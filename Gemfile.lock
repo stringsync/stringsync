@@ -59,6 +59,8 @@ GEM
     crass (1.0.3)
     erubis (2.7.0)
     ffi (1.9.23)
+    figaro (1.1.1)
+      thor (~> 0.14)
     foreman (0.82.0)
       thor (~> 0.19.1)
     globalid (0.4.1)
@@ -155,6 +157,7 @@ PLATFORMS
 DEPENDENCIES
   aws-sdk-s3 (~> 1)
   byebug
+  figaro
   foreman (~> 0.82.0)
   jbuilder (~> 2.5)
   listen (~> 3.0.5)
