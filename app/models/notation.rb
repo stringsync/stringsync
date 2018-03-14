@@ -1,0 +1,2 @@
+class Notation < ApplicationRecord
+end
