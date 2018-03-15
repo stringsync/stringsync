@@ -6,7 +6,7 @@ class Notation < ApplicationRecord
   has_many(:taggings, dependent: :destroy)
   has_many(:tags, through: :taggings)
 
-  has_attached_file(:thumbnail)
+  has_attached_file(:thumbnail, style: { thumbnail: "640x640" })
 
   validates_attachment(:thumbnail,
     presence: true,
