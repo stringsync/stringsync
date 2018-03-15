@@ -30,9 +30,13 @@ class FixtureLoader
 
       notation_attrs_by_id.each do |notation_id, notation_attrs|
         video = Video.new(video_attrs_by_notation_id.fetch(notation_id))
-        thumbnail = load_notation_thumbnail(notation_attrs.fetch("thumbnail_file_name"))
-        Notation.create!(notation_attrs.merge(video: video, thumbnail: thumbnail))
-        thumbnail.close
+
+        begin
+          thumbnail = load_notation_thumbnail(notation_attrs.fetch("thumbnail_file_name"))
+          Notation.create!(notation_attrs.merge(video: video, thumbnail: thumbnail))
+        ensure
+          thumbnail.close
+        end
       end
     end
 
