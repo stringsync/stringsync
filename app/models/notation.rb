@@ -1,4 +1,10 @@
+# This model is the citadel of StringSync. It is used to store the instructions
+# on how to sync a notation and media.
 class Notation < ApplicationRecord
+  belongs_to(:transcriber, foreign_key: :transcriber_id, class_name: "User")
+  has_many(:taggings, dependent: :destroy)
+  has_many(:tags, through: :taggings)
+
   has_attached_file(:thumbnail)
 
   validates_attachment(:thumbnail,
