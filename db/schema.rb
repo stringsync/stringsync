@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180315010729) do
+ActiveRecord::Schema.define(version: 20180315230231) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -75,8 +75,9 @@ ActiveRecord::Schema.define(version: 20180315010729) do
   end
 
   create_table "videos", force: :cascade do |t|
-    t.integer "notation_id", null: false
-    t.string  "src",         null: false
+    t.integer "notation_id",             null: false
+    t.string  "src",                     null: false
+    t.integer "kind",        default: 0, null: false
     t.index ["notation_id"], name: "index_videos_on_notation_id", using: :btree
   end
 
