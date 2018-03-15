@@ -19,6 +19,7 @@
   dead_time_ms: -765
   bpm: 120.0
   featured: true
+  thumbnail_file_name: notation_thumbnail_1.jpg
 - id: 2
   transcriber_id: 2
   song_name: Melancholic Riff
@@ -37,6 +38,7 @@
   dead_time_ms: 0
   bpm: 124.0
   featured: false
+  thumbnail_file_name: notation_thumbnail_2.jpg
 - id: 3
   transcriber_id: 3
   song_name: Panda
@@ -55,6 +57,7 @@
   dead_time_ms: 0
   bpm: 112.0
   featured: true
+  thumbnail_file_name: notation_thumbnail_3.jpg
 - id: 4
   transcriber_id: 1
   song_name: The Day After Christmas
@@ -75,6 +78,11 @@
     | :qd (7/5.9/4.7/3.8/2) $Emin7$ :8 7/5 :q (7/5.9/4.7/3.8/2.7/1)\r\nnotes | :q
     ## :qd 14/6 $F#9sus4$ :8 14/4\r\nnotes | :q (13/3.12/2) :8 14/6 $F#7b9$ :qd (12/3.11/2)\r\nnotes
     | :w ##"
+  duration_ms: 31000
+  dead_time_ms: -615
+  bpm: 113.0
+  featured: true
+  thumbnail_file_name: notation_thumbnail_4.jpg
 - id: 5
   transcriber_id: 2
   song_name: Untied Moccasins
@@ -94,6 +102,7 @@
   dead_time_ms: 490
   bpm: 70.0
   featured: true
+  thumbnail_file_name: notation_thumbnail_5.jpg
 - id: 6
   transcriber_id: 3
   song_name: Justwanna
@@ -120,6 +129,7 @@
   dead_time_ms: 600
   bpm: 135.0
   featured: true
+  thumbnail_file_name: notation_thumbnail_6.jpg
 - id: 7
   transcriber_id: 1
   song_name: Like Someone in Love
@@ -147,6 +157,7 @@
   dead_time_ms: 0
   bpm: 141.0
   featured: true
+  thumbnail_file_name: notation_thumbnail_7.jpg
 - id: 8
   transcriber_id: 2
   song_name: Musicians are Airbenders
@@ -172,6 +183,7 @@
   dead_time_ms: -100
   bpm: 152.0
   featured: true
+  thumbnail_file_name: notation_thumbnail_8.jpg
 - id: 9
   transcriber_id: 3
   song_name: Father's Tea
@@ -188,6 +200,7 @@
   dead_time_ms: 0
   bpm: 132.0
   featured: true
+  thumbnail_file_name: notation_thumbnail_9.jpg
 - id: 10
   transcriber_id: 1
   song_name: When You Wish Upon a Star
@@ -210,6 +223,7 @@
   dead_time_ms: -1200
   bpm: 105.0
   featured: true
+  thumbnail_file_name: notation_thumbnail_10.jpg
 - id: 11
   transcriber_id: 2
   song_name: Sunny Sunday in LA
@@ -238,3 +252,4 @@
   dead_time_ms: 0
   bpm: 88
   featured: true
+  thumbnail_file_name: notation_thumbnail_11.jpg
