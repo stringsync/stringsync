@@ -1,6 +1,22 @@
-return unless Rails.env.development?
-
 require File.join(Rails.root, "lib", "fixture_loader", "fixture_loader.rb")
 
-ApplicationRecord.descendants.each(&:delete_all)
-FixtureLoader.new.seed!
+def delete_all!
+  [User, Tag, Notation, Video, Tagging].each do |model|
+    model.delete_all
+    puts "Deleted all #{model} records."
+  end
+end
+
+def load_fixtures
+  puts "Loading records from db/fixtures."
+  FixtureLoader.new.seed!
+end
+
+if Rails.env.development?
+  delete_all!
+  load_fixtures
+else
+  puts "Cannot run seeds in the #{Rails.env} enviroment."
+end
+
+puts "Done."
