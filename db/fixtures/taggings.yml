@@ -1,62 +1,61 @@
 ---
-taggings:
-  - notation_id: 1
-    tag_id: 4
-  - notation_id: 1
-    tag_id: 3
-  - notation_id: 1
-    tag_id: 7
-  - notation_id: 2
-    tag_id: 5
-  - notation_id: 2
-    tag_id: 9
-  - notation_id: 2
-    tag_id: 1
-  - notation_id: 3
-    tag_id: 5
-  - notation_id: 3
-    tag_id: 3
-  - notation_id: 3
-    tag_id: 7
-  - notation_id: 4
-    tag_id: 3
-  - notation_id: 4
-    tag_id: 7
-  - notation_id: 4
-    tag_id: 2
-  - notation_id: 5
-    tag_id: 3
-  - notation_id: 5
-    tag_id: 4
-  - notation_id: 5
-    tag_id: 2
-  - notation_id: 6
-    tag_id: 10
-  - notation_id: 6
-    tag_id: 6
-  - notation_id: 6
-    tag_id: 8
-  - notation_id: 7
-    tag_id: 2
-  - notation_id: 7
-    tag_id: 10
-  - notation_id: 7
-    tag_id: 7
-  - notation_id: 8
-    tag_id: 9
-  - notation_id: 8
-    tag_id: 10
-  - notation_id: 8
-    tag_id: 1
-  - notation_id: 9
-    tag_id: 10
-  - notation_id: 9
-    tag_id: 1
-  - notation_id: 9
-    tag_id: 2
-  - notation_id: 10
-    tag_id: 7
-  - notation_id: 10
-    tag_id: 3
-  - notation_id: 10
-    tag_id: 2
+- notation_id: 1
+  tag_id: 4
+- notation_id: 1
+  tag_id: 3
+- notation_id: 1
+  tag_id: 7
+- notation_id: 2
+  tag_id: 5
+- notation_id: 2
+  tag_id: 9
+- notation_id: 2
+  tag_id: 1
+- notation_id: 3
+  tag_id: 5
+- notation_id: 3
+  tag_id: 3
+- notation_id: 3
+  tag_id: 7
+- notation_id: 4
+  tag_id: 3
+- notation_id: 4
+  tag_id: 7
+- notation_id: 4
+  tag_id: 2
+- notation_id: 5
+  tag_id: 3
+- notation_id: 5
+  tag_id: 4
+- notation_id: 5
+  tag_id: 2
+- notation_id: 6
+  tag_id: 10
+- notation_id: 6
+  tag_id: 6
+- notation_id: 6
+  tag_id: 8
+- notation_id: 7
+  tag_id: 2
+- notation_id: 7
+  tag_id: 10
+- notation_id: 7
+  tag_id: 7
+- notation_id: 8
+  tag_id: 9
+- notation_id: 8
+  tag_id: 10
+- notation_id: 8
+  tag_id: 1
+- notation_id: 9
+  tag_id: 10
+- notation_id: 9
+  tag_id: 1
+- notation_id: 9
+  tag_id: 2
+- notation_id: 10
+  tag_id: 7
+- notation_id: 10
+  tag_id: 3
+- notation_id: 10
+  tag_id: 2
