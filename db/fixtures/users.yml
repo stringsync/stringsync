@@ -1,37 +1,61 @@
 ---
-- name: mthurn
+- id: 1
+  name: mthurn
+  role: teacher
   email: mthurn@live.com
-  password: testing
-- name: fangorn
+  password: stringsync
+- id: 2
+  name: fangorn
+  role: teacher
   email: fangorn@hotmail.com
-  password: testing
-- name: euice
+  password: stringsync
+- id: 3
+  name: euice
+  role: teacher
   email: euice@outlook.com
-  password: testing
-- name: rgarcia
+  password: stringsync
+- id: 4
+  name: rgarcia
+  role: student
   email: rgarcia@optonline.net
-  password: testing
-- name: mxiao
+  password: stringsync
+- id: 5
+  name: mxiao
+  role: student
   email: mxiao@yahoo.com
-  password: testing
-- name: firstpr
+  password: stringsync
+- id: 6
+  name: firstpr
+  role: student
   email: firstpr@att.net
-  password: testing
-- name: webdragon
+  password: stringsync
+- id: 7
+  name: webdragon
+  role: student
   email: webdragon@comcast.net
-  password: testing
-- name: jguyer
+  password: stringsync
+- id: 8
+  name: jguyer
+  role: student
   email: jguyer@aol.com
-  password: testing
-- name: sakusha
+  password: stringsync
+- id: 9
+  name: sakusha
+  role: student
   email: sakusha@yahoo.ca
-  password: testing
-- name: crandall
+  password: stringsync
+- id: 10
+  name: crandall
+  role: student
   email: crandall@sbcglobal.net
-  password: testing
-- name: drezet
+  password: stringsync
+- id: 11
+  name: drezet
+  role: student
   email: drezet@me.com
-  password: testing
-- name: miyop
+  password: stringsync
+- id: 112
+  name: miyop
+  role: student
   email: miyop@icloud.com
-  password: testing
+  password: stringsync

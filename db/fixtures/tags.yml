@@ -1,10 +1,10 @@
 ---
-- acoustic
-- ambient
-- beginner
-- classical
-- gospel
-- jazz
-- neosoul
-- fusion
-- metal
+- name: acoustic
+- name: ambient
+- name: beginner
+- name: classical
+- name: gospel
+- name: jazz
+- name: neosoul
+- name: fusion
+- name: metal
