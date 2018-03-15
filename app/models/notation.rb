@@ -10,7 +10,7 @@ class Notation < ApplicationRecord
 
   validates_attachment(:thumbnail,
     presence: true,
-    content_type: { content_type: "image/jpeg" },
+    content_type: { content_type: %W(image/jpeg image/jpg image/gif image/png) },
     size: { in: 0..2.megabytes }
   )
 end
