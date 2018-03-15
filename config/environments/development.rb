@@ -44,8 +44,15 @@ Rails.application.configure do
   # routes, locales, etc. This feature depends on the listen gem.
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
+  # Paperclip
   config.paperclip_defaults = {
     storage: :s3,
-    preserve: true
+    preserve: true,
+    s3_region: Figaro.env.s3_region!,
+    s3_credentials: {
+      bucket: Figaro.env.s3_bucket!,
+      access_key_id: Figaro.env.s3_access_key_id!,
+      secret_access_key_id: Figaro.env.s3_secret_access_key!
+    }
   }
 end
