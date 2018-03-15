@@ -53,7 +53,7 @@
     $CM7$ :8 7/3 $✋$ $\U0001F92B$ 9/3 8/2 7/3\r\n"
   duration_ms: 17833
   dead_time_ms: 0
-  bpm: !ruby/object:BigDecimal 112.0
+  bpm: 112.0
   featured: true
 - id: 4
   transcriber_id: 4
