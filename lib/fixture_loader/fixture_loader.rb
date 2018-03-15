@@ -19,6 +19,8 @@ class FixtureLoader
       load_yaml_for(model).each(&model.method(:create!))
     end
 
+    # Due to the models validations and database constraints on notations and videos,
+    # we need to create these records at the same time.
     def create_notations_and_videos!
       notation_attrs_by_id = load_yaml_for(Notation).index_by do |attrs|
         attrs.fetch("id")
