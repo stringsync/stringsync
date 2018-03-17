@@ -1,5 +1,1 @@
-if defined?(user)
-  json.self user_path(user)
-else
-  json.self users_path
-end
+json.self user.present? ? user_path(user) : users_path
