@@ -1,10 +1,11 @@
 Rails.application.routes.draw do
-  mount_devise_token_auth_for "User", at: "auth"
-
   scope :api, defaults: { format: :json } do
-    resources :notations
-    resources :users
-    resources :tags
+    scope :v1
+      mount_devise_token_auth_for "User", at: "auth"
+      resources :notations
+      resources :users
+      resources :tags
+    end
   end
 
   # invokes fallback to hand off route handling to the client
