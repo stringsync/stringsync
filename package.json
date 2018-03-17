@@ -1,7 +1,7 @@
 {
   "name": "list-of-ingredients",
   "engines": {
-    "node": "6.3.1"
+    "node": "9.3.0"
   },
   "scripts": {
     "build": "cd client && npm install && npm run build && cd ..",
