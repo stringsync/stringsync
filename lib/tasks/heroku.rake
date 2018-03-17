@@ -4,11 +4,11 @@ namespace :heroku do
     exec "git push heroku #{ENV.fetch("BRANCH", "master")}"
   end
 
-  desc "Inject config stored in ENV variables by figaro"
-  task :inject_config do
+  desc "Inject ENV variables by figaro"
+  task :set_env do
     exec "figaro heroku:set -e production"
   end
 
   desc "Deploy to Heroku"
-  task deploy: %i(push inject_config)
+  task deploy: %i(push set_env)
 end
