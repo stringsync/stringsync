@@ -13,4 +13,6 @@ class Notation < ApplicationRecord
     content_type: { content_type: %W(image/jpeg image/jpg image/gif image/png) },
     size: { in: 0..2.megabytes }
   )
+
+  accepts_nested_attributes_for(:video)
 end

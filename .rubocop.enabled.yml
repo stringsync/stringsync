@@ -1,0 +1,66 @@
+AllCops:
+  DisabledByDefault: true
+
+Metrics/LineLength:                   { Enabled: true }
+Style/AlignHash:                      { Enabled: true }
+Style/AlignParameters:                { Enabled: true }
+Style/AndOr:                          { Enabled: true }
+Style/BlockDelimiters:                { Enabled: true }
+Style/BracesAroundHashParameters:     { Enabled: true }
+Style/CaseIndentation:                { Enabled: true }
+Style/ClosingParenthesisIndentation:  { Enabled: true }
+Style/ColonMethodCall:                { Enabled: true }
+Style/Documentation:                  { Enabled: true }
+Style/EachWithObject:                 { Enabled: true }
+Style/EmptyLineBetweenDefs:           { Enabled: true }
+Style/EmptyLinesAroundAccessModifier: { Enabled: true }
+Style/EmptyLiteral:                   { Enabled: true }
+Style/ExtraSpacing:                   { Enabled: true }
+Style/FormatString:                   { Enabled: true }
+Style/HashSyntax:                     { Enabled: true }
+Style/IndentArray:                    { Enabled: true }
+Style/IndentationConsistency:         { Enabled: true }
+Style/IndentationWidth:               { Enabled: true }
+Style/IndentHash:                     { Enabled: true }
+Style/Lambda:                         { Enabled: true }
+Style/LambdaCall:                     { Enabled: true }
+Style/LeadingCommentSpace:            { Enabled: true }
+Style/MethodCallParentheses:          { Enabled: true }
+Style/MultilineMethodCallIndentation: { Enabled: true }
+Style/MutableConstant:                { Enabled: true }
+Style/ParenthesesAroundCondition:     { Enabled: true }
+Style/RedundantBegin:                 { Enabled: true }
+Style/RedundantReturn:                { Enabled: true }
+Style/Semicolon:                      { Enabled: true }
+Style/SpaceAroundOperators:           { Enabled: true }
+Style/SpaceBeforeComma:               { Enabled: true }
+Style/SpaceInsideBrackets:            { Enabled: true }
+Style/SpaceInsideHashLiteralBraces:   { Enabled: true }
+Style/SpecialGlobalVars:              { Enabled: true }
+Style/StringLiterals:                 { Enabled: true }
+Style/SymbolArray:                    { Enabled: true }
+Style/TrailingBlankLines:             { Enabled: true }
+Style/TrailingCommaInArguments:       { Enabled: true }
+Style/TrailingCommaInLiteral:         { Enabled: true }
+Style/TrailingWhitespace:             { Enabled: true }
+Style/WordArray:                      { Enabled: true }
+
+Rails:
+  Enabled: true
+
+Rails/ActionFilter:         { Enabled: true }
+Rails/Date:                 { Enabled: true }
+Rails/Delegate:             { Enabled: true }
+Rails/Exit:                 { Enabled: true }
+#Rails/FindBy:               { Enabled: true }
+#Rails/FindEach:             { Enabled: true }
+Rails/HasAndBelongsToMany:  { Enabled: true }
+Rails/Output:               { Enabled: true }
+Rails/OutputSafety:         { Enabled: true }
+Rails/PluralizationGrammar: { Enabled: true }
+Rails/ReadWriteAttribute:   { Enabled: true }
+Rails/RequestReferer:       { Enabled: true }
+Rails/ScopeArgs:            { Enabled: true }
+Rails/TimeZone:             { Enabled: true }
+Rails/UniqBeforePluck:      { Enabled: true }
+Rails/Validation:           { Enabled: true }
