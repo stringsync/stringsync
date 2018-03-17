@@ -1,11 +1,10 @@
 import auth from 'j-toker';
 
+window.auth = auth;
+
 const configureAuth = () => (
   auth.configure({
-    apiUrl: 'https://shielded-forest-68418.herokuapp.com/',
-    authProviderPaths: {
-      github: '/auth/facebook'
-    }
+    apiUrl: `${window.location.origin}/api/v1`
   })
 );
 
