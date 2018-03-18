@@ -1,7 +1,18 @@
 import { createActions } from 'redux-actions';
 
 const notationsActions = createActions({
-  SET_NOTATIONS: notations => notations
+  NOTATIONS: {
+    INDEX: {
+      SET: notations => ({ notations })
+    },
+    SHOW: {
+      SET: notation => ({ notation })
+    },
+    EDIT: {
+      SET: notation => ({ notation }),
+      UPDATE: notation => ({ notation })
+    }
+  }
 });
 
 export default notationsActions;
