@@ -4,7 +4,5 @@
 class Video < ApplicationRecord
   belongs_to(:notation)
 
-  validates(:notation, presence: true)
-
   enum(kind: %i(youtube))
 end

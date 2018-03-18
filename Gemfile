@@ -13,8 +13,10 @@ gem "jbuilder", "~> 2.5"
 gem "paperclip", "~> 6.0.0"
 gem "aws-sdk-s3", "~> 1"
 gem "figaro"
-gem "devise_token_auth"
+gem "devise_token_auth", git: "https://github.com/jaredjj3/devise_token_auth"
+gem "omniauth"
 gem "omniauth-facebook"
+gem "rack-cors"
 
 group :development, :test do
   gem "byebug", platform: :mri

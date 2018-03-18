@@ -4,7 +4,8 @@ window.auth = auth;
 
 const configureAuth = () => (
   auth.configure({
-    apiUrl: 'https://shielded-forest-68418.herokuapp.com/api/v1/'
+    apiUrl: 'http://localhost:3001',
+    confirmationSuccessUrl: () => window.location.href
   })
 );
 

@@ -4,19 +4,33 @@ class FixtureLoader
   FIXTURES_DIR = File.join(Rails.root, "db", "fixtures").freeze
   NOTATION_THUMBNAILS_DIR = File.join(FIXTURES_DIR, "images", "notation_thumbnails").freeze
 
+  attr_accessor :memo
+
+  def initialize
+    self.memo = {}
+  end
+
   def seed!
     ApplicationRecord.transaction do
       create_fixtures!(User)
       create_fixtures!(Tag)
       create_notations_and_videos!
-      create_fixtures!(Tagging)
+      create_taggings!
     end
   end
 
   private
 
+    def instance(model, attrs)
+      dup_attrs = attrs.dup
+      id = dup_attrs.delete(:id)
+
+      memo[model] ||= {}
+      memo[model][id] = model.new(dup_attrs)
+    end
+
     def create_fixtures!(model)
-      load_yaml_for(model).each(&model.method(:create!))
+      load_yaml_for(model).each { |attrs| instance(model, attrs).save! }
     end
 
     # Due to the models validations and database constraints on notations and videos,
@@ -31,14 +45,23 @@ class FixtureLoader
       end
 
       notation_attrs_by_id.each do |notation_id, notation_attrs|
-        video = Video.new(video_attrs_by_notation_id.fetch(notation_id))
+        video = instance(Video, video_attrs_by_notation_id.fetch(notation_id))
+        video.save(validate: false)
 
         begin
           thumbnail = load_notation_thumbnail(notation_attrs.fetch("thumbnail_file_name"))
-          Notation.create!(notation_attrs.merge(video: video, thumbnail: thumbnail))
+          instance(Notation, notation_attrs.merge(video: video, thumbnail: thumbnail)).save!
         ensure
           thumbnail.close
         end
+      end
+    end
+
+    def create_taggings!
+      load_yaml_for(Tagging).each do |attrs|
+        notation = memo[Notation][attrs.fetch("notation_id")]
+        tag = memo[Tag][attrs.fetch("tag_id")]
+        instance(Tagging, attrs).save!
       end
     end
 
