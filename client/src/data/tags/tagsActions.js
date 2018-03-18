@@ -1,7 +1,11 @@
 import { createActions } from 'redux-actions';
 
 const tagsActions = createActions({
-  SET_TAGS: tags => tags
+  TAGS: {
+    INDEX: {
+      SET: tags => ({ tags })
+    }
+  }
 });
 
 export default tagsActions;

@@ -1,12 +1,8 @@
 import { handleActions, combineActions } from 'redux-actions';
-import { tagsActions } from './';
-
-const { setTags } = tagsActions;
-
-const defaultState = [];
+import { tagsActions as actions, tagsDefaultState as defaultState } from './';
 
 const tagsReducer = handleActions({
-  [combineActions(setTags)]: (state, action) => action.tags
+  [combineActions(actions.tags.index.set)]: (state, action) => action.tags
 }, defaultState);
 
 export default tagsReducer;
