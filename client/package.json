@@ -12,8 +12,11 @@
     "react-app-rewire-less": "^2.1.1",
     "react-app-rewired": "^1.5.0",
     "react-dom": "^16.2.0",
+    "react-redux": "^5.0.7",
     "react-scripts": "1.1.1",
-    "recompose": "^0.26.0"
+    "recompose": "^0.26.0",
+    "redux-actions": "^2.3.0",
+    "redux-thunk": "^2.2.0"
   },
   "scripts": {
     "start": "react-app-rewired start",
