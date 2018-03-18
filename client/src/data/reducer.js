@@ -1,7 +1,9 @@
 import { combineReducers } from 'redux';
 
-const reducer = combineReducers({
+import { notationsReducer as notations } from 'data';
 
+const reducer = combineReducers({
+  notations
 });
 
 export default reducer;
