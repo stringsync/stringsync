@@ -1,9 +1,13 @@
 import { combineReducers } from 'redux';
 
-import { notationsReducer as notations } from 'data';
+import {
+  notationsReducer as notations,
+  tagsReducer as tags
+} from 'data';
 
 const reducer = combineReducers({
-  notations
+  notations,
+  tags
 });
 
 export default reducer;
