@@ -1,5 +1,4 @@
 import { handleActions, combineActions } from 'redux-actions';
-import { merge } from 'lodash';
 import { usersActions as actions, usersDefaultState as defaultState } from './';
 
 const usersReducer = handleActions({

@@ -1,5 +1,4 @@
 import { handleActions, combineActions } from 'redux-actions';
-import { merge } from 'lodash';
 import { videoActions as actions, videoDefaultState as defaultState } from './';
 
 const videoReducer = handleActions({

@@ -1,5 +1,4 @@
 import { handleActions, combineActions } from 'redux-actions';
-import { merge } from 'lodash';
 import { sessionActions as actions, sessionDefaultState as defaultState } from './';
 
 const sessionReducer = handleActions({
