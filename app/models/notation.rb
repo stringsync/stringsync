@@ -14,5 +14,16 @@ class Notation < ApplicationRecord
     size: { in: 0..2.megabytes }
   )
 
+  validate(:check_transcriber)
+
   accepts_nested_attributes_for(:video)
+
+  private
+
+    # Allow only teachers and admins to transcribe Notations
+    def check_transcriber
+      if %i(teacher admin).none? { |role| transcriber.has_role?(role) }
+        errors.add(:transcriber, "must be a teacher or admin")
+      end
+    end
 end
