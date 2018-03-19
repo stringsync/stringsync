@@ -8,10 +8,6 @@ class User < ActiveRecord::Base
   # roles preceding it.
   enum(role: %i(student teacher admin))
 
-  def self.omniauth_for(auth)
-
-  end
-
   def has_role?(role)
     roles = self.class.roles
     roles.fetch(role.to_s) >= roles.fetch(self.role)
