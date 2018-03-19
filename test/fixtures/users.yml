@@ -1,16 +1,19 @@
 admin:
+  id: 1
   uid: 1
   name: jared
   role: admin
   email: jared@stringsync.com
 
 teacher:
+  id: 2
   uid: 2
   name: amy
   role: teacher
   email: amy@stringsync.com
 
 student:
+  id: 3
   uid: 3
   name: lance
   email: lance@stringsync.com

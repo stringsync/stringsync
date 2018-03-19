@@ -12,7 +12,7 @@ def load_fixtures
   FixtureLoader.new.seed!
 end
 
-if Rails.env.development?
+if Rails.env.development? || Rails.env.test?
   delete_all!
   load_fixtures
 else
