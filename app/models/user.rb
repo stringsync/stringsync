@@ -8,6 +8,8 @@ class User < ActiveRecord::Base
   # roles preceding it.
   enum(role: %i(student teacher admin))
 
+  has_many(:transcribed_notations, foreign_key: :transcriber_id, class_name: "Notation")
+
   def has_role?(role)
     roles = self.class.roles
     roles.fetch(self.role) >= roles.fetch(role.to_s)
