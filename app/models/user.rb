@@ -10,6 +10,6 @@ class User < ActiveRecord::Base
 
   def has_role?(role)
     roles = self.class.roles
-    roles.fetch(role.to_s) >= roles.fetch(self.role)
+    roles.fetch(self.role) >= roles.fetch(role.to_s)
   end
 end
