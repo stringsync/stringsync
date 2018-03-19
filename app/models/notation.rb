@@ -8,6 +8,8 @@ class Notation < ApplicationRecord
 
   has_attached_file(:thumbnail, style: { thumbnail: "640x640" })
 
+  validates(:transcriber, presence: true)
+
   validates_attachment(:thumbnail,
     presence: true,
     content_type: { content_type: %W(image/jpeg image/jpg image/gif image/png) },
@@ -20,7 +22,7 @@ class Notation < ApplicationRecord
 
   private
 
-    # Allow only teachers and admins to transcribe Notations
+    # Only allow teachers and admins to transcribe Notations
     def check_transcriber
       if %i(teacher admin).none? { |role| transcriber.has_role?(role) }
         errors.add(:transcriber, "must be a teacher or admin")
