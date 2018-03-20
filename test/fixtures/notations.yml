@@ -25,10 +25,12 @@ notation1:
   thumbnail_content_type: image/jpeg
   thumbnail_file_size: 1
   thumbnail_updated_at: 2018-01-01 00:00:00
-- id: 2
+
+notation2:
+  id: 2
   created_at: 2018-01-01 00:00:00
   updated_at: 2018-01-01 00:00:00
-  transcriber_id: 2
+  transcriber_id: 3
   song_name: Melancholic Riff
   artist_name: "@vininoes"
   vextab_string: "tabstave\r\nclef=none\r\nnotation=true\r\nkey=G time=4/4\r\n\r\nnotes

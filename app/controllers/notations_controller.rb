@@ -1,11 +1,11 @@
 class NotationsController < ApplicationController
   def index
-    @notations = Notation.includes(:tags, :transcriber)
+    @notations = Notation.includes(:tags, :transcriber, :video)
     render(:index, status: 200)
   end
 
   def show
-    @notation = Notation.includes(:tags, :transcriber).where(id: params.require(:id)).first!
+    @notation = Notation.includes(:tags, :transcriber, :video).where(id: params.require(:id)).first!
     render(:show, status: 200)
   end
 
@@ -24,7 +24,7 @@ class NotationsController < ApplicationController
   end
 
   def update
-    @notation = Notation.includes(:tags, :transcriber).where(id: params.require(:id)).first!
+    @notation = Notation.includes(:tags, :transcriber, :video).where(id: params.require(:id)).first!
     
     if current_user == @notation.transcriber || current_user.try(:has_role?, :admin)
       if @notation.update(notation_params)
