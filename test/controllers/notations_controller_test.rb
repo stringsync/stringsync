@@ -19,7 +19,6 @@ class NotationsControllerTest < ActionDispatch::IntegrationTest
   test "NotationsController#create allows teacher and admin users to create a notation" do
     users(:teacher1, :admin1).each do |user|
       assert(user.has_role?(:teacher))
-
       count = Notation.count
 
       params = {
@@ -58,42 +57,67 @@ class NotationsControllerTest < ActionDispatch::IntegrationTest
     id = :notation2
     notation = notations(id)
     transcriber = notation.transcriber
+    count = Notation.count
 
     refute(
       transcriber.has_role?(:admin),
       "Expected a notation fixture (#{id}) whose transcriber does not have the admin role"
     )
 
-    count = Notation.count
-
-    params = {
-      id: notation.id,
-      notation: {
-        song_name: "foo",
-        artist_name: transcriber.name,
-        vextab_string: "tabstave clef=none notation=true key=C time=4/4 yo",
-        thumbnail: fixture_file_upload(file_fixture("notation_thumbnail_1.jpg"), "image/jpg"),
-        video_attributes: {
-          src: "bam"
-        }
-      }
-    }
-
+    song_name = "This Will Never Coincidentally be the Fixture's Name"
+    params = { notation: { song_name: song_name } }
     tokens = sign_in_as(transcriber, "stringsync")
     patch(notation_path(notation), headers: tokens, params: params)
     assert_response(200)
     assert_equal(count, Notation.count)
 
     notation.reload
+    assert_equal(song_name, notation.song_name)
+    assert_equal(transcriber.id, notation.transcriber_id)
+  end
 
-    params[:notation].
-        slice(*%i(song_name artist_name vextab_string)).
-        each { |name, value| assert_equal(value, notation.send(name)) }
+  test "NotationsController#update disallows a different teacher to update a notation" do
+    id = :notation2
+    notation = notations(id)
+    user = users(:teacher2)
+    count = Notation.count
 
-    params[:notation][:video_attributes].each do |name, value|
-      assert_equal(value, notation.video.send(name))
-    end
+    refute(
+      user.has_role?(:admin),
+      "Expected a notation fixture (#{id}) whose user does not have the admin role"
+    )
 
-    assert_equal(transcriber, notation.transcriber)
+    refute_equal(user, notation.transcriber)
+
+    tokens = sign_in_as(user, "stringsync")
+    patch(notation_path(notation), headers: tokens)
+    assert_response(401)
+
+    attributes = notation.attributes
+    notation.reload
+    assert_equal(count, Notation.count)
+    assert_equal(attributes, notation.attributes)
+  end
+
+  test "NotationsController#update allows an admin to update any notation" do
+    id = :notation2
+    notation = notations(id)
+    user = users(:admin1)
+    count = Notation.count
+
+    assert(user.has_role?(:admin))
+    refute_equal(user, notation.transcriber)
+
+    song_name = "This Will Never Coincidentally be the Fixture's Name"
+    params = { notation: { song_name: song_name } }
+    tokens = sign_in_as(user, "stringsync")
+    patch(notation_path(notation), headers: tokens, params: params)
+    assert_response(200)
+    assert_equal(count, Notation.count)
+
+    transcriber_id = notation.transcriber_id
+    notation.reload
+    assert_equal(song_name, notation.song_name)
+    assert_equal(transcriber_id, notation.transcriber_id)
   end
 end
