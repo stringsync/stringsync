@@ -17,7 +17,7 @@ class NotationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "NotationsController#create allows teacher and admin users to create a notation" do
-    users(:teacher, :admin).each do |user|
+    users(:teacher1, :admin1).each do |user|
       assert(user.has_role?(:teacher))
 
       count = Notation.count
@@ -52,5 +52,9 @@ class NotationsControllerTest < ActionDispatch::IntegrationTest
 
       assert_equal(user, notation.transcriber)
     end
+  end
+
+  test "NotationsController#update allows the transcriber to update a notation" do
+
   end
 end

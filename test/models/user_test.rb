@@ -2,7 +2,7 @@ require 'test_helper'
 
 class NotationTest < ActiveSupport::TestCase
   test "#has_role?" do
-    users(:admin, :teacher, :student).each do |user|
+    users(:admin1, :teacher1, :student1).each do |user|
       ndx = User.roles.fetch(user.role)
       has_roles, rest_roles = User.roles.partition { |_, precedence| ndx >= precedence }
 

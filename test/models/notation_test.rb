@@ -5,14 +5,14 @@ class NotationTest < ActiveSupport::TestCase
     msg = "must be a teacher or admin"
 
     # allowed users
-    users(:admin, :teacher).each do |user|
+    users(:admin1, :teacher1).each do |user|
       notation = Notation.new(transcriber: user)
       notation.validate
       refute_includes(notation.errors[:transcriber], msg)
     end
 
     # not allowed user
-    notation = Notation.new(transcriber: users(:student))
+    notation = Notation.new(transcriber: users(:student1))
     notation.validate
     assert_includes(notation.errors[:transcriber], msg)
   end
