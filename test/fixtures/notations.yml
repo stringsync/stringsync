@@ -1,4 +1,4 @@
-first:
+notation1:
   id: 1
   created_at: 2018-01-01 00:00:00
   updated_at: 2018-01-01 00:00:00
@@ -25,3 +25,24 @@ first:
   thumbnail_content_type: image/jpeg
   thumbnail_file_size: 1
   thumbnail_updated_at: 2018-01-01 00:00:00
+- id: 2
+  created_at: 2018-01-01 00:00:00
+  updated_at: 2018-01-01 00:00:00
+  transcriber_id: 2
+  song_name: Melancholic Riff
+  artist_name: "@vininoes"
+  vextab_string: "tabstave\r\nclef=none\r\nnotation=true\r\nkey=G time=4/4\r\n\r\nnotes
+    | :q 0/6 :8 (10/5.9/4.11/3) $GM7$ :16 h12p11/3 :8 p9/3 :qd s7/3\r\nnotes | :8
+    T7/3 :8 0/6 :8 (7/5.5/4.7/3) $Em7$ :16 h8p7/3 :8 p5/3 :qd s4/3\r\nnotes | :q 5/6
+    :8 (5/6.5/4.4/3) $A7sus2$ (5/4.4/3) s5/3 :qd s7/3\r\nnotes | :q 8/6 $CM7sus2$
+    :8 9/4 7/3 :8 (9/4.7/3) h9/3 7/2 ^3^ h8s10s12/2 ^3^\r\nnotes | :q 0/6 :8 (10/5.9/4.11/3)
+    $GM7$ :16 h12p11/3 :8 p9/3 :qd s7/3\r\nnotes | :8 T7/3 :8 0/6 :8 (7/5.5/4.7/3)
+    $Em7$ :16 h8p7/3 :8 p5/3 :qd s4/3\r\nnotes | :q 5/6 :8 (5/6.5/4.4/3) $A7sus2$
+    (5/4.4/3) s5/3 :qd s7/3\r\nnotes | :q 8/6 $CM7sus2$ :8 9/4 :16 7/3 (9/4.7/3) :8
+    h(9/4.9/3) s7p5s4/3\r\nnotes | :q 0/6 :8 (10/5.9/4.11/3) $GM7$ :16 h12p11/3 :8
+    p9/3 :qd s7/3"
+  duration_ms: 15789
+  dead_time_ms: 0
+  bpm: 124.0
+  featured: false
+  thumbnail_file_name: notation_thumbnail_2.jpg

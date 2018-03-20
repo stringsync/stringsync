@@ -55,6 +55,6 @@ class NotationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "NotationsController#update allows the transcriber to update a notation" do
-
+    
   end
 end
