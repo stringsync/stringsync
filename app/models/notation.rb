@@ -2,7 +2,7 @@
 # on how to sync a notation and video.
 class Notation < ApplicationRecord
   belongs_to(:transcriber, foreign_key: :transcriber_id, class_name: "User")
-  has_one(:video)
+  has_one(:video, inverse_of: :notation)
   has_many(:taggings, dependent: :destroy)
   has_many(:tags, through: :taggings)
 
@@ -24,7 +24,7 @@ class Notation < ApplicationRecord
 
     # Only allow teachers and admins to transcribe Notations
     def check_transcriber
-      if %i(teacher admin).none? { |role| transcriber.has_role?(role) }
+      if %i(teacher admin).none? { |role| transcriber.try(:has_role?, role) }
         errors.add(:transcriber, "must be a teacher or admin")
       end
     end

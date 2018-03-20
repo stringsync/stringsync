@@ -4,6 +4,8 @@ admin:
   name: jared
   role: admin
   email: jared@stringsync.com
+  encrypted_password: $2a$11$74g/vJuZACUNf9hzA.JLdedfrqgYxaoXkOA0EY3TToO2qDX/dmPDC
+  confirmed_at: 2018-01-01 00:00:00
 
 teacher:
   id: 2
@@ -11,9 +13,13 @@ teacher:
   name: amy
   role: teacher
   email: amy@stringsync.com
+  encrypted_password: $2a$11$74g/vJuZACUNf9hzA.JLdedfrqgYxaoXkOA0EY3TToO2qDX/dmPDC
+  confirmed_at: 2018-01-01 00:00:00
 
 student:
   id: 3
   uid: 3
   name: lance
   email: lance@stringsync.com
+  encrypted_password: $2a$11$74g/vJuZACUNf9hzA.JLdedfrqgYxaoXkOA0EY3TToO2qDX/dmPDC
+  confirmed_at: 2018-01-01 00:00:00

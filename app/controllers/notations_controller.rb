@@ -11,7 +11,7 @@ class NotationsController < ApplicationController
 
   def create
     if current_user.try(:has_role?, :teacher)
-      @notation = Notation.new(notation_params)
+      @notation = Notation.new(notation_params.merge(transcriber: current_user))
 
       if @notation.save
         render(:show, status: 200)
@@ -24,10 +24,10 @@ class NotationsController < ApplicationController
   end
 
   def update
-    @notation = Notation.includes(:tags, :transcriber).find(params.require(:id))
+    @notation = Notation.includes(:tags, :transcriber).where(id: params.require(:id)).first!
     
     if current_user == @notation.transcriber || current_user.try(:has_role?, :admin)
-      if @notation.update(notation_params.compact)
+      if @notation.update(notation_params)
         render(:show, status: 200)
       else
         render("shared/errors", status: 422)
@@ -38,7 +38,7 @@ class NotationsController < ApplicationController
   end
 
   def destroy
-    @notation = Notation.includes(:tags, :transcriber).find(params.require(:id))
+    @notation = Notation.includes(:tags, :transcriber).where(id: params.require(:id)).first!
 
     if current_user.try(:has_role?, :admin)
       @notation.destroy!
