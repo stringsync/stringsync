@@ -16,6 +16,6 @@ rvm:
   - 2.3.1
 script:
   - bundle exec rails test
-  - npm run build && npm run test
+  - cd client && npm install && npm run test && cd ..
 env:
   secure: hCKigEL/b7K2Njpt09+ZEdCrildVhBSXOFvv5vJwPOTHOoC72vQnljyuTK6No3XXetS8zP4+sesCV0yoUZaqGZqFeV/aSpPqtrtVFi6j2p+x3kYGUJu8m9NQ/vdhWXd/hYO2dntKh8iONSmhIE9Cn7Lehuuok45vN+tcwSpG9c6Vz8+BN2i9l/N4P6z70Q7qfDjA+C0kt7G/3SDiFxXZrmD1Wz2f5sC64jBps6S8YU2kZXmzDYPTvqAgw82Ux3YAwheFt6iS7FEu/KiYp1Umc1CptxcD70K498u6xIY5Xv+cXbTyf9CATO4MmCBtFCERkAVEDBFOqMc3Ghkz26lEO5COyR8JoI3NTTbfzeDcCiKLwUuAdK0+P6po21ZTtKe3JdfXox8dhQAh0r4FM4FsiKrqd8XeRsrrQrdzTWx1xfTLpuF477ErMqJbNHL3Qf3qdyWKXaMq9HEWgSWuGa8TpjQEv7wAF4IT2dQOLGNTyNEleSsMQ7KxUJzPkQEFaQMB9+HjOe6P7+g6aqwbSoN9ezGIMeMIVToB/9HO65st2demel47kXHYFus3MViKWAG5uNkR3OTlAV0IVpF817D7KDwKXdffEEN02qLoh9daQkFrxAwqALwEA2lXrhwFcdv4nsaLnQquVjpr27z5mTH9s8OO5fpp8/tj0t3WPY2tEtk=
