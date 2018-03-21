@@ -5,8 +5,8 @@ language: ruby
 cache:
   bundler: true
   directories:
-    - client/node_modules
-    - /home/travis/.rvm/
+  - client/node_modules
+  - "/home/travis/.rvm/"
 before_script:
   - bundle exec rails db:create RAILS_ENV=test
 test:
@@ -20,3 +20,8 @@ script:
   - cd client && npm install && npm run test && cd ..
 env:
   secure: hCKigEL/b7K2Njpt09+ZEdCrildVhBSXOFvv5vJwPOTHOoC72vQnljyuTK6No3XXetS8zP4+sesCV0yoUZaqGZqFeV/aSpPqtrtVFi6j2p+x3kYGUJu8m9NQ/vdhWXd/hYO2dntKh8iONSmhIE9Cn7Lehuuok45vN+tcwSpG9c6Vz8+BN2i9l/N4P6z70Q7qfDjA+C0kt7G/3SDiFxXZrmD1Wz2f5sC64jBps6S8YU2kZXmzDYPTvqAgw82Ux3YAwheFt6iS7FEu/KiYp1Umc1CptxcD70K498u6xIY5Xv+cXbTyf9CATO4MmCBtFCERkAVEDBFOqMc3Ghkz26lEO5COyR8JoI3NTTbfzeDcCiKLwUuAdK0+P6po21ZTtKe3JdfXox8dhQAh0r4FM4FsiKrqd8XeRsrrQrdzTWx1xfTLpuF477ErMqJbNHL3Qf3qdyWKXaMq9HEWgSWuGa8TpjQEv7wAF4IT2dQOLGNTyNEleSsMQ7KxUJzPkQEFaQMB9+HjOe6P7+g6aqwbSoN9ezGIMeMIVToB/9HO65st2demel47kXHYFus3MViKWAG5uNkR3OTlAV0IVpF817D7KDwKXdffEEN02qLoh9daQkFrxAwqALwEA2lXrhwFcdv4nsaLnQquVjpr27z5mTH9s8OO5fpp8/tj0t3WPY2tEtk=
+deploy:
+  provider: heroku
+  app: string-sync-beta
+  api_key:
+    secure: MFnJ1DaOV3GaHkxPJLkP/UIj6esVccE+BbEbsjzgJuDRwCysETxO0zPTSWKRb2tpMd0SV0LK/muemH3ayxd196Zmsjamd+UjaFBdeLnX82hwEy+2K2TnS/qDMoWgrrFiX6DPD8w3OaUTWz3PYR3by0zdgzI+bSLN8PzDizE/tgvfdPODdVK13vYCBh4Hxf8XaR7P7sRZZP2KkC4RMFNCrZVcXZATk6tln6th0XQzNHtzQYA7VI09YlSArBp8rpa3ddvTfh7ccdwTy2KO/etrxftKbu6aD+Mt/uduY/lmGS7gcz6EJd2w98crdZcxrUAnsg+ClcQ+C23nOTFeOs7hv+HFLRDj/Sq7t4D34kpPg/9BoLuJfbeZPuPsduVuEFfGH+MrZi97tfjIOLbnQ12xEUhjBaAWfLIiJreDgZmagz6ncvuDGd5XmxurtjB6B8Kw8QalQ3u2cnxGYRD9rg8C64D+nBL4x4301S7Hx4Ma+JXOR/z+wu48t8PSzcqL++s0nc3xZ17OV5hkfG3ih2iaeadbVPRxWmWeGetA1LNtMI1T7odMm/pfWtmoSPDiZSTprWNezZsbGbNKQsR1BC+HZtvgl/Y3eQwTxGNy+W7w7UIC5kM8Ci1GPck0Jhnn8fHqb+vDTDYQiBJDPrJz/Gpg/VJl214tHM6IoL2gqGWXaPU=
