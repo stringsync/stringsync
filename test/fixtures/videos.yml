@@ -1,5 +1,11 @@
-youtube:
+video1:
   id: 1
   notation_id: 1
-  src: aJS7OIFPUQc
+  src: foo
+  kind: youtube
+
+video2:
+  id: 2
+  notation_id: 2
+  src: bar
   kind: youtube
