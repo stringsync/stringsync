@@ -2,7 +2,16 @@ addons:
   postgresql: 9.6
 dist: trusty
 language: ruby
-cache: bundler
+cache:
+  bundler: true
+  directories:
+    - client/node_modules
+before_script:
+  - psql -c 'create database string-sync_test;' -U postgres
+test:
+  adapter: postgresql
+  database: string-sync_test
+  username: postgres
 rvm:
   - 2.3.1
 script:
