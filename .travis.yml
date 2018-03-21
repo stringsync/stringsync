@@ -7,9 +7,3 @@ rvm:
 script:
   - bundle exec rails db:migrate RAILS_ENV=test
   - npm run test
-before_script:
-  - psql -c 'create database string-sync_test;' -U postgres
-test:
-  adapter: postgresql
-  database: string-sync_test
-  username: postgres
