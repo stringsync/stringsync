@@ -13,6 +13,11 @@ json.relationships do
       json.partial! "users/identifier", user: notation.transcriber
     end
   end
+  json.video do
+    json.data do
+      json.partial! "videos/identifier", video: notation.video
+    end
+  end
 end
 json.links do
   json.partial! "notations/links", notation: notation
