@@ -6,6 +6,7 @@ Rails.application.routes.draw do
       resources :notations
       resources :users
       resources :tags
+      resources :videos
     end
   end
 
