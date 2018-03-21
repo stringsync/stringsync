@@ -5,7 +5,7 @@ language: ruby
 cache:
   bundler: true
   directories:
-    - ./client/node_modules
+    - client/node_modules
     - /home/travis/.rvm/
 before_script:
   - bundle exec rails db:create RAILS_ENV=test
