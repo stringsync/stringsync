@@ -38,13 +38,16 @@ class NotationsController < ApplicationController
   end
 
   def destroy
-    @notation = Notation.includes(:tags, :transcriber).where(id: params.require(:id)).first!
-
     if current_user.try(:has_role?, :admin)
+      @notation = Notation.
+          includes(:tags, :video, :transcriber).
+          where(id: params.require(:id)).
+          first!
+
       @notation.destroy!
       render(:show, status: 200)
     else
-      render("shared/errors")
+      render("shared/errors", status: 401)
     end
   end
 

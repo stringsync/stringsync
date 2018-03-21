@@ -1,22 +1,22 @@
 require 'test_helper'
 
 class NotationsControllerTest < ActionDispatch::IntegrationTest
-  test "NotationsController#index" do
+  test "#index" do
     get(notations_path)
     assert_response(200)
   end
 
-  test "NotationsController#show" do
+  test "#show" do
     get(notation_path(1))
     assert_response(200)
   end
 
-  test "NotationsController#create disallows non logged in users to create a notation" do
+  test "#create disallows non logged in users to create a notation" do
     post(notations_path)
     assert_response(401)
   end
 
-  test "NotationsController#create allows teacher and admin users to create a notation" do
+  test "#create allows teacher and admin users to create a notation" do
     users(:teacher1, :admin1).each do |user|
       assert(user.has_role?(:teacher))
       count = Notation.count
@@ -53,7 +53,7 @@ class NotationsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "NotationsController#update allows its own transcriber to update a notation" do
+  test "#update allows its own transcriber to update a notation" do
     id = :notation2
     notation = notations(id)
     transcriber = notation.transcriber
@@ -76,30 +76,31 @@ class NotationsControllerTest < ActionDispatch::IntegrationTest
     assert_equal(transcriber.id, notation.transcriber_id)
   end
 
-  test "NotationsController#update disallows a different teacher to update a notation" do
-    id = :notation2
-    notation = notations(id)
-    user = users(:teacher2)
-    count = Notation.count
+  test "#update disallows a different teacher and students to update a notation" do
+    users(:student1, :teacher2).each do |user|
+      id = :notation2
+      notation = notations(id)
+      count = Notation.count
 
-    refute(
-      user.has_role?(:admin),
-      "Expected a notation fixture (#{id}) whose user does not have the admin role"
-    )
+      refute(
+        user.has_role?(:admin),
+        "Expected a notation fixture (#{id}) whose user does not have the admin role"
+      )
 
-    refute_equal(user, notation.transcriber)
+      refute_equal(user, notation.transcriber)
 
-    tokens = sign_in_as(user, "stringsync")
-    patch(notation_path(notation), headers: tokens)
-    assert_response(401)
+      tokens = sign_in_as(user, "stringsync")
+      patch(notation_path(notation), headers: tokens)
+      assert_response(401)
 
-    attributes = notation.attributes
-    notation.reload
-    assert_equal(count, Notation.count)
-    assert_equal(attributes, notation.attributes)
+      attributes = notation.attributes
+      notation.reload
+      assert_equal(count, Notation.count)
+      assert_equal(attributes, notation.attributes)
+    end
   end
 
-  test "NotationsController#update allows an admin to update any notation" do
+  test "#update allows an admin to update any notation" do
     id = :notation2
     notation = notations(id)
     user = users(:admin1)
@@ -119,5 +120,46 @@ class NotationsControllerTest < ActionDispatch::IntegrationTest
     notation.reload
     assert_equal(song_name, notation.song_name)
     assert_equal(transcriber_id, notation.transcriber_id)
+  end
+
+  test "#destroy disallows students or teachers" do
+    users(:student1, :teacher1).each do |user|
+      id = :notation2
+      notation = notations(id)
+      count = Notation.count
+
+      refute(
+        user.has_role?(:admin),
+        "Expected a notation fixture (#{id}) whose user does not have the admin role"
+      )
+
+      tokens = sign_in_as(user, "stringsync")
+      delete(notation_path(notation), headers: tokens)
+      assert_response(401)
+
+      attributes = notation.attributes
+      notation.reload
+      assert_equal(count, Notation.count)
+      assert_equal(attributes, notation.attributes)
+    end
+  end
+
+  test "#destroy allows admins" do
+    id = :notation2
+    notation = notations(id)
+    count = Notation.count
+    user = users(:admin1)
+
+    assert(
+      user.has_role?(:admin),
+      "Expected a notation fixture (#{id}) whose user has the admin role"
+    )
+
+    tokens = sign_in_as(user, "stringsync")
+    delete(notation_path(notation), headers: tokens)
+    assert_response(200)
+
+    assert_equal(count - 1, Notation.count)
+    refute(Notation.where(id: notation.id).exists?)
   end
 end
