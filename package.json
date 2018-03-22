@@ -7,7 +7,7 @@
     "build": "cd client && npm install && npm run build && cd ..",
     "deploy": "cp -a client/build/. public/",
     "test": "cd client && npm run test && cd ..",
-    "watchtest": "cd client && npm run watchtest && cd ..",
+    "jest": "cd client && npm run jest && cd ..",
     "postinstall": "npm run build && npm run deploy && echo 'Client built!'"
   }
 }
