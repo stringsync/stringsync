@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+import Root from './Root';
 import { store } from 'data';
 import { assertRender } from 'test';
 
-assertRender(App, { store });
+assertRender(Root, { store });
