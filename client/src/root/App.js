@@ -1,7 +1,8 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { compose, setDisplayName, lifecycle } from 'recompose';
-import { Layout, Menu, Breadcrumb } from 'antd';
+import { Layout } from 'antd';
+import { Nav } from 'components';
 import styled from 'react-emotion';
 
 const enhance = compose(
@@ -15,45 +16,42 @@ const enhance = compose(
   })
 );
 
+const LayoutHeader = styled(Layout.Header)`
+  background: #fff;
+`;
+
+const LayoutHeaderInner = styled('div')`
+  max-width: 980px;
+  margin: 0 auto;
+`;
+
+const LayoutContent = styled(Layout.Content)`
+  min-height: 100vh;
+`;
+
+const LayoutFooter = styled(Layout.Footer)`
+  text-align: center;
+`;
+
 /**
  * This component sets the layout and routes of the app.
  */
 const App = enhance(props => (
-  <main className="App">
-    <Layout className="layout">
-      <Layout.Header>
-        <div className="logo" />
-        <Menu
-          theme="dark"
-          mode="horizontal"
-          defaultSelectedKeys={['2']}
-          style={{ lineHeight: '64px' }}
-        >
-          <Menu.Item key="1">nav 1</Menu.Item>
-          <Menu.Item key="2">nav 2</Menu.Item>
-          <Menu.Item key="3">nav 3</Menu.Item>
-        </Menu>
-      </Layout.Header>
-      <Content>
-        <Breadcrumb style={{ margin: '16px 0' }}>
-          <Breadcrumb.Item>Home</Breadcrumb.Item>
-          <Breadcrumb.Item>List</Breadcrumb.Item>
-          <Breadcrumb.Item>App</Breadcrumb.Item>
-        </Breadcrumb>
-        <div style={{ background: '#fff', padding: 24, minHeight: 280 }}>Content</div>
-      </Content>
-      <Footer>
-        Ant Design ©2016 Created by Ant UED
-    </Footer>
+  <main className="app">
+    <Layout>
+      <LayoutHeader>
+        <LayoutHeaderInner>
+          <Nav />
+        </LayoutHeaderInner>
+      </LayoutHeader>
+      <LayoutContent>
+        
+      </LayoutContent>
+      <LayoutFooter>
+        StringSync ©2018 Created by Jared Johnson
+      </LayoutFooter>
     </Layout>
   </main>
 ));
-
-const Content = styled(Content)`
-  padding: 0 50px;
-`;
-const Footer = styled(Layout.Footer)`
-  text-align: center;
-`;
 
 export default App;
