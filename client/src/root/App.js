@@ -16,6 +16,12 @@ const enhance = compose(
   })
 );
 
+const Gradient = styled('div') `
+  height: 2px;
+  background: #FC354C;
+  background: linear-gradient(to right, #039E9E, #0ABFBC, #B3FB66, #FC354C);
+`;
+
 const LayoutHeader = styled(Layout.Header)`
   background: #fff;
 `;
@@ -29,6 +35,10 @@ const LayoutContent = styled(Layout.Content)`
   min-height: 100vh;
 `;
 
+const LayoutContentInner = styled('div')`
+
+`;
+
 const LayoutFooter = styled(Layout.Footer)`
   text-align: center;
 `;
@@ -38,6 +48,7 @@ const LayoutFooter = styled(Layout.Footer)`
  */
 const App = enhance(props => (
   <main className="app">
+    <Gradient />
     <Layout>
       <LayoutHeader>
         <LayoutHeaderInner>
@@ -45,7 +56,9 @@ const App = enhance(props => (
         </LayoutHeaderInner>
       </LayoutHeader>
       <LayoutContent>
-        
+        <LayoutContentInner>
+
+        </LayoutContentInner>
       </LayoutContent>
       <LayoutFooter>
         StringSync ©2018 Created by Jared Johnson

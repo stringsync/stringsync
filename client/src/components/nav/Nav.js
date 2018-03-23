@@ -16,7 +16,7 @@ const Nav = () => (
   <Row>
     <NavLeft span={12}>
       StringSync
-    </NavLeft>
+  </NavLeft>
     <NavRight span={12}>
       <Menu
         mode="horizontal"

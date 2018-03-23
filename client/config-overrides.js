@@ -6,8 +6,8 @@ module.exports = function override(config, env) {
   config = rewireLess.withLoaderOptions({
     modifyVars: {
       // TODO: Uncomment when ready for final deploy
-      // "@primary-color": "#fc354c",
-      // "@brand-primary": "@primary-color",
+      "@primary-color": "#fc354c",
+      "@brand-primary": "@primary-color",
       // "@layout-body-background": "#f8f8f8",
       // "@background-color-base": "#fcfcfc",
       // "@brand-primary-tap": "lighten(@brand-primary, 10%)",
