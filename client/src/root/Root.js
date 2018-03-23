@@ -14,16 +14,17 @@ const enhance = compose(
   })
 )
 
+/**
+ * This component wraps the App component with general functionality and providers.
+ */
 const Root = enhance(props => (
-  <div id="root">
-    <Provider store={props.store}>
-      <BrowserRouter>
-        <LocaleProvider locale={enUS}>
-          <App />
-        </LocaleProvider>
-      </BrowserRouter>
-    </Provider>
-  </div>
+  <Provider store={props.store}>
+    <BrowserRouter>
+      <LocaleProvider locale={enUS}>
+        <App />
+      </LocaleProvider>
+    </BrowserRouter>
+  </Provider>
 ));
 
 export default Root;

@@ -13,6 +13,9 @@ const enhance = compose(
   })
 );
 
+/**
+ * This component sets the routes and layout of the app.
+ */
 const App = enhance(props => (
   <main className="App">
     App

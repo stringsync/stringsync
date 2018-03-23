@@ -25,6 +25,11 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>StringSync</title>
+    <!-- Setup the ss window namespace and environment -->
+    <script>
+      window.ss = {};
+      window.ss.env = '%NODE_ENV%';
+    </script>
   </head>
   <body>
     <noscript>
