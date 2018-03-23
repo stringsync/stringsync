@@ -1,29 +1,22 @@
 import React from 'react';
+import { withRouter } from 'react-router-dom';
 import { compose, setDisplayName, lifecycle } from 'recompose';
-import { LocaleProvider } from 'antd';
-import enUS from 'antd/lib/locale-provider/en_US.js';
-
-const scrollToTop = () => window.scrollTo(null, 0);
 
 const enhance = compose(
   setDisplayName('App'),
+  withRouter,
   lifecycle({
-    componentDidMount: () => {
-
+    componentDidMount() {
+      // scroll to top on route change
+      this.props.history.listen(() => window.scrollTo(null, 0));
     }
   })
 );
 
 const App = enhance(props => (
-  <div className="App">
-    <LocaleProvider locale={enUS}>
-      <div>
-        <main>
-          App
-        </main>
-      </div>
-    </LocaleProvider>
-  </div>
+  <main className="App">
+    App
+  </main>
 ));
 
 export default App;
