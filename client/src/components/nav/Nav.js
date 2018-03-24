@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'react-emotion';
-import { connect } from 'react-redux';
-import { compose, withProps, withHandlers } from 'recompose';
+import { compose, withHandlers } from 'recompose';
 import { Link, withRouter } from 'react-router-dom';
 import { Row, Col, Menu, Icon } from 'antd';
 import { Logo } from './';
