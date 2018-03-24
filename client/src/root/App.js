@@ -35,10 +35,6 @@ const LayoutContent = styled(Layout.Content)`
   min-height: 100vh;
 `;
 
-const LayoutContentInner = styled('div')`
-
-`;
-
 const LayoutFooter = styled(Layout.Footer)`
   text-align: center;
 `;
@@ -56,9 +52,7 @@ const App = enhance(props => (
         </LayoutHeaderInner>
       </LayoutHeader>
       <LayoutContent>
-        <LayoutContentInner>
-
-        </LayoutContentInner>
+        App Content
       </LayoutContent>
       <LayoutFooter>
         StringSync ©2018 Created by Jared Johnson
