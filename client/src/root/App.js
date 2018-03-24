@@ -4,6 +4,7 @@ import { compose, setDisplayName, lifecycle } from 'recompose';
 import { Layout } from 'antd';
 import { Nav } from 'components';
 import styled from 'react-emotion';
+import { ViewportSync } from './';
 
 const enhance = compose(
   setDisplayName('App'),
@@ -16,7 +17,7 @@ const enhance = compose(
   })
 );
 
-const Gradient = styled('div') `
+const Gradient = styled('div')`
   height: 2px;
   background: #FC354C;
   background: linear-gradient(to right, #039E9E, #0ABFBC, #B3FB66, #FC354C);
@@ -44,6 +45,7 @@ const LayoutFooter = styled(Layout.Footer)`
  */
 const App = enhance(props => (
   <main className="app">
+    <ViewportSync />
     <Gradient />
     <Layout>
       <LayoutHeader>
