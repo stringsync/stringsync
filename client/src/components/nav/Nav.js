@@ -20,6 +20,9 @@ const I = styled(Icon)`
   }
 `;
 
+/**
+ * Navigation menu for all platforms
+ */
 const Nav = enhance(props => (
   <Row>
     <Col span={8}>
