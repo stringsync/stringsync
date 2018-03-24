@@ -17,12 +17,19 @@ const enhance = compose(
   )
 );
 
+/**
+ * Only update the store if the width changed
+ */
 const Sink = createSink(({ setViewportWidth, reactSizesWidth, storeWidth }) => {
   if (reactSizesWidth !== storeWidth) {
     setViewportWidth(reactSizesWidth);
   }
 });
 
+/**
+ * This component syncs the width from react-sizes's withSizes to the
+ * store's viewport's width
+ */
 const ViewportSync = enhance(props => <Sink {...props} />);
 
 export default ViewportSync;
