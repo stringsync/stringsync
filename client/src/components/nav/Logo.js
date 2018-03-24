@@ -24,7 +24,6 @@ const LogoText = styled('span')`
   font-size: 12px;
   font-weight: 100;
   letter-spacing: 3px;
-  color: ${props => props.theme.borderColor};
 `;
 
 /**
