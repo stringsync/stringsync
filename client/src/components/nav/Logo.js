@@ -1,44 +1,35 @@
 import React from 'react';
 import styled from 'react-emotion';
 import { connect } from 'react-redux';
-import { compose } from 'recompose';
+import { compose, mapProps } from 'recompose';
 
 const enhance = compose(
   connect(
     state => ({
       viewportType: state.viewport.type
     })
-  )
+  ),
+  mapProps(props => {
+    const logoText = props.viewportType === 'DESKTOP' || props.viewportType === 'TABLET'
+      ? 'STRING SYNC'
+      : 'SS'
+
+    return {
+      logoText
+    }
+  })
 );
 
 const LogoText = styled('span')`
   font-size: 12px;
   font-weight: 100;
   letter-spacing: 3px;
-  color: #aaa;
-  transition: color 200ms;
-
-  &:hover {
-    color: ${props => props.theme.primaryColor};
-  }
-`;
-
-const LogoImage = styled('span')`
-
+  color: ${props => props.theme.borderColor};
 `;
 
 /**
  * This component is the logo specifically for the nav component
  */
-const Logo = enhance(() => (
-  <span>
-    <LogoText>
-      STRING SYNC
-    </LogoText>
-    <LogoImage>
-    
-    </LogoImage>
-  </span>
-));
+const Logo = enhance(props => <LogoText>{props.logoText}</LogoText>);
 
 export default Logo;
