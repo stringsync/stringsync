@@ -2,8 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { getDisplayName } from 'recompose';
-import { Root 
-} from 'root';
+import { Root } from 'root';
 import { store } from 'data';
 
 /**
