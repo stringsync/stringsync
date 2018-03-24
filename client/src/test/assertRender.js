@@ -2,6 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { getDisplayName } from 'recompose';
+import { Root 
+} from 'root';
+import { store } from 'data';
 
 /**
  * Default options used for assertRender
@@ -9,7 +12,7 @@ import { getDisplayName } from 'recompose';
  * @return {object}
  */
 const DEFAULT_OPTS = Object.freeze({
-  insideRouter: false
+  isRoot: false
 });
 
 /**
@@ -39,19 +42,21 @@ const testName = (Component, props) => {
  * @param {object} opts
  * @return {React.Component}
  */
-const getTestComponent = (Component, opts) => {
-  let testComponent = Component;
+const getTestComponent = (Component, props, opts) => {
+  let TestComponent = null;
 
-  if (opts.insideRouter) {
-    testComponent = props => (
-      <BrowserRouter>
+  if (opts.isRoot) {
+    TestComponent = () => <Component {...props} />;
+  } else {
+    TestComponent = () => (
+      <Root store={store}>
         <Component {...props} />
-      </BrowserRouter>
+      </Root>
     );
   }
 
-  return testComponent;
-};
+  return TestComponent;
+}
 
 /**
  * Asserts that the Component renders successfully with the props param
@@ -64,8 +69,8 @@ const getTestComponent = (Component, opts) => {
 const assertRender = (Component, props = {}, opts = DEFAULT_OPTS) => {
   it (testName(Component, props), () => {
     const div = document.createElement('div');
-    const TestComponent = getTestComponent(Component, opts);
-    ReactDOM.render(<TestComponent {...props} />, div);
+    const TestComponent = getTestComponent(Component, props, opts);
+    ReactDOM.render(<TestComponent />, div);
     ReactDOM.unmountComponentAtNode(div);
   });
 }
