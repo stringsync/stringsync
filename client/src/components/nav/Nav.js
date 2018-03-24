@@ -35,7 +35,7 @@ const Nav = enhance(props => (
         <Menu
           mode="horizontal"
           style={{ lineHeight: '64px' }}
-          selectedKeys={[props.match.path]}
+          selectedKeys={[props.location.pathname]}
           onClick={props.handleClick}
         >
           <Menu.Item key="/about">
