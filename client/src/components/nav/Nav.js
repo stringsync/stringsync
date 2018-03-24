@@ -36,6 +36,7 @@ const Nav = enhance(props => (
           style={{ lineHeight: '64px' }}
           selectedKeys={[props.location.pathname]}
           onClick={props.handleClick}
+          multiple={false}
         >
           <Menu.Item key="/about">
             <I type="question-circle-o" /> 
