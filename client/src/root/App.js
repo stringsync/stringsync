@@ -4,7 +4,7 @@ import { compose, setDisplayName, lifecycle } from 'recompose';
 import { Layout } from 'antd';
 import { Nav } from 'components';
 import styled from 'react-emotion';
-import { ViewportSync } from './';
+import { ViewportSync, Routes } from './';
 
 const enhance = compose(
   setDisplayName('App'),
@@ -54,7 +54,7 @@ const App = enhance(props => (
         </LayoutHeaderInner>
       </LayoutHeader>
       <LayoutContent>
-        App Content
+        <Routes />
       </LayoutContent>
       <LayoutFooter>
         StringSync ©2018 Created by Jared Johnson
