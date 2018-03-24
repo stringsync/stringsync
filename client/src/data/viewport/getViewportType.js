@@ -7,9 +7,9 @@ import withSizes from 'react-sizes';
  * @return {string}
  */
 const getViewportType = width => {
-  if (withSizes.isMobile(width)) {
+  if (withSizes.isMobile({ width })) {
     return 'MOBILE';
-  } else if (withSizes.isTablet(width)) {
+  } else if (withSizes.isTablet({ width })) {
     return 'TABLET';
   } else {
     return 'DESKTOP';
