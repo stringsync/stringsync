@@ -16,9 +16,10 @@ const LogoText = styled('span')`
   font-weight: 100;
   letter-spacing: 3px;
   color: #aaa;
+  transition: color 200ms;
 
   &:hover {
-    color: lime;
+    color: ${props => props.theme.primaryColor};
   }
 `;
 
