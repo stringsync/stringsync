@@ -5,19 +5,22 @@ import { notationsActions as actions, notationsDefaultState as defaultState } fr
 const notationsReducer = handleActions({
   [combineActions(actions.notations.index.set)]: (state, action) => ({
     ...state,
-    index: action.notations
+    index: {
+      fetchedAt: Date.now(),
+      notations: action.payload.notations
+    }
   }),
   [combineActions(actions.notations.show.set)]: (state, action) => ({
     ...state,
-    show: action.notation
+    show: action.payload.notation
   }),
   [combineActions(actions.notations.edit.set)]: (state, action) => ({
     ...state,
-    edit: action.notation
+    edit: action.payload.notation
   }),
   [combineActions(actions.notations.edit.update)]: (state, action) => ({
     ...state,
-    edit: merge(state.edit, action.notation)
+    edit: merge(state.edit, action.payload.notation)
   })
 }, defaultState);
 

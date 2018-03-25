@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { getDisplayName } from 'recompose';
 import { Root } from 'root';
 import { store } from 'data';
+import { xhrMock } from 'test';
 
 /**
  * Default options used for assertRender
@@ -67,8 +68,11 @@ const getTestComponent = (Component, props, opts) => {
  */
 const assertRender = (Component, props = {}, opts = DEFAULT_OPTS) => {
   it (testName(Component, props), () => {
+    window.XMLHttpRequest = jest.fn(xhrMock);
+
     const div = document.createElement('div');
     const TestComponent = getTestComponent(Component, props, opts);
+
     ReactDOM.render(<TestComponent />, div);
     ReactDOM.unmountComponentAtNode(div);
   });
