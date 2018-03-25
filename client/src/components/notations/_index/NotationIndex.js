@@ -23,10 +23,23 @@ const enhance = compose(
      * @return {object}
      */
     getNotations(json) {
-      const { tags, users, videos } = indexIncluded(json.included);
-      
-      return json.data.reduce((notations, data) => {
+      const included = indexIncluded(json.included);
 
+      return json.data.reduce((notations, data) => {
+        const { id, attributes, links, relationships } = data;
+        const tags = relationships.tags.data.map(({ id }) => included.tags[id]);
+        const transcriber = included.users[relationships.transcriber.data.id];
+        const video = included.videos[relationships.video.data.id];
+
+        notations[id] = {
+          attributes,
+          links,
+          tags,
+          transcriber,
+          video
+        };
+
+        return notations;
       }, {})
     }
   })),
@@ -42,7 +55,7 @@ const enhance = compose(
 
 const NotationIndex = enhance(props => (
   <div>
-    Notations
+    
   </div>
 ));
 
