@@ -1,48 +1,73 @@
 import React from 'react';
-import { compose, setDisplayName, setPropTypes, withProps } from 'recompose';
 import PropTypes from 'prop-types';
+import { NotationDetail } from './';
+import { Row, Col } from 'antd';
 import { chunk } from 'lodash';
+import { compose, setDisplayName, setPropTypes, withProps } from 'recompose';
+import { connect } from 'react-redux';
 import styled from 'react-emotion';
 
 const enhance = compose(
+  connect(
+    state => ({
+      viewportType: state.viewport.type
+    })
+  ),
   setDisplayName('NotationGrid'),
   setPropTypes({
     notations: PropTypes.arrayOf(PropTypes.object)
   }),
-  withProps(props => ({
-    notationRows: chunk(props.notations, 3)
-  }))
+  withProps(props => {
+    let notationsPerRow, gutter;
+    switch (props.viewportType) {
+      case 'MOBILE':
+        notationsPerRow = 1;
+        gutter = 2;
+        break;
+      case 'TABLET':
+        notationsPerRow = 2;
+        gutter = 16;
+        break;
+      default:
+        notationsPerRow = 3;
+        gutter = 24;
+        break;
+    }
+
+    return {
+      gutter,
+      notationRows: chunk(props.notations, notationsPerRow),
+      colSpan: Math.floor(24 / notationsPerRow),
+    }
+  })
 );
 
-const GridRow = styled('div')`
+const StyledRow = styled(Row)`
+  margin-bottom: ${props => props.gutter}px;
 `;
 
-const GridItem = styled('div')`
-  overflow: hidden;
-  padding-bottom: 100%;
-  
-  img {
-    width: 100%;
-    height: 100%;
-  }
+const Outer = styled('div')`
+  margin-top: 24px;
+  margin-left: ${props => props.viewportType === 'TABLET' ? props.gutter : 0}px;
+  margin-right: ${props => props.viewportType === 'TABLET' ? props.gutter : 0}px;
 `;
 
 const NotationGrid = enhance(props => (
-  <div>
+  <Outer viewportType={props.viewportType} gutter={props.gutter}>
     {
       props.notationRows.map((notationRow, ndx) => (
-        <div key={ndx}>
+        <StyledRow key={ndx} gutter={props.gutter} type="flex" align="start">
           {
-            notationRow.map(({ id, attributes }) => (
-              <GridItem key={id}>
-                <img src={attributes.thumbnail} alt={attributes.songName} />
-              </GridItem>
+            notationRow.map(notation => (
+              <Col key={notation.id} span={props.colSpan}>
+                <NotationDetail notation={notation} />
+              </Col>
             ))
           }
-        </div>
+        </StyledRow>
       ))
     }
-  </div>
+  </Outer>
 ));
 
 export default NotationGrid;

@@ -36,9 +36,11 @@ const enhance = compose(
           id,
           attributes,
           links,
-          tags,
-          transcriber,
-          video
+          relationships: {
+            tags,
+            transcriber,
+            video
+          }
         }, true);
       });
       
