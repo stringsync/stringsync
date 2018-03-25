@@ -27,17 +27,22 @@ const LayoutHeader = styled(Layout.Header)`
   background: #fff;
 
   && {
-    padding: 0 10px;
+    padding: 0 20px;
   }
 `;
 
 const LayoutHeaderInner = styled('div')`
-  max-width: 980px;
+  max-width: 1200px;
   margin: 0 auto;
 `;
 
 const LayoutContent = styled(Layout.Content)`
   min-height: 100vh;
+`;
+
+const LayoutContentInner = styled('div')`
+  max-width: 1200px;
+  margin: 0 auto;
 `;
 
 const LayoutFooter = styled(Layout.Footer)`
@@ -58,7 +63,9 @@ const App = enhance(props => (
         </LayoutHeaderInner>
       </LayoutHeader>
       <LayoutContent>
-        <Routes />
+        <LayoutContentInner>
+          <Routes />
+        </LayoutContentInner>
       </LayoutContent>
       <LayoutFooter>
         StringSync ©2018 Created by Jared Johnson
