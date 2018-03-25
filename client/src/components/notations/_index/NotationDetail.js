@@ -12,7 +12,8 @@ const enhance = compose(
   mapProps(props => {
     const { thumbnail, songName, artistName } = props.notation.attributes;
     const tagNames = props.notation.relationships.tags.map(tag => tag.attributes.name).sort();
-    return { thumbnail, songName, artistName, tagNames };
+    const transcriberName = props.notation.relationships.transcriber.attributes.name;
+    return { thumbnail, songName, artistName, tagNames, transcriberName };
   })
 );
 
@@ -32,7 +33,7 @@ const NotationDetail = enhance(props => (
   >
     <Card.Meta
       title={props.songName}
-      description={props.artistName}
+      description={`by ${props.artistName} | ${props.transcriberName}`}
     />
     <TagNames>
       {props.tagNames.map(tagName => <Tag key={tagName}>{tagName}</Tag>)}

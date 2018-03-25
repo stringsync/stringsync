@@ -13,7 +13,7 @@ const scrollToTop = debounce(() => {
     duration: 200,
     smooth: true,
     offset: 5,
-    ignoreCancelEvents: false
+    ignoreCancelEvents: true
   });
 }, 250, { leading: true, trailing: true });
 
@@ -29,20 +29,6 @@ const enhance = compose(
     tagOptions: PropTypes.arrayOf(PropTypes.string).isRequired
   }),
   connect(state => ({ viewportType: state.viewport.type })),
-  withHandlers(() => {
-    let input = null;
-
-    return {
-      handleInputRef: () => ref => {
-        input = ref;
-      },
-      focusInput: () => () => {
-        if (input) {
-          input.focus();
-        }
-      }
-    }
-  }),
   withHandlers({
     handleQueryStringChange: props => event => {
       scrollToTop();
@@ -64,7 +50,6 @@ const enhance = compose(
   withHandlers({
     handleClear: props => event => {
       scrollToTop();
-      props.focusInput();
       props.clearQueries();
     }
   }),
@@ -75,13 +60,9 @@ const enhance = compose(
 
     return { suffix }
   }),
-  withProps(props => ({
-    affixTarget: () => window
-  })),
+  withProps(props => ({ affixTarget: () => window })),
   withState('affixed', 'setAffixed', false),
-  withHandlers({
-    handleAffixChange: props => affixed => props.setAffixed(affixed)
-  })
+  withHandlers({ handleAffixChange: props => affixed => props.setAffixed(affixed) })
 );
 
 const AffixInner = styled('div')`
@@ -98,6 +79,7 @@ const InputOuter = styled('div')`
 const Tags = styled('div')`
   margin-top: 8px;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
 `;
 
@@ -108,7 +90,7 @@ const NotationSearch = enhance(props => (
         <InputOuter viewportType={props.viewportType}>
           <Input
             type="text"
-            placeholder="filter"
+            placeholder="song, artist, or transcriber name"
             value={props.queryString}
             prefix={<Icon type="search" style={{ color: 'rgba(0,0,0,.25)' }} />}
             onChange={props.handleQueryStringChange}
@@ -122,6 +104,7 @@ const NotationSearch = enhance(props => (
                   key={tag}
                   onChange={props.handleQueryTagsChange(tag)}
                   checked={props.queryTags.has(tag)}
+                  style={{ marginTop: '2px' }}
                 >
                   {tag}
                 </Tag.CheckableTag>

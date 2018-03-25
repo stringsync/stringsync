@@ -21,7 +21,6 @@ const enhance = compose(
     props.notations.forEach(notation => {
       notation.relationships.tags.forEach(tag => tagOptions.add(tag.attributes.name));
     });
-    
     return { tagOptions: Array.from(tagOptions).sort() }
   }),
   withState('queryString', 'setQueryString', ''),
@@ -37,15 +36,24 @@ const enhance = compose(
     handleQueryTagsChange: props => tags => props.setQueryTags(tags)
   }),
   withProps(props => {
+    const queryTags = Array.from(props.queryTags);
     const queryString = props.queryString.toUpperCase();
-    const queriedNotations = props.notations.filter(({ attributes, relationships }) => (
-      [
-        attributes.artistName.toUpperCase(),
-        attributes.songName.toUpperCase(),
-        relationships.transcriber.attributes.name.toUpperCase(),
-        ...relationships.tags.map(tag => tag.attributes.name.toUpperCase())
-      ].some(tag => tag.includes(queryString))
-    ));
+
+    // Do a first pass filtering by queryTag, then by queryString
+    const queriedNotations = props.notations
+      .filter(notation => {
+        const notationTags = new Set(notation.relationships.tags.map(tag => tag.attributes.name));
+        return queryTags.every(queryTag => notationTags.has(queryTag));
+      })
+      .filter(({ attributes, relationships }) => {
+        const matchers = [
+          attributes.artistName.toUpperCase(),
+          attributes.songName.toUpperCase(),
+          relationships.transcriber.attributes.name.toUpperCase()
+        ]
+        
+        return matchers.some(matcher => matcher.includes(queryString))
+      });
 
     return {
       queriedNotations

@@ -1,27 +1,42 @@
 import React from 'react';
-import { compose, setPropTypes, setDisplayName } from 'recompose';
-import styled from 'react-emotion';
 import PropTypes from 'prop-types';
 import sonarSearchSrc from 'assets/sonar-search.svg';
+import styled from 'react-emotion';
+import { compact } from 'lodash';
+import { compose, setPropTypes, setDisplayName, withProps } from 'recompose';
 
 const enhance = compose(
   setDisplayName('NotationSearchResults'),
   setPropTypes({
     queryString: PropTypes.string.isRequired,
-    queryTags: PropTypes.arrayOf(PropTypes.string).isRequired,
+    queryTags: PropTypes.object.isRequired,
     numQueried: PropTypes.number.isRequired,
     onClear: PropTypes.func.isRequired
-  })
+  }),
+  withProps(props => {
+    const { queryTags, queryString, numQueried } = props;
+
+    const resultOrResults = numQueried === 1 ? 'result' : 'results';
+    const query = [...queryTags].sort();
+    query.push(queryString);
+    const forString = `${compact(query).join(', ')}`
+
+    const resultString = `${numQueried} ${resultOrResults} for ${forString}`;
+    return { resultString };
+  }),
+  withProps(props => ({
+    hasResults: props.queryString || props.queryTags.size > 0
+  }))
 )
 
 const Results = styled('div') `
   text-align: center;
-  margin-top: 24px;
+  margin: 24px 8px 0 8px;
   font-size: 24px;
 `;
 
 const SonarSearch = styled('img') `
-  width: 50%;
+  width: 65%;
 `;
 
 const RemoveFilter = styled('div') `
@@ -39,18 +54,16 @@ const RemoveFilter = styled('div') `
 const NotationSearchResults = enhance(props => (
   <div>
     {
-      props.queryString
+      props.hasResults
         ? <Results>
-          {props.numQueried} {`result${props.numQueried === 1 ? '' : 's'} for '${props.queryString}'`}
-          <RemoveFilter onClick={props.onClear}>
-            remove filter
-              </RemoveFilter>
-          {
-            props.numQueried === 0
-              ? <SonarSearch src={sonarSearchSrc} alt="StringSync logo" />
-              : null
-          }
-        </Results>
+            <div>{props.resultString}</div>
+            <RemoveFilter onClick={props.onClear}>remove filters</RemoveFilter>
+            {
+              props.numQueried === 0
+                ? <SonarSearch src={sonarSearchSrc} alt="StringSync logo" />
+                : null
+            }
+          </Results>
         : null
     }
   </div>
