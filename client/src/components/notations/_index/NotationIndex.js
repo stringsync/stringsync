@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { compose, withProps, lifecycle } from 'recompose';
 import { notationsActions } from 'data';
+import { indexIncluded } from 'utilities';
 
 const enhance = compose(
   connect(
@@ -22,12 +23,7 @@ const enhance = compose(
      * @return {object}
      */
     getNotations(json) {
-      const { tags, users, videos } = json.included.reduce((memo, object) => {
-        const { type, id, attributes, links } = object;
-        memo[type] = memo[type] || {};
-        memo[type][id] = { attributes, links };
-        return memo;
-      }, {});
+      const { tags, users, videos } = indexIncluded(json.included);
       
       return json.data.reduce((notations, data) => {
 
