@@ -25,6 +25,7 @@ const Gradient = styled('div')`
 
 const LayoutHeader = styled(Layout.Header)`
   background: #fff;
+  border-bottom: 1px solid #e8e8e8;
 
   && {
     padding: 0 20px;

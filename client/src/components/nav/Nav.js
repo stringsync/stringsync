@@ -36,7 +36,7 @@ const Nav = enhance(props => (
       <Row type="flex" justify="end">
         <Menu
           mode="horizontal"
-          style={{ lineHeight: '64px' }}
+          style={{ lineHeight: '62px' }}
           selectedKeys={[props.location.pathname]}
           onClick={props.handleClick}
           multiple={false}
