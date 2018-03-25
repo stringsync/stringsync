@@ -7,13 +7,12 @@ import styled from 'react-emotion';
 const enhance = compose(
   setDisplayName('NotationDetail'),
   setPropTypes({
-    notation: PropTypes.object.isRequired,
-    onTagClick: PropTypes.func
+    notation: PropTypes.object.isRequired
   }),
   mapProps(props => {
     const { thumbnail, songName, artistName } = props.notation.attributes;
     const tagNames = props.notation.relationships.tags.map(tag => tag.attributes.name).sort();
-    return { thumbnail, songName, artistName, tagNames, onTagClick: props.onTagClick };
+    return { thumbnail, songName, artistName, tagNames };
   })
 );
 
@@ -36,13 +35,7 @@ const NotationDetail = enhance(props => (
       description={props.artistName}
     />
     <TagNames>
-      {
-        props.tagNames.map(tagName => (
-          <Tag key={tagName} color="#FC354C">
-            {tagName}
-          </Tag>
-        ))
-      }
+      {props.tagNames.map(tagName => <Tag key={tagName}>{tagName}</Tag>)}
     </TagNames>
   </Card>
 ));

@@ -1,8 +1,8 @@
 import React from 'react';
-import { compose, setPropTypes, setDisplayName, withHandlers } from 'recompose';
+import { compose, setPropTypes, setDisplayName } from 'recompose';
 import styled from 'react-emotion';
 import PropTypes from 'prop-types';
-import sonarSearch from 'assets/sonar-search.svg';
+import sonarSearchSrc from 'assets/sonar-search.svg';
 
 const enhance = compose(
   setDisplayName('NotationSearchResults'),
@@ -36,7 +36,7 @@ const RemoveFilter = styled('div') `
   }
 `;
 
-const NotationSearchResults = props => (
+const NotationSearchResults = enhance(props => (
   <div>
     {
       props.queryString
@@ -47,13 +47,13 @@ const NotationSearchResults = props => (
               </RemoveFilter>
           {
             props.numQueried === 0
-              ? <SonarSearch src={sonarSearch} alt="StringSync logo" />
+              ? <SonarSearch src={sonarSearchSrc} alt="StringSync logo" />
               : null
           }
         </Results>
         : null
     }
   </div>
-);
+));
 
 export default NotationSearchResults;

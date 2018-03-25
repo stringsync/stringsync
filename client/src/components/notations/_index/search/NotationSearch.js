@@ -10,7 +10,7 @@ import { debounce } from 'lodash';
 
 const scrollToTop = debounce(() => {
   Scroll.animateScroll.scrollToTop({
-    duration: 100,
+    duration: 200,
     smooth: true,
     offset: 5,
     ignoreCancelEvents: false
@@ -25,7 +25,8 @@ const enhance = compose(
     queryTags: PropTypes.arrayOf(PropTypes.string).isRequired,
     onQueryTagsChange: PropTypes.func.isRequired,
     numQueried: PropTypes.number.isRequired,
-    clearQueries: PropTypes.func.isRequired
+    clearQueries: PropTypes.func.isRequired,
+    tagOptions: PropTypes.arrayOf(PropTypes.string).isRequired
   }),
   connect(
     state => ({
@@ -65,11 +66,7 @@ const enhance = compose(
   }),
   withProps(props => {
     const suffix = props.queryString
-      ? <Icon
-          type="close-circle-o"
-          onClick={props.handleClear}
-          style={{ cursor: 'pointer' }}
-        />
+      ? <Icon type="close-circle-o" onClick={props.handleClear} style={{ cursor: 'pointer' }} />
       : null
 
     return { suffix }
@@ -94,6 +91,13 @@ const AffixInner = styled('div')`
 const InputOuter = styled('div')`
   max-width: ${props => props.viewportType === 'MOBILE' ? '90%' : '100%'};
   margin: ${props => props.viewportType === 'TABLET' ? '0 16px' : '0 auto'};
+`;
+
+const Tags = styled('div')`
+  margin-top: 8px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
 `;
 
 const NotationSearch = enhance(props => (

@@ -108,10 +108,11 @@ const NotationIndex = enhance(props => (
     <NotationSearch
       queryString={props.queryString}
       queryTags={props.queryTags}
+      clearQueries={props.clearQueries}
       onQueryStringChange={props.handleQueryStringChange}
       onQueryTagsChange={props.handleQueryTagsChange}
-      clearQueries={props.clearQueries}
       numQueried={props.queriedNotations.length}
+      tagOptions={props.tagOptions}
     />
     <NotationGrid notations={props.queriedNotations} />
   </Outer>
