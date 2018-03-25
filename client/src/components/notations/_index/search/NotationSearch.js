@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Scroll from 'react-scroll';
 import styled from 'react-emotion';
-import { Icon, Input, Affix } from 'antd';
+import { Icon, Input, Affix, Tag } from 'antd';
 import { NotationSearchResults } from './';
 import { compose, setDisplayName, setPropTypes, withHandlers, withProps, withState } from 'recompose';
 import { connect } from 'react-redux';
@@ -22,17 +22,13 @@ const enhance = compose(
   setPropTypes({
     queryString: PropTypes.string.isRequired,
     onQueryStringChange: PropTypes.func.isRequired,
-    queryTags: PropTypes.arrayOf(PropTypes.string).isRequired,
+    queryTags: PropTypes.object.isRequired,
     onQueryTagsChange: PropTypes.func.isRequired,
     numQueried: PropTypes.number.isRequired,
     clearQueries: PropTypes.func.isRequired,
     tagOptions: PropTypes.arrayOf(PropTypes.string).isRequired
   }),
-  connect(
-    state => ({
-      viewportType: state.viewport.type
-    })
-  ),
+  connect(state => ({ viewportType: state.viewport.type })),
   withHandlers(() => {
     let input = null;
 
@@ -52,9 +48,17 @@ const enhance = compose(
       scrollToTop();
       props.onQueryStringChange(event);
     },
-    handleQueryTagsChange: props => event => {
+    handleQueryTagsChange: props => tag => checked => {
       scrollToTop();
-      props.onQueryTagsChange(event);
+
+      const { queryTags } = props;
+      if (checked) {
+        queryTags.add(tag);
+      } else {
+        queryTags.delete(tag);
+      }
+
+      props.onQueryTagsChange(queryTags);
     }
   }),
   withHandlers({
@@ -76,9 +80,7 @@ const enhance = compose(
   })),
   withState('affixed', 'setAffixed', false),
   withHandlers({
-    handleAffixChange: props => affixed => {
-      props.setAffixed(affixed);
-    }
+    handleAffixChange: props => affixed => props.setAffixed(affixed)
   })
 );
 
@@ -97,7 +99,6 @@ const Tags = styled('div')`
   margin-top: 8px;
   display: flex;
   justify-content: center;
-  width: 100%;
 `;
 
 const NotationSearch = enhance(props => (
@@ -114,6 +115,19 @@ const NotationSearch = enhance(props => (
             suffix={props.suffix}
             ref={props.handleInputRef}
           />
+          <Tags>
+            {
+              props.tagOptions.map(tag => (
+                <Tag.CheckableTag
+                  key={tag}
+                  onChange={props.handleQueryTagsChange(tag)}
+                  checked={props.queryTags.has(tag)}
+                >
+                  {tag}
+                </Tag.CheckableTag>
+              ))
+            }
+          </Tags>
         </InputOuter>
       </AffixInner>
     </Affix>

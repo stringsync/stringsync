@@ -22,25 +22,19 @@ const enhance = compose(
       notation.relationships.tags.forEach(tag => tagOptions.add(tag.attributes.name));
     });
     
-    return { tagOptions: Array.from(tagOptions) }
+    return { tagOptions: Array.from(tagOptions).sort() }
   }),
   withState('queryString', 'setQueryString', ''),
-  withState('queryTags', 'setQueryTags', []),
+  withState('queryTags', 'setQueryTags', new Set()),
   withProps(props => ({
     clearQueries: () => {
       props.setQueryString('');
-      props.setQueryTags([]);
+      props.setQueryTags(new Set());
     }
   })),
   withHandlers({
-    handleQueryStringChange: props => event => {
-      // Support calling this handler with a React event and a regular string
-      const queryString = typeof event === 'string' ? event : event.target.value;
-      props.setQueryString(queryString);
-    },
-    handleQueryTagsChange: props => tags => {
-      props.setQueryTags(tags);
-    }
+    handleQueryStringChange: props => event => props.setQueryString(event.target.value),
+    handleQueryTagsChange: props => tags => props.setQueryTags(tags)
   }),
   withProps(props => {
     const queryString = props.queryString.toUpperCase();
