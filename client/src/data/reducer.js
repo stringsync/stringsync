@@ -5,7 +5,8 @@ import {
   tagsReducer as tags,
   usersReducer as users,
   sessionReducer as session,
-  videoReducer as video
+  videoReducer as video,
+  viewportReducer as viewport
 } from 'data';
 
 const reducer = combineReducers({
@@ -13,7 +14,8 @@ const reducer = combineReducers({
   tags,
   users,
   session,
-  video
+  video,
+  viewport
 });
 
 export default reducer;

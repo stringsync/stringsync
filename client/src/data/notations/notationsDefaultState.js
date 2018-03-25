@@ -1,5 +1,8 @@
 const notationsDefaultState = Object.freeze({
-  index: [],
+  index: {
+    fetchedAt: new Date(1970, 1, 1).getTime(),
+    notations: []
+  },
   show: {
     songName: '',
     artistName: '',
