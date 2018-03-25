@@ -94,10 +94,13 @@ const enhance = compose(
   })),
   lifecycle({
     async componentDidMount() {
-      const response = await fetch('/api/v1/notations');
-      const json = await response.json();
-      const notations = this.props.getNotations(json);
-      this.props.setNotations(notations);
+      const twentyMinsAgo = Date.now() - (60 * 20 * 1000);
+      if (this.props.notations.length === 0 || this.props.fetchedAt < twentyMinsAgo) {
+        const response = await fetch('/api/v1/notations');
+        const json = await response.json();
+        const notations = this.props.getNotations(json);
+        this.props.setNotations(notations);
+      }
     }
   })
 );
