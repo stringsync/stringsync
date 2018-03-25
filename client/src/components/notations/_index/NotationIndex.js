@@ -2,7 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { compose, withProps, lifecycle } from 'recompose';
 import { notationsActions } from 'data';
-import { indexIncluded } from 'utilities';
+import { indexIncludedObjects, camelCaseKeys } from 'utilities';
+import { NotationGrid } from './';
 
 const enhance = compose(
   connect(
@@ -23,24 +24,25 @@ const enhance = compose(
      * @return {object}
      */
     getNotations(json) {
-      const included = indexIncluded(json.included);
+      const included = indexIncludedObjects(json.included);
 
-      return json.data.reduce((notations, data) => {
+      const notations = json.data.map(data => {
         const { id, attributes, links, relationships } = data;
         const tags = relationships.tags.data.map(({ id }) => included.tags[id]);
         const transcriber = included.users[relationships.transcriber.data.id];
         const video = included.videos[relationships.video.data.id];
 
-        notations[id] = {
+        return camelCaseKeys({
+          id,
           attributes,
           links,
           tags,
           transcriber,
           video
-        };
-
-        return notations;
-      }, {})
+        }, true);
+      });
+      
+      return notations;
     }
   })),
   lifecycle({
@@ -55,7 +57,9 @@ const enhance = compose(
 
 const NotationIndex = enhance(props => (
   <div>
-    
+    <NotationGrid
+      notations={props.notations}
+    />
   </div>
 ));
 
