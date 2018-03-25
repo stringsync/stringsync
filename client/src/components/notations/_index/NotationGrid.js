@@ -30,7 +30,7 @@ const enhance = compose(
         break;
       default:
         notationsPerRow = 3;
-        gutter = 24;
+        gutter = 36;
         break;
     }
 

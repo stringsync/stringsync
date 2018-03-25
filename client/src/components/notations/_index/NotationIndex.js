@@ -3,6 +3,7 @@ import styled from 'react-emotion';
 import { NotationGrid, NotationSearch } from './';
 import { compose, withProps, withHandlers, withState, lifecycle } from 'recompose';
 import { connect } from 'react-redux';
+import { BackTop } from 'antd';
 import { indexIncludedObjects, camelCaseKeys } from 'utilities';
 import { notationsActions } from 'data';
 
@@ -103,10 +104,13 @@ const enhance = compose(
 
 const Outer = styled('div')`
   margin-top: 24px;
+  max-width: 100%;
+  overflow-x: hidden;
 `;
 
 const NotationIndex = enhance(props => (
   <Outer>
+    <BackTop />
     <NotationSearch
       queryString={props.queryString}
       queryTags={props.queryTags}

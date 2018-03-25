@@ -60,7 +60,9 @@ const enhance = compose(
 
     return { suffix }
   }),
-  withProps(props => ({ affixTarget: () => window })),
+  withProps(props => ({ 
+    affixOffsetBottom: props.viewportType === 'MOBILE' ? 0 : null
+  })),
   withState('affixed', 'setAffixed', false),
   withHandlers({ handleAffixChange: props => affixed => props.setAffixed(affixed) })
 );
@@ -76,7 +78,7 @@ const InputOuter = styled('div')`
   margin: ${props => props.viewportType === 'TABLET' ? '0 16px' : '0 auto'};
 `;
 
-const Tags = styled('div')`
+const TagsOuter = styled('div')`
   margin-top: 8px;
   display: flex;
   flex-wrap: wrap;
@@ -85,7 +87,11 @@ const Tags = styled('div')`
 
 const NotationSearch = enhance(props => (
   <div id="notation-search">
-    <Affix target={props.affixTarget} onChange={props.handleAffixChange}>
+    <Affix
+      ref={props.handleAffixRef}
+      onChange={props.handleAffixChange}
+      offsetBottom={props.affixOffsetBottom}
+    >
       <AffixInner viewportType={props.viewportType} affixed={props.affixed}>
         <InputOuter viewportType={props.viewportType}>
           <Input
@@ -97,7 +103,7 @@ const NotationSearch = enhance(props => (
             suffix={props.suffix}
             ref={props.handleInputRef}
           />
-          <Tags>
+          <TagsOuter>
             {
               props.tagOptions.map(tag => (
                 <Tag.CheckableTag
@@ -110,7 +116,7 @@ const NotationSearch = enhance(props => (
                 </Tag.CheckableTag>
               ))
             }
-          </Tags>
+          </TagsOuter>
         </InputOuter>
       </AffixInner>
     </Affix>
