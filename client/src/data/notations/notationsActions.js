@@ -3,7 +3,7 @@ import { createActions } from 'redux-actions';
 const notationsActions = createActions({
   NOTATIONS: {
     INDEX: {
-      SET: notations => ({ notations })
+      SET: notations => ({ notations }),
     },
     SHOW: {
       SET: notation => ({ notation })

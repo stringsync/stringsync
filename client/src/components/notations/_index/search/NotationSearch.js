@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'react-emotion';
 import Scroll from 'react-scroll';
+import styled from 'react-emotion';
 import { Icon, Input, Affix } from 'antd';
+import { NotationSearchResults } from './';
 import { compose, setDisplayName, setPropTypes, withHandlers, withProps, withState } from 'recompose';
 import { connect } from 'react-redux';
 import { debounce } from 'lodash';
-import sonarSearch from 'assets/sonar-search.svg';
 
 const scrollToTop = debounce(() => {
   Scroll.animateScroll.scrollToTop({
@@ -15,14 +15,17 @@ const scrollToTop = debounce(() => {
     offset: 5,
     ignoreCancelEvents: false
   });
-}, 250, { leading: true });
+}, 250, { leading: true, trailing: true });
 
 const enhance = compose(
   setDisplayName('NotationSearch'),
   setPropTypes({
-    onChange: PropTypes.func.isRequired,
-    query: PropTypes.string.isRequired,
-    numQueried: PropTypes.number.isRequired
+    queryString: PropTypes.string.isRequired,
+    onQueryStringChange: PropTypes.func.isRequired,
+    queryTags: PropTypes.arrayOf(PropTypes.string).isRequired,
+    onQueryTagsChange: PropTypes.func.isRequired,
+    numQueried: PropTypes.number.isRequired,
+    clearQueries: PropTypes.func.isRequired
   }),
   connect(
     state => ({
@@ -44,19 +47,24 @@ const enhance = compose(
     }
   }),
   withHandlers({
-    handleChange: props => event => {
+    handleQueryStringChange: props => event => {
       scrollToTop();
-      props.onChange(event);
+      props.onQueryStringChange(event);
+    },
+    handleQueryTagsChange: props => event => {
+      scrollToTop();
+      props.onQueryTagsChange(event);
     }
   }),
   withHandlers({
     handleClear: props => event => {
+      scrollToTop();
       props.focusInput();
-      props.handleChange('');
+      props.clearQueries();
     }
   }),
   withProps(props => {
-    const suffix = props.query
+    const suffix = props.queryString
       ? <Icon
           type="close-circle-o"
           onClick={props.handleClear}
@@ -88,28 +96,6 @@ const InputOuter = styled('div')`
   margin: ${props => props.viewportType === 'TABLET' ? '0 16px' : '0 auto'};
 `;
 
-const Results = styled('div')`
-  text-align: center;
-  margin-top: 24px;
-  font-size: 24px;
-`;
-
-const SonarSearch = styled('img')`
-  width: 50%;
-`;
-
-const RemoveFilter = styled('div')`
-  margin: 0 auto;
-  padding: 12px;
-  font-size: 16px;
-  cursor: pointer;
-  color: ${props => props.theme.primaryColor};
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
 const NotationSearch = enhance(props => (
   <div id="notation-search">
     <Affix target={props.affixTarget} onChange={props.handleAffixChange}>
@@ -118,32 +104,21 @@ const NotationSearch = enhance(props => (
           <Input
             type="text"
             placeholder="filter"
-            value={props.query}
-            onChange={props.handleChange}
+            value={props.queryString}
             prefix={<Icon type="search" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            onChange={props.handleQueryStringChange}
             suffix={props.suffix}
             ref={props.handleInputRef}
           />
         </InputOuter>
       </AffixInner>
     </Affix>
-    <div>
-      {
-        props.query
-          ? <Results>
-              {props.numQueried} {`result${props.numQueried === 1 ? '' : 's'} for '${props.query}'`}
-              <RemoveFilter onClick={props.handleClear}>
-                remove filter
-              </RemoveFilter>
-              {
-                props.numQueried === 0
-                  ? <SonarSearch src={sonarSearch} alt="StringSync logo" />
-                  : null
-              }
-            </Results>
-          : null
-      }
-    </div>
+    <NotationSearchResults
+      queryString={props.queryString}
+      queryTags={props.queryTags}
+      numQueried={props.numQueried}
+      onClear={props.handleClear}
+    />
   </div>
 ));
 
