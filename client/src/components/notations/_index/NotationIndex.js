@@ -1,9 +1,10 @@
 import React from 'react';
+import styled from 'react-emotion';
+import { NotationGrid, NotationSearch } from './';
+import { compose, withProps, withHandlers, withState, lifecycle } from 'recompose';
 import { connect } from 'react-redux';
-import { compose, withProps, withState, lifecycle } from 'recompose';
-import { notationsActions } from 'data';
 import { indexIncludedObjects, camelCaseKeys } from 'utilities';
-import { NotationGrid } from './';
+import { notationsActions } from 'data';
 
 const enhance = compose(
   connect(
@@ -16,6 +17,13 @@ const enhance = compose(
     })
   ),
   withState('query', 'setQuery', ''),
+  withHandlers({
+    handleQueryChange: props => event => {
+      // Support calling this handler with a React event and a regular string
+      const query = typeof event === 'string' ? event : event.target.value;
+      props.setQuery(query);
+    }
+  }),
   withProps(props => {
     const query = props.query.toUpperCase();
     const queriedNotations = props.notations.filter(({ attributes, relationships }) => (
@@ -73,10 +81,15 @@ const enhance = compose(
   })
 );
 
+const Outer = styled('div')`
+  margin-top: 24px;
+`;
+
 const NotationIndex = enhance(props => (
-  <div>
+  <Outer>
+    <NotationSearch query={props.query} onChange={props.handleQueryChange} />
     <NotationGrid notations={props.queriedNotations} />
-  </div>
+  </Outer>
 ));
 
 export default NotationIndex;
