@@ -1,5 +1,6 @@
 import auth from 'j-toker';
 
+window.ss = window.ss || {};
 window.ss.auth = window.ss.auth || auth;
 
 /**

@@ -87,7 +87,11 @@ const Outer = styled('div')`
 
 const NotationIndex = enhance(props => (
   <Outer>
-    <NotationSearch query={props.query} onChange={props.handleQueryChange} />
+    <NotationSearch
+      query={props.query}
+      onChange={props.handleQueryChange}
+      numQueried={props.queriedNotations.length}
+    />
     <NotationGrid notations={props.queriedNotations} />
   </Outer>
 ));
