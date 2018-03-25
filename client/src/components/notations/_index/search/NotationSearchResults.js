@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import sonarSearchSrc from 'assets/sonar-search.svg';
 import styled from 'react-emotion';
-import { compact } from 'lodash';
 import { compose, setPropTypes, setDisplayName, withProps } from 'recompose';
 
 const enhance = compose(
@@ -14,14 +13,8 @@ const enhance = compose(
     onClear: PropTypes.func.isRequired
   }),
   withProps(props => {
-    const { queryTags, queryString, numQueried } = props;
-
-    const resultOrResults = numQueried === 1 ? 'result' : 'results';
-    const query = [...queryTags].sort();
-    query.push(queryString);
-    const forString = `${compact(query).join(', ')}`
-
-    const resultString = `${numQueried} ${resultOrResults} for ${forString}`;
+    const { numQueried } = props;
+    const resultString = `${numQueried} ${numQueried === 1 ? 'result' : 'results'}`;
     return { resultString };
   }),
   withProps(props => ({
