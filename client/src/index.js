@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Root } from 'root';
-import { configureAuth, registerServiceWorker } from 'utilities';
+import { registerServiceWorker } from 'utilities';
 import { store } from 'data';
+import { configure } from 'config';
 
-configureAuth();
+configure();
 ReactDOM.render(<Root store={store} />, document.getElementById('root'));
 registerServiceWorker();

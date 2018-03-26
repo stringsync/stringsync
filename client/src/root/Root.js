@@ -1,12 +1,12 @@
 import React from 'react';
-import { App } from './';
-import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
-import { compose, setPropTypes, setDisplayName } from 'recompose';
-import { LocaleProvider } from 'antd';
-import { ThemeProvider } from 'emotion-theming';
-import enUS from 'antd/lib/locale-provider/en_US.js';
 import PropTypes from 'prop-types';
+import enUS from 'antd/lib/locale-provider/en_US.js';
+import { App } from './';
+import { BrowserRouter } from 'react-router-dom';
+import { LocaleProvider } from 'antd';
+import { Provider } from 'react-redux';
+import { ThemeProvider } from 'emotion-theming';
+import { compose, setPropTypes, setDisplayName } from 'recompose';
 
 const enhance = compose(
   setDisplayName('Root'),
