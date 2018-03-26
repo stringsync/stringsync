@@ -9,6 +9,10 @@ const enhance = compose(
   setPropTypes({
     notation: PropTypes.object.isRequired
   }),
+  /**
+   * Map the prop values that are ultimately used in the component to keep
+   * the component code less cluttered
+   */
   mapProps(props => {
     const { thumbnail, songName, artistName } = props.notation.attributes;
     const tagNames = props.notation.relationships.tags.map(tag => tag.attributes.name).sort();
@@ -26,6 +30,9 @@ const TagNames = styled('div')`
   margin-top: 12px;
 `;
 
+/**
+ * Shows the detail for a given notation in the NotationIndex component
+ */
 const NotationDetail = enhance(props => (
   <Card
     hoverable
