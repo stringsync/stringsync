@@ -1,0 +1,91 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+import styled from 'react-emotion';
+import { Input, Tag, Icon } from 'antd';
+import { compose, setDisplayName, setPropTypes, withProps, withHandlers } from 'recompose';
+import { scrollToTop } from './';
+import { connect } from 'react-redux';
+
+const enhance = compose(
+  setDisplayName('NotationSearchInputs'),
+  setPropTypes({
+    queryString: PropTypes.string.isRequired,
+    onQueryStringChange: PropTypes.func.isRequired,
+    onQueryTagsChange: PropTypes.func.isRequired,
+    onClear: PropTypes.func.isRequired,
+    tagOptions: PropTypes.arrayOf(PropTypes.string).isRequired
+  }),
+  connect(
+    state => ({ viewportType: state.viewport.type })
+  ),
+  withHandlers({
+    handleQueryStringChange: props => event => {
+      scrollToTop();
+      props.onQueryStringChange(event);
+    },
+    handleQueryTagsChange: props => tag => checked => {
+      scrollToTop();
+
+      const { queryTags } = props;
+      if (checked) {
+        queryTags.add(tag);
+      } else {
+        queryTags.delete(tag);
+      }
+
+      props.onQueryTagsChange(queryTags);
+    }
+  }),
+  withProps(props => {
+    const suffix = props.queryString
+      ? <Icon type="close-circle-o" onClick={props.handleClear} style={{ cursor: 'pointer' }} />
+      : null
+
+    return { suffix }
+  }),
+);
+
+const Outer = styled('div') `
+  max-width: ${props => props.viewportType === 'MOBILE' ? '90%' : '100%'};
+  margin: ${props => props.viewportType === 'TABLET' ? '0 16px' : '0 auto'};
+`;
+
+const TagsOuter = styled('div') `
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+`;
+
+/**
+ * This component handles setting the queryString and queryTags for the NotationIndex
+ */
+const NotationSearchInputs = enhance(props => (
+  <Outer id="notation-search-input" viewportType={props.viewportType}>
+    <Input
+      type="text"
+      placeholder="song, artist, or transcriber name"
+      value={props.queryString}
+      prefix={<Icon type="search" style={{ color: 'rgba(0,0,0,.25)' }} />}
+      onChange={props.handleQueryStringChange}
+      suffix={props.suffix}
+      ref={props.handleInputRef}
+    />
+    <TagsOuter>
+      {
+        props.tagOptions.map(tag => (
+          <Tag.CheckableTag
+            key={tag}
+            onChange={props.handleQueryTagsChange(tag)}
+            checked={props.queryTags.has(tag)}
+            style={{ marginTop: '2px' }}
+          >
+            {tag}
+          </Tag.CheckableTag>
+        ))
+      }
+    </TagsOuter>
+  </Outer>
+));
+
+export default NotationSearchInputs;
