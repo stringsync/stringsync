@@ -1,13 +1,14 @@
 import React from 'react';
 import styled from 'react-emotion';
 import { NotationGrid, NotationSearch } from './';
-import { compose, withProps, withHandlers, withState, lifecycle } from 'recompose';
+import { compose, setDisplayName, withProps, withHandlers, withState, lifecycle } from 'recompose';
 import { connect } from 'react-redux';
 import { BackTop } from 'antd';
 import { indexIncludedObjects, camelCaseKeys } from 'utilities';
 import { notationsActions } from 'data';
 
 const enhance = compose(
+  setDisplayName('NotationIndex'),
   connect(
     state => ({
       fetchedAt: state.notations.index.fetchedAt,
@@ -37,15 +38,17 @@ const enhance = compose(
     handleQueryTagsChange: props => tags => props.setQueryTags(tags)
   }),
   withProps(props => {
-    const queryTags = Array.from(props.queryTags);
+    const queryTags = Array.from(props.queryTags).map(tag => tag.toUpperCase());
     const queryString = props.queryString.toUpperCase();
 
-    // Do a first pass filtering by queryTag, then by queryString
     const queriedNotations = props.notations
+      // On the first pass, filter the notations that match props.queryTags
       .filter(notation => {
-        const notationTags = new Set(notation.relationships.tags.map(tag => tag.attributes.name));
+        const notationTags = new Set(notation.relationships.tags.map(tag => tag.attributes.name.toUpperCase()));
+        // For a notation to match, it must have _every_ queryTag (and then maybe some others)
         return queryTags.every(queryTag => notationTags.has(queryTag));
       })
+      // On the second pass, filter the notations that match props.queryString
       .filter(({ attributes, relationships }) => {
         const matchers = [
           attributes.artistName.toUpperCase(),
@@ -56,19 +59,17 @@ const enhance = compose(
         return matchers.some(matcher => matcher.includes(queryString))
       });
 
-    return {
-      queriedNotations
-    }
+    return { queriedNotations }
   }),
   withProps(props => ({
     /**
      * Transforms the data from the notations index endpoint into notation objects
-     * for the store.
+     * for the store
      * 
      * @param {object} json 
      * @return {object}
      */
-    getNotations(json) {
+    extractNotations(json) {
       const included = indexIncludedObjects(json.included);
 
       const notations = json.data.map(data => {
@@ -88,17 +89,22 @@ const enhance = compose(
           }
         }, true);
       });
-      
+
       return notations;
+    }
+  })),
+  withProps(props => ({
+    fetchNotations: async () => {
+      const response = await fetch('/api/v1/notations');
+      const json = await response.json()
+      return this.props.extractNotations(json);
     }
   })),
   lifecycle({
     async componentDidMount() {
       const twentyMinsAgo = Date.now() - (60 * 20 * 1000);
       if (this.props.notations.length === 0 || this.props.fetchedAt < twentyMinsAgo) {
-        const response = await fetch('/api/v1/notations');
-        const json = await response.json();
-        const notations = this.props.getNotations(json);
+        const notations = await this.props.fetchNotations();
         this.props.setNotations(notations);
       }
     }
@@ -123,7 +129,10 @@ const NotationIndex = enhance(props => (
       numQueried={props.queriedNotations.length}
       tagOptions={props.tagOptions}
     />
-    <NotationGrid notations={props.queriedNotations} />
+    <NotationGrid
+      notations={props.queriedNotations}
+      queryTags={props.queryTags}
+    />
   </Outer>
 ));
 

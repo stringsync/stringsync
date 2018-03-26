@@ -7,7 +7,8 @@ import styled from 'react-emotion';
 const enhance = compose(
   setDisplayName('NotationDetail'),
   setPropTypes({
-    notation: PropTypes.object.isRequired
+    notation: PropTypes.object.isRequired,
+    queryTags: PropTypes.object.isRequired
   }),
   /**
    * Map the prop values that are ultimately used in the component to keep
@@ -43,7 +44,16 @@ const NotationDetail = enhance(props => (
       description={`by ${props.artistName} | ${props.transcriberName}`}
     />
     <TagNames>
-      {props.tagNames.map(tagName => <Tag key={tagName}>{tagName}</Tag>)}
+      {
+        props.tagNames.map(tagName => (
+          <Tag
+            key={tagName}
+            color={props.queryTags.has(tagName) ? '#FC354C' : null}
+          >
+            {tagName}
+          </Tag>)
+        )
+      }
     </TagNames>
   </Card>
 ));
