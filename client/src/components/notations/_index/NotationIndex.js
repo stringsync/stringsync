@@ -108,8 +108,12 @@ const enhance = compose(
     async componentDidMount() {
       const twentyMinsAgo = Date.now() - (60 * 20 * 1000);
       if (this.props.notations.length === 0 || this.props.fetchedAt < twentyMinsAgo) {
-        const notations = await this.props.fetchNotations();
-        this.props.setNotations(notations);
+        try {
+          const notations = await this.props.fetchNotations();
+          this.props.setNotations(notations);
+        } catch (error) {
+          window.ss.message.error('Notations could not load');
+        }
       }
     }
   })
