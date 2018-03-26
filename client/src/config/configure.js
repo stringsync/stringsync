@@ -1,8 +1,9 @@
-import { configureAuth, configureNotifications } from './';
+import { configureAuth, configureNotification, configureMessage } from './';
 
 const configure = () => {
   configureAuth();
-  configureNotifications();
+  configureNotification();
+  configureMessage();
 }
 
 export default configure;

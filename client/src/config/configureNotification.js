@@ -9,8 +9,8 @@ window.ss.notification = notification;
  *
  * @return {void}
  */
-const configureNotifications = () => {
+const configureNotification = () => {
   notification.config({ duration: 3 });
 };
 
-export default configureNotifications;
+export default configureNotification;
