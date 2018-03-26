@@ -12,11 +12,18 @@ const enhance = compose(
     numQueried: PropTypes.number.isRequired,
     onClear: PropTypes.func.isRequired
   }),
+  /**
+   * The resultString is the message that shows when a queryString or at least one queryTag
+   * is selected.
+   */
   withProps(props => {
     const { numQueried } = props;
     const resultString = `${numQueried} ${numQueried === 1 ? 'result' : 'results'}`;
     return { resultString };
   }),
+  /**
+   * 0 results from a given queryString or number of queryTags is considered having results
+   */
   withProps(props => ({
     hasResults: props.queryString || props.queryTags.size > 0
   }))
@@ -44,6 +51,9 @@ const RemoveFilter = styled('div') `
   }
 `;
 
+/**
+ * This component displays the number of results for the NotationIndex component
+ */
 const NotationSearchResults = enhance(props => (
   <div>
     {
