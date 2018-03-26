@@ -1,21 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import styled from 'react-emotion';
 import { NotationDetail } from './';
 import { Row, Col } from 'antd';
 import { chunk } from 'lodash';
 import { compose, setDisplayName, setPropTypes, withProps } from 'recompose';
 import { connect } from 'react-redux';
-import styled from 'react-emotion';
 
 const enhance = compose(
+  setDisplayName('NotationGrid'),
   connect(
     state => ({
       viewportType: state.viewport.type
     })
   ),
-  setDisplayName('NotationGrid'),
   setPropTypes({
-    notations: PropTypes.arrayOf(PropTypes.object)
+    notations: PropTypes.arrayOf(PropTypes.object),
+    queryTags: PropTypes.object.isRequired
   }),
   withProps(props => {
     let notationsPerRow, gutter;
@@ -52,6 +53,9 @@ const Outer = styled('div')`
   margin-right: ${props => props.viewportType === 'TABLET' ? props.gutter : 0}px;
 `;
 
+/**
+ * This component is the main content of the NotationIndex component
+ */
 const NotationGrid = enhance(props => (
   <Outer viewportType={props.viewportType} gutter={props.gutter}>
     {
@@ -60,7 +64,7 @@ const NotationGrid = enhance(props => (
           {
             notationRow.map(notation => (
               <Col key={notation.id} span={props.colSpan}>
-                <NotationDetail notation={notation} />
+                <NotationDetail notation={notation} queryTags={props.queryTags} />
               </Col>
             ))
           }

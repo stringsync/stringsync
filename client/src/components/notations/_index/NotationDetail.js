@@ -1,18 +1,20 @@
 import React from 'react';
 import { Card, Tag } from 'antd';
-import { compose, setDisplayName, setPropTypes, mapProps } from 'recompose';
+import { compose, setDisplayName, setPropTypes, withProps } from 'recompose';
 import PropTypes from 'prop-types';
 import styled from 'react-emotion';
 
 const enhance = compose(
   setDisplayName('NotationDetail'),
   setPropTypes({
-    notation: PropTypes.object.isRequired
+    notation: PropTypes.object.isRequired,
+    queryTags: PropTypes.object.isRequired
   }),
-  mapProps(props => {
+  withProps(props => {
     const { thumbnail, songName, artistName } = props.notation.attributes;
     const tagNames = props.notation.relationships.tags.map(tag => tag.attributes.name).sort();
     const transcriberName = props.notation.relationships.transcriber.attributes.name;
+
     return { thumbnail, songName, artistName, tagNames, transcriberName };
   })
 );
@@ -26,6 +28,9 @@ const TagNames = styled('div')`
   margin-top: 12px;
 `;
 
+/**
+ * Shows the detail for a given notation in the NotationIndex component
+ */
 const NotationDetail = enhance(props => (
   <Card
     hoverable
@@ -36,7 +41,16 @@ const NotationDetail = enhance(props => (
       description={`by ${props.artistName} | ${props.transcriberName}`}
     />
     <TagNames>
-      {props.tagNames.map(tagName => <Tag key={tagName}>{tagName}</Tag>)}
+      {
+        props.tagNames.map(tagName => (
+          <Tag
+            key={tagName}
+            color={props.queryTags.has(tagName) ? '#FC354C' : null}
+          >
+            {tagName}
+          </Tag>)
+        )
+      }
     </TagNames>
   </Card>
 ));
