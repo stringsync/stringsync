@@ -58,6 +58,7 @@ const NotationSearch = enhance(props => (
       <AffixInner affixed={props.affixed}>
         <NotationSearchInputs
           queryString={props.queryString}
+          queryTags={props.queryTags}
           onQueryStringChange={props.onQueryStringChange}
           onQueryTagsChange={props.onQueryTagsChange}
           onClear={props.handleClear}

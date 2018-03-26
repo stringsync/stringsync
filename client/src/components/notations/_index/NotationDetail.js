@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Tag } from 'antd';
-import { compose, setDisplayName, setPropTypes, mapProps } from 'recompose';
+import { compose, setDisplayName, setPropTypes, withProps } from 'recompose';
 import PropTypes from 'prop-types';
 import styled from 'react-emotion';
 
@@ -10,14 +10,11 @@ const enhance = compose(
     notation: PropTypes.object.isRequired,
     queryTags: PropTypes.object.isRequired
   }),
-  /**
-   * Map the prop values that are ultimately used in the component to keep
-   * the component code less cluttered
-   */
-  mapProps(props => {
+  withProps(props => {
     const { thumbnail, songName, artistName } = props.notation.attributes;
     const tagNames = props.notation.relationships.tags.map(tag => tag.attributes.name).sort();
     const transcriberName = props.notation.relationships.transcriber.attributes.name;
+
     return { thumbnail, songName, artistName, tagNames, transcriberName };
   })
 );

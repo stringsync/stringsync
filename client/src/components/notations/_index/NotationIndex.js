@@ -34,8 +34,12 @@ const enhance = compose(
     }
   })),
   withHandlers({
-    handleQueryStringChange: props => event => props.setQueryString(event.target.value),
-    handleQueryTagsChange: props => tags => props.setQueryTags(tags)
+    handleQueryStringChange: props => event => {
+      props.setQueryString(event.target.value);
+    },
+    handleQueryTagsChange: props => tags => {
+      props.setQueryTags(tags);
+    }
   }),
   withProps(props => {
     const queryTags = Array.from(props.queryTags).map(tag => tag.toUpperCase());
@@ -97,7 +101,7 @@ const enhance = compose(
     fetchNotations: async () => {
       const response = await fetch('/api/v1/notations');
       const json = await response.json()
-      return this.props.extractNotations(json);
+      return props.extractNotations(json);
     }
   })),
   lifecycle({

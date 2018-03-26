@@ -10,6 +10,7 @@ const enhance = compose(
   setDisplayName('NotationSearchInputs'),
   setPropTypes({
     queryString: PropTypes.string.isRequired,
+    queryTags: PropTypes.object.isRequired,
     onQueryStringChange: PropTypes.func.isRequired,
     onQueryTagsChange: PropTypes.func.isRequired,
     onClear: PropTypes.func.isRequired,
@@ -26,14 +27,14 @@ const enhance = compose(
     handleQueryTagsChange: props => tag => checked => {
       scrollToTop();
 
-      const { queryTags } = props;
+      const nextQueryTags = new Set([...props.queryTags]);
       if (checked) {
-        queryTags.add(tag);
+        nextQueryTags.add(tag);
       } else {
-        queryTags.delete(tag);
+        nextQueryTags.delete(tag);
       }
 
-      props.onQueryTagsChange(queryTags);
+      props.onQueryTagsChange(nextQueryTags);
     }
   }),
   withProps(props => {
@@ -42,7 +43,7 @@ const enhance = compose(
       : null
 
     return { suffix }
-  }),
+  })
 );
 
 const Outer = styled('div') `
@@ -73,14 +74,14 @@ const NotationSearchInputs = enhance(props => (
     />
     <TagsOuter>
       {
-        props.tagOptions.map(tag => (
+        props.tagOptions.map(tagName => (
           <Tag.CheckableTag
-            key={tag}
-            onChange={props.handleQueryTagsChange(tag)}
-            checked={props.queryTags.has(tag)}
+            key={tagName}
+            onChange={props.handleQueryTagsChange(tagName)}
+            checked={props.queryTags.has(tagName)}
             style={{ marginTop: '2px' }}
           >
-            {tag}
+            {tagName}
           </Tag.CheckableTag>
         ))
       }
