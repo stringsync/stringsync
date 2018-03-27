@@ -8,7 +8,7 @@ const getRandomSrc = () => Math.random() > 0.5 ? sonarSleepSrc : sonarGuitarSrc;
 
 const Outer = styled('div')`
   text-align: center;
-  margin-top: 25px;
+  margin-top: 24px;
 `;
 
 const Sonar = styled('img')`

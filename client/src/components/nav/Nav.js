@@ -48,7 +48,7 @@ const Nav = enhance(props => (
             <I type="compass" />
           </Menu.Item>
           <Menu.Item key="/login">
-            <I type="login" />
+            <I type="user" />
           </Menu.Item>
         </Menu>
       </Row>
