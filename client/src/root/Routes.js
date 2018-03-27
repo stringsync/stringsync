@@ -6,7 +6,7 @@ const Routes = () => (
   <Switch>
     <Route exact path="/" component={NotationIndex} />
     <Route path="/about" component={About} />
-    <Route path="/login" component={Login} />
+    <Route exact path="/login" component={Login} />
     <Route component={NotFound} />
   </Switch>
 );
