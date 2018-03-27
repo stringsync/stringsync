@@ -45,7 +45,7 @@ const Nav = enhance(props => (
             <I type="question-circle-o" /> 
           </Menu.Item>
           <Menu.Item key="/">
-            <I type="compass" />
+            <I type="home" />
           </Menu.Item>
           <Menu.Item key="/login">
             <I type="user" />
