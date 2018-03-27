@@ -10,10 +10,6 @@ const enhance = compose(
   setDisplayName('LoginForm')
 );
 
-const Inner = styled('div') `
-
-`;
-
 const LoginButton = styled(Button) `
   width: 100%;
 `;
@@ -25,17 +21,17 @@ const ForgotLink = styled('a') `
 const LoginForm = enhance(props => (
   <Form onSubmit={this.handleSubmit}>
     <FormItem>
-      {props.form.getFieldDecorator('userName', {
+      {props.form.getFieldDecorator('username', {
         rules: [{ required: true, message: 'username cannot be blank' }],
       })(
-        <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Username" />
+        <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="username" />
       )}
     </FormItem>
     <FormItem>
       {props.form.getFieldDecorator('password', {
         rules: [{ required: true, message: 'password cannot be blank' }],
       })(
-        <Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="Password" />
+        <Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="password" />
       )}
     </FormItem>
     <FormItem>
@@ -43,13 +39,13 @@ const LoginForm = enhance(props => (
         valuePropName: 'checked',
         initialValue: true,
       })(
-        <Checkbox>Remember me</Checkbox>
+        <Checkbox>remember me</Checkbox>
       )}
-      <ForgotLink href="">Forgot password</ForgotLink>
+      <ForgotLink href="">forgot</ForgotLink>
       <LoginButton type="primary" htmlType="submit">
-        Log in
+        login
       </LoginButton>
-      Or <a href="">register now!</a>
+      or <a href="">register now!</a>
     </FormItem>
   </Form>
 ));

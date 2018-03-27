@@ -31,8 +31,8 @@ const FormTitle = styled('h1') `
 
 const FormWrapper = enhance(props => (
   <div>
-    <Inner>
-      {props.title ? <FormTitle>{props.title}</FormTitle> : null}
+    <Inner viewportType={props.viewportType}>
+      {props.title ? <FormTitle className="main-title">{props.title}</FormTitle> : null}
       {props.children}
     </Inner>
   </div>

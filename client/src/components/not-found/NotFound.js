@@ -17,7 +17,7 @@ const Sonar = styled('img')`
 
 const NotFound = () => (
   <Outer>
-    <Sonar src={getRandomSrc()} alt="Not Found" />
+    <Sonar src={getRandomSrc()} alt="not-found-img" />
     <h1>page not found</h1>
     <Link to="/">home</Link>
   </Outer>
