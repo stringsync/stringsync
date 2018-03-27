@@ -1,3 +1,4 @@
 export * from './login';
-export { default as ProviderButtons } from './ProviderButtons';
-export { default as FormWrapper } from './FormWrapper';
+export * from './signup';
+export { default as SessionProviderButtons } from './SessionProviderButtons';
+export { default as SessionFormWrapper } from './SessionFormWrapper';

@@ -1,12 +1,13 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import { NotationIndex, About, Login, NotFound } from 'components';
+import { NotationIndex, About, Login, Signup, NotFound } from 'components';
 
 const Routes = () => (
   <Switch>
     <Route exact path="/" component={NotationIndex} />
-    <Route path="/about" component={About} />
     <Route exact path="/login" component={Login} />
+    <Route exact path="/signup" component={Signup} />
+    <Route path="/about" component={About} />
     <Route component={NotFound} />
   </Switch>
 );

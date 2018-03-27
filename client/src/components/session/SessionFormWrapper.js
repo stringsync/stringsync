@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import styled from 'react-emotion';
 import { compose, setDisplayName, setPropTypes } from 'recompose';
 import { connect } from 'react-redux';
-import { ProviderButtons } from './';
+import { SessionProviderButtons } from './';
 
 const enhance = compose(
   setDisplayName('FormWrapper'),
@@ -20,13 +20,13 @@ const Inner = styled('div') `
   border-radius: ${props => props.viewportType === 'MOBILE' ? '0' : '4px'};
   border: ${props => props.viewportType === 'MOBILE' ? 'none' : `1px solid ${props.theme.borderColor}`};
   padding: 36px;
-  max-width: ${props => props.viewportType === 'MOBILE' ? '100%' : '300px'};
+  max-width: ${props => props.viewportType === 'MOBILE' ? '100%' : '350px'};
 `;
 
 const FormTitle = styled('h1') `
   font-size: 24px;
   text-align: center;
-  margin-top: 16px;
+  margin-top: 8px;
   margin-bottom: 16px;
 `;
 
@@ -58,7 +58,7 @@ const FormWrapper = enhance(props => (
   <div>
     <Inner viewportType={props.viewportType}>
       {props.title ? <FormTitle className="main-title">{props.title}</FormTitle> : null}
-      <ProviderButtons />
+      <SessionProviderButtons />
       <OrContainer>
         <OrHr />
         <OrDiv>or</OrDiv>

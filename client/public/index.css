@@ -5,4 +5,5 @@ body {
 .main-title {
   font-weight: 100;
   letter-spacing: 3px;
+  text-transform: uppercase;
 }

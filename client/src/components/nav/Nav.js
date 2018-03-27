@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'react-emotion';
-import { compose, withHandlers } from 'recompose';
+import { compose, withHandlers, withProps } from 'recompose';
 import { Link, withRouter } from 'react-router-dom';
 import { Row, Col, Menu, Icon } from 'antd';
 import { Logo } from './';
@@ -11,6 +11,11 @@ const enhance = compose(
     handleClick: props => event => {
       props.history.push(event.key);
     }
+  }),
+  withProps(props => {
+    const { pathname } = props.location;
+    const selectedKeys = [pathname === '/signup' ? '/login' : pathname];
+    return { selectedKeys };
   })
 );
 
@@ -37,7 +42,7 @@ const Nav = enhance(props => (
         <Menu
           mode="horizontal"
           style={{ lineHeight: '62px' }}
-          selectedKeys={[props.location.pathname]}
+          selectedKeys={props.selectedKeys}
           onClick={props.handleClick}
           multiple={false}
         >
