@@ -4,12 +4,16 @@ import { Button, Icon } from 'antd';
 import GoogleIconSrc from 'assets/google-logo-icon-36x36.png';
 
 const GoogleButton = styled(Button) `
-  background: white;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 16px;
+
+  && {
+    background-color: white;
+    color: rgba(0, 0, 0, 0.65);
+  }
 `;
 
 const GoogleLogo = styled('img') `
@@ -18,9 +22,12 @@ const GoogleLogo = styled('img') `
 `;
 
 const FacebookButton = styled(Button) `
-  color: white;
   width: 100%;
-  background: #3f5692;
+
+  && {
+    color: white;
+    background-color: #3f5692;
+  }
 `;
 
 const ProviderButtons = props => (

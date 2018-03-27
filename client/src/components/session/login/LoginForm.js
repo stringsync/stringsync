@@ -41,7 +41,7 @@ const LoginForm = enhance(props => (
       })(
         <Checkbox>remember me</Checkbox>
       )}
-      <ForgotLink href="">forgot</ForgotLink>
+      <ForgotLink href="">forgot password</ForgotLink>
       <LoginButton type="primary" htmlType="submit">
         login
       </LoginButton>

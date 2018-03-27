@@ -19,7 +19,7 @@ const Inner = styled('div') `
   margin-top: ${props => props.viewportType === 'MOBILE' ? '0' : '24px'};
   border-radius: ${props => props.viewportType === 'MOBILE' ? '0' : '4px'};
   border: ${props => props.viewportType === 'MOBILE' ? 'none' : `1px solid ${props.theme.borderColor}`};
-  padding: 24px;
+  padding: 36px;
   max-width: ${props => props.viewportType === 'MOBILE' ? '100%' : '300px'};
 `;
 
