@@ -1,13 +1,15 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
-import { NotationIndex, About, Login } from 'components';
+import { Route, Switch } from 'react-router-dom';
+import { NotationIndex, About, Login, Signup, NotFound } from 'components';
 
 const Routes = () => (
-  <div id="routes" className="routes">
+  <Switch>
     <Route exact path="/" component={NotationIndex} />
+    <Route exact path="/login" component={Login} />
+    <Route exact path="/signup" component={Signup} />
     <Route path="/about" component={About} />
-    <Route path="/login" component={Login} />
-  </div>
+    <Route component={NotFound} />
+  </Switch>
 );
 
 export default Routes;

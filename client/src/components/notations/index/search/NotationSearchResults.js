@@ -63,7 +63,7 @@ const NotationSearchResults = enhance(props => (
             <RemoveFilter onClick={props.onClear}>remove filters</RemoveFilter>
             {
               props.numQueried === 0
-                ? <SonarSearch src={sonarSearchSrc} alt="StringSync logo" />
+                ? <SonarSearch src={sonarSearchSrc} alt="string-sync-logo" />
                 : null
             }
           </Results>

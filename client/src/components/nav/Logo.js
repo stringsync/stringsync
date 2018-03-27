@@ -21,14 +21,12 @@ const enhance = compose(
 );
 
 const LogoText = styled('span')`
-  font-size: 12px;
-  font-weight: 100;
-  letter-spacing: 3px;
+  font-size: 14px;
 `;
 
 /**
  * This component is the logo specifically for the nav component
  */
-const Logo = enhance(props => <LogoText>{props.logoText}</LogoText>);
+const Logo = enhance(props => <LogoText className="main-title">{props.logoText}</LogoText>);
 
 export default Logo;

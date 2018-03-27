@@ -37,10 +37,6 @@ const LayoutHeaderInner = styled('div')`
   margin: 0 auto;
 `;
 
-const LayoutContent = styled(Layout.Content)`
-  min-height: 100vh;
-`;
-
 const LayoutContentInner = styled('div')`
   max-width: 1200px;
   margin: 0 auto;
@@ -63,11 +59,11 @@ const App = enhance(props => (
           <Nav />
         </LayoutHeaderInner>
       </LayoutHeader>
-      <LayoutContent>
+      <Layout.Content>
         <LayoutContentInner>
           <Routes />
         </LayoutContentInner>
-      </LayoutContent>
+      </Layout.Content>
       <LayoutFooter>
         StringSync ©2018 Created by Jared Johnson
       </LayoutFooter>

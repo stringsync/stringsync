@@ -12,7 +12,8 @@ const enhance = compose(
   connect(
     state => ({
       fetchedAt: state.notations.index.fetchedAt,
-      notations: state.notations.index.notations
+      notations: state.notations.index.notations,
+      viewportType: state.viewport.type
     }),
     dispatch => ({
       setNotations: notations => dispatch(notationsActions.notations.index.set(notations))
@@ -108,8 +109,12 @@ const enhance = compose(
     async componentDidMount() {
       const twentyMinsAgo = Date.now() - (60 * 20 * 1000);
       if (this.props.notations.length === 0 || this.props.fetchedAt < twentyMinsAgo) {
-        const notations = await this.props.fetchNotations();
-        this.props.setNotations(notations);
+        try {
+          const notations = await this.props.fetchNotations();
+          this.props.setNotations(notations);
+        } catch (error) {
+          window.ss.message.error('Notations could not load');
+        }
       }
     }
   })
@@ -132,6 +137,7 @@ const NotationIndex = enhance(props => (
       onQueryTagsChange={props.handleQueryTagsChange}
       numQueried={props.queriedNotations.length}
       tagOptions={props.tagOptions}
+      viewportType={props.viewportType}
     />
     <NotationGrid
       notations={props.queriedNotations}

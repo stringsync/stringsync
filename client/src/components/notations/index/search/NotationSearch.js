@@ -4,7 +4,6 @@ import styled from 'react-emotion';
 import { Affix } from 'antd';
 import { NotationSearchResults, NotationSearchInputs, scrollToTop } from './';
 import { compose, setDisplayName, setPropTypes, withHandlers, withProps, withState } from 'recompose';
-import { connect } from 'react-redux';
 
 const enhance = compose(
   setDisplayName('NotationSearch'),
@@ -15,11 +14,9 @@ const enhance = compose(
     onQueryTagsChange: PropTypes.func.isRequired,
     numQueried: PropTypes.number.isRequired,
     clearQueries: PropTypes.func.isRequired,
-    tagOptions: PropTypes.arrayOf(PropTypes.string).isRequired
+    tagOptions: PropTypes.arrayOf(PropTypes.string).isRequired,
+    viewportType: PropTypes.string.isRequired
   }),
-  connect(
-    state => ({ viewportType: state.viewport.type })
-  ),
   withProps(props => ({
     affixOffsetBottom: props.viewportType === 'MOBILE' ? 0 : null
   })),
@@ -32,7 +29,10 @@ const enhance = compose(
   }),
   withHandlers({
     handleClear: props => event => {
-      scrollToTop();
+      if (props.viewportType !== 'MOBILE') {
+        scrollToTop();
+      }
+
       props.clearQueries();
     }
   }),
@@ -63,6 +63,7 @@ const NotationSearch = enhance(props => (
           onQueryTagsChange={props.onQueryTagsChange}
           onClear={props.handleClear}
           tagOptions={props.tagOptions}
+          viewportType={props.viewportType}
         />
       </AffixInner>
     </Affix>

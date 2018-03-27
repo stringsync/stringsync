@@ -4,7 +4,6 @@ import styled from 'react-emotion';
 import { Input, Tag, Icon } from 'antd';
 import { compose, setDisplayName, setPropTypes, withProps, withHandlers } from 'recompose';
 import { scrollToTop } from './';
-import { connect } from 'react-redux';
 
 const enhance = compose(
   setDisplayName('NotationSearchInputs'),
@@ -14,18 +13,21 @@ const enhance = compose(
     onQueryStringChange: PropTypes.func.isRequired,
     onQueryTagsChange: PropTypes.func.isRequired,
     onClear: PropTypes.func.isRequired,
-    tagOptions: PropTypes.arrayOf(PropTypes.string).isRequired
+    tagOptions: PropTypes.arrayOf(PropTypes.string).isRequired,
+    viewportType: PropTypes.string.isRequired
   }),
-  connect(
-    state => ({ viewportType: state.viewport.type })
-  ),
   withHandlers({
     handleQueryStringChange: props => event => {
-      scrollToTop();
+      if (props.viewportType !== 'MOBILE') {
+        scrollToTop();
+      }
+
       props.onQueryStringChange(event);
     },
     handleQueryTagsChange: props => tag => checked => {
-      scrollToTop();
+      if (props.viewportType !== 'MOBILE') {
+        scrollToTop();
+      }
 
       const nextQueryTags = new Set([...props.queryTags]);
       if (checked) {
@@ -47,7 +49,7 @@ const enhance = compose(
 );
 
 const Outer = styled('div') `
-  max-width: ${props => props.viewportType === 'MOBILE' ? '90%' : '100%'};
+  max-width: ${props => props.viewportType === 'MOBILE' ? '95%' : '100%'};
   margin: ${props => props.viewportType === 'TABLET' ? '0 16px' : '0 auto'};
 `;
 

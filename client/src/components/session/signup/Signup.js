@@ -2,16 +2,16 @@ import React from 'react';
 import styled from 'react-emotion';
 import { compose, setDisplayName } from 'recompose';
 import { SessionFormWrapper } from 'components';
-import { LoginForm } from './';
+import { SignupForm } from './';
 
 const enhance = compose(
-  setDisplayName('Login'),
+  setDisplayName('Signup'),
 );
 
-const Login = enhance(props => (
-  <SessionFormWrapper title="Login">
-    <LoginForm />
+const Signup = enhance(props => (
+  <SessionFormWrapper title="Signup">
+    <SignupForm />
   </SessionFormWrapper>
 ));
 
-export default Login;
+export default Signup;

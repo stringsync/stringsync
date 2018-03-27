@@ -3,6 +3,7 @@ import { Card, Tag } from 'antd';
 import { compose, setDisplayName, setPropTypes, withProps } from 'recompose';
 import PropTypes from 'prop-types';
 import styled from 'react-emotion';
+import { kebabCase } from 'lodash';
 
 const enhance = compose(
   setDisplayName('NotationDetail'),
@@ -34,7 +35,7 @@ const TagNames = styled('div')`
 const NotationDetail = enhance(props => (
   <Card
     hoverable
-    cover={<CoverImg src={props.thumbnail} alt={props.songName} />}
+    cover={<CoverImg src={props.thumbnail} alt={kebabCase(props.songName)} />}
   >
     <Card.Meta
       title={props.songName}
