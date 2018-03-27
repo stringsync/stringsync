@@ -12,7 +12,8 @@ const enhance = compose(
   connect(
     state => ({
       fetchedAt: state.notations.index.fetchedAt,
-      notations: state.notations.index.notations
+      notations: state.notations.index.notations,
+      viewportType: state.viewport.type
     }),
     dispatch => ({
       setNotations: notations => dispatch(notationsActions.notations.index.set(notations))
@@ -136,6 +137,7 @@ const NotationIndex = enhance(props => (
       onQueryTagsChange={props.handleQueryTagsChange}
       numQueried={props.queriedNotations.length}
       tagOptions={props.tagOptions}
+      viewportType={props.viewportType}
     />
     <NotationGrid
       notations={props.queriedNotations}
