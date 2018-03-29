@@ -5,13 +5,25 @@
   "proxy": "http://localhost:3001",
   "dependencies": {
     "antd": "^3.3.3",
-    "babel-plugin-import": "^1.6.7",
+    "emotion": "^9.1.0",
+    "emotion-theming": "^9.0.0",
+    "j-toker": "^0.0.10-beta3",
+    "lodash": "^4.17.5",
     "react": "^16.2.0",
     "react-app-rewire-less": "^2.1.1",
     "react-app-rewired": "^1.5.0",
     "react-dom": "^16.2.0",
+    "react-emotion": "^9.1.0",
+    "react-helmet": "^5.2.0",
+    "react-redux": "^5.0.7",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
     "react-scripts-ts": "2.14.0",
-    "recompose": "^0.26.0"
+    "react-scroll": "^1.7.7",
+    "react-sizes": "^1.0.3",
+    "recompose": "^0.26.0",
+    "redux": "^3.7.2",
+    "redux-actions": "^2.3.0"
   },
   "scripts": {
     "start": "react-app-rewired start --scripts-version react-scripts-ts",
@@ -26,9 +38,14 @@
     "@types/node": "^9.6.1",
     "@types/react": "^16.1.0",
     "@types/react-dom": "^16.0.4",
+    "@types/react-helmet": "^5.0.5",
+    "@types/react-redux": "^5.0.15",
+    "@types/react-router-dom": "^4.2.6",
+    "@types/react-scroll": "^1.5.3",
     "@types/recompose": "^0.24.7",
+    "@types/redux-actions": "^2.2.4",
+    "babel-plugin-import": "^1.6.7",
     "cross-env": "^5.1.4",
-    "lodash": "^4.17.5",
     "ts-import-plugin": "^1.4.4",
     "typescript": "^2.8.1"
   }
