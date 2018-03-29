@@ -1,41 +1,23 @@
 {
-  "name": "client",
+  "name": "my-app",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:3001",
   "dependencies": {
-    "antd": "^3.3.0",
-    "babel-plugin-import": "^1.6.7",
-    "emotion": "^9.0.2",
-    "emotion-theming": "^9.0.0",
-    "j-toker": "0.0.10-beta3",
-    "lodash": "^4.17.5",
-    "prop-types": "^15.6.1",
     "react": "^16.2.0",
-    "react-app-rewire-less": "^2.1.1",
-    "react-app-rewired": "^1.5.0",
     "react-dom": "^16.2.0",
-    "react-emotion": "^9.0.2",
-    "react-helmet": "^5.2.0",
-    "react-redux": "^5.0.7",
-    "react-router": "^4.2.0",
-    "react-router-dom": "^4.2.2",
-    "react-scripts": "1.1.1",
-    "react-scroll": "^1.7.7",
-    "react-sizes": "^1.0.3",
-    "recompose": "^0.26.0",
-    "redux": "^3.7.2",
-    "redux-actions": "^2.3.0",
-    "redux-thunk": "^2.2.0"
+    "react-scripts-ts": "2.14.0"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
-    "test": "cross-env CI=true react-app-rewired test --env=jsdom",
-    "jest": "react-app-rewired test --env=jsdom",
-    "eject": "react-scripts eject"
+    "start": "react-scripts-ts start",
+    "build": "react-scripts-ts build",
+    "test": "react-scripts-ts test --env=jsdom --watchAll",
+    "eject": "react-scripts-ts eject"
   },
   "devDependencies": {
-    "cross-env": "^5.1.4"
+    "@types/jest": "^22.2.2",
+    "@types/node": "^9.6.1",
+    "@types/react": "^16.1.0",
+    "@types/react-dom": "^16.0.4",
+    "typescript": "^2.8.1"
   }
 }
