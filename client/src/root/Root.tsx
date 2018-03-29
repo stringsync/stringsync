@@ -1,8 +1,10 @@
 import * as React from 'react';
+import { Button } from 'antd';
 
 const Root: React.SFC = props => (
   <div>
-    Alright, I'll take your word for it.
+    I was going to ask you.
+    <Button type="primary">Click for Anxiety</Button>
   </div>
 );
 
