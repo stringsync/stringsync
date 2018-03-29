@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { App } from './';
 
-const Root: React.SFC = props => (
+const Root: React.SFC = () => (
   <div>
     Root
     <App />
