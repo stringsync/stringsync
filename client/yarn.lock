@@ -31,6 +31,12 @@
     lodash "^4.2.0"
     to-fast-properties "^2.0.0"
 
+"@types/antd@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/antd/-/antd-1.0.0.tgz#f04e2a84efd9ea937366cd3dfbada5d3c949471d"
+  dependencies:
+    antd "*"
+
 "@types/jest@^22.2.2":
   version "22.2.2"
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-22.2.2.tgz#afe5dacbd00d65325f52da0ed3e76e259629ac9d"
@@ -180,7 +186,7 @@ ansi-styles@^3.2.0, ansi-styles@^3.2.1:
   dependencies:
     color-convert "^1.9.0"
 
-antd@^3.3.3:
+antd@*, antd@^3.3.3:
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/antd/-/antd-3.3.3.tgz#048a6550dffb355443d169226be05593c638e0cc"
   dependencies:
