@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-const assertRender = (Component: React.Component, props: object = {}) => {
+const assertRender = (Component: typeof React.Component, props: object = {}) => {
   it('renders', () => {
     expect(Component).toBeDefined();
     const div = document.createElement('div');
