@@ -1,5 +1,5 @@
 import React from 'react';
-import Login from './';
+import { Signup } from './';
 import { assertRender } from 'test';
 
-assertRender(Login);
+assertRender(Signup);
