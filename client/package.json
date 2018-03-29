@@ -3,21 +3,26 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "antd": "^3.3.3",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-scripts-ts": "2.14.0"
   },
   "scripts": {
-    "start": "react-scripts-ts start",
-    "build": "react-scripts-ts build",
-    "test": "react-scripts-ts test --env=jsdom --watchAll",
-    "eject": "react-scripts-ts eject"
+    "start": "react-app-rewired start --scripts-version react-scripts-ts",
+    "build": "react-app-rewired build --scripts-version react-scripts-ts",
+    "test": "cross-env CI=true react-app-rewired test --env=jsdom --scripts-version react-scripts-ts",
+    "jest": "react-app-rewired test --env=jsdom --scripts-version react-scripts-ts",
+    "eject": "react-scripts eject"
   },
   "devDependencies": {
     "@types/jest": "^22.2.2",
     "@types/node": "^9.6.1",
     "@types/react": "^16.1.0",
     "@types/react-dom": "^16.0.4",
+    "cross-env": "^5.1.4",
+    "react-app-rewire-less": "^2.1.1",
+    "react-app-rewired": "^1.5.0",
     "typescript": "^2.8.1"
   }
 }
