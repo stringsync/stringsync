@@ -23,7 +23,9 @@
     "react-sizes": "^1.0.3",
     "recompose": "^0.26.0",
     "redux": "^3.7.2",
-    "redux-actions": "^2.3.0"
+    "redux-actions": "^2.3.0",
+    "babel-plugin-import": "^1.6.7",
+    "ts-import-plugin": "^1.4.4"
   },
   "scripts": {
     "start": "react-app-rewired start --scripts-version react-scripts-ts",
@@ -44,9 +46,7 @@
     "@types/react-scroll": "^1.5.3",
     "@types/recompose": "^0.24.7",
     "@types/redux-actions": "^2.2.4",
-    "babel-plugin-import": "^1.6.7",
     "cross-env": "^5.1.4",
-    "ts-import-plugin": "^1.4.4",
     "typescript": "^2.8.1"
   }
 }
