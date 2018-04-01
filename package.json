@@ -1,9 +1,12 @@
 {
-  "name": "list-of-ingredients",
-  "engines": {
-    "node": "9.3.0"
+  "name": "string-sync-web-client-proxy",
+  "dependencies": {
+    "tslint": "^5.9.1",
+    "tslint-react": "^3.5.1",
+    "typescript": "^2.8.1"
   },
   "scripts": {
+    "start": "cd client && npm run start",
     "build": "cd client && npm install && npm run build && cd ..",
     "deploy": "cp -a client/build/. public/",
     "test": "cd client && npm run test && cd ..",

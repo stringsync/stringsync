@@ -37,7 +37,6 @@
     "redux": "^3.7.2",
     "redux-actions": "^2.3.0",
     "ts-import-plugin": "^1.4.4",
-    "tslint": "^5.9.1",
     "typescript": "^2.8.1"
   },
   "scripts": {
