@@ -34,7 +34,6 @@ const LayoutFooter = styled(Layout.Footer) `
 // Sets the layout and routes of the app
 const App: React.SFC = props => (
   <main className="app">
-    viewport sync
     <Gradient />
     <Layout>
       <LayoutHeader>
