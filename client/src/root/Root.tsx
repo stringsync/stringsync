@@ -5,9 +5,10 @@ import { BrowserRouter } from 'react-router-dom';
 import { LocaleProvider } from 'antd';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from 'emotion-theming';
+import { store } from 'data';
 
 interface RootProps {
-  store: undefined;
+  store: typeof store;
 }
 
 // Sets up the Providers and other components that are common to all components
