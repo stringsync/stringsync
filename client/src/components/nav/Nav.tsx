@@ -8,7 +8,7 @@ const enhance = compose(
 
 );
 
-const I = styled(Icon) `
+const StyledIcon = styled(Icon) `
   && {
     margin: 0;
   }
@@ -34,13 +34,13 @@ const Nav = enhance(props => (
           multiple={false}
         >
           <Menu.Item key="/about">
-            <I type="question-circle-o" />
+            <StyledIcon type="question-circle-o" />
           </Menu.Item>
           <Menu.Item key="/">
-            <I type="home" />
+            <StyledIcon type="home" />
           </Menu.Item>
           <Menu.Item key="/login">
-            <I type="user" />
+            <StyledIcon type="user" />
           </Menu.Item>
         </Menu>
       </Row>
