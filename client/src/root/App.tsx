@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styled from 'react-emotion';
 import { Layout } from 'antd';
+import { Nav } from 'components';
 
 const Gradient = styled('div')`
   height: 2px;
@@ -38,7 +39,7 @@ const App: React.SFC = props => (
     <Layout>
       <LayoutHeader>
         <LayoutHeaderInner>
-          nav
+          <Nav />
         </LayoutHeaderInner>
       </LayoutHeader>
       <Layout.Content>
