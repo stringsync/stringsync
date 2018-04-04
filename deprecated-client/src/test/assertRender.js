@@ -68,8 +68,6 @@ const getTestComponent = (Component, props, opts) => {
  */
 const assertRender = (Component, props = {}, opts = DEFAULT_OPTS) => {
   it (testName(Component, props), () => {
-    expect(Component).toBeDefined();
-
     window.XMLHttpRequest = jest.fn(xhrMock);
 
     const div = document.createElement('div');
