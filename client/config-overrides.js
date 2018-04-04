@@ -1,33 +1,19 @@
-// https://ant.design/docs/react/use-in-typescript
-const tsImportPluginFactory = require('ts-import-plugin')
-const { getLoader } = require('react-app-rewired');
+const { injectBabelPlugin } = require('react-app-rewired');
 const rewireLess = require('react-app-rewire-less');
 
 module.exports = function override(config, env) {
-  const tsLoader = getLoader(
-    config.module.rules,
-    rule =>
-      rule.loader &&
-      typeof rule.loader === 'string' &&
-      rule.loader.includes('ts-loader')
-  );
-
-  tsLoader.options = {
-    getCustomTransformers: () => ({
-      before: [tsImportPluginFactory({
-        libraryName: 'antd',
-        libraryDirectory: 'es',
-        style: true
-      })]
-    })
-  };
-
+  config = injectBabelPlugin(['import', { libraryName: 'antd', libraryDirectory: 'es', style: true}], config);
   config = rewireLess.withLoaderOptions({
     modifyVars: {
-      "@primary-color": "#FC354C",
-      "@brand-primary": "@primary-color"
-    },
+      // TODO: Uncomment when ready for final deploy
+      "@primary-color": "#fc354c",
+      "@brand-primary": "@primary-color",
+      // "@layout-body-background": "#f8f8f8",
+      // "@background-color-base": "#fcfcfc",
+      // "@brand-primary-tap": "lighten(@brand-primary, 10%)",
+      // "@outline-color": "#aaa",
+      // "@input-hover-border-color": "#ddd"
+    }
   })(config, env);
-
   return config;
-}
+};
