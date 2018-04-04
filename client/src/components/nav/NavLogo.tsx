@@ -5,7 +5,7 @@ const LogoText = styled('span')`
   font-size: 14px;
 `;
 
-const Logo: React.SFC = props => (
+const Logo: React.SFC = () => (
   <LogoText className="main-title">
     STRING SYNC
   </LogoText>
