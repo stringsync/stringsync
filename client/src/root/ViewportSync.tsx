@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { compose, withProps, createSink } from 'recompose';
+import { compose, createSink } from 'recompose';
 import { connect } from 'react-redux';
 import withSizes from 'react-sizes';
 import { viewportActions } from 'data';

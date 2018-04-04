@@ -16,7 +16,7 @@ const StyledIcon = styled(Icon) `
 `;
 
 // Navigation menu for all platforms
-const Nav = enhance(props => (
+const Nav = enhance(() => (
   <Row>
     <Col span={8}>
       <Row type="flex" justify="start">

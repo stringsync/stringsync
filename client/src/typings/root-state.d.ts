@@ -1,5 +1,5 @@
 import { ViewportState } from './';
 
-export declare interface RootState {
+export interface RootState {
   viewport: ViewportState;
 }

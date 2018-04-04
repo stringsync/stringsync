@@ -3,7 +3,7 @@ import { viewportActions as actions, viewportDefaultState, getViewportType } fro
 
 const viewportReducer = handleActions(
   {
-    [combineActions(actions.setViewportWidth)]: (state, action) => ({
+    [combineActions(actions.setViewportWidth)]: (_state, action) => ({
       width: action.payload!.width,
       type: getViewportType(action.payload!.width)
     })

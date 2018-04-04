@@ -4,8 +4,6 @@ export interface WidthPayload {
   readonly width: number;
 }
 
-const viewportActions = createActions({
+export const viewportActions = createActions({
   SET_VIEWPORT_WIDTH: (width: number): WidthPayload => Object.freeze({ width })
 });
-
-export default viewportActions;

@@ -1,7 +1,3 @@
-const NAMESPACE = 'ss';
-
-type WindowSSValueType = string | number | object | boolean;
-
 /**
  * Safely adds a global variable to the window, nested under 'window.ss'
  * 

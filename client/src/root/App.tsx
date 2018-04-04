@@ -33,7 +33,7 @@ const LayoutFooter = styled(Layout.Footer) `
 `;
 
 // Sets the layout and routes of the app
-const App: React.SFC = props => (
+const App: React.SFC = () => (
   <main className="app">
     <ViewportSync />
     <Gradient />
