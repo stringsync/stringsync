@@ -4,6 +4,9 @@ import sonarGuitarSrc from 'assets/sonar-guitar.svg';
 import styled from 'react-emotion';
 import { Link } from 'react-router-dom';
 
+/**
+ * Returns a random image source
+ */
 const getRandomSrc = () => Math.random() > 0.5 ? sonarSleepSrc : sonarGuitarSrc;
 
 const Outer = styled('div')`
@@ -15,6 +18,9 @@ const Sonar = styled('img')`
   width: 65%;
 `;
 
+/**
+ * Intended to be shown when a Route does not match
+ */
 const NotFound = () => (
   <Outer>
     <Sonar src={getRandomSrc()} alt="not-found-img" />
