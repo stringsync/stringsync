@@ -2,6 +2,7 @@ import * as React from 'react';
 import styled from 'react-emotion';
 import { Layout } from 'antd';
 import { Nav } from 'components';
+import { ViewportSync } from './';
 
 const Gradient = styled('div')`
   height: 2px;
@@ -34,6 +35,7 @@ const LayoutFooter = styled(Layout.Footer) `
 // Sets the layout and routes of the app
 const App: React.SFC = props => (
   <main className="app">
+    <ViewportSync />
     <Gradient />
     <Layout>
       <LayoutHeader>

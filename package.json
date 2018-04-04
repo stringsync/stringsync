@@ -7,10 +7,13 @@
   },
   "scripts": {
     "start": "cd client && npm run start",
-    "build": "cd client && npm install && npm run build && cd ..",
+    "build": "cd client && npm install && npm run build && cd .. && yarn run delete-maps",
     "deploy": "cp -a client/build/. public/",
     "test": "cd client && npm run test && cd ..",
     "jest": "cd client && npm run jest && cd ..",
-    "postinstall": "npm run build && npm run deploy && echo 'Client built!'"
+    "postinstall": "npm run build && npm run deploy && echo 'Client built!'",
+    "delete-maps": "yarn run delete-map-files && yarn run delete-references-to-map-files",
+    "delete-map-files": "find ./build -name '*.map' -delete",
+    "delete-references-to-map-files": "find ./build -regex '.*\\.\\(js\\|css\\)' -exec sed -i -E '\\/[\\*\\/]#\\ssourceMappingURL=main(\\.[0-9a-f]+)?\\.(css|js)\\.map(\\*\\/)?/g' {} +"
   }
 }

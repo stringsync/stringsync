@@ -14,17 +14,16 @@ interface Size {
   height: number;
 }
 
-const enhance = compose(
+const enhance = compose<ViewportSyncProps, {}>(
   withSizes((size: Size) => ({
     queriedWidth: size.width
-  })),
-  createSink((props: ViewportSyncProps) => {
-    if (props.storedWidth !== props.queriedWidth) {
-      props.setViewportWidth(props.queriedWidth);
-    }
-  })
+  }))
 );
 
-const ViewportSync = enhance(() => null);
+const ViewportSync = enhance(createSink((props: ViewportSyncProps) => {
+  if (props.storedWidth !== props.queriedWidth) {
+    props.setViewportWidth(props.queriedWidth);
+  }
+}));
 
 export default ViewportSync;
