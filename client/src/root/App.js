@@ -37,11 +37,6 @@ const LayoutHeaderInner = styled('div')`
   margin: 0 auto;
 `;
 
-const LayoutContentInner = styled('div')`
-  max-width: 1200px;
-  margin: 0 auto;
-`;
-
 const LayoutFooter = styled(Layout.Footer)`
   text-align: center;
 `;
@@ -60,9 +55,7 @@ const App = enhance(props => (
         </LayoutHeaderInner>
       </LayoutHeader>
       <Layout.Content>
-        <LayoutContentInner>
-          <Routes />
-        </LayoutContentInner>
+        <Routes />
       </Layout.Content>
       <LayoutFooter>
         StringSync ©2018 Created by Jared Johnson

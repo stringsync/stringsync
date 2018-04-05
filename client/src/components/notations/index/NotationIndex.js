@@ -121,9 +121,10 @@ const enhance = compose(
 );
 
 const Outer = styled('div')`
-  margin-top: 24px;
-  max-width: 100%;
   overflow-x: hidden;
+  max-width: 1200px;
+  margin: 0 auto;
+  margin-top: 24px;
 `;
 
 const NotationIndex = enhance(props => (
