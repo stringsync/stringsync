@@ -6,6 +6,7 @@ import { Row, Col } from 'antd';
 import { chunk } from 'lodash';
 import { compose, setDisplayName, setPropTypes, withProps } from 'recompose';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 const enhance = compose(
   setDisplayName('NotationGrid'),
@@ -64,7 +65,9 @@ const NotationGrid = enhance(props => (
           {
             notationRow.map(notation => (
               <Col key={notation.id} span={props.colSpan}>
-                <NotationDetail notation={notation} queryTags={props.queryTags} />
+                <Link to={`/n/${notation.id}`}>
+                  <NotationDetail notation={notation} queryTags={props.queryTags} />
+                </Link>
               </Col>
             ))
           }
