@@ -54,6 +54,16 @@ const Outer = styled('div')`
   margin-right: ${props => props.viewportType === 'TABLET' ? props.gutter : 0}px;
 `;
 
+const StyledLink = styled(Link)`
+  box-sizing: border-box;
+  border: 1px solid transparent;
+
+  &:hover {
+    border: 1px solid ${props => props.theme.primaryColor};
+    cursor: pointer;
+  }
+`;
+
 /**
  * This component is the main content of the NotationIndex component
  */
@@ -65,9 +75,9 @@ const NotationGrid = enhance(props => (
           {
             notationRow.map(notation => (
               <Col key={notation.id} span={props.colSpan}>
-                <Link to={`/n/${notation.id}`}>
+                <StyledLink to={`/n/${notation.id}`}>
                   <NotationDetail notation={notation} queryTags={props.queryTags} />
-                </Link>
+                </StyledLink>
               </Col>
             ))
           }

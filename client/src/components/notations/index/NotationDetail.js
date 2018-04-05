@@ -33,10 +33,7 @@ const TagNames = styled('div')`
  * Shows the detail for a given notation in the NotationIndex component
  */
 const NotationDetail = enhance(props => (
-  <Card
-    hoverable
-    cover={<CoverImg src={props.thumbnail} alt={kebabCase(props.songName)} />}
-  >
+  <Card cover={<CoverImg src={props.thumbnail} alt={kebabCase(props.songName)} />}>
     <Card.Meta
       title={props.songName}
       description={`by ${props.artistName} | ${props.transcriberName}`}
