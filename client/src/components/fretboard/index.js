@@ -1,3 +1,4 @@
-export { default as Fret } from './Fret';
-export { default as FretIndicators } from './FretIndicators';
-export { default as FretMarker } from './FretMarker';export { default as Fretboard } from './Fretboard';
+export * from './frets';
+export * from './guitar-strings';
+export * from './markers';
+export { default as Fretboard } from './Fretboard';
