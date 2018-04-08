@@ -5,3 +5,4 @@ export * from './about';
 export * from './session';
 export * from './not-found';
 export * from './fretboard';
+export * from './video';
