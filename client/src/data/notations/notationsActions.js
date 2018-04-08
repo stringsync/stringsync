@@ -6,7 +6,7 @@ const notationsActions = createActions({
       SET: notations => ({ notations }),
     },
     SHOW: {
-      SET: notation => ({ notation })
+      SET: notation => ({ notation }),
     },
     EDIT: {
       SET: notation => ({ notation }),

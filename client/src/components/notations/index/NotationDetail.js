@@ -12,11 +12,11 @@ const enhance = compose(
     queryTags: PropTypes.object.isRequired
   }),
   withProps(props => {
-    const { thumbnail, songName, artistName } = props.notation.attributes;
+    const { thumbnailUrl, songName, artistName } = props.notation.attributes;
     const tagNames = props.notation.relationships.tags.map(tag => tag.attributes.name).sort();
     const transcriberName = props.notation.relationships.transcriber.attributes.name;
 
-    return { thumbnail, songName, artistName, tagNames, transcriberName };
+    return { thumbnailUrl, songName, artistName, tagNames, transcriberName };
   })
 );
 
@@ -33,7 +33,7 @@ const TagNames = styled('div')`
  * Shows the detail for a given notation in the NotationIndex component
  */
 const NotationDetail = enhance(props => (
-  <Card cover={<CoverImg src={props.thumbnail} alt={kebabCase(props.songName)} />}>
+  <Card cover={<CoverImg src={props.thumbnailUrl} alt={kebabCase(props.songName)} />}>
     <Card.Meta
       title={props.songName}
       description={`by ${props.artistName} | ${props.transcriberName}`}

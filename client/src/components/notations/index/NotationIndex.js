@@ -5,7 +5,7 @@ import { compose, setDisplayName, withProps, withHandlers, withState, lifecycle 
 import { connect } from 'react-redux';
 import { BackTop } from 'antd';
 import { indexIncludedObjects, camelCaseKeys } from 'utilities';
-import { notationsActions } from 'data';
+import { fetchAllNotations } from 'data';
 
 const enhance = compose(
   setDisplayName('NotationIndex'),
@@ -16,7 +16,7 @@ const enhance = compose(
       viewportType: state.viewport.type
     }),
     dispatch => ({
-      setNotations: notations => dispatch(notationsActions.notations.index.set(notations))
+      fetchAllNotations: () => dispatch(fetchAllNotations())
     })
   ),
   withProps(props => {
@@ -66,52 +66,12 @@ const enhance = compose(
 
     return { queriedNotations }
   }),
-  withProps(props => ({
-    /**
-     * Transforms the data from the notations index endpoint into notation objects
-     * for the store
-     * 
-     * @param {object} json 
-     * @return {object}
-     */
-    extractNotations(json) {
-      const included = indexIncludedObjects(json.included);
-
-      const notations = json.data.map(data => {
-        const { id, attributes, links, relationships } = data;
-        const tags = relationships.tags.data.map(({ id }) => included.tags[id]);
-        const transcriber = included.users[relationships.transcriber.data.id];
-        const video = included.videos[relationships.video.data.id];
-
-        return camelCaseKeys({
-          id,
-          attributes,
-          links,
-          relationships: {
-            tags,
-            transcriber,
-            video
-          }
-        }, true);
-      });
-
-      return notations;
-    }
-  })),
-  withProps(props => ({
-    fetchNotations: async () => {
-      const response = await fetch('/api/v1/notations');
-      const json = await response.json()
-      return props.extractNotations(json);
-    }
-  })),
   lifecycle({
     async componentDidMount() {
       const twentyMinsAgo = Date.now() - (60 * 20 * 1000);
       if (this.props.notations.length === 0 || this.props.fetchedAt < twentyMinsAgo) {
         try {
-          const notations = await this.props.fetchNotations();
-          this.props.setNotations(notations);
+          await this.props.fetchAllNotations();
         } catch (error) {
           window.ss.message.error('Notations could not load');
         }

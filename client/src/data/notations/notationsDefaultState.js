@@ -4,27 +4,45 @@ const notationsDefaultState = Object.freeze({
     notations: []
   },
   show: {
-    songName: '',
-    artistName: '',
-    durationMs: 1,
-    deadTimeMs: 0,
-    thumbnailUrl: '',
-    bpm: 120,
-    vextabString: '',
-    tags: [],
-    transcriber: null
+    id: -1,
+    attributes: {
+      songName: '',
+      artistName: '',
+      durationMs: 1,
+      deadTimeMs: 0,
+      thumbnailUrl: '',
+      bpm: 120,
+      vextabString: '',
+    },
+    links: {
+      self: ''
+    },
+    relationships: {
+      tags: [],
+      transcriber: null,
+      video: null
+    }
   },
   edit: {
-    songName: '',
-    artistName: '',
-    durationMs: 1,
-    deadTimeMs: 0,
-    thumbnailUrl: '',
-    bpm: 120,
-    vextabString: '',
-    tags: [],
-    transcriber: null
-  }
+    id: -1,
+    attributes: {
+      songName: '',
+      artistName: '',
+      durationMs: 1,
+      deadTimeMs: 0,
+      thumbnailUrl: '',
+      bpm: 120,
+      vextabString: '',
+    },
+    links: {
+      self: ''
+    },
+    relationships: {
+      tags: [],
+      transcriber: null,
+      video: null
+    }
+  },
 });
 
 export default notationsDefaultState;
