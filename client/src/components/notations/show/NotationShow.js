@@ -1,5 +1,5 @@
 import React from 'react';
-import { Affix, Button } from 'antd';
+import { Affix } from 'antd';
 import styled from 'react-emotion';
 
 const Outer = styled('div')`
@@ -26,7 +26,6 @@ const NotationShow = props => (
       <Affix
         target={() => document.getElementById('notation-show')}
         offsetTop={2}
-        onChange={}
       >
         Fretboard
         Piano

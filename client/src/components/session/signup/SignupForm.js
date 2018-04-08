@@ -13,10 +13,6 @@ const SignupButton = styled(Button) `
   width: 100%;
 `;
 
-const ForgotLink = styled('a') `
-  float: right;
-`;
-
 const SignupForm = enhance(props => (
   <Form onSubmit={this.handleSubmit}>
     <Form.Item>

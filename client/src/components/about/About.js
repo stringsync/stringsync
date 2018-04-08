@@ -1,8 +1,6 @@
 import React from 'react';
 import styled from 'react-emotion';
-import guitarSrc from 'assets/guitar-2048x1152.jpg';
-import sonarGuitarSrc from 'assets/sonar-guitar.svg';
-import { Icon, Row, Col } from 'antd';
+import guitarSrc from 'assets/guitar-2048x1152.jpg';;
 
 const Outer = styled('div') `
   max-width: 100%;
