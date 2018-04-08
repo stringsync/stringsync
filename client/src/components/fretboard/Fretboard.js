@@ -1,21 +1,22 @@
 import React from 'react';
-import { compose } from 'recompose';
+import { Overlap, Layer } from 'components';
+import { Frets, GuitarStrings } from './';
 import styled from 'react-emotion';
 
-const enhance = compose(
-
+/**
+ * Sets up the layout for the Frets and GuitarStrings components
+ */
+const Fretboard = () => (
+  <div>
+    <Overlap>
+      <Layer>
+        <Frets />
+      </Layer>
+      <Layer>
+        <GuitarStrings />
+      </Layer>
+    </Overlap>
+  </div>
 );
-
-const Outer = styled('div')`
-  background-color: black;
-`;
-
-const Fretboard = enhance(() => (
-  <Outer>
-    <div>
-      Fretboard
-    </div>
-  </Outer>
-));
 
 export default Fretboard;
