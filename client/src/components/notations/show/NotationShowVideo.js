@@ -7,11 +7,25 @@ import { connect } from 'react-redux';
 const enhance = compose(
   connect(
     state => ({
-      songName: state.notation.show.songName,
-      thumbnailUrl: state.notation.show.thumbnailUrl
+      songName: state.notations.show.attributes.songName,
+      backgroundImgSrc: state.notations.show.attributes.thumbnailUrl
     })
   )
 );
+
+const Outer = styled('div')`
+  background: black;
+  height: 250px;
+  width: 100%;
+  min-height: 200px;
+  overflow: hidden;
+  
+  iframe {
+    height: 250px;
+    width: 100%;
+    min-height: 200px;
+  }
+`;
 
 const BackgroundImg = styled('img')`
   width: 100%;
@@ -36,22 +50,22 @@ const VideoContainer = styled('div')`
   margin: 0 auto;
 `;
 
-const NotationShowVideo = props => (
-  <div>
+const NotationShowVideo = enhance(props => (
+  <Outer>
     <Overlap>
-      <Layer style={{ zIndex: 10 }}>
-        <BackgroundImg src={props.thumbnailUrl} alt={props.songName} />
+      <Layer zIndex={10}>
+        <BackgroundImg src={props.backgroundImgSrc} alt={props.songName} />
       </Layer>
-      <Layer style={{ zIndex: 11 }}>
+      <Layer zIndex={11}>
         <BackgroundMask />
       </Layer>
-      <Layer style={{ zIndex: 12 }}>
+      <Layer zIndex={12}>
         <VideoContainer>
           <Video />
         </VideoContainer>
       </Layer>
     </Overlap>
-  </div>
-);
+  </Outer>
+));
 
 export default NotationShowVideo;

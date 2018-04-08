@@ -4,7 +4,7 @@ import styled from 'react-emotion';
 import { NotationShowVideo } from './';
 import { compose, withProps, lifecycle } from 'recompose';
 import { connect } from 'react-redux';
-import { notationsActions, fetchAllNotations } from 'data';
+import { notationsActions, fetchAllNotations, videoActions } from 'data';
 import { indexIncludedObjects, camelCaseKeys } from 'utilities';
 import { BEGINNING_OF_EPOCH } from 'constants';
 import { find } from 'lodash';
@@ -17,7 +17,8 @@ const enhance = compose(
     }),
     dispatch => ({
       fetchAllNotations: () => dispatch(fetchAllNotations()),
-      setNotation: notation => dispatch(notationsActions.notations.show.set(notation))
+      setNotation: notation => dispatch(notationsActions.notations.show.set(notation)),
+      setVideo: (kind, src) => dispatch(videoActions.video.set(kind, src))
     })
   ),
   lifecycle({
@@ -31,6 +32,9 @@ const enhance = compose(
 
       if (notation) {
         this.props.setNotation(notation);
+
+        const { kind, src } = notation.relationships.video.attributes;
+        this.props.setVideo(kind, src);
       } else {
         window.ss.message.error(`Notation #${notationId} was not found`);
       }

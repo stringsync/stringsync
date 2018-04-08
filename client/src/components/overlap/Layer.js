@@ -6,6 +6,7 @@ const Layer = styled('div')`
   left: 0;
   width: 100%;
   height: 100%;
+  z-index: ${props => props.zIndex || 'inherit'};
 `;
 
 export default Layer;
