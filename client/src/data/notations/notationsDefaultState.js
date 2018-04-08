@@ -1,6 +1,8 @@
+import { BEGINNING_OF_EPOCH } from 'constants';
+
 const notationsDefaultState = Object.freeze({
   index: {
-    fetchedAt: new Date(1970, 1, 1).getTime(),
+    fetchedAt: BEGINNING_OF_EPOCH,
     notations: []
   },
   show: {

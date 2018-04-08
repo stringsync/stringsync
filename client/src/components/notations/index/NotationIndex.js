@@ -55,6 +55,7 @@ const enhance = compose(
       })
       // On the second pass, filter the notations that match props.queryString
       .filter(({ attributes, relationships }) => {
+        
         const matchers = [
           attributes.artistName.toUpperCase(),
           attributes.songName.toUpperCase(),
