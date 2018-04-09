@@ -47,6 +47,9 @@ const enhance = compose(
   })
 );
 
+/**
+ * Wrapper around the YouTube (react-youtube) component
+ */
 const Video = enhance(props => (
   <div>
     <YouTube 
