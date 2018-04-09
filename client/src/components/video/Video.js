@@ -5,12 +5,12 @@ import { videoActions } from 'data';
 import YouTube from 'react-youtube';
 
 const PLAYER_STATES = Object.freeze({
-  [-1]: 'UNSTARTED',
-  [0]: 'ENDED',
-  [1]: 'PLAYING',
-  [2]: 'PAUSED',
-  [3]: 'BUFFERING',
-  [5]: 'VIDEO_CUED'
+  '-1': 'UNSTARTED',
+  '0': 'ENDED',
+  '1': 'PLAYING',
+  '2': 'PAUSED',
+  '3': 'BUFFERING',
+  '5': 'VIDEO_CUED'
 });
 
 const DEFAULT_YOUTUBE_OPTIONS = Object.freeze({
