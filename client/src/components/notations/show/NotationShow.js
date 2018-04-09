@@ -1,13 +1,15 @@
 import React from 'react';
-import { Affix } from 'antd';
 import styled from 'react-emotion';
+import { Affix } from 'antd';
+import { BEGINNING_OF_EPOCH } from 'constants';
+import { Fretboard } from 'components';
 import { NotationShowVideo } from './';
 import { compose, withProps, lifecycle } from 'recompose';
 import { connect } from 'react-redux';
-import { notationsActions, fetchAllNotations, videoActions } from 'data';
-import { indexIncludedObjects, camelCaseKeys } from 'utilities';
-import { BEGINNING_OF_EPOCH } from 'constants';
 import { find } from 'lodash';
+import { indexIncludedObjects, camelCaseKeys } from 'utilities';
+import { notationsActions, fetchAllNotations, videoActions } from 'data';
+import { Element as ScrollElement } from 'react-scroll';
 
 const enhance = compose(
   connect(
@@ -69,12 +71,12 @@ const NotationShow = enhance(props => (
         target={() => document.getElementById('notation-show')}
         offsetTop={2}
       >
-        Fretboard
+        <Fretboard />
         Piano
       </Affix>
     </Top>
     <Middle>
-      ScrollElement
+      <ScrollElement name="notation-show-tab" />
       Score
     </Middle>
     <Bottom>
