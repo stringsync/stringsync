@@ -33,8 +33,8 @@ const enhance = compose(
       kind: state.video.kind
     }),
     dispatch => ({
-      setPlayer: player => dispatch(videoActions.player.set),
-      setPlayerState: player => dispatch(videoActions.playerState.set)
+      setPlayer: player => dispatch(videoActions.player.set(player)),
+      setPlayerState: playerState => dispatch(videoActions.playerState.set(playerState))
     })
   ),
   withHandlers({

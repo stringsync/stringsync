@@ -2,8 +2,8 @@ import React from 'react';
 import styled from 'react-emotion';
 import { Affix } from 'antd';
 import { BEGINNING_OF_EPOCH } from 'constants';
-import { Fretboard } from 'components';
-import { NotationShowVideo } from './';
+import { Fretboard, Score, Piano } from 'components';
+import { NotationShowVideo, NotationShowControls } from './';
 import { compose, withProps, lifecycle } from 'recompose';
 import { connect } from 'react-redux';
 import { find } from 'lodash';
@@ -20,7 +20,9 @@ const enhance = compose(
     dispatch => ({
       fetchAllNotations: () => dispatch(fetchAllNotations()),
       setNotation: notation => dispatch(notationsActions.notations.show.set(notation)),
-      setVideo: (kind, src) => dispatch(videoActions.video.set(kind, src))
+      resetNotation: () => dispatch(notationsActions.notations.show.reset()),
+      setVideo: (kind, src) => dispatch(videoActions.video.set(kind, src)),
+      resetVideo: () => dispatch(videoActions.video.reset())
     })
   ),
   lifecycle({
@@ -40,6 +42,10 @@ const enhance = compose(
       } else {
         window.ss.message.error(`Notation #${notationId} was not found`);
       }
+    },
+    componentWillUnmount() {
+      this.props.resetNotation();
+      this.props.resetVideo();
     }
   }),
 );
@@ -49,6 +55,8 @@ const Outer = styled('div')`
   flex-flow: column;
   overflow: hidden;
   width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 `;
 
 const Top = styled('div')`
@@ -72,15 +80,15 @@ const NotationShow = enhance(props => (
         offsetTop={2}
       >
         <Fretboard />
-        Piano
+        <Piano />
       </Affix>
     </Top>
     <Middle>
       <ScrollElement name="notation-show-tab" />
-      Score
+      <Score />
     </Middle>
     <Bottom>
-      NotationControls
+      <NotationShowControls />
     </Bottom>
   </Outer>
 ));

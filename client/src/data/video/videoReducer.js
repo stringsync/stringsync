@@ -7,13 +7,17 @@ const videoReducer = handleActions({
     kind: action.payload.kind,
     src: action.payload.src
   }),
+  [combineActions(actions.video.reset)]: (state, action) => ({
+    ...defaultState
+  }),
   [combineActions(actions.player.set)]: (state, action) => ({
     ...state,
     player: action.payload.player
   }),
   [combineActions(actions.playerState.set)]: (state, action) => ({
     ...state,
-    playerState: action.payload.playerState
+    playerState: action.payload.playerState,
+    isActive: action.payload.playerState === 'PLAYING' || action.payload.playerState === 'BUFFERING'
   })
 }, defaultState);
 
