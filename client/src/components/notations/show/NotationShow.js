@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'react-emotion';
 import { Affix } from 'antd';
 import { BEGINNING_OF_EPOCH } from 'constants';
-import { Fretboard, Score, Piano } from 'components';
+import { Fretboard, Score, Piano, MaestroController } from 'components';
 import { NotationShowVideo, NotationShowControls } from './';
 import { compose, lifecycle } from 'recompose';
 import { connect } from 'react-redux';
@@ -72,6 +72,10 @@ const Bottom = styled('div')`
  */
 const NotationShow = enhance(props => (
   <Outer id="notation-show">
+    <MaestroController
+      bpm={props.notation.bpm}
+      deadTimeMs={props.notation.deadTimeMs}
+    />
     <Top>
       <NotationShowVideo />
       <Affix

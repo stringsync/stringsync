@@ -1,3 +1,4 @@
+export * from './maestro';
 export * from './overlap';
 export * from './nav';
 export * from './score';
@@ -8,4 +9,3 @@ export * from './not-found';
 export * from './fretboard';
 export * from './piano';
 export * from './video';
-export * from './maestro';
