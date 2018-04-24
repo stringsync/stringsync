@@ -4,7 +4,8 @@
  * instance is still computing, it will be ignored.
  */
 class Maestro {
-  constructor() {
+  constructor(timeKeeper) {
+    this.timeKeeper = timeKeeper;
     this.isUpdating = false;
   }
 

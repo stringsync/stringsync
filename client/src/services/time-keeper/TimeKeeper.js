@@ -27,6 +27,12 @@ class TimeKeeper {
   get currentTick() {
     return toTick(this.currentTimeMs, this.tpm);
   }
+
+  get clone() {
+    const clone = new TimeKeeper(this.bpm, this.deadTimeMs);
+    clone.currentTimeMs = this.currentTimeMs;
+    return clone;
+  }
 };
 
 export default TimeKeeper;
