@@ -27,7 +27,8 @@
     "recompose": "^0.26.0",
     "redux": "^3.7.2",
     "redux-actions": "^2.3.0",
-    "redux-thunk": "^2.2.0"
+    "redux-thunk": "^2.2.0",
+    "vexflow": "^1.2.84"
   },
   "scripts": {
     "start": "react-app-rewired start",
