@@ -13,7 +13,7 @@ const toTick = (timeMs, tpm) => tpm * ((timeMs / 1000) / 60);
  * This class is the sole source of truth for time. It is used by invoking the setter on currentTimeMs.
  * It also has convenient getters for converting time from ms to ticks.
  */
-class Maestro {
+class TimeKeeper {
   constructor(bpm, deadTimeMs) {
     this.currentTimeMs = 0;
     this.bpm = bpm;
@@ -29,4 +29,4 @@ class Maestro {
   }
 };
 
-export default Maestro;
+export default TimeKeeper;
