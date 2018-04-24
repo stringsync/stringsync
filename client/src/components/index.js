@@ -8,4 +8,4 @@ export * from './not-found';
 export * from './fretboard';
 export * from './piano';
 export * from './video';
-export * from './time-keeper';
+export * from './maestro';
