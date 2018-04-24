@@ -56,18 +56,13 @@ class RafLoop {
   }
 
   /**
+   * Executes each spec's callback then loops again.
+   * 
    * @private
    */
   _loop() {
-    this._execSpecs();
-    this.rafId = RAF(this._loop);
-  }
-
-  /**
-   * @private
-   */
-  _execSpecs() {
     this.specs.forEach(spec => spec.callback());
+    this.rafId = RAF(this._loop);
   }
 }
 
