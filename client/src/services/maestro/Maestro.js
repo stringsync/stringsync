@@ -28,12 +28,14 @@ class Maestro {
   }
 
   /**
-   * Contains the logic of 
+   * Contains the logic of actually doing the update.
    * 
    * @private
    */
   _doUpdate() {
-
+    // A clone is constructed so that time doesn't change during the computation.
+    const timeKeeper = this.timeKeeper.clone;
+    // TODO: Finish fleshing out this function
   }
 }
 
