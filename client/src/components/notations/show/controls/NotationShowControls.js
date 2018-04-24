@@ -2,8 +2,8 @@ import React from 'react';
 import styled from 'react-emotion';
 import { compose, withHandlers } from 'recompose';
 import { connect } from 'react-redux';
-import { Icon, Row, Col, Slider } from 'antd';
-import { MiniNotationDetail } from './';
+import { Icon, Row, Col } from 'antd';
+import { MiniNotationDetail, Scrubber } from './';
 
 const enhance = compose (
   connect(
@@ -75,9 +75,8 @@ const NotationShowControls = enhance(props => (
         <Icon type="play-circle-o" />
       </PlayerBtn>
       <SliderContainer>
-        <Slider 
-          style={{ margin: '0 4px 0 4px' }}
-        />
+        {/* TODO: Implement adding a no scroll class to the body onChange */}
+        <Scrubber />
       </SliderContainer>
       <PlayerBtn>
         <Icon type="setting" />
