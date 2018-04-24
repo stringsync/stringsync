@@ -1,5 +1,5 @@
 import React from 'react';
-import { compose, withHandlers, lifecycle, withProps } from 'recompose';
+import { compose, withHandlers } from 'recompose';
 import { Slider } from 'antd';
 import { connect } from 'react-redux';
 

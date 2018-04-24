@@ -1,4 +1,3 @@
-import { createAction } from 'redux-actions';
 import { notationsActions as actions } from './';
 import { indexIncludedObjects, camelCaseKeys } from 'utilities';
 

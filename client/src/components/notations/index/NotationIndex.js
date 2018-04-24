@@ -4,7 +4,6 @@ import { NotationGrid, NotationSearch } from './';
 import { compose, setDisplayName, withProps, withHandlers, withState, lifecycle } from 'recompose';
 import { connect } from 'react-redux';
 import { BackTop } from 'antd';
-import { indexIncludedObjects, camelCaseKeys } from 'utilities';
 import { fetchAllNotations } from 'data';
 
 const enhance = compose(
