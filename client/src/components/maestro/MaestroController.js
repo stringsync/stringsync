@@ -1,6 +1,6 @@
 import React from 'react';
 import { compose, setPropTypes, lifecycle, withHandlers } from 'recompose';
-import { Maestro, RafSpec } from 'services';
+import { Maestro, TimeKeeper, RafSpec } from 'services';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRaf } from 'enhancers';
@@ -13,7 +13,7 @@ const enhance = compose(
   connect(
     state => ({
       videoPlayer: state.video.player,
-      isVideoActive: state.video.isActive
+      isVideoActive: state.video.isActive,
     })
   ),
   withHandlers({
@@ -35,6 +35,10 @@ const enhance = compose(
     props => new RafSpec('MaestroController.handleRafLoop', 0, props.handleRafLoop)
   ),
   lifecycle({
+    componentDidMount() {
+      const timeKeeper = new TimeKeeper(this.props.bpm, this.props.deadTimeMs);
+      window.ss.maestro = new Maestro(timeKeeper);
+    },
     componentWillReceiveProps(nextProps) {
       if (nextProps.isVideoActive) {
         window.ss.rafLoop.start();
@@ -44,6 +48,7 @@ const enhance = compose(
     },
     componentWillUnmount() {
       window.ss.stop();
+      window.ss.maestro = undefined;
     }
   })
 );
