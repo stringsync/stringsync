@@ -4,7 +4,36 @@
  * instance is still computing, it will be ignored.
  */
 class Maestro {
+  constructor() {
+    this.isUpdating = false;
+  }
 
+  /**
+   * The primary interface that event handlers should call to update the backend
+   * models.
+   */
+  update() {
+    if (this.isUpdating) {
+      return;
+    }
+
+    this.isUpdating = true;
+
+    try {
+      this._doUpdate();
+    } finally {
+      this.isUpdating = false;
+    }
+  }
+
+  /**
+   * Contains the logic of 
+   * 
+   * @private
+   */
+  _doUpdate() {
+
+  }
 }
 
 export default Maestro;
