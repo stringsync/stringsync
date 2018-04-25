@@ -1,11 +1,15 @@
 import React from 'react';
 import styled from 'react-emotion';
-import { compose, withHandlers } from 'recompose';
+import { compose, withHandlers, setPropTypes } from 'recompose';
 import { connect } from 'react-redux';
 import { Icon, Row, Col } from 'antd';
-import { MiniNotationDetail, Scrubber, PlayButton } from './';
+import { MiniNotationDetail, Scrubber, PlayToggle, MenuToggle } from './';
+import PropTypes from 'prop-types';
 
 const enhance = compose (
+  setPropTypes({
+    toggleMenuVisibility: PropTypes.func.isRequired
+  }),
   connect(
     state => ({
       videoPlayer: state.video.player,
@@ -42,7 +46,7 @@ const Inner = styled('div')`
   align-items: center;
 `;
 
-const PlayerBtn = styled('button')`
+const PlayerButton = styled('button')`
   width: 24px;
   height: 100%;
   margin: 0 12px 0 12px;
@@ -71,15 +75,15 @@ const DetailContainer = styled('div')`
 const NotationShowControls = enhance(props => (
   <Outer>
     <Inner>
-      <PlayerBtn>
-        <PlayButton />
-      </PlayerBtn>
+      <PlayerButton>
+        <PlayToggle />
+      </PlayerButton>
       <SliderContainer>
         <Scrubber />
       </SliderContainer>
-      <PlayerBtn>
-        <Icon type="setting" />
-      </PlayerBtn>
+      <PlayerButton>
+        <MenuToggle toggleMenuVisibility={props.toggleMenuVisibility} />
+      </PlayerButton>
       <DetailContainer>
         <Row>
           <Col xs={0} sm={24} md={24} lg={24} xl={24} xxl={24}>

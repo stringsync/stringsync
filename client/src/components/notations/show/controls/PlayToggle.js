@@ -20,7 +20,7 @@ const enhance = compose(
   })
 );
 
-const PlayButton = enhance(props => {
+const PlayToggle = enhance(props => {
   if (props.isVideoActive) {
     return <Icon type="pause-circle-o" onClick={props.handlePauseClick} />
   } else {
@@ -28,4 +28,4 @@ const PlayButton = enhance(props => {
   }
 });
 
-export default PlayButton;
+export default PlayToggle;

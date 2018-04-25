@@ -2,13 +2,13 @@ import React from 'react';
 import styled from 'react-emotion';
 import { Affix } from 'antd';
 import { BEGINNING_OF_EPOCH } from 'constants';
-import { Fretboard, Score, Piano, MaestroController } from 'components';
-import { NotationShowVideo, NotationShowControls } from './';
-import { compose, lifecycle } from 'recompose';
+import { Element as ScrollElement } from 'react-scroll';
+import { Fretboard, Score, Piano, MaestroController, Overlap, Layer } from 'components';
+import { NotationShowVideo, NotationShowControls, NotationShowMenu } from './';
+import { compose, lifecycle, withState, withHandlers } from 'recompose';
 import { connect } from 'react-redux';
 import { find } from 'lodash';
 import { notationsActions, fetchAllNotations, videoActions } from 'data';
-import { Element as ScrollElement } from 'react-scroll';
 
 const enhance = compose(
   connect(
@@ -24,6 +24,12 @@ const enhance = compose(
       resetVideo: () => dispatch(videoActions.video.reset())
     })
   ),
+  withState('isMenuVisible', 'setMenuVisibility', false),
+  withHandlers({
+    toggleMenuVisibility: props => () => {
+      props.setMenuVisibility(!props.isMenuVisible);
+    }
+  }),
   lifecycle({
     async componentDidMount() {
       if (this.props.notationsIndex.fetchedAt === BEGINNING_OF_EPOCH) {
@@ -71,29 +77,46 @@ const Bottom = styled('div')`
  * Sets layout for the NotationShow page and fetches the notation from the router.
  */
 const NotationShow = enhance(props => (
-  <Outer id="notation-show">
-    <MaestroController
-      bpm={props.notation.bpm}
-      deadTimeMs={props.notation.deadTimeMs}
-    />
-    <Top>
-      <NotationShowVideo />
-      <Affix
-        target={() => document.getElementById('notation-show')}
-        offsetTop={2}
-      >
-        <Fretboard />
-        <Piano />
-      </Affix>
-    </Top>
-    <Middle>
-      <ScrollElement name="notation-show-tab" />
-      <Score />
-    </Middle>
-    <Bottom>
-      <NotationShowControls />
-    </Bottom>
-  </Outer>
+  <div id="notation-show">
+    <Overlap>
+      <Layer zIndex={10}>
+        {
+          props.isMenuVisible
+            ? <Outer>
+                <NotationShowMenu />
+              </Outer>
+            : null
+        }
+      </Layer>
+      <Layer zIndex={9}>
+        <Outer>
+          <MaestroController
+            bpm={props.notation.bpm}
+            deadTimeMs={props.notation.deadTimeMs}
+          />
+          <Top>
+            <NotationShowVideo />
+            <Affix
+              target={() => document.getElementById('notation-show')}
+              offsetTop={2}
+            >
+              <Fretboard />
+              <Piano />
+            </Affix>
+          </Top>
+          <Middle>
+            <ScrollElement name="notation-show-tab" />
+            <Score />
+          </Middle>
+          <Bottom>
+            <NotationShowControls
+              toggleMenuVisibility={props.toggleMenuVisibility}
+            />
+          </Bottom>
+        </Outer>
+      </Layer>
+    </Overlap>
+  </div>
 ));
 
 export default NotationShow;
