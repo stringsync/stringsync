@@ -5,8 +5,8 @@ import { compose, withProps, lifecycle } from 'recompose';
  * The wrapped component will have access to registerRaf() and unregisterRaf() in
  * its props.
  * 
- * @param {props => RafLoop} getRafLoop 
- * @param {props => RafSpec} rafSpecFactory 
+ * @param {ownProps => RafLoop} getRafLoop 
+ * @param {ownProps => RafSpec} rafSpecFactory 
  */
 const withRaf = (getRafLoop, rafSpecFactory) => (
   BaseComponent => {
@@ -15,14 +15,22 @@ const withRaf = (getRafLoop, rafSpecFactory) => (
         rafLoop: getRafLoop(props),
         rafSpec: rafSpecFactory(props)
       })),
-      withProps(props => ({
-        registerRaf: () => {
-          props.rafLoop.add(rafSpec);
-        },
-        unregisterRaf: () => {
-          props.rafLoop.remove(rafSpec.name);
+      withProps(props => {
+        const { rafLoop, rafSpec } = props;
+
+        if(!rafLoop) {
+          throw new Error('getRafLoop must return a rafLoop instance')
         }
-      })),
+        
+        return {
+          registerRaf: () => {
+            rafLoop.add(rafSpec);
+          },
+          unregisterRaf: () => {
+            rafLoop.remove(rafSpec.name);
+          }
+        }
+      }),
       lifecycle({
         componentDidMount() {
           this.props.registerRaf();

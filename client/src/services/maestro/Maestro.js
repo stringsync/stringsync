@@ -35,6 +35,8 @@ class Maestro {
   _doUpdate() {
     // A clone is constructed so that time doesn't change during the computation.
     const timeKeeper = this.timeKeeper.clone;
+
+    console.log('Updating maestro!', timeKeeper.currentTimeMs);
     // TODO: Finish fleshing out this function
   }
 }

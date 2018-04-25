@@ -1,6 +1,6 @@
 import React from 'react';
 import { compose, setPropTypes, lifecycle, withHandlers } from 'recompose';
-import { Maestro, TimeKeeper, RafSpec } from 'services';
+import { Maestro, TimeKeeper, RafLoop, RafSpec } from 'services';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRaf } from 'enhancers';
@@ -13,9 +13,28 @@ const enhance = compose(
   connect(
     state => ({
       videoPlayer: state.video.player,
-      isVideoActive: state.video.isActive,
+      isVideoActive: state.video.isActive
     })
   ),
+  lifecycle({
+    componentWillMount() {
+      const timeKeeper = new TimeKeeper(this.props.bpm, this.props.deadTimeMs);
+      window.ss.maestro = new Maestro(timeKeeper);
+      window.ss.rafLoop = new RafLoop();
+    },
+    componentWillReceiveProps(nextProps) {
+      if (nextProps.isVideoActive) {
+        window.ss.rafLoop.start();
+      } else {
+        window.ss.rafLoop.stop();
+      }
+    },
+    componentWillUnmount() {
+      window.ss.rafLoop.stop();
+      window.ss.maestro = undefined;
+      window.ss.rafLoop = undefined;
+    }
+  }),
   withHandlers({
     /**
      * Update the timeKeeper.currentTimeMs and call maestro.update whenever the rafLoop is active.
@@ -33,24 +52,7 @@ const enhance = compose(
   withRaf(
     () => window.ss.rafLoop,
     props => new RafSpec('MaestroController.handleRafLoop', 0, props.handleRafLoop)
-  ),
-  lifecycle({
-    componentDidMount() {
-      const timeKeeper = new TimeKeeper(this.props.bpm, this.props.deadTimeMs);
-      window.ss.maestro = new Maestro(timeKeeper);
-    },
-    componentWillReceiveProps(nextProps) {
-      if (nextProps.isVideoActive) {
-        window.ss.rafLoop.start();
-      } else {
-        window.ss.rafLoop.stop();
-      }
-    },
-    componentWillUnmount() {
-      window.ss.stop();
-      window.ss.maestro = undefined;
-    }
-  })
+  )
 );
 
 /**

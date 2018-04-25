@@ -60,7 +60,7 @@ class RafLoop {
    * 
    * @private
    */
-  _loop() {
+  _loop = () => {
     this.specs.forEach(spec => spec.callback());
     this.rafId = RAF(this._loop);
   }
