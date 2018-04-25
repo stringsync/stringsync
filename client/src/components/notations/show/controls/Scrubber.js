@@ -12,10 +12,8 @@ const enhance = compose(
   ),
   withHandlers({
     handleChange: props => value => {
-      console.log(value);
     },
     handleAfterChange: props => value => {
-      console.log(value);
     }
   })
 );
