@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 
 const enhance = compose(
   setPropTypes({
+    menuCollapsed: PropTypes.bool.isRequired,
     onMenuClick: PropTypes.func.isRequired
   }),
 );
