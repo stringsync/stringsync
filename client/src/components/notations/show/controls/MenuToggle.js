@@ -11,17 +11,23 @@ const enhance = compose(
   }),
 );
 
-const StyledIcon = styled(Icon)`
-  transform: ${props => props.menuCollapsed ? 'rotate(0deg)' : 'rotate(180deg)'};
-  transition: transform .2s ease-in;
+/**
+ * Workaround since applying the styles to the Icon component causes errors
+ */
+const Outer = styled('span')`
+  i {
+    transform: ${props => props.menuCollapsed ? 'rotate(0deg)' : 'rotate(180deg)'};
+    transition: transform .2s ease-in;
+  }
 `;
 
 const MenuToggle = enhance(props => (
-  <StyledIcon
-    type="setting"
+  <Outer
     onClick={props.onMenuClick}
     menuCollapsed={props.menuCollapsed}
-  />
+  >
+    <Icon type="setting" />
+  </Outer>
 ));
 
 export default MenuToggle;
