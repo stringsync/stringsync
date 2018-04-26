@@ -55,7 +55,7 @@ const Fretboard = enhance(props => (
         <Frets numFrets={props.numFrets} />
       </Layer>
       <Layer>
-        <GuitarStrings />
+        <GuitarStrings numStrings={6} />
       </Layer>
     </Overlap>
   </Outer>
