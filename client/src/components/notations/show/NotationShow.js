@@ -1,4 +1,5 @@
 import React from 'react';
+import $ from 'jquery';
 import styled from 'react-emotion';
 import { Affix } from 'antd';
 import { BEGINNING_OF_EPOCH } from 'constants';
@@ -31,6 +32,9 @@ const enhance = compose(
     }
   }),
   lifecycle({
+    componentWillMount() {
+      $('body').addClass('no-scroll');
+    },
     async componentDidMount() {
       if (this.props.notationsIndex.fetchedAt === BEGINNING_OF_EPOCH) {
         await this.props.fetchAllNotations();
@@ -51,13 +55,13 @@ const enhance = compose(
     componentWillUnmount() {
       this.props.resetNotation();
       this.props.resetVideo();
+      $('body').removeClass('no-scroll');
     }
-  }),
+  })
 );
 
 const Outer = styled('div')`
   width: 100%;
-  margin: 0 auto;
 `;
 
 const ContentContainer = styled('div')`

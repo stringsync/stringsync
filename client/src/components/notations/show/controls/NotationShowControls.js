@@ -49,7 +49,7 @@ const Outer = styled('div')`
   display: flex;
   align-items: center;
   z-index: 11;
-  margin-bottom: ${props => props.isIphoneX ? '24px' : '0'};
+  margin-bottom: ${props => props.isIphoneX ? '12px' : '0'};
 `;
 
 const Inner = styled('div')`
