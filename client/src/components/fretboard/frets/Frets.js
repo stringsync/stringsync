@@ -42,6 +42,7 @@ const Frets = enhance(props => (
       fret={0}
       width={props.firstFretWidth}
       viewportType={props.viewportType}
+      dots={0}
     />
     {
       times(props.numFrets, ndx => {
