@@ -4,8 +4,13 @@ import PropTypes from 'prop-types';
 import { times } from 'lodash';
 import styled from 'react-emotion';
 import { connect } from 'react-redux';
+import { Fret } from './';
 
 const FIRST_FRET_WIDTH_SCALE_FACTOR = 1.5;
+const DOTS = [
+  0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0,
+  2, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0
+];
 
 const enhance = compose(
   setPropTypes({
@@ -31,17 +36,10 @@ const Outer = styled('div')`
   width: 100%;
 `;
 
-const Fret = styled('div')`
-  width: ${props => `${props.width}%`};
-  border-right: ${props => props.fret === 0 ? 4 : props.viewportType === 'MOBILE' ? 1 : 2}px solid #aaa;
-  box-shadow: 0 1px 1px 1px #222;
-`;
-
 const Frets = enhance(props => (
   <Outer>
     <Fret
       fret={0}
-      className="fretboard-height"
       width={props.firstFretWidth}
       viewportType={props.viewportType}
     />
@@ -52,9 +50,9 @@ const Frets = enhance(props => (
           <Fret
             key={`fret-${fretNum}`}
             fret={fretNum}
-            className="fretboard-height"
             width={props.fretWidth}
             viewportType={props.viewportType}
+            dots={DOTS[fretNum]}
           />
         );
       })
