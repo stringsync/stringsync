@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'react-emotion';
-import { compose, withHandlers, setPropTypes } from 'recompose';
+import { compose, withHandlers, setPropTypes, withProps } from 'recompose';
 import { connect } from 'react-redux';
 import { Icon, Row, Col } from 'antd';
 import { MiniNotationDetail, Scrubber, PlayToggle, MenuToggle } from './';
@@ -23,6 +23,18 @@ const enhance = compose (
     onPlayClick: props => event => {
       props.videoPlayer.pauseVideo();
     }
+  }),
+  withProps(props => {
+    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const ratio = window.devicePixelRatio || 1;
+    const screen = {
+      width: window.screen.width * ratio,
+      height: window.screen.height * ratio
+    };
+
+    const isIphoneX = iOS && screen.width == 1125 && screen.height === 2436;
+
+    return { isIphoneX }
   })
 );
 
@@ -37,6 +49,7 @@ const Outer = styled('div')`
   display: flex;
   align-items: center;
   z-index: 11;
+  margin-bottom: ${props => props.isIphoneX ? '24px' : '0'};
 `;
 
 const Inner = styled('div')`
@@ -74,7 +87,7 @@ const DetailContainer = styled('div')`
 `;
 
 const NotationShowControls = enhance(props => (
-  <Outer>
+  <Outer isIphoneX={props.isIphoneX}>
     <Inner>
       <PlayerButton>
         <PlayToggle />
