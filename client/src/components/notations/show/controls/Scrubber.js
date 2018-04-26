@@ -4,6 +4,7 @@ import { Slider } from 'antd';
 import { connect } from 'react-redux';
 import { withRaf } from 'enhancers';
 import { RafSpec } from 'services';
+import styled from 'react-emotion';
 
 const enhance = compose(
   connect(
@@ -62,14 +63,29 @@ const enhance = compose(
   )
 );
 
+const StyledSlider = styled(Slider)`
+  .ant-slider-handle {
+    border-color: ${props => props.theme.primaryColor};
+    background-color: ${props => props.theme.primaryColor};
+  }
+
+  .ant-slider-track {
+    background: ${props => props.theme.primaryColor};
+  }
+
+  .ant-slider-rail {
+    background-color: #efefef;
+  }
+`;
+
 const Scrubber = enhance(props => (
-  <Slider
+  <StyledSlider
     onChange={props.handleChange}
     onAfterChange={props.handleAfterChange}
     value={props.value}
     tipFormatter={null}
     step={0.01}
-    style={{ margin: '0 4px 0 4px' }}
+    style={{ margin: '0 4px 4px 4px' }}
   />
 ));
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { compose, withHandlers, branch } from 'recompose';
 import { connect } from 'react-redux';
 import { Icon } from 'antd';
+import styled from 'react-emotion';
 
 const enhance = compose(
   connect(
@@ -20,12 +21,25 @@ const enhance = compose(
   })
 );
 
-const PlayToggle = enhance(props => {
-  if (props.isVideoActive) {
-    return <Icon type="pause-circle-o" onClick={props.handlePauseClick} />
-  } else {
-    return <Icon type="play-circle-o" onClick={props.handlePlayClick} />
+const Outer = styled('span')`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+`;
+
+const StyledIcon = styled(Icon)`
+  &:active {
+    font-size: 20px;
   }
-});
+
+  transition: font-size 40ms ease-in;
+`;
+
+const PlayToggle = enhance(props => (
+  <Outer onClick={props.isVideoActive ? props.handlePauseClick : props.handlePlayClick}>
+    <StyledIcon type={`${props.isVideoActive ? 'pause' : 'play'}-circle-o`} />
+  </Outer>
+));
 
 export default PlayToggle;
