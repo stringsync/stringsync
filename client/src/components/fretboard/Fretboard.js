@@ -14,16 +14,15 @@ const enhance = compose(
   ),
   withProps(props => {
     let numFrets;
-
     switch(props.viewportType) {
       case 'MOBILE':
-        numFrets = 15;
-        break;
-      case 'TABLET':
         numFrets = 17;
         break;
-      case 'DESKTOP':
+      case 'TABLET':
         numFrets = 19;
+        break;
+      case 'DESKTOP':
+        numFrets = 21;
         break;
       default:
         numFrets = 19;
@@ -38,6 +37,12 @@ const Outer = styled('div')`
   background: url(${props => woodTextureSrc});
   background-color: black;
   width: 100%;
+
+  &, .fretboard-height {
+    height: 12.5vw;
+    min-height: 125px;
+    max-height: 200px;
+  }
 `;
 
 /**
