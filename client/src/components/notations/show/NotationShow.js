@@ -117,7 +117,7 @@ const NotationShow = enhance(props => (
         />
         <NotationShowMenu collapsed={props.menuCollapsed} />
         <NotationShowControls
-          menuCollapsed={props.collapsed}
+          menuCollapsed={props.menuCollapsed}
           onMenuClick={props.handleMenuClick}
         />
       </Layer>
