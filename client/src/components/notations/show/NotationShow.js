@@ -24,10 +24,10 @@ const enhance = compose(
       resetVideo: () => dispatch(videoActions.video.reset())
     })
   ),
-  withState('isMenuVisible', 'setMenuVisibility', false),
+  withState('menuCollapsed', 'setMenuCollapsed', true),
   withHandlers({
-    toggleMenuVisibility: props => () => {
-      props.setMenuVisibility(!props.isMenuVisible);
+    handleMenuClick: props => () => {
+      props.setMenuCollapsed(!props.menuCollapsed);
     }
   }),
   lifecycle({
@@ -56,45 +56,41 @@ const enhance = compose(
 );
 
 const Outer = styled('div')`
+  width: 100%;
+  margin: 0 auto;
+`;
+
+const ContentContainer = styled('div')`
   display: flex;
   flex-flow: column;
   overflow: hidden;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
 `;
 
-const Top = styled('div')`
-`;
-
-const Middle = styled('div')`
-`;
-
-const Bottom = styled('div')`
+const Mask = styled('div')`
+  background: black;
+  opacity: 0.65;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100vh;
+  display: ${props => props.collapsed ? 'none' : 'block'};
 `;
 
 /**
  * Sets layout for the NotationShow page and fetches the notation from the router.
  */
 const NotationShow = enhance(props => (
-  <div id="notation-show">
+  <Outer id="notation-show">
     <Overlap>
       <Layer zIndex={10}>
-        {
-          props.isMenuVisible
-            ? <Outer>
-                <NotationShowMenu />
-              </Outer>
-            : null
-        }
-      </Layer>
-      <Layer zIndex={9}>
-        <Outer>
+        <ContentContainer>
           <MaestroController
             bpm={props.notation.bpm}
             deadTimeMs={props.notation.deadTimeMs}
           />
-          <Top>
+          <div>
             <NotationShowVideo />
             <Affix
               target={() => document.getElementById('notation-show')}
@@ -103,20 +99,26 @@ const NotationShow = enhance(props => (
               <Fretboard />
               <Piano />
             </Affix>
-          </Top>
-          <Middle>
+          </div>
+          <div>
             <ScrollElement name="notation-show-tab" />
             <Score />
-          </Middle>
-          <Bottom>
-            <NotationShowControls
-              toggleMenuVisibility={props.toggleMenuVisibility}
-            />
-          </Bottom>
-        </Outer>
+          </div>
+        </ContentContainer>
+      </Layer>
+      <Layer zIndex={11}>
+        <Mask
+          collapsed={props.menuCollapsed}
+          onClick={props.handleMenuClick}
+        />
+        <NotationShowMenu collapsed={props.menuCollapsed} />
+        <NotationShowControls
+          menuCollapsed={props.collapsed}
+          onMenuClick={props.handleMenuClick}
+        />
       </Layer>
     </Overlap>
-  </div>
+  </Outer>
 ));
 
 export default NotationShow;

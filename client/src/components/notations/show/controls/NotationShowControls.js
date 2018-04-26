@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 
 const enhance = compose (
   setPropTypes({
-    toggleMenuVisibility: PropTypes.func.isRequired
+    onMenuClick: PropTypes.func.isRequired
   }),
   connect(
     state => ({
@@ -36,6 +36,7 @@ const Outer = styled('div')`
   border-top: 1px solid #e8e8e8;
   display: flex;
   align-items: center;
+  z-index: 11;
 `;
 
 const Inner = styled('div')`
@@ -82,7 +83,10 @@ const NotationShowControls = enhance(props => (
         <Scrubber />
       </SliderContainer>
       <PlayerButton>
-        <MenuToggle toggleMenuVisibility={props.toggleMenuVisibility} />
+        <MenuToggle
+          menuCollapsed={props.menuCollapsed}
+          onMenuClick={props.onMenuClick}
+        />
       </PlayerButton>
       <DetailContainer>
         <Row>
