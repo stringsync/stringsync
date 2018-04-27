@@ -52,8 +52,8 @@ class ScaleDegree {
       throw new Error(`${literal} should be in ${ScaleDegree.LITERALS.join(', ')}`);
     }
 
-    this.scale = scale || null;
     this.literal = literal;
+    Object.defineProperty(this, 'scale', { value: scale, configurable: false, writable: false });
   }
 
   /**
@@ -62,7 +62,7 @@ class ScaleDegree {
    * @return {string}
    */
   get key() {
-    return this.scale.key;
+    this.scale ? this.scale.key : null;
   }
 
   /**
@@ -72,6 +72,10 @@ class ScaleDegree {
    */
   get value() {
     return ScaleDegree.VALUES_BY_LITERAL[this.literal];
+  }
+
+  isEquivalent(otherScaleDegree) {
+
   }
 
   modifier() {

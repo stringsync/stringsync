@@ -30,7 +30,7 @@ class Scale {
     }
 
     this.key = key;
-    this.degrees = sortBy(degreeLiterals.map(literal => new ScaleDegree(literal, this)), ['value']);
+    this.degrees = degreeLiterals.map(literal => new ScaleDegree(literal, this));
   }
 }
 
