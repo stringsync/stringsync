@@ -42,12 +42,17 @@ class ScaleDegree {
     return VALUES_BY_LITERAL;
   }
 
+  /**
+   * 
+   * @param {string} literal 
+   * @param {Scale} scale 
+   */
   constructor(literal, scale) {
     if (!ScaleDegree.LITERALS_SET.has(literal)) {
       throw new Error(`${literal} should be in ${ScaleDegree.LITERALS.join(', ')}`);
     }
 
-    this.scale = scale;
+    this.scale = scale || null;
     this.literal = literal;
   }
 

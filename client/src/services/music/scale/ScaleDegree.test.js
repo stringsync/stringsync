@@ -10,8 +10,15 @@ test('ScaleDegree.constructor', () => {
   });
 });
 
+test('ScaleDegree.constructor allows scale to be undefined', () => {
+  const scaleDegree = new ScaleDegree('1');
+  expect(scaleDegree.literal).toBe('1');
+  expect(scaleDegree.scale).toBeNull();
+});
+
 test('ScaleDegree.constructor disallows invalid literals', () => {
   const scale = new Scale('A', []);
+
   ['1%', 'b4', 'b1', 'foo', 'bar'].forEach(literal => {
     expect(() => new ScaleDegree(literal, scale)).toThrow();
   });
