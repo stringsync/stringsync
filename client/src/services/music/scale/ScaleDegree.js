@@ -73,8 +73,8 @@ class ScaleDegree {
     return ScaleDegree.VALUES_BY_LITERAL[this.literal];
   }
 
-  isEquivalent(otherScaleDegree) {
-    return this.value === otherScaleDegree.value;
+  isEquivalent(other) {
+    return this.key === other.key && this.value === other.value;
   }
 
   modifier() {

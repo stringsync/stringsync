@@ -55,7 +55,6 @@ test('Note.prototype.isSharp', () => {
 test('Note.prototype.isEquivalent', () => {
   // Arrays of arguments that should return true or false when isEquivalent is called on the
   // corresponding note objects. The last memeber is the expect value.
-
   const cases = [
     [['A' , 1], ['A' , 1], true],
     [['A#', 1], ['Bb', 1], true],

@@ -47,3 +47,20 @@ test('ScaleDegree.prototype.value fetches from the ScaleDegree.VALUES_BY_LITERAL
     expect(scaleDegree.value).toBe(value);
   });
 });
+
+test('ScaleDegree.prototype.isEquivalent', () => {
+  // Arrays of this ScaleDegree constructor args, other ScaleDegree constructor args,
+  // and expectation.
+  const cases = [
+    [[], [], true],
+    [[], [], true],
+    [[], [], true],
+    [[], [], true],
+    [[], [], false],
+    [[], [], false],
+    [[], [], false],
+    [[], [], false]
+  ];
+
+  fail();
+});
