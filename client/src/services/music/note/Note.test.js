@@ -1,10 +1,10 @@
 import { Note } from './';
 import { forOwn } from 'lodash';
 
-const FLAT_NOTES = Object.freeze(['Bb', 'Db', 'Eb', 'Gb', 'Ab']);
+const FLAT_NOTES    = Object.freeze(['Bb', 'Db', 'Eb', 'Gb', 'Ab']);
 const NATURAL_NOTES = Object.freeze(['A', 'B', 'C', 'D', 'E', 'F', 'G']);
-const SHARP_NOTES = Object.freeze(['A#', 'C#', 'D#', 'F#', 'G#']);
-const ALL_NOTES = Object.freeze([...FLAT_NOTES, ...NATURAL_NOTES, ...SHARP_NOTES]);
+const SHARP_NOTES   = Object.freeze(['A#', 'C#', 'D#', 'F#', 'G#']);
+const ALL_NOTES     = Object.freeze(['Ab', 'A', 'A#', 'Bb', 'B', 'C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', "G#"]);
 
 test('Note.constructor allows all valid note literals', () => {
   ALL_NOTES.forEach(literal => {
@@ -86,6 +86,7 @@ test('Note.prototype.clone', () => {
   ALL_NOTES.forEach(literal => {
     const note = new Note(literal, 1);
     const clone = note.clone;
+
     expect(note).not.toBe(clone);
     expect(clone.literal).toBe(note.literal);
     expect(clone.octave).toBe(note.octave);
@@ -95,7 +96,7 @@ test('Note.prototype.clone', () => {
 test('Note.prototype.toString', () => {
   const cases = ALL_NOTES.map(literal => {
     const sign = Math.random() > 0.5 ? 1 : -1;
-    const octave = Math.floor(Math.random()) * 100 * sign;
+    const octave = Math.floor(Math.random() * 100) * sign;
     return [literal, octave];
   });
 
@@ -109,6 +110,7 @@ test('Note.prototype.toFlat', () => {
   FLAT_NOTES.forEach(literal => {
     const note = new Note(literal, 1);
     const flatNote = note.toFlat();
+
     expect(note).not.toBe(flatNote);
     expect(note.isEquivalent(flatNote)).toBe(true);
     expect(flatNote.isEquivalent(note)).toBe(true);
@@ -117,6 +119,7 @@ test('Note.prototype.toFlat', () => {
   SHARP_NOTES.forEach(literal => {
     const note = new Note(literal, 1);
     const flatNote = note.toFlat();
+
     expect(note).not.toBe(flatNote);
     expect(note.isEquivalent(flatNote)).toBe(true);
     expect(flatNote.isEquivalent(note)).toBe(true);
@@ -127,6 +130,7 @@ test('Note.prototype.toSharp', () => {
   SHARP_NOTES.forEach(literal => {
     const note = new Note(literal, 1);
     const sharpNote = note.toSharp();
+
     expect(note).not.toBe(sharpNote);
     expect(note.isEquivalent(sharpNote)).toBe(true);
     expect(sharpNote.isEquivalent(note)).toBe(true);
@@ -135,8 +139,35 @@ test('Note.prototype.toSharp', () => {
   SHARP_NOTES.forEach(literal => {
     const note = new Note(literal, 1);
     const sharpNote = note.toSharp();
+
     expect(note).not.toBe(sharpNote);
     expect(note.isEquivalent(sharpNote)).toBe(true);
     expect(sharpNote.isEquivalent(note)).toBe(true);
+  });
+});
+
+test('Note.prototype.step numHalfSteps parameter defaults to 1', () => {
+  const literals = ALL_NOTES.filter(literal => {
+    const note = new Note(literal, 1);
+    return note.isSharp || note.isNatural;
+  });
+
+  const cases = literals.map(literal => {
+    const sign = Math.random() > 0.5 ? 1 : -1;
+    const octave = Math.floor(Math.random() * 100) * sign;
+    return [literal, octave];
+  });
+
+  cases.forEach((args, ndx) => {
+    const [literal, octave] = args;
+    const note = new Note(literal, octave);
+    const nextNote = note.step();
+    expect(nextNote).not.toBe(note);
+
+    const expectedLiteral = literals[(ndx + 1) % literals.length];
+    const expectedOctave = octave + (ndx === (cases.length - 1) ? 1 : 0);
+
+    expect(nextNote.literal).toBe(expectedLiteral);
+    expect(nextNote.octave).toBe(expectedOctave);
   });
 });

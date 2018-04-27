@@ -1,7 +1,9 @@
-const NOTE_LITERALS = Object.freeze(['Ab', 'A', 'A#', 'Bb', 'B', 'C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', 'G#']);
-const NOTE_LITERALS_SET = Object.freeze(new Set(NOTE_LITERALS));
+import { sortBy } from 'lodash';
+
+const NOTE_LITERALS       = Object.freeze(['Ab', 'A', 'A#', 'Bb', 'B', 'C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', 'G#']);
+const NOTE_LITERALS_SET   = Object.freeze(new Set(NOTE_LITERALS));
 const SHARP_NOTE_LITERALS = Object.freeze(['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']);
-const FLAT_NOTE_LITERALS = Object.freeze(['A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab']);
+const FLAT_NOTE_LITERALS  = Object.freeze(['A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab']);
 
 /**
  * The purpose of this class is to encapsulate the logic related to describing a note's inherent
@@ -27,6 +29,14 @@ class Note {
       'Gb': 'F#',
       'G': 'G',
       'G#': 'Ab'
+    });
+  }
+
+  // TODO: construct a chromatic Scale object, which describes the degree of the note literals,
+  // and then sort by the octave, then the ScaleDegree
+  static sort(notes) {
+    return sortBy(notes, note => {
+      return 1;
     });
   }
 
@@ -68,7 +78,10 @@ class Note {
   isEquivalent(otherNote) {
     return (
       this.octave === otherNote.octave &&
-      (this.literal === otherNote.literal || Note.NOTE_ALIASES[this.literal] === otherNote.literal)
+      (
+        this.literal === otherNote.literal ||
+        Note.NOTE_ALIASES[this.literal] === otherNote.literal
+      )
     );
   }
 
@@ -111,7 +124,7 @@ class Note {
     const firstOctaveHalfSteps = (notes.length - 1) - ndx;
     const remainingHalfSteps = numHalfSteps - firstOctaveHalfSteps;
     numOctavesTraversed += remainingHalfSteps > 0 ? 1 : 0;
-    numOctavesTraversed += Math.floor(remainingHalfSteps / notes.length);
+    numOctavesTraversed += Math.max(Math.floor(remainingHalfSteps / notes.length), 0);
     const octave = this.octave + numOctavesTraversed;
 
     return new Note(literal, octave);
