@@ -24,7 +24,7 @@ const Dot = styled('div')`
   height: ${props => props.viewportType === 'DESKTOP' ? 16 : 12}px;
   background-color: #6e6e6e;
   border-radius: 50%;
-  opacity: 0.85;
+  opacity: 0.6;
 `;
 
 const DotsContainer = styled('div')`

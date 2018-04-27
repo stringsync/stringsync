@@ -16,7 +16,7 @@ const Outer = styled('div')`
   height: ${props => props.height}px;
   background: #aaa;
   box-shadow: 0 0 0.5px 0.5px #222;
-  opacity: ${props => props.viewportType === 'MOBILE' ? 0.6 : 0.8};
+  opacity: ${props => props.viewportType === 'MOBILE' ? 0.6 : 0.75};
 `;
 
 const GuitarString = enhance(props => (
