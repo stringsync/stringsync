@@ -7,28 +7,22 @@ import { ScaleDegree, scales } from './';
  */
 class Scale {
   static for(key, scaleName) {
-    const degrees = scales[scaleName];
+    const degreeLiterals = scales[scaleName];
 
-    if (!degrees) {
+    if (!degreeLiterals) {
       throw new Error(`${scaleName} scale was not found`);
     }
 
-    return new Scale(key, ScaleDegree.for(degrees));
+    return new Scale(key, degreeLiterals);
   }
 
-  constructor(key, scaleDegrees) {
+  constructor(key, degreeLiterals) {
     if (!Note.ALL_LITERALS_SET.has(key)) {
       throw new Error(`${key} should be in ${Note.ALL_LITERALS.join(', ')}`);
-    } else if (!scaleDegrees.every(scaleDegree => scaleDegree instanceof ScaleDegree)) {
-      throw new Error('scaleDegrees must all be ScaleDegree instances');
     }
 
     this.key = key;
-    this.scaleDegrees = scaleDegrees;
-  }
-
-  get notes() {
-    
+    this.degrees = degreeLiterals.map(literal => new ScaleDegree(literal, this));
   }
 }
 

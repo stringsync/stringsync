@@ -17,16 +17,17 @@ class ScaleDegree {
     return MODIFIERS;
   }
 
-  static for(degreeLiterals) {
-    return degreeLiterals.map(literal => new ScaleDegree(literal));
-  }
-
-  constructor(literal) {
+  constructor(literal, scale) {
     if (!ScaleDegree.LITERALS_SET.has(literal)) {
       throw new Error( `${literal} should be in ${ScaleDegree.LITERALS.join(', ')}`);
     }
 
+    this.scale = scale;
     this.literal = literal;
+  }
+
+  get key() {
+    return this.scale.key;
   }
 
   modifier() {
