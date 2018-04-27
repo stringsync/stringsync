@@ -1,28 +1,50 @@
+import { BEGINNING_OF_EPOCH } from 'constants';
+
 const notationsDefaultState = Object.freeze({
   index: {
-    fetchedAt: new Date(1970, 1, 1).getTime(),
+    fetchedAt: BEGINNING_OF_EPOCH,
     notations: []
   },
   show: {
-    songName: '',
-    artistName: '',
-    durationMs: 1,
-    deadTimeMs: 0,
-    bpm: 120,
-    vextabString: '',
-    tags: [],
-    transcriber: null
+    id: -1,
+    attributes: {
+      songName: '',
+      artistName: '',
+      durationMs: 1,
+      deadTimeMs: 0,
+      thumbnailUrl: '',
+      bpm: 120,
+      vextabString: '',
+    },
+    links: {
+      self: ''
+    },
+    relationships: {
+      tags: [],
+      transcriber: null,
+      video: null
+    }
   },
   edit: {
-    songName: '',
-    artistName: '',
-    durationMs: 1,
-    deadTimeMs: 0,
-    bpm: 120,
-    vextabString: '',
-    tags: [],
-    transcriber: null
-  }
+    id: -1,
+    attributes: {
+      songName: '',
+      artistName: '',
+      durationMs: 1,
+      deadTimeMs: 0,
+      thumbnailUrl: '',
+      bpm: 120,
+      vextabString: '',
+    },
+    links: {
+      self: ''
+    },
+    relationships: {
+      tags: [],
+      transcriber: null,
+      video: null
+    }
+  },
 });
 
 export default notationsDefaultState;

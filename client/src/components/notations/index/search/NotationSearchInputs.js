@@ -41,7 +41,7 @@ const enhance = compose(
   }),
   withProps(props => {
     const suffix = props.queryString
-      ? <Icon type="close-circle-o" onClick={props.handleClear} style={{ cursor: 'pointer' }} />
+      ? <Icon type="close-circle-o" onClick={props.onClear} style={{ cursor: 'pointer' }} />
       : null
 
     return { suffix }

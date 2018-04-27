@@ -14,6 +14,10 @@ const notationsReducer = handleActions({
     ...state,
     show: action.payload.notation
   }),
+  [combineActions(actions.notations.show.reset)]: (state, action) => ({
+    ...state,
+    show: defaultState.show
+  }),
   [combineActions(actions.notations.edit.set)]: (state, action) => ({
     ...state,
     edit: action.payload.notation

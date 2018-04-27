@@ -2,6 +2,11 @@ body {
   background-color: #f0f2f5 !important;
 }
 
+body.no-scroll {
+  overflow: hidden;
+  position: fixed;
+}
+
 .main-title {
   font-weight: 100;
   letter-spacing: 3px;
