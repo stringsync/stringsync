@@ -1,35 +1,52 @@
 import { sortBy } from 'lodash';
 
-const NOTE_LITERALS       = Object.freeze(['Ab', 'A', 'A#', 'Bb', 'B', 'C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', 'G#']);
-const NOTE_LITERALS_SET   = Object.freeze(new Set(NOTE_LITERALS));
-const SHARP_NOTE_LITERALS = Object.freeze(['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']);
-const FLAT_NOTE_LITERALS  = Object.freeze(['A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab']);
+const ALL_LITERALS = Object.freeze(['Ab', 'A', 'A#', 'Bb', 'B', 'C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', 'G#']);
+const ALL_LITERALS_SET = Object.freeze(new Set(ALL_LITERALS));
+const SHARP_LITERALS = Object.freeze(['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']);
+const FLAT_LITERALS = Object.freeze(['A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab']);
+const NOTE_ALIASES = Object.freeze({
+  'Ab': 'G#',
+  'A': 'A',
+  'A#': 'Bb',
+  'Bb': 'A#',
+  'B': 'B',
+  'C': 'C',
+  'C#': 'Db',
+  'Db': 'C#',
+  'D': 'D',
+  'D#': 'Eb',
+  'Eb': 'D#',
+  'E': 'E',
+  'F': 'F',
+  'F#': 'Gb',
+  'Gb': 'F#',
+  'G': 'G',
+  'G#': 'Ab'
+});
 
 /**
  * The purpose of this class is to encapsulate the logic related to describing a note's inherent
  * state in different ways as well as functionality to step to other notes.
  */
 class Note {
-  static get NOTE_ALIASES () {
-    return Object.freeze({
-      'Ab': 'G#',
-      'A': 'A',
-      'A#': 'Bb',
-      'Bb': 'A#',
-      'B': 'B',
-      'C': 'C',
-      'C#': 'Db',
-      'Db': 'C#',
-      'D': 'D',
-      'D#': 'Eb',
-      'Eb': 'D#',
-      'E': 'E',
-      'F': 'F',
-      'F#': 'Gb',
-      'Gb': 'F#',
-      'G': 'G',
-      'G#': 'Ab'
-    });
+  static get ALL_LITERALS() {
+    return ALL_LITERALS;
+  }
+
+  static get ALL_LITERALS_SET() {
+    return ALL_LITERALS_SET;
+  }
+
+  static get SHARP_LITERALS() {
+    return SHARP_LITERALS;
+  }
+
+  static get FLAT_LITERALS() {
+    return FLAT_LITERALS;
+  }
+
+  static get NOTE_ALIASES() {
+    return NOTE_ALIASES;
   }
 
   // TODO: construct a chromatic Scale object, which describes the degree of the note literals,
@@ -45,8 +62,8 @@ class Note {
    * @param {number} octave
    */
   constructor(literal, octave) {
-    if (!NOTE_LITERALS_SET.has(literal)) {
-      throw new Error(`${literal} should be in ${NOTE_LITERALS.join(', ')}`);
+    if (!Note.ALL_LITERALS_SET.has(literal)) {
+      throw new Error(`${literal} should be in ${Note.ALL_LITERALS.join(', ')}`);
     } else if (!Number.isInteger(octave)) {
       throw new Error('octave must be an integer')
     }
@@ -111,7 +128,7 @@ class Note {
     }
 
     // Compute the stepped literal using modulus computations
-    const notes = this.isFlat ? FLAT_NOTE_LITERALS : SHARP_NOTE_LITERALS;
+    const notes = this.isFlat ? Note.FLAT_LITERALS : Note.SHARP_LITERALS;
     const ndx = notes.indexOf(this.literal);
     const steppedNdx = (ndx + numHalfSteps) % notes.length;
     const literal = notes[steppedNdx];
