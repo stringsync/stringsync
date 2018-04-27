@@ -1,6 +1,6 @@
 import { Scale, ScaleDegree } from './';
 import { Note, scales } from 'services';
-import { times, sample } from 'lodash';
+import { times, sample, forOwn } from 'lodash';
 
 const randomScale = () => {
   const key = sample(Note.ALL_LITERALS);
@@ -38,4 +38,12 @@ test('ScaleDegree.prototype.key returns the scale key', () => {
   const key = 'hello world'
   scale.key = key;
   expect(scaleDegree.key).toBe(scale.key);
+});
+
+test('ScaleDegree.prototype.value fetches from the ScaleDegree.VALUES_BY_LITERAL object', () => {
+  forOwn(ScaleDegree.VALUES_BY_LITERAL, (value, literal) => {
+    const scale = randomScale();
+    const scaleDegree = new ScaleDegree(literal, value);
+    expect(scaleDegree.value).toBe(value);
+  });
 });

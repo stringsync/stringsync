@@ -43,7 +43,6 @@ class ScaleDegree {
   }
 
   /**
-   * 
    * @param {string} literal 
    * @param {Scale} scale 
    */
