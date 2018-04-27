@@ -1,6 +1,6 @@
 import { Scale, ScaleDegree } from './';
 import { Note, scales } from 'services';
-import { sample } from 'lodash';
+import { times, sample } from 'lodash';
 
 const randomScale = () => {
   const key = sample(Note.ALL_LITERALS);
@@ -28,4 +28,14 @@ test('ScaleDegree.constructor makes the scale property immutable', () => {
   const scale = randomScale();
   const scaleDegree = new ScaleDegree('1', scale);
   expect(() => scaleDegree.scale = randomScale()).toThrow();
+});
+
+test('ScaleDegree.prototype.key returns the scale key', () => {
+  const scale = randomScale();
+  const scaleDegree = new ScaleDegree('1', scale);
+  expect(scaleDegree.key).toBe(scale.key);
+
+  const key = 'hello world'
+  scale.key = key;
+  expect(scaleDegree.key).toBe(scale.key);
 });

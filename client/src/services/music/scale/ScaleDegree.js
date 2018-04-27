@@ -62,7 +62,7 @@ class ScaleDegree {
    * @return {string}
    */
   get key() {
-    this.scale ? this.scale.key : null;
+    return this.scale.key;
   }
 
   /**
@@ -75,7 +75,7 @@ class ScaleDegree {
   }
 
   isEquivalent(otherScaleDegree) {
-
+    return this.value === otherScaleDegree.value;
   }
 
   modifier() {
