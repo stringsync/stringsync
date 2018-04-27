@@ -146,6 +146,29 @@ test('Note.prototype.toSharp', () => {
   });
 });
 
+test('Note.prototype.step', () => {
+  // Arrays of args, numHalfSteps, and expected 'args'
+  const cases = [
+    [['A' , 1], 1 , ['A#', 1]],
+    [['A' , 1], 0 , ['A' , 1]],
+    [['A' , 1], 12, ['A' , 2]],
+    [['A' , 5], 6 , ['D#', 5]],
+    [['G#', 3], 11, ['G' , 4]],
+    [['Ab', 6], 13, ['A' , 8]]
+  ]
+
+  cases.forEach(testCase => {
+    const [args, numHalfSteps, expectedArgs] = testCase;
+
+    const note = new Note(...args);
+    const steppedNote = note.step(numHalfSteps);
+    const expectedNote = new Note(...expectedArgs);
+
+    expect(note).not.toBe(steppedNote);
+    expect(steppedNote.isEquivalent(expectedNote)).toBe(true);
+  })
+});
+
 test('Note.prototype.step numHalfSteps parameter defaults to 1', () => {
   const literals = ALL_NOTES.filter(literal => {
     const note = new Note(literal, 1);
@@ -161,13 +184,13 @@ test('Note.prototype.step numHalfSteps parameter defaults to 1', () => {
   cases.forEach((args, ndx) => {
     const [literal, octave] = args;
     const note = new Note(literal, octave);
-    const nextNote = note.step();
-    expect(nextNote).not.toBe(note);
+    const steppedNote = note.step();
+    expect(steppedNote).not.toBe(note);
 
     const expectedLiteral = literals[(ndx + 1) % literals.length];
     const expectedOctave = octave + (ndx === (cases.length - 1) ? 1 : 0);
 
-    expect(nextNote.literal).toBe(expectedLiteral);
-    expect(nextNote.octave).toBe(expectedOctave);
+    expect(steppedNote.literal).toBe(expectedLiteral);
+    expect(steppedNote.octave).toBe(expectedOctave);
   });
 });
