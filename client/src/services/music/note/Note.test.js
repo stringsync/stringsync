@@ -6,6 +6,11 @@ const NATURAL_NOTES = Object.freeze(['A', 'B', 'C', 'D', 'E', 'F', 'G']);
 const SHARP_NOTES   = Object.freeze(['A#', 'C#', 'D#', 'F#', 'G#']);
 const ALL_NOTES     = Object.freeze(['Ab', 'A', 'A#', 'Bb', 'B', 'C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', "G#"]);
 
+const randomOctave = (max = 1000) => {
+  const sign = Math.random() > 0.5 ? 1 : -1;
+  return Math.floor(Math.random() * max) * sign;
+};
+
 test('Note.constructor allows all valid note literals', () => {
   ALL_NOTES.forEach(literal => {
     const note = new Note(literal, 1);
@@ -94,11 +99,7 @@ test('Note.prototype.clone', () => {
 });
 
 test('Note.prototype.toString', () => {
-  const cases = ALL_NOTES.map(literal => {
-    const sign = Math.random() > 0.5 ? 1 : -1;
-    const octave = Math.floor(Math.random() * 100) * sign;
-    return [literal, octave];
-  });
+  const cases = ALL_NOTES.map(literal => [literal, randomOctave()])
 
   cases.forEach(args => {
     const note = new Note(...args);
@@ -175,11 +176,7 @@ test('Note.prototype.step numHalfSteps parameter defaults to 1', () => {
     return note.isSharp || note.isNatural;
   });
 
-  const cases = literals.map(literal => {
-    const sign = Math.random() > 0.5 ? 1 : -1;
-    const octave = Math.floor(Math.random() * 100) * sign;
-    return [literal, octave];
-  });
+  const cases = literals.map(literal => [literal, randomOctave()]);
 
   cases.forEach((args, ndx) => {
     const [literal, octave] = args;
