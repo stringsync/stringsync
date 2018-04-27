@@ -1,11 +1,19 @@
 import { Note } from 'services';
 import { ScaleDegree, scales } from './';
+import { sortBy } from 'lodash';
 
 /**
  * The purpose of this class is to transform a key and an array of ScaleDegree instances
  * to a collection of notes.
  */
 class Scale {
+  /**
+   * Fetches the degreeLiterals from './scales.js', then constructs a scale using those
+   * literals.
+   *
+   * @param {string} key
+   * @param {keyof scales} scaleName
+   */
   static for(key, scaleName) {
     const degreeLiterals = scales[scaleName];
 
@@ -22,7 +30,7 @@ class Scale {
     }
 
     this.key = key;
-    this.degrees = degreeLiterals.map(literal => new ScaleDegree(literal, this));
+    this.degrees = sortBy(degreeLiterals.map(literal => new ScaleDegree(literal, this)), ['value']);
   }
 }
 
