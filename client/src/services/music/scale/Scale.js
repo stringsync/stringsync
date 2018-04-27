@@ -26,6 +26,10 @@ class Scale {
     this.key = key;
     this.scaleDegrees = scaleDegrees;
   }
+
+  get notes() {
+    
+  }
 }
 
 export default Scale;
