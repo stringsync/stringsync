@@ -52,15 +52,20 @@ test('ScaleDegree.prototype.isEquivalent', () => {
   // Arrays of this ScaleDegree constructor args, other ScaleDegree constructor args,
   // and expectation.
   const cases = [
-    [[], [], true],
-    [[], [], true],
-    [[], [], true],
-    [[], [], true],
-    [[], [], false],
-    [[], [], false],
-    [[], [], false],
-    [[], [], false]
+    [['1', new Scale('A', [])], ['1', new Scale('A', [])], true],
+    [['b3', new Scale('Db', [])], ['b3', new Scale('C#', [])], true],
+    [['1', new Scale('A', [])], ['1', new Scale('B', [])], false],
+    [['1', new Scale('A', [])], ['b2', new Scale('A', [])], false],
   ];
 
-  fail();
+  cases.forEach(testCase => {
+    const [args1, args2, expectation] = testCase;
+    const scaleDegree1 = new ScaleDegree(...args1);
+    const scaleDegree2 = new ScaleDegree(...args2);
+
+    expect(scaleDegree1.isEquivalent(scaleDegree1)).toBe(true);
+    expect(scaleDegree2.isEquivalent(scaleDegree2)).toBe(true);
+    expect(scaleDegree1.isEquivalent(scaleDegree2)).toBe(expectation);
+    expect(scaleDegree2.isEquivalent(scaleDegree1)).toBe(expectation);
+  });
 });

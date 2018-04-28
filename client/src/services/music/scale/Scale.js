@@ -29,7 +29,7 @@ class Scale {
       throw new Error(`${key} should be in ${Note.ALL_LITERALS.join(', ')}`);
     }
 
-    this.key = key;
+    this.key = new Note(key, 1);
     this.degrees = degreeLiterals.map(literal => new ScaleDegree(literal, this));
   }
 }

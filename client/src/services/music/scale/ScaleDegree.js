@@ -74,7 +74,7 @@ class ScaleDegree {
   }
 
   isEquivalent(other) {
-    return this.key === other.key && this.value === other.value;
+    return this.key.isEquivalent(other.key) && this.value === other.value;
   }
 
   modifier() {
