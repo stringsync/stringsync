@@ -36,6 +36,16 @@ class Scale {
     this.key = new Note(key, 1);
     this.degrees = degreeLiterals.map(literal => new ScaleDegree(literal, this));
   }
+
+  /**
+   * The primary purpose of the Scale service.
+   * Returns an array of note objects that correspond to the key and degrees
+   * 
+   * @return {Note[]}
+   */
+  get notes() {
+
+  }
 }
 
 export default Scale;
