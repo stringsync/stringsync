@@ -82,8 +82,8 @@ class ScaleDegree {
     return this.key.isEquivalent(other.key) && this.value === other.value;
   }
 
-  distance(otherScaleDegree) {
-    return otherScaleDegree.value - this.value;
+  distance(other) {
+    return other.value - this.value;
   }
 }
 

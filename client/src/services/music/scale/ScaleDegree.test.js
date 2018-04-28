@@ -87,4 +87,24 @@ test('ScaleDegree.prototype.modifier', () => {
   })
 });
 
-test
+test('ScaleDegree.prototype.distance', () => {
+  // Arrays of literal1, literal2, expectation
+  const cases = [
+    ['1', '1', 0],
+    ['1', '#1', 1],
+    ['1', '7', 11],
+    ['7', '1', -11],
+    ['b5', '#4', 0],
+    ['#2', 'b3', 0]
+  ];
+
+  cases.forEach(testCase => {
+    const [literal1, literal2, expectation] = testCase;
+
+    const scale = randomScale();
+    const scaleDegree1 = new ScaleDegree(literal1, scale);
+    const scaleDegree2 = new ScaleDegree(literal2, scale);
+
+    expect(scaleDegree1.distance(scaleDegree2)).toBe(expectation);
+  });
+});
