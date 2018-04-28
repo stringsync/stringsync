@@ -69,3 +69,20 @@ test('ScaleDegree.prototype.isEquivalent', () => {
     expect(scaleDegree2.isEquivalent(scaleDegree1)).toBe(expectation);
   });
 });
+
+test('ScaleDegree.prototype.modifier', () => {
+  ScaleDegree.LITERALS.forEach(literal => {
+    const scaleDegree = new ScaleDegree(literal, randomScale());
+
+    let expectation;
+    if (literal.startsWith('#')) {
+      expectation = '#';
+    } else if (literal.startsWith('b')) {
+      expectation = 'b';
+    } else {
+      expectation = '';
+    }
+
+    expect(scaleDegree.modifier()).toBe(expectation);
+  })
+});
