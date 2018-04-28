@@ -1,6 +1,6 @@
 import { Note } from 'services';
 import { Scale, ScaleDegree, scales } from './';
-import { times, forOwn, sample } from 'lodash';
+import { times, forOwn, sample, zip } from 'lodash';
 
 const KEYS = Note.ALL_LITERALS;
 
@@ -52,6 +52,12 @@ test('Scale.prototype.notes', () => {
   cases.forEach(testCase => {
     const [key, scaleName, expectedNoteLiterals] = testCase;
     const scale = Scale.for(key, scaleName);
+
     const expectedNotes = expectedNoteLiterals.map(literal => new Note(literal, 1));
+    const computedNotes = scale.notes();
+
+    const expectedLiterals = expectedNotes.map(note => note.toSharp().literal);
+    const computedLiterals = computedNotes.map(note => note.toSharp().literal);
+    expect(computedLiterals).toEqual(expectedLiterals);
   });
 });

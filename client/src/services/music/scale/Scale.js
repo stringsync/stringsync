@@ -38,13 +38,23 @@ class Scale {
 
   /**
    * The primary purpose of the Scale service.
-   * Returns an array of note objects that correspond to the key and degrees.
+   * Returns an array of note objects that correspond to the key, degrees, and octaves.
    * The notes will be in the same order as the degrees.
    * 
+   * @param {Array<number>}
    * @return {Note[]}
    */
-  get notes() {
+  notes(octaves = [4]) {
     const root = new ScaleDegree('1', this);
+    const notes = [];
+
+    // Used for the break condition in the while loop to construct the return value.
+    const targetOctaves = octaves.sort();
+
+    while (targetOctaves.length > 0) {
+      const octave = targetOctaves.shift();
+      
+    }
 
     return this.degrees.map(degree => {
       const numHalfSteps = root.distance(degree);

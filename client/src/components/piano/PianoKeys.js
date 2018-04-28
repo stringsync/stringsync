@@ -1,6 +1,7 @@
 import React from 'react';
 import { PianoKey } from './';
 import styled from 'react-emotion';
+import { Scale } from 'services';
 
 const Outer = styled('div')`
   display: flex;
