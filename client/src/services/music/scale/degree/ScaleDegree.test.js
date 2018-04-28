@@ -1,5 +1,5 @@
-import { ScaleDegree } from './';
 import { Note, Scale, scales } from 'services';
+import { ScaleDegree } from './';
 import { times, sample, forOwn } from 'lodash';
 
 const randomScale = () => {
