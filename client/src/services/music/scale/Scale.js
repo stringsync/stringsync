@@ -24,6 +24,10 @@ class Scale {
     return new Scale(key, degreeLiterals);
   }
 
+  /**
+   * @param {string} key
+   * @param {string} degreeLiterals
+   */
   constructor(key, degreeLiterals) {
     if (!Note.ALL_LITERALS_SET.has(key)) {
       throw new Error(`${key} should be in ${Note.ALL_LITERALS.join(', ')}`);
