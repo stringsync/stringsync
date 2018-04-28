@@ -4,7 +4,8 @@ import * as constants from './noteConstants';
 
 /**
  * The purpose of this class is to encapsulate the logic related to describing a note's inherent
- * state in different ways as well as functionality to step to other notes.
+ * state in different ways as well as functionality to step to other notes. It is the fundamental
+ * unit of music.
  */
 class Note {
   /**
