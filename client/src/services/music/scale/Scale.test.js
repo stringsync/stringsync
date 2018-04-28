@@ -33,10 +33,25 @@ test('Scale.constructor sets the ScaleDegree scales to +this+', () => {
   });
 });
 
-test('Scale.constructor creates a Note object from the key with an octave of 1', () => {
+test('Scale.constructor creates a Note object from the key with an octave of 4', () => {
   Note.ALL_LITERALS.forEach(key => {
     const scale = new Scale(key, randomDegreeLiterals());
     expect(scale.key).toBeInstanceOf(Note);
-    expect(scale.key.octave).toBe(1);
+    expect(scale.key.octave).toBe(4);
+  });
+});
+
+test('Scale.prototype.notes', () => {
+  // Arrays of Scale.for args, expectedNoteLiterals
+  const cases = [
+    ['C', 'chromatic', ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']],
+    ['C', 'chromatic', ['C', 'Db', 'D', 'D#', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'A#', 'B']],
+    ['C', 'ionian',    ['C', 'D', 'E', 'F', 'G', 'A', 'B']]
+  ]
+
+  cases.forEach(testCase => {
+    const [key, scaleName, expectedNoteLiterals] = testCase;
+    const scale = Scale.for(key, scaleName);
+    const expectedNotes = expectedNoteLiterals.map(literal => new Note(literal, 1));
   });
 });

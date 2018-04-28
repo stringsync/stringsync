@@ -33,19 +33,26 @@ class Scale {
       throw new Error(`${key} should be in ${Note.ALL_LITERALS.join(', ')}`);
     }
 
-    this.key = new Note(key, 1);
+    this.key = new Note(key, 4);
     this.degrees = degreeLiterals.map(literal => new ScaleDegree(literal, this));
   }
 
   /**
    * The primary purpose of the Scale service.
-   * Returns an array of note objects that correspond to the key and degrees
+   * Returns an array of note objects that correspond to the key and degrees.
+   * The notes will be in the same order as the degrees.
    * 
    * @return {Note[]}
    */
   get notes() {
+    const root = new ScaleDegree('1', this);
 
+    return this.degrees.map(degree => {
+      const numHalfSteps = root.distance(degree);
+      return this.key.step(numHalfSteps);
+    });
   }
 }
 
 export default Scale;
+window.Scale = Scale;

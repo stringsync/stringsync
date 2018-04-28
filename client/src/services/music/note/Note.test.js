@@ -190,3 +190,11 @@ test('Note.prototype.step numHalfSteps parameter defaults to 1', () => {
     expect(steppedNote.octave).toBe(expectedOctave);
   });
 });
+
+test('Note.prototype.value is backed by Note.VALUES_BY_LITERAL', () => {
+  forOwn(Note.VALUES_BY_LITERAL, (value, literal) => {
+    const octave = Math.floor(Math.random() * 100);
+    const note = new Note(literal, octave);
+    expect(note.value).toBe(value);
+  });
+});
