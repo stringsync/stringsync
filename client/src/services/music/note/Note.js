@@ -1,43 +1,77 @@
 import { sortBy } from 'lodash';
-
-const NOTE_LITERALS       = Object.freeze(['Ab', 'A', 'A#', 'Bb', 'B', 'C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', 'G#']);
-const NOTE_LITERALS_SET   = Object.freeze(new Set(NOTE_LITERALS));
-const SHARP_NOTE_LITERALS = Object.freeze(['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']);
-const FLAT_NOTE_LITERALS  = Object.freeze(['A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab']);
+import { Scale } from 'services';
+import * as constants from './noteConstants';
 
 /**
  * The purpose of this class is to encapsulate the logic related to describing a note's inherent
- * state in different ways as well as functionality to step to other notes.
+ * state in different ways as well as functionality to step to other notes. It is the fundamental
+ * unit of music.
  */
 class Note {
-  static get NOTE_ALIASES () {
-    return Object.freeze({
-      'Ab': 'G#',
-      'A': 'A',
-      'A#': 'Bb',
-      'Bb': 'A#',
-      'B': 'B',
-      'C': 'C',
-      'C#': 'Db',
-      'Db': 'C#',
-      'D': 'D',
-      'D#': 'Eb',
-      'Eb': 'D#',
-      'E': 'E',
-      'F': 'F',
-      'F#': 'Gb',
-      'Gb': 'F#',
-      'G': 'G',
-      'G#': 'Ab'
-    });
+  /**
+   * An array of all the possible Note literals
+   * 
+   * @returns {constants.ALL_LITERALS;}
+   */
+  static get ALL_LITERALS() {
+    return constants.ALL_LITERALS;
   }
 
-  // TODO: construct a chromatic Scale object, which describes the degree of the note literals,
-  // and then sort by the octave, then the ScaleDegree
+  /**
+   * A set of all the possible Note literals
+   * 
+   * @returns {constants.ALL_LITERALS_SET}
+   */
+  static get ALL_LITERALS_SET() {
+    return constants.ALL_LITERALS_SET;
+  }
+
+  /**
+   * An array of all the possible Note literals as sharps
+   * 
+   * @returns {constants.SHARP_LITERALS;}
+   */
+  static get SHARP_LITERALS() {
+    return constants.SHARP_LITERALS;
+  }
+
+  /**
+   * An array of all the possible Note literals as flats
+   * 
+   * @returns {constants.FLAT_LITERALS}
+   */
+  static get FLAT_LITERALS() {
+    return constants.FLAT_LITERALS;
+  }
+
+  /**
+   * Maps note literal to its alias. For example, 'D#' maps to 'Eb' since they are the same
+   * note. If a note has no alias, the same literal is mapped.
+   * 
+   * @returns {constants.NOTE_ALIASES}
+   */
+  static get NOTE_ALIASES() {
+    return constants.NOTE_ALIASES;
+  }
+
+  /**
+   * Used to back the value getter
+   * 
+   * @returns {constants.VALUES_BY_LITERAL}
+   */
+  static get VALUES_BY_LITERAL() {
+    return constants.VALUES_BY_LITERAL;
+  }
+
+  /**
+   * Sorts an array of notes by octvae, value, then by literal.
+   * When sorting by literal, the sort order is: naturals, sharps, then flats.
+   * 
+   * @param {Array<Note>} notes
+   * @returns {Array<Note>}
+   */
   static sort(notes) {
-    return sortBy(notes, note => {
-      return 1;
-    });
+    return sortBy(notes, ['octave', 'value', 'isFlat']);
   }
 
   /**
@@ -45,8 +79,8 @@ class Note {
    * @param {number} octave
    */
   constructor(literal, octave) {
-    if (!NOTE_LITERALS_SET.has(literal)) {
-      throw new Error(`${literal} should be in ${NOTE_LITERALS.join(', ')}`);
+    if (!Note.ALL_LITERALS_SET.has(literal)) {
+      throw new Error(`${literal} should be in ${Note.ALL_LITERALS.join(', ')}`);
     } else if (!Number.isInteger(octave)) {
       throw new Error('octave must be an integer')
     }
@@ -55,51 +89,122 @@ class Note {
     this.octave = octave;
   }
 
+  /**
+   * Returns an alias note with a literal backed by Note.NOTE_ALIASES.
+   * 
+   * @returns {Note}
+   */
   get alias() {
     return new Note(Note.NOTE_ALIASES[this.literal], this.octave);
   }
 
+  /**
+   * Clones the note.
+   * 
+   * @returns {Note}
+   */
   get clone() {
     return new Note(this.literal, this.octave);
   }
 
+  /**
+   * Returns true if the note is flat.
+   * 
+   * @returns {boolean}
+   */
   get isFlat() {
     return this.literal.endsWith('b');
   }
 
+  /**
+   * Returns true if the note is natural.
+   * 
+   * @returns {boolean}
+   */
   get isNatural() {
     return !this.isFlat && !this.isSharp;
   }
 
+  /**
+   * Returns true if the note is sharp.
+   * 
+   * @returns {boolean}
+   */
   get isSharp() {
     return this.literal.endsWith('#');
   }
 
-  isEquivalent(otherNote) {
-    return (
-      this.octave === otherNote.octave &&
-      (
-        this.literal === otherNote.literal ||
-        Note.NOTE_ALIASES[this.literal] === otherNote.literal
-      )
-    );
+  /**
+   * Returns the value of the note. Notes that have an alias with a different literal have
+   * the same value.
+   * 
+   * @returns {number}
+   */
+  get value() {
+    return Note.VALUES_BY_LITERAL[this.literal];
   }
 
+  /**
+   * A note is considered equivalent to another note when the octaves are the same and the
+   * values are the same.
+   * 
+   * @param {Note} other 
+   * @returns {boolean}
+   */
+  isEquivalent(other) {
+    return this.isSameOctave(other) && this.isSameNote(other);
+  }
+
+  /**
+   * Compares the equality of the octaves.
+   * 
+   * @param {Note} other 
+   * @returns {boolean}
+   */
+  isSameOctave(other) {
+    return this.octave === other.octave;
+  }
+
+  /**
+   * Compares the values of the notes.
+   * 
+   * @param {Note} other 
+   * @returns {boolean}
+   */
+  isSameNote(other) {
+    return this.value === other.value;
+  }
+
+  /**
+   * Returns the string representation of the note. Mainly used for Vexflow.
+   * 
+   * @returns {string}
+   */
   toString() {
     return `${this.literal}/${this.octave}`;
   }
 
+  /**
+   * Returns the flat version of the note if the note isSharp. Otherwise, returns a clone.
+   * 
+   * @returns {Note}
+   */
   toFlat() {
     return this.isSharp ? this.alias : this.clone;
   }
 
+  /**
+   * Returns the sharp version of the note if the note isFlat. Otherwise, returns a clone.
+   * 
+   * @returns {Note}
+   */
   toSharp() {
     return this.isFlat ? this.alias : this.clone;
   }
 
   /**
    * Returns a new note instance that corresponds to the number of half steps specified.
-   * If this.isFlat returns true, a flat note may be returned. Otherwise, may return a sharp
+   * If this.isFlat returns true, a flat note may be returned. Otherwise, maybe return a sharp
    * note.
    * 
    * @param {number} numHalfSteps 
@@ -111,7 +216,7 @@ class Note {
     }
 
     // Compute the stepped literal using modulus computations
-    const notes = this.isFlat ? FLAT_NOTE_LITERALS : SHARP_NOTE_LITERALS;
+    const notes = this.isFlat ? Note.FLAT_LITERALS : Note.SHARP_LITERALS;
     const ndx = notes.indexOf(this.literal);
     const steppedNdx = (ndx + numHalfSteps) % notes.length;
     const literal = notes[steppedNdx];
@@ -132,4 +237,3 @@ class Note {
 }
 
 export default Note;
-window.Note = Note;
