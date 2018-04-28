@@ -64,13 +64,13 @@ class Note {
 
   /**
    * Sorts an array of notes by octvae, value, then by literal.
-   * When sorting by literal, the sort order is: naturals, flats, then sharps.
+   * When sorting by literal, the sort order is: naturals, sharps, then flats.
    * 
    * @param {Array<Note>} notes
    * @returns {Array<Note>}
    */
   static sort(notes) {
-    return sortBy(notes, note => [note.octave, note.value, note.isNatural ? 0 : note.isFlat ? 1 : 2]);
+    return sortBy(notes, ['octave', 'value', 'isFlat']);
   }
 
   /**
@@ -89,7 +89,7 @@ class Note {
   }
 
   /**
-   * Returns an alias note with a literal backed by Note.NOTE_ALIASES
+   * Returns an alias note with a literal backed by Note.NOTE_ALIASES.
    * 
    * @returns {Note}
    */
@@ -98,7 +98,7 @@ class Note {
   }
 
   /**
-   * Clones the note
+   * Clones the note.
    * 
    * @returns {Note}
    */
@@ -107,7 +107,7 @@ class Note {
   }
 
   /**
-   * Returns true if the note is flat
+   * Returns true if the note is flat.
    * 
    * @returns {boolean}
    */
@@ -116,7 +116,7 @@ class Note {
   }
 
   /**
-   * Returns true if the note is natural
+   * Returns true if the note is natural.
    * 
    * @returns {boolean}
    */
@@ -125,7 +125,7 @@ class Note {
   }
 
   /**
-   * Returns true if the note is sharp
+   * Returns true if the note is sharp.
    * 
    * @returns {boolean}
    */
@@ -236,4 +236,3 @@ class Note {
 }
 
 export default Note;
-window.Note = Note;

@@ -1,10 +1,10 @@
 import { Note } from './';
-import { forOwn } from 'lodash';
+import { forOwn, shuffle, times } from 'lodash';
 
 const FLAT_NOTES    = Object.freeze(['Bb', 'Db', 'Eb', 'Gb', 'Ab']);
 const NATURAL_NOTES = Object.freeze(['A', 'B', 'C', 'D', 'E', 'F', 'G']);
 const SHARP_NOTES   = Object.freeze(['A#', 'C#', 'D#', 'F#', 'G#']);
-const ALL_NOTES     = Object.freeze(['Ab', 'A', 'A#', 'Bb', 'B', 'C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', "G#"]);
+const ALL_NOTES = Object.freeze(['A', 'A#', 'Bb', 'B', 'C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', 'G#', 'Ab']);
 
 const randomOctave = (max = 1000) => {
   const sign = Math.random() > 0.5 ? 1 : -1;
@@ -197,4 +197,20 @@ test('Note.prototype.value is backed by Note.VALUES_BY_LITERAL', () => {
     const note = new Note(literal, octave);
     expect(note.value).toBe(value);
   });
+});
+
+test('Note.sort', () => {
+  const sortedLiterals = ALL_NOTES;
+  const shuffledNotes = shuffle(sortedLiterals).map(literal => new Note(literal, 1));
+  const sortedNotes = Note.sort(shuffledNotes);
+
+  expect(sortedNotes.map(note => note.literal)).toEqual(sortedLiterals);
+});
+
+test('Note.sort respects octaves', () => {
+  const notes = times(8, ndx => new Note('C', ndx));
+  const sortedNoteStrings = notes.map(note => note.toString());
+  const shuffledNotes = shuffle(notes);
+
+  expect(Note.sort(shuffledNotes).map(note => note.toString())).toEqual(sortedNoteStrings);
 });
