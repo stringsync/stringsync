@@ -73,11 +73,22 @@ class ScaleDegree {
     return ScaleDegree.VALUES_BY_LITERAL[this.literal];
   }
 
+  /**
+   * If the literal is prefixed with a modifier in ScaleDegree.MODIFIERS, then it is returned here.
+   * Otherwise, return an empty string.
+   * 
+   * @return {string}
+   */
   get modifier() {
     const char = this.literal[0];
     return ScaleDegree.MODIFIERS.includes(char) ? char : '';
   }
 
+  /**
+   * Equivalency for ScaleDegrees means that they belong to the same key and have the same value.
+   * 
+   * @param {ScaleDegree} other 
+   */
   isEquivalent(other) {
     return this.key.isEquivalent(other.key) && this.value === other.value;
   }
