@@ -83,6 +83,8 @@ test('ScaleDegree.prototype.modifier', () => {
       expectation = '';
     }
 
-    expect(scaleDegree.modifier()).toBe(expectation);
+    expect(scaleDegree.modifier).toBe(expectation);
   })
 });
+
+test

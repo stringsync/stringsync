@@ -73,13 +73,13 @@ class ScaleDegree {
     return ScaleDegree.VALUES_BY_LITERAL[this.literal];
   }
 
-  isEquivalent(other) {
-    return this.key.isEquivalent(other.key) && this.value === other.value;
-  }
-
-  modifier() {
+  get modifier() {
     const char = this.literal[0];
     return ScaleDegree.MODIFIERS.includes(char) ? char : '';
+  }
+
+  isEquivalent(other) {
+    return this.key.isEquivalent(other.key) && this.value === other.value;
   }
 
   distance(otherScaleDegree) {
