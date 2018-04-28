@@ -1,8 +1,13 @@
 import { Note } from 'services';
 import { Scale, ScaleDegree, scales } from './';
-import { forOwn } from 'lodash';
+import { times, forOwn, sample } from 'lodash';
 
 const KEYS = Note.ALL_LITERALS;
+
+const randomDegreeLiterals = () => {
+  const scaleName = sample(Object.keys(scales));
+  return scales[scaleName];
+};
 
 test('Scale.for', () => {
   KEYS.forEach(key => {
@@ -25,5 +30,13 @@ test('Scale.constructor sets the ScaleDegree scales to +this+', () => {
 
   scale.degrees.forEach(degree => {
     expect(degree.scale).toBe(scale);
+  });
+});
+
+test('Scale.constructor creates a Note object from the key with an octave of 1', () => {
+  Note.ALL_LITERALS.forEach(key => {
+    const scale = new Scale(key, randomDegreeLiterals());
+    expect(scale.key).toBeInstanceOf(Note);
+    expect(scale.key.octave).toBe(1);
   });
 });
