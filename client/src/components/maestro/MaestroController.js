@@ -1,4 +1,3 @@
-import React from 'react';
 import { compose, setPropTypes, lifecycle, withHandlers } from 'recompose';
 import { Maestro, TimeKeeper, RafLoop, RafSpec } from 'services';
 import { connect } from 'react-redux';

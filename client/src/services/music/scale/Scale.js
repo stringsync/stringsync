@@ -1,6 +1,5 @@
 import { Note } from 'services';
 import { ScaleDegree, scales } from './';
-import { sortBy } from 'lodash';
 
 /**
  * The purpose of this class is to transform a key and an array of ScaleDegree instances

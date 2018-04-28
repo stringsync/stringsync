@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'react-emotion';
 import { compose, withHandlers, setPropTypes, withProps } from 'recompose';
 import { connect } from 'react-redux';
-import { Icon, Row, Col } from 'antd';
+import { Row, Col } from 'antd';
 import { MiniNotationDetail, Scrubber, PlayToggle, MenuToggle } from './';
 import PropTypes from 'prop-types';
 
@@ -33,7 +33,7 @@ const enhance = compose (
       height: window.screen.height * ratio
     };
 
-    const isIphoneX = iOS && screen.width == 1125 && screen.height === 2436;
+    const isIphoneX = iOS && screen.width === 1125 && screen.height === 2436;
 
     return { isIphoneX }
   })

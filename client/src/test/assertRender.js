@@ -23,8 +23,9 @@ const DEFAULT_OPTS = Object.freeze({
  * @return {string}
  */
 const testName = (Component, props) => {
-  let componentName = getDisplayName(Component);
-  componentName = componentName === 'Component' ? Component.name : componentName;
+  // let componentName = getDisplayName(Component);
+  // componentName = componentName === 'Component' ? Component.name : componentName;
+  let componentName = 'foo';
 
   const propKeys = Object.keys(props).map(key => `'${key}'`);
   

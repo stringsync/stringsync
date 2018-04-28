@@ -52,7 +52,7 @@ const enhance = compose(
       const value = 100 * window.ss.maestro.timeKeeper.currentTimeMs / props.durationMs;
 
       // Guard against NaN since it makes the page crash
-      if (value === value && !props.isScrubbing) {
+      if (!isNaN(value) && !props.isScrubbing) {
         props.setValue(value);
       }
     }

@@ -1,4 +1,3 @@
-import { Scale } from 'services';
 import * as constants from './scaleDegreeConstants';
 
 class ScaleDegree {

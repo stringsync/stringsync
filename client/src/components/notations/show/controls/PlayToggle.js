@@ -1,5 +1,5 @@
 import React from 'react';
-import { compose, withHandlers, branch } from 'recompose';
+import { compose, withHandlers } from 'recompose';
 import { connect } from 'react-redux';
 import { Icon } from 'antd';
 import styled from 'react-emotion';

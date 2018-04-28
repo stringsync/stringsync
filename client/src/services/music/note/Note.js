@@ -1,5 +1,4 @@
 import { sortBy } from 'lodash';
-import { Scale } from 'services';
 import * as constants from './noteConstants';
 
 /**
