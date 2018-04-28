@@ -55,4 +55,3 @@ class Scale {
 }
 
 export default Scale;
-window.Scale = Scale;
