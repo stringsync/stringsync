@@ -1,7 +1,22 @@
 import React from 'react';
 import { PianoKey } from './';
 import styled from 'react-emotion';
-import { Scale } from 'services';
+import { Scale, Note } from 'services';
+import { compose, withProps } from 'recompose';
+import { range } from 'lodash';
+
+const enhance = compose(
+  withProps(props => {
+    const A0 = new Note('A', 0);
+    const C8 = new Note('C', 8);
+
+    const notes = Scale.for('C', 'chromatic').notes(range(9)).filter(note => (
+      note.compare(A0) >= 0 && note.compare(C8) <= 0
+    ));
+
+    return { notes };
+  })
+);
 
 const Outer = styled('div')`
   display: flex;
@@ -9,12 +24,13 @@ const Outer = styled('div')`
   justify-content: center;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  color: white;
 `;
 
-const PianoKeys = () => (
+const PianoKeys = enhance(props => (
   <Outer>
-  
+    {props.notes.map(note => note.toString()).join(', ')}
   </Outer>
-);
+));
 
 export default PianoKeys;
