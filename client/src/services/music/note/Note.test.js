@@ -214,3 +214,21 @@ test('Note.sort respects octaves', () => {
 
   expect(Note.sort(shuffledNotes).map(note => note.toString())).toEqual(sortedNoteStrings);
 });
+
+test('Note.prototype.compare', () => {
+  // Arrays of caller args, parameter args, expectation
+  const cases = [
+    [['C', 0], ['C', 0], 0],
+    [['C', 0], ['C#', 0], -1],
+    [['C#', 0], ['C', 0], 1],
+    [['A', 19], ['A', 20], -1],
+    [['Gb', 0], ['F#', 0], 0]
+  ];
+
+  cases.forEach(testCase => {
+    const [args1, args2, expectation] = testCase;
+    const note1 = new Note(...args1);
+    const note2 = new Note(...args2);
+    expect(note1.compare(note2)).toBe(expectation);
+  });
+});

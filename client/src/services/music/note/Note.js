@@ -155,6 +155,28 @@ class Note {
   }
 
   /**
+   * Compares +this+ with the other note. Similar to the spaceship operator in Ruby.
+   * 
+   * @param {Note} other 
+   * @returns {number} -1 if less than, 0 if equal to, 1 if greater than
+   */
+  compare(other) {
+    if (this.octave < other.octave) {
+      return -1;
+    } else if (this.octave > other.octave) {
+      return 1;
+    } else {
+      if (this.value < other.value) {
+        return -1;
+      } else if (this.value > other.value) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
+  }
+
+  /**
    * Compares the equality of the octaves.
    * 
    * @param {Note} other 
