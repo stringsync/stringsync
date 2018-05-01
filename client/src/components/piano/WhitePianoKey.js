@@ -27,6 +27,7 @@ const Inner = styled('div') `
 const MiddleC = styled('div')`
   margin-bottom: 3px;
   font-size: 10px;
+  color: black;
 `;
 
 const WhitePianoKey = props => (
