@@ -10,9 +10,11 @@ const enhance = compose(
     const A0 = new Note('A', 0);
     const C8 = new Note('C', 8);
 
-    const notes = Scale.for('C', 'chromatic').notes(range(9)).filter(note => (
+    let notes = Scale.for('C', 'chromatic').notes(range(9)).filter(note => (
       note.compare(A0) >= 0 && note.compare(C8) <= 0
     ));
+
+    notes = notes.map(note => note.toString());
 
     return { notes };
   })
@@ -29,7 +31,7 @@ const Outer = styled('div')`
 
 const PianoKeys = enhance(props => (
   <Outer>
-    {props.notes.map(note => note.toString()).join(', ')}
+    {props.notes.map(note => <PianoKey key={`piano-key-${note}`} note={note} />)}
   </Outer>
 ));
 
