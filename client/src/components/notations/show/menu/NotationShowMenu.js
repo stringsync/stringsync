@@ -19,10 +19,15 @@ const enhance = compose(
 const Outer = styled('div')`
   position: fixed;
   max-width: ${props => props.collapsed ? '0' : '350px'};
+  width: 100%;
   min-height: 100vh;
   background: white;
   top: 0;
   right: 0;
+`;
+
+const CheckDescription = styled('span')`
+  margin-left: 10px;
 `;
 
 const NotationShowMenu = enhance(props => (
@@ -34,32 +39,52 @@ const NotationShowMenu = enhance(props => (
       mode="inline"
       inlineCollapsed={props.collapsed}
     >
-      <Item key="1">
-        <Icon type="pie-chart" />
-        <span>Option 1</span>
-      </Item>
-      <Item key="2">
-        <Icon type="desktop" />
-        <span>Option 2</span>
-      </Item>
-      <Item key="3">
-        <Icon type="inbox" />
-        <span>Option 3</span>
-      </Item>
-      <SubMenu key="sub1" title={<span><Icon type="mail" /><span>Navigation One</span></span>}>
-        <Item key="5">Option 5</Item>
-        <Item key="6">Option 6</Item>
-        <Item key="7">Option 7</Item>
-        <Item key="8">Option 8</Item>
-      </SubMenu>
-      <SubMenu key="sub2" title={<span><Icon type="appstore" /><span>Navigation Two</span></span>}>
-        <Item key="9">Option 9</Item>
-        <Item key="10">Option 10</Item>
-        <SubMenu key="sub3" title="Submenu">
-          <Item key="11">Option 11</Item>
-          <Item key="12">Option 12</Item>
-        </SubMenu>
-      </SubMenu>
+      <ItemGroup title="notation">
+        <Item key="print">
+          <Link to={`/n/${props.match.params.id}/print`}>
+            <Icon type="printer" />
+            <span>print</span>
+          </Link>
+        </Item>
+        <Item key="edit">
+          <Link to={`/n/${props.match.params.id}/edit`}>
+            <Icon type="edit" />
+            <span>edit</span>
+          </Link>
+        </Item>
+        <Item key="show">
+          <Link to={`/n/${props.match.params.id}`}>
+            <Icon type="picture" />
+            <span>show</span>
+          </Link>
+        </Item>
+        <Item key="studio">
+          <Link to={`/n/${props.match.params.id}/studio`}>
+            <Icon type="video-camera" />
+            <span>studio</span>
+          </Link>
+        </Item>
+      </ItemGroup>
+      <ItemGroup title="visuals">
+        <Item key="fretboard">
+          <Checkbox checked={props.fretboardChecked} />
+          <CheckDescription>fretboard</CheckDescription>
+        </Item>
+        <Item key="piano">
+          <Checkbox checked={props.pianoChecked} />
+          <CheckDescription>piano</CheckDescription>
+        </Item>
+      </ItemGroup>
+      <ItemGroup title="player">
+        <Item key="suggestNotes">
+          <Checkbox checked={props.suggestNotesChecked} />
+          <CheckDescription>suggest notes</CheckDescription>
+        </Item>
+        <Item key="showLoop">
+          <Checkbox checked={props.showLoopChecked} />
+          <CheckDescription>show loop</CheckDescription>
+        </Item>
+      </ItemGroup>
     </Menu>
   </Outer>
 ));

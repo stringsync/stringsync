@@ -13,10 +13,14 @@ const enhance = compose(
   ),
   withHandlers({
     handlePlayClick: props => event => {
-      props.videoPlayer.playVideo();
+      if (props.videoPlayer) {
+        props.videoPlayer.playVideo();
+      }
     },
     handlePauseClick: props => event => {
-      props.videoPlayer.pauseVideo();
+      if (props.videoPlayer) {
+        props.videoPlayer.pauseVideo();
+      }
     }
   })
 );

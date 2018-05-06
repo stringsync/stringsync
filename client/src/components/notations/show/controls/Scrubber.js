@@ -85,7 +85,7 @@ const Scrubber = enhance(props => (
     value={props.value}
     tipFormatter={null}
     step={0.01}
-    style={{ margin: '0 4px 4px 4px' }}
+    style={{ margin: '4px' }}
   />
 ));
 
