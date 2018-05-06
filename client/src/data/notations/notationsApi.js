@@ -1,5 +1,6 @@
 import { notationsActions as actions } from './';
 import { indexIncludedObjects, camelCaseKeys } from 'utilities';
+import { sortBy } from 'lodash';
 
 export const fetchAllNotations = () => async dispatch => {
   const response = await fetch('/api/v1/notations');
@@ -25,5 +26,6 @@ export const fetchAllNotations = () => async dispatch => {
     }, true);
   });
 
-  dispatch(actions.notations.index.set(notations));
+  const sortedNotations = sortBy(notations, notation => new Date(notation.attributes.createdAt));
+  dispatch(actions.notations.index.set(sortedNotations.reverse()));
 };
