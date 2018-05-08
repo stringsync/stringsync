@@ -26,7 +26,6 @@ const enhance = compose(
     handleSignupSuccess: props => res => {
       props.setLoading(false);
       props.login(res.data);
-      props.history.push('/');
       window.ss.message.success(`signed in as ${res.data.name}`);
     },
     handleSignupError: props => res => {
