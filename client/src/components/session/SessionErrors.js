@@ -2,6 +2,7 @@ import React from 'react';
 import { compose, setPropTypes } from 'recompose';
 import PropTypes from 'prop-types';
 import styled from 'react-emotion';
+import { Alert } from 'antd';
 
 const enhance = compose(
   setPropTypes({
@@ -9,19 +10,33 @@ const enhance = compose(
   })
 );
 
-const StyledList = styled('ul')`
-  list-style: disc outside none;
-  margin-left: 20px;
+const OuterErrors = styled('div')`
+  text-align: center;
 `;
 
-const SessionErrors = enhance(props => (
-  <StyledList>
+const OuterSessionErrors = styled('div')`
+  margin-top: 20px;
+`;
+
+const Errors = props => (
+  <OuterErrors>
     {
       props.errors.map((error, ndx) => (
-        <li key={`session-error-${ndx}`}>{error}</li>
+        <div key={`session-error-${ndx}`}>{error}</div>
       ))
     }
-  </StyledList>
-));
+  </OuterErrors>
+);
+
+const SessionErrors = enhance(props => (
+  props.errors.length === 0
+    ? null
+    : <OuterSessionErrors>
+        <Alert
+          type="error"
+          message={<Errors errors={props.errors} />}
+        />
+      </OuterSessionErrors>
+))
 
 export default SessionErrors;

@@ -2,39 +2,42 @@ import React from 'react';
 import styled from 'react-emotion';
 import { Form, Icon, Input, Button, Checkbox } from 'antd';
 import { compose, setDisplayName, withState, withHandlers, withProps } from 'recompose';
-import { Link } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { SessionErrors } from '../';
-import { signup } from 'data';
+import { signup, sessionActions } from 'data';
 import { connect } from 'react-redux';
 
 const { Item } = Form;
 
 const enhance = compose(
   Form.create(),
+  withRouter,
   connect(
     null,
     dispatch => ({
-      signup: user => dispatch(signup(user))
+      signup: (user, onSuccess, onError) => dispatch(signup(user, onSuccess, onError)),
+      login: user => dispatch(sessionActions.session.login(user))
     })
   ),
   withState('confirmDirty', 'setConfirmDirty', false),
   withState('loading', 'setLoading', false),
   withState('errors', 'setErrors', []),
+  withHandlers({
+    handleSignupSuccess: props => res => {
+      props.setLoading(false);
+      props.login(res.data);
+      props.history.push('/');
+      window.ss.message.success(`signed in as ${res.data.name}`);
+    },
+    handleSignupError: props => res => {
+      props.setLoading(false);
+      props.setErrors(res.data.errors.full_messages);
+    }
+  }),
   withProps(props => ({
     trySignup: async user => {
       props.setLoading(true);
-
-      try {
-        await props.signup(user);
-      } catch (error) {
-        if (error.responseJSON) {
-          props.setErrors(error.responseJSON.message || []);
-        } else {
-          console.error(error);
-        }
-      }
-
-      props.setLoading(false);
+      await props.signup(user, props.handleSignupSuccess, props.handleSignupError);
     }
   })),
   withProps(props => ({
@@ -135,7 +138,9 @@ const SignupForm = enhance(props => (
     <Footer>
       Already have an account? <Link to="/login">login</Link>
     </Footer>
-    <SessionErrors errors={props.errors} />
+    <Footer>
+      <SessionErrors errors={props.errors} />
+    </Footer>
   </div>
 ));
 

@@ -5,34 +5,15 @@ import { omit } from 'lodash';
 export const login = () => async dispatch => {
 };
 
-export const signup = user => async dispatch => {
-  // const data = JSON.stringify({
-  //   user: {
-  //     name: user.username,
-  //     email: user.email,
-  //     password: user.password,
-  //   },
-  //   session: {
-  //     remember: user.remember
-  //   }
-  // });
-
-  // const response = await fetch('/api/v1/users', {
-  //   method: 'POST',
-  //   body: data,
-  //   headers: new Headers({ 'Content-Type': 'application/json' })
-  // });
-
-  // const json = await response.json();
-
-  // debugger
-
-  window.auth.emailSignUp({
+export const signup = (user, onSuccess, onError) => async dispatch => (
+  window.ss.auth.emailSignUp({
     name: user.username,
     email: user.email,
     password: user.password,
     password_confirmation: user.passwordConfirmation
   }).then(res => {
-    debugger
-  });
-};
+    onSuccess(res);
+  }).fail(res => {
+    onError(res);
+  })
+);
