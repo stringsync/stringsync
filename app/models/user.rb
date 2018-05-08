@@ -11,6 +11,7 @@ class User < ActiveRecord::Base
   has_many(:transcribed_notations, foreign_key: :transcriber_id, class_name: "Notation")
 
   validates(:name, uniqueness: true)
+  validates(:name, presence: true)
 
   before_create { skip_confirmation! }
 
