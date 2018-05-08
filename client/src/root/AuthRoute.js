@@ -6,23 +6,24 @@ import { connect } from 'react-redux';
 const enhance = compose(
   connect(
     state => ({
-      isSignedIn: state.session.isSignedIn
+      isSignedIn: state.session.signedIn
     })
   )
 );
 
-const AuthRoute = (Component, routeProps, requireSignIn) => (
+const AuthRoute = enhance(({ component: Component, requireSignIn, isSignedIn, ...restProps }) => (
   <Route
-    {...routeProps}
-    render={enhance(props => {
+    {...restProps}
+    render={
+      props => {
         if (requireSignIn) {
-          return props.isSignedIn ? <Component {...props} /> : <Redirect to="/login" />
+          return isSignedIn ? <Component {...props} /> : <Redirect to="/login" />
         } else {
-          return props.isSignedIn ? <Redirect to="/" /> : <Component {...props} /> 
+          return isSignedIn ? <Redirect to="/" /> : <Component {...props} />
         }
-      })
+      }
     }
   />
-);
+));
 
 export default AuthRoute;
