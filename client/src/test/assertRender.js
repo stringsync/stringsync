@@ -5,6 +5,7 @@ import { getDisplayName } from 'recompose';
 import { Root } from 'root';
 import { store } from 'data';
 import { xhrMock } from 'test';
+import { configure } from 'config';
 
 /**
  * Default options used for assertRender
@@ -70,6 +71,7 @@ const assertRender = (Component, props = {}, opts = DEFAULT_OPTS) => {
   it (testName(Component, props), () => {
     window.XMLHttpRequest = jest.fn(xhrMock);
 
+    configure();
     const div = document.createElement('div');
     const TestComponent = getTestComponent(Component, props, opts);
 
