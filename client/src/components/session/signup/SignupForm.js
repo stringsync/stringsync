@@ -11,7 +11,6 @@ const { Item } = Form;
 
 const enhance = compose(
   Form.create(),
-  withRouter,
   connect(
     null,
     dispatch => ({

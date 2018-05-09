@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 const enhance = compose(
   connect(
     state => ({
-      isSignedIn: state.session.signedIn
+      signedIn: state.session.signedIn
     })
   )
 );
@@ -17,15 +17,15 @@ const enhance = compose(
  * Specifying requireSignIn as true will require the user to be signed in to mount the component.
  * Specifying requireSignIn as false will require the user NOT to be signed in to mount the component.
  */
-const AuthRoute = enhance(({ component: Component, requireSignIn, isSignedIn, ...restProps }) => (
+const AuthRoute = enhance(({ component: Component, requireSignIn, signedIn, ...restProps }) => (
   <Route
     {...restProps}
     render={
       props => {
         if (requireSignIn) {
-          return isSignedIn ? <Component {...props} /> : <Redirect to="/login" />;
+          return signedIn ? <Component {...props} /> : <Redirect to="/login" />;
         } else {
-          return isSignedIn ? <Redirect to="/" /> : <Component {...props} />;
+          return signedIn ? <Redirect to="/" /> : <Component {...props} />;
         }
       }
     }
