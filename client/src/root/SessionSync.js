@@ -7,7 +7,7 @@ const enhance = compose(
   connect(
     null,
     dispatch => ({
-      login: user => dispatch(sessionActions.session.login(user))
+      login: user => dispatch(sessionActions.session.set(user))
     })
   )
 );

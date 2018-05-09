@@ -4,12 +4,31 @@ import { compose, withHandlers, withProps } from 'recompose';
 import { Link, withRouter } from 'react-router-dom';
 import { Row, Col, Menu, Icon } from 'antd';
 import { Logo } from './';
+import { connect } from 'react-redux';
+import { logout } from 'data';
 
 const enhance = compose(
   withRouter,
+  connect(
+    state => ({
+      session: state.session
+    }),
+    dispatch => ({
+      logout: () => dispatch(logout())
+    })
+  ),
   withHandlers({
     handleClick: props => event => {
-      props.history.push(event.key);
+      if (event.key.startsWith('/'))
+        props.history.push(event.key);
+      else {
+        switch(event.key) {
+          case 'logout':
+            props.logout();
+            window.ss.message.info('logged out');
+            break;
+        }
+      }
     }
   }),
   withProps(props => {
@@ -19,10 +38,21 @@ const enhance = compose(
   })
 );
 
-const I = styled(Icon)`
+const StyledIcon = styled(Icon)`
   && {
     margin: 0;
   }
+`;
+
+const SubMenuTitle = styled('div')`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const CaretIcon = styled(Icon)`
+  font-size: 8px;
+  margin-left: 5px;
 `;
 
 /**
@@ -47,14 +77,22 @@ const Nav = enhance(props => (
           multiple={false}
         >
           <Menu.Item key="/about">
-            <I type="question-circle-o" /> 
+            <StyledIcon type="question-circle-o" /> 
           </Menu.Item>
           <Menu.Item key="/">
-            <I type="home" />
+            <StyledIcon type="home" />
           </Menu.Item>
-          <Menu.Item key="/login">
-            <I type="user" />
-          </Menu.Item>
+          {
+            props.session.signedIn 
+              ? <Menu.SubMenu title={<SubMenuTitle><div>{props.session.name}</div><CaretIcon type="caret-down" /></SubMenuTitle>}>
+                  <Menu.Item key="logout">
+                    logout
+                  </Menu.Item>
+                </Menu.SubMenu>
+              : <Menu.Item key="/login">
+                  <StyledIcon type="user" />
+                </Menu.Item>
+          }
         </Menu>
       </Row>
     </Col>

@@ -1,5 +1,4 @@
 import { sessionActions as actions } from './';
-import { indexIncludedObjects, camelCaseKeys } from 'utilities';
 import { omit } from 'lodash';
 
 export const login = (user, onSuccess, onError) => async dispatch => (
@@ -25,3 +24,7 @@ export const signup = (user, onSuccess, onError) => async dispatch => (
     onError(res);
   })
 );
+
+export const logout = () => async dispatch => {
+  window.ss.auth.signOut().then(() => dispatch(actions.session.reset()));
+}
