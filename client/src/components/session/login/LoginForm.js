@@ -1,16 +1,55 @@
 import React from 'react';
 import styled from 'react-emotion';
 import { Form, Icon, Input, Button, Checkbox } from 'antd';
-import { compose, withState } from 'recompose';
+import { compose, withState, withHandlers, withProps } from 'recompose';
 import { Link } from 'react-router-dom';
 import { SessionErrors } from '../';
+import { connect } from 'react-redux';
+import { login, sessionActions } from 'data';
 
 const { Item } = Form;
 
 const enhance = compose(
   Form.create(),
+  connect(
+    null,
+    dispatch => ({
+      login: (user, onSuccess, onError) => dispatch(login(user, onSuccess, onError)),
+      setSession: user => dispatch(sessionActions.session.set(user))
+    })
+  ),
   withState('loading', 'setLoading', false),
-  withState('errors', 'setErrors', [])
+  withState('errors', 'setErrors', []),
+  withHandlers({
+    handleLoginSuccess: props => res => {
+      props.setLoading(false);
+      props.setSession(res.data);
+      window.ss.message.success(`signed in as ${res.data.name}`);
+    },
+    handleLoginError: props => res => {
+      props.setLoading(false);
+      props.setErrors(res.data.errors);
+    }
+  }),
+  withProps(props => ({
+    doLogin: async user => {
+      props.setLoading(true);
+      await props.login(user, props.handleLoginSuccess, props.handleLoginError);
+    }
+  })),
+  withHandlers({
+    afterValidate: props => (errors, user) => {
+      if (!errors) {
+        props.doLogin(user);
+      }
+    }
+  }),
+  withHandlers({
+    handleSubmit: props => event => {
+      event.preventDefault();
+      props.form.validateFields(props.afterValidate);
+    }
+  })
 );
 
 const Outer = styled('div')`
@@ -28,12 +67,12 @@ const Footer = styled('div') `
 
 const LoginForm = enhance(props => (
   <Outer>
-    <Form onSubmit={this.handleSubmit}>
+    <Form onSubmit={props.handleSubmit}>
       <Item>
-        {props.form.getFieldDecorator('username', {
-          rules: [{ required: true, message: 'username cannot be blank' }],
+        {props.form.getFieldDecorator('email', {
+          rules: [{ required: true, message: 'email cannot be blank' }],
         })(
-          <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="username" />
+          <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="email" />
         )}
       </Item>
       <Item>
@@ -44,7 +83,7 @@ const LoginForm = enhance(props => (
         )}
       </Item>
       <Item>
-        <LoginButton type="primary" htmlType="submit">
+        <LoginButton type="primary" htmlType="submit" loading={props.loading}>
           login
         </LoginButton>
       </Item>

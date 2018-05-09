@@ -3,13 +3,11 @@ import { sessionActions as actions, sessionDefaultState as defaultState } from '
 import { pick } from 'lodash';
 
 const sessionReducer = handleActions({
-  [combineActions(actions.session.login)]: (state, action) => ({
+  [combineActions(actions.session.set)]: (state, action) => ({
     signedIn: true,
     ...pick(action.payload.user, ['email', 'uid', 'id', 'image', 'name', 'provider', 'role'])
   }),
-  [combineActions(actions.session.logout)]: (state, action) => ({
-    ...state
-  })
+  [combineActions(actions.session.reset)]: (state, action) => Object.assign({}, defaultState)
 }, defaultState);
 
 export default sessionReducer;

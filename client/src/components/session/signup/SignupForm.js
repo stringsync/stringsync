@@ -15,7 +15,7 @@ const enhance = compose(
     null,
     dispatch => ({
       signup: (user, onSuccess, onError) => dispatch(signup(user, onSuccess, onError)),
-      login: user => dispatch(sessionActions.session.login(user))
+      setSession: user => dispatch(sessionActions.session.set(user))
     })
   ),
   withState('confirmDirty', 'setConfirmDirty', false),
@@ -24,7 +24,7 @@ const enhance = compose(
   withHandlers({
     handleSignupSuccess: props => res => {
       props.setLoading(false);
-      props.login(res.data);
+      props.setSession(res.data);
       window.ss.message.success(`signed in as ${res.data.name}`);
     },
     handleSignupError: props => res => {
@@ -33,7 +33,7 @@ const enhance = compose(
     }
   }),
   withProps(props => ({
-    trySignup: async user => {
+    doSignup: async user => {
       props.setLoading(true);
       await props.signup(user, props.handleSignupSuccess, props.handleSignupError);
     }
@@ -54,9 +54,9 @@ const enhance = compose(
       const { value } = event.target;
       props.setConfirmDirty(props.confirmDity || !!value);
     },
-    afterValidate: props => (errors, user) => {''
+    afterValidate: props => (errors, user) => {
       if (!errors) {
-        props.trySignup(user);
+        props.doSignup(user);
       }
     }
   }),
