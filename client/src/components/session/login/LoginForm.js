@@ -21,8 +21,9 @@ const LoginButton = styled(Button) `
   width: 100%;
 `;
 
-const ForgotLink = styled('a') `
-  float: right;
+const Footer = styled('div') `
+  width: 100%;
+  text-align: center;
 `;
 
 const LoginForm = enhance(props => (
@@ -43,20 +44,17 @@ const LoginForm = enhance(props => (
         )}
       </Item>
       <Item>
-        {props.form.getFieldDecorator('remember', {
-          valuePropName: 'checked',
-          initialValue: true,
-        })(
-          <Checkbox>remember me</Checkbox>
-        )}
-        <ForgotLink href="">forgot password</ForgotLink>
         <LoginButton type="primary" htmlType="submit">
           login
         </LoginButton>
-        or <Link to="/signup">register now!</Link>
       </Item>
     </Form>
-    <SessionErrors errors={props.errors} />
+    <Footer>
+      or <Link to="/signup">register now!</Link>
+    </Footer>
+    <Footer>
+      <SessionErrors errors={props.errors} />
+    </Footer>
   </Outer> 
 ));
 
