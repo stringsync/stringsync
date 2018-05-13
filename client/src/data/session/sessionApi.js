@@ -25,6 +25,26 @@ export const signup = (user, onSuccess, onError) => async dispatch => (
   })
 );
 
-export const logout = () => async dispatch => {
-  window.ss.auth.signOut().then(() => dispatch(actions.session.reset()));
-}
+export const facebookLogin = (onSuccess, onError) => async dispatch => (
+  window.ss.auth.oAuthSignIn({
+    provider: 'facebook'
+  }).then(res => {
+    onSuccess(res);
+  }).fail(res => {
+    onError(res);
+  })
+);
+
+export const googleLogin = (onSuccess, onError) => async dispatch => (
+  window.ss.auth.oAuthSignIn({
+    provider: 'google'
+  }).then(res => {
+    onSuccess(res);
+  }).fail(res => {
+    onError(res);
+  })
+);
+
+export const logout = () => async dispatch => (
+  window.ss.auth.signOut().then(() => dispatch(actions.session.reset()))
+);
