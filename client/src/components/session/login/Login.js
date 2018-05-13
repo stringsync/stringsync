@@ -4,7 +4,7 @@ import { SessionFormWrapper } from 'components';
 import { LoginForm } from './';
 
 const enhance = compose(
-  setDisplayName('Login'),
+  setDisplayName('Login')
 );
 
 const Login = enhance(props => (

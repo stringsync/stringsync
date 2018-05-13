@@ -4,7 +4,7 @@ import { compose, setDisplayName, lifecycle } from 'recompose';
 import { Layout } from 'antd';
 import { Nav } from 'components';
 import styled from 'react-emotion';
-import { ViewportSync, Routes } from './';
+import { ViewportSync, SessionSync, Routes } from './';
 
 const enhance = compose(
   setDisplayName('App'),
@@ -47,6 +47,7 @@ const LayoutFooter = styled(Layout.Footer)`
 const App = enhance(props => (
   <main className="app">
     <ViewportSync />
+    <SessionSync />
     <Gradient />
     <Layout>
       <LayoutHeader>
