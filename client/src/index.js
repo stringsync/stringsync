@@ -7,4 +7,4 @@ import { configure } from 'config';
 
 configure();
 ReactDOM.render(<Root store={store} />, document.getElementById('root'));
-registerServiceWorker();
+// registerServiceWorker();
