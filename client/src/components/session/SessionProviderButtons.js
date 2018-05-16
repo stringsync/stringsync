@@ -6,6 +6,7 @@ import { compose, withHandlers, withState } from 'recompose';
 import { facebookLogin, googleLogin } from 'data';
 import { connect } from 'react-redux';
 import { sessionActions } from 'data';
+import { registerServiceWorker, unregisterServiceWorker } from 'utilities';
 
 const enhance = compose(
   withState('facebookLoading', 'setFacebookLoading', false),
@@ -33,12 +34,16 @@ const enhance = compose(
   }),
   withHandlers({
     handleFacebookClick: props => event => {
+      unregisterServiceWorker();
       props.setFacebookLoading(true);
       props.facebookLogin(props.handleSuccess, props.handleError);
+      registerServiceWorker();
     },
     handleGoogleClick: props => event => {
+      unregisterServiceWorker();
       props.setGoogleLoading(true);
       props.googleLogin(props.handleSuccess, props.handleError);
+      registerServiceWorker();
     }
   })
 );
