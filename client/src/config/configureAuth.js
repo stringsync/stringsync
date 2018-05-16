@@ -17,7 +17,7 @@ const getApiUrl = () => {
       return 'http://localhost:3001';
     case 'production':
     case 'PRODUCTION':
-      return window.location.origin;
+      return `${window.location.origin}/api`;
     default:
       console.warn(`no API url for ${window.ss.env}`);
       return '';
