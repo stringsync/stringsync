@@ -36,13 +36,25 @@ const enhance = compose(
     handleFacebookClick: props => event => {
       unregisterServiceWorker();
       props.setFacebookLoading(true);
-      props.facebookLogin(props.handleSuccess, props.handleError);
+
+      try {
+        props.facebookLogin(props.handleSuccess, props.handleError);
+      } catch (error) {
+        console.error(error);
+      }
+
       registerServiceWorker();
     },
     handleGoogleClick: props => event => {
       unregisterServiceWorker();
       props.setGoogleLoading(true);
-      props.googleLogin(props.handleSuccess, props.handleError);
+
+      try {
+        props.googleLogin(props.handleSuccess, props.handleError);
+      } catch (error) {
+        console.error(error);
+      }
+
       registerServiceWorker();
     }
   })
