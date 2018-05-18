@@ -3,7 +3,7 @@ import styled from 'react-emotion';
 import { compose, withHandlers, withProps } from 'recompose';
 import { Link, withRouter } from 'react-router-dom';
 import { Row, Col, Menu, Icon } from 'antd';
-import { Logo } from './';
+import { NavLogo } from './';
 import { connect } from 'react-redux';
 import { logout } from 'data';
 
@@ -63,7 +63,7 @@ const Nav = enhance(props => (
     <Col span={8}>
       <Row type="flex" justify="start">
         <Link to="/">
-          <Logo />
+          <NavLogo />
         </Link>
       </Row>
     </Col>
