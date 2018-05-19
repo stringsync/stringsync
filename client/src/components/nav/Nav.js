@@ -6,6 +6,7 @@ import { Row, Col, Menu, Icon } from 'antd';
 import { NavLogo } from './';
 import { connect } from 'react-redux';
 import { logout } from 'data';
+import { Avatar } from 'components';
 
 const enhance = compose(
   withRouter,
@@ -55,10 +56,7 @@ const CaretIcon = styled(Icon)`
   margin-left: 5px;
 `;
 
-const CircleImg = styled('img')`
-  width: 36px;
-  height: 36px;
-  background: ${props => props.theme.borderColor};
+const AvatarContainer = styled('div')`
   margin: 0 8px;
 `;
 
@@ -95,11 +93,9 @@ const Nav = enhance(props => (
                   title={
                     <SubMenuTitle>
                       <div>{props.session.name}</div>
-                      {
-                        props.session.image
-                          ? <div><CircleImg src={props.session.image} /></div>
-                          : null
-                      }
+                      <AvatarContainer>
+                        {<Avatar src={props.session.image} name={props.session.name} />}
+                      </AvatarContainer>
                       <CaretIcon type="caret-down" />
                     </SubMenuTitle>
                   }
