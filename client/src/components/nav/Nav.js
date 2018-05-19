@@ -3,7 +3,7 @@ import styled from 'react-emotion';
 import { compose, withHandlers, withProps } from 'recompose';
 import { Link, withRouter } from 'react-router-dom';
 import { Row, Col, Menu, Icon } from 'antd';
-import { Logo } from './';
+import { NavLogo } from './';
 import { connect } from 'react-redux';
 import { logout } from 'data';
 
@@ -55,6 +55,13 @@ const CaretIcon = styled(Icon)`
   margin-left: 5px;
 `;
 
+const CircleImg = styled('img')`
+  width: 36px;
+  height: 36px;
+  background: ${props => props.theme.borderColor};
+  margin: 0 8px;
+`;
+
 /**
  * Navigation menu for all platforms
  */
@@ -63,7 +70,7 @@ const Nav = enhance(props => (
     <Col span={8}>
       <Row type="flex" justify="start">
         <Link to="/">
-          <Logo />
+          <NavLogo />
         </Link>
       </Row>
     </Col>
@@ -84,7 +91,19 @@ const Nav = enhance(props => (
           </Menu.Item>
           {
             props.session.signedIn 
-              ? <Menu.SubMenu title={<SubMenuTitle><div>{props.session.name}</div><CaretIcon type="caret-down" /></SubMenuTitle>}>
+              ? <Menu.SubMenu
+                  title={
+                    <SubMenuTitle>
+                      <div>{props.session.name}</div>
+                      {
+                        props.session.image
+                          ? <div><CircleImg src={props.session.image} /></div>
+                          : null
+                      }
+                      <CaretIcon type="caret-down" />
+                    </SubMenuTitle>
+                  }
+                >
                   <Menu.Item key="logout">
                     logout
                   </Menu.Item>
