@@ -4,6 +4,7 @@ import { compose, setDisplayName, setPropTypes, withProps } from 'recompose';
 import PropTypes from 'prop-types';
 import styled from 'react-emotion';
 import { kebabCase } from 'lodash';
+import { Avatar } from 'components';
 
 const enhance = compose(
   setDisplayName('NotationDetail'),
@@ -15,8 +16,9 @@ const enhance = compose(
     const { thumbnailUrl, songName, artistName } = props.notation.attributes;
     const tagNames = props.notation.relationships.tags.map(tag => tag.attributes.name).sort();
     const transcriberName = props.notation.relationships.transcriber.attributes.name;
+    const transcriberImage = props.notation.relationships.transcriber.attributes.image;
 
-    return { thumbnailUrl, songName, artistName, tagNames, transcriberName };
+    return { thumbnailUrl, songName, artistName, tagNames, transcriberName, transcriberImage };
   })
 );
 
@@ -35,6 +37,7 @@ const TagNames = styled('div')`
 const NotationDetail = enhance(props => (
   <Card cover={<CoverImg src={props.thumbnailUrl} alt={kebabCase(props.songName)} />}>
     <Card.Meta
+      avatar={<Avatar src={props.transcriberImage} name={props.transcriberName} />}
       title={props.songName}
       description={`by ${props.artistName} | ${props.transcriberName}`}
     />
