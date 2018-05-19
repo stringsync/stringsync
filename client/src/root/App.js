@@ -5,6 +5,7 @@ import { Layout } from 'antd';
 import { Nav } from 'components';
 import styled from 'react-emotion';
 import { ViewportSync, SessionSync, Routes } from './';
+import { pick, values } from 'lodash';
 
 const enhance = compose(
   setDisplayName('App'),
@@ -17,10 +18,12 @@ const enhance = compose(
   })
 );
 
+const colors = ['primaryColor', 'secondaryColor', 'tertiaryColor'];
+
 const Gradient = styled('div')`
   height: 2px;
   background: #FC354C;
-  background: linear-gradient(to right, #039E9E, #0ABFBC, #B3FB66, #FC354C);
+  background: linear-gradient(to right, ${props => values(pick(props.theme, colors)).join(', ')});
 `;
 
 const LayoutHeader = styled(Layout.Header)`

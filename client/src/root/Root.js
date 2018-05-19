@@ -17,9 +17,9 @@ const enhance = compose(
 
 const theme = {
   primaryColor: '#FC354C',
-  secondaryColor: '#B3FB66',
-  tertiaryColor: '#0ABFBC',
-  quaternaryColor: '#039E9E',
+  secondaryColor: '#6CABBA',
+  tertiaryColor: '#F4F4F4',
+  quaternaryColor: '#161616',
   borderColor: '#EFEFEF'
 };
 
