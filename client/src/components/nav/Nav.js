@@ -55,6 +55,13 @@ const CaretIcon = styled(Icon)`
   margin-left: 5px;
 `;
 
+const CircleImg = styled('img')`
+  width: 36px;
+  height: 36px;
+  background: ${props => props.theme.borderColor};
+  margin: 0 8px;
+`;
+
 /**
  * Navigation menu for all platforms
  */
@@ -84,7 +91,19 @@ const Nav = enhance(props => (
           </Menu.Item>
           {
             props.session.signedIn 
-              ? <Menu.SubMenu title={<SubMenuTitle><div>{props.session.name}</div><CaretIcon type="caret-down" /></SubMenuTitle>}>
+              ? <Menu.SubMenu
+                  title={
+                    <SubMenuTitle>
+                      <div>{props.session.name}</div>
+                      {
+                        props.session.image
+                          ? <div><CircleImg src={props.session.image} /></div>
+                          : null
+                      }
+                      <CaretIcon type="caret-down" />
+                    </SubMenuTitle>
+                  }
+                >
                   <Menu.Item key="logout">
                     logout
                   </Menu.Item>
