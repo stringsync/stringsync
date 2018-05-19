@@ -12,7 +12,8 @@ const enhance = compose(
   withRouter,
   connect(
     state => ({
-      session: state.session
+      session: state.session,
+      viewportType: state.viewport.type
     }),
     dispatch => ({
       logout: () => dispatch(logout())
@@ -92,7 +93,11 @@ const Nav = enhance(props => (
               ? <Menu.SubMenu
                   title={
                     <SubMenuTitle>
-                      <div>{props.session.name}</div>
+                      {
+                        props.viewportType === 'DESKTOP'
+                          ? <div>{props.session.name}</div>
+                          : null
+                      }
                       <AvatarContainer>
                         {<Avatar src={props.session.image} name={props.session.name} />}
                       </AvatarContainer>
