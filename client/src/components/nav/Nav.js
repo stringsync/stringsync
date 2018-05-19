@@ -65,14 +65,14 @@ const AvatarContainer = styled('div')`
  */
 const Nav = enhance(props => (
   <Row>
-    <Col span={8}>
+    <Col span={4}>
       <Row type="flex" justify="start">
         <Link to="/">
           <NavLogo />
         </Link>
       </Row>
     </Col>
-    <Col span={16}>
+    <Col span={20}>
       <Row type="flex" justify="end">
         <Menu
           mode="horizontal"

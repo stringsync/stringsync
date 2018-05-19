@@ -6,6 +6,7 @@ import { withRouter, Link } from 'react-router-dom';
 import { SessionErrors } from '../';
 import { signup, sessionActions } from 'data';
 import { connect } from 'react-redux';
+import { get } from 'lodash';
 
 const { Item } = Form;
 
@@ -29,7 +30,7 @@ const enhance = compose(
     },
     handleSignupError: props => res => {
       props.setLoading(false);
-      props.setErrors(res.data.errors.full_messages);
+      props.setErrors(get(res.data.errors, 'full_messages') || ['Something went wrong']);
     }
   }),
   withProps(props => ({

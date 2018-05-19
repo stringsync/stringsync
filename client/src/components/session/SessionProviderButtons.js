@@ -29,7 +29,7 @@ const enhance = compose(
     handleError: props => res => {
       props.setFacebookLoading(false);
       props.setGoogleLoading(false);
-      window.ss.message.error('Could not sign in.');
+      window.ss.message.error('could not sign in');
     }
   }),
   withHandlers({

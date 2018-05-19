@@ -28,7 +28,7 @@ const enhance = compose(
     },
     handleLoginError: props => res => {
       props.setLoading(false);
-      props.setErrors(res.data.errors);
+      props.setErrors(res.data.errors || ['Something went wrong']);
     }
   }),
   withProps(props => ({
