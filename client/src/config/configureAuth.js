@@ -19,7 +19,6 @@ const getApiUrl = () => {
     case 'PRODUCTION':
       return window.location.origin;
     default:
-      console.warn(`no API url for ${window.ss.env}`);
       return '';
   }
 };
