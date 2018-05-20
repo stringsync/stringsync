@@ -51,6 +51,7 @@ const MainHeader = styled('h1')`
 
 const StyledSection = styled('section')`
   margin: 48px 0;
+  color: ${props => props.theme.quaternaryColor};
 `;
 
 const SectionHeader = styled('h2')`
@@ -60,6 +61,18 @@ const SectionHeader = styled('h2')`
 
 const StyledImg = styled('img')`
   width: 100%;
+`;
+
+const ImgWithMargin = styled('img')`
+  width: 75%;
+  margin-bottom: 36px;
+`;
+
+const ImgContainer = styled('div')`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const StyledLink = styled(Link)`
@@ -133,7 +146,7 @@ const About = enhance(props => (
       justify="center"
       background="tertiaryColor"
       color="primaryColor"
-      height={128}
+      height={64}
     >
       <Col {...BANNER_COL_SPEC}>
         <MainHeader
@@ -152,41 +165,53 @@ const About = enhance(props => (
       height={128}
     >
       <Col {...STACKED_COL_SPEC}>
-        <Row>
+        <Row
+          type="flex"
+          justify="center"
+        >
           <Col span={16}>
-            <ul>
-              <li>
-                <h2>learn fast</h2>
-                <p>
-                  lorem ipsum dolor sit amet, consectetuer
-                  lorem ipsum dolor sit amet, consectetuer
-                  lorem ipsum dolor sit amet, consectetuer
-                  lorem ipsum dolor sit amet, consectetuer
-                </p>
-              </li>
-              <li>
-                <h2>learn fast</h2>
-                <p>
-                  lorem ipsum dolor sit amet, consectetuer
-                  lorem ipsum dolor sit amet, consectetuer
-                  lorem ipsum dolor sit amet, consectetuer
-                  lorem ipsum dolor sit amet, consectetuer
-                </p>
-              </li>
-              <li>
-                <h2>learn fast</h2>
-                <p>
-                  lorem ipsum dolor sit amet, consectetuer
-                  lorem ipsum dolor sit amet, consectetuer
-                  lorem ipsum dolor sit amet, consectetuer
-                  lorem ipsum dolor sit amet, consectetuer
-                </p></li>
-            </ul>
+            <Row>
+              <Col>
+                <StyledSection>
+                  <SectionHeader>learn fast</SectionHeader>
+                  <p>
+                    lorem ipsum dolor sit amet, consectetuer
+                    lorem ipsum dolor sit amet, consectetuer
+                    lorem ipsum dolor sit amet, consectetuer
+                    lorem ipsum dolor sit amet, consectetuer
+                  </p>
+                </StyledSection>
+              </Col>
+              <Col>
+                <StyledSection>
+                  <SectionHeader>develop your skills</SectionHeader>
+                  <p>
+                    lorem ipsum dolor sit amet, consectetuer
+                    lorem ipsum dolor sit amet, consectetuer
+                    lorem ipsum dolor sit amet, consectetuer
+                    lorem ipsum dolor sit amet, consectetuer
+                  </p>
+                </StyledSection>
+              </Col>
+              <Col>
+                <StyledSection>
+                  <SectionHeader>explore music</SectionHeader>
+                  <p>
+                    lorem ipsum dolor sit amet, consectetuer
+                    lorem ipsum dolor sit amet, consectetuer
+                    lorem ipsum dolor sit amet, consectetuer
+                    lorem ipsum dolor sit amet, consectetuer
+                  </p>
+                </StyledSection>
+              </Col>
+            </Row>
           </Col>
         </Row>
       </Col>
       <Col {...STACKED_COL_SPEC}>
-        <StyledImg src={aboutGuitar2Src} alt="about-guitar-2" />
+        <ImgContainer>
+          <ImgWithMargin src={aboutGuitar2Src} alt="about-guitar-2" />
+        </ImgContainer>
       </Col>
     </StyledRow>
     <StyledRow
