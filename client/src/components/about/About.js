@@ -15,8 +15,8 @@ const BANNER_COL_SPEC = Object.freeze({
   sm: 12,
   md: 10,
   lg: 8,
-  xl: 6,
-  xxl: 5
+  xl: 7,
+  xxl: 6
 });
 
 const STACKED_COL_SPEC = Object.freeze({
@@ -48,6 +48,11 @@ const enhance = compose(
     })
   )
 );
+
+const Outer = styled('div')`
+  max-width: 1200px;
+  margin: 0 auto;
+`;
 
 const StyledRow = styled(Row)`
   background: ${props => props.theme[props.background]};
@@ -103,7 +108,7 @@ const VideoContainer = styled('div')`
 `;
 
 const About = enhance(props => (
-  <div>
+  <Outer>
     <StyledRow
       type="flex"
       align="middle"
@@ -202,7 +207,7 @@ const About = enhance(props => (
                   <SectionHeader>learn fast</SectionHeader>
                   <p>
                     Practice makes perfect. StringSync helps you learn music by making it super easy
-                    loop and slow down sections of music at a time.
+                    loop and slow down sections of music.
                   </p>
                 </StyledSection>
               </Col>
@@ -245,7 +250,7 @@ const About = enhance(props => (
         Get Started
       </StyledLink>
     </StyledRow>
-  </div>
+  </Outer>
 ));
 
 export default About;
