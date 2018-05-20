@@ -8,6 +8,7 @@ import { Icon, Row, Col } from 'antd';
 import { compose, } from 'recompose';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import YouTube from 'react-youtube';
 
 const BANNER_COL_SPEC = Object.freeze({
   xxs: 14,
@@ -25,6 +26,19 @@ const STACKED_COL_SPEC = Object.freeze({
   lg: 12,
   xl: 12,
   xxl: 12
+});
+
+const DEFAULT_YOUTUBE_OPTIONS = Object.freeze({
+  playerVars: {
+    modestbranding: 1,
+    playsinline: 1,
+    rel: 0,
+    showinfo: 0,
+    disablekb: 1,
+    fs: 0,
+    start: 0,
+    loop: 1,
+  }
 });
 
 const enhance = compose(
@@ -64,7 +78,7 @@ const StyledImg = styled('img')`
 `;
 
 const ImgWithMargin = styled('img')`
-  width: 75%;
+  width: 66%;
   margin-bottom: 36px;
 `;
 
@@ -80,6 +94,12 @@ const StyledLink = styled(Link)`
   padding: 4px 16px;
   background: ${props => props.theme.tertiaryColor};
   font-size: 24px;
+`;
+
+const VideoContainer = styled('div')`
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const About = enhance(props => (
@@ -132,13 +152,19 @@ const About = enhance(props => (
       color="tertiaryColor"
       height={512}
     >
-      <Col {...BANNER_COL_SPEC}>
+      <Col span={24}>
         <MainHeader
           color="tertiaryColor"
           viewportType={props.viewportType}
         >
-          It's so easy
+          It's easy
         </MainHeader>
+        <VideoContainer>
+          <YouTube
+            opts={DEFAULT_YOUTUBE_OPTIONS}
+            videoId="aJS7OIFPUQc"
+          />
+        </VideoContainer>
       </Col>
     </StyledRow>
     <StyledRow
@@ -175,10 +201,8 @@ const About = enhance(props => (
                 <StyledSection>
                   <SectionHeader>learn fast</SectionHeader>
                   <p>
-                    lorem ipsum dolor sit amet, consectetuer
-                    lorem ipsum dolor sit amet, consectetuer
-                    lorem ipsum dolor sit amet, consectetuer
-                    lorem ipsum dolor sit amet, consectetuer
+                    Practice makes perfect. StringSync helps you learn music by making it super easy
+                    loop and slow down sections of music at a time.
                   </p>
                 </StyledSection>
               </Col>
@@ -186,10 +210,8 @@ const About = enhance(props => (
                 <StyledSection>
                   <SectionHeader>develop your skills</SectionHeader>
                   <p>
-                    lorem ipsum dolor sit amet, consectetuer
-                    lorem ipsum dolor sit amet, consectetuer
-                    lorem ipsum dolor sit amet, consectetuer
-                    lorem ipsum dolor sit amet, consectetuer
+                    Grow your improvisation skills using our note suggestions. They allow you
+                    to tap into the secrets of music theory without hours of reading.
                   </p>
                 </StyledSection>
               </Col>
@@ -197,10 +219,8 @@ const About = enhance(props => (
                 <StyledSection>
                   <SectionHeader>explore music</SectionHeader>
                   <p>
-                    lorem ipsum dolor sit amet, consectetuer
-                    lorem ipsum dolor sit amet, consectetuer
-                    lorem ipsum dolor sit amet, consectetuer
-                    lorem ipsum dolor sit amet, consectetuer
+                    We have a wide variety of music for you to learn and enjoy. Use our tagging system
+                    to find that gospel-metal-jazz sound you've been looking to learn!
                   </p>
                 </StyledSection>
               </Col>
