@@ -14,9 +14,9 @@ const BANNER_COL_SPEC = Object.freeze({
   xxs: 14,
   sm: 12,
   md: 10,
-  lg: 8,
-  xl: 7,
-  xxl: 6
+  lg: 9,
+  xl: 8,
+  xxl: 7
 });
 
 const STACKED_COL_SPEC = Object.freeze({
@@ -59,17 +59,20 @@ const StyledRow = styled(Row)`
   color: ${props => props.theme[props.color]};
   min-height: ${props => props.height}px;
   width: 100%;
+  position: relative;
 `;
 
 const MainHeader = styled('h1')`
-  font-size: 1.5em;
+  font-size: 2em;
+  letter-spacing: 2px;
   text-align: center;
-  margin: 24px;
+  margin: 36px 24px 36px 24px;
   color: ${props => props.theme[props.color]};
 `;
 
 const StyledSection = styled('section')`
-  margin: 48px 0;
+  margin: 24px;
+  margin-top: ${props => props.first ? '0' : '24'}px;
   color: ${props => props.theme.quaternaryColor};
 `;
 
@@ -80,18 +83,6 @@ const SectionHeader = styled('h2')`
 
 const StyledImg = styled('img')`
   width: 100%;
-`;
-
-const ImgWithMargin = styled('img')`
-  width: 66%;
-  margin-bottom: 36px;
-`;
-
-const ImgContainer = styled('div')`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 `;
 
 const StyledLink = styled(Link)`
@@ -105,6 +96,10 @@ const VideoContainer = styled('div')`
   display: flex;
   justify-content: center;
   align-items: center;
+  position: absolute;
+  top: 120;
+  z-index: 5;
+  width: 100%;
 `;
 
 const About = enhance(props => (
@@ -137,13 +132,12 @@ const About = enhance(props => (
       </Col>
       <Col {...STACKED_COL_SPEC}>
         <Row type="flex" align="middle" justify="center">
-          <Col span={16}>
+          <Col span={props.viewportType === 'DESKTOP' ? 18 : 24}>
             <StyledSection viewportType={props.viewportType}>
-              <SectionHeader>we crafted a tool that simplifies learning guitar</SectionHeader>
+              <SectionHeader>We believe that learning music should be simple</SectionHeader>
               <p>
-                We believe learning music should be simple. While traditional guitar teaching methods
-                can be a bit inefficient, StringSync allows you to hear, see, and play - at the same
-                time.
+                While traditional guitar teaching methods can be a bit inefficient, StringSync
+                allows you to hear, see, and play &mdash; at the same time.
               </p>
             </StyledSection>
           </Col>
@@ -155,7 +149,7 @@ const About = enhance(props => (
       justify="center"
       background="secondaryColor"
       color="tertiaryColor"
-      height={512}
+      height={256}
     >
       <Col span={24}>
         <MainHeader
@@ -173,11 +167,16 @@ const About = enhance(props => (
       </Col>
     </StyledRow>
     <StyledRow
+      background="tertiaryColor"
+      color="primaryColor"
+      height={256}
+    />
+    <StyledRow
       type="flex"
       justify="center"
       background="tertiaryColor"
       color="primaryColor"
-      height={64}
+      height={128}
     >
       <Col {...BANNER_COL_SPEC}>
         <MainHeader
@@ -199,12 +198,13 @@ const About = enhance(props => (
         <Row
           type="flex"
           justify="center"
+          align="middle"
         >
-          <Col span={16}>
+          <Col span={props.viewportType === 'DESKTOP' ? 18 : 24}>
             <Row>
               <Col>
-                <StyledSection>
-                  <SectionHeader>learn fast</SectionHeader>
+                <StyledSection first>
+                  <SectionHeader>Learn fast</SectionHeader>
                   <p>
                     Practice makes perfect. StringSync helps you learn music by making it super easy
                     loop and slow down sections of music.
@@ -213,7 +213,7 @@ const About = enhance(props => (
               </Col>
               <Col>
                 <StyledSection>
-                  <SectionHeader>develop your skills</SectionHeader>
+                  <SectionHeader>Develop your skills</SectionHeader>
                   <p>
                     Grow your improvisation skills using our note suggestions. They allow you
                     to tap into the secrets of music theory without hours of reading.
@@ -222,7 +222,7 @@ const About = enhance(props => (
               </Col>
               <Col>
                 <StyledSection>
-                  <SectionHeader>explore music</SectionHeader>
+                  <SectionHeader>Explore music</SectionHeader>
                   <p>
                     We have a wide variety of music for you to learn and enjoy. Use our tagging system
                     to find that gospel-metal-jazz sound you've been looking to learn!
@@ -234,9 +234,7 @@ const About = enhance(props => (
         </Row>
       </Col>
       <Col {...STACKED_COL_SPEC}>
-        <ImgContainer>
-          <ImgWithMargin src={aboutGuitar2Src} alt="about-guitar-2" />
-        </ImgContainer>
+        <StyledImg src={aboutGuitar2Src} alt="about-guitar-2" />
       </Col>
     </StyledRow>
     <StyledRow
@@ -244,7 +242,7 @@ const About = enhance(props => (
       align="middle"
       justify="center"
       background="primaryColor"
-      height={256}
+      height={128}
     >
       <StyledLink to="/">
         Get Started
