@@ -6,6 +6,7 @@ import { Nav } from 'components';
 import styled from 'react-emotion';
 import { ViewportSync, SessionSync, Routes } from './';
 import { pick, values } from 'lodash';
+import { Link } from 'react-router-dom';
 
 const enhance = compose(
   setDisplayName('App'),
@@ -40,8 +41,26 @@ const LayoutHeaderInner = styled('div')`
   margin: 0 auto;
 `;
 
-const LayoutFooter = styled(Layout.Footer)`
-  text-align: center;
+const StyledLayoutContent = styled(Layout.Content)`
+  min-height: 100vh;
+`;
+
+const StyledLayoutFooter = styled(Layout.Footer)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+  width: 100%;
+  height: 64px;
+  line-height: 64px;
+  border-top: 1px solid ${props => props.theme.borderColor};
+`;
+
+const FooterLink = styled(Link)`
+  margin: 8px 16px;
+  font-size: 16px;
+  padding: 4px;
+  color: #777;
 `;
 
 /**
@@ -58,12 +77,14 @@ const App = enhance(props => (
           <Nav />
         </LayoutHeaderInner>
       </LayoutHeader>
-      <Layout.Content>
+      <StyledLayoutContent>
         <Routes />
-      </Layout.Content>
-      <LayoutFooter>
-        StringSync ©2018 Created by Jared Johnson
-      </LayoutFooter>
+      </StyledLayoutContent>
+      <StyledLayoutFooter>
+        <FooterLink to="about">about</FooterLink>
+        <FooterLink to="teach">teach</FooterLink>
+        <FooterLink to="terms">terms</FooterLink>
+      </StyledLayoutFooter>
     </Layout>
   </main>
 ));

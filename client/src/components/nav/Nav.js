@@ -61,6 +61,18 @@ const AvatarContainer = styled('div')`
   margin: 0 8px;
 `;
 
+const StyledMenu = styled(Menu)`
+  &&& {
+    border: 0;
+  }
+`;
+
+const StyledMenuItem = styled(Menu.Item)`
+  &&& {
+    border: 0;
+  }
+`;
+
 /**
  * Navigation menu for all platforms
  */
@@ -75,19 +87,19 @@ const Nav = enhance(props => (
     </Col>
     <Col span={20}>
       <Row type="flex" justify="end">
-        <Menu
+        <StyledMenu
           mode="horizontal"
           style={{ lineHeight: '62px' }}
           selectedKeys={props.selectedKeys}
           onClick={props.handleClick}
           multiple={false}
         >
-          <Menu.Item key="/about">
+          <StyledMenuItem key="/about">
             <StyledIcon type="question-circle-o" /> 
-          </Menu.Item>
-          <Menu.Item key="/">
+          </StyledMenuItem>
+          <StyledMenuItem key="/">
             <StyledIcon type="home" />
-          </Menu.Item>
+          </StyledMenuItem>
           {
             props.session.signedIn 
               ? <Menu.SubMenu
@@ -105,15 +117,15 @@ const Nav = enhance(props => (
                     </SubMenuTitle>
                   }
                 >
-                  <Menu.Item key="logout">
+                  <StyledMenuItem key="logout">
                     logout
-                  </Menu.Item>
+                  </StyledMenuItem>
                 </Menu.SubMenu>
-              : <Menu.Item key="/login">
+              : <StyledMenuItem key="/login">
                   <StyledIcon type="user" />
-                </Menu.Item>
+                </StyledMenuItem>
           }
-        </Menu>
+        </StyledMenu>
       </Row>
     </Col>
   </Row>
