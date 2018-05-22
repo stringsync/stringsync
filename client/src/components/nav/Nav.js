@@ -73,6 +73,12 @@ const StyledMenuItem = styled(Menu.Item)`
   }
 `;
 
+const StyledSubMenu = styled(Menu.SubMenu)`
+  &&& {
+    border: 0;
+  }
+`;
+
 /**
  * Navigation menu for all platforms
  */
@@ -102,7 +108,7 @@ const Nav = enhance(props => (
           </StyledMenuItem>
           {
             props.session.signedIn 
-              ? <Menu.SubMenu
+              ? <StyledSubMenu
                   title={
                     <SubMenuTitle>
                       {
@@ -120,7 +126,7 @@ const Nav = enhance(props => (
                   <StyledMenuItem key="logout">
                     logout
                   </StyledMenuItem>
-                </Menu.SubMenu>
+                </StyledSubMenu>
               : <StyledMenuItem key="/login">
                   <StyledIcon type="user" />
                 </StyledMenuItem>
