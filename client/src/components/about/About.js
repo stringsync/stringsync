@@ -100,6 +100,10 @@ const VideoContainer = styled('div')`
   top: 120;
   z-index: 5;
   width: 100%;
+
+  iframe {
+    max-width: 100vw;
+  }
 `;
 
 const About = enhance(props => (
