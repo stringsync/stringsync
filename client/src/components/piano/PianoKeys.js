@@ -1,7 +1,7 @@
 import React from 'react';
 import { PianoKey } from './';
 import styled from 'react-emotion';
-import { Scale, Note } from 'services';
+import { Scale, Note } from 'models';
 import { compose, withProps } from 'recompose';
 import { range } from 'lodash';
 
