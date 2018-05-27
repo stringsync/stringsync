@@ -1,5 +1,6 @@
 class User < ActiveRecord::Base
   include DeviseTokenAuth::Concerns::User
+  include DeviseTokenAuth::Concerns::UserOmniauthCallbacks
 
   devise(*%i(database_authenticatable registerable recoverable rememberable trackable validatable))
 
@@ -11,10 +12,7 @@ class User < ActiveRecord::Base
   has_many(:transcribed_notations, foreign_key: :transcriber_id, class_name: "Notation")
 
   validates(:name, presence: true)
-  validates(:email,
-    uniqueness: { case_sensitive: false },
-    format: { with: /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i }
-  )
+  validates(:email, format: { with: /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i })
 
   before_create { skip_confirmation! }
 
