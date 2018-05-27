@@ -10,8 +10,8 @@ class User < ActiveRecord::Base
 
   has_many(:transcribed_notations, foreign_key: :transcriber_id, class_name: "Notation")
 
-  validates(:name, uniqueness: true)
   validates(:name, presence: true)
+  validates(:email, format: { with: /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i })
 
   before_create { skip_confirmation! }
 
