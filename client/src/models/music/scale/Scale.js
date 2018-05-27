@@ -1,4 +1,4 @@
-import { Note } from 'services';
+import { Note } from 'models';
 import { ScaleDegree, scales } from './';
 import { flatMap, uniqWith } from 'lodash';
 
