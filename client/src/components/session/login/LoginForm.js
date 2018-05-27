@@ -44,7 +44,7 @@ const enhance = compose(
       props.setLoading(false);
       props.form.setFields({ password: { value: '' } });
       props.handlePasswordClear();
-      props.setErrors(res.data.errors || ['Something went wrong']);
+      props.setErrors(['Invalid email and/or password']);
     }
   }),
   withProps(props => ({
