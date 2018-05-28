@@ -34,7 +34,7 @@ class Maestro {
    */
   _doUpdate() {
     // A clone is constructed so that time doesn't change during the computation.
-    const timeKeeper = this.timeKeeper.clone;
+    // const timeKeeper = this.timeKeeper.clone;
     // TODO: Finish fleshing out this function
   }
 }

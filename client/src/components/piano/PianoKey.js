@@ -1,8 +1,6 @@
 import React from 'react';
 import { compose, branch, renderComponent, setPropTypes } from 'recompose';
 import { BlackPianoKey, WhitePianoKey } from './';
-import { isEqual } from 'lodash';
-import styled from 'react-emotion';
 import PropTypes from 'prop-types';
 
 const enhance = compose(

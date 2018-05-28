@@ -31,6 +31,8 @@ const enhance = compose(
             props.logout();
             window.ss.message.info('logged out');
             break;
+          default:
+            break;
         }
       }
     }

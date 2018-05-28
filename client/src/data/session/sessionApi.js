@@ -1,5 +1,4 @@
 import { sessionActions as actions } from './';
-import { omit } from 'lodash';
 
 export const login = (user, onSuccess, onError) => async dispatch => (
   window.ss.auth.emailSignIn({

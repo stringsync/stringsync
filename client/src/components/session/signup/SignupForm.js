@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'react-emotion';
-import { Form, Icon, Input, Button, Checkbox } from 'antd';
-import { compose, setDisplayName, withState, withHandlers, withProps } from 'recompose';
-import { withRouter, Link } from 'react-router-dom';
+import { Form, Icon, Input, Button } from 'antd';
+import { compose, withState, withHandlers, withProps } from 'recompose';
+import { Link } from 'react-router-dom';
 import { SessionErrors } from '../';
 import { signup, sessionActions } from 'data';
 import { connect } from 'react-redux';

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Avatar as AntdAvatar } from 'antd';
-import styled from 'react-emotion';
 import { compose, setPropTypes, withProps } from 'recompose';
 import PropTypes from 'prop-types';
 

@@ -1,6 +1,6 @@
 import { Note } from 'models';
 import { ScaleDegree, scales } from './';
-import { flatMap, uniqWith } from 'lodash';
+import { flatMap } from 'lodash';
 
 /**
  * The purpose of this class is to transform a key and an array of ScaleDegree instances

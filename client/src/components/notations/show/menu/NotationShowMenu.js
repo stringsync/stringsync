@@ -1,12 +1,11 @@
 import React from 'react';
 import styled from 'react-emotion';
-import { Menu, Radio, Checkbox, Icon } from 'antd';
+import { Menu, Checkbox, Icon } from 'antd';
 import { withRouter, Link } from 'react-router-dom';
-import { compose, withHandlers, withState, setPropTypes } from 'recompose';
+import { compose, setPropTypes } from 'recompose';
 import PropTypes from 'prop-types';
 
-const { SubMenu, ItemGroup, Item } = Menu;
-const RadioGroup = Radio.Group;
+const { ItemGroup, Item } = Menu;
 
 const enhance = compose(
   setPropTypes({

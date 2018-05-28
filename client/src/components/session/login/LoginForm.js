@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'react-emotion';
-import { Form, Icon, Input, Button, Checkbox } from 'antd';
+import { Form, Icon, Input, Button } from 'antd';
 import { compose, withState, withHandlers, withProps } from 'recompose';
 import { Link } from 'react-router-dom';
 import { SessionErrors } from '../';

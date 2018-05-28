@@ -1,10 +1,8 @@
 import React from 'react';
 import aboutGuitar1Src from 'assets/about-guitar-1.jpg';
 import aboutGuitar2Src from 'assets/about-guitar-2.jpg';
-import guitarSrc from 'assets/guitar-2048x1152.jpg';
-import sonarGuitarSrc from 'assets/sonar-guitar.svg';
 import styled from 'react-emotion';
-import { Icon, Row, Col } from 'antd';
+import { Row, Col } from 'antd';
 import { compose, } from 'recompose';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
