@@ -1,4 +1,4 @@
-import { Note } from 'services';
+import { Note } from 'models';
 import { Scale, ScaleDegree, scales } from './';
 import { times, forOwn, sample, flatMap } from 'lodash';
 
