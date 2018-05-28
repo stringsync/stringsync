@@ -8,6 +8,8 @@ import { connect } from 'react-redux';
 import { logout } from 'data';
 import { Avatar } from 'components';
 
+const { ItemGroup } = Menu;
+
 const enhance = compose(
   withRouter,
   connect(
@@ -123,9 +125,11 @@ const Nav = enhance(props => (
                     </SubMenuTitle>
                   }
                 >
-                  <StyledMenuItem key="logout">
-                    logout
-                  </StyledMenuItem>
+                  <ItemGroup title={props.session.role}>
+                    <StyledMenuItem key="logout">
+                      logout
+                    </StyledMenuItem>
+                  </ItemGroup>
                 </StyledSubMenu>
               : <StyledMenuItem key="/login">
                   <StyledIcon type="user" />
