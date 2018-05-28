@@ -1,5 +1,6 @@
 class User < ActiveRecord::Base
   include DeviseTokenAuth::Concerns::User
+  include DeviseTokenAuth::Concerns::UserOmniauthCallbacks
 
   devise(*%i(database_authenticatable registerable recoverable rememberable trackable validatable))
 

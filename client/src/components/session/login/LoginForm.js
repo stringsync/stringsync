@@ -20,6 +20,20 @@ const enhance = compose(
   ),
   withState('loading', 'setLoading', false),
   withState('errors', 'setErrors', []),
+  withHandlers(() => {
+    let passwordInput = null;
+
+    return ({
+      handlePasswordInputRef: () => ref => {
+        passwordInput = ref;
+      },
+      handlePasswordClear: () => () => {
+        if (passwordInput) {
+          passwordInput.focus();
+        }
+      }
+    })
+  }),
   withHandlers({
     handleLoginSuccess: props => res => {
       props.setLoading(false);
@@ -28,7 +42,9 @@ const enhance = compose(
     },
     handleLoginError: props => res => {
       props.setLoading(false);
-      props.setErrors(res.data.errors || ['Something went wrong']);
+      props.form.setFields({ password: { value: '' } });
+      props.handlePasswordClear();
+      props.setErrors(['Invalid email and/or password']);
     }
   }),
   withProps(props => ({
@@ -79,7 +95,12 @@ const LoginForm = enhance(props => (
         {props.form.getFieldDecorator('password', {
           rules: [{ required: true, message: 'password cannot be blank' }],
         })(
-          <Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="password" />
+          <Input 
+            type="password"
+            placeholder="password"
+            ref={props.handlePasswordInputRef}
+            prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+          />
         )}
       </Item>
       <Item>
