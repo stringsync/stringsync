@@ -7,7 +7,8 @@
   },
   "scripts": {
     "start": "cd client && npm run start",
-    "build": "cd client && npm install && npm run build && cd .. && yarn run delete-maps",
+    "build": "build-parser && cd client && npm install && npm run build && cd .. && yarn run delete-maps",
+    "build-parser": "cd client/src/services/vextab && jison parser.jison",
     "deploy": "cp -a client/build/. public/",
     "test": "cd client && npm run test && cd ..",
     "jest": "cd client && npm run jest && cd ..",
