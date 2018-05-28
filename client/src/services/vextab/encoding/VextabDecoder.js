@@ -1,17 +1,13 @@
-import { vextabParser } from './';
+import { parser as vextabParser } from './parser';
 
 class VextabDecoder {
-  static get parser() {
-    return vextabParser;
-  }
-
   /**
    * Converts a vextabString to vextab instructions.
    *
    * @param {string} vextabString
    */
   static decode(vextabString) {
-    return VextabDecoder.parser.parse(vextabString);
+    return vextabParser.parse(vextabString);
   }
 };
 
