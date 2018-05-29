@@ -71,7 +71,7 @@
     recoverable: (boolean: TRUE when the parser has a error recovery rule available for this particular error)
   }
 */
-var parser = (function(){
+var vextabDecoder = (function(){
 var o=function(k,v,o,l){for(o=o||{},l=k.length;l--;o[k[l]]=v);return o},$V0=[1,6],$V1=[1,7],$V2=[1,8],$V3=[1,9],$V4=[5,11,13,14,15],$V5=[5,11,13,14,15,17,19,21],$V6=[2,17],$V7=[1,14],$V8=[5,11,13,14,15,17,19,21,22],$V9=[1,18],$Va=[1,19],$Vb=[1,20],$Vc=[1,21],$Vd=[1,43],$Ve=[1,32],$Vf=[1,33],$Vg=[1,42],$Vh=[1,41],$Vi=[1,39],$Vj=[1,48],$Vk=[1,55],$Vl=[1,50],$Vm=[1,51],$Vn=[1,52],$Vo=[1,53],$Vp=[1,54],$Vq=[1,56],$Vr=[1,44],$Vs=[1,45],$Vt=[1,46],$Vu=[1,47],$Vv=[1,57],$Vw=[5,11,13,14,15,17,19,21,25],$Vx=[5,11,13,14,15,17,19,21,23,31,32,37,38,45,48,57,61,62,63,64,65,66,70,71,73,75,76],$Vy=[2,79],$Vz=[1,67],$VA=[1,64],$VB=[1,65],$VC=[1,66],$VD=[1,73],$VE=[1,74],$VF=[1,78],$VG=[1,79],$VH=[1,80],$VI=[1,81],$VJ=[41,57,59,61,62,63,64,65,66,67,68,69],$VK=[38,45,48,76],$VL=[41,48,57,59,61,62,63,64,65,66,67,68,69,81],$VM=[5,11,13,14,15,17,19,21,23,31,32,37,38,41,45,48,57,61,62,63,64,65,66,70,71,73,75,76],$VN=[1,101],$VO=[44,46],$VP=[2,63],$VQ=[1,106],$VR=[5,11,13,14,15,17,19,21,23,31,32,37,38,45,48,57,59,61,62,63,64,65,66,70,71,73,75,76],$VS=[5,11,13,14,15,17,19,21,23,31,32,37,38,45,48,57,59,60,61,62,63,64,65,66,70,71,73,75,76],$VT=[25,71],$VU=[41,48,57,59,61,62,63,64,65,66,67,68,69],$VV=[5,11,13,14,15,17,19,21,23,31,32,37,38,44,45,46,48,57,61,62,63,64,65,66,70,71,73,75,76];
 var parser = {trace: function trace() { },
 yy: {},
@@ -1137,9 +1137,9 @@ return new Parser;
 
 
 if (typeof require !== 'undefined' && typeof exports !== 'undefined') {
-exports.parser = parser;
-exports.Parser = parser.Parser;
-exports.parse = function () { return parser.parse.apply(parser, arguments); };
+exports.parser = vextabDecoder;
+exports.Parser = vextabDecoder.Parser;
+exports.parse = function () { return vextabDecoder.parse.apply(vextabDecoder, arguments); };
 exports.main = function commonjsMain(args) {
     if (!args[1]) {
         console.log('Usage: '+args[0]+' FILE');
