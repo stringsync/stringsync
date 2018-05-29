@@ -1,5 +1,7 @@
 class VextabEncoder {
-  static encode(vextab) {
-    
+  static encode(vextabStructs) {
+    return vextabStructs;
   }
 }
+
+export default VextabEncoder;

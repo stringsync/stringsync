@@ -1,2 +1,2 @@
-export { default as VextabDecoder } from './VextabDecoder';
+export { parser as vextabDecoder } from './vextabDecoder';
 export { default as VextabEncoder } from './VextabEncoder';

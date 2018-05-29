@@ -1,4 +1,4 @@
-import { VextabDecoder } from './';
+import { vextabDecoder as VextabDecoder, VextabEncoder } from './';
 
 const VEXTAB_STRINGS = [
   "tabstave\r\nclef=none\r\nnotation=true\r\nkey=E time=4/4\r\n\r\nnotes | :8 (7/5.8/3.7/2) $EM7$ h9/2 7/1 7/5 (9/4.8/3.9/2) ## (9/4.8/3.9/2) ##\r\nnotes | :8 (9/4.9/3.9/2.9/1) $C#m/B$ h11/1 p9/1 ^3^ 12p9/2 11/3 ^3^ (9/3.9/2) h(11/3.10/2) p(9/3.9/2) 0/6\r\nnotes | :8 (5/6.6/3.5/2.4/1) $AM7$ ## 5-7/2 :16 5h7p5p4/1 5p4/1 7-5/2\r\nnotes | :8 (4/5.6/4.4/3.5/2) $C#m7$ h7/2 4-7/1 (2/5.4/4.2/3.2/2.4/1) $B13(sus2)$ p2h4s9/1\r\nnotes | :q (7/5.9/4.8/3.7/2.9/1) $EM13(sus2)$ :8 7/1 7/5 $EM7$ (9/4.8/3.9/2) ## (9/4.8/3.9/2) ##\r\nnotes | :8 (9/4.9/3.9/2.9/1) $C#m/B$ 11/1 s(14/4.14/3.14/2.16/1) $AM7/E$ 14/1 (7/5.9/4.8/3.9/2.9/1) $EM13$ 7/1 7-9/2\r\nnotes | :8 (9/5.11/4.9/3.10/2) $F#m7$ h12/2 9-12/1 (11/5.13/4.11/3.12/2.14/1) $G#m7$ :q ##\r\nnotes | :q (12/5.14/4.12/3.13/2.15/1) 15-15/1 ^3^ $Am7$ :8 (16/4.17/3.17/2.19/1) 17/1 17/2 17/3\r\nnotes | :8 (7/5.8/3.7/2) $EM7$ h9/2 7/1 7/5 (9/4.8/3.9/2) ## (9/4.8/3.9/2) ##",
@@ -14,6 +14,6 @@ const VEXTAB_STRINGS = [
 
 test('VextabDecoder.decode can decode a number of valid vextabStrings', () => {
   VEXTAB_STRINGS.forEach(vextabString => {
-    VextabDecoder.decode(vextabString);
+    VextabDecoder.parse(vextabString);
   });
 });
