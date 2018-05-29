@@ -28,7 +28,7 @@ class Vextab {
    * @param {VextabStruct[]} structs
    */
   constructor(structs) {
-    this.structs = Object.freeze(structs);
+    this.structs = structs;
     this.measures = VextabMeasureExtractor.extract(this.structs);
   }
 
