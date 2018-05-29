@@ -17,3 +17,13 @@ test('VextabDecoder.decode can decode a number of valid vextabStrings', () => {
     VextabDecoder.parse(vextabString);
   });
 });
+
+test('VextabEncoder.encode produces strings that can be decoded to produce the same VextabStructs', () => {
+  VEXTAB_STRINGS.forEach(vextabString => {
+    const vextabStructs = VextabDecoder.parse(vextabString);
+    const reEncodedVextabString = VextabEncoder.encode(vextabStructs);
+    // FIXME: uncomment when read to test the encoder
+    // const reDecodedVextabStructs = VextabDecoder.parse(reEncodedVextabString);
+    // expect(reDecodedVextabStructs).toEqual(vextabStructs);
+  });
+});
