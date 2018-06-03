@@ -46,10 +46,6 @@ const enhance = compose(
 
       if (notation) {
         this.props.setNotation(notation);
-        const vextab = new Vextab(Vextab.decode(notation.attributes.vextabString));
-        debugger
-        throw new Error('Remove to allow this to work');
-
         const { kind, src } = notation.relationships.video.attributes;
         this.props.setVideo(kind, src);
       } else {
