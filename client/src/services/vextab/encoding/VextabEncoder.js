@@ -57,7 +57,7 @@ class VextabEncoder {
    * @private
    */
   _encodeOptions(options) {
-
+    return options.map(option => `${option.key}=${option.value}`);
   }
 
   /**
