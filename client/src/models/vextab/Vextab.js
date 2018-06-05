@@ -12,6 +12,21 @@ import { chunk } from 'lodash';
  * responsibility to construct. Using traditional Vextab grammar, one can use
  * Vextab.decode to produce the VextabStructs. See http://www.vexflow.com/vextab/tutorial.html
  * for the traditional grammar.
+ * 
+ * The initial render lifecycle of a Vextab is as follows:
+ *  1. Decode a vextabString into vextabStructs
+ *  2. Create vextabMeasures from the vextabStructs
+ *  3. Create vextabLines from the vextabMeasures
+ *  4. Create canvases that each point to a vextabLine
+ *  5. Create vextab Artists
+ *  6. Hydrate vextab Artists
+ *  7. Create notes, measures, and lines
+ *  8. Can now call vextab.render
+ * 
+ * Renderers live at the line (not VextabLine) level.
+ * 
+ * Do not change the internal state of Vextab. Instead, clone the structs member, update the clone,
+ * and create a new Vextab instance.
  */
 class Vextab {
   /**
@@ -27,22 +42,15 @@ class Vextab {
 
   /**
    * @param {VextabStruct[]} structs
+   * @param {number} measuresPerLine
    */
-  constructor(structs) {
-    this.structs = structs;
-    this.measures = VextabMeasureExtractor.extract(this.structs);
-    this.lines = [];
-
-    this.measuresPerLine = 4;
-  }
-
-  set measuresPerLine(measuresPerLine) {
+  constructor(structs, measuresPerLine) {
+    this.structs = Object.freeze(structs);
     this.measuresPerLine = measuresPerLine;
-    this.lines = chunk(this.measures, measuresPerLine);
-  }
 
-  // TODO: Think about how we want to apply updates to the structs member, which is readonly
-  // to permit undoing.
+    this.vextabMeasures = this._computeMeasures();
+    this.vextabLines = this._computeLines();
+  }
 
   /**
    * Draws the vextab onto the canvas element.
@@ -50,7 +58,7 @@ class Vextab {
    * @param {HTMLCanvasElement} canvas 
    */
   render(canvas) {
-    VextabRenderer.render(canvas, this.measures);
+
   }
 
   /**
@@ -60,6 +68,15 @@ class Vextab {
    */
   toString() {
     return VextabEncoder.encode(this.structs);
+  }
+
+  /**
+   * Computes the struct measures using the structs member variable. Each measure 
+   * 
+   * @return {}
+   */
+  _computeMeasures() {
+
   }
 }
 

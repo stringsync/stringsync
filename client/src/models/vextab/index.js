@@ -1,4 +1,5 @@
 export * from './encoding';
-export { default as VextabMeasureExtractor } from './VextabMeasureExtractor';
-export { default as VextabRenderer } from './VextabRenderer';
+export * from './line';
+export * from './measure';
+export * from './renderer';
 export { default as Vextab } from './Vextab';
