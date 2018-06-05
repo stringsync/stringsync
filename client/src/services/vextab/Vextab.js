@@ -4,6 +4,7 @@ import {
   VextabMeasureExtractor,
   VextabRenderer
 } from './';
+import { chunk } from 'lodash';
 
 /**
  * The Vextab is the encoding used to store instructions on how to draw, animate, and edit
@@ -30,6 +31,14 @@ class Vextab {
   constructor(structs) {
     this.structs = structs;
     this.measures = VextabMeasureExtractor.extract(this.structs);
+    this.lines = [];
+
+    this.measuresPerLine = 4;
+  }
+
+  set measuresPerLine(measuresPerLine) {
+    this.measuresPerLine = measuresPerLine;
+    this.lines = chunk(this.measures, measuresPerLine);
   }
 
   // TODO: Think about how we want to apply updates to the structs member, which is readonly
