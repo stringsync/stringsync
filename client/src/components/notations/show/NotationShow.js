@@ -10,6 +10,7 @@ import { compose, lifecycle, withState, withHandlers } from 'recompose';
 import { connect } from 'react-redux';
 import { find } from 'lodash';
 import { notationsActions, fetchAllNotations, videoActions } from 'data';
+import { Vextab } from 'services';
 
 const enhance = compose(
   connect(
@@ -45,7 +46,6 @@ const enhance = compose(
 
       if (notation) {
         this.props.setNotation(notation);
-
         const { kind, src } = notation.relationships.video.attributes;
         this.props.setVideo(kind, src);
       } else {
