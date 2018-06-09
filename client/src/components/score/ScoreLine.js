@@ -8,14 +8,11 @@ const enhance = compose(
     line: PropTypes.instanceOf(Line)
   }),
   withState('renderer', 'setRenderer', null),
-  withHandlers(() => {
-    let canvas = null;
-
-    return {
-      handleCanvasRef: () => ref => {
-        canvas = ref;
-      }
-    };
+  withHandlers({
+    handleCanvasRef: props => canvas => {
+      const { line } = props.line;
+      props.vextab.renderer.assign(canvas, line.number);
+    }
   })
 );
 

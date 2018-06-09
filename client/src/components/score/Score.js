@@ -13,8 +13,13 @@ const enhance = compose(
   withState('vextab', 'setVextab', new Vextab([], 1)),
   lifecycle({
     componentWillUpdate(nextProps) {
-      if (this.props.vextabString !== nextProps.vextabString) {
-        const vextab = new Vextab(Vextab.decode(nextProps.vextabString), 5);
+      const shouldSetVextab = (
+        this.props.vextabString !== nextProps.vextabString ||
+        this.props.measuresPerLine !== nextProps.measuresPerLine
+      );
+
+      if (shouldSetVextab) {
+        const vextab = new Vextab(Vextab.decode(nextProps.vextabString), this.props.measuresPerLine);
         nextProps.setVextab(vextab);
       }
     }
@@ -23,7 +28,17 @@ const enhance = compose(
 
 const Score = enhance(props => (
   <div>
-    {props.vextab.lines.map((line, ndx) => <ScoreLine key={`score-line-${ndx}`} line={line} />)}
+    {
+      props.vextab.lines.map((line, ndx) => {
+        return (
+          <ScoreLine
+            key={`score-line-${ndx}`}
+            line={line}
+            vextab={props.vextab}
+          />
+        );
+      })
+    }
   </div>
 ));
 

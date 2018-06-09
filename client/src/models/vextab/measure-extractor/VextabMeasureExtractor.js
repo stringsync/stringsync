@@ -16,7 +16,7 @@ class VextabMeasureExtractor {
     this.measures = [];
 
     this.slices = [];
-    this.rhythm = new Rhythm(4, false);
+    this.rhythm = new Rhythm(4, false, null);
     this.bar = undefined;
     this.timeSignature = undefined;
     this.tuning = tuning;
@@ -44,6 +44,8 @@ class VextabMeasureExtractor {
         }
       });
     });
+
+    return this.measures;
   }
 
   /**
@@ -86,7 +88,7 @@ class VextabMeasureExtractor {
         this.slices = [];
         break;
       case 'TIME':
-        this.rhythm = new Rhythm(note.time, note.dot);
+        this.rhythm = new Rhythm(note.time, note.dot, null);
         break;
       case 'NOTE':
         this.slices.push(this._extractNote(note));

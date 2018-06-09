@@ -2,7 +2,7 @@ import { sortBy } from 'lodash';
 import * as constants from './noteConstants';
 import { Rhythm } from '../rhythm';
 
-const DEFAULT_RHYTHM = new Rhythm(4, false);
+const DEFAULT_RHYTHM = new Rhythm(4, false, null);
 
 /**
  * The purpose of this class is to encapsulate the logic related to describing a note's inherent

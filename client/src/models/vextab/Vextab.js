@@ -18,13 +18,12 @@ import { Flow } from 'vexflow';
  * 
  * The initial render lifecycle of a Vextab is as follows:
  *  1. Decode a vextabString into vextabStructs
- *  2. Create vextabMeasures from the vextabStructs
- *  3. Create vextabLines from the vextabMeasures
- *  4. Create canvases that each point to a vextabLine
- *  5. Create vextab Artists
- *  6. Hydrate vextab Artists
- *  7. Create notes, measures, and lines
- *  8. Can now call vextab.render
+ *  2. Create measures: Measure[] from the vextabStructs
+ *  3. Create canvases that each point to a vextabLine
+ *  4. Create vextab Artists
+ *  5. Hydrate vextab Artists
+ *  6. Create notes, measures, and lines
+ *  7. Can now call vextab.render
  * 
  * Renderers live at the line (not VextabLine) level.
  * 
@@ -49,11 +48,18 @@ class Vextab {
    */
   constructor(structs, measuresPerLine, tuning = new Flow.Tuning()) {
     this.tuning = tuning;
+    this.measuresPerLine = measuresPerLine;
 
     this._structs = Object.freeze(structs);
-    this._measuresPerLine = measuresPerLine;
     this._measures = undefined;
     this._lines = undefined;
+
+    this.renderer = new VextabRenderer(this);
+
+    if (window.ss.env === 'development') {
+      console.warn('REMOVE BEFORE DEPLOY');
+      window.ss.vextab = this;
+    }
   }
 
   /**
@@ -65,16 +71,13 @@ class Vextab {
     return merge([], this._structs); 
   }
 
-  get measuresPerLine() {
-    return this._measuresPerLine;
-  }
-
   get measures() {
     if (this._measures) {
       return this._measures;
     }
 
-    return this._measures = VextabMeasureExtractor.extract(this.structs);
+    this._measures = VextabMeasureExtractor.extract(this.structs);
+    return this._measures;
   }
 
   get lines() {
@@ -82,21 +85,11 @@ class Vextab {
       return this._lines;
     }
 
-    return this._lines = chunk(this.measures, this.measuresPerLine).map(measures => new Line(measures));
-  }
-  
-  set measuresPerLine(measuresPerLine) {
-    this.lines = undefined;
-    this._measuresPerLine = measuresPerLine;
-  }
+    this._lines = chunk(this.measures, this.measuresPerLine).map((measures, number) => {
+      return new Line(measures, number);
+    });
 
-  /**
-   * Renders the vextab onto the canvas element.
-   * 
-   * @param {HTMLCanvasElement} canvas 
-   */
-  render(canvas) {
-
+    return this._lines;
   }
 
   /**
