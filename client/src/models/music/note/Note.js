@@ -1,5 +1,8 @@
 import { sortBy } from 'lodash';
 import * as constants from './noteConstants';
+import { Rhythm } from '../rhythm';
+
+const DEFAULT_RHYTHM = new Rhythm(4, false);
 
 /**
  * The purpose of this class is to encapsulate the logic related to describing a note's inherent
@@ -77,7 +80,7 @@ class Note {
    * @param {string} literal
    * @param {number} octave
    */
-  constructor(literal, octave) {
+  constructor(literal, octave, rhythm) {
     if (!Note.ALL_LITERALS_SET.has(literal)) {
       throw new Error(`${literal} should be in ${Note.ALL_LITERALS.join(', ')}`);
     } else if (!Number.isInteger(octave)) {
@@ -86,6 +89,8 @@ class Note {
 
     this.literal = literal;
     this.octave = octave;
+    this.rhythm = rhythm || DEFAULT_RHYTHM.clone();
+    this.type = 'NOTE';
   }
 
   /**

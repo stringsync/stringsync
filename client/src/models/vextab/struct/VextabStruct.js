@@ -3,14 +3,17 @@ import { isObject } from 'lodash';
 
 class VextabStruct {
   static typeof(struct) {
-    const { command, element } = struct;
-    const keys = new Set(Object.keys(struct));
+    const { element } = struct;
     
     if (element === 'tabstave') {
       return 'TABSTAVE';
     } else if (element === 'stave') {
       return 'STAVE';
-    } else if (command === 'bar') {
+    } 
+    
+    const { command } = struct;
+
+    if (command === 'bar') {
       return 'BAR';
     } else if (command === 'tuplet') {
       return 'TUPLET';
@@ -20,14 +23,28 @@ class VextabStruct {
       return 'BAR';
     } else if (command === 'annotations') {
       return 'ANNOTATIONS';
-    } else if (keys.has('time')) {
+    }
+
+    const { key } = struct;
+
+    if (key === 'clef') {
+      return 'CLEF';
+    } else if (key === 'notation') {
+      return 'NOTATION';
+    } else if (key === 'key') {
+      return 'KEY';
+    } else if (key === 'time') {
+      return 'TIME_SIGNATURE';
+    }
+    
+    const keys = new Set(Object.keys(struct));
+
+    if (keys.has('time')) {
       return 'TIME';
     } else if (keys.has('fret') && keys.has('string')) {
       return 'NOTE';
     } else if (keys.has('chord')) {
-      return 'CHORD'
-    } else {
-      return null;
+      return 'CHORD';
     }
   }
 }

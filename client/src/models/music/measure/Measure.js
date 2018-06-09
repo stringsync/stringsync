@@ -1,6 +1,8 @@
 class Measure {
-  constructor(notes) {
-    this.notes = notes;
+  constructor(timeSignature, slices, bar) {
+    this.slices = slices;
+    this.bar = bar;
+    this.timeSignature = timeSignature;
   }
 };
 

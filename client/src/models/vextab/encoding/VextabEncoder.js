@@ -103,7 +103,7 @@ class VextabEncoder {
     let ndx = -1;
     const measures = [];
     notes.forEach(note => {
-      if (note.command === 'bar') {
+      if (VextabStruct.typeof(note) === 'BAR') {
         ndx++;
       }
       measures[ndx] = measures[ndx] || [];
