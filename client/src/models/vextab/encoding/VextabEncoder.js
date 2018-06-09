@@ -1,4 +1,5 @@
 import { compact } from 'lodash';
+import { VextabStruct } from 'models';
 
 class VextabEncodingError extends Error {}
 
@@ -24,8 +25,8 @@ class VextabEncoder {
    */
   toString() {
     const vextabStringGroups = this.structs.map(struct => {
-      switch (struct.element) {
-        case 'tabstave':
+      switch (VextabStruct.typeof(struct)) {
+        case 'TABSTAVE':
           return this._encodeTabstave(struct);
         default:
           throw error(struct);
@@ -111,26 +112,24 @@ class VextabEncoder {
 
     // transform the measure groups into vextab strings
     return measures.map(measure => {
-      const vextabStrings = measure.map(entity => {
-        const { command } = entity;
-        const keys = new Set(Object.keys(entity));
-
-        if (command === 'bar') {
-          return this._encodeBar(entity);
-        } else if (command === 'annotations') {
-          return this._encodeAnnotations(entity);
-        } else if (command === 'tuplet') {
-          return this._encodeTuplet(entity);
-        } else if (command === 'rest') {
-          return this._encodeRest(entity);
-        } else if (keys.has('time')) {
-          return this._encodeTime(entity);
-        } else if (keys.has('fret') && keys.has('string')) {
-          return this._encodeNote(entity);
-        } else if (keys.has('chord')) {
-          return this._encodeChord(entity);
-        } else {
-          error(entity);
+      const vextabStrings = measure.map(struct => {
+        switch (VextabStruct.typeof(struct)) {
+          case 'BAR':
+            return this._encodeBar(struct);
+          case 'ANNOTATIONS':
+            return this._encodeAnnotations(struct);
+          case 'TUPLET':
+            return this._encodeTuplet(struct);
+          case 'REST':
+            return this._encodeRest(struct);
+          case 'TIME':
+            return this._encodeTime(struct);
+          case 'NOTE':
+            return this._encodeNote(struct);
+          case 'CHORD':
+            return this._encodeChord(struct);
+          default:
+            error(struct);
         }
       });
 

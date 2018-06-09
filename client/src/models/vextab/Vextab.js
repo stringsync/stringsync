@@ -71,9 +71,18 @@ class Vextab {
   }
 
   /**
-   * Computes the struct measures using the structs member variable. Each measure 
+   * Called from the constructor to compute the vextabMeasures member.
    * 
-   * @return {}
+   * @return {VextabMeasure[]}
+   */
+  _computeMeasures() {
+
+  }
+
+  /**
+   * Called from the constructor to compute the vextabLines member.
+   * 
+   * @return {VextabLine[]}
    */
   _computeMeasures() {
 
