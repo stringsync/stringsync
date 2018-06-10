@@ -1,5 +1,5 @@
 import React from 'react';
-import { compose, setPropTypes, withHandlers, withState } from 'recompose';
+import { compose, setPropTypes, withHandlers } from 'recompose';
 import PropTypes from 'prop-types';
 import { Line } from 'models';
 
@@ -7,7 +7,6 @@ const enhance = compose(
   setPropTypes({
     line: PropTypes.instanceOf(Line)
   }),
-  withState('renderer', 'setRenderer', null),
   withHandlers({
     handleCanvasRef: props => canvas => {
       props.vextab.renderer.assign(canvas, props.line.number);
