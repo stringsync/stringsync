@@ -7,7 +7,6 @@ import {
 } from './';
 import { Line } from 'models';
 import { Flow } from 'vexflow';
-import { addWindowResource } from 'utilities';
 
 const DEFAULT_TUNING = new Flow.Tuning();
 
@@ -51,7 +50,7 @@ class Vextab {
   constructor(structs, measuresPerLine, tuning = DEFAULT_TUNING) {
     if (typeof measuresPerLine !== 'number' || measuresPerLine < 0) {
       throw new Error('measuresPerLine must be a positive number');
-    } 
+    }
 
     this.tuning = tuning;
     this.measuresPerLine = parseInt(measuresPerLine, 10);
@@ -61,9 +60,6 @@ class Vextab {
     this._lines = undefined;
 
     this.renderer = new VextabRenderer(this);
-
-    console.warn('REMOVE FOR PRODUCTION');
-    addWindowResource('vextab', this)
   }
 
   /**

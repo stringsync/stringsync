@@ -13,7 +13,10 @@ class Measure {
       return this._struct;
     }
 
-    this._struct = this.elements.map(element => element.struct.raw);
+    this._struct = [
+      this.bar.struct.raw,
+      ...this.elements.map(element => element.struct.raw)
+    ]
 
     return this._struct;
   }

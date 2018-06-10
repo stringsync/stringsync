@@ -1,5 +1,6 @@
 
 import { at } from 'lodash';
+import { Vextab } from 'models';
 
 class VextabStruct {
   static typeof(struct) {
