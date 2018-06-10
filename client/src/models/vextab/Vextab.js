@@ -5,9 +5,9 @@ import {
   VextabRenderer,
   VextabStruct
 } from './';
-import { chunk } from 'lodash';
 import { Line } from 'models';
 import { Flow } from 'vexflow';
+import { last } from 'lodash';
 
 const DEFAULT_TUNING = new Flow.Tuning();
 
@@ -49,8 +49,12 @@ class Vextab {
    * @param {number} measuresPerLine
    */
   constructor(structs, measuresPerLine, tuning = DEFAULT_TUNING) {
+    if (typeof measuresPerLine !== 'number' || measuresPerLine < 0) {
+      throw new Error('measuresPerLine must be a positive number');
+    } 
+
     this.tuning = tuning;
-    this.measuresPerLine = measuresPerLine;
+    this.measuresPerLine = parseInt(measuresPerLine, 10);
     this.structs = Object.freeze(structs);
 
     this._measures = undefined;
@@ -64,6 +68,11 @@ class Vextab {
     }
   }
 
+  /**
+   * Delegates the measure extracting work to the VextabMeasureExtractor
+   * 
+   * @returns {Measure[]}
+   */
   get measures() {
     if (this._measures) {
       return this._measures;
@@ -73,13 +82,38 @@ class Vextab {
     return this._measures;
   }
 
+  /**
+   * Groups measures with the same measureSpec, respecting the order that the measures are in.
+   * 
+   * @returns {Line[]}
+   */
   get lines() {
     if (this._lines) {
       return this._lines;
     }
 
-    this._lines = chunk(this.measures, this.measuresPerLine).map((measures, number) => {
-      return new Line(number, measures);
+    this._lines = [];
+
+    let measures = [];
+    let prevMeasure = null;
+    this.measures.forEach((measure, ndx) => {
+      const shouldPushLine = (
+        measures.length === this.measuresPerLine ||
+        (prevMeasure && prevMeasure.spec.id !== measure.spec.id)
+      );
+
+      if (shouldPushLine) {
+        this._lines.push(new Line(this._lines.length, measures));
+        measures = [];
+      }
+
+      measures.push(measure);
+
+      if (ndx === this.measures.length - 1) {
+        this._lines.push(new Line(this._lines.length, measures));
+      }
+
+      prevMeasure = measure;
     });
 
     return this._lines;

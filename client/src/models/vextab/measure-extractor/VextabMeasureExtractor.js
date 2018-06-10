@@ -178,9 +178,7 @@ class VextabMeasureExtractor {
    */
   _extractNote(struct) {
     const [literal, octave] = this.tuning.getNoteForFret(struct.fret, struct.string).split('/');
-    return new Note(
-      literal, parseInt(octave, 10), this.rhythm.clone(), this.createVextabStruct()
-    );
+    return new Note(literal, parseInt(octave, 10), this.createVextabStruct());
   }
 
   /**

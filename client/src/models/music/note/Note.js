@@ -78,7 +78,6 @@ class Note {
   /**
    * @param {string} literal 
    * @param {number} octave 
-   * @param {Rhythm | void} rhythm 
    * @param {VextabStruct | void} struct 
    */
   constructor(literal, octave, struct) {
