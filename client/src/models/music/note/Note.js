@@ -3,8 +3,6 @@ import * as constants from './noteConstants';
 import { Rhythm } from '../rhythm';
 import { VextabStruct } from '../../vextab';
 
-const DEFAULT_RHYTHM = new Rhythm(4, false, null);
-
 /**
  * The purpose of this class is to encapsulate the logic related to describing a note's inherent
  * state in different ways as well as functionality to step to other notes. It is the fundamental
@@ -83,7 +81,7 @@ class Note {
    * @param {Rhythm | void} rhythm 
    * @param {VextabStruct | void} struct 
    */
-  constructor(literal, octave, rhythm, struct) {
+  constructor(literal, octave, struct) {
     if (!Note.ALL_LITERALS_SET.has(literal)) {
       throw new Error(`${literal} should be in ${Note.ALL_LITERALS.join(', ')}`);
     } else if (!Number.isInteger(octave)) {
@@ -92,7 +90,6 @@ class Note {
 
     this.literal = literal;
     this.octave = octave;
-    this.rhythm = rhythm || DEFAULT_RHYTHM.clone();
     this.struct = struct;
     this.type = 'NOTE';
   }

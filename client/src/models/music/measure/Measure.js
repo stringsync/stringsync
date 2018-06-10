@@ -1,8 +1,9 @@
 class Measure {
-  constructor(timeSignature, slices, bar) {
+  constructor(timeSignature, slices, bar, spec) {
     this.slices = slices;
     this.bar = bar;
-    this.timeSignature = timeSignature;
+    this.spec = spec;
+    this.type = 'MEASURE';
   }
 };
 

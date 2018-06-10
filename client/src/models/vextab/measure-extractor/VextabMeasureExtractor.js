@@ -1,9 +1,9 @@
 import {
   Measure, Note, TimeSignature, Bar,
-  Rhythm, Chord, Rest, VextabStruct
+  Rhythm, Chord, Rest, VextabStruct,
+  Tuplet, Annotations, Key
 } from 'models';
-import { Flow } from 'vexflow';
-import { takeRight } from 'lodash';
+import { VextabMeasureSpec } from './';
 
 class VextabMeasureExtractor {
   static extract(vextab, tuning) {
@@ -19,7 +19,7 @@ class VextabMeasureExtractor {
     this.slices = [];
     this.rhythm = new Rhythm(4, false, null);
     this.bar = undefined;
-    this.timeSignature = undefined;
+    this.measureSpec = undefined;
     this.path = '';
   }
 
@@ -32,7 +32,7 @@ class VextabMeasureExtractor {
     this.vextab.structs.forEach((struct, staveNdx) => {
 
       this.path = `[${staveNdx}]`;
-      this.timeSignature = this._extractTimeSignature(struct);
+      this.measureSpec = this._extractMeasureSpec(struct);
 
       struct.notes.forEach((note, noteNdx) => {
         this.path = `[${staveNdx}].notes[${noteNdx}]`;
@@ -51,6 +51,32 @@ class VextabMeasureExtractor {
     });
 
     return this.measures;
+  }
+
+  /**
+   * 
+   * @param {VextabStruct} struct 
+   * @returns {VextabMeasureSpec}
+   */
+  _extractMeasureSpec(struct) {
+    const params = struct.options.reduce((spec, option, ndx) => {
+      const path = this.path + `.options.[${ndx}]`;
+
+      switch (VextabStruct.typeof(option)) {
+        case 'KEY':
+          const note = new Note(option.value, 0);
+          spec['KEY'] = new Key(note, new VextabStruct(this.vextab, path));
+          return spec;
+        case 'TIME_SIGNATURE':
+          const [upper, lower] = option.value.split('/');
+          spec['TIME_SIGNATURE'] = new TimeSignature(upper, lower, new VextabStruct(this.vextab, path));
+          return spec;
+        default:
+          return spec;
+      }
+    }, {});
+
+    return new VextabMeasureSpec(params['KEY'], params['TIME_SIGNATURE']);
   }
 
   /**
@@ -85,6 +111,7 @@ class VextabMeasureExtractor {
     this._pushMeasure();
     this.bar = undefined;
     this.rhythm = undefined;
+    this.measureSpec = undefined;
     this.slices = [];
     this.path = '';
   }
@@ -103,7 +130,8 @@ class VextabMeasureExtractor {
         this.slices = [];
         break;
       case 'TIME':
-        this.rhythm = new Rhythm(note.time, note.dot, null);
+        this.rhythm = new Rhythm(note.time, note.dot, null, this.createVextabStruct());
+        this.slices.push(this.rhythm);
         break;
       case 'NOTE':
         this.slices.push(this._extractNote(note));
@@ -117,8 +145,14 @@ class VextabMeasureExtractor {
         );
         break;
       case 'TUPLET':
-        const tuplet = parseInt(note.params.tuplet, 10);
-        takeRight(this.slices, tuplet).forEach(note => note.rhythm.tuplet = tuplet);
+        this.slices.push(
+          new Tuplet(parseInt(note.params.tuplet, 10), this.createVextabStruct())
+        );
+        break;
+      case 'ANNOTATIONS':
+        this.slices.push(
+          new Annotations(note.params, this.createVextabStruct())
+        )
         break;
       default:
         break;
@@ -132,24 +166,8 @@ class VextabMeasureExtractor {
    */
   _pushMeasure() {
     this.measures.push(
-      new Measure(this.timeSignature, this.slices, this.bar, this.createVextabStruct())
+      new Measure(this.timeSignature, this.slices, this.bar, this.measureSpec)
     );
-  }
-
-  /**
-   * Creates a TimeSignature object from a struct
-   * 
-   * @param {VextabStruct} struct
-   * @returns {TimeSignature}
-   */
-  _extractTimeSignature(struct) {
-    const timeStructNdx = struct.options.map(VextabStruct.typeof).indexOf('TIME_SIGNATURE');
-    const timeStruct = struct.options[timeStructNdx];
-    const path = this.path + `options.[${timeStructNdx}]`;
-    
-    const [upper, lower] = timeStruct.value.split('/');
-
-    return new TimeSignature(upper, lower, new VextabStruct(this.vextab, path));
   }
 
   /**

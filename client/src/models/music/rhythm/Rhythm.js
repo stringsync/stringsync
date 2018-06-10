@@ -4,10 +4,11 @@ class Rhythm {
    * @param {boolean} dot 
    * @param {number | void} tuplet 
    */
-  constructor(value, dot, tuplet) {
+  constructor(value, dot, tuplet, struct) {
     this.value = value;
     this.dot = dot;
     this.tuplet = tuplet;
+    this.struct = struct;
     this.type = 'RHYTHM';
   }
 

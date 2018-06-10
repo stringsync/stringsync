@@ -7,3 +7,6 @@ export * from './chord';
 export * from './rest';
 export * from './time-signature';
 export * from './bar';
+export * from './key';
+export * from './tuplet';
+export * from './annotations';

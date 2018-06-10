@@ -9,8 +9,9 @@ class Line {
    * @param {Measure[]} measures 
    */
   constructor(number, measures) {
-    this.number = number
+    this.number = number;
     this.measures = measures;
+    this.type = 'LINE';
   }
 }
 
