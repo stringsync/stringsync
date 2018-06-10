@@ -4,6 +4,7 @@ import styled from 'react-emotion';
 import { ScoreLine } from './';
 import { compose, setPropTypes, withState, lifecycle } from 'recompose';
 import { Vextab } from 'models';
+import { addWindowResource } from 'utilities';
 
 const enhance = compose(
   setPropTypes({
@@ -21,6 +22,7 @@ const enhance = compose(
       if (shouldSetVextab) {
         const vextab = new Vextab(Vextab.decode(nextProps.vextabString), this.props.measuresPerLine);
         nextProps.setVextab(vextab);
+        addWindowResource('vextab', vextab);
       }
     }
   })
