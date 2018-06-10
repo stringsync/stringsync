@@ -5,9 +5,11 @@ import {
   VextabRenderer,
   VextabStruct
 } from './';
-import { chunk, merge, takeRight } from 'lodash';
-import { Measure, Line, Note, TimeSignature, Bar, Rhythm, Chord, Rest } from 'models';
+import { chunk } from 'lodash';
+import { Line } from 'models';
 import { Flow } from 'vexflow';
+
+const DEFAULT_TUNING = new Flow.Tuning();
 
 /**
  * The Vextab is the encoding used to store instructions on how to draw, animate, and edit
@@ -36,7 +38,7 @@ class Vextab {
    * Vextab.prototype.toString.
    *
    * @param {string} vextabString
-   * @return {VextabStruct[]}
+   * @returns {VextabStruct[]}
    */
   static decode(vextabString) {
     return VextabDecoder.parse(vextabString);
@@ -46,11 +48,11 @@ class Vextab {
    * @param {VextabStruct[]} structs
    * @param {number} measuresPerLine
    */
-  constructor(structs, measuresPerLine, tuning = new Flow.Tuning()) {
+  constructor(structs, measuresPerLine, tuning = DEFAULT_TUNING) {
     this.tuning = tuning;
     this.measuresPerLine = measuresPerLine;
+    this.structs = Object.freeze(structs);
 
-    this._structs = Object.freeze(structs);
     this._measures = undefined;
     this._lines = undefined;
 
@@ -62,21 +64,12 @@ class Vextab {
     }
   }
 
-  /**
-   * Returns a clone of structs instance variable.
-   * 
-   * @return {VextabStruct[][]}
-   */
-  get structs() {
-    return merge([], this._structs); 
-  }
-
   get measures() {
     if (this._measures) {
       return this._measures;
     }
 
-    this._measures = VextabMeasureExtractor.extract(this.structs);
+    this._measures = VextabMeasureExtractor.extract(this, this.tuning);
     return this._measures;
   }
 
@@ -95,7 +88,7 @@ class Vextab {
   /**
    * Encodes a VextabStruct array into a vextab string. It is the inverse of Vextab.decode.
    *
-   * @return {string}
+   * @returns {string}
    */
   toString() {
     return VextabEncoder.encode(this.structs);

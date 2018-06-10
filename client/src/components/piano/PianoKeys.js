@@ -4,6 +4,7 @@ import styled from 'react-emotion';
 import { Scale, Note } from 'models';
 import { compose, withProps } from 'recompose';
 import { range } from 'lodash';
+import { Rhythm } from '../../models/music/rhythm';
 
 const enhance = compose(
   withProps(props => {

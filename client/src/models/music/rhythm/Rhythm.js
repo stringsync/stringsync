@@ -1,4 +1,9 @@
 class Rhythm {
+  /**
+   * @param {number} value 
+   * @param {boolean} dot 
+   * @param {number | void} tuplet 
+   */
   constructor(value, dot, tuplet) {
     this.value = value;
     this.dot = dot;

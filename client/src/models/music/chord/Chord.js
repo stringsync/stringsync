@@ -1,6 +1,7 @@
 class Chord {
-  constructor(notes) {
+  constructor(notes, struct) {
     this.notes = notes;
+    this.struct = struct;
     this.type = 'CHORD';
   }
 }

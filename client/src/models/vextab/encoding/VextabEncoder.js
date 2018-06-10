@@ -21,7 +21,7 @@ class VextabEncoder {
   /**
    * Encodes the vextab structs into a vextab string.
    * 
-   * @return {string}
+   * @returns {string}
    */
   toString() {
     const vextabStringGroups = this.structs.map(struct => {
@@ -49,7 +49,7 @@ class VextabEncoder {
    * element, and that property value is equal to 'tabstave'.
    * 
    * @param {VextabStruct} tabstave
-   * @return {string[]}
+   * @returns {string[]}
    * @private
    */
   _encodeTabstave(tabstave) {
@@ -66,7 +66,7 @@ class VextabEncoder {
    * in a tabstave struct. See VextabEncoder.prototype._encodeTabstave.
    * 
    * @param {VextabStruct} options 
-   * @return {string[]}
+   * @returns {string[]}
    * @private
    */
   _encodeOptions(options) {
@@ -78,7 +78,7 @@ class VextabEncoder {
   /**
    * 
    * @param {VextabStruct} text
-   * @return {string[]}
+   * @returns {string[]}
    */
   _encodeText(texts) {
     return texts.length > 0
@@ -95,7 +95,7 @@ class VextabEncoder {
    * return value is essentially an array of measures encoded as vextab strings.
    * 
    * @param {VextabStruct} notes 
-   * @return {string[]}
+   * @returns {string[]}
    * @private
    */
   _encodeNotes(notes) {
@@ -143,7 +143,7 @@ class VextabEncoder {
    * Encodes a bar note.
    * 
    * @param {VextabStruct} bar 
-   * @return {string}
+   * @returns {string}
    * @private
    */
   _encodeBar(bar) {
@@ -169,7 +169,7 @@ class VextabEncoder {
    * Encodes an array of annotations.
    * 
    * @param {VextabStruct} annotations 
-   * @return {string}
+   * @returns {string}
    * @private
    */
   _encodeAnnotations(annotations) {
@@ -182,7 +182,7 @@ class VextabEncoder {
    * Encodes a tuplet.
    * 
    * @param {VextabStruct} tuplet 
-   * @return {string}
+   * @returns {string}
    * @private
    */
   _encodeTuplet(tuplet) {
@@ -193,7 +193,7 @@ class VextabEncoder {
    * Encodes a rest.
    * 
    * @param {VextabStruct} rest 
-   * @return {string}
+   * @returns {string}
    * @private
    */
   _encodeRest(rest) {
@@ -205,7 +205,7 @@ class VextabEncoder {
    * Encodes a time note.
    * 
    * @param {VextabStruct} time
-   * @return {string}
+   * @returns {string}
    * @private
    */
   _encodeTime(time) {
@@ -216,7 +216,7 @@ class VextabEncoder {
    * Encodes a guitar position.
    * 
    * @param {VextabStruct} note 
-   * @return {string}
+   * @returns {string}
    * @private
    */
   _encodeNote(note) {
@@ -228,7 +228,7 @@ class VextabEncoder {
    * Encodes a guitar chord.
    * 
    * @param {VextabStrict} chord 
-   * @return {string}
+   * @returns {string}
    * @private
    */
   _encodeChord(chord) {

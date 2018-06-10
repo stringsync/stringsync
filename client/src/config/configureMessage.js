@@ -6,7 +6,7 @@ window.ss.message = message;
 /**
  * Configure antd's message system
  * 
- * @return {void}
+ * @returns {void}
  */
 const configureMessage = () => {
   message.config({ duration: 2 });

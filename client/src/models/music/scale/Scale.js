@@ -43,7 +43,7 @@ class Scale {
    * The notes will be in the sort order dictated by Note.sort.
    * 
    * @param {Array<number>}
-   * @return {Note[]}
+   * @returns {Note[]}
    */
   notes(octaves = [4]) {
     const root = new ScaleDegree('1', this);

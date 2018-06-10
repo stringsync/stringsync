@@ -1,12 +1,20 @@
+import { VextabStruct } from 'models';
+
 class TimeSignature {
-  constructor(upper, lower) {
-    this.upper = upper;
-    this.lower = lower;
+  /**
+   * @param {number | string} upper 
+   * @param {number | string} lower 
+   * @param {VextabStruct} struct 
+   */
+  constructor(upper, lower, struct) {
+    this.upper = parseInt(upper, 10);
+    this.lower = parseInt(lower, 10);
+    this.struct = struct;
     this.type = 'TIME_SIGNATURE';
   }
 
   /**
-   * @return {string}
+   * @returns {string}
    */
   toString() {
     return `${this.upper}/${this.lower}`;

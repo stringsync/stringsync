@@ -1,5 +1,5 @@
 
-import { isObject } from 'lodash';
+import { at } from 'lodash';
 
 class VextabStruct {
   static typeof(struct) {
@@ -46,6 +46,24 @@ class VextabStruct {
     } else if (keys.has('chord')) {
       return 'CHORD';
     }
+  }
+
+  /**
+   * @param {Vextab} vextab 
+   * @param {string} path 
+   */
+  constructor(vextab, path) {
+    this.vextab = vextab;
+    this.path = path;
+  }
+
+  /**
+   * Returns the raw vextab struct.
+   * 
+   * @returns
+   */
+  get raw() {
+    return at(this.vextab.structs, this.path)[0];
   }
 }
 

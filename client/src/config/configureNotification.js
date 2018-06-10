@@ -7,7 +7,7 @@ window.ss.notification = notification;
  * Configures antd's notification system
  * https://ant.design/components/notification/
  *
- * @return {void}
+ * @returns {void}
  */
 const configureNotification = () => {
   notification.config({ duration: 3 });
