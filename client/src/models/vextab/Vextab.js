@@ -7,7 +7,7 @@ import {
 } from './';
 import { Line } from 'models';
 import { Flow } from 'vexflow';
-import { last } from 'lodash';
+import { addWindowResource } from 'utilities';
 
 const DEFAULT_TUNING = new Flow.Tuning();
 
@@ -62,10 +62,8 @@ class Vextab {
 
     this.renderer = new VextabRenderer(this);
 
-    if (window.ss.env === 'development') {
-      console.warn('REMOVE BEFORE DEPLOY');
-      window.ss.vextab = this;
-    }
+    console.warn('REMOVE FOR PRODUCTION');
+    addWindowResource('vextab', this)
   }
 
   /**
@@ -99,6 +97,7 @@ class Vextab {
     this.measures.forEach((measure, ndx) => {
       const shouldPushLine = (
         measures.length === this.measuresPerLine ||
+        (prevMeasure && prevMeasure.spec.struct !== measure.spec.struct) ||
         (prevMeasure && prevMeasure.spec.id !== measure.spec.id)
       );
 

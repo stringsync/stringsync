@@ -16,7 +16,7 @@ class VextabMeasureExtractor {
     this.measures = [];
 
     // "Current" properties
-    this.slices = [];
+    this.elements = [];
     this.rhythm = new Rhythm(4, false, null);
     this.bar = undefined;
     this.measureSpec = undefined;
@@ -76,7 +76,9 @@ class VextabMeasureExtractor {
       }
     }, {});
 
-    return new VextabMeasureSpec(params['KEY'], params['TIME_SIGNATURE']);
+    const path = this.path + 'options';
+    const measureSpecStruct = new VextabStruct(this.vextab, path);
+    return new VextabMeasureSpec(params['KEY'], params['TIME_SIGNATURE'], measureSpecStruct);
   }
 
   /**
@@ -112,7 +114,7 @@ class VextabMeasureExtractor {
     this.bar = undefined;
     this.rhythm = undefined;
     this.measureSpec = undefined;
-    this.slices = [];
+    this.elements = [];
     this.path = '';
   }
 
@@ -127,30 +129,30 @@ class VextabMeasureExtractor {
       case 'BAR':
         this._pushMeasure();
         this.bar = new Bar(note.type, this.createVextabStruct());
-        this.slices = [];
+        this.elements = [];
         break;
       case 'TIME':
         this.rhythm = new Rhythm(note.time, note.dot, null, this.createVextabStruct());
-        this.slices.push(this.rhythm);
+        this.elements.push(this.rhythm);
         break;
       case 'NOTE':
-        this.slices.push(this._extractNote(note));
+        this.elements.push(this._extractNote(note));
         break;
       case 'CHORD':
-        this.slices.push(this._extractChord(note));
+        this.elements.push(this._extractChord(note));
         break;
       case 'REST':
-        this.slices.push(
+        this.elements.push(
           new Rest(note.params.position, this.rhythm.clone(), this.createVextabStruct())
         );
         break;
       case 'TUPLET':
-        this.slices.push(
+        this.elements.push(
           new Tuplet(parseInt(note.params.tuplet, 10), this.createVextabStruct())
         );
         break;
       case 'ANNOTATIONS':
-        this.slices.push(
+        this.elements.push(
           new Annotations(note.params, this.createVextabStruct())
         )
         break;
@@ -166,7 +168,7 @@ class VextabMeasureExtractor {
    */
   _pushMeasure() {
     this.measures.push(
-      new Measure(this.timeSignature, this.slices, this.bar, this.measureSpec)
+      new Measure(this.timeSignature, this.elements, this.bar, this.measureSpec)
     );
   }
 
