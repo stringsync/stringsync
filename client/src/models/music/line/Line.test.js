@@ -4,6 +4,9 @@ import { last, isEqual, flatMap } from 'lodash';
 
 const VEXTABS = VEXTAB_STRINGS.map(Vextab.decode).map(structs => new Vextab(structs, 1));
 
+// The purpose of the lossless tests is to show that a newly parsed vextab string can still
+// be recovered from the Line abstraction that StringSync's Vextab provides.
+
 test('Line.prototype.structs is lossless in terms of notes', () => {
   VEXTABS.forEach(vextab => {
     const structs = flatMap(vextab.lines, line => line.struct.notes);
