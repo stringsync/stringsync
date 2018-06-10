@@ -1,3 +1,7 @@
+import { Flow } from 'vexflow';
+
+const CANVAS_BACKEND = Flow.Renderer.Backends.CANVAS;
+
 class VextabRenderer {
   constructor(vextab) {
     this.vextab = vextab;
@@ -16,13 +20,15 @@ class VextabRenderer {
   }
 
   /**
-   * First, validates to ensure that all lines have a canvas. Throws an error if there are not enough
-   * canvases.
+   * First, validates to ensure that all lines have a canvas. Throws an error if there are not
+   * enough canvases.
    * 
    * @return {void}
    */
   render() {
-
+    const canvas = this.canvasesByLineNumber[0];
+    const renderer = new Flow.Renderer(canvas, CANVAS_BACKEND);
+    const ctx = renderer.getContext();
   }
 };
 

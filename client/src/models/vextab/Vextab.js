@@ -86,7 +86,7 @@ class Vextab {
     }
 
     this._lines = chunk(this.measures, this.measuresPerLine).map((measures, number) => {
-      return new Line(measures, number);
+      return new Line(number, measures);
     });
 
     return this._lines;

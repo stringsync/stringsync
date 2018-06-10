@@ -30,6 +30,7 @@
     "redux": "^3.7.2",
     "redux-actions": "^2.3.0",
     "redux-thunk": "^2.2.0",
+    "vextab": "git+https://github.com/jaredjj3/vextab.git",
     "vexflow": "^1.2.84"
   },
   "scripts": {

@@ -10,16 +10,15 @@ const enhance = compose(
   withState('renderer', 'setRenderer', null),
   withHandlers({
     handleCanvasRef: props => canvas => {
-      const { line } = props.line;
-      props.vextab.renderer.assign(canvas, line.number);
+      props.vextab.renderer.assign(canvas, props.line.number);
     }
   })
 );
 
-const ScoreLine = props => (
+const ScoreLine = enhance(props => (
   <div>
     <canvas ref={props.handleCanvasRef} />
   </div>
-);
+));
 
 export default ScoreLine;
