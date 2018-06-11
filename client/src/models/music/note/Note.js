@@ -1,5 +1,7 @@
 import { sortBy } from 'lodash';
 import * as constants from './noteConstants';
+import { Rhythm } from '../rhythm';
+import { VextabStruct } from '../../vextab';
 
 /**
  * The purpose of this class is to encapsulate the logic related to describing a note's inherent
@@ -10,7 +12,7 @@ class Note {
   /**
    * An array of all the possible Note literals
    * 
-   * @returns {constants.ALL_LITERALS;}
+   * @returnss {constants.ALL_LITERALS;}
    */
   static get ALL_LITERALS() {
     return constants.ALL_LITERALS;
@@ -19,7 +21,7 @@ class Note {
   /**
    * A set of all the possible Note literals
    * 
-   * @returns {constants.ALL_LITERALS_SET}
+   * @returnss {constants.ALL_LITERALS_SET}
    */
   static get ALL_LITERALS_SET() {
     return constants.ALL_LITERALS_SET;
@@ -28,7 +30,7 @@ class Note {
   /**
    * An array of all the possible Note literals as sharps
    * 
-   * @returns {constants.SHARP_LITERALS;}
+   * @returnss {constants.SHARP_LITERALS;}
    */
   static get SHARP_LITERALS() {
     return constants.SHARP_LITERALS;
@@ -37,7 +39,7 @@ class Note {
   /**
    * An array of all the possible Note literals as flats
    * 
-   * @returns {constants.FLAT_LITERALS}
+   * @returnss {constants.FLAT_LITERALS}
    */
   static get FLAT_LITERALS() {
     return constants.FLAT_LITERALS;
@@ -47,7 +49,7 @@ class Note {
    * Maps note literal to its alias. For example, 'D#' maps to 'Eb' since they are the same
    * note. If a note has no alias, the same literal is mapped.
    * 
-   * @returns {constants.NOTE_ALIASES}
+   * @returnss {constants.NOTE_ALIASES}
    */
   static get NOTE_ALIASES() {
     return constants.NOTE_ALIASES;
@@ -56,7 +58,7 @@ class Note {
   /**
    * Used to back the value getter
    * 
-   * @returns {constants.VALUES_BY_LITERAL}
+   * @returnss {constants.VALUES_BY_LITERAL}
    */
   static get VALUES_BY_LITERAL() {
     return constants.VALUES_BY_LITERAL;
@@ -67,17 +69,18 @@ class Note {
    * When sorting by literal, the sort order is: naturals, sharps, then flats.
    * 
    * @param {Array<Note>} notes
-   * @returns {Array<Note>}
+   * @returnss {Array<Note>}
    */
   static sort(notes) {
     return sortBy(notes, ['octave', 'value', 'isFlat']);
   }
 
   /**
-   * @param {string} literal
-   * @param {number} octave
+   * @param {string} literal 
+   * @param {number} octave 
+   * @param {VextabStruct | void} struct 
    */
-  constructor(literal, octave) {
+  constructor(literal, octave, struct) {
     if (!Note.ALL_LITERALS_SET.has(literal)) {
       throw new Error(`${literal} should be in ${Note.ALL_LITERALS.join(', ')}`);
     } else if (!Number.isInteger(octave)) {
@@ -86,12 +89,14 @@ class Note {
 
     this.literal = literal;
     this.octave = octave;
+    this.struct = struct;
+    this.type = 'NOTE';
   }
 
   /**
    * Returns an alias note with a literal backed by Note.NOTE_ALIASES.
    * 
-   * @returns {Note}
+   * @returnss {Note}
    */
   get alias() {
     return new Note(Note.NOTE_ALIASES[this.literal], this.octave);
@@ -100,7 +105,7 @@ class Note {
   /**
    * Clones the note.
    * 
-   * @returns {Note}
+   * @returnss {Note}
    */
   get clone() {
     return new Note(this.literal, this.octave);
@@ -109,7 +114,7 @@ class Note {
   /**
    * Returns true if the note is flat.
    * 
-   * @returns {boolean}
+   * @returnss {boolean}
    */
   get isFlat() {
     return this.literal.endsWith('b');
@@ -118,7 +123,7 @@ class Note {
   /**
    * Returns true if the note is natural.
    * 
-   * @returns {boolean}
+   * @returnss {boolean}
    */
   get isNatural() {
     return !this.isFlat && !this.isSharp;
@@ -127,7 +132,7 @@ class Note {
   /**
    * Returns true if the note is sharp.
    * 
-   * @returns {boolean}
+   * @returnss {boolean}
    */
   get isSharp() {
     return this.literal.endsWith('#');
@@ -137,7 +142,7 @@ class Note {
    * Returns the value of the note. Notes that have an alias with a different literal have
    * the same value.
    * 
-   * @returns {number}
+   * @returnss {number}
    */
   get value() {
     return Note.VALUES_BY_LITERAL[this.literal];
@@ -148,7 +153,7 @@ class Note {
    * values are the same.
    * 
    * @param {Note} other 
-   * @returns {boolean}
+   * @returnss {boolean}
    */
   isEquivalent(other) {
     return this.isSameOctave(other) && this.isSameNote(other);
@@ -158,7 +163,7 @@ class Note {
    * Compares +this+ with the other note. Similar to the spaceship operator in Ruby.
    * 
    * @param {Note} other 
-   * @returns {number} -1 if less than, 0 if equal to, 1 if greater than
+   * @returnss {number} -1 if less than, 0 if equal to, 1 if greater than
    */
   compare(other) {
     if (this.octave < other.octave) {
@@ -180,7 +185,7 @@ class Note {
    * Compares the equality of the octaves.
    * 
    * @param {Note} other 
-   * @returns {boolean}
+   * @returnss {boolean}
    */
   isSameOctave(other) {
     return this.octave === other.octave;
@@ -190,7 +195,7 @@ class Note {
    * Compares the values of the notes.
    * 
    * @param {Note} other 
-   * @returns {boolean}
+   * @returnss {boolean}
    */
   isSameNote(other) {
     return this.value === other.value;
@@ -199,7 +204,7 @@ class Note {
   /**
    * Returns the string representation of the note. Mainly used for Vexflow.
    * 
-   * @returns {string}
+   * @returnss {string}
    */
   toString() {
     return `${this.literal}/${this.octave}`;
@@ -208,7 +213,7 @@ class Note {
   /**
    * Returns the flat version of the note if the note isSharp. Otherwise, returns a clone.
    * 
-   * @returns {Note}
+   * @returnss {Note}
    */
   toFlat() {
     return this.isSharp ? this.alias : this.clone;
@@ -217,7 +222,7 @@ class Note {
   /**
    * Returns the sharp version of the note if the note isFlat. Otherwise, returns a clone.
    * 
-   * @returns {Note}
+   * @returnss {Note}
    */
   toSharp() {
     return this.isFlat ? this.alias : this.clone;
@@ -229,7 +234,7 @@ class Note {
    * note.
    * 
    * @param {number} numHalfSteps 
-   * @return {Note}
+   * @returns {Note}
    */
   step(numHalfSteps = 1) {
     if (!Number.isInteger(numHalfSteps)) {

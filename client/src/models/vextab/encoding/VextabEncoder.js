@@ -1,4 +1,5 @@
 import { compact } from 'lodash';
+import { VextabStruct } from 'models';
 
 class VextabEncodingError extends Error {}
 
@@ -20,12 +21,12 @@ class VextabEncoder {
   /**
    * Encodes the vextab structs into a vextab string.
    * 
-   * @return {string}
+   * @returns {string}
    */
   toString() {
     const vextabStringGroups = this.structs.map(struct => {
-      switch (struct.element) {
-        case 'tabstave':
+      switch (VextabStruct.typeof(struct)) {
+        case 'TABSTAVE':
           return this._encodeTabstave(struct);
         default:
           throw error(struct);
@@ -48,7 +49,7 @@ class VextabEncoder {
    * element, and that property value is equal to 'tabstave'.
    * 
    * @param {VextabStruct} tabstave
-   * @return {string[]}
+   * @returns {string[]}
    * @private
    */
   _encodeTabstave(tabstave) {
@@ -65,7 +66,7 @@ class VextabEncoder {
    * in a tabstave struct. See VextabEncoder.prototype._encodeTabstave.
    * 
    * @param {VextabStruct} options 
-   * @return {string[]}
+   * @returns {string[]}
    * @private
    */
   _encodeOptions(options) {
@@ -77,7 +78,7 @@ class VextabEncoder {
   /**
    * 
    * @param {VextabStruct} text
-   * @return {string[]}
+   * @returns {string[]}
    */
   _encodeText(texts) {
     return texts.length > 0
@@ -94,7 +95,7 @@ class VextabEncoder {
    * return value is essentially an array of measures encoded as vextab strings.
    * 
    * @param {VextabStruct} notes 
-   * @return {string[]}
+   * @returns {string[]}
    * @private
    */
   _encodeNotes(notes) {
@@ -102,7 +103,7 @@ class VextabEncoder {
     let ndx = -1;
     const measures = [];
     notes.forEach(note => {
-      if (note.command === 'bar') {
+      if (VextabStruct.typeof(note) === 'BAR') {
         ndx++;
       }
       measures[ndx] = measures[ndx] || [];
@@ -111,26 +112,24 @@ class VextabEncoder {
 
     // transform the measure groups into vextab strings
     return measures.map(measure => {
-      const vextabStrings = measure.map(entity => {
-        const { command } = entity;
-        const keys = new Set(Object.keys(entity));
-
-        if (command === 'bar') {
-          return this._encodeBar(entity);
-        } else if (command === 'annotations') {
-          return this._encodeAnnotations(entity);
-        } else if (command === 'tuplet') {
-          return this._encodeTuplet(entity);
-        } else if (command === 'rest') {
-          return this._encodeRest(entity);
-        } else if (keys.has('time')) {
-          return this._encodeTime(entity);
-        } else if (keys.has('fret') && keys.has('string')) {
-          return this._encodeNote(entity);
-        } else if (keys.has('chord')) {
-          return this._encodeChord(entity);
-        } else {
-          error(entity);
+      const vextabStrings = measure.map(struct => {
+        switch (VextabStruct.typeof(struct)) {
+          case 'BAR':
+            return this._encodeBar(struct);
+          case 'ANNOTATIONS':
+            return this._encodeAnnotations(struct);
+          case 'TUPLET':
+            return this._encodeTuplet(struct);
+          case 'REST':
+            return this._encodeRest(struct);
+          case 'TIME':
+            return this._encodeTime(struct);
+          case 'NOTE':
+            return this._encodeNote(struct);
+          case 'CHORD':
+            return this._encodeChord(struct);
+          default:
+            error(struct);
         }
       });
 
@@ -144,7 +143,7 @@ class VextabEncoder {
    * Encodes a bar note.
    * 
    * @param {VextabStruct} bar 
-   * @return {string}
+   * @returns {string}
    * @private
    */
   _encodeBar(bar) {
@@ -170,7 +169,7 @@ class VextabEncoder {
    * Encodes an array of annotations.
    * 
    * @param {VextabStruct} annotations 
-   * @return {string}
+   * @returns {string}
    * @private
    */
   _encodeAnnotations(annotations) {
@@ -183,7 +182,7 @@ class VextabEncoder {
    * Encodes a tuplet.
    * 
    * @param {VextabStruct} tuplet 
-   * @return {string}
+   * @returns {string}
    * @private
    */
   _encodeTuplet(tuplet) {
@@ -194,7 +193,7 @@ class VextabEncoder {
    * Encodes a rest.
    * 
    * @param {VextabStruct} rest 
-   * @return {string}
+   * @returns {string}
    * @private
    */
   _encodeRest(rest) {
@@ -206,7 +205,7 @@ class VextabEncoder {
    * Encodes a time note.
    * 
    * @param {VextabStruct} time
-   * @return {string}
+   * @returns {string}
    * @private
    */
   _encodeTime(time) {
@@ -217,7 +216,7 @@ class VextabEncoder {
    * Encodes a guitar position.
    * 
    * @param {VextabStruct} note 
-   * @return {string}
+   * @returns {string}
    * @private
    */
   _encodeNote(note) {
@@ -229,7 +228,7 @@ class VextabEncoder {
    * Encodes a guitar chord.
    * 
    * @param {VextabStrict} chord 
-   * @return {string}
+   * @returns {string}
    * @private
    */
   _encodeChord(chord) {

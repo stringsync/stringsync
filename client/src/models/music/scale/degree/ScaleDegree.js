@@ -53,7 +53,7 @@ class ScaleDegree {
   /**
    * Returns the key of the scale AKA the root note.
    *
-   * @return {string}
+   * @returns {string}
    */
   get key() {
     return this.scale.key;
@@ -62,7 +62,7 @@ class ScaleDegree {
   /**
    * Looks up the number value from the VALUES_BY_LITERAL. Used to compare scale degrees.
    * 
-   * @return {number}
+   * @returns {number}
    */
   get value() {
     return ScaleDegree.VALUES_BY_LITERAL[this.literal];
@@ -72,7 +72,7 @@ class ScaleDegree {
    * If the literal is prefixed with a modifier in ScaleDegree.MODIFIERS, then it is returned here.
    * Otherwise, return an empty string.
    * 
-   * @return {string}
+   * @returns {string}
    */
   get modifier() {
     const char = this.literal[0];

@@ -8,7 +8,7 @@ window.ss.sessionSync = { callback: null, user: {} };
  * Returns the API Url for configuring jToker. Logs a warning if window.ss.env is
  * not handled.
  * 
- * @return {string} 
+ * @returns {string} 
  */
 const getApiUrl = () => {
   switch (window.ss.env) {
@@ -26,7 +26,7 @@ const getApiUrl = () => {
 /**
  * Configures jToker
  * 
- * @return {void}
+ * @returns {void}
  */
 const configureAuth = () => {
   auth.configure({

@@ -106,7 +106,10 @@ const NotationShow = enhance(props => (
           </div>
           <div>
             <ScrollElement name="notation-show-tab" />
-            <Score />
+            <Score
+              vextabString={props.notation.attributes.vextabString}
+              measuresPerLine={4}
+            />
           </div>
         </ContentContainer>
       </Layer>

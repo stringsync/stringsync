@@ -5,7 +5,7 @@ import { debounce } from 'lodash';
  * Scrolls to the top for the NotationIndex component
  * Doesn't fire off until there has been 1000 ms of no inputs
  * 
- * @return {void}
+ * @returns {void}
  */
 const scrollToTop = debounce(() => {
   Scroll.animateScroll.scrollToTop({

@@ -4,7 +4,7 @@ import withSizes from 'react-sizes';
  * Returns a string that describes the viewport
  * 
  * @param {number} width 
- * @return {string}
+ * @returns {string}
  */
 const getViewportType = width => {
   if (withSizes.isMobile({ width })) {

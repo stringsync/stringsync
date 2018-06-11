@@ -10,7 +10,7 @@ import { configure } from 'config';
 /**
  * Default options used for assertRender
  * 
- * @return {object}
+ * @returns {object}
  */
 const DEFAULT_OPTS = Object.freeze({
   isRoot: false
@@ -21,7 +21,7 @@ const DEFAULT_OPTS = Object.freeze({
  * 
  * @param {React.Component} Component 
  * @param {React.Props} props
- * @return {string}
+ * @returns {string}
  */
 const testName = (Component, props) => {
   let componentName = getDisplayName(Component);
@@ -41,7 +41,7 @@ const testName = (Component, props) => {
  * 
  * @param {React.Component} Component 
  * @param {object} opts
- * @return {React.Component}
+ * @returns {React.Component}
  */
 const getTestComponent = (Component, props, opts) => {
   let TestComponent = null;
