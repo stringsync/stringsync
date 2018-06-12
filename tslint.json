@@ -1,3 +1,17 @@
 {
-  "extends": "./client/tslint.json"
+  "extends": [
+    "tslint:recommended",
+    "tslint-react",
+    "tslint-config-prettier",
+    "./client/tslint.json"
+  ],
+  "rules": {
+    "ordered-imports": false
+  },
+  "linterOptions": {
+    "exclude": [
+      "config/**/*.js",
+      "client/node_modules/**/*.ts"
+    ]
+  }
 }
