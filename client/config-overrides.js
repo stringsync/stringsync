@@ -15,8 +15,8 @@ module.exports = function override(config, env) {
   tsLoader.options = {
     getCustomTransformers: () => ({
       before: [tsImportPluginFactory({
-        libraryName: 'antd',
         libraryDirectory: 'es',
+        libraryName: 'antd',
         style: true
       })]
     })
@@ -24,8 +24,8 @@ module.exports = function override(config, env) {
 
   config = rewireLess.withLoaderOptions({
     modifyVars: {
-      "@primary-color": "#FC354C",
-      "@brand-primary": "@primary-color"
+      "@brand-primary": "@primary-color",
+      "@primary-color": "#FC354C"
     },
   })(config, env);
 
