@@ -9,5 +9,6 @@ interface Window {
       user: any;
     };
     store: any;
-  }
+  },
+  XMLHttpRequest: XMLHttpRequest | jest.Mock
 }
