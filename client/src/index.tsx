@@ -6,6 +6,5 @@ import { registerServiceWorker } from 'utilities';
 import { createStore } from 'data';
 
 configure();
-const store = createStore();
-ReactDOM.render(<Root store={store} />, document.getElementById('root'));
+ReactDOM.render(<Root store={createStore()} />, document.getElementById('root'));
 registerServiceWorker();
