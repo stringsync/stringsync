@@ -5,30 +5,20 @@ import { createStore } from 'data';
 import { xhrMock } from './mocks';
 import { configure } from 'config';
 
-const getTestComponent = (
-  Component: React.ComponentClass | React.SFC,
-  props: object,
-  isRoot: boolean = false
-): React.SFC => {
-  if (isRoot) {
-    return () => <Component {...props} />;
-  } else {
-    return () => (
-      <Root store={createStore()}>
-        <Component {...props} />
-      </Root>
-    );
-  }
-};
+const createTestComponent = (Component: React.ComponentClass | React.SFC, props: object): React.SFC => () => (
+  <Root store={createStore()}>
+    <Component {...props} />
+  </Root>
+);
 
 const assertRender = (
-  Component: React.ComponentClass | React.SFC, props: object = {}, isRoot = false): void => {
+  Component: React.ComponentClass | React.SFC, props: object = {}): void => {
   it('renders without crashing', () => {
     window.XMLHttpRequest = jest.fn(xhrMock);
 
     configure();
     const div = document.createElement('div');
-    const TestComponent = getTestComponent(Component, props, isRoot);
+    const TestComponent = createTestComponent(Component, props);
 
     ReactDOM.render(<TestComponent />, div);
     ReactDOM.unmountComponentAtNode(div);

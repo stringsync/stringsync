@@ -1,6 +1,4 @@
-import auth from 'j-toker';
-
-window.ss.auth = auth;
+import * as auth from 'j-toker';
 
 /**
  * Returns the API Url for configuring jToker. Logs a warning if window.ss.env is
@@ -9,7 +7,7 @@ window.ss.auth = auth;
  * @returns {string} 
  */
 const getApiUrl = (): string => {
-  switch (window.ss.env.toLowerCase()) {
+  switch (window.ss.env) {
     case 'development':
       return 'http://localhost:3001';
     case 'production':
@@ -20,15 +18,17 @@ const getApiUrl = (): string => {
 };
 
 /**
- * Configures jToker
+ * Configures jToker in non test environments
  * 
  * @returns {void}
  */
 const configureAuth = (): void => {
-  auth.configure({
+  window.ss.auth = auth;
+
+  window.ss.auth.configure({
     apiUrl: getApiUrl(),
     confirmationSuccessUrl: () => window.location.href,
-    handleTokenValidationResponse: res => {
+    handleTokenValidationResponse: (res: any) => {
       const user = res.data;
       window.ss.sessionSync.user = user;
       

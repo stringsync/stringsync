@@ -1,7 +1,7 @@
 interface Window {
   ss: {
     auth: any;
-    env: string;
+    env: 'development' | 'test' | 'production';
     message: any;
     notification: any;
     sessionSync: {
