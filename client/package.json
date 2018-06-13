@@ -36,7 +36,7 @@
     "react-sizes": "^1.0.4",
     "react-youtube": "^7.6.0",
     "recompose": "^0.27.1",
-    "redux": "^4.0.0",
+    "redux": "^3.7.2",
     "redux-actions": "^2.4.0",
     "redux-thunk": "^2.3.0",
     "ts-import-plugin": "^1.5.2",
