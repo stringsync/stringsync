@@ -5,12 +5,6 @@ import { createStore } from 'data';
 import { xhrMock } from './mocks';
 import { configure } from 'config';
 
-const createTestComponent = (Component: React.ComponentClass | React.SFC, props: object): React.SFC => () => (
-  <Root store={createStore()}>
-    <Component {...props} />
-  </Root>
-);
-
 const assertRender = (
   Component: React.ComponentClass | React.SFC, props: object = {}): void => {
   it('renders without crashing', () => {
@@ -18,7 +12,11 @@ const assertRender = (
 
     configure();
     const div = document.createElement('div');
-    const TestComponent = createTestComponent(Component, props);
+    const TestComponent = () => (
+      <Root store={createStore()}>
+        <Component {...props} />
+      </Root>
+    );
 
     ReactDOM.render(<TestComponent />, div);
     ReactDOM.unmountComponentAtNode(div);
