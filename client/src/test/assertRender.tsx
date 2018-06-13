@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Root } from 'root';
+import { Root } from 'modules/root';
 import { createStore } from 'data';
 import { xhrMock } from './mocks';
 import { configure } from 'config';
