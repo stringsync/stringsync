@@ -23,12 +23,12 @@ const getApiUrl = (): string => {
  * @returns {void}
  */
 const configureAuth = (): void => {
-  window.ss.auth = auth;
-
+  window.ss.auth = auth as auth.IJTokerAuth;
+  
   window.ss.auth.configure({
     apiUrl: getApiUrl(),
     confirmationSuccessUrl: () => window.location.href,
-    handleTokenValidationResponse: (res: any) => {
+    handleTokenValidationResponse: res => {
       const user = res.data;
       window.ss.sessionSync.user = user;
       

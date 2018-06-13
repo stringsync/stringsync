@@ -1,22 +1,6 @@
 declare module 'j-toker' {
   export interface IResponse {
-    data: {
-      "access-token": string;
-      allow_password_change: boolean;
-      client: string;
-      configName: string;
-      created_at: string;
-      email: string;
-      expiry: number;
-      id: number;
-      image: string;
-      name: string;
-      provider: string;
-      role: string;
-      signedIn: boolean;
-      uid: string;
-      updated_at: string;
-    }
+    data: IUser;
   }
 
   export interface IAuthConfigurationOptions {
@@ -56,9 +40,8 @@ declare module 'j-toker' {
     handleTokenValidationResponse?: (response: IResponse) => any;
   }
 
-  const _default: {
+  export interface IJTokerAuth {
     configure: (options: IAuthConfigurationOptions, reset?: boolean) => any;
   }
-
-  export default _default;
 }
+
