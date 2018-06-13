@@ -1,12 +1,13 @@
 interface Window {
   ss: {
-    env: string,
-    auth: any,
+    auth: any;
+    env: string;
+    message: any;
+    notification: any;
     sessionSync: {
-      callback: any,
-      user: any
-    },
-    message: any,
-    notification: any
+      callback: any;
+      user: any;
+    };
+    store: any;
   }
 }

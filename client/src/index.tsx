@@ -3,8 +3,9 @@ import * as ReactDOM from 'react-dom';
 import { Root } from 'root';
 import { configure } from 'config';
 import { registerServiceWorker } from 'utilities';
-// import { store } from 'data';
+import { createStore } from 'data';
 
 configure();
-ReactDOM.render(<Root />, document.getElementById('root'));
+const store = createStore();
+ReactDOM.render(<Root store={store} />, document.getElementById('root'));
 registerServiceWorker();

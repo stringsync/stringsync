@@ -8,13 +8,11 @@ window.ss.auth = auth;
  * 
  * @returns {string} 
  */
-const getApiUrl = () => {
-  switch (window.ss.env) {
+const getApiUrl = (): string => {
+  switch (window.ss.env.toLowerCase()) {
     case 'development':
-    case 'DEVELOPMENT':
       return 'http://localhost:3001';
     case 'production':
-    case 'PRODUCTION':
       return window.location.origin;
     default:
       return '';
@@ -26,7 +24,7 @@ const getApiUrl = () => {
  * 
  * @returns {void}
  */
-const configureAuth = () => {
+const configureAuth = (): void => {
   auth.configure({
     apiUrl: getApiUrl(),
     confirmationSuccessUrl: () => window.location.href,
