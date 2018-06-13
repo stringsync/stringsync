@@ -38,7 +38,7 @@
     "recompose": "^0.27.1",
     "redux": "^3.7.2",
     "redux-actions": "^2.4.0",
-    "redux-thunk": "^2.3.0",
+    "redux-thunk": "^2.2.0",
     "ts-import-plugin": "^1.5.2",
     "typescript": "^2.9.1",
     "vexflow": "^1.2.84",
