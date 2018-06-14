@@ -11,8 +11,8 @@ export const getInitialState = (): IViewportState => ({
   width: window.innerWidth
 });
 
-export const viewportReducer = (state = getInitialState(), action: actions.Actions): IViewportState => {
-  const nextState = Object.assign({}, state);
+export const viewportReducer = (state = getInitialState(), action: actions.ViewportActions): IViewportState => {
+  const nextState = {...state};
 
   switch(action.type) {
 
