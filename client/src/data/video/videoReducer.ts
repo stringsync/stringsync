@@ -8,7 +8,7 @@ export interface IVideoState {
   isActive?: boolean;
 }
 
-const getInitialState = (): IVideoState => ({
+const getDefaultState = (): IVideoState => ({
   isActive: undefined,
   kind: 'YOUTUBE',
   player: null,
@@ -16,13 +16,13 @@ const getInitialState = (): IVideoState => ({
   src: ''
 });
 
-export const videoReducer = (state = getInitialState(), action: actions.VideoActions): IVideoState => {
+export const videoReducer = (state = getDefaultState(), action: actions.VideoActions): IVideoState => {
   const nextState = {...state};
 
   switch (action.type) {
 
     case actions.RESET_VIDEO:
-      return getInitialState();
+      return getDefaultState();
 
     case actions.SET_VIDEO:
       nextState.src = action.payload.src;

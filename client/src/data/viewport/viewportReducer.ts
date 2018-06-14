@@ -6,12 +6,12 @@ export interface IViewportState {
   width: number;
 }
 
-const getInitialState = (): IViewportState => ({
+const getDefaultState = (): IViewportState => ({
   type: 'DESKTOP',
   width: window.innerWidth
 });
 
-export const viewportReducer = (state = getInitialState(), action: actions.ViewportActions): IViewportState => {
+export const viewportReducer = (state = getDefaultState(), action: actions.ViewportActions): IViewportState => {
   const nextState = {...state};
 
   switch(action.type) {

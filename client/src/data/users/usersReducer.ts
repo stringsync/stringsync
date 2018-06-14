@@ -13,13 +13,13 @@ const getDefaultUser = (): User.IBaseUser => ({
   name: ''
 });
 
-const getInitialState = (): IUsersState => ({
+const getDefaultState = (): IUsersState => ({
   edit: getDefaultUser(),
   index: [],
   show: getDefaultUser()
 });
 
-export const usersReducer = (state = getInitialState(), action: actions.UsersActions): IUsersState => {
+export const usersReducer = (state = getDefaultState(), action: actions.UsersActions): IUsersState => {
   const nextState = merge({}, state);
   
   switch (action.type) {

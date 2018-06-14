@@ -25,13 +25,13 @@ const getDefaultNotation = (): Notation.INotation => ({
   }
 });
 
-const getInitialState = (): INotationsState => ({
+const getDefaultState = (): INotationsState => ({
   edit: getDefaultNotation(),
   index: [],
   show: getDefaultNotation()
 });
 
-export const notationsReducer = (state = getInitialState(), action: actions.NotationsActions): INotationsState => {
+export const notationsReducer = (state = getDefaultState(), action: actions.NotationsActions): INotationsState => {
   const nextState = merge({}, state);
 
   switch(action.type) {
