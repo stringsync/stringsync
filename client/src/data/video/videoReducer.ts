@@ -1,7 +1,7 @@
 import * as actions from './videoActions';
 
 export interface IVideoState {
-  kind: actions.VideoKinds;
+  kind: Video.Kinds;
   src: string;
   player: Youtube.Player | null;
   playerState?: Youtube.PlayerStates;
