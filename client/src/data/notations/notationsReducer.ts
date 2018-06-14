@@ -36,19 +36,19 @@ export const notationsReducer = (state = getInitialState(), action: actions.Nota
 
   switch(action.type) {
     
-    case actions.RESET_NOTATION_EDIT:
+    case actions.RESET_NOTATIONS_EDIT:
       nextState.edit = getDefaultNotation();
       return nextState;
 
-    case actions.RESET_NOTATION_SHOW:
+    case actions.RESET_NOTATIONS_SHOW:
       nextState.show = getDefaultNotation();
       return nextState;
 
-    case actions.SET_NOTATION_EDIT:
+    case actions.SET_NOTATIONS_EDIT:
       nextState.edit = action.payload.notation;
       return nextState;
 
-    case actions.SET_NOTATION_SHOW:
+    case actions.SET_NOTATIONS_SHOW:
       nextState.show = action.payload.notation;
       return nextState;
 
@@ -56,7 +56,7 @@ export const notationsReducer = (state = getInitialState(), action: actions.Nota
       nextState.index = action.payload.notations;
       return nextState;
 
-    case actions.UPDATE_NOTATION_EDIT:
+    case actions.UPDATE_NOTATIONS_EDIT:
       nextState.edit = { ...nextState.edit, ...action.payload.notation };
       return nextState;
 
