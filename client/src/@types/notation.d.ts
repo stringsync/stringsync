@@ -10,6 +10,6 @@ declare namespace Notation {
     vextabString: string;
     tags: string[];
     transcriber: User.IBaseUser | {};
-    video: Video.IVideo;
+    video: Video.IVideo | void;
   }
 }
