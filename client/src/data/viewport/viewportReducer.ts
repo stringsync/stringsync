@@ -6,7 +6,7 @@ export interface IViewportState {
   width: number;
 }
 
-export const getInitialState = (): IViewportState => ({
+const getInitialState = (): IViewportState => ({
   type: 'DESKTOP',
   width: window.innerWidth
 });

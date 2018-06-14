@@ -8,7 +8,7 @@ export interface INotationsState {
   edit: Notation.INotation
 }
 
-export const getDefaultNotation = (): Notation.INotation => ({
+const getDefaultNotation = (): Notation.INotation => ({
   artistName: '',
   bpm: 120,
   deadTimeMs: 0,
@@ -25,7 +25,7 @@ export const getDefaultNotation = (): Notation.INotation => ({
   }
 });
 
-export const getInitialState = (): INotationsState => ({
+const getInitialState = (): INotationsState => ({
   edit: getDefaultNotation(),
   index: [],
   show: getDefaultNotation()

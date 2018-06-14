@@ -8,7 +8,7 @@ export interface IVideoState {
   isActive?: boolean;
 }
 
-export const getInitialState = (): IVideoState => ({
+const getInitialState = (): IVideoState => ({
   isActive: undefined,
   kind: 'YOUTUBE',
   player: null,
