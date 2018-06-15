@@ -1,6 +1,7 @@
 declare namespace Notation {
   export interface INotation {
     id: number | void;
+    createdAt: Date;
     songName: string;
     artistName: string;
     durationMs: number;
@@ -9,7 +10,7 @@ declare namespace Notation {
     bpm: number;
     vextabString: string;
     tags: string[];
-    transcriber: User.IBaseUser | {};
-    video: Video.IVideo | void;
+    transcriber: User.IBaseUser | null;
+    video: Video.IVideo | null;
   }
 }

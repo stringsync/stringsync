@@ -28,6 +28,7 @@ namespace API {
       attributes: IDataAttributes;
       id: number;
       links: JSONApi.ILinks;
+      relationships: IDataRelationships;
     }
 
     export interface IIndexResponse extends API.Base.IResponse {

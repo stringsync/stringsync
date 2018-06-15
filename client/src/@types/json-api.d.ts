@@ -14,6 +14,7 @@ declare namespace JSONApi {
     id: number;
     type: string;
     attributes: object;
+    links?: ILinks;
   }
 
   export interface IData {

@@ -16,7 +16,6 @@ namespace API {
 
     export type IAsIncluded = IData;
 
-
     export interface IShowResponse {
       links: JSONApi.ILinks;
       data: IData;
