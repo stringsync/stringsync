@@ -7,5 +7,4 @@ end
 json.included do
   json.partial! "tags/as_included", collection: @notations.flat_map(&:tags).uniq, as: :tag
   json.partial! "users/as_included", collection: @notations.map(&:transcriber).uniq, as: :user
-  json.partial! "videos/as_included", collection: @notations.map(&:video).uniq, as: :video
 end
