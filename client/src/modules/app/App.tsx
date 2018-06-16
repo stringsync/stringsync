@@ -56,9 +56,9 @@ const StyledLayoutFooter = styled(Layout.Footer)`
 `;
 
 const FooterLink = styled(Link)`
-  margin: 8px 16px;
   font-size: 16px;
-  padding: 4px;
+  padding-left: 8px;
+  padding-right: 8px;
   color: #777;
 `;
 
