@@ -16,7 +16,7 @@ const enhance = compose(
   )
 );
 
-const render = (Component: React.ComponentClass<any> | React.SFC<any>, props: IProps) => {
+const render = (Component: React.ComponentClass<any> | React.SFC<any>, props: IProps) => () => {
   if (props.requireSignIn) {
     return props.signedIn ? <Component {...props} /> : <Redirect to="/login" />
   } else {
@@ -30,9 +30,9 @@ const render = (Component: React.ComponentClass<any> | React.SFC<any>, props: IP
  * Specifying requireSignIn as true will require the user to be signed in to mount the component.
  * Specifying requireSignIn as false will require the user NOT to be signed in to mount the component.
  */
-export const AuthRoute = enhance((props: any) => {
+export const AuthRoute: React.ComponentClass<any> = enhance((props: any) => {
   const { component, requireSignIn, signedIn, ...restProps } = props;
   const innerProps = { requireSignIn, signedIn, ...restProps }
 
-  return <Route {...restProps} render={render(component, innerProps)} />
+  return <Route {...restProps} render={render(component, innerProps)} />;
 });
