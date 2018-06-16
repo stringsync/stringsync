@@ -12,7 +12,7 @@ interface IStringSyncModules {
     callback: ((user: IUser) => any) | void;
     user: IUser | {};
   };
-  store: any | void;
+  store: Store<StringSync.StoreState> | void;
 }
 
 declare global {

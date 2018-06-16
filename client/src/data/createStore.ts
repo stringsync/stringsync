@@ -1,7 +1,10 @@
 import thunk from 'redux-thunk';
 import { applyMiddleware, combineReducers, createStore as _createStore } from 'redux';
+import { 
+  viewportReducer, videoReducer, sessionReducer, 
+  notationsReducer, usersReducer, tagsReducer
+} from './';
 import { Store } from 'react-redux';
-import { viewportReducer, videoReducer, notationsReducer, usersReducer, tagsReducer } from './';
 
 // Middleware
 const middleware = applyMiddleware(thunk);
@@ -9,6 +12,7 @@ const middleware = applyMiddleware(thunk);
 // Reducer
 const reducer = combineReducers({
   notations: notationsReducer,
+  session: sessionReducer,
   tags: tagsReducer,
   users: usersReducer,
   video: videoReducer,
@@ -16,8 +20,8 @@ const reducer = combineReducers({
 });
 
 // Store
-const createStore = (): Store<{}> => {
-  const store = _createStore(reducer, {}, middleware);
+const createStore = (): Store<StringSync.StoreState> => {
+  const store = _createStore(reducer, {}, middleware) as Store<StringSync.StoreState>;
   window.ss.store = store;
   return store;
 }
