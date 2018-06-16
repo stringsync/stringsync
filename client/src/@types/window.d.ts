@@ -4,7 +4,7 @@ import { message, notification } from 'antd';
 declare type Environments = 'development' | 'test' | 'production';
 
 interface IStringSyncModules {
-  auth: auth.IJTokerAuth | void;
+  auth: auth.IJTokerAuth;
   env: Environments;
   message: typeof message | void;
   notification: typeof notification | void;

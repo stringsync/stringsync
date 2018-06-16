@@ -40,8 +40,28 @@ declare module 'j-toker' {
     handleTokenValidationResponse?: (response: IResponse) => any;
   }
 
+  export type OAuthProviders = 'facebook' | 'google_oauth2';
+
+  export type SessionProviders = 'email' | OAuthProviders;
+
+  export interface IOAuthSignInArguments {
+    provider: OAuthProviders;
+    params?: {
+      [key: string]: string;
+    },
+    config?: any;
+  }
+
+  export interface IAuthResponse {
+    data: User.ISessionUser;
+  }
+
   export interface IJTokerAuth {
     configure: (options: IAuthConfigurationOptions, reset?: boolean) => any;
+    emailSignIn: (user: User.ILoginUser) => Promise<IAuthResponse>;
+    emailSignUp: (user: User.ISignupUser) => Promise<IAuthResponse>;
+    oAuthSignIn: (args: IOAuthSignInArguments) => Promise<IAuthResponse>;
+    signOut: () => Promise<void>;
   }
 }
 

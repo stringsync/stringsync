@@ -5,6 +5,16 @@ declare namespace User {
     image: string
   }
 
+  export interface ILoginUser {
+    email: string;
+    password: string;
+  }
+
+  export interface ISignupUser extends ILoginUser {
+    name: string;
+    password_confirmation: string;
+  }
+
   export interface ISessionUser extends IBaseUser {
     "access-token": string;
     allow_password_change: boolean;
@@ -14,7 +24,7 @@ declare namespace User {
     email: string;
     expiry: number;
     provider: string;
-    role: string;
+    role: Role.Roles;
     signedIn: boolean;
     uid: string;
     updated_at: string;
