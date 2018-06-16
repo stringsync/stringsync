@@ -2,7 +2,6 @@ const configureNamespaces = (): void => {
   window.ss = window.ss || {};
 
   // auth
-  window.ss.auth = undefined;
   window.ss.sessionSync = {
     callback: undefined,
     user: {}
