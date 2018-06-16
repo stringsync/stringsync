@@ -6,23 +6,20 @@ import { LocaleProvider } from 'antd';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from 'emotion-theming';
 import THEME from 'constants/theme';
+import { App } from 'modules/app';
 
 interface IRootProps {
   store: Store<StringSync.StoreState>
 }
 
-const Root: React.SFC<IRootProps> = props => (
+export const Root: React.SFC<IRootProps> = props => (
   <Provider store={props.store}>
     <BrowserRouter>
       <LocaleProvider locale={enUS}>
         <ThemeProvider theme={THEME}>
-          <div>
-            henlo
-          </div>
+          <App />
         </ThemeProvider>
       </LocaleProvider>
     </BrowserRouter> 
   </Provider>
 );
-
-export default Root;
