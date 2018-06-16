@@ -7,10 +7,6 @@ const configureNamespaces = (): void => {
     user: {}
   };
 
-  // antd message and notification
-  window.ss.message = undefined;
-  window.ss.notification = undefined;
-
   // redux store
   window.ss.store = undefined;
   const a = 'asdf';

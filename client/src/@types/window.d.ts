@@ -6,7 +6,7 @@ declare type Environments = 'development' | 'test' | 'production';
 interface IStringSyncModules {
   auth: auth.IJTokerAuth;
   env: Environments;
-  message: typeof message | void;
+  message: typeof message;
   notification: typeof notification | void;
   sessionSync: {
     callback: ((user: IUser) => any) | void;
