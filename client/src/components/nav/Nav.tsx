@@ -34,7 +34,7 @@ const enhance: ComponentEnhancer<IWithProps, {}> = compose(
       viewportType: state.viewport.type
     }),
     dispatch => ({
-      logout: () => logout()(dispatch)
+      logout: () => dispatch(logout() as any)
     })
   ),
   withHandlers({
