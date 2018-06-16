@@ -1,12 +1,6 @@
 import * as actions from './videoActions';
 
-export interface IVideoState {
-  kind: Video.Kinds;
-  src: string;
-  player: Youtube.Player | null;
-  playerState?: Youtube.PlayerStates;
-  isActive?: boolean;
-}
+export type IVideoState = StringSync.Store.IVideoState;
 
 const getDefaultState = (): IVideoState => ({
   isActive: undefined,

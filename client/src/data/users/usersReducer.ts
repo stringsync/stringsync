@@ -1,11 +1,7 @@
 import * as actions from './usersActions';
 import { merge } from 'lodash';
 
-export interface IUsersState {
-  edit: User.IBaseUser;
-  index: User.IBaseUser[];
-  show: User.IBaseUser;
-}
+export type IUsersState = StringSync.Store.IUsersState;
 
 const getDefaultUser = (): User.IBaseUser => ({
   id: -1,

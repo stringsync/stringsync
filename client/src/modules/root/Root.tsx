@@ -9,7 +9,7 @@ import THEME from 'constants/theme';
 import { App } from 'modules/app';
 
 interface IRootProps {
-  store: Store<StringSync.StoreState>
+  store: Store<StringSync.Store.IState>
 }
 
 export const Root: React.SFC<IRootProps> = props => (

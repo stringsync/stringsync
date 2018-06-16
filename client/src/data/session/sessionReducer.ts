@@ -1,16 +1,7 @@
 import * as actions from './sessionActions';
 import { SessionProviders } from 'j-toker';
 
-export interface ISessionState {
-  signedIn: boolean;
-  email: string;
-  uid: string;
-  id: number;
-  image: string | null;
-  name: string;
-  provider: SessionProviders;
-  role: Role.Roles;
-}
+export type ISessionState = StringSync.Store.ISessionState;
 
 const getDefaultState = (): ISessionState => ({
   email: '',

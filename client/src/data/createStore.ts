@@ -20,8 +20,8 @@ const reducer = combineReducers({
 });
 
 // Store
-const createStore = (): Store<StringSync.StoreState> => {
-  const store = _createStore(reducer, {}, middleware) as Store<StringSync.StoreState>;
+const createStore = (): Store<StringSync.Store.IState> => {
+  const store = _createStore(reducer, {}, middleware) as Store<StringSync.Store.IState>;
   window.ss.store = store;
   return store;
 }

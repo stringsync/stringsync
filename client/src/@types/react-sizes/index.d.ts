@@ -22,4 +22,6 @@ declare module 'react-sizes' {
     isTablet: ViewportPredicate;
     isDesktop: ViewportPredicate;
   }
+
+  export default any;
 }

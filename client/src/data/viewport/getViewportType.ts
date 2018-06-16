@@ -1,9 +1,6 @@
-import * as withSizes from 'react-sizes';
+import withSizes from 'react-sizes';
 
 export type ViewportTypes = 'MOBILE' | 'TABLET' | 'DESKTOP';
-
-// FIXME: Fix the typings for withSizes.
-const { isMobile, isTablet } = withSizes as any;
 
 /**
  * Returns a string that describes the viewport
@@ -12,9 +9,9 @@ const { isMobile, isTablet } = withSizes as any;
  * @returns {string}
  */
 const getViewportType = (width: number): ViewportTypes => {
-  if (isMobile({ width })) {
+  if (withSizes.isMobile({ width })) {
     return 'MOBILE';
-  } else if (isTablet({ width })) {
+  } else if (withSizes.isTablet({ width })) {
     return 'TABLET';
   } else {
     return 'DESKTOP';

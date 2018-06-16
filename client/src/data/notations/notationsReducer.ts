@@ -1,12 +1,7 @@
 import * as actions from './notationsActions';
 import { merge } from 'lodash';
 
-
-export interface INotationsState {
-  index: Notation.INotation[],
-  show: Notation.INotation,
-  edit: Notation.INotation
-}
+export type INotationsState = StringSync.Store.INotationsState;
 
 const getDefaultNotation = (): Notation.INotation => ({
   artistName: '',

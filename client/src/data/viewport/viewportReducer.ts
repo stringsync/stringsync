@@ -1,10 +1,7 @@
 import * as actions from './viewportActions';
 import getViewportType, { ViewportTypes } from './getViewportType';
 
-export interface IViewportState {
-  type: ViewportTypes;
-  width: number;
-}
+export type IViewportState = StringSync.Store.IViewportState;
 
 const getDefaultState = (): IViewportState => ({
   type: 'DESKTOP',
