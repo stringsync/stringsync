@@ -10,9 +10,9 @@ interface IStringSyncModules {
   notification: typeof notification | void;
   sessionSync: {
     callback: ((user: IUser) => any) | void;
-    user: IUser | {};
+    user: StringSync.Store.ISessionUser | {};
   };
-  store: Store<StringSync.StoreState> | void;
+  store: Store<StringSync.Store.IState> | void;
 }
 
 declare global {
