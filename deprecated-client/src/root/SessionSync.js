@@ -19,7 +19,7 @@ const Sink = createSink(props => {
   // is still a chance for the login callback to be called after the tokens get
   // validated. See configureAuth.js to see how the ss.session.callback can
   // get used.
-  const { user } = window.ss.sessionSync;
+  const { user } = window.ss.sessionSyRoutesnc;
   if (user.signedIn) {
     props.login(user);
   }
