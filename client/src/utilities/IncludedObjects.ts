@@ -49,7 +49,7 @@ class IncludedObjects {
     return this.included.reduce((memo, object) => {
       const { type, id, attributes, links } = object;
       memo[type] = memo[type] || {};
-      memo[type][id] = { attributes, links };
+      memo[type][id] = object;
       return memo;
     }, {});
   };
