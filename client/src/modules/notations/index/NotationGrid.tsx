@@ -1,6 +1,11 @@
 import * as React from 'react';
 
-export const NotationGrid: React.SFC = () => (
+interface IProps {
+  notations: Notation.INotation[];
+  queryTags: Set<string>;
+}
+
+export const NotationGrid: React.SFC<IProps> = () => (
   <div>
     NotationGrid
   </div>

@@ -7,10 +7,12 @@ import { fetchAllNotations } from 'data';
 import { NotationSearch } from './search';
 import { ViewportTypes } from '../../../data/viewport/getViewportType';
 import { compact } from 'lodash';
+import { NotationGrid } from './NotationGrid';
 
 interface IInnerProps {
   queryString: string;
   queryTags: Set<string>;
+  queriedNotations: Notation.INotation[];
   tags: Set<string>;
   notations: Notation.INotation[];
   viewportType: ViewportTypes;
@@ -100,7 +102,18 @@ export const NotationIndex = enhance(props => (
   <Outer>
     <BackTop />
     <NotationSearch
-      
+      queryString={props.queryString}
+      queryTags={props.queryTags}
+      clearQueries={props.clearQueries}
+      onQueryStringChange={props.handleQueryStringChange}
+      onQueryTagsChange={props.handleQueryTagsChange}
+      numQueriedNotations={props.queriedNotations.length}
+      tags={props.tags}
+      viewportType={props.viewportType}
+    />
+    <NotationGrid
+      notations={props.queriedNotations}
+      queryTags={props.queryTags}
     />
   </Outer>
 ));
