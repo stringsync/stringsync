@@ -24,7 +24,7 @@ const Errors = (props: IProps) => (
   </OuterErrors>
 );
 
-const SessionErrors = (props: IProps) => (
+export const SessionErrors = (props: IProps) => (
   props.errors.length === 0
     ? null
     : <OuterSessionErrors>
@@ -34,5 +34,3 @@ const SessionErrors = (props: IProps) => (
       />
     </OuterSessionErrors>
 );
-
-export default SessionErrors;
