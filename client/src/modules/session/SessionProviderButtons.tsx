@@ -14,8 +14,8 @@ interface IInnerProps {
   googleLoading: boolean;
   setFacebookLoading: (facebookLoading: boolean) => void;
   setGoogleLoading: (googleLoading: boolean) => void; 
-  facebookLogin: (onSuccess?: OAuthCallback, onError?: () => any) => void;
-  googleLogin: (onSuccess?: OAuthCallback, onError?: () => any) => void;
+  facebookLogin: () => void;
+  googleLogin: () => void;
   handleError: () => void;
   handleSuccess: (response: IAuthResponse) => void;
   handleFacebookClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
@@ -29,10 +29,10 @@ const enhance = compose<IInnerProps, {}>(
     null,
     dispatch => ({
       facebookLogin: (onSuccess?: OAuthCallback, onError?: () => any) => {
-        dispatch(oAuthLogin('facebook', onSuccess, onError) as any)
+        dispatch(oAuthLogin('facebook') as any)
       },
       googleLogin: (onSuccess?: OAuthCallback, onError?: () => any) => {
-        dispatch(oAuthLogin('google', onSuccess, onError) as any)
+        dispatch(oAuthLogin('google') as any)
       }
     })
   ),
@@ -54,7 +54,7 @@ const enhance = compose<IInnerProps, {}>(
       props.setFacebookLoading(true);
 
       try {
-        props.facebookLogin(props.handleSuccess, props.handleError);
+        props.facebookLogin();
       } catch (error) {
         console.error(error);
       }
@@ -66,7 +66,7 @@ const enhance = compose<IInnerProps, {}>(
       props.setGoogleLoading(true);
 
       try {
-        props.googleLogin(props.handleSuccess, props.handleError);
+        props.googleLogin();
       } catch (error) {
         console.error(error);
       }

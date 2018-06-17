@@ -5,30 +5,23 @@ import { OAuthProviders, OAuthCallback } from 'j-toker';
 export const login = (user: User.ILoginUser) => async (dispatch: Dispatch) => {
   const response = await window.ss.auth.emailSignIn(user);
   dispatch(SessionActions.setSession(response.data));
+  return response;
 }
 
 export const signup = (user: User.ISignupUser) => async (dispatch: Dispatch) => {
   const response = await window.ss.auth.emailSignUp(user);
   dispatch(SessionActions.setSession(response.data));
+  return response;
 };
 
-export const oAuthLogin = (provider: OAuthProviders, onSuccess?: OAuthCallback, onError?: () => any) => async (dispatch: Dispatch) => {
-  try {
-    const response = await window.ss.auth.oAuthSignIn({ provider });
-    dispatch(SessionActions.setSession(response.data));
-
-    if (onSuccess) {
-      onSuccess(response);
-    }
-  } catch (error) {
-
-    if (onError) {
-      onError();
-    }
-  }
+export const oAuthLogin = (provider: OAuthProviders) => async (dispatch: Dispatch) => {
+  const response = await window.ss.auth.oAuthSignIn({ provider });
+  dispatch(SessionActions.setSession(response.data));
+  return response;
 };
 
 export const logout = () => async (dispatch: Dispatch) => {
   await window.ss.auth.signOut();
   dispatch(SessionActions.resetSession());
+  window.ss.sessionSync.user = {};
 };
