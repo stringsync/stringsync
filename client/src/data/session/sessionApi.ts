@@ -1,6 +1,6 @@
 import { SessionActions } from './sessionActions';
 import { Dispatch } from 'react-redux';
-import { OAuthProviders } from 'j-toker';
+import { OAuthProviders, OAuthCallback } from 'j-toker';
 
 export const login = (user: User.ILoginUser) => async (dispatch: Dispatch) => {
   const response = await window.ss.auth.emailSignIn(user);
@@ -12,9 +12,20 @@ export const signup = (user: User.ISignupUser) => async (dispatch: Dispatch) => 
   dispatch(SessionActions.setSession(response.data));
 };
 
-export const oAuthLogin = (provider: OAuthProviders) => async (dispatch: Dispatch) => {
-  const response = await window.ss.auth.oAuthSignIn({ provider });
-  dispatch(SessionActions.setSession(response.data));
+export const oAuthLogin = (provider: OAuthProviders, onSuccess?: OAuthCallback, onError?: () => any) => async (dispatch: Dispatch) => {
+  try {
+    const response = await window.ss.auth.oAuthSignIn({ provider });
+    dispatch(SessionActions.setSession(response.data));
+
+    if (onSuccess) {
+      onSuccess(response);
+    }
+  } catch (error) {
+
+    if (onError) {
+      onError();
+    }
+  }
 };
 
 export const logout = () => async (dispatch: Dispatch) => {

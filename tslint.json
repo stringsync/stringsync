@@ -6,7 +6,8 @@
     "./client/tslint.json"
   ],
   "rules": {
-    "ordered-imports": false
+    "ordered-imports": false,
+    "no-console": [true, "log"]
   },
   "linterOptions": {
     "exclude": [

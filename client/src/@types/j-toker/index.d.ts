@@ -40,7 +40,7 @@ declare module 'j-toker' {
     handleTokenValidationResponse?: (response: IResponse) => any;
   }
 
-  export type OAuthProviders = 'facebook' | 'google_oauth2';
+  export type OAuthProviders = 'facebook' | 'google_oauth2' | 'google';
 
   export type SessionProviders = 'email' | OAuthProviders;
 
@@ -63,5 +63,6 @@ declare module 'j-toker' {
     oAuthSignIn: (args: IOAuthSignInArguments) => Promise<IAuthResponse>;
     signOut: () => Promise<void>;
   }
-}
 
+  export type OAuthCallback = (res: IAuthResponse) => any;
+}
