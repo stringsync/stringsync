@@ -66,7 +66,7 @@ const OrHr = styled('hr')`
   top: 25px;
 `;
 
-export const FormWrapper = enhance(props => (
+export const SessionFormWrapper = enhance(props => (
   <div>
     <Inner viewportType={props.viewportType}>
       {props.title ? <FormTitle className="main-title">{props.title}</FormTitle> : null}
