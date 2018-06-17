@@ -14,8 +14,8 @@ interface IInnerProps {
   googleLoading: boolean;
   setFacebookLoading: (facebookLoading: boolean) => void;
   setGoogleLoading: (googleLoading: boolean) => void; 
-  facebookLogin: () => void;
-  googleLogin: () => void;
+  facebookLogin: () => IAuthResponse;
+  googleLogin: () => IAuthResponse;
   handleError: () => void;
   handleSuccess: (response: IAuthResponse) => void;
   handleFacebookClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
@@ -54,9 +54,11 @@ const enhance = compose<IInnerProps, {}>(
       props.setFacebookLoading(true);
 
       try {
-        props.facebookLogin();
+        const response = props.facebookLogin();
+        props.handleSuccess(response);
       } catch (error) {
         console.error(error);
+        props.handleError();
       }
 
       registerServiceWorker();
@@ -66,9 +68,11 @@ const enhance = compose<IInnerProps, {}>(
       props.setGoogleLoading(true);
 
       try {
-        props.googleLogin();
+        const response = props.googleLogin();
+        props.handleSuccess(response);
       } catch (error) {
         console.error(error);
+        props.handleError(error);
       }
 
       registerServiceWorker();
