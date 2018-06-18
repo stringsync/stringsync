@@ -95,7 +95,7 @@ const Mask = styled('div')<IMaskProps>`
 /**
  * Sets layout for the NotationShow page and fetches the notation from the router.
  */
-const NotationShow = enhance(props => (
+export const NotationShow = enhance(props => (
   <Outer id="notation-show">
     <Overlap>
       <Layer zIndex={10}>
@@ -137,5 +137,3 @@ const NotationShow = enhance(props => (
     </Overlap>
   </Outer>
 ));
-
-export default NotationShow;
