@@ -56,10 +56,17 @@ declare module 'j-toker' {
     data: User.ISessionUser;
   }
 
+  export interface ISignupUser {
+    email: string;
+    name: string;
+    password: string;
+    passwordConfirmation: string;
+  }
+
   export interface IJTokerAuth {
     configure: (options: IAuthConfigurationOptions, reset?: boolean) => any;
     emailSignIn: (user: User.ILoginUser) => Promise<IAuthResponse>;
-    emailSignUp: (user: User.ISignupUser) => Promise<IAuthResponse>;
+    emailSignUp: (user: ISignupUser) => Promise<IAuthResponse>;
     oAuthSignIn: (args: IOAuthSignInArguments) => Promise<IAuthResponse>;
     signOut: () => Promise<void>;
   }

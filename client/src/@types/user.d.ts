@@ -11,8 +11,8 @@ declare namespace User {
   }
 
   export interface ISignupUser extends ILoginUser {
-    name: string;
-    password_confirmation: string;
+    username: string;
+    passwordConfirmation: string;
   }
 
   export interface ISessionUser extends IBaseUser {
@@ -28,5 +28,8 @@ declare namespace User {
     signedIn: boolean;
     uid: string;
     updated_at: string;
+    errors?: {
+      full_messages: string[];
+    }
   }
 }

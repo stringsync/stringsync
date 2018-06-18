@@ -16,7 +16,7 @@ interface IInnerProps {
   loading: boolean;
   errors: string[];
   login: (user: User.ILoginUser) => IAuthResponse;
-  setSession: (user: User.ILoginUser) => void;
+  setSession: (user: User.ISessionUser) => void;
   setLoading: (loading: boolean) => void;
   setErrors: (errors: string[]) => void;
   handlePasswordClear: () => void;
