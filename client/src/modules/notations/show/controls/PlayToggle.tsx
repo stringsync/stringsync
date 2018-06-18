@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Icon } from 'antd';
 import styled from 'react-emotion';
 
-interface IInnerProps extends IOuterProps {
+interface IInnerProps {
   isVideoActive: boolean;
   videoPlayer: Youtube.Player;
   handlePlayClick: (event: React.SyntheticEvent<HTMLElement>) => void;

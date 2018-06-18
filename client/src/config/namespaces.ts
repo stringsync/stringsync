@@ -10,6 +10,9 @@ const configureNamespaces = (): void => {
   // redux store
   window.ss.store = undefined;
   const a = 'asdf';
+
+  // maestro
+  window.ss.maestro = undefined;
 };
 
 export default configureNamespaces;
