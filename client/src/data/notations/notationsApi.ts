@@ -32,6 +32,8 @@ export const fetchAllNotations = () => async (dispatch: Dispatch) => {
 
   const sorted = sortBy(notations, notation => notation.createdAt);
   dispatch(NotationsActions.setNotationsIndex(sorted));
+
+  return sorted;
 };
 
 export const fetchNotation = (notationId: number) => async (dispatch: Dispatch) => {
@@ -60,4 +62,6 @@ export const fetchNotation = (notationId: number) => async (dispatch: Dispatch) 
   };
 
   dispatch(NotationsActions.setNotationShow(notation));
+
+  return notation;
 };
