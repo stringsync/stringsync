@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'react-emotion';
 
 interface IProps {
-  zIndex: number;
+  zIndex?: number;
 }
 
 export const Layer = styled('div')<IProps>`
