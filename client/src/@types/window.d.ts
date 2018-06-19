@@ -15,7 +15,7 @@ interface IStringSyncModules {
     user: StringSync.Store.ISessionUser | {};
   };
   store: Store<StringSync.Store.IState> | void;
-  rafLoop: RafLoop;
+  rafLoop: RafLoop | void;
 }
 
 declare global {

@@ -8,7 +8,7 @@ import styled from 'react-emotion';
 import { SliderProps } from 'antd/lib/slider';
 
 interface IInnerProps extends IWithRafProps {
-  videoPlayer: Youtube.Player;
+  videoPlayer: Youtube.IPlayer;
   isVideoPlaying: boolean;
   durationMs: number;
   value: number;
@@ -84,7 +84,7 @@ const enhance = compose<IInnerProps, {}>(
   }),
   withRaf(
     () => window.ss.rafLoop,
-    props => new RafSpec('Scrubber.handleRafLoop', 1, props.handleRafLoop)
+    (props: any) => new RafSpec('Scrubber.handleRafLoop', 1, props.handleRafLoop)
   )
 );
 

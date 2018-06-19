@@ -6,7 +6,7 @@ import styled from 'react-emotion';
 
 interface IInnerProps {
   isVideoActive: boolean;
-  videoPlayer: Youtube.Player;
+  videoPlayer: Youtube.IPlayer;
   handlePlayClick: (event: React.SyntheticEvent<HTMLElement>) => void;
   handlePauseClick: (event: React.SyntheticEvent<HTMLElement>) => void;
 }

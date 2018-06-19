@@ -12,7 +12,7 @@ interface IOuterProps {
 
 interface IInnerProps extends IOuterProps {
   isVideoActive: boolean;
-  videoPlayer: Youtube.Player;
+  videoPlayer: Youtube.IPlayer;
   isIphoneX: boolean;
 }
 

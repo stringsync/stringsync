@@ -7,7 +7,7 @@ export const SET_PLAYER_STATE = 'SET_PLAYER_STATE';
 
 export const VideoActions = {
   resetVideo: () =>  createAction(RESET_VIDEO),
-  setPlayer: (player: Youtube.Player) => createAction(SET_PLAYER, { player }),
+  setPlayer: (player: Youtube.IPlayer) => createAction(SET_PLAYER, { player }),
   setPlayerState: (playerState: Youtube.PlayerStates) => createAction(SET_PLAYER_STATE, { playerState }),
   setVideo: (kind: Video.Kinds, src: string) => createAction(SET_VIDEO, { kind, src })
 };
