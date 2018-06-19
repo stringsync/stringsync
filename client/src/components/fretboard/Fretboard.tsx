@@ -57,7 +57,7 @@ const Outer = styled('div')`
 /**
  * Sets up the layout for the Frets and GuitarStrings components
  */
-const Fretboard = enhance(props => (
+export const Fretboard = enhance(props => (
   <Outer>
     <Overlap>
       <Layer>
@@ -69,5 +69,3 @@ const Fretboard = enhance(props => (
     </Overlap>
   </Outer>
 ));
-
-export default Fretboard;

@@ -10,21 +10,30 @@ import { connect } from 'react-redux';
 import { find } from 'lodash';
 import { NotationsActions, fetchNotation, VideoActions } from 'data';
 import { Vextab } from 'models';
+import { RouteComponentProps } from 'react-router-dom';
 
-interface IInnerProps {
+type OuterProps = RouteComponentProps<{ id: string }>;
+
+interface IConnectProps extends OuterProps {
   notation: Notation.INotation;
-  menuCollapsed: boolean;
   fetchNotation: (id: number) => Notation.INotation;
   resetNotation: () => void;
   resetVideo: () => void;
-  setVideo: (kind: Video.Kinds, src: string) => void;
+  setVideo: (video: Video.IVideo) => void;
+}
+
+interface IMenuCollapsedProps extends IConnectProps {
+  menuCollapsed: boolean;
   setMenuCollapsed: (menuCollapsed: boolean) => void;
+}
+
+interface IMenuHandlerProps extends IMenuCollapsedProps {
   handleMenuClick: (event: React.SyntheticEvent<HTMLElement>) => void;
 }
 
 const getNotationShowElement = () => document.getElementById('notation-show');
 
-const enhance = compose<IInnerProps, any>(
+const enhance = compose<IMenuHandlerProps, OuterProps>(
   connect(
     (state: StringSync.Store.IState) => ({
       notation: state.notations.show
@@ -33,7 +42,7 @@ const enhance = compose<IInnerProps, any>(
       fetchNotation: (id: number) => dispatch(fetchNotation(id) as any),
       resetNotation: () => dispatch(NotationsActions.resetNotationShow()),
       resetVideo: () => dispatch(VideoActions.resetVideo()),
-      setVideo: (kind: Video.Kinds, src: string) => dispatch(VideoActions.setVideo(kind, src))
+      setVideo: (video: Video.IVideo) => dispatch(VideoActions.setVideo(video))
     })
   ),
   withState('menuCollapsed', 'setMenuCollapsed', true),
@@ -42,7 +51,7 @@ const enhance = compose<IInnerProps, any>(
       props.setMenuCollapsed(!props.menuCollapsed);
     }
   }),
-  lifecycle<any, any>({
+  lifecycle<IMenuHandlerProps, {}>({
     componentWillMount() {
       $('body').addClass('no-scroll');
     },
@@ -51,8 +60,10 @@ const enhance = compose<IInnerProps, any>(
 
       try {
         const notation = await this.props.fetchNotation(id);
-        const { kind, src } = notation.video;
-        this.props.setVideo(kind, src);
+
+        if (notation.video) {
+          this.props.setVideo(notation.video);
+        }
       } catch (error) {
         console.error(error);
         window.ss.message.error(`Notation #${id} was not found`);

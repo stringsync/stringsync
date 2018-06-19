@@ -37,7 +37,7 @@ declare namespace StringSync {
     }
 
     export interface IVideoState {
-      kind: Video.Kinds;
+      kind: Video.Kinds | null;
       src: string;
       player: Youtube.IPlayer | null;
       playerState?: Youtube.IPlayerStates;

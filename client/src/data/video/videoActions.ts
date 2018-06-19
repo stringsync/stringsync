@@ -9,7 +9,7 @@ export const VideoActions = {
   resetVideo: () =>  createAction(RESET_VIDEO),
   setPlayer: (player: Youtube.IPlayer) => createAction(SET_PLAYER, { player }),
   setPlayerState: (playerState: Youtube.PlayerStates) => createAction(SET_PLAYER_STATE, { playerState }),
-  setVideo: (kind: Video.Kinds, src: string) => createAction(SET_VIDEO, { kind, src })
+  setVideo: (video: Video.IVideo) => createAction(SET_VIDEO, { video })
 };
 
 export type VideoActions = ActionsUnion<typeof VideoActions>;

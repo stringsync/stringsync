@@ -19,8 +19,8 @@ export const videoReducer = (state = getDefaultState(), action: actions.VideoAct
       return getDefaultState();
 
     case actions.SET_VIDEO:
-      nextState.src = action.payload.src;
-      nextState.kind = action.payload.kind;
+      nextState.src = action.payload.video.src;
+      nextState.kind = action.payload.video.kind;
       return nextState;
 
     case actions.SET_PLAYER:
