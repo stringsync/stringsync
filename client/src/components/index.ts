@@ -6,3 +6,4 @@ export * from './maestro';
 export * from './overlap';
 export * from './piano';
 export * from './score';
+export * from './video';

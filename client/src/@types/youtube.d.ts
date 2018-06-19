@@ -5,4 +5,13 @@ declare namespace Youtube {
     getDuration: () => number;
     getCurrentTime: () => number;
   }
+
+  export interface IEvent {
+    data: any;
+    target: IPlayer;
+  }
+
+  export interface IStateChangeEvent extends IEvent {
+    data: number;
+  }
 }
