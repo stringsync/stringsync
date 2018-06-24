@@ -1,5 +1,4 @@
 import { Measure } from 'models/music';
-import { Vextab } from 'models/vextab';
 
 export class Line {
   public id: number;
@@ -18,8 +17,7 @@ export class Line {
   private getRawStruct(): Vextab.Parsed.ILine {
     // notes are measure struct!
     const notes = this.measures.reduce<any[]>((measureStructs, measure) => {
-      measureStructs.concat(measure.rawStruct);
-      return measureStructs;
+      return measureStructs.concat(measure.rawStruct);
     }, []);
     const options = this.measures.length === 0 ? [] : this.measures[0].spec.struct.raw;
 

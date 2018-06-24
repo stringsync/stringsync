@@ -9,7 +9,7 @@ const VEXTABS = VEXTAB_STRINGS.map(Vextab.decode).map(structs => new Vextab(stru
 
 test('Line.prototype.structs is lossless in terms of notes', () => {
   VEXTABS.forEach(vextab => {
-    const structs = flatMap(vextab.lines, line => line.struct.notes);
+    const structs = flatMap(vextab.lines, line => line.rawStruct.notes);
     const expected = flatMap(vextab.structs, struct => struct.notes);
 
     expect(structs).not.toBe(expected);
@@ -24,11 +24,11 @@ test('Line.prototype.structs is lossless in terms of options', () => {
 
       const shouldPushOptions = (
         options.length === 0 ||
-        (prevOpts && !isEqual(prevOpts, line.struct.options))
+        (prevOpts && !isEqual(prevOpts, line.rawStruct.options))
       )
 
       if (shouldPushOptions) {
-        options.push(line.struct.options);
+        options.push(line.rawStruct.options);
       }
 
       return options;

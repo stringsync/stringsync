@@ -60,8 +60,8 @@ export class Vextab {
     this.measuresPerLine = measuresPerLine;
     this.structs = structs;
 
-    this.measures = this.computeMeasures();
-    this.lines = this.computeLines();;
+    this.measures = this.getMeasures();
+    this.lines = this.getLines();
 
     this.renderer = new VextabRenderer(this);
   }
@@ -80,7 +80,7 @@ export class Vextab {
    * 
    * @returns {Measure[]}
    */
-  private computeMeasures(): Measure[] {
+  private getMeasures(): Measure[] {
     return VextabMeasureExtractor.extract(this, this.tuning);
   }
 
@@ -89,7 +89,7 @@ export class Vextab {
    * 
    * @returns {Line[]}
    */
-  private computeLines(): Line[] {
+  private getLines(): Line[] {
     const lines: Line[] = [];
     let measures: Measure[] = [];
 

@@ -64,18 +64,29 @@ export class VextabMeasureExtractor {
     return this.measures;
   }
 
+  /**
+   * Uses the path instance variable to create a new VextabStruct instance.
+   * 
+   * @returns {VextabStruct}
+   */
+  private get struct(): VextabStruct {
+    return new VextabStruct(this.vextab, this.path);
+  }
+
   private extractMeasureSpec(struct: Vextab.ParsedStruct): VextabMeasureSpec {
     const params = struct.options.reduce((spec: any, option: any, ndx: number) => {
       const path = this.path + `.options.[${ndx}]`;
 
+      const vextabStruct = new VextabStruct(this.vextab, path);
+
       switch (VextabStruct.typeof(option)) {
         case 'KEY':
           const note = new Note(option.value, 0);
-          spec.KEY = new Key(note);
+          spec.KEY = new Key(note, vextabStruct);
           return spec;
         case 'TIME_SIGNATURE':
           const [upper, lower] = option.value.split('/');
-          spec.TIME_SIGNATURE = new TimeSignature(upper, lower, new VextabStruct(this.vextab, path));
+          spec.TIME_SIGNATURE = new TimeSignature(upper, lower, vextabStruct);
           return spec;
         default:
           return spec;
@@ -97,7 +108,7 @@ export class VextabMeasureExtractor {
       throw new Error(`expected first note to be a typeof BAR: ${JSON.stringify(note)}`);
     }
 
-    this.bar = new Bar(note.type);
+    this.bar = new Bar(note.type, this.struct);
   }
 
   /**
@@ -125,11 +136,11 @@ export class VextabMeasureExtractor {
     switch (VextabStruct.typeof(note)) {
       case 'BAR':
         this.pushMeasure();
-        this.bar = new Bar(note.type);
+        this.bar = new Bar(note.type, this.struct);
         this.elements = [];
         break;
       case 'TIME':
-        this.rhythm = new Rhythm(note.time, note.dot, null);
+        this.rhythm = new Rhythm(note.time, note.dot, null, this.struct);
         this.elements.push(this.rhythm);
         break;
       case 'NOTE':
@@ -140,17 +151,17 @@ export class VextabMeasureExtractor {
         break;
       case 'REST':
         this.elements.push(
-          new Rest(note.params.position, this.rhythm.clone())
+          new Rest(note.params.position, this.rhythm.clone(), this.struct)
         );
         break;
       case 'TUPLET':
         this.elements.push(
-          new Tuplet(parseInt(note.params.tuplet, 10))
+          new Tuplet(parseInt(note.params.tuplet, 10), this.struct)
         );
         break;
       case 'ANNOTATIONS':
         this.elements.push(
-          new Annotations(note.params)
+          new Annotations(note.params, this.struct)
         )
         break;
       default:
@@ -164,8 +175,12 @@ export class VextabMeasureExtractor {
    * @returns {void}
    */
   private pushMeasure(): void {
+    if (typeof this.measureSpec === 'undefined') {
+      throw new Error(`expected measureSpec not to be undefined1`)
+    }
+
     this.measures.push(
-      new Measure(this.timeSignature, this.elements, this.bar as Bar, this.measureSpec)
+      new Measure([this.bar, ...this.elements], this.measureSpec)
     );
   }
 
@@ -177,7 +192,7 @@ export class VextabMeasureExtractor {
    */
   private extractNote(struct: Vextab.Parsed.IPosition) {
     const [literal, octave] = this.tuning.getNoteForFret(struct.fret, struct.string).split('/');
-    return new Note(literal, parseInt(octave, 10));
+    return new Note(literal, parseInt(octave, 10), this.struct);
   }
 
   /**
@@ -188,6 +203,6 @@ export class VextabMeasureExtractor {
    */
   private extractChord(struct: Vextab.Parsed.IChord) {
     const notes = struct.chord.map(note => this.extractNote(note));
-    return new Chord(notes);
+    return new Chord(notes, this.struct);
   }
 }
