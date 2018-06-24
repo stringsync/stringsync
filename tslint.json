@@ -1,0 +1,19 @@
+{
+  "extends": [
+    "tslint:recommended",
+    "tslint-react",
+    "tslint-config-prettier",
+    "./client/tslint.json"
+  ],
+  "rules": {
+    "ordered-imports": false,
+    "no-console": [true, "log"],
+    "no-bitwise": false
+  },
+  "linterOptions": {
+    "exclude": [
+      "config/**/*.js",
+      "client/node_modules/**/*.ts"
+    ]
+  }
+}

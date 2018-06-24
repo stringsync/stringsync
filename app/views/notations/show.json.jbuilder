@@ -7,4 +7,5 @@ end
 json.included do
   json.partial! "tags/as_included", collection: @notation.tags, as: :tag
   json.partial! "users/as_included", collection: [@notation.transcriber], as: :user
+  json.partial! "videos/as_included", collection: [@notation.video], as: :video
 end

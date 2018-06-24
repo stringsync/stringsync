@@ -1,0 +1,19 @@
+import * as Scroll from 'react-scroll';
+import { debounce } from 'lodash';
+
+/**
+ * Scrolls to the top for the NotationIndex component
+ * Doesn't fire off until there has been 1000 ms of no inputs
+ * 
+ * @returns {void}
+ */
+const scrollToTop = debounce(() => {
+  Scroll.animateScroll.scrollToTop({
+    duration: 200,
+    ignoreCancelEvents: true,
+    offset: 5,
+    smooth: true
+  });
+}, 1000, { leading: true, trailing: true });
+
+export default scrollToTop;
