@@ -6,10 +6,8 @@ const Outer = styled('div')`
   background: black;
 `;
 
-const Piano: React.SFC = () => (
+export const Piano: React.SFC = () => (
   <Outer>
     <PianoKeys />
   </Outer>
 );
-
-export default Piano;

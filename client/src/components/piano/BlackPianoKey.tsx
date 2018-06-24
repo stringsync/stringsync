@@ -1,6 +1,10 @@
 import * as React from 'react';
 import styled from 'react-emotion';
 
+interface IProps {
+  note: string;
+}
+
 const Outer = styled('div')`
   position: relative;
   z-index: 11;
@@ -21,7 +25,7 @@ const Inner = styled('div')`
   box-sizing: border-box;
 `;
 
-export const BlackPianoKey: React.SFC = () => (
+export const BlackPianoKey: React.SFC<IProps> = () => (
   <Outer>
     <Inner />
   </Outer>
