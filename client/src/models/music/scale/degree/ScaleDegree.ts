@@ -39,7 +39,7 @@ export class ScaleDegree {
   }
 
   public readonly literal: string;
-  public readonly scale: Scale;
+  public scale: Scale;
 
   constructor(literal: string, scale: Scale) {
     if (!ScaleDegree.LITERALS_SET.has(literal)) {

@@ -1,12 +1,8 @@
-export type BarKinds = 'SINGLE' | 'DOUBLE';
-
 export class Bar {
-  public kind: BarKinds;
-  public readonly struct: Vextab.Parsed.IBar;
+  public kind: string;
   public readonly type = 'BAR';
 
-  constructor(kind: BarKinds, struct: Vextab.Parsed.IBar) {
+  constructor(kind: string) {
     this.kind = kind;
-    this.struct = struct;
   }
 }

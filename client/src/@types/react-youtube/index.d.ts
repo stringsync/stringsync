@@ -1,3 +1,1 @@
-declare module 'react-youtube' {
-  export default any; 
-}
+declare module 'react-youtube';

@@ -5,21 +5,22 @@ export type MeasureElement = Note | Rest;
 export class Measure {
   public elements: MeasureElement[];
   public bar: Bar;
-  // public struct: Vextab.Parsed.Note[];
+  public struct: Vextab.Parsed.Note[];
+  public readonly spec: any;
   public readonly type = 'MEASURE';
 
-  constructor(timeSignature: TimeSignature, elements: MeasureElement[], bar: Bar) {
+  constructor(timeSignature: TimeSignature, elements: MeasureElement[], bar: Bar, spec: any) {
     this.elements = elements;
     this.bar = bar;
+    this.spec = spec;
 
-    // this.struct = this.computeStruct();
+    this.struct = this.computeStruct();
   }
 
-  // FIXME: Fix when ready
-  // private computeStruct(): Vextab.Parsed.Note[] {
-  //   return [
-  //     this.bar.struct.raw,
-  //     ...this.elements.map(element => element.struct.raw)
-  //   ]
-  // }
+  private computeStruct(): Vextab.Parsed.Note[] {
+    return [
+      // (this.bar.struct as any).raw,
+      // ...this.elements.map((element: any) => element.struct.raw)
+    ]
+  }
 };
