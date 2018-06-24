@@ -1,6 +1,9 @@
 import { hash } from 'utilities';
 import { Key, TimeSignature, VextabStruct } from 'models';
 
+/**
+ * Used for clustering measures.
+ */
 export class VextabMeasureSpec {
   public key: Key;
   public timeSignature: TimeSignature;

@@ -1,12 +1,13 @@
 import { sortBy } from 'lodash';
 import * as constants from './noteConstants';
+import { AbstractVexWrapper, VextabStruct } from 'models/vextab';
 
 /**
  * The purpose of this class is to encapsulate the logic related to describing a note's inherent
  * state in different ways as well as functionality to step to other notes. It is the fundamental
  * unit of music.
  */
-export class Note {
+export class Note extends AbstractVexWrapper {
   /**
    * An array of all the possible Note literals
    * 
@@ -77,7 +78,9 @@ export class Note {
   public octave: number;
   public readonly type = 'NOTE';
 
-  constructor(literal: string, octave: number) {
+  constructor(literal: string, octave: number, struct: VextabStruct | null = null) {
+    super(struct);
+
     if (!Note.ALL_LITERALS_SET.has(literal)) {
       throw new Error(`${literal} should be in ${Note.ALL_LITERALS.join(', ')}`);
     } else if (!Number.isInteger(octave)) {
@@ -250,5 +253,9 @@ export class Note {
     const octave = this.octave + numOctavesTraversed;
 
     return new Note(literal, octave);
+  }
+
+  public hydrate(): void {
+    this.vexAttrs = null;
   }
 }

@@ -47,6 +47,7 @@ export class ScaleDegree {
     }
 
     this.literal = literal;
+    this.scale = scale;
   }
 
   /**

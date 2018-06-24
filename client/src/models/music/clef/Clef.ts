@@ -1,8 +1,13 @@
-export class Clef {
-  public readonly struct: Vextab.Parsed.IClef;
+import { AbstractVexWrapper, VextabStruct } from 'models/vextab';
+
+export class Clef extends AbstractVexWrapper {
   public readonly type = 'CLEF';
 
-  constructor(struct: Vextab.Parsed.IClef) {
-    this.struct = struct;
+  constructor(struct: VextabStruct) {
+    super(struct);
+  }
+
+  public hydrate(): void {
+    this.vexAttrs = null;
   }
 }

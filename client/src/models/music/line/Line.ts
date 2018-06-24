@@ -1,8 +1,10 @@
 import { Measure } from 'models/music';
+import { Vextab } from 'models/vextab';
 
 export class Line {
   public id: number;
   public measures: Measure[];
+  public rawStruct: Vextab.Parsed.ILine;
   public readonly type = 'LINE';
   public readonly struct: any;
 
@@ -10,13 +12,13 @@ export class Line {
     this.id = id;
     this.measures = measures;
 
-    this.struct = this.computeStruct();
+    this.rawStruct = this.getRawStruct();
   }
 
-  private computeStruct(): Vextab.Parsed.ILine {
+  private getRawStruct(): Vextab.Parsed.ILine {
     // notes are measure struct!
     const notes = this.measures.reduce<any[]>((measureStructs, measure) => {
-      measureStructs.concat(measure.struct);
+      measureStructs.concat(measure.rawStruct);
       return measureStructs;
     }, []);
     const options = this.measures.length === 0 ? [] : this.measures[0].spec.struct.raw;
@@ -26,8 +28,8 @@ export class Line {
       notes,
       options,
       text: []
-    }
-  }
+    };
+  };
 }
 
 export default Line;

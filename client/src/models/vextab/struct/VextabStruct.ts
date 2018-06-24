@@ -58,12 +58,7 @@ export class VextabStruct {
     this.vextab = vextab;
     this.path = path;
   }
-
-  /**
-   * Returns the raw vextab struct.
-   * 
-   * @returns
-   */
+  
   get raw() {
     return at(this.vextab.structs, this.path)[0];
   }

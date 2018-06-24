@@ -1,6 +1,11 @@
 declare namespace Vextab {
-  export type ParsedStruct = Parsed.IOptions | Parsed.Notes;
+  export type ParsedStruct = Parsed.IOptions | Parsed.Note | Parsed.ILine;
   export type ElementTypes = 'tabstave' | 'stave';
+
+  export interface IVextabable {
+    toVextabString: () => string;
+    toVextabStruct: () => ParsedStruct;
+  }
 
   namespace Parsed {
     export interface ILine {

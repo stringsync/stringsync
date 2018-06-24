@@ -24,12 +24,6 @@ test('ScaleDegree.constructor disallows invalid literals', () => {
   });
 });
 
-test('ScaleDegree.constructor makes the scale property immutable', () => {
-  const scale = randomScale();
-  const scaleDegree = new ScaleDegree('1', scale);
-  expect(() => scaleDegree.scale = randomScale()).toThrow();
-});
-
 test('ScaleDegree.prototype.value fetches from the ScaleDegree.VALUES_BY_LITERAL object', () => {
   forOwn(ScaleDegree.VALUES_BY_LITERAL, (value, literal) => {
     const scale = randomScale();
@@ -51,7 +45,7 @@ test('ScaleDegree.prototype.isEquivalent', () => {
   cases.forEach(testCase => {
     const [args1, args2, expectation] = testCase;
     const scaleDegree1 = new ScaleDegree(args1[0], args1[1]);
-    const scaleDegree2 = new ScaleDegree(args1[0], args1[1]);
+    const scaleDegree2 = new ScaleDegree(args2[0], args2[1]);
 
     expect(scaleDegree1.isEquivalent(scaleDegree1)).toBe(true);
     expect(scaleDegree2.isEquivalent(scaleDegree2)).toBe(true);
