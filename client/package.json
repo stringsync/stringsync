@@ -16,6 +16,7 @@
     "@types/react-scroll": "^1.5.3",
     "@types/recompose": "^0.26.1",
     "antd": "^3.6.2",
+    "babel-jest": "^23.0.1",
     "babel-plugin-import": "^1.8.0",
     "emotion": "^9.2.3",
     "emotion-theming": "^9.2.3",
