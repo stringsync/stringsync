@@ -18,12 +18,6 @@ export class VextabRenderer {
     this.artistsByLineId = {};
   }
 
-  get missingCanvses(): number[] {
-    return this.vextab.lines.map(line => line.id).filter(id => (
-      !this.canvasesByLineId[id]
-    ));
-  }
-
   /**
    * The interface to populate canvasesByLineId. It will automatically 
    * 
@@ -33,6 +27,7 @@ export class VextabRenderer {
    */
   public assign(canvas: HTMLCanvasElement, lineId: number): void {
     this.canvasesByLineId[lineId] = canvas;
+    this.hydrate(lineId);
   }
 
   /**
@@ -42,13 +37,19 @@ export class VextabRenderer {
    * @returns {void}
    */
   public render(): void {
-    const missing = this.missingCanvses;
+    const missing = this.missingCanvases;
 
     if (missing.length > 0) {
-      throw new Error(`missing canvases for lines ${missing.join(', ')}`);
+      throw new Error(`missing canvases and/or artists for lines ${missing.join(', ')}`);
     }
 
 
+  }
+
+  private get missingCanvases(): number[] {
+    return this.vextab.lines.map(line => line.id).filter(id => (
+      !this.canvasesByLineId[id] || !this.artistsByLineId[id]
+    ));
   }
 
   /**
@@ -57,18 +58,22 @@ export class VextabRenderer {
    * 
    * @returns {void}
    */
-  private hydrate() {
-    this.vextab.lines.forEach(line => {
-      const artist = new Artist(10, 20, 980);
-      this.artistsByLineId[line.id] = artist;
-      const vextabGenerator = new VextabGenerator(artist);
+  private hydrate(lineId: number): void {
+    const line = this.vextab.lines.find(vextabLine => vextabLine.id === lineId);
 
-      // Mimics the behavior of the original Vextab
-      // See https://github.com/0xfe/vextab/blob/master/src/vextab.coffee#L204
-      vextabGenerator.elements = [line.struct];
-      vextabGenerator.generate();
-      vextabGenerator.valid = true;
-    });
+    if (typeof line === 'undefined') {
+      throw new Error(`could not find line ${lineId}`);
+    }
+
+    const artist = new Artist(10, 20, 980);
+    this.artistsByLineId[line.id] = artist;
+    const vextabGenerator = new VextabGenerator(artist);
+
+    // Mimics the behavior of the original Vextab
+    // See https://github.com/0xfe/vextab/blob/master/src/vextab.coffee#L204
+    vextabGenerator.elements = [line.rawStruct];
+    vextabGenerator.generate();
+    vextabGenerator.valid = true;
   }
 };
 

@@ -5,7 +5,6 @@ export class Line {
   public measures: Measure[];
   public rawStruct: Vextab.Parsed.ILine;
   public readonly type = 'LINE';
-  public readonly struct: any;
 
   constructor(id: number, measures: Measure[]) {
     this.id = id;
