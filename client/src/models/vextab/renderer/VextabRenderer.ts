@@ -79,6 +79,7 @@ export class VextabRenderer {
     vextabGenerator.elements = [line.rawStruct];
     vextabGenerator.generate();
     vextabGenerator.valid = true;
+
   }
 };
 

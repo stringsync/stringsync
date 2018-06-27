@@ -15,6 +15,7 @@
     "@types/react-router-dom": "^4.2.7",
     "@types/react-scroll": "^1.5.3",
     "@types/recompose": "^0.26.1",
+    "@types/vexflow": "^1.2.31",
     "antd": "^3.6.2",
     "babel-jest": "^23.0.1",
     "babel-plugin-import": "^1.8.0",
