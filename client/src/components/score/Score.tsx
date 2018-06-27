@@ -25,7 +25,6 @@ const enhance = compose<IInnerProps, IOuterProps>(
 
       if (shouldSetVextab) {
         const vextab = new Vextab(Vextab.decode(nextProps.vextabString), this.props.measuresPerLine);
-        (window as any).vextab = vextab;
         nextProps.setVextab(vextab);
       }
     }

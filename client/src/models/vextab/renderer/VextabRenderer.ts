@@ -37,19 +37,24 @@ export class VextabRenderer {
    * @returns {void}
    */
   public render(): void {
-    const missing = this.missingCanvases;
+    const missingCanvases = this.missingCanvases;
+    const missingArtists = this.missingArtists;
 
-    if (missing.length > 0) {
-      throw new Error(`missing canvases and/or artists for lines ${missing.join(', ')}`);
+    if (missingCanvases.length > 0) {
+      throw new Error(`missing canvases for lines ${missingCanvases.join(', ')}`);
+    } else if (missingArtists.length > 0) {
+      throw new Error(`missing artists for lines ${missingArtists.join(', ')}`);
     }
 
 
   }
 
   private get missingCanvases(): number[] {
-    return this.vextab.lines.map(line => line.id).filter(id => (
-      !this.canvasesByLineId[id] || !this.artistsByLineId[id]
-    ));
+    return this.vextab.lines.map(line => line.id).filter(id => !this.canvasesByLineId[id]);
+  }
+
+  private get missingArtists(): number[] {
+    return this.vextab.lines.map(line => line.id).filter(id => !this.artistsByLineId[id]);
   }
 
   /**
