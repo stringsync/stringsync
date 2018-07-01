@@ -30,6 +30,8 @@ export class VextabHydrator {
         return vexObject.keys.length > 1 ? 'CHORD' : 'NOTE';
       case 'TabNote':
         return vexObject.positions.length > 1 ? 'CHORD' : 'NOTE';
+      case 'GhostNote':
+        return 'REST';
       default:
         return undefined;
     }
@@ -123,7 +125,7 @@ export class VextabHydrator {
       zip(notes, wrappers).forEach(pair => {
         const [note, wrapper] = pair;
 
-        if (VextabHydrator.typeof(note) !== (wrapper as any)!.type) {
+        if (VextabHydrator.typeof(note) !== (wrapper as any).type) {
           throw new Error('expected noteMeasures and wrapperMeasures to map types exactly');
         }
       });
@@ -132,7 +134,7 @@ export class VextabHydrator {
         const [tab, wrapper] = pair;
 
         if (VextabHydrator.typeof(tab) !== (wrapper as any)!.type) {
-          throw new Error('expected noteMeasures and wrapperMeasures to map types exactly');
+          throw new Error('expected tabMeasures and wrapperMeasures to map types exactly');
         }
       })
     })

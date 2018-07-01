@@ -8,8 +8,11 @@ export class Chord extends AbstractVexWrapper {
   constructor(notes: Note[], struct: VextabStruct | null = null) {
     super(struct);
 
+    if (notes.length <= 1) {
+      throw new Error('expected more than one note to construct a chord');
+    }
+
     this.notes = notes;
-    this.type = 'CHORD';
   }
 
   public hydrate(): void {

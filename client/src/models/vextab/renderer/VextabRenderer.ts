@@ -38,16 +38,7 @@ export class VextabRenderer {
    * @returns {void}
    */
   public render(): void {
-    const missingCanvases = this.missingCanvases;
-    const missingArtists = this.missingArtists;
-
-    if (missingCanvases.length > 0) {
-      throw new Error(`missing canvases for lines ${missingCanvases.join(', ')}`);
-    } else if (missingArtists.length > 0) {
-      throw new Error(`missing artists for lines ${missingArtists.join(', ')}`);
-    }
-
-
+    this.validate();
   }
 
   private get missingCanvases(): number[] {
@@ -75,6 +66,17 @@ export class VextabRenderer {
     this.artistsByLineId[line.id] = artist;
 
     VextabHydrator.hydrate(line, artist);
+  }
+
+  private validate(): void {
+    const missingCanvases = this.missingCanvases;
+    const missingArtists = this.missingArtists;
+
+    if (missingCanvases.length > 0) {
+      throw new Error(`missing canvases for lines ${missingCanvases.join(', ')}`);
+    } else if (missingArtists.length > 0) {
+      throw new Error(`missing artists for lines ${missingArtists.join(', ')}`);
+    }
   }
 };
 
