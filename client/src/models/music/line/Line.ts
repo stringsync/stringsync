@@ -3,6 +3,7 @@ import { Measure } from 'models/music';
 export class Line {
   public id: number;
   public measures: Measure[];
+  public stave: Vex.Flow.Stave;
   public rawStruct: Vextab.Parsed.ILine;
   public readonly type = 'LINE';
 

@@ -1,6 +1,7 @@
 import { Flow } from 'vexflow';
 import { Vextab } from 'models/vextab';
-import { VexTab as VextabGenerator, Artist } from 'vextab/releases/vextab-div.js';
+import { Artist } from 'vextab/releases/vextab-div.js';
+import { VextabHydrator } from './VextabHydrator';
 
 Artist.NO_LOGO = true;
 
@@ -72,14 +73,8 @@ export class VextabRenderer {
 
     const artist = new Artist(10, 20, 980);
     this.artistsByLineId[line.id] = artist;
-    const vextabGenerator = new VextabGenerator(artist);
 
-    // Mimics the behavior of the original Vextab
-    // See https://github.com/0xfe/vextab/blob/master/src/vextab.coffee#L204
-    vextabGenerator.elements = [line.rawStruct];
-    vextabGenerator.generate();
-    vextabGenerator.valid = true;
-
+    VextabHydrator.hydrate(line, artist);
   }
 };
 
