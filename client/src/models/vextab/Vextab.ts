@@ -9,7 +9,7 @@ import { Line } from 'models';
 import { Flow } from 'vexflow';
 import { Measure } from '../music/measure/Measure';
 
-const DEFAULT_TUNING = new (Flow as any).Tuning();
+const DEFAULT_TUNING = new (Flow as any).Tuning() as Vex.Flow.Tuning;
 
 /**
  * The Vextab is the encoding used to store instructions on how to draw, animate, and edit

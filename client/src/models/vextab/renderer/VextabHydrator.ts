@@ -32,9 +32,9 @@ export class VextabHydrator {
       case 'BarNote':
         return 'BAR';
       case 'StaveNote':
-        return vexObject.keys.length > 1 ? 'CHORD' : 'NOTE';
+        return (vexObject as Vex.Flow.StaveNote).getKeys().length > 1 ? 'CHORD' : 'NOTE';
       case 'TabNote':
-        return vexObject.positions.length > 1 ? 'CHORD' : 'NOTE';
+        return (vexObject as Vex.Flow.TabNote).getPositions().length > 1 ? 'CHORD' : 'NOTE';
       case 'GhostNote':
         return 'REST';
       default:
@@ -90,7 +90,9 @@ export class VextabHydrator {
         if (wrapper.type === 'BAR') {
           (wrapper as Bar).hydrate(staveNote as Vex.Flow.BarNote, tabNote as Vex.Flow.BarNote);
         } else {
-          (wrapper as Note | Chord | Rest).hydrate(staveNote as Vex.Flow.StaveNote, tabNote as Vex.Flow.TabNote);
+          (wrapper as Note | Chord | Rest).hydrate(
+            staveNote as Vex.Flow.StaveNote, tabNote as Vex.Flow.TabNote
+          );
         }
       });
     });

@@ -255,7 +255,51 @@ export class Note extends AbstractVexWrapper {
     return new Note(literal, octave);
   }
 
+  /**
+   * Sets postprocessing vexflow attributes to the instance.
+   * 
+   * @param staveNote 
+   * @param tabNote 
+   */
   public hydrate(staveNote: Vex.Flow.StaveNote, tabNote: Vex.Flow.TabNote): void {
+    this.validateHydration(staveNote, tabNote);
+
+    // Set vexAttr refs
     this.vexAttrs = { staveNote, tabNote };
+  }
+
+  /**
+   * Validates that the arguments passed to Note.prototype.hydrate
+   * 
+   * @param staveNote 
+   * @param tabNote 
+   */
+  private validateHydration(staveNote: Vex.Flow.StaveNote, tabNote: Vex.Flow.TabNote): void {
+    // Validate hydratable
+    if (!(this.struct instanceof VextabStruct)) {
+      throw new Error('cannot hydrate an object that does not have a struct member');
+    }
+
+    const staveKeys = staveNote.getKeys();
+    const tabPositions = tabNote.getPositions();
+
+    // Validate length
+    if (staveKeys.length !== 1) {
+      throw new Error('expected staveNote to only have 1 key');
+    } else if (tabPositions.length !== 1) {
+      throw new Error('expected tabNote to only have 1 position');
+    }
+
+    const noteStr = this.toString();
+    const staveNoteStr = staveKeys[0];
+    const { fret, str } = tabPositions[0];
+    const tabNoteStr = this.struct.vextab.tuning.getNoteForFret(fret.toString(), str.toString())
+
+    // Validate literal
+    if (noteStr !== staveNoteStr) {
+      throw new Error('expected staveKey to be equal to the note string');
+    } else if (noteStr !== tabNoteStr) {
+      throw new Error('expected tabNoteStr to be equal to the note string');
+    }
   }
 }
