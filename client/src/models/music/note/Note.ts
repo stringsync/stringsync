@@ -255,7 +255,7 @@ export class Note extends AbstractVexWrapper {
     return new Note(literal, octave);
   }
 
-  public hydrate(): void {
-    this.vexAttrs = null;
+  public hydrate(staveNote: Vex.Flow.StaveNote, tabNote: Vex.Flow.TabNote): void {
+    this.vexAttrs = { staveNote, tabNote };
   }
 }

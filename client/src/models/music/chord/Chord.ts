@@ -15,7 +15,7 @@ export class Chord extends AbstractVexWrapper {
     this.notes = notes;
   }
 
-  public hydrate(): void {
-    this.vexAttrs = null;
+  public hydrate(staveNote: Vex.Flow.StaveNote, tabNote: Vex.Flow.TabNote): void {
+    this.vexAttrs = { staveNote, tabNote };
   }
 }

@@ -18,4 +18,8 @@ export abstract class AbstractVexWrapper {
    * Using any number of arbitrary arguments, it must set the vexAttrs variable.
    */
   public abstract hydrate(...args: any[]): void;
+
+  public get isHydrated(): boolean {
+    return typeof this.vexAttrs !== 'undefined' && this.vexAttrs !== null;
+  }
 }

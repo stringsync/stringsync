@@ -13,7 +13,7 @@ export class Rest extends AbstractVexWrapper {
     this.rhythm = rhythm;
   }
   
-  public hydrate(): void {
-    this.vexAttrs = null;
+  public hydrate(staveNote: Vex.Flow.StaveNote, tabNote: Vex.Flow.TabNote): void {
+    this.vexAttrs = { staveNote, tabNote };
   }
 }

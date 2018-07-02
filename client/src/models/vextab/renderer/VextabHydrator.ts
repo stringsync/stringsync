@@ -1,6 +1,11 @@
 import { Line } from 'models';
 import { VexTab as VextabGenerator, Artist } from 'vextab/releases/vextab-div.js';
 import { get, zip, uniq } from 'lodash';
+import { MeasureElement } from '../../music';
+import { Bar, Note, Chord, Rest } from 'models/music';
+
+export type StaveNote = Vex.Flow.StaveNote | Vex.Flow.BarNote;
+export type TabNote = Vex.Flow.TabNote | Vex.Flow.BarNote;
 
 export interface IStave extends Vex.Flow.Stave {
   note_notes: Vex.Flow.Note[];
@@ -67,8 +72,8 @@ export class VextabHydrator {
     // element represents a measure.
     //
     // Each measure has the following stucture: [BarNote, VexNote, VexNote, VexNote, ...]
-    const noteMeasures = this.getMeasures(this.stave.note_notes);
-    const tabMeasures = this.getMeasures(this.stave.tab_notes);
+    const noteMeasures = this.getMeasures<StaveNote>(this.stave.note_notes as StaveNote[]);
+    const tabMeasures = this.getMeasures<TabNote>(this.stave.tab_notes as TabNote[]);
 
     const hydratables = VextabHydrator.HYDRATABLES;
     const wrapperMeasures = this.line.measures.map(measure => 
@@ -76,17 +81,30 @@ export class VextabHydrator {
     );
 
     this.validateMeasures(noteMeasures, tabMeasures, wrapperMeasures);
+
+    wrapperMeasures.forEach((wrapperMeasure, measureNdx) => {
+      wrapperMeasure.forEach((wrapper, wrapperNdx) => {
+        const staveNote = noteMeasures[measureNdx][wrapperNdx];
+        const tabNote = tabMeasures[measureNdx][wrapperNdx];
+
+        if (wrapper.type === 'BAR') {
+          (wrapper as Bar).hydrate(staveNote as Vex.Flow.BarNote, tabNote as Vex.Flow.BarNote);
+        } else {
+          (wrapper as Note | Chord | Rest).hydrate(staveNote as Vex.Flow.StaveNote, tabNote as Vex.Flow.TabNote);
+        }
+      });
+    });
   }
 
-  private getMeasures(notes: Vex.Flow.Note[]): Vex.Flow.Note[][] {
+  private getMeasures<T>(notes: T[]): T[][] {
     const firstNoteType = VextabHydrator.typeof(notes[0]);
 
     if (firstNoteType !== 'BAR') {
       throw new Error(`expected the first note type to be 'BAR', got: ${firstNoteType}` );
     }
 
-    const line: Vex.Flow.Note[][] = [];
-    let measure: Vex.Flow.Note[] = [notes[0]];
+    const line: T[][] = [];
+    let measure: T[] = [notes[0]];
     notes.slice(1).forEach((note, ndx) => {
       if (VextabHydrator.typeof(note) === 'BAR') {
         line.push(measure);
@@ -108,12 +126,16 @@ export class VextabHydrator {
    * @param tabMeasures Measures from Vexflow's stave.tab_notes
    * @param wrapperMeasures Measures constructed using StringSync's measure system
    */
-  private validateMeasures(noteMeasures: any[], tabMeasures: any[], wrapperMeasures: any[]): void {
+  private validateMeasures(
+    noteMeasures: StaveNote[][],
+    tabMeasures: TabNote[][],
+    wrapperMeasures: MeasureElement[][]
+  ): void {
     const groups = zip(noteMeasures, tabMeasures, wrapperMeasures);
 
     // Validate length
     groups.forEach(group => {
-      if (uniq(group.map(measures => measures.length)).length > 1) {
+      if (uniq(group.map(measures => measures!.length)).length > 1) {
         throw new Error('expected noteMeasures, tabMeasures, and wrapperMeasures to have the same length');
       }
     });
@@ -122,18 +144,18 @@ export class VextabHydrator {
     groups.forEach(group => {
       const [notes, tabs, wrappers] = group;
 
-      zip(notes, wrappers).forEach(pair => {
+      zip(notes as StaveNote[], wrappers as MeasureElement[]).forEach(pair => {
         const [note, wrapper] = pair;
 
-        if (VextabHydrator.typeof(note) !== (wrapper as any).type) {
+        if (VextabHydrator.typeof(note!) !== wrapper!.type) {
           throw new Error('expected noteMeasures and wrapperMeasures to map types exactly');
         }
       });
 
-      zip(tabs, wrappers).forEach(pair => {
+      zip(tabs as TabNote[], wrappers as MeasureElement[]).forEach(pair => {
         const [tab, wrapper] = pair;
 
-        if (VextabHydrator.typeof(tab) !== (wrapper as any)!.type) {
+        if (VextabHydrator.typeof(tab!) !== wrapper!.type) {
           throw new Error('expected tabMeasures and wrapperMeasures to map types exactly');
         }
       })

@@ -10,7 +10,7 @@ export class Bar extends AbstractVexWrapper {
     this.kind = kind;
   }
 
-  public hydrate(): void {
-    this.vexAttrs = null;
+  public hydrate(staveNote: Vex.Flow.BarNote, tabNote: Vex.Flow.BarNote): void {
+    this.vexAttrs = { staveNote, tabNote };
   }
 }
