@@ -1,6 +1,7 @@
 import { sortBy } from 'lodash';
 import * as constants from './noteConstants';
 import { AbstractVexWrapper, VextabStruct } from 'models/vextab';
+import { NoteHydrationValidator } from './NoteHydrationValidator';
 
 /**
  * The purpose of this class is to encapsulate the logic related to describing a note's inherent
@@ -276,7 +277,7 @@ export class Note extends AbstractVexWrapper {
    * @param tabNote 
    */
   public hydrate(staveNote: Vex.Flow.StaveNote, tabNote: Vex.Flow.TabNote): void {
-    this.validateHydration(staveNote, tabNote);
+    new NoteHydrationValidator(this, staveNote, tabNote).validate();
 
     // Set vexAttr refs
     this.vexAttrs = { staveNote, tabNote };
@@ -296,41 +297,6 @@ export class Note extends AbstractVexWrapper {
       return `${literal[0].toUpperCase()}${literal[1].toLowerCase()}`;
     } else {
       throw new Error('literals must have 1 or 2 characters');
-    }
-  }
-
-  /**
-   * Validates that the arguments passed to Note.prototype.hydrate
-   * 
-   * @param staveNote 
-   * @param tabNote 
-   */
-  private validateHydration(staveNote: Vex.Flow.StaveNote, tabNote: Vex.Flow.TabNote): void {
-    if (!this.isHydratable) {
-      throw new Error('cannot hydrate an object that is not hydratable');
-    }
-
-    const staveKeys = staveNote.getKeys();
-    const tabPositions = tabNote.getPositions();
-
-    // Validate length
-    if (staveKeys.length !== 1) {
-      throw new Error('expected staveNote to only have 1 key');
-    } else if (tabPositions.length !== 1) {
-      throw new Error('expected tabNote to only have 1 position');
-    }
-
-    const staveNoteStr = staveKeys[0]
-    const { fret, str } = tabPositions[0];
-    const tabNoteStr = this.struct!.vextab.tuning.getNoteForFret(
-      fret.toString(), str.toString()
-    )
-
-    // Validate literal
-    if (!this.isEquivalent(Note.from(staveNoteStr))) {
-      throw new Error('expected staveNote to translate to the note string');
-    } else if (!this.isEquivalent(Note.from(tabNoteStr))) {
-      throw new Error('expected tabNoteStr to be equal to the note string');
     }
   }
 }

@@ -1,7 +1,21 @@
-export abstract class AbstractValidator {
-  public readonly isValid: boolean = false;
+export abstract class AbstractValidator<T> {
+  public readonly target: T;
 
-  // Should not take any arguments, but use the constructor to set the instance variables
-  // that will be used in the private sub validators.
+  constructor(target: T, ...args: any[]) {
+    this.target = target;
+  }
+
+  /**
+   * Use the constructor to set instance variables needed throughout sub validations.
+   */
   public abstract validate(): void;
+  
+  /**
+   * Throws an error
+   * 
+   * @param msg
+   */
+  protected error(msg: string): void {
+    throw new Error(msg);
+  }
 }
