@@ -6,11 +6,26 @@
  */
 export abstract class AbstractValidator<T> {
   public readonly target: T;
-  public readonly errors: Error[] = [];
+
+  private validationErrors: Error[] = [];
   private validated: boolean = false; // describes if validate has been called.
 
   constructor(target: T, ...args: any[]) {
     this.target = target;
+  }
+
+  public get isValid(): boolean {
+    return this.validated && this.errors.length === 0;
+  }
+
+  public get errors(): Error[] {
+    const validationErrors = [...this.validationErrors];
+
+    if (!this.validated) {
+      validationErrors.unshift(new Error('validator has not called validate'));
+    }
+
+    return validationErrors;
   }
 
   // Use the constructor to set instance variables needed throughout sub validations.
@@ -25,13 +40,9 @@ export abstract class AbstractValidator<T> {
     return this.isValid;
   }
 
-  public get isValid(): boolean {
-    return this.validated && this.errors.length === 0;
-  }
-
   protected abstract doValidate(): void;
   
   protected error(msg: string): void {
-    this.errors.push(new Error(msg));
+    this.validationErrors.push(new Error(msg));
   }
 }

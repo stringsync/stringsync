@@ -32,10 +32,10 @@ export class NoteHydrationValidator extends AbstractValidator<Note> {
 
   private get tuning(): Vex.Flow.Tuning {
     if (!this.target.struct) {
-      this.error('expected note to have a struct');
+      throw new Error('expected note to have a struct');
     }
 
-    return this.target.struct!.vextab.tuning;
+    return this.target.struct.vextab.tuning;
   }
 
   private get tabNoteStr(): string {
