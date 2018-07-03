@@ -3,17 +3,6 @@ import { Chord } from 'models/music';
 import { Note } from '../note';
 
 export class ChordHydrationValidator extends AbstractValidator<Chord> {
-  public static isEqual(notes1: Note[], notes2: Note[]): boolean {
-    if (notes1.length !== notes2.length) {
-      return false;
-    }
-
-    const sortedNotes1 = Note.sort(notes1);
-    const sortedNotes2 = Note.sort(notes2);
-
-    return sortedNotes1.every((sortedNote1, ndx) => sortedNote1.isEquivalent(sortedNotes2[ndx]));
-  }
-
   public readonly staveNote: Vex.Flow.StaveNote;
   public readonly tabNote: Vex.Flow.TabNote;
 
@@ -26,8 +15,7 @@ export class ChordHydrationValidator extends AbstractValidator<Chord> {
 
   protected doValidate(): void {
     this.validateHydratable();
-    this.validateLengths();
-    this.validateLiterals();
+    this.validateChords();
   }
 
   private get staveKeys(): string[] {
@@ -52,12 +40,12 @@ export class ChordHydrationValidator extends AbstractValidator<Chord> {
     ));
   }
 
-  private get wrappedStaveNotes(): Note[] {
-    return this.staveKeys.map(Note.from);
+  private get staveChord(): Chord {
+    return new Chord(this.staveKeys.map(Note.from));
   }
 
-  private get wrappedTabNotes(): Note[] {
-    return this.tabKeys.map(Note.from);
+  private get tabChord(): Chord {
+    return new Chord(this.tabKeys.map(Note.from));
   }
 
   private validateHydratable(): void {
@@ -66,24 +54,11 @@ export class ChordHydrationValidator extends AbstractValidator<Chord> {
     }
   }
 
-  private validateLengths(): void {
-    const { notes } = this.target;
-
-    if (this.staveKeys.length !== notes.length) {
-      this.error(`expected staveNote to have ${notes.length} keys`);
-    } else if (this.tabPositions.length !== notes.length) {
-      this.error(`expected tabNote to have ${notes.length} positions`);
-    }
-  }
-
-  private validateLiterals(): void {
-    const { notes } = this.target;
-    const { wrappedStaveNotes, wrappedTabNotes } = this;
-
-    if (!ChordHydrationValidator.isEqual(notes, wrappedStaveNotes)) {
-      this.error('expected chord to have the same keys as staveNote');
-    } else if (!ChordHydrationValidator.isEqual(notes, wrappedTabNotes)) {
-      this.error('expected chord to have the same keys as tabNote');
+  private validateChords(): void {
+    if (!this.target.isEquivalent(this.staveChord)) {
+      this.error('expected chord to be equivalent to the staveNote chord');
+    } else if (!this.target.isEquivalent(this.tabChord)) {
+      this.error('expected chord to be equivalent to the tabNote chord');
     }
   }
 }

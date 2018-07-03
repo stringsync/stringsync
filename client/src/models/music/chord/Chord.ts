@@ -18,6 +18,22 @@ export class Chord extends AbstractVexWrapper {
   }
 
   /**
+   * Equivalency is based on the equivalency of the notes that constitute each Chord object.
+   * 
+   * @param other 
+   */
+  public isEquivalent(other: Chord): boolean {
+    if (this.notes.length !== other.notes.length) {
+      return false;
+    }
+
+    const src = Note.sort(this.notes);
+    const dst = Note.sort(other.notes);
+
+    return src.every((note, ndx) => note.isEquivalent(dst[ndx]));
+  }
+
+  /**
    * Sets postprocessing vexflow attributes to the instance
    * 
    * @param staveNote 

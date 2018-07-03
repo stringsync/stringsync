@@ -65,7 +65,7 @@ export class Note extends AbstractVexWrapper {
   }
 
   /**
-   * Sorts an array of notes by octvae, value, then by literal.
+   * Sorts an array of notes by octave, value, then by literal.
    * When sorting by literal, the sort order is: naturals, sharps, then flats.
    * 
    * @param {Array<Note>} notes
