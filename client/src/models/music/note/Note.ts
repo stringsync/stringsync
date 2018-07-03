@@ -294,9 +294,14 @@ export class Note extends AbstractVexWrapper {
    * @param tabNote 
    */
   public hydrate(staveNote: Vex.Flow.StaveNote, tabNote: Vex.Flow.TabNote): void {
-    new NoteHydrationValidator(this, staveNote, tabNote).validate();
+    const validator = new NoteHydrationValidator(this, staveNote, tabNote);
 
-    // Set vexAttr refs
-    this.vexAttrs = { staveNote, tabNote };
+    validator.validate();
+
+    if (validator.isValid) {
+      this.vexAttrs = { staveNote, tabNote };
+    } else {
+      throw validator.errors;
+    }
   }
 }

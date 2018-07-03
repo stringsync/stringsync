@@ -12,12 +12,10 @@ export class NoteHydrationValidator extends AbstractValidator<Note> {
     this.tabNote = tabNote;
   }
 
-  public validate(): boolean {
+  protected doValidate(): void {
     this.validateHydratable();
     this.validateLengths();
     this.validateLiterals();
-
-    return true;
   }
 
   private get staveKeys(): string[] {
