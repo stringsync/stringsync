@@ -87,6 +87,23 @@ export class Note extends AbstractVexWrapper {
     return new Note(splitStr[0], parseInt(splitStr[1], 10));
   }
 
+  /**
+   * Makes a good attempt at normalizing the literal. Throws an error if it can't.
+   * 
+   * @param literal 
+   */
+  public static normalize(literal: string): string {
+    const trimmed = literal.trim();
+
+    if (trimmed.length === 1) {
+      return trimmed.toUpperCase();
+    } else if (trimmed.length === 2) {
+      return `${literal[0].toUpperCase()}${literal[1].toLowerCase()}`;
+    } else {
+      throw new Error('literals must have 1 or 2 characters');
+    }
+  }
+
   public readonly literal: string;
   public octave: number;
   public readonly type = 'NOTE';
@@ -94,7 +111,7 @@ export class Note extends AbstractVexWrapper {
   constructor(literal: string, octave: number, struct: VextabStruct | null = null) {
     super(struct);
 
-    const normalizedLiteral = this.normalizeLiteral(literal)
+    const normalizedLiteral = Note.normalize(literal);
 
     if (!Note.ALL_LITERALS_SET.has(normalizedLiteral)) {
       throw new Error(`${normalizedLiteral} should be in ${Note.ALL_LITERALS.join(', ')}`);
@@ -281,22 +298,5 @@ export class Note extends AbstractVexWrapper {
 
     // Set vexAttr refs
     this.vexAttrs = { staveNote, tabNote };
-  }
-
-  /**
-   * Makes a good attempt at normalizing the literal. Throws an error if it can't.
-   * 
-   * @param literal 
-   */
-  private normalizeLiteral(literal: string): string {
-    const trimmed = literal.trim();
-
-    if (trimmed.length === 1) {
-      return trimmed.toUpperCase();
-    } else if (trimmed.length === 2) {
-      return `${literal[0].toUpperCase()}${literal[1].toLowerCase()}`;
-    } else {
-      throw new Error('literals must have 1 or 2 characters');
-    }
   }
 }
