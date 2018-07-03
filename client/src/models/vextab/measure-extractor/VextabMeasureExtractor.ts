@@ -108,7 +108,31 @@ export class VextabMeasureExtractor {
       throw new Error(`expected first note to be a typeof BAR: ${JSON.stringify(note)}`);
     }
 
-    this.bar = new Bar(note.type, this.struct);
+    let kind: Vex.Flow.Barline.type;
+    switch (note.type.toUpperCase()) {
+      case 'SINGLE':
+        kind = Vex.Flow.Barline.type.SINGLE;
+        break;
+      case 'DOUBLE':
+        kind = Vex.Flow.Barline.type.DOUBLE;
+        break;
+      case 'END':
+        kind = Vex.Flow.Barline.type.END;
+        break;
+      case 'REPEAT-END':
+        kind = Vex.Flow.Barline.type.REPEAT_END;
+        break;
+      case 'REPEAT-BEGIN':
+        kind = Vex.Flow.Barline.type.REPEAT_BEGIN;
+        break;
+      case 'REPEAT-BOTH':
+        kind = Vex.Flow.Barline.type.REPEAT_BOTH;
+        break;
+      default:
+        throw new Error(`unhandled barline type: ${note.type}`);
+    }
+    
+    this.bar = new Bar(kind, this.struct);
   }
 
   /**
