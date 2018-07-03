@@ -1,5 +1,6 @@
 import { Rhythm } from 'models';
 import { AbstractVexWrapper, VextabStruct } from 'models/vextab';
+import { RestHydrationValidator } from './RestHydrationValidator';
 
 export class Rest extends AbstractVexWrapper {
   public readonly position: number;
@@ -14,6 +15,14 @@ export class Rest extends AbstractVexWrapper {
   }
   
   public hydrate(staveNote: Vex.Flow.StaveNote, tabNote: Vex.Flow.TabNote): void {
-    this.vexAttrs = { staveNote, tabNote };
+    const validator = new RestHydrationValidator(this, staveNote, tabNote);
+
+    validator.validate();
+
+    if (validator.isValid) {
+      this.vexAttrs = { staveNote, tabNote };
+    } else {
+      throw validator.errors;
+    }
   }
 }
