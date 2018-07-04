@@ -2,6 +2,7 @@ import { Flow } from 'vexflow';
 import { Vextab } from 'models/vextab';
 import { Artist } from 'vextab/releases/vextab-div.js';
 import { VextabHydrator } from './VextabHydrator';
+import { VextabRenderValidator } from './VextabRenderValidator';
 
 Artist.NO_LOGO = true;
 
@@ -9,9 +10,8 @@ const CANVAS_BACKEND = (Flow as any).Renderer.Backends.CANVAS;
 
 export class VextabRenderer {
   public readonly vextab: Vextab;
-
-  private canvasesByLineId: { [lineId: string]: HTMLCanvasElement };
-  private artistsByLineId: { [lineId: string]: any };
+  public canvasesByLineId: { [lineId: string]: HTMLCanvasElement };
+  public artistsByLineId: { [lineId: string]: any };
 
   constructor(vextab: Vextab) {
     this.vextab = vextab;
@@ -38,15 +38,13 @@ export class VextabRenderer {
    * @returns {void}
    */
   public render(): void {
-    this.validate();
-  }
+    const validator = new VextabRenderValidator(this);
 
-  private get missingCanvases(): number[] {
-    return this.vextab.lines.map(line => line.id).filter(id => !this.canvasesByLineId[id]);
-  }
-
-  private get missingArtists(): number[] {
-    return this.vextab.lines.map(line => line.id).filter(id => !this.artistsByLineId[id]);
+    if (validator.validate()) {
+      // do render
+    } else {
+      throw validator.errors;
+    }
   }
 
   /**
@@ -66,17 +64,6 @@ export class VextabRenderer {
     this.artistsByLineId[line.id] = artist;
 
     VextabHydrator.hydrate(line, artist);
-  }
-
-  private validate(): void {
-    const missingCanvases = this.missingCanvases;
-    const missingArtists = this.missingArtists;
-
-    if (missingCanvases.length > 0) {
-      throw new Error(`missing canvases for lines ${missingCanvases.join(', ')}`);
-    } else if (missingArtists.length > 0) {
-      throw new Error(`missing artists for lines ${missingArtists.join(', ')}`);
-    }
   }
 };
 
