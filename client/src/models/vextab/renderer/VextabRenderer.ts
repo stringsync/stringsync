@@ -10,13 +10,11 @@ const CANVAS_BACKEND = (Flow as any).Renderer.Backends.CANVAS;
 
 export class VextabRenderer {
   public readonly vextab: Vextab;
-  public canvasesByLineId: { [lineId: string]: HTMLCanvasElement };
-  public artistsByLineId: { [lineId: string]: any };
+  public canvasesByLineId: { [lineId: string]: HTMLCanvasElement } = {};
+  public artistsByLineId: { [lineId: string]: any } = {};
 
   constructor(vextab: Vextab) {
     this.vextab = vextab;
-    this.canvasesByLineId = {};
-    this.artistsByLineId = {};
   }
 
   /**
