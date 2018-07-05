@@ -15,7 +15,13 @@ interface IInnerProps {
 const enhance = compose<IInnerProps, IOuterProps>(
   withHandlers({
     handleCanvasRef: (props: IOuterProps) => (canvas: HTMLCanvasElement) => {
-      props.vextab.renderer.assign(canvas, props.line.id);
+      const { renderer } = props.vextab;
+
+      renderer.assign(canvas, props.line.id);
+
+      if (renderer.isRenderable) {
+        renderer.render();
+      }
     }
   })
 );

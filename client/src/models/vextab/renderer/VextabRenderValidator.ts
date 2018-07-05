@@ -39,4 +39,10 @@ export class VextabRenderValidator extends AbstractValidator<VextabRenderer> {
       this.error(`missing artists for line ids ${missingArtists.join(', ')}`);
     }
   }
+
+  private validateWidth(): void {
+    if (!this.target.width) {
+      this.error('expected width to be a positive number');
+    }
+  }
 }
