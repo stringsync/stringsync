@@ -3,20 +3,17 @@ import { Vextab } from 'models/vextab';
 import { Artist } from 'vextab/releases/vextab-div.js';
 import { VextabHydrator } from './VextabHydrator';
 import { VextabRenderValidator } from './VextabRenderValidator';
-import { debounce, isEqual } from 'lodash';
+import { isEqual } from 'lodash';
 
 Artist.NO_LOGO = true;
 
-const CANVAS_BACKEND = Flow.Renderer.Backends.CANVAS;
-
-// This function is debounced since it is a heavy operation
-const rehydrate = debounce((renderer: VextabRenderer): void => {
-  Object.keys(renderer.canvasesByLineId).forEach(id => {
-    const canvas = renderer.canvasesByLineId[id];
-    renderer.assign(canvas, parseInt(id, 10));
-  });
-}, 500);
-
+/**
+ * This class is a wrapper around Vexflow's renderer that allows the caller to assign
+ * canvases for each Vextab line, and render each line.
+ * 
+ * In the context of this class, a Vextab line is hydrated when a Vextab Artist is assigned
+ * to that particular lineId via artistsByLineId. See VextabRenderer.prototype.isRenderable.
+ */
 export class VextabRenderer {
   public static get DEFAULT_LINE_HEIGHT(): number {
     return 280;
@@ -30,6 +27,7 @@ export class VextabRenderer {
   public canvasesByLineId: { [lineId: string]: HTMLCanvasElement } = {};
   public artistsByLineId: { [lineId: string]: any } = {};
   public backendRenderersByLineId: { [lineId: string]: Flow.Renderer } = {};
+  public isRendered: boolean = false;
 
   private $height: number = VextabRenderer.DEFAULT_LINE_HEIGHT;
   private $width: number = VextabRenderer.DEFAULT_LINE_WIDTH;
@@ -49,10 +47,16 @@ export class VextabRenderer {
   }
 
   public set width(width: number) {
+    if (width === this.$width) {
+      return;
+    }
+
     this.$width = width;
 
-    if (this.isRenderable) {
-      rehydrate(this);
+    if (this.isRenderable && this.isRendered) {
+      this.rehydrate();
+      this.clear();
+      this.render();
     }
   }
 
@@ -61,10 +65,16 @@ export class VextabRenderer {
   }
 
   public set height(height: number) {
+    if (height === this.$height) {
+      return;
+    }
+
     this.$height = height;
   
-    if (this.isRenderable) {
-      rehydrate(this);
+    if (this.isRenderable && this.isRendered) {
+      this.rehydrate();
+      this.clear();
+      this.render();
     }
   }
 
@@ -77,7 +87,7 @@ export class VextabRenderer {
    */
   public assign(canvas: HTMLCanvasElement, lineId: number): void {
     this.canvasesByLineId[lineId] = canvas;
-    this.backendRenderersByLineId[lineId] = new Flow.Renderer(canvas, CANVAS_BACKEND);
+    this.backendRenderersByLineId[lineId] = new Flow.Renderer(canvas, Flow.Renderer.Backends.CANVAS);
     this.hydrate(lineId);
   }
 
@@ -92,9 +102,25 @@ export class VextabRenderer {
 
     if (validator.validate()) {
       this.doRender();
+      this.isRendered = true;
     } else {
       throw validator.errors;
     }
+  }
+
+  public clear(): void {
+    this.forEachLineId(lineId => {
+      const canvas = this.canvasesByLineId[lineId];
+      const ctx = canvas.getContext('2d');
+
+      if (!ctx) {
+        return;
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+
+    this.isRendered = false;
   }
 
   /**
@@ -108,14 +134,19 @@ export class VextabRenderer {
 
     if (typeof line === 'undefined') {
       throw new Error(`could not find line ${lineId}`);
-    } else if (typeof this.width === 'undefined') {
-      throw new Error('expected width to be defined');
     }
 
     const artist = new Artist(10, 20, this.width);
     this.artistsByLineId[line.id] = artist;
 
     VextabHydrator.hydrate(line, artist);
+  }
+
+  private rehydrate(): void {
+    Object.keys(this.canvasesByLineId).forEach(id => {
+      const canvas = this.canvasesByLineId[id];
+      this.assign(canvas, parseInt(id, 10));
+    });
   }
 
   private doRender(): void {

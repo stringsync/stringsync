@@ -4,6 +4,7 @@ import { ScoreLine } from './ScoreLine';
 import { compose, withState, lifecycle } from 'recompose';
 import { Vextab } from 'models';
 import { connect } from 'react-redux';
+import { Row } from 'antd';
 
 interface IOuterProps {
   vextabString: string;
@@ -40,13 +41,13 @@ const enhance = compose<IInnerProps, IOuterProps>(
       }
 
       // Sync the viewport width with the renderer width.
-      vextab.renderer.width = nextProps.viewportWidth;
+      vextab.renderer.width = Math.min(nextProps.viewportWidth, 1200);
     }
   })
 );
 
 export const Score = enhance(props => (
-  <div>
+  <Row type="flex" justify="center" align="middle">
     {
       props.vextab.lines.map((line, ndx) => {
         return (
@@ -58,5 +59,5 @@ export const Score = enhance(props => (
         );
       })
     }
-  </div>
+  </Row>
 ));
