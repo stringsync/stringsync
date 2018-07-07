@@ -7,6 +7,6 @@ import { sample } from 'lodash';
 assertRender(() => (
   <Score
     vextabString={sample(VEXTAB_STRINGS) as string}
-    measuresPerLine={1}
+    width={640}
   />
 ));

@@ -39,7 +39,7 @@ export class VextabRenderer {
   public get isRenderable(): boolean {
     const lineIds = this.vextab.lines.map(line => line.id);
     const hydratedLineIds = Object.keys(this.artistsByLineId).map(lineId => parseInt(lineId, 10));
-    return isEqual(lineIds, hydratedLineIds);
+    return isEqual(lineIds, hydratedLineIds) && !!this.width && !!this.height;
   }
 
   public get width(): number {
@@ -47,17 +47,7 @@ export class VextabRenderer {
   }
 
   public set width(width: number) {
-    if (width === this.$width) {
-      return;
-    }
-
-    this.$width = width;
-
-    if (this.isRenderable && this.isRendered) {
-      this.rehydrate();
-      this.clear();
-      this.render();
-    }
+    this.setDimension('$width', width);
   }
 
   public get height(): number {
@@ -65,17 +55,7 @@ export class VextabRenderer {
   }
 
   public set height(height: number) {
-    if (height === this.$height) {
-      return;
-    }
-
-    this.$height = height;
-  
-    if (this.isRenderable && this.isRendered) {
-      this.rehydrate();
-      this.clear();
-      this.render();
-    }
+    this.setDimension('$height', height);
   }
 
   /**
@@ -178,6 +158,27 @@ export class VextabRenderer {
     this.vextab.lines.map(line => line.id).forEach(lineId => {
       callback(lineId)
     });
+  }
+
+  /**
+   * Conditionally rerenders if this method is called and the renderer isRenderable and
+   * isRendered. This is used in the height and width setters of this method.
+   * 
+   * @param field The field that should be set
+   * @param value the value that got passed in
+   */
+  private setDimension(field: '$height' | '$width', value: number): void {
+    if (value === this[field]) {
+      return;
+    }
+
+    this[field] = value;
+
+    if (this.isRenderable && this.isRendered) {
+      this.rehydrate();
+      this.clear();
+      this.render();
+    }
   }
 };
 

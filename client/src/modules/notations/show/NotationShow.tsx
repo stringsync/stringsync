@@ -5,7 +5,7 @@ import { Affix } from 'antd';
 import { Element as ScrollElement } from 'react-scroll';
 import { Fretboard, Score, Piano, MaestroController, Overlap, Layer } from 'components';
 import { NotationShowVideo, NotationShowControls, NotationShowMenu } from './';
-import { compose, lifecycle, withState, withHandlers } from 'recompose';
+import { compose, lifecycle, withState, withHandlers, withProps } from 'recompose';
 import { connect } from 'react-redux';
 import { find } from 'lodash';
 import { NotationsActions, fetchNotation, VideoActions } from 'data';
@@ -16,13 +16,18 @@ type OuterProps = RouteComponentProps<{ id: string }>;
 
 interface IConnectProps extends OuterProps {
   notation: Notation.INotation;
+  viewportWidth: number;
   fetchNotation: (id: number) => Notation.INotation;
   resetNotation: () => void;
   resetVideo: () => void;
   setVideo: (video: Video.IVideo) => void;
 }
 
-interface IMenuCollapsedProps extends IConnectProps {
+interface IScoreWidthProps extends IConnectProps {
+  scoreWidth: number;
+}
+
+interface IMenuCollapsedProps extends IScoreWidthProps {
   menuCollapsed: boolean;
   setMenuCollapsed: (menuCollapsed: boolean) => void;
 }
@@ -36,7 +41,8 @@ const getNotationShowElement = () => document.getElementById('notation-show');
 const enhance = compose<IMenuHandlerProps, OuterProps>(
   connect(
     (state: StringSync.Store.IState) => ({
-      notation: state.notations.show
+      notation: state.notations.show,
+      viewportWidth: state.viewport.width
     }),
     dispatch => ({
       fetchNotation: (id: number) => dispatch(fetchNotation(id) as any),
@@ -45,6 +51,9 @@ const enhance = compose<IMenuHandlerProps, OuterProps>(
       setVideo: (video: Video.IVideo) => dispatch(VideoActions.setVideo(video))
     })
   ),
+  withProps((props: IConnectProps) => ({
+    scoreWidth: Math.max(Math.min(props.viewportWidth, 1200), 200) - 20
+  })),
   withState('menuCollapsed', 'setMenuCollapsed', true),
   withHandlers({
     handleMenuClick: (props: any) => (event: React.SyntheticEvent<HTMLElement>) => {
@@ -129,7 +138,7 @@ export const NotationShow = enhance(props => (
             <ScrollElement name="notation-show-tab" />
             <Score
               vextabString={props.notation.vextabString}
-              measuresPerLine={4}
+              width={props.scoreWidth}
             />
           </div>
         </ContentContainer>
