@@ -3,7 +3,8 @@ import { Vextab } from 'models/vextab';
 import { Artist } from 'vextab/releases/vextab-div.js';
 import { VextabHydrator } from './VextabHydrator';
 import { VextabRenderValidator } from './VextabRenderValidator';
-import { isEqual } from 'lodash';
+import { isEqual, sortBy } from 'lodash';
+import { Bar } from 'models/music';
 
 Artist.NOLOGO = true;
 
@@ -81,16 +82,20 @@ export class VextabRenderer {
     const validator = new VextabRenderValidator(this);
 
     if (validator.validate()) {
-      this.doRender();
-      this.isRendered = true;
+      try {
+        this.doRender();
+        this.isRendered = true;
+      } catch (error) {
+        console.error(error);
+      }
     } else {
       throw validator.errors;
     }
   }
 
   public clear(): void {
-    this.forEachLineId(lineId => {
-      const canvas = this.canvasesByLineId[lineId];
+    this.vextab.lines.forEach(line => {
+      const canvas = this.canvasesByLineId[line.id];
       const ctx = canvas.getContext('2d');
 
       if (!ctx) {
@@ -129,35 +134,56 @@ export class VextabRenderer {
     });
   }
 
+  /**
+   * Performs the render.
+   */
   private doRender(): void {
     this.resize();
 
-    this.forEachLineId(lineId => {
-      const artist = this.artistsByLineId[lineId];
-      const backendRenderer = this.backendRenderersByLineId[lineId];
+    this.vextab.lines.forEach(line => {
+      const artist = this.artistsByLineId[line.id];
+      const backendRenderer = this.backendRenderersByLineId[line.id];
+      const ctx = this.canvasesByLineId[line.id].getContext('2d');
 
+      if (!ctx) {
+        throw new Error(`no context found for ${line.id}`);
+      }
+
+      // render score
       artist.render(backendRenderer);
-    })
+
+      // render measure numbers
+      ctx.save();
+      ctx.fillStyle = 'darkgray';
+      ctx.font = 'italic 10px arial';
+
+      line.measures.forEach(measure => {
+        const bar = measure.elements.find(el => el.type === 'BAR') as Bar;
+        const barNote = bar.vexAttrs.staveNote as Vex.Flow.BarNote;
+        const x = barNote.getAbsoluteX();
+
+        ctx.fillText(measure.id.toString(), x - 3, 50);
+      })
+
+      ctx.restore();
+    });
   }
 
+  /**
+   * Calls the canvas's setters, to resize it to this instance's width and height.
+   */
   private resize(): void {
     const { width, height } = this;
     const ratio = window.devicePixelRatio || 1;
 
-    this.forEachLineId(lineId => {
-      const canvas = this.canvasesByLineId[lineId];
+    this.vextab.lines.forEach(line => {
+      const canvas = this.canvasesByLineId[line.id];
 
       canvas.width = width * ratio;
       canvas.height = height * ratio;
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
     })
-  }
-
-  private forEachLineId(callback: (lineId: number) => void) {
-    this.vextab.lines.map(line => line.id).forEach(lineId => {
-      callback(lineId)
-    });
   }
 
   /**

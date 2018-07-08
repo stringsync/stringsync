@@ -6,8 +6,7 @@ import { VextabStruct } from 'models/vextab';
  */
 export abstract class AbstractVexWrapper {
   public struct: VextabStruct | null;
-
-  protected vexAttrs: any;
+  public vexAttrs: any;
 
   constructor(struct: VextabStruct | null) {
     this.struct = struct;

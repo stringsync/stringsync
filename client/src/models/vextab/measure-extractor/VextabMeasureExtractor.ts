@@ -180,7 +180,7 @@ export class VextabMeasureExtractor {
     }
 
     this.measures.push(
-      new Measure([this.bar, ...this.elements], this.measureSpec)
+      new Measure([this.bar, ...this.elements], this.measures.length + 1, this.measureSpec)
     );
   }
 

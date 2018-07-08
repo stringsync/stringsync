@@ -21,8 +21,9 @@ export class Bar extends AbstractVexWrapper {
     }
   }
 
-  public kind: Vex.Flow.Barline.type;
   public readonly type = 'BAR';
+
+  public kind: Vex.Flow.Barline.type;
 
   constructor(kind: Vex.Flow.Barline.type, struct: VextabStruct | null = null) {
     super(struct);
