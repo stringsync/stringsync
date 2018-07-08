@@ -1,13 +1,12 @@
 import * as React from 'react';
-import { compose, withHandlers, withProps, withState } from 'recompose';
+import { compose, withHandlers, withProps, withState, lifecycle } from 'recompose';
 import { Slider } from 'antd';
 import { connect } from 'react-redux';
-import { withRaf, IWithRafProps } from 'enhancers';
-import { RafSpec, Time } from 'services';
+import { Time, Maestro } from 'services';
 import styled from 'react-emotion';
 import { SliderProps } from 'antd/lib/slider';
 
-interface IInnerProps extends IWithRafProps {
+interface IInnerProps {
   videoPlayer: Youtube.IPlayer;
   isVideoPlaying: boolean;
   durationMs: number;
@@ -20,6 +19,7 @@ interface IInnerProps extends IWithRafProps {
   valueToTimeMs: (value: number) => number;
   handleChange: (value: number) => void;
   handleAfterChange: (value: number) => void;
+  handleNotification: (maestro: Maestro) => void;
 }
 
 const enhance = compose<IInnerProps, {}>(
@@ -71,21 +71,26 @@ const enhance = compose<IInnerProps, {}>(
     }
   }),
   withHandlers({
-    handleRafLoop: (props: any) => () => {
-      if (window.ss.maestro) {
-        const value = 100 * window.ss.maestro.time.ms / props.durationMs;
+    handleNotification: (props: any) => (maestro: Maestro) => {
+      const value = 100 * maestro.time.ms / props.durationMs;
 
-        // Guard against NaN since it makes the page crash
-        if (!isNaN(value) && !props.isScrubbing) {
-          props.setValue(value);
-        }
+      // Guard against NaN since it makes the page crash
+      if (!isNaN(value) && !props.isScrubbing) {
+        props.setValue(value);
       }
     }
   }),
-  withRaf(
-    () => window.ss.rafLoop,
-    (props: any) => new RafSpec('Scrubber.handleRafLoop', 1, props.handleRafLoop)
-  )
+  lifecycle<IInnerProps, {}>({
+    componentWillMount(): void {
+      if (!window.ss.maestro) {
+        throw new Error(
+          'Expected maestro instance under the window.ss namespace. Mount a MaestroController.'
+        )
+      }
+
+      window.ss.maestro.subscribe(this.props);
+    }
+  })
 );
 
 // Hack to allow the style prop directly on Slider
