@@ -1,16 +1,45 @@
 import { VextabStruct, AbstractVexWrapper } from 'models/vextab';
+import { BarHydrationValidator } from './BarHydrationValidator';
 
 export class Bar extends AbstractVexWrapper {
-  public kind: string;
+  public static kindof(note: Vextab.Parsed.IBar): Vex.Flow.Barline.type {
+    switch (note.type.toUpperCase()) {
+      case 'SINGLE':
+        return Vex.Flow.Barline.type.SINGLE;
+      case 'DOUBLE':
+        return Vex.Flow.Barline.type.DOUBLE;
+      case 'END':
+        return Vex.Flow.Barline.type.END;
+      case 'REPEAT-END':
+        return Vex.Flow.Barline.type.REPEAT_END;
+      case 'REPEAT-BEGIN':
+        return Vex.Flow.Barline.type.REPEAT_BEGIN;
+      case 'REPEAT-BOTH':
+        return Vex.Flow.Barline.type.REPEAT_BOTH;
+      default:
+        return Vex.Flow.Barline.type.REPEAT_BOTH;
+    }
+  }
+
   public readonly type = 'BAR';
 
-  constructor(kind: string, struct: VextabStruct | null = null) {
+  public kind: Vex.Flow.Barline.type;
+
+  constructor(kind: Vex.Flow.Barline.type, struct: VextabStruct | null = null) {
     super(struct);
 
     this.kind = kind;
   }
 
   public hydrate(staveNote: Vex.Flow.BarNote, tabNote: Vex.Flow.BarNote): void {
-    this.vexAttrs = { staveNote, tabNote };
+    const validator = new BarHydrationValidator(this, staveNote, tabNote);
+
+    validator.validate();
+
+    if (validator.isValid) {
+      this.vexAttrs = { staveNote, tabNote };
+    } else {
+      throw validator.errors;
+    }
   }
 }

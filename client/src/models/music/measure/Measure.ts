@@ -6,15 +6,17 @@ export type MeasureElement = Note | Rest | Bar;
 
 export class Measure {
   public elements: MeasureElement[];
+  public id: number;
   public readonly spec: any;
   public readonly rawStruct: Vextab.ParsedStruct[];
   public readonly type = 'MEASURE';
 
-  constructor(elements: MeasureElement[], spec: VextabMeasureSpec) {
+  constructor(elements: MeasureElement[], id: number, spec: VextabMeasureSpec) {
     if (elements[0].type !== 'BAR') {
       throw new Error(`expected the first element to have type BAR, got: ${elements[0].type}`);
-    } 
-
+    }
+    
+    this.id = id;
     this.elements = elements;
     this.spec = spec;
 

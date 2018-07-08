@@ -107,8 +107,8 @@ export class VextabMeasureExtractor {
     if (VextabStruct.typeof(note) !== 'BAR') {
       throw new Error(`expected first note to be a typeof BAR: ${JSON.stringify(note)}`);
     }
-
-    this.bar = new Bar(note.type, this.struct);
+    
+    this.bar = new Bar(Bar.kindof(note), this.struct);
   }
 
   /**
@@ -136,7 +136,7 @@ export class VextabMeasureExtractor {
     switch (VextabStruct.typeof(note)) {
       case 'BAR':
         this.pushMeasure();
-        this.bar = new Bar(note.type, this.struct);
+        this.bar = new Bar(Bar.kindof(note), this.struct);
         this.elements = [];
         break;
       case 'TIME':
@@ -180,7 +180,7 @@ export class VextabMeasureExtractor {
     }
 
     this.measures.push(
-      new Measure([this.bar, ...this.elements], this.measureSpec)
+      new Measure([this.bar, ...this.elements], this.measures.length + 1, this.measureSpec)
     );
   }
 

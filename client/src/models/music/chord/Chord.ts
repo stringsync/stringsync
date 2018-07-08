@@ -1,5 +1,7 @@
 import { Note } from 'models';
 import { AbstractVexWrapper, VextabStruct } from 'models/vextab';
+import { zip } from 'lodash';
+import { ChordHydrationValidator } from './ChordHydrationValidator';
 
 export class Chord extends AbstractVexWrapper {
   public notes: Note[];
@@ -15,7 +17,37 @@ export class Chord extends AbstractVexWrapper {
     this.notes = notes;
   }
 
+  /**
+   * Equivalency is based on the equivalency of the notes that constitute each Chord object.
+   * 
+   * @param other 
+   */
+  public isEquivalent(other: Chord): boolean {
+    if (this.notes.length !== other.notes.length) {
+      return false;
+    }
+
+    const src = Note.sort(this.notes);
+    const dst = Note.sort(other.notes);
+
+    return src.every((note, ndx) => note.isEquivalent(dst[ndx]));
+  }
+
+  /**
+   * Sets postprocessing vexflow attributes to the instance
+   * 
+   * @param staveNote 
+   * @param tabNote 
+   */
   public hydrate(staveNote: Vex.Flow.StaveNote, tabNote: Vex.Flow.TabNote): void {
-    this.vexAttrs = { staveNote, tabNote };
+    const validator = new ChordHydrationValidator(this, staveNote, tabNote);
+
+    validator.validate();
+
+    if (validator.isValid) {
+      this.vexAttrs = { staveNote, tabNote };
+    } else {
+      throw validator.errors;
+    }
   }
 }

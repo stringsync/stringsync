@@ -1,6 +1,7 @@
 import { sortBy } from 'lodash';
 import * as constants from './noteConstants';
 import { AbstractVexWrapper, VextabStruct } from 'models/vextab';
+import { NoteHydrationValidator } from './NoteHydrationValidator';
 
 /**
  * The purpose of this class is to encapsulate the logic related to describing a note's inherent
@@ -13,7 +14,7 @@ export class Note extends AbstractVexWrapper {
    * 
    * @returns {constants.ALL_LITERALS;}
    */
-  static get ALL_LITERALS() {
+  public static get ALL_LITERALS() {
     return constants.ALL_LITERALS;
   }
 
@@ -22,7 +23,7 @@ export class Note extends AbstractVexWrapper {
    * 
    * @returns {constants.ALL_LITERALS_SET}
    */
-  static get ALL_LITERALS_SET() {
+  public static get ALL_LITERALS_SET() {
     return constants.ALL_LITERALS_SET;
   }
 
@@ -31,7 +32,7 @@ export class Note extends AbstractVexWrapper {
    * 
    * @returns {constants.SHARP_LITERALS;}
    */
-  static get SHARP_LITERALS() {
+  public static get SHARP_LITERALS() {
     return constants.SHARP_LITERALS;
   }
 
@@ -40,7 +41,7 @@ export class Note extends AbstractVexWrapper {
    * 
    * @returns {constants.FLAT_LITERALS}
    */
-  static get FLAT_LITERALS() {
+  public static get FLAT_LITERALS() {
     return constants.FLAT_LITERALS;
   }
 
@@ -50,7 +51,7 @@ export class Note extends AbstractVexWrapper {
    * 
    * @returns {constants.NOTE_ALIASES}
    */
-  static get NOTE_ALIASES() {
+  public static get NOTE_ALIASES() {
     return constants.NOTE_ALIASES;
   }
 
@@ -59,12 +60,12 @@ export class Note extends AbstractVexWrapper {
    * 
    * @returns {constants.VALUES_BY_LITERAL}
    */
-  static get VALUES_BY_LITERAL() {
+  public static get VALUES_BY_LITERAL() {
     return constants.VALUES_BY_LITERAL;
   }
 
   /**
-   * Sorts an array of notes by octvae, value, then by literal.
+   * Sorts an array of notes by octave, value, then by literal.
    * When sorting by literal, the sort order is: naturals, sharps, then flats.
    * 
    * @param {Array<Note>} notes
@@ -74,6 +75,35 @@ export class Note extends AbstractVexWrapper {
     return sortBy(notes, ['octave', 'value', 'isFlat']);
   }
 
+  /**
+   * Transforms a string that has literal and octave information in it to a Note object.
+   * Validation is handled at note creation.
+   * 
+   * @param {string} str expected string format: `${note}${modifier?}/${octave}`
+   * @returns {Note}
+   */
+  public static from(str: string): Note {
+    const splitStr = str.split('/');
+    return new Note(splitStr[0], parseInt(splitStr[1], 10));
+  }
+
+  /**
+   * Makes a good attempt at normalizing the literal. Throws an error if it can't.
+   * 
+   * @param literal 
+   */
+  public static normalize(literal: string): string {
+    const trimmed = literal.trim();
+
+    if (trimmed.length === 1) {
+      return trimmed.toUpperCase();
+    } else if (trimmed.length === 2) {
+      return `${literal[0].toUpperCase()}${literal[1].toLowerCase()}`;
+    } else {
+      throw new Error('literals must have 1 or 2 characters');
+    }
+  }
+
   public readonly literal: string;
   public octave: number;
   public readonly type = 'NOTE';
@@ -81,13 +111,15 @@ export class Note extends AbstractVexWrapper {
   constructor(literal: string, octave: number, struct: VextabStruct | null = null) {
     super(struct);
 
-    if (!Note.ALL_LITERALS_SET.has(literal)) {
-      throw new Error(`${literal} should be in ${Note.ALL_LITERALS.join(', ')}`);
+    const normalizedLiteral = Note.normalize(literal);
+
+    if (!Note.ALL_LITERALS_SET.has(normalizedLiteral)) {
+      throw new Error(`${normalizedLiteral} should be in ${Note.ALL_LITERALS.join(', ')}`);
     } else if (!Number.isInteger(octave)) {
       throw new Error('octave must be an integer')
     }
 
-    this.literal = literal;
+    this.literal = normalizedLiteral;
     this.octave = octave;
     this.type = 'NOTE';
   }
@@ -216,7 +248,7 @@ export class Note extends AbstractVexWrapper {
   /**
    * Returns the sharp version of the note if the note isFlat. Otherwise, returns a clone.
    * 
-   * @returnss {Note}
+   * @returns {Note}
    */
   public toSharp(): Note {
     return this.isFlat ? this.alias : this.clone;
@@ -255,7 +287,21 @@ export class Note extends AbstractVexWrapper {
     return new Note(literal, octave);
   }
 
+  /**
+   * Sets postprocessing vexflow attributes to the instance
+   * 
+   * @param staveNote 
+   * @param tabNote 
+   */
   public hydrate(staveNote: Vex.Flow.StaveNote, tabNote: Vex.Flow.TabNote): void {
-    this.vexAttrs = { staveNote, tabNote };
+    const validator = new NoteHydrationValidator(this, staveNote, tabNote);
+
+    validator.validate();
+
+    if (validator.isValid) {
+      this.vexAttrs = { staveNote, tabNote };
+    } else {
+      throw validator.errors;
+    }
   }
 }

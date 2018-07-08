@@ -8,8 +8,12 @@ import {
 import { Line } from 'models';
 import { Flow } from 'vexflow';
 import { Measure } from '../music/measure/Measure';
+import { hash } from 'utilities';
 
-const DEFAULT_TUNING = new (Flow as any).Tuning();
+const DEFAULT_TUNING: Vex.Flow.Tuning = new (Flow as any).Tuning();
+
+let VEXTAB_ID_BASE = 0;
+const getVextabId = () => hash((VEXTAB_ID_BASE++).toString());
 
 /**
  * The Vextab is the encoding used to store instructions on how to draw, animate, and edit
@@ -45,6 +49,7 @@ export class Vextab {
   }
 
   public readonly structs: Vextab.ParsedStruct[];
+  public readonly id: number;
 
   public measuresPerLine: number;
   public tuning = DEFAULT_TUNING;
@@ -56,6 +61,8 @@ export class Vextab {
     if (typeof measuresPerLine !== 'number' || measuresPerLine < 0) {
       throw new Error('measuresPerLine must be a positive number');
     }
+
+    this.id = getVextabId();
 
     this.measuresPerLine = measuresPerLine;
     this.structs = structs;
