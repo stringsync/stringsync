@@ -5,7 +5,7 @@ import { VextabHydrator } from './VextabHydrator';
 import { VextabRenderValidator } from './VextabRenderValidator';
 import { isEqual } from 'lodash';
 
-Artist.NO_LOGO = true;
+Artist.NOLOGO = true;
 
 /**
  * This class is a wrapper around Vexflow's renderer that allows the caller to assign
