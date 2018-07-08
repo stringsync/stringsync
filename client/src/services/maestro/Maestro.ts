@@ -18,6 +18,7 @@ export class Maestro extends AbstractObservable {
 
     this.deadTime = new Time(deadTimeMs, 'ms');
     this.bpm = bpm;
+    this.time = new Time(0, 'ms');
   }
 
   public get time() {

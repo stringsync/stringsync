@@ -3,7 +3,9 @@ import { Flow } from 'vexflow';
 export type TimeUnits = 'ms' | 's' | 'min';
 
 /**
- * This class is used to convert time from milliseconds to ticks.
+ * This class is used to convert time from milliseconds to ticks. The caller can optionally
+ * pass in bpm. However, if not supplied, any computation that requires bpm to be defined
+ * will throw an error.
  */
 export class Time {
   public readonly ms: number;  // milliseconds
