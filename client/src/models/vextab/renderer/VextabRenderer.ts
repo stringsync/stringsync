@@ -82,30 +82,29 @@ export class VextabRenderer {
     const validator = new VextabRenderValidator(this);
 
     if (validator.validate()) {
-      try {
-        this.doRender();
-        this.isRendered = true;
-      } catch (error) {
-        console.error(error);
-      }
+      this.doRender();
     } else {
       throw validator.errors;
     }
   }
 
   public clear(): void {
-    this.vextab.lines.forEach(line => {
-      const canvas = this.canvasesByLineId[line.id];
-      const ctx = canvas.getContext('2d');
+    try {
+      this.vextab.lines.forEach(line => {
+        const canvas = this.canvasesByLineId[line.id];
+        const ctx = canvas.getContext('2d');
 
-      if (!ctx) {
-        return;
-      }
+        if (!ctx) {
+          throw new Error(`expected context for line ${line.id}`);
+        }
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    });
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      });
 
-    this.isRendered = false;
+      this.isRendered = false;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   /**
@@ -140,33 +139,39 @@ export class VextabRenderer {
   private doRender(): void {
     this.resize();
 
-    this.vextab.lines.forEach(line => {
-      const artist = this.artistsByLineId[line.id];
-      const backendRenderer = this.backendRenderersByLineId[line.id];
-      const ctx = this.canvasesByLineId[line.id].getContext('2d');
+    try {
+      this.vextab.lines.forEach(line => {
+        const artist = this.artistsByLineId[line.id];
+        const backendRenderer = this.backendRenderersByLineId[line.id];
+        const ctx = this.canvasesByLineId[line.id].getContext('2d');
 
-      if (!ctx) {
-        throw new Error(`no context found for ${line.id}`);
-      }
+        if (!ctx) {
+          throw new Error(`no context found for ${line.id}`);
+        }
 
-      // render score
-      artist.render(backendRenderer);
+        // render score
+        artist.render(backendRenderer);
 
-      // render measure numbers
-      ctx.save();
-      ctx.fillStyle = 'darkgray';
-      ctx.font = 'italic 10px arial';
+        // render measure numbers
+        ctx.save();
+        ctx.fillStyle = 'darkgray';
+        ctx.font = 'italic 10px arial';
 
-      line.measures.forEach(measure => {
-        const bar = measure.elements.find(el => el.type === 'BAR') as Bar;
-        const barNote = bar.vexAttrs.staveNote as Vex.Flow.BarNote;
-        const x = barNote.getAbsoluteX();
+        line.measures.forEach(measure => {
+          const bar = measure.elements.find(el => el.type === 'BAR') as Bar;
+          const barNote = bar.vexAttrs.staveNote as Vex.Flow.BarNote;
+          const x = barNote.getAbsoluteX();
 
-        ctx.fillText(measure.id.toString(), x - 3, 50);
-      })
+          ctx.fillText(measure.id.toString(), x - 3, 50);
+        })
 
-      ctx.restore();
-    });
+        ctx.restore();
+      });
+
+      this.isRendered = true;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   /**
