@@ -116,7 +116,7 @@ export class VextabRenderer {
       throw new Error(`could not find line ${lineId}`);
     }
 
-    const artist = new Artist(10, 20, this.width);
+    const artist = new Artist(6, 20, this.width);
     this.artistsByLineId[line.id] = artist;
 
     VextabHydrator.hydrate(line, artist);

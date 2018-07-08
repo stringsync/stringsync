@@ -52,11 +52,11 @@ const enhance = compose<IMenuHandlerProps, OuterProps>(
     })
   ),
   withProps((props: IConnectProps) => ({
-    scoreWidth: Math.max(Math.min(props.viewportWidth, 1200), 200) - 20
+    scoreWidth: Math.max(Math.min(props.viewportWidth, 1200), 200) - 30
   })),
   withState('menuCollapsed', 'setMenuCollapsed', true),
   withHandlers({
-    handleMenuClick: (props: any) => (event: React.SyntheticEvent<HTMLElement>) => {
+    handleMenuClick: (props: any) => () => {
       props.setMenuCollapsed(!props.menuCollapsed);
     }
   }),
