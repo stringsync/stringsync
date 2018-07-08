@@ -1,5 +1,28 @@
 import { Time } from 'services';
 import { AbstractObservable } from 'utilities';
+import { isEqual } from 'lodash';
+import { Line, Measure, Note, Rest } from 'models/music';
+import { Vextab } from 'models/vextab';
+import { TickMap, ITickData } from './TickMap';
+import { MeasureElement } from 'models';
+
+interface IMaestroState {
+  time: Time;
+  start: number | null;
+  stop: number | null;
+  line: Line | null;
+  measure: Measure | null;
+  note: MeasureElement | null;
+}
+
+const getNullState = (time: Time): IMaestroState => ({
+  line: null,
+  measure: null,
+  note: null,
+  start: null,
+  stop: null,
+  time
+});
 
 /**
  * This class's purpose is to provide a single interface for callers to invoke an update on
@@ -9,8 +32,11 @@ import { AbstractObservable } from 'utilities';
 export class Maestro extends AbstractObservable {
   public deadTime: Time;
   public bpm: number;
-
+  
   private isUpdating: boolean = false;
+  private tickMap: TickMap | null = null;
+  private $vextab: Vextab | null = null;
+  private $state: IMaestroState;
   private $time: Time;
 
   constructor(deadTimeMs: number, bpm: number) {
@@ -19,6 +45,8 @@ export class Maestro extends AbstractObservable {
     this.deadTime = new Time(deadTimeMs, 'ms');
     this.bpm = bpm;
     this.time = new Time(0, 'ms');
+
+    this.state = getNullState(this.time.clone);
   }
 
   public get time() {
@@ -32,6 +60,27 @@ export class Maestro extends AbstractObservable {
 
     this.$time = time.clone;
     this.$time.bpm = this.bpm;
+  }
+
+  public get state() {
+    return this.$state;
+  }
+
+  public set state(state: IMaestroState) {
+    this.$state = state;
+    this.notify();
+  }
+
+  public get vextab() {
+    return this.$vextab;
+  }
+
+  public set vextab(vextab: Vextab | null) {
+    if (vextab && vextab !== this.vextab) {
+      this.tickMap = new TickMap(vextab);
+    }
+
+    this.$vextab = vextab;
   }
 
   /**
@@ -53,11 +102,26 @@ export class Maestro extends AbstractObservable {
   }
 
   /**
-   * Contains the logic of doing the update.
+   * Contains the logic of doing the update. It will call the state's setter function,
+   * which will notify observers of this class.
    * 
    * @private
    */
   private doUpdate() {
-    this.notify();
+    const time = this.time.clone; // ensures that this time is constant during this function call
+
+    let nextState: IMaestroState;
+    try {
+      // typescript bang operator usage:
+      //  this.tickMap may be null, but an error will be thrown and caught if it is.
+      //  TickMap.prototype.fetch may also throw an error, so that case is handled as well.
+      nextState = { time, ...this.tickMap!.fetch(time.tick) };
+    } catch {
+      nextState = getNullState(time);
+    }
+
+    this.changed = !isEqual(this.state, nextState);
+
+    this.state = nextState;
   }
 }

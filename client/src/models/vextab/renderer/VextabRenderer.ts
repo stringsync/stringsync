@@ -159,6 +159,11 @@ export class VextabRenderer {
 
         line.measures.forEach(measure => {
           const bar = measure.elements.find(el => el.type === 'BAR') as Bar;
+
+          if (!bar.vexAttrs) {
+            return;
+          }
+
           const barNote = bar.vexAttrs.staveNote as Vex.Flow.BarNote;
           const x = barNote.getAbsoluteX();
 

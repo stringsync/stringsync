@@ -23,6 +23,12 @@ export class Measure {
     this.rawStruct = this.getRawStruct();
   }
 
+  get tickables(): MeasureElement[] {
+    return this.elements.filter(element => (
+      typeof get(element.vexAttrs, 'staveNote.getTicks') === 'function'
+    ));
+  }
+
   private getRawStruct(): Vextab.ParsedStruct[] {
     return compact(this.elements.map(element => get(element, 'struct.raw')));
   }

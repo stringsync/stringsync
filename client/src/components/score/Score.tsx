@@ -59,6 +59,11 @@ const enhance = compose<IInnerProps, IOuterProps>(
 
       // Sync the component width with the renderer's width.
       vextab.renderer.width = nextProps.width;
+
+      // Sync the Vextab with Maestro's vextab
+      if (window.ss.maestro) {
+        window.ss.maestro.vextab = vextab;
+      }
     }
   })
 );
