@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { compose, lifecycle, withHandlers } from 'recompose';
 import { connect } from 'react-redux';
-import { withRaf } from 'enhancers';
-import { Maestro, TimeKeeper, RafLoop, RafSpec } from 'services';
+import { withRaf, IWithRafProps } from 'enhancers';
+import { Maestro, Time, RafLoop, RafSpec } from 'services';
 
 class MaestroError extends Error { };
 
@@ -11,22 +11,27 @@ interface IOuterProps {
   deadTimeMs: number;
 }
 
-interface IInnerProps extends IOuterProps {
+interface IConnectProps extends IOuterProps {
   isVideoActive: boolean;
   videoPlayer: Youtube.IPlayer;
 }
 
-const enhance = compose<IInnerProps, IOuterProps>(
+interface IRafHandlerProps extends IConnectProps {
+  handleRafLoop: () => void;
+}
+
+type InnerProps = IRafHandlerProps & IWithRafProps;
+
+const enhance = compose<InnerProps, IOuterProps>(
   connect(
     (state: StringSync.Store.IState) => ({
       isVideoActive: state.video.isActive,
       videoPlayer: state.video.player
     })
   ),
-  lifecycle<any, {}>({
+  lifecycle<IConnectProps, {}>({
     componentWillMount() {
-      const timeKeeper = new TimeKeeper(this.props.bpm, this.props.deadTimeMs);
-      window.ss.maestro = new Maestro(timeKeeper);
+      window.ss.maestro = new Maestro(this.props.deadTimeMs, this.props.bpm);
       window.ss.rafLoop = new RafLoop();
     },
     componentWillReceiveProps(nextProps) {
@@ -37,7 +42,7 @@ const enhance = compose<IInnerProps, IOuterProps>(
       if (nextProps.isVideoActive) {
         window.ss.rafLoop.start();
       } else {
-        window.ss.rafLoop!.stop();
+        window.ss.rafLoop.stop();
       }
     },
     componentWillUnmount() {
@@ -54,28 +59,28 @@ const enhance = compose<IInnerProps, IOuterProps>(
     /**
      * Update the timeKeeper.currentTimeMs and call maestro.update whenever the rafLoop is active.
      */
-    handleRafLoop: (props: any) => () => {
+    handleRafLoop: (props: IConnectProps) => () => {
       if (!window.ss.maestro) {
-        throw new MaestroError('Expected an instance of Maestro to be defined on window.ss');
+        throw new MaestroError('expected an instance of Maestro to be defined on window.ss');
+      } else if (!props.videoPlayer) {
+        throw new MaestroError('expected a Youtube video player to be defined in the store');
       }
 
-      if (props.videoPlayer) {
-        window.ss.maestro.timeKeeper.currentTimeMs = props.videoPlayer.getCurrentTime() * 1000;
-      }
+      window.ss.maestro.time = new Time(props.videoPlayer.getCurrentTime(), 's');
 
       window.ss.maestro.update();
     }
   }),
   withRaf(
     () => window.ss.rafLoop!,
-    (props: any) => new RafSpec('MaestroController.handleRafLoop', 0, props.handleRafLoop)
+    (props: InnerProps) => new RafSpec('MaestroController.handleRafLoop', 0, props.handleRafLoop)
   )
 );
 
 /**
  * This component has three main responsibilities:
  * 
- * 1. Sync maestro.timeKeeper.currentTimeMs with videoPlayer.getCurrentTime() in the redux store
+ * 1. Sync maestro.time with videoPlayer.getCurrentTime()
  * 2. Add the maestro.update() callback in the rafLoop
  * 3. Start-and-stop the rafLoop when its props warrant it
  */

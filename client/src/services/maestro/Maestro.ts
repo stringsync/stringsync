@@ -1,5 +1,5 @@
-import { TimeKeeper } from 'services';
-import { AbstractObservable } from '../../utilities/AbstractObservable';
+import { Time } from 'services';
+import { AbstractObservable } from 'utilities';
 
 /**
  * This class's purpose is to provide a single interface for callers to invoke an update on
@@ -7,14 +7,30 @@ import { AbstractObservable } from '../../utilities/AbstractObservable';
  * instance is still computing, it will be ignored.
  */
 export class Maestro extends AbstractObservable {
-  public timeKeeper: TimeKeeper;
-  public isUpdating: boolean;
+  public deadTime: Time;
+  public bpm: number;
 
-  constructor(timeKeeper: TimeKeeper) {
+  private isUpdating: boolean = false;
+  private $time: Time;
+
+  constructor(deadTimeMs: number, bpm: number) {
     super();
 
-    this.timeKeeper = timeKeeper;
-    this.isUpdating = false;
+    this.deadTime = new Time(deadTimeMs, 'ms');
+    this.bpm = bpm;
+  }
+
+  public get time() {
+    return this.$time;
+  }
+
+  public set time(time: Time) {
+    if (time.bpm) {
+      throw new Error('Expected bpm to be undefined. Set bpm in maestro instead.');
+    }
+
+    this.$time = time.clone;
+    this.$time.bpm = this.bpm;
   }
 
   /**
@@ -23,7 +39,7 @@ export class Maestro extends AbstractObservable {
    */
   public update() {
     if (this.isUpdating) {
-      return;
+      throw new Error('called Maestro.prototype.update in the middle of an update');
     }
 
     this.isUpdating = true;
@@ -36,13 +52,11 @@ export class Maestro extends AbstractObservable {
   }
 
   /**
-   * Contains the logic of actually doing the update.
+   * Contains the logic of doing the update.
    * 
    * @private
    */
   private doUpdate() {
-    // A clone is constructed so that time doesn't change during the computation.
-    // const timeKeeper = this.timeKeeper.clone;
-    // TODO: Finish fleshing out this function
+    this.notify();
   }
 }

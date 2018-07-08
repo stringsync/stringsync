@@ -2,8 +2,13 @@ import * as actions from './videoActions';
 
 export type IVideoState = StringSync.Store.IVideoState;
 
+const ACTIVE_PLAYER_STATES = [
+  'PLAYING',
+  'BUFFERING'
+];
+
 const getDefaultState = (): IVideoState => ({
-  isActive: undefined,
+  isActive: false,
   kind: 'YOUTUBE',
   player: null,
   playerState: undefined,
@@ -29,6 +34,9 @@ export const videoReducer = (state = getDefaultState(), action: actions.VideoAct
 
     case actions.SET_PLAYER_STATE:
       nextState.playerState = action.payload.playerState;
+      nextState.isActive = ACTIVE_PLAYER_STATES.some(activeState => {
+        return action.payload.playerState === activeState
+      });
       return nextState;
 
     default:

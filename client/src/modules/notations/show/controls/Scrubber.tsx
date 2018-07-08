@@ -3,7 +3,7 @@ import { compose, withHandlers, withProps, withState } from 'recompose';
 import { Slider } from 'antd';
 import { connect } from 'react-redux';
 import { withRaf, IWithRafProps } from 'enhancers';
-import { RafSpec } from 'services';
+import { RafSpec, Time } from 'services';
 import styled from 'react-emotion';
 import { SliderProps } from 'antd/lib/slider';
 
@@ -45,7 +45,7 @@ const enhance = compose<IInnerProps, {}>(
       const seekToTimeMs = props.valueToTimeMs(value);
 
       if (window.ss.maestro) {
-        window.ss.maestro.timeKeeper.currentTimeMs = seekToTimeMs;
+        window.ss.maestro.time = new Time(seekToTimeMs, 'ms');
       }
 
       props.setValue(value);
@@ -64,7 +64,7 @@ const enhance = compose<IInnerProps, {}>(
       const seekToTimeMs = props.valueToTimeMs(value);
 
       if (window.ss.maestro) {
-        window.ss.maestro.timeKeeper.currentTimeMs = seekToTimeMs;
+        window.ss.maestro.time = new Time(seekToTimeMs, 'ms');
         props.videoPlayer.seekTo(seekToTimeMs / 1000, true);
         props.setValue(value);
       }
@@ -73,7 +73,7 @@ const enhance = compose<IInnerProps, {}>(
   withHandlers({
     handleRafLoop: (props: any) => () => {
       if (window.ss.maestro) {
-        const value = 100 * window.ss.maestro.timeKeeper.currentTimeMs / props.durationMs;
+        const value = 100 * window.ss.maestro.time.ms / props.durationMs;
 
         // Guard against NaN since it makes the page crash
         if (!isNaN(value) && !props.isScrubbing) {
