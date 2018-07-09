@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { Time, Maestro } from 'services';
 import styled from 'react-emotion';
 import { SliderProps } from 'antd/lib/slider';
+import { observeMaestro } from 'enhancers';
 
 interface IInnerProps {
   videoPlayer: Youtube.IPlayer;
@@ -72,7 +73,7 @@ const enhance = compose<IInnerProps, {}>(
   }),
   withHandlers({
     handleNotification: (props: any) => (maestro: Maestro) => {
-      const value = 100 * maestro.time.ms / props.durationMs;
+      const value = 100 * maestro.state.time.ms / props.durationMs;
 
       // Guard against NaN since it makes the page crash
       if (!isNaN(value) && !props.isScrubbing) {
@@ -80,17 +81,7 @@ const enhance = compose<IInnerProps, {}>(
       }
     }
   }),
-  lifecycle<IInnerProps, {}>({
-    componentWillMount(): void {
-      if (!window.ss.maestro) {
-        throw new Error(
-          'Expected maestro instance under the window.ss namespace. Mount a MaestroController.'
-        )
-      }
-
-      window.ss.maestro.subscribe(this.props);
-    }
-  })
+  observeMaestro<IInnerProps>(props => ({ handleNotification: props.handleNotification }))
 );
 
 // Hack to allow the style prop directly on Slider

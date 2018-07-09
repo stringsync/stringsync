@@ -46,11 +46,7 @@ export class Maestro extends AbstractObservable {
     this.bpm = bpm;
     this.time = new Time(0, 'ms');
 
-    this.state = getNullState(this.time.clone);
-  }
-
-  public get time() {
-    return this.$time;
+    this.state = getNullState(this.$time.clone);
   }
 
   public set time(time: Time) {
@@ -108,7 +104,7 @@ export class Maestro extends AbstractObservable {
    * @private
    */
   private doUpdate() {
-    const time = this.time.clone; // ensures that this time is constant during this function call
+    const time = this.$time.clone; // ensures that this time is constant during this function call
 
     let nextState: IMaestroState;
     try {
