@@ -3,6 +3,7 @@ import { ScoreLine } from './ScoreLine';
 import { compose, withState, lifecycle, withProps } from 'recompose';
 import { Vextab } from 'models';
 import { hash } from 'utilities';
+import { ScoreScroller } from './ScoreScroller';
 
 const MIN_WIDTH_PER_MEASURE = 240; // px
 const MIN_MEASURES_PER_LINE = 1;
@@ -69,12 +70,16 @@ const enhance = compose<IInnerProps, IOuterProps>(
 );
 
 export const Score = enhance(props => (
-  <div>
+  <div id="Score">
+    <ScoreScroller />
     {
       props.vextab.lines.map(line => {
+        const key = `score-line-${line.id}-${props.vextab.id}`;
+
         return (
           <ScoreLine
-            key={`score-line-${line.id}-${props.vextab.id}`}
+            id={key}
+            key={key}
             line={line}
             vextab={props.vextab}
           />

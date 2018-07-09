@@ -6,6 +6,7 @@ import styled from 'react-emotion';
 import { Row } from 'antd';
 
 interface IOuterProps {
+  id: string;
   vextab: Vextab;
   line: Line;
 }

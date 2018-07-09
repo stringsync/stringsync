@@ -14,7 +14,7 @@ export const observeMaestro = <P>(getObserver: (props: P) => IObserver) => (
   (BaseComponent: React.ComponentClass<P> | React.SFC<P>) => {
     const enhance = compose(
       withState('observer', 'setObserver', null),
-      lifecycle<any, any>({
+      lifecycle<IObserveMaestroProps & P, any>({
         componentWillMount(): void {
           if (!window.ss.maestro) {
             throw new Error(
