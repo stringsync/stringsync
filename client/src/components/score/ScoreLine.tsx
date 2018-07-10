@@ -4,9 +4,9 @@ import { Line } from 'models';
 import { Vextab } from '../../models/vextab/Vextab';
 import styled from 'react-emotion';
 import { Row } from 'antd';
+import { get } from 'lodash';
 
 interface IOuterProps {
-  id: string;
   vextab: Vextab;
   line: Line;
 }
@@ -28,6 +28,11 @@ const enhance = compose<IInnerProps, IOuterProps>(
 
       if (renderer.isRenderable) {
         renderer.render();
+
+        const tickMap = get(window.ss, 'maestro.tickMap');
+        if (tickMap) {
+          tickMap.compute();
+        }
       }
     }
   })

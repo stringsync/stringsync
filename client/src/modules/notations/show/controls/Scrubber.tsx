@@ -81,7 +81,7 @@ const enhance = compose<IInnerProps, {}>(
       }
     }
   }),
-  observeMaestro<IInnerProps>(props => ({ handleNotification: props.handleNotification }))
+  observeMaestro<IInnerProps>(props => ({ name: 'Scrubber', handleNotification: props.handleNotification }))
 );
 
 // Hack to allow the style prop directly on Slider

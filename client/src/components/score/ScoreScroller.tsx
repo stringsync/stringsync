@@ -4,10 +4,11 @@ import { observeMaestro } from 'enhancers';
 import { Line } from 'models/music';
 import { Maestro } from 'services';
 import { scroller } from 'react-scroll';
+import { scoreKey } from './scoreKey';
 
 interface IFocusedLineProps {
   focusedLine: Line;
-  setFocusedLine: (line: Line) => void;
+  setFocusedLine: (line: Line | null) => void;
 }
 
 interface IInnerProps extends IFocusedLineProps {
@@ -20,24 +21,25 @@ const enhance = compose<IInnerProps, {}>(
     handleNotification: (props: IFocusedLineProps) => (maestro: Maestro) => {
       const { line } = maestro.state;
       
-      if (props.focusedLine !== line) {
+      if (props.focusedLine === line) {
         return;
       } else if (!maestro.vextab) {
         throw new Error('expected vextab to be defined on maestro');
       }
 
-      // See id computation in ScoreLine.tsx
-      scroller.scrollTo(`score-line-${line.id}-${maestro.vextab.id}`, {
-        containerId: 'Score',
-        duration: 200,
-        ignoreCancelEvents: true,
-        smooth: true
-      });
+      if (line) {
+        scroller.scrollTo(scoreKey(maestro.vextab, line), {
+          containerId: 'Score',
+          duration: 200,
+          ignoreCancelEvents: true,
+          smooth: true
+        });
+      }
 
       props.setFocusedLine(line);
     }
   }),
-  observeMaestro<IInnerProps>(({ handleNotification }) => ({ handleNotification }))
+  observeMaestro<IInnerProps>(props => ({ name: 'ScoreScroller', handleNotification: props.handleNotification }))
 );
 
 export const ScoreScroller = enhance(() => null);

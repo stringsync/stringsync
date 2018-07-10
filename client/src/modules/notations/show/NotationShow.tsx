@@ -135,7 +135,6 @@ export const NotationShow = enhance(props => (
             </Affix>
           </div>
           <div>
-            <ScrollElement name="notation-show-tab" />
             <Score
               vextabString={props.notation.vextabString}
               width={props.scoreWidth}

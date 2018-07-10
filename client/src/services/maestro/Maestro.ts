@@ -64,6 +64,7 @@ export class Maestro extends AbstractObservable {
 
   public set state(state: IMaestroState) {
     this.$state = state;
+
     this.notify();
   }
 
@@ -72,10 +73,12 @@ export class Maestro extends AbstractObservable {
   }
 
   public set vextab(vextab: Vextab | null) {
-    if (vextab && vextab !== this.vextab) {
+    if (!vextab) {
+      this.tickMap = null;
+    } else if (vextab !== this.vextab) {
       this.tickMap = new TickMap(vextab);
     }
-
+    
     this.$vextab = vextab;
   }
 

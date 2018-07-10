@@ -27,6 +27,12 @@ export class TickMap {
 
   constructor(vextab: Vextab) {
     this.vextab = vextab;
+  }
+
+  /**
+   * Called after the vextab is hydrated, which is after each line gets assigned a canvas.
+   */
+  public compute(): void {
     this.data = this.getData();
   }
 
