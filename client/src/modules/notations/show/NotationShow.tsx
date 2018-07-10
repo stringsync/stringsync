@@ -2,14 +2,11 @@ import * as React from 'react';
 import * as $ from 'jquery';
 import styled from 'react-emotion';
 import { Affix } from 'antd';
-import { Element as ScrollElement } from 'react-scroll';
 import { Fretboard, Score, Piano, MaestroController, Overlap, Layer } from 'components';
 import { NotationShowVideo, NotationShowControls, NotationShowMenu } from './';
 import { compose, lifecycle, withState, withHandlers, withProps } from 'recompose';
 import { connect } from 'react-redux';
-import { find } from 'lodash';
 import { NotationsActions, fetchNotation, VideoActions } from 'data';
-import { Vextab } from 'models';
 import { RouteComponentProps } from 'react-router-dom';
 
 type OuterProps = RouteComponentProps<{ id: string }>;
