@@ -108,14 +108,18 @@ export class Maestro extends AbstractObservable {
    */
   private doUpdate() {
     const time = this.$time.clone; // ensures that this time is constant during this function call
+    const deadTime = this.deadTime.clone
+    deadTime.bpm = this.bpm;
 
     let nextState: IMaestroState;
+
     try {
       // typescript bang operator usage:
       //  this.tickMap may be null, but an error will be thrown and caught if it is.
       //  TickMap.prototype.fetch may also throw an error, so that case is handled as well.
-      nextState = { time, ...this.tickMap!.fetch(time.tick) };
-    } catch {
+      nextState = { time, ...this.tickMap!.fetch(time.tick + deadTime.tick) };
+    } catch (error) {
+      console.warn(error);
       nextState = getNullState(time);
     }
 

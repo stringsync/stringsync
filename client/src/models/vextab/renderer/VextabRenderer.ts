@@ -191,8 +191,8 @@ export class VextabRenderer {
 
       canvas.width = width * ratio;
       canvas.height = height * ratio;
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
+      canvas.style.width = `${width * ratio}px`;
+      canvas.style.height = `${height * ratio}px`;
     })
   }
 

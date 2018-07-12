@@ -6,6 +6,8 @@ import { Maestro } from 'services';
 import { scroller } from 'react-scroll';
 import { scoreKey } from './scoreKey';
 
+(window as any).scroller = scroller;
+
 interface IFocusedLineProps {
   focusedLine: Line;
   setFocusedLine: (line: Line | null) => void;
@@ -21,18 +23,16 @@ const enhance = compose<IInnerProps, {}>(
     handleNotification: (props: IFocusedLineProps) => (maestro: Maestro) => {
       const { line } = maestro.state;
       
-      if (props.focusedLine === line) {
+      if (props.focusedLine === line || !document.getElementById('score')) {
         return;
-      } else if (!maestro.vextab) {
-        throw new Error('expected vextab to be defined on maestro');
       }
 
       if (line) {
-        scroller.scrollTo(scoreKey(maestro.vextab, line), {
-          containerId: 'Score',
+        scroller.scrollTo(scoreKey(maestro.vextab!, line), {
+          containerId: 'score',
           duration: 200,
           ignoreCancelEvents: true,
-          smooth: true
+          smooth: true,
         });
       }
 

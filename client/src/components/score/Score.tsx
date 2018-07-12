@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ScoreLine } from './ScoreLine';
 import { compose, withState, lifecycle, withProps } from 'recompose';
-import { Vextab } from 'models';
+import { Vextab, VextabRenderer } from 'models';
 import { ScoreScroller } from './ScoreScroller';
 import { Element as ScrollElement } from 'react-scroll';
 import styled from 'react-emotion';
@@ -76,26 +76,30 @@ const enhance = compose<IInnerProps, IOuterProps>(
 
 const Outer = styled('div')`
   background: white;
-  height: 280px;
+  max-height: 1040px;
   overflow-x: hidden;
-  overflow-y: hidden;
+  overflow-y: scroll;
+  position: relative;
   -webkit-overflow-scrolling: touch;
 `;
 
-export const Score = enhance(props => (
-  <Outer id="Score">
-    <ScoreScroller />
-    {
-      props.vextab.lines.map(line => {
-        const key = scoreKey(props.vextab, line);
+const Spacer = styled('div')`
+  height: ${() => VextabRenderer.DEFAULT_LINE_HEIGHT * 4}px;
+`;
 
-        return (
-          <div key={key}>
-            <ScrollElement name={key} />
-            <ScoreLine line={line} vextab={props.vextab} />
-          </div>
-        );
-      })
+export const Score = enhance(props => (
+  <Outer id="score">
+    <ScoreScroller />
+    <Spacer />
+    {
+      props.vextab.lines.map(line => (
+        <ScoreLine
+          key={`key-${scoreKey(props.vextab, line)}`}
+          line={line}
+          vextab={props.vextab}
+        />
+      ))
     }
+    <Spacer />
   </Outer>
 ));
