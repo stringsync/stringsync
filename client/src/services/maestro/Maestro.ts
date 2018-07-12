@@ -107,9 +107,9 @@ export class Maestro extends AbstractObservable {
    * @private
    */
   private doUpdate() {
-    const time = this.$time.clone; // ensures that this time is constant during this function call
     const deadTime = this.deadTime.clone
     deadTime.bpm = this.bpm;
+    const time = new Time(this.$time.ms - deadTime.ms, 'ms', this.bpm);
 
     let nextState: IMaestroState;
 
@@ -126,12 +126,12 @@ export class Maestro extends AbstractObservable {
         // typescript bang operator usage:
         //  this.tickMap may be null, but an error will be thrown and caught if it is.
         //  TickMap.prototype.fetch may also throw an error, so that case is handled as well.
-        nextState = { time, ...this.tickMap!.fetch(time.tick + deadTime.tick) };
+        nextState = { time, ...this.tickMap!.fetch(time.tick) };
       } else {
         nextState = Object.assign({}, this.state, { time });
       }
     } catch (error) {
-      console.warn(error);
+      // Potentially dangerous! Error is swallowed.
       nextState = getNullState(time);
     }
 
