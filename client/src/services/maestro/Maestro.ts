@@ -113,18 +113,29 @@ export class Maestro extends AbstractObservable {
 
     let nextState: IMaestroState;
 
+    const { start, stop } = this.state;
+    const shouldFetchData = (
+      start === null    ||
+      stop === null     ||
+      time.tick < start ||
+      time.tick >= stop
+    )
+
     try {
-      // typescript bang operator usage:
-      //  this.tickMap may be null, but an error will be thrown and caught if it is.
-      //  TickMap.prototype.fetch may also throw an error, so that case is handled as well.
-      nextState = { time, ...this.tickMap!.fetch(time.tick + deadTime.tick) };
+      if (shouldFetchData) {
+        // typescript bang operator usage:
+        //  this.tickMap may be null, but an error will be thrown and caught if it is.
+        //  TickMap.prototype.fetch may also throw an error, so that case is handled as well.
+        nextState = { time, ...this.tickMap!.fetch(time.tick + deadTime.tick) };
+      } else {
+        nextState = Object.assign({}, this.state, { time });
+      }
     } catch (error) {
       console.warn(error);
       nextState = getNullState(time);
     }
 
     this.changed = !isEqual(this.state, nextState);
-
     this.state = nextState;
   }
 }
