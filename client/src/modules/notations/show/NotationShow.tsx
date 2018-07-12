@@ -2,14 +2,11 @@ import * as React from 'react';
 import * as $ from 'jquery';
 import styled from 'react-emotion';
 import { Affix } from 'antd';
-import { Element as ScrollElement } from 'react-scroll';
 import { Fretboard, Score, Piano, MaestroController, Overlap, Layer } from 'components';
 import { NotationShowVideo, NotationShowControls, NotationShowMenu } from './';
 import { compose, lifecycle, withState, withHandlers, withProps } from 'recompose';
 import { connect } from 'react-redux';
-import { find } from 'lodash';
 import { NotationsActions, fetchNotation, VideoActions } from 'data';
-import { Vextab } from 'models';
 import { RouteComponentProps } from 'react-router-dom';
 
 type OuterProps = RouteComponentProps<{ id: string }>;
@@ -90,13 +87,6 @@ const Outer = styled('div')`
   width: 100%;
 `;
 
-const ContentContainer = styled('div')`
-  display: flex;
-  flex-flow: column;
-  overflow: hidden;
-  width: 100%;
-`;
-
 interface IMaskProps {
   collapsed: boolean;
 }
@@ -117,31 +107,28 @@ const Mask = styled('div')<IMaskProps>`
  */
 export const NotationShow = enhance(props => (
   <Outer id="notation-show">
+    <MaestroController
+      bpm={props.notation.bpm}
+      deadTimeMs={props.notation.deadTimeMs}
+    />
     <Overlap>
       <Layer zIndex={10}>
-        <ContentContainer>
-          <MaestroController
-            bpm={props.notation.bpm}
-            deadTimeMs={props.notation.deadTimeMs}
+        <div>
+          <NotationShowVideo />
+          <Affix
+            target={getNotationShowElement}
+            offsetTop={2}
+          >
+            <Fretboard />
+            <Piano />
+          </Affix>
+        </div>
+        <div>
+          <Score
+            vextabString={props.notation.vextabString}
+            width={props.scoreWidth}
           />
-          <div>
-            <NotationShowVideo />
-            <Affix
-              target={getNotationShowElement}
-              offsetTop={2}
-            >
-              <Fretboard />
-              <Piano />
-            </Affix>
-          </div>
-          <div>
-            <ScrollElement name="notation-show-tab" />
-            <Score
-              vextabString={props.notation.vextabString}
-              width={props.scoreWidth}
-            />
-          </div>
-        </ContentContainer>
+        </div>
       </Layer>
       <Layer zIndex={11}>
         <Mask

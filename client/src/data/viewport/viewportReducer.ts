@@ -4,7 +4,7 @@ import getViewportType, { ViewportTypes } from './getViewportType';
 export type IViewportState = StringSync.Store.IViewportState;
 
 const getDefaultState = (): IViewportState => ({
-  type: 'DESKTOP',
+  type: getViewportType(window.innerWidth),
   width: window.innerWidth
 });
 

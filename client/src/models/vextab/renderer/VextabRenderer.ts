@@ -159,6 +159,11 @@ export class VextabRenderer {
 
         line.measures.forEach(measure => {
           const bar = measure.elements.find(el => el.type === 'BAR') as Bar;
+
+          if (!bar.vexAttrs) {
+            return;
+          }
+
           const barNote = bar.vexAttrs.staveNote as Vex.Flow.BarNote;
           const x = barNote.getAbsoluteX();
 
@@ -186,8 +191,8 @@ export class VextabRenderer {
 
       canvas.width = width * ratio;
       canvas.height = height * ratio;
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
+      canvas.style.width = `${width * ratio}px`;
+      canvas.style.height = `${height * ratio}px`;
     })
   }
 

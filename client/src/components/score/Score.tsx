@@ -1,8 +1,11 @@
 import * as React from 'react';
 import { ScoreLine } from './ScoreLine';
 import { compose, withState, lifecycle, withProps } from 'recompose';
-import { Vextab } from 'models';
-import { hash } from 'utilities';
+import { Vextab, VextabRenderer } from 'models';
+import { ScoreScroller } from './ScoreScroller';
+import { Element as ScrollElement } from 'react-scroll';
+import styled from 'react-emotion';
+import { scoreKey } from './scoreKey';
 
 const MIN_WIDTH_PER_MEASURE = 240; // px
 const MIN_MEASURES_PER_LINE = 1;
@@ -18,17 +21,18 @@ interface IVextabProps extends IOuterProps {
   setVextab: (vextab: Vextab) => void;
 }
 
-interface IMeasuresPerLineProps extends IVextabProps {
-  measuresPerLine: number;
+interface IVextabSyncProps extends IVextabProps {
+  vextabId: number;
+  lineIds: number[];
 }
 
-interface IInnerProps extends IVextabProps {
+interface IInnerProps extends IVextabSyncProps {
   measuresPerLine: number;
 }
 
 const enhance = compose<IInnerProps, IOuterProps>(
   withState('vextab', 'setVextab', new Vextab([], 1)),
-  withProps((props: IVextabProps) => {
+  withProps((props: IVextabSyncProps) => {
     let measuresPerLine;
     
     // compute mpl based on width
@@ -44,6 +48,10 @@ const enhance = compose<IInnerProps, IOuterProps>(
   }),
   lifecycle<IInnerProps, {}>({
     componentWillReceiveProps(nextProps) {
+      if (!window.ss.maestro) {
+        throw new Error('expected maestro to be defined');
+      }
+
       const shouldCreateVextab = (
         this.props.vextabString !== nextProps.vextabString ||
         this.props.measuresPerLine !== nextProps.measuresPerLine
@@ -54,27 +62,44 @@ const enhance = compose<IInnerProps, IOuterProps>(
         vextab = new Vextab(Vextab.decode(nextProps.vextabString), nextProps.measuresPerLine);
         nextProps.setVextab(vextab);
       } else {
-        vextab = this.props.vextab;
+        vextab = nextProps.vextab;
       }
 
       // Sync the component width with the renderer's width.
       vextab.renderer.width = nextProps.width;
+
+      // Sync the Vextab with Maestro's vextab
+      window.ss.maestro.vextab = vextab;
     }
   })
 );
 
+const Outer = styled('div')`
+  background: white;
+  max-height: 1040px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+`;
+
+const Spacer = styled('div')`
+  height: ${() => VextabRenderer.DEFAULT_LINE_HEIGHT * 4}px;
+`;
+
 export const Score = enhance(props => (
-  <div>
+  <Outer id="score">
+    <ScoreScroller />
+    <Spacer />
     {
-      props.vextab.lines.map(line => {
-        return (
-          <ScoreLine
-            key={`score-line-${line.id}-${props.vextab.id}`}
-            line={line}
-            vextab={props.vextab}
-          />
-        );
-      })
+      props.vextab.lines.map(line => (
+        <ScoreLine
+          key={`key-${scoreKey(props.vextab, line)}`}
+          line={line}
+          vextab={props.vextab}
+        />
+      ))
     }
-  </div>
+    <Spacer />
+  </Outer>
 ));

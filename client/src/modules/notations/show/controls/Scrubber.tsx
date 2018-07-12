@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { compose, withHandlers, withProps, withState } from 'recompose';
+import { compose, withHandlers, withProps, withState, lifecycle } from 'recompose';
 import { Slider } from 'antd';
 import { connect } from 'react-redux';
-import { withRaf, IWithRafProps } from 'enhancers';
-import { RafSpec } from 'services';
+import { Time, Maestro } from 'services';
 import styled from 'react-emotion';
 import { SliderProps } from 'antd/lib/slider';
+import { observeMaestro } from 'enhancers';
 
-interface IInnerProps extends IWithRafProps {
+interface IInnerProps {
   videoPlayer: Youtube.IPlayer;
   isVideoPlaying: boolean;
   durationMs: number;
@@ -20,6 +20,7 @@ interface IInnerProps extends IWithRafProps {
   valueToTimeMs: (value: number) => number;
   handleChange: (value: number) => void;
   handleAfterChange: (value: number) => void;
+  handleNotification: (maestro: Maestro) => void;
 }
 
 const enhance = compose<IInnerProps, {}>(
@@ -45,7 +46,7 @@ const enhance = compose<IInnerProps, {}>(
       const seekToTimeMs = props.valueToTimeMs(value);
 
       if (window.ss.maestro) {
-        window.ss.maestro.timeKeeper.currentTimeMs = seekToTimeMs;
+        window.ss.maestro.time = new Time(seekToTimeMs, 'ms');
       }
 
       props.setValue(value);
@@ -64,28 +65,23 @@ const enhance = compose<IInnerProps, {}>(
       const seekToTimeMs = props.valueToTimeMs(value);
 
       if (window.ss.maestro) {
-        window.ss.maestro.timeKeeper.currentTimeMs = seekToTimeMs;
+        window.ss.maestro.time = new Time(seekToTimeMs, 'ms');
         props.videoPlayer.seekTo(seekToTimeMs / 1000, true);
         props.setValue(value);
       }
     }
   }),
   withHandlers({
-    handleRafLoop: (props: any) => () => {
-      if (window.ss.maestro) {
-        const value = 100 * window.ss.maestro.timeKeeper.currentTimeMs / props.durationMs;
+    handleNotification: (props: any) => (maestro: Maestro) => {
+      const value = 100 * maestro.state.time.ms / props.durationMs;
 
-        // Guard against NaN since it makes the page crash
-        if (!isNaN(value) && !props.isScrubbing) {
-          props.setValue(value);
-        }
+      // Guard against NaN since it makes the page crash
+      if (!isNaN(value) && !props.isScrubbing) {
+        props.setValue(value);
       }
     }
   }),
-  withRaf(
-    () => window.ss.rafLoop,
-    (props: any) => new RafSpec('Scrubber.handleRafLoop', 1, props.handleRafLoop)
-  )
+  observeMaestro<IInnerProps>(props => ({ name: 'Scrubber', handleNotification: props.handleNotification }))
 );
 
 // Hack to allow the style prop directly on Slider
