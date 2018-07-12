@@ -90,7 +90,6 @@ const Spacer = styled('div')`
 export const Score = enhance(props => (
   <Outer id="score">
     <ScoreScroller />
-    <Spacer />
     {
       props.vextab.lines.map(line => (
         <ScoreLine
