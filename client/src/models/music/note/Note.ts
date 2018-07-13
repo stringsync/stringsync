@@ -9,60 +9,12 @@ import { NoteHydrationValidator } from './NoteHydrationValidator';
  * unit of music.
  */
 export class Note extends AbstractVexWrapper {
-  /**
-   * An array of all the possible Note literals
-   * 
-   * @returns {constants.ALL_LITERALS;}
-   */
-  public static get ALL_LITERALS() {
-    return constants.ALL_LITERALS;
-  }
-
-  /**
-   * A set of all the possible Note literals
-   * 
-   * @returns {constants.ALL_LITERALS_SET}
-   */
-  public static get ALL_LITERALS_SET() {
-    return constants.ALL_LITERALS_SET;
-  }
-
-  /**
-   * An array of all the possible Note literals as sharps
-   * 
-   * @returns {constants.SHARP_LITERALS;}
-   */
-  public static get SHARP_LITERALS() {
-    return constants.SHARP_LITERALS;
-  }
-
-  /**
-   * An array of all the possible Note literals as flats
-   * 
-   * @returns {constants.FLAT_LITERALS}
-   */
-  public static get FLAT_LITERALS() {
-    return constants.FLAT_LITERALS;
-  }
-
-  /**
-   * Maps note literal to its alias. For example, 'D#' maps to 'Eb' since they are the same
-   * note. If a note has no alias, the same literal is mapped.
-   * 
-   * @returns {constants.NOTE_ALIASES}
-   */
-  public static get NOTE_ALIASES() {
-    return constants.NOTE_ALIASES;
-  }
-
-  /**
-   * Used to back the value getter
-   * 
-   * @returns {constants.VALUES_BY_LITERAL}
-   */
-  public static get VALUES_BY_LITERAL() {
-    return constants.VALUES_BY_LITERAL;
-  }
+  public static ALL_LITERALS = constants.ALL_LITERALS;
+  public static ALL_LITERALS_SET = constants.ALL_LITERALS_SET;
+  public static SHARP_LITERALS = constants.SHARP_LITERALS;
+  public static FLAT_LITERALS = constants.FLAT_LITERALS;
+  public static NOTE_ALIASES = constants.NOTE_ALIASES;
+  public static VALUES_BY_LITERAL = constants.VALUES_BY_LITERAL;
 
   /**
    * Sorts an array of notes by octave, value, then by literal.

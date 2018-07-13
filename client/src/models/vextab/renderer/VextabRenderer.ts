@@ -7,6 +7,9 @@ import { isEqual, sortBy } from 'lodash';
 import { Bar } from '../../music';
 import { RendererStore, IStoreData } from './RendererStore';
 import { Line } from '../..';
+import { CaretRenderer } from './sub-renderers/CaretRenderer';
+import { LoopCaretRenderer } from './sub-renderers/LoopCaretRenderer';
+import { ScoreRenderer } from './sub-renderers/ScoreRenderer';
 
 Artist.NOLOGO = true;
 
@@ -18,13 +21,8 @@ Artist.NOLOGO = true;
  * to that particular lineId via artistsByLineId. See VextabRenderer.prototype.isRenderable.
  */
 export class VextabRenderer {
-  public static get DEFAULT_LINE_HEIGHT(): number {
-    return 280;
-  }
-
-  public static get DEFAULT_LINE_WIDTH(): number {
-    return 640;
-  }
+  public static DEFAULT_LINE_HEIGHT = 280;
+  public static DEFAULT_LINE_WIDTH = 640;
 
   public readonly vextab: Vextab;
   public readonly store: RendererStore = new RendererStore();
@@ -32,6 +30,9 @@ export class VextabRenderer {
 
   private $height: number = VextabRenderer.DEFAULT_LINE_HEIGHT;
   private $width: number = VextabRenderer.DEFAULT_LINE_WIDTH;
+  private caretRenderer: CaretRenderer;
+  private loopCaretRenderer: LoopCaretRenderer;
+  private scoreRenderer: ScoreRenderer;
 
   constructor(vextab: Vextab) {
     this.vextab = vextab;

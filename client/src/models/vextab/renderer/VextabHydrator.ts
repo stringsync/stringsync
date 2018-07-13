@@ -14,14 +14,7 @@ export interface IStave extends Vex.Flow.Stave {
 
 // The purpose of this class is to link Vexflow note instances with StringSync's note system.
 export class VextabHydrator {
-  public static get HYDRATABLES() {
-    return [
-      'BAR',
-      'NOTE',
-      'CHORD',
-      'REST'
-    ]
-  }
+  public static HYDRATABLES = ['BAR', 'NOTE', 'CHORD', 'REST']
 
   public static typeof(vexObject: any) {
     if (get(vexObject, 'keys', []).some((key: string) => key.startsWith('r'))) {
