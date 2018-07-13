@@ -17,11 +17,23 @@ export class VextabRenderValidator extends AbstractValidator<VextabRenderer> {
   }
 
   private get missingCanvases(): number[] {
-    return this.lineIds.filter(id => !this.target.store.data[id]);
+    return this.lineIds.filter(lineId => {
+      try {
+        return !this.target.store.fetch(lineId).scoreCanvas
+      } catch {
+        return false;
+      }
+    });
   }
 
-  private get missingArtists(): number [] {
-    return this.lineIds.filter(id => !this.target.store.data[id]);
+  private get missingArtists(): number[] {
+    return this.lineIds.filter(lineId => {
+      try {
+        return !this.target.store.fetch(lineId).artist
+      } catch {
+        return false;
+      }
+    });
   }
 
   private validateCanvases(): void {

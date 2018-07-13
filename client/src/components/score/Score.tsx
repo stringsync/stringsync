@@ -3,7 +3,6 @@ import { ScoreLine } from './ScoreLine';
 import { compose, withState, lifecycle, withProps } from 'recompose';
 import { Vextab, VextabRenderer } from 'models';
 import { ScoreScroller } from './ScoreScroller';
-import { Element as ScrollElement } from 'react-scroll';
 import styled from 'react-emotion';
 import { scoreKey } from './scoreKey';
 

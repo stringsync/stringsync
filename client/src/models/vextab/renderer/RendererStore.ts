@@ -37,7 +37,7 @@ export class RendererStore {
     const mergeData = {};
     mergeData[key] = data;
 
-    Object.assign({}, this.data[line.id], mergeData);
+    this.data[line.id] = Object.assign({}, this.data[line.id], mergeData);
   }
 
   public unassign(line: Line): void {

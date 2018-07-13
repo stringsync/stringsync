@@ -55,6 +55,10 @@ const enhance = compose<IInnerProps, IOuterProps>(
 
 const Outer = styled('div')`
   width: 100%;
+  height: ${() => VextabRenderer.DEFAULT_LINE_HEIGHT}px;
+`;
+
+const StyledLayer = styled(Layer)`
   display: flex;
   justify-content: center;
 `;
@@ -63,9 +67,9 @@ export const ScoreLine = enhance(props => (
   <Outer>
     <ScrollElement name={scoreKey(props.vextab, props.line)} />
     <Overlap>
-      <Layer zIndex={10}>
+      <StyledLayer zIndex={10}>
         <canvas ref={props.handleScoreCanvasRef} />
-      </Layer>
+      </StyledLayer>
       <Layer zIndex={11}>
         <canvas ref={props.handleCaretCanvasRef} />
       </Layer>
