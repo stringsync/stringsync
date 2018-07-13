@@ -7,6 +7,7 @@ import { Row } from 'antd';
 import { get } from 'lodash';
 import { Element as ScrollElement } from 'react-scroll';
 import { scoreKey } from './scoreKey';
+import { Overlap, Layer } from '../overlap';
 
 interface IOuterProps {
   vextab: Vextab;
@@ -14,19 +15,31 @@ interface IOuterProps {
 }
 
 interface IInnerProps extends IOuterProps {
-  handleCanvasRef: (canvas: HTMLCanvasElement) => void;
+  handleScoreCanvasRef: (canvas: HTMLCanvasElement) => void;
+  handleCaretCanvasRef: (canvas: HTMLCanvasElement) => void;
+  handleLoopCaretCanvasRef: (canvas: HTMLCanvasElement) => void;
 }
 
 const enhance = compose<IInnerProps, IOuterProps>(
   withHandlers({
-    handleCanvasRef: (props: IOuterProps) => (canvas: HTMLCanvasElement) => {
+    handleCaretCanvasRef: (props: IOuterProps) => (canvas: HTMLCanvasElement) => {
+      if (!canvas) {
+        return;
+      }
+    },
+    handleLoopCaretCanvasRef: (props: IOuterProps) => (canvas: HTMLCanvasElement) => {
+      if (!canvas) {
+        return;
+      }
+    },
+    handleScoreCanvasRef: (props: IOuterProps) => (canvas: HTMLCanvasElement) => {
       if (!canvas) {
         return;
       }
 
       const { renderer } = props.vextab;
 
-      renderer.assign(canvas, props.line.id);
+      renderer.assign(props.line, 'scoreCanvas', canvas);
 
       if (renderer.isRenderable) {
         renderer.render();
@@ -49,6 +62,16 @@ const Outer = styled('div')`
 export const ScoreLine = enhance(props => (
   <Outer>
     <ScrollElement name={scoreKey(props.vextab, props.line)} />
-    <canvas ref={props.handleCanvasRef} />
+    <Overlap>
+      <Layer zIndex={10}>
+        <canvas ref={props.handleScoreCanvasRef} />
+      </Layer>
+      <Layer zIndex={11}>
+        <canvas ref={props.handleCaretCanvasRef} />
+      </Layer>
+      <Layer zIndex={12}>
+        <canvas ref={props.handleLoopCaretCanvasRef} />
+      </Layer>
+    </Overlap>
   </Outer>
 ));
