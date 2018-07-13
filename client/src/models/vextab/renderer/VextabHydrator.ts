@@ -1,8 +1,8 @@
-import { Line } from 'models';
+import { Line } from '../..';
 import { VexTab as VextabGenerator, Artist } from 'vextab/releases/vextab-div.js';
 import { get, zip, uniq } from 'lodash';
 import { MeasureElement } from '../../music';
-import { Bar, Note, Chord, Rest } from 'models/music';
+import { Bar, Note, Chord, Rest } from '../../music';
 
 export type StaveNote = Vex.Flow.StaveNote | Vex.Flow.BarNote;
 export type TabNote = Vex.Flow.TabNote | Vex.Flow.BarNote;

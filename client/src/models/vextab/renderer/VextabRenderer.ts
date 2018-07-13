@@ -1,10 +1,12 @@
 import { Flow } from 'vexflow';
-import { Vextab } from 'models/vextab';
+import { Vextab } from '..';
 import { Artist } from 'vextab/releases/vextab-div.js';
 import { VextabHydrator } from './VextabHydrator';
 import { VextabRenderValidator } from './VextabRenderValidator';
 import { isEqual, sortBy } from 'lodash';
-import { Bar } from 'models/music';
+import { Bar } from '../../music';
+import { RendererStore, IStoreData } from './RendererStore';
+import { Line } from '../..';
 
 Artist.NOLOGO = true;
 
@@ -25,9 +27,7 @@ export class VextabRenderer {
   }
 
   public readonly vextab: Vextab;
-  public canvasesByLineId: { [lineId: string]: HTMLCanvasElement } = {};
-  public artistsByLineId: { [lineId: string]: any } = {};
-  public backendRenderersByLineId: { [lineId: string]: Flow.Renderer } = {};
+  public readonly store: RendererStore = new RendererStore();
   public isRendered: boolean = false;
 
   private $height: number = VextabRenderer.DEFAULT_LINE_HEIGHT;
@@ -39,7 +39,7 @@ export class VextabRenderer {
 
   public get isRenderable(): boolean {
     const lineIds = this.vextab.lines.map(line => line.id);
-    const hydratedLineIds = Object.keys(this.artistsByLineId).map(lineId => parseInt(lineId, 10));
+    const hydratedLineIds = Object.keys(this.store.data).map(lineId => parseInt(lineId, 10));
     return isEqual(lineIds, hydratedLineIds) && !!this.width && !!this.height;
   }
 
@@ -66,10 +66,15 @@ export class VextabRenderer {
    * @param {number} lineNumber 
    * @returns {void}
    */
-  public assign(canvas: HTMLCanvasElement, lineId: number): void {
-    this.canvasesByLineId[lineId] = canvas;
-    this.backendRenderersByLineId[lineId] = new Flow.Renderer(canvas, Flow.Renderer.Backends.CANVAS);
-    this.hydrate(lineId);
+  public assign(line: Line, key: keyof IStoreData, data: any): void {
+    this.store.assign(line, key, data);
+
+    if (key === 'scoreCanvas') {
+      const renderer = new Flow.Renderer(data, Flow.Renderer.Backends.CANVAS);
+      this.store.assign(line, 'renderer', renderer)
+
+      this.hydrate(line.id);
+    }
   }
 
   /**
@@ -91,7 +96,12 @@ export class VextabRenderer {
   public clear(): void {
     try {
       this.vextab.lines.forEach(line => {
-        const canvas = this.canvasesByLineId[line.id];
+        const canvas = this.store.fetch(line).scoreCanvas;
+
+        if (!canvas) {
+          return;
+        }
+
         const ctx = canvas.getContext('2d');
 
         if (!ctx) {
@@ -121,15 +131,20 @@ export class VextabRenderer {
     }
 
     const artist = new Artist(6, 20, this.width);
-    this.artistsByLineId[line.id] = artist;
+    this.assign(line, 'artist', artist);
 
     VextabHydrator.hydrate(line, artist);
   }
 
   private rehydrate(): void {
-    Object.keys(this.canvasesByLineId).forEach(id => {
-      const canvas = this.canvasesByLineId[id];
-      this.assign(canvas, parseInt(id, 10));
+    this.vextab.lines.forEach(line => {
+      const canvas = this.store.fetch(line).scoreCanvas;
+
+      if (!canvas) {
+        return;
+      }
+
+      this.assign(line, 'scoreCanvas', canvas);
     });
   }
 
@@ -141,16 +156,20 @@ export class VextabRenderer {
 
     try {
       this.vextab.lines.forEach(line => {
-        const artist = this.artistsByLineId[line.id];
-        const backendRenderer = this.backendRenderersByLineId[line.id];
-        const ctx = this.canvasesByLineId[line.id].getContext('2d');
+        const { artist, renderer, scoreCanvas } = this.store.fetch(line);
+
+        if (!artist || !renderer || !scoreCanvas) {
+          throw new Error(`could not render line ${line.id}`);
+        }
+
+        const ctx = scoreCanvas.getContext('2d');
 
         if (!ctx) {
           throw new Error(`no context found for ${line.id}`);
         }
 
         // render score
-        artist.render(backendRenderer);
+        artist.render(renderer);
 
         // render measure numbers
         ctx.save();
@@ -187,7 +206,11 @@ export class VextabRenderer {
     const ratio = window.devicePixelRatio || 1;
 
     this.vextab.lines.forEach(line => {
-      const canvas = this.canvasesByLineId[line.id];
+      const canvas = this.store.fetch(line).scoreCanvas;
+
+      if (!canvas) {
+        throw new Error(`could not resize line ${line.id}: missing canvas`);
+      }
 
       canvas.width = width * ratio;
       canvas.height = height * ratio;

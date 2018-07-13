@@ -1,6 +1,6 @@
 import { AbstractValidator } from 'utilities';
 import VextabRenderer from './VextabRenderer';
-import { Line } from 'models';
+import { Line } from '../..';
 
 export class VextabRenderValidator extends AbstractValidator<VextabRenderer> {
   constructor(renderer: VextabRenderer) {
@@ -17,11 +17,11 @@ export class VextabRenderValidator extends AbstractValidator<VextabRenderer> {
   }
 
   private get missingCanvases(): number[] {
-    return this.lineIds.filter(id => !this.target.canvasesByLineId[id]);
+    return this.lineIds.filter(id => !this.target.store.data[id]);
   }
 
   private get missingArtists(): number [] {
-    return this.lineIds.filter(id => !this.target.artistsByLineId[id]);
+    return this.lineIds.filter(id => !this.target.store.data[id]);
   }
 
   private validateCanvases(): void {

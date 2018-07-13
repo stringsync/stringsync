@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'react-emotion';
 import { BackTop } from 'antd';
 import { connect } from 'react-redux';
-import { compose, ComponentEnhancer, withProps, withState, withHandlers, lifecycle } from 'recompose';
+import { compose, withProps, withState, withHandlers, lifecycle } from 'recompose';
 import { fetchAllNotations } from 'data';
 import { NotationSearch } from './search';
 import { ViewportTypes } from '../../../data/viewport/getViewportType';
