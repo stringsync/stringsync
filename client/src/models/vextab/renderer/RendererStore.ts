@@ -1,21 +1,17 @@
-import { Line } from '../..';
+import { Line } from '../../music';
 
-export interface IStoreData {
+interface IBaseData {
   line: Line;
-  scoreCanvas?: HTMLCanvasElement;
-  caretCanvas?: HTMLCanvasElement;
-  loopCanvas?: HTMLCanvasElement;
-  artist?: any;
-  renderer?: Vex.Flow.Renderer;
+  canvas?: HTMLCanvasElement;
 }
 
 /**
  * This class is used for managing rendering properties that belong to a line.
  */
-export class RendererStore {
-  public data: { [lineId: string]: IStoreData | void } = {};
+export class RendererStore<T extends IBaseData> {
+  public data: { [lineId: string]: (T | void) } = {};
 
-  public fetch(line: Line | number | string): IStoreData {
+  public fetch(line: Line | number | string): T {
     let data;
 
     if (line instanceof Line) {
@@ -31,10 +27,10 @@ export class RendererStore {
     return data;
   }
 
-  public assign(line: Line, key: keyof IStoreData, data: any): void {
-    this.data[line.id] = this.data[line.id] || { line };
+  public assign(line: Line, key: keyof T, data: any): void {
+    this.data[line.id] = this.data[line.id] || { line } as T;
 
-    const mergeData = {};
+    const mergeData = {} as T;
     mergeData[key] = data;
 
     this.data[line.id] = Object.assign({}, this.data[line.id], mergeData);

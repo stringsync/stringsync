@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { compose, withHandlers } from 'recompose';
 import { Line, VextabRenderer } from 'models';
-import { Vextab } from '../../models/vextab/Vextab';
+import { Vextab } from 'models/vextab/Vextab';
 import styled from 'react-emotion';
 import { Row } from 'antd';
 import { get } from 'lodash';
@@ -39,7 +39,7 @@ const enhance = compose<IInnerProps, IOuterProps>(
 
       const { renderer } = props.vextab;
 
-      renderer.assign(props.line, 'scoreCanvas', canvas);
+      renderer.assign(props.line, canvas);
 
       if (renderer.isRenderable) {
         renderer.render();

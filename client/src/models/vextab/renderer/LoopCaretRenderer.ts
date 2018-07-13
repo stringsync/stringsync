@@ -1,6 +1,6 @@
-import { VextabRenderer } from 'models';
+import { VextabRenderer } from '../..';
 
-export class ScoreRenderer {
+export class LoopCaretRenderer {
   public vextabRenderer: VextabRenderer;
 
   constructor(vextabRenderer: VextabRenderer) {

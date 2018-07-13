@@ -2,16 +2,19 @@ import { Flow } from 'vexflow';
 import { Vextab } from '..';
 import { Artist } from 'vextab/releases/vextab-div.js';
 import { VextabHydrator } from './VextabHydrator';
-import { VextabRenderValidator } from './VextabRenderValidator';
-import { isEqual, sortBy } from 'lodash';
-import { Bar } from '../../music';
-import { RendererStore, IStoreData } from './RendererStore';
-import { Line } from '../..';
-import { CaretRenderer } from './sub-renderers/CaretRenderer';
-import { LoopCaretRenderer } from './sub-renderers/LoopCaretRenderer';
-import { ScoreRenderer } from './sub-renderers/ScoreRenderer';
+import { RendererValidator } from './RendererValidator';
+import { isEqual } from 'lodash';
+import { Bar, Line } from 'models/music';
+import { RendererStore } from './RendererStore';
 
 Artist.NOLOGO = true;
+
+interface IVextabRendererStoreData {
+  line: Line;
+  canvas?: HTMLCanvasElement;
+  artist?: any;
+  vexRenderer?: Vex.Flow.Renderer;
+}
 
 /**
  * This class is a wrapper around Vexflow's renderer that allows the caller to assign
@@ -25,14 +28,12 @@ export class VextabRenderer {
   public static DEFAULT_LINE_WIDTH = 640;
 
   public readonly vextab: Vextab;
-  public readonly store: RendererStore = new RendererStore();
+  public readonly store: RendererStore<IVextabRendererStoreData>;
+
   public isRendered: boolean = false;
 
   private $height: number = VextabRenderer.DEFAULT_LINE_HEIGHT;
   private $width: number = VextabRenderer.DEFAULT_LINE_WIDTH;
-  private caretRenderer: CaretRenderer;
-  private loopCaretRenderer: LoopCaretRenderer;
-  private scoreRenderer: ScoreRenderer;
 
   constructor(vextab: Vextab) {
     this.vextab = vextab;
@@ -67,15 +68,13 @@ export class VextabRenderer {
    * @param {number} lineNumber 
    * @returns {void}
    */
-  public assign(line: Line, key: keyof IStoreData, data: any): void {
-    this.store.assign(line, key, data);
+  public assign(line: Line, canvas: HTMLCanvasElement): void {
+    this.store.assign(line, 'canvas', canvas);
 
-    if (key === 'scoreCanvas') {
-      const renderer = new Flow.Renderer(data, Flow.Renderer.Backends.CANVAS);
-      this.store.assign(line, 'renderer', renderer)
+    const renderer = new Flow.Renderer(canvas, Flow.Renderer.Backends.CANVAS);
+    this.store.assign(line, 'vexRenderer', renderer)
 
-      this.hydrate(line.id);
-    }
+    this.hydrate(line.id);
   }
 
   /**
@@ -85,7 +84,7 @@ export class VextabRenderer {
    * @returns {void}
    */
   public render(): void {
-    const validator = new VextabRenderValidator(this);
+    const validator = new RendererValidator(this);
 
     if (validator.validate()) {
       this.doRender();
@@ -97,7 +96,7 @@ export class VextabRenderer {
   public clear(): void {
     try {
       this.vextab.lines.forEach(line => {
-        const canvas = this.store.fetch(line).scoreCanvas;
+        const { canvas } = this.store.fetch(line);
 
         if (!canvas) {
           return;
@@ -132,20 +131,20 @@ export class VextabRenderer {
     }
 
     const artist = new Artist(6, 20, this.width);
-    this.assign(line, 'artist', artist);
+    this.store.assign(line, 'artist', artist);
 
     VextabHydrator.hydrate(line, artist);
   }
 
   private rehydrate(): void {
     this.vextab.lines.forEach(line => {
-      const canvas = this.store.fetch(line).scoreCanvas;
+      const { canvas } = this.store.fetch(line);
 
       if (!canvas) {
         return;
       }
 
-      this.assign(line, 'scoreCanvas', canvas);
+      this.store.assign(line, 'canvas', canvas);
     });
   }
 
@@ -157,20 +156,20 @@ export class VextabRenderer {
 
     try {
       this.vextab.lines.forEach(line => {
-        const { artist, renderer, scoreCanvas } = this.store.fetch(line);
+        const { artist, vexRenderer, canvas } = this.store.fetch(line);
 
-        if (!artist || !renderer || !scoreCanvas) {
+        if (!artist || !vexRenderer || !canvas) {
           throw new Error(`could not render line ${line.id}`);
         }
 
-        const ctx = scoreCanvas.getContext('2d');
+        const ctx = canvas.getContext('2d');
 
         if (!ctx) {
           throw new Error(`no context found for ${line.id}`);
         }
 
         // render score
-        artist.render(renderer);
+        artist.render(vexRenderer);
 
         // render measure numbers
         ctx.save();
@@ -207,7 +206,7 @@ export class VextabRenderer {
     const ratio = window.devicePixelRatio || 1;
 
     this.vextab.lines.forEach(line => {
-      const canvas = this.store.fetch(line).scoreCanvas;
+      const { canvas } = this.store.fetch(line);
 
       if (!canvas) {
         throw new Error(`could not resize line ${line.id}: missing canvas`);

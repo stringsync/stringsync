@@ -1,4 +1,4 @@
-import { VextabRenderer } from 'models';
+import { VextabRenderer } from '../..';
 
 export class CaretRenderer {
   public vextabRenderer: VextabRenderer;
@@ -6,4 +6,6 @@ export class CaretRenderer {
   constructor(vextabRenderer: VextabRenderer) {
     this.vextabRenderer = vextabRenderer;
   }
+
+
 }

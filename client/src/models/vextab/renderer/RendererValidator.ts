@@ -1,15 +1,22 @@
 import { AbstractValidator } from 'utilities';
-import VextabRenderer from './VextabRenderer';
-import { Line } from '../..';
+import { RendererStore } from './RendererStore';
+import { Vextab } from 'models';
 
-export class VextabRenderValidator extends AbstractValidator<VextabRenderer> {
-  constructor(renderer: VextabRenderer) {
+interface IBaseRendererProps {
+  store: RendererStore<any>;
+  vextab: Vextab;
+  width: number;
+}
+
+export class RendererValidator<R extends IBaseRendererProps> extends AbstractValidator<R> {
+  constructor(renderer: R) {
     super(renderer);
   }
 
   protected doValidate(): void {
     this.validateCanvases();
     this.validateArtists();
+    this.validateWidth();
   }
 
   private get lineIds(): number[] {
