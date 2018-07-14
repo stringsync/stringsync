@@ -4,10 +4,13 @@ import {
   VextabMeasureExtractor,
   VextabRenderer,
 } from './';
-import { Line } from 'models';
+import { Line, MeasureElement } from 'models';
 import { Flow } from 'vexflow';
 import { Measure } from '../music/measure/Measure';
 import { hash } from 'utilities';
+import { Note } from 'models/music';
+import { flatMap } from 'lodash';
+import { VextabLinkedList } from './linked-list';
 
 const DEFAULT_TUNING: Vex.Flow.Tuning = new (Flow as any).Tuning();
 
@@ -49,12 +52,13 @@ export class Vextab {
 
   public readonly structs: Vextab.ParsedStruct[];
   public readonly id: number;
+  public readonly measures: Measure[];
+  public readonly lines: Line[];
 
   public measuresPerLine: number;
   public tuning = DEFAULT_TUNING;
-  public measures: Measure[];
-  public lines: Line[];
   public renderer: VextabRenderer;
+  public links: VextabLinkedList;
 
   constructor(structs: Vextab.ParsedStruct[], measuresPerLine: number) {
     if (typeof measuresPerLine !== 'number' || measuresPerLine < 0) {
@@ -70,6 +74,36 @@ export class Vextab {
     this.lines = this.getLines();
 
     this.renderer = new VextabRenderer(this);
+    this.links = new VextabLinkedList(this.lines, this.measures);
+  }
+
+  /**
+   * Returns the next logical element based on the src type.
+   * 
+   * @param src A line, measure, or note
+   * @param tickable If src is a Note, then 
+   */
+  public next(src: Line | Measure | MeasureElement, tickable?: boolean): Line | Measure | MeasureElement | void {
+    let ndx: number;
+    let measures: Measure[];
+    let notes: MeasureElement[];
+
+    switch(src.type) {
+      case 'LINE':
+        ndx = this.lines.indexOf(src as Line);
+        return ndx === -1 ? undefined : this.lines[ndx + 1];
+      case 'MEASURE':
+        measures = flatMap(this.lines, line => line.measures);
+        ndx = measures.indexOf(src as Measure);
+        return ndx === -1 ? undefined : measures[ndx + 1];
+      case 'NOTE':
+        measures = flatMap(this.lines, line => line.measures);
+        notes = flatMap(measures, measure => tickable ? measure.tickables : measure.elements);
+        ndx = notes.indexOf(src as MeasureElement);
+        return ndx === -1 ? undefined : notes[ndx + 1];
+      default:
+        break;
+    }
   }
 
   /**

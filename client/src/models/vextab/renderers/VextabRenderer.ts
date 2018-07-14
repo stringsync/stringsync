@@ -6,6 +6,8 @@ import { RendererValidator } from './RendererValidator';
 import { isEqual } from 'lodash';
 import { Bar, Line } from 'models/music';
 import { RendererStore } from './RendererStore';
+import { CaretRenderer } from './CaretRenderer';
+import { LoopCaretRenderer } from './LoopCaretRenderer';
 
 Artist.NOLOGO = true;
 
@@ -35,13 +37,19 @@ export class VextabRenderer {
   private $height: number = VextabRenderer.DEFAULT_LINE_HEIGHT;
   private $width: number = VextabRenderer.DEFAULT_LINE_WIDTH;
 
+  private caretRenderer: CaretRenderer;
+  private loopCaretRenderer: LoopCaretRenderer;
+
   constructor(vextab: Vextab) {
     this.vextab = vextab;
+
+    this.caretRenderer = new CaretRenderer(this);
+    this.loopCaretRenderer = new LoopCaretRenderer(this);
   }
 
   public get isRenderable(): boolean {
-    const lineIds = this.vextab.lines.map(line => line.id);
-    const hydratedLineIds = Object.keys(this.store.data).map(lineId => parseInt(lineId, 10));
+    const lineIds = this.vextab.lines.map(line => line.id).sort();
+    const hydratedLineIds = Object.keys(this.store.data).map(lineId => parseInt(lineId, 10)).sort();
     return isEqual(lineIds, hydratedLineIds) && !!this.width && !!this.height;
   }
 
@@ -68,13 +76,24 @@ export class VextabRenderer {
    * @param {number} lineNumber 
    * @returns {void}
    */
-  public assign(line: Line, canvas: HTMLCanvasElement): void {
-    this.store.assign(line, 'canvas', canvas);
+  public assign(line: Line, canvas: HTMLCanvasElement, key: 'score' | 'caret' | 'loopCaret'): void {
+    switch (key) {
+      case 'score':
+        this.store.assign(line, 'canvas', canvas);
 
-    const renderer = new Flow.Renderer(canvas, Flow.Renderer.Backends.CANVAS);
-    this.store.assign(line, 'vexRenderer', renderer)
+        const renderer = new Flow.Renderer(canvas, Flow.Renderer.Backends.CANVAS);
+        this.store.assign(line, 'vexRenderer', renderer)
 
-    this.hydrate(line.id);
+        this.hydrate(line.id);
+        break;
+      case 'caret':
+        this.caretRenderer.store.assign(line, 'canvas', canvas);
+        break;
+      case 'loopCaret':
+        break;
+      default:
+        break;
+    }
   }
 
   /**
@@ -83,11 +102,13 @@ export class VextabRenderer {
    * 
    * @returns {void}
    */
-  public render(): void {
+  public render(lines: Line[] = this.vextab.lines): void {
+    this.clear();
+    this.resize();
     const validator = new RendererValidator(this);
 
     if (validator.validate()) {
-      this.doRender();
+      this.doRender(lines);
     } else {
       throw validator.errors;
     }
@@ -105,7 +126,7 @@ export class VextabRenderer {
         const ctx = canvas.getContext('2d');
 
         if (!ctx) {
-          throw new Error(`expected context for line ${line.id}`);
+          return;
         }
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -151,11 +172,9 @@ export class VextabRenderer {
   /**
    * Performs the render.
    */
-  private doRender(): void {
-    this.resize();
-
+  private doRender(lines: Line[]): void {
     try {
-      this.vextab.lines.forEach(line => {
+      lines.forEach(line => {
         const { artist, vexRenderer, canvas } = this.store.fetch(line);
 
         if (!artist || !vexRenderer || !canvas) {

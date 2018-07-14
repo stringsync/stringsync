@@ -23,7 +23,7 @@ export class Measure {
     this.rawStruct = this.getRawStruct();
   }
 
-  get tickables(): MeasureElement[] {
+  public get tickables(): MeasureElement[] {
     return this.elements.filter(element => (
       typeof get(element.vexAttrs, 'staveNote.getTicks') === 'function'
     ));
