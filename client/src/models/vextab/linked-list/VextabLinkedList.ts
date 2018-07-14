@@ -1,12 +1,12 @@
 import { Line, Measure, MeasureElement } from 'models/music';
-import { flatMap } from 'lodash';
+import { flatMap, get } from 'lodash';
 
 export type VextabElementLinkTypes = Line | Measure | MeasureElement;
 
 export interface IListElement<T> {
   self: T;
-  prev: T | null;
-  next: T | null; 
+  prev: T | void;
+  next: T | void; 
 }
 
 // The purpose of this class is to compute the next and prev element of
@@ -35,17 +35,34 @@ export class VextabLinkedList {
   public readonly tickablesList: { [elementId: string]: IListElement<MeasureElement> };
 
   constructor(lines: Line[], measures: Measure[]) {
-    this.lines = lines;
-    this.measures = measures;
-    this.elements = flatMap(this.measures, measure => measure.elements);
+    this.lines     = lines;
+    this.measures  = measures;
+    this.elements  = flatMap(this.measures, measure => measure.elements);
     this.tickables = flatMap(this.measures, measure => measure.tickables);
+
+    const { link } = VextabLinkedList;
+    this.linesList     = link(this.lines);
+    this.measuresList  = link(this.measures);
+    this.elementsList  = link(this.elements);
+    this.tickablesList = link(this.tickables);
   }
 
-  public next(obj: VextabElementLinkTypes, tickable?: boolean = false): VextabElementLinkTypes {
-    
+  public next(obj: VextabElementLinkTypes, tickable: boolean = false): VextabElementLinkTypes | void {
+    return get(this.get(obj, tickable), 'next');
   }
 
-  public prev(obj: VextabElementLinkTypes, tickable?: boolean = false): VextabElementLinkTypes {
+  public prev(obj: VextabElementLinkTypes, tickable: boolean = false): VextabElementLinkTypes {
+    return get(this.get(obj, tickable), 'prev');
+  }
 
+  private get(obj: VextabElementLinkTypes, tickable: boolean = false): IListElement<VextabElementLinkTypes> | void {
+    switch (obj.type) {
+      case 'LINE':
+        return this.linesList[obj.id];
+      case 'MEASURE':
+        return this.measuresList[obj.id];
+      default:
+        return tickable ? this.tickablesList[obj.id] : this.elementsList[obj.id];
+    }
   }
 }
