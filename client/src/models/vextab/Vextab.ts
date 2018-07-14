@@ -3,7 +3,6 @@ import {
   VextabEncoder,
   VextabMeasureExtractor,
   VextabRenderer,
-  VextabStruct
 } from './';
 import { Line } from 'models';
 import { Flow } from 'vexflow';
