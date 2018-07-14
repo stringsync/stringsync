@@ -39,7 +39,7 @@ const enhance = compose<IInnerProps, IOuterProps>(
 
       const { renderer } = props.vextab;
 
-      renderer.assign(props.line, canvas);
+      renderer.assign(props.line, canvas, 'score');
 
       if (renderer.isRenderable) {
         renderer.render();
