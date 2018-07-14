@@ -76,35 +76,6 @@ export class Vextab {
   }
 
   /**
-   * Returns the next logical element based on the src type.
-   * 
-   * @param src A line, measure, or note
-   * @param tickable If src is a Note, then 
-   */
-  public next(src: Line | Measure | MeasureElement, tickable?: boolean): Line | Measure | MeasureElement | void {
-    let ndx: number;
-    let measures: Measure[];
-    let notes: MeasureElement[];
-
-    switch(src.type) {
-      case 'LINE':
-        ndx = this.lines.indexOf(src as Line);
-        return ndx === -1 ? undefined : this.lines[ndx + 1];
-      case 'MEASURE':
-        measures = flatMap(this.lines, line => line.measures);
-        ndx = measures.indexOf(src as Measure);
-        return ndx === -1 ? undefined : measures[ndx + 1];
-      case 'NOTE':
-        measures = flatMap(this.lines, line => line.measures);
-        notes = flatMap(measures, measure => tickable ? measure.tickables : measure.elements);
-        ndx = notes.indexOf(src as MeasureElement);
-        return ndx === -1 ? undefined : notes[ndx + 1];
-      default:
-        break;
-    }
-  }
-
-  /**
    * Encodes a VextabStruct array into a vextab string. It is the inverse of Vextab.decode.
    *
    * @returns {string}

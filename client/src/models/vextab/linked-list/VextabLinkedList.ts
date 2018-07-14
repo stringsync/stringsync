@@ -55,7 +55,7 @@ export class VextabLinkedList {
     return get(this.get(obj, tickable), 'prev');
   }
 
-  private get(obj: VextabElementLinkTypes, tickable: boolean = false): IListElement<VextabElementLinkTypes> | void {
+  public get(obj: VextabElementLinkTypes, tickable: boolean = false): IListElement<VextabElementLinkTypes> | void {
     switch (obj.type) {
       case 'LINE':
         return this.linesList[obj.id];

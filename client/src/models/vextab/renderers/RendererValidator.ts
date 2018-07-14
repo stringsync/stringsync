@@ -26,7 +26,7 @@ export class RendererValidator<R extends IBaseRendererProps> extends AbstractVal
   private get missingCanvases(): number[] {
     return this.lineIds.filter(lineId => {
       try {
-        return !this.target.store.fetch(lineId).scoreCanvas
+        return !this.target.store.fetch(lineId).canvas
       } catch {
         return false;
       }

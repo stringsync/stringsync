@@ -43,6 +43,7 @@ export class VextabRenderer {
   constructor(vextab: Vextab) {
     this.vextab = vextab;
 
+    this.store = new RendererStore();
     this.caretRenderer = new CaretRenderer(this);
     this.loopCaretRenderer = new LoopCaretRenderer(this);
   }
@@ -81,8 +82,8 @@ export class VextabRenderer {
       case 'score':
         this.store.assign(line, 'canvas', canvas);
 
-        const renderer = new Flow.Renderer(canvas, Flow.Renderer.Backends.CANVAS);
-        this.store.assign(line, 'vexRenderer', renderer)
+        const vexRenderer = new Flow.Renderer(canvas, Flow.Renderer.Backends.CANVAS);
+        this.store.assign(line, 'vexRenderer', vexRenderer)
 
         this.hydrate(line.id);
         break;
@@ -105,6 +106,7 @@ export class VextabRenderer {
   public render(lines: Line[] = this.vextab.lines): void {
     this.clear();
     this.resize();
+
     const validator = new RendererValidator(this);
 
     if (validator.validate()) {
