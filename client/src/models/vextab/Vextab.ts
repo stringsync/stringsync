@@ -11,11 +11,9 @@ import { hash } from 'utilities';
 import { Note } from 'models/music';
 import { flatMap } from 'lodash';
 import { VextabLinkedList } from './linked-list';
+import { id } from 'utilities';
 
 const DEFAULT_TUNING: Vex.Flow.Tuning = new (Flow as any).Tuning();
-
-let VEXTAB_ID_BASE = 0;
-const getVextabId = () => hash((VEXTAB_ID_BASE++).toString());
 
 /**
  * The Vextab is the encoding used to store instructions on how to draw, animate, and edit
@@ -65,7 +63,7 @@ export class Vextab {
       throw new Error('measuresPerLine must be a positive number');
     }
 
-    this.id = getVextabId();
+    this.id = id();
 
     this.measuresPerLine = measuresPerLine;
     this.structs = structs;

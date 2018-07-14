@@ -2,6 +2,7 @@ import { sortBy } from 'lodash';
 import * as constants from './noteConstants';
 import { AbstractVexWrapper, VextabStruct } from 'models/vextab';
 import { NoteHydrationValidator } from './NoteHydrationValidator';
+import { id } from 'utilities';
 
 /**
  * The purpose of this class is to encapsulate the logic related to describing a note's inherent
@@ -57,8 +58,10 @@ export class Note extends AbstractVexWrapper {
   }
 
   public readonly literal: string;
-  public octave: number;
   public readonly type = 'NOTE';
+  public readonly id: number;
+
+  public octave: number;
 
   constructor(literal: string, octave: number, struct: VextabStruct | null = null) {
     super(struct);
@@ -71,6 +74,7 @@ export class Note extends AbstractVexWrapper {
       throw new Error('octave must be an integer')
     }
 
+    this.id = id();
     this.literal = normalizedLiteral;
     this.octave = octave;
     this.type = 'NOTE';
