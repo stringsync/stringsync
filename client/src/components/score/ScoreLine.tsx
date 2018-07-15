@@ -3,7 +3,6 @@ import { compose, withHandlers } from 'recompose';
 import { Line, VextabRenderer } from 'models';
 import { Vextab } from 'models/vextab/Vextab';
 import styled from 'react-emotion';
-import { Row } from 'antd';
 import { get } from 'lodash';
 import { Element as ScrollElement } from 'react-scroll';
 import { scoreKey } from './scoreKey';
@@ -26,11 +25,15 @@ const enhance = compose<IInnerProps, IOuterProps>(
       if (!canvas) {
         return;
       }
+
+      props.vextab.renderer.assign(props.line, canvas, 'caret');
     },
     handleLoopCaretCanvasRef: (props: IOuterProps) => (canvas: HTMLCanvasElement) => {
       if (!canvas) {
         return;
       }
+
+      props.vextab.renderer.assign(props.line, canvas, 'loopCaret');
     },
     handleScoreCanvasRef: (props: IOuterProps) => (canvas: HTMLCanvasElement) => {
       if (!canvas) {
@@ -42,7 +45,9 @@ const enhance = compose<IInnerProps, IOuterProps>(
       renderer.assign(props.line, canvas, 'score');
 
       if (renderer.isRenderable) {
-        renderer.render();
+        if (!renderer.isRendered) {
+          renderer.render();
+        }
 
         const tickMap = get(window.ss, 'maestro.tickMap');
         if (tickMap) {
@@ -70,12 +75,12 @@ export const ScoreLine = enhance(props => (
       <StyledLayer zIndex={10}>
         <canvas ref={props.handleScoreCanvasRef} />
       </StyledLayer>
-      <Layer zIndex={11}>
+      <StyledLayer zIndex={11}>
         <canvas ref={props.handleCaretCanvasRef} />
-      </Layer>
-      <Layer zIndex={12}>
+      </StyledLayer>
+      <StyledLayer zIndex={12}>
         <canvas ref={props.handleLoopCaretCanvasRef} />
-      </Layer>
+      </StyledLayer>
     </Overlap>
   </Outer>
 ));

@@ -130,7 +130,7 @@ export class Maestro extends AbstractObservable {
       nextState = getNullState(time);
     }
 
-    this.changed = !isEqual(this.state, nextState);
+    this.changed = true;
     this.state = nextState;
   }
 }

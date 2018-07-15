@@ -31,14 +31,14 @@ export class VextabRenderer {
 
   public readonly vextab: Vextab;
   public readonly store: RendererStore<IVextabRendererStoreData>;
+  public readonly caretRenderer: CaretRenderer;
+  public readonly loopCaretRenderer: LoopCaretRenderer;
 
   public isRendered: boolean = false;
 
   private $height: number = VextabRenderer.DEFAULT_LINE_HEIGHT;
   private $width: number = VextabRenderer.DEFAULT_LINE_WIDTH;
 
-  private caretRenderer: CaretRenderer;
-  private loopCaretRenderer: LoopCaretRenderer;
 
   constructor(vextab: Vextab) {
     this.vextab = vextab;
@@ -103,14 +103,14 @@ export class VextabRenderer {
    * 
    * @returns {void}
    */
-  public render(lines: Line[] = this.vextab.lines): void {
-    this.clear();
+  public render(): void {
     this.resize();
+    this.clear();
 
     const validator = new RendererValidator(this);
 
     if (validator.validate()) {
-      this.doRender(lines);
+      this.doRender();
     } else {
       throw validator.errors;
     }
@@ -174,9 +174,9 @@ export class VextabRenderer {
   /**
    * Performs the render.
    */
-  private doRender(lines: Line[]): void {
+  private doRender(): void {
     try {
-      lines.forEach(line => {
+      this.vextab.lines.forEach(line => {
         const { artist, vexRenderer, canvas } = this.store.fetch(line);
 
         if (!artist || !vexRenderer || !canvas) {
@@ -256,7 +256,6 @@ export class VextabRenderer {
 
     if (this.isRenderable && this.isRendered) {
       this.rehydrate();
-      this.clear();
       this.render();
     }
   }

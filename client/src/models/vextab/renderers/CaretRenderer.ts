@@ -45,14 +45,31 @@ export class CaretRenderer {
   public render(maestro: Maestro): void {
     this.clear();
     this.resize();
+    this.setStyles();
 
     const x = this.getXForRender(maestro);
 
     if (typeof x === 'number') {
-
-
-      const line = get(maestro.state.note, 'measure.line');
+      const line: Line | void = get(maestro.state.note, 'measure.line');
       if (line) {
+        const { canvas } = this.store.fetch(line);
+
+        if (!canvas) {
+          return;
+        }
+
+        const ctx = canvas.getContext('2d');
+
+        if (!ctx) {
+          return;
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, 0 + maestro.vextab!.renderer.height);
+        ctx.stroke();
+        ctx.closePath();
+
         this.rendereredLines.push(line);
       }
     }
@@ -123,7 +140,7 @@ export class CaretRenderer {
     }
 
     // interpolate
-    return interpolate({ x: x0, y: t0 }, { x: x1, y: t1 }, time.tick);
+    return interpolate({ x: t0, y: x0 }, { x: t1, y: x1 }, time.tick);
   }
 
   private resize(): void {

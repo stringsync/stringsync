@@ -3,6 +3,7 @@ import { ScoreLine } from './ScoreLine';
 import { compose, withState, lifecycle, withProps } from 'recompose';
 import { Vextab, VextabRenderer } from 'models';
 import { ScoreScroller } from './ScoreScroller';
+import { CaretController } from './CaretController';
 import styled from 'react-emotion';
 import { scoreKey } from './scoreKey';
 
@@ -52,6 +53,7 @@ const enhance = compose<IInnerProps, IOuterProps>(
       }
 
       const shouldCreateVextab = (
+        this.props.width !== nextProps.width ||
         this.props.vextabString !== nextProps.vextabString ||
         this.props.measuresPerLine !== nextProps.measuresPerLine
       );
@@ -89,6 +91,7 @@ const Spacer = styled('div')`
 export const Score = enhance(props => (
   <Outer id="score">
     <ScoreScroller />
+    <CaretController />
     {
       props.vextab.lines.map(line => (
         <ScoreLine
