@@ -1,33 +1,51 @@
-import { Note } from 'models';
+import { Note, Chord } from 'models/music';
 
 export class NoteRenderer {
-  public static ACTIVE_COLOR = '#a33743';
+  public static ACTIVE_COLOR = '#fc354c';
   public static DEFAULT_COLOR = '#000000';
 
-  public readonly note: Note;
+  public readonly note: Note | Chord;
   public fillStyle: string = NoteRenderer.DEFAULT_COLOR;
   public strokeStyle: string = NoteRenderer.DEFAULT_COLOR;
+  public isActive: boolean = false;
 
-  constructor(note: Note) {
+  constructor(note: Note | Chord) {
     this.note = note;
   }
 
   public activate(): void {
+    if (this.isActive) {
+      return;
+    }
+
     this.validate();
-
-    this.fillStyle = NoteRenderer.ACTIVE_COLOR;
-    this.strokeStyle = NoteRenderer.ACTIVE_COLOR;
-
+    this.color = NoteRenderer.ACTIVE_COLOR;
     this.redraw();
+
+    this.isActive = true;
   }
 
   public deactivate(): void {
+    if (!this.isActive) {
+      return;
+    }
+
     this.validate();
-
-    this.fillStyle = NoteRenderer.DEFAULT_COLOR;
-    this.strokeStyle = NoteRenderer.DEFAULT_COLOR;
-
+    this.color = NoteRenderer.DEFAULT_COLOR;
     this.redraw();
+
+    this.isActive = false;
+  }
+
+  private set color(color: string) {
+    this.fillStyle = color;
+    this.strokeStyle = color;
+
+    const style = { fillStyle: color, strokeStyle: color };
+    const staveNote = this.note.vexAttrs!.staveNote as any;
+    staveNote.setStyle(style);
+    staveNote.setLedgerLineStyle(style);
+    staveNote.setFlagStyle(style);
   }
 
   private validate(): void {
