@@ -1,5 +1,5 @@
 import { Note } from 'models';
-import { AbstractVexWrapper, VextabStruct } from 'models/vextab';
+import { AbstractVexWrapper, VextabStruct, NoteRenderer } from 'models/vextab';
 import { ChordHydrationValidator } from './ChordHydrationValidator';
 import { Measure } from 'models/music';
 import { id } from 'utilities';
@@ -10,6 +10,7 @@ export class Chord extends AbstractVexWrapper {
   
   public notes: Note[];
   public measure: Measure | void;
+  public renderer: NoteRenderer;
 
   constructor(notes: Note[], struct: VextabStruct | null = null) {
     super(struct);
@@ -20,6 +21,7 @@ export class Chord extends AbstractVexWrapper {
 
     this.id = id();
     this.notes = notes;
+    this.renderer = new NoteRenderer(this);
   }
 
   /**
