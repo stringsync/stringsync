@@ -35,8 +35,8 @@ const enhance = compose<InnerProps, IOuterProps>(
       window.ss.rafLoop = new RafLoop();
     },
     componentWillReceiveProps(nextProps) {
-      if (!window.ss.rafLoop) {
-        throw new MaestroError('Expected an instance of RafLoop to be defined on window.ss');
+      if (!window.ss.rafLoop || !window.ss.maestro) {
+        throw new MaestroError('Expected an instance of RafLoop and Maestro to be defined on window.ss');
       }
 
       if (nextProps.isVideoActive) {
@@ -44,6 +44,9 @@ const enhance = compose<InnerProps, IOuterProps>(
       } else {
         window.ss.rafLoop.stop();
       }
+
+      // sync nextProps bpm with Maestro's bpm
+      window.ss.maestro.bpm = nextProps.bpm;
     },
     componentWillUnmount() {
       if (!window.ss.rafLoop) {

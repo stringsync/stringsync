@@ -66,7 +66,7 @@ export class CaretRenderer {
 
         ctx.beginPath();
         ctx.moveTo(x, 0);
-        ctx.lineTo(x, 0 + maestro.vextab!.renderer.height);
+        ctx.lineTo(x, 0 + this.vextabRenderer.height);
         ctx.stroke();
         ctx.closePath();
 

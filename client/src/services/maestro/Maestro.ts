@@ -59,7 +59,6 @@ export class Maestro extends AbstractObservable {
 
   public set state(state: IMaestroState) {
     this.$state = state;
-
     this.notify();
   }
 
@@ -130,7 +129,7 @@ export class Maestro extends AbstractObservable {
       nextState = getNullState(time);
     }
 
-    this.changed = true;
+    this.changed = !isEqual(this.state, nextState);
     this.state = nextState;
   }
 }
