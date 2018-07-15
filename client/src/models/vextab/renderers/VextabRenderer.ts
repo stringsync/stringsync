@@ -1,12 +1,22 @@
 import { Flow } from 'vexflow';
-import { Vextab } from 'models/vextab';
+import { Vextab } from '..';
 import { Artist } from 'vextab/releases/vextab-div.js';
 import { VextabHydrator } from './VextabHydrator';
-import { VextabRenderValidator } from './VextabRenderValidator';
-import { isEqual, sortBy } from 'lodash';
-import { Bar } from 'models/music';
+import { RendererValidator } from './RendererValidator';
+import { isEqual } from 'lodash';
+import { Bar, Line } from 'models/music';
+import { RendererStore } from './RendererStore';
+import { CaretRenderer } from './CaretRenderer';
+import { LoopCaretRenderer } from './LoopCaretRenderer';
 
 Artist.NOLOGO = true;
+
+interface IVextabRendererStoreData {
+  line: Line;
+  canvas?: HTMLCanvasElement;
+  artist?: any;
+  vexRenderer?: Vex.Flow.Renderer;
+}
 
 /**
  * This class is a wrapper around Vexflow's renderer that allows the caller to assign
@@ -16,47 +26,34 @@ Artist.NOLOGO = true;
  * to that particular lineId via artistsByLineId. See VextabRenderer.prototype.isRenderable.
  */
 export class VextabRenderer {
-  public static get DEFAULT_LINE_HEIGHT(): number {
-    return 280;
-  }
-
-  public static get DEFAULT_LINE_WIDTH(): number {
-    return 640;
-  }
+  public static DEFAULT_LINE_HEIGHT = 280;
+  public static DEFAULT_LINE_WIDTH = 640;
 
   public readonly vextab: Vextab;
-  public canvasesByLineId: { [lineId: string]: HTMLCanvasElement } = {};
-  public artistsByLineId: { [lineId: string]: any } = {};
-  public backendRenderersByLineId: { [lineId: string]: Flow.Renderer } = {};
+  public readonly store: RendererStore<IVextabRendererStoreData>;
+  public readonly caretRenderer: CaretRenderer;
+  public readonly loopCaretRenderer: LoopCaretRenderer;
+  public readonly height: number = VextabRenderer.DEFAULT_LINE_HEIGHT;
+  public readonly width: number = VextabRenderer.DEFAULT_LINE_WIDTH;
+
   public isRendered: boolean = false;
 
-  private $height: number = VextabRenderer.DEFAULT_LINE_HEIGHT;
-  private $width: number = VextabRenderer.DEFAULT_LINE_WIDTH;
-
-  constructor(vextab: Vextab) {
+  constructor(vextab: Vextab, width: number | void) {
     this.vextab = vextab;
+
+    if (width) {
+      this.width = width;
+    }
+    
+    this.store = new RendererStore();
+    this.caretRenderer = new CaretRenderer(this);
+    this.loopCaretRenderer = new LoopCaretRenderer(this);
   }
 
   public get isRenderable(): boolean {
-    const lineIds = this.vextab.lines.map(line => line.id);
-    const hydratedLineIds = Object.keys(this.artistsByLineId).map(lineId => parseInt(lineId, 10));
-    return isEqual(lineIds, hydratedLineIds) && !!this.width && !!this.height;
-  }
-
-  public get width(): number {
-    return this.$width;
-  }
-
-  public set width(width: number) {
-    this.setDimension('$width', width);
-  }
-
-  public get height(): number {
-    return this.$height;
-  }
-
-  public set height(height: number) {
-    this.setDimension('$height', height);
+    const lineIds = this.vextab.lines.map(line => line.id).sort();
+    const hydratedLineIds = Object.keys(this.store.data).map(lineId => parseInt(lineId, 10)).sort();
+    return isEqual(lineIds, hydratedLineIds);
   }
 
   /**
@@ -66,10 +63,24 @@ export class VextabRenderer {
    * @param {number} lineNumber 
    * @returns {void}
    */
-  public assign(canvas: HTMLCanvasElement, lineId: number): void {
-    this.canvasesByLineId[lineId] = canvas;
-    this.backendRenderersByLineId[lineId] = new Flow.Renderer(canvas, Flow.Renderer.Backends.CANVAS);
-    this.hydrate(lineId);
+  public assign(line: Line, canvas: HTMLCanvasElement, key: 'score' | 'caret' | 'loopCaret'): void {
+    switch (key) {
+      case 'score':
+        this.store.assign(line, 'canvas', canvas);
+
+        const vexRenderer = new Flow.Renderer(canvas, Flow.Renderer.Backends.CANVAS);
+        this.store.assign(line, 'vexRenderer', vexRenderer)
+
+        this.hydrate(line.id);
+        break;
+      case 'caret':
+        this.caretRenderer.store.assign(line, 'canvas', canvas);
+        break;
+      case 'loopCaret':
+        break;
+      default:
+        break;
+    }
   }
 
   /**
@@ -79,7 +90,10 @@ export class VextabRenderer {
    * @returns {void}
    */
   public render(): void {
-    const validator = new VextabRenderValidator(this);
+    this.resize();
+    this.clear();
+
+    const validator = new RendererValidator(this);
 
     if (validator.validate()) {
       this.doRender();
@@ -91,11 +105,16 @@ export class VextabRenderer {
   public clear(): void {
     try {
       this.vextab.lines.forEach(line => {
-        const canvas = this.canvasesByLineId[line.id];
+        const { canvas } = this.store.fetch(line);
+
+        if (!canvas) {
+          return;
+        }
+
         const ctx = canvas.getContext('2d');
 
         if (!ctx) {
-          throw new Error(`expected context for line ${line.id}`);
+          return;
         }
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -120,37 +139,32 @@ export class VextabRenderer {
       throw new Error(`could not find line ${lineId}`);
     }
 
-    const artist = new Artist(6, 20, this.width);
-    this.artistsByLineId[line.id] = artist;
+    const artist = new Artist(5, 20, this.width);
+    this.store.assign(line, 'artist', artist);
 
     VextabHydrator.hydrate(line, artist);
-  }
-
-  private rehydrate(): void {
-    Object.keys(this.canvasesByLineId).forEach(id => {
-      const canvas = this.canvasesByLineId[id];
-      this.assign(canvas, parseInt(id, 10));
-    });
   }
 
   /**
    * Performs the render.
    */
   private doRender(): void {
-    this.resize();
-
     try {
       this.vextab.lines.forEach(line => {
-        const artist = this.artistsByLineId[line.id];
-        const backendRenderer = this.backendRenderersByLineId[line.id];
-        const ctx = this.canvasesByLineId[line.id].getContext('2d');
+        const { artist, vexRenderer, canvas } = this.store.fetch(line);
+
+        if (!artist || !vexRenderer || !canvas) {
+          throw new Error(`could not render line ${line.id}`);
+        }
+
+        const ctx = canvas.getContext('2d');
 
         if (!ctx) {
           throw new Error(`no context found for ${line.id}`);
         }
 
         // render score
-        artist.render(backendRenderer);
+        artist.render(vexRenderer);
 
         // render measure numbers
         ctx.save();
@@ -187,7 +201,11 @@ export class VextabRenderer {
     const ratio = window.devicePixelRatio || 1;
 
     this.vextab.lines.forEach(line => {
-      const canvas = this.canvasesByLineId[line.id];
+      const { canvas } = this.store.fetch(line);
+
+      if (!canvas) {
+        throw new Error(`could not resize line ${line.id}: missing canvas`);
+      }
 
       canvas.width = width * ratio;
       canvas.height = height * ratio;
@@ -195,27 +213,4 @@ export class VextabRenderer {
       canvas.style.height = `${height * ratio}px`;
     })
   }
-
-  /**
-   * Conditionally rerenders if this method is called and the renderer isRenderable and
-   * isRendered. This is used in the height and width setters of this method.
-   * 
-   * @param field The field that should be set
-   * @param value the value that got passed in
-   */
-  private setDimension(field: '$height' | '$width', value: number): void {
-    if (value === this[field]) {
-      return;
-    }
-
-    this[field] = value;
-
-    if (this.isRenderable && this.isRendered) {
-      this.rehydrate();
-      this.clear();
-      this.render();
-    }
-  }
-};
-
-export default VextabRenderer;
+}

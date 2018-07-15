@@ -3,17 +3,14 @@ import {
   VextabEncoder,
   VextabMeasureExtractor,
   VextabRenderer,
-  VextabStruct
 } from './';
 import { Line } from 'models';
 import { Flow } from 'vexflow';
 import { Measure } from '../music/measure/Measure';
-import { hash } from 'utilities';
+import { VextabLinkedList } from './linked-list';
+import { id } from 'utilities';
 
 const DEFAULT_TUNING: Vex.Flow.Tuning = new (Flow as any).Tuning();
-
-let VEXTAB_ID_BASE = 0;
-const getVextabId = () => hash((VEXTAB_ID_BASE++).toString());
 
 /**
  * The Vextab is the encoding used to store instructions on how to draw, animate, and edit
@@ -50,19 +47,20 @@ export class Vextab {
 
   public readonly structs: Vextab.ParsedStruct[];
   public readonly id: number;
+  public readonly measures: Measure[];
+  public readonly lines: Line[];
 
   public measuresPerLine: number;
   public tuning = DEFAULT_TUNING;
-  public measures: Measure[];
-  public lines: Line[];
   public renderer: VextabRenderer;
+  public links: VextabLinkedList;
 
-  constructor(structs: Vextab.ParsedStruct[], measuresPerLine: number) {
+  constructor(structs: Vextab.ParsedStruct[], measuresPerLine: number, width?: number | void) {
     if (typeof measuresPerLine !== 'number' || measuresPerLine < 0) {
       throw new Error('measuresPerLine must be a positive number');
     }
 
-    this.id = getVextabId();
+    this.id = id();
 
     this.measuresPerLine = measuresPerLine;
     this.structs = structs;
@@ -70,7 +68,18 @@ export class Vextab {
     this.measures = this.getMeasures();
     this.lines = this.getLines();
 
-    this.renderer = new VextabRenderer(this);
+    // Link lines with measures
+    this.lines.forEach(line => {
+      line.measures.forEach(measure => measure.line = line);
+    });
+
+    // Link measure elements with measures
+    this.measures.forEach(measure => {
+      measure.elements.forEach(element => element.measure = measure);
+    })
+
+    this.renderer = new VextabRenderer(this, width);
+    this.links = new VextabLinkedList(this.lines, this.measures);
   }
 
   /**

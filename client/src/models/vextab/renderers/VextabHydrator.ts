@@ -1,8 +1,8 @@
-import { Line } from 'models';
+import { Line } from '../..';
 import { VexTab as VextabGenerator, Artist } from 'vextab/releases/vextab-div.js';
 import { get, zip, uniq } from 'lodash';
 import { MeasureElement } from '../../music';
-import { Bar, Note, Chord, Rest } from 'models/music';
+import { Bar, Note, Chord, Rest } from '../../music';
 
 export type StaveNote = Vex.Flow.StaveNote | Vex.Flow.BarNote;
 export type TabNote = Vex.Flow.TabNote | Vex.Flow.BarNote;
@@ -14,14 +14,7 @@ export interface IStave extends Vex.Flow.Stave {
 
 // The purpose of this class is to link Vexflow note instances with StringSync's note system.
 export class VextabHydrator {
-  public static get HYDRATABLES() {
-    return [
-      'BAR',
-      'NOTE',
-      'CHORD',
-      'REST'
-    ]
-  }
+  public static HYDRATABLES = ['BAR', 'NOTE', 'CHORD', 'REST']
 
   public static typeof(vexObject: any) {
     if (get(vexObject, 'keys', []).some((key: string) => key.startsWith('r'))) {

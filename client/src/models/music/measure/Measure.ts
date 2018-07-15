@@ -1,15 +1,20 @@
-import { Bar, Note, Rest } from 'models/music';
+import { Bar, Note, Rest, Line, Chord } from 'models/music';
 import { VextabStruct, VextabMeasureSpec } from 'models/vextab';
 import { compact, get } from 'lodash';
 
-export type MeasureElement = Note | Rest | Bar;
+export type MeasureElement = Note | Rest | Bar | Chord;
 
 export class Measure {
-  public elements: MeasureElement[];
-  public id: number;
+  public static tickableTypes = ['NOTE', 'CHORD', 'REST'];
+
   public readonly spec: any;
   public readonly rawStruct: Vextab.ParsedStruct[];
+  public readonly id: number;
   public readonly type = 'MEASURE';
+
+  public line: Line | void;
+
+  public elements: MeasureElement[];
 
   constructor(elements: MeasureElement[], id: number, spec: VextabMeasureSpec) {
     if (elements[0].type !== 'BAR') {
@@ -23,10 +28,9 @@ export class Measure {
     this.rawStruct = this.getRawStruct();
   }
 
-  get tickables(): MeasureElement[] {
-    return this.elements.filter(element => (
-      typeof get(element.vexAttrs, 'staveNote.getTicks') === 'function'
-    ));
+  public get tickables(): MeasureElement[] {
+    const tickableTypes = new Set(Measure.tickableTypes);
+    return this.elements.filter(element => tickableTypes.has(element.type));
   }
 
   private getRawStruct(): Vextab.ParsedStruct[] {

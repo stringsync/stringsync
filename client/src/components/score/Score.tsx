@@ -3,7 +3,7 @@ import { ScoreLine } from './ScoreLine';
 import { compose, withState, lifecycle, withProps } from 'recompose';
 import { Vextab, VextabRenderer } from 'models';
 import { ScoreScroller } from './ScoreScroller';
-import { Element as ScrollElement } from 'react-scroll';
+import { CaretController } from './CaretController';
 import styled from 'react-emotion';
 import { scoreKey } from './scoreKey';
 
@@ -53,20 +53,20 @@ const enhance = compose<IInnerProps, IOuterProps>(
       }
 
       const shouldCreateVextab = (
+        this.props.width !== nextProps.width ||
         this.props.vextabString !== nextProps.vextabString ||
         this.props.measuresPerLine !== nextProps.measuresPerLine
       );
 
       let vextab;
       if (shouldCreateVextab) {
-        vextab = new Vextab(Vextab.decode(nextProps.vextabString), nextProps.measuresPerLine);
+        vextab = new Vextab(
+          Vextab.decode(nextProps.vextabString), nextProps.measuresPerLine, nextProps.width
+        );
         nextProps.setVextab(vextab);
       } else {
         vextab = nextProps.vextab;
       }
-
-      // Sync the component width with the renderer's width.
-      vextab.renderer.width = nextProps.width;
 
       // Sync the Vextab with Maestro's vextab
       window.ss.maestro.vextab = vextab;
@@ -90,7 +90,7 @@ const Spacer = styled('div')`
 export const Score = enhance(props => (
   <Outer id="score">
     <ScoreScroller />
-    <Spacer />
+    <CaretController />
     {
       props.vextab.lines.map(line => (
         <ScoreLine

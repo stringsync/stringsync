@@ -35,19 +35,24 @@ const enhance = compose<InnerProps, IOuterProps>(
       window.ss.rafLoop = new RafLoop();
     },
     componentWillReceiveProps(nextProps) {
-      if (!window.ss.rafLoop) {
-        throw new MaestroError('Expected an instance of RafLoop to be defined on window.ss');
+      if (!window.ss.rafLoop || !window.ss.maestro) {
+        throw new MaestroError('Expected an instance of RafLoop and Maestro to be defined on window.ss');
       }
 
+      const raf = window.ss.rafLoop;
       if (nextProps.isVideoActive) {
-        window.ss.rafLoop.start();
+        raf.start();
       } else {
-        window.ss.rafLoop.stop();
+        raf.stop();
       }
+
+      // sync IOuterProps with maestro
+      window.ss.maestro.bpm = nextProps.bpm;
+      window.ss.maestro.deadTime = new Time(nextProps.deadTimeMs, 'ms');
     },
     componentWillUnmount() {
       if (!window.ss.rafLoop) {
-        throw new MaestroError('Expected an instance of RafLoop to be defined on window.ss');
+        throw new MaestroError('expected an instance of RafLoop to be defined on window.ss');
       }
 
       window.ss.rafLoop.stop();
@@ -56,7 +61,7 @@ const enhance = compose<InnerProps, IOuterProps>(
     }
   }),
   withHandlers({
-    /**
+    /** q
      * Update the timeKeeper.currentTimeMs and call maestro.update whenever the rafLoop is active.
      */
     handleRafLoop: (props: IConnectProps) => () => {
@@ -67,8 +72,6 @@ const enhance = compose<InnerProps, IOuterProps>(
       }
 
       window.ss.maestro.time = new Time(props.videoPlayer.getCurrentTime(), 's');
-
-      window.ss.maestro.update();
     }
   }),
   withRaf(

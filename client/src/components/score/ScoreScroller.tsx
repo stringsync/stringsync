@@ -5,6 +5,8 @@ import { Line } from 'models/music';
 import { Maestro } from 'services';
 import { scroller } from 'react-scroll';
 import { scoreKey } from './scoreKey';
+import { get } from 'lodash';
+import { Measure } from 'models';
 
 (window as any).scroller = scroller;
 
@@ -21,7 +23,7 @@ const enhance = compose<IInnerProps, {}>(
   withState('focusedLine', 'setFocusedLine', null),
   withHandlers({
     handleNotification: (props: IFocusedLineProps) => (maestro: Maestro) => {
-      const { line } = maestro.state;
+      const line = get(maestro.state.note, 'measure.line') || null;
       
       if (props.focusedLine === line || !document.getElementById('score')) {
         return;

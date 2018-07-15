@@ -1,15 +1,22 @@
 import { AbstractValidator } from 'utilities';
-import VextabRenderer from './VextabRenderer';
-import { Line } from 'models';
+import { RendererStore } from './RendererStore';
+import { Vextab } from 'models';
 
-export class VextabRenderValidator extends AbstractValidator<VextabRenderer> {
-  constructor(renderer: VextabRenderer) {
+interface IBaseRendererProps {
+  store: RendererStore<any>;
+  vextab: Vextab;
+  width: number;
+}
+
+export class RendererValidator<R extends IBaseRendererProps> extends AbstractValidator<R> {
+  constructor(renderer: R) {
     super(renderer);
   }
 
   protected doValidate(): void {
     this.validateCanvases();
     this.validateArtists();
+    this.validateWidth();
   }
 
   private get lineIds(): number[] {
@@ -17,11 +24,23 @@ export class VextabRenderValidator extends AbstractValidator<VextabRenderer> {
   }
 
   private get missingCanvases(): number[] {
-    return this.lineIds.filter(id => !this.target.canvasesByLineId[id]);
+    return this.lineIds.filter(lineId => {
+      try {
+        return !this.target.store.fetch(lineId).canvas
+      } catch {
+        return false;
+      }
+    });
   }
 
-  private get missingArtists(): number [] {
-    return this.lineIds.filter(id => !this.target.artistsByLineId[id]);
+  private get missingArtists(): number[] {
+    return this.lineIds.filter(lineId => {
+      try {
+        return !this.target.store.fetch(lineId).artist
+      } catch {
+        return false;
+      }
+    });
   }
 
   private validateCanvases(): void {

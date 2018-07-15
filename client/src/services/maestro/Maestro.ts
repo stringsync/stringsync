@@ -1,23 +1,18 @@
 import { Time } from 'services';
 import { AbstractObservable } from 'utilities';
 import { isEqual } from 'lodash';
-import { Line, Measure, Note, Rest } from 'models/music';
 import { Vextab } from 'models/vextab';
-import { TickMap, ITickData } from './TickMap';
+import { TickMap } from './TickMap';
 import { MeasureElement } from 'models';
 
 interface IMaestroState {
   time: Time;
   start: number | null;
   stop: number | null;
-  line: Line | null;
-  measure: Measure | null;
   note: MeasureElement | null;
 }
 
 const getNullState = (time: Time): IMaestroState => ({
-  line: null,
-  measure: null,
   note: null,
   start: null,
   stop: null,
@@ -32,9 +27,9 @@ const getNullState = (time: Time): IMaestroState => ({
 export class Maestro extends AbstractObservable {
   public deadTime: Time;
   public bpm: number;
+  public tickMap: TickMap | null = null;
   
   private isUpdating: boolean = false;
-  private tickMap: TickMap | null = null;
   private $vextab: Vextab | null = null;
   private $state: IMaestroState;
   private $time: Time;
@@ -44,8 +39,7 @@ export class Maestro extends AbstractObservable {
 
     this.deadTime = new Time(deadTimeMs, 'ms');
     this.bpm = bpm;
-    this.time = new Time(0, 'ms');
-
+    this.$time = new Time(0, 'ms');
     this.state = getNullState(this.$time.clone);
   }
 
@@ -56,6 +50,8 @@ export class Maestro extends AbstractObservable {
 
     this.$time = time.clone;
     this.$time.bpm = this.bpm;
+
+    this.update();
   }
 
   public get state() {
@@ -64,7 +60,6 @@ export class Maestro extends AbstractObservable {
 
   public set state(state: IMaestroState) {
     this.$state = state;
-
     this.notify();
   }
 
@@ -88,7 +83,8 @@ export class Maestro extends AbstractObservable {
    */
   public update() {
     if (this.isUpdating) {
-      throw new Error('called Maestro.prototype.update in the middle of an update');
+      console.warn('called Maestro.prototype.update in the middle of an update');
+      return;
     }
 
     this.isUpdating = true;
@@ -107,24 +103,33 @@ export class Maestro extends AbstractObservable {
    * @private
    */
   private doUpdate() {
-    const time = this.$time.clone; // ensures that this time is constant during this function call
-    const deadTime = this.deadTime.clone
-    deadTime.bpm = this.bpm;
+    const time = new Time(this.$time.ms - this.deadTime.ms, 'ms', this.bpm);
 
     let nextState: IMaestroState;
 
+    const { start, stop } = this.state;
+    const shouldFetchData = (
+      start === null    ||
+      stop === null     ||
+      time.tick < start ||
+      time.tick >= stop
+    )
+
     try {
-      // typescript bang operator usage:
-      //  this.tickMap may be null, but an error will be thrown and caught if it is.
-      //  TickMap.prototype.fetch may also throw an error, so that case is handled as well.
-      nextState = { time, ...this.tickMap!.fetch(time.tick + deadTime.tick) };
+      if (shouldFetchData) {
+        // typescript bang operator usage:
+        //  this.tickMap may be null, but an error will be thrown and caught if it is.
+        //  TickMap.prototype.fetch may also throw an error, so that case is handled as well.
+        nextState = { time, ...this.tickMap!.fetch(time.tick) };
+      } else {
+        nextState = Object.assign({}, this.state, { time });
+      }
     } catch (error) {
-      console.warn(error);
+      // Potentially dangerous! Error is swallowed.
       nextState = getNullState(time);
     }
 
     this.changed = !isEqual(this.state, nextState);
-
     this.state = nextState;
   }
 }
