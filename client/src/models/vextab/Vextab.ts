@@ -55,7 +55,7 @@ export class Vextab {
   public renderer: VextabRenderer;
   public links: VextabLinkedList;
 
-  constructor(structs: Vextab.ParsedStruct[], measuresPerLine: number) {
+  constructor(structs: Vextab.ParsedStruct[], measuresPerLine: number, width?: number | void) {
     if (typeof measuresPerLine !== 'number' || measuresPerLine < 0) {
       throw new Error('measuresPerLine must be a positive number');
     }
@@ -78,7 +78,7 @@ export class Vextab {
       measure.elements.forEach(element => element.measure = measure);
     })
 
-    this.renderer = new VextabRenderer(this);
+    this.renderer = new VextabRenderer(this, width);
     this.links = new VextabLinkedList(this.lines, this.measures);
   }
 

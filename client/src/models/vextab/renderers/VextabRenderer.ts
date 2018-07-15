@@ -33,16 +33,18 @@ export class VextabRenderer {
   public readonly store: RendererStore<IVextabRendererStoreData>;
   public readonly caretRenderer: CaretRenderer;
   public readonly loopCaretRenderer: LoopCaretRenderer;
+  public readonly height: number = VextabRenderer.DEFAULT_LINE_HEIGHT;
+  public readonly width: number = VextabRenderer.DEFAULT_LINE_WIDTH;
 
   public isRendered: boolean = false;
 
-  private $height: number = VextabRenderer.DEFAULT_LINE_HEIGHT;
-  private $width: number = VextabRenderer.DEFAULT_LINE_WIDTH;
-
-
-  constructor(vextab: Vextab) {
+  constructor(vextab: Vextab, width: number | void) {
     this.vextab = vextab;
 
+    if (width) {
+      this.width = width;
+    }
+    
     this.store = new RendererStore();
     this.caretRenderer = new CaretRenderer(this);
     this.loopCaretRenderer = new LoopCaretRenderer(this);
@@ -51,23 +53,7 @@ export class VextabRenderer {
   public get isRenderable(): boolean {
     const lineIds = this.vextab.lines.map(line => line.id).sort();
     const hydratedLineIds = Object.keys(this.store.data).map(lineId => parseInt(lineId, 10)).sort();
-    return isEqual(lineIds, hydratedLineIds) && !!this.width && !!this.height;
-  }
-
-  public get width(): number {
-    return this.$width;
-  }
-
-  public set width(width: number) {
-    this.setDimension('$width', width);
-  }
-
-  public get height(): number {
-    return this.$height;
-  }
-
-  public set height(height: number) {
-    this.setDimension('$height', height);
+    return isEqual(lineIds, hydratedLineIds);
   }
 
   /**
@@ -239,26 +225,4 @@ export class VextabRenderer {
       canvas.style.height = `${height * ratio}px`;
     })
   }
-
-  /**
-   * Conditionally rerenders if this method is called and the renderer isRenderable and
-   * isRendered. This is used in the height and width setters of this method.
-   * 
-   * @param field The field that should be set
-   * @param value the value that got passed in
-   */
-  private setDimension(field: '$height' | '$width', value: number): void {
-    if (value === this[field]) {
-      return;
-    }
-
-    this[field] = value;
-
-    if (this.isRenderable && this.isRendered) {
-      this.rehydrate();
-      this.render();
-    }
-  }
-};
-
-export default VextabRenderer;
+}
