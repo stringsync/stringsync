@@ -27,9 +27,8 @@ export class Measure {
   }
 
   public get tickables(): MeasureElement[] {
-    return this.elements.filter(element => (
-      typeof get(element.vexAttrs, 'staveNote.getTicks') === 'function'
-    ));
+    const tickableTypes = new Set(['NOTE', 'CHORD', 'REST']);
+    return this.elements.filter(element => tickableTypes.has(element.type));
   }
 
   private getRawStruct(): Vextab.ParsedStruct[] {

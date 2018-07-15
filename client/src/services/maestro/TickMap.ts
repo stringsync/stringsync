@@ -65,9 +65,9 @@ export class TickMap {
           if (!note.isHydrated) {
             throw new Error('expected note to be hydrated');
           }
-          
+
           const start = totalTicks;
-          const stop = totalTicks + note.vexAttrs!.staveNote.getTicks().quotient();
+          const stop = totalTicks + note.vexAttrs!.staveNote.getTicks().simplify().value();
 
           data.push({ note, start, stop });
 

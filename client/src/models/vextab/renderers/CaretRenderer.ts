@@ -102,9 +102,9 @@ export class CaretRenderer {
    */
   private getXForRender(maestro: Maestro): number | void {
     const { vextab } = maestro;
-    const { time, note } = maestro.state;
+    const { time, note, start, stop } = maestro.state;
 
-    if (!vextab || !time || !note) {
+    if (!vextab || !time || !note || !start || !stop) {
       // nothing to render
       return;
     }
@@ -117,26 +117,19 @@ export class CaretRenderer {
     const next = vextab.links.next(note, true) as typeof note;
 
     // interpolation args
-    const currStaveNote = curr.vexAttrs!.staveNote;
-    const x0 = currStaveNote.getAbsoluteX();
-    const t0 = currStaveNote.getTicks().quotient();
+    const t0 = start;
+    const t1 = stop;
+    const x0 = curr.vexAttrs!.staveNote.getAbsoluteX();
     let x1;
-    let t1;
-
     if (!next) {
       // currently on last note
-      // use the vextab renderer's width
-      x1 = vextab.renderer.width;
-      t1 = last(maestro.tickMap!.data)!.stop;
-    } else if (curr.measure && curr.measure.line === get(next, 'measure.line')) {
+      x1 = this.width;
+    } else if (curr.measure && curr.measure.line !== get(next, 'measure.line')) {
       // next note is on a different line
-      // use the vextab renderer's width
-      x1 = vextab.renderer.width;
-      t1 = next.vexAttrs!.staveNote.getTicks().quotient();
+      x1 = this.width;
     } else {
       // most frequent case: note is on the same line
       x1 = next.vexAttrs!.staveNote.getAbsoluteX();
-      t1 = next.vexAttrs!.staveNote.getTicks().quotient();
     }
 
     // interpolate
@@ -177,7 +170,6 @@ export class CaretRenderer {
         throw new Error(`no context found for ${line.id}`);
       }
 
-      ctx.scale(ratio, ratio);
       ctx.strokeStyle = CaretRenderer.STROKE_STYLE;
       ctx.lineWidth = CaretRenderer.THICKNESS;
       ctx.globalAlpha = CaretRenderer.ALPHA;

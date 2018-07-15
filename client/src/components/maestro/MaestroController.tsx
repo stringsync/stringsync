@@ -45,8 +45,9 @@ const enhance = compose<InnerProps, IOuterProps>(
         window.ss.rafLoop.stop();
       }
 
-      // sync nextProps bpm with Maestro's bpm
+      // sync IOuterProps with maestro
       window.ss.maestro.bpm = nextProps.bpm;
+      window.ss.maestro.deadTime = new Time(nextProps.deadTimeMs, 'ms');
     },
     componentWillUnmount() {
       if (!window.ss.rafLoop) {
@@ -59,7 +60,7 @@ const enhance = compose<InnerProps, IOuterProps>(
     }
   }),
   withHandlers({
-    /**
+    /** q
      * Update the timeKeeper.currentTimeMs and call maestro.update whenever the rafLoop is active.
      */
     handleRafLoop: (props: IConnectProps) => () => {
@@ -70,8 +71,6 @@ const enhance = compose<InnerProps, IOuterProps>(
       }
 
       window.ss.maestro.time = new Time(props.videoPlayer.getCurrentTime(), 's');
-
-      window.ss.maestro.update();
     }
   }),
   withRaf(

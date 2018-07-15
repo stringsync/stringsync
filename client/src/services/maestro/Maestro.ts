@@ -39,8 +39,7 @@ export class Maestro extends AbstractObservable {
 
     this.deadTime = new Time(deadTimeMs, 'ms');
     this.bpm = bpm;
-    this.time = new Time(0, 'ms');
-
+    this.$time = new Time(0, 'ms');
     this.state = getNullState(this.$time.clone);
   }
 
@@ -51,6 +50,8 @@ export class Maestro extends AbstractObservable {
 
     this.$time = time.clone;
     this.$time.bpm = this.bpm;
+
+    this.update();
   }
 
   public get state() {
@@ -82,7 +83,8 @@ export class Maestro extends AbstractObservable {
    */
   public update() {
     if (this.isUpdating) {
-      throw new Error('called Maestro.prototype.update in the middle of an update');
+      console.warn('called Maestro.prototype.update in the middle of an update');
+      return;
     }
 
     this.isUpdating = true;
@@ -101,9 +103,7 @@ export class Maestro extends AbstractObservable {
    * @private
    */
   private doUpdate() {
-    const deadTime = this.deadTime.clone
-    deadTime.bpm = this.bpm;
-    const time = new Time(this.$time.ms - deadTime.ms, 'ms', this.bpm);
+    const time = new Time(this.$time.ms - this.deadTime.ms, 'ms', this.bpm);
 
     let nextState: IMaestroState;
 

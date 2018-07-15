@@ -53,6 +53,8 @@ const enhance = compose<IInnerProps, IOuterProps>(
         if (tickMap) {
           tickMap.compute();
         }
+
+        props.vextab.links.compute();
       }
     }
   })
@@ -64,8 +66,8 @@ const Outer = styled('div')`
 `;
 
 const StyledLayer = styled(Layer)`
-  display: flex;
-  justify-content: center;
+  /* display: flex;
+  justify-content: center; */
 `;
 
 export const ScoreLine = enhance(props => (

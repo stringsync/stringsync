@@ -13,9 +13,7 @@ export class Time {
   public bpm?: number; // beats per minute
 
   constructor(value: number, units: TimeUnits, bpm?: number) {
-    if (value < 0) {
-      throw new RangeError('expected ms to be a number greater than or equal to 0');
-    } else if (typeof bpm === 'number' && bpm <= 0) {
+    if (typeof bpm === 'number' && bpm <= 0) {
       throw new RangeError('expected bpm to be a number greater than 0 or undefined');
     }
   

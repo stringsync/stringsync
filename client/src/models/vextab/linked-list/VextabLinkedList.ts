@@ -27,24 +27,36 @@ export class VextabLinkedList {
   public readonly lines: Line[];
   public readonly measures: Measure[];
   public readonly elements: MeasureElement[];
-  public readonly tickables: MeasureElement[];
-  
-  public readonly linesList:     { [lineId: string]:    IListElement<Line>           };
-  public readonly measuresList:  { [measureId: string]: IListElement<Measure>        };
-  public readonly elementsList:  { [elementId: string]: IListElement<MeasureElement> };
-  public readonly tickablesList: { [elementId: string]: IListElement<MeasureElement> };
+
+  public tickables: MeasureElement[];
+
+  public linesList:     { [lineId: string]:    IListElement<Line>           };
+  public measuresList:  { [measureId: string]: IListElement<Measure>        };
+  public elementsList:  { [elementId: string]: IListElement<MeasureElement> };
+  public tickablesList: { [elementId: string]: IListElement<MeasureElement> };
+
+  public isComputed: boolean = false;
 
   constructor(lines: Line[], measures: Measure[]) {
     this.lines     = lines;
     this.measures  = measures;
     this.elements  = flatMap(this.measures, measure => measure.elements);
-    this.tickables = flatMap(this.measures, measure => measure.tickables);
+  }
+
+  public compute(): void {
+    if (this.isComputed) {
+      return;
+    }
 
     const { link } = VextabLinkedList;
+    this.tickables = flatMap(this.measures, measure => measure.tickables);
+
     this.linesList     = link(this.lines);
     this.measuresList  = link(this.measures);
     this.elementsList  = link(this.elements);
     this.tickablesList = link(this.tickables);
+
+    this.isComputed = true;
   }
 
   public next(obj: VextabElementLinkTypes, tickable: boolean = false): VextabElementLinkTypes | void {
@@ -56,6 +68,10 @@ export class VextabLinkedList {
   }
 
   public get(obj: VextabElementLinkTypes, tickable: boolean = false): IListElement<VextabElementLinkTypes> | void {
+    if (!this.isComputed) {
+      return;
+    }
+
     switch (obj.type) {
       case 'LINE':
         return this.linesList[obj.id];

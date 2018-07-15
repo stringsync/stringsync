@@ -145,18 +145,6 @@ export class VextabRenderer {
     VextabHydrator.hydrate(line, artist);
   }
 
-  private rehydrate(): void {
-    this.vextab.lines.forEach(line => {
-      const { canvas } = this.store.fetch(line);
-
-      if (!canvas) {
-        return;
-      }
-
-      this.store.assign(line, 'canvas', canvas);
-    });
-  }
-
   /**
    * Performs the render.
    */

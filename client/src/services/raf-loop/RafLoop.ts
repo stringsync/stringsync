@@ -13,7 +13,6 @@ export class RafLoop {
   public specs: RafSpec[];
   public rafId: number | null;
 
-
   constructor() {
     this.isActive = false;
     this.specs = [];
