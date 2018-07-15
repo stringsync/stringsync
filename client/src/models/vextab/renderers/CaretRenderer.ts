@@ -14,6 +14,7 @@ export class CaretRenderer {
   public static THICKNESS = 2; // px
   public static ALPHA = 0.75;
   public static STROKE_STYLE = '#fc354c';
+  public static CARET_HEIGHT = 227; // px
 
   public readonly store: RendererStore<ICaretRendererStoreData> = new RendererStore<ICaretRendererStoreData>();
   public readonly vextabRenderer: VextabRenderer;
@@ -66,7 +67,7 @@ export class CaretRenderer {
 
         ctx.beginPath();
         ctx.moveTo(x, 0);
-        ctx.lineTo(x, 0 + this.vextabRenderer.height);
+        ctx.lineTo(x, 0 + CaretRenderer.CARET_HEIGHT);
         ctx.stroke();
         ctx.closePath();
 

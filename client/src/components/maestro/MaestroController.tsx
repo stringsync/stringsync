@@ -39,10 +39,11 @@ const enhance = compose<InnerProps, IOuterProps>(
         throw new MaestroError('Expected an instance of RafLoop and Maestro to be defined on window.ss');
       }
 
+      const raf = window.ss.rafLoop;
       if (nextProps.isVideoActive) {
-        window.ss.rafLoop.start();
+        raf.start();
       } else {
-        window.ss.rafLoop.stop();
+        raf.stop();
       }
 
       // sync IOuterProps with maestro
@@ -51,7 +52,7 @@ const enhance = compose<InnerProps, IOuterProps>(
     },
     componentWillUnmount() {
       if (!window.ss.rafLoop) {
-        throw new MaestroError('Expected an instance of RafLoop to be defined on window.ss');
+        throw new MaestroError('expected an instance of RafLoop to be defined on window.ss');
       }
 
       window.ss.rafLoop.stop();

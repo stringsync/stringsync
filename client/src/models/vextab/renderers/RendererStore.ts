@@ -12,16 +12,11 @@ export class RendererStore<T extends IBaseData> {
   public data: { [lineId: string]: (T | void) } = {};
 
   public fetch(line: Line | number | string): T {
-    let data;
-
-    if (line instanceof Line) {
-      data = this.data[line.id];
-    } else {
-      data = this.data[line];
-    }
+    const lineId = typeof line === 'string' || typeof line === 'number' ? line : line.id;
+    const data = this.data[lineId];
 
     if (!data) {
-      throw new RangeError(`out of range: could not find data for line ${line}`);
+      throw new RangeError(`out of range: could not find data for line ${lineId}`);
     }
 
     return data;

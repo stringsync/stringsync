@@ -61,28 +61,39 @@ const enhance = compose<IInnerProps, IOuterProps>(
 );
 
 const Outer = styled('div')`
-  width: 100%;
   height: ${() => VextabRenderer.DEFAULT_LINE_HEIGHT}px;
+  display: flex;
+  justify-content: center;
 `;
 
-const StyledLayer = styled(Layer)`
-  /* display: flex;
-  justify-content: center; */
+interface IInnerDivProps {
+  vextab: Vextab;
+}
+
+// It is necessary to sync the inner div's style with the vextab renderer
+// so the browser can compute where the center is.
+//
+// The javascript in the renderers changes the style of the canvas.
+const Inner = styled('div')<IInnerDivProps>`
+  width: ${props => props.vextab.renderer.width}px;
+  height: ${props => props.vextab.renderer.height}px;
 `;
 
 export const ScoreLine = enhance(props => (
   <Outer>
     <ScrollElement name={scoreKey(props.vextab, props.line)} />
-    <Overlap>
-      <StyledLayer zIndex={10}>
-        <canvas ref={props.handleScoreCanvasRef} />
-      </StyledLayer>
-      <StyledLayer zIndex={11}>
-        <canvas ref={props.handleCaretCanvasRef} />
-      </StyledLayer>
-      <StyledLayer zIndex={12}>
-        <canvas ref={props.handleLoopCaretCanvasRef} />
-      </StyledLayer>
-    </Overlap>
+    <Inner vextab={props.vextab}>
+      <Overlap>
+        <Layer zIndex={10}>
+          <canvas ref={props.handleScoreCanvasRef} />
+        </Layer>
+        <Layer zIndex={11}>
+          <canvas ref={props.handleCaretCanvasRef} />
+        </Layer>
+        <Layer zIndex={12}>
+          <canvas ref={props.handleLoopCaretCanvasRef} />
+        </Layer>
+      </Overlap>
+    </Inner>
   </Outer>
 ));

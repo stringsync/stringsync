@@ -5,6 +5,8 @@ import { compact, get } from 'lodash';
 export type MeasureElement = Note | Rest | Bar | Chord;
 
 export class Measure {
+  public static tickableTypes = ['NOTE', 'CHORD', 'REST'];
+
   public readonly spec: any;
   public readonly rawStruct: Vextab.ParsedStruct[];
   public readonly id: number;
@@ -27,7 +29,7 @@ export class Measure {
   }
 
   public get tickables(): MeasureElement[] {
-    const tickableTypes = new Set(['NOTE', 'CHORD', 'REST']);
+    const tickableTypes = new Set(Measure.tickableTypes);
     return this.elements.filter(element => tickableTypes.has(element.type));
   }
 
