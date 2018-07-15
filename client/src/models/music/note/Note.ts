@@ -4,6 +4,7 @@ import { AbstractVexWrapper, VextabStruct } from 'models/vextab';
 import { NoteHydrationValidator } from './NoteHydrationValidator';
 import { id } from 'utilities';
 import { Measure } from 'models/music';
+import { NoteRenderer } from 'models/vextab';
 
 /**
  * The purpose of this class is to encapsulate the logic related to describing a note's inherent
@@ -59,11 +60,12 @@ export class Note extends AbstractVexWrapper {
   }
 
   public readonly literal: string;
-  public readonly type = 'NOTE';
   public readonly id: number;
+  public readonly type = 'NOTE';
 
   public octave: number;
   public measure: Measure | void;
+  public renderer: NoteRenderer;
 
   constructor(literal: string, octave: number, struct: VextabStruct | null = null) {
     super(struct);
@@ -79,7 +81,7 @@ export class Note extends AbstractVexWrapper {
     this.id = id();
     this.literal = normalizedLiteral;
     this.octave = octave;
-    this.type = 'NOTE';
+    this.renderer = new NoteRenderer(this);
   }
 
   /**
