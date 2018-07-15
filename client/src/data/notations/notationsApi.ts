@@ -30,7 +30,7 @@ export const fetchAllNotations = () => async (dispatch: Dispatch) => {
     };
   });
 
-  const sorted = sortBy(notations, notation => notation.createdAt);
+  const sorted = sortBy(notations, notation => notation.createdAt).reverse();
   dispatch(NotationsActions.setNotationsIndex(sorted));
 
   return sorted;
