@@ -1,10 +1,8 @@
-import { Vextab, Line, Measure, Note, MeasureElement } from 'models';
+import { Vextab, MeasureElement } from 'models';
 
 export interface ITickData {
   start: number;
   stop: number;
-  line: Line;
-  measure: Measure;
   note: MeasureElement;
 }
 
@@ -71,7 +69,7 @@ export class TickMap {
           const start = totalTicks;
           const stop = totalTicks + note.vexAttrs!.staveNote.getTicks().quotient();
 
-          data.push({ line, measure, note, start, stop });
+          data.push({ note, start, stop });
 
           totalTicks = stop; // increment accumulator
         });

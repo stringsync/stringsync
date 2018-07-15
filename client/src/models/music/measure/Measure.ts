@@ -1,15 +1,18 @@
-import { Bar, Note, Rest } from 'models/music';
+import { Bar, Note, Rest, Line, Chord } from 'models/music';
 import { VextabStruct, VextabMeasureSpec } from 'models/vextab';
 import { compact, get } from 'lodash';
 
-export type MeasureElement = Note | Rest | Bar;
+export type MeasureElement = Note | Rest | Bar | Chord;
 
 export class Measure {
-  public elements: MeasureElement[];
-  public id: number;
   public readonly spec: any;
   public readonly rawStruct: Vextab.ParsedStruct[];
+  public readonly id: number;
   public readonly type = 'MEASURE';
+
+  public line: Line | void;
+
+  public elements: MeasureElement[];
 
   constructor(elements: MeasureElement[], id: number, spec: VextabMeasureSpec) {
     if (elements[0].type !== 'BAR') {

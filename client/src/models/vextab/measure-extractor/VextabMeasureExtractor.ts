@@ -19,7 +19,6 @@ export class VextabMeasureExtractor {
   private bar: Bar | void;
   private measureSpec: VextabMeasureSpec | void;
   private path: string;
-  private timeSignature: TimeSignature;
 
   constructor(vextab: Vextab, tuning: any) {
     this.vextab = vextab;
@@ -180,7 +179,7 @@ export class VextabMeasureExtractor {
     }
 
     this.measures.push(
-      new Measure([this.bar, ...this.elements], this.measures.length + 1, this.measureSpec)
+      new Measure([this.bar, ...this.elements], this.measures.length + 1,  this.measureSpec)
     );
   }
 

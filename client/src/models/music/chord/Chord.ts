@@ -1,11 +1,15 @@
 import { Note } from 'models';
 import { AbstractVexWrapper, VextabStruct } from 'models/vextab';
-import { zip } from 'lodash';
 import { ChordHydrationValidator } from './ChordHydrationValidator';
+import { Measure } from 'models/music';
+import { id } from 'utilities';
 
 export class Chord extends AbstractVexWrapper {
-  public notes: Note[];
+  public readonly id: number;
   public readonly type = 'CHORD';
+  
+  public notes: Note[];
+  public measure: Measure | void;
 
   constructor(notes: Note[], struct: VextabStruct | null = null) {
     super(struct);
@@ -14,6 +18,7 @@ export class Chord extends AbstractVexWrapper {
       throw new Error('expected more than one note to construct a chord');
     }
 
+    this.id = id();
     this.notes = notes;
   }
 

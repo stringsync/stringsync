@@ -4,12 +4,9 @@ import {
   VextabMeasureExtractor,
   VextabRenderer,
 } from './';
-import { Line, MeasureElement } from 'models';
+import { Line } from 'models';
 import { Flow } from 'vexflow';
 import { Measure } from '../music/measure/Measure';
-import { hash } from 'utilities';
-import { Note } from 'models/music';
-import { flatMap } from 'lodash';
 import { VextabLinkedList } from './linked-list';
 import { id } from 'utilities';
 
@@ -70,6 +67,16 @@ export class Vextab {
 
     this.measures = this.getMeasures();
     this.lines = this.getLines();
+
+    // Link lines with measures
+    this.lines.forEach(line => {
+      line.measures.forEach(measure => measure.line = line);
+    });
+
+    // Link measure elements with measures
+    this.measures.forEach(measure => {
+      measure.elements.forEach(element => element.measure = measure);
+    })
 
     this.renderer = new VextabRenderer(this);
     this.links = new VextabLinkedList(this.lines, this.measures);

@@ -3,6 +3,7 @@ import * as constants from './noteConstants';
 import { AbstractVexWrapper, VextabStruct } from 'models/vextab';
 import { NoteHydrationValidator } from './NoteHydrationValidator';
 import { id } from 'utilities';
+import { Measure } from 'models/music';
 
 /**
  * The purpose of this class is to encapsulate the logic related to describing a note's inherent
@@ -62,6 +63,7 @@ export class Note extends AbstractVexWrapper {
   public readonly id: number;
 
   public octave: number;
+  public measure: Measure | void;
 
   constructor(literal: string, octave: number, struct: VextabStruct | null = null) {
     super(struct);

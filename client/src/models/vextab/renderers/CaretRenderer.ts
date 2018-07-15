@@ -1,8 +1,9 @@
 import { VextabRenderer } from './VextabRenderer';
 import { RendererStore } from './RendererStore';
-import { Line } from 'models/music';
-import { isEqual } from 'lodash';
-import { Maestro } from '../../../services/maestro/Maestro';
+import { Line } from '../../music';
+import { isEqual, get, last } from 'lodash';
+import { Maestro } from 'services/maestro/Maestro';
+import { interpolate } from 'utilities';
 
 interface ICaretRendererStoreData {
   line: Line;
@@ -10,6 +11,10 @@ interface ICaretRendererStoreData {
 }
 
 export class CaretRenderer {
+  public static THICKNESS = 2; // px
+  public static ALPHA = 0.75;
+  public static STROKE_STYLE = '#fc354c';
+
   public readonly store: RendererStore<ICaretRendererStoreData> = new RendererStore<ICaretRendererStoreData>();
   public readonly vextabRenderer: VextabRenderer;
 
@@ -40,16 +45,17 @@ export class CaretRenderer {
   public render(maestro: Maestro): void {
     this.clear();
     this.resize();
-    
-    const { line, time, note, measure } = maestro.state;
 
-    if (!line || !time || !note || !measure) {
-      return;
+    const x = this.getXForRender(maestro);
+
+    if (typeof x === 'number') {
+
+
+      const line = get(maestro.state.note, 'measure.line');
+      if (line) {
+        this.rendereredLines.push(line);
+      }
     }
-
-    
-
-    this.rendereredLines.push(line);
   }
 
   public clear(): void {
@@ -72,6 +78,54 @@ export class CaretRenderer {
     this.rendereredLines = [];
   }
 
+  /**
+   * Used exclusively in CaretRenderer.prototype.render
+   * 
+   * @param maestro 
+   */
+  private getXForRender(maestro: Maestro): number | void {
+    const { vextab } = maestro;
+    const { time, note } = maestro.state;
+
+    if (!vextab || !time || !note) {
+      // nothing to render
+      return;
+    }
+
+    if (!note.isHydrated) {
+      throw new Error('Must hydrate the measure element before rendering the Caret for it');
+    }
+
+    const curr = note;
+    const next = vextab.links.next(note, true) as typeof note;
+
+    // interpolation args
+    const currStaveNote = curr.vexAttrs!.staveNote;
+    const x0 = currStaveNote.getAbsoluteX();
+    const t0 = currStaveNote.getTicks().quotient();
+    let x1;
+    let t1;
+
+    if (!next) {
+      // currently on last note
+      // use the vextab renderer's width
+      x1 = vextab.renderer.width;
+      t1 = last(maestro.tickMap!.data)!.stop;
+    } else if (curr.measure && curr.measure.line === get(next, 'measure.line')) {
+      // next note is on a different line
+      // use the vextab renderer's width
+      x1 = vextab.renderer.width;
+      t1 = next.vexAttrs!.staveNote.getTicks().quotient();
+    } else {
+      // most frequent case: note is on the same line
+      x1 = next.vexAttrs!.staveNote.getAbsoluteX();
+      t1 = next.vexAttrs!.staveNote.getTicks().quotient();
+    }
+
+    // interpolate
+    return interpolate({ x: x0, y: t0 }, { x: x1, y: t1 }, time.tick);
+  }
+
   private resize(): void {
     const { width, height } = this;
     const ratio = window.devicePixelRatio || 1;
@@ -87,6 +141,29 @@ export class CaretRenderer {
       canvas.height = height * ratio;
       canvas.style.width = `${width * ratio}px`;
       canvas.style.height = `${height * ratio}px`;
+    });
+  }
+
+  private setStyles(): void {
+    const ratio = window.devicePixelRatio || 1;
+
+    this.lines.forEach(line => {
+      const { canvas } = this.store.fetch(line);
+
+      if (!canvas) {
+        throw new Error(`could not set style for line ${line.id}: missing canvas`);
+      }
+
+      const ctx = canvas.getContext('2d');
+
+      if (!ctx) {
+        throw new Error(`no context found for ${line.id}`);
+      }
+
+      ctx.scale(ratio, ratio);
+      ctx.strokeStyle = CaretRenderer.STROKE_STYLE;
+      ctx.lineWidth = CaretRenderer.THICKNESS;
+      ctx.globalAlpha = CaretRenderer.ALPHA;
     });
   }
 }

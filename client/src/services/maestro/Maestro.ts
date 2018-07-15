@@ -1,23 +1,18 @@
 import { Time } from 'services';
 import { AbstractObservable } from 'utilities';
 import { isEqual } from 'lodash';
-import { Line, Measure, Note, Rest } from 'models/music';
 import { Vextab } from 'models/vextab';
-import { TickMap, ITickData } from './TickMap';
+import { TickMap } from './TickMap';
 import { MeasureElement } from 'models';
 
 interface IMaestroState {
   time: Time;
   start: number | null;
   stop: number | null;
-  line: Line | null;
-  measure: Measure | null;
   note: MeasureElement | null;
 }
 
 const getNullState = (time: Time): IMaestroState => ({
-  line: null,
-  measure: null,
   note: null,
   start: null,
   stop: null,
@@ -32,9 +27,9 @@ const getNullState = (time: Time): IMaestroState => ({
 export class Maestro extends AbstractObservable {
   public deadTime: Time;
   public bpm: number;
+  public tickMap: TickMap | null = null;
   
   private isUpdating: boolean = false;
-  private tickMap: TickMap | null = null;
   private $vextab: Vextab | null = null;
   private $state: IMaestroState;
   private $time: Time;

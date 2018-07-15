@@ -1,6 +1,7 @@
 import { VextabStruct, AbstractVexWrapper } from 'models/vextab';
 import { BarHydrationValidator } from './BarHydrationValidator';
 import { id } from 'utilities';
+import { Measure } from 'models/music';
 
 export class Bar extends AbstractVexWrapper {
   public static kindof(note: Vextab.Parsed.IBar): Vex.Flow.Barline.type {
@@ -26,6 +27,7 @@ export class Bar extends AbstractVexWrapper {
   public readonly id: number;
 
   public kind: Vex.Flow.Barline.type;
+  public measure: Measure | void;
 
   constructor(kind: Vex.Flow.Barline.type, struct: VextabStruct | null = null) {
     super(struct);
