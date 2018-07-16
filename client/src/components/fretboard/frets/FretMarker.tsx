@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { compose, withState, lifecycle } from 'recompose';
+import { compose, withState } from 'recompose';
 import { Note } from 'models/music';
 import { ViewportTypes } from 'data/viewport/getViewportType';
 import styled from 'react-emotion';
-import { sample } from 'lodash';
 
 export type FretMarkerStates = 'LIT' | 'PRESSED' | 'HIDDEN' | 'JUST_PRESSED' | 'SUGGESTED';
 
@@ -17,15 +16,8 @@ interface IInnerProps extends IOuterProps {
   setMarkerState: (markerState: FretMarkerStates) => void;
 }
 
-const getRandomState = (): FretMarkerStates => sample(['LIT', 'PRESSED', 'HIDDEN', 'JUST_PRESSED', 'SUGGESTED']) as FretMarkerStates;
-
 const enhance = compose<IInnerProps, IOuterProps>(
-  withState('markerState', 'setMarkerState', 'HIDDEN'),
-  lifecycle<IInnerProps, {}>({
-    componentDidMount(): void {
-      this.props.setMarkerState(getRandomState());
-    }
-  })
+  withState('markerState', 'setMarkerState', 'HIDDEN')
 );
 
 interface IOuterDivProps {
