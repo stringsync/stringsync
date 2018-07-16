@@ -31,6 +31,10 @@ const Outer = styled('div')`
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   color: white;
+
+  ::-webkit-scrollbar { 
+    display: none; 
+  }
 `;
 
 export const PianoKeys = enhance(props => (
