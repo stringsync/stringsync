@@ -3,7 +3,7 @@ import { AbstractObservable } from 'utilities';
 import { isEqual } from 'lodash';
 import { Vextab } from 'models/vextab';
 import { TickMap } from './TickMap';
-import { MeasureElement } from 'models';
+import { MeasureElement, Fretboard } from 'models';
 
 interface IMaestroState {
   time: Time;
@@ -28,6 +28,7 @@ export class Maestro extends AbstractObservable {
   public deadTime: Time;
   public bpm: number;
   public tickMap: TickMap | null = null;
+  public fretboard: Fretboard | null = null;
   
   private isUpdating: boolean = false;
   private $vextab: Vextab | null = null;
@@ -126,9 +127,10 @@ export class Maestro extends AbstractObservable {
         nextState = Object.assign({}, this.state, { time });
       }
     } catch (error) {
-      if (window.ss.debug) {
-        console.error(error);
-      }
+      // Potentially dangerous! Uncomment the following lines to debug in non productin envs.
+      // if (window.ss.debug) {
+      //   console.error(error);
+      // }
       nextState = getNullState(time);
     }
 

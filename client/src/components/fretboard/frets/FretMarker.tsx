@@ -1,13 +1,15 @@
 import * as React from 'react';
-import { compose, withState } from 'recompose';
+import { compose, withState, lifecycle } from 'recompose';
 import { Note } from 'models/music';
 import { ViewportTypes } from 'data/viewport/getViewportType';
 import styled from 'react-emotion';
 import { FretMarker as FretMarkerModel, FretMarkerStates } from 'models';
+import { get } from 'lodash';
 
 interface IOuterProps {
   note: Note;
   viewportType: ViewportTypes;
+  position: Guitar.IPosition;
 }
 
 interface IInnerProps extends IOuterProps {
@@ -16,7 +18,33 @@ interface IInnerProps extends IOuterProps {
 }
 
 const enhance = compose<IInnerProps, IOuterProps>(
-  withState('markerState', 'setMarkerState', 'HIDDEN')
+  withState('markerState', 'setMarkerState', 'HIDDEN'),
+  lifecycle<IInnerProps, {}>({
+    componentDidMount(): void {
+      const { maestro } = window.ss;
+
+      if (!maestro) {
+        throw new Error('expected Maestro instance to be defined on window.ss');
+      }
+
+      const { fretboard } = maestro;
+
+      if (!fretboard) {
+        throw new Error('expected Fretboard to be defined on maestro');
+      }
+
+      fretboard.add(new FretMarkerModel(this, this.props.position));
+    },
+    componentWillUnmount(): void {
+      const fretboard = get(window.ss.maestro, 'fretboard');
+
+      if (!fretboard) {
+        return;
+      }
+
+      fretboard.remove(this.props.position);
+    }
+  })
 );
 
 interface IOuterDivProps {
@@ -33,10 +61,9 @@ const Outer = styled('div')<IOuterDivProps>(props => {
     boxSizing: 'border-box',
     display: 'flex',
     justifyContent: 'center',
-    transition: 'all 200ms ease-in'
   };
 
-  // font
+  // font and box shadow
   let font;
   switch (props.viewportType) {
     case 'MOBILE':
@@ -94,21 +121,24 @@ const Outer = styled('div')<IOuterDivProps>(props => {
   switch(props.markerState) {
     case 'HIDDEN':
       rest = {
-        opacity: 0
+        opacity: 0,
+        transition: 'all 200ms ease-in'
       };
       break;
 
     case 'JUST_PRESSED':
       rest = {
         backgroundColor: '#B3FB66',
-        border: '2px solid rgba(0, 0, 0, 0.75)',
-        opacity: 1
+        boxShadow: '0 3px #666',
+        opacity: 1,
+        transform: 'translateY(-2px)'
       };
       break;
 
     case 'PRESSED':
       rest = {
         backgroundColor: '#B3FB66',
+        boxShadow: '0 1px #666',
         opacity: 1
       }
       break;

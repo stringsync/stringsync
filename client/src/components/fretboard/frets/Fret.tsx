@@ -75,9 +75,11 @@ export const Fret: React.SFC<IProps> = props => (
             Array(6).fill(null).map((_, ndx) => {
               const str = ndx + 1;
               const note = Note.from(TUNING.getNoteForFret(`${props.fret}`,`${str}`))
+              const position: Guitar.IPosition = { fret: props.fret, str };
               return (
                 <FretMarker
                   key={`fret-marker-${str}`}
+                  position={position}
                   viewportType={props.viewportType}
                   note={note}
                 />

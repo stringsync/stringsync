@@ -63,7 +63,7 @@ export class Chord extends AbstractVexWrapper {
    * Returns a guitar position if the note is hydrated. If it is not hydrated,
    * throws an error.
    */
-  public get pos(): Guitar.IPosition[] {
+  public get positions(): Guitar.IPosition[] {
     if (!this.isHydrated) {
       throw new Error('cannot fetch the guitar position of an unhydrated chord');
     }

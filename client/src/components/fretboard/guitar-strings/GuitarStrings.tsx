@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { GuitarString } from './GuitarString';
-import { times } from 'lodash';
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
 import styled from 'react-emotion';
@@ -15,7 +14,8 @@ interface IInnerProps extends IOuterProps {
 }
 
 // the first string corresponds to the high pitched e string
-const STRING_HEIGHTS_PX = [1, 1, 1, 2, 2, 3]
+const STRING_HEIGHTS_PX = [1, 1, 1, 2, 2, 3];
+const STRING_NUMBERS = [1, 2, 3, 4, 5, 6];
 
 const enhance = compose<IInnerProps, IOuterProps>(
   connect(
@@ -37,11 +37,11 @@ const Outer = styled('div')`
 export const GuitarStrings = enhance(props => (
   <Outer className="fretboard-height">
     {
-      times(props.numStrings, ndx => (
+      STRING_NUMBERS.map(str => (
         <GuitarString
-          key={`guitar-string-${ndx + 1}`}
-          guitarString={ndx + 1}
-          height={STRING_HEIGHTS_PX[ndx]}
+          key={`guitar-string-${str}`}
+          guitarString={str}
+          height={STRING_HEIGHTS_PX[str - 1]}
           viewportType={props.viewportType}
         />
       ))
