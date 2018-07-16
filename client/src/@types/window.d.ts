@@ -7,6 +7,7 @@ declare type Environments = 'development' | 'test' | 'production';
 interface IStringSyncModules {
   auth: auth.IJTokerAuth;
   env: Environments;
+  debug: boolean;
   message: typeof message;
   notification: typeof notification | void;
   maestro: Maestro | void;

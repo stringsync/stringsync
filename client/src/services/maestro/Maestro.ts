@@ -126,8 +126,9 @@ export class Maestro extends AbstractObservable {
         nextState = Object.assign({}, this.state, { time });
       }
     } catch (error) {
-      // Potentially dangerous! Error is swallowed.
-      console.error(error);
+      if (window.ss.debug) {
+        console.error(error);
+      }
       nextState = getNullState(time);
     }
 

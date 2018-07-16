@@ -3,8 +3,7 @@ import { compose, withState } from 'recompose';
 import { Note } from 'models/music';
 import { ViewportTypes } from 'data/viewport/getViewportType';
 import styled from 'react-emotion';
-
-export type FretMarkerStates = 'LIT' | 'PRESSED' | 'HIDDEN' | 'JUST_PRESSED' | 'SUGGESTED';
+import { FretMarker as FretMarkerModel, FretMarkerStates } from 'models';
 
 interface IOuterProps {
   note: Note;
