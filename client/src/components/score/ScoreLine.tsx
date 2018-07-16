@@ -26,14 +26,15 @@ const enhance = compose<IInnerProps, IOuterProps>(
         return;
       }
 
-      props.vextab.renderer.assign(props.line, canvas, 'caret');
+      props.vextab.renderer.caretRenderer.assign(props.line, canvas);
     },
     handleLoopCaretCanvasRef: (props: IOuterProps) => (canvas: HTMLCanvasElement) => {
       if (!canvas) {
         return;
       }
 
-      props.vextab.renderer.assign(props.line, canvas, 'loopCaret');
+      // TODO: When ready to implement loops, revisit
+      // props.vextab.renderer.loopCaretRender.assign(props.line, canvas);
     },
     handleScoreCanvasRef: (props: IOuterProps) => (canvas: HTMLCanvasElement) => {
       if (!canvas) {
@@ -42,7 +43,7 @@ const enhance = compose<IInnerProps, IOuterProps>(
 
       const { renderer } = props.vextab;
 
-      renderer.assign(props.line, canvas, 'score');
+      renderer.assign(props.line, canvas);
 
       if (renderer.isRenderable) {
         if (!renderer.isRendered) {

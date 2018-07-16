@@ -1,9 +1,9 @@
 import { VextabRenderer } from './VextabRenderer';
 import { RendererStore } from './RendererStore';
-import { Line } from '../../music';
-import { isEqual, get, last } from 'lodash';
+import { isEqual, get } from 'lodash';
 import { Maestro } from 'services/maestro/Maestro';
 import { interpolate } from 'utilities';
+import { Line } from 'models/music';
 
 interface ICaretRendererStoreData {
   line: Line;
@@ -43,10 +43,14 @@ export class CaretRenderer {
     return this.vextabRenderer.height;
   }
 
+  public assign(line: Line, canvas: HTMLCanvasElement): void {
+    this.store.assign(line, 'canvas', canvas);
+    this.resize(line);
+    this.setStyles(line);
+  }
+
   public render(maestro: Maestro): void {
     this.clear();
-    this.resize();
-    this.setStyles();
 
     const x = this.getXForRender(maestro);
 
@@ -137,43 +141,37 @@ export class CaretRenderer {
     return interpolate({ x: t0, y: x0 }, { x: t1, y: x1 }, time.tick);
   }
 
-  private resize(): void {
+  private resize(line: Line): void {
     const { width, height } = this;
     const ratio = window.devicePixelRatio || 1;
 
-    this.lines.forEach(line => {
-      const { canvas } = this.store.fetch(line);
+    const { canvas } = this.store.fetch(line);
 
-      if (!canvas) {
-        throw new Error(`could not resize line ${line.id}: missing canvas`);
-      }
+    if (!canvas) {
+      throw new Error(`could not resize line ${line.id}: missing canvas`);
+    }
 
-      canvas.width = width * ratio;
-      canvas.height = height * ratio;
-      canvas.style.width = `${width * ratio}px`;
-      canvas.style.height = `${height * ratio}px`;
-    });
+    canvas.width = width * ratio;
+    canvas.height = height * ratio;
+    canvas.style.width = `${width * ratio}px`;
+    canvas.style.height = `${height * ratio}px`;
   }
 
-  private setStyles(): void {
-    const ratio = window.devicePixelRatio || 1;
+  private setStyles(line: Line): void {
+    const { canvas } = this.store.fetch(line);
 
-    this.lines.forEach(line => {
-      const { canvas } = this.store.fetch(line);
+    if (!canvas) {
+      throw new Error(`could not set style for line ${line.id}: missing canvas`);
+    }
 
-      if (!canvas) {
-        throw new Error(`could not set style for line ${line.id}: missing canvas`);
-      }
+    const ctx = canvas.getContext('2d');
 
-      const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      throw new Error(`no context found for ${line.id}`);
+    }
 
-      if (!ctx) {
-        throw new Error(`no context found for ${line.id}`);
-      }
-
-      ctx.strokeStyle = CaretRenderer.STROKE_STYLE;
-      ctx.lineWidth = CaretRenderer.THICKNESS;
-      ctx.globalAlpha = CaretRenderer.ALPHA;
-    });
+    ctx.strokeStyle = CaretRenderer.STROKE_STYLE;
+    ctx.lineWidth = CaretRenderer.THICKNESS;
+    ctx.globalAlpha = CaretRenderer.ALPHA;
   }
 }

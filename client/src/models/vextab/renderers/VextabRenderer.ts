@@ -63,24 +63,13 @@ export class VextabRenderer {
    * @param {number} lineNumber 
    * @returns {void}
    */
-  public assign(line: Line, canvas: HTMLCanvasElement, key: 'score' | 'caret' | 'loopCaret'): void {
-    switch (key) {
-      case 'score':
-        this.store.assign(line, 'canvas', canvas);
+  public assign(line: Line, canvas: HTMLCanvasElement): void {
+    this.store.assign(line, 'canvas', canvas);
 
-        const vexRenderer = new Flow.Renderer(canvas, Flow.Renderer.Backends.CANVAS);
-        this.store.assign(line, 'vexRenderer', vexRenderer)
+    const vexRenderer = new Flow.Renderer(canvas, Flow.Renderer.Backends.CANVAS);
+    this.store.assign(line, 'vexRenderer', vexRenderer)
 
-        this.hydrate(line.id);
-        break;
-      case 'caret':
-        this.caretRenderer.store.assign(line, 'canvas', canvas);
-        break;
-      case 'loopCaret':
-        break;
-      default:
-        break;
-    }
+    this.hydrate(line.id);
   }
 
   /**
