@@ -2,6 +2,11 @@ import * as React from 'react';
 import styled from 'react-emotion';
 import { Overlap, Layer } from 'components';
 import { ViewportTypes } from 'data/viewport/getViewportType';
+import { FretMarker } from './FretMarker';
+import { Flow } from 'vexflow';
+import { Note } from 'models/music';
+
+const TUNING = new (Flow as any).Tuning() as Vex.Flow.Tuning;
 
 interface IProps {
   fret: number;
@@ -55,7 +60,20 @@ export const Fret: React.SFC<IProps> = props => (
           }
         </DotsContainer>
       </Layer>
-      <Layer zIndex={11} />
+      <Layer zIndex={11}>
+        {
+          Array(6).fill(null).map((_, str) => {
+            const note = Note.from('C/4');
+            return (
+              <FretMarker
+                key={`fret-marker-${str}`}
+                viewportType={props.viewportType}
+                note={note}
+              />
+            )
+          })
+        }
+      </Layer>
     </Overlap>
   </Outer>
 );
