@@ -60,7 +60,7 @@ const Outer = styled('div')<IOuterDivProps>(props => {
     borderRadius: '50%',
     boxSizing: 'border-box',
     display: 'flex',
-    justifyContent: 'center',
+    justifyContent: 'center'
   };
 
   // font and box shadow
@@ -129,17 +129,16 @@ const Outer = styled('div')<IOuterDivProps>(props => {
     case 'JUST_PRESSED':
       rest = {
         backgroundColor: '#B3FB66',
-        boxShadow: '0 3px #666',
-        opacity: 1,
-        transform: 'translateY(-2px)'
+        boxShadow: '0 3px black',
+        opacity: 1
       };
       break;
 
     case 'PRESSED':
       rest = {
         backgroundColor: '#B3FB66',
-        boxShadow: '0 1px #666',
-        opacity: 1
+        opacity: 1,
+        transform: 'translateY(3px)'
       }
       break;
 

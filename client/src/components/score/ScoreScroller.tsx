@@ -6,7 +6,6 @@ import { Maestro } from 'services';
 import { scroller } from 'react-scroll';
 import { scoreKey } from './scoreKey';
 import { get } from 'lodash';
-import { Measure } from 'models';
 
 (window as any).scroller = scroller;
 
