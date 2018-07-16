@@ -1,4 +1,3 @@
-export * from './markers';
-
-export { Fret } from './Fret';
-export { Frets } from './Frets';
+export * from './Fret';
+export * from './Frets';
+export * from './FretMarker';

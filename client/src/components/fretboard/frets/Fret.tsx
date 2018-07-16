@@ -2,6 +2,11 @@ import * as React from 'react';
 import styled from 'react-emotion';
 import { Overlap, Layer } from 'components';
 import { ViewportTypes } from 'data/viewport/getViewportType';
+import { FretMarker } from './FretMarker';
+import { Flow } from 'vexflow';
+import { Note } from 'models/music';
+
+const TUNING = new (Flow as any).Tuning() as Vex.Flow.Tuning;
 
 interface IProps {
   fret: number;
@@ -38,6 +43,15 @@ const DotsContainer = styled('div')`
   align-items: center;
 `;
 
+const MarkerContainer = styled('div')`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  overflow-x: hidden;
+  width: 100%;
+`;
+
 export const Fret: React.SFC<IProps> = props => (
   <Outer
     fret={props.fret}
@@ -55,7 +69,25 @@ export const Fret: React.SFC<IProps> = props => (
           }
         </DotsContainer>
       </Layer>
-      <Layer zIndex={11} />
+      <Layer zIndex={11}>
+        <MarkerContainer className="fretboard-height">
+          {
+            Array(6).fill(null).map((_, ndx) => {
+              const str = ndx + 1;
+              const note = Note.from(TUNING.getNoteForFret(`${props.fret}`,`${str}`))
+              const position: Guitar.IPosition = { fret: props.fret, str };
+              return (
+                <FretMarker
+                  key={`fret-marker-${str}`}
+                  position={position}
+                  viewportType={props.viewportType}
+                  note={note}
+                />
+              )
+            })
+          }
+        </MarkerContainer>
+      </Layer>
     </Overlap>
   </Outer>
 );

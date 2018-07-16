@@ -82,6 +82,10 @@ const Outer = styled('div')`
   overflow-y: scroll;
   position: relative;
   -webkit-overflow-scrolling: touch;
+
+  ::-webkit-scrollbar { 
+    display: none; 
+  }
 `;
 
 const Spacer = styled('div')`

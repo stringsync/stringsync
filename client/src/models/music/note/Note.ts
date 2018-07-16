@@ -135,6 +135,19 @@ export class Note extends AbstractVexWrapper {
   }
 
   /**
+   * Returns a guitar position if the note is hydrated. If it is not hydrated,
+   * throws an error.
+   */
+  public get positions(): Guitar.IPosition[] {
+    if (!this.isHydrated) {
+      throw new Error('cannot fetch the guitar position of an unhydrated note');
+    }
+
+    const { fret, str } = (this.vexAttrs!.tabNote as any).positions[0];
+    return [{ fret: parseInt(fret, 10), str: parseInt(str, 10) }];
+  }
+
+  /**
    * A note is considered equivalent to another note when the octaves are the same and the
    * values are the same.
    * 

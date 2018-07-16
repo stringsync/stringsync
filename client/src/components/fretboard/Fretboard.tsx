@@ -6,6 +6,7 @@ import woodTextureSrc from 'assets/wood-texture.jpg';
 import { compose, withProps } from 'recompose';
 import { connect } from 'react-redux';
 import { ViewportTypes } from 'data/viewport/getViewportType';
+import { FretboardController } from './FretboardController';
 
 interface IConnectProps {
   viewportType: ViewportTypes;
@@ -59,6 +60,7 @@ const Outer = styled('div')`
  */
 export const Fretboard = enhance(props => (
   <Outer>
+    <FretboardController />
     <Overlap>
       <Layer>
         <Frets numFrets={props.numFrets} />

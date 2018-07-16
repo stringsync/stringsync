@@ -1,6 +1,6 @@
 import { Bar, Note, Rest, Line, Chord } from 'models/music';
-import { VextabStruct, VextabMeasureSpec } from 'models/vextab';
-import { compact, get } from 'lodash';
+import { VextabMeasureSpec } from 'models/vextab';
+import { compact, get, flatMap } from 'lodash';
 
 export type MeasureElement = Note | Rest | Bar | Chord;
 
@@ -31,6 +31,16 @@ export class Measure {
   public get tickables(): MeasureElement[] {
     const tickableTypes = new Set(Measure.tickableTypes);
     return this.elements.filter(element => tickableTypes.has(element.type));
+  }
+
+  /**
+   * Iterates through the Chord and Note elements, and flat maps their pos getters.
+   */
+  public get positions(): Guitar.IPosition[] {
+    const targets = this.elements.filter(element => (
+      element.type === 'NOTE' || element.type === 'CHORD'
+    )) as Array<Chord | Note>;
+    return flatMap(targets, target => target.positions);
   }
 
   private getRawStruct(): Vextab.ParsedStruct[] {

@@ -20,11 +20,14 @@ export interface ITickData {
  * query data given a Time object.
  */
 export class TickMap {
-  public vextab: Vextab;
+  public readonly vextab: Vextab;
+  public readonly offset: number;
+
   public data: ITickData[];
 
-  constructor(vextab: Vextab) {
+  constructor(vextab: Vextab, offset: number = 0) {
     this.vextab = vextab;
+    this.offset = offset;
   }
 
   /**
@@ -57,7 +60,7 @@ export class TickMap {
    */
   private getData(): ITickData[] {
     const data: ITickData[] = [];
-    let totalTicks = 0; // accumulator 
+    let totalTicks = this.offset; // accumulator 
 
     this.vextab.lines.forEach(line => {
       line.measures.forEach(measure => {

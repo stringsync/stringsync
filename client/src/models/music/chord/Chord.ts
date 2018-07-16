@@ -3,6 +3,7 @@ import { AbstractVexWrapper, VextabStruct, NoteRenderer } from 'models/vextab';
 import { ChordHydrationValidator } from './ChordHydrationValidator';
 import { Measure } from 'models/music';
 import { id } from 'utilities';
+import { Flow } from 'vexflow';
 
 export class Chord extends AbstractVexWrapper {
   public readonly id: number;
@@ -56,5 +57,29 @@ export class Chord extends AbstractVexWrapper {
     } else {
       throw validator.errors;
     }
+  }
+
+  /**
+   * Returns a guitar position if the note is hydrated. If it is not hydrated,
+   * throws an error.
+   */
+  public get positions(): Guitar.IPosition[] {
+    if (!this.isHydrated) {
+      throw new Error('cannot fetch the guitar position of an unhydrated chord');
+    }
+
+    const tabNote = this.vexAttrs!.tabNote as any;
+    let positions: Array<{ fret: string, str: string }> = tabNote.positions;
+    const modifiers = tabNote.modifiers as any[];
+
+    modifiers.filter(mod => mod instanceof Flow.GraceNoteGroup).forEach(group => {
+      group.grace_notes.forEach((graceTabNote: any) => {
+        positions = positions.concat(graceTabNote.positions);
+      });
+    });
+
+    return positions.map(({ fret, str }) => (
+      { fret: parseInt(fret, 10), str: parseInt(str, 10 )}
+    ));
   }
 }

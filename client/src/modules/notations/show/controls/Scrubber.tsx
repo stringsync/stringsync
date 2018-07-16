@@ -55,7 +55,8 @@ const enhance = compose<IInnerProps, {}>(
       props.setIsScrubbing(false);
     },
     handleChange: (props: any) => (value: number) => {
-      if (!props.isScrubbing) {
+      // For some reason, when the video ends, this handler gets called
+      if (!props.isScrubbing && value < 100) {
         props.setIsScrubbing(true);
         props.setPlayAfterChange(props.isVideoPlaying);
       }
