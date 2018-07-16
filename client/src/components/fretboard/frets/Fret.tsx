@@ -43,6 +43,15 @@ const DotsContainer = styled('div')`
   align-items: center;
 `;
 
+const MarkerContainer = styled('div')`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  overflow-x: hidden;
+  width: 100%;
+`;
+
 export const Fret: React.SFC<IProps> = props => (
   <Outer
     fret={props.fret}
@@ -61,18 +70,21 @@ export const Fret: React.SFC<IProps> = props => (
         </DotsContainer>
       </Layer>
       <Layer zIndex={11}>
-        {
-          Array(6).fill(null).map((_, str) => {
-            const note = Note.from('C/4');
-            return (
-              <FretMarker
-                key={`fret-marker-${str}`}
-                viewportType={props.viewportType}
-                note={note}
-              />
-            )
-          })
-        }
+        <MarkerContainer className="fretboard-height">
+          {
+            Array(6).fill(null).map((_, ndx) => {
+              const str = ndx + 1;
+              const note = Note.from(TUNING.getNoteForFret(`${props.fret}`,`${str}`))
+              return (
+                <FretMarker
+                  key={`fret-marker-${str}`}
+                  viewportType={props.viewportType}
+                  note={note}
+                />
+              )
+            })
+          }
+        </MarkerContainer>
       </Layer>
     </Overlap>
   </Outer>

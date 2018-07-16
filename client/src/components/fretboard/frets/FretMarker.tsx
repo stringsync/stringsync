@@ -31,6 +31,7 @@ const enhance = compose<IInnerProps, IOuterProps>(
 interface IOuterDivProps {
   markerState: FretMarkerStates;
   viewportType: ViewportTypes;
+  note: Note;
 }
 
 const Outer = styled('div')<IOuterDivProps>(props => {
@@ -49,13 +50,13 @@ const Outer = styled('div')<IOuterDivProps>(props => {
   switch (props.viewportType) {
     case 'MOBILE':
       font = {
-        fontSize: 0,
+        fontSize: 0
       };
       break
 
     case 'TABLET':
       font = {
-        fontSize: 10,
+        fontSize: 0
       };
       break
 
@@ -67,8 +68,13 @@ const Outer = styled('div')<IOuterDivProps>(props => {
       break
 
     default:
-      font = { };
+      font = {
+        fontSize: 0
+      };
       break
+  }
+  if (!props.note.isNatural) {
+    font.fontSize = Math.floor(font.fontSize * 0.75);
   }
 
   // Compute dimensions
@@ -141,7 +147,11 @@ const Outer = styled('div')<IOuterDivProps>(props => {
 });
 
 export const FretMarker = enhance(props => (
-  <Outer markerState={props.markerState} viewportType={props.viewportType}>
+  <Outer
+    note={props.note}
+    markerState={props.markerState}
+    viewportType={props.viewportType}
+  >
     {props.note.literal}
   </Outer>
 ));
