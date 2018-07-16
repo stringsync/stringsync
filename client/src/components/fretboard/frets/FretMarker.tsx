@@ -103,7 +103,7 @@ const Outer = styled('div')<IOuterDivProps>(props => {
       break
 
     case 'TABLET':
-      size = 17;
+      size = 15;
       break
 
     case 'DESKTOP':
@@ -129,24 +129,26 @@ const Outer = styled('div')<IOuterDivProps>(props => {
     case 'JUST_PRESSED':
       rest = {
         backgroundColor: '#B3FB66',
-        boxShadow: '0 3px black',
-        opacity: 1
+        boxShadow: '0 3px #92cc55',
+        opacity: 1,
+        transform: 'translateY(-2px)'
       };
       break;
 
     case 'PRESSED':
       rest = {
         backgroundColor: '#B3FB66',
+        boxShadow: '0 1px #92cc55',
         opacity: 1,
-        transform: 'translateY(3px)'
       }
       break;
 
     case 'LIT':
       rest = {
         backgroundColor: 'rgb(251, 246, 102)',
-        boxShadow: '0 0 2px 1px rgb(251, 246, 102)',
-        opacity: 0.25
+        boxShadow: '0 3px #92cc55',
+        opacity: 0.25,
+        transform: 'translateY(-2px)'
       };
       break
 
