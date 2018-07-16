@@ -72,7 +72,8 @@ const enhance = compose<IMenuHandlerProps, OuterProps>(
         }
       } catch (error) {
         console.error(error);
-        window.ss.message.error(`Notation #${id} was not found`);
+        window.ss.message.error('Something went wrong');
+        this.props.history.push('/');
       }
     },
     componentWillUnmount() {

@@ -71,7 +71,9 @@ export class Maestro extends AbstractObservable {
     if (!vextab) {
       this.tickMap = null;
     } else if (vextab !== this.vextab) {
-      this.tickMap = new TickMap(vextab);
+      const deadTime = this.deadTime;
+      deadTime.bpm = this.bpm;
+      this.tickMap = new TickMap(vextab, deadTime.tick);
     }
     
     this.$vextab = vextab;
@@ -83,7 +85,6 @@ export class Maestro extends AbstractObservable {
    */
   public update() {
     if (this.isUpdating) {
-      console.warn('called Maestro.prototype.update in the middle of an update');
       return;
     }
 
@@ -103,7 +104,7 @@ export class Maestro extends AbstractObservable {
    * @private
    */
   private doUpdate() {
-    const time = new Time(this.$time.ms - this.deadTime.ms, 'ms', this.bpm);
+    const time = this.$time.clone;
 
     let nextState: IMaestroState;
 
@@ -126,6 +127,7 @@ export class Maestro extends AbstractObservable {
       }
     } catch (error) {
       // Potentially dangerous! Error is swallowed.
+      console.error(error);
       nextState = getNullState(time);
     }
 
