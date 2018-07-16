@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { compose, withState } from 'recompose';
+import { compose, withState, lifecycle } from 'recompose';
 import { Note } from 'models/music';
 import { ViewportTypes } from 'data/viewport/getViewportType';
 import styled from 'react-emotion';
+import { sample } from 'lodash';
 
 export type FretMarkerStates = 'LIT' | 'PRESSED' | 'HIDDEN' | 'JUST_PRESSED' | 'SUGGESTED';
 
@@ -16,8 +17,15 @@ interface IInnerProps extends IOuterProps {
   setMarkerState: (markerState: FretMarkerStates) => void;
 }
 
+const getRandomState = (): FretMarkerStates => sample(['LIT', 'PRESSED', 'HIDDEN', 'JUST_PRESSED', 'SUGGESTED']) as FretMarkerStates;
+
 const enhance = compose<IInnerProps, IOuterProps>(
-  withState('markerState', 'setMarkerState', 'LIT')
+  withState('markerState', 'setMarkerState', 'HIDDEN'),
+  lifecycle<IInnerProps, {}>({
+    componentDidMount(): void {
+      this.props.setMarkerState(getRandomState());
+    }
+  })
 );
 
 interface IOuterDivProps {
@@ -30,13 +38,58 @@ const Outer = styled('div')<IOuterDivProps>(props => {
   const base = {
     alignItems: 'center',
     borderRadius: '50%',
+    boxSizing: 'border-box',
     display: 'flex',
     justifyContent: 'center',
     transition: 'all 200ms ease-in'
   };
 
+  // font
+  let font;
+  switch (props.viewportType) {
+    case 'MOBILE':
+      font = {
+        fontSize: 0,
+      };
+      break
+
+    case 'TABLET':
+      font = {
+        fontSize: 10,
+      };
+      break
+
+    case 'DESKTOP':
+      font = {
+        fontSize: 12,
+        fontWeight: 700
+      };
+      break
+
+    default:
+      font = { };
+      break
+  }
+
   // Compute dimensions
-  const size = props.viewportType === 'MOBILE' ? 13 : 24;
+  let size; // px
+  switch (props.viewportType) {
+    case 'MOBILE':
+      size = 13;
+      break
+
+    case 'TABLET':
+      size = 17;
+      break
+
+    case 'DESKTOP':
+      size = 23;
+      break
+
+    default:
+      size = 13;
+      break
+  }
   const dimensions = { width: size, height: size };
 
   // Compute styles based on the markerState
@@ -84,7 +137,7 @@ const Outer = styled('div')<IOuterDivProps>(props => {
   }
 
   
-  return Object.assign(base, dimensions, rest);
+  return Object.assign(base, font, dimensions, rest);
 });
 
 export const FretMarker = enhance(props => (
