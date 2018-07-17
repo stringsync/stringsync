@@ -12,6 +12,6 @@ export class PianoKey {
   }
 
   public setKeyState(state: PianoKeyStates) {
-    this.reactComponent.props.setMarkerState(state);
+    this.reactComponent.props.setKeyState(state);
   }
 }
