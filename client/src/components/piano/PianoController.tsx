@@ -2,7 +2,7 @@ import * as React from 'react';
 import { compose, withHandlers, lifecycle } from 'recompose';
 import { observeMaestro } from 'enhancers';
 import { Maestro } from 'services/maestro/Maestro';
-import { Fretboard } from 'models';
+import { Piano } from 'models';
 import { get } from 'lodash';
 
 
@@ -19,30 +19,30 @@ const enhance = compose<IInnerProps, {}>(
         throw new Error('expected an instance of Maestro to be defined on window.ss');
       }
 
-      maestro.fretboard = new Fretboard();
+      maestro.piano = new Piano();
     },
     componentWillUnmount(): void {
       const { maestro } = window.ss;
 
       if (maestro) {
-        maestro.fretboard = null;
+        maestro.piano = null;
       }
     }
   }),
   withHandlers({
     handleNotification: () => (maestro: Maestro) => {
-      const fretboard = get(window.ss.maestro, 'fretboard');
+      const piano = get(window.ss.maestro, 'piano');
 
-      if (!fretboard) {
+      if (!piano) {
         return;
       }
 
-      fretboard.update(maestro);
+      piano.update(maestro);
     }
   }),
   observeMaestro<IInnerProps>(
-    props => ({ name: 'FretboardController', handleNotification: props.handleNotification })
+    props => ({ name: 'PianoController', handleNotification: props.handleNotification })
   )
 );
 
-export const FretboardController = enhance(() => null);
+export const PianoController = enhance(() => null);

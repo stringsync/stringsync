@@ -11,7 +11,7 @@ interface IInnerProps {
 }
 
 const enhance = compose<IInnerProps, {}>(
-  withProps(props => {
+  withProps(() => {
     const A0 = new Note('A', 0);
     const C8 = new Note('C', 8);
 

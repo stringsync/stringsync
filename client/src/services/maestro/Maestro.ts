@@ -4,6 +4,7 @@ import { isEqual } from 'lodash';
 import { Vextab } from 'models/vextab';
 import { TickMap } from './TickMap';
 import { MeasureElement, Fretboard } from 'models';
+import { Piano } from 'models';
 
 interface IMaestroState {
   time: Time;
@@ -29,6 +30,7 @@ export class Maestro extends AbstractObservable {
   public bpm: number;
   public tickMap: TickMap | null = null;
   public fretboard: Fretboard | null = null;
+  public piano: Piano | null = null;
   
   private isUpdating: boolean = false;
   private $vextab: Vextab | null = null;
