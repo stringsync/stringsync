@@ -44,8 +44,8 @@ const enhance = compose<IInnerProps, IOuterProps>(
   }),
   branch(
     (props: IInnerProps) => Note.from(props.note).toSharp().isSharp,
-    renderComponent((props: IInnerProps) => <BlackPianoKey note={props.note} />),
-    renderComponent((props: IInnerProps) => <WhitePianoKey note={props.note} />)
+    renderComponent((props: IInnerProps) => <BlackPianoKey note={props.note} keyState={props.keyState} />),
+    renderComponent((props: IInnerProps) => <WhitePianoKey note={props.note} keyState={props.keyState} />)
   )
 );
 

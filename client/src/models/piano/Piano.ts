@@ -1,40 +1,24 @@
 import { PianoKey, PianoKeyStates } from './PianoKey';
 import { Maestro } from 'services';
-import { flatMap, compact } from 'lodash';
-import { Note, Chord, MeasureElement } from 'models/music';
+import { compact } from 'lodash';
 
 export class Piano {
   public pianoKeysByNoteName: { [noteName: string]: PianoKey } = {};
 
-  public lit:     Set<PianoKey> = new Set();
   public pressed: Set<PianoKey> = new Set();
 
   public update(maestro: Maestro): void {
     // Arguments for Fretboard.prototype.sync
-    let lit:     string[] = [];
     let pressed: string[] = [];
 
     const element = maestro.state.note;
 
     if (!element) {
-      this.sync(lit, pressed);
+      this.sync(pressed);
       return;
     } else if (!element.measure) {
       throw new Error('measure elements must be associated with a measure to update fretboard');
     }
-
-    const targets = element.measure.elements.filter(({ type }) => type === 'NOTE' || type === 'CHORD');
-    const notes = flatMap(targets, (el: Note | Chord) => {
-      const { type } = el;
-      if (type === 'CHORD') {
-        return (el as Chord).notes.map(note => note.toString())
-      } else {
-        // Type is note
-        return (el as Note).toString();
-      }
-    });
-
-    lit = compact(notes);
 
     if (element.type === 'CHORD') {
       pressed = element.notes.map(note => note.toString());
@@ -42,7 +26,7 @@ export class Piano {
       pressed = [element.toString()];
     }
 
-    this.sync(lit, pressed);
+    this.sync(pressed);
   }
 
   /**
@@ -62,11 +46,9 @@ export class Piano {
    * @param lit 
    * @param pressed
    */
-  private sync(litNoteNames: string[], pressedNoteNames: string[]) {
-    const shouldLight = this.mapKeys(litNoteNames);
+  private sync(pressedNoteNames: string[]) {
     const shouldPress = this.mapKeys(pressedNoteNames);
 
-    this.lit = this.doSync(shouldLight, 'LIT');
     this.pressed = this.doSync(shouldPress, 'PRESSED');
   }
 
@@ -86,10 +68,6 @@ export class Piano {
 
     let curr: Set<PianoKey>;
     switch (state) {
-      case 'LIT':
-        curr = this.lit;
-        break
-
       case 'PRESSED':
         curr = this.pressed;
         break

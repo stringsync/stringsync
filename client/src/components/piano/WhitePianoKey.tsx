@@ -1,8 +1,10 @@
 import * as React from 'react';
 import styled from 'react-emotion';
+import { PianoKeyStates } from 'models/piano';
 
 interface IProps {
   note: string;
+  keyState: PianoKeyStates;
 }
 
 const Outer = styled('div')`
@@ -14,19 +16,47 @@ const Outer = styled('div')`
   }
 `;
 
-const Inner = styled('div')`
-  width: 24px;
-  height: 98px;
-  box-sizing: border-box;
-  border-top: 1px solid black;
-  border-left: 1px solid black;
-  border-bottom: 1px solid black;
-  transition: background ease-in 100ms;
-  background: white;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-`;
+interface IInnerDivProps {
+  keyState: PianoKeyStates;
+}
+
+const Inner = styled('div')<IInnerDivProps>(props => {
+  const base = {
+    alignItems: 'flex-end',
+    borderBottom: '1px solid black',
+    borderLeft: '1px solid black',
+    borderTop: '1px solid black',
+    display: 'flex',
+    height: '98px',
+    justifyContent: 'center',
+    width: '24px'
+  }
+
+  let rest;
+  switch(props.keyState) {
+    case 'HIDDEN':
+      rest = {
+        background: 'white',
+        transition: 'all 200ms ease-in'
+      };
+      break;
+
+    case 'PRESSED':
+      rest = {
+        background: props.theme.primaryColor,
+        transform: 'translateY(2px)'
+      };
+      break;
+
+    default:
+      rest = {
+        background: 'white'
+      };
+      break;
+  }
+
+  return Object.assign(base, rest);
+});
 
 const MiddleC = styled('div')`
   margin-bottom: 3px;
@@ -36,7 +66,7 @@ const MiddleC = styled('div')`
 
 export const WhitePianoKey: React.SFC<IProps> = props => (
   <Outer>
-    <Inner>
+    <Inner keyState={props.keyState}>
       {props.note === 'C/4' ? <MiddleC>C</MiddleC> : null}
     </Inner>
   </Outer>
