@@ -24,12 +24,16 @@ interface IScoreWidthProps extends IConnectProps {
   scoreWidth: number;
 }
 
-interface IMenuCollapsedProps extends IScoreWidthProps {
+interface IMenuProps extends IScoreWidthProps {
   menuCollapsed: boolean;
+  isFretboardVisible: boolean;
+  isPianoVisible: boolean;
   setMenuCollapsed: (menuCollapsed: boolean) => void;
+  setFretboardVisibility: (isFretboardVisible: boolean) => void;
+  setPianoVisibility: (isPianoVisible: boolean) => void;
 }
 
-interface IMenuHandlerProps extends IMenuCollapsedProps {
+interface IMenuHandlerProps extends IMenuProps {
   handleMenuClick: (event: React.SyntheticEvent<HTMLElement>) => void;
 }
 
@@ -52,6 +56,8 @@ const enhance = compose<IMenuHandlerProps, OuterProps>(
     scoreWidth: Math.max(Math.min(props.viewportWidth, 1200), 200) - 30
   })),
   withState('menuCollapsed', 'setMenuCollapsed', true),
+  withState('isFretboardVisible', 'setFretboardVisibility', true),
+  withState('isPianoVisible', 'setPianoVisibility', false),
   withHandlers({
     handleMenuClick: (props: any) => () => {
       props.setMenuCollapsed(!props.menuCollapsed);
