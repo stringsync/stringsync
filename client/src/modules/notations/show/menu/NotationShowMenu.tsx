@@ -3,30 +3,29 @@ import styled from 'react-emotion';
 import { Menu, Checkbox, Icon } from 'antd';
 import { withRouter, Link, RouteComponentProps } from 'react-router-dom';
 import { compose, withState } from 'recompose';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 
 const { ItemGroup, Item } = Menu;
 
 interface IOuterProps {
   collapsed: boolean;
+  fretboardVisibility: boolean;
+  pianoVisibility: boolean;
+  onFretboardVisibilityChange: (event: CheckboxChangeEvent) => void;
+  onPianoVisibilityChange: (event: CheckboxChangeEvent) => void;
 }
 
 type IWithRouterProps = IOuterProps & RouteComponentProps<{ id: string }, {}>
 
 interface IInnerProps extends IWithRouterProps {
-  fretboardChecked: boolean;
-  pianoChecked: boolean;
   suggestNotesChecked: boolean;
   showLoopChecked: boolean;
-  setFretboardChecked: (fretboard: boolean) => void;
-  setPianoChecked: (piano: boolean) => void;
   setSuggestNotesChecked: (suggestNotes: boolean) => void;
   setShowLoopChecked: (showLoop: boolean) => void;
 }
 
 const enhance = compose<IInnerProps, IOuterProps>(
   withRouter,
-  withState('fretboardChecked', 'setFretboardChecked', true),
-  withState('pianoChecked', 'setPianoChecked', false),
   withState('suggestNotesChecked', 'setSuggestNotesChecked', false),
   withState('showLoopChecked', 'setShowLoopChecked', false)
 );
@@ -86,12 +85,20 @@ export const NotationShowMenu = enhance(props => (
       </ItemGroup>
       <ItemGroup title="visuals">
         <Item key="fretboard">
-          <Checkbox checked={props.fretboardChecked} />
-          <CheckDescription>fretboard</CheckDescription>
+          <Checkbox
+            checked={props.fretboardVisibility}
+            onChange={props.onFretboardVisibilityChange}
+          >
+            <CheckDescription>fretboard</CheckDescription>
+          </Checkbox>
         </Item>
         <Item key="piano">
-          <Checkbox checked={props.pianoChecked} />
-          <CheckDescription>piano</CheckDescription>
+          <Checkbox
+            checked={props.pianoVisibility}
+            onChange={props.onPianoVisibilityChange} 
+          >
+            <CheckDescription>piano</CheckDescription>
+          </Checkbox>
         </Item>
       </ItemGroup>
       <ItemGroup title="player">

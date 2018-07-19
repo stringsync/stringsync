@@ -8,6 +8,7 @@ import { compose, lifecycle, withState, withHandlers, withProps } from 'recompos
 import { connect } from 'react-redux';
 import { NotationsActions, fetchNotation, VideoActions } from 'data';
 import { RouteComponentProps } from 'react-router-dom';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 
 type OuterProps = RouteComponentProps<{ id: string }>;
 
@@ -26,15 +27,17 @@ interface IScoreWidthProps extends IConnectProps {
 
 interface IMenuProps extends IScoreWidthProps {
   menuCollapsed: boolean;
-  isFretboardVisible: boolean;
-  isPianoVisible: boolean;
+  fretboardVisibility: boolean;
+  pianoVisibility: boolean;
   setMenuCollapsed: (menuCollapsed: boolean) => void;
-  setFretboardVisibility: (isFretboardVisible: boolean) => void;
-  setPianoVisibility: (isPianoVisible: boolean) => void;
+  setFretboardVisibility: (fretboardVisibility: boolean) => void;
+  setPianoVisibility: (pianoVisibility: boolean) => void;
 }
 
 interface IMenuHandlerProps extends IMenuProps {
   handleMenuClick: (event: React.SyntheticEvent<HTMLElement>) => void;
+  handleFretboardVisibilityChange: (event: CheckboxChangeEvent) => void;
+  handlePianoVisibilityChange: (event: CheckboxChangeEvent) => void;
 }
 
 const getNotationShowElement = () => document.getElementById('notation-show');
@@ -56,12 +59,18 @@ const enhance = compose<IMenuHandlerProps, OuterProps>(
     scoreWidth: Math.max(Math.min(props.viewportWidth, 1200), 200) - 30
   })),
   withState('menuCollapsed', 'setMenuCollapsed', true),
-  withState('isFretboardVisible', 'setFretboardVisibility', true),
-  withState('isPianoVisible', 'setPianoVisibility', false),
+  withState('fretboardVisibility', 'setFretboardVisibility', true),
+  withState('pianoVisibility', 'setPianoVisibility', false),
   withHandlers({
-    handleMenuClick: (props: any) => () => {
+    handleFretboardVisibilityChange: (props: IMenuProps) => (event: CheckboxChangeEvent) => {
+      props.setFretboardVisibility(event.target.checked);
+    },
+    handleMenuClick: (props: IMenuProps) => () => {
       props.setMenuCollapsed(!props.menuCollapsed);
-    }
+    },
+    handlePianoVisibilityChange: (props: IMenuProps) => (event: CheckboxChangeEvent) => {
+      props.setPianoVisibility(event.target.checked);
+    },
   }),
   lifecycle<IMenuHandlerProps, {}>({
     componentWillMount() {
@@ -126,8 +135,8 @@ export const NotationShow = enhance(props => (
             target={getNotationShowElement}
             offsetTop={2}
           >
-            <Fretboard />
-            <Piano />
+            {props.fretboardVisibility ? <Fretboard /> : null}
+            {props.pianoVisibility ? <Piano /> : null}
           </Affix>
         </div>
         <div>
@@ -142,7 +151,13 @@ export const NotationShow = enhance(props => (
           collapsed={props.menuCollapsed}
           onClick={props.handleMenuClick}
         />
-        <NotationShowMenu collapsed={props.menuCollapsed} />
+        <NotationShowMenu
+          fretboardVisibility={props.fretboardVisibility}
+          pianoVisibility={props.pianoVisibility}
+          onFretboardVisibilityChange={props.handleFretboardVisibilityChange}
+          onPianoVisibilityChange={props.handlePianoVisibilityChange}
+          collapsed={props.menuCollapsed}
+        />
         <NotationShowControls
           menuCollapsed={props.menuCollapsed}
           onMenuClick={props.handleMenuClick}
