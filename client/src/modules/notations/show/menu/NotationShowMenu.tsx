@@ -4,6 +4,8 @@ import { Menu, Checkbox, Icon } from 'antd';
 import { withRouter, Link, RouteComponentProps } from 'react-router-dom';
 import { compose, withState } from 'recompose';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import { connect } from 'react-redux';
+import { get } from 'lodash';
 
 const { ItemGroup, Item } = Menu;
 
@@ -15,9 +17,14 @@ interface IOuterProps {
   onPianoVisibilityChange: (event: CheckboxChangeEvent) => void;
 }
 
-type IWithRouterProps = IOuterProps & RouteComponentProps<{ id: string }, {}>
+type WithRouterProps = IOuterProps & RouteComponentProps<{ id: string }, {}>
 
-interface IInnerProps extends IWithRouterProps {
+interface IConnectProps extends WithRouterProps {
+  isCurrentUserTranscriber: boolean;
+  role: Role.Roles;
+}
+
+interface IInnerProps extends IConnectProps {
   suggestNotesChecked: boolean;
   showLoopChecked: boolean;
   setSuggestNotesChecked: (suggestNotes: boolean) => void;
@@ -26,6 +33,17 @@ interface IInnerProps extends IWithRouterProps {
 
 const enhance = compose<IInnerProps, IOuterProps>(
   withRouter,
+  connect(
+    (state: StringSync.Store.IState) => {
+      const sessionUserId = state.session.id;
+      const notationTranscriberUserId = get(state.notations.show.transcriber, 'id');
+
+      return {
+        isCurrentUserTranscriber: sessionUserId && sessionUserId === notationTranscriberUserId,
+        role: state.session.role
+      }
+    }
+  ),
   withState('suggestNotesChecked', 'setSuggestNotesChecked', false),
   withState('showLoopChecked', 'setShowLoopChecked', false)
 );
@@ -64,24 +82,26 @@ export const NotationShowMenu = enhance(props => (
             <span>print</span>
           </Link>
         </Item>
-        <Item key="edit">
-          <Link to={`/n/${props.match.params.id}/edit`}>
-            <Icon type="edit" />
-            <span>edit</span>
-          </Link>
-        </Item>
-        <Item key="show">
-          <Link to={`/n/${props.match.params.id}`}>
-            <Icon type="picture" />
-            <span>show</span>
-          </Link>
-        </Item>
-        <Item key="studio">
-          <Link to={`/n/${props.match.params.id}/studio`}>
-            <Icon type="video-camera" />
-            <span>studio</span>
-          </Link>
-        </Item>
+        {
+          props.isCurrentUserTranscriber || props.role === 'admin'
+            ? <Item key="edit">
+                <Link to={`/n/${props.match.params.id}/edit`}>
+                  <Icon type="edit" />
+                  <span>edit</span>
+                </Link>
+              </Item>
+            : null
+        }
+        {
+          props.role === 'admin'
+            ? <Item key="studio">
+                <Link to={`/n/${props.match.params.id}/studio`}>
+                  <Icon type="video-camera" />
+                  <span>studio</span>
+                </Link>
+              </Item>
+            : null
+        }
       </ItemGroup>
       <ItemGroup title="visuals">
         <Item key="fretboard">
