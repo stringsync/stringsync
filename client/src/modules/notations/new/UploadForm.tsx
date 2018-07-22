@@ -1,92 +1,49 @@
 import * as React from 'react';
 import styled from 'react-emotion';
-import { Form, Icon, Input, Button } from 'antd';
-import { compose, withState, withHandlers, withProps } from 'recompose';
+import { Form, Icon, Input, Button, Select, Upload } from 'antd';
+import { compose, withState, withHandlers } from 'recompose';
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { login, SessionActions } from 'data';
-import { IAuthResponse } from 'j-toker';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
 
 const { Item } = Form;
+const { Option } = Select;
 
-interface IInnerProps {
+const YOUTUBE_REGEX = /^(?:https?:\/\/)?(?:www\.)?youtu(?:\.be|be\.com)\/(?:watch\?v=)?([\w-]{10,})/;
+
+interface IFormProps {
   form: WrappedFormUtils;
+}
+
+interface IStateProps extends IFormProps {
   loading: boolean;
   errors: string[];
-  login: (user: User.ILoginUser) => IAuthResponse;
-  setSession: (user: User.ISessionUser) => void;
   setLoading: (loading: boolean) => void;
   setErrors: (errors: string[]) => void;
-  handlePasswordClear: () => void;
-  handlePasswordInputRef: () => void;
-  handleLoginError: () => void;
-  handleLoginSuccess: (res: IAuthResponse) => void;
-  doLogin: (user: User.ILoginUser) => void;
-  afterValidate: (errors?: string[], user?: User.ILoginUser) => void;
-  handleSubmit: (event: React.SyntheticEvent<HTMLElement>) => void;
+}
+
+interface IValidationProps extends IStateProps {
+  afterValidate: (errors: string[]) => void;
+}
+
+interface IInnerProps extends IValidationProps {
+  handleSubmit: (event: React.SyntheticEvent<HTMLFormElement>) => void;
 }
 
 const enhance = compose<IInnerProps, {}>(
   Form.create(),
-  connect(
-    null,
-    dispatch => ({
-      login: (user: User.ILoginUser) => dispatch(login(user) as any),
-      setSession: (user: User.ISessionUser) => dispatch(SessionActions.setSession(user))
-    })
-  ),
   withState('loading', 'setLoading', false),
   withState('errors', 'setErrors', []),
-  withHandlers(() => {
-    let passwordInput: HTMLInputElement;
-
-    return ({
-      handlePasswordClear: () => () => {
-        if (passwordInput) {
-          passwordInput.focus();
-        }
-      },
-      handlePasswordInputRef: () => (ref: HTMLInputElement) => {
-        passwordInput = ref;
-      }
-    })
-  }),
   withHandlers({
-    handleLoginError: (props: any) => (errors: string[]) => {
-      props.setLoading(false);
-      props.form.setFields({ password: { value: '' } });
-      props.handlePasswordClear();
-      props.setErrors(errors);
-    },
-    handleLoginSuccess: (props: any) => (res: IAuthResponse) => {
-      // We redirect to the home page, so we don't bother setting the loading to false,
-      // since we don't want to call setState on an unmounted component.
-      window.ss.message.success(`signed in as ${res.data.name}`);
-    }
-  }),
-  withProps((props: any) => ({
-    doLogin: async (user: User.ILoginUser) => {
-      props.setLoading(true);
-
-      try {
-        const response = await props.login(user);
-        props.handleLoginSuccess(response);
-      } catch (error) {
-        props.handleLoginError(error.data.errors);
-      }
-    }
-  })),
-  withHandlers({
-    afterValidate: (props: any) => (errors: string[], user: User.ILoginUser) => {
+    afterValidate: () => (errors: string[]) => {
       if (!errors) {
-        props.doLogin(user);
+        console.warn('no errors');
       }
     }
   }),
   withHandlers({
-    handleSubmit: (props: any) => (event: React.SyntheticEvent<HTMLElement>) => {
+    handleSubmit: (props: IValidationProps) => (event: React.SyntheticEvent<HTMLFormElement>) => {
       event.preventDefault();
+      props.setLoading(true);
       props.form.validateFields(props.afterValidate);
     }
   })
@@ -96,8 +53,16 @@ const Outer = styled('div')`
   transition: height 500ms ease-in;
 `;
 
-const LoginButton = styled(Button)`
+const StyledButton = styled(Button)`
   width: 100%;
+`;
+
+const StyledUpload = styled(Upload)`
+  width: 100%;
+
+  .ant-upload.ant-upload-select {
+    width: 100%;
+  }
 `;
 
 const Footer = styled('div')`
@@ -105,36 +70,68 @@ const Footer = styled('div')`
   text-align: center;
 `;
 
+const getFalse = () => false;
+
 export const UploadForm = enhance(props => (
   <Outer>
     <Form onSubmit={props.handleSubmit}>
       <Item>
-        {props.form.getFieldDecorator('email', {
-          rules: [{ required: true, message: 'email cannot be blank' }],
+        {props.form.getFieldDecorator('youtubeUrl', {
+          rules: [
+            { required: true, message: 'YouTube URL cannot be blank' },
+            { pattern: YOUTUBE_REGEX, message: 'must be valid YouTube URL' }
+          ],
         })(
-          <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="email" />
+          <Input prefix={<Icon type="video-camera" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="youtube url" />
         )}
       </Item>
       <Item>
-        {props.form.getFieldDecorator('password', {
-          rules: [{ required: true, message: 'password cannot be blank' }],
+        {props.form.getFieldDecorator('songName', {
+          rules: [{ required: true, message: 'Song name cannot be blank' }],
         })(
-          <Input
-            type="password"
-            placeholder="password"
-            ref={props.handlePasswordInputRef}
-            prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-          />
+          <Input prefix={<Icon type="info-circle-o" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="song name" />
         )}
       </Item>
       <Item>
-        <LoginButton type="primary" htmlType="submit" loading={props.loading}>
-          login
-        </LoginButton>
+        {props.form.getFieldDecorator('artistName', {
+          rules: [{ required: true, message: 'Artist name cannot be blank' }],
+        })(
+          <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="artist name" />
+        )}
+      </Item>
+      <Item>
+        {props.form.getFieldDecorator('tagIds', {
+          rules: [{ required: true, message: 'Tags cannot be blank' }],
+        })(
+          <Select mode="tags" placeholder="tags">
+            {
+              [{ name: 'foo', id: 1 }, { name: 'bar', id: 2 }].map(tag => (
+                <Option key={tag.name} value={tag.id.toString()}>{tag.name}</Option>
+              ))
+            }
+          </Select>
+        )}
+      </Item>
+      <Item>
+        {props.form.getFieldDecorator('thumbnail', {
+          rules: [{ required: true, message: 'Thumbnail name cannot be blank' }],
+        })(
+          <StyledUpload accept="image/*" beforeUpload={getFalse}>
+            <StyledButton type="dashed">
+              <Icon type="upload" />
+              Click to Upload
+            </StyledButton>
+          </StyledUpload>
+        )}
+      </Item>
+      <Item>
+        <StyledButton type="primary" htmlType="submit" loading={props.loading}>
+          submit
+        </StyledButton>
       </Item>
     </Form>
     <Footer>
-      or <Link to="/signup">register now!</Link>
+      or <Link to="/">discover new music!</Link>
     </Footer>
     <Footer>
       Hello, errors!
