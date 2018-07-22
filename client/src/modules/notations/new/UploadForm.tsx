@@ -1,10 +1,12 @@
 import * as React from 'react';
 import styled from 'react-emotion';
 import { Form, Icon, Input, Button, Select, Upload } from 'antd';
-import { compose, withState, withHandlers } from 'recompose';
+import { compose, withState, withHandlers, lifecycle } from 'recompose';
 import { Link } from 'react-router-dom';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
 import { FormErrors } from 'modules/forms';
+import { connect, Dispatch } from 'react-redux';
+import { fetchAllTags } from 'data/tags';
 
 const { Item } = Form;
 const { Option } = Select;
@@ -15,7 +17,12 @@ interface IFormProps {
   form: WrappedFormUtils;
 }
 
-interface IStateProps extends IFormProps {
+interface IConnectProps extends IFormProps {
+  tags: Tag.ITag[];
+  fetchAllTags: () => void;
+}
+
+interface IStateProps extends IConnectProps {
   loading: boolean;
   errors: string[];
   setLoading: (loading: boolean) => void;
@@ -32,12 +39,22 @@ interface IInnerProps extends IValidationProps {
 
 const enhance = compose<IInnerProps, {}>(
   Form.create(),
+  connect(
+    (state: StringSync.Store.IState) => ({
+      tags: state.tags.index
+    }),
+    (dispatch: Dispatch) => ({
+      fetchAllTags: () => dispatch(fetchAllTags() as any)
+    })
+  ),
   withState('loading', 'setLoading', false),
   withState('errors', 'setErrors', []),
   withHandlers({
-    afterValidate: () => (errors: string[]) => {
+    afterValidate: (props: IStateProps) => (errors: string[]) => {
       if (!errors) {
         // do upload
+      } else {
+        props.setLoading(false);
       }
     }
   }),
@@ -46,6 +63,11 @@ const enhance = compose<IInnerProps, {}>(
       event.preventDefault();
       props.setLoading(true);
       props.form.validateFields(props.afterValidate);
+    }
+  }),
+  lifecycle<IInnerProps, {}>({
+    componentDidMount(): void {
+      this.props.fetchAllTags();
     }
   })
 );
@@ -118,7 +140,7 @@ export const UploadForm = enhance(props => (
         })(
           <Select disabled={props.loading} mode="tags" placeholder="tags">
             {
-              [{ name: 'foo', id: 1 }, { name: 'bar', id: 2 }].map(tag => (
+              props.tags.map(tag => (
                 <Option key={tag.name} value={tag.id.toString()}>{tag.name}</Option>
               ))
             }
