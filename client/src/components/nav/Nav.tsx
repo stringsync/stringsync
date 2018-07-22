@@ -46,6 +46,7 @@ const enhance: ComponentEnhancer<IWithProps, {}> = compose(
           case 'logout':
             props.logout();
             window.ss.message.info('logged out');
+            props.history.push('/');
             break;
           default:
             break;

@@ -113,7 +113,11 @@ export const LoginForm = enhance(props => (
         {props.form.getFieldDecorator('email', {
           rules: [{ required: true, message: 'email cannot be blank' }],
         })(
-          <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="email" />
+          <Input
+            disabled={props.loading}
+            prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            placeholder="email"
+          />
         )}
       </Item>
       <Item>
@@ -123,6 +127,7 @@ export const LoginForm = enhance(props => (
           <Input
             type="password"
             placeholder="password"
+            disabled={props.loading}
             ref={props.handlePasswordInputRef}
             prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
           />

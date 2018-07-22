@@ -4,6 +4,7 @@ import { Form, Icon, Input, Button, Select, Upload } from 'antd';
 import { compose, withState, withHandlers } from 'recompose';
 import { Link } from 'react-router-dom';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
+import { FormErrors } from 'modules/forms';
 
 const { Item } = Form;
 const { Option } = Select;
@@ -36,7 +37,7 @@ const enhance = compose<IInnerProps, {}>(
   withHandlers({
     afterValidate: () => (errors: string[]) => {
       if (!errors) {
-        console.warn('no errors');
+        // do upload
       }
     }
   }),
@@ -82,28 +83,40 @@ export const UploadForm = enhance(props => (
             { pattern: YOUTUBE_REGEX, message: 'must be valid YouTube URL' }
           ],
         })(
-          <Input prefix={<Icon type="video-camera" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="youtube url" />
+          <Input
+            disabled={props.loading}
+            prefix={<Icon type="video-camera" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            placeholder="youtube url"
+          />
         )}
       </Item>
       <Item>
         {props.form.getFieldDecorator('songName', {
           rules: [{ required: true, message: 'Song name cannot be blank' }],
         })(
-          <Input prefix={<Icon type="info-circle-o" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="song name" />
+          <Input
+            disabled={props.loading}
+            prefix={<Icon type="info-circle-o" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            placeholder="song name"
+          />
         )}
       </Item>
       <Item>
         {props.form.getFieldDecorator('artistName', {
           rules: [{ required: true, message: 'Artist name cannot be blank' }],
         })(
-          <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="artist name" />
+          <Input
+            disabled={props.loading}
+            prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            placeholder="artist name"
+          />
         )}
       </Item>
       <Item>
         {props.form.getFieldDecorator('tagIds', {
           rules: [{ required: true, message: 'Tags cannot be blank' }],
         })(
-          <Select mode="tags" placeholder="tags">
+          <Select disabled={props.loading} mode="tags" placeholder="tags">
             {
               [{ name: 'foo', id: 1 }, { name: 'bar', id: 2 }].map(tag => (
                 <Option key={tag.name} value={tag.id.toString()}>{tag.name}</Option>
@@ -134,7 +147,7 @@ export const UploadForm = enhance(props => (
       or <Link to="/">discover new music!</Link>
     </Footer>
     <Footer>
-      Hello, errors!
+      <FormErrors errors={props.errors} />
     </Footer>
   </Outer>
 ));

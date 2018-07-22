@@ -72,7 +72,7 @@ const enhance = compose<IInnerProps, {}>(
       }
     }
   })),
-  withProps(props => ({
+  withProps(() => ({
     checkPasswordConfirm: (form: WrappedFormUtils, otherPasswordField: string) => (rule: any, value: any, callback: any) => {
       const otherValue = form.getFieldValue(otherPasswordField);
 
@@ -124,7 +124,11 @@ export const SignupForm = enhance(props => (
             { pattern: /[a-zA-Z0-9]{1,}/, message: 'must have at least one letter or number' }
           ],
         })(
-          <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="username" />
+          <Input
+            disabled={props.loading}
+            prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            placeholder="username"
+          />
         )}
       </Item>
       <Item>
@@ -135,7 +139,11 @@ export const SignupForm = enhance(props => (
             { max: 30, message: 'must be at most 30 characters' },
           ],
         })(
-          <Input prefix={<Icon type="inbox" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="email" />
+          <Input
+            disabled={props.loading}
+            prefix={<Icon type="inbox" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            placeholder="email"
+          />
         )}
       </Item>
       <Item>
@@ -148,7 +156,12 @@ export const SignupForm = enhance(props => (
             { validator: props.checkPasswordConfirm(props.form, 'passwordConfirmation') }
           ],
         })(
-          <Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="password" />
+          <Input
+            disabled={props.loading}
+            prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            type="password"
+            placeholder="password"
+          />
         )}
       </Item>
       <Item>
@@ -158,7 +171,12 @@ export const SignupForm = enhance(props => (
             { validator: props.checkPasswordConfirm(props.form, 'password') }
           ],
         })(
-          <Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="confirm password" />
+          <Input
+            disabled={props.loading}
+            prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            type="password"
+            placeholder="confirm password"
+          />
         )}
       </Item>
       <Item>
