@@ -5,8 +5,8 @@ const enhance = compose(
 
 );
 
-export const NotationUpload = enhance(() => (
+export const NotationNew = enhance(() => (
   <div>
-    NotationUpload
+    NotationNew
   </div>
 ));
