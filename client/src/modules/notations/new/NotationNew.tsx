@@ -1,12 +1,9 @@
 import * as React from 'react';
-import { compose } from 'recompose';
+import { UploadForm } from './UploadForm';
+import { FormWrapper } from 'modules/forms';
 
-const enhance = compose(
-
+export const NotationNew = () => (
+  <FormWrapper title="Upload">
+    <UploadForm />
+  </FormWrapper>
 );
-
-export const NotationNew = enhance(() => (
-  <div>
-    NotationNew
-  </div>
-));

@@ -11,8 +11,8 @@ export const Routes = () => (
     <Route exact={true} path="/" component={NotationIndex} />
     <AuthRoute requireSignIn={false} exact={true} path="/login" component={Login} />
     <AuthRoute requireSignIn={false} exact={true} path="/signup" component={Signup} />
+    <Route exact={true} path="/upload" component={NotationNew} />
     <Route path="/n" component={Notation} />
-    <AuthRoute requireSignIn={true} exact={true} path="/upload" component={NotationNew} />
     <Route path="/about" component={About} />
     <Route component={NotFound} />
   </Switch>
