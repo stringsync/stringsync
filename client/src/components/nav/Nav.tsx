@@ -144,12 +144,12 @@ const Nav = enhance(props => (
                   {
                     props.session.role === 'teacher' || props.session.role === 'admin'
                       ? <StyledMenuItem key="/upload">
-                          upload
+                          <Icon type="upload" /> upload
                         </StyledMenuItem>
                       : null
                   }
                   <StyledMenuItem key="logout">
-                    logout
+                    <Icon type="logout" /> logout
                   </StyledMenuItem>
               </ItemGroup>
               </StyledSubMenu>
