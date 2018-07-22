@@ -22,7 +22,7 @@ namespace API {
 
     export interface IIndexResponse {
       links: JSONApi.ILinks;
-      data: IData;
+      data: IData[];
     }
   }
 }
