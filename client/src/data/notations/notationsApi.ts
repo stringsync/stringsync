@@ -2,7 +2,7 @@
 import { NotationsActions } from './notationsActions';
 import { IncludedObjects } from 'utilities';
 import { Dispatch } from 'react-redux';
-import { pick, sortBy } from 'lodash';
+import { pick, omit, sortBy } from 'lodash';
 
 export const fetchAllNotations = () => async (dispatch: Dispatch) => {
   const response = await fetch('/api/v1/notations');
@@ -65,3 +65,32 @@ export const fetchNotation = (notationId: number) => async (dispatch: Dispatch) 
 
   return notation;
 };
+
+export interface ICreateNotation {
+  artist_name: string;
+  bpm: number;
+  dead_time_ms: number;
+  duration_ms: number;
+  song_name: string;
+  thumbnail: File;
+  vextab_string: string;
+  video: {
+    kind: Video.Kinds;
+    src: string;
+  }
+}
+
+export const createNotation = (notation: ICreateNotation) => async (dispatch: Dispatch) => {
+  const data = new FormData();
+  data.append('notation', JSON.stringify(omit(notation, 'thumbnail')));
+  data.append('notation[thumbnail]', notation.thumbnail);
+
+  const response = await fetch('/api/v1/notations.json', {
+    body: data,
+    credentials: 'include',
+    headers: window.ss.auth.retrieveData('authHeaders'),
+    method: 'POST',
+  });
+
+  console.log(response);
+}

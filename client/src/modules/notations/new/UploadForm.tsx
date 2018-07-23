@@ -7,11 +7,37 @@ import { WrappedFormUtils } from 'antd/lib/form/Form';
 import { FormErrors } from 'modules/forms';
 import { connect, Dispatch } from 'react-redux';
 import { fetchAllTags } from 'data/tags';
+import { ICreateNotation, createNotation } from 'data';
 
 const { Item } = Form;
 const { Option } = Select;
 
 const YOUTUBE_REGEX = /^(?:https?:\/\/)?(?:www\.)?youtu(?:\.be|be\.com)\/(?:watch\?v=)?([\w-]{10,})/;
+
+interface IFormFieldData {
+  artistName: string;
+  songName: string;
+  tagIds: string[];
+  thumbnail: {
+    file: File;
+    fileList: File[];
+  };
+  youtubeUrl: string;
+}
+
+const getNotationParams = (fields: IFormFieldData): ICreateNotation => ({
+  artist_name: fields.artistName,
+  bpm: 120,
+  dead_time_ms: 0,
+  duration_ms: 60,
+  song_name: fields.songName,
+  thumbnail: fields.thumbnail.file,
+  vextab_string: '',
+  video: {
+    kind: 'YOUTUBE',
+    src: fields.youtubeUrl
+  }
+});
 
 interface IFormProps {
   form: WrappedFormUtils;
@@ -20,6 +46,7 @@ interface IFormProps {
 interface IConnectProps extends IFormProps {
   tags: Tag.ITag[];
   fetchAllTags: () => void;
+  createNotation: (notation: ICreateNotation) => void;
 }
 
 interface IStateProps extends IConnectProps {
@@ -44,15 +71,16 @@ const enhance = compose<IInnerProps, {}>(
       tags: state.tags.index
     }),
     (dispatch: Dispatch) => ({
+      createNotation: (notation: ICreateNotation) => dispatch(createNotation(notation) as any),
       fetchAllTags: () => dispatch(fetchAllTags() as any)
     })
   ),
   withState('loading', 'setLoading', false),
   withState('errors', 'setErrors', []),
   withHandlers({
-    afterValidate: (props: IStateProps) => (errors: string[]) => {
+    afterValidate: (props: IStateProps) => (errors: string[], fields: IFormFieldData) => {
       if (!errors) {
-        // do upload
+        props.createNotation(getNotationParams(fields));
       } else {
         props.setLoading(false);
       }
@@ -138,7 +166,7 @@ export const UploadForm = enhance(props => (
         {props.form.getFieldDecorator('tagIds', {
           rules: [{ required: true, message: 'Tags cannot be blank' }],
         })(
-          <Select disabled={props.loading} mode="tags" placeholder="tags">
+          <Select disabled={props.loading} mode="multiple" placeholder="tags">
             {
               props.tags.map(tag => (
                 <Option key={tag.name} value={tag.id.toString()}>{tag.name}</Option>

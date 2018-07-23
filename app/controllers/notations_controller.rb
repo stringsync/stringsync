@@ -1,3 +1,4 @@
+
 class NotationsController < ApplicationController
   def index
     @notations = Notation.includes(:tags, :transcriber, :video)

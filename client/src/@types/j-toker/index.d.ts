@@ -64,6 +64,8 @@ declare module 'j-toker' {
   }
 
   export interface IJTokerAuth {
+    appendAuthHeaders: (xhr: JQueryXHR, settings: any) => void;
+    retrieveData: (key: string) => any;
     configure: (options: IAuthConfigurationOptions, reset?: boolean) => any;
     emailSignIn: (user: User.ILoginUser) => Promise<IAuthResponse>;
     emailSignUp: (user: ISignupUser) => Promise<IAuthResponse>;
