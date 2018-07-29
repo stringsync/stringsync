@@ -78,12 +78,12 @@ const enhance = compose<IInnerProps, {}>(
   withState('loading', 'setLoading', false),
   withState('errors', 'setErrors', []),
   withHandlers({
-    afterValidate: (props: IStateProps) => (errors: string[], fields: IFormFieldData) => {
+    afterValidate: (props: IStateProps) => async (errors: string[], fields: IFormFieldData) => {
       if (!errors) {
-        props.createNotation(getNotationParams(fields));
-      } else {
-        props.setLoading(false);
+        await props.createNotation(getNotationParams(fields));
       }
+
+      props.setLoading(false);
     }
   }),
   withHandlers({

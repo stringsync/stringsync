@@ -47,6 +47,8 @@ Rails.application.configure do
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
   # Paperclip
+  Paperclip.options[:command_path] = "/usr/local/bin/convert"
+
   config.paperclip_defaults = {
     storage: :s3,
     preserve: true,

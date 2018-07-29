@@ -82,8 +82,26 @@ export interface ICreateNotation {
 
 export const createNotation = (notation: ICreateNotation) => async (dispatch: Dispatch) => {
   const data = new FormData();
-  data.append('notation', JSON.stringify(omit(notation, 'thumbnail')));
-  data.append('notation[thumbnail]', notation.thumbnail);
+
+  Object.keys(notation).forEach(key => {
+    const value = notation[key];
+
+    switch (key) {
+
+      case 'thumbnail':
+        data.append(`notation[thumbnail]`, value);
+        break;
+
+      case 'video':
+        data.append(`notation[video_attributes][kind]`, (value.kind as string).toLowerCase());
+        data.append(`notation[video_attributes][src]`, value.src);
+        break;
+
+      default:
+        data.append(`notation[${key}]`, value);
+        break;
+    }
+  });
 
   const response = await fetch('/api/v1/notations.json', {
     body: data,
@@ -91,6 +109,4 @@ export const createNotation = (notation: ICreateNotation) => async (dispatch: Di
     headers: window.ss.auth.retrieveData('authHeaders'),
     method: 'POST',
   });
-
-  console.log(response);
 }
