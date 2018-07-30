@@ -74,6 +74,7 @@ export interface ICreateNotation {
   song_name: string;
   thumbnail: File;
   vextab_string: string;
+  tag_ids: string[];
   video: {
     kind: Video.Kinds;
     src: string;
@@ -95,6 +96,10 @@ export const createNotation = (notation: ICreateNotation) => async (dispatch: Di
       case 'video':
         data.append(`notation[video_attributes][kind]`, (value.kind as string).toLowerCase());
         data.append(`notation[video_attributes][src]`, value.src);
+        break;
+
+      case 'tag_ids':
+        value.forEach((id: string) => data.append(`notation[tag_ids][]`, id));
         break;
 
       default:

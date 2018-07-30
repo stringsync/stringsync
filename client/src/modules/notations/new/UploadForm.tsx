@@ -31,6 +31,7 @@ const getNotationParams = (fields: IFormFieldData): ICreateNotation => ({
   dead_time_ms: 0,
   duration_ms: 60,
   song_name: fields.songName,
+  tag_ids: fields.tagIds,
   thumbnail: fields.thumbnail.file,
   vextab_string: '',
   video: {

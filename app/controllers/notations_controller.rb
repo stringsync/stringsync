@@ -13,6 +13,7 @@ class NotationsController < ApplicationController
   def create
     if current_user.try(:has_role?, :teacher)
       @notation = Notation.new(notation_params.merge(transcriber: current_user))
+      @notation.tags = Tag.where(id: params.fetch(:notation).fetch(:tag_ids))
 
       if @notation.save
         render(:show, status: 200)
