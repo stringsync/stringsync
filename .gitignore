@@ -8,8 +8,6 @@
 *.sqlite
 sandbox.html
 .byebug_history
-.vscode/
-.vscode
 
 ### OSX ###
 
