@@ -1,7 +1,7 @@
 
 import * as $ from 'jquery';
 import { NotationsActions } from './notationsActions';
-import { IncludedObjects } from 'utilities';
+import { IncludedObjects, ajax } from 'utilities';
 import { Dispatch } from 'react-redux';
 import { pick, sortBy } from 'lodash';
 
@@ -109,12 +109,11 @@ export const createNotation = (notation: ICreateNotation) => async (dispatch: Di
     }
   });
 
-  const json: API.Notations.IShowResponse = await $.ajax({
+  const json: API.Notations.IShowResponse = await ajax('/api/v1/notations', {
     contentType: false,
     data,
     method: 'POST',
-    processData: false,
-    url: `${window.ss.auth.getApiUrl()}/api/v1/notations`,
+    processData: false
   });
 
   // extract notation edit
