@@ -21,7 +21,7 @@ class NotationsController < ApplicationController
         render("shared/errors", status: 422)
       end
     else
-      render("shared/errors", status: 401)
+      render("shared/errors", status: 401, locals: { details: "Must be a teacher to upload" })
     end
   end
 

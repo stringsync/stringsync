@@ -16,6 +16,15 @@ class FixtureLoader
       create_fixtures!(Tag)
       create_notations_and_videos!
       create_taggings!
+
+      # Manually setting the ids does causes unexpected behavior with the auto increment coloumns
+      [User, Tag, Notation, Video, Tagging].each do |model|
+        id = model.maximum(:id) + 1
+        
+        ActiveRecord::Base.connection.execute(
+          "ALTER SEQUENCE #{model.table_name}_id_seq RESTART WITH #{id}"
+        )
+      end
     end
   end
 

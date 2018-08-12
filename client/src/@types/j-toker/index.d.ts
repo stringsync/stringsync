@@ -71,6 +71,7 @@ declare module 'j-toker' {
     emailSignUp: (user: ISignupUser) => Promise<IAuthResponse>;
     oAuthSignIn: (args: IOAuthSignInArguments) => Promise<IAuthResponse>;
     signOut: () => Promise<void>;
+    getApiUrl(): () => string;
   }
 
   export type OAuthCallback = (res: IAuthResponse) => any;

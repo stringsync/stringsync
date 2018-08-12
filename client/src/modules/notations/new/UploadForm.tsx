@@ -7,6 +7,7 @@ import { WrappedFormUtils } from 'antd/lib/form/Form';
 import { FormErrors } from 'modules/forms';
 import { connect, Dispatch } from 'react-redux';
 import { fetchAllTags } from 'data/tags';
+import { get } from 'lodash';
 import { ICreateNotation, createNotation } from 'data';
 
 const { Item } = Form;
@@ -81,7 +82,18 @@ const enhance = compose<IInnerProps, {}>(
   withHandlers({
     afterValidate: (props: IStateProps) => async (errors: string[], fields: IFormFieldData) => {
       if (!errors) {
-        await props.createNotation(getNotationParams(fields));
+        try {
+          await props.createNotation(getNotationParams(fields));
+        } catch (error) {
+          console.error(error);
+          const responseErrors = (
+            get(error.responseJSON, 'errors') ||
+            [{ details: 'Something went wrong' }]
+          );
+          props.setErrors(
+            responseErrors.map((errorObj: any) => errorObj.details)
+          );
+        }
       }
 
       props.setLoading(false);

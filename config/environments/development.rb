@@ -46,6 +46,9 @@ Rails.application.configure do
   # routes, locales, etc. This feature depends on the listen gem.
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
+  # Do not log partial renderings
+  config.action_view.logger = nil
+
   # Paperclip
   Paperclip.options[:command_path] = "/usr/local/bin/convert"
 

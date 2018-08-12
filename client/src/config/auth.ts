@@ -1,3 +1,4 @@
+import * as $ from 'jquery';
 import * as auth from 'j-toker';
 
 /**
@@ -36,6 +37,13 @@ const configureAuth = (): void => {
       if (window.ss.sessionSync.callback) {
         window.ss.sessionSync.callback(user);
       }
+
+      $.ajaxSetup({
+        beforeSend: (xhr, settings) => {
+          // append outbound auth headers
+          window.ss.auth.appendAuthHeaders(xhr, settings);
+        }
+      });
 
       return user;
     }
