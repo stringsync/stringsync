@@ -5,9 +5,7 @@ import GoogleIconSrc from 'assets/google-logo-icon-36x36.png';
 import { compose, withHandlers, withState } from 'recompose';
 import { oAuthLogin } from 'data';
 import { connect } from 'react-redux';
-import { SessionActions } from 'data';
 import { registerServiceWorker, unregisterServiceWorker } from 'utilities';
-import { OAuthCallback, IAuthResponse } from 'j-toker';
 
 interface IInnerProps {
   facebookLoading: boolean;
@@ -18,8 +16,8 @@ interface IInnerProps {
   googleLogin: () => User.ISessionUser;
   handleError: () => void;
   handleSuccess: (user: User.ISessionUser) => void;
-  handleFacebookClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  handleGoogleClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  handleFacebookClick: () => User.ISessionUser;
+  handleGoogleClick: () => User.ISessionUser;
 }
 
 const enhance = compose<IInnerProps, {}>(
@@ -28,12 +26,8 @@ const enhance = compose<IInnerProps, {}>(
   connect(
     null,
     dispatch => ({
-      facebookLogin: (onSuccess?: OAuthCallback, onError?: () => any) => {
-        dispatch(oAuthLogin('facebook') as any)
-      },
-      googleLogin: (onSuccess?: OAuthCallback, onError?: () => any) => {
-        dispatch(oAuthLogin('google') as any)
-      }
+      facebookLogin: () => dispatch(oAuthLogin('facebook') as any),
+      googleLogin: () => dispatch(oAuthLogin('google') as any)
     })
   ),
   withHandlers({
@@ -42,19 +36,18 @@ const enhance = compose<IInnerProps, {}>(
       props.setGoogleLoading(false);
       window.ss.message.error('could not sign in');
     },
-    handleSuccess: (props: any) => (user: User.ISessionUser) => {
-      props.setFacebookLoading(false);
-      props.setGoogleLoading(false);
-      window.ss.message.error(`signed in as ${user.name}`);
+    handleSuccess: () => (user: User.ISessionUser) => {
+      // should redirect to the library
+      window.ss.message.info(`signed in as ${user.name}`);
     }
   }),
   withHandlers({
-    handleFacebookClick: (props: any) => (event: React.MouseEvent<HTMLButtonElement>) => {
+    handleFacebookClick: (props: any) => async () => {
       unregisterServiceWorker();
       props.setFacebookLoading(true);
 
       try {
-        const user = props.facebookLogin();
+        const user = await props.facebookLogin();
         props.handleSuccess(user);
       } catch (error) {
         console.error(error);
@@ -63,12 +56,12 @@ const enhance = compose<IInnerProps, {}>(
 
       registerServiceWorker();
     },
-    handleGoogleClick: (props: any) => (event: React.MouseEvent<HTMLButtonElement>) => {
+    handleGoogleClick: (props: any) => async () => {
       unregisterServiceWorker();
       props.setGoogleLoading(true);
 
       try {
-        const user = props.googleLogin();
+        const user = await props.googleLogin();
         props.handleSuccess(user);
       } catch (error) {
         console.error(error);
