@@ -2,13 +2,13 @@ import * as React from 'react';
 import styled from 'react-emotion';
 import { Form, Icon, Input, Button, Select, Upload } from 'antd';
 import { compose, withState, withHandlers, lifecycle } from 'recompose';
-import { Link } from 'react-router-dom';
+import { Link, withRouter, RouteComponentProps } from 'react-router-dom';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
 import { FormErrors } from 'modules/forms';
 import { connect, Dispatch } from 'react-redux';
 import { fetchAllTags } from 'data/tags';
 import { get } from 'lodash';
-import { ICreateNotation, createNotation } from 'data';
+import { ICreateNotation, createNotation, NotationsActions } from 'data';
 
 const { Item } = Form;
 const { Option } = Select;
@@ -41,14 +41,16 @@ const getNotationParams = (fields: IFormFieldData): ICreateNotation => ({
   }
 });
 
-interface IFormProps {
+interface IFormProps extends RouteComponentProps<{ id: string }, {}> {
   form: WrappedFormUtils;
 }
 
 interface IConnectProps extends IFormProps {
   tags: Tag.ITag[];
+  notationEdit: Notation.INotation;
   fetchAllTags: () => void;
   createNotation: (notation: ICreateNotation) => void;
+  resetNotationEdit: () => void;
 }
 
 interface IStateProps extends IConnectProps {
@@ -67,16 +69,32 @@ interface IInnerProps extends IValidationProps {
 }
 
 const enhance = compose<IInnerProps, {}>(
+  withRouter,
   Form.create(),
   connect(
     (state: StringSync.Store.IState) => ({
+      notationEdit: state.notations.edit,
       tags: state.tags.index
     }),
     (dispatch: Dispatch) => ({
       createNotation: (notation: ICreateNotation) => dispatch(createNotation(notation) as any),
-      fetchAllTags: () => dispatch(fetchAllTags() as any)
+      fetchAllTags: () => dispatch(fetchAllTags() as any),
+      resetNotationEdit: () => dispatch(NotationsActions.resetNotationEdit() as any)
     })
   ),
+  lifecycle<IConnectProps, {}>({
+    componentDidMount(): void {
+      this.props.resetNotationEdit();
+      this.props.fetchAllTags();
+    },
+    componentDidUpdate(): void {
+      const { id } = this.props.notationEdit;
+
+      if (id > -1) {
+        this.props.history.push(`/n/${id}/edit`)
+      }
+    }
+  }),
   withState('loading', 'setLoading', false),
   withState('errors', 'setErrors', []),
   withHandlers({
@@ -86,17 +104,18 @@ const enhance = compose<IInnerProps, {}>(
           await props.createNotation(getNotationParams(fields));
         } catch (error) {
           console.error(error);
+
           const responseErrors = (
             get(error.responseJSON, 'errors') ||
-            [{ details: 'Something went wrong' }]
+            [
+              { details: 'Something went wrong' }
+            ]
           );
-          props.setErrors(
-            responseErrors.map((errorObj: any) => errorObj.details)
-          );
+
+          props.setErrors(responseErrors.map((errorObj: any) => errorObj.details));
+          props.setLoading(false);
         }
       }
-
-      props.setLoading(false);
     }
   }),
   withHandlers({
@@ -104,11 +123,6 @@ const enhance = compose<IInnerProps, {}>(
       event.preventDefault();
       props.setLoading(true);
       props.form.validateFields(props.afterValidate);
-    }
-  }),
-  lifecycle<IInnerProps, {}>({
-    componentDidMount(): void {
-      this.props.fetchAllTags();
     }
   })
 );
