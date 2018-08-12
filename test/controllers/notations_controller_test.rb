@@ -23,6 +23,7 @@ class NotationsControllerTest < ActionDispatch::IntegrationTest
 
       params = {
         notation: {
+          tag_ids: tags(:acoustic),
           song_name: "foo",
           artist_name: user.name,
           vextab_string: "tabstave clef=none notation=true key=C time=4/4",
