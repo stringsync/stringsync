@@ -6,12 +6,14 @@ import { Dispatch } from 'react-redux';
 import { pick, sortBy } from 'lodash';
 
 export const fetchAllNotations = () => async (dispatch: Dispatch) => {
-  const response = await fetch('/api/v1/notations');
-  const json: API.Notations.IIndexResponse = await response.json();
+  const json: API.Notations.IIndexResponse = await ajax('/api/v1/notations', {
+    method: 'GET'
+  });
+
   const included = new IncludedObjects(json.included);
 
   const notations: Notation.INotation[] = json.data.map(data => {
-    const { id, attributes, links, relationships } = data;
+    const { id, attributes, relationships } = data;
     const tags = included.fetch(relationships.tags.data) as API.Tags.IAsIncluded[]
     const transcriber = included.fetch(relationships.transcriber.data) as API.Users.IAsIncluded;
 
@@ -38,8 +40,10 @@ export const fetchAllNotations = () => async (dispatch: Dispatch) => {
 };
 
 export const fetchNotation = (notationId: number) => async (dispatch: Dispatch) => {
-  const response = await fetch(`/api/v1/notations/${notationId}`);
-  const json: API.Notations.IShowResponse = await response.json();
+  const json: API.Notations.IShowResponse = await ajax(`/api/v1/notations/${notationId}`, {
+    method: 'GET'
+  });
+  
   const included = new IncludedObjects(json.included);
 
   const { id, attributes, links, relationships } = json.data;
