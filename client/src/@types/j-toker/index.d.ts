@@ -69,7 +69,7 @@ declare module 'j-toker' {
     configure: (options: IAuthConfigurationOptions, reset?: boolean) => any;
     emailSignIn: (user: User.ILoginUser) => Promise<IAuthResponse>;
     emailSignUp: (user: ISignupUser) => Promise<IAuthResponse>;
-    oAuthSignIn: (args: IOAuthSignInArguments) => Promise<IAuthResponse>;
+    oAuthSignIn: (args: IOAuthSignInArguments) => User.ISessionUser;
     signOut: () => Promise<void>;
     getApiUrl(): () => string;
   }

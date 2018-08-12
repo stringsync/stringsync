@@ -14,10 +14,10 @@ interface IInnerProps {
   googleLoading: boolean;
   setFacebookLoading: (facebookLoading: boolean) => void;
   setGoogleLoading: (googleLoading: boolean) => void; 
-  facebookLogin: () => IAuthResponse;
-  googleLogin: () => IAuthResponse;
+  facebookLogin: () => User.ISessionUser;
+  googleLogin: () => User.ISessionUser;
   handleError: () => void;
-  handleSuccess: (response: IAuthResponse) => void;
+  handleSuccess: (user: User.ISessionUser) => void;
   handleFacebookClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   handleGoogleClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
@@ -42,10 +42,10 @@ const enhance = compose<IInnerProps, {}>(
       props.setGoogleLoading(false);
       window.ss.message.error('could not sign in');
     },
-    handleSuccess: (props: any) => (res: IAuthResponse) => {
+    handleSuccess: (props: any) => (user: User.ISessionUser) => {
       props.setFacebookLoading(false);
       props.setGoogleLoading(false);
-      window.ss.message.error(`signed in as ${res.data.name}`);
+      window.ss.message.error(`signed in as ${user.name}`);
     }
   }),
   withHandlers({
@@ -54,8 +54,8 @@ const enhance = compose<IInnerProps, {}>(
       props.setFacebookLoading(true);
 
       try {
-        const response = props.facebookLogin();
-        props.handleSuccess(response);
+        const user = props.facebookLogin();
+        props.handleSuccess(user);
       } catch (error) {
         console.error(error);
         props.handleError();
@@ -68,8 +68,8 @@ const enhance = compose<IInnerProps, {}>(
       props.setGoogleLoading(true);
 
       try {
-        const response = props.googleLogin();
-        props.handleSuccess(response);
+        const user = props.googleLogin();
+        props.handleSuccess(user);
       } catch (error) {
         console.error(error);
         props.handleError(error);

@@ -15,9 +15,9 @@ export const signup = (user: ISignupUser) => async (dispatch: Dispatch) => {
 };
 
 export const oAuthLogin = (provider: OAuthProviders) => async (dispatch: Dispatch) => {
-  const response = await window.ss.auth.oAuthSignIn({ provider });
-  dispatch(SessionActions.setSession(response.data));
-  return response;
+  const user = await window.ss.auth.oAuthSignIn({ provider });
+  dispatch(SessionActions.setSession(user));
+  return user;
 };
 
 export const logout = () => async (dispatch: Dispatch) => {
