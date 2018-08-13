@@ -132,6 +132,7 @@ export const NotationShow = enhance(props => (
   <Outer id="notation-show">
     <MaestroController
       bpm={props.notation.bpm}
+      durationMs={props.notation.durationMs}
       deadTimeMs={props.notation.deadTimeMs}
     />
     <Overlap>

@@ -9,6 +9,7 @@ class MaestroError extends Error { };
 interface IOuterProps {
   bpm: number;
   deadTimeMs: number;
+  durationMs: number;
 }
 
 interface IConnectProps extends IOuterProps {
@@ -31,7 +32,7 @@ const enhance = compose<InnerProps, IOuterProps>(
   ),
   lifecycle<IConnectProps, {}>({
     componentWillMount() {
-      window.ss.maestro = new Maestro(this.props.deadTimeMs, this.props.bpm);
+      window.ss.maestro = new Maestro(this.props.deadTimeMs, this.props.bpm, this.props.durationMs);
       window.ss.rafLoop = new RafLoop();
     },
     componentWillReceiveProps(nextProps) {

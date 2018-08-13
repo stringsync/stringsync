@@ -8,12 +8,16 @@ import { Piano } from 'models';
 
 interface IMaestroState {
   time: Time;
-  start: number | null; // start time that the note is valid
-  stop: number | null;  // stop time that the note is valid
+  loopStart: Time;
+  loopEnd: Time;
+  start: number | null; // start tick time that the note is valid
+  stop: number | null;  // stop tick time that the note is valid
   note: MeasureElement | null;
 }
 
-const getNullState = (time: Time): IMaestroState => ({
+const getNullState = (time: Time, loopStart: Time, loopEnd: Time): IMaestroState => ({
+  loopEnd,
+  loopStart,
   note: null,
   start: null,
   stop: null,
@@ -28,6 +32,7 @@ const getNullState = (time: Time): IMaestroState => ({
 export class Maestro extends AbstractObservable {
   public deadTime: Time;
   public bpm: number;
+  public durationMs: Time;
   public tickMap: TickMap | null = null;
   public fretboard: Fretboard | null = null;
   public piano: Piano | null = null;
@@ -37,13 +42,14 @@ export class Maestro extends AbstractObservable {
   private $state: IMaestroState;
   private $time: Time;
 
-  constructor(deadTimeMs: number, bpm: number) {
+  constructor(deadTimeMs: number, bpm: number, durationMs: number) {
     super();
 
     this.deadTime = new Time(deadTimeMs, 'ms');
     this.bpm = bpm;
+    this.durationMs = new Time(0, 'ms');
     this.$time = new Time(0, 'ms');
-    this.state = getNullState(this.$time.clone);
+    this.state = getNullState(this.$time.clone, this.$time.clone, this.durationMs.clone);
   }
 
   public set time(time: Time) {
@@ -108,6 +114,8 @@ export class Maestro extends AbstractObservable {
    */
   private doUpdate() {
     const time = this.$time.clone;
+    const loopStart = this.state.loopStart.clone;
+    const loopEnd = this.state.loopEnd.clone;
 
     let nextState: IMaestroState;
 
@@ -124,7 +132,7 @@ export class Maestro extends AbstractObservable {
         // typescript bang operator usage:
         //  this.tickMap may be null, but an error will be thrown and caught if it is.
         //  TickMap.prototype.fetch may also throw an error, so that case is handled as well.
-        nextState = { time, ...this.tickMap!.fetch(time.tick) };
+        nextState = { time, loopStart, loopEnd, ...this.tickMap!.fetch(time.tick) };
       } else {
         nextState = Object.assign({}, this.state, { time });
       }
@@ -133,7 +141,7 @@ export class Maestro extends AbstractObservable {
       // if (window.ss.debug) {
       //   console.error(error);
       // }
-      nextState = getNullState(time);
+      nextState = getNullState(time, loopStart, loopEnd);
     }
 
     this.changed = !isEqual(this.state, nextState);
