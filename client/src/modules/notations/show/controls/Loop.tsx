@@ -42,7 +42,9 @@ const enhance = compose<IInnerProps, {}>(
   withState('isScrubbing', 'setIsScrubbing', false),
   withHandlers({
     handleAfterChange: (props: IStateProps) => (values: SliderValues) => {
-      console.log('after changed');
+      if (props.playAfterChange) {
+        props.videoPlayer.playVideo();
+      }
     },
     handleChange: (props: IStateProps) => (values: SliderValues) => {
       console.log('changed');

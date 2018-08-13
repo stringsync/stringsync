@@ -41,15 +41,19 @@ export class Maestro extends AbstractObservable {
   private $vextab: Vextab | null = null;
   private $state: IMaestroState;
   private $time: Time;
+  private $loopStart: Time;
+  private $loopEnd: Time;
 
   constructor(deadTimeMs: number, bpm: number, durationMs: number) {
     super();
 
     this.deadTime = new Time(deadTimeMs, 'ms');
     this.bpm = bpm;
-    this.durationMs = new Time(0, 'ms');
+    this.durationMs = new Time(durationMs, 'ms');
     this.$time = new Time(0, 'ms');
-    this.state = getNullState(this.$time.clone, this.$time.clone, this.durationMs.clone);
+    this.$loopStart = new Time(0, 'ms');
+    this.$loopEnd = new Time(0, 'ms');
+    this.state = getNullState(this.$time.clone, this.$loopStart.clone, this.$loopEnd.clone);
   }
 
   public set time(time: Time) {
@@ -60,6 +64,28 @@ export class Maestro extends AbstractObservable {
     this.$time = time.clone;
     this.$time.bpm = this.bpm;
 
+    this.update();
+  }
+
+  public set loopStart(loopStart: Time) {
+    if (loopStart.bpm) {
+      throw new Error('Expected bpm to be undefined. Set bpm in maestro instead.');
+    }
+
+    this.$loopStart = loopStart.clone;
+    this.$loopStart.bpm = this.bpm;
+    
+    this.update();
+  }
+
+  public set loopEnd(loopEnd: Time) {
+    if (loopEnd.bpm) {
+      throw new Error('Expected bpm to be undefined. Set bpm in maestro instead.');
+    }
+
+    this.$loopEnd = loopEnd.clone;
+    this.$loopEnd.bpm = this.bpm;
+    
     this.update();
   }
 
@@ -114,8 +140,8 @@ export class Maestro extends AbstractObservable {
    */
   private doUpdate() {
     const time = this.$time.clone;
-    const loopStart = this.state.loopStart.clone;
-    const loopEnd = this.state.loopEnd.clone;
+    const loopStart = this.$loopStart.clone;
+    const loopEnd = this.$loopEnd.clone;
 
     let nextState: IMaestroState;
 
