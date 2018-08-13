@@ -69,7 +69,7 @@ const enhance = compose<IInnerProps, {}>(
       props.setIsScrubbing(false);
     },
     handleChange: (props: IValueConverterProps) => (values: SliderValues) => {
-      if (!props.isScrubbing && values.some(value => value > 100)) {
+      if (!props.isScrubbing && Math.max(...values) < 100) {
         props.setIsScrubbing(true);
         props.setPlayAfterChange(props.isVideoPlaying);
       }
@@ -84,8 +84,9 @@ const enhance = compose<IInnerProps, {}>(
       if (maestro) {
         maestro.loopStart = loopStart;
         maestro.loopEnd = loopEnd;
-        props.setValues(values);
       }
+
+      props.setValues(values);
     }
   })
 );
