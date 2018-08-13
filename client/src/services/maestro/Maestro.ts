@@ -162,7 +162,7 @@ export class Maestro extends AbstractObservable {
         //  TickMap.prototype.fetch may also throw an error, so that case is handled as well.
         nextState = { time, loopStart, loopEnd, ...this.tickMap!.fetch(time.tick) };
       } else {
-        nextState = Object.assign({}, this.state, { time });
+        nextState = Object.assign({}, this.state, { time, loopStart, loopEnd });
       }
     } catch (error) {
       // Potentially dangerous! Uncomment the following lines to debug in non productin envs.
@@ -173,6 +173,7 @@ export class Maestro extends AbstractObservable {
     }
 
     this.changed = !isEqual(this.state, nextState);
+
     this.state = nextState;
   }
 }
