@@ -7,8 +7,6 @@ import styled from 'react-emotion';
 import { SliderProps } from 'antd/lib/slider';
 import { observeMaestro } from 'enhancers';
 
-const LOOP_BUFFER_MS = 10;
-
 interface IInnerProps {
   videoPlayer: Youtube.IPlayer;
   isVideoPlaying: boolean;
@@ -81,15 +79,17 @@ const enhance = compose<IInnerProps, {}>(
       // least resistance to get the feature working
       const { time, loopStart, loopEnd } = maestro.state;
 
+      const beat = new Time(1 / maestro.bpm, 'min', maestro.bpm);
+
       let target: Time;
-      if (time.ms < (loopStart.ms - LOOP_BUFFER_MS) || time.ms >= (loopEnd.ms + LOOP_BUFFER_MS)) {
+      if (time.ms < (loopStart.ms - beat.ms) || time.ms >= (loopEnd.ms + beat.ms)) {
         target = loopStart;
 
         const { videoPlayer, isVideoPlaying } = props;
         if (videoPlayer && isVideoPlaying) {
           videoPlayer.pauseVideo();
           videoPlayer.seekTo(loopStart.s);
-          window.setTimeout(() => videoPlayer.playVideo(), 500);
+          window.setTimeout(() => videoPlayer.playVideo(), beat.ms);
         }
       } else {
         target = time;
