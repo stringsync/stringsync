@@ -10,6 +10,11 @@ interface ICaretRendererStoreData {
   canvas?: HTMLCanvasElement;
 }
 
+interface IRenderSpec {
+  x: number;
+  line: Line;
+}
+
 export class LoopCaretRenderer {
   public static THICKNESS = 2; // px
   public static ALPHA = 0.75;
@@ -52,10 +57,14 @@ export class LoopCaretRenderer {
   public render(maestro: Maestro): void {
     this.clear();
 
-    const x = this.getXForRender(maestro);
+    const specs = this.renderSpec(maestro);
 
-    if (typeof x === 'number') {
-      const line: Line | void = get(maestro.state.note, 'measure.line');
+    if (!specs) {
+      return;
+    }
+
+    specs.forEach(spec => {
+      const line = spec.line;
       if (line) {
         const { canvas } = this.store.fetch(line);
 
@@ -70,14 +79,14 @@ export class LoopCaretRenderer {
         }
 
         ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, 0 + LoopCaretRenderer.CARET_HEIGHT);
+        ctx.moveTo(spec.x, 0);
+        ctx.lineTo(spec.x, 0 + LoopCaretRenderer.CARET_HEIGHT);
         ctx.stroke();
         ctx.closePath();
 
         this.rendereredLines.push(line);
       }
-    }
+    });
   }
 
   public clear(): void {
@@ -101,44 +110,47 @@ export class LoopCaretRenderer {
   }
 
   /**
-   * Used exclusively in CaretRenderer.prototype.render
+   * Used exclusively in LoopCaretRenderer.prototype.render
    * 
    * @param maestro 
    */
-  private getXForRender(maestro: Maestro): number | void {
+  private renderSpec(maestro: Maestro): [IRenderSpec, IRenderSpec] | void {
     const { vextab } = maestro;
-    const { time, note, start, stop } = maestro.state;
+    const { loopStart, loopEnd } = maestro.state;
 
-    if (!vextab || !time || !note || typeof start !== 'number' || typeof stop !== 'number') {
+    if (!vextab || !loopStart || !loopEnd || !maestro.tickMap) {
       // nothing to render
       return;
     }
 
-    if (!note.isHydrated) {
-      throw new Error('Must hydrate the measure element before rendering the Caret for it');
-    }
+    return [loopStart, loopEnd].map(time => {
+      const { note, start, stop } = maestro.tickMap!.fetch(time.tick);
 
-    const curr = note;
-    const next = vextab.links.next(note, true) as typeof note;
+      const curr = note;
+      const next = vextab.links.next(note, true) as typeof note;
 
-    // interpolation args
-    const t0 = start;
-    const t1 = stop;
-    const x0 = curr.vexAttrs!.staveNote.getAbsoluteX();
-    let x1;
-    if (!next) {
-      // currently on last note
-      x1 = this.width;
-    } else if (curr.measure && curr.measure.line !== get(next, 'measure.line')) {
-      // next note is on a different line
-      x1 = this.width;
-    } else {
-      // most frequent case: note is on the same line
-      x1 = next.vexAttrs!.staveNote.getAbsoluteX();
-    }
+      // interpolation args
+      const t0 = start;
+      const t1 = stop;
+      const x0 = curr.vexAttrs!.staveNote.getAbsoluteX();
+      let x1;
+      if (!next) {
+        // currently on last note
+        x1 = this.width;
+      } else if (curr.measure && curr.measure.line !== get(next, 'measure.line')) {
+        // next note is on a different line
+        x1 = this.width;
+      } else {
+        // most frequent case: note is on the same line
+        x1 = next.vexAttrs!.staveNote.getAbsoluteX();
+      }
 
-    // interpolate
-    return interpolate({ x: t0, y: x0 }, { x: t1, y: x1 }, time.tick);
+      // interpolate
+      const x = interpolate({ x: t0, y: x0 }, { x: t1, y: x1 }, time.tick);
+
+      const line = get(note.measure, 'line');
+      return { x, line }
+    }) as [IRenderSpec, IRenderSpec]
   }
 
   private resize(line: Line): void {
