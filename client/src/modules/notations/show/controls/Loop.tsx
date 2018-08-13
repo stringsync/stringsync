@@ -7,20 +7,26 @@ import styled from 'react-emotion';
 import { SliderProps } from 'antd/lib/slider';
 import { observeMaestro } from 'enhancers';
 
-interface IInnerProps {
-  videoPlayer: Youtube.IPlayer;
-  isVideoPlaying: boolean;
+type SliderValues = [number, number];
+
+interface IConnectProps {
   durationMs: number;
-  value: number;
+  isVideoPlaying: boolean;
+  videoPlayer: Youtube.IPlayer;
+}
+
+interface IStateProps extends IConnectProps {
+  values: SliderValues;
   playAfterChange: boolean;
   isScrubbing: boolean;
-  setValue: (value: number) => void;
-  setPlayAfterChange: (playAfterChange: boolean) => void;
-  setIsScrubbing: (isScrubbing: boolean) => void;
-  valueToTimeMs: (value: number) => number;
-  handleChange: (value: number) => void;
-  handleAfterChange: (value: number) => void;
-  handleNotification: (maestro: Maestro) => void;
+  setValues: (values: SliderValues) => void;
+  setPlayAfterChange: (playAfterChange: false) => void;
+  setIsScrubbing: (isScrubbing: false) => void;
+}
+
+interface IInnerProps extends IStateProps {
+  handleAfterChange: (values: SliderValues) => void;
+  handleChange: (values: SliderValues) => void;
 }
 
 const enhance = compose<IInnerProps, {}>(
@@ -31,45 +37,15 @@ const enhance = compose<IInnerProps, {}>(
       videoPlayer: state.video.player
     })
   ),
-  withState('value', 'setValue', 0),
+  withState('values', 'setValues', [0, 100]),
   withState('playAfterChange', 'setPlayAfterChange', false),
   withState('isScrubbing', 'setIsScrubbing', false),
-  withProps((props: any) => ({
-    valueToTimeMs: (value: number) => (value / 100) * props.durationMs
-  })),
   withHandlers({
-    handleAfterChange: (props: any) => (value: number) => {
-      if (props.playAfterChange) {
-        props.videoPlayer.playVideo();
-      }
-
-      const seekToTimeMs = props.valueToTimeMs(value);
-
-      if (window.ss.maestro) {
-        window.ss.maestro.time = new Time(seekToTimeMs, 'ms');
-      }
-
-      props.setValue(value);
-
-      props.setPlayAfterChange(false);
-      props.setIsScrubbing(false);
+    handleAfterChange: (props: IStateProps) => (values: SliderValues) => {
+      console.log('after changed');
     },
-    handleChange: (props: any) => (value: number) => {
-      // For some reason, when the video ends, this handler gets called
-      if (!props.isScrubbing && value < 100) {
-        props.setIsScrubbing(true);
-        props.setPlayAfterChange(props.isVideoPlaying);
-      }
-
-      props.videoPlayer.pauseVideo();
-
-      const seekToTimeMs = props.valueToTimeMs(value);
-
-      if (window.ss.maestro) {
-        window.ss.maestro.time = new Time(seekToTimeMs, 'ms');
-        props.videoPlayer.seekTo(seekToTimeMs / 1000, true);
-        props.setValue(value);
-      }
+    handleChange: (props: IStateProps) => (values: SliderValues) => {
+      console.log('changed');
     }
   })
 );
@@ -96,9 +72,10 @@ const StyledSlider = styled(Slider)<IStyledSliderProps>`
 
 export const Loop = enhance(props => (
   <StyledSlider
+    range={true}
     onChange={props.handleChange}
     onAfterChange={props.handleAfterChange}
-    value={props.value}
+    value={props.values}
     tipFormatter={null}
     step={0.01}
     style={{ margin: '4px' }}
