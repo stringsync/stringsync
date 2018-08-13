@@ -82,7 +82,7 @@ const enhance = compose<IInnerProps, {}>(
       const beat = new Time(1 / maestro.bpm, 'min', maestro.bpm);
 
       let target: Time;
-      if (time.ms < (loopStart.ms - beat.ms) || time.ms >= (loopEnd.ms + beat.ms)) {
+      if (time.ms < (loopStart.ms - beat.ms) || time.ms >= loopEnd.ms) {
         target = loopStart;
 
         const { videoPlayer, isVideoPlaying } = props;

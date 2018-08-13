@@ -33,8 +33,7 @@ const enhance = compose<IInnerProps, IOuterProps>(
         return;
       }
 
-      // TODO: When ready to implement loops, revisit
-      // props.vextab.renderer.loopCaretRender.assign(props.line, canvas);
+      props.vextab.renderer.loopCaretRenderer.assign(props.line, canvas);
     },
     handleScoreCanvasRef: (props: IOuterProps) => (canvas: HTMLCanvasElement) => {
       if (!canvas) {
