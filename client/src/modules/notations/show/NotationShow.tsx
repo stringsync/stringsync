@@ -9,12 +9,14 @@ import { connect } from 'react-redux';
 import { NotationsActions, fetchNotation, VideoActions } from 'data';
 import { RouteComponentProps } from 'react-router-dom';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import { ViewportTypes } from 'data/viewport/getViewportType';
 
 type OuterProps = RouteComponentProps<{ id: string }>;
 
 interface IConnectProps extends OuterProps {
   notation: Notation.INotation;
   viewportWidth: number;
+  viewportType: ViewportTypes;
   fetchNotation: (id: number) => Notation.INotation;
   resetNotation: () => void;
   resetVideo: () => void;
@@ -46,6 +48,7 @@ const enhance = compose<IMenuHandlerProps, OuterProps>(
   connect(
     (state: StringSync.Store.IState) => ({
       notation: state.notations.show,
+      viewportType: state.viewport.type,
       viewportWidth: state.viewport.width
     }),
     dispatch => ({
@@ -77,6 +80,10 @@ const enhance = compose<IMenuHandlerProps, OuterProps>(
       $('body').addClass('no-scroll');
     },
     async componentDidMount() {
+      if (this.props.viewportType === 'MOBILE') {
+        this.props.setFretboardVisibility(false);
+      }
+
       const id = parseInt(this.props.match.params.id, 10);
 
       try {

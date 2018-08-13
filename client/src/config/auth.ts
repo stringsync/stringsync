@@ -10,7 +10,7 @@ import * as auth from 'j-toker';
 const getApiUrl = (): string => {
   switch (window.ss.env) {
     case 'development':
-      return 'http://localhost:3001';
+      return `http://${window.location.hostname}:3001`;
     case 'production':
       return window.location.origin;
     default:

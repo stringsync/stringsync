@@ -55,7 +55,7 @@ interface IOuterDivProps {
 const Outer = styled('div')<IOuterDivProps>`
   position: fixed;
   max-width: ${props => props.collapsed ? '0' : '350px'};
-  width: 100%;
+  width: 75%;
   background: white;
   top: 0;
   right: 0;
