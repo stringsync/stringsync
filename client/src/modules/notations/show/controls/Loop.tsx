@@ -24,7 +24,11 @@ interface IStateProps extends IConnectProps {
   setIsScrubbing: (isScrubbing: false) => void;
 }
 
-interface IInnerProps extends IStateProps {
+interface IValueConverterProps extends IStateProps {
+  valuesToTimeMs: (values: SliderValues) => SliderValues;
+}
+
+interface IInnerProps extends IValueConverterProps {
   handleAfterChange: (values: SliderValues) => void;
   handleChange: (values: SliderValues) => void;
 }
@@ -40,13 +44,31 @@ const enhance = compose<IInnerProps, {}>(
   withState('values', 'setValues', [0, 100]),
   withState('playAfterChange', 'setPlayAfterChange', false),
   withState('isScrubbing', 'setIsScrubbing', false),
+  withProps((props: IStateProps) => ({
+    valuesToTimeMs: (values: SliderValues) => values.map(value => (value / 100) * props.durationMs)
+  })),
   withHandlers({
-    handleAfterChange: (props: IStateProps) => (values: SliderValues) => {
+    handleAfterChange: (props: IValueConverterProps) => (values: SliderValues) => {
       if (props.playAfterChange) {
         props.videoPlayer.playVideo();
       }
+
+      const [loopStart, loopEnd] = props.valuesToTimeMs(values).
+          sort((a, b) => a - b).
+          map(ms => new Time(ms, 'ms'));
+
+      const { maestro } = window.ss;
+      if (maestro) {
+        maestro.loopStart = loopStart;
+        maestro.loopEnd = loopEnd;
+      }
+
+      props.setValues(values);
+
+      props.setPlayAfterChange(false);
+      props.setIsScrubbing(false);
     },
-    handleChange: (props: IStateProps) => (values: SliderValues) => {
+    handleChange: (props: IValueConverterProps) => (values: SliderValues) => {
       console.log('changed');
     }
   })
