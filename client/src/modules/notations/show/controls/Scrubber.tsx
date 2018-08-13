@@ -1,11 +1,13 @@
 import * as React from 'react';
-import { compose, withHandlers, withProps, withState, lifecycle } from 'recompose';
+import { compose, withHandlers, withProps, withState } from 'recompose';
 import { Slider } from 'antd';
 import { connect } from 'react-redux';
 import { Time, Maestro } from 'services';
 import styled from 'react-emotion';
 import { SliderProps } from 'antd/lib/slider';
 import { observeMaestro } from 'enhancers';
+
+const LOOP_BUFFER_MS = 10;
 
 interface IInnerProps {
   videoPlayer: Youtube.IPlayer;
@@ -73,13 +75,26 @@ const enhance = compose<IInnerProps, {}>(
     }
   }),
   withHandlers({
-    handleNotification: (props: any) => (maestro: Maestro) => {
+    handleNotification: (props: any) => async (maestro: Maestro) => {
       // TODO: Kind of janky... We rely on the scrubber to manipulate the video
       // time. At the time this code was written, it felt like the path of
       // least resistance to get the feature working
       const { time, loopStart, loopEnd } = maestro.state;
 
-      const target = time.ms < loopStart.ms || time.ms >= loopEnd.ms ? loopStart : loopEnd;
+      let target: Time;
+      if (time.ms < (loopStart.ms - LOOP_BUFFER_MS) || time.ms >= (loopEnd.ms + LOOP_BUFFER_MS)) {
+        target = loopStart;
+
+        const { videoPlayer, isVideoPlaying } = props;
+        if (videoPlayer && isVideoPlaying) {
+          videoPlayer.pauseVideo();
+          videoPlayer.seekTo(loopStart.s);
+          window.setTimeout(() => videoPlayer.playVideo(), 500);
+        }
+      } else {
+        target = time;
+      }
+
       const value = 100 * target.ms / props.durationMs;
 
       // Guard against NaN since it makes the page crash

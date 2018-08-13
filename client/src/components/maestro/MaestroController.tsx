@@ -50,6 +50,10 @@ const enhance = compose<InnerProps, IOuterProps>(
       // sync IOuterProps with maestro
       window.ss.maestro.bpm = nextProps.bpm;
       window.ss.maestro.deadTime = new Time(nextProps.deadTimeMs, 'ms');
+
+      if (this.props.durationMs !== nextProps.durationMs) {
+        window.ss.maestro.loopEnd = new Time(nextProps.durationMs, 'ms');
+      }
     },
     componentWillUnmount() {
       if (!window.ss.rafLoop) {

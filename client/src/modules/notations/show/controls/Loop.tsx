@@ -20,8 +20,8 @@ interface IStateProps extends IConnectProps {
   playAfterChange: boolean;
   isScrubbing: boolean;
   setValues: (values: SliderValues) => void;
-  setPlayAfterChange: (playAfterChange: false) => void;
-  setIsScrubbing: (isScrubbing: false) => void;
+  setPlayAfterChange: (playAfterChange: boolean) => void;
+  setIsScrubbing: (isScrubbing: boolean) => void;
 }
 
 interface IValueConverterProps extends IStateProps {
@@ -69,7 +69,23 @@ const enhance = compose<IInnerProps, {}>(
       props.setIsScrubbing(false);
     },
     handleChange: (props: IValueConverterProps) => (values: SliderValues) => {
-      console.log('changed');
+      if (!props.isScrubbing && values.some(value => value > 100)) {
+        props.setIsScrubbing(true);
+        props.setPlayAfterChange(props.isVideoPlaying);
+      }
+
+      props.videoPlayer.pauseVideo();
+
+      const [loopStart, loopEnd] = props.valuesToTimeMs(values).
+          sort((a, b) => a - b).
+          map(ms => new Time(ms, 'ms'));
+
+      const { maestro } = window.ss;
+      if (maestro) {
+        maestro.loopStart = loopStart;
+        maestro.loopEnd = loopEnd;
+        props.setValues(values);
+      }
     }
   })
 );

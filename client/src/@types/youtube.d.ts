@@ -3,6 +3,7 @@ declare namespace Youtube {
 
   export interface IPlayer {
     playVideo: () => void;
+    pauseVideo: () => void;
     getDuration: () => number;
     getCurrentTime: () => number;
   }

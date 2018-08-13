@@ -52,7 +52,7 @@ export class Maestro extends AbstractObservable {
     this.durationMs = new Time(durationMs, 'ms');
     this.$time = new Time(0, 'ms');
     this.$loopStart = new Time(0, 'ms');
-    this.$loopEnd = new Time(0, 'ms');
+    this.$loopEnd = new Time(durationMs, 'ms');
     this.state = getNullState(this.$time.clone, this.$loopStart.clone, this.$loopEnd.clone);
   }
 
