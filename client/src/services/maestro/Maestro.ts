@@ -40,6 +40,7 @@ export class Maestro extends AbstractObservable {
   private isUpdating: boolean = false;
   private $vextab: Vextab | null = null;
   private $state: IMaestroState;
+  private $prevState: IMaestroState;
   private $time: Time;
   private $loopStart: Time;
   private $loopEnd: Time;
@@ -56,6 +57,7 @@ export class Maestro extends AbstractObservable {
     this.$loopEnd = new Time(durationMs, 'ms', this.bpm);
 
     this.state = getNullState(this.$time.clone, this.$loopStart.clone, this.$loopEnd.clone);
+    this.$prevState = getNullState(this.$time.clone, this.$loopStart.clone, this.$loopEnd.clone);
   }
 
   public set time(time: Time) {
@@ -96,6 +98,7 @@ export class Maestro extends AbstractObservable {
   }
 
   public set state(state: IMaestroState) {
+    this.$prevState = this.$state;
     this.$state = state;
     this.notify();
   }
@@ -114,6 +117,10 @@ export class Maestro extends AbstractObservable {
     }
     
     this.$vextab = vextab;
+  }
+
+  public get prevState() {
+    return this.$prevState;
   }
 
   /**

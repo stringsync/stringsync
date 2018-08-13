@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { compose, withState, withHandlers } from 'recompose';
 import { observeMaestro } from 'enhancers';
-import { Line } from 'models/music';
+import { Line, Note, MeasureElement } from 'models/music';
 import { Maestro } from 'services';
 import { scroller } from 'react-scroll';
 import { scoreKey } from './scoreKey';
@@ -22,7 +22,25 @@ const enhance = compose<IInnerProps, {}>(
   withState('focusedLine', 'setFocusedLine', null),
   withHandlers({
     handleNotification: (props: IFocusedLineProps) => (maestro: Maestro) => {
-      const line = get(maestro.state.note, 'measure.line') || null;
+      const { state, prevState } = maestro;
+
+      let targetNote: MeasureElement | null;
+      try {
+        if (prevState.loopStart.ms !== state.loopStart.ms && maestro.tickMap) {
+          // loopStart is scrubbing
+          targetNote = maestro.tickMap.fetch(state.loopStart.tick).note;
+        } else if (prevState.loopEnd.ms !== state.loopEnd.ms && maestro.tickMap) {
+          // loopEnd is scrubbing
+          targetNote = maestro.tickMap.fetch(state.loopEnd.tick).note;
+        } else {
+          // normal time change
+          targetNote = state.note;
+        }
+      } catch (error) {
+        targetNote = null;
+      }
+
+      const line = get(targetNote, 'measure.line') || null;
       
       if (props.focusedLine === line || !document.getElementById('score')) {
         return;
