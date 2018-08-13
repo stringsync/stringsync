@@ -74,7 +74,13 @@ const enhance = compose<IInnerProps, {}>(
   }),
   withHandlers({
     handleNotification: (props: any) => (maestro: Maestro) => {
-      const value = 100 * maestro.state.time.ms / props.durationMs;
+      // TODO: Kind of janky... We rely on the scrubber to manipulate the video
+      // time. At the time this code was written, it felt like the path of
+      // least resistance to get the feature working
+      const { time, loopStart, loopEnd } = maestro.state;
+
+      const target = time.ms < loopStart.ms || time.ms >= loopEnd.ms ? loopStart : loopEnd;
+      const value = 100 * target.ms / props.durationMs;
 
       // Guard against NaN since it makes the page crash
       if (!isNaN(value) && !props.isScrubbing) {
