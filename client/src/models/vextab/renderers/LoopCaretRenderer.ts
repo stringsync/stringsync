@@ -115,42 +115,47 @@ export class LoopCaretRenderer {
    * @param maestro 
    */
   private renderSpec(maestro: Maestro): [IRenderSpec, IRenderSpec] | void {
-    const { vextab } = maestro;
+    const { vextab, tickMap } = maestro;
     const { loopStart, loopEnd } = maestro.state;
 
-    if (!vextab || !loopStart || !loopEnd || !maestro.tickMap) {
+    if (!vextab || !loopStart || !loopEnd || !tickMap) {
       // nothing to render
       return;
     }
 
-    return [loopStart, loopEnd].map(time => {
-      const { note, start, stop } = maestro.tickMap!.fetch(time.tick);
-
-      const curr = note;
-      const next = vextab.links.next(note, true) as typeof note;
-
-      // interpolation args
-      const t0 = start;
-      const t1 = stop;
-      const x0 = curr.vexAttrs!.staveNote.getAbsoluteX();
-      let x1;
-      if (!next) {
-        // currently on last note
-        x1 = this.width;
-      } else if (curr.measure && curr.measure.line !== get(next, 'measure.line')) {
-        // next note is on a different line
-        x1 = this.width;
-      } else {
-        // most frequent case: note is on the same line
-        x1 = next.vexAttrs!.staveNote.getAbsoluteX();
-      }
-
-      // interpolate
-      const x = interpolate({ x: t0, y: x0 }, { x: t1, y: x1 }, time.tick);
-
-      const line = get(note.measure, 'line');
-      return { x, line }
-    }) as [IRenderSpec, IRenderSpec]
+    try {
+      return [loopStart, loopEnd].map(time => {
+        const { note, start, stop } = tickMap.fetch(time.tick);
+  
+        const curr = note;
+        const next = vextab.links.next(note, true) as typeof note;
+  
+        // interpolation args
+        const t0 = start;
+        const t1 = stop;
+        const x0 = curr.vexAttrs!.staveNote.getAbsoluteX();
+        let x1;
+        if (!next) {
+          // currently on last note
+          x1 = this.width;
+        } else if (curr.measure && curr.measure.line !== get(next, 'measure.line')) {
+          // next note is on a different line
+          x1 = this.width;
+        } else {
+          // most frequent case: note is on the same line
+          x1 = next.vexAttrs!.staveNote.getAbsoluteX();
+        }
+  
+        // interpolate
+        const x = interpolate({ x: t0, y: x0 }, { x: t1, y: x1 }, time.tick);
+  
+        const line = get(note.measure, 'line');
+        return { x, line }
+      }) as [IRenderSpec, IRenderSpec]
+    } catch (error) {
+      // most likely a fetch error
+      return;
+    }
   }
 
   private resize(line: Line): void {

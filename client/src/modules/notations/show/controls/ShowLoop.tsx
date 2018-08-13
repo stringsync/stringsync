@@ -24,6 +24,6 @@ const StyledIcon = styled(Icon)`
 
 export const ShowLoop = enhance(props => (
   <Outer>
-    <StyledIcon type="retweet" />
+    <StyledIcon type="reload" />
   </Outer>
 ));

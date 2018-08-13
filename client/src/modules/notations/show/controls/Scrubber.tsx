@@ -82,19 +82,22 @@ const enhance = compose<IInnerProps, {}>(
       const beat = new Time(1 / maestro.bpm, 'min', maestro.bpm);
 
       let target: Time;
-      if (time.ms < (loopStart.ms - beat.ms) || time.ms >= loopEnd.ms) {
+      if (time.ms < loopStart.ms || time.ms >= loopEnd.ms) {
         target = loopStart;
 
         const { videoPlayer, isVideoPlaying } = props;
         if (videoPlayer && isVideoPlaying) {
           videoPlayer.pauseVideo();
-          videoPlayer.seekTo(loopStart.s);
+          videoPlayer.seekTo(loopStart.s, true);
           window.setTimeout(() => videoPlayer.playVideo(), beat.ms);
+        } else {
+          videoPlayer.seekTo(loopStart.s, true);
         }
       } else {
         target = time;
       }
 
+      maestro.time = new Time(target.ms, 'ms');
       const value = 100 * target.ms / props.durationMs;
 
       // Guard against NaN since it makes the page crash

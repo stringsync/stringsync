@@ -82,8 +82,8 @@ const enhance = compose<IInnerProps, {}>(
 
       const { maestro } = window.ss;
       if (maestro) {
-        maestro.loopStart = loopStart;
-        maestro.loopEnd = loopEnd;
+        maestro.loopStart = loopStart.clone;
+        maestro.loopEnd = loopEnd.clone;
       }
 
       props.setValues(values);
