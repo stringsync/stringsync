@@ -8,8 +8,8 @@ import { Piano } from 'models';
 
 interface IMaestroState {
   time: Time;
-  start: number | null;
-  stop: number | null;
+  start: number | null; // start time that the note is valid
+  stop: number | null;  // stop time that the note is valid
   note: MeasureElement | null;
 }
 
