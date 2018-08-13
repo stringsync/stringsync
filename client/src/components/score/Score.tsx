@@ -7,6 +7,7 @@ import { CaretController } from './CaretController';
 import styled from 'react-emotion';
 import { scoreKey } from './scoreKey';
 import { NoteController } from './NoteController';
+import { LoopCaretController } from './LoopCaretController';
 
 const MIN_WIDTH_PER_MEASURE = 240; // px
 const MIN_MEASURES_PER_LINE = 1;
@@ -96,6 +97,7 @@ export const Score = enhance(props => (
   <Outer id="score">
     <ScoreScroller />
     <CaretController />
+    <LoopCaretController />
     <NoteController />
     {
       props.vextab.lines.map(line => (
