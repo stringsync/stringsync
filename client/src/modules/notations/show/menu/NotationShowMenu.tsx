@@ -56,10 +56,15 @@ const Outer = styled('div')<IOuterDivProps>`
   position: fixed;
   max-width: ${props => props.collapsed ? '0' : '350px'};
   width: 100%;
-  min-height: 100vh;
   background: white;
   top: 0;
   right: 0;
+  overflow-y: auto;
+`;
+
+const Inner = styled('div')`
+  min-height: 100vh;
+  height: 100vh;
 `;
 
 const CheckDescription = styled('span')`
@@ -68,69 +73,71 @@ const CheckDescription = styled('span')`
 
 export const NotationShowMenu = enhance(props => (
   <Outer collapsed={props.collapsed}>
-    <Menu
-      selectable={false}
-      defaultSelectedKeys={[]}
-      defaultOpenKeys={[]}
-      mode="inline"
-      inlineCollapsed={props.collapsed}
-    >
-      <ItemGroup title="notation">
-        <Item key="print">
-          <Link to={`/n/${props.match.params.id}/print`}>
-            <Icon type="printer" />
-            <span>print</span>
-          </Link>
-        </Item>
-        {
-          props.isCurrentUserTranscriber || props.role === 'admin'
-            ? <Item key="edit">
-                <Link to={`/n/${props.match.params.id}/edit`}>
-                  <Icon type="edit" />
-                  <span>edit</span>
-                </Link>
-              </Item>
-            : null
-        }
-        {
-          props.role === 'admin'
-            ? <Item key="studio">
-                <Link to={`/n/${props.match.params.id}/studio`}>
-                  <Icon type="video-camera" />
-                  <span>studio</span>
-                </Link>
-              </Item>
-            : null
-        }
-      </ItemGroup>
-      <ItemGroup title="visuals">
-        <Item key="fretboard">
-          <Checkbox
-            checked={props.fretboardVisibility}
-            onChange={props.onFretboardVisibilityChange}
-          >
-            <CheckDescription>fretboard</CheckDescription>
-          </Checkbox>
-        </Item>
-        <Item key="piano">
-          <Checkbox
-            checked={props.pianoVisibility}
-            onChange={props.onPianoVisibilityChange} 
-          >
-            <CheckDescription>piano</CheckDescription>
-          </Checkbox>
-        </Item>
-      </ItemGroup>
-      <ItemGroup title="player">
-        <Item key="suggestNotes">
-          <Checkbox checked={props.suggestNotesChecked} />
-          <CheckDescription>suggest notes</CheckDescription>
-        </Item>
-        <Item key="showLoop">
-          <Checkbox checked={props.showLoopChecked} />
-          <CheckDescription>show loop</CheckDescription>
-        </Item>
-      </ItemGroup>
-    </Menu>
+    <Inner>
+      <Menu
+        selectable={false}
+        defaultSelectedKeys={[]}
+        defaultOpenKeys={[]}
+        mode="inline"
+        inlineCollapsed={props.collapsed}
+      >
+        <ItemGroup title="notation">
+          <Item key="print">
+            <Link to={`/n/${props.match.params.id}/print`}>
+              <Icon type="printer" />
+              <span>print</span>
+            </Link>
+          </Item>
+          {
+            props.isCurrentUserTranscriber || props.role === 'admin'
+              ? <Item key="edit">
+                  <Link to={`/n/${props.match.params.id}/edit`}>
+                    <Icon type="edit" />
+                    <span>edit</span>
+                  </Link>
+                </Item>
+              : null
+          }
+          {
+            props.role === 'admin'
+              ? <Item key="studio">
+                  <Link to={`/n/${props.match.params.id}/studio`}>
+                    <Icon type="video-camera" />
+                    <span>studio</span>
+                  </Link>
+                </Item>
+              : null
+          }
+        </ItemGroup>
+        <ItemGroup title="visuals">
+          <Item key="fretboard">
+            <Checkbox
+              checked={props.fretboardVisibility}
+              onChange={props.onFretboardVisibilityChange}
+            >
+              <CheckDescription>fretboard</CheckDescription>
+            </Checkbox>
+          </Item>
+          <Item key="piano">
+            <Checkbox
+              checked={props.pianoVisibility}
+              onChange={props.onPianoVisibilityChange}
+            >
+              <CheckDescription>piano</CheckDescription>
+            </Checkbox>
+          </Item>
+        </ItemGroup>
+        <ItemGroup title="player">
+          <Item key="suggestNotes">
+            <Checkbox checked={props.suggestNotesChecked} />
+            <CheckDescription>suggest notes</CheckDescription>
+          </Item>
+          <Item key="showLoop">
+            <Checkbox checked={props.showLoopChecked} />
+            <CheckDescription>show loop</CheckDescription>
+          </Item>
+        </ItemGroup>
+      </Menu>
+    </Inner>
   </Outer>
 ));
