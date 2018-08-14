@@ -5,6 +5,7 @@ import { withRouter, RouteComponentProps } from 'react-router';
 import { fetchNotation, NotationsActions } from 'data';
 import styled from 'react-emotion';
 import { Score, MaestroController } from 'components';
+import { Link } from 'react-router-dom';
 
 interface IInnerProps extends RouteComponentProps<{ id: string }> {
   notation: Notation.INotation
@@ -44,8 +45,10 @@ const enhance = compose<IInnerProps, {}>(
 )
 
 const Outer = styled('div')`
-  @media print {
+  width: 1200px;
+  margin: 0 auto;
 
+  @media print {
     #score {
       overflow: visible;
 
@@ -60,17 +63,26 @@ const Outer = styled('div')`
   }
 `;
 
+const Inner = styled('div')`
+  width: 100%;
+  background: white;
+  padding: 48px;
+`;
+
 export const NotationPrint = enhance(props => (
   <Outer>
-    <MaestroController
-      bpm={props.notation.bpm}
-      deadTimeMs={props.notation.deadTimeMs}
-      durationMs={props.notation.durationMs}
-    />
-    <Score
-      dynamic={false}
-      notation={props.notation}
-      width={900}  
-    />
+    <Inner>
+      <Link to={`/n/${props.match.params.id}`} className="print-hidden">back</Link>
+      <MaestroController
+        bpm={props.notation.bpm}
+        deadTimeMs={props.notation.deadTimeMs}
+        durationMs={props.notation.durationMs}
+      />
+      <Score
+        dynamic={false}
+        notation={props.notation}
+        width={900}  
+      />
+    </Inner>
   </Outer>
 ));
