@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { compose, withHandlers } from 'recompose';
+import { compose, withHandlers, lifecycle } from 'recompose';
 import { Maestro } from 'services';
 import { LoopCaretRenderer } from 'models/vextab/renderers/LoopCaretRenderer';
 import { get } from 'lodash';
@@ -11,7 +11,7 @@ interface IConnectProps {
 }
 
 interface IInnerProps extends IConnectProps {
-  handleNotification: (maestro: Maestro) => void;
+  syncShowLoopWithCanvas: (maestro: Maestro) => void;
 }
 
 const enhance = compose(
@@ -21,7 +21,7 @@ const enhance = compose(
     })
   ),
   withHandlers({
-    handleNotification: (props: IConnectProps) => (maestro: Maestro) => {
+    syncShowLoopWithCanvas: (props: IConnectProps) => (maestro: Maestro) => {
       const renderer: LoopCaretRenderer | void = get(maestro.vextab, 'renderer.loopCaretRenderer');
 
       if (!renderer) {
@@ -36,8 +36,15 @@ const enhance = compose(
     }
   }),
   observeMaestro<IInnerProps>(
-    props => ({ name: 'LoopCaretController', handleNotification: props.handleNotification })
-  )
+    props => ({ name: 'LoopCaretController', handleNotification: props.syncShowLoopWithCanvas })
+  ),
+  lifecycle<IInnerProps, {}>({
+    componentDidUpdate(): void {
+      if (window.ss.maestro) {
+        this.props.syncShowLoopWithCanvas(window.ss.maestro);
+      }
+    }
+  })
 );
 
 export const LoopCaretController = enhance(() => null);

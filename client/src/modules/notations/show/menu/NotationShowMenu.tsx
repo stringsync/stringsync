@@ -2,10 +2,11 @@ import * as React from 'react';
 import styled from 'react-emotion';
 import { Menu, Checkbox, Icon } from 'antd';
 import { withRouter, Link, RouteComponentProps } from 'react-router-dom';
-import { compose, withState } from 'recompose';
+import { compose, withState, withHandlers } from 'recompose';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
-import { connect } from 'react-redux';
+import { connect, Dispatch } from 'react-redux';
 import { get } from 'lodash';
+import { BehaviorActions } from 'data';
 
 const { ItemGroup, Item } = Menu;
 
@@ -22,13 +23,17 @@ type WithRouterProps = IOuterProps & RouteComponentProps<{ id: string }, {}>
 interface IConnectProps extends WithRouterProps {
   isCurrentUserTranscriber: boolean;
   role: Role.Roles;
+  showLoop: boolean;
+  setShowLoop: (showLoop: boolean) => void;
 }
 
-interface IInnerProps extends IConnectProps {
+interface IHandlerProps extends IConnectProps {
+  handleShowLoopClick: (event: CheckboxChangeEvent) => void;
+}
+
+interface IInnerProps extends IHandlerProps {
   suggestNotesChecked: boolean;
-  showLoopChecked: boolean;
   setSuggestNotesChecked: (suggestNotes: boolean) => void;
-  setShowLoopChecked: (showLoop: boolean) => void;
 }
 
 const enhance = compose<IInnerProps, IOuterProps>(
@@ -40,12 +45,20 @@ const enhance = compose<IInnerProps, IOuterProps>(
 
       return {
         isCurrentUserTranscriber: sessionUserId && sessionUserId === notationTranscriberUserId,
-        role: state.session.role
+        role: state.session.role,
+        showLoop: state.behavior.showLoop
       }
-    }
+    },
+    (dispatch: Dispatch) => ({
+      setShowLoop: (showLoop: boolean) => dispatch(BehaviorActions.setBehavior('showLoop', showLoop) as any)
+    })
   ),
+  withHandlers({
+    handleShowLoopClick: (props: IConnectProps) => (event: CheckboxChangeEvent) => {
+      props.setShowLoop(!props.showLoop);
+    }
+  }),
   withState('suggestNotesChecked', 'setSuggestNotesChecked', false),
-  withState('showLoopChecked', 'setShowLoopChecked', false)
 );
 
 interface IOuterDivProps {
@@ -133,7 +146,10 @@ export const NotationShowMenu = enhance(props => (
             <CheckDescription>suggest notes</CheckDescription>
           </Item>
           <Item key="showLoop">
-            <Checkbox checked={props.showLoopChecked} />
+            <Checkbox
+              checked={props.showLoop}
+              onChange={props.handleShowLoopClick}
+            />
             <CheckDescription>show loop</CheckDescription>
           </Item>
         </ItemGroup>

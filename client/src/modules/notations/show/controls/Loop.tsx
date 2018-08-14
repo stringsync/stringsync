@@ -65,6 +65,8 @@ const enhance = compose<IInnerProps, {}>(
           sort((a, b) => a - b).
           map(ms => new Time(ms, 'ms'));
 
+      props.setValues(values);
+
       const { maestro } = window.ss;
       if (maestro) {
         maestro.loopStart = loopStart;
@@ -75,8 +77,6 @@ const enhance = compose<IInnerProps, {}>(
         maestro.changed = true;
         maestro.notify();
       }
-
-      props.setValues(values);
 
       if (props.playAfterChange) {
         props.videoPlayer.playVideo();
