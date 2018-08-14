@@ -109,7 +109,7 @@ export class CaretRenderer {
     const { vextab } = maestro;
     const { time, note, start, stop } = maestro.state;
 
-    if (!vextab || !time || !note || !start || !stop) {
+    if (!vextab || !time || !note || typeof start !== 'number' || typeof stop !== 'number') {
       // nothing to render
       return;
     }
