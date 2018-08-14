@@ -17,7 +17,7 @@ interface IRenderSpec {
 
 export class LoopCaretRenderer {
   public static THICKNESS = 2; // px
-  public static ALPHA = 0.75;
+  public static ALPHA = 0.075;
   public static STROKE_STYLE = '#4286f4';
   public static CARET_HEIGHT = 227; // px
 
@@ -287,6 +287,7 @@ export class LoopCaretRenderer {
 
     ctx.strokeStyle = LoopCaretRenderer.STROKE_STYLE;
     ctx.lineWidth = LoopCaretRenderer.THICKNESS;
+    ctx.fillStyle = LoopCaretRenderer.STROKE_STYLE;
     ctx.globalAlpha = LoopCaretRenderer.ALPHA;
   }
 }
