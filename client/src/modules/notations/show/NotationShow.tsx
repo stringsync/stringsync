@@ -10,6 +10,7 @@ import { NotationsActions, fetchNotation, VideoActions } from 'data';
 import { RouteComponentProps } from 'react-router-dom';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { ViewportTypes } from 'data/viewport/getViewportType';
+import { get } from 'lodash';
 
 type OuterProps = RouteComponentProps<{ id: string }>;
 
@@ -50,6 +51,7 @@ const enhance = compose<IMenuHandlerProps, OuterProps>(
       notation: state.notations.show,
       viewportType: state.viewport.type,
       viewportWidth: state.viewport.width
+
     }),
     dispatch => ({
       fetchNotation: (id: number) => dispatch(fetchNotation(id) as any),
@@ -149,6 +151,9 @@ export const NotationShow = enhance(props => (
         </div>
         <div>
           <Score
+            songName={props.notation.songName}
+            artistName={props.notation.artistName}
+            transcriberName={get(props.notation.transcriber, 'name') || ''}
             vextabString={props.notation.vextabString}
             width={props.scoreWidth}
           />

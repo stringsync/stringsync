@@ -8,6 +8,7 @@ import styled from 'react-emotion';
 import { scoreKey } from './scoreKey';
 import { NoteController } from './NoteController';
 import { LoopCaretController } from './LoopCaretController';
+import { ScoreTitle } from './ScoreTitle';
 
 const MIN_WIDTH_PER_MEASURE = 240; // px
 const MIN_MEASURES_PER_LINE = 1;
@@ -16,6 +17,9 @@ const MAX_MEASURES_PER_LINE = 4;
 interface IOuterProps {
   vextabString: string;
   width: number;
+  songName: string;
+  artistName: string;
+  transcriberName: string;
 }
 
 interface IVextabProps extends IOuterProps {
@@ -82,6 +86,7 @@ const Outer = styled('div')`
   overflow-x: hidden;
   overflow-y: scroll;
   position: relative;
+  padding-top: 48px;
   -webkit-overflow-scrolling: touch;
 
   ::-webkit-scrollbar { 
@@ -99,6 +104,11 @@ export const Score = enhance(props => (
     <CaretController />
     <LoopCaretController />
     <NoteController />
+    <ScoreTitle 
+      songName={props.songName}
+      artistName={props.artistName}
+      transcriberName={props.transcriberName}
+    />
     {
       props.vextab.lines.map(line => (
         <ScoreLine
