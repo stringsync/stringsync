@@ -7,6 +7,7 @@ import { get } from 'lodash';
 import { Element as ScrollElement } from 'react-scroll';
 import { scoreKey } from './scoreKey';
 import { Overlap, Layer } from '../overlap';
+import { Time } from 'services';
 
 interface IOuterProps {
   vextab: Vextab;
@@ -55,6 +56,16 @@ const enhance = compose<IInnerProps, IOuterProps>(
         }
 
         props.vextab.links.compute();
+
+        const { maestro } = window.ss;
+        if (maestro) {
+          const caret = maestro.observers.find(observer => observer.name === 'CaretController');
+          maestro.update(false);
+
+          if (caret) {
+            caret.handleNotification(maestro);
+          }
+        }
       }
     }
   })

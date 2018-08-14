@@ -127,7 +127,7 @@ export class Maestro extends AbstractObservable {
    * The primary interface that event handlers should call to update the backend
    * models.
    */
-  public update() {
+  public update(notifyOnChange = true) {
     if (this.isUpdating) {
       return;
     }
@@ -135,7 +135,9 @@ export class Maestro extends AbstractObservable {
     this.isUpdating = true;
 
     try {
-      this.doUpdate();
+      const nextState = this.nextState;
+      this.changed = notifyOnChange && !isEqual(this.state, nextState);
+      this.state = nextState;
     } finally {
       this.isUpdating = false;
     }
@@ -147,7 +149,7 @@ export class Maestro extends AbstractObservable {
    * 
    * @private
    */
-  private doUpdate() {
+  private get nextState(): IMaestroState {
     const time = this.$time.clone;
     const loopStart = this.$loopStart.clone;
     const loopEnd = this.$loopEnd.clone;
@@ -179,8 +181,6 @@ export class Maestro extends AbstractObservable {
       nextState = getNullState(time, loopStart, loopEnd);
     }
 
-    this.changed = !isEqual(this.state, nextState);
-
-    this.state = nextState;
+    return nextState;
   }
 }
