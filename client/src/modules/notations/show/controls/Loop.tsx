@@ -1,11 +1,10 @@
 import * as React from 'react';
-import { compose, withHandlers, withProps, withState, lifecycle } from 'recompose';
+import { compose, withHandlers, withProps, withState } from 'recompose';
 import { Slider } from 'antd';
 import { connect } from 'react-redux';
-import { Time, Maestro } from 'services';
+import { Time } from 'services';
 import styled from 'react-emotion';
 import { SliderProps } from 'antd/lib/slider';
-import { observeMaestro } from 'enhancers';
 
 type SliderValues = [number, number];
 
