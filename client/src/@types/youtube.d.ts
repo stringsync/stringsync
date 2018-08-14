@@ -6,7 +6,7 @@ declare namespace Youtube {
     pauseVideo: () => void;
     getDuration: () => number;
     getCurrentTime: () => number;
-    seekTo: (seconds: number, allowSeekAhead: boolean) => void;
+    seekTo: (seconds: number, allowSeekAhead?: boolean) => void;
   }
 
   export interface IEvent {
