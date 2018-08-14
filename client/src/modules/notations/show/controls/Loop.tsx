@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { compose, withHandlers, withProps, withState } from 'recompose';
 import { Slider } from 'antd';
-import { connect } from 'react-redux';
+import { connect, Dispatch } from 'react-redux';
 import { Time } from 'services';
 import styled from 'react-emotion';
 import { SliderProps } from 'antd/lib/slider';
+import { BehaviorActions } from 'data';
 
 type SliderValues = [number, number];
 
@@ -12,15 +13,19 @@ interface IConnectProps {
   durationMs: number;
   isVideoPlaying: boolean;
   videoPlayer: Youtube.IPlayer;
+  showLoop: boolean;
+  setShowLoop: (showLoop: boolean) => void;
 }
 
 interface IStateProps extends IConnectProps {
   values: SliderValues;
   playAfterChange: boolean;
   isScrubbing: boolean;
+  showLoopAfterChange: boolean;
   setValues: (values: SliderValues) => void;
   setPlayAfterChange: (playAfterChange: boolean) => void;
   setIsScrubbing: (isScrubbing: boolean) => void;
+  setShowLoopAfterChange: (showLoopAfterChange: boolean) => void;
 }
 
 interface IValueConverterProps extends IStateProps {
@@ -37,21 +42,25 @@ const enhance = compose<IInnerProps, {}>(
     (state: StringSync.Store.IState) => ({
       durationMs: state.notations.show.durationMs,
       isVideoPlaying: state.video.playerState === 'PLAYING',
+      showLoop: state.behavior.showLoop,
       videoPlayer: state.video.player
+    }),
+    (dispatch: Dispatch) => ({
+      setShowLoop: (showLoop: boolean) => dispatch(BehaviorActions.setBehavior('showLoop', showLoop) as any)
     })
   ),
   withState('values', 'setValues', [0, 100]),
   withState('playAfterChange', 'setPlayAfterChange', false),
   withState('isScrubbing', 'setIsScrubbing', false),
+  withState('showLoopAfterChange', 'setShowLoopAfterChange', false),
   withProps((props: IStateProps) => ({
     valuesToTimeMs: (values: SliderValues) => values.map(value => (value / 100) * props.durationMs)
   })),
   withHandlers({
     handleAfterChange: (props: IValueConverterProps) => (values: SliderValues) => {
-      if (props.playAfterChange) {
-        props.videoPlayer.playVideo();
-      }
+      props.setShowLoop(props.showLoopAfterChange);
 
+      // Update loopStart and loopEnds
       const [loopStart, loopEnd] = props.valuesToTimeMs(values).
           sort((a, b) => a - b).
           map(ms => new Time(ms, 'ms'));
@@ -60,17 +69,30 @@ const enhance = compose<IInnerProps, {}>(
       if (maestro) {
         maestro.loopStart = loopStart;
         maestro.loopEnd = loopEnd;
+
+        // We want the player to snap back to the caret play head.
+        // By forcing an update, we can achieve this.
+        maestro.changed = true;
+        maestro.notify();
       }
 
       props.setValues(values);
 
+      if (props.playAfterChange) {
+        props.videoPlayer.playVideo();
+      }
+
       props.setPlayAfterChange(false);
       props.setIsScrubbing(false);
+      props.setShowLoopAfterChange(false);
     },
     handleChange: (props: IValueConverterProps) => (values: SliderValues) => {
-      if (!props.isScrubbing && Math.max(...values) < 100) {
+      if (!props.isScrubbing && Math.max(...values) <= 100) {
         props.setIsScrubbing(true);
         props.setPlayAfterChange(props.isVideoPlaying);
+
+        props.setShowLoopAfterChange(props.showLoop);
+        props.setShowLoop(true);
       }
 
       props.videoPlayer.pauseVideo();

@@ -89,8 +89,6 @@ export class LoopCaretRenderer {
         ctx.lineTo(spec.x, 0 + LoopCaretRenderer.CARET_HEIGHT);
         ctx.stroke();
         ctx.closePath();
-
-        this.rendereredLines.push(line);
       }
     });
 
@@ -185,6 +183,8 @@ export class LoopCaretRenderer {
       ctx.rect(0, 0, specs[1].x, LoopCaretRenderer.CARET_HEIGHT);
       ctx.fill();
     }
+
+    this.rendereredLines = [firstLine, ...inBetweenLines, lastLine];
   }
 
   public clear(): void {

@@ -1,6 +1,7 @@
 declare namespace StringSync {
   export namespace Store {
     export interface IState {
+      behavior: IBehaviorState;
       notations: INotationsState;
       session: ISessionState;
       tags: ITagsState;

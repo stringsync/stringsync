@@ -32,7 +32,7 @@ export abstract class AbstractObservable {
    * 
    * Does nothing if the changed state is false.
    */
-  protected notify(): void {
+  public notify(): void {
     if (this.changed) {
       this.observers.forEach(observer => observer.handleNotification(this));
     }

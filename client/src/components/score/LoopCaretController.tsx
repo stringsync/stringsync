@@ -4,21 +4,35 @@ import { Maestro } from 'services';
 import { LoopCaretRenderer } from 'models/vextab/renderers/LoopCaretRenderer';
 import { get } from 'lodash';
 import { observeMaestro } from 'enhancers';
+import { connect } from 'react-redux';
 
-interface IInnerProps {
+interface IConnectProps {
+  showLoop: boolean;
+}
+
+interface IInnerProps extends IConnectProps {
   handleNotification: (maestro: Maestro) => void;
 }
 
 const enhance = compose(
+  connect(
+    (state: StringSync.Store.IState) => ({
+      showLoop: state.behavior.showLoop
+    })
+  ),
   withHandlers({
-    handleNotification: () => (maestro: Maestro) => {
+    handleNotification: (props: IConnectProps) => (maestro: Maestro) => {
       const renderer: LoopCaretRenderer | void = get(maestro.vextab, 'renderer.loopCaretRenderer');
 
       if (!renderer) {
         return;
       }
 
-      renderer.render(maestro);
+      if (props.showLoop) {
+        renderer.render(maestro);
+      } else {
+        renderer.clear();
+      }
     }
   }),
   observeMaestro<IInnerProps>(

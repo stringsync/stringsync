@@ -1,3 +1,4 @@
+export * from './behavior';
 export * from './viewport';
 export * from './video';
 export * from './notations';
