@@ -86,12 +86,14 @@ const enhance = compose<IInnerProps, {}>(
         target = loopStart;
 
         const { videoPlayer, isVideoPlaying } = props;
-        if (videoPlayer && isVideoPlaying) {
-          videoPlayer.pauseVideo();
-          videoPlayer.seekTo(loopStart.s, true);
-          window.setTimeout(() => videoPlayer.playVideo(), beat.ms);
-        } else {
-          videoPlayer.seekTo(loopStart.s, true);
+        if (videoPlayer) {
+          if (isVideoPlaying) {
+            videoPlayer.pauseVideo();
+            videoPlayer.seekTo(loopStart.s, true);
+            window.setTimeout(() => videoPlayer.playVideo(), beat.ms);
+          } else {
+            videoPlayer.seekTo(loopStart.s, true);
+          }
         }
       } else {
         target = time;

@@ -142,15 +142,17 @@ export const NotationShowMenu = enhance(props => (
         </ItemGroup>
         <ItemGroup title="player">
           <Item key="suggestNotes">
-            <Checkbox checked={props.suggestNotesChecked} />
-            <CheckDescription>suggest notes</CheckDescription>
+            <Checkbox checked={props.suggestNotesChecked}>
+              <CheckDescription>suggest notes</CheckDescription>
+            </Checkbox>
           </Item>
           <Item key="showLoop">
             <Checkbox
               checked={props.showLoop}
               onChange={props.handleShowLoopClick}
-            />
-            <CheckDescription>show loop</CheckDescription>
+            >
+              <CheckDescription>show loop</CheckDescription>
+            </Checkbox>
           </Item>
         </ItemGroup>
       </Menu>
