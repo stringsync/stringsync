@@ -10,13 +10,13 @@ interface IStringSyncModules {
   debug: boolean;
   message: typeof message;
   notification: typeof notification | void;
-  maestro: Maestro | void;
+  maestro: Maestro;
   sessionSync: {
     callback: ((user: IUser) => any) | void;
     user: StringSync.Store.ISessionUser | {};
   };
   store: Store<StringSync.Store.IState> | void;
-  rafLoop: RafLoop | void;
+  rafLoop: RafLoop;
 }
 
 declare global {

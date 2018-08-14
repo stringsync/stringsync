@@ -9,17 +9,16 @@ import { scoreKey } from './scoreKey';
 import { NoteController } from './NoteController';
 import { LoopCaretController } from './LoopCaretController';
 import { ScoreTitle } from './ScoreTitle';
+import { get } from 'lodash';
 
 const MIN_WIDTH_PER_MEASURE = 240; // px
 const MIN_MEASURES_PER_LINE = 1;
 const MAX_MEASURES_PER_LINE = 4;
 
 interface IOuterProps {
-  vextabString: string;
+  dynamic: boolean;
+  notation: Notation.INotation;
   width: number;
-  songName: string;
-  artistName: string;
-  transcriberName: string;
 }
 
 interface IVextabProps extends IOuterProps {
@@ -54,20 +53,16 @@ const enhance = compose<IInnerProps, IOuterProps>(
   }),
   lifecycle<IInnerProps, {}>({
     componentWillReceiveProps(nextProps) {
-      if (!window.ss.maestro) {
-        throw new Error('expected maestro to be defined');
-      }
-
       const shouldCreateVextab = (
         this.props.width !== nextProps.width ||
-        this.props.vextabString !== nextProps.vextabString ||
+        this.props.notation.vextabString !== nextProps.notation.vextabString ||
         this.props.measuresPerLine !== nextProps.measuresPerLine
       );
 
       let vextab;
-      if (shouldCreateVextab) {
+      if (shouldCreateVextab && nextProps.notation.vextabString.length > 0) {
         vextab = new Vextab(
-          Vextab.decode(nextProps.vextabString), nextProps.measuresPerLine, nextProps.width
+          Vextab.decode(nextProps.notation.vextabString), nextProps.measuresPerLine, nextProps.width
         );
         nextProps.setVextab(vextab);
       } else {
@@ -80,10 +75,14 @@ const enhance = compose<IInnerProps, IOuterProps>(
   })
 );
 
-const Outer = styled('div')`
+interface IOuterDiv {
+  dynamic: boolean;
+}
+
+const Outer = styled('div')<IOuterDiv>`
   background: white;
   max-height: 1040px;
-  overflow-x: hidden;
+  overflow-x: ${props => props.dynamic ? 'hidden' : 'scroll'};
   overflow-y: scroll;
   position: relative;
   padding-top: 48px;
@@ -99,15 +98,15 @@ const Spacer = styled('div')`
 `;
 
 export const Score = enhance(props => (
-  <Outer id="score">
-    <ScoreScroller />
-    <CaretController />
-    <LoopCaretController />
-    <NoteController />
-    <ScoreTitle 
-      songName={props.songName}
-      artistName={props.artistName}
-      transcriberName={props.transcriberName}
+  <Outer id="score" dynamic={props.dynamic}>
+    {props.dynamic ? <ScoreScroller />       : null}
+    {props.dynamic ? <CaretController />     : null}
+    {props.dynamic ? <LoopCaretController /> : null}
+    {props.dynamic ? <NoteController />      : null}
+    <ScoreTitle
+      songName={props.notation.songName}
+      artistName={props.notation.artistName}
+      transcriberName={get(props.notation.transcriber, 'name') || ''}
     />
     {
       props.vextab.lines.map(line => (
@@ -118,6 +117,6 @@ export const Score = enhance(props => (
         />
       ))
     }
-    <Spacer />
+    {props.dynamic ? <Spacer /> : null}
   </Outer>
 ));

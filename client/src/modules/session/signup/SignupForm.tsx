@@ -47,7 +47,7 @@ const enhance = compose<IInnerProps, {}>(
   withHandlers({
     handleSignupError: (props: any) => (res: IAuthResponse) => {
       props.setLoading(false);
-      props.setErrors(get(res.data.errors, 'full_messages') || ['Something went wrong']);
+      props.setErrors(get(res.data.errors, 'full_messages') || ['something went wrong']);
     },
     handleSignupSuccess: (props: any) => (res: IAuthResponse) => {
       props.setLoading(false);

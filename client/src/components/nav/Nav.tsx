@@ -101,7 +101,7 @@ const StyledSubMenu = styled(Menu.SubMenu)`
 `;
 
 const Nav = enhance(props => (
-  <Row>
+  <Row id="nav">
     <Col span={4}>
       <Row type="flex" justify="start">
         <Link to="/">

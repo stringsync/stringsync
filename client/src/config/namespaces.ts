@@ -1,3 +1,5 @@
+import { Maestro, RafLoop } from 'services';
+
 const configureNamespaces = (): void => {
   window.ss = window.ss || {};
 
@@ -9,10 +11,10 @@ const configureNamespaces = (): void => {
 
   // redux store
   window.ss.store = undefined;
-  const a = 'asdf';
 
   // maestro
-  window.ss.maestro = undefined;
+  window.ss.maestro = new Maestro(0, 120, 1);
+  window.ss.rafLoop = new RafLoop();
 };
 
 export default configureNamespaces;

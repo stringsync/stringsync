@@ -49,6 +49,7 @@ export class Vextab {
   public readonly id: number;
   public readonly measures: Measure[];
   public readonly lines: Line[];
+  public readonly width: number | void;
 
   public measuresPerLine: number;
   public tuning = DEFAULT_TUNING;
@@ -64,6 +65,7 @@ export class Vextab {
 
     this.measuresPerLine = measuresPerLine;
     this.structs = structs;
+    this.width = width;
 
     this.measures = this.getMeasures();
     this.lines = this.getLines();

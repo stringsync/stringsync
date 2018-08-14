@@ -3,7 +3,7 @@ import { merge } from 'lodash';
 
 export type INotationsState = StringSync.Store.INotationsState;
 
-const getDefaultNotation = (): Notation.INotation => ({
+export const getDefaultNotation = (): Notation.INotation => ({
   artistName: '',
   bpm: 120,
   createdAt: new Date(1970, 1, 1),

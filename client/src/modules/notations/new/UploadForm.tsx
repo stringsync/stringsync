@@ -108,7 +108,7 @@ const enhance = compose<IInnerProps, {}>(
           const responseErrors = (
             get(error.responseJSON, 'errors') ||
             [
-              { details: 'Something went wrong' }
+              { details: 'something went wrong' }
             ]
           );
 

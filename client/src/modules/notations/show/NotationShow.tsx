@@ -96,7 +96,7 @@ const enhance = compose<IMenuHandlerProps, OuterProps>(
         }
       } catch (error) {
         console.error(error);
-        window.ss.message.error('Something went wrong');
+        window.ss.message.error('something went wrong');
         this.props.history.push('/');
       }
     },
@@ -150,13 +150,7 @@ export const NotationShow = enhance(props => (
           </Affix>
         </div>
         <div>
-          <Score
-            songName={props.notation.songName}
-            artistName={props.notation.artistName}
-            transcriberName={get(props.notation.transcriber, 'name') || ''}
-            vextabString={props.notation.vextabString}
-            width={props.scoreWidth}
-          />
+          <Score dynamic={true} notation={props.notation} width={props.scoreWidth} />
         </div>
       </Layer>
       <Layer zIndex={11}>

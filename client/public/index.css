@@ -11,3 +11,9 @@ body.no-scroll {
   font-weight: 100;
   letter-spacing: 1px;
 }
+
+@media print {
+  #nav, #footer, .print-hidden {
+    display: none;
+  }
+}

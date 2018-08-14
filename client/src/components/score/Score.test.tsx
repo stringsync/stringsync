@@ -3,13 +3,13 @@ import { Score } from './Score';
 import { assertRender } from 'test';
 import { VEXTAB_STRINGS } from 'test';
 import { sample } from 'lodash';
+import { getDefaultNotation } from 'data';
 
-assertRender(() => (
-  <Score
-    songName="foo"
-    artistName="bar"
-    transcriberName="baz"
-    vextabString={sample(VEXTAB_STRINGS) as string}
-    width={640}
-  />
-));
+assertRender(() => {
+  const notation = getDefaultNotation();
+  notation.songName = 'foo';
+  notation.artistName = 'bar';
+  notation.vextabString = sample(VEXTAB_STRINGS) as string;
+
+  return <Score dynamic={true} width={640} notation={notation} />;
+});

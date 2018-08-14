@@ -91,7 +91,7 @@ const Inner = styled('div')<IInnerDivProps>`
 `;
 
 export const ScoreLine = enhance(props => (
-  <Outer>
+  <Outer className="score-line">
     <ScrollElement name={scoreKey(props.vextab, props.line)} />
     <Inner vextab={props.vextab}>
       <Overlap>

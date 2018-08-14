@@ -76,7 +76,7 @@ export const App = enhance(() => (
       <StyledLayoutContent>
         <Routes />
       </StyledLayoutContent>
-      <StyledLayoutFooter>
+      <StyledLayoutFooter id="footer">
         <FooterLink to="about">about</FooterLink>
         <FooterLink to="teach">teach</FooterLink>
         <FooterLink to="terms">terms</FooterLink>

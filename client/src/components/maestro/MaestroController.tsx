@@ -2,9 +2,7 @@ import * as React from 'react';
 import { compose, lifecycle, withHandlers } from 'recompose';
 import { connect } from 'react-redux';
 import { withRaf, IWithRafProps } from 'enhancers';
-import { Maestro, Time, RafLoop, RafSpec } from 'services';
-
-class MaestroError extends Error { };
+import { Time, RafSpec } from 'services';
 
 interface IOuterProps {
   bpm: number;
@@ -31,15 +29,7 @@ const enhance = compose<InnerProps, IOuterProps>(
     })
   ),
   lifecycle<IConnectProps, {}>({
-    componentWillMount() {
-      window.ss.maestro = new Maestro(this.props.deadTimeMs, this.props.bpm, this.props.durationMs);
-      window.ss.rafLoop = new RafLoop();
-    },
     componentWillReceiveProps(nextProps) {
-      if (!window.ss.rafLoop || !window.ss.maestro) {
-        throw new MaestroError('Expected an instance of RafLoop and Maestro to be defined on window.ss');
-      }
-
       const raf = window.ss.rafLoop;
       if (nextProps.isVideoActive) {
         raf.start();
@@ -56,13 +46,7 @@ const enhance = compose<InnerProps, IOuterProps>(
       }
     },
     componentWillUnmount() {
-      if (!window.ss.rafLoop) {
-        throw new MaestroError('expected an instance of RafLoop to be defined on window.ss');
-      }
-
       window.ss.rafLoop.stop();
-      window.ss.maestro = undefined;
-      window.ss.rafLoop = undefined;
     }
   }),
   withHandlers({
@@ -71,9 +55,9 @@ const enhance = compose<InnerProps, IOuterProps>(
      */
     handleRafLoop: (props: IConnectProps) => () => {
       if (!window.ss.maestro) {
-        throw new MaestroError('expected an instance of Maestro to be defined on window.ss');
+        throw new Error('expected an instance of Maestro to be defined on window.ss');
       } else if (!props.videoPlayer) {
-        throw new MaestroError('expected a Youtube video player to be defined in the store');
+        throw new Error('expected a Youtube video player to be defined in the store');
       }
 
       window.ss.maestro.time = new Time(props.videoPlayer.getCurrentTime(), 's');
