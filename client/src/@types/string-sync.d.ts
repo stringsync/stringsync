@@ -48,5 +48,9 @@ declare namespace StringSync {
       type: ViewportTypes;
       width: number;
     }
+
+    export interface IBehaviorState {
+      showLoop: boolean;
+    }
   }
 }
