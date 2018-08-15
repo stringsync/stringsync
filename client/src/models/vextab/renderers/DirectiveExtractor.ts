@@ -16,6 +16,17 @@ import { Vextab, MeasureElement, Note } from 'models';
  */
 export class DirectiveExtractor {
   /**
+   * Convenient static method to avoid having to instantiate an extractor manually.
+   * 
+   * @param {Vextab} vextab 
+   */
+  public static extract(vextab: Vextab): DirectiveExtractor {
+    const extractor = new DirectiveExtractor(vextab);
+    extractor.extract();
+    return extractor;
+  }
+
+  /**
    * This function contains the implementation for determining if a modifier is a
    * directive or not.
    * 

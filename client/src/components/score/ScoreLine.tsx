@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { compose, withHandlers } from 'recompose';
-import { Line, VextabRenderer } from 'models';
+import { Line, VextabRenderer, DirectiveExtractor } from 'models';
 import { Vextab } from 'models/vextab/Vextab';
 import styled from 'react-emotion';
 import { get } from 'lodash';
@@ -46,6 +46,9 @@ const enhance = compose<IInnerProps, IOuterProps>(
       renderer.assign(props.line, canvas);
 
       if (renderer.isRenderable) {
+        // The extraction process is idempotent.
+        DirectiveExtractor.extract(renderer.vextab);
+
         if (!renderer.isRendered) {
           renderer.render();
         }
