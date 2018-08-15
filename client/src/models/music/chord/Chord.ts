@@ -12,6 +12,7 @@ export class Chord extends AbstractVexWrapper {
   public notes: Note[];
   public measure: Measure | void;
   public renderer: NoteRenderer;
+  public directives: Directive.IDirective[] = [];
 
   constructor(notes: Note[], struct: VextabStruct | null = null) {
     super(struct);

@@ -28,6 +28,7 @@ export class Bar extends AbstractVexWrapper {
 
   public kind: Vex.Flow.Barline.type;
   public measure: Measure | void;
+  public directives: Directive.IDirective[] = [];
 
   constructor(kind: Vex.Flow.Barline.type, struct: VextabStruct | null = null) {
     super(struct);

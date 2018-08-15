@@ -11,6 +11,7 @@ export class Rest extends AbstractVexWrapper {
   public readonly type = 'REST';
 
   public measure: Measure | void;
+  public directives: Directive.IDirective[] = [];
 
   constructor(position: number, rhythm: Rhythm, struct: VextabStruct | null = null) {
     super(struct);

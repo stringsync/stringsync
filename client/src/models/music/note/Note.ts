@@ -66,6 +66,7 @@ export class Note extends AbstractVexWrapper {
   public octave: number;
   public measure: Measure | void;
   public renderer: NoteRenderer;
+  public directives: Directive.IDirective[] = [];
 
   constructor(literal: string, octave: number, struct: VextabStruct | null = null) {
     super(struct);
