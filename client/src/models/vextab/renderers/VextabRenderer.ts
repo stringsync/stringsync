@@ -117,8 +117,13 @@ export class VextabRenderer {
 
   /**
    * This is the step used to create all the artists, which are ultimately used to render to
-   * the canvas. It will also assign all the Vexflow element to the wrapper model elements.
+   * the canvas.
    * 
+   * This function will take the artist that is instantiated and extract the directives from it
+   * via the DirectiveExtractor. Caller beware: The extraction process involves mutating the
+   * artist in place. It will also assign all the Vexflow element to the wrapper model elements via
+   * the VextabHydrator.
+   *
    * @returns {void}
    */
   private hydrate(lineId: number): void {
