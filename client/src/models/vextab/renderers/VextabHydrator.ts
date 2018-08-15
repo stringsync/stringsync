@@ -58,6 +58,10 @@ export class VextabHydrator {
     this.stave = stave;
   }
 
+  /**
+   * This is the primary method for the VextabHydrator. Its purpose to to link the Vexflow
+   * data structures with the StringSync wrappers.
+   */
   public hydrate(): void {
     this.line.stave = this.stave;
 
