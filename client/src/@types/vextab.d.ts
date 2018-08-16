@@ -21,6 +21,7 @@ declare namespace Vextab {
       ITabstave | ITuplet | ITime
 
     export interface IAnnotations {
+      command: 'annotations',
       params: string[];
     }
 

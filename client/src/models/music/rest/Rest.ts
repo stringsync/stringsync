@@ -17,12 +17,16 @@ export class Rest extends AbstractVexWrapper {
   public annotations: Annotations[] = [];
   public tuplet: Tuplet | void;
 
-  constructor(position: number, rhythm: Rhythm, struct: VextabStruct | null = null) {
-    super(struct);
+  constructor(position: number, rhythm: Rhythm) {
+    super();
 
     this.id = id();
     this.rhythm = rhythm;
     this.position = position;
+  }
+
+  public get struct(): Vextab.ParsedStruct {
+
   }
   
   public hydrate(staveNote: Vex.Flow.StaveNote, tabNote: Vex.Flow.TabNote): void {

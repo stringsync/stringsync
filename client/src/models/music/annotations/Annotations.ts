@@ -10,7 +10,7 @@ export class Annotations extends AbstractVexWrapper {
     this.texts = texts;
   }
 
-  public get struct(): Vextab.ParsedStruct {
+  public get struct(): Vextab.Parsed.IAnnotations {
     return { command: 'annotations', params: this.texts }
   }
 
