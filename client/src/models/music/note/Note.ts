@@ -73,9 +73,10 @@ export class Note extends AbstractVexWrapper {
   public annotations: Annotations[] = [];
   public rhythm: Rhythm | void;
   public tuplet: Tuplet | void;
+  public position: Vextab.Parsed.IPosition | void;
 
-  constructor(literal: string, octave: number, struct: VextabStruct | null = null) {
-    super(struct);
+  constructor(literal: string, octave: number, position?: Vextab.Parsed.IPosition) {
+    super();
 
     const normalizedLiteral = Note.normalize(literal);
 
@@ -89,6 +90,7 @@ export class Note extends AbstractVexWrapper {
     this.literal = normalizedLiteral;
     this.octave = octave;
     this.renderer = new NoteRenderer(this);
+    this.position = position;
   }
 
   /**
@@ -139,19 +141,6 @@ export class Note extends AbstractVexWrapper {
    */
   public get value(): boolean {
     return Note.VALUES_BY_LITERAL[this.literal];
-  }
-
-  /**
-   * Returns a guitar position if the note is hydrated. If it is not hydrated,
-   * throws an error.
-   */
-  public get positions(): Guitar.IPosition[] {
-    if (!this.isHydrated) {
-      throw new Error('cannot fetch the guitar position of an unhydrated note');
-    }
-
-    const { fret, str } = (this.vexAttrs!.tabNote as any).positions[0];
-    return [{ fret: parseInt(fret, 10), str: parseInt(str, 10) }];
   }
 
   /**

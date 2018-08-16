@@ -7,6 +7,7 @@ import { Flow } from 'vexflow';
 import { Annotations } from '../annotations';
 import { Rhythm } from '../rhythm';
 import { Tuplet } from '../tuplet';
+import { compact } from 'lodash';
 
 export class Chord extends AbstractVexWrapper {
   public readonly id: number;
@@ -20,8 +21,8 @@ export class Chord extends AbstractVexWrapper {
   public rhythm: Rhythm | void;
   public tuplet: Tuplet | void;
 
-  constructor(notes: Note[], struct: VextabStruct | null = null) {
-    super(struct);
+  constructor(notes: Note[]) {
+    super();
 
     if (notes.length <= 1) {
       throw new Error('expected more than one note to construct a chord');
@@ -46,6 +47,12 @@ export class Chord extends AbstractVexWrapper {
     const dst = Note.sort(other.notes);
 
     return src.every((note, ndx) => note.isEquivalent(dst[ndx]));
+  }
+
+  public get struct(): Vextab.Parsed.IChord {
+    return {
+      chord: compact(this.notes.map(note => note.position)) as Vextab.Parsed.IPosition[]
+    };
   }
 
   /**
