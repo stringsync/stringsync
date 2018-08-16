@@ -111,7 +111,7 @@ export class VextabMeasureExtractor {
       throw new Error(`expected first note to be a typeof BAR: ${JSON.stringify(note)}`);
     }
     
-    this.bar = new Bar(Bar.kindof(note), this.struct);
+    this.bar = new Bar(note.type.toLowerCase() as Vextab.Parsed.IBarTypes);
   }
 
   /**

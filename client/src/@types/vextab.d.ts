@@ -21,13 +21,14 @@ declare namespace Vextab {
       ITabstave | ITuplet | ITime
 
     export interface IAnnotations {
-      command: 'annotations',
+      command: 'annotations';
       params: string[];
     }
 
     export type IBarTypes = 'single' | 'double' | 'end' | 'repeat-end' | 'repeat-begin' | 'repeat-both';
 
     export interface IBar {
+      command: 'bar';
       type: IBarTypes;
     }
 

@@ -5,38 +5,23 @@ import { Measure } from 'models/music';
 import { Annotations } from '../annotations';
 
 export class Bar extends AbstractVexWrapper {
-  public static kindof(note: Vextab.Parsed.IBar): Vex.Flow.Barline.type {
-    switch (note.type.toUpperCase()) {
-      case 'SINGLE':
-        return Vex.Flow.Barline.type.SINGLE;
-      case 'DOUBLE':
-        return Vex.Flow.Barline.type.DOUBLE;
-      case 'END':
-        return Vex.Flow.Barline.type.END;
-      case 'REPEAT-END':
-        return Vex.Flow.Barline.type.REPEAT_END;
-      case 'REPEAT-BEGIN':
-        return Vex.Flow.Barline.type.REPEAT_BEGIN;
-      case 'REPEAT-BOTH':
-        return Vex.Flow.Barline.type.REPEAT_BOTH;
-      default:
-        return Vex.Flow.Barline.type.REPEAT_BOTH;
-    }
-  }
-
   public readonly type = 'BAR';
   public readonly id: number;
 
-  public kind: Vex.Flow.Barline.type;
+  public kind: Vextab.Parsed.IBarTypes;
   public measure: Measure | void;
   public directives: Directive.IDirective[] = [];
   public annotations: Annotations[] = [];
 
-  constructor(kind: Vex.Flow.Barline.type, struct: VextabStruct | null = null) {
-    super(struct);
+  constructor(kind: Vextab.Parsed.IBarTypes) {
+    super();
 
     this.id = id();
     this.kind = kind;
+  }
+
+  public get struct(): Vextab.Parsed.IBar {
+    return { command: 'bar', type: this.kind };
   }
 
   public hydrate(staveNote: Vex.Flow.BarNote, tabNote: Vex.Flow.BarNote): void {
