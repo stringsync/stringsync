@@ -13,9 +13,9 @@ export class BarHydrationValidator extends AbstractValidator<Bar> {
   }
 
   protected doValidate(): void {
-    if (this.target.kind !== this.staveNote.getType()) {
+    if (this.target.getType() !== this.staveNote.getType()) {
       this.error('expected bar kind to be the staveNote type');
-    } else if (this.target.kind !== this.tabNote.getType()) {
+    } else if (this.target.getType() !== this.tabNote.getType()) {
       this.error('expected bar kind to be the tabNote type');
     }
   }

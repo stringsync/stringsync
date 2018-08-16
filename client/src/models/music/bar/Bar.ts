@@ -20,6 +20,28 @@ export class Bar extends AbstractVexWrapper {
     this.kind = kind;
   }
 
+  /**
+   * Used to compare to Vexflow data structures that use the getType function.
+   */
+  public getType(): Vex.Flow.Barline.type {
+    switch (this.kind.toUpperCase()) {
+      case 'SINGLE':
+        return Vex.Flow.Barline.type.SINGLE;
+      case 'DOUBLE':
+        return Vex.Flow.Barline.type.DOUBLE;
+      case 'END':
+        return Vex.Flow.Barline.type.END;
+      case 'REPEAT-END':
+        return Vex.Flow.Barline.type.REPEAT_END;
+      case 'REPEAT-BEGIN':
+        return Vex.Flow.Barline.type.REPEAT_BEGIN;
+      case 'REPEAT-BOTH':
+        return Vex.Flow.Barline.type.REPEAT_BOTH;
+      default:
+        return Vex.Flow.Barline.type.REPEAT_BOTH;
+    }
+  }
+
   public get struct(): Vextab.Parsed.IBar {
     return { command: 'bar', type: this.kind };
   }

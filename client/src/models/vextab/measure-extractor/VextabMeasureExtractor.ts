@@ -83,9 +83,7 @@ export class VextabMeasureExtractor {
       }
     }, {});
 
-    const measurePath = this.path + 'options';
-    const measureSpecStruct = at(this.vextab.structs, measurePath)[0];
-    return new VextabMeasureSpec(params.KEY, params.TIME_SIGNATURE, measureSpecStruct);
+    return new VextabMeasureSpec(params.KEY, params.TIME_SIGNATURE);
   }
 
   /**
@@ -185,7 +183,8 @@ export class VextabMeasureExtractor {
    */
   private extractNote(struct: Vextab.Parsed.IPosition) {
     const [literal, octave] = this.tuning.getNoteForFret(struct.fret, struct.string).split('/');
-    const note = new Note(literal, parseInt(octave, 10));
+    const position = { fret: parseInt(struct.fret, 10), str: parseInt(struct.string, 10) }
+    const note = new Note(literal, parseInt(octave, 10), [position]);
 
     note.rhythm = this.rhythm;
 

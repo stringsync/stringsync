@@ -4,23 +4,19 @@ export class Line {
   public id: number;
   public measures: Measure[];
   public stave: Vex.Flow.Stave;
-  public rawStruct: Vextab.Parsed.ILine;
   public readonly type = 'LINE';
 
   constructor(id: number, measures: Measure[]) {
     this.id = id;
     this.measures = measures;
-
-    this.rawStruct = this.getRawStruct();
   }
 
-
-  private getRawStruct(): Vextab.Parsed.ILine {
+  public get struct(): Vextab.Parsed.ILine {
     // notes are measure struct!
     const notes = this.measures.reduce<any[]>((measureStructs, measure) => {
-      return measureStructs.concat(measure.rawStruct);
+      return measureStructs.concat(measure.struct);
     }, []);
-    const options = this.measures.length === 0 ? [] : this.measures[0].spec.struct.raw;
+    const options = this.measures.length === 0 ? [] : this.measures[0].spec.struct
 
     return {
       element: 'tabstave',

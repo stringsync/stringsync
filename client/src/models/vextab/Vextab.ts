@@ -9,6 +9,7 @@ import { Flow } from 'vexflow';
 import { Measure } from '../music/measure/Measure';
 import { VextabLinkedList } from './linked-list';
 import { id } from 'utilities';
+import { isEqual } from 'lodash';
 
 const DEFAULT_TUNING: Vex.Flow.Tuning = new (Flow as any).Tuning();
 
@@ -115,7 +116,7 @@ export class Vextab {
     this.measures.forEach((measure, ndx) => {
       const shouldPushLine = (
         measures.length === this.measuresPerLine ||
-        (prevMeasure && prevMeasure.spec.struct !== measure.spec.struct) ||
+        (prevMeasure && !isEqual(prevMeasure.spec.struct, measure.spec.struct)) ||
         (prevMeasure && prevMeasure.spec.id !== measure.spec.id)
       );
 

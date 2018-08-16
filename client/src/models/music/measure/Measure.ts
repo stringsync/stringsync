@@ -8,7 +8,6 @@ export class Measure {
   public static tickableTypes = ['NOTE', 'CHORD', 'REST'];
 
   public readonly spec: any;
-  public readonly rawStruct: Vextab.ParsedStruct[];
   public readonly id: number;
   public readonly type = 'MEASURE';
 
@@ -24,8 +23,6 @@ export class Measure {
     this.id = id;
     this.elements = elements;
     this.spec = spec;
-
-    this.rawStruct = this.getRawStruct();
   }
 
   public get tickables(): MeasureElement[] {
@@ -40,15 +37,16 @@ export class Measure {
     const targets = this.elements.filter(element => (
       element.type === 'NOTE' || element.type === 'CHORD'
     )) as Array<Chord | Note>;
+
     return flatMap(targets, target => target.positions);
   }
 
-  private getRawStruct(): Vextab.ParsedStruct[] {
+  public get struct(): Vextab.ParsedStruct[] {
     return flatMap(this.elements, element => (
       compact([
-        get(element, 'rhythm.struct.raw'),
-        get(element, 'struct.raw'),
-        ...element.annotations.map(annotation => get(annotation, 'struct.raw'))
+        get(element, 'rhythm.struct'),
+        element.struct,
+        ...element.annotations.map(annotation => annotation.struct)
       ])
     ));
   }

@@ -40,7 +40,7 @@ export class VextabHydrator {
 
     // Mimics the behavior of the original Vextab
     // See https://github.com/0xfe/vextab/blob/master/src/vextab.coffee#L204
-    vextabGenerator.elements = [line.rawStruct];
+    vextabGenerator.elements = [line.struct];
     vextabGenerator.generate();
     vextabGenerator.valid = true;
 

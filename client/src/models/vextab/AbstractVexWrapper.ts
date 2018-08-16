@@ -23,8 +23,4 @@ export abstract class AbstractVexWrapper {
   public get isHydrated(): boolean {
     return this.vexAttrs !== null;
   }
-
-  public get isHydratable(): boolean {
-    return this.struct instanceof VextabStruct;
-  }
 }

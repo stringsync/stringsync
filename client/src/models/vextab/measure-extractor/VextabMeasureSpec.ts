@@ -7,19 +7,26 @@ import { Key, TimeSignature } from 'models';
 export class VextabMeasureSpec {
   public key: Key;
   public timeSignature: TimeSignature;
-  public struct: any;
   public clef = 'none';
   public notation = true;
   public readonly id: number;
 
   // TODO: Add types for the struct member
-  constructor(key: Key, timeSignature: TimeSignature, struct: any) {
+  constructor(key: Key, timeSignature: TimeSignature) {
     this.key = key;
     this.timeSignature = timeSignature;
-    this.struct = struct;
 
     this.id = hash(
       `${this.clef}${this.notation}${this.key.toString()}${this.timeSignature.toString()}`
     )
+  }
+
+  public get struct(): any {
+    return [
+      { key: 'clef',     value: 'none' },
+      { key: 'notation', value: 'true' },
+      { key: 'key',      value: this.key.note.literal },
+      { key: 'time',     value: this.timeSignature.toString() }
+    ]
   }
 }

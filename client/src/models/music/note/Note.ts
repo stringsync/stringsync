@@ -1,4 +1,4 @@
-import { sortBy } from 'lodash';
+import { merge, sortBy } from 'lodash';
 import * as constants from './noteConstants';
 import { AbstractVexWrapper, VextabStruct } from 'models/vextab';
 import { NoteHydrationValidator } from './NoteHydrationValidator';
@@ -73,9 +73,9 @@ export class Note extends AbstractVexWrapper {
   public annotations: Annotations[] = [];
   public rhythm: Rhythm | void;
   public tuplet: Tuplet | void;
-  public position: Vextab.Parsed.IPosition | void;
+  public positions: Guitar.IPosition[] = [];
 
-  constructor(literal: string, octave: number, position?: Vextab.Parsed.IPosition) {
+  constructor(literal: string, octave: number, positions?: Guitar.IPosition[]) {
     super();
 
     const normalizedLiteral = Note.normalize(literal);
@@ -90,7 +90,10 @@ export class Note extends AbstractVexWrapper {
     this.literal = normalizedLiteral;
     this.octave = octave;
     this.renderer = new NoteRenderer(this);
-    this.position = position; // TODO: Validate that the position returns the right note literal
+
+    if (positions) {
+      this.positions = positions; // TODO: Validate that the position returns the right note literal
+    }
   }
 
   /**
@@ -103,7 +106,7 @@ export class Note extends AbstractVexWrapper {
   }
 
   public get clone(): Note {
-    return new Note(this.literal, this.octave);
+    return new Note(this.literal, this.octave, merge([], this.positions));
   }
 
   /**
@@ -146,8 +149,11 @@ export class Note extends AbstractVexWrapper {
   /**
    * @returns {Vextab.Parsed.IPosition}
    */
-  public get struct(): Vextab.Parsed.IPosition | void {
-    return this.position;
+  public get struct(): Vextab.Parsed.IPosition {
+    return {
+      fret: this.positions[0].fret.toString(),
+      string: this.positions[0].str.toString()
+    }
   }
 
   /**
@@ -260,7 +266,7 @@ export class Note extends AbstractVexWrapper {
     numOctavesTraversed += Math.max(Math.floor(remainingHalfSteps / notes.length), 0);
     const octave = this.octave + numOctavesTraversed;
 
-    return new Note(literal, octave);
+    return new Note(literal, octave, merge([], this.positions));
   }
 
   /**
