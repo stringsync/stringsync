@@ -46,6 +46,7 @@ declare namespace Vextab {
     }
 
     export interface IRest {
+      command: 'rest',
       params: {
         position: number;
       }

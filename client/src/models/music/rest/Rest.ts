@@ -25,8 +25,13 @@ export class Rest extends AbstractVexWrapper {
     this.position = position;
   }
 
-  public get struct(): Vextab.ParsedStruct {
-
+  public get struct(): Vextab.Parsed.IRest {
+    return {
+      command: 'rest',
+      params: {
+        position: this.position
+      }
+    }
   }
   
   public hydrate(staveNote: Vex.Flow.StaveNote, tabNote: Vex.Flow.TabNote): void {
