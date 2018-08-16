@@ -90,7 +90,7 @@ export class Note extends AbstractVexWrapper {
     this.literal = normalizedLiteral;
     this.octave = octave;
     this.renderer = new NoteRenderer(this);
-    this.position = position;
+    this.position = position; // TODO: Validate that the position returns the right note literal
   }
 
   /**
@@ -141,6 +141,13 @@ export class Note extends AbstractVexWrapper {
    */
   public get value(): boolean {
     return Note.VALUES_BY_LITERAL[this.literal];
+  }
+
+  /**
+   * @returns {Vextab.Parsed.IPosition}
+   */
+  public get struct(): Vextab.Parsed.IPosition | void {
+    return this.position;
   }
 
   /**

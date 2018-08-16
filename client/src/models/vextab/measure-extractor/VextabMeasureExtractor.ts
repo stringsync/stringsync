@@ -1,7 +1,7 @@
 import {
   Measure, Note, TimeSignature, Bar,
   Rhythm, Chord, Rest, VextabStruct,
-  Tuplet, Annotations, Key, Vextab,
+  Tuplet, Annotations, Vextab,
   MeasureElement
 } from 'models';
 import { VextabMeasureSpec } from './';
@@ -65,15 +65,6 @@ export class VextabMeasureExtractor {
     });
 
     return this.measures;
-  }
-
-  /**
-   * Uses the path instance variable to create a new VextabStruct instance.
-   * 
-   * @returns {VextabStruct}
-   */
-  private get struct(): VextabStruct {
-    return new VextabStruct(this.vextab, this.path);
   }
 
   private extractMeasureSpec(struct: Vextab.ParsedStruct): VextabMeasureSpec {
