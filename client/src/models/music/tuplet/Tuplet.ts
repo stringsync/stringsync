@@ -1,4 +1,4 @@
-import { VextabStruct, AbstractVexWrapper } from 'models/vextab';
+import { AbstractVexWrapper } from 'models/vextab';
 
 export class Tuplet extends AbstractVexWrapper {
   public readonly value: number;

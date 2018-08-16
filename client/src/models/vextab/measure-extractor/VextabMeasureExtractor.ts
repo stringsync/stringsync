@@ -1,11 +1,11 @@
 import {
   Measure, Note, TimeSignature, Bar,
   Rhythm, Chord, Rest, VextabStruct,
-  Tuplet, Annotations, Vextab,
+  Tuplet, Annotations, Vextab, Key,
   MeasureElement
 } from 'models';
 import { VextabMeasureSpec } from './';
-import { get, last, dropRight } from 'lodash';
+import { at, get, last, dropRight } from 'lodash';
 
 export class VextabMeasureExtractor {
   public static extract(vextab: Vextab, tuning: any) {
@@ -69,18 +69,14 @@ export class VextabMeasureExtractor {
 
   private extractMeasureSpec(struct: Vextab.ParsedStruct): VextabMeasureSpec {
     const params = struct.options.reduce((spec: any, option: any, ndx: number) => {
-      const path = this.path + `.options.[${ndx}]`;
-
-      const vextabStruct = new VextabStruct(this.vextab, path);
-
       switch (VextabStruct.typeof(option)) {
         case 'KEY':
           const note = new Note(option.value, 0);
-          spec.KEY = new Key(note, vextabStruct);
+          spec.KEY = new Key(note);
           return spec;
         case 'TIME_SIGNATURE':
           const [upper, lower] = option.value.split('/');
-          spec.TIME_SIGNATURE = new TimeSignature(upper, lower, vextabStruct);
+          spec.TIME_SIGNATURE = new TimeSignature(upper, lower);
           return spec;
         default:
           return spec;
@@ -88,7 +84,7 @@ export class VextabMeasureExtractor {
     }, {});
 
     const measurePath = this.path + 'options';
-    const measureSpecStruct = new VextabStruct(this.vextab, measurePath);
+    const measureSpecStruct = at(this.vextab.structs, measurePath)[0];
     return new VextabMeasureSpec(params.KEY, params.TIME_SIGNATURE, measureSpecStruct);
   }
 
@@ -130,11 +126,11 @@ export class VextabMeasureExtractor {
     switch (VextabStruct.typeof(note)) {
       case 'BAR':
         this.pushMeasure();
-        this.bar = new Bar(Bar.kindof(note), this.struct);
+        this.bar = new Bar(note.type);
         this.elements = [];
         break;
       case 'TIME':
-        this.rhythm = new Rhythm(note.time, note.dot, null, this.struct);
+        this.rhythm = new Rhythm(note.time, note.dot, null);
         break;
       case 'NOTE':
         this.elements.push(this.extractNote(note));
@@ -143,10 +139,10 @@ export class VextabMeasureExtractor {
         this.elements.push(this.extractChord(note));
         break;
       case 'REST':
-        this.elements.push(new Rest(note.params.position, this.rhythm, this.struct));
+        this.elements.push(new Rest(note.params.position, this.rhythm));
         break;
       case 'TUPLET':
-        this.tuplet = new Tuplet(parseInt(note.params.tuplet, 10), this.struct);
+        this.tuplet = new Tuplet(parseInt(note.params.tuplet, 10));
         break;
       case 'ANNOTATIONS':
         const lastElement = last(this.elements) || this.bar;
@@ -155,7 +151,7 @@ export class VextabMeasureExtractor {
           throw new Error('expected an element to associate the annotation with');
         }
 
-        lastElement.annotations.push(new Annotations(note.params, this.struct));
+        lastElement.annotations.push(new Annotations(note.params));
         break;
       default:
         break;
@@ -189,7 +185,7 @@ export class VextabMeasureExtractor {
    */
   private extractNote(struct: Vextab.Parsed.IPosition) {
     const [literal, octave] = this.tuning.getNoteForFret(struct.fret, struct.string).split('/');
-    const note = new Note(literal, parseInt(octave, 10), this.struct);
+    const note = new Note(literal, parseInt(octave, 10));
 
     note.rhythm = this.rhythm;
 
@@ -206,7 +202,7 @@ export class VextabMeasureExtractor {
    */
   private extractChord(struct: Vextab.Parsed.IChord) {
     const notes = struct.chord.map(note => this.extractNote(note));
-    const chord = new Chord(notes, this.struct);
+    const chord = new Chord(notes);
     chord.rhythm = this.rhythm;
 
     this.appendTuplet(chord);
@@ -237,7 +233,7 @@ export class VextabMeasureExtractor {
     if (isTupletFufilled) {
       this.tuplet = null;
     } else {
-      element.tuplet = new Tuplet(tuplet.value, tuplet.struct);
+      element.tuplet = new Tuplet(tuplet.value);
     }
   }
 }
