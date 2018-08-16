@@ -69,14 +69,21 @@ declare namespace Vextab {
     }
 
     export interface ITuplet {
+      command: 'tuplet';
       params: {
-        tuplet: number;
+        tuplet: string;
       }
     }
 
+    // Used for specifying rhythms, not time signatures
     export interface ITime {
-      time: number;
-      dot?: string;
+      time: string;
+      dot: boolean;
+    }
+
+    export interface ITimeSignature {
+      key: 'time';
+      value: string;
     }
 
     export interface IText {
