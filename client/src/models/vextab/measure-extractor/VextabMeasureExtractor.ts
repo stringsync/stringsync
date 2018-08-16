@@ -1,9 +1,11 @@
 import {
   Measure, Note, TimeSignature, Bar,
   Rhythm, Chord, Rest, VextabStruct,
-  Tuplet, Annotations, Key, Vextab
+  Tuplet, Annotations, Key, Vextab,
+  MeasureElement
 } from 'models';
 import { VextabMeasureSpec } from './';
+import { get, last, dropRight } from 'lodash';
 
 export class VextabMeasureExtractor {
   public static extract(vextab: Vextab, tuning: any) {
@@ -14,8 +16,9 @@ export class VextabMeasureExtractor {
   public readonly tuning: any;
   public readonly measures: Measure[];
 
-  private elements: any[];
+  private elements: MeasureElement[];
   private rhythm: Rhythm;
+  private tuplet: Tuplet | null;
   private bar: Bar | void;
   private measureSpec: VextabMeasureSpec | void;
   private path: string;
@@ -28,6 +31,7 @@ export class VextabMeasureExtractor {
     // "Current" properties
     this.elements = [];
     this.rhythm = new Rhythm(4, false, null);
+    this.tuplet = null;
     this.bar = undefined;
     this.measureSpec = undefined;
     this.path = '';
@@ -140,7 +144,6 @@ export class VextabMeasureExtractor {
         break;
       case 'TIME':
         this.rhythm = new Rhythm(note.time, note.dot, null, this.struct);
-        this.elements.push(this.rhythm);
         break;
       case 'NOTE':
         this.elements.push(this.extractNote(note));
@@ -149,19 +152,19 @@ export class VextabMeasureExtractor {
         this.elements.push(this.extractChord(note));
         break;
       case 'REST':
-        this.elements.push(
-          new Rest(note.params.position, this.rhythm.clone(), this.struct)
-        );
+        this.elements.push(new Rest(note.params.position, this.rhythm, this.struct));
         break;
       case 'TUPLET':
-        this.elements.push(
-          new Tuplet(parseInt(note.params.tuplet, 10), this.struct)
-        );
+        this.tuplet = new Tuplet(parseInt(note.params.tuplet, 10), this.struct);
         break;
       case 'ANNOTATIONS':
-        this.elements.push(
-          new Annotations(note.params, this.struct)
-        )
+        const lastElement = last(this.elements) || this.bar;
+        
+        if (!lastElement) {
+          throw new Error('expected an element to associate the annotation with');
+        }
+
+        lastElement.annotations.push(new Annotations(note.params, this.struct));
         break;
       default:
         break;
@@ -175,7 +178,11 @@ export class VextabMeasureExtractor {
    */
   private pushMeasure(): void {
     if (typeof this.measureSpec === 'undefined') {
-      throw new Error(`expected measureSpec not to be undefined1`)
+      throw new Error('expected measureSpec not to be undefined')
+    }
+    
+    if (!this.bar) {
+      throw new Error('expected bar to be defined to push measure');
     }
 
     this.measures.push(
@@ -191,7 +198,13 @@ export class VextabMeasureExtractor {
    */
   private extractNote(struct: Vextab.Parsed.IPosition) {
     const [literal, octave] = this.tuning.getNoteForFret(struct.fret, struct.string).split('/');
-    return new Note(literal, parseInt(octave, 10), this.struct);
+    const note = new Note(literal, parseInt(octave, 10), this.struct);
+
+    note.rhythm = this.rhythm;
+
+    this.appendTuplet(note);
+
+    return note;
   }
 
   /**
@@ -202,6 +215,38 @@ export class VextabMeasureExtractor {
    */
   private extractChord(struct: Vextab.Parsed.IChord) {
     const notes = struct.chord.map(note => this.extractNote(note));
-    return new Chord(notes, this.struct);
+    const chord = new Chord(notes, this.struct);
+    chord.rhythm = this.rhythm;
+
+    this.appendTuplet(chord);
+
+    return chord;
+  }
+
+  /**
+   * Compares the last n notes to the tuplet's value. If the tuplet is fulfilled,
+   * it has enough notes to satisfy its value. This function will remove the tuplet
+   * member variable and set it to null.
+   * 
+   * @param {Note | Chord | Rest} element 
+   */
+  private appendTuplet(element: Note | Chord | Rest): void {
+    const { tuplet } = this;
+
+    if (!tuplet) {
+      return;
+    }
+
+    // Fulfilling a tuplet means you've supplied enough notes to satisfy the tuplet's value
+    const isTupletFufilled = dropRight(this.elements, tuplet.value).every(el => {
+      const otherTuplet: Tuplet | void = get(el, 'tuplet');
+      return Boolean(otherTuplet && otherTuplet.value === tuplet.value);
+    });
+
+    if (isTupletFufilled) {
+      this.tuplet = null;
+    } else {
+      element.tuplet = new Tuplet(tuplet.value, tuplet.struct);
+    }
   }
 }

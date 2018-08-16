@@ -44,6 +44,12 @@ export class Measure {
   }
 
   private getRawStruct(): Vextab.ParsedStruct[] {
-    return compact(this.elements.map(element => get(element, 'struct.raw')));
+    return flatMap(this.elements, element => (
+      compact([
+        get(element, 'rhythm.struct.raw'),
+        get(element, 'struct.raw'),
+        ...element.annotations.map(annotation => get(annotation, 'struct.raw'))
+      ])
+    ));
   }
 };

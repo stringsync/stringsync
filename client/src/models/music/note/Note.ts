@@ -5,6 +5,9 @@ import { NoteHydrationValidator } from './NoteHydrationValidator';
 import { id } from 'utilities';
 import { Measure } from 'models/music';
 import { NoteRenderer } from 'models/vextab';
+import { Annotations } from '../annotations';
+import { Rhythm } from '../rhythm';
+import { Tuplet } from '../tuplet';
 
 /**
  * The purpose of this class is to encapsulate the logic related to describing a note's inherent
@@ -67,6 +70,9 @@ export class Note extends AbstractVexWrapper {
   public measure: Measure | void;
   public renderer: NoteRenderer;
   public directives: Directive.IDirective[] = [];
+  public annotations: Annotations[] = [];
+  public rhythm: Rhythm | void;
+  public tuplet: Tuplet | void;
 
   constructor(literal: string, octave: number, struct: VextabStruct | null = null) {
     super(struct);

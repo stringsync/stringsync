@@ -4,6 +4,9 @@ import { ChordHydrationValidator } from './ChordHydrationValidator';
 import { Measure } from 'models/music';
 import { id } from 'utilities';
 import { Flow } from 'vexflow';
+import { Annotations } from '../annotations';
+import { Rhythm } from '../rhythm';
+import { Tuplet } from '../tuplet';
 
 export class Chord extends AbstractVexWrapper {
   public readonly id: number;
@@ -13,6 +16,9 @@ export class Chord extends AbstractVexWrapper {
   public measure: Measure | void;
   public renderer: NoteRenderer;
   public directives: Directive.IDirective[] = [];
+  public annotations: Annotations[] = [];
+  public rhythm: Rhythm | void;
+  public tuplet: Tuplet | void;
 
   constructor(notes: Note[], struct: VextabStruct | null = null) {
     super(struct);

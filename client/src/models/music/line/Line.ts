@@ -1,6 +1,5 @@
 import { Measure } from 'models/music';
 
-
 export class Line {
   public id: number;
   public measures: Measure[];
@@ -15,6 +14,7 @@ export class Line {
     this.rawStruct = this.getRawStruct();
   }
 
+
   private getRawStruct(): Vextab.Parsed.ILine {
     // notes are measure struct!
     const notes = this.measures.reduce<any[]>((measureStructs, measure) => {
@@ -26,7 +26,7 @@ export class Line {
       element: 'tabstave',
       notes,
       options,
-      text: []
+      text: [] // Not supported yet
     };
   };
 }
