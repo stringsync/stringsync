@@ -1,14 +1,18 @@
 import { Note } from 'models/music';
-import { AbstractVexWrapper, VextabStruct } from 'models/vextab';
+import { AbstractVexWrapper } from 'models/vextab';
 
 export class Key extends AbstractVexWrapper {
   public note: Note;
   public type = 'KEY';
 
-  constructor(note: Note, struct: VextabStruct | null = null) {
-    super(struct);
+  constructor(note: Note) {
+    super();
 
     this.note = note;
+  }
+
+  public get struct(): Vextab.Parsed.IKey {
+    return { key: 'key', value: this.note.toString() };
   }
 
   public toString(): string {

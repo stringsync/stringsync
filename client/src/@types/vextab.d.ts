@@ -38,16 +38,13 @@ declare namespace Vextab {
       decorator?: string;
     }
 
-    export interface IClef {
-
-    }
-
     export interface IKey {
-
+      key: 'key';
+      value: string;
     }
 
     export interface IRest {
-      command: 'rest',
+      command: 'rest';
       params: {
         position: number;
       }

@@ -1,8 +1,6 @@
 export * from './annotations';
 export * from './bar';
 export * from './chord';
-export * from './clef';
-export * from './key';
 export * from './line';
 export * from './measure';
 export * from './note';
@@ -11,3 +9,4 @@ export * from './rhythm';
 export * from './scale';
 export * from './time-signature';
 export * from './tuplet';
+export * from './key';
