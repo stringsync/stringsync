@@ -13,9 +13,10 @@ export class Line {
 
   public get struct(): Vextab.Parsed.ILine {
     // notes are measure struct!
-    const notes = this.measures.reduce<any[]>((measureStructs, measure) => {
+    const notes = this.measures.reduce<Vextab.Parsed.Note[]>((measureStructs, measure) => {
       return measureStructs.concat(measure.struct);
     }, []);
+
     const options = this.measures.length === 0 ? [] : this.measures[0].spec.struct
 
     return {
