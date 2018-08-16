@@ -23,6 +23,10 @@ export class Chord extends AbstractVexWrapper {
   constructor(notes: Note[]) {
     super();
 
+    if (notes.length <= 1) {
+      throw new Error('expected more than one note to construct a chord');
+    }
+
     this.id = id();
     this.notes = notes;
     this.renderer = new NoteRenderer(this);
