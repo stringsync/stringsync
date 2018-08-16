@@ -54,6 +54,10 @@ export class VextabStruct {
   public readonly vextab: Vextab;
   public readonly path: string;
 
+  // FIXME
+  // FIXME: VextabStructs should compute their struct based on the properties of
+  // the StringSync data structure they belong to. Maybe this becomes methods
+  // on the structures themselves?
   constructor(vextab: Vextab, path: string) {
     this.vextab = vextab;
     this.path = path;
