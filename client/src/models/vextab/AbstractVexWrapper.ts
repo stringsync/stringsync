@@ -12,7 +12,7 @@ export interface IVexAttrs {
 export abstract class AbstractVexWrapper {
   public vexAttrs: IVexAttrs | null = null;
 
-  public abstract get struct(): Vextab.ParsedStruct[];
+  public abstract get struct(): Vextab.ParsedStruct;
 
   /**
    * This function is called after the VextabGenerator creates Vexflow (not Vextab) elements.
