@@ -61,7 +61,9 @@ const enhance = compose<IInnerProps, {}>(
         props.setPlayAfterChange(props.isVideoPlaying);
       }
 
-      props.videoPlayer.pauseVideo();
+      if (props.videoPlayer) {
+        props.videoPlayer.pauseVideo();
+      }
 
       const seekToTimeMs = props.valueToTimeMs(value);
 

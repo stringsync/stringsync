@@ -30,7 +30,9 @@ export class RestHydrationValidator extends AbstractValidator<Rest> {
 
     if (duration !== this.staveNote.getDuration()) {
       this.error('expected staveNote to have the same duration as the rest\'s rhythm');
-    } else if (duration !== this.tabNote.getDuration()) {
+    }
+    
+    if (duration !== this.tabNote.getDuration()) {
       this.error('expected tabNote to have the same duration as the rest\'s rhythm');
     }
   }

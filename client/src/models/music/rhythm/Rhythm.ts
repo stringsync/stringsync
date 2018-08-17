@@ -6,12 +6,16 @@ export class Rhythm extends AbstractVexWrapper {
   public readonly tuplet: number | null;
   public readonly type = 'RHYTHM';
 
-  constructor(value: number, dot: boolean, tuplet: number | null, struct: VextabStruct | null = null) {
-    super(struct);
+  constructor(value: number, dot: boolean, tuplet: number | null) {
+    super();
 
     this.value = value;
     this.dot = dot;
     this.tuplet = tuplet;
+  }
+
+  public get struct(): Vextab.Parsed.ITime {
+    return { dot: this.dot, time: this.value.toString() };
   }
 
   public clone(): Rhythm {

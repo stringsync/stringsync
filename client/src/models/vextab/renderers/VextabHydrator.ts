@@ -40,7 +40,7 @@ export class VextabHydrator {
 
     // Mimics the behavior of the original Vextab
     // See https://github.com/0xfe/vextab/blob/master/src/vextab.coffee#L204
-    vextabGenerator.elements = [line.rawStruct];
+    vextabGenerator.elements = [line.struct];
     vextabGenerator.generate();
     vextabGenerator.valid = true;
 
@@ -58,6 +58,10 @@ export class VextabHydrator {
     this.stave = stave;
   }
 
+  /**
+   * This is the primary method for the VextabHydrator. Its purpose to to link the Vexflow
+   * data structures with the StringSync wrappers.
+   */
   public hydrate(): void {
     this.line.stave = this.stave;
 

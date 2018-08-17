@@ -1,9 +1,11 @@
 import {
   Measure, Note, TimeSignature, Bar,
   Rhythm, Chord, Rest, VextabStruct,
-  Tuplet, Annotations, Key, Vextab
+  Tuplet, Annotations, Vextab, Key,
+  MeasureElement
 } from 'models';
 import { VextabMeasureSpec } from './';
+import { at, get, last, dropRight } from 'lodash';
 
 export class VextabMeasureExtractor {
   public static extract(vextab: Vextab, tuning: any) {
@@ -14,8 +16,9 @@ export class VextabMeasureExtractor {
   public readonly tuning: any;
   public readonly measures: Measure[];
 
-  private elements: any[];
+  private elements: MeasureElement[];
   private rhythm: Rhythm;
+  private tuplet: Tuplet | null;
   private bar: Bar | void;
   private measureSpec: VextabMeasureSpec | void;
   private path: string;
@@ -28,6 +31,7 @@ export class VextabMeasureExtractor {
     // "Current" properties
     this.elements = [];
     this.rhythm = new Rhythm(4, false, null);
+    this.tuplet = null;
     this.bar = undefined;
     this.measureSpec = undefined;
     this.path = '';
@@ -63,38 +67,23 @@ export class VextabMeasureExtractor {
     return this.measures;
   }
 
-  /**
-   * Uses the path instance variable to create a new VextabStruct instance.
-   * 
-   * @returns {VextabStruct}
-   */
-  private get struct(): VextabStruct {
-    return new VextabStruct(this.vextab, this.path);
-  }
-
   private extractMeasureSpec(struct: Vextab.ParsedStruct): VextabMeasureSpec {
     const params = struct.options.reduce((spec: any, option: any, ndx: number) => {
-      const path = this.path + `.options.[${ndx}]`;
-
-      const vextabStruct = new VextabStruct(this.vextab, path);
-
       switch (VextabStruct.typeof(option)) {
         case 'KEY':
           const note = new Note(option.value, 0);
-          spec.KEY = new Key(note, vextabStruct);
+          spec.KEY = new Key(note);
           return spec;
         case 'TIME_SIGNATURE':
           const [upper, lower] = option.value.split('/');
-          spec.TIME_SIGNATURE = new TimeSignature(upper, lower, vextabStruct);
+          spec.TIME_SIGNATURE = new TimeSignature(upper, lower);
           return spec;
         default:
           return spec;
       }
     }, {});
 
-    const measurePath = this.path + 'options';
-    const measureSpecStruct = new VextabStruct(this.vextab, measurePath);
-    return new VextabMeasureSpec(params.KEY, params.TIME_SIGNATURE, measureSpecStruct);
+    return new VextabMeasureSpec(params.KEY, params.TIME_SIGNATURE);
   }
 
   /**
@@ -107,7 +96,7 @@ export class VextabMeasureExtractor {
       throw new Error(`expected first note to be a typeof BAR: ${JSON.stringify(note)}`);
     }
     
-    this.bar = new Bar(Bar.kindof(note), this.struct);
+    this.bar = new Bar(note.type.toLowerCase() as Vextab.Parsed.IBarTypes);
   }
 
   /**
@@ -135,12 +124,11 @@ export class VextabMeasureExtractor {
     switch (VextabStruct.typeof(note)) {
       case 'BAR':
         this.pushMeasure();
-        this.bar = new Bar(Bar.kindof(note), this.struct);
+        this.bar = new Bar(note.type);
         this.elements = [];
         break;
       case 'TIME':
-        this.rhythm = new Rhythm(note.time, note.dot, null, this.struct);
-        this.elements.push(this.rhythm);
+        this.rhythm = new Rhythm(note.time, note.dot, null);
         break;
       case 'NOTE':
         this.elements.push(this.extractNote(note));
@@ -149,19 +137,19 @@ export class VextabMeasureExtractor {
         this.elements.push(this.extractChord(note));
         break;
       case 'REST':
-        this.elements.push(
-          new Rest(note.params.position, this.rhythm.clone(), this.struct)
-        );
+        this.elements.push(new Rest(note.params.position, this.rhythm));
         break;
       case 'TUPLET':
-        this.elements.push(
-          new Tuplet(parseInt(note.params.tuplet, 10), this.struct)
-        );
+        this.tuplet = new Tuplet(parseInt(note.params.tuplet, 10));
         break;
       case 'ANNOTATIONS':
-        this.elements.push(
-          new Annotations(note.params, this.struct)
-        )
+        const lastElement = last(this.elements) || this.bar;
+        
+        if (!lastElement) {
+          throw new Error('expected an element to associate the annotation with');
+        }
+
+        lastElement.annotations.push(new Annotations(note.params));
         break;
       default:
         break;
@@ -175,7 +163,11 @@ export class VextabMeasureExtractor {
    */
   private pushMeasure(): void {
     if (typeof this.measureSpec === 'undefined') {
-      throw new Error(`expected measureSpec not to be undefined1`)
+      throw new Error('expected measureSpec not to be undefined')
+    }
+    
+    if (!this.bar) {
+      throw new Error('expected bar to be defined to push measure');
     }
 
     this.measures.push(
@@ -191,7 +183,14 @@ export class VextabMeasureExtractor {
    */
   private extractNote(struct: Vextab.Parsed.IPosition) {
     const [literal, octave] = this.tuning.getNoteForFret(struct.fret, struct.string).split('/');
-    return new Note(literal, parseInt(octave, 10), this.struct);
+    const position = { fret: parseInt(struct.fret, 10), str: parseInt(struct.string, 10) }
+    const note = new Note(literal, parseInt(octave, 10), [position]);
+
+    note.rhythm = this.rhythm;
+
+    this.appendTuplet(note);
+
+    return note;
   }
 
   /**
@@ -202,6 +201,38 @@ export class VextabMeasureExtractor {
    */
   private extractChord(struct: Vextab.Parsed.IChord) {
     const notes = struct.chord.map(note => this.extractNote(note));
-    return new Chord(notes, this.struct);
+    const chord = new Chord(notes);
+    chord.rhythm = this.rhythm;
+
+    this.appendTuplet(chord);
+
+    return chord;
+  }
+
+  /**
+   * Compares the last n notes to the tuplet's value. If the tuplet is fulfilled,
+   * it has enough notes to satisfy its value. This function will remove the tuplet
+   * member variable and set it to null.
+   * 
+   * @param {Note | Chord | Rest} element 
+   */
+  private appendTuplet(element: Note | Chord | Rest): void {
+    const { tuplet } = this;
+
+    if (!tuplet) {
+      return;
+    }
+
+    // Fulfilling a tuplet means you've supplied enough notes to satisfy the tuplet's value
+    const isTupletFufilled = dropRight(this.elements, tuplet.value).every(el => {
+      const otherTuplet: Tuplet | void = get(el, 'tuplet');
+      return Boolean(otherTuplet && otherTuplet.value === tuplet.value);
+    });
+
+    if (isTupletFufilled) {
+      this.tuplet = null;
+    } else {
+      element.tuplet = new Tuplet(tuplet.value);
+    }
   }
 }

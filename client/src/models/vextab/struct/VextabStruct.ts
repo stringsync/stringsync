@@ -1,7 +1,3 @@
-
-import { at } from 'lodash';
-import { Vextab } from 'models';
-
 export class VextabStruct {
   public static typeof(struct: Vextab.ParsedStruct) {
     const { element } = struct;
@@ -49,17 +45,5 @@ export class VextabStruct {
     }
 
     return null;
-  }
-
-  public readonly vextab: Vextab;
-  public readonly path: string;
-
-  constructor(vextab: Vextab, path: string) {
-    this.vextab = vextab;
-    this.path = path;
-  }
-  
-  get raw() {
-    return at(this.vextab.structs, this.path)[0];
   }
 }

@@ -2,10 +2,29 @@ import { VextabStruct, AbstractVexWrapper } from 'models/vextab';
 import { BarHydrationValidator } from './BarHydrationValidator';
 import { id } from 'utilities';
 import { Measure } from 'models/music';
+import { Annotations } from '../annotations';
 
 export class Bar extends AbstractVexWrapper {
-  public static kindof(note: Vextab.Parsed.IBar): Vex.Flow.Barline.type {
-    switch (note.type.toUpperCase()) {
+  public readonly type = 'BAR';
+  public readonly id: number;
+
+  public kind: Vextab.Parsed.IBarTypes;
+  public measure: Measure | void;
+  public directives: Directive.IDirective[] = [];
+  public annotations: Annotations[] = [];
+
+  constructor(kind: Vextab.Parsed.IBarTypes) {
+    super();
+
+    this.id = id();
+    this.kind = kind;
+  }
+
+  /**
+   * Used to compare to Vexflow data structures that use the getType function.
+   */
+  public getType(): Vex.Flow.Barline.type {
+    switch (this.kind.toUpperCase()) {
       case 'SINGLE':
         return Vex.Flow.Barline.type.SINGLE;
       case 'DOUBLE':
@@ -23,17 +42,8 @@ export class Bar extends AbstractVexWrapper {
     }
   }
 
-  public readonly type = 'BAR';
-  public readonly id: number;
-
-  public kind: Vex.Flow.Barline.type;
-  public measure: Measure | void;
-
-  constructor(kind: Vex.Flow.Barline.type, struct: VextabStruct | null = null) {
-    super(struct);
-
-    this.id = id();
-    this.kind = kind;
+  public get struct(): Vextab.Parsed.IBar {
+    return { command: 'bar', type: this.kind };
   }
 
   public hydrate(staveNote: Vex.Flow.BarNote, tabNote: Vex.Flow.BarNote): void {

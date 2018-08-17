@@ -10,12 +10,9 @@ export interface IVexAttrs {
  * and Vextab.
  */
 export abstract class AbstractVexWrapper {
-  public struct: VextabStruct | null;
   public vexAttrs: IVexAttrs | null = null;
 
-  constructor(struct: VextabStruct | null) {
-    this.struct = struct;
-  }
+  public abstract get struct(): Vextab.ParsedStruct;
 
   /**
    * This function is called after the VextabGenerator creates Vexflow (not Vextab) elements.
@@ -25,9 +22,5 @@ export abstract class AbstractVexWrapper {
 
   public get isHydrated(): boolean {
     return this.vexAttrs !== null;
-  }
-
-  public get isHydratable(): boolean {
-    return this.struct instanceof VextabStruct;
   }
 }

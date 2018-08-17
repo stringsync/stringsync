@@ -1,10 +1,13 @@
-import { sortBy } from 'lodash';
+import { merge, sortBy } from 'lodash';
 import * as constants from './noteConstants';
 import { AbstractVexWrapper, VextabStruct } from 'models/vextab';
 import { NoteHydrationValidator } from './NoteHydrationValidator';
 import { id } from 'utilities';
 import { Measure } from 'models/music';
 import { NoteRenderer } from 'models/vextab';
+import { Annotations } from '../annotations';
+import { Rhythm } from '../rhythm';
+import { Tuplet } from '../tuplet';
 
 /**
  * The purpose of this class is to encapsulate the logic related to describing a note's inherent
@@ -66,9 +69,14 @@ export class Note extends AbstractVexWrapper {
   public octave: number;
   public measure: Measure | void;
   public renderer: NoteRenderer;
+  public directives: Directive.IDirective[] = [];
+  public annotations: Annotations[] = [];
+  public rhythm: Rhythm | void;
+  public tuplet: Tuplet | void;
+  public positions: Guitar.IPosition[] = [];
 
-  constructor(literal: string, octave: number, struct: VextabStruct | null = null) {
-    super(struct);
+  constructor(literal: string, octave: number, positions?: Guitar.IPosition[]) {
+    super();
 
     const normalizedLiteral = Note.normalize(literal);
 
@@ -82,6 +90,10 @@ export class Note extends AbstractVexWrapper {
     this.literal = normalizedLiteral;
     this.octave = octave;
     this.renderer = new NoteRenderer(this);
+
+    if (positions) {
+      this.positions = positions; // TODO: Validate that the position returns the right note literal
+    }
   }
 
   /**
@@ -94,7 +106,7 @@ export class Note extends AbstractVexWrapper {
   }
 
   public get clone(): Note {
-    return new Note(this.literal, this.octave);
+    return new Note(this.literal, this.octave, merge([], this.positions));
   }
 
   /**
@@ -135,16 +147,13 @@ export class Note extends AbstractVexWrapper {
   }
 
   /**
-   * Returns a guitar position if the note is hydrated. If it is not hydrated,
-   * throws an error.
+   * @returns {Vextab.Parsed.IPosition}
    */
-  public get positions(): Guitar.IPosition[] {
-    if (!this.isHydrated) {
-      throw new Error('cannot fetch the guitar position of an unhydrated note');
+  public get struct(): Vextab.Parsed.IPosition {
+    return {
+      fret: this.positions[0].fret.toString(),
+      string: this.positions[0].str.toString()
     }
-
-    const { fret, str } = (this.vexAttrs!.tabNote as any).positions[0];
-    return [{ fret: parseInt(fret, 10), str: parseInt(str, 10) }];
   }
 
   /**
@@ -257,7 +266,7 @@ export class Note extends AbstractVexWrapper {
     numOctavesTraversed += Math.max(Math.floor(remainingHalfSteps / notes.length), 0);
     const octave = this.octave + numOctavesTraversed;
 
-    return new Note(literal, octave);
+    return new Note(literal, octave, merge([], this.positions));
   }
 
   /**

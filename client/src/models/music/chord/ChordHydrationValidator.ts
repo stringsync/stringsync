@@ -1,6 +1,9 @@
 import { AbstractValidator } from 'utilities';
 import { Chord } from 'models/music';
 import { Note } from '../note';
+import { Flow } from 'vexflow';
+
+const TUNING = new (Flow as any).Tuning() as Vex.Flow.Tuning;
 
 export class ChordHydrationValidator extends AbstractValidator<Chord> {
   public readonly staveNote: Vex.Flow.StaveNote;
@@ -14,7 +17,6 @@ export class ChordHydrationValidator extends AbstractValidator<Chord> {
   }
 
   protected doValidate(): void {
-    this.validateHydratable();
     this.validateChords();
   }
 
@@ -26,12 +28,9 @@ export class ChordHydrationValidator extends AbstractValidator<Chord> {
     return this.tabNote.getPositions();
   }
 
+  // TODO: Allow the validator to take the correct tuning
   private get tuning(): Vex.Flow.Tuning {
-    if (!this.target.struct) {
-      throw new Error('expected note to have a struct');
-    }
-
-    return this.target.struct.vextab.tuning;
+    return TUNING;
   }
 
   private get tabKeys(): string[] {
@@ -46,12 +45,6 @@ export class ChordHydrationValidator extends AbstractValidator<Chord> {
 
   private get tabChord(): Chord {
     return new Chord(this.tabKeys.map(Note.from));
-  }
-
-  private validateHydratable(): void {
-    if (!this.target.isHydratable) {
-      this.error('cannot hydrate an object that is not hydratable');
-    }
   }
 
   private validateChords(): void {

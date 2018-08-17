@@ -1,9 +1,12 @@
 import { Note } from 'models';
-import { AbstractVexWrapper, VextabStruct, NoteRenderer } from 'models/vextab';
+import { AbstractVexWrapper, NoteRenderer } from 'models/vextab';
 import { ChordHydrationValidator } from './ChordHydrationValidator';
 import { Measure } from 'models/music';
 import { id } from 'utilities';
-import { Flow } from 'vexflow';
+import { Annotations } from '../annotations';
+import { Rhythm } from '../rhythm';
+import { Tuplet } from '../tuplet';
+import { flatMap } from 'lodash';
 
 export class Chord extends AbstractVexWrapper {
   public readonly id: number;
@@ -12,9 +15,13 @@ export class Chord extends AbstractVexWrapper {
   public notes: Note[];
   public measure: Measure | void;
   public renderer: NoteRenderer;
+  public directives: Directive.IDirective[] = [];
+  public annotations: Annotations[] = [];
+  public rhythm: Rhythm | void;
+  public tuplet: Tuplet | void;
 
-  constructor(notes: Note[], struct: VextabStruct | null = null) {
-    super(struct);
+  constructor(notes: Note[]) {
+    super();
 
     if (notes.length <= 1) {
       throw new Error('expected more than one note to construct a chord');
@@ -41,6 +48,10 @@ export class Chord extends AbstractVexWrapper {
     return src.every((note, ndx) => note.isEquivalent(dst[ndx]));
   }
 
+  public get struct(): Vextab.Parsed.IChord {
+    return { chord: flatMap(this.notes, note => note.struct) };
+  }
+
   /**
    * Sets postprocessing vexflow attributes to the instance
    * 
@@ -60,26 +71,10 @@ export class Chord extends AbstractVexWrapper {
   }
 
   /**
-   * Returns a guitar position if the note is hydrated. If it is not hydrated,
+   * Returns a guitar position if the note is hydrated. If any note does not have a position,
    * throws an error.
    */
   public get positions(): Guitar.IPosition[] {
-    if (!this.isHydrated) {
-      throw new Error('cannot fetch the guitar position of an unhydrated chord');
-    }
-
-    const tabNote = this.vexAttrs!.tabNote as any;
-    let positions: Array<{ fret: string, str: string }> = tabNote.positions;
-    const modifiers = tabNote.modifiers as any[];
-
-    modifiers.filter(mod => mod instanceof Flow.GraceNoteGroup).forEach(group => {
-      group.grace_notes.forEach((graceTabNote: any) => {
-        positions = positions.concat(graceTabNote.positions);
-      });
-    });
-
-    return positions.map(({ fret, str }) => (
-      { fret: parseInt(fret, 10), str: parseInt(str, 10 )}
-    ));
+    return flatMap(this.notes, note => note.positions);
   }
 }

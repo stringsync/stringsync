@@ -95,7 +95,9 @@ const enhance = compose<IInnerProps, {}>(
         props.setShowLoop(true);
       }
 
-      props.videoPlayer.pauseVideo();
+      if (props.videoPlayer) {
+        props.videoPlayer.pauseVideo();
+      }
 
       const [loopStart, loopEnd] = props.valuesToTimeMs(values).
           sort((a, b) => a - b).
