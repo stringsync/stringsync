@@ -90,7 +90,7 @@ export class DirectiveExtractor {
       // FIXME: Overly complicated logic to hack JSON since Vextab handles commas differently
       const text: string = get(mod, 'text');
       const payload: Directive.IPayload = JSON.parse(text.split('=')[1].replace(/\;/g, ','));
-      return { element, payload }
+      return { element, payload };
     });
   }
 }
