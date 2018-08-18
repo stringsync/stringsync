@@ -1,5 +1,5 @@
 export * from './AbstractVexWrapper';
-export * from './struct';
+export * from './VextabStruct';
 export * from './encoding';
 export * from './measure-extractor';
 export * from './renderers';
