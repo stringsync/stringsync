@@ -1,5 +1,5 @@
 import { get, startsWith, partition } from 'lodash';
-import { Vextab, MeasureElement, Note } from 'models';
+import { Vextab, MeasureElement } from 'models';
 
 /**
  * This class is used to extract the custom directives from Vextab. The extraction process
@@ -14,13 +14,13 @@ import { Vextab, MeasureElement, Note } from 'models';
  *     - Create a directive object that a directive handler will act on later.
  *     - Add a directive reference to the StringSync data structure.
  */
-export class DirectiveExtractor {
+export class Extractor {
   /**
    * Convenient static method to avoid having to instantiate an extractor manually.
    * 
    * @param {Vextab} vextab 
    */
-  public static extract(vextab: Vextab): DirectiveExtractor {
+  public static extract(vextab: Vextab): Extractor {
     const extractor = new DirectiveExtractor(vextab);
     extractor.extract();
     return extractor;
