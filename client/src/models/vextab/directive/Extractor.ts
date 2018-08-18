@@ -1,5 +1,5 @@
 import { get, startsWith, partition } from 'lodash';
-import { Vextab, MeasureElement, Note } from 'models';
+import { Vextab, MeasureElement } from 'models';
 
 /**
  * This class is used to extract the custom directives from Vextab. The extraction process
@@ -14,18 +14,7 @@ import { Vextab, MeasureElement, Note } from 'models';
  *     - Create a directive object that a directive handler will act on later.
  *     - Add a directive reference to the StringSync data structure.
  */
-export class DirectiveExtractor {
-  /**
-   * Convenient static method to avoid having to instantiate an extractor manually.
-   * 
-   * @param {Vextab} vextab 
-   */
-  public static extract(vextab: Vextab): DirectiveExtractor {
-    const extractor = new DirectiveExtractor(vextab);
-    extractor.extract();
-    return extractor;
-  }
-
+export class Extractor {
   /**
    * This function contains the implementation for determining if a modifier is a
    * directive or not.
@@ -53,7 +42,7 @@ export class DirectiveExtractor {
   /**
    * The primary function of the directive extractor. It modifies the vextab member variable
    * in place by removing modifiers on the tabNotes that return true for 
-   * DirectiveExtractor.isDirective. Additionally, it will insert notes (as needed) in the
+   * Extractor.isDirective. Additionally, it will insert notes (as needed) in the
    * vextab's measures.
    */
   public extract(): void {
@@ -78,7 +67,7 @@ export class DirectiveExtractor {
     }
 
     const mods: Vex.Flow.Modifier[] = get(tabNote, 'modifiers');
-    const [directiveMods, nonDirectiveMods] = partition(mods,  mod => DirectiveExtractor.isDirective(mod));
+    const [directiveMods, nonDirectiveMods] = partition(mods,  mod => Extractor.isDirective(mod));
 
     // MUTATION!
     // Removes the directive modifiers from the tabNote object itself.
@@ -89,8 +78,16 @@ export class DirectiveExtractor {
     element.directives = directiveMods.map(mod => {
       // FIXME: Overly complicated logic to hack JSON since Vextab handles commas differently
       const text: string = get(mod, 'text');
-      const payload: Directive.IPayload = JSON.parse(text.split('=')[1].replace(/\;/g, ','));
-      return { element, payload };
+      const payload = JSON.parse(text.split('=')[1].replace(/\;/g, ','));
+      const type: Directive.DirectiveTypes = payload.type;
+
+      if (!type) {
+        throw new Error(`expected type to be defined on directive: ${text}`);
+      }
+
+      delete payload.type;
+
+      return { element, type, payload };
     });
   }
 }

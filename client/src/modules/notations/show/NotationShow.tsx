@@ -97,7 +97,6 @@ const enhance = compose<IMenuHandlerProps, OuterProps>(
       } catch (error) {
         console.error(error);
         window.ss.message.error('something went wrong');
-        this.props.history.push('/');
       }
     },
     componentWillUnmount() {

@@ -5,11 +5,11 @@ import {
   MeasureElement
 } from 'models';
 import { VextabMeasureSpec } from './';
-import { at, get, last, dropRight } from 'lodash';
+import { get, last, dropRight } from 'lodash';
 
-export class VextabMeasureExtractor {
+export class MeasureExtractor {
   public static extract(vextab: Vextab, tuning: any) {
-    return new VextabMeasureExtractor(vextab, tuning).extract();
+    return new MeasureExtractor(vextab, tuning).extract();
   }
 
   public readonly vextab: Vextab;

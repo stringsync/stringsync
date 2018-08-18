@@ -1,13 +1,12 @@
 import * as React from 'react';
 import { compose, withHandlers } from 'recompose';
-import { Line, VextabRenderer, DirectiveExtractor } from 'models';
+import { Line, VextabRenderer, Directive } from 'models';
 import { Vextab } from 'models/vextab/Vextab';
 import styled from 'react-emotion';
 import { get } from 'lodash';
 import { Element as ScrollElement } from 'react-scroll';
 import { scoreKey } from './scoreKey';
 import { Overlap, Layer } from '../overlap';
-import { Time } from 'services';
 
 interface IOuterProps {
   vextab: Vextab;
@@ -47,7 +46,8 @@ const enhance = compose<IInnerProps, IOuterProps>(
 
       if (renderer.isRenderable) {
         // The extraction process is idempotent.
-        DirectiveExtractor.extract(renderer.vextab);
+        Directive.extractAndInvoke(renderer.vextab); // We ensure that we're targeting the correct 
+                                                     // vextab by referencing the renderer's vextab. 
 
         if (!renderer.isRendered) {
           renderer.render();
