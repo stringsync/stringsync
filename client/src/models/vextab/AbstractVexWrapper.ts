@@ -1,5 +1,3 @@
-import { VextabStruct } from 'models/vextab';
-
 export interface IVexAttrs {
   staveNote: Vex.Flow.StaveNote | Vex.Flow.BarNote;
   tabNote: Vex.Flow.TabNote | Vex.Flow.BarNote;
