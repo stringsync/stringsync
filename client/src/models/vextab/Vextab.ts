@@ -1,7 +1,7 @@
 import {
   VextabDecoder,
   VextabEncoder,
-  VextabMeasureExtractor,
+  MeasureExtractor,
   VextabRenderer,
 } from './';
 import { Line } from 'models';
@@ -95,12 +95,12 @@ export class Vextab {
   }
 
   /**
-   * Delegates the measure extracting work to the VextabMeasureExtractor
+   * Delegates the measure extracting work to the MeasureExtractor
    * 
    * @returns {Measure[]}
    */
   private getMeasures(): Measure[] {
-    return VextabMeasureExtractor.extract(this, this.tuning);
+    return MeasureExtractor.extract(this, this.tuning);
   }
 
   /**

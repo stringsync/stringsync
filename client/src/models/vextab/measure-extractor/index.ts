@@ -1,2 +1,2 @@
-export * from './VextabMeasureSpec';
-export * from './VextabMeasureExtractor';
+export * from './MeasureSpec';
+export * from './MeasureExtractor';
