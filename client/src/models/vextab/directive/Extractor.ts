@@ -16,17 +16,6 @@ import { Vextab, MeasureElement } from 'models';
  */
 export class Extractor {
   /**
-   * Convenient static method to avoid having to instantiate an extractor manually.
-   * 
-   * @param {Vextab} vextab 
-   */
-  public static extract(vextab: Vextab): Extractor {
-    const extractor = new Extractor(vextab);
-    extractor.extract();
-    return extractor;
-  }
-
-  /**
    * This function contains the implementation for determining if a modifier is a
    * directive or not.
    * 
@@ -89,8 +78,16 @@ export class Extractor {
     element.directives = directiveMods.map(mod => {
       // FIXME: Overly complicated logic to hack JSON since Vextab handles commas differently
       const text: string = get(mod, 'text');
-      const payload: Directive.IPayload = JSON.parse(text.split('=')[1].replace(/\;/g, ','));
-      return { element, payload };
+      const payload = JSON.parse(text.split('=')[1].replace(/\;/g, ','));
+      const type: Directive.DirectiveTypes = payload.type;
+
+      if (!type) {
+        throw new Error(`expected type to be defined on directive: ${text}`);
+      }
+
+      delete payload.type;
+
+      return { element, type, payload };
     });
   }
 }

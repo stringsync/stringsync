@@ -9,23 +9,10 @@ import { Extractor, Invoker } from './';
  */
 export class Directive {
   /**
-   * The primary interface for the directive class. It has an invariant on the vextab object
-   * supplied to the function:
-   *   The vextab should *not* be rendered in order to execute directives.
-   * 
    * @param {Vextab} vextab 
    */
-  public static extractAndInvoke(vextab: Vextab) {
-    if (vextab.renderer.isRendered) {
-      throw new Error('expected the vextab to not be rendered');
-    }
-
-    Extractor.extract(vextab);
-
-    vextab.forEachElement(element => {
-      element.directives.forEach(directive => {
-        Invoker.invokePrerenderer(directive);
-      })
-    });
+  public static extractAndInvoke(vextab: Vextab): void {
+    new Extractor(vextab).extract();
+    new Invoker(vextab).invokePrerenderers();
   }
 }

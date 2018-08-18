@@ -95,19 +95,6 @@ export class Vextab {
   }
 
   /**
-   * Convinence method that iterates over each measure element and calls the callback with it.
-   * 
-   * @param {(element: MeasureElement) => any} callback 
-   */
-  public forEachElement(callback: (element: MeasureElement) => any): void {
-    this.lines.forEach(line => {
-      line.measures.forEach(measure => {
-        measure.elements.forEach(element => callback(element))
-      })
-    })
-  }
-
-  /**
    * Delegates the measure extracting work to the MeasureExtractor
    * 
    * @returns {Measure[]}
