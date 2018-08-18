@@ -21,7 +21,7 @@ export class Extractor {
    * @param {Vextab} vextab 
    */
   public static extract(vextab: Vextab): Extractor {
-    const extractor = new DirectiveExtractor(vextab);
+    const extractor = new Extractor(vextab);
     extractor.extract();
     return extractor;
   }
@@ -53,7 +53,7 @@ export class Extractor {
   /**
    * The primary function of the directive extractor. It modifies the vextab member variable
    * in place by removing modifiers on the tabNotes that return true for 
-   * DirectiveExtractor.isDirective. Additionally, it will insert notes (as needed) in the
+   * Extractor.isDirective. Additionally, it will insert notes (as needed) in the
    * vextab's measures.
    */
   public extract(): void {
@@ -78,7 +78,7 @@ export class Extractor {
     }
 
     const mods: Vex.Flow.Modifier[] = get(tabNote, 'modifiers');
-    const [directiveMods, nonDirectiveMods] = partition(mods,  mod => DirectiveExtractor.isDirective(mod));
+    const [directiveMods, nonDirectiveMods] = partition(mods,  mod => Extractor.isDirective(mod));
 
     // MUTATION!
     // Removes the directive modifiers from the tabNote object itself.

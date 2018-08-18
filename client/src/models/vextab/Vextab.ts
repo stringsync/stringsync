@@ -4,7 +4,7 @@ import {
   MeasureExtractor,
   VextabRenderer,
 } from './';
-import { Line } from 'models';
+import { Line, MeasureElement } from 'models';
 import { Flow } from 'vexflow';
 import { Measure } from '../music/measure/Measure';
 import { VextabLinkedList } from './linked-list';
@@ -92,6 +92,19 @@ export class Vextab {
    */
   public toString(): string {
     return VextabEncoder.encode(this.structs);
+  }
+
+  /**
+   * Convinence method that iterates over each measure element and calls the callback with it.
+   * 
+   * @param {(element: MeasureElement) => any} callback 
+   */
+  public forEachElement(callback: (element: MeasureElement) => any): void {
+    this.lines.forEach(line => {
+      line.measures.forEach(measure => {
+        measure.elements.forEach(element => callback(element))
+      })
+    })
   }
 
   /**
