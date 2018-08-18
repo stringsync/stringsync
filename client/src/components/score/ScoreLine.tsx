@@ -46,7 +46,8 @@ const enhance = compose<IInnerProps, IOuterProps>(
 
       if (renderer.isRenderable) {
         // The extraction process is idempotent.
-        Directive.extractAndInvoke(renderer.vextab);
+        Directive.extractAndInvoke(renderer.vextab); // We ensure that we're targeting the correct 
+                                                     // vextab by referencing the renderer's vextab. 
 
         if (!renderer.isRendered) {
           renderer.render();
