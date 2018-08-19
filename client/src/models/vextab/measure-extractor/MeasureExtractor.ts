@@ -30,7 +30,7 @@ export class MeasureExtractor {
 
     // "Current" properties
     this.elements = [];
-    this.rhythm = new Rhythm(4, false, null);
+    this.rhythm = new Rhythm('4', false, null);
     this.tuplet = null;
     this.bar = undefined;
     this.measureSpec = undefined;
@@ -43,7 +43,7 @@ export class MeasureExtractor {
    * @returns {Measure[]}
    */
   public extract(): Measure[] {
-    this.vextab.structs.forEach((struct, staveNdx) => {
+    this.vextab.rawStructs.forEach((struct, staveNdx) => {
 
       this.path = `[${staveNdx}]`;
       this.measureSpec = this.extractMeasureSpec(struct);
@@ -108,7 +108,7 @@ export class MeasureExtractor {
   private handleLastNote(): void {
     this.pushMeasure();
     this.bar = undefined;
-    this.rhythm = new Rhythm(4, false, null);
+    this.rhythm = new Rhythm('4', false, null);
     this.measureSpec = undefined;
     this.elements = [];
     this.path = '';

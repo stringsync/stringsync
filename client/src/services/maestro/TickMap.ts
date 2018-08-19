@@ -1,4 +1,5 @@
-import { Vextab, MeasureElement } from 'models';
+import { Vextab, MeasureElement, Note, Chord, Rest } from 'models';
+import { get } from 'lodash';
 
 export interface ITickData {
   start: number;
@@ -64,17 +65,27 @@ export class TickMap {
 
     this.vextab.lines.forEach(line => {
       line.measures.forEach(measure => {
+        let prev: Note | Chord | Rest | null = null;
         measure.tickables.forEach(note => {
           if (!note.isHydrated) {
             throw new Error('expected note to be hydrated');
           }
 
           const start = totalTicks;
-          const stop = totalTicks + note.vexAttrs!.staveNote.getTicks().simplify().value();
+          let stop = totalTicks + note.vexAttrs!.staveNote.getTicks().simplify().value();
+
+          if (get(note, 'rhythm.isGrace')) {
+            stop = totalTicks + 512; // Reassign the value completely
+          }
+          
+          if (get(prev, 'rhythm.isGrace')) {
+            stop -= 512;
+          }
 
           data.push({ note, start, stop });
 
           totalTicks = stop; // increment accumulator
+          prev = note; // Create a reference to the previous note
         });
       });
     });

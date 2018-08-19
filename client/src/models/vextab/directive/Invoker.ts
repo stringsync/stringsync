@@ -1,5 +1,7 @@
 import { Vextab } from 'models';
 import { Flow } from 'vexflow';
+import { Directive } from './Directive';
+import { Rhythm, Note, Chord } from '../../music';
 
 /**
  * The purpose of this class is to encapsulate the logic of invoking directives. It has one
@@ -16,7 +18,7 @@ export class Invoker {
 
   public vextab: Vextab;
 
-  /**
+  /** 
    * @param {Vextab} vextab 
    */
   constructor(vextab: Vextab) {
@@ -32,7 +34,10 @@ export class Invoker {
 
     this.vextab.lines.forEach(line => {
       line.measures.forEach(measure => {
-        measure.elements.forEach(element => {
+        // FIXME: Since we are inserting elements into the measure,
+        // we create a new array. We should do a functional approach
+        // here instead of mutating in place
+        [...measure.elements].forEach(element => {
           const prerenderDirectives = element.directives.filter(directive => (
             prerenderTypes.has(directive.type)
           ));
@@ -43,16 +48,19 @@ export class Invoker {
     })
   }
 
-  private invoke(directive: Directive.IDirective): void {
+  private invoke(directive: Directive): void {
     switch (directive.type) {
       case 'GRACE_NOTE':
-        this.invokeGraceNote(directive as Directive.GraceNote);
+        this.invokeGraceNote(directive);
         return;
     }
   }
 
-  private invokeGraceNote(directive: Directive.GraceNote): void {
-    const payload = Object.assign({}, Invoker.DEFAULT_GRACE_NOTE_PAYLOAD, directive.payload);
+  private invokeGraceNote(directive: Directive): void {
+    const payload = Object.assign(
+      {}, Invoker.DEFAULT_GRACE_NOTE_PAYLOAD, directive.payload
+    ) as Directive.Payload.IGraceNote;
+
     const { positions, duration, slur } = payload;
     const { tuning } = this.vextab;
     const { vexAttrs } = directive.element;
@@ -61,12 +69,12 @@ export class Invoker {
       throw new Error('expected directive element to have vexAttrs defined to invoke a graceNote directive');
     }
 
-    const tabNote: Vex.Flow.TabNote = vexAttrs.tabNote;
-    const staveNote: Vex.Flow.StaveNote = vexAttrs.staveNote;
+    const tabNote = vexAttrs.tabNote as Vex.Flow.TabNote;
+    const staveNote = vexAttrs.staveNote as Vex.Flow.StaveNote;
 
     // FIXME: Add annotations for GraceTabNote and GraceNoteGroups
     // Create graceTabNoteGroup
-    const graceTabNote = new (Flow as any).GraceTabNote({ positions, duration: duration.toString(10) });
+    const graceTabNote = new (Flow as any).GraceTabNote({ positions, duration: duration.toString() });
     const graceTabNoteGroup = new (Flow as any).GraceNoteGroup([graceTabNote], !!slur);
 
     // Append graceTabNoteGroup to tabNote's modifiers
@@ -75,13 +83,13 @@ export class Invoker {
     graceTabNote.setTickContext(tabNote.getTickContext());
 
     // Create graceNoteGroup
-    const keys = graceTabNote.positions.map((pos: Guitar.IPosition) => (
+    const keys: string[] = graceTabNote.positions.map((pos: Guitar.IPosition) => (
       tuning.getNoteForFret(pos.fret.toString(10), pos.str.toString(10))
     ));
     const { fret, str } = graceTabNote.positions[0];
     const stemDirection = tuning.getValueForFret(fret, str) >= 59 ? -1 : 1; // B5
     const graceNote = new Flow.GraceNote({
-      duration: duration.toString(10),
+      duration: duration.toString(),
       keys,
       slash: true,
       stem_direction: stemDirection
@@ -92,5 +100,32 @@ export class Invoker {
     staveNote.addModifier(0, graceNoteGroup);
     (graceNote as any).context = (staveNote as any).context;
     graceNote.setTickContext(staveNote.getTickContext());
+
+    // Insert a StringSync note before the current element so that the StringSync
+    // data structures are up-to-date.
+    const rhythm = new Rhythm('g', false, null);
+    const notes = positions.map(pos => {
+      const key = tuning.getNoteForFret(pos.fret.toString(10), pos.str.toString(10))
+      const note = Note.from(key);
+      note.positions = [pos];
+      return note;
+    });
+
+    notes.forEach(note => note.rhythm = rhythm.clone());
+    const ssDataStructure = notes.length > 1 ? new Chord(notes) : notes[0];
+    ssDataStructure.rhythm = rhythm.clone();
+    const { measure } = directive.element;
+
+    if (!measure) {
+      throw new Error('expected measure to be assigned elements');
+    }
+
+    // Assign the data structure to the measure
+    const ndx = measure.elements.indexOf(directive.element);
+    measure.elements.splice(ndx, 0, ssDataStructure);
+    ssDataStructure.measure = measure;
+
+    // Hydrate the new data structure
+    ssDataStructure.hydrate(graceNote, graceTabNote);
   }
 }

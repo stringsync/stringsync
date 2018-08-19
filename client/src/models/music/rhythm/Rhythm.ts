@@ -1,17 +1,22 @@
-import { AbstractVexWrapper, VextabStruct } from 'models/vextab';
+import { AbstractVexWrapper } from 'models/vextab';
+import { Tuplet } from '../tuplet';
 
 export class Rhythm extends AbstractVexWrapper {
-  public readonly value: number;
+  public readonly value: string;
   public readonly dot: boolean;
-  public readonly tuplet: number | null;
+  public readonly tuplet: Tuplet | null;
   public readonly type = 'RHYTHM';
 
-  constructor(value: number, dot: boolean, tuplet: number | null) {
+  constructor(value: string, dot: boolean, tuplet: Tuplet | null) {
     super();
 
     this.value = value;
     this.dot = dot;
     this.tuplet = tuplet;
+  }
+
+  public get isGrace(): boolean {
+    return this.value === 'g';
   }
 
   public get struct(): Vextab.Parsed.ITime {

@@ -25,9 +25,9 @@ export class Measure {
     this.spec = spec;
   }
 
-  public get tickables(): MeasureElement[] {
+  public get tickables(): Array<Note | Chord | Rest> {
     const tickableTypes = new Set(Measure.tickableTypes);
-    return this.elements.filter(element => tickableTypes.has(element.type));
+    return this.elements.filter(element => tickableTypes.has(element.type)) as Array<Note | Chord| Rest>;
   }
 
   /**
@@ -46,7 +46,8 @@ export class Measure {
       compact([
         get(element, 'rhythm.struct'),
         element.struct,
-        ...element.annotations.map(annotation => annotation.struct)
+        ...element.annotations.map(annotation => annotation.struct),
+        ...element.directives.map(directive => directive.struct)
       ])
     ));
   }

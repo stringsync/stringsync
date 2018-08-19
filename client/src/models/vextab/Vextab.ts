@@ -46,7 +46,7 @@ export class Vextab {
     return (VextabDecoder as any).parse(vextabString);
   }
 
-  public readonly structs: Vextab.ParsedStruct[];
+  public readonly rawStructs: Vextab.ParsedStruct[];
   public readonly id: number;
   public readonly measures: Measure[];
   public readonly lines: Line[];
@@ -57,7 +57,7 @@ export class Vextab {
   public renderer: VextabRenderer;
   public links: VextabLinkedList;
 
-  constructor(structs: Vextab.ParsedStruct[], measuresPerLine: number, width?: number | void) {
+  constructor(rawStructs: Vextab.ParsedStruct[], measuresPerLine: number, width?: number | void) {
     if (typeof measuresPerLine !== 'number' || measuresPerLine < 0) {
       throw new Error('measuresPerLine must be a positive number');
     }
@@ -65,7 +65,7 @@ export class Vextab {
     this.id = id();
 
     this.measuresPerLine = measuresPerLine;
-    this.structs = structs;
+    this.rawStructs = rawStructs;
     this.width = width;
 
     this.measures = this.getMeasures();
@@ -86,12 +86,19 @@ export class Vextab {
   }
 
   /**
+   * This method returns the computed structs, not the rawStructs.
+   */
+  public get structs(): Vextab.ParsedStruct[] {
+    return this.lines.map(line => line.struct);
+  }
+
+  /**
    * Encodes a VextabStruct array into a vextab string. It is the inverse of Vextab.decode.
    *
    * @returns {string}
    */
   public toString(): string {
-    return VextabEncoder.encode(this.structs);
+    return VextabEncoder.encode(this.rawStructs);
   }
 
   /**

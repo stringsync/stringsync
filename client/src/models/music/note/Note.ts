@@ -1,6 +1,6 @@
 import { merge, sortBy } from 'lodash';
 import * as constants from './noteConstants';
-import { AbstractVexWrapper, VextabStruct } from 'models/vextab';
+import { AbstractVexWrapper, Directive } from 'models/vextab';
 import { NoteHydrationValidator } from './NoteHydrationValidator';
 import { id } from 'utilities';
 import { Measure } from 'models/music';
@@ -69,7 +69,7 @@ export class Note extends AbstractVexWrapper {
   public octave: number;
   public measure: Measure | void;
   public renderer: NoteRenderer;
-  public directives: Directive.IDirective[] = [];
+  public directives: Directive[] = [];
   public annotations: Annotations[] = [];
   public rhythm: Rhythm | void;
   public tuplet: Tuplet | void;

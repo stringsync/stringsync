@@ -1,5 +1,5 @@
 import { Rhythm } from 'models';
-import { AbstractVexWrapper, VextabStruct } from 'models/vextab';
+import { AbstractVexWrapper, VextabStruct, Directive } from 'models/vextab';
 import { RestHydrationValidator } from './RestHydrationValidator';
 import { id } from 'utilities';
 import { Measure } from 'models/music';
@@ -13,7 +13,7 @@ export class Rest extends AbstractVexWrapper {
   
   public rhythm: Rhythm;
   public measure: Measure | void;
-  public directives: Directive.IDirective[] = [];
+  public directives: Directive[] = [];
   public annotations: Annotations[] = [];
   public tuplet: Tuplet | void;
 
