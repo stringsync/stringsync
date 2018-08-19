@@ -30,7 +30,7 @@ export class MeasureExtractor {
 
     // "Current" properties
     this.elements = [];
-    this.rhythm = new Rhythm(4, false, null);
+    this.rhythm = new Rhythm(4, false, false, null);
     this.tuplet = null;
     this.bar = undefined;
     this.measureSpec = undefined;
@@ -108,7 +108,7 @@ export class MeasureExtractor {
   private handleLastNote(): void {
     this.pushMeasure();
     this.bar = undefined;
-    this.rhythm = new Rhythm(4, false, null);
+    this.rhythm = new Rhythm(4, false, false, null);
     this.measureSpec = undefined;
     this.elements = [];
     this.path = '';
@@ -128,7 +128,7 @@ export class MeasureExtractor {
         this.elements = [];
         break;
       case 'TIME':
-        this.rhythm = new Rhythm(note.time, note.dot, null);
+        this.rhythm = new Rhythm(note.time, note.dot, false, null);
         break;
       case 'NOTE':
         this.elements.push(this.extractNote(note));

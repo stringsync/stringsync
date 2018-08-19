@@ -1,6 +1,7 @@
 import { Vextab } from 'models';
 import { Flow } from 'vexflow';
 import { Directive } from './Directive';
+import { Rhythm, Note, Chord } from '../../music';
 
 /**
  * The purpose of this class is to encapsulate the logic of invoking directives. It has one
@@ -79,7 +80,7 @@ export class Invoker {
     graceTabNote.setTickContext(tabNote.getTickContext());
 
     // Create graceNoteGroup
-    const keys = graceTabNote.positions.map((pos: Guitar.IPosition) => (
+    const keys: string[] = graceTabNote.positions.map((pos: Guitar.IPosition) => (
       tuning.getNoteForFret(pos.fret.toString(10), pos.str.toString(10))
     ));
     const { fret, str } = graceTabNote.positions[0];
@@ -96,5 +97,25 @@ export class Invoker {
     staveNote.addModifier(0, graceNoteGroup);
     (graceNote as any).context = (staveNote as any).context;
     graceNote.setTickContext(staveNote.getTickContext());
+
+    // Insert a StringSync note before the current element so that the StringSync
+    // data structures are up-to-date.
+    const rhythm = new Rhythm(-1, false, true, null);
+    const notes = keys.map(key => Note.from(key));
+    notes.forEach(note => note.rhythm = rhythm.clone());
+    const ssDataStructure = notes.length > 1 ? new Chord(notes) : notes[0];
+    const { measure } = directive.element;
+
+    if (!measure) {
+      throw new Error('expected measure to be assigned elements');
+    }
+
+    // Assign the data structure to the measure
+    const ndx = measure.elements.indexOf(directive.element);
+    measure.elements.splice(ndx, 0, ssDataStructure);
+    ssDataStructure.measure = measure;
+
+    // Hydrate the new data structure
+    ssDataStructure.hydrate(graceNote, graceTabNote);
   }
 }
