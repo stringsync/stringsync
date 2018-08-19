@@ -34,7 +34,10 @@ export class Invoker {
 
     this.vextab.lines.forEach(line => {
       line.measures.forEach(measure => {
-        measure.elements.forEach(element => {
+        // FIXME: Since we are inserting elements into the measure,
+        // we create a new array. We should do a functional approach
+        // here instead of mutating in place
+        [...measure.elements].forEach(element => {
           const prerenderDirectives = element.directives.filter(directive => (
             prerenderTypes.has(directive.type)
           ));
@@ -100,10 +103,17 @@ export class Invoker {
 
     // Insert a StringSync note before the current element so that the StringSync
     // data structures are up-to-date.
-    const rhythm = new Rhythm(-1, false, true, null);
-    const notes = keys.map(key => Note.from(key));
+    const rhythm = new Rhythm('g', false, null);
+    const notes = positions.map(pos => {
+      const key = tuning.getNoteForFret(pos.fret.toString(10), pos.str.toString(10))
+      const note = Note.from(key);
+      note.positions = [pos];
+      return note;
+    });
+
     notes.forEach(note => note.rhythm = rhythm.clone());
     const ssDataStructure = notes.length > 1 ? new Chord(notes) : notes[0];
+    ssDataStructure.rhythm = rhythm.clone();
     const { measure } = directive.element;
 
     if (!measure) {

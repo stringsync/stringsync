@@ -74,9 +74,11 @@ export class TickMap {
           const start = totalTicks;
           let stop = totalTicks + note.vexAttrs!.staveNote.getTicks().simplify().value();
 
-          if (get(note.rhythm, 'grace')) {
+          if (get(note, 'rhythm.isGrace')) {
             stop = totalTicks + 512; // Reassign the value completely
-          } else if (get(prev, 'rhythm.grace')) {
+          }
+          
+          if (get(prev, 'rhythm.isGrace')) {
             stop -= 512;
           }
 

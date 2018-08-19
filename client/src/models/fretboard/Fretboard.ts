@@ -43,14 +43,14 @@ export class Fretboard {
 
     lit = element.measure.positions;
     pressed = element.type === 'NOTE' || element.type === 'CHORD' ? element.positions : [];
-    
+
     // compute justPressed, which is the the pressed notes
     const { start, stop } = maestro.state;
     if (typeof start === 'number' && typeof stop === 'number') {
-      const threshold = Math.min(start + 250, start + (stop - start) * 0.5)
+      const threshold = Math.min(start + 250, start + ((stop - start) * 0.5))
       justPressed = maestro.state.time.tick < threshold; 
     }
-
+  
     this.sync(lit, pressed, justPressed);
   }
 
