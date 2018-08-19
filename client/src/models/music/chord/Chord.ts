@@ -1,5 +1,5 @@
 import { Note } from 'models';
-import { AbstractVexWrapper, NoteRenderer } from 'models/vextab';
+import { AbstractVexWrapper, NoteRenderer, Directive } from 'models/vextab';
 import { ChordHydrationValidator } from './ChordHydrationValidator';
 import { Measure } from 'models/music';
 import { id } from 'utilities';
@@ -15,7 +15,7 @@ export class Chord extends AbstractVexWrapper {
   public notes: Note[];
   public measure: Measure | void;
   public renderer: NoteRenderer;
-  public directives: Directive.IDirective[] = [];
+  public directives: Directive[] = [];
   public annotations: Annotations[] = [];
   public rhythm: Rhythm | void;
   public tuplet: Tuplet | void;

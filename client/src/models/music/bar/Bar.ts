@@ -1,4 +1,4 @@
-import { VextabStruct, AbstractVexWrapper } from 'models/vextab';
+import { AbstractVexWrapper, Directive } from 'models/vextab';
 import { BarHydrationValidator } from './BarHydrationValidator';
 import { id } from 'utilities';
 import { Measure } from 'models/music';
@@ -10,7 +10,7 @@ export class Bar extends AbstractVexWrapper {
 
   public kind: Vextab.Parsed.IBarTypes;
   public measure: Measure | void;
-  public directives: Directive.IDirective[] = [];
+  public directives: Directive[] = [];
   public annotations: Annotations[] = [];
 
   constructor(kind: Vextab.Parsed.IBarTypes) {

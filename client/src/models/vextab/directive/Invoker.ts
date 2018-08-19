@@ -1,5 +1,6 @@
 import { Vextab } from 'models';
 import { Flow } from 'vexflow';
+import { Directive } from './Directive';
 
 /**
  * The purpose of this class is to encapsulate the logic of invoking directives. It has one
@@ -16,7 +17,7 @@ export class Invoker {
 
   public vextab: Vextab;
 
-  /**
+  /** 
    * @param {Vextab} vextab 
    */
   constructor(vextab: Vextab) {
@@ -43,16 +44,19 @@ export class Invoker {
     })
   }
 
-  private invoke(directive: Directive.IDirective): void {
+  private invoke(directive: Directive): void {
     switch (directive.type) {
       case 'GRACE_NOTE':
-        this.invokeGraceNote(directive as Directive.GraceNote);
+        this.invokeGraceNote(directive);
         return;
     }
   }
 
-  private invokeGraceNote(directive: Directive.GraceNote): void {
-    const payload = Object.assign({}, Invoker.DEFAULT_GRACE_NOTE_PAYLOAD, directive.payload);
+  private invokeGraceNote(directive: Directive): void {
+    const payload = Object.assign(
+      {}, Invoker.DEFAULT_GRACE_NOTE_PAYLOAD, directive.payload
+    ) as Directive.Payload.IGraceNote;
+
     const { positions, duration, slur } = payload;
     const { tuning } = this.vextab;
     const { vexAttrs } = directive.element;
@@ -61,12 +65,12 @@ export class Invoker {
       throw new Error('expected directive element to have vexAttrs defined to invoke a graceNote directive');
     }
 
-    const tabNote: Vex.Flow.TabNote = vexAttrs.tabNote;
-    const staveNote: Vex.Flow.StaveNote = vexAttrs.staveNote;
+    const tabNote = vexAttrs.tabNote as Vex.Flow.TabNote;
+    const staveNote = vexAttrs.staveNote as Vex.Flow.StaveNote;
 
     // FIXME: Add annotations for GraceTabNote and GraceNoteGroups
     // Create graceTabNoteGroup
-    const graceTabNote = new (Flow as any).GraceTabNote({ positions, duration: duration.toString(10) });
+    const graceTabNote = new (Flow as any).GraceTabNote({ positions, duration: duration.toString() });
     const graceTabNoteGroup = new (Flow as any).GraceNoteGroup([graceTabNote], !!slur);
 
     // Append graceTabNoteGroup to tabNote's modifiers
@@ -81,7 +85,7 @@ export class Invoker {
     const { fret, str } = graceTabNote.positions[0];
     const stemDirection = tuning.getValueForFret(fret, str) >= 59 ? -1 : 1; // B5
     const graceNote = new Flow.GraceNote({
-      duration: duration.toString(10),
+      duration: duration.toString(),
       keys,
       slash: true,
       stem_direction: stemDirection

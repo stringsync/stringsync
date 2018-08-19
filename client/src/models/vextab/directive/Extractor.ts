@@ -1,5 +1,6 @@
 import { get, startsWith, partition } from 'lodash';
 import { Vextab, MeasureElement } from 'models';
+import { DirectiveTypes, Directive } from './Directive';
 
 /**
  * This class is used to extract the custom directives from Vextab. The extraction process
@@ -79,7 +80,7 @@ export class Extractor {
       // FIXME: Overly complicated logic to hack JSON since Vextab handles commas differently
       const text: string = get(mod, 'text');
       const payload = JSON.parse(text.split('=')[1].replace(/\;/g, ','));
-      const type: Directive.DirectiveTypes = payload.type;
+      const type: DirectiveTypes = payload.type;
 
       if (!type) {
         throw new Error(`expected type to be defined on directive: ${text}`);
@@ -87,7 +88,7 @@ export class Extractor {
 
       delete payload.type;
 
-      return { element, type, payload };
+      return new Directive(type, element, payload);
     });
   }
 }
