@@ -43,7 +43,7 @@ export class MeasureExtractor {
    * @returns {Measure[]}
    */
   public extract(): Measure[] {
-    this.vextab.structs.forEach((struct, staveNdx) => {
+    this.vextab.rawStructs.forEach((struct, staveNdx) => {
 
       this.path = `[${staveNdx}]`;
       this.measureSpec = this.extractMeasureSpec(struct);
