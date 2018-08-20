@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { AuthRoute } from './AuthRoute';
-import { Notation, NotationNew } from 'modules/notations';
+import { Notation, New as NotationNew } from 'modules/notations';
 import { Index as NotationIndex } from 'modules/notations/index/Index.tsx';
 import { About } from 'modules/about';
 import { Login, Signup } from 'modules/session';
