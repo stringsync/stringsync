@@ -47,4 +47,4 @@ const enhance = compose(
   })
 );
 
-export const LoopCaretController = enhance(() => null);
+export const LoopCaret = enhance(() => null);

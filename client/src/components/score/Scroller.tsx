@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { compose, withState, withHandlers } from 'recompose';
 import { observeMaestro } from 'enhancers';
-import { Line, Note, MeasureElement } from 'models/music';
+import { Line, MeasureElement } from 'models/music';
 import { Maestro } from 'services';
 import { scroller } from 'react-scroll';
 import { scoreKey } from './scoreKey';
@@ -61,4 +61,4 @@ const enhance = compose<IInnerProps, {}>(
   observeMaestro<IInnerProps>(props => ({ name: 'ScoreScroller', handleNotification: props.handleNotification }))
 );
 
-export const ScoreScroller = enhance(() => null);
+export const Scroller = enhance(() => null);

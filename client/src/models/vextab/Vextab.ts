@@ -1,12 +1,7 @@
-import {
-  VextabDecoder,
-  VextabEncoder,
-  MeasureExtractor,
-  VextabRenderer,
-} from './';
-import { Line, MeasureElement } from 'models';
+import { VextabDecoder, VextabEncoder, VextabRenderer } from './';
+import { StringSyncFactory } from './string-sync-factory';
+import { Line, Measure } from 'models';
 import { Flow } from 'vexflow';
-import { Measure } from '../music/measure/Measure';
 import { VextabLinkedList } from './linked-list';
 import { id } from 'utilities';
 import { isEqual } from 'lodash';
@@ -102,12 +97,12 @@ export class Vextab {
   }
 
   /**
-   * Delegates the measure extracting work to the MeasureExtractor
+   * Delegates the measure extracting work to the StringSyncFactory
    * 
    * @returns {Measure[]}
    */
   private getMeasures(): Measure[] {
-    return MeasureExtractor.extract(this, this.tuning);
+    return StringSyncFactory.extract(this, this.tuning);
   }
 
   /**

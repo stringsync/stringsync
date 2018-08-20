@@ -69,7 +69,7 @@ const Inner = styled('div')`
   padding: 48px;
 `;
 
-export const NotationPrint = enhance(props => (
+export const Print = enhance(props => (
   <Outer>
     <Inner>
       <Link to={`/n/${props.match.params.id}`} className="print-hidden">back</Link>

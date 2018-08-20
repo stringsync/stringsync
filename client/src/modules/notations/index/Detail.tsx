@@ -1,9 +1,11 @@
 import * as React from 'react';
+import styled from 'react-emotion';
+import { Avatar } from 'components';
 import { Card, Tag } from 'antd';
 import { compose, withProps } from 'recompose';
-import styled from 'react-emotion';
 import { kebabCase } from 'lodash';
-import { Avatar } from 'components';
+
+const { Meta } = Card;
 
 interface IOuterProps {
   notation: Notation.INotation;
@@ -36,21 +38,21 @@ const CoverImg = styled('img')`
   height: 100%;
 `;
 
-const TagNames = styled('div')`
+const Tags = styled('div')`
   margin-top: 12px;
 `;
 
 /**
  * Shows the detail for a given notation in the NotationIndex component
  */
-export const NotationDetail = enhance(props => (
+export const Detail = enhance(props => (
   <Card cover={<CoverImg src={props.thumbnailUrl} alt={kebabCase(props.songName)} />}>
-    <Card.Meta
+    <Meta
       avatar={<Avatar src={props.transcriberImage} name={props.transcriberName} />}
       title={props.songName}
       description={`by ${props.artistName} | ${props.transcriberName}`}
     />
-    <TagNames>
+    <Tags>
       {
         props.tags.map(tag => (
           <Tag
@@ -61,8 +63,6 @@ export const NotationDetail = enhance(props => (
           </Tag>)
         )
       }
-    </TagNames>
+    </Tags>
   </Card>
 ));
-
-export default NotationDetail;

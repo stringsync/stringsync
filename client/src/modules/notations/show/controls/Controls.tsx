@@ -1,11 +1,14 @@
 import * as React from 'react';
 import styled from 'react-emotion';
+import { Loop } from './Loop';
+import { MenuToggle } from './MenuToggle';
+import { MiniDetail } from './MiniDetail';
+import { PlayToggle } from './PlayToggle';
+import { Row, Col, Collapse, Tooltip } from 'antd';
+import { Scrubber } from './Scrubber';
+import { ShowLoop } from './ShowLoop';
 import { compose, withHandlers, withProps, withState } from 'recompose';
 import { connect } from 'react-redux';
-import { Row, Col, Collapse, Tooltip } from 'antd';
-import { MiniNotationDetail, Scrubber, PlayToggle, MenuToggle } from './';
-import { Loop } from './Loop';
-import { ShowLoop } from './ShowLoop';
 
 const { Panel } = Collapse;
 
@@ -157,13 +160,13 @@ const Detail = (props: { style?: any }) => (
   <DetailContainer style={props.style || {}}>
     <Row>
       <Col xs={0} sm={24} md={24} lg={24} xl={24} xxl={24}>
-        <MiniNotationDetail />
+        <MiniDetail />
       </Col>
     </Row>
   </DetailContainer>
 );
 
-export const NotationShowControls = enhance(props => (
+export const Controls = enhance(props => (
   <Outer>
     <Row1>
       <Inner>

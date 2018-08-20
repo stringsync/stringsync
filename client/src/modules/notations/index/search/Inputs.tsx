@@ -74,7 +74,7 @@ const TagOuter = styled('span')`
   margin-top: 2px;
 `;
 
-export const NotationSearchInputs = enhance(props => (
+export const Inputs = enhance(props => (
   <Outer viewportType={props.viewportType}>
     <Input
       type="text"
