@@ -37,7 +37,7 @@ const DEFAULT_YOUTUBE_OPTIONS = Object.freeze({
 
 const enhance = compose<IInnerProps, {}>(
   connect(
-    (state: StringSync.Store.IState) => ({
+    (state: Store.IState) => ({
       kind: state.video.kind,
       src: state.video.src
     }),

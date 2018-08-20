@@ -27,7 +27,7 @@ const DOTS = [
 
 const enhance = compose<IInnerProps, IOuterProps>(
   connect(
-    (state: StringSync.Store.IState) => ({
+    (state: Store.IState) => ({
       viewportType: state.viewport.type
     })
   ),

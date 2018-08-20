@@ -93,7 +93,7 @@ const Outer = styled('div')<IOuterDiv>`
 `;
 
 const Logo = styled('img')`
-  width: 15%;
+  width: 64px;
   margin-top: 128px;
 `;
 

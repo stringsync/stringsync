@@ -1,7 +1,7 @@
 import * as actions from './viewportActions';
 import getViewportType, { ViewportTypes } from './getViewportType';
 
-export type IViewportState = StringSync.Store.IViewportState;
+export type IViewportState = Store.IViewportState;
 
 const getDefaultState = (): IViewportState => ({
   type: getViewportType(window.innerWidth),

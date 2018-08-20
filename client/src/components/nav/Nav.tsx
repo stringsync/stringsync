@@ -13,7 +13,7 @@ import { ClickParam } from 'antd/lib/menu';
 const { ItemGroup } = Menu;
 
 interface IConnectProps extends RouteComponentProps<{}, {}> {
-  session: StringSync.Store.ISessionState;
+  session: Store.ISessionState;
   viewportType: ViewportTypes;
   logout: () => void;
 }
@@ -29,7 +29,7 @@ interface IWithProps extends IWithHandlersProps {
 const enhance: ComponentEnhancer<IWithProps, {}> = compose(
   withRouter,
   connect(
-    (state: StringSync.Store.IState) => ({
+    (state: Store.IState) => ({
       session: state.session,
       viewportType: state.viewport.type
     }),

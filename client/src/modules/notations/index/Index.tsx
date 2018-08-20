@@ -7,7 +7,10 @@ import { ViewportTypes } from 'data/viewport/getViewportType';
 import { compact } from 'lodash';
 import { compose, withProps, withState, withHandlers, lifecycle } from 'recompose';
 import { connect } from 'react-redux';
-import { fetchAllNotations } from 'data';
+import { fetchNotations } from 'data';
+import { RouteComponentProps } from 'react-router';
+
+type OuterProps = RouteComponentProps<{}>;
 
 interface IInnerProps {
   queryString: string;
@@ -16,25 +19,26 @@ interface IInnerProps {
   tags: Set<string>;
   notations: Notation.INotation[];
   viewportType: ViewportTypes;
+  fetchNotations: () => any;
   handleQueryStringChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleQueryTagsChange: (tags: Set<string>) => void;
   clearQueries: () => void;
 }
 
-const enhance = compose<IInnerProps, any>(
+const enhance = compose<IInnerProps, OuterProps>(
   connect(
-    (state: StringSync.Store.IState) => ({
-      notations: state.notations.index,
+    (state: Store.IState) => ({
+      notations: state.notations,
       viewportType: state.viewport.type
     }),
     dispatch => ({
-      fetchAllNotations: () => dispatch(fetchAllNotations() as any)
+      fetchNotations: () => dispatch(fetchNotations() as any)
     })
   ),
   withProps((props: { notations: Notation.INotation[] }) => {
     const tags = new Set();
     props.notations.forEach(notation => {
-        notation.tags.forEach(tag => tags.add(tag));
+      notation.tags.forEach(tag => tags.add(tag));
     });
 
     return { tags: Array.from(tags).sort() };
@@ -80,12 +84,12 @@ const enhance = compose<IInnerProps, any>(
 
     return { queriedNotations }
   }),
-  lifecycle<any, any, any>({
+  lifecycle<IInnerProps, {}>({
     async componentDidMount() {
       try {
-        await this.props.fetchAllNotations();
+        await this.props.fetchNotations();
       } catch (error) {
-        window.ss.message.error('Notations could not load');
+        window.ss.message.error('could not load notations');
       }
     }
   })

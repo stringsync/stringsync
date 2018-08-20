@@ -4,50 +4,57 @@ import { Loop } from './Loop';
 import { MenuToggle } from './MenuToggle';
 import { MiniDetail } from './MiniDetail';
 import { PlayToggle } from './PlayToggle';
-import { Row, Col, Collapse, Tooltip } from 'antd';
+import { Collapse, Tooltip } from 'antd';
 import { Scrubber } from './Scrubber';
 import { ShowLoop } from './ShowLoop';
 import { compose, withHandlers, withProps, withState } from 'recompose';
-import { connect } from 'react-redux';
+import { connect, Dispatch } from 'react-redux';
+import { UiActions } from 'data';
 
 const { Panel } = Collapse;
 
-interface IRow2Props {
-  menuCollapsed: boolean;
-  onMenuClick: (event: React.SyntheticEvent<HTMLElement>) => void;
-}
-
-interface IInnerProps extends IRow2Props {
+interface IConnectProps {
   isVideoActive: boolean;
-  videoPlayer: Youtube.IPlayer;
-  isIphoneX: boolean;
-  loopCollapsed: boolean;
-  handleLoopCollapseChange: () => void;
-  setLoopCollapsed: (collapsed: boolean) => void;
+  videoPlayer: Video.IVideo | null;
+  isNotationMenuVisible: boolean;
+  setNotationMenuVisibility: (notationMenuVisibility: boolean) => void;
 }
 
-const enhance = compose<IInnerProps, IRow2Props>(
+interface IStateProps extends IConnectProps {
+  loopCollapsed: boolean;
+  setLoopCollapsed: (loopCollapsed: boolean) => void;
+}
+
+interface IHandlerProps extends IStateProps {
+  handleLoopCollapseChange: () => void;
+  handleNotationMenuClick: () => void;
+}
+
+interface IInnerProps extends IHandlerProps {
+  isIphoneX: boolean;
+}
+
+const enhance = compose<IInnerProps, {}>(
   connect(
-    (state: StringSync.Store.IState) => ({
+    (state: Store.IState) => ({
+      isNotationMenuVisible: state.ui.isNotationMenuVisible,
       isVideoActive: state.video.isActive,
       videoPlayer: state.video.player
+    }),
+    (dispatch: Dispatch) => ({
+      setNotationMenuVisibility: (visibility: boolean) => dispatch(UiActions.setNotationMenuVisibility(visibility))
     })
   ),
   withState('loopCollapsed', 'setLoopCollapsed', true),
   withHandlers({
     handleLoopCollapseChange: (props: any) => () => {
       props.setLoopCollapsed(!props.loopCollapsed);
-    }
-  }),
-  withHandlers({
-    onPauseClick: (props: any) => (event: React.SyntheticEvent<HTMLElement>) => {
-      props.videoPlayer.playVideo();
     },
-    onPlayClick: (props: any) => (event: React.SyntheticEvent<HTMLElement>) => {
-      props.videoPlayer.pauseVideo();
+    handleNotationMenuClick: (props: any) => () => {
+      props.setNotationMenuVisibility(!props.isNotationMenuVisible)
     }
   }),
-  withProps(props => {
+  withProps(() => {
     const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     const ratio = window.devicePixelRatio || 1;
     const screen = {
@@ -152,21 +159,7 @@ const SliderContainer = styled('div')`
   width: 100%;
 `;
 
-const DetailContainer = styled('div')`
-  margin-right: 12px;
-`;
-
-const Detail = (props: { style?: any }) => (
-  <DetailContainer style={props.style || {}}>
-    <Row>
-      <Col xs={0} sm={24} md={24} lg={24} xl={24} xxl={24}>
-        <MiniDetail />
-      </Col>
-    </Row>
-  </DetailContainer>
-);
-
-export const Controls = enhance(props => (
+export const VideoControls = enhance(props => (
   <Outer>
     <Row1>
       <Inner>
@@ -187,13 +180,10 @@ export const Controls = enhance(props => (
                 <SliderContainer>
                   <Loop />
                 </SliderContainer>
-                <PlayerButton style={{ opacity: 0 }}>
-                  <MenuToggle
-                    menuCollapsed={props.menuCollapsed}
-                    onMenuClick={props.onMenuClick}
-                  />
+                <PlayerButton style={{ opacity: 0 }} onClick={props.handleNotationMenuClick}>
+                  <MenuToggle />
                 </PlayerButton>
-                <Detail style={{ opacity: 0 }} />
+                <MiniDetail hidden={true} />
               </Inner>
             </Panel>
           </StyledCollapse>
@@ -211,13 +201,10 @@ export const Controls = enhance(props => (
         <SliderContainer>
           <Scrubber />
         </SliderContainer>
-        <PlayerButton>
-          <MenuToggle
-            menuCollapsed={props.menuCollapsed}
-            onMenuClick={props.onMenuClick}
-          />
+        <PlayerButton onClick={props.handleNotationMenuClick}>
+          <MenuToggle />
         </PlayerButton>
-        <Detail />
+        <MiniDetail />
       </Inner>
     </Row2>
   </Outer>

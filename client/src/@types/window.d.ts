@@ -13,9 +13,9 @@ interface IStringSyncModules {
   maestro: Maestro;
   sessionSync: {
     callback: ((user: IUser) => any) | void;
-    user: StringSync.Store.ISessionUser | {};
+    user: Store.ISessionUser | {};
   };
-  store: Store<StringSync.Store.IState> | void;
+  store: Store<Store.IState> | void;
   rafLoop: RafLoop;
 }
 

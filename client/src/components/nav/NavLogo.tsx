@@ -11,7 +11,7 @@ interface IInnerProps {
 
 const enhance: ComponentEnhancer<IInnerProps, {}> = compose(
   connect(
-    (state: StringSync.Store.IState) => ({
+    (state: Store.IState) => ({
       viewportType: state.viewport.type
     })
   )

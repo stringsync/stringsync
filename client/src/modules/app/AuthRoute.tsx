@@ -10,7 +10,7 @@ interface IProps {
 
 const enhance = compose(
   connect(
-    (state: StringSync.Store.IState) => ({
+    (state: Store.IState) => ({
       signedIn: state.session.signedIn
     })
   )

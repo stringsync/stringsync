@@ -5,7 +5,7 @@ import { connect, Dispatch } from 'react-redux';
 import { Time } from 'services';
 import styled from 'react-emotion';
 import { SliderProps } from 'antd/lib/slider';
-import { BehaviorActions } from 'data';
+import { UiActions } from 'data';
 
 type SliderValues = [number, number];
 
@@ -14,7 +14,7 @@ interface IConnectProps {
   isVideoPlaying: boolean;
   videoPlayer: Youtube.IPlayer;
   showLoop: boolean;
-  setShowLoop: (showLoop: boolean) => void;
+  setLoopVisibility: (showLoop: boolean) => void;
 }
 
 interface IStateProps extends IConnectProps {
@@ -39,14 +39,14 @@ interface IInnerProps extends IValueConverterProps {
 
 const enhance = compose<IInnerProps, {}>(
   connect(
-    (state: StringSync.Store.IState) => ({
-      durationMs: state.notations.show.durationMs,
+    (state: Store.IState) => ({
+      durationMs: state.notation.durationMs,
+      isLoopVisible: state.ui.isLoopVisible,
       isVideoPlaying: state.video.playerState === 'PLAYING',
-      showLoop: state.behavior.showLoop,
       videoPlayer: state.video.player
     }),
     (dispatch: Dispatch) => ({
-      setShowLoop: (showLoop: boolean) => dispatch(BehaviorActions.setBehavior('showLoop', showLoop) as any)
+      setLoopVisibility: (loopVisibility: boolean) => dispatch(UiActions.setLoopVisibility(loopVisibility))
     })
   ),
   withState('values', 'setValues', [0, 100]),
@@ -58,7 +58,7 @@ const enhance = compose<IInnerProps, {}>(
   })),
   withHandlers({
     handleAfterChange: (props: IValueConverterProps) => (values: SliderValues) => {
-      props.setShowLoop(props.showLoopAfterChange);
+      props.setLoopVisibility(props.showLoopAfterChange);
 
       // Update loopStart and loopEnds
       const [loopStart, loopEnd] = props.valuesToTimeMs(values).
@@ -92,7 +92,7 @@ const enhance = compose<IInnerProps, {}>(
         props.setPlayAfterChange(props.isVideoPlaying);
 
         props.setShowLoopAfterChange(props.showLoop);
-        props.setShowLoop(true);
+        props.setLoopVisibility(true);
       }
 
       if (props.videoPlayer) {

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { compose, lifecycle } from 'recompose';
 import { connect, Dispatch } from 'react-redux';
 import { withRouter, RouteComponentProps } from 'react-router';
-import { fetchNotation, NotationsActions } from 'data';
+import { fetchNotation, NotationActions } from 'data';
 import styled from 'react-emotion';
 import { Score, MaestroController } from 'components';
 import { Link } from 'react-router-dom';
@@ -10,25 +10,24 @@ import { Link } from 'react-router-dom';
 interface IInnerProps extends RouteComponentProps<{ id: string }> {
   notation: Notation.INotation
   fetchNotation: (id: number) => void;
-  resetNotationShow: () => void;
+  resetNotation: () => void;
 }
 
 const enhance = compose<IInnerProps, {}>(
   withRouter,
   connect(
-    (state: StringSync.Store.IState) => ({
-      notation: state.notations.show
+    (state: Store.IState) => ({
+      notation: state.notation
     }),
     (dispatch: Dispatch) => ({
       fetchNotation: (id: number) => dispatch(fetchNotation(id) as any),
-      resetNotationShow: () => dispatch(NotationsActions.resetNotationShow())
+      resetNotation: () => dispatch(NotationActions.resetNotation())
     })
   ),
   lifecycle<IInnerProps, {}>({
-    componentWillMount(): void {
-      this.props.resetNotationShow();
-    },
     async componentDidMount() {
+      this.props.resetNotation();
+
       try {
         const notationId = parseInt(this.props.match.params.id, 10);
         await this.props.fetchNotation(notationId);
@@ -37,10 +36,7 @@ const enhance = compose<IInnerProps, {}>(
         window.ss.message.error('could not fetch notation');
         this.props.history.push(`/n/${this.props.match.params.id}`)
       }
-    },
-    componentWillUnmount(): void {
-      this.props.resetNotationShow();
-    },
+    }
   }),
 )
 

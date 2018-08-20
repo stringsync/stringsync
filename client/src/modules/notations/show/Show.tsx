@@ -5,13 +5,13 @@ import { Affix } from 'antd';
 import { Fretboard, Score, Piano, MaestroController, Overlap, Layer } from 'components';
 import { compose, lifecycle, withState, withHandlers, withProps } from 'recompose';
 import { connect } from 'react-redux';
-import { NotationsActions, fetchNotation, VideoActions } from 'data';
+import { fetchNotation, VideoActions, UiActions, NotationActions } from 'data';
 import { RouteComponentProps } from 'react-router-dom';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { ViewportTypes } from 'data/viewport/getViewportType';
 import { ShowVideo } from './ShowVideo';
 import { Menu } from './Menu';
-import { Controls } from './controls';
+import { VideoControls } from 'modules/video-controls';
 
 type OuterProps = RouteComponentProps<{ id: string }>;
 
@@ -19,81 +19,59 @@ interface IConnectProps extends OuterProps {
   notation: Notation.INotation;
   viewportWidth: number;
   viewportType: ViewportTypes;
+  isNotationMenuVisible: boolean;
   fetchNotation: (id: number) => Notation.INotation;
+  setNotation: (notation: Notation.INotation) => void;
+  setVideo: (video: Video.IVideo) => void;
   resetNotation: () => void;
   resetVideo: () => void;
-  setVideo: (video: Video.IVideo) => void;
-}
-
-interface IScoreWidthProps extends IConnectProps {
-  scoreWidth: number;
-}
-
-interface IMenuProps extends IScoreWidthProps {
-  menuCollapsed: boolean;
-  fretboardVisibility: boolean;
-  pianoVisibility: boolean;
-  setMenuCollapsed: (menuCollapsed: boolean) => void;
+  resetUi: () => void;
   setFretboardVisibility: (fretboardVisibility: boolean) => void;
-  setPianoVisibility: (pianoVisibility: boolean) => void;
 }
 
-interface IMenuHandlerProps extends IMenuProps {
-  handleMenuClick: (event: React.SyntheticEvent<HTMLElement>) => void;
-  handleFretboardVisibilityChange: (event: CheckboxChangeEvent) => void;
-  handlePianoVisibilityChange: (event: CheckboxChangeEvent) => void;
+interface IInnerProps extends IConnectProps {
+  scoreWidth: number;
 }
 
 const getNotationShowElement = () => document.getElementById('notation-show');
 
-const enhance = compose<IMenuHandlerProps, OuterProps>(
+const enhance = compose<IInnerProps, OuterProps>(
   connect(
-    (state: StringSync.Store.IState) => ({
-      notation: state.notations.show,
+    (state: Store.IState) => ({
+      isNotationMenuVisible: state.ui.isNotationMenuVisible,
+      notation: state.notation,
       viewportType: state.viewport.type,
       viewportWidth: state.viewport.width
-
     }),
     dispatch => ({
       fetchNotation: (id: number) => dispatch(fetchNotation(id) as any),
-      resetNotation: () => dispatch(NotationsActions.resetNotationShow()),
+      resetNotation: () => dispatch(NotationActions.resetNotation()),
+      resetUi: () => dispatch(UiActions.reset()),
       resetVideo: () => dispatch(VideoActions.resetVideo()),
+      setFretboardVisibility: (visibility: boolean) => dispatch(UiActions.setFretboardVisibility(visibility)),
       setVideo: (video: Video.IVideo) => dispatch(VideoActions.setVideo(video))
     })
   ),
   withProps((props: IConnectProps) => ({
     scoreWidth: Math.max(Math.min(props.viewportWidth, 1200), 200) - 30
   })),
-  withState('menuCollapsed', 'setMenuCollapsed', true),
-  withState('fretboardVisibility', 'setFretboardVisibility', true),
-  withState('pianoVisibility', 'setPianoVisibility', false),
-  withHandlers({
-    handleFretboardVisibilityChange: (props: IMenuProps) => (event: CheckboxChangeEvent) => {
-      props.setFretboardVisibility(event.target.checked);
-    },
-    handleMenuClick: (props: IMenuProps) => () => {
-      props.setMenuCollapsed(!props.menuCollapsed);
-    },
-    handlePianoVisibilityChange: (props: IMenuProps) => (event: CheckboxChangeEvent) => {
-      props.setPianoVisibility(event.target.checked);
-    },
-  }),
-  lifecycle<IMenuHandlerProps, {}>({
-    componentWillMount() {
-      $('body').addClass('no-scroll');
-    },
+  lifecycle<IInnerProps, {}>({
     async componentDidMount() {
-      if (this.props.viewportType === 'MOBILE') {
-        this.props.setFretboardVisibility(false);
-      }
+      $('body').addClass('no-scroll');
+
+      this.props.resetNotation();
+      this.props.resetVideo();
+      this.props.resetUi();
+      this.props.setFretboardVisibility(this.props.viewportType !== 'MOBILE');
 
       const id = parseInt(this.props.match.params.id, 10);
 
       try {
-        const notation = await this.props.fetchNotation(id);
+        await this.props.fetchNotation(id);
 
-        if (notation.video) {
-          this.props.setVideo(notation.video);
+        const { video } = this.props.notation;
+        if (video) {
+          this.props.setVideo(video)
         }
       } catch (error) {
         console.error(error);
@@ -101,8 +79,6 @@ const enhance = compose<IMenuHandlerProps, OuterProps>(
       }
     },
     componentWillUnmount() {
-      this.props.resetNotation();
-      this.props.resetVideo();
       $('body').removeClass('no-scroll');
     }
   })
@@ -110,21 +86,6 @@ const enhance = compose<IMenuHandlerProps, OuterProps>(
 
 const Outer = styled('div')`
   width: 100%;
-`;
-
-interface IMaskProps {
-  collapsed: boolean;
-}
-
-const Mask = styled('div')<IMaskProps>`
-  background: black;
-  opacity: 0.65;
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 100%;
-  height: 100vh;
-  display: ${props => props.collapsed ? 'none' : 'block'};
 `;
 
 /**
@@ -141,12 +102,9 @@ export const Show = enhance(props => (
       <Layer zIndex={10}>
         <div>
           <ShowVideo />
-          <Affix
-            target={getNotationShowElement}
-            offsetTop={2}
-          >
-            {props.fretboardVisibility ? <Fretboard /> : null}
-            {props.pianoVisibility ? <Piano /> : null}
+          <Affix target={getNotationShowElement} offsetTop={2} >
+            <Fretboard />
+            <Piano />
           </Affix>
         </div>
         <div>
@@ -154,15 +112,8 @@ export const Show = enhance(props => (
         </div>
       </Layer>
       <Layer zIndex={11}>
-        <Mask collapsed={props.menuCollapsed} onClick={props.handleMenuClick} />
-        <Menu
-          fretboardVisibility={props.fretboardVisibility}
-          pianoVisibility={props.pianoVisibility}
-          onFretboardVisibilityChange={props.handleFretboardVisibilityChange}
-          onPianoVisibilityChange={props.handlePianoVisibilityChange}
-          collapsed={props.menuCollapsed}
-        />
-        <Controls menuCollapsed={props.menuCollapsed} onMenuClick={props.handleMenuClick} />
+        <Menu />
+        <VideoControls />
       </Layer>
     </Overlap>
   </Outer>

@@ -1,25 +1,38 @@
 import * as React from 'react';
-import { compose } from 'recompose';
 import styled from 'react-emotion';
+import { compose, branch, renderNothing } from 'recompose';
+import { ViewportTypes } from 'data/viewport/getViewportType';
 import { connect } from 'react-redux';
 
-interface IInnerProps {
+interface IOuterProps {
+  hidden?: boolean;
+}
+
+interface IInnerProps extends IOuterProps {
   songName: string;
   artistName: string;
   thumbnailUrl: string;
+  viewportType: ViewportTypes;
 }
 
-const enhance = compose<IInnerProps, {}>(
+const enhance = compose<IInnerProps, IOuterProps>(
   connect(
-    (state: StringSync.Store.IState) => {
-      const { songName, artistName, thumbnailUrl } = state.notations.show;
-      return { songName, artistName, thumbnailUrl };
-    }
+    (state: Store.IState) => ({
+      artistName: state.notation.artistName,
+      songName: state.notation.songName,
+      thumbnailUrl: state.notation.thumbnailUrl,
+      viewportType: state.viewport.type
+    })
+  ),
+  branch<IInnerProps>(
+    props => props.hidden || props.viewportType !== 'DESKTOP',
+    renderNothing
   )
 );
 
 const Outer = styled('div')`
   display: flex;
+  margin-right: 12px;
 `;
 
 const Detail = styled('div')`

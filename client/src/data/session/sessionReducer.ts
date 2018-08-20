@@ -1,7 +1,7 @@
 import * as actions from './sessionActions';
 import { SessionProviders } from 'j-toker';
 
-export type ISessionState = StringSync.Store.ISessionState;
+export type ISessionState = Store.ISessionState;
 
 const getDefaultState = (): ISessionState => ({
   email: '',

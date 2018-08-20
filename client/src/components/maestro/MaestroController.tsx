@@ -23,7 +23,7 @@ type InnerProps = IRafHandlerProps & IWithRafProps;
 
 const enhance = compose<InnerProps, IOuterProps>(
   connect(
-    (state: StringSync.Store.IState) => ({
+    (state: Store.IState) => ({
       isVideoActive: state.video.isActive,
       videoPlayer: state.video.player
     })

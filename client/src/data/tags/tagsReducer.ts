@@ -1,18 +1,15 @@
 import * as actions from './tagsActions';
 
-export type ITagsState = StringSync.Store.ITagsState;
+// For type annotation
+const getDefaultState = (): Tag.ITag[] => [];
 
-const getDefaultState = (): ITagsState => ({
-  index: []
-});
-
-export const tagsReducer = (state = getDefaultState(), action: actions.TagsActions): ITagsState => {
-  const nextState = { index: [...state.index] };
+export const tagsReducer = (state = getDefaultState(), action: actions.TagsActions): Tag.ITag[] => {
+  let nextState = state.map(tag => Object.assign({}, tag));
 
   switch(action.type) {
 
-    case actions.SET_TAGS_INDEX:
-      nextState.index = action.payload.tags;
+    case actions.SET_TAGS:
+      nextState = action.payload.tags;
       return nextState;
 
     default:

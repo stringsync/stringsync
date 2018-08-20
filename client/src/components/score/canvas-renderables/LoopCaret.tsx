@@ -7,28 +7,28 @@ import { observeMaestro } from 'enhancers';
 import { connect } from 'react-redux';
 
 interface IConnectProps {
-  showLoop: boolean;
+  isLoopVisible: boolean;
 }
 
 interface IInnerProps extends IConnectProps {
-  syncShowLoopWithCanvas: (maestro: Maestro) => void;
+  syncLoopVisibility: (maestro: Maestro) => void;
 }
 
 const enhance = compose(
   connect(
-    (state: StringSync.Store.IState) => ({
-      showLoop: state.behavior.showLoop
+    (state: Store.IState) => ({
+      isLoopVisible: state.ui.isLoopVisible
     })
   ),
   withHandlers({
-    syncShowLoopWithCanvas: (props: IConnectProps) => (maestro: Maestro) => {
+    syncLoopVisibility: (props: IConnectProps) => (maestro: Maestro) => {
       const renderer: LoopCaretRenderer | void = get(maestro.vextab, 'renderer.loopCaretRenderer');
 
       if (!renderer) {
         return;
       }
 
-      if (props.showLoop) {
+      if (props.isLoopVisible) {
         renderer.render(maestro);
       } else {
         renderer.clear();
@@ -36,12 +36,12 @@ const enhance = compose(
     }
   }),
   observeMaestro<IInnerProps>(
-    props => ({ name: 'LoopCaretController', handleNotification: props.syncShowLoopWithCanvas })
+    props => ({ name: 'LoopCaretController', handleNotification: props.syncLoopVisibility })
   ),
   lifecycle<IInnerProps, {}>({
     componentDidUpdate(): void {
       if (window.ss.maestro) {
-        this.props.syncShowLoopWithCanvas(window.ss.maestro);
+        this.props.syncLoopVisibility(window.ss.maestro);
       }
     }
   })
