@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { compose, lifecycle, branch, renderComponent, withHandlers } from 'recompose';
+import { compose, lifecycle, branch, renderComponent } from 'recompose';
 import { RouteComponentProps } from 'react-router';
 import { ViewportTypes } from 'data/viewport/getViewportType';
 import { connect, Dispatch } from 'react-redux';
@@ -10,7 +10,7 @@ import { EditVideo } from './EditVideo';
 import styled from 'react-emotion';
 import { EditScore } from './EditScore';
 import { Controls } from '../show/controls';
-import { Fretboard, Piano, MaestroController } from 'components';
+import { Fretboard, MaestroController } from 'components';
 
 const MINIMUM_VIEWPORT_WIDTH = 1024; // px
 
@@ -72,10 +72,7 @@ const enhance = compose<IInnerProps, OuterProps>(
   branch<IInnerProps>(
     props => props.viewportWidth < MINIMUM_VIEWPORT_WIDTH,
     renderComponent(NotSupported)
-  ),
-  withHandlers({
-    foo: () => () => console.log('bar')
-  })
+  )
 );
 
 const StyledRow = styled(Row)`
@@ -122,6 +119,5 @@ export const Edit = enhance(props => (
         <EditScore />
       </RightCol>
     </StyledRow>
-    <Controls menuCollapsed={true} onMenuClick={props.foo} />
   </div>
 ));

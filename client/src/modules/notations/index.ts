@@ -1,3 +1,4 @@
+export * from './controls';
 export * from './edit';
 export * from './index/index.ts';
 export * from './print';
