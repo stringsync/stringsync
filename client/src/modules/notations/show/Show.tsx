@@ -20,6 +20,7 @@ interface IConnectProps extends OuterProps {
   viewportWidth: number;
   viewportType: ViewportTypes;
   fetchNotation: (id: number) => Notation.INotation;
+  setNotation: (notation: Notation.INotation) => void;
   resetNotation: () => void;
   resetVideo: () => void;
   setVideo: (video: Video.IVideo) => void;
@@ -52,12 +53,12 @@ const enhance = compose<IMenuHandlerProps, OuterProps>(
       notation: state.notations.show,
       viewportType: state.viewport.type,
       viewportWidth: state.viewport.width
-
     }),
     dispatch => ({
       fetchNotation: (id: number) => dispatch(fetchNotation(id) as any),
       resetNotation: () => dispatch(NotationsActions.resetNotationShow()),
       resetVideo: () => dispatch(VideoActions.resetVideo()),
+      setNotation: (notation: Notation.INotation) => dispatch(NotationsActions.setNotationShow(notation)),
       setVideo: (video: Video.IVideo) => dispatch(VideoActions.setVideo(video))
     })
   ),
@@ -91,6 +92,7 @@ const enhance = compose<IMenuHandlerProps, OuterProps>(
 
       try {
         const notation = await this.props.fetchNotation(id);
+        this.props.setNotation(notation);
 
         if (notation.video) {
           this.props.setVideo(notation.video);

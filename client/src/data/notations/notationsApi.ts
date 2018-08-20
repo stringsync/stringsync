@@ -66,8 +66,6 @@ export const fetchNotation = (notationId: number) => async (dispatch: Dispatch) 
     video: video.attributes
   };
 
-  dispatch(NotationsActions.setNotationShow(notation));
-
   return notation;
 };
 
