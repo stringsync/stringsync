@@ -9,8 +9,8 @@ import { Row, Col } from 'antd';
 import { EditVideo } from './EditVideo';
 import styled from 'react-emotion';
 import { EditScore } from './EditScore';
-import { Controls } from '../show/controls';
 import { Fretboard, MaestroController } from 'components';
+import { VideoControls } from 'modules/video-controls';
 
 const MINIMUM_VIEWPORT_WIDTH = 1024; // px
 
@@ -21,25 +21,17 @@ interface IInnerProps extends OuterProps {
   viewportWidth: number;
   viewportType: ViewportTypes;
   fetchNotation: (id: number) => Notation.INotation;
-  resetNotation: () => void;
-  resetVideo: () => void;
-  setNotation: (notation: Notation.INotation) => void;
-  setVideo: (video: Video.IVideo) => void;
-  foo: (event: React.SyntheticEvent<HTMLElement>) => void;
 }
 
 const enhance = compose<IInnerProps, OuterProps>(
   connect(
     (state: Store.IState) => ({
-      notation: state.notations.edit,
+      notation: state.notation,
       viewportType: state.viewport.type,
       viewportWidth: state.viewport.width
     }),
     (dispatch: Dispatch) => ({
       fetchNotation: (id: number) => dispatch(fetchNotation(id) as any),
-      resetNotation: () => dispatch(NotationsActions.resetNotationEdit()),
-      resetVideo: () => dispatch(VideoActions.resetVideo()),
-      setNotation: (notation: Notation.INotation) => dispatch(NotationsActions.setNotationEdit(notation)),
       setVideo: (video: Video.IVideo) => dispatch(VideoActions.setVideo(video))
     })
   ),
@@ -51,13 +43,7 @@ const enhance = compose<IInnerProps, OuterProps>(
       const id = parseInt(this.props.match.params.id, 10);
 
       try {
-        const notation = await this.props.fetchNotation(id);
-        this.props.setNotation(notation);
-
-        if (notation.video) {
-          this.props.setVideo(notation.video);
-        }
-
+        await this.props.fetchNotation(id);
       } catch (error) {
         console.error(error);
         window.ss.message.error('something went wrong');
@@ -65,8 +51,6 @@ const enhance = compose<IInnerProps, OuterProps>(
     },
     componentWillUnmount() {
       $('body').removeClass('no-scroll');
-      this.props.resetNotation();
-      this.props.resetVideo();
     }
   }),
   branch<IInnerProps>(
@@ -94,7 +78,6 @@ const RightCol = styled(Col)`
 `;
 
 const Spacer = styled('div')`
-  border: 1px solid red;
   height: 110vh;
 `
 
@@ -119,5 +102,6 @@ export const Edit = enhance(props => (
         <EditScore />
       </RightCol>
     </StyledRow>
+    <VideoControls />
   </div>
 ));

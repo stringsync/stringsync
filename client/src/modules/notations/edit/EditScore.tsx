@@ -26,7 +26,7 @@ const DEFAULT_SCORE_WIDTH = 840; // px
 const enhance = compose<IInnerProps, {}>(
   connect(
     (state: Store.IState) => ({
-      notation: state.notations.edit,
+      notation: state.notation,
       viewportWidth: state.viewport.width // causes the scoreWidth to be recalculated
     })
   ),

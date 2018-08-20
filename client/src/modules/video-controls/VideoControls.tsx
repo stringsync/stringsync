@@ -4,7 +4,7 @@ import { Loop } from './Loop';
 import { MenuToggle } from './MenuToggle';
 import { MiniDetail } from './MiniDetail';
 import { PlayToggle } from './PlayToggle';
-import { Row, Col, Collapse, Tooltip } from 'antd';
+import { Collapse, Tooltip } from 'antd';
 import { Scrubber } from './Scrubber';
 import { ShowLoop } from './ShowLoop';
 import { compose, withHandlers, withProps, withState } from 'recompose';
@@ -35,14 +35,14 @@ const enhance = compose<IInnerProps, {}>(
     }
   }),
   withHandlers({
-    onPauseClick: (props: any) => (event: React.SyntheticEvent<HTMLElement>) => {
+    onPauseClick: (props: any) => () => {
       props.videoPlayer.playVideo();
     },
-    onPlayClick: (props: any) => (event: React.SyntheticEvent<HTMLElement>) => {
+    onPlayClick: (props: any) => () => {
       props.videoPlayer.pauseVideo();
     }
   }),
-  withProps(props => {
+  withProps(() => {
     const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     const ratio = window.devicePixelRatio || 1;
     const screen = {
@@ -147,20 +147,6 @@ const SliderContainer = styled('div')`
   width: 100%;
 `;
 
-const DetailContainer = styled('div')`
-  margin-right: 12px;
-`;
-
-const Detail = (props: { style?: any }) => (
-  <DetailContainer style={props.style || {}}>
-    <Row>
-      <Col xs={0} sm={24} md={24} lg={24} xl={24} xxl={24}>
-        <MiniDetail />
-      </Col>
-    </Row>
-  </DetailContainer>
-);
-
 export const VideoControls = enhance(props => (
   <Outer>
     <Row1>
@@ -185,7 +171,7 @@ export const VideoControls = enhance(props => (
                 <PlayerButton style={{ opacity: 0 }}>
                   <MenuToggle />
                 </PlayerButton>
-                <Detail style={{ opacity: 0 }} />
+                <MiniDetail hidden={true} />
               </Inner>
             </Panel>
           </StyledCollapse>
@@ -206,7 +192,7 @@ export const VideoControls = enhance(props => (
         <PlayerButton>
           <MenuToggle />
         </PlayerButton>
-        <Detail />
+        <MiniDetail />
       </Inner>
     </Row2>
   </Outer>

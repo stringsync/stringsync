@@ -1,9 +1,9 @@
 import thunk from 'redux-thunk';
 import { applyMiddleware, combineReducers, createStore as _createStore } from 'redux';
 import { 
-  viewportReducer, videoReducer, sessionReducer, 
-  notationsReducer, usersReducer, tagsReducer,
-  behaviorReducer, uiReducer
+  viewportReducer, videoReducer, sessionReducer,
+  notationsReducer, tagsReducer,
+  uiReducer, notationReducer
 } from './';
 import { Store } from 'react-redux';
 
@@ -12,12 +12,11 @@ const middleware = applyMiddleware(thunk);
 
 // Reducer
 const reducer = combineReducers({
-  behavior: behaviorReducer,
+  notation: notationReducer,
   notations: notationsReducer,
   session: sessionReducer,
   tags: tagsReducer,
   ui: uiReducer,
-  users: usersReducer,
   video: videoReducer,
   viewport: viewportReducer
 });

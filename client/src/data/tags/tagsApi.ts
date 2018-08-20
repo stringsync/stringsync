@@ -2,7 +2,7 @@ import { TagsActions } from './tagsActions';
 import { Dispatch } from 'react-redux';
 import { ajax } from 'utilities';
 
-export const fetchAllTags = () => async (dispatch: Dispatch) => {
+export const fetchTags = () => async (dispatch: Dispatch) => {
   const json:  API.Tags.IIndexResponse = await ajax('/api/v1/tags', {
     method: 'GET'
   });
@@ -14,7 +14,5 @@ export const fetchAllTags = () => async (dispatch: Dispatch) => {
     return { id, name };
   });
 
-  dispatch(TagsActions.setTagsIndex(tags));
-
-  return tags;
+  dispatch(TagsActions.setTags(tags));
 }

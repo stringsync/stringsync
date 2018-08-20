@@ -12,8 +12,8 @@ interface IInnerProps {
 const enhance = compose<IInnerProps, {}>(
   connect(
     (state: Store.IState) => ({
-      backgroundImgSrc: state.notations.show.thumbnailUrl,
-      songName: state.notations.show.songName
+      backgroundImgSrc: state.notation.thumbnailUrl,
+      songName: state.notation.songName
     })
   )
 );

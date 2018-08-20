@@ -6,7 +6,7 @@ import { compose, withState, withHandlers } from 'recompose';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { connect, Dispatch } from 'react-redux';
 import { get } from 'lodash';
-import { BehaviorActions } from 'data';
+import { UiActions } from 'data';
 
 const { ItemGroup, Item } = AntdMenu;
 
@@ -23,8 +23,8 @@ type WithRouterProps = IOuterProps & RouteComponentProps<{ id: string }, {}>
 interface IConnectProps extends WithRouterProps {
   isCurrentUserTranscriber: boolean;
   role: Role.Roles;
-  showLoop: boolean;
-  setShowLoop: (showLoop: boolean) => void;
+  isLoopVisible: boolean;
+  setLoopVisibility: (loopVisibility: boolean) => void;
 }
 
 interface IHandlerProps extends IConnectProps {
@@ -41,21 +41,21 @@ const enhance = compose<IInnerProps, IOuterProps>(
   connect(
     (state: Store.IState) => {
       const sessionUserId = state.session.id;
-      const notationTranscriberUserId = get(state.notations.show.transcriber, 'id');
+      const notationTranscriberUserId = get(state.notation.transcriber, 'id');
 
       return {
-        isCurrentUserTranscriber: sessionUserId && sessionUserId === notationTranscriberUserId,
-        role: state.session.role,
-        showLoop: state.behavior.showLoop
+        isCurrentUserTranscriber: typeof sessionUserId === 'number' && sessionUserId === notationTranscriberUserId,
+        isLoopVisible: state.ui.isLoopVisible,
+        role: state.session.role
       }
     },
     (dispatch: Dispatch) => ({
-      setShowLoop: (showLoop: boolean) => dispatch(BehaviorActions.setBehavior('showLoop', showLoop) as any)
+      setLoopVisibility: (loopVisibility: boolean) => dispatch(UiActions.setLoopVisibility(loopVisibility))
     })
   ),
   withHandlers({
-    handleShowLoopClick: (props: IConnectProps) => (event: CheckboxChangeEvent) => {
-      props.setShowLoop(!props.showLoop);
+    handleShowLoopClick: (props: IConnectProps) => () => {
+      props.setLoopVisibility(!props.isLoopVisible);
     }
   }),
   withState('suggestNotesChecked', 'setSuggestNotesChecked', false),
@@ -148,7 +148,7 @@ export const Menu = enhance(props => (
           </Item>
           <Item key="showLoop">
             <Checkbox
-              checked={props.showLoop}
+              checked={props.isLoopVisible}
               onChange={props.handleShowLoopClick}
             >
               <CheckDescription>show loop</CheckDescription>

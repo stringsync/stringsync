@@ -1,18 +1,12 @@
 declare namespace Store {
   export interface IState {
-    behavior: IBehaviorState;
-    notations: INotationsState;
+    notations: Notation.INotation[];
+    notation: Notation.INotation;
     session: ISessionState;
-    tags: ITagsState;
-    users: IUsersState;
+    tags: Tag.ITag[];
+    ui: IUiState;
     video: IVideoState;
     viewport: IViewportState;
-  }
-
-  export interface INotationsState {
-    index: Notation.INotation[],
-    show: Notation.INotation,
-    edit: Notation.INotation
   }
 
   export interface ISessionState {
@@ -24,16 +18,6 @@ declare namespace Store {
     name: string;
     provider: SessionProviders;
     role: Role.Roles;
-  }
-
-  export interface ITagsState {
-    index: Tag.ITag[];
-  }
-
-  export interface IUsersState {
-    edit: User.IBaseUser;
-    index: User.IBaseUser[];
-    show: User.IBaseUser;
   }
 
   export interface IVideoState {
@@ -49,11 +33,8 @@ declare namespace Store {
     width: number;
   }
 
-  export interface IBehaviorState {
-    showLoop: boolean;
-  }
-
   export interface IUiState {
     isNotationMenuVisible: boolean;
+    isLoopVisible: boolean;
   }
 }

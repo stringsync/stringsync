@@ -6,9 +6,9 @@ import { Link, withRouter, RouteComponentProps } from 'react-router-dom';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
 import { FormErrors } from 'modules/forms';
 import { connect, Dispatch } from 'react-redux';
-import { fetchAllTags } from 'data/tags';
+import { fetchTags } from 'data/tags';
 import { get } from 'lodash';
-import { ICreateNotation, createNotation, NotationsActions } from 'data';
+import { ICreateNotation, createNotation, NotationActions } from 'data';
 
 const { Item } = Form;
 const { Option } = Select;
@@ -47,10 +47,10 @@ interface IFormProps extends RouteComponentProps<{ id: string }, {}> {
 
 interface IConnectProps extends IFormProps {
   tags: Tag.ITag[];
-  notationEdit: Notation.INotation;
-  fetchAllTags: () => void;
+  notationId: number;
+  fetchTags: () => void;
+  resetNotation: () => void;
   createNotation: (notation: ICreateNotation) => void;
-  resetNotationEdit: () => void;
 }
 
 interface IStateProps extends IConnectProps {
@@ -73,22 +73,22 @@ const enhance = compose<IInnerProps, {}>(
   Form.create(),
   connect(
     (state: Store.IState) => ({
-      notationEdit: state.notations.edit,
-      tags: state.tags.index
+      notationId: state.notation.id,
+      tags: state.tags
     }),
     (dispatch: Dispatch) => ({
       createNotation: (notation: ICreateNotation) => dispatch(createNotation(notation) as any),
-      fetchAllTags: () => dispatch(fetchAllTags() as any),
-      resetNotationEdit: () => dispatch(NotationsActions.resetNotationEdit() as any)
+      fetchTags: () => dispatch(fetchTags() as any),
+      resetNotation: () => dispatch(NotationActions.resetNotation())
     })
   ),
   lifecycle<IConnectProps, {}>({
     componentDidMount(): void {
-      this.props.resetNotationEdit();
-      this.props.fetchAllTags();
+      this.props.resetNotation();
+      this.props.fetchTags();
     },
     componentDidUpdate(): void {
-      const { id } = this.props.notationEdit;
+      const id = this.props.notationId;
 
       if (id > -1) {
         this.props.history.push(`/n/${id}/edit`)

@@ -26,7 +26,7 @@ interface IInnerProps {
 const enhance = compose<IInnerProps, {}>(
   connect(
     (state: Store.IState) => ({
-      durationMs: state.notations.show.durationMs,
+      durationMs: state.notation.durationMs,
       isVideoPlaying: state.video.playerState === 'PLAYING',
       videoPlayer: state.video.player
     })

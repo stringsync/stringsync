@@ -50,15 +50,13 @@ const getNotationShowElement = () => document.getElementById('notation-show');
 const enhance = compose<IMenuHandlerProps, OuterProps>(
   connect(
     (state: Store.IState) => ({
-      notation: state.notations.show,
+      notation: state.notation,
       viewportType: state.viewport.type,
       viewportWidth: state.viewport.width
     }),
     dispatch => ({
       fetchNotation: (id: number) => dispatch(fetchNotation(id) as any),
-      resetNotation: () => dispatch(NotationsActions.resetNotationShow()),
       resetVideo: () => dispatch(VideoActions.resetVideo()),
-      setNotation: (notation: Notation.INotation) => dispatch(NotationsActions.setNotationShow(notation)),
       setVideo: (video: Video.IVideo) => dispatch(VideoActions.setVideo(video))
     })
   ),
@@ -91,11 +89,11 @@ const enhance = compose<IMenuHandlerProps, OuterProps>(
       const id = parseInt(this.props.match.params.id, 10);
 
       try {
-        const notation = await this.props.fetchNotation(id);
-        this.props.setNotation(notation);
+        await this.props.fetchNotation(id);
 
-        if (notation.video) {
-          this.props.setVideo(notation.video);
+        const { video } = this.props.notation;
+        if (video) {
+          this.props.setVideo(video)
         }
       } catch (error) {
         console.error(error);
@@ -103,8 +101,6 @@ const enhance = compose<IMenuHandlerProps, OuterProps>(
       }
     },
     componentWillUnmount() {
-      this.props.resetNotation();
-      this.props.resetVideo();
       $('body').removeClass('no-scroll');
     }
   })

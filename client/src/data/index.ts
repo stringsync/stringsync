@@ -1,9 +1,8 @@
-export * from './behavior';
 export * from './ui';
 export * from './viewport';
 export * from './video';
+export * from './notation';
 export * from './notations';
-export * from './users';
 export * from './tags';
 export * from './session';
 
