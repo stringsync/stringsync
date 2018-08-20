@@ -1,4 +1,4 @@
-import { NotationShow } from './NotationShow';
+import { Show } from './Show';
 import { assertRender } from 'test';
 
-assertRender(NotationShow);
+assertRender(Show);
