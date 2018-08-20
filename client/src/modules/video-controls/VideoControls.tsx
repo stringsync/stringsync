@@ -8,38 +8,50 @@ import { Collapse, Tooltip } from 'antd';
 import { Scrubber } from './Scrubber';
 import { ShowLoop } from './ShowLoop';
 import { compose, withHandlers, withProps, withState } from 'recompose';
-import { connect } from 'react-redux';
+import { connect, Dispatch } from 'react-redux';
+import { UiActions } from 'data';
 
 const { Panel } = Collapse;
 
-interface IInnerProps {
+interface IConnectProps {
   isVideoActive: boolean;
-  videoPlayer: Youtube.IPlayer;
-  isIphoneX: boolean;
+  videoPlayer: Video.IVideo | null;
+  isNotationMenuVisible: boolean;
+  setNotationMenuVisibility: (notationMenuVisibility: boolean) => void;
+}
+
+interface IStateProps extends IConnectProps {
   loopCollapsed: boolean;
+  setLoopCollapsed: (loopCollapsed: boolean) => void;
+}
+
+interface IHandlerProps extends IStateProps {
   handleLoopCollapseChange: () => void;
-  setLoopCollapsed: (collapsed: boolean) => void;
+  handleNotationMenuClick: () => void;
+}
+
+interface IInnerProps extends IHandlerProps {
+  isIphoneX: boolean;
 }
 
 const enhance = compose<IInnerProps, {}>(
   connect(
     (state: Store.IState) => ({
+      isNotationMenuVisible: state.ui.isNotationMenuVisible,
       isVideoActive: state.video.isActive,
       videoPlayer: state.video.player
+    }),
+    (dispatch: Dispatch) => ({
+      setNotationMenuVisibility: (visibility: boolean) => dispatch(UiActions.setNotationMenuVisibility(visibility))
     })
   ),
   withState('loopCollapsed', 'setLoopCollapsed', true),
   withHandlers({
     handleLoopCollapseChange: (props: any) => () => {
       props.setLoopCollapsed(!props.loopCollapsed);
-    }
-  }),
-  withHandlers({
-    onPauseClick: (props: any) => () => {
-      props.videoPlayer.playVideo();
     },
-    onPlayClick: (props: any) => () => {
-      props.videoPlayer.pauseVideo();
+    handleNotationMenuClick: (props: any) => () => {
+      props.setNotationMenuVisibility(!props.isNotationMenuVisible)
     }
   }),
   withProps(() => {
@@ -168,7 +180,7 @@ export const VideoControls = enhance(props => (
                 <SliderContainer>
                   <Loop />
                 </SliderContainer>
-                <PlayerButton style={{ opacity: 0 }}>
+                <PlayerButton style={{ opacity: 0 }} onClick={props.handleNotationMenuClick}>
                   <MenuToggle />
                 </PlayerButton>
                 <MiniDetail hidden={true} />
@@ -189,7 +201,7 @@ export const VideoControls = enhance(props => (
         <SliderContainer>
           <Scrubber />
         </SliderContainer>
-        <PlayerButton>
+        <PlayerButton onClick={props.handleNotationMenuClick}>
           <MenuToggle />
         </PlayerButton>
         <MiniDetail />

@@ -5,7 +5,7 @@ import { Affix } from 'antd';
 import { Fretboard, Score, Piano, MaestroController, Overlap, Layer } from 'components';
 import { compose, lifecycle, withState, withHandlers, withProps } from 'recompose';
 import { connect } from 'react-redux';
-import { NotationsActions, fetchNotation, VideoActions } from 'data';
+import { fetchNotation, VideoActions } from 'data';
 import { RouteComponentProps } from 'react-router-dom';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { ViewportTypes } from 'data/viewport/getViewportType';
@@ -19,11 +19,14 @@ interface IConnectProps extends OuterProps {
   notation: Notation.INotation;
   viewportWidth: number;
   viewportType: ViewportTypes;
+  isNotationMenuVisible: boolean;
   fetchNotation: (id: number) => Notation.INotation;
   setNotation: (notation: Notation.INotation) => void;
+  setVideo: (video: Video.IVideo) => void;
   resetNotation: () => void;
   resetVideo: () => void;
-  setVideo: (video: Video.IVideo) => void;
+  setFretboardVisibility: (fretboardVisibility: boolean) => void;
+  setPianoVisibility: (pianoVisibility: boolean) => void;
 }
 
 interface IScoreWidthProps extends IConnectProps {
@@ -31,12 +34,8 @@ interface IScoreWidthProps extends IConnectProps {
 }
 
 interface IMenuProps extends IScoreWidthProps {
-  menuCollapsed: boolean;
   fretboardVisibility: boolean;
   pianoVisibility: boolean;
-  setMenuCollapsed: (menuCollapsed: boolean) => void;
-  setFretboardVisibility: (fretboardVisibility: boolean) => void;
-  setPianoVisibility: (pianoVisibility: boolean) => void;
 }
 
 interface IMenuHandlerProps extends IMenuProps {
@@ -50,6 +49,7 @@ const getNotationShowElement = () => document.getElementById('notation-show');
 const enhance = compose<IMenuHandlerProps, OuterProps>(
   connect(
     (state: Store.IState) => ({
+      isNotationMenuVisible: state.ui.isNotationMenuVisible,
       notation: state.notation,
       viewportType: state.viewport.type,
       viewportWidth: state.viewport.width
@@ -63,20 +63,6 @@ const enhance = compose<IMenuHandlerProps, OuterProps>(
   withProps((props: IConnectProps) => ({
     scoreWidth: Math.max(Math.min(props.viewportWidth, 1200), 200) - 30
   })),
-  withState('menuCollapsed', 'setMenuCollapsed', true),
-  withState('fretboardVisibility', 'setFretboardVisibility', true),
-  withState('pianoVisibility', 'setPianoVisibility', false),
-  withHandlers({
-    handleFretboardVisibilityChange: (props: IMenuProps) => (event: CheckboxChangeEvent) => {
-      props.setFretboardVisibility(event.target.checked);
-    },
-    handleMenuClick: (props: IMenuProps) => () => {
-      props.setMenuCollapsed(!props.menuCollapsed);
-    },
-    handlePianoVisibilityChange: (props: IMenuProps) => (event: CheckboxChangeEvent) => {
-      props.setPianoVisibility(event.target.checked);
-    },
-  }),
   lifecycle<IMenuHandlerProps, {}>({
     componentWillMount() {
       $('body').addClass('no-scroll');
@@ -110,21 +96,6 @@ const Outer = styled('div')`
   width: 100%;
 `;
 
-interface IMaskProps {
-  collapsed: boolean;
-}
-
-const Mask = styled('div')<IMaskProps>`
-  background: black;
-  opacity: 0.65;
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 100%;
-  height: 100vh;
-  display: ${props => props.collapsed ? 'none' : 'block'};
-`;
-
 /**
  * Sets layout for the NotationShow page and fetches the notation from the router.
  */
@@ -152,14 +123,7 @@ export const Show = enhance(props => (
         </div>
       </Layer>
       <Layer zIndex={11}>
-        <Mask collapsed={props.menuCollapsed} onClick={props.handleMenuClick} />
-        <Menu
-          fretboardVisibility={props.fretboardVisibility}
-          pianoVisibility={props.pianoVisibility}
-          onFretboardVisibilityChange={props.handleFretboardVisibilityChange}
-          onPianoVisibilityChange={props.handlePianoVisibilityChange}
-          collapsed={props.menuCollapsed}
-        />
+        <Menu />
         <VideoControls />
       </Layer>
     </Overlap>
