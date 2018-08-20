@@ -10,6 +10,7 @@ import { NoteController } from './NoteController';
 import { LoopCaretController } from './LoopCaretController';
 import { ScoreTitle } from './ScoreTitle';
 import { get } from 'lodash';
+import logo from 'assets/logo.svg';
 
 const MIN_WIDTH_PER_MEASURE = 240; // px
 const MIN_MEASURES_PER_LINE = 1;
@@ -93,8 +94,15 @@ const Outer = styled('div')<IOuterDiv>`
   }
 `;
 
+const Logo = styled('img')`
+  width: 15%;
+`;
+
 const Spacer = styled('div')`
   height: ${() => VextabRenderer.DEFAULT_LINE_HEIGHT * 4}px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 `;
 
 export const Score = enhance(props => (
@@ -117,6 +125,6 @@ export const Score = enhance(props => (
         />
       ))
     }
-    {props.dynamic ? <Spacer /> : null}
+    {props.dynamic ? <Spacer><Logo src={logo}  alt="logo" /></Spacer> : null}
   </Outer>
 ));

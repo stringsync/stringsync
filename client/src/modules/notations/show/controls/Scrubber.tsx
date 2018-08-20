@@ -69,7 +69,11 @@ const enhance = compose<IInnerProps, {}>(
 
       if (window.ss.maestro) {
         window.ss.maestro.time = new Time(seekToTimeMs, 'ms');
-        props.videoPlayer.seekTo(seekToTimeMs / 1000, true);
+
+        if (props.videoPlayer) {
+          props.videoPlayer.seekTo(seekToTimeMs / 1000, true);
+        }
+
         props.setValue(value);
       }
     }
