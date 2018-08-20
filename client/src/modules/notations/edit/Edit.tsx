@@ -7,12 +7,14 @@ import { fetchNotation, NotationsActions, VideoActions } from 'data';
 import { NotSupported } from './NotSupported';
 import { Row, Col } from 'antd';
 import { EditVideo } from './EditVideo';
+import styled from 'react-emotion';
+import { EditScore } from './EditScore';
 
 const MINIMUM_VIEWPORT_WIDTH = 1024; // px
 
 type OuterProps = RouteComponentProps<{ id: string }>;
 
-interface IConnectProps extends OuterProps {
+interface IInnerProps extends OuterProps {
   notation: Notation.INotation;
   viewportWidth: number;
   viewportType: ViewportTypes;
@@ -21,10 +23,6 @@ interface IConnectProps extends OuterProps {
   resetVideo: () => void;
   setNotation: (notation: Notation.INotation) => void;
   setVideo: (video: Video.IVideo) => void;
-}
-
-interface IInnerProps extends IConnectProps {
-  foo: string;
 }
 
 const enhance = compose<IInnerProps, OuterProps>(
@@ -70,15 +68,22 @@ const enhance = compose<IInnerProps, OuterProps>(
   )
 );
 
+const StyledRow = styled(Row)`
+  background: white;
+  min-height: 100vh;
+`;
+
+/**
+ * The purpose of this component is to manage the state.notations.edit and video state
+ * as well as setting the layout for the NotationEdit component.
+ */
 export const Edit = enhance(() => (
-  <div>
-    <Row>
-      <Col span={6}>
-        <EditVideo />
-      </Col>
-      <Col span={18}>
-        bar
-      </Col>
-    </Row>
-  </div>
+  <StyledRow>
+    <Col span={6}>
+      <EditVideo />
+    </Col>
+    <Col span={18}>
+      <EditScore />
+    </Col>
+  </StyledRow>
 ));
