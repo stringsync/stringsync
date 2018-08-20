@@ -1,16 +1,16 @@
 import * as React from 'react';
+import scrollToTop from './scrollToTop';
+import styled from 'react-emotion';
+import { Affix } from 'antd';
+import { Inputs } from './Inputs';
+import { Results } from './Results';
 import { ViewportTypes } from 'data/viewport/getViewportType';
 import { compose, withProps, withState, withHandlers } from 'recompose';
-import scrollToTop from './scrollToTop';
-import { Affix } from 'antd';
-import { NotationSearchInputs } from './NotationSearchInputs';
-import styled from 'react-emotion';
-import NotationSearchResults from './NotationSearchResults';
 
 interface IOuterProps {
   queryString: string;
   queryTags: Set<string>;
-  numQueriedNotations: number;
+  numFound: number;
   tags: Set<string>;
   viewportType: ViewportTypes;
   onQueryStringChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -57,14 +57,14 @@ const AffixInner = styled('div')<IAffixInnerProps>`
   transition: all 150ms ease-in;
 `;
 
-export const NotationSearch = enhance(props => (
+export const Search = enhance(props => (
   <div>
     <Affix
       onChange={props.handleAffixChange}
       offsetBottom={props.affixOffsetBottom}
     >
       <AffixInner affixed={props.affixed}>
-        <NotationSearchInputs
+        <Inputs
           queryString={props.queryString}
           queryTags={props.queryTags}
           onQueryStringChange={props.onQueryStringChange}
@@ -75,10 +75,10 @@ export const NotationSearch = enhance(props => (
         />
       </AffixInner>
     </Affix>
-    <NotationSearchResults
+    <Results
       queryString={props.queryString}
       queryTags={props.queryTags}
-      numQueriedNotations={props.numQueriedNotations}
+      numFound={props.numFound}
       onClear={props.handleClear}
     />
   </div>

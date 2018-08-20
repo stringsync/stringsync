@@ -1,13 +1,13 @@
 import * as React from 'react';
 import styled from 'react-emotion';
 import { BackTop } from 'antd';
-import { connect } from 'react-redux';
-import { compose, withProps, withState, withHandlers, lifecycle } from 'recompose';
-import { fetchAllNotations } from 'data';
-import { NotationSearch } from './search';
-import { ViewportTypes } from '../../../data/viewport/getViewportType';
+import { Grid } from './Grid';
+import { Search } from './search';
+import { ViewportTypes } from 'data/viewport/getViewportType';
 import { compact } from 'lodash';
-import { NotationGrid } from './NotationGrid';
+import { compose, withProps, withState, withHandlers, lifecycle } from 'recompose';
+import { connect } from 'react-redux';
+import { fetchAllNotations } from 'data';
 
 interface IInnerProps {
   queryString: string;
@@ -101,19 +101,16 @@ const Outer = styled('div')`
 export const NotationIndex = enhance(props => (
   <Outer>
     <BackTop />
-    <NotationSearch
+    <Search
       queryString={props.queryString}
       queryTags={props.queryTags}
       clearQueries={props.clearQueries}
       onQueryStringChange={props.handleQueryStringChange}
       onQueryTagsChange={props.handleQueryTagsChange}
-      numQueriedNotations={props.queriedNotations.length}
+      numFound={props.queriedNotations.length}
       tags={props.tags}
       viewportType={props.viewportType}
     />
-    <NotationGrid
-      notations={props.queriedNotations}
-      queryTags={props.queryTags}
-    />
+    <Grid notations={props.queriedNotations} queryTags={props.queryTags} />
   </Outer>
 ));
