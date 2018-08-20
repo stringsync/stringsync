@@ -39,7 +39,7 @@ interface IInnerProps extends IHandlerProps {
 const enhance = compose<IInnerProps, IOuterProps>(
   withRouter,
   connect(
-    (state: StringSync.Store.IState) => {
+    (state: Store.IState) => {
       const sessionUserId = state.session.id;
       const notationTranscriberUserId = get(state.notations.show.transcriber, 'id');
 

@@ -22,7 +22,7 @@ interface IInnerProps extends IOuterProps {
 
 const enhance = compose<IInnerProps, IOuterProps>(
   connect(
-    (state: StringSync.Store.IState) => ({
+    (state: Store.IState) => ({
       viewportType: state.viewport.type
     })
   ),

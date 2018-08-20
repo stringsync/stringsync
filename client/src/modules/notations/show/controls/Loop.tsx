@@ -39,7 +39,7 @@ interface IInnerProps extends IValueConverterProps {
 
 const enhance = compose<IInnerProps, {}>(
   connect(
-    (state: StringSync.Store.IState) => ({
+    (state: Store.IState) => ({
       durationMs: state.notations.show.durationMs,
       isVideoPlaying: state.video.playerState === 'PLAYING',
       showLoop: state.behavior.showLoop,

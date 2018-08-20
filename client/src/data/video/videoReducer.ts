@@ -1,6 +1,6 @@
 import * as actions from './videoActions';
 
-export type IVideoState = StringSync.Store.IVideoState;
+export type IVideoState = Store.IVideoState;
 
 const ACTIVE_PLAYER_STATES = [
   'PLAYING',

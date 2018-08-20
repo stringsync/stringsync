@@ -11,7 +11,7 @@ interface IInnerProps {
 
 const enhance = compose<IInnerProps, {}>(
   connect(
-    (state: StringSync.Store.IState) => {
+    (state: Store.IState) => {
       const { songName, artistName, thumbnailUrl } = state.notations.show;
       return { songName, artistName, thumbnailUrl };
     }

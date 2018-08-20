@@ -13,7 +13,7 @@ interface ISinkProps {
 const enhance = compose(
   (withSizes as any)(({ width }: { width: number }) => ({ reactSizesWidth: width })),
   connect(
-    (state: StringSync.Store.IState) => ({
+    (state: Store.IState) => ({
       storeWidth: state.viewport.width
     }),
     dispatch => ({

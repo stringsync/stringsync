@@ -19,7 +19,7 @@ const STRING_NUMBERS = [1, 2, 3, 4, 5, 6];
 
 const enhance = compose<IInnerProps, IOuterProps>(
   connect(
-    (state: StringSync.Store.IState) => ({
+    (state: Store.IState) => ({
       viewportType: state.viewport.type
     })
   )

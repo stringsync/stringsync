@@ -1,7 +1,7 @@
 import { createAction } from 'utilities/redux';
 
 // Helps keep line length in action definitions
-type State = StringSync.Store.IBehaviorState;
+type State = Store.IBehaviorState;
 
 export const RESET_ALL_BEHAVIORS = 'RESET_ALL_BEHAVIORS';
 export const RESET_BEHAVIOR = 'RESET_BEHAVIOR';

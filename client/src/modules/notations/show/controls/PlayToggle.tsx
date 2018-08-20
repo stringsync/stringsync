@@ -13,7 +13,7 @@ interface IInnerProps {
 
 const enhance = compose<IInnerProps, {}>(
   connect(
-    (state: StringSync.Store.IState) => ({
+    (state: Store.IState) => ({
       isVideoActive: state.video.isActive,
       videoPlayer: state.video.player
     })

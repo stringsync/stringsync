@@ -16,7 +16,7 @@ interface IInnerProps extends RouteComponentProps<{ id: string }> {
 const enhance = compose<IInnerProps, {}>(
   withRouter,
   connect(
-    (state: StringSync.Store.IState) => ({
+    (state: Store.IState) => ({
       notation: state.notations.show
     }),
     (dispatch: Dispatch) => ({

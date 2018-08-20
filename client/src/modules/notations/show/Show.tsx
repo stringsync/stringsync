@@ -48,7 +48,7 @@ const getNotationShowElement = () => document.getElementById('notation-show');
 
 const enhance = compose<IMenuHandlerProps, OuterProps>(
   connect(
-    (state: StringSync.Store.IState) => ({
+    (state: Store.IState) => ({
       notation: state.notations.show,
       viewportType: state.viewport.type,
       viewportWidth: state.viewport.width

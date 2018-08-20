@@ -8,7 +8,7 @@ import { ThemeProvider } from 'emotion-theming';
 import { App } from 'modules/app';
 
 interface IRootProps {
-  store: Store<StringSync.Store.IState>
+  store: Store<Store.IState>
 }
 
 const THEME = Object.freeze({

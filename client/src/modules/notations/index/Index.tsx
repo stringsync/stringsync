@@ -23,7 +23,7 @@ interface IInnerProps {
 
 const enhance = compose<IInnerProps, any>(
   connect(
-    (state: StringSync.Store.IState) => ({
+    (state: Store.IState) => ({
       notations: state.notations.index,
       viewportType: state.viewport.type
     }),

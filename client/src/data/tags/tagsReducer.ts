@@ -1,6 +1,6 @@
 import * as actions from './tagsActions';
 
-export type ITagsState = StringSync.Store.ITagsState;
+export type ITagsState = Store.ITagsState;
 
 const getDefaultState = (): ITagsState => ({
   index: []

@@ -16,7 +16,7 @@ interface IInnerProps extends IConnectProps {
 
 const enhance = compose(
   connect(
-    (state: StringSync.Store.IState) => ({
+    (state: Store.IState) => ({
       showLoop: state.behavior.showLoop
     })
   ),

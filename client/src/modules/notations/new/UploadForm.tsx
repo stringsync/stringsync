@@ -72,7 +72,7 @@ const enhance = compose<IInnerProps, {}>(
   withRouter,
   Form.create(),
   connect(
-    (state: StringSync.Store.IState) => ({
+    (state: Store.IState) => ({
       notationEdit: state.notations.edit,
       tags: state.tags.index
     }),

@@ -1,7 +1,7 @@
 import * as actions from './behaviorActions';
 import { pick } from 'lodash';
 
-export type IBehaviorState = StringSync.Store.IBehaviorState;
+export type IBehaviorState = Store.IBehaviorState;
 
 const getDefaultState = (): IBehaviorState => ({
   showLoop: false
