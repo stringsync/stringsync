@@ -12,7 +12,7 @@ interface IInnerProps {
 
 const enhance = compose<IInnerProps, {}>(
   lifecycle<{}, {}>({
-    componentWillMount(): void {
+    componentDidMount(): void {
       const { maestro } = window.ss;
 
       if (!maestro) {
@@ -20,13 +20,6 @@ const enhance = compose<IInnerProps, {}>(
       }
 
       maestro.fretboard = new Fretboard();
-    },
-    componentWillUnmount(): void {
-      const { maestro } = window.ss;
-
-      if (maestro) {
-        maestro.fretboard = null;
-      }
     }
   }),
   withHandlers({

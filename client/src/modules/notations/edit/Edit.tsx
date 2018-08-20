@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { compose, lifecycle, branch, renderComponent } from 'recompose';
+import { compose, lifecycle, branch, renderComponent, withHandlers } from 'recompose';
 import { RouteComponentProps } from 'react-router';
 import { ViewportTypes } from 'data/viewport/getViewportType';
 import { connect, Dispatch } from 'react-redux';
@@ -9,6 +9,8 @@ import { Row, Col } from 'antd';
 import { EditVideo } from './EditVideo';
 import styled from 'react-emotion';
 import { EditScore } from './EditScore';
+import { Controls } from '../show/controls';
+import { Fretboard, Piano, MaestroController } from 'components';
 
 const MINIMUM_VIEWPORT_WIDTH = 1024; // px
 
@@ -23,6 +25,7 @@ interface IInnerProps extends OuterProps {
   resetVideo: () => void;
   setNotation: (notation: Notation.INotation) => void;
   setVideo: (video: Video.IVideo) => void;
+  foo: (event: React.SyntheticEvent<HTMLElement>) => void;
 }
 
 const enhance = compose<IInnerProps, OuterProps>(
@@ -41,6 +44,9 @@ const enhance = compose<IInnerProps, OuterProps>(
     })
   ),
   lifecycle<IInnerProps, {}>({
+    componentWillMount() {
+      $('body').addClass('no-scroll');
+    },
     async componentDidMount() {
       const id = parseInt(this.props.match.params.id, 10);
 
@@ -58,6 +64,7 @@ const enhance = compose<IInnerProps, OuterProps>(
       }
     },
     componentWillUnmount() {
+      $('body').removeClass('no-scroll');
       this.props.resetNotation();
       this.props.resetVideo();
     }
@@ -65,25 +72,56 @@ const enhance = compose<IInnerProps, OuterProps>(
   branch<IInnerProps>(
     props => props.viewportWidth < MINIMUM_VIEWPORT_WIDTH,
     renderComponent(NotSupported)
-  )
+  ),
+  withHandlers({
+    foo: () => () => console.log('bar')
+  })
 );
 
 const StyledRow = styled(Row)`
   background: white;
-  min-height: 100vh;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
 `;
+
+const LeftCol = styled(Col)`
+  overflow: auto;
+  height: auto;
+  -webkit-overflow-scrolling: touch;
+  border-right: 1px solid #efefef;
+`;
+
+const RightCol = styled(Col)`
+  overflow: hidden;
+`;
+
+const Spacer = styled('div')`
+  border: 1px solid red;
+  height: 110vh;
+`
 
 /**
  * The purpose of this component is to manage the state.notations.edit and video state
  * as well as setting the layout for the NotationEdit component.
  */
-export const Edit = enhance(() => (
-  <StyledRow>
-    <Col span={6}>
-      <EditVideo />
-    </Col>
-    <Col span={18}>
-      <EditScore />
-    </Col>
-  </StyledRow>
+export const Edit = enhance(props => (
+  <div>
+    <MaestroController
+      bpm={props.notation.bpm}
+      durationMs={props.notation.durationMs}
+      deadTimeMs={props.notation.deadTimeMs}
+    />
+    <StyledRow type="flex">
+      <LeftCol span={6}>
+        <EditVideo />
+        <Spacer />
+      </LeftCol>
+      <RightCol span={18}>
+        <Fretboard />
+        <EditScore />
+      </RightCol>
+    </StyledRow>
+    <Controls menuCollapsed={true} onMenuClick={props.foo} />
+  </div>
 ));

@@ -1,9 +1,11 @@
 import * as React from 'react';
 import { compose, withState, withHandlers, withProps } from 'recompose';
 import { connect } from 'react-redux';
+import { Score } from 'components';
 
 interface IConnectProps {
-  viewportWidth: number
+  viewportWidth: number;
+  notation: Notation.INotation;
 }
 
 interface IStateProps extends IConnectProps {
@@ -24,6 +26,7 @@ const DEFAULT_SCORE_WIDTH = 840; // px
 const enhance = compose<IInnerProps, {}>(
   connect(
     (state: Store.IState) => ({
+      notation: state.notations.edit,
       viewportWidth: state.viewport.width // causes the scoreWidth to be recalculated
     })
   ),
@@ -44,6 +47,10 @@ const enhance = compose<IInnerProps, {}>(
 
 export const EditScore = enhance(props => (
   <div ref={props.handleOuterDivRef}>
-    {props.scoreWidth}
+    <Score
+      dynamic={true}
+      notation={props.notation}
+      width={props.scoreWidth}
+    />
   </div>
 ));

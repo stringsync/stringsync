@@ -44,7 +44,7 @@ const enhance = compose<IInnerProps, {}>(
 );
 
 const Outer = styled('div')`
-  background: url(${props => woodTextureSrc});
+  background: url(${() => woodTextureSrc});
   background-color: black;
   width: 100%;
 
