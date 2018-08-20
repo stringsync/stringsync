@@ -8,9 +8,13 @@ const getDefaultState = (): Store.IUiState => ({
 });
 
 export const uiReducer = (state = getDefaultState(), action: actions.UiActions): Store.IUiState => {
-  const nextState = Object.assign({}, state);
+  let nextState = Object.assign({}, state);
 
   switch(action.type) {
+
+    case actions.RESET:
+      nextState = getDefaultState();
+      return nextState;
 
     case actions.SET_NOTATION_MENU_VISIBILITY:
       nextState.isNotationMenuVisible = action.payload.notationMenuVisibility;

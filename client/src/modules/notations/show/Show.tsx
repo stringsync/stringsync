@@ -5,7 +5,7 @@ import { Affix } from 'antd';
 import { Fretboard, Score, Piano, MaestroController, Overlap, Layer } from 'components';
 import { compose, lifecycle, withState, withHandlers, withProps } from 'recompose';
 import { connect } from 'react-redux';
-import { fetchNotation, VideoActions } from 'data';
+import { fetchNotation, VideoActions, UiActions, NotationActions } from 'data';
 import { RouteComponentProps } from 'react-router-dom';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { ViewportTypes } from 'data/viewport/getViewportType';
@@ -25,28 +25,17 @@ interface IConnectProps extends OuterProps {
   setVideo: (video: Video.IVideo) => void;
   resetNotation: () => void;
   resetVideo: () => void;
+  resetUi: () => void;
   setFretboardVisibility: (fretboardVisibility: boolean) => void;
-  setPianoVisibility: (pianoVisibility: boolean) => void;
 }
 
-interface IScoreWidthProps extends IConnectProps {
+interface IInnerProps extends IConnectProps {
   scoreWidth: number;
-}
-
-interface IMenuProps extends IScoreWidthProps {
-  fretboardVisibility: boolean;
-  pianoVisibility: boolean;
-}
-
-interface IMenuHandlerProps extends IMenuProps {
-  handleMenuClick: (event: React.SyntheticEvent<HTMLElement>) => void;
-  handleFretboardVisibilityChange: (event: CheckboxChangeEvent) => void;
-  handlePianoVisibilityChange: (event: CheckboxChangeEvent) => void;
 }
 
 const getNotationShowElement = () => document.getElementById('notation-show');
 
-const enhance = compose<IMenuHandlerProps, OuterProps>(
+const enhance = compose<IInnerProps, OuterProps>(
   connect(
     (state: Store.IState) => ({
       isNotationMenuVisible: state.ui.isNotationMenuVisible,
@@ -56,21 +45,24 @@ const enhance = compose<IMenuHandlerProps, OuterProps>(
     }),
     dispatch => ({
       fetchNotation: (id: number) => dispatch(fetchNotation(id) as any),
+      resetNotation: () => dispatch(NotationActions.resetNotation()),
+      resetUi: () => dispatch(UiActions.reset()),
       resetVideo: () => dispatch(VideoActions.resetVideo()),
+      setFretboardVisibility: (visibility: boolean) => dispatch(UiActions.setFretboardVisibility(visibility)),
       setVideo: (video: Video.IVideo) => dispatch(VideoActions.setVideo(video))
     })
   ),
   withProps((props: IConnectProps) => ({
     scoreWidth: Math.max(Math.min(props.viewportWidth, 1200), 200) - 30
   })),
-  lifecycle<IMenuHandlerProps, {}>({
-    componentWillMount() {
-      $('body').addClass('no-scroll');
-    },
+  lifecycle<IInnerProps, {}>({
     async componentDidMount() {
-      if (this.props.viewportType === 'MOBILE') {
-        this.props.setFretboardVisibility(false);
-      }
+      $('body').addClass('no-scroll');
+
+      this.props.resetNotation();
+      this.props.resetVideo();
+      this.props.resetUi();
+      this.props.setFretboardVisibility(this.props.viewportType !== 'MOBILE');
 
       const id = parseInt(this.props.match.params.id, 10);
 
@@ -110,12 +102,9 @@ export const Show = enhance(props => (
       <Layer zIndex={10}>
         <div>
           <ShowVideo />
-          <Affix
-            target={getNotationShowElement}
-            offsetTop={2}
-          >
-            {props.fretboardVisibility ? <Fretboard /> : null}
-            {props.pianoVisibility ? <Piano /> : null}
+          <Affix target={getNotationShowElement} offsetTop={2} >
+            <Fretboard />
+            <Piano />
           </Affix>
         </div>
         <div>

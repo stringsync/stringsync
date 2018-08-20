@@ -3,13 +3,14 @@ import { Overlap, Layer } from 'components';
 import { Frets, GuitarStrings } from './';
 import styled from 'react-emotion';
 import woodTextureSrc from 'assets/wood-texture.jpg';
-import { compose, withProps } from 'recompose';
+import { compose, withProps, branch, renderNothing } from 'recompose';
 import { connect } from 'react-redux';
 import { ViewportTypes } from 'data/viewport/getViewportType';
 import { FretboardController } from './FretboardController';
 
 interface IConnectProps {
   viewportType: ViewportTypes;
+  isFretboardVisible: boolean;
 }
 
 interface IInnerProps extends IConnectProps {
@@ -19,6 +20,7 @@ interface IInnerProps extends IConnectProps {
 const enhance = compose<IInnerProps, {}>(
   connect(
     (state: Store.IState) => ({
+      isFretboardVisible: state.ui.isFretboardVisible,
       viewportType: state.viewport.type
     })
   ),
@@ -40,7 +42,11 @@ const enhance = compose<IInnerProps, {}>(
     };
 
     return { numFrets };
-  })
+  }),
+  branch<IInnerProps>(
+    props => !props.isFretboardVisible,
+    renderNothing
+  )
 );
 
 const Outer = styled('div')`

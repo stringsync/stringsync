@@ -3,7 +3,6 @@ import styled from 'react-emotion';
 import { Menu as AntdMenu, Checkbox, Icon } from 'antd';
 import { withRouter, Link, RouteComponentProps } from 'react-router-dom';
 import { compose, withState, withHandlers } from 'recompose';
-import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { connect, Dispatch } from 'react-redux';
 import { get } from 'lodash';
 import { UiActions } from 'data';
@@ -19,14 +18,16 @@ interface IConnectProps extends WithRouterProps {
   isNotationMenuVisible: boolean;
   isFretboardVisible: boolean;
   isPianoVisible: boolean;
-  setFretboardVisibility: (fretboardVisibility: boolean) => void;
-  setLoopVisibility: (loopVisibility: boolean) => void;
-  setPianoVisibility: (pianoVisibility: boolean) => void;
+  setFretboardVisibility: (visibility: boolean) => void;
+  setLoopVisibility: (visibility: boolean) => void;
+  setPianoVisibility: (visibility: boolean) => void;
+  setNotationMenuVisibility: (visibility: boolean) => void;
 }
 
 interface IHandlerProps extends IConnectProps {
   handleFretboardChange: () => void;
   handleShowLoopChange: () => void;
+  handleNotationMenuChange: () => void;
   handlePianoChange: () => void;
 }
 
@@ -52,13 +53,18 @@ const enhance = compose<IInnerProps, {}>(
       }
     },
     (dispatch: Dispatch) => ({
-      setFretboardVisibility: (fretboardVisibility: boolean) => dispatch(UiActions.setFretboardVisibility(fretboardVisibility)),
-      setLoopVisibility: (loopVisibility: boolean) => dispatch(UiActions.setLoopVisibility(loopVisibility))
+      setFretboardVisibility: (visibility: boolean) => dispatch(UiActions.setFretboardVisibility(visibility)),
+      setLoopVisibility: (visibility: boolean) => dispatch(UiActions.setLoopVisibility(visibility)),
+      setNotationMenuVisibility: (visibility: boolean) => dispatch(UiActions.setNotationMenuVisibility(visibility)),
+      setPianoVisibility: (visibility: boolean) => dispatch(UiActions.setPianoVisibility(visibility))
     })
   ),
   withHandlers({
-    handleFretboardVisibilityChange: (props: IConnectProps) => () => {
+    handleFretboardChange: (props: IConnectProps) => () => {
       props.setFretboardVisibility(!props.isFretboardVisible);
+    },
+    handleNotationMenuChange: (props: IConnectProps) => () => {
+      props.setNotationMenuVisibility(!props.isNotationMenuVisible);
     },
     handlePianoChange: (props: IConnectProps) => () => {
       props.setPianoVisibility(!props.isPianoVisible);
@@ -110,7 +116,10 @@ const Mask = styled('div')<IMaskProps>`
 
 export const Menu = enhance(props => (
   <div>
-    <Mask collapsed={!props.isNotationMenuVisible} />
+    <Mask
+      collapsed={!props.isNotationMenuVisible} 
+      onClick={props.handleNotationMenuChange}
+    />
     <Outer collapsed={!props.isNotationMenuVisible}>
       <Inner>
         <AntdMenu

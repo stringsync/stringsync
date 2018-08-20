@@ -9,8 +9,9 @@ import { Row, Col } from 'antd';
 import { EditVideo } from './EditVideo';
 import styled from 'react-emotion';
 import { EditScore } from './EditScore';
-import { Fretboard, MaestroController } from 'components';
+import { Fretboard, MaestroController, Overlap, Layer } from 'components';
 import { VideoControls } from 'modules/video-controls';
+import { Menu } from '../show/Menu';
 
 const MINIMUM_VIEWPORT_WIDTH = 1024; // px
 
@@ -98,10 +99,17 @@ export const Edit = enhance(props => (
         <Spacer />
       </LeftCol>
       <RightCol span={18}>
-        <Fretboard />
-        <EditScore />
+        <Overlap>
+          <Layer zIndex={10}>
+            <Fretboard />
+            <EditScore />
+          </Layer>
+          <Layer zIndex={11}>
+            <Menu />
+            <VideoControls />
+          </Layer>
+        </Overlap>
       </RightCol>
     </StyledRow>
-    <VideoControls />
   </div>
 ));
