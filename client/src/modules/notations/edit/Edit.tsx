@@ -5,7 +5,8 @@ import { ViewportTypes } from 'data/viewport/getViewportType';
 import { connect, Dispatch } from 'react-redux';
 import { fetchNotation, NotationsActions, VideoActions } from 'data';
 import { NotSupported } from './NotSupported';
-import styled from 'react-emotion';
+import { Row, Col } from 'antd';
+import { EditVideo } from './EditVideo';
 
 const MINIMUM_VIEWPORT_WIDTH = 1024; // px
 
@@ -48,10 +49,19 @@ const enhance = compose<IInnerProps, OuterProps>(
       try {
         const notation = await this.props.fetchNotation(id);
         this.props.setNotation(notation);
+
+        if (notation.video) {
+          this.props.setVideo(notation.video);
+        }
+
       } catch (error) {
         console.error(error);
         window.ss.message.error('something went wrong');
       }
+    },
+    componentWillUnmount() {
+      this.props.resetNotation();
+      this.props.resetVideo();
     }
   }),
   branch<IInnerProps>(
@@ -60,8 +70,15 @@ const enhance = compose<IInnerProps, OuterProps>(
   )
 );
 
-export const Edit = enhance(props => (
+export const Edit = enhance(() => (
   <div>
-    {props.notation.vextabString}
+    <Row>
+      <Col span={6}>
+        <EditVideo />
+      </Col>
+      <Col span={18}>
+        bar
+      </Col>
+    </Row>
   </div>
 ));
