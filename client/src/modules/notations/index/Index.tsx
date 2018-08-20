@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'react-emotion';
 import { BackTop } from 'antd';
 import { Grid } from './Grid';
-import { Search } from './search';
+import { Search } from './search/Search.tsx';
 import { ViewportTypes } from 'data/viewport/getViewportType';
 import { compact } from 'lodash';
 import { compose, withProps, withState, withHandlers, lifecycle } from 'recompose';
