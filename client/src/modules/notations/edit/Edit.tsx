@@ -1,9 +1,13 @@
 import * as React from 'react';
-import { compose, lifecycle } from 'recompose';
+import { compose, lifecycle, branch, renderComponent } from 'recompose';
 import { RouteComponentProps } from 'react-router';
 import { ViewportTypes } from 'data/viewport/getViewportType';
 import { connect, Dispatch } from 'react-redux';
 import { fetchNotation, NotationsActions, VideoActions } from 'data';
+import { NotSupported } from './NotSupported';
+import styled from 'react-emotion';
+
+const MINIMUM_VIEWPORT_WIDTH = 1024; // px
 
 type OuterProps = RouteComponentProps<{ id: string }>;
 
@@ -49,7 +53,11 @@ const enhance = compose<IInnerProps, OuterProps>(
         window.ss.message.error('something went wrong');
       }
     }
-  })
+  }),
+  branch<IInnerProps>(
+    props => props.viewportWidth < MINIMUM_VIEWPORT_WIDTH,
+    renderComponent(NotSupported)
+  )
 );
 
 export const Edit = enhance(props => (
