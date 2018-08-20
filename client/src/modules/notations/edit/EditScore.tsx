@@ -41,7 +41,7 @@ const enhance = compose<IInnerProps, {}>(
     }
   }),
   withProps((props: IOuterDivRefHandlerProps) => ({
-    scoreWidth: props.outerDiv ? props.outerDiv.clientWidth : DEFAULT_SCORE_WIDTH
+    scoreWidth: props.outerDiv ? 0.75 * props.outerDiv.clientWidth : DEFAULT_SCORE_WIDTH
   }))
 );
 
