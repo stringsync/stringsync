@@ -1,15 +1,14 @@
 import * as React from 'react';
-import { ScoreLine } from './ScoreLine';
-import { compose, withState, lifecycle, withProps } from 'recompose';
-import { Vextab, VextabRenderer } from 'models';
-import { ScoreScroller } from './ScoreScroller';
-import { CaretController } from './CaretController';
+import logo from 'assets/logo.svg';
 import styled from 'react-emotion';
-import { scoreKey } from './scoreKey';
-import { NoteController } from './NoteController';
-import { LoopCaretController } from './LoopCaretController';
-import { ScoreTitle } from './ScoreTitle';
+import { Caret, LoopCaret, Note } from './canvas-renderables';
+import { Line } from './Line';
+import { Scroller } from './Scroller';
+import { Title } from './Title';
+import { Vextab, VextabRenderer } from 'models';
+import { compose, withState, lifecycle, withProps } from 'recompose';
 import { get } from 'lodash';
+import { scoreKey } from './scoreKey';
 
 const MIN_WIDTH_PER_MEASURE = 240; // px
 const MIN_MEASURES_PER_LINE = 1;
@@ -93,30 +92,38 @@ const Outer = styled('div')<IOuterDiv>`
   }
 `;
 
+const Logo = styled('img')`
+  width: 15%;
+  margin-top: 128px;
+`;
+
 const Spacer = styled('div')`
   height: ${() => VextabRenderer.DEFAULT_LINE_HEIGHT * 4}px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 `;
 
 export const Score = enhance(props => (
   <Outer id="score" dynamic={props.dynamic}>
-    {props.dynamic ? <ScoreScroller />       : null}
-    {props.dynamic ? <CaretController />     : null}
-    {props.dynamic ? <LoopCaretController /> : null}
-    {props.dynamic ? <NoteController />      : null}
-    <ScoreTitle
+    {props.dynamic ? <Scroller  /> : null}
+    {props.dynamic ? <Caret     /> : null}
+    {props.dynamic ? <LoopCaret /> : null}
+    {props.dynamic ? <Note      /> : null}
+    <Title
       songName={props.notation.songName}
       artistName={props.notation.artistName}
       transcriberName={get(props.notation.transcriber, 'name') || ''}
     />
     {
       props.vextab.lines.map(line => (
-        <ScoreLine
+        <Line
           key={`key-${scoreKey(props.vextab, line)}`}
           line={line}
           vextab={props.vextab}
         />
       ))
     }
-    {props.dynamic ? <Spacer /> : null}
+    {props.dynamic ? <Spacer><Logo src={logo}  alt="logo" /></Spacer> : null}
   </Outer>
 ));

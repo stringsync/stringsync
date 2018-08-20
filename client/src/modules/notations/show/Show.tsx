@@ -3,14 +3,15 @@ import * as $ from 'jquery';
 import styled from 'react-emotion';
 import { Affix } from 'antd';
 import { Fretboard, Score, Piano, MaestroController, Overlap, Layer } from 'components';
-import { NotationShowVideo, NotationShowControls, NotationShowMenu } from './';
 import { compose, lifecycle, withState, withHandlers, withProps } from 'recompose';
 import { connect } from 'react-redux';
 import { NotationsActions, fetchNotation, VideoActions } from 'data';
 import { RouteComponentProps } from 'react-router-dom';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { ViewportTypes } from 'data/viewport/getViewportType';
-import { get } from 'lodash';
+import { ShowVideo } from './ShowVideo';
+import { Menu } from './Menu';
+import { Controls } from './controls';
 
 type OuterProps = RouteComponentProps<{ id: string }>;
 
@@ -129,7 +130,7 @@ const Mask = styled('div')<IMaskProps>`
 /**
  * Sets layout for the NotationShow page and fetches the notation from the router.
  */
-export const NotationShow = enhance(props => (
+export const Show = enhance(props => (
   <Outer id="notation-show">
     <MaestroController
       bpm={props.notation.bpm}
@@ -139,7 +140,7 @@ export const NotationShow = enhance(props => (
     <Overlap>
       <Layer zIndex={10}>
         <div>
-          <NotationShowVideo />
+          <ShowVideo />
           <Affix
             target={getNotationShowElement}
             offsetTop={2}
@@ -153,21 +154,15 @@ export const NotationShow = enhance(props => (
         </div>
       </Layer>
       <Layer zIndex={11}>
-        <Mask
-          collapsed={props.menuCollapsed}
-          onClick={props.handleMenuClick}
-        />
-        <NotationShowMenu
+        <Mask collapsed={props.menuCollapsed} onClick={props.handleMenuClick} />
+        <Menu
           fretboardVisibility={props.fretboardVisibility}
           pianoVisibility={props.pianoVisibility}
           onFretboardVisibilityChange={props.handleFretboardVisibilityChange}
           onPianoVisibilityChange={props.handlePianoVisibilityChange}
           collapsed={props.menuCollapsed}
         />
-        <NotationShowControls
-          menuCollapsed={props.menuCollapsed}
-          onMenuClick={props.handleMenuClick}
-        />
+        <Controls menuCollapsed={props.menuCollapsed} onMenuClick={props.handleMenuClick} />
       </Layer>
     </Overlap>
   </Outer>

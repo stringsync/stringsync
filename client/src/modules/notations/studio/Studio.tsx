@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export const NotationStudio: React.SFC = () => (
+export const Studio: React.SFC = () => (
   <div>
     NotationStudio
   </div>

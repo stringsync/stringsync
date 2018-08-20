@@ -55,7 +55,7 @@ const VideoContainer = styled('div')`
   margin: 0 auto;
 `;
 
-export const NotationShowVideo = enhance(props => (
+export const ShowVideo = enhance(props => (
   <Outer>
     <Overlap>
       <Layer zIndex={10}>

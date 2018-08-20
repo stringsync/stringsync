@@ -51,7 +51,7 @@ const SongName = styled('span')`
   overflow: hidden;
 `;
 
-export const MiniNotationDetail = enhance(props => (
+export const MiniDetail = enhance(props => (
   <Outer>
     <Thumbnail src={props.thumbnailUrl} />
     <Detail>

@@ -1,1 +1,1 @@
-export * from './NotationNew';
+export * from './New';

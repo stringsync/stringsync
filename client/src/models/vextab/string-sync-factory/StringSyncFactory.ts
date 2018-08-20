@@ -7,9 +7,14 @@ import {
 import { VextabMeasureSpec } from './';
 import { get, last, dropRight } from 'lodash';
 
-export class MeasureExtractor {
+/**
+ * This class is responsible for creating StringSync data structures from Vextab
+ * structs. It does *not* link Vexflow data structures to the StringSync data structures.
+ * See the hydrate instance method on the StringSync data structures.
+ */
+export class StringSyncFactory {
   public static extract(vextab: Vextab, tuning: any) {
-    return new MeasureExtractor(vextab, tuning).extract();
+    return new StringSyncFactory(vextab, tuning).extract();
   }
 
   public readonly vextab: Vextab;
@@ -21,7 +26,7 @@ export class MeasureExtractor {
   private tuplet: Tuplet | null;
   private bar: Bar | void;
   private measureSpec: VextabMeasureSpec | void;
-  private path: string;
+  private path: string = '';
 
   constructor(vextab: Vextab, tuning: any) {
     this.vextab = vextab;
@@ -34,7 +39,6 @@ export class MeasureExtractor {
     this.tuplet = null;
     this.bar = undefined;
     this.measureSpec = undefined;
-    this.path = '';
   }
 
   /**

@@ -1,1 +1,1 @@
-export * from './NotationSearch';
+export * from './Search';

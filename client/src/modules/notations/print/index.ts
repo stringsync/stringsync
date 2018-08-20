@@ -1,1 +1,1 @@
-export * from './NotationPrint';
+export * from './Print';

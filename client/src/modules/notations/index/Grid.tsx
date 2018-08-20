@@ -1,12 +1,12 @@
 import * as React from 'react';
 import styled from 'react-emotion';
-import { NotationDetail } from './NotationDetail';
+import { Detail } from './Detail';
 import { Row, Col } from 'antd';
 import { chunk } from 'lodash';
-import { compose, setDisplayName, setPropTypes, withProps } from 'recompose';
+import { compose, withProps } from 'recompose';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { ViewportTypes } from '../../../data/viewport/getViewportType';
+import { ViewportTypes } from 'data/viewport/getViewportType';
 
 interface IOuterProps {
   notations: Notation.INotation[];
@@ -74,7 +74,7 @@ const Outer = styled('div')<IOuterDivProps>`
 /**
  * This component is the main content of the NotationIndex component
  */
-export const NotationGrid = enhance(props => (
+export const Grid = enhance(props => (
   <Outer viewportType={props.viewportType} gutter={props.gutter}>
     {
       props.notationRows.map((notationRow, ndx) => (
@@ -83,7 +83,7 @@ export const NotationGrid = enhance(props => (
             notationRow.map(notation => (
               <Col key={`col-${notation.id}`} span={props.colSpan}>
                 <Link to={`/n/${notation.id}`}>
-                  <NotationDetail notation={notation} queryTags={props.queryTags} />
+                  <Detail notation={notation} queryTags={props.queryTags} />
                 </Link>
               </Col>
             ))
@@ -93,5 +93,3 @@ export const NotationGrid = enhance(props => (
     }
   </Outer>
 ));
-
-export default NotationGrid;
