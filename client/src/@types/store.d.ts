@@ -36,5 +36,7 @@ declare namespace Store {
   export interface IUiState {
     isNotationMenuVisible: boolean;
     isLoopVisible: boolean;
+    isFretboardVisible: boolean;
+    isPianoVisible: boolean;
   }
 }
