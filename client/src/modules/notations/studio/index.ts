@@ -1,1 +1,1 @@
-export * from './NotationStudio';
+export * from './Studio';

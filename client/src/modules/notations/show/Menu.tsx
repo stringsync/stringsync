@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styled from 'react-emotion';
-import { Menu, Checkbox, Icon } from 'antd';
+import { Menu as AntdMenu, Checkbox, Icon } from 'antd';
 import { withRouter, Link, RouteComponentProps } from 'react-router-dom';
 import { compose, withState, withHandlers } from 'recompose';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
@@ -8,7 +8,7 @@ import { connect, Dispatch } from 'react-redux';
 import { get } from 'lodash';
 import { BehaviorActions } from 'data';
 
-const { ItemGroup, Item } = Menu;
+const { ItemGroup, Item } = AntdMenu;
 
 interface IOuterProps {
   collapsed: boolean;
@@ -84,10 +84,10 @@ const CheckDescription = styled('span')`
   margin-left: 10px;
 `;
 
-export const NotationShowMenu = enhance(props => (
+export const Menu = enhance(props => (
   <Outer collapsed={props.collapsed}>
     <Inner>
-      <Menu
+      <AntdMenu
         selectable={false}
         defaultSelectedKeys={[]}
         defaultOpenKeys={[]}
@@ -155,7 +155,7 @@ export const NotationShowMenu = enhance(props => (
             </Checkbox>
           </Item>
         </ItemGroup>
-      </Menu>
+      </AntdMenu>
     </Inner>
   </Outer>
 ));
