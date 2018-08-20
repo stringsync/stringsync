@@ -26,4 +26,4 @@ const enhance = compose<IInnerProps, {}>(
   )
 );
 
-export const CaretController = enhance(() => null);
+export const Caret = enhance(() => null);

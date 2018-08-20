@@ -2,16 +2,17 @@ import * as React from 'react';
 import { compose, withHandlers, withState, withProps } from 'recompose';
 import { Maestro } from 'services';
 import { observeMaestro } from 'enhancers';
-import { isEqual } from 'lodash';
-import { Note, Chord } from 'models/music';
+import { Note as NoteModel, Chord as ChordModel } from 'models/music';
+
+type Renderable = NoteModel | ChordModel;
 
 interface IActiveObjProps {
-  activeObj: Chord | Note | null;
-  setActiveObj: (activeObj: Chord | Note | null) => void;
+  activeObj: Renderable | null;
+  setActiveObj: (activeObj: Renderable | null) => void;
 }
 
 interface IActivationProps extends IActiveObjProps {
-  activate: (nextObj: Chord | Note) => void;
+  activate: (nextObj: Renderable) => void;
   deactivate: () => void;
 }
 
@@ -22,7 +23,7 @@ interface IInnerProps extends IActivationProps {
 const enhance = compose(
   withState('activeObj', 'setActiveObj', null),
   withProps((props: IActiveObjProps) => ({
-    activate: (nextObj: Chord | Note ): void => {
+    activate: (nextObj: Renderable ): void => {
       if (props.activeObj !== nextObj) {
         if (props.activeObj) {
           props.activeObj.renderer.deactivate();
@@ -58,4 +59,4 @@ const enhance = compose(
   )
 );
 
-export const NoteController = enhance(() => null);
+export const Note = enhance(() => null);

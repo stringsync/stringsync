@@ -39,7 +39,7 @@ const Line2 = styled('h4')`
   color: darkgray;
 `;
 
-export const ScoreTitle = enhance(props => (
+export const Title = enhance(props => (
   <Outer>
     <Line1>{props.line1}</Line1>
     <Line2>{props.line2}</Line2>

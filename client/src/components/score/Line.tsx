@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { compose, withHandlers } from 'recompose';
-import { Line, VextabRenderer, Directive } from 'models';
+import { Line as LineModel, VextabRenderer, Directive } from 'models';
 import { Vextab } from 'models/vextab/Vextab';
 import styled from 'react-emotion';
 import { get } from 'lodash';
@@ -10,7 +10,7 @@ import { Overlap, Layer } from '../overlap';
 
 interface IOuterProps {
   vextab: Vextab;
-  line: Line;
+  line: LineModel;
 }
 
 interface IInnerProps extends IOuterProps {
@@ -93,7 +93,7 @@ const Inner = styled('div')<IInnerDivProps>`
   height: ${props => props.vextab.renderer.height}px;
 `;
 
-export const ScoreLine = enhance(props => (
+export const Line = enhance(props => (
   <Outer className="score-line">
     <ScrollElement name={scoreKey(props.vextab, props.line)} />
     <Inner vextab={props.vextab}>
