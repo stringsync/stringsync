@@ -57,7 +57,13 @@ export class CaretRenderer {
     if (typeof x === 'number') {
       const line: Line | void = get(maestro.state.note, 'measure.line');
       if (line) {
-        const { canvas } = this.store.fetch(line);
+
+        let canvas: HTMLCanvasElement | void;
+        try {
+          canvas  = this.store.fetch(line).canvas;
+        } catch (error) {
+          // noop
+        }
 
         if (!canvas) {
           return;
