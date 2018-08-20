@@ -1,4 +1,4 @@
 import { assertRender } from 'test';
-import { NotationIndex } from './NotationIndex';
+import { Index } from './Index.tsx';
 
-assertRender(NotationIndex);
+assertRender(Index);

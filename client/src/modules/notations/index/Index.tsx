@@ -98,7 +98,7 @@ const Outer = styled('div')`
   margin-top: 24px;
 `;
 
-export const NotationIndex = enhance(props => (
+export const Index = enhance(props => (
   <Outer>
     <BackTop />
     <Search
