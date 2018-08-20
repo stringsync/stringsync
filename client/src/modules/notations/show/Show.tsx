@@ -11,7 +11,7 @@ import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { ViewportTypes } from 'data/viewport/getViewportType';
 import { ShowVideo } from './ShowVideo';
 import { Menu } from './Menu';
-import { Controls } from './controls';
+import { VideoControls } from 'modules/video-controls';
 
 type OuterProps = RouteComponentProps<{ id: string }>;
 
@@ -164,7 +164,7 @@ export const Show = enhance(props => (
           onPianoVisibilityChange={props.handlePianoVisibilityChange}
           collapsed={props.menuCollapsed}
         />
-        <Controls menuCollapsed={props.menuCollapsed} onMenuClick={props.handleMenuClick} />
+        <VideoControls />
       </Layer>
     </Overlap>
   </Outer>

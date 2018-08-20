@@ -12,12 +12,7 @@ import { connect } from 'react-redux';
 
 const { Panel } = Collapse;
 
-interface IRow2Props {
-  menuCollapsed: boolean;
-  onMenuClick: (event: React.SyntheticEvent<HTMLElement>) => void;
-}
-
-interface IInnerProps extends IRow2Props {
+interface IInnerProps {
   isVideoActive: boolean;
   videoPlayer: Youtube.IPlayer;
   isIphoneX: boolean;
@@ -26,7 +21,7 @@ interface IInnerProps extends IRow2Props {
   setLoopCollapsed: (collapsed: boolean) => void;
 }
 
-const enhance = compose<IInnerProps, IRow2Props>(
+const enhance = compose<IInnerProps, {}>(
   connect(
     (state: Store.IState) => ({
       isVideoActive: state.video.isActive,
@@ -166,7 +161,7 @@ const Detail = (props: { style?: any }) => (
   </DetailContainer>
 );
 
-export const Controls = enhance(props => (
+export const VideoControls = enhance(props => (
   <Outer>
     <Row1>
       <Inner>
@@ -188,10 +183,7 @@ export const Controls = enhance(props => (
                   <Loop />
                 </SliderContainer>
                 <PlayerButton style={{ opacity: 0 }}>
-                  <MenuToggle
-                    menuCollapsed={props.menuCollapsed}
-                    onMenuClick={props.onMenuClick}
-                  />
+                  <MenuToggle />
                 </PlayerButton>
                 <Detail style={{ opacity: 0 }} />
               </Inner>
@@ -212,10 +204,7 @@ export const Controls = enhance(props => (
           <Scrubber />
         </SliderContainer>
         <PlayerButton>
-          <MenuToggle
-            menuCollapsed={props.menuCollapsed}
-            onMenuClick={props.onMenuClick}
-          />
+          <MenuToggle />
         </PlayerButton>
         <Detail />
       </Inner>

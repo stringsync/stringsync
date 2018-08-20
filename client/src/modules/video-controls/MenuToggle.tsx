@@ -2,11 +2,6 @@ import * as React from 'react';
 import { Icon } from 'antd';
 import styled from 'react-emotion';
 
-interface IProps {
-  menuCollapsed: boolean;
-  onMenuClick: (event: React.SyntheticEvent<HTMLElement>) => void;
-}
-
 interface IOuterSpanProps {
   menuCollapsed: boolean;
 }
@@ -21,11 +16,8 @@ const Outer = styled('span')<IOuterSpanProps>`
   }
 `;
 
-export const MenuToggle: React.SFC<IProps> = props => (
-  <Outer
-    onClick={props.onMenuClick}
-    menuCollapsed={props.menuCollapsed}
-  >
+export const MenuToggle: React.SFC = props => (
+  <Outer menuCollapsed={false}>
     <Icon type="setting" />
   </Outer>
 );

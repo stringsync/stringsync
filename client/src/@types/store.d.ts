@@ -52,4 +52,8 @@ declare namespace Store {
   export interface IBehaviorState {
     showLoop: boolean;
   }
+
+  export interface IUiState {
+    isNotationMenuVisible: boolean;
+  }
 }
