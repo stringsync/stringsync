@@ -3,7 +3,7 @@ import { compose, lifecycle, branch, renderComponent } from 'recompose';
 import { RouteComponentProps } from 'react-router';
 import { ViewportTypes } from 'data/viewport/getViewportType';
 import { connect, Dispatch } from 'react-redux';
-import { fetchNotation, NotationsActions, VideoActions } from 'data';
+import { fetchNotation, VideoActions } from 'data';
 import { NotSupported } from './NotSupported';
 import { Row, Col } from 'antd';
 import { EditVideo } from './EditVideo';
@@ -11,7 +11,7 @@ import styled from 'react-emotion';
 import { EditScore } from './EditScore';
 import { Fretboard, MaestroController, Overlap, Layer } from 'components';
 import { VideoControls } from 'modules/video-controls';
-import { Menu } from '../show/Menu';
+import { Menu } from 'modules/notation/menu';
 
 const MINIMUM_VIEWPORT_WIDTH = 1024; // px
 

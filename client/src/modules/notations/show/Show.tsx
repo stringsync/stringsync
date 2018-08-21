@@ -3,14 +3,13 @@ import * as $ from 'jquery';
 import styled from 'react-emotion';
 import { Affix } from 'antd';
 import { Fretboard, Score, Piano, MaestroController, Overlap, Layer } from 'components';
-import { compose, lifecycle, withState, withHandlers, withProps } from 'recompose';
+import { compose, lifecycle, withProps } from 'recompose';
 import { connect } from 'react-redux';
 import { fetchNotation, VideoActions, UiActions, NotationActions } from 'data';
 import { RouteComponentProps } from 'react-router-dom';
-import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { ViewportTypes } from 'data/viewport/getViewportType';
 import { ShowVideo } from './ShowVideo';
-import { Menu } from './Menu';
+import { Menu } from 'modules/notations/menu';
 import { VideoControls } from 'modules/video-controls';
 
 type OuterProps = RouteComponentProps<{ id: string }>;
