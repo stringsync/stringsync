@@ -49,8 +49,8 @@ const enhance = compose<IInnerProps, OuterProps>(
     async componentDidMount() {
       $('body').addClass('no-scroll');
 
-      this.props.resetVideo();
       this.props.resetNotation();
+      this.props.resetVideo();
       this.props.resetUi();
       this.props.setFretboardVisibility(true);
       const id = parseInt(this.props.match.params.id, 10);
