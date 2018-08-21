@@ -1,9 +1,14 @@
-import { Editor } from './Editor';
+import { Vextab } from '../Vextab';
+import { last } from 'lodash';
 
 export class Cache {
-  public readonly editor: Editor;
+  private undoStack: Vextab[] = [];
 
-  constructor(editor: Editor) {
-    this.editor = editor;
+  public push(vextab: Vextab): void {
+    this.undoStack.push(vextab);
+  }
+  
+  public peek(): Vextab | void {
+    return last(this.undoStack);
   }
 }
