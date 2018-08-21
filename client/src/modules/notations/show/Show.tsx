@@ -108,7 +108,6 @@ export const Show = enhance(props => (
         </div>
         <div>
           <Score
-            editor={false}
             dynamic={true}
             notation={props.notation}
             width={props.scoreWidth}

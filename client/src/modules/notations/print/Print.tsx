@@ -75,7 +75,6 @@ export const Print = enhance(props => (
         durationMs={props.notation.durationMs}
       />
       <Score
-        editor={false}
         dynamic={false}
         notation={props.notation}
         width={900}  

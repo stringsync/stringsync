@@ -1,4 +1,4 @@
-import { Line } from 'models/music';
+import { Line, MeasureElement } from 'models/music';
 import { VextabRenderer } from './VextabRenderer';
 import { RendererStore } from './RendererStore';
 import { isEqual, get } from 'lodash';
@@ -102,13 +102,15 @@ export class SelectorRenderer {
   }
 
   private getXForRender(maestro: Maestro): number | void {
-    const { note } = maestro.state;
+    // const selected = get(maestro.editor, 'selector.selected');
 
-    if (!note || !note.isHydrated) {
-      return;
-    }
+    // if (!selected) {
+    //   return;
+    // }
 
-    return note.vexAttrs!.staveNote.getAbsoluteX();
+    // const note: MeasureElement = selected.type === 'MEASURE' ? selected.elements[0] : selected;
+
+    // return note.vexAttrs!.staveNote.getAbsoluteX();
   }
 
   private resize(line: Line): void {
