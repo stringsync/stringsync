@@ -20,6 +20,7 @@ const enhance = compose<IInnerProps, IOuterProps>(
       this.props.setEditor(editor);
     },
     componentDidUpdate(): void {
+      // We set the editor in componentDidMount, so we leverage the bang operator here.
       this.props.editor!.vextab = this.props.vextab;
     }
   })

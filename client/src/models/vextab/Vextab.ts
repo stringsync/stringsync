@@ -46,11 +46,11 @@ export class Vextab {
   public readonly measures: Measure[];
   public readonly lines: Line[];
   public readonly width: number | void;
+  public readonly renderer: VextabRenderer;
+  public readonly links: VextabLinkedList;
 
   public measuresPerLine: number;
   public tuning = DEFAULT_TUNING;
-  public renderer: VextabRenderer;
-  public links: VextabLinkedList;
 
   constructor(rawStructs: Vextab.ParsedStruct[], measuresPerLine: number, width?: number | void) {
     if (typeof measuresPerLine !== 'number' || measuresPerLine < 0) {
