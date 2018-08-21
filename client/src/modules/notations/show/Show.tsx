@@ -107,7 +107,12 @@ export const Show = enhance(props => (
           </Affix>
         </div>
         <div>
-          <Score dynamic={true} notation={props.notation} width={props.scoreWidth} />
+          <Score
+            selector={false}
+            dynamic={true}
+            notation={props.notation}
+            width={props.scoreWidth}
+          />
         </div>
       </Layer>
       <Layer zIndex={11}>

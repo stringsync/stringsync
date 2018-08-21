@@ -48,6 +48,7 @@ const enhance = compose<IInnerProps, {}>(
 export const EditScore = enhance(props => (
   <div ref={props.handleOuterDivRef}>
     <Score
+      selector={true}
       dynamic={true}
       notation={props.notation}
       width={props.scoreWidth}

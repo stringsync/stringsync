@@ -19,6 +19,7 @@ interface IOuterProps {
   dynamic: boolean;
   notation: Notation.INotation;
   width: number;
+  selector: boolean;
 }
 
 interface IVextabProps extends IOuterProps {
@@ -108,11 +109,11 @@ const Spacer = styled('div')`
 export const Score = enhance(props => (
   <Outer id="score" dynamic={props.dynamic}>
     <Renderer />
-    {props.dynamic ? <Selector />  : null}
-    {props.dynamic ? <Scroller  /> : null}
-    {props.dynamic ? <Caret     /> : null}
-    {props.dynamic ? <LoopCaret /> : null}
-    {props.dynamic ? <Note      /> : null}
+    {props.selector ? <Selector />  : null}
+    {props.dynamic  ? <Scroller  /> : null}
+    {props.dynamic  ? <Caret     /> : null}
+    {props.dynamic  ? <LoopCaret /> : null}
+    {props.dynamic  ? <Note      /> : null}
     <Title
       songName={props.notation.songName}
       artistName={props.notation.artistName}
