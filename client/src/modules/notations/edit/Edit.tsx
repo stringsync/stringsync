@@ -3,7 +3,7 @@ import { compose, lifecycle, branch, renderComponent } from 'recompose';
 import { RouteComponentProps } from 'react-router';
 import { ViewportTypes } from 'data/viewport/getViewportType';
 import { connect, Dispatch } from 'react-redux';
-import { fetchNotation, VideoActions } from 'data';
+import { fetchNotation, VideoActions, NotationActions, UiActions } from 'data';
 import { NotSupported } from './NotSupported';
 import { Row, Col } from 'antd';
 import { EditVideo } from './EditVideo';
@@ -22,6 +22,11 @@ interface IInnerProps extends OuterProps {
   viewportWidth: number;
   viewportType: ViewportTypes;
   fetchNotation: (id: number) => Notation.INotation;
+  resetNotation: () => void;
+  resetVideo: () => void;
+  resetUi: () => void;
+  setVideo: (video: Video.IVideo) => void;
+  setFretboardVisibility: (visibility: boolean) => void;
 }
 
 const enhance = compose<IInnerProps, OuterProps>(
@@ -33,18 +38,30 @@ const enhance = compose<IInnerProps, OuterProps>(
     }),
     (dispatch: Dispatch) => ({
       fetchNotation: (id: number) => dispatch(fetchNotation(id) as any),
+      resetNotation: () => dispatch(NotationActions.resetNotation()),
+      resetUi: () => dispatch(UiActions.reset()),
+      resetVideo: () => dispatch(VideoActions.resetVideo()),
+      setFretboardVisibility: (visibility: boolean) => dispatch(UiActions.setFretboardVisibility(visibility)),
       setVideo: (video: Video.IVideo) => dispatch(VideoActions.setVideo(video))
     })
   ),
   lifecycle<IInnerProps, {}>({
-    componentWillMount() {
-      $('body').addClass('no-scroll');
-    },
     async componentDidMount() {
+      $('body').addClass('no-scroll');
+
+      this.props.resetVideo();
+      this.props.resetNotation();
+      this.props.resetUi();
+      this.props.setFretboardVisibility(true);
       const id = parseInt(this.props.match.params.id, 10);
 
       try {
         await this.props.fetchNotation(id);
+
+        const { video } = this.props.notation;
+        if (video) {
+          this.props.setVideo(video)
+        }
       } catch (error) {
         console.error(error);
         window.ss.message.error('something went wrong');
