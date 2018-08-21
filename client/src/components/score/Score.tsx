@@ -1,7 +1,7 @@
 import * as React from 'react';
 import logo from 'assets/logo.svg';
 import styled from 'react-emotion';
-import { Caret, LoopCaret, Note } from './canvas-renderables';
+import { Caret, LoopCaret, Note, Selector } from './canvas-renderables';
 import { Line } from './Line';
 import { Scroller } from './Scroller';
 import { Title } from './Title';
@@ -108,6 +108,7 @@ const Spacer = styled('div')`
 export const Score = enhance(props => (
   <Outer id="score" dynamic={props.dynamic}>
     <Renderer />
+    {props.dynamic ? <Selector />  : null}
     {props.dynamic ? <Scroller  /> : null}
     {props.dynamic ? <Caret     /> : null}
     {props.dynamic ? <LoopCaret /> : null}

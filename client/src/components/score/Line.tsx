@@ -17,6 +17,7 @@ interface IInnerProps extends IOuterProps {
   handleScoreCanvasRef: (canvas: HTMLCanvasElement) => void;
   handleCaretCanvasRef: (canvas: HTMLCanvasElement) => void;
   handleLoopCaretCanvasRef: (canvas: HTMLCanvasElement) => void;
+  handleSelectorCanvasRef: (canvas: HTMLCanvasElement) => void;
 }
 
 const enhance = compose<IInnerProps, IOuterProps>(
@@ -51,6 +52,13 @@ const enhance = compose<IInnerProps, IOuterProps>(
         maestro.changed = true;
         maestro.notify();
       }
+    },
+    handleSelectorCanvasRef: (props: IOuterProps) => (canvas: HTMLCanvasElement) => {
+      if (!canvas) {
+        return;
+      }
+
+      props.vextab.renderer.selectorRenderer.assign(props.line, canvas);
     }
   })
 );
@@ -87,6 +95,9 @@ export const Line = enhance(props => (
         </Layer>
         <Layer zIndex={12}>
           <canvas ref={props.handleLoopCaretCanvasRef} />
+        </Layer>
+        <Layer zIndex={13}>
+          <canvas ref={props.handleSelectorCanvasRef} />
         </Layer>
       </Overlap>
     </Inner>
