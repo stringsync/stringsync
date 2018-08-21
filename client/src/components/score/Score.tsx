@@ -1,15 +1,15 @@
 import * as React from 'react';
 import logo from 'assets/logo.svg';
 import styled from 'react-emotion';
-import { Caret, LoopCaret, Note, Selector } from './canvas-renderables';
 import { Line } from './Line';
-import { Scroller } from './Scroller';
 import { Title } from './Title';
 import { Vextab, VextabRenderer } from 'models';
 import { compose, withState, lifecycle, withProps } from 'recompose';
 import { get } from 'lodash';
 import { scoreKey } from './scoreKey';
 import { Renderer } from './Renderer';
+import { CanvasRenderables } from './canvas-renderables';
+import { Selector } from './canvas-renderables/Selector';
 
 const MIN_WIDTH_PER_MEASURE = 240; // px
 const MIN_MEASURES_PER_LINE = 1;
@@ -109,11 +109,8 @@ const Spacer = styled('div')`
 export const Score = enhance(props => (
   <Outer id="score" dynamic={props.dynamic}>
     <Renderer />
-    {props.selector ? <Selector />  : null}
-    {props.dynamic  ? <Scroller  /> : null}
-    {props.dynamic  ? <Caret     /> : null}
-    {props.dynamic  ? <LoopCaret /> : null}
-    {props.dynamic  ? <Note      /> : null}
+    {props.selector ? <Selector vextab={props.vextab} />  : null}
+    <CanvasRenderables active={props.dynamic} />
     <Title
       songName={props.notation.songName}
       artistName={props.notation.artistName}

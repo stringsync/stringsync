@@ -4,12 +4,17 @@ import { observeMaestro } from 'enhancers';
 import { Maestro } from 'services/maestro/Maestro';
 import { get } from 'lodash';
 import { CaretRenderer } from 'models/vextab/renderers/CaretRenderer';
+import { Vextab } from 'models';
 
-interface IInnerProps {
+interface IOuterProps {
+  vextab: Vextab;
+}
+
+interface IInnerProps extends IOuterProps {
   handleNotification: (maestro: Maestro) => void;
 }
 
-const enhance = compose<IInnerProps, {}>(
+const enhance = compose<IInnerProps, IOuterProps>(
   withHandlers({
     handleNotification: () => (maestro: Maestro) => {
       const renderer: CaretRenderer | void = get(maestro.vextab, 'renderer.selectorRenderer');
