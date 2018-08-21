@@ -1,4 +1,3 @@
-export * from './editor';
 export * from './encoding';
 export * from './string-sync-factory';
 export * from './renderers';

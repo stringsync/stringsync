@@ -3,7 +3,7 @@ import { compose, lifecycle, branch, renderComponent } from 'recompose';
 import { RouteComponentProps } from 'react-router';
 import { ViewportTypes } from 'data/viewport/getViewportType';
 import { connect, Dispatch } from 'react-redux';
-import { fetchNotation, VideoActions, NotationActions, UiActions } from 'data';
+import { fetchNotation, VideoActions, NotationActions, UiActions, EditorActions } from 'data';
 import { NotSupported } from './NotSupported';
 import { Row, Col } from 'antd';
 import { EditVideo } from './EditVideo';
@@ -27,6 +27,7 @@ interface IInnerProps extends OuterProps {
   resetUi: () => void;
   setVideo: (video: Video.IVideo) => void;
   setFretboardVisibility: (visibility: boolean) => void;
+  setEditorEnabled: (enabled: boolean) => void;
 }
 
 const enhance = compose<IInnerProps, OuterProps>(
@@ -41,6 +42,7 @@ const enhance = compose<IInnerProps, OuterProps>(
       resetNotation: () => dispatch(NotationActions.resetNotation()),
       resetUi: () => dispatch(UiActions.reset()),
       resetVideo: () => dispatch(VideoActions.resetVideo()),
+      setEditorEnabled: (enabled: boolean) => dispatch(EditorActions.setEnabled(enabled)),
       setFretboardVisibility: (visibility: boolean) => dispatch(UiActions.setFretboardVisibility(visibility)),
       setVideo: (video: Video.IVideo) => dispatch(VideoActions.setVideo(video))
     })
@@ -53,6 +55,8 @@ const enhance = compose<IInnerProps, OuterProps>(
       this.props.resetVideo();
       this.props.resetUi();
       this.props.setFretboardVisibility(true);
+      this.props.setEditorEnabled(true);
+
       const id = parseInt(this.props.match.params.id, 10);
 
       try {
@@ -68,6 +72,7 @@ const enhance = compose<IInnerProps, OuterProps>(
       }
     },
     componentWillUnmount() {
+      this.props.setEditorEnabled(false);
       $('body').removeClass('no-scroll');
     }
   }),
