@@ -1,4 +1,5 @@
 export * from './ui';
+export * from './editor';
 export * from './viewport';
 export * from './video';
 export * from './notation';

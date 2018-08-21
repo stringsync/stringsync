@@ -3,7 +3,7 @@ import { applyMiddleware, combineReducers, createStore as _createStore } from 'r
 import { 
   viewportReducer, videoReducer, sessionReducer,
   notationsReducer, tagsReducer,
-  uiReducer, notationReducer
+  uiReducer, notationReducer, editorReducer
 } from './';
 import { Store } from 'react-redux';
 
@@ -12,6 +12,7 @@ const middleware = applyMiddleware(thunk);
 
 // Reducer
 const reducer = combineReducers({
+  editor: editorReducer,
   notation: notationReducer,
   notations: notationsReducer,
   session: sessionReducer,
