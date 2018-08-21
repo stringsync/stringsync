@@ -11,7 +11,7 @@ import styled from 'react-emotion';
 import { EditScore } from './EditScore';
 import { Fretboard, MaestroController, Overlap, Layer } from 'components';
 import { VideoControls } from 'modules/video-controls';
-import { Menu } from 'modules/notation/menu';
+import { Menu } from 'modules/notations/menu';
 
 const MINIMUM_VIEWPORT_WIDTH = 1024; // px
 
