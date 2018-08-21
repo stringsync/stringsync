@@ -9,6 +9,7 @@ import { Vextab, VextabRenderer } from 'models';
 import { compose, withState, lifecycle, withProps } from 'recompose';
 import { get } from 'lodash';
 import { scoreKey } from './scoreKey';
+import { Renderer } from './Renderer';
 
 const MIN_WIDTH_PER_MEASURE = 240; // px
 const MIN_MEASURES_PER_LINE = 1;
@@ -106,6 +107,7 @@ const Spacer = styled('div')`
 
 export const Score = enhance(props => (
   <Outer id="score" dynamic={props.dynamic}>
+    <Renderer />
     {props.dynamic ? <Scroller  /> : null}
     {props.dynamic ? <Caret     /> : null}
     {props.dynamic ? <LoopCaret /> : null}

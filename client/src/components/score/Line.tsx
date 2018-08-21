@@ -44,31 +44,12 @@ const enhance = compose<IInnerProps, IOuterProps>(
 
       renderer.assign(props.line, canvas);
 
-      if (renderer.isRenderable) {
-        // The extraction process is idempotent.
-        Directive.extractAndInvoke(renderer.vextab); // We ensure that we're targeting the correct 
-                                                     // vextab by referencing the renderer's vextab. 
-
-        if (!renderer.isRendered) {
-          renderer.render();
-        }
-
-        const tickMap = get(window.ss, 'maestro.tickMap');
-        if (tickMap) {
-          tickMap.compute();
-        }
-
-        props.vextab.links.compute();
-
+      // If all of the score lines are rendered, trigger a notification.
+      // The score/Renderer component should take care of renderering the vextab.
+      if (renderer.isRenderable && !renderer.isRendered) {
         const { maestro } = window.ss;
-        if (maestro) {
-          const caret = maestro.observers.find(observer => observer.name === 'CaretController');
-          maestro.update(false);
-
-          if (caret) {
-            caret.handleNotification(maestro);
-          }
-        }
+        maestro.changed = true;
+        maestro.notify();
       }
     }
   })
