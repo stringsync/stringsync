@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { compose, branch, renderNothing, lifecycle } from 'recompose';
+import { compose, lifecycle } from 'recompose';
 import { connect } from 'react-redux';
 import { Vextab } from 'models';
 
@@ -17,19 +17,14 @@ const enhance = compose<IInnerProps, IOuterProps>(
       editor: state.editor
     })
   ),
-  branch<IInnerProps>(props => !props.editor.enabled, renderNothing),
   lifecycle<IInnerProps, {}>({
     componentDidUpdate(): void {
       const { editor, vextab } = this.props;
       const { selectorRenderer } = this.props.vextab.renderer;
 
-      if (!editor.enabled) {
-        return;
-      }
-
       const selected = vextab.elements[editor.elementIndex];
 
-      if (!selected) {
+      if (!selected || !editor.enabled) {
         selectorRenderer.clear();
       } else {
         selectorRenderer.render(selected);

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { compose, withHandlers, lifecycle, withProps } from 'recompose';
 import { Dispatch, connect } from 'react-redux';
 import { EditorActions } from 'data';
-import { InputNumber, Form, Divider } from 'antd';
+import { InputNumber, Form } from 'antd';
 import { Measure, MeasureElement } from 'models';
 import { get } from 'lodash';
 
@@ -34,7 +34,7 @@ interface ISelectedProps extends IConnectProps {
 
 interface IHandlerProps extends ISelectedProps {
   handleElementIndexChange: (value: number) => void;
-  handleMeasureIndexChange: (value: number) => void;
+  handleMeasureIdChange: (value: number) => void;
 }
 
 const enhance = compose<IHandlerProps, {}>(
@@ -68,7 +68,7 @@ const enhance = compose<IHandlerProps, {}>(
 
       props.setElementIndex(elementIndex);
     },
-    handleMeasureIndexChange: (props: IConnectProps) => (measureIndex: number) => {
+    handleMeasureIdChange: (props: IConnectProps) => (measureId: number) => {
       const { vextab } = window.ss.maestro;
 
       if (!vextab) {
@@ -76,7 +76,7 @@ const enhance = compose<IHandlerProps, {}>(
       }
 
       // get the index of the first element in the measure
-      const measure = vextab.measures[measureIndex];
+      const measure = vextab.measures[measureId - 1];
 
       if (!measure) {
         return;
@@ -91,14 +91,14 @@ const enhance = compose<IHandlerProps, {}>(
 );
 
 export const Selector = enhance(props => (
-  <Form layout="inline">
-    <Divider>Selector</Divider>
+  <Form.Item>
     <Form.Item
       colon={false}
       label="element"
     >
       <InputNumber
         min={-1}
+        disabled={!props.editor.enabled}
         value={props.editor.elementIndex as number | undefined}
         onChange={props.handleElementIndexChange}
         parser={parseValue}
@@ -110,10 +110,11 @@ export const Selector = enhance(props => (
     >
       <InputNumber
         min={-1}
+        disabled={!props.editor.enabled}
         value={get(props.measure, 'id')}
-        onChange={props.handleMeasureIndexChange}
+        onChange={props.handleMeasureIdChange}
         parser={parseValue}
       />
     </Form.Item>
-  </Form>
+  </Form.Item>
 ));
