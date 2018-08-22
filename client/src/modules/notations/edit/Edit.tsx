@@ -91,11 +91,21 @@ const StyledRow = styled(Row)`
 `;
 
 const LeftCol = styled(Col)`
-  overflow: auto;
-  height: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 128px;
   border-right: 1px solid #efefef;
 `;
+
+const LeftColInner = styled('div')`
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  
+  ::-webkit-scrollbar {
+    display: none;
+  }
+`
 
 const RightCol = styled(Col)`
   overflow: hidden;
@@ -115,7 +125,9 @@ export const Edit = enhance(props => (
     <StyledRow type="flex">
       <LeftCol span={6}>
         <EditVideo />
-        <Controls />
+        <LeftColInner>
+          <Controls />
+        </LeftColInner>
       </LeftCol>
       <RightCol span={18}>
         <Overlap>
