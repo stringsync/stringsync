@@ -52,6 +52,7 @@ export class Measure {
           get(element, 'rhythm.struct'),
           element.struct,
           ...element.annotations.map(annotation => annotation.struct),
+          ...element.directives.map(directive => directive.struct)
         ])
       }
     });
