@@ -8,6 +8,7 @@ import { Chord } from './Chord';
 import { Note } from './Note';
 import { get } from 'lodash';
 import { Rest } from './Rest';
+import { Form, Alert } from 'antd';
 
 
 interface IOuterProps {
@@ -32,7 +33,7 @@ const enhance = compose<IElementTypeProps, IOuterProps>(
 );
 
 export const Details = enhance(() => (
-  <div>
-    none
-  </div>
+  <Form.Item>
+    <Alert message="no element found" /> 
+  </Form.Item>
 ));

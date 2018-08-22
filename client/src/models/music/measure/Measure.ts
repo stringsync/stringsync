@@ -7,7 +7,7 @@ export type MeasureElement = Note | Rest | Bar | Chord;
 export class Measure {
   public static tickableTypes = ['NOTE', 'CHORD', 'REST'];
 
-  public readonly spec: any;
+  public readonly spec: VextabMeasureSpec;
   public readonly id: number;
   public readonly type = 'MEASURE';
 
