@@ -33,7 +33,8 @@ interface ISelectedProps extends IConnectProps {
 }
 
 interface IHandlerProps extends ISelectedProps {
-  handleElementIndexChange: (value: number | string) => void;
+  handleElementIndexChange: (value: number) => void;
+  handleMeasureIndexChange: (value: number) => void;
 }
 
 const enhance = compose<IHandlerProps, {}>(
@@ -66,6 +67,25 @@ const enhance = compose<IHandlerProps, {}>(
       }
 
       props.setElementIndex(elementIndex);
+    },
+    handleMeasureIndexChange: (props: IConnectProps) => (measureIndex: number) => {
+      const { vextab } = window.ss.maestro;
+
+      if (!vextab) {
+        return;
+      }
+
+      // get the index of the first element in the measure
+      const measure = vextab.measures[measureIndex];
+
+      if (!measure) {
+        return;
+      }
+
+      const element = measure.elements[0];
+      const elementIndex = vextab.elements.indexOf(element);
+
+      props.setElementIndex(elementIndex);
     }
   })
 );
@@ -89,8 +109,10 @@ export const Selector = enhance(props => (
       label="measure"
     >
       <InputNumber
-        disabled={true}
+        min={-1}
         value={get(props.measure, 'id')}
+        onChange={props.handleMeasureIndexChange}
+        parser={parseValue}
       />
     </Form.Item>
   </Form>
