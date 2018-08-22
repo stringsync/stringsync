@@ -4,7 +4,7 @@ import { Line, Measure } from 'models';
 import { Flow } from 'vexflow';
 import { VextabLinkedList } from './linked-list';
 import { id } from 'utilities';
-import { isEqual, flatMap } from 'lodash';
+import { isEqual, flatMap, uniqWith } from 'lodash';
 import { MeasureElement } from '../music';
 
 const DEFAULT_TUNING: Vex.Flow.Tuning = new (Flow as any).Tuning();
@@ -40,6 +40,10 @@ export class Vextab {
    */
   public static decode(vextabString: string): Vextab.ParsedStruct[] {
     return (VextabDecoder as any).parse(vextabString);
+  }
+
+  public static encode(structs: Vextab.ParsedStruct[]) {
+    return VextabEncoder.encode(structs);
   }
 
   public readonly rawStructs: Vextab.ParsedStruct[];
@@ -82,10 +86,53 @@ export class Vextab {
   }
 
   /**
-   * This method returns the computed structs, not the rawStructs.
+   * This function computes the structs based off of the StringSync data structures.
+   * It will combine measures with the same measure spec with each other.
+   * There are also more note elements since "time" Vextab ParsedStructs are being
+   * appended to every single note.
    */
   public get structs(): Vextab.ParsedStruct[] {
-    return this.lines.map(line => line.struct);
+    const lineGroups: Line[][] = this.lines.reduce((groups, line, ndx) => {
+      const prev = this.links.prev(line) as Line | void;
+      const next = this.links.next(line) as Line | void;
+
+      // we only check the first measure since we already know that
+      // a line's measures all have the same measure spec
+      const shouldAppendToCurrGroup = (
+        !prev ||
+        !next ||
+        isEqual(prev.measures[0].spec.struct, line.measures[0].spec.struct)
+      );
+
+      if (shouldAppendToCurrGroup) {
+        groups[groups.length - 1].push(line);
+      } else {
+        groups.push([line]);
+      }
+
+      return groups;
+    }, [[]] as Line[][]);
+
+    const baseStruct: Vextab.Parsed.ILine = {
+      element: 'tabstave',
+      notes: [],
+      options: [],
+      text: []
+    };
+
+    return lineGroups.map(lineGroup => (
+      lineGroup.reduce((struct, line) => {
+        const { element } = struct;
+        const { notes, options, text } = line.struct;
+
+        return {
+          element,
+          notes: [...struct.notes, ...notes],
+          options: uniqWith([...struct.options, ...options], isEqual),
+          text: [...struct.text, ...text]
+        }
+      }, baseStruct)
+    ));
   }
 
   /**
@@ -101,7 +148,7 @@ export class Vextab {
    * @returns {string}
    */
   public toString(): string {
-    return VextabEncoder.encode(this.rawStructs);
+    return Vextab.encode(this.structs);
   }
 
   /**

@@ -63,7 +63,7 @@ export class VextabLinkedList {
     return get(this.get(obj, tickable), 'next');
   }
 
-  public prev(obj: VextabElementLinkTypes, tickable: boolean = false): VextabElementLinkTypes {
+  public prev(obj: VextabElementLinkTypes, tickable: boolean = false): VextabElementLinkTypes | void {
     return get(this.get(obj, tickable), 'prev');
   }
 
