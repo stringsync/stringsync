@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { compose, branch, renderNothing, lifecycle } from 'recompose';
 import { connect } from 'react-redux';
-import { select } from './select';
 import { Vextab } from 'models';
 
 interface IOuterProps {
@@ -28,13 +27,12 @@ const enhance = compose<IInnerProps, IOuterProps>(
         return;
       }
 
-      const selected = select(vextab, editor.measureIndex, editor.elementIndex);
+      const selected = vextab.elements[editor.elementIndex];
 
       if (!selected) {
         selectorRenderer.clear();
       } else {
-        const element = selected.type === 'MEASURE' ? selected.elements[0] : selected;
-        selectorRenderer.render(element);
+        selectorRenderer.render(selected);
       }
     }
   })

@@ -2,7 +2,6 @@ import { Line, MeasureElement } from 'models/music';
 import { VextabRenderer } from './VextabRenderer';
 import { RendererStore } from './RendererStore';
 import { isEqual, get } from 'lodash';
-import { Maestro } from 'services';
 
 interface IStoreData {
   line: Line;
@@ -68,6 +67,10 @@ export class SelectorRenderer {
   public render(element: MeasureElement): void {
     this.clear();
 
+    if (!element.isHydrated) {
+      return;
+    }
+
     const x = element.vexAttrs!.staveNote.getAbsoluteX();
     if (typeof x !== 'number') {
       return;
@@ -92,7 +95,7 @@ export class SelectorRenderer {
     }
 
     ctx.beginPath();
-    ctx.arc(x + 6, 40, 3, 0, Math.PI * 2);
+    ctx.arc(x, 40, 3, 0, Math.PI * 2);
     ctx.fill();
     ctx.closePath();
 

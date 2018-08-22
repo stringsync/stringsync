@@ -1,5 +1,5 @@
 import { Bar, Note, Rest, Line, Chord } from 'models/music';
-import { VextabMeasureSpec } from 'models/vextab';
+import { VextabMeasureSpec, Vextab } from 'models/vextab';
 import { compact, get, flatMap } from 'lodash';
 
 export type MeasureElement = Note | Rest | Bar | Chord;

@@ -43,7 +43,6 @@ declare namespace Store {
 
   export interface IEditorState {
     enabled: boolean;
-    measureIndex: number | null;
-    elementIndex: number | null;
+    elementIndex: number;
   }
 }

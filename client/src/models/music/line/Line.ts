@@ -1,4 +1,5 @@
 import { Measure } from 'models/music';
+import { Vextab } from '../../vextab';
 
 export class Line {
   public id: number;

@@ -12,6 +12,7 @@ import { EditScore } from './EditScore';
 import { Fretboard, MaestroController, Overlap, Layer } from 'components';
 import { VideoControls } from 'modules/video-controls';
 import { Menu } from 'modules/notations/menu';
+import { Controls } from './controls';
 
 const MINIMUM_VIEWPORT_WIDTH = 1024; // px
 
@@ -100,10 +101,6 @@ const RightCol = styled(Col)`
   overflow: hidden;
 `;
 
-const Spacer = styled('div')`
-  height: 110vh;
-`
-
 /**
  * The purpose of this component is to manage the state.notations.edit and video state
  * as well as setting the layout for the NotationEdit component.
@@ -118,7 +115,7 @@ export const Edit = enhance(props => (
     <StyledRow type="flex">
       <LeftCol span={6}>
         <EditVideo />
-        <Spacer />
+        <Controls />
       </LeftCol>
       <RightCol span={18}>
         <Overlap>

@@ -1,9 +1,8 @@
 import * as actions from './editorActions';
 
 const getDefaultState = (): Store.IEditorState => ({
-  elementIndex: null,
+  elementIndex: -1,
   enabled: false,
-  measureIndex: null
 });
 
 export const editorReducer = (state = getDefaultState(), action: actions.EditorActions): Store.IEditorState => {
@@ -17,10 +16,6 @@ export const editorReducer = (state = getDefaultState(), action: actions.EditorA
 
     case actions.SET_ELEMENT_INDEX:
       nextState.elementIndex = action.payload.elementIndex;
-      return nextState;
-
-    case actions.SET_MEASURE_INDEX:
-      nextState.measureIndex = action.payload.measureIndex;
       return nextState;
 
     default:

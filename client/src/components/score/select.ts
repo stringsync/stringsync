@@ -18,7 +18,10 @@ export const select = (vextab: Vextab, measureIndex: number | null, elementIndex
 
   if (measure && typeof elementIndex === 'number') {
     element = measure.elements[elementIndex] || null;
-  }
 
-  return element || measure;
+    // The intention is to select an element. If none is found, return null.
+    return element;
+  } else {
+    return measure;
+  }
 };

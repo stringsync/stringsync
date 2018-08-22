@@ -4,7 +4,8 @@ import { Line, Measure } from 'models';
 import { Flow } from 'vexflow';
 import { VextabLinkedList } from './linked-list';
 import { id } from 'utilities';
-import { isEqual } from 'lodash';
+import { isEqual, flatMap } from 'lodash';
+import { MeasureElement } from '../music';
 
 const DEFAULT_TUNING: Vex.Flow.Tuning = new (Flow as any).Tuning();
 
@@ -63,8 +64,8 @@ export class Vextab {
     this.rawStructs = rawStructs;
     this.width = width;
 
-    this.measures = this.getMeasures();
-    this.lines = this.getLines();
+    this.measures = this.computeMeasures();
+    this.lines = this.computeLines();
 
     // Link lines with measures
     this.lines.forEach(line => {
@@ -88,6 +89,13 @@ export class Vextab {
   }
 
   /**
+   * Computes all the elements of the measures
+   */
+  public get elements(): MeasureElement[] {
+    return flatMap(this.measures, measure => measure.elements);
+  }
+
+  /**
    * Encodes a VextabStruct array into a vextab string. It is the inverse of Vextab.decode.
    *
    * @returns {string}
@@ -101,7 +109,7 @@ export class Vextab {
    * 
    * @returns {Measure[]}
    */
-  private getMeasures(): Measure[] {
+  private computeMeasures(): Measure[] {
     return StringSyncFactory.extract(this, this.tuning);
   }
 
@@ -110,7 +118,7 @@ export class Vextab {
    * 
    * @returns {Line[]}
    */
-  private getLines(): Line[] {
+  private computeLines(): Line[] {
     const lines: Line[] = [];
     let measures: Measure[] = [];
 
