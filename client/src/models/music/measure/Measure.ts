@@ -44,13 +44,16 @@ export class Measure {
   }
 
   public get struct(): Vextab.ParsedStruct[] {
-    return flatMap(this.elements, element => (
-      compact([
-        get(element, 'rhythm.struct'),
-        element.struct,
-        ...element.annotations.map(annotation => annotation.struct),
-        ...element.directives.map(directive => directive.struct)
-      ])
-    ));
+    return flatMap(this.elements, element => {
+      if (get(element, 'rhythm.isGrace', false)) {
+        return [];
+      } else {
+        return compact([
+          get(element, 'rhythm.struct'),
+          element.struct,
+          ...element.annotations.map(annotation => annotation.struct),
+        ])
+      }
+    });
   }
 };

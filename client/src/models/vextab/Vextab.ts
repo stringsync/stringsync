@@ -151,6 +151,10 @@ export class Vextab {
     return Vextab.encode(this.structs);
   }
 
+  public clone(): Vextab {
+    return new Vextab(this.structs, this.measuresPerLine, this.width);
+  }
+
   /**
    * Delegates the measure extracting work to the StringSyncFactory
    * 
