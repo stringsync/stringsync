@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { MeasureElement, Measure } from 'models';
 import { Form, Divider } from 'antd';
 import { get } from 'lodash';
+import { Details } from './details';
 
 interface IConnectProps {
   editor: Store.IEditorState;
@@ -44,14 +45,14 @@ export const Selected = enhance(props => (
       colon={false}
       label={get(props.measure, 'type', 'NONE')}
     >
-      measure
+      <Details element={props.measure} />
     </Form.Item>
     <Divider />
     <Form.Item
       colon={false}
       label={get(props.element, 'type', 'NONE')}
     >
-      element
+      <Details element={props.element} />
     </Form.Item>
   </Form.Item>
 ));

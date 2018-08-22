@@ -54,11 +54,10 @@ const enhance = compose<IHandlerProps, {}>(
     return { element, measure };
   }),
   lifecycle<ISelectedProps, {}>({
-    componentDidMount(): void {
-      this.props.setElementIndex(0);
-    },
     componentDidUpdate(prevProps): void {
       if (!this.props.editor.enabled && prevProps.editor.enabled) {
+        this.props.setElementIndex(-1);
+      } else if (this.props.editor.enabled && !prevProps.editor.enabled) {
         this.props.setElementIndex(0);
       }
     }

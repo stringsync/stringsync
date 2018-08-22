@@ -11,7 +11,7 @@ export type Condition<TProps> = [predicate<TProps>, InferableComponentEnhancer<T
  */
 export const cond = <TProps>(conditions: Array<Condition<TProps>>) => (
   (BaseComponent: React.ComponentClass<TProps> | React.SFC<TProps>) => {
-    const enhance = conditions.reduce((hocs, condition) => {
+    const enhance = conditions.reverse().reduce((hocs, condition) => {
       const [test, targetHoc] = condition;
 
       return branch((props: TProps) => test(props), targetHoc, hocs);

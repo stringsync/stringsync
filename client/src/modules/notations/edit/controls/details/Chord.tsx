@@ -6,5 +6,5 @@ const enhance = compose(
 );
 
 export const Chord = enhance(() => (
-  <div>foo</div>
+  <div>Chord</div>
 ));

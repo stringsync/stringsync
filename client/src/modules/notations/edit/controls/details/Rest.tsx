@@ -6,5 +6,5 @@ const enhance = compose(
 );
 
 export const Rest = enhance(() => (
-  <div>foo</div>
+  <div>Rest</div>
 ));
