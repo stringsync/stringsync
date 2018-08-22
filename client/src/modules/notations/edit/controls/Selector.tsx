@@ -96,10 +96,7 @@ const enhance = compose<IHandlerProps, {}>(
 
 export const Selector = enhance(props => (
   <Form.Item>
-    <Form.Item
-      colon={false}
-      label="element"
-    >
+    <Form.Item label="element">
       <InputNumber
         min={-1}
         disabled={!props.editor.enabled}
@@ -108,10 +105,7 @@ export const Selector = enhance(props => (
         parser={parseValue}
       />
     </Form.Item>
-    <Form.Item
-      colon={false}
-      label="measure"
-    >
+    <Form.Item label="measure">
       <InputNumber
         min={-1}
         disabled={!props.editor.enabled}

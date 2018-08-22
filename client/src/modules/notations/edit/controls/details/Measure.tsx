@@ -27,18 +27,18 @@ const StyledSelect = styled(Select)`
 
 export const Measure = enhance(props => (
   <Form.Item>
-    <Form.Item label="id" colon={false}>
+    <Form.Item label="id">
       <InputNumber disabled={true} value={props.element.id} />
     </Form.Item>
-    <Form.Item label="length" colon={false}>
+    <Form.Item label="length">
       <InputNumber disabled={true} value={props.element.elements.length} />
     </Form.Item>
-    <Form.Item label="key" colon={false}>
+    <Form.Item label="key">
       <StyledSelect value={props.element.spec.key.note.literal}>
         {NOTES.map(note => <Option key={note}>{note}</Option>)}
       </StyledSelect>
     </Form.Item>
-    <Form.Item label="time signature" colon={false}>
+    <Form.Item label="time signature">
       <InputNumber value={props.element.spec.timeSignature.upper} />
       <Divider type="vertical" />
       <InputNumber value={props.element.spec.timeSignature.lower} />

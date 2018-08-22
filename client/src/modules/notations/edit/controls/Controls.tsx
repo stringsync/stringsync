@@ -11,16 +11,13 @@ const Outer = styled('div')`
 
 export const Controls: React.SFC = () => (
   <Outer>
-    <Divider>options</Divider>
+    <Divider orientation="left">MAIN</Divider>
     <Form layout="inline">
       <Enabler />
-    </Form>
-    <Divider />
-    <Form layout="inline">
       <Selector />
     </Form>
     <Divider />
-    <Form layout="inline">
+    <Form>
       <Selected />
     </Form>
   </Outer>

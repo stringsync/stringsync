@@ -2,10 +2,12 @@ import * as React from 'react';
 import { compose, withProps, branch, renderComponent } from 'recompose';
 import { connect } from 'react-redux';
 import { MeasureElement, Measure } from 'models';
-import { Form, Divider } from 'antd';
+import { Form, Divider, Collapse } from 'antd';
 import { get } from 'lodash';
 import { Details } from './details';
 import { NotFound } from './details/NotFound';
+
+const { Panel } = Collapse;
 
 interface IConnectProps {
   editor: Store.IEditorState;
@@ -43,32 +45,27 @@ const enhance = compose<ISelectedProps, {}>(
 
 export const Selected = enhance(props => (
   <Form.Item>
-    <Form.Item
-      colon={false}
-      label={get(props.measure, 'type', 'NONE')}
-    >
-      <Details element={props.measure} />
-    </Form.Item>
-    <Divider />
-    <Form.Item
-      colon={false}
-      label={get(props.element, 'type', 'NONE')}
-    >
-      <Details element={props.element} />
-    </Form.Item>
-    <Divider />
-    <Form.Item
-      colon={false}
-      label="ANNOTATIONS"
-    >
-      <Details show="annotations" element={props.element}/>
-    </Form.Item>
-    <Divider />
-    <Form.Item
-      colon={false}
-      label="DIRECTIVES"
-    >
-      <Details show="directives" element={props.element} />
-    </Form.Item>
+    <Collapse accordion={true} bordered={false}>
+      <Panel key="1" header="MEASURE">
+        <Form layout="inline">
+          <Details element={props.measure} />
+        </Form>
+      </Panel>
+      <Panel key="2" header={get(props.element, 'type')}>
+        <Form layout="inline">
+          <Details element={props.element} />
+        </Form>
+      </Panel>
+      <Panel key="3" header="ANNOTATIONS">
+        <Form layout="inline">
+          <Details show="annotations" element={props.element} />
+        </Form>
+      </Panel>
+      <Panel key="4" header="DIRECTIVES">
+        <Form layout="inline">
+          <Details show="directives" element={props.element} />
+        </Form>
+      </Panel>
+    </Collapse>
   </Form.Item>
 ));

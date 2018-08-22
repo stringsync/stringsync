@@ -15,10 +15,10 @@ const enhance = compose<IOuterProps, IOuterProps>(
 
 export const Bar = enhance(props => (
   <Form.Item>
-    <Form.Item label="id" colon={false}>
+    <Form.Item label="id">
       <InputNumber disabled={true} value={props.element.id} />
     </Form.Item>
-    <Form.Item label="kind" colon={false}>
+    <Form.Item label="kind">
       <Select value={props.element.kind}>
         {BarModel.KINDS.map(kind => <Option key={kind}>{kind}</Option>)}
       </Select>

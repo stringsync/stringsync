@@ -13,7 +13,7 @@ const enhance = compose<IOuterProps, IOuterProps>(
 );
 
 const Indented = styled('div')`
-  margin-left: 8px;
+  margin-left: 16px;
 `;
 
 export const GraceNote = enhance(props => (
