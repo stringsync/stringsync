@@ -25,12 +25,18 @@ const enhance = compose<IInnerProps, IOuterProps>(
     })
   ),
   branch<IInnerProps>(
-    props => props.hidden || props.viewportType !== 'DESKTOP',
+    props => props.viewportType !== 'DESKTOP',
     renderNothing
   )
 );
 
-const Outer = styled('div')`
+// If you add a prop named "hidden", this will display: none.
+interface IOuterDiv {
+  $hidden: boolean;
+}
+
+const Outer = styled('div')<IOuterDiv>`
+  opacity: ${props => props.$hidden ? 0 : 1};
   display: flex;
   margin-right: 12px;
 `;
@@ -65,7 +71,7 @@ const SongName = styled('span')`
 `;
 
 export const MiniDetail = enhance(props => (
-  <Outer>
+  <Outer $hidden={!!props.hidden}>
     <Thumbnail src={props.thumbnailUrl} />
     <Detail>
       <ArtistName>{props.artistName}</ArtistName>
