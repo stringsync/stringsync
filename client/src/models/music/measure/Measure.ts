@@ -1,6 +1,7 @@
 import { Bar, Note, Rest, Line, Chord } from 'models/music';
-import { VextabMeasureSpec, Vextab } from 'models/vextab';
+import { VextabMeasureSpec, Vextab, Directive } from 'models/vextab';
 import { compact, get, flatMap } from 'lodash';
+import { Annotations } from '../annotations';
 
 export type MeasureElement = Note | Rest | Bar | Chord;
 
@@ -12,8 +13,9 @@ export class Measure {
   public readonly type = 'MEASURE';
 
   public line: Line | void;
-
   public elements: MeasureElement[];
+  public annotations: Annotations[] = [];
+  public directives: Directive[] = [];
 
   constructor(elements: MeasureElement[], id: number, spec: VextabMeasureSpec) {
     if (elements[0].type !== 'BAR') {

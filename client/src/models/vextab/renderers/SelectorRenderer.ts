@@ -8,8 +8,8 @@ interface IStoreData {
   canvas: HTMLCanvasElement;
 }
 
-export class SelectorRenderer {
-  public static FILL_STYLE = '#1034A6';
+export class SelectorRenderer { 
+  public static FILL_STYLE = 'lime';
 
   public readonly store: RendererStore<IStoreData> = new RendererStore<IStoreData>();
   public readonly vextabRenderer: VextabRenderer;

@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { compose, withProps } from 'recompose';
+import { compose, withProps, branch, renderComponent } from 'recompose';
 import { connect } from 'react-redux';
 import { MeasureElement, Measure } from 'models';
 import { Form, Divider } from 'antd';
 import { get } from 'lodash';
 import { Details } from './details';
+import { NotFound } from './details/NotFound';
 
 interface IConnectProps {
   editor: Store.IEditorState;
@@ -36,7 +37,8 @@ const enhance = compose<ISelectedProps, {}>(
     }
 
     return { measure, element };
-  })
+  }),
+  branch((props: ISelectedProps) => !props.element, renderComponent(NotFound))
 );
 
 export const Selected = enhance(props => (
@@ -53,6 +55,20 @@ export const Selected = enhance(props => (
       label={get(props.element, 'type', 'NONE')}
     >
       <Details element={props.element} />
+    </Form.Item>
+    <Divider />
+    <Form.Item
+      colon={false}
+      label="ANNOTATIONS"
+    >
+      <Details show="annotations" element={props.element}/>
+    </Form.Item>
+    <Divider />
+    <Form.Item
+      colon={false}
+      label="DIRECTIVES"
+    >
+      <Details show="directives" element={props.element} />
     </Form.Item>
   </Form.Item>
 ));

@@ -9,10 +9,12 @@ import { Note } from './Note';
 import { get } from 'lodash';
 import { Rest } from './Rest';
 import { Form, Alert } from 'antd';
-
+import { Annotations } from './Annotations';
+import { Directives } from './directives';
 
 interface IOuterProps {
   element: MeasureModel | MeasureElement | null;
+  show?: 'annotations' | 'directives';
 }
 
 interface IElementTypeProps extends IOuterProps {
@@ -24,6 +26,8 @@ const enhance = compose<IElementTypeProps, IOuterProps>(
     elementType: get(props.element, 'type')
   })),
   cond<IElementTypeProps>([
+    [({ show, element }) => !!element && show === 'annotations', renderComponent(Annotations)],
+    [({ show, element }) => !!element && show === 'directives', renderComponent(Directives)],
     [({ elementType }) => elementType === 'NOTE'   , renderComponent(Note)],
     [({ elementType }) => elementType === 'CHORD'  , renderComponent(Chord)],
     [({ elementType }) => elementType === 'BAR'    , renderComponent(Bar)],
@@ -32,8 +36,4 @@ const enhance = compose<IElementTypeProps, IOuterProps>(
   ])
 );
 
-export const Details = enhance(() => (
-  <Form.Item>
-    <Alert message="no element found" /> 
-  </Form.Item>
-));
+export const Details = enhance(() => null);

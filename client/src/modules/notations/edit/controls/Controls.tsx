@@ -12,7 +12,7 @@ const Outer = styled('div')`
 export const Controls: React.SFC = () => (
   <Outer>
     <Divider>options</Divider>
-    <Form>
+    <Form layout="inline">
       <Enabler />
     </Form>
     <Divider />
