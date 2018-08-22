@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styled from 'react-emotion';
 import { Alert } from 'antd';
+import { MINIMUM_VIEWPORT_WIDTH } from './Edit';
 
 const Outer = styled('div')`
   margin: 64px;
@@ -15,7 +16,7 @@ export const NotSupported = () => (
       showIcon={true}
       message="error"
       type="error"
-      description="A minimum width of 1024px is required for this view. Please increase your screen size."
+      description={`A minimum width of ${MINIMUM_VIEWPORT_WIDTH}px is required for this view. Please increase your screen size.`}
     />
   </Outer>
 );

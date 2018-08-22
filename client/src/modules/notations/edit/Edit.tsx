@@ -14,7 +14,7 @@ import { VideoControls } from 'modules/video-controls';
 import { Menu } from 'modules/notations/menu';
 import { Controls } from './controls';
 
-const MINIMUM_VIEWPORT_WIDTH = 1024; // px
+export const MINIMUM_VIEWPORT_WIDTH = 760; // px
 
 type OuterProps = RouteComponentProps<{ id: string }>;
 
@@ -123,13 +123,13 @@ export const Edit = enhance(props => (
       deadTimeMs={props.notation.deadTimeMs}
     />
     <StyledRow type="flex">
-      <LeftCol span={6}>
+      <LeftCol span={8}>
         <EditVideo />
         <LeftColInner>
           <Controls />
         </LeftColInner>
       </LeftCol>
-      <RightCol span={18}>
+      <RightCol span={16}>
         <Overlap>
           <Layer zIndex={10}>
             <Fretboard />

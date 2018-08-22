@@ -5,6 +5,15 @@ import { Measure } from 'models/music';
 import { Annotations } from '../annotations';
 
 export class Bar extends AbstractVexWrapper {
+  public static KINDS = [
+    'single',
+    'double',
+    'end',
+    'repeat-end',
+    'repeat-begin',
+    'repeat-both'
+  ];
+
   public readonly type = 'BAR';
   public readonly id: number;
 
