@@ -65,52 +65,38 @@ export class SelectorRenderer {
     this.renderedLines = [];
   }
 
-  public render(maestro: Maestro): void {
+  public render(element: MeasureElement): void {
     this.clear();
 
-    const x = this.getXForRender(maestro);
-
-    if (typeof x === 'number') {
-      const line: Line | void = get(maestro.state.note, 'measure.line');
-      if (line) {
-
-        let canvas: HTMLCanvasElement | void;
-        try {
-          canvas = this.store.fetch(line).canvas;
-        } catch (error) {
-          // noop
-        }
-
-        if (!canvas) {
-          return;
-        }
-
-        const ctx = canvas.getContext('2d');
-
-        if (!ctx) {
-          return;
-        }
-
-        ctx.beginPath();
-        ctx.arc(x + 6, 40, 3, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.closePath();
-
-        this.renderedLines.push(line);
-      }
+    const x = element.vexAttrs!.staveNote.getAbsoluteX();
+    if (typeof x !== 'number') {
+      return;
     }
-  }
 
-  private getXForRender(maestro: Maestro): number | void {
-    // const selected = get(maestro.editor, 'selector.selected');
+    const line: Line | void = get(element, 'measure.line');
+    if (!line) {
+      return;
+    }
 
-    // if (!selected) {
-    //   return;
-    // }
+    let canvas: HTMLCanvasElement;
+    try {
+      canvas = this.store.fetch(line).canvas;
+    } catch (error) {
+      return
+    }
 
-    // const note: MeasureElement = selected.type === 'MEASURE' ? selected.elements[0] : selected;
+    const ctx = canvas.getContext('2d');
 
-    // return note.vexAttrs!.staveNote.getAbsoluteX();
+    if (!ctx) {
+      return;
+    }
+
+    ctx.beginPath();
+    ctx.arc(x + 6, 40, 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.closePath();
+
+    this.renderedLines.push(line);
   }
 
   private resize(line: Line): void {

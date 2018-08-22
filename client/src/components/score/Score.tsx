@@ -9,6 +9,7 @@ import { get } from 'lodash';
 import { scoreKey } from './scoreKey';
 import { Renderer } from './Renderer';
 import { CanvasRenderables } from './canvas-renderables';
+import { Editor } from './Editor';
 
 const MIN_WIDTH_PER_MEASURE = 240; // px
 const MIN_MEASURES_PER_LINE = 1;
@@ -106,6 +107,7 @@ const Spacer = styled('div')`
 
 export const Score = enhance(props => (
   <Outer id="score" dynamic={props.dynamic}>
+    <Editor vextab={props.vextab} />
     <Renderer />
     <CanvasRenderables active={props.dynamic} />
     <Title
