@@ -186,7 +186,7 @@ export class StringSyncFactory {
     note.articulation = struct.articulation;
     note.decorator = struct.decorator;
 
-    note.rhythm = this.rhythm;
+    note.rhythm = this.rhythm.clone();
 
     return note;
   }
@@ -204,7 +204,7 @@ export class StringSyncFactory {
     chord.articulation = struct.articulation;
     chord.decorator = struct.decorator;
 
-    chord.rhythm = this.rhythm;
+    chord.rhythm = this.rhythm.clone();
 
     return chord;
   }
@@ -225,6 +225,6 @@ export class StringSyncFactory {
       throw new Error(`expected ${value} rhythms with rhythms, got ${rhythms.length}`);
     }
 
-    rhythms.forEach(rhythm => rhythm.tuplet = new Tuplet(value))
+    rhythms.forEach(rhythm => rhythm.tuplet = new Tuplet(value));
   }
 }

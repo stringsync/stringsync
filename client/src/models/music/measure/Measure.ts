@@ -1,8 +1,9 @@
 import { Bar, Note, Rest, Line, Chord } from 'models/music';
 import { VextabMeasureSpec, Directive } from 'models/vextab';
-import { compact, get, flatMap, times } from 'lodash';
+import { compact, get, flatMap, last } from 'lodash';
 import { Annotations } from '../annotations';
 import { Tuplet } from '../tuplet';
+import { Rhythm } from '../rhythm';
 
 export type MeasureElement = Note | Rest | Bar | Chord;
 
@@ -22,7 +23,7 @@ export class Measure {
     if (elements[0].type !== 'BAR') {
       throw new Error(`expected the first element to have type BAR, got: ${elements[0].type}`);
     }
-    
+
     this.id = id;
     this.elements = elements;
     this.spec = spec;
@@ -30,7 +31,7 @@ export class Measure {
 
   public get tickables(): Array<Note | Chord | Rest> {
     const tickableTypes = new Set(Measure.tickableTypes);
-    return this.elements.filter(element => tickableTypes.has(element.type)) as Array<Note | Chord| Rest>;
+    return this.elements.filter(element => tickableTypes.has(element.type)) as Array<Note | Chord | Rest>;
   }
 
   /**
@@ -45,40 +46,61 @@ export class Measure {
   }
 
   public get struct(): Vextab.ParsedStruct[] {
-    return flatMap(this.elements, (element, ndx) => {
+    return flatMap(this.elements, element => {
       if (get(element, 'rhythm.isGrace', false)) {
         // Grace notes are implemented via directives, so we ignore them here
         return [];
       } else {
-        // Compute the main 
-        const structs = [
+        return compact([
           get(element, 'rhythm.struct'),
           element.struct,
           ...element.annotations.map(annotation => annotation.struct),
-          ...element.directives.map(directive => directive.struct)
-        ]
-
-        // We have to deal with tuplets at the measure level since it requires us
-        // to look backwards.
-        const tuplet = get(element, 'rhythm.tuplet') as Tuplet | void;
-
-        if (tuplet) {
-          // starting index for Array.prototype.slice
-          const startNdx = ndx + 1 - tuplet.value;
-          if (tuplet.value > 0 && startNdx > -1) {
-            const tupletElements = this.elements.slice(startNdx, ndx + 1);
-            const shouldPushTuplet = tupletElements.length === tuplet.value && tupletElements.every(tupletElement => (
-              get(tupletElement, 'rhythm.tuplet.value', -1) === tuplet.value
-            ));
-
-            if (shouldPushTuplet) {
-              structs.push(tuplet.struct);
-            }
-          }
-        }
-
-        return compact(structs);
+          ...element.directives.map(directive => directive.struct),
+          this.tupletStruct(element)
+        ]);
       }
     });
+  }
+
+  private tupletStruct(element: MeasureElement): Vextab.Parsed.ITuplet | void {
+    // We have to deal with tuplets at the measure level since it requires us
+    // to look backwards.
+    const tuplet = get(element, 'rhythm.tuplet') as Tuplet | void;
+
+    if (!tuplet) {
+      return;
+    }
+
+    // compute tuplet groups, which are arrays of arrays of rhythms
+    const tuplets = compact(this.elements.map(el => get(el, 'rhythm.tuplet'))) as Tuplet[];
+
+    const tupletGroups = tuplets.reduce((groups, tup) => {
+      const lastGroup = last(groups);
+
+      // A group is satisfied if the first rhythm's tuplet's value is equal
+      // to the group size
+      if (!lastGroup || get(lastGroup[0], 'value', -1) === lastGroup.length) {
+        groups.push([tup]);
+        return groups;
+      } else {
+        lastGroup.push(tup);
+      }
+
+      return groups;
+    }, [] as Tuplet[][]);
+    
+    // Out of each tupletGroup, we take the last tuplet, since this is
+    // the element that we'll act on and push the tuplet
+    const actionTuplets = tupletGroups.reduce((actionTups, tupletGroup) => {
+      const lastTuplet = last(tupletGroup);
+
+      if (lastTuplet) {
+        actionTups.add(lastTuplet.id);
+      }
+
+      return actionTups;
+    }, new Set() as Set<number>);
+
+    return actionTuplets.has(tuplet.id) ? tuplet.struct : undefined;
   }
 };
