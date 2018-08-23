@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { compose, withProps, branch, renderComponent } from 'recompose';
+import { compose, withProps, branch, renderComponent, withPropsOnChange } from 'recompose';
 import { connect } from 'react-redux';
 import { MeasureElement, Measure, Vextab } from 'models';
 import { Form, Collapse } from 'antd';
@@ -14,7 +14,11 @@ interface IConnectProps {
   vextabString: string;
 }
 
-interface ISelectedProps extends IConnectProps {
+interface IVextabProps extends IConnectProps {
+  vextab: Vextab | null;
+}
+
+interface ISelectedProps extends IVextabProps {
   measure: Measure | null;
   element: MeasureElement | null;
 }
@@ -26,15 +30,21 @@ const enhance = compose<ISelectedProps, {}>(
       vextabString: state.notation.vextabString
     })
   ),
-  withProps((props: IConnectProps) => {
-    if (!props.vextabString) {
+  withPropsOnChange(
+    ['vextabString'],
+    (props: IConnectProps) => ({
+      vextab: props.vextabString ? new Vextab(Vextab.decode(props.vextabString), 1) : null
+    })
+  ),
+  withProps((props: IVextabProps) => {
+    const { vextab } = props;
+
+    if (!vextab) {
       return;
     }
 
     let measure: Measure | null = null;
     let element: MeasureElement | null = null;
-
-    const vextab = new Vextab(Vextab.decode(props.vextabString), 1);
 
     element = vextab.elements[props.editor.elementIndex] || null;
 
