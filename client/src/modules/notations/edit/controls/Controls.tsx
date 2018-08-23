@@ -17,8 +17,6 @@ export const Controls: React.SFC = () => (
       <Selector />
     </Form>
     <Divider />
-    <Form>
-      <Selected />
-    </Form>
+    <Selected />
   </Outer>
 );

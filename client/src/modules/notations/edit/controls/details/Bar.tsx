@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { compose, withHandlers, lifecycle } from 'recompose';
+import { compose, withHandlers } from 'recompose';
 import { Bar as BarModel } from 'models';
 import { Form, Select, InputNumber } from 'antd';
 import { withSetVextab, IWithSetVextabProps } from 'enhancers';
@@ -31,7 +31,7 @@ const enhance = compose<ISelectHandlerProps, IOuterProps>(
 );
 
 export const Bar = enhance(props => (
-  <Form.Item>
+  <Form layout="inline">
     <Form.Item label="id">
       <InputNumber disabled={true} value={props.element.id} />
     </Form.Item>
@@ -39,6 +39,6 @@ export const Bar = enhance(props => (
       <Select value={props.element.kind} onChange={props.handleSelectChange}>
         {BarModel.KINDS.map(kind => <Option key={kind}>{kind}</Option>)}
       </Select>
-    </Form.Item>  
-  </Form.Item>
+    </Form.Item>
+  </Form>
 ));
