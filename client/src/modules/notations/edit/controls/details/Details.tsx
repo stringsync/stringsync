@@ -8,7 +8,6 @@ import { Chord } from './Chord';
 import { Note } from './Note';
 import { get } from 'lodash';
 import { Rest } from './Rest';
-import { Form, Alert } from 'antd';
 import { Annotations } from './Annotations';
 import { Directives } from './directives';
 

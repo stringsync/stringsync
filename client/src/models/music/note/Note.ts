@@ -3,11 +3,8 @@ import * as constants from './noteConstants';
 import { AbstractVexWrapper, Directive } from 'models/vextab';
 import { NoteHydrationValidator } from './NoteHydrationValidator';
 import { id } from 'utilities';
-import { Measure } from 'models/music';
+import { Measure, Annotations, Rhythm, Tuplet } from 'models/music';
 import { NoteRenderer } from 'models/vextab';
-import { Annotations } from '../annotations';
-import { Rhythm } from '../rhythm';
-import { Tuplet } from '../tuplet';
 
 /**
  * The purpose of this class is to encapsulate the logic related to describing a note's inherent

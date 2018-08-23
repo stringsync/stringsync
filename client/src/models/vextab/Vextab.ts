@@ -1,11 +1,10 @@
 import { VextabDecoder, VextabEncoder, VextabRenderer } from './';
 import { StringSyncFactory } from './string-sync-factory';
-import { Line, Measure } from 'models';
+import { Line, Measure, MeasureElement } from 'models';
 import { Flow } from 'vexflow';
 import { VextabLinkedList } from './linked-list';
 import { id } from 'utilities';
 import { isEqual, flatMap, uniqWith } from 'lodash';
-import { MeasureElement } from '../music';
 
 const DEFAULT_TUNING: Vex.Flow.Tuning = new (Flow as any).Tuning();
 

@@ -1,4 +1,4 @@
-import { Note } from './';
+import { Note } from './Note';
 import { forOwn, shuffle, times } from 'lodash';
 
 const FLAT_NOTES = Object.freeze(['Bb', 'Db', 'Eb', 'Gb', 'Ab']);

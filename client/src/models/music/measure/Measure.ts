@@ -1,5 +1,5 @@
 import { Bar, Note, Rest, Line, Chord } from 'models/music';
-import { VextabMeasureSpec, Vextab, Directive } from 'models/vextab';
+import { VextabMeasureSpec, Directive } from 'models/vextab';
 import { compact, get, flatMap } from 'lodash';
 import { Annotations } from '../annotations';
 
