@@ -6,6 +6,7 @@ import { Rhythm } from './Rhythm';
 
 interface IOuterProps {
   element: NoteModel;
+  editor: Store.IEditorState;
 }
 
 const enhance = compose<IOuterProps, IOuterProps>(
@@ -29,6 +30,6 @@ export const Chord = enhance(props => (
         </Form.Item>
       ))
     }
-    {props.element.rhythm ? <Rhythm element={props.element.rhythm} /> : null}
+    {props.element.rhythm ? <Rhythm editor={props.editor} element={props.element.rhythm} /> : null}
   </Form.Item>
 ));

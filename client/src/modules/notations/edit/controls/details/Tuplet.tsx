@@ -13,6 +13,6 @@ const enhance = compose<IOuterProps, IOuterProps>(
 
 export const Tuplet = enhance(props => (
   <Form.Item label="tuplet value">
-    <InputNumber value={props.element.value} />
+    <InputNumber defaultValue={props.element.value} />
   </Form.Item>
 ));

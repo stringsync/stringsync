@@ -2,9 +2,10 @@ import { AbstractVexWrapper } from 'models/vextab';
 import { Tuplet } from '../tuplet';
 
 export class Rhythm extends AbstractVexWrapper {
-  public readonly value: string;
-  public readonly dot: boolean;
   public readonly type = 'RHYTHM';
+
+  public value: string;
+  public dot: boolean;
 
   public tuplet: Tuplet | null = null;
 

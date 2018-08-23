@@ -7,6 +7,7 @@ import { Tuplet } from './Tuplet';
 
 interface IOuterProps {
   element: NoteModel;
+  editor: Store.IEditorState;
 }
 
 const enhance = compose<IOuterProps, IOuterProps>(
@@ -24,6 +25,6 @@ export const Note = enhance(props => (
     <Form.Item label="string">
       <InputNumber value={props.element.positions[0].str} />
     </Form.Item>
-    {props.element.rhythm ? <Rhythm element={props.element.rhythm} /> : null}
+    {props.element.rhythm ? <Rhythm editor={props.editor} element={props.element.rhythm} /> : null}
   </Form.Item>
 ));

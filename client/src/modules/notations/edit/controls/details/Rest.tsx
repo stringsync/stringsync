@@ -32,16 +32,18 @@ const enhance = compose<IHandlerProps, IOuterProps>(
 );
 
 export const Rest = enhance(props => (
-  <Form layout="inline">
-    <Form.Item label="id">
-      <InputNumber disabled={true} value={props.element.id} />
-    </Form.Item>
-    <Form.Item label="position">
-      <InputNumber
-        defaultValue={props.element.position}
-        onChange={props.handlePositionChange}
-      />
-    </Form.Item>
-    <Rhythm element={props.element.rhythm} />
-  </Form>
+  <div>
+    <Form layout="inline">
+      <Form.Item label="id">
+        <InputNumber disabled={true} value={props.element.id} />
+      </Form.Item>
+      <Form.Item label="position">
+        <InputNumber
+          defaultValue={props.element.position}
+          onChange={props.handlePositionChange}
+        />
+      </Form.Item>
+    </Form>
+    <Rhythm editor={props.editor} element={props.element.rhythm} />
+  </div>
 ));
