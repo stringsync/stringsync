@@ -4,7 +4,7 @@ import styled from 'react-emotion';
 import { compose, branch, renderNothing, withHandlers } from 'recompose';
 import { connect, Dispatch } from 'react-redux';
 import { withVextab, IWithVextabProps } from 'enhancers';
-import { NotationActions } from 'data';
+import { NotationActions, EditorActions } from 'data';
 
 const { TextArea } = Input;
 
@@ -12,6 +12,7 @@ interface IConnectProps {
   editorErrors: string[];
   vextabString: string;
   setVextabString: (vextabString: string) => void;
+  setElementIndex: (elementIndex: number) => void;
 }
 
 interface IHandlerProps extends IConnectProps {
@@ -25,12 +26,16 @@ const enhance = compose<IHandlerProps, {}>(
       vextabString: state.notation.vextabString
     }),
     (dispatch: Dispatch) => ({
+      setElementIndex: (elementIndex: number) => dispatch(EditorActions.setElementIndex(elementIndex)),
       setVextabString: (vextabString: string) => dispatch(NotationActions.setVextabString(vextabString))
     })
   ),
   withHandlers({
     handleChange: (props: IConnectProps) => (event: React.SyntheticEvent<HTMLTextAreaElement>) => {
       props.setVextabString(event.currentTarget.value);
+
+      // Hack to force the StringSync data structure details to rerender
+      props.setElementIndex(-1);
     }
   }),
   branch<IConnectProps>(

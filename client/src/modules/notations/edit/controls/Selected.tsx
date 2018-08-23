@@ -11,7 +11,6 @@ const { Panel } = Collapse;
 
 interface IConnectProps {
   editor: Store.IEditorState;
-  vextabString: string;
 }
 
 interface IVextabProps extends IConnectProps {
@@ -26,8 +25,7 @@ interface ISelectedProps extends IVextabProps {
 const enhance = compose<ISelectedProps, {}>(
   connect(
     (state: Store.IState) => ({
-      editor: state.editor,
-      vextabString: state.notation.vextabString
+      editor: state.editor
     })
   ),
   withProps((props: IVextabProps) => {
