@@ -4,15 +4,15 @@ import { Tuplet } from '../tuplet';
 export class Rhythm extends AbstractVexWrapper {
   public readonly value: string;
   public readonly dot: boolean;
-  public readonly tuplet: Tuplet | null;
   public readonly type = 'RHYTHM';
 
-  constructor(value: string, dot: boolean, tuplet: Tuplet | null) {
+  public tuplet: Tuplet | null = null;
+
+  constructor(value: string, dot: boolean) {
     super();
 
     this.value = value;
     this.dot = dot;
-    this.tuplet = tuplet;
   }
 
   public get isGrace(): boolean {
@@ -24,7 +24,9 @@ export class Rhythm extends AbstractVexWrapper {
   }
 
   public clone(): Rhythm {
-    return new Rhythm(this.value, this.dot, this.tuplet);
+    const rhythm = new Rhythm(this.value, this.dot);
+    rhythm.tuplet = this.tuplet ? new Tuplet(this.tuplet.value) : null;
+    return rhythm;
   }
 
   public hydrate() {

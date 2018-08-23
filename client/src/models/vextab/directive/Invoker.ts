@@ -103,7 +103,7 @@ export class Invoker {
 
     // Insert a StringSync note before the current element so that the StringSync
     // data structures are up-to-date.
-    const rhythm = new Rhythm('g', false, null);
+    const rhythm = new Rhythm('g', false);
     const notes = positions.map(pos => {
       const key = tuning.getNoteForFret(pos.fret.toString(10), pos.str.toString(10))
       const note = Note.from(key);

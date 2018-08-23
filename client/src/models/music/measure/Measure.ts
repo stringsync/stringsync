@@ -1,7 +1,8 @@
 import { Bar, Note, Rest, Line, Chord } from 'models/music';
 import { VextabMeasureSpec, Directive } from 'models/vextab';
-import { compact, get, flatMap } from 'lodash';
+import { compact, get, flatMap, times } from 'lodash';
 import { Annotations } from '../annotations';
+import { Tuplet } from '../tuplet';
 
 export type MeasureElement = Note | Rest | Bar | Chord;
 
@@ -44,16 +45,39 @@ export class Measure {
   }
 
   public get struct(): Vextab.ParsedStruct[] {
-    return flatMap(this.elements, element => {
+    return flatMap(this.elements, (element, ndx) => {
       if (get(element, 'rhythm.isGrace', false)) {
+        // Grace notes are implemented via directives, so we ignore them here
         return [];
       } else {
-        return compact([
+        // Compute the main 
+        const structs = [
           get(element, 'rhythm.struct'),
           element.struct,
           ...element.annotations.map(annotation => annotation.struct),
           ...element.directives.map(directive => directive.struct)
-        ])
+        ]
+
+        // We have to deal with tuplets at the measure level since it requires us
+        // to look backwards.
+        const tuplet = get(element, 'rhythm.tuplet') as Tuplet | void;
+
+        if (tuplet) {
+          // starting index for Array.prototype.slice
+          const startNdx = ndx + 1 - tuplet.value;
+          if (tuplet.value > 0 && startNdx > -1) {
+            const tupletElements = this.elements.slice(startNdx, ndx + 1);
+            const shouldPushTuplet = tupletElements.length === tuplet.value && tupletElements.every(tupletElement => (
+              get(tupletElement, 'rhythm.tuplet.value', -1) === tuplet.value
+            ));
+
+            if (shouldPushTuplet) {
+              structs.push(tuplet.struct);
+            }
+          }
+        }
+
+        return compact(structs);
       }
     });
   }

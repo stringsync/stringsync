@@ -5,7 +5,7 @@ import {
   MeasureElement
 } from 'models';
 import { VextabMeasureSpec } from './';
-import { get, last, dropRight } from 'lodash';
+import { get, last, takeRight, compact } from 'lodash';
 
 /**
  * This class is responsible for creating StringSync data structures from Vextab
@@ -23,10 +23,8 @@ export class StringSyncFactory {
 
   private elements: MeasureElement[];
   private rhythm: Rhythm;
-  private tuplet: Tuplet | null;
   private bar: Bar | void;
   private measureSpec: VextabMeasureSpec | void;
-  private path: string = '';
 
   constructor(vextab: Vextab, tuning: any) {
     this.vextab = vextab;
@@ -35,8 +33,7 @@ export class StringSyncFactory {
 
     // "Current" properties
     this.elements = [];
-    this.rhythm = new Rhythm('4', false, null);
-    this.tuplet = null;
+    this.rhythm = new Rhythm('4', false);
     this.bar = undefined;
     this.measureSpec = undefined;
   }
@@ -48,12 +45,9 @@ export class StringSyncFactory {
    */
   public extract(): Measure[] {
     this.vextab.rawStructs.forEach((struct, staveNdx) => {
-
-      this.path = `[${staveNdx}]`;
       this.measureSpec = this.extractMeasureSpec(struct);
 
       struct.notes.forEach((note: any, noteNdx: number) => {
-        this.path = `[${staveNdx}].notes[${noteNdx}]`;
 
         if (noteNdx === 0) {
           this.handleFirstNote(note);
@@ -112,10 +106,9 @@ export class StringSyncFactory {
   private handleLastNote(): void {
     this.pushMeasure();
     this.bar = undefined;
-    this.rhythm = new Rhythm('4', false, null);
+    this.rhythm = new Rhythm('4', false);
     this.measureSpec = undefined;
     this.elements = [];
-    this.path = '';
   }
 
   /**
@@ -132,7 +125,7 @@ export class StringSyncFactory {
         this.elements = [];
         break;
       case 'TIME':
-        this.rhythm = new Rhythm(note.time, note.dot, null);
+        this.rhythm = new Rhythm(note.time, note.dot);
         break;
       case 'NOTE':
         this.elements.push(this.extractNote(note));
@@ -144,7 +137,7 @@ export class StringSyncFactory {
         this.elements.push(new Rest(note.params.position, this.rhythm));
         break;
       case 'TUPLET':
-        this.tuplet = new Tuplet(parseInt(note.params.tuplet, 10));
+        this.applyTuplet(parseInt(note.params.tuplet, 10));
         break;
       case 'ANNOTATIONS':
         const lastElement = last(this.elements) || this.bar;
@@ -192,8 +185,6 @@ export class StringSyncFactory {
 
     note.rhythm = this.rhythm;
 
-    this.appendTuplet(note);
-
     return note;
   }
 
@@ -206,37 +197,28 @@ export class StringSyncFactory {
   private extractChord(struct: Vextab.Parsed.IChord) {
     const notes = struct.chord.map(note => this.extractNote(note));
     const chord = new Chord(notes);
-    chord.rhythm = this.rhythm;
 
-    this.appendTuplet(chord);
+    chord.rhythm = this.rhythm;
 
     return chord;
   }
 
   /**
-   * Compares the last n notes to the tuplet's value. If the tuplet is fulfilled,
-   * it has enough notes to satisfy its value. This function will remove the tuplet
-   * member variable and set it to null.
+   * Since tuplets are specified after the notes they are connected to, we look at the
+   * last n elements (n = tuplet's value) and attach the tuplet to each element's
+   * rhythm.
    * 
-   * @param {Note | Chord | Rest} element 
+   * @param value 
    */
-  private appendTuplet(element: Note | Chord | Rest): void {
-    const { tuplet } = this;
+  private applyTuplet(value: number) {
+    const rhythms = takeRight(
+      compact(this.elements.map(element => get(element, 'rhythm'))), value
+    ) as Rhythm[];
 
-    if (!tuplet) {
-      return;
+    if (rhythms.length !== value) {
+      throw new Error(`expected ${value} rhythms with rhythms, got ${rhythms.length}`);
     }
 
-    // Fulfilling a tuplet means you've supplied enough notes to satisfy the tuplet's value
-    const isTupletFufilled = dropRight(this.elements, tuplet.value).every(el => {
-      const otherTuplet: Tuplet | void = get(el, 'tuplet');
-      return Boolean(otherTuplet && otherTuplet.value === tuplet.value);
-    });
-
-    if (isTupletFufilled) {
-      this.tuplet = null;
-    } else {
-      element.tuplet = new Tuplet(tuplet.value);
-    }
+    rhythms.forEach(rhythm => rhythm.tuplet = new Tuplet(value))
   }
 }
