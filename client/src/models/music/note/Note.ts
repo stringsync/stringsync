@@ -71,6 +71,8 @@ export class Note extends AbstractVexWrapper {
   public rhythm: Rhythm | void;
   public tuplet: Tuplet | void;
   public positions: Guitar.IPosition[] = [];
+  public articulation: string | void;
+  public decorator: string | void;
 
   constructor(literal: string, octave: number, positions?: Guitar.IPosition[]) {
     super();
@@ -148,6 +150,8 @@ export class Note extends AbstractVexWrapper {
    */
   public get struct(): Vextab.Parsed.IPosition {
     return {
+      articulation: this.articulation,
+      decorator: this.decorator,
       fret: this.positions[0].fret.toString(),
       string: this.positions[0].str.toString()
     }

@@ -182,6 +182,9 @@ export class StringSyncFactory {
     const [literal, octave] = this.tuning.getNoteForFret(struct.fret, struct.string).split('/');
     const position = { fret: parseInt(struct.fret, 10), str: parseInt(struct.string, 10) }
     const note = new Note(literal, parseInt(octave, 10), [position]);
+    
+    note.articulation = struct.articulation;
+    note.decorator = struct.decorator;
 
     note.rhythm = this.rhythm;
 
@@ -197,6 +200,9 @@ export class StringSyncFactory {
   private extractChord(struct: Vextab.Parsed.IChord) {
     const notes = struct.chord.map(note => this.extractNote(note));
     const chord = new Chord(notes);
+
+    chord.articulation = struct.articulation;
+    chord.decorator = struct.decorator;
 
     chord.rhythm = this.rhythm;
 

@@ -19,6 +19,8 @@ export class Chord extends AbstractVexWrapper {
   public annotations: Annotations[] = [];
   public rhythm: Rhythm | void;
   public tuplet: Tuplet | void;
+  public articulation: string | void;
+  public decorator: string | void;
 
   constructor(notes: Note[]) {
     super();
@@ -49,7 +51,11 @@ export class Chord extends AbstractVexWrapper {
   }
 
   public get struct(): Vextab.Parsed.IChord {
-    return { chord: flatMap(this.notes, note => note.struct) };
+    return {
+      articulation: this.articulation,
+      chord: flatMap(this.notes, note => note.struct),
+      decorator: this.decorator
+    };
   }
 
   /**
