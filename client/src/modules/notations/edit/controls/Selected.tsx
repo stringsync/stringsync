@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { compose, withProps, branch, renderComponent, withPropsOnChange } from 'recompose';
+import { compose, withProps, branch, renderComponent } from 'recompose';
 import { connect } from 'react-redux';
 import { MeasureElement, Measure, Vextab } from 'models';
-import { Form, Collapse } from 'antd';
+import { Collapse } from 'antd';
 import { get } from 'lodash';
 import { Details } from './details';
 import { NotFound } from './details/NotFound';
@@ -30,14 +30,8 @@ const enhance = compose<ISelectedProps, {}>(
       vextabString: state.notation.vextabString
     })
   ),
-  withPropsOnChange(
-    ['vextabString'],
-    (props: IConnectProps) => ({
-      vextab: props.vextabString ? new Vextab(Vextab.decode(props.vextabString), 1) : null
-    })
-  ),
   withProps((props: IVextabProps) => {
-    const { vextab } = props;
+    const { vextab } = props.editor;
 
     if (!vextab) {
       return;

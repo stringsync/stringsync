@@ -11,6 +11,7 @@ import { Overlap, Layer } from '../overlap';
 interface IOuterProps {
   vextab: Vextab;
   line: LineModel;
+  editMode: boolean;
 }
 
 interface IInnerProps extends IOuterProps {
@@ -43,7 +44,15 @@ const enhance = compose<IInnerProps, IOuterProps>(
 
       const { renderer } = props.vextab;
 
-      renderer.assign(props.line, canvas);
+      try {
+        renderer.assign(props.line, canvas);
+      } catch (error) {
+        if (props.editMode) {
+          console.error(error);
+        }  else {
+          throw error;
+        }
+      }
 
       // If all of the score lines are rendered, trigger a notification.
       // The score/Renderer component should take care of renderering the vextab.

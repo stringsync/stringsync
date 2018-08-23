@@ -22,7 +22,7 @@ const enhance = compose<ISelectHandlerProps, IOuterProps>(
   withVextab,
   withHandlers({
     handleSelectChange: (props: SetVextabProps) => (value: SelectValue) => {
-      const vextab = props.getVextabClone();
+      const vextab = props.getVextab();
       const bar = vextab.elements[props.editor.elementIndex] as BarModel;
       bar.kind = value as Vextab.Parsed.IBarTypes;
       props.setVextab(vextab);
@@ -36,7 +36,7 @@ export const Bar = enhance(props => (
       <InputNumber disabled={true} value={props.element.id} />
     </Form.Item>
     <Form.Item label="kind">
-      <Select value={props.element.kind} onChange={props.handleSelectChange}>
+      <Select defaultValue={props.element.kind} onChange={props.handleSelectChange}>
         {BarModel.KINDS.map(kind => <Option key={kind}>{kind}</Option>)}
       </Select>
     </Form.Item>

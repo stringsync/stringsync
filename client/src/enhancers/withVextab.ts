@@ -5,11 +5,12 @@ import { NotationActions } from 'data';
 import { ComponentClass } from 'react';
 
 interface IConnectProps {
+  vextab: Vextab;
   setVextabString: (vextabString: string) => void;
 }
 
 export interface IWithVextabProps extends IConnectProps {
-  getVextabClone: () => Vextab;
+  getVextab: () => Vextab;
   setVextab: (vextab: Vextab) => void;
 }
 
@@ -22,22 +23,16 @@ export interface IWithVextabProps extends IConnectProps {
 export const withVextab = <TProps>(BaseComponent: ComponentClass<TProps>) => {
   const enhance = compose<TProps, IWithVextabProps & TProps>(
     connect(
-      null,
+      (state: Store.IState) => ({
+        vextab: state.editor.vextab
+      }),
       (dispatch: Dispatch) => ({
         setVextabString: (vextabString: string) => dispatch(NotationActions.setVextabString(vextabString))
       })
     ),
     withHandlers({
-      getVextabClone: () => () => {
-        const { vextab } = window.ss.maestro;
-
-        if (!vextab) {
-          throw new Error('expected vextab to be set on maestro');
-        }
-
-        const clone = vextab.clone();
-        clone.psuedorender();
-        return clone;
+      getVextab: (props: TProps & IWithVextabProps) => () => {
+        return props.vextab.clone();
       },
       setVextab: (props: TProps & IWithVextabProps) => (vextab: Vextab) => {
         props.setVextabString(vextab.toString());

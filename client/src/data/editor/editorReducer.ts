@@ -3,6 +3,8 @@ import * as actions from './editorActions';
 const getDefaultState = (): Store.IEditorState => ({
   elementIndex: -1,
   enabled: false,
+  errors: [],
+  vextab: null
 });
 
 export const editorReducer = (state = getDefaultState(), action: actions.EditorActions): Store.IEditorState => {
@@ -10,12 +12,24 @@ export const editorReducer = (state = getDefaultState(), action: actions.EditorA
 
   switch(action.type) {
 
+    case actions.APPEND_ERRORS:
+      nextState.errors = [...nextState.errors, ...action.payload.errors];
+      return nextState;
+
+    case actions.REMOVE_ERRORS:
+      nextState.errors = [];
+      return nextState;
+
     case actions.SET_ENABLED:
       nextState.enabled = action.payload.enabled;
       return nextState;
 
     case actions.SET_ELEMENT_INDEX:
       nextState.elementIndex = action.payload.elementIndex;
+      return nextState;
+
+    case actions.SET_VEXTAB:
+      nextState.vextab = action.payload.vextab;
       return nextState;
 
     default:

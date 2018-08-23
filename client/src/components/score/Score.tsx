@@ -10,6 +10,8 @@ import { scoreKey } from './scoreKey';
 import { Renderer } from './Renderer';
 import { CanvasRenderables } from './canvas-renderables';
 import { Editor } from './Editor';
+import { connect, Dispatch } from 'react-redux';
+import { EditorActions } from 'data';
 
 const MIN_WIDTH_PER_MEASURE = 240; // px
 const MIN_MEASURES_PER_LINE = 1;
@@ -19,9 +21,16 @@ interface IOuterProps {
   dynamic: boolean;
   notation: Notation.INotation;
   width: number;
+  editMode: boolean;
 }
 
-interface IVextabProps extends IOuterProps {
+interface IConnectProps extends IOuterProps {
+  appendErrors: (errors: string[]) => void;
+  removeErrors: () => void;
+  setEditorVextab: (vextab: Vextab) => void;
+}
+
+interface IVextabProps extends IConnectProps {
   vextab: Vextab;
   setVextab: (vextab: Vextab) => void;
 }
@@ -36,6 +45,14 @@ interface IInnerProps extends IVextabSyncProps {
 }
 
 const enhance = compose<IInnerProps, IOuterProps>(
+  connect(
+    null,
+    (dispatch: Dispatch) => ({
+      appendErrors: (errors: string[]) => dispatch(EditorActions.appendErrors(errors)),
+      removeErrors: () => dispatch(EditorActions.removeErrors()),
+      setEditorVextab: (vextab: Vextab) => dispatch(EditorActions.setVextab(vextab))
+    })
+  ),
   withState('vextab', 'setVextab', new Vextab([], 1)),
   withProps((props: IVextabSyncProps) => {
     let measuresPerLine;
@@ -52,21 +69,38 @@ const enhance = compose<IInnerProps, IOuterProps>(
     return { measuresPerLine };
   }),
   lifecycle<IInnerProps, {}>({
-    componentWillReceiveProps(nextProps) {
+    componentDidUpdate(prevProps) {
       const shouldCreateVextab = (
-        this.props.width !== nextProps.width ||
-        this.props.notation.vextabString !== nextProps.notation.vextabString ||
-        this.props.measuresPerLine !== nextProps.measuresPerLine
+        prevProps.width !== this.props.width ||
+        prevProps.notation.vextabString !== this.props.notation.vextabString ||
+        prevProps.measuresPerLine !== this.props.measuresPerLine
       );
 
       let vextab;
-      if (shouldCreateVextab && nextProps.notation.vextabString.length > 0) {
-        vextab = new Vextab(
-          Vextab.decode(nextProps.notation.vextabString), nextProps.measuresPerLine, nextProps.width
-        );
-        nextProps.setVextab(vextab);
+      if (shouldCreateVextab && this.props.notation.vextabString.length > 0) {
+        let structs: Vextab.ParsedStruct[] =[];
+
+        try {
+          structs = Vextab.decode(this.props.notation.vextabString);
+        } catch (error) {
+          if (this.props.editMode) {
+            this.props.appendErrors([error.message]);
+            return;
+          } else {
+            throw error;
+          }
+        }
+
+        this.props.removeErrors();
+
+        vextab = new Vextab(structs, this.props.measuresPerLine, this.props.width);
+        this.props.setVextab(vextab);
+
+        if (this.props.editMode) {
+          this.props.setEditorVextab(vextab);
+        }
       } else {
-        vextab = nextProps.vextab;
+        vextab = this.props.vextab;
       }
 
       // Sync the Vextab with Maestro's vextab
@@ -108,7 +142,7 @@ const Spacer = styled('div')`
 export const Score = enhance(props => (
   <Outer id="score" dynamic={props.dynamic}>
     <Editor vextab={props.vextab} />
-    <Renderer />
+    <Renderer editMode={props.editMode} />
     <CanvasRenderables active={props.dynamic} />
     <Title
       songName={props.notation.songName}
@@ -118,6 +152,7 @@ export const Score = enhance(props => (
     {
       props.vextab.lines.map(line => (
         <Line
+          editMode={props.editMode}
           key={`key-${scoreKey(props.vextab, line)}`}
           line={line}
           vextab={props.vextab}
@@ -125,5 +160,6 @@ export const Score = enhance(props => (
       ))
     }
     {props.dynamic ? <Spacer><Logo src={logo}  alt="logo" /></Spacer> : null}
+    {props.children}
   </Outer>
 ));

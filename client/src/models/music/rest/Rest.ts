@@ -7,10 +7,10 @@ import { Annotations } from '../annotations';
 import { Tuplet } from '../tuplet';
 
 export class Rest extends AbstractVexWrapper {
-  public readonly position: number;
   public readonly id: number;
   public readonly type = 'REST';
   
+  public position: number;
   public rhythm: Rhythm;
   public measure: Measure | void;
   public directives: Directive[] = [];

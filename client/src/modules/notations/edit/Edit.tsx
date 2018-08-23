@@ -51,7 +51,6 @@ const enhance = compose<IInnerProps, OuterProps>(
   lifecycle<IInnerProps, {}>({
     async componentDidMount() {
       $('body').addClass('no-scroll');
-
       this.props.resetNotation();
       this.props.resetVideo();
       this.props.resetUi();
@@ -73,8 +72,8 @@ const enhance = compose<IInnerProps, OuterProps>(
       }
     },
     componentWillUnmount() {
-      this.props.setEditorEnabled(false);
       $('body').removeClass('no-scroll');
+      this.props.setEditorEnabled(false);
     }
   }),
   branch<IInnerProps>(
@@ -94,8 +93,8 @@ const LeftCol = styled(Col)`
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  margin-bottom: 128px;
   border-right: 1px solid #efefef;
+  padding-bottom: 128px;
 `;
 
 const LeftColInner = styled('div')`

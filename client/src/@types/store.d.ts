@@ -44,5 +44,7 @@ declare namespace Store {
   export interface IEditorState {
     enabled: boolean;
     elementIndex: number;
+    errors: string[];
+    vextab: Vextab | null;
   }
 }
