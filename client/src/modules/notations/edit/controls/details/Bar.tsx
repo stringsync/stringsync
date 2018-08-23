@@ -1,16 +1,33 @@
 import * as React from 'react';
-import { compose } from 'recompose';
+import { compose, withHandlers, lifecycle } from 'recompose';
 import { Bar as BarModel } from 'models';
 import { Form, Select, InputNumber } from 'antd';
+import { withSetVextab, IWithSetVextabProps } from 'enhancers';
+import { SelectValue } from 'antd/lib/select';
 
 const { Option } = Select;
 
 interface IOuterProps {
   element: BarModel;
+  editor: Store.IEditorState;
 }
 
-const enhance = compose<IOuterProps, IOuterProps>(
+type SetVextabProps = IOuterProps & IWithSetVextabProps;
 
+interface ISelectHandlerProps extends SetVextabProps {
+  handleSelectChange: (value: SelectValue) => void;
+}
+
+const enhance = compose<ISelectHandlerProps, IOuterProps>(
+  withSetVextab,
+  withHandlers({
+    handleSelectChange: (props: SetVextabProps) => (value: SelectValue) => {
+      const vextab = props.getVextabClone();
+      const bar = vextab.elements[props.editor.elementIndex] as BarModel;
+      bar.kind = value as Vextab.Parsed.IBarTypes;
+      props.setVextab(vextab);
+    }
+  })
 );
 
 export const Bar = enhance(props => (
@@ -19,7 +36,7 @@ export const Bar = enhance(props => (
       <InputNumber disabled={true} value={props.element.id} />
     </Form.Item>
     <Form.Item label="kind">
-      <Select value={props.element.kind}>
+      <Select value={props.element.kind} onChange={props.handleSelectChange}>
         {BarModel.KINDS.map(kind => <Option key={kind}>{kind}</Option>)}
       </Select>
     </Form.Item>  

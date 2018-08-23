@@ -13,6 +13,7 @@ import { Directives } from './directives';
 
 interface IOuterProps {
   element: MeasureModel | MeasureElement | null;
+  editor: Store.IEditorState;
   show?: 'annotations' | 'directives';
 }
 
