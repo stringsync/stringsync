@@ -59,11 +59,11 @@ const enhance = compose<ISelectedProps, {}>(
 
 export const Selected = enhance(props => (
   <Collapse accordion={true} bordered={false}>
-    <Panel key="1" header="MEASURE">
-      <Details editor={props.editor} element={props.measure} />
-    </Panel>
-    <Panel key="2" header={get(props.element, 'type')}>
+    <Panel key="1" header={get(props.element, 'type')}>
       <Details editor={props.editor} element={props.element} />
+    </Panel>
+    <Panel key="2" header="MEASURE">
+      <Details editor={props.editor} element={props.measure} />
     </Panel>
     <Panel key="3" header="ANNOTATIONS">
       <Details editor={props.editor} show="annotations" element={props.element} />

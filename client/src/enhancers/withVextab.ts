@@ -8,18 +8,19 @@ interface IConnectProps {
   setVextabString: (vextabString: string) => void;
 }
 
-export interface IWithSetVextabProps extends IConnectProps {
+export interface IWithVextabProps extends IConnectProps {
   getVextabClone: () => Vextab;
   setVextab: (vextab: Vextab) => void;
 }
 
 /**
- * This component adds the setVextab to the component as a prop. 
+ * This component adds the setter and getters for the notation.vextabString in
+ * the redux store.
  * 
  * @param BaseComponent
  */
-export const withSetVextab = <TProps>(BaseComponent: ComponentClass<TProps>) => {
-  const enhance = compose<TProps, IWithSetVextabProps & TProps>(
+export const withVextab = <TProps>(BaseComponent: ComponentClass<TProps>) => {
+  const enhance = compose<TProps, IWithVextabProps & TProps>(
     connect(
       null,
       (dispatch: Dispatch) => ({
@@ -38,7 +39,7 @@ export const withSetVextab = <TProps>(BaseComponent: ComponentClass<TProps>) => 
         clone.psuedorender();
         return clone;
       },
-      setVextab: (props: TProps & IWithSetVextabProps) => (vextab: Vextab) => {
+      setVextab: (props: TProps & IWithVextabProps) => (vextab: Vextab) => {
         props.setVextabString(vextab.toString());
       }
     })
