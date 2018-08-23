@@ -21,7 +21,11 @@ interface ISelectedProps extends IConnectProps {
 const enhance = compose<ISelectedProps, {}>(
   connect(
     (state: Store.IState) => ({
-      editor: state.editor
+      editor: state.editor,
+      // we connect this element to the vextabString so that we
+      // can observe changes in the children without having to
+      // connect to the vextabString in each child component
+      vextabString: state.notation.vextabString
     })
   ),
   withProps((props: IConnectProps) => {

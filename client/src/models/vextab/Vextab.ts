@@ -5,6 +5,7 @@ import { Flow } from 'vexflow';
 import { VextabLinkedList } from './linked-list';
 import { id } from 'utilities';
 import { isEqual, flatMap, uniqWith } from 'lodash';
+import { Directive } from './directive';
 
 const DEFAULT_TUNING: Vex.Flow.Tuning = new (Flow as any).Tuning();
 
@@ -150,8 +151,26 @@ export class Vextab {
     return Vextab.encode(this.structs);
   }
 
+  /**
+   * Returns a cloned Vextab.
+   */
   public clone(): Vextab {
     return new Vextab(this.structs, this.measuresPerLine, this.width);
+  }
+
+  /**
+   * Creates fake canvases to generate the Vexflow data structures needed to hydrate
+   * each note.
+   */
+  public psuedorender(): void {
+    if (this.renderer.isRendered) {
+      throw new Error('cannot psuedorender a rendered vextab')
+    }
+
+    this.lines.forEach(line => this.renderer.assign(line, document.createElement('canvas')));
+    Directive.extractAndInvoke(this);
+    this.renderer.render();
+    this.links.compute();
   }
 
   /**
