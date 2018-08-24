@@ -1,10 +1,11 @@
 import { VextabDecoder, VextabEncoder, VextabRenderer } from './';
 import { StringSyncFactory } from './string-sync-factory';
-import { Line, Measure } from 'models';
+import { Line, Measure, MeasureElement } from 'models';
 import { Flow } from 'vexflow';
 import { VextabLinkedList } from './linked-list';
 import { id } from 'utilities';
-import { isEqual } from 'lodash';
+import { isEqual, flatMap, uniqWith } from 'lodash';
+import { Directive } from './directive';
 
 const DEFAULT_TUNING: Vex.Flow.Tuning = new (Flow as any).Tuning();
 
@@ -41,16 +42,20 @@ export class Vextab {
     return (VextabDecoder as any).parse(vextabString);
   }
 
+  public static encode(structs: Vextab.ParsedStruct[]) {
+    return VextabEncoder.encode(structs);
+  }
+
   public readonly rawStructs: Vextab.ParsedStruct[];
   public readonly id: number;
   public readonly measures: Measure[];
   public readonly lines: Line[];
   public readonly width: number | void;
+  public readonly renderer: VextabRenderer;
+  public readonly links: VextabLinkedList;
 
   public measuresPerLine: number;
   public tuning = DEFAULT_TUNING;
-  public renderer: VextabRenderer;
-  public links: VextabLinkedList;
 
   constructor(rawStructs: Vextab.ParsedStruct[], measuresPerLine: number, width?: number | void) {
     if (typeof measuresPerLine !== 'number' || measuresPerLine < 0) {
@@ -63,8 +68,8 @@ export class Vextab {
     this.rawStructs = rawStructs;
     this.width = width;
 
-    this.measures = this.getMeasures();
-    this.lines = this.getLines();
+    this.measures = this.computeMeasures();
+    this.lines = this.computeLines();
 
     // Link lines with measures
     this.lines.forEach(line => {
@@ -81,10 +86,60 @@ export class Vextab {
   }
 
   /**
-   * This method returns the computed structs, not the rawStructs.
+   * This function computes the structs based off of the StringSync data structures.
+   * It will combine measures with the same measure spec with each other.
+   * There are also more note elements since "time" Vextab ParsedStructs are being
+   * appended to every single note.
    */
   public get structs(): Vextab.ParsedStruct[] {
-    return this.lines.map(line => line.struct);
+    const lineGroups: Line[][] = this.lines.reduce((groups, line, ndx) => {
+      const prev = this.links.prev(line) as Line | void;
+      const next = this.links.next(line) as Line | void;
+
+      // we only check the first measure since we already know that
+      // a line's measures all have the same measure spec
+      const shouldAppendToCurrGroup = (
+        !prev ||
+        !next ||
+        isEqual(prev.measures[0].spec.struct, line.measures[0].spec.struct)
+      );
+
+      if (shouldAppendToCurrGroup) {
+        groups[groups.length - 1].push(line);
+      } else {
+        groups.push([line]);
+      }
+
+      return groups;
+    }, [[]] as Line[][]);
+
+    const baseStruct: Vextab.Parsed.ILine = {
+      element: 'tabstave',
+      notes: [],
+      options: [],
+      text: []
+    };
+
+    return lineGroups.map(lineGroup => (
+      lineGroup.reduce((struct, line) => {
+        const { element } = struct;
+        const { notes, options, text } = line.struct;
+
+        return {
+          element,
+          notes: [...struct.notes, ...notes],
+          options: uniqWith([...struct.options, ...options], isEqual),
+          text: [...struct.text, ...text]
+        }
+      }, baseStruct)
+    ));
+  }
+
+  /**
+   * Computes all the elements of the measures
+   */
+  public get elements(): MeasureElement[] {
+    return flatMap(this.measures, measure => measure.elements);
   }
 
   /**
@@ -93,7 +148,29 @@ export class Vextab {
    * @returns {string}
    */
   public toString(): string {
-    return VextabEncoder.encode(this.rawStructs);
+    return Vextab.encode(this.structs);
+  }
+
+  /**
+   * Returns a cloned Vextab.
+   */
+  public clone(): Vextab {
+    return new Vextab(this.structs, this.measuresPerLine, this.width);
+  }
+
+  /**
+   * Creates fake canvases to generate the Vexflow data structures needed to hydrate
+   * each note.
+   */
+  public psuedorender(): void {
+    if (this.renderer.isRendered) {
+      throw new Error('cannot psuedorender a rendered vextab')
+    }
+
+    this.lines.forEach(line => this.renderer.assign(line, document.createElement('canvas')));
+    Directive.extractAndInvoke(this);
+    this.renderer.render();
+    this.links.compute();
   }
 
   /**
@@ -101,7 +178,7 @@ export class Vextab {
    * 
    * @returns {Measure[]}
    */
-  private getMeasures(): Measure[] {
+  private computeMeasures(): Measure[] {
     return StringSyncFactory.extract(this, this.tuning);
   }
 
@@ -110,7 +187,7 @@ export class Vextab {
    * 
    * @returns {Line[]}
    */
-  private getLines(): Line[] {
+  private computeLines(): Line[] {
     const lines: Line[] = [];
     let measures: Measure[] = [];
 

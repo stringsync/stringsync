@@ -3,11 +3,8 @@ import * as constants from './noteConstants';
 import { AbstractVexWrapper, Directive } from 'models/vextab';
 import { NoteHydrationValidator } from './NoteHydrationValidator';
 import { id } from 'utilities';
-import { Measure } from 'models/music';
+import { Measure, Annotations, Rhythm, Tuplet } from 'models/music';
 import { NoteRenderer } from 'models/vextab';
-import { Annotations } from '../annotations';
-import { Rhythm } from '../rhythm';
-import { Tuplet } from '../tuplet';
 
 /**
  * The purpose of this class is to encapsulate the logic related to describing a note's inherent
@@ -74,6 +71,8 @@ export class Note extends AbstractVexWrapper {
   public rhythm: Rhythm | void;
   public tuplet: Tuplet | void;
   public positions: Guitar.IPosition[] = [];
+  public articulation: string | void;
+  public decorator: string | void;
 
   constructor(literal: string, octave: number, positions?: Guitar.IPosition[]) {
     super();
@@ -151,6 +150,8 @@ export class Note extends AbstractVexWrapper {
    */
   public get struct(): Vextab.Parsed.IPosition {
     return {
+      articulation: this.articulation,
+      decorator: this.decorator,
       fret: this.positions[0].fret.toString(),
       string: this.positions[0].str.toString()
     }

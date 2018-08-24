@@ -74,6 +74,11 @@ export class Extractor {
     // Removes the directive modifiers from the tabNote object itself.
     (tabNote as any).modifiers = nonDirectiveMods;
 
+    // MUTATION!
+    // Removes the annotations from the element.
+    const directiveTexts = new Set(directiveMods.map(mod => get(mod, 'text')));
+    element.annotations = element.annotations.filter(annotation => !annotation.texts.some(text => directiveTexts.has(text)));
+
     // Now, we create the directive object from the directiveMods to 
     // store on the measure element itself.
     element.directives = directiveMods.map(mod => {

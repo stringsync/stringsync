@@ -3,7 +3,7 @@ import { compose, lifecycle, branch, renderComponent } from 'recompose';
 import { RouteComponentProps } from 'react-router';
 import { ViewportTypes } from 'data/viewport/getViewportType';
 import { connect, Dispatch } from 'react-redux';
-import { fetchNotation, NotationsActions, VideoActions } from 'data';
+import { fetchNotation, VideoActions, NotationActions, UiActions, EditorActions } from 'data';
 import { NotSupported } from './NotSupported';
 import { Row, Col } from 'antd';
 import { EditVideo } from './EditVideo';
@@ -11,9 +11,10 @@ import styled from 'react-emotion';
 import { EditScore } from './EditScore';
 import { Fretboard, MaestroController, Overlap, Layer } from 'components';
 import { VideoControls } from 'modules/video-controls';
-import { Menu } from '../show/Menu';
+import { Menu } from 'modules/notations/menu';
+import { Controls } from './controls';
 
-const MINIMUM_VIEWPORT_WIDTH = 1024; // px
+export const MINIMUM_VIEWPORT_WIDTH = 760; // px
 
 type OuterProps = RouteComponentProps<{ id: string }>;
 
@@ -22,6 +23,12 @@ interface IInnerProps extends OuterProps {
   viewportWidth: number;
   viewportType: ViewportTypes;
   fetchNotation: (id: number) => Notation.INotation;
+  resetNotation: () => void;
+  resetVideo: () => void;
+  resetUi: () => void;
+  setVideo: (video: Video.IVideo) => void;
+  setFretboardVisibility: (visibility: boolean) => void;
+  setEditorEnabled: (enabled: boolean) => void;
 }
 
 const enhance = compose<IInnerProps, OuterProps>(
@@ -33,18 +40,32 @@ const enhance = compose<IInnerProps, OuterProps>(
     }),
     (dispatch: Dispatch) => ({
       fetchNotation: (id: number) => dispatch(fetchNotation(id) as any),
+      resetNotation: () => dispatch(NotationActions.resetNotation()),
+      resetUi: () => dispatch(UiActions.reset()),
+      resetVideo: () => dispatch(VideoActions.resetVideo()),
+      setEditorEnabled: (enabled: boolean) => dispatch(EditorActions.setEnabled(enabled)),
+      setFretboardVisibility: (visibility: boolean) => dispatch(UiActions.setFretboardVisibility(visibility)),
       setVideo: (video: Video.IVideo) => dispatch(VideoActions.setVideo(video))
     })
   ),
   lifecycle<IInnerProps, {}>({
-    componentWillMount() {
-      $('body').addClass('no-scroll');
-    },
     async componentDidMount() {
+      $('body').addClass('no-scroll');
+      this.props.resetNotation();
+      this.props.resetVideo();
+      this.props.resetUi();
+      this.props.setFretboardVisibility(true);
+      this.props.setEditorEnabled(true);
+
       const id = parseInt(this.props.match.params.id, 10);
 
       try {
         await this.props.fetchNotation(id);
+
+        const { video } = this.props.notation;
+        if (video) {
+          this.props.setVideo(video)
+        }
       } catch (error) {
         console.error(error);
         window.ss.message.error('something went wrong');
@@ -52,6 +73,7 @@ const enhance = compose<IInnerProps, OuterProps>(
     },
     componentWillUnmount() {
       $('body').removeClass('no-scroll');
+      this.props.setEditorEnabled(false);
     }
   }),
   branch<IInnerProps>(
@@ -68,19 +90,25 @@ const StyledRow = styled(Row)`
 `;
 
 const LeftCol = styled(Col)`
-  overflow: auto;
-  height: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   border-right: 1px solid #efefef;
+  padding-bottom: 128px;
 `;
+
+const LeftColInner = styled('div')`
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  
+  ::-webkit-scrollbar {
+    display: none;
+  }
+`
 
 const RightCol = styled(Col)`
   overflow: hidden;
 `;
-
-const Spacer = styled('div')`
-  height: 110vh;
-`
 
 /**
  * The purpose of this component is to manage the state.notations.edit and video state
@@ -94,11 +122,13 @@ export const Edit = enhance(props => (
       deadTimeMs={props.notation.deadTimeMs}
     />
     <StyledRow type="flex">
-      <LeftCol span={6}>
+      <LeftCol span={8}>
         <EditVideo />
-        <Spacer />
+        <LeftColInner>
+          <Controls />
+        </LeftColInner>
       </LeftCol>
-      <RightCol span={18}>
+      <RightCol span={16}>
         <Overlap>
           <Layer zIndex={10}>
             <Fretboard />

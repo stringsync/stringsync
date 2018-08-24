@@ -30,6 +30,10 @@ export const notationReducer = (state = getDefaultState(), action: actions.Notat
       nextState = Object.assign({}, action.payload.notation);
       return nextState;
 
+    case actions.SET_VEXTAB_STRING:
+      nextState.vextabString = action.payload.vextabString;
+      return nextState;
+
     default:
       return nextState;
   }

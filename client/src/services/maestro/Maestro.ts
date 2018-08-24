@@ -30,6 +30,7 @@ const getNullState = (time: Time, loopStart: Time, loopEnd: Time): IMaestroState
  * instance is still computing, it will be ignored.
  */
 export class Maestro extends AbstractObservable {
+  
   public deadTime: Time;
   public bpm: number;
   public durationMs: Time;

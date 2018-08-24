@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'react-emotion';
 import { Menu as AntdMenu, Checkbox, Icon } from 'antd';
 import { withRouter, Link, RouteComponentProps } from 'react-router-dom';
-import { compose, withState, withHandlers } from 'recompose';
+import { compose, withState, withHandlers, withProps } from 'recompose';
 import { connect, Dispatch } from 'react-redux';
 import { get } from 'lodash';
 import { UiActions } from 'data';
@@ -32,6 +32,7 @@ interface IHandlerProps extends IConnectProps {
 }
 
 interface IInnerProps extends IHandlerProps {
+  isEdit: boolean;
   suggestNotesChecked: boolean;
   setSuggestNotesChecked: (suggestNotes: boolean) => void;
 }
@@ -73,7 +74,10 @@ const enhance = compose<IInnerProps, {}>(
       props.setLoopVisibility(!props.isLoopVisible);
     }
   }),
-  withState('suggestNotesChecked', 'setSuggestNotesChecked', false),
+  withProps((props: IHandlerProps)  => ({
+    isEdit: props.location.pathname.endsWith('edit')
+  })),
+  withState('suggestNotesChecked', 'setSuggestNotesChecked', false)
 );
 
 interface IOuterDivProps {
@@ -138,10 +142,10 @@ export const Menu = enhance(props => (
             </Item>
             {
               props.isCurrentUserTranscriber || props.role === 'admin'
-                ? <Item key="edit">
-                  <Link to={`/n/${props.match.params.id}/edit`}>
+                ? <Item key="back">
+                  <Link to={`/n/${props.match.params.id}${props.isEdit ? '' : '/edit' }`}>
                     <Icon type="edit" />
-                    <span>edit</span>
+                    <span>{`${props.isEdit ? 'show' : 'edit'}`}</span>
                   </Link>
                 </Item>
                 : null

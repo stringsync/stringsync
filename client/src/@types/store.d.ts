@@ -1,5 +1,6 @@
 declare namespace Store {
   export interface IState {
+    editor: IEditorState;
     notations: Notation.INotation[];
     notation: Notation.INotation;
     session: ISessionState;
@@ -38,5 +39,12 @@ declare namespace Store {
     isLoopVisible: boolean;
     isFretboardVisible: boolean;
     isPianoVisible: boolean;
+  }
+
+  export interface IEditorState {
+    enabled: boolean;
+    elementIndex: number;
+    errors: string[];
+    vextab: Vextab | null;
   }
 }

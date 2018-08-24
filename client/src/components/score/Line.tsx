@@ -11,12 +11,14 @@ import { Overlap, Layer } from '../overlap';
 interface IOuterProps {
   vextab: Vextab;
   line: LineModel;
+  editMode: boolean;
 }
 
 interface IInnerProps extends IOuterProps {
   handleScoreCanvasRef: (canvas: HTMLCanvasElement) => void;
   handleCaretCanvasRef: (canvas: HTMLCanvasElement) => void;
   handleLoopCaretCanvasRef: (canvas: HTMLCanvasElement) => void;
+  handleSelectorCanvasRef: (canvas: HTMLCanvasElement) => void;
 }
 
 const enhance = compose<IInnerProps, IOuterProps>(
@@ -42,34 +44,30 @@ const enhance = compose<IInnerProps, IOuterProps>(
 
       const { renderer } = props.vextab;
 
-      renderer.assign(props.line, canvas);
-
-      if (renderer.isRenderable) {
-        // The extraction process is idempotent.
-        Directive.extractAndInvoke(renderer.vextab); // We ensure that we're targeting the correct 
-                                                     // vextab by referencing the renderer's vextab. 
-
-        if (!renderer.isRendered) {
-          renderer.render();
-        }
-
-        const tickMap = get(window.ss, 'maestro.tickMap');
-        if (tickMap) {
-          tickMap.compute();
-        }
-
-        props.vextab.links.compute();
-
-        const { maestro } = window.ss;
-        if (maestro) {
-          const caret = maestro.observers.find(observer => observer.name === 'CaretController');
-          maestro.update(false);
-
-          if (caret) {
-            caret.handleNotification(maestro);
-          }
+      try {
+        renderer.assign(props.line, canvas);
+      } catch (error) {
+        if (props.editMode) {
+          console.error(error);
+        }  else {
+          throw error;
         }
       }
+
+      // If all of the score lines are rendered, trigger a notification.
+      // The score/Renderer component should take care of renderering the vextab.
+      if (renderer.isRenderable && !renderer.isRendered) {
+        const { maestro } = window.ss;
+        maestro.changed = true;
+        maestro.notify();
+      }
+    },
+    handleSelectorCanvasRef: (props: IOuterProps) => (canvas: HTMLCanvasElement) => {
+      if (!canvas) {
+        return;
+      }
+
+      props.vextab.renderer.selectorRenderer.assign(props.line, canvas);
     }
   })
 );
@@ -106,6 +104,9 @@ export const Line = enhance(props => (
         </Layer>
         <Layer zIndex={12}>
           <canvas ref={props.handleLoopCaretCanvasRef} />
+        </Layer>
+        <Layer zIndex={13}>
+          <canvas ref={props.handleSelectorCanvasRef} />
         </Layer>
       </Overlap>
     </Inner>

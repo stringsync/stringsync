@@ -29,8 +29,8 @@ declare namespace Vextab {
 
     export interface IChord {
       chord: IPosition[];
-      articulation?: string;
-      decorator?: string;
+      articulation: string | void;
+      decorator: string | void;
     }
 
     export interface IKey {
@@ -48,8 +48,8 @@ declare namespace Vextab {
     export interface IPosition {
       string: string;
       fret: string;
-      articulation?: string;
-      decorator?: string;
+      articulation: string | void;
+      decorator: string | void;
     }
 
     export interface ITabstave {

@@ -1,6 +1,6 @@
 import { createAction } from 'utilities/redux';
 
-export const RESET = 'RESET';
+export const RESET = 'uiActions/RESET';
 export const SET_NOTATION_MENU_VISIBILITY = 'SET_NOTATION_MENU_VISIBILITY';
 export const SET_LOOP_VISIBILITY = 'SET_LOOP_VISIBILITY';
 export const SET_FRETBOARD_VISIBILITY = 'SET_FRETBOARD_VISIBILITY';

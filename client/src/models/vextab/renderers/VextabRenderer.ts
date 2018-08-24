@@ -8,6 +8,7 @@ import { Bar, Line } from 'models/music';
 import { RendererStore } from './RendererStore';
 import { CaretRenderer } from './CaretRenderer';
 import { LoopCaretRenderer } from './LoopCaretRenderer';
+import { SelectorRenderer } from './SelectorRenderer';
 
 Artist.NOLOGO = true;
 
@@ -33,6 +34,7 @@ export class VextabRenderer {
   public readonly store: RendererStore<IVextabRendererStoreData>;
   public readonly caretRenderer: CaretRenderer;
   public readonly loopCaretRenderer: LoopCaretRenderer;
+  public readonly selectorRenderer: SelectorRenderer;
   public readonly height: number = VextabRenderer.DEFAULT_LINE_HEIGHT;
   public readonly width: number = VextabRenderer.DEFAULT_LINE_WIDTH;
 
@@ -46,8 +48,11 @@ export class VextabRenderer {
     }
     
     this.store = new RendererStore();
+
+    // sub-renderers
     this.caretRenderer = new CaretRenderer(this);
     this.loopCaretRenderer = new LoopCaretRenderer(this);
+    this.selectorRenderer = new SelectorRenderer(this);
   }
 
   public get isRenderable(): boolean {

@@ -32,6 +32,6 @@ export class Directive {
 
   public get struct(): Vextab.Parsed.IAnnotations {
     const json = JSON.stringify(Object.assign({}, { type: this.type }, this.payload));
-    return { command: 'annotations', params: [`JSON=${json}`] }
+    return { command: 'annotations', params: [`JSON=${json.replace(',', ';')}`] }
   }
 }

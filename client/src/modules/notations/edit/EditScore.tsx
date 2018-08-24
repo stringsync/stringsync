@@ -2,6 +2,7 @@ import * as React from 'react';
 import { compose, withState, withHandlers, withProps } from 'recompose';
 import { connect } from 'react-redux';
 import { Score } from 'components';
+import { EditorErrors } from './EditorErrors';
 
 interface IConnectProps {
   viewportWidth: number;
@@ -47,7 +48,9 @@ const enhance = compose<IInnerProps, {}>(
 
 export const EditScore = enhance(props => (
   <div ref={props.handleOuterDivRef}>
+    <EditorErrors />
     <Score
+      editMode={true}
       dynamic={true}
       notation={props.notation}
       width={props.scoreWidth}

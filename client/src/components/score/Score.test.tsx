@@ -11,5 +11,5 @@ assertRender(() => {
   notation.artistName = 'bar';
   notation.vextabString = sample(VEXTAB_STRINGS) as string;
 
-  return <Score dynamic={true} width={640} notation={notation} />;
+  return <Score editMode={false} dynamic={true} width={640} notation={notation} />;
 });

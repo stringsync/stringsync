@@ -7,4 +7,4 @@ import { sample } from 'lodash';
 
 const vextab = new Vextab(Vextab.decode(sample(VEXTAB_STRINGS) as string), 1);
 
-assertRender(() => <Line vextab={vextab} line={vextab.lines[0]}/>);
+assertRender(() => <Line editMode={true} vextab={vextab} line={vextab.lines[0]}/>);

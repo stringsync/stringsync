@@ -19,7 +19,7 @@ export class CaretRenderer {
   public readonly store: RendererStore<ICaretRendererStoreData> = new RendererStore<ICaretRendererStoreData>();
   public readonly vextabRenderer: VextabRenderer;
 
-  public rendereredLines: Line[] = [];
+  public renderedLines: Line[] = [];
 
   constructor(vextabRenderer: VextabRenderer) {
     this.vextabRenderer = vextabRenderer;
@@ -81,13 +81,13 @@ export class CaretRenderer {
         ctx.stroke();
         ctx.closePath();
 
-        this.rendereredLines.push(line);
+        this.renderedLines.push(line);
       }
     }
   }
 
   public clear(): void {
-    this.rendereredLines.forEach(line => {
+    this.renderedLines.forEach(line => {
       const { canvas } = this.store.fetch(line);
 
       if (!canvas) {
@@ -103,7 +103,7 @@ export class CaretRenderer {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     });
 
-    this.rendereredLines = [];
+    this.renderedLines = [];
   }
 
   /**

@@ -5,6 +5,7 @@ import { Video } from 'components';
 const Outer = styled('div')`
   background: black;
   overflow: hidden;
+  min-height: 350px;
   
   iframe {
     width: 100%;

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { compose, ComponentEnhancer } from 'recompose';
 import logoSrc from 'assets/logo.svg';
 import { ViewportTypes } from 'data/viewport/getViewportType';
+import { Divider } from 'antd';
 
 interface IInnerProps {
   viewportType: ViewportTypes;
@@ -28,11 +29,8 @@ const Logo = styled('img')`
 `;
 
 const LogoText = styled('span')`
-  margin-left: 8px;
-  padding-left: 8px;
   font-size: 14px;
   height: 24px;
-  border-left: 1px solid ${props => props.theme.primaryColor};
 `;
 
 /**
@@ -45,10 +43,13 @@ export const NavLogo = enhance(props =>
     </div>
     <div>
       {
-        props.viewportType === 'DESKTOP' || props.viewportType === 'TABLET'
-          ? <LogoText className="main-title">
-            StringSync
-            </LogoText>
+        props.viewportType === 'DESKTOP'
+          ? <div>
+              <Divider type="vertical" />     
+              <LogoText className="main-title">
+                StringSync
+              </LogoText>
+            </div>
           : null
       }
     </div>
