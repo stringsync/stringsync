@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { compose, withHandlers } from 'recompose';
+import { compose } from 'recompose';
 import { Form, Input, Checkbox } from 'antd';
 import { Rhythm as RhythmModel } from 'models';
 import { Tuplet } from './Tuplet';
-import { withVextab, IWithVextabProps } from 'enhancers';
+import { withVextabChangeHandlers } from 'enhancers';
 import { get } from 'lodash';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 
@@ -12,31 +12,24 @@ interface IOuterProps {
   editor: Store.IEditorState;
 }
 
-type VextabProps = IOuterProps & IWithVextabProps;
-
-interface IHandlerProps extends VextabProps {
+interface IHandlerProps extends IOuterProps {
   handleValueChange: (event: React.FormEvent<HTMLInputElement>) => void;
   handleDotChange: (checked: CheckboxChangeEvent) => void;
 }
 
 const enhance = compose<IHandlerProps, IOuterProps>(
-  withVextab,
-  withHandlers({
-    handleDotChange: (props: VextabProps) => (event: CheckboxChangeEvent) => {
-      const vextab = props.getVextab();
-
+  withVextabChangeHandlers<CheckboxChangeEvent | React.FormEvent<HTMLInputElement>, IOuterProps>({
+    handleDotChange: props => (event: CheckboxChangeEvent, vextab) => {
       const rhythm = get(vextab.elements[props.editor.elementIndex], 'rhythm') as RhythmModel;
       rhythm.dot = event.target.checked;
 
-      props.setVextab(vextab);
+      return vextab;
     },
-    handleValueChange: (props: VextabProps) => (event: React.FormEvent<HTMLInputElement>) => {
-      const vextab = props.getVextab();
-
+    handleValueChange: props => (event: React.FormEvent<HTMLInputElement>, vextab) => {
       const rhythm = get(vextab.elements[props.editor.elementIndex], 'rhythm') as RhythmModel;
       rhythm.value = event.currentTarget.value;
 
-      props.setVextab(vextab);
+      return vextab;
     }
   })
 );

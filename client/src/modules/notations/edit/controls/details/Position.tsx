@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { compose, withHandlers } from 'recompose';
+import { compose } from 'recompose';
 import { Form, Input, InputNumber } from 'antd';
 import { Chord, Note, Measure } from 'models';
-import { withVextab, IWithVextabProps } from 'enhancers';
+import { withVextabChangeHandlers } from 'enhancers';
 import { get } from 'lodash';
 
 interface IOuterProps {
@@ -11,20 +11,15 @@ interface IOuterProps {
   position: Guitar.IPosition;
 }
 
-type VextabProps = IOuterProps & IWithVextabProps;
-
-interface IHandlerProps extends VextabProps {
+interface IHandlerProps extends IOuterProps {
   handleFretChange: (fret: number | string) => void;
 }
 
 const enhance = compose<IHandlerProps, IOuterProps>(
-  withVextab,
-  withHandlers({
-    handleFretChange: (props: VextabProps) => (value: number | string) => {
+  withVextabChangeHandlers<number | string, IOuterProps>({
+    handleFretChange: props => (value, vextab) => {
       let nextFret: number | undefined = typeof value === 'number' ? value : parseInt(value, 10);
       nextFret = isNaN(nextFret) ? undefined : nextFret;
-
-      const vextab = props.getVextab();
 
       const note = vextab.elements[props.editor.elementIndex] as Note | Chord;
       const { str, fret } = props.position;
@@ -72,7 +67,7 @@ const enhance = compose<IHandlerProps, IOuterProps>(
         }
       }
       
-      props.setVextab(vextab);
+      return vextab;
     }
   })
 );

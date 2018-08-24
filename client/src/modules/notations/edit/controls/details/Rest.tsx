@@ -1,32 +1,27 @@
 import * as React from 'react';
-import { compose, withHandlers } from 'recompose';
+import { compose } from 'recompose';
 import { Form, InputNumber } from 'antd';
 import { Rest as RestModel } from 'models';
 import { Rhythm } from './Rhythm';
-import { withVextab, IWithVextabProps } from 'enhancers';
+import { withVextabChangeHandlers } from 'enhancers';
 
 interface IOuterProps {
   element: RestModel;
   editor: Store.IEditorState;
 }
 
-type VextabProps = IOuterProps & IWithVextabProps;
-
-interface IHandlerProps extends VextabProps {
+interface IHandlerProps extends IOuterProps {
   handlePositionChange: (value: number | string) => void;
 }
 
 const enhance = compose<IHandlerProps, IOuterProps>(
-  withVextab,
-  withHandlers({
-    handlePositionChange: (props: VextabProps) => (value: number | string) => {
-      const vextab = props.getVextab();
-
+  withVextabChangeHandlers<number | string, IOuterProps>({
+    handlePositionChange: props => (value, vextab) => {
       const rest = vextab.elements[props.editor.elementIndex] as RestModel;
       const position = typeof value === 'number' ? value : parseInt(value, 10);
       rest.position = position;
 
-      props.setVextab(vextab);
+      return vextab;
     }
   })
 );

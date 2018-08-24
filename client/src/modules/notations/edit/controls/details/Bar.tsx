@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { compose, withHandlers } from 'recompose';
+import { compose } from 'recompose';
 import { Bar as BarModel } from 'models';
 import { Form, Select, InputNumber } from 'antd';
-import { withVextab, IWithVextabProps } from 'enhancers';
+import { withVextabChangeHandlers } from 'enhancers';
 import { SelectValue } from 'antd/lib/select';
 
 const { Option } = Select;
@@ -12,20 +12,16 @@ interface IOuterProps {
   editor: Store.IEditorState;
 }
 
-type SetVextabProps = IOuterProps & IWithVextabProps;
-
-interface ISelectHandlerProps extends SetVextabProps {
+interface IVextabChangeHandlerProps extends IOuterProps {
   handleSelectChange: (value: SelectValue) => void;
 }
 
-const enhance = compose<ISelectHandlerProps, IOuterProps>(
-  withVextab,
-  withHandlers({
-    handleSelectChange: (props: SetVextabProps) => (value: SelectValue) => {
-      const vextab = props.getVextab();
+const enhance = compose<IVextabChangeHandlerProps, IOuterProps>(
+  withVextabChangeHandlers<SelectValue, IOuterProps>({
+    handleSelectChange: props => (value, vextab) => {
       const bar = vextab.elements[props.editor.elementIndex] as BarModel;
       bar.kind = value as Vextab.Parsed.IBarTypes;
-      props.setVextab(vextab);
+      return vextab;
     }
   })
 );
