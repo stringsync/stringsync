@@ -66,13 +66,19 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
           let line: Line
           if (vextab.lines.length === 0) {
             line = new Line(0, []);
+            vextab.lines.push(line);
           } else if (measure) {
             line = measure.line as Line;
           } else {
             line = last(vextab.lines) as Line;
           }
-
+          
+          newMeasure.line = line;
+          vextab.measures.push(newMeasure);
           line.measures.push(newMeasure);
+
+          const bar = newMeasure.elements[0];
+          props.setElementIndex(vextab.elements.indexOf(bar));
           return vextab;
 
         case 'REST':
