@@ -27,11 +27,11 @@ const enhance = compose<IFretsByStringsProps, IOuterProps>(
 
 export const ChordOrNote = enhance(props => (
   <div>
-    <Form layout="inline">
+    <Form>
       <Form.Item label="id">
         <InputNumber disabled={true} value={props.element.id} />
       </Form.Item>
-      <div>
+      <Form.Item label="positions (string, fret)">
         {
           [1, 2, 3, 4, 5, 6].map(str => (
             <Position 
@@ -42,7 +42,7 @@ export const ChordOrNote = enhance(props => (
             />
           ))
         }
-      </div>
+      </Form.Item>
     </Form>
     {props.element.rhythm ? <Rhythm editor={props.editor} element={props.element.rhythm} /> : null}
   </div>

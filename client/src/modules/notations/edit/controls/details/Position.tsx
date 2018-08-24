@@ -73,7 +73,7 @@ const enhance = compose<IHandlerProps, IOuterProps>(
 );
 
 export const Position = enhance(props => (
-  <Form.Item label="position">
+  <Form.Item>
     <Input.Group compact={true}>
       <InputNumber disabled={true} value={props.position.str} />
       <InputNumber
