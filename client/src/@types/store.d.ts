@@ -45,6 +45,7 @@ declare namespace Store {
     enabled: boolean;
     elementIndex: number;
     errors: string[];
+    lastRenderedAt: number;
     vextab: Vextab | null;
   }
 }

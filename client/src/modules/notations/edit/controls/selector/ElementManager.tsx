@@ -6,7 +6,6 @@ import { compose, withState, withHandlers } from 'recompose';
 import { Measure, MeasureElement } from 'models';
 import { AddElement } from './AddElement';
 import { RadioChangeEvent } from 'antd/lib/radio';
-import { get } from 'lodash';
 
 export type ElementTypes = 'MEASURE' | 'NOTE' | 'REST';
 

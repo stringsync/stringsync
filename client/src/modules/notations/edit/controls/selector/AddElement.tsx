@@ -3,9 +3,11 @@ import { compose, mapProps } from 'recompose';
 import { withVextabChangeHandlers } from 'enhancers';
 import { Button } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
-import { get } from 'lodash';
+import { get, last, findLastIndex } from 'lodash';
 import { Bar, Rest, Rhythm, Measure, VextabMeasureSpec, Note, TimeSignature, Line, Key } from 'models';
 import { ElementTypes } from './ElementManager';
+import { connect, Dispatch } from 'react-redux';
+import { EditorActions } from 'data';
 
 const getRest = () => {
   const rhythm = new Rhythm('1', false);
@@ -33,7 +35,11 @@ interface IOuterProps {
   elementIndex: number;
 }
 
-interface IHandlerProps extends IOuterProps {
+interface IConnectProps extends IOuterProps {
+  setElementIndex: (elementIndex: number) => void;
+}
+
+interface IHandlerProps extends IConnectProps {
   handleButtonClick: (event: React.SyntheticEvent<HTMLButtonElement>) => void;
 }
 
@@ -42,23 +48,31 @@ interface IMappedProps {
 }
 
 const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
-  withVextabChangeHandlers<React.SyntheticEvent<HTMLButtonElement>, IOuterProps>({
-    handleButtonClick: (props: IOuterProps) => (event, vextab) => {
+  connect(
+    null,
+    (dispatch: Dispatch) => ({
+      setElementIndex: (elementIndex: number) => dispatch(EditorActions.setElementIndex(elementIndex))
+    })
+  ),
+  withVextabChangeHandlers<React.SyntheticEvent<HTMLButtonElement>, IConnectProps>({
+    handleButtonClick: props => (event, vextab) => {
       const measure = get(vextab.elements[props.elementIndex], 'measure') as Measure | void;
 
       // Create the element to add
       switch (props.elementType) {
         case 'MEASURE':
-          const line = get(measure, 'line') as Line | void;
-          const newMeasure = getMeasure(get(measure, 'spec'));
-
-          if (line) {
-            line.add(newMeasure);
+        const newMeasure = getMeasure(get(measure, 'spec'));
+        
+          let line: Line
+          if (vextab.lines.length === 0) {
+            line = new Line(0, []);
+          } else if (measure) {
+            line = measure.line as Line;
           } else {
-            const newLine = new Line(0, [newMeasure]);
-            vextab.lines.push(newLine);
+            line = last(vextab.lines) as Line;
           }
 
+          line.measures.push(newMeasure);
           return vextab;
 
         case 'REST':
@@ -66,7 +80,9 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
             return;
           }
 
-          measure.add(getRest(), props.elementIndex)
+          const rest = getRest();
+          measure.add(rest, props.elementIndex)
+          props.setElementIndex(vextab.elements.indexOf(rest));
           return vextab;
 
         case 'NOTE':
@@ -77,6 +93,7 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
           }
 
           measure.add(note, props.elementIndex);
+          props.setElementIndex(vextab.elements.indexOf(note));
           return vextab;
 
         default:
@@ -91,6 +108,7 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
     delete nextProps.handleButtonClick;
     delete nextProps.elementIndex;
     delete nextProps.elementType;
+    delete nextProps.setElementIndex;
 
     return nextProps;
   })

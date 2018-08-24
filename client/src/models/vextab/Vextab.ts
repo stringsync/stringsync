@@ -53,7 +53,7 @@ export class Vextab {
   public readonly width: number | void;
   public readonly renderer: VextabRenderer;
   public readonly links: VextabLinkedList;
-
+  
   public measuresPerLine: number;
   public tuning = DEFAULT_TUNING;
 

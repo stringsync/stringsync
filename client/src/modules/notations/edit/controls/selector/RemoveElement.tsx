@@ -3,12 +3,18 @@ import { compose, mapProps } from 'recompose';
 import { withVextabChangeHandlers } from 'enhancers';
 import { Button } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
+import { connect, Dispatch } from 'react-redux';
+import { EditorActions } from 'data';
 
 interface IOuterProps {
   elementIndex: number;
 }
 
-interface IHandlerProps extends IOuterProps {
+interface IConnectProps extends IOuterProps {
+  setElementIndex: (elementIndex: number) => void;
+}
+
+interface IHandlerProps extends IConnectProps {
   handleButtonClick: (event: React.SyntheticEvent<HTMLButtonElement>) => void;
 }
 
@@ -17,9 +23,16 @@ interface IMappedProps {
 }
 
 const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
-  withVextabChangeHandlers<React.SyntheticEvent<HTMLButtonElement>, IOuterProps>({
-    handleButtonClick: (props: IOuterProps) => (event, vextab) => {
+  connect(
+    null,
+    (dispatch: Dispatch) => ({
+      setElementIndex: (elementIndex: number) => dispatch(EditorActions.setElementIndex(elementIndex))
+    })
+  ),
+  withVextabChangeHandlers<React.SyntheticEvent<HTMLButtonElement>, IConnectProps>({
+    handleButtonClick: props => (event, vextab) => {
       const element = vextab.elements[props.elementIndex];
+      props.setElementIndex(props.elementIndex - 1);
 
       if (!element || !element.measure) {
         return;
@@ -36,6 +49,7 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
     nextProps.onClick = props.handleButtonClick;
     delete nextProps.handleButtonClick;
     delete nextProps.elementIndex;
+    delete nextProps.setElementIndex;
 
     return nextProps;
   })

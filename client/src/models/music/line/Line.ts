@@ -1,5 +1,6 @@
 import { Measure } from 'models/music';
 import { Vextab } from '../../vextab';
+import { runInThisContext } from 'vm';
 
 export class Line {
   public id: number;
@@ -26,11 +27,6 @@ export class Line {
       options,
       text: [] // Not supported yet
     };
-  }
-
-  public add(measure: Measure, index: number = -1) {
-    this.measures.splice(index, 0, measure);
-    this.measures.forEach((lineMeasure, ndx) => lineMeasure.id = ndx + 1);
   }
 }
 

@@ -13,6 +13,7 @@ interface IOuterProps {
 
 interface IConnectProps extends IOuterProps {
   appendErrors: (errors: string[]) => void;
+  notifyRender: () => void;
 }
 
 interface IInnerProps extends IConnectProps {
@@ -23,7 +24,8 @@ const enhance = compose<IInnerProps, IOuterProps>(
   connect(
     null,
     (dispatch: Dispatch) => ({
-      appendErrors: (errors: string[]) => dispatch(EditorActions.appendErrors(errors))
+      appendErrors: (errors: string[]) => dispatch(EditorActions.appendErrors(errors)),
+      notifyRender: () => dispatch(EditorActions.notifyRender())
     })
   ),
   withHandlers({
@@ -65,6 +67,8 @@ const enhance = compose<IInnerProps, IOuterProps>(
           throw error;
         }
       }
+
+      props.notifyRender();
     }
   }),
   observeMaestro<IInnerProps>(
