@@ -9,9 +9,15 @@ interface IConnectProps {
   setVextabString: (vextabString: string) => void;
 }
 
-export interface IWithVextabProps extends IConnectProps {
+interface IVextabAccessorProps extends IConnectProps {
   getVextab: () => Vextab;
   setVextab: (vextab: Vextab) => void;
+}
+
+export type VextabChangeHandler<TEvent = any> = (e: TEvent, vextab: Vextab) => Vextab;
+
+export interface IWithVextabProps<TEvent = any> extends IVextabAccessorProps {
+  handleVextabChange: VextabChangeHandler<TEvent>;
 }
 
 /**
@@ -20,8 +26,8 @@ export interface IWithVextabProps extends IConnectProps {
  * 
  * @param BaseComponent
  */
-export const withVextab = <TProps>(BaseComponent: ComponentClass<TProps>) => {
-  const enhance = compose<TProps, IWithVextabProps & TProps>(
+export const withVextab = <TEvent>(vextabUpdater: VextabChangeHandler<TEvent>) => <TProps>(BaseComponent: ComponentClass<TProps>) => {
+  const enhance = compose<TProps, IWithVextabProps<TEvent> & TProps>(
     connect(
       (state: Store.IState) => ({
         vextab: state.editor.vextab
@@ -31,14 +37,21 @@ export const withVextab = <TProps>(BaseComponent: ComponentClass<TProps>) => {
       })
     ),
     withHandlers({
-      getVextab: (props: TProps & IWithVextabProps) => () => {
+      getVextab: (props: TProps & IWithVextabProps<TEvent>) => () => {
         return props.vextab.clone();
       },
-      setVextab: (props: TProps & IWithVextabProps) => (vextab: Vextab) => {
+      setVextab: (props: TProps & IWithVextabProps<TEvent>) => (vextab: Vextab) => {
         props.setVextabString(vextab.toString());
+      }
+    }),
+    withHandlers({
+      handleVextabChange: (props: IWithVextabProps<TEvent>) => (e: TEvent) => {
+        const vextab = props.getVextab();
+        const updatedVextab = vextabUpdater(e, vextab);
+        props.setVextab(updatedVextab)
       }
     })
   );
 
-  return enhance(BaseComponent)
+  return enhance(BaseComponent);
 }
