@@ -26,4 +26,8 @@ export class TimeSignature extends AbstractVexWrapper {
   public hydrate(): void {
     this.vexAttrs = null;
   }
+
+  public clone(): TimeSignature {
+    return new TimeSignature(this.upper, this.lower);
+  }
 }

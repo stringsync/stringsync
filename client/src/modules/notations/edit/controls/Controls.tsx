@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Selector } from './Selector';
+import { Selector } from './selector';
 import styled from 'react-emotion';
 import { Divider, Form } from 'antd';
 import { Enabler } from './Enabler';

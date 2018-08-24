@@ -26,7 +26,12 @@ export class Line {
       options,
       text: [] // Not supported yet
     };
-  };
+  }
+
+  public add(measure: Measure, index: number = -1) {
+    this.measures.splice(index, 0, measure);
+    this.measures.forEach((lineMeasure, ndx) => lineMeasure.id = ndx + 1);
+  }
 }
 
 export default Line;

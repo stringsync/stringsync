@@ -21,12 +21,16 @@ export class VextabMeasureSpec {
     )
   }
 
-  public get struct(): any {
+  public get struct() {
     return [
       { key: 'clef',     value: 'none' },
       { key: 'notation', value: 'true' },
       { key: 'key',      value: this.key.note.literal },
       { key: 'time',     value: this.timeSignature.toString() }
     ]
+  }
+
+  public clone(): VextabMeasureSpec {
+    return new VextabMeasureSpec(this.key.clone(), this.timeSignature.clone());
   }
 }

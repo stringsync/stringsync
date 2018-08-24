@@ -11,9 +11,9 @@ export class Measure {
   public static tickableTypes = ['NOTE', 'CHORD', 'REST'];
 
   public readonly spec: VextabMeasureSpec;
-  public readonly id: number;
   public readonly type = 'MEASURE';
-
+  
+  public id: number;
   public line: Line | void;
   public elements: MeasureElement[];
   public annotations: Annotations[] = [];
@@ -60,6 +60,17 @@ export class Measure {
         ]);
       }
     });
+  }
+
+  /**
+   * Adds a measure element to the measure. If an index is provided, it will be spliced
+   * into the elements at that index.
+   * 
+   * @param element 
+   * @param index 
+   */
+  public add(element: MeasureElement, index: number = -1) {
+    this.elements.push(element);
   }
 
   public remove(element: MeasureElement) {

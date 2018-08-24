@@ -67,22 +67,29 @@ export class StringSyncFactory {
   }
 
   private extractMeasureSpec(struct: Vextab.ParsedStruct): VextabMeasureSpec {
-    const params = struct.options.reduce((spec: any, option: any, ndx: number) => {
-      switch (VextabStruct.typeof(option)) {
-        case 'KEY':
-          const note = new Note(option.value, 0);
-          spec.KEY = new Key(note);
-          return spec;
-        case 'TIME_SIGNATURE':
-          const [upper, lower] = option.value.split('/');
-          spec.TIME_SIGNATURE = new TimeSignature(upper, lower);
-          return spec;
-        default:
-          return spec;
-      }
-    }, {});
+    let params: any = {};
 
-    return new VextabMeasureSpec(params.KEY, params.TIME_SIGNATURE);
+    if (struct.options) {
+      params = struct.options.reduce((spec: any, option: any) => {
+        switch (VextabStruct.typeof(option)) {
+          case 'KEY':
+            const note = new Note(option.value, 0);
+            spec.key = new Key(note);
+            return spec;
+          case 'TIME_SIGNATURE':
+            const [upper, lower] = option.value.split('/');
+            spec.timeSignature = new TimeSignature(upper, lower);
+            return spec;
+          default:
+            return spec;
+        }
+      }, params);
+    }
+
+    params.key = params.key || new Key(Note.from('C/0'));
+    params.timeSignature = params.timeSignature || new TimeSignature(4, 4);
+
+    return new VextabMeasureSpec(params.key, params.timeSignature);
   }
 
   /**
