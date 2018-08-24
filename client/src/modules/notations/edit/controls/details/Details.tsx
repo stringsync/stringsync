@@ -4,8 +4,7 @@ import { MeasureElement, Measure as MeasureModel } from 'models';
 import { Measure } from './Measure';
 import { cond } from 'enhancers';
 import { Bar } from './Bar';
-import { Chord } from './Chord';
-import { Note } from './Note';
+import { ChordOrNote } from './ChordOrNote'
 import { get } from 'lodash';
 import { Rest } from './Rest';
 import { Annotations } from './Annotations';
@@ -28,8 +27,8 @@ const enhance = compose<IElementTypeProps, IOuterProps>(
   cond<IElementTypeProps>([
     [({ show, element }) => !!element && show === 'annotations', renderComponent(Annotations)],
     [({ show, element }) => !!element && show === 'directives', renderComponent(Directives)],
-    [({ elementType }) => elementType === 'NOTE'   , renderComponent(Note)],
-    [({ elementType }) => elementType === 'CHORD'  , renderComponent(Chord)],
+    [({ elementType }) => elementType === 'NOTE'   , renderComponent(ChordOrNote)],
+    [({ elementType }) => elementType === 'CHORD'  , renderComponent(ChordOrNote)],
     [({ elementType }) => elementType === 'BAR'    , renderComponent(Bar)],
     [({ elementType }) => elementType === 'MEASURE', renderComponent(Measure)],
     [({ elementType }) => elementType === 'REST'   , renderComponent(Rest)]
