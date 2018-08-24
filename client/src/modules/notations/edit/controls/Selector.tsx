@@ -5,6 +5,8 @@ import { EditorActions } from 'data';
 import { InputNumber, Form } from 'antd';
 import { Measure, MeasureElement } from 'models';
 import { get } from 'lodash';
+import { RemoveElement } from './RemoveElement';
+import ButtonGroup from 'antd/lib/button/button-group';
 
 /**
  * Takes the value from an InputNumber component and returns a number or null.
@@ -30,6 +32,7 @@ interface IConnectProps {
 interface ISelectedProps extends IConnectProps {
   measure: Measure | null;
   element: MeasureElement | null;
+  barElementIndex: number;
 }
 
 interface IHandlerProps extends ISelectedProps {
@@ -47,11 +50,12 @@ const enhance = compose<IHandlerProps, {}>(
     })
   ),
   withProps((props: IConnectProps) => {
-    const { vextab } = window.ss.maestro;
+    const { vextab } = props.editor;
     const element = vextab ? vextab.elements[props.editor.elementIndex] || null : null;
     const measure = element ? element.measure : null;
+    const barElementIndex = measure ? vextab.elements.indexOf(measure.elements[0]) : -1;
 
-    return { element, measure };
+    return { element, measure, barElementIndex };
   }),
   lifecycle<ISelectedProps, {}>({
     componentDidUpdate(prevProps): void {
@@ -113,6 +117,22 @@ export const Selector = enhance(props => (
         onChange={props.handleMeasureIdChange}
         parser={parseValue}
       />
+    </Form.Item>
+    <Form.Item label="remove">
+      <ButtonGroup>
+        <RemoveElement
+          disabled={!props.element || props.element.type === 'BAR'}
+          elementIndex={props.editor.elementIndex}
+        >
+          element
+        </RemoveElement>
+        <RemoveElement
+          disabled={!props.measure}
+          elementIndex={props.barElementIndex}
+        >
+          measure
+    </RemoveElement>
+      </ButtonGroup>
     </Form.Item>
   </Form.Item>
 ));

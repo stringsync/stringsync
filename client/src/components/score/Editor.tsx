@@ -1,36 +1,46 @@
 import * as React from 'react';
 import { compose, lifecycle } from 'recompose';
 import { connect } from 'react-redux';
-import { Vextab } from 'models';
 
-interface IOuterProps {
-  vextab: Vextab;
-}
 
-interface IInnerProps extends IOuterProps {
+interface IConnectProps {
   editor: Store.IEditorState;
 }
 
-const enhance = compose<IInnerProps, IOuterProps>(
+interface IHandlerProps extends IConnectProps {
+  renderSelection: () => void;
+}
+
+// TODO rename this
+const enhance = compose<IHandlerProps, {}>(
   connect(
     (state: Store.IState) => ({
       editor: state.editor
     })
   ),
-  lifecycle<IInnerProps, {}>({
+  lifecycle<IHandlerProps, {}>({
     componentDidUpdate(): void {
-      const { editor, vextab } = this.props;
-      const { selectorRenderer } = this.props.vextab.renderer;
+      const { vextab, elementIndex, enabled } = this.props.editor;
 
-      const selected = vextab.elements[editor.elementIndex];
+      if (!vextab) {
+        return;
+      }
 
-      if (!selected || !editor.enabled) {
+      const { selectorRenderer } = vextab.renderer;
+
+      if (!selectorRenderer.isRenderable) {
+        return;
+      }
+
+      const selected = vextab.elements[elementIndex];
+
+      if (!selected || !enabled) {
         selectorRenderer.clear();
       } else {
         selectorRenderer.render(selected);
       }
     }
-  })
+  }),
 );
 
 export const Editor = enhance(() => null);

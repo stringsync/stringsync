@@ -44,10 +44,11 @@ export class StringSyncFactory {
    * @returns {Measure[]}
    */
   public extract(): Measure[] {
-    this.vextab.rawStructs.forEach((struct, staveNdx) => {
+    this.vextab.rawStructs.forEach(struct => {
       this.measureSpec = this.extractMeasureSpec(struct);
 
-      struct.notes.forEach((note: any, noteNdx: number) => {
+      const structNotes = get(struct, 'notes', []);
+      structNotes.forEach((note: any, noteNdx: number) => {
 
         if (noteNdx === 0) {
           this.handleFirstNote(note);

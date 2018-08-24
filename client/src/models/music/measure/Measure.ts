@@ -62,6 +62,14 @@ export class Measure {
     });
   }
 
+  public remove(element: MeasureElement) {
+    const ndx = this.elements.indexOf(element);
+
+    if (ndx > -1) {
+      this.elements.splice(ndx, 1);
+    }
+  }
+
   private tupletStruct(element: MeasureElement): Vextab.Parsed.ITuplet | void {
     // We have to deal with tuplets at the measure level since it requires us
     // to look backwards.

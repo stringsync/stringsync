@@ -4,6 +4,7 @@ import { Form, InputNumber } from 'antd';
 import { Rest as RestModel } from 'models';
 import { Rhythm } from './Rhythm';
 import { withVextabChangeHandlers } from 'enhancers';
+import { RemoveElement } from '../RemoveElement';
 
 interface IOuterProps {
   element: RestModel;

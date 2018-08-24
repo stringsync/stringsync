@@ -141,7 +141,7 @@ const Spacer = styled('div')`
 
 export const Score = enhance(props => (
   <Outer id="score" dynamic={props.dynamic}>
-    <Editor vextab={props.vextab} />
+    <Editor />
     <Renderer editMode={props.editMode} />
     <CanvasRenderables active={props.dynamic} />
     <Title

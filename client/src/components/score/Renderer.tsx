@@ -50,7 +50,7 @@ const enhance = compose<IInnerProps, IOuterProps>(
         renderer.vextab.links.compute();
 
         // Last, we render the Caret if it is observing the maestro
-        maestro.update(false);
+        maestro.update(true);
 
         const caret = maestro.observers.find(observer => observer.name === 'CaretController');
 
