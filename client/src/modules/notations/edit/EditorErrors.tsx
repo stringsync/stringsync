@@ -3,7 +3,6 @@ import { Alert, Input } from 'antd';
 import styled from 'react-emotion';
 import { compose, branch, renderNothing, withHandlers } from 'recompose';
 import { connect, Dispatch } from 'react-redux';
-import { withVextab, IWithVextabProps } from 'enhancers';
 import { NotationActions, EditorActions } from 'data';
 
 const { TextArea } = Input;
