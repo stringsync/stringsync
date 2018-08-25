@@ -83,4 +83,8 @@ export class Chord extends AbstractVexWrapper {
   public get positions(): Guitar.IPosition[] {
     return flatMap(this.notes, note => note.positions);
   }
+
+  public clone(): Chord {
+    return new Chord(this.notes.map(note => note.clone()));
+  }
 }

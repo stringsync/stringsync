@@ -55,6 +55,10 @@ export class Bar extends AbstractVexWrapper {
     return { command: 'bar', type: this.kind };
   }
 
+  public clone(): Bar {
+    return new Bar(this.kind);
+  }
+
   public hydrate(staveNote: Vex.Flow.BarNote, tabNote: Vex.Flow.BarNote): void {
     const validator = new BarHydrationValidator(this, staveNote, tabNote);
 

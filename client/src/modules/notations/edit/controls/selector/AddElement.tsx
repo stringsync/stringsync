@@ -10,7 +10,7 @@ import { connect, Dispatch } from 'react-redux';
 import { EditorActions } from 'data';
 
 const getRest = () => {
-  const rhythm = new Rhythm('1', false);
+  const rhythm = new Rhythm('4', false);
   return new Rest(0, rhythm);
 }
 

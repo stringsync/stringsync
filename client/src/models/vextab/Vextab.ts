@@ -84,19 +84,21 @@ export class Vextab {
    * appended to every single note.
    */
   public get structs(): Vextab.ParsedStruct[] {
-    const lineGroups: Line[][] = this.lines.reduce((groups, line, ndx) => {
-      const prev = this.links.prev(line) as Line | void;
-      const next = this.links.next(line) as Line | void;
+    const measures = this.measures.map(measure => measure.clone());
+    const lines = this.computeLines(measures);
+
+    const lineGroups: Line[][] = lines.reduce((groups, line, ndx) => {
+      const prev = lines[ndx - 1];
+      const next = lines[ndx + 1];
 
       // we only check the first measure since we already know that
       // a line's measures all have the same measure spec
-      const shouldAppendToCurrGroup = (
-        !prev ||
-        !next ||
+      const isPrevSpecEqual = (
+        prev && 
         isEqual(prev.measures[0].spec.struct, line.measures[0].spec.struct)
       );
 
-      if (shouldAppendToCurrGroup) {
+      if (isPrevSpecEqual) {
         groups[groups.length - 1].push(line);
       } else {
         groups.push([line]);
@@ -105,15 +107,15 @@ export class Vextab {
       return groups;
     }, [[]] as Line[][]);
 
-    const baseStruct: Vextab.Parsed.ILine = {
-      element: 'tabstave',
-      notes: [],
-      options: [],
-      text: []
-    };
+    return lineGroups.map(lineGroup => {
+      const baseStruct: Vextab.Parsed.ILine = {
+        element: 'tabstave',
+        notes: [],
+        options: [],
+        text: []
+      };
 
-    return lineGroups.map(lineGroup => (
-      lineGroup.reduce((struct, line) => {
+      return lineGroup.reduce((struct, line) => {
         const { element } = struct;
         const { notes, options, text } = line.struct;
 
@@ -124,7 +126,7 @@ export class Vextab {
           text: [...struct.text, ...text]
         }
       }, baseStruct)
-    ));
+    });
   }
 
   /**
@@ -204,7 +206,7 @@ export class Vextab {
       prevMeasure = measure;
     });
 
-     // Link lines with measures
+    // Link lines with measures
     lines.forEach(line => line.measures.forEach(measure => measure.line = line));
 
     return lines;

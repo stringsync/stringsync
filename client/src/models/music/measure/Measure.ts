@@ -63,6 +63,12 @@ export class Measure {
     });
   }
 
+  public clone(): Measure {
+    const elements = this.elements.map(element => element.clone());
+    const spec = this.spec.clone();
+    return new Measure(elements, this.id, spec.clone());
+  }
+
   /**
    * Adds a measure element to the measure. If an index is provided, it will be spliced
    * into the elements at that index.

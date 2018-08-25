@@ -89,7 +89,7 @@ test('Note.prototype.alias', () => {
 test('Note.prototype.clone', () => {
   ALL_NOTES.forEach(literal => {
     const note = new Note(literal, 1);
-    const clone = note.clone;
+    const clone = note.clone();
 
     expect(note).not.toBe(clone);
     expect(clone.literal).toBe(note.literal);

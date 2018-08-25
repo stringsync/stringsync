@@ -1,9 +1,10 @@
 import { VextabStruct, AbstractVexWrapper } from 'models/vextab';
 
 export class TimeSignature extends AbstractVexWrapper {
-  public readonly upper: number;
-  public readonly lower: number;
   public readonly type = 'TIME_SIGNATURE';
+
+  public upper: number;
+  public lower: number;
 
   constructor(upper: number, lower: number) {
     super();

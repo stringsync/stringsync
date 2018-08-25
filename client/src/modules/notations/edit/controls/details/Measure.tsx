@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { Measure as MeasureModel, Scale } from 'models';
-import { Form, InputNumber, Select, Divider } from 'antd';
+import { Form, InputNumber, Select, Divider, Input } from 'antd';
 import styled from 'react-emotion';
 import { uniq, flatMap } from 'lodash';
+import { withVextabChangeHandlers } from 'enhancers';
 
 const { Option } = Select;
 
@@ -15,8 +16,25 @@ interface IOuterProps {
   element: MeasureModel;
 }
 
-const enhance = compose<IOuterProps, IOuterProps>(
+interface IVextabChangeHandlerProps extends IOuterProps {
+  handleUpperChange: (value: number | string) => void;
+}
 
+const enhance = compose<IVextabChangeHandlerProps, IOuterProps>(
+  withVextabChangeHandlers<number | string, IOuterProps>({
+    handleUpperChange: props => (value, vextab) => {
+      const measure = vextab.measures.find($measure => $measure.id === props.element.id);
+
+      if (!measure) {
+        return;
+      }
+
+      const upper = typeof value === 'number' ? value : parseInt(value, 10);
+      measure.spec.timeSignature.upper = upper;
+
+      return vextab;
+    }
+  })
 );
 
 const StyledSelect = styled(Select)`
@@ -26,9 +44,9 @@ const StyledSelect = styled(Select)`
 `;
 
 export const Measure = enhance(props => (
-  <Form.Item>
+  <Form layout="inline">
     <Form.Item label="id">
-      <InputNumber disabled={true} value={props.element.id} />
+      <InputNumber disabled={true} defaultValue={props.element.id} />
     </Form.Item>
     <Form.Item label="length">
       <InputNumber disabled={true} value={props.element.elements.length} />
@@ -39,9 +57,12 @@ export const Measure = enhance(props => (
       </StyledSelect>
     </Form.Item>
     <Form.Item label="time signature">
-      <InputNumber value={props.element.spec.timeSignature.upper} />
+      <InputNumber 
+        onChange={props.handleUpperChange}
+        defaultValue={props.element.spec.timeSignature.upper}
+      />
       <Divider type="vertical" />
       <InputNumber value={props.element.spec.timeSignature.lower} />
     </Form.Item>
-  </Form.Item>
+  </Form>
 ));

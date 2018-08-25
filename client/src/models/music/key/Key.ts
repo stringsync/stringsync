@@ -24,6 +24,6 @@ export class Key extends AbstractVexWrapper {
   }
 
   public clone(): Key {
-    return new Key(this.note.clone);
+    return new Key(this.note.clone());
   }
 }

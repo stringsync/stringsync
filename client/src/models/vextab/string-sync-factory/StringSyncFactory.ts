@@ -172,7 +172,7 @@ export class StringSyncFactory {
     }
 
     this.measures.push(
-      new Measure([this.bar, ...this.elements], this.measures.length + 1,  this.measureSpec)
+      new Measure([this.bar, ...this.elements], this.measures.length + 1,  this.measureSpec.clone())
     );
   }
 

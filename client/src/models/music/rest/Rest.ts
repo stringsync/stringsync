@@ -33,6 +33,10 @@ export class Rest extends AbstractVexWrapper {
       }
     }
   }
+
+  public clone(): Rest {
+    return new Rest(this.position, this.rhythm.clone());
+  }
   
   public hydrate(staveNote: Vex.Flow.StaveNote, tabNote: Vex.Flow.TabNote): void {
     const validator = new RestHydrationValidator(this, staveNote, tabNote);

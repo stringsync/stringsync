@@ -104,10 +104,6 @@ export class Note extends AbstractVexWrapper {
     return new Note(Note.NOTE_ALIASES[this.literal], this.octave);
   }
 
-  public get clone(): Note {
-    return new Note(this.literal, this.octave, merge([], this.positions));
-  }
-
   /**
    * Returns true if the note is flat.
    * 
@@ -155,6 +151,10 @@ export class Note extends AbstractVexWrapper {
       fret: this.positions[0].fret.toString(),
       string: this.positions[0].str.toString()
     }
+  }
+
+  public clone(): Note {
+    return new Note(this.literal, this.octave, merge([], this.positions));
   }
 
   /**
@@ -225,7 +225,7 @@ export class Note extends AbstractVexWrapper {
    * @returns {Note}
    */
   public toFlat(): Note {
-    return this.isSharp ? this.alias : this.clone;
+    return this.isSharp ? this.alias : this.clone();
   }
 
   /**
@@ -234,7 +234,7 @@ export class Note extends AbstractVexWrapper {
    * @returns {Note}
    */
   public toSharp(): Note {
-    return this.isFlat ? this.alias : this.clone;
+    return this.isFlat ? this.alias : this.clone();
   }
 
   /**

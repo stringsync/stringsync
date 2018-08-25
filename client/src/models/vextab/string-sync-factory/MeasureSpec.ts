@@ -9,15 +9,16 @@ export class VextabMeasureSpec {
   public timeSignature: TimeSignature;
   public clef = 'none';
   public notation = true;
-  public readonly id: number;
 
   // TODO: Add types for the struct member
   constructor(key: Key, timeSignature: TimeSignature) {
     this.key = key;
     this.timeSignature = timeSignature;
+  }
 
-    this.id = hash(
-      `${this.clef}${this.notation}${this.key.toString()}${this.timeSignature.toString()}`
+  public get id() {
+    return hash(
+      `${this.clef}${this.notation}${this.key.note.literal}${this.timeSignature.toString()}`
     )
   }
 
