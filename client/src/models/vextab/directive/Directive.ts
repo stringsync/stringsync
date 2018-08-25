@@ -22,10 +22,10 @@ export class Directive {
 
   public type: DirectiveTypes;
   public element: MeasureElement;
-  public payload: Directive.Payload.Types;
+  public payload: any;
 
   // FIXME: Fix the annotation for this class
-  constructor(type: DirectiveTypes, element: MeasureElement, payload: Directive.Payload.Types) {
+  constructor(type: DirectiveTypes, element: MeasureElement, payload: any) {
     this.type = type;
     this.element = element;
     this.payload = payload;

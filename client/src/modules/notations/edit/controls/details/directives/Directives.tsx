@@ -23,7 +23,7 @@ export const Directives = enhance(props => (
   <Form.Item>
     {
       props.directives.map((directive, ndx) => (
-        <Directive key={`directive-${ndx}`} directive={directive} />
+        <Directive key={`directive-${ndx}`} directive={directive} directiveIndex={ndx} />
       ))
     }
   </Form.Item>

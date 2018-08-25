@@ -8,6 +8,7 @@ import { NoteSuggestions } from './NoteSuggestions';
 
 interface IOuterProps {
   directive: DirectiveModel;
+  directiveIndex: number;
 }
 
 const enhance = compose<IOuterProps, IOuterProps>(
