@@ -4,7 +4,6 @@ import { Directive as DirectiveModel } from 'models';
 import { cond } from 'enhancers';
 import { Form, Alert } from 'antd';
 import { GraceNote } from './GraceNote';
-import { NoteSuggestions } from './NoteSuggestions';
 
 interface IOuterProps {
   directive: DirectiveModel;
