@@ -48,7 +48,6 @@ export class Vextab {
 
   public readonly rawStructs: Vextab.ParsedStruct[];
   public readonly id: number;
-  public readonly measures: Measure[];
   public readonly lines: Line[];
   public readonly width: number | void;
   public readonly renderer: VextabRenderer;
@@ -68,19 +67,12 @@ export class Vextab {
     this.rawStructs = rawStructs;
     this.width = width;
 
-    this.measures = this.computeMeasures();
-    this.lines = this.computeLines();
+    // Create StringSync data structures
+    const factory = new StringSyncFactory(rawStructs, this.tuning);
+    const measures = factory.extract();
+    this.lines = this.computeLines(measures);
 
-    // Link lines with measures
-    this.lines.forEach(line => {
-      line.measures.forEach(measure => measure.line = line);
-    });
-
-    // Link measure elements with measures
-    this.measures.forEach(measure => {
-      measure.elements.forEach(element => element.measure = measure);
-    })
-
+    // Create auxillary data structures
     this.renderer = new VextabRenderer(this, width);
     this.links = new VextabLinkedList(this.lines, this.measures);
   }
@@ -136,6 +128,13 @@ export class Vextab {
   }
 
   /**
+   * Computes all the measures of the vextab
+   */
+  public get measures(): Measure[] {
+    return flatMap(this.lines, line => line.measures);
+  }
+
+  /**
    * Computes all the elements of the measures
    */
   public get elements(): MeasureElement[] {
@@ -174,44 +173,39 @@ export class Vextab {
   }
 
   /**
-   * Delegates the measure extracting work to the StringSyncFactory
-   * 
-   * @returns {Measure[]}
-   */
-  private computeMeasures(): Measure[] {
-    return StringSyncFactory.extract(this, this.tuning);
-  }
-
-  /**
    * Groups measures with the same measureSpec, respecting the order that the measures are in.
    * 
    * @returns {Line[]}
    */
-  private computeLines(): Line[] {
+  private computeLines(measures: Measure[]): Line[] {
     const lines: Line[] = [];
-    let measures: Measure[] = [];
 
+    let lineMeasures: Measure[] = [];
     let prevMeasure: Measure | null = null;
-    this.measures.forEach((measure, ndx) => {
+
+    measures.forEach((measure, ndx) => {
       const shouldPushLine = (
-        measures.length === this.measuresPerLine ||
+        lineMeasures.length === this.measuresPerLine ||
         (prevMeasure && !isEqual(prevMeasure.spec.struct, measure.spec.struct)) ||
         (prevMeasure && prevMeasure.spec.id !== measure.spec.id)
       );
 
       if (shouldPushLine) {
-        lines.push(new Line(lines.length, measures));
-        measures = [];
+        lines.push(new Line(lines.length, lineMeasures));
+        lineMeasures = [];
       }
 
-      measures.push(measure);
+      lineMeasures.push(measure);
 
-      if (ndx === this.measures.length - 1) {
-        lines.push(new Line(lines.length, measures));
+      if (ndx === measures.length - 1) {
+        lines.push(new Line(lines.length, lineMeasures));
       }
 
       prevMeasure = measure;
     });
+
+     // Link lines with measures
+    lines.forEach(line => line.measures.forEach(measure => measure.line = line));
 
     return lines;
   }

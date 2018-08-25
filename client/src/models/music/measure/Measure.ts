@@ -27,6 +27,8 @@ export class Measure {
     this.id = id;
     this.elements = elements;
     this.spec = spec;
+
+    this.elements.forEach(element => element.measure = this);
   }
 
   public get tickables(): Array<Note | Chord | Rest> {
@@ -74,9 +76,12 @@ export class Measure {
   }
 
   public remove(element: MeasureElement) {
-    const ndx = this.elements.indexOf(element);
 
-    if (ndx > -1) {
+    if (element instanceof Bar && this.line) {
+      // remove the measure from the line
+      this.line.measures = this.line.measures.filter(measure => measure !== this);
+    } else {
+      const ndx = this.elements.indexOf(element);
       this.elements.splice(ndx, 1);
     }
   }

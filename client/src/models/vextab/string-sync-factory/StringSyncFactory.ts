@@ -13,11 +13,7 @@ import { get, last, takeRight, compact } from 'lodash';
  * See the hydrate instance method on the StringSync data structures.
  */
 export class StringSyncFactory {
-  public static extract(vextab: Vextab, tuning: any) {
-    return new StringSyncFactory(vextab, tuning).extract();
-  }
-
-  public readonly vextab: Vextab;
+  public readonly structs: Vextab.ParsedStruct[];
   public readonly tuning: any;
   public readonly measures: Measure[];
 
@@ -26,8 +22,8 @@ export class StringSyncFactory {
   private bar: Bar | void;
   private measureSpec: VextabMeasureSpec | void;
 
-  constructor(vextab: Vextab, tuning: any) {
-    this.vextab = vextab;
+  constructor(structs: Vextab.ParsedStruct[], tuning: any) {
+    this.structs = structs;
     this.tuning = tuning;
     this.measures = [];
 
@@ -44,7 +40,7 @@ export class StringSyncFactory {
    * @returns {Measure[]}
    */
   public extract(): Measure[] {
-    this.vextab.rawStructs.forEach(struct => {
+    this.structs.forEach(struct => {
       this.measureSpec = this.extractMeasureSpec(struct);
 
       const structNotes = get(struct, 'notes', []);

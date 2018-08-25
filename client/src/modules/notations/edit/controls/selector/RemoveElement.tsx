@@ -5,6 +5,7 @@ import { Button } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
 import { connect, Dispatch } from 'react-redux';
 import { EditorActions } from 'data';
+import { take } from 'lodash';
 
 interface IOuterProps {
   elementIndex: number;
@@ -32,13 +33,27 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
   withVextabChangeHandlers<React.SyntheticEvent<HTMLButtonElement>, IConnectProps>({
     handleButtonClick: props => (event, vextab) => {
       const element = vextab.elements[props.elementIndex];
-      props.setElementIndex(props.elementIndex - 1);
 
       if (!element || !element.measure) {
         return;
       }
 
+      // get the measure that we'll focus before the removal
+      //  
+      // then reverse the array and drop the elements at and before the reversed index
+      const reversedElements = take(vextab.elements, props.elementIndex).reverse();
+
+      // find the first bar after
+      const bar = reversedElements.find(el => el.type === 'BAR');
+
+      // lastly, determine the forward index
+      const prevBarNdx = bar ? vextab.elements.indexOf(bar) : -1;
+
       element.measure.remove(element);
+
+      if (prevBarNdx > -1) {
+        props.setElementIndex(prevBarNdx);
+      }
       
       return vextab;
     }

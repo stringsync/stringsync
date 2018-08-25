@@ -1,6 +1,4 @@
 import { Measure } from 'models/music';
-import { Vextab } from '../../vextab';
-import { runInThisContext } from 'vm';
 
 export class Line {
   public id: number;
