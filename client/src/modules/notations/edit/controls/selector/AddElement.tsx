@@ -55,6 +55,7 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
     })
   ),
   withVextabChangeHandlers<React.SyntheticEvent<HTMLButtonElement>, IConnectProps>({
+    // FIXME: this logic should live on the backend models
     handleButtonClick: props => (event, vextab) => {
       const measure = get(vextab.elements[props.elementIndex], 'measure') as Measure | void;
 
