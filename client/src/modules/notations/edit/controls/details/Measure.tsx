@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { Measure as MeasureModel, Scale, Key, Note } from 'models';
-import { Form, InputNumber, Select, Divider, Input } from 'antd';
+import { Form, InputNumber, Select, Divider } from 'antd';
 import styled from 'react-emotion';
 import { uniq, flatMap } from 'lodash';
 import { withVextabChangeHandlers } from 'enhancers';
