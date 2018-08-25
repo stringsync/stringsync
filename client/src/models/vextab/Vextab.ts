@@ -84,6 +84,10 @@ export class Vextab {
    * appended to every single note.
    */
   public get structs(): Vextab.ParsedStruct[] {
+    // WARNING
+    // These lines are not hydrated. This should be ok given the context
+    // that we're just trying to generate structs. We won't use these
+    // to directly render things.
     const measures = this.measures.map(measure => measure.clone());
     const lines = this.computeLines(measures);
 
