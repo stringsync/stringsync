@@ -37,7 +37,12 @@ const enhance = compose<IVextabChangeHandlersProps, IOuterProps>(
   }),
   withVextabChangeHandlers<React.ChangeEvent<HTMLTextAreaElement>, ITextProps>({
     handleTextsChange: (props: IVextabChangeHandlersProps) => (e: React.ChangeEvent<HTMLTextAreaElement>, vextab) => {
-      console.log(e.currentTarget.dataset);
+      const { annotationNdx, textNdx } = e.currentTarget.dataset;
+      const element = vextab.elements[props.editor.elementIndex];
+
+      element.annotations[annotationNdx!].texts[textNdx!] = e.currentTarget.value;
+
+      return vextab;
     }
   })
 );  
