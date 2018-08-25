@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { Measure as MeasureModel, Scale } from 'models';
+import { Measure as MeasureModel, Scale, Key, Note } from 'models';
 import { Form, InputNumber, Select, Divider, Input } from 'antd';
 import styled from 'react-emotion';
 import { uniq, flatMap } from 'lodash';
 import { withVextabChangeHandlers } from 'enhancers';
+import { SelectValue } from 'antd/lib/select';
 
 const { Option } = Select;
 
@@ -17,25 +18,39 @@ interface IOuterProps {
 }
 
 interface IVextabChangeHandlerProps extends IOuterProps {
+  handleKeyChange: (value: SelectValue) => void;
   handleUpperChange: (value: number | string) => void;
   handleLowerChange: (value: number | string) => void;
 }
 
 const enhance = compose<IVextabChangeHandlerProps, IOuterProps>(
   withVextabChangeHandlers<number | string, IOuterProps>({
-    handleLowerChange: props => (value, vextab) => {
+    handleKeyChange: props => (noteLiteral: string, vextab) => {
       const measure = vextab.measures.find($measure => $measure.id === props.element.id);
-  
-        if (!measure) {
-          return;
-        }
-  
-        const lower = typeof value === 'number' ? value : parseInt(value, 10);
-        measure.spec.timeSignature.lower = lower;
-  
-        return vextab;
+
+      if (!measure) {
+        return;
+      }
+
+      const note = new Note(noteLiteral, 0);
+      const key = new Key(note);
+      measure.spec.key = key;
+
+      return vextab;
     },
-    handleUpperChange: props => (value, vextab) => {
+    handleLowerChange: props => (value: number | string, vextab) => {
+      const measure = vextab.measures.find($measure => $measure.id === props.element.id);
+
+      if (!measure) {
+        return;
+      }
+
+      const lower = typeof value === 'number' ? value : parseInt(value, 10);
+      measure.spec.timeSignature.lower = lower;
+
+      return vextab;
+    },
+    handleUpperChange: props => (value: number | string, vextab) => {
       const measure = vextab.measures.find($measure => $measure.id === props.element.id);
 
       if (!measure) {
@@ -65,17 +80,20 @@ export const Measure = enhance(props => (
       <InputNumber disabled={true} value={props.element.elements.length} />
     </Form.Item>
     <Form.Item label="key">
-      <StyledSelect value={props.element.spec.key.note.literal}>
+      <StyledSelect
+        onChange={props.handleKeyChange}
+        defaultValue={props.element.spec.key.note.literal}
+      >
         {NOTES.map(note => <Option key={note}>{note}</Option>)}
       </StyledSelect>
     </Form.Item>
     <Form.Item label="time signature">
-      <InputNumber 
+      <InputNumber
         onChange={props.handleUpperChange}
         defaultValue={props.element.spec.timeSignature.upper}
       />
       <Divider type="vertical" />
-      <InputNumber 
+      <InputNumber
         onChange={props.handleLowerChange}
         defaultValue={props.element.spec.timeSignature.lower}
       />
