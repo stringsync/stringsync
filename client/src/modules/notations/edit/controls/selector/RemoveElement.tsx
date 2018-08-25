@@ -6,6 +6,7 @@ import { ButtonProps } from 'antd/lib/button';
 import { connect, Dispatch } from 'react-redux';
 import { EditorActions } from 'data';
 import { take } from 'lodash';
+import { Measure } from 'models';
 
 interface IOuterProps {
   elementIndex: number;
@@ -38,21 +39,26 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
         return;
       }
 
-      // get the measure that we'll focus before the removal
-      //  
-      // then reverse the array and drop the elements at and before the reversed index
-      const reversedElements = take(vextab.elements, props.elementIndex).reverse();
+      if (element.type === 'BAR') {
+        // get the measure that we'll focus before the removal
+        //  
+        // then reverse the array and drop the elements at and before the reversed index
+        const reversedElements = take(vextab.elements, props.elementIndex).reverse();
 
-      // find the first bar after
-      const bar = reversedElements.find(el => el.type === 'BAR');
+        // find the first bar after
+        const bar = reversedElements.find(el => el.type === 'BAR');
 
-      // lastly, determine the forward index
-      const prevBarNdx = bar ? vextab.elements.indexOf(bar) : -1;
+        // lastly, determine the forward index
+        const prevBarNdx = bar ? vextab.elements.indexOf(bar) : -1;
 
-      element.measure.remove(element);
+        (element.measure as Measure).remove(element);
 
-      if (prevBarNdx > -1) {
-        props.setElementIndex(prevBarNdx);
+        if (prevBarNdx > -1) {
+          props.setElementIndex(prevBarNdx);
+        }
+      } else {
+        (element.measure as Measure).remove(element);
+        props.setElementIndex(props.elementIndex - 1);
       }
       
       return vextab;

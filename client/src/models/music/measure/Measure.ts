@@ -3,7 +3,6 @@ import { VextabMeasureSpec, Directive } from 'models/vextab';
 import { compact, get, flatMap, last } from 'lodash';
 import { Annotations } from '../annotations';
 import { Tuplet } from '../tuplet';
-import { Rhythm } from '../rhythm';
 
 export type MeasureElement = Note | Rest | Bar | Chord;
 
