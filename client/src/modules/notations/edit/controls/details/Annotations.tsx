@@ -1,12 +1,14 @@
 import * as React from 'react';
 import { compose, branch, renderNothing, withProps } from 'recompose';
-import { Form } from 'antd';
+import { Form, Button } from 'antd';
 import { Measure, MeasureElement, Annotations as AnnotationsModel } from 'models';
-import { get, flatMap } from 'lodash';
+import { get, last, flatMap } from 'lodash';
 import TextArea from 'antd/lib/input/TextArea';
 import { withVextabChangeHandlers } from 'enhancers';
 
 type TextData = [string, number, number];
+
+type EventTypes = React.ChangeEvent<HTMLTextAreaElement> | React.SyntheticEvent<HTMLButtonElement>;
 
 interface IOuterProps {
   element: Measure | MeasureElement | null;
@@ -18,7 +20,9 @@ interface ITextProps extends IOuterProps {
 }
 
 interface IVextabChangeHandlersProps extends ITextProps {
+  addAnnotation: (e: React.SyntheticEvent<HTMLButtonElement>) => void;
   handleTextsChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  removeAnnotation: (e: React.SyntheticEvent<HTMLButtonElement>) => void;
 }
 
 const mapTextData = (annotations: AnnotationsModel[]): TextData[] => (
@@ -35,20 +39,48 @@ const enhance = compose<IVextabChangeHandlersProps, IOuterProps>(
 
     return { textData };
   }),
-  withVextabChangeHandlers<React.ChangeEvent<HTMLTextAreaElement>, ITextProps>({
-    handleTextsChange: (props: IVextabChangeHandlersProps) => (e: React.ChangeEvent<HTMLTextAreaElement>, vextab) => {
+  withVextabChangeHandlers<EventTypes, ITextProps>({
+    addAnnotation: props => (e: React.SyntheticEvent<HTMLButtonElement>, vextab) => {
+      const element = vextab.elements[props.editor.elementIndex];
+      
+      element.annotations.push(new AnnotationsModel(['*']));
+
+      return vextab;
+    },
+    handleTextsChange: props => (e: React.ChangeEvent<HTMLTextAreaElement>, vextab) => {
       const { annotationNdx, textNdx } = e.currentTarget.dataset;
       const element = vextab.elements[props.editor.elementIndex];
 
       element.annotations[annotationNdx!].texts[textNdx!] = e.currentTarget.value;
 
       return vextab;
+    },
+    removeAnnotation: props => (e: React.SyntheticEvent<HTMLButtonElement>, vextab) => {
+      const { annotationNdx, textNdx } = e.currentTarget.dataset;
+      const element = vextab.elements[props.editor.elementIndex];
+
+      const annotation = element.annotations[annotationNdx!]
+      annotation.texts.splice(parseInt(textNdx!, 10), 1);
+
+      if (annotation.texts.length === 0) {
+        element.annotations.splice(parseInt(annotationNdx!, 10), 1);
+      }
+
+      return vextab;
     }
   })
-);  
+);
 
 export const Annotations = enhance(props => (
-  <Form.Item>
+  <Form>
+    <Form.Item>
+      <Button
+        disabled={!props.element || props.element.type === 'BAR' || props.element.type === 'MEASURE'}
+        onClick={props.addAnnotation}
+      >
+        add
+      </Button>
+    </Form.Item>
     {
       props.textData.map(([text, annotationNdx, textNdx]) => (
         <Form.Item
@@ -60,8 +92,15 @@ export const Annotations = enhance(props => (
             onChange={props.handleTextsChange}
             defaultValue={text}
           />
+          <Button
+            data-annotation-ndx={annotationNdx}
+            data-text-ndx={textNdx}
+            onClick={props.removeAnnotation}
+          >
+            remove
+          </Button>
         </Form.Item>
       ))
     }
-  </Form.Item>
+  </Form>
 ));
