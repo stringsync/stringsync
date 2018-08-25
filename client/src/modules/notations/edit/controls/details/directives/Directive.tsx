@@ -14,7 +14,8 @@ interface IOuterProps {
 const enhance = compose<IOuterProps, IOuterProps>(
   cond<IOuterProps>([
     [({ directive }) => directive.type === 'GRACE_NOTE', renderComponent(GraceNote)],
-    [({ directive }) => directive.type === 'NOTE_SUGGESTIONS', renderComponent(NoteSuggestions)]
+    // uncomment when ready to work on NOTE_SUGGESTIONS
+    // [({ directive }) => directive.type === 'NOTE_SUGGESTIONS', renderComponent(NoteSuggestions)]
   ])
 );
 

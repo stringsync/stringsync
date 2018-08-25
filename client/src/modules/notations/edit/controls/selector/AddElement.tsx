@@ -67,14 +67,16 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
           if (vextab.lines.length === 0) {
             line = new Line(0, []);
             vextab.lines.push(line);
+            line.measures.push(newMeasure);
           } else if (measure) {
             line = measure.line as Line;
+            line.measures.splice(line.measures.indexOf(measure), 0, newMeasure);
           } else {
             line = last(vextab.lines) as Line;
+            line.measures.push(newMeasure);
           }
 
           newMeasure.line = line;
-          line.measures.splice(get(measure, 'id', 0) - 1, 0, newMeasure);
 
           const bar = newMeasure.elements[0];
           props.setElementIndex(vextab.elements.indexOf(bar));

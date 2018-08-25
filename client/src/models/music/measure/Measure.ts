@@ -73,15 +73,10 @@ export class Measure {
     if (element instanceof Bar && this.line) {
       // remove the measure from the line
       this.line.measures = this.line.measures.filter(measure => measure !== this);
+      this.line = undefined;
     } else {
       const ndx = this.elements.indexOf(element);
       this.elements.splice(ndx, 1);
-    }
-
-    // Reindex the measures
-    if (this.line) {
-      this.line.measures.forEach((measure, ndx) => measure.id = ndx + 1);
-      this.line = undefined;
     }
   }
 

@@ -39,16 +39,10 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
         return;
       }
 
-      if (element.type === 'BAR') {
-        const { id } = measure;
-        measure.remove(element);
-        
-        // Find the bar element that has the measure with the same id after the removal
-        const sameIdMeasure = vextab.measures.find(meas => meas.id === id);
-        const ndx = sameIdMeasure ? vextab.elements.indexOf(sameIdMeasure.elements[0]) : -1;
-        props.setElementIndex(ndx);
-      } else {
-        measure.remove(element);
+      
+      measure.remove(element);
+
+      if (element.type !== 'BAR') {
         props.setElementIndex(props.elementIndex - 1);
       }
       

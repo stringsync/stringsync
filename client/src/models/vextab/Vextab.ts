@@ -6,6 +6,7 @@ import { VextabLinkedList } from './linked-list';
 import { id } from 'utilities';
 import { isEqual, flatMap, uniqWith } from 'lodash';
 import { Directive } from './directive';
+import { Bar } from '../music';
 
 const DEFAULT_TUNING: Vex.Flow.Tuning = new (Flow as any).Tuning();
 
@@ -90,7 +91,7 @@ export class Vextab {
       // we only check the first measure since we already know that
       // a line's measures all have the same measure spec
       const isPrevSpecEqual = (
-        prev && 
+        prev &&
         isEqual(prev.measures[0].spec.struct, line.measures[0].spec.struct)
       );
 

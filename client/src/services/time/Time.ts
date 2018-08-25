@@ -1,6 +1,6 @@
 import { Flow } from 'vexflow';
 
-export type TimeUnits = 'ms' | 's' | 'min';
+export type TimeUnits = 'ms' | 's' | 'min' | 'tick';
 
 /**
  * This class is used to convert time from milliseconds to ticks. The caller can optionally
@@ -20,12 +20,21 @@ export class Time {
     switch (units) {
       case 'ms':
         this.ms = value;
-        break;
+        break;  
       case 's':
         this.ms = value * 1000;
         break;
       case 'min':
         this.ms = (value * 60) * 1000;
+        break;
+      case 'tick':
+        if (typeof bpm !== 'number') {
+          throw new RangeError('expected bpm to be defined for a tick Time spec');
+        }
+
+        // mins per tick
+        const mpt = 1 / bpm * (Flow.RESOLUTION / 4);
+        this.ms = mpt * value * 60000;
         break;
       default:
         throw Error(`invalid units: ${units}`);
