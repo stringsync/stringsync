@@ -18,10 +18,23 @@ interface IOuterProps {
 
 interface IVextabChangeHandlerProps extends IOuterProps {
   handleUpperChange: (value: number | string) => void;
+  handleLowerChange: (value: number | string) => void;
 }
 
 const enhance = compose<IVextabChangeHandlerProps, IOuterProps>(
   withVextabChangeHandlers<number | string, IOuterProps>({
+    handleLowerChange: props => (value, vextab) => {
+      const measure = vextab.measures.find($measure => $measure.id === props.element.id);
+  
+        if (!measure) {
+          return;
+        }
+  
+        const lower = typeof value === 'number' ? value : parseInt(value, 10);
+        measure.spec.timeSignature.lower = lower;
+  
+        return vextab;
+    },
     handleUpperChange: props => (value, vextab) => {
       const measure = vextab.measures.find($measure => $measure.id === props.element.id);
 
@@ -62,7 +75,10 @@ export const Measure = enhance(props => (
         defaultValue={props.element.spec.timeSignature.upper}
       />
       <Divider type="vertical" />
-      <InputNumber value={props.element.spec.timeSignature.lower} />
+      <InputNumber 
+        onChange={props.handleLowerChange}
+        defaultValue={props.element.spec.timeSignature.lower}
+      />
     </Form.Item>
   </Form>
 ));
