@@ -154,7 +154,15 @@ export class Note extends AbstractVexWrapper {
   }
 
   public clone(): Note {
-    return new Note(this.literal, this.octave, merge([], this.positions));
+    const note = new Note(this.literal, this.octave, merge([], this.positions));
+
+    const annotations = this.annotations.map(annotation => annotation.clone());
+    const directives = this.directives.map(directive => directive.clone(note));
+
+    note.annotations = annotations;
+    note.directives = directives;
+
+    return note;
   }
 
   /**

@@ -1,6 +1,7 @@
 import { Vextab } from 'models';
 import { Extractor, Invoker } from './';
 import { MeasureElement } from '../../music';
+import { merge } from 'lodash';
 
 export type DirectiveTypes = 'GRACE_NOTE' | 'NOTE_SUGGESTIONS';
 
@@ -32,6 +33,11 @@ export class Directive {
 
   public get struct(): Vextab.Parsed.IAnnotations {
     const json = JSON.stringify(Object.assign({}, { type: this.type }, this.payload));
-    return { command: 'annotations', params: [`JSON=${json.replace(',', ';')}`] }
+    return { command: 'annotations', params: [`JSON=${json.replace(/,/g, ';')}`] }
+  }
+
+  public clone(element: MeasureElement): Directive {
+    const payload = merge({}, this.payload);
+    return new Directive(this.type, element, payload);
   }
 }

@@ -26,6 +26,11 @@ export class Line {
       text: [] // Not supported yet
     };
   }
+
+  public clone(): Line {
+    const measures = this.measures.map(measure => measure.clone());
+    return new Line(this.id, measures);
+  }
 }
 
 export default Line;

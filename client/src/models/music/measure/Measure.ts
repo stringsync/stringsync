@@ -69,25 +69,19 @@ export class Measure {
     return new Measure(elements, this.id, spec.clone());
   }
 
-  /**
-   * Adds a measure element to the measure. If an index is provided, it will be spliced
-   * into the elements at that index.
-   * 
-   * @param element 
-   * @param index 
-   */
-  public add(element: MeasureElement, index: number = -1) {
-    this.elements.push(element);
-  }
-
   public remove(element: MeasureElement) {
-
     if (element instanceof Bar && this.line) {
       // remove the measure from the line
       this.line.measures = this.line.measures.filter(measure => measure !== this);
     } else {
       const ndx = this.elements.indexOf(element);
       this.elements.splice(ndx, 1);
+    }
+
+    // Reindex the measures
+    if (this.line) {
+      this.line.measures.forEach((measure, ndx) => measure.id = ndx + 1);
+      this.line = undefined;
     }
   }
 

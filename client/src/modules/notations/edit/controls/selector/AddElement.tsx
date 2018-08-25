@@ -9,6 +9,23 @@ import { ElementTypes } from './ElementManager';
 import { connect, Dispatch } from 'react-redux';
 import { EditorActions } from 'data';
 
+interface IOuterProps {
+  elementType: ElementTypes;
+  elementIndex: number;
+}
+
+interface IConnectProps extends IOuterProps {
+  setElementIndex: (elementIndex: number) => void;
+}
+
+interface IHandlerProps extends IConnectProps {
+  handleButtonClick: (event: React.SyntheticEvent<HTMLButtonElement>) => void;
+}
+
+interface IMappedProps {
+  onClick: (event: React.SyntheticEvent<HTMLButtonElement>) => void;
+}
+
 const getRest = () => {
   const rhythm = new Rhythm('4', false);
   return new Rest(0, rhythm);
@@ -30,23 +47,6 @@ const getMeasure = (spec: VextabMeasureSpec | void) => {
   return new Measure([bar, rest], 0, measureSpec);
 }
 
-interface IOuterProps {
-  elementType: ElementTypes;
-  elementIndex: number;
-}
-
-interface IConnectProps extends IOuterProps {
-  setElementIndex: (elementIndex: number) => void;
-}
-
-interface IHandlerProps extends IConnectProps {
-  handleButtonClick: (event: React.SyntheticEvent<HTMLButtonElement>) => void;
-}
-
-interface IMappedProps {
-  onClick: (event: React.SyntheticEvent<HTMLButtonElement>) => void;
-}
-
 const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
   connect(
     null,
@@ -61,8 +61,8 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
       // Create the element to add
       switch (props.elementType) {
         case 'MEASURE':
-        const newMeasure = getMeasure(get(measure, 'spec'));
-        
+          const newMeasure = getMeasure(get(measure, 'spec'));
+
           let line: Line
           if (vextab.lines.length === 0) {
             line = new Line(0, []);
@@ -72,10 +72,9 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
           } else {
             line = last(vextab.lines) as Line;
           }
-          
+
           newMeasure.line = line;
-          vextab.measures.push(newMeasure);
-          line.measures.push(newMeasure);
+          line.measures.splice(get(measure, 'id', 0) - 1, 0, newMeasure);
 
           const bar = newMeasure.elements[0];
           props.setElementIndex(vextab.elements.indexOf(bar));
@@ -87,7 +86,7 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
           }
 
           const rest = getRest();
-          measure.add(rest, props.elementIndex)
+          measure.elements.push(rest);
           props.setElementIndex(vextab.elements.indexOf(rest));
           return vextab;
 
@@ -98,7 +97,7 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
             return;
           }
 
-          measure.add(note, props.elementIndex);
+          measure.elements.push(note);
           props.setElementIndex(vextab.elements.indexOf(note));
           return vextab;
 

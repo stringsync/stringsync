@@ -56,7 +56,15 @@ export class Bar extends AbstractVexWrapper {
   }
 
   public clone(): Bar {
-    return new Bar(this.kind);
+    const bar = new Bar(this.kind);
+
+    const annotations = this.annotations.map(annotation => annotation.clone());
+    const directives = this.directives.map(directive => directive.clone(bar));
+
+    bar.annotations = annotations;
+    bar.directives = directives;
+
+    return bar;
   }
 
   public hydrate(staveNote: Vex.Flow.BarNote, tabNote: Vex.Flow.BarNote): void {

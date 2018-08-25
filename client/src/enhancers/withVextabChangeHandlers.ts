@@ -46,7 +46,9 @@ export const withVextabChangeHandlers = <TEvent, TProps>(vextabUpdaters: IVextab
       ),
       withHandlers({
         $getVextab: (props: TProps & IConnectProps) => () => {
-          return props.$vextab.clone();
+          const vextab = props.$vextab.clone();
+          vextab.psuedorender();
+          return vextab;
         },
         $setVextab: (props: TProps & IConnectProps) => (vextab: Vextab) => {
           props.$setVextabString(vextab.toString());

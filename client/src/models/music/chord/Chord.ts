@@ -85,6 +85,14 @@ export class Chord extends AbstractVexWrapper {
   }
 
   public clone(): Chord {
-    return new Chord(this.notes.map(note => note.clone()));
+    const chord = new Chord(this.notes.map(note => note.clone()));
+
+    const annotations = this.annotations.map(annotation => annotation.clone());
+    const directives = this.directives.map(directive => directive.clone(chord));
+
+    chord.annotations = annotations;
+    chord.directives = directives;
+
+    return chord;
   }
 }

@@ -1,38 +1,60 @@
 import * as React from 'react';
 import { compose, branch, renderNothing, withProps } from 'recompose';
-import { Form, Input } from 'antd';
+import { Form } from 'antd';
 import { Measure, MeasureElement, Annotations as AnnotationsModel } from 'models';
-import { get } from 'lodash';
+import { get, flatMap } from 'lodash';
+import TextArea from 'antd/lib/input/TextArea';
+import { withVextabChangeHandlers } from 'enhancers';
+
+type TextData = [string, number, number];
 
 interface IOuterProps {
   element: Measure | MeasureElement | null;
+  editor: Store.IEditorState;
 }
 
 interface ITextProps extends IOuterProps {
-  texts: string[];
+  textData: TextData[];
 }
 
-const enhance = compose<ITextProps, IOuterProps>(
+interface IVextabChangeHandlersProps extends ITextProps {
+  handleTextsChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+}
+
+const mapTextData = (annotations: AnnotationsModel[]): TextData[] => (
+  flatMap(annotations, (annotation, annotationNdx) => (
+    annotation.texts.map((text, textNdx) => [text, annotationNdx, textNdx] as TextData))
+  )
+);
+
+const enhance = compose<IVextabChangeHandlersProps, IOuterProps>(
   branch<IOuterProps>(props => !props.element, renderNothing),
   withProps((props: IOuterProps) => {
-    const texts: string[] = [];
-
     const annotations: AnnotationsModel[] = get(props.element, 'annotations', []);
-    
-    annotations.forEach((annotation: AnnotationsModel) => {
-      annotation.texts.forEach(text => texts.push(text))
-    });
+    const textData = mapTextData(annotations);
 
-    return { texts };
+    return { textData };
+  }),
+  withVextabChangeHandlers<React.ChangeEvent<HTMLTextAreaElement>, ITextProps>({
+    handleTextsChange: (props: IVextabChangeHandlersProps) => (e: React.ChangeEvent<HTMLTextAreaElement>, vextab) => {
+      console.log(e.currentTarget.dataset);
+    }
   })
 );  
 
 export const Annotations = enhance(props => (
   <Form.Item>
     {
-      props.texts.map((text, ndx) => (
-        <Form.Item key={`annotations-${ndx}`} label="annotation">
-          <Input value={text} />
+      props.textData.map(([text, annotationNdx, textNdx]) => (
+        <Form.Item
+          key={`${props.editor.elementIndex}-annotations-${annotationNdx}-${textNdx}`}
+        >
+          <TextArea
+            data-annotation-ndx={annotationNdx}
+            data-text-ndx={textNdx}
+            onChange={props.handleTextsChange}
+            defaultValue={text}
+          />
         </Form.Item>
       ))
     }

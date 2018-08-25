@@ -84,16 +84,8 @@ export class Vextab {
    * appended to every single note.
    */
   public get structs(): Vextab.ParsedStruct[] {
-    // WARNING
-    // These lines are not hydrated. This should be ok given the context
-    // that we're just trying to generate structs. We won't use these
-    // to directly render things.
-    const measures = this.measures.map(measure => measure.clone());
-    const lines = this.computeLines(measures);
-
-    const lineGroups: Line[][] = lines.reduce((groups, line, ndx) => {
-      const prev = lines[ndx - 1];
-      const next = lines[ndx + 1];
+    const lineGroups: Line[][] = this.lines.reduce((groups, line, ndx, $lines) => {
+      const prev = $lines[ndx - 1];
 
       // we only check the first measure since we already know that
       // a line's measures all have the same measure spec
@@ -109,7 +101,7 @@ export class Vextab {
       }
 
       return groups;
-    }, [[]] as Line[][]);
+    }, [] as Line[][]);
 
     return lineGroups.map(lineGroup => {
       const baseStruct: Vextab.Parsed.ILine = {

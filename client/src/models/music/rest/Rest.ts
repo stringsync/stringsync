@@ -35,7 +35,15 @@ export class Rest extends AbstractVexWrapper {
   }
 
   public clone(): Rest {
-    return new Rest(this.position, this.rhythm.clone());
+    const rest = new Rest(this.position, this.rhythm.clone());
+
+    const annotations = this.annotations.map(annotation => annotation.clone());
+    const directives = this.directives.map(directive => directive.clone(rest));
+
+    rest.annotations = annotations;
+    rest.directives = directives;
+
+    return rest;
   }
   
   public hydrate(staveNote: Vex.Flow.StaveNote, tabNote: Vex.Flow.TabNote): void {
