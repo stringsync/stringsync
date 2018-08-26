@@ -1,15 +1,15 @@
 import { compact } from 'lodash';
-import { VextabStruct } from 'models';
+import { Struct } from 'models';
 
 const error = (struct: any) => {
   return new Error(`could not handle struct: ${JSON.stringify(struct)}`)
 }
 
-// Performs the reverse operation of the VextabDecoder. That is, from an array of VextabStructs,
+// Performs the reverse operation of the VextabDecoder. That is, from an array of Structs,
 // encode them into a Vextab string.
 export class VextabEncoder {
-  public static encode(vextabStructs: Vextab.ParsedStruct[]) {
-    return new VextabEncoder(vextabStructs).toString();
+  public static encode(Structs: Vextab.ParsedStruct[]) {
+    return new VextabEncoder(Structs).toString();
   }
 
   public readonly structs: Vextab.ParsedStruct[];
@@ -25,7 +25,7 @@ export class VextabEncoder {
    */
   public toString(): string {
     const vextabStringGroups = this.structs.map(struct => {
-      switch (VextabStruct.typeof(struct)) {
+      switch (Struct.typeof(struct)) {
         case 'TABSTAVE':
           return this.encodeTabstave(struct);
         default:
@@ -45,10 +45,10 @@ export class VextabEncoder {
   }
 
   /**
-   * Encodes a tabstave. A tabstave is identified by a vextabStruct having a property called
+   * Encodes a tabstave. A tabstave is identified by a Struct having a property called
    * element, and that property value is equal to 'tabstave'.
    * 
-   * @param {VextabStruct} tabstave
+   * @param {Struct} tabstave
    * @returns {string[]}
    * @private
    */
@@ -65,7 +65,7 @@ export class VextabEncoder {
    * Encodes a tabstave's options. Options are identified by being the options key-value pair
    * in a tabstave struct. See VextabEncoder.prototype._encodeTabstave.
    * 
-   * @param {VextabStruct} options 
+   * @param {Struct} options 
    * @returns {string[]}
    * @private
    */
@@ -77,7 +77,7 @@ export class VextabEncoder {
 
   /**
    * 
-   * @param {VextabStruct} text
+   * @param {Struct} text
    * @returns {string[]}
    */
   private encodeText(texts: Vextab.Parsed.IText[]) {
@@ -94,7 +94,7 @@ export class VextabEncoder {
    * to improve encoding consistency, notes are grouped by bars, then encoded as groups. The
    * return value is essentially an array of measures encoded as vextab strings.
    * 
-   * @param {VextabStruct} notes 
+   * @param {Struct} notes 
    * @returns {string[]}
    * @private
    */
@@ -103,7 +103,7 @@ export class VextabEncoder {
     let ndx = -1;
     const measures: Vextab.Parsed.Note[][] = [];
     notes.forEach(note => {
-      if (VextabStruct.typeof(note) === 'BAR') {
+      if (Struct.typeof(note) === 'BAR') {
         ndx++;
       }
       measures[ndx] = measures[ndx] || [];
@@ -113,7 +113,7 @@ export class VextabEncoder {
     // transform the measure groups into vextab strings
     return measures.map(measure => {
       const vextabStrings = measure.map(struct => {
-        switch (VextabStruct.typeof(struct)) {
+        switch (Struct.typeof(struct)) {
           case 'BAR':
             return this.encodeBar(struct as Vextab.Parsed.IBar);
           case 'ANNOTATIONS':
@@ -142,7 +142,7 @@ export class VextabEncoder {
   /**
    * Encodes a bar note.
    * 
-   * @param {VextabStruct} bar 
+   * @param {Struct} bar 
    * @returns {string}
    * @private
    */
@@ -168,7 +168,7 @@ export class VextabEncoder {
   /**
    * Encodes an array of annotations.
    * 
-   * @param {VextabStruct} annotations 
+   * @param {Struct} annotations 
    * @returns {string}
    * @private
    */
@@ -181,7 +181,7 @@ export class VextabEncoder {
   /**
    * Encodes a tuplet.
    * 
-   * @param {VextabStruct} tuplet 
+   * @param {Struct} tuplet 
    * @returns {string}
    * @private
    */
@@ -192,7 +192,7 @@ export class VextabEncoder {
   /**
    * Encodes a rest.
    * 
-   * @param {VextabStruct} rest 
+   * @param {Struct} rest 
    * @returns {string}
    * @private
    */
@@ -204,7 +204,7 @@ export class VextabEncoder {
   /**
    * Encodes a time note.
    * 
-   * @param {VextabStruct} time
+   * @param {Struct} time
    * @returns {string}
    * @private
    */
@@ -215,7 +215,7 @@ export class VextabEncoder {
   /**
    * Encodes a guitar position.
    * 
-   * @param {VextabStruct} note 
+   * @param {Struct} note 
    * @returns {string}
    * @private
    */

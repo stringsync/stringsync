@@ -1,10 +1,9 @@
 import {
   Measure, Note, TimeSignature, Bar,
-  Rhythm, Chord, Rest, VextabStruct,
+  Rhythm, Chord, Rest, Struct,
   Tuplet, Annotations, Vextab, Key,
-  MeasureElement
+  MeasureElement, Spec
 } from 'models';
-import { VextabMeasureSpec } from './';
 import { get, last, takeRight, compact } from 'lodash';
 
 /**
@@ -12,7 +11,7 @@ import { get, last, takeRight, compact } from 'lodash';
  * structs. It does *not* link Vexflow data structures to the StringSync data structures.
  * See the hydrate instance method on the StringSync data structures.
  */
-export class StringSyncFactory {
+export class Factory {
   public readonly structs: Vextab.ParsedStruct[];
   public readonly tuning: any;
   public readonly measures: Measure[];
@@ -20,7 +19,7 @@ export class StringSyncFactory {
   private elements: MeasureElement[];
   private rhythm: Rhythm;
   private bar: Bar | void;
-  private measureSpec: VextabMeasureSpec | void;
+  private measureSpec: Spec | void;
 
   constructor(structs: Vextab.ParsedStruct[], tuning: any) {
     this.structs = structs;
@@ -62,12 +61,12 @@ export class StringSyncFactory {
     return this.measures;
   }
 
-  private extractMeasureSpec(struct: Vextab.ParsedStruct): VextabMeasureSpec {
+  private extractMeasureSpec(struct: Vextab.ParsedStruct): Spec {
     let params: any = {};
 
     if (struct.options) {
       params = struct.options.reduce((spec: any, option: any) => {
-        switch (VextabStruct.typeof(option)) {
+        switch (Struct.typeof(option)) {
           case 'KEY':
             const note = new Note(option.value, 0);
             spec.key = new Key(note);
@@ -85,16 +84,16 @@ export class StringSyncFactory {
     params.key = params.key || new Key(Note.from('C/0'));
     params.timeSignature = params.timeSignature || new TimeSignature(4, 4);
 
-    return new VextabMeasureSpec(params.key, params.timeSignature);
+    return new Spec(params.key, params.timeSignature);
   }
 
   /**
    * The first note in the notes array should be a bar. Sets the bar instance variable.
    * 
-   * @param {VextabStruct} note 
+   * @param {Struct} note 
    */
   private handleFirstNote(note: Vextab.Parsed.IBar) {
-    if (VextabStruct.typeof(note) !== 'BAR') {
+    if (Struct.typeof(note) !== 'BAR') {
       throw new Error(`expected first note to be a typeof BAR: ${JSON.stringify(note)}`);
     }
     
@@ -105,7 +104,7 @@ export class StringSyncFactory {
    * Push whatever is in the instance variables keeping track of the current note properties,
    * then unset them.
    * 
-   * @param {VextabStruct} note 
+   * @param {Struct} note 
    */
   private handleLastNote(): void {
     this.pushMeasure();
@@ -118,11 +117,11 @@ export class StringSyncFactory {
   /**
    * Takes a note struct and populates the slices, bar, and rhythm instance variables.
    * 
-   * @param {VextabStruct} note 
+   * @param {Struct} note 
    * @returns {void}
    */
   private handleNote(note: Vextab.ParsedStruct): void {
-    switch (VextabStruct.typeof(note)) {
+    switch (Struct.typeof(note)) {
       case 'BAR':
         this.pushMeasure();
         this.bar = new Bar(note.type);
@@ -179,7 +178,7 @@ export class StringSyncFactory {
   /**
    * Creates a Note object from a struct
    * 
-   * @param {VextabStruct} struct 
+   * @param {Struct} struct 
    * @returns {Note}
    */
   private extractNote(struct: Vextab.Parsed.IPosition) {
@@ -198,7 +197,7 @@ export class StringSyncFactory {
   /**
    * Creates a Chord object from a struct
    * 
-   * @param {VextabStruct} struct 
+   * @param {Struct} struct 
    * @returns {Chord}
    */
   private extractChord(struct: Vextab.Parsed.IChord) {

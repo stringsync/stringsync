@@ -4,7 +4,7 @@ import { Key, TimeSignature } from 'models';
 /**
  * Used for clustering measures.
  */
-export class VextabMeasureSpec {
+export class Spec {
   public key: Key;
   public timeSignature: TimeSignature;
   public clef = 'none';
@@ -31,7 +31,7 @@ export class VextabMeasureSpec {
     ]
   }
 
-  public clone(): VextabMeasureSpec {
-    return new VextabMeasureSpec(this.key.clone(), this.timeSignature.clone());
+  public clone(): Spec {
+    return new Spec(this.key.clone(), this.timeSignature.clone());
   }
 }

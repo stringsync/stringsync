@@ -14,11 +14,11 @@ test('VextabDecoder.decode can decode a number of valid vextabStrings', () => {
   });
 });
 
-test('VextabEncoder.encode produces strings that can be decoded to produce the same VextabStructs', () => {
+test('VextabEncoder.encode produces strings that can be decoded to produce the same Structs', () => {
   VEXTAB_STRINGS.forEach(vextabString => {
-    const vextabStructs = (VextabDecoder as any).parse(vextabString);
-    const reEncodedVextabString = VextabEncoder.encode(vextabStructs);
-    const reDecodedVextabStructs = (VextabDecoder as any).parse(reEncodedVextabString);
+    const Structs = (VextabDecoder as any).parse(vextabString);
+    const reEncodedVextabString = VextabEncoder.encode(Structs);
+    const reDecodedStructs = (VextabDecoder as any).parse(reEncodedVextabString);
 
     // recursively omit the props that correspond to the string position
     const omitStrPosInfo = (thing: IStringPosInfo): any => {
@@ -33,9 +33,9 @@ test('VextabEncoder.encode produces strings that can be decoded to produce the s
       }
     };
 
-    expect(vextabStructs.length > 0).toBe(true);
-    expect(reDecodedVextabStructs.length).toBe(vextabStructs.length);
-    expect(reDecodedVextabStructs).not.toBe(vextabStructs);
-    expect(omitStrPosInfo(reDecodedVextabStructs)).toEqual(omitStrPosInfo(vextabStructs));
+    expect(Structs.length > 0).toBe(true);
+    expect(reDecodedStructs.length).toBe(Structs.length);
+    expect(reDecodedStructs).not.toBe(Structs);
+    expect(omitStrPosInfo(reDecodedStructs)).toEqual(omitStrPosInfo(Structs));
   });
 });

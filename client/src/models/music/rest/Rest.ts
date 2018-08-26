@@ -1,5 +1,5 @@
 import { Rhythm } from 'models';
-import { AbstractVexWrapper, VextabStruct, Directive } from 'models/vextab';
+import { AbstractVexWrapper, Struct, Directive } from 'models/vextab';
 import { RestHydrationValidator } from './RestHydrationValidator';
 import { id } from 'utilities';
 import { Measure } from 'models/music';

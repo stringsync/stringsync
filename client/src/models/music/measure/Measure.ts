@@ -1,15 +1,13 @@
 import { Bar, Note, Rest, Line, Chord } from 'models/music';
-import { VextabMeasureSpec, Directive } from 'models/vextab';
+import { Spec, Annotations, Tuplet, Directive } from 'models';
 import { compact, get, flatMap, last } from 'lodash';
-import { Annotations } from '../annotations';
-import { Tuplet } from '../tuplet';
 
 export type MeasureElement = Note | Rest | Bar | Chord;
 
 export class Measure {
   public static tickableTypes = ['NOTE', 'CHORD', 'REST'];
 
-  public readonly spec: VextabMeasureSpec;
+  public readonly spec: Spec;
   public readonly type = 'MEASURE';
   
   public id: number;
@@ -18,7 +16,7 @@ export class Measure {
   public annotations: Annotations[] = [];
   public directives: Directive[] = [];
 
-  constructor(elements: MeasureElement[], id: number, spec: VextabMeasureSpec) {
+  constructor(elements: MeasureElement[], id: number, spec: Spec) {
     if (elements[0].type !== 'BAR') {
       throw new Error(`expected the first element to have type BAR, got: ${elements[0].type}`);
     }

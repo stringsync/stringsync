@@ -1,25 +1,24 @@
 import { VextabDecoder, VextabEncoder, VextabRenderer } from './';
-import { StringSyncFactory } from './string-sync-factory';
+import { Factory } from './factory';
 import { Line, Measure, MeasureElement } from 'models';
 import { Flow } from 'vexflow';
 import { VextabLinkedList } from './linked-list';
 import { id } from 'utilities';
 import { isEqual, flatMap, uniqWith } from 'lodash';
 import { Directive } from './directive';
-import { Bar } from '../music';
 
 const DEFAULT_TUNING: Vex.Flow.Tuning = new (Flow as any).Tuning();
 
 /**
  * The Vextab is the encoding used to store instructions on how to draw, animate, and edit
- * a score in StringSync. It is based on VextabStructs, which is the caller's
+ * a score in StringSync. It is based on Structs, which is the caller's
  * responsibility to construct. Using traditional Vextab grammar, one can use
- * Vextab.decode to produce the VextabStructs. See http://www.vexflow.com/vextab/tutorial.html
+ * Vextab.decode to produce the Structs. See http://www.vexflow.com/vextab/tutorial.html
  * for the traditional grammar.
  * 
  * The initial render lifecycle of a Vextab is as follows:
- *  1. Decode a vextabString into vextabStructs
- *  2. Create measures: Measure[] from the vextabStructs
+ *  1. Decode a vextabString into Structs
+ *  2. Create measures: Measure[] from the Structs
  *  3. Create canvases that each point to a vextabLine
  *  4. Create vextab Artists
  *  5. Hydrate vextab Artists
@@ -33,11 +32,11 @@ const DEFAULT_TUNING: Vex.Flow.Tuning = new (Flow as any).Tuning();
  */
 export class Vextab {
   /**
-   * Decodes a VextabString into an array of VextabStructs. It is the inverse of
+   * Decodes a VextabString into an array of Structs. It is the inverse of
    * Vextab.prototype.toString.
    *
    * @param {string} vextabString
-   * @returns {VextabStruct[]}
+   * @returns {Struct[]}
    */
   public static decode(vextabString: string): Vextab.ParsedStruct[] {
     return (VextabDecoder as any).parse(vextabString);
@@ -69,7 +68,7 @@ export class Vextab {
     this.width = width;
 
     // Create StringSync data structures
-    const factory = new StringSyncFactory(rawStructs, this.tuning);
+    const factory = new Factory(rawStructs, this.tuning);
     const measures = factory.extract();
     this.lines = this.computeLines(measures);
 
@@ -141,7 +140,7 @@ export class Vextab {
   }
 
   /**
-   * Encodes a VextabStruct array into a vextab string. It is the inverse of Vextab.decode.
+   * Encodes a Struct array into a vextab string. It is the inverse of Vextab.decode.
    *
    * @returns {string}
    */

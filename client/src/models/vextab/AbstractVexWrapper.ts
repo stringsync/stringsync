@@ -4,7 +4,7 @@ export interface IVexAttrs {
 }
 
 /**
- * Extending this class indicates that the child class has properties related to Vexflow\
+ * Extending this class indicates that the child class has properties related to Vexflow
  * and Vextab.
  */
 export abstract class AbstractVexWrapper {

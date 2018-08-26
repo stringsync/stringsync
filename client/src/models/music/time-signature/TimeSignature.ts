@@ -1,4 +1,4 @@
-import { VextabStruct, AbstractVexWrapper } from 'models/vextab';
+import { Struct, AbstractVexWrapper } from 'models/vextab';
 
 export class TimeSignature extends AbstractVexWrapper {
   public readonly type = 'TIME_SIGNATURE';

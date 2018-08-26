@@ -4,7 +4,7 @@ import { withVextabChangeHandlers } from 'enhancers';
 import { Button } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
 import { get, last, findLastIndex } from 'lodash';
-import { Bar, Rest, Rhythm, Measure, VextabMeasureSpec, Note, TimeSignature, Line, Key } from 'models';
+import { Bar, Rest, Rhythm, Measure, Spec, Note, TimeSignature, Line, Key } from 'models';
 import { ElementTypes } from './ElementManager';
 import { connect, Dispatch } from 'react-redux';
 import { EditorActions } from 'data';
@@ -31,13 +31,13 @@ const getRest = () => {
   return new Rest(0, rhythm);
 }
 
-const getMeasure = (spec: VextabMeasureSpec | void) => {
-  let measureSpec: VextabMeasureSpec;
+const getMeasure = (spec: Spec | void) => {
+  let measureSpec: Spec;
   if (!spec) {
     const note = new Note('C', 4, [{ str: 2, fret: 1 }]);
     const key = new Key(note);
     const timeSignature = new TimeSignature(4, 4);
-    measureSpec = new VextabMeasureSpec(key, timeSignature);
+    measureSpec = new Spec(key, timeSignature);
   } else {
     measureSpec = spec.clone();
   }

@@ -1,4 +1,4 @@
-export class VextabStruct {
+export class Struct {
   public static typeof(struct: Vextab.ParsedStruct) {
     const { element } = struct;
 
