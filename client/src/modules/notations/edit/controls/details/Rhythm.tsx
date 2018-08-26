@@ -50,6 +50,6 @@ export const Rhythm = enhance(props => (
         />
       </Form.Item>
     </Form>
-    {props.element.tuplet ? <Tuplet element={props.element.tuplet} /> : null}
+    <Tuplet tuplet={props.element.tuplet} />
   </div>
 ));
