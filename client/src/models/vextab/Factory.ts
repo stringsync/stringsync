@@ -12,8 +12,6 @@ interface IMeasureGrouping {
   elements: VextabElement[];
 }
 
-const { Tuning } = Flow;
-
 /**
  * This class creates Vextab instances. It provides all the logic for creating the
  * StringSync data structures, namely: Vextab elements, measures, and lines.
@@ -23,11 +21,11 @@ export class Factory {
   public static DEFAULT_TIME_SIGNATURE_STR = '4/4';
 
   public staves: Vextab.Parsed.IStave[];
-  public tuning: any;
+  public tuning: Vex.Flow.Tuning;
   public measuresPerLine: number;
   public width: number; 
 
-  constructor(staves: Vextab.Parsed.IStave[], tuning: typeof Tuning, measuresPerLine: number, width: number) {
+  constructor(staves: Vextab.Parsed.IStave[], tuning: Vex.Flow.Tuning, measuresPerLine: number, width: number) {
     this.staves = staves;
     this.tuning = tuning;
     this.measuresPerLine = measuresPerLine;
@@ -35,7 +33,7 @@ export class Factory {
   }
 
   public newInstance(): Vextab {
-    return new Vextab(this.lines, this.measuresPerLine, this.width, this.tuning);
+    return new Vextab(this.lines, this.tuning, this.measuresPerLine, this.width);
   }
 
   private get lines(): Line[] {
@@ -140,7 +138,7 @@ export class Factory {
             const annotations = staveNote as Vextab.Parsed.IAnnotations;
             const prevElement = elements[ndx - 1];
 
-            if (!prevElement) {
+            if (!prevElement || prevElement instanceof Bar) {
               throw new Error('expected an element to associate the annotations with');
             }
 

@@ -4,7 +4,7 @@ import { withVextabChangeHandlers } from 'enhancers';
 import { Button } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
 import { get, last, findLastIndex } from 'lodash';
-import { Bar, Rest, Rhythm, Measure, Spec, Note, TimeSignature, Line, Key } from 'models';
+import { Bar, Rest, Rhythm, Measure, Note, TimeSignature, Line, Key } from 'models';
 import { ElementTypes } from './ElementManager';
 import { connect, Dispatch } from 'react-redux';
 import { EditorActions } from 'data';
@@ -31,20 +31,19 @@ const getRest = () => {
   return new Rest(0, rhythm);
 }
 
-const getMeasure = (spec: Spec | void) => {
-  let measureSpec: Spec;
-  if (!spec) {
-    const note = new Note('C', 4, [{ str: 2, fret: 1 }]);
+const getMeasure = (bar: Bar) => {
+  let nextBar: Bar;
+  if (!bar) {
+    const note = new Note('C', 4, { positions: [{ str: 2, fret: 1 }] });
     const key = new Key(note);
     const timeSignature = new TimeSignature(4, 4);
-    measureSpec = new Spec(key, timeSignature);
+    nextBar = new Bar('single', key, timeSignature);
   } else {
-    measureSpec = spec.clone();
+    nextBar = bar.clone();
   }
 
-  const bar = new Bar('single');
   const rest = getRest();
-  return new Measure([bar, rest], 0, measureSpec);
+  return new Measure(nextBar, [rest]);
 }
 
 const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
@@ -66,7 +65,7 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
 
           let line: Line
           if (vextab.lines.length === 0) {
-            line = new Line(0, []);
+            line = new Line([]);
             vextab.lines.push(line);
             line.measures.push(newMeasure);
           } else if (measure) {
@@ -98,7 +97,7 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
             return;
           }
 
-          const note = new Note('C', 5, [{ fret: 1, str: 2 }]);
+          const note = new Note('C', 5, { positions: [{ fret: 1, str: 2 }] });
           note.rhythm = new Rhythm('4', false);
           measure.elements.push(note);
           props.setElementIndex(vextab.elements.indexOf(note));

@@ -3,8 +3,8 @@ import logo from 'assets/logo.svg';
 import styled from 'react-emotion';
 import { Line } from './Line';
 import { Title } from './Title';
-import { Vextab, VextabRenderer } from 'models';
-import { compose, withState, lifecycle, withProps } from 'recompose';
+import { Vextab, VextabRenderer, Factory as VextabFactory } from 'models';
+import { compose, lifecycle, withProps } from 'recompose';
 import { get } from 'lodash';
 import { scoreKey } from './scoreKey';
 import { Renderer } from './Renderer';
@@ -25,17 +25,13 @@ interface IOuterProps {
 }
 
 interface IConnectProps extends IOuterProps {
+  vextab: Vextab;
   appendErrors: (errors: string[]) => void;
   removeErrors: () => void;
   setEditorVextab: (vextab: Vextab) => void;
 }
 
-interface IVextabProps extends IConnectProps {
-  vextab: Vextab;
-  setVextab: (vextab: Vextab) => void;
-}
-
-interface IVextabSyncProps extends IVextabProps {
+interface IVextabSyncProps extends IConnectProps {
   vextabId: number;
   lineIds: number[];
 }
@@ -46,14 +42,15 @@ interface IInnerProps extends IVextabSyncProps {
 
 const enhance = compose<IInnerProps, IOuterProps>(
   connect(
-    null,
+    (state: Store.IState) => ({
+      vextab: state.editor.vextab
+    }),
     (dispatch: Dispatch) => ({
       appendErrors: (errors: string[]) => dispatch(EditorActions.appendErrors(errors)),
       removeErrors: () => dispatch(EditorActions.removeErrors()),
       setEditorVextab: (vextab: Vextab) => dispatch(EditorActions.setVextab(vextab))
     })
   ),
-  withState('vextab', 'setVextab', new Vextab([], 1)),
   withProps((props: IVextabSyncProps) => {
     let measuresPerLine;
     
@@ -78,10 +75,12 @@ const enhance = compose<IInnerProps, IOuterProps>(
 
       let vextab;
       if (shouldCreateVextab && this.props.notation.vextabString.length > 0) {
-        let structs: Vextab.ParsedStruct[] =[];
+        let staves: Vextab.Parsed.IStave[] =[];
 
+        // Parse the vextabString
         try {
-          structs = Vextab.decode(this.props.notation.vextabString);
+          staves = Vextab.decode(this.props.notation.vextabString);
+          this.props.removeErrors();
         } catch (error) {
           if (this.props.editMode) {
             this.props.appendErrors([error.message]);
@@ -91,14 +90,13 @@ const enhance = compose<IInnerProps, IOuterProps>(
           }
         }
 
-        this.props.removeErrors();
+        // create a new Vextab object using the factory
+        const factory = new VextabFactory(
+          staves, window.ss.maestro.tuning, this.props.measuresPerLine, this.props.width
+        )
 
-        vextab = new Vextab(structs, this.props.measuresPerLine, this.props.width);
-        this.props.setVextab(vextab);
-
-        if (this.props.editMode) {
-          this.props.setEditorVextab(vextab);
-        }
+        vextab = factory.newInstance();
+        this.props.setEditorVextab(vextab);
       } else {
         vextab = this.props.vextab;
       }

@@ -32,20 +32,6 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
   ),
   withVextabChangeHandlers<React.SyntheticEvent<HTMLButtonElement>, IConnectProps>({
     handleButtonClick: props => (event, vextab) => {
-      const element = vextab.elements[props.elementIndex];
-      const measure = get(element, 'measure');
-
-      if (!element || !measure) {
-        return;
-      }
-
-      
-      measure.remove(element);
-
-      if (element.type !== 'BAR') {
-        props.setElementIndex(props.elementIndex - 1);
-      }
-      
       return vextab;
     }
   }),

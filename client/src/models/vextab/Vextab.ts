@@ -1,5 +1,4 @@
-import { VextabDecoder, VextabEncoder, VextabRenderer } from './';
-import { Factory } from './factory';
+import { VextabDecoder, VextabEncoder, VextabRenderer, Factory } from './';
 import { Line, Measure } from 'models';
 import { flatMap } from 'lodash';
 import { Note, Chord, Rest } from 'models';
@@ -42,14 +41,16 @@ export class Vextab {
   public readonly width: number;
   public readonly renderer: VextabRenderer;
   public readonly measuresPerLine: number;
+  public readonly tuning: Vex.Flow.Tuning;
 
-  constructor(lines: Line[], measuresPerLine: number, width: number) {
+  constructor(lines: Line[], tuning: Vex.Flow.Tuning, measuresPerLine: number, width: number) {
     if (measuresPerLine < 0) {
       throw new Error('measuresPerLine must be a positive number');
     }
 
     this.id = id();
     this.lines = lines;
+    this.tuning = tuning;
     this.measuresPerLine = measuresPerLine;
     this.width = width;
 
@@ -85,5 +86,10 @@ export class Vextab {
    */
   public toString(): string {
     return Vextab.encode(this.structs);
+  }
+
+  public clone(): Vextab {
+    const factory = new Factory(this.structs, this.tuning, this.measuresPerLine, this.width);
+    return factory.newInstance();
   }
 }

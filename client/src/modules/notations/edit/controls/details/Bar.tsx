@@ -19,9 +19,7 @@ interface IVextabChangeHandlerProps extends IOuterProps {
 const enhance = compose<IVextabChangeHandlerProps, IOuterProps>(
   withVextabChangeHandlers<SelectValue, IOuterProps>({
     handleSelectChange: props => (value, vextab) => {
-      const bar = vextab.elements[props.editor.elementIndex] as BarModel;
-      bar.kind = value as Vextab.Parsed.IBarTypes;
-      return vextab;
+      return;
     }
   })
 );

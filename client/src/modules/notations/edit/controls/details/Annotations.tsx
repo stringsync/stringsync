@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { compose, branch, renderNothing, withProps } from 'recompose';
 import { Form, Button } from 'antd';
-import { Measure, MeasureElement, Annotations as AnnotationsModel } from 'models';
+import { Measure, VextabElement, Annotations as AnnotationsModel, Bar } from 'models';
 import { get, last, flatMap } from 'lodash';
 import TextArea from 'antd/lib/input/TextArea';
 import { withVextabChangeHandlers } from 'enhancers';
@@ -11,7 +11,7 @@ type TextData = [string, number, number];
 type EventTypes = React.ChangeEvent<HTMLTextAreaElement> | React.SyntheticEvent<HTMLButtonElement>;
 
 interface IOuterProps {
-  element: Measure | MeasureElement | null;
+  element: Measure | VextabElement | null;
   editor: Store.IEditorState;
 }
 
@@ -75,7 +75,7 @@ export const Annotations = enhance(props => (
   <Form>
     <Form.Item>
       <Button
-        disabled={!props.element || props.element.type === 'BAR' || props.element.type === 'MEASURE'}
+        disabled={!props.element || props.element instanceof Bar || props.element instanceof Measure }
         onClick={props.addAnnotation}
       >
         add

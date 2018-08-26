@@ -3,10 +3,9 @@ import { compose, withHandlers, lifecycle, withProps } from 'recompose';
 import { Dispatch, connect } from 'react-redux';
 import { EditorActions } from 'data';
 import { InputNumber, Form } from 'antd';
-import { Measure, MeasureElement } from 'models';
+import { Measure, VextabElement } from 'models';
 import { get } from 'lodash';
 import { ElementManager } from './ElementManager';
-import { ElementType } from './ElementType';
 
 /**
  * Takes the value from an InputNumber component and returns a number or null.
@@ -31,7 +30,7 @@ interface IConnectProps {
 
 interface ISelectedProps extends IConnectProps {
   measure: Measure | null;
-  element: MeasureElement | null;
+  element: VextabElement | null;
   barElementIndex: number;
 }
 

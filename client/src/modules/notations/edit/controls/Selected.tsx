@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { compose, withProps, branch, renderComponent } from 'recompose';
 import { connect } from 'react-redux';
-import { MeasureElement, Measure, Vextab } from 'models';
+import { Measure, Vextab, VextabElement } from 'models';
 import { Collapse } from 'antd';
 import { get } from 'lodash';
 import { Details } from './details';
@@ -19,7 +19,7 @@ interface IVextabProps extends IConnectProps {
 
 interface ISelectedProps extends IVextabProps {
   measure: Measure | null;
-  element: MeasureElement | null;
+  element: VextabElement | null;
 }
 
 const enhance = compose<ISelectedProps, {}>(
@@ -36,7 +36,7 @@ const enhance = compose<ISelectedProps, {}>(
     }
 
     let measure: Measure | null = null;
-    let element: MeasureElement | null = null;
+    let element: VextabElement | null = null;
 
     element = vextab.elements[props.editor.elementIndex] || null;
 

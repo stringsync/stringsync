@@ -1,8 +1,8 @@
 import { Line } from '../..';
 import { VexTab as VextabGenerator, Artist } from 'vextab/releases/vextab-div.js';
 import { get, zip, uniq } from 'lodash';
-import { MeasureElement } from '../../music';
 import { Bar, Note, Chord, Rest } from '../../music';
+import { VextabElement } from '../Vextab';
 
 export type StaveNote = Vex.Flow.StaveNote | Vex.Flow.BarNote;
 export type TabNote = Vex.Flow.TabNote | Vex.Flow.BarNote;
@@ -90,8 +90,8 @@ export class VextabHydrator {
         const staveNote = noteMeasures[measureNdx][wrapperNdx];
         const tabNote = tabMeasures[measureNdx][wrapperNdx];
 
-        if (wrapper.type === 'BAR') {
-          (wrapper as Bar).hydrate(staveNote as Vex.Flow.BarNote, tabNote as Vex.Flow.BarNote);
+        if (wrapper instanceof Bar) {
+          wrapper.hydrate(staveNote as Vex.Flow.BarNote, tabNote as Vex.Flow.BarNote);
         } else {
           (wrapper as Note | Chord | Rest).hydrate(
             staveNote as Vex.Flow.StaveNote, tabNote as Vex.Flow.TabNote
@@ -134,7 +134,7 @@ export class VextabHydrator {
   private validateMeasures(
     noteMeasures: StaveNote[][],
     tabMeasures: TabNote[][],
-    wrapperMeasures: MeasureElement[][]
+    wrapperMeasures: VextabElement[][]
   ): void {
     const groups = zip(noteMeasures, tabMeasures, wrapperMeasures);
 
@@ -149,7 +149,7 @@ export class VextabHydrator {
     groups.forEach(group => {
       const [notes, tabs, wrappers] = group;
 
-      zip(notes as StaveNote[], wrappers as MeasureElement[]).forEach(pair => {
+      zip(notes as StaveNote[], wrappers as VextabElement[]).forEach(pair => {
         const [note, wrapper] = pair;
 
         if (VextabHydrator.typeof(note!) !== wrapper!.type) {
@@ -157,7 +157,7 @@ export class VextabHydrator {
         }
       });
 
-      zip(tabs as TabNote[], wrappers as MeasureElement[]).forEach(pair => {
+      zip(tabs as TabNote[], wrappers as VextabElement[]).forEach(pair => {
         const [tab, wrapper] = pair;
 
         if (VextabHydrator.typeof(tab!) !== wrapper!.type) {

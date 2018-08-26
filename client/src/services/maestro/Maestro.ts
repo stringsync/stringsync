@@ -5,6 +5,7 @@ import { Vextab, VextabElement } from 'models/vextab';
 import { TickMap } from './TickMap';
 import { Fretboard } from 'models';
 import { Piano } from 'models';
+import { Flow } from 'vexflow';
 
 interface IMaestroState {
   time: Time;
@@ -24,6 +25,8 @@ const getNullState = (time: Time, loopStart: Time, loopEnd: Time): IMaestroState
   time
 });
 
+const DEFAULT_TUNING = new Flow.Tuning();
+
 /**
  * This class's purpose is to provide a single interface for callers to invoke an update on
  * all of the backend models. If a caller asynchronously invokes an update while the Maestro
@@ -37,6 +40,7 @@ export class Maestro extends AbstractObservable {
   public tickMap: TickMap | null = null;
   public fretboard: Fretboard | null = null;
   public piano: Piano | null = null;
+  public tuning = DEFAULT_TUNING;
   
   private isUpdating: boolean = false;
   private $vextab: Vextab | null = null;

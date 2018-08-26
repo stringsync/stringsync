@@ -30,9 +30,6 @@ const enhance = compose<IFretsByStringsProps, IOuterProps>(
 export const ChordOrNote = enhance(props => (
   <div>
     <Form>
-      <Form.Item label="id">
-        <InputNumber disabled={true} value={props.element.id} />
-      </Form.Item>
       <Form.Item label="positions (string, fret)">
         {
           [1, 2, 3, 4, 5, 6].map(str => (

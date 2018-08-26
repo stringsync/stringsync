@@ -8,13 +8,13 @@ const error = (struct: any) => {
 // Performs the reverse operation of the VextabDecoder. That is, from an array of Structs,
 // encode them into a Vextab string.
 export class VextabEncoder {
-  public static encode(Structs: Vextab.ParsedStruct[]) {
+  public static encode(Structs: Vextab.Parsed.Struct[]) {
     return new VextabEncoder(Structs).toString();
   }
 
-  public readonly structs: Vextab.ParsedStruct[];
+  public readonly structs: Vextab.Parsed.Struct[];
 
-  constructor(structs: Vextab.ParsedStruct[]) {
+  constructor(structs: Vextab.Parsed.Struct[]) {
     this.structs = structs;
   }
 
@@ -27,7 +27,7 @@ export class VextabEncoder {
     const vextabStringGroups = this.structs.map(struct => {
       switch (Struct.typeof(struct)) {
         case 'TABSTAVE':
-          return this.encodeTabstave(struct);
+          return this.encodeTabstave(struct as Vextab.Parsed.ITabstave);
         default:
           throw error(struct);
       }

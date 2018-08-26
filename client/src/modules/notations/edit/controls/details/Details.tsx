@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { compose, renderComponent, withProps } from 'recompose';
-import { MeasureElement, Measure as MeasureModel } from 'models';
+import { VextabElement, Measure as MeasureModel } from 'models';
 import { Measure } from './Measure';
 import { cond } from 'enhancers';
 import { Bar } from './Bar';
@@ -11,13 +11,13 @@ import { Annotations } from './Annotations';
 import { Directives } from './directives';
 
 interface IOuterProps {
-  element: MeasureModel | MeasureElement | null;
+  element: MeasureModel | VextabElement | null;
   editor: Store.IEditorState;
   show?: 'annotations' | 'directives';
 }
 
 interface IElementTypeProps extends IOuterProps {
-  elementType: (MeasureModel | MeasureElement)['type'] | void;
+  elementType: (MeasureModel | VextabElement)['type'] | void;
 }
 
 const enhance = compose<IElementTypeProps, IOuterProps>(

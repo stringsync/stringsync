@@ -3,7 +3,7 @@ import { Vextab } from '..';
 import { Artist } from 'vextab/releases/vextab-div.js';
 import { VextabHydrator } from './VextabHydrator';
 import { RendererValidator } from './RendererValidator';
-import { isEqual } from 'lodash';
+import { get, isEqual } from 'lodash';
 import { Bar, Line } from 'models/music';
 import { RendererStore } from './RendererStore';
 import { CaretRenderer } from './CaretRenderer';
@@ -56,7 +56,7 @@ export class VextabRenderer {
   }
 
   public get isRenderable(): boolean {
-    const lineIds = this.vextab.lines.map(line => line.id).sort();
+    const lineIds = this.vextab.lines.map(line => line.index).sort();
     const hydratedLineIds = Object.keys(this.store.data).map(lineId => parseInt(lineId, 10)).sort();
     return isEqual(lineIds, hydratedLineIds);
   }
@@ -74,7 +74,7 @@ export class VextabRenderer {
     const vexRenderer = new Flow.Renderer(canvas, Flow.Renderer.Backends.CANVAS);
     this.store.assign(line, 'vexRenderer', vexRenderer)
 
-    this.hydrate(line.id);
+    this.hydrate(line.index);
   }
 
   /**
@@ -132,7 +132,7 @@ export class VextabRenderer {
    * @returns {void}
    */
   private hydrate(lineId: number): void {
-    const line = this.vextab.lines.find(vextabLine => vextabLine.id === lineId);
+    const line = this.vextab.lines.find(vextabLine => vextabLine.index === lineId);
 
     if (typeof line === 'undefined') {
       throw new Error(`could not find line ${lineId}`);
@@ -153,13 +153,13 @@ export class VextabRenderer {
         const { artist, vexRenderer, canvas } = this.store.fetch(line);
 
         if (!artist || !vexRenderer || !canvas) {
-          throw new Error(`could not render line ${line.id}`);
+          throw new Error(`could not render line ${line.index}`);
         }
 
         const ctx = canvas.getContext('2d');
 
         if (!ctx) {
-          throw new Error(`no context found for ${line.id}`);
+          throw new Error(`no context found for ${line.index}`);
         }
 
         // render score
@@ -171,16 +171,17 @@ export class VextabRenderer {
         ctx.font = 'italic 10px arial';
 
         line.measures.forEach(measure => {
-          const bar = measure.elements.find(el => el.type === 'BAR') as Bar;
+          const bar = measure.elements.find(el => el instanceof Bar);
+          const vexAttrs = get(bar, 'vexAttrs');
 
-          if (!bar.vexAttrs) {
+          if (!vexAttrs) {
             return;
           }
 
-          const barNote = bar.vexAttrs.staveNote as Vex.Flow.BarNote;
+          const barNote = vexAttrs.staveNote as Vex.Flow.BarNote;
           const x = barNote.getAbsoluteX();
 
-          ctx.fillText(measure.id.toString(), x - 3, 50);
+          ctx.fillText(measure.index.toString(), x - 3, 50);
         })
 
         ctx.restore();
@@ -203,7 +204,7 @@ export class VextabRenderer {
       const { canvas } = this.store.fetch(line);
 
       if (!canvas) {
-        throw new Error(`could not resize line ${line.id}: missing canvas`);
+        throw new Error(`could not resize line ${line.index}: missing canvas`);
       }
 
       canvas.width = width * ratio;

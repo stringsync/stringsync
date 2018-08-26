@@ -3,7 +3,7 @@ import { Form } from 'antd';
 import ButtonGroup from 'antd/lib/button/button-group';
 import { RemoveElement } from './RemoveElement';
 import { compose, withState, withHandlers } from 'recompose';
-import { Measure, MeasureElement } from 'models';
+import { Measure, VextabElement, Bar } from 'models';
 import { AddElement } from './AddElement';
 import { RadioChangeEvent } from 'antd/lib/radio';
 import { ElementType } from './ElementType';
@@ -12,7 +12,7 @@ export type ElementTypes = 'MEASURE' | 'NOTE' | 'REST';
 
 interface IOuterProps {
   measure: Measure | null;
-  element: MeasureElement | null;
+  element: VextabElement | null;
   elementIndex: number;
   barElementIndex: number;
 }
@@ -64,7 +64,7 @@ export const ElementManager = enhance(props => (
           measure
           </RemoveElement>
         <RemoveElement
-          disabled={!props.element || props.element.type === 'BAR'}
+          disabled={!props.element || props.element instanceof Bar}
           elementIndex={props.elementIndex}
         >
           note

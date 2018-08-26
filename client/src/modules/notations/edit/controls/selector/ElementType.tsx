@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { compose, withProps } from 'recompose';
-import { MeasureElement, Rhythm, Note, Rest } from 'models';
+import { Rhythm, Note, Rest, VextabElement } from 'models';
 import { Radio } from 'antd';
 import RadioGroup from 'antd/lib/radio/group';
 import { connect } from 'react-redux';
@@ -11,7 +11,7 @@ import { get } from 'lodash';
 type ElementTypes = 'NOTE' | 'REST' | 'BAR' | null;
 
 interface IOuterProps {
-  element: MeasureElement | null;
+  element: VextabElement | null;
 }
 
 interface IConnectProps extends IOuterProps {
@@ -53,7 +53,7 @@ const enhance = compose<IWithVextabChangeHandlerProps, IOuterProps>(
       let nextElement: Rest | Note;
       switch (event.target.value) {
         case 'NOTE':
-          const note = new Note('C', 5, [{ fret: 1, str: 2 }]);
+          const note = new Note('C', 5, { positions: [{ fret: 1, str: 2 }] });
           note.rhythm = rhythm;
           nextElement = note;
           break;
