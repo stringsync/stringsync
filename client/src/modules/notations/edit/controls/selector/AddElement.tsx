@@ -94,12 +94,12 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
           return vextab;
 
         case 'NOTE':
-          const note = new Note('C', 5, [{ fret: 1, str: 2 }]);
-
           if (!measure) {
             return;
           }
 
+          const note = new Note('C', 5, [{ fret: 1, str: 2 }]);
+          note.rhythm = new Rhythm('4', false);
           measure.elements.push(note);
           props.setElementIndex(vextab.elements.indexOf(note));
           return vextab;

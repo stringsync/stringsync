@@ -6,6 +6,7 @@ import { InputNumber, Form } from 'antd';
 import { Measure, MeasureElement } from 'models';
 import { get } from 'lodash';
 import { ElementManager } from './ElementManager';
+import { ElementType } from './ElementType';
 
 /**
  * Takes the value from an InputNumber component and returns a number or null.

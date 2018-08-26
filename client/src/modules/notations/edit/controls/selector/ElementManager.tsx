@@ -6,6 +6,7 @@ import { compose, withState, withHandlers } from 'recompose';
 import { Measure, MeasureElement } from 'models';
 import { AddElement } from './AddElement';
 import { RadioChangeEvent } from 'antd/lib/radio';
+import { ElementType } from './ElementType';
 
 export type ElementTypes = 'MEASURE' | 'NOTE' | 'REST';
 
@@ -36,43 +37,42 @@ const enhance = compose<IHandlerProps, IOuterProps>(
 
 export const ElementManager = enhance(props => (
   <Form.Item>
-    <div>
-      <Form.Item>
-        <ButtonGroup>
-          <AddElement
-            type="primary"
-            elementIndex={props.elementIndex}
-            elementType="MEASURE"
-          >
-            measure
+    <Form.Item>
+      <ButtonGroup>
+        <AddElement
+          type="primary"
+          elementIndex={props.elementIndex}
+          elementType="MEASURE"
+        >
+          measure
           </AddElement>
-          <AddElement
-            type="primary"
-            elementIndex={props.elementIndex}
-            elementType="NOTE"
-          >
-            note
+        <AddElement
+          type="primary"
+          elementIndex={props.elementIndex}
+          elementType="NOTE"
+        >
+          note
           </AddElement>
-        </ButtonGroup>
-      </Form.Item>
-    </div>
-    <div>
-      <Form.Item>
-        <ButtonGroup>
-          <RemoveElement
-            disabled={!props.measure}
-            elementIndex={props.barElementIndex}
-          >
-            measure
+      </ButtonGroup>
+    </Form.Item>
+    <Form.Item>
+      <ButtonGroup>
+        <RemoveElement
+          disabled={!props.measure}
+          elementIndex={props.barElementIndex}
+        >
+          measure
           </RemoveElement>
-          <RemoveElement
-            disabled={!props.element || props.element.type === 'BAR'}
-            elementIndex={props.elementIndex}
-          >
-            note
+        <RemoveElement
+          disabled={!props.element || props.element.type === 'BAR'}
+          elementIndex={props.elementIndex}
+        >
+          note
           </RemoveElement>
-        </ButtonGroup>
-      </Form.Item>
-    </div>
+      </ButtonGroup>
+    </Form.Item>
+    <Form.Item label="type">
+      <ElementType element={props.element} />
+    </Form.Item>
   </Form.Item>
 ));
