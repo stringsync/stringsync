@@ -1,8 +1,9 @@
 import { Rhythm } from 'models';
-import { AbstractVexWrapper, Directive } from 'models/vextab';
+import { AbstractVexWrapper, Directive, VextabElement } from 'models/vextab';
 import { RestHydrationValidator } from './RestHydrationValidator';
-import { id } from 'utilities';
+import { id, prev, next } from 'utilities';
 import { Measure, Annotations } from 'models/music';
+import { get } from 'lodash';
 
 export class Rest extends AbstractVexWrapper {
   public readonly id: number;
@@ -10,9 +11,9 @@ export class Rest extends AbstractVexWrapper {
   
   public position: number;
   public rhythm: Rhythm;
-  public measure: Measure | void;
   public directives: Directive[] = [];
   public annotations: Annotations[] = [];
+  public measure: Measure | void;
 
   constructor(position: number, rhythm: Rhythm) {
     super();
@@ -20,6 +21,14 @@ export class Rest extends AbstractVexWrapper {
     this.id = id();
     this.rhythm = rhythm;
     this.position = position;
+  }
+
+  public get next(): VextabElement | null {
+    return next(this, get(this.measure, 'elements', []));
+  }
+
+  public get prev(): VextabElement | null {
+    return prev(this, get(this.measure, 'elements', []));
   }
 
   public get struct(): Vextab.Parsed.IRest {

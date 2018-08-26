@@ -1,13 +1,8 @@
 import { VextabDecoder, VextabEncoder, VextabRenderer } from './';
 import { Factory } from './factory';
-import { Line, Measure, MeasureElement } from 'models';
-import { Flow } from 'vexflow';
-import { VextabLinkedList } from './linked-list';
-import { id } from 'utilities';
-import { isEqual, flatMap, uniqWith } from 'lodash';
-import { Bar, Note, Chord, Rest, Tuplet, Directive } from 'models';
-
-const DEFAULT_TUNING: Vex.Flow.Tuning = new (Flow as any).Tuning();
+import { Line, Measure } from 'models';
+import { flatMap } from 'lodash';
+import { Note, Chord, Rest } from 'models';
 
 export type VextabElement = Note | Chord | Rest;
 
@@ -33,33 +28,21 @@ export type VextabElement = Note | Chord | Rest;
  * and create a new Vextab instance.
  */
 export class Vextab {
-  /**
-   * Decodes a VextabString into an array of Structs. It is the inverse of
-   * Vextab.prototype.toString.
-   *
-   * @param {string} vextabString
-   * @returns {Struct[]}
-   */
-  public static decode(vextabString: string): Vextab.ParsedStruct[] {
+  public static decode(vextabString: string): Vextab.Parsed.IStave[] {
     return (VextabDecoder as any).parse(vextabString);
   }
 
-  public static encode(structs: Vextab.ParsedStruct[]) {
+  public static encode(structs: Vextab.Parsed.IStave[]): string {
     return VextabEncoder.encode(structs);
   }
 
-  public readonly rawStructs: Vextab.ParsedStruct[];
-  public readonly id: number;
   public readonly lines: Line[];
-  public readonly width: number | void;
+  public readonly width: number;
   public readonly renderer: VextabRenderer;
-  public readonly links: VextabLinkedList;
-  
-  public measuresPerLine: number;
-  public tuning = DEFAULT_TUNING;
+  public readonly measuresPerLine: number;
 
   constructor(lines: Line[], measuresPerLine: number, width: number) {
-    if (typeof measuresPerLine !== 'number' || measuresPerLine < 0) {
+    if (measuresPerLine < 0) {
       throw new Error('measuresPerLine must be a positive number');
     }
 
@@ -69,67 +52,26 @@ export class Vextab {
 
     // Create auxillary data structures
     this.renderer = new VextabRenderer(this, width);
+
+    // associate all the inner models with each other
+    this.lines.forEach(line => {
+      line.vextab = this;
+      line.measures.forEach(measure => {
+        measure.line = line;
+        measure.elements.forEach(element => element.measure = measure)
+      })
+    })
   }
 
-  /**
-   * This function computes the structs based off of the StringSync data structures.
-   * It will combine measures with the same measure spec with each other.
-   * There are also more note elements since "time" Vextab ParsedStructs are being
-   * appended to every single note.
-   */
-  public get structs(): Vextab.ParsedStruct[] {
-    const lineGroups: Line[][] = this.lines.reduce((groups, line, ndx, $lines) => {
-      const prev = $lines[ndx - 1];
-
-      // we only check the first measure since we already know that
-      // a line's measures all have the same measure spec
-      const isPrevSpecEqual = (
-        prev &&
-        isEqual(prev.measures[0].spec.struct, line.measures[0].spec.struct)
-      );
-
-      if (isPrevSpecEqual) {
-        groups[groups.length - 1].push(line);
-      } else {
-        groups.push([line]);
-      }
-
-      return groups;
-    }, [] as Line[][]);
-
-    return lineGroups.map(lineGroup => {
-      const baseStruct: Vextab.Parsed.ILine = {
-        element: 'tabstave',
-        notes: [],
-        options: [],
-        text: []
-      };
-
-      return lineGroup.reduce((struct, line) => {
-        const { element } = struct;
-        const { notes, options, text } = line.struct;
-
-        return {
-          element,
-          notes: [...struct.notes, ...notes],
-          options: uniqWith([...struct.options, ...options], isEqual),
-          text: [...struct.text, ...text]
-        }
-      }, baseStruct)
-    });
+  public get structs(): Vextab.Parsed.IStave[] {
+    return this.lines.map(line => line.struct);
   }
 
-  /**
-   * Computes all the measures of the vextab
-   */
   public get measures(): Measure[] {
     return flatMap(this.lines, line => line.measures);
   }
 
-  /**
-   * Computes all the elements of the measures
-   */
-  public get elements(): MeasureElement[] {
+  public get elements(): VextabElement[] {
     return flatMap(this.measures, measure => measure.elements);
   }
 
@@ -140,65 +82,5 @@ export class Vextab {
    */
   public toString(): string {
     return Vextab.encode(this.structs);
-  }
-
-  /**
-   * Returns a cloned Vextab.
-   */
-  public clone(): Vextab {
-    return new Vextab(this.structs, this.measuresPerLine, this.width);
-  }
-
-  /**
-   * Creates fake canvases to generate the Vexflow data structures needed to hydrate
-   * each note.
-   */
-  public psuedorender(): void {
-    if (this.renderer.isRendered) {
-      throw new Error('cannot psuedorender a rendered vextab')
-    }
-
-    this.lines.forEach(line => this.renderer.assign(line, document.createElement('canvas')));
-    Directive.extractAndInvoke(this);
-    this.renderer.render();
-    this.links.compute();
-  }
-
-  /**
-   * Groups measures with the same measureSpec, respecting the order that the measures are in.
-   * 
-   * @returns {Line[]}
-   */
-  private computeLines(measures: Measure[]): Line[] {
-    const lines: Line[] = [];
-
-    let lineMeasures: Measure[] = [];
-    let prevMeasure: Measure | null = null;
-
-    measures.forEach((measure, ndx) => {
-      const shouldPushLine = (
-        lineMeasures.length === this.measuresPerLine ||
-        (prevMeasure && !isEqual(prevMeasure.spec.struct, measure.spec.struct)) ||
-        (prevMeasure && prevMeasure.spec.id !== measure.spec.id)
-      );
-
-      if (shouldPushLine) {
-        lines.push(new Line(lines.length, lineMeasures));
-        lineMeasures = [];
-      }
-
-      lineMeasures.push(measure);
-
-      if (ndx === measures.length - 1) {
-        lines.push(new Line(lines.length, lineMeasures));
-      }
-
-      prevMeasure = measure;
-    });
-
-    // Link lines with measures
-    lines.forEach(line => line.measures.forEach(measure => measure.line = line));
-
-    return lines;
   }
 }

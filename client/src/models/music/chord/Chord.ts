@@ -1,12 +1,9 @@
 import { Note } from 'models';
-import { AbstractVexWrapper, NoteRenderer, Directive } from 'models/vextab';
+import { AbstractVexWrapper, NoteRenderer, Directive, VextabElement } from 'models/vextab';
 import { ChordHydrationValidator } from './ChordHydrationValidator';
-import { Measure } from 'models/music';
-import { id } from 'utilities';
-import { Annotations } from '../annotations';
-import { Rhythm } from '../rhythm';
-import { Tuplet } from '../tuplet';
-import { flatMap } from 'lodash';
+import { Measure, Rhythm, Tuplet, Annotations } from 'models/music';
+import { id, next, prev } from 'utilities';
+import { get, flatMap } from 'lodash';
 
 interface IChordOptions {
   articulation?: string | void;
@@ -45,6 +42,18 @@ export class Chord extends AbstractVexWrapper {
      this.articulation = opts.articulation;
      this.decorator = opts.decorator;
      this.rhythm = opts.rhythm;
+  }
+
+  public get next(): VextabElement | null {
+    return next(this, get(this.measure, 'elements', []));
+  }
+
+  public get prev(): VextabElement | null {
+    return prev(this, get(this.measure, 'elements', []));
+  }
+
+  public get positions(): Guitar.IPosition[] {
+    return flatMap(this.notes, note => note.positions);
   }
 
   /**
@@ -87,14 +96,6 @@ export class Chord extends AbstractVexWrapper {
     } else {
       throw validator.errors;
     }
-  }
-
-  /**
-   * Returns a guitar position if the note is hydrated. If any note does not have a position,
-   * throws an error.
-   */
-  public get positions(): Guitar.IPosition[] {
-    return flatMap(this.notes, note => note.positions);
   }
 
   public clone(): Chord {

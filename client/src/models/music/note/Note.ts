@@ -1,10 +1,9 @@
-import { merge, sortBy } from 'lodash';
+import { get, merge, sortBy } from 'lodash';
+import { next, prev } from 'utilities';
 import * as constants from './noteConstants';
-import { AbstractVexWrapper, Directive } from 'models/vextab';
+import { AbstractVexWrapper, Directive, VextabElement, NoteRenderer } from 'models/vextab';
 import { NoteHydrationValidator } from './NoteHydrationValidator';
-import { id } from 'utilities';
-import { Measure, Annotations, Rhythm, Tuplet } from 'models/music';
-import { NoteRenderer } from 'models/vextab';
+import { Measure, Annotations, Rhythm } from 'models/music';
 
 export interface INoteOptions {
   articulation?: string | void;
@@ -67,7 +66,6 @@ export class Note extends AbstractVexWrapper {
   }
 
   public readonly literal: string;
-  public readonly id: number;
   public readonly type = 'NOTE';
 
   public octave: number;
@@ -91,7 +89,6 @@ export class Note extends AbstractVexWrapper {
       throw new Error('octave must be an integer')
     }
 
-    this.id = id();
     this.literal = normalizedLiteral;
     this.octave = octave;
     this.renderer = new NoteRenderer(this);
@@ -103,6 +100,14 @@ export class Note extends AbstractVexWrapper {
     this.decorator = opts.decorator;
     this.rhythm = opts.rhythm;
     this.positions = opts.positions;
+  }
+
+  public get next(): VextabElement | null {
+    return next(this, get(this.measure, 'elements', []));
+  }
+
+  public get prev(): VextabElement | null {
+    return prev(this, get(this.measure, 'elements', []));
   }
 
   /**
