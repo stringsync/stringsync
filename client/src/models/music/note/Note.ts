@@ -43,9 +43,9 @@ export class Note extends AbstractVexWrapper {
    * @param {string} str expected string format: `${note}${modifier?}/${octave}`
    * @returns {Note}
    */
-  public static from(str: string): Note {
+  public static from(str: string, options?: INoteOptions): Note {
     const splitStr = str.split('/');
-    return new Note(splitStr[0], parseInt(splitStr[1], 10));
+    return new Note(splitStr[0], parseInt(splitStr[1], 10), options);
   }
 
   /**
@@ -86,7 +86,7 @@ export class Note extends AbstractVexWrapper {
     if (!Note.ALL_LITERALS_SET.has(normalizedLiteral)) {
       throw new Error(`${normalizedLiteral} should be in ${Note.ALL_LITERALS.join(', ')}`);
     } else if (!Number.isInteger(octave)) {
-      throw new Error('octave must be an integer')
+      throw new Error('octave must be an integer');
     }
 
     this.literal = normalizedLiteral;

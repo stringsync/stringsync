@@ -17,7 +17,7 @@ interface IMeasureGrouping {
  * StringSync data structures, namely: Vextab elements, measures, and lines.
  */
 export class Factory {
-  public static DEFAULT_KEY_NOTE_STR = 'C/0';
+  public static DEFAULT_KEY_NOTE_STR = 'C';
   public static DEFAULT_TIME_SIGNATURE_STR = '4/4';
 
   public staves: Vextab.Parsed.IStave[];
@@ -77,7 +77,7 @@ export class Factory {
 
       // key and timeSignature are used to construct Bar objects
       const keyNoteStr = get(staveOptions, 'KEY[0].value', Factory.DEFAULT_KEY_NOTE_STR) as string;
-      const keyNote = Note.from(keyNoteStr);
+      const keyNote = Note.from(`${keyNoteStr}/0`);
       const key = new Key(keyNote);
 
       const timeSignatureStr = get(staveOptions, 'TIME_SIGNATURE[0].value', Factory.DEFAULT_TIME_SIGNATURE_STR) as string;

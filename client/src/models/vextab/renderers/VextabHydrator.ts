@@ -102,12 +102,6 @@ export class VextabHydrator {
   }
 
   private getMeasures<T>(notes: T[]): T[][] {
-    const firstNoteType = VextabHydrator.typeof(notes[0]);
-
-    if (firstNoteType !== 'BAR') {
-      throw new Error(`expected the first note type to be 'BAR', got: ${firstNoteType}` );
-    }
-
     const line: T[][] = [];
     let measure: T[] = [notes[0]];
     notes.slice(1).forEach((note, ndx) => {

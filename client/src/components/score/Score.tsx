@@ -4,7 +4,7 @@ import styled from 'react-emotion';
 import { Line } from './Line';
 import { Title } from './Title';
 import { Vextab, VextabRenderer, Factory as VextabFactory } from 'models';
-import { compose, lifecycle, withProps } from 'recompose';
+import { compose, lifecycle, withProps, branch, renderNothing } from 'recompose';
 import { get } from 'lodash';
 import { scoreKey } from './scoreKey';
 import { Renderer } from './Renderer';
@@ -104,7 +104,8 @@ const enhance = compose<IInnerProps, IOuterProps>(
       // Sync the Vextab with Maestro's vextab
       window.ss.maestro.vextab = vextab;
     }
-  })
+  }),
+  branch<IInnerProps>(props => !props.vextab, renderNothing)
 );
 
 interface IOuterDiv {

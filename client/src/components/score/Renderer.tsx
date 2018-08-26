@@ -49,7 +49,6 @@ const enhance = compose<IInnerProps, IOuterProps>(
         }
 
         tickMap.compute();
-        renderer.vextab.links.compute();
 
         // Last, we render the Caret if it is observing the maestro
         maestro.update(true);
