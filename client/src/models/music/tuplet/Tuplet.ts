@@ -25,4 +25,8 @@ export class Tuplet extends AbstractVexWrapper {
   public hydrate(): void {
     this.vexAttrs = null;
   }
+
+  public clone(): Tuplet {
+    return new Tuplet(this.value);
+  }
 }

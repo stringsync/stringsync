@@ -6,8 +6,7 @@ export class Line {
   public stave: Vex.Flow.Stave;
   public readonly type = 'LINE';
 
-  constructor(id: number, measures: Measure[]) {
-    this.id = id;
+  constructor(measures: Measure[]) {
     this.measures = measures;
   }
 

@@ -8,6 +8,12 @@ import { Rhythm } from '../rhythm';
 import { Tuplet } from '../tuplet';
 import { flatMap } from 'lodash';
 
+interface IChordOptions {
+  articulation?: string | void;
+  decorator?: string | void;
+  rhythm?: Rhythm;
+}
+
 export class Chord extends AbstractVexWrapper {
   public readonly id: number;
   public readonly type = 'CHORD';
@@ -17,12 +23,12 @@ export class Chord extends AbstractVexWrapper {
   public renderer: NoteRenderer;
   public directives: Directive[] = [];
   public annotations: Annotations[] = [];
-  public rhythm: Rhythm | void;
+  public rhythm: Rhythm;
   public tuplet: Tuplet | void;
   public articulation: string | void;
   public decorator: string | void;
 
-  constructor(notes: Note[]) {
+  constructor(notes: Note[], options?: IChordOptions) {
     super();
 
     if (notes.length <= 1) {
@@ -32,6 +38,13 @@ export class Chord extends AbstractVexWrapper {
     this.id = id();
     this.notes = notes;
     this.renderer = new NoteRenderer(this);
+
+     // TODO validate the positions
+     const base = { positions: [], rhythm: new Rhythm('4', false) };
+     const opts = Object.assign(base, options || {});
+     this.articulation = opts.articulation;
+     this.decorator = opts.decorator;
+     this.rhythm = opts.rhythm;
   }
 
   /**

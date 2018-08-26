@@ -1,35 +1,46 @@
 import { Bar, Note, Rest, Line, Chord } from 'models/music';
 import { Spec, Annotations, Tuplet, Directive } from 'models';
 import { compact, get, flatMap, last } from 'lodash';
-
-export type MeasureElement = Note | Rest | Bar | Chord;
+import { VextabElement } from '../../vextab';
+import { hash } from 'utilities';
 
 export class Measure {
-  public static tickableTypes = ['NOTE', 'CHORD', 'REST'];
+  public static TICKABLE_TYPES = ['NOTE', 'CHORD', 'REST'];
 
-  public readonly spec: Spec;
   public readonly type = 'MEASURE';
-  
-  public id: number;
-  public line: Line | void;
-  public elements: MeasureElement[];
+  public readonly clef = 'none';
+  public readonly notation = true;
+
+  public bar: Bar;
+  public elements: VextabElement[];
   public annotations: Annotations[] = [];
   public directives: Directive[] = [];
 
-  constructor(elements: MeasureElement[], id: number, spec: Spec) {
-    if (elements[0].type !== 'BAR') {
-      throw new Error(`expected the first element to have type BAR, got: ${elements[0].type}`);
-    }
-
-    this.id = id;
+  constructor(bar: Bar, elements: VextabElement[]) {
+    this.bar = bar;
     this.elements = elements;
-    this.spec = spec;
+  }
 
-    this.elements.forEach(element => element.measure = this);
+  public get specHash(): number {
+    const { key, timeSignature } = this.bar;
+    const { clef, notation } = this;
+
+    return hash(`${clef}${notation}${key.note.literal}${timeSignature.toString()}`);
+  }
+
+  public get specStruct() {
+    const { key, timeSignature } = this.bar;
+
+    return [
+      { key: 'clef',     value: 'none' },
+      { key: 'notation', value: 'true' },
+      { key: 'key',      value: key.note.literal },
+      { key: 'time',     value: timeSignature.toString() }
+    ];
   }
 
   public get tickables(): Array<Note | Chord | Rest> {
-    const tickableTypes = new Set(Measure.tickableTypes);
+    const tickableTypes = new Set(Measure.TICKABLE_TYPES);
     return this.elements.filter(element => tickableTypes.has(element.type)) as Array<Note | Chord | Rest>;
   }
 

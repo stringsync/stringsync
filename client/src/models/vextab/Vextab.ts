@@ -5,9 +5,11 @@ import { Flow } from 'vexflow';
 import { VextabLinkedList } from './linked-list';
 import { id } from 'utilities';
 import { isEqual, flatMap, uniqWith } from 'lodash';
-import { Directive } from './directive';
+import { Bar, Note, Chord, Rest, Tuplet, Directive } from 'models';
 
 const DEFAULT_TUNING: Vex.Flow.Tuning = new (Flow as any).Tuning();
+
+export type VextabElement = Note | Chord | Rest;
 
 /**
  * The Vextab is the encoding used to store instructions on how to draw, animate, and edit
@@ -56,25 +58,17 @@ export class Vextab {
   public measuresPerLine: number;
   public tuning = DEFAULT_TUNING;
 
-  constructor(rawStructs: Vextab.ParsedStruct[], measuresPerLine: number, width?: number | void) {
+  constructor(lines: Line[], measuresPerLine: number, width: number) {
     if (typeof measuresPerLine !== 'number' || measuresPerLine < 0) {
       throw new Error('measuresPerLine must be a positive number');
     }
 
-    this.id = id();
-
+    this.lines = lines;
     this.measuresPerLine = measuresPerLine;
-    this.rawStructs = rawStructs;
     this.width = width;
-
-    // Create StringSync data structures
-    const factory = new Factory(rawStructs, this.tuning);
-    const measures = factory.extract();
-    this.lines = this.computeLines(measures);
 
     // Create auxillary data structures
     this.renderer = new VextabRenderer(this, width);
-    this.links = new VextabLinkedList(this.lines, this.measures);
   }
 
   /**

@@ -6,6 +6,13 @@ import { id } from 'utilities';
 import { Measure, Annotations, Rhythm, Tuplet } from 'models/music';
 import { NoteRenderer } from 'models/vextab';
 
+export interface INoteOptions {
+  articulation?: string | void;
+  decorator?: string | void;
+  positions?: Guitar.IPosition[];
+  rhythm?: Rhythm;
+}
+
 /**
  * The purpose of this class is to encapsulate the logic related to describing a note's inherent
  * state in different ways as well as functionality to step to other notes. It is the fundamental
@@ -68,13 +75,12 @@ export class Note extends AbstractVexWrapper {
   public renderer: NoteRenderer;
   public directives: Directive[] = [];
   public annotations: Annotations[] = [];
-  public rhythm: Rhythm | void;
-  public tuplet: Tuplet | void;
+  public rhythm: Rhythm;
   public positions: Guitar.IPosition[] = [];
   public articulation: string | void;
   public decorator: string | void;
 
-  constructor(literal: string, octave: number, positions?: Guitar.IPosition[]) {
+  constructor(literal: string, octave: number, options?: INoteOptions) {
     super();
 
     const normalizedLiteral = Note.normalize(literal);
@@ -90,9 +96,13 @@ export class Note extends AbstractVexWrapper {
     this.octave = octave;
     this.renderer = new NoteRenderer(this);
 
-    if (positions) {
-      this.positions = positions; // TODO: Validate that the position returns the right note literal
-    }
+    // TODO validate the positions
+    const base = { positions: [], rhythm: new Rhythm('4', false) };
+    const opts = Object.assign(base, options || {});
+    this.articulation = opts.articulation;
+    this.decorator = opts.decorator;
+    this.rhythm = opts.rhythm;
+    this.positions = opts.positions;
   }
 
   /**

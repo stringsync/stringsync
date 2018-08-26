@@ -1,10 +1,8 @@
 import { Rhythm } from 'models';
-import { AbstractVexWrapper, Struct, Directive } from 'models/vextab';
+import { AbstractVexWrapper, Directive } from 'models/vextab';
 import { RestHydrationValidator } from './RestHydrationValidator';
 import { id } from 'utilities';
-import { Measure } from 'models/music';
-import { Annotations } from '../annotations';
-import { Tuplet } from '../tuplet';
+import { Measure, Annotations } from 'models/music';
 
 export class Rest extends AbstractVexWrapper {
   public readonly id: number;
@@ -15,7 +13,6 @@ export class Rest extends AbstractVexWrapper {
   public measure: Measure | void;
   public directives: Directive[] = [];
   public annotations: Annotations[] = [];
-  public tuplet: Tuplet | void;
 
   constructor(position: number, rhythm: Rhythm) {
     super();
