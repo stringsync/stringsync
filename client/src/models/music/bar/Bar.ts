@@ -20,6 +20,8 @@ export class Bar extends AbstractVexWrapper {
   public key: Key;
   public timeSignature: TimeSignature;
   public measure: Measure | void;
+  public annotations: Annotations[] = [];
+  public directives: Directive[] = []
 
   constructor(kind: Vextab.Parsed.IBarTypes, key: Key, timeSignature: TimeSignature) {
     super();

@@ -1,6 +1,6 @@
 import { Line } from '../..';
 import { VexTab as VextabGenerator, Artist } from 'vextab/releases/vextab-div.js';
-import { get, zip, uniq } from 'lodash';
+import { get, zip, uniq, flatMap } from 'lodash';
 import { Bar, Note, Chord, Rest } from '../../music';
 import { VextabElement } from '../Vextab';
 
@@ -79,9 +79,9 @@ export class VextabHydrator {
     const tabMeasures = this.getMeasures<TabNote>(this.stave.tab_notes as TabNote[]);
 
     const hydratables = VextabHydrator.HYDRATABLES;
-    const wrapperMeasures = this.line.measures.map(measure => 
-      measure.elements.filter(el => hydratables.includes(el.type))
-    );
+    const wrapperMeasures =this.line.measures.map(measure => (
+      [measure.bar, ...measure.elements.filter(el => hydratables.includes(el.type))]
+    ));
 
     this.validateMeasures(noteMeasures, tabMeasures, wrapperMeasures);
 
@@ -128,7 +128,7 @@ export class VextabHydrator {
   private validateMeasures(
     noteMeasures: StaveNote[][],
     tabMeasures: TabNote[][],
-    wrapperMeasures: VextabElement[][]
+    wrapperMeasures: Array<Array<VextabElement | Bar>>
   ): void {
     const groups = zip(noteMeasures, tabMeasures, wrapperMeasures);
 
@@ -143,7 +143,7 @@ export class VextabHydrator {
     groups.forEach(group => {
       const [notes, tabs, wrappers] = group;
 
-      zip(notes as StaveNote[], wrappers as VextabElement[]).forEach(pair => {
+      zip(notes as StaveNote[], wrappers as Array<VextabElement | Bar>).forEach(pair => {
         const [note, wrapper] = pair;
 
         if (VextabHydrator.typeof(note!) !== wrapper!.type) {

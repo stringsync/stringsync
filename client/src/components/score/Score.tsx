@@ -28,7 +28,7 @@ interface IConnectProps extends IOuterProps {
   vextab: Vextab;
   appendErrors: (errors: string[]) => void;
   removeErrors: () => void;
-  setEditorVextab: (vextab: Vextab) => void;
+  setEditorVextab: (vextab: Vextab | null) => void;
 }
 
 interface IVextabSyncProps extends IConnectProps {
@@ -48,10 +48,10 @@ const enhance = compose<IInnerProps, IOuterProps>(
     (dispatch: Dispatch) => ({
       appendErrors: (errors: string[]) => dispatch(EditorActions.appendErrors(errors)),
       removeErrors: () => dispatch(EditorActions.removeErrors()),
-      setEditorVextab: (vextab: Vextab) => dispatch(EditorActions.setVextab(vextab))
+      setEditorVextab: (vextab: Vextab | null) => dispatch(EditorActions.setVextab(vextab))
     })
   ),
-  withProps((props: IVextabSyncProps) => {
+  withProps((props: IConnectProps) => {
     let measuresPerLine;
     
     // compute mpl based on width
@@ -105,7 +105,12 @@ const enhance = compose<IInnerProps, IOuterProps>(
       window.ss.maestro.vextab = vextab;
     }
   }),
-  branch<IInnerProps>(props => !props.vextab, renderNothing)
+  branch<IInnerProps>(props => !props.vextab, renderNothing),
+  lifecycle<IInnerProps, {}>({
+    componentWillUnmount() {
+      this.props.setEditorVextab(null);
+    }
+  }),
 );
 
 interface IOuterDiv {

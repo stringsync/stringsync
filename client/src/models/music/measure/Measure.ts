@@ -1,4 +1,4 @@
-import { Bar, Note, Rest, Chord, Annotations, Tuplet, Line } from 'models/music';
+import { Bar, Note, Chord, Annotations, Tuplet, Line } from 'models/music';
 import { Directive, VextabElement } from 'models/vextab';
 import { compact, get, flatMap, last } from 'lodash';
 import { hash, next, prev } from 'utilities';
@@ -30,11 +30,15 @@ export class Measure {
   }
 
   public get next(): Measure | null {
-    return next(this, get(this.line, 'measures', []));
+    const lines: Line[] = compact([this.line, get(this.line, 'next')]);
+    const measures = flatMap(lines, line => line.measures);
+    return next(this, measures);
   }
 
   public get prev(): Measure | null {
-    return prev(this, get(this.line, 'measures', []));
+    const lines: Line[] = compact([this.line, get(this.line, 'prev')]);
+    const measures = flatMap(lines, line => line.measures);
+    return prev(this, measures);
   }
 
   public get specHash(): number {
@@ -45,7 +49,7 @@ export class Measure {
   }
 
   public get struct(): Vextab.Parsed.Note[] {
-    return flatMap(this.elements, element => {
+    return flatMap([this.bar, ...this.elements], element => {
       if (get(element, 'rhythm.isGrace', false)) {
         // Grace notes are implemented via directives, so we ignore them here
         return [];
@@ -89,7 +93,7 @@ export class Measure {
     return new Measure(bar, elements);
   }
 
-  private tupletStruct(element: VextabElement): Vextab.Parsed.ITuplet | void {
+  private tupletStruct(element: VextabElement | Bar): Vextab.Parsed.ITuplet | void {
     // We have to deal with tuplets at the measure level since it requires us
     // to look backwards.
     const tuplet = get(element, 'rhythm.tuplet') as Tuplet | void;

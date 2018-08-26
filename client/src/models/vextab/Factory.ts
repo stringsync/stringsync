@@ -1,5 +1,4 @@
-import { groupBy, get, flatMap, takeRight } from 'lodash';
-import { Flow } from 'vexflow';
+import { last, groupBy, get, flatMap, takeRight } from 'lodash';
 import { Struct as VextabStruct } from 'models/vextab';
 import {
   Annotations, Bar, Chord, Key,Line,  Measure,
@@ -38,14 +37,14 @@ export class Factory {
 
   private get lines(): Line[] {
     // groups of VextabElements that will belong to the same measure
-    const lines = this.measures.reduce((groups, measure, ndx) => {
+    const lines = this.measures.reduce((groups, measure, ndx, measures) => {
       const group = groups[groups.length - 1];
-      const prevMeasure = measure[ndx - 1];
+      const prevMeasure = measures[ndx - 1];
 
-      if (measure.specHash === get(prevMeasure, 'specHash')) {
-        group.push(measure);
-      } else {
+      if (measure.specHash !== get(prevMeasure, 'specHash') || get(group, 'length') === this.measuresPerLine) {
         groups.push([measure]);
+      } else {
+        group.push(measure);
       }
 
       return groups;
@@ -136,13 +135,13 @@ export class Factory {
 
           case 'ANNOTATIONS':
             const annotations = staveNote as Vextab.Parsed.IAnnotations;
-            const prevElement = elements[ndx - 1];
+            const lastElement = last(elements);
 
-            if (!prevElement || prevElement instanceof Bar) {
+            if (!lastElement) {
               throw new Error('expected an element to associate the annotations with');
             }
 
-            prevElement.annotations.push(new Annotations(annotations.params));
+            lastElement.annotations.push(new Annotations(annotations.params));
             break;
 
           default:
@@ -172,6 +171,7 @@ export class Factory {
     return new Note(literal, parseInt(octave, 10), {
       articulation: parsed.articulation,
       decorator: parsed.decorator,
+      positions: [{ fret, str }],
       rhythm
     });
   }

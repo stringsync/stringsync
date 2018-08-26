@@ -1,6 +1,6 @@
-import { get, merge, sortBy } from 'lodash';
-import { next, prev } from 'utilities';
 import * as constants from './noteConstants';
+import { get, flatMap, compact, merge, sortBy } from 'lodash';
+import { next, prev } from 'utilities';
 import { AbstractVexWrapper, Directive, VextabElement, NoteRenderer } from 'models/vextab';
 import { NoteHydrationValidator } from './NoteHydrationValidator';
 import { Measure, Annotations, Rhythm } from 'models/music';
@@ -103,11 +103,15 @@ export class Note extends AbstractVexWrapper {
   }
 
   public get next(): VextabElement | null {
-    return next(this, get(this.measure, 'elements', []));
+    const measures: Measure[] = compact([this.measure, get(this.measure, 'next')]);
+    const elements = flatMap(measures, measure => measure.elements);
+    return next(this, elements);
   }
 
   public get prev(): VextabElement | null {
-    return prev(this, get(this.measure, 'elements', []));
+    const measures: Measure[] = compact([this.measure, get(this.measure, 'prev')]);
+    const elements = flatMap(measures, measure => measure.elements);
+    return prev(this, elements);
   }
 
   /**
