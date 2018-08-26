@@ -1,7 +1,8 @@
 import { Vextab } from 'models';
 import { Extractor, Invoker } from './';
-import { MeasureElement } from '../../music';
 import { merge } from 'lodash';
+import { VextabElement } from '../Vextab';
+import { Bar } from '../../music';
 
 export type DirectiveTypes = 'GRACE_NOTE' | 'NOTE_SUGGESTIONS';
 
@@ -21,11 +22,11 @@ export class Directive {
   }
 
   public type: DirectiveTypes;
-  public element: MeasureElement;
+  public element: VextabElement;
   public payload: any;
 
   // FIXME: Fix the annotation for this class
-  constructor(type: DirectiveTypes, element: MeasureElement, payload: any) {
+  constructor(type: DirectiveTypes, element: VextabElement, payload: any) {
     this.type = type;
     this.element = element;
     this.payload = payload;
@@ -36,7 +37,7 @@ export class Directive {
     return { command: 'annotations', params: [`JSON=${json.replace(/,/g, ';')}`] }
   }
 
-  public clone(element: MeasureElement): Directive {
+  public clone(element: VextabElement): Directive {
     const payload = merge({}, this.payload);
     return new Directive(this.type, element, payload);
   }

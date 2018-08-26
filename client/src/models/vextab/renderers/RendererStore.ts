@@ -12,7 +12,7 @@ export class RendererStore<T extends IBaseData> {
   public data: { [lineId: string]: (T | void) } = {};
 
   public fetch(line: Line | number | string): T {
-    const lineId = typeof line === 'string' || typeof line === 'number' ? line : line.id;
+    const lineId = typeof line === 'string' || typeof line === 'number' ? line : line.index;
     const data = this.data[lineId];
 
     if (!data) {
@@ -23,15 +23,15 @@ export class RendererStore<T extends IBaseData> {
   }
 
   public assign(line: Line, key: keyof T, data: any): void {
-    this.data[line.id] = this.data[line.id] || { line } as T;
+    this.data[line.index] = this.data[line.index] || { line } as T;
 
     const mergeData = {} as T;
     mergeData[key] = data;
 
-    this.data[line.id] = Object.assign({}, this.data[line.id], mergeData);
+    this.data[line.index] = Object.assign({}, this.data[line.index], mergeData);
   }
 
   public unassign(line: Line): void {
-    this.data[line.id] = undefined;
+    this.data[line.index] = undefined;
   }
 }

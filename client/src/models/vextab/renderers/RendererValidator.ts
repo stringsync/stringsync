@@ -20,7 +20,7 @@ export class RendererValidator<R extends IBaseRendererProps> extends AbstractVal
   }
 
   private get lineIds(): number[] {
-    return this.target.vextab.lines.map(line => line.id);
+    return this.target.vextab.lines.map(line => line.index);
   }
 
   private get missingCanvases(): number[] {

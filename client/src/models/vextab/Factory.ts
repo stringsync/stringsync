@@ -35,7 +35,7 @@ export class Factory {
   }
 
   public newInstance(): Vextab {
-    return new Vextab(this.lines, this.measuresPerLine, this.width);
+    return new Vextab(this.lines, this.measuresPerLine, this.width, this.tuning);
   }
 
   private get lines(): Line[] {

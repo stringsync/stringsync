@@ -1,6 +1,7 @@
 import { PianoKey, PianoKeyStates } from './PianoKey';
 import { Maestro } from 'services';
 import { compact } from 'lodash';
+import { Chord } from '../music';
 
 export class Piano {
   public pianoKeysByNoteName: { [noteName: string]: PianoKey } = {};
@@ -20,7 +21,7 @@ export class Piano {
       throw new Error('measure elements must be associated with a measure to update fretboard');
     }
 
-    if (element.type === 'CHORD') {
+    if (element instanceof Chord) {
       pressed = element.notes.map(note => note.toString());
     } else if (element.type === 'NOTE') {
       pressed = [element.toString()];

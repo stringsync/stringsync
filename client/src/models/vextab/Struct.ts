@@ -1,5 +1,5 @@
 export class Struct {
-  public static typeof(struct: Vextab.ParsedStruct) {
+  public static typeof(struct: any) {
     const { element } = struct;
 
     if (element === 'tabstave') {

@@ -19,13 +19,11 @@ export class Bar extends AbstractVexWrapper {
   public kind: Vextab.Parsed.IBarTypes;
   public key: Key;
   public timeSignature: TimeSignature;
-  public directives: Directive[] = [];
-  public annotations: Annotations[] = [];
+  public measure: Measure | void;
 
   constructor(kind: Vextab.Parsed.IBarTypes, key: Key, timeSignature: TimeSignature) {
     super();
 
-    this.id = id();
     this.kind = kind;
     this.key = key;
     this.timeSignature = timeSignature;
@@ -58,15 +56,7 @@ export class Bar extends AbstractVexWrapper {
   }
 
   public clone(): Bar {
-    const bar = new Bar(this.kind, this.key.clone(), this.timeSignature.clone());
-
-    const annotations = this.annotations.map(annotation => annotation.clone());
-    const directives = this.directives.map(directive => directive.clone(bar));
-
-    bar.annotations = annotations;
-    bar.directives = directives;
-
-    return bar;
+    return new Bar(this.kind, this.key.clone(), this.timeSignature.clone());
   }
 
   public hydrate(staveNote: Vex.Flow.BarNote, tabNote: Vex.Flow.BarNote): void {

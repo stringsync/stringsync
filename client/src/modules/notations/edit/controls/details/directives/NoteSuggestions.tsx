@@ -20,11 +20,11 @@ export const NoteSuggestions = enhance(props => (
   <Form.Item label="note suggestion">
     <Indented>
       {
-        Object.keys(props.directive.payload).map(key => (
-          <Form.Item key={`note-suggestions-${props.directive.element.id}-${key}`} label={`${key}`}>
-            <Input value={JSON.stringify(props.directive.payload[key])} />
-          </Form.Item>
-        ))
+        // Object.keys(props.directive.payload).map(key => (
+        //   <Form.Item key={`note-suggestions-${props.directive.element.id}-${key}`} label={`${key}`}>
+        //     <Input value={JSON.stringify(props.directive.payload[key])} />
+        //   </Form.Item>
+        // ))
       }
     </Indented>
   </Form.Item>

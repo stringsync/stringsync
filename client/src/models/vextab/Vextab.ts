@@ -3,6 +3,7 @@ import { Factory } from './factory';
 import { Line, Measure } from 'models';
 import { flatMap } from 'lodash';
 import { Note, Chord, Rest } from 'models';
+import { id } from 'utilities';
 
 export type VextabElement = Note | Chord | Rest;
 
@@ -36,6 +37,7 @@ export class Vextab {
     return VextabEncoder.encode(structs);
   }
 
+  public readonly id: number;
   public readonly lines: Line[];
   public readonly width: number;
   public readonly renderer: VextabRenderer;
@@ -46,6 +48,7 @@ export class Vextab {
       throw new Error('measuresPerLine must be a positive number');
     }
 
+    this.id = id();
     this.lines = lines;
     this.measuresPerLine = measuresPerLine;
     this.width = width;

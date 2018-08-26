@@ -1,9 +1,9 @@
 import { Time } from 'services';
 import { AbstractObservable } from 'utilities';
 import { isEqual } from 'lodash';
-import { Vextab } from 'models/vextab';
+import { Vextab, VextabElement } from 'models/vextab';
 import { TickMap } from './TickMap';
-import { MeasureElement, Fretboard } from 'models';
+import { Fretboard } from 'models';
 import { Piano } from 'models';
 
 interface IMaestroState {
@@ -12,7 +12,7 @@ interface IMaestroState {
   loopEnd: Time;
   start: number | null; // start tick time that the note is valid
   stop: number | null;  // stop tick time that the note is valid
-  note: MeasureElement | null;
+  note: VextabElement | null;
 }
 
 const getNullState = (time: Time, loopStart: Time, loopEnd: Time): IMaestroState => ({
