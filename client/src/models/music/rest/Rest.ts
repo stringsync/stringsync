@@ -3,7 +3,7 @@ import { AbstractVexWrapper, Directive, VextabElement } from 'models/vextab';
 import { RestHydrationValidator } from './RestHydrationValidator';
 import { id, prev, next } from 'utilities';
 import { Measure, Annotations } from 'models/music';
-import { get } from 'lodash';
+import { get, compact, flatMap } from 'lodash';
 
 export class Rest extends AbstractVexWrapper {
   public readonly id: number;
@@ -24,11 +24,15 @@ export class Rest extends AbstractVexWrapper {
   }
 
   public get next(): VextabElement | null {
-    return next(this, get(this.measure, 'elements', []));
+    const measures: Measure[] = compact([this.measure, get(this.measure, 'next')]);
+    const elements = flatMap(measures, measure => measure.elements);
+    return next(this, elements);
   }
 
   public get prev(): VextabElement | null {
-    return prev(this, get(this.measure, 'elements', []));
+    const measures: Measure[] = compact([this.measure, get(this.measure, 'prev')]);
+    const elements = flatMap(measures, measure => measure.elements);
+    return prev(this, elements);
   }
 
   public get struct(): Vextab.Parsed.IRest {
