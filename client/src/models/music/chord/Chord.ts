@@ -3,7 +3,7 @@ import { AbstractVexWrapper, NoteRenderer, Directive, VextabElement } from 'mode
 import { ChordHydrationValidator } from './ChordHydrationValidator';
 import { Measure, Rhythm, Tuplet, Annotations } from 'models/music';
 import { id, next, prev } from 'utilities';
-import { get, flatMap } from 'lodash';
+import { get, flatMap, compact } from 'lodash';
 
 interface IChordOptions {
   articulation?: string | void;
@@ -45,11 +45,15 @@ export class Chord extends AbstractVexWrapper {
   }
 
   public get next(): VextabElement | null {
-    return next(this, get(this.measure, 'elements', []));
+    const measures: Measure[] = compact([this.measure, get(this.measure, 'next')]);
+    const elements = flatMap(measures, measure => measure.elements);
+    return next(this, elements);
   }
 
   public get prev(): VextabElement | null {
-    return prev(this, get(this.measure, 'elements', []));
+    const measures: Measure[] = compact([this.measure, get(this.measure, 'prev')]);
+    const elements = flatMap(measures, measure => measure.elements);
+    return prev(this, elements);
   }
 
   public get positions(): Guitar.IPosition[] {
