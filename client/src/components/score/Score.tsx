@@ -4,7 +4,7 @@ import styled from 'react-emotion';
 import { Line } from './Line';
 import { Title } from './Title';
 import { Vextab, VextabRenderer, Factory as VextabFactory } from 'models';
-import { compose, lifecycle, withProps, branch, renderNothing } from 'recompose';
+import { compose, lifecycle, withProps, branch, renderNothing, withState } from 'recompose';
 import { get } from 'lodash';
 import { scoreKey } from './scoreKey';
 import { Renderer } from './Renderer';
@@ -12,6 +12,7 @@ import { CanvasRenderables } from './canvas-renderables';
 import { Editor } from './Editor';
 import { connect, Dispatch } from 'react-redux';
 import { EditorActions } from 'data';
+import { Flow } from 'vexflow';
 
 const MIN_WIDTH_PER_MEASURE = 240; // px
 const MIN_MEASURES_PER_LINE = 1;
@@ -25,13 +26,17 @@ interface IOuterProps {
 }
 
 interface IConnectProps extends IOuterProps {
-  vextab: Vextab;
   appendErrors: (errors: string[]) => void;
   removeErrors: () => void;
   setEditorVextab: (vextab: Vextab | null) => void;
 }
 
-interface IVextabSyncProps extends IConnectProps {
+interface IStateProps extends IConnectProps {
+  vextab: Vextab;
+  setVextab: (vextab: Vextab) => void;
+}
+
+interface IVextabSyncProps extends IStateProps {
   vextabId: number;
   lineIds: number[];
 }
@@ -42,9 +47,7 @@ interface IInnerProps extends IVextabSyncProps {
 
 const enhance = compose<IInnerProps, IOuterProps>(
   connect(
-    (state: Store.IState) => ({
-      vextab: state.editor.vextab
-    }),
+    null,
     (dispatch: Dispatch) => ({
       appendErrors: (errors: string[]) => dispatch(EditorActions.appendErrors(errors)),
       removeErrors: () => dispatch(EditorActions.removeErrors()),
@@ -65,6 +68,7 @@ const enhance = compose<IInnerProps, IOuterProps>(
 
     return { measuresPerLine };
   }),
+  withState('vextab', 'setVextab', new Vextab([], new Flow.Tuning(), 1, 640)),
   lifecycle<IInnerProps, {}>({
     componentDidUpdate(prevProps) {
       const shouldCreateVextab = (
@@ -97,6 +101,7 @@ const enhance = compose<IInnerProps, IOuterProps>(
 
         vextab = factory.newInstance();
         this.props.setEditorVextab(vextab);
+        this.props.setVextab(vextab);
       } else {
         vextab = this.props.vextab;
       }
@@ -105,12 +110,7 @@ const enhance = compose<IInnerProps, IOuterProps>(
       window.ss.maestro.vextab = vextab;
     }
   }),
-  branch<IInnerProps>(props => !props.vextab, renderNothing),
-  lifecycle<IInnerProps, {}>({
-    componentWillUnmount() {
-      this.props.setEditorVextab(null);
-    }
-  }),
+  branch<IInnerProps>(props => !props.vextab, renderNothing)
 );
 
 interface IOuterDiv {

@@ -1,6 +1,6 @@
 import { Line } from '../..';
 import { VexTab as VextabGenerator, Artist } from 'vextab/releases/vextab-div.js';
-import { get, zip, uniq, flatMap } from 'lodash';
+import { get, zip, uniq } from 'lodash';
 import { Bar, Note, Chord, Rest } from '../../music';
 import { VextabElement } from '../Vextab';
 
