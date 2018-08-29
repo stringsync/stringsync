@@ -3,7 +3,7 @@ import { compose } from 'recompose';
 import { Form, InputNumber } from 'antd';
 import { Rest as RestModel } from 'models';
 import { Rhythm } from './Rhythm';
-import { withVextabChangeHandlers } from 'enhancers';
+import { withEditorHandlers } from 'enhancers';
 import { RemoveElement } from '../RemoveElement';
 
 interface IOuterProps {
@@ -16,7 +16,7 @@ interface IHandlerProps extends IOuterProps {
 }
 
 const enhance = compose<IHandlerProps, IOuterProps>(
-  withVextabChangeHandlers<number | string, IOuterProps>({
+  withEditorHandlers<number | string, IOuterProps>({
     handlePositionChange: props => (value, vextab) => {
       const rest = vextab.elements[props.editor.elementIndex] as RestModel;
       const position = typeof value === 'number' ? value : parseInt(value, 10);

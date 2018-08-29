@@ -1,4 +1,5 @@
-import { Vextab } from 'models';
+import { Vextab, VextabElement, Measure, Line } from 'models';
+import { at, get } from 'lodash';
 
 /**
  * The purpose of this class is to provide an interface for editing a vextab.
@@ -18,19 +19,33 @@ export class Editor {
     return this.vextab.toString();
   }
 
-  public addElement(element: any, index: number) {
+  public get element(): VextabElement | null {
+    return this.path ? at(this.vextab.elements, this.path) as any : null;
+  }
+
+  public get measure(): Measure | null {
+    return get(this.element, 'measure', null) as Measure | null;
+  }
+
+  public get line(): Line | null {
+    return get(this.measure, 'line', null) as Line | null;
+  }
+
+  public addElement(element: Measure | VextabElement) {
+    if (element instanceof Measure && this.line) {
+      this.line.measures.push(element);
+    }
+  }
+
+  public removeElement() {
     // TODO
   }
 
-  public removeElement(index: number) {
+  public addMeasure() {
     // TODO
   }
 
-  public addMeasure(index: number) {
-    // TODO
-  }
-
-  public removeMeasure(index: number) {
+  public removeMeasure() {
     // TODO
   }
 }

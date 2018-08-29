@@ -4,7 +4,7 @@ import { Measure as MeasureModel, Scale, Key, Note } from 'models';
 import { Form, InputNumber, Select, Divider } from 'antd';
 import styled from 'react-emotion';
 import { uniq, flatMap } from 'lodash';
-import { withVextabChangeHandlers } from 'enhancers';
+import { withEditorHandlers } from 'enhancers';
 import { SelectValue } from 'antd/lib/select';
 
 const { Option } = Select;
@@ -24,7 +24,7 @@ interface IVextabChangeHandlerProps extends IOuterProps {
 }
 
 const enhance = compose<IVextabChangeHandlerProps, IOuterProps>(
-  withVextabChangeHandlers<number | string, IOuterProps>({
+  withEditorHandlers<number | string, IOuterProps>({
     handleKeyChange: props => (noteLiteral: string, vextab) => {
       const measure = vextab.measures.find($measure => $measure.index === props.element.index);
 

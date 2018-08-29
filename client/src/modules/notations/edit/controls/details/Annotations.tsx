@@ -4,7 +4,7 @@ import { Form, Button } from 'antd';
 import { Measure, VextabElement, Annotations as AnnotationsModel, Bar } from 'models';
 import { get, last, flatMap } from 'lodash';
 import TextArea from 'antd/lib/input/TextArea';
-import { withVextabChangeHandlers } from 'enhancers';
+import { withEditorHandlers } from 'enhancers';
 
 type TextData = [string, number, number];
 
@@ -39,7 +39,7 @@ const enhance = compose<IVextabChangeHandlersProps, IOuterProps>(
 
     return { textData };
   }),
-  withVextabChangeHandlers<EventTypes, ITextProps>({
+  withEditorHandlers<EventTypes, ITextProps>({
     addAnnotation: props => (e: React.SyntheticEvent<HTMLButtonElement>, vextab) => {
       const element = vextab.elements[props.editor.elementIndex];
       

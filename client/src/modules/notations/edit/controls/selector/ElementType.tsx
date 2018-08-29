@@ -5,7 +5,7 @@ import { Radio } from 'antd';
 import RadioGroup from 'antd/lib/radio/group';
 import { connect } from 'react-redux';
 import { RadioChangeEvent } from 'antd/lib/radio';
-import { withVextabChangeHandlers } from 'enhancers';
+import { withEditorHandlers } from 'enhancers';
 import { get } from 'lodash';
 
 type ElementTypes = 'NOTE' | 'REST' | 'BAR' | null;
@@ -41,7 +41,7 @@ const enhance = compose<IWithVextabChangeHandlerProps, IOuterProps>(
     
     return { type };
   }),
-  withVextabChangeHandlers<RadioChangeEvent, IWithVextabChangeHandlerProps>({
+  withEditorHandlers<RadioChangeEvent, IWithVextabChangeHandlerProps>({
     castType: props => (event: RadioChangeEvent, vextab) => {
       const element = vextab.elements[props.editor.elementIndex];
       const rhythm: Rhythm = get(element, 'rhythm', new Rhythm('4', false));

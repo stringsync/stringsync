@@ -3,7 +3,7 @@ import { compose } from 'recompose';
 import { Form, Input, Checkbox } from 'antd';
 import { Rhythm as RhythmModel } from 'models';
 import { Tuplet } from './Tuplet';
-import { withVextabChangeHandlers } from 'enhancers';
+import { withEditorHandlers } from 'enhancers';
 import { get } from 'lodash';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 
@@ -18,7 +18,7 @@ interface IHandlerProps extends IOuterProps {
 }
 
 const enhance = compose<IHandlerProps, IOuterProps>(
-  withVextabChangeHandlers<CheckboxChangeEvent | React.FormEvent<HTMLInputElement>, IOuterProps>({
+  withEditorHandlers<CheckboxChangeEvent | React.FormEvent<HTMLInputElement>, IOuterProps>({
     handleDotChange: props => (event: CheckboxChangeEvent, vextab) => {
       const rhythm = get(vextab.elements[props.editor.elementIndex], 'rhythm') as RhythmModel;
       rhythm.dot = event.target.checked;

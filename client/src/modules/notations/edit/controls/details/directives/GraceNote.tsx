@@ -4,7 +4,7 @@ import { Form, Input, Checkbox } from 'antd';
 import { Directive } from 'models';
 import styled from 'react-emotion';
 import { Position } from './Position';
-import { withVextabChangeHandlers } from 'enhancers';
+import { withEditorHandlers } from 'enhancers';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 
 type Events = CheckboxChangeEvent | React.FormEvent<HTMLInputElement> | number | string;
@@ -14,13 +14,13 @@ interface IOuterProps {
   directiveIndex: number;
 }
 
-interface IWithVextabChangeHandlers {
+interface IwithEditorHandlers {
   handleSlurChange: (event: CheckboxChangeEvent) => void;
   handleDurationChange: (event: React.FormEvent<HTMLInputElement>) => void;
 }
 
 const enhance = compose<IOuterProps, IOuterProps>(
-  withVextabChangeHandlers<Events, IOuterProps>({
+  withEditorHandlers<Events, IOuterProps>({
     handleSlurChange: props => (event: CheckboxChangeEvent, vextab) => {
       return vextab;
     }

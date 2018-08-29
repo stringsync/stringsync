@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { compose, mapProps } from 'recompose';
-import { withVextabChangeHandlers } from 'enhancers';
+import { withEditorHandlers } from 'enhancers';
 import { Button } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
 import { connect, Dispatch } from 'react-redux';
@@ -30,18 +30,19 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
       setElementIndex: (elementIndex: number) => dispatch(EditorActions.setElementIndex(elementIndex))
     })
   ),
-  withVextabChangeHandlers<React.SyntheticEvent<HTMLButtonElement>, IConnectProps>({
-    handleButtonClick: props => (event, vextab) => {
-      return vextab;
+  withEditorHandlers<React.SyntheticEvent<HTMLButtonElement>, IConnectProps>({
+    handleButtonClick: props => (event, editor) => {
+      return editor;
     }
   }),
   mapProps((props: IHandlerProps & ButtonProps) => {
     const nextProps = Object.assign({}, props);
 
-    nextProps.onClick = props.handleButtonClick;
     delete nextProps.handleButtonClick;
     delete nextProps.elementIndex;
     delete nextProps.setElementIndex;
+
+    nextProps.onClick = props.handleButtonClick;
 
     return nextProps;
   })

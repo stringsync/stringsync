@@ -2,7 +2,7 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { Bar as BarModel } from 'models';
 import { Form, Select, InputNumber } from 'antd';
-import { withVextabChangeHandlers } from 'enhancers';
+import { withEditorHandlers } from 'enhancers';
 import { SelectValue } from 'antd/lib/select';
 
 const { Option } = Select;
@@ -17,7 +17,7 @@ interface IVextabChangeHandlerProps extends IOuterProps {
 }
 
 const enhance = compose<IVextabChangeHandlerProps, IOuterProps>(
-  withVextabChangeHandlers<SelectValue, IOuterProps>({
+  withEditorHandlers<SelectValue, IOuterProps>({
     handleSelectChange: props => (value, vextab) => {
       return;
     }

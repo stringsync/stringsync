@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { Form, Input, InputNumber } from 'antd';
-import { withVextabChangeHandlers } from 'enhancers';
+import { withEditorHandlers } from 'enhancers';
 import { Directive } from 'models';
 import { connect } from 'react-redux';
 
@@ -25,7 +25,7 @@ const enhance = compose<IHandlerProps, IOuterProps>(
       elementIndex: state.editor.elementIndex
     })
   ),
-  withVextabChangeHandlers<number | string, IConnectProps>({
+  withEditorHandlers<number | string, IConnectProps>({
     handleFretChange: props => (value, vextab) => {
       let nextFret: number | undefined = typeof value === 'number' ? value : parseInt(value, 10);
       nextFret = isNaN(nextFret) ? undefined : nextFret;
