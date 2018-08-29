@@ -6,8 +6,16 @@ import { Vextab } from 'models';
 export class Editor {
   public readonly vextab: Vextab;
 
+  // Gets passed into lodash.at https://lodash.com/docs/4.17.10#at to find
+  // the target element.
+  public path: string | null = null;
+
   constructor(vextab: Vextab) {
     this.vextab = vextab;
+  }
+
+  public get vextabString(): string {
+    return this.vextab.toString();
   }
 
   public addElement(element: any, index: number) {
