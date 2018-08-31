@@ -171,8 +171,7 @@ export class VextabRenderer {
         ctx.font = 'italic 10px arial';
 
         line.measures.forEach(measure => {
-          const bar = measure.elements.find(el => el instanceof Bar);
-          const vexAttrs = get(bar, 'vexAttrs');
+          const vexAttrs = get(measure.bar, 'vexAttrs');
 
           if (!vexAttrs) {
             return;
@@ -181,7 +180,7 @@ export class VextabRenderer {
           const barNote = vexAttrs.staveNote as Vex.Flow.BarNote;
           const x = barNote.getAbsoluteX();
 
-          ctx.fillText(measure.index.toString(), x - 3, 50);
+          ctx.fillText((measure.index + 1).toString(), x - 3, 50);
         })
 
         ctx.restore();

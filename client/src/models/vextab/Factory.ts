@@ -86,7 +86,12 @@ export class Factory {
       // handle the notes array of the stave
       // staveNote is a parsed Vextab struct, not a Vexflow data structure
       let rhythm = new Rhythm('4', false); // We will reassign this on TIME staveNotes
-      return stave.notes.reduce((elements, staveNote, ndx) => {
+
+      if (typeof stave.notes === 'undefined') {
+        return [];
+      }
+
+      return stave.notes.reduce((elements, staveNote) => {
         // This is the element we will push into the elements array
         let element: VextabElement | Bar | void;
 

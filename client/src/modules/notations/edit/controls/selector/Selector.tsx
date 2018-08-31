@@ -114,7 +114,7 @@ export const Selector = enhance(props => (
         min={-1}
         max={get(props.editor.vextab, 'measures.length', 1)}
         disabled={!props.editor.enabled}
-        value={get(props.measure, 'id')}
+        value={get(props.measure, 'index')}
         onChange={props.handleMeasureIdChange}
         parser={parseValue}
       />

@@ -3,11 +3,11 @@ import { compose, mapProps } from 'recompose';
 import { withEditorHandlers } from 'enhancers';
 import { Button } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
-import { Bar, Rest, Rhythm, Measure, Note, TimeSignature, Key, VextabElement } from 'models';
 import { ElementTypes } from './ElementManager';
 import { connect, Dispatch } from 'react-redux';
 import { EditorActions } from 'data';
 import { get } from 'lodash';
+import { Editor } from 'models/vextab/Editor';
 
 interface IOuterProps {
   elementType: ElementTypes;
@@ -26,26 +26,6 @@ interface IMappedProps {
   onClick: (event: React.SyntheticEvent<HTMLButtonElement>) => void;
 }
 
-const newNote = () => new Note('C', 4, { positions: [{ str: 2, fret: 1 }] });
-
-const newRest = () => {
-  const rhythm = new Rhythm('4', false);
-  return new Rest(0, rhythm);
-}
-
-const newBar = () => {
-  const note = newNote();
-  const key = new Key(note);
-  const timeSignature = new TimeSignature(4, 4);
-  return new Bar('single', key, timeSignature);
-}
-
-const newMeasure = (bar: Bar) => {
-  const nextBar = bar.clone();
-  const rest = newRest();
-  return new Measure(nextBar, [rest]);
-}
-
 const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
   connect(
     null,
@@ -57,16 +37,17 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
     handleButtonClick: props => (_, editor) => {
       switch (props.elementType) {
         case 'MEASURE':
-          const bar = get(editor.measure, 'bar', newBar());
-          editor.addMeasure(newMeasure(bar));
+          const bar = get(editor.measure, 'bar', Editor.getDefaultBar());
+          const measure = Editor.getDefaultMeasure(bar); 
+          editor.addMeasure(measure);
           return;
         
         case 'NOTE':
-          editor.addElement(newNote());
+          editor.addElement(Editor.getDefaultNote());
           return;
 
         case 'REST':
-          editor.addElement(newRest());
+          editor.addElement(Editor.getDefaultRest());
           return;
 
         default:

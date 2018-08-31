@@ -37,11 +37,11 @@ export class Vextab {
   }
 
   public readonly id: number;
-  public readonly lines: Line[];
   public readonly width: number;
   public readonly renderer: VextabRenderer;
   public readonly measuresPerLine: number;
   public readonly tuning: Vex.Flow.Tuning;
+  public lines: Line[];
 
   constructor(lines: Line[], tuning: Vex.Flow.Tuning, measuresPerLine: number, width: number) {
     if (measuresPerLine < 0) {

@@ -55,9 +55,9 @@ export class VextabEncoder {
   private encodeTabstave(tabstave: Vextab.Parsed.ITabstave) {
     return compact([
       'tabstave',
-      this.encodeOptions(tabstave.options),
-      this.encodeNotes(tabstave.notes),
-      this.encodeText(tabstave.text)
+      this.encodeOptions(tabstave.options || []),
+      this.encodeNotes(tabstave.notes || []),
+      this.encodeText(tabstave.text || [])
     ]);
   }
 
