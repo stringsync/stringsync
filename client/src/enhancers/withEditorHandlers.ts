@@ -83,11 +83,12 @@ export const withEditorHandlers = <TEvent, TProps>(vextabUpdaters: IVextabUpdate
       // FIXME: Fix the props type here. It should include the withHandlers props, which
       // varies based on the vextabUpdaters argument.
       mapProps((props: IConnectProps<TProps>) => { 
-        const nextProps = Object.assign({}, props);
+        const nextProps = Object.assign({}, props, props.ownProps);
 
         delete nextProps.setVextabString
         delete nextProps.vextab;
         delete nextProps.elementIndex;
+        delete nextProps.ownProps;
 
         return nextProps;
       })
