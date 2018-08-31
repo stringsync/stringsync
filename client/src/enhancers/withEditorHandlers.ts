@@ -1,7 +1,7 @@
 import { compose, withHandlers, mapProps } from 'recompose';
 import { connect, Dispatch } from 'react-redux';
 import { Vextab } from 'models';
-import { NotationActions } from 'data';
+import { NotationActions, EditorActions } from 'data';
 import { ComponentClass } from 'react';
 import { Editor } from 'models/vextab/Editor';
 
@@ -20,6 +20,9 @@ interface IOwnProps<TProps> {
 interface IConnectProps<TProps> extends IOwnProps<TProps> {
   vextab: Vextab;
   elementIndex: number;
+  appendErrors: (errors: string[]) => void;
+  removeErrors: () => void;
+  setElementIndex: (elementIndex: number) => void;
   setVextabString: (vextabString: string) => void;
 }
 
@@ -47,6 +50,9 @@ export const withEditorHandlers = <TEvent, TProps>(vextabUpdaters: IVextabUpdate
           vextab: state.editor.vextab
         }),
         (dispatch: Dispatch) => ({
+          appendErrors: (errors: string[]) => dispatch(EditorActions.appendErrors(errors)),
+          removeErrors: () => dispatch(EditorActions.removeErrors()),
+          setElementIndex: (elementIndex: number) => dispatch(EditorActions.setElementIndex(elementIndex)),
           setVextabString: (vextabString: string) => dispatch(NotationActions.setVextabString(vextabString))
         })
       ),
@@ -67,7 +73,14 @@ export const withEditorHandlers = <TEvent, TProps>(vextabUpdaters: IVextabUpdate
 
           // This is the primary purpose of the enhancer. The cloned vextab will potentionally
           // be updated via the enhancer
-          updater(e, editor);
+          try {
+            updater(e, editor);
+          } catch (error) {
+            props.appendErrors([error.message]);
+            return;
+          }
+
+          props.removeErrors();
 
           // Minor optimization: don't update the vextabString if nothing was changed
           const vextabString = props.vextab.toString();
@@ -76,6 +89,10 @@ export const withEditorHandlers = <TEvent, TProps>(vextabUpdaters: IVextabUpdate
           if (vextabString !== nextVextabString) {
             props.setVextabString(nextVextabString);
           }
+
+          // Finally, focus the new measure
+          const nextElementIndex = typeof editor.elementIndex === 'number' ? editor.elementIndex : -1;
+          props.setElementIndex(nextElementIndex);
         }
 
         return handlers;
@@ -89,6 +106,9 @@ export const withEditorHandlers = <TEvent, TProps>(vextabUpdaters: IVextabUpdate
         delete nextProps.vextab;
         delete nextProps.elementIndex;
         delete nextProps.ownProps;
+        delete nextProps.appendErrors;
+        delete nextProps.removeErrors;
+        delete nextProps.setElementIndex;
 
         return nextProps;
       })

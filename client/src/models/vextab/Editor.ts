@@ -32,21 +32,46 @@ export class Editor {
     return get(this.measure, 'line', null) as Line | null;
   }
 
-  public addElement(element: Measure | VextabElement) {
-    if (element instanceof Measure && this.line) {
-      this.line.measures.push(element);
+  public addMeasure(measure: Measure) {
+    // add the measure
+    let line = this.line;
+
+    if (!line) {
+      line = new Line([]);
+      this.vextab.lines.push(line);
+    }
+
+    line.measures.push(measure);
+
+    // focus the first element of the measure, if any
+    const firstMeasureElement = measure.elements[0];
+
+    if (firstMeasureElement) {
+      this.elementIndex = this.vextab.elements.indexOf(firstMeasureElement);
     }
   }
 
-  public removeElement() {
-    // TODO
-  }
-
-  public addMeasure() {
-    // TODO
-  }
-
   public removeMeasure() {
+    const { measure } = this;
+
+    if (!measure) {
+      return;
+    }
+
+    const { line } = measure;
+
+    if (!line) {
+      return;
+    }
+
+    line.measures.filter(lineMeasure => lineMeasure !== measure);
+  }
+
+  public addElement(element: VextabElement) {
+    // TODO
+  }
+
+  public removeElement() {
     // TODO
   }
 }

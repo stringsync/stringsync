@@ -55,26 +55,23 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
   ),
   withEditorHandlers<React.SyntheticEvent<HTMLButtonElement>, IConnectProps>({
     handleButtonClick: props => (_, editor) => {
-      let element: Measure | VextabElement;
       switch (props.elementType) {
         case 'MEASURE':
           const bar = get(editor.measure, 'bar', newBar());
-          element = newMeasure(bar);
-          break;
+          editor.addMeasure(newMeasure(bar));
+          return;
         
         case 'NOTE':
-          element = newNote();
-          break;
+          editor.addElement(newNote());
+          return;
 
         case 'REST':
-          element = newRest();
-          break;
+          editor.addElement(newRest());
+          return;
 
         default:
           throw new Error(`unexpected elementType: ${props.elementType}`);
       }
-
-      editor.addElement(element);
     }
   }),
   mapProps((props: IHandlerProps & ButtonProps) => {
