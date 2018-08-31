@@ -25,8 +25,8 @@ interface IVextabChangeHandlerProps extends IOuterProps {
 
 const enhance = compose<IVextabChangeHandlerProps, IOuterProps>(
   withEditorHandlers<number | string, IOuterProps>({
-    handleKeyChange: props => (noteLiteral: string, vextab) => {
-      const measure = vextab.measures.find($measure => $measure.index === props.element.index);
+    handleKeyChange: props => (noteLiteral: string, editor) => {
+      const measure = editor.vextab.measures.find($measure => $measure.index === props.element.index);
 
       if (!measure) {
         return;
@@ -35,11 +35,9 @@ const enhance = compose<IVextabChangeHandlerProps, IOuterProps>(
       const note = new Note(noteLiteral, 0);
       const key = new Key(note);
       measure.bar.key = key;
-
-      return vextab;
     },
-    handleLowerChange: props => (value: number | string, vextab) => {
-      const measure = vextab.measures.find($measure => $measure.index === props.element.index);
+    handleLowerChange: props => (value: number | string, editor) => {
+      const measure = editor.vextab.measures.find($measure => $measure.index === props.element.index);
 
       if (!measure) {
         return;
@@ -47,11 +45,9 @@ const enhance = compose<IVextabChangeHandlerProps, IOuterProps>(
 
       const lower = typeof value === 'number' ? value : parseInt(value, 10);
       measure.bar.timeSignature.lower = lower;
-
-      return vextab;
     },
-    handleUpperChange: props => (value: number | string, vextab) => {
-      const measure = vextab.measures.find($measure => $measure.index === props.element.index);
+    handleUpperChange: props => (value: number | string, editor) => {
+      const measure = editor.vextab.measures.find($measure => $measure.index === props.element.index);
 
       if (!measure) {
         return;
@@ -59,8 +55,6 @@ const enhance = compose<IVextabChangeHandlerProps, IOuterProps>(
 
       const upper = typeof value === 'number' ? value : parseInt(value, 10);
       measure.bar.timeSignature.upper = upper;
-
-      return vextab;
     }
   })
 );

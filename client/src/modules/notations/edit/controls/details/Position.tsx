@@ -2,7 +2,7 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { Form, Input, InputNumber } from 'antd';
 import { Chord, Note, Measure } from 'models';
-import { withVextabChangeHandlers } from 'enhancers';
+import { withEditorHandlers } from 'enhancers';
 import { get } from 'lodash';
 
 interface IOuterProps {
@@ -16,7 +16,7 @@ interface IHandlerProps extends IOuterProps {
 }
 
 const enhance = compose<IHandlerProps, IOuterProps>(
-  withVextabChangeHandlers<number | string, IOuterProps>({
+  withEditorHandlers<number | string, IOuterProps>({
     handleFretChange: props => (_, editor) => {
       return editor;
       // let nextFret: number | undefined = typeof value === 'number' ? value : parseInt(value, 10);

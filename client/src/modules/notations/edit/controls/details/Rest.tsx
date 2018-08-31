@@ -17,12 +17,10 @@ interface IHandlerProps extends IOuterProps {
 
 const enhance = compose<IHandlerProps, IOuterProps>(
   withEditorHandlers<number | string, IOuterProps>({
-    handlePositionChange: props => (value, vextab) => {
-      const rest = vextab.elements[props.editor.elementIndex] as RestModel;
+    handlePositionChange: props => (value, editor) => {
+      const rest = editor.vextab.elements[props.editor.elementIndex] as RestModel;
       const position = typeof value === 'number' ? value : parseInt(value, 10);
       rest.position = position;
-
-      return vextab;
     }
   })
 );

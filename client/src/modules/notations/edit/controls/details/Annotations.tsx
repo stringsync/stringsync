@@ -40,24 +40,20 @@ const enhance = compose<IVextabChangeHandlersProps, IOuterProps>(
     return { textData };
   }),
   withEditorHandlers<EventTypes, ITextProps>({
-    addAnnotation: props => (e: React.SyntheticEvent<HTMLButtonElement>, vextab) => {
-      const element = vextab.elements[props.editor.elementIndex];
+    addAnnotation: props => (e: React.SyntheticEvent<HTMLButtonElement>, editor) => {
+      const element = editor.vextab.elements[props.editor.elementIndex];
       
       element.annotations.push(new AnnotationsModel(['*']));
-
-      return vextab;
     },
-    handleTextsChange: props => (e: React.ChangeEvent<HTMLTextAreaElement>, vextab) => {
+    handleTextsChange: props => (e: React.ChangeEvent<HTMLTextAreaElement>, editor) => {
       const { annotationNdx, textNdx } = e.currentTarget.dataset;
-      const element = vextab.elements[props.editor.elementIndex];
+      const element = editor.vextab.elements[props.editor.elementIndex];
 
       element.annotations[annotationNdx!].texts[textNdx!] = e.currentTarget.value;
-
-      return vextab;
     },
-    removeAnnotation: props => (e: React.SyntheticEvent<HTMLButtonElement>, vextab) => {
+    removeAnnotation: props => (e: React.SyntheticEvent<HTMLButtonElement>, editor) => {
       const { annotationNdx, textNdx } = e.currentTarget.dataset;
-      const element = vextab.elements[props.editor.elementIndex];
+      const element = editor.vextab.elements[props.editor.elementIndex];
 
       const annotation = element.annotations[annotationNdx!]
       annotation.texts.splice(parseInt(textNdx!, 10), 1);
@@ -65,8 +61,6 @@ const enhance = compose<IVextabChangeHandlersProps, IOuterProps>(
       if (annotation.texts.length === 0) {
         element.annotations.splice(parseInt(annotationNdx!, 10), 1);
       }
-
-      return vextab;
     }
   })
 );

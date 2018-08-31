@@ -26,19 +26,17 @@ const enhance = compose<IHandlerProps, IOuterProps>(
     })
   ),
   withEditorHandlers<number | string, IConnectProps>({
-    handleFretChange: props => (value, vextab) => {
+    handleFretChange: props => (value, editor) => {
       let nextFret: number | undefined = typeof value === 'number' ? value : parseInt(value, 10);
       nextFret = isNaN(nextFret) ? undefined : nextFret;
 
-      const directive = vextab.elements[props.elementIndex].directives[props.directiveIndex];
+      const directive = editor.vextab.elements[props.elementIndex].directives[props.directiveIndex];
       
       if (!directive) {
         return;
       }
 
       directive.payload.positions[0].fret = nextFret;
-      
-      return vextab;
     }
   })
 );

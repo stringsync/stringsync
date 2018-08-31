@@ -42,8 +42,8 @@ const enhance = compose<IWithVextabChangeHandlerProps, IOuterProps>(
     return { type };
   }),
   withEditorHandlers<RadioChangeEvent, IWithVextabChangeHandlerProps>({
-    castType: props => (event: RadioChangeEvent, vextab) => {
-      const element = vextab.elements[props.editor.elementIndex];
+    castType: props => (event: RadioChangeEvent, editor) => {
+      const element = editor.vextab.elements[props.editor.elementIndex];
       const rhythm: Rhythm = get(element, 'rhythm', new Rhythm('4', false));
 
       if (!element.measure) {
@@ -69,8 +69,6 @@ const enhance = compose<IWithVextabChangeHandlerProps, IOuterProps>(
 
       const ndx = element.measure.elements.indexOf(element);
       element.measure.elements.splice(ndx, 1, nextElement);
-
-      return vextab;
     }
   })
 );
