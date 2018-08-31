@@ -9,7 +9,7 @@ export class Editor {
 
   // Gets passed into lodash.at https://lodash.com/docs/4.17.10#at to find
   // the target element.
-  public path: string | null = null;
+  public elementIndex: number | null;
 
   constructor(vextab: Vextab) {
     this.vextab = vextab;
@@ -20,7 +20,8 @@ export class Editor {
   }
 
   public get element(): VextabElement | null {
-    return this.path ? at(this.vextab.elements, this.path) as any : null;
+    const index = this.elementIndex;
+    return typeof index === 'number' ? this.vextab.elements[index] as any : null || null;
   }
 
   public get measure(): Measure | null {

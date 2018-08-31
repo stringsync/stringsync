@@ -57,7 +57,7 @@ export const withEditorHandlers = <TEvent, TProps>(vextabUpdaters: IVextabUpdate
 
           // By default, the path is null, which results in null editor targets.
           if (typeof props.elementIndex === 'number') {
-            editor.path = `[${props.elementIndex}]`;
+            editor.elementIndex = props.elementIndex;
           }
 
           // This is the implementation details to preserve the withHandlers-like syntax of
