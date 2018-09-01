@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Selector } from './selector';
 import styled from 'react-emotion';
 import { Divider, Form } from 'antd';
-import { Enabler } from './Enabler';
+import { Primary } from './Primary';
 import { Selected } from './Selected';
 
 const Outer = styled('div')`
@@ -13,7 +13,7 @@ export const Controls: React.SFC = () => (
   <Outer>
     <Divider orientation="left">MAIN</Divider>
     <Form layout="inline">
-      <Enabler />
+      <Primary />
       <Selector />
     </Form>
     <Divider />

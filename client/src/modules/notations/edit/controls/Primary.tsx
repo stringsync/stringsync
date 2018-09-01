@@ -8,6 +8,7 @@ import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 interface IConnectProps {
   enabled: boolean;
   autosave: boolean;
+  lastUpdatedAt: number;
   setEnabled: (enabled: boolean) => void;
   setAutosave: (autosave: boolean) => void;
 }
@@ -21,7 +22,8 @@ const enhance = compose<IHandlerProps, {}>(
   connect(
     (state: Store.IState) => ({
       autosave: state.editor.autosave,
-      enabled: state.editor.enabled
+      enabled: state.editor.enabled,
+      lastUpdatedAt: state.editor.lastUpdatedAt
     }),
     (dispatch: Dispatch) => ({
       setAutosave: (autosave: boolean) => dispatch(EditorActions.setAutosave(autosave)),
@@ -38,7 +40,7 @@ const enhance = compose<IHandlerProps, {}>(
   })
 );
 
-export const Enabler = enhance(props => (
+export const Primary = enhance(props => (
   <Form.Item>
     <Form.Item>
       <Checkbox
@@ -55,6 +57,7 @@ export const Enabler = enhance(props => (
       >
         autosave
       </Checkbox>
+      about {Math.floor((new Date().getTime() - props.lastUpdatedAt) / 1000)} seconds ago
     </Form.Item>
   </Form.Item>
 ));

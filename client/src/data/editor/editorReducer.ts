@@ -6,6 +6,7 @@ const getDefaultState = (): Store.IEditorState => ({
   enabled: false,
   errors: [],
   lastRenderedAt: new Date().getTime(),
+  lastUpdatedAt: new Date().getTime(),
   vextab: null,
 });
 
@@ -20,6 +21,10 @@ export const editorReducer = (state = getDefaultState(), action: actions.EditorA
 
     case actions.NOTIFY_RENDER:
       nextState.lastRenderedAt = new Date().getTime();
+      return nextState;
+
+    case actions.NOTIFY_UPDATED:
+      nextState.lastUpdatedAt = new Date().getTime();
       return nextState;
 
     case actions.REMOVE_ERRORS:

@@ -146,7 +146,7 @@ export class Editor {
     // compute the previous measure, and focus its last element
     const prevMeasure = measure.prev;
     const focusElement = last(get(prevMeasure, 'elements', []));
-    const nextElementIndex = focusElement ? this.vextab.elements.indexOf(focusElement) : -1;
+    const nextElementIndex = focusElement ? this.vextab.elements.indexOf(focusElement) : 0;
 
     line.measures = line.measures.filter(lineMeasure => lineMeasure !== measure);
 

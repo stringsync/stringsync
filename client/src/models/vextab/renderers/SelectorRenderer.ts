@@ -96,7 +96,7 @@ export class SelectorRenderer {
     }
 
     ctx.beginPath();
-    ctx.arc(x, 40, 3, 0, Math.PI * 2);
+    ctx.arc(x, 40, 10, 0, Math.PI * 2);
     ctx.fill();
     ctx.closePath();
 

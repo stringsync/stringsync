@@ -47,6 +47,7 @@ declare namespace Store {
     elementIndex: number;
     errors: string[];
     lastRenderedAt: number;
+    lastUpdatedAt: number;
     vextab: Vextab | null;
   }
 }
