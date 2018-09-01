@@ -6,6 +6,7 @@ import { compose, withState, withHandlers, withProps } from 'recompose';
 import { connect, Dispatch } from 'react-redux';
 import { get } from 'lodash';
 import { UiActions } from 'data';
+import { scroller } from 'react-scroll';
 
 const { ItemGroup, Item } = AntdMenu;
 
@@ -18,6 +19,7 @@ interface IConnectProps extends WithRouterProps {
   isNotationMenuVisible: boolean;
   isFretboardVisible: boolean;
   isPianoVisible: boolean;
+  focusedScrollElement: string;
   setFretboardVisibility: (visibility: boolean) => void;
   setLoopVisibility: (visibility: boolean) => void;
   setPianoVisibility: (visibility: boolean) => void;
@@ -45,6 +47,7 @@ const enhance = compose<IInnerProps, {}>(
       const notationTranscriberUserId = get(state.notation.transcriber, 'id');
 
       return {
+        focusedScrollElement: state.ui.focusedScrollElement,
         isCurrentUserTranscriber: typeof sessionUserId === 'number' && sessionUserId === notationTranscriberUserId,
         isFretboardVisible: state.ui.isFretboardVisible,
         isLoopVisible: state.ui.isLoopVisible,
@@ -63,18 +66,32 @@ const enhance = compose<IInnerProps, {}>(
   withHandlers({
     handleFretboardChange: (props: IConnectProps) => () => {
       props.setFretboardVisibility(!props.isFretboardVisible);
+
+      // FIXME: Hack to make the ui changes work with css
+      const el = props.focusedScrollElement;
+      if (el) {
+        scroller.scrollTo(el, { offset: -1 });
+        scroller.scrollTo(el, {});
+      }
     },
     handleNotationMenuChange: (props: IConnectProps) => () => {
       props.setNotationMenuVisibility(!props.isNotationMenuVisible);
     },
     handlePianoChange: (props: IConnectProps) => () => {
       props.setPianoVisibility(!props.isPianoVisible);
+
+      // FIXME: Hack to make the ui changes work with css
+      const el = props.focusedScrollElement;
+      if (el) {
+        scroller.scrollTo(el, { offset: -1 });
+        scroller.scrollTo(el, {});
+      }
     },
     handleShowLoopChange: (props: IConnectProps) => () => {
       props.setLoopVisibility(!props.isLoopVisible);
     }
   }),
-  withProps((props: IHandlerProps)  => ({
+  withProps((props: IHandlerProps) => ({
     isEdit: props.location.pathname.endsWith('edit')
   })),
   withState('suggestNotesChecked', 'setSuggestNotesChecked', false)
@@ -107,7 +124,7 @@ interface IMaskProps {
   collapsed: boolean;
 }
 
-const Mask = styled('div')<IMaskProps>`
+const Mask = styled('div') <IMaskProps>`
   background: black;
   opacity: 0.65;
   position: fixed;
@@ -121,7 +138,7 @@ const Mask = styled('div')<IMaskProps>`
 export const Menu = enhance(props => (
   <div>
     <Mask
-      collapsed={!props.isNotationMenuVisible} 
+      collapsed={!props.isNotationMenuVisible}
       onClick={props.handleNotationMenuChange}
     />
     <Outer collapsed={!props.isNotationMenuVisible}>
@@ -143,7 +160,7 @@ export const Menu = enhance(props => (
             {
               props.isCurrentUserTranscriber || props.role === 'admin'
                 ? <Item key="back">
-                  <Link to={`/n/${props.match.params.id}${props.isEdit ? '' : '/edit' }`}>
+                  <Link to={`/n/${props.match.params.id}${props.isEdit ? '' : '/edit'}`}>
                     <Icon type="edit" />
                     <span>{`${props.isEdit ? 'show' : 'edit'}`}</span>
                   </Link>

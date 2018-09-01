@@ -74,11 +74,10 @@ const enhance = compose<IInnerProps, OuterProps>(
       } catch (error) {
         console.error(error);
         window.ss.message.error('something went wrong');
-      } finally {
-        scroller.scrollTo('app-top', {});
       }
     },
     componentWillUnmount() {
+      scroller.scrollTo('app-top', {});
       $('body').removeClass('no-scroll');
     }
   })
