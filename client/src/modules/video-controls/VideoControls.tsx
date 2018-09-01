@@ -4,10 +4,10 @@ import { Loop } from './Loop';
 import { MenuToggle } from './MenuToggle';
 import { MiniDetail } from './MiniDetail';
 import { PlayToggle } from './PlayToggle';
-import { Collapse, Tooltip, Icon } from 'antd';
+import { Collapse, Tooltip } from 'antd';
 import { Scrubber } from './Scrubber';
 import { ShowLoop } from './ShowLoop';
-import { compose, withHandlers, withProps, withState } from 'recompose';
+import { compose, withHandlers, withProps, withState, lifecycle } from 'recompose';
 import { connect, Dispatch } from 'react-redux';
 import { UiActions } from 'data';
 import { scroller } from 'react-scroll';
@@ -25,6 +25,8 @@ interface IConnectProps {
 
 interface IStateProps extends IConnectProps {
   loopCollapsed: boolean;
+  tooltipVisible: boolean;
+  setTooltipVisibility: (tooltipVisible: boolean) => void;
   setLoopCollapsed: (loopCollapsed: boolean) => void;
 }
 
@@ -35,11 +37,11 @@ interface IHandlerProps extends IStateProps {
   toggleScrollState: () => void;
 }
 
-interface IInnerProps extends IHandlerProps {
+interface IIPhoneXProps extends IHandlerProps {
   isIphoneX: boolean;
 }
 
-const enhance = compose<IInnerProps, {}>(
+const enhance = compose<IIPhoneXProps, {}>(
   connect(
     (state: Store.IState) => ({
       focusedScrollElement: state.ui.focusedScrollElement,
@@ -52,6 +54,7 @@ const enhance = compose<IInnerProps, {}>(
       setNotationMenuVisibility: (visibility: boolean) => dispatch(UiActions.setNotationMenuVisibility(visibility)),
     })
   ),
+  withState('tooltipVisible', 'setTooltipVisibility', true),
   withState('loopCollapsed', 'setLoopCollapsed', true),
   withHandlers({
     handleLoopCollapseChange: (props: any) => () => {
@@ -66,6 +69,10 @@ const enhance = compose<IInnerProps, {}>(
         nextFocusedElement = 'notation-show-score';
       } else {
         nextFocusedElement = 'app-top';
+      }
+
+      if (props.tooltipVisible) {
+        props.setTooltipVisibility(false);
       }
 
       scroller.scrollTo(nextFocusedElement, { smooth: true, duration: 300 });
@@ -83,6 +90,11 @@ const enhance = compose<IInnerProps, {}>(
     const isIphoneX = iOS && screen.width === 1125 && screen.height === 2436;
 
     return { isIphoneX }
+  }),
+  lifecycle<IIPhoneXProps, {}>({
+    componentDidMount() {
+      setTimeout(() => this.props.setTooltipVisibility(false), 8000);
+    }
   })
 );
 
@@ -174,34 +186,32 @@ export const VideoControls = enhance(props => (
   <Outer>
     <Row1>
       <Inner>
-        <Tooltip title="loop controls">
-          <StyledCollapse
-            bordered={false}
-            onChange={props.handleLoopCollapseChange}
-            activeKey={props.loopCollapsed ? [] : ['loop']}
-          >
-            <Panel showArrow={false} key="loop" header={null}>
-              <Inner>
-                <PlayerButton style={{ opacity: 0 }} onClick={props.handleLoopCollapseChange}>
-                  <ShowLoop />
-                </PlayerButton>
-                <PlayerButton style={{ opacity: 0 }}>
-                  <PlayToggle />
-                </PlayerButton>
-                <SliderContainer>
-                  <Loop />
-                </SliderContainer>
-                <PlayerButton style={{ opacity: 0 }} onClick={props.handleNotationMenuClick}>
-                  <MenuToggle />
-                </PlayerButton>
-                <PlayerButton style={{ opacity: 0 }} onClick={props.toggleScrollState}>
-                  <ScreenScroller />
-                </PlayerButton>
-                <MiniDetail hidden={true} />
-              </Inner>
-            </Panel>
-          </StyledCollapse>
-        </Tooltip>
+        <StyledCollapse
+          bordered={false}
+          onChange={props.handleLoopCollapseChange}
+          activeKey={props.loopCollapsed ? [] : ['loop']}
+        >
+          <Panel showArrow={false} key="loop" header={null}>
+            <Inner>
+              <PlayerButton style={{ opacity: 0 }} onClick={props.handleLoopCollapseChange}>
+                <ShowLoop />
+              </PlayerButton>
+              <PlayerButton style={{ opacity: 0 }}>
+                <PlayToggle />
+              </PlayerButton>
+              <SliderContainer>
+                <Loop />
+              </SliderContainer>
+              <PlayerButton style={{ opacity: 0 }} onClick={props.toggleScrollState}>
+                <ScreenScroller />
+              </PlayerButton>
+              <PlayerButton style={{ opacity: 0 }} onClick={props.handleNotationMenuClick}>
+                <MenuToggle />
+              </PlayerButton>
+              <MiniDetail hidden={true} />
+            </Inner>
+          </Panel>
+        </StyledCollapse>
       </Inner>
     </Row1>
     <Row2 isIphoneX={props.isIphoneX}>
@@ -215,11 +225,13 @@ export const VideoControls = enhance(props => (
         <SliderContainer>
           <Scrubber />
         </SliderContainer>
+        <PlayerButton onClick={props.toggleScrollState}>
+          <Tooltip title="toggle view" visible={props.tooltipVisible}>
+            <ScreenScroller />
+          </Tooltip>
+        </PlayerButton>
         <PlayerButton onClick={props.handleNotationMenuClick}>
           <MenuToggle />
-        </PlayerButton>
-        <PlayerButton onClick={props.toggleScrollState}>
-          <ScreenScroller />
         </PlayerButton>
         <MiniDetail />
       </Inner>

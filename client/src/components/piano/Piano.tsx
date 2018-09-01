@@ -23,6 +23,11 @@ const enhance = compose(
 
 const Outer = styled('div')`
   background: black;
+  overflow-y: hidden;
+
+  ::-webkit-scrollbar { 
+    display: none; 
+  }
 `;
 
 export const Piano = enhance(() => (

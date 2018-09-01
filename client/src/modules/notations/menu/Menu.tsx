@@ -112,6 +112,7 @@ const Outer = styled('div') <IOuterDivProps>`
 `;
 
 const Inner = styled('div')`
+  margin-top: 65px;
   min-height: 100vh;
   height: 100vh;
 `;
@@ -197,11 +198,6 @@ export const Menu = enhance(props => (
             </Item>
           </ItemGroup>
           <ItemGroup title="player">
-            <Item key="suggestNotes">
-              <Checkbox checked={props.suggestNotesChecked}>
-                <CheckDescription>suggest notes</CheckDescription>
-              </Checkbox>
-            </Item>
             <Item key="showLoop">
               <Checkbox
                 checked={props.isLoopVisible}
