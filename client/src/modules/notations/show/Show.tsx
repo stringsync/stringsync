@@ -21,6 +21,7 @@ interface IConnectProps extends OuterProps {
   viewportType: ViewportTypes;
   isNotationMenuVisible: boolean;
   fetchNotation: (id: number) => Notation.INotation;
+  focusScrollElement: (scrollElement: string) => void;
   setNotation: (notation: Notation.INotation) => void;
   setVideo: (video: Video.IVideo) => void;
   resetNotation: () => void;
@@ -39,10 +40,11 @@ const enhance = compose<IInnerProps, OuterProps>(
       isNotationMenuVisible: state.ui.isNotationMenuVisible,
       notation: state.notation,
       viewportType: state.viewport.type,
-      viewportWidth: state.viewport.width
+      viewportWidth: state.viewport.width,
     }),
     dispatch => ({
       fetchNotation: (id: number) => dispatch(fetchNotation(id) as any),
+      focusScrollElement: (scrollElement: string) => dispatch(UiActions.focusScrollElement(scrollElement)),
       resetNotation: () => dispatch(NotationActions.resetNotation()),
       resetUi: () => dispatch(UiActions.reset()),
       resetVideo: () => dispatch(VideoActions.resetVideo()),
@@ -74,6 +76,12 @@ const enhance = compose<IInnerProps, OuterProps>(
       } catch (error) {
         console.error(error);
         window.ss.message.error('something went wrong');
+      }
+    },
+    componentWillUpdate(nextProps) {
+      if (this.props.viewportWidth !== nextProps.viewportWidth) {
+        this.props.focusScrollElement('app-top');
+        scroller.scrollTo('app-top', {});
       }
     },
     componentWillUnmount() {
