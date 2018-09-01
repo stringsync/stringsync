@@ -8,6 +8,7 @@ import { connect, Dispatch } from 'react-redux';
 import { EditorActions } from 'data';
 import { get } from 'lodash';
 import { Editor } from 'models/vextab/editor';
+import { Note, Rest, Chord } from 'models';
 
 interface IOuterProps {
   elementType: ElementTypes;
@@ -43,11 +44,14 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
           return;
         
         case 'NOTE':
-          editor.addElement(Editor.getDefaultNote());
+          const note = editor.element instanceof Note || editor.element instanceof Chord ? 
+            editor.element.clone() : Editor.getDefaultNote();
+          editor.addElement(note);
           return;
 
         case 'REST':
-          editor.addElement(Editor.getDefaultRest());
+          const rest = editor.element instanceof Rest ? editor.element.clone() : Editor.getDefaultRest();
+          editor.addElement(rest);
           return;
 
         default:

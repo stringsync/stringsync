@@ -19,13 +19,11 @@ interface IHandlerProps extends IOuterProps {
 
 const enhance = compose<IHandlerProps, IOuterProps>(
   withEditorHandlers<CheckboxChangeEvent | React.FormEvent<HTMLInputElement>, IOuterProps>({
-    handleDotChange: props => (event: CheckboxChangeEvent, editor) => {
-      const rhythm = get(editor.vextab.elements[props.editor.elementIndex], 'rhythm') as RhythmModel;
-      rhythm.dot = event.target.checked;
+    handleDotChange: () => (event: CheckboxChangeEvent, editor) => {
+      editor.updateRhythmDot(event.target.checked);
     },
-    handleValueChange: props => (event: React.FormEvent<HTMLInputElement>, editor) => {
-      const rhythm = get(editor.vextab.elements[props.editor.elementIndex], 'rhythm') as RhythmModel;
-      rhythm.value = event.currentTarget.value;
+    handleValueChange: () => (event: React.FormEvent<HTMLInputElement>, editor) => {
+      editor.updateRhythmValue(event.currentTarget.value);
     }
   })
 );

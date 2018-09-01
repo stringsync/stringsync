@@ -305,4 +305,30 @@ export class Editor {
 
     return positions;
   }
+
+  public updateRhythmDot(dot: boolean): Rhythm {
+    const { element } = this;
+
+    if (!element) {
+      throw new Error('no element selected');
+    }
+
+    element.rhythm = element.rhythm.clone();
+    element.rhythm.dot = dot;
+
+    return element.rhythm;
+  }
+
+  public updateRhythmValue(value: string): Rhythm {
+    const { element } = this;
+
+    if (!element) {
+      throw new Error('no element selected');
+    }
+
+    element.rhythm = element.rhythm.clone();
+    element.rhythm.value = value;
+
+    return element.rhythm;
+  }
 }
