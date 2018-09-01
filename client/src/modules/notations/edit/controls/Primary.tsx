@@ -4,11 +4,11 @@ import { connect, Dispatch } from 'react-redux';
 import { Form, Checkbox, InputNumber } from 'antd';
 import { EditorActions } from 'data';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import { UpdatedAgo } from './UpdatedAgo';
 
 interface IConnectProps {
   enabled: boolean;
   autosave: boolean;
-  lastUpdatedAt: number;
   setEnabled: (enabled: boolean) => void;
   setAutosave: (autosave: boolean) => void;
 }
@@ -22,8 +22,7 @@ const enhance = compose<IHandlerProps, {}>(
   connect(
     (state: Store.IState) => ({
       autosave: state.editor.autosave,
-      enabled: state.editor.enabled,
-      lastUpdatedAt: state.editor.lastUpdatedAt
+      enabled: state.editor.enabled
     }),
     (dispatch: Dispatch) => ({
       setAutosave: (autosave: boolean) => dispatch(EditorActions.setAutosave(autosave)),
@@ -57,7 +56,7 @@ export const Primary = enhance(props => (
       >
         autosave
       </Checkbox>
-      about {Math.floor((new Date().getTime() - props.lastUpdatedAt) / 1000)} seconds ago
+      <UpdatedAgo />
     </Form.Item>
   </Form.Item>
 ));
