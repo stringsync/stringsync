@@ -2,7 +2,6 @@ import { Vextab } from 'models';
 import { Extractor, Invoker } from './';
 import { merge } from 'lodash';
 import { VextabElement } from '../Vextab';
-import { Bar } from '../../music';
 
 export type DirectiveTypes = 'GRACE_NOTE' | 'NOTE_SUGGESTIONS';
 

@@ -3,7 +3,8 @@ import {
   Vextab, VextabElement,
   Measure, Line, Note, Bar,
   Rest, Rhythm, Key, TimeSignature,
-  Annotations, Chord, Tuplet
+  Annotations, Chord, Tuplet,
+  Directive
 } from 'models';
 
 /**
@@ -429,5 +430,65 @@ export class Editor {
     }
 
     return annotation;
+  }
+
+  // Adds a grace note directive by default
+  public addDirective(): Directive {
+    let { element } = this;
+
+    if (!(element instanceof Note) && !(element instanceof Chord)) {
+      element = Editor.getDefaultNote();
+      this.addElement(element);
+    }
+
+    const directiveNote = Editor.getDefaultNote();
+
+    const directive = new Directive('GRACE_NOTE', element, {
+      duration: '8',
+      positions: directiveNote.positions.map(pos => ({ ...pos })),
+      slur: false
+    });
+
+    element.directives.push(directive);
+
+    if (typeof this.elementIndex === 'number') {
+      this.elementIndex++;
+    }
+
+    return directive;
+  }
+
+  public removeDirective(directiveIndex: number): Directive | void {
+    const { element } = this;
+
+    if (!element) {
+      return;
+    }
+
+    const directive = element.directives[directiveIndex];
+
+    element.directives.splice(directiveIndex, 1);
+
+    return directive;
+  }
+
+  public updateGraceNote(directiveIndex: number, payload: Directive.Payload.IGraceNote): Directive {
+    const { element } = this;
+
+    if (!element) {
+      throw new Error('no element selected');
+    }
+
+    const directive = element.directives[directiveIndex];
+
+    if (!directive || directive.type !== 'GRACE_NOTE') {
+      throw new Error('no grace note selected');
+    }
+
+    const nextDirective = new Directive('GRACE_NOTE', element, payload);
+
+    element.directives.splice(directiveIndex, 1, nextDirective);
+
+    return nextDirective;
   }
 }

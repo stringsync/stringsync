@@ -38,6 +38,10 @@ const enhance = compose<IVextabChangeHandlerProps, IOuterProps>(
       const lower = typeof value === 'number' ? value : parseInt(value, 10);
       const { upper } = measure.bar.timeSignature;
 
+      if (isNaN(lower) || isNaN(upper)) {
+        return;
+      }
+
       editor.updateTimeSignature(upper, lower);
     },
     handleUpperChange: () => (value: number | string, editor) => {
@@ -49,6 +53,10 @@ const enhance = compose<IVextabChangeHandlerProps, IOuterProps>(
 
       const upper = typeof value === 'number' ? value : parseInt(value, 10);
       const { lower } = measure.bar.timeSignature;
+
+      if (isNaN(lower) || isNaN(upper)) {
+        return;
+      }
 
       editor.updateTimeSignature(upper, lower);
     }

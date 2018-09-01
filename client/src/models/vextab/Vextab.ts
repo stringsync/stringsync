@@ -3,6 +3,7 @@ import { Line, Measure } from 'models';
 import { flatMap } from 'lodash';
 import { Note, Chord, Rest } from 'models';
 import { id } from 'utilities';
+import { Directive } from './directive';
 
 export type VextabElement = Note | Chord | Rest;
 
@@ -91,5 +92,15 @@ export class Vextab {
   public clone(): Vextab {
     const factory = new Factory(this.structs, this.tuning, this.measuresPerLine, this.width);
     return factory.newInstance();
+  }
+
+  public psuedorender() {
+    this.lines.forEach(line => {
+      const canvas = document.createElement('canvas');
+      this.renderer.assign(line, canvas);
+    });
+
+    Directive.extractAndInvoke(this);
+    this.renderer.render();
   }
 }

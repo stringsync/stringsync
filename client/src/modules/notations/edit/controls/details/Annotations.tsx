@@ -60,7 +60,7 @@ export const Annotations = enhance(props => (
   <Form>
     <Form.Item>
       <Button
-        disabled={!props.element || props.element instanceof Bar || props.element instanceof Measure }
+        disabled={!props.element}
         onClick={props.addAnnotation}
       >
         add

@@ -1,6 +1,6 @@
 import { compose, withHandlers, mapProps } from 'recompose';
 import { connect, Dispatch } from 'react-redux';
-import { Vextab, Editor } from 'models';
+import { Vextab, Editor, Directive } from 'models';
 import { NotationActions, EditorActions } from 'data';
 import { ComponentClass } from 'react';
 
@@ -58,6 +58,7 @@ export const withEditorHandlers = <TEvent, TProps>(vextabUpdaters: IVextabUpdate
       withHandlers(() => Object.keys(vextabUpdaters).reduce((handlers, handlerName) => {
         handlers[handlerName] = (props: IConnectProps<TProps>) => (e: TEvent) => {
           const vextab = props.vextab.clone();
+          vextab.psuedorender();
           const editor = new Editor(vextab);
 
           // By default, the path is null, which results in null editor targets.
