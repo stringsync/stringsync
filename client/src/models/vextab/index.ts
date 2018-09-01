@@ -5,3 +5,4 @@ export * from './Factory';
 export * from './renderers';
 export * from './directive';
 export * from './Vextab';
+export * from './editor';

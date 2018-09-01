@@ -1,9 +1,8 @@
 import { compose, withHandlers, mapProps } from 'recompose';
 import { connect, Dispatch } from 'react-redux';
-import { Vextab } from 'models';
+import { Vextab, Editor } from 'models';
 import { NotationActions, EditorActions } from 'data';
 import { ComponentClass } from 'react';
-import { Editor } from 'models/vextab/Editor';
 
 export type VextabEditorHandler<TEvent> = (event: TEvent, editor: Editor) => any;
 

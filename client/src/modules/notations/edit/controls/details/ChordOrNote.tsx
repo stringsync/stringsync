@@ -1,11 +1,9 @@
 import * as React from 'react';
 import { compose, withProps } from 'recompose';
-import { Form, InputNumber, Select } from 'antd';
+import { Form } from 'antd';
 import { Note as NoteModel, Chord as ChordModel } from 'models';
 import { Rhythm } from './Rhythm';
 import { Position } from './Position';
-
-const { Option } = Select;
 
 interface IOuterProps {
   element: NoteModel | ChordModel;

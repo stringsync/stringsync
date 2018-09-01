@@ -6,7 +6,9 @@ import {
 } from 'models';
 
 /**
- * The purpose of this class is to provide an interface for editing a vextab.
+ * The purpose of this class is to provide an interface for editing a vextab. It mainly knows
+ * how to add and remove Lines, Measures, and Elements. It proxies the subrenderers to edit
+ * the elements on a more grannular level.
  */
 export class Editor {
   public static getDefaultNote(): Note {

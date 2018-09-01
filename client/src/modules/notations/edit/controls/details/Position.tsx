@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { Form, Input, InputNumber } from 'antd';
-import { Chord, Note, Measure } from 'models';
+import { Chord, Note } from 'models';
 import { withEditorHandlers } from 'enhancers';
-import { get } from 'lodash';
 
 interface IOuterProps {
   element: Chord | Note;

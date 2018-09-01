@@ -1,13 +1,12 @@
 import * as React from 'react';
 import { compose, withProps } from 'recompose';
-import { Rhythm, Note, Rest, VextabElement } from 'models';
+import { Rhythm, Note, Rest, VextabElement, Editor } from 'models';
 import { Radio } from 'antd';
 import RadioGroup from 'antd/lib/radio/group';
 import { connect } from 'react-redux';
 import { RadioChangeEvent } from 'antd/lib/radio';
 import { withEditorHandlers } from 'enhancers';
 import { get } from 'lodash';
-import { Editor } from 'models/vextab/Editor';
 
 type ElementTypes = 'NOTE' | 'REST' | 'BAR' | null;
 

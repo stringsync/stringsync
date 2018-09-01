@@ -7,7 +7,7 @@ import { ElementTypes } from './ElementManager';
 import { connect, Dispatch } from 'react-redux';
 import { EditorActions } from 'data';
 import { get } from 'lodash';
-import { Editor } from 'models/vextab/Editor';
+import { Editor } from 'models/vextab/editor';
 
 interface IOuterProps {
   elementType: ElementTypes;
