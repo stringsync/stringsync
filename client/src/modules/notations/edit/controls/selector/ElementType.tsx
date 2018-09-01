@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { RadioChangeEvent } from 'antd/lib/radio';
 import { withEditorHandlers } from 'enhancers';
 import { get } from 'lodash';
+import { Editor } from 'models/vextab/Editor';
 
 type ElementTypes = 'NOTE' | 'REST' | 'BAR' | null;
 
@@ -53,7 +54,7 @@ const enhance = compose<IWithVextabChangeHandlerProps, IOuterProps>(
       let nextElement: Rest | Note;
       switch (event.target.value) {
         case 'NOTE':
-          const note = new Note('C', 5, { positions: [{ fret: 1, str: 2 }] });
+          const note = Editor.getDefaultNote();
           note.rhythm = rhythm;
           nextElement = note;
           break;
@@ -67,8 +68,8 @@ const enhance = compose<IWithVextabChangeHandlerProps, IOuterProps>(
           return;
       }
 
-      const ndx = element.measure.elements.indexOf(element);
-      element.measure.elements.splice(ndx, 1, nextElement);
+      editor.removeElement();
+      editor.addElement(nextElement);
     }
   })
 );
