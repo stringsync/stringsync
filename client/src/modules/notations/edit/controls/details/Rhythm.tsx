@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { Form, Input, Checkbox } from 'antd';
+import { Form, Checkbox, Radio } from 'antd';
 import { Rhythm as RhythmModel } from 'models';
 import { Tuplet } from './Tuplet';
 import { withEditorHandlers } from 'enhancers';
-import { get } from 'lodash';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import { RadioChangeEvent } from 'antd/lib/radio';
 
 interface IOuterProps {
   element: RhythmModel;
@@ -13,17 +13,17 @@ interface IOuterProps {
 }
 
 interface IHandlerProps extends IOuterProps {
-  handleValueChange: (event: React.FormEvent<HTMLInputElement>) => void;
+  handleValueChange: (event: RadioChangeEvent) => void;
   handleDotChange: (checked: CheckboxChangeEvent) => void;
 }
 
 const enhance = compose<IHandlerProps, IOuterProps>(
-  withEditorHandlers<CheckboxChangeEvent | React.FormEvent<HTMLInputElement>, IOuterProps>({
+  withEditorHandlers<CheckboxChangeEvent | RadioChangeEvent, IOuterProps>({
     handleDotChange: () => (event: CheckboxChangeEvent, editor) => {
       editor.updateRhythmDot(event.target.checked);
     },
-    handleValueChange: () => (event: React.FormEvent<HTMLInputElement>, editor) => {
-      editor.updateRhythmValue(event.currentTarget.value);
+    handleValueChange: () => (event: RadioChangeEvent, editor) => {
+      editor.updateRhythmValue(event.target.value);
     }
   })
 );
@@ -32,10 +32,16 @@ export const Rhythm = enhance(props => (
   <div>
     <Form layout="inline">
       <Form.Item label="value">
-        <Input
-          defaultValue={props.element.value}
+        <Radio.Group
           onChange={props.handleValueChange}
-        />
+          defaultValue={props.element.value}
+        >
+          <Radio.Button value={1}>1</Radio.Button>
+          <Radio.Button value={2}>2</Radio.Button>
+          <Radio.Button value={4}>4</Radio.Button>
+          <Radio.Button value={8}>8</Radio.Button>
+          <Radio.Button value={16}>16</Radio.Button>
+        </Radio.Group>
       </Form.Item>
       <Form.Item label="dot">
         <Checkbox
