@@ -54,7 +54,7 @@ const enhance = compose<IIPhoneXProps, {}>(
       setNotationMenuVisibility: (visibility: boolean) => dispatch(UiActions.setNotationMenuVisibility(visibility)),
     })
   ),
-  withState('tooltipVisible', 'setTooltipVisibility', true),
+  withState('tooltipVisible', 'setTooltipVisibility', localStorage.getItem('toggleViewTutorial') !== 'true'),
   withState('loopCollapsed', 'setLoopCollapsed', true),
   withHandlers({
     handleLoopCollapseChange: (props: any) => () => {
@@ -73,6 +73,7 @@ const enhance = compose<IIPhoneXProps, {}>(
 
       if (props.tooltipVisible) {
         props.setTooltipVisibility(false);
+        localStorage.setItem('toggleViewTutorial', 'true');
       }
 
       scroller.scrollTo(nextFocusedElement, { smooth: true, duration: 300 });
@@ -90,11 +91,6 @@ const enhance = compose<IIPhoneXProps, {}>(
     const isIphoneX = iOS && screen.width === 1125 && screen.height === 2436;
 
     return { isIphoneX }
-  }),
-  lifecycle<IIPhoneXProps, {}>({
-    componentDidMount() {
-      setTimeout(() => this.props.setTooltipVisibility(false), 8000);
-    }
   })
 );
 
