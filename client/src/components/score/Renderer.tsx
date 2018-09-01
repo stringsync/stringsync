@@ -13,6 +13,7 @@ interface IOuterProps {
 
 interface IConnectProps extends IOuterProps {
   appendErrors: (errors: string[]) => void;
+  notifyRender: () => void;
 }
 
 interface IInnerProps extends IConnectProps {
@@ -23,7 +24,8 @@ const enhance = compose<IInnerProps, IOuterProps>(
   connect(
     null,
     (dispatch: Dispatch) => ({
-      appendErrors: (errors: string[]) => dispatch(EditorActions.appendErrors(errors))
+      appendErrors: (errors: string[]) => dispatch(EditorActions.appendErrors(errors)),
+      notifyRender: () => dispatch(EditorActions.notifyRender())
     })
   ),
   withHandlers({
@@ -47,10 +49,9 @@ const enhance = compose<IInnerProps, IOuterProps>(
         }
 
         tickMap.compute();
-        renderer.vextab.links.compute();
 
         // Last, we render the Caret if it is observing the maestro
-        maestro.update(false);
+        maestro.update(true);
 
         const caret = maestro.observers.find(observer => observer.name === 'CaretController');
 
@@ -65,6 +66,8 @@ const enhance = compose<IInnerProps, IOuterProps>(
           throw error;
         }
       }
+
+      props.notifyRender();
     }
   }),
   observeMaestro<IInnerProps>(

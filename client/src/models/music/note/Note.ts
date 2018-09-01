@@ -1,10 +1,16 @@
-import { merge, sortBy } from 'lodash';
 import * as constants from './noteConstants';
-import { AbstractVexWrapper, Directive } from 'models/vextab';
+import { get, flatMap, compact, merge, sortBy } from 'lodash';
+import { next, prev } from 'utilities';
+import { AbstractVexWrapper, Directive, VextabElement, NoteRenderer } from 'models/vextab';
 import { NoteHydrationValidator } from './NoteHydrationValidator';
-import { id } from 'utilities';
-import { Measure, Annotations, Rhythm, Tuplet } from 'models/music';
-import { NoteRenderer } from 'models/vextab';
+import { Measure, Annotations, Rhythm } from 'models/music';
+
+export interface INoteOptions {
+  articulation?: string | void;
+  decorator?: string | void;
+  positions?: Guitar.IPosition[];
+  rhythm?: Rhythm;
+}
 
 /**
  * The purpose of this class is to encapsulate the logic related to describing a note's inherent
@@ -37,9 +43,9 @@ export class Note extends AbstractVexWrapper {
    * @param {string} str expected string format: `${note}${modifier?}/${octave}`
    * @returns {Note}
    */
-  public static from(str: string): Note {
+  public static from(str: string, options?: INoteOptions): Note {
     const splitStr = str.split('/');
-    return new Note(splitStr[0], parseInt(splitStr[1], 10));
+    return new Note(splitStr[0], parseInt(splitStr[1], 10), options);
   }
 
   /**
@@ -60,7 +66,6 @@ export class Note extends AbstractVexWrapper {
   }
 
   public readonly literal: string;
-  public readonly id: number;
   public readonly type = 'NOTE';
 
   public octave: number;
@@ -68,13 +73,12 @@ export class Note extends AbstractVexWrapper {
   public renderer: NoteRenderer;
   public directives: Directive[] = [];
   public annotations: Annotations[] = [];
-  public rhythm: Rhythm | void;
-  public tuplet: Tuplet | void;
+  public rhythm: Rhythm;
   public positions: Guitar.IPosition[] = [];
   public articulation: string | void;
   public decorator: string | void;
 
-  constructor(literal: string, octave: number, positions?: Guitar.IPosition[]) {
+  constructor(literal: string, octave: number, options?: INoteOptions) {
     super();
 
     const normalizedLiteral = Note.normalize(literal);
@@ -82,17 +86,32 @@ export class Note extends AbstractVexWrapper {
     if (!Note.ALL_LITERALS_SET.has(normalizedLiteral)) {
       throw new Error(`${normalizedLiteral} should be in ${Note.ALL_LITERALS.join(', ')}`);
     } else if (!Number.isInteger(octave)) {
-      throw new Error('octave must be an integer')
+      throw new Error('octave must be an integer');
     }
 
-    this.id = id();
     this.literal = normalizedLiteral;
     this.octave = octave;
     this.renderer = new NoteRenderer(this);
 
-    if (positions) {
-      this.positions = positions; // TODO: Validate that the position returns the right note literal
-    }
+    // TODO validate the positions
+    const base = { positions: [], rhythm: new Rhythm('4', false) };
+    const opts = Object.assign(base, options || {});
+    this.articulation = opts.articulation;
+    this.decorator = opts.decorator;
+    this.rhythm = opts.rhythm;
+    this.positions = opts.positions;
+  }
+
+  public get next(): VextabElement | null {
+    const measures: Measure[] = compact([this.measure, get(this.measure, 'next')]);
+    const elements = flatMap(measures, measure => measure.elements);
+    return next(this, elements);
+  }
+
+  public get prev(): VextabElement | null {
+    const measures: Measure[] = compact([get(this.measure, 'prev'), this.measure]);
+    const elements = flatMap(measures, measure => measure.elements);
+    return prev(this, elements);
   }
 
   /**
@@ -102,10 +121,6 @@ export class Note extends AbstractVexWrapper {
    */
   public get alias() {
     return new Note(Note.NOTE_ALIASES[this.literal], this.octave);
-  }
-
-  public get clone(): Note {
-    return new Note(this.literal, this.octave, merge([], this.positions));
   }
 
   /**
@@ -155,6 +170,20 @@ export class Note extends AbstractVexWrapper {
       fret: this.positions[0].fret.toString(),
       string: this.positions[0].str.toString()
     }
+  }
+
+  public clone(): Note {
+    const note = new Note(this.literal, this.octave, {
+      articulation: this.articulation,
+      decorator: this.decorator,
+      positions:  merge([], this.positions),
+      rhythm: this.rhythm.clone()
+    });
+
+    note.annotations = this.annotations.map(annotation => annotation.clone());
+    note.directives = this.directives.map(directive => directive.clone(note));
+
+    return note;
   }
 
   /**
@@ -225,7 +254,7 @@ export class Note extends AbstractVexWrapper {
    * @returns {Note}
    */
   public toFlat(): Note {
-    return this.isSharp ? this.alias : this.clone;
+    return this.isSharp ? this.alias : this.clone();
   }
 
   /**
@@ -234,7 +263,7 @@ export class Note extends AbstractVexWrapper {
    * @returns {Note}
    */
   public toSharp(): Note {
-    return this.isFlat ? this.alias : this.clone;
+    return this.isFlat ? this.alias : this.clone();
   }
 
   /**

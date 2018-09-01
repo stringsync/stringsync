@@ -1,7 +1,8 @@
-import { Line, MeasureElement } from 'models/music';
+import { Line } from 'models/music';
 import { VextabRenderer } from './VextabRenderer';
 import { RendererStore } from './RendererStore';
 import { isEqual, get } from 'lodash';
+import { VextabElement } from '../Vextab';
 
 interface IStoreData {
   line: Line;
@@ -25,7 +26,7 @@ export class SelectorRenderer {
   }
 
   public get isRenderable(): boolean {
-    const lineIds = this.lines.map(line => line.id).sort();
+    const lineIds = this.lines.map(line => line.index).sort();
     const canvasLineIds = Object.keys(this.store.data).map(lineId => parseInt(lineId, 10)).sort();
     return isEqual(lineIds, canvasLineIds);
   }
@@ -64,7 +65,7 @@ export class SelectorRenderer {
     this.renderedLines = [];
   }
 
-  public render(element: MeasureElement): void {
+  public render(element: VextabElement): void {
     this.clear();
 
     if (!element.isHydrated) {
@@ -95,7 +96,7 @@ export class SelectorRenderer {
     }
 
     ctx.beginPath();
-    ctx.arc(x, 40, 3, 0, Math.PI * 2);
+    ctx.arc(x, 40, 10, 0, Math.PI * 2);
     ctx.fill();
     ctx.closePath();
 
@@ -109,7 +110,7 @@ export class SelectorRenderer {
     const { canvas } = this.store.fetch(line);
 
     if (!canvas) {
-      throw new Error(`could not resize line ${line.id}: missing canvas`);
+      throw new Error(`could not resize line ${line.index}: missing canvas`);
     }
 
     canvas.width = width * ratio;
@@ -122,13 +123,13 @@ export class SelectorRenderer {
     const { canvas } = this.store.fetch(line);
 
     if (!canvas) {
-      throw new Error(`could not set style for line ${line.id}: missing canvas`);
+      throw new Error(`could not set style for line ${line.index}: missing canvas`);
     }
 
     const ctx = canvas.getContext('2d');
 
     if (!ctx) {
-      throw new Error(`no context found for ${line.id}`);
+      throw new Error(`no context found for ${line.index}`);
     }
 
     ctx.fillStyle = SelectorRenderer.FILL_STYLE;

@@ -1,7 +1,7 @@
 
 class NotationsController < ApplicationController
   def index
-    @notations = Notation.includes(:tags, :transcriber, :video)
+    @notations = Notation.includes(:tags, :transcriber, :video).where(featured: true)
     render(:index, status: 200)
   end
 

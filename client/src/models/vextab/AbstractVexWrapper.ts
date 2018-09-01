@@ -4,13 +4,13 @@ export interface IVexAttrs {
 }
 
 /**
- * Extending this class indicates that the child class has properties related to Vexflow\
+ * Extending this class indicates that the child class has properties related to Vexflow
  * and Vextab.
  */
 export abstract class AbstractVexWrapper {
   public vexAttrs: IVexAttrs | null = null;
 
-  public abstract get struct(): Vextab.ParsedStruct;
+  public abstract get struct(): Vextab.Parsed.Struct;
 
   /**
    * This function is called after the VextabGenerator creates Vexflow (not Vextab) elements.

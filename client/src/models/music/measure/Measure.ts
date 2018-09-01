@@ -1,52 +1,55 @@
-import { Bar, Note, Rest, Line, Chord } from 'models/music';
-import { VextabMeasureSpec, Directive } from 'models/vextab';
+import { Bar, Note, Chord, Annotations, Tuplet, Line } from 'models/music';
+import { Directive, VextabElement } from 'models/vextab';
 import { compact, get, flatMap, last } from 'lodash';
-import { Annotations } from '../annotations';
-import { Tuplet } from '../tuplet';
-import { Rhythm } from '../rhythm';
+import { hash, next, prev } from 'utilities';
 
-export type MeasureElement = Note | Rest | Bar | Chord;
-
+/**
+ * The purpose of this class is to manage a group of VextabElements.
+ */
 export class Measure {
-  public static tickableTypes = ['NOTE', 'CHORD', 'REST'];
+  public static TICKABLE_TYPES = ['NOTE', 'CHORD', 'REST'];
 
-  public readonly spec: VextabMeasureSpec;
-  public readonly id: number;
   public readonly type = 'MEASURE';
+  public readonly clef = 'none';
+  public readonly notation = true;
 
-  public line: Line | void;
-  public elements: MeasureElement[];
+  public bar: Bar;
+  public elements: VextabElement[];
   public annotations: Annotations[] = [];
   public directives: Directive[] = [];
+  public line: Line | void;
 
-  constructor(elements: MeasureElement[], id: number, spec: VextabMeasureSpec) {
-    if (elements[0].type !== 'BAR') {
-      throw new Error(`expected the first element to have type BAR, got: ${elements[0].type}`);
-    }
-
-    this.id = id;
+  constructor(bar: Bar, elements: VextabElement[]) {
+    this.bar = bar;
     this.elements = elements;
-    this.spec = spec;
   }
 
-  public get tickables(): Array<Note | Chord | Rest> {
-    const tickableTypes = new Set(Measure.tickableTypes);
-    return this.elements.filter(element => tickableTypes.has(element.type)) as Array<Note | Chord | Rest>;
+  public get index(): number {
+    const measures = get(this.line, 'vextab.measures', []);
+    return measures.indexOf(this);
   }
 
-  /**
-   * Iterates through the Chord and Note elements, and flat maps their pos getters.
-   */
-  public get positions(): Guitar.IPosition[] {
-    const targets = this.elements.filter(element => (
-      element.type === 'NOTE' || element.type === 'CHORD'
-    )) as Array<Chord | Note>;
-
-    return flatMap(targets, target => target.positions);
+  public get next(): Measure | null {
+    const lines: Line[] = compact([this.line, get(this.line, 'next')]);
+    const measures = flatMap(lines, line => line.measures);
+    return next(this, measures);
   }
 
-  public get struct(): Vextab.ParsedStruct[] {
-    return flatMap(this.elements, element => {
+  public get prev(): Measure | null {
+    const lines: Line[] = compact([get(this.line, 'prev'), this.line]);
+    const measures = flatMap(lines, line => line.measures);
+    return prev(this, measures);
+  }
+
+  public get specHash(): number {
+    const { key, timeSignature } = this.bar;
+    const { clef, notation } = this;
+
+    return hash(`${clef}${notation}${key.note.literal}${timeSignature.toString()}`);
+  }
+
+  public get struct(): Vextab.Parsed.Note[] {
+    return flatMap([this.bar, ...this.elements], element => {
       if (get(element, 'rhythm.isGrace', false)) {
         // Grace notes are implemented via directives, so we ignore them here
         return [];
@@ -62,19 +65,32 @@ export class Measure {
     });
   }
 
-  private tupletStruct(element: MeasureElement): Vextab.Parsed.ITuplet | void {
-    // We have to deal with tuplets at the measure level since it requires us
-    // to look backwards.
-    const tuplet = get(element, 'rhythm.tuplet') as Tuplet | void;
+  public get optionsStruct() {
+    const { key, timeSignature } = this.bar;
 
-    if (!tuplet) {
-      return;
-    }
+    return [
+      { key: 'clef', value: 'none' },
+      { key: 'notation', value: 'true' },
+      { key: 'key', value: key.note.literal },
+      { key: 'time', value: timeSignature.toString() }
+    ];
+  }
 
-    // compute tuplet groups, which are arrays of arrays of rhythms
+  /**
+   * Iterates through the Chord and Note elements, and flat maps their pos getters.
+   */
+  public get positions(): Guitar.IPosition[] {
+    const targets = this.elements.filter(element => (
+      element.type === 'NOTE' || element.type === 'CHORD'
+    )) as Array<Chord | Note>;
+
+    return flatMap(targets, target => target.positions);
+  }
+
+  public get tupletGroups(): Tuplet[][] {
     const tuplets = compact(this.elements.map(el => get(el, 'rhythm.tuplet'))) as Tuplet[];
 
-    const tupletGroups = tuplets.reduce((groups, tup) => {
+    return tuplets.reduce((groups, tup) => {
       const lastGroup = last(groups);
 
       // A group is satisfied if the first rhythm's tuplet's value is equal
@@ -88,10 +104,26 @@ export class Measure {
 
       return groups;
     }, [] as Tuplet[][]);
-    
+  }
+
+  public clone(): Measure {
+    const elements = this.elements.map(element => element.clone());
+    const bar = this.bar.clone();
+    return new Measure(bar, elements);
+  }
+
+  private tupletStruct(element: VextabElement | Bar): Vextab.Parsed.ITuplet | void {
+    // We have to deal with tuplets at the measure level since it requires us
+    // to look backwards.
+    const tuplet = get(element, 'rhythm.tuplet') as Tuplet | void;
+
+    if (!tuplet) {
+      return;
+    }
+
     // Out of each tupletGroup, we take the last tuplet, since this is
     // the element that we'll act on and push the tuplet
-    const actionTuplets = tupletGroups.reduce((actionTups, tupletGroup) => {
+    const actionTuplets = this.tupletGroups.reduce((actionTups, tupletGroup) => {
       const lastTuplet = last(tupletGroup);
 
       if (lastTuplet) {

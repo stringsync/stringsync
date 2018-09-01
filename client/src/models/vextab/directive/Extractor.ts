@@ -1,6 +1,7 @@
 import { get, startsWith, partition } from 'lodash';
-import { Vextab, MeasureElement } from 'models';
+import { Vextab } from 'models';
 import { DirectiveTypes, Directive } from './Directive';
+import { VextabElement } from '../Vextab';
 
 /**
  * This class is used to extract the custom directives from Vextab. The extraction process
@@ -54,7 +55,7 @@ export class Extractor {
     });
   }
 
-  private mutateModifiersIntoDirectives(element: MeasureElement): void {
+  private mutateModifiersIntoDirectives(element: VextabElement): void {
     // We rely on the connection between the VexFlow and StringSync data structures to be
     // established before we perform the extraction.
     if (!element.isHydrated) {

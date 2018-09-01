@@ -1,19 +1,24 @@
 declare namespace Vextab {
-  export type ParsedStruct = Parsed.IOptions | Parsed.Note | Parsed.ILine;
-  export type ElementTypes = 'tabstave' | 'stave';
-
   namespace Parsed {
-    export interface ILine {
-      element: ElementTypes;
+    export type Struct = IStave | Note | IOption;
+
+    export interface IStave {
+      element: 'tabstave' | 'stave';
       options: IOption[];
       notes: Note[];
       text: any[];
     }
 
+    export interface IOption {
+      key: string;
+      value: string;
+    }
+
     export type Note =
       IAnnotations | IBar | IChord |
       IKey | IRest | IPosition |
-      ITabstave | ITuplet | ITime
+      ITabstave | ITuplet | ITime |
+      ITimeSignature | IText
 
     export interface IAnnotations {
       command: 'annotations';
@@ -56,11 +61,6 @@ declare namespace Vextab {
       options: IOptions;
       notes: Note[];
       text: IText[];
-    }
-
-    export interface IOption {
-      key: string;
-      value: string;
     }
 
     export interface ITuplet {

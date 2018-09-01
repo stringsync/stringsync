@@ -14,6 +14,10 @@ export class Annotations extends AbstractVexWrapper {
     return { command: 'annotations', params: this.texts }
   }
 
+  public clone(): Annotations {
+    return new Annotations([...this.texts]);
+  }
+
   // TODO: Create a validator for this hydrate function.
   public hydrate(staveNote: Vex.Flow.StaveNote, tabNote: Vex.Flow.TabNote): void {
     this.vexAttrs = { staveNote, tabNote };

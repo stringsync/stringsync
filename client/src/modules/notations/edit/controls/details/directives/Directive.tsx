@@ -4,16 +4,17 @@ import { Directive as DirectiveModel } from 'models';
 import { cond } from 'enhancers';
 import { Form, Alert } from 'antd';
 import { GraceNote } from './GraceNote';
-import { NoteSuggestions } from './NoteSuggestions';
 
 interface IOuterProps {
   directive: DirectiveModel;
+  directiveIndex: number;
 }
 
 const enhance = compose<IOuterProps, IOuterProps>(
   cond<IOuterProps>([
     [({ directive }) => directive.type === 'GRACE_NOTE', renderComponent(GraceNote)],
-    [({ directive }) => directive.type === 'NOTE_SUGGESTIONS', renderComponent(NoteSuggestions)]
+    // uncomment when ready to work on NOTE_SUGGESTIONS
+    // [({ directive }) => directive.type === 'NOTE_SUGGESTIONS', renderComponent(NoteSuggestions)]
   ])
 );
 

@@ -35,7 +35,7 @@ export class LoopCaretRenderer {
   }
 
   public get isRenderable(): boolean {
-    const lineIds = this.lines.map(line => line.id).sort();
+    const lineIds = this.lines.map(line => line.index).sort();
     const canvasLineIds = Object.keys(this.store.data).map(lineId => parseInt(lineId, 10)).sort();
     return isEqual(lineIds, canvasLineIds);
   }
@@ -102,10 +102,10 @@ export class LoopCaretRenderer {
     const inBetweenLines: Line[] = [];
 
     if (firstLine !== lastLine) {
-      let probeLine = vextab.links.next(firstLine) as Line | void;
+      let probeLine = firstLine.next;
       while (probeLine && probeLine !== lastLine) {
         inBetweenLines.push(probeLine);
-        probeLine = vextab.links.next(probeLine) as Line | void;
+        probeLine = probeLine.next;
       }
     }
 
@@ -226,7 +226,7 @@ export class LoopCaretRenderer {
         const { note, start, stop } = tickMap.fetch(time.tick);
   
         const curr = note;
-        const next = vextab.links.next(note, true) as typeof note;
+        const next = note.next;
   
         // interpolation args
         const t0 = start;
@@ -263,7 +263,7 @@ export class LoopCaretRenderer {
     const { canvas } = this.store.fetch(line);
 
     if (!canvas) {
-      throw new Error(`could not resize line ${line.id}: missing canvas`);
+      throw new Error(`could not resize line ${line.index}: missing canvas`);
     }
 
     canvas.width = width * ratio;
@@ -276,13 +276,13 @@ export class LoopCaretRenderer {
     const { canvas } = this.store.fetch(line);
 
     if (!canvas) {
-      throw new Error(`could not set style for line ${line.id}: missing canvas`);
+      throw new Error(`could not set style for line ${line.index}: missing canvas`);
     }
 
     const ctx = canvas.getContext('2d');
 
     if (!ctx) {
-      throw new Error(`no context found for ${line.id}`);
+      throw new Error(`no context found for ${line.index}`);
     }
 
     ctx.strokeStyle = LoopCaretRenderer.STROKE_STYLE;

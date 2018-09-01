@@ -46,7 +46,7 @@ export class Scale {
     const notes = flatMap(this.degrees, degree => (
       octaves.map(octave => {
         // The seed is the note used to start the scale for a given octave
-        const seed = this.key.clone;
+        const seed = this.key.clone();
         seed.octave = octave;
         return seed.step(root.distance(degree));
       })

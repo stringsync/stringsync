@@ -3,6 +3,8 @@ import { Flow } from 'vexflow';
 import { Directive } from './Directive';
 import { Rhythm, Note, Chord } from '../../music';
 
+const DEFAULT_TUNING = new (Flow as any).Tuning();
+
 /**
  * The purpose of this class is to encapsulate the logic of invoking directives. It has one
  * primary public static interface, Invoker.invokePrerenderers, which _potentially_ modifies
@@ -62,7 +64,7 @@ export class Invoker {
     ) as Directive.Payload.IGraceNote;
 
     const { positions, duration, slur } = payload;
-    const { tuning } = this.vextab;
+    const tuning = DEFAULT_TUNING; // FIXME to accept any tunings
     const { vexAttrs } = directive.element;
 
     if (!vexAttrs) {

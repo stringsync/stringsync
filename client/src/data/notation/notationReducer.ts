@@ -5,7 +5,7 @@ export const getDefaultNotation = (): Notation.INotation => ({
   bpm: 120,
   createdAt: new Date(1970, 1, 1),
   deadTimeMs: 0,
-  durationMs: 1,
+  durationMs: 120000,
   id: -1,
   songName: '',
   tags: [],

@@ -1,10 +1,10 @@
-import { Vextab, MeasureElement, Note, Chord, Rest } from 'models';
+import { Vextab, VextabElement, Note, Chord, Rest } from 'models';
 import { get } from 'lodash';
 
 export interface ITickData {
   start: number;
   stop: number;
-  note: MeasureElement;
+  note: VextabElement;
 }
 
 /**
@@ -66,7 +66,7 @@ export class TickMap {
     this.vextab.lines.forEach(line => {
       line.measures.forEach(measure => {
         let prev: Note | Chord | Rest | null = null;
-        measure.tickables.forEach(note => {
+        measure.elements.forEach(note => {
           if (!note.isHydrated) {
             throw new Error('expected note to be hydrated');
           }

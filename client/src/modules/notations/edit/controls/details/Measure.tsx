@@ -1,9 +1,11 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { Measure as MeasureModel, Scale } from 'models';
+import { Measure as MeasureModel, Scale, Key, Note } from 'models';
 import { Form, InputNumber, Select, Divider } from 'antd';
 import styled from 'react-emotion';
 import { uniq, flatMap } from 'lodash';
+import { withEditorHandlers } from 'enhancers';
+import { SelectValue } from 'antd/lib/select';
 
 const { Option } = Select;
 
@@ -15,8 +17,50 @@ interface IOuterProps {
   element: MeasureModel;
 }
 
-const enhance = compose<IOuterProps, IOuterProps>(
+interface IVextabChangeHandlerProps extends IOuterProps {
+  handleKeyChange: (value: SelectValue) => void;
+  handleUpperChange: (value: number | string) => void;
+  handleLowerChange: (value: number | string) => void;
+}
 
+const enhance = compose<IVextabChangeHandlerProps, IOuterProps>(
+  withEditorHandlers<number | string, IOuterProps>({
+    handleKeyChange: () => (noteLiteral: string, editor) => {
+      editor.updateMeasureKey(noteLiteral);
+    },
+    handleLowerChange: () => (value: number | string, editor) => {
+      const { measure } = editor;
+
+      if (!measure) {
+        return;
+      }
+
+      const lower = typeof value === 'number' ? value : parseInt(value, 10);
+      const { upper } = measure.bar.timeSignature;
+
+      if (isNaN(lower) || isNaN(upper)) {
+        return;
+      }
+
+      editor.updateTimeSignature(upper, lower);
+    },
+    handleUpperChange: () => (value: number | string, editor) => {
+      const { measure } = editor;
+
+      if (!measure) {
+        return;
+      }
+
+      const upper = typeof value === 'number' ? value : parseInt(value, 10);
+      const { lower } = measure.bar.timeSignature;
+
+      if (isNaN(lower) || isNaN(upper)) {
+        return;
+      }
+
+      editor.updateTimeSignature(upper, lower);
+    }
+  })
 );
 
 const StyledSelect = styled(Select)`
@@ -26,22 +70,31 @@ const StyledSelect = styled(Select)`
 `;
 
 export const Measure = enhance(props => (
-  <Form.Item>
+  <Form layout="inline">
     <Form.Item label="id">
-      <InputNumber disabled={true} value={props.element.id} />
+      <InputNumber disabled={true} defaultValue={props.element.index} />
     </Form.Item>
     <Form.Item label="length">
       <InputNumber disabled={true} value={props.element.elements.length} />
     </Form.Item>
     <Form.Item label="key">
-      <StyledSelect value={props.element.spec.key.note.literal}>
+      <StyledSelect
+        onChange={props.handleKeyChange}
+        defaultValue={props.element.bar.key.note.literal}
+      >
         {NOTES.map(note => <Option key={note}>{note}</Option>)}
       </StyledSelect>
     </Form.Item>
     <Form.Item label="time signature">
-      <InputNumber value={props.element.spec.timeSignature.upper} />
+      <InputNumber
+        onChange={props.handleUpperChange}
+        defaultValue={props.element.bar.timeSignature.upper}
+      />
       <Divider type="vertical" />
-      <InputNumber value={props.element.spec.timeSignature.lower} />
+      <InputNumber
+        onChange={props.handleLowerChange}
+        defaultValue={props.element.bar.timeSignature.lower}
+      />
     </Form.Item>
-  </Form.Item>
+  </Form>
 ));

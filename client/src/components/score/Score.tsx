@@ -3,8 +3,8 @@ import logo from 'assets/logo.svg';
 import styled from 'react-emotion';
 import { Line } from './Line';
 import { Title } from './Title';
-import { Vextab, VextabRenderer } from 'models';
-import { compose, withState, lifecycle, withProps } from 'recompose';
+import { Vextab, VextabRenderer, Factory as VextabFactory } from 'models';
+import { compose, lifecycle, withProps, branch, renderNothing, withState } from 'recompose';
 import { get } from 'lodash';
 import { scoreKey } from './scoreKey';
 import { Renderer } from './Renderer';
@@ -12,6 +12,7 @@ import { CanvasRenderables } from './canvas-renderables';
 import { Editor } from './Editor';
 import { connect, Dispatch } from 'react-redux';
 import { EditorActions } from 'data';
+import { Flow } from 'vexflow';
 
 const MIN_WIDTH_PER_MEASURE = 240; // px
 const MIN_MEASURES_PER_LINE = 1;
@@ -27,15 +28,15 @@ interface IOuterProps {
 interface IConnectProps extends IOuterProps {
   appendErrors: (errors: string[]) => void;
   removeErrors: () => void;
-  setEditorVextab: (vextab: Vextab) => void;
+  setEditorVextab: (vextab: Vextab | null) => void;
 }
 
-interface IVextabProps extends IConnectProps {
+interface IStateProps extends IConnectProps {
   vextab: Vextab;
   setVextab: (vextab: Vextab) => void;
 }
 
-interface IVextabSyncProps extends IVextabProps {
+interface IVextabSyncProps extends IStateProps {
   vextabId: number;
   lineIds: number[];
 }
@@ -50,11 +51,10 @@ const enhance = compose<IInnerProps, IOuterProps>(
     (dispatch: Dispatch) => ({
       appendErrors: (errors: string[]) => dispatch(EditorActions.appendErrors(errors)),
       removeErrors: () => dispatch(EditorActions.removeErrors()),
-      setEditorVextab: (vextab: Vextab) => dispatch(EditorActions.setVextab(vextab))
+      setEditorVextab: (vextab: Vextab | null) => dispatch(EditorActions.setVextab(vextab))
     })
   ),
-  withState('vextab', 'setVextab', new Vextab([], 1)),
-  withProps((props: IVextabSyncProps) => {
+  withProps((props: IConnectProps) => {
     let measuresPerLine;
     
     // compute mpl based on width
@@ -68,6 +68,7 @@ const enhance = compose<IInnerProps, IOuterProps>(
 
     return { measuresPerLine };
   }),
+  withState('vextab', 'setVextab', new Vextab([], new Flow.Tuning(), 1, 640)),
   lifecycle<IInnerProps, {}>({
     componentDidUpdate(prevProps) {
       const shouldCreateVextab = (
@@ -78,10 +79,12 @@ const enhance = compose<IInnerProps, IOuterProps>(
 
       let vextab;
       if (shouldCreateVextab && this.props.notation.vextabString.length > 0) {
-        let structs: Vextab.ParsedStruct[] =[];
+        let staves: Vextab.Parsed.IStave[] =[];
 
+        // Parse the vextabString
         try {
-          structs = Vextab.decode(this.props.notation.vextabString);
+          staves = Vextab.decode(this.props.notation.vextabString);
+          this.props.removeErrors();
         } catch (error) {
           if (this.props.editMode) {
             this.props.appendErrors([error.message]);
@@ -91,14 +94,14 @@ const enhance = compose<IInnerProps, IOuterProps>(
           }
         }
 
-        this.props.removeErrors();
+        // create a new Vextab object using the factory
+        const factory = new VextabFactory(
+          staves, window.ss.maestro.tuning, this.props.measuresPerLine, this.props.width
+        )
 
-        vextab = new Vextab(structs, this.props.measuresPerLine, this.props.width);
+        vextab = factory.newInstance();
+        this.props.setEditorVextab(vextab);
         this.props.setVextab(vextab);
-
-        if (this.props.editMode) {
-          this.props.setEditorVextab(vextab);
-        }
       } else {
         vextab = this.props.vextab;
       }
@@ -106,7 +109,8 @@ const enhance = compose<IInnerProps, IOuterProps>(
       // Sync the Vextab with Maestro's vextab
       window.ss.maestro.vextab = vextab;
     }
-  })
+  }),
+  branch<IInnerProps>(props => !props.vextab, renderNothing)
 );
 
 interface IOuterDiv {
@@ -141,7 +145,7 @@ const Spacer = styled('div')`
 
 export const Score = enhance(props => (
   <Outer id="score" dynamic={props.dynamic}>
-    <Editor vextab={props.vextab} />
+    <Editor />
     <Renderer editMode={props.editMode} />
     <CanvasRenderables active={props.dynamic} />
     <Title

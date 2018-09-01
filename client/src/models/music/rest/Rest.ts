@@ -1,10 +1,9 @@
 import { Rhythm } from 'models';
-import { AbstractVexWrapper, VextabStruct, Directive } from 'models/vextab';
+import { AbstractVexWrapper, Directive, VextabElement } from 'models/vextab';
 import { RestHydrationValidator } from './RestHydrationValidator';
-import { id } from 'utilities';
-import { Measure } from 'models/music';
-import { Annotations } from '../annotations';
-import { Tuplet } from '../tuplet';
+import { id, prev, next } from 'utilities';
+import { Measure, Annotations } from 'models/music';
+import { get, compact, flatMap } from 'lodash';
 
 export class Rest extends AbstractVexWrapper {
   public readonly id: number;
@@ -12,10 +11,9 @@ export class Rest extends AbstractVexWrapper {
   
   public position: number;
   public rhythm: Rhythm;
-  public measure: Measure | void;
   public directives: Directive[] = [];
   public annotations: Annotations[] = [];
-  public tuplet: Tuplet | void;
+  public measure: Measure | void;
 
   constructor(position: number, rhythm: Rhythm) {
     super();
@@ -25,6 +23,18 @@ export class Rest extends AbstractVexWrapper {
     this.position = position;
   }
 
+  public get next(): VextabElement | null {
+    const measures: Measure[] = compact([this.measure, get(this.measure, 'next')]);
+    const elements = flatMap(measures, measure => measure.elements);
+    return next(this, elements);
+  }
+
+  public get prev(): VextabElement | null {
+    const measures: Measure[] = compact([get(this.measure, 'prev'), this.measure]);
+    const elements = flatMap(measures, measure => measure.elements);
+    return prev(this, elements);
+  }
+
   public get struct(): Vextab.Parsed.IRest {
     return {
       command: 'rest',
@@ -32,6 +42,18 @@ export class Rest extends AbstractVexWrapper {
         position: this.position
       }
     }
+  }
+
+  public clone(): Rest {
+    const rest = new Rest(this.position, this.rhythm.clone());
+
+    const annotations = this.annotations.map(annotation => annotation.clone());
+    const directives = this.directives.map(directive => directive.clone(rest));
+
+    rest.annotations = annotations;
+    rest.directives = directives;
+
+    return rest;
   }
   
   public hydrate(staveNote: Vex.Flow.StaveNote, tabNote: Vex.Flow.TabNote): void {

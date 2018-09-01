@@ -1,36 +1,54 @@
 import * as React from 'react';
 import { compose, lifecycle } from 'recompose';
-import { connect } from 'react-redux';
-import { Vextab } from 'models';
+import { connect, Dispatch } from 'react-redux';
+import { EditorActions } from 'data';
 
-interface IOuterProps {
-  vextab: Vextab;
-}
 
-interface IInnerProps extends IOuterProps {
+interface IConnectProps {
   editor: Store.IEditorState;
+  setElementIndex: (elementIndex: number) => void;
 }
 
-const enhance = compose<IInnerProps, IOuterProps>(
+interface IHandlerProps extends IConnectProps {
+  renderSelection: () => void;
+}
+
+// TODO rename this
+const enhance = compose<IHandlerProps, {}>(
   connect(
     (state: Store.IState) => ({
       editor: state.editor
+    }),
+    (dispatch: Dispatch) => ({
+      setElementIndex: (elementIndex: number) => dispatch(EditorActions.setElementIndex(elementIndex))
     })
   ),
-  lifecycle<IInnerProps, {}>({
+  lifecycle<IHandlerProps, {}>({
+    componentDidMount(): void {
+      this.props.setElementIndex(0);
+    },
     componentDidUpdate(): void {
-      const { editor, vextab } = this.props;
-      const { selectorRenderer } = this.props.vextab.renderer;
+      const { vextab, elementIndex, enabled } = this.props.editor;
 
-      const selected = vextab.elements[editor.elementIndex];
+      if (!vextab) {
+        return;
+      }
 
-      if (!selected || !editor.enabled) {
+      const { selectorRenderer } = vextab.renderer;
+
+      if (!selectorRenderer.isRenderable) {
+        return;
+      }
+
+      const selected = vextab.elements[elementIndex];
+
+      if (!selected || !enabled) {
         selectorRenderer.clear();
       } else {
         selectorRenderer.render(selected);
       }
     }
-  })
+  }),
 );
 
 export const Editor = enhance(() => null);

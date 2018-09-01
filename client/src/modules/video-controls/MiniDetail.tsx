@@ -25,7 +25,7 @@ const enhance = compose<IInnerProps, IOuterProps>(
     })
   ),
   branch<IInnerProps>(
-    props => props.viewportType !== 'DESKTOP',
+    props => props.viewportType !== 'DESKTOP' || !props.thumbnailUrl,
     renderNothing
   )
 );
@@ -38,7 +38,7 @@ interface IOuterDiv {
 const Outer = styled('div')<IOuterDiv>`
   opacity: ${props => props.$hidden ? 0 : 1};
   display: flex;
-  margin-right: 12px;
+  margin: 0 8px;
 `;
 
 const Detail = styled('div')`

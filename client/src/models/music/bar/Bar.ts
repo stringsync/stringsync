@@ -1,8 +1,6 @@
 import { AbstractVexWrapper, Directive } from 'models/vextab';
 import { BarHydrationValidator } from './BarHydrationValidator';
-import { id } from 'utilities';
-import { Measure } from 'models/music';
-import { Annotations } from '../annotations';
+import { Measure, Annotations, Key, TimeSignature } from 'models/music';
 
 export class Bar extends AbstractVexWrapper {
   public static KINDS = [
@@ -18,15 +16,18 @@ export class Bar extends AbstractVexWrapper {
   public readonly id: number;
 
   public kind: Vextab.Parsed.IBarTypes;
+  public key: Key;
+  public timeSignature: TimeSignature;
   public measure: Measure | void;
-  public directives: Directive[] = [];
   public annotations: Annotations[] = [];
+  public directives: Directive[] = []
 
-  constructor(kind: Vextab.Parsed.IBarTypes) {
+  constructor(kind: Vextab.Parsed.IBarTypes, key: Key, timeSignature: TimeSignature) {
     super();
 
-    this.id = id();
     this.kind = kind;
+    this.key = key;
+    this.timeSignature = timeSignature;
   }
 
   /**
@@ -53,6 +54,10 @@ export class Bar extends AbstractVexWrapper {
 
   public get struct(): Vextab.Parsed.IBar {
     return { command: 'bar', type: this.kind };
+  }
+
+  public clone(): Bar {
+    return new Bar(this.kind, this.key.clone(), this.timeSignature.clone());
   }
 
   public hydrate(staveNote: Vex.Flow.BarNote, tabNote: Vex.Flow.BarNote): void {

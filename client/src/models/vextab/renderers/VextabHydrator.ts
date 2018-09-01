@@ -1,8 +1,8 @@
 import { Line } from '../..';
 import { VexTab as VextabGenerator, Artist } from 'vextab/releases/vextab-div.js';
 import { get, zip, uniq } from 'lodash';
-import { MeasureElement } from '../../music';
 import { Bar, Note, Chord, Rest } from '../../music';
+import { VextabElement } from '../Vextab';
 
 export type StaveNote = Vex.Flow.StaveNote | Vex.Flow.BarNote;
 export type TabNote = Vex.Flow.TabNote | Vex.Flow.BarNote;
@@ -79,9 +79,9 @@ export class VextabHydrator {
     const tabMeasures = this.getMeasures<TabNote>(this.stave.tab_notes as TabNote[]);
 
     const hydratables = VextabHydrator.HYDRATABLES;
-    const wrapperMeasures = this.line.measures.map(measure => 
-      measure.elements.filter(el => hydratables.includes(el.type))
-    );
+    const wrapperMeasures =this.line.measures.map(measure => (
+      [measure.bar, ...measure.elements.filter(el => hydratables.includes(el.type))]
+    ));
 
     this.validateMeasures(noteMeasures, tabMeasures, wrapperMeasures);
 
@@ -90,8 +90,8 @@ export class VextabHydrator {
         const staveNote = noteMeasures[measureNdx][wrapperNdx];
         const tabNote = tabMeasures[measureNdx][wrapperNdx];
 
-        if (wrapper.type === 'BAR') {
-          (wrapper as Bar).hydrate(staveNote as Vex.Flow.BarNote, tabNote as Vex.Flow.BarNote);
+        if (wrapper instanceof Bar) {
+          wrapper.hydrate(staveNote as Vex.Flow.BarNote, tabNote as Vex.Flow.BarNote);
         } else {
           (wrapper as Note | Chord | Rest).hydrate(
             staveNote as Vex.Flow.StaveNote, tabNote as Vex.Flow.TabNote
@@ -102,12 +102,6 @@ export class VextabHydrator {
   }
 
   private getMeasures<T>(notes: T[]): T[][] {
-    const firstNoteType = VextabHydrator.typeof(notes[0]);
-
-    if (firstNoteType !== 'BAR') {
-      throw new Error(`expected the first note type to be 'BAR', got: ${firstNoteType}` );
-    }
-
     const line: T[][] = [];
     let measure: T[] = [notes[0]];
     notes.slice(1).forEach((note, ndx) => {
@@ -134,7 +128,7 @@ export class VextabHydrator {
   private validateMeasures(
     noteMeasures: StaveNote[][],
     tabMeasures: TabNote[][],
-    wrapperMeasures: MeasureElement[][]
+    wrapperMeasures: Array<Array<VextabElement | Bar>>
   ): void {
     const groups = zip(noteMeasures, tabMeasures, wrapperMeasures);
 
@@ -149,7 +143,7 @@ export class VextabHydrator {
     groups.forEach(group => {
       const [notes, tabs, wrappers] = group;
 
-      zip(notes as StaveNote[], wrappers as MeasureElement[]).forEach(pair => {
+      zip(notes as StaveNote[], wrappers as Array<VextabElement | Bar>).forEach(pair => {
         const [note, wrapper] = pair;
 
         if (VextabHydrator.typeof(note!) !== wrapper!.type) {
@@ -157,7 +151,7 @@ export class VextabHydrator {
         }
       });
 
-      zip(tabs as TabNote[], wrappers as MeasureElement[]).forEach(pair => {
+      zip(tabs as TabNote[], wrappers as VextabElement[]).forEach(pair => {
         const [tab, wrapper] = pair;
 
         if (VextabHydrator.typeof(tab!) !== wrapper!.type) {

@@ -1,42 +1,29 @@
 import * as React from 'react';
-import { compose, withHandlers } from 'recompose';
-import { Form, Input, Checkbox } from 'antd';
+import { compose } from 'recompose';
+import { Form, Checkbox, Radio } from 'antd';
 import { Rhythm as RhythmModel } from 'models';
 import { Tuplet } from './Tuplet';
-import { withVextab, IWithVextabProps } from 'enhancers';
-import { get } from 'lodash';
+import { withEditorHandlers } from 'enhancers';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import { RadioChangeEvent } from 'antd/lib/radio';
 
 interface IOuterProps {
   element: RhythmModel;
   editor: Store.IEditorState;
 }
 
-type VextabProps = IOuterProps & IWithVextabProps;
-
-interface IHandlerProps extends VextabProps {
-  handleValueChange: (event: React.FormEvent<HTMLInputElement>) => void;
+interface IHandlerProps extends IOuterProps {
+  handleValueChange: (event: RadioChangeEvent) => void;
   handleDotChange: (checked: CheckboxChangeEvent) => void;
 }
 
 const enhance = compose<IHandlerProps, IOuterProps>(
-  withVextab,
-  withHandlers({
-    handleDotChange: (props: VextabProps) => (event: CheckboxChangeEvent) => {
-      const vextab = props.getVextab();
-
-      const rhythm = get(vextab.elements[props.editor.elementIndex], 'rhythm') as RhythmModel;
-      rhythm.dot = event.target.checked;
-
-      props.setVextab(vextab);
+  withEditorHandlers<CheckboxChangeEvent | RadioChangeEvent, IOuterProps>({
+    handleDotChange: () => (event: CheckboxChangeEvent, editor) => {
+      editor.updateRhythmDot(event.target.checked);
     },
-    handleValueChange: (props: VextabProps) => (event: React.FormEvent<HTMLInputElement>) => {
-      const vextab = props.getVextab();
-
-      const rhythm = get(vextab.elements[props.editor.elementIndex], 'rhythm') as RhythmModel;
-      rhythm.value = event.currentTarget.value;
-
-      props.setVextab(vextab);
+    handleValueChange: () => (event: RadioChangeEvent, editor) => {
+      editor.updateRhythmValue(event.target.value);
     }
   })
 );
@@ -45,10 +32,16 @@ export const Rhythm = enhance(props => (
   <div>
     <Form layout="inline">
       <Form.Item label="value">
-        <Input
-          defaultValue={props.element.value}
+        <Radio.Group
           onChange={props.handleValueChange}
-        />
+          defaultValue={props.element.value}
+        >
+          <Radio.Button value={1}>1</Radio.Button>
+          <Radio.Button value={2}>2</Radio.Button>
+          <Radio.Button value={4}>4</Radio.Button>
+          <Radio.Button value={8}>8</Radio.Button>
+          <Radio.Button value={16}>16</Radio.Button>
+        </Radio.Group>
       </Form.Item>
       <Form.Item label="dot">
         <Checkbox
@@ -57,6 +50,6 @@ export const Rhythm = enhance(props => (
         />
       </Form.Item>
     </Form>
-    {props.element.tuplet ? <Tuplet element={props.element.tuplet} /> : null}
+    <Tuplet tuplet={props.element.tuplet} />
   </div>
 ));

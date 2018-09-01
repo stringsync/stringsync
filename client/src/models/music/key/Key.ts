@@ -22,4 +22,8 @@ export class Key extends AbstractVexWrapper {
   public hydrate(): void {
     this.vexAttrs = null;
   }
+
+  public clone(): Key {
+    return new Key(this.note.clone());
+  }
 }

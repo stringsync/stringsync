@@ -39,12 +39,16 @@ declare namespace Store {
     isLoopVisible: boolean;
     isFretboardVisible: boolean;
     isPianoVisible: boolean;
+    focusedScrollElement: string | null;
   }
 
   export interface IEditorState {
+    autosave: boolean;
     enabled: boolean;
     elementIndex: number;
     errors: string[];
+    lastRenderedAt: number;
+    lastUpdatedAt: number;
     vextab: Vextab | null;
   }
 }

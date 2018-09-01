@@ -1,12 +1,15 @@
 import { Note } from 'models';
-import { AbstractVexWrapper, NoteRenderer, Directive } from 'models/vextab';
+import { AbstractVexWrapper, NoteRenderer, Directive, VextabElement } from 'models/vextab';
 import { ChordHydrationValidator } from './ChordHydrationValidator';
-import { Measure } from 'models/music';
-import { id } from 'utilities';
-import { Annotations } from '../annotations';
-import { Rhythm } from '../rhythm';
-import { Tuplet } from '../tuplet';
-import { flatMap } from 'lodash';
+import { Measure, Rhythm, Tuplet, Annotations } from 'models/music';
+import { id, next, prev } from 'utilities';
+import { get, flatMap, compact } from 'lodash';
+
+interface IChordOptions {
+  articulation?: string | void;
+  decorator?: string | void;
+  rhythm?: Rhythm;
+}
 
 export class Chord extends AbstractVexWrapper {
   public readonly id: number;
@@ -17,12 +20,12 @@ export class Chord extends AbstractVexWrapper {
   public renderer: NoteRenderer;
   public directives: Directive[] = [];
   public annotations: Annotations[] = [];
-  public rhythm: Rhythm | void;
+  public rhythm: Rhythm;
   public tuplet: Tuplet | void;
   public articulation: string | void;
   public decorator: string | void;
 
-  constructor(notes: Note[]) {
+  constructor(notes: Note[], options?: IChordOptions) {
     super();
 
     if (notes.length <= 1) {
@@ -32,6 +35,29 @@ export class Chord extends AbstractVexWrapper {
     this.id = id();
     this.notes = notes;
     this.renderer = new NoteRenderer(this);
+
+     // TODO validate the positions
+     const base = { positions: [], rhythm: new Rhythm('4', false) };
+     const opts = Object.assign(base, options || {});
+     this.articulation = opts.articulation;
+     this.decorator = opts.decorator;
+     this.rhythm = opts.rhythm;
+  }
+
+  public get next(): VextabElement | null {
+    const measures: Measure[] = compact([this.measure, get(this.measure, 'next')]);
+    const elements = flatMap(measures, measure => measure.elements);
+    return next(this, elements);
+  }
+
+  public get prev(): VextabElement | null {
+    const measures: Measure[] = compact([get(this.measure, 'prev'), this.measure]);
+    const elements = flatMap(measures, measure => measure.elements);
+    return prev(this, elements);
+  }
+
+  public get positions(): Guitar.IPosition[] {
+    return flatMap(this.notes, note => note.positions);
   }
 
   /**
@@ -76,11 +102,15 @@ export class Chord extends AbstractVexWrapper {
     }
   }
 
-  /**
-   * Returns a guitar position if the note is hydrated. If any note does not have a position,
-   * throws an error.
-   */
-  public get positions(): Guitar.IPosition[] {
-    return flatMap(this.notes, note => note.positions);
+  public clone(): Chord {
+    const chord = new Chord(this.notes.map(note => note.clone()));
+
+    const annotations = this.annotations.map(annotation => annotation.clone());
+    const directives = this.directives.map(directive => directive.clone(chord));
+
+    chord.annotations = annotations;
+    chord.directives = directives;
+
+    return chord;
   }
 }

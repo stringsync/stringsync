@@ -1,10 +1,11 @@
 import { Time } from 'services';
 import { AbstractObservable } from 'utilities';
 import { isEqual } from 'lodash';
-import { Vextab } from 'models/vextab';
+import { Vextab, VextabElement } from 'models/vextab';
 import { TickMap } from './TickMap';
-import { MeasureElement, Fretboard } from 'models';
+import { Fretboard } from 'models';
 import { Piano } from 'models';
+import { Flow } from 'vexflow';
 
 interface IMaestroState {
   time: Time;
@@ -12,7 +13,7 @@ interface IMaestroState {
   loopEnd: Time;
   start: number | null; // start tick time that the note is valid
   stop: number | null;  // stop tick time that the note is valid
-  note: MeasureElement | null;
+  note: VextabElement | null;
 }
 
 const getNullState = (time: Time, loopStart: Time, loopEnd: Time): IMaestroState => ({
@@ -23,6 +24,8 @@ const getNullState = (time: Time, loopStart: Time, loopEnd: Time): IMaestroState
   stop: null,
   time
 });
+
+const DEFAULT_TUNING = new Flow.Tuning();
 
 /**
  * This class's purpose is to provide a single interface for callers to invoke an update on
@@ -37,6 +40,7 @@ export class Maestro extends AbstractObservable {
   public tickMap: TickMap | null = null;
   public fretboard: Fretboard | null = null;
   public piano: Piano | null = null;
+  public tuning = DEFAULT_TUNING;
   
   private isUpdating: boolean = false;
   private $vextab: Vextab | null = null;
@@ -128,7 +132,7 @@ export class Maestro extends AbstractObservable {
    * The primary interface that event handlers should call to update the backend
    * models.
    */
-  public update(notifyOnChange = true) {
+  public update(forceChanged = false) {
     if (this.isUpdating) {
       return;
     }
@@ -137,7 +141,7 @@ export class Maestro extends AbstractObservable {
 
     try {
       const nextState = this.nextState;
-      this.changed = notifyOnChange && !isEqual(this.state, nextState);
+      this.changed = forceChanged || !isEqual(this.state, nextState);
       this.state = nextState;
     } finally {
       this.isUpdating = false;

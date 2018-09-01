@@ -1,6 +1,16 @@
 # This model is the citadel of StringSync. It is used to store the instructions
 # on how to sync a notation and video.
 class Notation < ApplicationRecord
+  DEFAULT_VEXTAB_STRING = <<-VEXTAB.freeze
+    tabstave
+    clef=none
+    notation=true
+    key=C
+    time=4/4
+    
+    notes | :1 ##
+  VEXTAB
+
   belongs_to(:transcriber, foreign_key: :transcriber_id, class_name: "User")
   has_one(:video, inverse_of: :notation)
   has_many(:taggings, dependent: :destroy)
@@ -18,6 +28,8 @@ class Notation < ApplicationRecord
 
   validate(:check_transcriber)
 
+  before_create(:ensure_vextab_string!)
+
   accepts_nested_attributes_for(:video)
 
   private
@@ -27,5 +39,9 @@ class Notation < ApplicationRecord
       if %i(teacher admin).none? { |role| transcriber.try(:has_role?, role) }
         errors.add(:transcriber, "must be a teacher or admin")
       end
+    end
+
+    def ensure_vextab_string!
+      self.vextab_string = DEFAULT_VEXTAB_STRING if vextab_string.blank?
     end
 end

@@ -40,11 +40,11 @@ export class ChordHydrationValidator extends AbstractValidator<Chord> {
   }
 
   private get staveChord(): Chord {
-    return new Chord(this.staveKeys.map(Note.from));
+    return new Chord(this.staveKeys.map(key => Note.from(key)));
   }
 
   private get tabChord(): Chord {
-    return new Chord(this.tabKeys.map(Note.from));
+    return new Chord(this.tabKeys.map(key => Note.from(key)));
   }
 
   private validateChords(): void {

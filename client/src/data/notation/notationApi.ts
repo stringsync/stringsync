@@ -35,6 +35,46 @@ export const fetchNotation = (notationId: number) => async (dispatch: Dispatch) 
   dispatch(NotationActions.setNotation(notation));
 };
 
+export interface IUpdateNotation {
+  song_name?: string;
+  artist_name?: string;
+  vextab_string?: string;
+  bpm?: number;
+  dead_time_ms?: number;
+  duration_ms?: number;
+}
+
+export const updateNotation = (notationId: number, notation: IUpdateNotation) => async (dispatch: Dispatch) => {
+  const json: API.Notations.IShowResponse = await ajax(`/api/v1/notations/${notationId}`, {
+    data: { notation },
+    method: 'PUT'
+  });
+
+  const included = new IncludedObjects(json.included);
+
+  const { id, attributes, links, relationships } = json.data;
+  const tags = included.fetch(relationships.tags.data) as API.Tags.IAsIncluded[];
+  const transcriber = included.fetch(relationships.transcriber.data) as API.Users.IAsIncluded;
+  const video = included.fetch(relationships.video.data) as API.Videos.IAsIncluded;
+
+  const updatedNotation = {
+    artistName: attributes.artist_name,
+    bpm: attributes.bpm,
+    createdAt: new Date(attributes.created_at),
+    deadTimeMs: attributes.dead_time_ms,
+    durationMs: attributes.duration_ms,
+    id,
+    songName: attributes.song_name,
+    tags: tags.map(tag => tag.attributes.name),
+    thumbnailUrl: attributes.thumbnail_url,
+    transcriber: pick(transcriber.attributes, ['id', 'name', 'image']) as User.IBaseUser,
+    vextabString: attributes.vextab_string,
+    video: video.attributes
+  };
+
+  dispatch(NotationActions.setNotation(updatedNotation));
+};
+
 export interface ICreateNotation {
   artist_name: string;
   bpm: number;
