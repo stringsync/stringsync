@@ -173,35 +173,6 @@ export class Editor {
 
   // grannular editing
 
-  public addAnnotation(texts: string[]): Annotations {
-    let element = this.element;
-
-    if (!element) {
-      element = Editor.getDefaultRest();
-      this.addElement(element);
-    }
-
-    const annotations = new Annotations(texts);
-
-    element.annotations.push(annotations);
-
-    return annotations;
-  }
-
-  public removeAnnotation(annotationsIndex: number): Annotations | void {
-    const { element } = this;
-
-    if (!element) {
-      return;
-    }
-
-    const annotation = element.annotations[annotationsIndex];
-
-    element.annotations.splice(annotationsIndex, 1);
-
-    return annotation;
-  }
-
   public updateBarKind(kind: Vextab.Parsed.IBarTypes): Vextab.Parsed.IBarTypes {
     const { measure } = this;
 
@@ -371,7 +342,7 @@ export class Editor {
     return tuplet;
   }
 
-  // FIXME: Ugh...
+  // FIXME: Ugh... this feels very janky
   public removeTuplet(): Tuplet[] | void {
     const { element } = this;
 
@@ -403,5 +374,60 @@ export class Editor {
     });
 
     return tuplets;
+  }
+
+  public addAnnotations(): Annotations {
+    let { element } = this;
+
+    if (!element) {
+      element = Editor.getDefaultRest();
+      this.addElement(element);
+    }
+
+    const annotations = new Annotations(['*']);
+    element.annotations.push(annotations);
+
+    return annotations;
+  }
+
+  public updateText(annotationsIndex: number, textIndex: number, text: string): string {
+    const { element } = this;
+
+    if (!element) {
+      throw new Error('no element selected');
+    }
+
+    const annotation = element.annotations[annotationsIndex].clone();
+
+    if (!annotation) {
+      throw new Error('no annotations selected');
+    }
+
+    annotation.texts.splice(textIndex, 1, text);
+    element.annotations.splice(annotationsIndex, 1, annotation);
+
+    return text;
+  }
+
+  public removeText(annotationsIndex: number, textIndex: number): Annotations | void {
+    const { element } = this;
+
+    if (!element) {
+      return;
+    }
+
+    const annotation = element.annotations[annotationsIndex];
+
+    if (!annotation) {
+      return;
+    }
+
+    annotation.texts.splice(textIndex, 1);
+
+    if (annotation.texts.length === 0) {
+      element.annotations.splice(annotationsIndex, 1);
+    }
+
+    return annotation;
   }
 }

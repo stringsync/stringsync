@@ -22,7 +22,7 @@ interface ITextProps extends IOuterProps {
 interface IVextabChangeHandlersProps extends ITextProps {
   addAnnotation: (e: React.SyntheticEvent<HTMLButtonElement>) => void;
   handleTextsChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  removeAnnotation: (e: React.SyntheticEvent<HTMLButtonElement>) => void;
+  removeText: (e: React.SyntheticEvent<HTMLButtonElement>) => void;
 }
 
 const mapTextData = (annotations: AnnotationsModel[]): TextData[] => (
@@ -40,27 +40,18 @@ const enhance = compose<IVextabChangeHandlersProps, IOuterProps>(
     return { textData };
   }),
   withEditorHandlers<EventTypes, ITextProps>({
-    addAnnotation: props => (e: React.SyntheticEvent<HTMLButtonElement>, editor) => {
-      const element = editor.vextab.elements[props.editor.elementIndex];
-      
-      element.annotations.push(new AnnotationsModel(['*']));
+    addAnnotation: () => (_, editor) => {
+      editor.addAnnotations();
     },
-    handleTextsChange: props => (e: React.ChangeEvent<HTMLTextAreaElement>, editor) => {
+    handleTextsChange: () => (e: React.ChangeEvent<HTMLTextAreaElement>, editor) => {
       const { annotationNdx, textNdx } = e.currentTarget.dataset;
-      const element = editor.vextab.elements[props.editor.elementIndex];
-
-      element.annotations[annotationNdx!].texts[textNdx!] = e.currentTarget.value;
+      editor.updateText(
+        parseInt(annotationNdx!, 10), parseInt(textNdx!, 10), e.currentTarget.value
+      );
     },
-    removeAnnotation: props => (e: React.SyntheticEvent<HTMLButtonElement>, editor) => {
+    removeText: () => (e: React.SyntheticEvent<HTMLButtonElement>, editor) => {
       const { annotationNdx, textNdx } = e.currentTarget.dataset;
-      const element = editor.vextab.elements[props.editor.elementIndex];
-
-      const annotation = element.annotations[annotationNdx!]
-      annotation.texts.splice(parseInt(textNdx!, 10), 1);
-
-      if (annotation.texts.length === 0) {
-        element.annotations.splice(parseInt(annotationNdx!, 10), 1);
-      }
+      editor.removeText(parseInt(annotationNdx!, 10), parseInt(textNdx!, 10));
     }
   })
 );
@@ -89,7 +80,7 @@ export const Annotations = enhance(props => (
           <Button
             data-annotation-ndx={annotationNdx}
             data-text-ndx={textNdx}
-            onClick={props.removeAnnotation}
+            onClick={props.removeText}
           >
             remove
           </Button>

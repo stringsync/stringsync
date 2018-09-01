@@ -59,9 +59,6 @@ export const withEditorHandlers = <TEvent, TProps>(vextabUpdaters: IVextabUpdate
         handlers[handlerName] = (props: IConnectProps<TProps>) => (e: TEvent) => {
           const vextab = props.vextab.clone();
           const editor = new Editor(vextab);
-          const subEditors = [
-
-          ]
 
           // By default, the path is null, which results in null editor targets.
           if (typeof props.elementIndex === 'number') {
