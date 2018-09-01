@@ -145,9 +145,9 @@
   dependencies:
     "@types/react" "*"
 
-"@types/vexflow@^1.2.31":
-  version "1.2.31"
-  resolved "https://registry.yarnpkg.com/@types/vexflow/-/vexflow-1.2.31.tgz#d3000983f5d28e7767455f30ef2cf04fe4c3f431"
+"@types/vexflow@^1.2.32":
+  version "1.2.32"
+  resolved "https://registry.yarnpkg.com/@types/vexflow/-/vexflow-1.2.32.tgz#55a129ae0070c52a340b4a69ae2776788d7f5a6e"
 
 JSONSelect@0.4.0:
   version "0.4.0"
