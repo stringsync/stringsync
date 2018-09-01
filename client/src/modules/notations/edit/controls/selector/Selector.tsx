@@ -100,7 +100,7 @@ export const Selector = enhance(props => (
     <Form.Item label="element">
       <InputNumber
         min={-1}
-        max={get(props.editor.vextab, 'elements.length', 1)}
+        max={get(props.editor.vextab, 'elements.length', 1) - 1}
         disabled={!props.editor.enabled}
         value={props.editor.elementIndex as number | undefined}
         onChange={props.handleElementIndexChange}

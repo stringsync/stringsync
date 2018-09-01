@@ -67,8 +67,12 @@ const enhance = compose<IWithVextabChangeHandlerProps, IOuterProps>(
           return;
       }
 
-      editor.removeElement();
+      // Removing the last element will remove the measure!
+      // We do this hack to work around it.
       editor.addElement(nextElement);
+      editor.elementIndex!--;
+      editor.removeElement();
+      editor.elementIndex!++;
     }
   })
 );
