@@ -6,6 +6,7 @@ import { ButtonProps } from 'antd/lib/button';
 
 interface IOuterProps {
   elementIndex: number;
+  elementType: 'MEASURE' | 'ELEMENT';
 }
 
 interface IHandlerProps extends IOuterProps {
@@ -19,7 +20,18 @@ interface IMappedProps {
 const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
   withEditorHandlers<React.SyntheticEvent<HTMLButtonElement>, IOuterProps>({
     handleButtonClick: props => (_, editor) => {
-      editor.removeMeasure();
+      switch (props.elementType) {
+        case 'MEASURE':
+          editor.removeMeasure();
+          return;
+
+        case 'ELEMENT':
+          editor.removeElement();
+          return;
+
+        default:
+          throw new Error(`unexpected elementType: ${props.elementType}`);
+      }
     }
   }),
   mapProps((props: IHandlerProps & ButtonProps) => {
@@ -27,6 +39,7 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
 
     delete nextProps.handleButtonClick;
     delete nextProps.elementIndex;
+    delete nextProps.elementType;
 
     nextProps.onClick = props.handleButtonClick;
 

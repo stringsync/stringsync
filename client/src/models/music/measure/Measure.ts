@@ -36,7 +36,7 @@ export class Measure {
   }
 
   public get prev(): Measure | null {
-    const lines: Line[] = compact([this.line, get(this.line, 'prev')]);
+    const lines: Line[] = compact([get(this.line, 'prev'), this.line]);
     const measures = flatMap(lines, line => line.measures);
     return prev(this, measures);
   }

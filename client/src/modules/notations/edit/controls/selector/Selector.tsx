@@ -31,7 +31,6 @@ interface IConnectProps {
 interface ISelectedProps extends IConnectProps {
   measure: Measure | null;
   element: VextabElement | null;
-  barElementIndex: number;
 }
 
 interface IHandlerProps extends ISelectedProps {
@@ -52,9 +51,8 @@ const enhance = compose<IHandlerProps, {}>(
     const { vextab } = props.editor;
     const element = vextab ? vextab.elements[props.editor.elementIndex] || null : null;
     const measure = element ? element.measure : null;
-    const barElementIndex = measure ? vextab.elements.indexOf(measure.elements[0]) : -1;
 
-    return { element, measure, barElementIndex };
+    return { element, measure };
   }),
   lifecycle<ISelectedProps, {}>({
     componentDidUpdate(prevProps): void {
@@ -112,7 +110,7 @@ export const Selector = enhance(props => (
     <Form.Item label="measure">
       <InputNumber
         min={-1}
-        max={get(props.editor.vextab, 'measures.length', 1)}
+        max={get(props.editor.vextab, 'measures.length', 1) + 1}
         disabled={!props.editor.enabled}
         value={get(props.measure, 'index')}
         onChange={props.handleMeasureIdChange}
@@ -123,7 +121,6 @@ export const Selector = enhance(props => (
       element={props.element}
       measure={props.measure}
       elementIndex={props.editor.elementIndex}
-      barElementIndex={props.barElementIndex}
     />
   </Form.Item>
 ));

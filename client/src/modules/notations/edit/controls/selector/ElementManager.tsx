@@ -14,7 +14,6 @@ interface IOuterProps {
   measure: Measure | null;
   element: VextabElement | null;
   elementIndex: number;
-  barElementIndex: number;
 }
 
 interface IStateProps extends IOuterProps {
@@ -59,13 +58,15 @@ export const ElementManager = enhance(props => (
       <ButtonGroup>
         <RemoveElement
           disabled={!props.measure}
-          elementIndex={props.barElementIndex}
+          elementIndex={props.elementIndex}
+          elementType="MEASURE"
         >
           measure
           </RemoveElement>
         <RemoveElement
-          disabled={!props.element || props.element instanceof Bar}
+          disabled={!props.element}
           elementIndex={props.elementIndex}
+          elementType="ELEMENT"
         >
           note
           </RemoveElement>

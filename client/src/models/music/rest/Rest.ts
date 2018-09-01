@@ -30,7 +30,7 @@ export class Rest extends AbstractVexWrapper {
   }
 
   public get prev(): VextabElement | null {
-    const measures: Measure[] = compact([this.measure, get(this.measure, 'prev')]);
+    const measures: Measure[] = compact([get(this.measure, 'prev'), this.measure]);
     const elements = flatMap(measures, measure => measure.elements);
     return prev(this, elements);
   }

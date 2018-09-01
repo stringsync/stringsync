@@ -67,7 +67,7 @@ export class Editor {
       this.elementIndex = 0;
     }
 
-    this.elementIndex++
+    this.elementIndex++;
 
     measure.elements.splice(this.elementIndex, 0, element);
 
@@ -92,7 +92,7 @@ export class Editor {
     const measureNdx = probeMeasure ? line.measures.indexOf(probeMeasure) : -1;
 
     // insert the measure
-    line.measures.splice(measureNdx, 0, measure);
+    line.measures.splice(measureNdx + 1, 0, measure);
 
     // focus the first element of the measure, if any
     const firstMeasureElement = measure.elements[0];
@@ -117,7 +117,14 @@ export class Editor {
       throw new Error('selected measure does not belong to a line');
     }
 
+    // compute the previous measure, and focus its last element
+    const prevMeasure = measure.prev;
+    const focusElement = last(get(prevMeasure, 'elements', []));
+    const nextElementIndex = focusElement ? this.vextab.elements.indexOf(focusElement) : -1;
+
     line.measures = line.measures.filter(lineMeasure => lineMeasure !== measure);
+
+    this.elementIndex = nextElementIndex;
   }
 
   public addLine(line: Line): Line {
