@@ -56,7 +56,21 @@ export class Editor {
   }
 
   public addElement(element: VextabElement): VextabElement {
-    // TODO
+    let measure = this.measure;
+
+    if (!measure) {
+      const bar = Editor.getDefaultBar();
+      measure = this.addMeasure(Editor.getDefaultMeasure(bar));
+    }
+
+    if (typeof this.elementIndex !== 'number') {
+      this.elementIndex = 0;
+    }
+
+    this.elementIndex++
+
+    measure.elements.splice(this.elementIndex, 0, element);
+
     return element;
   }
 
@@ -64,7 +78,7 @@ export class Editor {
     return null;
   }
 
-  public addMeasure(measure: Measure) {
+  public addMeasure(measure: Measure): Measure {
     // find or create the line
     let line = this.line || last(this.vextab.lines);
 
@@ -86,6 +100,8 @@ export class Editor {
     if (firstMeasureElement) {
       this.elementIndex = this.vextab.elements.indexOf(firstMeasureElement);
     }
+
+    return measure;
   }
 
   public removeMeasure() {
