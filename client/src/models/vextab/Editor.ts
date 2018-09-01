@@ -75,7 +75,29 @@ export class Editor {
   }
 
   public removeElement(): VextabElement | null {
-    return null;
+    const { measure } = this;
+
+    if (!measure) {
+      return null;
+    }
+
+    const { element } = this;
+
+    if (!element) {
+      return null;
+    }
+
+    if (measure.elements.length === 1) {
+      this.removeMeasure();
+    } else {
+      measure.elements = measure.elements.filter(measureElement => measureElement !== element);
+
+      if (typeof this.elementIndex === 'number') {
+        this.elementIndex--;
+      }
+    }
+
+    return element;
   }
 
   public addMeasure(measure: Measure): Measure {
