@@ -1,18 +1,35 @@
 import * as React from 'react';
 import { compose, branch, renderNothing } from 'recompose';
-import { Form, InputNumber } from 'antd';
+import { Form, InputNumber, Button } from 'antd';
 import { Tuplet as TupletModel } from 'models';
+import { get } from 'lodash';
+import { withEditorHandlers } from 'enhancers';
 
 interface IOuterProps {
   tuplet: TupletModel | null;
 }
 
-const enhance = compose<IOuterProps, IOuterProps>(
-  branch((props: IOuterProps) => !props.tuplet, renderNothing)
+interface IEditorHandlerProps extends IOuterProps {
+  handleValueChange: (value: number | string) => void;
+}
+
+const enhance = compose<IEditorHandlerProps, IOuterProps>(
+  withEditorHandlers<number | string, IOuterProps>({
+    handleValueChange: () => (value, editor) => {
+      if (typeof value === 'number') {
+        editor.addTuplet(value);
+      } else {
+        editor.removeTuplet();
+      }
+    }
+  })
 );
 
 export const Tuplet = enhance(props => (
   <Form.Item label="tuplet value">
-    <InputNumber defaultValue={props.tuplet!.value} />
+    <InputNumber
+      onChange={props.handleValueChange}
+      defaultValue={get(props.tuplet, 'value')}
+    />
   </Form.Item>
 ));

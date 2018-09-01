@@ -3,7 +3,7 @@ import {
   Vextab, VextabElement,
   Measure, Line, Note, Bar,
   Rest, Rhythm, Key, TimeSignature,
-  Annotations, Chord
+  Annotations, Chord, Tuplet
 } from 'models';
 
 /**
@@ -342,5 +342,66 @@ export class Editor {
     element.position = position;
 
     return position;
+  }
+
+  public addTuplet(value: number): Tuplet {
+    const { element } = this;
+
+    if (!element) {
+      throw new Error('no element selected');
+    }
+
+    const tuplet = new Tuplet(value);
+
+    const tupletElements = [element];
+
+    while (tupletElements.length < tuplet.value) {
+      const lastElement = last(tupletElements) as VextabElement;
+      const nextTupletElement = lastElement.next;
+
+      if (!nextTupletElement) {
+        throw new Error(`not enough elements for a tuplet of value ${tuplet.value}`);
+      }
+
+      tupletElements.push(nextTupletElement);
+    }
+
+    tupletElements.forEach(tupletElement => tupletElement.rhythm.tuplet = tuplet.clone());
+
+    return tuplet;
+  }
+
+  // FIXME: Ugh...
+  public removeTuplet(): Tuplet[] | void {
+    const { element } = this;
+
+    if (!element) {
+      throw new Error('no element selected');
+    }
+
+    const { measure} = element;
+    const { tuplet } = element.rhythm;
+
+    if (!measure || !tuplet) {
+      return;
+    }
+
+    // Find the tupletGroup that this tuplet belongs to
+    const tuplets = measure.tupletGroups.find(tupGroup => tupGroup.some(tup => tup === tuplet));
+    
+    if (!tuplets) {
+      return;
+    }
+
+    const tupletSet = new Set(tuplets);
+
+    // Find the rhythms that have the tuplets in the tupletGroup and set them to null
+    measure.elements.map(el => el.rhythm).forEach(rhythm => {
+      if (rhythm.tuplet && tupletSet.has(rhythm.tuplet)) {
+        rhythm.tuplet = null;
+      }
+    });
+
+    return tuplets;
   }
 }

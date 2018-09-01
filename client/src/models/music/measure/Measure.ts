@@ -69,10 +69,10 @@ export class Measure {
     const { key, timeSignature } = this.bar;
 
     return [
-      { key: 'clef',     value: 'none' },
+      { key: 'clef', value: 'none' },
       { key: 'notation', value: 'true' },
-      { key: 'key',      value: key.note.literal },
-      { key: 'time',     value: timeSignature.toString() }
+      { key: 'key', value: key.note.literal },
+      { key: 'time', value: timeSignature.toString() }
     ];
   }
 
@@ -85,6 +85,25 @@ export class Measure {
     )) as Array<Chord | Note>;
 
     return flatMap(targets, target => target.positions);
+  }
+
+  public get tupletGroups(): Tuplet[][] {
+    const tuplets = compact(this.elements.map(el => get(el, 'rhythm.tuplet'))) as Tuplet[];
+
+    return tuplets.reduce((groups, tup) => {
+      const lastGroup = last(groups);
+
+      // A group is satisfied if the first rhythm's tuplet's value is equal
+      // to the group size
+      if (!lastGroup || get(lastGroup[0], 'value', -1) === lastGroup.length) {
+        groups.push([tup]);
+        return groups;
+      } else {
+        lastGroup.push(tup);
+      }
+
+      return groups;
+    }, [] as Tuplet[][]);
   }
 
   public clone(): Measure {
@@ -102,27 +121,9 @@ export class Measure {
       return;
     }
 
-    // compute tuplet groups, which are arrays of arrays of rhythms
-    const tuplets = compact(this.elements.map(el => get(el, 'rhythm.tuplet'))) as Tuplet[];
-
-    const tupletGroups = tuplets.reduce((groups, tup) => {
-      const lastGroup = last(groups);
-
-      // A group is satisfied if the first rhythm's tuplet's value is equal
-      // to the group size
-      if (!lastGroup || get(lastGroup[0], 'value', -1) === lastGroup.length) {
-        groups.push([tup]);
-        return groups;
-      } else {
-        lastGroup.push(tup);
-      }
-
-      return groups;
-    }, [] as Tuplet[][]);
-    
     // Out of each tupletGroup, we take the last tuplet, since this is
     // the element that we'll act on and push the tuplet
-    const actionTuplets = tupletGroups.reduce((actionTups, tupletGroup) => {
+    const actionTuplets = this.tupletGroups.reduce((actionTups, tupletGroup) => {
       const lastTuplet = last(tupletGroup);
 
       if (lastTuplet) {
