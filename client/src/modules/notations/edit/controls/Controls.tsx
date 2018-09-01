@@ -4,6 +4,7 @@ import styled from 'react-emotion';
 import { Divider, Form } from 'antd';
 import { Primary } from './Primary';
 import { Selected } from './Selected';
+import { TimeEditors } from './TimeEditors';
 
 const Outer = styled('div')`
   padding: 12px 16px;
@@ -14,6 +15,7 @@ export const Controls: React.SFC = () => (
     <Divider orientation="left">MAIN</Divider>
     <Form layout="inline">
       <Primary />
+      <TimeEditors />
       <Selector />
     </Form>
     <Divider />

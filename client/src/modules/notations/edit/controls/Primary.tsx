@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { compose, withHandlers } from 'recompose';
 import { connect, Dispatch } from 'react-redux';
-import { Form, Checkbox } from 'antd';
+import { Form, Checkbox, InputNumber } from 'antd';
 import { EditorActions } from 'data';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 
