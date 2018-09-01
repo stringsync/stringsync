@@ -331,4 +331,16 @@ export class Editor {
 
     return element.rhythm;
   }
+
+  public updateRestPosition(position: number): number {
+    const { element } = this;
+
+    if (!(element instanceof Rest)) {
+      throw new Error('no rest selected');
+    } 
+
+    element.position = position;
+
+    return position;
+  }
 }
