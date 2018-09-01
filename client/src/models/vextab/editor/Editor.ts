@@ -271,6 +271,7 @@ export class Editor {
   }
 
   public updateNotePositions(positions: Guitar.IPosition[], srcElement: Note | Chord): Guitar.IPosition[] {
+    // compute notes from the positions and srcElement arguments
     const notes = positions.map(({ fret, str}) => {
       const noteStr = this.vextab.tuning.getNoteForFret(fret.toString(), str.toString());
       const noteOpts = {
@@ -283,6 +284,7 @@ export class Editor {
       return Note.from(noteStr, noteOpts);
     });
 
+    // create a note or chord based on the length of the computed notes
     let nextElement: Note | Chord;
     if (notes.length > 1) {
       const chordOpts = { 
@@ -297,6 +299,7 @@ export class Editor {
       throw new Error('notes were not generated from the position');
     }
 
+    // apply the changes to the vextab
     this.removeElement();
     this.addElement(nextElement);
 
