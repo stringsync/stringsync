@@ -25,36 +25,32 @@ interface IVextabChangeHandlerProps extends IOuterProps {
 
 const enhance = compose<IVextabChangeHandlerProps, IOuterProps>(
   withEditorHandlers<number | string, IOuterProps>({
-    handleKeyChange: props => (noteLiteral: string, editor) => {
-      const measure = editor.vextab.measures.find($measure => $measure.index === props.element.index);
-
-      if (!measure) {
-        return;
-      }
-
-      const note = new Note(noteLiteral, 0);
-      const key = new Key(note);
-      measure.bar.key = key;
+    handleKeyChange: () => (noteLiteral: string, editor) => {
+      editor.updateMeasureKey(noteLiteral);
     },
-    handleLowerChange: props => (value: number | string, editor) => {
-      const measure = editor.vextab.measures.find($measure => $measure.index === props.element.index);
+    handleLowerChange: () => (value: number | string, editor) => {
+      const { measure } = editor;
 
       if (!measure) {
         return;
       }
 
       const lower = typeof value === 'number' ? value : parseInt(value, 10);
-      measure.bar.timeSignature.lower = lower;
+      const { upper } = measure.bar.timeSignature;
+
+      editor.updateTimeSignature(upper, lower);
     },
-    handleUpperChange: props => (value: number | string, editor) => {
-      const measure = editor.vextab.measures.find($measure => $measure.index === props.element.index);
+    handleUpperChange: () => (value: number | string, editor) => {
+      const { measure } = editor;
 
       if (!measure) {
         return;
       }
 
       const upper = typeof value === 'number' ? value : parseInt(value, 10);
-      measure.bar.timeSignature.upper = upper;
+      const { lower } = measure.bar.timeSignature;
+
+      editor.updateTimeSignature(upper, lower);
     }
   })
 );

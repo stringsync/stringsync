@@ -18,17 +18,14 @@ interface IVextabChangeHandlerProps extends IOuterProps {
 
 const enhance = compose<IVextabChangeHandlerProps, IOuterProps>(
   withEditorHandlers<SelectValue, IOuterProps>({
-    handleSelectChange: props => (value, vextab) => {
-      return;
+    handleSelectChange: () => (value, editor) => {
+      editor.updateBarKind(value as Vextab.Parsed.IBarTypes);
     }
   })
 );
 
 export const Bar = enhance(props => (
   <Form layout="inline">
-    <Form.Item label="id">
-      <InputNumber disabled={true} value={props.element.id} />
-    </Form.Item>
     <Form.Item label="kind">
       <Select defaultValue={props.element.kind} onChange={props.handleSelectChange}>
         {BarModel.KINDS.map(kind => <Option key={kind}>{kind}</Option>)}

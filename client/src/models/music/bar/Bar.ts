@@ -1,7 +1,6 @@
 import { AbstractVexWrapper, Directive } from 'models/vextab';
 import { BarHydrationValidator } from './BarHydrationValidator';
 import { Measure, Annotations, Key, TimeSignature } from 'models/music';
-import { id } from 'utilities';
 
 export class Bar extends AbstractVexWrapper {
   public static KINDS = [

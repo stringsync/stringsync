@@ -2,7 +2,8 @@ import { get, last } from 'lodash';
 import {
   Vextab, VextabElement,
   Measure, Line, Note, Bar,
-  Rest, Rhythm, Key, TimeSignature
+  Rest, Rhythm, Key, TimeSignature,
+  Annotations, Chord
 } from 'models';
 
 /**
@@ -76,17 +77,17 @@ export class Editor {
     return element;
   }
 
-  public removeElement(): VextabElement | null {
+  public removeElement(): VextabElement | void {
     const { measure } = this;
 
     if (!measure) {
-      return null;
+      return;
     }
 
     const { element } = this;
 
     if (!element) {
-      return null;
+      return;
     }
 
     if (measure.elements.length === 1) {
@@ -128,17 +129,17 @@ export class Editor {
     return measure;
   }
 
-  public removeMeasure() {
+  public removeMeasure(): Measure | void {
     const { measure } = this;
 
     if (!measure) {
-      throw new Error('no measure selected');
+      return;
     }
 
     const { line } = measure;
 
     if (!line) {
-      throw new Error('selected measure does not belong to a line');
+      return;
     }
 
     // compute the previous measure, and focus its last element
@@ -149,6 +150,8 @@ export class Editor {
     line.measures = line.measures.filter(lineMeasure => lineMeasure !== measure);
 
     this.elementIndex = nextElementIndex;
+
+    return measure;
   }
 
   public addLine(line: Line): Line {
@@ -156,13 +159,147 @@ export class Editor {
     return line;
   }
 
-  public removeLine(): Line | null {
+  public removeLine(): Line | void {
     const { line } = this;
 
-    if (line) {
-      this.vextab.lines = this.vextab.lines.filter(vextabLine => vextabLine !== line);
+    if (!line) {
+      return;
     }
 
+    this.vextab.lines = this.vextab.lines.filter(vextabLine => vextabLine !== line);
+
     return line;
+  }
+
+  // grannular editing
+
+  public addAnnotation(texts: string[]): Annotations {
+    let element = this.element;
+
+    if (!element) {
+      element = Editor.getDefaultRest();
+      this.addElement(element);
+    }
+
+    const annotations = new Annotations(texts);
+
+    element.annotations.push(annotations);
+
+    return annotations;
+  }
+
+  public removeAnnotation(annotationsIndex: number): Annotations | void {
+    const { element } = this;
+
+    if (!element) {
+      return;
+    }
+
+    const annotation = element.annotations[annotationsIndex];
+
+    element.annotations.splice(annotationsIndex, 1);
+
+    return annotation;
+  }
+
+  public updateBarKind(kind: Vextab.Parsed.IBarTypes): Vextab.Parsed.IBarTypes {
+    const { measure } = this;
+
+    if (!measure) {
+      throw new Error('no measure selected');
+    }
+
+    measure.bar.kind = kind;
+
+    return kind;
+  }
+
+  public updateMeasureKey(noteLiteral: string): Key {
+    const { measure } = this;
+
+    if (!measure) {
+      throw new Error('no measure selected');
+    }
+
+    const note = new Note(noteLiteral, 0);
+    const key = new Key(note);
+    measure.bar.key = key;
+
+    return key;
+  }
+
+  public updateTimeSignature(upper: number, lower: number): TimeSignature {
+    const { measure } = this;
+
+    if (!measure) {
+      throw new Error('no measure selected');
+    }
+
+    const timeSignature = new TimeSignature(upper, lower);
+    measure.bar.timeSignature = timeSignature;
+
+    return timeSignature;
+  }
+
+  public addNotePosition(position: Guitar.IPosition): Guitar.IPosition {
+    const { element } = this;
+
+    if (!(element instanceof Note) && !(element instanceof Chord)) {
+      throw new Error('can only update the position of a note or chord');
+    }
+
+    const positions = element.positions.filter(pos => pos.str !== position.str);
+    positions.push(position);
+
+    this.updateNotePositions(positions, element);
+
+    return position;
+  }
+
+  public removeNotePosition(guitarStr: number): number {
+    const { element } = this;
+
+    if (!(element instanceof Note) && !(element instanceof Chord)) {
+      throw new Error('can only update the position of a note or chord');
+    }
+
+    const positions = element.positions.filter(pos => pos.str !== guitarStr);
+
+    this.updateNotePositions(positions, element);
+
+    return guitarStr;
+  }
+
+  public updateNotePositions(positions: Guitar.IPosition[], srcElement: Note | Chord): Guitar.IPosition[] {
+    const notes = positions.map(({ fret, str}) => {
+      const noteStr = this.vextab.tuning.getNoteForFret(fret.toString(), str.toString());
+      const noteOpts = {
+        articlation: srcElement.articulation,
+        decorator: srcElement.decorator,
+        positions: [{ fret, str }],
+        rhythm: srcElement.rhythm.clone()
+      };
+      
+      return Note.from(noteStr, noteOpts);
+    });
+
+    let nextElement: Note | Chord;
+    if (notes.length > 1) {
+      const chordOpts = { 
+        articulation: notes[0].articulation, 
+        decorator: notes[0].decorator, 
+        rhythm: notes[0].rhythm.clone()
+      };
+      nextElement = new Chord(notes, chordOpts)
+    } else if (notes.length === 1) {
+      nextElement = notes[0];
+    } else {
+      throw new Error('notes were not generated from the position');
+    }
+
+    this.removeElement();
+    this.addElement(nextElement);
+
+    return positions;
   }
 }
