@@ -1,15 +1,18 @@
 import * as React from 'react';
-import { compose, withState, withHandlers } from 'recompose';
+import { compose, withState, withHandlers, lifecycle } from 'recompose';
 import { observeMaestro } from 'enhancers';
 import { Line, VextabElement } from 'models';
 import { Maestro } from 'services';
 import { scroller } from 'react-scroll';
 import { scoreKey } from './scoreKey';
 import { get } from 'lodash';
+import { connect } from 'react-redux';
 
-(window as any).scroller = scroller;
+interface IConnectProps {
+  isVideoActive: boolean;
+}
 
-interface IFocusedLineProps {
+interface IFocusedLineProps extends IConnectProps {
   focusedLine: Line;
   setFocusedLine: (line: Line | null) => void;
 }
@@ -19,7 +22,19 @@ interface IInnerProps extends IFocusedLineProps {
 }
 
 const enhance = compose<IInnerProps, {}>(
+  connect(
+    (state: Store.IState) => ({
+      isVideoActive: state.video.isActive
+    })
+  ),
   withState('focusedLine', 'setFocusedLine', null),
+  lifecycle<IFocusedLineProps, {}>({
+    componentDidUpdate(prevProps): void {
+      if (this.props.isVideoActive !== prevProps.isVideoActive) {
+        this.props.setFocusedLine(null);
+      }
+    }
+  }),
   withHandlers({
     handleNotification: (props: IFocusedLineProps) => (maestro: Maestro) => {
       const { state, prevState } = maestro;
