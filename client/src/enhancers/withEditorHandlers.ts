@@ -1,7 +1,7 @@
 import { compose, withHandlers, mapProps } from 'recompose';
 import { connect, Dispatch } from 'react-redux';
-import { Vextab, Editor, Directive } from 'models';
-import { NotationActions, EditorActions } from 'data';
+import { Vextab, Editor } from 'models';
+import { NotationActions, EditorActions, IUpdateNotation, updateNotation } from 'data';
 import { ComponentClass } from 'react';
 
 export type VextabEditorHandler<TEvent> = (event: TEvent, editor: Editor) => any;
@@ -17,12 +17,17 @@ interface IOwnProps<TProps> {
 }
 
 interface IConnectProps<TProps> extends IOwnProps<TProps> {
+  autosave: boolean;
+  enabled: boolean;
   vextab: Vextab;
   elementIndex: number;
+  notationId: number;
   appendErrors: (errors: string[]) => void;
   removeErrors: () => void;
   setElementIndex: (elementIndex: number) => void;
+  setEnabled: (enabled: boolean) => void;
   setVextabString: (vextabString: string) => void;
+  updateVextabString: (notationId: number, vextabString: string) => void;
 }
 
 /**
@@ -45,18 +50,25 @@ export const withEditorHandlers = <TEvent, TProps>(vextabUpdaters: IVextabUpdate
       mapProps(props => ({ ownProps: Object.assign({}, props) })),
       connect(
         (state: Store.IState) => ({
+          autosave: state.editor.autosave,
           elementIndex: state.editor.elementIndex,
+          enabled: state.editor.enabled,
+          notationId: state.notation.id,
           vextab: state.editor.vextab
         }),
         (dispatch: Dispatch) => ({
           appendErrors: (errors: string[]) => dispatch(EditorActions.appendErrors(errors)),
           removeErrors: () => dispatch(EditorActions.removeErrors()),
           setElementIndex: (elementIndex: number) => dispatch(EditorActions.setElementIndex(elementIndex)),
-          setVextabString: (vextabString: string) => dispatch(NotationActions.setVextabString(vextabString))
+          setEnabled: (enabled: boolean) => dispatch(EditorActions.setEnabled(enabled)),
+          setVextabString: (vextabString: string) => dispatch(NotationActions.setVextabString(vextabString)),
+          updateVextabString: (notationId: number, vextabString: string) => (
+            dispatch(updateNotation(notationId, { vextab_string: vextabString }) as any)
+          )
         })
       ),
       withHandlers(() => Object.keys(vextabUpdaters).reduce((handlers, handlerName) => {
-        handlers[handlerName] = (props: IConnectProps<TProps>) => (e: TEvent) => {
+        handlers[handlerName] = (props: IConnectProps<TProps>) => async (e: TEvent) => {
           const vextab = props.vextab.clone();
           vextab.psuedorender();
           const editor = new Editor(vextab);
@@ -90,9 +102,26 @@ export const withEditorHandlers = <TEvent, TProps>(vextabUpdaters: IVextabUpdate
             props.setVextabString(nextVextabString);
           }
 
-          // Finally, focus the new measure
+          // Focus the new measure
           const nextElementIndex = typeof editor.elementIndex === 'number' ? editor.elementIndex : -1;
           props.setElementIndex(nextElementIndex);
+
+          // If the editor vextab can render and autosave is on, issue a save
+          if (props.autosave && typeof props.notationId === 'number') {
+            const wasEnabled = props.enabled;
+
+            try {
+              const nextVextab = editor.vextab.clone();
+              nextVextab.psuedorender();
+
+              props.setEnabled(false);
+              await props.updateVextabString(props.notationId, nextVextab.toString());
+            } catch (error) {
+              console.error(error);
+            } finally {
+              props.setEnabled(wasEnabled);
+            }
+          }
         }
 
         return handlers;
@@ -109,6 +138,11 @@ export const withEditorHandlers = <TEvent, TProps>(vextabUpdaters: IVextabUpdate
         delete nextProps.appendErrors;
         delete nextProps.removeErrors;
         delete nextProps.setElementIndex;
+        delete nextProps.autosave;
+        delete nextProps.updateVextabString;
+        delete nextProps.notationId;
+        delete nextProps.setEnabled;
+        delete nextProps.enabled;
 
         return nextProps;
       })

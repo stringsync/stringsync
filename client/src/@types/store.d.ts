@@ -42,6 +42,7 @@ declare namespace Store {
   }
 
   export interface IEditorState {
+    autosave: boolean;
     enabled: boolean;
     elementIndex: number;
     errors: string[];

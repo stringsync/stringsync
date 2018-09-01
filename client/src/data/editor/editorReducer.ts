@@ -1,6 +1,7 @@
 import * as actions from './editorActions';
 
 const getDefaultState = (): Store.IEditorState => ({
+  autosave: true,
   elementIndex: -1,
   enabled: false,
   errors: [],
@@ -35,6 +36,10 @@ export const editorReducer = (state = getDefaultState(), action: actions.EditorA
 
     case actions.SET_VEXTAB:
       nextState.vextab = action.payload.vextab;
+      return nextState;
+
+    case actions.SET_AUTOSAVE:
+      nextState.autosave = action.payload.autosave;
       return nextState;
 
     default:

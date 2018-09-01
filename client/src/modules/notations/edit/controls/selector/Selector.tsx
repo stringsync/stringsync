@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { compose, withHandlers, lifecycle, withProps } from 'recompose';
+import { compose, withHandlers, withProps } from 'recompose';
 import { Dispatch, connect } from 'react-redux';
 import { EditorActions } from 'data';
 import { InputNumber, Form } from 'antd';
@@ -53,15 +53,6 @@ const enhance = compose<IHandlerProps, {}>(
     const measure = element ? element.measure : null;
 
     return { element, measure };
-  }),
-  lifecycle<ISelectedProps, {}>({
-    componentDidUpdate(prevProps): void {
-      if (!this.props.editor.enabled && prevProps.editor.enabled) {
-        this.props.setElementIndex(-1);
-      } else if (this.props.editor.enabled && !prevProps.editor.enabled) {
-        this.props.setElementIndex(0);
-      }
-    }
   }),
   withHandlers({
     handleElementIndexChange: (props: IConnectProps) => (elementIndex: number) => {
