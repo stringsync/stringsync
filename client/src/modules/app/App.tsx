@@ -7,13 +7,25 @@ import styled from 'react-emotion';
 import { ViewportSync, SessionSync, Routes } from './';
 import { pick, values } from 'lodash';
 import { Link } from 'react-router-dom';
+import { Element as ScrollElement, scroller } from 'react-scroll';
+import { Dispatch, connect } from 'react-redux';
+import { UiActions } from 'data';
 
 const enhance = compose(
   withRouter,
-  lifecycle<RouteComponentProps<{}, {}>, {}>({
+  connect(
+    null,
+    (dispatch: Dispatch) => ({
+      focusScrollElement: (element: string) => dispatch(UiActions.focusScrollElement(element))
+    })
+  ),
+  lifecycle<any, {}>({
     componentDidMount(): void {
       // scroll to top on route change
-      this.props.history.listen(() => window.scrollTo(undefined, 0));
+      this.props.history.listen(() => {
+        scroller.scrollTo('app-top', {});
+        this.props.focusScrollElement('app-top');
+      });
     }
   })
 );
@@ -64,6 +76,7 @@ const FooterLink = styled(Link)`
 
 export const App = enhance(() => (
   <main>
+    <ScrollElement name="app-top" />
     <ViewportSync />
     <SessionSync />
     <Gradient />

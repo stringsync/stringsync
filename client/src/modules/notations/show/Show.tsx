@@ -11,6 +11,7 @@ import { ViewportTypes } from 'data/viewport/getViewportType';
 import { ShowVideo } from './ShowVideo';
 import { Menu } from 'modules/notations/menu';
 import { VideoControls } from 'modules/video-controls';
+import { Element as ScrollElement, scroller } from 'react-scroll';
 
 type OuterProps = RouteComponentProps<{ id: string }>;
 
@@ -31,8 +32,6 @@ interface IConnectProps extends OuterProps {
 interface IInnerProps extends IConnectProps {
   scoreWidth: number;
 }
-
-const getNotationShowElement = () => document.getElementById('notation-show');
 
 const enhance = compose<IInnerProps, OuterProps>(
   connect(
@@ -75,6 +74,8 @@ const enhance = compose<IInnerProps, OuterProps>(
       } catch (error) {
         console.error(error);
         window.ss.message.error('something went wrong');
+      } finally {
+        scroller.scrollTo('app-top', {});
       }
     },
     componentWillUnmount() {
@@ -85,6 +86,17 @@ const enhance = compose<IInnerProps, OuterProps>(
 
 const Outer = styled('div')`
   width: 100%;
+  height: 200vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+`;
+
+// FIXME: This component is needed to hack the fretboard
+const Dummy = styled('div')`
+  height: 0.1px;
+  background: black;
+  width: 100%;
 `;
 
 /**
@@ -92,6 +104,7 @@ const Outer = styled('div')`
  */
 export const Show = enhance(props => (
   <Outer id="notation-show">
+    <ScrollElement name="notation-show-top" />
     <MaestroController
       bpm={props.notation.bpm}
       durationMs={props.notation.durationMs}
@@ -101,9 +114,13 @@ export const Show = enhance(props => (
       <Layer zIndex={10}>
         <div>
           <ShowVideo />
-          <Affix target={getNotationShowElement} offsetTop={2} >
-            <Fretboard />
-            <Piano />
+          <ScrollElement name="notation-show-score" />
+          <Dummy />
+          <Affix offsetTop={2}>
+            <div>
+              <Fretboard />
+              <Piano />
+            </div>
           </Affix>
         </div>
         <div>

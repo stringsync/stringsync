@@ -4,12 +4,14 @@ import { Loop } from './Loop';
 import { MenuToggle } from './MenuToggle';
 import { MiniDetail } from './MiniDetail';
 import { PlayToggle } from './PlayToggle';
-import { Collapse, Tooltip } from 'antd';
+import { Collapse, Tooltip, Icon } from 'antd';
 import { Scrubber } from './Scrubber';
 import { ShowLoop } from './ShowLoop';
 import { compose, withHandlers, withProps, withState } from 'recompose';
 import { connect, Dispatch } from 'react-redux';
 import { UiActions } from 'data';
+import { scroller } from 'react-scroll';
+import { ScreenScroller } from './ScreenScroller';
 
 const { Panel } = Collapse;
 
@@ -18,6 +20,7 @@ interface IConnectProps {
   videoPlayer: Video.IVideo | null;
   isNotationMenuVisible: boolean;
   setNotationMenuVisibility: (notationMenuVisibility: boolean) => void;
+  focusScrollElement: (focusedScrollElement: string | null) => void;
 }
 
 interface IStateProps extends IConnectProps {
@@ -28,6 +31,8 @@ interface IStateProps extends IConnectProps {
 interface IHandlerProps extends IStateProps {
   handleLoopCollapseChange: () => void;
   handleNotationMenuClick: () => void;
+  handleScreenScrollerClick: () => void;
+  toggleScrollState: () => void;
 }
 
 interface IInnerProps extends IHandlerProps {
@@ -37,12 +42,14 @@ interface IInnerProps extends IHandlerProps {
 const enhance = compose<IInnerProps, {}>(
   connect(
     (state: Store.IState) => ({
+      focusedScrollElement: state.ui.focusedScrollElement,
       isNotationMenuVisible: state.ui.isNotationMenuVisible,
       isVideoActive: state.video.isActive,
-      videoPlayer: state.video.player
+      videoPlayer: state.video.player,
     }),
     (dispatch: Dispatch) => ({
-      setNotationMenuVisibility: (visibility: boolean) => dispatch(UiActions.setNotationMenuVisibility(visibility))
+      focusScrollElement: (focusedScrollElement: string | null) => dispatch(UiActions.focusScrollElement(focusedScrollElement)),
+      setNotationMenuVisibility: (visibility: boolean) => dispatch(UiActions.setNotationMenuVisibility(visibility)),
     })
   ),
   withState('loopCollapsed', 'setLoopCollapsed', true),
@@ -52,6 +59,17 @@ const enhance = compose<IInnerProps, {}>(
     },
     handleNotationMenuClick: (props: any) => () => {
       props.setNotationMenuVisibility(!props.isNotationMenuVisible)
+    },
+    toggleScrollState: (props: any) => () => {
+      let nextFocusedElement: string;
+      if (props.focusedScrollElement === 'app-top') {
+        nextFocusedElement = 'notation-show-score';
+      } else {
+        nextFocusedElement = 'app-top';
+      }
+
+      scroller.scrollTo(nextFocusedElement, { smooth: true, duration: 300 });
+      props.focusScrollElement(nextFocusedElement);
     }
   }),
   withProps(() => {
@@ -89,7 +107,7 @@ interface IRow2DivProps {
   isIphoneX: boolean;
 }
 
-const Row2 = styled('div')<IRow2DivProps>`
+const Row2 = styled('div') <IRow2DivProps>`
   display: flex;
   align-items: center;
   padding-bottom: ${props => props.isIphoneX ? '24px' : '0'};
@@ -131,20 +149,12 @@ const StyledCollapse = styled(Collapse)`
 const PlayerButton = styled('button')`
   width: 24px;
   height: 100%;
-  margin: 0 12px 0 0px;
+  margin: 0 8px;
   padding: 0;
   border: 0;
   background-color: transparent;
   cursor: pointer;
   transition: all 10ms;
-
-  &:first-of-type {
-    margin-left: 24px;
-  }
-
-  &:last-of-type {
-    margin-left: 12px;
-  }
 
   &:focus {
     outline: 0;
@@ -157,6 +167,7 @@ const PlayerButton = styled('button')`
 
 const SliderContainer = styled('div')`
   width: 100%;
+  margin: 0 8px;
 `;
 
 export const VideoControls = enhance(props => (
@@ -169,7 +180,7 @@ export const VideoControls = enhance(props => (
             onChange={props.handleLoopCollapseChange}
             activeKey={props.loopCollapsed ? [] : ['loop']}
           >
-            <Panel showArrow={false} key="loop" header={null}> 
+            <Panel showArrow={false} key="loop" header={null}>
               <Inner>
                 <PlayerButton style={{ opacity: 0 }} onClick={props.handleLoopCollapseChange}>
                   <ShowLoop />
@@ -182,6 +193,9 @@ export const VideoControls = enhance(props => (
                 </SliderContainer>
                 <PlayerButton style={{ opacity: 0 }} onClick={props.handleNotationMenuClick}>
                   <MenuToggle />
+                </PlayerButton>
+                <PlayerButton style={{ opacity: 0 }} onClick={props.toggleScrollState}>
+                  <ScreenScroller />
                 </PlayerButton>
                 <MiniDetail hidden={true} />
               </Inner>
@@ -203,6 +217,9 @@ export const VideoControls = enhance(props => (
         </SliderContainer>
         <PlayerButton onClick={props.handleNotationMenuClick}>
           <MenuToggle />
+        </PlayerButton>
+        <PlayerButton onClick={props.toggleScrollState}>
+          <ScreenScroller />
         </PlayerButton>
         <MiniDetail />
       </Inner>

@@ -39,6 +39,7 @@ declare namespace Store {
     isLoopVisible: boolean;
     isFretboardVisible: boolean;
     isPianoVisible: boolean;
+    focusedScrollElement: string | null;
   }
 
   export interface IEditorState {

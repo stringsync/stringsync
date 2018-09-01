@@ -1,6 +1,7 @@
 import * as actions from './uiActions';
 
 const getDefaultState = (): Store.IUiState => ({
+  focusedScrollElement: 'app-top',
   isFretboardVisible: false,
   isLoopVisible: false,
   isNotationMenuVisible: false,
@@ -11,6 +12,10 @@ export const uiReducer = (state = getDefaultState(), action: actions.UiActions):
   let nextState = Object.assign({}, state);
 
   switch(action.type) {
+
+    case actions.FOCUS_SCROLL_ELEMENT:
+      nextState.focusedScrollElement = action.payload.focusedScrollElement;
+      return nextState;
 
     case actions.RESET:
       nextState = getDefaultState();
