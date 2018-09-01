@@ -54,7 +54,7 @@ const enhance = compose<IIPhoneXProps, {}>(
       setNotationMenuVisibility: (visibility: boolean) => dispatch(UiActions.setNotationMenuVisibility(visibility)),
     })
   ),
-  withState('tooltipVisible', 'setTooltipVisibility', localStorage.getItem('toggleViewTutorial') !== 'true'),
+  withState('tooltipVisible', 'setTooltipVisibility', !!(window.localStorage && window.localStorage.getItem('toggleViewTutorial') !== 'true')),
   withState('loopCollapsed', 'setLoopCollapsed', true),
   withHandlers({
     handleLoopCollapseChange: (props: any) => () => {

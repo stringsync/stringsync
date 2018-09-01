@@ -2,13 +2,14 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Root } from 'modules/root';
 import { createStore } from 'data';
-import { xhrMock } from './mocks';
+import { xhrMock, localStorageMock } from './mocks';
 import { configure } from 'config';
 
 const assertRender = (
   Component: React.ComponentClass | React.SFC, props: object = {}): void => {
   it('renders without crashing', () => {
     window.XMLHttpRequest = jest.fn(xhrMock);
+    (window as any).localStorage = localStorageMock;
 
     configure();
     const div = document.createElement('div');
