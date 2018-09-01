@@ -17,6 +17,7 @@ interface IConnectProps extends IOuterProps {
 
 interface IHandlerProps extends IConnectProps {
   handleFretChange: (fret: number | string) => void;
+  handleStrChange: (str: number | string) => void;
 }
 
 const enhance = compose<IHandlerProps, IOuterProps>(
@@ -31,12 +32,24 @@ const enhance = compose<IHandlerProps, IOuterProps>(
       nextFret = isNaN(nextFret) ? undefined : nextFret;
 
       const directive = editor.vextab.elements[props.elementIndex].directives[props.directiveIndex];
-      
+
       if (!directive) {
         return;
       }
 
       directive.payload.positions[0].fret = nextFret;
+    },
+    handleStrChange: props => (value, editor) => {
+      let nextStr: number | undefined = typeof value === 'number' ? value : parseInt(value, 10);
+      nextStr = isNaN(nextStr) ? undefined : nextStr;
+
+      const directive = editor.vextab.elements[props.elementIndex].directives[props.directiveIndex];
+
+      if (!directive) {
+        return;
+      }
+
+      directive.payload.positions[0].str = nextStr;
     }
   })
 );
@@ -44,7 +57,12 @@ const enhance = compose<IHandlerProps, IOuterProps>(
 export const Position = enhance(props => (
   <Form.Item>
     <Input.Group compact={true}>
-      <InputNumber disabled={true} value={props.position.str} />
+      <InputNumber
+        min={1}
+        max={6}
+        defaultValue={props.position.str}
+        onChange={props.handleStrChange}
+      />
       <InputNumber
         min={0}
         max={30}
