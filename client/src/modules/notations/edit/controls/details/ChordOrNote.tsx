@@ -27,6 +27,7 @@ const enhance = compose<IFretsByStringsProps, IOuterProps>(
 
 export const ChordOrNote = enhance(props => (
   <div>
+    <Rhythm editor={props.editor} element={props.element.rhythm} />
     <Form>
       <Form.Item label="positions (string, fret)">
         {
@@ -41,6 +42,5 @@ export const ChordOrNote = enhance(props => (
         }
       </Form.Item>
     </Form>
-    {props.element.rhythm ? <Rhythm editor={props.editor} element={props.element.rhythm} /> : null}
   </div>
 ));
