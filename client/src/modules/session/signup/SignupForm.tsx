@@ -50,7 +50,6 @@ const enhance = compose<IInnerProps, {}>(
       props.setErrors(get(res.data.errors, 'full_messages') || ['something went wrong']);
     },
     handleSignupSuccess: (props: any) => (res: IAuthResponse) => {
-      props.setLoading(false);
       props.setSession(res.data);
       window.ss.message.success(`signed in as ${res.data.name}`);
     }
