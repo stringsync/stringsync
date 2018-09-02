@@ -44,13 +44,12 @@ const enhance = compose<IMappedProps & ButtonProps, IOuterProps & ButtonProps>(
           return;
         
         case 'NOTE':
-          const note = editor.element instanceof Note || editor.element instanceof Chord ? 
-            editor.element.clone() : Editor.getDefaultNote();
+          const note = Editor.getDefaultNote();
           editor.addElement(note);
           return;
 
         case 'REST':
-          const rest = editor.element instanceof Rest ? editor.element.clone() : Editor.getDefaultRest();
+          const rest = Editor.getDefaultRest();
           editor.addElement(rest);
           return;
 

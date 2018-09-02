@@ -5,6 +5,7 @@ import { Divider, Form } from 'antd';
 import { Primary } from './Primary';
 import { Selected } from './Selected';
 import { TimeEditors } from './TimeEditors';
+import { VextabStringEditor } from './VextabStringEditor';
 
 const Outer = styled('div')`
   padding: 12px 16px;
@@ -17,6 +18,7 @@ export const Controls: React.SFC = () => (
       <Primary />
       <TimeEditors />
       <Selector />
+      <VextabStringEditor />
     </Form>
     <Divider />
     <Selected />
