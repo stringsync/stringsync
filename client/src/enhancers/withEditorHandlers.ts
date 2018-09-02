@@ -23,7 +23,6 @@ interface IConnectProps<TProps> extends IOwnProps<TProps> {
   elementIndex: number;
   notationId: number;
   appendErrors: (errors: string[]) => void;
-  notifyUpdated: () => void;
   removeErrors: () => void;
   setElementIndex: (elementIndex: number) => void;
   setEnabled: (enabled: boolean) => void;
@@ -59,7 +58,6 @@ export const withEditorHandlers = <TEvent, TProps>(vextabUpdaters: IVextabUpdate
         }),
         (dispatch: Dispatch) => ({
           appendErrors: (errors: string[]) => dispatch(EditorActions.appendErrors(errors)),
-          notifyUpdated: () => dispatch(EditorActions.notifyUpdated()),
           removeErrors: () => dispatch(EditorActions.removeErrors()),
           setElementIndex: (elementIndex: number) => dispatch(EditorActions.setElementIndex(elementIndex)),
           setEnabled: (enabled: boolean) => dispatch(EditorActions.setEnabled(enabled)),
@@ -118,7 +116,6 @@ export const withEditorHandlers = <TEvent, TProps>(vextabUpdaters: IVextabUpdate
 
               props.setEnabled(false);
               await props.updateVextabString(props.notationId, nextVextab.toString());
-              props.notifyUpdated();
             } catch (error) {
               console.error(error);
               window.ss.message.error('vextab did not autosave');
@@ -147,7 +144,6 @@ export const withEditorHandlers = <TEvent, TProps>(vextabUpdaters: IVextabUpdate
         delete nextProps.notationId;
         delete nextProps.setEnabled;
         delete nextProps.enabled;
-        delete nextProps.notifyUpdated;
 
         return nextProps;
       })

@@ -23,10 +23,6 @@ export const editorReducer = (state = getDefaultState(), action: actions.EditorA
       nextState.lastRenderedAt = new Date().getTime();
       return nextState;
 
-    case actions.NOTIFY_UPDATED:
-      nextState.lastUpdatedAt = new Date().getTime();
-      return nextState;
-
     case actions.REMOVE_ERRORS:
       nextState.errors = [];
       return nextState;
