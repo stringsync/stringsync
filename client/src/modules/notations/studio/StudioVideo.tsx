@@ -20,13 +20,13 @@ const enhance = compose<IInnerProps, {}>(
 
 const Outer = styled('div')`
   background: black;
-  height: 340px;
+  height: 295px;
   width: 100%;
   min-height: 200px;
   overflow: hidden;
   
   iframe {
-    height: 400px;
+    height: 295px;
     width: 100%;
     min-height: 200px;
   }
@@ -44,12 +44,12 @@ const BackgroundMask = styled('div')`
   width: 100%;
   background: black;
   opacity: 0.75;
-  height: 400px;
+  height: 295px;
 `;
 
 const VideoContainer = styled('div')`
   max-width: 53.33333vh;
-  height: 400px;
+  height: 295px;
   min-width: 200px;
   min-height: 200px;
   margin: 0 auto;

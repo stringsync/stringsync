@@ -12,6 +12,7 @@ import { StudioVideo } from './StudioVideo';
 import { Menu } from 'modules/notations/menu';
 import { VideoControls } from 'modules/video-controls';
 import { Element as ScrollElement, scroller } from 'react-scroll';
+import logoSrc from 'assets/logo.svg';
 
 type OuterProps = RouteComponentProps<{ id: string }>;
 
@@ -108,6 +109,22 @@ const Dummy = styled('div')`
   width: 100%;
 `;
 
+const StyledImg = styled('img')`
+  width: 50px;
+  position: absolute;
+  bottom: -800px;
+  border-radius: 50%;
+  padding: 4px;
+  background: white;
+  border: 3px solid ${props => props.theme.primaryColor};
+`;
+
+const LogoContainer = styled('div')`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+`;
+
 /**
  * Sets layout for the NotationShow page and fetches the notation from the router.
  */
@@ -141,7 +158,12 @@ export const Studio = enhance(props => (
           />
         </div>
       </Layer>
-      <Layer zIndex={11}>
+      <Layer zIndex={12}>
+        <LogoContainer>
+          <StyledImg src={logoSrc} width={200} />
+        </LogoContainer>
+      </Layer>
+      <Layer zIndex={13}>
         <Menu />
         <VideoControls />
       </Layer>

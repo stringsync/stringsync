@@ -31,6 +31,7 @@ const Logo = styled('img')`
 const LogoText = styled('span')`
   font-size: 14px;
   height: 24px;
+  color: ${props => props.theme.primaryColor};
 `;
 
 /**

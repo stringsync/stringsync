@@ -13,6 +13,7 @@ import { Editor } from './Editor';
 import { connect, Dispatch } from 'react-redux';
 import { EditorActions } from 'data';
 import { Flow } from 'vexflow';
+import { Element as ScrollElement } from 'react-scroll';
 
 const MIN_WIDTH_PER_MEASURE = 240; // px
 const MIN_MEASURES_PER_LINE = 1;
@@ -145,6 +146,7 @@ const Spacer = styled('div')`
 
 export const Score = enhance(props => (
   <Outer id="score" dynamic={props.dynamic}>
+    <ScrollElement name="score-top" />
     <Editor />
     <Renderer editMode={props.editMode} />
     <CanvasRenderables active={props.dynamic} />

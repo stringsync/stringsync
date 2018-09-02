@@ -26,6 +26,10 @@ const Outer = styled('div')<IOuterDivProps>`
   width: ${props => `${props.width}%`};
   border-right: ${props => props.fret === 0 ? 4 : props.viewportType === 'MOBILE' ? 1 : 2}px solid #aaa;
   box-shadow: 0 1px 1px 1px #222;
+
+  &:last-of-type {
+    border-right: none;
+  }
 `;
 
 const Dot = styled('div')<{ viewportType: ViewportTypes }>`
