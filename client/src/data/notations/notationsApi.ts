@@ -28,6 +28,7 @@ export const fetchNotations = () => async (dispatch: Dispatch) => {
       tags: tags.map(tag => tag.attributes.name),
       thumbnailUrl: attributes.thumbnail_url,
       transcriber: pick(transcriber.attributes, ['id', 'name', 'image']) as User.IBaseUser,
+      updatedAt: new Date(attributes.updated_at),
       vextabString: attributes.vextab_string,
       video: null
     };

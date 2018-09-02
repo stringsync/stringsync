@@ -11,6 +11,7 @@ export const getDefaultNotation = (): Notation.INotation => ({
   tags: [],
   thumbnailUrl: '',
   transcriber: null,
+  updatedAt: new Date(1970, 1, 1),
   vextabString: '',
   video: null
 });

@@ -3,7 +3,7 @@ import { compose, withProps, withHandlers, withState, lifecycle } from 'recompos
 import { connect } from 'react-redux';
 
 interface IConnectProps {
-  lastUpdatedAt: number;
+  updatedAt: Date;
 }
 
 interface ICurrentTimeMsProps extends IConnectProps {
@@ -33,13 +33,13 @@ const loopUpdateTime = async (props: IUpdateTimeProps) => {
 const enhance = compose<IUpdateTimeProps, {}>(
   connect(
     (state: Store.IState) => ({
-      lastUpdatedAt: state.editor.lastUpdatedAt
+      updatedAt: state.notation.updatedAt
     })
   ),
   withState('currentTimeMs', 'setCurrentTimeMs', new Date().getTime()),
   withState('loopHandle', 'setLoopHandle', null),
   withProps((props: ICurrentTimeMsProps) => ({
-    secondsAgo: Math.floor((props.currentTimeMs - props.lastUpdatedAt) / 1000)
+    secondsAgo: Math.floor((props.currentTimeMs - props.updatedAt.getTime()) / 1000)
   })),
   withHandlers({
     updateTime: (props: ISecondsAgoProps) => () => {

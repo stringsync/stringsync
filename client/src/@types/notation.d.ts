@@ -2,6 +2,7 @@ declare namespace Notation {
   export interface INotation {
     id: number | void;
     createdAt: Date;
+    updatedAt: Date;
     songName: string;
     artistName: string;
     durationMs: number;

@@ -14,6 +14,7 @@ namespace API {
 
     export interface IDataAttributes {
       created_at: string;
+      updated_at: string;
       song_name: string;
       artist_name: string;
       thumbnail_url: string;
