@@ -3,6 +3,7 @@ import { compose, lifecycle, withHandlers } from 'recompose';
 import { connect } from 'react-redux';
 import { withRaf, IWithRafProps } from 'enhancers';
 import { Time, RafSpec } from 'services';
+import { TickMap } from 'services/maestro/TickMap';
 
 interface IOuterProps {
   bpm: number;
@@ -37,12 +38,17 @@ const enhance = compose<InnerProps, IOuterProps>(
         raf.stop();
       }
 
+      const { maestro } = window.ss;
+
       // sync IOuterProps with maestro
-      window.ss.maestro.bpm = nextProps.bpm;
-      window.ss.maestro.deadTime = new Time(nextProps.deadTimeMs, 'ms');
+      maestro.bpm = nextProps.bpm;
+
+      if (maestro.deadTime.ms !== nextProps.deadTimeMs) {
+        maestro.deadTime = new Time(nextProps.deadTimeMs, 'ms');
+      }
 
       if (this.props.durationMs !== nextProps.durationMs) {
-        window.ss.maestro.loopEnd = new Time(nextProps.durationMs, 'ms');
+        maestro.loopEnd = new Time(nextProps.durationMs, 'ms');
       }
     },
     componentWillUnmount() {

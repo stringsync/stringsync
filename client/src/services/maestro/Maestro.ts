@@ -34,7 +34,6 @@ const DEFAULT_TUNING = new Flow.Tuning();
  */
 export class Maestro extends AbstractObservable {
   
-  public deadTime: Time;
   public bpm: number;
   public durationMs: Time;
   public tickMap: TickMap | null = null;
@@ -49,11 +48,12 @@ export class Maestro extends AbstractObservable {
   private $time: Time;
   private $loopStart: Time;
   private $loopEnd: Time;
+  private $deadTime: Time;
 
   constructor(deadTimeMs: number, bpm: number, durationMs: number) {
     super();
 
-    this.deadTime = new Time(deadTimeMs, 'ms');
+    this.$deadTime = new Time(deadTimeMs, 'ms', bpm);
     this.bpm = bpm;
     this.durationMs = new Time(durationMs, 'ms');
 
@@ -74,6 +74,27 @@ export class Maestro extends AbstractObservable {
     this.$time.bpm = this.bpm;
 
     this.update();
+  }
+
+  public get deadTime()  {
+    return this.$deadTime;
+  }
+
+  public set deadTime(deadTime: Time) {
+    this.$deadTime = deadTime;
+    this.$deadTime.bpm = this.bpm;
+
+    if (this.tickMap && this.vextab) {
+      this.tickMap = new TickMap(this.vextab, this.$deadTime.tick);
+
+      try {
+        this.tickMap.compute();
+      } catch (error) {
+        // The tickMap may not be ready to compute, hand off the responsibility to
+        // the Renderer component.
+        console.error(error);
+      }
+    }
   }
 
   public set loopStart(loopStart: Time) {

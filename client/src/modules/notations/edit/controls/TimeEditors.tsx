@@ -61,12 +61,14 @@ export const TimeEditors = enhance(props => (
       <InputNumber
         onChange={props.handleDeadTimeMsChange}
         value={props.deadTimeMs}
+        step={100}
       />
     </Form.Item>
     <Form.Item label="dur">
       <InputNumber
         onChange={props.handleDurationMsChange}
         value={props.durationMs}
+        step={100}
       />
     </Form.Item>
   </Form.Item>
