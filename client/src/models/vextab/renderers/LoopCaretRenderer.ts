@@ -1,6 +1,6 @@
 import { VextabRenderer } from './VextabRenderer';
 import { RendererStore } from './RendererStore';
-import { isEqual, get } from 'lodash';
+import { isEqual, get, last } from 'lodash';
 import { Maestro } from 'services/maestro/Maestro';
 import { interpolate } from 'utilities';
 import { Line } from 'models/music';
@@ -54,8 +54,16 @@ export class LoopCaretRenderer {
     this.setStyles(line);
   }
 
-  // TODO: Clean up this function.
   public render(maestro: Maestro): void {
+    try {
+      this.doRender(maestro);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  // TODO: Clean up this function.
+  public doRender(maestro: Maestro): void {
     this.clear();
     const { vextab } = maestro;
 
@@ -72,12 +80,13 @@ export class LoopCaretRenderer {
     specs.forEach(spec => {
       const line = spec.line;
       if (line) {
-        const { canvas } = this.store.fetch(line);
+        const lineData = this.store.fetch(line);
 
-        if (!canvas) {
+        if (!lineData) {
           return;
         }
 
+        const canvas = lineData.canvas as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
 
         if (!ctx) {
@@ -127,7 +136,7 @@ export class LoopCaretRenderer {
       }
 
       ctx.clearRect(0, 0, canvas.width, LoopCaretRenderer.CARET_HEIGHT);
-      ctx.rect(specs[0].x, 0, specs[1].x - specs[0].x, LoopCaretRenderer.CARET_HEIGHT);
+      ctx.rect(specs[0].x, 0, Math.min(specs[1].x - specs[0].x, this.width), LoopCaretRenderer.CARET_HEIGHT);
       ctx.fill();
     } else {
       // firstLine
@@ -144,7 +153,7 @@ export class LoopCaretRenderer {
       }
 
       ctx.clearRect(0, 0, canvas.width, LoopCaretRenderer.CARET_HEIGHT);
-      ctx.rect(specs[0].x, 0, canvas.width, LoopCaretRenderer.CARET_HEIGHT);
+      ctx.rect(specs[0].x, 0, this.width, LoopCaretRenderer.CARET_HEIGHT);
       ctx.fill();
 
       // inBetweenLines
@@ -162,7 +171,7 @@ export class LoopCaretRenderer {
         }
 
         lineCtx.clearRect(0, 0, lineCanvas.width, LoopCaretRenderer.CARET_HEIGHT);
-        lineCtx.rect(0, 0, lineCanvas.width, LoopCaretRenderer.CARET_HEIGHT);
+        lineCtx.rect(0, 0, this.width, LoopCaretRenderer.CARET_HEIGHT);
         lineCtx.fill();
       });
 
@@ -180,7 +189,7 @@ export class LoopCaretRenderer {
       }
 
       ctx.clearRect(0, 0, canvas.width, LoopCaretRenderer.CARET_HEIGHT);
-      ctx.rect(0, 0, specs[1].x, LoopCaretRenderer.CARET_HEIGHT);
+      ctx.rect(0, 0, Math.min(specs[1].x, this.width), LoopCaretRenderer.CARET_HEIGHT);
       ctx.fill();
     }
 
