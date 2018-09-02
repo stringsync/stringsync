@@ -100,6 +100,7 @@ const Outer = styled('div')`
   overflow: hidden;
   margin: 0 auto;
   margin-top: 20px;
+  border: 2px solid ${props => props.theme.primaryColor};
 `;
 
 // FIXME: This component is needed to hack the fretboard
