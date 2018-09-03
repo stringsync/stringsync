@@ -6,8 +6,7 @@ const getDefaultState = (): Store.IEditorState => ({
   enabled: false,
   errors: [],
   lastRenderedAt: new Date().getTime(),
-  lastUpdatedAt: new Date().getTime(),
-  vextab: null,
+  lastUpdatedAt: new Date().getTime()
 });
 
 export const editorReducer = (state = getDefaultState(), action: actions.EditorActions): Store.IEditorState => {
@@ -33,10 +32,6 @@ export const editorReducer = (state = getDefaultState(), action: actions.EditorA
 
     case actions.SET_ELEMENT_INDEX:
       nextState.elementIndex = action.payload.elementIndex;
-      return nextState;
-
-    case actions.SET_VEXTAB:
-      nextState.vextab = action.payload.vextab;
       return nextState;
 
     case actions.SET_AUTOSAVE:

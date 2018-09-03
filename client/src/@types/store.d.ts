@@ -50,15 +50,11 @@ declare namespace Store {
     errors: string[];
     lastRenderedAt: number;
     lastUpdatedAt: number;
-    vextab: Vextab | null;
   }
   
   // The optional parameters facilitate the UPDATE action
   export interface IMaestroState {
     currentTimeMs?: number;
-    loopStartTimeMs?: number;
-    loopEndTimeMs?: number;
-    elementIndex?: number | null;
     vextab?: Vextab | null;
   }
 }

@@ -29,7 +29,6 @@ interface IOuterProps {
 interface IConnectProps extends IOuterProps {
   appendErrors: (errors: string[]) => void;
   removeErrors: () => void;
-  setEditorVextab: (vextab: Vextab | null) => void;
   setMaestroVextab: (vextab: Vextab | null) => void;
 }
 
@@ -53,7 +52,6 @@ const enhance = compose<IInnerProps, IOuterProps>(
     (dispatch: Dispatch) => ({
       appendErrors: (errors: string[]) => dispatch(EditorActions.appendErrors(errors)),
       removeErrors: () => dispatch(EditorActions.removeErrors()),
-      setEditorVextab: (vextab: Vextab | null) => dispatch(EditorActions.setVextab(vextab)),
       setMaestroVextab: (vextab: Vextab | null) => dispatch(MaestroActions.update({ vextab }))
     })
   ),
@@ -103,7 +101,6 @@ const enhance = compose<IInnerProps, IOuterProps>(
         )
 
         vextab = factory.newInstance();
-        this.props.setEditorVextab(vextab);
         this.props.setMaestroVextab(vextab);
         this.props.setVextab(vextab);
       } else {

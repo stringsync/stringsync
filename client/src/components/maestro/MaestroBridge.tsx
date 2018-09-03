@@ -14,16 +14,12 @@ interface IConnectProps extends IOuterProps {
   isVideoActive: boolean;
   currentTimeMs: number;
   videoPlayer: Youtube.IPlayer;
-  setElementIndex: (elementIndex: number) => void;
 }
 
 const enhance = compose<IConnectProps, IOuterProps>(
   connect(
     (state: Store.IState) => ({
       currentTimeMs: state.maestro.currentTimeMs,
-    }),
-    (dispatch: Dispatch) => ({
-      setElementIndex: (elementIndex: number) => dispatch(MaestroActions.update({ elementIndex }))
     })
   ),
   lifecycle<IConnectProps, {}>({

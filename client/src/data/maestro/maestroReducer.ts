@@ -2,9 +2,7 @@ import * as actions from './maestroActions';
 
 const getDefaultState = (): Store.IMaestroState => ({
   currentTimeMs: 0,
-  elementIndex: null,
-  loopEndTimeMs: Number.MAX_SAFE_INTEGER,
-  loopStartTimeMs: 0
+  vextab: null
 });
 
 export const maestroReducer = (state = getDefaultState(), action: actions.MaestroActions): Store.IMaestroState => {

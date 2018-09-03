@@ -14,7 +14,6 @@ interface IConnectProps {
   isVideoPlaying: boolean;
   videoPlayer: Youtube.IPlayer;
   showLoop: boolean;
-  setLoopTimes: (loopStartTimeMs: number, loopEndTimeMs: number) => void;
   setLoopVisibility: (showLoop: boolean) => void;
 }
 
@@ -47,9 +46,6 @@ const enhance = compose<IInnerProps, {}>(
       videoPlayer: state.video.player
     }),
     (dispatch: Dispatch) => ({
-      setLoopTimes: (loopStartTimeMs: number, loopEndTimeMs: number) => (
-        dispatch(MaestroActions.update({ loopStartTimeMs, loopEndTimeMs }))
-      ),
       setLoopVisibility: (loopVisibility: boolean) => dispatch(UiActions.setLoopVisibility(loopVisibility))
     })
   ),
@@ -82,8 +78,6 @@ const enhance = compose<IInnerProps, {}>(
         maestro.notify();
       }
 
-      props.setLoopTimes(loopStart.ms, loopEnd.ms);
-
       if (props.playAfterChange) {
         props.videoPlayer.playVideo();
       }
@@ -114,8 +108,6 @@ const enhance = compose<IInnerProps, {}>(
         maestro.loopStart = loopStart.clone;
         maestro.loopEnd = loopEnd.clone;
       }
-
-      props.setLoopTimes(loopStart.ms, loopEnd.ms);
 
       props.setValues(values);
     }

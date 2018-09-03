@@ -28,7 +28,8 @@ const enhance = compose<IHandlerProps, {}>(
       this.props.setElementIndex(0);
     },
     componentDidUpdate(): void {
-      const { vextab, elementIndex, enabled } = this.props.editor;
+      const { elementIndex, enabled } = this.props.editor;
+      const { vextab } = window.ss.maestro;
 
       if (!vextab) {
         return;
