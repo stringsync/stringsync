@@ -3,7 +3,6 @@ import { compose, lifecycle, withHandlers } from 'recompose';
 import { connect } from 'react-redux';
 import { withRaf, IWithRafProps } from 'enhancers';
 import { Time, RafSpec } from 'services';
-import { TickMap } from 'services/maestro/TickMap';
 
 interface IOuterProps {
   bpm: number;
@@ -13,6 +12,7 @@ interface IOuterProps {
 
 interface IConnectProps extends IOuterProps {
   isVideoActive: boolean;
+  timeMs: number;
   videoPlayer: Youtube.IPlayer;
 }
 
@@ -26,14 +26,15 @@ const enhance = compose<InnerProps, IOuterProps>(
   connect(
     (state: Store.IState) => ({
       isVideoActive: state.video.isActive,
-      videoPlayer: state.video.player
+      timeMs: state.maestro.timeMs,
+      videoPlayer: state.video.player,
     })
   ),
   lifecycle<IConnectProps, {}>({
     componentWillReceiveProps(nextProps) {
       const raf = window.ss.rafLoop;
       if (nextProps.isVideoActive) {
-        raf.start();
+        // raf.start();
       } else {
         raf.stop();
       }
@@ -50,6 +51,8 @@ const enhance = compose<InnerProps, IOuterProps>(
       if (this.props.durationMs !== nextProps.durationMs) {
         maestro.loopEnd = new Time(nextProps.durationMs, 'ms');
       }
+
+      maestro.time = new Time(nextProps.timeMs, 'ms');
     },
     componentWillUnmount() {
       window.ss.rafLoop.stop();

@@ -9,7 +9,7 @@ export const maestroReducer = (state = getDefaultState(), action: actions.Maestr
 
   switch (action.type) {
 
-    case actions.SET_TIME:
+    case actions.SET_TIME_MS:
       nextState.timeMs = action.payload.timeMs;
       return nextState;
 

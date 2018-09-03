@@ -1,9 +1,9 @@
 import { createAction } from 'utilities/redux';
 
-export const SET_TIME = 'maestro/SET_TIME';
+export const SET_TIME_MS = 'maestro/SET_TIME_MS';
 
 export const MaestroActions = {
-  setTime: (timeMs: number) => createAction(SET_TIME, { timeMs })
+  setTimeMs: (timeMs: number) => createAction(SET_TIME_MS, { timeMs })
 };
 
 export type MaestroActions = ActionsUnion<typeof MaestroActions>;
