@@ -2,7 +2,6 @@ import * as React from 'react';
 import { compose, lifecycle } from 'recompose';
 import { connect, Dispatch } from 'react-redux';
 import { Time } from 'services';
-import { MaestroActions } from 'data';
 
 interface IOuterProps {
   bpm: number;
@@ -10,19 +9,8 @@ interface IOuterProps {
   durationMs: number;
 }
 
-interface IConnectProps extends IOuterProps {
-  isVideoActive: boolean;
-  currentTimeMs: number;
-  videoPlayer: Youtube.IPlayer;
-}
-
-const enhance = compose<IConnectProps, IOuterProps>(
-  connect(
-    (state: Store.IState) => ({
-      currentTimeMs: state.maestro.currentTimeMs,
-    })
-  ),
-  lifecycle<IConnectProps, {}>({
+const enhance = compose<IOuterProps, IOuterProps>(
+  lifecycle<IOuterProps, {}>({
     componentDidUpdate(prevProps) {
       const { maestro } = window.ss;
 
@@ -38,8 +26,6 @@ const enhance = compose<IConnectProps, IOuterProps>(
       if (this.props.durationMs !== prevProps.durationMs) {
         maestro.loopEnd = new Time(this.props.durationMs, 'ms');
       }
-
-      maestro.time = new Time(this.props.currentTimeMs, 'ms');
     }
   })
 );

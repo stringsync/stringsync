@@ -27,6 +27,7 @@ const enhance = compose<IConnectProps, {}>(
     }
 
     const time = new Time(props.videoPlayer.getCurrentTime(), 's');
+    window.ss.maestro.time = time;
 
     props.updateCurrentTimeMs(time.ms);
   }),

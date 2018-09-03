@@ -84,6 +84,7 @@ const enhance = compose<IInnerProps, {}>(
       // time. At the time this code was written, it felt like the path of
       // least resistance to get the feature working
       const { time, loopStart, loopEnd } = maestro.state;
+      const { videoPlayer, isVideoPlaying } = props;
 
       const beat = new Time(1 / maestro.bpm, 'min', maestro.bpm);
 
@@ -91,7 +92,6 @@ const enhance = compose<IInnerProps, {}>(
       if (time.ms < (loopStart.ms - 10) || time.ms >= loopEnd.ms) {
         target = loopStart;
 
-        const { videoPlayer, isVideoPlaying } = props;
         if (videoPlayer) {
           if (isVideoPlaying) {
             videoPlayer.pauseVideo();
