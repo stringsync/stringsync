@@ -4,6 +4,9 @@ import { flatMap } from 'lodash';
 import { Note, Chord, Rest } from 'models';
 import { id } from 'utilities';
 import { Directive } from './directive';
+import { CaretRenderer } from './renderers/CaretRenderer';
+import { LoopCaretRenderer } from './renderers/LoopCaretRenderer';
+import { SelectorRenderer } from './renderers/SelectorRenderer';
 
 export type VextabElement = Note | Chord | Rest;
 
@@ -39,9 +42,14 @@ export class Vextab {
 
   public readonly id: number;
   public readonly width: number;
-  public readonly renderer: VextabRenderer;
   public readonly measuresPerLine: number;
   public readonly tuning: Vex.Flow.Tuning;
+
+  public readonly scoreRenderer: VextabRenderer;
+  public readonly caretRenderer: CaretRenderer;
+  public readonly loopCaretRenderer: LoopCaretRenderer;
+  public readonly selectorRenderer: SelectorRenderer;
+
   public lines: Line[];
 
   constructor(lines: Line[], tuning: Vex.Flow.Tuning, measuresPerLine: number, width: number) {
@@ -56,7 +64,11 @@ export class Vextab {
     this.width = width;
 
     // Create auxillary data structures
-    this.renderer = new VextabRenderer(this, width);
+    this.scoreRenderer = new VextabRenderer(this, width);
+    this.caretRenderer = new CaretRenderer(this);
+    this.loopCaretRenderer = new LoopCaretRenderer(this);
+    this.selectorRenderer = new SelectorRenderer(this);
+
 
     // associate all the inner models with each other
     this.lines.forEach(line => {
@@ -97,10 +109,10 @@ export class Vextab {
   public psuedorender() {
     this.lines.forEach(line => {
       const canvas = document.createElement('canvas');
-      this.renderer.assign(line, canvas);
+      this.scoreRenderer.assign(line, canvas);
     });
 
     Directive.extractAndInvoke(this);
-    this.renderer.render();
+    this.scoreRenderer.render();
   }
 }

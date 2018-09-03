@@ -12,7 +12,7 @@ interface IOuterProps {
 
 interface IConnectProps extends IOuterProps {
   isVideoActive: boolean;
-  timeMs: number;
+  currentTimeMs: number;
   videoPlayer: Youtube.IPlayer;
 }
 
@@ -25,8 +25,8 @@ type InnerProps = IRafHandlerProps & IWithRafProps;
 const enhance = compose<InnerProps, IOuterProps>(
   connect(
     (state: Store.IState) => ({
+      currentTimeMs: state.maestro.currentTimeMs,
       isVideoActive: state.video.isActive,
-      timeMs: state.maestro.timeMs,
       videoPlayer: state.video.player,
     })
   ),
@@ -52,7 +52,7 @@ const enhance = compose<InnerProps, IOuterProps>(
         maestro.loopEnd = new Time(nextProps.durationMs, 'ms');
       }
 
-      maestro.time = new Time(nextProps.timeMs, 'ms');
+      maestro.time = new Time(nextProps.currentTimeMs, 'ms');
     },
     componentWillUnmount() {
       window.ss.rafLoop.stop();

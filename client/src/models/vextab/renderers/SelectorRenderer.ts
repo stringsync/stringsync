@@ -1,8 +1,7 @@
 import { Line } from 'models/music';
-import { VextabRenderer } from './VextabRenderer';
 import { RendererStore } from './RendererStore';
 import { isEqual, get } from 'lodash';
-import { VextabElement } from '../Vextab';
+import { VextabElement, Vextab } from '../Vextab';
 
 interface IStoreData {
   line: Line;
@@ -13,16 +12,16 @@ export class SelectorRenderer {
   public static FILL_STYLE = 'lime';
 
   public readonly store: RendererStore<IStoreData> = new RendererStore<IStoreData>();
-  public readonly vextabRenderer: VextabRenderer;
+  public readonly vextab: Vextab;
 
   public renderedLines: Line[] = [];
 
-  constructor(vextabRenderer: VextabRenderer) {
-    this.vextabRenderer = vextabRenderer;
+  constructor(vextab: Vextab) {
+    this.vextab = vextab;
   }
 
   public get lines(): Line[] {
-    return this.vextabRenderer.vextab.lines;
+    return this.vextab.lines;
   }
 
   public get isRenderable(): boolean {
@@ -32,11 +31,11 @@ export class SelectorRenderer {
   }
 
   public get width(): number {
-    return this.vextabRenderer.width;
+    return this.vextab.width;
   }
 
   public get height(): number {
-    return this.vextabRenderer.height;
+    return this.vextab.scoreRenderer.height;
   }
 
   public assign(line: Line, canvas: HTMLCanvasElement): void {
@@ -47,7 +46,7 @@ export class SelectorRenderer {
 
   public clear(): void {
     this.renderedLines.forEach(line => {
-      const { canvas } = this.store.fetch(line);
+      const canvas = get(this.store.fetch(line), 'canvas');
 
       if (!canvas) {
         return;
@@ -84,7 +83,7 @@ export class SelectorRenderer {
 
     let canvas: HTMLCanvasElement;
     try {
-      canvas = this.store.fetch(line).canvas;
+      canvas = get(this.store.fetch(line), 'canvas');
     } catch (error) {
       return
     }
@@ -107,7 +106,7 @@ export class SelectorRenderer {
     const { width, height } = this;
     const ratio = window.devicePixelRatio || 1;
 
-    const { canvas } = this.store.fetch(line);
+    const canvas = get(this.store.fetch(line), 'canvas');
 
     if (!canvas) {
       throw new Error(`could not resize line ${line.index}: missing canvas`);
@@ -120,7 +119,7 @@ export class SelectorRenderer {
   }
 
   private setStyles(line: Line): void {
-    const { canvas } = this.store.fetch(line);
+    const canvas = get(this.store.fetch(line), 'canvas');
 
     if (!canvas) {
       throw new Error(`could not set style for line ${line.index}: missing canvas`);

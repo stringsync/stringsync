@@ -11,15 +11,9 @@ interface IBaseData {
 export class RendererStore<T extends IBaseData> {
   public data: { [lineId: string]: (T | void) } = {};
 
-  public fetch(line: Line | number | string): T {
+  public fetch(line: Line | number | string): T | void {
     const lineId = typeof line === 'string' || typeof line === 'number' ? line : line.index;
-    const data = this.data[lineId];
-
-    if (!data) {
-      throw new RangeError(`out of range: could not find data for line ${lineId}`);
-    }
-
-    return data;
+    return this.data[lineId];
   }
 
   public assign(line: Line, key: keyof T, data: any): void {

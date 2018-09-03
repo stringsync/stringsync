@@ -59,5 +59,6 @@ declare namespace Store {
     loopStartTimeMs?: number;
     loopEndTimeMs?: number;
     elementIndex?: number | null;
+    vextab?: Vextab | null;
   }
 }
