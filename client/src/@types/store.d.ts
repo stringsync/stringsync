@@ -51,4 +51,8 @@ declare namespace Store {
     lastUpdatedAt: number;
     vextab: Vextab | null;
   }
+  
+  export interface IMaestroState {
+    timeMs: number;
+  }
 }
