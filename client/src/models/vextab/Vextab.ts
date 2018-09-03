@@ -7,6 +7,7 @@ import { Directive } from './directive';
 import { CaretRenderer } from './renderers/CaretRenderer';
 import { LoopCaretRenderer } from './renderers/LoopCaretRenderer';
 import { SelectorRenderer } from './renderers/SelectorRenderer';
+import { TickMap } from 'services/maestro/TickMap';
 
 export type VextabElement = Note | Chord | Rest;
 
@@ -68,7 +69,6 @@ export class Vextab {
     this.caretRenderer = new CaretRenderer(this);
     this.loopCaretRenderer = new LoopCaretRenderer(this);
     this.selectorRenderer = new SelectorRenderer(this);
-
 
     // associate all the inner models with each other
     this.lines.forEach(line => {

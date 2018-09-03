@@ -31,7 +31,7 @@ const enhance = compose<IInnerProps, IOuterProps>(
   withHandlers({
     handleNotification: (props: IConnectProps) => (maestro: Maestro) => {
       // First, we check to see if we should go through with the initial rendering process.
-      const renderer = get(maestro, 'vextab.renderer');
+      const renderer = get(maestro, 'vextab.scoreRenderer');
 
       if (!renderer || !renderer.isRenderable || renderer.isRendered) {
         return;

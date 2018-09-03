@@ -1,1 +1,1 @@
-export * from './MaestroController';
+export * from './MaestroBridge';

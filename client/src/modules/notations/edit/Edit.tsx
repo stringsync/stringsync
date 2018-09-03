@@ -9,7 +9,7 @@ import { Row, Col } from 'antd';
 import { EditVideo } from './EditVideo';
 import styled from 'react-emotion';
 import { EditScore } from './EditScore';
-import { Fretboard, MaestroController, Overlap, Layer } from 'components';
+import { Fretboard, MaestroBridge, Overlap, Layer } from 'components';
 import { VideoControls } from 'modules/video-controls';
 import { Menu } from 'modules/notations/menu';
 import { Controls } from './controls';
@@ -116,7 +116,7 @@ const RightCol = styled(Col)`
  */
 export const Edit = enhance(props => (
   <div>
-    <MaestroController
+    <MaestroBridge
       bpm={props.notation.bpm}
       durationMs={props.notation.durationMs}
       deadTimeMs={props.notation.deadTimeMs}

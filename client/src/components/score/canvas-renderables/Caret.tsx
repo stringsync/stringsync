@@ -1,63 +1,61 @@
 import * as React from 'react';
-import { compose, lifecycle } from 'recompose';
+import { compose, lifecycle, withHandlers } from 'recompose';
 import { connect } from 'react-redux';
-import { Vextab } from 'models';
+import { Vextab, Line } from 'models';
 import { CaretRenderer } from 'models/vextab/renderers/CaretRenderer';
 import { get } from 'lodash';
-import { Time } from 'services';
+import { Time, Maestro } from 'services';
 import { interpolate } from 'utilities';
+import { observeMaestro } from 'enhancers';
 
 interface IConnectProps {
   bpm: number;
   currentTimeMs: number;
-  elementIndex: number | null;
+  noteIndex: number | null;
   loopStartTimeMs: number;
   loopEndTimeMs: number;
   vextab: Vextab | null;
 }
 
-const enhance = compose<IConnectProps, {}>(
+interface IHandlerProps extends IConnectProps {
+  handleNotification: (maestro: Maestro) => void;
+}
+
+const enhance = compose<IHandlerProps, {}>(
   connect(
     (state: Store.IState) => ({
-      bpm: state.notation.bpm,
       currentTimeMs: state.maestro.currentTimeMs,
-      elementIndex: state.maestro.elementIndex,
-      loopEndTimeMs: state.maestro.loopEndTimeMs,
-      loopStartTimeMs: state.maestro.loopStartTimeMs,
       vextab: state.maestro.vextab
     })
   ),
-  lifecycle<IConnectProps, {}>({
-    componentDidUpdate() {
-      const {
-        vextab, elementIndex, loopStartTimeMs, loopEndTimeMs, bpm, currentTimeMs
-      } = this.props;
-
-      if (!vextab || typeof elementIndex !== 'number') {
-        return;
-      }
-
-      const element = vextab.elements[elementIndex] || null;
+  withHandlers({
+    handleNotification: () => (maestro: Maestro) => {
+      const { state, vextab } = maestro;
+      const { start, stop, note, time } = state;
+      const line = get(note, 'measure.line') as Line | void;
       
-      if (!element || !element.isHydrated) {
-        return;
-      }
-
-      const line = get(element.measure, 'line');
-
-      if (!line) {
+      // This if statement is formatted for this for the linter and compiler.
+      if (
+        !line ||
+        !note ||
+        !note.isHydrated ||
+        !time ||
+        !vextab ||
+        typeof start !== 'number' ||
+        typeof stop !== 'number'
+      ) {
         return;
       }
       
       // Do interpolation
-      const x0 = element.vexAttrs!.staveNote.getAbsoluteX();
+      const x0 = note!.vexAttrs!.staveNote.getAbsoluteX();
 
-      const t = new Time(currentTimeMs, 'ms', bpm).tick;
-      const t0 = new Time(loopStartTimeMs, 'ms', bpm).tick;
-      const t1 = new Time(loopEndTimeMs, 'ms', bpm).tick;
+      const t = time.tick;
+      const t0 = start;
+      const t1 = stop;
 
-      const curr = element;
-      const next = element.next;
+      const curr = note;
+      const next = note.next;
 
       let x1: number;
       if (!next) {
@@ -74,7 +72,10 @@ const enhance = compose<IConnectProps, {}>(
       const x = interpolate({ x: t0, y: x0 }, { x: t1, y: x1 }, t);
       vextab.caretRenderer.render(x, line);
     }
-  })
+  }),
+  observeMaestro(
+    (props: IHandlerProps) => ({ name: 'FretboardController', handleNotification: props.handleNotification })
+  )
 );
 
 export const Caret = enhance(() => null);

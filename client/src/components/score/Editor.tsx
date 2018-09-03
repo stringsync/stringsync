@@ -34,7 +34,7 @@ const enhance = compose<IHandlerProps, {}>(
         return;
       }
 
-      const { selectorRenderer } = vextab.renderer;
+      const { selectorRenderer } = vextab;
 
       if (!selectorRenderer.isRenderable) {
         return;
