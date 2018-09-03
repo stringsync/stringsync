@@ -1,6 +1,7 @@
 declare namespace Store {
   export interface IState {
     editor: IEditorState;
+    maestro: IMaestroState;
     notations: Notation.INotation[];
     notation: Notation.INotation;
     session: ISessionState;
