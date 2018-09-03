@@ -55,7 +55,9 @@ declare namespace Store {
   
   // The optional parameters facilitate the UPDATE action
   export interface IMaestroState {
-    bpm?: number;
-    timeMs?: number;
+    currentTimeMs?: number;
+    loopStartTimeMs?: number;
+    loopEndTimeMs?: number;
+    elementIndex?: number | null;
   }
 }

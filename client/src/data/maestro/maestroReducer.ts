@@ -1,8 +1,10 @@
 import * as actions from './maestroActions';
 
 const getDefaultState = (): Store.IMaestroState => ({
-  bpm: 120,
-  timeMs: 0
+  currentTimeMs: 0,
+  elementIndex: null,
+  loopEndTimeMs: Number.MAX_SAFE_INTEGER,
+  loopStartTimeMs: 0
 });
 
 export const maestroReducer = (state = getDefaultState(), action: actions.MaestroActions): Store.IMaestroState => {

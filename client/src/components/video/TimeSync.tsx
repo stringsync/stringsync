@@ -6,19 +6,19 @@ import { loop } from 'enhancers/loop';
 import { Time } from 'services';
 
 interface IConnectProps {
-  timeMs: number;
+  currentTimeMs: number;
   videoPlayer: Youtube.IPlayer;
-  updateTimeMs: (timeMs: number) => void;
+  updateCurrentTimeMs: (currentTimeMs: number) => void;
 }
 
 const enhance = compose<IConnectProps, {}>(
   connect(
     (state: Store.IState) => ({
-      timeMs: state.maestro.timeMs,
+      currentTimeMs: state.maestro.currentTimeMs,
       videoPlayer: state.video.player
     }),
     (dispatch: Dispatch) => ({
-      updateTimeMs: (timeMs: number) => dispatch(MaestroActions.update({ timeMs }))
+      updateCurrentTimeMs: (currentTimeMs: number) => dispatch(MaestroActions.update({ currentTimeMs }))
     })
   ),
   loop((props: IConnectProps) => {
@@ -28,11 +28,11 @@ const enhance = compose<IConnectProps, {}>(
 
     const time = new Time(props.videoPlayer.getCurrentTime(), 's');
 
-    props.updateTimeMs(time.ms);
+    props.updateCurrentTimeMs(time.ms);
   }),
   lifecycle<IConnectProps, {}>({
     componentWillUnmount() {
-      this.props.updateTimeMs(0);
+      this.props.updateCurrentTimeMs(0);
     }
   })
 )
