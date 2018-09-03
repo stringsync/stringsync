@@ -8,7 +8,7 @@ import { Time } from 'services';
 interface IConnectProps {
   timeMs: number;
   videoPlayer: Youtube.IPlayer;
-  setTimeMs: (timeMs: number) => void;
+  updateTimeMs: (timeMs: number) => void;
 }
 
 const enhance = compose<IConnectProps, {}>(
@@ -18,7 +18,7 @@ const enhance = compose<IConnectProps, {}>(
       videoPlayer: state.video.player
     }),
     (dispatch: Dispatch) => ({
-      setTimeMs: (timeMs: number) => dispatch(MaestroActions.setTimeMs(timeMs))
+      updateTimeMs: (timeMs: number) => dispatch(MaestroActions.update({ timeMs }))
     })
   ),
   loop((props: IConnectProps) => {
@@ -28,11 +28,11 @@ const enhance = compose<IConnectProps, {}>(
 
     const time = new Time(props.videoPlayer.getCurrentTime(), 's');
 
-    props.setTimeMs(time.ms);
+    props.updateTimeMs(time.ms);
   }),
   lifecycle<IConnectProps, {}>({
     componentWillUnmount() {
-      this.props.setTimeMs(0);
+      this.props.updateTimeMs(0);
     }
   })
 )
