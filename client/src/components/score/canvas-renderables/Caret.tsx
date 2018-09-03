@@ -24,8 +24,7 @@ interface IHandlerProps extends IConnectProps {
 const enhance = compose<IHandlerProps, {}>(
   connect(
     (state: Store.IState) => ({
-      currentTimeMs: state.maestro.currentTimeMs,
-      vextab: state.maestro.vextab
+      currentTimeMs: state.maestro.currentTimeMs
     })
   ),
   withHandlers({
@@ -74,7 +73,7 @@ const enhance = compose<IHandlerProps, {}>(
     }
   }),
   observeMaestro(
-    (props: IHandlerProps) => ({ name: 'FretboardController', handleNotification: props.handleNotification })
+    (props: IHandlerProps) => ({ name: 'CaretController', handleNotification: props.handleNotification })
   )
 );
 

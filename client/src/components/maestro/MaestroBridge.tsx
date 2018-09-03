@@ -43,9 +43,7 @@ const enhance = compose<IConnectProps, IOuterProps>(
         maestro.loopEnd = new Time(this.props.durationMs, 'ms');
       }
 
-      if (maestro.time && maestro.time.ms !== this.props.currentTimeMs) {
-        maestro.time = new Time(this.props.currentTimeMs, 'ms');
-      }
+      maestro.time = new Time(this.props.currentTimeMs, 'ms');
     }
   })
 );
