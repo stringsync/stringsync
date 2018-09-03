@@ -10,7 +10,6 @@ import { observeMaestro } from 'enhancers';
 
 interface IConnectProps {
   bpm: number;
-  currentTimeMs: number;
   noteIndex: number | null;
   loopStartTimeMs: number;
   loopEndTimeMs: number;
@@ -22,11 +21,6 @@ interface IHandlerProps extends IConnectProps {
 }
 
 const enhance = compose<IHandlerProps, {}>(
-  connect(
-    (state: Store.IState) => ({
-      currentTimeMs: state.maestro.currentTimeMs
-    })
-  ),
   withHandlers({
     handleNotification: () => (maestro: Maestro) => {
       const { state, vextab } = maestro;

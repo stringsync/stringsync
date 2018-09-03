@@ -1,7 +1,6 @@
 import * as actions from './maestroActions';
 
 const getDefaultState = (): Store.IMaestroState => ({
-  currentTimeMs: 0,
   vextab: null
 });
 

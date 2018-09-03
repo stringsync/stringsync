@@ -54,7 +54,6 @@ declare namespace Store {
   
   // The optional parameters facilitate the UPDATE action
   export interface IMaestroState {
-    currentTimeMs?: number;
     vextab?: Vextab | null;
   }
 }
