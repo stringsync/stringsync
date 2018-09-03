@@ -4,7 +4,7 @@ import { connect, Dispatch } from 'react-redux';
 import { withRouter, RouteComponentProps } from 'react-router';
 import { fetchNotation, NotationActions } from 'data';
 import styled from 'react-emotion';
-import { Score, MaestroController } from 'components';
+import { Score, MaestroBridge } from 'components';
 import { Link } from 'react-router-dom';
 
 interface IInnerProps extends RouteComponentProps<{ id: string }> {
@@ -69,7 +69,7 @@ export const Print = enhance(props => (
   <Outer>
     <Inner>
       <Link to={`/n/${props.match.params.id}`} className="print-hidden">back</Link>
-      <MaestroController
+      <MaestroBridge
         bpm={props.notation.bpm}
         deadTimeMs={props.notation.deadTimeMs}
         durationMs={props.notation.durationMs}

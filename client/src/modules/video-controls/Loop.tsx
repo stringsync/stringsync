@@ -5,7 +5,7 @@ import { connect, Dispatch } from 'react-redux';
 import { Time } from 'services';
 import styled from 'react-emotion';
 import { SliderProps } from 'antd/lib/slider';
-import { UiActions } from 'data';
+import { UiActions, MaestroActions } from 'data';
 
 type SliderValues = [number, number];
 

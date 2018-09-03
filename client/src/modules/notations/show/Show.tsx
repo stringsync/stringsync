@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as $ from 'jquery';
 import styled from 'react-emotion';
 import { Affix } from 'antd';
-import { Fretboard, Score, Piano, MaestroController, Overlap, Layer } from 'components';
+import { Fretboard, Score, Piano, MaestroBridge, Overlap, Layer } from 'components';
 import { compose, lifecycle, withProps } from 'recompose';
 import { connect } from 'react-redux';
 import { fetchNotation, VideoActions, UiActions, NotationActions } from 'data';
@@ -112,7 +112,7 @@ const Dummy = styled('div')`
 export const Show = enhance(props => (
   <Outer id="notation-show">
     <ScrollElement name="notation-show-top" />
-    <MaestroController
+    <MaestroBridge
       bpm={props.notation.bpm}
       durationMs={props.notation.durationMs}
       deadTimeMs={props.notation.deadTimeMs}

@@ -18,7 +18,7 @@ export const observeMaestro = <P>(getObserver: (props: P) => IObserver) => (
         componentWillMount(): void {
           if (!window.ss.maestro) {
             throw new Error(
-              'Expected maestro instance under the window.ss namespace. Mount a MaestroController.'
+              'Expected maestro instance under the window.ss namespace. Mount a MaestroBridge.'
             )
           } else if (this.props.observer) {
             throw new Error('expected no observer to be set');

@@ -6,5 +6,6 @@ export * from './notation';
 export * from './notations';
 export * from './tags';
 export * from './session';
+export * from './maestro';
 
 export { default as createStore } from './createStore';

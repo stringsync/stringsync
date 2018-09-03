@@ -3,6 +3,7 @@ import { compose, withHandlers } from 'recompose';
 import { connect } from 'react-redux';
 import { VideoActions } from 'data';
 import YouTube from 'react-youtube';
+import { TimeSync } from './TimeSync';
 
 interface IInnerProps {
   src: string;
@@ -61,6 +62,7 @@ const enhance = compose<IInnerProps, {}>(
  */
 export const Video = enhance(props => (
   <div>
+    <TimeSync />
     <YouTube
       opts={DEFAULT_YOUTUBE_OPTIONS}
       videoId={props.src}

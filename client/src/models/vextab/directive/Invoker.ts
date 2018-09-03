@@ -28,7 +28,7 @@ export class Invoker {
   }
 
   public invokePrerenderers(): void {
-    if (this.vextab.renderer.isRendered) {
+    if (this.vextab.scoreRenderer.isRendered) {
       throw new Error('expected the vextab to not be rendered');
     }
 

@@ -11,7 +11,7 @@ import { Renderer } from './Renderer';
 import { CanvasRenderables } from './canvas-renderables';
 import { Editor } from './Editor';
 import { connect, Dispatch } from 'react-redux';
-import { EditorActions } from 'data';
+import { EditorActions, MaestroActions } from 'data';
 import { Flow } from 'vexflow';
 import { Element as ScrollElement } from 'react-scroll';
 
@@ -29,7 +29,7 @@ interface IOuterProps {
 interface IConnectProps extends IOuterProps {
   appendErrors: (errors: string[]) => void;
   removeErrors: () => void;
-  setEditorVextab: (vextab: Vextab | null) => void;
+  setMaestroVextab: (vextab: Vextab | null) => void;
 }
 
 interface IStateProps extends IConnectProps {
@@ -52,7 +52,7 @@ const enhance = compose<IInnerProps, IOuterProps>(
     (dispatch: Dispatch) => ({
       appendErrors: (errors: string[]) => dispatch(EditorActions.appendErrors(errors)),
       removeErrors: () => dispatch(EditorActions.removeErrors()),
-      setEditorVextab: (vextab: Vextab | null) => dispatch(EditorActions.setVextab(vextab))
+      setMaestroVextab: (vextab: Vextab | null) => dispatch(MaestroActions.update({ vextab }))
     })
   ),
   withProps((props: IConnectProps) => {
@@ -101,7 +101,7 @@ const enhance = compose<IInnerProps, IOuterProps>(
         )
 
         vextab = factory.newInstance();
-        this.props.setEditorVextab(vextab);
+        this.props.setMaestroVextab(vextab);
         this.props.setVextab(vextab);
       } else {
         vextab = this.props.vextab;

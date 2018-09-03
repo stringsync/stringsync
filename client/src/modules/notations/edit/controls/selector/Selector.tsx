@@ -3,7 +3,7 @@ import { compose, withHandlers, withProps } from 'recompose';
 import { Dispatch, connect } from 'react-redux';
 import { EditorActions } from 'data';
 import { InputNumber, Form } from 'antd';
-import { Measure, VextabElement } from 'models';
+import { Measure, VextabElement, Vextab } from 'models';
 import { get } from 'lodash';
 import { ElementManager } from './ElementManager';
 
@@ -25,6 +25,7 @@ const parseValue = (value: number | string | void): number => {
 
 interface IConnectProps {
   editor: Store.IEditorState;
+  vextab: Vextab;
   setElementIndex: (index: number | null) => void;
 }
 
@@ -41,14 +42,15 @@ interface IHandlerProps extends ISelectedProps {
 const enhance = compose<IHandlerProps, {}>(
   connect(
     (state: Store.IState) => ({
-      editor: state.editor
+      editor: state.editor,
+      vextab: state.maestro.vextab
     }),
     (dispatch: Dispatch) => ({
       setElementIndex: (index: number) => dispatch(EditorActions.setElementIndex(index)),
     })
   ),
   withProps((props: IConnectProps) => {
-    const { vextab } = props.editor;
+    const { vextab } = props;
     const element = vextab ? vextab.elements[props.editor.elementIndex] || null : null;
     const measure = element ? element.measure : null;
 
@@ -91,7 +93,7 @@ export const Selector = enhance(props => (
     <Form.Item label="element">
       <InputNumber
         min={-1}
-        max={get(props.editor.vextab, 'elements.length', 1) - 1}
+        max={get(props.vextab, 'elements.length', 1) - 1}
         disabled={!props.editor.enabled}
         value={props.editor.elementIndex as number | undefined}
         onChange={props.handleElementIndexChange}
@@ -101,7 +103,7 @@ export const Selector = enhance(props => (
     <Form.Item label="measure">
       <InputNumber
         min={-1}
-        max={get(props.editor.vextab, 'measures.length', 1) - 1}
+        max={get(props.vextab, 'measures.length', 1) - 1}
         disabled={!props.editor.enabled}
         value={get(props.measure, 'index')}
         onChange={props.handleMeasureIndexChange}

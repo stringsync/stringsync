@@ -28,24 +28,24 @@ const enhance = compose<IInnerProps, IOuterProps>(
         return;
       }
 
-      props.vextab.renderer.caretRenderer.assign(props.line, canvas);
+      props.vextab.caretRenderer.assign(props.line, canvas);
     },
     handleLoopCaretCanvasRef: (props: IOuterProps) => (canvas: HTMLCanvasElement) => {
       if (!canvas) {
         return;
       }
 
-      props.vextab.renderer.loopCaretRenderer.assign(props.line, canvas);
+      props.vextab.loopCaretRenderer.assign(props.line, canvas);
     },
     handleScoreCanvasRef: (props: IOuterProps) => (canvas: HTMLCanvasElement) => {
       if (!canvas) {
         return;
       }
 
-      const { renderer } = props.vextab;
+      const { scoreRenderer } = props.vextab;
 
       try {
-        renderer.assign(props.line, canvas);
+        scoreRenderer.assign(props.line, canvas);
       } catch (error) {
         if (props.editMode) {
           console.error(error);
@@ -56,7 +56,7 @@ const enhance = compose<IInnerProps, IOuterProps>(
 
       // If all of the score lines are rendered, trigger a notification.
       // The score/Renderer component should take care of renderering the vextab.
-      if (renderer.isRenderable && !renderer.isRendered) {
+      if (scoreRenderer.isRenderable && !scoreRenderer.isRendered) {
         const { maestro } = window.ss;
         maestro.changed = true;
         maestro.notify();
@@ -67,7 +67,7 @@ const enhance = compose<IInnerProps, IOuterProps>(
         return;
       }
 
-      props.vextab.renderer.selectorRenderer.assign(props.line, canvas);
+      props.vextab.selectorRenderer.assign(props.line, canvas);
     }
   })
 );
@@ -87,8 +87,8 @@ interface IInnerDivProps {
 //
 // The javascript in the renderers changes the style of the canvas.
 const Inner = styled('div')<IInnerDivProps>`
-  width: ${props => props.vextab.renderer.width}px;
-  height: ${props => props.vextab.renderer.height}px;
+  width: ${props => props.vextab.scoreRenderer.width}px;
+  height: ${props => props.vextab.scoreRenderer.height}px;
 `;
 
 export const Line = enhance(props => (

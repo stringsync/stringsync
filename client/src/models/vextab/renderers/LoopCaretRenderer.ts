@@ -1,9 +1,10 @@
 import { VextabRenderer } from './VextabRenderer';
 import { RendererStore } from './RendererStore';
-import { isEqual, get, last } from 'lodash';
+import { isEqual, get } from 'lodash';
 import { Maestro } from 'services/maestro/Maestro';
 import { interpolate } from 'utilities';
 import { Line } from 'models/music';
+import { Vextab } from '../Vextab';
 
 interface ICaretRendererStoreData {
   line: Line;
@@ -22,16 +23,16 @@ export class LoopCaretRenderer {
   public static CARET_HEIGHT = 227; // px
 
   public readonly store: RendererStore<ICaretRendererStoreData> = new RendererStore<ICaretRendererStoreData>();
-  public readonly vextabRenderer: VextabRenderer;
+  public readonly vextab: Vextab;
 
   public rendereredLines: Line[] = [];
 
-  constructor(vextabRenderer: VextabRenderer) {
-    this.vextabRenderer = vextabRenderer;
+  constructor(vextab: Vextab) {
+    this.vextab = vextab;
   }
 
   public get lines(): Line[] {
-    return this.vextabRenderer.vextab.lines;
+    return this.vextab.lines;
   }
 
   public get isRenderable(): boolean {
@@ -41,11 +42,11 @@ export class LoopCaretRenderer {
   }
 
   public get width(): number {
-    return this.vextabRenderer.width;
+    return this.vextab.scoreRenderer.width;
   }
 
   public get height(): number {
-    return this.vextabRenderer.height;
+    return this.vextab.scoreRenderer.height;
   }
 
   public assign(line: Line, canvas: HTMLCanvasElement): void {
@@ -123,7 +124,7 @@ export class LoopCaretRenderer {
     //   The firstLine and lastLines are different. Fill the first line all the way to the right,
     //   the inBewteenLines completely, and the lastLine all the way to the left.
     if (firstLine === lastLine) {
-      const { canvas } = this.store.fetch(firstLine);
+      const canvas = get(this.store.fetch(firstLine), 'canvas');
 
       if (!canvas) {
         return;
@@ -140,7 +141,7 @@ export class LoopCaretRenderer {
       ctx.fill();
     } else {
       // firstLine
-      let canvas = this.store.fetch(firstLine).canvas;
+      let canvas = get(this.store.fetch(firstLine), 'canvas');
 
       if (!canvas) {
         return;
@@ -153,12 +154,12 @@ export class LoopCaretRenderer {
       }
 
       ctx.clearRect(0, 0, canvas.width, LoopCaretRenderer.CARET_HEIGHT);
-      ctx.rect(specs[0].x, 0, this.width, LoopCaretRenderer.CARET_HEIGHT);
+      ctx.rect(specs[0].x, 0, this.width - specs[0].x, LoopCaretRenderer.CARET_HEIGHT);
       ctx.fill();
 
       // inBetweenLines
       inBetweenLines.forEach(line => {
-        const lineCanvas = this.store.fetch(line).canvas;
+        const lineCanvas = get(this.store.fetch(line), 'canvas');
 
         if (!lineCanvas) {
           return;
@@ -176,7 +177,7 @@ export class LoopCaretRenderer {
       });
 
       // lastLine
-      canvas = this.store.fetch(lastLine).canvas;
+      canvas = get(this.store.fetch(lastLine), 'canvas');
 
       if (!canvas) {
         return;
@@ -198,7 +199,7 @@ export class LoopCaretRenderer {
 
   public clear(): void {
     this.rendereredLines.forEach(line => {
-      const { canvas } = this.store.fetch(line);
+      const canvas = get(this.store.fetch(line), 'canvas');
 
       if (!canvas) {
         return;
@@ -269,7 +270,7 @@ export class LoopCaretRenderer {
     const { width, height } = this;
     const ratio = window.devicePixelRatio || 1;
 
-    const { canvas } = this.store.fetch(line);
+    const canvas = get(this.store.fetch(line), 'canvas');
 
     if (!canvas) {
       throw new Error(`could not resize line ${line.index}: missing canvas`);
@@ -282,7 +283,7 @@ export class LoopCaretRenderer {
   }
 
   private setStyles(line: Line): void {
-    const { canvas } = this.store.fetch(line);
+    const canvas = get(this.store.fetch(line), 'canvas');
 
     if (!canvas) {
       throw new Error(`could not set style for line ${line.index}: missing canvas`);

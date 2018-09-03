@@ -3,6 +3,7 @@ import { connect, Dispatch } from 'react-redux';
 import { Vextab, Editor } from 'models';
 import { NotationActions, EditorActions, IUpdateNotation, updateNotation } from 'data';
 import { ComponentClass } from 'react';
+import { pick } from 'lodash';
 
 export type VextabEditorHandler<TEvent> = (event: TEvent, editor: Editor) => any;
 
@@ -54,7 +55,7 @@ export const withEditorHandlers = <TEvent, TProps>(vextabUpdaters: IVextabUpdate
           elementIndex: state.editor.elementIndex,
           enabled: state.editor.enabled,
           notationId: state.notation.id,
-          vextab: state.editor.vextab
+          vextab: state.maestro.vextab
         }),
         (dispatch: Dispatch) => ({
           appendErrors: (errors: string[]) => dispatch(EditorActions.appendErrors(errors)),
@@ -130,22 +131,8 @@ export const withEditorHandlers = <TEvent, TProps>(vextabUpdaters: IVextabUpdate
       // FIXME: Fix the props type here. It should include the withHandlers props, which
       // varies based on the vextabUpdaters argument.
       mapProps((props: IConnectProps<TProps>) => { 
-        const nextProps = Object.assign({}, props, props.ownProps);
-
-        delete nextProps.setVextabString
-        delete nextProps.vextab;
-        delete nextProps.elementIndex;
-        delete nextProps.ownProps;
-        delete nextProps.appendErrors;
-        delete nextProps.removeErrors;
-        delete nextProps.setElementIndex;
-        delete nextProps.autosave;
-        delete nextProps.updateVextabString;
-        delete nextProps.notationId;
-        delete nextProps.setEnabled;
-        delete nextProps.enabled;
-
-        return nextProps;
+        const editorHandlers = pick(props, Object.keys(vextabUpdaters));
+        return Object.assign({}, props.ownProps, editorHandlers);
       })
     );
 

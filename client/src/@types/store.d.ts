@@ -1,6 +1,7 @@
 declare namespace Store {
   export interface IState {
     editor: IEditorState;
+    maestro: IMaestroState;
     notations: Notation.INotation[];
     notation: Notation.INotation;
     session: ISessionState;
@@ -49,6 +50,11 @@ declare namespace Store {
     errors: string[];
     lastRenderedAt: number;
     lastUpdatedAt: number;
-    vextab: Vextab | null;
+  }
+  
+  // The optional parameters facilitate the UPDATE action
+  export interface IMaestroState {
+    currentTimeMs?: number;
+    vextab?: Vextab | null;
   }
 }

@@ -2,8 +2,8 @@ import { VextabRenderer } from './VextabRenderer';
 import { RendererStore } from './RendererStore';
 import { isEqual, get } from 'lodash';
 import { Maestro } from 'services/maestro/Maestro';
-import { interpolate } from 'utilities';
 import { Line } from 'models/music';
+import { VextabElement, Vextab } from '../Vextab';
 
 interface ICaretRendererStoreData {
   line: Line;
@@ -17,16 +17,16 @@ export class CaretRenderer {
   public static CARET_HEIGHT = 227; // px
 
   public readonly store: RendererStore<ICaretRendererStoreData> = new RendererStore<ICaretRendererStoreData>();
-  public readonly vextabRenderer: VextabRenderer;
+  public readonly vextab: Vextab;
 
   public renderedLines: Line[] = [];
 
-  constructor(vextabRenderer: VextabRenderer) {
-    this.vextabRenderer = vextabRenderer;
+  constructor(vextab: Vextab) {
+    this.vextab = vextab;
   }
 
   public get lines(): Line[] {
-    return this.vextabRenderer.vextab.lines;
+    return this.vextab.lines;
   }
 
   public get isRenderable(): boolean {
@@ -36,11 +36,11 @@ export class CaretRenderer {
   }
 
   public get width(): number {
-    return this.vextabRenderer.width;
+    return this.vextab.width;
   }
 
   public get height(): number {
-    return this.vextabRenderer.height;
+    return this.vextab.scoreRenderer.height;
   }
 
   public assign(line: Line, canvas: HTMLCanvasElement): void {
@@ -49,46 +49,33 @@ export class CaretRenderer {
     this.setStyles(line);
   }
 
-  public render(maestro: Maestro): void {
+  public render(x: number, line: Line): void {
     this.clear();
 
-    const x = this.getXForRender(maestro);
+    const canvas = get(this.store.fetch(line), 'canvas');
 
-    if (typeof x === 'number') {
-      const line: Line | void = get(maestro.state.note, 'measure.line');
-      if (line) {
-
-        let canvas: HTMLCanvasElement | void;
-        try {
-          canvas  = this.store.fetch(line).canvas;
-        } catch (error) {
-          // noop
-        }
-
-        if (!canvas) {
-          return;
-        }
-
-        const ctx = canvas.getContext('2d');
-
-        if (!ctx) {
-          return;
-        }
-
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, 0 + CaretRenderer.CARET_HEIGHT);
-        ctx.stroke();
-        ctx.closePath();
-
-        this.renderedLines.push(line);
-      }
+    if (!canvas) {
+      return;
     }
+
+    const ctx = canvas.getContext('2d');
+
+    if (!ctx) {
+      return;
+    }
+
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, 0 + CaretRenderer.CARET_HEIGHT);
+    ctx.stroke();
+    ctx.closePath();
+
+    this.renderedLines.push(line);
   }
 
   public clear(): void {
     this.renderedLines.forEach(line => {
-      const { canvas } = this.store.fetch(line);
+      const canvas = get(this.store.fetch(line), 'canvas');
 
       if (!canvas) {
         return;
@@ -106,52 +93,11 @@ export class CaretRenderer {
     this.renderedLines = [];
   }
 
-  /**
-   * Used exclusively in CaretRenderer.prototype.render
-   * 
-   * @param maestro 
-   */
-  private getXForRender(maestro: Maestro): number | void {
-    const { vextab } = maestro;
-    const { time, note, start, stop } = maestro.state;
-
-    if (!vextab || !time || !note || typeof start !== 'number' || typeof stop !== 'number') {
-      // nothing to render
-      return;
-    }
-
-    if (!note.isHydrated) {
-      throw new Error('Must hydrate the measure element before rendering the Caret for it');
-    }
-
-    const curr = note;
-    const next = note.next;
-
-    // interpolation args
-    const t0 = start;
-    const t1 = stop;
-    const x0 = curr.vexAttrs!.staveNote.getAbsoluteX();
-    let x1;
-    if (!next) {
-      // currently on last note
-      x1 = this.width;
-    } else if (curr.measure && curr.measure.line !== get(next, 'measure.line')) {
-      // next note is on a different line
-      x1 = this.width;
-    } else {
-      // most frequent case: note is on the same line
-      x1 = next.vexAttrs!.staveNote.getAbsoluteX();
-    }
-
-    // interpolate
-    return interpolate({ x: t0, y: x0 }, { x: t1, y: x1 }, time.tick);
-  }
-
   private resize(line: Line): void {
     const { width, height } = this;
     const ratio = window.devicePixelRatio || 1;
 
-    const { canvas } = this.store.fetch(line);
+    const canvas = get(this.store.fetch(line), 'canvas');
 
     if (!canvas) {
       throw new Error(`could not resize line ${line.index}: missing canvas`);
@@ -164,7 +110,7 @@ export class CaretRenderer {
   }
 
   private setStyles(line: Line): void {
-    const { canvas } = this.store.fetch(line);
+    const canvas = get(this.store.fetch(line), 'canvas');
 
     if (!canvas) {
       throw new Error(`could not set style for line ${line.index}: missing canvas`);
