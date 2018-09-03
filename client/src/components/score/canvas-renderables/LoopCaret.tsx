@@ -22,7 +22,7 @@ const enhance = compose(
   ),
   withHandlers({
     syncLoopVisibility: (props: IConnectProps) => (maestro: Maestro) => {
-      const renderer: LoopCaretRenderer | void = get(maestro.vextab, 'renderer.loopCaretRenderer');
+      const renderer: LoopCaretRenderer | void = get(maestro.vextab, 'loopCaretRenderer');
 
       if (!renderer) {
         return;

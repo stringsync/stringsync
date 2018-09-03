@@ -154,7 +154,7 @@ export class LoopCaretRenderer {
       }
 
       ctx.clearRect(0, 0, canvas.width, LoopCaretRenderer.CARET_HEIGHT);
-      ctx.rect(specs[0].x, 0, this.width, LoopCaretRenderer.CARET_HEIGHT);
+      ctx.rect(specs[0].x, 0, this.width - specs[0].x, LoopCaretRenderer.CARET_HEIGHT);
       ctx.fill();
 
       // inBetweenLines
