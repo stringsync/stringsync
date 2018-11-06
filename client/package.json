@@ -7,6 +7,8 @@
     "@types/node": "^10.12.2",
     "@types/react": "^16.4.18",
     "@types/react-dom": "^16.0.9",
+    "awesome-typescript-loader": "^5.2.1",
+    "babel-loader": "^8.0.4",
     "react": "^16.6.0",
     "react-docgen-typescript-webpack-plugin": "^1.1.0",
     "react-dom": "^16.6.0",
@@ -15,6 +17,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "storybook": "start-storybook -c .storybook",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -32,6 +35,9 @@
     "@storybook/addon-info": "^4.0.4",
     "@storybook/addon-knobs": "^4.0.4",
     "@storybook/react": "^4.0.4",
-    "storybook-addon-jsx": "^5.4.0"
+    "babel-core": "^6.26.3",
+    "jest": "^23.6.0",
+    "storybook-addon-jsx": "^5.4.0",
+    "ts-jest": "^23.10.4"
   }
 }
