@@ -7,11 +7,5 @@
     "ordered-imports": false,
     "no-console": [true, "log"],
     "no-bitwise": false
-  },
-  "linterOptions": {
-    "exclude": [
-      "config/**/*.js",
-      "client/node_modules/**/*.ts"
-    ]
   }
 }
