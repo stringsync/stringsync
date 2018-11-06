@@ -1,7 +1,8 @@
 {
-  "name": "client",
-  "version": "0.1.0",
+  "name": "stringsync-web-client",
+  "version": "0.0.1",
   "private": true,
+  "proxy": "http://localhost:3001",
   "dependencies": {
     "@types/jest": "^23.3.9",
     "@types/node": "^10.12.2",
