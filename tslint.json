@@ -1,9 +1,7 @@
 {
   "extends": [
     "tslint:recommended",
-    "tslint-react",
-    "tslint-config-prettier",
-    "./client/tslint.json"
+    "tslint-react"
   ],
   "rules": {
     "ordered-imports": false,
