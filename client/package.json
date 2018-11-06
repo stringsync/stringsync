@@ -17,7 +17,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "storybook": "start-storybook -c .storybook",
+    "storybook": "start-storybook -c .storybook -p 6006",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
