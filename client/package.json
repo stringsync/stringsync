@@ -8,6 +8,7 @@
     "@types/node": "^10.12.2",
     "@types/react": "^16.4.18",
     "@types/react-dom": "^16.0.9",
+    "antd": "^3.10.4",
     "awesome-typescript-loader": "^5.2.1",
     "babel-loader": "^8.0.4",
     "react": "^16.6.0",
