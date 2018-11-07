@@ -1,4 +1,8 @@
 import * as React from 'react';
-import Button from 'antd/lib/button';
+import { Button } from 'antd';
 
-export const App = () => <Button>App</Button>;
+export const App = () => (
+  <div>
+    <Button type="primary">App</Button>
+  </div>
+);
