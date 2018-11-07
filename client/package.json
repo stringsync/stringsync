@@ -36,7 +36,9 @@
     "react-sizes": "^1.0.4",
     "react-youtube": "^7.8.0",
     "recompose": "^0.30.0",
-    "typescript": "^3.1.6"
+    "redux-thunk": "^2.3.0",
+    "typescript": "^3.1.6",
+    "vexflow": "^1.2.87"
   },
   "scripts": {
     "start": "craco start",
