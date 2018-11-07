@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Button } from 'antd';
 import styled from 'react-emotion';
 
-const StyledDiv = styled.div`
+const StyledDiv = styled('div')`
   color: blue;
 `;
 
