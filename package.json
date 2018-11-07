@@ -3,7 +3,7 @@
   "scripts": {
     "start": "cd client && npm run start",
     "storybook": "cd client && npm run storybook",
-    "build": "cd client && npm install && npm run build && cd .. && yarn run delete-maps",
+    "build": "cd client && npm install && npm run build && yarn run delete-maps && cd .. ",
     "build-parser": "cd client/src/models/vextab/encoding && ../../../../node_modules/.bin/jison vextabDecoder.jison",
     "deploy": "cp -a client/build/. public/",
     "test": "cd client && npm run test && cd ..",
