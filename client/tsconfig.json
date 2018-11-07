@@ -14,10 +14,7 @@
     "allowJs": false,
     "jsx": "preserve",
     "moduleResolution": "node",
-    "rootDirs": [
-      "src",
-      "stories"
-    ],
+    "rootDir": "src",
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
