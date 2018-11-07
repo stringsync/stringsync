@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "build/lib",
-    "module": "esnext",
+    "module": "commonjs",
     "target": "es5",
     "lib": [
       "es5",
@@ -12,7 +12,7 @@
     ],
     "sourceMap": true,
     "allowJs": false,
-    "jsx": "preserve",
+    "jsx": "react",
     "moduleResolution": "node",
     "rootDirs": [
       "src",
@@ -25,7 +25,6 @@
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
-    "declaration": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,

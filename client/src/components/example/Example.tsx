@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Button } from 'antd';
 
 export interface IProps {
   label: string;
@@ -6,7 +7,7 @@ export interface IProps {
 }
 
 export const Example: React.SFC<IProps> = (props) => (
-  <button disabled={props.disabled}>
+  <Button disabled={props.disabled}>
     {props.label}
-  </button>
+  </Button>
 );
