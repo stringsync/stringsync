@@ -43,7 +43,7 @@
   },
   "scripts": {
     "start": "craco start",
-    "storybook": "start-storybook -c .storybook -p 6006",
+    "storybook": "start-storybook -c .storybook -p 6006 --ci",
     "build": "craco build",
     "test": "cross-env CI=true craco test --env=jsdom",
     "jest": "craco test --env=jsdom",
