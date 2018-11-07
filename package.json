@@ -3,14 +3,11 @@
   "scripts": {
     "start": "cd client && npm run start",
     "storybook": "cd client && npm run storybook",
-    "build": "cd client && npm install && npm run build && yarn run delete-maps && cd .. ",
+    "build": "cd client && npm install && npm run build && cd .. ",
     "build-parser": "cd client/src/models/vextab/encoding && ../../../../node_modules/.bin/jison vextabDecoder.jison",
     "deploy": "cp -a client/build/. public/",
     "test": "cd client && npm run test && cd ..",
     "jest": "cd client && npm run jest && cd ..",
-    "postinstall": "npm run build && npm run deploy && echo 'Client built!'",
-    "delete-maps": "yarn run delete-map-files && yarn run delete-references-to-map-files",
-    "delete-map-files": "find ./public -name '*.map' -delete",
-    "delete-references-to-map-files": "find ./public -regex '.*\\.\\(js\\|css\\)' -exec sed -i -E '\\/[\\*\\/]#\\ssourceMappingURL=main(\\.[0-9a-f]+)?\\.(css|js)\\.map(\\*\\/)?/g' {} +"
+    "postinstall": "npm run build && npm run deploy && echo 'Client built!'"
   }
 }
