@@ -7,7 +7,7 @@ export interface IProps {
 }
 
 export const Example: React.SFC<IProps> = (props) => (
-  <Button disabled={props.disabled}>
+  <Button type="primary" disabled={props.disabled}>
     {props.label}
   </Button>
 );
