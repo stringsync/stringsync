@@ -38,7 +38,8 @@
     "recompose": "^0.30.0",
     "redux-thunk": "^2.3.0",
     "typescript": "^3.1.6",
-    "vexflow": "^1.2.87"
+    "vexflow": "^1.2.87",
+    "vextab": "git+https://github.com/jaredjj3/vextab.git"
   },
   "scripts": {
     "start": "craco start",
