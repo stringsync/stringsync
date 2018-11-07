@@ -1,4 +1,4 @@
-const { getLoader, loaderByName } = require("craco");
+const { getLoader, loaderByName } = require('@craco/craco');
 
 const LESS_EXTENSION = /\.less$/;
 
@@ -14,7 +14,7 @@ const excludeFileLoaderLessHandling = config => {
 const getLessRules = theme => {
   return {
     oneOf: [{
-      test: lessExtension,
+      test: LESS_EXTENSION,
       use: [
         {
           loader: require.resolve('style-loader')
@@ -41,10 +41,9 @@ const appendLessRules = (lessRules, config) => {
 };
 
 const injectAntdTheme = (theme, config) => {
-  let nextConfig
-  nextConfig = excludeFileLoaderLessHandling(config);
-  nextConfig = appendLessRules(getLessRules(theme));
+  let nextConfig = excludeFileLoaderLessHandling(config);
+  nextConfig = appendLessRules(getLessRules(theme), nextConfig);
   return nextConfig;
 };
 
-export default injectAntdTheme;
+module.exports = injectAntdTheme;
