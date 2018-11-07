@@ -1,6 +1,7 @@
 namespace :start do
-  task :development do
-    exec "foreman start -f Procfile.dev"
+  task development: :environment do
+    run_storybook = ENV["WITH_STORYBOOK"] == "true"
+    exec "foreman start -f Procfile.dev web=1,api=1,sb=#{run_storybook ? 1 : 0}"
   end
 
   desc "Start production server"
