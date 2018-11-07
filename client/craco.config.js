@@ -73,7 +73,8 @@ module.exports = {
           const oneOfRule = webpackConfig.module.rules.find(rule => (
             typeof rule.oneOf !== 'undefined'
           ));
-          (oneOfRule || webpackConfig.module.rules).push(lessRules);
+          const appendTo = oneOfRule ? oneOfRule.oneOf : webpackConfig.module.rules;
+          appendTo.push(lessRules);
 
           return webpackConfig;
         }

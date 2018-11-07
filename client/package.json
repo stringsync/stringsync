@@ -11,6 +11,7 @@
     "@types/react-dom": "^16.0.9",
     "antd": "^3.10.4",
     "awesome-typescript-loader": "^5.2.1",
+    "babel-core": "^6.26.3",
     "babel-loader": "^8.0.4",
     "babel-plugin-import": "^1.11.0",
     "less": "^3.8.1",
@@ -22,10 +23,11 @@
     "typescript": "^3.1.6"
   },
   "scripts": {
-    "start": "craco start --config craco.config.js",
+    "start": "craco start",
     "storybook": "start-storybook -c .storybook -p 6006",
-    "build": "craco build --config craco.config.js",
-    "test": "craco test --config craco.config.js",
+    "build": "craco build",
+    "test": "cross-env CI=true craco test --env=jsdom",
+    "jest": "craco test --env=jsdom",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -41,7 +43,6 @@
     "@storybook/addon-info": "^4.0.4",
     "@storybook/addon-knobs": "^4.0.4",
     "@storybook/react": "^4.0.4",
-    "babel-core": "^6.26.3",
     "storybook-addon-jsx": "^5.4.0"
   }
 }
