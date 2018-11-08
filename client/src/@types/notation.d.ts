@@ -1,4 +1,4 @@
-declare interface INotation {
+export interface INotation {
   id: number | void;
   createdAt: Date;
   updatedAt: Date;

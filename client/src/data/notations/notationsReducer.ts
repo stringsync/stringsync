@@ -1,7 +1,6 @@
 import * as actions from './notationsActions';
-
-// For type annotation
-const getDefaultState = (): INotation[] => [];
+import { getDefaultState } from './getDefaultState';
+import { INotation } from '../../@types/notation';
 
 export const notationsReducer = (state = getDefaultState(), action: actions.NotationsActions): INotation[] => {
   let nextState = state.map((notation: INotation) => Object.assign({}, notation));

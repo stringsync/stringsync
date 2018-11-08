@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { compose, createSink } from 'recompose';
-import { SessionActions } from 'data/session';
+import { SessionActions } from '../../../data/session/sessionActions';
 
 interface IProps {
   login: (user: User.ISession) => void;

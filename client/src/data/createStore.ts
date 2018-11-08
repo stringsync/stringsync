@@ -1,16 +1,19 @@
 import thunk from 'redux-thunk';
-import { applyMiddleware, combineReducers, createStore as _createStore } from 'redux';
-import { notationsReducer } from './';
+import { applyMiddleware, combineReducers, createStore } from 'redux';
+import { notationsReducer as notations } from './notations';
+import { sessionReducer as session } from './session';
+import preloadedState from './preloadedState';
 
 // Middleware
 const middleware = applyMiddleware(thunk);
 
 // Reducer
 const reducer = combineReducers({
-  notations: notationsReducer,
+  notations,
+  session
 });
 
 // Store
-const createStore = () => _createStore(reducer, {}, middleware);
+const doCreateStore = () => createStore(reducer, preloadedState, middleware);
 
-export default createStore;
+export default doCreateStore;

@@ -1,4 +1,5 @@
 import { createAction } from '../createAction';
+import { INotation } from '../../@types/notation';
 
 export const SET_NOTATIONS = 'SET_NOTATIONS';
 
