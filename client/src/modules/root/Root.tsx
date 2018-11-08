@@ -12,15 +12,13 @@ interface IProps {
 }
 
 export const Root: React.SFC<IProps> = (props) => (
-  <div id="root">
+  <LocaleProvider locale={enUS}>
     <Provider store={props.store}>
-      <BrowserRouter>
-        <LocaleProvider locale={enUS}>
-          <ThemeProvider theme={theme}>
-            <App />
-          </ThemeProvider>
-        </LocaleProvider>
-      </BrowserRouter>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ThemeProvider>
     </Provider>
-  </div>
+  </LocaleProvider>
 );
