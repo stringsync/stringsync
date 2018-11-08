@@ -9,7 +9,7 @@ interface IStringSyncModules {
   message: typeof message;
   notification: typeof notification | void;
   sessionSync: {
-    callback: ((user: User.ILogin) => any) | void;
+    callback: ((user: User.ISession) => any) | void;
     user: any;
   };
   store: any | void;
