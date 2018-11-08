@@ -16,7 +16,7 @@ const Inner = styled('div')`
 export const Footer = () => (
   <Outer>
     <Inner>
-      <Row type="flex" justify="space-between">
+      <Row>
         <Col>
           <Links />
         </Col>
