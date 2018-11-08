@@ -29,7 +29,7 @@ const configureAuth = (): void => {
   window.ss.auth.configure({
     apiUrl: getApiUrl(),
     confirmationSuccessUrl: () => window.location.href,
-    handleTokenValidationResponse: (res) => {
+    handleTokenValidationResponse: res => {
       const user = res.data;
       window.ss.sessionSync.user = user;
 
