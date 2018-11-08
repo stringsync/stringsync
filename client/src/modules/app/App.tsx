@@ -1,22 +1,17 @@
 import * as React from 'react';
-import { withRouter, RouteComponentProps } from 'react-router';
-import { compose, lifecycle } from 'recompose';
+import { compose } from 'recompose';
 import { Layout } from 'antd';
 import { Gradient } from './Gradient';
-import { Header } from './Header';
-import { Content } from './Content';
-import { Footer } from './Footer';
-import { Behavior } from './Behavior';
+import { Behavior } from './behavior/Behavior';
+import { Header } from './header/Header';
+import { Content } from './content/Content';
+import { Footer } from './footer/Footer';
+import { onRouteChange } from '../../enhancers/onRouteChange';
 
-const scrollToTop = () => window.scrollTo(0, 0);
+const scrollToTop = () => setTimeout(() => window.scrollTo(0, 0), 0);
 
 const enhance = compose(
-  withRouter,
-  lifecycle<RouteComponentProps, {}>({
-    componentDidMount(): void {
-      this.props.history.listen(scrollToTop);
-    }
-  })
+  onRouteChange(scrollToTop),
 );
 
 export const App = enhance(() => (
