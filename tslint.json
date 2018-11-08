@@ -4,6 +4,7 @@
     "tslint-react"
   ],
   "rules": {
+    "arrow-parens": [true, "ban-single-arg-parens"],
     "trailing-comma": false,
     "no-unused-expression": true,
     "no-unused-variable": true,
