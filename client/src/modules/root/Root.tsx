@@ -11,7 +11,7 @@ interface IProps {
   store: any;
 }
 
-export const Root: React.SFC<IProps> = (props) => (
+export const Root: React.SFC<IProps> = props => (
   <LocaleProvider locale={enUS}>
     <Provider store={props.store}>
       <ThemeProvider theme={theme}>
