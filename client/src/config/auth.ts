@@ -1,5 +1,7 @@
 import * as $ from 'jquery';
 import auth from 'j-toker';
+import { Store } from 'redux';
+import { SessionActions } from '../data/session';
 
 /**
  * Returns the API Url for configuring jToker. Logs a warning if window.ss.env is
@@ -18,6 +20,10 @@ const getApiUrl = (): string => {
   }
 };
 
+const syncSession = (user: User.ISession, store: Store) => {
+  store.dispatch(SessionActions.setSession(user));
+};
+
 /**
  * Configures jToker in non test environments
  *
@@ -34,9 +40,7 @@ const configureAuth = (): void => {
       window.ss.sessionSync.user = user;
 
       // Set the user in the redux store if the callback is available
-      if (window.ss.sessionSync.callback) {
-        window.ss.sessionSync.callback(user);
-      }
+      syncSession(user, window.ss.store);
 
       $.ajaxSetup({
         beforeSend: (xhr, settings) => {
