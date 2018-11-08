@@ -1,5 +1,5 @@
 const injectAntdTheme = require('./plugins/injectAntdTheme');
-const theme = require('./theme');
+const theme = require('./src/theme');
 
 module.exports = {
   babel: {

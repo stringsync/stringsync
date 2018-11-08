@@ -1,5 +1,5 @@
 const TSDocgenPlugin = require('react-docgen-typescript-webpack-plugin');
-const theme = require('../theme');
+const theme = require('../src/theme');
 const injectAntdTheme = require('../plugins/injectAntdTheme');
 
 module.exports = (baseConfig, env, defaultConfig) => {
