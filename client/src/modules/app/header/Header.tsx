@@ -1,7 +1,8 @@
 import * as React from 'react';
 import styled from 'react-emotion';
-import { Layout } from 'antd';
+import { Layout, Row, Col, Menu } from 'antd';
 import { Branding } from './Branding';
+import { Link } from 'react-router-dom';
 
 const Outer = styled(Layout.Header)`
   background: #ffffff;
@@ -13,10 +14,17 @@ const Inner = styled('div')`
   margin: 0 auto;
 `;
 
-export const Header = props => (
+export const Header = () => (
   <Outer>
     <Inner>
-      <Branding />
+      <Row type="flex" justify="space-between">
+        <Col>
+          <Link to="/"><Branding /></Link>
+        </Col>
+        <Col>
+          <Menu />
+        </Col>
+      </Row>
     </Inner>
   </Outer>
 );
