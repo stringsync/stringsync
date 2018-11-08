@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { Layout } from 'antd';
-import { Gradient } from './Gradient';
-import { Behavior } from './behavior/Behavior';
 import { Header } from './header/Header';
 import { Content } from './content/Content';
 import { Footer } from './footer/Footer';
@@ -16,7 +14,6 @@ const enhance = compose(
 
 export const App = enhance(() => (
   <main>
-    <Behavior />
     <Layout>
       <Header />
       <Content />
