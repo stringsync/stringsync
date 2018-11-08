@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from 'react-emotion';
-import { Layout, Row, Col } from 'antd';
-import { Brand } from '../../../components/branding';
+import { Layout } from 'antd';
+import { Branding } from './Branding';
 
 const Outer = styled(Layout.Header)`
   background: #ffffff;
@@ -16,7 +16,7 @@ const Inner = styled('div')`
 export const Header = props => (
   <Outer>
     <Inner>
-      <Brand />
+      <Branding />
     </Inner>
   </Outer>
 );
