@@ -4,7 +4,9 @@
     "tslint-react"
   ],
   "rules": {
-    "no-bitwise": false,
+    "no-unused-expression": true,
+    "no-unused-variable": true,
+    "no-bitwise": true,
     "no-console": [true, "log"],
     "ordered-imports": false,
     "quotemark": [true, "single", "jsx-double"]

@@ -1,5 +1,4 @@
 {
   "tslint.nodePath": "client/node_modules",
   "tslint.configFile": "tslint.json",
-  "tslint.enable": true
 }
