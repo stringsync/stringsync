@@ -17,7 +17,6 @@ const enhance = compose(
 export const App = enhance(() => (
   <main>
     <Behavior />
-    <Gradient />
     <Layout>
       <Header />
       <Content />
