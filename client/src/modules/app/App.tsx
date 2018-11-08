@@ -1,5 +1,5 @@
 import * as React from 'react';
 
 export const App = () => (
-  <div>App</div>
+  <div>{JSON.stringify(window.ss)}</div>
 );

@@ -1100,6 +1100,12 @@
   version "23.3.9"
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-23.3.9.tgz#c16b55186ee73ae65e001fbee69d392c51337ad1"
 
+"@types/jquery@^3.3.22":
+  version "3.3.22"
+  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.3.22.tgz#cde55dc8f83207dffd16205b05f97ce824581735"
+  dependencies:
+    "@types/sizzle" "*"
+
 "@types/lodash@^4.14.118":
   version "4.14.118"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.118.tgz#247bab39bfcc6d910d4927c6e06cbc70ec376f27"
@@ -1157,6 +1163,10 @@
 "@types/semver@^5.5.0":
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/@types/semver/-/semver-5.5.0.tgz#146c2a29ee7d3bae4bf2fcb274636e264c813c45"
+
+"@types/sizzle@*":
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/@types/sizzle/-/sizzle-2.3.2.tgz#a811b8c18e2babab7d542b3365887ae2e4d9de47"
 
 "@types/tapable@1.0.2":
   version "1.0.2"
@@ -6036,6 +6046,15 @@ istanbul-reports@^1.5.1:
   dependencies:
     handlebars "^4.0.3"
 
+j-toker@^0.0.10-beta3:
+  version "0.0.10-beta3"
+  resolved "https://registry.yarnpkg.com/j-toker/-/j-toker-0.0.10-beta3.tgz#37380689d5d7663e50b741be6c4639b1792d04e7"
+  dependencies:
+    jquery ">1.11.2"
+    jquery-deparam "^0.1.0"
+    jquery.cookie "^1.4.1"
+    pubsub-js "^1.5.2"
+
 jest-changed-files@^23.4.2:
   version "23.4.2"
   resolved "https://registry.yarnpkg.com/jest-changed-files/-/jest-changed-files-23.4.2.tgz#1eed688370cd5eebafe4ae93d34bb3b64968fe83"
@@ -6338,7 +6357,15 @@ joi@^11.1.1:
     isemail "3.x.x"
     topo "2.x.x"
 
-jquery@^3.1.0:
+jquery-deparam@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/jquery-deparam/-/jquery-deparam-0.1.0.tgz#eaa60c1699fab7637d1acb8d2a08c72d095a0b96"
+
+jquery.cookie@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/jquery.cookie/-/jquery.cookie-1.4.1.tgz#d63dce209eab691fe63316db08ca9e47e0f9385b"
+
+jquery@>1.11.2, jquery@^3.1.0:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.3.1.tgz#958ce29e81c9790f31be7792df5d4d95fc57fbca"
 
@@ -8946,6 +8973,10 @@ public-encrypt@^4.0.0:
     parse-asn1 "^5.0.0"
     randombytes "^2.0.1"
     safe-buffer "^5.1.2"
+
+pubsub-js@^1.5.2:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/pubsub-js/-/pubsub-js-1.7.0.tgz#eca97f9a4217bef62b2d3aaa1552005260cc2e49"
 
 pump@^2.0.0, pump@^2.0.1:
   version "2.0.1"
