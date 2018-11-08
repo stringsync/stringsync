@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styled from 'react-emotion';
-import { Layout } from 'antd';
+import { Layout, Row, Col } from 'antd';
 import { Brand } from '../../../components/branding';
 
 const Outer = styled(Layout.Header)`
