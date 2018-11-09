@@ -1,15 +1,27 @@
 import * as React from 'react';
 import { ContentLane } from '../../../components/content-lane/ContentLane';
+import { Box } from '../../../components/box/Box';
+import { Row, Col } from 'antd';
+import { OAuthButtons } from '../OAuthButtons';
+import { Link } from 'react-router-dom';
 import styled from 'react-emotion';
 
-const CodeBox = styled('div')`
-  border: 1px;
-  border-radius: 2px;
-  background: white;
+const Home = styled('div')`
+  text-align: center;
+  margin-top: 16px;
 `;
 
 export const Login = () => (
   <ContentLane withPadding={true} withTopMargin={true}>
-    <CodeBox>Login</CodeBox>
+    <Row type="flex" justify="center">
+      <Col>
+        <Box title="login">
+          <OAuthButtons />
+          <Home>
+            <Link to="/">home</Link>
+          </Home>
+        </Box>
+      </Col>
+    </Row>
   </ContentLane>
 );

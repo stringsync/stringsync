@@ -1,3 +1,5 @@
+import { IBase } from "./user";
+
 export interface INotation {
   id: number | void;
   createdAt: Date;
@@ -10,6 +12,6 @@ export interface INotation {
   bpm: number;
   vextabString: string;
   tags: string[];
-  transcriber: User.IBase | null;
+  transcriber: IBase | null;
   video: any | null;
 }

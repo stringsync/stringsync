@@ -2,6 +2,7 @@ import * as $ from 'jquery';
 import auth from 'j-toker';
 import { Store } from 'redux';
 import { SessionActions } from '../data/session';
+import { ISession } from '../@types/session';
 
 /**
  * Returns the API Url for configuring jToker. Logs a warning if window.ss.env is
@@ -20,7 +21,7 @@ const getApiUrl = (): string => {
   }
 };
 
-const syncSession = (user: User.ISession, store: Store) => {
+const syncSession = (user: any, store: Store) => {
   store.dispatch(SessionActions.setSession(user));
 };
 

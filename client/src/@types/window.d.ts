@@ -1,4 +1,5 @@
 import { message, notification } from 'antd';
+import { ISession } from './user';
 
 declare type Environments = 'development' | 'test' | 'production';
 
@@ -9,7 +10,7 @@ interface IStringSyncModules {
   message: typeof message;
   notification: typeof notification | void;
   sessionSync: {
-    callback: ((user: User.ISession) => any) | void;
+    callback: ((user: ISession) => any) | void;
     user: any;
   };
   store: any | void;
