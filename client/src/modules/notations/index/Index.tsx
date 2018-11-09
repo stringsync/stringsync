@@ -1,14 +1,18 @@
 import * as React from 'react';
-import { compose } from 'recompose';
+import { compose, lifecycle } from 'recompose';
 import { ContentLane } from '../../../components/content-lane';
-import styled from 'react-emotion';
+import { Grid } from './grid';
 
 const enhance = compose(
-
+  lifecycle({
+    componentDidMount(): void {
+      // fetch notations
+    }
+  })
 );
 
 export const Index = enhance(props => (
   <ContentLane withTopMargin={true}>
-    foo bar
+    <Grid />
   </ContentLane>
 ));
