@@ -17,7 +17,8 @@ export const canonicalize = (response: IResponse, transforms: ITransforms = {}) 
   const included = new IncludedObjects(nextResponse.included || []);
 
   nextResponse.data.map(data => {
-    const { relationships } = data;
+    const { id, relationships } = data;
+    data.attributes.id = id;
 
     // First, assign relationships to the attributes of the data object
     if (typeof relationships !== 'undefined') {
