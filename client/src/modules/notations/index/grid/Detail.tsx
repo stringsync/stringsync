@@ -32,7 +32,13 @@ export const Detail: React.SFC<IProps> = props => {
           />
         }
         title={artistName}
-        description={songName}
+        description={
+          <div>
+            <span>{songName}</span>
+            <Divider type="vertical" />
+            <small>{get(transcriber, 'name', '')}</small>
+          </div>
+        }
       />
       <Tags>
         {
