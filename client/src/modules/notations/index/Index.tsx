@@ -2,11 +2,15 @@ import * as React from 'react';
 import { compose, lifecycle } from 'recompose';
 import { ContentLane } from '../../../components/content-lane';
 import { Grid } from './grid';
+import { fetchAllNotations } from './fetchAllNotations';
+import { connect } from 'react-redux';
 
 const enhance = compose(
+  connect(null, dispatch => ()),
   lifecycle({
-    componentDidMount(): void {
-      // fetch notations
+    async componentDidMount() {
+      const notations = await fetchAllNotations();
+      
     }
   })
 );
