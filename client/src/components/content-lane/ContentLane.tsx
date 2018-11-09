@@ -3,16 +3,13 @@ import styled from 'react-emotion';
 
 interface IProps {
   withTopMargin?: boolean;
+  withPadding?: boolean;
 }
 
-interface IOuterProps {
-  withTopMargin: boolean;
-}
-
-const Outer = styled('div')<IOuterProps>`
-  padding: 0 50px;
+const Outer = styled('div')<IProps>`
   width: 100%;
-  ${props => props.withTopMargin ? 'margin-top: 48px' : '' };
+  ${props => props.withPadding ? 'padding: 0 50px;' : ''}
+  ${props => props.withTopMargin ? 'margin-top: 48px;' : '' }
 `;
 
 const Inner = styled('div')`
@@ -21,7 +18,10 @@ const Inner = styled('div')`
 `;
 
 export const ContentLane: React.SFC<IProps> = props => (
-  <Outer withTopMargin={!!props.withTopMargin}>
+  <Outer
+    withPadding={props.withPadding}
+    withTopMargin={props.withTopMargin}
+  >
     <Inner>
       {props.children}
     </Inner>

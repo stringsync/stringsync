@@ -7,13 +7,18 @@ import { connect } from 'react-redux';
 import { NotationsActions } from '../../../data/notations/notationsActions';
 import { INotation } from '../../../@types/notation';
 import { IStore } from '../../../@types/store';
+import withSizes from 'react-sizes';
 
 interface IConnectProps {
   notations: INotation[];
   setNotations: (notations: INotation[]) => any;
 }
 
-const enhance = compose<IConnectProps, {}>(
+interface ISizeProps extends IConnectProps {
+  isMobile: boolean;
+}
+
+const enhance = compose<ISizeProps, {}>(
   connect(
     (state: IStore) => ({
       notations: state.notations
@@ -29,11 +34,15 @@ const enhance = compose<IConnectProps, {}>(
       const sorted = notations.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
       this.props.setNotations(sorted);
     }
-  })
+  }),
+  withSizes(size => ({ isMobile: withSizes.isMobile(size) }))
 );
 
 export const Index = enhance(props => (
-  <ContentLane withTopMargin={true}>
+  <ContentLane
+    withPadding={!props.isMobile}
+    withTopMargin={true}
+  >
     <Grid notations={props.notations} />
   </ContentLane>
 ));

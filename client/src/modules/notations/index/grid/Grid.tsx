@@ -5,6 +5,8 @@ import withSizes from 'react-sizes';
 import { chunk } from 'lodash';
 import { Row, Col } from 'antd';
 import { Link } from 'react-router-dom';
+import { Detail } from './Detail';
+import styled from 'react-emotion';
 
 interface IOuterProps {
   notations: INotation[];
@@ -32,7 +34,7 @@ const enhance = compose<ISizesProps & IUiProps, IOuterProps>(
 
     if (props.isMobile) {
       notationsPerRow = 1;
-      gutter = 2;
+      gutter = 8;
     } else if (props.isTablet) {
       notationsPerRow = 2;
       gutter = 16;
@@ -49,17 +51,26 @@ const enhance = compose<ISizesProps & IUiProps, IOuterProps>(
   })
 );
 
+const Outer = styled('div')`
+  margin: 0;
+`;
+
 export const Grid = enhance(props => (
-  <div style={{ margin: `0 ${props.gutter}px`}}>
+  <Outer>
     {
       props.notationRows.map((notations, ndx) => (
-        <Row key={ndx} gutter={props.gutter} type="flex" align="top">
+        <Row
+          key={ndx}
+          gutter={props.gutter}
+          type="flex"
+          align="top"
+          style={{ marginTop: props.gutter }}
+        >
           {
             notations.map(notation => (
               <Col key={`col-${notation.id}`} span={props.colSpan}>
                 <Link to={`/n/${notation.id}`}>
-                  {notation.artistName}
-                  {notation.songName}
+                  <Detail notation={notation} />
                 </Link>
               </Col>
             ))
@@ -67,5 +78,5 @@ export const Grid = enhance(props => (
         </Row>
       ))
     }
-  </div>
+  </Outer>
 ));
