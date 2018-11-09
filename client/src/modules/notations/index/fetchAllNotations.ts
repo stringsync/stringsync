@@ -1,9 +1,10 @@
 import { canonicalize } from '../../../utils/canonicalize/canonicalize';
-import { pick, mapKeys, camelCase } from 'lodash';
+import { pick, camelCase } from 'lodash';
 import * as $ from 'jquery';
 import { mapKeysDeep } from '../../../utils/mapKeysDeep';
+import { INotation } from '../../../@types/notation';
 
-export const fetchAllNotations = async () => {
+export const fetchAllNotations = async (): Promise<INotation[]> => {
   const response = await $.ajax('/api/v1/notations.json', { method: 'GET' });
   const json = canonicalize(response, {
     created_at: createdAt => new Date(createdAt),

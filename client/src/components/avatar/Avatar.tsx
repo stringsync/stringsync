@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Avatar as AntdAvatar } from 'antd';
-import { compose, withProps, ComponentEnhancer } from 'recompose';
+import { compose, withProps } from 'recompose';
 
 interface IOuterProps {
   src: string | null;
