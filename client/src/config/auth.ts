@@ -37,8 +37,6 @@ const configureAuth = (): void => {
     confirmationSuccessUrl: () => window.location.href,
     handleTokenValidationResponse: res => {
       const user = res.data;
-      window.ss.sessionSync.user = user;
-
       // Set the user in the redux store if the callback is available
       syncSession(user, window.ss.store);
 
