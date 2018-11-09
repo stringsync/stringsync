@@ -1,8 +1,9 @@
 import * as React from 'react';
 import styled from 'react-emotion';
-import { Layout, Row, Col, Menu } from 'antd';
+import { Layout, Row, Col } from 'antd';
 import { Branding } from './Branding';
 import { Link } from 'react-router-dom';
+import { Menu } from './menu';
 
 const Outer = styled(Layout.Header)`
   background: #ffffff;
