@@ -7,6 +7,7 @@ import { get } from 'lodash';
 
 interface IProps {
   notation: INotation;
+  checkedTags: string[];
 }
 
 const Tags = styled('div')`
@@ -34,7 +35,16 @@ export const Detail: React.SFC<IProps> = props => {
         description={songName}
       />
       <Tags>
-        {tags.map(tag => (<Tag key={tag}>{tag}</Tag>))}
+        {
+          tags.map(tag => (
+            <Tag
+              key={tag}
+              color={props.checkedTags.includes(tag) ? '#FC354C' : undefined}
+            >
+              {tag}
+            </Tag>
+          ))
+        }
       </Tags>
     </Card>
   );

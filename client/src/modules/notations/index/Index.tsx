@@ -81,6 +81,9 @@ export const Index = enhance(props => (
       setQueryString={props.setQueryString}
       setQueryTags={props.setQueryTags}
     />
-    <Grid notations={props.queriedNotations} />
+    <Grid
+      queryTags={props.queryTags}
+      notations={props.queriedNotations}
+    />
   </ContentLane>
 ));

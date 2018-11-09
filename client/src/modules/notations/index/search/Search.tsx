@@ -73,13 +73,13 @@ export const Search = enhance(props => (
           setQueryTags={props.setQueryTags}
           onClear={props.handleClear}
         />
-        <Results
-          numQueried={props.numQueried}
-          queryString={props.queryString}
-          queryTags={props.queryTags}
-          onClear={props.handleClear}
-        />
       </AffixInner>
     </Affix>
+    <Results
+      numQueried={props.numQueried}
+      queryString={props.queryString}
+      queryTags={props.queryTags}
+      onClear={props.handleClear}
+    />
   </div>
 ));

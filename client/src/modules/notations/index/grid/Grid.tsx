@@ -10,6 +10,7 @@ import styled from 'react-emotion';
 
 interface IOuterProps {
   notations: INotation[];
+  queryTags: string[];
 }
 
 interface ISizesProps extends IOuterProps {
@@ -70,7 +71,7 @@ export const Grid = enhance(props => (
             notations.map(notation => (
               <Col key={`col-${notation.id}`} span={props.colSpan}>
                 <Link to={`/n/${notation.id}`}>
-                  <Detail notation={notation} />
+                  <Detail notation={notation} checkedTags={props.queryTags} />
                 </Link>
               </Col>
             ))
