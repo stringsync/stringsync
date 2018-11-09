@@ -69,6 +69,8 @@ export const Search = enhance(props => (
         <Inputs
           queryString={props.queryString}
           queryTags={props.queryTags}
+          setQueryString={props.setQueryString}
+          setQueryTags={props.setQueryTags}
           onClear={props.handleClear}
         />
         <Results
