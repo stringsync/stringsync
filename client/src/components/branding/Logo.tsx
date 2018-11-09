@@ -2,10 +2,9 @@ import * as React from 'react';
 import src from '../../assets/logo.svg';
 
 interface IProps {
-  width: string | number;
-  height: string | number;
+  size: string | number;
 }
 
 export const Logo: React.SFC<IProps> = props => (
-  <img src={src} width={props.width} height={props.height} />
+  <img src={src} width={props.size} height={props.size} />
 );

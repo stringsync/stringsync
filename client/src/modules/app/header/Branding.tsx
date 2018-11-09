@@ -5,10 +5,8 @@ import withSizes from 'react-sizes';
 import { Divider } from 'antd';
 import { Name } from '../../../components/branding/Name';
 
-const LOGO_SIZE = 28;
-
 const HalfBranding = () => (
-  <Logo width={LOGO_SIZE} height={LOGO_SIZE} />
+  <Logo size={28} />
 );
 
 const FullBranding = () => (

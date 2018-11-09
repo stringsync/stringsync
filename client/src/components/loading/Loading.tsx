@@ -1,0 +1,32 @@
+import * as React from 'react';
+import styled from 'react-emotion';
+import { Logo } from '../branding';
+import { compose, branch, renderNothing } from 'recompose';
+
+interface IProps {
+  loading: boolean;
+}
+
+const enhance = compose<IProps, IProps>(
+  branch<IProps>(props => !props.loading, renderNothing)
+);
+
+const Outer = styled('div')`
+  z-index: 9999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffffff;
+`;
+
+export const Loading = enhance(() => (
+  <Outer>
+    <Logo size={64} />
+  </Outer>
+));

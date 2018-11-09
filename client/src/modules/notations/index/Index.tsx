@@ -6,18 +6,15 @@ import { fetchAllNotations } from './fetchAllNotations';
 import { connect } from 'react-redux';
 import { NotationsActions } from '../../../data/notations/notationsActions';
 import { INotation } from '../../../@types/notation';
-import { IStore } from '../../../@types/store';
+import { Loading } from '../../../components/loading';
 
 interface IConnectProps {
-  notations: INotation[];
   setNotations: (notations: INotation[]) => any;
 }
 
 const enhance = compose<IConnectProps, {}>(
   connect(
-    (state: IStore) => ({
-      notations: state.notations
-    }),
+    null,
     dispatch => ({
       setNotations: (notations: INotation[]) => dispatch(NotationsActions.setNotations(notations))
     })
@@ -25,9 +22,8 @@ const enhance = compose<IConnectProps, {}>(
   lifecycle<IConnectProps, {}>({
     async componentDidMount() {
       const notations = await fetchAllNotations();
-      const sorted = notations.
-        sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()).
-        reverse();
+      // sorted in reverse
+      const sorted = notations.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
       this.props.setNotations(sorted);
     }
   })
@@ -36,6 +32,5 @@ const enhance = compose<IConnectProps, {}>(
 export const Index = enhance(props => (
   <ContentLane withTopMargin={true}>
     <Grid />
-    {JSON.stringify(props.notations)}
   </ContentLane>
 ));
