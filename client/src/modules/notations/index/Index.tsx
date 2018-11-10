@@ -21,9 +21,11 @@ interface IStateProps extends IConnectProps {
   queryString: string;
   queryTags: string[];
   queriedNotations: INotation[];
+  loading: boolean;
   setQueryString: (queryString: string) => void;
   setQueryTags: (queryTags: string[]) => void;
   setQueriedNotations: (queriedNotations: INotation[]) => void;
+  setLoading: (loading: boolean) => void;
 }
 
 interface ISizeProps extends IStateProps {
@@ -45,6 +47,7 @@ const enhance = compose<ISizeProps, {}>(
   withState('queryString', 'setQueryString', ''),
   withState('queryTags', 'setQueryTags', []),
   withState('queriedNotations', 'setQueriedNotations', []),
+  withState('loading', 'setLoading', true),
   lifecycle<IStateProps, {}>({
     async componentDidMount(): Promise<void> {
       const notations = await fetchAllNotations();
@@ -52,6 +55,7 @@ const enhance = compose<ISizeProps, {}>(
       const sorted = notations.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
       this.props.setNotations(sorted);
       this.props.setQueriedNotations(sorted);
+      this.props.setLoading(false);
     },
     componentDidUpdate(prevProps): void {
       if (!didQueryChange(this.props, prevProps)) {
@@ -84,6 +88,7 @@ export const Index = enhance(props => (
     <Grid
       queryTags={props.queryTags}
       notations={props.queriedNotations}
+      loading={props.loading}
     />
   </ContentLane>
 ));

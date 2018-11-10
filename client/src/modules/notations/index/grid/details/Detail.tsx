@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { INotation } from '../../../../@types/notation';
 import { Card, Divider, Tag } from 'antd';
 import styled from 'react-emotion';
-import { Avatar } from '../../../../components/avatar';
+import { Avatar } from '../../../../../components/avatar';
 import { get } from 'lodash';
+import { INotation } from '../../../../../@types/notation';
 
 interface IProps {
   notation: INotation;

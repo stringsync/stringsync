@@ -3,14 +3,13 @@ import { INotation } from '../../../../@types/notation';
 import { compose, withProps } from 'recompose';
 import withSizes from 'react-sizes';
 import { chunk } from 'lodash';
-import { Row, Col } from 'antd';
-import { Link } from 'react-router-dom';
-import { Detail } from './Detail';
+import { Details } from './details';
 import styled from 'react-emotion';
 
 interface IOuterProps {
   notations: INotation[];
   queryTags: string[];
+  loading?: boolean;
 }
 
 interface ISizesProps extends IOuterProps {
@@ -24,7 +23,9 @@ interface IUiProps {
   colSpan: number;
 }
 
-const enhance = compose<ISizesProps & IUiProps, IOuterProps>(
+export type GridProps = ISizesProps & IUiProps;
+
+const enhance = compose<GridProps, IOuterProps>(
   withSizes(size => ({
     isMobile: withSizes.isMobile(size),
     isTablet: withSizes.isTablet(size)
@@ -58,26 +59,6 @@ const Outer = styled('div')`
 
 export const Grid = enhance(props => (
   <Outer>
-    {
-      props.notationRows.map((notations, ndx) => (
-        <Row
-          key={ndx}
-          gutter={props.gutter}
-          type="flex"
-          align="top"
-          style={{ marginTop: props.gutter }}
-        >
-          {
-            notations.map(notation => (
-              <Col key={`col-${notation.id}`} span={props.colSpan}>
-                <Link to={`/n/${notation.id}`}>
-                  <Detail notation={notation} checkedTags={props.queryTags} />
-                </Link>
-              </Col>
-            ))
-          }
-        </Row>
-      ))
-    }
+    <Details {...props} />
   </Outer>
 ));
