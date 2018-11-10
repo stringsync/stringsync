@@ -21,8 +21,19 @@ const getApiUrl = (): string => {
   }
 };
 
-const syncSession = (user: any, store: Store) => {
-  store.dispatch(SessionActions.setSession(user));
+const syncSession = (response: any) => {
+  const user = response.data;
+
+  $.ajaxSetup({
+    beforeSend: (xhr, settings) => {
+      // append outbound auth headers
+      window.ss.auth.appendAuthHeaders(xhr, settings);
+    },
+  });
+
+  window.ss.store.dispatch(SessionActions.setSession(user));
+
+  return user;
 };
 
 /**
@@ -36,20 +47,8 @@ const configureAuth = (): void => {
   window.ss.auth.configure({
     apiUrl: getApiUrl(),
     confirmationSuccessUrl: () => window.location.href,
-    handleTokenValidationResponse: res => {
-      const user = res.data;
-      // Set the user in the redux store if the callback is available
-      syncSession(user, window.ss.store);
-
-      $.ajaxSetup({
-        beforeSend: (xhr, settings) => {
-          // append outbound auth headers
-          window.ss.auth.appendAuthHeaders(xhr, settings);
-        },
-      });
-
-      return user;
-    },
+    handleTokenValidationResponse: syncSession,
+    handleLoginResponse: syncSession
   });
 };
 

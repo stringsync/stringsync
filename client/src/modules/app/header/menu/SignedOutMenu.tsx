@@ -4,11 +4,24 @@ import { MENU_PROPS } from './MENU_PROPS';
 import { ITEM_PROPS } from './ITEM_PROPS';
 import { SUB_MENU_PROPS } from './SUB_MENU_PROPS';
 import styled from 'react-emotion';
+import { compose, withHandlers } from 'recompose';
+import { ClickParam } from 'antd/lib/menu';
+import { withAuth, IWithAuthProps } from '../../../../enhancers/withAuth';
+import { ISession } from '../../../../@types/user';
 
-const GoogleIcon = styled('img')`
-  width: 14px;
-  margin-right: 4px;
-`;
+interface IHandlerProps {
+  handleMenuClick: (e: ClickParam) => void;
+}
+
+const enhance = compose <IHandlerProps & IWithAuthProps, {}>(
+  withAuth,
+  withHandlers<IWithAuthProps, IHandlerProps>({
+    handleMenuClick: props => async ({ key }) => {
+      // the key is the provider name
+      await props.signIn(key);
+    }
+  })
+);
 
 const OAuthItem = styled(Menu.Item)<{ background: string }>`
   background: ${props => props.background};
@@ -17,8 +30,12 @@ const OAuthItem = styled(Menu.Item)<{ background: string }>`
   min-width: 200px;
 `;
 
-export const SignedOutMenu = () => (
-  <Menu {...MENU_PROPS} >
+export const SignedOutMenu = enhance(props => (
+  <Menu
+    selectable={false}
+    {...MENU_PROPS}
+    onClick={props.handleMenuClick}
+  >
     <Menu.SubMenu
       {...SUB_MENU_PROPS}
       title={<Avatar><Icon type="user" style={{ marginRight: 0 }} /></Avatar>}
@@ -35,4 +52,4 @@ export const SignedOutMenu = () => (
       </Menu.ItemGroup>
     </Menu.SubMenu>
   </Menu>
-);
+));
