@@ -75,7 +75,7 @@ const enhance = compose<IInnerProps, IOuterProps>(
 );
 
 const Outer = styled('div')<{ isGtMobile: boolean}>`
-  padding: 0 ${props => props.isGtMobile ? 0 : 50}px;
+  padding: 0 ${props => props.isGtMobile ? 0 : 16}px;
 `;
 
 const TagWrapper = styled('span')`

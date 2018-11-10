@@ -17,7 +17,7 @@ const Outer = styled('div')<IProps>`
 
 export const Box = props => (
   <Outer>
-    <Title title={props.title} />
+    <Title />
     {props.children}
   </Outer>
 );

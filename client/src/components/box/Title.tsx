@@ -3,7 +3,7 @@ import { branch, compose, renderNothing } from 'recompose';
 import styled from 'react-emotion';
 
 interface IProps {
-  title: string;
+  title?: string;
 }
 
 const enhance = compose<IProps, IProps>(

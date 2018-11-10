@@ -53,7 +53,7 @@ const enhance = compose<ISizesProps & IUiProps, IOuterProps>(
 );
 
 const Outer = styled('div')`
-  margin: 0;
+  margin: 48px 0 0 0;
 `;
 
 export const Grid = enhance(props => (
