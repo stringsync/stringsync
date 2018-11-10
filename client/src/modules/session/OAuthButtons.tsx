@@ -1,7 +1,6 @@
 import * as React from 'react';
 import styled from 'react-emotion';
 import { Button, Icon } from 'antd';
-import GoogleIconSrc from '../../assets/google-logo-icon-36x36.png';
 import { compose, withHandlers, withState } from 'recompose';
 import { connect } from 'react-redux';
 import * as serviceWorker from '../../serviceWorker';
@@ -76,7 +75,6 @@ const enhance = compose<IInnerProps, {}>(
 );
 
 const GoogleButton = styled<any>(Button)`
-  width: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -87,14 +85,8 @@ const GoogleButton = styled<any>(Button)`
   }
 `;
 
-const GoogleLogo = styled('img')`
-  width: 14px;
-  margin-right: 4px;
-`;
 
 const FacebookButton = styled<any>(Button)`
-  width: 200px;
-
   && {
     color: white;
     background-color: #3f5692;
@@ -107,14 +99,16 @@ export const OAuthButtons = enhance(props => (
       onClick={props.handleGoogleClick}
       loading={props.googleLoading}
       size="large"
+      block={true}
     >
-      <GoogleLogo src={GoogleIconSrc} alt="google-icon" />
+      <Icon type="google" />
       Google
     </GoogleButton>
     <FacebookButton
       onClick={props.handleFacebookClick}
       loading={props.facebookLoading}
       size="large"
+      block={true}
     >
       <Icon type="facebook" />
       Facebook
