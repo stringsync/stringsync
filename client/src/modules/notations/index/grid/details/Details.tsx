@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { compose, branch, renderComponent } from 'recompose';
 import { GridProps } from '../Grid';
 import { LoadingDetails } from './LoadingDetails';
