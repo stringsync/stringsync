@@ -11,6 +11,7 @@ import { Search } from './search';
 import { isEqual } from 'lodash';
 import { filterNotations } from './filterNotations';
 import { IStore } from '../../../@types/store';
+import { getNullNotations } from './getNullNotations';
 
 interface IConnectProps {
   notations: INotation[];
@@ -49,14 +50,6 @@ const enhance = compose<ISizeProps, {}>(
   withState('queriedNotations', 'setQueriedNotations', []),
   withState('loading', 'setLoading', true),
   lifecycle<IStateProps, {}>({
-    async componentDidMount(): Promise<void> {
-      const notations = await fetchAllNotations();
-      // sorted in reverse
-      const sorted = notations.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-      this.props.setNotations(sorted);
-      this.props.setQueriedNotations(sorted);
-      this.props.setLoading(false);
-    },
     componentDidUpdate(prevProps): void {
       if (!didQueryChange(this.props, prevProps)) {
         return;
@@ -68,6 +61,17 @@ const enhance = compose<ISizeProps, {}>(
       } else {
         this.props.setQueriedNotations(notations);
       }
+    }
+  }),
+  lifecycle<IStateProps, {}>({
+    async componentDidMount(): Promise<void> {
+      this.props.setNotations(getNullNotations(12));
+      const notations = await fetchAllNotations();
+      // sorted in reverse
+      const sorted = notations.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      this.props.setNotations(sorted);
+      this.props.setQueriedNotations(sorted);
+      this.props.setLoading(false);
     }
   }),
   withSizes(size => ({ isMobile: withSizes.isMobile(size) }))
