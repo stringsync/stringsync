@@ -79,7 +79,7 @@ const enhance = compose<ISizeProps, {}>(
   withSizes(size => ({ isMobile: withSizes.isMobile(size) }))
 );
 
-export const Index = enhance(props => (
+export const NotationIndex = enhance(props => (
   <ContentLane
     withPadding={!props.isMobile}
     withTopMargin={true}

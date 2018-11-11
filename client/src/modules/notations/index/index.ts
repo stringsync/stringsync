@@ -1,1 +1,1 @@
-export * from './Index.tsx';
+export * from './NotationIndex';
