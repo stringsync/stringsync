@@ -73,7 +73,7 @@ export const Grid = enhance(props => (
           {
             notations.map(notation => (
               <Col key={`col-${notation.id}`} span={props.colSpan}>
-                <Link to={`/n/${notation.id}`}>
+                <Link to={props.loading ? '/' : `/n/${notation.id}`}>
                   <Detail
                     loading={props.loading}
                     notation={notation}
