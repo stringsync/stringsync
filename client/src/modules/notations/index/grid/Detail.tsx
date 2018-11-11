@@ -1,24 +1,28 @@
 import * as React from 'react';
 import { Card, Divider, Tag, Skeleton } from 'antd';
-import styled from 'react-emotion';
 import { Avatar } from '../../../../components/avatar';
 import { get } from 'lodash';
 import { INotation } from '../../../../@types/notation';
+import { Img } from './Img';
+import { compose, withStateHandlers } from 'recompose';
 
-interface IProps {
+interface IOuterProps {
   notation: INotation;
   checkedTags: string[];
   loading?: boolean;
 }
 
-const TagsOuter = styled('div')`
-  margin-top: 12px;
-`;
+interface IStateProps extends IOuterProps {
+  imgLoading: boolean;
+  handleImgLoad: () => void;
+}
 
-const CoverImg = styled('img')`
-  width: 100%;
-  height: 100%;
-`;
+const enhance = compose <IStateProps, IOuterProps>(
+  withStateHandlers(
+    { imgLoading: true },
+    { handleImgLoad: () => () => ({ imgLoading: false }) }
+  )
+);
 
 const Description = ({ songName, transcriberName }) => (
   <div>
@@ -29,22 +33,33 @@ const Description = ({ songName, transcriberName }) => (
 );
 
 const Tags = ({ tags, checkedTags }) => (
-  <TagsOuter>
+  <div style={{ marginTop: '12px' }}>
     {tags.map(tag => (<Tag key={tag} color={checkedTags.has(tag) ? '#FC354C' : undefined}>{tag}</Tag>))}
-  </TagsOuter>
+  </div>
 );
 
-export const Detail: React.SFC<IProps> = props => {
+export const Detail = enhance(props => {
   const { thumbnailUrl, songName, artistName, tags, transcriber } = props.notation;
   const transcriberImg = get(transcriber, 'image', null);
   const transcriberName = get(transcriber, 'name', '');
   const checkedTags = new Set(props.checkedTags);
 
   return (
-    <Card cover={<CoverImg src={thumbnailUrl} alt={songName} />}>
+    <Card
+      cover={
+        <Img
+          src={thumbnailUrl}
+          alt={songName}
+          loading={props.imgLoading}
+          onLoad={props.handleImgLoad}
+        />
+      }
+    >
       <Skeleton
-        loading={props.loading}
+        loading={props.loading || props.imgLoading}
         avatar={true}
+        paragraph={{ rows: 1 }}
+        active={true}
       >
         <Card.Meta
           avatar={<Avatar src={transcriberImg} name={transcriberName} />}
@@ -55,4 +70,4 @@ export const Detail: React.SFC<IProps> = props => {
       </Skeleton>
     </Card>
   );
-};
+});
