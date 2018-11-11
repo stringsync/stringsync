@@ -3,10 +3,11 @@ import { GridProps } from '../Grid';
 import { times } from 'lodash';
 import { Row, Col, Card, Skeleton, Avatar } from 'antd';
 import styled from 'react-emotion';
+import placeholderSrc from '../../../../../assets/notation_thumbnail_placeholder.jpg';
 
-const Cover = styled('div')`
+const Cover = styled('img')`
   width: 100%;
-  height: 375px;
+  height: 100%;
   background: #f2f2f2;
 `;
 
@@ -24,7 +25,7 @@ export const LoadingDetails = (props: GridProps) => (
           {
             times(3, ndx2 => (
               <Col key={`col-${ndx}-${ndx2}`} span={props.colSpan}>
-                <Card cover={<Cover />}>
+                <Card cover={<Cover src={placeholderSrc} alt="placeholder" />}>
                   <Skeleton
                     loading={true}
                     avatar={true}
