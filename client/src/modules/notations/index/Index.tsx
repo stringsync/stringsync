@@ -33,11 +33,6 @@ interface ISizeProps extends IStateProps {
   isMobile: boolean;
 }
 
-const didQueryChange = (props: IStateProps, prevProps: IStateProps): boolean => (
-  props.queryString !== prevProps.queryString ||
-  !isEqual(new Set(props.queryTags), new Set(prevProps.queryTags))
-);
-
 const enhance = compose<ISizeProps, {}>(
   connect(
     (state: IStore) => ({ notations: state.notations }),
@@ -51,7 +46,14 @@ const enhance = compose<ISizeProps, {}>(
   withState('loading', 'setLoading', true),
   lifecycle<IStateProps, {}>({
     componentDidUpdate(prevProps): void {
-      if (!didQueryChange(this.props, prevProps) && this.props.queriedNotations.length > 0) {
+      const didQueryChange = (
+        this.props.queryString !== prevProps.queryString ||
+        !isEqual(new Set(this.props.queryTags), new Set(prevProps.queryTags))
+      );
+
+      const isInitialLoad = this.props.loading && this.props.queriedNotations.length === 0;
+
+      if (!didQueryChange && !isInitialLoad) {
         return;
       }
 
