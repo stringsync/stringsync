@@ -3,8 +3,10 @@ import { INotation } from '../../../../@types/notation';
 import { compose, withProps } from 'recompose';
 import withSizes from 'react-sizes';
 import { chunk } from 'lodash';
-import { Details } from './details';
 import styled from 'react-emotion';
+import { Row, Col } from 'antd';
+import { Link } from 'react-router-dom';
+import { Detail } from './Detail';
 
 interface IOuterProps {
   notations: INotation[];
@@ -59,6 +61,30 @@ const Outer = styled('div')`
 
 export const Grid = enhance(props => (
   <Outer>
-    <Details {...props} />
+    {
+      props.notationRows.map((notations, ndx) => (
+        <Row
+          key={`notation-row-${ndx}`}
+          gutter={props.gutter}
+          type="flex"
+          align="top"
+          style={{ marginTop: props.gutter }}
+        >
+          {
+            notations.map(notation => (
+              <Col key={`col-${notation.id}`} span={props.colSpan}>
+                <Link to={`/n/${notation.id}`}>
+                  <Detail
+                    loading={props.loading}
+                    notation={notation}
+                    checkedTags={props.queryTags}
+                  />
+                </Link>
+              </Col>
+            ))
+          }
+        </Row>
+      ))
+    }
   </Outer>
 ));
