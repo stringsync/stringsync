@@ -26,10 +26,9 @@ export const withAuth = <TProps = {}>(BaseComponent: any) => {
     withHandlers<IConnectProps & TProps, IWithAuthProps>({
       signIn: props => async (provider: string) => {
         serviceWorker.unregister();
-        const { auth } = window.ss;
 
         try {
-          const user = await auth.oAuthSignIn({ provider });
+          const user = await window.ss.auth.oAuthSignIn({ provider });
           props.setSession(user);
           window.ss.message.info(`signed in as ${user.name}`);
         } catch (error) {
@@ -39,10 +38,19 @@ export const withAuth = <TProps = {}>(BaseComponent: any) => {
           serviceWorker.register();
         }
       },
-      signOut: props => () => {
-        window.ss.auth.signOut();
-        props.resetSession();
-        window.ss.message.info('signed out');
+      signOut: props => async () => {
+        serviceWorker.unregister();
+
+        try {
+          await window.ss.auth.signOut();
+          props.resetSession();
+          window.ss.message.info('signed out');
+        } catch (error) {
+          console.error(error);
+          window.ss.message.error('could not sign out');
+        } finally {
+          serviceWorker.register();
+        }
       }
     }),
     mapProps<TProps & IWithAuthProps, any>(props => {
