@@ -9,7 +9,7 @@ import { onRouteChange } from '../../enhancers/onRouteChange';
 const scrollToTop = () => setTimeout(() => window.scrollTo(0, 0), 0);
 
 const enhance = compose(
-  onRouteChange(scrollToTop),
+  onRouteChange(scrollToTop)
 );
 
 export const App = enhance(() => (

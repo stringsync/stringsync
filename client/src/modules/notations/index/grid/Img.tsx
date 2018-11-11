@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from 'react-emotion';
-import placeholderSrc from '../../../../assets/notation_thumbnail_placeholder.png';
-import { compose, withHandlers } from 'recompose';
+import placeholderSrc from '../../../../assets/thumbnail_placeholder.jpg';
+import { Icon } from 'antd';
 
 interface IProps {
   src: string;

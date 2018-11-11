@@ -50,7 +50,7 @@ export const Detail = enhance(props => {
         <Img
           src={thumbnailUrl}
           alt={songName}
-          loading={props.imgLoading}
+          loading={props.loading || props.imgLoading}
           onLoad={props.handleImgLoad}
         />
       }

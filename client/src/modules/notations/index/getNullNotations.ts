@@ -1,6 +1,6 @@
 import { times } from 'lodash';
 import { INotation } from '../../../@types/notation';
-import placeholderSrc from '../../../assets/notation_thumbnail_placeholder.png';
+import placeholderSrc from '../../../assets/thumbnail_placeholder.jpg';
 
 export const getNullNotations = (numNotations: number): INotation[] => {
   const now = new Date();
