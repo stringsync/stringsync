@@ -51,7 +51,7 @@ const enhance = compose<ISizeProps, {}>(
   withState('loading', 'setLoading', true),
   lifecycle<IStateProps, {}>({
     componentDidUpdate(prevProps): void {
-      if (!didQueryChange(this.props, prevProps)) {
+      if (!didQueryChange(this.props, prevProps) && this.props.queriedNotations.length > 0) {
         return;
       }
 

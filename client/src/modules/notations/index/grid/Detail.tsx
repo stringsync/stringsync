@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Card, Divider, Tag } from 'antd';
+import { Card, Divider, Tag, Skeleton } from 'antd';
 import styled from 'react-emotion';
 import { Avatar } from '../../../../components/avatar';
 import { get } from 'lodash';
@@ -42,12 +42,17 @@ export const Detail: React.SFC<IProps> = props => {
 
   return (
     <Card cover={<CoverImg src={thumbnailUrl} alt={songName} />}>
-      <Card.Meta
-        avatar={<Avatar src={transcriberImg} name={transcriberName} />}
-        title={artistName}
-        description={<Description songName={songName} transcriberName={transcriberName} />}
-      />
-      <Tags tags={tags} checkedTags={checkedTags} />>
+      <Skeleton
+        loading={props.loading}
+        avatar={true}
+      >
+        <Card.Meta
+          avatar={<Avatar src={transcriberImg} name={transcriberName} />}
+          title={artistName}
+          description={<Description songName={songName} transcriberName={transcriberName} />}
+        />
+        <Tags tags={tags} checkedTags={checkedTags} />
+      </Skeleton>
     </Card>
   );
 };
