@@ -4,8 +4,10 @@ import { ContentLane } from '../../../components/content-lane';
 import { Form, Input, Icon, Select, Upload, Button, Row, Col } from 'antd';
 import { RouteComponentProps } from 'react-router';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
-import { compose } from 'recompose';
+import { compose, withState, withHandlers, lifecycle } from 'recompose';
 import styled from 'react-emotion';
+import { connect } from 'react-redux';
+import { IStore } from '../../../@types/store';
 
 const YOUTUBE_REGEX = /^(?:https?:\/\/)?(?:www\.)?youtu(?:\.be|be\.com)\/(?:watch\?v=)?([\w-]{10,})/;
 
@@ -48,8 +50,48 @@ interface IInnerProps extends IValidationProps {
 }
 
 const enhance = compose<IInnerProps, any>(
-  Form.create()
+  Form.create(),
+  connect(
+    (state: IStore) => ({
+      notationId: state.notation.id,
+    }),
+    dispatch => ({
+      setNotation: (notation: any) => dispatch(NotationActions.setNotation(notation)),
+      setTags: (tags: ITag[]) => dispatch(TagActions.setTags(tags))
+    })
+  ),
+  lifecycle<IConnectProps, {}>({
+
+  }),
+  withState('loading', 'setLoading', false),
+  withHandlers({
+    afterValidate: (props: IStateProps) => async (errors: string[], fields: IFormFieldData) => {
+      if (!errors) {
+        try {
+          await props.createNotation(getNotationParams(fields));
+        } catch (error) {
+          console.error(error);
+          props.setLoading(false);
+        }
+      }
+    }
+  })
 );
+
+const getNotationParams = (fields: IFormFieldData) => ({
+  artist_name: fields.artistName,
+  bpm: 120,
+  dead_time_ms: 0,
+  duration_ms: 60,
+  song_name: fields.songName,
+  tag_ids: fields.tagIds,
+  thumbnail: fields.thumbnail.file,
+  vextab_string: '',
+  video: {
+    kind: 'YOUTUBE',
+    src: fields.youtubeUrl
+  }
+});
 
 const noop = () => false;
 
