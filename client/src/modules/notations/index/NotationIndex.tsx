@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { compose, lifecycle, withState } from 'recompose';
-import { ContentLane } from '../../../components/content-lane';
+import { Lane } from '../../../components/lane';
 import { Grid } from './grid';
 import { fetchAllNotations } from './fetchAllNotations';
 import { connect } from 'react-redux';
@@ -80,7 +80,7 @@ const enhance = compose<ISizeProps, {}>(
 );
 
 export const NotationIndex = enhance(props => (
-  <ContentLane
+  <Lane
     withPadding={!props.isMobile}
     withTopMargin={true}
   >
@@ -96,5 +96,5 @@ export const NotationIndex = enhance(props => (
       notations={props.queriedNotations}
       loading={props.loading}
     />
-  </ContentLane>
+  </Lane>
 ));

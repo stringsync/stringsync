@@ -17,7 +17,7 @@ const Inner = styled('div')`
   margin: 0 auto;
 `;
 
-export const ContentLane: React.SFC<IProps> = props => (
+export const Lane: React.SFC<IProps> = props => (
   <Outer
     withPadding={props.withPadding}
     withTopMargin={props.withTopMargin}

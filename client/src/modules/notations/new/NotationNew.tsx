@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Box } from '../../../components/box/Box';
-import { ContentLane } from '../../../components/content-lane';
-import { Form, Input, Icon, Select, Upload, Button, Row, Col } from 'antd';
+import { Lane } from '../../../components/lane';
+import { Form, Input, Icon, Select, Upload, Button } from 'antd';
 import { RouteComponentProps } from 'react-router';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
 import { compose, withState, withHandlers, lifecycle } from 'recompose';
@@ -51,15 +51,15 @@ interface IInnerProps extends IValidationProps {
 
 const enhance = compose<IInnerProps, any>(
   Form.create(),
-  connect(
-    (state: IStore) => ({
-      notationId: state.notation.id,
-    }),
-    dispatch => ({
-      setNotation: (notation: any) => dispatch(NotationActions.setNotation(notation)),
-      setTags: (tags: ITag[]) => dispatch(TagActions.setTags(tags))
-    })
-  ),
+  // connect(
+  //   (state: IStore) => ({
+  //     notationId: state.notation.id,
+  //   }),
+  //   dispatch => ({
+  //     setNotation: (notation: any) => dispatch(NotationActions.setNotation(notation)),
+  //     setTags: (tags: ITag[]) => dispatch(TagActions.setTags(tags))
+  //   })
+  // ),
   lifecycle<IConnectProps, {}>({
 
   }),
@@ -112,7 +112,7 @@ const Center = styled('div')`
 `;
 
 export const NotationNew = enhance(props => (
-  <ContentLane withTopMargin={true}>
+  <Lane withTopMargin={true}>
     <Center>
       <Box title="upload" width={300} block={true}>
         <Form>
@@ -183,5 +183,5 @@ export const NotationNew = enhance(props => (
         </Form>
       </Box>
     </Center>
-  </ContentLane>
+  </Lane>
 ));
