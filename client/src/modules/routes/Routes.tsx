@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Switch, Route, RouteComponentProps } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import { NotationIndex, NotationNew, NotationEdit, NotationPrint, NotationShow, NotationStudio  } from '../notations';
 import { NotFound } from '../../components/not-found/NotFound';
 
