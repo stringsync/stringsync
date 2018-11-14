@@ -32,7 +32,7 @@ export const Img: React.SFC<IProps> = (props => (
       <Skeleton
         active={true}
         loading={props.loading}
-        paragraph={{ rows: 6 }}
+        paragraph={{ rows: 7 }}
       >
         <div />
       </Skeleton>
