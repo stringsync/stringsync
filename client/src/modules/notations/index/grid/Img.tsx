@@ -6,6 +6,11 @@ import { Transition } from 'react-transition-group';
 
 const DURATION_MS = 150;
 
+const TRANSITION_STYLES = {
+  entering: { opacity: 0 },
+  entered: { opacity: 1 },
+};
+
 interface IProps {
   src: string;
   alt: string;
@@ -35,11 +40,6 @@ const StyledImg = styled('img')`
   transition: opacity ${DURATION_MS}ms ease-in-out;
 `;
 
-const transitionStyles = {
-  entering: { opacity: 0 },
-  entered: { opacity: 1 },
-};
-
 /**
  * This component will conditionally show the placeholder until
  * the image loads. This avoids showing abrupt animations when
@@ -54,7 +54,7 @@ export const Img = enhance((props => (
           loading={props.loading}
           paragraph={{ rows: 7 }}
         >
-          <StyledImg src={props.src} alt={props.alt} style={{ ...transitionStyles[state] }} />
+          <StyledImg src={props.src} alt={props.alt} style={{ ...TRANSITION_STYLES[state] }} />
         </Skeleton>
       )}
     </Transition>
