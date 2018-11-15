@@ -1,8 +1,8 @@
-import { canonicalize } from '../../utils/canonicalize/canonicalize';
-import { pick, camelCase } from 'lodash';
 import * as $ from 'jquery';
+import { canonicalize } from '../../utils/canonicalize/canonicalize';
+import { pick } from 'lodash';
 import { INotation } from '../../@types/notation';
-import { mapKeysDeep } from '../../utils/mapKeysDeep';
+import { getAttributes } from '../../utils/getAttributes';
 
 export const fetchAllNotations = async (): Promise<INotation[]> => {
   const response = await $.ajax('/api/v1/notations.json', { method: 'GET' });
@@ -13,7 +13,5 @@ export const fetchAllNotations = async (): Promise<INotation[]> => {
     transcriber: transcriber => pick(transcriber.attributes, ['id', 'name', 'image']),
     video: video => video.attributes
   });
-
-  const notations = json.data.map(data => data.attributes);
-  return notations.map(notation => mapKeysDeep(notation, (_, key) => camelCase(key)));
+  return getAttributes(json.data);
 };

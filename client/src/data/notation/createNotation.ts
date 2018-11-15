@@ -3,6 +3,7 @@ import * as $ from 'jquery';
 import { canonicalize } from '../../utils/canonicalize/canonicalize';
 import { pick, camelCase } from 'lodash';
 import { mapKeysDeep } from '../../utils/mapKeysDeep';
+import { getAttributes } from '../../utils/getAttributes';
 
 interface ICreateNotation {
   artist_name: string;
@@ -63,7 +64,5 @@ export const createNotation = async (notation: ICreateNotation): Promise<INotati
     transcriber: transcriber => pick(transcriber.attributes, ['id', 'name', 'image']),
     video: video => video.attributes
   });
-
-  const newNotation = json.data.attributes;
-  return mapKeysDeep(newNotation, (_, key) => camelCase(key));
+  return getAttributes(json.data);
 };

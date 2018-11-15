@@ -23,20 +23,6 @@ const getApiUrl = (): string => {
 
 const syncSession = (response: any) => {
   const user = response.data;
-
-  $.ajaxSetup({
-    beforeSend: (xhr, settings) => {
-      const { ss } = window;
-
-      // append outbound auth headers
-      if (ss.env === 'development') {
-        settings.url = `http://localhost:3001/${settings.url}`;
-      }
-
-      ss.auth.appendAuthHeaders(xhr, settings);
-    },
-  });
-
   window.ss.store.dispatch(SessionActions.setSession(user));
 
   return user;
@@ -49,6 +35,22 @@ const syncSession = (response: any) => {
  */
 const configureAuth = (): void => {
   window.ss.auth = auth;
+
+  // configure ajax
+  $.ajaxSetup({
+    beforeSend: (xhr, settings) => {
+      const { ss } = window;
+
+      // ensure use of proxy
+      if (ss.env === 'development' && typeof settings.url !== 'undefined') {
+        const url = new URL(settings.url);
+        url.host = 'localhost:3001';
+        settings.url = url.toString();
+      }
+
+      ss.auth.appendAuthHeaders(xhr, settings);
+    },
+  });
 
   window.ss.auth.configure({
     apiUrl: getApiUrl(),
