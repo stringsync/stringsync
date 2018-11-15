@@ -61,30 +61,26 @@ const Outer = styled('div')`
 
 export const Grid = enhance(props => (
   <Outer>
-    {
-      props.notationRows.map((notations, ndx) => (
-        <Row
-          key={`notation-row-${ndx}`}
-          gutter={props.gutter}
-          type="flex"
-          align="top"
-          style={{ marginTop: props.gutter }}
-        >
-          {
-            notations.map(notation => (
-              <Col key={`col-${notation.id}`} span={props.colSpan}>
-                <Link to={props.loading ? '/' : `/n/${notation.id}`}>
-                  <Detail
-                    loading={props.loading}
-                    notation={notation}
-                    checkedTags={props.queryTags}
-                  />
-                </Link>
-              </Col>
-            ))
-          }
-        </Row>
-      ))
-    }
+    {props.notationRows.map((notations, ndx) => (
+      <Row
+        key={`notation-row-${ndx}`}
+        gutter={props.gutter}
+        type="flex"
+        align="top"
+        style={{ marginTop: props.gutter }}
+      >
+        {notations.map(notation => (
+          <Col key={`col-${notation.id}`} span={props.colSpan}>
+            <Link to={props.loading ? '/' : `/n/${notation.id}`}>
+              <Detail
+                loading={props.loading}
+                notation={notation}
+                checkedTags={props.queryTags}
+              />
+            </Link>
+          </Col>
+        ))}
+      </Row>
+    ))}
   </Outer>
 ));
