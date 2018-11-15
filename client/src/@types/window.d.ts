@@ -8,12 +8,8 @@ interface IStringSyncModules {
   env: Environments;
   debug: boolean;
   message: typeof message;
-  notification: typeof notification | void;
-  sessionSync: {
-    callback: ((user: ISession) => any) | void;
-    user: any;
-  };
-  store: any | void;
+  notification: typeof notification;
+  store: any;
 }
 
 declare global {

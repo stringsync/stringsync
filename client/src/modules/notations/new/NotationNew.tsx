@@ -13,6 +13,7 @@ import { NotationActions } from '../../../data/notation/notationActions';
 import { ITag } from '../../../@types/tag';
 import { TagsActions } from '../../../data/tags/tagsActions';
 import { fetchAllTags } from '../../../data/tags/fetchAllTags';
+import { createNotation } from '../../../data/notation/createNotation';
 
 const YOUTUBE_REGEX = /^(?:https?:\/\/)?(?:www\.)?youtu(?:\.be|be\.com)\/(?:watch\?v=)?([\w-]{10,})/;
 
@@ -32,15 +33,14 @@ interface IFormProps extends RouteComponentProps<{ id: string }, {}> {
 }
 
 interface IConnectProps extends IFormProps {
+  tags: ITag[];
   setNotation: (notation: INotation) => void;
   setTags: (tags: ITag[]) => void;
 }
 
 interface IStateProps extends IConnectProps {
   loading: boolean;
-  errors: string[];
   setLoading: (loading: boolean) => void;
-  setErrors: (errors: string[]) => void;
 }
 
 interface IValidationProps extends IStateProps {
@@ -54,29 +54,42 @@ interface IInnerProps extends IValidationProps {
 const enhance = compose<IInnerProps, any>(
   Form.create(),
   connect(
-    null,
+    (state: IStore) => ({
+      tags: state.tags
+    }),
     dispatch => ({
       setNotation: (notation: INotation) => dispatch(NotationActions.setNotation(notation)),
       setTags: (tags: ITag[]) => dispatch(TagsActions.setTags(tags))
     })
   ),
   withState('loading', 'setLoading', true),
-  lifecycle<IConnectProps, {}>({
+  lifecycle<IStateProps, {}>({
     async componentDidMount(): Promise<void> {
       const tags = await fetchAllTags();
       this.props.setTags(tags);
+      this.props.setLoading(false);
     }
   }),
   withHandlers({
     afterValidate: (props: IStateProps) => async (errors: string[], fields: IFormFieldData) => {
       if (!errors) {
         try {
-          // await props.createNotation(getNotationParams(fields));
+          const notation = await createNotation(getNotationParams(fields));
+          window.ss.message.success('created notation');
+          props.history.push(`/n/${notation.id}/edit`);
         } catch (error) {
           console.error(error);
+          window.ss.message.error('could not create notation');
           props.setLoading(false);
         }
       }
+    }
+  }),
+  withHandlers({
+    handleSubmit: (props: IValidationProps) => (event: React.SyntheticEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      props.setLoading(true);
+      props.form.validateFields(props.afterValidate);
     }
   })
 );
@@ -118,7 +131,7 @@ export const NotationNew = enhance(props => (
   <Lane withTopMargin={true}>
     <Center>
       <Box title="upload" width={300} block={true}>
-        <Form>
+        <Form onSubmit={props.handleSubmit}>
           <Form.Item>
             {props.form.getFieldDecorator('youtubeUrl', {
               rules: [
@@ -159,8 +172,12 @@ export const NotationNew = enhance(props => (
             {props.form.getFieldDecorator('tagIds', {
               rules: [{ required: true, message: 'Tags cannot be blank' }],
             })(
-              <Select disabled={props.loading} mode="multiple" placeholder="tags">
-                {[{ id: 1, name: 'foo' }].map(tag => (
+              <Select
+                disabled={props.loading}
+                mode="multiple"
+                placeholder={<span><Icon type="tags" style={{ color: 'rgba(0,0,0,.25)' }} /> tags</span>}
+              >
+                {props.tags.map(tag => (
                   <Select.Option key={tag.name} value={tag.id.toString()}>{tag.name}</Select.Option>
                 ))}
               </Select>

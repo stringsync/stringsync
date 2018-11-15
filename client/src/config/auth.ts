@@ -26,8 +26,14 @@ const syncSession = (response: any) => {
 
   $.ajaxSetup({
     beforeSend: (xhr, settings) => {
+      const { ss } = window;
+
       // append outbound auth headers
-      window.ss.auth.appendAuthHeaders(xhr, settings);
+      if (ss.env === 'development') {
+        settings.url = `http://localhost:3001/${settings.url}`;
+      }
+
+      ss.auth.appendAuthHeaders(xhr, settings);
     },
   });
 

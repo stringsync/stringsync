@@ -15,8 +15,9 @@ export const canonicalize = (response: IResponse, transforms: ITransforms = {}) 
   const nextResponse = merge({}, response);
 
   const included = new IncludedObjects(nextResponse.included || []);
+  const resData = Array.isArray(nextResponse.data) ? nextResponse.data : [nextResponse.data];
 
-  nextResponse.data.map(data => {
+  resData.forEach(data => {
     const { id, relationships } = data;
     data.attributes.id = id;
 
