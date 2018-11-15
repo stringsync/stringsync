@@ -1,8 +1,6 @@
 import * as actions from './tagsActions';
 import { ITag } from '../../@types/tag';
-
-// For type annotation
-const getDefaultState = (): ITag[] => [];
+import { getDefaultState } from './getDefaultState';
 
 export const tagsReducer = (state = getDefaultState(), action: actions.TagsActions): ITag[] => {
   let nextState = state.map(tag => Object.assign({}, tag));

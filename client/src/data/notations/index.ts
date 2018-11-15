@@ -1,2 +1,2 @@
 export * from './notationsActions';
-export * from './NotationsReducer';
+export * from './notationsReducer';

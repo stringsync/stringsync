@@ -1,4 +1,4 @@
-import { createAction } from 'utilities/redux';
+import { createAction } from '../createAction';
 import { ITag } from '../../@types/tag';
 
 export const SET_TAGS = 'SET_TAGS';
