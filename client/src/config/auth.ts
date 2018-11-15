@@ -49,7 +49,7 @@ const configureAuth = (): void => {
       }
 
       ss.auth.appendAuthHeaders(xhr, settings);
-    },
+    }
   });
 
   window.ss.auth.configure({

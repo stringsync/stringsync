@@ -4,7 +4,7 @@ import { canonicalize } from '../../utils/canonicalize/canonicalize';
 import { pick } from 'lodash';
 import { getAttributes } from '../../utils/getAttributes';
 
-interface INotationData {
+interface IRawNotationFormData {
   artist_name: string;
   bpm: number;
   dead_time_ms: number;
@@ -19,15 +19,7 @@ interface INotationData {
   };
 }
 
-const JSON_TRANSFORMS = Object.freeze({
-  created_at: createdAt => new Date(createdAt),
-  updated_at: updatedAt => new Date(updatedAt),
-  tags: tag => tag.attributes.name,
-  transcriber: transcriber => pick(transcriber.attributes, ['id', 'name', 'image']),
-  video: video => video.attributes
-});
-
-const formData = (notation: INotationData) => {
+const getFormData = (notation: IRawNotationFormData) => {
   const data = new FormData();
 
   Object.keys(notation).forEach(key => {
@@ -56,24 +48,40 @@ const formData = (notation: INotationData) => {
   return data;
 };
 
-export const createNotation = async (notation: INotationData): Promise<INotation> => {
-  const data = formData(notation);
+const handleResponse = (response: any) => {
+  const json = canonicalize(response, {
+    created_at: createdAt => new Date(createdAt),
+    updated_at: updatedAt => new Date(updatedAt),
+    tags: tag => tag.attributes.name,
+    transcriber: transcriber => pick(transcriber.attributes, ['id', 'name', 'image']),
+    video: video => video.attributes
+  });
+  return getAttributes(json.data);
+};
+
+export const fetchNotation = async (notationId: number): Promise<INotation> => {
+  const response = await $.ajax(`/api/v1/notations/${notationId}`, {
+    method: 'GET'
+  });
+  return handleResponse(response);
+};
+
+export const createNotation = async (notation: IRawNotationFormData): Promise<INotation> => {
+  const data = getFormData(notation);
   const response = await $.ajax('/api/v1/notations', {
     contentType: false,
     data,
     method: 'POST',
     processData: false
   });
-  const json = canonicalize(response, JSON_TRANSFORMS);
-  return getAttributes(json.data);
+  return handleResponse(response);
 };
 
-export const updateNotation = async (notationId: number, notation: INotationData): Promise<INotation> => {
-  const data = formData(notation);
+export const updateNotation = async (notationId: number, notation: IRawNotationFormData): Promise<INotation> => {
+  const data = getFormData(notation);
   const response = await $.ajax(`/api/v1/notations/${notationId}`, {
-    data: { notation },
+    data,
     method: 'PUT'
   });
-  const json = canonicalize(response, JSON_TRANSFORMS);
-  return getAttributes(json.data);
+  return handleResponse(response);
 };
