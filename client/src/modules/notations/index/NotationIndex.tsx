@@ -2,7 +2,6 @@ import * as React from 'react';
 import { compose, lifecycle, withState } from 'recompose';
 import { Lane } from '../../../components/lane';
 import { Grid } from './grid';
-import { fetchAllNotations } from './fetchAllNotations';
 import { connect } from 'react-redux';
 import { NotationsActions } from '../../../data/notations/notationsActions';
 import { INotation } from '../../../@types/notation';
@@ -12,6 +11,7 @@ import { isEqual } from 'lodash';
 import { filterNotations } from './filterNotations';
 import { IStore } from '../../../@types/store';
 import { getNullNotations } from './getNullNotations';
+import { fetchAllNotations } from '../../../data/notations/fetchAllNotations';
 
 interface IConnectProps {
   notations: INotation[];

@@ -9,6 +9,10 @@ import styled from 'react-emotion';
 import { connect } from 'react-redux';
 import { IStore } from '../../../@types/store';
 import { INotation } from '../../../@types/notation';
+import { NotationActions } from '../../../data/notation/notationActions';
+import { ITag } from '../../../@types/tag';
+import { TagsActions } from '../../../data/tags/tagsActions';
+import { fetchAllTags } from '../../../data/tags/fetchAllTags';
 
 const YOUTUBE_REGEX = /^(?:https?:\/\/)?(?:www\.)?youtu(?:\.be|be\.com)\/(?:watch\?v=)?([\w-]{10,})/;
 
@@ -28,11 +32,8 @@ interface IFormProps extends RouteComponentProps<{ id: string }, {}> {
 }
 
 interface IConnectProps extends IFormProps {
-  tags: any;
-  notationId: number;
-  fetchTags: () => void;
-  resetNotation: () => void;
-  createNotation: (notation: any) => void;
+  setNotation: (notation: INotation) => void;
+  setTags: (tags: ITag[]) => void;
 }
 
 interface IStateProps extends IConnectProps {
@@ -52,22 +53,25 @@ interface IInnerProps extends IValidationProps {
 
 const enhance = compose<IInnerProps, any>(
   Form.create(),
-  // connect(
-  //   dispatch => ({
-  //     // resetNotation: (notation: INotation) => dispatch(NotationsActions)
-  //     setNotation: (notation: INotation) => dispatch(NotationActions.setNotation(notation)),
-  //     setTags: (tags: ITag[]) => dispatch(TagActions.setTags(tags))
-  //   })
-  // ),
+  connect(
+    null,
+    dispatch => ({
+      setNotation: (notation: INotation) => dispatch(NotationActions.setNotation(notation)),
+      setTags: (tags: ITag[]) => dispatch(TagsActions.setTags(tags))
+    })
+  ),
+  withState('loading', 'setLoading', true),
   lifecycle<IConnectProps, {}>({
-
+    async componentDidMount(): Promise<void> {
+      const tags = await fetchAllTags();
+      this.props.setTags(tags);
+    }
   }),
-  withState('loading', 'setLoading', false),
   withHandlers({
     afterValidate: (props: IStateProps) => async (errors: string[], fields: IFormFieldData) => {
       if (!errors) {
         try {
-          await props.createNotation(getNotationParams(fields));
+          // await props.createNotation(getNotationParams(fields));
         } catch (error) {
           console.error(error);
           props.setLoading(false);
