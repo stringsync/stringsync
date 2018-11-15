@@ -13,7 +13,7 @@ import { NotationActions } from '../../../data/notation/notationActions';
 import { ITag } from '../../../@types/tag';
 import { TagsActions } from '../../../data/tags/tagsActions';
 import { fetchAllTags } from '../../../data/tags/fetchAllTags';
-import { createNotation } from '../../../data/notation/createNotation';
+import { createNotation } from '../../../data/notation/notationApi';
 
 const YOUTUBE_REGEX = /^(?:https?:\/\/)?(?:www\.)?youtu(?:\.be|be\.com)\/(?:watch\?v=)?([\w-]{10,})/;
 
