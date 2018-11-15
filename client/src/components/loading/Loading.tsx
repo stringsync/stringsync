@@ -2,6 +2,9 @@ import * as React from 'react';
 import styled from 'react-emotion';
 import { Logo } from '../branding';
 import { compose, branch, renderNothing } from 'recompose';
+import { Transition } from 'react-transition-group';
+
+const DURATION_MS = 200;
 
 interface IProps {
   loading: boolean;
@@ -25,8 +28,13 @@ const Outer = styled('div')`
   background-color: #ffffff;
 `;
 
-export const Loading = enhance(() => (
+export const Loading = enhance(props => (
   <Outer>
-    <Logo size={64} />
+    <Transition
+      in={!props.loading}
+      timeout={DURATION_MS}
+    >
+      <Logo size={64} />
+    </Transition>
   </Outer>
 ));
