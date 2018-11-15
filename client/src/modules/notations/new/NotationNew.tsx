@@ -8,6 +8,7 @@ import { compose, withState, withHandlers, lifecycle } from 'recompose';
 import styled from 'react-emotion';
 import { connect } from 'react-redux';
 import { IStore } from '../../../@types/store';
+import { INotation } from '../../../@types/notation';
 
 const YOUTUBE_REGEX = /^(?:https?:\/\/)?(?:www\.)?youtu(?:\.be|be\.com)\/(?:watch\?v=)?([\w-]{10,})/;
 
@@ -52,11 +53,9 @@ interface IInnerProps extends IValidationProps {
 const enhance = compose<IInnerProps, any>(
   Form.create(),
   // connect(
-  //   (state: IStore) => ({
-  //     notationId: state.notation.id,
-  //   }),
   //   dispatch => ({
-  //     setNotation: (notation: any) => dispatch(NotationActions.setNotation(notation)),
+  //     // resetNotation: (notation: INotation) => dispatch(NotationsActions)
+  //     setNotation: (notation: INotation) => dispatch(NotationActions.setNotation(notation)),
   //     setTags: (tags: ITag[]) => dispatch(TagActions.setTags(tags))
   //   })
   // ),
