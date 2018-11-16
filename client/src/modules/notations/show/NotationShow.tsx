@@ -1,12 +1,11 @@
 import * as React from 'react';
-import { compose, withState, lifecycle, branch, renderComponent } from 'recompose';
+import { compose, withState, lifecycle } from 'recompose';
 import { fetchNotation } from '../../../data/notation/notationApi';
 import { RouteComponentProps } from 'react-router';
 import { INotation } from '../../../@types/notation';
 import { connect } from 'react-redux';
 import { IStore } from '../../../@types/store';
 import { NotationActions } from '../../../data/notation/notationActions';
-import styled from 'react-emotion';
 import { Loading } from '../../../components/loading/Loading';
 
 interface IConnectProps extends RouteComponentProps<{ id: string }> {
@@ -56,12 +55,6 @@ const enhance = compose<IStateProps, RouteComponentProps> (
     }
   })
 );
-
-const Center = styled('div')`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
 
 export const NotationShow = enhance(props => (
   <div>
