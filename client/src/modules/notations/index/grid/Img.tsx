@@ -6,11 +6,6 @@ import { Transition } from 'react-transition-group';
 
 const DURATION_MS = 150;
 
-const TRANSITION_STYLES = {
-  entering: { opacity: 0 },
-  entered: { opacity: 1 },
-};
-
 interface IProps {
   src: string;
   alt: string;
@@ -33,10 +28,21 @@ const Outer = styled('div')<{ loading: boolean }>`
   padding: ${props => props.loading ? 24 : 0}px;
 `;
 
-const StyledImg = styled('img')`
+const getOpacity = (state: string) => {
+  switch (state) {
+    case 'entering':
+      return 0;
+    case 'entered':
+      return 1;
+    default:
+      return 0;
+  }
+};
+
+const StyledImg = styled('img')<{ state: string }>`
   width: 100%;
   height: 100%;
-  opacity: 0;
+  opacity: ${({ state }) => getOpacity(state)};
   transition: opacity ${DURATION_MS}ms ease-in-out;
 `;
 
@@ -54,7 +60,11 @@ export const Img = enhance((props => (
           loading={props.loading}
           paragraph={{ rows: 7 }}
         >
-          <StyledImg src={props.src} alt={props.alt} style={{ ...TRANSITION_STYLES[state] }} />
+          <StyledImg
+            src={props.src}
+            alt={props.alt}
+            state={state}
+          />
         </Skeleton>
       )}
     </Transition>

@@ -6,8 +6,6 @@ import { INotation } from '../../../@types/notation';
 import { connect } from 'react-redux';
 import { IStore } from '../../../@types/store';
 import { NotationActions } from '../../../data/notation/notationActions';
-import { Lane } from '../../../components/lane';
-import { Icon } from 'antd';
 import styled from 'react-emotion';
 import { Loading } from '../../../components/loading/Loading';
 
@@ -22,7 +20,7 @@ interface IStateProps extends IConnectProps {
   setLoading: (loading: boolean) => void;
 }
 
-const enhance = compose<IConnectProps, RouteComponentProps> (
+const enhance = compose<IStateProps, RouteComponentProps> (
   connect(
     (state: IStore) => ({
       notation: state.notation
@@ -56,11 +54,7 @@ const enhance = compose<IConnectProps, RouteComponentProps> (
     componentWillUnmount(): void {
       this.props.resetNotation();
     }
-  }),
-  branch<IStateProps>(
-    props => props.loading,
-    renderComponent(Loading)
-  )
+  })
 );
 
 const Center = styled('div')`
@@ -69,4 +63,9 @@ const Center = styled('div')`
   align-items: center;
 `;
 
-export const NotationShow = enhance(() => <div>NotationShow</div>);
+export const NotationShow = enhance(props => (
+  <div>
+    <Loading loading={props.loading} />
+    <div>NotationShow</div>
+  </div>
+));
