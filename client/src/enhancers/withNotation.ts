@@ -28,7 +28,7 @@ export const withNotation = <TProps>(
   onSuccess: NotationHandler<TProps>,
   onError: NotationHandler<TProps>) => (
     BaseComponent => {
-      const enhance = compose<IWithNotationProps, TProps>(
+      const enhance = compose<IWithNotationProps & TProps, TProps>(
         mapProps<IOwnProps<TProps>, TProps>(ownProps => ({ ownProps })),
         connect(
           (state: IStore) => ({
@@ -39,6 +39,14 @@ export const withNotation = <TProps>(
             resetNotation: () => dispatch(NotationActions.resetNotation())
           })
         ),
+        lifecycle<IConnectProps<TProps>, {}, {}>({
+          componentDidMount(): void {
+            this.props.resetNotation();
+          },
+          componentWillUnmount(): void {
+            this.props.resetNotation();
+          }
+        }),
         lifecycle<IConnectProps<TProps>, {}, {}>({
           async componentDidMount(): Promise<void> {
             const notationId = getNotationId(this.props.ownProps);
