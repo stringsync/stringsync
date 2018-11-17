@@ -8,11 +8,11 @@ export interface IPlayer {
   seekTo: (seconds: number, allowSeekAhead?: boolean) => void;
 }
 
-export interface IEvent {
+export interface IYTEvent {
   data: any;
   target: IPlayer;
 }
 
-export interface IStateChangeEvent extends IEvent {
+export interface IYTStateChangeEvent extends IYTEvent {
   data: number;
 }
