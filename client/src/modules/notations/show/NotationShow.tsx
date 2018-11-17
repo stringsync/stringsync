@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { compose, withState, lifecycle } from 'recompose';
+import { compose, withState } from 'recompose';
 import { RouteComponentProps } from 'react-router';
-import { INotation } from '../../../@types/notation';
 import { Loading } from '../../../components/loading/Loading';
 import { withNotation } from '../../../enhancers/withNotation';
 
