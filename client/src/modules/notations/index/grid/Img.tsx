@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from 'react-emotion';
 import { Skeleton } from 'antd';
-import { compose, lifecycle } from 'recompose';
+import { compose, lifecycle, withState } from 'recompose';
 import { Transition } from 'react-transition-group';
 
 const DURATION_MS = 150;
@@ -13,13 +13,26 @@ interface IProps {
   onLoad: () => void;
 }
 
-const enhance = compose<IProps, IProps>(
-  lifecycle<IProps, {}, {}>({
+interface IImgProps extends IProps {
+  img: HTMLImageElement;
+  setImg: (img: HTMLImageElement) => void;
+}
+
+const noop = () => null;
+
+const enhance = compose<IImgProps, IProps>(
+  withState('img', 'setImg', new Image()),
+  lifecycle<IImgProps, {}, {}>({
     componentDidMount(): void {
-      // preload image
       const img = new Image();
+      this.props.setImg(img);
       img.onload = this.props.onLoad;
       img.src = this.props.src;
+    },
+    componentWillUnmount(): void {
+      // prevent the img from executing a callback if unmounting
+      this.props.img.onload = noop;
+      this.props.img.src = '';
     }
   })
 );

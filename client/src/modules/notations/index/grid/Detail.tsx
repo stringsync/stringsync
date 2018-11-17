@@ -56,7 +56,7 @@ export const Detail = enhance(props => {
       }
     >
       <Skeleton
-        loading={props.loading || props.imgLoading}
+        loading={props.loading}
         avatar={true}
         paragraph={{ rows: 1 }}
         active={true}
