@@ -17,8 +17,12 @@ type ConnectProps = IStateProps & IDispatchProps;
 
 const enhance = compose<ConnectProps, {}>(
   connect<IStateProps, IDispatchProps, {}, IStore>(
-    state => ({ visible: state.notationMenu.visible }),
-    dispatch => ({ hide: () => dispatch(NotationMenuActions.hide()) })
+    state => ({
+      visible: state.notationMenu.visible
+    }),
+    dispatch => ({
+      hide: () => dispatch(NotationMenuActions.hide())
+    })
   )
 );
 

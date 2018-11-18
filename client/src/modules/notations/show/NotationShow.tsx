@@ -48,6 +48,7 @@ const Bottom = styled('div')`
   width: 100%;
   position: fixed;
   bottom: 0;
+  background: white;
 `;
 
 export const NotationShow = enhance(props => {
