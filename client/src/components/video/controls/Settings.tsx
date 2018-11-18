@@ -33,9 +33,11 @@ const Outer = styled('div')`
   padding: 8px 0;
 `;
 
-const IconWrapper = styled('div')<{ menuVisible: boolean }>`
-  transform: ${props => props.menuVisible ? 'rotate(0deg)' : 'rotate(180deg)'};
-  transition: transform 300ms ease-in-out;
+const IconWrapper = styled('span')<{ menuVisible: boolean }>`
+  i {
+    transform: ${props => props.menuVisible ? 'rotate(0deg)' : 'rotate(180deg)'};
+    transition: transform 300ms ease-in-out;
+  }
 `;
 
 export const Settings = enhance(props => (
