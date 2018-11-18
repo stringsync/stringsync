@@ -1,6 +1,7 @@
 import { combineReducers, createStore } from 'redux';
 import { notationsReducer as notations } from './notations';
 import { notationReducer as notation } from './notation';
+import { notationMenuReducer as notationMenu } from './notation-menu';
 import { sessionReducer as session } from './session';
 import { tagsReducer as tags } from './tags';
 import { videoReducer as video } from './video';
@@ -10,6 +11,7 @@ import preloadedState from './preloadedState';
 const reducer = combineReducers({
   notations,
   notation,
+  notationMenu,
   session,
   tags,
   video

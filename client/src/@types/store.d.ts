@@ -16,9 +16,14 @@ export interface IVideoState {
   isActive?: boolean;
 }
 
+export interface INotationMenuState {
+  visible: boolean;
+}
+
 export interface IStore {
   notations: NotationsState;
   notation: NotationState;
+  notationMenu: INotationMenuState;
   session: SessionState;
   tags: TagsState;
   video: IVideoState;
