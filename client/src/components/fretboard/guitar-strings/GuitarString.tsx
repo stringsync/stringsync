@@ -10,7 +10,7 @@ const Outer = styled('div')<{ height: number }>`
   height: ${props => props.height}px;
   background: #aaaaaa;
   box-shadow: 0 0 0.5px 0.5px #222222;
-  opacity: 0.7;
+  opacity: 0.65;
 `;
 
 export const GuitarString: React.SFC<IProps> = props => <Outer height={props.height} />;
