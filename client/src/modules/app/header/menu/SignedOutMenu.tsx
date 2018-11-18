@@ -7,7 +7,6 @@ import styled from 'react-emotion';
 import { compose, withHandlers } from 'recompose';
 import { ClickParam } from 'antd/lib/menu';
 import { withAuth, IWithAuthProps } from '../../../../enhancers/withAuth';
-import { ISession } from '../../../../@types/user';
 
 interface IHandlerProps {
   handleMenuClick: (e: ClickParam) => void;
@@ -32,12 +31,12 @@ const OAuthItem = styled(Menu.Item)<{ background: string }>`
 
 export const SignedOutMenu = enhance(props => (
   <Menu
-    selectable={false}
     {...MENU_PROPS}
     onClick={props.handleMenuClick}
   >
     <Menu.SubMenu
       {...SUB_MENU_PROPS}
+      key="foo"
       title={<Avatar><Icon type="user" style={{ marginRight: 0 }} /></Avatar>}
     >
       <Menu.ItemGroup title="sign in">

@@ -49,7 +49,6 @@ const enhance = compose <InnerProps, {}>(
 
 const Outer = styled('div')`
   cursor: pointer;
-  padding: 8px 0;
 `;
 
 export const Play = enhance(props => (

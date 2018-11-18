@@ -30,7 +30,6 @@ const enhance = compose<ConnectProps, {}>(
 
 const Outer = styled('div')`
   cursor: pointer;
-  padding: 8px 0;
 `;
 
 const IconWrapper = styled('span')<{ menuVisible: boolean }>`

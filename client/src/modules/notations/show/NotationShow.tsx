@@ -52,6 +52,17 @@ const Bottom = styled('div')`
   z-index: 2;
 `;
 
+const VideoWrapper = styled('div')`
+  max-width: 53.33333vh;
+  min-height: 200px;
+  margin: 0 auto;
+
+  iframe {
+    width: 100%;
+    min-height: 200px;
+  }
+`;
+
 export const NotationShow = enhance(props => {
   const videoProps = {
     ...pick(props.notation.video, 'kind', 'src'),
@@ -62,9 +73,11 @@ export const NotationShow = enhance(props => {
     <div>
       <Loading loading={props.loading} />
       <Menu />
-      <Row type="flex" justify="center" style={{ background: 'black' }}>
-        <Video {...videoProps} />
-      </Row>
+      <div style={{ background: 'black' }}>
+        <VideoWrapper>
+          <Video {...videoProps} />
+        </VideoWrapper>
+      </div>
       <Row type="flex" justify="center">
         <div>Fretboard</div>
       </Row>
