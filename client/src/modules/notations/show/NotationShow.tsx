@@ -3,8 +3,11 @@ import { compose, withStateHandlers, withProps } from 'recompose';
 import { RouteComponentProps } from 'react-router';
 import { Loading } from '../../../components/loading/Loading';
 import { withNotation, IWithNotationProps } from '../../../enhancers/withNotation';
-import { Video } from '../../../components/video/Video';
+import { Video } from '../../../components/video';
 import { pick } from 'lodash';
+import { Row } from 'antd';
+import styled from 'react-emotion';
+import { Menu } from './menu';
 
 type RouteProps = RouteComponentProps<{ id: string }>;
 
@@ -41,12 +44,24 @@ const enhance = compose<InnerProps, RouteComponentProps> (
 );
 
 export const NotationShow = enhance(props => {
-  const videoProps = { ...pick(props.notation.video, 'kind', 'src'), onReady: props.videoLoaded };
+  const videoProps = {
+    ...pick(props.notation.video, 'kind', 'src'),
+    onReady: props.videoLoaded
+  };
 
   return (
     <div>
       <Loading loading={props.loading} />
-      <Video {...videoProps} />
+      <Row type="flex" justify="center" style={{ background: 'black' }}>
+        <Video {...videoProps} />
+      </Row>
+      <Row type="flex" justify="center">
+        <div>Fretboard</div>
+      </Row>
+      <Row type="flex" justify="center">
+        <div>Score</div>
+      </Row>
+      <Menu />
     </div>
   );
 });

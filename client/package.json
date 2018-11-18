@@ -21,7 +21,7 @@
     "babel-plugin-import": "^1.11.0",
     "cross-env": "^5.2.0",
     "emotion": "^9.2.12",
-    "emotion-theming": "^9.2.9",
+    "emotion-theming": "^9.2.3",
     "j-toker": "^0.0.10-beta3",
     "less": "^3.8.1",
     "less-loader": "^4.1.0",
