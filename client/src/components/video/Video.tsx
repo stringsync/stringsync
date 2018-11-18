@@ -11,19 +11,25 @@ interface IOuterProps {
   kind: string;
 }
 
-interface IConnectProps {
+interface IStateProps {
+  srcFromStore: string;
+}
+
+interface IDispatchProps {
   setPlayer: (player: IPlayer) => void;
   setPlayerState: (playerState: PlayerStates) => void;
   setVideo: (video: IVideoState) => void;
   resetVideo: () => void;
 }
 
+type ConnectProps = IStateProps & IDispatchProps;
+
 interface IHandlerProps {
   handleReady: (event: IYTEvent) => void;
   handleStateChange: (event: IYTStateChangeEvent) => void;
 }
 
-type InnerProps = IOuterProps & IConnectProps & IHandlerProps;
+type InnerProps = IOuterProps & IStateProps & IDispatchProps & IHandlerProps;
 
 const PLAYER_STATES = Object.freeze({
   '-1': 'UNSTARTED',
@@ -48,7 +54,7 @@ const DEFAULT_YOUTUBE_OPTIONS = Object.freeze({
 });
 
 const enhance = compose<InnerProps, IOuterProps>(
-  connect<{}, IConnectProps, {}, {}>(
+  connect<IStateProps, IDispatchProps>(
     null,
     dispatch => ({
       setPlayer: (player: IPlayer) => dispatch(VideoActions.setPlayer(player)),
@@ -57,15 +63,22 @@ const enhance = compose<InnerProps, IOuterProps>(
       resetVideo: () => dispatch(VideoActions.resetVideo())
     })
   ),
-  lifecycle<IConnectProps, {}, {}>({
+  lifecycle<ConnectProps & IOuterProps, {}, {}>({
     componentDidMount(): void {
-      this.props.resetVideo();
+      if (this.props.srcFromStore) {
+        throw new Error('video already mounted!');
+      } else if (!this.props.src) {
+        throw new Error('src not provided');
+      }
+
+      const { kind, src } = this.props;
+      this.props.setVideo({ kind, src });
     },
     componentWillUnmount(): void {
       this.props.resetVideo();
     }
   }),
-  withHandlers<IConnectProps, IHandlerProps>({
+  withHandlers<ConnectProps, IHandlerProps>({
     handleReady: props => event => {
       props.setPlayer(event.target);
     },

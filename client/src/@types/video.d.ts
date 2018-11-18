@@ -1,8 +1,4 @@
-declare namespace Video {
-  type Kinds = 'YOUTUBE'
-
-  export interface IVideo {
-    kind: Kinds | null;
-    src: string;
-  }
+export interface IVideo {
+  kind: string;
+  src: string;
 }

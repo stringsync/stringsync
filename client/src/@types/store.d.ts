@@ -9,9 +9,9 @@ export type SessionState = ISession;
 export type TagsState = ITag[];
 
 export interface IVideoState {
-  kind: Video.Kinds | null;
+  kind: string;
   src: string;
-  player: IPlayer | null;
+  player?: IPlayer | null;
   playerState?: PlayerStates;
   isActive?: boolean;
 }
