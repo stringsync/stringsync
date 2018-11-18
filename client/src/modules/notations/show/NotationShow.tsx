@@ -44,12 +44,9 @@ const enhance = compose<InnerProps, RouteComponentProps> (
   )
 );
 
-const Bottom = styled('div')`
+const ControlsWrapper = styled('div')`
   width: 100%;
-  position: fixed;
-  bottom: 0;
   background: white;
-  z-index: 2;
 `;
 
 const VideoWrapper = styled('div')`
@@ -78,15 +75,15 @@ export const NotationShow = enhance(props => {
           <Video {...videoProps} />
         </VideoWrapper>
       </div>
+      <ControlsWrapper>
+        <Controls />
+      </ControlsWrapper>
       <Row type="flex" justify="center">
         <div>Fretboard</div>
       </Row>
       <Row type="flex" justify="center">
         <div>Score</div>
       </Row>
-      <Bottom>
-        <Controls />
-      </Bottom>
     </div>
   );
 });
