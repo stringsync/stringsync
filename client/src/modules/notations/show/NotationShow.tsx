@@ -8,6 +8,7 @@ import { pick } from 'lodash';
 import { Row } from 'antd';
 import styled from 'react-emotion';
 import { Menu } from './menu';
+import { Controls } from '../../../components/video/controls';
 
 type RouteProps = RouteComponentProps<{ id: string }>;
 
@@ -43,6 +44,12 @@ const enhance = compose<InnerProps, RouteComponentProps> (
   )
 );
 
+const Bottom = styled('div')`
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+`;
+
 export const NotationShow = enhance(props => {
   const videoProps = {
     ...pick(props.notation.video, 'kind', 'src'),
@@ -52,6 +59,7 @@ export const NotationShow = enhance(props => {
   return (
     <div>
       <Loading loading={props.loading} />
+      <Menu />
       <Row type="flex" justify="center" style={{ background: 'black' }}>
         <Video {...videoProps} />
       </Row>
@@ -61,7 +69,9 @@ export const NotationShow = enhance(props => {
       <Row type="flex" justify="center">
         <div>Score</div>
       </Row>
-      <Menu />
+      <Bottom>
+        <Controls />
+      </Bottom>
     </div>
   );
 });
