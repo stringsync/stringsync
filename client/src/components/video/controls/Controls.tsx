@@ -5,6 +5,7 @@ import { NotationMenuActions } from '../../../data/notation-menu/notationMenuAct
 import { Row, Col, Slider, Icon } from 'antd';
 import { Lane } from '../../lane';
 import styled from 'react-emotion';
+import { Settings } from './Settings';
 
 interface IDispatchProps {
   toggleVisibility: () => void;
@@ -36,9 +37,7 @@ export const Controls = enhance(() => (
           <Slider />
         </Col>
         <Col span={1}>
-          <Row type="flex" justify="center" align="middle">
-            <Icon type="setting" style={{ fontSize: 24 }} />
-          </Row>
+          <Settings />
         </Col>
         <Col span={6}>
           <Row type="flex" justify="start" align="middle">

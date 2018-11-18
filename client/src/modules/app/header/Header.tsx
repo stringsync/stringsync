@@ -4,20 +4,16 @@ import { Layout, Row, Col } from 'antd';
 import { Branding } from './Branding';
 import { Link } from 'react-router-dom';
 import { Menu } from './menu';
+import { Lane } from '../../../components/lane/Lane';
 
 const Outer = styled(Layout.Header)`
   background: #ffffff;
   border-bottom: 1px solid #e8e8e8;
 `;
 
-const Inner = styled('div')`
-  max-width: 1200px;
-  margin: 0 auto;
-`;
-
 export const Header = () => (
   <Outer>
-    <Inner>
+    <Lane>
       <Row type="flex" justify="space-between">
         <Col>
           <Link to="/"><Branding /></Link>
@@ -26,6 +22,6 @@ export const Header = () => (
           <Menu />
         </Col>
       </Row>
-    </Inner>
+    </Lane>
   </Outer>
 );
