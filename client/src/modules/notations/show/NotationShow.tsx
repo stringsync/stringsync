@@ -9,6 +9,7 @@ import { Row } from 'antd';
 import styled from 'react-emotion';
 import { Menu } from './menu';
 import { Controls } from '../../../components/video/controls';
+import { Fretboard } from '../../../components/fretboard';
 
 type RouteProps = RouteComponentProps<{ id: string }>;
 
@@ -79,7 +80,7 @@ export const NotationShow = enhance(props => {
         <Controls />
       </ControlsWrapper>
       <Row type="flex" justify="center">
-        <div>Fretboard</div>
+        <Fretboard />
       </Row>
       <Row type="flex" justify="center">
         <div>Score</div>
