@@ -1,26 +1,52 @@
 import * as React from 'react';
-import { compose, withState } from 'recompose';
+import { compose, withStateHandlers, withProps } from 'recompose';
 import { RouteComponentProps } from 'react-router';
 import { Loading } from '../../../components/loading/Loading';
-import { withNotation } from '../../../enhancers/withNotation';
+import { withNotation, IWithNotationProps } from '../../../enhancers/withNotation';
+import { Video } from '../../../components/video/Video';
+import { pick } from 'lodash';
 
-interface IStateProps extends RouteComponentProps<{ id: string }> {
-  loading: boolean;
-  setLoading: (loading: boolean) => void;
+type RouteProps = RouteComponentProps<{ id: string }>;
+
+interface IStateProps {
+  notationLoading: boolean;
+  videoLoading: boolean;
+  notationLoaded: () => void;
+  videoLoaded: () => void;
 }
 
-const enhance = compose<IStateProps, RouteComponentProps> (
-  withState('loading', 'setLoading', true),
-  withNotation<IStateProps>(
+interface ILoadingProps {
+  loading: boolean;
+}
+
+type InnerProps = RouteProps & IStateProps & ILoadingProps & IWithNotationProps;
+
+const enhance = compose<InnerProps, RouteComponentProps> (
+  withStateHandlers(
+    { notationLoading: true },
+    { notationLoaded: () => () => ({ notationLoading: false }) }
+  ),
+  withStateHandlers(
+    { videoLoading: true },
+    { videoLoaded: () => () => ({ videoLoading: false }) }
+  ),
+  withProps<ILoadingProps, IStateProps>(props => ({
+    loading: props.notationLoading || props.videoLoading
+  })),
+  withNotation<IStateProps & RouteProps>(
     props => parseInt(props.match.params.id, 10),
-    props => props.setLoading(false),
+    props => props.notationLoaded(),
     props => props.history.push('/')
   )
 );
 
-export const NotationShow = enhance(props => (
-  <div>
-    <Loading loading={props.loading} />
-    <div>NotationShow</div>
-  </div>
-));
+export const NotationShow = enhance(props => {
+  const videoProps = { ...pick(props.notation.video, 'kind', 'src'), onReady: props.videoLoaded };
+
+  return (
+    <div>
+      <Loading loading={props.loading} />
+      <Video {...videoProps} />
+    </div>
+  );
+});

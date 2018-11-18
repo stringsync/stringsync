@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { compose, lifecycle, withHandlers } from 'recompose';
-import { IStore, IVideoState } from '../../@types/store';
+import { compose, lifecycle, withHandlers, branch, renderNothing } from 'recompose';
+import { IVideoState } from '../../@types/store';
 import { connect } from 'react-redux';
 import { IPlayer, PlayerStates, IYTEvent, IYTStateChangeEvent } from '../../@types/youtube';
 import { VideoActions } from '../../data/video/videoActions';
@@ -9,10 +9,7 @@ import YouTube from 'react-youtube';
 interface IOuterProps {
   src: string;
   kind: string;
-}
-
-interface IStateProps {
-  srcFromStore: string;
+  onReady?: (event?: IYTEvent) => void;
 }
 
 interface IDispatchProps {
@@ -22,14 +19,12 @@ interface IDispatchProps {
   resetVideo: () => void;
 }
 
-type ConnectProps = IStateProps & IDispatchProps;
-
 interface IHandlerProps {
   handleReady: (event: IYTEvent) => void;
   handleStateChange: (event: IYTStateChangeEvent) => void;
 }
 
-type InnerProps = IOuterProps & IStateProps & IDispatchProps & IHandlerProps;
+type InnerProps = IOuterProps & IDispatchProps & IHandlerProps;
 
 const PLAYER_STATES = Object.freeze({
   '-1': 'UNSTARTED',
@@ -54,7 +49,7 @@ const DEFAULT_YOUTUBE_OPTIONS = Object.freeze({
 });
 
 const enhance = compose<InnerProps, IOuterProps>(
-  connect<IStateProps, IDispatchProps>(
+  connect<{}, IDispatchProps>(
     null,
     dispatch => ({
       setPlayer: (player: IPlayer) => dispatch(VideoActions.setPlayer(player)),
@@ -63,14 +58,12 @@ const enhance = compose<InnerProps, IOuterProps>(
       resetVideo: () => dispatch(VideoActions.resetVideo())
     })
   ),
-  lifecycle<ConnectProps & IOuterProps, {}, {}>({
+  branch<IDispatchProps & IOuterProps>(
+    props => !props.src,
+    renderNothing
+  ),
+  lifecycle<IDispatchProps & IOuterProps, {}, {}>({
     componentDidMount(): void {
-      if (this.props.srcFromStore) {
-        throw new Error('video already mounted!');
-      } else if (!this.props.src) {
-        throw new Error('src not provided');
-      }
-
       const { kind, src } = this.props;
       this.props.setVideo({ kind, src });
     },
@@ -78,9 +71,13 @@ const enhance = compose<InnerProps, IOuterProps>(
       this.props.resetVideo();
     }
   }),
-  withHandlers<ConnectProps, IHandlerProps>({
+  withHandlers<IDispatchProps & IOuterProps, IHandlerProps>({
     handleReady: props => event => {
       props.setPlayer(event.target);
+
+      if (typeof props.onReady === 'function') {
+        props.onReady(event);
+      }
     },
     handleStateChange: props => event => {
       props.setPlayerState(PLAYER_STATES[event.data]);
