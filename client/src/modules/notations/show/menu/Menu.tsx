@@ -1,14 +1,25 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { Drawer } from 'antd';
+import { connect } from 'react-redux';
+import { IStore } from '../../../../@types/store';
+import { NotationMenuActions } from '../../../../data/notation-menu/notationMenuActions';
 
-interface IConnectProps {
-  visible: boolean | undefined;
+interface IStateProps {
+  visible: boolean;
+}
+
+interface IDispatchProps {
   hide: () => void;
 }
 
-const enhance = compose<IConnectProps, {}>(
+type ConnectProps = IStateProps & IDispatchProps;
 
+const enhance = compose<ConnectProps, {}>(
+  connect<IStateProps, IDispatchProps, {}, IStore>(
+    state => ({ visible: state.notationMenu.visible }),
+    dispatch => ({ hide: () => dispatch(NotationMenuActions.hide()) })
+  )
 );
 
 export const Menu = enhance(props => (
