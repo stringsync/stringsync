@@ -41,11 +41,11 @@ const Outer = styled('div')`
   }
 `;
 
-export const Fretboard = enhance(() => (
+export const Fretboard = enhance(props => (
   <Outer>
     <Overlap>
       <Layer>
-        <Frets />
+        <Frets numFrets={props.numFrets} />
       </Layer>
       <Layer>
         <GuitarStrings />
