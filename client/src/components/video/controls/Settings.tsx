@@ -5,7 +5,7 @@ import { IStore } from '../../../@types/store';
 import { NotationMenuActions } from '../../../data/notation-menu/notationMenuActions';
 import { Row, Icon } from 'antd';
 import styled from 'react-emotion';
-import { ICON_SIZE_PX } from './ICON_SIZE_PX';
+import { ICON_SIZE } from './ICON_SIZE';
 
 interface IStateProps {
   visible: boolean;
@@ -36,7 +36,7 @@ const Outer = styled('div')`
 const IconWrapper = styled('div')<{ menuVisible: boolean }>`
   transform: ${props => props.menuVisible ? 'rotate(0deg)' : 'rotate(180deg)'};
   transition: transform 300ms ease-in-out;
-  font-size: ${() => ICON_SIZE_PX}px;
+  font-size: ${() => ICON_SIZE};
 `;
 
 export const Settings = enhance(props => (

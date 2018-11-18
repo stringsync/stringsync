@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Menu } from 'antd';
 import { MENU_PROPS } from './MENU_PROPS';
 import { ITEM_PROPS } from './ITEM_PROPS';
-import { Link } from 'react-router-dom';
 import { Avatar } from '../../../../components/avatar';
 import { ISession } from '../../../../@types/session';
 import { SUB_MENU_PROPS } from './SUB_MENU_PROPS';
