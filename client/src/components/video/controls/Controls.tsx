@@ -1,37 +1,22 @@
 import * as React from 'react';
-import { compose } from 'recompose';
-import { connect } from 'react-redux';
-import { NotationMenuActions } from '../../../data/notation-menu/notationMenuActions';
-import { Row, Col, Icon } from 'antd';
+import { Row, Col } from 'antd';
 import { Lane } from '../../lane';
 import styled from 'react-emotion';
 import { Settings } from './Settings';
 import { Detail } from './Detail';
-
-interface IDispatchProps {
-  toggleVisibility: () => void;
-}
-
-const enhance = compose<IDispatchProps, {}>(
-  connect(
-    null,
-    dispatch => ({
-      toggleVisibility: () => dispatch(NotationMenuActions.toggleVisibility())
-    })
-  )
-);
+import { Play } from './Play';
 
 const Outer = styled('div')`
   padding: 12px 0;
 `;
 
-export const Controls = enhance(props => (
+export const Controls = props => (
   <Outer>
     <Lane withPadding={true}>
       <Row type="flex" justify="center" align="middle">
         <Col span={1}>
           <Row type="flex" justify="center" align="middle">
-            <Icon type="play-circle" style={{ fontSize: 24 }} />
+            <Play />
           </Row>
         </Col>
         <Col xxl={18} xl={18} lg={22} md={22} sm={22} xs={22}>
@@ -46,4 +31,4 @@ export const Controls = enhance(props => (
       </Row>
     </Lane>
   </Outer>
-));
+);

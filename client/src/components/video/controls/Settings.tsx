@@ -36,19 +36,17 @@ const Outer = styled('div')`
 const IconWrapper = styled('div')<{ menuVisible: boolean }>`
   transform: ${props => props.menuVisible ? 'rotate(0deg)' : 'rotate(180deg)'};
   transition: transform 300ms ease-in-out;
-  font-size: ${() => ICON_SIZE};
 `;
 
 export const Settings = enhance(props => (
-  <Outer>
+  <Outer onClick={props.toggleVisibility}>
     <Row
       type="flex"
       justify="center"
       align="middle"
-      onClick={props.toggleVisibility}
     >
       <IconWrapper menuVisible={props.visible}>
-        <Icon type="setting" />
+        <Icon type="setting" style={{ fontSize: ICON_SIZE }} />
       </IconWrapper>
     </Row>
   </Outer>
