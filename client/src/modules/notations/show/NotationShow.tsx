@@ -10,6 +10,7 @@ import styled from 'react-emotion';
 import { Menu } from './menu';
 import { Controls } from '../../../components/video/controls';
 import { Fretboard } from '../../../components/fretboard';
+import { Score } from '../../../components/score/Score';
 
 type RouteProps = RouteComponentProps<{ id: string }>;
 
@@ -83,7 +84,7 @@ export const NotationShow = enhance(props => {
         <Fretboard />
       </Row>
       <Row type="flex" justify="center">
-        <div>Score</div>
+        <Score src="" />
       </Row>
     </div>
   );
