@@ -10,7 +10,7 @@ interface IProps {
 const enhance = compose<IProps, IProps>(
   lifecycle({
     async componentDidMount() {
-      const osmd = new OpenSheetMusicDisplay('score', { backend: 'canvas' });
+      const osmd = new OpenSheetMusicDisplay('score');
       await osmd.load(xml);
       osmd.render();
     }
@@ -19,6 +19,6 @@ const enhance = compose<IProps, IProps>(
 
 export const Score = enhance(() => (
   <div>
-    <div id="score" style={{ width: '1200px' }} />
+    <div id="score" style={{ width: '400px' }} />
   </div>
 ));
