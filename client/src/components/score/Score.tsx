@@ -19,6 +19,6 @@ const enhance = compose<IProps, IProps>(
 
 export const Score = enhance(() => (
   <div>
-    <div id="score" style={{ width: '400px' }} />
+    <div id="score" style={{ width: '800px' }} />
   </div>
 ));
