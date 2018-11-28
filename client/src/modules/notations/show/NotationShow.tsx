@@ -11,6 +11,7 @@ import { Menu } from './menu';
 import { Controls } from '../../../components/video/controls';
 import { Fretboard } from '../../../components/fretboard';
 import { Score } from '../../../components/score/Score';
+import withSizes from 'react-sizes';
 
 type RouteProps = RouteComponentProps<{ id: string }>;
 
@@ -25,7 +26,11 @@ interface ILoadingProps {
   loading: boolean;
 }
 
-type InnerProps = RouteProps & IStateProps & ILoadingProps & IWithNotationProps;
+interface IWithSizesProps {
+  scoreWidth: number;
+}
+
+type InnerProps = RouteProps & IStateProps & ILoadingProps & IWithSizesProps & IWithNotationProps;
 
 const enhance = compose<InnerProps, RouteComponentProps> (
   withStateHandlers(
@@ -43,7 +48,8 @@ const enhance = compose<InnerProps, RouteComponentProps> (
     props => parseInt(props.match.params.id, 10),
     props => props.notationLoaded(),
     props => props.history.push('/')
-  )
+  ),
+  withSizes(size => ({ scoreWidth: Math.min(1200, size.width) }))
 );
 
 const ControlsWrapper = styled('div')`
@@ -84,7 +90,10 @@ export const NotationShow = enhance(props => {
         <Fretboard />
       </Row>
       <Row type="flex" justify="center">
-        <Score src="" />
+        <Score
+          vextabString={props.notation.vextabString}
+          width={props.scoreWidth}
+        />
       </Row>
     </div>
   );
