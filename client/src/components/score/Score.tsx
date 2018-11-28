@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { compose, withHandlers } from 'recompose';
-import VT from 'vextab/releases/vextab-div.js';
+import { compose, withHandlers, withState, EventHandler } from 'recompose';
 import { VextabString } from '../../models/vextab-string';
 import { Score as ScoreModel } from '../../models/score';
 
@@ -8,25 +7,21 @@ interface IProps {
   src: string;
 }
 
-interface IHandlerProps {
-  handleDivRef: any;
+interface IStateProps {
+  div: HTMLDivElement | null;
+  setDiv: (div: HTMLDivElement | null) => void;
 }
 
-type InnerProps = IHandlerProps & IProps;
+interface IHandlerProps {
+  handleDivRef: (div: HTMLDivElement) => void;
+}
+
+type InnerProps = IProps & IStateProps & IHandlerProps;
 
 const enhance = compose<InnerProps, IProps>(
-  withHandlers(() => {
-    let div: HTMLCanvasElement;
-
-    return {
-      handleDivRef: () => ref => {
-        if (!ref) {
-          return;
-        }
-
-        div = ref;
-      }
-    };
+  withState('div', 'setDiv', null),
+  withHandlers<IStateProps, IHandlerProps>({
+    handleDivRef: props => div => props.setDiv(div)
   })
 );
 
