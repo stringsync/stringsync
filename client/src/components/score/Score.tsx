@@ -3,8 +3,14 @@ import { compose, withHandlers, withState, withProps, lifecycle } from 'recompos
 import { VextabString as VextabStringWrapper } from '../../models/vextab-string';
 import { Score as ScoreWrapper } from '../../models/score';
 import { debounce } from 'lodash';
+import styled from 'react-emotion';
+import { Row, Col } from 'antd';
+import { ScoreTitle } from './ScoreTitle';
 
 interface IProps {
+  songName: string;
+  artistName: string;
+  transcriberName: string;
   vextabString: string;
   width: number;
 }
@@ -28,7 +34,7 @@ const MIN_WIDTH_PER_MEASURE = 240; // px
 const MIN_MEASURES_PER_LINE = 1;
 const MAX_MEASURES_PER_LINE = 4;
 
-const updateScore = debounce(function(this: any) {
+const renderScore = debounce(function(this: any) {
   if (!this.props.div) {
     return;
   }
@@ -81,11 +87,32 @@ const enhance = compose<InnerProps, IProps>(
       );
     },
     componentDidUpdate(): void {
-      updateScore.call(this);
+      renderScore.call(this);
     }
   })
 );
 
+const Outer = styled('div')`
+  background: white;
+  padding-top: 48px;
+  padding-bottom: 64px;
+`;
+
 export const Score = enhance(props => (
-  <div style={{ background: 'white' }} ref={props.handleDivRef} />
+  <Outer>
+    <Row type="flex" justify="center">
+      <Col span={24}>
+        <ScoreTitle
+          songName={props.songName}
+          artistName={props.artistName}
+          transcriberName={props.transcriberName}
+        />
+      </Col>
+    </Row>
+    <Row type="flex" justify="center">
+      <Col span={24}>
+        <div ref={props.handleDivRef} />
+      </Col>
+    </Row>
+  </Outer>
 ));

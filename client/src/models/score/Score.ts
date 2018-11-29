@@ -26,7 +26,7 @@ export class Score {
   public render(): void {
     // Initialize
     this.renderer = new Flow.Renderer(this.div, Flow.Renderer.Backends.SVG);
-    this.artist = new Artist(0, 0, this.width);
+    this.artist = new Artist(7, 0, this.width);
     this.vextab = new VexTab(this.artist);
 
     // Parse vextabString

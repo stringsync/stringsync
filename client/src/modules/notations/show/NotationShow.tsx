@@ -4,8 +4,8 @@ import { RouteComponentProps } from 'react-router';
 import { Loading } from '../../../components/loading/Loading';
 import { withNotation, IWithNotationProps } from '../../../enhancers/withNotation';
 import { Video } from '../../../components/video';
-import { pick } from 'lodash';
-import { Row } from 'antd';
+import { pick, get } from 'lodash';
+import { Row, Col } from 'antd';
 import styled from 'react-emotion';
 import { Menu } from './menu';
 import { Controls } from '../../../components/video/controls';
@@ -83,18 +83,25 @@ export const NotationShow = enhance(props => {
           <Video {...videoProps} />
         </VideoWrapper>
       </div>
-      <ControlsWrapper>
-        <Controls />
-      </ControlsWrapper>
       <Row type="flex" justify="center">
         <Fretboard />
       </Row>
       <Row type="flex" justify="center">
-        <Score
-          vextabString={props.notation.vextabString}
-          width={props.scoreWidth}
-        />
+        <Col span={24} style={{ background: 'white' }}>
+          <Row type="flex" justify="center">
+            <Score
+              songName={props.notation.songName}
+              artistName={props.notation.artistName}
+              transcriberName={get(props.notation.transcriber, 'name', '')}
+              vextabString={props.notation.vextabString}
+              width={props.scoreWidth}
+            />
+          </Row>
+        </Col>
       </Row>
+      <ControlsWrapper>
+        <Controls />
+      </ControlsWrapper>
     </div>
   );
 });
