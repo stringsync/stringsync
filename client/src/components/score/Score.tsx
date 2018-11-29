@@ -2,6 +2,7 @@ import * as React from 'react';
 import { compose, withHandlers, withState, withProps, lifecycle } from 'recompose';
 import { VextabString as VextabStringWrapper } from '../../models/vextab-string';
 import { Score as ScoreWrapper } from '../../models/score';
+import { debounce } from 'lodash';
 
 interface IProps {
   vextabString: string;
@@ -27,13 +28,39 @@ const MIN_WIDTH_PER_MEASURE = 240; // px
 const MIN_MEASURES_PER_LINE = 1;
 const MAX_MEASURES_PER_LINE = 4;
 
+const updateScore = debounce(function(this: any) {
+  if (!this.props.div) {
+    return;
+  }
+
+  try {
+    // We have to manually manage the children of the main div
+    // since React knows nothing about them
+    const { firstChild } = this.props.div;
+    if (firstChild) {
+      this.props.div.removeChild(firstChild);
+    }
+
+    const score = new ScoreWrapper(
+      this.props.width,
+      this.props.div,
+      new VextabStringWrapper(this.props.vextabString).asMeasures(this.props.measuresPerLine)
+    );
+
+    score.render();
+  } catch (error) {
+    console.error(error);
+    window.ss.message.error('could not render score');
+  }
+}, 250);
+
 const enhance = compose<InnerProps, IProps>(
   withState('div', 'setDiv', null),
   withHandlers<IStateProps, IHandlerProps>({
     handleDivRef: props => div => props.setDiv(div)
   }),
   withProps((props: any) => {
-    let measuresPerLine;
+    let measuresPerLine: number;
 
     // compute mpl based on width
     measuresPerLine = Math.floor(props.width / MIN_WIDTH_PER_MEASURE);
@@ -54,26 +81,11 @@ const enhance = compose<InnerProps, IProps>(
       );
     },
     componentDidUpdate(): void {
-      if (!this.props.div) {
-        return;
-      }
-
-      // We have to manually manage the children of the main div
-      // since React knows nothing about them
-      const { firstChild } = this.props.div;
-      if (firstChild) {
-        this.props.div.removeChild(firstChild);
-      }
-
-      const score = new ScoreWrapper(
-        this.props.width,
-        this.props.div,
-        new VextabStringWrapper(this.props.vextabString).asMeasures(this.props.measuresPerLine)
-      );
-
-      score.render();
+      updateScore.call(this);
     }
   })
 );
 
-export const Score = enhance(props => <div ref={props.handleDivRef} />);
+export const Score = enhance(props => (
+  <div style={{ background: 'white' }} ref={props.handleDivRef} />
+));

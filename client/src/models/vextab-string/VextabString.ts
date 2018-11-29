@@ -15,22 +15,16 @@ const toOptionsObject = (optionsStr: string): object => (
   }, {})
 );
 const toOptionsStr = (optionsObj: object): string => {
-  const keys = Object.keys(optionsObj).sort(a => a === 'tabstave' ? -1 : 1);
-  return keys.map(key => {
-    const value = optionsObj[key];
-    if (value === null) {
-      return key;
-    } else {
-      return `${key}=${value}`;
-    }
-  }).join(' ');
+  const optionsStr = Object.keys(optionsObj).map(key => `${key}=${optionsObj[key]}`).join(' ');
+  return `tabstave ${optionsStr}`;
 };
 
-const DEFAULT_COMMON_OPTIONS = {
-  tabstave: null,
+const DEFAULT_BASE_OPTS = {
   clef: 'none',
   notation: 'true'
 };
+
+const DEFAULT_SPACING = 50; // px
 
 export class VextabString {
   public readonly raw: string;
@@ -45,7 +39,7 @@ export class VextabString {
    *
    * @param maxMeasuresPerLine number
    */
-  public asMeasures(maxMeasuresPerLine: number, commonOptions = DEFAULT_COMMON_OPTIONS): string {
+  public asMeasures(maxMeasuresPerLine: number, spacing = DEFAULT_SPACING, baseOpts = DEFAULT_BASE_OPTS): string {
     if (maxMeasuresPerLine < 1) {
       throw new RangeError(`expected maxMeasuresPerLine to be >= 1: ${maxMeasuresPerLine}`);
     }
@@ -53,7 +47,7 @@ export class VextabString {
     // Create groupings similar to measureGroups, but adheres to maxMeasuresPerLine
     const lines: IMeasureGroup[] = this.measureGroups.reduce((groups: IMeasureGroup[], measureGroup) => {
       const { options, measures } = measureGroup;
-      const withCommonOptions = Object.assign({}, options, commonOptions);
+      const opts = Object.assign({}, options, baseOpts);
 
       let line: string[] = [];
       measures.forEach((measure, ndx) => {
@@ -64,14 +58,14 @@ export class VextabString {
         } else {
           // When we reach the maxMeasuresPerLine length, we push a
           // new group
-          groups.push({ options: withCommonOptions, measures: line });
+          groups.push({ options: opts, measures: line });
           line = [measure];
         }
 
         if (ndx === measures.length - 1) {
           // The next measureGroup will have new options, so we push
           // a new group if on the last measure of measureGroup
-          groups.push({ options: withCommonOptions, measures: line });
+          groups.push({ options: opts, measures: line });
         }
       });
 
@@ -80,6 +74,7 @@ export class VextabString {
 
     // Reconstruct the vextabString
     return lines.reduce((rows: string[], line) => {
+      rows.push(`options space=${spacing}`);
       rows.push(toOptionsStr(line.options));
       // Assume all measures have the single bar line
       line.measures.forEach(measure => rows.push(`notes | ${measure}`));
