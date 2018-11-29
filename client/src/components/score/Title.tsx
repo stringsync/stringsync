@@ -31,7 +31,7 @@ const StyledH2 = styled('h2')`
   color: #aaaaaa;
 `;
 
-export const ScoreTitle = enhance(props => (
+export const Title = enhance(props => (
   <Outer>
     <StyledH1>{props.songName} by {props.artistName}</StyledH1>
     <StyledH2>trascribed by {props.transcriberName}</StyledH2>

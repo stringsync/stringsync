@@ -55,6 +55,10 @@ const enhance = compose<InnerProps, RouteComponentProps> (
 const ControlsWrapper = styled('div')`
   width: 100%;
   background: white;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
 `;
 
 const VideoWrapper = styled('div')`

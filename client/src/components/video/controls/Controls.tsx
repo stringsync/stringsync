@@ -9,6 +9,7 @@ import { Scrubber } from './Scrubber';
 
 const Outer = styled('div')`
   padding: 12px 0;
+  border-top: 1px solid #e8e8e8;
 `;
 
 export const Controls = () => (

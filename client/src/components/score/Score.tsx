@@ -5,7 +5,7 @@ import { Score as ScoreWrapper } from '../../models/score';
 import { debounce } from 'lodash';
 import styled from 'react-emotion';
 import { Row, Col } from 'antd';
-import { ScoreTitle } from './ScoreTitle';
+import { Title } from './Title';
 
 interface IProps {
   songName: string;
@@ -102,7 +102,7 @@ export const Score = enhance(props => (
   <Outer>
     <Row type="flex" justify="center">
       <Col span={24}>
-        <ScoreTitle
+        <Title
           songName={props.songName}
           artistName={props.artistName}
           transcriberName={props.transcriberName}

@@ -19,12 +19,12 @@ const toOptionsStr = (optionsObj: object): string => {
   return `tabstave ${optionsStr}`;
 };
 
-const DEFAULT_BASE_OPTS = {
+const BASE_OPTS = {
   clef: 'none',
   notation: 'true'
 };
 
-const DEFAULT_SPACING = 50; // px
+const SPACING = 50; // px
 
 export class VextabString {
   public readonly raw: string;
@@ -39,7 +39,8 @@ export class VextabString {
    *
    * @param maxMeasuresPerLine number
    */
-  public asMeasures(maxMeasuresPerLine: number, spacing = DEFAULT_SPACING, baseOpts = DEFAULT_BASE_OPTS): string {
+  public asMeasures(maxMeasuresPerLine: number): string {
+
     if (maxMeasuresPerLine < 1) {
       throw new RangeError(`expected maxMeasuresPerLine to be >= 1: ${maxMeasuresPerLine}`);
     }
@@ -47,7 +48,7 @@ export class VextabString {
     // Create groupings similar to measureGroups, but adheres to maxMeasuresPerLine
     const lines: IMeasureGroup[] = this.measureGroups.reduce((groups: IMeasureGroup[], measureGroup) => {
       const { options, measures } = measureGroup;
-      const opts = Object.assign({}, options, baseOpts);
+      const opts = Object.assign({}, options, BASE_OPTS);
 
       let line: string[] = [];
       measures.forEach((measure, ndx) => {
@@ -74,7 +75,7 @@ export class VextabString {
 
     // Reconstruct the vextabString
     return lines.reduce((rows: string[], line) => {
-      rows.push(`options space=${spacing}`);
+      rows.push(`options space=${SPACING}`);
       rows.push(toOptionsStr(line.options));
       // Assume all measures have the single bar line
       line.measures.forEach(measure => rows.push(`notes | ${measure}`));
