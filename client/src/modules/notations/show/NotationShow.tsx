@@ -62,7 +62,6 @@ const ControlsWrapper = styled('div')`
 `;
 
 const VideoWrapper = styled('div')`
-  max-width: 53.33333vh;
   min-height: 200px;
   margin: 0 auto;
 
@@ -82,17 +81,25 @@ export const NotationShow = enhance(props => {
     <div>
       <Loading loading={props.loading} />
       <Menu />
-      <div style={{ background: 'black' }}>
-        <VideoWrapper>
-          <Video {...videoProps} />
-        </VideoWrapper>
-      </div>
-      <Row type="flex" justify="center">
-        <Fretboard />
+      <Row
+        type="flex"
+        justify="center"
+        align="bottom"
+        gutter={2}
+        style={{ background: 'white', borderBottom: '1px solid #e8e8e8' }}
+      >
+        <Col xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
+          <VideoWrapper>
+            <Video {...videoProps} />
+          </VideoWrapper>
+        </Col>
+        <Col xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
+          <Fretboard />
+        </Col>
       </Row>
       <Row type="flex" justify="center">
-        <Col span={24} style={{ background: 'white' }}>
-          <Row type="flex" justify="center">
+        <Col span={24}>
+          <Row type="flex" justify="center" style={{ background: 'white' }}>
             <Score
               songName={props.notation.songName}
               artistName={props.notation.artistName}

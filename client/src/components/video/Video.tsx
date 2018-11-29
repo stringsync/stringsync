@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { IPlayer, PlayerStates, IYTEvent, IYTStateChangeEvent } from '../../@types/youtube';
 import { VideoActions } from '../../data/video/videoActions';
 import YouTube from 'react-youtube';
+import styled from 'react-emotion';
 
 interface IOuterProps {
   src: string;
@@ -85,11 +86,17 @@ const enhance = compose<InnerProps, IOuterProps>(
   })
 );
 
+const Outer = styled('div')`
+  background: black;
+`;
+
 export const Video = enhance(props => (
-  <YouTube
-    opts={DEFAULT_YOUTUBE_OPTIONS}
-    videoId={props.src}
-    onReady={props.handleReady}
-    onStateChange={props.handleStateChange}
-  />
+  <Outer>
+    <YouTube
+      opts={DEFAULT_YOUTUBE_OPTIONS}
+      videoId={props.src}
+      onReady={props.handleReady}
+      onStateChange={props.handleStateChange}
+    />
+  </Outer>
 ));
