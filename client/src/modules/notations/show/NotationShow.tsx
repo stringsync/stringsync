@@ -18,6 +18,7 @@ import { IStore } from '../../../@types/store';
 import { INotation } from '../../../@types/notation';
 import { NotationsActions } from '../../../data/notations/notationsActions';
 import { fetchAllNotations } from '../../../data/notations/notationsApi';
+import { CondAffix } from './CondAffix';
 
 type RouteProps = RouteComponentProps<{ id: string }>;
 
@@ -125,31 +126,35 @@ export const NotationShow = enhance(props => {
     <div>
       <Loading loading={props.loading} />
       <Menu />
-      <Row
-        type="flex"
-        justify="center"
-        align="bottom"
-        gutter={2}
-        style={{ background: 'white', borderBottom: '1px solid #e8e8e8' }}
-      >
-        <Col xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
-          <VideoWrapper>
-            <Video {...videoProps} />
-          </VideoWrapper>
-        </Col>
-        <Col xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
-          <Row type="flex" align="middle" gutter={4}>
-            <Col xs={0} sm={0} md={0} lg={24} xl={24} xxl={24}>
-              <Carousel notations={props.notations} />
-            </Col>
-            <Col span={24} >
-              <Affix>
-                <Fretboard />
-              </Affix>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
+      <CondAffix affixWhen={['desktop']}>
+        <Row
+          type="flex"
+          justify="center"
+          align="bottom"
+          gutter={2}
+          style={{ background: 'white', borderBottom: '1px solid #e8e8e8' }}
+        >
+          <Col xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
+            <VideoWrapper>
+              <Video {...videoProps} />
+            </VideoWrapper>
+          </Col>
+          <Col xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
+            <Row type="flex" align="middle" gutter={4}>
+              <Col xs={0} sm={0} md={0} lg={24} xl={24} xxl={24}>
+                <Carousel notations={props.notations} />
+              </Col>
+              <Col span={24} >
+                <Affix>
+                  <CondAffix affixWhen={['mobile']}>
+                    <Fretboard />
+                  </CondAffix>
+                </Affix>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </CondAffix>
       <Row type="flex" justify="center">
         <Col span={24}>
           <Row type="flex" justify="center" style={{ background: 'white' }}>

@@ -5,7 +5,7 @@ import { Copyright } from './Copyright';
 import { Lane } from '../../../components/lane';
 
 export const Footer = () => (
-  <Layout.Footer>
+  <Layout.Footer style={{ marginBottom: '64px' }}>
     <Lane withTopMargin={true}>
       <Row>
         <Col>
