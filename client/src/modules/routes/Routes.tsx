@@ -10,7 +10,7 @@ export const Routes = () => (
     <Route exact={true} path="/n/:id/edit"   component={NotationEdit}   />
     <Route exact={true} path="/n/:id/print"  component={NotationPrint}  />
     <Route exact={true} path="/n/:id/studio" component={NotationStudio} />
-    <Route exact={true} path="/n/:id"        component={NotationShow}   />
+    <Route exact={false} path="/n/:id"       component={NotationShow}   />
     <Route                                   component={NotFound}       />
   </Switch>
 );

@@ -26,7 +26,8 @@ interface IConnectProps<TProps> extends IOwnProps<TProps> {
 export const withNotation = <TProps>(
   getNotationId: NotationIdGetter<TProps>,
   onSuccess: NotationHandler<TProps>,
-  onError: NotationHandler<TProps>) => (
+  onError: NotationHandler<TProps>,
+  onChange: NotationHandler<TProps>) => (
     BaseComponent => {
       const enhance = compose<IWithNotationProps & TProps, TProps>(
         mapProps<IOwnProps<TProps>, TProps>(ownProps => ({ ownProps })),
@@ -43,13 +44,26 @@ export const withNotation = <TProps>(
           componentDidMount(): void {
             this.props.resetNotation();
           },
+          componentDidUpdate(prevProps): void {
+            const prevNotationId = getNotationId(prevProps.ownProps);
+            const notationId = getNotationId(this.props.ownProps);
+
+            if (prevNotationId !== notationId) {
+              this.props.resetNotation();
+              onChange(this.props.ownProps);
+            }
+          },
           componentWillUnmount(): void {
             this.props.resetNotation();
           }
         }),
         lifecycle<IConnectProps<TProps>, {}, {}>({
-          async componentDidMount(): Promise<void> {
+          async componentDidUpdate(): Promise<void> {
             const notationId = getNotationId(this.props.ownProps);
+
+            if (this.props.notation.id === notationId) {
+              return;
+            }
 
             try {
               if (isNaN(notationId)) {

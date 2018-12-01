@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from 'react-emotion';
 import { Logo } from '../branding';
-import { compose, branch, renderNothing, withState, withHandlers } from 'recompose';
+import { compose, branch, renderNothing, withState, withHandlers, lifecycle } from 'recompose';
 import { Transition } from 'react-transition-group';
 
 const DURATION_MS = 500;
@@ -24,6 +24,17 @@ const enhance = compose<IHandlerProps, IProps>(
   withHandlers<IStateProps, any>({
     triggerLoaded: props => () => {
       props.setLoaded(true);
+    }
+  }),
+  lifecycle<IProps & IStateProps, {} , {}>({
+    componentDidUpdate(): void {
+      if (!this.props.loaded) {
+        return;
+      }
+
+      if (this.props.loaded && this.props.loading) {
+        this.props.setLoaded(false);
+      }
     }
   }),
   branch<IHandlerProps>(

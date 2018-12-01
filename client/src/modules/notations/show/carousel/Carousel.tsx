@@ -90,6 +90,10 @@ const CarouselBtn = styled('button')`
   cursor: pointer;
   padding: 0 16px;
   border: 1px solid ${props => props.theme['@muted']};
+
+  i {
+    font-size: 1.5em;
+  }
 `;
 
 export const Carousel = enhance(props => (

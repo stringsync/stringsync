@@ -25,7 +25,9 @@ interface IStateProps {
   notationLoading: boolean;
   videoLoading: boolean;
   notationLoaded: () => void;
+  notationChanged: () => void;
   videoLoaded: () => void;
+  videoChanged: () => void;
 }
 
 interface ILoadingProps {
@@ -48,11 +50,17 @@ type InnerProps = NotationsOuterProps & IWithSizesProps;
 const enhance = compose<InnerProps, RouteComponentProps> (
   withStateHandlers(
     { notationLoading: true },
-    { notationLoaded: () => () => ({ notationLoading: false }) }
+    {
+      notationLoaded: () => () => ({ notationLoading: false }),
+      notationChanged: () =>  () => ({ notationLoading: true })
+    }
   ),
   withStateHandlers(
     { videoLoading: true },
-    { videoLoaded: () => () => ({ videoLoading: false }) }
+    {
+      videoLoaded: () => () => ({ videoLoading: false }),
+      videoChanged: () => () => ({ videoLoading: true })
+    },
   ),
   withProps<ILoadingProps, IStateProps>(props => ({
     loading: props.notationLoading || props.videoLoading
@@ -60,7 +68,11 @@ const enhance = compose<InnerProps, RouteComponentProps> (
   withNotation<IStateProps & RouteProps>(
     props => parseInt(props.match.params.id, 10),
     props => props.notationLoaded(),
-    props => props.history.push('/')
+    props => props.history.push('/'),
+    props => {
+      props.notationChanged();
+      props.videoChanged();
+    }
   ),
   connect(
     (state: IStore) => ({ notations: state.notations }),
