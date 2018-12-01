@@ -1,4 +1,4 @@
-import { compose, lifecycle, mapProps } from 'recompose';
+import { compose, lifecycle, mapProps, withState } from 'recompose';
 import { INotation } from '../@types/notation';
 import { connect } from 'react-redux';
 import { IStore } from '../@types/store';
@@ -15,6 +15,11 @@ export type NotationHandler<TProps> = (props: TProps) => any;
 
 interface IOwnProps<TProps> {
   ownProps: TProps;
+}
+
+interface IStateProps {
+  fetching: boolean;
+  setFetching: (fetching: boolean) => void;
 }
 
 interface IConnectProps<TProps> extends IOwnProps<TProps> {
@@ -57,11 +62,12 @@ export const withNotation = <TProps>(
             this.props.resetNotation();
           }
         }),
-        lifecycle<IConnectProps<TProps>, {}, {}>({
+        withState('fetching' , 'setFetching', false),
+        lifecycle<IConnectProps<TProps> & IStateProps, {}, {}>({
           async componentDidUpdate(): Promise<void> {
             const notationId = getNotationId(this.props.ownProps);
 
-            if (this.props.notation.id === notationId) {
+            if (this.props.fetching || this.props.notation.id === notationId) {
               return;
             }
 
@@ -70,6 +76,7 @@ export const withNotation = <TProps>(
                 throw new Error(`'${notationId}' is not a valid notation id`);
               }
 
+              this.props.setFetching(true);
               const notation = await fetchNotation(notationId);
               this.props.setNotation(notation);
               onSuccess(this.props.ownProps);
@@ -78,6 +85,8 @@ export const withNotation = <TProps>(
               window.ss.message.error(`could not load notation '${notationId}'`);
               onError(this.props.ownProps);
             }
+
+            this.props.setFetching(false);
           }
         }),
         mapProps<any, any>(props => ({
