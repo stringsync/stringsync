@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { compose, withStateHandlers, withProps } from 'recompose';
+import { compose, withStateHandlers, withProps, lifecycle } from 'recompose';
 import { RouteComponentProps } from 'react-router';
 import { Loading } from '../../../components/loading/Loading';
 import { withNotation, IWithNotationProps } from '../../../enhancers/withNotation';
@@ -12,6 +12,12 @@ import { Controls } from '../../../components/video/controls';
 import { Fretboard } from '../../../components/fretboard';
 import { Score } from '../../../components/score/Score';
 import withSizes from 'react-sizes';
+import { Carousel } from './carousel';
+import { connect } from 'react-redux';
+import { IStore } from '../../../@types/store';
+import { INotation } from '../../../@types/notation';
+import { NotationsActions } from '../../../data/notations/notationsActions';
+import { fetchAllNotations } from '../../../data/notations/notationsApi';
 
 type RouteProps = RouteComponentProps<{ id: string }>;
 
@@ -26,11 +32,18 @@ interface ILoadingProps {
   loading: boolean;
 }
 
+interface IConnectProps {
+  notations: INotation[];
+  setNotations: (notations: INotation[]) => void;
+}
+
+type NotationsOuterProps = RouteProps & IStateProps & ILoadingProps & IConnectProps & IWithNotationProps;
+
 interface IWithSizesProps {
   scoreWidth: number;
 }
 
-type InnerProps = RouteProps & IStateProps & ILoadingProps & IWithSizesProps & IWithNotationProps;
+type InnerProps = NotationsOuterProps & IWithSizesProps;
 
 const enhance = compose<InnerProps, RouteComponentProps> (
   withStateHandlers(
@@ -49,6 +62,25 @@ const enhance = compose<InnerProps, RouteComponentProps> (
     props => props.notationLoaded(),
     props => props.history.push('/')
   ),
+  connect(
+    (state: IStore) => ({ notations: state.notations }),
+    dispatch => ({
+      setNotations: (notations: INotation[]) => dispatch(NotationsActions.setNotations(notations))
+    })
+  ),
+  lifecycle <NotationsOuterProps, {}, {}>({
+    async componentDidMount(): Promise<void> {
+      // Only fetch if we need to
+      if (this.props.notations.length > 0) {
+        return;
+      }
+
+      const notations = await fetchAllNotations();
+      // sorted in reverse
+      const sorted = notations.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      this.props.setNotations(sorted);
+    }
+  }),
   withSizes(size => ({ scoreWidth: Math.min(1200, size.width) }))
 );
 
@@ -94,7 +126,17 @@ export const NotationShow = enhance(props => {
           </VideoWrapper>
         </Col>
         <Col xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
-          <Fretboard />
+          <Row type="flex" align="middle" gutter={4}>
+            <Col xs={0} sm={0} md={0} lg={24} xl={24} xxl={24}>
+              <Carousel
+                initialNotationId={parseInt(props.match.params.id, 10)}
+                notations={props.notations}
+              />
+            </Col>
+            <Col span={24} >
+              <Fretboard />
+            </Col>
+          </Row>
         </Col>
       </Row>
       <Row type="flex" justify="center">
