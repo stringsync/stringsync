@@ -5,7 +5,7 @@ import { Loading } from '../../../components/loading/Loading';
 import { withNotation, IWithNotationProps } from '../../../enhancers/withNotation';
 import { Video } from '../../../components/video';
 import { pick, get } from 'lodash';
-import { Row, Col } from 'antd';
+import { Row, Col, Affix } from 'antd';
 import styled from 'react-emotion';
 import { Menu } from './menu';
 import { Controls } from '../../../components/video/controls';
@@ -140,13 +140,12 @@ export const NotationShow = enhance(props => {
         <Col xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
           <Row type="flex" align="middle" gutter={4}>
             <Col xs={0} sm={0} md={0} lg={24} xl={24} xxl={24}>
-              <Carousel
-                initialNotationId={parseInt(props.match.params.id, 10)}
-                notations={props.notations}
-              />
+              <Carousel notations={props.notations} />
             </Col>
             <Col span={24} >
-              <Fretboard />
+              <Affix>
+                <Fretboard />
+              </Affix>
             </Col>
           </Row>
         </Col>

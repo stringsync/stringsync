@@ -8,7 +8,6 @@ import styled from 'react-emotion';
 import withSizes from 'react-sizes';
 
 interface IProps {
-  initialNotationId: number;
   notations: INotation[];
 }
 
