@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import { IStore } from '../../../@types/store';
 import styled from 'react-emotion';
 import { truncate } from 'lodash';
-import withSizes from 'react-sizes';
 
 interface IStateProps {
   artistName: string;
@@ -51,7 +50,7 @@ export const Detail = enhance(props => (
         <Col><Img src={props.thumbnailUrl} alt={props.songName} /></Col>
         <Col>
           <Row>
-            <Col>{truncate(props.songName, { length: 22 })}</Col>
+            <Col>{truncate(props.songName, { length: 20 })}</Col>
             <Col><small>{truncate(props.artistName, { length: 24 })}</small></Col>
           </Row>
         </Col>

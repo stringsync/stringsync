@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { compose, withStateHandlers, withProps, lifecycle } from 'recompose';
+import { compose, withStateHandlers, withProps, lifecycle, withHandlers } from 'recompose';
 import { RouteComponentProps } from 'react-router';
 import { Loading } from '../../../components/loading/Loading';
 import { withNotation, IWithNotationProps } from '../../../enhancers/withNotation';
@@ -44,9 +44,17 @@ type NotationsOuterProps = RouteProps & IStateProps & ILoadingProps & IConnectPr
 
 interface IWithSizesProps {
   scoreWidth: number;
+  isDesktop: boolean;
+  isTablet: boolean;
+  isMobile: boolean;
 }
 
-type InnerProps = NotationsOuterProps & IWithSizesProps;
+interface IShouldAffixProps {
+  shouldFirstRowAffix: () => boolean;
+  shouldFretboardAffix: () => boolean;
+}
+
+type InnerProps = NotationsOuterProps & IWithSizesProps & IShouldAffixProps;
 
 const enhance = compose<InnerProps, RouteComponentProps> (
   withStateHandlers(
@@ -94,7 +102,20 @@ const enhance = compose<InnerProps, RouteComponentProps> (
       this.props.setNotations(sorted);
     }
   }),
-  withSizes(size => ({ scoreWidth: Math.min(1200, size.width) }))
+  withSizes(size => ({
+    isMobile: withSizes.isMobile(size),
+    isTablet: withSizes.isTablet(size),
+    isDesktop: withSizes.isDesktop(size),
+    scoreWidth: Math.min(1200, size.width)
+  })),
+  withHandlers<any, any>({
+    shouldFirstRowAffix: props => () => {
+      return props.isDesktop;
+    },
+    shouldFretboardAffix: props => () => {
+      return props.isTablet || props.isMobile;
+    }
+  })
 );
 
 const ControlsWrapper = styled('div')`
@@ -126,7 +147,7 @@ export const NotationShow = enhance(props => {
     <div>
       <Loading loading={props.loading} />
       <Menu />
-      <CondAffix affixWhen={['desktop']}>
+      <CondAffix shouldAffix={props.shouldFirstRowAffix}>
         <Row
           type="flex"
           justify="center"
@@ -146,7 +167,7 @@ export const NotationShow = enhance(props => {
               </Col>
               <Col span={24} >
                 <Affix>
-                  <CondAffix affixWhen={['mobile']}>
+                  <CondAffix shouldAffix={props.shouldFretboardAffix}>
                     <Fretboard />
                   </CondAffix>
                 </Affix>

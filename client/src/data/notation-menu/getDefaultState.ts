@@ -1,1 +1,1 @@
-export const getDefaultState = () => ({ visible: false });
+export const getDefaultState = () => ({ visible: false, fretboardVisible: true });

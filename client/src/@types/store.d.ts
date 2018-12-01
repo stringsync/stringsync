@@ -18,6 +18,7 @@ export interface IVideoState {
 
 export interface INotationMenuState {
   visible: boolean;
+  fretboardVisible: boolean;
 }
 
 export interface IStore {
