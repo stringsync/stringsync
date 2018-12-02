@@ -18,8 +18,8 @@ import { INotation } from '../../../@types/notation';
 import { NotationsActions } from '../../../data/notations/notationsActions';
 import { fetchAllNotations } from '../../../data/notations/notationsApi';
 import { CondAffix } from './CondAffix';
-import { FretboardWrapper } from './FretboardWrapper';
 import { CondVisibility } from './CondVisibility';
+import { Fretboard } from '../../../components/fretboard';
 
 type RouteProps = RouteComponentProps<{ id: string }>;
 
@@ -161,37 +161,39 @@ export const NotationShow = enhance(props => {
       <Loading loading={props.loading} />
       <BackTop style={{ bottom: '100px', right: '32px' }} />
       <Menu />
-      <CondAffix shouldAffix={props.shouldFirstRowAffix}>
-        <Row
-          type="flex"
-          justify="center"
-          align="bottom"
-          gutter={2}
-          style={{ background: 'white', borderBottom: '1px solid #e8e8e8' }}
-        >
-          <Col xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
-            <CondAffix shouldAffix={props.shouldVideoAffix}>
-              <VideoWrapper>
-                <Video {...videoProps} />
-              </VideoWrapper>
-            </CondAffix>
-          </Col>
-          <CondVisibility shouldShow={props.shouldRightColShow}>
-            <Col xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
-              <Row type="flex" align="middle" gutter={4}>
-                <Col xs={0} sm={0} md={0} lg={24} xl={24} xxl={24}>
-                  <Carousel notations={props.notations} />
-                </Col>
-                <Col span={24} >
-                  <CondAffix shouldAffix={props.shouldFretboardAffix}>
-                    <FretboardWrapper />
-                  </CondAffix>
-                </Col>
-              </Row>
+      <div id="main-media">
+        <CondAffix shouldAffix={props.shouldFirstRowAffix}>
+          <Row
+            type="flex"
+            justify="center"
+            align="bottom"
+            gutter={2}
+            style={{ background: 'white', borderBottom: '1px solid #e8e8e8' }}
+          >
+            <Col xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
+              <CondAffix shouldAffix={props.shouldVideoAffix}>
+                <VideoWrapper>
+                  <Video {...videoProps} />
+                </VideoWrapper>
+              </CondAffix>
             </Col>
-          </CondVisibility>
-        </Row>
-      </CondAffix>
+            <CondVisibility shouldShow={props.shouldRightColShow}>
+              <Col xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
+                <Row type="flex" align="middle" gutter={4}>
+                  <Col xs={0} sm={0} md={0} lg={24} xl={24} xxl={24}>
+                    <Carousel notations={props.notations} />
+                  </Col>
+                  <Col span={24} >
+                    <CondAffix shouldAffix={props.shouldFretboardAffix}>
+                      <Fretboard />
+                    </CondAffix>
+                  </Col>
+                </Row>
+              </Col>
+            </CondVisibility>
+          </Row>
+        </CondAffix>
+      </div>
       <Row type="flex" justify="center">
         <Col span={24}>
           <Row type="flex" justify="center" style={{ background: 'white' }}>
@@ -202,6 +204,11 @@ export const NotationShow = enhance(props => {
               vextabString={props.notation.vextabString}
               width={props.scoreWidth}
             />
+          </Row>
+          <Row type="flex" align="middle" gutter={4}>
+            <Col xs={24} sm={24} md={24} lg={0} xl={0} xxl={0}>
+              <Carousel notations={props.notations} />
+            </Col>
           </Row>
         </Col>
       </Row>

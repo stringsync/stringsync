@@ -43,7 +43,7 @@ const renderScore = debounce(function(this: any) {
     // We have to manually manage the children of the main div
     // since React knows nothing about them
     const { firstChild } = this.props.div;
-    if (firstChild) {
+    if (firstChild && firstChild.parentNode === this.props.div) {
       this.props.div.removeChild(firstChild);
     }
 

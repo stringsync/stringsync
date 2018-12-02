@@ -76,6 +76,7 @@ const Outer = styled('div')`
   margin-left: 8px;
   margin-right: 8px;
   width: 100%;
+  background: white;
 `;
 
 const Title = styled('h2')`
