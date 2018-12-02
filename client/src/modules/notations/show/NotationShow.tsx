@@ -19,6 +19,7 @@ import { INotation } from '../../../@types/notation';
 import { NotationsActions } from '../../../data/notations/notationsActions';
 import { fetchAllNotations } from '../../../data/notations/notationsApi';
 import { CondAffix } from './CondAffix';
+import { FretboardWrapper } from './FretboardWrapper';
 
 type RouteProps = RouteComponentProps<{ id: string }>;
 
@@ -168,7 +169,7 @@ export const NotationShow = enhance(props => {
               <Col span={24} >
                 <Affix>
                   <CondAffix shouldAffix={props.shouldFretboardAffix}>
-                    <Fretboard />
+                    <FretboardWrapper />
                   </CondAffix>
                 </Affix>
               </Col>
