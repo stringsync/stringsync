@@ -5,7 +5,7 @@ import { Loading } from '../../../components/loading/Loading';
 import { withNotation, IWithNotationProps } from '../../../enhancers/withNotation';
 import { Video } from '../../../components/video';
 import { pick, get } from 'lodash';
-import { Row, Col, Affix } from 'antd';
+import { Row, Col, Affix, BackTop } from 'antd';
 import styled from 'react-emotion';
 import { Menu } from './menu';
 import { Controls } from '../../../components/video/controls';
@@ -155,6 +155,7 @@ export const NotationShow = enhance(props => {
   return (
     <div>
       <Loading loading={props.loading} />
+      <BackTop style={{ bottom: '100px', right: '32px' }} />
       <Menu />
       <CondAffix shouldAffix={props.shouldFirstRowAffix}>
         <Row

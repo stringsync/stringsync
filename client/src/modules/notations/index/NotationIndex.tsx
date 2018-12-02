@@ -12,6 +12,7 @@ import { filterNotations } from './filterNotations';
 import { IStore } from '../../../@types/store';
 import { getNullNotations } from './getNullNotations';
 import { fetchAllNotations } from '../../../data/notations/notationsApi';
+import { BackTop } from 'antd';
 
 interface IConnectProps {
   notations: INotation[];
@@ -84,6 +85,7 @@ export const NotationIndex = enhance(props => (
     withPadding={!props.isMobile}
     withTopMargin={true}
   >
+    <BackTop />
     <Search
       numQueried={props.queriedNotations.length}
       queryString={props.queryString}
