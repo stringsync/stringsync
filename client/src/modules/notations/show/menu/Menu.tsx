@@ -65,6 +65,13 @@ export const Menu = enhance(props => (
           checked={props.fretboardVisible}
           onChange={props.handleFretboardVisibilityChange}
         >
+          video
+        </Checkbox>
+        <Checkbox
+          defaultChecked={true}
+          checked={props.fretboardVisible}
+          onChange={props.handleFretboardVisibilityChange}
+        >
           fretboard
         </Checkbox>
       </MenuItem>

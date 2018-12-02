@@ -38,6 +38,7 @@ interface ILoadingProps {
 
 interface IConnectProps {
   notations: INotation[];
+  fretboardVisible: boolean;
   setNotations: (notations: INotation[]) => void;
 }
 
@@ -53,6 +54,7 @@ interface IWithSizesProps {
 interface IShouldAffixProps {
   shouldFirstRowAffix: () => boolean;
   shouldFretboardAffix: () => boolean;
+  shouldVideoAffix: () => boolean;
 }
 
 type InnerProps = NotationsOuterProps & IWithSizesProps & IShouldAffixProps;
@@ -85,7 +87,10 @@ const enhance = compose<InnerProps, RouteComponentProps> (
     }
   ),
   connect(
-    (state: IStore) => ({ notations: state.notations }),
+    (state: IStore) => ({
+      notations: state.notations,
+      fretboardVisible: state.notationMenu.fretboardVisible
+    }),
     dispatch => ({
       setNotations: (notations: INotation[]) => dispatch(NotationsActions.setNotations(notations))
     })
@@ -109,12 +114,15 @@ const enhance = compose<InnerProps, RouteComponentProps> (
     isDesktop: withSizes.isDesktop(size),
     scoreWidth: Math.min(1200, size.width)
   })),
-  withHandlers<any, any>({
+  withHandlers<NotationsOuterProps & IWithSizesProps, IShouldAffixProps>({
     shouldFirstRowAffix: props => () => {
       return props.isDesktop;
     },
     shouldFretboardAffix: props => () => {
       return props.isTablet || props.isMobile;
+    },
+    shouldVideoAffix: props => () => {
+      return (props.isTablet || props.isMobile) && !props.fretboardVisible;
     }
   })
 );
@@ -157,9 +165,11 @@ export const NotationShow = enhance(props => {
           style={{ background: 'white', borderBottom: '1px solid #e8e8e8' }}
         >
           <Col xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
-            <VideoWrapper>
-              <Video {...videoProps} />
-            </VideoWrapper>
+            <CondAffix shouldAffix={props.shouldVideoAffix}>
+              <VideoWrapper>
+                <Video {...videoProps} />
+              </VideoWrapper>
+            </CondAffix>
           </Col>
           <Col xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
             <Row type="flex" align="middle" gutter={4}>
@@ -167,11 +177,9 @@ export const NotationShow = enhance(props => {
                 <Carousel notations={props.notations} />
               </Col>
               <Col span={24} >
-                <Affix>
-                  <CondAffix shouldAffix={props.shouldFretboardAffix}>
-                    <FretboardWrapper />
-                  </CondAffix>
-                </Affix>
+                <CondAffix shouldAffix={props.shouldFretboardAffix}>
+                  <FretboardWrapper />
+                </CondAffix>
               </Col>
             </Row>
           </Col>

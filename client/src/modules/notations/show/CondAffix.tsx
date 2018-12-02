@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { compose, branch, renderComponent, defaultProps } from 'recompose';
-import withSizes from 'react-sizes';
 import { Affix as AntdAffix } from 'antd';
 
 interface IProps {
