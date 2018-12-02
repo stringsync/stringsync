@@ -20,6 +20,7 @@ import { NotationsActions } from '../../../data/notations/notationsActions';
 import { fetchAllNotations } from '../../../data/notations/notationsApi';
 import { CondAffix } from './CondAffix';
 import { FretboardWrapper } from './FretboardWrapper';
+import { CondVisibility } from './CondVisibility';
 
 type RouteProps = RouteComponentProps<{ id: string }>;
 
@@ -55,6 +56,7 @@ interface IShouldAffixProps {
   shouldFirstRowAffix: () => boolean;
   shouldFretboardAffix: () => boolean;
   shouldVideoAffix: () => boolean;
+  shouldRightColShow: () => boolean;
 }
 
 type InnerProps = NotationsOuterProps & IWithSizesProps & IShouldAffixProps;
@@ -123,6 +125,9 @@ const enhance = compose<InnerProps, RouteComponentProps> (
     },
     shouldVideoAffix: props => () => {
       return (props.isTablet || props.isMobile) && !props.fretboardVisible;
+    },
+    shouldRightColShow: props => () => {
+      return props.fretboardVisible;
     }
   })
 );
@@ -172,18 +177,20 @@ export const NotationShow = enhance(props => {
               </VideoWrapper>
             </CondAffix>
           </Col>
-          <Col xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
-            <Row type="flex" align="middle" gutter={4}>
-              <Col xs={0} sm={0} md={0} lg={24} xl={24} xxl={24}>
-                <Carousel notations={props.notations} />
-              </Col>
-              <Col span={24} >
-                <CondAffix shouldAffix={props.shouldFretboardAffix}>
-                  <FretboardWrapper />
-                </CondAffix>
-              </Col>
-            </Row>
-          </Col>
+          <CondVisibility shouldShow={props.shouldRightColShow}>
+            <Col xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
+              <Row type="flex" align="middle" gutter={4}>
+                <Col xs={0} sm={0} md={0} lg={24} xl={24} xxl={24}>
+                  <Carousel notations={props.notations} />
+                </Col>
+                <Col span={24} >
+                  <CondAffix shouldAffix={props.shouldFretboardAffix}>
+                    <FretboardWrapper />
+                  </CondAffix>
+                </Col>
+              </Row>
+            </Col>
+          </CondVisibility>
         </Row>
       </CondAffix>
       <Row type="flex" justify="center">

@@ -7,19 +7,11 @@ interface IProps {
   affixProps?: any;
 }
 
-interface IWithSizesProps {
-  mobile: boolean;
-  tablet: boolean;
-  desktop: boolean;
-}
-
-type InnerProps = IProps & IWithSizesProps;
-
 const Affix = props => <AntdAffix {...props.affixProps}>{props.children}</AntdAffix>;
 
-const enhance = compose<InnerProps, IProps>(
+const enhance = compose<IProps, IProps>(
   defaultProps({ affixProps: {} }),
-  branch<InnerProps>(
+  branch<IProps>(
     props => props.shouldAffix(),
     renderComponent(Affix)
   )
