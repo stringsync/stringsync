@@ -54,6 +54,7 @@ const renderScore = debounce(function(this: any) {
     );
 
     score.render();
+    (window as any).score = score;
   } catch (error) {
     console.error(error);
     window.ss.message.error('could not render score');

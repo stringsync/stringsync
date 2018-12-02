@@ -1,4 +1,5 @@
 import { Flow, Artist, VexTab } from 'vextab/releases/vextab-div.js';
+import { Line } from './line';
 
 Artist.NOLOGO = true;
 
@@ -12,6 +13,8 @@ export class Score {
   public readonly width: number;
   public readonly div: HTMLDivElement;
   public readonly vextabString: string;
+
+  public lines: Line[] = [];
 
   private artist: typeof Artist;
   private vextab: typeof VexTab;
@@ -34,5 +37,13 @@ export class Score {
 
     // Render notation into the div container
     this.artist.render(this.renderer);
+
+    // Now that the notation is rendered, the artist has all the information needed
+    // to link the markup with the internal model of notes
+    this.lines = this.getLines();
+  }
+
+  private getLines(): Line[] {
+    return this.artist.staves.map(stave => new Line(stave));
   }
 }
