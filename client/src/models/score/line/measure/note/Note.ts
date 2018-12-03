@@ -5,9 +5,11 @@ export class Note {
 
   public readonly noteNote: any;
   public readonly tabNote: any;
+  public readonly graphic: Element;
 
-  constructor(noteNote: any, tabNote: any) {
+  constructor(noteNote: any, tabNote: any, graphic: Element) {
     this.noteNote = noteNote;
     this.tabNote = tabNote;
+    this.graphic = graphic;
   }
 }
