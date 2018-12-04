@@ -44,7 +44,7 @@ export class Score {
     this.hydrate();
   }
 
-  public hydrate(): Line[] {
+  private hydrate(): Line[] {
     const svg = this.div.firstChild;
 
     if (!svg) {
