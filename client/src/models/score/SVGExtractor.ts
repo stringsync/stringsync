@@ -1,3 +1,8 @@
+/**
+ * The purpose of this class is to provide an interface that takes an SVG element
+ * and returns the staveNotes and staveLines within. These child elements are used
+ * to be married with instances of the Line and Note models.
+ */
 export class SVGExtractor {
   public readonly svg: SVGElement;
   public readonly staveNotes: Element[];

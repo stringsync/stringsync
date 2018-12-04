@@ -57,6 +57,8 @@ export class Score {
       throw new Error('must have the same number of staves and staveLines');
     }
 
+    // noteOffset is the mechanism by which we take the aligned graphical elements
+    // from the extractor and vexflow's notes and marry them in Line.prototype.hydrate.
     let noteOffset = 0;
     return this.lines = this.artist.staves.map((stave, ndx) => {
       const line = new Line(stave, ndx);
