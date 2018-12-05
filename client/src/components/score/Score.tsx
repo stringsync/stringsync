@@ -1,5 +1,12 @@
 import * as React from 'react';
-import { compose, withHandlers, withState, withProps, lifecycle, ReactLifeCycleFunctionsThisArguments } from 'recompose';
+import {
+  compose,
+  withHandlers,
+  withState,
+  withProps,
+  lifecycle,
+  ReactLifeCycleFunctionsThisArguments
+} from 'recompose';
 import { VextabString as VextabStringWrapper } from '../../models/vextab-string';
 import { Score as ScoreWrapper } from '../../models/score';
 import { debounce } from 'lodash';
@@ -60,7 +67,7 @@ const renderScore = debounce(function(this: ReactLifeCycleFunctionsThisArguments
 
     // Now that the score is rendered, it is also hydrated. We can now mount the Maestro
     // to the store.
-    const maestro = new Maestro(score, this.props.bpm);
+    const maestro = new Maestro(score);
     maestro.hydrate();
     this.props.setMaestro(maestro);
   } catch (error) {

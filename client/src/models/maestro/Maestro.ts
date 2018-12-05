@@ -2,6 +2,7 @@ import { Score } from '../score';
 import { IPlayer } from '../../@types/youtube';
 import { Note } from '../score/line/measure/note';
 import { flatMap } from 'lodash';
+import { bsearch } from '../../utils/bsearch';
 
 interface ISpecEdge {
   tick: number;
@@ -13,20 +14,36 @@ export interface ISpec {
   stop: ISpecEdge;
 }
 
+// Used in bsearch
+const comparator = (tick: number) => (spec: ISpec): -1 | 0 | 1 => {
+  if (spec.start.tick > tick) {
+    return -1;
+  } else if (spec.stop.tick < tick) {
+    return 1;
+  } else {
+    return 0;
+  }
+};
+
 /**
  * This class is concerned with determining the position within a Score instance
- * given a time.
+ * given a tick.
  */
 export class Maestro {
   public readonly score: Score;
-  public readonly bpm: number;
 
   public player: IPlayer | null = null;
   public specs: ISpec[] = [];
 
-  constructor(score: Score, bpm: number) {
+  constructor(score: Score) {
     this.score = score;
-    this.bpm = bpm;
+  }
+
+  // Performs a bsearch for the spec that contains the tick supplied as an argument.
+  // This function must be performant as it will be called every animation frame to
+  // determine the current spec.
+  public spec(tick: number): ISpec | null {
+    return bsearch(this.specs, comparator(tick)) || null;
   }
 
   public hydrate(): void {
