@@ -198,6 +198,7 @@ export const NotationShow = enhance(props => {
         <Col span={24}>
           <Row type="flex" justify="center" style={{ background: 'white' }}>
             <Score
+              caret={true}
               songName={props.notation.songName}
               artistName={props.notation.artistName}
               transcriberName={get(props.notation.transcriber, 'name', '')}

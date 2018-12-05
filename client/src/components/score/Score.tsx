@@ -15,6 +15,7 @@ import { Row, Col } from 'antd';
 import { Title } from './Title';
 import { withMaestro, IWithMaestroProps } from '../../enhancers/withMaestro';
 import { Maestro } from '../../models/maestro/Maestro';
+import { Caret } from './Caret';
 
 interface IProps {
   songName: string;
@@ -23,6 +24,7 @@ interface IProps {
   transcriberName: string;
   vextabString: string;
   width: number;
+  caret: boolean;
 }
 
 interface IStateProps {
@@ -101,7 +103,8 @@ const enhance = compose<InnerProps, IProps>(
     shouldComponentUpdate(nextProps) {
       return !!nextProps.div && (
         this.props.vextabString !== nextProps.vextabString ||
-        this.props.width !== nextProps.width
+        this.props.width !== nextProps.width ||
+        this.props.caret !== nextProps.caret
       );
     },
     componentDidUpdate(): void {
@@ -132,6 +135,7 @@ export const Score = enhance(props => (
     </Row>
     <Row type="flex" justify="center">
       <Col span={24}>
+        <Caret visible={props.caret} />
         <div ref={props.handleDivRef} />
       </Col>
     </Row>
