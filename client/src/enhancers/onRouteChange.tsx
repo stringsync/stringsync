@@ -1,4 +1,4 @@
-import { compose, lifecycle, mapProps, withHandlers } from 'recompose';
+import { compose, lifecycle, mapProps } from 'recompose';
 import { withRouter, RouteComponentProps } from 'react-router';
 import { Location } from 'history';
 

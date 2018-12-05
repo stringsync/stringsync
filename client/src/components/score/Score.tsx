@@ -64,6 +64,7 @@ const renderScore = debounce(function(this: ReactLifeCycleFunctionsThisArguments
     );
 
     score.render();
+    score.hydrate();
 
     // Now that the score is rendered, it is also hydrated. We can now mount the Maestro
     // to the store.

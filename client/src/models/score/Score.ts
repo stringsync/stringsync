@@ -39,13 +39,9 @@ export class Score {
 
     // Render notation into the div container
     this.artist.render(this.renderer);
-
-    // Now that the notation is rendered, the artist has all the information needed
-    // to link the markup with the internal model of notes
-    this.hydrate();
   }
 
-  private hydrate(): Line[] {
+  public hydrate(): Line[] {
     const svg = this.div.firstChild;
 
     if (!svg) {
