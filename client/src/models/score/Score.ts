@@ -1,6 +1,7 @@
 import { Flow, Artist, VexTab } from 'vextab/releases/vextab-div.js';
 import { Line } from './line';
 import { SVGExtractor } from './SVGExtractor';
+import { Caret } from './Caret';
 
 Artist.NOLOGO = true;
 
@@ -17,6 +18,7 @@ export class Score {
 
   public lines: Line[] = [];
   public hydrated: boolean = false;
+  public caret: Caret;
 
   private artist: typeof Artist;
   private vextab: typeof VexTab;
@@ -26,6 +28,11 @@ export class Score {
     this.width = width;
     this.div = div;
     this.vextabString = vextabString;
+    this.caret = new Caret(this);
+  }
+
+  public get svg(): SVGElement {
+    return this.div.firstChild as SVGElement;
   }
 
   public render(): void {
@@ -42,13 +49,11 @@ export class Score {
   }
 
   public hydrate(): Line[] {
-    const svg = this.div.firstChild;
-
-    if (!svg) {
+    if (!this.svg) {
       throw new Error('must successfully render to div first');
     }
 
-    const extractor = new SVGExtractor(svg as SVGElement);
+    const extractor = new SVGExtractor(this.svg);
 
     if (extractor.staveLines.length !== this.artist.staves.length) {
       throw new Error('must have the same number of staves and staveLines');
