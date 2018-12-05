@@ -16,6 +16,7 @@ export class Score {
   public readonly vextabString: string;
 
   public lines: Line[] = [];
+  public hydrated: boolean = false;
 
   private artist: typeof Artist;
   private vextab: typeof VexTab;
@@ -60,11 +61,15 @@ export class Score {
     // noteOffset is the mechanism by which we take the aligned graphical elements
     // from the extractor and vexflow's notes and marry them in Line.prototype.hydrate.
     let noteOffset = 0;
-    return this.lines = this.artist.staves.map((stave, ndx) => {
+    this.lines = this.artist.staves.map((stave, ndx) => {
       const line = new Line(stave, ndx);
       line.hydrate(extractor, noteOffset);
       line.measures.forEach(measure => noteOffset += measure.notes.length);
       return line;
     });
+
+    this.hydrated = true;
+
+    return this.lines;
   }
 }
