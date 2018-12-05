@@ -5,6 +5,9 @@ export class Note {
 
   public readonly graphic: Element;
 
+  // Callers should not access the vexflow elements. Instead,
+  // a method exposing and computing some aspect of the vexflow
+  // element should be created.
   private readonly noteNote: any;
   private readonly tabNote: any;
 
