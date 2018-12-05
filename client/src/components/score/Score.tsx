@@ -1,14 +1,17 @@
 import * as React from 'react';
-import { compose, withHandlers, withState, withProps, lifecycle } from 'recompose';
+import { compose, withHandlers, withState, withProps, lifecycle, ReactLifeCycleFunctionsThisArguments } from 'recompose';
 import { VextabString as VextabStringWrapper } from '../../models/vextab-string';
 import { Score as ScoreWrapper } from '../../models/score';
 import { debounce } from 'lodash';
 import styled from 'react-emotion';
 import { Row, Col } from 'antd';
 import { Title } from './Title';
+import { withMaestro, IWithMaestroProps } from '../../enhancers/withMaestro';
+import { Maestro } from '../../models/maestro/Maestro';
 
 interface IProps {
   songName: string;
+  bpm: number;
   artistName: string;
   transcriberName: string;
   vextabString: string;
@@ -28,13 +31,13 @@ interface IMeasuresPerLineProps {
   measuresPerLine: number;
 }
 
-type InnerProps = IProps & IStateProps & IHandlerProps & IMeasuresPerLineProps;
+type InnerProps = IProps & IStateProps & IHandlerProps & IMeasuresPerLineProps & IWithMaestroProps;
 
 const MIN_WIDTH_PER_MEASURE = 240; // px
 const MIN_MEASURES_PER_LINE = 1;
 const MAX_MEASURES_PER_LINE = 4;
 
-const renderScore = debounce(function(this: any) {
+const renderScore = debounce(function(this: ReactLifeCycleFunctionsThisArguments<InnerProps, {}, {}>) {
   if (!this.props.div) {
     return;
   }
@@ -54,6 +57,12 @@ const renderScore = debounce(function(this: any) {
     );
 
     score.render();
+
+    // Now that the score is rendered, it is also hydrated. We can now mount the Maestro
+    // to the store.
+    const maestro = new Maestro(score, this.props.bpm);
+    maestro.hydrate();
+    this.props.setMaestro(maestro);
   } catch (error) {
     console.error(error);
     window.ss.message.error('could not render score');
@@ -79,6 +88,7 @@ const enhance = compose<InnerProps, IProps>(
 
     return { measuresPerLine };
   }),
+  withMaestro,
   lifecycle<InnerProps, {}, {}>({
     shouldComponentUpdate(nextProps) {
       return !!nextProps.div && (
@@ -88,6 +98,9 @@ const enhance = compose<InnerProps, IProps>(
     },
     componentDidUpdate(): void {
       renderScore.call(this);
+    },
+    componentWillUnmount(): void {
+      this.props.resetMaestro();
     }
   })
 );

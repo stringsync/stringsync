@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { IStore } from '../@types/store';
 import { ScoreActions } from '../data/score/scoreActions';
 
-export interface IMaestroProps {
+export interface IWithMaestroProps {
   maestro: Maestro | null;
   setMaestro: (maestro: Maestro) => void;
   resetMaestro: () => void;
@@ -20,7 +20,7 @@ interface IDispatchProps {
 }
 
 export const withMaestro = <TProps>(BaseComponent) => {
-  const enhance = compose<IMaestroProps & TProps, TProps>(
+  const enhance = compose<IWithMaestroProps & TProps, TProps>(
     connect<IStateProps, IDispatchProps, {}, IStore>(
       state => ({
         maestro: state.score.maestro

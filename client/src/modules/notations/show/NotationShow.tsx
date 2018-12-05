@@ -202,6 +202,7 @@ export const NotationShow = enhance(props => {
               artistName={props.notation.artistName}
               transcriberName={get(props.notation.transcriber, 'name', '')}
               vextabString={props.notation.vextabString}
+              bpm={props.notation.bpm}
               width={props.scoreWidth}
             />
           </Row>

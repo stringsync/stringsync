@@ -3,11 +3,14 @@ import { IPlayer } from '../../@types/youtube';
 import { Note } from '../score/line/measure/note';
 import { flatMap } from 'lodash';
 
-export interface ITickSpec {
-  startTick: number;
-  stopTick: number;
-  startNote: Note | null;
-  stopNote: Note | null;
+interface ISpecEdge {
+  tick: number;
+  note: Note;
+}
+
+export interface ISpec {
+  start: ISpecEdge;
+  stop: ISpecEdge;
 }
 
 /**
@@ -17,14 +20,13 @@ export interface ITickSpec {
 export class Maestro {
   public readonly score: Score;
   public readonly bpm: number;
-  public readonly player: IPlayer;
 
-  public tickSpecs: ITickSpec[] = [];
+  public player: IPlayer | null = null;
+  public specs: ISpec[] = [];
 
-  constructor(score: Score, bpm: number, player: IPlayer) {
+  constructor(score: Score, bpm: number) {
     this.score = score;
     this.bpm = bpm;
-    this.player = player;
   }
 
   public hydrate(): void {
@@ -36,15 +38,13 @@ export class Maestro {
     const notes = flatMap(measures, measure => measure.notes);
 
     let currTick = 0;
-    this.tickSpecs = notes.map((note, ndx) => {
-      const startTick = currTick;
-      const stopTick = startTick + note.durationTick;
-      const startNote = notes[ndx - 1] || null;
-      const stopNote = note;
+    this.specs = notes.map((note, ndx) => {
+      const start = { tick: currTick, note: notes[ndx - 1] || null };
+      const stop = { tick: start.tick + note.durationTick, note };
 
-      currTick = stopTick;
+      currTick = stop.tick;
 
-      return { startTick, stopTick, startNote, stopNote };
+      return { start, stop };
     });
   }
 }
