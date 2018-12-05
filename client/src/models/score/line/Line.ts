@@ -2,6 +2,7 @@ import { Measure } from './measure';
 import { last } from 'lodash';
 import { Note } from './measure/note/Note';
 import { SVGExtractor } from '../SVGExtractor';
+import { Score } from '../Score';
 
 export class Line {
   public readonly stave: any;
@@ -9,6 +10,7 @@ export class Line {
 
   public graphic: any;
   public measures: Measure[] = [];
+  public score: Score | undefined;
 
   constructor(stave: any, index: number) {
     this.stave = stave;

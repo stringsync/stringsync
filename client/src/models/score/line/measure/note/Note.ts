@@ -1,9 +1,12 @@
+import { Measure } from '../Measure';
 export class Note {
   public static isBar(noteNote: any): boolean {
     return noteNote.duration.toLowerCase() === 'b';
   }
 
   public readonly graphic: Element;
+
+  public measure: Measure | undefined;
 
   // Callers should not access the vexflow elements. Instead,
   // a method exposing and computing some aspect of the vexflow

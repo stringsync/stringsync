@@ -64,6 +64,18 @@ export class Score {
       return line;
     });
 
+    // Finally, we iterate over all lines, measures, and notes and associate everything
+    // with each other.
+    this.lines.forEach(line => {
+      line.score = this;
+      line.measures.forEach(measure => {
+        measure.line = line;
+        measure.notes.forEach(note => {
+          note.measure = measure;
+        });
+      });
+    });
+
     this.hydrated = true;
 
     return this.lines;
