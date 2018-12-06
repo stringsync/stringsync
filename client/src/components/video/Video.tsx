@@ -6,6 +6,7 @@ import { IPlayer, PlayerStates, IYTEvent, IYTStateChangeEvent } from '../../@typ
 import { VideoActions } from '../../data/video/videoActions';
 import YouTube from 'react-youtube';
 import styled from 'react-emotion';
+import { Sync } from './Sync';
 
 interface IOuterProps {
   src: string;
@@ -66,7 +67,9 @@ const enhance = compose<InnerProps, IOuterProps>(
   lifecycle<IDispatchProps & IOuterProps, {}, {}>({
     componentDidMount(): void {
       const { kind, src } = this.props;
-      this.props.setVideo({ kind, src });
+      const player = null;
+      const currentTimeMs = 0;
+      this.props.setVideo({ kind, src, player, currentTimeMs });
     },
     componentWillUnmount(): void {
       this.props.resetVideo();
@@ -92,6 +95,7 @@ const Outer = styled('div')`
 
 export const Video = enhance(props => (
   <Outer>
+    <Sync />
     <YouTube
       opts={DEFAULT_YOUTUBE_OPTIONS}
       videoId={props.src}
