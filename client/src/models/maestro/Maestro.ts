@@ -31,20 +31,25 @@ const comparator = (tick: number) => (spec: ISpec): -1 | 0 | 1 => {
  */
 export class Maestro {
   public readonly score: Score;
+  public readonly bpm: number;
 
   public specs: ISpec[] = [];
   public currentTimeMs: number = 0;
-  public bpm: number = 120;
 
-  constructor(score: Score) {
+  constructor(score: Score, bpm: number) {
     this.score = score;
+    this.bpm = bpm;
   }
 
   // Performs a bsearch for the spec that contains the tick supplied as an argument.
   // This function must be performant as it will be called every animation frame to
   // determine the current spec.
-  public spec(): ISpec | null {
+  public get spec(): ISpec | null {
     return bsearch(this.specs, comparator(msToTick(this.currentTimeMs, this.bpm))) || null;
+  }
+
+  public get currentTick(): number {
+    return msToTick(this.currentTimeMs, this.bpm);
   }
 
   public hydrate(deadTimeMs: number, bpm: number): void {

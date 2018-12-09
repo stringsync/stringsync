@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { compose, branch, renderNothing, lifecycle, withProps } from 'recompose';
-import { Maestro, ISpec } from '../../models/maestro/Maestro';
-import { loop } from '../../enhancers/loop';
+import { ISpec } from '../../models/maestro/Maestro';
 import { connect } from 'react-redux';
 import { IStore } from '../../@types/store';
 import { msToTick } from '../../utils/conversions';
@@ -9,7 +8,6 @@ import { ScoreActions } from '../../data/score/scoreActions';
 import { withMaestro, IWithMaestroProps } from '../../enhancers/withMaestro';
 
 interface IStateProps {
-  currentTimeMs: number;
   spec: ISpec | null;
   bpm: number;
 }
@@ -35,19 +33,15 @@ const enhance = compose<InnerProps, {}>(
   connect<IStateProps, IDispatchProps, {}, IStore>(
     state => ({
       bpm: state.notation.bpm,
-      currentTimeMs: state.video.currentTimeMs,
       spec: state.score.spec
     }),
     dispatch => ({
       setSpec: (spec: ISpec | null) => dispatch(ScoreActions.setSpec(spec))
     })
   ),
-  withProps<ITickProps, ConnectProps>(props => ({
-    tick: msToTick(props.currentTimeMs, props.bpm)
-  })),
   lifecycle<InnerProps, {}, {}>({
     componentDidMount(): void {
-      this.props.setSpec(this.props.maestro!.spec(this.props.tick));
+      this.props.setSpec(this.props.maestro!.spec);
     },
     shouldComponentUpdate(): boolean {
       return (
@@ -57,7 +51,7 @@ const enhance = compose<InnerProps, {}>(
       );
     },
     componentDidUpdate(): void {
-      this.props.setSpec(this.props.maestro!.spec(this.props.tick));
+      this.props.setSpec(this.props.maestro!.spec);
     }
   })
 );
