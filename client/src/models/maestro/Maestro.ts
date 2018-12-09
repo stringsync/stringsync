@@ -1,8 +1,8 @@
 import { Score } from '../score';
-import { IPlayer } from '../../@types/youtube';
 import { Note } from '../score/line/measure/note';
 import { flatMap } from 'lodash';
 import { bsearch } from '../../utils/bsearch';
+import { msToTick } from '../../utils/conversions';
 
 interface ISpecEdge {
   tick: number;
@@ -32,7 +32,6 @@ const comparator = (tick: number) => (spec: ISpec): -1 | 0 | 1 => {
 export class Maestro {
   public readonly score: Score;
 
-  public player: IPlayer | null = null;
   public specs: ISpec[] = [];
 
   constructor(score: Score) {
@@ -46,7 +45,7 @@ export class Maestro {
     return bsearch(this.specs, comparator(tick)) || null;
   }
 
-  public hydrate(): void {
+  public hydrate(deadTimeMs: number, bpm: number): void {
     if (!this.score.hydrated) {
       throw new Error('Score must be hydrated before hydrating Maestro');
     }
@@ -54,7 +53,7 @@ export class Maestro {
     const measures = flatMap(this.score.lines, line => line.measures);
     const notes = flatMap(measures, measure => measure.notes);
 
-    let currTick = 0;
+    let currTick = msToTick(deadTimeMs, bpm);
     this.specs = notes.map((note, ndx) => {
       const start = { tick: currTick, note: notes[ndx - 1] || null };
       const stop = { tick: start.tick + note.durationTick, note };

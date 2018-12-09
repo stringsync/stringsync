@@ -16,6 +16,7 @@ import { Title } from './Title';
 import { withMaestro, IWithMaestroProps } from '../../enhancers/withMaestro';
 import { Maestro } from '../../models/maestro/Maestro';
 import { Caret } from './Caret';
+import { SpecSync } from './SpecSync';
 
 interface IProps {
   songName: string;
@@ -23,6 +24,7 @@ interface IProps {
   artistName: string;
   transcriberName: string;
   vextabString: string;
+  deadTimeMs: number;
   width: number;
   caret: boolean;
 }
@@ -71,7 +73,7 @@ const renderScore = debounce(function(this: ReactLifeCycleFunctionsThisArguments
     // Now that the score is rendered, it is also hydrated. We can now mount the Maestro
     // to the store.
     const maestro = new Maestro(score);
-    maestro.hydrate();
+    maestro.hydrate(this.props.deadTimeMs, this.props.bpm);
     this.props.setMaestro(maestro);
   } catch (error) {
     console.error(error);
@@ -101,11 +103,7 @@ const enhance = compose<InnerProps, IProps>(
   withMaestro,
   lifecycle<InnerProps, {}, {}>({
     shouldComponentUpdate(nextProps) {
-      return !!nextProps.div && (
-        this.props.vextabString !== nextProps.vextabString ||
-        this.props.width !== nextProps.width ||
-        this.props.caret !== nextProps.caret
-      );
+      return !!nextProps.div;
     },
     componentDidUpdate(): void {
       renderScore.call(this);
@@ -124,6 +122,7 @@ const Outer = styled('div')`
 
 export const Score = enhance(props => (
   <Outer>
+    <SpecSync maestro={props.maestro} />
     <Row type="flex" justify="center">
       <Col span={24}>
         <Title

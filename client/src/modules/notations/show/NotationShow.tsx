@@ -199,6 +199,7 @@ export const NotationShow = enhance(props => {
           <Row type="flex" justify="center" style={{ background: 'white' }}>
             <Score
               caret={true}
+              deadTimeMs={props.notation.deadTimeMs}
               songName={props.notation.songName}
               artistName={props.notation.artistName}
               transcriberName={get(props.notation.transcriber, 'name', '')}

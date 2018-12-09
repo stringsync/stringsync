@@ -42,4 +42,4 @@ const enhance = compose <InnerProps, {}>(
   })
 );
 
-export const Sync = enhance(() => null);
+export const TimeSync = enhance(() => null);

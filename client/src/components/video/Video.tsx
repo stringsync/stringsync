@@ -6,7 +6,7 @@ import { IPlayer, PlayerStates, IYTEvent, IYTStateChangeEvent } from '../../@typ
 import { VideoActions } from '../../data/video/videoActions';
 import YouTube from 'react-youtube';
 import styled from 'react-emotion';
-import { Sync } from './Sync';
+import { TimeSync } from './TimeSync';
 
 interface IOuterProps {
   src: string;
@@ -95,7 +95,7 @@ const Outer = styled('div')`
 
 export const Video = enhance(props => (
   <Outer>
-    <Sync />
+    <TimeSync />
     <YouTube
       opts={DEFAULT_YOUTUBE_OPTIONS}
       videoId={props.src}

@@ -1,17 +1,24 @@
 import * as React from 'react';
-import { compose, branch, renderNothing } from 'recompose';
-import { withMaestro } from '../../enhancers/withMaestro';
+import { compose, branch, renderNothing, lifecycle } from 'recompose';
+import { withMaestro, IWithMaestroProps } from '../../enhancers/withMaestro';
+import { loop } from '../../enhancers/loop';
+import { connect } from 'react-redux';
 
 interface IProps {
   visible: boolean;
 }
 
-const enhance = compose<IProps, IProps>(
-  branch<IProps>(
-    props => !props.visible,
+type InnerProps = IProps & IWithMaestroProps;
+
+const enhance = compose<InnerProps, IProps>(
+  withMaestro,
+  branch<InnerProps>(
+    props => !props.visible || !props.maestro,
     renderNothing
   ),
-  withMaestro
+  loop((props: InnerProps) => {
+    props.maestro!.score.caret.render(0, 0);
+  })
 );
 
 export const Caret = enhance(() => null);

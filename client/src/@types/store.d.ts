@@ -2,7 +2,7 @@ import { INotation } from "./notation";
 import { ISession } from "./session";
 import { ITag } from "./tag";
 import { IPlayer, PlayerStates } from './youtube';
-import { Maestro } from '../models/maestro/Maestro';
+import { Maestro, ISpec } from '../models/maestro/Maestro';
 
 export type NotationsState = INotation[];
 export type NotationState = INotation;
@@ -25,6 +25,7 @@ export interface INotationMenuState {
 
 export interface IScoreState {
   maestro: Maestro | null;
+  spec: ISpec | null;
 }
 
 export interface IStore {
