@@ -1,15 +1,12 @@
 import * as React from 'react';
-import { compose, branch, renderNothing } from 'recompose';
+import { compose, branch, renderNothing, lifecycle, withProps } from 'recompose';
 import { Maestro, ISpec } from '../../models/maestro/Maestro';
 import { loop } from '../../enhancers/loop';
 import { connect } from 'react-redux';
 import { IStore } from '../../@types/store';
 import { msToTick } from '../../utils/conversions';
 import { ScoreActions } from '../../data/score/scoreActions';
-
-interface IProps {
-  maestro: Maestro | null;
-}
+import { withMaestro, IWithMaestroProps } from '../../enhancers/withMaestro';
 
 interface IStateProps {
   currentTimeMs: number;
@@ -21,10 +18,17 @@ interface IDispatchProps {
   setSpec: (spec: ISpec | null) => void;
 }
 
-type InnerProps = IProps & IStateProps & IDispatchProps;
+type ConnectProps = IWithMaestroProps & IStateProps & IDispatchProps;
 
-const enhance = compose<InnerProps, IProps>(
-  branch<IProps>(
+interface ITickProps {
+  tick: number;
+}
+
+type InnerProps = ConnectProps & ITickProps;
+
+const enhance = compose<InnerProps, {}>(
+  withMaestro,
+  branch<IWithMaestroProps>(
     props => !props.maestro,
     renderNothing
   ),
@@ -38,17 +42,22 @@ const enhance = compose<InnerProps, IProps>(
       setSpec: (spec: ISpec | null) => dispatch(ScoreActions.setSpec(spec))
     })
   ),
-  loop((props: InnerProps) => {
-    const tick = msToTick(props.currentTimeMs, props.bpm);
-
-    const shouldUpdateSpec = (
-      !props.spec ||
-      props.spec.start.tick > tick ||
-      props.spec.stop.tick <= tick
-    );
-
-    if (shouldUpdateSpec) {
-      props.setSpec(props.maestro!.spec(tick));
+  withProps<ITickProps, ConnectProps>(props => ({
+    tick: msToTick(props.currentTimeMs, props.bpm)
+  })),
+  lifecycle<InnerProps, {}, {}>({
+    componentDidMount(): void {
+      this.props.setSpec(this.props.maestro!.spec(this.props.tick));
+    },
+    shouldComponentUpdate(): boolean {
+      return (
+        !this.props.spec ||
+        this.props.spec.start.tick > this.props.tick ||
+        this.props.spec.stop.tick <= this.props.tick
+      );
+    },
+    componentDidUpdate(): void {
+      this.props.setSpec(this.props.maestro!.spec(this.props.tick));
     }
   })
 );

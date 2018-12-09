@@ -102,8 +102,11 @@ const enhance = compose<InnerProps, IProps>(
   }),
   withMaestro,
   lifecycle<InnerProps, {}, {}>({
-    shouldComponentUpdate(nextProps) {
-      return !!nextProps.div;
+    shouldComponentUpdate(nextProps): boolean {
+      return !!nextProps.div && (
+        this.props.width !== nextProps.width ||
+        this.props.vextabString !== nextProps.vextabString
+      );
     },
     componentDidUpdate(): void {
       renderScore.call(this);
@@ -122,7 +125,7 @@ const Outer = styled('div')`
 
 export const Score = enhance(props => (
   <Outer>
-    <SpecSync maestro={props.maestro} />
+    <SpecSync />
     <Row type="flex" justify="center">
       <Col span={24}>
         <Title

@@ -4,7 +4,7 @@ export class Note {
     return noteNote.duration.toLowerCase() === 'b';
   }
 
-  public readonly graphic: Element;
+  public readonly graphic: any;
 
   public measure: Measure | undefined;
 
@@ -14,7 +14,7 @@ export class Note {
   private readonly noteNote: any;
   private readonly tabNote: any;
 
-  constructor(noteNote: any, tabNote: any, graphic: Element) {
+  constructor(noteNote: any, tabNote: any, graphic: any) {
     this.noteNote = noteNote;
     this.tabNote = tabNote;
     this.graphic = graphic;
