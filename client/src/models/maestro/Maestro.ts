@@ -32,27 +32,29 @@ const comparator = (tick: number) => (spec: ISpec): -1 | 0 | 1 => {
 export class Maestro {
   public readonly score: Score;
   public readonly bpm: number;
+  public readonly deadTimeMs: number;
 
   public specs: ISpec[] = [];
   public currentTimeMs: number = 0;
 
-  constructor(score: Score, bpm: number) {
+  constructor(score: Score, deadTimeMs: number, bpm: number) {
     this.score = score;
     this.bpm = bpm;
+    this.deadTimeMs = deadTimeMs;
   }
 
   // Performs a bsearch for the spec that contains the tick supplied as an argument.
   // This function must be performant as it will be called every animation frame to
   // determine the current spec.
   public get spec(): ISpec | null {
-    return bsearch(this.specs, comparator(msToTick(this.currentTimeMs, this.bpm))) || null;
+    return bsearch(this.specs, comparator(this.currentTick)) || null;
   }
 
   public get currentTick(): number {
     return msToTick(this.currentTimeMs, this.bpm);
   }
 
-  public hydrate(deadTimeMs: number, bpm: number): void {
+  public hydrate(): void {
     if (!this.score.hydrated) {
       throw new Error('Score must be hydrated before hydrating Maestro');
     }
@@ -60,7 +62,7 @@ export class Maestro {
     const measures = flatMap(this.score.lines, line => line.measures);
     const notes = flatMap(measures, measure => measure.notes);
 
-    let currTick = msToTick(deadTimeMs, bpm);
+    let currTick = msToTick(this.deadTimeMs, this.bpm);
     this.specs = notes.map((note, ndx) => {
       const start = { tick: currTick, note: notes[ndx - 1] || null };
       const stop = { tick: start.tick + note.durationTick, note };

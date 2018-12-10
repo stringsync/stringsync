@@ -72,8 +72,8 @@ const renderScore = debounce(function(this: ReactLifeCycleFunctionsThisArguments
 
     // Now that the score is rendered, it is also hydrated. We can now mount the Maestro
     // to the store.
-    const maestro = new Maestro(score, this.props.bpm);
-    maestro.hydrate(this.props.deadTimeMs, this.props.bpm);
+    const maestro = new Maestro(score, this.props.deadTimeMs, this.props.bpm);
+    maestro.hydrate();
     this.props.setMaestro(maestro);
   } catch (error) {
     console.error(error);
@@ -105,7 +105,9 @@ const enhance = compose<InnerProps, IProps>(
     shouldComponentUpdate(nextProps): boolean {
       return !!nextProps.div && (
         this.props.width !== nextProps.width ||
-        this.props.vextabString !== nextProps.vextabString
+        this.props.vextabString !== nextProps.vextabString ||
+        this.props.deadTimeMs !== nextProps.deadTimeMs ||
+        this.props.bpm !== nextProps.bpm
       );
     },
     componentDidUpdate(): void {
