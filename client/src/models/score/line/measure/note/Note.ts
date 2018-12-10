@@ -1,4 +1,5 @@
 import { Measure } from '../Measure';
+import { first, get, last } from 'lodash';
 export class Note {
   public static isBar(noteNote: any): boolean {
     return noteNote.duration.toLowerCase() === 'b';
@@ -22,5 +23,13 @@ export class Note {
 
   get durationTick(): number {
     return this.noteNote.getTicks().simplify().value();
+  }
+
+  public get isFirst(): boolean {
+    return first(get(this.measure, 'notes', [])) === this;
+  }
+
+  public get isLast(): boolean {
+    return last(get(this.measure, 'notes', [])) === this;
   }
 }

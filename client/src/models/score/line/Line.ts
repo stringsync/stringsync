@@ -1,5 +1,5 @@
 import { Measure } from './measure';
-import { last } from 'lodash';
+import { first, last, get } from 'lodash';
 import { Note } from './measure/note/Note';
 import { SVGExtractor } from '../SVGExtractor';
 import { Score } from '../Score';
@@ -15,6 +15,14 @@ export class Line {
   constructor(stave: any, index: number) {
     this.stave = stave;
     this.index = index;
+  }
+
+  public get isFirst(): boolean {
+    return first(get(this.score, 'lines', [])) === this;
+  }
+
+  public get isLast(): boolean {
+    return last(get(this.score, 'lines', [])) === this;
   }
 
   public hydrate(extractor: SVGExtractor, noteOffset: number): Measure[] {
