@@ -1,21 +1,13 @@
 import * as React from 'react';
-import { compose, branch, renderNothing, lifecycle } from 'recompose';
-import { withMaestro, IWithMaestroProps } from '../../enhancers/withMaestro';
+import { compose, branch, renderNothing } from 'recompose';
 import { interpolate } from '../../utils/interpolate';
 import { ISpec, Maestro } from '../../models/maestro/Maestro';
 import { get } from 'lodash';
+import { subscribeMaestro } from '../../enhancers/subscribeMaestro';
 
 interface IProps {
   visible: boolean;
 }
-
-interface IStateProps {
-  spec: ISpec | null;
-  currentTimeMs: number;
-  bpm: number;
-}
-
-type InnerProps = IProps & IWithMaestroProps & IStateProps;
 
 const renderCaret = (maestro: Maestro) => {
   const { spec } = maestro;
@@ -44,12 +36,12 @@ const renderCaret = (maestro: Maestro) => {
 
 const maestroListener = Object.freeze({ name: 'renderCaret', callback: renderCaret });
 
-const enhance = compose<InnerProps, IProps>(
-  withMaestro,
-  branch<InnerProps>(
-    props => !props.visible || !props.maestro || !props.maestro.spec,
+const enhance = compose<IProps, IProps>(
+  branch<IProps>(
+    props => !props.visible,
     renderNothing
-  )
+  ),
+  subscribeMaestro(maestroListener)
 );
 
 export const Caret = enhance(() => null);
