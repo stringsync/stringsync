@@ -82,6 +82,10 @@ export class Maestro {
     this.listeners = this.listeners.filter(listener => listener.name !== name);
   }
 
+  public hasListener(name: string): boolean {
+    return this.listeners.some(listener => listener.name === name);
+  }
+
   public hydrate(): void {
     if (!this.score.hydrated) {
       throw new Error('Score must be hydrated before hydrating Maestro');

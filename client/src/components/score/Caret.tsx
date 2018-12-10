@@ -42,10 +42,7 @@ const renderCaret = (maestro: Maestro) => {
   maestro.score.caret.render(x, y);
 };
 
-const maestroListener = Object.freeze({
-  name: 'renderCaret',
-  callback: renderCaret
-});
+const maestroListener = Object.freeze({ name: 'renderCaret', callback: renderCaret });
 
 const enhance = compose<InnerProps, IProps>(
   withMaestro,
