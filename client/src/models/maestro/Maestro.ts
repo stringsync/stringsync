@@ -14,6 +14,11 @@ export interface ISpec {
   stop: ISpecEdge;
 }
 
+export interface IMaestroListener {
+  name: string;
+  callback: (maestro: Maestro) => any;
+}
+
 // Used in bsearch
 const comparator = (tick: number) => (spec: ISpec): -1 | 0 | 1 => {
   if (spec.start.tick > tick) {
@@ -35,7 +40,9 @@ export class Maestro {
   public readonly deadTimeMs: number;
 
   public specs: ISpec[] = [];
-  public currentTimeMs: number = 0;
+
+  private $currentTimeMs: number = 0;
+  private listeners: IMaestroListener[] = [];
 
   constructor(score: Score, deadTimeMs: number, bpm: number) {
     this.score = score;
@@ -52,6 +59,27 @@ export class Maestro {
 
   public get currentTick(): number {
     return msToTick(this.currentTimeMs, this.bpm);
+  }
+
+  public get currentTimeMs(): number {
+    return this.$currentTimeMs;
+  }
+
+  public set currentTimeMs(currentTimeMs: number) {
+    this.$currentTimeMs = currentTimeMs;
+    this.broadcast();
+  }
+
+  public addListener(listener: IMaestroListener): void {
+    if (this.listeners.some(l => l.name === listener.name)) {
+      throw new Error(`tried to add duplicate listener: ${listener.name}`);
+    }
+
+    this.listeners.push(listener);
+  }
+
+  public removeListener(name: string): void {
+    this.listeners = this.listeners.filter(listener => listener.name !== name);
   }
 
   public hydrate(): void {
@@ -71,5 +99,9 @@ export class Maestro {
 
       return { start, stop };
     });
+  }
+
+  private broadcast(): void {
+    this.listeners.forEach(listener => listener.callback(this));
   }
 }
