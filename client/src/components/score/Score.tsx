@@ -16,7 +16,6 @@ import { Title } from './Title';
 import { withMaestro, IWithMaestroProps } from '../../enhancers/withMaestro';
 import { Maestro } from '../../models/maestro/Maestro';
 import { Caret } from './Caret';
-import { SpecSync } from './SpecSync';
 
 interface IProps {
   songName: string;
@@ -127,7 +126,6 @@ const Outer = styled('div')`
 
 export const Score = enhance(props => (
   <Outer>
-    <SpecSync />
     <Row type="flex" justify="center">
       <Col span={24}>
         <Title
