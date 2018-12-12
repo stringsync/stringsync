@@ -27,7 +27,13 @@ export class Caret {
   }
 
   public clear(): void {
-    // noop
+    const { svg } = this.score;
+
+    if (svg) {
+      svg.removeChild(this.rect);
+    }
+
+    this.rect = null;
   }
 
   private mountRect(): void {

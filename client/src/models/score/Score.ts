@@ -31,8 +31,8 @@ export class Score {
     this.caret = new Caret(this);
   }
 
-  public get svg(): SVGElement {
-    return this.div.firstChild as SVGElement;
+  public get svg(): any {
+    return this.div.firstChild;
   }
 
   public render(): void {

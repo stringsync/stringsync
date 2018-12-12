@@ -1,28 +1,58 @@
 import * as React from 'react';
 import { compose, branch, renderNothing } from 'recompose';
 import { interpolate } from '../../utils/interpolate';
-import { ISpec, Maestro } from '../../models/maestro/Maestro';
-import { get } from 'lodash';
+import { Maestro } from '../../models/maestro/Maestro';
+import { get, first, last } from 'lodash';
 import { subscribeMaestro } from '../../enhancers/subscribeMaestro';
 
 interface IProps {
   visible: boolean;
 }
 
-const renderCaret = (maestro: Maestro) => {
-  const { spec } = maestro;
+const NOTE_BBOX_OFFSET = 64; // px
 
-  if (!spec) {
+const renderCaret = (maestro: Maestro) => {
+  const { currentSpec } = maestro;
+
+  if (!currentSpec) {
     return;
   }
 
-  const t0 = spec.start.tick;
-  const t1 = spec.stop.tick;
-  const x0 = spec.start.note.graphic.getBBox().x;
-  const x1 = spec.stop.note.graphic.getBBox().x;
+  const t0 = currentSpec.start.tick;
+  const t1 = currentSpec.stop.tick;
   const t = maestro.currentTick;
 
-  const line = get(spec.start.note.measure, 'line');
+  // Compute x0
+  let x0: number;
+  if (currentSpec.start.note) {
+    x0 = currentSpec.start.note.graphic.getBBox().x + NOTE_BBOX_OFFSET;
+  } else {
+    // must be at beginning, get the first note
+    const firstLine = first(maestro.score.lines);
+    const firstMeasure = firstLine && first(firstLine.measures);
+    const firstNote = firstMeasure && first(firstMeasure.notes);
+    if (!firstNote) {
+      // don't even try rendering if there's no first note
+      return;
+    }
+    x0 = firstNote.graphic.getBBox().x + NOTE_BBOX_OFFSET;
+  }
+
+  // Compute x1
+  let x1: number;
+  if (currentSpec.stop.note) {
+    const stopNote = currentSpec.stop.note;
+    if (stopNote.isLast && stopNote.measure!.isLast) {
+      x1 = maestro.score.svg.getBBox().width;
+    } else {
+      x1 = currentSpec.stop.note.graphic.getBBox().x + NOTE_BBOX_OFFSET;
+    }
+  } else {
+    // must be at end, get the svg edge
+    x1 = maestro.score.svg.getBBox().width;
+  }
+
+  const line = get(currentSpec.start.note, 'measure.line', get(currentSpec.stop.note, 'measure.line'));
 
   if (!line) {
     throw new Error('expected note to be hydrated with a measure');

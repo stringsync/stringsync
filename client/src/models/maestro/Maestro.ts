@@ -4,9 +4,9 @@ import { flatMap } from 'lodash';
 import { bsearch } from '../../utils/bsearch';
 import { msToTick } from '../../utils/conversions';
 
-interface ISpecEdge {
+export interface ISpecEdge {
   tick: number;
-  note: Note;
+  note: Note | null;
 }
 
 export interface ISpec {
@@ -42,6 +42,7 @@ export class Maestro {
   public specs: ISpec[] = [];
 
   private $currentTimeMs: number = 0;
+  private $currentSpec: ISpec | null = null;
   private listeners: IMaestroListener[] = [];
 
   constructor(score: Score, deadTimeMs: number, bpm: number) {
@@ -53,8 +54,18 @@ export class Maestro {
   // Performs a bsearch for the spec that contains the tick supplied as an argument.
   // This function must be performant as it will be called every animation frame to
   // determine the current spec.
-  public get spec(): ISpec | null {
-    return bsearch(this.specs, comparator(this.currentTick)) || null;
+  public get currentSpec(): ISpec | null {
+    const { currentTick } = this;
+
+    const shouldComputeSpec = (
+      !this.$currentSpec ||
+      this.$currentSpec.start.tick > currentTick ||
+      this.$currentSpec.stop.tick <= currentTick
+    );
+
+    return shouldComputeSpec
+      ? bsearch(this.specs, comparator(this.currentTick)) || null
+      : this.$currentSpec;
   }
 
   public get currentTick(): number {
