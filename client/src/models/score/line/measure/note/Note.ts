@@ -34,18 +34,18 @@ export class Note {
   }
 
   public light(): void {
-    const paths = this.graphic.querySelectorAll('path');
-    paths.forEach(path => {
-      path.setAttribute('stroke', 'red');
-      path.setAttribute('fill', 'red');
-    });
+    this.setColor('red');
   }
 
   public unlight(): void {
-    const paths = this.graphic.querySelectorAll('path');
+    this.setColor('black');
+  }
+
+  private setColor(color: string): void {
+    const paths = this.graphic.querySelectorAll('.vf-notehead path');
     paths.forEach(path => {
-      path.setAttribute('stroke', 'black');
-      path.setAttribute('fill', 'black');
+      path.setAttribute('stroke', color);
+      path.setAttribute('fill', color);
     });
   }
 }
