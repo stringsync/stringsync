@@ -32,4 +32,20 @@ export class Note {
   public get isLast(): boolean {
     return last(get(this.measure, 'notes', [])) === this;
   }
+
+  public light(): void {
+    const paths = this.graphic.querySelectorAll('path');
+    paths.forEach(path => {
+      path.setAttribute('stroke', 'red');
+      path.setAttribute('fill', 'red');
+    });
+  }
+
+  public unlight(): void {
+    const paths = this.graphic.querySelectorAll('path');
+    paths.forEach(path => {
+      path.setAttribute('stroke', 'black');
+      path.setAttribute('fill', 'black');
+    });
+  }
 }
