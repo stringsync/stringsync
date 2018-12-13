@@ -1,7 +1,7 @@
 import { Flow, Artist, VexTab } from 'vextab/releases/vextab-div.js';
 import { Line } from './line';
 import { SVGExtractor } from './SVGExtractor';
-import { Caret } from './Caret';
+import { Caret } from './caret';
 
 Artist.NOLOGO = true;
 

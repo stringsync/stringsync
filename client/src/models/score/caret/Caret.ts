@@ -1,4 +1,6 @@
-import { Score } from './Score';
+import { Score } from '../Score';
+import { ISpec } from '../../maestro/Maestro';
+import { PosCalculator } from './PosCalculator';
 
 export class Caret {
   public readonly score: Score;
@@ -13,7 +15,7 @@ export class Caret {
     return !!this.rect;
   }
 
-  public render(x: number, y: number): void {
+  public render(spec: ISpec, tick: number): void {
     if (!this.rect) {
       this.mountRect();
     }
@@ -22,8 +24,14 @@ export class Caret {
       throw new Error('rect did not mount');
     }
 
-    this.rect.setAttribute('x', x.toString());
-    this.rect.setAttribute('y', y.toString());
+    const posCalculator = new PosCalculator(this.score, spec, tick);
+
+    try {
+      this.rect.setAttribute('x', posCalculator.x.toString());
+      this.rect.setAttribute('y', posCalculator.y.toString());
+    } catch (error) {
+      this.clear();
+    }
   }
 
   public clear(): void {
