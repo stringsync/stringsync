@@ -16,6 +16,8 @@ import { Title } from './Title';
 import { withMaestro, IWithMaestroProps } from '../../enhancers/withMaestro';
 import { Maestro } from '../../models/maestro/Maestro';
 import { Caret } from './Caret';
+import { Scroller } from './Scroller';
+import { Lighter } from './Lighter';
 
 interface IProps {
   songName: string;
@@ -138,6 +140,8 @@ export const Score = enhance(props => (
     <Row type="flex" justify="center">
       <Col span={24}>
         <Caret visible={props.caret} />
+        <Scroller />
+        <Lighter />
         <div ref={props.handleDivRef} />
       </Col>
     </Row>

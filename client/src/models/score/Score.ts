@@ -65,6 +65,7 @@ export class Score {
     this.lines = this.artist.staves.map((stave, ndx) => {
       const line = new Line(stave, ndx);
       line.hydrate(extractor, noteOffset);
+      line.graphic.setAttribute('id', `line-${line.index}`);
       line.measures.forEach(measure => noteOffset += measure.notes.length);
       return line;
     });
