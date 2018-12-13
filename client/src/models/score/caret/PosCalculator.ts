@@ -75,7 +75,7 @@ export class PosCalculator {
       throw new Error('could not find line for y computation');
     }
 
-    return line.graphic.getBBox().y;
+    return line.graphic.getBBox().y - 25;
   }
 
   private get svgWidth(): number {
