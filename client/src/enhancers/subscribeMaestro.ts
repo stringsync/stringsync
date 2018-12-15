@@ -2,34 +2,43 @@ import { withMaestro, IWithMaestroProps } from './withMaestro';
 import { IMaestroListener } from '../models/maestro';
 import { compose, lifecycle, mapProps } from 'recompose';
 
-export const subscribeMaestro = (listener: IMaestroListener) => (BaseComponent: React.ComponentClass<any>) => {
+type Listener<TProps> = (props: TProps) => IMaestroListener;
+
+interface IOwnProps<TProps> {
+  ownProps: TProps;
+  listener: IMaestroListener;
+}
+
+type InsideProps<TProps> = IWithMaestroProps & IOwnProps<TProps>;
+
+export const subscribeMaestro = <TProps>(listener: Listener<TProps>) => (BaseComponent: React.ComponentClass<any>) => {
   const enhance = compose(
-    mapProps(ownProps => ({ ownProps })),
+    mapProps<IOwnProps<TProps>, TProps>(ownProps => ({ ownProps, listener: listener(ownProps) })),
     withMaestro,
-    lifecycle<IWithMaestroProps, {}, {}>({
+    lifecycle<InsideProps<TProps>, {}, {}>({
       componentDidMount(): void {
         const { maestro } = this.props;
 
         if (maestro) {
-          maestro.addListener(listener);
+          maestro.addListener(this.props.listener);
         }
       },
       componentDidUpdate(): void {
         const { maestro } = this.props;
 
-        if (maestro && !maestro.hasListener(listener.name)) {
-          maestro.addListener(listener);
+        if (maestro && !maestro.hasListener(this.props.listener.name)) {
+          maestro.addListener(this.props.listener);
         }
       },
       componentWillUnmount(): void {
         const { maestro } = this.props;
 
         if (maestro) {
-          maestro.removeListener(listener.name);
+          maestro.removeListener(this.props.listener.name);
         }
       }
     }),
-    mapProps((props: any) => props.ownProps),
+    mapProps<TProps, InsideProps<TProps>>((props: any) => props.ownProps),
   );
 
   return enhance(BaseComponent);

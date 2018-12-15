@@ -17,14 +17,15 @@ const renderCaret = (maestro: Maestro) => {
   maestro.score.caret.render(currentSpec, maestro.currentTick);
 };
 
-const maestroListener = Object.freeze({ name: 'renderCaret', callback: renderCaret });
-
 const enhance = compose<IProps, IProps>(
   branch<IProps>(
     props => !props.visible,
     renderNothing
   ),
-  subscribeMaestro(maestroListener)
+  subscribeMaestro(() => ({
+    name: 'renderCaret',
+    callback: renderCaret
+  }))
 );
 
 export const Caret = enhance(() => null);
