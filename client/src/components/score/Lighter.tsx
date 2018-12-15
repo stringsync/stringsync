@@ -17,7 +17,7 @@ type InnerProps = IStateProps & IHandlerProps;
 const enhance = compose<InnerProps, {}>(
   withState('spec', 'setSpec', null),
   withHandlers<IStateProps, IHandlerProps>({
-    updateLit: (props: IStateProps) => (maestro: Maestro) => {
+    updateLit: props => (maestro: Maestro) => {
       const { currentSpec } = maestro;
 
       if (props.spec === currentSpec) {
