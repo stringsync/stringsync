@@ -1,6 +1,5 @@
 import * as React from 'react';
-import $ from 'jquery';
-import { compose, withStateHandlers, withProps, lifecycle, withHandlers } from 'recompose';
+import { compose, withStateHandlers, withProps, lifecycle, withState } from 'recompose';
 import { RouteComponentProps } from 'react-router';
 import { Loading } from '../../../components/loading/Loading';
 import { withNotation, IWithNotationProps } from '../../../enhancers/withNotation';
@@ -11,27 +10,34 @@ import styled from 'react-emotion';
 import { Menu } from './menu';
 import { Controls } from '../../../components/video/controls';
 import { Score } from '../../../components/score/Score';
-import withSizes from 'react-sizes';
 import { Carousel } from './carousel';
 import { connect } from 'react-redux';
 import { IStore } from '../../../@types/store';
 import { INotation } from '../../../@types/notation';
 import { NotationsActions } from '../../../data/notations/notationsActions';
 import { fetchAllNotations } from '../../../data/notations/notationsApi';
-import { CondAffix } from './CondAffix';
-import { CondVisibility } from './CondVisibility';
-import { Fretboard } from '../../../components/fretboard';
+import withSizes from 'react-sizes';
 
 type RouteProps = RouteComponentProps<{ id: string }>;
 
-interface IStateProps {
+interface INotationLoadingProps {
   notationLoading: boolean;
-  videoLoading: boolean;
-  notationLoaded: () => void;
   notationChanged: () => void;
+  notationLoaded: () => void;
+}
+
+interface IVideoLoadingProps {
+  videoLoading: boolean;
   videoLoaded: () => void;
   videoChanged: () => void;
 }
+
+interface IRightDivProps {
+  rightDiv: HTMLDivElement | null;
+  handleRightDivRef: (div: HTMLDivElement | null) => void;
+}
+
+type StateProps = INotationLoadingProps & IVideoLoadingProps & IRightDivProps;
 
 interface ILoadingProps {
   loading: boolean;
@@ -43,27 +49,13 @@ interface IConnectProps {
   setNotations: (notations: INotation[]) => void;
 }
 
-type NotationsOuterProps = RouteProps & IStateProps & ILoadingProps & IConnectProps & IWithNotationProps;
+type LifecycleProps = StateProps & IRightDivProps & ILoadingProps & IWithNotationProps & IConnectProps;
 
-interface IWithSizesProps {
+interface IScoreWidthProps {
   scoreWidth: number;
-  isDesktop: boolean;
-  isTablet: boolean;
-  isMobile: boolean;
 }
 
-interface IShouldAffixProps {
-  shouldFirstRowAffix: () => boolean;
-  shouldFretboardAffix: () => boolean;
-  shouldVideoAffix: () => boolean;
-  shouldRightColShow: () => boolean;
-}
-
-interface IScrollOffsetProps {
-  scrollOffset: number;
-}
-
-type InnerProps = NotationsOuterProps & IWithSizesProps & IShouldAffixProps & IScrollOffsetProps;
+type InnerProps = LifecycleProps & IScoreWidthProps;
 
 const enhance = compose<InnerProps, RouteComponentProps> (
   withStateHandlers(
@@ -80,10 +72,14 @@ const enhance = compose<InnerProps, RouteComponentProps> (
       videoChanged: () => () => ({ videoLoading: true })
     },
   ),
-  withProps<ILoadingProps, IStateProps>(props => ({
+  withStateHandlers(
+    { rightDiv: null },
+    { handleRightDivRef: () => (rightDiv: any) => ({ rightDiv }) },
+  ),
+  withProps<ILoadingProps, StateProps>(props => ({
     loading: props.notationLoading || props.videoLoading
   })),
-  withNotation<IStateProps & RouteProps>(
+  withNotation<StateProps & RouteProps>(
     props => parseInt(props.match.params.id, 10),
     props => props.notationLoaded(),
     props => props.history.push('/'),
@@ -101,7 +97,7 @@ const enhance = compose<InnerProps, RouteComponentProps> (
       setNotations: (notations: INotation[]) => dispatch(NotationsActions.setNotations(notations))
     })
   ),
-  lifecycle <NotationsOuterProps, {}, {}>({
+  lifecycle<LifecycleProps, {}, {}>({
     async componentDidMount(): Promise<void> {
       // Only fetch if we need to
       if (this.props.notations.length > 0) {
@@ -114,42 +110,10 @@ const enhance = compose<InnerProps, RouteComponentProps> (
       this.props.setNotations(sorted);
     }
   }),
-  withSizes(size => ({
-    isMobile: withSizes.isMobile(size),
-    isTablet: withSizes.isTablet(size),
-    isDesktop: withSizes.isDesktop(size),
-    scoreWidth: Math.min(1200, size.width)
+  withSizes(({ width }) => ({ width })),
+  withProps<IScoreWidthProps, LifecycleProps>(props => ({
+    scoreWidth: Math.min(props.rightDiv ? props.rightDiv.offsetWidth : 1200, 1200)
   })),
-  withHandlers<NotationsOuterProps & IWithSizesProps, IShouldAffixProps>({
-    shouldFirstRowAffix: props => () => {
-      return props.isDesktop;
-    },
-    shouldFretboardAffix: props => () => {
-      return props.isTablet || props.isMobile;
-    },
-    shouldVideoAffix: props => () => {
-      return (props.isTablet || props.isMobile) && !props.fretboardVisible;
-    },
-    shouldRightColShow: props => () => {
-      return props.fretboardVisible;
-    }
-  }),
-  withProps<IScrollOffsetProps, NotationsOuterProps & IWithSizesProps & IShouldAffixProps>(props => {
-    let scrollOffset: number = 0;
-
-    if (props.shouldFirstRowAffix()) {
-      scrollOffset = $('#main-media').height() || 0;
-    } else {
-      if (props.shouldRightColShow() && props.shouldFretboardAffix()) {
-        scrollOffset += $('#notation-show-fretboard').height() || 0;
-      }
-      if (props.shouldVideoAffix()) {
-        scrollOffset += $('#notation-show-video').height() || 0;
-      }
-    }
-
-    return { scrollOffset };
-  })
 );
 
 const ControlsWrapper = styled('div')`
@@ -177,68 +141,35 @@ export const NotationShow = enhance(props => {
     onReady: props.videoLoaded
   };
 
+  const scoreProps = {
+    caret: true,
+    scrollOffset: 0,
+    deadTimeMs: props.notation.deadTimeMs,
+    songName: props.notation.songName,
+    artistName: props.notation.artistName,
+    transcriberName: get(props.notation.transcriber, 'name', ''),
+    vextabString: props.notation.vextabString,
+    bpm: props.notation.bpm,
+    width: props.scoreWidth
+  };
+
   return (
     <div>
       <Loading loading={props.loading} />
       <BackTop style={{ bottom: '100px', right: '32px' }} />
       <Menu />
-      <div id="main-media">
-        <CondAffix shouldAffix={props.shouldFirstRowAffix}>
-          <Row
-            type="flex"
-            justify="center"
-            align="bottom"
-            gutter={2}
-            style={{ background: 'white', borderBottom: '1px solid #e8e8e8' }}
-          >
-            <Col xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
-              <div id="notation-show-video">
-                <CondAffix shouldAffix={props.shouldVideoAffix}>
-                  <VideoWrapper>
-                    <Video {...videoProps} />
-                  </VideoWrapper>
-                </CondAffix>
-              </div>
-            </Col>
-            <CondVisibility shouldShow={props.shouldRightColShow}>
-              <Col xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
-                <Row type="flex" align="middle" gutter={4}>
-                  <Col xs={0} sm={0} md={0} lg={24} xl={24} xxl={24}>
-                    <Carousel notations={props.notations} />
-                  </Col>
-                  <Col span={24} >
-                    <div id="notation-show-fretboard">
-                      <CondAffix shouldAffix={props.shouldFretboardAffix}>
-                        <Fretboard />
-                      </CondAffix>
-                    </div>
-                  </Col>
-                </Row>
-              </Col>
-            </CondVisibility>
-          </Row>
-        </CondAffix>
-      </div>
-      <Row type="flex" justify="center">
-        <Col span={24}>
-          <Row type="flex" justify="center" style={{ background: 'white' }}>
-            <Score
-              caret={true}
-              scrollOffset={props.scrollOffset}
-              deadTimeMs={props.notation.deadTimeMs}
-              songName={props.notation.songName}
-              artistName={props.notation.artistName}
-              transcriberName={get(props.notation.transcriber, 'name', '')}
-              vextabString={props.notation.vextabString}
-              bpm={props.notation.bpm}
-              width={props.scoreWidth}
-            />
-          </Row>
-          <Row type="flex" align="middle" gutter={4}>
-            <Col xs={24} sm={24} md={24} lg={0} xl={0} xxl={0}>
-              <Carousel notations={props.notations} />
-            </Col>
-          </Row>
+      <Row>
+        <Col span={6}>
+          <VideoWrapper>
+            <Video {...videoProps} />
+          </VideoWrapper>
+        </Col>
+        <Col span={18}>
+          <div ref={props.handleRightDivRef} style={{ background: 'white' }}>
+            <Row type="flex" justify="center">
+              <Score {...scoreProps} />
+            </Row>
+          </div>
         </Col>
       </Row>
       <ControlsWrapper>
