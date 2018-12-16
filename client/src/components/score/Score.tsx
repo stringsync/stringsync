@@ -127,6 +127,12 @@ const Outer = styled('div')`
   padding-bottom: 64px;
 `;
 
+const Spacer = styled('div')`
+  height: 300px;
+  width: 100%;
+  background: white;
+`;
+
 export const Score = enhance(props => (
   <Outer>
     <Row type="flex" justify="center">
@@ -146,5 +152,6 @@ export const Score = enhance(props => (
         <div ref={props.handleDivRef} />
       </Col>
     </Row>
+    <Spacer />
   </Outer>
 ));

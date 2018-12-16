@@ -16,6 +16,7 @@ import { IStore } from '../../../@types/store';
 import withSizes from 'react-sizes';
 import { noScroll } from '../../../enhancers/noScroll';
 import { Suggestions } from './suggestions';
+import { Fretboard } from '../../../components/fretboard';
 
 type RouteProps = RouteComponentProps<{ id: string }>;
 
@@ -162,6 +163,12 @@ const VideoWrapper = styled('div')`
   }
 `;
 
+const FretboardWrapper = styled('div')`
+  position: fixed;
+  bottom: 64px;
+  width: 100%;
+`;
+
 export const NotationShow = enhance(props => (
   <div>
     <Loading loading={props.loading} />
@@ -185,6 +192,9 @@ export const NotationShow = enhance(props => (
               <Score {...getScoreProps(props)} />
             </Row>
           </ScoreWrapper>
+          <FretboardWrapper>
+            <Fretboard />
+          </FretboardWrapper>
           <Row>
             <Controls />
           </Row>
