@@ -34,6 +34,6 @@ const StyledH2 = styled('h2')`
 export const Title = enhance(props => (
   <Outer>
     <StyledH1>{props.songName} by {props.artistName}</StyledH1>
-    <StyledH2>trascribed by {props.transcriberName}</StyledH2>
+    <StyledH2>transcribed by {props.transcriberName}</StyledH2>
   </Outer>
 ));
