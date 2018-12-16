@@ -1,3 +1,7 @@
+.no-scroll {
+  overflow: hidden;
+}
+
 #root {
   overflow-x: hidden;
 }

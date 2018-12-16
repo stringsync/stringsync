@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Skeleton, Row, Col, Tooltip } from 'antd';
-import { compose, withProps, branch, renderNothing } from 'recompose';
+import { Skeleton, Tooltip } from 'antd';
+import { compose, withProps } from 'recompose';
 import { connect } from 'react-redux';
 import { IStore } from '../../../@types/store';
 import styled from 'react-emotion';
@@ -46,15 +46,7 @@ export const Detail = enhance(props => (
     active={true}
   >
     <Tooltip title={`${props.songName} by ${props.artistName}`}>
-      <Row type="flex" gutter={8} align="middle">
-        <Col><Img src={props.thumbnailUrl} alt={props.songName} /></Col>
-        <Col>
-          <Row>
-            <Col>{truncate(props.songName, { length: 20 })}</Col>
-            <Col><small>{truncate(props.artistName, { length: 24 })}</small></Col>
-          </Row>
-        </Col>
-      </Row>
+      <Img src={props.thumbnailUrl} alt={props.songName} />
     </Tooltip>
   </Skeleton>
 ));

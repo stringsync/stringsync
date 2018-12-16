@@ -35,7 +35,8 @@ const enhance = compose<InnerProps, IProps>(
         scroller.scrollTo(`line-${line.index}`, {
           smooth: true,
           duration: 200,
-          offset: -props.offset - 80
+          offset: -props.offset, // 64 px comes from the nav component
+          containerId: 'score-wrapper'
         });
       }
 

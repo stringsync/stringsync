@@ -8,7 +8,7 @@ interface IProps {
   width?: number | string;
 }
 
-const Outer = styled('div')<{ block?: boolean, width?: number }>`
+const Outer = styled('div')<{ block?: boolean, width?: number | string }>`
   padding: 24px;
   border: 1px solid #e8e8e8;
   border-radius: 4px;
@@ -16,7 +16,7 @@ const Outer = styled('div')<{ block?: boolean, width?: number }>`
   display: ${props => props.block ? 'block' : 'inline-block'};
 `;
 
-export const Box = props => (
+export const Box: React.SFC<IProps> = props => (
   <Outer block={props.block} width={props.width} style={{ width: props.width }}>
     <Title title={props.title} />
     {props.children}
