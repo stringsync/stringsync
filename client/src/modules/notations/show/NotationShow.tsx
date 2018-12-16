@@ -1,4 +1,5 @@
 import * as React from 'react';
+import $ from 'jquery';
 import { compose, withStateHandlers, withProps, lifecycle, withHandlers } from 'recompose';
 import { RouteComponentProps } from 'react-router';
 import { Loading } from '../../../components/loading/Loading';
@@ -58,7 +59,11 @@ interface IShouldAffixProps {
   shouldRightColShow: () => boolean;
 }
 
-type InnerProps = NotationsOuterProps & IWithSizesProps & IShouldAffixProps;
+interface IScrollOffsetProps {
+  scrollOffset: number;
+}
+
+type InnerProps = NotationsOuterProps & IWithSizesProps & IShouldAffixProps & IScrollOffsetProps;
 
 const enhance = compose<InnerProps, RouteComponentProps> (
   withStateHandlers(
@@ -128,6 +133,22 @@ const enhance = compose<InnerProps, RouteComponentProps> (
     shouldRightColShow: props => () => {
       return props.fretboardVisible;
     }
+  }),
+  withProps<IScrollOffsetProps, NotationsOuterProps & IWithSizesProps & IShouldAffixProps>(props => {
+    let scrollOffset: number = 0;
+
+    if (props.shouldFirstRowAffix()) {
+      scrollOffset = $('#main-media').height() || 0;
+    } else {
+      if (props.shouldRightColShow() && props.shouldFretboardAffix()) {
+        scrollOffset += $('#notation-show-fretboard').height() || 0;
+      }
+      if (props.shouldVideoAffix()) {
+        scrollOffset += $('#notation-show-video').height() || 0;
+      }
+    }
+
+    return { scrollOffset };
   })
 );
 
@@ -171,11 +192,13 @@ export const NotationShow = enhance(props => {
             style={{ background: 'white', borderBottom: '1px solid #e8e8e8' }}
           >
             <Col xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
-              <CondAffix shouldAffix={props.shouldVideoAffix}>
-                <VideoWrapper>
-                  <Video {...videoProps} />
-                </VideoWrapper>
-              </CondAffix>
+              <div id="notation-show-video">
+                <CondAffix shouldAffix={props.shouldVideoAffix}>
+                  <VideoWrapper>
+                    <Video {...videoProps} />
+                  </VideoWrapper>
+                </CondAffix>
+              </div>
             </Col>
             <CondVisibility shouldShow={props.shouldRightColShow}>
               <Col xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
@@ -184,9 +207,11 @@ export const NotationShow = enhance(props => {
                     <Carousel notations={props.notations} />
                   </Col>
                   <Col span={24} >
-                    <CondAffix shouldAffix={props.shouldFretboardAffix}>
-                      <Fretboard />
-                    </CondAffix>
+                    <div id="notation-show-fretboard">
+                      <CondAffix shouldAffix={props.shouldFretboardAffix}>
+                        <Fretboard />
+                      </CondAffix>
+                    </div>
                   </Col>
                 </Row>
               </Col>
@@ -199,6 +224,7 @@ export const NotationShow = enhance(props => {
           <Row type="flex" justify="center" style={{ background: 'white' }}>
             <Score
               caret={true}
+              scrollOffset={props.scrollOffset}
               deadTimeMs={props.notation.deadTimeMs}
               songName={props.notation.songName}
               artistName={props.notation.artistName}

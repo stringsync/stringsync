@@ -17,4 +17,4 @@ const enhance = compose<IProps, IProps>(
   )
 );
 
-export const CondAffix = enhance(props => <>{props.children}</>);
+export const CondAffix = enhance(props => <div>{props.children}</div>);

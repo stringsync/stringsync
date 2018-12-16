@@ -21,6 +21,7 @@ import { Lighter } from './Lighter';
 
 interface IProps {
   songName: string;
+  scrollOffset: number;
   bpm: number;
   artistName: string;
   transcriberName: string;
@@ -140,7 +141,7 @@ export const Score = enhance(props => (
     <Row type="flex" justify="center">
       <Col span={24}>
         <Caret visible={props.caret} />
-        <Scroller />
+        <Scroller offset={props.scrollOffset} />
         <Lighter />
         <div ref={props.handleDivRef} />
       </Col>

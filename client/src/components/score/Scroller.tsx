@@ -6,6 +6,10 @@ import { Maestro } from '../../models/maestro/Maestro';
 import { get } from 'lodash';
 import { subscribeMaestro } from '../../enhancers/subscribeMaestro';
 
+interface IProps {
+  offset: number;
+}
+
 interface IStateProps {
   line: Line | null;
   setLine: (line: Line | null) => void;
@@ -15,26 +19,24 @@ interface IHandlerProps {
   updateScroller: (maestro: Maestro) => void;
 }
 
-type InnerProps = IStateProps & IHandlerProps;
+type InnerProps = IProps & IStateProps & IHandlerProps;
 
-const enhance = compose<InnerProps, {}>(
+const enhance = compose<InnerProps, IProps>(
   withState('line', 'setLine', null),
-  withHandlers<IStateProps, IHandlerProps>({
+  withHandlers<IProps & IStateProps, IHandlerProps>({
     updateScroller: props => (maestro: Maestro) => {
-      const line = get(maestro.currentSpec, 'start.note.measure.line', null);
+      const line = get(maestro.currentSpec, 'stop.note.measure.line', null);
 
       if (props.line === line) {
         return;
       }
 
       if (line) {
-        const el = document.getElementById(`line-${line.index}`);
-        if (el) {
-          scroller.scrollTo(el, {
-            smooth: true,
-            duration: 100
-          });
-        }
+        scroller.scrollTo(`line-${line.index}`, {
+          smooth: true,
+          duration: 200,
+          offset: -props.offset - 80
+        });
       }
 
       props.setLine(line);

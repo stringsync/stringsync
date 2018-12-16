@@ -1,8 +1,7 @@
 import { INotation } from '../../@types/notation';
 import * as $ from 'jquery';
 import { canonicalize } from '../../utils/canonicalize/canonicalize';
-import { pick, camelCase } from 'lodash';
-import { mapKeysDeep } from '../../utils/mapKeysDeep';
+import { pick } from 'lodash';
 import { getAttributes } from '../../utils/getAttributes';
 
 interface ICreateNotation {

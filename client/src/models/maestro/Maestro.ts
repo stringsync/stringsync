@@ -77,8 +77,13 @@ export class Maestro {
   }
 
   public set currentTimeMs(currentTimeMs: number) {
+    const shouldBroadcast = this.$currentTimeMs !== currentTimeMs;
+
     this.$currentTimeMs = currentTimeMs;
-    this.broadcast();
+
+    if (shouldBroadcast) {
+      this.broadcast();
+    }
   }
 
   public addListener(listener: IMaestroListener): void {
