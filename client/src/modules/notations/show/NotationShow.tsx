@@ -18,6 +18,7 @@ import { NotationsActions } from '../../../data/notations/notationsActions';
 import { fetchAllNotations } from '../../../data/notations/notationsApi';
 import withSizes from 'react-sizes';
 import { noScroll } from '../../../enhancers/noScroll';
+import { Suggestions } from './Suggestions';
 
 type RouteProps = RouteComponentProps<{ id: string }>;
 
@@ -45,12 +46,8 @@ interface ILoadingProps {
 }
 
 interface IConnectProps {
-  notations: INotation[];
   fretboardVisible: boolean;
-  setNotations: (notations: INotation[]) => void;
 }
-
-type LifecycleProps = StateProps & IRightDivProps & ILoadingProps & IWithNotationProps & IConnectProps;
 
 interface IWithSizesProps {
   width: number;
@@ -60,7 +57,8 @@ interface IScoreWidthProps {
   scoreWidth: number;
 }
 
-type InnerProps = LifecycleProps & IWithSizesProps & IScoreWidthProps;
+type InnerProps = RouteProps & StateProps & IWithNotationProps & ILoadingProps &
+  IConnectProps & IWithSizesProps & IScoreWidthProps;
 
 const LG_BREAKPOINT = 992;
 
@@ -98,28 +96,11 @@ const enhance = compose<InnerProps, RouteComponentProps>(
   ),
   connect(
     (state: IStore) => ({
-      notations: state.notations,
       fretboardVisible: state.notationMenu.fretboardVisible
-    }),
-    dispatch => ({
-      setNotations: (notations: INotation[]) => dispatch(NotationsActions.setNotations(notations))
     })
   ),
-  lifecycle<LifecycleProps, {}, {}>({
-    async componentDidMount(): Promise<void> {
-      // Only fetch if we need to
-      if (this.props.notations.length > 0) {
-        return;
-      }
-
-      const notations = await fetchAllNotations();
-      // sorted in reverse
-      const sorted = notations.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-      this.props.setNotations(sorted);
-    }
-  }),
   withSizes(({ width }) => ({ width })),
-  withProps<IScoreWidthProps, IWithSizesProps & LifecycleProps>(props => ({
+  withProps<IScoreWidthProps, any>(props => ({
     scoreWidth: Math.min(props.rightDiv ? props.rightDiv.offsetWidth : 1200, 1200) - 20
   })),
 );
@@ -194,6 +175,7 @@ export const NotationShow = enhance(props => (
           <VideoWrapper>
             <Video {...getVideoProps(props)} />
           </VideoWrapper>
+          <Suggestions />
         </LeftCol>
       </Col>
       <Col xs={24} sm={24} md={24} lg={18} xl={18} xxl={18}>
