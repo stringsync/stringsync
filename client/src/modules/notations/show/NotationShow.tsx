@@ -1,6 +1,6 @@
 import * as React from 'react';
 import $ from 'jquery';
-import { compose, withStateHandlers, withProps, lifecycle } from 'recompose';
+import { compose, withStateHandlers, withProps } from 'recompose';
 import { RouteComponentProps } from 'react-router';
 import { Loading } from '../../../components/loading/Loading';
 import { withNotation, IWithNotationProps } from '../../../enhancers/withNotation';
@@ -13,12 +13,9 @@ import { Controls } from '../../../components/video/controls';
 import { Score } from '../../../components/score/Score';
 import { connect } from 'react-redux';
 import { IStore } from '../../../@types/store';
-import { INotation } from '../../../@types/notation';
-import { NotationsActions } from '../../../data/notations/notationsActions';
-import { fetchAllNotations } from '../../../data/notations/notationsApi';
 import withSizes from 'react-sizes';
 import { noScroll } from '../../../enhancers/noScroll';
-import { Suggestions } from './Suggestions';
+import { Suggestions } from './suggestions';
 
 type RouteProps = RouteComponentProps<{ id: string }>;
 
@@ -175,7 +172,7 @@ export const NotationShow = enhance(props => (
           <VideoWrapper>
             <Video {...getVideoProps(props)} />
           </VideoWrapper>
-          <Suggestions />
+          <Suggestions visible={props.width >= LG_BREAKPOINT} />
         </LeftCol>
       </Col>
       <Col xs={24} sm={24} md={24} lg={18} xl={18} xxl={18}>
