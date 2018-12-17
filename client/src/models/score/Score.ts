@@ -2,6 +2,7 @@ import { Flow, Artist, VexTab } from 'vextab/releases/vextab-div.js';
 import { Line } from './line';
 import { SVGExtractor } from './SVGExtractor';
 import { Caret } from './caret';
+import { flatMap } from 'lodash';
 
 Artist.NOLOGO = true;
 
@@ -80,6 +81,27 @@ export class Score {
           note.measure = measure;
         });
       });
+    });
+
+    // Each score sub model is a doubly linked list:
+    // link lines
+    this.lines.forEach((line, ndx) => {
+      line.prev = this.lines[ndx - 1] || null;
+      line.next = this.lines[ndx + 1] || null;
+    });
+
+    // link measures
+    const measures = flatMap(this.lines, line => line.measures);
+    measures.forEach((measure, ndx) => {
+      measure.prev = measures[ndx - 1] || null;
+      measure.next = measures[ndx + 1] || null;
+    });
+
+    // link notes
+    const notes = flatMap(measures, measure => measure.notes);
+    notes.forEach((note, ndx) => {
+      note.prev = notes[ndx - 1] || null;
+      note.next = notes[ndx + 1] || null;
     });
 
     this.hydrated = true;

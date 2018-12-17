@@ -8,6 +8,8 @@ export class Note {
   public readonly graphic: any;
 
   public measure: Measure | undefined;
+  public prev: Note | undefined | null;
+  public next: Note | undefined | null;
 
   // Callers should not access the vexflow elements. Instead,
   // a method exposing and computing some aspect of the vexflow
@@ -31,52 +33,6 @@ export class Note {
 
   public get isLast(): boolean {
     return last(get(this.measure, 'notes', [])) === this;
-  }
-
-  public get next(): Note | null {
-    if (!this.measure) {
-      return null;
-    }
-
-    if (this.isLast) {
-      const nextMeasure = this.measure.next;
-      if (!nextMeasure) {
-        return null;
-      }
-
-      return first(nextMeasure.notes) || null;
-    }
-
-    const ndx = this.measure.notes.indexOf(this);
-
-    if (ndx < 0) {
-      return null;
-    }
-
-    return this.measure.notes[ndx + 1] || null;
-  }
-
-  public get prev(): Note | null {
-    if (!this.measure) {
-      return null;
-    }
-
-    if (this.isFirst) {
-      const prevMeasure = this.measure.prev;
-      if (!prevMeasure) {
-        return null;
-      }
-
-      return last(prevMeasure.notes) || null;
-    }
-
-    const ndx = this.measure.notes.indexOf(this);
-
-    if (ndx < 0) {
-      return null;
-    }
-
-    return this.measure.notes[ndx - 1] || null;
   }
 
   public light(): void {
