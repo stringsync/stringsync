@@ -55,7 +55,7 @@ export class Caret {
       throw new Error('must have a score svg to mount a rect');
     }
 
-    this.rect.setAttribute('width', '2');
+    this.rect.setAttribute('width', '1');
     this.rect.setAttribute('height', '225');
     this.rect.setAttribute('fill', '#fc354c');
     this.rect.setAttribute('stroke', '#fc354c');

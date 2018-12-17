@@ -2,7 +2,6 @@ import { ISpec } from '../../maestro/Maestro';
 import { get, first } from 'lodash';
 import { Score } from '../Score';
 import { interpolate } from '../../../utils/interpolate';
-import { Line } from '../line/Line';
 
 export class PosCalculator {
   public static BBOX_OFFSET = 10; // px
