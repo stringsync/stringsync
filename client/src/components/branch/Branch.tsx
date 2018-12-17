@@ -12,4 +12,4 @@ const enhance = compose<IProps, IProps>(
   )
 );
 
-export const CondVis = enhance(props => <>{props.children}</>);
+export const Branch = enhance(props => <>{props.children}</>);

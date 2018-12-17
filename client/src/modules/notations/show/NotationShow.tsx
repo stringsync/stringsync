@@ -17,7 +17,7 @@ import withSizes from 'react-sizes';
 import { noScroll } from '../../../enhancers/noScroll';
 import { Suggestions } from './suggestions';
 import { Fretboard } from '../../../components/fretboard';
-import { CondVis } from '../../../components/cond-vis';
+import { Branch } from '../../../components/branch';
 
 type RouteProps = RouteComponentProps<{ id: string }>;
 
@@ -53,6 +53,7 @@ interface IWithSizesProps {
 }
 
 interface IScoreWidthProps {
+  numFrets: number;
   scoreWidth: number;
 }
 
@@ -100,6 +101,7 @@ const enhance = compose<InnerProps, RouteComponentProps>(
   ),
   withSizes(({ width }) => ({ width })),
   withProps<IScoreWidthProps, any>(props => ({
+    numFrets: props.isDesktop ? 21 : props.isTablet ? 19 : 14,
     scoreWidth: Math.min(props.rightDiv ? props.rightDiv.offsetWidth : 1200, 1200) - 20
   })),
 );
@@ -181,15 +183,15 @@ export const NotationShow = enhance(props => (
           <VideoWrapper>
             <Video {...getVideoProps(props)} />
           </VideoWrapper>
-          <CondVis visible={props.fretboardVisible && props.width < LG_BREAKPOINT}>
-            <Fretboard />
-          </CondVis>
-          <CondVis visible={props.width < LG_BREAKPOINT}>
+          <Branch visible={props.fretboardVisible && props.width < LG_BREAKPOINT}>
+            <Fretboard numFrets={props.numFrets} />
+          </Branch>
+          <Branch visible={props.width < LG_BREAKPOINT}>
             <Controls />
-          </CondVis>
-          <CondVis visible={props.width >= LG_BREAKPOINT}>
+          </Branch>
+          <Branch visible={props.width >= LG_BREAKPOINT}>
             <Suggestions />
-          </CondVis>
+          </Branch>
         </LeftCol>
       </Col>
       <Col xs={24} sm={24} md={24} lg={18} xl={18} xxl={18}>
@@ -205,12 +207,12 @@ export const NotationShow = enhance(props => (
               <Score {...getScoreProps(props)} />
             </Row>
           </ScoreWrapper>
-          <CondVis visible={props.fretboardVisible && props.width >= LG_BREAKPOINT}>
-            <Fretboard />
-          </CondVis>
-          <CondVis visible={props.width >= LG_BREAKPOINT}>
+          <Branch visible={props.fretboardVisible && props.width >= LG_BREAKPOINT}>
+            <Fretboard numFrets={props.numFrets} />
+          </Branch>
+          <Branch visible={props.width >= LG_BREAKPOINT}>
             <Controls />
-          </CondVis>
+          </Branch>
         </div>
       </Col>
     </Row>
