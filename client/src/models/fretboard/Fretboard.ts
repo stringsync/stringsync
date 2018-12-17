@@ -1,6 +1,4 @@
-import { FretMarker } from './FretMarker';
 import { Note } from '../score/line/measure/note';
-import { partition } from 'lodash';
 import { IPosition } from '../../@types/position';
 
 const NUM_FRETS = 23;
@@ -16,8 +14,18 @@ export class Fretboard {
   ];
 
   public note: Note | null = null;
-  public lit: Set<FretMarker> = new Set();
-  public pressed: Set<FretMarker> = new Set();
+  public lit: Set<any> = new Set();
+  public pressed: Set<any> = new Set();
+
+  public add(fretMarker: any, position: IPosition) {
+    const { fret, str } = position;
+    this.fretMarkers[str - 1][fret] = fretMarker;
+  }
+
+  public remove(position: IPosition) {
+    const { fret, str } = position;
+    this.fretMarkers[str - 1][fret] = null;
+  }
 
   /**
    * The primary interface of Fretboard. This will take a maestro, and infer all of the
@@ -50,7 +58,7 @@ export class Fretboard {
     this.note = note;
   }
 
-  private getFretMarker(position: IPosition): FretMarker {
+  private getFretMarker(position: IPosition): any {
     return this.fretMarkers[position.str - 1][position.fret];
   }
 }
