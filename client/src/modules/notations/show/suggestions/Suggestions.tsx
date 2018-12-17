@@ -51,7 +51,7 @@ const enhance = compose<InnerProps, {}>(
 const Outer = styled('ul')`
   margin: 0 auto;
   width: 100%;
-  padding-bottom: 64px;
+  padding-bottom: 72px;
 `;
 
 export const Suggestions = enhance(props => (
