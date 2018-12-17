@@ -33,6 +33,52 @@ export class Note {
     return last(get(this.measure, 'notes', [])) === this;
   }
 
+  public get next(): Note | null {
+    if (!this.measure) {
+      return null;
+    }
+
+    if (this.isLast) {
+      const nextMeasure = this.measure.next;
+      if (!nextMeasure) {
+        return null;
+      }
+
+      return first(nextMeasure.notes) || null;
+    }
+
+    const ndx = this.measure.notes.indexOf(this);
+
+    if (ndx < 0) {
+      return null;
+    }
+
+    return this.measure.notes[ndx + 1] || null;
+  }
+
+  public get prev(): Note | null {
+    if (!this.measure) {
+      return null;
+    }
+
+    if (this.isFirst) {
+      const prevMeasure = this.measure.prev;
+      if (!prevMeasure) {
+        return null;
+      }
+
+      return last(prevMeasure.notes) || null;
+    }
+
+    const ndx = this.measure.notes.indexOf(this);
+
+    if (ndx < 0) {
+      return null;
+    }
+
+    return this.measure.notes[ndx - 1] || null;
+  }
+
   public light(): void {
     this.setColor('red');
   }

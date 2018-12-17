@@ -25,6 +25,34 @@ export class Line {
     return last(get(this.score, 'lines', [])) === this;
   }
 
+  public get next(): Line | null {
+    if (!this.score) {
+      return null;
+    }
+
+    const ndx = this.score.lines.indexOf(this);
+
+    if (ndx < 0) {
+      return null;
+    }
+
+    return this.score.lines[ndx + 1] || null;
+  }
+
+  public get prev(): Line | null {
+    if (!this.score) {
+      return null;
+    }
+
+    const ndx = this.score.lines.indexOf(this);
+
+    if (ndx < 0) {
+      return null;
+    }
+
+    return this.score.lines[ndx - 1] || null;
+  }
+
   public hydrate(extractor: SVGExtractor, noteOffset: number): Measure[] {
     this.graphic = extractor.getStaveLine(this.index);
 

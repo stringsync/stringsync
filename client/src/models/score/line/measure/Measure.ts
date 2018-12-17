@@ -14,6 +14,52 @@ export class Measure {
     return last(get(this.line, 'measures', [])) === this;
   }
 
+  public get next(): Measure | null {
+    if (!this.line) {
+      return null;
+    }
+
+    if (this.isLast) {
+      const nextLine = this.line.next;
+      if (!nextLine) {
+        return null;
+      }
+
+      return first(nextLine.measures) || null;
+    }
+
+    const ndx = this.line.measures.indexOf(this);
+
+    if (ndx < 0) {
+      return null;
+    }
+
+    return this.line.measures[ndx + 1] || null;
+  }
+
+  public get prev(): Measure | null {
+    if (!this.line) {
+      return null;
+    }
+
+    if (this.isFirst) {
+      const prevLine = this.line.prev;
+      if (!prevLine) {
+        return null;
+      }
+
+      return last(prevLine.measures) || null;
+    }
+
+    const ndx = this.line.measures.indexOf(this);
+
+    if (ndx < 0) {
+      return null;
+    }
+
+    return this.line.measures[ndx - 1] || null;
+  }
+
   constructor(notes: Note[]) {
     this.notes = notes;
   }
