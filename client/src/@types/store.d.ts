@@ -1,3 +1,4 @@
+import { Fretboard } from './../components/fretboard/Fretboard';
 import { INotation } from "./notation";
 import { ISession } from "./session";
 import { ITag } from "./tag";
@@ -25,7 +26,7 @@ export interface INotationMenuState {
 
 export interface IScoreState {
   maestro: Maestro | null;
-  spec: ISpec | null;
+  fretboard: Fretboard | null;
 }
 
 export interface IStore {
