@@ -25,7 +25,7 @@ const enhance = compose<InnerProps, IProps>(
   withState('line', 'setLine', null),
   withHandlers<IProps & IStateProps, IHandlerProps>({
     updateScroller: props => (maestro: Maestro) => {
-      const line = get(maestro.currentSpec, 'stop.note.measure.line', null);
+      const line = get(maestro.currentSpec, 'note.measure.line', null);
 
       if (props.line === line) {
         return;

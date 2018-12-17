@@ -24,12 +24,12 @@ const enhance = compose<InnerProps, {}>(
         return;
       }
 
-      if (props.spec && props.spec.stop.note) {
-        props.spec.stop.note.unlight();
+      if (props.spec && props.spec.note) {
+        props.spec.note.unlight();
       }
 
-      if (currentSpec && currentSpec.stop.note) {
-        currentSpec.stop.note.light();
+      if (currentSpec && currentSpec.note) {
+        currentSpec.note.light();
       }
 
       props.setSpec(currentSpec);

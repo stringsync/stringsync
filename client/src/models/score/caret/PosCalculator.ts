@@ -2,6 +2,7 @@ import { ISpec } from '../../maestro/Maestro';
 import { get, first } from 'lodash';
 import { Score } from '../Score';
 import { interpolate } from '../../../utils/interpolate';
+import { Line } from '../line/Line';
 
 export class PosCalculator {
   public static BBOX_OFFSET = 10; // px
@@ -17,55 +18,42 @@ export class PosCalculator {
   }
 
   public get x(): number {
-    // Compute t0 and t1
-    const t0 = this.spec.start.tick;
-    const t1 = this.spec.stop.tick;
+    const { startTick, stopTick, note } = this.spec;
 
-    let startNote = this.spec.start.note;
-    const stopNote = this.spec.stop.note;
-
-    // Compute x0
-    let x0: number;
-    if (startNote) {
-      x0 = this.getX(startNote.graphic);
+    // x0 calc
+    let x0: number = 0;
+    if (note) {
+      x0 = this.getX(note.graphic);
     } else {
-      // must be at beginning, get the first note
-      const firstLine = first(this.score.lines);
-      const firstMeasure = firstLine && first(firstLine.measures);
-      startNote = (firstMeasure && first(firstMeasure.notes)) || null;
-
-      if (!startNote) {
-        throw new Error('no first note for x pos');
-      }
-
-      x0 = this.getX(startNote.graphic);
+      throw new Error('cannot calculate x from null note');
     }
 
-    // Compute x1
-    let x1: number;
-    if (stopNote) {
-      const shouldUseSvgWidth: boolean = (
-        (stopNote.measure!.line !== get(startNote, 'measure.line')) ||
-        (stopNote.isLast && get(stopNote.measure, 'isLast', false))
-      );
+    // x1 calc
+    let x1: number = 0;
+    if (note && note.next) {
+      const noteLine = get(note, 'measure.line');
+      const nextNoteLine = get(note.next, 'measure.line');
 
-      if (shouldUseSvgWidth) {
-        x1 = this.svgWidth;
+      if (!noteLine || !nextNoteLine) {
+        throw new Error(`expected note's measure to be hydrated`);
+      }
+
+      if (noteLine === nextNoteLine) {
+        x1 = this.getX(note.next.graphic);
       } else {
-        x1 = this.getX(stopNote.graphic);
+        x1 = this.svgWidth;
       }
     } else {
-      // must be at the end, use the svg width
-      x1 = this.svgWidth;
+      throw new Error('cannot calculate x from null note.next');
     }
 
-    return interpolate({ x: t0, y: x0 }, { x: t1, y: x1 }, this.tick);
+    return interpolate({ x: startTick, y: x0 }, { x: stopTick, y: x1 }, this.tick);
   }
 
   public get y(): number {
     let line;
-    if (this.spec.start.note) {
-      line = get(this.spec.start.note, 'measure.line');
+    if (this.spec.note) {
+      line = get(this.spec.note, 'measure.line');
     } else {
       // if you have no start note, you are at the beginning, so use the first line
       line = first(this.score.lines);

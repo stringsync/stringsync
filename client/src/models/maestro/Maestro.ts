@@ -4,14 +4,10 @@ import { flatMap } from 'lodash';
 import { bsearch } from '../../utils/bsearch';
 import { msToTick } from '../../utils/conversions';
 
-export interface ISpecEdge {
-  tick: number;
-  note: Note | null;
-}
-
 export interface ISpec {
-  start: ISpecEdge;
-  stop: ISpecEdge;
+  startTick: number;
+  stopTick: number;
+  note: Note | null;
 }
 
 export interface IMaestroListener {
@@ -21,9 +17,9 @@ export interface IMaestroListener {
 
 // Used in bsearch
 const comparator = (tick: number) => (spec: ISpec): -1 | 0 | 1 => {
-  if (spec.start.tick > tick) {
+  if (spec.startTick > tick) {
     return -1;
-  } else if (spec.stop.tick < tick) {
+  } else if (spec.stopTick < tick) {
     return 1;
   } else {
     return 0;
@@ -59,8 +55,8 @@ export class Maestro {
 
     const shouldComputeSpec = (
       !this.$currentSpec ||
-      this.$currentSpec.start.tick > currentTick ||
-      this.$currentSpec.stop.tick <= currentTick
+      this.$currentSpec.startTick > currentTick ||
+      this.$currentSpec.stopTick <= currentTick
     );
 
     return shouldComputeSpec
@@ -111,13 +107,11 @@ export class Maestro {
     const notes = flatMap(measures, measure => measure.notes);
 
     let currTick = msToTick(this.deadTimeMs, this.bpm);
-    this.specs = notes.map((note, ndx) => {
-      const start = { tick: currTick, note: notes[ndx - 1] || null };
-      const stop = { tick: start.tick + note.durationTick, note };
-
-      currTick = stop.tick;
-
-      return { start, stop };
+    this.specs = notes.map(note => {
+      const startTick = currTick;
+      const stopTick = startTick + note.durationTick;
+      currTick = stopTick;
+      return { startTick, stopTick, note };
     });
   }
 
