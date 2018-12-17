@@ -32,7 +32,7 @@ export const Fret: React.SFC<IProps> = props => (
         <Dots dots={props.dots} />
       </Layer>
       <Layer>
-        <Markers />
+        <Markers fret={props.fret} />
       </Layer>
     </Overlap>
   </Outer>
