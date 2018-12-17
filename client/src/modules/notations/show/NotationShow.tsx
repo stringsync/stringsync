@@ -1,6 +1,6 @@
 import * as React from 'react';
 import $ from 'jquery';
-import { compose, withStateHandlers, withProps } from 'recompose';
+import { compose, withStateHandlers, withProps, lifecycle } from 'recompose';
 import { RouteComponentProps } from 'react-router';
 import { Loading } from '../../../components/loading/Loading';
 import { withNotation, IWithNotationProps } from '../../../enhancers/withNotation';
@@ -18,6 +18,7 @@ import { noScroll } from '../../../enhancers/noScroll';
 import { Suggestions } from './suggestions';
 import { Fretboard } from '../../../components/fretboard';
 import { Branch } from '../../../components/branch';
+import { NotationMenuActions } from '../../../data/notation-menu/notationMenuActions';
 
 type RouteProps = RouteComponentProps<{ id: string }>;
 
@@ -44,12 +45,18 @@ interface ILoadingProps {
   loading: boolean;
 }
 
-interface IConnectProps {
+interface IConnectStateProps {
   fretboardVisible: boolean;
+}
+
+interface IConnectDispatchProps {
+  setFretboardVisibility: (fretboardVisible: boolean) => void;
 }
 
 interface IWithSizesProps {
   width: number;
+  isDesktop: boolean;
+  isTablet: boolean;
 }
 
 interface IScoreWidthProps {
@@ -58,7 +65,7 @@ interface IScoreWidthProps {
 }
 
 type InnerProps = RouteProps & StateProps & IWithNotationProps & ILoadingProps &
-  IConnectProps & IWithSizesProps & IScoreWidthProps;
+  IConnectStateProps & IConnectDispatchProps & IWithSizesProps & IScoreWidthProps;
 
 const LG_BREAKPOINT = 992; // px
 
@@ -94,16 +101,32 @@ const enhance = compose<InnerProps, RouteComponentProps>(
       props.videoChanged();
     }
   ),
-  connect(
-    (state: IStore) => ({
+  connect<IConnectStateProps, IConnectDispatchProps, {}, IStore>(
+    state => ({
       fretboardVisible: state.notationMenu.fretboardVisible
+    }),
+    dispatch => ({
+      setFretboardVisibility: (fretboardVisible: boolean) => {
+        dispatch(NotationMenuActions.setFretboardVisibility(fretboardVisible));
+      }
     })
   ),
-  withSizes(({ width }) => ({ width })),
+  withSizes(size => ({
+    width: size.width,
+    isDesktop: withSizes.isDesktop(size),
+    isTablet: withSizes.isTablet(size)
+  })),
   withProps<IScoreWidthProps, any>(props => ({
     numFrets: props.isDesktop ? 21 : props.isTablet ? 19 : 14,
     scoreWidth: Math.min(props.rightDiv ? props.rightDiv.offsetWidth : 1200, 1200) - 20
   })),
+  lifecycle<InnerProps, {}, {}>({
+    componentDidMount(): void {
+      if (!this.props.isDesktop) {
+        this.props.setFretboardVisibility(false);
+      }
+    }
+  })
 );
 
 const getVideoProps = (props: InnerProps) => ({
