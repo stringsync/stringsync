@@ -25,7 +25,7 @@ const enhance = compose<InnerProps, {}>(
     isDesktop: withSizes.isDesktop(size)
   })),
   withProps<IFretProps, ISizeProps>(props => ({
-    numFrets: props.isDesktop ? 21 : props.isTablet ? 19 : 17
+    numFrets: props.isDesktop ? 21 : props.isTablet ? 19 : 14
   }))
 );
 
@@ -35,9 +35,7 @@ const Outer = styled('div')`
   width: 100%;
 
   &, .fretboard-height {
-    height: 12.5vw;
-    min-height: 125px;
-    max-height: 200px;
+    height: 200px;
   }
 `;
 

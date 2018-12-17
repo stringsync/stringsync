@@ -6,12 +6,11 @@ import { Settings } from './Settings';
 import { Detail } from './Detail';
 import { Play } from './Play';
 import { Scrubber } from './Scrubber';
-import { isIPhoneX } from '../../../utils/isIPhoneX';
 
 const Outer = styled('div')`
   padding: 12px 0;
-  ${() => isIPhoneX() ? 'padding-bottom: 36px;' : ''}
   border-top: 1px solid #e8e8e8;
+  border-bottom: 1px solid #e8e8e8;
   z-index: 2;
   background: white;
 `;

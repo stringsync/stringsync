@@ -2,6 +2,10 @@
   overflow: hidden;
 }
 
+body.no-scroll {
+  position: fixed;
+}
+
 #root {
   overflow-x: hidden;
 }

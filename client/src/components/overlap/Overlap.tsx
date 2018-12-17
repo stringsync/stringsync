@@ -4,4 +4,3 @@ export const Overlap = styled('div')`
   width: 100%;
   position: relative;
 `;
-

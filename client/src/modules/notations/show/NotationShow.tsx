@@ -17,6 +17,7 @@ import withSizes from 'react-sizes';
 import { noScroll } from '../../../enhancers/noScroll';
 import { Suggestions } from './suggestions';
 import { Fretboard } from '../../../components/fretboard';
+import { CondVis } from '../../../components/cond-vis';
 
 type RouteProps = RouteComponentProps<{ id: string }>;
 
@@ -58,7 +59,7 @@ interface IScoreWidthProps {
 type InnerProps = RouteProps & StateProps & IWithNotationProps & ILoadingProps &
   IConnectProps & IWithSizesProps & IScoreWidthProps;
 
-const LG_BREAKPOINT = 992;
+const LG_BREAKPOINT = 992; // px
 
 const enhance = compose<InnerProps, RouteComponentProps>(
   noScroll<RouteComponentProps>(() => $('body')[0]),
@@ -110,7 +111,8 @@ const getVideoProps = (props: InnerProps) => ({
 
 const getScoreProps = (props: InnerProps) => ({
   caret: true,
-  scrollOffset: 128 + (props.width <= LG_BREAKPOINT ? 200 : 0),
+  // 100 offset + 200 for video + 64 for controls + 200 for fretboard
+  scrollOffset: 100 + (props.width <= LG_BREAKPOINT ? 264 : 0) + (props.fretboardVisible ? 200 : 0),
   deadTimeMs: props.notation.deadTimeMs,
   songName: props.notation.songName,
   artistName: props.notation.artistName,
@@ -125,22 +127,28 @@ const LeftCol = styled('div')`
   border-right: 1px solid #e8e8e8;
   height: 100vh;
   overflow-y: auto;
+  overflow-x: hidden;
 
   @media (max-width: ${LG_BREAKPOINT}px) {
     height: auto;
   }
 `;
 
-const ScoreWrapper = styled('div')`
+interface IScoreWrapperProps {
+  fretboardVisible: boolean;
+}
+
+const fretboardHeight = (props: IScoreWrapperProps) => props.fretboardVisible ? 200 : 0;
+const ScoreWrapper = styled('div') <IScoreWrapperProps>`
   /* the nav bar is 64px and the player bar is 64 px */
-  height: calc(100vh - 128px);
+  height: calc(100vh - 128px - ${fretboardHeight}px);
   overflow-y: auto;
   overflow-x: hidden;
   width: 100%;
   -webkit-overflow-scrolling: touch;
 
   @media (max-width: ${LG_BREAKPOINT}px) {
-    height: calc(100vh - 128px - 200px);
+    height: calc(100vh - 128px - 200px - ${fretboardHeight}px);
   }
 `;
 
@@ -163,12 +171,6 @@ const VideoWrapper = styled('div')`
   }
 `;
 
-const FretboardWrapper = styled('div')`
-  position: fixed;
-  bottom: 64px;
-  width: 100%;
-`;
-
 export const NotationShow = enhance(props => (
   <div>
     <Loading loading={props.loading} />
@@ -179,7 +181,15 @@ export const NotationShow = enhance(props => (
           <VideoWrapper>
             <Video {...getVideoProps(props)} />
           </VideoWrapper>
-          <Suggestions visible={props.width >= LG_BREAKPOINT} />
+          <CondVis visible={props.fretboardVisible && props.width < LG_BREAKPOINT}>
+            <Fretboard />
+          </CondVis>
+          <CondVis visible={props.width < LG_BREAKPOINT}>
+            <Controls />
+          </CondVis>
+          <CondVis visible={props.width >= LG_BREAKPOINT}>
+            <Suggestions />
+          </CondVis>
         </LeftCol>
       </Col>
       <Col xs={24} sm={24} md={24} lg={18} xl={18} xxl={18}>
@@ -187,17 +197,20 @@ export const NotationShow = enhance(props => (
           ref={props.handleRightDivRef}
           style={{ background: 'white' }}
         >
-          <ScoreWrapper id="score-wrapper">
+          <ScoreWrapper
+            id="score-wrapper"
+            fretboardVisible={props.fretboardVisible}
+          >
             <Row type="flex" justify="center">
               <Score {...getScoreProps(props)} />
             </Row>
           </ScoreWrapper>
-          <FretboardWrapper>
+          <CondVis visible={props.fretboardVisible && props.width >= LG_BREAKPOINT}>
             <Fretboard />
-          </FretboardWrapper>
-          <Row>
+          </CondVis>
+          <CondVis visible={props.width >= LG_BREAKPOINT}>
             <Controls />
-          </Row>
+          </CondVis>
         </div>
       </Col>
     </Row>

@@ -109,7 +109,8 @@ const enhance = compose<InnerProps, IProps>(
         this.props.width !== nextProps.width ||
         this.props.vextabString !== nextProps.vextabString ||
         this.props.deadTimeMs !== nextProps.deadTimeMs ||
-        this.props.bpm !== nextProps.bpm
+        this.props.bpm !== nextProps.bpm ||
+        this.props.scrollOffset !== nextProps.scrollOffset
       );
     },
     componentDidUpdate(): void {
@@ -128,8 +129,8 @@ const Outer = styled('div')`
 `;
 
 const Spacer = styled('div')`
-  height: 300px;
   width: 100%;
+  height: 300px;
   background: white;
 `;
 

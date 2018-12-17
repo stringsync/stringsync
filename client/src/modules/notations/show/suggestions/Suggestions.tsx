@@ -8,10 +8,6 @@ import { INotation } from '../../../../@types/notation';
 import { IStore } from '../../../../@types/store';
 import { Item } from './Item';
 
-interface IProps {
-  visible: boolean;
-}
-
 interface IStateProps {
   focusedNotation: INotation;
   notations: INotation[];
@@ -23,11 +19,7 @@ interface IDispatchProps {
 
 type InnerProps = IStateProps & IDispatchProps;
 
-const enhance = compose<InnerProps, IProps>(
-  branch<IProps>(
-    props => !props.visible,
-    renderNothing
-  ),
+const enhance = compose<InnerProps, {}>(
   connect<IStateProps, IDispatchProps, {}, IStore>(
     state => ({
       focusedNotation: state.notation,
