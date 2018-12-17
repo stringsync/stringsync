@@ -1,5 +1,6 @@
 import { Measure } from '../Measure';
 import { first, get, last } from 'lodash';
+import { IPosition } from '../../../../../@types/position';
 export class Note {
   public static isBar(noteNote: any): boolean {
     return noteNote.duration.toLowerCase() === 'b';
@@ -33,6 +34,19 @@ export class Note {
 
   public get isLast(): boolean {
     return last(get(this.measure, 'notes', [])) === this;
+  }
+
+  public get positions(): IPosition[] {
+    const { positions } = this.tabNote;
+
+    if (!positions) {
+      return [];
+    }
+
+    return positions.map(({ fret, str }) => ({
+      fret: parseInt(fret, 10),
+      str: parseInt(str, 10)
+    }));
   }
 
   public light(): void {
