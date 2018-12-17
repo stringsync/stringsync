@@ -1,6 +1,7 @@
 import { Note } from './note';
 import { Line } from '../Line';
-import { first, get, last } from 'lodash';
+import { first, get, last, flatMap } from 'lodash';
+import { IPosition } from '../../../../@types/position';
 
 export class Measure {
   public notes: Note[] = [];
@@ -14,6 +15,10 @@ export class Measure {
 
   public get isLast(): boolean {
     return last(get(this.line, 'measures', [])) === this;
+  }
+
+  public get positions(): IPosition[] {
+    return flatMap(this.notes, note => note.positions);
   }
 
   constructor(notes: Note[]) {
