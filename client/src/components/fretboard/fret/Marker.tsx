@@ -1,11 +1,13 @@
 import * as React from 'react';
-import { compose, withStateHandlers, StateHandler, withProps } from 'recompose';
+import { compose, withStateHandlers, StateHandler, withProps, lifecycle } from 'recompose';
 import { Flow } from 'vextab/releases/vextab-div.js';
 import styled from 'react-emotion';
+import { Fretboard } from '../../../models/fretboard';
 
 interface IProps {
   str: number;
   fret: number;
+  fretboard: Fretboard | null;
 }
 
 type FretMarkerState = 'LIT' | 'PRESSED' | 'HIDDEN';
@@ -43,7 +45,25 @@ const enhance = compose<InnerProps, IProps>(
   ),
   withProps<INoteProps, IProps & WithStateHandlerProps>(props => ({
     noteLiteral: TUNING.getNoteForFret(props.fret, props.str).split('/')[0]
-  }))
+  })),
+  lifecycle<InnerProps, {}, {}>({
+    componentDidMount(): void {
+      const { fretboard } = this.props;
+
+      if (!fretboard) {
+        throw new Error('expected fretboard');
+      }
+
+      fretboard.add(this, { fret: this.props.fret, str: this.props.str });
+    },
+    componentWillUnmount(): void {
+      const { fretboard } = this.props;
+
+      if (fretboard) {
+        fretboard.remove({ fret: this.props.fret, str: this.props.str });
+      }
+    }
+  })
 );
 
 const Outer = styled('div')`

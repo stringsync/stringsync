@@ -1,11 +1,13 @@
 import * as React from 'react';
-import { compose, withProps } from 'recompose';
+import { compose, withProps, branch, renderNothing } from 'recompose';
 import { times } from 'lodash';
 import styled from 'react-emotion';
 import { Fret } from './Fret';
+import { Fretboard } from '../../../models/fretboard';
 
 interface IOuterProps {
   numFrets: number;
+  fretboard: Fretboard | null;
 }
 
 interface IFretProps {
@@ -22,6 +24,10 @@ const DOTS = [
 ];
 
 const enhance = compose<InnerProps, IOuterProps>(
+  branch<IOuterProps>(
+    props => !props.fretboard,
+    renderNothing
+  ),
   withProps<IFretProps, IOuterProps>(props => {
     // solved y + xn = 100 where y is the width of the first fret, x is the width
     // of a single fret, and n is the number of frets
@@ -43,6 +49,7 @@ export const Frets = enhance(props => (
       fret={0}
       width={props.firstFretWidth}
       dots={0}
+      fretboard={props.fretboard}
     />
     {times(props.numFrets, ndx => {
       const fretNum = ndx + 1;
@@ -52,6 +59,7 @@ export const Frets = enhance(props => (
           fret={fretNum}
           width={props.fretWidth}
           dots={DOTS[fretNum]}
+          fretboard={props.fretboard}
         />
       );
     })}

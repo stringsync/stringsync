@@ -2,9 +2,11 @@ import * as React from 'react';
 import styled from 'react-emotion';
 import { Marker } from './Marker';
 import { times } from 'lodash';
+import { Fretboard } from '../../../models/fretboard';
 
 interface IProps {
   fret: number;
+  fretboard: Fretboard | null;
 }
 
 const Outer = styled('div')`
@@ -20,7 +22,14 @@ export const Markers: React.SFC<IProps> = props => (
   <Outer className="fretboard-height">
     {times(6, strNdx => {
       const str = strNdx + 1;
-      return <Marker key={`marker-${str}-${props.fret}`} str={str} fret={props.fret} />;
+      return (
+        <Marker
+          key={`marker-${str}-${props.fret}`}
+          str={str}
+          fret={props.fret}
+          fretboard={props.fretboard}
+        />
+      );
     })}
   </Outer>
 );

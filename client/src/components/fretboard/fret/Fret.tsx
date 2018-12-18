@@ -4,11 +4,13 @@ import { Dots } from './Dots';
 import { Overlap } from '../../overlap/Overlap';
 import { Layer } from '../../overlap/Layer';
 import { Markers } from './Markers';
+import { Fretboard } from '../../../models/fretboard';
 
 interface IProps {
   fret: number;
   width: number;
   dots: number;
+  fretboard: Fretboard | null;
 }
 
 const Outer = styled('div')<{ width: number, fret: number }>`
@@ -32,7 +34,10 @@ export const Fret: React.SFC<IProps> = props => (
         <Dots dots={props.dots} />
       </Layer>
       <Layer>
-        <Markers fret={props.fret} />
+        <Markers
+          fretboard={props.fretboard}
+          fret={props.fret}
+        />
       </Layer>
     </Overlap>
   </Outer>

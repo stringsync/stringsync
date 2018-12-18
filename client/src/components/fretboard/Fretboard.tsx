@@ -15,15 +15,21 @@ interface IProps {
   numFrets: number;
 }
 
+interface IStateProps {
+  fretboard: FretboardModel | null;
+}
+
 interface IDispatchProps {
   setFretboard: (fretboard: FretboardModel | null) => void;
 }
 
-type InnerProps = IProps & IDispatchProps;
+type InnerProps = IProps & IStateProps & IDispatchProps;
 
 const enhance = compose<InnerProps, IProps>(
-  connect<{}, IDispatchProps, {}, IStore>(
-    null,
+  connect<IStateProps, IDispatchProps, {}, IStore>(
+    state => ({
+      fretboard: state.score.fretboard
+    }),
     dispatch => ({
       setFretboard: (fretboard: FretboardModel | null) => dispatch(ScoreActions.setFretboard(fretboard))
     })
@@ -52,7 +58,10 @@ export const Fretboard = enhance(props => (
   <Outer>
     <Overlap>
       <Layer>
-        <Frets numFrets={props.numFrets} />
+        <Frets
+          fretboard={props.fretboard}
+          numFrets={props.numFrets}
+        />
       </Layer>
       <Layer>
         <GuitarStrings />
