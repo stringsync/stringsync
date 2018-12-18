@@ -66,20 +66,50 @@ const enhance = compose<InnerProps, IProps>(
   })
 );
 
-const Outer = styled('div')`
+interface IOuterProps {
+  state: FretMarkerState;
+}
+
+const opacity = (props: IOuterProps) => {
+  switch (props.state) {
+    case 'HIDDEN':
+      return 0;
+    case 'LIT':
+      return 0.25;
+    case 'PRESSED':
+      return 1;
+    default:
+      return 0;
+  }
+};
+
+const background = (props: IOuterProps) => {
+  switch (props.state) {
+    case 'HIDDEN':
+      return 'none';
+    case 'LIT':
+      return '#92cc55';
+    case 'PRESSED':
+      return '#B3FB66';
+    default:
+      return 'none';
+  }
+};
+
+const Outer = styled('div')<IOuterProps>`
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  background: lime;
   box-sizing: border-box;
   font-size: 0.75em;
   font-weight: 700;
   width: 2em;
   height: 2em;
   z-index: 2;
+  background: ${background};
+  opacity: ${opacity};
+  transition: all 50ms;
 `;
 
-export const Marker = enhance(props => (
-  <Outer>{props.noteLiteral}</Outer>
-));
+export const Marker = enhance(props => <Outer state={props.markerState}>{props.noteLiteral}</Outer>);
