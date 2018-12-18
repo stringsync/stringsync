@@ -5,11 +5,12 @@ import styled from 'react-emotion';
 import { Layer } from '../overlap';
 import { Frets } from './fret/Frets';
 import { GuitarStrings } from './guitar-strings';
-import { compose, lifecycle } from 'recompose';
+import { compose, lifecycle, branch, renderNothing } from 'recompose';
 import { connect } from 'react-redux';
 import { Fretboard as FretboardModel } from '../../models/fretboard';
 import { IStore } from '../../@types/store';
 import { ScoreActions } from '../../data/score';
+import { Lighter } from './Lighter';
 
 interface IProps {
   numFrets: number;
@@ -41,7 +42,11 @@ const enhance = compose<InnerProps, IProps>(
     componentWillUnmount(): void {
       this.props.setFretboard(null);
     }
-  })
+  }),
+  branch<InnerProps>(
+    props => !props.fretboard,
+    renderNothing
+  ),
 );
 
 const Outer = styled('div')`
@@ -56,6 +61,7 @@ const Outer = styled('div')`
 
 export const Fretboard = enhance(props => (
   <Outer>
+    <Lighter />
     <Overlap>
       <Layer>
         <Frets

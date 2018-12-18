@@ -1,5 +1,6 @@
 import { Note } from '../score/line/measure/note';
 import { IPosition } from '../../@types/position';
+import { compact } from 'lodash';
 
 const NUM_FRETS = 23;
 
@@ -48,10 +49,10 @@ export class Fretboard {
     const shouldUnlight = Array.from(this.lit).filter(fretMarker => !shouldLight.has(fretMarker));
     const shouldUnpress = Array.from(this.pressed).filter(fretMarker => !shouldPress.has(fretMarker));
 
-    shouldLight.forEach(fretMarker => fretMarker.light());
-    shouldUnlight.forEach(fretMarker => fretMarker.hide());
-    shouldPress.forEach(fretMarker => fretMarker.press());
-    shouldUnpress.forEach(fretMarker => fretMarker.unpress());
+    compact(Array.from(shouldLight)).forEach(fretMarker => fretMarker.props.light());
+    compact(shouldUnlight).forEach(fretMarker => fretMarker.props.unlight());
+    compact(Array.from(shouldPress)).forEach(fretMarker => fretMarker.props.press());
+    compact(shouldUnpress).forEach(fretMarker => fretMarker.props.unpress());
 
     this.lit = shouldLight;
     this.pressed = shouldPress;
