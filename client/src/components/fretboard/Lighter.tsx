@@ -19,13 +19,7 @@ type InnerProps = IProps & IHandlerProps;
 const enhance = compose<InnerProps, IProps>(
   withHandlers<IProps, IHandlerProps>({
     updateFretMarkers: props => maestro => {
-      const note = get(maestro.currentSpec, 'note') as Note | undefined;
-
-      if (!note) {
-        return;
-      }
-
-      props.fretboard.updateFretMarkers(note);
+      props.fretboard.updateFretMarkers(maestro.currentSpec, maestro.currentTick);
     }
   }),
   subscribeMaestro<InnerProps>(props => ({

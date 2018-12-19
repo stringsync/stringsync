@@ -10,7 +10,7 @@ interface IProps {
   fretboard: Fretboard;
 }
 
-type FretMarkerState = 'LIT' | 'PRESSED' | 'HIDDEN';
+type FretMarkerState = 'LIT' | 'PRESSED' | 'HIDDEN' | 'JUST_PRESSED';
 
 interface IStateProps {
   markerState: FretMarkerState;
@@ -21,6 +21,8 @@ interface IHandlerProps {
   unlight: StateHandler<IStateProps>;
   press: StateHandler<IStateProps>;
   unpress: StateHandler<IStateProps>;
+  justPress: StateHandler<IStateProps>;
+  justUnpress: StateHandler<IStateProps>;
 }
 
 type WithStateHandlerProps = IStateProps & IHandlerProps;
@@ -37,10 +39,12 @@ const enhance = compose<InnerProps, IProps>(
   withStateHandlers<IStateProps, IHandlerProps, IProps>(
     { markerState: 'HIDDEN' },
     {
-      light: () => () => ({ markerState: 'LIT' }),
-      unlight: () => () => ({ markerState: 'HIDDEN' }),
-      press: () => () => ({ markerState: 'PRESSED' }),
-      unpress: () => () => ({ markerState: 'LIT' })
+      light:       () => () => ({ markerState: 'LIT'          }),
+      unlight:     () => () => ({ markerState: 'HIDDEN'       }),
+      press:       () => () => ({ markerState: 'PRESSED'      }),
+      unpress:     () => () => ({ markerState: 'LIT'          }),
+      justPress:   () => () => ({ markerState: 'JUST_PRESSED' }),
+      justUnpress: () => () => ({ markerState: 'PRESSED'      })
     }
   ),
   withProps<INoteProps, IProps & WithStateHandlerProps>(props => ({
@@ -67,6 +71,7 @@ const opacity = (props: IOuterProps) => {
     case 'LIT':
       return 0.25;
     case 'PRESSED':
+    case 'JUST_PRESSED':
       return 1;
     default:
       return 0;
@@ -78,9 +83,32 @@ const background = (props: IOuterProps) => {
     case 'HIDDEN':
       return 'none';
     case 'LIT':
-      return '#92cc55';
+      return '#fbf666';
     case 'PRESSED':
+    case 'JUST_PRESSED':
       return '#B3FB66';
+    default:
+      return 'none';
+  }
+};
+
+const transform = (props: IOuterProps) => {
+  switch (props.state) {
+    case 'LIT':
+    case 'JUST_PRESSED':
+      return 'translateY(-2px)';
+    default:
+      return 'none';
+  }
+};
+
+const boxShadow = (props: IOuterProps) => {
+  switch (props.state) {
+    case 'LIT':
+    case 'JUST_PRESSED':
+      return '0 3px #92cc55';
+    case 'PRESSED':
+      return '0 1px #92cc55';
     default:
       return 'none';
   }
@@ -99,7 +127,9 @@ const Outer = styled('div')<IOuterProps>`
   z-index: 2;
   background: ${background};
   opacity: ${opacity};
-  transition: all 50ms;
+  transform: ${transform};
+  box-shadow: ${boxShadow};
+  transition: all 50ms ease-in;
 `;
 
 export const Marker = enhance(props => <Outer state={props.markerState}>{props.noteLiteral}</Outer>);
