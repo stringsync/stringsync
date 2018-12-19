@@ -10,10 +10,6 @@ export const scoreReducer = (state = getDefaultState(), action: actions.ScoreAct
       nextState.maestro = action.payload.maestro;
       return nextState;
 
-    case actions.SET_FRETBOARD:
-      nextState.fretboard = action.payload.fretboard;
-      return nextState;
-
     default:
       return nextState;
   }

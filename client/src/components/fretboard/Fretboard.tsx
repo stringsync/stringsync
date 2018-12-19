@@ -5,48 +5,25 @@ import styled from 'react-emotion';
 import { Layer } from '../overlap';
 import { Frets } from './fret/Frets';
 import { GuitarStrings } from './guitar-strings';
-import { compose, lifecycle, branch, renderNothing } from 'recompose';
-import { connect } from 'react-redux';
+import { compose, withPropsOnChange } from 'recompose';
 import { Fretboard as FretboardModel } from '../../models/fretboard';
-import { IStore } from '../../@types/store';
-import { ScoreActions } from '../../data/score';
 import { Lighter } from './Lighter';
 
 interface IProps {
   numFrets: number;
 }
 
-interface IStateProps {
-  fretboard: FretboardModel | null;
+interface IFretboardProps {
+  fretboard: FretboardModel;
 }
 
-interface IDispatchProps {
-  setFretboard: (fretboard: FretboardModel | null) => void;
-}
-
-type InnerProps = IProps & IStateProps & IDispatchProps;
+type InnerProps = IProps & IFretboardProps;
 
 const enhance = compose<InnerProps, IProps>(
-  connect<IStateProps, IDispatchProps, {}, IStore>(
-    state => ({
-      fretboard: state.score.fretboard
-    }),
-    dispatch => ({
-      setFretboard: (fretboard: FretboardModel | null) => dispatch(ScoreActions.setFretboard(fretboard))
-    })
-  ),
-  lifecycle<InnerProps, {}, {}>({
-    componentDidMount(): void {
-      this.props.setFretboard(new FretboardModel());
-    },
-    componentWillUnmount(): void {
-      this.props.setFretboard(null);
-    }
-  }),
-  branch<InnerProps>(
-    props => !props.fretboard,
-    renderNothing
-  ),
+  withPropsOnChange(
+    ['fretboard'],
+    () => ({ fretboard: new FretboardModel() })
+  )
 );
 
 const Outer = styled('div')`
@@ -61,7 +38,7 @@ const Outer = styled('div')`
 
 export const Fretboard = enhance(props => (
   <Outer>
-    <Lighter />
+    <Lighter fretboard={props.fretboard} />
     <Overlap>
       <Layer>
         <Frets

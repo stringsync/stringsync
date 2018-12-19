@@ -6,7 +6,7 @@ import { Fretboard } from '../../../models/fretboard';
 
 interface IProps {
   fret: number;
-  fretboard: Fretboard | null;
+  fretboard: Fretboard;
 }
 
 const Outer = styled('div')`

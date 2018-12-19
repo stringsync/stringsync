@@ -7,7 +7,7 @@ import { Fretboard } from '../../../models/fretboard';
 interface IProps {
   str: number;
   fret: number;
-  fretboard: Fretboard | null;
+  fretboard: Fretboard;
 }
 
 type FretMarkerState = 'LIT' | 'PRESSED' | 'HIDDEN';
@@ -48,20 +48,10 @@ const enhance = compose<InnerProps, IProps>(
   })),
   lifecycle<InnerProps, {}, {}>({
     componentDidMount(): void {
-      const { fretboard } = this.props;
-
-      if (!fretboard) {
-        throw new Error('expected fretboard');
-      }
-
-      fretboard.add(this, { fret: this.props.fret, str: this.props.str });
+      this.props.fretboard.add(this, { fret: this.props.fret, str: this.props.str });
     },
     componentWillUnmount(): void {
-      const { fretboard } = this.props;
-
-      if (fretboard) {
-        fretboard.remove({ fret: this.props.fret, str: this.props.str });
-      }
+      this.props.fretboard.remove({ fret: this.props.fret, str: this.props.str });
     }
   })
 );

@@ -7,7 +7,7 @@ import { Fretboard } from '../../../models/fretboard';
 
 interface IOuterProps {
   numFrets: number;
-  fretboard: Fretboard | null;
+  fretboard: Fretboard;
 }
 
 interface IFretProps {

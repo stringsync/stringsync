@@ -10,7 +10,7 @@ interface IProps {
   fret: number;
   width: number;
   dots: number;
-  fretboard: Fretboard | null;
+  fretboard: Fretboard;
 }
 
 const Outer = styled('div')<{ width: number, fret: number }>`
