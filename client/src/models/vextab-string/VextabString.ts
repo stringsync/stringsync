@@ -102,9 +102,9 @@ export class VextabString {
           groups.push({ options: lineOptions, measures: [] });
         }
       } else if (!group) {
-        throw new Error(`expected group at line ${ndx}`);
+        throw new Error(`formatter error: expected group at line ${ndx}`);
       } else if (!groupOptions) {
-        throw new Error(`expected options at line ${ndx}`);
+        throw new Error(`formatter error: expected options at line ${ndx}`);
       } else {
         // We did not encounter an options string and we have a current
         // group with options. This ensures that all measure groups belong

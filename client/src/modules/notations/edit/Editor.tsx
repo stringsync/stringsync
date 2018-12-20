@@ -1,11 +1,14 @@
 import * as React from 'react';
-import { compose, withHandlers } from 'recompose';
+import { compose, withHandlers, withState, lifecycle } from 'recompose';
 import styled from 'react-emotion';
 import { InputNumber, Form, Input, Button } from 'antd';
 import { INotation } from '../../../@types/notation';
 import { connect } from 'react-redux';
 import { IStore } from '../../../@types/store';
 import { NotationActions } from '../../../data/notation/notationActions';
+import { VextabString } from '../../../models/vextab-string/VextabString';
+import { Score } from '../../../models/score/Score';
+import { Status } from './Status';
 
 interface IStateProps {
   notation: INotation;
@@ -15,13 +18,20 @@ interface IDispatchProps {
   setNotation: (notation: INotation) => void;
 }
 
+interface IInnerStateProps {
+  editorVextabString: string | null;
+  error: string | null;
+  setEditorVextabString: (editorVextabString: string) => void;
+  setError: (error: string | null) => void;
+}
+
 interface IHandlerProps {
   updateDeadTimeMs: (value: number | string | undefined) => void;
   updateBpm: (value: number | string | undefined) => void;
   updateVextabString: (event: any) => void;
 }
 
-type InnerProps = IStateProps & IDispatchProps & IHandlerProps;
+type InnerProps = IStateProps & IDispatchProps & IInnerStateProps & IHandlerProps;
 
 const enhance = compose<InnerProps, {}>(
   connect<IStateProps, IDispatchProps, {}, IStore>(
@@ -32,7 +42,9 @@ const enhance = compose<InnerProps, {}>(
       setNotation: (notation: INotation) => dispatch(NotationActions.setNotation(notation))
     })
   ),
-  withHandlers<IStateProps & IDispatchProps, IHandlerProps>({
+  withState('editorVextabString', 'setEditorVextabString', null),
+  withState('error', 'setError', null),
+  withHandlers<IStateProps & IDispatchProps & IInnerStateProps, IHandlerProps>({
     updateDeadTimeMs: props => value => {
       const deadTimeMs = (typeof value === 'string' ? parseInt(value, 10) : value) || 0;
       props.setNotation({ ...props.notation, deadTimeMs });
@@ -43,8 +55,30 @@ const enhance = compose<InnerProps, {}>(
     },
     updateVextabString: props => event => {
       const vextabString = event.target.value;
-      props.setNotation({ ...props.notation, vextabString });
-    },
+      props.setEditorVextabString(vextabString);
+
+      const dummyDiv = document.createElement('div');
+
+      try {
+        // If the score can render, then it is ok to set the notation
+        const formattedVextabString = new VextabString(vextabString).asMeasures(3);
+        const score = new Score(800, dummyDiv, formattedVextabString);
+        score.render();
+
+        // Will not run if can't render
+        props.setNotation({ ...props.notation, vextabString });
+        props.setError(null);
+      } catch (error) {
+        props.setError(error.message);
+      }
+    }
+  }),
+  lifecycle<InnerProps, {}, {}>({
+    componentDidUpdate(): void {
+      if (this.props.editorVextabString === null && this.props.notation.vextabString) {
+        this.props.setEditorVextabString(this.props.notation.vextabString);
+      }
+    }
   })
 );
 
@@ -75,9 +109,12 @@ export const Editor = enhance(props => (
       <Form.Item label="vextab string">
         <Input.TextArea
           autosize={{ minRows: 5 }}
-          value={props.notation.vextabString}
+          value={props.editorVextabString || ''}
           onChange={props.updateVextabString}
         />
+      </Form.Item>
+      <Form.Item>
+        <Status error={props.error} />
       </Form.Item>
     </Form>
   </Outer>
