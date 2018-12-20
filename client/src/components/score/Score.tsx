@@ -79,7 +79,6 @@ const renderScore = debounce(function(this: ReactLifeCycleFunctionsThisArguments
     this.props.setMaestro(maestro);
   } catch (error) {
     console.error(error);
-    window.ss.message.error('could not render score');
   }
 }, 250);
 
