@@ -1,9 +1,31 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import styled from 'react-emotion';
-import { InputNumber, Form, Input } from 'antd';
+import { InputNumber, Form, Input, Button } from 'antd';
+import { INotation } from '../../../@types/notation';
+import { connect } from 'react-redux';
+import { IStore } from '../../../@types/store';
+import { NotationActions } from '../../../data/notation/notationActions';
 
-const enhance = compose(
+interface IStateProps {
+  notation: INotation;
+}
+
+interface IDispatchProps {
+  setNotation: (notation: INotation) => void;
+}
+
+type InnerProps = IStateProps & IDispatchProps;
+
+const enhance = compose<InnerProps, {}>(
+  connect<IStateProps, IDispatchProps, {}, IStore>(
+    state => ({
+      notation: state.notation
+    }),
+    dispatch => ({
+      setNotation: (notation: INotation) => dispatch(NotationActions.setNotation(notation))
+    })
+  )
 );
 
 const Outer = styled('div')`
@@ -14,14 +36,24 @@ const Outer = styled('div')`
 export const Editor = enhance(props => (
   <Outer>
     <Form>
+      <Form.Item>
+        <Button type="primary">Save</Button>
+      </Form.Item>
       <Form.Item label="dead time (ms)">
-        <InputNumber />
+        <InputNumber
+          value={props.notation.deadTimeMs}
+        />
       </Form.Item>
       <Form.Item label="bpm">
-        <InputNumber />
+        <InputNumber
+          value={props.notation.bpm}
+        />
       </Form.Item>
       <Form.Item label="vextab string">
-        <Input.TextArea autosize={{ minRows: 5 }} />
+        <Input.TextArea
+          autosize={{ minRows: 5 }}
+          value={props.notation.vextabString}
+        />
       </Form.Item>
     </Form>
   </Outer>
