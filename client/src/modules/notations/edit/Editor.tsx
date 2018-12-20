@@ -93,6 +93,16 @@ export const Editor = enhance(props => (
       <Form.Item>
         <Button type="primary">Save</Button>
       </Form.Item>
+      <Form.Item label="vextab string">
+        <Input.TextArea
+          autosize={{ minRows: 5 }}
+          value={props.editorVextabString || ''}
+          onChange={props.updateVextabString}
+        />
+      </Form.Item>
+      <Form.Item>
+        <Status error={props.error} />
+      </Form.Item>
       <Form.Item label="dead time (ms)">
         <InputNumber
           value={props.notation.deadTimeMs}
@@ -105,16 +115,6 @@ export const Editor = enhance(props => (
           value={props.notation.bpm}
           onChange={props.updateBpm}
         />
-      </Form.Item>
-      <Form.Item label="vextab string">
-        <Input.TextArea
-          autosize={{ minRows: 5 }}
-          value={props.editorVextabString || ''}
-          onChange={props.updateVextabString}
-        />
-      </Form.Item>
-      <Form.Item>
-        <Status error={props.error} />
       </Form.Item>
     </Form>
   </Outer>
