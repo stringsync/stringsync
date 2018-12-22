@@ -8,7 +8,7 @@ import { IPlayer } from '../../../@types/youtube';
 import { IStore } from '../../../@types/store';
 
 interface IStateProps {
-  isVideoActive: boolean | undefined;
+  isVideoActive: boolean | void;
   videoPlayer: IPlayer | null | undefined;
 }
 

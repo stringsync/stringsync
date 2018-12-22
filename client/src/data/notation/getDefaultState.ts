@@ -5,7 +5,7 @@ export const getDefaultState = (): INotation => ({
   bpm: 120,
   createdAt: new Date(1970, 1, 1),
   deadTimeMs: 0,
-  durationMs: 120000,
+  durationMs: 0,
   id: -1,
   songName: '',
   tags: [],

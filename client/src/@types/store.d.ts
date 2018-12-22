@@ -15,8 +15,8 @@ export interface IVideoState {
   src: string;
   currentTimeMs: number;
   player: IPlayer | null;
-  playerState?: PlayerStates;
-  isActive?: boolean;
+  playerState: PlayerStates | void;
+  isActive: boolean | void;
 }
 
 export interface INotationMenuState {

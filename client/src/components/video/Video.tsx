@@ -69,7 +69,9 @@ const enhance = compose<InnerProps, IOuterProps>(
       const { kind, src } = this.props;
       const player = null;
       const currentTimeMs = 0;
-      this.props.setVideo({ kind, src, player, currentTimeMs });
+      const playerState = undefined;
+      const isActive = undefined;
+      this.props.setVideo({ kind, src, player, currentTimeMs, playerState, isActive });
     },
     componentWillUnmount(): void {
       this.props.resetVideo();

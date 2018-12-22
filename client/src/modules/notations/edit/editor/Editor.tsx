@@ -2,14 +2,15 @@ import * as React from 'react';
 import { compose, withHandlers, withState, lifecycle } from 'recompose';
 import styled from 'react-emotion';
 import { InputNumber, Form, Input, Button } from 'antd';
-import { INotation } from '../../../@types/notation';
+import { INotation } from '../../../../@types/notation';
 import { connect } from 'react-redux';
-import { IStore } from '../../../@types/store';
-import { NotationActions } from '../../../data/notation/notationActions';
-import { VextabString } from '../../../models/vextab-string/VextabString';
-import { Score } from '../../../models/score/Score';
+import { IStore } from '../../../../@types/store';
+import { NotationActions } from '../../../../data/notation/notationActions';
+import { VextabString } from '../../../../models/vextab-string/VextabString';
+import { Score } from '../../../../models/score';
+import { updateNotation } from '../../../../data/notation/notationApi';
+import { DurationMsSync } from './DurationMsSync';
 import { Status } from './Status';
-import { updateNotation } from '../../../data/notation/notationApi';
 
 interface IProps {
   notationId: string;
@@ -114,6 +115,9 @@ const Outer = styled('div')`
 export const Editor = enhance(props => (
   <Outer>
     <Form>
+      <Form.Item>
+        <DurationMsSync />
+      </Form.Item>
       <Form.Item>
         <Button
           type="primary"

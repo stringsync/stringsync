@@ -18,7 +18,7 @@ import { noScroll } from '../../../enhancers/noScroll';
 import { Fretboard } from '../../../components/fretboard';
 import { Branch } from '../../../components/branch';
 import { NotationMenuActions } from '../../../data/notation-menu/notationMenuActions';
-import { Editor } from './Editor';
+import { Editor } from './editor';
 
 type RouteProps = RouteComponentProps<{ id: string }>;
 
