@@ -4,6 +4,7 @@ import { NotationIndex, NotationNew, NotationEdit, NotationPrint, NotationShow, 
 import { NotFound } from '../../components/not-found/NotFound';
 import { About } from '../about/About';
 import { Contact } from '../contact/Contact';
+import { Terms } from '../terms/Terms';
 
 export const Routes = () => (
   <Switch>
@@ -15,6 +16,7 @@ export const Routes = () => (
     <Route exact={false} path="/n/:id"       component={NotationShow}   />
     <Route exact={false} path="/about"       component={About}          />
     <Route exact={false} path="/contact"     component={Contact}        />
+    <Route exact={false} path="/terms"       component={Terms}          />
     <Route                                   component={NotFound}       />
   </Switch>
 );
