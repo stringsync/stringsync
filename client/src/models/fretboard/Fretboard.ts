@@ -53,11 +53,11 @@ export class Fretboard {
       return;
     }
 
-    const shouldLight = new Set(measurePositions.map(position => this.getFretMarker(position)));
     const shouldPress = new Set(notePositions.map(position => this.getFretMarker(position)));
+    const shouldLight = new Set(measurePositions.map(position => this.getFretMarker(position)));
 
-    const shouldUnlight = Array.from(this.lit).filter(fretMarker => !shouldLight.has(fretMarker));
     const shouldUnpress = Array.from(this.pressed).filter(fretMarker => !shouldPress.has(fretMarker));
+    const shouldUnlight = Array.from(this.lit).filter(fretMarker => !shouldLight.has(fretMarker));
 
     compact(Array.from(shouldLight)).forEach(fretMarker => fretMarker.props.light());
     compact(Array.from(shouldPress)).forEach(fretMarker => {
@@ -68,8 +68,8 @@ export class Fretboard {
       }
     });
 
-    compact(shouldUnlight).forEach(fretMarker => fretMarker.props.unlight());
     compact(shouldUnpress).forEach(fretMarker => fretMarker.props.unpress());
+    compact(shouldUnlight).forEach(fretMarker => fretMarker.props.unlight());
 
     this.lit = shouldLight;
     this.pressed = shouldPress;
