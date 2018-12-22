@@ -13,7 +13,6 @@ export type TagsState = ITag[];
 export interface IVideoState {
   kind: string;
   src: string;
-  currentTimeMs: number;
   player: IPlayer | null;
   playerState: PlayerStates | void;
   isActive: boolean | void;

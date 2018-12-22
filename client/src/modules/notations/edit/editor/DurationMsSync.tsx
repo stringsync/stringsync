@@ -7,6 +7,7 @@ import { Alert } from 'antd';
 import { getDefaultState } from '../../../../data/notation/getDefaultState';
 import { NotationActions } from '../../../../data/notation/notationActions';
 import { updateNotation } from '../../../../data/notation/notationApi';
+import { sToMs } from '../../../../utils/conversions';
 
 interface IStateProps {
   notation: INotation;
@@ -43,7 +44,7 @@ const enhance = compose<InnerProps, {}>(
   ),
   withHandlers<ConnectProps, IHandlerProps>({
     updateDurationMs: props => async (durationMs: number) => {
-      const { notation, video } = props;
+      const { notation } = props;
 
       if (typeof notation.id !== 'number') {
         return;
@@ -70,7 +71,7 @@ const enhance = compose<InnerProps, {}>(
         return;
       }
 
-      const durationMs = player.getDuration() * 1000;
+      const durationMs = sToMs(player.getDuration());
 
       if (typeof durationMs === 'number' && durationMs > 0) {
         this.props.updateDurationMs(durationMs);

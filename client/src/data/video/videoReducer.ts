@@ -30,10 +30,6 @@ export const videoReducer = (state = getDefaultState(), action: actions.VideoAct
       });
       return nextState;
 
-    case actions.SET_CURRENT_TIME_MS:
-      nextState.currentTimeMs = action.payload.currentTimeMs;
-      return nextState;
-
     default:
       return nextState;
   }
