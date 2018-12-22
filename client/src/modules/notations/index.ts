@@ -1,9 +1,6 @@
-export * from './menu';
+export * from './index/';
 export * from './edit';
-export * from './index/index.ts';
+export * from './new';
 export * from './print';
 export * from './show';
 export * from './studio';
-export * from './new';
-
-export * from './Notation';

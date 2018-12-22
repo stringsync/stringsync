@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Avatar as AntdAvatar } from 'antd';
-import { compose, withProps, ComponentEnhancer } from 'recompose';
+import { compose, withProps } from 'recompose';
 
 interface IOuterProps {
   src: string | null;
@@ -8,21 +8,15 @@ interface IOuterProps {
 }
 
 interface IInnerProps extends IOuterProps {
-  initials: string;
+  initial: string;
 }
 
-const enhance: ComponentEnhancer<IInnerProps, IOuterProps> = compose(
-  withProps((props: IOuterProps) => {
-    let initials = '';
-
-    if (props.name && props.name.length > 0) {
-      initials = props.name[0].toUpperCase();
-    }
-
-    return { initials }
-  })
-)
+const enhance = compose<IInnerProps, IOuterProps>(
+  withProps((props: IOuterProps) => ({
+    initial: (props.name && props.name.length > 0) ? props.name[0].toUpperCase() : ''
+  }))
+);
 
 export const Avatar = enhance(props => (
-  props.src ? <AntdAvatar src={props.src} /> : <AntdAvatar>{props.initials}</AntdAvatar>
+  props.src ? <AntdAvatar src={props.src} /> : <AntdAvatar>{props.initial}</AntdAvatar>
 ));

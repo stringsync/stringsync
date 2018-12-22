@@ -1,32 +1,24 @@
 import * as React from 'react';
-import { Store } from 'react-redux';
+import { App } from '../app';
 import enUS from 'antd/lib/locale-provider/en_US';
+import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { LocaleProvider } from 'antd';
-import { Provider } from 'react-redux';
 import { ThemeProvider } from 'emotion-theming';
-import { App } from 'modules/app';
+import theme from '../../theme';
 
-interface IRootProps {
-  store: Store<Store.IState>
+interface IProps {
+  store: any;
 }
 
-const THEME = Object.freeze({
-  borderColor: '#EFEFEF',
-  primaryColor: '#FC354C',
-  quaternaryColor: '#161616',
-  secondaryColor: '#6CABBA',
-  tertiaryColor: '#F4F4F4'
-});
-
-export const Root: React.SFC<IRootProps> = props => (
-  <Provider store={props.store}>
-    <BrowserRouter>
-      <LocaleProvider locale={enUS}>
-        <ThemeProvider theme={THEME}>
+export const Root: React.SFC<IProps> = props => (
+  <LocaleProvider locale={enUS}>
+    <Provider store={props.store}>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
           <App />
-        </ThemeProvider>
-      </LocaleProvider>
-    </BrowserRouter> 
-  </Provider>
+        </BrowserRouter>
+      </ThemeProvider>
+    </Provider>
+  </LocaleProvider>
 );

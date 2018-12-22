@@ -1,1 +1,1 @@
-export * from './Edit';
+export * from './NotationEdit';

@@ -1,25 +1,16 @@
+import { getDefaultState } from './getDefaultState';
 import * as actions from './videoActions';
-
-export type IVideoState = Store.IVideoState;
+import { IVideoState } from '../../@types/store';
 
 const ACTIVE_PLAYER_STATES = [
   'PLAYING',
   'BUFFERING'
 ];
 
-const getDefaultState = (): IVideoState => ({
-  isActive: false,
-  kind: 'YOUTUBE',
-  player: null,
-  playerState: undefined,
-  src: ''
-});
-
 export const videoReducer = (state = getDefaultState(), action: actions.VideoActions): IVideoState => {
-  const nextState = {...state};
+  const nextState = { ...state };
 
   switch (action.type) {
-
     case actions.RESET_VIDEO:
       return getDefaultState();
 
@@ -35,11 +26,11 @@ export const videoReducer = (state = getDefaultState(), action: actions.VideoAct
     case actions.SET_PLAYER_STATE:
       nextState.playerState = action.payload.playerState;
       nextState.isActive = ACTIVE_PLAYER_STATES.some(activeState => {
-        return action.payload.playerState === activeState
+        return action.payload.playerState === activeState;
       });
       return nextState;
 
     default:
       return nextState;
   }
-}
+};

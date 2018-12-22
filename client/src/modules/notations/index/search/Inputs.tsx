@@ -1,102 +1,114 @@
 import * as React from 'react';
-import { ViewportTypes } from 'data/viewport/getViewportType';
 import { compose, withHandlers, withProps } from 'recompose';
-import { Icon, Input, Tag } from 'antd';
-import scrollToTop from './scrollToTop';
+import withSizes from 'react-sizes';
+import { scrollToTop } from './scrollToTop';
+import { Input, Icon, Row, Tag } from 'antd';
+import { connect } from 'react-redux';
+import { IStore } from '../../../../@types/store';
 import styled from 'react-emotion';
 
 interface IOuterProps {
   queryString: string;
-  queryTags: Set<string>;
-  tags: Set<string>;
-  viewportType: ViewportTypes;
-  onQueryStringChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onQueryTagsChange: (tags: Set<string>) => void;
+  queryTags: string[];
+  setQueryString: (queryString: string) => void;
+  setQueryTags: (queryTags: string[]) => void;
   onClear: () => void;
 }
 
-interface IInnerProps extends IOuterProps {
-  suffix: JSX.Element | null;
+interface IConnectProps extends IOuterProps {
+  tags: string[];
+}
+
+interface ISizesProps extends IConnectProps {
+  isGtMobile: boolean;
+}
+
+interface IHandlerProps extends ISizesProps {
   handleQueryStringChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleQueryTagsChange: (tag: string) => (checked: boolean) => void;
 }
 
+interface IInnerProps extends IHandlerProps {
+  suffix: JSX.Element | null;
+}
+
 const enhance = compose<IInnerProps, IOuterProps>(
-  withHandlers({
-    handleQueryStringChange: (props: any) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (props.viewportType !== 'MOBILE') {
+  connect((state: IStore) => {
+    const tags = state.notations.reduce((tagSet, notation) => {
+      notation.tags.forEach(tag => tagSet.add(tag));
+      return tagSet;
+    }, new Set());
+
+    return { tags: Array.from(tags).sort() };
+  }),
+  withSizes(size => ({ isGtMobile: withSizes.isGtMobile(size) })),
+  withHandlers<IOuterProps, any>({
+    handleQueryStringChange: props => (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (props.isGtMobile) {
         scrollToTop();
       }
 
-      props.onQueryStringChange(event);
+      props.setQueryString(event.target.value);
     },
-    handleQueryTagsChange: (props: any) => (tag: string) => (checked: boolean) => {
-      if (props.viewportType !== 'MOBILE') {
+    handleQueryTagsChange: props => (tag: string) => (checked: boolean) => {
+      if (props.isGtMobile) {
         scrollToTop();
       }
 
-      const nextQueryTags = new Set([...Array.from(props.queryTags)]);
+      const nextQueryTags = new Set(props.queryTags);
       if (checked) {
         nextQueryTags.add(tag);
       } else {
         nextQueryTags.delete(tag);
       }
 
-      props.onQueryTagsChange(nextQueryTags);
+      props.setQueryTags(Array.from(nextQueryTags));
     }
   }),
-  withProps((props: any) => {
+  withProps<any, IHandlerProps>(props => {
     const suffix = props.queryString
       ? <Icon type="close-circle-o" onClick={props.onClear} style={{ cursor: 'pointer' }} />
-      : null
+      : null;
 
-    return { suffix }
+    return { suffix };
   })
 );
 
-interface IOuterDivProps {
-  viewportType: ViewportTypes;
-}
-
-const Outer = styled('div')<IOuterDivProps>`
-  max-width: ${props => props.viewportType === 'MOBILE' ? '95%' : '100%'};
-  margin: ${props => props.viewportType === 'TABLET' ? '0 16px' : '0 auto'};
+const Outer = styled('div')<{ isGtMobile: boolean}>`
+  padding: 0 ${props => props.isGtMobile ? 0 : 16}px;
 `;
 
-const TagsOuter = styled('div')`
-  margin-top: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+const TagWrapper = styled('span')`
+  margin-top: 6px;
 `;
 
-const TagOuter = styled('span')`
-  margin-top: 2px;
-`;
+export const Inputs = enhance(props => {
+  const queryTags = new Set(props.queryTags);
 
-export const Inputs = enhance(props => (
-  <Outer viewportType={props.viewportType}>
-    <Input
-      type="text"
-      placeholder="song, artist, or transcriber name"
-      value={props.queryString}
-      prefix={<Icon type="search" style={{ color: 'rgba(0,0,0,.25)' }} />}
-      onChange={props.handleQueryStringChange}
-      suffix={props.suffix}
-    />
-    <TagsOuter>
-      {
-        Array.from(props.tags).map(tagName => (
-          <TagOuter key={tagName}>
-            <Tag.CheckableTag
-              onChange={props.handleQueryTagsChange(tagName)}
-              checked={props.queryTags.has(tagName)}
-            >
-              {tagName}
-            </Tag.CheckableTag>
-          </TagOuter>
-        ))
-      }
-    </TagsOuter>
-  </Outer>
-));
+  return (
+    <Outer isGtMobile={props.isGtMobile}>
+      <Input
+        type="text"
+        placeholder="song, artist, or transcriber name"
+        value={props.queryString}
+        prefix={<Icon type="search" style={{ color: 'rgba(0, 0, 0, .25)' }} />}
+        onChange={props.handleQueryStringChange}
+        suffix={props.suffix}
+      />
+      <Row type="flex" justify="center" align="middle">
+        {
+          Array.from(props.tags).map(tag => (
+            <TagWrapper key={tag}>
+              <Tag.CheckableTag
+                onChange={props.handleQueryTagsChange(tag)}
+                checked={queryTags.has(tag)}
+              >
+                {tag}
+              </Tag.CheckableTag>
+            </TagWrapper>
+          ))
+        }
+      </Row>
+    </Outer>
+  );
+});

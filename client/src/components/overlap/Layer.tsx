@@ -1,11 +1,6 @@
-import * as React from 'react';
 import styled from 'react-emotion';
 
-interface IProps {
-  zIndex?: number;
-}
-
-export const Layer = styled('div')<IProps>`
+export const Layer = styled('div') <{ zIndex?: number }>`
   position: absolute;
   top: 0;
   left: 0;

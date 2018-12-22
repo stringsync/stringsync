@@ -1,4 +1,4 @@
-json.created_at notation.created_at.to_date.to_formatted_s(:iso8601)
+json.created_at notation.created_at.to_formatted_s(:iso8601)
 json.updated_at notation.updated_at.to_formatted_s(:iso8601)
 json.song_name notation.song_name
 json.artist_name notation.artist_name

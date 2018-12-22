@@ -1,39 +1,17 @@
-
 import * as $ from 'jquery';
-import { NotationsActions } from './notationsActions';
-import { IncludedObjects, ajax } from 'utilities';
-import { Dispatch } from 'react-redux';
-import { pick, sortBy } from 'lodash';
+import { canonicalize } from '../../utils/canonicalize/canonicalize';
+import { pick } from 'lodash';
+import { INotation } from '../../@types/notation';
+import { getAttributes } from '../../utils/getAttributes';
 
-export const fetchNotations = () => async (dispatch: Dispatch) => {
-  const json: API.Notations.IIndexResponse = await ajax('/api/v1/notations', {
-    method: 'GET'
+export const fetchAllNotations = async (): Promise<INotation[]> => {
+  const response = await $.ajax('/api/v1/notations.json', { method: 'GET' });
+  const json = canonicalize(response, {
+    created_at: createdAt => new Date(createdAt),
+    updated_at: updatedAt => new Date(updatedAt),
+    tags: tag => tag.attributes.name,
+    transcriber: transcriber => pick(transcriber.attributes, ['id', 'name', 'image']),
+    video: video => video.attributes
   });
-
-  const included = new IncludedObjects(json.included);
-
-  const notations: Notation.INotation[] = json.data.map(data => {
-    const { id, attributes, relationships } = data;
-    const tags = included.fetch(relationships.tags.data) as API.Tags.IAsIncluded[]
-    const transcriber = included.fetch(relationships.transcriber.data) as API.Users.IAsIncluded;
-
-    return {
-      artistName: attributes.artist_name,
-      bpm: attributes.bpm,
-      createdAt: new Date(attributes.created_at),
-      deadTimeMs: attributes.dead_time_ms,
-      durationMs: attributes.duration_ms,
-      id,
-      songName: attributes.song_name,
-      tags: tags.map(tag => tag.attributes.name),
-      thumbnailUrl: attributes.thumbnail_url,
-      transcriber: pick(transcriber.attributes, ['id', 'name', 'image']) as User.IBaseUser,
-      updatedAt: new Date(attributes.updated_at),
-      vextabString: attributes.vextab_string,
-      video: null
-    };
-  });
-
-  const sortedNotations = sortBy(notations, notation => notation.createdAt).reverse();
-  dispatch(NotationsActions.setNotations(sortedNotations));
+  return getAttributes(json.data);
 };

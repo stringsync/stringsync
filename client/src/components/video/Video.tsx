@@ -1,18 +1,32 @@
 import * as React from 'react';
-import { compose, withHandlers } from 'recompose';
+import { compose, lifecycle, withHandlers, branch, renderNothing } from 'recompose';
+import { IVideoState } from '../../@types/store';
 import { connect } from 'react-redux';
-import { VideoActions } from 'data';
+import { IPlayer, PlayerStates, IYTEvent, IYTStateChangeEvent } from '../../@types/youtube';
+import { VideoActions } from '../../data/video/videoActions';
 import YouTube from 'react-youtube';
+import styled from 'react-emotion';
 import { TimeSync } from './TimeSync';
 
-interface IInnerProps {
+interface IOuterProps {
   src: string;
-  kind: Video.Kinds;
-  setPlayer: (player: Youtube.IPlayer) => void;
-  setPlayerState: (playerState: Youtube.PlayerStates) => void;
-  handleReady: (event: Youtube.IEvent) => void;
-  handleStateChange: (event: Youtube.IStateChangeEvent) => void;
+  kind: string;
+  onReady?: (event?: IYTEvent) => void;
 }
+
+interface IDispatchProps {
+  setPlayer: (player: IPlayer) => void;
+  setPlayerState: (playerState: PlayerStates) => void;
+  setVideo: (video: IVideoState) => void;
+  resetVideo: () => void;
+}
+
+interface IHandlerProps {
+  handleReady: (event: IYTEvent) => void;
+  handleStateChange: (event: IYTStateChangeEvent) => void;
+}
+
+type InnerProps = IOuterProps & IDispatchProps & IHandlerProps;
 
 const PLAYER_STATES = Object.freeze({
   '-1': 'UNSTARTED',
@@ -36,32 +50,52 @@ const DEFAULT_YOUTUBE_OPTIONS = Object.freeze({
   }
 });
 
-const enhance = compose<IInnerProps, {}>(
-  connect(
-    (state: Store.IState) => ({
-      kind: state.video.kind,
-      src: state.video.src
-    }),
+const enhance = compose<InnerProps, IOuterProps>(
+  connect<{}, IDispatchProps>(
+    null,
     dispatch => ({
-      setPlayer: (player: Youtube.IPlayer) => dispatch(VideoActions.setPlayer(player)),
-      setPlayerState: (playerState: Youtube.PlayerStates) => dispatch(VideoActions.setPlayerState(playerState))
+      setPlayer: (player: IPlayer) => dispatch(VideoActions.setPlayer(player)),
+      setPlayerState: (playerState: PlayerStates) => dispatch(VideoActions.setPlayerState(playerState)),
+      setVideo: (video: IVideoState) => dispatch(VideoActions.setVideo(video)),
+      resetVideo: () => dispatch(VideoActions.resetVideo())
     })
   ),
-  withHandlers({
-    handleReady: (props: any) => (event: Youtube.IEvent) => {
-      props.setPlayer(event.target);
+  branch<IDispatchProps & IOuterProps>(
+    props => !props.src,
+    renderNothing
+  ),
+  lifecycle<IDispatchProps & IOuterProps, {}, {}>({
+    componentDidMount(): void {
+      const { kind, src } = this.props;
+      const player = null;
+      const playerState = undefined;
+      const isActive = undefined;
+      this.props.setVideo({ kind, src, player, playerState, isActive });
     },
-    handleStateChange: (props: any) => (event: Youtube.IStateChangeEvent) => {
+    componentWillUnmount(): void {
+      this.props.resetVideo();
+    }
+  }),
+  withHandlers<IDispatchProps & IOuterProps, IHandlerProps>({
+    handleReady: props => event => {
+      props.setPlayer(event.target);
+
+      if (typeof props.onReady === 'function') {
+        props.onReady(event);
+      }
+    },
+    handleStateChange: props => event => {
       props.setPlayerState(PLAYER_STATES[event.data]);
     }
   })
 );
 
-/**
- * Wrapper around the YouTube (react-youtube) component
- */
+const Outer = styled('div')`
+  background: black;
+`;
+
 export const Video = enhance(props => (
-  <div>
+  <Outer>
     <TimeSync />
     <YouTube
       opts={DEFAULT_YOUTUBE_OPTIONS}
@@ -69,5 +103,5 @@ export const Video = enhance(props => (
       onReady={props.handleReady}
       onStateChange={props.handleStateChange}
     />
-  </div>
+  </Outer>
 ));

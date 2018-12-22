@@ -1,57 +1,59 @@
 import * as React from 'react';
-import scrollToTop from './scrollToTop';
+import { compose, withStateHandlers, withProps, withHandlers } from 'recompose';
+import withSizes from 'react-sizes';
+import { scrollToTop } from './scrollToTop';
 import styled from 'react-emotion';
 import { Affix } from 'antd';
 import { Inputs } from './Inputs';
 import { Results } from './Results';
-import { ViewportTypes } from 'data/viewport/getViewportType';
-import { compose, withProps, withState, withHandlers } from 'recompose';
 
 interface IOuterProps {
   queryString: string;
-  queryTags: Set<string>;
-  numFound: number;
-  tags: Set<string>;
-  viewportType: ViewportTypes;
-  onQueryStringChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onQueryTagsChange: (tags: Set<string>) => void;
-  clearQueries: () => void;
+  queryTags: string[];
+  numQueried: number;
+  setQueryString: (queryString: string) => void;
+  setQueryTags: (queryTags: string[]) => void;
 }
 
-interface IInnerProps extends IOuterProps {
-  affixOffsetBottom: number | undefined;
+interface ISizesProps extends IOuterProps {
+  isMobile: boolean;
+}
+
+interface IAffixProps extends ISizesProps {
+  affixOffsetBottom: 0 | undefined;
+}
+
+interface IStateProps extends IAffixProps {
   affixed: boolean;
-  handleAffixChange: (affixed: boolean) => void;
+  handleAffixChange: (affixed?: boolean) => void;
+}
+
+interface IClearProps extends IStateProps {
   handleClear: () => void;
 }
 
-const enhance = compose<IInnerProps, IOuterProps>(
-  withProps((props: any) => ({
-    affixOffsetBottom: props.viewportType === 'MOBILE' ? 0 : undefined
+const enhance = compose<IClearProps, IOuterProps>(
+  withSizes(size => ({ isMobile: withSizes.isMobile(size) })),
+  withProps<any, ISizesProps>(props => ({
+    affixOffsetBottom: props.isMobile ? 0 : undefined
   })),
-  /**
-   * The AffixInner styled component needs knowledge of its parent affix
-   */
-  withState('affixed', 'setAffixed', false),
-  withHandlers({
-    handleAffixChange: (props: any) => (affixed: boolean) => props.setAffixed(affixed)
-  }),
-  withHandlers({
-    handleClear: (props: any) => () => {
-      if (props.viewportType !== 'MOBILE') {
+  withStateHandlers(
+    { affixed: false },
+    { handleAffixChange: () => affixed => ({ affixed }) }
+  ),
+  withHandlers<IStateProps, any>({
+    handleClear: props => () => {
+      if (props.isMobile) {
         scrollToTop();
       }
 
-      props.clearQueries();
+      props.setQueryString('');
+      props.setQueryTags([]);
     }
-  }),
+  })
 );
 
-interface IAffixInnerProps {
-  affixed: boolean;
-}
-
-const AffixInner = styled('div')<IAffixInnerProps>`
+const AffixInner = styled('div')<{ affixed: boolean }>`
   background: ${props => props.affixed ? '#FFFFFF' : 'transparent'};
   padding: ${props => props.affixed ? '24px' : '0'};
   transition: all 150ms ease-in;
@@ -67,18 +69,16 @@ export const Search = enhance(props => (
         <Inputs
           queryString={props.queryString}
           queryTags={props.queryTags}
-          onQueryStringChange={props.onQueryStringChange}
-          onQueryTagsChange={props.onQueryTagsChange}
+          setQueryString={props.setQueryString}
+          setQueryTags={props.setQueryTags}
           onClear={props.handleClear}
-          tags={props.tags}
-          viewportType={props.viewportType}
         />
       </AffixInner>
     </Affix>
     <Results
+      numQueried={props.numQueried}
       queryString={props.queryString}
       queryTags={props.queryTags}
-      numFound={props.numFound}
       onClear={props.handleClear}
     />
   </div>

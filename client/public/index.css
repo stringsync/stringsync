@@ -1,14 +1,13 @@
-body {
-  background-color: #f0f2f5 !important;
-}
-
-body.no-scroll {
+.no-scroll {
   overflow: hidden;
 }
 
-.main-title {
-  font-weight: 100;
-  letter-spacing: 1px;
+body.no-scroll {
+  position: fixed;
+}
+
+#root {
+  overflow-x: hidden;
 }
 
 @media print {

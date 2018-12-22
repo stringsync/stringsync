@@ -1,9 +1,7 @@
-declare namespace API {
-  namespace Base {
-    export interface IResponse {
-      data?: any[];
-      included?: JSONApi.IIncludedObject[];
-      links?: JSONApi.ILinksObject;
-    }
-  }
+import { IIncluded, ILinks } from '../json-api';
+
+export interface IResponse {
+  data?: any;
+  included?: IIncluded[];
+  links?: ILinks;
 }

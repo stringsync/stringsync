@@ -1,38 +1,38 @@
 import * as React from 'react';
-import styled from 'react-emotion';
 import { compose, withProps, branch, renderNothing } from 'recompose';
 import { SonarSearch } from './SonarSearch';
+import styled from 'react-emotion';
 
-interface IOuterProps {
+interface IProps {
   queryString: string;
-  queryTags: Set<string>;
-  numFound: number;
+  queryTags: string[];
+  numQueried: number;
   onClear: () => void;
 }
 
-interface IInnerProps extends IOuterProps {
+interface IInnerProps extends IProps {
   resultString: string;
   hasResults: boolean;
 }
 
-const enhance = compose<IInnerProps, IOuterProps>(
+const enhance = compose<IInnerProps, IProps>(
   /**
    * The resultString is the message that shows when a queryString or at least one queryTag
    * is selected.
    */
   withProps((props: any) => {
-    const { numFound } = props;
-    const resultString = `${numFound} ${numFound === 1 ? 'result' : 'results'}`;
+    const { numQueried } = props;
+    const resultString = `${numQueried} ${numQueried === 1 ? 'result' : 'results'}`;
     return { resultString };
   }),
   /**
    * 0 results from a given queryString or number of queryTags is considered having results
    */
   withProps((props: any) => ({
-    hasResults: props.queryString || props.queryTags.size > 0
+    hasResults: props.queryString || props.queryTags.length > 0
   })),
   branch((props: IInnerProps) => !props.hasResults, renderNothing)
-)
+);
 
 const Inner = styled('div')`
   text-align: center;
@@ -45,8 +45,7 @@ const Clear = styled('div')`
   padding: 12px;
   font-size: 16px;
   cursor: pointer;
-  color: ${props => props.theme.primaryColor};
-
+  color: ${props => props.theme['@primary-color']};
   &:hover {
     text-decoration: underline;
   }
@@ -59,6 +58,6 @@ export const Results = enhance(props => (
   <Inner>
     <div>{props.resultString}</div>
     <Clear onClick={props.onClear}>remove filters</Clear>
-    <SonarSearch hidden={props.numFound > 0} />
+    <SonarSearch hidden={props.numQueried > 0} />
   </Inner>
 ));

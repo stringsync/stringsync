@@ -1,38 +1,18 @@
 import * as actions from './notationActions';
+import { getDefaultState } from './getDefaultState';
+import { INotation } from '../../@types/notation';
 
-export const getDefaultNotation = (): Notation.INotation => ({
-  artistName: '',
-  bpm: 120,
-  createdAt: new Date(1970, 1, 1),
-  deadTimeMs: 0,
-  durationMs: 120000,
-  id: -1,
-  songName: '',
-  tags: [],
-  thumbnailUrl: '',
-  transcriber: null,
-  updatedAt: new Date(1970, 1, 1),
-  vextabString: '',
-  video: null
-});
-
-const getDefaultState = (): Notation.INotation => getDefaultNotation();
-
-export const notationReducer = (state = getDefaultState(), action: actions.NotationActions): Notation.INotation => {
+export const notationReducer = (state = getDefaultState(), action: actions.NotationActions): INotation => {
   let nextState = Object.assign({}, state);
 
-  switch(action.type) {
+  switch (action.type) {
 
     case actions.RESET_NOTATION:
       nextState = getDefaultState();
       return nextState;
-    
+
     case actions.SET_NOTATION:
       nextState = Object.assign({}, action.payload.notation);
-      return nextState;
-
-    case actions.SET_VEXTAB_STRING:
-      nextState.vextabString = action.payload.vextabString;
       return nextState;
 
     default:

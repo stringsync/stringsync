@@ -1,5 +1,10 @@
-import * as React from 'react';
-import { assertRender } from 'test';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Root } from './';
+import createStore from '../../data/createStore';
 
-const Dummy = () => <div/>;
-assertRender(Dummy);
+it('renders without crashing', () => {
+  const div = document.createElement('div');
+  ReactDOM.render(<Root store={createStore()} />, div);
+  ReactDOM.unmountComponentAtNode(div);
+});

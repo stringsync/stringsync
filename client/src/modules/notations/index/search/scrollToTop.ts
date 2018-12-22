@@ -7,7 +7,7 @@ import { debounce } from 'lodash';
  * 
  * @returns {void}
  */
-const scrollToTop = debounce(() => {
+export const scrollToTop = debounce(() => {
   Scroll.animateScroll.scrollToTop({
     duration: 200,
     ignoreCancelEvents: true,
@@ -15,5 +15,3 @@ const scrollToTop = debounce(() => {
     smooth: true
   });
 }, 1000, { leading: true, trailing: true });
-
-export default scrollToTop;

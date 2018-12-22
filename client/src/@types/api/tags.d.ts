@@ -1,28 +1,30 @@
-namespace API {
-  namespace Tags {
-    export interface IAsIncluded {
-      type: 'tags';
-      id: number;
-      attributes: {
-        name: string;
-        links: JSONApi.ILinks;
-      }
-    }
+// import { ILinks } from "../json-api";
 
-    export interface IIdentifier extends JSONApi.IIdentifier {
-      type: 'tags';
-      id: number;
-    }
+// declare namespace API {
+//   namespace Tags {
+//     export interface IAsIncluded {
+//       type: 'tags';
+//       id: number;
+//       attributes: {
+//         name: string;
+//         links: ILinks;
+//       }
+//     }
 
-    export interface IData extends IIdentifier {
-      attributes: {
-        name: string;
-      }
-    }
+//     export interface IIdentifier extends IIdentifier {
+//       type: 'tags';
+//       id: number;
+//     }
 
-    export interface IIndexResponse {
-      links: JSONApi.ILinks;
-      data: IData[];
-    }
-  }
-}
+//     export interface IData extends IIdentifier {
+//       attributes: {
+//         name: string;
+//       }
+//     }
+
+//     export interface IIndexResponse {
+//       links: ILinks;
+//       data: IData[];
+//     }
+//   }
+// }

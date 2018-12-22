@@ -2,7 +2,7 @@ import { message } from 'antd';
 
 /**
  * Configure antd's message system
- * 
+ *
  * @returns {void}
  */
 const configureMessage = () => {

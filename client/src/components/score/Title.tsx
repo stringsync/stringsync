@@ -1,47 +1,39 @@
 import * as React from 'react';
-import { compose, mapProps } from 'recompose';
+import { compose, branch, renderComponent } from 'recompose';
 import styled from 'react-emotion';
 
-interface IOuterProps {
-  songName?: string;
-  artistName?: string;
-  transcriberName?: string;
+interface IProps {
+  songName: string | void;
+  artistName: string | void;
+  transcriberName: string | void;
 }
 
-interface IInnerProps {
-  line1: string;
-  line2: string;
-}
+const Loading = () => <Outer><StyledH1>loading...</StyledH1></Outer>;
 
-const enhance = compose<IInnerProps, IOuterProps>(
-  mapProps((props: IOuterProps) => {
-    const { songName, artistName, transcriberName } = props;
-
-    return {
-      line1: songName && artistName ? `${songName} by ${artistName}` : 'loading...',
-      line2: transcriberName ? `transcribed by ${transcriberName}` : ''
-    }
-  })
+const enhance = compose<IProps, IProps>(
+  branch<IProps>(
+    props => !props.songName || !props.artistName || !props.transcriberName,
+    renderComponent(Loading)
+  )
 );
 
 const Outer = styled('div')`
   text-align: center;
-  margin: 24px;
-`
-
-const Line1 = styled('h2')`
-  color: black;
-  font-weight: 500;
-  font-size: 24px;
 `;
 
-const Line2 = styled('h4')`
-  color: darkgray;
+const StyledH1 = styled('h1')`
+  font-size: 2em;
+  margin-bottom: 0.2em;
+`;
+
+const StyledH2 = styled('h2')`
+  font-size: 1.25em;
+  color: #aaaaaa;
 `;
 
 export const Title = enhance(props => (
   <Outer>
-    <Line1>{props.line1}</Line1>
-    <Line2>{props.line2}</Line2>
+    <StyledH1>{props.songName} by {props.artistName}</StyledH1>
+    <StyledH2>transcribed by {props.transcriberName}</StyledH2>
   </Outer>
 ));

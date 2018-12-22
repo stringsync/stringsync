@@ -1,7 +1,7 @@
-import { FretMarker } from './FretMarker';
-import { Maestro, Time } from 'services';
-import { compact, get } from 'lodash';
-import { FretMarkerStates } from 'models';
+import { Note } from '../score/line/measure/note';
+import { IPosition } from '../../@types/position';
+import { compact } from 'lodash';
+import { ISpec } from '../maestro';
 
 const NUM_FRETS = 23;
 
@@ -15,123 +15,69 @@ export class Fretboard {
     new Array(NUM_FRETS).fill(null)
   ];
 
-  public lit:         Set<FretMarker> = new Set();
-  public pressed:     Set<FretMarker> = new Set();
-  public justPressed: Set<FretMarker> = new Set();
+  public cachedSpec: ISpec | null = null;
+  public cachedIsJustPressed: boolean = false;
+  public lit: Set<any> = new Set();
+  public pressed: Set<any> = new Set();
+  public justPressed: Set<any> = new Set();
 
-  // TODO: Handle justPressed and pressed in ties and slurs
-  /**
-   * The primary interface of Fretboard. This will take a maestro, and infer all of the
-   * components that should be lit, pressed, justPressed, or suggested.
-   * 
-   * @param maestro 
-   */
-  public update(maestro: Maestro): void {
-    // Arguments for Fretboard.prototype.sync
-    let lit: Guitar.IPosition[] = [];
-    let pressed: Guitar.IPosition[] = [];
-    let justPressed = false;
-
-    const element = maestro.state.note;
-
-    if (!element) {
-      this.sync(lit, pressed, justPressed);
-      return;
-    } else if (!element.measure) {
-      throw new Error('measure elements must be associated with a measure to update fretboard');
-    }
-
-    lit = element.measure.positions;
-    pressed = element.type === 'NOTE' || element.type === 'CHORD' ? element.positions : [];
-
-    // compute justPressed, which is the the pressed notes
-    const { start, stop } = maestro.state;
-    if (typeof start === 'number' && typeof stop === 'number') {
-      const threshold = Math.min(start + 250, start + ((stop - start) * 0.5))
-      justPressed = maestro.state.time.tick < threshold; 
-    }
-  
-    this.sync(lit, pressed, justPressed);
-  }
-
-  /**
-   * Inserts the fretMarker in the fretMarkers instance variable.
-   */
-  public add(fretMarker: FretMarker) {
-    const { fret, str } = fretMarker.position;
+  public add(fretMarker: any, position: IPosition) {
+    const { fret, str } = position;
     this.fretMarkers[str - 1][fret] = fretMarker;
   }
 
-  public remove(position: Guitar.IPosition) {
+  public remove(position: IPosition) {
     const { fret, str } = position;
     this.fretMarkers[str - 1][fret] = null;
   }
 
   /**
-   * Orchestrates syncing with the React components attached to the FretMarker and
-   * GuitarString models.
-   * 
-   * @param lit 
-   * @param pressed 
-   * @param justPressed 
+   * The primary interface of Fretboard. This will take a maestro, and infer all of the
+   * components that should be lit or pressed.
    */
-  private sync(litPositions: Guitar.IPosition[], pressedPositions: Guitar.IPosition[], justPressed: boolean) {
+  public updateFretMarkers(spec: ISpec | null, tick: number): void {
+    let notePositions: IPosition[] = [];
+    let measurePositions: IPosition[] = [];
+    let isJustPressed = false;
 
-    // These components should light/press/justPress, and they might already be in that state.
-    const shouldLight     = this.mapMarkers(litPositions);
-    const shouldPress     = justPressed ? [] : this.mapMarkers(pressedPositions);
-    const shouldJustPress = justPressed ? this.mapMarkers(pressedPositions) : [];
-
-    this.lit         = this.doSync(shouldLight, 'LIT');
-    this.pressed     = this.doSync(shouldPress, 'PRESSED');
-    this.justPressed = this.doSync(shouldJustPress, 'JUST_PRESSED');
-  }
-
-  private mapMarkers(positions: Guitar.IPosition[]): FretMarker[] {
-    return compact(positions.map(({ str, fret }) => get(this.fretMarkers[str - 1], fret)));
-  }
-
-  /**
-   * Performs the actual syncing mechanism which updates the state on the fret markers' react
-   * components.
-   * 
-   * @param fretMarkers 
-   * @param state 
-   */
-  private doSync(fretMarkers: FretMarker[], state: FretMarkerStates): Set<FretMarker> {
-    const next: Set<FretMarker> = new Set();
-
-    let curr: Set<FretMarker>;
-    switch (state) {
-      case 'LIT':
-        curr = this.lit;
-        break
-
-      case 'PRESSED':
-        curr = this.pressed;
-        break
-      
-      case 'JUST_PRESSED':
-        curr = this.justPressed;
-        break
-      
-      default:
-        return next;
+    if (spec && spec.note && spec.note.measure) {
+      notePositions = spec.note.positions;
+      measurePositions = spec.note.measure.positions;
+      const start = spec.startTick;
+      const stop = spec.stopTick;
+      isJustPressed = tick < Math.min(start + 250, start + ((stop - start) * 0.5));
     }
 
-    fretMarkers.forEach(fretMarker => {
-      if (curr.has(fretMarker)) {
-        fretMarker.setMarkerState(state);
+    // Avoid heavy weight operations
+    if (this.cachedSpec === spec && this.cachedIsJustPressed === isJustPressed) {
+      return;
+    }
+
+    const shouldLight = new Set(measurePositions.map(position => this.getFretMarker(position)));
+    const shouldPress = new Set(notePositions.map(position => this.getFretMarker(position)));
+
+    const shouldUnlight = Array.from(this.lit).filter(fretMarker => !shouldLight.has(fretMarker));
+    const shouldUnpress = Array.from(this.pressed).filter(fretMarker => !shouldPress.has(fretMarker));
+
+    compact(Array.from(shouldLight)).forEach(fretMarker => fretMarker.props.light());
+    compact(Array.from(shouldPress)).forEach(fretMarker => {
+      if (isJustPressed) {
+        fretMarker.props.justPress();
+      } else {
+        fretMarker.props.press();
       }
-
-      next.add(fretMarker);
     });
 
-    // Should hide these components
-    Array.from(curr).filter(fretMarker => !next.has(fretMarker)).forEach(fretMarker => {
-      fretMarker.setMarkerState('HIDDEN');
-    });
+    compact(shouldUnlight).forEach(fretMarker => fretMarker.props.unlight());
+    compact(shouldUnpress).forEach(fretMarker => fretMarker.props.unpress());
 
-    return next;
+    this.lit = shouldLight;
+    this.pressed = shouldPress;
+    this.cachedSpec = spec;
+    this.cachedIsJustPressed = isJustPressed;
+  }
+
+  private getFretMarker(position: IPosition): any {
+    return this.fretMarkers[position.str - 1][position.fret];
   }
 }

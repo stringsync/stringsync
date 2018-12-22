@@ -1,11 +1,14 @@
 import * as $ from 'jquery';
-import * as auth from 'j-toker';
+import auth from 'j-toker';
+import { Store } from 'redux';
+import { SessionActions } from '../data/session';
+import { ISession } from '../@types/session';
 
 /**
  * Returns the API Url for configuring jToker. Logs a warning if window.ss.env is
  * not handled.
- * 
- * @returns {string} 
+ *
+ * @returns {string}
  */
 const getApiUrl = (): string => {
   switch (window.ss.env) {
@@ -18,36 +21,43 @@ const getApiUrl = (): string => {
   }
 };
 
+const syncSession = (response: any) => {
+  const user = response.data;
+  window.ss.store.dispatch(SessionActions.setSession(user));
+
+  return user;
+};
+
 /**
  * Configures jToker in non test environments
- * 
+ *
  * @returns {void}
  */
 const configureAuth = (): void => {
-  window.ss.auth = auth as auth.IJTokerAuth;
-  
+  window.ss.auth = auth;
+
+  // configure ajax
+  $.ajaxSetup({
+    beforeSend: (xhr, settings) => {
+      const { ss } = window;
+
+      // ensure use of proxy
+      if (ss.env === 'development' && typeof settings.url !== 'undefined') {
+        const url = new URL(settings.url);
+        url.host = 'localhost:3001';
+        settings.url = url.toString();
+      }
+
+      ss.auth.appendAuthHeaders(xhr, settings);
+    }
+  });
+
   window.ss.auth.configure({
     apiUrl: getApiUrl(),
     confirmationSuccessUrl: () => window.location.href,
-    handleTokenValidationResponse: res => {
-      const user = res.data;
-      window.ss.sessionSync.user = user;
-      
-      // Set the user in the redux store if the callback is available
-      if (window.ss.sessionSync.callback) {
-        window.ss.sessionSync.callback(user);
-      }
-
-      $.ajaxSetup({
-        beforeSend: (xhr, settings) => {
-          // append outbound auth headers
-          window.ss.auth.appendAuthHeaders(xhr, settings);
-        }
-      });
-
-      return user;
-    }
-  })
+    handleTokenValidationResponse: syncSession,
+    handleLoginResponse: syncSession
+  });
 };
 
 export default configureAuth;

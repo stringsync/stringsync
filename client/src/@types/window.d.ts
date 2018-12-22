@@ -1,22 +1,15 @@
-import * as auth from 'j-toker';
 import { message, notification } from 'antd';
-import { Maestro, RafLoop } from 'services';
+import { ISession } from './user';
 
 declare type Environments = 'development' | 'test' | 'production';
 
 interface IStringSyncModules {
-  auth: auth.IJTokerAuth;
+  auth: any;
   env: Environments;
   debug: boolean;
   message: typeof message;
-  notification: typeof notification | void;
-  maestro: Maestro;
-  sessionSync: {
-    callback: ((user: IUser) => any) | void;
-    user: Store.ISessionUser | {};
-  };
-  store: Store<Store.IState> | void;
-  rafLoop: RafLoop;
+  notification: typeof notification;
+  store: any;
 }
 
 declare global {

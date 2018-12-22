@@ -1,17 +1,26 @@
 import * as React from 'react';
-import aboutGuitar1Src from 'assets/about-guitar-1.jpg';
-import aboutGuitar2Src from 'assets/about-guitar-2.jpg';
+import aboutGuitar1Src from '../../assets/about-guitar-1.jpg';
+import aboutGuitar2Src from '../../assets/about-guitar-2.jpg';
 import styled from 'react-emotion';
 import { Row, Col } from 'antd';
-import { compose, } from 'recompose';
-import { connect } from 'react-redux';
+import { compose } from 'recompose';
 import { Link } from 'react-router-dom';
 import YouTube from 'react-youtube';
-import { ViewportTypes } from '../../data/viewport/getViewportType';
 import { RowProps } from 'antd/lib/row';
+import withSizes from 'react-sizes';
+import { Lane } from '../../components/lane/Lane';
 
-interface IInnerProps {
-  viewportType: ViewportTypes;
+const theme = Object.freeze({
+  '@primary-color': '#fc354c',
+  '@secondary-color': '#6cabba',
+  '@tertiary-color': '#f4f4f4',
+  '@highlight-color': '#ff9ea9',
+  '@background-color-base': '#f0f2f5',
+  '@muted': '#e8e8e8'
+});
+
+interface IWithSizesProps {
+  isDesktop: boolean;
 }
 
 const BANNER_COL_SPEC = Object.freeze({
@@ -45,32 +54,11 @@ const DEFAULT_YOUTUBE_OPTIONS = Object.freeze({
   }
 });
 
-const enhance = compose<IInnerProps, {}>(
-  connect(
-    (state: Store.IState) => ({
-      viewportType: state.viewport.type
-    })
-  )
+const enhance = compose <IWithSizesProps, {}>(
+  withSizes(size => ({
+    isDesktop: withSizes.isDesktop(size)
+  }))
 );
-
-const Outer = styled('div')`
-  max-width: 1200px;
-  margin: 0 auto;
-`;
-
-interface IStyledRowProps extends RowProps {
-  background: string;
-  color?: string;
-  height: string | number;
-}
-
-const StyledRow = styled(Row)<IStyledRowProps>`
-  background: ${props => props.theme[props.background]};
-  color: ${props => props.color ? props.theme[props.color] : null};
-  min-height: ${props => props.height}px;
-  width: 100%;
-  position: relative;
-`;
 
 interface IColorProps {
   color: string;
@@ -88,25 +76,25 @@ interface IFirstProps {
   first?: boolean;
 }
 
-const StyledSection = styled('section')<IFirstProps>`
+const StyledSection = styled('section') <IFirstProps>`
   margin: 24px;
   margin-top: ${props => !!props.first ? '0' : '24'}px;
-  color: ${props => props.theme.quaternaryColor};
+  color: black;
 `;
 
 const SectionHeader = styled('h2')`
   font-size: 1.25em;
-  color: ${props => props.theme.primaryColor};
+  color: ${props => theme['@primary-color']};
 `;
 
 const StyledImg = styled('img')`
   width: 100%;
 `;
 
-const StyledLink = styled(Link)`
+const StyledLink = styled('span')`
   border-radius: 5px;
   padding: 4px 16px;
-  background: ${props => props.theme.tertiaryColor};
+  background: ${() => theme['@tertiary-color']};
   font-size: 24px;
 `;
 
@@ -118,23 +106,43 @@ const VideoContainer = styled('div')`
   top: 120;
   z-index: 5;
   width: 100%;
-
   iframe {
     max-width: 100vw;
   }
 `;
 
+interface IStyledRowProps extends RowProps {
+  background: string;
+  color?: string;
+  height: string | number;
+}
+
+const StyledRow: React.SFC<IStyledRowProps> = props => {
+  const styleProps = {
+    background: theme[props.background],
+    color: props.color ? theme[props.color] : null,
+    minHeight: props.height
+  };
+
+  const restProps = Object.assign({}, props);
+  delete restProps.background;
+  delete restProps.color;
+  delete restProps.height;
+
+  return <Row style={styleProps} {...restProps}>{props.children}</Row>;
+};
+
 export const About = enhance(props => (
-  <Outer>
+  <Lane>
     <StyledRow
       type="flex"
       align="middle"
       justify="center"
-      background="primaryColor"
+      background="@primary-color"
       height={256}
     >
       <Col {...BANNER_COL_SPEC}>
-        <MainHeader color="tertiaryColor">
+        <MainHeader color="@tertiary-color">
           We created StringSync to help you learn guitar differently
         </MainHeader>
       </Col>
@@ -143,7 +151,7 @@ export const About = enhance(props => (
       type="flex"
       align="middle"
       justify="center"
-      background="tertiaryColor"
+      background="@tertiary-color"
       height={256}
     >
       <Col {...STACKED_COL_SPEC}>
@@ -151,7 +159,7 @@ export const About = enhance(props => (
       </Col>
       <Col {...STACKED_COL_SPEC}>
         <Row type="flex" align="middle" justify="center">
-          <Col span={props.viewportType === 'DESKTOP' ? 18 : 24}>
+          <Col span={props.isDesktop ? 18 : 24}>
             <StyledSection>
               <SectionHeader>We believe that learning music should be simple</SectionHeader>
               <p>
@@ -166,12 +174,12 @@ export const About = enhance(props => (
     <StyledRow
       type="flex"
       justify="center"
-      background="secondaryColor"
-      color="tertiaryColor"
+      background="@secondary-color"
+      color="@tertiary-color"
       height={256}
     >
       <Col span={24}>
-        <MainHeader color="tertiaryColor">
+        <MainHeader color="@tertiary-color">
           It's easy
         </MainHeader>
         <VideoContainer>
@@ -183,19 +191,19 @@ export const About = enhance(props => (
       </Col>
     </StyledRow>
     <StyledRow
-      background="tertiaryColor"
-      color="primaryColor"
+      background="@tertiary-color"
+      color="@primary-color"
       height={256}
     />
     <StyledRow
       type="flex"
       justify="center"
-      background="tertiaryColor"
-      color="primaryColor"
+      background="@tertiary-color"
+      color="@primary-color"
       height={128}
     >
       <Col {...BANNER_COL_SPEC}>
-        <MainHeader color="primaryColor">
+        <MainHeader color="@primary-color">
           How to learn guitar with StringSync
         </MainHeader>
       </Col>
@@ -203,8 +211,8 @@ export const About = enhance(props => (
     <StyledRow
       type="flex"
       justify="center"
-      background="tertiaryColor"
-      color="primaryColor"
+      background="@tertiary-color"
+      color="@primary-color"
       height={128}
     >
       <Col {...STACKED_COL_SPEC}>
@@ -213,7 +221,7 @@ export const About = enhance(props => (
           justify="center"
           align="middle"
         >
-          <Col span={props.viewportType === 'DESKTOP' ? 18 : 24}>
+          <Col span={props.isDesktop ? 18 : 24}>
             <Row>
               <Col>
                 <StyledSection first={true}>
@@ -254,12 +262,12 @@ export const About = enhance(props => (
       type="flex"
       align="middle"
       justify="center"
-      background="primaryColor"
+      background="@primary-color"
       height={128}
     >
-      <StyledLink to="/">
-        Get Started
+      <StyledLink>
+        <Link to="/">Get Started</Link>
       </StyledLink>
     </StyledRow>
-  </Outer>
+  </Lane>
 ));

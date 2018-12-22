@@ -1,59 +1,38 @@
-declare namespace Store {
-  export interface IState {
-    editor: IEditorState;
-    maestro: IMaestroState;
-    notations: Notation.INotation[];
-    notation: Notation.INotation;
-    session: ISessionState;
-    tags: Tag.ITag[];
-    ui: IUiState;
-    video: IVideoState;
-    viewport: IViewportState;
-  }
 
-  export interface ISessionState {
-    signedIn: boolean;
-    email: string;
-    uid: string;
-    id: number;
-    image: string | null;
-    name: string;
-    provider: SessionProviders;
-    role: Role.Roles;
-  }
+import { INotation } from "./notation";
+import { ISession } from "./session";
+import { ITag } from "./tag";
+import { IPlayer, PlayerStates } from './youtube';
+import { Maestro, ISpec } from '../models/maestro/Maestro';
 
-  export interface IVideoState {
-    kind: Video.Kinds | null;
-    src: string;
-    player: Youtube.IPlayer | null;
-    playerState?: Youtube.IPlayerStates;
-    isActive?: boolean;
-  }
+export type NotationsState = INotation[];
+export type NotationState = INotation;
+export type SessionState = ISession;
+export type TagsState = ITag[];
 
-  export interface IViewportState {
-    type: ViewportTypes;
-    width: number;
-  }
+export interface IVideoState {
+  kind: string;
+  src: string;
+  player: IPlayer | null;
+  playerState: PlayerStates | void;
+  isActive: boolean | void;
+}
 
-  export interface IUiState {
-    isNotationMenuVisible: boolean;
-    isLoopVisible: boolean;
-    isFretboardVisible: boolean;
-    isPianoVisible: boolean;
-    focusedScrollElement: string | null;
-  }
+export interface INotationMenuState {
+  visible: boolean;
+  fretboardVisible: boolean;
+}
 
-  export interface IEditorState {
-    autosave: boolean;
-    enabled: boolean;
-    elementIndex: number;
-    errors: string[];
-    lastRenderedAt: number;
-    lastUpdatedAt: number;
-  }
-  
-  // The optional parameters facilitate the UPDATE action
-  export interface IMaestroState {
-    vextab?: Vextab | null;
-  }
+export interface IScoreState {
+  maestro: Maestro | null;
+}
+
+export interface IStore {
+  notations: NotationsState;
+  notation: NotationState;
+  notationMenu: INotationMenuState;
+  score: IScoreState;
+  session: SessionState;
+  tags: TagsState;
+  video: IVideoState;
 }

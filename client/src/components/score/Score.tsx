@@ -1,63 +1,95 @@
 import * as React from 'react';
-import logo from 'assets/logo.svg';
+import {
+  compose,
+  withHandlers,
+  withState,
+  withProps,
+  lifecycle,
+  ReactLifeCycleFunctionsThisArguments
+} from 'recompose';
+import { VextabString as VextabStringWrapper } from '../../models/vextab-string';
+import { Score as ScoreWrapper } from '../../models/score';
+import { debounce } from 'lodash';
 import styled from 'react-emotion';
-import { Line } from './Line';
+import { Row, Col } from 'antd';
 import { Title } from './Title';
-import { Vextab, VextabRenderer, Factory as VextabFactory } from 'models';
-import { compose, lifecycle, withProps, branch, renderNothing, withState } from 'recompose';
-import { get } from 'lodash';
-import { scoreKey } from './scoreKey';
-import { Renderer } from './Renderer';
-import { CanvasRenderables } from './canvas-renderables';
-import { Editor } from './Editor';
-import { connect, Dispatch } from 'react-redux';
-import { EditorActions, MaestroActions } from 'data';
-import { Flow } from 'vexflow';
-import { Element as ScrollElement } from 'react-scroll';
+import { withMaestro, IWithMaestroProps } from '../../enhancers/withMaestro';
+import { Maestro } from '../../models/maestro/Maestro';
+import { Caret } from './Caret';
+import { Scroller } from './Scroller';
+import { Lighter } from './Lighter';
+
+interface IProps {
+  songName: string;
+  scrollOffset: number;
+  bpm: number;
+  artistName: string;
+  transcriberName: string;
+  vextabString: string;
+  deadTimeMs: number;
+  width: number;
+  caret: boolean;
+}
+
+interface IStateProps {
+  div: HTMLDivElement | null;
+  setDiv: (div: HTMLDivElement | null) => void;
+}
+
+interface IHandlerProps {
+  handleDivRef: (div: HTMLDivElement) => void;
+}
+
+interface IMeasuresPerLineProps {
+  measuresPerLine: number;
+}
+
+type InnerProps = IProps & IStateProps & IHandlerProps & IMeasuresPerLineProps & IWithMaestroProps;
 
 const MIN_WIDTH_PER_MEASURE = 240; // px
 const MIN_MEASURES_PER_LINE = 1;
 const MAX_MEASURES_PER_LINE = 4;
 
-interface IOuterProps {
-  dynamic: boolean;
-  notation: Notation.INotation;
-  width: number;
-  editMode: boolean;
-}
+const renderScore = debounce(function(this: ReactLifeCycleFunctionsThisArguments<InnerProps, {}, {}>) {
+  if (!this.props.div) {
+    return;
+  }
 
-interface IConnectProps extends IOuterProps {
-  appendErrors: (errors: string[]) => void;
-  removeErrors: () => void;
-  setMaestroVextab: (vextab: Vextab | null) => void;
-}
+  try {
+    // We have to manually manage the children of the main div
+    // since React knows nothing about them
+    const { firstChild } = this.props.div;
+    if (firstChild && firstChild.parentNode === this.props.div) {
+      this.props.div.removeChild(firstChild);
+    }
 
-interface IStateProps extends IConnectProps {
-  vextab: Vextab;
-  setVextab: (vextab: Vextab) => void;
-}
+    const score = new ScoreWrapper(
+      this.props.width,
+      this.props.div,
+      new VextabStringWrapper(this.props.vextabString).asMeasures(this.props.measuresPerLine)
+    );
 
-interface IVextabSyncProps extends IStateProps {
-  vextabId: number;
-  lineIds: number[];
-}
+    score.render();
+    score.hydrate();
 
-interface IInnerProps extends IVextabSyncProps {
-  measuresPerLine: number;
-}
+    // Now that the score is rendered, it is also hydrated. We can now mount the Maestro
+    // to the store.
+    const maestro = new Maestro(score, this.props.deadTimeMs, this.props.bpm);
+    maestro.hydrate();
+    this.props.setMaestro(maestro);
+  } catch (error) {
+    console.error(error);
+  }
+}, 250);
 
-const enhance = compose<IInnerProps, IOuterProps>(
-  connect(
-    null,
-    (dispatch: Dispatch) => ({
-      appendErrors: (errors: string[]) => dispatch(EditorActions.appendErrors(errors)),
-      removeErrors: () => dispatch(EditorActions.removeErrors()),
-      setMaestroVextab: (vextab: Vextab | null) => dispatch(MaestroActions.update({ vextab }))
-    })
-  ),
-  withProps((props: IConnectProps) => {
-    let measuresPerLine;
-    
+const enhance = compose<InnerProps, IProps>(
+  withState('div', 'setDiv', null),
+  withHandlers<IStateProps, IHandlerProps>({
+    handleDivRef: props => div => props.setDiv(div)
+  }),
+  withProps((props: any) => {
+    let measuresPerLine: number;
+
     // compute mpl based on width
     measuresPerLine = Math.floor(props.width / MIN_WIDTH_PER_MEASURE);
 
@@ -69,103 +101,57 @@ const enhance = compose<IInnerProps, IOuterProps>(
 
     return { measuresPerLine };
   }),
-  withState('vextab', 'setVextab', new Vextab([], new Flow.Tuning(), 1, 640)),
-  lifecycle<IInnerProps, {}>({
-    componentDidUpdate(prevProps) {
-      const shouldCreateVextab = (
-        prevProps.width !== this.props.width ||
-        prevProps.notation.vextabString !== this.props.notation.vextabString ||
-        prevProps.measuresPerLine !== this.props.measuresPerLine
+  withMaestro,
+  lifecycle<InnerProps, {}, {}>({
+    shouldComponentUpdate(nextProps): boolean {
+      return !!nextProps.div && (
+        this.props.width !== nextProps.width ||
+        this.props.vextabString !== nextProps.vextabString ||
+        this.props.deadTimeMs !== nextProps.deadTimeMs ||
+        this.props.bpm !== nextProps.bpm ||
+        this.props.scrollOffset !== nextProps.scrollOffset
       );
-
-      let vextab;
-      if (shouldCreateVextab && this.props.notation.vextabString.length > 0) {
-        let staves: Vextab.Parsed.IStave[] =[];
-
-        // Parse the vextabString
-        try {
-          staves = Vextab.decode(this.props.notation.vextabString);
-          this.props.removeErrors();
-        } catch (error) {
-          if (this.props.editMode) {
-            this.props.appendErrors([error.message]);
-            return;
-          } else {
-            throw error;
-          }
-        }
-
-        // create a new Vextab object using the factory
-        const factory = new VextabFactory(
-          staves, window.ss.maestro.tuning, this.props.measuresPerLine, this.props.width
-        )
-
-        vextab = factory.newInstance();
-        this.props.setMaestroVextab(vextab);
-        this.props.setVextab(vextab);
-      } else {
-        vextab = this.props.vextab;
-      }
-
-      // Sync the Vextab with Maestro's vextab
-      window.ss.maestro.vextab = vextab;
+    },
+    componentDidUpdate(): void {
+      renderScore.call(this);
+    },
+    componentWillUnmount(): void {
+      this.props.resetMaestro();
     }
-  }),
-  branch<IInnerProps>(props => !props.vextab, renderNothing)
+  })
 );
 
-interface IOuterDiv {
-  dynamic: boolean;
-}
-
-const Outer = styled('div')<IOuterDiv>`
+const Outer = styled('div')`
   background: white;
-  max-height: 1040px;
-  overflow-x: ${props => props.dynamic ? 'hidden' : 'scroll'};
-  overflow-y: scroll;
-  position: relative;
   padding-top: 48px;
-  -webkit-overflow-scrolling: touch;
-
-  ::-webkit-scrollbar { 
-    display: none; 
-  }
-`;
-
-const Logo = styled('img')`
-  width: 64px;
-  margin-top: 128px;
+  padding-bottom: 64px;
 `;
 
 const Spacer = styled('div')`
-  height: ${() => VextabRenderer.DEFAULT_LINE_HEIGHT * 4}px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  width: 100%;
+  height: 300px;
+  background: white;
 `;
 
 export const Score = enhance(props => (
-  <Outer id="score" dynamic={props.dynamic}>
-    <ScrollElement name="score-top" />
-    <Editor />
-    <Renderer editMode={props.editMode} />
-    <CanvasRenderables active={props.dynamic} />
-    <Title
-      songName={props.notation.songName}
-      artistName={props.notation.artistName}
-      transcriberName={get(props.notation.transcriber, 'name') || ''}
-    />
-    {
-      props.vextab.lines.map(line => (
-        <Line
-          editMode={props.editMode}
-          key={`key-${scoreKey(props.vextab, line)}`}
-          line={line}
-          vextab={props.vextab}
+  <Outer>
+    <Row type="flex" justify="center">
+      <Col span={24}>
+        <Title
+          songName={props.songName}
+          artistName={props.artistName}
+          transcriberName={props.transcriberName}
         />
-      ))
-    }
-    {props.dynamic ? <Spacer><Logo src={logo}  alt="logo" /></Spacer> : null}
-    {props.children}
+      </Col>
+    </Row>
+    <Row type="flex" justify="center">
+      <Col span={24}>
+        <Caret visible={props.caret} />
+        <Scroller offset={props.scrollOffset} />
+        <Lighter />
+        <div ref={props.handleDivRef} />
+      </Col>
+    </Row>
+    <Spacer />
   </Outer>
 ));

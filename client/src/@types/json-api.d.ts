@@ -1,25 +1,23 @@
-declare namespace JSONApi {
-  export interface IIdentifier {
-    id: number;
-    type: string;
-  }
+export interface IIdentifier {
+  id: number;
+  type: string;
+}
 
-  export interface ILinks {
-    self?: string;
-    related?: string | object;
-    meta?: object;
-  }
+export interface ILinks {
+  self?: string;
+  related?: string | object;
+  meta?: object;
+}
 
-  export interface IIncluded {
-    id: number;
-    type: string;
-    attributes: object;
-    links?: ILinks;
-  }
+export interface IIncluded {
+  id: number;
+  type: string;
+  attributes: object;
+  links?: ILinks;
+}
 
-  export interface IData {
-    attributes?: object;
-    relationships?: object;
-    links: ILinksObject;
-  }
+export interface IData {
+  attributes?: object;
+  relationships?: object;
+  links: ILinks;
 }

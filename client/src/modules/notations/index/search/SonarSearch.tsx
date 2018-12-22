@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { compose, branch, renderNothing } from 'recompose';
-import sonarSearchSrc from 'assets/sonar-search.svg';
+import sonarSearchSrc from '../../../../assets/sonar-search.svg';
 import styled from 'react-emotion';
 
 interface IOuterProps {

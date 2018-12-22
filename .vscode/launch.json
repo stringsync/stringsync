@@ -1,21 +1,23 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
     {
       "type": "chrome",
       "request": "launch",
-      "name": "Launch Chrome against localhost",
+      "name": "launch webapp",
       "url": "http://localhost:3000",
       "webRoot": "${workspaceFolder}"
-    },
-    {
-      "name": "Debug CRA Tests",
+    }, {
+      "type": "chrome",
+      "request": "launch",
+      "name": "launch storybook",
+      "url": "http://localhost:6006",
+      "webRoot": "${workspaceFolder}"
+    }, {
+      "name": "debug tests",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "${workspaceRoot}/client/node_modules/.bin/react-scripts-ts",
+      "runtimeExecutable": "${workspaceRoot}/client/node_modules/.bin/react-scripts",
       "args": [
         "test",
         "--runInBand",

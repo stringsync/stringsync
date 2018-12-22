@@ -1,6 +1,6 @@
 import * as React from 'react';
-import sonarSleepSrc from 'assets/sonar-sleep.svg';
-import sonarGuitarSrc from 'assets/sonar-guitar.svg';
+import sonarSleepSrc from '../../assets/sonar-sleep.svg';
+import sonarGuitarSrc from '../../assets/sonar-guitar.svg';
 import styled from 'react-emotion';
 import { Link } from 'react-router-dom';
 

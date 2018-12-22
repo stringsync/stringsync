@@ -34,9 +34,9 @@ export const loop = <TProps>(callback: (props: TProps) => any) => (
           props.doCallback();
           const handle = await RAF(doLoop(props));
           props.setHandle(handle);
-        }
+        };
 
-        return { doLoop }
+        return { doLoop };
       }),
       lifecycle<IDoLoopProps<TProps>, {}>({
         componentDidMount() {
@@ -53,4 +53,4 @@ export const loop = <TProps>(callback: (props: TProps) => any) => (
 
     return enhance(BaseComponent);
   }
-)
+);
