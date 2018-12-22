@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import YouTube from 'react-youtube';
 import { RowProps } from 'antd/lib/row';
 import withSizes from 'react-sizes';
+import { Lane } from '../../components/lane/Lane';
 
 const theme = Object.freeze({
   '@primary-color': '#fc354c',
@@ -58,11 +59,6 @@ const enhance = compose <IWithSizesProps, {}>(
     isDesktop: withSizes.isDesktop(size)
   }))
 );
-
-const Outer = styled('div')`
-  max-width: 1200px;
-  margin: 0 auto;
-`;
 
 interface IColorProps {
   color: string;
@@ -137,7 +133,7 @@ const StyledRow: React.SFC<IStyledRowProps> = props => {
 };
 
 export const About = enhance(props => (
-  <Outer>
+  <Lane>
     <StyledRow
       type="flex"
       align="middle"
@@ -273,5 +269,5 @@ export const About = enhance(props => (
         <Link to="/">Get Started</Link>
       </StyledLink>
     </StyledRow>
-  </Outer>
+  </Lane>
 ));
