@@ -5,15 +5,15 @@ import { pick } from 'lodash';
 import { getAttributes } from '../../utils/getAttributes';
 
 interface IRawNotationFormData {
-  artist_name: string;
-  bpm: number;
-  dead_time_ms: number;
-  duration_ms: number;
-  song_name: string;
-  thumbnail: File;
-  vextab_string: string;
-  tag_ids: string[];
-  video: {
+  artist_name?: string;
+  bpm?: number;
+  dead_time_ms?: number;
+  duration_ms?: number;
+  song_name?: string;
+  thumbnail?: File;
+  vextab_string?: string;
+  tag_ids?: string[];
+  video?: {
     kind: string;
     src: string;
   };
@@ -80,8 +80,10 @@ export const createNotation = async (notation: IRawNotationFormData): Promise<IN
 export const updateNotation = async (notationId: number, notation: IRawNotationFormData): Promise<INotation> => {
   const data = getFormData(notation);
   const response = await $.ajax(`/api/v1/notations/${notationId}`, {
+    contentType: false,
     data,
-    method: 'PUT'
+    method: 'PUT',
+    processData: false
   });
   return handleResponse(response);
 };

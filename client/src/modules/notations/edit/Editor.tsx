@@ -9,6 +9,11 @@ import { NotationActions } from '../../../data/notation/notationActions';
 import { VextabString } from '../../../models/vextab-string/VextabString';
 import { Score } from '../../../models/score/Score';
 import { Status } from './Status';
+import { updateNotation } from '../../../data/notation/notationApi';
+
+interface IProps {
+  notationId: string;
+}
 
 interface IStateProps {
   notation: INotation;
@@ -29,11 +34,12 @@ interface IHandlerProps {
   updateDeadTimeMs: (value: number | string | undefined) => void;
   updateBpm: (value: number | string | undefined) => void;
   updateVextabString: (event: any) => void;
+  updateNotation: () => void;
 }
 
-type InnerProps = IStateProps & IDispatchProps & IInnerStateProps & IHandlerProps;
+type InnerProps = IProps & IStateProps & IDispatchProps & IInnerStateProps & IHandlerProps;
 
-const enhance = compose<InnerProps, {}>(
+const enhance = compose<InnerProps, IProps>(
   connect<IStateProps, IDispatchProps, {}, IStore>(
     state => ({
       notation: state.notation
@@ -44,7 +50,7 @@ const enhance = compose<InnerProps, {}>(
   ),
   withState('editorVextabString', 'setEditorVextabString', null),
   withState('error', 'setError', null),
-  withHandlers<IStateProps & IDispatchProps & IInnerStateProps, IHandlerProps>({
+  withHandlers<IProps & IStateProps & IDispatchProps & IInnerStateProps, IHandlerProps>({
     updateDeadTimeMs: props => value => {
       const deadTimeMs = (typeof value === 'string' ? parseInt(value, 10) : value) || 0;
       props.setNotation({ ...props.notation, deadTimeMs });
@@ -71,6 +77,24 @@ const enhance = compose<InnerProps, {}>(
       } catch (error) {
         props.setError(error.message);
       }
+    },
+    updateNotation: props => async () => {
+      const { notationId, notation } = props;
+
+      try {
+        const updatedNotation = await updateNotation(parseInt(notationId, 10), {
+          bpm: notation.bpm,
+          dead_time_ms: notation.deadTimeMs,
+          duration_ms: notation.durationMs,
+          vextab_string: notation.vextabString
+        });
+
+        props.setNotation(updatedNotation);
+        window.ss.message.success('updated notation');
+      } catch (error) {
+        console.error(error);
+        window.ss.notification.error({ message: 'notation', description: error.message });
+      }
     }
   }),
   lifecycle<InnerProps, {}, {}>({
@@ -91,7 +115,12 @@ export const Editor = enhance(props => (
   <Outer>
     <Form>
       <Form.Item>
-        <Button type="primary">Save</Button>
+        <Button
+          type="primary"
+          onClick={props.updateNotation}
+        >
+          Save
+        </Button>
       </Form.Item>
       <Form.Item label="vextab string">
         <Input.TextArea

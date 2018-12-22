@@ -153,10 +153,6 @@ const LeftCol = styled('div')`
   height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
-
-  @media (max-width: ${LG_BREAKPOINT}px) {
-    height: auto;
-  }
 `;
 
 interface IScoreWrapperProps {
@@ -171,10 +167,6 @@ const ScoreWrapper = styled('div') <IScoreWrapperProps>`
   overflow-x: hidden;
   width: 100%;
   -webkit-overflow-scrolling: touch;
-
-  @media (max-width: ${LG_BREAKPOINT}px) {
-    height: calc(100vh - 128px - 200px - ${fretboardHeight}px);
-  }
 `;
 
 const VideoWrapper = styled('div')`
@@ -186,14 +178,6 @@ const VideoWrapper = styled('div')`
     width: 100%;
     min-height: 200px;
   }
-
-  @media (max-width: ${LG_BREAKPOINT}px) {
-    height: 200px;
-
-    iframe {
-      height: 200px;
-    }
-  }
 `;
 
 export const NotationEdit = enhance(props => (
@@ -201,23 +185,15 @@ export const NotationEdit = enhance(props => (
     <Loading loading={props.loading} />
     <Menu />
     <Row>
-      <Col xs={24} sm={24} md={24} lg={6} xl={6} xxl={6}>
+      <Col span={6}>
         <LeftCol>
           <VideoWrapper>
             <Video {...getVideoProps(props)} />
           </VideoWrapper>
-          <Branch visible={props.fretboardVisible && props.width < LG_BREAKPOINT}>
-            <Fretboard numFrets={props.numFrets} />
-          </Branch>
-          <Branch visible={props.width < LG_BREAKPOINT}>
-            <Controls />
-          </Branch>
-          <Branch visible={props.width >= LG_BREAKPOINT}>
-            <Editor />
-          </Branch>
+          <Editor notationId={props.match.params.id} />
         </LeftCol>
       </Col>
-      <Col xs={24} sm={24} md={24} lg={18} xl={18} xxl={18}>
+      <Col span={18}>
         <div
           ref={props.handleRightDivRef}
           style={{ background: 'white' }}
@@ -230,12 +206,10 @@ export const NotationEdit = enhance(props => (
               <Score {...getScoreProps(props)} />
             </Row>
           </ScoreWrapper>
-          <Branch visible={props.fretboardVisible && props.width >= LG_BREAKPOINT}>
+          <Branch visible={props.fretboardVisible}>
             <Fretboard numFrets={props.numFrets} />
           </Branch>
-          <Branch visible={props.width >= LG_BREAKPOINT}>
-            <Controls />
-          </Branch>
+          <Controls />
         </div>
       </Col>
     </Row>
