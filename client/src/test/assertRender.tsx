@@ -5,7 +5,7 @@ import { xhrMock, localStorageMock } from './mocks';
 import configure from '../config/configureApp';
 import createStore from '../data/createStore';
 
-const assertRender = (Component: React.ComponentClass | React.SFC, props: object = {}): void => {
+const assertRender = (Component: any, props: object = {}): void => {
   it('renders without crashing', () => {
     window.XMLHttpRequest = jest.fn(xhrMock);
     (window as any).localStorage = localStorageMock;
