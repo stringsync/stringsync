@@ -14,7 +14,7 @@ export const Routes = () => (
     <Route exact={true} path="/n/:id/edit"   component={NotationEdit}   />
     <Route exact={true} path="/n/:id/print"  component={NotationPrint}  />
     <Route exact={true} path="/n/:id/studio" component={NotationStudio} />
-    <Route exact={false} path="/n/:id"       component={NotationShow}   />
+    <Route exact={true} path="/n/:id"        component={NotationShow}   />
     <Route exact={true} path="/about"        component={About}          />
     <Route exact={true} path="/contact"      component={Contact}        />
     <Route exact={true} path="/terms"        component={Terms}          />
