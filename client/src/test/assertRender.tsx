@@ -1,9 +1,9 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Root } from 'modules/root';
-import { createStore } from 'data';
+import { Root } from '../modules/root';
 import { xhrMock, localStorageMock } from './mocks';
-import { configure } from 'config';
+import configure from '../config/configureApp';
+import createStore from '../data/createStore';
 
 const assertRender = (Component: React.ComponentClass | React.SFC, props: object = {}): void => {
   it('renders without crashing', () => {
