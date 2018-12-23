@@ -1,8 +1,8 @@
 import { INotation } from '../../@types/notation';
-import * as $ from 'jquery';
 import { canonicalize } from '../../utils/canonicalize/canonicalize';
 import { pick } from 'lodash';
 import { getAttributes } from '../../utils/getAttributes';
+import { ajax } from '../../utils/ajax';
 
 interface IRawNotationFormData {
   artist_name?: string;
@@ -60,7 +60,7 @@ const handleResponse = (response: any) => {
 };
 
 export const fetchNotation = async (notationId: number): Promise<INotation> => {
-  const response = await $.ajax(`/api/v1/notations/${notationId}`, {
+  const response = await ajax(`/api/v1/notations/${notationId}`, {
     method: 'GET'
   });
   return handleResponse(response);
@@ -68,7 +68,7 @@ export const fetchNotation = async (notationId: number): Promise<INotation> => {
 
 export const createNotation = async (notation: IRawNotationFormData): Promise<INotation> => {
   const data = getFormData(notation);
-  const response = await $.ajax('/api/v1/notations', {
+  const response = await ajax('/api/v1/notations', {
     contentType: false,
     data,
     method: 'POST',
@@ -79,7 +79,7 @@ export const createNotation = async (notation: IRawNotationFormData): Promise<IN
 
 export const updateNotation = async (notationId: number, notation: IRawNotationFormData): Promise<INotation> => {
   const data = getFormData(notation);
-  const response = await $.ajax(`/api/v1/notations/${notationId}`, {
+  const response = await ajax(`/api/v1/notations/${notationId}`, {
     contentType: false,
     data,
     method: 'PUT',
