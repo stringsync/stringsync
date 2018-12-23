@@ -1,8 +1,22 @@
 
 class NotationsController < ApplicationController
   def index
-    @notations = Notation.includes(:tags, :transcriber, :video).where(featured: true)
-    render(:index, status: 200)
+    filter = params.fetch("filter", "featured").to_sym
+
+    case filter
+    when :all
+      @notations = Notation.includes(:tags, :transcriber, :video)
+    when :featured
+      @notations = Notation.includes(:tags, :transcriber, :video).where(featured: true)
+    else
+      @notations = Notation.none
+    end
+
+    if authorized?(filter)
+      render(:index, status: 200)
+    else
+      render("shared/errors", status: 401)
+    end
   end
 
   def show
@@ -69,5 +83,16 @@ class NotationsController < ApplicationController
             ),
             video_attributes: %i(src kind)
           )
+    end
+
+    def authorized?(filter)
+      case filter
+      when :all
+        !!current_user.try(:has_role?, :admin)
+      when :featured
+        true
+      else
+        false
+      end
     end
 end
