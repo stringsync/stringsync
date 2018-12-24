@@ -18,9 +18,22 @@ The implementation throughout the codebase also adheres to the philosophy, where
 
 ## Features
 
+### Notation Index Page
+
+<img width="1670" alt="screen shot 2018-12-24 at 1 14 18 pm" src="https://user-images.githubusercontent.com/19232300/50405174-c726e700-077e-11e9-99a6-9f9f89042594.png">
+
+This page is the landing page of StringSync. It is composed of a search bar and the notations that match the query. Users can search by any combination of the following:
+
+- song name
+- artist name
+- transcriber name
+- tags
+
 ### Notation Show Page
 
 <img width="1674" alt="screen shot 2018-12-24 at 12 58 18 pm" src="https://user-images.githubusercontent.com/19232300/50404926-9c875f00-077b-11e9-8443-583ea8dc8075.png">
+
+This page is the main feature of StringSync. It is composed of a video, suggestions, fretboard, and a score. When the user plays the video, StringSync updates the score and fretboard components to show the current notes and finger positions, respectively.
 
 ## Technologies
 
