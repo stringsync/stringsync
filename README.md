@@ -1,6 +1,6 @@
 # StringSync [![Build Status](https://travis-ci.com/jaredjj3/string-sync.svg?branch=master)](https://travis-ci.com/jaredjj3/string-sync)
 
-[🦑 stringsync.com](https://stringsync.com)
+[stringsync.com](https://stringsync.com)
 
 StringSync is a web application that simplifies learning how to play guitar. It accomplishes this goal by providing a user interface that abstracts the inherent complexities in reading guitar tablature.
 
