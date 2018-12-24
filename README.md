@@ -35,6 +35,60 @@ This page is the landing page of StringSync. It is composed of a search bar and 
 
 This page is the main feature of StringSync. It is composed of a video, suggestions, fretboard, and a score. When the user plays the video, StringSync updates the score and fretboard components to show the current notes and finger positions, respectively.
 
+## Implementation
+
+### Programming Paradigm
+
+In the React usage of the codebase, StringSync employs functional patterns. This design decision was chosen over the classical approach because of its inherent nature to allow React components to be composable.
+
+Service objects are typically written using ES6's class syntax expression (see client/src/models).
+
+### Maestro
+
+Most of the dynamic features on the Notation Show page (scrubber position, caret position, visble fretboard markers, etc.) are a function of the current time in the video. Initially, this state was kept in the redux store, where an arbitrary number of subscribers can listen for changes and update accordingly.
+
+However, the time must be updated every paint, managed by `window.requestAnimationFrame`. Updating at this frequency is not feasible via Redux.
+
+The `Maestro` class's purpose is to be the source of truth regarding parameters needed for the dynamic features on the Notation Show page. It is its own pub-sub mechanisms to call listeners in a deterministic manner whenever its `$currentTimeMs` changes.
+
+React components can subscribe to the Maestro using the `subscribeMaestro` enhancer. This enhancer will manage adding and remove a listener to the `maestro` instance in the store, if any.
+
+```ts
+export const subscribeMaestro = <TProps>(listener: Listener<TProps>) => (BaseComponent: React.ComponentClass<any>) => {
+  const enhance = compose(
+    mapProps<IOwnProps<TProps>, TProps>(ownProps => ({ ownProps, listener: listener(ownProps) })),
+    withMaestro,
+    lifecycle<InsideProps<TProps>, {}, {}>({
+      componentDidMount(): void {
+        const { maestro } = this.props;
+
+        if (maestro) {
+          maestro.addListener(this.props.listener);
+        }
+      },
+      componentDidUpdate(): void {
+        const { maestro } = this.props;
+
+        if (maestro && !maestro.hasListener(this.props.listener.name)) {
+          maestro.addListener(this.props.listener);
+        }
+      },
+      componentWillUnmount(): void {
+        const { maestro } = this.props;
+
+        if (maestro) {
+          maestro.removeListener(this.props.listener.name);
+        }
+      }
+    }),
+    mapProps<TProps, InsideProps<TProps>>((props: any) => props.ownProps),
+  );
+
+  return enhance(BaseComponent);
+};
+
+```
+
 ## Technologies
 
 ### Backend
@@ -57,6 +111,8 @@ Some of the JavaScript libraries used are:
 - `antd` library of React components to build rich user interfaces
 - `j-toker` the client side counterpart of `devise-token-auth`
 - `vextab` tablature encoding engine
+- `redux` global client side state management
+- `recompose` library of reusable higher order components
 
 ### Platforms
 StringSync uses `heroku` to host the application. It also uses `travis-ci` to automatically run backend and frontend tests whenever a commit is pushed to `master`. If the tests pass, `travis-ci` will run a hook that deploys the application to `heroku`. Otherwise, `travis-ci` will send an email notifying that tests are failing on `master`.
