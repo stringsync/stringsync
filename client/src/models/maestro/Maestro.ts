@@ -83,7 +83,7 @@ export class Maestro {
   }
 
   public addListener(listener: IMaestroListener): void {
-    if (this.listeners.some(l => l.name === listener.name)) {
+    if (this.hasListener(listener.name)) {
       throw new Error(`tried to add duplicate listener: ${listener.name}`);
     }
 
