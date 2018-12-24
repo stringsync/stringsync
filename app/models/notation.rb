@@ -1,15 +1,7 @@
 # This model is the citadel of StringSync. It is used to store the instructions
 # on how to sync a notation and video.
 class Notation < ApplicationRecord
-  DEFAULT_VEXTAB_STRING = <<-VEXTAB.freeze
-    tabstave
-    clef=none
-    notation=true
-    key=C
-    time=4/4
-    
-    notes | :1 ##
-  VEXTAB
+  DEFAULT_VEXTAB_STRING = "key=C time=4/4\n:1 ##".freeze
 
   belongs_to(:transcriber, foreign_key: :transcriber_id, class_name: "User")
   has_one(:video, inverse_of: :notation)
