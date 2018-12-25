@@ -1,4 +1,3 @@
-
 class NotationsController < ApplicationController
   def index
     filter = params.fetch("filter", "featured").to_sym
