@@ -25,8 +25,7 @@ class NotationsController < ApplicationController
   end
 
   def create
-    # if current_user.try(:has_role?, :teacher)
-    if true
+    if current_user.try(:has_role?, :teacher)
       @notation = Notation.new(notation_params.except("tag_ids").merge(transcriber: User.find(6)))
       @notation.tags = Tag.where(id: params.fetch(:notation).fetch(:tag_ids))
 
