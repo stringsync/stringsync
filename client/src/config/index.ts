@@ -1,4 +1,5 @@
 export { default as auth } from './auth';
+export { default as jquery } from './jquery';
 export { default as store } from './store';
 export { default as message } from './message';
 export { default as namespaces } from './namespaces';

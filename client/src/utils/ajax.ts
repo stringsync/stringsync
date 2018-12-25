@@ -14,5 +14,5 @@ const beforeSend = (xhr, settings) => {
 };
 
 export const ajax = (url: string, settings: JQuery.AjaxSettings = {}): JQuery.jqXHR => (
-  $.ajax(url, { beforeSend, ...settings })
+  $.ajax(url, { ...settings })
 );

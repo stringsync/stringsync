@@ -35,7 +35,6 @@ const configureAuth = (): void => {
   window.ss.auth = auth;
   window.ss.auth.configure({
     apiUrl: getApiUrl(),
-    confirmationSuccessUrl: () => window.location.href,
     handleTokenValidationResponse: syncSession,
     handleLoginResponse: syncSession
   });
