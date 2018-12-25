@@ -1,18 +1,17 @@
 import $ from 'jquery';
 
-// const beforeSend = (xhr, settings) => {
-//   const { ss } = window;
+export const ajax = (url: string, settings: JQuery.AjaxSettings = {}): JQuery.jqXHR => {
+  const dupSettings = { ...settings };
 
-//   // ensure use of proxy
-//   if (ss.env === 'development' && typeof settings.url !== 'undefined') {
-//     const url = new URL(`${location.protocol}//${location.host}${settings.url}`);
-//     url.host = 'localhost:3001';
-//     settings.url = url.toString();
-//   }
+  const headers = {
+    ...window.ss.auth.retrieveData('authHeaders'),
+    ...(dupSettings.headers || {})
+  };
 
-//   ss.auth.appendAuthHeaders(xhr, settings);
-// };
+  delete dupSettings.headers;
 
-export const ajax = (url: string, settings: JQuery.AjaxSettings = {}): JQuery.jqXHR => (
-  $.ajax(url, { headers: window.ss.auth.retrieveData('authHeaders'), ...settings })
-);
+  return $.ajax(url, {
+    headers,
+    ...dupSettings
+  });
+};
