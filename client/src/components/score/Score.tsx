@@ -7,8 +7,8 @@ import {
   lifecycle,
   ReactLifeCycleFunctionsThisArguments
 } from 'recompose';
-import { VextabString as VextabStringWrapper } from '../../models/vextab-string';
-import { Score as ScoreWrapper } from '../../models/score';
+import { VextabString as VextabStringModel } from '../../models/vextab-string';
+import { Score as ScoreModel } from '../../models/score';
 import { debounce } from 'lodash';
 import styled from 'react-emotion';
 import { Row, Col } from 'antd';
@@ -18,6 +18,11 @@ import { Maestro } from '../../models/maestro/Maestro';
 import { Caret } from './Caret';
 import { Scroller } from './Scroller';
 import { Lighter } from './Lighter';
+import { Branch } from '../branch';
+import { connect } from 'react-redux';
+import { IStore } from '../../@types/store';
+import { ScoreActions } from '../../data/score/scoreActions';
+import { AutoScrollButton } from './AutoScrollButton';
 
 interface IProps {
   songName: string;
@@ -29,7 +34,20 @@ interface IProps {
   deadTimeMs: number;
   width: number;
   caret: boolean;
+  fretboardVisible: boolean;
 }
+
+interface IConnectStateProps {
+  scrolling: boolean;
+  autoScroll: boolean;
+  isVideoActive: boolean | void;
+}
+
+interface IConnectDispatchProps {
+  setAutoScroll: (autoScroll: boolean) => void;
+}
+
+type ConnectProps = IConnectStateProps & IConnectDispatchProps;
 
 interface IStateProps {
   div: HTMLDivElement | null;
@@ -38,13 +56,14 @@ interface IStateProps {
 
 interface IHandlerProps {
   handleDivRef: (div: HTMLDivElement) => void;
+  maybeDisableAutoScroll: () => void;
 }
 
 interface IMeasuresPerLineProps {
   measuresPerLine: number;
 }
 
-type InnerProps = IProps & IStateProps & IHandlerProps & IMeasuresPerLineProps & IWithMaestroProps;
+type InnerProps = IProps & ConnectProps & IStateProps & IHandlerProps & IMeasuresPerLineProps & IWithMaestroProps;
 
 const MIN_WIDTH_PER_MEASURE = 240; // px
 const MIN_MEASURES_PER_LINE = 1;
@@ -63,10 +82,10 @@ const renderScore = debounce(function(this: ReactLifeCycleFunctionsThisArguments
       this.props.div.removeChild(firstChild);
     }
 
-    const score = new ScoreWrapper(
+    const score = new ScoreModel(
       this.props.width,
       this.props.div,
-      new VextabStringWrapper(this.props.vextabString).asMeasures(this.props.measuresPerLine)
+      new VextabStringModel(this.props.vextabString).asMeasures(this.props.measuresPerLine)
     );
 
     score.render();
@@ -79,13 +98,33 @@ const renderScore = debounce(function(this: ReactLifeCycleFunctionsThisArguments
     this.props.setMaestro(maestro);
   } catch (error) {
     console.error(error);
+    window.ss.message.warn('notation rendered with issues');
   }
 }, 250);
 
 const enhance = compose<InnerProps, IProps>(
+  connect<IConnectStateProps, IConnectDispatchProps, {}, IStore>(
+    state => ({
+      scrolling: state.score.scrolling,
+      autoScroll: state.score.autoScroll,
+      isVideoActive: state.video.isActive
+    }),
+    dispatch => ({
+      setAutoScroll: (autoScroll: boolean) => dispatch(ScoreActions.setAutoScroll(autoScroll))
+    })
+  ),
   withState('div', 'setDiv', null),
-  withHandlers<IStateProps, IHandlerProps>({
-    handleDivRef: props => div => props.setDiv(div)
+  withHandlers<IStateProps & ConnectProps, IHandlerProps>({
+    handleDivRef: props => div => props.setDiv(div),
+    maybeDisableAutoScroll: props => () => {
+      // turn off autoScroll only if the user is scrolling while the
+      // notation is not being programmatically scrolled
+      if (!props.isVideoActive || !props.autoScroll || props.scrolling) {
+        return;
+      }
+
+      props.setAutoScroll(false);
+    }
   }),
   withProps((props: any) => {
     let measuresPerLine: number;
@@ -109,7 +148,8 @@ const enhance = compose<InnerProps, IProps>(
         this.props.vextabString !== nextProps.vextabString ||
         this.props.deadTimeMs !== nextProps.deadTimeMs ||
         this.props.bpm !== nextProps.bpm ||
-        this.props.scrollOffset !== nextProps.scrollOffset
+        this.props.scrollOffset !== nextProps.scrollOffset ||
+        this.props.autoScroll !== nextProps.autoScroll
       );
     },
     componentDidUpdate(): void {
@@ -122,6 +162,35 @@ const enhance = compose<InnerProps, IProps>(
 );
 
 const Outer = styled('div')`
+  position: relative;
+`;
+
+interface IScoreWrapperProps {
+  fretboardVisible: boolean;
+}
+
+const fretboardHeight = (props: IScoreWrapperProps) => props.fretboardVisible ? 200 : 0;
+const ScoreWrapper = styled('div')`
+  /* the nav bar is 64px and the player bar is 64 px */
+  height: calc(100vh - 128px - ${fretboardHeight}px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+
+  /* LG_BREAKPOINT = 992 from NotationShow */
+  @media (max-width: 992px) {
+    height: calc(100vh - 128px - 200px - ${fretboardHeight}px);
+  }
+`;
+
+const AutoScrollWrapper = styled('div')`
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+`;
+
+const Inner = styled('div')`
   background: white;
   padding-top: 48px;
   padding-bottom: 64px;
@@ -135,23 +204,40 @@ const Spacer = styled('div')`
 
 export const Score = enhance(props => (
   <Outer>
-    <Row type="flex" justify="center">
-      <Col span={24}>
-        <Title
-          songName={props.songName}
-          artistName={props.artistName}
-          transcriberName={props.transcriberName}
-        />
-      </Col>
-    </Row>
-    <Row type="flex" justify="center">
-      <Col span={24}>
-        <Caret visible={props.caret} />
-        <Scroller offset={props.scrollOffset} />
-        <Lighter />
-        <div ref={props.handleDivRef} />
-      </Col>
-    </Row>
-    <Spacer />
+    <ScoreWrapper
+      id="score-wrapper"
+      onScroll={props.maybeDisableAutoScroll}
+      fretboardVisible={props.fretboardVisible}
+    >
+      <Row type="flex" justify="center">
+        <Inner>
+          <Row type="flex" justify="center">
+            <Col span={24}>
+              <Title
+                songName={props.songName}
+                artistName={props.artistName}
+                transcriberName={props.transcriberName}
+              />
+            </Col>
+          </Row>
+          <Row type="flex" justify="center">
+            <Col span={24}>
+              <Caret visible={props.caret} />
+              <Branch visible={props.autoScroll}>
+                <Scroller offset={props.scrollOffset} />
+              </Branch>
+              <Lighter />
+              <div ref={props.handleDivRef} />
+            </Col>
+          </Row>
+          <Spacer />
+        </Inner>
+      </Row>
+    </ScoreWrapper>
+    <Branch visible={!props.autoScroll}>
+      <AutoScrollWrapper>
+        <AutoScrollButton />
+      </AutoScrollWrapper>
+    </Branch>
   </Outer>
 ));
