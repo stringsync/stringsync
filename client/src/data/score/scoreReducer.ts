@@ -14,6 +14,10 @@ export const scoreReducer = (state = getDefaultState(), action: actions.ScoreAct
       nextState.scrolling = action.payload.scrolling;
       return nextState;
 
+    case actions.SET_AUTO_SCROLL:
+      nextState.scrolling = action.payload.autoScroll;
+      return nextState;
+
     default:
       return nextState;
   }
