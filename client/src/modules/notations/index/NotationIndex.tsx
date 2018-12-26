@@ -11,7 +11,7 @@ import { isEqual } from 'lodash';
 import { filterNotations } from './filterNotations';
 import { IStore } from '../../../@types/store';
 import { getNullNotations } from './getNullNotations';
-import { fetchAllNotations } from '../../../data/notations/notationsApi';
+import { fetchAllNotations } from '../../../data/notation/notationApi';
 import { BackTop } from 'antd';
 
 interface IConnectProps {

@@ -66,6 +66,18 @@ export const fetchNotation = async (notationId: number): Promise<INotation> => {
   return handleResponse(response);
 };
 
+export const fetchAllNotations = async (): Promise<INotation[]> => {
+  const response = await ajax('/api/v1/notations.json', { method: 'GET' });
+  const json = canonicalize(response, {
+    created_at: createdAt => new Date(createdAt),
+    updated_at: updatedAt => new Date(updatedAt),
+    tags: tag => tag.attributes.name,
+    transcriber: transcriber => pick(transcriber.attributes, ['id', 'name', 'image']),
+    video: video => video.attributes
+  });
+  return getAttributes(json.data);
+};
+
 export const createNotation = async (notation: IRawNotationFormData): Promise<INotation> => {
   const data = getFormData(notation);
   const response = await ajax('/api/v1/notations', {
