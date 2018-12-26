@@ -7,14 +7,16 @@ def delete_all!
   end
 end
 
-def load_fixtures
+def load_fixtures!
   puts "Loading records from db/fixtures."
   FixtureLoader.new.seed!
 end
 
 if Rails.env.development? || Rails.env.test?
-  delete_all!
-  load_fixtures
+  ApplicationRecord.transaction do
+    delete_all!
+    load_fixtures!
+  end
 else
   puts "Cannot run seeds in the #{Rails.env} enviroment."
 end
