@@ -65,7 +65,7 @@ const enhance = compose<InnerProps, IProps>(
         window.ss.message.success(`updated notation '${props.notation.id}'`);
       } catch (error) {
         console.error(error.message);
-        window.ss.message.success(`could not update notation '${props.notation.id}'`);
+        window.ss.message.error(`could not update notation '${props.notation.id}'`);
       } finally {
         props.setLoading(false);
       }
