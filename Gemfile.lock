@@ -265,6 +265,7 @@ DEPENDENCIES
   rubocop
   spring
   spring-watcher-listen (~> 2.0.0)
+  sprockets
   travis
   tzinfo-data
 

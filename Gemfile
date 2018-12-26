@@ -19,6 +19,7 @@ gem "omniauth", "1.3.1"
 gem "omniauth-facebook", "4.0.0"
 gem "omniauth-google-oauth2", "0.5.2"
 gem "rack-cors"
+gem "sprockets"
 
 group :development, :test do
   gem "byebug", platform: :mri
