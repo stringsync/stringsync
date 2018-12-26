@@ -6,21 +6,25 @@ import { IStore } from '../../../../@types/store';
 import { NotationMenuActions } from '../../../../data/notation-menu/notationMenuActions';
 import styled from 'react-emotion';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import { ScoreActions } from '../../../../data/score/scoreActions';
 
 interface IStateProps {
   visible: boolean;
+  autoScroll: boolean;
   fretboardVisible: boolean;
 }
 
 interface IDispatchProps {
   hide: () => void;
+  setAutoScroll: (autoScroll: boolean) => void;
   setFretboardVisibility: (fretboardVisible: boolean) => void;
 }
 
 type ConnectProps = IStateProps & IDispatchProps;
 
 interface IHandlerProps {
-  handleFretboardVisibilityChange: (event: CheckboxChangeEvent) => void;
+  toggleAutoScroll: (event: CheckboxChangeEvent) => void;
+  toggleFretboardVisibility: (event: CheckboxChangeEvent) => void;
 }
 
 type InnerProps = ConnectProps & IHandlerProps;
@@ -29,17 +33,22 @@ const enhance = compose<InnerProps, {}>(
   connect<IStateProps, IDispatchProps, {}, IStore>(
     state => ({
       visible: state.notationMenu.visible,
+      autoScroll: state.score.autoScroll,
       fretboardVisible: state.notationMenu.fretboardVisible
     }),
     dispatch => ({
       hide: () => dispatch(NotationMenuActions.hide()),
+      setAutoScroll: (autoScroll: boolean) => dispatch(ScoreActions.setAutoScroll(autoScroll)),
       setFretboardVisibility: (fretboardVisibility: boolean) => {
         dispatch(NotationMenuActions.setFretboardVisibility(fretboardVisibility));
       }
     })
   ),
   withHandlers<ConnectProps, IHandlerProps>({
-    handleFretboardVisibilityChange: props => event => {
+    toggleAutoScroll: props => event => {
+      props.setAutoScroll(event.target.checked);
+    },
+    toggleFretboardVisibility: props => event => {
       props.setFretboardVisibility(event.target.checked);
     }
   })
@@ -61,11 +70,18 @@ export const Menu = enhance(props => (
     <ul>
       <MenuItem>
         <Checkbox
-          defaultChecked={true}
           checked={props.fretboardVisible}
-          onChange={props.handleFretboardVisibilityChange}
+          onChange={props.toggleFretboardVisibility}
         >
           fretboard
+        </Checkbox>
+      </MenuItem>
+      <MenuItem>
+        <Checkbox
+          checked={props.autoScroll}
+          onChange={props.toggleAutoScroll}
+        >
+          autoscroll
         </Checkbox>
       </MenuItem>
     </ul>

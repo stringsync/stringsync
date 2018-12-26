@@ -13,10 +13,6 @@ interface IProps {
   offset: number;
 }
 
-interface IDispatchProps {
-  setScrolling: (scrolling: boolean) => void;
-}
-
 interface IStateProps {
   line: Line | null;
   setLine: (line: Line | null) => void;
@@ -26,19 +22,13 @@ interface IHandlerProps {
   updateScroller: (maestro: Maestro) => void;
 }
 
-type InnerProps = IProps & IDispatchProps & IStateProps & IHandlerProps;
+type InnerProps = IProps & IStateProps & IHandlerProps;
 
 const SCROLL_DURATION_MS = 200;
 
 const enhance = compose<InnerProps, IProps>(
-  connect<{}, IDispatchProps, {}, IStore>(
-    null,
-    dispatch => ({
-      setScrolling: (scrolling: boolean) => dispatch(ScoreActions.setScrolling(scrolling))
-    })
-  ),
   withState('line', 'setLine', null),
-  withHandlers<IProps & IDispatchProps & IStateProps, IHandlerProps>({
+  withHandlers<IProps & IStateProps, IHandlerProps>({
     updateScroller: props => (maestro: Maestro) => {
       const line = get(maestro.currentSpec, 'note.measure.line', null);
 
@@ -47,21 +37,12 @@ const enhance = compose<InnerProps, IProps>(
       }
 
       if (line) {
-        // Assume that it takes < 50 ms to execute the next lines.
-        // This is the mechanism by which StringSync determines if a scroll was
-        // produced by a human or not
-        props.setScrolling(true);
-
         scroller.scrollTo(`line-${line.index}`, {
           smooth: true,
           duration: SCROLL_DURATION_MS,
           offset: -props.offset, // 64 px comes from the nav component
           containerId: 'score-wrapper'
         });
-
-        window.setTimeout(() => {
-          props.setScrolling(false);
-        }, SCROLL_DURATION_MS + 50);
       }
 
       props.setLine(line);

@@ -38,16 +38,8 @@ interface IProps {
 }
 
 interface IConnectStateProps {
-  scrolling: boolean;
   autoScroll: boolean;
-  isVideoActive: boolean | void;
 }
-
-interface IConnectDispatchProps {
-  setAutoScroll: (autoScroll: boolean) => void;
-}
-
-type ConnectProps = IConnectStateProps & IConnectDispatchProps;
 
 interface IStateProps {
   div: HTMLDivElement | null;
@@ -56,14 +48,14 @@ interface IStateProps {
 
 interface IHandlerProps {
   handleDivRef: (div: HTMLDivElement) => void;
-  maybeDisableAutoScroll: () => void;
 }
 
 interface IMeasuresPerLineProps {
   measuresPerLine: number;
 }
 
-type InnerProps = IProps & ConnectProps & IStateProps & IHandlerProps & IMeasuresPerLineProps & IWithMaestroProps;
+type InnerProps = IProps & IConnectStateProps &  IStateProps &
+  IHandlerProps & IMeasuresPerLineProps & IWithMaestroProps;
 
 const MIN_WIDTH_PER_MEASURE = 240; // px
 const MIN_MEASURES_PER_LINE = 1;
@@ -103,28 +95,14 @@ const renderScore = debounce(function(this: ReactLifeCycleFunctionsThisArguments
 }, 250);
 
 const enhance = compose<InnerProps, IProps>(
-  connect<IConnectStateProps, IConnectDispatchProps, {}, IStore>(
+  connect<IConnectStateProps, {}, {}, IStore>(
     state => ({
-      scrolling: state.score.scrolling,
-      autoScroll: state.score.autoScroll,
-      isVideoActive: state.video.isActive
-    }),
-    dispatch => ({
-      setAutoScroll: (autoScroll: boolean) => dispatch(ScoreActions.setAutoScroll(autoScroll))
+      autoScroll: state.score.autoScroll
     })
   ),
   withState('div', 'setDiv', null),
-  withHandlers<IStateProps & ConnectProps, IHandlerProps>({
-    handleDivRef: props => div => props.setDiv(div),
-    maybeDisableAutoScroll: props => () => {
-      // turn off autoScroll only if the user is scrolling while the
-      // notation is not being programmatically scrolled
-      if (!props.isVideoActive || !props.autoScroll || props.scrolling) {
-        return;
-      }
-
-      props.setAutoScroll(false);
-    }
+  withHandlers<IConnectStateProps & IStateProps, IHandlerProps>({
+    handleDivRef: props => div => props.setDiv(div)
   }),
   withProps((props: any) => {
     let measuresPerLine: number;
@@ -206,7 +184,6 @@ export const Score = enhance(props => (
   <Outer>
     <ScoreWrapper
       id="score-wrapper"
-      onScroll={props.maybeDisableAutoScroll}
       fretboardVisible={props.fretboardVisible}
     >
       <Row type="flex" justify="center">
