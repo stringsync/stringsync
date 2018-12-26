@@ -4,6 +4,7 @@ export interface INotation {
   id: number | void;
   createdAt: Date;
   updatedAt: Date;
+  featured: boolean;
   songName: string;
   artistName: string;
   durationMs: number;
