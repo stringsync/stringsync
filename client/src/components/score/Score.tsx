@@ -29,6 +29,7 @@ interface IProps {
   deadTimeMs: number;
   width: number;
   caret: boolean;
+  fretboardVisible: boolean;
 }
 
 interface IStateProps {
@@ -121,7 +122,26 @@ const enhance = compose<InnerProps, IProps>(
   })
 );
 
+interface IScoreWrapperProps {
+  fretboardVisible: boolean;
+}
+
+const fretboardHeight = (props: IScoreWrapperProps) => props.fretboardVisible ? 200 : 0;
 const Outer = styled('div')`
+  /* the nav bar is 64px and the player bar is 64 px */
+  height: calc(100vh - 128px - ${fretboardHeight}px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+
+  /* LG_BREAKPOINT = 992 from NotationShow */
+  @media (max-width: 992px) {
+    height: calc(100vh - 128px - 200px - ${fretboardHeight}px);
+  }
+`;
+
+const Inner = styled('div')`
   background: white;
   padding-top: 48px;
   padding-bottom: 64px;
@@ -134,24 +154,31 @@ const Spacer = styled('div')`
 `;
 
 export const Score = enhance(props => (
-  <Outer>
+  <Outer
+    id="score-wrapper"
+    fretboardVisible={props.fretboardVisible}
+  >
     <Row type="flex" justify="center">
-      <Col span={24}>
-        <Title
-          songName={props.songName}
-          artistName={props.artistName}
-          transcriberName={props.transcriberName}
-        />
-      </Col>
+      <Inner>
+        <Row type="flex" justify="center">
+          <Col span={24}>
+            <Title
+              songName={props.songName}
+              artistName={props.artistName}
+              transcriberName={props.transcriberName}
+            />
+          </Col>
+        </Row>
+        <Row type="flex" justify="center">
+          <Col span={24}>
+            <Caret visible={props.caret} />
+            <Scroller offset={props.scrollOffset} />
+            <Lighter />
+            <div ref={props.handleDivRef} />
+          </Col>
+        </Row>
+        <Spacer />
+      </Inner>
     </Row>
-    <Row type="flex" justify="center">
-      <Col span={24}>
-        <Caret visible={props.caret} />
-        <Scroller offset={props.scrollOffset} />
-        <Lighter />
-        <div ref={props.handleDivRef} />
-      </Col>
-    </Row>
-    <Spacer />
   </Outer>
 ));

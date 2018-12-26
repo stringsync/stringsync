@@ -144,7 +144,8 @@ const getScoreProps = (props: InnerProps) => ({
   transcriberName: get(props.notation.transcriber, 'name', ''),
   vextabString: props.notation.vextabString,
   bpm: props.notation.bpm,
-  width: props.scoreWidth
+  width: props.scoreWidth,
+  fretboardVisible: props.fretboardVisible
 });
 
 const LeftCol = styled('div')`
@@ -156,24 +157,6 @@ const LeftCol = styled('div')`
 
   @media (max-width: ${LG_BREAKPOINT}px) {
     height: auto;
-  }
-`;
-
-interface IScoreWrapperProps {
-  fretboardVisible: boolean;
-}
-
-const fretboardHeight = (props: IScoreWrapperProps) => props.fretboardVisible ? 200 : 0;
-const ScoreWrapper = styled('div') <IScoreWrapperProps>`
-  /* the nav bar is 64px and the player bar is 64 px */
-  height: calc(100vh - 128px - ${fretboardHeight}px);
-  overflow-y: auto;
-  overflow-x: hidden;
-  width: 100%;
-  -webkit-overflow-scrolling: touch;
-
-  @media (max-width: ${LG_BREAKPOINT}px) {
-    height: calc(100vh - 128px - 200px - ${fretboardHeight}px);
   }
 `;
 
@@ -222,14 +205,7 @@ export const NotationShow = enhance(props => (
           ref={props.handleRightDivRef}
           style={{ background: 'white' }}
         >
-          <ScoreWrapper
-            id="score-wrapper"
-            fretboardVisible={props.fretboardVisible}
-          >
-            <Row type="flex" justify="center">
-              <Score {...getScoreProps(props)} />
-            </Row>
-          </ScoreWrapper>
+          <Score {...getScoreProps(props)} />
           <Branch visible={props.fretboardVisible && props.width >= LG_BREAKPOINT}>
             <Fretboard numFrets={props.numFrets} />
           </Branch>
