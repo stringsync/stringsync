@@ -18,6 +18,10 @@ import { Maestro } from '../../models/maestro/Maestro';
 import { Caret } from './Caret';
 import { Scroller } from './Scroller';
 import { Lighter } from './Lighter';
+import { Branch } from '../branch';
+import { connect } from 'react-redux';
+import { IStore } from '../../@types/store';
+import { ScoreActions } from '../../data/score/scoreActions';
 
 interface IProps {
   songName: string;
@@ -32,6 +36,17 @@ interface IProps {
   fretboardVisible: boolean;
 }
 
+interface IConnectStateProps {
+  scrolling: boolean;
+  autoScroll: boolean;
+}
+
+interface IConnectDispatchProps {
+  setAutoScroll: (autoScroll: boolean) => void;
+}
+
+type ConnectProps = IConnectStateProps & IConnectDispatchProps;
+
 interface IStateProps {
   div: HTMLDivElement | null;
   setDiv: (div: HTMLDivElement | null) => void;
@@ -39,13 +54,14 @@ interface IStateProps {
 
 interface IHandlerProps {
   handleDivRef: (div: HTMLDivElement) => void;
+  maybeStopAutoScrolling: () => void;
 }
 
 interface IMeasuresPerLineProps {
   measuresPerLine: number;
 }
 
-type InnerProps = IProps & IStateProps & IHandlerProps & IMeasuresPerLineProps & IWithMaestroProps;
+type InnerProps = IProps & ConnectProps & IStateProps & IHandlerProps & IMeasuresPerLineProps & IWithMaestroProps;
 
 const MIN_WIDTH_PER_MEASURE = 240; // px
 const MIN_MEASURES_PER_LINE = 1;
@@ -84,9 +100,27 @@ const renderScore = debounce(function(this: ReactLifeCycleFunctionsThisArguments
 }, 250);
 
 const enhance = compose<InnerProps, IProps>(
+  connect<IConnectStateProps, IConnectDispatchProps, {}, IStore>(
+    state => ({
+      scrolling: state.score.scrolling,
+      autoScroll: state.score.autoScroll
+    }),
+    dispatch => ({
+      setAutoScroll: (autoScroll: boolean) => dispatch(ScoreActions.setAutoScroll(autoScroll))
+    })
+  ),
   withState('div', 'setDiv', null),
-  withHandlers<IStateProps, IHandlerProps>({
-    handleDivRef: props => div => props.setDiv(div)
+  withHandlers<IStateProps & ConnectProps, IHandlerProps>({
+    handleDivRef: props => div => props.setDiv(div),
+    maybeStopAutoScrolling: props => () => {
+      // turn off autoScroll only if the user is scrolling while the
+      // notation is not being programmatically scrolled
+      if (!props.autoScroll || props.scrolling) {
+        return;
+      }
+
+      props.setAutoScroll(false);
+    }
   }),
   withProps((props: any) => {
     let measuresPerLine: number;
@@ -110,7 +144,8 @@ const enhance = compose<InnerProps, IProps>(
         this.props.vextabString !== nextProps.vextabString ||
         this.props.deadTimeMs !== nextProps.deadTimeMs ||
         this.props.bpm !== nextProps.bpm ||
-        this.props.scrollOffset !== nextProps.scrollOffset
+        this.props.scrollOffset !== nextProps.scrollOffset ||
+        this.props.autoScroll !== nextProps.autoScroll
       );
     },
     componentDidUpdate(): void {
@@ -156,6 +191,7 @@ const Spacer = styled('div')`
 export const Score = enhance(props => (
   <Outer
     id="score-wrapper"
+    onScroll={props.maybeStopAutoScrolling}
     fretboardVisible={props.fretboardVisible}
   >
     <Row type="flex" justify="center">
@@ -172,7 +208,9 @@ export const Score = enhance(props => (
         <Row type="flex" justify="center">
           <Col span={24}>
             <Caret visible={props.caret} />
-            <Scroller offset={props.scrollOffset} />
+            <Branch visible={props.autoScroll}>
+              <Scroller offset={props.scrollOffset} />
+            </Branch>
             <Lighter />
             <div ref={props.handleDivRef} />
           </Col>
