@@ -66,7 +66,7 @@ const renderEditLink = (_, notation: INotation) => <Link to={`/n/${notation.id}/
 
 export const NotationDashboard = enhance(props => (
   <Lane withTopMargin={true} withPadding={true}>
-    <Box title="dashboard" width="100%">
+    <Box title="dashboard" block={true}>
       <Table
         rowKey={getRowKey}
         dataSource={props.notations}
