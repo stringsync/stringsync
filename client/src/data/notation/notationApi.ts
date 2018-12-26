@@ -9,6 +9,7 @@ interface IRawNotationFormData {
   bpm?: number;
   dead_time_ms?: number;
   duration_ms?: number;
+  featured?: boolean;
   song_name?: string;
   thumbnail?: File;
   vextab_string?: string;

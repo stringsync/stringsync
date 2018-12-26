@@ -1,4 +1,6 @@
 class NotationsController < ApplicationController
+  ADMIN_ONLY_ATTRS = %i(featured)
+
   def index
     filter = params.fetch("filter", "featured").to_sym
     authorized = false
@@ -73,18 +75,17 @@ class NotationsController < ApplicationController
   private
 
     def notation_params
-      params.
-          require(:notation).
-          permit(*%i(
-              song_name
-              artist_name
-              vextab_string
-              bpm
-              dead_time_ms
-              duration_ms
-              thumbnail
-            ),
-            video_attributes: %i(src kind)
-          )
+      notation_attrs = %i(
+        song_name
+        artist_name
+        vextab_string
+        bpm
+        dead_time_ms
+        duration_ms
+        thumbnail
+      )
+      notation_attrs += ADMIN_ONLY_ATTRS if current_user.try(:has_role?, :admin)
+
+      params.require(:notation).permit(*notation_attrs, video_attributes: %i(src kind))
     end
 end

@@ -7,9 +7,7 @@ import { IStore } from '../../../@types/store';
 import { NotationsActions } from '../../../data/notations/notationsActions';
 import { fetchAllNotations } from '../../../data/notation/notationApi';
 import { Table } from 'antd';
-import styled from 'react-emotion';
 import { Box } from '../../../components/box';
-import { Img } from './Img';
 import { FeaturedCheckbox } from './FeaturedCheckbox';
 
 interface IStateProps {
@@ -40,6 +38,7 @@ const enhance = compose<InnerProps, {}>(
   })
 );
 
+const getRowKey = (notation: INotation) => `notation-${notation.id}`;
 const renderDate = (date: Date) => `${date.getFullYear()}-${date.getMonth()}-${date.getDay()}`;
 const renderThumbnail = (src: string) => <img src={src} style={{ width: 35 }} alt="thumbnail" />;
 const renderCheckbox = (_, notation: INotation) => <FeaturedCheckbox notation={notation} />;
@@ -47,7 +46,11 @@ const renderCheckbox = (_, notation: INotation) => <FeaturedCheckbox notation={n
 export const NotationDashboard = enhance(props => (
   <Lane withTopMargin={true} withPadding={true}>
     <Box title="dashboard" width="100%">
-      <Table dataSource={props.notations} pagination={{ position: 'top' }}>
+      <Table
+        rowKey={getRowKey}
+        dataSource={props.notations}
+        pagination={{ position: 'top' }}
+      >
         <Table.Column
           dataIndex="thumbnailUrl"
           render={renderThumbnail}
