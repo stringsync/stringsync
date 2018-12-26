@@ -9,6 +9,7 @@ export const getNullNotations = (numNotations: number): INotation[] => {
     id: ndx,
     createdAt: now,
     updatedAt: now,
+    featured: true,
     songName: '',
     artistName: '',
     durationMs: 0,

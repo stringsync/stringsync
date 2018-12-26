@@ -2,7 +2,7 @@ import * as React from 'react';
 import { compose, lifecycle, branch, renderNothing } from 'recompose';
 import { connect } from 'react-redux';
 import { NotationsActions } from '../../../../data/notations';
-import { fetchAllNotations } from '../../../../data/notations/notationsApi';
+import { fetchAllNotations } from '../../../../data/notation/notationApi';
 import styled from 'react-emotion';
 import { INotation } from '../../../../@types/notation';
 import { IStore } from '../../../../@types/store';

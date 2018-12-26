@@ -2,6 +2,7 @@ import { INotation } from '../../@types/notation';
 
 export const getDefaultState = (): INotation => ({
   artistName: '',
+  featured: true,
   bpm: 120,
   createdAt: new Date(1970, 1, 1),
   deadTimeMs: 0,

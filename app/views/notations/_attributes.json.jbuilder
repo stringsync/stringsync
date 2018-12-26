@@ -1,5 +1,6 @@
 json.created_at notation.created_at.to_formatted_s(:iso8601)
 json.updated_at notation.updated_at.to_formatted_s(:iso8601)
+json.featured notation.featured
 json.song_name notation.song_name
 json.artist_name notation.artist_name
 json.thumbnail_url notation.thumbnail.url

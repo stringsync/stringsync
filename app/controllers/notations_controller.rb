@@ -1,17 +1,23 @@
 class NotationsController < ApplicationController
+  ADMIN_ONLY_ATTRS = %i(featured)
+
   def index
     filter = params.fetch("filter", "featured").to_sym
+    authorized = false
 
     case filter
     when :all
       @notations = Notation.includes(:tags, :transcriber, :video)
+      authorized = !!current_user.try(:has_role?, :admin)
     when :featured
       @notations = Notation.includes(:tags, :transcriber, :video).where(featured: true)
+      authorized = true
     else
       @notations = Notation.none
+      authorized = false
     end
 
-    if authorized?(filter)
+    if authorized
       render(:index, status: 200)
     else
       render("shared/errors", status: 401)
@@ -69,29 +75,17 @@ class NotationsController < ApplicationController
   private
 
     def notation_params
-      params.
-          require(:notation).
-          permit(*%i(
-              song_name
-              artist_name
-              vextab_string
-              bpm
-              dead_time_ms
-              duration_ms
-              thumbnail
-            ),
-            video_attributes: %i(src kind)
-          )
-    end
+      notation_attrs = %i(
+        song_name
+        artist_name
+        vextab_string
+        bpm
+        dead_time_ms
+        duration_ms
+        thumbnail
+      )
+      notation_attrs += ADMIN_ONLY_ATTRS if current_user.try(:has_role?, :admin)
 
-    def authorized?(filter)
-      case filter
-      when :all
-        !!current_user.try(:has_role?, :admin)
-      when :featured
-        true
-      else
-        false
-      end
+      params.require(:notation).permit(*notation_attrs, video_attributes: %i(src kind))
     end
 end

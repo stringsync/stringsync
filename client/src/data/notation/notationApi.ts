@@ -9,6 +9,7 @@ interface IRawNotationFormData {
   bpm?: number;
   dead_time_ms?: number;
   duration_ms?: number;
+  featured?: boolean;
   song_name?: string;
   thumbnail?: File;
   vextab_string?: string;
@@ -18,6 +19,8 @@ interface IRawNotationFormData {
     src: string;
   };
 }
+
+type NotationFilters = 'all' | 'featured';
 
 const getFormData = (notation: IRawNotationFormData) => {
   const data = new FormData();
@@ -64,6 +67,21 @@ export const fetchNotation = async (notationId: number): Promise<INotation> => {
     method: 'GET'
   });
   return handleResponse(response);
+};
+
+export const fetchAllNotations = async (filter?: NotationFilters): Promise<INotation[]> => {
+  const response = await ajax('/api/v1/notations.json', {
+    method: 'GET',
+    data: { filter }
+  });
+  const json = canonicalize(response, {
+    created_at: createdAt => new Date(createdAt),
+    updated_at: updatedAt => new Date(updatedAt),
+    tags: tag => tag.attributes.name,
+    transcriber: transcriber => pick(transcriber.attributes, ['id', 'name', 'image']),
+    video: video => video.attributes
+  });
+  return getAttributes(json.data);
 };
 
 export const createNotation = async (notation: IRawNotationFormData): Promise<INotation> => {

@@ -1,3 +1,5 @@
+export type SessionRoles = 'student' | 'teacher' | 'admin';
+
 export interface ISession {
   signedIn: boolean;
   email: string;
@@ -6,5 +8,5 @@ export interface ISession {
   image: string | null;
   name: string;
   provider: string;
-  role: 'student' | 'teacher' | 'admin';
+  role: SessionRoles;
 }
