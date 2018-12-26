@@ -7,8 +7,8 @@ import {
   lifecycle,
   ReactLifeCycleFunctionsThisArguments
 } from 'recompose';
-import { VextabString as VextabStringWrapper } from '../../models/vextab-string';
-import { Score as ScoreWrapper } from '../../models/score';
+import { VextabString as VextabStringModel } from '../../models/vextab-string';
+import { Score as ScoreModel } from '../../models/score';
 import { debounce } from 'lodash';
 import styled from 'react-emotion';
 import { Row, Col } from 'antd';
@@ -22,6 +22,7 @@ import { Branch } from '../branch';
 import { connect } from 'react-redux';
 import { IStore } from '../../@types/store';
 import { ScoreActions } from '../../data/score/scoreActions';
+import { AutoScrollButton } from './AutoScrollButton';
 
 interface IProps {
   songName: string;
@@ -39,6 +40,7 @@ interface IProps {
 interface IConnectStateProps {
   scrolling: boolean;
   autoScroll: boolean;
+  isVideoActive: boolean | void;
 }
 
 interface IConnectDispatchProps {
@@ -54,7 +56,7 @@ interface IStateProps {
 
 interface IHandlerProps {
   handleDivRef: (div: HTMLDivElement) => void;
-  maybeStopAutoScrolling: () => void;
+  maybeDisableAutoScroll: () => void;
 }
 
 interface IMeasuresPerLineProps {
@@ -80,10 +82,10 @@ const renderScore = debounce(function(this: ReactLifeCycleFunctionsThisArguments
       this.props.div.removeChild(firstChild);
     }
 
-    const score = new ScoreWrapper(
+    const score = new ScoreModel(
       this.props.width,
       this.props.div,
-      new VextabStringWrapper(this.props.vextabString).asMeasures(this.props.measuresPerLine)
+      new VextabStringModel(this.props.vextabString).asMeasures(this.props.measuresPerLine)
     );
 
     score.render();
@@ -96,6 +98,7 @@ const renderScore = debounce(function(this: ReactLifeCycleFunctionsThisArguments
     this.props.setMaestro(maestro);
   } catch (error) {
     console.error(error);
+    window.ss.message.warn('notation rendered with issues');
   }
 }, 250);
 
@@ -103,7 +106,8 @@ const enhance = compose<InnerProps, IProps>(
   connect<IConnectStateProps, IConnectDispatchProps, {}, IStore>(
     state => ({
       scrolling: state.score.scrolling,
-      autoScroll: state.score.autoScroll
+      autoScroll: state.score.autoScroll,
+      isVideoActive: state.video.isActive
     }),
     dispatch => ({
       setAutoScroll: (autoScroll: boolean) => dispatch(ScoreActions.setAutoScroll(autoScroll))
@@ -112,10 +116,10 @@ const enhance = compose<InnerProps, IProps>(
   withState('div', 'setDiv', null),
   withHandlers<IStateProps & ConnectProps, IHandlerProps>({
     handleDivRef: props => div => props.setDiv(div),
-    maybeStopAutoScrolling: props => () => {
+    maybeDisableAutoScroll: props => () => {
       // turn off autoScroll only if the user is scrolling while the
       // notation is not being programmatically scrolled
-      if (!props.autoScroll || props.scrolling) {
+      if (!props.isVideoActive || !props.autoScroll || props.scrolling) {
         return;
       }
 
@@ -157,12 +161,16 @@ const enhance = compose<InnerProps, IProps>(
   })
 );
 
+const Outer = styled('div')`
+  position: relative;
+`;
+
 interface IScoreWrapperProps {
   fretboardVisible: boolean;
 }
 
 const fretboardHeight = (props: IScoreWrapperProps) => props.fretboardVisible ? 200 : 0;
-const Outer = styled('div')`
+const ScoreWrapper = styled('div')`
   /* the nav bar is 64px and the player bar is 64 px */
   height: calc(100vh - 128px - ${fretboardHeight}px);
   overflow-y: auto;
@@ -174,6 +182,12 @@ const Outer = styled('div')`
   @media (max-width: 992px) {
     height: calc(100vh - 128px - 200px - ${fretboardHeight}px);
   }
+`;
+
+const AutoScrollWrapper = styled('div')`
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
 `;
 
 const Inner = styled('div')`
@@ -189,34 +203,41 @@ const Spacer = styled('div')`
 `;
 
 export const Score = enhance(props => (
-  <Outer
-    id="score-wrapper"
-    onScroll={props.maybeStopAutoScrolling}
-    fretboardVisible={props.fretboardVisible}
-  >
-    <Row type="flex" justify="center">
-      <Inner>
-        <Row type="flex" justify="center">
-          <Col span={24}>
-            <Title
-              songName={props.songName}
-              artistName={props.artistName}
-              transcriberName={props.transcriberName}
-            />
-          </Col>
-        </Row>
-        <Row type="flex" justify="center">
-          <Col span={24}>
-            <Caret visible={props.caret} />
-            <Branch visible={props.autoScroll}>
-              <Scroller offset={props.scrollOffset} />
-            </Branch>
-            <Lighter />
-            <div ref={props.handleDivRef} />
-          </Col>
-        </Row>
-        <Spacer />
-      </Inner>
-    </Row>
+  <Outer>
+    <ScoreWrapper
+      id="score-wrapper"
+      onScroll={props.maybeDisableAutoScroll}
+      fretboardVisible={props.fretboardVisible}
+    >
+      <Row type="flex" justify="center">
+        <Inner>
+          <Row type="flex" justify="center">
+            <Col span={24}>
+              <Title
+                songName={props.songName}
+                artistName={props.artistName}
+                transcriberName={props.transcriberName}
+              />
+            </Col>
+          </Row>
+          <Row type="flex" justify="center">
+            <Col span={24}>
+              <Caret visible={props.caret} />
+              <Branch visible={props.autoScroll}>
+                <Scroller offset={props.scrollOffset} />
+              </Branch>
+              <Lighter />
+              <div ref={props.handleDivRef} />
+            </Col>
+          </Row>
+          <Spacer />
+        </Inner>
+      </Row>
+    </ScoreWrapper>
+    <Branch visible={!props.autoScroll}>
+      <AutoScrollWrapper>
+        <AutoScrollButton />
+      </AutoScrollWrapper>
+    </Branch>
   </Outer>
 ));

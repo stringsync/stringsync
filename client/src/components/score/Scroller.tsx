@@ -47,13 +47,10 @@ const enhance = compose<InnerProps, IProps>(
       }
 
       if (line) {
-        // Assume that it takes < 100 ms to execute the next lines.
+        // Assume that it takes < 50 ms to execute the next lines.
         // This is the mechanism by which StringSync determines if a scroll was
         // produced by a human or not
         props.setScrolling(true);
-        window.setTimeout(() => {
-          props.setScrolling(false);
-        }, SCROLL_DURATION_MS + 100);
 
         scroller.scrollTo(`line-${line.index}`, {
           smooth: true,
@@ -61,6 +58,10 @@ const enhance = compose<InnerProps, IProps>(
           offset: -props.offset, // 64 px comes from the nav component
           containerId: 'score-wrapper'
         });
+
+        window.setTimeout(() => {
+          props.setScrolling(false);
+        }, SCROLL_DURATION_MS + 50);
       }
 
       props.setLine(line);
