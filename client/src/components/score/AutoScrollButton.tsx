@@ -45,7 +45,7 @@ const enhance = compose<InnerProps, {}>(
         if (props.player && wasVideoActive) {
           props.player.playVideo();
         }
-      }, 300);
+      }, 1000);
     }
   })
 );
