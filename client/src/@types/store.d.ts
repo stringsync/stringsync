@@ -25,6 +25,7 @@ export interface INotationMenuState {
 
 export interface IScoreState {
   maestro: Maestro | null;
+  scrolling: boolean;
 }
 
 export interface IStore {

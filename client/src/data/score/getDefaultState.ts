@@ -1,5 +1,6 @@
 import { IScoreState } from '../../@types/store';
 
 export const getDefaultState = (): IScoreState => ({
-  maestro: null
+  maestro: null,
+  scrolling: false
 });
