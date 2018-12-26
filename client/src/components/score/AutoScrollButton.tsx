@@ -6,11 +6,6 @@ import { IStore } from '../../@types/store';
 import { ScoreActions } from '../../data/score/scoreActions';
 import { IPlayer } from '../../@types/youtube';
 
-interface IStateProps {
-  player: IPlayer | null;
-  isVideoActive: boolean | void;
-}
-
 interface IDispatchProps {
   setAutoScroll: (autoScroll: boolean) => void;
 }
@@ -19,33 +14,18 @@ interface IHandlerProps {
   enableAutoScroll: () => void;
 }
 
-type InnerProps = IStateProps & IDispatchProps & IHandlerProps;
+type InnerProps = IDispatchProps & IHandlerProps;
 
 const enhance = compose<InnerProps, {}>(
-  connect<IStateProps, IDispatchProps, {}, IStore>(
-    state => ({
-      player: state.video.player,
-      isVideoActive: state.video.isActive
-    }),
+  connect<{}, IDispatchProps, {}, IStore>(
+    null,
     dispatch => ({
       setAutoScroll: (autoScroll: boolean) => dispatch(ScoreActions.setAutoScroll(autoScroll))
     })
   ),
-  withHandlers<IStateProps & IDispatchProps, IHandlerProps>({
+  withHandlers<IDispatchProps, IHandlerProps>({
     enableAutoScroll: props => () => {
-      const wasVideoActive = props.isVideoActive;
-
-      if (props.player && props.isVideoActive) {
-        props.player.pauseVideo();
-      }
-
       props.setAutoScroll(true);
-
-      window.setTimeout(() => {
-        if (props.player && wasVideoActive) {
-          props.player.playVideo();
-        }
-      }, 1000);
     }
   })
 );
