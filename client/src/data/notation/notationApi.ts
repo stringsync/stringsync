@@ -19,6 +19,8 @@ interface IRawNotationFormData {
   };
 }
 
+type NotationFilters = 'all' | 'featured';
+
 const getFormData = (notation: IRawNotationFormData) => {
   const data = new FormData();
 
@@ -66,8 +68,11 @@ export const fetchNotation = async (notationId: number): Promise<INotation> => {
   return handleResponse(response);
 };
 
-export const fetchAllNotations = async (): Promise<INotation[]> => {
-  const response = await ajax('/api/v1/notations.json', { method: 'GET' });
+export const fetchAllNotations = async (filter?: NotationFilters): Promise<INotation[]> => {
+  const response = await ajax('/api/v1/notations.json', {
+    method: 'GET',
+    data: { filter }
+  });
   const json = canonicalize(response, {
     created_at: createdAt => new Date(createdAt),
     updated_at: updatedAt => new Date(updatedAt),
