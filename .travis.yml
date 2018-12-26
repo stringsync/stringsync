@@ -2,6 +2,8 @@ addons:
   postgresql: 9.6
 dist: trusty
 language: ruby
+cache:
+  bundler: true
 before_script:
   - bundle exec rails db:create RAILS_ENV=test
 test:
