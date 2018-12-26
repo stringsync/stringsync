@@ -36,21 +36,12 @@ const enhance = compose<InnerProps, {}>(
     })
   ),
   lifecycle<InnerProps, {}, {}>({
-    componentDidMount(): void {
+    async componentDidMount() {
       this.props.resetNotations();
-    },
-    shouldComponentUpdate(nextProps): boolean {
-      return (
-        this.props.notations.length === 0 ||
-        this.props.currentUserRole !== nextProps.currentUserRole
-      );
-    },
-    async componentDidUpdate(): Promise<void> {
-      if (this.props.currentUserRole === 'admin') {
-        const notations = await fetchAllNotations('all');
-        const sorted = notations.sort((a, b) => (b.id as number) - (a.id as number));
-        this.props.setNotations(sorted);
-      }
+
+      const notations = await fetchAllNotations('all');
+      const sorted = notations.sort((a, b) => (b.id as number) - (a.id as number));
+      this.props.setNotations(sorted);
     },
     componentWillUnmount(): void {
       this.props.resetNotations();
