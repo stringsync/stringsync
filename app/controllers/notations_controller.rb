@@ -1,17 +1,21 @@
 class NotationsController < ApplicationController
   def index
     filter = params.fetch("filter", "featured").to_sym
+    authorized = false
 
     case filter
     when :all
       @notations = Notation.includes(:tags, :transcriber, :video)
+      authorized = !!current_user.try(:has_role?, :admin)
     when :featured
       @notations = Notation.includes(:tags, :transcriber, :video).where(featured: true)
+      authorized = true
     else
       @notations = Notation.none
+      authorized = false
     end
 
-    if authorized?(filter)
+    if authorized
       render(:index, status: 200)
     else
       render("shared/errors", status: 401)
@@ -82,16 +86,5 @@ class NotationsController < ApplicationController
             ),
             video_attributes: %i(src kind)
           )
-    end
-
-    def authorized?(filter)
-      case filter
-      when :all
-        !!current_user.try(:has_role?, :admin)
-      when :featured
-        true
-      else
-        false
-      end
     end
 end
