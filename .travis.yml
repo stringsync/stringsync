@@ -14,7 +14,7 @@ rvm:
   - 2.6.0
 script:
   - bundle exec rails test
-  - cd client && npm install && cd .. && npm run test
+  - cd client && yarn install && cd .. && yarn run test
 env:
   global:
     secure: kUheTymsuegxDA2ybuhg6bBN2A+zxk8ScbKrPZ/khTjeZfjnBsLK94A/NOpbCRsSsutRraKczd3zjFGwFIZKbIRoVpF+1s1JhOC56FCC9RLDHJ1yMeNM02QKR7+a66F5M4euGklpzFzMY1DJehrXLD7XlPm2nq2RducNWER3MVtes3gdk52/t5QLt6ukd9Oj2H2hSUBefDF+IHab8C4iUc1tiXDSjbIJffBVFyvOcNFLp5cckIHVfHO2pku1skBRune424R+S/r2Kc8nUcSn2Wr36Ce1Gds8ZvDnU45mfy7rik0W+sxU9PtZ40qWj5d70+p0eHlpQ8jYmwVS00AgcY4vLT4aNpWbJV5qjdDWthJVftOErJHz7uVsIHMYkBLsDfEYvDPgePP2IU5CG+RrhoFQA964taxB0Eokry7eOHADloeztf9yz3uV1XI7YIfwO6jIG7ODRHq9OmMDNxk1U0qAusI4LceR2sz5K9BeM7J+0l6JBXUcI9+S/EYrMiPi15tK98x8tuSWG3vhn48dHj4uCUMcMm/AKv0l1Ky/Klu0hrg384Q3GYcWxfKC//djdYCg/JwMWPwQ9W/DPgJkdXK84QLvK6ef9JIcu025B+FzRERfu3rSkD8THDmrU61HzDmEYZdPR4j4tEYpXKoHfwMyfdPRW74ej6nIwLt1GrE=
