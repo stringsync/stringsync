@@ -64,7 +64,7 @@ export const NotationStudio = enhance(props => (
       <ScoreWrapper>
         <Score
           caret={true}
-          scrollOffset={0}
+          scrollOffset={660}
           deadTimeMs={props.notation.deadTimeMs}
           songName={props.notation.songName}
           artistName={props.notation.artistName}
