@@ -21,7 +21,6 @@ import { Lighter } from './Lighter';
 import { Branch } from '../branch';
 import { connect } from 'react-redux';
 import { IStore } from '../../@types/store';
-import { ScoreActions } from '../../data/score/scoreActions';
 import { AutoScrollButton } from './AutoScrollButton';
 
 interface IProps {

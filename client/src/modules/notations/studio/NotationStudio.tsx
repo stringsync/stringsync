@@ -40,6 +40,12 @@ const Box = styled('div')`
   width: 860px;
   height: 860px;
   margin: 0 auto;
+  border: 3px solid red;
+`;
+
+const ScoreWrapper = styled('div')`
+  height: 289px;
+  overflow: hidden;
 `;
 
 export const NotationStudio = enhance(props => (
@@ -55,18 +61,20 @@ export const NotationStudio = enhance(props => (
         />
       </VideoWrapper>
       <Fretboard numFrets={16} />
-      <Score
-        caret={true}
-        scrollOffset={100 + 200 + 200}
-        deadTimeMs={props.notation.deadTimeMs}
-        songName={props.notation.songName}
-        artistName={props.notation.artistName}
-        transcriberName={get(props.notation.transcriber, 'name', '')}
-        vextabString={props.notation.vextabString}
-        bpm={props.notation.bpm}
-        width={860}
-        fretboardVisible={false}
-      />
+      <ScoreWrapper>
+        <Score
+          caret={true}
+          scrollOffset={0}
+          deadTimeMs={props.notation.deadTimeMs}
+          songName={props.notation.songName}
+          artistName={props.notation.artistName}
+          transcriberName={get(props.notation.transcriber, 'name', '')}
+          vextabString={props.notation.vextabString}
+          bpm={props.notation.bpm}
+          width={860}
+          fretboardVisible={false}
+        />
+      </ScoreWrapper>
     </Box>
   </Lane>
 ));
