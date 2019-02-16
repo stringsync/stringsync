@@ -3,6 +3,7 @@ import { Note } from '../score/line/measure/note';
 import { flatMap } from 'lodash';
 import { bsearch } from '../../utils/bsearch';
 import { msToTick } from '../../utils/conversions';
+import { JUST_PRESSED_OFFSET_MS } from '../fretboard/Fretboard';
 
 export interface ISpec {
   startTick: number;
@@ -106,7 +107,7 @@ export class Maestro {
     const measures = flatMap(this.score.lines, line => line.measures);
     const notes = flatMap(measures, measure => measure.notes);
 
-    let currTick = msToTick(this.deadTimeMs, this.bpm);
+    let currTick = msToTick(this.deadTimeMs - JUST_PRESSED_OFFSET_MS, this.bpm);
     this.specs = notes.map(note => {
       const startTick = currTick;
       const stopTick = startTick + note.durationTick;

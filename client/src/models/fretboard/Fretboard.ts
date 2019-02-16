@@ -5,6 +5,8 @@ import { ISpec } from '../maestro';
 
 const NUM_FRETS = 23;
 
+export const JUST_PRESSED_OFFSET_MS = 250;
+
 export class Fretboard {
   public fretMarkers = [
     new Array(NUM_FRETS).fill(null),
@@ -45,7 +47,7 @@ export class Fretboard {
       measurePositions = spec.note.measure.positions;
       const start = spec.startTick;
       const stop = spec.stopTick;
-      isJustPressed = tick < Math.min(start + 250, start + ((stop - start) * 0.5));
+      isJustPressed = tick < Math.min(start + JUST_PRESSED_OFFSET_MS, start + ((stop - start) * 0.5));
     }
 
     // Avoid heavy weight operations
