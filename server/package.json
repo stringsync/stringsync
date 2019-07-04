@@ -6,5 +6,8 @@
   "repository": "https://github.com/jaredjj3/string-sync",
   "author": "Jared Johnson",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "express": "4.17.1"
+  }
 }
