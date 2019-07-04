@@ -9,5 +9,18 @@
   "private": true,
   "dependencies": {
     "express": "4.17.1"
+  },
+  "devDependencies": {
+    "gts": "^1.0.0",
+    "typescript": "~3.4.0"
+  },
+  "scripts": {
+    "check": "gts check",
+    "clean": "gts clean",
+    "compile": "tsc -p .",
+    "fix": "gts fix",
+    "prepare": "yarn run compile",
+    "pretest": "yarn run compile",
+    "posttest": "yarn run check"
   }
 }
