@@ -7,9 +7,12 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "start": "node ./build/src/index.js",
+    "dev": "nodemon --delay 500ms --watch build ./build/src/index.js",
+    "watch": "tsc -w",
+    "compile": "tsc -p .",
     "check": "gts check",
     "clean": "gts clean",
-    "compile": "tsc -p .",
     "fix": "gts fix"
   },
   "dependencies": {
