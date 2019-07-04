@@ -8,7 +8,7 @@
   "private": true,
   "scripts": {
     "start": "node ./build/src/index.js",
-    "dev": "nodemon --delay 500ms --watch build ./build/src/index.js",
+    "dev": "touch ./build/src/index.js && nodemon --delay 500ms --watch build ./build/src/index.js",
     "watch": "tsc -w",
     "compile": "tsc -p .",
     "check": "gts check",
