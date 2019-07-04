@@ -1,5 +1,0 @@
-{
-  "tslint.nodePath": "client/node_modules",
-  "tslint.configFile": "tslint.json",
-  "eslint.enable": false,
-}
