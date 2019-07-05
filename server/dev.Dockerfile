@@ -8,10 +8,3 @@ WORKDIR /server
 COPY ./package.json .
 COPY ./yarn.lock .
 RUN yarn
-
-# create the build
-COPY . .
-RUN yarn compile
-
-# start the server
-CMD ["yarn", "start"]
