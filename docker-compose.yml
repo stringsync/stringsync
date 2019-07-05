@@ -7,8 +7,7 @@ services:
     depends_on:
       - transpiler
     volumes:
-      - ./server:/server
-      - /server/node_modules
+      - server-build:/server/build
     environment:
       NODE_ENV: development
     ports:
@@ -19,6 +18,8 @@ services:
     build:
       context: ./server
     volumes:
-      - ./server:/server
-      - /server/node_modules
+      - server-build:/server/build
     command: ["yarn", "watch"]
+
+volumes:
+  server-build:
