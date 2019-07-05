@@ -19,6 +19,8 @@ services:
       context: ./server
     volumes:
       - server-build:/server/build
+      - ./server:/server
+      - /server/node_modules
     command: ["yarn", "watch"]
 
 volumes:
