@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ -z "$SERVICE" ]; then
+	SERVICE=server
+fi
+
+if [ -n "$(docker-compose ps -q $SERVICE)" ]; then
+	cmd="export TERM=xterm && ${@}"
+	docker-compose exec $SERVICE bash -c "$cmd"
+	exit $?
+else
+	>&2 echo "$SERVICE is not up"
+	exit 1
+fi
