@@ -4,15 +4,14 @@ FROM node:12.4.0
 RUN mkdir /server
 WORKDIR /server
 
-# install server dependencies
+# install node_modules
 COPY ./package.json .
 COPY ./yarn.lock .
 RUN yarn
 
-# bundle server src
+# create the build
 COPY . .
 RUN yarn compile
 
-# start server
-EXPOSE 8080
+# start the server
 CMD ["yarn", "start"]
