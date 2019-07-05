@@ -8,9 +8,9 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "prepare": "mkdir -p build && touch ./build/server.js",
-    "start": "yarn prepare && node ./build/server.js",
-    "dev": "yarn prepare && nodemon --delay 500ms --watch build ./build/server.js",
+    "ensure-server-file": "mkdir -p build && touch ./build/server.js",
+    "start": "yarn ensure-server-file && node ./build/server.js",
+    "dev": "yarn ensure-server-file && nodemon --delay 500ms --watch build ./build/server.js",
     "watch": "tsc -w",
     "compile": "tsc -p .",
     "check": "gts check",
