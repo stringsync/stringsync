@@ -5,8 +5,6 @@ services:
     build:
       context: ./server
       dockerfile: dev.Dockerfile
-    depends_on:
-      - transpiler
     volumes:
       - server-build:/server/build
     environment:
@@ -29,7 +27,7 @@ services:
     image: postgres:11
     restart: always
     environment:
-      POSTGRES_USER: admin
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
       - postgres:/var/lib/postgresql/data
@@ -45,8 +43,8 @@ services:
         databases:
           default:
             connector: postgres
-            host: postgres
-            user: admin
+            host: db
+            user: postgres
             password: postgres
             rawAccess: true
             port: 5432
