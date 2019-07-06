@@ -25,5 +25,15 @@ services:
       - /server/node_modules
     command: ["yarn", "watch"]
 
+  postgres:
+    image: postgres:11
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
 volumes:
   server-build:
+  postgres:
