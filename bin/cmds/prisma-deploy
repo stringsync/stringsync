@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ -z "which prisma" ]; then
+  echo "Installing 'prisma' on the host machine..."
+  npm install -g prisma
+fi
+
+(cd ../prisma/meta && prisma deploy)
