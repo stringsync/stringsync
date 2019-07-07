@@ -6,11 +6,13 @@ services:
       context: ./server
       dockerfile: dev.Dockerfile
     volumes:
-      - server-build:/server/build
+      - server-build:/app/build
     environment:
       NODE_ENV: development
     ports:
       - "8080:8080"
+    links:
+      - prisma
     command: ["yarn", "dev"]
 
   transpiler:
@@ -18,19 +20,10 @@ services:
       context: ./server
       dockerfile: dev.Dockerfile
     volumes:
-      - server-build:/server/build
-      - ./server:/server
-      - /server/node_modules
+      - server-build:/app/build
+      - ./server:/app
+      - /app/node_modules
     command: ["yarn", "watch"]
-
-  db:
-    image: postgres:11
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    volumes:
-      - postgres:/var/lib/postgresql/data
 
   prisma:
     image: prismagraphql/prisma:1.34
@@ -40,6 +33,8 @@ services:
     environment:
       PRISMA_CONFIG: |
         port: 4466
+        # uncomment the next line and provide the env var PRISMA_MANAGEMENT_API_SECRET=my-secret to activate cluster security
+        # managementApiSecret: my-secret
         databases:
           default:
             connector: postgres
@@ -49,6 +44,15 @@ services:
             rawAccess: true
             port: 5432
             migrations: true
+
+  db:
+    image: postgres:11
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres:/var/lib/postgresql/data
 
 volumes:
   server-build:

@@ -1,12 +1,11 @@
 import express from 'express';
+import prisma from './prisma';
 
 const app = express();
 
-app.get('*', (req, res, next) => {
-  res.json({
-    status: 'ok',
-    message: 'Hello, world!',
-  });
+app.get('*', async (req, res, next) => {
+  const users = await prisma.users();
+  res.json(users);
 });
 
 app.listen(8080, () => {

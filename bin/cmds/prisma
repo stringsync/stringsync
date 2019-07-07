@@ -5,4 +5,4 @@ if [ -z "which prisma" ]; then
   npm install -g prisma
 fi
 
-(cd ../prisma/meta && prisma deploy)
+(cd ../server/prisma && prisma ${@})

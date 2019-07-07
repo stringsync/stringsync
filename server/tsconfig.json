@@ -3,9 +3,11 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "build",
+    "allowJs": true,
+    "declaration": false,
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "include": ["server.ts", "test/**/*"],
+  "include": ["server.ts", "test/**/*", "prisma/**/*"],
   "exclude": ["build/**/*"]
 }
