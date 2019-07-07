@@ -33,7 +33,6 @@
     "nodemon": "^1.19.1",
     "prisma": "^1.34.0",
     "rimraf": "^2.6.3",
-    "ts-node": "^8.3.0",
     "typescript": "~3.4.0"
   }
 }
