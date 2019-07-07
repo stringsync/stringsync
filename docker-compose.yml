@@ -8,8 +8,10 @@ services:
     volumes:
       - server-build:/app/build
       - ./server/prisma:/app/prisma
+      - ./server/graphql:/app/graphql
     environment:
       NODE_ENV: development
+      PRISMA_SECRET: mysecret123
     ports:
       - "4000:4000"
     links:

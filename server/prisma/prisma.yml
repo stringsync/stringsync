@@ -1,5 +1,5 @@
 # Specifies the HTTP endpoint of your Prisma API.
-endpoint: http://prisma:4466/dev
+endpoint: http://prisma:4466
 
 # Defines your models, each model is mapped to the database as a collection.
 datamodel: datamodel.prisma
@@ -16,4 +16,4 @@ hooks:
 
 # Seeds initial data into the database by running a script.
 seed:
-  run: yarn ts-node ./prisma/seed.ts
+  import: seed.graphql
