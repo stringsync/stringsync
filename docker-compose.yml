@@ -7,6 +7,7 @@ services:
       dockerfile: dev.Dockerfile
     volumes:
       - server-build:/app/build
+      - ./server/prisma:/app/prisma
     environment:
       NODE_ENV: development
     ports:
