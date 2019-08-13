@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo "Installing server node_modules"
+pwd
+(cd ../server && yarn)
