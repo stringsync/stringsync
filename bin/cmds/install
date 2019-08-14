@@ -2,4 +2,4 @@
 
 echo "Installing server node_modules"
 pwd
-(cd ../server && yarn)
+(cd ../server && rm -rf node_modules && yarn)

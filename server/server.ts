@@ -1,14 +1,20 @@
-import { GraphQLServer } from 'graphql-yoga';
+import express from 'express';
+import graphqlHTTP from 'express-graphql';
 import { prisma } from './prisma/generated/prisma-client';
-import resolvers from './graphql/resolvers';
+import schema from './graphql/schema';
 
-const server = new GraphQLServer({
-  typeDefs: './graphql/schema.graphql',
-  resolvers,
-  context: request => ({
-    ...request,
-    prisma,
-  }),
-});
+const app = express();
+const port = 8080;
 
-server.start(() => console.log(`Server is running on http://localhost:4000`));
+app.use(
+  '/graphql',
+  graphqlHTTP({
+    schema,
+    graphiql: true,
+    context: {
+      prisma,
+    },
+  })
+);
+
+app.listen(port, () => console.log(`Server running on port ${port}`));
