@@ -1,4 +1,25 @@
-node_modules
+# general
+.DS_Store
 .vscode
 build
-yarn-error.log
+dist
+node_modules
+node_modules
+
+# local env files
+.env.local
+.env.*.local
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
