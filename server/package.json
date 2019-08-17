@@ -12,25 +12,20 @@
     "start": "yarn ensure-server-file && node ./build/server.js",
     "dev": "yarn ensure-server-file && nodemon --delay 500ms ./build/server.js",
     "watch": "tsc -w",
-    "compile": "tsc -p .",
-    "check": "gts check",
-    "clean": "gts clean",
-    "fix": "gts fix"
+    "compile": "tsc -p ."
   },
   "dependencies": {
-    "bcryptjs": "^2.4.3",
     "express-graphql": "^0.9.0",
     "graphql": "^14.4.2",
-    "jsonwebtoken": "^8.5.1",
     "prisma-client-lib": "1.34.0"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.2",
     "@types/graphql": "^14.2.2",
-    "@types/jsonwebtoken": "^8.3.2",
     "@types/node": "^12.0.12",
-    "gts": "^1.0.0",
+    "eslint": "^6.1.0",
+    "eslint-plugin-prettier": "^3.1.0",
     "nodemon": "^1.19.1",
+    "prettier": "^1.18.2",
     "prisma": "^1.34.0",
     "typescript": "~3.4.0"
   }

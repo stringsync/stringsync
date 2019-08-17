@@ -18,7 +18,7 @@ app.use(
 );
 
 app.get('/', (req, res) => {
-  res.send('Hello, world!');
+  res.send('Goodbye, world!');
 });
 
 app.listen(port, () => console.log(`Server running on port ${port}`));
