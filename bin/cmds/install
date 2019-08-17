@@ -2,3 +2,6 @@
 
 echo "Installing server node_modules"
 (cd ../server && rm -rf node_modules && yarn)
+echo
+echo "Installing web node_modules"
+(cd ../web && rm -rf node_modules && yarn)
