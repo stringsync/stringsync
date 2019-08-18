@@ -7,9 +7,9 @@ import axios from 'axios';
 
 // configure
 Vue.config.productionTip = process.env.NODE_ENV === 'production';
-axios.defaults.baseURL = process.env.VUE_APP_ROOT_API;
+axios.defaults.baseURL = process.env.VUE_APP_API_BASE_URL;
 
-// instantiate the root Vue component
+// init
 new Vue({
   router,
   store,
