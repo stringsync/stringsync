@@ -6,9 +6,8 @@ services:
       context: ./server
       dockerfile: dev.Dockerfile
     volumes:
-      - server-build:/app/build
-      - ./server/prisma:/app/prisma
-      - ./server/graphql:/app/graphql
+      - ./server:/app
+      - /app/node_modules
     environment:
       NODE_ENV: development
       PRISMA_SECRET: mysecret123
@@ -16,19 +15,7 @@ services:
       - "8080:8080"
     links:
       - prisma
-    command: ["yarn", "dev"]
-
-  transpiler:
-    build:
-      context: ./server
-      dockerfile: dev.Dockerfile
-    volumes:
-      - server-build:/app/build
-      - ./server:/app
-      - /app/node_modules
-    environment:
-      NODE_ENV: development
-    command: ["yarn", "watch"]
+    command: ["yarn", "build:dev"]
 
   prisma:
     image: prismagraphql/prisma:1.34
@@ -73,5 +60,4 @@ services:
     command: ["yarn", "serve"]
 
 volumes:
-  server-build:
   postgres:

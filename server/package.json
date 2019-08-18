@@ -4,15 +4,13 @@
   "description": "Serve requests from stringsync.com.",
   "repository": "https://github.com/jaredjj3/string-sync",
   "author": "Jared Johnson",
-  "main": "server.js",
   "license": "MIT",
   "private": true,
   "scripts": {
-    "ensure-server-file": "mkdir -p build && touch ./build/server.js",
-    "start": "yarn ensure-server-file && node ./build/server.js",
-    "dev": "yarn ensure-server-file && nodemon --delay 500ms ./build/server.js",
-    "watch": "tsc -w",
-    "compile": "tsc -p ."
+    "build": "NODE_ENV=production webpack",
+    "build:dev": "webpack",
+    "start": "node ./dst/index.js",
+    "start:dev": "nodemon ./dst/index.js"
   },
   "dependencies": {
     "express-graphql": "^0.9.0",
@@ -27,6 +25,11 @@
     "nodemon": "^1.19.1",
     "prettier": "^1.18.2",
     "prisma": "^1.34.0",
-    "typescript": "~3.4.3"
+    "ts-loader": "^6.0.4",
+    "typescript": "~3.4.3",
+    "webpack": "^4.39.2",
+    "webpack-cli": "^3.3.6",
+    "webpack-node-externals": "^1.7.2",
+    "webpack-shell-plugin": "^0.5.0"
   }
 }
