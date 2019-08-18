@@ -1,7 +1,7 @@
 <template>
   <div>
     The message from the server was:
-    <em>{{msg}}</em>
+    <em>{{ msg }}</em>
   </div>
 </template>
 
@@ -19,5 +19,4 @@ export default class HelloWorld extends Vue {
 }
 </script>
 
-<style scoped lang="scss">
-</style>
+<style scoped lang="scss"></style>
