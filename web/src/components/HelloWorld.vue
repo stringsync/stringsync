@@ -7,17 +7,14 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import axios from 'axios';
 
 @Component
 export default class HelloWorld extends Vue {
-  @Prop() private msg: string = '';
+  private msg: string = '';
 
   async mounted() {
-    fetch('http://localhost:8080/')
-      .then((res) => res.json())
-      .then((json) => {
-        this.msg = json.msg;
-      });
+    axios('/').then((res) => (this.msg = res.data.msg));
   }
 }
 </script>
