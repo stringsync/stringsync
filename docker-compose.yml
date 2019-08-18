@@ -26,6 +26,8 @@ services:
       - server-build:/app/build
       - ./server:/app
       - /app/node_modules
+    environment:
+      NODE_ENV: development
     command: ["yarn", "watch"]
 
   prisma:
@@ -54,6 +56,21 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - postgres:/var/lib/postgresql/data
+
+  web:
+    build:
+      context: ./web
+      dockerfile: dev.Dockerfile
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+    environment:
+      NODE_ENV: development
+    ports:
+      - "8081:8081"
+    links:
+      - server
+    command: ["yarn", "serve"]
 
 volumes:
   server-build:
