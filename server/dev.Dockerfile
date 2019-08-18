@@ -9,8 +9,9 @@ COPY ./package.json .
 COPY ./yarn.lock .
 RUN yarn
 
-# copy config files
+# copy configuration
 COPY ./.eslintrc.js .
 COPY ./tsconfig.json .
 COPY ./webpack.config.js .
 COPY ./jest.config.js .
+COPY ./prettier.config.js .
