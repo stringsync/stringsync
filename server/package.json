@@ -10,7 +10,8 @@
     "build": "NODE_ENV=production webpack",
     "build:dev": "webpack",
     "start": "node ./dst/index.js",
-    "start:dev": "nodemon ./dst/index.js"
+    "start:dev": "nodemon ./dst/index.js",
+    "test:unit": "jest"
   },
   "dependencies": {
     "express-graphql": "^0.9.0",
@@ -19,12 +20,17 @@
   },
   "devDependencies": {
     "@types/graphql": "^14.2.2",
+    "@types/jest": "^24.0.17",
     "@types/node": "^12.0.12",
+    "@types/supertest": "^2.0.8",
     "eslint": "^6.1.0",
     "eslint-plugin-prettier": "^3.1.0",
+    "jest": "^24.9.0",
     "nodemon": "^1.19.1",
     "prettier": "^1.18.2",
     "prisma": "^1.34.0",
+    "supertest": "^4.0.2",
+    "ts-jest": "^24.0.2",
     "ts-loader": "^6.0.4",
     "typescript": "~3.4.3",
     "webpack": "^4.39.2",
