@@ -1,9 +1,7 @@
 # general
 .DS_Store
 .vscode
-build
-dist
-node_modules
+dst
 node_modules
 
 # local env files
