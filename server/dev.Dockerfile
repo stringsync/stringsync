@@ -13,3 +13,4 @@ RUN yarn
 COPY ./.eslintrc.js .
 COPY ./tsconfig.json .
 COPY ./webpack.config.js .
+COPY ./jest.config.js .
