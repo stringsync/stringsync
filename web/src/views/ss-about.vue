@@ -1,14 +1,11 @@
 <template>
-  <HelloWorld />
+  <div>ss-about</div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
-import HelloWorld from '../components/HelloWorld.vue';
 
 export default Vue.extend({
-  components: {
-    HelloWorld,
-  },
+  name: 'ss-about',
 });
 </script>

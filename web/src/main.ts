@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import App from './App.vue';
+import ssApp from './ss-app.vue';
 import router from './router';
 import store from './store';
 import './registerServiceWorker';
@@ -22,5 +22,5 @@ new Vue({
   router,
   store,
   vuetify,
-  render: (h) => h(App),
+  render: (h) => h(ssApp),
 }).$mount('#app');
