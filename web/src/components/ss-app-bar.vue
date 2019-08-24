@@ -16,7 +16,7 @@ import { mapActions } from 'vuex';
 
 export default Vue.extend({
   methods: {
-    ...mapActions('ui', ['toggleIsAppNavOpened']),
+    ...mapActions(['toggleIsAppNavOpened']),
   },
 });
 </script>

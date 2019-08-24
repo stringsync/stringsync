@@ -16,10 +16,10 @@ export default Vue.extend({
   computed: {
     isAppNavOpened: {
       get() {
-        return this.$store.getters['ui/isAppNavOpened'];
+        return this.$store.getters.isAppNavOpened;
       },
       set(isAppNavOpened) {
-        this.$store.dispatch('ui/setIsAppNavOpened', { isAppNavOpened });
+        this.$store.dispatch('setIsAppNavOpened', { isAppNavOpened });
       },
     },
   },
