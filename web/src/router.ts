@@ -4,6 +4,8 @@ import ssHome from './views/ss-home.vue';
 
 const ssAbout = () =>
   import(/* webpackChunkName: "about" */ './views/ss-about.vue');
+const ssLogin = () =>
+  import(/* webpackChunkName: "about" */ './views/ss-login.vue');
 
 Vue.use(Router);
 
@@ -20,6 +22,11 @@ export default new Router({
       path: '/about',
       name: 'about',
       component: ssAbout,
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: ssLogin,
     },
   ],
 });
