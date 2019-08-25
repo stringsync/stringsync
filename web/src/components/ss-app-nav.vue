@@ -15,17 +15,12 @@
         <template v-else>
           <v-row>
             <v-col>
-              <v-btn block color="primary" @click.stop="navigateTo('login')">
+              <v-btn block color="primary" :to="{ name: 'login' }">
                 Login
               </v-btn>
             </v-col>
             <v-col>
-              <v-btn
-                block
-                text
-                color="primary"
-                @click.stop="navigateTo('signup')"
-              >
+              <v-btn block text color="primary" :to="{ name: 'signup' }">
                 Signup
               </v-btn>
             </v-col>
