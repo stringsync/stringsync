@@ -1,15 +1,24 @@
-import { GraphQLObjectType } from 'graphql';
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLInputObjectType,
+} from 'graphql';
 
 export const User = new GraphQLObjectType({
   name: 'User',
   description: 'All details of a user on the website',
   fields: () => ({
-    // fields, such as id: { type: GraphQLInt }
+    username: { type: GraphQLString },
+    password: { type: GraphQLString },
   }),
 });
 
-export const UserInput = new GraphQLObjectType({
+export const UserInput = new GraphQLInputObjectType({
   name: 'UserInput',
   description: 'The data used to create a user',
-  fields: () => ({}),
+  fields: {
+    username: { type: new GraphQLNonNull(GraphQLString) },
+    password: { type: new GraphQLNonNull(GraphQLString) },
+  },
 });

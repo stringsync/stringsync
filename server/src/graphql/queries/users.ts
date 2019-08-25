@@ -1,5 +1,6 @@
 import { GraphQLList } from 'graphql';
 import { User } from '../types/User';
+import { Db } from '../db';
 
 export default {
   users: {
@@ -7,7 +8,7 @@ export default {
     description: 'Get a list of users',
     args: {},
     resolve: () => {
-      // get users from db
+      return Db.users;
     },
   },
 };

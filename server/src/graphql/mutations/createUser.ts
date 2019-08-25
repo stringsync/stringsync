@@ -1,17 +1,17 @@
 import { User, UserInput } from '../types/User';
+import { Db } from '../db';
 
 export default {
-  addUser: {
+  createUser: {
     type: User,
     description: 'Creates a new user',
     args: {
-      user: {
-        type: UserInput,
-      },
+      userInput: { type: UserInput },
     },
     resolve: (parent, args) => {
-      // Database query
-      // Return user object
+      const user = args.userInput;
+      Db.users.push({ ...user });
+      return user;
     },
   },
 };
