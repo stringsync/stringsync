@@ -1,11 +1,13 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import ssHome from './views/ss-home.vue';
+import ssLibrary from './views/ss-library.vue';
 
 const ssAbout = () =>
-  import(/* webpackChunkName: "about" */ './views/ss-about.vue');
+  import(/* webpackChunkName: "ssAbout" */ './views/ss-about.vue');
 const ssLogin = () =>
-  import(/* webpackChunkName: "about" */ './views/ss-login.vue');
+  import(/* webpackChunkName: "ssLogin" */ './views/ss-login.vue');
+const ssSignup = () => 
+  import(/* webpackChunkName: "ssSignup" */ './views/ss-signup.vue');
 
 Vue.use(Router);
 
@@ -15,18 +17,20 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: ssHome,
-    },
-    {
+      name: 'library',
+      component: ssLibrary,
+    }, {
       path: '/about',
       name: 'about',
       component: ssAbout,
-    },
-    {
+    }, {
       path: '/login',
       name: 'login',
       component: ssLogin,
-    },
+    }, {
+      path: '/signup',
+      name: 'signup',
+      component: ssSignup,
+    }
   ],
 });

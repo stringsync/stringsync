@@ -25,11 +25,19 @@
                 v-model="password"
                 :rules="passwordRules"
               ></v-text-field>
+              <v-text-field
+                label="confirm password"
+                name="confirm password"
+                type="password"
+                required
+                v-model="confirmPassword"
+                :rules="confirmPasswordRules"
+              ></v-text-field>
             </v-form>
           </v-card-text>
           <v-card-actions>
             <v-btn text block color="primary">
-              Login
+              Signup
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -40,8 +48,8 @@
       <v-col cols="12" sm="8" md="4" lg="3">
         <v-card>
           <v-card-text class="text-center">
-            Don't have an account?
-            <router-link :to="{ name: 'signup' }">Signup</router-link>
+            Already have an account?
+            <router-link :to="{ name: 'login' }">Login</router-link>
           </v-card-text>
         </v-card>
       </v-col>
@@ -57,7 +65,20 @@ import {
   passwordIsRequired,
 } from '../util/validators';
 
-export default Vue.extend({
+interface Data {
+  valid: boolean;
+  email: string;
+  emailRules: FieldValidator[];
+  password: string;
+  passwordRules: FieldValidator[];
+  confirmPassword: string;
+  confirmPasswordRules: FieldValidator[];
+}
+interface Methods {}
+interface Computed {}
+interface Props {}
+
+export default Vue.extend<Data, Methods, Computed, Props>({
   data() {
     return {
       valid: false,
@@ -65,6 +86,11 @@ export default Vue.extend({
       emailRules: [emailIsRequired, emailFormat],
       password: '',
       passwordRules: [passwordIsRequired],
+      confirmPassword: '',
+      confirmPasswordRules: [
+        passwordIsRequired,
+        () => this.password === this.confirmPassword || 'passwords must match',
+      ],
     };
   },
 });

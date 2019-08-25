@@ -1,5 +1,5 @@
 <template>
-  <div>ss-home</div>
+  <div>ss-library</div>
 </template>
 
 <script lang="ts">
