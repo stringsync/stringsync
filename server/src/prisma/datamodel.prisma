@@ -1,17 +1,5 @@
-type Post {
+type User @db(name: "user") {
   id: ID! @id
-  createdAt: DateTime! @createdAt
-  updatedAt: DateTime! @updatedAt
-  published: Boolean! @default(value: false)
-  title: String!
-  content: String!
-  author: User!
-}
-
-type User {
-  id: ID! @id
-  email: String! @unique
+  username: String!
   password: String!
-  name: String!
-  posts: [Post!]!
 }

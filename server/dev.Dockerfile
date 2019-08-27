@@ -11,6 +11,7 @@ RUN yarn
 
 # copy configuration
 COPY ./.eslintrc.js .
+COPY ./.graphqlconfig.yml .
 COPY ./tsconfig.json .
 COPY ./webpack.config.js .
 COPY ./jest.config.js .

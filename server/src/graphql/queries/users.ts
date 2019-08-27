@@ -1,14 +1,14 @@
-import { GraphQLList } from 'graphql';
+import { GraphQLList, GraphQLFieldConfigMap } from 'graphql';
 import { User } from '../types/User';
-import { Db } from '../db';
+import { Context } from '@/types/context';
 
-export default {
+export const users: GraphQLFieldConfigMap<undefined, Context> = {
   users: {
     type: new GraphQLList(User),
     description: 'Get a list of users',
     args: {},
-    resolve: () => {
-      return Db.users;
+    resolve: (parent, args, ctx, info) => {
+      return ctx.prisma.users();
     },
   },
 };

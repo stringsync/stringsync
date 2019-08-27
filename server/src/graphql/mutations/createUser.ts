@@ -1,17 +1,16 @@
 import { User, UserInput } from '../types/User';
-import { Db } from '../db';
+import { Context } from '@/types/context';
+import { GraphQLFieldConfigMap } from 'graphql';
 
-export default {
+export const createUser: GraphQLFieldConfigMap<undefined, Context> = {
   createUser: {
     type: User,
     description: 'Creates a new user',
     args: {
       userInput: { type: UserInput },
     },
-    resolve: (parent, args) => {
-      const user = args.userInput;
-      Db.users.push({ ...user });
-      return user;
+    resolve: (parent, args, ctx, info) => {
+      return ctx.prisma.createUser(args.userInput);
     },
   },
 };
