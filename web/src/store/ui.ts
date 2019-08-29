@@ -11,11 +11,7 @@ export const ui: Module<UiState, RootState> = {
       isAppNavOpened: false,
     };
   },
-  getters: {
-    isAppNavOpened(state) {
-      return state.isAppNavOpened;
-    },
-  },
+  getters: {},
   mutations: {
     setIsAppNavOpened(state, payload) {
       state.isAppNavOpened = payload.isAppNavOpened;

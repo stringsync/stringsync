@@ -3,9 +3,7 @@
     <v-row align="center" justify="center">
       <v-col cols="12" sm="8" md="4" lg="3">
         <v-card>
-          <v-card-title class="text-center">
-            StringSync
-          </v-card-title>
+          <v-card-title class="text-center">StringSync</v-card-title>
           <v-card-text>
             <v-form v-model="valid" lazy-validation>
               <v-text-field
@@ -36,9 +34,7 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <v-btn text block color="primary">
-              Signup
-            </v-btn>
+            <v-btn text block color="primary">Signup</v-btn>
           </v-card-actions>
         </v-card>
         <v-spacer></v-spacer>
@@ -64,6 +60,7 @@ import {
   emailFormat,
   passwordIsRequired,
 } from '../util/validators';
+import { FieldValidator } from '../types/field-validator';
 
 interface Data {
   valid: boolean;
@@ -76,7 +73,10 @@ interface Data {
 }
 interface Methods {}
 interface Computed {}
-interface Props {}
+interface Props {
+  password: string;
+  confirmPassword: string;
+}
 
 export default Vue.extend<Data, Methods, Computed, Props>({
   data() {

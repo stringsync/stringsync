@@ -15,14 +15,12 @@
         <template v-else>
           <v-row>
             <v-col>
-              <v-btn block color="primary" :to="{ name: 'login' }">
-                Login
-              </v-btn>
+              <v-btn block color="primary" :to="{ name: 'login' }">Login</v-btn>
             </v-col>
             <v-col>
-              <v-btn block text color="primary" :to="{ name: 'signup' }">
-                Signup
-              </v-btn>
+              <v-btn block text color="primary" :to="{ name: 'signup' }"
+                >Signup</v-btn
+              >
             </v-col>
           </v-row>
         </template>
@@ -56,7 +54,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue, { ComputedOptions } from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 
 interface Item {
@@ -69,10 +67,12 @@ interface Data {
   items: Item[];
 }
 interface Methods {}
-interface Computed {}
+interface Computed {
+  isAppNavOpened: ComputedOptions<boolean>;
+}
 interface Props {}
 
-export default Vue.extend({
+export default Vue.extend<Data, Methods, Computed, Props>({
   data() {
     return {
       items: [{ title: 'Library', icon: 'mdi-library-books', name: 'home' }],
@@ -86,7 +86,7 @@ export default Vue.extend({
   computed: {
     isAppNavOpened: {
       get() {
-        return this.$store.getters.isAppNavOpened;
+        return this.$store.state.ui.isAppNavOpened;
       },
       set(isAppNavOpened) {
         this.$store.dispatch('setIsAppNavOpened', { isAppNavOpened });
