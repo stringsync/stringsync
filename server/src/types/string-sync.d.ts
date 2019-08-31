@@ -19,6 +19,7 @@ export namespace StringSync {
   ) => any;
 
   export interface ResolverContext {
+    req: Request;
     prisma: Prisma;
   }
 }

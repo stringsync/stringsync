@@ -1,8 +1,11 @@
 import { GraphQLList, GraphQLFieldConfigMap, GraphQLString } from 'graphql';
 import { User } from '../types/User';
-import { Context } from '@/string-sync';
+import { StringSync } from '@/types/string-sync';
 
-export const user: GraphQLFieldConfigMap<undefined, Context> = {
+export const user: GraphQLFieldConfigMap<
+  undefined,
+  StringSync.ResolverContext
+> = {
   user: {
     type: User,
     description: 'Gets a user by id',

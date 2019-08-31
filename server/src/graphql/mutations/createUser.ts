@@ -1,8 +1,11 @@
 import { User, UserInput } from '../types/User';
 import { GraphQLFieldConfigMap } from 'graphql';
-import { Context } from '@/string-sync';
+import { StringSync } from '@/types/string-sync';
 
-export const createUser: GraphQLFieldConfigMap<undefined, Context> = {
+export const createUser: GraphQLFieldConfigMap<
+  undefined,
+  StringSync.ResolverContext
+> = {
   createUser: {
     type: User,
     description: 'Creates a new user',

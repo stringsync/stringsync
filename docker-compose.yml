@@ -11,6 +11,7 @@ services:
     environment:
       NODE_ENV: development
       PRISMA_SECRET: mysecret123
+      JWT_SECRET: mysecret123
     ports:
       - "8080:8080"
     links:
