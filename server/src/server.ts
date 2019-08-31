@@ -11,6 +11,7 @@ app.use('/graphql', middleware.graphql);
 
 // endpoints
 app.get('/', api.getRoot);
+app.get('/health', api.getHealth);
 
 // only listen for requests if the file was executed
 if (require.main === module) {

@@ -1,6 +1,6 @@
 import { User, UserInput } from '../types/User';
-import { Context } from '@/types/context';
 import { GraphQLFieldConfigMap } from 'graphql';
+import { Context } from '@/string-sync';
 
 export const createUser: GraphQLFieldConfigMap<undefined, Context> = {
   createUser: {

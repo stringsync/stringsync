@@ -9,8 +9,8 @@
   "scripts": {
     "build": "NODE_ENV=production webpack",
     "build:dev": "webpack",
-    "start": "node ./dst/index.js",
-    "start:dev": "nodemon ./dst/index.js",
+    "start": "node ./dst/server.js",
+    "start:dev": "nodemon ./dst/server.js",
     "test:unit": "jest"
   },
   "dependencies": {

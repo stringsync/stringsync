@@ -1,6 +1,6 @@
 import { GraphQLList, GraphQLFieldConfigMap, GraphQLString } from 'graphql';
 import { User } from '../types/User';
-import { Context } from '@/types/context';
+import { Context } from '@/string-sync';
 
 export const user: GraphQLFieldConfigMap<undefined, Context> = {
   user: {
