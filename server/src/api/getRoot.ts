@@ -1,4 +1,4 @@
-import { StringSync } from '@/string-sync';
+import { StringSync } from '@/types/string-sync';
 
 export const getRoot: StringSync.RequestHandler = (req, res, next) => {
   res.json({

@@ -17,8 +17,8 @@ export namespace StringSync {
     res: Response,
     next: NextFunction
   ) => any;
-}
 
-export interface Context {
-  prisma: Prisma;
+  export interface ResolverContext {
+    prisma: Prisma;
+  }
 }
