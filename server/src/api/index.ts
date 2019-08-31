@@ -1,0 +1,1 @@
+export { getRoot } from './getRoot';

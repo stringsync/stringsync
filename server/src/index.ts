@@ -1,27 +1,16 @@
 import express from 'express';
-import graphqlHTTP from 'express-graphql';
-import { prisma } from './prisma/generated/prisma-client';
-import schema from './graphql/schema';
+import * as middleware from './middleware';
+import * as api from './api';
 
 const app = express();
 const port = 8080;
 
-app.use(
-  '/graphql',
-  graphqlHTTP({
-    schema,
-    graphiql: true,
-    context: {
-      prisma,
-    },
-  })
-);
+// middleware
+app.use(middleware.auth);
+app.use('/graphql', middleware.graphql);
 
-app.get('/', (req, res) => {
-  res.json({
-    msg: 'Hello, from the server!',
-  });
-});
+// endpoints
+app.get('/', api.getRoot);
 
 // only listen for requests if the file was executed
 if (require.main === module) {
