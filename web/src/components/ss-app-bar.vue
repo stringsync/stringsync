@@ -1,8 +1,8 @@
 <template>
-  <v-app-bar app flat :style="style">
-    <v-toolbar-title>
-      <span class="font-weight-thin">StringSync</span>
-    </v-toolbar-title>
+  <v-app-bar app flat clipped-right :value="isAppNavVisible" :style="style">
+    <router-link :to="{ name: 'library' }">
+      <v-toolbar-title class="toolbar-title">StringSync</v-toolbar-title>
+    </router-link>
 
     <v-spacer></v-spacer>
 
@@ -16,7 +16,20 @@
 import Vue from 'vue';
 import { mapActions } from 'vuex';
 
-export default Vue.extend({
+interface Data {}
+interface Methods {}
+interface Computed {}
+interface Props {
+  isAppNavVisible: boolean;
+}
+
+export default Vue.extend<Data, Methods, Computed, Props>({
+  props: {
+    isAppNavVisible: {
+      required: true,
+      default: false,
+    },
+  },
   data() {
     return {
       style: {
@@ -29,3 +42,9 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+.toolbar-title {
+  text-decoration: none;
+}
+</style>

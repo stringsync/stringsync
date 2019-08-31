@@ -1,5 +1,12 @@
 <template>
-  <v-navigation-drawer app temporary right bottom v-model="isAppNavOpened">
+  <v-navigation-drawer
+    app
+    temporary
+    right
+    bottom
+    clipped
+    v-model="isAppNavOpened"
+  >
     <template v-slot:prepend>
       <v-list-item two-line>
         <template v-if="isLoggedIn">
@@ -33,7 +40,7 @@
       <v-list-item
         v-for="item in items"
         :key="item.title"
-        @click="navigateTo(item.name)"
+        :to="{ name: item.name }"
       >
         <v-list-item-icon>
           <v-icon>{{ item.icon }}</v-icon>
@@ -75,13 +82,8 @@ interface Props {}
 export default Vue.extend<Data, Methods, Computed, Props>({
   data() {
     return {
-      items: [{ title: 'Library', icon: 'mdi-library-books', name: 'home' }],
+      items: [{ title: 'Library', icon: 'mdi-library-books', name: 'library' }],
     };
-  },
-  methods: {
-    navigateTo(name: string) {
-      this.$router.push({ name });
-    },
   },
   computed: {
     isAppNavOpened: {
