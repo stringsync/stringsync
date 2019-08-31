@@ -1,5 +1,5 @@
-import { StringSyncRequestHandler } from '@/string-sync';
+import { StringSync } from '@/string-sync';
 
-export const getHealth: StringSyncRequestHandler = (req, res) => {
+export const getHealth: StringSync.RequestHandler = (req, res) => {
   res.send('ok');
 };

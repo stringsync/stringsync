@@ -1,7 +1,6 @@
-import { RequestHandler } from 'express';
-import { StringSyncRequestHandler } from '@/string-sync';
+import { StringSync } from '@/string-sync';
 
-export const auth: StringSyncRequestHandler = (req, res, next) => {
+export const auth: StringSync.RequestHandler = (req, res, next) => {
   req.user = { username: 'foo' };
   next();
 };

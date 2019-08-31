@@ -1,6 +1,6 @@
-import { StringSyncRequestHandler } from '@/string-sync';
+import { StringSync } from '@/string-sync';
 
-export const getRoot: StringSyncRequestHandler = (req, res, next) => {
+export const getRoot: StringSync.RequestHandler = (req, res, next) => {
   res.json({
     user: req.user,
     message: 'Hello, from the server!',
