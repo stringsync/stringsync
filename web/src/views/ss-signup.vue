@@ -5,7 +5,12 @@
         <v-card>
           <v-card-title class="text-center">StringSync</v-card-title>
           <v-card-text>
-            <v-form v-model="valid" lazy-validation>
+            <v-form
+              id="ss-signup-form"
+              v-model="valid"
+              lazy-validation
+              @submit.prevent="onSubmit"
+            >
               <v-text-field
                 label="email"
                 name="email"
@@ -34,7 +39,15 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <v-btn text block color="primary">Signup</v-btn>
+            <v-btn
+              text
+              block
+              type="submit"
+              form="ss-signup-form"
+              color="primary"
+            >
+              Signup
+            </v-btn>
           </v-card-actions>
         </v-card>
         <v-spacer></v-spacer>
@@ -61,6 +74,7 @@ import {
   passwordIsRequired,
 } from '../util/validators';
 import { FieldValidator } from '../types/field-validator';
+import axios from 'axios';
 
 interface Data {
   valid: boolean;
@@ -71,7 +85,9 @@ interface Data {
   confirmPassword: string;
   confirmPasswordRules: FieldValidator[];
 }
-interface Methods {}
+interface Methods {
+  onSubmit(event: Event): void;
+}
 interface Computed {}
 interface Props {
   password: string;
@@ -92,6 +108,35 @@ export default Vue.extend<Data, Methods, Computed, Props>({
         () => this.password === this.confirmPassword || 'passwords must match',
       ],
     };
+  },
+  methods: {
+    async onSubmit(event) {
+      if (!this.valid) {
+        return;
+      }
+      try {
+        const result = await axios.post('http://localhost:8080/graphql', {
+          query: `
+            mutation signup($userInput: UserInput!) {
+              signup(userInput: $userInput) {
+                id
+                username
+                token
+              }
+            }
+          `,
+          variables: {
+            userInput: {
+              username: this.email,
+              password: this.password,
+            },
+          },
+        });
+        console.log(result);
+      } catch (error) {
+        console.error(error);
+      }
+    },
   },
 });
 </script>

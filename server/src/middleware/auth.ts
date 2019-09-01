@@ -5,18 +5,6 @@ import { Strategy as JwtStrategy } from 'passport-jwt';
 import { prisma } from '../prisma/generated/prisma-client';
 import bcrypt from 'bcrypt';
 
-export class AuthError extends Error {
-  constructor() {
-    super('invalid username or password');
-  }
-}
-
-export class JwtError extends Error {
-  constructor() {
-    super('jwt expired');
-  }
-}
-
 passport.use(
   new LocalStrategy(
     {
@@ -33,7 +21,7 @@ passport.use(
         if (passwordsMatch) {
           return done(null, user);
         }
-        return done(new AuthError());
+        return done(new Error('invalid username or password'));
       } catch (err) {
         done(err);
       }
@@ -44,18 +32,22 @@ passport.use(
 passport.use(
   new JwtStrategy(
     {
-      jwtFromRequest: (req) => req.cookies.jwt,
+      jwtFromRequest: (req) => req.cookies && req.cookies.jwt,
       secretOrKey: process.env.JWT_SECRET,
     },
     (jwtPayload, done) => {
       if (Date.now() > jwtPayload.expires) {
-        return done(new JwtError());
+        return done(new Error('jwt expired'));
       }
       return done(null, jwtPayload);
     }
   )
 );
 
-export const auth: StringSync.RequestHandler = passport.authenticate('jwt', {
-  session: false,
-});
+export const auth: StringSync.RequestHandler = (req, res, next) => {
+  next();
+};
+
+// passport.authenticate('jwt', {
+//   session: false,
+// });

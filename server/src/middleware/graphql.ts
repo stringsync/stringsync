@@ -1,4 +1,3 @@
-import { RequestHandler } from 'express';
 import graphqlHTTP from 'express-graphql';
 import { prisma } from '../prisma/generated/prisma-client';
 import { schema } from '../graphql/schema';

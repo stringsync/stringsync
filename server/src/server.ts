@@ -1,11 +1,13 @@
 import express from 'express';
 import * as middleware from './middleware';
 import * as api from './api';
+import cors from 'cors';
 
 const app = express();
 const port = 8080;
 
 // middleware
+app.use(cors());
 app.use(middleware.auth);
 app.use('/graphql', middleware.graphql);
 

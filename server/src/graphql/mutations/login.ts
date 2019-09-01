@@ -3,7 +3,6 @@ import { StringSync } from '@/types/string-sync';
 import { User, UserInput } from '../types/User';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { AuthError } from '@/middleware/auth';
 
 interface Args {
   userInput: UserInput;
@@ -24,11 +23,11 @@ export const login: GraphQLFieldConfigMap<
       const { username, password } = args.userInput;
       const user = await ctx.prisma.user({ username });
       if (!user) {
-        throw new AuthError();
+        throw new Error('user does not exist');
       }
       const valid = await bcrypt.compare(password, user.encryptedPassword);
       if (!valid) {
-        throw new AuthError();
+        throw new Error('invalid username or password');
       }
       return {
         ...user,
