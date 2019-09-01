@@ -3,15 +3,10 @@ import { StringSync } from '@/types/string-sync';
 import { User, UserInput } from '../types/User';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { AuthError } from '@/middleware/auth';
 
 interface Args {
   userInput: UserInput;
-}
-
-export class AuthError extends Error {
-  constructor() {
-    super('invalid username or password');
-  }
 }
 
 export const login: GraphQLFieldConfigMap<
