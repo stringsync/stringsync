@@ -1,5 +1,5 @@
 type User @db(name: "user") {
   id: ID! @id
   username: String! @unique
-  password: String!
+  encryptedPassword: String!
 }

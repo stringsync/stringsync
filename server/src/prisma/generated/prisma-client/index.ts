@@ -106,8 +106,8 @@ export type UserOrderByInput =
   | "id_DESC"
   | "username_ASC"
   | "username_DESC"
-  | "password_ASC"
-  | "password_DESC";
+  | "encryptedPassword_ASC"
+  | "encryptedPassword_DESC";
 
 export type MutationType = "CREATED" | "UPDATED" | "DELETED";
 
@@ -145,20 +145,20 @@ export interface UserWhereInput {
   username_not_starts_with?: Maybe<String>;
   username_ends_with?: Maybe<String>;
   username_not_ends_with?: Maybe<String>;
-  password?: Maybe<String>;
-  password_not?: Maybe<String>;
-  password_in?: Maybe<String[] | String>;
-  password_not_in?: Maybe<String[] | String>;
-  password_lt?: Maybe<String>;
-  password_lte?: Maybe<String>;
-  password_gt?: Maybe<String>;
-  password_gte?: Maybe<String>;
-  password_contains?: Maybe<String>;
-  password_not_contains?: Maybe<String>;
-  password_starts_with?: Maybe<String>;
-  password_not_starts_with?: Maybe<String>;
-  password_ends_with?: Maybe<String>;
-  password_not_ends_with?: Maybe<String>;
+  encryptedPassword?: Maybe<String>;
+  encryptedPassword_not?: Maybe<String>;
+  encryptedPassword_in?: Maybe<String[] | String>;
+  encryptedPassword_not_in?: Maybe<String[] | String>;
+  encryptedPassword_lt?: Maybe<String>;
+  encryptedPassword_lte?: Maybe<String>;
+  encryptedPassword_gt?: Maybe<String>;
+  encryptedPassword_gte?: Maybe<String>;
+  encryptedPassword_contains?: Maybe<String>;
+  encryptedPassword_not_contains?: Maybe<String>;
+  encryptedPassword_starts_with?: Maybe<String>;
+  encryptedPassword_not_starts_with?: Maybe<String>;
+  encryptedPassword_ends_with?: Maybe<String>;
+  encryptedPassword_not_ends_with?: Maybe<String>;
   AND?: Maybe<UserWhereInput[] | UserWhereInput>;
   OR?: Maybe<UserWhereInput[] | UserWhereInput>;
   NOT?: Maybe<UserWhereInput[] | UserWhereInput>;
@@ -167,17 +167,17 @@ export interface UserWhereInput {
 export interface UserCreateInput {
   id?: Maybe<ID_Input>;
   username: String;
-  password: String;
+  encryptedPassword: String;
 }
 
 export interface UserUpdateInput {
   username?: Maybe<String>;
-  password?: Maybe<String>;
+  encryptedPassword?: Maybe<String>;
 }
 
 export interface UserUpdateManyMutationInput {
   username?: Maybe<String>;
-  password?: Maybe<String>;
+  encryptedPassword?: Maybe<String>;
 }
 
 export interface UserSubscriptionWhereInput {
@@ -198,13 +198,13 @@ export interface NodeNode {
 export interface User {
   id: ID_Output;
   username: String;
-  password: String;
+  encryptedPassword: String;
 }
 
 export interface UserPromise extends Promise<User>, Fragmentable {
   id: () => Promise<ID_Output>;
   username: () => Promise<String>;
-  password: () => Promise<String>;
+  encryptedPassword: () => Promise<String>;
 }
 
 export interface UserSubscription
@@ -212,7 +212,7 @@ export interface UserSubscription
     Fragmentable {
   id: () => Promise<AsyncIterator<ID_Output>>;
   username: () => Promise<AsyncIterator<String>>;
-  password: () => Promise<AsyncIterator<String>>;
+  encryptedPassword: () => Promise<AsyncIterator<String>>;
 }
 
 export interface UserNullablePromise
@@ -220,7 +220,7 @@ export interface UserNullablePromise
     Fragmentable {
   id: () => Promise<ID_Output>;
   username: () => Promise<String>;
-  password: () => Promise<String>;
+  encryptedPassword: () => Promise<String>;
 }
 
 export interface UserConnection {
@@ -344,7 +344,7 @@ export interface UserSubscriptionPayloadSubscription
 export interface UserPreviousValues {
   id: ID_Output;
   username: String;
-  password: String;
+  encryptedPassword: String;
 }
 
 export interface UserPreviousValuesPromise
@@ -352,7 +352,7 @@ export interface UserPreviousValuesPromise
     Fragmentable {
   id: () => Promise<ID_Output>;
   username: () => Promise<String>;
-  password: () => Promise<String>;
+  encryptedPassword: () => Promise<String>;
 }
 
 export interface UserPreviousValuesSubscription
@@ -360,7 +360,7 @@ export interface UserPreviousValuesSubscription
     Fragmentable {
   id: () => Promise<AsyncIterator<ID_Output>>;
   username: () => Promise<AsyncIterator<String>>;
-  password: () => Promise<AsyncIterator<String>>;
+  encryptedPassword: () => Promise<AsyncIterator<String>>;
 }
 
 /*

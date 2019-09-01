@@ -3,7 +3,7 @@ import {
   Response as ExpressResponse,
   NextFunction,
 } from 'express';
-import { Prisma } from './prisma/generated/prisma-client';
+import { Prisma } from '../prisma/generated/prisma-client';
 
 export namespace StringSync {
   export interface Request extends ExpressRequest {

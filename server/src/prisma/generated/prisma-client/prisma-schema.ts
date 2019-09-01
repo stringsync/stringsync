@@ -52,7 +52,7 @@ type Subscription {
 type User {
   id: ID!
   username: String!
-  password: String!
+  encryptedPassword: String!
 }
 
 type UserConnection {
@@ -64,7 +64,7 @@ type UserConnection {
 input UserCreateInput {
   id: ID
   username: String!
-  password: String!
+  encryptedPassword: String!
 }
 
 type UserEdge {
@@ -77,14 +77,14 @@ enum UserOrderByInput {
   id_DESC
   username_ASC
   username_DESC
-  password_ASC
-  password_DESC
+  encryptedPassword_ASC
+  encryptedPassword_DESC
 }
 
 type UserPreviousValues {
   id: ID!
   username: String!
-  password: String!
+  encryptedPassword: String!
 }
 
 type UserSubscriptionPayload {
@@ -107,12 +107,12 @@ input UserSubscriptionWhereInput {
 
 input UserUpdateInput {
   username: String
-  password: String
+  encryptedPassword: String
 }
 
 input UserUpdateManyMutationInput {
   username: String
-  password: String
+  encryptedPassword: String
 }
 
 input UserWhereInput {
@@ -144,20 +144,20 @@ input UserWhereInput {
   username_not_starts_with: String
   username_ends_with: String
   username_not_ends_with: String
-  password: String
-  password_not: String
-  password_in: [String!]
-  password_not_in: [String!]
-  password_lt: String
-  password_lte: String
-  password_gt: String
-  password_gte: String
-  password_contains: String
-  password_not_contains: String
-  password_starts_with: String
-  password_not_starts_with: String
-  password_ends_with: String
-  password_not_ends_with: String
+  encryptedPassword: String
+  encryptedPassword_not: String
+  encryptedPassword_in: [String!]
+  encryptedPassword_not_in: [String!]
+  encryptedPassword_lt: String
+  encryptedPassword_lte: String
+  encryptedPassword_gt: String
+  encryptedPassword_gte: String
+  encryptedPassword_contains: String
+  encryptedPassword_not_contains: String
+  encryptedPassword_starts_with: String
+  encryptedPassword_not_starts_with: String
+  encryptedPassword_ends_with: String
+  encryptedPassword_not_ends_with: String
   AND: [UserWhereInput!]
   OR: [UserWhereInput!]
   NOT: [UserWhereInput!]

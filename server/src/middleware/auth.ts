@@ -14,9 +14,9 @@ passport.use(
     async (username, password, done) => {
       try {
         const user = await prisma.user({ username });
-        const passwordsMatch: boolean = await bcrypt.compare(
+        const passwordsMatch = await bcrypt.compare(
           password,
-          user.password
+          user.encryptedPassword
         );
         if (passwordsMatch) {
           return done(null, user);
@@ -37,7 +37,7 @@ passport.use(
     },
     (jwtPayload, done) => {
       if (Date.now() > jwtPayload.expires) {
-        return done('jwt expired');
+        return done(new Error('jwt expired'));
       }
       return done(null, jwtPayload);
     }
@@ -45,6 +45,5 @@ passport.use(
 );
 
 export const auth: StringSync.RequestHandler = (req, res, next) => {
-  req.user = { username: 'foo' };
   next();
 };
