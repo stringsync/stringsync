@@ -6,6 +6,7 @@ export interface UiState {
 }
 
 export const ui: Module<UiState, RootState> = {
+  namespaced: true,
   state() {
     return {
       isAppNavOpened: false,

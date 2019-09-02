@@ -38,7 +38,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
     };
   },
   methods: {
-    ...mapActions(['toggleIsAppNavOpened']),
+    ...mapActions('ui', ['toggleIsAppNavOpened']),
   },
 });
 </script>

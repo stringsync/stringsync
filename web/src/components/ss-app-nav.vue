@@ -52,9 +52,9 @@
       </v-list-item>
     </v-list>
 
-    <template v-slot:append v-if="isLoggedIn">
+    <template v-slot:append v-if="isLoggedIn" @click.stop="logout">
       <div class="pa-2">
-        <v-btn block>Logout</v-btn>
+        <v-btn block @click.stop="logout">Logout</v-btn>
       </div>
     </template>
   </v-navigation-drawer>
@@ -62,7 +62,7 @@
 
 <script lang="ts">
 import Vue, { ComputedOptions } from 'vue';
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 
 interface Item {
   title: string;
@@ -73,9 +73,12 @@ interface Item {
 interface Data {
   items: Item[];
 }
-interface Methods {}
+interface Methods {
+  logout(): void;
+}
 interface Computed {
   isAppNavOpened: ComputedOptions<boolean>;
+  isLoggedIn: boolean;
 }
 interface Props {}
 
@@ -85,16 +88,23 @@ export default Vue.extend<Data, Methods, Computed, Props>({
       items: [{ title: 'Library', icon: 'mdi-library-books', name: 'library' }],
     };
   },
+  methods: {
+    logout() {
+      this.$store.dispatch('session/logout');
+    },
+  },
   computed: {
     isAppNavOpened: {
       get() {
         return this.$store.state.ui.isAppNavOpened;
       },
       set(isAppNavOpened) {
-        this.$store.dispatch('setIsAppNavOpened', { isAppNavOpened });
+        this.$store.dispatch('ui/setIsAppNavOpened', { isAppNavOpened });
       },
     },
-    ...mapGetters(['isLoggedIn']),
+    isLoggedIn() {
+      return this.$store.state.session.isLoggedIn;
+    },
   },
 });
 </script>

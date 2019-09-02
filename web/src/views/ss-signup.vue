@@ -75,6 +75,7 @@ import {
 } from '../util/validators';
 import { FieldValidator } from '../types/field-validator';
 import axios from 'axios';
+import { mapState } from 'vuex';
 
 interface Data {
   valid: boolean;
@@ -94,7 +95,16 @@ interface Props {
   confirmPassword: string;
 }
 
+const REDIRECT_PATH = Object.freeze({ name: 'library ' });
+
 export default Vue.extend<Data, Methods, Computed, Props>({
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      if (vm['shouldRedirect']) {
+        next(REDIRECT_PATH);
+      }
+    });
+  },
   data() {
     return {
       valid: false,
@@ -114,27 +124,21 @@ export default Vue.extend<Data, Methods, Computed, Props>({
       if (!this.valid) {
         return;
       }
-      try {
-        const result = await axios.post('http://localhost:8080/graphql', {
-          query: `
-            mutation signup($userInput: UserInput!) {
-              signup(userInput: $userInput) {
-                id
-                username
-                token
-              }
-            }
-          `,
-          variables: {
-            userInput: {
-              username: this.email,
-              password: this.password,
-            },
-          },
-        });
-        console.log(result);
-      } catch (error) {
-        console.error(error);
+      this.$store.dispatch('session/signup', {
+        username: this.email,
+        password: this.password,
+      });
+    },
+  },
+  computed: {
+    shouldRedirect() {
+      return this.$store.state.session.isLoggedIn;
+    },
+  },
+  watch: {
+    shouldRedirect(shouldRedirect) {
+      if (shouldRedirect) {
+        this.$router.push(REDIRECT_PATH);
       }
     },
   },

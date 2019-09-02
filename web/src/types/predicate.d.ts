@@ -1,1 +1,1 @@
-type Predicate = (arg: any) => boolean;
+type Predicate = (arg?: any) => boolean;
