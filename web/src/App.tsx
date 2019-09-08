@@ -1,11 +1,9 @@
 import React from 'react';
-import { Button } from 'antd';
 
-export const App: React.FC = () => {
-  return (
-    <div>
-      StringSync? Absolutely.
-      <Button type="primary">Click me</Button>
-    </div>
-  );
+interface Props {}
+
+const App: React.FC<Props> = (props) => {
+  return <div>App</div>;
 };
+
+export default App;
