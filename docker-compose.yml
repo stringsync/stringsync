@@ -58,7 +58,7 @@ services:
       - "8081:8081"
     links:
       - server
-    command: ["yarn", "serve"]
+    command: ["yarn", "start"]
 
 volumes:
   postgres:
