@@ -32,5 +32,5 @@ export const getScreenState = (width: number, height: number): ScreenState => {
     }
   }
 
-  throw new RangeError(`could not compute a partial state for ${width}`);
+  throw new RangeError(`could not compute a screen state for ${width}`);
 };
