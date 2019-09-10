@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { SET_DIMENSIONS } from '../store/screen/types';
 import { throttle } from 'lodash';
 
-const THROTTLE_WAIT_MS = 500;
+const THROTTLE_WAIT_MS = 250;
 
 interface Props {}
 

@@ -3,7 +3,7 @@ import { Layout } from 'antd';
 import Routes from '../routes/Routes';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
-import { Store } from '../../store';
+import { Store, State } from '../../store';
 
 const StyledLayout = styled(Layout)`
   height: 100vh;
@@ -18,10 +18,21 @@ const StyledFooter = styled(Layout.Footer)`
   text-align: center;
 `;
 
+interface SelectedState {
+  xs: boolean;
+  sm: boolean;
+  md: boolean;
+}
+
 interface Props {}
 
 const App: React.FC<Props> = (props) => {
-  const xs = useSelector<Store, { xs: boolean }>((state) => {});
+  const { xs, sm, md } = useSelector<State, SelectedState>((state) => ({
+    xs: state.screen.xs,
+    sm: state.screen.sm,
+    md: state.screen.md,
+  }));
+  const isFooterVisible = !xs && !sm && !md;
   return (
     <StyledLayout>
       <StyledHeader>Branding</StyledHeader>
@@ -30,7 +41,7 @@ const App: React.FC<Props> = (props) => {
           <Routes />
         </main>
       </Layout.Content>
-      <StyledFooter>© 2019 StringSync LLC</StyledFooter>
+      {isFooterVisible && <StyledFooter>© 2019 StringSync LLC</StyledFooter>}
     </StyledLayout>
   );
 };
