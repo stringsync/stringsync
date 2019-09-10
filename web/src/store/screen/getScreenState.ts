@@ -11,7 +11,11 @@ const BREAKPOINTS: Breakpoint[] = [
   ['xxl', Number.POSITIVE_INFINITY],
 ];
 
-export const getScreenState = (width: number, height: number): ScreenState => {
+export const getScreenState = (
+  width: number,
+  height: number,
+  breakpoints = BREAKPOINTS
+): ScreenState => {
   const screenState: ScreenState = {
     xs: false,
     sm: false,
@@ -24,7 +28,7 @@ export const getScreenState = (width: number, height: number): ScreenState => {
     height,
   };
 
-  for (const [breakpointName, breakpointPx] of BREAKPOINTS) {
+  for (const [breakpointName, breakpointPx] of breakpoints) {
     if (width < breakpointPx) {
       screenState[breakpointName] = true;
       screenState.breakpointName = breakpointName;
