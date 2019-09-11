@@ -1,7 +1,7 @@
 import React from 'react';
 import { Layout } from 'antd';
 import styled from 'styled-components';
-import ScreenSyncer from '../../components/ScreenSyncer';
+import ScreenSyncer from '../../components/screen-syncer/ScreenSyncer';
 import Header from './Header';
 import Content from './Content';
 import Footer from './Footer';

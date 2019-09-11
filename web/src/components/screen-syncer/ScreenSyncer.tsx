@@ -1,8 +1,8 @@
 import React from 'react';
-import { BreakpointName, SET_BREAKPOINT_NAME } from '../store/screen/types';
-import { useMedia } from '../hooks/useMedia';
+import { BreakpointName, SET_BREAKPOINT_NAME } from '../../store/screen/types';
+import { useMedia } from '../../hooks/useMedia';
 import { useDispatch, useSelector } from 'react-redux';
-import { State } from '../store';
+import { State } from '../../store';
 
 const BREAKPOINT_QUERIES = [
   '(max-width: 575px)',
