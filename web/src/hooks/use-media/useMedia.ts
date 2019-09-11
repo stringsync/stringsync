@@ -6,6 +6,10 @@ export const useMedia = <T>(
   values: T[],
   defaultValue: T
 ): T => {
+  if (queries.length !== values.length) {
+    throw new TypeError('queries and values arguments must be the same length');
+  }
+
   const mediaQueryLists = useMemo(() => {
     return queries.map((query) => window.matchMedia(query));
   }, [queries]);
@@ -14,8 +18,7 @@ export const useMedia = <T>(
     const index = mediaQueryLists.findIndex(
       (mediaQueryList) => mediaQueryList.matches
     );
-    const value = values[index];
-    return typeof value === 'undefined' ? defaultValue : value;
+    return index < 0 ? defaultValue : values[index];
   }, [mediaQueryLists, values, defaultValue]);
 
   // setValue triggers rerenders
