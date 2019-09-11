@@ -7,7 +7,9 @@ export const useMedia = <T>(
   defaultValue: T
 ): T => {
   if (queries.length !== values.length) {
-    throw new TypeError('queries and values arguments must be the same length');
+    throw new TypeError(
+      "'queries' and 'values' arguments must be the same length"
+    );
   }
 
   const mediaQueryLists = useMemo(() => {
