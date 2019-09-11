@@ -1,20 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 
 // https://usehooks.com/useMedia/
 export const useMedia = <T>(
   queries: string[],
   values: T[],
   defaultValue: T
-) => {
-  const mediaQueryLists = queries.map((query) => window.matchMedia(query));
+): T => {
+  const mediaQueryLists = useMemo(() => {
+    return queries.map((query) => window.matchMedia(query));
+  }, [queries]);
 
-  const getValue = () => {
-    const index = mediaQueryLists.findIndex(({ matches }) => matches);
+  const getValue = useCallback(() => {
+    const index = mediaQueryLists.findIndex(
+      (mediaQueryList) => mediaQueryList.matches
+    );
     const value = values[index];
     return typeof value === 'undefined' ? defaultValue : value;
-  };
+  }, [mediaQueryLists, values, defaultValue]);
 
-  const [value, setValue] = useState(getValue);
+  // setValue triggers rerenders
+  const [value, setValue] = useState(getValue());
 
   useEffect(() => {
     const handler = () => setValue(getValue);
@@ -26,7 +31,7 @@ export const useMedia = <T>(
         mediaQueryList.removeListener(handler);
       }
     };
-  }, []);
+  }, [getValue, mediaQueryLists]);
 
   return value;
 };

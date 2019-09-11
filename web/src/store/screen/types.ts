@@ -8,18 +8,15 @@ export interface ScreenState {
   xl: boolean;
   xxl: boolean;
   breakpointName: BreakpointName;
-  width: number;
-  height: number;
 }
 
-export const SET_DIMENSIONS = 'SET_DIMENSIONS';
+export const SET_BREAKPOINT_NAME = 'SET_BREAKPOINT_NAME';
 
-interface SetDimesionsAction {
-  type: typeof SET_DIMENSIONS;
+interface SetBreakpointNameAction {
+  type: typeof SET_BREAKPOINT_NAME;
   payload: {
-    width: number;
-    height: number;
+    breakpointName: BreakpointName;
   };
 }
 
-export type ScreenActionTypes = SetDimesionsAction;
+export type ScreenActionTypes = SetBreakpointNameAction;

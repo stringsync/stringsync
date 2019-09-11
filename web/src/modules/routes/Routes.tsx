@@ -7,6 +7,7 @@ import Login from '../login/Login';
 interface Props {}
 
 const Router: React.FC<Props> = (props) => {
+  console.log('Router rerendered');
   return (
     <React.Fragment>
       <Route path="/" exact component={Library} />
