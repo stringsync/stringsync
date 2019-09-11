@@ -1,8 +1,9 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 import Library from '../library/Library';
-import Signup from '../signup/Signup';
-import Login from '../login/Login';
+
+const Signup = React.lazy(() => import('../signup/Signup'));
+const Login = React.lazy(() => import('../login/Login'));
 
 interface Props {}
 
