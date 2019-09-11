@@ -17,11 +17,10 @@ const BREAKPOINT_NAMES: BreakpointName[] = ['xs', 'sm', 'md', 'lg', 'xl'];
 interface Props {}
 
 const ScreenSyncer: React.FC<Props> = (props) => {
+  const dispatch = useDispatch();
   const breakpointName = useSelector<State, BreakpointName>(
     (state) => state.screen.breakpointName
   );
-  const dispatch = useDispatch();
-
   const nextBreakpointName = useMedia(
     BREAKPOINT_QUERIES,
     BREAKPOINT_NAMES,
