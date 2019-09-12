@@ -1,11 +1,19 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import withSuspense from '../../hocs/with-suspense/withSuspense';
 import Landing from '../landing/Landing';
 import Fallback from './Fallback';
 
-const withFallback = (Component: React.ComponentType) =>
-  withSuspense(Component, <Fallback />);
+// HOC that shows loading spinner while the browser fetches the
+// js bundle for the component.
+const withFallback = function<P>(Component: React.ComponentType<P>) {
+  return (props: P) => {
+    return (
+      <React.Suspense fallback={<Fallback />}>
+        <Component {...props} />
+      </React.Suspense>
+    );
+  };
+};
 
 const Library = withFallback(React.lazy(() => import('../library/Library')));
 const Signup = withFallback(React.lazy(() => import('../signup/Signup')));
