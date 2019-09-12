@@ -17,6 +17,10 @@ const match = (regex: RegExp, userAgent: string): boolean => {
   return regex.test(userAgent);
 };
 
+export const getUserAgent = (): string => {
+  return 'userAgent' in navigator ? navigator.userAgent : '';
+};
+
 export type Device = {
   apple: {
     phone: boolean;
@@ -54,8 +58,7 @@ export type Device = {
 
 const getDevice = (userAgent?: string): Device => {
   /* eslint-disable no-param-reassign */
-  userAgent =
-    userAgent || (typeof navigator !== 'undefined' ? navigator.userAgent : '');
+  userAgent = userAgent || getUserAgent();
 
   // Facebook mobile app's integrated browser adds a bunch of strings that
   // match everything. Strip it out if it exists.
