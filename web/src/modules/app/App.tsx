@@ -1,7 +1,7 @@
 import React from 'react';
 import { Layout } from 'antd';
 import styled from 'styled-components';
-import ScreenSyncer from '../../components/screen-syncer/ScreenSyncer';
+import StoreViewportSync from '../../components/store-viewport-sync/StoreViewportSync';
 import Header from './Header';
 import Content from './Content';
 import Footer from './Footer';
@@ -15,7 +15,7 @@ interface Props {}
 const App: React.FC<Props> = (props) => {
   return (
     <>
-      <ScreenSyncer />
+      <StoreViewportSync />
       <StyledLayout>
         <Header />
         <Content />

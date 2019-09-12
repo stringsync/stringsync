@@ -19,7 +19,7 @@ const BREAKPOINT_NAMES: BreakpointName[] = ['xs', 'sm', 'md', 'lg', 'xl'];
 
 interface Props {}
 
-const ScreenSyncer: React.FC<Props> = (props) => {
+const StoreViewportSync: React.FC<Props> = (props) => {
   const dispatch = useDispatch();
   const breakpointName = useSelector<RootState, BreakpointName>(
     (state) => state.viewport.breakpointName
@@ -39,4 +39,4 @@ const ScreenSyncer: React.FC<Props> = (props) => {
   return null;
 };
 
-export default ScreenSyncer;
+export default StoreViewportSync;
