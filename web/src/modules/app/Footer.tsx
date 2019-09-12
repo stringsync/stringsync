@@ -12,7 +12,7 @@ interface Props {}
 
 const Footer: React.FC<Props> = (props) => {
   const isHidden = useSelector<RootState, boolean>((state) => {
-    const { xs, sm, md } = state.screen;
+    const { xs, sm, md } = state.viewport;
     return xs || sm || md;
   });
 

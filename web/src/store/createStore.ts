@@ -1,9 +1,9 @@
 import { combineReducers, createStore as doCreateStore } from 'redux';
 import { getPreloadedState } from './getPreloadedState';
-import screenReducer from './screen/reducer';
+import viewportReducer from './modules/viewport/reducer';
 
 const reducer = combineReducers({
-  screen: screenReducer,
+  viewport: viewportReducer,
 });
 const preloadedState = getPreloadedState();
 

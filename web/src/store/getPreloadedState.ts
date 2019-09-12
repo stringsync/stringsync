@@ -1,6 +1,6 @@
-import getInitialScreenState from './screen/getInitialState';
+import getInitialViewportState from './modules/viewport/getInitialState';
 import { RootState } from '.';
 
 export const getPreloadedState = (): RootState => ({
-  screen: getInitialScreenState(),
+  viewport: getInitialViewportState(),
 });

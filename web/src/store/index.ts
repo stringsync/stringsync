@@ -1,10 +1,10 @@
 import createStore from './createStore';
-import * as Screen from './screen/types';
+import * as Viewport from './modules/viewport/types';
 
 export type Store = ReturnType<typeof createStore>;
 
-export type Actions = Screen.ScreenActionTypes;
+export type Actions = Viewport.ViewportActionTypes;
 
 export interface RootState {
-  screen: Screen.ScreenState;
+  viewport: Viewport.ViewportState;
 }

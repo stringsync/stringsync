@@ -1,6 +1,6 @@
 export type BreakpointName = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
-export interface ScreenState {
+export interface ViewportState {
   xs: boolean;
   sm: boolean;
   md: boolean;
@@ -19,4 +19,4 @@ interface SetBreakpointNameAction {
   };
 }
 
-export type ScreenActionTypes = SetBreakpointNameAction;
+export type ViewportActionTypes = SetBreakpointNameAction;

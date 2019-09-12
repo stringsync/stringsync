@@ -1,5 +1,8 @@
 import React from 'react';
-import { BreakpointName, SET_BREAKPOINT_NAME } from '../../store/screen/types';
+import {
+  BreakpointName,
+  SET_BREAKPOINT_NAME,
+} from '../../store/modules/viewport/types';
 import useMedia from '../../hooks/use-media/useMedia';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
@@ -19,7 +22,7 @@ interface Props {}
 const ScreenSyncer: React.FC<Props> = (props) => {
   const dispatch = useDispatch();
   const breakpointName = useSelector<RootState, BreakpointName>(
-    (state) => state.screen.breakpointName
+    (state) => state.viewport.breakpointName
   );
   const nextBreakpointName = useMedia(
     BREAKPOINT_QUERIES,
