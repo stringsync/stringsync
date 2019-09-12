@@ -13,7 +13,7 @@ interface Props {}
 const Header: React.FC<Props> = (props) => {
   return (
     <StyledHeader>
-      <Link to="/">home</Link>
+      <Link to="/">landing</Link>
       <Link to="/library">library</Link>
       <Link to="/signup">signup</Link>
       <Link to="/login">login</Link>
