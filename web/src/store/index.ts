@@ -5,6 +5,6 @@ export type Store = ReturnType<typeof createStore>;
 
 export type Actions = Screen.ScreenActionTypes;
 
-export interface State {
+export interface RootState {
   screen: Screen.ScreenState;
 }

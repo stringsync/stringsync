@@ -1,6 +1,6 @@
 import getInitialScreenState from './screen/getInitialState';
-import { State } from '.';
+import { RootState } from '.';
 
-export const getPreloadedState = (): State => ({
+export const getPreloadedState = (): RootState => ({
   screen: getInitialScreenState(),
 });

@@ -6,11 +6,7 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
  * This hook creates media query watchers on the window object, that
  * will return different values based on the first watcher that matches.
  */
-export const useMedia = <T>(
-  queries: string[],
-  values: T[],
-  defaultValue: T
-): T => {
+const useMedia = <T>(queries: string[], values: T[], defaultValue: T): T => {
   if (queries.length !== values.length) {
     throw new TypeError(
       "'queries' and 'values' arguments must be the same length"
@@ -51,3 +47,5 @@ export const useMedia = <T>(
 
   return value;
 };
+
+export default useMedia;

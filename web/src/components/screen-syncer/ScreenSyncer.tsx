@@ -1,8 +1,8 @@
 import React from 'react';
 import { BreakpointName, SET_BREAKPOINT_NAME } from '../../store/screen/types';
-import { useMedia } from '../../hooks/use-media/useMedia';
+import useMedia from '../../hooks/use-media/useMedia';
 import { useDispatch, useSelector } from 'react-redux';
-import { State } from '../../store';
+import { RootState } from '../../store';
 
 const BREAKPOINT_QUERIES = [
   '(max-width: 575px)',
@@ -18,7 +18,7 @@ interface Props {}
 
 const ScreenSyncer: React.FC<Props> = (props) => {
   const dispatch = useDispatch();
-  const breakpointName = useSelector<State, BreakpointName>(
+  const breakpointName = useSelector<RootState, BreakpointName>(
     (state) => state.screen.breakpointName
   );
   const nextBreakpointName = useMedia(

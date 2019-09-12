@@ -1,9 +1,15 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
+import withSuspense from '../../hocs/with-suspense/withSuspense';
 import Landing from '../landing/Landing';
-const Library = React.lazy(() => import('../library/Library'));
-const Signup = React.lazy(() => import('../signup/Signup'));
-const Login = React.lazy(() => import('../login/Login'));
+import Fallback from './Fallback';
+
+const withFallback = (Component: React.ComponentType) =>
+  withSuspense(Component, <Fallback />);
+
+const Library = withFallback(React.lazy(() => import('../library/Library')));
+const Signup = withFallback(React.lazy(() => import('../signup/Signup')));
+const Login = withFallback(React.lazy(() => import('../login/Login')));
 
 interface Props {}
 
