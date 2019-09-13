@@ -7,7 +7,7 @@ import Content from './Content';
 import Footer from './Footer';
 
 const StyledLayout = styled(Layout)`
-  height: 100vh;
+  min-height: 100vh;
 `;
 
 interface Props {}
