@@ -16,7 +16,7 @@ const Footer: React.FC<Props> = (props) => {
     return xs || sm || md;
   });
 
-  return isHidden ? null : <StyledFooter>© 2019 StringSync LLC</StyledFooter>;
+  return isHidden ? null : <StyledFooter>StringSync LLC © 2019 </StyledFooter>;
 };
 
 export default Footer;
