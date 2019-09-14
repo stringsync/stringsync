@@ -1,7 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Layout } from 'antd';
-import { Link } from 'react-router-dom';
+import { Wordmark } from '../../components/brand';
+import { useRouter } from '../routes/Router';
+
+// hide header for the following paths
+const HEADER_BLACKLIST = ['/signup', '/login'];
 
 const StyledHeader = styled(Layout.Header)`
   background: #ffffff;
@@ -11,12 +15,18 @@ const StyledHeader = styled(Layout.Header)`
 interface Props {}
 
 const Header: React.FC<Props> = (props) => {
+  const router = useRouter();
+  const isHeaderVisible = !HEADER_BLACKLIST.includes(router.location.pathname);
+
+  if (!isHeaderVisible) {
+    return null;
+  }
+
   return (
     <StyledHeader>
-      <Link to="/">landing</Link>
-      <Link to="/library">library</Link>
-      <Link to="/signup">signup</Link>
-      <Link to="/login">login</Link>
+      <h1>
+        <Wordmark />
+      </h1>
     </StyledHeader>
   );
 };

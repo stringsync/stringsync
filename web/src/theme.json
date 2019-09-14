@@ -4,5 +4,6 @@
   "@tertiary-color": "#F4F4F4",
   "@highlight-color": "#FF9EA9",
   "@background-color-base": "#F0F2F5",
-  "@muted": "#E8E8E8"
+  "@muted": "#999999",
+  "@border-color": "#D9D9D9"
 }
