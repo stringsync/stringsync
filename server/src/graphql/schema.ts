@@ -1,5 +1,3 @@
-import Query from './Query';
-import Mutation from './Mutation';
 import typeDefs from './type-defs';
 import resolvers from './resolvers';
 import { makeExecutableSchema } from 'apollo-server';
@@ -28,6 +26,6 @@ import { makeExecutableSchema } from 'apollo-server';
  * resolvers are in the ./resolvers directory
  */
 export default makeExecutableSchema({
-  typeDefs: [Query, Mutation, ...typeDefs],
+  typeDefs,
   resolvers,
 });
