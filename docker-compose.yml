@@ -7,6 +7,8 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
     volumes:
       - postgres:/var/lib/postgresql/data
 
@@ -22,7 +24,7 @@ services:
       PRISMA_SECRET: mysecret123
       JWT_SECRET: mysecret123
     ports:
-      - "4000:4000"
+      - "3000:3000"
     command: ["yarn", "build:dev"]
 
   web:
