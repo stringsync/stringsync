@@ -1,14 +1,13 @@
-import { Book, allBooks } from './books';
+import { allBooks } from './books';
 import { IFieldResolver } from 'graphql-tools';
+import { BookInput, Book } from '../type-defs/Book';
 
 interface Args {
-  title: string;
-  author: string;
+  input: BookInput;
 }
 
 const addBook: IFieldResolver<any, any, Args> = (parent, args) => {
-  const { title, author } = args;
-  const book: Book = { title, author };
+  const book: Book = { ...args.input };
   allBooks.push(book);
   return book;
 };

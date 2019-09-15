@@ -19,7 +19,7 @@ import { makeExecutableSchema } from 'apollo-server';
  * }
  *
  * type Mutation {
- *   addFoo(bar: String!, baz: Int!): Foo
+ *   mutateFoo(bar: String!, baz: Int!): Foo
  * }
  *
  * Query is defined in ./Query.ts

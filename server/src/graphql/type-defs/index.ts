@@ -1,3 +1,6 @@
 import Book from './Book';
+import { ITypedef } from 'graphql-tools';
 
-export default [Book];
+const typeDefs: ITypedef[] = [Book];
+
+export default typeDefs;

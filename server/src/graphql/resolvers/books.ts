@@ -1,9 +1,6 @@
-import { IResolvers } from 'graphql-tools';
-
-export interface Book {
-  title: string;
-  author: string;
-}
+import { IFieldResolver } from 'graphql-tools';
+import { Context } from 'src';
+import { Book } from '../type-defs/Book';
 
 export const allBooks: Book[] = [
   {
@@ -16,6 +13,10 @@ export const allBooks: Book[] = [
   },
 ];
 
-const books = () => allBooks;
+interface Args {}
+
+const books: IFieldResolver<any, Context, Args> = () => {
+  return allBooks;
+};
 
 export default books;

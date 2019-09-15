@@ -11,7 +11,8 @@ RUN yarn
 
 # copy configuration
 COPY ./.eslintrc.js .
+COPY ./prettier.config.js .
 COPY ./tsconfig.json .
 COPY ./webpack.config.js .
 COPY ./jest.config.js .
-COPY ./prettier.config.js .
+COPY ./.graphqlconfig.yml .

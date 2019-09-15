@@ -1,0 +1,26 @@
+mutation {
+  user1: createUser(
+    data: {
+      username: "developer1@example.com"
+      encryptedPassword: "$2a$10$hACwQ5/HQI6FhbIISOUVeusy3sKyUDhSq36fF5d/54aAdiygJPFzm"
+    }
+  ) {
+    id
+  }
+  user2: createUser(
+    data: {
+      username: "developer2@example.com"
+      encryptedPassword: "$2a$10$hACwQ5/HQI6FhbIISOUVeusy3sKyUDhSq36fF5d/54aAdiygJPFzm"
+    }
+  ) {
+    id
+  }
+  user3: createUser(
+    data: {
+      username: "developer3@example.com"
+      encryptedPassword: "$2a$10$hACwQ5/HQI6FhbIISOUVeusy3sKyUDhSq36fF5d/54aAdiygJPFzm"
+    }
+  ) {
+    id
+  }
+}
