@@ -1,5 +1,5 @@
 import { IFieldResolver } from 'apollo-server';
-import { Context } from 'src';
+import { Context } from '../../';
 import { Book } from '../type-defs/Book';
 
 export const allBooks: Book[] = [

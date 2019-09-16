@@ -1,9 +1,12 @@
 import Scalars from './Scalars';
-import Query from './Query';
-import Mutation from './Mutation';
-import Book from './Book';
 import { ITypedef } from 'apollo-server';
 
-const typeDefs: ITypedef[] = [Scalars, Query, Mutation, Book];
+import Query from './Query';
+import Book from './Book';
+import User from './User';
+
+import Mutation from './Mutation';
+
+const typeDefs: ITypedef[] = [Scalars, Query, Mutation, Book, User];
 
 export default typeDefs;
