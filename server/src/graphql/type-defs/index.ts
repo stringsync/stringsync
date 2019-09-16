@@ -2,7 +2,7 @@ import Scalars from './Scalars';
 import Query from './Query';
 import Mutation from './Mutation';
 import Book from './Book';
-import { ITypedef } from 'graphql-tools';
+import { ITypedef } from 'apollo-server';
 
 const typeDefs: ITypedef[] = [Scalars, Query, Mutation, Book];
 

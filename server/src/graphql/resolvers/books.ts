@@ -1,4 +1,4 @@
-import { IFieldResolver } from 'graphql-tools';
+import { IFieldResolver } from 'apollo-server';
 import { Context } from 'src';
 import { Book } from '../type-defs/Book';
 

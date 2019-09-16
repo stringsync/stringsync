@@ -1,26 +1,32 @@
 mutation {
   user1: createUser(
     data: {
-      username: "developer1@example.com"
+      username: "user"
+      email: "user2@stringsync.com"
+      provider: "email"
       encryptedPassword: "$2a$10$hACwQ5/HQI6FhbIISOUVeusy3sKyUDhSq36fF5d/54aAdiygJPFzm"
     }
   ) {
-    id
+    uid
   }
   user2: createUser(
     data: {
-      username: "developer2@example.com"
+      username: "user2"
+      email: "user2@stringsync.com"
+      provider: "email"
       encryptedPassword: "$2a$10$hACwQ5/HQI6FhbIISOUVeusy3sKyUDhSq36fF5d/54aAdiygJPFzm"
     }
   ) {
-    id
+    uid
   }
   user3: createUser(
     data: {
-      username: "developer3@example.com"
+      username: "user3"
+      email: "user3@stringsync.com"
+      provider: "email"
       encryptedPassword: "$2a$10$hACwQ5/HQI6FhbIISOUVeusy3sKyUDhSq36fF5d/54aAdiygJPFzm"
     }
   ) {
-    id
+    uid
   }
 }

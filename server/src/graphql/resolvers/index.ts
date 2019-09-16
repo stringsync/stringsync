@@ -1,6 +1,6 @@
 import books from './books';
 import addBook from './addBook';
-import { IResolvers } from 'graphql-tools';
+import { IResolvers } from 'apollo-server';
 
 const resolvers: IResolvers = {
   Query: {
