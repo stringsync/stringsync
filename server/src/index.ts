@@ -1,13 +1,8 @@
 import { ApolloServer } from 'apollo-server';
 import schema from './graphql/schema';
-import { ContextFunction } from 'apollo-server-core';
-import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
+import getContext from './utils/getContext';
 
 const PORT = process.env.PORT || 3000;
-
-export interface Context {}
-
-export const getContext: ContextFunction<ExpressContext, Context> = () => ({});
 
 export const server = new ApolloServer({
   schema,
