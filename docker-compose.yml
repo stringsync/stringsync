@@ -5,8 +5,9 @@ services:
     image: postgres:11
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: stringsync
+      POSTGRES_USER: stringsync
+      POSTGRES_PASSWORD: stringsync
     ports:
       - "5432:5432"
     volumes:
@@ -21,8 +22,13 @@ services:
       - /app/node_modules
     environment:
       NODE_ENV: development
-      PRISMA_SECRET: mysecret123
-      JWT_SECRET: mysecret123
+      DB_NAME: stringsync
+      DB_USERNAME: stringsync
+      DB_PASSWORD: stringsync
+      DB_HOST: host.docker.internal
+    links:
+      - db
+
     ports:
       - "3000:3000"
     command: ["yarn", "build:dev"]

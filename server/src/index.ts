@@ -1,6 +1,7 @@
 import { ApolloServer } from 'apollo-server';
 import schema from './graphql/schema';
-import getContext from './utils/getContext';
+import getContext from './util/getContext';
+import sequelize from './util/sequelize';
 
 const PORT = process.env.PORT || 3000;
 
@@ -9,9 +10,17 @@ export const server = new ApolloServer({
   context: getContext,
 });
 
-// only start the server if the file was run directly
+const main = async () => {
+  // connect to db
+  await sequelize.authenticate();
+  console.log('🚀 Connection to db established successfully');
+
+  // start server
+  const serverInfo = await server.listen(PORT);
+  console.log(`🚀 Server ready at ${serverInfo.url}`);
+};
+
+// runs if the file was executed directly (vs. imported)
 if (require.main === module) {
-  server.listen(PORT).then((serverInfo) => {
-    console.log(`🚀 Server ready at ${serverInfo.url}`);
-  });
+  main();
 }

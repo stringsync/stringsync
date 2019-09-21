@@ -1,5 +1,5 @@
 import { IFieldResolver } from 'apollo-server';
-import { Context } from '../../';
+import { Context } from '../../util/getContext';
 import { User } from '../type-defs/User';
 
 interface Args {}
