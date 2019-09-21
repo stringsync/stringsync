@@ -36,6 +36,7 @@
     "jest": "^24.9.0",
     "nodemon": "^1.19.1",
     "prettier": "^1.18.2",
+    "sequelize-cli": "^5.5.1",
     "ts-jest": "^24.0.2",
     "ts-loader": "^6.0.4",
     "typescript": "~3.4.3",
