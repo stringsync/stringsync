@@ -1,7 +1,0 @@
-type User @db(name: "user") {
-  uid: ID! @id
-  provider: String!
-  username: String! @unique
-  email: String!
-  encryptedPassword: String!
-}

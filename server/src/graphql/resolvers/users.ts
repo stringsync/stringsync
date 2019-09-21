@@ -4,7 +4,6 @@ import { User } from '../type-defs/User';
 
 interface Args {}
 
-const users: IFieldResolver<any, Context, Args> = (parent, args, context) =>
-  context.prisma.users();
+const users: IFieldResolver<any, Context, Args> = (parent, args, context) => {};
 
 export default users;
