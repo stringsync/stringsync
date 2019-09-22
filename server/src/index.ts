@@ -13,11 +13,11 @@ export const server = new ApolloServer({
 const main = async () => {
   // connect to db
   await sequelize.authenticate();
-  console.log('🚀 Connection to db established successfully');
+  console.log('🦑 Connected to db successfully');
 
   // start server
   const serverInfo = await server.listen(PORT);
-  console.log(`🚀 Server ready at ${serverInfo.url}`);
+  console.log(`🦑 Server ready at ${serverInfo.url}`);
 };
 
 // runs if the file was executed directly (vs. imported)
