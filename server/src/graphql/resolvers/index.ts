@@ -6,6 +6,7 @@ import users from './users';
 
 // Mutation
 import addBook from './addBook';
+import signup from './signup';
 
 const resolvers: IResolvers = {
   Query: {
@@ -14,6 +15,7 @@ const resolvers: IResolvers = {
   },
   Mutation: {
     addBook,
+    signup,
   },
 };
 
