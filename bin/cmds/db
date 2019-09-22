@@ -1,0 +1,3 @@
+#!/bin/bash
+
+SERVICE=db ss exec psql -U stringsync

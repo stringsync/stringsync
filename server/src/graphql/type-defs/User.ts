@@ -1,17 +1,14 @@
 import { gql } from 'apollo-server';
-import { UserProvider } from '../../models/User';
 
 export interface User {
-  uid: string;
-  provider: UserProvider;
+  id: number;
   username: string;
   email: string;
 }
 
 export default gql`
   type User {
-    uid: String!
-    provider: String!
+    id: Int!
     username: String!
     email: String!
   }
