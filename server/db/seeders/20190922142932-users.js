@@ -1,27 +1,37 @@
 'use strict';
 
+const bcrypt = require('bcrypt');
+
 const NOW = new Date('2019-09-22T14:45:43.045Z');
+const HASH_ROUNDS = 10;
+const PASSWORD = 'password';
+
+const encrypt = async (password) => await bcrypt.hash(password, HASH_ROUNDS);
 
 module.exports = {
-  up: (queryInterface, Sequelize) => {
+  up: async (queryInterface, Sequelize) => {
+    const encryptedPassword = await encrypt(PASSWORD);
     return queryInterface.bulkInsert('users', [
       {
-        username: 'foo',
-        email: 'foo@foo.com',
+        username: 'jaredplaysguitar',
+        email: 'jared@gmail.com',
         created_at: NOW,
         updated_at: NOW,
+        encrypted_password: encryptedPassword,
       },
       {
-        username: 'bar',
-        email: 'bar@bar.com',
+        username: 'jessicaplayspiano',
+        email: 'jessica@hotmail.com',
         created_at: NOW,
         updated_at: NOW,
+        encrypted_password: encryptedPassword,
       },
       {
-        username: 'baz',
-        email: 'baz@baz.com',
+        username: 'jordanplaysflute',
+        email: 'jordan@yahoo.com',
         created_at: NOW,
         updated_at: NOW,
+        encrypted_password: encryptedPassword,
       },
     ]);
   },

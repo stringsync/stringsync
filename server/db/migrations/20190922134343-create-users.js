@@ -8,7 +8,8 @@ module.exports = {
         created_at TIMESTAMP NOT NULL,
         updated_at TIMESTAMP NOT NULL,
         username TEXT UNIQUE NOT NULL,
-        email TEXT UNIQUE NOT NULL
+        email TEXT UNIQUE NOT NULL,
+        encrypted_password TEXT NOT NULL
       );
     `);
   },

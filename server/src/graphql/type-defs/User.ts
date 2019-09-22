@@ -10,6 +10,7 @@ export interface User {
 export interface UserInput {
   username: string;
   email: string;
+  password: string;
 }
 
 export default gql`
@@ -23,5 +24,6 @@ export default gql`
   input UserInput {
     username: String!
     email: String!
+    password: String!
   }
 `;

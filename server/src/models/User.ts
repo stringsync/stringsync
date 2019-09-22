@@ -55,6 +55,11 @@ const User = <UserStatic>db.define(
         isEmail: true,
       },
     },
+    encryptedPassword: {
+      field: 'encrypted_password',
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
   },
   {
     tableName: 'users',
