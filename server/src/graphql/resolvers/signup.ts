@@ -21,7 +21,6 @@ const signup: IFieldResolver<any, Context, Args> = async (parent, args) => {
       `password must be greater than ${PASSWORD_MIN_LEN} characters`
     );
   }
-
   if (password.length > PASSWORD_MAX_LEN) {
     throw new UserInputError(
       `password must be less than ${PASSWORD_MAX_LEN} characters`
@@ -29,7 +28,6 @@ const signup: IFieldResolver<any, Context, Args> = async (parent, args) => {
   }
 
   const encryptedPassword = await bcrypt.hash(password, HASH_ROUNDS);
-
   try {
     return User.create({ username, email, encryptedPassword });
   } catch (e) {
