@@ -4,6 +4,7 @@ export interface User {
   id: number;
   username: string;
   email: string;
+  createdAt: Date;
 }
 
 export default gql`
@@ -11,5 +12,6 @@ export default gql`
     id: Int!
     username: String!
     email: String!
+    createdAt: Date!
   }
 `;
