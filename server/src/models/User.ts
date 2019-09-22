@@ -26,21 +26,34 @@ const User = <UserStatic>db.define(
       field: 'created_at',
       type: DataTypes.DATE,
       allowNull: false,
+      validate: {
+        isDate: true,
+      },
     },
     updatedAt: {
       field: 'updated_at',
       type: DataTypes.DATE,
       allowNull: false,
+      validate: {
+        isDate: true,
+      },
     },
     username: {
       field: 'username',
       type: DataTypes.TEXT,
       allowNull: false,
+      validate: {
+        len: [3, 36],
+      },
     },
     email: {
       field: 'email',
       type: DataTypes.TEXT,
       allowNull: false,
+      validate: {
+        len: [3, 36],
+        isEmail: true,
+      },
     },
   },
   {
