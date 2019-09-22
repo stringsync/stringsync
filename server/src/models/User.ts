@@ -7,6 +7,7 @@ export interface User extends Model {
   readonly updatedAt: Date;
   username: string;
   email: string;
+  encryptedPassword: string;
 }
 
 export type UserStatic = typeof Model & {

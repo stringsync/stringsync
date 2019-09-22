@@ -26,6 +26,7 @@ services:
       - /app/node_modules
     environment:
       NODE_ENV: development
+      JWT_SECRET: stringsync
       DB_NAME: stringsync
       DB_USERNAME: stringsync
       DB_PASSWORD: stringsync

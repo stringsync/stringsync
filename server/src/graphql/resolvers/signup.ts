@@ -5,6 +5,8 @@ import UserModel from '../../models/User';
 import { User } from '../type-defs/User';
 import { ValidationError } from 'sequelize';
 import bcrypt from 'bcrypt';
+import getJwt from '../../util/getJwt';
+import db from 'src/util/db';
 
 const PASSWORD_MIN_LEN = 6;
 const PASSWORD_MAX_LEN = 256;
@@ -14,7 +16,11 @@ interface Args {
   input: UserInput;
 }
 
-const signup: IFieldResolver<any, Context, Args> = async (parent, args) => {
+const signup: IFieldResolver<any, Context, Args> = async (
+  parent,
+  args,
+  ctx
+) => {
   const { username, email, password } = args.input;
 
   if (password.length < PASSWORD_MIN_LEN) {
@@ -35,7 +41,13 @@ const signup: IFieldResolver<any, Context, Args> = async (parent, args) => {
       email,
       encryptedPassword,
     });
-    const user: User = { ...userRecord, jwt: 'asdf' };
+    const user: User = {
+      id: userRecord.id,
+      username: userRecord.username,
+      email: userRecord.email,
+      createdAt: userRecord.createdAt,
+      jwt: getJwt(userRecord.id, ctx.requestedAt),
+    };
     return user;
   } catch (e) {
     if (e instanceof ValidationError) {
