@@ -25,7 +25,7 @@ services:
       DB_NAME: stringsync
       DB_USERNAME: stringsync
       DB_PASSWORD: stringsync
-      DB_HOST: localhost
+      DB_HOST: host.docker.internal
     links:
       - db
 
