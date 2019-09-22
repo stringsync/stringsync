@@ -19,6 +19,7 @@ services:
       dockerfile: dev.Dockerfile
     volumes:
       - ./server/src:/app/src
+      - ./server/db:/app/db
       - /app/node_modules
     environment:
       NODE_ENV: development
