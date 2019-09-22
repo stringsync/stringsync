@@ -10,6 +10,8 @@ COPY ./yarn.lock .
 RUN yarn
 
 # copy configuration
+COPY ./.sequelizerc .
+COPY ./sequelize.config.json .
 COPY ./.eslintrc.js .
 COPY ./prettier.config.js .
 COPY ./tsconfig.json .

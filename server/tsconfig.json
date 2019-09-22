@@ -9,6 +9,6 @@
     "paths": {},
     "lib": ["es2015", "dom"]
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts"],
+  "include": ["src/**/*.ts", "tests/**/*.ts", "db/**/*.ts"],
   "exclude": ["node_modules"]
 }
