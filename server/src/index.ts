@@ -1,7 +1,7 @@
 import { ApolloServer } from 'apollo-server';
 import schema from './graphql/schema';
 import getContext from './util/getContext';
-import sequelize from './util/sequelize';
+import db from './util/db';
 
 const PORT = process.env.PORT || 3000;
 
@@ -12,7 +12,7 @@ export const server = new ApolloServer({
 
 const main = async () => {
   // connect to db
-  await sequelize.authenticate();
+  await db.authenticate();
   console.log('🦑  Connected to db successfully!');
 
   // start server

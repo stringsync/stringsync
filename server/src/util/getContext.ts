@@ -1,11 +1,11 @@
 import { ContextFunction } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
-import sequelize from './sequelize';
+import db from './db';
 
 export interface Context {}
 
 const getContext: ContextFunction<ExpressContext, Context> = () => ({
-  db: sequelize,
+  db,
 });
 
 export default getContext;

@@ -1,6 +1,7 @@
 import { Sequelize } from 'sequelize';
 
-const sequelize = new Sequelize({
+// A singleton instance of a db connection using sequelize.
+const db = new Sequelize({
   dialect: 'postgres',
   database: process.env.DB_NAME,
   username: process.env.DB_USERNAME,
@@ -9,4 +10,4 @@ const sequelize = new Sequelize({
   port: 5432,
 });
 
-export default sequelize;
+export default db;
