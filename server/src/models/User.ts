@@ -1,4 +1,5 @@
-import { Model } from 'sequelize';
+import { Model, DataTypes } from 'sequelize';
+import sequelize from '../util/sequelize';
 
 class User extends Model {
   public id: number;
@@ -7,5 +8,37 @@ class User extends Model {
   public username: string;
   public email: string;
 }
+
+User.init(
+  {
+    id: {
+      field: 'id',
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    createdAt: {
+      field: 'created_at',
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    updatedAt: {
+      field: 'updated_at',
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    username: {
+      field: 'username',
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    email: {
+      field: 'email',
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+  },
+  { sequelize }
+);
 
 export default User;
