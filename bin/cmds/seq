@@ -1,0 +1,3 @@
+#!/bin/bash
+
+SERVICE=server ss exec "(npx sequelize ${@})"
