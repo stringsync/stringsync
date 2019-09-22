@@ -2,6 +2,7 @@ version: "3.7"
 
 services:
   db:
+    container_name: ss_db
     image: postgres:11
     restart: always
     environment:
@@ -14,6 +15,8 @@ services:
       - postgres:/var/lib/postgresql/data
 
   server:
+    container_name: ss_server
+    image: ss-server:latest
     build:
       context: ./server
       dockerfile: dev.Dockerfile
@@ -35,6 +38,8 @@ services:
     command: ["yarn", "build:dev"]
 
   web:
+    container_name: ss_web
+    image: ss-web:latest
     build:
       context: ./web
       dockerfile: dev.Dockerfile

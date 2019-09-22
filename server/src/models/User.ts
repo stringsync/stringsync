@@ -1,19 +1,24 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, BuildOptions } from 'sequelize';
 import db from '../util/db';
 
-class User extends Model {
-  public id: number;
-  public readonly createdAt: Date;
-  public readonly updatedAt: Date;
-  public username: string;
-  public email: string;
+export interface User extends Model {
+  id: number;
+  readonly createdAt: Date;
+  readonly updatedAt: Date;
+  username: string;
+  email: string;
 }
 
-User.init(
+export type UserStatic = typeof Model & {
+  new (values?: object, options?: BuildOptions): User;
+};
+
+const User = <UserStatic>db.define(
+  'User',
   {
     id: {
       field: 'id',
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
@@ -40,7 +45,6 @@ User.init(
   },
   {
     tableName: 'users',
-    sequelize: db,
   }
 );
 

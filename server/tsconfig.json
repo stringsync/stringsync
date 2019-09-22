@@ -7,7 +7,7 @@
     "skipLibCheck": true,
     "types": ["jest"],
     "paths": {},
-    "lib": ["es2015", "dom"]
+    "lib": ["es2015"]
   },
   "include": ["src/**/*.ts", "tests/**/*.ts", "db/**/*.ts"],
   "exclude": ["node_modules"]
