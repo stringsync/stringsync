@@ -38,7 +38,10 @@ User.init(
       allowNull: false,
     },
   },
-  { sequelize: db }
+  {
+    tableName: 'users',
+    sequelize: db,
+  }
 );
 
 export default User;
