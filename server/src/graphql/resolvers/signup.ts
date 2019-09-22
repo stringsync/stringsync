@@ -1,13 +1,14 @@
 import { IFieldResolver, UserInputError } from 'apollo-server';
 import { UserInput } from '../type-defs/User';
 import { Context } from '../../util/getContext';
-import User from '../../models/User';
+import UserModel from '../../models/User';
+import { User } from '../type-defs/User';
 import { ValidationError } from 'sequelize';
 import bcrypt from 'bcrypt';
 
 const PASSWORD_MIN_LEN = 6;
 const PASSWORD_MAX_LEN = 256;
-const HASH_ROUNDS = 10; // yum
+const HASH_ROUNDS = 10;
 
 interface Args {
   input: UserInput;
@@ -29,7 +30,13 @@ const signup: IFieldResolver<any, Context, Args> = async (parent, args) => {
 
   const encryptedPassword = await bcrypt.hash(password, HASH_ROUNDS);
   try {
-    return User.create({ username, email, encryptedPassword });
+    const userRecord = await UserModel.create({
+      username,
+      email,
+      encryptedPassword,
+    });
+    const user: User = { ...userRecord, jwt: 'asdf' };
+    return user;
   } catch (e) {
     if (e instanceof ValidationError) {
       throw new UserInputError(e.message);

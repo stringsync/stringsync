@@ -5,6 +5,7 @@ export interface User {
   username: string;
   email: string;
   createdAt: Date;
+  jwt?: string;
 }
 
 export interface UserInput {
@@ -19,6 +20,7 @@ export default gql`
     username: String!
     email: String!
     createdAt: Date!
+    jwt: String
   }
 
   input UserInput {
