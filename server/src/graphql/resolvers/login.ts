@@ -1,14 +1,13 @@
-import { IFieldResolver, AuthenticationError } from 'apollo-server';
+import { IFieldResolver, ForbiddenError } from 'apollo-server';
 import { Context } from '../../util/getContext';
 import UserModel from '../../models/User';
-import { User } from '../type-defs/User';
+import { User, LoginInput } from '../type-defs/User';
 import getJwt from '../../util/getJwt';
-import getEncryptedPassword from '../../util/getEncryptedPassword';
+import bcrypt from 'bcrypt';
 import { or } from 'sequelize';
 
 interface Args {
-  emailOrUsername: string;
-  password: string;
+  input: LoginInput;
 }
 
 const login: IFieldResolver<any, Context, Args> = async (
@@ -16,23 +15,30 @@ const login: IFieldResolver<any, Context, Args> = async (
   args,
   context
 ) => {
-  const encryptedPassword = await getEncryptedPassword(args.password);
-  let email = args.emailOrUsername;
-  let username = args.emailOrUsername;
+  const password = args.input.password;
+  const email = args.input.emailOrUsername;
+  const username = args.input.emailOrUsername;
 
-  // Fetch the user using the encrypted password, which will verify if the
-  // password was correct
+  // fetch record
   const userRecord = await UserModel.findOne({
     where: {
-      encryptedPassword,
       ...or({ email }, { username }),
     },
   });
-
   if (!userRecord) {
-    throw new AuthenticationError('wrong username, email, or password');
+    throw new ForbiddenError('wrong username, email, or password');
   }
 
+  // check password
+  const isPassword = await bcrypt.compare(
+    password,
+    userRecord.encryptedPassword
+  );
+  if (!isPassword) {
+    throw new ForbiddenError('wrong username, email, or password');
+  }
+
+  // return user
   const user: User = {
     id: userRecord.id,
     username: userRecord.username,

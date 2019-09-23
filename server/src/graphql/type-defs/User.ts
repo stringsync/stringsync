@@ -15,7 +15,7 @@ export interface SignupInput {
 }
 
 export interface LoginInput {
-  usernameOrEmail: string;
+  emailOrUsername: string;
   password: string;
 }
 
@@ -35,7 +35,7 @@ export default gql`
   }
 
   input LoginInput {
-    usernameOrEmail: String!
+    emailOrUsername: String!
     password: String!
   }
 `;
