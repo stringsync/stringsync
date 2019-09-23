@@ -1,5 +1,5 @@
 import { IFieldResolver, UserInputError } from 'apollo-server';
-import { UserInput } from '../type-defs/User';
+import { SignupInput } from '../type-defs/User';
 import { Context } from '../../util/getContext';
 import UserModel from '../../models/User';
 import { User } from '../type-defs/User';
@@ -11,7 +11,7 @@ const PASSWORD_MIN_LEN = 6;
 const PASSWORD_MAX_LEN = 256;
 
 interface Args {
-  input: UserInput;
+  input: SignupInput;
 }
 
 const signup: IFieldResolver<any, Context, Args> = async (
