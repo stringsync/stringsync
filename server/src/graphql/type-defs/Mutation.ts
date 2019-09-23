@@ -2,6 +2,7 @@ import { gql } from 'apollo-server';
 
 export default gql`
   type Mutation {
-    signup(input: UserInput!): User!
+    signup(input: SignupInput!): User!
+    login(input: LoginInput!): User!
   }
 `;
