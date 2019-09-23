@@ -4,7 +4,7 @@ import User from '../../models/User';
 
 interface Args {}
 
-const users: IFieldResolver<any, Context, Args> = (parent, args, context) => {
+const users: IFieldResolver<any, Context, Args> = (parent, args, ctx) => {
   return User.findAll();
 };
 
