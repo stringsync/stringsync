@@ -1,13 +1,30 @@
-import { ApolloServer } from 'apollo-server';
+import { ApolloServer, ApolloError } from 'apollo-server';
 import schema from './graphql/schema';
 import getContext from './util/getContext';
 import db from './util/db';
 
 const PORT = process.env.PORT || 3000;
+const env = process.env.NODE_ENV || 'development';
 
 export const server = new ApolloServer({
   schema,
   context: getContext,
+  formatError: (e) => {
+    // We don't care about non prop environments
+    if (env !== 'production') {
+      return e;
+    }
+
+    // Do not expose internal service error stacktraces to clients
+    if (e.extensions.code === 'INTERNAL_SERVER_ERROR') {
+      console.error(JSON.stringify(e));
+      return new ApolloError('something went wrong', 'INTERNAL_SERVER_ERROR');
+    }
+
+    // If not an internal server error, we probably should
+    // forward it to the client and let it handle it
+    return e;
+  },
 });
 
 const main = async () => {
