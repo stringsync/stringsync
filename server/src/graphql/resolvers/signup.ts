@@ -2,8 +2,7 @@ import { IFieldResolver, UserInputError } from 'apollo-server';
 import { SignupInput } from '../type-defs/User';
 import { Context } from '../../util/getContext';
 import UserModel from '../../models/User';
-import { User } from '../type-defs/User';
-import { ValidationError, Sequelize } from 'sequelize';
+import { ValidationError } from 'sequelize';
 import getJwt from '../../util/getJwt';
 import getEncryptedPassword from '../../util/getEncryptedPassword';
 
