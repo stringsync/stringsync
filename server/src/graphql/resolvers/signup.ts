@@ -3,7 +3,7 @@ import { SignupInput } from '../type-defs/User';
 import { Context } from '../../util/getContext';
 import UserModel from '../../models/User';
 import { User } from '../type-defs/User';
-import { ValidationError } from 'sequelize';
+import { ValidationError, Sequelize } from 'sequelize';
 import getJwt from '../../util/getJwt';
 import getEncryptedPassword from '../../util/getEncryptedPassword';
 
@@ -21,6 +21,7 @@ const signup: IFieldResolver<any, Context, Args> = async (
 ) => {
   const { username, email, password } = args.input;
 
+  // check password
   if (password.length < PASSWORD_MIN_LEN) {
     throw new UserInputError(
       `password must be greater than ${PASSWORD_MIN_LEN} characters`
@@ -32,20 +33,27 @@ const signup: IFieldResolver<any, Context, Args> = async (
     );
   }
 
+  // try creating user
   try {
-    const userRecord = await UserModel.create({
-      username,
-      email,
-      encryptedPassword: await getEncryptedPassword(password),
+    return ctx.db.transaction(async (transaction) => {
+      const userRecord = await UserModel.create(
+        {
+          username,
+          email,
+          encryptedPassword: await getEncryptedPassword(password),
+        },
+        { transaction }
+      );
+      const user = {
+        id: userRecord.id,
+        username: userRecord.username,
+        email: userRecord.email,
+        createdAt: userRecord.createdAt,
+        jwt: getJwt(userRecord.id, ctx.requestedAt),
+      };
+      transaction.commit();
+      return user;
     });
-    const user: User = {
-      id: userRecord.id,
-      username: userRecord.username,
-      email: userRecord.email,
-      createdAt: userRecord.createdAt,
-      jwt: getJwt(userRecord.id, ctx.requestedAt),
-    };
-    return user;
   } catch (e) {
     if (e instanceof ValidationError) {
       throw new UserInputError(e.message);

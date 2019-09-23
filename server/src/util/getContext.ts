@@ -1,8 +1,4 @@
-import {
-  ContextFunction,
-  UserInputError,
-  AuthenticationError,
-} from 'apollo-server-core';
+import { ContextFunction, AuthenticationError } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 import db from './db';
 import { User } from '../graphql/type-defs/User';
@@ -34,21 +30,24 @@ export const getUser = async (token: string) => {
     return null;
   }
 
+  // Check jwt has been signed using JWT_SECRET
   const maybePayload = jwt.verify(token, JWT_SECRET);
   if (typeof maybePayload === 'string') {
-    throw new AuthenticationError('must reauthenticate');
+    return null;
   }
   const payload = maybePayload as JwtPayload;
 
+  // Check that jwt is not expired
   const issuedAt = new Date(payload.iat);
   if (isExpired(issuedAt)) {
-    throw new AuthenticationError('must reauthenticate');
+    return null;
   }
 
+  // Check to see if user exists in db
   const id = payload.id;
   const userRecord = await UserModel.findOne({ where: { id } });
   if (!userRecord) {
-    throw new AuthenticationError('must reauthenticate');
+    return null;
   }
 
   const user: User = Object.freeze({

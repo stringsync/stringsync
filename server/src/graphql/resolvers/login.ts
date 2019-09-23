@@ -10,11 +10,7 @@ interface Args {
   input: LoginInput;
 }
 
-const login: IFieldResolver<any, Context, Args> = async (
-  parent,
-  args,
-  context
-) => {
+const login: IFieldResolver<any, Context, Args> = async (parent, args, ctx) => {
   const password = args.input.password;
   const email = args.input.emailOrUsername;
   const username = args.input.emailOrUsername;
@@ -44,7 +40,7 @@ const login: IFieldResolver<any, Context, Args> = async (
     username: userRecord.username,
     createdAt: userRecord.createdAt,
     email: userRecord.email,
-    jwt: getJwt(userRecord.id, context.requestedAt),
+    jwt: getJwt(userRecord.id, ctx.requestedAt),
   };
   return user;
 };
