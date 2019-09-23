@@ -4,13 +4,11 @@ import { Context } from '../../util/getContext';
 import UserModel from '../../models/User';
 import { User } from '../type-defs/User';
 import { ValidationError } from 'sequelize';
-import bcrypt from 'bcrypt';
 import getJwt from '../../util/getJwt';
-import db from 'src/util/db';
+import getEncryptedPassword from '../../util/getEncryptedPassword';
 
 const PASSWORD_MIN_LEN = 6;
 const PASSWORD_MAX_LEN = 256;
-const HASH_ROUNDS = 10;
 
 interface Args {
   input: UserInput;
@@ -34,12 +32,11 @@ const signup: IFieldResolver<any, Context, Args> = async (
     );
   }
 
-  const encryptedPassword = await bcrypt.hash(password, HASH_ROUNDS);
   try {
     const userRecord = await UserModel.create({
       username,
       email,
-      encryptedPassword,
+      encryptedPassword: await getEncryptedPassword(password),
     });
     const user: User = {
       id: userRecord.id,
