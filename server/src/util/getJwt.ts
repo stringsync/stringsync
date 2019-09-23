@@ -2,10 +2,11 @@ import jwt from 'jsonwebtoken';
 
 export interface JwtPayload {
   id: number;
-  iat: number;
+  iat: number; // issued at
 }
 
-const JWT_SECRET = process.env.JWT_SECRET;
+export const JWT_SECRET = process.env.JWT_SECRET;
+export const JWT_LIFESPAN_MS = 1000 * 60 * 60 * 24 * 14; // 14 days
 
 const getJwt = (userId: number, issuedAt: Date): string => {
   const payload: JwtPayload = {
