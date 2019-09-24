@@ -1,14 +1,14 @@
 import { ContextFunction } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
-import { getUserTypeDef } from './getUserTypeDef';
+import { getUserType } from './getUserType';
 import { JwtPayload, JWT_SECRET, JWT_LIFESPAN_MS } from './getJwt';
 import { UserModel } from '../models/UserModel';
-import { UserTypeDef } from '../resolvers/schema';
+import { UserType } from '../resolvers/schema';
 import db from './db';
 import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 
 export interface Auth {
-  user?: UserTypeDef;
+  user?: UserType;
   isLoggedIn: boolean;
 }
 
@@ -61,7 +61,7 @@ export const getAuthenticatedUser = async (
     return null;
   }
 
-  return getUserTypeDef(userRecord);
+  return getUserType(userRecord);
 };
 
 export const getServerContext: ContextFunction<

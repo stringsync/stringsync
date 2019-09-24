@@ -4,7 +4,7 @@ import { login } from './mutation/login';
 import { signup } from './mutation/signup';
 import { notations } from './user/notations';
 
-export interface UserTypeDef {
+export interface UserType {
   id: number;
   username: string;
   email: string;
@@ -24,7 +24,7 @@ export interface SignupInputTypeDef {
 
 export interface SignupPayloadTypeDef {
   jwt: string;
-  user: UserTypeDef;
+  user: UserType;
 }
 
 export interface LoginInputTypeDef {
@@ -34,7 +34,7 @@ export interface LoginInputTypeDef {
 
 export interface LoginPayloadTypeDef {
   jwt: string;
-  user: UserTypeDef;
+  user: UserType;
 }
 
 const typeDefs = gql`

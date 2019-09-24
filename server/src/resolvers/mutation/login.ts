@@ -1,7 +1,7 @@
 import { FieldResolver } from '..';
 import { ForbiddenError } from 'apollo-server';
 import { getJwt } from '../../util/getJwt';
-import { getUserTypeDef } from '../../util/getUserTypeDef';
+import { getUserType } from '../../util/getUserType';
 import { LoginInputTypeDef, LoginPayloadTypeDef } from '../schema';
 import { or } from 'sequelize';
 import { UserModel } from '../../models/UserModel';
@@ -43,7 +43,7 @@ export const login: FieldResolver<
     throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
   }
 
-  const user = getUserTypeDef(userRecord);
+  const user = getUserType(userRecord);
   const jwt = getJwt(userRecord.id, ctx.requestedAt);
   return { user, jwt };
 };
