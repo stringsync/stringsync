@@ -1,6 +1,6 @@
 import { ApolloServer, ApolloError } from 'apollo-server';
-import schema from './graphql/schema';
-import getContext from './util/getContext';
+import schema from './resolvers/schema';
+import getServerContext from './util/getServerContext';
 import db from './util/db';
 
 const PORT = process.env.PORT || 3000;
@@ -8,7 +8,7 @@ const env = process.env.NODE_ENV || 'development';
 
 export const server = new ApolloServer({
   schema,
-  context: getContext,
+  context: getServerContext,
   formatError: (e) => {
     // We don't care about non prop environments
     if (env !== 'production') {

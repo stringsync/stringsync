@@ -1,22 +1,20 @@
-import { ContextFunction, AuthenticationError } from 'apollo-server-core';
+import { ContextFunction } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
-import db from './db';
-import { User } from '../graphql/type-defs/User';
-import UserModel from '../models/User';
 import { JwtPayload, JWT_SECRET, JWT_LIFESPAN_MS } from './getJwt';
+import { UserTypeDef } from 'src/resolvers/schema';
+import db from './db';
 import jwt from 'jsonwebtoken';
+import UserModel from '../models/User';
 
-export interface Context {
-  db: typeof db;
-  auth: {
-    isLoggedIn: boolean;
-    user?: User;
-  };
-  requestedAt: Date;
+export interface Auth {
+  user?: UserTypeDef;
+  isLoggedIn: boolean;
 }
 
-export interface AuthenticatedUser extends User {
-  isLoggedIn: boolean;
+export interface ServerContext {
+  db: typeof db;
+  auth: Auth;
+  requestedAt: Date;
 }
 
 export const isExpired = (issuedAt: Date) => {
@@ -50,19 +48,20 @@ export const getUser = async (token: string) => {
     return null;
   }
 
-  const user: User = Object.freeze({
+  const user: UserTypeDef = Object.freeze({
     id: userRecord.id,
     username: userRecord.username,
     email: userRecord.email,
     createdAt: userRecord.createdAt,
-    jwt: undefined,
+    updatedAt: userRecord.updatedAt,
   });
   return user;
 };
 
-export const getContext: ContextFunction<ExpressContext, Context> = async ({
-  req,
-}) => {
+const getServerContext: ContextFunction<
+  ExpressContext,
+  ServerContext
+> = async ({ req }) => {
   const token = req.headers.authorization || '';
   const user = await getUser(token);
   const auth = { isLoggedIn: Boolean(user), user };
@@ -74,4 +73,4 @@ export const getContext: ContextFunction<ExpressContext, Context> = async ({
   };
 };
 
-export default getContext;
+export default getServerContext;

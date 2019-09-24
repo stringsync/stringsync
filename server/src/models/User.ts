@@ -1,7 +1,7 @@
 import { Model, DataTypes, BuildOptions } from 'sequelize';
 import db from '../util/db';
 
-export interface User extends Model {
+export interface UserModel extends Model {
   id: number;
   readonly createdAt: Date;
   readonly updatedAt: Date;
@@ -10,11 +10,11 @@ export interface User extends Model {
   encryptedPassword: string;
 }
 
-export type UserStatic = typeof Model & {
-  new (values?: object, options?: BuildOptions): User;
+export type UserModelStatic = typeof Model & {
+  new (values?: object, options?: BuildOptions): UserModel;
 };
 
-const User = <UserStatic>db.define(
+const UserModel = <UserModelStatic>db.define(
   'User',
   {
     id: {
@@ -67,4 +67,4 @@ const User = <UserStatic>db.define(
   }
 );
 
-export default User;
+export default UserModel;

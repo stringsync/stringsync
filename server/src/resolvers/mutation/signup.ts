@@ -1,10 +1,10 @@
-import { IFieldResolver, UserInputError } from 'apollo-server';
-import { SignupInput } from '../type-defs/User';
-import { Context } from '../../util/getContext';
-import UserModel from '../../models/User';
+import { FieldResolver } from '..';
+import { SignupInput, UserTypeDef, SignupPayload } from '../schema';
+import { UserInputError } from 'apollo-server';
 import { ValidationError } from 'sequelize';
-import getJwt from '../../util/getJwt';
 import getEncryptedPassword from '../../util/getEncryptedPassword';
+import getJwt from '../../util/getJwt';
+import UserModel from '../../models/User';
 
 const PASSWORD_MIN_LEN = 6;
 const PASSWORD_MAX_LEN = 256;
@@ -13,7 +13,7 @@ interface Args {
   input: SignupInput;
 }
 
-const signup: IFieldResolver<any, Context, Args> = async (
+const signup: FieldResolver<SignupPayload, undefined, Args> = async (
   parent,
   args,
   ctx
@@ -43,15 +43,16 @@ const signup: IFieldResolver<any, Context, Args> = async (
         },
         { transaction }
       );
-      const user = {
+      const user: UserTypeDef = {
         id: userRecord.id,
         username: userRecord.username,
         email: userRecord.email,
         createdAt: userRecord.createdAt,
-        jwt: getJwt(userRecord.id, ctx.requestedAt),
+        updatedAt: userRecord.updatedAt,
       };
+      const jwt = getJwt(userRecord.id, ctx.requestedAt);
       transaction.commit();
-      return user;
+      return { user, jwt };
     });
   } catch (e) {
     if (e instanceof ValidationError) {

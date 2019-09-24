@@ -1,16 +1,20 @@
-import { IFieldResolver, ForbiddenError } from 'apollo-server';
-import { Context } from '../../util/getContext';
+import { ForbiddenError } from 'apollo-server';
 import UserModel from '../../models/User';
-import { User, LoginInput } from '../type-defs/User';
+import { UserTypeDef, LoginInput, LoginPayload } from '../schema';
 import getJwt from '../../util/getJwt';
 import bcrypt from 'bcrypt';
 import { or } from 'sequelize';
+import { FieldResolver } from '..';
 
 interface Args {
   input: LoginInput;
 }
 
-const login: IFieldResolver<any, Context, Args> = async (parent, args, ctx) => {
+const login: FieldResolver<LoginPayload, undefined, Args> = async (
+  parent,
+  args,
+  ctx
+) => {
   const password = args.input.password;
   const email = args.input.emailOrUsername;
   const username = args.input.emailOrUsername;
@@ -35,14 +39,17 @@ const login: IFieldResolver<any, Context, Args> = async (parent, args, ctx) => {
   }
 
   // return user
-  const user: User = {
+  const user: UserTypeDef = {
     id: userRecord.id,
     username: userRecord.username,
     createdAt: userRecord.createdAt,
+    updatedAt: userRecord.updatedAt,
     email: userRecord.email,
+  };
+  return {
+    user,
     jwt: getJwt(userRecord.id, ctx.requestedAt),
   };
-  return user;
 };
 
 export default login;
