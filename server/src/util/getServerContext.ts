@@ -1,10 +1,11 @@
 import { ContextFunction } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
+import { getUserTypeDef } from './getUserTypeDef';
 import { JwtPayload, JWT_SECRET, JWT_LIFESPAN_MS } from './getJwt';
 import { UserModel } from '../models/UserModel';
 import { UserTypeDef } from '../resolvers/schema';
 import db from './db';
-import jwt from 'jsonwebtoken';
+import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 
 export interface Auth {
   user?: UserTypeDef;
@@ -17,58 +18,61 @@ export interface ServerContext {
   requestedAt: Date;
 }
 
-export const isExpired = (issuedAt: Date) => {
-  const expiresAt = new Date(issuedAt.getTime() + JWT_LIFESPAN_MS);
-  const now = new Date();
-  return expiresAt < now;
-};
-
-export const getUser = async (token: string) => {
+export const getUser = async (token: string, requestedAt: Date) => {
   if (!token) {
     return null;
   }
 
   // Check jwt has been signed using JWT_SECRET
-  const maybePayload = jwt.verify(token, JWT_SECRET);
-  if (typeof maybePayload === 'string') {
+  let maybePayload: string | object;
+  try {
+    maybePayload = jwt.verify(token, JWT_SECRET);
+  } catch (err) {
+    if (err instanceof JsonWebTokenError) {
+      return null;
+    }
+    throw err;
+  }
+  if (
+    typeof maybePayload === 'string' ||
+    typeof maybePayload['id'] !== 'number' ||
+    typeof maybePayload['iat'] !== 'number'
+  ) {
     return null;
   }
-  const payload = maybePayload as JwtPayload;
+  const payload: JwtPayload = {
+    id: maybePayload['id'],
+    iat: maybePayload['iat'],
+  };
 
-  // Check that jwt is not expired
+  // Check that jwt is not expired and that it was not issued in the future
   const issuedAt = new Date(payload.iat);
-  if (isExpired(issuedAt)) {
+  const expiresAt = new Date(payload.iat + JWT_LIFESPAN_MS);
+  if (expiresAt < requestedAt || requestedAt < issuedAt) {
     return null;
   }
 
   // Check to see if user exists in db
-  const id = payload.id;
-  const userRecord = await UserModel.findOne({ where: { id } });
+  const userRecord = await UserModel.findOne({ where: { id: payload.id } });
   if (!userRecord) {
     return null;
   }
 
-  const user: UserTypeDef = Object.freeze({
-    id: userRecord.id,
-    username: userRecord.username,
-    email: userRecord.email,
-    createdAt: userRecord.createdAt,
-    updatedAt: userRecord.updatedAt,
-  });
-  return user;
+  return getUserTypeDef(userRecord);
 };
 
 export const getServerContext: ContextFunction<
   ExpressContext,
   ServerContext
 > = async ({ req }) => {
+  const requestedAt = new Date();
   const token = req.headers.authorization || '';
-  const user = await getUser(token);
-  const auth = { isLoggedIn: Boolean(user), user };
+  const user = await getUser(token, requestedAt);
+  const auth: Auth = { isLoggedIn: Boolean(user), user };
 
   return {
     db,
     auth,
-    requestedAt: new Date(),
+    requestedAt,
   };
 };
