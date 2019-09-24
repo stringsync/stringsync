@@ -12,27 +12,27 @@ export interface UserType {
   updatedAt: Date;
 }
 
-export interface NotationTypeDef {
+export interface NotationType {
   id: number;
 }
 
-export interface SignupInputTypeDef {
+export interface SignupInputType {
   username: string;
   email: string;
   password: string;
 }
 
-export interface SignupPayloadTypeDef {
+export interface SignupPayloadType {
   jwt: string;
   user: UserType;
 }
 
-export interface LoginInputTypeDef {
+export interface LoginInputType {
   emailOrUsername: string;
   password: string;
 }
 
-export interface LoginPayloadTypeDef {
+export interface LoginPayloadType {
   jwt: string;
   user: UserType;
 }

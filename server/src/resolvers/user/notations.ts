@@ -1,8 +1,6 @@
 import { FieldResolver } from '..';
-import { NotationTypeDef, UserType } from '../schema';
+import { NotationType, UserType } from '../schema';
 
-export const notations: FieldResolver<NotationTypeDef[], UserType> = (
-  parent
-) => {
+export const notations: FieldResolver<NotationType[], UserType> = (parent) => {
   return [];
 };
