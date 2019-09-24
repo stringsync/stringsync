@@ -27,23 +27,6 @@ export const validatePassword = (password: string) => {
   }
 };
 
-export const createUser = async (
-  username: string,
-  email: string,
-  password: string,
-  transaction: Transaction
-) => {
-  const encryptedPassword = await getEncryptedPassword(password);
-  return UserModel.create(
-    {
-      username,
-      email,
-      encryptedPassword,
-    },
-    { transaction }
-  );
-};
-
 export const signup: FieldResolver<
   SignupPayloadTypeDef,
   undefined,
@@ -55,18 +38,13 @@ export const signup: FieldResolver<
 
   try {
     return ctx.db.transaction(async (transaction) => {
-      const userRecord = await createUser(
-        username,
-        email,
-        password,
-        transaction
+      const encryptedPassword = await getEncryptedPassword(password);
+      const userRecord = await UserModel.create(
+        { username, email, encryptedPassword },
+        { transaction }
       );
-
       const user = getUserTypeDef(userRecord);
       const jwt = getJwt(userRecord.id, ctx.requestedAt);
-
-      transaction.commit();
-
       return { user, jwt };
     });
   } catch (err) {
