@@ -1,5 +1,5 @@
 import { makeExecutableSchema, gql, IResolvers } from 'apollo-server';
-import { users } from './query/users';
+import { getUsers } from './query/getUsers';
 import { login } from './mutation/login';
 import { signup } from './mutation/signup';
 import { notations } from './user/notations';
@@ -78,7 +78,7 @@ const typeDefs = gql`
 
   # Query
   type Query {
-    users: [User]
+    getUsers: [User]
   }
 
   # Mutation
@@ -97,7 +97,7 @@ const resolvers: IResolvers = {
   },
   // Query
   Query: {
-    users,
+    getUsers,
   },
   // Mutation
   Mutation: {
