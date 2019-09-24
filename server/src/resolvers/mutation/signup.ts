@@ -1,19 +1,23 @@
 import { FieldResolver } from '..';
-import { SignupInput, UserTypeDef, SignupPayload } from '../schema';
+import {
+  SignupInputTypeDef,
+  UserTypeDef,
+  SignupPayloadTypeDef,
+} from '../schema';
 import { UserInputError } from 'apollo-server';
 import { ValidationError } from 'sequelize';
 import getEncryptedPassword from '../../util/getEncryptedPassword';
 import getJwt from '../../util/getJwt';
-import UserModel from '../../models/User';
+import UserModel from '../../models/UserModel';
 
 const PASSWORD_MIN_LEN = 6;
 const PASSWORD_MAX_LEN = 256;
 
 interface Args {
-  input: SignupInput;
+  input: SignupInputTypeDef;
 }
 
-const signup: FieldResolver<SignupPayload, undefined, Args> = async (
+const signup: FieldResolver<SignupPayloadTypeDef, undefined, Args> = async (
   parent,
   args,
   ctx

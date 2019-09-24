@@ -1,16 +1,16 @@
 import { ForbiddenError } from 'apollo-server';
-import UserModel from '../../models/User';
-import { UserTypeDef, LoginInput, LoginPayload } from '../schema';
+import UserModel from '../../models/UserModel';
+import { UserTypeDef, LoginInputTypeDef, LoginPayloadTypeDef } from '../schema';
 import getJwt from '../../util/getJwt';
 import bcrypt from 'bcrypt';
 import { or } from 'sequelize';
 import { FieldResolver } from '..';
 
 interface Args {
-  input: LoginInput;
+  input: LoginInputTypeDef;
 }
 
-const login: FieldResolver<LoginPayload, undefined, Args> = async (
+const login: FieldResolver<LoginPayloadTypeDef, undefined, Args> = async (
   parent,
   args,
   ctx

@@ -1,4 +1,4 @@
-import UserModel from '../../models/User';
+import UserModel from '../../models/UserModel';
 import { FieldResolver } from '..';
 import { UserTypeDef } from '../schema';
 

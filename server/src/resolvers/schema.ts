@@ -12,23 +12,23 @@ export interface UserTypeDef {
   updatedAt: Date;
 }
 
-export interface SignupInput {
+export interface SignupInputTypeDef {
   username: string;
   email: string;
   password: string;
 }
 
-export interface SignupPayload {
+export interface SignupPayloadTypeDef {
   user: UserTypeDef;
   jwt: string;
 }
 
-export interface LoginInput {
+export interface LoginInputTypeDef {
   emailOrUsername: string;
   password: string;
 }
 
-export interface LoginPayload {
+export interface LoginPayloadTypeDef {
   user: UserTypeDef;
   jwt: string;
 }
