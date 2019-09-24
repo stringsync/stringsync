@@ -1,8 +1,7 @@
 import { makeExecutableSchema, gql, IResolvers } from 'apollo-server';
-import DateScalarType from './scalar/Date';
-import users from './query/users';
-import login from './mutation/login';
-import signup from './mutation/signup';
+import { users } from './query/users';
+import { login } from './mutation/login';
+import { signup } from './mutation/signup';
 
 export interface UserTypeDef {
   id: number;
@@ -19,8 +18,8 @@ export interface SignupInputTypeDef {
 }
 
 export interface SignupPayloadTypeDef {
-  user: UserTypeDef;
   jwt: string;
+  user: UserTypeDef;
 }
 
 export interface LoginInputTypeDef {
@@ -29,12 +28,12 @@ export interface LoginInputTypeDef {
 }
 
 export interface LoginPayloadTypeDef {
-  user: UserTypeDef;
   jwt: string;
+  user: UserTypeDef;
 }
 
 const typeDefs = gql`
-  # Scalars
+  # Scalar
   scalar Date
 
   # Types/Inputs
@@ -53,8 +52,8 @@ const typeDefs = gql`
   }
 
   type SignupPayload {
-    user: User!
     jwt: String!
+    user: User!
   }
 
   input LoginInput {
@@ -63,8 +62,8 @@ const typeDefs = gql`
   }
 
   type LoginPayload {
-    user: User!
     jwt: String!
+    user: User!
   }
 
   # Query
@@ -81,7 +80,7 @@ const typeDefs = gql`
 
 const resolvers: IResolvers = {
   // Scalar
-  Date: DateScalarType,
+
   // Types
   User: {},
   // Query

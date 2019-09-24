@@ -1,9 +1,9 @@
-import UserModel from '../../models/UserModel';
 import { FieldResolver } from '..';
 import { UserTypeDef } from '../schema';
+import { getUserTypeDef } from '../../util/getUserTypeDef';
+import { UserModel } from '../../models/UserModel';
 
-const users: FieldResolver<UserTypeDef[]> = (parent) => {
-  return UserModel.findAll();
+export const users: FieldResolver<UserTypeDef[]> = async () => {
+  const userRecords = await UserModel.findAll();
+  return userRecords.map(getUserTypeDef);
 };
-
-export default users;

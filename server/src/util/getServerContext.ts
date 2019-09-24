@@ -1,10 +1,10 @@
 import { ContextFunction } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 import { JwtPayload, JWT_SECRET, JWT_LIFESPAN_MS } from './getJwt';
-import { UserTypeDef } from 'src/resolvers/schema';
+import { UserModel } from '../models/UserModel';
+import { UserTypeDef } from '../resolvers/schema';
 import db from './db';
 import jwt from 'jsonwebtoken';
-import UserModel from '../models/User';
 
 export interface Auth {
   user?: UserTypeDef;
@@ -58,7 +58,7 @@ export const getUser = async (token: string) => {
   return user;
 };
 
-const getServerContext: ContextFunction<
+export const getServerContext: ContextFunction<
   ExpressContext,
   ServerContext
 > = async ({ req }) => {
@@ -72,5 +72,3 @@ const getServerContext: ContextFunction<
     requestedAt: new Date(),
   };
 };
-
-export default getServerContext;

@@ -1,55 +1,49 @@
-import { ForbiddenError } from 'apollo-server';
-import UserModel from '../../models/UserModel';
-import { UserTypeDef, LoginInputTypeDef, LoginPayloadTypeDef } from '../schema';
-import getJwt from '../../util/getJwt';
-import bcrypt from 'bcrypt';
-import { or } from 'sequelize';
 import { FieldResolver } from '..';
+import { ForbiddenError } from 'apollo-server';
+import { getJwt } from '../../util/getJwt';
+import { getUserTypeDef } from '../../util/getUserTypeDef';
+import { LoginInputTypeDef, LoginPayloadTypeDef } from '../schema';
+import { or } from 'sequelize';
+import { UserModel } from '../../models/UserModel';
+import bcrypt from 'bcrypt';
 
 interface Args {
   input: LoginInputTypeDef;
 }
 
-const login: FieldResolver<LoginPayloadTypeDef, undefined, Args> = async (
-  parent,
-  args,
-  ctx
-) => {
-  const password = args.input.password;
-  const email = args.input.emailOrUsername;
-  const username = args.input.emailOrUsername;
+export const WRONG_CREDENTIALS_MSG = 'wrong username, email, or password';
 
-  // fetch record
-  const userRecord = await UserModel.findOne({
+export const getUserRecord = (emailOrUsername: string, password: string) => {
+  const email = emailOrUsername;
+  const username = emailOrUsername;
+  return UserModel.findOne({
     where: {
       ...or({ email }, { username }),
     },
   });
+};
+
+export const login: FieldResolver<
+  LoginPayloadTypeDef,
+  undefined,
+  Args
+> = async (parent, args, ctx) => {
+  const { emailOrUsername, password } = args.input;
+
+  const userRecord = await getUserRecord(emailOrUsername, password);
   if (!userRecord) {
-    throw new ForbiddenError('wrong username, email, or password');
+    throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
   }
 
-  // check password
   const isPassword = await bcrypt.compare(
     password,
     userRecord.encryptedPassword
   );
   if (!isPassword) {
-    throw new ForbiddenError('wrong username, email, or password');
+    throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
   }
 
-  // return user
-  const user: UserTypeDef = {
-    id: userRecord.id,
-    username: userRecord.username,
-    createdAt: userRecord.createdAt,
-    updatedAt: userRecord.updatedAt,
-    email: userRecord.email,
-  };
-  return {
-    user,
-    jwt: getJwt(userRecord.id, ctx.requestedAt),
-  };
+  const user = getUserTypeDef(userRecord);
+  const jwt = getJwt(userRecord.id, ctx.requestedAt);
+  return { user, jwt };
 };
-
-export default login;
