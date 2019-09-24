@@ -2,6 +2,7 @@ import { makeExecutableSchema, gql, IResolvers } from 'apollo-server';
 import { users } from './query/users';
 import { login } from './mutation/login';
 import { signup } from './mutation/signup';
+import { notations } from './user/notations';
 
 export interface UserTypeDef {
   id: number;
@@ -9,6 +10,10 @@ export interface UserTypeDef {
   email: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface NotationTypeDef {
+  id: number;
 }
 
 export interface SignupInputTypeDef {
@@ -43,6 +48,11 @@ const typeDefs = gql`
     email: String!
     createdAt: Date!
     updatedAt: Date!
+    notations: [Notation]
+  }
+
+  type Notation {
+    id: Int!
   }
 
   input SignupInput {
@@ -79,10 +89,12 @@ const typeDefs = gql`
 `;
 
 const resolvers: IResolvers = {
-  // Scalar
+  // Scalars
 
   // Types
-  User: {},
+  User: {
+    notations,
+  },
   // Query
   Query: {
     users,
