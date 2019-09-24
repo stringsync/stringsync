@@ -18,7 +18,10 @@ export interface ServerContext {
   requestedAt: Date;
 }
 
-export const getUser = async (token: string, requestedAt: Date) => {
+export const getAuthenticatedUser = async (
+  token: string,
+  requestedAt: Date
+) => {
   if (!token) {
     return null;
   }
@@ -67,7 +70,7 @@ export const getServerContext: ContextFunction<
 > = async ({ req }) => {
   const requestedAt = new Date();
   const token = req.headers.authorization || '';
-  const user = await getUser(token, requestedAt);
+  const user = await getAuthenticatedUser(token, requestedAt);
   const auth: Auth = { isLoggedIn: Boolean(user), user };
 
   return {
