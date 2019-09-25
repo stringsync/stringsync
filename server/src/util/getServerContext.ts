@@ -6,6 +6,7 @@ import { UserModel } from '../models/UserModel';
 import { UserType } from '../resolvers/schema';
 import db from './db';
 import jwt, { JsonWebTokenError } from 'jsonwebtoken';
+import { DataLoaders, getDataLoaders } from './getDataLoaders';
 
 export interface Auth {
   user?: UserType;
@@ -16,6 +17,7 @@ export interface ServerContext {
   db: typeof db;
   auth: Auth;
   requestedAt: Date;
+  dataLoaders: DataLoaders;
 }
 
 export const getAuthenticatedUser = async (
@@ -72,10 +74,12 @@ export const getServerContext: ContextFunction<
   const token = req.headers.authorization || '';
   const user = await getAuthenticatedUser(token, requestedAt);
   const auth: Auth = { isLoggedIn: Boolean(user), user };
+  const dataLoaders = getDataLoaders(db);
 
   return {
     db,
     auth,
     requestedAt,
+    dataLoaders,
   };
 };
