@@ -13,7 +13,7 @@ interface Args {
 
 export const WRONG_CREDENTIALS_MSG = 'wrong username, email, or password';
 
-export const getUserRecord = (emailOrUsername: string, password: string) => {
+export const getUserRecord = (emailOrUsername: string) => {
   const email = emailOrUsername;
   const username = emailOrUsername;
   return UserModel.findOne({
@@ -30,7 +30,7 @@ export const login: FieldResolver<LoginPayloadType, undefined, Args> = async (
 ) => {
   const { emailOrUsername, password } = args.input;
 
-  const userRecord = await getUserRecord(emailOrUsername, password);
+  const userRecord = await getUserRecord(emailOrUsername);
   if (!userRecord) {
     throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
   }
