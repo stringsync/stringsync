@@ -1,5 +1,5 @@
 import { FieldResolver } from '..';
-import { UserType, GetUserInputType } from '../schema';
+import { UserType, GetUserInputType } from '../types';
 
 interface Args {
   input: GetUserInputType;

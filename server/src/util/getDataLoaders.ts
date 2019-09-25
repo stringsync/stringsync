@@ -1,5 +1,5 @@
 import DataLoader from 'dataloader';
-import { NotationType, UserType } from '../resolvers/schema';
+import { NotationType, UserType } from '../resolvers/types';
 import { Sequelize } from 'sequelize/types';
 import { getUserType } from './getUserType';
 import { UserModel } from '../models/UserModel';

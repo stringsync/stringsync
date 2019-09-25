@@ -2,7 +2,7 @@ import { ContextFunction } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 import { getUserType } from './getUserType';
 import { JwtPayload, JWT_SECRET, JWT_LIFESPAN_MS } from './getJwt';
-import { UserType } from '../resolvers/schema';
+import { UserType } from '../resolvers/types';
 import db from './db';
 import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import { DataLoaders, getDataLoaders } from './getDataLoaders';

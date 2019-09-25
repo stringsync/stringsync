@@ -1,5 +1,5 @@
 import { FieldResolver } from '..';
-import { UserType } from '../schema';
+import { UserType } from '../types';
 import { getUserType } from '../../util/getUserType';
 import { UserModel } from '../../models/UserModel';
 import { AuthenticationError } from 'apollo-server';

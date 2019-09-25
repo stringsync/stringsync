@@ -1,5 +1,5 @@
 import { FieldResolver } from '..';
-import { SignupInputType, SignupPayloadType } from '../schema';
+import { SignupInputType, SignupPayloadType } from '../types';
 import { UserInputError } from 'apollo-server';
 import { UserModel } from '../../models/UserModel';
 import { ValidationError, Transaction } from 'sequelize';

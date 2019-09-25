@@ -1,5 +1,5 @@
 import { FieldResolver } from '..';
-import { RefreshAuthPayloadType, RefreshAuthInputType } from '../schema';
+import { RefreshAuthPayloadType, RefreshAuthInputType } from '../types';
 import { getJwt } from '../../util/getJwt';
 import { ForbiddenError } from 'apollo-server';
 

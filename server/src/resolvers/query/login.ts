@@ -2,7 +2,7 @@ import { FieldResolver } from '..';
 import { ForbiddenError } from 'apollo-server';
 import { getJwt } from '../../util/getJwt';
 import { getUserType } from '../../util/getUserType';
-import { LoginInputType, LoginPayloadType } from '../schema';
+import { LoginInputType, LoginPayloadType } from '../types';
 import { or } from 'sequelize';
 import { UserModel } from '../../models/UserModel';
 import bcrypt from 'bcrypt';

@@ -1,5 +1,5 @@
 import { UserModel } from '../models/UserModel';
-import { UserType } from '../resolvers/schema';
+import { UserType } from '../resolvers/types';
 
 export const getUserType = (userRecord: UserModel): UserType => {
   return {
