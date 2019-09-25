@@ -70,7 +70,10 @@ export const getDataLoaders = (db: Sequelize): DataLoaders => ({
     const userRecords = await UserModel.findAll({ where: { id: ids } });
     const users = userRecords.map((userRecord) => {
       const user = getUserType(userRecord);
-      return { key: user.id, value: user };
+      return {
+        key: user.id,
+        value: user,
+      };
     });
 
     return getOrderedDataLoaderValues('id', ids, users);
