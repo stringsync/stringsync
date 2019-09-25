@@ -2,11 +2,11 @@ import { ContextFunction } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 import { getUserType } from './getUserType';
 import { JwtPayload, JWT_SECRET, JWT_LIFESPAN_MS } from './getJwt';
-import { UserModel } from '../models/UserModel';
 import { UserType } from '../resolvers/schema';
 import db from './db';
 import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import { DataLoaders, getDataLoaders } from './getDataLoaders';
+import { UserModel } from '../models/UserModel';
 
 export interface Auth {
   user?: UserType;
@@ -58,7 +58,9 @@ export const getAuthenticatedUser = async (
   }
 
   // Check to see if user exists in db
-  const userRecord = await UserModel.findOne({ where: { id: payload.id } });
+  const userRecord = await UserModel.findOne({
+    where: { id: payload.id },
+  });
   if (!userRecord) {
     return null;
   }

@@ -1,9 +1,14 @@
 import { FieldResolver } from '..';
 import { UserType } from '../schema';
 import { getUserType } from '../../util/getUserType';
-import { UserModel } from '../../models/UserModel';
+import { UserModel } from 'src/models/UserModel';
 
-export const getUsers: FieldResolver<UserType[]> = async () => {
+export const getUsers: FieldResolver<UserType[]> = async (
+  parent,
+  args,
+  ctx
+) => {
   const userRecords = await UserModel.findAll();
-  return userRecords.map(getUserType);
+  const users = userRecords.map(getUserType);
+  return users;
 };
