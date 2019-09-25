@@ -10,7 +10,7 @@ export const server = new ApolloServer({
   schema,
   context: getServerContext,
   formatError: (e) => {
-    // We don't care about non prop environments
+    // We don't care about non prod environments
     if (env !== 'production') {
       return e;
     }
