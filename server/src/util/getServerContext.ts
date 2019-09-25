@@ -33,10 +33,10 @@ export const getAuthenticatedUser = async (
   try {
     maybePayload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
-    if (err instanceof JsonWebTokenError) {
-      return null;
-    }
-    throw err;
+    // if we come across an error trying to verify the token,
+    // log the error and return null
+    console.error(err);
+    return null;
   }
   if (
     typeof maybePayload === 'string' ||
