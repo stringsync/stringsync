@@ -1,7 +1,7 @@
 import { ApolloServer, ApolloError } from 'apollo-server';
 import { getServerContext } from './util/getServerContext';
 import db from './util/db';
-import schema from './resolvers/schema';
+import { schema } from './resolvers/schema';
 
 const PORT = process.env.PORT || 3000;
 const env = process.env.NODE_ENV || 'development';

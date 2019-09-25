@@ -66,7 +66,7 @@ const typeDefs = gql`
   }
 `;
 
-export default makeExecutableSchema({
+export const schema = makeExecutableSchema({
   typeDefs,
   resolvers,
 });
