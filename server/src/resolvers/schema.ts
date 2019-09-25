@@ -1,6 +1,7 @@
 import { makeExecutableSchema, gql, IResolvers } from 'apollo-server';
 import { getUsers } from './query/getUsers';
 import { getUser } from './query/getUser';
+import { refreshAuth } from './query/refreshAuth';
 import { login } from './mutation/login';
 import { signup } from './mutation/signup';
 import { notations } from './user/notations';
@@ -13,12 +14,20 @@ export interface UserType {
   updatedAt: Date;
 }
 
+export interface NotationType {
+  id: number;
+}
+
 export interface GetUserInputType {
   id: number;
 }
 
-export interface NotationType {
+export interface RefreshAuthInputType {
   id: number;
+}
+
+export interface RefreshAuthPayloadType {
+  jwt: string;
 }
 
 export interface SignupInputType {
@@ -64,6 +73,14 @@ const typeDefs = gql`
     id: Int!
   }
 
+  input RefreshAuthInput {
+    id: Int!
+  }
+
+  type RefreshAuthPayload {
+    jwt: String!
+  }
+
   input SignupInput {
     username: String!
     email: String!
@@ -89,6 +106,7 @@ const typeDefs = gql`
   type Query {
     getUsers: [User]!
     getUser(input: GetUserInput!): User!
+    refreshAuth(input: RefreshAuthInput!): RefreshAuthPayload!
   }
 
   # Mutation
@@ -109,6 +127,7 @@ const resolvers: IResolvers = {
   Query: {
     getUsers,
     getUser,
+    refreshAuth,
   },
   // Mutation
   Mutation: {
