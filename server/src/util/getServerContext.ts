@@ -4,8 +4,11 @@ import { getUserType } from './getUserType';
 import { JwtPayload, JWT_SECRET, JWT_LIFESPAN_MS } from './getJwt';
 import { UserType } from '../resolvers/types';
 import db from './db';
-import jwt, { JsonWebTokenError } from 'jsonwebtoken';
-import { DataLoaders, getDataLoaders } from './getDataLoaders';
+import jwt from 'jsonwebtoken';
+import {
+  DataLoaders,
+  createDataLoaders,
+} from '../data-loaders/createDataLoaders';
 import { UserModel } from '../models/UserModel';
 
 export interface Auth {
@@ -76,7 +79,7 @@ export const getServerContext: ContextFunction<
   const token = req.headers.authorization || '';
   const user = await getAuthenticatedUser(token, requestedAt);
   const auth: Auth = { isLoggedIn: Boolean(user), user };
-  const dataLoaders = getDataLoaders(db);
+  const dataLoaders = createDataLoaders(db);
 
   return {
     db,

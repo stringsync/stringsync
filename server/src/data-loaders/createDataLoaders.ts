@@ -1,7 +1,6 @@
 import DataLoader from 'dataloader';
 import { NotationType, UserType } from '../resolvers/types';
 import { Sequelize } from 'sequelize/types';
-import { getUserType } from './getUserType';
 import { UserModel } from '../models/UserModel';
 import { isDeepStrictEqual } from 'util';
 
@@ -79,7 +78,7 @@ const createKeyValue = <V>(key: string | number, value: V): KeyValue<V> => ({
   value,
 });
 
-export const getDataLoaders = (db: Sequelize): DataLoaders => ({
+export const createDataLoaders = (db: Sequelize): DataLoaders => ({
   usersById: new DataLoader(async (ids) => {
     const userRecords = await UserModel.findAll({ where: { id: ids } });
     const userKeyValues = userRecords.map((userRecord) =>
