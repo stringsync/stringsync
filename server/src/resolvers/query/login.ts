@@ -1,6 +1,6 @@
 import { FieldResolver } from '..';
 import { ForbiddenError } from 'apollo-server';
-import { getJwt } from '../../util/getJwt';
+import { createJwt } from '../../util/createJwt';
 import { getUserType } from '../../util/getUserType';
 import { LoginInputType, LoginPayloadType } from '../types';
 import { or } from 'sequelize';
@@ -44,6 +44,6 @@ export const login: FieldResolver<LoginPayloadType, undefined, Args> = async (
   }
 
   const user = getUserType(userRecord);
-  const jwt = getJwt(userRecord.id, ctx.requestedAt);
+  const jwt = createJwt(userRecord.id, ctx.requestedAt);
   return { user, jwt };
 };

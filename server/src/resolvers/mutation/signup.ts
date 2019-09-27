@@ -4,7 +4,7 @@ import { UserInputError } from 'apollo-server';
 import { UserModel } from '../../models/UserModel';
 import { ValidationError, Transaction } from 'sequelize';
 import { getEncryptedPassword } from '../../util/getEncryptedPassword';
-import { getJwt } from '../../util/getJwt';
+import { createJwt } from '../../util/createJwt';
 import { getUserType } from '../../util/getUserType';
 
 const PASSWORD_MIN_LEN = 6;
@@ -44,7 +44,7 @@ export const signup: FieldResolver<SignupPayloadType, undefined, Args> = async (
         { transaction }
       );
       const user = getUserType(userRecord);
-      const jwt = getJwt(userRecord.id, ctx.requestedAt);
+      const jwt = createJwt(userRecord.id, ctx.requestedAt);
       return { user, jwt };
     });
   } catch (err) {

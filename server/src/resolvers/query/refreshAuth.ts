@@ -1,6 +1,6 @@
 import { FieldResolver } from '..';
 import { RefreshAuthPayloadType, RefreshAuthInputType } from '../types';
-import { getJwt } from '../../util/getJwt';
+import { createJwt } from '../../util/createJwt';
 import { ForbiddenError } from 'apollo-server';
 
 interface Args {
@@ -31,6 +31,6 @@ export const refreshAuth: FieldResolver<
 
   // if we got here, it means that the user has a valid jwt
   // and that jwt's id matches the one that the user provided
-  const jwt = getJwt(ctx.auth.user.id, ctx.requestedAt);
+  const jwt = createJwt(ctx.auth.user.id, ctx.requestedAt);
   return { jwt };
 };
