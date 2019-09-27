@@ -1,7 +1,7 @@
 import { FieldResolver } from '..';
 import { ForbiddenError } from 'apollo-server';
 import { createJwt } from '../../util/createJwt';
-import { getUserType } from '../../util/getUserType';
+import { toUserType } from '../../casters/toUserType';
 import { LoginInputType, LoginPayloadType } from '../types';
 import { or } from 'sequelize';
 import { UserModel } from '../../models/UserModel';
@@ -43,7 +43,7 @@ export const login: FieldResolver<LoginPayloadType, undefined, Args> = async (
     throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
   }
 
-  const user = getUserType(userRecord);
+  const user = toUserType(userRecord);
   const jwt = createJwt(userRecord.id, ctx.requestedAt);
   return { user, jwt };
 };

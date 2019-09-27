@@ -5,7 +5,7 @@ import { UserModel } from '../../models/UserModel';
 import { ValidationError, Transaction } from 'sequelize';
 import { getEncryptedPassword } from '../../util/getEncryptedPassword';
 import { createJwt } from '../../util/createJwt';
-import { getUserType } from '../../util/getUserType';
+import { toUserType } from '../../casters/toUserType';
 
 const PASSWORD_MIN_LEN = 6;
 const PASSWORD_MAX_LEN = 256;
@@ -43,7 +43,7 @@ export const signup: FieldResolver<SignupPayloadType, undefined, Args> = async (
         { username, email, encryptedPassword },
         { transaction }
       );
-      const user = getUserType(userRecord);
+      const user = toUserType(userRecord);
       const jwt = createJwt(userRecord.id, ctx.requestedAt);
       return { user, jwt };
     });

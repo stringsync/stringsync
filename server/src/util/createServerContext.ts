@@ -1,6 +1,6 @@
 import { ContextFunction } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
-import { getUserType } from './getUserType';
+import { toUserType } from '../casters/toUserType';
 import { JwtPayload, JWT_SECRET, JWT_LIFESPAN_MS } from './createJwt';
 import { UserType } from '../resolvers/types';
 import db from './db';
@@ -68,7 +68,7 @@ export const getAuthenticatedUser = async (
     return null;
   }
 
-  return getUserType(userRecord);
+  return toUserType(userRecord);
 };
 
 export const createServerContext: ContextFunction<
