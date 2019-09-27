@@ -71,7 +71,7 @@ export const getAuthenticatedUser = async (
   return getUserType(userRecord);
 };
 
-export const getServerContext: ContextFunction<
+export const createServerContext: ContextFunction<
   ExpressContext,
   ServerContext
 > = async ({ req }) => {

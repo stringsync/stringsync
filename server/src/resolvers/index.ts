@@ -1,5 +1,5 @@
 import { MergeInfo } from 'apollo-server';
-import { ServerContext } from '../util/getServerContext';
+import { ServerContext } from '../util/createServerContext';
 import { GraphQLResolveInfo } from 'graphql';
 import { IResolvers } from 'apollo-server';
 import { notations } from './user/notations';

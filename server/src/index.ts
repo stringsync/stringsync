@@ -1,5 +1,5 @@
 import { ApolloServer, ApolloError } from 'apollo-server';
-import { getServerContext } from './util/getServerContext';
+import { createServerContext } from './util/createServerContext';
 import db from './util/db';
 import { schema } from './resolvers/schema';
 
@@ -8,7 +8,7 @@ const env = process.env.NODE_ENV || 'development';
 
 export const server = new ApolloServer({
   schema,
-  context: getServerContext,
+  context: createServerContext,
   formatError: (e) => {
     // We don't care about non prod environments
     if (env !== 'production') {
