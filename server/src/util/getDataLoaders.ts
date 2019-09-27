@@ -3,6 +3,7 @@ import { NotationType, UserType } from '../resolvers/types';
 import { Sequelize } from 'sequelize/types';
 import { getUserType } from './getUserType';
 import { UserModel } from '../models/UserModel';
+import { isDeepStrictEqual } from 'util';
 
 export interface DataLoaders {
   usersById: DataLoader<number, UserType>;
@@ -36,7 +37,11 @@ const indexUniquelyBy = <V>(
 ): UniqueIndex<V> => {
   return objects.reduce<UniqueIndex<V>>((memo, object) => {
     const key = object.key;
-    if (key in memo) {
+    // If we have at least two objects that have the same keys but different values,
+    // then we violate the 'uniquely' invariant of this function. It is valid for
+    // more than one object to have the same key, as long as their values as equivalent,
+    // based on util.isDeepStrictEqual.
+    if (key in memo && !isDeepStrictEqual(object.value, memo[key])) {
       memo[key] = new DuplicateKeyError(keyName, key);
     } else {
       memo[key] = object.value;
@@ -45,10 +50,14 @@ const indexUniquelyBy = <V>(
   }, {});
 };
 
-const getOrderedDataLoaderValues = <K, V>(
+/**
+ * This function enforces the invariant that the values array must be sorted the
+ * same way as the keys array.
+ */
+const getOrderedDataLoaderValues = <V>(
   keyName: string,
   keys: Array<number | string>,
-  unorderedValues: KeyValue<V>[]
+  unorderedValues: Array<KeyValue<V>>
 ): OrderedValues<V> => {
   const valuesByKey = indexUniquelyBy(keyName, unorderedValues);
   const len = keys.length;
@@ -65,26 +74,23 @@ const getOrderedDataLoaderValues = <K, V>(
   return orderedValues;
 };
 
+const createKeyValue = <V>(key: string | number, value: V): KeyValue<V> => ({
+  key,
+  value,
+});
+
 export const getDataLoaders = (db: Sequelize): DataLoaders => ({
   usersById: new DataLoader(async (ids) => {
     const userRecords = await UserModel.findAll({ where: { id: ids } });
-    const users = userRecords.map((userRecord) => {
-      const user = getUserType(userRecord);
-      return {
-        key: user.id,
-        value: user,
-      };
-    });
-
-    return getOrderedDataLoaderValues('id', ids, users);
+    const userKeyValues = userRecords.map((userRecord) =>
+      createKeyValue(userRecord.id, userRecord)
+    );
+    return getOrderedDataLoaderValues('id', ids, userKeyValues);
   }),
   notationsByUserId: new DataLoader(async (userIds) => {
-    const notations = userIds.map((userId) => {
-      return {
-        key: userId,
-        value: [{ id: userId }, { id: userId }],
-      };
-    });
-    return getOrderedDataLoaderValues('userId', userIds, notations);
+    const notationKeyValues = userIds.map((userId) =>
+      createKeyValue(userId, [{ id: userId }])
+    );
+    return getOrderedDataLoaderValues('userId', userIds, notationKeyValues);
   }),
 });
