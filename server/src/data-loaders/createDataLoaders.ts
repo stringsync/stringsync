@@ -9,11 +9,11 @@ export interface DataLoaders {
   notationsByUserId: DataLoader<number, NotationType[]>;
 }
 
-type UniqueIndex<T> = { [key: string]: T | DuplicateKeyError };
+export type UniqueIndex<T> = { [key: string]: T | DuplicateKeyError };
 
-type OrderedValues<T> = Array<T | DuplicateKeyError | MissingKeyError>;
+export type OrderedValues<T> = Array<T | DuplicateKeyError | MissingKeyError>;
 
-interface KeyValue<V> {
+export interface KeyValue<V> {
   key: string | number;
   value: V;
 }
@@ -30,7 +30,7 @@ export class MissingKeyError extends Error {
   }
 }
 
-const indexUniquelyBy = <V>(
+export const indexUniquelyBy = <V>(
   keyName: string,
   objects: KeyValue<V>[]
 ): UniqueIndex<V> => {
@@ -53,7 +53,7 @@ const indexUniquelyBy = <V>(
  * This function enforces the invariant that the values array must be sorted the
  * same way as the keys array.
  */
-const getOrderedDataLoaderValues = <V>(
+export const getOrderedDataLoaderValues = <V>(
   keyName: string,
   keys: Array<number | string>,
   unorderedValues: Array<KeyValue<V>>
@@ -78,6 +78,7 @@ const createKeyValue = <V>(key: string | number, value: V): KeyValue<V> => ({
   value,
 });
 
+// TODO(jared) shard this into multiple files if this mapping becomes too big
 export const createDataLoaders = (db: Sequelize): DataLoaders => ({
   usersById: new DataLoader(async (ids) => {
     const userRecords = await UserModel.findAll({ where: { id: ids } });
