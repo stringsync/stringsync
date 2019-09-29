@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@apollo/react-hooks": "^3.1.1",
     "antd": "^3.23.2",
-    "apollo-client": "^2.6.4",
+    "apollo-boost": "^0.4.4",
     "babel-plugin-import": "^1.12.1",
     "customize-cra": "^0.6.0",
+    "graphql": "^14.5.8",
     "less": "^3.10.3",
     "less-loader": "^5.0.0",
     "lodash": "^4.17.15",
