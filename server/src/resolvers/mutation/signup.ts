@@ -2,7 +2,7 @@ import { FieldResolver } from '..';
 import { SignupInputType, SignupPayloadType } from '../types';
 import { UserInputError } from 'apollo-server';
 import { UserModel } from '../../models/UserModel';
-import { ValidationError, Transaction } from 'sequelize';
+import { ValidationError } from 'sequelize';
 import { getEncryptedPassword } from '../../util/getEncryptedPassword';
 import { createJwt } from '../../util/createJwt';
 import { toUserType } from '../../casters/user/toUserType';
@@ -44,7 +44,7 @@ export const signup: FieldResolver<SignupPayloadType, undefined, Args> = async (
         { transaction }
       );
       const user = toUserType(userRecord);
-      const jwt = createJwt(userRecord.id, ctx.requestedAt);
+      const jwt = createJwt(user.id, ctx.requestedAt);
       return { user, jwt };
     });
   } catch (err) {

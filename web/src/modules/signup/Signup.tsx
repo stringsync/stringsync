@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { FormComponentProps } from 'antd/lib/form';
 import { Link } from 'react-router-dom';
 import { Wordmark } from '../../components/brand';
+import { createSignupAction } from '../../store/modules/auth/types';
+import { useDispatch } from 'react-redux';
 
 const RoundedBox = styled.div`
   margin-top: 24px;
@@ -64,6 +66,8 @@ const withForm = Form.create<Props>({
 });
 
 const Signup = withForm((props: Props) => {
+  const dispatch = useDispatch();
+
   const { getFieldDecorator } = props.form;
   const emailFieldDecorator = getFieldDecorator('email', {
     rules: [{ required: true, message: 'email is required' }],
@@ -82,7 +86,8 @@ const Signup = withForm((props: Props) => {
         console.error(errors);
         return;
       }
-      console.log(values);
+      console.log('dispatching');
+      dispatch(createSignupAction(values));
     });
   };
 
@@ -108,7 +113,7 @@ const Signup = withForm((props: Props) => {
               </Form.Item>
               <Form.Item>
                 {passwordFieldDecorator(
-                  <Input.Password required placeholder="password" />
+                  <Input.Password placeholder="password" />
                 )}
               </Form.Item>
               <Form.Item>

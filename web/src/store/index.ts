@@ -1,7 +1,10 @@
 import createStore from './createStore';
+import apollo from '../util/apollo';
+import { ThunkAction as BaseThunkAction } from 'redux-thunk';
 import * as Viewport from './modules/viewport/types';
 import * as Device from './modules/device/types';
 import * as Auth from './modules/auth/types';
+import { Action } from 'redux';
 
 export type Store = ReturnType<typeof createStore>;
 
@@ -15,3 +18,14 @@ export interface RootState {
   device: Device.DeviceState;
   auth: Auth.AuthState;
 }
+
+export interface ThunkContext {
+  apollo: typeof apollo;
+}
+
+export type ThunkAction<R, A extends Action> = BaseThunkAction<
+  R,
+  RootState,
+  ThunkContext,
+  A
+>;
