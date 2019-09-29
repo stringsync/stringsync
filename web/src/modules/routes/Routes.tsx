@@ -16,8 +16,6 @@ const Login = enhance(React.lazy(() => import('../login/Login')));
 interface Props {}
 
 const Routes: React.FC<Props> = (props) => {
-  // Hack since react-router does not have a hook yet
-  // https://github.com/ReactTraining/react-router/issues/6430
   return (
     <Router>
       <Route path="/" exact component={Landing} />
