@@ -70,7 +70,7 @@ export const createSignupAction = (
 
   // parse response
   const jwt: string = res.data.signup.jwt;
-  const userData = res.data.signup;
+  const userData = res.data.signup.user;
   const user: AuthUser = {
     id: userData.id,
     username: userData.username,

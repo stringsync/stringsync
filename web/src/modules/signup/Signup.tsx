@@ -86,7 +86,6 @@ const Signup = withForm((props: Props) => {
         console.error(errors);
         return;
       }
-      console.log('dispatching');
       dispatch(createSignupAction(values));
     });
   };
