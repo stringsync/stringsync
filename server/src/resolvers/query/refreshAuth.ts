@@ -19,7 +19,8 @@ export const refreshAuth: FieldResolver<
     throw new ForbiddenError(BAD_JWT_MSG);
   }
 
-  // no user from the database (this should never happen)
+  // no user from the database (this should never happen because
+  // of the isLoggedIn guard)
   if (!ctx.auth.user) {
     throw new ForbiddenError(BAD_JWT_MSG);
   }

@@ -2,7 +2,7 @@ import { FieldResolver } from '..';
 import { ForbiddenError } from 'apollo-server';
 import { createJwt } from '../../util/createJwt';
 import { toUserType } from '../../casters/user/toUserType';
-import { LoginInputType, LoginPayloadType } from '../types';
+import { LoginInputType, LoginPayloadType, UserType } from '../types';
 import { or } from 'sequelize';
 import { UserModel } from '../../models/UserModel';
 import bcrypt from 'bcrypt';
@@ -19,7 +19,6 @@ export const getUserRecord = (emailOrUsername: string) => {
   return UserModel.findOne({
     where: {
       ...or({ email }, { username }),
-      raw: true,
     },
   });
 };
