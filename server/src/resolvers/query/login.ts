@@ -19,6 +19,7 @@ export const getUserRecord = (emailOrUsername: string) => {
   return UserModel.findOne({
     where: {
       ...or({ email }, { username }),
+      raw: true,
     },
   });
 };
