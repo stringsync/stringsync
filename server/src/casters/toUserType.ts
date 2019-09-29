@@ -1,5 +1,5 @@
 import { UserType } from '../resolvers/types';
-import { UserModel } from 'src/models/UserModel';
+import { UserModel } from '../models/UserModel';
 import { MissingCasterError } from '.';
 
 const fromUserModelToUserType = (userRecord: UserModel) => ({
