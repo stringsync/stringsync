@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FormEventHandler } from 'react';
 import { Form, Input, Row, Col, Button } from 'antd';
 import styled from 'styled-components';
 import { FormComponentProps } from 'antd/lib/form';
@@ -53,13 +53,18 @@ const SPANS = Object.freeze({
 
 interface Props extends FormComponentProps {}
 
+interface FormValues {
+  email: string;
+  username: string;
+  password: string;
+}
+
 const withForm = Form.create<Props>({
   name: 'signup',
 });
 
 const Signup = withForm((props: Props) => {
   const { getFieldDecorator } = props.form;
-
   const emailFieldDecorator = getFieldDecorator('email', {
     rules: [{ required: true, message: 'email is required' }],
   });
@@ -69,6 +74,18 @@ const Signup = withForm((props: Props) => {
   const passwordFieldDecorator = getFieldDecorator('password', {
     rules: [{ required: true, message: 'password is required' }],
   });
+
+  const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault();
+    props.form.validateFields((errors, values: FormValues) => {
+      if (errors) {
+        console.error(errors);
+        return;
+      }
+      console.log(values);
+    });
+  };
+
   return (
     <>
       <Row type="flex" justify="center" align="middle">
@@ -80,16 +97,18 @@ const Signup = withForm((props: Props) => {
               </StyledH1>
             </Link>
             <Callout>Signup to gain access to exclusive features</Callout>
-            <Form>
+            <Form onSubmit={handleSubmit}>
               <Form.Item>
-                {emailFieldDecorator(<Input placeholder="email" />)}
+                {emailFieldDecorator(<Input required placeholder="email" />)}
               </Form.Item>
               <Form.Item>
-                {usernameFieldDecorator(<Input placeholder="username" />)}
+                {usernameFieldDecorator(
+                  <Input required placeholder="username" />
+                )}
               </Form.Item>
               <Form.Item>
                 {passwordFieldDecorator(
-                  <Input.Password placeholder="password" />
+                  <Input.Password required placeholder="password" />
                 )}
               </Form.Item>
               <Form.Item>
