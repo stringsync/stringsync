@@ -5,7 +5,7 @@ import { UserModel } from '../../models/UserModel';
 import { ValidationError, Transaction } from 'sequelize';
 import { getEncryptedPassword } from '../../util/getEncryptedPassword';
 import { createJwt } from '../../util/createJwt';
-import { toUserType } from '../../casters/toUserType';
+import { toUserType } from '../../casters/user/toUserType';
 
 const PASSWORD_MIN_LEN = 6;
 const PASSWORD_MAX_LEN = 256;

@@ -1,6 +1,6 @@
 import { ContextFunction } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
-import { toUserType } from '../casters/toUserType';
+import { toUserType } from '../casters/user/toUserType';
 import { JwtPayload, JWT_SECRET, JWT_LIFESPAN_MS } from './createJwt';
 import { UserType } from '../resolvers/types';
 import db from './db';

@@ -1,7 +1,7 @@
 import { FieldResolver } from '..';
 import { ForbiddenError } from 'apollo-server';
 import { createJwt } from '../../util/createJwt';
-import { toUserType } from '../../casters/toUserType';
+import { toUserType } from '../../casters/user/toUserType';
 import { LoginInputType, LoginPayloadType } from '../types';
 import { or } from 'sequelize';
 import { UserModel } from '../../models/UserModel';

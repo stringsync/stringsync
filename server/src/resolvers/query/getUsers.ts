@@ -1,6 +1,6 @@
 import { FieldResolver } from '..';
 import { UserType } from '../types';
-import { toUserType } from '../../casters/toUserType';
+import { toUserType } from '../../casters/user/toUserType';
 import { UserModel } from '../../models/UserModel';
 import { AuthenticationError } from 'apollo-server';
 
