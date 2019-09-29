@@ -1,6 +1,6 @@
 import { FieldResolver } from '..';
 import { UserType } from '../types';
-import { toUserType } from '../../casters/user/toUserType';
+import { asUserType } from '../../casters/user/asUserType';
 import { UserModel } from '../../models/UserModel';
 import { AuthenticationError } from 'apollo-server';
 
@@ -12,7 +12,5 @@ export const getUsers: FieldResolver<UserType[]> = async (
   if (!ctx.auth.isLoggedIn) {
     throw new AuthenticationError('must be logged in');
   }
-  const userRecords = await UserModel.findAll();
-  const users = userRecords.map(toUserType);
-  return users;
+  return await UserModel.findAll({ ...asUserType });
 };
