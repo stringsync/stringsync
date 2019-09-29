@@ -52,6 +52,7 @@
     "@types/react-redux": "^7.1.2",
     "@types/react-router-dom": "^4.3.5",
     "@types/redux": "^3.6.0",
-    "@types/styled-components": "^4.1.18"
+    "@types/styled-components": "^4.1.18",
+    "@types/zen-observable": "^0.8.0"
   }
 }
