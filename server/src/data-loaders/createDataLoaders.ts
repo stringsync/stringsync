@@ -3,6 +3,7 @@ import { NotationType, UserType } from '../resolvers/types';
 import { Sequelize } from 'sequelize/types';
 import { UserModel } from '../models/UserModel';
 import { isDeepStrictEqual } from 'util';
+import { asUserType } from '../casters/user/asUserType';
 
 export interface DataLoaders {
   usersById: DataLoader<number, UserType>;
@@ -81,10 +82,11 @@ const createKeyValue = <V>(key: string | number, value: V): KeyValue<V> => ({
 // TODO(jared) shard this into multiple files if this mapping becomes too big
 export const createDataLoaders = (db: Sequelize): DataLoaders => ({
   usersById: new DataLoader(async (ids) => {
-    const userRecords = await UserModel.findAll({ where: { id: ids } });
-    const userKeyValues = userRecords.map((userRecord) =>
-      createKeyValue(userRecord.id, userRecord)
-    );
+    const users = await UserModel.findAll({
+      ...asUserType,
+      where: { id: ids },
+    });
+    const userKeyValues = users.map((user) => createKeyValue(user.id, user));
     return getOrderedDataLoaderValues('id', ids, userKeyValues);
   }),
   notationsByUserId: new DataLoader(async (userIds) => {
