@@ -112,7 +112,7 @@ const Signup = withForm((props: Props) => {
               </Form.Item>
               <Form.Item>
                 {passwordFieldDecorator(
-                  <Input.Password placeholder="password" />
+                  <Input.Password required placeholder="password" />
                 )}
               </Form.Item>
               <Form.Item>
