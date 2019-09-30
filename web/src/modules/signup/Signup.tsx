@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { FormComponentProps } from 'antd/lib/form';
 import { Link } from 'react-router-dom';
 import { Wordmark } from '../../components/brand';
-import { createSignupAction } from '../../store/modules/auth/types';
+import { createSignupAction } from '../../store/modules/auth';
 import { useDispatch } from 'react-redux';
 
 const RoundedBox = styled.div`

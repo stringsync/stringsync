@@ -1,5 +1,10 @@
+import { gql, ApolloError } from 'apollo-boost';
 import { ThunkAction } from '../..';
-import { gql } from 'apollo-boost';
+import { pick } from 'lodash';
+
+// keys for localstorage
+export const AUTH_JWT_KEY = 'ss:auth:jwt';
+export const AUTH_USER_KEY = 'ss:auth:user';
 
 export interface AuthUser {
   id: number;
@@ -7,16 +12,11 @@ export interface AuthUser {
   email: string;
 }
 
-// keys for localstorage
-export const AUTH_JWT_KEY = 'ss:auth:jwt';
-export const AUTH_USER_KEY = 'ss:auth:user';
-
 export type AuthState = AuthUser & {
   isLoggedIn: boolean;
   jwt: string;
 };
 
-// can be used for signup, login, or refreshAuth workflows
 export const SET_AUTH = 'SET_AUTH';
 interface SetAuthPayload {
   user: AuthUser;
@@ -41,41 +41,53 @@ export const createClearAuthAction = (): ClearAuthAction => ({
   type: CLEAR_AUTH,
 });
 
-interface SignupInput {
+export interface SignupInput {
   username: string;
   email: string;
   password: string;
 }
+export interface SignupData {
+  signup: {
+    jwt: string;
+    user: {
+      id: number;
+      username: string;
+      email: string;
+    };
+  };
+}
+export const SIGNUP_MUTATION = gql`
+  mutation Signup($input: SignupInput!) {
+    signup(input: $input) {
+      jwt
+      user {
+        id
+        username
+        email
+      }
+    }
+  }
+`;
+
 export const createSignupAction = (
   input: SignupInput
 ): ThunkAction<void, AuthActionTypes> => async (dispatch, getState, ctx) => {
   // issue mutation request
-  const res = await ctx.apollo.mutate({
-    mutation: gql`
-      mutation Signup($input: SignupInput!) {
-        signup(input: $input) {
-          jwt
-          user {
-            id
-            username
-            email
-          }
-        }
-      }
-    `,
+  const res = await ctx.apollo.mutate<SignupData>({
+    mutation: SIGNUP_MUTATION,
     variables: {
       input,
     },
   });
 
+  if (!res.data) {
+    throw new ApolloError({ errorMessage: 'no data returned from the server' });
+  }
+
   // parse response
-  const jwt: string = res.data.signup.jwt;
-  const userData = res.data.signup.user;
-  const user: AuthUser = {
-    id: userData.id,
-    username: userData.username,
-    email: userData.email,
-  };
+  const data = res.data.signup;
+  const jwt = data.jwt;
+  const user = pick(data.user, ['id', 'username', 'email']);
 
   // dispatch action to set auth in store
   dispatch(createSetAuthAction({ user, jwt }));

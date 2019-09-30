@@ -1,5 +1,6 @@
-import { AuthState, AuthActionTypes, SET_AUTH, CLEAR_AUTH } from './types';
+import { AuthState, AuthActionTypes, SET_AUTH, CLEAR_AUTH } from '.';
 import getInitialState from './getInitialState';
+import getNullState from './getNullState';
 
 export default (
   state = getInitialState(),
@@ -13,15 +14,8 @@ export default (
         jwt,
         isLoggedIn: true,
       };
-
     case CLEAR_AUTH:
-      return {
-        id: -1,
-        username: '',
-        email: '',
-        jwt: '',
-        isLoggedIn: false,
-      };
+      return getNullState();
     default:
       return { ...state };
   }
