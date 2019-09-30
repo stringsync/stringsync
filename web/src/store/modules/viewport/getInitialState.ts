@@ -1,4 +1,4 @@
-import { ViewportState } from './types';
+import { ViewportState } from '.';
 import getViewportState from './getViewportState';
 
 export default (): ViewportState => {

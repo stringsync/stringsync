@@ -1,4 +1,4 @@
-import { BreakpointName, ViewportState } from './types';
+import { BreakpointName, ViewportState } from '.';
 
 const getViewportState = (breakpointName: BreakpointName): ViewportState => {
   const viewportState: ViewportState = {

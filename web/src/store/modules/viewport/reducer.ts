@@ -1,8 +1,4 @@
-import {
-  ViewportState,
-  ViewportActionTypes,
-  SET_BREAKPOINT_NAME,
-} from './types';
+import { ViewportState, ViewportActionTypes, SET_BREAKPOINT_NAME } from '.';
 import getInitialState from './getInitialState';
 import getViewportState from './getViewportState';
 
