@@ -2,7 +2,7 @@ import createStore from './createStore';
 import apollo from '../util/apollo';
 import { ThunkAction as BaseThunkAction } from 'redux-thunk';
 import * as Viewport from './modules/viewport/types';
-import * as Device from './modules/device/types';
+import * as Device from './modules/device';
 import * as Auth from './modules/auth';
 import { Action } from 'redux';
 

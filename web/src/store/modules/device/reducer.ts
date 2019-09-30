@@ -1,4 +1,4 @@
-import { DeviceState, DeviceActionTypes, SET_USER_AGENT } from './types';
+import { DeviceState, DeviceActionTypes, SET_USER_AGENT } from '.';
 import getInitialState from './getInitialState';
 import getDevice from './getDevice';
 

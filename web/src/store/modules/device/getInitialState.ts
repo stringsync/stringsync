@@ -1,5 +1,5 @@
 import getDevice, { getUserAgent } from './getDevice';
-import { DeviceState } from './types';
+import { DeviceState } from '.';
 
 const getInitalState = (): DeviceState => {
   const userAgent = getUserAgent();
