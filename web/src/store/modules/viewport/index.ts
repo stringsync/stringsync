@@ -11,12 +11,20 @@ export interface ViewportState {
 }
 
 export const SET_BREAKPOINT_NAME = 'SET_BREAKPOINT_NAME';
-
+interface SetBreakpointNameInput {
+  breakpointName: BreakpointName;
+}
 interface SetBreakpointNameAction {
   type: typeof SET_BREAKPOINT_NAME;
   payload: {
     breakpointName: BreakpointName;
   };
 }
+export const createSetBreakpointNameAction = (
+  input: SetBreakpointNameInput
+): SetBreakpointNameAction => ({
+  type: SET_BREAKPOINT_NAME,
+  payload: input,
+});
 
 export type ViewportActionTypes = SetBreakpointNameAction;

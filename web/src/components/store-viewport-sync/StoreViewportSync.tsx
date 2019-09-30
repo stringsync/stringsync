@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   BreakpointName,
-  SET_BREAKPOINT_NAME,
+  createSetBreakpointNameAction,
 } from '../../store/modules/viewport';
 import useMedia from '../../hooks/use-media/useMedia';
 import { useDispatch, useSelector } from 'react-redux';
@@ -31,10 +31,10 @@ const StoreViewportSync: React.FC<Props> = (props) => {
   );
 
   if (nextBreakpointName !== breakpointName) {
-    dispatch({
-      type: SET_BREAKPOINT_NAME,
-      payload: { breakpointName: nextBreakpointName },
+    const setBreakpointNameAction = createSetBreakpointNameAction({
+      breakpointName,
     });
+    dispatch(setBreakpointNameAction);
   }
   return null;
 };
