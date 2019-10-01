@@ -10,6 +10,6 @@ export default (
     case SET_BREAKPOINT_NAME:
       return getViewportState(action.payload.breakpointName);
     default:
-      return { ...state };
+      return state;
   }
 };

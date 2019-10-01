@@ -11,6 +11,6 @@ export default (
       const { userAgent } = action.payload;
       return { userAgent, ...getDevice(userAgent) };
     default:
-      return { ...state };
+      return state;
   }
 };

@@ -1,11 +1,17 @@
-import { AuthState } from '.';
+import { AuthState, AuthUser } from '.';
 
-const getNullState = (): AuthState => ({
+export const getNullAuthUser = (): AuthUser => ({
   id: -1,
   username: '',
   email: '',
-  jwt: '',
+});
+
+const getNullState = (): AuthState => ({
+  isPending: false,
+  user: getNullAuthUser(),
   isLoggedIn: false,
+  jwt: '',
+  errors: [],
 });
 
 export default getNullState;

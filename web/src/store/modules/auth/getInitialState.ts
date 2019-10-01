@@ -19,9 +19,11 @@ const getInitialState = (): AuthState => {
   // until we refresh the auth. However, we assume it's
   // true to prevent flicking UI state changes
   return {
-    ...user,
+    user,
     jwt,
+    isPending: false,
     isLoggedIn: true,
+    errors: [],
   };
 };
 

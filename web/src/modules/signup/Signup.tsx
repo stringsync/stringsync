@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { FormComponentProps } from 'antd/lib/form';
 import { Link } from 'react-router-dom';
 import { Wordmark } from '../../components/brand';
-import { createSignupAction } from '../../store/modules/auth';
+import { signup } from '../../store/modules/auth';
 import { useDispatch } from 'react-redux';
 
 const RoundedBox = styled.div`
@@ -81,12 +81,12 @@ const Signup = withForm((props: Props) => {
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
-    props.form.validateFields((errors, values: FormValues) => {
+    props.form.validateFields((errors, user: FormValues) => {
       if (errors) {
         console.error(errors);
         return;
       }
-      dispatch(createSignupAction(values));
+      dispatch(signup(user));
     });
   };
 
