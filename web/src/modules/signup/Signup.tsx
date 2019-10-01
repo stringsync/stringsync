@@ -5,7 +5,8 @@ import { FormComponentProps } from 'antd/lib/form';
 import { Link } from 'react-router-dom';
 import { Wordmark } from '../../components/brand';
 import { signup } from '../../store/modules/auth';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store';
 
 const RoundedBox = styled.div`
   margin-top: 24px;
@@ -61,12 +62,23 @@ interface FormValues {
   password: string;
 }
 
+interface SelectedState {
+  isAuthPending: boolean;
+  authErrors: string[];
+}
+
 const withForm = Form.create<Props>({
   name: 'signup',
 });
 
 const Signup = withForm((props: Props) => {
   const dispatch = useDispatch();
+  const { isAuthPending, authErrors } = useSelector<RootState, SelectedState>(
+    (state) => ({
+      isAuthPending: state.auth.isPending,
+      authErrors: state.auth.errors,
+    })
+  );
 
   const { getFieldDecorator } = props.form;
   const emailFieldDecorator = getFieldDecorator('email', {
@@ -103,20 +115,39 @@ const Signup = withForm((props: Props) => {
             <Callout>Signup to gain access to exclusive features</Callout>
             <Form onSubmit={handleSubmit}>
               <Form.Item>
-                {emailFieldDecorator(<Input required placeholder="email" />)}
+                {emailFieldDecorator(
+                  <Input
+                    required
+                    placeholder="email"
+                    disabled={isAuthPending}
+                  />
+                )}
               </Form.Item>
               <Form.Item>
                 {usernameFieldDecorator(
-                  <Input required placeholder="username" />
+                  <Input
+                    required
+                    placeholder="username"
+                    disabled={isAuthPending}
+                  />
                 )}
               </Form.Item>
               <Form.Item>
                 {passwordFieldDecorator(
-                  <Input.Password required placeholder="password" />
+                  <Input.Password
+                    required
+                    placeholder="password"
+                    disabled={isAuthPending}
+                  />
                 )}
               </Form.Item>
               <Form.Item>
-                <Button type="primary" htmlType="submit" block>
+                <Button
+                  block
+                  type="primary"
+                  htmlType="submit"
+                  disabled={isAuthPending}
+                >
                   Signup
                 </Button>
               </Form.Item>
@@ -128,6 +159,14 @@ const Signup = withForm((props: Props) => {
           </RoundedBox>
         </Col>
       </Row>
+
+      {authErrors.length ? (
+        <Row type="flex" justify="center" align="middle">
+          <Col {...SPANS}>
+            <RoundedBox>{authErrors}</RoundedBox>
+          </Col>
+        </Row>
+      ) : null}
 
       <Row type="flex" justify="center" align="middle">
         <Col {...SPANS}>

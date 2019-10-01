@@ -119,7 +119,20 @@ export const signup = (
     window.localStorage.setItem(AUTH_JWT_KEY, jwt);
     window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
   } catch (error) {
-    dispatch(requestAuthFailure(error.message));
+    const errorMessages: string[] = [];
+    if ('graphQLErrors' in error) {
+      for (const graphQLError of error.graphQLErrors) {
+        const extendedErrors = graphQLError.extensions.exception.errors;
+        for (const extendedError of extendedErrors) {
+          errorMessages.push(extendedError.message);
+        }
+      }
+    } else if ('message' in error) {
+      errorMessages.push(error.message);
+    } else {
+      errorMessages.push('something went wrong');
+    }
+    dispatch(requestAuthFailure(errorMessages));
   }
 };
 
