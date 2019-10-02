@@ -1,10 +1,10 @@
-import React, { FormEventHandler } from 'react';
-import { Form, Input, Row, Col, Button } from 'antd';
+import React, { FormEventHandler, MouseEventHandler } from 'react';
+import { Form, Input, Row, Col, Button, Alert } from 'antd';
 import styled from 'styled-components';
 import { FormComponentProps } from 'antd/lib/form';
 import { Link } from 'react-router-dom';
 import { Wordmark } from '../../components/brand';
-import { signup } from '../../store/modules/auth';
+import { signup, clearAuthErrors } from '../../store/modules/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 
@@ -15,6 +15,15 @@ const RoundedBox = styled.div`
   border-radius: 4px;
   padding: 24px;
   max-width: 320px;
+`;
+
+const StyledAlert = styled(Alert)`
+  width: 100%;
+  max-width: 320px;
+
+  && {
+    margin-top: 24px;
+  }
 `;
 
 const StyledH1 = styled.h1`
@@ -79,6 +88,20 @@ const Signup = withForm((props: Props) => {
       authErrors: state.auth.errors,
     })
   );
+  const validateThenSignup: FormEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault();
+    props.form.validateFields((errors, user: FormValues) => {
+      if (errors) {
+        // let ant design decide to
+        console.error(errors);
+        return;
+      }
+      dispatch(signup(user));
+    });
+  };
+  const clearErrors: MouseEventHandler<HTMLAnchorElement> = (event) => {
+    dispatch(clearAuthErrors());
+  };
 
   const { getFieldDecorator } = props.form;
   const emailFieldDecorator = getFieldDecorator('email', {
@@ -91,17 +114,6 @@ const Signup = withForm((props: Props) => {
     rules: [{ required: true, message: 'password is required' }],
   });
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
-    event.preventDefault();
-    props.form.validateFields((errors, user: FormValues) => {
-      if (errors) {
-        console.error(errors);
-        return;
-      }
-      dispatch(signup(user));
-    });
-  };
-
   return (
     <>
       <Row type="flex" justify="center" align="middle">
@@ -113,7 +125,7 @@ const Signup = withForm((props: Props) => {
               </StyledH1>
             </Link>
             <Callout>Signup to gain access to exclusive features</Callout>
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={validateThenSignup}>
               <Form.Item>
                 {emailFieldDecorator(
                   <Input
@@ -163,7 +175,20 @@ const Signup = withForm((props: Props) => {
       {authErrors.length ? (
         <Row type="flex" justify="center" align="middle">
           <Col {...SPANS}>
-            <RoundedBox>{authErrors}</RoundedBox>
+            <StyledAlert
+              closable
+              type="error"
+              showIcon
+              onClose={clearErrors}
+              message="Error"
+              description={
+                <ul>
+                  {authErrors.map((authError, authErrorNdx) => {
+                    return <li key={authErrorNdx}>{authError}</li>;
+                  })}
+                </ul>
+              }
+            />
           </Col>
         </Row>
       ) : null}

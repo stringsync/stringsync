@@ -1,4 +1,4 @@
-import { gql, ApolloError } from 'apollo-boost';
+import { gql } from 'apollo-boost';
 import { ThunkAction } from '../..';
 import { pick } from 'lodash';
 
