@@ -32,7 +32,7 @@ const StoreViewportSync: React.FC<Props> = (props) => {
 
   if (nextBreakpointName !== breakpointName) {
     const setBreakpointNameAction = createSetBreakpointNameAction({
-      breakpointName,
+      breakpointName: nextBreakpointName,
     });
     dispatch(setBreakpointNameAction);
   }

@@ -1,6 +1,9 @@
 import React from 'react';
 import { Layout } from 'antd';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import { Wordmark } from '../../components/brand';
 
 const StyledLayout = styled(Layout)`
   min-height: 100vh;
@@ -11,18 +14,27 @@ const StyledHeader = styled(Layout.Header)`
   border-bottom: 1px solid #e8e8e8;
 `;
 
-export interface DefaultLayoutProps {
-  foo?: string;
-}
+const StyledFooter = styled(Layout.Footer)`
+  text-align: center;
+`;
 
-const DefaultLayout: React.FC<DefaultLayoutProps> = (props) => {
+const DefaultLayout: React.FC = (props) => {
+  const isFooterHidden = useSelector<RootState, boolean>((state) => {
+    const { xs, sm, md } = state.viewport;
+    return xs || sm || md;
+  });
+
   return (
     <StyledLayout>
-      <StyledHeader>{props.foo}</StyledHeader>
-      <Layout.Content>
-        <main>{props.children}</main>
-      </Layout.Content>
-      <Layout.Footer></Layout.Footer>
+      <StyledHeader>
+        <h1>
+          <Wordmark />
+        </h1>
+      </StyledHeader>
+      <Layout.Content>{props.children}</Layout.Content>;
+      {isFooterHidden ? null : (
+        <StyledFooter>StringSync LLC © 2019</StyledFooter>
+      )}
     </StyledLayout>
   );
 };

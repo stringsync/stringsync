@@ -1,7 +1,7 @@
 import React from 'react';
 import { Layouts } from './Layouts';
-import DefaultLayout, { DefaultLayoutProps } from './DefaultLayout';
-import NoneLayout, { NoneLayoutProps } from './NoneLayout';
+import DefaultLayout from './DefaultLayout';
+import NoneLayout from './NoneLayout';
 
 const getLayout = (layout: Layouts) => {
   switch (layout) {
