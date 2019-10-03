@@ -7,6 +7,9 @@ import { Wordmark } from '../../components/brand';
 import { signup, clearAuthErrors } from '../../store/modules/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
+import compose from '../../util/compose';
+import { withLayout } from '../../hocs';
+import { Layouts } from '../../hocs/with-layout/Layouts';
 
 const RoundedBox = styled.div`
   margin-top: 24px;
@@ -76,11 +79,12 @@ interface SelectedState {
   authErrors: string[];
 }
 
-const withForm = Form.create<Props>({
-  name: 'signup',
-});
+const enhance = compose(
+  withLayout({ layout: Layouts.NONE, props: {} }),
+  Form.create<Props>({ name: 'signup' })
+);
 
-const Signup = withForm((props: Props) => {
+const Signup = enhance((props: Props) => {
   const dispatch = useDispatch();
   const { isAuthPending, authErrors } = useSelector<RootState, SelectedState>(
     (state) => ({

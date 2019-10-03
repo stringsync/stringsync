@@ -1,1 +1,1 @@
-export const hocs = undefined;
+export { default as withLayout } from './with-layout/withLayout';

@@ -1,26 +1,17 @@
 import React from 'react';
-import { Layout } from 'antd';
-import styled from 'styled-components';
 import StoreViewportSync from '../../components/store-viewport-sync/StoreViewportSync';
-import Header from './Header';
-import Content from './Content';
-import Footer from './Footer';
-
-const StyledLayout = styled(Layout)`
-  min-height: 100vh;
-`;
+import Routes from '../routes/Routes';
 
 interface Props {}
 
 const App: React.FC<Props> = (props) => {
   return (
     <>
+      {/* NOT RENDERED TO DOM */}
       <StoreViewportSync />
-      <StyledLayout>
-        <Header />
-        <Content />
-        <Footer />
-      </StyledLayout>
+
+      {/* RENDERED TO DOM */}
+      <Routes />
     </>
   );
 };
