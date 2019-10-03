@@ -5,7 +5,7 @@ import { withLayout } from '../../hocs';
 
 interface Props {}
 
-const enhance = compose(withLayout({ layout: Layouts.DEFAULT, props: {} }));
+const enhance = compose(withLayout(Layouts.DEFAULT));
 
 const Library: React.FC<Props> = enhance(() => {
   return <div>Library</div>;

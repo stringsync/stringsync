@@ -80,7 +80,7 @@ interface SelectedState {
 }
 
 const enhance = compose(
-  withLayout({ layout: Layouts.NONE, props: {} }),
+  withLayout(Layouts.DEFAULT),
   Form.create<Props>({ name: 'signup' })
 );
 

@@ -14,18 +14,11 @@ const getLayout = (layout: Layouts) => {
   }
 };
 
-type LayoutProps = DefaultLayoutProps | NoneLayoutProps;
-
-interface LayoutOptions {
-  layout: Layouts;
-  props: LayoutProps;
-}
-
-const withLayout = (layoutOptions: LayoutOptions) =>
+const withLayout = (layout: Layouts) =>
   function<P>(Component: React.ComponentType<P>) {
-    const Layout = getLayout(layoutOptions.layout);
+    const Layout = getLayout(layout);
     return (props: P) => (
-      <Layout {...layoutOptions.props}>
+      <Layout>
         <Component {...props} />
       </Layout>
     );

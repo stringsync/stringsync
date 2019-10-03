@@ -11,12 +11,14 @@ const StyledHeader = styled(Layout.Header)`
   border-bottom: 1px solid #e8e8e8;
 `;
 
-export interface DefaultLayoutProps {}
+export interface DefaultLayoutProps {
+  foo?: string;
+}
 
 const DefaultLayout: React.FC<DefaultLayoutProps> = (props) => {
   return (
     <StyledLayout>
-      <StyledHeader>default layout</StyledHeader>
+      <StyledHeader>{props.foo}</StyledHeader>
       <Layout.Content>
         <main>{props.children}</main>
       </Layout.Content>

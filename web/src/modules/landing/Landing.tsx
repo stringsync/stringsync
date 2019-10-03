@@ -7,7 +7,7 @@ import { Layouts } from '../../hocs/with-layout/Layouts';
 
 interface Props {}
 
-const enhance = compose(withLayout({ layout: Layouts.DEFAULT, props: {} }));
+const enhance = compose(withLayout(Layouts.DEFAULT));
 
 const Landing: React.FC<Props> = enhance(() => {
   const isMobile = useSelector(isMobileSelector);
