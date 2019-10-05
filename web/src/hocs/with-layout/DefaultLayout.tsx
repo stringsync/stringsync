@@ -1,9 +1,11 @@
 import React from 'react';
-import { Layout } from 'antd';
+import { Layout, Dropdown, Icon, Menu, Row, Col, Divider } from 'antd';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { Wordmark } from '../../components/brand';
+import Logo from '../../components/brand/logo/Logo';
+import { Link } from 'react-router-dom';
 
 const StyledLayout = styled(Layout)`
   min-height: 100vh;
@@ -19,7 +21,7 @@ const StyledFooter = styled(Layout.Footer)`
 `;
 
 const DefaultLayout: React.FC = (props) => {
-  const isFooterHidden = useSelector<RootState, boolean>((state) => {
+  const isLtMdViewport = useSelector<RootState, boolean>((state) => {
     const { xs, sm, md } = state.viewport;
     return xs || sm || md;
   });
@@ -27,12 +29,23 @@ const DefaultLayout: React.FC = (props) => {
   return (
     <StyledLayout>
       <StyledHeader>
-        <h1>
-          <Wordmark />
-        </h1>
+        <Row type="flex" justify="space-between">
+          <Col>
+            <Link to="/library">
+              <Logo size={28} />
+              {!isLtMdViewport ? (
+                <>
+                  <Divider type="vertical" />
+                  <Wordmark />
+                </>
+              ) : null}
+            </Link>
+          </Col>
+          <Col>menu</Col>
+        </Row>
       </StyledHeader>
       <Layout.Content>{props.children}</Layout.Content>;
-      {isFooterHidden ? null : (
+      {isLtMdViewport ? null : (
         <StyledFooter>StringSync LLC © 2019</StyledFooter>
       )}
     </StyledLayout>
