@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Dropdown, Icon, Menu, Row, Col, Divider } from 'antd';
+import { Layout, Row, Col, Divider } from 'antd';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
