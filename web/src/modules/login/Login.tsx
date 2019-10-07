@@ -26,6 +26,7 @@ const StyledAlert = styled(Alert)`
   max-width: 320px;
 
   && {
+    margin: 0 auto;
     margin-top: 24px;
   }
 `;

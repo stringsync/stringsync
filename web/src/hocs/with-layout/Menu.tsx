@@ -8,12 +8,7 @@ import { AuthUser } from '../../store/modules/auth';
 import { logout } from '../../store/modules/auth/';
 
 const MenuIcon = styled(Icon)`
-  font-size: 20px;
-  color: rgba(0, 0, 0, 0.65);
-
-  :hover {
-    color: ${(props) => props.theme['@primary-color']};
-  }
+  font-size: 22px;
 `;
 
 const Username = styled.div`
@@ -48,7 +43,7 @@ const Menu: React.FC<Props> = (props) => {
     message.success('logged out');
   };
 
-  const gutterPx = isLoggedIn ? 24 : 8;
+  const gutterPx = isLoggedIn ? 16 : 8;
 
   const isLibraryVisible = !isLtEqMdViewport && isLoggedIn;
   const isUploadVisible = !isLtEqMdViewport && isLoggedIn && isGtEqTeacher;
@@ -61,23 +56,29 @@ const Menu: React.FC<Props> = (props) => {
       <Row type="flex" justify="center" align="middle" gutter={gutterPx}>
         {isLibraryVisible ? (
           <Col>
-            <Link to="library">
-              <MenuIcon type="compass" />
-            </Link>
+            <Button type="link" size="large" shape="circle">
+              <Link to="library">
+                <MenuIcon type="compass" theme="filled" />
+              </Link>
+            </Button>
           </Col>
         ) : null}
 
         {isUploadVisible ? (
           <Col>
-            <Link to="upload">
-              <MenuIcon type="upload" />
-            </Link>
+            <Button type="link" size="large" shape="circle">
+              <Link to="upload">
+                <MenuIcon type="upload" />
+              </Link>
+            </Button>
           </Col>
         ) : null}
 
         {isSettingsVisible ? (
           <Col>
-            <MenuIcon type="user" onClick={showModal} />
+            <Button type="link" size="large" shape="circle" onClick={showModal}>
+              <MenuIcon type="setting" theme="filled" />
+            </Button>
           </Col>
         ) : null}
 
