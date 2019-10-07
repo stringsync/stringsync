@@ -10,7 +10,6 @@ const getNullState = (): AuthState => ({
   isPending: false,
   user: getNullAuthUser(),
   isLoggedIn: false,
-  jwt: '',
   errors: [],
 });
 

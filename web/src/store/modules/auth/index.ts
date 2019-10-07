@@ -3,7 +3,6 @@ import { ThunkAction } from '../..';
 import { pick } from 'lodash';
 import { message } from 'antd';
 import getErrorMessages from './getErrorMessages';
-import { createLexer } from 'graphql';
 
 export const AUTH_JWT_KEY = 'ss:auth:jwt';
 export const AUTH_USER_KEY = 'ss:auth:user';
@@ -18,7 +17,6 @@ export interface AuthState {
   isPending: boolean;
   user: AuthUser;
   isLoggedIn: boolean;
-  jwt: string;
   errors: string[];
 }
 
@@ -33,18 +31,16 @@ export const requestAuthPending = (): RequestAuthPendingAction => ({
 export const REQUEST_AUTH_SUCCESS = 'auth/REQUEST_AUTH_SUCCESS';
 interface RequestAuthSuccessPayload {
   user: AuthUser;
-  jwt: string;
 }
 interface RequestAuthSuccessAction {
   type: typeof REQUEST_AUTH_SUCCESS;
   payload: RequestAuthSuccessPayload;
 }
 export const requestAuthSuccess = (
-  user: AuthUser,
-  jwt: string
+  user: AuthUser
 ): RequestAuthSuccessAction => ({
   type: REQUEST_AUTH_SUCCESS,
-  payload: { user, jwt },
+  payload: { user },
 });
 
 export const REQUEST_AUTH_FAILURE = 'auth/REQUEST_AUTH_FAILURE';
@@ -125,7 +121,7 @@ export const signup = (
     const jwt = data.jwt;
     const user = pick(data.user, ['id', 'username', 'email']);
 
-    dispatch(requestAuthSuccess(user, jwt));
+    dispatch(requestAuthSuccess(user));
 
     window.localStorage.setItem(AUTH_JWT_KEY, jwt);
     window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
@@ -182,7 +178,7 @@ export const login = (
     const jwt = data.jwt;
     const user = pick(data.user, ['id', 'username', 'email']);
 
-    dispatch(requestAuthSuccess(user, jwt));
+    dispatch(requestAuthSuccess(user));
 
     window.localStorage.setItem(AUTH_JWT_KEY, jwt);
     window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
@@ -236,7 +232,7 @@ export const refreshAuth = (
     const jwt = data.jwt;
     const user = pick(data.user, ['id', 'username', 'email']);
 
-    dispatch(requestAuthSuccess(user, jwt));
+    dispatch(requestAuthSuccess(user));
 
     window.localStorage.setItem(AUTH_JWT_KEY, jwt);
     window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));

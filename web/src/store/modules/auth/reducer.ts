@@ -19,8 +19,7 @@ export default (
       return { ...state, isPending: true, errors: [] };
     case REQUEST_AUTH_SUCCESS:
       const user = { ...action.payload.user };
-      const jwt = action.payload.jwt;
-      return { isPending: false, isLoggedIn: true, user, jwt, errors: [] };
+      return { isPending: false, isLoggedIn: true, user, errors: [] };
     case REQUEST_AUTH_FAILURE:
       const errors = [...action.payload.errors];
       return { ...getNullState(), isLoggedIn: false, isPending: false, errors };
