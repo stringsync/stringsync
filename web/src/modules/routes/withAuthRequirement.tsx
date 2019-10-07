@@ -37,15 +37,14 @@ const withAuthRequirement = (authRequirements: AuthRequirements) =>
           break;
         case AuthRequirements.LOGGED_OUT:
           if (isLoggedIn) {
-            message.info(`already logged in as @${username}`);
-            router.history.goBack();
+            router.history.push('library');
           }
           break;
         case AuthRequirements.LOGGED_IN_AS_STUDENT:
           if (compareRole(userRole, 'student') < 0) {
             message.error('must be logged in as a student');
             if (isLoggedIn) {
-              router.history.goBack();
+              router.history.push('library');
             } else {
               router.history.push('login');
             }
@@ -55,7 +54,7 @@ const withAuthRequirement = (authRequirements: AuthRequirements) =>
           if (compareRole(userRole, 'teacher') < 0) {
             message.error('must be logged in as a teacher');
             if (isLoggedIn) {
-              router.history.goBack();
+              router.history.push('library');
             } else {
               router.history.push('login');
             }
@@ -65,7 +64,7 @@ const withAuthRequirement = (authRequirements: AuthRequirements) =>
           if (compareRole(userRole, 'admin') < 0) {
             message.error('must be logged in as a admin');
             if (isLoggedIn) {
-              router.history.goBack();
+              router.history.push('library');
             } else {
               router.history.push('login');
             }

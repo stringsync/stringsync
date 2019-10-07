@@ -2,6 +2,7 @@ import { gql } from 'apollo-boost';
 import { ThunkAction } from '../..';
 import { pick } from 'lodash';
 import { message } from 'antd';
+import getErrorMessages from './getErrorMessages';
 
 export const AUTH_JWT_KEY = 'ss:auth:jwt';
 export const AUTH_USER_KEY = 'ss:auth:user';
@@ -130,19 +131,7 @@ export const signup = (
 
     message.success(`logged in as @${user.username}`);
   } catch (error) {
-    const errorMessages: string[] = [];
-    if ('graphQLErrors' in error) {
-      for (const graphQLError of error.graphQLErrors) {
-        const extendedErrors = graphQLError.extensions.exception.errors;
-        for (const extendedError of extendedErrors) {
-          errorMessages.push(extendedError.message);
-        }
-      }
-    } else {
-      console.error(error);
-      errorMessages.push('something went wrong');
-    }
-    dispatch(requestAuthFailure(errorMessages));
+    dispatch(requestAuthFailure(getErrorMessages(error)));
   }
 };
 
@@ -199,16 +188,7 @@ export const login = (
 
     message.success(`logged in as @${user.username}`);
   } catch (error) {
-    const errorMessages: string[] = [];
-    if ('graphQLErrors' in error) {
-      for (const graphQLError of error.graphQLErrors) {
-        errorMessages.push(graphQLError.message);
-      }
-    } else {
-      console.error(error);
-      errorMessages.push('something went wrong');
-    }
-    dispatch(requestAuthFailure(errorMessages));
+    dispatch(requestAuthFailure(getErrorMessages(error)));
   }
 };
 
