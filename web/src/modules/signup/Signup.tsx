@@ -1,4 +1,4 @@
-import React, { FormEventHandler, useEffect } from 'react';
+import React, { FormEventHandler } from 'react';
 import { Form, Input, Row, Col, Button, Alert } from 'antd';
 import styled from 'styled-components';
 import { FormComponentProps } from 'antd/lib/form';
@@ -10,6 +10,7 @@ import { RootState } from '../../store';
 import compose from '../../util/compose';
 import { withLayout } from '../../hocs';
 import { Layouts } from '../../hocs/with-layout/Layouts';
+import useEffectOnce from '../../hooks/use-effect-once/useEffectOnce';
 
 const RoundedBox = styled.div`
   margin: 0 auto;
@@ -113,9 +114,9 @@ const Signup = enhance((props: Props) => {
     });
   };
   const clearErrors = () => dispatch(clearAuthErrors());
-  useEffect(() => {
+  useEffectOnce(() => {
     clearErrors();
-  }, []);
+  });
 
   const { getFieldDecorator } = props.form;
   const emailFieldDecorator = getFieldDecorator('email', {

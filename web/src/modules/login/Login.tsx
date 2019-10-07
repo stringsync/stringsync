@@ -1,4 +1,4 @@
-import React, { useEffect, FormEventHandler } from 'react';
+import React, { FormEventHandler } from 'react';
 import compose from '../../util/compose';
 import { withLayout } from '../../hocs';
 import { Layouts } from '../../hocs/with-layout/Layouts';
@@ -10,6 +10,7 @@ import { RootState } from '../../store';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearAuthErrors, login } from '../../store/modules/auth';
 import { Wordmark } from '../../components/brand';
+import useEffectOnce from '../../hooks/use-effect-once/useEffectOnce';
 
 const RoundedBox = styled.div`
   margin: 0 auto;
@@ -94,9 +95,9 @@ const Login: React.FC<Props> = enhance((props: Props) => {
     });
   };
   const clearErrors = () => dispatch(clearAuthErrors());
-  useEffect(() => {
+  useEffectOnce(() => {
     clearErrors();
-  }, []);
+  });
 
   const { getFieldDecorator } = props.form;
   const emailOrUsernameFieldDecorator = getFieldDecorator('emailOrUsername', {
