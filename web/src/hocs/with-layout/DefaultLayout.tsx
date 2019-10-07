@@ -8,6 +8,10 @@ import Logo from '../../components/brand/logo/Logo';
 import { Link } from 'react-router-dom';
 import Menu from './Menu';
 
+const StyledLogo = styled(Logo)`
+  font-size: 22px;
+`;
+
 const StyledLayout = styled(Layout)`
   min-height: 100vh;
 `;
@@ -41,13 +45,17 @@ const DefaultLayout: React.FC = (props) => {
           <Row type="flex" justify="space-between">
             <Col>
               <Link to="library">
-                <Logo size={28} />
-                {isLtEqMdViewport ? null : (
-                  <>
-                    <Divider type="vertical" />
-                    <Wordmark />
-                  </>
-                )}
+                <Row type="flex" justify="center" align="middle">
+                  <span>
+                    <StyledLogo />
+                  </span>
+                  {isLtEqMdViewport ? null : (
+                    <>
+                      <Divider type="vertical" />
+                      <Wordmark />
+                    </>
+                  )}
+                </Row>
               </Link>
             </Col>
             <Col>
