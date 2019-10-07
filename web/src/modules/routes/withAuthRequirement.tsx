@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { message } from 'antd';
 import compareRole from '../../util/compareRole';
+import noop from '../../util/noop';
 
 export enum AuthRequirements {
   NONE = 'NONE',
@@ -14,6 +15,8 @@ export enum AuthRequirements {
   LOGGED_IN_AS_ADMIN = 'LOGGED_IN_AS_ADMIN',
 }
 
+const ForceSuspense = React.lazy(() => new Promise(noop));
+
 const withAuthRequirement = (authRequirements: AuthRequirements) =>
   function<P>(Component: React.ComponentType<P>): React.FC<P> {
     return (props) => {
@@ -23,51 +26,58 @@ const withAuthRequirement = (authRequirements: AuthRequirements) =>
       const isLoggedIn = useSelector<RootState, boolean>(
         (state) => state.auth.isLoggedIn
       );
-      const username = useSelector<RootState, string>(
-        (state) => state.auth.user.username
-      );
+      const navigateTo = (path: string) => {
+        window.requestAnimationFrame(() => {
+          router.history.push(path);
+        });
+      };
       switch (authRequirements) {
         case AuthRequirements.NONE:
           break;
         case AuthRequirements.LOGGED_IN:
           if (!isLoggedIn) {
             message.error('must be logged in');
-            router.history.push('login');
+            navigateTo('login');
+            return <ForceSuspense />;
           }
           break;
         case AuthRequirements.LOGGED_OUT:
           if (isLoggedIn) {
-            router.history.push('library');
+            navigateTo('library');
+            return <ForceSuspense />;
           }
           break;
         case AuthRequirements.LOGGED_IN_AS_STUDENT:
           if (compareRole(userRole, 'student') < 0) {
             message.error('must be logged in as a student');
             if (isLoggedIn) {
-              router.history.push('library');
+              navigateTo('library');
             } else {
-              router.history.push('login');
+              navigateTo('login');
             }
+            return <ForceSuspense />;
           }
           break;
         case AuthRequirements.LOGGED_IN_AS_TEACHER:
           if (compareRole(userRole, 'teacher') < 0) {
             message.error('must be logged in as a teacher');
             if (isLoggedIn) {
-              router.history.push('library');
+              navigateTo('library');
             } else {
-              router.history.push('login');
+              navigateTo('login');
             }
+            return <ForceSuspense />;
           }
           break;
         case AuthRequirements.LOGGED_IN_AS_ADMIN:
           if (compareRole(userRole, 'admin') < 0) {
             message.error('must be logged in as a admin');
             if (isLoggedIn) {
-              router.history.push('library');
+              navigateTo('library');
             } else {
-              router.history.push('login');
+              navigateTo('login');
             }
+            return <ForceSuspense />;
           }
           break;
       }

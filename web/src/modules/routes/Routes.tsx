@@ -9,21 +9,21 @@ import compose from '../../util/compose';
 import withAuthRequirement, { AuthRequirements } from './withAuthRequirement';
 
 const WrappedLibrary = compose(
+  withFallback,
   withAuthRequirement(AuthRequirements.NONE),
-  withScrollRestoration,
-  withFallback
+  withScrollRestoration
 )(Library);
 
 const WrappedSignup = compose(
+  withFallback,
   withAuthRequirement(AuthRequirements.LOGGED_OUT),
-  withScrollRestoration,
-  withFallback
+  withScrollRestoration
 )(React.lazy(() => import('../signup/Signup')));
 
 const WrappedLogin = compose(
+  withFallback,
   withAuthRequirement(AuthRequirements.LOGGED_OUT),
-  withScrollRestoration,
-  withFallback
+  withScrollRestoration
 )(React.lazy(() => import('../login/Login')));
 
 const Routes: React.FC = () => {
