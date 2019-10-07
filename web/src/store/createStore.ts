@@ -10,7 +10,6 @@ import apollo from '../util/apollo';
 import viewportReducer from './modules/viewport/reducer';
 import deviceReducer from './modules/device/reducer';
 import authReducer from './modules/auth/reducer';
-import noop from '../util/noop';
 
 const reducer = combineReducers({
   viewport: viewportReducer,
@@ -20,7 +19,7 @@ const reducer = combineReducers({
 const preloadedState = getPreloadedState();
 
 const middlewares = [thunk.withExtraArgument({ apollo })];
-const reduxDevtools = (window as any).__REDUX_DEVTOOLS_EXTENSION__ || noop;
+const reduxDevtools = (window as any).__REDUX_DEVTOOLS_EXTENSION__ || compose;
 
 const createStore = () =>
   doCreateStore(

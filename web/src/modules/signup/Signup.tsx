@@ -1,4 +1,4 @@
-import React, { FormEventHandler, MouseEventHandler } from 'react';
+import React, { FormEventHandler, MouseEventHandler, useEffect } from 'react';
 import { Form, Input, Row, Col, Button, Alert } from 'antd';
 import styled from 'styled-components';
 import { FormComponentProps } from 'antd/lib/form';
@@ -92,6 +92,7 @@ const Signup = enhance((props: Props) => {
       authErrors: state.auth.errors,
     })
   );
+
   const validateThenSignup: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
     props.form.validateFields((errors, user: FormValues) => {
@@ -103,9 +104,10 @@ const Signup = enhance((props: Props) => {
       dispatch(signup(user));
     });
   };
-  const clearErrors: MouseEventHandler<HTMLAnchorElement> = (event) => {
-    dispatch(clearAuthErrors());
-  };
+  const clearErrors = () => dispatch(clearAuthErrors());
+  useEffect(() => {
+    clearErrors();
+  }, []);
 
   const { getFieldDecorator } = props.form;
   const emailFieldDecorator = getFieldDecorator('email', {

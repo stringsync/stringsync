@@ -1,6 +1,7 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 import Landing from '../landing/Landing';
+import Library from '../library/Library';
 import withFallback from './withFallback';
 import withScrollRestoration from './withScrollRestoration';
 import Router from './Router';
@@ -9,7 +10,6 @@ const enhance = function<P>(Component: React.ComponentType<P>) {
   return withScrollRestoration(withFallback(Component));
 };
 
-const Library = enhance(React.lazy(() => import('../library/Library')));
 const Signup = enhance(React.lazy(() => import('../signup/Signup')));
 const Login = enhance(React.lazy(() => import('../login/Login')));
 

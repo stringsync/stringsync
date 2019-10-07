@@ -59,6 +59,14 @@ export const requestAuthFailure = (
   payload: { errors },
 });
 
+export const CLEAR_AUTH = 'auth/CLEAR_AUTH';
+interface ClearAuthAction {
+  type: typeof CLEAR_AUTH;
+}
+export const clearAuth = (): ClearAuthAction => ({
+  type: CLEAR_AUTH,
+});
+
 export const CLEAR_AUTH_ERRORS = 'auth/CLEAR_AUTH_ERRORS';
 interface ClearAuthErrorsAction {
   type: typeof CLEAR_AUTH_ERRORS;
@@ -136,8 +144,17 @@ export const signup = (
   }
 };
 
+export const logout = (): ThunkAction<void, AuthActionTypes> => async (
+  dispatch
+) => {
+  window.localStorage.removeItem(AUTH_JWT_KEY);
+  window.localStorage.removeItem(AUTH_USER_KEY);
+  dispatch(clearAuth());
+};
+
 export type AuthActionTypes =
   | RequestAuthPendingAction
   | RequestAuthSuccessAction
   | RequestAuthFailureAction
+  | ClearAuthAction
   | ClearAuthErrorsAction;

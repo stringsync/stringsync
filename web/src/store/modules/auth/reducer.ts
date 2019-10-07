@@ -5,6 +5,7 @@ import {
   REQUEST_AUTH_SUCCESS,
   REQUEST_AUTH_FAILURE,
   CLEAR_AUTH_ERRORS,
+  CLEAR_AUTH,
 } from '.';
 import getInitialState from './getInitialState';
 import getNullState from './getNullState';
@@ -23,6 +24,8 @@ export default (
     case REQUEST_AUTH_FAILURE:
       const errors = [...action.payload.errors];
       return { ...getNullState(), isLoggedIn: false, isPending: false, errors };
+    case CLEAR_AUTH:
+      return getNullState();
     case CLEAR_AUTH_ERRORS:
       return { ...state, errors: [] };
     default:

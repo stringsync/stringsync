@@ -1,11 +1,12 @@
 import React from 'react';
-import { Layout, Row, Col, Divider } from 'antd';
+import { Layout, Row, Col, Divider, Dropdown, Avatar } from 'antd';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { Wordmark } from '../../components/brand';
 import Logo from '../../components/brand/logo/Logo';
 import { Link } from 'react-router-dom';
+import Menu from './Menu';
 
 const StyledLayout = styled(Layout)`
   min-height: 100vh;
@@ -26,6 +27,8 @@ const DefaultLayout: React.FC = (props) => {
     return xs || sm || md;
   });
 
+  const avatarSrc = useSelector<RootState, string>((state) => '');
+
   return (
     <StyledLayout>
       <StyledHeader>
@@ -33,15 +36,17 @@ const DefaultLayout: React.FC = (props) => {
           <Col>
             <Link to="/library">
               <Logo size={28} />
-              {!isLtMdViewport ? (
+              {isLtMdViewport ? null : (
                 <>
                   <Divider type="vertical" />
                   <Wordmark />
                 </>
-              ) : null}
+              )}
             </Link>
           </Col>
-          <Col>menu</Col>
+          <Col>
+            <Menu />
+          </Col>
         </Row>
       </StyledHeader>
       <Layout.Content>{props.children}</Layout.Content>;
