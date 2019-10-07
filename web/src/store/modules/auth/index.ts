@@ -129,7 +129,7 @@ export const signup = (
     window.localStorage.setItem(AUTH_JWT_KEY, jwt);
     window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
 
-    message.success(`logged in as @${user.username}`);
+    message.info(`logged in as @${user.username}`);
   } catch (error) {
     dispatch(requestAuthFailure(getErrorMessages(error)));
   }
@@ -186,7 +186,7 @@ export const login = (
     window.localStorage.setItem(AUTH_JWT_KEY, jwt);
     window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
 
-    message.success(`logged in as @${user.username}`);
+    message.info(`logged in as @${user.username}`);
   } catch (error) {
     dispatch(requestAuthFailure(getErrorMessages(error)));
   }
