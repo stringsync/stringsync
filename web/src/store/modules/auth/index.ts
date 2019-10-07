@@ -3,6 +3,7 @@ import { ThunkAction } from '../..';
 import { pick } from 'lodash';
 import { message } from 'antd';
 import getErrorMessages from './getErrorMessages';
+import { createLexer } from 'graphql';
 
 export const AUTH_JWT_KEY = 'ss:auth:jwt';
 export const AUTH_USER_KEY = 'ss:auth:user';
@@ -189,6 +190,59 @@ export const login = (
     message.info(`logged in as @${user.username}`);
   } catch (error) {
     dispatch(requestAuthFailure(getErrorMessages(error)));
+  }
+};
+
+export interface RefreshAuthInput {
+  id: number;
+}
+export interface RefreshAuthData {
+  refreshAuth: {
+    jwt: string;
+    user: {
+      id: number;
+      username: string;
+      email: string;
+    };
+  };
+}
+const REFRESH_AUTH_QUERY = gql`
+  query RefreshAuth($input: RefreshAuthInput!) {
+    refreshAuth(input: $input) {
+      jwt
+      user {
+        id
+        username
+        email
+      }
+    }
+  }
+`;
+export const refreshAuth = (
+  input: RefreshAuthInput
+): ThunkAction<void, AuthActionTypes> => async (dispatch, getState, ctx) => {
+  dispatch(requestAuthPending());
+  try {
+    const res = await ctx.apollo.query<RefreshAuthData>({
+      query: REFRESH_AUTH_QUERY,
+      variables: {
+        input,
+      },
+    });
+    if (!res.data) {
+      throw new Error('jwt expired or invalid');
+    }
+    const data = res.data.refreshAuth;
+    const jwt = data.jwt;
+    const user = data.user;
+
+    dispatch(requestAuthSuccess(user, jwt));
+
+    window.localStorage.setItem(AUTH_JWT_KEY, jwt);
+    window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+  } catch (error) {
+    console.error(error);
+    dispatch(clearAuth());
   }
 };
 

@@ -29,6 +29,7 @@ const typeDefs = gql`
 
   type RefreshAuthPayload {
     jwt: String!
+    user: User!
   }
 
   input SignupInput {

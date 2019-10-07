@@ -20,6 +20,7 @@ export interface RefreshAuthInputType {
 
 export interface RefreshAuthPayloadType {
   jwt: string;
+  user: UserType;
 }
 
 export interface SignupInputType {

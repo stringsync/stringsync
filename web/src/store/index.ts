@@ -1,5 +1,5 @@
 import createStore from './createStore';
-import apollo from '../util/apollo';
+import createApolloClient from '../util/ createApolloClient';
 import { ThunkAction as BaseThunkAction } from 'redux-thunk';
 import * as Viewport from './modules/viewport';
 import * as Device from './modules/device';
@@ -20,7 +20,7 @@ export interface RootState {
 }
 
 export interface ThunkContext {
-  apollo: typeof apollo;
+  apollo: ReturnType<typeof createApolloClient>;
 }
 
 export type ThunkAction<R, A extends Action> = BaseThunkAction<

@@ -6,7 +6,7 @@ import {
 } from 'redux';
 import { getPreloadedState } from './getPreloadedState';
 import thunk from 'redux-thunk';
-import apollo from '../util/apollo';
+import createApolloClient from '../util/ createApolloClient';
 import viewportReducer from './modules/viewport/reducer';
 import deviceReducer from './modules/device/reducer';
 import authReducer from './modules/auth/reducer';
@@ -18,11 +18,12 @@ const reducer = combineReducers({
 });
 const preloadedState = getPreloadedState();
 
-const middlewares = [thunk.withExtraArgument({ apollo })];
-const reduxDevtools = (window as any).__REDUX_DEVTOOLS_EXTENSION__ || compose;
+const createStore = () => {
+  const apollo = createApolloClient();
+  const middlewares = [thunk.withExtraArgument({ apollo })];
+  const reduxDevtools = (window as any).__REDUX_DEVTOOLS_EXTENSION__ || compose;
 
-const createStore = () =>
-  doCreateStore(
+  return doCreateStore(
     reducer,
     preloadedState,
     compose(
@@ -30,5 +31,6 @@ const createStore = () =>
       reduxDevtools()
     )
   );
+};
 
 export default createStore;

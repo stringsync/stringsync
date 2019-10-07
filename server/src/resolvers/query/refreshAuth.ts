@@ -33,5 +33,6 @@ export const refreshAuth: FieldResolver<
   // if we got here, it means that the user has a valid jwt
   // and that jwt's id matches the one that the user provided
   const jwt = createJwt(ctx.auth.user.id, ctx.requestedAt);
-  return { jwt };
+  const user = ctx.auth.user;
+  return { jwt, user };
 };
