@@ -58,7 +58,7 @@ const Menu: React.FC<Props> = (props) => {
           <Col>
             <Button type="link" size="large" shape="circle">
               <Link to="library">
-                <MenuIcon type="compass" theme="filled" />
+                <MenuIcon type="compass" />
               </Link>
             </Button>
           </Col>
@@ -77,7 +77,7 @@ const Menu: React.FC<Props> = (props) => {
         {isSettingsVisible ? (
           <Col>
             <Button type="link" size="large" shape="circle" onClick={showModal}>
-              <MenuIcon type="setting" theme="filled" />
+              <MenuIcon type="setting" />
             </Button>
           </Col>
         ) : null}
