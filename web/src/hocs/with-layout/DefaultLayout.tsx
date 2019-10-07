@@ -29,7 +29,7 @@ const Lane = styled.div`
 `;
 
 const DefaultLayout: React.FC = (props) => {
-  const isLtMdViewport = useSelector<RootState, boolean>((state) => {
+  const isLtEqMdViewport = useSelector<RootState, boolean>((state) => {
     const { xs, sm, md } = state.viewport;
     return xs || sm || md;
   });
@@ -42,7 +42,7 @@ const DefaultLayout: React.FC = (props) => {
             <Col>
               <Link to="/library">
                 <Logo size={28} />
-                {isLtMdViewport ? null : (
+                {isLtEqMdViewport ? null : (
                   <>
                     <Divider type="vertical" />
                     <Wordmark />
@@ -59,7 +59,7 @@ const DefaultLayout: React.FC = (props) => {
       <Layout.Content>
         <Lane>{props.children}</Lane>
       </Layout.Content>
-      {isLtMdViewport ? null : (
+      {isLtEqMdViewport ? null : (
         <StyledFooter>
           <Lane>StringSync LLC © 2019</Lane>
         </StyledFooter>

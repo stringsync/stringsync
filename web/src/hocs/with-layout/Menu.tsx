@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { AuthUser } from '../../store/modules/auth';
 import { logout } from '../../store/modules/auth/';
 
-const StyledIcon = styled(Icon)`
+const MenuIcon = styled(Icon)`
   font-size: 20px;
   color: rgba(0, 0, 0, 0.65);
 
@@ -29,10 +29,15 @@ const Role = styled.div`
 interface Props {}
 
 const Menu: React.FC<Props> = (props) => {
-  const isLoggedIn = useSelector<RootState, boolean>((state) => true);
+  const isLoggedIn = useSelector<RootState, boolean>(
+    (state) => state.auth.isLoggedIn
+  );
   const user = useSelector<RootState, AuthUser>((state) => state.auth.user);
-  // TODO put real logic
-  const isGtEqTeacher = true;
+  const isLtEqMdViewport = useSelector<RootState, boolean>((state) => {
+    const { xs, sm, md } = state.viewport;
+    return xs || sm || md;
+  });
+  const isGtEqTeacher = true; // TODO put real logic
   const dispatch = useDispatch();
   const [isModalVisible, setModalVisible] = useState(false);
   const showModal = () => setModalVisible(true);
@@ -44,8 +49,8 @@ const Menu: React.FC<Props> = (props) => {
 
   const gutterPx = isLoggedIn ? 24 : 8;
 
-  const isLibraryVisible = isLoggedIn;
-  const isUploadVisible = isLoggedIn && isGtEqTeacher;
+  const isLibraryVisible = !isLtEqMdViewport && isLoggedIn;
+  const isUploadVisible = !isLtEqMdViewport && isLoggedIn && isGtEqTeacher;
   const isLoginVisible = !isLoggedIn;
   const isSignupVisible = !isLoggedIn;
   const isSettingsVisible = isLoggedIn;
@@ -56,7 +61,7 @@ const Menu: React.FC<Props> = (props) => {
         {isLibraryVisible ? (
           <Col>
             <Link to="library">
-              <StyledIcon type="compass" />
+              <MenuIcon type="compass" />
             </Link>
           </Col>
         ) : null}
@@ -64,14 +69,14 @@ const Menu: React.FC<Props> = (props) => {
         {isUploadVisible ? (
           <Col>
             <Link to="upload">
-              <StyledIcon type="upload" />
+              <MenuIcon type="upload" />
             </Link>
           </Col>
         ) : null}
 
         {isSettingsVisible ? (
           <Col>
-            <StyledIcon type="user" onClick={showModal} />
+            <MenuIcon type="user" onClick={showModal} />
           </Col>
         ) : null}
 
