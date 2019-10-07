@@ -234,7 +234,7 @@ export const refreshAuth = (
     }
     const data = res.data.refreshAuth;
     const jwt = data.jwt;
-    const user = data.user;
+    const user = pick(data.user, ['id', 'username', 'email']);
 
     dispatch(requestAuthSuccess(user, jwt));
 

@@ -13,7 +13,6 @@ const createApolloClient = () => {
   const httpLink = new HttpLink({ uri });
   const authLink = new ApolloLink((operation, next) => {
     const jwt = window.localStorage.getItem(AUTH_JWT_KEY);
-
     if (jwt) {
       operation.setContext({
         headers: {
@@ -21,7 +20,6 @@ const createApolloClient = () => {
         },
       });
     }
-
     return next(operation);
   });
 
