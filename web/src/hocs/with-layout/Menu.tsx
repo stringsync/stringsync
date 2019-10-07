@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Button, Row, Icon, Col, Modal, Avatar, List } from 'antd';
+import { Button, Row, Icon, Col, Modal, Avatar, List, message } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store';
 import { Link } from 'react-router-dom';
@@ -45,6 +45,7 @@ const Menu: React.FC<Props> = (props) => {
   const handleLogoutClick = () => {
     dispatch(logout());
     hideModal();
+    message.success('logged out');
   };
 
   const gutterPx = isLoggedIn ? 24 : 8;
@@ -101,11 +102,11 @@ const Menu: React.FC<Props> = (props) => {
         ) : null}
       </Row>
 
-      <Modal
-        closable
-        closeIcon={null}
-        title={
-          isLoggedIn ? (
+      {isLoggedIn ? (
+        <Modal
+          closable
+          closeIcon={null}
+          title={
             <Row type="flex" gutter={8}>
               <Col>
                 <Avatar icon="user" />{' '}
@@ -117,16 +118,16 @@ const Menu: React.FC<Props> = (props) => {
                 </div>
               </Col>
             </Row>
-          ) : null
-        }
-        visible={isModalVisible}
-        onCancel={hideModal}
-        footer={null}
-      >
-        <Button block onClick={handleLogoutClick} disabled={!isLoggedIn}>
-          logout
-        </Button>
-      </Modal>
+          }
+          visible={isModalVisible}
+          onCancel={hideModal}
+          footer={null}
+        >
+          <Button block onClick={handleLogoutClick} disabled={!isLoggedIn}>
+            logout
+          </Button>
+        </Modal>
+      ) : null}
     </>
   );
 };
