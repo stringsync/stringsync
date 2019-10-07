@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { Button, Row, Icon, Col, Modal, Avatar, List, message } from 'antd';
+import React, { useState } from 'react';
+import { Button, Row, Icon, Col, Modal, Avatar, message } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store';
 import { Link } from 'react-router-dom';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Row, Col, Divider, Dropdown, Avatar } from 'antd';
+import { Layout, Row, Col, Divider } from 'antd';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
@@ -40,7 +40,7 @@ const DefaultLayout: React.FC = (props) => {
         <Lane>
           <Row type="flex" justify="space-between">
             <Col>
-              <Link to="/library">
+              <Link to="library">
                 <Logo size={28} />
                 {isLtEqMdViewport ? null : (
                   <>

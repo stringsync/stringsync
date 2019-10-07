@@ -1,4 +1,4 @@
-import React, { FormEventHandler, MouseEventHandler, useEffect } from 'react';
+import React, { FormEventHandler, useEffect } from 'react';
 import { Form, Input, Row, Col, Button, Alert } from 'antd';
 import styled from 'styled-components';
 import { FormComponentProps } from 'antd/lib/form';
@@ -12,6 +12,7 @@ import { withLayout } from '../../hocs';
 import { Layouts } from '../../hocs/with-layout/Layouts';
 
 const RoundedBox = styled.div`
+  margin: 0 auto;
   margin-top: 24px;
   background: white;
   border: 1px solid ${(props) => props.theme['@border-color']};
@@ -27,6 +28,12 @@ const StyledAlert = styled(Alert)`
   && {
     margin-top: 24px;
   }
+`;
+
+const StyledUl = styled.ul`
+  list-style: none;
+  margin: 0;
+  padding: 0;
 `;
 
 const StyledH1 = styled.h1`
@@ -48,12 +55,12 @@ const Legal = styled.div`
   margin: 0 16px 24px 16px;
 `;
 
-const LegalLink = styled(Link)`
+const TermsLink = styled(Link)`
   font-weight: 600;
   color: ${(props) => props.theme['@muted']};
 `;
 
-const GotoLogin = styled.div`
+const LoginLink = styled.div`
   text-align: center;
 `;
 
@@ -74,7 +81,7 @@ interface FormValues {
   password: string;
 }
 
-interface SelectedState {
+interface SelectedAuthState {
   isAuthPending: boolean;
   authErrors: string[];
 }
@@ -86,18 +93,18 @@ const enhance = compose(
 
 const Signup = enhance((props: Props) => {
   const dispatch = useDispatch();
-  const { isAuthPending, authErrors } = useSelector<RootState, SelectedState>(
-    (state) => ({
-      isAuthPending: state.auth.isPending,
-      authErrors: state.auth.errors,
-    })
-  );
+  const { isAuthPending, authErrors } = useSelector<
+    RootState,
+    SelectedAuthState
+  >((state) => ({
+    isAuthPending: state.auth.isPending,
+    authErrors: state.auth.errors,
+  }));
 
   const validateThenSignup: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
     props.form.validateFields((errors, user: FormValues) => {
       if (errors) {
-        // let ant design decide to
         console.error(errors);
         return;
       }
@@ -166,13 +173,13 @@ const Signup = enhance((props: Props) => {
                   htmlType="submit"
                   disabled={isAuthPending}
                 >
-                  Signup
+                  signup
                 </Button>
               </Form.Item>
             </Form>
             <Legal>
               By signing up, you agree to our{' '}
-              <LegalLink to="/terms">terms</LegalLink>
+              <TermsLink to="terms">terms</TermsLink>
             </Legal>
           </RoundedBox>
         </Col>
@@ -188,11 +195,11 @@ const Signup = enhance((props: Props) => {
               onClose={clearErrors}
               message="Error"
               description={
-                <ul>
+                <StyledUl>
                   {authErrors.map((authError, authErrorNdx) => {
                     return <li key={authErrorNdx}>{authError}</li>;
                   })}
-                </ul>
+                </StyledUl>
               }
             />
           </Col>
@@ -202,9 +209,9 @@ const Signup = enhance((props: Props) => {
       <Row type="flex" justify="center" align="middle">
         <Col {...SPANS}>
           <RoundedBox>
-            <GotoLogin>
-              Have an account? <Link to="/login">login</Link>
-            </GotoLogin>
+            <LoginLink>
+              Have an account? <Link to="login">login</Link>
+            </LoginLink>
           </RoundedBox>
         </Col>
       </Row>

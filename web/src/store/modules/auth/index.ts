@@ -1,6 +1,7 @@
 import { gql } from 'apollo-boost';
 import { ThunkAction } from '../..';
 import { pick } from 'lodash';
+import { message } from 'antd';
 
 export const AUTH_JWT_KEY = 'ss:auth:jwt';
 export const AUTH_USER_KEY = 'ss:auth:user';
@@ -90,7 +91,7 @@ export interface SignupData {
     };
   };
 }
-export const SIGNUP_MUTATION = gql`
+const SIGNUP_MUTATION = gql`
   mutation Signup($input: SignupInput!) {
     signup(input: $input) {
       jwt
@@ -126,6 +127,8 @@ export const signup = (
 
     window.localStorage.setItem(AUTH_JWT_KEY, jwt);
     window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+
+    message.success(`logged in as @${user.username}`);
   } catch (error) {
     const errorMessages: string[] = [];
     if ('graphQLErrors' in error) {
@@ -135,9 +138,74 @@ export const signup = (
           errorMessages.push(extendedError.message);
         }
       }
-    } else if ('message' in error) {
-      errorMessages.push(error.message);
     } else {
+      console.error(error);
+      errorMessages.push('something went wrong');
+    }
+    dispatch(requestAuthFailure(errorMessages));
+  }
+};
+
+export interface LoginInput {
+  emailOrUsername: string;
+  password: string;
+}
+export interface LoginData {
+  login: {
+    jwt: string;
+    user: {
+      id: number;
+      username: string;
+      email: string;
+    };
+  };
+}
+const LOGIN_QUERY = gql`
+  query Login($input: LoginInput!) {
+    login(input: $input) {
+      jwt
+      user {
+        id
+        username
+        email
+      }
+    }
+  }
+`;
+
+export const login = (
+  input: LoginInput
+): ThunkAction<void, AuthActionTypes> => async (dispatch, getState, ctx) => {
+  dispatch(requestAuthPending());
+
+  try {
+    const res = await ctx.apollo.query<LoginData>({
+      query: LOGIN_QUERY,
+      variables: {
+        input,
+      },
+    });
+    if (!res.data) {
+      throw new Error('no data returned from the server');
+    }
+    const data = res.data.login;
+    const jwt = data.jwt;
+    const user = pick(data.user, ['id', 'username', 'email']);
+
+    dispatch(requestAuthSuccess(user, jwt));
+
+    window.localStorage.setItem(AUTH_JWT_KEY, jwt);
+    window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+
+    message.success(`logged in as @${user.username}`);
+  } catch (error) {
+    const errorMessages: string[] = [];
+    if ('graphQLErrors' in error) {
+      for (const graphQLError of error.graphQLErrors) {
+        errorMessages.push(graphQLError.message);
+      }
+    } else {
+      console.error(error);
       errorMessages.push('something went wrong');
     }
     dispatch(requestAuthFailure(errorMessages));
