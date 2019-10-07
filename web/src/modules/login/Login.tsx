@@ -120,7 +120,6 @@ const Login: React.FC<Props> = enhance((props: Props) => {
               <Form.Item>
                 {emailOrUsernameFieldDecorator(
                   <Input
-                    required
                     placeholder="email or username"
                     disabled={isAuthPending}
                   />
@@ -129,7 +128,6 @@ const Login: React.FC<Props> = enhance((props: Props) => {
               <Form.Item>
                 {passwordFieldDecorator(
                   <Input.Password
-                    required
                     placeholder="password"
                     disabled={isAuthPending}
                   />
