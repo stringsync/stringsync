@@ -22,6 +22,10 @@ const StyledHeader = styled(Layout.Header)`
   padding: 0 16px;
 `;
 
+const StyledH1 = styled.h1`
+  font-size: 16px;
+`;
+
 const StyledFooter = styled(Layout.Footer)`
   text-align: center;
 `;
@@ -52,7 +56,9 @@ const DefaultLayout: React.FC = (props) => {
                   {isLtEqMdViewport ? null : (
                     <>
                       <Divider type="vertical" />
-                      <Wordmark />
+                      <StyledH1>
+                        <Wordmark />
+                      </StyledH1>
                     </>
                   )}
                 </Row>
