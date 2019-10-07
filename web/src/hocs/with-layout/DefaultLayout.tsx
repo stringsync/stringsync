@@ -15,10 +15,17 @@ const StyledLayout = styled(Layout)`
 const StyledHeader = styled(Layout.Header)`
   background: #ffffff;
   border-bottom: 1px solid #e8e8e8;
+  padding: 0 16px;
 `;
 
 const StyledFooter = styled(Layout.Footer)`
   text-align: center;
+`;
+
+const Lane = styled.div`
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
 `;
 
 const DefaultLayout: React.FC = (props) => {
@@ -27,31 +34,35 @@ const DefaultLayout: React.FC = (props) => {
     return xs || sm || md;
   });
 
-  const avatarSrc = useSelector<RootState, string>((state) => '');
-
   return (
     <StyledLayout>
       <StyledHeader>
-        <Row type="flex" justify="space-between">
-          <Col>
-            <Link to="/library">
-              <Logo size={28} />
-              {isLtMdViewport ? null : (
-                <>
-                  <Divider type="vertical" />
-                  <Wordmark />
-                </>
-              )}
-            </Link>
-          </Col>
-          <Col>
-            <Menu />
-          </Col>
-        </Row>
+        <Lane>
+          <Row type="flex" justify="space-between">
+            <Col>
+              <Link to="/library">
+                <Logo size={28} />
+                {isLtMdViewport ? null : (
+                  <>
+                    <Divider type="vertical" />
+                    <Wordmark />
+                  </>
+                )}
+              </Link>
+            </Col>
+            <Col>
+              <Menu />
+            </Col>
+          </Row>
+        </Lane>
       </StyledHeader>
-      <Layout.Content>{props.children}</Layout.Content>;
+      <Layout.Content>
+        <Lane>{props.children}</Lane>
+      </Layout.Content>
       {isLtMdViewport ? null : (
-        <StyledFooter>StringSync LLC © 2019</StyledFooter>
+        <StyledFooter>
+          <Lane>StringSync LLC © 2019</Lane>
+        </StyledFooter>
       )}
     </StyledLayout>
   );
