@@ -123,7 +123,7 @@ const Menu: React.FC<Props> = (props) => {
         onCancel={hideModal}
         footer={null}
       >
-        <Button block onClick={handleLogoutClick}>
+        <Button block onClick={handleLogoutClick} disabled={!isLoggedIn}>
           logout
         </Button>
       </Modal>
