@@ -10,7 +10,7 @@ export interface ViewportState {
   breakpointName: BreakpointName;
 }
 
-export const SET_BREAKPOINT_NAME = 'SET_BREAKPOINT_NAME';
+export const SET_BREAKPOINT_NAME = 'viewport/SET_BREAKPOINT_NAME';
 interface SetBreakpointNameInput {
   breakpointName: BreakpointName;
 }

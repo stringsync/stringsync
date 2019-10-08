@@ -4,7 +4,7 @@ export type DeviceState = Device & {
   userAgent: string;
 };
 
-export const SET_USER_AGENT = 'SET_USER_AGENT';
+export const SET_USER_AGENT = 'device/SET_USER_AGENT';
 interface SetUserAgentInput {
   userAgent: string;
 }
