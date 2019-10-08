@@ -6,7 +6,7 @@ import { ValidationError } from 'sequelize';
 import { getEncryptedPassword } from '../../util/getEncryptedPassword';
 import { createAuthJwt } from '../../util/createAuthJwt';
 import { toUserType } from '../../casters/user/toUserType';
-import { setAuthJwtCookie } from 'src/util/setAuthJwtCookie';
+import { setAuthJwtCookie } from '../../util/setAuthJwtCookie';
 
 const PASSWORD_MIN_LEN = 6;
 const PASSWORD_MAX_LEN = 256;

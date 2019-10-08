@@ -170,7 +170,8 @@ export const login = (
 
     message.info(`logged in as @${user.username}`);
   } catch (error) {
-    dispatch(requestAuthFailure(getErrorMessages(error)));
+    console.error(error);
+    dispatch(logout());
   }
 };
 
@@ -208,10 +209,8 @@ export const reauth = (): ThunkAction<void, AuthActionTypes> => async (
       throw new Error('jwt expired or invalid');
     }
     const user = pick(res.data.reauth.user, ['id', 'username', 'email']);
-
     dispatch(requestAuthSuccess(user));
   } catch (error) {
-    // jwt expired or invalid
     dispatch(logout());
   }
 };
@@ -231,12 +230,13 @@ export const logout = (): ThunkAction<void, AuthActionTypes> => async (
   getState,
   ctx
 ) => {
+  dispatch(clearAuth());
   try {
     ctx.apollo.mutate<LogoutData>({
       mutation: LOGOUT_MUTATION,
     });
-  } finally {
-    dispatch(clearAuth());
+  } catch (error) {
+    console.error(error);
   }
 };
 
