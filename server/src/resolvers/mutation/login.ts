@@ -1,15 +1,12 @@
 import { FieldResolver } from '..';
 import { ForbiddenError } from 'apollo-server';
-import {
-  createJwt,
-  JWT_MAX_AGE_MS,
-  JWT_COOKIE_NAME,
-} from '../../util/createJwt';
+import { createAuthJwt } from '../../util/createAuthJwt';
 import { toUserType } from '../../casters/user/toUserType';
-import { LoginInputType, LoginPayloadType, UserType } from '../types';
+import { LoginInputType, LoginPayloadType } from '../types';
 import { or } from 'sequelize';
 import { UserModel } from '../../models/UserModel';
 import bcrypt from 'bcrypt';
+import { setAuthJwtCookie } from 'src/util/setAuthJwtCookie';
 
 interface Args {
   input: LoginInputType;
@@ -48,12 +45,8 @@ export const login: FieldResolver<LoginPayloadType, undefined, Args> = async (
   }
 
   const user = toUserType(userRecord);
-  const jwt = createJwt(userRecord.id, ctx.requestedAt);
-
-  ctx.res.cookie(JWT_COOKIE_NAME, jwt, {
-    httpOnly: true,
-    maxAge: JWT_MAX_AGE_MS,
-  });
+  const jwt = createAuthJwt(userRecord.id, ctx.requestedAt);
+  setAuthJwtCookie(jwt, ctx.res);
 
   return { user };
 };

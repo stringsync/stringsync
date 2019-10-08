@@ -1,11 +1,8 @@
 import { FieldResolver } from '..';
 import { ReauthPayloadType } from '../types';
-import {
-  createJwt,
-  JWT_COOKIE_NAME,
-  JWT_MAX_AGE_MS,
-} from '../../util/createJwt';
+import { createAuthJwt } from '../../util/createAuthJwt';
 import { ForbiddenError } from 'apollo-server';
+import { setAuthJwtCookie } from 'src/util/setAuthJwtCookie';
 
 const BAD_JWT_MSG = 'invalid or expired credentials';
 
@@ -27,13 +24,9 @@ export const reauth: FieldResolver<ReauthPayloadType> = async (
 
   // if we got here, it means that the user has a valid jwt
   // and that jwt's id matches the one that the user provided
-  const jwt = createJwt(ctx.auth.user.id, ctx.requestedAt);
   const user = ctx.auth.user;
-
-  ctx.res.cookie(JWT_COOKIE_NAME, jwt, {
-    httpOnly: true,
-    maxAge: JWT_MAX_AGE_MS,
-  });
+  const jwt = createAuthJwt(ctx.auth.user.id, ctx.requestedAt);
+  setAuthJwtCookie(jwt, ctx.res);
 
   return { user };
 };

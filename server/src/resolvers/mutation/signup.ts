@@ -4,12 +4,9 @@ import { UserInputError } from 'apollo-server';
 import { UserModel } from '../../models/UserModel';
 import { ValidationError } from 'sequelize';
 import { getEncryptedPassword } from '../../util/getEncryptedPassword';
-import {
-  createJwt,
-  JWT_COOKIE_NAME,
-  JWT_MAX_AGE_MS,
-} from '../../util/createJwt';
+import { createAuthJwt } from '../../util/createAuthJwt';
 import { toUserType } from '../../casters/user/toUserType';
+import { setAuthJwtCookie } from 'src/util/setAuthJwtCookie';
 
 const PASSWORD_MIN_LEN = 6;
 const PASSWORD_MAX_LEN = 256;
@@ -48,11 +45,8 @@ export const signup: FieldResolver<SignupPayloadType, undefined, Args> = async (
         { transaction }
       );
       const user = toUserType(userRecord);
-      const jwt = createJwt(user.id, ctx.requestedAt);
-      ctx.res.cookie(JWT_COOKIE_NAME, jwt, {
-        httpOnly: true,
-        maxAge: JWT_MAX_AGE_MS,
-      });
+      const jwt = createAuthJwt(user.id, ctx.requestedAt);
+      setAuthJwtCookie(jwt, ctx.res);
       return { user };
     });
   } catch (err) {
