@@ -4,8 +4,6 @@ import { pick } from 'lodash';
 import { message } from 'antd';
 import getErrorMessages from './getErrorMessages';
 
-export const AUTH_USER_KEY = 'ss:auth:user';
-
 export interface AuthUser {
   id: number;
   username: string;
@@ -119,8 +117,6 @@ export const signup = (
 
     dispatch(requestAuthSuccess(user));
 
-    window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
-
     message.info(`logged in as @${user.username}`);
   } catch (error) {
     dispatch(requestAuthFailure(getErrorMessages(error)));
@@ -172,8 +168,6 @@ export const login = (
 
     dispatch(requestAuthSuccess(user));
 
-    window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
-
     message.info(`logged in as @${user.username}`);
   } catch (error) {
     dispatch(requestAuthFailure(getErrorMessages(error)));
@@ -216,8 +210,6 @@ export const refreshAuth = (): ThunkAction<void, AuthActionTypes> => async (
     const user = pick(res.data.refreshAuth.user, ['id', 'username', 'email']);
 
     dispatch(requestAuthSuccess(user));
-
-    window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
   } catch (error) {
     // jwt expired or invalid
     dispatch(logout());
@@ -244,7 +236,6 @@ export const logout = (): ThunkAction<void, AuthActionTypes> => async (
       mutation: LOGOUT_MUTATION,
     });
   } finally {
-    window.localStorage.removeItem(AUTH_USER_KEY);
     dispatch(clearAuth());
   }
 };
