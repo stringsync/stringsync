@@ -170,8 +170,7 @@ export const login = (
 
     message.info(`logged in as @${user.username}`);
   } catch (error) {
-    console.error(error);
-    dispatch(logout());
+    dispatch(requestAuthFailure(getErrorMessages(error)));
   }
 };
 
