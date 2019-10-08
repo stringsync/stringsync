@@ -22,10 +22,6 @@ const StyledHeader = styled(Layout.Header)`
   padding: 0 16px;
 `;
 
-const StyledH1 = styled.h1`
-  font-size: 16px;
-`;
-
 const StyledFooter = styled(Layout.Footer)`
   text-align: center;
 `;
@@ -49,19 +45,13 @@ const DefaultLayout: React.FC = (props) => {
           <Row type="flex" justify="space-between">
             <Col>
               <Link to="library">
-                <Row type="flex" justify="center" align="middle">
-                  <span>
-                    <StyledLogo />
-                  </span>
-                  {isLtEqMdViewport ? null : (
-                    <>
-                      <Divider type="vertical" />
-                      <StyledH1>
-                        <Wordmark />
-                      </StyledH1>
-                    </>
-                  )}
-                </Row>
+                <StyledLogo />
+                {isLtEqMdViewport ? null : (
+                  <>
+                    <Divider type="vertical" />
+                    <Wordmark />
+                  </>
+                )}
               </Link>
             </Col>
             <Col>
