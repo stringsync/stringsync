@@ -55,5 +55,5 @@ export const login: FieldResolver<LoginPayloadType, undefined, Args> = async (
     maxAge: JWT_MAX_AGE_MS,
   });
 
-  return { user, jwt: '' };
+  return { user };
 };

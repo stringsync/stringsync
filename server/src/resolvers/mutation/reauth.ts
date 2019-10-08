@@ -35,5 +35,5 @@ export const reauth: FieldResolver<ReauthPayloadType> = async (
     maxAge: JWT_MAX_AGE_MS,
   });
 
-  return { jwt: '', user };
+  return { user };
 };
