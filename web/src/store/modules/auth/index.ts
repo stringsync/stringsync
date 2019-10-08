@@ -174,8 +174,8 @@ export const login = (
   }
 };
 
-export interface RefreshAuthData {
-  refreshAuth: {
+export interface ReauthData {
+  reauth: {
     user: {
       id: number;
       username: string;
@@ -183,9 +183,9 @@ export interface RefreshAuthData {
     };
   };
 }
-const REFRESH_AUTH_MUTATION = gql`
+const REAUTH_MUTATION = gql`
   mutation {
-    refreshAuth {
+    reauth {
       user {
         id
         username
@@ -194,20 +194,20 @@ const REFRESH_AUTH_MUTATION = gql`
     }
   }
 `;
-export const refreshAuth = (): ThunkAction<void, AuthActionTypes> => async (
+export const reauth = (): ThunkAction<void, AuthActionTypes> => async (
   dispatch,
   getState,
   ctx
 ) => {
   dispatch(requestAuthPending());
   try {
-    const res = await ctx.apollo.mutate<RefreshAuthData>({
-      mutation: REFRESH_AUTH_MUTATION,
+    const res = await ctx.apollo.mutate<ReauthData>({
+      mutation: REAUTH_MUTATION,
     });
     if (!res.data) {
       throw new Error('jwt expired or invalid');
     }
-    const user = pick(res.data.refreshAuth.user, ['id', 'username', 'email']);
+    const user = pick(res.data.reauth.user, ['id', 'username', 'email']);
 
     dispatch(requestAuthSuccess(user));
   } catch (error) {
