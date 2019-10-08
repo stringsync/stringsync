@@ -1,7 +1,7 @@
 import React from 'react';
 import StoreViewportSync from '../../components/store-viewport-sync/StoreViewportSync';
 import Routes from '../routes/Routes';
-import RefreshAuth from '../../components/refresh-auth/RefreshAuth';
+import ReauthOnce from '../../components/reauth-once/ReauthOnce';
 
 interface Props {}
 
@@ -10,7 +10,7 @@ const App: React.FC<Props> = (props) => {
     <>
       {/* NOT RENDERED TO DOM */}
       <StoreViewportSync />
-      <RefreshAuth />
+      <ReauthOnce />
 
       {/* RENDERED TO DOM */}
       <Routes />

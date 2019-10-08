@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { refreshAuth } from '../../store/modules/auth';
 import useEffectOnce from '../../hooks/use-effect-once/useEffectOnce';
 
-const RefreshAuth: React.FC = () => {
+const ReauthOnce: React.FC = () => {
   const dispatch = useDispatch();
   useEffectOnce(() => {
     dispatch(refreshAuth());
@@ -11,4 +11,4 @@ const RefreshAuth: React.FC = () => {
   return null;
 };
 
-export default RefreshAuth;
+export default ReauthOnce;
