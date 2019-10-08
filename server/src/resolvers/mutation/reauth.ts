@@ -1,5 +1,5 @@
 import { FieldResolver } from '..';
-import { RefreshAuthPayloadType, RefreshAuthInputType } from '../types';
+import { ReauthPayloadType } from '../types';
 import {
   createJwt,
   JWT_COOKIE_NAME,
@@ -9,7 +9,7 @@ import { ForbiddenError } from 'apollo-server';
 
 const BAD_JWT_MSG = 'invalid or expired credentials';
 
-export const refreshAuth: FieldResolver<RefreshAuthPayloadType> = async (
+export const reauth: FieldResolver<ReauthPayloadType> = async (
   parent,
   args,
   ctx
@@ -20,7 +20,7 @@ export const refreshAuth: FieldResolver<RefreshAuthPayloadType> = async (
   }
 
   // no user from the database (this should never happen because
-  // of the isLoggedIn guard)
+  // of the way isLoggedIn is computed)
   if (!ctx.auth.user) {
     throw new ForbiddenError(BAD_JWT_MSG);
   }
@@ -29,9 +29,11 @@ export const refreshAuth: FieldResolver<RefreshAuthPayloadType> = async (
   // and that jwt's id matches the one that the user provided
   const jwt = createJwt(ctx.auth.user.id, ctx.requestedAt);
   const user = ctx.auth.user;
+
   ctx.res.cookie(JWT_COOKIE_NAME, jwt, {
     httpOnly: true,
     maxAge: JWT_MAX_AGE_MS,
   });
+
   return { jwt: '', user };
 };

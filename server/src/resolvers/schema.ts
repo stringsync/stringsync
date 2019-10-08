@@ -23,7 +23,7 @@ const typeDefs = gql`
     id: Int!
   }
 
-  type RefreshAuthPayload {
+  type ReauthPayload {
     user: User!
   }
 
@@ -61,7 +61,7 @@ const typeDefs = gql`
     signup(input: SignupInput!): SignupPayload!
     login(input: LoginInput!): LoginPayload!
     logout: LogoutPayload!
-    refreshAuth: RefreshAuthPayload!
+    reauth: ReauthPayload!
   }
 `;
 

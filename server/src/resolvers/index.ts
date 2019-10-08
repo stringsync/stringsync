@@ -6,7 +6,7 @@ import { login } from './mutation/login';
 import { MergeInfo } from 'apollo-server';
 import { notations } from './user/notations';
 import { logout } from './mutation/logout';
-import { refreshAuth } from './mutation/refreshAuth';
+import { reauth } from './mutation/reauth';
 import { ServerContext } from '../util/createServerContext';
 import { signup } from './mutation/signup';
 
@@ -39,6 +39,6 @@ export const resolvers: IResolvers = {
     login,
     logout,
     signup,
-    refreshAuth,
+    reauth,
   },
 };

@@ -14,11 +14,7 @@ export interface GetUserInputType {
   id: number;
 }
 
-export interface RefreshAuthInputType {
-  id: number;
-}
-
-export interface RefreshAuthPayloadType {
+export interface ReauthPayloadType {
   user: UserType;
 }
 
