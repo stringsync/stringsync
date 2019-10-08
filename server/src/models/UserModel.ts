@@ -44,7 +44,10 @@ export const UserModel = <UserModelStatic>db.define(
       type: DataTypes.TEXT,
       allowNull: false,
       validate: {
-        len: [3, 36],
+        len: {
+          args: [3, 36],
+          msg: 'username must be between 3 and 36 characters',
+        },
       },
     },
     email: {
@@ -52,8 +55,13 @@ export const UserModel = <UserModelStatic>db.define(
       type: DataTypes.TEXT,
       allowNull: false,
       validate: {
-        len: [3, 36],
-        isEmail: true,
+        len: {
+          args: [3, 36],
+          msg: 'email must be betweem 3 and 36 characters',
+        },
+        isEmail: {
+          msg: 'email must be valid',
+        },
       },
     },
     encryptedPassword: {

@@ -21,12 +21,12 @@ interface Args {
 export const validatePassword = (password: string) => {
   if (password.length < PASSWORD_MIN_LEN) {
     throw new UserInputError(
-      `password must be greater than ${PASSWORD_MIN_LEN} characters`
+      `password must have at least ${PASSWORD_MIN_LEN} characters`
     );
   }
   if (password.length > PASSWORD_MAX_LEN) {
     throw new UserInputError(
-      `password must be less than ${PASSWORD_MAX_LEN} characters`
+      `password must have no more than ${PASSWORD_MAX_LEN} characters`
     );
   }
 };
