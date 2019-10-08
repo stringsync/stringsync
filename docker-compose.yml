@@ -25,6 +25,7 @@ services:
       - ./server/db:/app/db
       - /app/node_modules
     environment:
+      CLIENT_URI: http://localhost:8080
       NODE_ENV: development
       JWT_SECRET: stringsync
       DB_NAME: stringsync

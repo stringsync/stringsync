@@ -1,7 +1,12 @@
 import { ContextFunction } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 import { asUserType } from '../casters/user/asUserType';
-import { JwtPayload, JWT_SECRET, JWT_LIFESPAN_MS } from './createJwt';
+import {
+  JwtPayload,
+  JWT_SECRET,
+  JWT_MAX_AGE_MS,
+  JWT_COOKIE_NAME,
+} from './createJwt';
 import { UserType } from '../resolvers/types';
 import db from './db';
 import jwt from 'jsonwebtoken';
@@ -10,6 +15,7 @@ import {
   createDataLoaders,
 } from '../data-loaders/createDataLoaders';
 import { UserModel } from '../models/UserModel';
+import { Request, Response } from 'express';
 
 export interface Auth {
   user?: UserType;
@@ -17,6 +23,8 @@ export interface Auth {
 }
 
 export interface ServerContext {
+  req: Request;
+  res: Response;
   db: typeof db;
   auth: Auth;
   requestedAt: Date;
@@ -55,7 +63,7 @@ export const getAuthenticatedUser = async (
 
   // Check that jwt is not expired and that it was not issued in the future
   const issuedAt = new Date(payload.iat);
-  const expiresAt = new Date(payload.iat + JWT_LIFESPAN_MS);
+  const expiresAt = new Date(payload.iat + JWT_MAX_AGE_MS);
   if (expiresAt < requestedAt || requestedAt < issuedAt) {
     return null;
   }
@@ -70,14 +78,16 @@ export const getAuthenticatedUser = async (
 export const createServerContext: ContextFunction<
   ExpressContext,
   ServerContext
-> = async ({ req }) => {
+> = async ({ req, res }) => {
   const requestedAt = new Date();
-  const token = req.headers.authorization || '';
+  const token = req.cookies[JWT_COOKIE_NAME] || '';
   const user = await getAuthenticatedUser(token, requestedAt);
   const auth: Auth = { isLoggedIn: Boolean(user), user };
   const dataLoaders = createDataLoaders(db);
 
   return {
+    req,
+    res,
     db,
     auth,
     requestedAt,

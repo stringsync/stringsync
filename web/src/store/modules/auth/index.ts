@@ -4,7 +4,6 @@ import { pick } from 'lodash';
 import { message } from 'antd';
 import getErrorMessages from './getErrorMessages';
 
-export const AUTH_JWT_KEY = 'ss:auth:jwt';
 export const AUTH_USER_KEY = 'ss:auth:user';
 
 export interface AuthUser {
@@ -81,7 +80,6 @@ export interface SignupInput {
 }
 export interface SignupData {
   signup: {
-    jwt: string;
     user: {
       id: number;
       username: string;
@@ -90,9 +88,8 @@ export interface SignupData {
   };
 }
 const SIGNUP_MUTATION = gql`
-  mutation Signup($input: SignupInput!) {
+  mutation($input: SignupInput!) {
     signup(input: $input) {
-      jwt
       user {
         id
         username
@@ -118,12 +115,10 @@ export const signup = (
       throw new Error('no data returned from the server');
     }
     const data = res.data.signup;
-    const jwt = data.jwt;
     const user = pick(data.user, ['id', 'username', 'email']);
 
     dispatch(requestAuthSuccess(user));
 
-    window.localStorage.setItem(AUTH_JWT_KEY, jwt);
     window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
 
     message.info(`logged in as @${user.username}`);
@@ -138,7 +133,6 @@ export interface LoginInput {
 }
 export interface LoginData {
   login: {
-    jwt: string;
     user: {
       id: number;
       username: string;
@@ -146,10 +140,9 @@ export interface LoginData {
     };
   };
 }
-const LOGIN_QUERY = gql`
-  query Login($input: LoginInput!) {
+const LOGIN_MUTATION = gql`
+  mutation($input: LoginInput!) {
     login(input: $input) {
-      jwt
       user {
         id
         username
@@ -165,8 +158,8 @@ export const login = (
   dispatch(requestAuthPending());
 
   try {
-    const res = await ctx.apollo.query<LoginData>({
-      query: LOGIN_QUERY,
+    const res = await ctx.apollo.mutate<LoginData>({
+      mutation: LOGIN_MUTATION,
       variables: {
         input,
       },
@@ -175,12 +168,10 @@ export const login = (
       throw new Error('no data returned from the server');
     }
     const data = res.data.login;
-    const jwt = data.jwt;
     const user = pick(data.user, ['id', 'username', 'email']);
 
     dispatch(requestAuthSuccess(user));
 
-    window.localStorage.setItem(AUTH_JWT_KEY, jwt);
     window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
 
     message.info(`logged in as @${user.username}`);
@@ -189,12 +180,8 @@ export const login = (
   }
 };
 
-export interface RefreshAuthInput {
-  id: number;
-}
 export interface RefreshAuthData {
   refreshAuth: {
-    jwt: string;
     user: {
       id: number;
       username: string;
@@ -202,10 +189,9 @@ export interface RefreshAuthData {
     };
   };
 }
-const REFRESH_AUTH_QUERY = gql`
-  query RefreshAuth($input: RefreshAuthInput!) {
-    refreshAuth(input: $input) {
-      jwt
+const REFRESH_AUTH_MUTATION = gql`
+  mutation {
+    refreshAuth {
       user {
         id
         username
@@ -214,40 +200,53 @@ const REFRESH_AUTH_QUERY = gql`
     }
   }
 `;
-export const refreshAuth = (
-  input: RefreshAuthInput
-): ThunkAction<void, AuthActionTypes> => async (dispatch, getState, ctx) => {
+export const refreshAuth = (): ThunkAction<void, AuthActionTypes> => async (
+  dispatch,
+  getState,
+  ctx
+) => {
   dispatch(requestAuthPending());
   try {
-    const res = await ctx.apollo.query<RefreshAuthData>({
-      query: REFRESH_AUTH_QUERY,
-      variables: {
-        input,
-      },
+    const res = await ctx.apollo.mutate<RefreshAuthData>({
+      mutation: REFRESH_AUTH_MUTATION,
     });
     if (!res.data) {
       throw new Error('jwt expired or invalid');
     }
-    const data = res.data.refreshAuth;
-    const jwt = data.jwt;
-    const user = pick(data.user, ['id', 'username', 'email']);
+    const user = pick(res.data.refreshAuth.user, ['id', 'username', 'email']);
 
     dispatch(requestAuthSuccess(user));
 
-    window.localStorage.setItem(AUTH_JWT_KEY, jwt);
     window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
   } catch (error) {
-    console.error(error);
-    dispatch(clearAuth());
+    // jwt expired or invalid
+    dispatch(logout());
   }
 };
 
+interface LogoutData {
+  ok: boolean;
+}
+const LOGOUT_MUTATION = gql`
+  mutation {
+    logout {
+      ok
+    }
+  }
+`;
 export const logout = (): ThunkAction<void, AuthActionTypes> => async (
-  dispatch
+  dispatch,
+  getState,
+  ctx
 ) => {
-  window.localStorage.removeItem(AUTH_JWT_KEY);
-  window.localStorage.removeItem(AUTH_USER_KEY);
-  dispatch(clearAuth());
+  try {
+    ctx.apollo.mutate<LogoutData>({
+      mutation: LOGOUT_MUTATION,
+    });
+  } finally {
+    window.localStorage.removeItem(AUTH_USER_KEY);
+    dispatch(clearAuth());
+  }
 };
 
 export type AuthActionTypes =

@@ -4,7 +4,11 @@ import { UserInputError } from 'apollo-server';
 import { UserModel } from '../../models/UserModel';
 import { ValidationError } from 'sequelize';
 import { getEncryptedPassword } from '../../util/getEncryptedPassword';
-import { createJwt } from '../../util/createJwt';
+import {
+  createJwt,
+  JWT_COOKIE_NAME,
+  JWT_MAX_AGE_MS,
+} from '../../util/createJwt';
 import { toUserType } from '../../casters/user/toUserType';
 
 const PASSWORD_MIN_LEN = 6;
@@ -45,7 +49,11 @@ export const signup: FieldResolver<SignupPayloadType, undefined, Args> = async (
       );
       const user = toUserType(userRecord);
       const jwt = createJwt(user.id, ctx.requestedAt);
-      return { user, jwt };
+      ctx.res.cookie(JWT_COOKIE_NAME, jwt, {
+        httpOnly: true,
+        maxAge: JWT_MAX_AGE_MS,
+      });
+      return { user };
     });
   } catch (err) {
     if (err instanceof ValidationError) {

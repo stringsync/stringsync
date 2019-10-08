@@ -19,7 +19,6 @@ export interface RefreshAuthInputType {
 }
 
 export interface RefreshAuthPayloadType {
-  jwt: string;
   user: UserType;
 }
 
@@ -30,7 +29,6 @@ export interface SignupInputType {
 }
 
 export interface SignupPayloadType {
-  jwt: string;
   user: UserType;
 }
 
@@ -40,6 +38,9 @@ export interface LoginInputType {
 }
 
 export interface LoginPayloadType {
-  jwt: string;
   user: UserType;
+}
+
+export interface LogoutPayloadType {
+  ok: boolean;
 }

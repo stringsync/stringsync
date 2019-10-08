@@ -1,31 +1,48 @@
-import { ApolloServer, ApolloError } from 'apollo-server';
+import express from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import { ApolloError } from 'apollo-server';
+import { ApolloServer } from 'apollo-server-express';
 import { createServerContext } from './util/createServerContext';
 import db from './util/db';
 import { schema } from './resolvers/schema';
 
+const CLIENT_URI = process.env.CLIENT_URI;
 const PORT = process.env.PORT || 3000;
 const env = process.env.NODE_ENV || 'development';
 
-export const server = new ApolloServer({
+export const app = express();
+app.use(
+  cors({
+    origin: CLIENT_URI,
+    credentials: true,
+  })
+);
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
+
+const apolloServer = new ApolloServer({
   schema,
   context: createServerContext,
-  formatError: (e) => {
+  formatError: (error) => {
     // We don't care about non prod environments
     if (env !== 'production') {
-      return e;
+      return error;
     }
 
     // Do not expose internal service error stacktraces to clients
-    if (e.extensions.code === 'INTERNAL_SERVER_ERROR') {
-      console.error(JSON.stringify(e));
+    if (error.extensions.code === 'INTERNAL_SERVER_ERROR') {
+      console.error(JSON.stringify(error));
       return new ApolloError('something went wrong', 'INTERNAL_SERVER_ERROR');
     }
 
     // If not an internal server error, we probably should
     // forward it to the client and let it handle it
-    return e;
+    return error;
   },
 });
+
+apolloServer.applyMiddleware({ app, cors: false });
 
 const main = async () => {
   // connect to db
@@ -33,8 +50,8 @@ const main = async () => {
   console.log('🦑  Connected to db successfully!');
 
   // start server
-  const serverInfo = await server.listen(PORT);
-  console.log(`🦑  Server ready at ${serverInfo.url}`);
+  await app.listen(PORT);
+  console.log(`🦑  Server ready on port ${PORT}`);
 };
 
 // runs if the file was executed directly (vs. imported)

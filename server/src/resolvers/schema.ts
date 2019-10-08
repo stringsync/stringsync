@@ -23,12 +23,7 @@ const typeDefs = gql`
     id: Int!
   }
 
-  input RefreshAuthInput {
-    id: Int!
-  }
-
   type RefreshAuthPayload {
-    jwt: String!
     user: User!
   }
 
@@ -39,7 +34,6 @@ const typeDefs = gql`
   }
 
   type SignupPayload {
-    jwt: String!
     user: User!
   }
 
@@ -49,14 +43,15 @@ const typeDefs = gql`
   }
 
   type LoginPayload {
-    jwt: String!
     user: User!
+  }
+
+  type LogoutPayload {
+    ok: Boolean!
   }
 
   # Query
   type Query {
-    login(input: LoginInput!): LoginPayload!
-    refreshAuth(input: RefreshAuthInput!): RefreshAuthPayload!
     getUsers: [User]!
     getUser(input: GetUserInput!): User!
   }
@@ -64,6 +59,9 @@ const typeDefs = gql`
   # Mutation
   type Mutation {
     signup(input: SignupInput!): SignupPayload!
+    login(input: LoginInput!): LoginPayload!
+    logout: LogoutPayload!
+    refreshAuth: RefreshAuthPayload!
   }
 `;
 

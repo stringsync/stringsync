@@ -1,12 +1,13 @@
-import { MergeInfo } from 'apollo-server';
-import { ServerContext } from '../util/createServerContext';
+import { getUser } from './query/getUser';
+import { getUsers } from './query/getUsers';
 import { GraphQLResolveInfo } from 'graphql';
 import { IResolvers } from 'apollo-server';
+import { login } from './mutation/login';
+import { MergeInfo } from 'apollo-server';
 import { notations } from './user/notations';
-import { login } from './query/login';
-import { refreshAuth } from './query/refreshAuth';
-import { getUsers } from './query/getUsers';
-import { getUser } from './query/getUser';
+import { logout } from './mutation/logout';
+import { refreshAuth } from './mutation/refreshAuth';
+import { ServerContext } from '../util/createServerContext';
 import { signup } from './mutation/signup';
 
 // Rewrite of Apollo's IFieldResolver to enforce a certain result
@@ -30,13 +31,14 @@ export const resolvers: IResolvers = {
   },
   // Query
   Query: {
-    login,
-    refreshAuth,
     getUsers,
     getUser,
   },
   // Mutation
   Mutation: {
+    login,
+    logout,
     signup,
+    refreshAuth,
   },
 };
