@@ -210,6 +210,8 @@ export const reauth = (): ThunkAction<void, AuthActionTypes> => async (
     const user = pick(res.data.reauth.user, ['id', 'username', 'email']);
     dispatch(requestAuthSuccess(user));
   } catch (error) {
+    // ensure the jwt gets removed
+    // logout should remove the isPending status, too
     dispatch(logout());
   }
 };
@@ -235,6 +237,8 @@ export const logout = (): ThunkAction<void, AuthActionTypes> => async (
       mutation: LOGOUT_MUTATION,
     });
   } catch (error) {
+    // TODO use sentry or some other tool that will track
+    // when logouts fail
     console.error(error);
   }
 };
