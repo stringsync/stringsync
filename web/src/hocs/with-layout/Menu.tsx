@@ -32,6 +32,9 @@ const Menu: React.FC<Props> = (props) => {
     const { xs, sm, md } = state.viewport;
     return xs || sm || md;
   });
+  const isAuthPending = useSelector<RootState, boolean>(
+    (state) => state.auth.isPending
+  );
   const isGtEqTeacher = true; // TODO put real logic
   const dispatch = useDispatch();
   const [isModalVisible, setModalVisible] = useState(false);
@@ -45,11 +48,12 @@ const Menu: React.FC<Props> = (props) => {
 
   const gutterPx = isLoggedIn ? 16 : 8;
 
-  const isLibraryVisible = !isLtEqMdViewport && isLoggedIn;
-  const isUploadVisible = !isLtEqMdViewport && isLoggedIn && isGtEqTeacher;
-  const isLoginVisible = !isLoggedIn;
-  const isSignupVisible = !isLoggedIn;
-  const isSettingsVisible = isLoggedIn;
+  const isLibraryVisible = !isAuthPending && !isLtEqMdViewport && isLoggedIn;
+  const isUploadVisible =
+    !isAuthPending && !isLtEqMdViewport && isLoggedIn && isGtEqTeacher;
+  const isLoginVisible = !isAuthPending && !isLoggedIn;
+  const isSignupVisible = !isAuthPending && !isLoggedIn;
+  const isSettingsVisible = !isAuthPending && isLoggedIn;
 
   return (
     <>
