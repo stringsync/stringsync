@@ -1,16 +1,16 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "outDir": "dst",
-    "sourceMap": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "types": ["jest"],
-    "lib": ["es2015"],
     "paths": {
       "@/*": ["src/*"],
       "common/*": ["../common/*"]
-    }
+    },
+    "outDir": "dst",
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "strict": true
   },
   "include": ["src/**/*.ts", "tests/**/*.ts"],
   "exclude": ["node_modules"]

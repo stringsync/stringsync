@@ -12,13 +12,13 @@ export interface KeyValue<V> {
 }
 
 export class DuplicateKeyError extends Error {
-  constructor(keyName, key) {
+  constructor(keyName: string, key: string) {
     super(`duplicate key for ${keyName} = ${key}`);
   }
 }
 
 export class MissingKeyError extends Error {
-  constructor(keyName, key) {
+  constructor(keyName: string, key: string) {
     super(`missing key for ${keyName} = ${key}`);
   }
 }
@@ -34,7 +34,7 @@ export const indexUniquelyBy = <V>(
     // more than one object to have the same key, as long as their values as equivalent,
     // based on util.isDeepStrictEqual.
     if (key in memo && !isDeepStrictEqual(object.value, memo[key])) {
-      memo[key] = new DuplicateKeyError(keyName, key);
+      memo[key] = new DuplicateKeyError(keyName, key.toString());
     } else {
       memo[key] = object.value;
     }
@@ -60,7 +60,7 @@ export const getOrderedDataLoaderValues = <V>(
       const value = valuesByKey[key];
       orderedValues[ndx] = value;
     } else {
-      orderedValues[ndx] = new MissingKeyError(keyName, key);
+      orderedValues[ndx] = new MissingKeyError(keyName, key.toString());
     }
   }
   return orderedValues;

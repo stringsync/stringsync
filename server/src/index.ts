@@ -24,21 +24,20 @@ app.use(express.urlencoded({ extended: true }));
 const apolloServer = new ApolloServer({
   schema,
   context: createServerContext,
-  formatError: (error) => {
-    // We don't care about non prod environments
+  formatError: (e: Error | ApolloError) => {
     if (env !== 'production') {
-      return error;
+      return e;
     }
 
     // Do not expose internal service error stacktraces to clients
-    if (error.extensions.code === 'INTERNAL_SERVER_ERROR') {
-      console.error(JSON.stringify(error));
+    if ('extensions' in e && e.extensions.code === 'INTERNAL_SERVER_ERROR') {
+      console.error(JSON.stringify(e));
       return new ApolloError('something went wrong', 'INTERNAL_SERVER_ERROR');
     }
 
     // If not an internal server error, we probably should
     // forward it to the client and let it handle it
-    return error;
+    return e;
   },
 });
 

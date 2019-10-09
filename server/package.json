@@ -32,6 +32,7 @@
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
     "@types/bluebird": "^3.5.27",
+    "@types/cookie-parser": "^1.4.2",
     "@types/express": "^4.17.1",
     "@types/graphql": "^14.5.0",
     "@types/jest": "^24.0.17",

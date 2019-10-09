@@ -14,7 +14,7 @@ import { UserModel } from '../models/UserModel';
 import { Request, Response } from 'express';
 
 export interface Auth {
-  user?: UserType;
+  user: UserType | null;
   isLoggedIn: boolean;
 }
 
@@ -36,7 +36,7 @@ export const getAuthenticatedUser = async (
   }
 
   // Check jwt has been signed using JWT_SECRET
-  let maybePayload: string | object;
+  let maybePayload: string | { [key: string]: any };
   try {
     maybePayload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
