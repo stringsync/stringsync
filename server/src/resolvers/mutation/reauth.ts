@@ -1,8 +1,8 @@
 import { FieldResolver } from '..';
 import { ReauthPayloadType } from '../types';
-import { createAuthJwt } from '../../util/createAuthJwt';
+import { createAuthJwt } from '../../util/auth-jwt/createAuthJwt';
 import { ForbiddenError } from 'apollo-server';
-import { setAuthJwtCookie } from '../../util/setAuthJwtCookie';
+import { setAuthJwtCookie } from '../../util/auth-jwt/setAuthJwtCookie';
 
 const BAD_JWT_MSG = 'invalid or expired credentials';
 

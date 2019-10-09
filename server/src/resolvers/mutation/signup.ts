@@ -4,9 +4,9 @@ import { UserInputError } from 'apollo-server';
 import { UserModel } from '../../models/UserModel';
 import { ValidationError } from 'sequelize';
 import { getEncryptedPassword } from '../../util/getEncryptedPassword';
-import { createAuthJwt } from '../../util/createAuthJwt';
+import { createAuthJwt } from '../../util/auth-jwt/createAuthJwt';
 import { toUserType } from '../../casters/user/toUserType';
-import { setAuthJwtCookie } from '../../util/setAuthJwtCookie';
+import { setAuthJwtCookie } from '../../util/auth-jwt/setAuthJwtCookie';
 
 const PASSWORD_MIN_LEN = 6;
 const PASSWORD_MAX_LEN = 256;

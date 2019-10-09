@@ -1,8 +1,8 @@
 import { ContextFunction } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 import { asUserType } from '../casters/user/asUserType';
-import { JwtPayload, JWT_SECRET, JWT_MAX_AGE_MS } from './createAuthJwt';
-import { JWT_COOKIE_NAME } from './setAuthJwtCookie';
+import { JwtPayload } from './auth-jwt/createAuthJwt';
+import { JWT_COOKIE_NAME, JWT_SECRET, JWT_MAX_AGE_MS } from './auth-jwt';
 import { UserType } from '../resolvers/types';
 import db from './db';
 import jwt from 'jsonwebtoken';

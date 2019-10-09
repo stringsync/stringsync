@@ -1,9 +1,9 @@
-import { createAuthJwt } from '../../util/createAuthJwt';
+import { createAuthJwt } from '../../util/auth-jwt/createAuthJwt';
 import { FieldResolver } from '..';
 import { ForbiddenError } from 'apollo-server';
 import { LoginInputType, LoginPayloadType } from '../types';
 import { or } from 'sequelize';
-import { setAuthJwtCookie } from '../..//util/setAuthJwtCookie';
+import { setAuthJwtCookie } from '../..//util/auth-jwt/setAuthJwtCookie';
 import { toUserType } from '../../casters/user/toUserType';
 import { UserModel } from '../../models/UserModel';
 import bcrypt from 'bcrypt';
