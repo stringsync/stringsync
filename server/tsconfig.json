@@ -6,9 +6,12 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "types": ["jest"],
-    "paths": {},
-    "lib": ["es2015"]
+    "lib": ["es2015"],
+    "paths": {
+      "@/*": ["src/*"],
+      "common/*": ["../common/*"]
+    }
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts", "db/**/*.ts"],
+  "include": ["src/**/*.ts", "tests/**/*.ts"],
   "exclude": ["node_modules"]
 }
