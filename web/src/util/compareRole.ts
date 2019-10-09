@@ -9,10 +9,10 @@ const compareRole = (role1: Roles, role2: Roles) => {
   if (ndx1 < 0 || ndx2 < 0) {
     throw new Error(`can't compare roles: ${role1}, ${role2}`);
   }
-  if (role1 < role2) {
+  if (ndx1 < ndx2) {
     return -1;
   }
-  if (role1 > role2) {
+  if (ndx1 > ndx2) {
     return 1;
   }
   return 0;

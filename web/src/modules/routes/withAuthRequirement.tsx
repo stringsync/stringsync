@@ -22,7 +22,7 @@ const withAuthRequirement = (authRequirements: AuthRequirements) =>
     return (props) => {
       const router = useRouter();
       // TODO put real logic here
-      const userRole = 'student';
+      const userRole = 'admin';
       const isLoggedIn = useSelector<RootState, boolean>(
         (state) => state.auth.isLoggedIn
       );

@@ -26,6 +26,12 @@ const WrappedLogin = compose(
   withScrollRestoration
 )(React.lazy(() => import('../login/Login')));
 
+const WrappedUpload = compose(
+  withFallback,
+  withAuthRequirement(AuthRequirements.LOGGED_IN_AS_TEACHER),
+  withScrollRestoration
+)(React.lazy(() => import('../upload/Upload')));
+
 const Routes: React.FC = () => {
   return (
     <Router>
@@ -33,6 +39,7 @@ const Routes: React.FC = () => {
       <Route path="/library" component={WrappedLibrary} />
       <Route path="/signup" component={WrappedSignup} />
       <Route path="/login" component={WrappedLogin} />
+      <Route path="/upload" component={WrappedUpload} />
     </Router>
   );
 };
