@@ -14,7 +14,7 @@ export type UserModelStatic = typeof Model & {
   new (values?: object, options?: BuildOptions): UserModel;
 };
 
-export const UserModel = <UserModelStatic>db.define(
+export const UserModel = db.define(
   'User',
   {
     id: {
@@ -73,4 +73,4 @@ export const UserModel = <UserModelStatic>db.define(
   {
     tableName: 'users',
   }
-);
+) as UserModelStatic;

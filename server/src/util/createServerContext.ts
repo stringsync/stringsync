@@ -79,7 +79,7 @@ export const createServerContext: ContextFunction<
   const token = req.cookies[JWT_COOKIE_NAME] || '';
   const user = await getAuthenticatedUser(token, requestedAt);
   const auth: Auth = { isLoggedIn: Boolean(user), user };
-  const dataLoaders = createDataLoaders(db);
+  const dataLoaders = createDataLoaders();
 
   return {
     req,

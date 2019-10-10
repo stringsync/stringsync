@@ -1,5 +1,3 @@
-import DataLoader from 'dataloader';
-import { NotationType, UserType } from '../resolvers/types';
 import { isDeepStrictEqual } from 'util';
 
 export type UniqueIndex<T> = { [key: string]: T | DuplicateKeyError };
