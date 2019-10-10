@@ -3,6 +3,7 @@ const WARN = 1;
 const ERROR = 2;
 
 module.exports = {
+  root: true,
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: 'server/tsconfig.json',
