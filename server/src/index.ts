@@ -24,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 const apolloServer = new ApolloServer({
   schema,
   context: createServerContext,
-  formatError: (e: Error | ApolloError) => {
+  formatError: (e: Error | ApolloError): Error => {
     if (env !== 'production') {
       return e;
     }
@@ -43,7 +43,7 @@ const apolloServer = new ApolloServer({
 
 apolloServer.applyMiddleware({ app, cors: false });
 
-const main = async () => {
+const main = async (): Promise<void> => {
   // connect to db
   await db.authenticate();
   console.log('🦑  Connected to db successfully!');

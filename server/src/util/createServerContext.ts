@@ -30,7 +30,7 @@ export interface ServerContext {
 export const getAuthenticatedUser = async (
   token: string,
   requestedAt: Date
-) => {
+): Promise<UserType | null> => {
   if (!token) {
     return null;
   }

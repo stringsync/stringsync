@@ -1,17 +1,25 @@
+const OFF = 0;
+const WARN = 1;
+const ERROR = 2;
+
 module.exports = {
-  root: true,
   parser: '@typescript-eslint/parser',
-  env: {
-    node: true,
-    es6: true,
+  parserOptions: {
+    project: 'server/tsconfig.json',
   },
+  plugins: ['@typescript-eslint'],
   extends: [
     'plugin:@typescript-eslint/recommended',
-    'prettier:@typescript-eslint',
+    'plugin:prettier/recommended',
+    'prettier/@typescript-eslint',
   ],
-  rules: {},
-  parserOptions: {
-    ecmaVersion: 2018,
-    sourceType: 'module',
+  env: {
+    es6: true,
+    node: true,
+  },
+  rules: {
+    '@typescript-eslint/no-explicit-any': OFF,
+    '@typescript-eslint/no-unused-vars': WARN,
+    '@typescript-eslint/explicit-function-return-type': ERROR,
   },
 };

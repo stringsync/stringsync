@@ -12,8 +12,6 @@ RUN yarn
 # copy configuration
 COPY ./.sequelizerc .
 COPY ./sequelize.config.js .
-COPY ./.eslintrc.js .
-COPY ./prettier.config.js .
 COPY ./tsconfig.json .
 COPY ./webpack.config.js .
 COPY ./jest.config.js .
