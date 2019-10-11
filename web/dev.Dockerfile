@@ -1,10 +1,10 @@
-FROM node:12.4.0
+FROM ss-root:latest
 
-# create web directory
-RUN mkdir /app
-WORKDIR /app
-
-# install node_modules
+WORKDIR /string-sync/web
 COPY ./package.json .
 COPY ./yarn.lock .
 RUN yarn
+
+COPY .env.development .
+COPY config-overrides.js .
+COPY tsconfig.json .

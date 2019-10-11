@@ -7,6 +7,8 @@ import { createServerContext } from './util/createServerContext';
 import db from './util/db';
 import { schema } from './resolvers/schema';
 
+const foo = 'asdf';
+
 const CLIENT_URI = process.env.CLIENT_URI;
 const PORT = process.env.PORT || 3000;
 const env = process.env.NODE_ENV || 'development';

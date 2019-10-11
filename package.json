@@ -1,0 +1,23 @@
+{
+  "name": "string-sync",
+  "version": "1.0.0",
+  "repository": "git@github.com:jaredjj3/string-sync.git",
+  "author": "Jared Johnson <jared@jaredjohnson.dev>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "lint": "eslint --ext ts,tsx  ./common ./server/src ./web/src"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.3.0",
+    "@typescript-eslint/parser": "^2.3.0",
+    "eslint": "5.16.0",
+    "eslint-config-prettier": "^6.4.0",
+    "eslint-config-react-app": "^5.0.2",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-react": "^7.16.0",
+    "prettier": "^1.18.2",
+    "typescript": "^3.6.4"
+  }
+}

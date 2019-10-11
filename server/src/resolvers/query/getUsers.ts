@@ -9,8 +9,8 @@ export const getUsers: FieldResolver<UserType[]> = async (
   args,
   ctx
 ) => {
-  if (!ctx.auth.isLoggedIn) {
-    throw new AuthenticationError('must be logged in');
-  }
+  // if (!ctx.auth.isLoggedIn) {
+  //   throw new AuthenticationError('must be logged in');
+  // }
   return await UserModel.findAll({ ...asUserType });
 };

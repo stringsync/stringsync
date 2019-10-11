@@ -1,4 +1,4 @@
-version: "3.7"
+version: '3.7'
 
 services:
   db:
@@ -10,20 +10,30 @@ services:
       POSTGRES_USER: stringsync
       POSTGRES_PASSWORD: stringsync
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres:/var/lib/postgresql/data
+
+  root:
+    container_name: ss_root
+    image: ss-root:latest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: ['exit', '0']
 
   server:
     container_name: ss_server
     image: ss-server:latest
     build:
       context: ./server
-      dockerfile: dev.Dockerfile
+      dockerfile: ./dev.Dockerfile
     volumes:
-      - ./server/src:/app/src
-      - ./server/db:/app/db
-      - /app/node_modules
+      - ./common:/string-sync/common
+      - ./server/src:/string-sync/server/src
+      - ./server/db:/string-sync/server/db
+      - /string-sync/node_modules
+      - /string-sync/server/node_modules
     environment:
       CLIENT_URI: http://localhost:8080
       NODE_ENV: development
@@ -34,27 +44,34 @@ services:
       DB_HOST: host.docker.internal
     links:
       - db
-
+    depends_on:
+      - root
     ports:
-      - "3000:3000"
-    command: ["yarn", "build:dev"]
+      - '3000:3000'
+    command: ['yarn', 'build:dev']
 
   web:
     container_name: ss_web
     image: ss-web:latest
     build:
       context: ./web
-      dockerfile: dev.Dockerfile
+      dockerfile: ./dev.Dockerfile
     volumes:
-      - ./web:/app
-      - /app/node_modules
+      - ./common:/string-sync/common
+      - ./web/src:/string-sync/web/src
+      - ./web/public:/string-sync/web/public
+      - /string-sync/node_modules
+      - /string-sync/web/node_modules
     environment:
       NODE_ENV: development
     ports:
-      - "8080:8080"
+      - '8080:8080'
     links:
       - server
-    command: ["yarn", "start"]
+    depends_on:
+      - root
+    command: ['yarn', 'start']
 
 volumes:
   postgres:
+  common:

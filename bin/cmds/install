@@ -1,7 +1,10 @@
 #!/bin/bash
 
-echo "Installing server node_modules"
+echo "🦑  Installing root node_modules"
+(cd ../ && rm -rf node_modules && yarn)
+echo
+echo "🦑  Installing server node_modules"
 (cd ../server && rm -rf node_modules && yarn)
 echo
-echo "Installing web node_modules"
+echo "🦑  Installing web node_modules"
 (cd ../web && rm -rf node_modules && yarn)

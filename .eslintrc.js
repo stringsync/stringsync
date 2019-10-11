@@ -6,11 +6,13 @@ module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: 'server/tsconfig.json',
+    ecmaVersion: 6,
+    sourceType: 'module',
   },
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', 'react'],
   extends: [
     'plugin:@typescript-eslint/recommended',
+    'react-app',
     'plugin:prettier/recommended',
     'prettier/@typescript-eslint',
   ],
@@ -19,8 +21,9 @@ module.exports = {
     node: true,
   },
   rules: {
+    '@typescript-eslint/explicit-function-return-type': OFF,
+    '@typescript-eslint/no-commonjs': OFF,
     '@typescript-eslint/no-explicit-any': OFF,
     '@typescript-eslint/no-unused-vars': WARN,
-    '@typescript-eslint/explicit-function-return-type': OFF,
   },
 };

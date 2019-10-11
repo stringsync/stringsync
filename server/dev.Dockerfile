@@ -1,18 +1,13 @@
-FROM node:12.4.0
+FROM ss-root:latest
 
-# create server directory
-RUN mkdir /app
-WORKDIR /app
-
-# install node_modules
+WORKDIR /string-sync/server
 COPY ./package.json .
 COPY ./yarn.lock .
 RUN yarn
 
-# copy configuration
-COPY ./.sequelizerc .
-COPY ./sequelize.config.js .
-COPY ./tsconfig.json .
-COPY ./webpack.config.js .
-COPY ./jest.config.js .
-COPY ./.graphqlconfig.yml .
+COPY .graphqlconfig.yml .
+COPY .sequelizerc .
+COPY jest.config.js .
+COPY sequelize.config.js .
+COPY tsconfig.json .
+COPY webpack.config.js .

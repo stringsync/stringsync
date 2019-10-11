@@ -5,6 +5,12 @@ import enUS from 'antd/lib/locale-provider/en_US';
 import { Store } from '../../store';
 import { ThemeProvider } from 'styled-components';
 import theme from '../../theme.json';
+import { PartialUser } from 'common/types';
+
+const user: PartialUser = {
+  id: 123,
+};
+console.log(user);
 
 interface Props {
   store: Store;
