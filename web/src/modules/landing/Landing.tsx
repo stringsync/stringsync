@@ -1,10 +1,7 @@
-import React, { useState } from 'react';
-import { isMobile as isMobileSelector } from '../../store/selectors';
-import { useSelector } from 'react-redux';
+import React from 'react';
 import compose from '../../util/compose';
 import { withLayout } from '../../hocs';
 import { Layouts } from '../../hocs/with-layout/Layouts';
-import { PartialUser } from 'common/types';
 
 interface Props {}
 

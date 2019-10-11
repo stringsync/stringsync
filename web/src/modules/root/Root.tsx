@@ -7,8 +7,6 @@ import { ThemeProvider } from 'styled-components';
 import theme from '../../theme.json';
 import { PartialUser } from 'common/types';
 
-const foo = 'asdf';
-
 const user: PartialUser = {
   id: 123,
 };
