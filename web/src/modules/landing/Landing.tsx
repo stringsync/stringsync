@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { isMobile as isMobileSelector } from '../../store/selectors';
 import { useSelector } from 'react-redux';
 import compose from '../../util/compose';

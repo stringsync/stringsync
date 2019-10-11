@@ -19,6 +19,7 @@ module.exports = {
   env: {
     es6: true,
     node: true,
+    browser: true,
   },
   rules: {
     '@typescript-eslint/explicit-function-return-type': OFF,

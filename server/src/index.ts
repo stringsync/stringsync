@@ -7,8 +7,6 @@ import { createServerContext } from './util/createServerContext';
 import db from './util/db';
 import { schema } from './resolvers/schema';
 
-const foo = 'asdf';
-
 const CLIENT_URI = process.env.CLIENT_URI;
 const PORT = process.env.PORT || 3000;
 const env = process.env.NODE_ENV || 'development';
@@ -32,6 +30,7 @@ const apolloServer = new ApolloServer({
     }
 
     // Do not expose internal service error stacktraces to clients
+
     if ('extensions' in e && e.extensions.code === 'INTERNAL_SERVER_ERROR') {
       console.error(JSON.stringify(e));
       return new ApolloError('something went wrong', 'INTERNAL_SERVER_ERROR');
