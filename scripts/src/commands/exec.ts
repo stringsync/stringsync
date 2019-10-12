@@ -8,18 +8,19 @@ export default class Exec extends Command {
 
   static flags = {
     help: flags.help({ char: 'h' }),
-    service: flags.string({
-      char: 's',
-      required: true,
-      description: 'service name',
-    }),
   };
 
-  static args = [{ name: 'cmd', required: true }];
+  static args = [
+    { name: 'service', required: true },
+    { name: 'cmd', required: true },
+  ];
 
   async run() {
-    const { flags, args } = this.parse(Exec);
-    execSync(`docker-compose exec ${flags.service} bash -c "${args.cmd}"`, {
+    const { argv } = this.parse(Exec);
+    const [service, ...cmdv] = argv;
+    const cmd = cmdv.join(' ');
+    this.log(`exec '${cmd}' on ${service}:`);
+    execSync(`docker-compose exec ${service} bash -c "${cmd}"`, {
       stdio: 'inherit',
     });
   }
