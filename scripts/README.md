@@ -30,9 +30,10 @@ USAGE
 <!-- commands -->
 * [`ss bounce`](#ss-bounce)
 * [`ss down`](#ss-down)
-* [`ss exec [FILE]`](#ss-exec-file)
+* [`ss exec CMD`](#ss-exec-cmd)
 * [`ss help [COMMAND]`](#ss-help-command)
 * [`ss install`](#ss-install)
+* [`ss logs [FILE]`](#ss-logs-file)
 * [`ss up`](#ss-up)
 
 ## `ss bounce`
@@ -63,18 +64,17 @@ OPTIONS
 
 _See code: [src/commands/down.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/down.ts)_
 
-## `ss exec [FILE]`
+## `ss exec CMD`
 
-describe the command here
+Runs docker-compose exec on an running container.
 
 ```
 USAGE
-  $ ss exec [FILE]
+  $ ss exec CMD
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -h, --help             show CLI help
+  -s, --service=service  (required) service name
 ```
 
 _See code: [src/commands/exec.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/exec.ts)_
@@ -109,6 +109,22 @@ OPTIONS
 ```
 
 _See code: [src/commands/install.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/install.ts)_
+
+## `ss logs [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ ss logs [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/logs.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/logs.ts)_
 
 ## `ss up`
 
