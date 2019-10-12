@@ -29,12 +29,13 @@ USAGE
 # Commands
 <!-- commands -->
 * [`ss bounce`](#ss-bounce)
+* [`ss db [FILE]`](#ss-db-file)
 * [`ss down`](#ss-down)
 * [`ss exec SERVICE CMD`](#ss-exec-service-cmd)
 * [`ss help [COMMAND]`](#ss-help-command)
 * [`ss install`](#ss-install)
 * [`ss logs SERVICE`](#ss-logs-service)
-* [`ss sql [FILE]`](#ss-sql-file)
+* [`ss sql CMD`](#ss-sql-cmd)
 * [`ss up`](#ss-up)
 
 ## `ss bounce`
@@ -50,6 +51,22 @@ OPTIONS
 ```
 
 _See code: [src/commands/bounce.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/bounce.ts)_
+
+## `ss db [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ ss db [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/db.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/db.ts)_
 
 ## `ss down`
 
@@ -125,18 +142,16 @@ OPTIONS
 
 _See code: [src/commands/logs.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/logs.ts)_
 
-## `ss sql [FILE]`
+## `ss sql CMD`
 
 describe the command here
 
 ```
 USAGE
-  $ ss sql [FILE]
+  $ ss sql CMD
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -h, --help  show CLI help
 ```
 
 _See code: [src/commands/sql.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/sql.ts)_

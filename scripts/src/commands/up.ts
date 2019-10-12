@@ -1,5 +1,5 @@
 import { Command, flags } from '@oclif/command';
-import { spawn, execSync } from 'child_process';
+import { execSync } from 'child_process';
 import { buildDockerImageSync } from '../util/buildDockerImage';
 import { ROOT_PATH } from '../util/constants';
 

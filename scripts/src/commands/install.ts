@@ -11,7 +11,7 @@ const INSTALLATION_DIRS = [
 ];
 
 export default class Install extends Command {
-  static description = 'Reinstalls node_modules throughout the project';
+  static description = 'Reinstalls node_modules throughout the project.';
 
   static flags = {
     help: flags.help({ char: 'h' }),
