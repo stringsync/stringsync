@@ -30,6 +30,7 @@ USAGE
 <!-- commands -->
 * [`ss hello [FILE]`](#ss-hello-file)
 * [`ss help [COMMAND]`](#ss-help-command)
+* [`ss up [FILE]`](#ss-up-file)
 
 ## `ss hello [FILE]`
 
@@ -67,4 +68,20 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.1/src/commands/help.ts)_
+
+## `ss up [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ ss up [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/up.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/up.ts)_
 <!-- commandsstop -->

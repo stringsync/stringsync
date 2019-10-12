@@ -4,7 +4,6 @@
     "paths": {
       "common/*": ["./common/*"]
     },
-    "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -14,7 +13,6 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "noImplicitThis": true,
-    "alwaysStrict": true,
-    "isolatedModules": true
+    "alwaysStrict": true
   }
 }

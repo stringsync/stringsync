@@ -14,14 +14,6 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
 
-  root:
-    container_name: ss_root
-    image: ss-root:latest
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    command: ['exit', '0']
-
   server:
     container_name: ss_server
     image: ss-server:latest
@@ -44,8 +36,6 @@ services:
       DB_HOST: host.docker.internal
     links:
       - db
-    depends_on:
-      - root
     ports:
       - '3000:3000'
     command: ['yarn', 'build:dev']
@@ -68,8 +58,6 @@ services:
       - '8080:8080'
     links:
       - server
-    depends_on:
-      - root
     command: ['yarn', 'start']
 
 volumes:

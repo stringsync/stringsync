@@ -1,6 +1,6 @@
 {
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "extends": "../tsconfig.base.json",
     "declaration": true,
     "importHelpers": true,
     "module": "commonjs",
