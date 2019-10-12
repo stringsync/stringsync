@@ -28,9 +28,26 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`ss down [FILE]`](#ss-down-file)
 * [`ss hello [FILE]`](#ss-hello-file)
 * [`ss help [COMMAND]`](#ss-help-command)
-* [`ss up [FILE]`](#ss-up-file)
+* [`ss up`](#ss-up)
+
+## `ss down [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ ss down [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/down.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/down.ts)_
 
 ## `ss hello [FILE]`
 
@@ -69,18 +86,17 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.1/src/commands/help.ts)_
 
-## `ss up [FILE]`
+## `ss up`
 
-describe the command here
+Spins up a development environment
 
 ```
 USAGE
-  $ ss up [FILE]
+  $ ss up
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -a, --attach
+  -h, --help    show CLI help
 ```
 
 _See code: [src/commands/up.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/up.ts)_
