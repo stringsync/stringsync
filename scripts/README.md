@@ -30,8 +30,9 @@ USAGE
 <!-- commands -->
 * [`ss bounce`](#ss-bounce)
 * [`ss down`](#ss-down)
+* [`ss exec [FILE]`](#ss-exec-file)
 * [`ss help [COMMAND]`](#ss-help-command)
-* [`ss install [FILE]`](#ss-install-file)
+* [`ss install`](#ss-install)
 * [`ss up`](#ss-up)
 
 ## `ss bounce`
@@ -62,6 +63,22 @@ OPTIONS
 
 _See code: [src/commands/down.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/down.ts)_
 
+## `ss exec [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ ss exec [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/exec.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/exec.ts)_
+
 ## `ss help [COMMAND]`
 
 display help for ss
@@ -79,18 +96,16 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.1/src/commands/help.ts)_
 
-## `ss install [FILE]`
+## `ss install`
 
-describe the command here
+Reinstalls node_modules throughout the project
 
 ```
 USAGE
-  $ ss install [FILE]
+  $ ss install
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -h, --help  show CLI help
 ```
 
 _See code: [src/commands/install.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/install.ts)_
