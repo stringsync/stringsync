@@ -1,5 +1,5 @@
 import { Command, flags } from '@oclif/command';
-import { execSync } from 'child_process';
+import { spawn } from 'child_process';
 import { buildDockerImageSync } from '../util/buildDockerImage';
 import { ROOT_PATH } from '../util/constants';
 
@@ -27,6 +27,6 @@ export default class Up extends Command {
       cwd: ROOT_PATH,
     });
 
-    execSync([cmd, ...args].join(' '), { stdio: 'inherit' });
+    spawn(cmd, args, { stdio: 'inherit' });
   }
 }
