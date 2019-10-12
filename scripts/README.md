@@ -28,46 +28,40 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`ss down [FILE]`](#ss-down-file)
-* [`ss hello [FILE]`](#ss-hello-file)
+* [`ss bounce [FILE]`](#ss-bounce-file)
+* [`ss down`](#ss-down)
 * [`ss help [COMMAND]`](#ss-help-command)
 * [`ss up`](#ss-up)
 
-## `ss down [FILE]`
+## `ss bounce [FILE]`
 
 describe the command here
 
 ```
 USAGE
-  $ ss down [FILE]
+  $ ss bounce [FILE]
 
 OPTIONS
   -f, --force
   -h, --help       show CLI help
   -n, --name=name  name to print
+```
+
+_See code: [src/commands/bounce.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/bounce.ts)_
+
+## `ss down`
+
+Turns down a development environment
+
+```
+USAGE
+  $ ss down
+
+OPTIONS
+  -h, --help  show CLI help
 ```
 
 _See code: [src/commands/down.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/down.ts)_
-
-## `ss hello [FILE]`
-
-describe the command here
-
-```
-USAGE
-  $ ss hello [FILE]
-
-OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
-
-EXAMPLE
-  $ ss hello
-  hello world from ./src/hello.ts!
-```
-
-_See code: [src/commands/hello.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/hello.ts)_
 
 ## `ss help [COMMAND]`
 
