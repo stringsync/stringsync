@@ -28,23 +28,22 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`ss bounce [FILE]`](#ss-bounce-file)
+* [`ss bounce`](#ss-bounce)
 * [`ss down`](#ss-down)
 * [`ss help [COMMAND]`](#ss-help-command)
+* [`ss install [FILE]`](#ss-install-file)
 * [`ss up`](#ss-up)
 
-## `ss bounce [FILE]`
+## `ss bounce`
 
-describe the command here
+Performs a hard reset on the development environment
 
 ```
 USAGE
-  $ ss bounce [FILE]
+  $ ss bounce
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -h, --help  show CLI help
 ```
 
 _See code: [src/commands/bounce.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/bounce.ts)_
@@ -79,6 +78,22 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.1/src/commands/help.ts)_
+
+## `ss install [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ ss install [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/install.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/install.ts)_
 
 ## `ss up`
 

@@ -10,6 +10,7 @@ export default class Down extends Command {
   };
 
   async run() {
+    this.parse(Down);
     execSync('docker-compose down', { cwd: ROOT_PATH });
   }
 }

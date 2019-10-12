@@ -1,5 +1,5 @@
 import { Command, flags } from '@oclif/command';
-import { execSync, spawn } from 'child_process';
+import { execSync } from 'child_process';
 
 export default class Bounce extends Command {
   static description = 'Performs a hard reset on the development environment';
@@ -9,6 +9,7 @@ export default class Bounce extends Command {
   };
 
   async run() {
+    this.parse(Bounce);
     execSync('ss down', { stdio: 'inherit' });
     execSync('ss up', { stdio: 'inherit', maxBuffer: 10 });
   }
