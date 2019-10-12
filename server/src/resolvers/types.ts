@@ -1,10 +1,4 @@
-export interface UserType {
-  id: number;
-  username: string;
-  email: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { User } from 'common/types';
 
 export interface NotationType {
   id: number;
@@ -15,7 +9,7 @@ export interface GetUserInputType {
 }
 
 export interface ReauthPayloadType {
-  user: UserType;
+  user: User;
 }
 
 export interface SignupInputType {
@@ -25,7 +19,7 @@ export interface SignupInputType {
 }
 
 export interface SignupPayloadType {
-  user: UserType;
+  user: User;
 }
 
 export interface LoginInputType {
@@ -34,7 +28,7 @@ export interface LoginInputType {
 }
 
 export interface LoginPayloadType {
-  user: UserType;
+  user: User;
 }
 
 export interface LogoutPayloadType {

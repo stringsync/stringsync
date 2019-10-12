@@ -1,13 +1,9 @@
 import { FieldResolver } from '..';
-import { UserType } from '../types';
+import { User } from 'common/types';
 import { asUserType } from '../../casters/user/asUserType';
 import { UserModel } from '../../models/UserModel';
 
-export const getUsers: FieldResolver<UserType[]> = async (
-  parent,
-  args,
-  ctx
-) => {
+export const getUsers: FieldResolver<User[]> = async (parent, args, ctx) => {
   // if (!ctx.auth.isLoggedIn) {
   //   throw new AuthenticationError('must be logged in');
   // }

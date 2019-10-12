@@ -1,10 +1,11 @@
 import DataLoader from 'dataloader';
 import { createUsersById } from './createUsersById';
-import { UserType, NotationType } from '../resolvers/types';
+import { NotationType } from '../resolvers/types';
 import { createNotationsByUserId } from './createNotationsByUserId';
+import { User } from 'common/types';
 
 export interface DataLoaders {
-  usersById: DataLoader<number, UserType>;
+  usersById: DataLoader<number, User>;
   notationsByUserId: DataLoader<number, NotationType[]>;
 }
 

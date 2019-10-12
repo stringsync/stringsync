@@ -1,7 +1,8 @@
 import { FieldResolver } from '..';
-import { NotationType, UserType } from '../types';
+import { NotationType } from '../types';
+import { User } from 'common/types';
 
-export const notations: FieldResolver<NotationType[], UserType> = (
+export const notations: FieldResolver<NotationType[], User> = (
   user,
   args,
   ctx

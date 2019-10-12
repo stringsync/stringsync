@@ -1,11 +1,12 @@
 import { FieldResolver } from '..';
-import { UserType, GetUserInputType } from '../types';
+import { GetUserInputType } from '../types';
+import { User } from 'common/types';
 
 interface Args {
   input: GetUserInputType;
 }
 
-export const getUser: FieldResolver<UserType, undefined, Args> = async (
+export const getUser: FieldResolver<User, undefined, Args> = async (
   parent,
   args,
   ctx

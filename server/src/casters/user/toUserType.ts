@@ -1,4 +1,4 @@
-import { UserType } from '../../resolvers/types';
+import { User } from 'common/types';
 import { UserModel } from '../../models/UserModel';
 import { MissingCasterError } from '..';
 
@@ -10,7 +10,7 @@ const fromUserModelToUserType = (userRecord: UserModel) => ({
   updatedAt: userRecord.updatedAt,
 });
 
-export const toUserType = (from: UserModel): UserType => {
+export const toUserType = (from: UserModel): User => {
   if (from instanceof UserModel) {
     return fromUserModelToUserType(from);
   }

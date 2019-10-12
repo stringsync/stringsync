@@ -3,7 +3,7 @@ import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 import { asUserType } from '../casters/user/asUserType';
 import { JwtPayload } from './auth-jwt/createAuthJwt';
 import { JWT_COOKIE_NAME, JWT_SECRET, JWT_MAX_AGE_MS } from './auth-jwt';
-import { UserType } from '../resolvers/types';
+import { User } from 'common/types';
 import db from './db';
 import jwt from 'jsonwebtoken';
 import {
@@ -14,7 +14,7 @@ import { UserModel } from '../models/UserModel';
 import { Request, Response } from 'express';
 
 export interface Auth {
-  user: UserType | null;
+  user: User | null;
   isLoggedIn: boolean;
 }
 
@@ -30,7 +30,7 @@ export interface ServerContext {
 export const getAuthenticatedUser = async (
   token: string,
   requestedAt: Date
-): Promise<UserType | null> => {
+): Promise<User | null> => {
   if (!token) {
     return null;
   }
