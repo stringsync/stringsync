@@ -40,11 +40,11 @@ export const signup: FieldResolver<SignupPayloadType, undefined, Args> = async (
   try {
     return ctx.db.transaction(async (transaction) => {
       const encryptedPassword = await getEncryptedPassword(password);
-      const userRecord = await UserModel.create(
+      const userModel = await UserModel.create(
         { username, email, encryptedPassword },
         { transaction }
       );
-      const user = toUserPojo(userRecord);
+      const user = toUserPojo(userModel);
       const jwt = createAuthJwt(user.id, ctx.requestedAt);
       setAuthJwtCookie(jwt, ctx.res);
       return { user };

@@ -14,7 +14,7 @@ interface Args {
 
 export const WRONG_CREDENTIALS_MSG = 'wrong username, email, or password';
 
-export const getUserRecord = (emailOrUsername: string) => {
+export const getUserModel = (emailOrUsername: string) => {
   const email = emailOrUsername;
   const username = emailOrUsername;
   return UserModel.findOne({
@@ -31,21 +31,21 @@ export const login: FieldResolver<LoginPayloadType, undefined, Args> = async (
 ) => {
   const { emailOrUsername, password } = args.input;
 
-  const userRecord = await getUserRecord(emailOrUsername);
-  if (!userRecord) {
+  const userModel = await getUserModel(emailOrUsername);
+  if (!userModel) {
     throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
   }
 
   const isPassword = await bcrypt.compare(
     password,
-    userRecord.encryptedPassword
+    userModel.encryptedPassword
   );
   if (!isPassword) {
     throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
   }
 
-  const user = toUserPojo(userRecord);
-  const jwt = createAuthJwt(userRecord.id, ctx.requestedAt);
+  const user = toUserPojo(userModel);
+  const jwt = createAuthJwt(userModel.id, ctx.requestedAt);
   setAuthJwtCookie(jwt, ctx.res);
 
   return { user };
