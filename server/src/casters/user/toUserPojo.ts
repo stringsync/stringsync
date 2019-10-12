@@ -2,7 +2,7 @@ import { User } from 'common/types';
 import { UserModel } from '../../models/UserModel';
 import { MissingCasterError } from '..';
 
-const fromUserModelToUserType = (userRecord: UserModel) => ({
+const fromUserModelToUserPojo = (userRecord: UserModel) => ({
   id: userRecord.id,
   username: userRecord.username,
   email: userRecord.email,
@@ -10,9 +10,9 @@ const fromUserModelToUserType = (userRecord: UserModel) => ({
   updatedAt: userRecord.updatedAt,
 });
 
-export const toUserType = (from: UserModel): User => {
+export const toUserPojo = (from: UserModel): User => {
   if (from instanceof UserModel) {
-    return fromUserModelToUserType(from);
+    return fromUserModelToUserPojo(from);
   }
   throw new MissingCasterError('user');
 };

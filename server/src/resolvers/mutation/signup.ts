@@ -5,7 +5,7 @@ import { UserModel } from '../../models/UserModel';
 import { ValidationError } from 'sequelize';
 import { getEncryptedPassword } from '../../util/getEncryptedPassword';
 import { createAuthJwt } from '../../util/auth-jwt/createAuthJwt';
-import { toUserType } from '../../casters/user/toUserType';
+import { toUserPojo } from '../../casters/user/toUserPojo';
 import { setAuthJwtCookie } from '../../util/auth-jwt/setAuthJwtCookie';
 
 const PASSWORD_MIN_LEN = 6;
@@ -44,7 +44,7 @@ export const signup: FieldResolver<SignupPayloadType, undefined, Args> = async (
         { username, email, encryptedPassword },
         { transaction }
       );
-      const user = toUserType(userRecord);
+      const user = toUserPojo(userRecord);
       const jwt = createAuthJwt(user.id, ctx.requestedAt);
       setAuthJwtCookie(jwt, ctx.res);
       return { user };
