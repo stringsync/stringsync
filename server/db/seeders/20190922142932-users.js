@@ -1,5 +1,3 @@
-'use strict';
-
 const bcrypt = require('bcrypt');
 
 const NOW = new Date('2019-09-22T14:45:43.045Z');
@@ -13,11 +11,12 @@ module.exports = {
     const encryptedPassword = await encrypt(PASSWORD);
     return queryInterface.bulkInsert('users', [
       {
-        username: 'jaredplaysguitar',
         email: 'jared@gmail.com',
+        username: 'jaredplaysguitar',
         created_at: NOW,
         updated_at: NOW,
         encrypted_password: encryptedPassword,
+        avatar_url: 'https://images.unsplash.com/photo-1543610892-0b1f7e6d8ac1',
       },
       {
         username: 'jessicaplayspiano',
@@ -25,6 +24,8 @@ module.exports = {
         created_at: NOW,
         updated_at: NOW,
         encrypted_password: encryptedPassword,
+        avatar_url:
+          'https://images.unsplash.com/photo-1524593689594-aae2f26b75ab',
       },
       {
         username: 'jordanplaysflute',
@@ -32,6 +33,7 @@ module.exports = {
         created_at: NOW,
         updated_at: NOW,
         encrypted_password: encryptedPassword,
+        avatar_url: 'https://images.unsplash.com/photo-1552673304-23f6ad21aada',
       },
     ]);
   },
