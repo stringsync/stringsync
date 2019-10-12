@@ -5,6 +5,12 @@ const typeDefs = gql`
   # Scalar
   scalar Date
 
+  enum UserRoles {
+    student
+    teacher
+    admin
+  }
+
   # Types/Inputs
   type User {
     id: Int!
@@ -13,6 +19,7 @@ const typeDefs = gql`
     createdAt: Date!
     updatedAt: Date!
     notations: [Notation]
+    role: UserRoles!
   }
 
   type Notation {

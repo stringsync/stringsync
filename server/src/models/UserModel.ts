@@ -1,5 +1,8 @@
 import { Model, DataTypes, BuildOptions } from 'sequelize';
 import db from '../util/db';
+import { UserRoles } from 'common/types';
+
+const USER_ROLES: UserRoles[] = ['student', 'teacher', 'admin'];
 
 export interface UserModel extends Model {
   id: number;
@@ -8,6 +11,7 @@ export interface UserModel extends Model {
   username: string;
   email: string;
   encryptedPassword: string;
+  role: UserRoles;
 }
 
 export type UserModelStatic = typeof Model & {
@@ -68,6 +72,12 @@ export const UserModel = db.define(
       field: 'encrypted_password',
       type: DataTypes.TEXT,
       allowNull: false,
+    },
+    role: {
+      field: 'role',
+      type: DataTypes.ENUM(...USER_ROLES),
+      allowNull: false,
+      defaultValue: USER_ROLES[0],
     },
   },
   {
