@@ -1,16 +1,3 @@
 #!/bin/bash
 
-cd $(dirname $0)
-
-if [ $# -gt 0 -a -x "./cmds/$1" ]; then
-	exec ./cmds/${@}
-else
-	>&2 echo "Usage: ss COMMAND [ARGS]"
-	>&2 echo
-	>&2 echo "Commands:"
-
-	for cmd in $(ls ./cmds); do
-		>&2 echo "  $cmd"
-	done
-	exit 1
-fi
+(../scripts/bin/run ${@})
