@@ -3,12 +3,9 @@ import { ThunkAction } from '../..';
 import { pick } from 'lodash';
 import { message } from 'antd';
 import getErrorMessages from './getErrorMessages';
+import { User } from 'common/types';
 
-export interface AuthUser {
-  id: number;
-  username: string;
-  email: string;
-}
+export type AuthUser = Pick<User, 'id' | 'email' | 'username'>;
 
 export interface AuthState {
   isPending: boolean;

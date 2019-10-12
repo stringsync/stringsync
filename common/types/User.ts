@@ -5,5 +5,3 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
 }
-
-export type PartialUser = Partial<User>;
