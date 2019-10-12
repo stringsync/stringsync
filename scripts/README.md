@@ -29,11 +29,12 @@ USAGE
 # Commands
 <!-- commands -->
 * [`ss bounce`](#ss-bounce)
-* [`ss db [FILE]`](#ss-db-file)
+* [`ss db`](#ss-db)
 * [`ss down`](#ss-down)
 * [`ss exec SERVICE CMD`](#ss-exec-service-cmd)
 * [`ss help [COMMAND]`](#ss-help-command)
 * [`ss install`](#ss-install)
+* [`ss lint [FILE]`](#ss-lint-file)
 * [`ss logs SERVICE`](#ss-logs-service)
 * [`ss sql CMD`](#ss-sql-cmd)
 * [`ss up`](#ss-up)
@@ -52,25 +53,23 @@ OPTIONS
 
 _See code: [src/commands/bounce.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/bounce.ts)_
 
-## `ss db [FILE]`
+## `ss db`
 
-describe the command here
+Runs a db console.
 
 ```
 USAGE
-  $ ss db [FILE]
+  $ ss db
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -h, --help  show CLI help
 ```
 
 _See code: [src/commands/db.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/db.ts)_
 
 ## `ss down`
 
-Turns down a development environment
+Turns down a development environment.
 
 ```
 USAGE
@@ -115,7 +114,7 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.1
 
 ## `ss install`
 
-Reinstalls node_modules throughout the project
+Reinstalls node_modules throughout the project.
 
 ```
 USAGE
@@ -127,9 +126,25 @@ OPTIONS
 
 _See code: [src/commands/install.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/install.ts)_
 
+## `ss lint [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ ss lint [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/lint.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/lint.ts)_
+
 ## `ss logs SERVICE`
 
-Runs docker-compose exec on an running container.
+Follows the logs for a particular service.
 
 ```
 USAGE
@@ -144,7 +159,7 @@ _See code: [src/commands/logs.ts](https://github.com/jaredjj3/string-sync/blob/v
 
 ## `ss sql CMD`
 
-describe the command here
+Runs sequelize commands on a running server service.
 
 ```
 USAGE
