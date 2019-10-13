@@ -26,7 +26,8 @@
     "jsonwebtoken": "^8.5.1",
     "pg": "^7.12.1",
     "pg-hstore": "^2.3.3",
-    "sequelize": "^5.19.0"
+    "sequelize": "^5.19.0",
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
@@ -38,6 +39,7 @@
     "@types/node": "^12.7.12",
     "@types/pg": "^7.11.1",
     "@types/sequelize": "^4.28.4",
+    "@types/uuid": "^3.4.5",
     "@types/validator": "^10.11.3",
     "jest": "^24.9.0",
     "nodemon": "^1.19.1",
