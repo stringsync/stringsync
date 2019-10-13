@@ -13,7 +13,7 @@ module.exports = {
         confirmation_token TEXT UNIQUE,
         confirmed_at TIMESTAMP,
         reset_password_token TEXT UNIQUE,
-        reset_password_sent_at TIMESTAMP,
+        reset_password_token_sent_at TIMESTAMP,
         avatar_url TEXT,
         role roles DEFAULT 'student'
       );
