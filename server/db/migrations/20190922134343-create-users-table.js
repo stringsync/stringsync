@@ -4,7 +4,7 @@ module.exports = {
       CREATE TYPE roles AS ENUM ('student', 'teacher', 'admin');
 
       CREATE TABLE users (
-        user_id TEXT PRIMARY KEY,
+        id TEXT PRIMARY KEY,
         email TEXT UNIQUE NOT NULL,
         username TEXT UNIQUE NOT NULL,
         encrypted_password TEXT NOT NULL,
@@ -18,7 +18,7 @@ module.exports = {
         role roles DEFAULT 'student'
       );
 
-      CREATE TRIGGER trigger_generate_user_id BEFORE INSERT ON users FOR EACH ROW EXECUTE PROCEDURE unique_short_id();
+      CREATE TRIGGER trigger_generate_id BEFORE INSERT ON users FOR EACH ROW EXECUTE PROCEDURE unique_short_id();
       CREATE INDEX index_users_on_confirmation_token ON users(confirmation_token);
       CREATE INDEX index_users_on_reset_password_token ON users(reset_password_token);
     `);

@@ -4,11 +4,9 @@ const NOW = new Date('2019-09-22T14:45:43.045Z');
 const HASH_ROUNDS = 10;
 const PASSWORD = 'password';
 
-const encrypt = async (password) => await bcrypt.hash(password, HASH_ROUNDS);
-
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    const encryptedPassword = await encrypt(PASSWORD);
+    const encryptedPassword = await bcrypt.hash(PASSWORD, HASH_ROUNDS);
     return queryInterface.bulkInsert('users', [
       {
         email: 'jared@gmail.com',
