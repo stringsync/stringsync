@@ -14,11 +14,8 @@ export default class Sql extends Command {
 
   async run() {
     const { argv } = this.parse(Sql);
-    // sequelize can only run one command at a time
-    for (const cmd of argv) {
-      execSync(`ss exec server yarn sequelize ${cmd}`, {
-        stdio: 'inherit',
-      });
-    }
+    execSync(`ss exec server yarn sequelize ${argv.join(' ')}`, {
+      stdio: 'inherit',
+    });
   }
 }
