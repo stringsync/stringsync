@@ -1,8 +1,6 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    // should only be run by tsc, not webpack
-    // see sql script for usage
     "outDir": "tsc",
     "allowJs": true,
     "isolatedModules": true
