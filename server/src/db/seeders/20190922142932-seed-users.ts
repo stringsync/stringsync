@@ -1,16 +1,16 @@
-const bcrypt = require('bcrypt');
+import * as bcrypt from 'bcrypt';
 
 const NOW = new Date('2019-09-22T14:45:43.045Z');
 const HASH_ROUNDS = 10;
 const PASSWORD = 'password';
 
-module.exports = {
-  up: async (queryInterface, Sequelize) => {
+export default {
+  up: async (queryInterface: any, Sequelize: any) => {
     const encryptedPassword = await bcrypt.hash(PASSWORD, HASH_ROUNDS);
     return queryInterface.bulkInsert('users', [
       {
-        email: 'jared@gmail.com',
         username: 'jaredplaysguitar',
+        email: 'jared@gmail.com',
         created_at: NOW,
         updated_at: NOW,
         encrypted_password: encryptedPassword,
@@ -35,7 +35,7 @@ module.exports = {
       },
     ]);
   },
-  down: (queryInterface, Sequelize) => {
+  down: (queryInterface: any, Sequelize: any) => {
     return queryInterface.bulkDelete('users', null, {});
   },
 };

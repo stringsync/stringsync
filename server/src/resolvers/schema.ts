@@ -13,7 +13,7 @@ const typeDefs = gql`
 
   # Types/Inputs
   type User {
-    id: Int!
+    id: String!
     username: String!
     email: String!
     createdAt: Date!
@@ -23,11 +23,11 @@ const typeDefs = gql`
   }
 
   type Notation {
-    id: Int!
+    id: String!
   }
 
   input GetUserInput {
-    id: Int!
+    id: String!
   }
 
   type ReauthPayload {

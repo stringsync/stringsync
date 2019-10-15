@@ -1,5 +1,7 @@
-module.exports = {
-  up: async (queryInterface, Sequelize) => {
+import { QueryInterface } from 'sequelize/types';
+
+export default {
+  up: async (queryInterface: QueryInterface, Sequelize: any) => {
     queryInterface.sequelize.query(`
       CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
@@ -66,7 +68,7 @@ module.exports = {
     `);
   },
 
-  down: async (queryInterface, Sequelize) => {
+  down: async (queryInterface: QueryInterface, Sequelize: any) => {
     queryInterface.sequelize.query(`
       DROP FUNCTION unique_short_id;
       DROP EXTENSION "pgcrypto";

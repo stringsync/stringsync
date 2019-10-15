@@ -1,17 +1,16 @@
 import { ContextFunction } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
-import { asUserPojo } from '../casters/user/asUserPojo';
+import { asUserPojo } from '../db/casters/user/asUserPojo';
 import { JwtPayload } from './auth-jwt/createAuthJwt';
 import { JWT_COOKIE_NAME, JWT_SECRET, JWT_MAX_AGE_MS } from './auth-jwt';
 import { User } from 'common/types';
-import db from './db';
 import jwt from 'jsonwebtoken';
 import {
   DataLoaders,
   createDataLoaders,
 } from '../data-loaders/createDataLoaders';
-import { UserModel } from '../models/UserModel';
 import { Request, Response } from 'express';
+import { Db } from '../db/createDb';
 
 export interface Auth {
   user: User | null;
@@ -21,7 +20,7 @@ export interface Auth {
 export interface ServerContext {
   req: Request;
   res: Response;
-  db: typeof db;
+  db: Db;
   auth: Auth;
   requestedAt: Date;
   dataLoaders: DataLoaders;
@@ -29,7 +28,8 @@ export interface ServerContext {
 
 export const getAuthenticatedUser = async (
   token: string,
-  requestedAt: Date
+  requestedAt: Date,
+  db: Db
 ): Promise<User | null> => {
   if (!token) {
     return null;
@@ -47,7 +47,7 @@ export const getAuthenticatedUser = async (
   }
   if (
     typeof maybePayload === 'string' ||
-    typeof maybePayload['id'] !== 'number' ||
+    typeof maybePayload['id'] !== 'string' ||
     typeof maybePayload['iat'] !== 'number'
   ) {
     return null;
@@ -65,21 +65,20 @@ export const getAuthenticatedUser = async (
   }
 
   // Check to see if user exists in db
-  return await UserModel.findOne({
+  return await db.models.User.findOne({
     where: { id: payload.id },
     ...asUserPojo,
   });
 };
 
-export const createServerContext: ContextFunction<
-  ExpressContext,
-  ServerContext
-> = async ({ req, res }) => {
+export const createServerContext = (
+  db: Db
+): ContextFunction<ExpressContext, ServerContext> => async ({ req, res }) => {
   const requestedAt = new Date();
   const token = req.cookies[JWT_COOKIE_NAME] || '';
-  const user = await getAuthenticatedUser(token, requestedAt);
+  const user = await getAuthenticatedUser(token, requestedAt, db);
   const auth: Auth = { isLoggedIn: Boolean(user), user };
-  const dataLoaders = createDataLoaders();
+  const dataLoaders = createDataLoaders(db);
 
   return {
     req,

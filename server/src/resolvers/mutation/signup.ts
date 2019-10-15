@@ -1,11 +1,10 @@
 import { FieldResolver } from '..';
 import { SignupInputType, SignupPayloadType } from '../types';
 import { UserInputError } from 'apollo-server';
-import { UserModel } from '../../models/UserModel';
 import { ValidationError } from 'sequelize';
 import { getEncryptedPassword } from '../../util/getEncryptedPassword';
 import { createAuthJwt } from '../../util/auth-jwt/createAuthJwt';
-import { toUserPojo } from '../../casters/user/toUserPojo';
+import { toUserPojo } from '../../db/casters/user/toUserPojo';
 import { setAuthJwtCookie } from '../../util/auth-jwt/setAuthJwtCookie';
 
 const PASSWORD_MIN_LEN = 6;
@@ -38,9 +37,9 @@ export const signup: FieldResolver<SignupPayloadType, undefined, Args> = async (
   validatePassword(password);
 
   try {
-    return ctx.db.transaction(async (transaction) => {
+    return ctx.db.connection.transaction(async (transaction) => {
       const encryptedPassword = await getEncryptedPassword(password);
-      const userModel = await UserModel.create(
+      const userModel = await ctx.db.models.User.create(
         { username, email, encryptedPassword },
         { transaction }
       );

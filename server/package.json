@@ -11,7 +11,7 @@
     "build:dev": "webpack",
     "seed": "ts-node ./scripts/seed.ts",
     "start": "node ./dst/index.js",
-    "start:dev": "nodemon ./dst/index.js",
+    "start:dev": "nodemon -V --watch ./dst/index.js",
     "test:unit": "jest"
   },
   "dependencies": {

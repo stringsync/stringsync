@@ -3,10 +3,10 @@ import { FieldResolver } from '..';
 import { ForbiddenError } from 'apollo-server';
 import { LoginInputType, LoginPayloadType } from '../types';
 import { or } from 'sequelize';
-import { setAuthJwtCookie } from '../..//util/auth-jwt/setAuthJwtCookie';
-import { toUserPojo } from '../../casters/user/toUserPojo';
-import { UserModel } from '../../models/UserModel';
+import { setAuthJwtCookie } from '../../util/auth-jwt/setAuthJwtCookie';
+import { toUserPojo } from '../../db/casters/user/toUserPojo';
 import bcrypt from 'bcrypt';
+import { Db } from '../../db/createDb';
 
 interface Args {
   input: LoginInputType;
@@ -14,10 +14,10 @@ interface Args {
 
 export const WRONG_CREDENTIALS_MSG = 'wrong username, email, or password';
 
-export const getUserModel = (emailOrUsername: string) => {
+export const getUserModel = (emailOrUsername: string, db: Db) => {
   const email = emailOrUsername;
   const username = emailOrUsername;
-  return UserModel.findOne({
+  return db.models.User.findOne({
     where: {
       ...or({ email }, { username }),
     },
@@ -31,7 +31,7 @@ export const login: FieldResolver<LoginPayloadType, undefined, Args> = async (
 ) => {
   const { emailOrUsername, password } = args.input;
 
-  const userModel = await getUserModel(emailOrUsername);
+  const userModel = await getUserModel(emailOrUsername, ctx.db);
   if (!userModel) {
     throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
   }

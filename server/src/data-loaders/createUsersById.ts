@@ -1,11 +1,11 @@
 import DataLoader from 'dataloader';
-import { UserModel } from '../models/UserModel';
-import { asUserPojo } from '../casters/user/asUserPojo';
+import { asUserPojo } from '../db/casters/user/asUserPojo';
 import { createKeyValue, getOrderedDataLoaderValues } from '.';
+import { Db } from '../db/createDb';
 
-export const createUsersById = () =>
-  new DataLoader(async (ids: number[]) => {
-    const users = await UserModel.findAll({
+export const createUsersById = (db: Db) =>
+  new DataLoader(async (ids: string[]) => {
+    const users = await db.models.User.findAll({
       where: { id: ids },
       ...asUserPojo,
     });

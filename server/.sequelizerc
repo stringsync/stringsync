@@ -1,7 +1,10 @@
 const path = require('path');
 
+// this is where the sql.ts emits compiled db files (using tsconfig.db.json)
+const DST_DB_PATH = path.resolve(__dirname, 'tsc', 'server', 'src', 'db');
+
 module.exports = {
   config: path.resolve(__dirname, 'sequelize.config.js'),
-  'migrations-path': path.resolve(__dirname, 'db', 'migrations'),
-  'seeders-path': path.resolve(__dirname, 'db', 'seeders'),
+  'migrations-path': path.resolve(DST_DB_PATH, 'migrations'),
+  'seeders-path': path.resolve(DST_DB_PATH, 'seeders'),
 };

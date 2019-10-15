@@ -2,7 +2,7 @@ import { FindOptions } from 'sequelize';
 import { User } from 'common/types';
 
 const DUMMY: User = {
-  id: -1,
+  id: '',
   username: '',
   createdAt: new Date(),
   updatedAt: new Date(),

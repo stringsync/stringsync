@@ -76,7 +76,7 @@ export interface SignupInput {
 export interface SignupData {
   signup: {
     user: {
-      id: number;
+      id: string;
       username: string;
       email: string;
     };
@@ -127,7 +127,7 @@ export interface LoginInput {
 export interface LoginData {
   login: {
     user: {
-      id: number;
+      id: string;
       username: string;
       email: string;
     };
@@ -174,7 +174,7 @@ export const login = (
 export interface ReauthData {
   reauth: {
     user: {
-      id: number;
+      id: string;
       username: string;
       email: string;
     };

@@ -1,7 +1,7 @@
 import { AuthState, AuthUser } from '.';
 
 export const getNullAuthUser = (): AuthUser => ({
-  id: -1,
+  id: '',
   username: '',
   email: '',
 });

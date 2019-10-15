@@ -1,11 +1,11 @@
 import { User } from 'common/types';
 
 export interface NotationType {
-  id: number;
+  id: string;
 }
 
 export interface GetUserInputType {
-  id: number;
+  id: string;
 }
 
 export interface ReauthPayloadType {

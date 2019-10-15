@@ -1,5 +1,7 @@
-module.exports = {
-  up: (queryInterface, Sequelize) => {
+import { QueryInterface } from 'sequelize/types';
+
+export default {
+  up: (queryInterface: QueryInterface, Sequelize: any) => {
     return queryInterface.sequelize.query(`
       CREATE TYPE roles AS ENUM ('student', 'teacher', 'admin');
 
@@ -24,9 +26,10 @@ module.exports = {
     `);
   },
 
-  down: (queryInterface, Sequelize) => {
+  down: (queryInterface: QueryInterface, Sequelize: any) => {
     return queryInterface.sequelize.query(`
       DROP TABLE users;
+      DROP TYPE roles;
     `);
   },
 };
