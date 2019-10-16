@@ -8,6 +8,7 @@ export default class Exec extends Command {
 
   static flags = {
     help: flags.help({ char: 'h' }),
+    psuedoTty: flags.boolean({ char: 'T' }),
   };
 
   static args = [
@@ -16,12 +17,22 @@ export default class Exec extends Command {
   ];
 
   async run() {
-    const { argv } = this.parse(Exec);
+    const { argv, flags } = this.parse(Exec);
     const [service, ...cmdv] = argv;
-    const cmd = cmdv.join(' ');
+
+    const cmd = [
+      'docker-compose',
+      'exec',
+      flags.psuedoTty ? '-T' : '',
+      service,
+      'bash',
+      '-c',
+      `"${cmdv.join(' ')}"`,
+    ]
+      .filter((str) => str.length > 0)
+      .join(' ');
+
     this.log(`exec '${cmd}' on ${service}:`);
-    execSync(`docker-compose exec ${service} bash -c "${cmd}"`, {
-      stdio: 'inherit',
-    });
+    execSync(cmd, { stdio: 'inherit' });
   }
 }

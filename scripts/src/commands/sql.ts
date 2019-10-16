@@ -3,7 +3,40 @@ import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 
-const BLACKLISTED_CMDS = ['model:generate'];
+const ALL_CMDS = [
+  'db:migrate',
+  'db:migrate:schema:timestamps:add',
+  'db:migrate:status',
+  'db:migrate:undo',
+  'db:migrate:undo:all',
+  'db:seed',
+  'db:seed:undo',
+  'db:seed:all',
+  'db:seed:undo:all',
+  'db:create',
+  'db:drop',
+  'init',
+  'init:config',
+  'init:migrations',
+  'init:models',
+  'init:seeders',
+  'migration:generate',
+  'model:generate',
+  'seed:generate',
+];
+const BLACKLISTED_CMDS = [
+  'db:migration:schema:timestamps:add',
+  'init',
+  'init:config',
+  'init:migrations',
+  'init:models',
+  'init:seeders',
+  'model:generate',
+];
+const WHITELISTED_CMDS = (() => {
+  const blacklist = new Set(BLACKLISTED_CMDS);
+  return ALL_CMDS.filter((cmd) => !blacklist.has(cmd));
+})();
 const GENERATE_MIGRATION_CMD = 'migration:generate';
 const GENERATE_SEED_CMD = 'seed:generate';
 const SERVER_ROOT_PATH = path.resolve('..', 'server');
@@ -15,14 +48,6 @@ const TEMPLATE = path.resolve(
   '../templates',
   'migration.template.ts'
 );
-
-const hasBlacklistedCmd = (argv: string[]) => {
-  return argv.some((arg) => BLACKLISTED_CMDS.includes(arg));
-};
-
-const hasDbCmd = (argv: string[]) => {
-  return argv.length > 0 && argv[0].startsWith('db:');
-};
 
 const getGenerateDirPath = (cmd: string) => {
   switch (cmd) {
@@ -63,29 +88,39 @@ export default class Sql extends Command {
   static args = [{ name: 'cmd', required: true }];
 
   async run() {
-    const { argv, flags } = this.parse(Sql);
+    const { argv, flags, args } = this.parse(Sql);
+    const { cmd } = args;
 
-    if (hasBlacklistedCmd(argv)) {
-      this.log(
-        `the following commands are not allowed: ${BLACKLISTED_CMDS.join(',')}`
-      );
-      this.exit();
+    // ensure cmd is allowed
+    if (!WHITELISTED_CMDS.includes(cmd) || cmd === 'help') {
+      const buffer = execSync('ss exec -T server yarn sequelize help', {
+        stdio: 'pipe',
+      });
+
+      const msg = buffer
+        .toString()
+        .split('\n')
+        // very slow but simple algorithm
+        // don't expect the blacklist to grow
+        // could use trie if needed
+        .filter((line) => !BLACKLISTED_CMDS.some((cmd) => line.includes(cmd)))
+        .join('\n');
+      this.log(msg);
+      this.exit(cmd === 'help' ? 0 : 1);
     }
 
-    const generateCmd =
-      argv.find((arg) => arg === GENERATE_MIGRATION_CMD) ||
-      argv.find((arg) => arg === GENERATE_SEED_CMD);
-
-    if (generateCmd) {
+    // intercept generate: command and run custom generator
+    // the script will exit after running custom generator
+    if (cmd.startsWith('generate:')) {
       if (!flags.name) {
         this.log('--name flag required');
         this.exit(1);
       }
-      this.log(`running custom ${generateCmd} command`);
+      this.log(`running custom ${cmd} command on host`);
       this.log('copying migration.template.ts');
       const src = TEMPLATE;
       const dst = path.resolve(
-        getGenerateDirPath(generateCmd),
+        getGenerateDirPath(cmd),
         getGeneratedFilename(`-${flags.name}.ts`)
       );
       fs.copyFileSync(src, dst);
@@ -93,13 +128,16 @@ export default class Sql extends Command {
       return this.exit();
     }
 
-    if (hasDbCmd(argv)) {
+    // compile .ts files to outputDir as determined by tsconfig.db.json
+    // the script will continue immediately after compilation
+    if (cmd.startsWith('db:')) {
       this.log(`compiling .ts files with tsc`);
       execSync(`ss exec server yarn tsc --project tsconfig.db.json`, {
         stdio: 'inherit',
       });
     }
 
+    // run the actual command against the sequelize library
     execSync(`ss exec server yarn sequelize ${argv.join(' ')}`, {
       stdio: 'inherit',
     });
