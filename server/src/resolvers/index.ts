@@ -7,7 +7,7 @@ import { MergeInfo } from 'apollo-server';
 import { notations } from './user/notations';
 import { logout } from './mutation/logout';
 import { reauth } from './mutation/reauth';
-import { ServerContext } from '../util/createServerContext';
+import { ServerContext } from '../util/getServerContextCreator';
 import { signup } from './mutation/signup';
 
 // Rewrite of Apollo's IFieldResolver to enforce a certain result

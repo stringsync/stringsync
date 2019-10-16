@@ -71,7 +71,7 @@ export const getAuthenticatedUser = async (
   });
 };
 
-export const createServerContext = (
+export const getServerContextCreator = (
   db: Db
 ): ContextFunction<ExpressContext, ServerContext> => async ({ req, res }) => {
   const requestedAt = new Date();
