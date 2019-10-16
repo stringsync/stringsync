@@ -10,8 +10,8 @@ export default {
         email TEXT UNIQUE NOT NULL,
         username TEXT UNIQUE NOT NULL,
         encrypted_password TEXT NOT NULL,
-        created_at TIMESTAMP NOT NULL,
-        updated_at TIMESTAMP NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         confirmation_token TEXT UNIQUE,
         confirmed_at TIMESTAMP,
         reset_password_token TEXT UNIQUE,
@@ -30,6 +30,10 @@ export default {
     return queryInterface.sequelize.query(`
       DROP TABLE users;
       DROP TYPE roles;
+      
+      DROP TRIGGER trigger_generate_id;
+      DROP INDEX index_users_on_confirmation_token;
+      DROP INDEX index_users_on_reset_password_token;
     `);
   },
 };
