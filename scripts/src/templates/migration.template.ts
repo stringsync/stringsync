@@ -1,6 +1,6 @@
 import { QueryInterface } from 'sequelize';
 
-module.exports = {
+export default {
   up: async (queryInterface: QueryInterface, Sequelize: any) => {
     // Write migration code here.
   },

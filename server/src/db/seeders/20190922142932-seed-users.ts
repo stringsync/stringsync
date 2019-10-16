@@ -1,3 +1,4 @@
+import { QueryInterface } from 'sequelize';
 import * as bcrypt from 'bcrypt';
 
 const NOW = new Date('2019-09-22T14:45:43.045Z');
@@ -5,7 +6,7 @@ const HASH_ROUNDS = 10;
 const PASSWORD = 'password';
 
 export default {
-  up: async (queryInterface: any, Sequelize: any) => {
+  up: async (queryInterface: QueryInterface, Sequelize: any) => {
     const encryptedPassword = await bcrypt.hash(PASSWORD, HASH_ROUNDS);
     return queryInterface.bulkInsert('users', [
       {

@@ -1,4 +1,4 @@
-import { QueryInterface } from 'sequelize/types';
+import { QueryInterface } from 'sequelize';
 
 export default {
   up: (queryInterface: QueryInterface, Sequelize: any) => {
