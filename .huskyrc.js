@@ -5,6 +5,6 @@ module.exports = {
     'pre-commit':
       'tsc --noEmit --project server/tsconfig.json &&' +
       'tsc --noEmit --project web/tsconfig.json &&' +
-      'ss lint',
+      'ss lint -s',
   },
 };
