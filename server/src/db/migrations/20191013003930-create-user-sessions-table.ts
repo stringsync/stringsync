@@ -6,7 +6,8 @@ export default {
       CREATE TABLE user_sessions (
         id SERIAL PRIMARY KEY,
         token UUID DEFAULT uuid_generate_v4(),
-        user_id TEXT REFERENCES users(id)
+        expires_at TIMESTAMP NOT NULL,
+        user_id TEXT REFERENCES users(id) ON DELETE CASCADE
       );
 
       CREATE INDEX index_user_sessions_on_token ON user_sessions(token);

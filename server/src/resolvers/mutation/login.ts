@@ -1,12 +1,14 @@
-import { createAuthJwt } from '../../util/auth-jwt/createAuthJwt';
 import { FieldResolver } from '..';
 import { ForbiddenError } from 'apollo-server';
 import { LoginInputType, LoginPayloadType } from '../types';
 import { or } from 'sequelize';
-import { setAuthJwtCookie } from '../../util/auth-jwt/setAuthJwtCookie';
-import { toUserPojo } from '../../db/casters/user/toUserPojo';
 import bcrypt from 'bcrypt';
 import { Db } from '../../db/createDb';
+import { RawUser } from 'server/src/db/models/UserModel';
+import {
+  getExpiresAtDetails,
+  setUserSessionToken,
+} from '../../modules/user-session-token/';
 
 interface Args {
   input: LoginInputType;
@@ -14,39 +16,40 @@ interface Args {
 
 export const WRONG_CREDENTIALS_MSG = 'wrong username, email, or password';
 
-export const getUserModel = (emailOrUsername: string, db: Db) => {
-  const email = emailOrUsername;
-  const username = emailOrUsername;
-  return db.models.User.findOne({
-    where: {
-      ...or({ email }, { username }),
-    },
-  });
-};
+export const getUserModel = (emailOrUsername: string, db: Db) => {};
 
 export const login: FieldResolver<LoginPayloadType, undefined, Args> = async (
   parent,
   args,
   ctx
 ) => {
-  const { emailOrUsername, password } = args.input;
+  const email = args.input.emailOrUsername;
+  const username = args.input.emailOrUsername;
+  const user = (await ctx.db.models.User.findOne({
+    raw: true,
+    where: {
+      ...or({ email }, { username }),
+    },
+  })) as RawUser | null;
 
-  const userModel = await getUserModel(emailOrUsername, ctx.db);
-  if (!userModel) {
+  if (!user) {
     throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
   }
 
   const isPassword = await bcrypt.compare(
-    password,
-    userModel.encryptedPassword
+    args.input.password,
+    user.encryptedPassword
   );
   if (!isPassword) {
     throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
   }
 
-  const user = toUserPojo(userModel);
-  const jwt = createAuthJwt(userModel.id, ctx.requestedAt);
-  setAuthJwtCookie(jwt, ctx.res);
+  const { expiresAt, maxAgeMs } = getExpiresAtDetails(ctx.requestedAt);
+  const userSession = await ctx.db.models.UserSession.create({
+    userId: user.id,
+    expiresAt,
+  });
+  setUserSessionToken(userSession, maxAgeMs, ctx.res);
 
   return { user };
 };

@@ -202,13 +202,11 @@ export const reauth = (): ThunkAction<void, AuthActionTypes> => async (
       mutation: REAUTH_MUTATION,
     });
     if (!res.data) {
-      throw new Error('jwt expired or invalid');
+      throw new Error('user session expired or invalid');
     }
     const user = pick(res.data.reauth.user, ['id', 'username', 'email']);
     dispatch(requestAuthSuccess(user));
   } catch (error) {
-    // ensure the jwt gets removed
-    // logout should remove the isPending status, too
     dispatch(logout());
   }
 };

@@ -31,7 +31,7 @@ export default {
       DROP TABLE users;
       DROP TYPE roles;
       
-      DROP TRIGGER trigger_generate_id;
+      DROP TRIGGER trigger_generate_id ON users;
       DROP INDEX index_users_on_confirmation_token;
       DROP INDEX index_users_on_reset_password_token;
     `);

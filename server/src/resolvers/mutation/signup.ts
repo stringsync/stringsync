@@ -3,9 +3,11 @@ import { SignupInputType, SignupPayloadType } from '../types';
 import { UserInputError } from 'apollo-server';
 import { ValidationError } from 'sequelize';
 import { getEncryptedPassword } from '../../util/getEncryptedPassword';
-import { createAuthJwt } from '../../util/auth-jwt/createAuthJwt';
-import { toUserPojo } from '../../db/casters/user/toUserPojo';
-import { setAuthJwtCookie } from '../../util/auth-jwt/setAuthJwtCookie';
+import {
+  getExpiresAtDetails,
+  setUserSessionToken,
+} from '../../modules/user-session-token';
+import { RawUser } from '../../db/models/UserModel';
 
 const PASSWORD_MIN_LEN = 6;
 const PASSWORD_MAX_LEN = 256;
@@ -43,9 +45,13 @@ export const signup: FieldResolver<SignupPayloadType, undefined, Args> = async (
         { username, email, encryptedPassword },
         { transaction }
       );
-      const user = toUserPojo(userModel);
-      const jwt = createAuthJwt(user.id, ctx.requestedAt);
-      setAuthJwtCookie(jwt, ctx.res);
+      const user = userModel.get({ plain: true }) as RawUser;
+      const { expiresAt, maxAgeMs } = getExpiresAtDetails(ctx.requestedAt);
+      const userSession = await ctx.db.models.UserSession.create({
+        userId: user.id,
+        expiresAt,
+      });
+      setUserSessionToken(userSession, maxAgeMs, ctx.res);
       return { user };
     });
   } catch (err) {

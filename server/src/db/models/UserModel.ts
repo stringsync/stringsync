@@ -3,6 +3,21 @@ import { UserRoles } from 'common/types';
 
 const USER_ROLES: UserRoles[] = ['student', 'teacher', 'admin'];
 
+export interface RawUser {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  username: string;
+  email: string;
+  encryptedPassword: string;
+  role: UserRoles;
+  confirmationToken: string;
+  confirmedAt: Date;
+  resetPasswordToken: string;
+  resetPasswordTokenSentAt: Date;
+  avatarUrl: string;
+}
+
 export interface UserModel extends Model {
   id: string;
   readonly createdAt: Date;
@@ -24,15 +39,13 @@ export type UserModelStatic = typeof Model & {
 
 export const defineUserModel = (dbConnection: Sequelize) =>
   dbConnection.define(
-    'User',
+    'user',
     {
       id: {
-        field: 'id',
         type: DataTypes.TEXT,
         primaryKey: true,
       },
       createdAt: {
-        field: 'created_at',
         type: DataTypes.DATE,
         allowNull: false,
         validate: {
@@ -40,7 +53,6 @@ export const defineUserModel = (dbConnection: Sequelize) =>
         },
       },
       updatedAt: {
-        field: 'updated_at',
         type: DataTypes.DATE,
         allowNull: false,
         validate: {
@@ -48,7 +60,6 @@ export const defineUserModel = (dbConnection: Sequelize) =>
         },
       },
       username: {
-        field: 'username',
         type: DataTypes.TEXT,
         allowNull: false,
         validate: {
@@ -59,7 +70,6 @@ export const defineUserModel = (dbConnection: Sequelize) =>
         },
       },
       email: {
-        field: 'email',
         type: DataTypes.TEXT,
         allowNull: false,
         validate: {
@@ -73,43 +83,38 @@ export const defineUserModel = (dbConnection: Sequelize) =>
         },
       },
       encryptedPassword: {
-        field: 'encrypted_password',
         type: DataTypes.TEXT,
         allowNull: false,
       },
       role: {
-        field: 'role',
         type: DataTypes.ENUM(...USER_ROLES),
         allowNull: false,
         defaultValue: USER_ROLES[0],
       },
       confirmationToken: {
-        field: 'confirmation_token',
         type: DataTypes.TEXT,
         allowNull: true,
       },
       confirmedAt: {
-        field: 'confirmed_at',
         type: DataTypes.DATE,
         allowNull: true,
       },
       resetPasswordToken: {
-        field: 'reset_password_token',
         type: DataTypes.TEXT,
         allowNull: true,
       },
       resetPasswordTokenSentAt: {
-        field: 'reset_password_token_sent_at',
         type: DataTypes.DATE,
         allowNull: true,
       },
       avatarUrl: {
-        field: 'avatar_url',
         type: DataTypes.TEXT,
         allowNull: true,
       },
     },
     {
+      timestamps: true,
+      underscored: true,
       tableName: 'users',
     }
   ) as UserModelStatic;

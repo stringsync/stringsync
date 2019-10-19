@@ -1,10 +1,10 @@
 import { FieldResolver } from '..';
 import { LogoutPayloadType } from '../types';
-import { clearAuthJwtCookie } from '../../util/auth-jwt/clearAuthJwtCookie';
+import { clearUserSessionToken } from '../../modules/user-session-token/';
 
 export const logout: FieldResolver<LogoutPayloadType> = (parent, args, ctx) => {
   try {
-    clearAuthJwtCookie(ctx.res);
+    clearUserSessionToken(ctx.res);
     return { ok: true };
   } catch {
     return { ok: false };
