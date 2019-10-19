@@ -1,6 +1,6 @@
 import DataLoader from 'dataloader';
 import { createKeyValue, getOrderedDataLoaderValues } from '.';
-import { Db } from '../db/createDb';
+import { Db } from '../../db/createDb';
 
 export const createNotationsByUserId = (db: Db) =>
   new DataLoader(async (userIds: string[]) => {

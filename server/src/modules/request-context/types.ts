@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Db } from '../../db/createDb';
 import { User } from 'common/types';
-import { DataLoaders } from '../../data-loaders/createDataLoaders';
+import { DataLoaders } from '../../modules/data-loaders/createDataLoaders';
 
 export interface Auth {
   user: User | null;

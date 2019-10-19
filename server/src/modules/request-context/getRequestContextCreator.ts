@@ -4,7 +4,7 @@ import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 import { RequestContext, Auth } from './types';
 import { getUserSessionToken } from '../user-session/';
 import { authenticate } from './authenticate';
-import { createDataLoaders } from '../../data-loaders/createDataLoaders';
+import { createDataLoaders } from '../../modules/data-loaders/createDataLoaders';
 
 export const getRequestContextCreator = (
   db: Db

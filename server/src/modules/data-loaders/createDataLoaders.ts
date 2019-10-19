@@ -1,9 +1,9 @@
 import DataLoader from 'dataloader';
 import { createUsersById } from './createUsersById';
-import { NotationType } from '../resolvers/types';
+import { NotationType } from '../../resolvers/types';
 import { createNotationsByUserId } from './createNotationsByUserId';
 import { User } from 'common/types';
-import { Db } from '../db/createDb';
+import { Db } from '../../db/createDb';
 
 export interface DataLoaders {
   usersById: DataLoader<string, User>;
