@@ -1,6 +1,6 @@
 import { defineUserModel, UserModelStatic } from './UserModel';
 import { defineUserSessionModel, UserSessionStatic } from './UserSessionModel';
-import { Sequelize } from 'sequelize/types';
+import { Sequelize } from 'sequelize';
 
 export interface ModelMap {
   User: UserModelStatic;

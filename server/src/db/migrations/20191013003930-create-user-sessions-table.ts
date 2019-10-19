@@ -5,6 +5,7 @@ export default {
     queryInterface.sequelize.query(`
       CREATE TABLE user_sessions (
         id SERIAL PRIMARY KEY,
+        issued_at TIMESTAMP NOT NULL,
         token UUID DEFAULT uuid_generate_v4(),
         expires_at TIMESTAMP NOT NULL,
         user_id TEXT REFERENCES users(id) ON DELETE CASCADE

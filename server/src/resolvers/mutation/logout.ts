@@ -1,6 +1,6 @@
 import { FieldResolver } from '..';
 import { LogoutPayloadType } from '../types';
-import { clearUserSessionToken } from '../../modules/user-session-token/';
+import { clearUserSessionToken } from '../../modules/user-session/';
 
 export const logout: FieldResolver<LogoutPayloadType> = (parent, args, ctx) => {
   try {

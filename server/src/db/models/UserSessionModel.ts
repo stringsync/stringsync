@@ -2,13 +2,15 @@ import { Model, DataTypes, BuildOptions, Sequelize } from 'sequelize';
 
 export interface RawUserSession {
   id: number;
+  issuedAt: Date;
   token: string;
   userId: string;
-  expiredAt: Date;
+  expiresAt: Date;
 }
 
 export interface UserSessionModel extends Model {
   id: number;
+  readonly issuedAt: Date;
   token: string;
   userId: string;
   expiresAt: Date;
@@ -26,6 +28,10 @@ export const defineUserSessionModel = (dbConnection: Sequelize) =>
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
+      },
+      issuedAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
       },
       token: {
         type: DataTypes.UUIDV4,
@@ -45,7 +51,7 @@ export const defineUserSessionModel = (dbConnection: Sequelize) =>
     },
     {
       underscored: true,
-      timestamps: false,
       tableName: 'user_sessions',
+      timestamps: false,
     }
   ) as UserSessionStatic;

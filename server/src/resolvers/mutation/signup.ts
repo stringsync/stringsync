@@ -4,9 +4,9 @@ import { UserInputError } from 'apollo-server';
 import { ValidationError } from 'sequelize';
 import { getEncryptedPassword } from '../../util/getEncryptedPassword';
 import {
-  getExpiresAtDetails,
-  setUserSessionToken,
-} from '../../modules/user-session-token';
+  setUserSessionTokenCookie,
+  createUserSession,
+} from '../../modules/user-session';
 import { RawUser } from '../../db/models/UserModel';
 
 const PASSWORD_MIN_LEN = 6;
@@ -46,12 +46,8 @@ export const signup: FieldResolver<SignupPayloadType, undefined, Args> = async (
         { transaction }
       );
       const user = userModel.get({ plain: true }) as RawUser;
-      const { expiresAt, maxAgeMs } = getExpiresAtDetails(ctx.requestedAt);
-      const userSession = await ctx.db.models.UserSession.create({
-        userId: user.id,
-        expiresAt,
-      });
-      setUserSessionToken(userSession, maxAgeMs, ctx.res);
+      const userSession = await createUserSession(user.id, ctx, transaction);
+      setUserSessionTokenCookie(userSession, ctx);
       return { user };
     });
   } catch (err) {

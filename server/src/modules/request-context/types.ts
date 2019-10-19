@@ -6,6 +6,7 @@ import { DataLoaders } from '../../data-loaders/createDataLoaders';
 export interface Auth {
   user: User | null;
   isLoggedIn: boolean;
+  token: string;
 }
 
 export interface RequestContext {

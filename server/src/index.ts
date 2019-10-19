@@ -3,7 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { ApolloError } from 'apollo-server';
 import { ApolloServer } from 'apollo-server-express';
-import { getServerContextCreator } from './util/getServerContextCreator';
+import { getRequestContextCreator } from './modules/request-context/';
 import { schema } from './resolvers/schema';
 import { createDb } from './db/createDb';
 
@@ -30,7 +30,7 @@ const main = async (): Promise<void> => {
 
   const apolloServer = new ApolloServer({
     schema,
-    context: getServerContextCreator(db),
+    context: getRequestContextCreator(db),
     formatError: (e: Error | ApolloError): Error => {
       if (env !== 'production') {
         return e;
