@@ -4,10 +4,11 @@ import { ForbiddenError } from 'apollo-server';
 import {
   createUserSession,
   setUserSessionTokenCookie,
+  USER_SESSION_TOKEN_MAX_AGE_MS,
 } from '../../modules/user-session';
 
 const BAD_SESSION_TOKEN_MSG = 'invalid or expired credentials';
-const MIN_REFRESH_AGE_MS = 1000 * 60 * 5; // 5 minutes
+const MIN_REFRESH_AGE_MS = USER_SESSION_TOKEN_MAX_AGE_MS / 2;
 
 export const reauth: FieldResolver<ReauthPayloadType> = async (
   parent,
@@ -36,10 +37,9 @@ export const reauth: FieldResolver<ReauthPayloadType> = async (
     const ageMs = ctx.requestedAt.getTime() - oldUserSession.issuedAt.getTime();
     console.log(ageMs);
     if (ageMs < MIN_REFRESH_AGE_MS) {
-      // Session token is still in grace period, but the
-      // user is still valid. This is done to prevent
-      // clearing a session token before the client receives
-      // the last response.
+      // Session token is still in grace period, so avoid
+      // making database changes until we're sure that
+      // the user has the last session token.
       return { user };
     }
 
