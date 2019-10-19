@@ -7,9 +7,7 @@ import {
 } from '../../modules/user-session';
 
 const BAD_SESSION_TOKEN_MSG = 'invalid or expired credentials';
-// The token has to be at least 5 minutes old, or we might refresh too
-// soon.
-const MIN_REFRESH_AGE_MS = 1000 * 60 * 5;
+const MIN_REFRESH_AGE_MS = 1000 * 60 * 5; // 5 minutes
 
 export const reauth: FieldResolver<ReauthPayloadType> = async (
   parent,
@@ -35,16 +33,17 @@ export const reauth: FieldResolver<ReauthPayloadType> = async (
       throw new ForbiddenError(BAD_SESSION_TOKEN_MSG);
     }
 
-    const ageMs = oldUserSession.issuedAt.getTime() - ctx.requestedAt.getTime();
+    const ageMs = ctx.requestedAt.getTime() - oldUserSession.issuedAt.getTime();
+    console.log(ageMs);
     if (ageMs < MIN_REFRESH_AGE_MS) {
       // Session token is still in grace period, but the
       // user is still valid. This is done to prevent
       // clearing a session token before the client receives
-      // the new response.
+      // the last response.
       return { user };
     }
 
-    ctx.db.models.UserSession.destroy({ where: { token }, transaction });
+    oldUserSession.destroy();
     const userSession = await createUserSession(user.id, ctx, transaction);
     setUserSessionTokenCookie(userSession, ctx);
     return { user };
