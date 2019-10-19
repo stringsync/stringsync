@@ -1,6 +1,7 @@
 # general
 .DS_Store
 .vscode
+.devcontainer
 dst
 node_modules
 .nyc_output
