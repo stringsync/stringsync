@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3.7'
 
 services:
   db:
@@ -18,12 +18,6 @@ services:
     build:
       context: ./server
       dockerfile: ./dev.Dockerfile
-    volumes:
-      - ./common:/string-sync/common
-      - ./server/src:/string-sync/server/src
-      - ./server/db:/string-sync/server/db
-      - root-node-modules:/string-sync/node_modules
-      - server-node-modules:/string-sync/server/node_modules
     environment:
       CLIENT_URI: http://localhost:8080
       PORT: 3000
@@ -32,6 +26,13 @@ services:
       DB_USERNAME: stringsync
       DB_PASSWORD: stringsync
       DB_HOST: host.docker.internal
+    volumes:
+      - type: bind
+        source: ./common
+        target: /string-sync/common
+      - type: bind
+        source: ./server/src
+        target: /string-sync/server/src
     links:
       - db
     depends_on:
@@ -43,22 +44,22 @@ services:
   scripts:
     image: ss-server:latest
     container_name: ss_scripts
-    volumes:
-      - ./common:/string-sync/common
-      - ./server/src:/string-sync/server/src
-      - root-node-modules:/string-sync/node_modules:ro
-      - server-node-modules:/string-sync/server/node_modules:ro
     environment:
       NODE_ENV: migration
       DB_NAME: stringsync
       DB_USERNAME: stringsync
       DB_PASSWORD: stringsync
       DB_HOST: host.docker.internal
+    volumes:
+      - type: bind
+        source: ./common
+        target: /string-sync/common
+      - type: bind
+        source: ./server/src
+        target: /string-sync/server/src
     links:
       - db
-    depends_on:
-      - db
-    command: ['./wait-for-it.sh', 'db:5432', '--', 'yarn', 'start:scripts:dev']
+    command: ['yarn', 'start:scripts:dev']
 
   web:
     container_name: ss_web
@@ -67,11 +68,15 @@ services:
       context: ./web
       dockerfile: ./dev.Dockerfile
     volumes:
-      - ./common:/string-sync/common
-      - ./web/src:/string-sync/web/src
-      - ./web/public:/string-sync/web/public
-      - root-node-modules:/string-sync/node_modules:ro
-      - web-node-modules:/string-sync/web/node_modules
+      - type: bind
+        source: ./common
+        target: /string-sync/common
+      - type: bind
+        source: ./web/src
+        target: /string-sync/web/src
+      - type: bind
+        source: ./web/public
+        target: /string-sync/web/public
     environment:
       NODE_ENV: development
     ports:
@@ -79,9 +84,3 @@ services:
     links:
       - server
     command: ['yarn', 'start']
-
-volumes:
-  root-node-modules:
-  server-node-modules:
-  common-node-modules:
-  web-node-modules:
