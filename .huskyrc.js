@@ -3,8 +3,8 @@
 module.exports = {
   hooks: {
     'pre-commit':
-      'tsc --noEmit --project server/tsconfig.json &&' +
-      'tsc --noEmit --project web/tsconfig.json &&' +
+      'yarn tsc --noEmit --project server/tsconfig.json &&' +
+      'yarn tsc --noEmit --project web/tsconfig.json &&' +
       'ss lint -s &&' +
       'ss prettier -s -f',
   },
