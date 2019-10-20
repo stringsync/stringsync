@@ -9,12 +9,12 @@
   "scripts": {
     "compile:db": "tsc --project ./tsconfig.db.json",
     "migrate": "sequelize db:migrate",
-    "migrate:dev": "yarn compile:db && yarn migrate && yarn seed",
     "seed": "sequelize db:seed:all",
     "build": "NODE_ENV=production webpack",
     "build:dev": "webpack",
     "start": "node ./dst/index.js",
     "start:dev": "nodemon -V --watch ./dst/index.js",
+    "start:scripts:dev": "yarn compile:db && yarn migrate && yarn seed && yarn compile:db --watch",
     "test:unit": "jest"
   },
   "dependencies": {
