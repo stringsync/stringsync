@@ -12,7 +12,7 @@ services:
     ports:
       - '5432:5432'
 
-  server: &server
+  server:
     container_name: ss_server
     image: ss-server:latest
     build:
@@ -34,13 +34,21 @@ services:
       DB_HOST: host.docker.internal
     links:
       - db
+    depends_on:
+      - db
     ports:
       - '3000:3000'
     command: ['yarn', 'build:dev']
 
-  migration:
-    <<: *server
-    container_name: ss_migration
+  scripts:
+    image: ss-server:latest
+    container_name: ss_scripts
+    volumes:
+      - ./common:/string-sync/common
+      - ./server/src:/string-sync/server/src
+      - ./server/db:/string-sync/server/db
+      - /string-sync/node_modules
+      - /string-sync/server/node_modules
     environment:
       PORT: 3001
       NODE_ENV: development
@@ -48,8 +56,13 @@ services:
       DB_USERNAME: stringsync
       DB_PASSWORD: stringsync
       DB_HOST: host.docker.internal
+    links:
+      - db
+    depends_on:
+      - db
     ports:
       - '3001:3001'
+    command: ['./wait-for-it.sh', 'db:5432', '--', 'yarn', 'migrate:dev']
 
   web:
     container_name: ss_web

@@ -1,10 +1,5 @@
 {
   "extends": "../tsconfig.base.json",
-  "compilerOptions": {
-    "outDir": "tsc",
-    "allowJs": true,
-    "isolatedModules": true
-  },
   "include": ["src/db/**/*.ts"],
   "exclude": ["node_modules"]
 }

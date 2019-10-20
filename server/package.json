@@ -7,9 +7,12 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "compile:db": "tsc --project ./tsconfig.db.json",
+    "migrate": "sequelize db:migrate",
+    "migrate:dev": "yarn compile:db && yarn migrate && yarn seed",
+    "seed": "sequelize db:seed:all",
     "build": "NODE_ENV=production webpack",
     "build:dev": "webpack",
-    "seed": "ts-node ./scripts/seed.ts",
     "start": "node ./dst/index.js",
     "start:dev": "nodemon -V --watch ./dst/index.js",
     "test:unit": "jest"
