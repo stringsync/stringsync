@@ -12,4 +12,3 @@ COPY sequelize.config.js .
 COPY tsconfig.json .
 COPY tsconfig.db.json .
 COPY webpack.config.js .
-COPY wait-for-it.sh .
