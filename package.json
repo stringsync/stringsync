@@ -5,6 +5,13 @@
   "author": "Jared Johnson <jared@jaredjohnson.dev>",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "compile:server": "yarn tsc --noEmit --project server/tsconfig.json",
+    "compile:web": "yarn tsc --project server/tsconfig.json",
+    "lint": "./bin/ss lint",
+    "prettier": "./bin/ss prettier",
+    "precommit": "yarn compile:server --noEmit && yarn compile:web --noEmit && yarn lint -s && yarn prettier -s -f"
+  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.3.0",
     "@typescript-eslint/parser": "^2.3.0",
