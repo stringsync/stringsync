@@ -128,15 +128,6 @@ export default class Sql extends Command {
       return this.exit();
     }
 
-    // compile .ts files to outputDir as determined by tsconfig.db.json
-    // the script will continue immediately after compilation
-    if (cmd.startsWith('db:')) {
-      this.log(`compiling .ts files with tsc`);
-      execSync(`ss exec scripts yarn tsc --project tsconfig.db.json`, {
-        stdio: 'inherit',
-      });
-    }
-
     // run the actual command against the sequelize library
     execSync(`ss exec scripts yarn sequelize ${argv.join(' ')}`, {
       stdio: 'inherit',
