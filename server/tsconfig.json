@@ -1,10 +1,15 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
+    "types": ["jest", "node"],
     "outDir": "dst",
-    "allowJs": true,
-    "isolatedModules": true
+    "allowJs": true
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts"],
-  "exclude": ["node_modules", "src/db/migrations/**/*", "src/db/seeders/**/*"]
+  "include": ["src/**/*.ts"],
+  "exclude": [
+    "node_modules",
+    "src/db/migrations/**/*",
+    "src/db/seeders/**/*",
+    "src/**/*.test.ts"
+  ]
 }

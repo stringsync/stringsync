@@ -15,7 +15,7 @@
     "start": "node ./dst/index.js",
     "start:dev": "nodemon -V --watch ./dst/index.js",
     "start:scripts:dev": "yarn compile:db && yarn migrate && yarn seed && yarn compile:db --watch",
-    "test:unit": "jest"
+    "test": "jest"
   },
   "dependencies": {
     "apollo-server": "^2.9.3",
@@ -35,7 +35,7 @@
     "@types/cookie-parser": "^1.4.2",
     "@types/express": "^4.17.1",
     "@types/graphql": "^14.5.0",
-    "@types/jest": "^24.0.17",
+    "@types/jest": "^24.0.19",
     "@types/node": "^12.7.12",
     "@types/pg": "^7.11.1",
     "@types/sequelize": "^4.28.4",
@@ -43,7 +43,7 @@
     "jest": "^24.9.0",
     "nodemon": "^1.19.1",
     "sequelize-cli": "^5.5.1",
-    "ts-jest": "^24.0.2",
+    "ts-jest": "^24.1.0",
     "ts-loader": "^6.0.4",
     "typescript": "~3.4.3",
     "webpack": "^4.39.2",
