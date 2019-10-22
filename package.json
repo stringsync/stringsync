@@ -9,8 +9,8 @@
     "compile:server": "yarn tsc --noEmit --project server/tsconfig.json",
     "compile:web": "yarn tsc --project server/tsconfig.json",
     "lint": "./bin/ss lint",
-    "prettier": "./bin/ss prettier",
-    "precommit": "yarn compile:server --noEmit && yarn compile:web --noEmit && yarn lint -s && yarn prettier -s -f"
+    "format": "./bin/ss prettier",
+    "precommit": "yarn compile:server --noEmit && yarn compile:web --noEmit && yarn lint -s && yarn format -s -f"
   },
   "devDependencies": {
     "@types/jest": "^24.0.19",
