@@ -58,6 +58,7 @@ test('POST /graphql with invalid query responds with BAD_REQUEST', (done) => {
   req('test')
     .post('/graphql')
     .send({ query: '{ doesNotExistResolver }' })
+    .expect('Content-Type', /json/)
     .expect(HttpStatus.BAD_REQUEST, done);
 });
 
@@ -65,6 +66,7 @@ test('POST /graphql in prod env does not expose internal server errors', (done) 
   req('production')
     .post('/graphql')
     .send({ query: '{ unsuccessfulResolver }' })
+    .expect('Content-Type', /json/)
     .expect(HttpStatus.OK)
     .end((err, res) => {
       if (err) done(err);
@@ -77,6 +79,7 @@ test('POST /graphql in dev env exposes internal server errors', (done) => {
   req('development')
     .post('/graphql')
     .send({ query: '{ unsuccessfulResolver }' })
+    .expect('Content-Type', /json/)
     .expect(HttpStatus.OK)
     .end((err, res) => {
       if (err) done(err);
@@ -88,5 +91,6 @@ test('POST /graphql in dev env exposes internal server errors', (done) => {
 test('GET / responds with NOT_FOUND', (done) => {
   req('test')
     .get('/')
+    .expect('Content-Type', /json/)
     .expect(HttpStatus.NOT_FOUND, done);
 });
