@@ -5,11 +5,13 @@ import { makeExecutableSchema, gql } from 'apollo-server';
 import HttpStatus from 'common/http-status-codes';
 import { GraphQLError } from 'graphql';
 
-// The purpose of these tests is to test that createApp plumbs the schema
-// and error formatter correctly.
+// The purpose of these tests is to test that createApp plumbs middlewares
+// correctly.
 
 const SUCCESSFUL_RESOLVER_RETURN_VALUE = 'RESOLVER_RETURN_VALUE';
 const SECRET_INTERNAL_SERVER_DETAILS = 'SECRET_INTERNAL_SERVER_DETAILS';
+const ALLOWED_CLIENT_URI = 'http://stringsync.com';
+const DISALLOWED_CLIENT_URI = 'http://literally-any-other-uri';
 
 const req = (env: string) => {
   const app = createApp({
@@ -17,7 +19,7 @@ const req = (env: string) => {
       connection: sinon.mock() as any,
       models: sinon.mock() as any,
     },
-    clientUri: '',
+    clientUri: ALLOWED_CLIENT_URI,
     env,
     schema: makeExecutableSchema({
       typeDefs: gql`
@@ -54,6 +56,16 @@ test('POST /graphql with valid query responds with OK', (done) => {
     });
 });
 
+// TODO, fix this test
+test('POST /graphql with invalid origin responds with ???', (done) => {
+  req('test')
+    .post('/graphql')
+    .set('Origin', DISALLOWED_CLIENT_URI)
+    .send({ query: '{ successfulResolver }' })
+    .expect('Content-Type', /json/)
+    .expect(HttpStatus.OK, done);
+});
+
 test('POST /graphql with invalid query responds with BAD_REQUEST', (done) => {
   req('test')
     .post('/graphql')
@@ -86,11 +98,4 @@ test('POST /graphql in dev env exposes internal server errors', (done) => {
       expect(res.text).toContain(SECRET_INTERNAL_SERVER_DETAILS);
       done();
     });
-});
-
-test('GET / responds with NOT_FOUND', (done) => {
-  req('test')
-    .get('/')
-    .expect('Content-Type', /json/)
-    .expect(HttpStatus.NOT_FOUND, done);
 });

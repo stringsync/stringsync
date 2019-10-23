@@ -20,7 +20,6 @@ export const installMiddlewares = (
   const middlewares: RequestHandler[] = [
     cors({ origin: opts.clientUri, credentials: true }),
     cookieParser(),
-    // express.urlencoded({ extended: true }), might need?
   ];
 
   for (const middleware of middlewares) {
