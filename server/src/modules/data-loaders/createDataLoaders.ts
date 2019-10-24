@@ -1,13 +1,12 @@
 import DataLoader from 'dataloader';
 import { createUsersById } from './createUsersById';
-import { NotationType } from '../../resolvers/types';
 import { createNotationsByUserId } from './createNotationsByUserId';
-import { User } from 'common/types';
+import { User, Notation } from 'common/types';
 import { Db } from '../../db/createDb';
 
 export interface DataLoaders {
   usersById: DataLoader<string, User>;
-  notationsByUserId: DataLoader<string, NotationType[]>;
+  notationsByUserId: DataLoader<string, Notation[]>;
 }
 
 export const createDataLoaders = (db: Db): DataLoaders => ({

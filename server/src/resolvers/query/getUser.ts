@@ -1,9 +1,9 @@
 import { FieldResolver } from '..';
-import { GetUserInputType } from '../types';
+import { GetUserInput } from 'common/types';
 import { User } from 'common/types';
 
 interface Args {
-  input: GetUserInputType;
+  input: GetUserInput;
 }
 
 export const getUser: FieldResolver<User, undefined, Args> = async (

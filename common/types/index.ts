@@ -6,3 +6,4 @@ export * from './SignupInput';
 export * from './SignupPayload';
 export * from './LoginInput';
 export * from './LoginPayload';
+export * from './LogoutPayload';

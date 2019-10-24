@@ -1,5 +1,5 @@
 import { FieldResolver } from '..';
-import { ReauthPayloadType } from '../types';
+import { ReauthPayload } from 'common/types';
 import { ForbiddenError } from 'apollo-server';
 import {
   createUserSession,
@@ -9,7 +9,7 @@ import {
 const BAD_SESSION_TOKEN_MSG = 'invalid or expired credentials';
 const MIN_REFRESH_AGE_MS = 1000 * 60 * 5; // 5 minutes
 
-export const reauth: FieldResolver<ReauthPayloadType> = async (
+export const reauth: FieldResolver<ReauthPayload> = async (
   parent,
   args,
   ctx

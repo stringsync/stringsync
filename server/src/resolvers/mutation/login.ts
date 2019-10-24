@@ -1,6 +1,6 @@
 import { FieldResolver } from '..';
 import { ForbiddenError } from 'apollo-server';
-import { LoginInputType, LoginPayloadType } from '../types';
+import { LoginInput, LoginPayload } from 'common/types';
 import { or } from 'sequelize';
 import bcrypt from 'bcrypt';
 import { RawUser } from '../../db/models/UserModel';
@@ -10,12 +10,12 @@ import {
 } from '../../modules/user-session/';
 
 interface Args {
-  input: LoginInputType;
+  input: LoginInput;
 }
 
 export const WRONG_CREDENTIALS_MSG = 'wrong username, email, or password';
 
-export const login: FieldResolver<LoginPayloadType, undefined, Args> = async (
+export const login: FieldResolver<LoginPayload, undefined, Args> = async (
   parent,
   args,
   ctx

@@ -1,5 +1,5 @@
 import { FieldResolver } from '..';
-import { SignupInputType, SignupPayloadType } from '../types';
+import { SignupInput, SignupPayload } from 'common/types';
 import { UserInputError } from 'apollo-server';
 import { ValidationError } from 'sequelize';
 import { getEncryptedPassword } from '../../util/getEncryptedPassword';
@@ -13,7 +13,7 @@ const PASSWORD_MIN_LEN = 6;
 const PASSWORD_MAX_LEN = 256;
 
 interface Args {
-  input: SignupInputType;
+  input: SignupInput;
 }
 
 export const validatePassword = (password: string) => {
@@ -29,7 +29,7 @@ export const validatePassword = (password: string) => {
   }
 };
 
-export const signup: FieldResolver<SignupPayloadType, undefined, Args> = async (
+export const signup: FieldResolver<SignupPayload, undefined, Args> = async (
   parent,
   args,
   ctx

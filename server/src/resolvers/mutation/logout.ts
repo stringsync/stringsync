@@ -1,12 +1,8 @@
 import { FieldResolver } from '..';
-import { LogoutPayloadType } from '../types';
+import { LogoutPayload } from 'common/types';
 import { clearUserSessionToken } from '../../modules/user-session/';
 
-export const logout: FieldResolver<LogoutPayloadType> = (parent, args, ctx) => {
-  try {
-    clearUserSessionToken(ctx.res);
-    return { ok: true };
-  } catch {
-    return { ok: false };
-  }
+export const logout: FieldResolver<LogoutPayload> = (parent, args, ctx) => {
+  clearUserSessionToken(ctx.res);
+  return { user: ctx.auth.user };
 };
