@@ -6,9 +6,11 @@ import { createDataLoaders } from '../../modules/data-loaders/createDataLoaders'
 import { getCookies } from './getCookies';
 import { getAuth } from './getAuth';
 
+type RequestContextCreator = ContextFunction<ExpressContext, RequestContext>;
+
 export const getRequestContextCreator = (
   db: Db
-): ContextFunction<ExpressContext, RequestContext> => async ({ req, res }) => {
+): RequestContextCreator => async ({ req, res }) => {
   const requestedAt = new Date();
   const cookies = getCookies(req.headers.cookie);
   const token = cookies.USER_SESSION_TOKEN;
