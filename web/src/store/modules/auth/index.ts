@@ -3,7 +3,7 @@ import { ThunkAction } from '../..';
 import { pick } from 'lodash';
 import { message } from 'antd';
 import getErrorMessages from './getErrorMessages';
-import { User } from 'common/types';
+import { User, LogoutPayload } from 'common/types';
 
 export type AuthUser = Pick<User, 'id' | 'email' | 'username'>;
 
@@ -211,13 +211,14 @@ export const reauth = (): ThunkAction<void, AuthActionTypes> => async (
   }
 };
 
-interface LogoutData {
-  ok: boolean;
-}
 const LOGOUT_MUTATION = gql`
   mutation {
     logout {
-      ok
+      user {
+        id
+        username
+        email
+      }
     }
   }
 `;
@@ -228,7 +229,7 @@ export const logout = (): ThunkAction<void, AuthActionTypes> => async (
 ) => {
   dispatch(clearAuth());
   try {
-    ctx.apollo.mutate<LogoutData>({
+    ctx.apollo.mutate<Pick<LogoutPayload, 'user'>>({
       mutation: LOGOUT_MUTATION,
     });
   } catch (error) {

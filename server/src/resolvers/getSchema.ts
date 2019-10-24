@@ -54,7 +54,7 @@ const typeDefs = gql`
   }
 
   type LogoutPayload {
-    ok: Boolean!
+    user: User
   }
 
   # Query
