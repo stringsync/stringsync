@@ -12,19 +12,19 @@ export interface Config {
 // valid means T[P] for all P
 type MaybeValid<T> = { [P in keyof T]: T[P] | undefined };
 
-const getMaybeValidConfig = (): MaybeValid<Config> => ({
-  NODE_ENV: process.env.NODE_ENV,
-  PORT: process.env.PORT,
-  CLIENT_URI: process.env.CLIENT_URI,
-  DB_NAME: process.env.DB_NAME,
-  DB_USERNAME: process.env.DB_USERNAME,
-  DB_PASSWORD: process.env.DB_PASSWORD,
-  DB_HOST: process.env.DB_HOST,
-  DB_PORT: process.env.DB_PORT,
+const getMaybeValidConfig = (env: NodeJS.ProcessEnv): MaybeValid<Config> => ({
+  NODE_ENV: env.NODE_ENV,
+  PORT: env.PORT,
+  CLIENT_URI: env.CLIENT_URI,
+  DB_NAME: env.DB_NAME,
+  DB_USERNAME: env.DB_USERNAME,
+  DB_PASSWORD: env.DB_PASSWORD,
+  DB_HOST: env.DB_HOST,
+  DB_PORT: env.DB_PORT,
 });
 
-export const getConfig = (): Config => {
-  const config = getMaybeValidConfig();
+export const getConfig = (env: NodeJS.ProcessEnv): Config => {
+  const config = getMaybeValidConfig(env);
 
   for (const [key, val] of Object.entries(config)) {
     if (!val) {
