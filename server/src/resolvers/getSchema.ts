@@ -72,7 +72,9 @@ const typeDefs = gql`
   }
 `;
 
-export const schema = makeExecutableSchema({
-  typeDefs,
-  resolvers,
-});
+export const getSchema = () => {
+  return makeExecutableSchema({
+    typeDefs,
+    resolvers,
+  });
+};

@@ -1,31 +1,19 @@
 import { createDb } from './db/createDb';
-import { createApp } from './modules/app';
-import { defaults } from 'lodash';
-import { schema } from './resolvers/schema';
-
-const DEFAULT_CREATE_APP_OPTIONS = Object.freeze({
-  clientUri: '',
-  env: 'development',
-  schema,
-});
+import { createServer } from './modules/server';
+import { getSchema } from './resolvers/getSchema';
+import { getConfig } from './getConfig';
 
 const main = async (): Promise<void> => {
-  const db = createDb();
+  const config = getConfig();
+  const db = createDb(config);
+  const schema = getSchema();
+
   await db.connection.authenticate();
   console.log('🦑  Connected to db successfully!');
 
-  const app = createApp(
-    defaults(
-      {
-        db,
-        clientUri: process.env.CLIENT_URI,
-        env: process.env.NODE_ENV,
-      },
-      DEFAULT_CREATE_APP_OPTIONS
-    )
-  );
-  const port = process.env.PORT || '3000';
-  await app.listen(port);
+  const server = createServer(db, schema, config);
+  const port = config.PORT;
+  await server.listen(port);
   console.log(`🦑  Server ready on port ${port}`);
 };
 

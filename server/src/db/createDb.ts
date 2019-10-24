@@ -1,24 +1,25 @@
 import { Sequelize } from 'sequelize';
 import { ModelMap } from './models/defineModels';
 import { defineModels } from './models/defineModels';
+import { Config } from '../getConfig';
 
 export interface Db {
   connection: Sequelize;
   models: ModelMap;
 }
 
-export const createDbConnection = () => {
-  return new Sequelize({
+export const createDb = (config: Config): Db => {
+  const connection = new Sequelize({
     dialect: 'postgres',
-    database: process.env.DB_NAME,
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    host: process.env.DB_HOST,
-    port: 5432,
+    database: config.DB_NAME,
+    username: config.DB_USERNAME,
+    password: config.DB_PASSWORD,
+    host: config.DB_HOST,
+    port: parseInt(config.DB_PORT, 10),
   });
-};
 
-export const createDb = (connection = createDbConnection()): Db => ({
-  connection,
-  models: defineModels(connection),
-});
+  return {
+    connection,
+    models: defineModels(connection),
+  };
+};

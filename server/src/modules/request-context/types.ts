@@ -9,11 +9,16 @@ export interface Auth {
   token: string;
 }
 
+export interface Cookies {
+  USER_SESSION_TOKEN: string;
+}
+
 export interface RequestContext {
+  requestedAt: Date;
   req: Request;
   res: Response;
-  db: Db;
+  cookies: Cookies;
   auth: Auth;
-  requestedAt: Date;
   dataLoaders: DataLoaders;
+  db: Db;
 }
