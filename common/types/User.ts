@@ -1,3 +1,5 @@
+export type UserRoles = 'student' | 'teacher' | 'admin';
+
 export interface User {
   id: string;
   username: string;
@@ -6,5 +8,3 @@ export interface User {
   updatedAt: Date;
   role: UserRoles;
 }
-
-export type UserRoles = 'student' | 'teacher' | 'admin';
