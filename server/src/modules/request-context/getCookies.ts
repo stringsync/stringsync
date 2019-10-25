@@ -7,6 +7,6 @@ const DEFAULT_COOKIES: Cookies = Object.freeze({
 });
 
 export const getCookies = (headerCookies: string | undefined) => {
-  const cookies = cookie.parse(headerCookies || '') as Partial<Cookies>;
+  const cookies = cookie.parse(headerCookies || '');
   return defaults(cookies, DEFAULT_COOKIES);
 };
