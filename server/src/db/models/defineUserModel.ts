@@ -3,21 +3,6 @@ import { UserRoles } from 'common/types';
 
 const USER_ROLES: UserRoles[] = ['student', 'teacher', 'admin'];
 
-export interface RawUser {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  username: string;
-  email: string;
-  encryptedPassword: string;
-  role: UserRoles;
-  confirmationToken: string;
-  confirmedAt: Date;
-  resetPasswordToken: string;
-  resetPasswordTokenSentAt: Date;
-  avatarUrl: string;
-}
-
 export interface UserModel extends Model {
   id: string;
   readonly createdAt: Date;

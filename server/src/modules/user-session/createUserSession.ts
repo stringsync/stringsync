@@ -1,13 +1,13 @@
 import { RequestContext } from '../request-context';
 import { USER_SESSION_TOKEN_MAX_AGE_MS } from './constants';
-import { RawUserSession } from '../../db/models/UserSessionModel';
 import { Transaction } from 'sequelize';
+import { UserSessionModel } from '../../db/models/types';
 
 export const createUserSession = async (
   userId: string,
   ctx: RequestContext,
   transaction?: Transaction
-): Promise<RawUserSession> => {
+): Promise<UserSessionModel> => {
   const expiresAtMsFromEpoch =
     ctx.requestedAt.getTime() + USER_SESSION_TOKEN_MAX_AGE_MS;
   const expiresAt = new Date(expiresAtMsFromEpoch);
@@ -21,5 +21,5 @@ export const createUserSession = async (
     { transaction }
   );
 
-  return userSessionModel.get() as RawUserSession;
+  return userSessionModel;
 };

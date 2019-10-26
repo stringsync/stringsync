@@ -7,7 +7,6 @@ import {
   setUserSessionTokenCookie,
   createUserSession,
 } from '../../modules/user-session';
-import { RawUser } from '../../db/models/UserModel';
 
 const PASSWORD_MIN_LEN = 6;
 const PASSWORD_MAX_LEN = 256;
@@ -45,10 +44,13 @@ export const signup: FieldResolver<SignupPayload, undefined, Args> = async (
         { username, email, encryptedPassword },
         { transaction }
       );
-      const user = userModel.get({ plain: true }) as RawUser;
-      const userSession = await createUserSession(user.id, ctx, transaction);
+      const userSession = await createUserSession(
+        userModel.id,
+        ctx,
+        transaction
+      );
       setUserSessionTokenCookie(userSession, ctx);
-      return { user };
+      return { user: userModel };
     });
   } catch (err) {
     if (err instanceof ValidationError) {
