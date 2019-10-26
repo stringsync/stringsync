@@ -1,11 +1,11 @@
 import { FieldResolver } from '..';
 import { ForbiddenError } from 'apollo-server';
 import { LoginInput, LoginPayload } from 'common/types';
-import bcrypt from 'bcrypt';
 import {
   setUserSessionTokenCookie,
   getExpiresAt,
 } from '../../modules/user-session/';
+import { isPassword as _isPassword } from '../../modules/encrypted-password';
 import { or } from 'sequelize';
 
 interface Args {
@@ -29,7 +29,7 @@ export const login: FieldResolver<LoginPayload, undefined, Args> = async (
     throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
   }
 
-  const isPassword = await bcrypt.compare(
+  const isPassword = await _isPassword(
     args.input.password,
     userModel.encryptedPassword
   );
