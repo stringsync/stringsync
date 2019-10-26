@@ -3,3 +3,4 @@ export * from './models';
 export * from './createDb';
 export * from './createDbConnection';
 export * from './truncateAll';
+export * from './data';

@@ -1,10 +1,10 @@
 import { Db } from '../../db';
 import { ContextFunction } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
-import { RequestContext } from './types';
+import { RequestContext, Auth } from './types';
 import { createDataLoaders } from '../../modules/data-loaders/createDataLoaders';
 import { getCookies } from './getCookies';
-import { getAuth } from './getAuth';
+import { data } from '../../db';
 
 export const getRequestContextCreator = (
   db: Db
@@ -12,16 +12,18 @@ export const getRequestContextCreator = (
   const requestedAt = new Date();
   const cookies = getCookies(req.headers.cookie);
   const token = cookies.USER_SESSION_TOKEN;
-  const auth = await getAuth(token, requestedAt, db);
+  const user = await data.User.getAuthenticatedUser(db, { token, requestedAt });
+  const auth: Auth = { user, isLoggedIn: Boolean(user), token };
   const dataLoaders = createDataLoaders(db);
 
   return {
-    requestedAt,
-    req,
-    res,
-    db,
-    cookies,
     auth,
+    cookies,
+    data,
     dataLoaders,
+    db,
+    req,
+    requestedAt,
+    res,
   };
 };

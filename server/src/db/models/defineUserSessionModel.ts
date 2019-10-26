@@ -1,12 +1,12 @@
-import { Model, DataTypes, BuildOptions, Sequelize } from 'sequelize';
-
-export interface RawUserSession {
-  id: number;
-  issuedAt: Date;
-  token: string;
-  userId: string;
-  expiresAt: Date;
-}
+import {
+  Model,
+  DataTypes,
+  BuildOptions,
+  Sequelize,
+  BelongsToGetAssociationMixin,
+  BelongsToCreateAssociationMixin,
+} from 'sequelize';
+import { UserModel } from './defineUserModel';
 
 export interface UserSessionModel extends Model {
   id: number;
@@ -14,6 +14,8 @@ export interface UserSessionModel extends Model {
   token: string;
   userId: string;
   expiresAt: Date;
+
+  getUser: BelongsToGetAssociationMixin<UserModel>;
 }
 
 export type UserSessionModelStatic = typeof Model & {
