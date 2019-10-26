@@ -1,4 +1,4 @@
-import { DatumAccessor } from '../types';
+import { DataAccessor } from '../types';
 import { UserModel } from '../../models/defineUserModel';
 import { or } from 'sequelize';
 
@@ -6,7 +6,7 @@ interface Args {
   emailOrUsername: string;
 }
 
-export const getUserByEmailOrUsername: DatumAccessor<UserModel, Args> = (
+export const getUserByEmailOrUsername: DataAccessor<UserModel, Args> = (
   db,
   args
 ) => {

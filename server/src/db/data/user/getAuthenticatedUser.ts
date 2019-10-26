@@ -1,15 +1,15 @@
 import { UserModel } from '../../models';
-import { DatumAccessor } from '../types';
+import { DataAccessor } from '../types';
 
 interface Args {
   token: string;
   requestedAt: Date;
 }
 
-export const getAuthenticatedUser: DatumAccessor<UserModel, Args> = async (
-  db,
-  args
-) => {
+export const getAuthenticatedUser: DataAccessor<
+  UserModel | null,
+  Args
+> = async (db, args) => {
   if (!args.token) {
     return null;
   }
