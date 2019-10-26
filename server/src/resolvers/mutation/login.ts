@@ -1,7 +1,6 @@
 import { FieldResolver } from '..';
 import { ForbiddenError } from 'apollo-server';
 import { LoginInput, LoginPayload } from 'common/types';
-import { or } from 'sequelize';
 import bcrypt from 'bcrypt';
 import {
   createUserSession,
