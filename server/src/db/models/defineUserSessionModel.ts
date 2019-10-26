@@ -4,7 +4,6 @@ import {
   BuildOptions,
   Sequelize,
   BelongsToGetAssociationMixin,
-  BelongsToCreateAssociationMixin,
 } from 'sequelize';
 import { UserModel } from './defineUserModel';
 

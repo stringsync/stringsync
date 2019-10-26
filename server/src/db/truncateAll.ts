@@ -9,6 +9,10 @@ const onlyPermitTestEnv = (msg: string) => {
 export const truncateAll = async (db: Db) => {
   onlyPermitTestEnv('must have NODE_ENV=test to truncate all tables');
   for (const Model of Object.values(db.models)) {
-    await Model.truncate({ cascade: true, restartIdentity: true });
+    await Model.truncate({
+      cascade: true,
+      restartIdentity: true,
+      logging: false,
+    });
   }
 };

@@ -1,5 +1,12 @@
-import { Model, DataTypes, BuildOptions, Sequelize } from 'sequelize';
+import {
+  Model,
+  DataTypes,
+  BuildOptions,
+  Sequelize,
+  HasManyCreateAssociationMixin,
+} from 'sequelize';
 import { UserRoles } from 'common/types';
+import { UserSessionModel } from './defineUserSessionModel';
 
 const USER_ROLES: UserRoles[] = ['student', 'teacher', 'admin'];
 
@@ -16,6 +23,8 @@ export interface UserModel extends Model {
   resetPasswordToken: string;
   resetPasswordTokenSentAt: Date;
   avatarUrl: string;
+
+  createUserSession: HasManyCreateAssociationMixin<UserSessionModel>;
 }
 
 export type UserModelStatic = typeof Model & {
