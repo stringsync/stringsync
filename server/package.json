@@ -15,6 +15,7 @@
     "start": "node ./dst/index.js",
     "start:dev": "nodemon -V --watch ./dst/index.js",
     "start:scripts:dev": "yarn compile:db && yarn migrate && yarn seed && yarn compile:db --watch",
+    "pretest": "yarn compile:db && yarn migrate",
     "test": "jest"
   },
   "dependencies": {

@@ -28,7 +28,7 @@ export default class Test extends Command {
     try {
       execSync(
         `docker-compose -f docker-compose.test.yml run --rm test-server yarn run test${
-          flags.watch ? '--watchAll' : ''
+          flags.watch ? ' --watchAll' : ''
         }`,
         {
           stdio: 'inherit',
