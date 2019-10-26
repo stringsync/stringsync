@@ -19,15 +19,9 @@ export const login: FieldResolver<LoginPayload, undefined, Args> = async (
   args,
   ctx
 ) => {
-  const email = args.input.emailOrUsername;
-  const username = args.input.emailOrUsername;
-  const userModel = await ctx.db.models.User.findOne({
-    raw: true,
-    where: {
-      ...or({ email }, { username }),
-    },
+  const userModel = await ctx.data.User.getUserByEmailOrUsername(ctx.db, {
+    emailOrUsername: args.input.emailOrUsername,
   });
-
   if (!userModel) {
     throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
   }
