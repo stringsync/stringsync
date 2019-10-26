@@ -1,6 +1,6 @@
 import { Command, flags } from '@oclif/command';
 import { execSync } from 'child_process';
-import { buildDockerImageSync } from '../util/buildDockerImage';
+import { buildDockerImageSync } from '../util/buildDockerImageSync';
 import { ROOT_PATH } from '../util/constants';
 
 export default class Up extends Command {

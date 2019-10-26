@@ -34,9 +34,11 @@ USAGE
 * [`ss exec SERVICE CMD`](#ss-exec-service-cmd)
 * [`ss help [COMMAND]`](#ss-help-command)
 * [`ss install`](#ss-install)
-* [`ss lint [FILE]`](#ss-lint-file)
+* [`ss lint`](#ss-lint)
 * [`ss logs SERVICE`](#ss-logs-service)
+* [`ss prettier`](#ss-prettier)
 * [`ss sql CMD`](#ss-sql-cmd)
+* [`ss test [FILE]`](#ss-test-file)
 * [`ss up`](#ss-up)
 
 ## `ss bounce`
@@ -90,7 +92,8 @@ USAGE
   $ ss exec SERVICE CMD
 
 OPTIONS
-  -h, --help  show CLI help
+  -T, --psuedoTty
+  -h, --help       show CLI help
 ```
 
 _See code: [src/commands/exec.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/exec.ts)_
@@ -126,18 +129,17 @@ OPTIONS
 
 _See code: [src/commands/install.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/install.ts)_
 
-## `ss lint [FILE]`
+## `ss lint`
 
-describe the command here
+Lints the entire project (except node_modules).
 
 ```
 USAGE
-  $ ss lint [FILE]
+  $ ss lint
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -h, --help           show CLI help
+  -s, --gitStagedOnly
 ```
 
 _See code: [src/commands/lint.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/lint.ts)_
@@ -157,6 +159,22 @@ OPTIONS
 
 _See code: [src/commands/logs.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/logs.ts)_
 
+## `ss prettier`
+
+describe the command here
+
+```
+USAGE
+  $ ss prettier
+
+OPTIONS
+  -f, --fix
+  -h, --help           show CLI help
+  -s, --gitStagedOnly
+```
+
+_See code: [src/commands/prettier.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/prettier.ts)_
+
 ## `ss sql CMD`
 
 Runs sequelize commands on a running server service.
@@ -166,10 +184,27 @@ USAGE
   $ ss sql CMD
 
 OPTIONS
-  -h, --help  show CLI help
+  -h, --help       show CLI help
+  -n, --name=name
 ```
 
 _See code: [src/commands/sql.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/sql.ts)_
+
+## `ss test [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ ss test [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/test.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/test.ts)_
 
 ## `ss up`
 
