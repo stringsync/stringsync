@@ -1,25 +1,25 @@
-import { RequestContext } from '../request-context';
+import { DataAccessor, UserSessionModel } from '../../db';
 import { USER_SESSION_TOKEN_MAX_AGE_MS } from './constants';
-import { Transaction } from 'sequelize';
-import { UserSessionModel } from '../../db';
 
-export const createUserSession = async (
-  userId: string,
-  ctx: RequestContext,
-  transaction?: Transaction
-): Promise<UserSessionModel> => {
-  const expiresAtMsFromEpoch =
-    ctx.requestedAt.getTime() + USER_SESSION_TOKEN_MAX_AGE_MS;
-  const expiresAt = new Date(expiresAtMsFromEpoch);
+interface Args {
+  userId: string;
+  issuedAt: Date;
+}
 
-  const userSessionModel = await ctx.db.models.UserSession.create(
+export const createUserSession: DataAccessor<UserSessionModel, Args> = (
+  db,
+  args,
+  transaction
+) => {
+  const expiresAt = new Date(
+    args.issuedAt.getTime() + USER_SESSION_TOKEN_MAX_AGE_MS
+  );
+  return db.models.UserSession.create(
     {
-      issuedAt: ctx.requestedAt,
-      userId,
+      issuedAt: args.issuedAt,
+      userId: args.userId,
       expiresAt,
     },
     { transaction }
   );
-
-  return userSessionModel;
 };

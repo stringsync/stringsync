@@ -1,4 +1,4 @@
-import { Db, data } from '../../db';
+import { Db } from '../../db';
 import { User } from 'common/types';
 import { DataLoaders } from '../../modules/data-loaders/createDataLoaders';
 import { Request, Response } from 'express';
@@ -16,7 +16,6 @@ export interface Cookies {
 export interface RequestContext {
   auth: Auth;
   cookies: Cookies;
-  data: typeof data;
   dataLoaders: DataLoaders;
   db: Db;
   req: Request;

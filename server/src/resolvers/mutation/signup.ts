@@ -44,12 +44,12 @@ export const signup: FieldResolver<SignupPayload, undefined, Args> = async (
         { username, email, encryptedPassword },
         { transaction }
       );
-      const userSession = await createUserSession(
-        userModel.id,
-        ctx,
+      const userSessionModel = await createUserSession(
+        ctx.db,
+        { userId: userModel.id, issuedAt: ctx.requestedAt },
         transaction
       );
-      setUserSessionTokenCookie(userSession, ctx);
+      setUserSessionTokenCookie(userSessionModel, ctx);
       return { user: userModel };
     });
   } catch (err) {

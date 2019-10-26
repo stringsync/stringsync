@@ -3,9 +3,10 @@ import { ForbiddenError } from 'apollo-server';
 import { LoginInput, LoginPayload } from 'common/types';
 import bcrypt from 'bcrypt';
 import {
-  createUserSession,
   setUserSessionTokenCookie,
+  getExpiresAt,
 } from '../../modules/user-session/';
+import { or } from 'sequelize';
 
 interface Args {
   input: LoginInput;
@@ -18,8 +19,11 @@ export const login: FieldResolver<LoginPayload, undefined, Args> = async (
   args,
   ctx
 ) => {
-  const userModel = await ctx.data.User.getUserByEmailOrUsername(ctx.db, {
-    emailOrUsername: args.input.emailOrUsername,
+  const emailOrUsername = args.input.emailOrUsername;
+  const userModel = await ctx.db.models.User.findOne({
+    where: {
+      ...or({ email: emailOrUsername }, { username: emailOrUsername }),
+    },
   });
   if (!userModel) {
     throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
@@ -33,13 +37,11 @@ export const login: FieldResolver<LoginPayload, undefined, Args> = async (
     throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
   }
 
-  const userSessionModel = await ctx.data.UserSession.createUserSession(
-    ctx.db,
-    {
-      userId: userModel.id,
-      issuedAt: ctx.requestedAt,
-    }
-  );
+  const userSessionModel = await ctx.db.models.UserSession.create({
+    userId: userModel.id,
+    issuedAt: ctx.requestedAt,
+    expiresAt: getExpiresAt(ctx.requestedAt),
+  });
   setUserSessionTokenCookie(userSessionModel, ctx);
 
   return { user: userModel };
