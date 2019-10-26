@@ -1,6 +1,6 @@
 import { USER_SESSION_TOKEN_COOKIE_NAME } from './constants';
 import { RequestContext } from '../request-context';
-import { UserSessionModel } from '../../db/models/types';
+import { UserSessionModel } from '../../db';
 
 export const setUserSessionTokenCookie = (
   userSession: UserSessionModel,

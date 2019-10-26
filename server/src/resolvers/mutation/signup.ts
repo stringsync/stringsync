@@ -2,7 +2,7 @@ import { FieldResolver } from '..';
 import { SignupInput, SignupPayload } from 'common/types';
 import { UserInputError } from 'apollo-server';
 import { ValidationError } from 'sequelize';
-import { getEncryptedPassword } from '../../util/getEncryptedPassword';
+import { getEncryptedPassword } from '../../modules/encrypted-password';
 import {
   setUserSessionTokenCookie,
   createUserSession,

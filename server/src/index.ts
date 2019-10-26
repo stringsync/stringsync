@@ -1,8 +1,7 @@
-import { createDb } from './db/createDb';
-import { createDbConnection } from './db//createDbConnection';
+import { createDb, createDbConnection } from './db';
+import { getConfig } from './modules/config';
 import { createServer } from './modules/server';
 import { getSchema } from './resolvers/getSchema';
-import { getConfig } from './getConfig';
 
 const main = async (): Promise<void> => {
   const config = getConfig(process.env);

@@ -1,4 +1,4 @@
-import { Db } from '../../db/types';
+import { Db } from '../../db';
 import { ContextFunction } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 import { RequestContext } from './types';

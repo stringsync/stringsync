@@ -1,6 +1,6 @@
 import DataLoader from 'dataloader';
 import { createKeyValue, getOrderedDataLoaderValues } from '.';
-import { Db } from '../../db/types';
+import { Db } from '../../db';
 
 export const createUsersById = (db: Db) =>
   new DataLoader(async (ids: string[]) => {

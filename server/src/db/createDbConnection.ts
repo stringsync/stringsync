@@ -1,4 +1,4 @@
-import { Config } from '../getConfig';
+import { Config } from '../modules/config';
 import { Sequelize } from 'sequelize';
 
 export const createDbConnection = (config: Config) => {

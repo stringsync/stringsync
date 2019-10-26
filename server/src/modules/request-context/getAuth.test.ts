@@ -1,5 +1,4 @@
-import { Db } from '../../db/types';
-import { createDb } from '../../db/createDb';
+import { createDb, Db } from '../../db';
 import { Sequelize } from 'sequelize';
 
 const foo = async (db: Db) => {
@@ -38,11 +37,6 @@ afterEach(async (done) => {
 });
 
 test('db tests are cool', async (done) => {
-  await foo(db);
-  done();
-});
-
-test('db tests are REALLY cool', async (done) => {
   await foo(db);
   done();
 });

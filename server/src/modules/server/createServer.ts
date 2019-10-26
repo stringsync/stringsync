@@ -1,8 +1,8 @@
-import { Db } from '../../db/types';
+import { Db } from '../../db';
 import { ApolloServer } from 'apollo-server';
 import { GraphQLSchema } from 'graphql';
 import { getRequestContextCreator } from '../request-context';
-import { Config } from '../../getConfig';
+import { Config } from '../../modules/config';
 import { getErrorFormatter } from './getErrorFormatter';
 
 export const createServer = (db: Db, schema: GraphQLSchema, config: Config) => {

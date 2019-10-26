@@ -1,7 +1,7 @@
 import { RequestContext } from '../request-context';
 import { USER_SESSION_TOKEN_MAX_AGE_MS } from './constants';
 import { Transaction } from 'sequelize';
-import { UserSessionModel } from '../../db/models/types';
+import { UserSessionModel } from '../../db';
 
 export const createUserSession = async (
   userId: string,

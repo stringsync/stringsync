@@ -1,15 +1,5 @@
-export interface Config {
-  NODE_ENV: string;
-  PORT: string;
-  CLIENT_URI: string;
-  DB_NAME: string;
-  DB_USERNAME: string;
-  DB_PASSWORD: string;
-  DB_HOST: string;
-  DB_PORT: string;
-}
+import { Config } from './types';
 
-// valid means T[P] for all P
 type MaybeValid<T> = { [P in keyof T]: T[P] | undefined };
 
 const getMaybeValidConfig = (env: NodeJS.ProcessEnv): MaybeValid<Config> => ({
