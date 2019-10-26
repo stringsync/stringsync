@@ -28,5 +28,6 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': OFF,
     '@typescript-eslint/camelcase': OFF,
     '@typescript-eslint/no-var-requires': OFF,
+    '@typescript-eslint/prefer-namespace-keyword': OFF,
   },
 };
