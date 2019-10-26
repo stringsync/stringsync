@@ -9,6 +9,8 @@ services:
       POSTGRES_DB: stringsync
       POSTGRES_USER: stringsync
       POSTGRES_PASSWORD: stringsync
+    networks:
+      - dev-network
 
   server:
     container_name: ss_server
@@ -38,6 +40,8 @@ services:
       - db
     ports:
       - '3000:3000'
+    networks:
+      - dev-network
     command: ['yarn', 'build:dev']
 
   scripts:
@@ -59,6 +63,8 @@ services:
         target: /string-sync/server/src
     links:
       - db
+    networks:
+      - dev-network
     command: ['yarn', 'start:scripts:dev']
 
   web:
@@ -83,4 +89,10 @@ services:
       - '8080:8080'
     links:
       - server
+    networks:
+      - dev-network
     command: ['yarn', 'start']
+
+networks:
+  dev-network:
+    name: ss_dev_network
