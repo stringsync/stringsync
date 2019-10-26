@@ -9,8 +9,6 @@ services:
       POSTGRES_DB: stringsync
       POSTGRES_USER: stringsync
       POSTGRES_PASSWORD: stringsync
-    ports:
-      - '5432:5432'
 
   server:
     container_name: ss_server
@@ -25,7 +23,7 @@ services:
       DB_NAME: stringsync
       DB_USERNAME: stringsync
       DB_PASSWORD: stringsync
-      DB_HOST: host.docker.internal
+      DB_HOST: db
       DB_PORT: 5432
     volumes:
       - type: bind
@@ -50,7 +48,7 @@ services:
       DB_NAME: stringsync
       DB_USERNAME: stringsync
       DB_PASSWORD: stringsync
-      DB_HOST: host.docker.internal
+      DB_HOST: db
       DB_PORT: 5432
     volumes:
       - type: bind
