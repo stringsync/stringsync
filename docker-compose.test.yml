@@ -19,7 +19,7 @@ services:
       context: ./server
       dockerfile: ./dev.Dockerfile
     environment:
-      NODE_ENV: development
+      NODE_ENV: test
       PORT: 3000
       CLIENT_URI: http://localhost:8080
       DB_NAME: stringsync

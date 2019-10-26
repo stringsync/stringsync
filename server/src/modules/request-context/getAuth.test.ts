@@ -1,5 +1,14 @@
-import { createDb, Db } from '../../db';
-import { Sequelize } from 'sequelize';
+import { createDb, Db, createDbConnection, truncateAll } from '../../db';
+import { getConfig } from '../config';
+
+const config = getConfig(process.env);
+const connection = createDbConnection(config);
+const db = createDb(connection);
+
+afterEach(async (done) => {
+  await truncateAll(db);
+  done();
+});
 
 const foo = async (db: Db) => {
   await db.transaction(async (transaction) => {
@@ -17,24 +26,6 @@ const foo = async (db: Db) => {
     });
   });
 };
-
-const db: Db = createDb(
-  new Sequelize({
-    dialect: 'postgres',
-    database: process.env.DB_NAME,
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    host: process.env.DB_HOST,
-    port: parseInt(process.env.DB_PORT || '', 10),
-  })
-);
-
-afterEach(async (done) => {
-  for (const [_, Model] of Object.entries(db.models)) {
-    await Model.truncate({ cascade: true, restartIdentity: true });
-  }
-  done();
-});
 
 test('db tests are cool', async (done) => {
   await foo(db);
