@@ -3,6 +3,7 @@ module.exports = {
     'ts-jest': {
       tsConfig: 'tsconfig.json',
     },
+    db: undefined,
   },
   roots: ['<rootDir>/src/'],
   transform: {
@@ -11,4 +12,5 @@ module.exports = {
   moduleNameMapper: {
     '^common/(.*)': '<rootDir>/../common/$1',
   },
+  setupFiles: ['<rootDir>/src/jest.setup.ts'],
 };
