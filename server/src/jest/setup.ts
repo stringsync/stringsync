@@ -1,5 +1,5 @@
 import { Sequelize } from 'sequelize';
-import { createDb } from './db/createDb';
+import { createDb } from '../db/createDb';
 
 const createDbConnection = () => {
   return new Sequelize({
