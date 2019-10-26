@@ -10,7 +10,7 @@ const main = async (): Promise<void> => {
 
   const connection = createDbConnection(config);
   const db = createDb(connection);
-  await db.connection.authenticate({ logging: false });
+  await db.authenticate({ logging: false });
   console.log('🦑  connected to db');
 
   const schema = getSchema();

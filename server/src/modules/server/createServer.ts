@@ -1,4 +1,4 @@
-import { Db } from '../../db/createDb';
+import { Db } from '../../db/types';
 import { ApolloServer } from 'apollo-server';
 import { GraphQLSchema } from 'graphql';
 import { getRequestContextCreator } from '../request-context';

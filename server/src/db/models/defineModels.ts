@@ -1,10 +1,13 @@
 import { defineUserModel, UserModelStatic } from './UserModel';
-import { defineUserSessionModel, UserSessionStatic } from './UserSessionModel';
+import {
+  defineUserSessionModel,
+  UserSessionModelStatic,
+} from './UserSessionModel';
 import { Sequelize } from 'sequelize';
 
 export interface ModelMap {
   User: UserModelStatic;
-  UserSession: UserSessionStatic;
+  UserSession: UserSessionModelStatic;
 }
 
 export const defineModels = (dbConnection: Sequelize): ModelMap => {
@@ -12,6 +15,7 @@ export const defineModels = (dbConnection: Sequelize): ModelMap => {
   const UserSession = defineUserSessionModel(dbConnection);
 
   UserSession.belongsTo(User);
+  User.hasMany(UserSession);
 
   return {
     User,

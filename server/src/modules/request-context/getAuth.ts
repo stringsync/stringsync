@@ -1,4 +1,4 @@
-import { Db } from '../../db/createDb';
+import { Db } from '../../db/types';
 import { User } from 'common/types';
 import { Auth } from './types';
 

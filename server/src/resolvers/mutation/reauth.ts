@@ -20,7 +20,7 @@ export const reauth: FieldResolver<ReauthPayload> = async (
     throw new ForbiddenError(BAD_SESSION_TOKEN_MSG);
   }
 
-  return ctx.db.connection.transaction(async (transaction) => {
+  return ctx.db.transaction(async (transaction) => {
     const oldUserSession = await ctx.db.models.UserSession.findOne({
       where: { token },
       transaction,

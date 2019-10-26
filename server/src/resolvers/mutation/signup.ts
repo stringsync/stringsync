@@ -39,7 +39,7 @@ export const signup: FieldResolver<SignupPayload, undefined, Args> = async (
   validatePassword(password);
 
   try {
-    return ctx.db.connection.transaction(async (transaction) => {
+    return ctx.db.transaction(async (transaction) => {
       const encryptedPassword = await getEncryptedPassword(password);
       const userModel = await ctx.db.models.User.create(
         { username, email, encryptedPassword },

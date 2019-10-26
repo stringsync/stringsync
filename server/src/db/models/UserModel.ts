@@ -39,7 +39,7 @@ export type UserModelStatic = typeof Model & {
 
 export const defineUserModel = (dbConnection: Sequelize) =>
   dbConnection.define(
-    'user',
+    'User',
     {
       id: {
         type: DataTypes.TEXT,

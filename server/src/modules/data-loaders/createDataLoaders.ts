@@ -2,7 +2,7 @@ import DataLoader from 'dataloader';
 import { createUsersById } from './createUsersById';
 import { createNotationsByUserId } from './createNotationsByUserId';
 import { User, Notation } from 'common/types';
-import { Db } from '../../db/createDb';
+import { Db } from '../../db/types';
 
 export interface DataLoaders {
   usersById: DataLoader<string, User>;

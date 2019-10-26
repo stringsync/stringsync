@@ -16,13 +16,13 @@ export interface UserSessionModel extends Model {
   expiresAt: Date;
 }
 
-export type UserSessionStatic = typeof Model & {
+export type UserSessionModelStatic = typeof Model & {
   new (values?: object, options?: BuildOptions): UserSessionModel;
 };
 
 export const defineUserSessionModel = (dbConnection: Sequelize) =>
   dbConnection.define(
-    'userSession',
+    'UserSession',
     {
       id: {
         type: DataTypes.INTEGER,
@@ -54,4 +54,4 @@ export const defineUserSessionModel = (dbConnection: Sequelize) =>
       tableName: 'user_sessions',
       timestamps: false,
     }
-  ) as UserSessionStatic;
+  ) as UserSessionModelStatic;

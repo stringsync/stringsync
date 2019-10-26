@@ -1,15 +1,8 @@
 import { Sequelize } from 'sequelize';
-import { ModelMap } from './models/defineModels';
 import { defineModels } from './models/defineModels';
+import { Db } from './types';
 
-export interface Db {
-  connection: Sequelize;
-  models: ModelMap;
-}
-
-export const createDb = (connection: Sequelize): Db => {
-  return {
-    connection,
-    models: defineModels(connection),
-  };
+export const createDb = (connection: Sequelize) => {
+  defineModels(connection);
+  return connection as Db;
 };

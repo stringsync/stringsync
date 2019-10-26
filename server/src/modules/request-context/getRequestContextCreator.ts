@@ -1,4 +1,4 @@
-import { Db } from '../../db/createDb';
+import { Db } from '../../db/types';
 import { ContextFunction } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 import { RequestContext } from './types';
@@ -6,11 +6,9 @@ import { createDataLoaders } from '../../modules/data-loaders/createDataLoaders'
 import { getCookies } from './getCookies';
 import { getAuth } from './getAuth';
 
-type RequestContextCreator = ContextFunction<ExpressContext, RequestContext>;
-
 export const getRequestContextCreator = (
   db: Db
-): RequestContextCreator => async ({ req, res }) => {
+): ContextFunction<ExpressContext, RequestContext> => async ({ req, res }) => {
   const requestedAt = new Date();
   const cookies = getCookies(req.headers.cookie);
   const token = cookies.USER_SESSION_TOKEN;
