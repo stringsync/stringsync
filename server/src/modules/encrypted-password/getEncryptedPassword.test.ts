@@ -11,7 +11,7 @@ test('getEncryptedPassword is not idempotent', async (done) => {
   done();
 });
 
-test('getEncryptedPassword can be decrypted by bcrypt', async (done) => {
+test('getEncryptedPassword can be verified by bcrypt', async (done) => {
   const encryptedPassword1 = await getEncryptedPassword(PASSWORD);
   const encryptedPassword2 = await getEncryptedPassword(PASSWORD);
 
