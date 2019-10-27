@@ -41,7 +41,7 @@ export const defineUserSessionModel = (dbConnection: Sequelize) =>
       userId: {
         type: DataTypes.TEXT,
         references: {
-          model: 'user',
+          model: 'User',
           key: 'id',
         },
       },

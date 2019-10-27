@@ -6,6 +6,6 @@ export const defineModels = (dbConnection: Sequelize) => {
   const User = defineUserModel(dbConnection);
   const UserSession = defineUserSessionModel(dbConnection);
 
-  UserSession.belongsTo(User);
+  UserSession.belongsTo(User, { foreignKey: 'user_id' });
   User.hasMany(UserSession);
 };

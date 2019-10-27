@@ -29,5 +29,6 @@ module.exports = {
     '@typescript-eslint/camelcase': OFF,
     '@typescript-eslint/no-var-requires': OFF,
     '@typescript-eslint/prefer-namespace-keyword': OFF,
+    '@typescript-eslint/no-non-null-assertion': OFF,
   },
 };
