@@ -18,7 +18,13 @@ export default {
         qry TEXT;
         found TEXT;
       BEGIN
-      
+        -- allow clients to specify their own id
+        -- we trust that the clients connected directly to this
+        -- db will not do malicious things
+        IF NEW.id IS NOT NULL THEN
+          RETURN NEW;
+        END IF;
+
         -- generate the first part of a query as a string with safely
         -- escaped table name, using || to concat the parts
         qry := 'SELECT id FROM ' || quote_ident(TG_TABLE_NAME) || ' WHERE id=';
