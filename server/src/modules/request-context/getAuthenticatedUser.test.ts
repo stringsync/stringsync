@@ -12,11 +12,11 @@ const db = createDb();
 let transaction: Transaction;
 
 beforeEach(async () => {
-  transaction = await db.transaction({ logging: false });
+  transaction = await db.transaction();
 });
 
 afterEach(async () => {
-  await transaction.rollback();
+  // await transaction.rollback();
 });
 
 test('getAuthenticatedUser with empty token returns null', async (done) => {
@@ -87,9 +87,7 @@ test('getAuthenticatedUser with active session in db returns user', async (done)
     },
     transaction
   );
-
   expect(user).not.toBeNull();
-  // TODO figure out why this isn't working
-  // expect(user!.id).toEqual(student1.id);
+  expect(user!.id).toBe(student1.id);
   done();
 });

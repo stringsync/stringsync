@@ -1,14 +1,16 @@
-import { DataAccessor, UserModel } from '../../db';
+import { DataAccessor } from '../../db';
+import { User } from 'common/types';
 
 interface Args {
   token: string;
   requestedAt: Date;
 }
 
-export const getAuthenticatedUser: DataAccessor<
-  UserModel | null,
-  Args
-> = async (db, args, transaction) => {
+export const getAuthenticatedUser: DataAccessor<User | null, Args> = async (
+  db,
+  args,
+  transaction
+) => {
   if (!args.token) {
     return null;
   }
@@ -23,5 +25,14 @@ export const getAuthenticatedUser: DataAccessor<
   if (userSessionModel.expiresAt < args.requestedAt) {
     return null;
   }
-  return userSessionModel.getUser();
+  // TODO(jared)
+  // When transaction is undefined (i.e. in prod),
+  // this method behaves as expected.
+  // When transaction is defined (i.e. in test), then
+  // getUser() returns null.
+  // Follow up on these open github issues and try to use the
+  // belongs to association getter
+  // https://github.com/sequelize/sequelize/issues/11459
+  // https://github.com/sequelize/sequelize/issues/11459
+  return userSessionModel.get('User') as User;
 };
