@@ -39,7 +39,7 @@ export default class Test extends Command {
       exit = 1;
     }
 
-    execSync(`docker-compose -f docker-compose.test.yml down --volumes`, {
+    execSync(`./bin/ss down docker-compose.test.yml`, {
       stdio: 'inherit',
       cwd: ROOT_PATH,
     });
