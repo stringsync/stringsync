@@ -35,20 +35,44 @@ test('sets expiresAt 14 days from issuedAt', async (done) => {
   done();
 });
 
-// TODO: fix this test
-// test('saves a user session to the db', async (done) => {
-//   createFixtures(db, transaction, {
-//     User: [USER_FIXTURE],
-//   });
+test('saves a user session to the db', async (done) => {
+  createFixtures(db, transaction, {
+    User: [USER_FIXTURE],
+  });
 
-//   const issuedAt = new Date();
+  const { id } = await createUserSession(db, transaction, {
+    userId: USER_FIXTURE.id,
+    issuedAt: new Date(),
+  });
+  const count = await db.models.UserSession.count({ transaction });
+  const userSession = await db.models.UserSession.findByPk(id, { transaction });
 
-//   const { id } = await createUserSession(db, {
-//     userId: USER_FIXTURE.id,
-//     issuedAt,
-//   });
+  expect(count).toBe(1);
+  expect(userSession).not.toBeNull();
+  done();
+});
 
-//   const userSession = await db.models.UserSession.findByPk(id);
-//   expect(userSession).not.toBeNull();
-//   done();
-// });
+test('saves n sessions for a particular user', async (done) => {
+  const n = 2;
+  createFixtures(db, transaction, {
+    User: [USER_FIXTURE],
+  });
+
+  const ids = new Array(n);
+  for (let i = 0; i < n; i++) {
+    const { id } = await createUserSession(db, transaction, {
+      userId: USER_FIXTURE.id,
+      issuedAt: new Date(),
+    });
+    ids[i] = id;
+  }
+  const count = await db.models.UserSession.count({ transaction });
+  const userSessions = await db.models.UserSession.findAll({
+    where: { id: ids },
+    transaction,
+  });
+
+  expect(count).toBe(n);
+  expect(userSessions.length).toBe(n);
+  done();
+});
