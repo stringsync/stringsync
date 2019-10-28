@@ -1,25 +1,5 @@
-import {
-  Model,
-  DataTypes,
-  BuildOptions,
-  Sequelize,
-  BelongsToGetAssociationMixin,
-} from 'sequelize';
-import { UserModel } from './defineUserModel';
-
-export interface UserSessionModel extends Model {
-  id: number;
-  readonly issuedAt: Date;
-  token: string;
-  userId: string;
-  expiresAt: Date;
-
-  getUser: BelongsToGetAssociationMixin<UserModel>;
-}
-
-export type UserSessionModelStatic = typeof Model & {
-  new (values?: object, options?: BuildOptions): UserSessionModel;
-};
+import { DataTypes, Sequelize } from 'sequelize';
+import { UserSessionModelStatic } from './types';
 
 export const defineUserSessionModel = (dbConnection: Sequelize) =>
   dbConnection.define(

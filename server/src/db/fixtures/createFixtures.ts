@@ -1,6 +1,8 @@
 import { DbAccessor } from '../types';
-import { ModelName } from '../models';
+import { UserModelStatic, UserSessionModelStatic } from '../models';
 
+type ModelName = 'User' | 'UserSession';
+type StaticModel = UserModelStatic | UserSessionModelStatic;
 const MODEL_CREATE_ORDER: ModelName[] = ['User', 'UserSession'];
 
 interface FixtureMap {
@@ -16,7 +18,8 @@ export const createFixtures: DbAccessor<void, FixtureMap> = async (
   for (const modelName of MODEL_CREATE_ORDER) {
     const fixtures = fixtureMap[modelName] || [];
     for (const fixture of fixtures) {
-      await db.models[modelName].create<any>(fixture, { transaction });
+      const Model: StaticModel = db.models[modelName];
+      await Model.create<any>(fixture, { transaction });
     }
   }
 };

@@ -1,35 +1,5 @@
-import {
-  Model,
-  DataTypes,
-  BuildOptions,
-  Sequelize,
-  HasManyCreateAssociationMixin,
-} from 'sequelize';
-import { UserRoles } from 'common/types';
-import { UserSessionModel } from './defineUserSessionModel';
-
-const USER_ROLES: UserRoles[] = ['student', 'teacher', 'admin'];
-
-export interface UserModel extends Model {
-  id: string;
-  readonly createdAt: Date;
-  readonly updatedAt: Date;
-  username: string;
-  email: string;
-  encryptedPassword: string;
-  role: UserRoles;
-  confirmationToken: string;
-  confirmedAt: Date;
-  resetPasswordToken: string;
-  resetPasswordTokenSentAt: Date;
-  avatarUrl: string;
-
-  createUserSession: HasManyCreateAssociationMixin<UserSessionModel>;
-}
-
-export type UserModelStatic = typeof Model & {
-  new (values?: object, options?: BuildOptions): UserModel;
-};
+import { Sequelize, DataTypes } from 'sequelize';
+import { USER_ROLES, UserModelStatic } from './types';
 
 export const defineUserModel = (dbConnection: Sequelize) =>
   dbConnection.define(

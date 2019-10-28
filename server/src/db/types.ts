@@ -1,6 +1,5 @@
 import { Sequelize, Transaction } from 'sequelize';
-import { UserModelStatic } from './models/defineUserModel';
-import { UserSessionModelStatic } from './models/defineUserSessionModel';
+import { UserModelStatic, UserSessionModelStatic } from './models';
 
 export type Db = Sequelize & {
   models: {

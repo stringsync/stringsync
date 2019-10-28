@@ -1,5 +1,5 @@
-import { defineUserModel } from './defineUserModel';
-import { defineUserSessionModel } from './defineUserSessionModel';
+import { defineUserModel } from './user';
+import { defineUserSessionModel } from './user-session';
 import { Sequelize } from 'sequelize';
 
 export const defineModels = (dbConnection: Sequelize) => {
