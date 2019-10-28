@@ -29,7 +29,7 @@ afterEach(async (done) => {
 });
 
 test('getAuthenticatedUser with empty token returns null', async (done) => {
-  const user = await getAuthenticatedUser(db, {
+  const user = await getAuthenticatedUser(db, transaction, {
     token: '',
     requestedAt: NOW,
   });
@@ -39,14 +39,10 @@ test('getAuthenticatedUser with empty token returns null', async (done) => {
 });
 
 test('getAuthenticatedUser with no session in db returns null', async (done) => {
-  const user = await getAuthenticatedUser(
-    db,
-    {
-      token: TOKEN,
-      requestedAt: NOW,
-    },
-    transaction
-  );
+  const user = await getAuthenticatedUser(db, transaction, {
+    token: TOKEN,
+    requestedAt: NOW,
+  });
 
   expect(user).toBeNull();
   done();
@@ -58,14 +54,10 @@ test('getAuthenticatedUser with expired session in db returns null', async (done
     UserSession: [{ ...USER_SESSION_FIXTURE, expiresAt: PAST }],
   });
 
-  const user = await getAuthenticatedUser(
-    db,
-    {
-      token: TOKEN,
-      requestedAt: NOW,
-    },
-    transaction
-  );
+  const user = await getAuthenticatedUser(db, transaction, {
+    token: TOKEN,
+    requestedAt: NOW,
+  });
 
   expect(user).toBeNull();
   done();
@@ -77,14 +69,10 @@ test('getAuthenticatedUser with active session in db returns user', async (done)
     UserSession: [{ ...USER_SESSION_FIXTURE, expiresAt: FUTURE }],
   });
 
-  const user = await getAuthenticatedUser(
-    db,
-    {
-      token: TOKEN,
-      requestedAt: NOW,
-    },
-    transaction
-  );
+  const user = await getAuthenticatedUser(db, transaction, {
+    token: TOKEN,
+    requestedAt: NOW,
+  });
   expect(user).not.toBeNull();
   expect(user!.id).toBe(USER_FIXTURE.id);
   done();

@@ -12,7 +12,10 @@ export const getRequestContextCreator = (
   const requestedAt = new Date();
   const cookies = getCookies(req.headers.cookie);
   const token = cookies.USER_SESSION_TOKEN;
-  const user = await getAuthenticatedUser(db, { token, requestedAt });
+  const user = await getAuthenticatedUser(db, undefined, {
+    token,
+    requestedAt,
+  });
   const auth: Auth = { user, isLoggedIn: Boolean(user), token };
   const dataLoaders = createDataLoaders(db);
 

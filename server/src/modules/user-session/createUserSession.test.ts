@@ -26,11 +26,10 @@ test('sets expiresAt 14 days from issuedAt', async (done) => {
   const issuedAt = new Date('2019-01-01');
   const expected = new Date('2019-01-15').getTime();
 
-  const userSession = await createUserSession(
-    db,
-    { userId: USER_FIXTURE.id, issuedAt },
-    transaction
-  );
+  const userSession = await createUserSession(db, transaction, {
+    userId: USER_FIXTURE.id,
+    issuedAt,
+  });
 
   expect(userSession.expiresAt.getTime()).toBe(expected);
   done();

@@ -1,4 +1,4 @@
-import { DataAccessor } from '../../db';
+import { DbAccessor } from '../../db';
 import { User } from 'common/types';
 
 interface Args {
@@ -6,10 +6,10 @@ interface Args {
   requestedAt: Date;
 }
 
-export const getAuthenticatedUser: DataAccessor<User | null, Args> = async (
+export const getAuthenticatedUser: DbAccessor<User | null, Args> = async (
   db,
-  args,
-  transaction
+  transaction,
+  args
 ) => {
   if (!args.token) {
     return null;

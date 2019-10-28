@@ -31,14 +31,10 @@ export const reauth: FieldResolver<ReauthPayload> = async (
 
     if (shouldRefreshUserSession(ctx.requestedAt, oldUserSession.issuedAt)) {
       await oldUserSession.destroy({ transaction });
-      const userSessionModel = await createUserSession(
-        ctx.db,
-        {
-          userId: user.id,
-          issuedAt: ctx.requestedAt,
-        },
-        transaction
-      );
+      const userSessionModel = await createUserSession(ctx.db, transaction, {
+        userId: user.id,
+        issuedAt: ctx.requestedAt,
+      });
       setUserSessionTokenCookie(userSessionModel, ctx.res);
     }
 

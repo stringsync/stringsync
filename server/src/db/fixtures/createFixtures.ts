@@ -1,6 +1,5 @@
-import { Db } from '../types';
+import { DbAccessor } from '../types';
 import { ModelName } from '../models';
-import { Transaction } from 'sequelize';
 
 const MODEL_CREATE_ORDER: ModelName[] = ['User', 'UserSession'];
 
@@ -9,10 +8,10 @@ interface FixtureMap {
   UserSession?: any[];
 }
 
-export const createFixtures = async (
-  db: Db,
-  transaction: Transaction,
-  fixtureMap: FixtureMap
+export const createFixtures: DbAccessor<void, FixtureMap> = async (
+  db,
+  transaction,
+  fixtureMap
 ) => {
   for (const modelName of MODEL_CREATE_ORDER) {
     const fixtures = fixtureMap[modelName] || [];

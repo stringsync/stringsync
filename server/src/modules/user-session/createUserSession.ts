@@ -1,4 +1,4 @@
-import { DataAccessor, UserSessionModel } from '../../db';
+import { DbAccessor, UserSessionModel } from '../../db';
 import { USER_SESSION_TOKEN_MAX_AGE_MS } from './constants';
 
 interface Args {
@@ -6,10 +6,10 @@ interface Args {
   issuedAt: Date;
 }
 
-export const createUserSession: DataAccessor<UserSessionModel, Args> = (
+export const createUserSession: DbAccessor<UserSessionModel, Args> = (
   db,
-  args,
-  transaction
+  transaction,
+  args
 ) => {
   const expiresAt = new Date(
     args.issuedAt.getTime() + USER_SESSION_TOKEN_MAX_AGE_MS

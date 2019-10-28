@@ -9,8 +9,8 @@ export type Db = Sequelize & {
   };
 };
 
-export type DataAccessor<T, A> = (
+export type DbAccessor<T, A> = (
   db: Db,
-  args: A,
-  transaction?: Transaction
+  transaction: Transaction | undefined,
+  args: A
 ) => Promise<T>;
