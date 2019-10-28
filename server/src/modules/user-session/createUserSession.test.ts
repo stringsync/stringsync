@@ -35,23 +35,6 @@ test('sets expiresAt 14 days from issuedAt', async (done) => {
   done();
 });
 
-test('saves a user session to the db', async (done) => {
-  createFixtures(db, transaction, {
-    User: [USER_FIXTURE],
-  });
-
-  const { id } = await createUserSession(db, transaction, {
-    userId: USER_FIXTURE.id,
-    issuedAt: new Date(),
-  });
-  const count = await db.models.UserSession.count({ transaction });
-  const userSession = await db.models.UserSession.findByPk(id, { transaction });
-
-  expect(count).toBe(1);
-  expect(userSession).not.toBeNull();
-  done();
-});
-
 test('saves n sessions for a particular user', async (done) => {
   const n = 2;
   createFixtures(db, transaction, {
