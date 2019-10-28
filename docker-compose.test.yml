@@ -17,7 +17,7 @@ services:
     image: ss-server:latest
     build:
       context: ./server
-      dockerfile: ./dev.Dockerfile
+      dockerfile: ./Dockerfile
     environment:
       NODE_ENV: test
       PORT: 3000
