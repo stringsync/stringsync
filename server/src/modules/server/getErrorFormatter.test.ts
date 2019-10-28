@@ -16,7 +16,7 @@ const INTERNAL_SERVER_ERROR = new GraphQLError(
   { code: 'INTERNAL_SERVER_ERROR' }
 );
 
-test('getErrorFormatter does not sanitize internal errors in nonprod', (done) => {
+test('does not sanitize internal errors in nonprod', (done) => {
   for (const env of NONPROD_ENVS) {
     const errorFormatter = getErrorFormatter(env);
     expect(errorFormatter(INTERNAL_SERVER_ERROR).message).toEqual(
@@ -26,7 +26,7 @@ test('getErrorFormatter does not sanitize internal errors in nonprod', (done) =>
   done();
 });
 
-test('getErrorFormatter does not sanitize non internal errors in nonprod', (done) => {
+test('does not sanitize non internal errors in nonprod', (done) => {
   for (const env of NONPROD_ENVS) {
     const errorFormatter = getErrorFormatter(env);
     expect(errorFormatter(NON_INTERNAL_SERVER_ERROR).message).toEqual(
@@ -36,7 +36,7 @@ test('getErrorFormatter does not sanitize non internal errors in nonprod', (done
   done();
 });
 
-test('getErrorFormatter sanitizes internal server errors in prod', (done) => {
+test('sanitizes internal server errors in prod', (done) => {
   const errorFormatter = getErrorFormatter(PROD_ENV);
   expect(errorFormatter(INTERNAL_SERVER_ERROR).message).toEqual(
     SANITIZED_SERVER_DETAILS
@@ -44,7 +44,7 @@ test('getErrorFormatter sanitizes internal server errors in prod', (done) => {
   done();
 });
 
-test('getErrorFormatter does not sanitize non internal server errors in prod', (done) => {
+test('does not sanitize non internal server errors in prod', (done) => {
   const errorFormatter = getErrorFormatter(PROD_ENV);
   expect(errorFormatter(NON_INTERNAL_SERVER_ERROR).message).toEqual(
     SECRET_SERVER_DETAILS

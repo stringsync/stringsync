@@ -42,7 +42,17 @@ test('uses getCookies', async (done) => {
   done();
 });
 
-test('handles getAuthenticatedUser returns a user', async (done) => {
+test('uses createDataLoaders', async (done) => {
+  const dataLoaders = Symbol('data-loaders');
+  (createDataLoaders as jest.Mock).mockReturnValueOnce(dataLoaders);
+
+  const ctx = await createRequestContext(EXPRESS_CONTEXT);
+
+  expect(ctx.dataLoaders).toBe(dataLoaders);
+  done();
+});
+
+test('handles when getAuthenticatedUser returns a user', async (done) => {
   const user = Symbol('user');
   (getAuthenticatedUser as jest.Mock).mockReturnValueOnce(user);
 
@@ -54,7 +64,7 @@ test('handles getAuthenticatedUser returns a user', async (done) => {
   done();
 });
 
-test('handles getAuthenticatedUser returns null', async (done) => {
+test('handles when getAuthenticatedUser returns null', async (done) => {
   (getAuthenticatedUser as jest.Mock).mockReturnValueOnce(null);
 
   const ctx = await createRequestContext(EXPRESS_CONTEXT);
@@ -62,15 +72,5 @@ test('handles getAuthenticatedUser returns null', async (done) => {
   expect(getAuthenticatedUser).toBeCalledTimes(1);
   expect(ctx.auth.user).toBeNull();
   expect(ctx.auth.isLoggedIn).toBe(false);
-  done();
-});
-
-test('uses createDataLoaders', async (done) => {
-  const dataLoaders = Symbol('data-loaders');
-  (createDataLoaders as jest.Mock).mockReturnValueOnce(dataLoaders);
-
-  const ctx = await createRequestContext(EXPRESS_CONTEXT);
-
-  expect(ctx.dataLoaders).toBe(dataLoaders);
   done();
 });

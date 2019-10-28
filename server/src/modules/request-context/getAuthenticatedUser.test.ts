@@ -28,7 +28,7 @@ afterEach(async (done) => {
   done();
 });
 
-test('getAuthenticatedUser with empty token returns null', async (done) => {
+test('returns null when the token is empty', async (done) => {
   const user = await getAuthenticatedUser(db, transaction, {
     token: '',
     requestedAt: NOW,
@@ -38,7 +38,7 @@ test('getAuthenticatedUser with empty token returns null', async (done) => {
   done();
 });
 
-test('getAuthenticatedUser with no session in db returns null', async (done) => {
+test('returns null when there is no user session in the db for it', async (done) => {
   const user = await getAuthenticatedUser(db, transaction, {
     token: TOKEN,
     requestedAt: NOW,
@@ -48,7 +48,7 @@ test('getAuthenticatedUser with no session in db returns null', async (done) => 
   done();
 });
 
-test('getAuthenticatedUser with expired session in db returns null', async (done) => {
+test('returns null when the db user session is expired', async (done) => {
   await createFixtures(db, transaction, {
     User: [USER_FIXTURE],
     UserSession: [{ ...USER_SESSION_FIXTURE, expiresAt: PAST }],
@@ -63,7 +63,7 @@ test('getAuthenticatedUser with expired session in db returns null', async (done
   done();
 });
 
-test('getAuthenticatedUser with active session in db returns user', async (done) => {
+test('returns user when the db user session is active ', async (done) => {
   await createFixtures(db, transaction, {
     User: [USER_FIXTURE],
     UserSession: [{ ...USER_SESSION_FIXTURE, expiresAt: FUTURE }],

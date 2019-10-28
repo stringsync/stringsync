@@ -1,6 +1,6 @@
 import { shouldRefreshUserSession } from './shouldRefreshUserSession';
 
-test('returns false if difference < 5 minutes', (done) => {
+test('returns false when difference < 5 minutes', (done) => {
   const issuedAt = new Date('2019-01-01T00:00:00.000Z');
   const requestedAt = new Date('2019-01-01T00:04:99.999Z');
 
@@ -9,7 +9,7 @@ test('returns false if difference < 5 minutes', (done) => {
   done();
 });
 
-test('returns true if difference >= 5 minutes', (done) => {
+test('returns true when difference >= 5 minutes', (done) => {
   const issuedAt = new Date('2019-01-01T00:00:00.000Z');
   const requestedAt = new Date('2019-01-01T00:05:00.000Z');
 

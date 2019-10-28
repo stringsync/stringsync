@@ -11,18 +11,18 @@ const MOCK_ENV = Object.freeze({
   DB_PORT: 'DB_PORT',
 });
 
-test('getConfig when has all env var succeeds', (done) => {
+test('succeeds when all variables are specified', (done) => {
   const config = getConfig(MOCK_ENV);
   expect(config).toEqual(MOCK_ENV);
   done();
 });
 
-test('getConfig when missing an env var fails', (done) => {
+test('fails when missing a variable', (done) => {
   expect(() => getConfig({})).toThrow();
   done();
 });
 
-test('getConfig when has blank env var fails', (done) => {
+test('fails when it has an empty string for a variable', (done) => {
   expect(() => getConfig({ ...MOCK_ENV, NODE_ENV: '' })).toThrow();
   done();
 });
