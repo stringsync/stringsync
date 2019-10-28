@@ -10,7 +10,7 @@ export default class Bounce extends Command {
 
   async run() {
     this.parse(Bounce);
-    execSync('ss down', { stdio: 'inherit' });
-    execSync('ss up', { stdio: 'inherit', maxBuffer: 10 });
+    execSync('./bin/ss down', { stdio: 'inherit' });
+    execSync('./bin/ss up', { stdio: 'inherit', maxBuffer: 10 });
   }
 }

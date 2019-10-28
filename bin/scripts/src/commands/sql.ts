@@ -93,7 +93,7 @@ export default class Sql extends Command {
 
     // ensure cmd is allowed
     if (!WHITELISTED_CMDS.includes(cmd) || cmd === 'help') {
-      const buffer = execSync('ss exec -T server yarn sequelize help', {
+      const buffer = execSync('./bin/ss exec -T server yarn sequelize help', {
         stdio: 'pipe',
       });
 
@@ -129,7 +129,7 @@ export default class Sql extends Command {
     }
 
     // run the actual command against the sequelize library
-    execSync(`ss exec scripts yarn sequelize ${argv.join(' ')}`, {
+    execSync(`./bin/ss exec scripts yarn sequelize ${argv.join(' ')}`, {
       stdio: 'inherit',
     });
   }

@@ -10,6 +10,6 @@ export default class Db extends Command {
 
   async run() {
     this.parse(Db);
-    execSync('ss exec db psql -U stringsync', { stdio: 'inherit' });
+    execSync('./bin/ss exec db psql -U stringsync', { stdio: 'inherit' });
   }
 }
