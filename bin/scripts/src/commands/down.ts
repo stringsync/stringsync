@@ -3,7 +3,7 @@ import { execSync } from 'child_process';
 import { ROOT_PATH } from '../util/constants';
 
 export default class Down extends Command {
-  static description = 'Turns down a development environment.';
+  static description = 'Turns down a docker-compose environment.';
 
   static flags = {
     help: flags.help({ char: 'h' }),
