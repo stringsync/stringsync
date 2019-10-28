@@ -9,8 +9,15 @@ export default class Down extends Command {
     help: flags.help({ char: 'h' }),
   };
 
+  static args = [
+    { name: 'file', required: false, default: 'docker-compose.yml' },
+  ];
+
   async run() {
-    this.parse(Down);
-    execSync('docker-compose down --volumes', { cwd: ROOT_PATH });
+    const { args } = this.parse(Down);
+
+    execSync(`docker-compose -f ${args.file} down --volumes`, {
+      cwd: ROOT_PATH,
+    });
   }
 }
