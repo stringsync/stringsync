@@ -1,12 +1,12 @@
 import { USER_SESSION_TOKEN_COOKIE_NAME } from './constants';
-import { RequestContext } from '../request-context';
 import { UserSessionModel } from '../../db';
+import { Response } from 'express';
 
 export const setUserSessionTokenCookie = (
   userSession: UserSessionModel,
-  ctx: RequestContext
+  res: Response
 ) => {
-  ctx.res.cookie(USER_SESSION_TOKEN_COOKIE_NAME, userSession.token, {
+  res.cookie(USER_SESSION_TOKEN_COOKIE_NAME, userSession.token, {
     httpOnly: true,
     expires: userSession.expiresAt,
   });

@@ -39,7 +39,7 @@ export const reauth: FieldResolver<ReauthPayload> = async (
         },
         transaction
       );
-      setUserSessionTokenCookie(userSessionModel, ctx);
+      setUserSessionTokenCookie(userSessionModel, ctx.res);
     }
 
     return { user };

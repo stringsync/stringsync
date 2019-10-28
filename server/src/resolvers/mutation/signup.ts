@@ -49,7 +49,7 @@ export const signup: FieldResolver<SignupPayload, undefined, Args> = async (
         { userId: userModel.id, issuedAt: ctx.requestedAt },
         transaction
       );
-      setUserSessionTokenCookie(userSessionModel, ctx);
+      setUserSessionTokenCookie(userSessionModel, ctx.res);
       return { user: userModel };
     });
   } catch (err) {

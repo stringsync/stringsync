@@ -42,7 +42,7 @@ export const login: FieldResolver<LoginPayload, undefined, Args> = async (
     issuedAt: ctx.requestedAt,
     expiresAt: getExpiresAt(ctx.requestedAt),
   });
-  setUserSessionTokenCookie(userSessionModel, ctx);
+  setUserSessionTokenCookie(userSessionModel, ctx.res);
 
   return { user: userModel };
 };
