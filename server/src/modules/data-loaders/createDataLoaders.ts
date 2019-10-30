@@ -1,6 +1,6 @@
 import DataLoader from 'dataloader';
-import { createUsersById } from './createUsersById';
-import { createNotationsByUserId } from './createNotationsByUserId';
+import { usersById } from './users';
+import { notationsByUserId } from './notations';
 import { User, Notation } from 'common/types';
 import { Db } from '../../db';
 
@@ -10,6 +10,6 @@ export interface DataLoaders {
 }
 
 export const createDataLoaders = (db: Db): DataLoaders => ({
-  usersById: createUsersById(db),
-  notationsByUserId: createNotationsByUserId(db),
+  usersById: usersById(db),
+  notationsByUserId: notationsByUserId(db),
 });

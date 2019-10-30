@@ -1,8 +1,9 @@
 import DataLoader from 'dataloader';
-import { createKeyValue, getOrderedDataLoaderValues } from '.';
-import { Db } from '../../db';
+import { createKeyValue } from '../createKeyValue';
+import { getOrderedDataLoaderValues } from '../getOrderedDataLoaderValues';
+import { Db } from '../../../db';
 
-export const createUsersById = (db: Db) =>
+export const usersById = (db: Db) =>
   new DataLoader(async (ids: string[]) => {
     const users = await db.models.User.findAll({
       where: { id: ids },

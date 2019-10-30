@@ -1,0 +1,1 @@
+export { notationsByUserId } from './notationsByUserId';
