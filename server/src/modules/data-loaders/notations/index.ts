@@ -1,1 +1,1 @@
-export { notationsByUserId } from './notationsByUserId';
+export { batchGetNotationsFromUserIds } from './batchGetNotationsFromUserIds';

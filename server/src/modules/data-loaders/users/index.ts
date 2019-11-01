@@ -1,1 +1,1 @@
-export { usersById } from './usersById';
+export { batcGetUsersFromIds } from './batcGetUsersFromIds';
