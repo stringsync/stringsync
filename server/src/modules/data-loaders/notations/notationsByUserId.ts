@@ -1,12 +1,17 @@
 import DataLoader from 'dataloader';
-import { createKeyValue } from '../createKeyValue';
-import { getOrderedDataLoaderValues } from '../getOrderedDataLoaderValues';
+import { alignOneToMany } from '../../align';
 import { Db } from '../../../db';
+import { Notation } from 'common/types';
+import { flatten } from 'lodash';
 
 export const notationsByUserId = (db: Db) =>
   new DataLoader(async (userIds: string[]) => {
-    const notationKeyValues = userIds.map((userId) =>
-      createKeyValue(userId, [{ id: userId }])
-    );
-    return getOrderedDataLoaderValues('userId', userIds, notationKeyValues);
+    // userId can have many notations
+    const notations = userIds.map<Notation[]>((userId) => {
+      return [{ id: userId }];
+    });
+    return alignOneToMany(userIds, flatten(notations), {
+      getKey: (notation) => notation.id,
+      getUniqueIdentifier: (notation) => notation.id,
+    });
   });
