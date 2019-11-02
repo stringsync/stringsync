@@ -1,7 +1,7 @@
 import { KeyGetter, UniqueIdentifierGetter, MissingValueGetter } from './types';
 import { uniqBy, keyBy } from 'lodash';
 
-interface Callbacks<V> {
+interface Getters<V> {
   getKey: KeyGetter<V>;
   getUniqueIdentifier: UniqueIdentifierGetter<V>;
   getMissingValue: MissingValueGetter;
@@ -10,12 +10,18 @@ interface Callbacks<V> {
 export const alignOneToOne = <V>(
   keys: Array<number | string>,
   values: V[],
-  callbacks: Callbacks<V>
+  getters: Getters<V>
 ) => {
-  const uniqValues = uniqBy(values, callbacks.getUniqueIdentifier);
-  const valuesByKey = keyBy(uniqValues, callbacks.getKey);
-  return new Array(keys.length).map((_, ndx) => {
+  const uniqValues = uniqBy(values, getters.getUniqueIdentifier);
+  const valuesByKey = keyBy(uniqValues, getters.getKey);
+
+  const len = keys.length;
+  const aligned = new Array(len);
+  for (let ndx = 0; ndx < len; ndx++) {
     const key = keys[ndx];
-    return valuesByKey[key] || callbacks.getMissingValue(key);
-  });
+    const value = valuesByKey[key] || getters.getMissingValue(key);
+    aligned[ndx] = value;
+  }
+
+  return aligned;
 };
