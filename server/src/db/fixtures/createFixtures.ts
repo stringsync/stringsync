@@ -17,9 +17,8 @@ export const createFixtures: DbAccessor<void, FixtureMap> = async (
 ) => {
   for (const modelName of MODEL_CREATE_ORDER) {
     const fixtures = fixtureMap[modelName] || [];
-    for (const fixture of fixtures) {
-      const Model: StaticModel = db.models[modelName];
-      await Model.create<any>(fixture, { transaction });
-    }
+    const Model = db.models[modelName];
+    // TODO figure out type error
+    await (Model as any).bulkCreate(fixtures, { transaction });
   }
 };
