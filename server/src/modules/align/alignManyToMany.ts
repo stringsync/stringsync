@@ -28,8 +28,14 @@ export const alignManyToMany = <V>(
     }
     return obj;
   }, {});
-  return new Array(keys.length).map((_, ndx) => {
+
+  const len = keys.length;
+  const aligned = new Array(len);
+  for (let ndx = 0; ndx < len; ndx++) {
     const key = keys[ndx];
-    return valuesByKey[key] || getters.getMissingValue(key);
-  });
+    const value = valuesByKey[key] || getters.getMissingValue(key);
+    aligned[ndx] = value;
+  }
+
+  return aligned;
 };
