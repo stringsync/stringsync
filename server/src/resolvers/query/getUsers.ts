@@ -1,6 +1,9 @@
 import { FieldResolver } from '..';
 import { User } from 'common/types';
+import { authenticated } from '../../modules/resolver-guards/authenticated';
 
-export const getUsers: FieldResolver<User[]> = async (parent, args, ctx) => {
+const getUsersResolver: FieldResolver<User[]> = async (parent, args, ctx) => {
   return await ctx.db.models.User.findAll();
 };
+
+export const getUsers = authenticated(getUsersResolver);
