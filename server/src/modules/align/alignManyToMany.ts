@@ -1,16 +1,21 @@
-import { KeysGetter, UniqueIdentifierGetter } from './types';
+import {
+  KeysGetter,
+  UniqueIdentifierGetter,
+  MissingValueGetter,
+} from './types';
 import { uniqBy } from 'lodash';
 
 interface Getters<V> {
   getKeys: KeysGetter<V>;
   getUniqueIdentifier: UniqueIdentifierGetter<V>;
+  getMissingValue: MissingValueGetter;
 }
 
 interface ValuesByKey<V> {
   [key: string]: V[];
 }
 
-export const alignOneToMany = <V>(
+export const alignManyToMany = <V>(
   keys: Array<number | string>,
   values: V[],
   getters: Getters<V>
@@ -23,5 +28,8 @@ export const alignOneToMany = <V>(
     }
     return obj;
   }, {});
-  return new Array(keys.length).map((_, ndx) => valuesByKey[keys[ndx]] || []);
+  return new Array(keys.length).map((_, ndx) => {
+    const key = keys[ndx];
+    return valuesByKey[key] || getters.getMissingValue(key);
+  });
 };

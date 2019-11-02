@@ -1,5 +1,5 @@
 import DataLoader from 'dataloader';
-import { batcGetUsersFromIds } from './users';
+import { batchGetUsersFromIds } from './users';
 import { batchGetNotationsFromUserIds } from './notations';
 import { User, Notation } from 'common/types';
 import { Db } from '../../db';
@@ -10,6 +10,6 @@ export interface DataLoaders {
 }
 
 export const createDataLoaders = (db: Db): DataLoaders => ({
-  usersById: new DataLoader(batcGetUsersFromIds(db)),
+  usersById: new DataLoader(batchGetUsersFromIds(db)),
   notationsByUserId: new DataLoader(batchGetNotationsFromUserIds(db)),
 });
