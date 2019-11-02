@@ -1,9 +1,9 @@
 import { createUserSession } from './createUserSession';
 import { createDb } from '../../db';
 import { Transaction } from 'sequelize';
-import { createFixtures, UserFixtures } from '../../db/fixtures';
+import { createFixtures, getUserFixtures } from '../../db/fixtures';
 
-const USER_FIXTURE = { ...UserFixtures.student1 };
+const USER_FIXTURE = { ...getUserFixtures().student1 };
 
 const db = createDb();
 let transaction: Transaction;

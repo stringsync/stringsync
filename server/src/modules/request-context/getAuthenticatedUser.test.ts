@@ -3,8 +3,8 @@ import { createDb } from '../../db';
 import { Transaction } from 'sequelize';
 import {
   createFixtures,
-  UserFixtures,
-  UserSessionFixtures,
+  getUserFixtures,
+  getUserSessionFixtures,
 } from '../../db/fixtures';
 
 const TOKEN = '23dd7932-a42e-42af-95fc-045ef1080bfd';
@@ -12,8 +12,8 @@ const NOW = new Date('2019-01-01');
 const PAST = new Date(NOW.getTime() - 1);
 const FUTURE = new Date(NOW.getTime() + 1);
 
-const USER_FIXTURE = { ...UserFixtures.student1 };
-const USER_SESSION_FIXTURE = { ...UserSessionFixtures.student1Session };
+const USER_FIXTURE = { ...getUserFixtures().student1 };
+const USER_SESSION_FIXTURE = { ...getUserSessionFixtures().student1Session };
 
 const db = createDb();
 let transaction: Transaction;

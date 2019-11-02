@@ -1,8 +1,6 @@
 import { DbAccessor } from '../types';
-import { UserModelStatic, UserSessionModelStatic } from '../models';
 
 type ModelName = 'User' | 'UserSession';
-type StaticModel = UserModelStatic | UserSessionModelStatic;
 const MODEL_CREATE_ORDER: ModelName[] = ['User', 'UserSession'];
 
 interface FixtureMap {
