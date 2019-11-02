@@ -14,8 +14,14 @@ export const alignOneToMany = <V>(
 ) => {
   const uniqValues = uniqBy(values, getters.getUniqueIdentifier);
   const valuesByKey = groupBy(uniqValues, getters.getKey);
-  return new Array(keys.length).map((_, ndx) => {
+
+  const len = keys.length;
+  const aligned = new Array(len);
+  for (let ndx = 0; ndx < len; ndx++) {
     const key = keys[ndx];
-    return valuesByKey[key] || getters.getMissingValue(key);
-  });
+    const value = valuesByKey[key] || getters.getMissingValue(key);
+    aligned[ndx] = value;
+  }
+
+  return aligned;
 };
