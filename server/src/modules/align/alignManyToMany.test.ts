@@ -1,4 +1,5 @@
 import { alignManyToMany } from './alignManyToMany';
+import { identity, noop } from 'common/util';
 
 const KEY1 = 'KEY1';
 const KEY2 = 'KEY2';
@@ -20,8 +21,6 @@ const getKeys = (value: string) => {
       return [];
   }
 };
-const identity = <T>(x: T) => x;
-const noop: any = () => {};
 
 test('aligns keys with values', (done) => {
   const keys = [KEY1, KEY2, KEY3];

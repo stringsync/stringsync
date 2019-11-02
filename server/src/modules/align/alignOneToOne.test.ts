@@ -1,4 +1,5 @@
 import { alignOneToOne } from './alignOneToOne';
+import { noop, identity } from 'common/util';
 
 const KEY1 = 'KEY1';
 const KEY2 = 'KEY2';
@@ -8,8 +9,6 @@ const VAL1 = 'VAL1';
 const VAL2 = 'VAL2';
 const VAL3 = 'VAL3';
 
-const identity = <T>(x: T) => x;
-const noop: any = () => {};
 const getKey = (value: string) => {
   switch (value) {
     case VAL1:

@@ -1,4 +1,5 @@
 import { alignOneToMany } from './alignOneToMany';
+import { noop } from 'common/util';
 
 interface Value {
   id: number;
@@ -14,7 +15,6 @@ const VAL3 = { id: 3, key: KEY1 };
 
 const getKey = (value: Value) => value.key;
 const getId = (value: Value) => value.id;
-const noop: any = () => {};
 
 test('aligns keys with values', (done) => {
   const keys = [KEY1, KEY2];
