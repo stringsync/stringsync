@@ -5,7 +5,7 @@ import {
   setUserSessionTokenCookie,
   getExpiresAt,
 } from '../../modules/user-session/';
-import { isPassword as _isPassword } from '../../modules/encrypted-password';
+import { isPassword } from '../../modules/encrypted-password';
 import { or } from 'sequelize';
 
 interface Args {
@@ -29,11 +29,7 @@ export const login: FieldResolver<LoginPayload, undefined, Args> = async (
     throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
   }
 
-  const isPassword = await _isPassword(
-    args.input.password,
-    userModel.encryptedPassword
-  );
-  if (!isPassword) {
+  if (!(await isPassword(args.input.password, userModel.encryptedPassword))) {
     throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
   }
 
