@@ -16,7 +16,7 @@ import { getTransactionOptions } from './getTransactionOptions';
  * must be managed by the caller. Child "transactions" are implemented as savepoints
  * in Postgres. This was done to keep the internal data structure simple.
  */
-export const getTransactionManager = (db: Db): TransactionManager => {
+export const createTransactionManager = (db: Db): TransactionManager => {
   let root: Tx | undefined;
   const transactions: TransactionMap = {};
 
