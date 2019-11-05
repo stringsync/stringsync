@@ -12,6 +12,6 @@ export interface TransactionMap {
 }
 
 export interface TransactionManager {
-  get: () => Tx | undefined;
+  get: () => Transaction | undefined;
   begin: (parent?: Tx, options?: TransactionOptions) => Promise<Tx>;
 }

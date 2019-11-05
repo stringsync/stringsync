@@ -11,10 +11,6 @@ import { getTransactionOptions } from './getTransactionOptions';
  * The transaction manager returns a wrapped Sequelize transaction called a Tx. This
  * object implements the same interface as a Sequelize transaction, but allows the
  * manager to hook into the commit and rollback functions.
- *
- * The transaction manager only exposes the root transaction via get. Child "transactions"
- * must be managed by the caller. Child "transactions" are implemented as savepoints
- * in Postgres. This was done to keep the internal data structure simple.
  */
 export const createTransactionManager = (db: Db): TransactionManager => {
   let root: Tx | undefined;
@@ -34,7 +30,14 @@ export const createTransactionManager = (db: Db): TransactionManager => {
   };
 
   return {
-    get: () => root,
+    get: (uuid?: string) => {
+      if (typeof uuid === 'string') {
+        return transactions[uuid];
+      }
+      if (root) {
+        return transactions[root.uuid];
+      }
+    },
     begin: async (parent?: Tx, options?: TransactionOptions): Promise<Tx> => {
       // create an unmanaged sequelize transaction
       const transaction = await db.transaction(
