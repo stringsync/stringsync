@@ -1,32 +1,8 @@
 import { Db } from '../../db';
-import { TransactionOptions, Transaction } from 'sequelize';
+import { TransactionOptions } from 'sequelize';
 import { v4 } from 'uuid';
-
-interface Tx {
-  uuid: string;
-  commit: () => Promise<void>;
-  rollback: () => Promise<void>;
-  afterCommit(fn: (transaction: Transaction) => any): void;
-}
-
-interface TransactionMap {
-  [key: string]: Transaction;
-}
-
-const getTransactionOptions = (
-  transactions: TransactionMap,
-  parent?: Tx,
-  options?: TransactionOptions
-): TransactionOptions => {
-  if (options && options.transaction) {
-    throw new Error('cannot pass `transaction` to TransactionOptions');
-  }
-  const transactionOptions = Object.assign({}, options);
-  if (parent) {
-    transactionOptions.transaction = transactions[parent.uuid];
-  }
-  return transactionOptions;
-};
+import { Tx, TransactionMap, TransactionManager } from './types';
+import { getTransactionOptions } from './getTransactionOptions';
 
 /**
  * Utility function that hides manual Sequelize transaction management. For a
@@ -40,7 +16,7 @@ const getTransactionOptions = (
  * must be managed by the caller. Child "transactions" are implemented as savepoints
  * in Postgres. This was done to keep the internal data structure simple.
  */
-export const getTransactionManager = (db: Db) => {
+export const getTransactionManager = (db: Db): TransactionManager => {
   let root: Tx | undefined;
   const transactions: TransactionMap = {};
 
