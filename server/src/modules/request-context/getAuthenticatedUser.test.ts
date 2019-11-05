@@ -12,8 +12,8 @@ const NOW = new Date('2019-01-01');
 const PAST = new Date(NOW.getTime() - 1);
 const FUTURE = new Date(NOW.getTime() + 1);
 
-const USER_FIXTURE = { ...getUserFixtures().student1 };
-const USER_SESSION_FIXTURE = { ...getUserSessionFixtures().student1Session };
+const USER_FIXTURE = getUserFixtures().student1;
+const USER_SESSION_FIXTURE = getUserSessionFixtures().student1Session;
 
 const db = createDb();
 let transaction: Transaction;

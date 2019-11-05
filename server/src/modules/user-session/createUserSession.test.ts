@@ -3,7 +3,7 @@ import { createDb } from '../../db';
 import { Transaction } from 'sequelize';
 import { createFixtures, getUserFixtures } from '../../db/fixtures';
 
-const USER_FIXTURE = { ...getUserFixtures().student1 };
+const USER_FIXTURE = getUserFixtures().student1;
 
 const db = createDb();
 let transaction: Transaction;
