@@ -2,7 +2,7 @@ import { Db } from '../../db';
 import { User } from 'common/types';
 import { DataLoaders } from '../../modules/data-loaders/createDataLoaders';
 import { Request, Response } from 'express';
-import { TransactionManager } from '../transaction-manager';
+import { TxManager } from '../tx-manager';
 
 export interface Auth {
   user: User | null;
@@ -22,5 +22,5 @@ export interface RequestContext {
   req: Request;
   requestedAt: Date;
   res: Response;
-  transaction: TransactionManager;
+  tx: TxManager;
 }

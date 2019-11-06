@@ -5,7 +5,7 @@ import { RequestContext, Auth } from './types';
 import { createDataLoaders } from '../../modules/data-loaders/createDataLoaders';
 import { getCookies } from './getCookies';
 import { getAuthenticatedUser } from './getAuthenticatedUser';
-import { createTransactionManager } from '../transaction-manager';
+import { createTxManager } from '../tx-manager';
 
 export const getRequestContextCreator = (
   db: Db
@@ -19,7 +19,7 @@ export const getRequestContextCreator = (
   });
   const auth: Auth = { user, isLoggedIn: Boolean(user), token };
   const dataLoaders = createDataLoaders(db);
-  const transaction = createTransactionManager(db);
+  const tx = createTxManager(db);
 
   return {
     auth,
@@ -29,6 +29,6 @@ export const getRequestContextCreator = (
     req,
     requestedAt,
     res,
-    transaction,
+    tx,
   };
 };

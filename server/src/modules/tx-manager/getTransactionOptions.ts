@@ -1,8 +1,7 @@
 import { TransactionOptions } from 'sequelize';
-import { Tx, TransactionMap } from './types';
+import { Tx } from './types';
 
 export const getTransactionOptions = (
-  transactions: TransactionMap,
   parent?: Tx,
   options?: TransactionOptions
 ): TransactionOptions => {
@@ -11,7 +10,7 @@ export const getTransactionOptions = (
   }
   const transactionOptions = Object.assign({}, options);
   if (parent) {
-    transactionOptions.transaction = transactions[parent.uuid];
+    transactionOptions.transaction = parent.transaction;
   }
   return transactionOptions;
 };
