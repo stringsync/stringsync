@@ -33,11 +33,14 @@ export const login: FieldResolver<LoginPayload, undefined, Args> = async (
     throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
   }
 
-  const userSessionModel = await ctx.db.models.UserSession.create({
-    userId: userModel.id,
-    issuedAt: ctx.requestedAt,
-    expiresAt: getExpiresAt(ctx.requestedAt),
-  });
+  const userSessionModel = await ctx.db.models.UserSession.create(
+    {
+      userId: userModel.id,
+      issuedAt: ctx.requestedAt,
+      expiresAt: getExpiresAt(ctx.requestedAt),
+    },
+    { transaction: ctx.tx.getRootTransaction() }
+  );
   setUserSessionTokenCookie(userSessionModel, ctx.res);
 
   return { user: userModel };
