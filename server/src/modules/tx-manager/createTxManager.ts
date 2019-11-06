@@ -17,7 +17,7 @@ interface TxMap {
  * object implements the same interface as a Sequelize transaction, but allows the
  * manager to hook into the commit and rollback functions.
  */
-export const createTxManager = (db: Db): TxManager => {
+export const createTxManager = (db: Db): Readonly<TxManager> => {
   let root: Tx | undefined;
   const txes: TxMap = {};
 
@@ -29,6 +29,7 @@ export const createTxManager = (db: Db): TxManager => {
   };
 
   return {
+    db,
     get: (uuid?: string) => {
       if (typeof uuid === 'string') {
         return txes[uuid];

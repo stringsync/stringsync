@@ -1,4 +1,5 @@
 import { Transaction, TransactionOptions } from 'sequelize';
+import { Db } from '../../db';
 
 export interface Tx {
   uuid: string;
@@ -9,6 +10,7 @@ export interface Tx {
 }
 
 export interface TxManager {
+  db: Db;
   get: (uuid?: string) => Tx | undefined;
   begin: (parent?: Tx, options?: TransactionOptions) => Promise<Tx>;
 }

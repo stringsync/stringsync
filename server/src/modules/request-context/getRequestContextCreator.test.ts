@@ -4,6 +4,7 @@ import { createDb } from '../../db';
 import { getRequestContextCreator } from './getRequestContextCreator';
 import { createDataLoaders } from '../../modules/data-loaders/createDataLoaders';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
+import { createTxManager } from '../tx-manager';
 
 jest.mock('./getCookies', () => ({
   getCookies: jest.fn().mockReturnValue({}),
@@ -27,6 +28,24 @@ const createRequestContext = getRequestContextCreator(db);
 
 afterEach(() => {
   jest.clearAllMocks();
+});
+
+test('suceeds if preloadedTx was created with the same db', (done) => {
+  const tx = createTxManager(db);
+
+  expect(() => getRequestContextCreator(db, tx)).not.toThrow();
+
+  done();
+});
+
+test('throws an error if preloadedTx was created with a diff db', (done) => {
+  const db1 = createDb();
+  const db2 = createDb();
+  const tx = createTxManager(db2);
+
+  expect(() => getRequestContextCreator(db1, tx)).toThrow();
+
+  done();
 });
 
 test('uses getCookies', async (done) => {
