@@ -9,13 +9,10 @@ export interface Tx {
   afterCommit(fn: (transaction: Transaction) => any): void;
 }
 
-interface TransactionObjForSequelizeArgs {
-  transaction: Transaction | undefined;
-}
-
 export interface TxManager {
   db: Db;
-  transaction: () => TransactionObjForSequelizeArgs;
-  get: (uuid?: string) => Tx | undefined;
+  getRootTransaction: () => Transaction | undefined;
+  getRootTx: () => Tx | undefined;
+  getTx: (uuid?: string) => Tx | undefined;
   begin: (parent?: Tx, options?: TransactionOptions) => Promise<Tx>;
 }

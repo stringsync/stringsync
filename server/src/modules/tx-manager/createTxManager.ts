@@ -30,10 +30,13 @@ export const createTxManager = (db: Db): Readonly<TxManager> => {
 
   return {
     db,
-    transaction: () => ({
-      transaction: root ? root.transaction : undefined,
-    }),
-    get: (uuid?: string) => {
+    getRootTransaction: () => {
+      return root ? root.transaction : undefined;
+    },
+    getRootTx: () => {
+      return root;
+    },
+    getTx: (uuid?: string) => {
       if (typeof uuid === 'string') {
         return txes[uuid];
       }
