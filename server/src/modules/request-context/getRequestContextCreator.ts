@@ -31,7 +31,7 @@ export const getRequestContextCreator = (
 
     const cookies = getCookies(req.headers.cookie);
     const token = cookies.USER_SESSION_TOKEN;
-    const user = await getAuthenticatedUser(db, undefined, {
+    const user = await getAuthenticatedUser(db, tx.getRootTransaction(), {
       token,
       requestedAt,
     });
