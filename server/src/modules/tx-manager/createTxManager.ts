@@ -30,6 +30,9 @@ export const createTxManager = (db: Db): Readonly<TxManager> => {
 
   return {
     db,
+    transaction: () => ({
+      transaction: root ? root.transaction : undefined,
+    }),
     get: (uuid?: string) => {
       if (typeof uuid === 'string') {
         return txes[uuid];
