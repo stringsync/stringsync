@@ -5,7 +5,7 @@ import { getRequestContextCreator } from '../request-context';
 import { Config } from '../config';
 import { getErrorFormatter } from './getErrorFormatter';
 
-export const createServer = (db: Db, schema: GraphQLSchema, config: Config) => {
+export const getServer = (db: Db, schema: GraphQLSchema, config: Config) => {
   return new ApolloServer({
     schema,
     context: getRequestContextCreator(db),

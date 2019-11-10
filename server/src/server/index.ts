@@ -1,1 +1,1 @@
-export * from './createServer';
+export * from './getServer';

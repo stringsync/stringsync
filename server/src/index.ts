@@ -1,6 +1,6 @@
 import { connectToDb } from './db';
 import { getConfig } from './config';
-import { createServer } from './server';
+import { getServer } from './server';
 import { getSchema } from './resolvers/getSchema';
 
 const main = async (): Promise<void> => {
@@ -12,7 +12,7 @@ const main = async (): Promise<void> => {
   console.log('🦑  connected to db');
 
   const schema = getSchema();
-  const server = createServer(db, schema, config);
+  const server = getServer(db, schema, config);
   const port = config.PORT;
   await server.listen(port);
   console.log(`🦑  ready on port ${port}`);

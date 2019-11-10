@@ -1,7 +1,7 @@
 import { ApolloServer } from 'apollo-server';
 import { getRequestContextCreator } from '../request-context';
 import { getErrorFormatter } from './getErrorFormatter';
-import { createServer } from './createServer';
+import { getServer } from './getServer';
 import { getConfig } from '../config';
 
 jest.mock('apollo-server');
@@ -32,7 +32,7 @@ it('wraps the ApolloServer constructor', (done) => {
     requestContextCreator
   );
 
-  const server = createServer(db, schema, config);
+  const server = getServer(db, schema, config);
 
   expect(ApolloServer).toBeCalledWith({
     schema,
