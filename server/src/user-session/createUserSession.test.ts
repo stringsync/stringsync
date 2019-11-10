@@ -21,17 +21,14 @@ afterEach(async (done) => {
 });
 
 test('sets expiresAt 14 days from issuedAt', async (done) => {
-  createFixtures(db, transaction, {
+  createFixtures(db, {
     User: [USER_FIXTURE],
   });
 
   const issuedAt = new Date('2019-01-01');
   const expected = new Date('2019-01-15').getTime();
 
-  const userSession = await createUserSession(db, transaction, {
-    userId: USER_FIXTURE.id,
-    issuedAt,
-  });
+  const userSession = await createUserSession(db, USER_FIXTURE.id, issuedAt);
 
   expect(userSession.expiresAt.getTime()).toBe(expected);
   done();
@@ -39,16 +36,14 @@ test('sets expiresAt 14 days from issuedAt', async (done) => {
 
 test('saves n sessions for a particular user', async (done) => {
   const n = 2;
-  createFixtures(db, transaction, {
+  createFixtures(db, {
     User: [USER_FIXTURE],
   });
 
   const ids = new Array(n);
   for (let i = 0; i < n; i++) {
-    const { id } = await createUserSession(db, transaction, {
-      userId: USER_FIXTURE.id,
-      issuedAt: new Date(),
-    });
+    const issuedAt = new Date();
+    const { id } = await createUserSession(db, USER_FIXTURE.id, issuedAt);
     ids[i] = id;
   }
   const count = await db.models.UserSession.count({ transaction });

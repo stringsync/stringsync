@@ -31,50 +31,39 @@ afterEach(async (done) => {
 });
 
 test('returns null when the token is empty', async (done) => {
-  const user = await getAuthenticatedUser(db, transaction, {
-    token: '',
-    requestedAt: NOW,
-  });
+  const token = '';
+  const user = await getAuthenticatedUser(db, token, NOW);
 
   expect(user).toBeNull();
   done();
 });
 
 test('returns null when there is no user session in the db for it', async (done) => {
-  const user = await getAuthenticatedUser(db, transaction, {
-    token: TOKEN,
-    requestedAt: NOW,
-  });
+  const user = await getAuthenticatedUser(db, TOKEN, NOW);
 
   expect(user).toBeNull();
   done();
 });
 
 test('returns null when the db user session is expired', async (done) => {
-  await createFixtures(db, transaction, {
+  await createFixtures(db, {
     User: [USER_FIXTURE],
     UserSession: [{ ...USER_SESSION_FIXTURE, expiresAt: PAST }],
   });
 
-  const user = await getAuthenticatedUser(db, transaction, {
-    token: TOKEN,
-    requestedAt: NOW,
-  });
+  const user = await getAuthenticatedUser(db, TOKEN, NOW);
 
   expect(user).toBeNull();
   done();
 });
 
 test('returns user when the db user session is active ', async (done) => {
-  await createFixtures(db, transaction, {
+  await createFixtures(db, {
     User: [USER_FIXTURE],
     UserSession: [{ ...USER_SESSION_FIXTURE, expiresAt: FUTURE }],
   });
 
-  const user = await getAuthenticatedUser(db, transaction, {
-    token: TOKEN,
-    requestedAt: NOW,
-  });
+  const user = await getAuthenticatedUser(db, TOKEN, NOW);
   expect(user).not.toBeNull();
   expect(user!.id).toBe(USER_FIXTURE.id);
   done();

@@ -1,4 +1,4 @@
-import { Sequelize, Transaction } from 'sequelize';
+import { Sequelize } from 'sequelize';
 import { UserModelStatic, UserSessionModelStatic } from './models';
 
 export type Db = Sequelize & {
@@ -7,9 +7,3 @@ export type Db = Sequelize & {
     UserSession: UserSessionModelStatic;
   };
 };
-
-export type DbAccessor<T, A> = (
-  db: Db,
-  transaction: Transaction | undefined,
-  args: A
-) => Promise<T>;

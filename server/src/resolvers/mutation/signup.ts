@@ -44,10 +44,11 @@ export const signup: FieldResolver<SignupPayload, undefined, Args> = async (
         { username, email, encryptedPassword },
         { transaction }
       );
-      const userSessionModel = await createUserSession(ctx.db, transaction, {
-        userId: userModel.id,
-        issuedAt: ctx.requestedAt,
-      });
+      const userSessionModel = await createUserSession(
+        ctx.db,
+        userModel.id,
+        ctx.requestedAt
+      );
       setUserSessionTokenCookie(userSessionModel, ctx.res);
       return { user: userModel };
     });

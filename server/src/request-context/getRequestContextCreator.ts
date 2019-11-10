@@ -17,15 +17,10 @@ export const getRequestContextCreator = (
   db: Db
 ): ContextFunction<ExpressContext, RequestContext> => async ({ req, res }) => {
   const requestedAt = new Date();
-
   const dataLoaders = createDataLoaders(db);
-
   const cookies = getCookies(req.headers.cookie);
   const token = cookies.USER_SESSION_TOKEN;
-  const user = await getAuthenticatedUser(db, undefined, {
-    token,
-    requestedAt,
-  });
+  const user = await getAuthenticatedUser(db, token, requestedAt);
   const auth: Auth = { user, isLoggedIn: Boolean(user), token };
 
   return {

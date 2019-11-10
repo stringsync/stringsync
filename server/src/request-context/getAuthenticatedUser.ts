@@ -1,28 +1,22 @@
-import { DbAccessor } from '../db';
 import { User } from 'common/types';
+import { Db } from '../db';
 
-interface Args {
-  token: string;
-  requestedAt: Date;
-}
-
-export const getAuthenticatedUser: DbAccessor<User | null, Args> = async (
-  db,
-  transaction,
-  args
+export const getAuthenticatedUser = async (
+  db: Db,
+  token: string,
+  requestedAt: Date
 ) => {
-  if (!args.token) {
+  if (!token) {
     return null;
   }
   const userSessionModel = await db.models.UserSession.findOne({
-    where: { token: args.token },
+    where: { token: token },
     include: [{ model: db.models.User }],
-    transaction,
   });
   if (!userSessionModel) {
     return null;
   }
-  if (userSessionModel.expiresAt < args.requestedAt) {
+  if (userSessionModel.expiresAt < requestedAt) {
     return null;
   }
   return userSessionModel.get('User') as User;
