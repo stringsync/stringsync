@@ -1,11 +1,8 @@
 import { FieldResolver } from '..';
 import { ForbiddenError } from 'apollo-server';
 import { LoginInput, LoginPayload } from 'common/types';
-import {
-  setUserSessionTokenCookie,
-  getExpiresAt,
-} from '../../modules/user-session/';
-import { isPassword } from '../../modules/encrypted-password';
+import { setUserSessionTokenCookie, getExpiresAt } from '../../user-session';
+import { isPassword } from '../../encrypted-password';
 import { or } from 'sequelize';
 
 interface Args {

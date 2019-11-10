@@ -1,7 +1,7 @@
 import { createUserSession } from './createUserSession';
-import { connectToDb } from '../../db';
+import { connectToDb } from '../db';
 import { Transaction } from 'sequelize';
-import { createFixtures, getUserFixtures } from '../../db/fixtures';
+import { createFixtures, getUserFixtures } from '../db/fixtures';
 import { getConfig } from '../config';
 
 const USER_FIXTURE = getUserFixtures().student1;

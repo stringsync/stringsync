@@ -1,8 +1,8 @@
 import { getCookies } from './getCookies';
 import { getAuthenticatedUser } from './getAuthenticatedUser';
-import { connectToDb } from '../../db';
+import { connectToDb } from '../db';
 import { getRequestContextCreator } from './getRequestContextCreator';
-import { createDataLoaders } from '../../modules/data-loaders/createDataLoaders';
+import { createDataLoaders } from '../data-loaders/createDataLoaders';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 import { getConfig } from '../config';
 

@@ -1,6 +1,6 @@
-import { Db } from '../../db';
+import { Db } from '../db';
 import { User } from 'common/types';
-import { DataLoaders } from '../../modules/data-loaders/createDataLoaders';
+import { DataLoaders } from '../data-loaders/createDataLoaders';
 import { Request, Response } from 'express';
 
 export interface Auth {

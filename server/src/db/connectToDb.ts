@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize';
 import { defineModels } from './models';
 import { Db } from './types';
-import { Config } from '../modules/config';
+import { Config } from '../config';
 import { TRANSACTION_NAMESPACE } from './constants';
 
 export const connectToDb = (config: Config) => {

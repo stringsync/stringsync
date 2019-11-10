@@ -1,11 +1,11 @@
 import { getAuthenticatedUser } from './getAuthenticatedUser';
-import { connectToDb } from '../../db';
+import { connectToDb } from '../db';
 import { Transaction } from 'sequelize';
 import {
   createFixtures,
   getUserFixtures,
   getUserSessionFixtures,
-} from '../../db/fixtures';
+} from '../db/fixtures';
 import { getConfig } from '../config';
 
 const TOKEN = '23dd7932-a42e-42af-95fc-045ef1080bfd';

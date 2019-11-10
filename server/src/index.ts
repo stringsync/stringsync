@@ -1,6 +1,6 @@
 import { connectToDb } from './db';
-import { getConfig } from './modules/config';
-import { createServer } from './modules/server';
+import { getConfig } from './config';
+import { createServer } from './server';
 import { getSchema } from './resolvers/getSchema';
 
 const main = async (): Promise<void> => {

@@ -1,4 +1,4 @@
-import { DbAccessor } from '../../db';
+import { DbAccessor } from '../db';
 import { User } from 'common/types';
 
 interface Args {

@@ -1,5 +1,5 @@
 import { USER_SESSION_TOKEN_COOKIE_NAME } from './constants';
-import { UserSessionModel } from '../../db';
+import { UserSessionModel } from '../db';
 import { Response } from 'express';
 
 export const setUserSessionTokenCookie = (

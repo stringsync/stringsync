@@ -1,5 +1,5 @@
 import { alignOneToOne } from '../../align';
-import { Db } from '../../../db';
+import { Db } from '../../db';
 import { User } from 'common/types';
 import { MissingValueError } from '../../align/types';
 

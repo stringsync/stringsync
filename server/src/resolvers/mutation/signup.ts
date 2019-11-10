@@ -2,11 +2,11 @@ import { FieldResolver } from '..';
 import { SignupInput, SignupPayload } from 'common/types';
 import { UserInputError } from 'apollo-server';
 import { ValidationError } from 'sequelize';
-import { getEncryptedPassword } from '../../modules/encrypted-password';
+import { getEncryptedPassword } from '../../encrypted-password';
 import {
   setUserSessionTokenCookie,
   createUserSession,
-} from '../../modules/user-session';
+} from '../../user-session';
 
 const PASSWORD_MIN_LEN = 6;
 const PASSWORD_MAX_LEN = 256;

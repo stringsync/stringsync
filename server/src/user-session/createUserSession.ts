@@ -1,4 +1,4 @@
-import { DbAccessor, UserSessionModel } from '../../db';
+import { DbAccessor, UserSessionModel } from '../db';
 import { USER_SESSION_TOKEN_MAX_AGE_MS } from './constants';
 
 interface Args {

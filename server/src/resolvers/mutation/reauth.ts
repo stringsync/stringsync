@@ -5,7 +5,7 @@ import {
   setUserSessionTokenCookie,
   shouldRefreshUserSession,
   createUserSession,
-} from '../../modules/user-session';
+} from '../../user-session';
 
 const BAD_SESSION_TOKEN_MSG = 'invalid or expired credentials';
 

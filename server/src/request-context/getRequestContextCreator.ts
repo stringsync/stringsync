@@ -1,8 +1,8 @@
-import { Db } from '../../db';
+import { Db } from '../db';
 import { ContextFunction } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 import { RequestContext, Auth } from './types';
-import { createDataLoaders } from '../../modules/data-loaders/createDataLoaders';
+import { createDataLoaders } from '../data-loaders/createDataLoaders';
 import { getCookies } from './getCookies';
 import { getAuthenticatedUser } from './getAuthenticatedUser';
 
