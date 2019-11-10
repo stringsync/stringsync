@@ -1,11 +1,11 @@
-import { createTestDbProvider, getUserFixtures } from '../../../testing';
+import { getTestDbProvider, getUserFixtures } from '../../../testing';
 import { getConfig } from '../../../config';
 import { getUserByEmailOrUsername } from './getUserByEmailOrUsername';
 
 const STUDENT1 = getUserFixtures().student1;
 
 const config = getConfig(process.env);
-const provideTestDb = createTestDbProvider(config);
+const provideTestDb = getTestDbProvider(config);
 
 it(
   'searches users by username',

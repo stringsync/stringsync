@@ -17,7 +17,7 @@ class ForcedRollback extends Error {
  * Anything done in the callback will be rolled back, allowing
  * db tests to be hermetic.
  */
-export const createTestDbProvider = (config: Config) => {
+export const getTestDbProvider = (config: Config) => {
   const db = connectToDb(config);
   return <A extends any[]>(
     fixtureMap: FixtureMap,

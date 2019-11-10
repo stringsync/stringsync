@@ -4,7 +4,7 @@ import { getRequestContextCreator } from './getRequestContextCreator';
 import { createDataLoaders } from '../data-loaders/createDataLoaders';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 import { getConfig } from '../config';
-import { createTestDbProvider } from '../testing';
+import { getTestDbProvider } from '../testing';
 
 jest.mock('./getCookies', () => ({
   getCookies: jest.fn().mockReturnValue({}),
@@ -24,7 +24,7 @@ const EXPRESS_CONTEXT = {
 } as ExpressContext;
 
 const config = getConfig(process.env);
-const provideTestDb = createTestDbProvider(config);
+const provideTestDb = getTestDbProvider(config);
 
 afterEach(() => {
   jest.clearAllMocks();

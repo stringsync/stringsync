@@ -2,7 +2,7 @@ import { getAuthenticatedUser } from './getAuthenticatedUser';
 import {
   getUserFixtures,
   getUserSessionFixtures,
-  createTestDbProvider,
+  getTestDbProvider,
 } from '../../../testing';
 import { getConfig } from '../../../config';
 
@@ -14,7 +14,7 @@ const STUDENT1 = getUserFixtures().student1;
 const STUDENT1_SESSION = getUserSessionFixtures().student1Session;
 
 const config = getConfig(process.env);
-const provideTestDb = createTestDbProvider(config);
+const provideTestDb = getTestDbProvider(config);
 
 it(
   'returns null when the token is empty',

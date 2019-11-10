@@ -1,6 +1,6 @@
 import { batchGetUsersFromIds } from './batchGetUsersFromIds';
 import { getConfig } from '../../config';
-import { createTestDbProvider, getUserFixtures } from '../../testing';
+import { getTestDbProvider, getUserFixtures } from '../../testing';
 import { MissingValueError } from '../../align';
 import { User } from 'common/types';
 
@@ -10,7 +10,7 @@ const STUDENT2 = USER_FIXTURES.student2;
 const TEACHER1 = USER_FIXTURES.teacher1;
 
 const config = getConfig(process.env);
-const provideTestDb = createTestDbProvider(config);
+const provideTestDb = getTestDbProvider(config);
 
 afterEach(() => {
   jest.clearAllMocks();
