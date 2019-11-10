@@ -1,5 +1,5 @@
 import { makeExecutableSchema, gql } from 'apollo-server';
-import { resolvers } from '.';
+import { getResolvers } from './getResolvers';
 
 const typeDefs = gql`
   # Scalar
@@ -73,6 +73,7 @@ const typeDefs = gql`
 `;
 
 export const getSchema = () => {
+  const resolvers = getResolvers();
   return makeExecutableSchema({
     typeDefs,
     resolvers,

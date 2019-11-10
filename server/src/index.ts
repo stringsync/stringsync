@@ -1,7 +1,7 @@
 import { connectToDb } from './db';
 import { getConfig } from './config';
 import { getServer } from './server';
-import { getSchema } from './resolvers/getSchema';
+import { getSchema } from './resolvers';
 
 const main = async (): Promise<void> => {
   const config = getConfig(process.env);
