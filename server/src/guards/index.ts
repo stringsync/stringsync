@@ -1,1 +1,1 @@
-export * from './authenticated';
+export * from './guardAuthenticated';
