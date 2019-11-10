@@ -3,10 +3,8 @@ import { SignupInput, SignupPayload } from 'common/types';
 import { UserInputError } from 'apollo-server';
 import { ValidationError } from 'sequelize';
 import { getEncryptedPassword } from '../../encrypted-password';
-import {
-  setUserSessionTokenCookie,
-  createUserSession,
-} from '../../user-session';
+import { createUserSession } from '../../db';
+import { setUserSessionTokenCookie } from '../../user-session';
 
 const PASSWORD_MIN_LEN = 6;
 const PASSWORD_MAX_LEN = 256;

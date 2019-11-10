@@ -1,10 +1,10 @@
 import { FieldResolver } from '..';
 import { ReauthPayload } from 'common/types';
 import { ForbiddenError } from 'apollo-server';
+import { createUserSession } from '../../db';
 import {
   setUserSessionTokenCookie,
   shouldRefreshUserSession,
-  createUserSession,
 } from '../../user-session';
 
 const BAD_SESSION_TOKEN_MSG = 'invalid or expired credentials';

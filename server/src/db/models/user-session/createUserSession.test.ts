@@ -1,6 +1,6 @@
 import { createUserSession } from './createUserSession';
-import { createTestDbProvider, getUserFixtures } from '../testing';
-import { getConfig } from '../config';
+import { createTestDbProvider, getUserFixtures } from '../../../testing';
+import { getConfig } from '../../../config';
 
 const USER_FIXTURE = getUserFixtures().student1;
 
