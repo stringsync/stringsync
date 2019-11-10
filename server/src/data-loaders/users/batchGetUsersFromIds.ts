@@ -1,5 +1,5 @@
 import { alignOneToOne } from '../../align';
-import { Db } from '../../db';
+import { Db, toUserPojo } from '../../db';
 import { User } from 'common/types';
 
 export const batchGetUsersFromIds = (db: Db) => async (
@@ -8,7 +8,8 @@ export const batchGetUsersFromIds = (db: Db) => async (
   const users = (await db.models.User.findAll({
     raw: true,
     where: { id: ids },
-  })) as User[];
+  })).map((user) => toUserPojo(user));
+
   return alignOneToOne(ids, users, {
     getKey: (user) => user.id,
     getUniqueIdentifier: (user) => user.id,
