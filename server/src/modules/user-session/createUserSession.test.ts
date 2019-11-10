@@ -1,11 +1,13 @@
 import { createUserSession } from './createUserSession';
-import { createDb } from '../../db';
+import { connectToDb } from '../../db';
 import { Transaction } from 'sequelize';
 import { createFixtures, getUserFixtures } from '../../db/fixtures';
+import { getConfig } from '../config';
 
 const USER_FIXTURE = getUserFixtures().student1;
 
-const db = createDb();
+const config = getConfig(process.env);
+const db = connectToDb(config);
 let transaction: Transaction;
 
 beforeEach(async (done) => {

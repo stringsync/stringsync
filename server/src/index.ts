@@ -1,4 +1,4 @@
-import { createDb, createDbConnection } from './db';
+import { connectToDb } from './db';
 import { getConfig } from './modules/config';
 import { createServer } from './modules/server';
 import { getSchema } from './resolvers/getSchema';
@@ -7,8 +7,7 @@ const main = async (): Promise<void> => {
   const config = getConfig(process.env);
   console.log(`🦑  running in '${config.NODE_ENV}'`);
 
-  const connection = createDbConnection(config);
-  const db = createDb(connection);
+  const db = connectToDb(config);
   await db.authenticate({ logging: false });
   console.log('🦑  connected to db');
 

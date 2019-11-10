@@ -1,9 +1,10 @@
 import { getCookies } from './getCookies';
 import { getAuthenticatedUser } from './getAuthenticatedUser';
-import { createDb } from '../../db';
+import { connectToDb } from '../../db';
 import { getRequestContextCreator } from './getRequestContextCreator';
 import { createDataLoaders } from '../../modules/data-loaders/createDataLoaders';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
+import { getConfig } from '../config';
 
 jest.mock('./getCookies', () => ({
   getCookies: jest.fn().mockReturnValue({}),
@@ -22,7 +23,8 @@ const EXPRESS_CONTEXT = {
   res: {},
 } as ExpressContext;
 
-const db = createDb();
+const config = getConfig(process.env);
+const db = connectToDb(config);
 const createRequestContext = getRequestContextCreator(db);
 
 afterEach(() => {

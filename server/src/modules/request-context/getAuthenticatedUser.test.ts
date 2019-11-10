@@ -1,11 +1,12 @@
 import { getAuthenticatedUser } from './getAuthenticatedUser';
-import { createDb } from '../../db';
+import { connectToDb } from '../../db';
 import { Transaction } from 'sequelize';
 import {
   createFixtures,
   getUserFixtures,
   getUserSessionFixtures,
 } from '../../db/fixtures';
+import { getConfig } from '../config';
 
 const TOKEN = '23dd7932-a42e-42af-95fc-045ef1080bfd';
 const NOW = new Date('2019-01-01');
@@ -15,7 +16,8 @@ const FUTURE = new Date(NOW.getTime() + 1);
 const USER_FIXTURE = getUserFixtures().student1;
 const USER_SESSION_FIXTURE = getUserSessionFixtures().student1Session;
 
-const db = createDb();
+const config = getConfig(process.env);
+const db = connectToDb(config);
 let transaction: Transaction;
 
 beforeEach(async (done) => {
