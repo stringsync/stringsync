@@ -3,7 +3,7 @@ import { Config } from '../config';
 import { FixtureMap } from '../testing';
 import { createFixtures } from './createFixtures';
 
-type DbCallback = (db: Db, ...args: any[]) => Promise<any> | any;
+type DbCallback<A extends any[]> = (db: Db, ...args: A) => Promise<any>;
 
 class ForcedRollback extends Error {
   constructor() {
@@ -19,9 +19,10 @@ class ForcedRollback extends Error {
  */
 export const createTestDbProvider = (config: Config) => {
   const db = connectToDb(config);
-  return (fixtureMap: FixtureMap, callback: DbCallback) => async (
-    ...args: any[]
-  ) => {
+  return <A extends any[]>(
+    fixtureMap: FixtureMap,
+    callback: DbCallback<A>
+  ) => async (...args: A) => {
     try {
       await db.transaction(async () => {
         await createFixtures(db, fixtureMap);
