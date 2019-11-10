@@ -1,7 +1,7 @@
 import { Db } from '../db';
 import { User } from 'common/types';
-import { DataLoaders } from '../data-loaders/getDataLoaders';
 import { Request, Response } from 'express';
+import { getDataLoaders } from '../data-loaders';
 
 export interface Auth {
   user: User | null;
@@ -16,7 +16,7 @@ export interface Cookies {
 export interface RequestContext {
   auth: Auth;
   cookies: Cookies;
-  dataLoaders: DataLoaders;
+  dataLoaders: ReturnType<typeof getDataLoaders>;
   db: Db;
   req: Request;
   requestedAt: Date;

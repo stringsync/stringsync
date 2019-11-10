@@ -1,7 +1,6 @@
 import { batchGetUsersFromIds } from './batchGetUsersFromIds';
 import { getConfig } from '../../config';
 import { getTestDbProvider, getUserFixtures } from '../../testing';
-import { MissingValueError } from '../../align';
 import { User } from 'common/types';
 
 const USER_FIXTURES = getUserFixtures();
@@ -28,7 +27,7 @@ it(
 
       const actualUsers = await batchGetUsersFromIds(db)(providedUserIds);
       const actualUserIds = actualUsers
-        .filter((value): value is User => 'id' in value)
+        .filter((value): value is User => Boolean(value))
         .map((user) => user.id);
 
       expect(actualUsers.length).toBe(providedUsers.length);
@@ -52,7 +51,7 @@ it(
 
       const actualUsers = await batchGetUsersFromIds(db)(providedUserIds);
       const actualUserIds = actualUsers
-        .filter((value): value is User => !(value instanceof MissingValueError))
+        .filter((value): value is User => Boolean(value))
         .map((user) => user.id);
 
       expect(actualUsers.length).toBe(providedUsers.length);
@@ -62,7 +61,7 @@ it(
 );
 
 it(
-  'makes missing values errors',
+  'fills missing values with null',
   provideTestDb(
     {
       User: [TEACHER1],
@@ -74,8 +73,7 @@ it(
 
       const actualUsers = await batchGetUsersFromIds(db)(providedUserIds);
       const missingErrors = actualUsers.filter(
-        (value): value is MissingValueError =>
-          value instanceof MissingValueError
+        (value): value is null => !value
       );
 
       expect(actualUsers.length).toBe(providedUsers.length);

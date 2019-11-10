@@ -60,7 +60,7 @@ const typeDefs = gql`
   # Query
   type Query {
     getUsers: [User]!
-    getUser(input: GetUserInput!): User!
+    getUser(input: GetUserInput!): User
   }
 
   # Mutation

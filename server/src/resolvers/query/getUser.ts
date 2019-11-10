@@ -6,7 +6,7 @@ interface Args {
   input: GetUserInput;
 }
 
-export const getUser: FieldResolver<User, undefined, Args> = async (
+export const getUser: FieldResolver<User | null, undefined, Args> = async (
   parent,
   args,
   ctx
