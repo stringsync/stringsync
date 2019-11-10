@@ -8,7 +8,7 @@ export const batchGetUsersFromIds = (db: Db) => async (
   const users = (await db.models.User.findAll({
     raw: true,
     where: { id: ids },
-  })).map((user) => toUserPojo(user));
+  })).map(toUserPojo);
 
   return alignOneToOne(ids, users, {
     getKey: (user) => user.id,

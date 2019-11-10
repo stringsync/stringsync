@@ -5,6 +5,5 @@ import { toUserPojo } from '../../db';
 
 export const getUsers: FieldResolver<User[]> = async (parent, args, ctx) => {
   guardAuthenticated(ctx);
-  const rawUsers = await ctx.db.models.User.findAll({ raw: true });
-  return rawUsers.map(toUserPojo);
+  return (await ctx.db.models.User.findAll({ raw: true })).map(toUserPojo);
 };
