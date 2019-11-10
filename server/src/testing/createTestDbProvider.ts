@@ -3,7 +3,14 @@ import { Config } from '../config';
 import { FixtureMap } from '../testing';
 import { createFixtures } from './createFixtures';
 
-type WithDbCleanupCallback = (db: Db) => Promise<any> | any;
+type DbCallback = (db: Db) => Promise<any> | any;
+
+class ForcedRollback extends Error {
+  constructor() {
+    super();
+    this.name = 'ForcedRollback';
+  }
+}
 
 /**
  * The canonnical way of accessing a db in a test environment.
@@ -14,15 +21,16 @@ export const createTestDbProvider = (config: Config) => {
   const db = connectToDb(config);
   return async (
     fixtureMap: FixtureMap,
-    callback: WithDbCleanupCallback
+    callback: DbCallback
   ): Promise<void> => {
-    const transaction = await db.transaction();
-    await createFixtures(db, fixtureMap);
     try {
-      callback(db);
+      await db.transaction(async () => {
+        await createFixtures(db, fixtureMap);
+        await callback(db);
+        throw new ForcedRollback();
+      });
     } catch (e) {
-      console.error(e);
+      if (e.name !== 'ForcedRollback') throw e;
     }
-    transaction.rollback();
   };
 };
