@@ -8,7 +8,7 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-test('calls clearCookie on the res object', (done) => {
+it('calls clearCookie on the res object', (done) => {
   clearUserSessionTokenCookie(res);
 
   expect(res.clearCookie).toBeCalledTimes(1);

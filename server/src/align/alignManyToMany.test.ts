@@ -22,7 +22,7 @@ const getKeys = (value: string) => {
   }
 };
 
-test('aligns keys with values', (done) => {
+it('aligns keys with values', (done) => {
   const keys = [KEY1, KEY2, KEY3];
   const values = [VAL1, VAL2, VAL3];
 
@@ -36,7 +36,7 @@ test('aligns keys with values', (done) => {
   done();
 });
 
-test('dedups values', (done) => {
+it('dedups values', (done) => {
   const keys = [KEY1, KEY2, KEY3];
   const values = [VAL1, VAL2, VAL3, VAL2, VAL3, VAL3];
 
@@ -50,7 +50,7 @@ test('dedups values', (done) => {
   done();
 });
 
-test('excludes missing values', (done) => {
+it('excludes missing values', (done) => {
   const keys = [KEY1, KEY2, KEY3];
   const values = [VAL1, VAL3];
 

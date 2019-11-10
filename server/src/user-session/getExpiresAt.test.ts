@@ -1,6 +1,6 @@
 import { getExpiresAt } from './getExpiresAt';
 
-test('adds 14 days to the reference date', (done) => {
+it('adds 14 days to the reference date', (done) => {
   const from = new Date('2019-01-01');
   const expected = new Date('2019-01-15').getTime();
 

@@ -16,7 +16,7 @@ const VAL3 = { id: 3, key: KEY1 };
 const getKey = (value: Value) => value.key;
 const getId = (value: Value) => value.id;
 
-test('aligns keys with values', (done) => {
+it('aligns keys with values', (done) => {
   const keys = [KEY1, KEY2];
   const values = [VAL1, VAL2, VAL3];
 
@@ -30,7 +30,7 @@ test('aligns keys with values', (done) => {
   done();
 });
 
-test('dedups values', (done) => {
+it('dedups values', (done) => {
   const keys = [KEY1, KEY2];
   const values = [VAL1, VAL2, VAL3, VAL1, VAL1, VAL3];
 
@@ -44,7 +44,7 @@ test('dedups values', (done) => {
   done();
 });
 
-test('handles missing values', (done) => {
+it('handles missing values', (done) => {
   const keys = [KEY2];
   const values = [VAL1, VAL3];
   const getMissingValue = (key: any) => Symbol.for(key);

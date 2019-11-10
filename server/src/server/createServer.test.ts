@@ -16,7 +16,7 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-test('wraps the ApolloServer constructor', (done) => {
+it('wraps the ApolloServer constructor', (done) => {
   const config = getConfig(process.env);
   const db = Symbol('db') as any;
   const schema = Symbol('schema') as any;

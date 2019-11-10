@@ -30,7 +30,7 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-test(
+it(
   'uses getCookies',
   provideTestDb({}, async (db) => {
     const userSessionToken = 'foo-token';
@@ -46,7 +46,7 @@ test(
   })
 );
 
-test(
+it(
   'uses createDataLoaders',
   provideTestDb({}, async (db) => {
     const dataLoaders = Symbol('data-loaders');
@@ -59,7 +59,7 @@ test(
   })
 );
 
-test(
+it(
   'handles when getAuthenticatedUser returns a user',
   provideTestDb({}, async (db) => {
     const user = Symbol('user');
@@ -74,7 +74,7 @@ test(
   })
 );
 
-test(
+it(
   'handles when getAuthenticatedUser returns null',
   provideTestDb({}, async (db) => {
     (getAuthenticatedUser as jest.Mock).mockReturnValueOnce(null);
