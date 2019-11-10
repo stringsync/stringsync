@@ -1,5 +1,4 @@
-import { User } from 'common/types';
-import { Db } from '../db';
+import { Db, RawUser } from '../db';
 
 export const getAuthenticatedUser = async (
   db: Db,
@@ -19,5 +18,5 @@ export const getAuthenticatedUser = async (
   if (userSessionModel.expiresAt < requestedAt) {
     return null;
   }
-  return userSessionModel.get('User') as User;
+  return userSessionModel.get('User', { plain: true }) as RawUser;
 };
