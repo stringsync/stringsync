@@ -1,5 +1,7 @@
 import { Db, connectToDb } from '../db';
 import { Config } from '../config';
+import { FixtureMap } from '../testing';
+import { createFixtures } from './createFixtures';
 
 type WithDbCleanupCallback = (db: Db) => Promise<any> | any;
 
@@ -8,15 +10,19 @@ type WithDbCleanupCallback = (db: Db) => Promise<any> | any;
  * Anything done in the callback will be rolled back, allowing
  * db tests to be hermetic.
  */
-export const createTestDbProvider = (config: Config) => async (
-  callback: WithDbCleanupCallback
-): Promise<void> => {
+export const createTestDbProvider = (config: Config) => {
   const db = connectToDb(config);
-  const transaction = await db.transaction();
-  try {
-    callback(db);
-  } catch (e) {
-    console.error(e);
-  }
-  transaction.rollback();
+  return async (
+    fixtureMap: FixtureMap,
+    callback: WithDbCleanupCallback
+  ): Promise<void> => {
+    const transaction = await db.transaction();
+    await createFixtures(db, fixtureMap);
+    try {
+      callback(db);
+    } catch (e) {
+      console.error(e);
+    }
+    transaction.rollback();
+  };
 };
