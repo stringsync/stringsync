@@ -1,4 +1,5 @@
-import { Db, RawUser } from '../db';
+import { Db } from '../../';
+import { RawUser } from './types';
 
 export const getAuthenticatedUser = async (
   db: Db,

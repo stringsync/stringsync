@@ -1,5 +1,5 @@
 import { getCookies } from './getCookies';
-import { getAuthenticatedUser } from './getAuthenticatedUser';
+import { getAuthenticatedUser } from '../db/models/user/getAuthenticatedUser';
 import { getRequestContextCreator } from './getRequestContextCreator';
 import { createDataLoaders } from '../data-loaders/createDataLoaders';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
@@ -10,7 +10,7 @@ jest.mock('./getCookies', () => ({
   getCookies: jest.fn().mockReturnValue({}),
 }));
 
-jest.mock('./getAuthenticatedUser', () => ({
+jest.mock('../db/models/user/getAuthenticatedUser', () => ({
   getAuthenticatedUser: jest.fn().mockReturnValue({}),
 }));
 
