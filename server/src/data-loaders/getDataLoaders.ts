@@ -9,7 +9,7 @@ export interface DataLoaders {
   notationsByUserId: DataLoader<string, Notation[]>;
 }
 
-export const createDataLoaders = (db: Db): DataLoaders => ({
+export const getDataLoaders = (db: Db): DataLoaders => ({
   usersById: new DataLoader(batchGetUsersFromIds(db)),
   notationsByUserId: new DataLoader(batchGetNotationsFromUserIds(db)),
 });

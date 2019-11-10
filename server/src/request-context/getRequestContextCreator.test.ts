@@ -1,7 +1,7 @@
 import { getCookies } from './getCookies';
 import { getAuthenticatedUser } from '../db/models/user/getAuthenticatedUser';
 import { getRequestContextCreator } from './getRequestContextCreator';
-import { createDataLoaders } from '../data-loaders/createDataLoaders';
+import { getDataLoaders } from '../data-loaders/getDataLoaders';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 import { getConfig } from '../config';
 import { getTestDbProvider } from '../testing';
@@ -14,8 +14,8 @@ jest.mock('../db/models/user/getAuthenticatedUser', () => ({
   getAuthenticatedUser: jest.fn().mockReturnValue({}),
 }));
 
-jest.mock('../data-loaders/createDataLoaders', () => ({
-  createDataLoaders: jest.fn().mockReturnValue({}),
+jest.mock('../data-loaders/getDataLoaders', () => ({
+  getDataLoaders: jest.fn().mockReturnValue({}),
 }));
 
 const EXPRESS_CONTEXT = {
@@ -47,14 +47,15 @@ it(
 );
 
 it(
-  'uses createDataLoaders',
+  'uses getDataLoaders',
   provideTestDb({}, async (db) => {
     const dataLoaders = Symbol('data-loaders');
-    (createDataLoaders as jest.Mock).mockReturnValueOnce(dataLoaders);
+    (getDataLoaders as jest.Mock).mockReturnValueOnce(dataLoaders);
 
     const createRequestContext = getRequestContextCreator(db);
     const ctx = await createRequestContext(EXPRESS_CONTEXT);
 
+    expect(getDataLoaders).toBeCalledTimes(1);
     expect(ctx.dataLoaders).toBe(dataLoaders);
   })
 );
