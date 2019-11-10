@@ -3,7 +3,11 @@ import { ForbiddenError } from 'apollo-server';
 import { LoginInput, LoginPayload } from 'common/types';
 import { setUserSessionTokenCookie } from '../../user-session';
 import { isPassword } from '../../encrypted-password';
-import { getUserByEmailOrUsername, createUserSession } from '../../db';
+import {
+  getUserByEmailOrUsername,
+  createUserSession,
+  toUserPojo,
+} from '../../db';
 
 interface Args {
   input: LoginInput;
@@ -37,5 +41,5 @@ export const login: FieldResolver<LoginPayload, undefined, Args> = async (
 
   setUserSessionTokenCookie(rawUserSession, ctx.res);
 
-  return { user: rawUser };
+  return { user: toUserPojo(rawUser) };
 };

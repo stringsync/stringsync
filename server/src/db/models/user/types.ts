@@ -12,11 +12,11 @@ export interface RawUser {
   email: string;
   encryptedPassword: string;
   role: UserRoles;
-  confirmationToken: string;
-  confirmedAt: Date;
-  resetPasswordToken: string;
-  resetPasswordTokenSentAt: Date;
-  avatarUrl: string;
+  confirmationToken: string | null;
+  confirmedAt: Date | null;
+  resetPasswordToken: string | null;
+  resetPasswordTokenSentAt: Date | null;
+  avatarUrl: string | null;
 }
 
 export interface UserModel extends Model, RawUser {

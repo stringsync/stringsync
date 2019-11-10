@@ -1,7 +1,7 @@
 import { FieldResolver } from '..';
 import { ReauthPayload } from 'common/types';
 import { ForbiddenError } from 'apollo-server';
-import { createUserSession } from '../../db';
+import { createUserSession, toUserPojo } from '../../db';
 import {
   setUserSessionTokenCookie,
   shouldRefreshUserSession,
@@ -39,6 +39,6 @@ export const reauth: FieldResolver<ReauthPayload> = async (
       setUserSessionTokenCookie(userSessionModel, ctx.res);
     }
 
-    return { user };
+    return { user: toUserPojo(user) };
   });
 };

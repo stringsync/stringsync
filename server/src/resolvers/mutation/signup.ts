@@ -3,7 +3,7 @@ import { SignupInput, SignupPayload } from 'common/types';
 import { UserInputError } from 'apollo-server';
 import { ValidationError } from 'sequelize';
 import { getEncryptedPassword } from '../../encrypted-password';
-import { createUserSession } from '../../db';
+import { createUserSession, toUserPojo } from '../../db';
 import { setUserSessionTokenCookie } from '../../user-session';
 
 const PASSWORD_MIN_LEN = 6;
@@ -48,7 +48,7 @@ export const signup: FieldResolver<SignupPayload, undefined, Args> = async (
         ctx.requestedAt
       );
       setUserSessionTokenCookie(userSessionModel, ctx.res);
-      return { user: userModel };
+      return { user: toUserPojo(userModel) };
     });
   } catch (err) {
     if (err instanceof ValidationError) {
