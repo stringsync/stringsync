@@ -1,9 +1,6 @@
 import { Sequelize } from 'sequelize';
-import { UserModelStatic, UserSessionModelStatic } from './models';
+import { StaticModelMap } from './models';
 
 export type Db = Sequelize & {
-  models: {
-    User: UserModelStatic;
-    UserSession: UserSessionModelStatic;
-  };
+  models: StaticModelMap;
 };

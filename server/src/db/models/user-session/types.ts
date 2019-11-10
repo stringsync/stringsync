@@ -1,4 +1,4 @@
-import { Model, BelongsToGetAssociationMixin, BuildOptions } from 'sequelize';
+import { Model, BelongsToGetAssociationMixin } from 'sequelize';
 import { UserModel } from '../user';
 
 export interface RawUserSession {
@@ -12,7 +12,3 @@ export interface RawUserSession {
 export interface UserSessionModel extends Model, RawUserSession {
   getUser: BelongsToGetAssociationMixin<UserModel>;
 }
-
-export type UserSessionModelStatic = typeof Model & {
-  new (values?: object, options?: BuildOptions): UserSessionModel;
-};

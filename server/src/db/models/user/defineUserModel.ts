@@ -1,5 +1,6 @@
 import { Sequelize, DataTypes } from 'sequelize';
-import { USER_ROLES, UserModelStatic } from './types';
+import { USER_ROLES, UserModel } from './types';
+import { StaticModel } from '../types';
 
 export const defineUserModel = (dbConnection: Sequelize) =>
   dbConnection.define(
@@ -81,4 +82,4 @@ export const defineUserModel = (dbConnection: Sequelize) =>
       underscored: true,
       tableName: 'users',
     }
-  ) as UserModelStatic;
+  ) as StaticModel<UserModel>;

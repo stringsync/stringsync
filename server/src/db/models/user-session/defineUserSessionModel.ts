@@ -1,5 +1,6 @@
 import { DataTypes, Sequelize } from 'sequelize';
-import { UserSessionModelStatic } from './types';
+import { UserSessionModel } from './types';
+import { StaticModel } from '../types';
 
 export const defineUserSessionModel = (dbConnection: Sequelize) =>
   dbConnection.define(
@@ -35,4 +36,4 @@ export const defineUserSessionModel = (dbConnection: Sequelize) =>
       tableName: 'user_sessions',
       timestamps: false,
     }
-  ) as UserSessionModelStatic;
+  ) as StaticModel<UserSessionModel>;

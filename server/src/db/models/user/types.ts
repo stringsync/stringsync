@@ -1,5 +1,5 @@
 import { UserRoles } from 'common/types';
-import { Model, HasManyCreateAssociationMixin, BuildOptions } from 'sequelize';
+import { Model, HasManyCreateAssociationMixin } from 'sequelize';
 import { UserSessionModel } from '../user-session';
 
 export const USER_ROLES: UserRoles[] = ['student', 'teacher', 'admin'];
@@ -22,7 +22,3 @@ export interface RawUser {
 export interface UserModel extends Model, RawUser {
   createUserSession: HasManyCreateAssociationMixin<UserSessionModel>;
 }
-
-export type UserModelStatic = typeof Model & {
-  new (values?: object, options?: BuildOptions): UserModel;
-};
