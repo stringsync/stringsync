@@ -2,9 +2,8 @@ import { getCookies } from './getCookies';
 import { getAuthenticatedUser } from '../db/models/user/getAuthenticatedUser';
 import { getRequestContextCreator } from './getRequestContextCreator';
 import { getDataLoaders } from '../data-loaders/getDataLoaders';
-import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 import { getConfig } from '../config';
-import { getTestDbProvider } from '../testing';
+import { getTestDbProvider, getFakeExpressContext } from '../testing';
 
 jest.mock('./getCookies', () => ({
   getCookies: jest.fn().mockReturnValue({}),
@@ -17,11 +16,6 @@ jest.mock('../db/models/user/getAuthenticatedUser', () => ({
 jest.mock('../data-loaders/getDataLoaders', () => ({
   getDataLoaders: jest.fn().mockReturnValue({}),
 }));
-
-const EXPRESS_CONTEXT = {
-  req: { headers: { cookie: '' } },
-  res: {},
-} as ExpressContext;
 
 const config = getConfig(process.env);
 const provideTestDb = getTestDbProvider(config);
@@ -38,7 +32,7 @@ it(
     (getCookies as jest.Mock).mockReturnValueOnce(cookies);
 
     const createRequestContext = getRequestContextCreator(db);
-    const ctx = await createRequestContext(EXPRESS_CONTEXT);
+    const ctx = await createRequestContext(getFakeExpressContext());
 
     expect(getCookies).toBeCalledTimes(1);
     expect(ctx.cookies).toStrictEqual(cookies);
@@ -53,7 +47,7 @@ it(
     (getDataLoaders as jest.Mock).mockReturnValueOnce(dataLoaders);
 
     const createRequestContext = getRequestContextCreator(db);
-    const ctx = await createRequestContext(EXPRESS_CONTEXT);
+    const ctx = await createRequestContext(getFakeExpressContext());
 
     expect(getDataLoaders).toBeCalledTimes(1);
     expect(ctx.dataLoaders).toBe(dataLoaders);
@@ -67,7 +61,7 @@ it(
     (getAuthenticatedUser as jest.Mock).mockReturnValueOnce(user);
 
     const createRequestContext = getRequestContextCreator(db);
-    const ctx = await createRequestContext(EXPRESS_CONTEXT);
+    const ctx = await createRequestContext(getFakeExpressContext());
 
     expect(getAuthenticatedUser).toBeCalledTimes(1);
     expect(ctx.auth.user).toBe(user);
@@ -81,7 +75,7 @@ it(
     (getAuthenticatedUser as jest.Mock).mockReturnValueOnce(null);
 
     const createRequestContext = getRequestContextCreator(db);
-    const ctx = await createRequestContext(EXPRESS_CONTEXT);
+    const ctx = await createRequestContext(getFakeExpressContext());
 
     expect(getAuthenticatedUser).toBeCalledTimes(1);
     expect(ctx.auth.user).toBeNull();
