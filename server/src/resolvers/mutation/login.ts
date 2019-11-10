@@ -1,9 +1,9 @@
 import { FieldResolver } from '..';
 import { ForbiddenError } from 'apollo-server';
 import { LoginInput, LoginPayload } from 'common/types';
-import { setUserSessionTokenCookie, getExpiresAt } from '../../user-session';
+import { setUserSessionTokenCookie } from '../../user-session';
 import { isPassword } from '../../encrypted-password';
-import { or } from 'sequelize';
+import { getUserByEmailOrUsername, createUserSession } from '../../db';
 
 interface Args {
   input: LoginInput;
@@ -16,29 +16,26 @@ export const login: FieldResolver<LoginPayload, undefined, Args> = async (
   args,
   ctx
 ) => {
-  const emailOrUsername = args.input.emailOrUsername;
-  const userModel = await ctx.db.models.User.findOne({
-    where: {
-      ...or({ email: emailOrUsername }, { username: emailOrUsername }),
-    },
-  });
-  if (!userModel) {
-    throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
-  }
-
-  if (!(await isPassword(args.input.password, userModel.encryptedPassword))) {
-    throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
-  }
-
-  const userSessionModel = await ctx.db.models.UserSession.create(
-    {
-      userId: userModel.id,
-      issuedAt: ctx.requestedAt,
-      expiresAt: getExpiresAt(ctx.requestedAt),
-    },
-    { transaction: undefined }
+  const rawUser = await getUserByEmailOrUsername(
+    ctx.db,
+    args.input.emailOrUsername
   );
-  setUserSessionTokenCookie(userSessionModel, ctx.res);
 
-  return { user: userModel };
+  if (!rawUser) {
+    throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
+  }
+
+  if (!(await isPassword(args.input.password, rawUser.encryptedPassword))) {
+    throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
+  }
+
+  const rawUserSession = await createUserSession(
+    ctx.db,
+    rawUser.id,
+    ctx.requestedAt
+  );
+
+  setUserSessionTokenCookie(rawUserSession, ctx.res);
+
+  return { user: rawUser };
 };
