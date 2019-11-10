@@ -8,51 +8,55 @@ const NOW = new Date('2019-01-01');
 const PAST = new Date(NOW.getTime() - 1);
 const FUTURE = new Date(NOW.getTime() + 1);
 
-const USER_FIXTURE = getUserFixtures().student1;
-const USER_SESSION_FIXTURE = getUserSessionFixtures().student1Session;
+const STUDENT1 = getUserFixtures().student1;
+const STUDENT1_SESSION = getUserSessionFixtures().student1Session;
 
 const config = getConfig(process.env);
 const provideTestDb = createTestDbProvider(config);
 
-test('returns null when the token is empty', async () => {
-  await provideTestDb({}, async (db) => {
+it(
+  'returns null when the token is empty',
+  provideTestDb({}, async (db) => {
     const token = '';
     const user = await getAuthenticatedUser(db, token, NOW);
     expect(user).toBeNull();
-  });
-});
+  })
+);
 
-test('returns null when there is no user session in the db for it', async () => {
-  await provideTestDb({}, async (db) => {
+it(
+  'returns null when there is no user session in the db for it',
+  provideTestDb({}, async (db) => {
     const user = await getAuthenticatedUser(db, TOKEN, NOW);
     expect(user).toBeNull();
-  });
-});
+  })
+);
 
-test('returns null when the db user session is expired', async () => {
-  await provideTestDb(
+it(
+  'returns null when the db user session is expired',
+  provideTestDb(
     {
-      User: [USER_FIXTURE],
-      UserSession: [{ ...USER_SESSION_FIXTURE, expiresAt: PAST }],
+      User: [STUDENT1],
+      UserSession: [{ ...STUDENT1_SESSION, expiresAt: PAST }],
     },
     async (db) => {
       const user = await getAuthenticatedUser(db, TOKEN, NOW);
 
       expect(user).toBeNull();
     }
-  );
-});
+  )
+);
 
-test('returns user when the db user session is active ', async () => {
-  await provideTestDb(
+it(
+  'returns user when the db user session is active ',
+  provideTestDb(
     {
-      User: [USER_FIXTURE],
-      UserSession: [{ ...USER_SESSION_FIXTURE, expiresAt: FUTURE }],
+      User: [STUDENT1],
+      UserSession: [{ ...STUDENT1_SESSION, expiresAt: FUTURE }],
     },
     async (db) => {
       const user = await getAuthenticatedUser(db, TOKEN, NOW);
       expect(user).not.toBeNull();
-      expect(user!.id).toBe(USER_FIXTURE.id);
+      expect(user!.id).toBe(STUDENT1.id);
     }
-  );
-});
+  )
+);

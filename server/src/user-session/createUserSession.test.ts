@@ -7,8 +7,9 @@ const USER_FIXTURE = getUserFixtures().student1;
 const config = getConfig(process.env);
 const provideTestDb = createTestDbProvider(config);
 
-test('sets expiresAt 14 days from issuedAt', async () => {
-  await provideTestDb(
+it(
+  'sets expiresAt 14 days from issuedAt',
+  provideTestDb(
     {
       User: [USER_FIXTURE],
     },
@@ -24,15 +25,16 @@ test('sets expiresAt 14 days from issuedAt', async () => {
 
       expect(userSession.expiresAt.getTime()).toBe(expected);
     }
-  );
-});
+  )
+);
 
-test.each([0, 1, 2, 3])('saves n sessions for a particular user', async (n) => {
-  await provideTestDb(
+it.each([0, 1, 2, 3])(
+  'saves n sessions for a particular user',
+  provideTestDb(
     {
       User: [USER_FIXTURE],
     },
-    async (db) => {
+    async (db, n: number) => {
       const ids = new Array(n);
       for (let i = 0; i < n; i++) {
         const issuedAt = new Date();
@@ -47,5 +49,5 @@ test.each([0, 1, 2, 3])('saves n sessions for a particular user', async (n) => {
       expect(count).toBe(n);
       expect(userSessions.length).toBe(n);
     }
-  );
-});
+  )
+);

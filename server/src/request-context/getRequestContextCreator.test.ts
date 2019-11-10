@@ -30,8 +30,9 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-test('uses getCookies', async () => {
-  await provideTestDb({}, async (db) => {
+test(
+  'uses getCookies',
+  provideTestDb({}, async (db) => {
     const userSessionToken = 'foo-token';
     const cookies = { USER_SESSION_TOKEN: userSessionToken };
     (getCookies as jest.Mock).mockReturnValueOnce(cookies);
@@ -42,11 +43,12 @@ test('uses getCookies', async () => {
     expect(getCookies).toBeCalledTimes(1);
     expect(ctx.cookies).toStrictEqual(cookies);
     expect(ctx.auth.token).toBe(userSessionToken);
-  });
-});
+  })
+);
 
-test('uses createDataLoaders', async () => {
-  await provideTestDb({}, async (db) => {
+test(
+  'uses createDataLoaders',
+  provideTestDb({}, async (db) => {
     const dataLoaders = Symbol('data-loaders');
     (createDataLoaders as jest.Mock).mockReturnValueOnce(dataLoaders);
 
@@ -54,11 +56,12 @@ test('uses createDataLoaders', async () => {
     const ctx = await createRequestContext(EXPRESS_CONTEXT);
 
     expect(ctx.dataLoaders).toBe(dataLoaders);
-  });
-});
+  })
+);
 
-test('handles when getAuthenticatedUser returns a user', async () => {
-  await provideTestDb({}, async (db) => {
+test(
+  'handles when getAuthenticatedUser returns a user',
+  provideTestDb({}, async (db) => {
     const user = Symbol('user');
     (getAuthenticatedUser as jest.Mock).mockReturnValueOnce(user);
 
@@ -68,11 +71,12 @@ test('handles when getAuthenticatedUser returns a user', async () => {
     expect(getAuthenticatedUser).toBeCalledTimes(1);
     expect(ctx.auth.user).toBe(user);
     expect(ctx.auth.isLoggedIn).toBe(true);
-  });
-});
+  })
+);
 
-test('handles when getAuthenticatedUser returns null', async () => {
-  await provideTestDb({}, async (db) => {
+test(
+  'handles when getAuthenticatedUser returns null',
+  provideTestDb({}, async (db) => {
     (getAuthenticatedUser as jest.Mock).mockReturnValueOnce(null);
 
     const createRequestContext = getRequestContextCreator(db);
@@ -81,5 +85,5 @@ test('handles when getAuthenticatedUser returns null', async () => {
     expect(getAuthenticatedUser).toBeCalledTimes(1);
     expect(ctx.auth.user).toBeNull();
     expect(ctx.auth.isLoggedIn).toBe(false);
-  });
-});
+  })
+);
