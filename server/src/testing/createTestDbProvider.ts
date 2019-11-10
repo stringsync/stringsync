@@ -8,7 +8,7 @@ type DbCallback<A extends any[]> = (db: Db, ...args: A) => Promise<any>;
 class ForcedRollback extends Error {
   constructor() {
     super();
-    this.name = 'ForcedRollback';
+    Object.setPrototypeOf(this, ForcedRollback.prototype);
   }
 }
 
@@ -30,7 +30,7 @@ export const createTestDbProvider = (config: Config) => {
         throw new ForcedRollback();
       });
     } catch (e) {
-      if (e.name !== 'ForcedRollback') throw e;
+      if (!(e instanceof ForcedRollback)) throw e;
     }
   };
 };

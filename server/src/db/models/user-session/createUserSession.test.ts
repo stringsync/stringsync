@@ -32,7 +32,7 @@ it.each([0, 1, 2, 3])(
     {
       User: [STUDENT1],
     },
-    async (db, n: number) => {
+    async (db, n) => {
       const ids = new Array(n);
       for (let i = 0; i < n; i++) {
         const issuedAt = new Date();

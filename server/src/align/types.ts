@@ -9,5 +9,6 @@ export type MissingValueGetter = (key: number | string) => any;
 export class MissingValueError extends Error {
   constructor(key: string | number) {
     super(`missing value for key: ${key}`);
+    Object.setPrototypeOf(this, MissingValueError.prototype);
   }
 }

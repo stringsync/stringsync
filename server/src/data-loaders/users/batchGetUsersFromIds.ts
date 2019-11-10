@@ -1,9 +1,10 @@
-import { alignOneToOne } from '../../align';
+import { alignOneToOne, MissingValueError } from '../../align';
 import { Db } from '../../db';
 import { User } from 'common/types';
-import { MissingValueError } from '../../align/types';
 
-export const batchGetUsersFromIds = (db: Db) => async (ids: string[]) => {
+export const batchGetUsersFromIds = (db: Db) => async (
+  ids: string[]
+): Promise<Array<User | MissingValueError>> => {
   const users = (await db.models.User.findAll({
     raw: true,
     where: { id: ids },
