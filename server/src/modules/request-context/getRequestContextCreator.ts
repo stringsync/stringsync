@@ -5,7 +5,6 @@ import { RequestContext, Auth } from './types';
 import { createDataLoaders } from '../../modules/data-loaders/createDataLoaders';
 import { getCookies } from './getCookies';
 import { getAuthenticatedUser } from './getAuthenticatedUser';
-import { createTxManager, TxManager } from '../tx-manager';
 
 /**
  * This function returns a context creator that is used to create the request context
@@ -15,37 +14,27 @@ import { createTxManager, TxManager } from '../tx-manager';
  * @param preloadedTx must use the same db object in memory as db (used for testing)
  */
 export const getRequestContextCreator = (
-  db: Db,
-  preloadedTx?: TxManager
-): ContextFunction<ExpressContext, RequestContext> => {
-  if (preloadedTx && preloadedTx.db !== db) {
-    throw new ReferenceError(
-      'preloadedTx must be created with the same db reference'
-    );
-  }
-  return async ({ req, res }) => {
-    const requestedAt = new Date();
+  db: Db
+): ContextFunction<ExpressContext, RequestContext> => async ({ req, res }) => {
+  const requestedAt = new Date();
 
-    const tx = preloadedTx || createTxManager(db);
-    const dataLoaders = createDataLoaders(db);
+  const dataLoaders = createDataLoaders(db);
 
-    const cookies = getCookies(req.headers.cookie);
-    const token = cookies.USER_SESSION_TOKEN;
-    const user = await getAuthenticatedUser(db, tx.getRootTransaction(), {
-      token,
-      requestedAt,
-    });
-    const auth: Auth = { user, isLoggedIn: Boolean(user), token };
+  const cookies = getCookies(req.headers.cookie);
+  const token = cookies.USER_SESSION_TOKEN;
+  const user = await getAuthenticatedUser(db, undefined, {
+    token,
+    requestedAt,
+  });
+  const auth: Auth = { user, isLoggedIn: Boolean(user), token };
 
-    return {
-      auth,
-      cookies,
-      dataLoaders,
-      db,
-      req,
-      requestedAt,
-      res,
-      tx,
-    };
+  return {
+    auth,
+    cookies,
+    dataLoaders,
+    db,
+    req,
+    requestedAt,
+    res,
   };
 };

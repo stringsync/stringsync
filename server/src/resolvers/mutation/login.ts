@@ -39,7 +39,7 @@ export const login: FieldResolver<LoginPayload, undefined, Args> = async (
       issuedAt: ctx.requestedAt,
       expiresAt: getExpiresAt(ctx.requestedAt),
     },
-    { transaction: ctx.tx.getRootTransaction() }
+    { transaction: undefined }
   );
   setUserSessionTokenCookie(userSessionModel, ctx.res);
 
