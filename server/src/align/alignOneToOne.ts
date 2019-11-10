@@ -1,17 +1,17 @@
 import { KeyGetter, UniqueIdentifierGetter, MissingValueGetter } from './types';
 import { uniqBy, keyBy } from 'lodash';
 
-interface Getters<V> {
+interface Getters<V, M> {
   getKey: KeyGetter<V>;
   getUniqueIdentifier: UniqueIdentifierGetter<V>;
-  getMissingValue: MissingValueGetter;
+  getMissingValue: MissingValueGetter<M>;
 }
 
-export const alignOneToOne = <V>(
+export const alignOneToOne = <V, M>(
   keys: Array<number | string>,
   values: V[],
-  getters: Getters<V>
-) => {
+  getters: Getters<V, M>
+): Array<V | M> => {
   const uniqValues = uniqBy(values, getters.getUniqueIdentifier);
   const valuesByKey = keyBy(uniqValues, getters.getKey);
 

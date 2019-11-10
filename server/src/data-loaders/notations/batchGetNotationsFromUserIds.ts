@@ -13,6 +13,6 @@ export const batchGetNotationsFromUserIds = (db: Db) => async (
   return alignOneToMany(userIds, flatten(notations), {
     getKey: (notation) => notation.id,
     getUniqueIdentifier: (notation) => notation.id,
-    getMissingValue: (key) => [],
+    getMissingValue: (key): Notation[] => [],
   });
 };

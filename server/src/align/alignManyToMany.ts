@@ -5,21 +5,21 @@ import {
 } from './types';
 import { uniqBy } from 'lodash';
 
-interface Getters<V> {
+interface Getters<V, M> {
   getKeys: KeysGetter<V>;
   getUniqueIdentifier: UniqueIdentifierGetter<V>;
-  getMissingValue: MissingValueGetter;
+  getMissingValue: MissingValueGetter<M>;
 }
 
 interface ValuesByKey<V> {
   [key: string]: V[];
 }
 
-export const alignManyToMany = <V>(
+export const alignManyToMany = <V, M>(
   keys: Array<number | string>,
   values: V[],
-  getters: Getters<V>
-) => {
+  getters: Getters<V, M>
+): Array<V[] | M> => {
   const uniqValues = uniqBy(values, getters.getUniqueIdentifier);
   const valuesByKey = uniqValues.reduce<ValuesByKey<V>>((obj, value) => {
     for (const key of getters.getKeys(value)) {
