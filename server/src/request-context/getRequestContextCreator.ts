@@ -1,10 +1,9 @@
-import { Db } from '../db';
 import { ContextFunction } from 'apollo-server-core';
-import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
-import { RequestContext, Auth } from './types';
 import { createDataLoaders } from '../data-loaders/createDataLoaders';
+import { Db, getAuthenticatedUser } from '../db';
+import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 import { getCookies } from './getCookies';
-import { getAuthenticatedUser } from '../db/models/user/getAuthenticatedUser';
+import { RequestContext, Auth } from './types';
 
 /**
  * This function returns a context creator that is used to create the request context
