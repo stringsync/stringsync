@@ -6,7 +6,7 @@ export const createUserSession = (db: Db, userId: string, issuedAt: Date) => {
     issuedAt.getTime() + USER_SESSION_TOKEN_MAX_AGE_MS
   );
   return db.models.UserSession.create({
-    issuedAt: issuedAt,
+    issuedAt,
     userId: userId,
     expiresAt,
   });
