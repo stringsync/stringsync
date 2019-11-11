@@ -17,7 +17,7 @@ export const getTestRequestContextProvider = () => {
     await provideTestDb(fixtureMap, async (db) => {
       const createRequestContext = getRequestContextCreator(db);
       const ctx = await createRequestContext(getMockExpressContext());
-      callback(ctx, ...args);
-    });
+      await callback(ctx, ...args);
+    })();
   };
 };
