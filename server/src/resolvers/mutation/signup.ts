@@ -30,7 +30,7 @@ export const signup = async (
   parent: undefined,
   args: Args,
   ctx: RequestContext
-) => {
+): Promise<SignupPayload> => {
   const { username, email, password } = args.input;
 
   validatePassword(password);
