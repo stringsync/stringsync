@@ -1,7 +1,8 @@
-import { FieldResolver } from '..';
-import { Notation } from 'common/types';
 import { User } from 'common/types';
+import { RequestContext } from '../../request-context';
 
-export const notations: FieldResolver<Notation[], User> = (user, args, ctx) => {
+interface Args {}
+
+export const notations = (user: User, args: Args, ctx: RequestContext) => {
   return ctx.dataLoaders.notationsByUserId.load(user.id);
 };

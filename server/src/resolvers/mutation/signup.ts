@@ -1,10 +1,10 @@
-import { FieldResolver } from '..';
 import { SignupInput, SignupPayload } from 'common/types';
 import { UserInputError } from 'apollo-server';
 import { ValidationError } from 'sequelize';
 import { getEncryptedPassword } from '../../encrypted-password';
 import { createUserSession, toUserPojo } from '../../db';
 import { setUserSessionTokenCookie } from '../../user-session';
+import { RequestContext } from '../../request-context';
 
 const PASSWORD_MIN_LEN = 6;
 const PASSWORD_MAX_LEN = 256;
@@ -26,10 +26,10 @@ export const validatePassword = (password: string) => {
   }
 };
 
-export const signup: FieldResolver<SignupPayload, undefined, Args> = async (
-  parent,
-  args,
-  ctx
+export const signup = async (
+  parent: undefined,
+  args: Args,
+  ctx: RequestContext
 ) => {
   const { username, email, password } = args.input;
 

@@ -1,18 +1,19 @@
-import { FieldResolver } from '..';
-import { ReauthPayload } from 'common/types';
 import { ForbiddenError } from 'apollo-server';
 import { createUserSession, toUserPojo } from '../../db';
 import {
   setUserSessionTokenCookie,
   shouldRefreshUserSession,
 } from '../../user-session';
+import { RequestContext } from '../../request-context';
+
+interface Args {}
 
 const BAD_SESSION_TOKEN_MSG = 'invalid or expired credentials';
 
-export const reauth: FieldResolver<ReauthPayload> = async (
-  parent,
-  args,
-  ctx
+export const reauth = async (
+  parent: undefined,
+  args: Args,
+  ctx: RequestContext
 ) => {
   const { isLoggedIn, user, token } = ctx.auth;
 

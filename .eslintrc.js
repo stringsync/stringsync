@@ -30,5 +30,6 @@ module.exports = {
     '@typescript-eslint/no-var-requires': OFF,
     '@typescript-eslint/prefer-namespace-keyword': OFF,
     '@typescript-eslint/no-non-null-assertion': OFF,
+    '@typescript-eslint/no-empty-interface': OFF,
   },
 };

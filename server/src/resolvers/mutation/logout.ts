@@ -1,9 +1,10 @@
-import { FieldResolver } from '..';
-import { LogoutPayload } from 'common/types';
 import { clearUserSessionTokenCookie } from '../../user-session/';
 import { toUserPojo } from '../../db';
+import { RequestContext } from '../../request-context';
 
-export const logout: FieldResolver<LogoutPayload> = (parent, args, ctx) => {
+interface Args {}
+
+export const logout = (parent: undefined, args: Args, ctx: RequestContext) => {
   clearUserSessionTokenCookie(ctx.res);
   const user = ctx.auth.user ? toUserPojo(ctx.auth.user) : null;
   return { user };

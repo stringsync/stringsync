@@ -1,9 +1,14 @@
-import { FieldResolver } from '..';
-import { User } from 'common/types';
 import { guardAuthenticated } from '../../guards';
 import { toUserPojo } from '../../db';
+import { RequestContext } from '../../request-context';
 
-export const getUsers: FieldResolver<User[]> = async (parent, args, ctx) => {
+interface Args {}
+
+export const getUsers = async (
+  parent: undefined,
+  args: Args,
+  ctx: RequestContext
+) => {
   guardAuthenticated(ctx);
   return (await ctx.db.models.User.findAll({ raw: true })).map(toUserPojo);
 };

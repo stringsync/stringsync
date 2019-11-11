@@ -1,6 +1,5 @@
-import { FieldResolver } from '..';
 import { ForbiddenError } from 'apollo-server';
-import { LoginInput, LoginPayload } from 'common/types';
+import { LoginInput } from 'common/types';
 import { setUserSessionTokenCookie } from '../../user-session';
 import { isPassword } from '../../encrypted-password';
 import {
@@ -8,6 +7,7 @@ import {
   createUserSession,
   toUserPojo,
 } from '../../db';
+import { RequestContext } from '../../request-context';
 
 interface Args {
   input: LoginInput;
@@ -15,10 +15,10 @@ interface Args {
 
 export const WRONG_CREDENTIALS_MSG = 'wrong username, email, or password';
 
-export const login: FieldResolver<LoginPayload, undefined, Args> = async (
-  parent,
-  args,
-  ctx
+export const login = async (
+  parent: undefined,
+  args: Args,
+  ctx: RequestContext
 ) => {
   const rawUser = await getUserByEmailOrUsername(
     ctx.db,

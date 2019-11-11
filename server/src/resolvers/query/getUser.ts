@@ -1,15 +1,14 @@
-import { FieldResolver } from '..';
 import { GetUserInput } from 'common/types';
-import { User } from 'common/types';
+import { RequestContext } from '../../request-context';
 
 interface Args {
   input: GetUserInput;
 }
 
-export const getUser: FieldResolver<User | null, undefined, Args> = async (
-  parent,
-  args,
-  ctx
+export const getUser = async (
+  parent: undefined,
+  args: Args,
+  ctx: RequestContext
 ) => {
-  return ctx.dataLoaders.usersById.load(args.input.id);
+  return await ctx.dataLoaders.usersById.load(args.input.id);
 };
