@@ -1,6 +1,6 @@
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 
-export const getFakeExpressContext = () => {
+export const getMockExpressContext = () => {
   return {
     req: { headers: { cookie: '' } },
     res: {},

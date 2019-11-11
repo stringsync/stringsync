@@ -2,7 +2,7 @@ import { getCookies } from './getCookies';
 import { getAuthenticatedUser } from '../db/models/user/getAuthenticatedUser';
 import { getRequestContextCreator } from './getRequestContextCreator';
 import { getDataLoaders } from '../data-loaders/getDataLoaders';
-import { getTestDbProvider, getFakeExpressContext } from '../testing';
+import { getTestDbProvider, getMockExpressContext } from '../testing';
 
 jest.mock('./getCookies', () => ({
   getCookies: jest.fn().mockReturnValue({}),
@@ -30,7 +30,7 @@ it(
     (getCookies as jest.Mock).mockReturnValueOnce(cookies);
 
     const createRequestContext = getRequestContextCreator(db);
-    const ctx = await createRequestContext(getFakeExpressContext());
+    const ctx = await createRequestContext(getMockExpressContext());
 
     expect(getCookies).toBeCalledTimes(1);
     expect(ctx.cookies).toStrictEqual(cookies);
@@ -45,7 +45,7 @@ it(
     (getDataLoaders as jest.Mock).mockReturnValueOnce(dataLoaders);
 
     const createRequestContext = getRequestContextCreator(db);
-    const ctx = await createRequestContext(getFakeExpressContext());
+    const ctx = await createRequestContext(getMockExpressContext());
 
     expect(getDataLoaders).toBeCalledTimes(1);
     expect(ctx.dataLoaders).toBe(dataLoaders);
@@ -59,7 +59,7 @@ it(
     (getAuthenticatedUser as jest.Mock).mockReturnValueOnce(user);
 
     const createRequestContext = getRequestContextCreator(db);
-    const ctx = await createRequestContext(getFakeExpressContext());
+    const ctx = await createRequestContext(getMockExpressContext());
 
     expect(getAuthenticatedUser).toBeCalledTimes(1);
     expect(ctx.auth.user).toBe(user);
@@ -73,7 +73,7 @@ it(
     (getAuthenticatedUser as jest.Mock).mockReturnValueOnce(null);
 
     const createRequestContext = getRequestContextCreator(db);
-    const ctx = await createRequestContext(getFakeExpressContext());
+    const ctx = await createRequestContext(getMockExpressContext());
 
     expect(getAuthenticatedUser).toBeCalledTimes(1);
     expect(ctx.auth.user).toBeNull();

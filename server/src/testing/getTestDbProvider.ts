@@ -1,6 +1,6 @@
+import { FixtureMap } from '.';
 import { Db, connectToDb } from '../db';
 import { getConfig } from '../config';
-import { FixtureMap } from '../testing';
 import { createFixtures } from './createFixtures';
 
 type DbCallback<A extends any[]> = (db: Db, ...args: A) => Promise<any>;
@@ -20,6 +20,7 @@ class ForcedRollback extends Error {
 export const getTestDbProvider = () => {
   const config = getConfig(process.env);
   const db = connectToDb(config);
+
   return <A extends any[]>(
     fixtureMap: FixtureMap,
     callback: DbCallback<A>
