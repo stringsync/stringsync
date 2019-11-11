@@ -1,5 +1,4 @@
 import { batchGetUsersFromIds } from './batchGetUsersFromIds';
-import { getConfig } from '../../config';
 import { getTestDbProvider, getUserFixtures } from '../../testing';
 import { User } from 'common/types';
 
@@ -8,8 +7,7 @@ const STUDENT1 = USER_FIXTURES.student1;
 const STUDENT2 = USER_FIXTURES.student2;
 const TEACHER1 = USER_FIXTURES.teacher1;
 
-const config = getConfig(process.env);
-const provideTestDb = getTestDbProvider(config);
+const provideTestDb = getTestDbProvider();
 
 afterEach(() => {
   jest.clearAllMocks();

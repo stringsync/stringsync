@@ -1,11 +1,9 @@
 import { createUserSession } from './createUserSession';
 import { getTestDbProvider, getUserFixtures } from '../../../testing';
-import { getConfig } from '../../../config';
 
 const STUDENT1 = getUserFixtures().student1;
 
-const config = getConfig(process.env);
-const provideTestDb = getTestDbProvider(config);
+const provideTestDb = getTestDbProvider();
 
 it(
   'sets expiresAt 14 days from issuedAt',

@@ -4,7 +4,6 @@ import {
   getUserSessionFixtures,
   getTestDbProvider,
 } from '../../../testing';
-import { getConfig } from '../../../config';
 
 const TOKEN = '23dd7932-a42e-42af-95fc-045ef1080bfd';
 const NOW = new Date('2019-01-01');
@@ -13,8 +12,7 @@ const FUTURE = new Date(NOW.getTime() + 1);
 const STUDENT1 = getUserFixtures().student1;
 const STUDENT1_SESSION = getUserSessionFixtures().student1Session;
 
-const config = getConfig(process.env);
-const provideTestDb = getTestDbProvider(config);
+const provideTestDb = getTestDbProvider();
 
 it(
   'returns null when the token is empty',

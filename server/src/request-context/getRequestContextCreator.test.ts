@@ -2,7 +2,6 @@ import { getCookies } from './getCookies';
 import { getAuthenticatedUser } from '../db/models/user/getAuthenticatedUser';
 import { getRequestContextCreator } from './getRequestContextCreator';
 import { getDataLoaders } from '../data-loaders/getDataLoaders';
-import { getConfig } from '../config';
 import { getTestDbProvider, getFakeExpressContext } from '../testing';
 
 jest.mock('./getCookies', () => ({
@@ -17,8 +16,7 @@ jest.mock('../data-loaders/getDataLoaders', () => ({
   getDataLoaders: jest.fn().mockReturnValue({}),
 }));
 
-const config = getConfig(process.env);
-const provideTestDb = getTestDbProvider(config);
+const provideTestDb = getTestDbProvider();
 
 afterEach(() => {
   jest.clearAllMocks();

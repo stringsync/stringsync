@@ -1,5 +1,5 @@
 import { Db, connectToDb } from '../db';
-import { Config } from '../config';
+import { getConfig } from '../config';
 import { FixtureMap } from '../testing';
 import { createFixtures } from './createFixtures';
 
@@ -17,7 +17,8 @@ class ForcedRollback extends Error {
  * Anything done in the callback will be rolled back, allowing
  * db tests to be hermetic.
  */
-export const getTestDbProvider = (config: Config) => {
+export const getTestDbProvider = () => {
+  const config = getConfig(process.env);
   const db = connectToDb(config);
   return <A extends any[]>(
     fixtureMap: FixtureMap,
