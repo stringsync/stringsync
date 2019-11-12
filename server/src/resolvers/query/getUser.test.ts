@@ -18,3 +18,13 @@ it(
     expect(user!.id).toBe(STUDENT1.id);
   })
 );
+
+it(
+  'returns null for missing users',
+  provideTestCtx({}, async (ctx) => {
+    const input: GetUserInput = { id: STUDENT1.id };
+    const user = await getUser(undefined, { input }, ctx);
+
+    expect(user).toBeNull();
+  })
+);
