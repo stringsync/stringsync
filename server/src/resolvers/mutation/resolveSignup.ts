@@ -26,7 +26,7 @@ export const validatePassword = (password: string) => {
   }
 };
 
-export const signup = async (
+export const resolveSignup = async (
   parent: undefined,
   args: Args,
   ctx: RequestContext

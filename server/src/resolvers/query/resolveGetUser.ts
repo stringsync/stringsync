@@ -5,7 +5,7 @@ interface Args {
   input: GetUserInput;
 }
 
-export const getUser = async (
+export const resolveGetUser = async (
   parent: undefined,
   args: Args,
   ctx: RequestContext

@@ -1,29 +1,25 @@
-import { getUser } from './query/getUser';
-import { getUsers } from './query/getUsers';
 import { IResolvers } from 'apollo-server';
-import { login } from './mutation/login';
-import { notations } from './user/notations';
-import { logout } from './mutation/logout';
-import { reauth } from './mutation/reauth';
-import { signup } from './mutation/signup';
+import { resolveGetUser, resolveGetUsers } from './query';
+import {
+  resolveLogin,
+  resolveLogout,
+  resolveSignup,
+  resolveReauth,
+} from './mutation';
+import { resolveNotations } from './user';
 
 export const getResolvers = (): IResolvers => ({
-  // Scalars
-
-  // Types
   User: {
-    notations,
+    notations: resolveNotations,
   },
-  // Query
   Query: {
-    getUsers,
-    getUser,
+    getUsers: resolveGetUsers,
+    getUser: resolveGetUser,
   },
-  // Mutation
   Mutation: {
-    login,
-    logout,
-    signup,
-    reauth,
+    login: resolveLogin,
+    logout: resolveLogout,
+    signup: resolveSignup,
+    reauth: resolveReauth,
   },
 });

@@ -4,7 +4,11 @@ import { RequestContext } from '../../request-context';
 
 interface Args {}
 
-export const logout = (parent: undefined, args: Args, ctx: RequestContext) => {
+export const resolveLogout = (
+  parent: undefined,
+  args: Args,
+  ctx: RequestContext
+) => {
   clearUserSessionTokenCookie(ctx.res);
   const user = ctx.auth.user ? toUserPojo(ctx.auth.user) : null;
   return { user };

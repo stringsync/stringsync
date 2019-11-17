@@ -10,7 +10,7 @@ interface Args {}
 
 const BAD_SESSION_TOKEN_MSG = 'invalid or expired credentials';
 
-export const reauth = async (
+export const resolveReauth = async (
   parent: undefined,
   args: Args,
   ctx: RequestContext
