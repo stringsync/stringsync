@@ -2,8 +2,6 @@ import { UserRoles } from 'common/types';
 import { Model, HasManyCreateAssociationMixin } from 'sequelize';
 import { UserSessionModel } from '../user-session';
 
-export const USER_ROLES: UserRoles[] = ['student', 'teacher', 'admin'];
-
 export interface RawUser {
   id: string;
   readonly createdAt: Date;

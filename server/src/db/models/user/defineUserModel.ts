@@ -1,5 +1,6 @@
 import { Sequelize, DataTypes } from 'sequelize';
-import { USER_ROLES, UserModel } from './types';
+import { USER_ROLE_HIEARCHY } from 'common/user-roles';
+import { UserModel } from './types';
 import { StaticModel } from '../types';
 
 export const defineUserModel = (dbConnection: Sequelize) =>
@@ -52,9 +53,9 @@ export const defineUserModel = (dbConnection: Sequelize) =>
         allowNull: false,
       },
       role: {
-        type: DataTypes.ENUM(...USER_ROLES),
+        type: DataTypes.ENUM(...USER_ROLE_HIEARCHY),
         allowNull: false,
-        defaultValue: USER_ROLES[0],
+        defaultValue: USER_ROLE_HIEARCHY[0],
       },
       confirmationToken: {
         type: DataTypes.TEXT,
