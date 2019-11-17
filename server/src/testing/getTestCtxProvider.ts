@@ -8,7 +8,7 @@ type CtxCallback<A extends any[]> = (
   ...args: A
 ) => Promise<any>;
 
-export const getTestRequestContextProvider = () => {
+export const getTestCtxProvider = () => {
   const provideTestDb = getTestDbProvider();
   return <A extends any[]>(
     fixtureMap: FixtureMap,

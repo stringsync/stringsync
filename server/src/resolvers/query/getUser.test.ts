@@ -1,12 +1,12 @@
 import { getUser } from './getUser';
-import { getTestRequestContextProvider } from '../../testing';
+import { getTestCtxProvider } from '../../testing';
 import { GetUserInput } from 'common/types';
 import { getUserFixtures } from '../../testing';
 
 const USER_FIXTURES = getUserFixtures();
 const STUDENT1 = USER_FIXTURES.student1;
 
-const provideTestCtx = getTestRequestContextProvider();
+const provideTestCtx = getTestCtxProvider();
 
 it(
   'returns a user matching the id',

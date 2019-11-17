@@ -3,4 +3,4 @@ export * from './getTestDbProvider';
 export * from './getUserFixtures';
 export * from './getUserSessionFixtures';
 export * from './getMockExpressContext';
-export * from './getTestRequestContextProvider';
+export * from './getTestCtxProvider';
