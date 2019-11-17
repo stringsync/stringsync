@@ -1,4 +1,3 @@
-import { guardAuthenticated } from '../../guards';
 import { toUserPojo } from '../../db';
 import { RequestContext } from '../../request-context';
 
@@ -9,6 +8,5 @@ export const getUsers = async (
   args: Args,
   ctx: RequestContext
 ) => {
-  guardAuthenticated(ctx);
   return (await ctx.db.models.User.findAll({ raw: true })).map(toUserPojo);
 };
