@@ -1,14 +1,15 @@
 import { GetUserInput } from 'common/types';
 import { RequestContext } from '../../request-context';
+import { getUsers } from '../../db';
 
 interface Args {
   input: GetUserInput;
 }
 
-export const resolveGetUser = async (
+export const getUsersResolver = async (
   parent: undefined,
   args: Args,
   ctx: RequestContext
 ) => {
-  return await ctx.dataLoaders.usersById.load(args.input.id);
+  return getUsers(ctx.db);
 };

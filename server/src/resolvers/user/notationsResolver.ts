@@ -3,7 +3,7 @@ import { RequestContext } from '../../request-context';
 
 interface Args {}
 
-export const resolveNotations = (
+export const notationsResolver = (
   user: User,
   args: Args,
   ctx: RequestContext

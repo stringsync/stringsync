@@ -1,1 +1,1 @@
-export * from './resolveNotations';
+export * from './notationsResolver';

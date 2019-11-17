@@ -15,7 +15,7 @@ interface Args {
 
 export const WRONG_CREDENTIALS_MSG = 'wrong username, email, or password';
 
-export const resolveLogin = async (
+export const loginResolver = async (
   parent: undefined,
   args: Args,
   ctx: RequestContext

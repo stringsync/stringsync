@@ -1,25 +1,25 @@
 import { IResolvers } from 'apollo-server';
-import { resolveGetUser, resolveGetUsers } from './query';
+import { getUsersResolver, getUserResolver } from './query';
 import {
-  resolveLogin,
-  resolveLogout,
-  resolveSignup,
-  resolveReauth,
+  loginResolver,
+  logoutResolver,
+  signupResolver,
+  reauthResolver,
 } from './mutation';
-import { resolveNotations } from './user';
+import { notationsResolver } from './user';
 
 export const getResolvers = (): IResolvers => ({
   User: {
-    notations: resolveNotations,
+    notations: notationsResolver,
   },
   Query: {
-    getUsers: resolveGetUsers,
-    getUser: resolveGetUser,
+    getUsers: getUsersResolver,
+    getUser: getUserResolver,
   },
   Mutation: {
-    login: resolveLogin,
-    logout: resolveLogout,
-    signup: resolveSignup,
-    reauth: resolveReauth,
+    login: loginResolver,
+    logout: logoutResolver,
+    signup: signupResolver,
+    reauth: reauthResolver,
   },
 });

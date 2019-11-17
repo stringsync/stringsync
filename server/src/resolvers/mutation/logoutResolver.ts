@@ -4,7 +4,7 @@ import { RequestContext } from '../../request-context';
 
 interface Args {}
 
-export const resolveLogout = (
+export const logoutResolver = (
   parent: undefined,
   args: Args,
   ctx: RequestContext
