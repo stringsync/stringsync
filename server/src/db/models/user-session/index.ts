@@ -1,3 +1,3 @@
 export * from './types';
 export * from './defineUserSessionModel';
-export * from './createUserSession';
+export * from './createRawUserSession';

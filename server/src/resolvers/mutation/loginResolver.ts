@@ -4,7 +4,7 @@ import { setUserSessionTokenCookie } from '../../user-session';
 import { isPassword } from '../../encrypted-password';
 import {
   getRawUserByEmailOrUsername,
-  createUserSession,
+  createRawUserSession,
   toCanonicalUser,
 } from '../../db';
 import { RequestContext } from '../../request-context';
@@ -33,7 +33,7 @@ export const loginResolver = async (
     throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
   }
 
-  const rawUserSession = await createUserSession(
+  const rawUserSession = await createRawUserSession(
     ctx.db,
     rawUser.id,
     ctx.requestedAt

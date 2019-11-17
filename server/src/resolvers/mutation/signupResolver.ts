@@ -2,7 +2,7 @@ import { SignupInput, SignupPayload } from 'common/types';
 import { UserInputError } from 'apollo-server';
 import { ValidationError } from 'sequelize';
 import { getEncryptedPassword } from '../../encrypted-password';
-import { createUserSession, toCanonicalUser } from '../../db';
+import { createRawUserSession, toCanonicalUser } from '../../db';
 import { setUserSessionTokenCookie } from '../../user-session';
 import { RequestContext } from '../../request-context';
 
@@ -42,7 +42,7 @@ export const signupResolver = async (
         { username, email, encryptedPassword },
         { transaction }
       );
-      const userSessionModel = await createUserSession(
+      const userSessionModel = await createRawUserSession(
         ctx.db,
         userModel.id,
         ctx.requestedAt

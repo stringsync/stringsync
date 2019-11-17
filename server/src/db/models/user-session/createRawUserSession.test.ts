@@ -1,4 +1,4 @@
-import { createUserSession } from './createUserSession';
+import { createRawUserSession } from './createRawUserSession';
 import { getTestDbProvider, getUserFixtures } from '../../../testing';
 
 const STUDENT1 = getUserFixtures().student1;
@@ -15,7 +15,7 @@ it(
       const issuedAt = new Date('2019-01-01');
       const expiresAt = new Date('2019-01-15');
 
-      const userSession = await createUserSession(db, STUDENT1.id, issuedAt);
+      const userSession = await createRawUserSession(db, STUDENT1.id, issuedAt);
 
       expect(userSession.issuedAt).toEqual(issuedAt);
       expect(userSession.expiresAt).toEqual(expiresAt);
@@ -34,7 +34,7 @@ it.each([0, 1, 2, 3])(
       const ids = new Array(n);
       for (let i = 0; i < n; i++) {
         const issuedAt = new Date();
-        const { id } = await createUserSession(db, STUDENT1.id, issuedAt);
+        const { id } = await createRawUserSession(db, STUDENT1.id, issuedAt);
         ids[i] = id;
       }
       const count = await db.models.UserSession.count();
