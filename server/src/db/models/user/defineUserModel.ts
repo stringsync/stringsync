@@ -1,7 +1,12 @@
 import { Sequelize, DataTypes } from 'sequelize';
-import { USER_ROLE_HIEARCHY } from 'common/user-roles';
 import { UserModel } from './types';
 import { StaticModel } from '../types';
+import { UserRoles } from 'common/types';
+
+// TODO(jared) fix this import
+// import { USER_ROLE_HIEARCHY } from 'common/user-roles';
+
+const USER_ROLE_HIEARCHY: UserRoles[] = ['student', 'teacher', 'admin'];
 
 export const defineUserModel = (dbConnection: Sequelize) =>
   dbConnection.define(

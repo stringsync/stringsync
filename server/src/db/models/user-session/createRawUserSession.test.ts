@@ -38,12 +38,12 @@ it.each([0, 1, 2, 3])(
         ids[i] = id;
       }
       const count = await db.models.UserSession.count();
+      expect(count).toBe(n);
+
       const userSessions = await db.models.UserSession.findAll({
         where: { id: ids },
       });
-
-      expect(count).toBe(n);
-      expect(userSessions.length).toBe(n);
+      expect(userSessions).toHaveLength(n);
     }
   )
 );

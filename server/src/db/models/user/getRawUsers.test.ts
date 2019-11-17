@@ -11,8 +11,8 @@ it(
     const rawUsers = await getRawUsers(db);
 
     expect(rawUsers).toHaveLength(USERS.length);
-    expect(rawUsers.map((rawUser) => rawUser.id).sort()).toEqual(
-      USERS.map((user) => user.id).sort()
-    );
+    const rawUsersIds = rawUsers.map((rawUser) => rawUser.id).sort();
+    const expectedUserIds = USERS.map((user) => user.id).sort();
+    expect(rawUsersIds).toEqual(expectedUserIds);
   })
 );
