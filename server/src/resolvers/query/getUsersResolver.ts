@@ -1,10 +1,7 @@
-import { GetUserInput } from 'common/types';
 import { RequestContext } from '../../request-context';
 import { getUsers } from '../../db';
 
-interface Args {
-  input: GetUserInput;
-}
+interface Args {}
 
 export const getUsersResolver = async (
   parent: undefined,
