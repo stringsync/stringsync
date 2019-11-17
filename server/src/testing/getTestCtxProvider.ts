@@ -3,10 +3,7 @@ import { getTestDbProvider } from './getTestDbProvider';
 import { getMockExpressContext } from './getMockExpressContext';
 import { RequestContext, getRequestContextCreator } from '../request-context';
 
-type CtxCallback<A extends any[]> = (
-  ctx: RequestContext,
-  ...args: A
-) => Promise<any>;
+type CtxCallback<A extends any[]> = (ctx: RequestContext, ...args: A) => any;
 
 export const getTestCtxProvider = () => {
   const provideTestDb = getTestDbProvider();
