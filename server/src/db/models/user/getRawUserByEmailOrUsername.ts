@@ -2,7 +2,7 @@ import { or } from 'sequelize';
 import { Db } from '../../types';
 import { RawUser } from './types';
 
-export const getUserByEmailOrUsername = async (
+export const getRawUserByEmailOrUsername = async (
   db: Db,
   emailOrUsername: string
 ): Promise<RawUser | null> => {

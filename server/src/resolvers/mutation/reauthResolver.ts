@@ -1,5 +1,5 @@
 import { ForbiddenError } from 'apollo-server';
-import { createUserSession, toUserPojo } from '../../db';
+import { createUserSession, toCanonicalUser } from '../../db';
 import {
   setUserSessionTokenCookie,
   shouldRefreshUserSession,
@@ -40,6 +40,6 @@ export const reauthResolver = async (
       setUserSessionTokenCookie(userSessionModel, ctx.res);
     }
 
-    return { user: toUserPojo(user) };
+    return { user: toCanonicalUser(user) };
   });
 };

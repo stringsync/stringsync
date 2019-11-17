@@ -1,5 +1,5 @@
 import { getCookies } from './getCookies';
-import { getAuthenticatedUser } from '../db/models/user/getAuthenticatedUser';
+import { getAuthenticatedRawUser } from '../db/models/user/getAuthenticatedRawUser';
 import { getRequestContextCreator } from './getRequestContextCreator';
 import { getDataLoaders } from '../data-loaders/getDataLoaders';
 import { getTestDbProvider, getMockExpressContext } from '../testing';
@@ -8,8 +8,8 @@ jest.mock('./getCookies', () => ({
   getCookies: jest.fn().mockReturnValue({}),
 }));
 
-jest.mock('../db/models/user/getAuthenticatedUser', () => ({
-  getAuthenticatedUser: jest.fn().mockReturnValue({}),
+jest.mock('../db/models/user/getAuthenticatedRawUser', () => ({
+  getAuthenticatedRawUser: jest.fn().mockReturnValue({}),
 }));
 
 jest.mock('../data-loaders/getDataLoaders', () => ({
@@ -53,29 +53,29 @@ it(
 );
 
 it(
-  'handles when getAuthenticatedUser returns a user',
+  'handles when getAuthenticatedRawUser returns a user',
   provideTestDb({}, async (db) => {
     const user = Symbol('user');
-    (getAuthenticatedUser as jest.Mock).mockReturnValueOnce(user);
+    (getAuthenticatedRawUser as jest.Mock).mockReturnValueOnce(user);
 
     const createRequestContext = getRequestContextCreator(db);
     const ctx = await createRequestContext(getMockExpressContext());
 
-    expect(getAuthenticatedUser).toBeCalledTimes(1);
+    expect(getAuthenticatedRawUser).toBeCalledTimes(1);
     expect(ctx.auth.user).toBe(user);
     expect(ctx.auth.isLoggedIn).toBe(true);
   })
 );
 
 it(
-  'handles when getAuthenticatedUser returns null',
+  'handles when getAuthenticatedRawUser returns null',
   provideTestDb({}, async (db) => {
-    (getAuthenticatedUser as jest.Mock).mockReturnValueOnce(null);
+    (getAuthenticatedRawUser as jest.Mock).mockReturnValueOnce(null);
 
     const createRequestContext = getRequestContextCreator(db);
     const ctx = await createRequestContext(getMockExpressContext());
 
-    expect(getAuthenticatedUser).toBeCalledTimes(1);
+    expect(getAuthenticatedRawUser).toBeCalledTimes(1);
     expect(ctx.auth.user).toBeNull();
     expect(ctx.auth.isLoggedIn).toBe(false);
   })

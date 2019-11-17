@@ -3,9 +3,9 @@ import { LoginInput } from 'common/types';
 import { setUserSessionTokenCookie } from '../../user-session';
 import { isPassword } from '../../encrypted-password';
 import {
-  getUserByEmailOrUsername,
+  getRawUserByEmailOrUsername,
   createUserSession,
-  toUserPojo,
+  toCanonicalUser,
 } from '../../db';
 import { RequestContext } from '../../request-context';
 
@@ -20,7 +20,7 @@ export const loginResolver = async (
   args: Args,
   ctx: RequestContext
 ) => {
-  const rawUser = await getUserByEmailOrUsername(
+  const rawUser = await getRawUserByEmailOrUsername(
     ctx.db,
     args.input.emailOrUsername
   );
@@ -41,5 +41,5 @@ export const loginResolver = async (
 
   setUserSessionTokenCookie(rawUserSession, ctx.res);
 
-  return { user: toUserPojo(rawUser) };
+  return { user: toCanonicalUser(rawUser) };
 };

@@ -1,7 +1,7 @@
 import { Db } from '../../';
 import { RawUser } from './types';
 
-export const getAuthenticatedUser = async (
+export const getAuthenticatedRawUser = async (
   db: Db,
   token: string,
   requestedAt: Date

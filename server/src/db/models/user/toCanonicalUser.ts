@@ -4,7 +4,7 @@ type UserLike = {
   [P in keyof User]: User[P];
 };
 
-export const toUserPojo = (userLike: UserLike): User => ({
+export const toCanonicalUser = (userLike: UserLike): User => ({
   id: userLike.id,
   createdAt: userLike.createdAt,
   email: userLike.email,

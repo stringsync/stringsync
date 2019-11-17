@@ -1,4 +1,4 @@
-import { getAuthenticatedUser } from './getAuthenticatedUser';
+import { getAuthenticatedRawUser } from './getAuthenticatedRawUser';
 import {
   getUserFixtures,
   getUserSessionFixtures,
@@ -18,7 +18,7 @@ it(
   'returns null when the token is empty',
   provideTestDb({}, async (db) => {
     const token = '';
-    const user = await getAuthenticatedUser(db, token, NOW);
+    const user = await getAuthenticatedRawUser(db, token, NOW);
     expect(user).toBeNull();
   })
 );
@@ -26,7 +26,7 @@ it(
 it(
   'returns null when there is no user session in the db for it',
   provideTestDb({}, async (db) => {
-    const user = await getAuthenticatedUser(db, TOKEN, NOW);
+    const user = await getAuthenticatedRawUser(db, TOKEN, NOW);
     expect(user).toBeNull();
   })
 );
@@ -39,7 +39,7 @@ it(
       UserSession: [{ ...STUDENT1_SESSION, expiresAt: PAST }],
     },
     async (db) => {
-      const user = await getAuthenticatedUser(db, TOKEN, NOW);
+      const user = await getAuthenticatedRawUser(db, TOKEN, NOW);
 
       expect(user).toBeNull();
     }
@@ -54,7 +54,7 @@ it(
       UserSession: [{ ...STUDENT1_SESSION, expiresAt: FUTURE }],
     },
     async (db) => {
-      const user = await getAuthenticatedUser(db, TOKEN, NOW);
+      const user = await getAuthenticatedRawUser(db, TOKEN, NOW);
       expect(user).not.toBeNull();
       expect(user!.id).toBe(STUDENT1.id);
     }

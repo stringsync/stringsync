@@ -2,7 +2,7 @@ import { SignupInput, SignupPayload } from 'common/types';
 import { UserInputError } from 'apollo-server';
 import { ValidationError } from 'sequelize';
 import { getEncryptedPassword } from '../../encrypted-password';
-import { createUserSession, toUserPojo } from '../../db';
+import { createUserSession, toCanonicalUser } from '../../db';
 import { setUserSessionTokenCookie } from '../../user-session';
 import { RequestContext } from '../../request-context';
 
@@ -48,7 +48,7 @@ export const signupResolver = async (
         ctx.requestedAt
       );
       setUserSessionTokenCookie(userSessionModel, ctx.res);
-      return { user: toUserPojo(userModel) };
+      return { user: toCanonicalUser(userModel) };
     });
   } catch (err) {
     if (err instanceof ValidationError) {
@@ -57,5 +57,3 @@ export const signupResolver = async (
     throw err;
   }
 };
-
-export default signup;

@@ -1,5 +1,5 @@
 import { clearUserSessionTokenCookie } from '../../user-session/';
-import { toUserPojo } from '../../db';
+import { toCanonicalUser } from '../../db';
 import { RequestContext } from '../../request-context';
 
 interface Args {}
@@ -10,6 +10,6 @@ export const logoutResolver = (
   ctx: RequestContext
 ) => {
   clearUserSessionTokenCookie(ctx.res);
-  const user = ctx.auth.user ? toUserPojo(ctx.auth.user) : null;
+  const user = ctx.auth.user ? toCanonicalUser(ctx.auth.user) : null;
   return { user };
 };
