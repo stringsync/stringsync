@@ -1,12 +1,15 @@
-import { toUserPojo } from '../../db';
+import { GetUserInput } from 'common/types';
 import { RequestContext } from '../../request-context';
+import { getUsers as $getUsers } from '../../db';
 
-interface Args {}
+interface Args {
+  input: GetUserInput;
+}
 
 export const getUsers = async (
   parent: undefined,
   args: Args,
   ctx: RequestContext
 ) => {
-  return (await ctx.db.models.User.findAll({ raw: true })).map(toUserPojo);
+  return $getUsers(ctx.db);
 };

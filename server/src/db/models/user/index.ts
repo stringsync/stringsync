@@ -3,3 +3,4 @@ export * from './defineUserModel';
 export * from './toUserPojo';
 export * from './getUserByEmailOrUsername';
 export * from './getAuthenticatedUser';
+export * from './getUsers';
