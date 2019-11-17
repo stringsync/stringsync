@@ -1,4 +1,4 @@
-import { alignOneToOne } from '../../align';
+import { alignOneToOne } from '../../align-arrays';
 import { Db, toUserPojo } from '../../db';
 import { User } from 'common/types';
 

@@ -1,4 +1,4 @@
-import { alignOneToMany } from '../../align';
+import { alignOneToMany } from '../../align-arrays';
 import { Db } from '../../db';
 import { Notation } from 'common/types';
 import { flatten } from 'lodash';
