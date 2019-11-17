@@ -13,7 +13,7 @@ class ForcedRollback extends Error {
 }
 
 /**
- * The canonnical way of accessing a db in a test environment.
+ * The canonical way of accessing a db in a test environment.
  * Anything done in the callback will be rolled back, allowing
  * db tests to be hermetic.
  */
