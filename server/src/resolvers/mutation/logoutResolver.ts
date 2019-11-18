@@ -1,5 +1,5 @@
 import { clearUserSessionTokenCookie } from '../../user-session/';
-import { toCanonicalUser } from '../../db';
+import { toCanonicalUser, destroyUserSession } from '../../db';
 import { RequestContext } from '../../request-context';
 import { LogoutPayload } from 'common/types';
 
@@ -16,8 +16,7 @@ export const logoutResolver = async (
     return { user: null };
   }
 
-  const token = ctx.auth.token;
-  await ctx.db.models.UserSession.destroy({ where: { token } });
+  await destroyUserSession(ctx.db, ctx.auth.token);
 
   const user = toCanonicalUser(ctx.auth.user);
   return { user };
