@@ -11,18 +11,21 @@ export const getFixtures = () => ({
   User: {
     student1: {
       id: 'student1-id',
+      role: 'student',
       username: 'student1-username',
       email: 'student1@email.com',
       encryptedPassword: ENCRYPTED_PASSWORD,
     },
     student2: {
       id: 'student2-id',
+      role: 'student',
       username: 'student2-username',
       email: 'student2@email.com',
       encryptedPassword: ENCRYPTED_PASSWORD,
     },
     teacher1: {
       id: 'teacher1-id',
+      role: 'teacher',
       username: 'teacher1-username',
       email: 'teacher1@email.com',
       encryptedPassword: ENCRYPTED_PASSWORD,
