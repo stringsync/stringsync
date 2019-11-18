@@ -1,13 +1,10 @@
 import { logoutResolver } from './logoutResolver';
-import {
-  getUserFixtures,
-  getUserSessionFixtures,
-  getTestCtxProvider,
-} from '../../testing';
+import { getFixtures, getTestCtxProvider } from '../../testing';
 import { clearUserSessionTokenCookie } from '../../user-session/';
 
-const STUDENT1 = getUserFixtures().student1;
-const STUDENT1_SESSION = getUserSessionFixtures().student1Session;
+const FIXTURES = getFixtures();
+const STUDENT1 = FIXTURES.User.student1;
+const STUDENT1_SESSION = FIXTURES.UserSession.student1Session;
 
 jest.mock('../../user-session/', () => ({
   clearUserSessionTokenCookie: jest.fn(),

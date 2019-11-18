@@ -1,11 +1,7 @@
 import { getUsersResolver } from './getUsersResolver';
-import { getUserFixtures, getTestCtxProvider } from '../../testing';
+import { getFixtures, getTestCtxProvider } from '../../testing';
 
-const USER_FIXTURES = getUserFixtures();
-const USER1 = USER_FIXTURES.student1;
-const USER2 = USER_FIXTURES.student2;
-const USER3 = USER_FIXTURES.teacher1;
-const USERS = [USER1, USER2, USER3];
+const USERS = Object.values(getFixtures().User);
 
 const provideTestCtx = getTestCtxProvider();
 

@@ -1,16 +1,14 @@
 import { getAuthenticatedRawUser } from './getAuthenticatedRawUser';
-import {
-  getUserFixtures,
-  getUserSessionFixtures,
-  getTestDbProvider,
-} from '../../../testing';
+import { getFixtures, getTestDbProvider } from '../../../testing';
 
 const TOKEN = '23dd7932-a42e-42af-95fc-045ef1080bfd';
 const NOW = new Date('2019-01-01');
 const PAST = new Date(NOW.getTime() - 1);
 const FUTURE = new Date(NOW.getTime() + 1);
-const STUDENT1 = getUserFixtures().student1;
-const STUDENT1_SESSION = getUserSessionFixtures().student1Session;
+
+const FIXTURES = getFixtures();
+const STUDENT1 = FIXTURES.User.student1;
+const STUDENT1_SESSION = FIXTURES.UserSession.student1Session;
 
 const provideTestDb = getTestDbProvider();
 

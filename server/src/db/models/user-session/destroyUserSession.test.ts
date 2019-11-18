@@ -1,12 +1,9 @@
 import { destroyUserSession } from './destroyUserSession';
-import {
-  getTestDbProvider,
-  getUserFixtures,
-  getUserSessionFixtures,
-} from '../../../testing';
+import { getTestDbProvider, getFixtures } from '../../../testing';
 
-const USER = getUserFixtures().student1;
-const USER_SESSION = getUserSessionFixtures().student1Session;
+const FIXTURES = getFixtures();
+const USER = FIXTURES.User.student1;
+const USER_SESSION = FIXTURES.UserSession.student1Session;
 
 const provideTestDb = getTestDbProvider();
 

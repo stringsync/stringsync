@@ -1,8 +1,8 @@
 import { getUserResolver } from './getUserResolver';
 import { GetUserInput } from 'common/types';
-import { getTestCtxProvider, getUserFixtures } from '../../testing';
+import { getTestCtxProvider, getFixtures } from '../../testing';
 
-const USER_FIXTURES = getUserFixtures();
+const USER_FIXTURES = getFixtures().User;
 const USER1 = USER_FIXTURES.student1;
 const USER2 = USER_FIXTURES.student2;
 

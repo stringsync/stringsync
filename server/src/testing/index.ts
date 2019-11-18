@@ -1,6 +1,5 @@
 export * from './types';
 export * from './getTestDbProvider';
-export * from './getUserFixtures';
-export * from './getUserSessionFixtures';
+export * from './getFixtures';
 export * from './getMockExpressContext';
 export * from './getTestCtxProvider';

@@ -1,8 +1,8 @@
 import { batchGetUsersFromIds } from './batchGetUsersFromIds';
-import { getTestDbProvider, getUserFixtures } from '../../testing';
+import { getTestDbProvider, getFixtures } from '../../testing';
 import { User } from 'common/types';
 
-const USER_FIXTURES = getUserFixtures();
+const USER_FIXTURES = getFixtures().User;
 const STUDENT1 = USER_FIXTURES.student1;
 const STUDENT2 = USER_FIXTURES.student2;
 const TEACHER1 = USER_FIXTURES.teacher1;

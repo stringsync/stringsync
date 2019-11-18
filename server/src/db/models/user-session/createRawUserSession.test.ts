@@ -1,7 +1,7 @@
 import { createRawUserSession } from './createRawUserSession';
-import { getTestDbProvider, getUserFixtures } from '../../../testing';
+import { getTestDbProvider, getFixtures } from '../../../testing';
 
-const STUDENT1 = getUserFixtures().student1;
+const STUDENT1 = getFixtures().User.student1;
 
 const provideTestDb = getTestDbProvider();
 

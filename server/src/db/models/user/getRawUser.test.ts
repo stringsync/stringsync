@@ -1,9 +1,9 @@
 import { getRawUser } from './getRawUser';
-import { getTestDbProvider, getUserFixtures } from '../../../testing';
+import { getTestDbProvider, getFixtures } from '../../../testing';
 
 const provideTestDb = getTestDbProvider();
 
-const USER_FIXTURES = getUserFixtures();
+const USER_FIXTURES = getFixtures().User;
 const USER1 = USER_FIXTURES.student1;
 const USER2 = USER_FIXTURES.student2;
 
