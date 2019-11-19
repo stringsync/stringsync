@@ -6,6 +6,7 @@ module.exports = async () => {
     throw new Error(`cannot run jest setup in NODE_ENV=${env || ''}`);
   }
 
+  // `yarn tsc:db` is called in pretest script
   execSync('yarn sequelize db:drop');
   execSync('yarn sequelize db:create');
   execSync('yarn sequelize db:migrate');
