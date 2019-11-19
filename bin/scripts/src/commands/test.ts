@@ -36,6 +36,7 @@ export default class Test extends Command {
         }
       );
     } catch (e) {
+      console.error(e);
       exit = 1;
     }
 

@@ -2,6 +2,7 @@ import { Command, flags } from '@oclif/command';
 import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
+import { ROOT_PATH } from '../util/constants';
 
 const ALL_CMDS = [
   'db:migrate',
@@ -131,6 +132,7 @@ export default class Sql extends Command {
     // run the actual command against the sequelize library
     execSync(`./bin/ss exec scripts yarn sequelize ${argv.join(' ')}`, {
       stdio: 'inherit',
+      cwd: ROOT_PATH,
     });
   }
 }
