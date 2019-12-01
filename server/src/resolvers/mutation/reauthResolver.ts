@@ -1,5 +1,9 @@
 import { ForbiddenError } from 'apollo-server';
-import { createRawUserSession, toCanonicalUser } from '../../db';
+import {
+  createRawUserSession,
+  toCanonicalUser,
+  destroyUserSession,
+} from '../../db';
 import {
   setUserSessionTokenCookie,
   shouldRefreshUserSession,
@@ -31,13 +35,13 @@ export const reauthResolver = async (
     }
 
     if (shouldRefreshUserSession(ctx.requestedAt, oldUserSession.issuedAt)) {
-      await oldUserSession.destroy({ transaction });
-      const userSessionModel = await createRawUserSession(
+      await destroyUserSession(ctx.db, oldUserSession.token);
+      const rawUserSession = await createRawUserSession(
         ctx.db,
         user.id,
         ctx.requestedAt
       );
-      setUserSessionTokenCookie(userSessionModel, ctx.res);
+      setUserSessionTokenCookie(rawUserSession, ctx.res);
     }
 
     return { user: toCanonicalUser(user) };
