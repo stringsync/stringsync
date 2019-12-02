@@ -26,16 +26,21 @@ export const reauthResolver = async (
   }
 
   return ctx.db.transaction(async (transaction) => {
-    const oldUserSession = await ctx.db.models.UserSession.findOne({
+    const oldRawUserSession = await ctx.db.models.UserSession.findOne({
+      raw: true,
       where: { token },
-      transaction,
     });
-    if (!oldUserSession) {
+
+    if (!oldRawUserSession) {
       throw new ForbiddenError(BAD_SESSION_TOKEN_MSG);
     }
 
-    if (shouldRefreshUserSession(ctx.requestedAt, oldUserSession.issuedAt)) {
-      await destroyUserSession(ctx.db, oldUserSession.token);
+    if (oldRawUserSession.expiresAt < ctx.requestedAt) {
+      throw new ForbiddenError(BAD_SESSION_TOKEN_MSG);
+    }
+
+    if (shouldRefreshUserSession(ctx.requestedAt, oldRawUserSession.issuedAt)) {
+      await destroyUserSession(ctx.db, oldRawUserSession.token);
       const rawUserSession = await createRawUserSession(
         ctx.db,
         user.id,

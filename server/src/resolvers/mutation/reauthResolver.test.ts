@@ -52,3 +52,16 @@ it(
     );
   })
 );
+
+it(
+  'does not throw an error when user session exists',
+  provideTestCtx({ User: [USER], UserSession: [USER_SESSION] }, async (ctx) => {
+    const user = await getRawUserByEmailOrUsername(ctx.db, USER.username);
+
+    ctx.auth.isLoggedIn = true;
+    ctx.auth.user = user;
+    ctx.auth.token = USER_SESSION.token;
+
+    await expect(reauthResolver(undefined, {}, ctx)).resolves.not.toThrow();
+  })
+);
