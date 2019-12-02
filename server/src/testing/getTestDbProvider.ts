@@ -1,5 +1,5 @@
 import { FixtureMap } from '.';
-import { Db, connectToDb } from '../db';
+import { Db, connectToDb, transaction } from '../db';
 import { getConfig } from '../config';
 import { createFixtures } from './createFixtures';
 
@@ -26,7 +26,7 @@ export const getTestDbProvider = () => {
     callback: DbCallback<A>
   ) => async (...args: A) => {
     try {
-      await db.transaction(async () => {
+      await transaction(db, async () => {
         await createFixtures(db, fixtureMap);
         await callback(db, ...args);
         throw new ForcedRollback();
