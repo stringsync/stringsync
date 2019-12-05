@@ -1,69 +1,39 @@
 import { logoutResolver } from './logoutResolver';
 import { getFixtures, getTestCtxProvider } from '../../testing';
-import { clearUserSessionTokenCookie } from '../../user-session/';
-import { RequestContext } from '../../request-context';
-import { RawUser } from '../../db';
 
-const NOW = new Date();
 const FIXTURES = getFixtures();
-const STUDENT1: RawUser = {
-  ...FIXTURES.User.student1,
-  createdAt: NOW,
-  updatedAt: NOW,
-  role: 'student',
-  confirmationToken: '',
-  confirmedAt: null,
-  resetPasswordToken: '',
-  resetPasswordTokenSentAt: null,
-  avatarUrl: '',
+const USER = FIXTURES.User.student1;
+const USER_SESSION = FIXTURES.UserSession.student1Session;
+const NOW = USER_SESSION.issuedAt;
+const LOGGED_IN_HEADERS = {
+  cookie: `USER_SESSION_TOKEN=${USER_SESSION.token}`,
 };
-const STUDENT1_SESSION = FIXTURES.UserSession.student1Session;
-
-jest.mock('../../user-session/', () => ({
-  clearUserSessionTokenCookie: jest.fn(),
-}));
 
 const provideTestCtx = getTestCtxProvider();
 
-const appearLoggedIn = (
-  ctx: RequestContext,
-  token: string,
-  user: RawUser
-): void => {
-  // setup ctx to appear logged in
-  ctx.auth.token = token;
-  ctx.auth.user = user;
-  ctx.auth.isLoggedIn = true;
-};
-
 it(
   'should clear the user session token from cookies',
-  provideTestCtx({}, {}, async (ctx) => {
-    await logoutResolver(undefined, {}, ctx);
-    expect(clearUserSessionTokenCookie).toBeCalledTimes(1);
-  })
+  provideTestCtx(
+    { User: [USER], UserSession: [USER_SESSION] },
+    { requestedAt: NOW, req: { headers: LOGGED_IN_HEADERS } },
+    async (ctx) => {
+      await logoutResolver(undefined, {}, ctx);
+
+      expect(ctx.res.cookies['USER_SESSION_TOKEN'].value).toBe('');
+    }
+  )
 );
 
 it(
   'should remove the user session from the database',
   provideTestCtx(
-    { User: [STUDENT1], UserSession: [STUDENT1_SESSION] },
-    {},
+    { User: [USER], UserSession: [USER_SESSION] },
+    { requestedAt: NOW, req: { headers: LOGGED_IN_HEADERS } },
     async (ctx) => {
-      appearLoggedIn(ctx, STUDENT1_SESSION.token, STUDENT1);
-
-      // check that user session exists in db
-      let userSession = await ctx.db.models.UserSession.findOne({
-        where: { token: STUDENT1_SESSION.token },
-      });
-      expect(userSession).not.toBeNull();
-
-      // do logout
       await logoutResolver(undefined, {}, ctx);
 
-      // check that user session does not exist is db
-      userSession = await ctx.db.models.UserSession.findOne({
-        where: { token: STUDENT1_SESSION.token },
+      const userSession = await ctx.db.models.UserSession.findOne({
+        where: { token: USER_SESSION.token },
       });
       expect(userSession).toBeNull();
     }
@@ -73,15 +43,13 @@ it(
 it(
   'returns the user that was logged out',
   provideTestCtx(
-    { User: [STUDENT1], UserSession: [STUDENT1_SESSION] },
-    {},
+    { User: [USER], UserSession: [USER_SESSION] },
+    { requestedAt: NOW, req: { headers: LOGGED_IN_HEADERS } },
     async (ctx) => {
-      appearLoggedIn(ctx, STUDENT1_SESSION.token, STUDENT1);
-
       const { user } = await logoutResolver(undefined, {}, ctx);
 
       expect(user).not.toBeNull();
-      expect(user!.id).toBe(STUDENT1.id);
+      expect(user!.id).toBe(USER.id);
     }
   )
 );

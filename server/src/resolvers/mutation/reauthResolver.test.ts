@@ -53,7 +53,7 @@ it(
   })
 );
 
-it(
+it.skip(
   'does not throw an error when user session exists',
   provideTestCtx(
     { User: [USER], UserSession: [USER_SESSION] },

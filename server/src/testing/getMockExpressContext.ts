@@ -1,12 +1,10 @@
-import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 import { createRequest, createResponse } from 'node-mocks-http';
-import { ExpressContextOptions } from './types';
+import { ExpressContextOptions, MockExpressContext } from './types';
 
 export const getMockExpressContext = (
   options: ExpressContextOptions
-): ExpressContext => {
-  return {
-    req: createRequest(options.req),
-    res: createResponse(options.res),
-  };
+): MockExpressContext => {
+  const req = createRequest(options.req);
+  const res = createResponse({ req, ...options.res });
+  return { req, res };
 };

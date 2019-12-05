@@ -1,7 +1,5 @@
 import { Db, RawUser } from '../db';
-import { Request, Response } from 'express';
 import { getDataLoaders } from '../data-loaders';
-import { ContextFunction } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 
 export interface Auth {
@@ -10,21 +8,16 @@ export interface Auth {
   token: string;
 }
 
-export interface Cookies {
+export type Cookies = {
   USER_SESSION_TOKEN: string;
-}
+};
 
-export interface RequestContext {
+export interface RequestContext<E extends ExpressContext = ExpressContext> {
+  requestedAt: Date;
   auth: Auth;
   cookies: Cookies;
   dataLoaders: ReturnType<typeof getDataLoaders>;
   db: Db;
-  req: Request;
-  requestedAt: Date;
-  res: Response;
+  req: E['req'];
+  res: E['res'];
 }
-
-export type RequestContextCreator = ContextFunction<
-  ExpressContext,
-  RequestContext
->;
