@@ -1,12 +1,11 @@
-import { Db } from '../db';
-import { User } from 'common/types';
+import { Db, RawUser } from '../db';
 import { Request, Response } from 'express';
 import { getDataLoaders } from '../data-loaders';
 import { ContextFunction } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 
 export interface Auth {
-  user: User | null;
+  user: RawUser | null;
   isLoggedIn: boolean;
   token: string;
 }

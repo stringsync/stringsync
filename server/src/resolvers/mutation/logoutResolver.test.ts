@@ -2,15 +2,20 @@ import { logoutResolver } from './logoutResolver';
 import { getFixtures, getTestCtxProvider } from '../../testing';
 import { clearUserSessionTokenCookie } from '../../user-session/';
 import { RequestContext } from '../../request-context';
-import { User } from 'common/types';
+import { RawUser } from '../../db';
 
 const NOW = new Date();
 const FIXTURES = getFixtures();
-const STUDENT1: User = {
+const STUDENT1: RawUser = {
   ...FIXTURES.User.student1,
   createdAt: NOW,
   updatedAt: NOW,
   role: 'student',
+  confirmationToken: '',
+  confirmedAt: null,
+  resetPasswordToken: '',
+  resetPasswordTokenSentAt: null,
+  avatarUrl: '',
 };
 const STUDENT1_SESSION = FIXTURES.UserSession.student1Session;
 
@@ -23,7 +28,7 @@ const provideTestCtx = getTestCtxProvider();
 const appearLoggedIn = (
   ctx: RequestContext,
   token: string,
-  user: User
+  user: RawUser
 ): void => {
   // setup ctx to appear logged in
   ctx.auth.token = token;
