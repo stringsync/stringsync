@@ -10,7 +10,7 @@ const provideTestCtx = getTestCtxProvider();
 
 it(
   'returns the user from the db that matches the id',
-  provideTestCtx({ User: [USER1, USER2] }, async (ctx) => {
+  provideTestCtx({ User: [USER1, USER2] }, {}, async (ctx) => {
     const input: GetUserInput = { id: USER1.id };
     const user = await getUserResolver(undefined, { input }, ctx);
 
@@ -21,7 +21,7 @@ it(
 
 it(
   'returns null if the user does not exist',
-  provideTestCtx({}, async (ctx) => {
+  provideTestCtx({}, {}, async (ctx) => {
     const input: GetUserInput = { id: USER1.id };
     const user = await getUserResolver(undefined, { input }, ctx);
 

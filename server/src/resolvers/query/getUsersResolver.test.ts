@@ -7,7 +7,7 @@ const provideTestCtx = getTestCtxProvider();
 
 it(
   'returns all users',
-  provideTestCtx({ User: USERS }, async (ctx) => {
+  provideTestCtx({ User: USERS }, {}, async (ctx) => {
     const users = await getUsersResolver(undefined, {}, ctx);
 
     expect(users).toHaveLength(USERS.length);

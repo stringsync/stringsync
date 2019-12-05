@@ -38,7 +38,7 @@ const appearLoggedIn = (
 
 it(
   'should clear the user session token from cookies',
-  provideTestCtx({}, async (ctx) => {
+  provideTestCtx({}, {}, async (ctx) => {
     await logoutResolver(undefined, {}, ctx);
     expect(clearUserSessionTokenCookie).toBeCalledTimes(1);
   })
@@ -48,6 +48,7 @@ it(
   'should remove the user session from the database',
   provideTestCtx(
     { User: [STUDENT1], UserSession: [STUDENT1_SESSION] },
+    {},
     async (ctx) => {
       appearLoggedIn(ctx, STUDENT1_SESSION.token, STUDENT1);
 
@@ -73,6 +74,7 @@ it(
   'returns the user that was logged out',
   provideTestCtx(
     { User: [STUDENT1], UserSession: [STUDENT1_SESSION] },
+    {},
     async (ctx) => {
       appearLoggedIn(ctx, STUDENT1_SESSION.token, STUDENT1);
 

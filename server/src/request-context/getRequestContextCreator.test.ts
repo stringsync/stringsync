@@ -30,7 +30,7 @@ it(
     (getCookies as jest.Mock).mockReturnValueOnce(cookies);
 
     const createRequestContext = getRequestContextCreator(db);
-    const ctx = await createRequestContext(getMockExpressContext());
+    const ctx = await createRequestContext(getMockExpressContext({}));
 
     expect(getCookies).toBeCalledTimes(1);
     expect(ctx.cookies).toStrictEqual(cookies);
@@ -45,7 +45,7 @@ it(
     (getDataLoaders as jest.Mock).mockReturnValueOnce(dataLoaders);
 
     const createRequestContext = getRequestContextCreator(db);
-    const ctx = await createRequestContext(getMockExpressContext());
+    const ctx = await createRequestContext(getMockExpressContext({}));
 
     expect(getDataLoaders).toBeCalledTimes(1);
     expect(ctx.dataLoaders).toBe(dataLoaders);
@@ -59,7 +59,7 @@ it(
     (getAuthenticatedRawUser as jest.Mock).mockReturnValueOnce(user);
 
     const createRequestContext = getRequestContextCreator(db);
-    const ctx = await createRequestContext(getMockExpressContext());
+    const ctx = await createRequestContext(getMockExpressContext({}));
 
     expect(getAuthenticatedRawUser).toBeCalledTimes(1);
     expect(ctx.auth.user).toBe(user);
@@ -73,7 +73,7 @@ it(
     (getAuthenticatedRawUser as jest.Mock).mockReturnValueOnce(null);
 
     const createRequestContext = getRequestContextCreator(db);
-    const ctx = await createRequestContext(getMockExpressContext());
+    const ctx = await createRequestContext(getMockExpressContext({}));
 
     expect(getAuthenticatedRawUser).toBeCalledTimes(1);
     expect(ctx.auth.user).toBeNull();

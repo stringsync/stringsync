@@ -9,7 +9,7 @@ const provideTestCtx = getTestCtxProvider();
 
 it.each([USER1.email, USER1.username])(
   'returns the user if the username and password is correct',
-  provideTestCtx({ User: [USER1] }, async (ctx, emailOrUsername) => {
+  provideTestCtx({ User: [USER1] }, {}, async (ctx, emailOrUsername) => {
     const { UserSession } = ctx.db.models;
     expect(await UserSession.count()).toBe(0);
 
@@ -30,7 +30,7 @@ it.each([USER1.email, USER1.username])(
 
 it(
   'throws an error if the user does not exist',
-  provideTestCtx({}, async (ctx) => {
+  provideTestCtx({}, {}, async (ctx) => {
     const input: LoginInput = {
       emailOrUsername: USER1.email,
       password: PASSWORD,
@@ -44,7 +44,7 @@ it(
 
 it(
   'throws an error is the password is wrong',
-  provideTestCtx({ User: [USER1] }, async (ctx) => {
+  provideTestCtx({ User: [USER1] }, {}, async (ctx) => {
     const input: LoginInput = {
       emailOrUsername: USER1.email,
       password: 'wrong password',
