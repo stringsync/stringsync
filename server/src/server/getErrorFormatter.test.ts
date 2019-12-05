@@ -16,23 +16,22 @@ const INTERNAL_SERVER_ERROR = new GraphQLError(
   { code: 'INTERNAL_SERVER_ERROR' }
 );
 
-it('does not sanitize internal errors in nonprod', () => {
-  for (const env of NONPROD_ENVS) {
-    const errorFormatter = getErrorFormatter(env);
-    expect(errorFormatter(INTERNAL_SERVER_ERROR).message).toEqual(
-      SECRET_SERVER_DETAILS
-    );
-  }
+it.each(NONPROD_ENVS)('does not sanitize internal errors in nonprod', (env) => {
+  const errorFormatter = getErrorFormatter(env);
+  expect(errorFormatter(INTERNAL_SERVER_ERROR).message).toEqual(
+    SECRET_SERVER_DETAILS
+  );
 });
 
-it('does not sanitize non internal errors in nonprod', () => {
-  for (const env of NONPROD_ENVS) {
+it.each(NONPROD_ENVS)(
+  'does not sanitize non internal errors in nonprod',
+  (env) => {
     const errorFormatter = getErrorFormatter(env);
     expect(errorFormatter(NON_INTERNAL_SERVER_ERROR).message).toEqual(
       SECRET_SERVER_DETAILS
     );
   }
-});
+);
 
 it('sanitizes internal server errors in prod', () => {
   const errorFormatter = getErrorFormatter(PROD_ENV);
