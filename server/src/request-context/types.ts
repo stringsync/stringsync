@@ -2,6 +2,8 @@ import { Db } from '../db';
 import { User } from 'common/types';
 import { Request, Response } from 'express';
 import { getDataLoaders } from '../data-loaders';
+import { ContextFunction } from 'apollo-server-core';
+import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 
 export interface Auth {
   user: User | null;
@@ -22,3 +24,8 @@ export interface RequestContext {
   requestedAt: Date;
   res: Response;
 }
+
+export type RequestContextCreator = ContextFunction<
+  ExpressContext,
+  RequestContext
+>;
