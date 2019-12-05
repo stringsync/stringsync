@@ -16,7 +16,7 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-it('wraps the ApolloServer constructor', (done) => {
+it('wraps the ApolloServer constructor', () => {
   const config = getConfig(process.env);
   const db = Symbol('db') as any;
   const schema = Symbol('schema') as any;
@@ -46,5 +46,4 @@ it('wraps the ApolloServer constructor', (done) => {
   expect(getRequestContextCreator).toBeCalledWith(db);
   expect(getErrorFormatter).toBeCalledWith(config.NODE_ENV);
   expect(server).toBe(apolloServer);
-  done();
 });

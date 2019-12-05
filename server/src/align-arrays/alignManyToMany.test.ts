@@ -22,7 +22,7 @@ const getKeys = (value: string) => {
   }
 };
 
-it('aligns keys with values', (done) => {
+it('aligns keys with values', () => {
   const keys = [KEY1, KEY2, KEY3];
   const values = [VAL1, VAL2, VAL3];
 
@@ -33,10 +33,9 @@ it('aligns keys with values', (done) => {
   });
 
   expect(actual).toEqual([[VAL1, VAL2, VAL3], [VAL1, VAL3], [VAL2, VAL3]]);
-  done();
 });
 
-it('dedups values', (done) => {
+it('dedups values', () => {
   const keys = [KEY1, KEY2, KEY3];
   const values = [VAL1, VAL2, VAL3, VAL2, VAL3, VAL3];
 
@@ -47,10 +46,9 @@ it('dedups values', (done) => {
   });
 
   expect(actual).toEqual([[VAL1, VAL2, VAL3], [VAL1, VAL3], [VAL2, VAL3]]);
-  done();
 });
 
-it('excludes missing values', (done) => {
+it('excludes missing values', () => {
   const keys = [KEY1, KEY2, KEY3];
   const values = [VAL1, VAL3];
 
@@ -61,5 +59,4 @@ it('excludes missing values', (done) => {
   });
 
   expect(actual).toEqual([[VAL1, VAL3], [VAL1, VAL3], [VAL3]]);
-  done();
 });

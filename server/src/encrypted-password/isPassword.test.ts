@@ -3,7 +3,7 @@ import { isPassword } from './isPassword';
 
 const PASSWORD = 'foobar1337';
 
-it('can verify the output of getEncryptedPassword', async (done) => {
+it('can verify the output of getEncryptedPassword', async () => {
   const encryptedPassword1 = await getEncryptedPassword(PASSWORD);
   const encryptedPassword2 = await getEncryptedPassword(PASSWORD);
 
@@ -12,5 +12,4 @@ it('can verify the output of getEncryptedPassword', async (done) => {
 
   expect(isPassword1).toBe(true);
   expect(isPassword2).toBe(true);
-  done();
 });

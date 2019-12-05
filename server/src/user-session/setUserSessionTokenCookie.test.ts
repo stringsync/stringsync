@@ -15,7 +15,7 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-it('sets the cookie on the res object', (done) => {
+it('sets the cookie on the res object', () => {
   setUserSessionTokenCookie(userSession, res);
 
   expect(res.cookie).toBeCalledTimes(1);
@@ -23,5 +23,4 @@ it('sets the cookie on the res object', (done) => {
     httpOnly: true,
     expires: NOW,
   });
-  done();
 });
