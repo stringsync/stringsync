@@ -1,16 +1,14 @@
 import { getUserResolver } from './getUserResolver';
 import { GetUserInput } from 'common/types';
-import { getTestCtxProvider, getFixtures } from '../../testing';
+import { useTestCtx, getFixtures } from '../../testing';
 
 const USER_FIXTURES = getFixtures().User;
 const USER1 = USER_FIXTURES.student1;
 const USER2 = USER_FIXTURES.student2;
 
-const provideTestCtx = getTestCtxProvider();
-
 it(
   'returns the user from the db that matches the id',
-  provideTestCtx({ User: [USER1, USER2] }, {}, async (ctx) => {
+  useTestCtx({ User: [USER1, USER2] }, {}, async (ctx) => {
     const input: GetUserInput = { id: USER1.id };
     const user = await getUserResolver(undefined, { input }, ctx);
 
@@ -21,7 +19,7 @@ it(
 
 it(
   'returns null if the user does not exist',
-  provideTestCtx({}, {}, async (ctx) => {
+  useTestCtx({}, {}, async (ctx) => {
     const input: GetUserInput = { id: USER1.id };
     const user = await getUserResolver(undefined, { input }, ctx);
 

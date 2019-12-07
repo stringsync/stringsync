@@ -1,7 +1,5 @@
 import { getRawUser } from './getRawUser';
-import { getTestDbProvider, getFixtures } from '../../../testing';
-
-const provideTestDb = getTestDbProvider();
+import { useTestDb, getFixtures } from '../../../testing';
 
 const USER_FIXTURES = getFixtures().User;
 const USER1 = USER_FIXTURES.student1;
@@ -9,7 +7,7 @@ const USER2 = USER_FIXTURES.student2;
 
 it(
   'finds a user matching the id',
-  provideTestDb({ User: [USER1, USER2] }, async (db) => {
+  useTestDb({ User: [USER1, USER2] }, async (db) => {
     const rawUser = await getRawUser(db, USER1.id);
 
     expect(rawUser).not.toBeNull();
@@ -19,7 +17,7 @@ it(
 
 it(
   'returns null when the user is not in db',
-  provideTestDb({}, async (db) => {
+  useTestDb({}, async (db) => {
     const rawUser = await getRawUser(db, USER1.id);
 
     expect(rawUser).toBeNull();

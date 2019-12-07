@@ -1,13 +1,11 @@
 import { createRawUserSession } from './createRawUserSession';
-import { getTestDbProvider, getFixtures } from '../../../testing';
+import { useTestDb, getFixtures } from '../../../testing';
 
 const STUDENT1 = getFixtures().User.student1;
 
-const provideTestDb = getTestDbProvider();
-
 it(
   'sets expiresAt 14 days from issuedAt',
-  provideTestDb(
+  useTestDb(
     {
       User: [STUDENT1],
     },
@@ -26,7 +24,7 @@ it(
 
 it.each([0, 1, 2, 3])(
   'saves n sessions for a particular user',
-  provideTestDb(
+  useTestDb(
     {
       User: [STUDENT1],
     },

@@ -1,5 +1,5 @@
 import { logoutResolver } from './logoutResolver';
-import { getFixtures, getTestCtxProvider } from '../../testing';
+import { getFixtures, useTestCtx } from '../../testing';
 
 const FIXTURES = getFixtures();
 const USER = FIXTURES.User.student1;
@@ -9,11 +9,9 @@ const LOGGED_IN_HEADERS = {
   cookie: `USER_SESSION_TOKEN=${USER_SESSION.token}`,
 };
 
-const provideTestCtx = getTestCtxProvider();
-
 it(
   'should clear the user session token from cookies',
-  provideTestCtx(
+  useTestCtx(
     { User: [USER], UserSession: [USER_SESSION] },
     { requestedAt: NOW, req: { headers: LOGGED_IN_HEADERS } },
     async (ctx) => {
@@ -26,7 +24,7 @@ it(
 
 it(
   'should remove the user session from the database',
-  provideTestCtx(
+  useTestCtx(
     { User: [USER], UserSession: [USER_SESSION] },
     { requestedAt: NOW, req: { headers: LOGGED_IN_HEADERS } },
     async (ctx) => {
@@ -42,7 +40,7 @@ it(
 
 it(
   'returns the user that was logged out',
-  provideTestCtx(
+  useTestCtx(
     { User: [USER], UserSession: [USER_SESSION] },
     { requestedAt: NOW, req: { headers: LOGGED_IN_HEADERS } },
     async (ctx) => {

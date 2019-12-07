@@ -17,22 +17,19 @@ class ForcedRollback extends Error {
  * Anything done in the callback will be rolled back, allowing
  * db tests to be hermetic.
  */
-export const getTestDbProvider = () => {
+export const useTestDb = <A extends any[]>(
+  fixtureMap: FixtureMap,
+  callback: DbCallback<A>
+) => async (...args: A) => {
   const config = getConfig(process.env);
   const db = connectToDb(config);
-
-  return <A extends any[]>(
-    fixtureMap: FixtureMap,
-    callback: DbCallback<A>
-  ) => async (...args: A) => {
-    try {
-      await transaction(db, async () => {
-        await createFixtures(db, fixtureMap);
-        await callback(db, ...args);
-        throw new ForcedRollback();
-      });
-    } catch (e) {
-      if (!(e instanceof ForcedRollback)) throw e;
-    }
-  };
+  try {
+    await transaction(db, async () => {
+      await createFixtures(db, fixtureMap);
+      await callback(db, ...args);
+      throw new ForcedRollback();
+    });
+  } catch (e) {
+    if (!(e instanceof ForcedRollback)) throw e;
+  }
 };

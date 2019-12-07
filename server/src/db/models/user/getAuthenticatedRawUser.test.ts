@@ -1,5 +1,5 @@
 import { getAuthenticatedRawUser } from './getAuthenticatedRawUser';
-import { getFixtures, getTestDbProvider } from '../../../testing';
+import { getFixtures, useTestDb } from '../../../testing';
 
 const TOKEN = '23dd7932-a42e-42af-95fc-045ef1080bfd';
 const NOW = new Date('2019-01-01');
@@ -10,11 +10,9 @@ const FIXTURES = getFixtures();
 const STUDENT1 = FIXTURES.User.student1;
 const STUDENT1_SESSION = FIXTURES.UserSession.student1Session;
 
-const provideTestDb = getTestDbProvider();
-
 it(
   'returns null when the token is empty',
-  provideTestDb({}, async (db) => {
+  useTestDb({}, async (db) => {
     const token = '';
     const user = await getAuthenticatedRawUser(db, token, NOW);
     expect(user).toBeNull();
@@ -23,7 +21,7 @@ it(
 
 it(
   'returns null when there is no user session in the db for it',
-  provideTestDb({}, async (db) => {
+  useTestDb({}, async (db) => {
     const user = await getAuthenticatedRawUser(db, TOKEN, NOW);
     expect(user).toBeNull();
   })
@@ -31,7 +29,7 @@ it(
 
 it(
   'returns null when the db user session is expired',
-  provideTestDb(
+  useTestDb(
     {
       User: [STUDENT1],
       UserSession: [{ ...STUDENT1_SESSION, expiresAt: PAST }],
@@ -46,7 +44,7 @@ it(
 
 it(
   'returns user when the db user session is active ',
-  provideTestDb(
+  useTestDb(
     {
       User: [STUDENT1],
       UserSession: [{ ...STUDENT1_SESSION, expiresAt: FUTURE }],

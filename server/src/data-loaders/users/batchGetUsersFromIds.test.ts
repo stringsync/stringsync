@@ -1,5 +1,5 @@
 import { batchGetUsersFromIds } from './batchGetUsersFromIds';
-import { getTestDbProvider, getFixtures } from '../../testing';
+import { useTestDb, getFixtures } from '../../testing';
 import { User } from 'common/types';
 
 const USER_FIXTURES = getFixtures().User;
@@ -7,15 +7,13 @@ const STUDENT1 = USER_FIXTURES.student1;
 const STUDENT2 = USER_FIXTURES.student2;
 const TEACHER1 = USER_FIXTURES.teacher1;
 
-const provideTestDb = getTestDbProvider();
-
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 it(
   'fetches multiple users',
-  provideTestDb(
+  useTestDb(
     {
       User: [STUDENT1, STUDENT2, TEACHER1],
     },
@@ -36,7 +34,7 @@ it(
 
 it(
   'does not over-fetch users',
-  provideTestDb(
+  useTestDb(
     {
       User: [STUDENT1, STUDENT2, TEACHER1],
     },
@@ -60,7 +58,7 @@ it(
 
 it(
   'fills missing values with null',
-  provideTestDb(
+  useTestDb(
     {
       User: [TEACHER1],
     },

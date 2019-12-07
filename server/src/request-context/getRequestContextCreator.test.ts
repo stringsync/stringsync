@@ -2,7 +2,7 @@ import { getCookies } from './getCookies';
 import { getAuthenticatedRawUser } from '../db/models/user/getAuthenticatedRawUser';
 import { getRequestContextCreator } from './getRequestContextCreator';
 import { getDataLoaders } from '../data-loaders/getDataLoaders';
-import { getTestDbProvider, getMockExpressContext } from '../testing';
+import { useTestDb, getMockExpressContext } from '../testing';
 
 jest.mock('./getCookies', () => ({
   getCookies: jest.fn().mockReturnValue({}),
@@ -16,15 +16,13 @@ jest.mock('../data-loaders/getDataLoaders', () => ({
   getDataLoaders: jest.fn().mockReturnValue({}),
 }));
 
-const provideTestDb = getTestDbProvider();
-
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 it(
   'uses getCookies',
-  provideTestDb({}, async (db) => {
+  useTestDb({}, async (db) => {
     const userSessionToken = 'foo-token';
     const cookies = { USER_SESSION_TOKEN: userSessionToken };
     (getCookies as jest.Mock).mockReturnValueOnce(cookies);
@@ -40,7 +38,7 @@ it(
 
 it(
   'uses getDataLoaders',
-  provideTestDb({}, async (db) => {
+  useTestDb({}, async (db) => {
     const dataLoaders = Symbol('data-loaders');
     (getDataLoaders as jest.Mock).mockReturnValueOnce(dataLoaders);
 
@@ -54,7 +52,7 @@ it(
 
 it(
   'handles when getAuthenticatedRawUser returns a user',
-  provideTestDb({}, async (db) => {
+  useTestDb({}, async (db) => {
     const user = Symbol('user');
     (getAuthenticatedRawUser as jest.Mock).mockReturnValueOnce(user);
 
@@ -69,7 +67,7 @@ it(
 
 it(
   'handles when getAuthenticatedRawUser returns null',
-  provideTestDb({}, async (db) => {
+  useTestDb({}, async (db) => {
     (getAuthenticatedRawUser as jest.Mock).mockReturnValueOnce(null);
 
     const createRequestContext = getRequestContextCreator(db);
