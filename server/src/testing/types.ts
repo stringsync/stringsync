@@ -4,6 +4,7 @@ import {
   ResponseOptions,
   MockRequest,
   MockResponse,
+  Cookies,
 } from 'node-mocks-http';
 import { Request, Response } from 'express';
 import { RequestContext } from '../request-context';
@@ -18,8 +19,9 @@ export interface ExpressContextOptions {
   res?: ResponseOptions;
 }
 
-export type MockContextCreatorOptions = ExpressContextOptions & {
+export type CtxOptions = {
   requestedAt?: Date;
+  cookies?: Cookies;
 };
 
 export type FixtureMap = Partial<
