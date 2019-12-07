@@ -3,6 +3,7 @@ import {
   createRawUserSession,
   toCanonicalUser,
   destroyUserSession,
+  transaction,
 } from '../../db';
 import {
   setUserSessionTokenCookie,
@@ -25,7 +26,7 @@ export const reauthResolver = async (
     throw new ForbiddenError(BAD_SESSION_TOKEN_MSG);
   }
 
-  return ctx.db.transaction(async (transaction) => {
+  return transaction(ctx.db, async () => {
     const oldRawUserSession = await ctx.db.models.UserSession.findOne({
       raw: true,
       where: { token },
