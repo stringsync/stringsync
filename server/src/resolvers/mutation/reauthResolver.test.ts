@@ -1,7 +1,6 @@
 import { reauthResolver } from './reauthResolver';
 import { useTestCtx, getFixtures } from '../../testing';
 import { shouldRefreshUserSession } from '../../user-session/shouldRefreshUserSession';
-import { createRawUserSession } from '../../db';
 
 jest.mock('../../user-session/shouldRefreshUserSession', () => ({
   shouldRefreshUserSession: jest.fn(),
@@ -77,6 +76,27 @@ it(
       expect(userSessions).toHaveLength(1);
       const userSession = userSessions[0];
       expect(userSession.token).not.toBe(USER_SESSION_TOKEN);
+    }
+  )
+);
+
+it(
+  'sets the new session token in the cookies',
+  useTestCtx(
+    { User: [USER], UserSession: [USER_SESSION] },
+    { requestedAt: USER_SESSION.issuedAt, cookies: { USER_SESSION_TOKEN } },
+    async (ctx) => {
+      (shouldRefreshUserSession as jest.Mock).mockReturnValueOnce(true);
+
+      await reauthResolver(undefined, {}, ctx);
+
+      const userSession = await ctx.db.models.UserSession.findOne({
+        where: { userId: USER.id },
+      });
+      expect(userSession).not.toBeNull();
+      expect(ctx.res.cookies['USER_SESSION_TOKEN'].value).toBe(
+        userSession!.token
+      );
     }
   )
 );
