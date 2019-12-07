@@ -2,7 +2,8 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dst",
-    "allowJs": true
+    "allowJs": true,
+    "lib": ["es2017"]
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "src/db/migrations/**/*", "src/db/seeders/**/*"]
