@@ -13,7 +13,7 @@ export const createRawUserSession = async (
   return await db.models.UserSession.create(
     {
       issuedAt,
-      userId: userId,
+      userId,
       expiresAt,
     },
     { raw: true }

@@ -1,6 +1,15 @@
 import { reauthResolver } from './reauthResolver';
 import { useTestCtx, getFixtures } from '../../testing';
-import { getRawUserByEmailOrUsername } from '../../db';
+import { shouldRefreshUserSession } from '../../user-session/shouldRefreshUserSession';
+import { createRawUserSession } from '../../db';
+
+jest.mock('../../user-session/shouldRefreshUserSession', () => ({
+  shouldRefreshUserSession: jest.fn(),
+}));
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
 const FIXTURES = getFixtures();
 const USER = FIXTURES.User.student1;
@@ -9,24 +18,6 @@ const USER_SESSION_TOKEN = USER_SESSION.token;
 
 it(
   'throws an error when not logged in',
-  useTestCtx({}, {}, async (ctx) => {
-    await expect(reauthResolver(undefined, {}, ctx)).rejects.toThrowError(
-      'invalid or expired credentials'
-    );
-  })
-);
-
-it(
-  'throws an error when no user',
-  useTestCtx({}, {}, async (ctx) => {
-    await expect(reauthResolver(undefined, {}, ctx)).rejects.toThrowError(
-      'invalid or expired credentials'
-    );
-  })
-);
-
-it(
-  'throws an error when no token',
   useTestCtx({}, {}, async (ctx) => {
     await expect(reauthResolver(undefined, {}, ctx)).rejects.toThrowError(
       'invalid or expired credentials'
@@ -50,6 +41,42 @@ it(
     { requestedAt: USER_SESSION.issuedAt, cookies: { USER_SESSION_TOKEN } },
     async (ctx) => {
       await expect(reauthResolver(undefined, {}, ctx)).resolves.not.toThrow();
+    }
+  )
+);
+
+it(
+  'destroy the old session token if it should refresh',
+  useTestCtx(
+    { User: [USER], UserSession: [USER_SESSION] },
+    { requestedAt: USER_SESSION.issuedAt, cookies: { USER_SESSION_TOKEN } },
+    async (ctx) => {
+      (shouldRefreshUserSession as jest.Mock).mockReturnValueOnce(true);
+
+      await reauthResolver(undefined, {}, ctx);
+
+      const userSession = await ctx.db.models.UserSession.findOne({
+        where: { token: USER_SESSION_TOKEN },
+      });
+      expect(userSession).toBeNull();
+    }
+  )
+);
+
+it(
+  'creates a new session token if it should refresh',
+  useTestCtx(
+    { User: [USER], UserSession: [USER_SESSION] },
+    { requestedAt: USER_SESSION.issuedAt, cookies: { USER_SESSION_TOKEN } },
+    async (ctx) => {
+      (shouldRefreshUserSession as jest.Mock).mockReturnValueOnce(true);
+
+      await reauthResolver(undefined, {}, ctx);
+
+      const userSessions = await ctx.db.models.UserSession.findAll();
+      expect(userSessions).toHaveLength(1);
+      const userSession = userSessions[0];
+      expect(userSession.token).not.toBe(USER_SESSION_TOKEN);
     }
   )
 );

@@ -26,21 +26,21 @@ export const reauthResolver = async (
     throw new ForbiddenError(BAD_SESSION_TOKEN_MSG);
   }
 
-  return transaction(ctx.db, async () => {
-    const oldRawUserSession = await ctx.db.models.UserSession.findOne({
-      raw: true,
-      where: { token },
-    });
+  const oldRawUserSession = await ctx.db.models.UserSession.findOne({
+    raw: true,
+    where: { token },
+  });
 
-    if (!oldRawUserSession) {
-      throw new ForbiddenError(BAD_SESSION_TOKEN_MSG);
-    }
+  if (!oldRawUserSession) {
+    throw new ForbiddenError(BAD_SESSION_TOKEN_MSG);
+  }
 
-    if (oldRawUserSession.expiresAt < ctx.requestedAt) {
-      throw new ForbiddenError(BAD_SESSION_TOKEN_MSG);
-    }
+  if (oldRawUserSession.expiresAt < ctx.requestedAt) {
+    throw new ForbiddenError(BAD_SESSION_TOKEN_MSG);
+  }
 
-    if (shouldRefreshUserSession(ctx.requestedAt, oldRawUserSession.issuedAt)) {
+  if (shouldRefreshUserSession(ctx.requestedAt, oldRawUserSession.issuedAt)) {
+    await transaction(ctx.db, async () => {
       await destroyUserSession(ctx.db, oldRawUserSession.token);
       const rawUserSession = await createRawUserSession(
         ctx.db,
@@ -48,8 +48,8 @@ export const reauthResolver = async (
         ctx.requestedAt
       );
       setUserSessionTokenCookie(rawUserSession, ctx.res);
-    }
+    });
+  }
 
-    return { user: toCanonicalUser(user) };
-  });
+  return { user: toCanonicalUser(user) };
 };
