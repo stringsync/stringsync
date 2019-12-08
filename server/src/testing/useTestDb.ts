@@ -22,7 +22,7 @@ export const useTestDb = <A extends any[]>(
   callback: DbCallback<A>
 ) => async (...args: A) => {
   const config = getConfig(process.env);
-  const db = connectToDb(config);
+  const db = connectToDb(config, false);
   try {
     await transaction(db, async () => {
       await createFixtures(db, fixtureMap);

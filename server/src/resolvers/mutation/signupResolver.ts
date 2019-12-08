@@ -1,6 +1,5 @@
-import { ValidationError } from 'sequelize';
 import { SignupInput, SignupPayload } from 'common/types';
-import { UserInputError } from 'apollo-server';
+import { ForbiddenError } from 'apollo-server';
 import { getEncryptedPassword } from '../../password';
 import { createRawUserSession, toCanonicalUser, transaction } from '../../db';
 import { setUserSessionTokenCookie } from '../../user-session';
@@ -15,27 +14,24 @@ export const signupResolver = async (
   args: Args,
   ctx: RequestContext
 ): Promise<SignupPayload> => {
+  if (ctx.auth.isLoggedIn) {
+    throw new ForbiddenError('already logged in');
+  }
+
   const { username, email, password } = args.input;
   const encryptedPassword = await getEncryptedPassword(password);
   return transaction(ctx.db, async () => {
-    try {
-      const userModel = await ctx.db.models.User.create({
-        username,
-        email,
-        encryptedPassword,
-      });
-      const userSessionModel = await createRawUserSession(
-        ctx.db,
-        userModel.id,
-        ctx.requestedAt
-      );
-      setUserSessionTokenCookie(userSessionModel, ctx.res);
-      return { user: toCanonicalUser(userModel) };
-    } catch (err) {
-      if (err instanceof ValidationError) {
-        throw new UserInputError(err.message);
-      }
-      throw err;
-    }
+    const userModel = await ctx.db.models.User.create({
+      username,
+      email,
+      encryptedPassword,
+    });
+    const userSessionModel = await createRawUserSession(
+      ctx.db,
+      userModel.id,
+      ctx.requestedAt
+    );
+    setUserSessionTokenCookie(userSessionModel, ctx.res);
+    return { user: toCanonicalUser(userModel) };
   });
 };
