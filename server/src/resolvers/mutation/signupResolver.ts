@@ -1,8 +1,8 @@
 import { SignupInput, SignupPayload } from 'common/types';
 import { ForbiddenError, UserInputError } from 'apollo-server';
 import { getEncryptedPassword } from '../../password';
-import { createRawUserSession, toCanonicalUser, transaction } from '../../db';
-import { setUserSessionTokenCookie } from '../../user-session';
+import { toCanonicalUser, transaction } from '../../db';
+import { setUserSessionTokenCookie, getExpiresAt } from '../../user-session';
 import { RequestContext } from '../../request-context';
 
 interface Args {
@@ -22,7 +22,6 @@ export const signupResolver = async (
   if (password.length < 6) {
     throw new UserInputError('password must be at least 6 characters');
   }
-
   if (password.length > 256) {
     throw new UserInputError('password must be at most 256 characters');
   }
@@ -34,11 +33,11 @@ export const signupResolver = async (
       email,
       encryptedPassword,
     });
-    const userSessionModel = await createRawUserSession(
-      ctx.db,
-      userModel.id,
-      ctx.requestedAt
-    );
+    const userSessionModel = await ctx.db.models.UserSession.create({
+      issuedAt: ctx.requestedAt,
+      userId: userModel.id,
+      expiresAt: getExpiresAt(ctx.requestedAt),
+    });
     setUserSessionTokenCookie(userSessionModel, ctx.res);
     return { user: toCanonicalUser(userModel) };
   });

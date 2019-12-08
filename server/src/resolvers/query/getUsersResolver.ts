@@ -1,5 +1,5 @@
 import { RequestContext } from '../../request-context';
-import { getRawUsers, toCanonicalUser } from '../../db';
+import { toCanonicalUser } from '../../db';
 
 interface Args {}
 
@@ -8,6 +8,6 @@ export const getUsersResolver = async (
   args: Args,
   ctx: RequestContext
 ) => {
-  const rawUsers = await getRawUsers(ctx.db);
-  return rawUsers.map(toCanonicalUser);
+  const userModels = await ctx.db.models.User.findAll();
+  return userModels.map(toCanonicalUser);
 };

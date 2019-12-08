@@ -1,13 +1,10 @@
 import { ForbiddenError } from 'apollo-server';
 import { LoginInput } from 'common/types';
-import { setUserSessionTokenCookie } from '../../user-session';
+import { setUserSessionTokenCookie, getExpiresAt } from '../../user-session';
 import { isPassword } from '../../password';
-import {
-  getRawUserByEmailOrUsername,
-  createRawUserSession,
-  toCanonicalUser,
-} from '../../db';
+import { toCanonicalUser } from '../../db';
 import { RequestContext } from '../../request-context';
+import { or } from 'sequelize';
 
 interface Args {
   input: LoginInput;
@@ -20,26 +17,30 @@ export const loginResolver = async (
   args: Args,
   ctx: RequestContext
 ) => {
-  const rawUser = await getRawUserByEmailOrUsername(
-    ctx.db,
-    args.input.emailOrUsername
-  );
+  const userModel = await ctx.db.models.User.findOne({
+    where: {
+      ...or(
+        { username: args.input.emailOrUsername },
+        { email: args.input.emailOrUsername }
+      ),
+    },
+  });
 
-  if (!rawUser) {
+  if (!userModel) {
     throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
   }
 
-  if (!(await isPassword(args.input.password, rawUser.encryptedPassword))) {
+  if (!(await isPassword(args.input.password, userModel.encryptedPassword))) {
     throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
   }
 
-  const rawUserSession = await createRawUserSession(
-    ctx.db,
-    rawUser.id,
-    ctx.requestedAt
-  );
+  const userSessionModel = await ctx.db.models.UserSession.create({
+    issuedAt: ctx.requestedAt,
+    userId: userModel.id,
+    expiresAt: getExpiresAt(ctx.requestedAt),
+  });
 
-  setUserSessionTokenCookie(rawUserSession, ctx.res);
+  setUserSessionTokenCookie(userSessionModel, ctx.res);
 
-  return { user: toCanonicalUser(rawUser) };
+  return { user: toCanonicalUser(userModel) };
 };

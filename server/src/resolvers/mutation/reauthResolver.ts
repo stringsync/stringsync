@@ -1,14 +1,9 @@
 import { ForbiddenError } from 'apollo-server';
-import {
-  createRawUserSession,
-  toCanonicalUser,
-  destroyUserSession,
-  transaction,
-  RawUserSession,
-} from '../../db';
+import { toCanonicalUser, transaction } from '../../db';
 import {
   setUserSessionTokenCookie,
   shouldRefreshUserSession,
+  getExpiresAt,
 } from '../../user-session';
 import { RequestContext } from '../../request-context';
 import { ReauthPayload } from 'common/types';
@@ -28,34 +23,31 @@ export const reauthResolver = async (
     throw new ForbiddenError(BAD_SESSION_TOKEN_MSG);
   }
 
-  const oldRawUserSession: RawUserSession | null = await ctx.db.models.UserSession.findOne(
-    {
-      raw: true,
-      where: { token },
-    }
-  );
+  const oldUserSessionModel = await ctx.db.models.UserSession.findOne({
+    where: { token },
+  });
 
-  if (!oldRawUserSession) {
+  if (!oldUserSessionModel) {
     throw new ForbiddenError(BAD_SESSION_TOKEN_MSG);
   }
 
-  if (oldRawUserSession.expiresAt < ctx.requestedAt) {
+  if (oldUserSessionModel.expiresAt < ctx.requestedAt) {
     throw new ForbiddenError(BAD_SESSION_TOKEN_MSG);
   }
 
-  if (shouldRefreshUserSession(ctx.requestedAt, oldRawUserSession.issuedAt)) {
+  if (shouldRefreshUserSession(ctx.requestedAt, oldUserSessionModel.issuedAt)) {
     await transaction(ctx.db, async () => {
-      await destroyUserSession(ctx.db, oldRawUserSession.token);
-      const rawUserSession = await createRawUserSession(
-        ctx.db,
-        user.id,
-        ctx.requestedAt
-      );
-      setUserSessionTokenCookie(rawUserSession, ctx.res);
+      await oldUserSessionModel.destroy();
+      const newUserSessionModel = await ctx.db.models.UserSession.create({
+        issuedAt: ctx.requestedAt,
+        userId: user.id,
+        expiresAt: getExpiresAt(ctx.requestedAt),
+      });
+      setUserSessionTokenCookie(newUserSessionModel, ctx.res);
     });
   } else {
     // should be a noop, but we set it anyway for tests
-    setUserSessionTokenCookie(oldRawUserSession, ctx.res);
+    setUserSessionTokenCookie(oldUserSessionModel, ctx.res);
   }
 
   return { user: toCanonicalUser(user) };
