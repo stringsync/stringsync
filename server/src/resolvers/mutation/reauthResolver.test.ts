@@ -100,3 +100,51 @@ it(
     }
   )
 );
+
+it(
+  'does not destroy the user session if it should not refresh',
+  useTestCtx(
+    { User: [USER], UserSession: [USER_SESSION] },
+    { requestedAt: USER_SESSION.issuedAt, cookies: { USER_SESSION_TOKEN } },
+    async (ctx) => {
+      (shouldRefreshUserSession as jest.Mock).mockReturnValueOnce(false);
+
+      await reauthResolver(undefined, {}, ctx);
+
+      const userSession = await ctx.db.models.UserSession.findOne({
+        where: { token: USER_SESSION_TOKEN },
+      });
+      expect(userSession).not.toBeNull();
+    }
+  )
+);
+
+it(
+  'keeps the user session token in the cookies if it should not refresh',
+  useTestCtx(
+    { User: [USER], UserSession: [USER_SESSION] },
+    { requestedAt: USER_SESSION.issuedAt, cookies: { USER_SESSION_TOKEN } },
+    async (ctx) => {
+      (shouldRefreshUserSession as jest.Mock).mockReturnValueOnce(false);
+
+      await reauthResolver(undefined, {}, ctx);
+
+      expect(ctx.res.cookies['USER_SESSION_TOKEN'].value).toBe(
+        USER_SESSION_TOKEN
+      );
+    }
+  )
+);
+
+it(
+  'returns the logged in user',
+  useTestCtx(
+    { User: [USER], UserSession: [USER_SESSION] },
+    { requestedAt: USER_SESSION.issuedAt, cookies: { USER_SESSION_TOKEN } },
+    async (ctx) => {
+      const reauthPayload = await reauthResolver(undefined, {}, ctx);
+
+      expect(reauthPayload.user.id).toBe(USER.id);
+    }
+  )
+);

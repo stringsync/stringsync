@@ -4,12 +4,14 @@ import {
   toCanonicalUser,
   destroyUserSession,
   transaction,
+  RawUserSession,
 } from '../../db';
 import {
   setUserSessionTokenCookie,
   shouldRefreshUserSession,
 } from '../../user-session';
 import { RequestContext } from '../../request-context';
+import { ReauthPayload } from 'common/types';
 
 interface Args {}
 
@@ -19,17 +21,19 @@ export const reauthResolver = async (
   parent: undefined,
   args: Args,
   ctx: RequestContext
-) => {
+): Promise<ReauthPayload> => {
   const { isLoggedIn, user, token } = ctx.auth;
 
   if (!isLoggedIn || !user || !token) {
     throw new ForbiddenError(BAD_SESSION_TOKEN_MSG);
   }
 
-  const oldRawUserSession = await ctx.db.models.UserSession.findOne({
-    raw: true,
-    where: { token },
-  });
+  const oldRawUserSession: RawUserSession | null = await ctx.db.models.UserSession.findOne(
+    {
+      raw: true,
+      where: { token },
+    }
+  );
 
   if (!oldRawUserSession) {
     throw new ForbiddenError(BAD_SESSION_TOKEN_MSG);
@@ -49,6 +53,9 @@ export const reauthResolver = async (
       );
       setUserSessionTokenCookie(rawUserSession, ctx.res);
     });
+  } else {
+    // should be a noop, but we set it anyway for tests
+    setUserSessionTokenCookie(oldRawUserSession, ctx.res);
   }
 
   return { user: toCanonicalUser(user) };
