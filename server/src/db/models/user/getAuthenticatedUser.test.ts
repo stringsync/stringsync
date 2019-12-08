@@ -1,4 +1,4 @@
-import { getAuthenticatedRawUser } from './getAuthenticatedRawUser';
+import { getAuthenticatedUser } from './getAuthenticatedUser';
 import { getFixtures, useTestDb } from '../../../testing';
 
 const TOKEN = '23dd7932-a42e-42af-95fc-045ef1080bfd';
@@ -14,16 +14,16 @@ it(
   'returns null when the token is empty',
   useTestDb({}, async (db) => {
     const token = '';
-    const user = await getAuthenticatedRawUser(db, token, NOW);
-    expect(user).toBeNull();
+    const rawUser = await getAuthenticatedUser(db, token, NOW);
+    expect(rawUser).toBeNull();
   })
 );
 
 it(
   'returns null when there is no user session in the db for it',
   useTestDb({}, async (db) => {
-    const user = await getAuthenticatedRawUser(db, TOKEN, NOW);
-    expect(user).toBeNull();
+    const rawUser = await getAuthenticatedUser(db, TOKEN, NOW);
+    expect(rawUser).toBeNull();
   })
 );
 
@@ -35,9 +35,9 @@ it(
       UserSession: [{ ...STUDENT1_SESSION, expiresAt: PAST }],
     },
     async (db) => {
-      const user = await getAuthenticatedRawUser(db, TOKEN, NOW);
+      const rawUser = await getAuthenticatedUser(db, TOKEN, NOW);
 
-      expect(user).toBeNull();
+      expect(rawUser).toBeNull();
     }
   )
 );
@@ -50,9 +50,9 @@ it(
       UserSession: [{ ...STUDENT1_SESSION, expiresAt: FUTURE }],
     },
     async (db) => {
-      const user = await getAuthenticatedRawUser(db, TOKEN, NOW);
-      expect(user).not.toBeNull();
-      expect(user!.id).toBe(STUDENT1.id);
+      const rawUser = await getAuthenticatedUser(db, TOKEN, NOW);
+      expect(rawUser).not.toBeNull();
+      expect(rawUser!.id).toBe(STUDENT1.id);
     }
   )
 );

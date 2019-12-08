@@ -1,11 +1,11 @@
 import { Db } from '../../';
 import { RawUser } from './types';
 
-export const getAuthenticatedRawUser = async (
+export const getAuthenticatedUser = async (
   db: Db,
   token: string,
   requestedAt: Date
-): Promise<RawUser | null> => {
+) => {
   if (!token) {
     return null;
   }

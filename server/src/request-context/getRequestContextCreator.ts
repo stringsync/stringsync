@@ -1,5 +1,5 @@
 import { getDataLoaders } from '../data-loaders/getDataLoaders';
-import { Db, getAuthenticatedRawUser } from '../db';
+import { Db, getAuthenticatedUser } from '../db';
 import { getCookies } from './getCookies';
 import { Auth, RequestContext } from './types';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
@@ -19,7 +19,7 @@ export const getRequestContextCreator = (db: Db) => async <
   const dataLoaders = getDataLoaders(db);
   const cookies = getCookies(req.headers.cookie);
   const token = cookies.USER_SESSION_TOKEN;
-  const rawUser = await getAuthenticatedRawUser(db, token, requestedAt);
+  const rawUser = await getAuthenticatedUser(db, token, requestedAt);
   const auth: Auth = { user: rawUser, isLoggedIn: Boolean(rawUser), token };
 
   return {
