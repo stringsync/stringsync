@@ -1,7 +1,7 @@
 import { ForbiddenError } from 'apollo-server';
 import { LoginInput } from 'common/types';
 import { setUserSessionTokenCookie } from '../../user-session';
-import { isPassword } from '../../encrypted-password';
+import { isPassword } from '../../password';
 import {
   getRawUserByEmailOrUsername,
   createRawUserSession,

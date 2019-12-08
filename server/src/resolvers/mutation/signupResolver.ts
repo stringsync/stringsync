@@ -1,7 +1,7 @@
 import { SignupInput, SignupPayload } from 'common/types';
 import { UserInputError } from 'apollo-server';
 import { ValidationError } from 'sequelize';
-import { getEncryptedPassword } from '../../encrypted-password';
+import { getEncryptedPassword } from '../../password';
 import { createRawUserSession, toCanonicalUser, transaction } from '../../db';
 import { setUserSessionTokenCookie } from '../../user-session';
 import { RequestContext } from '../../request-context';
