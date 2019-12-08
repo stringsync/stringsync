@@ -11,5 +11,4 @@ module.exports = {
   moduleNameMapper: {
     '^common/(.*)': '<rootDir>/../common/$1',
   },
-  globalSetup: '<rootDir>/jest.setup.js',
 };

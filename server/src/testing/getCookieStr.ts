@@ -5,5 +5,5 @@ export const getCookieStr = (cookies: Cookies): string => {
   for (const [key, value] of Object.entries(cookies)) {
     parts.push(`${key}=${value}`);
   }
-  return parts.join(' ');
+  return parts.join(';');
 };

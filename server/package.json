@@ -13,7 +13,7 @@
     "start": "node ./dst/index.js",
     "start:dev": "nodemon -V --watch ./dst/index.js",
     "start:scripts:dev": "yarn tsc:db && sequelize db:migrate && sequelize db:seed && yarn tsc:db --watch",
-    "pretest": "yarn tsc:db",
+    "pretest": "yarn tsc:db && sequelize db:migrate",
     "test": "jest"
   },
   "dependencies": {
