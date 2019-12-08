@@ -1,7 +1,7 @@
 import { ValidationError } from 'sequelize';
 import { SignupInput, SignupPayload } from 'common/types';
 import { UserInputError } from 'apollo-server';
-import { getEncryptedPassword, validatePassword } from '../../password';
+import { getEncryptedPassword } from '../../password';
 import { createRawUserSession, toCanonicalUser, transaction } from '../../db';
 import { setUserSessionTokenCookie } from '../../user-session';
 import { RequestContext } from '../../request-context';
@@ -16,12 +16,9 @@ export const signupResolver = async (
   ctx: RequestContext
 ): Promise<SignupPayload> => {
   const { username, email, password } = args.input;
-
-  validatePassword(password);
-
-  try {
-    return transaction(ctx.db, async () => {
-      const encryptedPassword = await getEncryptedPassword(password);
+  const encryptedPassword = await getEncryptedPassword(password);
+  return transaction(ctx.db, async () => {
+    try {
       const userModel = await ctx.db.models.User.create({
         username,
         email,
@@ -34,11 +31,11 @@ export const signupResolver = async (
       );
       setUserSessionTokenCookie(userSessionModel, ctx.res);
       return { user: toCanonicalUser(userModel) };
-    });
-  } catch (err) {
-    if (err instanceof ValidationError) {
-      throw new UserInputError(err.message);
+    } catch (err) {
+      if (err instanceof ValidationError) {
+        throw new UserInputError(err.message);
+      }
+      throw err;
     }
-    throw err;
-  }
+  });
 };
