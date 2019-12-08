@@ -1,5 +1,5 @@
 import { SignupInput, SignupPayload } from 'common/types';
-import { ForbiddenError } from 'apollo-server';
+import { ForbiddenError, UserInputError } from 'apollo-server';
 import { getEncryptedPassword } from '../../password';
 import { createRawUserSession, toCanonicalUser, transaction } from '../../db';
 import { setUserSessionTokenCookie } from '../../user-session';
@@ -19,6 +19,14 @@ export const signupResolver = async (
   }
 
   const { username, email, password } = args.input;
+  if (password.length < 6) {
+    throw new UserInputError('password must be at least 6 characters');
+  }
+
+  if (password.length > 256) {
+    throw new UserInputError('password must be at most 256 characters');
+  }
+
   const encryptedPassword = await getEncryptedPassword(password);
   return transaction(ctx.db, async () => {
     const userModel = await ctx.db.models.User.create({

@@ -1,7 +1,7 @@
 import { signupResolver } from './signupResolver';
 import { useTestCtx, getFixtures } from '../../testing';
 import { SignupInput } from 'common/types';
-import { ForbiddenError } from 'apollo-server';
+import { ForbiddenError, UserInputError } from 'apollo-server';
 import { isPassword } from '../../password';
 import { ValidationError } from 'sequelize';
 
@@ -104,5 +104,45 @@ it(
     await expect(
       signupResolver(undefined, { input }, ctx)
     ).rejects.toThrowError(ValidationError);
+  })
+);
+
+it(
+  'throws a user input error when password is < 6 chars',
+  useTestCtx({}, {}, async (ctx) => {
+    const input: SignupInput = {
+      email: USER.email,
+      password: 'short',
+      username: USER.username,
+    };
+
+    await expect(
+      signupResolver(undefined, { input }, ctx)
+    ).rejects.toThrowError(
+      new UserInputError('password must be at least 6 characters')
+    );
+  })
+);
+
+it(
+  'throws a user input error when password is > 256 chars',
+  useTestCtx({}, {}, async (ctx) => {
+    const chars = new Array<string>(257);
+    for (let i = 0; i < 257; i++) {
+      chars[i] = 'a';
+    }
+    const password = chars.join('');
+
+    const input: SignupInput = {
+      email: USER.email,
+      password,
+      username: USER.username,
+    };
+
+    await expect(
+      signupResolver(undefined, { input }, ctx)
+    ).rejects.toThrowError(
+      new UserInputError('password must be at most 256 characters')
+    );
   })
 );
