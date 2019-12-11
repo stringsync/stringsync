@@ -8,7 +8,9 @@
     "noEmit": true,
     "jsx": "react",
     "allowJs": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "esModuleInterop": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }
