@@ -1,0 +1,29 @@
+version: '3.7'
+
+services:
+  test-web:
+    container_name: ss_test_web
+    image: ss-web:latest
+    build:
+      context: ./web
+      dockerfile: ./Dockerfile
+    volumes:
+      - type: bind
+        source: ./common
+        target: /string-sync/common
+      - type: bind
+        source: ./web/src
+        target: /string-sync/web/src
+      - type: bind
+        source: ./web/public
+        target: /string-sync/web/public
+    environment:
+      NODE_ENV: test
+    ports:
+      - '8080:8080'
+    networks:
+      - test-web-network
+
+networks:
+  test-web-network:
+    name: ss_test_web_network

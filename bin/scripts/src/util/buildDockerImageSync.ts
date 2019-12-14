@@ -1,4 +1,5 @@
 import { execSync } from 'child_process';
+import { cmd } from './cmd';
 
 interface BuildDOckerImageSyncOptions {
   imageTagName: string;
@@ -8,15 +9,16 @@ interface BuildDOckerImageSyncOptions {
 }
 
 export const buildDockerImageSync = (opts: BuildDOckerImageSyncOptions) => {
-  const cmd = [
-    'docker',
-    'build',
-    '-t',
-    opts.imageTagName,
-    '-f',
-    opts.dockerfilePath,
-    opts.dockerContextPath,
-  ].join(' ');
-
-  execSync(cmd, { cwd: opts.cwd, stdio: 'inherit' });
+  execSync(
+    cmd(
+      'docker',
+      'build',
+      '-t',
+      opts.imageTagName,
+      '-f',
+      opts.dockerfilePath,
+      opts.dockerContextPath
+    ),
+    { cwd: opts.cwd, stdio: 'inherit' }
+  );
 };

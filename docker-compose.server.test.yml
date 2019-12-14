@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: stringsync
       POSTGRES_PASSWORD: stringsync
     networks:
-      - test-network
+      - test-server-network
 
   test-server:
     container_name: ss_test_server
@@ -41,8 +41,8 @@ services:
     ports:
       - '3000:3000'
     networks:
-      - test-network
+      - test-server-network
 
 networks:
-  test-network:
-    name: ss_test_network
+  test-server-network:
+    name: ss_test_server_network

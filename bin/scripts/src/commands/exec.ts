@@ -1,5 +1,6 @@
 import { Command, flags } from '@oclif/command';
 import { execSync } from 'child_process';
+import { cmd } from '../util/cmd';
 
 export default class Exec extends Command {
   static description = 'Runs docker-compose exec on an running container.';
@@ -20,19 +21,17 @@ export default class Exec extends Command {
     const { argv, flags } = this.parse(Exec);
     const [service, ...cmdv] = argv;
 
-    const cmd = [
+    const execCmd = cmd(
       'docker-compose',
       'exec',
       flags.psuedoTty ? '-T' : '',
       service,
       'bash',
       '-c',
-      `"${cmdv.join(' ')}"`,
-    ]
-      .filter((str) => str.length > 0)
-      .join(' ');
+      `"${cmdv.join(' ')}"`
+    );
 
-    this.log(`exec '${cmd}' on ${service}:`);
-    execSync(cmd, { stdio: 'inherit' });
+    this.log(`exec '${execCmd}' on ${service}:`);
+    execSync(execCmd, { stdio: 'inherit' });
   }
 }
