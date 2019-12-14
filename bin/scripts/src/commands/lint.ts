@@ -18,7 +18,7 @@ export default class Lint extends Command {
         ? 'git diff --diff-filter=d --cached --name-only | grep ".*tsx\\?$" | xargs'
         : '',
       'yarn eslint --max-warnings 1 --ext ts,tsx',
-      flags.gitStagedOnly ? '' : 'common server/src scripts/src web/src',
+      flags.gitStagedOnly ? '' : 'common server/src bin/scripts/src web/src',
     ]
       .filter((str) => str.length > 0)
       .join(' ');

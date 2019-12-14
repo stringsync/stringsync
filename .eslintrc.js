@@ -6,16 +6,11 @@ module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    ecmaVersion: 6,
+    ecmaVersion: 9,
     sourceType: 'module',
   },
   plugins: ['@typescript-eslint', 'react'],
-  extends: [
-    'plugin:@typescript-eslint/recommended',
-    'react-app',
-    'plugin:prettier/recommended',
-    'prettier/@typescript-eslint',
-  ],
+  extends: ['plugin:@typescript-eslint/recommended', 'react-app'],
   env: {
     es6: true,
     node: true,
