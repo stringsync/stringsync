@@ -5,6 +5,7 @@ import enUS from 'antd/lib/locale-provider/en_US';
 import { Store } from '../../store';
 import { ThemeProvider } from 'styled-components';
 import theme from '../../theme.json';
+import Router from './Router';
 
 interface Props {
   store: Store;
@@ -15,7 +16,7 @@ const Root: React.FC<Props> = (props) => {
     <StoreProvider store={props.store}>
       <ConfigProvider locale={enUS}>
         <ThemeProvider theme={theme}>
-          <>{props.children}</>
+          <Router>{props.children}</Router>
         </ThemeProvider>
       </ConfigProvider>
     </StoreProvider>

@@ -4,7 +4,6 @@ import Landing from '../landing/Landing';
 import Library from '../library/Library';
 import withFallback from './withFallback';
 import withScrollRestoration from './withScrollRestoration';
-import Router from './Router';
 import compose from '../../util/compose';
 import withAuthRequirement, { AuthRequirements } from './withAuthRequirement';
 
@@ -34,13 +33,13 @@ const WrappedUpload = compose(
 
 const Routes: React.FC = () => {
   return (
-    <Router>
+    <>
       <Route path="/" exact component={Landing} />
       <Route path="/library" component={WrappedLibrary} />
       <Route path="/signup" component={WrappedSignup} />
       <Route path="/login" component={WrappedLogin} />
       <Route path="/upload" component={WrappedUpload} />
-    </Router>
+    </>
   );
 };
 
