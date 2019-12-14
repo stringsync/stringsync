@@ -8,11 +8,8 @@ interface Props {}
 const App: React.FC<Props> = (props) => {
   return (
     <>
-      {/* NOT RENDERED TO DOM */}
       <StoreViewportSync />
       <ReauthOnce />
-
-      {/* RENDERED TO DOM */}
       <Routes />
     </>
   );
