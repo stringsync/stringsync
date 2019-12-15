@@ -73,7 +73,7 @@ const enhance = compose(
   Form.create<Props>({ name: 'login' })
 );
 
-const Login: React.FC<Props> = enhance((props: Props) => {
+const Login: React.FC = enhance((props: Props) => {
   const dispatch = useDispatch();
   const { isAuthPending, authErrors } = useSelector<
     RootState,
