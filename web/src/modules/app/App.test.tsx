@@ -13,3 +13,13 @@ it('renders without crashing', () => {
   );
   expect(container).toBeInTheDocument();
 });
+
+it('opens on the landing page', () => {
+  const store = createStore();
+  const { getByTestId } = render(
+    <Root store={store}>
+      <App />
+    </Root>
+  );
+  expect(getByTestId('landing')).toBeInTheDocument();
+});
