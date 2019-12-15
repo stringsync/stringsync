@@ -25,8 +25,8 @@ it('renders without crashing', () => {
 it('has at least one link to /signup', () => {
   const { container } = render(component);
 
-  const links = Array.from(container.querySelectorAll('a')).filter((anchor) =>
-    anchor.innerHTML.match(/signup/)
+  const links = Array.from(
+    container.querySelectorAll<HTMLAnchorElement>('a[href="/signup"]')
   );
 
   expect(links.length).toBeGreaterThan(0);
