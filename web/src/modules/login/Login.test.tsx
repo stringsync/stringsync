@@ -22,12 +22,18 @@ it('renders without crashing', () => {
   expect(container).toBeInTheDocument();
 });
 
+it('has at least one link to /library', () => {
+  const { container } = render(component);
+
+  expect(
+    container.querySelectorAll<HTMLAnchorElement>('a[href="/library"]').length
+  ).toBeGreaterThan(0);
+});
+
 it('has at least one link to /signup', () => {
   const { container } = render(component);
 
-  const links = Array.from(
-    container.querySelectorAll<HTMLAnchorElement>('a[href="/signup"]')
-  );
-
-  expect(links.length).toBeGreaterThan(0);
+  expect(
+    container.querySelectorAll<HTMLAnchorElement>('a[href="/signup"]').length
+  ).toBeGreaterThan(0);
 });
