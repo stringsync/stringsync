@@ -6,7 +6,7 @@ import {
 } from 'redux';
 import { getPreloadedState } from './getPreloadedState';
 import thunk from 'redux-thunk';
-import viewportReducer from './modules/viewport/reducer';
+import { viewportReducer } from './modules/viewport';
 import { deviceReducer } from './modules/device';
 import { authReducer } from './modules/auth';
 import { ApolloClient, NormalizedCacheObject } from 'apollo-boost';

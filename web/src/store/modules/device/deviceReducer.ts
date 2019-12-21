@@ -1,10 +1,10 @@
 import { SET_USER_AGENT } from './constants';
 import { DeviceState, DeviceActionTypes } from './types';
 import { getDevice } from './getDevice';
-import getInitialState from './getInitialState';
+import { getInitialDeviceState } from './getInitialDeviceState';
 
 export const deviceReducer = (
-  state = getInitialState(),
+  state = getInitialDeviceState(),
   action: DeviceActionTypes
 ): DeviceState => {
   switch (action.type) {

@@ -2,7 +2,7 @@ import { getDevice } from './getDevice';
 import { getUserAgent } from './getUserAgent';
 import { DeviceState } from './types';
 
-const getInitalState = (): DeviceState => {
+export const getInitialDeviceState = (): DeviceState => {
   const userAgent = getUserAgent();
   const device = getDevice(userAgent);
   return {
@@ -10,5 +10,3 @@ const getInitalState = (): DeviceState => {
     ...device,
   };
 };
-
-export default getInitalState;

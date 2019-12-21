@@ -7,3 +7,4 @@ export { authReducer } from './authReducer';
 export { getReauthAction } from './getReauthAction';
 export { getLogoutAction } from './getLogoutAction';
 export { getSignupAction } from './getSignupAction';
+export { getInitialAuthState } from './getInitialAuthState';

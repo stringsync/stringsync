@@ -1,9 +1,9 @@
 import { ViewportState, ViewportActionTypes, SET_BREAKPOINT_NAME } from '.';
-import getInitialState from './getInitialState';
-import getViewportState from './getViewportState';
+import { getInitialViewportState } from './getInitialViewportState';
+import { getViewportState } from './getViewportState';
 
-export default (
-  state = getInitialState(),
+export const viewportReducer = (
+  state = getInitialViewportState(),
   action: ViewportActionTypes
 ): ViewportState => {
   switch (action.type) {

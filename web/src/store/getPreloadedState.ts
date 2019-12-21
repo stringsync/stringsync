@@ -1,7 +1,9 @@
 import { RootState } from '.';
-import getInitialViewportState from './modules/viewport/getInitialState';
-import getInitialDeviceState from './modules/device/getInitialState';
-import getInitialAuthState from './modules/auth/getInitialState';
+import {
+  getInitialViewportState,
+  getInitialDeviceState,
+  getInitialAuthState,
+} from './';
 
 export const getPreloadedState = (): RootState => ({
   viewport: getInitialViewportState(),

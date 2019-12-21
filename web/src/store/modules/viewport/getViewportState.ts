@@ -1,6 +1,8 @@
 import { BreakpointName, ViewportState } from '.';
 
-const getViewportState = (breakpointName: BreakpointName): ViewportState => {
+export const getViewportState = (
+  breakpointName: BreakpointName
+): ViewportState => {
   const viewportState: ViewportState = {
     xs: false,
     sm: false,
@@ -13,5 +15,3 @@ const getViewportState = (breakpointName: BreakpointName): ViewportState => {
   viewportState[breakpointName] = true;
   return viewportState;
 };
-
-export default getViewportState;

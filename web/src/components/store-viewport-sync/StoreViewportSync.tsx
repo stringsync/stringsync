@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  BreakpointName,
-  createSetBreakpointNameAction,
-} from '../../store/modules/viewport';
+import { BreakpointName, getSetBreakpointNameAction } from '../../store';
 import useMedia from '../../hooks/use-media/useMedia';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
@@ -31,7 +28,7 @@ const StoreViewportSync: React.FC<Props> = (props) => {
   );
 
   if (nextBreakpointName !== breakpointName) {
-    const setBreakpointNameAction = createSetBreakpointNameAction({
+    const setBreakpointNameAction = getSetBreakpointNameAction({
       breakpointName: nextBreakpointName,
     });
     dispatch(setBreakpointNameAction);

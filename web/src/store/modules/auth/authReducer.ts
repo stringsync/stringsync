@@ -6,11 +6,11 @@ import {
   CLEAR_AUTH,
 } from '.';
 import { AuthState, AuthActionTypes } from './types';
-import getInitialState from './getInitialState';
+import { getInitialAuthState } from './getInitialAuthState';
 import getNullState from './getNullState';
 
 export const authReducer = (
-  state = getInitialState(),
+  state = getInitialAuthState(),
   action: AuthActionTypes
 ): AuthState => {
   switch (action.type) {
