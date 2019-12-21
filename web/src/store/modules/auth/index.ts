@@ -23,7 +23,7 @@ export const requestAuthPending = (): RequestAuthPendingAction => ({
 });
 
 export const REQUEST_AUTH_SUCCESS = 'auth/REQUEST_AUTH_SUCCESS';
-interface RequestAuthSuccessPayload {
+export interface RequestAuthSuccessPayload {
   user: AuthUser;
 }
 interface RequestAuthSuccessAction {
@@ -180,7 +180,7 @@ export interface ReauthData {
     };
   };
 }
-const REAUTH_MUTATION = gql`
+export const REAUTH_MUTATION = gql`
   mutation {
     reauth {
       user {
