@@ -8,7 +8,7 @@ export default class Test extends Command {
   static description = 'describe the command here';
 
   static flags = {
-    watch: flags.boolean({ char: 'w' }),
+    watch: flags.boolean({ char: 'w', default: false }),
   };
 
   static args = [
