@@ -14,7 +14,7 @@ const getLayout = (layout: Layouts) => {
   }
 };
 
-const withLayout = (layout: Layouts) =>
+export const withLayout = (layout: Layouts) =>
   function<P>(Component: React.ComponentType<P>) {
     const Layout = getLayout(layout);
     return (props: P) => (
@@ -23,5 +23,3 @@ const withLayout = (layout: Layouts) =>
       </Layout>
     );
   };
-
-export default withLayout;

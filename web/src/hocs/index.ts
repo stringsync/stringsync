@@ -1,1 +1,1 @@
-export { default as withLayout } from './with-layout/withLayout';
+export * from './with-layout';

@@ -1,7 +1,6 @@
 import React, { FormEventHandler } from 'react';
 import compose from '../../util/compose';
-import { withLayout } from '../../hocs';
-import { Layouts } from '../../hocs/with-layout/Layouts';
+import { withLayout, Layouts } from '../../hocs';
 import styled from 'styled-components';
 import { Alert, Form, Row, Col, Input, Button } from 'antd';
 import { Link } from 'react-router-dom';
