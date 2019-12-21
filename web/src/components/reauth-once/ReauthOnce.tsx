@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { getReauthAction } from '../../store/modules';
+import { getReauthAction } from '../../store';
 import useEffectOnce from '../../hooks/use-effect-once/useEffectOnce';
 
 const ReauthOnce: React.FC = () => {

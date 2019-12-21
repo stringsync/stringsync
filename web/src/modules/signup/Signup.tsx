@@ -10,8 +10,7 @@ import compose from '../../util/compose';
 import { withLayout } from '../../hocs';
 import { Layouts } from '../../hocs/with-layout/Layouts';
 import useEffectOnce from '../../hooks/use-effect-once/useEffectOnce';
-import { getSignupAction } from '../../store/modules/auth/getSignupAction';
-import { getClearAuthErrorsAction } from '../../store/modules';
+import { getSignupAction, getClearAuthErrorsAction } from '../../store';
 
 const RoundedBox = styled.div`
   margin: 0 auto;

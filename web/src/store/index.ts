@@ -6,6 +6,9 @@ import * as Device from './modules/device';
 import * as Auth from './modules/auth/';
 import { Action } from 'redux';
 
+export * from './modules';
+export * from './selectors';
+
 export type Store = ReturnType<typeof createStore>;
 
 export type Actions =

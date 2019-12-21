@@ -4,8 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { AuthUser } from '../../store/modules/auth';
-import { getLogoutAction } from '../../store/modules/';
+import { AuthUser, getLogoutAction } from '../../store';
 
 const MenuIcon = styled(Icon)`
   font-size: 22px;

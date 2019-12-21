@@ -10,7 +10,7 @@ import { RootState } from '../../store';
 import { useDispatch, useSelector } from 'react-redux';
 import { Wordmark } from '../../components/brand';
 import useEffectOnce from '../../hooks/use-effect-once/useEffectOnce';
-import { getClearAuthErrorsAction, getLoginAction } from '../../store/modules';
+import { getClearAuthErrorsAction, getLoginAction } from '../../store';
 
 const RoundedBox = styled.div`
   margin: 0 auto;
