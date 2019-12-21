@@ -4,12 +4,16 @@ import Login from './Login';
 import createStore from '../../store/createStore';
 import { Store } from '../../store';
 import { render } from '@testing-library/react';
+import { ApolloClient, NormalizedCacheObject } from 'apollo-boost';
+import createApolloClient from '../../util/ createApolloClient';
 
+let apollo: ApolloClient<NormalizedCacheObject>;
 let store: Store;
 let component: JSX.Element;
 
 beforeEach(() => {
-  store = createStore();
+  apollo = createApolloClient();
+  store = createStore(apollo);
   component = (
     <Root store={store}>
       <Login />

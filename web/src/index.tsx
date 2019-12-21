@@ -4,8 +4,10 @@ import Root from './modules/root/Root';
 import App from './modules/app/App';
 import * as serviceWorker from './serviceWorker';
 import createStore from './store/createStore';
+import createApolloClient from './util/ createApolloClient';
 
-const store = createStore();
+const apollo = createApolloClient();
+const store = createStore(apollo);
 
 ReactDOM.render(
   <Root store={store}>
