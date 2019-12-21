@@ -1,6 +1,6 @@
 import React from 'react';
 import { BreakpointName, getSetBreakpointNameAction } from '../../store';
-import useMedia from '../../hooks/use-media/useMedia';
+import { useMedia } from '../../hooks';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 

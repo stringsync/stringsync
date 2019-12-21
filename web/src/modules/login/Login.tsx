@@ -9,7 +9,7 @@ import { FormComponentProps } from 'antd/lib/form';
 import { RootState } from '../../store';
 import { useDispatch, useSelector } from 'react-redux';
 import { Wordmark } from '../../components/brand';
-import useEffectOnce from '../../hooks/use-effect-once/useEffectOnce';
+import { useEffectOnce } from '../../hooks';
 import { getClearAuthErrorsAction, getLoginAction } from '../../store';
 
 const RoundedBox = styled.div`

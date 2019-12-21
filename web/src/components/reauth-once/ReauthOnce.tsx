@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { getReauthAction } from '../../store';
-import useEffectOnce from '../../hooks/use-effect-once/useEffectOnce';
+import { useEffectOnce } from '../../hooks';
 
 const ReauthOnce: React.FC = () => {
   const dispatch = useDispatch();

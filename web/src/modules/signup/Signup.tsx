@@ -9,7 +9,7 @@ import { RootState } from '../../store';
 import compose from '../../util/compose';
 import { withLayout } from '../../hocs';
 import { Layouts } from '../../hocs/with-layout/Layouts';
-import useEffectOnce from '../../hooks/use-effect-once/useEffectOnce';
+import { useEffectOnce } from '../../hooks';
 import { getSignupAction, getClearAuthErrorsAction } from '../../store';
 
 const RoundedBox = styled.div`

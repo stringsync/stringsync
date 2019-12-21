@@ -1,1 +1,2 @@
-export { default as useMedia } from './use-media/useMedia';
+export { useMedia } from './useMedia';
+export { useEffectOnce } from './useEffectOnce';
