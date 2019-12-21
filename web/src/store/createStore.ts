@@ -8,12 +8,12 @@ import { getPreloadedState } from './getPreloadedState';
 import thunk from 'redux-thunk';
 import viewportReducer from './modules/viewport/reducer';
 import deviceReducer from './modules/device/reducer';
-import authReducer from './modules/auth/reducer';
+import { authReducer } from './modules/auth';
 import { ApolloClient, NormalizedCacheObject } from 'apollo-boost';
 
 const REDUX_DEVTOOLS_KEY = '__REDUX_DEVTOOLS_EXTENSION__';
 
-const reducer = combineReducers({
+const rootReducer = combineReducers({
   viewport: viewportReducer,
   device: deviceReducer,
   auth: authReducer,
@@ -26,7 +26,7 @@ const createStore = (apollo: ApolloClient<NormalizedCacheObject>) => {
   let reduxDevtools = (window as any)[REDUX_DEVTOOLS_KEY] || compose;
 
   return doCreateStore(
-    reducer,
+    rootReducer,
     preloadedState,
     compose(applyMiddleware(...middlewares), reduxDevtools())
   );

@@ -10,7 +10,7 @@ import {
 import getInitialState from './getInitialState';
 import getNullState from './getNullState';
 
-export default (
+export const authReducer = (
   state = getInitialState(),
   action: AuthActionTypes
 ): AuthState => {

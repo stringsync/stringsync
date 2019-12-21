@@ -245,3 +245,5 @@ export type AuthActionTypes =
   | RequestAuthFailureAction
   | ClearAuthAction
   | ClearAuthErrorsAction;
+
+export { authReducer } from './authReducer';
