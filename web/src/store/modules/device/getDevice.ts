@@ -1,3 +1,6 @@
+import { Device } from './types';
+import { getUserAgent } from './getUserAgent';
+
 const appleIphone = /iPhone/i;
 const appleIpod = /iPod/i;
 const appleTablet = /iPad/i;
@@ -17,46 +20,7 @@ const match = (regex: RegExp, userAgent: string): boolean => {
   return regex.test(userAgent);
 };
 
-export const getUserAgent = (): string => {
-  return 'userAgent' in navigator ? navigator.userAgent : '';
-};
-
-export type Device = {
-  apple: {
-    phone: boolean;
-    ipod: boolean;
-    tablet: boolean;
-    device: boolean;
-  };
-  amazon: {
-    phone: boolean;
-    tablet: boolean;
-    device: boolean;
-  };
-  android: {
-    phone: boolean;
-    tablet: boolean;
-    device: boolean;
-  };
-  windows: {
-    phone: boolean;
-    tablet: boolean;
-    device: boolean;
-  };
-  other: {
-    blackberry: boolean;
-    blackberry10: boolean;
-    opera: boolean;
-    firefox: boolean;
-    chrome: boolean;
-    device: boolean;
-  };
-  phone: boolean;
-  tablet: boolean;
-  any: boolean;
-};
-
-const getDevice = (userAgent?: string): Device => {
+export const getDevice = (userAgent?: string): Device => {
   /* eslint-disable no-param-reassign */
   userAgent = userAgent || getUserAgent();
 
@@ -147,5 +111,3 @@ const getDevice = (userAgent?: string): Device => {
 
   return device;
 };
-
-export default getDevice;

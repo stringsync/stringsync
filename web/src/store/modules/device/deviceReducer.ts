@@ -1,8 +1,9 @@
-import { DeviceState, DeviceActionTypes, SET_USER_AGENT } from '.';
+import { SET_USER_AGENT } from './constants';
+import { DeviceState, DeviceActionTypes } from './types';
+import { getDevice } from './getDevice';
 import getInitialState from './getInitialState';
-import getDevice from './getDevice';
 
-export default (
+export const deviceReducer = (
   state = getInitialState(),
   action: DeviceActionTypes
 ): DeviceState => {
