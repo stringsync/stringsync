@@ -1,4 +1,4 @@
-const getErrorMessages = (error: any): string[] => {
+export const getErrorMessages = (error: any): string[] => {
   const errorMessages = [];
   if ('graphQLErrors' in error) {
     for (const graphQLError of error.graphQLErrors) {
@@ -10,5 +10,3 @@ const getErrorMessages = (error: any): string[] => {
   }
   return errorMessages;
 };
-
-export default getErrorMessages;

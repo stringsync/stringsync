@@ -5,7 +5,7 @@ import { RootState } from '../../store';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { AuthUser } from '../../store/modules/auth';
-import { logout } from '../../store/modules/auth/';
+import { getLogoutAction } from '../../store/modules/';
 
 const MenuIcon = styled(Icon)`
   font-size: 22px;
@@ -41,7 +41,8 @@ const Menu: React.FC<Props> = (props) => {
   const showModal = () => setModalVisible(true);
   const hideModal = () => setModalVisible(false);
   const handleLogoutClick = () => {
-    dispatch(logout());
+    const logoutAction = getLogoutAction();
+    dispatch(logoutAction);
     hideModal();
     message.success('logged out');
   };

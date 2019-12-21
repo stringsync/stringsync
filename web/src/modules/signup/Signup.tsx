@@ -4,13 +4,14 @@ import styled from 'styled-components';
 import { FormComponentProps } from 'antd/lib/form';
 import { Link } from 'react-router-dom';
 import { Wordmark } from '../../components/brand';
-import { signup, clearAuthErrors } from '../../store/modules/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import compose from '../../util/compose';
 import { withLayout } from '../../hocs';
 import { Layouts } from '../../hocs/with-layout/Layouts';
 import useEffectOnce from '../../hooks/use-effect-once/useEffectOnce';
+import { getSignupAction } from '../../store/modules/auth/getSignupAction';
+import { getClearAuthErrorsAction } from '../../store/modules';
 
 const RoundedBox = styled.div`
   margin: 0 auto;
@@ -110,10 +111,14 @@ const Signup = enhance((props: Props) => {
         console.error(errors);
         return;
       }
-      dispatch(signup(user));
+      const signupAction = getSignupAction(user);
+      dispatch(signupAction);
     });
   };
-  const clearErrors = () => dispatch(clearAuthErrors());
+  const clearErrors = () => {
+    const clearAuthErrorsAction = getClearAuthErrorsAction();
+    dispatch(clearAuthErrorsAction);
+  };
   useEffectOnce(() => {
     clearErrors();
   });

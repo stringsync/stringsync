@@ -1,12 +1,13 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { reauth } from '../../store/modules/auth';
+import { getReauthAction } from '../../store/modules';
 import useEffectOnce from '../../hooks/use-effect-once/useEffectOnce';
 
 const ReauthOnce: React.FC = () => {
   const dispatch = useDispatch();
   useEffectOnce(() => {
-    dispatch(reauth());
+    const reauthAction = getReauthAction();
+    dispatch(reauthAction);
   });
   return null;
 };

@@ -8,9 +8,9 @@ import { Link } from 'react-router-dom';
 import { FormComponentProps } from 'antd/lib/form';
 import { RootState } from '../../store';
 import { useDispatch, useSelector } from 'react-redux';
-import { clearAuthErrors, login } from '../../store/modules/auth';
 import { Wordmark } from '../../components/brand';
 import useEffectOnce from '../../hooks/use-effect-once/useEffectOnce';
+import { getClearAuthErrorsAction, getLoginAction } from '../../store/modules';
 
 const RoundedBox = styled.div`
   margin: 0 auto;
@@ -91,10 +91,14 @@ const Login: React.FC = enhance((props: Props) => {
         console.error(errors);
         return;
       }
-      dispatch(login(loginInput));
+      const loginAction = getLoginAction(loginInput);
+      dispatch(loginAction);
     });
   };
-  const clearErrors = () => dispatch(clearAuthErrors());
+  const clearErrors = () => {
+    const clearAuthErrorsAction = getClearAuthErrorsAction();
+    dispatch(clearAuthErrorsAction);
+  };
   useEffectOnce(() => {
     clearErrors();
   });

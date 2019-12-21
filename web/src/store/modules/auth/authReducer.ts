@@ -1,12 +1,11 @@
 import {
-  AuthState,
-  AuthActionTypes,
   REQUEST_AUTH_PENDING,
   REQUEST_AUTH_SUCCESS,
   REQUEST_AUTH_FAILURE,
   CLEAR_AUTH_ERRORS,
   CLEAR_AUTH,
 } from '.';
+import { AuthState, AuthActionTypes } from './types';
 import getInitialState from './getInitialState';
 import getNullState from './getNullState';
 

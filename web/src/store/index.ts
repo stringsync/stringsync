@@ -3,7 +3,7 @@ import createApolloClient from '../util/ createApolloClient';
 import { ThunkAction as BaseThunkAction } from 'redux-thunk';
 import * as Viewport from './modules/viewport';
 import * as Device from './modules/device';
-import * as Auth from './modules/auth';
+import * as Auth from './modules/auth/';
 import { Action } from 'redux';
 
 export type Store = ReturnType<typeof createStore>;
