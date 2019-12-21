@@ -1,5 +1,5 @@
 import React, { FormEventHandler } from 'react';
-import compose from '../../util/compose';
+import { compose } from '../../util';
 import { withLayout, Layouts } from '../../hocs';
 import styled from 'styled-components';
 import { Alert, Form, Row, Col, Input, Button } from 'antd';

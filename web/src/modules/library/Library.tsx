@@ -1,5 +1,5 @@
 import React from 'react';
-import compose from '../../util/compose';
+import { compose } from '../../util';
 import { Layouts, withLayout } from '../../hocs';
 
 interface Props {}

@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { Wordmark } from '../../components/brand';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import compose from '../../util/compose';
+import { compose } from '../../util';
 import { withLayout } from '../../hocs';
 import { Layouts } from '../../hocs/with-layout/Layouts';
 import { useEffectOnce } from '../../hooks';

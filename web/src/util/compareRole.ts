@@ -2,7 +2,7 @@ export type Roles = 'student' | 'teacher' | 'admin';
 
 const ROLE_HIEARCHY: Roles[] = ['student', 'teacher', 'admin'];
 
-const compareRole = (role1: Roles, role2: Roles) => {
+export const compareRole = (role1: Roles, role2: Roles) => {
   const ndx1 = ROLE_HIEARCHY.indexOf(role1);
   const ndx2 = ROLE_HIEARCHY.indexOf(role2);
 
@@ -17,5 +17,3 @@ const compareRole = (role1: Roles, role2: Roles) => {
   }
   return 0;
 };
-
-export default compareRole;

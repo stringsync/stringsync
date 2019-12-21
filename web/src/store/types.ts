@@ -1,5 +1,5 @@
 import createStore from './createStore';
-import createApolloClient from '../util/ createApolloClient';
+import { createApolloClient } from '../util';
 import { ThunkAction as BaseThunkAction } from 'redux-thunk';
 import * as Viewport from './modules/viewport';
 import * as Device from './modules/device';

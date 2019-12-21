@@ -5,7 +5,7 @@ import Root from '../root/Root';
 import { render } from '@testing-library/react';
 import { Store } from '../../store';
 import { ApolloClient, NormalizedCacheObject } from 'apollo-boost';
-import createApolloClient from '../../util/ createApolloClient';
+import { createApolloClient } from '../../util/';
 
 let apollo: ApolloClient<NormalizedCacheObject>;
 let store: Store;

@@ -3,8 +3,7 @@ import { useRouter } from '../root/Router';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { message } from 'antd';
-import compareRole from '../../util/compareRole';
-import noop from '../../util/noop';
+import { compareRole, noop } from '../../util';
 
 export enum AuthRequirements {
   NONE = 'NONE',

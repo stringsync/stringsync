@@ -2,7 +2,7 @@ import { ApolloClient, InMemoryCache, HttpLink } from 'apollo-boost';
 
 const uri = process.env.REACT_APP_SERVER_URI;
 
-const createApolloClient = () => {
+export const createApolloClient = () => {
   const cache = new InMemoryCache();
   const httpLink = new HttpLink({
     uri,
@@ -13,5 +13,3 @@ const createApolloClient = () => {
     cache,
   });
 };
-
-export default createApolloClient;

@@ -1,5 +1,5 @@
 import React from 'react';
-import compose from '../../util/compose';
+import { compose } from '../../util';
 import { withLayout } from '../../hocs';
 import { Layouts } from '../../hocs/with-layout/Layouts';
 
