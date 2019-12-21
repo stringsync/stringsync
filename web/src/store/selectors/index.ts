@@ -1,1 +1,1 @@
-export { default as isMobile } from './is-mobile/isMobile';
+export { isMobile } from './isMobile';
