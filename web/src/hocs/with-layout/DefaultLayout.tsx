@@ -32,14 +32,14 @@ const Lane = styled.div`
   margin: 0 auto;
 `;
 
-const DefaultLayout: React.FC = (props) => {
+export const DefaultLayout: React.FC = (props) => {
   const isLtEqMdViewport = useSelector<RootState, boolean>((state) => {
     const { xs, sm, md } = state.viewport;
     return xs || sm || md;
   });
 
   return (
-    <StyledLayout>
+    <StyledLayout data-testid="default-layout">
       <StyledHeader>
         <Lane>
           <Row type="flex" justify="space-between">
@@ -71,5 +71,3 @@ const DefaultLayout: React.FC = (props) => {
     </StyledLayout>
   );
 };
-
-export default DefaultLayout;

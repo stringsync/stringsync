@@ -1,7 +1,7 @@
 import React from 'react';
 import { Layouts } from './Layouts';
-import DefaultLayout from './DefaultLayout';
-import NoneLayout from './NoneLayout';
+import { DefaultLayout } from './DefaultLayout';
+import { NoneLayout } from './NoneLayout';
 
 const getLayout = (layout: Layouts) => {
   switch (layout) {
@@ -14,12 +14,13 @@ const getLayout = (layout: Layouts) => {
   }
 };
 
-export const withLayout = (layout: Layouts) =>
-  function<P>(Component: React.ComponentType<P>) {
-    const Layout = getLayout(layout);
+export const withLayout = (layout: Layouts) => {
+  const Layout = getLayout(layout);
+  return function<P>(Component: React.ComponentType<P>) {
     return (props: P) => (
       <Layout>
         <Component {...props} />
       </Layout>
     );
   };
+};
