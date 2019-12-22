@@ -6,7 +6,7 @@ import { RootState } from '../../store';
 import { Wordmark } from '../../components/wordmark';
 import { Logo } from '../../components/logo';
 import { Link } from 'react-router-dom';
-import Menu from './Menu';
+import { Menu } from './Menu';
 
 const StyledLogo = styled(Logo)`
   font-size: 22px;

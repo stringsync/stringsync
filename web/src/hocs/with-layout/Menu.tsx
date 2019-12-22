@@ -22,7 +22,7 @@ const Role = styled.div`
 
 interface Props {}
 
-const Menu: React.FC<Props> = (props) => {
+export const Menu: React.FC<Props> = (props) => {
   const isLoggedIn = useSelector<RootState, boolean>(
     (state) => state.auth.isLoggedIn
   );
@@ -136,5 +136,3 @@ const Menu: React.FC<Props> = (props) => {
     </>
   );
 };
-
-export default Menu;
