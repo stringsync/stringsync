@@ -27,8 +27,6 @@ const LogoSvg = () => (
   </svg>
 );
 
-const Logo: React.FC<IconProps> = (props) => {
+export const Logo: React.FC<IconProps> = (props) => {
   return <Icon component={LogoSvg} {...props} />;
 };
-
-export default Logo;

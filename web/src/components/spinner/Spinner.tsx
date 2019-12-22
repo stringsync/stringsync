@@ -11,8 +11,6 @@ const LoadingIcon = () => {
   return <StyledIcon spin type="loading" />;
 };
 
-const Spinner = (props: SpinProps) => {
+export const Spinner = (props: SpinProps) => {
   return <Spin indicator={<LoadingIcon />} {...props} />;
 };
-
-export default Spinner;

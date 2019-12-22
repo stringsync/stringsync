@@ -3,7 +3,7 @@ import { Form, Input, Row, Col, Button, Alert } from 'antd';
 import styled from 'styled-components';
 import { FormComponentProps } from 'antd/lib/form';
 import { Link } from 'react-router-dom';
-import { Wordmark } from '../../components/brand';
+import { Wordmark } from '../../components/wordmark';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { compose } from '../../util';

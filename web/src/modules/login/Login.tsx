@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { FormComponentProps } from 'antd/lib/form';
 import { RootState } from '../../store';
 import { useDispatch, useSelector } from 'react-redux';
-import { Wordmark } from '../../components/brand';
+import { Wordmark } from '../../components/wordmark';
 import { useEffectOnce } from '../../hooks';
 import { getClearAuthErrorsAction, getLoginAction } from '../../store';
 

@@ -3,8 +3,8 @@ import { Layout, Row, Col, Divider } from 'antd';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { Wordmark } from '../../components/brand';
-import Logo from '../../components/brand/logo/Logo';
+import { Wordmark } from '../../components/wordmark';
+import { Logo } from '../../components/logo';
 import { Link } from 'react-router-dom';
 import Menu from './Menu';
 

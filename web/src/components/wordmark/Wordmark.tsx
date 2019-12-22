@@ -9,8 +9,6 @@ const StyledSpan = styled.span`
 
 interface Props {}
 
-const Wordmark: React.FC<Props> = (props) => {
+export const Wordmark: React.FC<Props> = (props) => {
   return <StyledSpan>StringSync</StyledSpan>;
 };
-
-export default Wordmark;
