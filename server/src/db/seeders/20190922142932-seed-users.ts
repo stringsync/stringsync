@@ -12,6 +12,7 @@ export default {
       {
         username: 'jaredplaysguitar',
         email: 'jared@gmail.com',
+        role: 'admin',
         created_at: NOW,
         updated_at: NOW,
         encrypted_password: encryptedPassword,

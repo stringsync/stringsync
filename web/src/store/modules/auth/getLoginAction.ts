@@ -1,5 +1,5 @@
 import { gql } from 'apollo-boost';
-import { LoginInput } from 'common/types';
+import { LoginInput, UserRoles } from 'common/types';
 import { ThunkAction } from '../..';
 import { pick } from 'lodash';
 import { message } from 'antd';
@@ -15,6 +15,7 @@ interface LoginData {
       id: string;
       username: string;
       email: string;
+      role: UserRoles;
     };
   };
 }
@@ -26,6 +27,7 @@ const LOGIN_MUTATION = gql`
         id
         username
         email
+        role
       }
     }
   }
@@ -48,7 +50,7 @@ export const getLoginAction = (
       throw new Error('no data returned from the server');
     }
     const data = res.data.login;
-    const user = pick(data.user, ['id', 'username', 'email']);
+    const user = pick(data.user, ['id', 'username', 'email', 'role']);
 
     const requestAuthSuccessAction = getRequestAuthSuccessAction(user);
     dispatch(requestAuthSuccessAction);

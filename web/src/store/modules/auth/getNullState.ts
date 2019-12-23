@@ -4,6 +4,7 @@ export const getNullAuthUser = (): AuthUser => ({
   id: '',
   username: '',
   email: '',
+  role: 'student',
 });
 
 const getNullState = (): AuthState => ({

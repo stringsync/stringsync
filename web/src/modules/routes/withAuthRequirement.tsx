@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { message } from 'antd';
 import { compareRole, noop } from '../../util';
+import { UserRoles } from 'common/types';
 
 export enum AuthRequirements {
   NONE = 'NONE',
@@ -14,6 +15,11 @@ export enum AuthRequirements {
   LOGGED_IN_AS_ADMIN = 'LOGGED_IN_AS_ADMIN',
 }
 
+interface SelectedState {
+  isLoggedIn: boolean;
+  userRole: UserRoles;
+}
+
 const ForceSuspense = React.lazy(() => new Promise(noop));
 
 const withAuthRequirement = (authRequirements: AuthRequirements) =>
@@ -21,9 +27,11 @@ const withAuthRequirement = (authRequirements: AuthRequirements) =>
     return (props) => {
       const router = useRouter();
       // TODO put real logic here
-      const userRole = 'admin';
-      const isLoggedIn = useSelector<RootState, boolean>(
-        (state) => state.auth.isLoggedIn
+      const { isLoggedIn, userRole } = useSelector<RootState, SelectedState>(
+        (state) => ({
+          isLoggedIn: state.auth.isLoggedIn,
+          userRole: state.auth.user.role,
+        })
       );
       const navigateTo = (path: string) => {
         window.requestAnimationFrame(() => {

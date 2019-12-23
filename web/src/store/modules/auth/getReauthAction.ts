@@ -5,6 +5,7 @@ import { pick } from 'lodash';
 import { getLogoutAction } from './getLogoutAction';
 import { getRequestAuthPendingAction } from './getRequestAuthPendingAction';
 import { getRequestAuthSuccessAction } from './getRequestAuthSuccessAction';
+import { UserRoles } from 'common/types';
 
 export interface ReauthData {
   reauth: {
@@ -12,6 +13,7 @@ export interface ReauthData {
       id: string;
       username: string;
       email: string;
+      role: UserRoles;
     };
   };
 }
@@ -23,6 +25,7 @@ export const REAUTH_MUTATION = gql`
         id
         username
         email
+        role
       }
     }
   }
@@ -42,7 +45,12 @@ export const getReauthAction = (): ThunkAction<void, AuthActionTypes> => async (
     if (!res.data) {
       throw new Error('user session expired or invalid');
     }
-    const user = pick(res.data.reauth.user, ['id', 'username', 'email']);
+    const user = pick(res.data.reauth.user, [
+      'id',
+      'username',
+      'email',
+      'role',
+    ]);
     const requestAuthSuccessAction = getRequestAuthSuccessAction(user);
     dispatch(requestAuthSuccessAction);
   } catch (error) {

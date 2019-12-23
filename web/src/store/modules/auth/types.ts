@@ -7,7 +7,7 @@ import {
   REQUEST_AUTH_SUCCESS,
 } from './constants';
 
-export type AuthUser = Pick<User, 'id' | 'email' | 'username'>;
+export type AuthUser = Pick<User, 'id' | 'email' | 'username' | 'role'>;
 
 export interface AuthState {
   isPending: boolean;
