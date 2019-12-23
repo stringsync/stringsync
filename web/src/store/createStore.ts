@@ -21,7 +21,7 @@ const rootReducer = combineReducers({
 
 const preloadedState = getPreloadedState();
 
-const createStore = (apollo: ApolloClient<NormalizedCacheObject>) => {
+export const createStore = (apollo: ApolloClient<NormalizedCacheObject>) => {
   const middlewares = [thunk.withExtraArgument({ apollo })];
   let reduxDevtools = (window as any)[REDUX_DEVTOOLS_KEY] || compose;
 
@@ -31,5 +31,3 @@ const createStore = (apollo: ApolloClient<NormalizedCacheObject>) => {
     compose(applyMiddleware(...middlewares), reduxDevtools())
   );
 };
-
-export default createStore;

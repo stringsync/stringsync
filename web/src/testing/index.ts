@@ -1,0 +1,1 @@
+export { getTestComponent } from './getTestComponent';

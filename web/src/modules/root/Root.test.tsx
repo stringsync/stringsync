@@ -1,22 +1,12 @@
 import React from 'react';
 import Root from './Root';
-import createStore from '../../store/createStore';
 import { render } from '@testing-library/react';
-import { ApolloClient, NormalizedCacheObject } from 'apollo-boost';
-import { Store } from '../../store';
 import { createApolloClient } from '../../util';
-
-let apollo: ApolloClient<NormalizedCacheObject>;
-let store: Store;
-let component: JSX.Element;
-
-beforeEach(() => {
-  apollo = createApolloClient();
-  store = createStore(apollo);
-  component = <Root store={store} />;
-});
+import { createStore } from '../../store';
 
 it('renders without crashing', () => {
-  const { container } = render(component);
+  const apollo = createApolloClient();
+  const store = createStore(apollo);
+  const { container } = render(<Root store={store} />);
   expect(container).toBeInTheDocument();
 });

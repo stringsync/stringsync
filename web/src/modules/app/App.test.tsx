@@ -1,32 +1,16 @@
 import React from 'react';
 import App from './App';
-import Root from '../root/Root';
-import createStore from '../../store/createStore';
 import { render } from '@testing-library/react';
-import { Store } from '../../store';
-import { ApolloClient, NormalizedCacheObject } from 'apollo-boost';
-import { createApolloClient } from '../../util/';
-
-let apollo: ApolloClient<NormalizedCacheObject>;
-let store: Store;
-let component: JSX.Element;
-
-beforeEach(() => {
-  apollo = createApolloClient();
-  store = createStore(apollo);
-  component = (
-    <Root store={store}>
-      <App />
-    </Root>
-  );
-});
+import { getTestComponent } from '../../testing/';
 
 it('renders without crashing', () => {
-  const { container } = render(component);
+  const { TestComponent } = getTestComponent(App, {});
+  const { container } = render(<TestComponent />);
   expect(container).toBeInTheDocument();
 });
 
 it('opens on the landing page', () => {
-  const { getByTestId } = render(component);
+  const { TestComponent } = getTestComponent(App, {});
+  const { getByTestId } = render(<TestComponent />);
   expect(getByTestId('landing')).toBeInTheDocument();
 });

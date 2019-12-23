@@ -9,8 +9,9 @@ it('calls the callback once', () => {
     return null;
   };
 
-  const { rerender } = render(<Component />);
-  rerender(<Component />);
+  const component = <Component />;
+  const { rerender } = render(component);
+  rerender(component);
 
   expect(callback).toBeCalledTimes(1);
 });
