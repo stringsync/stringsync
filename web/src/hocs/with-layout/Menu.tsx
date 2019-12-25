@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Button, Row, Icon, Col, Modal, Avatar, message } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { AuthUser, getLogoutAction } from '../../store';
+import { compareRole } from '../../util';
 
 const MenuIcon = styled(Icon)`
   font-size: 22px;
@@ -23,10 +24,11 @@ const Role = styled.div`
 interface Props {}
 
 export const Menu: React.FC<Props> = (props) => {
+  const dispatch = useDispatch();
+
   const isLoggedIn = useSelector<RootState, boolean>(
     (state) => state.auth.isLoggedIn
   );
-  const user = useSelector<RootState, AuthUser>((state) => state.auth.user);
   const isLtEqMdViewport = useSelector<RootState, boolean>((state) => {
     const { xs, sm, md } = state.viewport;
     return xs || sm || md;
@@ -34,11 +36,16 @@ export const Menu: React.FC<Props> = (props) => {
   const isAuthPending = useSelector<RootState, boolean>(
     (state) => state.auth.isPending
   );
-  const isGtEqTeacher = true; // TODO put real logic
-  const dispatch = useDispatch();
+  const user = useSelector<RootState, AuthUser>((state) => state.auth.user);
+
+  const isGtEqTeacher = compareRole(user.role, 'teacher') >= 0;
+
   const [isModalVisible, setModalVisible] = useState(false);
-  const showModal = () => setModalVisible(true);
-  const hideModal = () => setModalVisible(false);
+  const showModal = useCallback(() => setModalVisible(true), [setModalVisible]);
+  const hideModal = useCallback(() => setModalVisible(false), [
+    setModalVisible,
+  ]);
+
   const handleLogoutClick = () => {
     const logoutAction = getLogoutAction();
     dispatch(logoutAction);

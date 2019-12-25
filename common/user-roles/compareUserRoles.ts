@@ -1,4 +1,4 @@
-import { UserRoles } from 'common/types';
+import { UserRoles } from '../types';
 import { USER_ROLE_HIEARCHY } from './constants';
 
 export const compareUserRoles = (role1: UserRoles, role2: UserRoles) => {
