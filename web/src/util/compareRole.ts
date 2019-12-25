@@ -1,4 +1,4 @@
-export type Roles = 'student' | 'teacher' | 'admin';
+type Roles = 'student' | 'teacher' | 'admin';
 
 const ROLE_HIEARCHY: Roles[] = ['student', 'teacher', 'admin'];
 
