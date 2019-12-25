@@ -1,13 +1,3 @@
-export * from './User';
-export * from './GetUserInput';
-export * from './Notation';
-export * from './ReauthPayload';
-export * from './SignupInput';
-export * from './SignupPayload';
-export * from './LoginInput';
-export * from './LoginPayload';
-export * from './LogoutPayload';
-
 export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends (infer U)[]
     ? DeepPartial<U>[]
@@ -15,3 +5,49 @@ export type DeepPartial<T> = {
     ? DeepPartial<T[P]>
     : T[P];
 };
+
+export type UserRoles = 'student' | 'teacher' | 'admin';
+
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  createdAt: Date;
+  updatedAt: Date;
+  role: UserRoles;
+}
+
+export interface SignupInput {
+  username: string;
+  email: string;
+  password: string;
+}
+
+export interface SignupPayload {
+  user: User;
+}
+
+export interface ReauthPayload {
+  user: User;
+}
+
+export interface LogoutPayload {
+  user: User | null;
+}
+
+export interface LoginInput {
+  emailOrUsername: string;
+  password: string;
+}
+
+export interface LoginPayload {
+  user: User;
+}
+
+export interface Notation {
+  id: string;
+}
+
+export interface GetUserInput {
+  id: string;
+}
