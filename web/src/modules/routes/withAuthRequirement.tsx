@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useRouter } from '../root/Router';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
@@ -7,12 +7,12 @@ import { compareRole, noop } from '../../util';
 import { UserRoles } from 'common/types';
 
 export enum AuthRequirements {
-  NONE = 'NONE',
-  LOGGED_IN = 'LOGGED_IN',
-  LOGGED_OUT = 'LOGGED_OUT',
-  LOGGED_IN_AS_STUDENT = 'LOGGED_IN_AS_STUDENT',
-  LOGGED_IN_AS_TEACHER = 'LOGGED_IN_AS_TEACHER',
-  LOGGED_IN_AS_ADMIN = 'LOGGED_IN_AS_ADMIN',
+  NONE,
+  LOGGED_IN,
+  LOGGED_OUT,
+  LOGGED_IN_AS_STUDENT,
+  LOGGED_IN_AS_TEACHER,
+  LOGGED_IN_AS_ADMIN,
 }
 
 interface SelectedState {
@@ -26,24 +26,27 @@ const withAuthRequirement = (authRequirements: AuthRequirements) =>
   function<P>(Component: React.ComponentType<P>): React.FC<P> {
     return (props) => {
       const router = useRouter();
-      // TODO put real logic here
+
       const { isLoggedIn, userRole } = useSelector<RootState, SelectedState>(
         (state) => ({
           isLoggedIn: state.auth.isLoggedIn,
           userRole: state.auth.user.role,
         })
       );
-      const navigateTo = (path: string) => {
-        window.requestAnimationFrame(() => {
+
+      const navigateTo = useCallback(
+        (path: string) => {
           router.history.push(path);
-        });
-      };
+        },
+        [router]
+      );
+
       switch (authRequirements) {
         case AuthRequirements.NONE:
           break;
         case AuthRequirements.LOGGED_IN:
+          message.error('must be logged in');
           if (!isLoggedIn) {
-            message.error('must be logged in');
             navigateTo('login');
             return <ForceSuspense />;
           }
@@ -57,33 +60,21 @@ const withAuthRequirement = (authRequirements: AuthRequirements) =>
         case AuthRequirements.LOGGED_IN_AS_STUDENT:
           if (compareRole(userRole, 'student') < 0) {
             message.error('must be logged in as a student');
-            if (isLoggedIn) {
-              navigateTo('library');
-            } else {
-              navigateTo('login');
-            }
+            navigateTo(isLoggedIn ? 'library' : 'login');
             return <ForceSuspense />;
           }
           break;
         case AuthRequirements.LOGGED_IN_AS_TEACHER:
           if (compareRole(userRole, 'teacher') < 0) {
             message.error('must be logged in as a teacher');
-            if (isLoggedIn) {
-              navigateTo('library');
-            } else {
-              navigateTo('login');
-            }
+            navigateTo(isLoggedIn ? 'library' : 'login');
             return <ForceSuspense />;
           }
           break;
         case AuthRequirements.LOGGED_IN_AS_ADMIN:
           if (compareRole(userRole, 'admin') < 0) {
             message.error('must be logged in as a admin');
-            if (isLoggedIn) {
-              navigateTo('library');
-            } else {
-              navigateTo('login');
-            }
+            navigateTo(isLoggedIn ? 'library' : 'login');
             return <ForceSuspense />;
           }
           break;
