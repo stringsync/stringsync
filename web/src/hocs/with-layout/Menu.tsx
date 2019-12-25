@@ -5,7 +5,7 @@ import { RootState } from '../../store';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { AuthUser, getLogoutAction } from '../../store';
-import { compareRole } from '../../util';
+import { compareUserRoles } from 'common/user-roles';
 
 const MenuIcon = styled(Icon)`
   font-size: 22px;
@@ -38,7 +38,7 @@ export const Menu: React.FC<Props> = (props) => {
   );
   const user = useSelector<RootState, AuthUser>((state) => state.auth.user);
 
-  const isGtEqTeacher = compareRole(user.role, 'teacher') >= 0;
+  const isGtEqTeacher = compareUserRoles(user.role, 'teacher') >= 0;
 
   const [isModalVisible, setModalVisible] = useState(false);
   const showModal = useCallback(() => setModalVisible(true), [setModalVisible]);

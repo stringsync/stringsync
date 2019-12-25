@@ -3,8 +3,9 @@ import { useRouter } from '../root/Router';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { message } from 'antd';
-import { compareRole, noop } from '../../util';
+import { noop } from '../../util';
 import { UserRoles } from 'common/types';
+import { compareUserRoles } from 'common/user-roles';
 
 export enum AuthRequirements {
   NONE,
@@ -58,21 +59,21 @@ const withAuthRequirement = (authRequirements: AuthRequirements) =>
           }
           break;
         case AuthRequirements.LOGGED_IN_AS_STUDENT:
-          if (compareRole(userRole, 'student') < 0) {
+          if (compareUserRoles(userRole, 'student') < 0) {
             message.error('must be logged in as a student');
             navigateTo(isLoggedIn ? 'library' : 'login');
             return <ForceSuspense />;
           }
           break;
         case AuthRequirements.LOGGED_IN_AS_TEACHER:
-          if (compareRole(userRole, 'teacher') < 0) {
+          if (compareUserRoles(userRole, 'teacher') < 0) {
             message.error('must be logged in as a teacher');
             navigateTo(isLoggedIn ? 'library' : 'login');
             return <ForceSuspense />;
           }
           break;
         case AuthRequirements.LOGGED_IN_AS_ADMIN:
-          if (compareRole(userRole, 'admin') < 0) {
+          if (compareUserRoles(userRole, 'admin') < 0) {
             message.error('must be logged in as a admin');
             navigateTo(isLoggedIn ? 'library' : 'login');
             return <ForceSuspense />;
