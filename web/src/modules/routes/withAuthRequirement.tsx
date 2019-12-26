@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
-import { useRouter } from '../root/Router';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { message } from 'antd';
 import { noop } from '../../util';
 import { UserRoles } from 'common/types';
 import { compareUserRoles } from '../../util';
+import { useHistory } from 'react-router';
 
 export enum AuthRequirements {
   NONE,
@@ -26,8 +26,6 @@ const ForceSuspense = React.lazy(() => new Promise(noop));
 const withAuthRequirement = (authRequirements: AuthRequirements) =>
   function<P>(Component: React.ComponentType<P>): React.FC<P> {
     return (props) => {
-      const router = useRouter();
-
       const { isLoggedIn, userRole } = useSelector<RootState, SelectedState>(
         (state) => ({
           isLoggedIn: state.auth.isLoggedIn,
@@ -35,11 +33,12 @@ const withAuthRequirement = (authRequirements: AuthRequirements) =>
         })
       );
 
+      const history = useHistory();
       const navigateTo = useCallback(
         (path: string) => {
-          router.history.push(path);
+          history.push(path);
         },
-        [router]
+        [history]
       );
 
       switch (authRequirements) {
