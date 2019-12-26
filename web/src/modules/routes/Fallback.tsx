@@ -10,12 +10,10 @@ const StyledDiv = styled.div`
 
 interface Props {}
 
-const Fallback: React.FC<Props> = (props) => {
+export const Fallback: React.FC<Props> = (props) => {
   return (
     <StyledDiv>
       <Spinner />
     </StyledDiv>
   );
 };
-
-export default Fallback;

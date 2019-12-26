@@ -1,5 +1,5 @@
 import React from 'react';
-import Fallback from './Fallback';
+import { Fallback } from './Fallback';
 
 // HOC that shows loading spinner while the browser fetches the
 // js bundle for the component.
