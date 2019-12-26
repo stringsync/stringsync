@@ -11,7 +11,7 @@ const RouterContext = React.createContext<RouteChildrenProps<any, any>>({
 
 export const useRouter = () => useContext(RouterContext);
 
-const Router: React.FC<BrowserRouterProps> = (props) => (
+export const Router: React.FC<BrowserRouterProps> = (props) => (
   // Hack to get access to routeProps from child component since
   // react-router does not have an official hook yet
   // https://github.com/ReactTraining/react-router/issues/6430
@@ -25,5 +25,3 @@ const Router: React.FC<BrowserRouterProps> = (props) => (
     </Route>
   </BrowserRouter>
 );
-
-export default Router;

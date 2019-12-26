@@ -1,11 +1,11 @@
 import React from 'react';
 import { ConfigProvider } from 'antd';
 import { Provider as StoreProvider } from 'react-redux';
-import enUS from 'antd/lib/locale-provider/en_US';
+import { Router } from './Router';
 import { Store } from '../../store';
 import { ThemeProvider } from 'styled-components';
+import enUS from 'antd/lib/locale-provider/en_US';
 import theme from '../../theme.json';
-import Router from './Router';
 
 interface Props {
   store: Store;
