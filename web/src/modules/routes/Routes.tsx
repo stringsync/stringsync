@@ -2,8 +2,8 @@ import React from 'react';
 import { Route } from 'react-router-dom';
 import Landing from '../landing/Landing';
 import Library from '../library/Library';
-import withFallback from './withFallback';
-import withScrollRestoration from './withScrollRestoration';
+import { withFallback } from './withFallback';
+import { withScrollRestoration } from './withScrollRestoration';
 import { compose } from '../../util';
 import withAuthRequirement, { AuthRequirements } from './withAuthRequirement';
 
