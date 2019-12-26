@@ -1,29 +1,38 @@
-// import React from 'react';
-// import { StoreViewportSync } from './StoreViewportSync';
-// import { getTestComponent } from '../../testing';
-// import { render } from '@testing-library/react';
+import React from 'react';
+import { StoreViewportSync } from './StoreViewportSync';
+import { getTestComponent } from '../../testing';
+import { render } from '@testing-library/react';
+import { useMedia } from '../../hooks';
 
-// const resizeWindowWidth = (width: number) => {
-//   (window as any).innerWidth = width;
-//   window.dispatchEvent(new Event('resize'));
-// };
+jest.mock('../../hooks/useMedia', () => ({
+  useMedia: jest.fn(),
+}));
 
-// it.each([
-//   { width: 574, breakpointName: 'xs' },
-//   { width: 766, breakpointName: 'sm' },
-//   { width: 990, breakpointName: 'md' },
-//   { width: 1198, breakpointName: 'lg' },
-//   { width: 1598, breakpointName: 'xl' },
-// ])(
-//   'updates the store with the breakpoint name',
-//   ({ width, breakpointName }) => {
-//     const { TestComponent, store } = getTestComponent(StoreViewportSync, {});
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
-//     const component = <TestComponent />;
-//     const { rerender } = render(component);
-//     resizeWindowWidth(width);
-//     rerender(component);
+it('updates the store with the breakpoint name', () => {
+  const breakpointName = 'md';
+  (useMedia as jest.Mock).mockReturnValue(breakpointName);
 
-//     expect(store.getState().viewport.breakpointName).toBe(breakpointName);
-//   }
-// );
+  const { TestComponent, store } = getTestComponent(
+    StoreViewportSync,
+    {},
+    {
+      viewport: {
+        breakpointName: 'xs',
+        xs: true,
+        sm: false,
+        md: false,
+        lg: false,
+        xl: false,
+        xxl: false,
+      },
+    }
+  );
+
+  render(<TestComponent />);
+
+  expect(store.getState().viewport.breakpointName).toBe(breakpointName);
+});
