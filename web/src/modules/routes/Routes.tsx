@@ -31,7 +31,7 @@ const WrappedUpload = compose(
   withScrollRestoration
 )(React.lazy(() => import('../upload/Upload')));
 
-const Routes: React.FC = () => {
+export const Routes: React.FC = () => {
   return (
     <>
       <Route path="/" exact component={Landing} />
@@ -42,5 +42,3 @@ const Routes: React.FC = () => {
     </>
   );
 };
-
-export default Routes;

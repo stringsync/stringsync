@@ -1,7 +1,7 @@
 import React from 'react';
 import { StoreViewportSync } from '../../components/store-viewport-sync';
 import { ReauthOnce } from '../../components/reauth-once';
-import Routes from '../routes/Routes';
+import { Routes } from '../routes/Routes';
 
 interface Props {}
 
