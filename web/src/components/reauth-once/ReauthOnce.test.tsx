@@ -8,14 +8,19 @@ jest.mock('../../store/modules/auth/getReauthAction', () => ({
   getReauthAction: jest.fn(),
 }));
 
-it('dispatches a reauth action', () => {
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
+it('dispatches a reauth action once', () => {
   const { TestComponent, store } = getTestComponent(ReauthOnce, {});
 
   const dispatchSpy = jest
     .spyOn(store, 'dispatch')
-    .mockImplementationOnce(jest.fn());
+    .mockImplementation(jest.fn());
 
-  const { container } = render(<TestComponent />);
+  const { rerender, container } = render(<TestComponent />);
+  rerender(<TestComponent />);
 
   expect(container).toBeInTheDocument();
   expect(dispatchSpy).toBeCalledTimes(1);
