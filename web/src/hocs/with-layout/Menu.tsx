@@ -5,7 +5,7 @@ import { RootState } from '../../store';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { AuthUser, getLogoutAction } from '../../store';
-import { compareUserRoles } from 'common/user-roles';
+import { compareUserRoles } from '../../util';
 
 const MenuIcon = styled(Icon)`
   font-size: 22px;

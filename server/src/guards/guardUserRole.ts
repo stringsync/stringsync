@@ -1,5 +1,5 @@
 import { User, UserRoles } from 'common/types';
-import { compareUserRoles } from 'common/user-roles';
+import { compareUserRoles } from '../util';
 import { ForbiddenError } from 'apollo-server';
 
 export const guardUserRole = (role: UserRoles, user: User | null) => {

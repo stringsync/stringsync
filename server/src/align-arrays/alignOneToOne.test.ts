@@ -1,5 +1,5 @@
 import { alignOneToOne } from './alignOneToOne';
-import { noop, identity } from 'common/util';
+import { noop, identity } from '../util';
 
 const KEY1 = 'KEY1';
 const KEY2 = 'KEY2';

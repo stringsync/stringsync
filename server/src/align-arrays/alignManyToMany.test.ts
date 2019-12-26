@@ -1,5 +1,5 @@
 import { alignManyToMany } from './alignManyToMany';
-import { identity, noop } from 'common/util';
+import { identity, noop } from '../util';
 
 const KEY1 = 'KEY1';
 const KEY2 = 'KEY2';
@@ -32,7 +32,11 @@ it('aligns keys with values', () => {
     getMissingValue: noop,
   });
 
-  expect(actual).toEqual([[VAL1, VAL2, VAL3], [VAL1, VAL3], [VAL2, VAL3]]);
+  expect(actual).toEqual([
+    [VAL1, VAL2, VAL3],
+    [VAL1, VAL3],
+    [VAL2, VAL3],
+  ]);
 });
 
 it('dedups values', () => {
@@ -45,7 +49,11 @@ it('dedups values', () => {
     getMissingValue: noop,
   });
 
-  expect(actual).toEqual([[VAL1, VAL2, VAL3], [VAL1, VAL3], [VAL2, VAL3]]);
+  expect(actual).toEqual([
+    [VAL1, VAL2, VAL3],
+    [VAL1, VAL3],
+    [VAL2, VAL3],
+  ]);
 });
 
 it('excludes missing values', () => {

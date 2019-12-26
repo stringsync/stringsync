@@ -5,7 +5,7 @@ import { RootState } from '../../store';
 import { message } from 'antd';
 import { noop } from '../../util';
 import { UserRoles } from 'common/types';
-import { compareUserRoles } from 'common/user-roles';
+import { compareUserRoles } from '../../util';
 
 export enum AuthRequirements {
   NONE,

@@ -1,5 +1,6 @@
-import { UserRoles } from '../types';
-import { USER_ROLE_HIEARCHY } from './constants';
+import { UserRoles } from 'common/types';
+
+const USER_ROLE_HIEARCHY: UserRoles[] = ['student', 'teacher', 'admin'];
 
 export const compareUserRoles = (role1: UserRoles, role2: UserRoles) => {
   const ndx1 = USER_ROLE_HIEARCHY.indexOf(role1);

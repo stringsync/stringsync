@@ -1,5 +1,5 @@
 import { alignOneToMany } from './alignOneToMany';
-import { noop } from 'common/util';
+import { noop } from '../util';
 
 interface Value {
   id: number;
