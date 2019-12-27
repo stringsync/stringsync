@@ -23,7 +23,7 @@ interface SelectedState {
 
 const ForceSuspense = React.lazy(() => new Promise(noop));
 
-const withAuthRequirement = (authRequirements: AuthRequirements) =>
+export const withAuthRequirement = (authRequirements: AuthRequirements) =>
   function<P>(Component: React.ComponentType<P>): React.FC<P> {
     return (props) => {
       const { isLoggedIn, userRole } = useSelector<RootState, SelectedState>(
@@ -82,5 +82,3 @@ const withAuthRequirement = (authRequirements: AuthRequirements) =>
       return <Component {...props} />;
     };
   };
-
-export default withAuthRequirement;

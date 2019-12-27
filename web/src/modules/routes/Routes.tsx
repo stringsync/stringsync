@@ -5,7 +5,7 @@ import Library from '../library/Library';
 import { withFallback } from './withFallback';
 import { withScrollRestoration } from './withScrollRestoration';
 import { compose } from '../../util';
-import withAuthRequirement, { AuthRequirements } from './withAuthRequirement';
+import { withAuthRequirement, AuthRequirements } from './withAuthRequirement';
 
 const WrappedLibrary = compose(
   withFallback,
