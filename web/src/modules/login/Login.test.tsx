@@ -9,20 +9,21 @@ it('renders without crashing', () => {
   expect(container).toBeInTheDocument();
 });
 
-it('has at least one link to /library', () => {
+it.each(['/library', '/signup'])('has useful links', (href) => {
   const { TestComponent } = getTestComponent(Login, {});
   const { container } = render(<TestComponent />);
 
   expect(
-    container.querySelectorAll<HTMLAnchorElement>('a[href="/library"]').length
+    container.querySelectorAll<HTMLAnchorElement>(`a[href="${href}"]`).length
   ).toBeGreaterThan(0);
 });
 
-it('has at least one link to /signup', () => {
-  const { TestComponent } = getTestComponent(Login, {});
-  const { container } = render(<TestComponent />);
+it.each(['email or username', 'password'])(
+  'has required fields',
+  (placeholderText) => {
+    const { TestComponent } = getTestComponent(Login, {});
+    const { getByPlaceholderText } = render(<TestComponent />);
 
-  expect(
-    container.querySelectorAll<HTMLAnchorElement>('a[href="/signup"]').length
-  ).toBeGreaterThan(0);
-});
+    expect(getByPlaceholderText(placeholderText)).toBeInTheDocument();
+  }
+);
