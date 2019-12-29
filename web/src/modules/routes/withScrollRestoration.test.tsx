@@ -29,9 +29,9 @@ it('scrolls to (0, 0) on location change', () => {
   const { TestComponent } = getTestComponent(Component, {});
 
   const { rerender } = render(<TestComponent />);
+  expect(window.scrollTo).toBeCalledTimes(1);
+
   history.push('foobar');
   rerender(<TestComponent />);
-
-  // once for initial render, again for history change
   expect(window.scrollTo).toBeCalledTimes(2);
 });
