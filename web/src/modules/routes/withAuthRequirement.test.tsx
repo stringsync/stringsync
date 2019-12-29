@@ -21,3 +21,14 @@ it.each([
   const { getByTestId } = render(<TestComponent />);
   expect(getByTestId('dummy')).toBeInTheDocument();
 });
+
+it('renders nothing when not logged in and requirement is LOGGED_IN', () => {
+  const { TestComponent } = getTestComponent(
+    withAuthRequirement(AuthRequirements.LOGGED_IN)(Dummy),
+    {},
+    { auth: { isLoggedIn: false } }
+  );
+
+  const { queryByTestId } = render(<TestComponent />);
+  expect(queryByTestId('dummy')).toBeNull();
+});
