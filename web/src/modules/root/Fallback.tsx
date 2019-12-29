@@ -1,20 +1,26 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Icon, Spin } from 'antd';
-import { useStyled } from '../../hooks/useStyled';
+import { styled } from '../../util';
 
 export const Fallback: React.FC = () => {
-  const StyledDiv = useStyled(
-    (styled) => styled.div`
+  // FIXME: If these styled components are created outside of this
+  // function, some of the antd styles break. This may be a bug in
+  // antd.
+  const StyledDiv = useMemo(
+    () => styled.div`
       margin-top: 7rem;
       display: flex;
       justify-content: center;
-    `
+    `,
+    []
   );
 
-  const StyledIcon = useStyled(
-    (styled) => styled(Icon)`
-      font-size: 5em;
-    `
+  const StyledIcon = useMemo(
+    () =>
+      styled(Icon)`
+        font-size: 5em;
+      `,
+    []
   );
 
   return (

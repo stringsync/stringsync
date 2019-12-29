@@ -1,7 +1,6 @@
 import React, { FormEventHandler } from 'react';
-import { compose } from '../../util';
+import { styled, compose } from '../../util';
 import { withLayout, Layouts } from '../../hocs';
-import styled from 'styled-components';
 import { Alert, Form, Row, Col, Input, Button } from 'antd';
 import { Link } from 'react-router-dom';
 import { FormComponentProps } from 'antd/lib/form';
@@ -68,17 +67,13 @@ const enhance = compose(
 
 const Login: React.FC = enhance((props: Props) => {
   const dispatch = useDispatch();
-  const { isAuthPending, authErrors } = useStoreState((state) => ({
-    isAuthPending: state.auth.isPending,
-    authErrors: state.auth.errors,
-  }));
+  const isAuthPending = useStoreState((state) => state.auth.isPending);
+  const authErrors = useStoreState((state) => state.auth.errors);
 
   const validateThenLogin: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
     props.form.validateFields((errors, loginInput: FormValues) => {
       if (errors) {
-        // let ant design decide to
-        console.error(errors);
         return;
       }
       const loginAction = getLoginAction(loginInput);

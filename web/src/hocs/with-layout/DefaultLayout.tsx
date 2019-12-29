@@ -1,7 +1,7 @@
 import React from 'react';
 import { Layout, Row, Col, Divider } from 'antd';
 import styled from 'styled-components';
-import { useStyled, useStoreState } from '../../hooks';
+import { useStoreState } from '../../hooks';
 import { Wordmark } from '../../components/wordmark';
 import { Logo } from '../../components/logo';
 import { Link } from 'react-router-dom';
@@ -25,19 +25,17 @@ const StyledFooter = styled(Layout.Footer)`
   text-align: center;
 `;
 
+const Lane = styled.div`
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+`;
+
 export const DefaultLayout: React.FC = (props) => {
   const isLtEqMdViewport = useStoreState(
     (state) => state.viewport.xs || state.viewport.sm || state.viewport.md
   );
 
-  const Lane = useStyled((styled) => {
-    console.log('foobar');
-    return styled.div`
-      max-width: 1200px;
-      width: 100%;
-      margin: 0 auto;
-    `;
-  });
   return (
     <StyledLayout data-testid="default-layout">
       <StyledHeader>
