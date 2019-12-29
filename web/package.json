@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
+    "@testing-library/react": "^9.3.3",
     "@types/jest": "24.0.20",
     "@types/jest-when": "^2.7.0",
     "@types/lodash": "^4.14.141",

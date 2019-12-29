@@ -80,6 +80,7 @@ const Login: React.FC = enhance((props: Props) => {
       dispatch(loginAction);
     });
   };
+
   const clearErrors = () => {
     const clearAuthErrorsAction = getClearAuthErrorsAction();
     dispatch(clearAuthErrorsAction);
@@ -106,7 +107,7 @@ const Login: React.FC = enhance((props: Props) => {
                 <Wordmark />
               </StyledH1>
             </Link>
-            <Form onSubmit={validateThenLogin}>
+            <Form data-testid="login-form" onSubmit={validateThenLogin}>
               <Form.Item>
                 {emailOrUsernameFieldDecorator(
                   <Input
