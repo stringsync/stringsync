@@ -1,4 +1,0 @@
-projects:
-  prisma:
-    extensions:
-      prisma: ./src/prisma/prisma.yml

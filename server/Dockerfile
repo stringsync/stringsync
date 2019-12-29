@@ -5,7 +5,6 @@ COPY ./package.json .
 COPY ./yarn.lock .
 RUN yarn
 
-COPY .graphqlconfig.yml .
 COPY .sequelizerc .
 COPY jest.config.js .
 COPY sequelize.config.js .
