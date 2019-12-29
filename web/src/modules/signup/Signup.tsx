@@ -4,12 +4,11 @@ import styled from 'styled-components';
 import { FormComponentProps } from 'antd/lib/form';
 import { Link } from 'react-router-dom';
 import { Wordmark } from '../../components/wordmark';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../store';
+import { useDispatch } from 'react-redux';
 import { compose } from '../../util';
 import { withLayout } from '../../hocs';
 import { Layouts } from '../../hocs/with-layout/Layouts';
-import { useEffectOnce } from '../../hooks';
+import { useEffectOnce, useStoreState } from '../../hooks';
 import { getSignupAction, getClearAuthErrorsAction } from '../../store';
 
 const RoundedBox = styled.div`
@@ -83,11 +82,6 @@ interface FormValues {
   password: string;
 }
 
-interface SelectedAuthState {
-  isAuthPending: boolean;
-  authErrors: string[];
-}
-
 const enhance = compose(
   withLayout(Layouts.NONE),
   Form.create<Props>({ name: 'signup' })
@@ -95,10 +89,7 @@ const enhance = compose(
 
 const Signup = enhance((props: Props) => {
   const dispatch = useDispatch();
-  const { isAuthPending, authErrors } = useSelector<
-    RootState,
-    SelectedAuthState
-  >((state) => ({
+  const { isAuthPending, authErrors } = useStoreState((state) => ({
     isAuthPending: state.auth.isPending,
     authErrors: state.auth.errors,
   }));

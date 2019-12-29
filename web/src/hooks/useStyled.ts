@@ -11,5 +11,5 @@ export const useStyled = <T>(
   deps: DependencyList = []
 ) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  return useMemo(() => factory(styled), [factory, ...deps]);
+  return useMemo(() => factory(styled), [...deps]);
 };

@@ -1,10 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
 import { message } from 'antd';
-import { UserRoles } from 'common/types';
 import { compareUserRoles } from '../../util';
 import { useHistory } from 'react-router';
+import { useStoreState } from '../../hooks/useStoreState';
 
 export enum AuthRequirements {
   NONE,
@@ -18,14 +16,11 @@ export enum AuthRequirements {
 export const withAuthRequirement = (authReqs: AuthRequirements) =>
   function<P>(Component: React.ComponentType<P>): React.FC<P> {
     return (props) => {
-      const isLoggedIn = useSelector<RootState, boolean>(
-        (state) => state.auth.isLoggedIn
-      );
-      const userRole = useSelector<RootState, UserRoles>(
-        (state) => state.auth.user.role
-      );
-
+      const isLoggedIn = useStoreState((state) => state.auth.isLoggedIn);
+      const userRole = useStoreState((state) => state.auth.user.role);
       const meetsAuthReqs = useRef(true);
+      const history = useHistory();
+
       switch (authReqs) {
         case AuthRequirements.NONE:
           meetsAuthReqs.current = true;
@@ -50,7 +45,6 @@ export const withAuthRequirement = (authReqs: AuthRequirements) =>
           break;
       }
 
-      const history = useHistory();
       useEffect(() => {
         if (meetsAuthReqs.current) {
           return;

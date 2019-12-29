@@ -1,11 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import { Button, Row, Icon, Col, Modal, Avatar, message } from 'antd';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../store';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { AuthUser, getLogoutAction } from '../../store';
+import { getLogoutAction } from '../../store';
 import { compareUserRoles } from '../../util';
+import { useStoreState } from '../../hooks';
 
 const MenuIcon = styled(Icon)`
   font-size: 22px;
@@ -26,17 +26,13 @@ interface Props {}
 export const Menu: React.FC<Props> = (props) => {
   const dispatch = useDispatch();
 
-  const isLoggedIn = useSelector<RootState, boolean>(
-    (state) => state.auth.isLoggedIn
-  );
-  const isLtEqMdViewport = useSelector<RootState, boolean>((state) => {
+  const isLoggedIn = useStoreState((state) => state.auth.isLoggedIn);
+  const isLtEqMdViewport = useStoreState((state) => {
     const { xs, sm, md } = state.viewport;
     return xs || sm || md;
   });
-  const isAuthPending = useSelector<RootState, boolean>(
-    (state) => state.auth.isPending
-  );
-  const user = useSelector<RootState, AuthUser>((state) => state.auth.user);
+  const isAuthPending = useStoreState((state) => state.auth.isPending);
+  const user = useStoreState((state) => state.auth.user);
 
   const isGtEqTeacher = compareUserRoles(user.role, 'teacher') >= 0;
 

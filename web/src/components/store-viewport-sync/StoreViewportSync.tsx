@@ -1,11 +1,8 @@
 import React from 'react';
-import {
-  RootState,
-  BreakpointName,
-  getSetBreakpointNameAction,
-} from '../../store';
+import { BreakpointName, getSetBreakpointNameAction } from '../../store';
 import { useMedia } from '../../hooks';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useStoreState } from '../../hooks/useStoreState';
 
 const BREAKPOINT_QUERIES = [
   '(max-width: 575px)',
@@ -21,7 +18,7 @@ interface Props {}
 
 export const StoreViewportSync: React.FC<Props> = (props) => {
   const dispatch = useDispatch();
-  const breakpointName = useSelector<RootState, BreakpointName>(
+  const breakpointName = useStoreState(
     (state) => state.viewport.breakpointName
   );
   const nextBreakpointName = useMedia(
