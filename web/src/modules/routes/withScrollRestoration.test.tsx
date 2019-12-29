@@ -19,6 +19,17 @@ it('scrolls to (0, 0)', () => {
   expect(window.scrollTo).toBeCalledWith(0, 0);
 });
 
+it('does not scroll on every rerender', () => {
+  window.scrollTo = jest.fn();
+  const Component = withScrollRestoration(() => <div />);
+  const { TestComponent } = getTestComponent(Component, {});
+
+  const { rerender } = render(<TestComponent />);
+  rerender(<TestComponent />);
+
+  expect(window.scrollTo).toBeCalledTimes(1);
+});
+
 it('scrolls to (0, 0) on location change', () => {
   window.scrollTo = jest.fn();
   let history: ReturnType<typeof useHistory>;
