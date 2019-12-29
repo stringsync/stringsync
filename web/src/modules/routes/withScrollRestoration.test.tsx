@@ -42,7 +42,7 @@ it('scrolls to (0, 0) on location change', () => {
   const { rerender } = render(<TestComponent />);
   expect(window.scrollTo).toBeCalledTimes(1);
 
-  history.push('foobar');
+  history!.push('foobar');
   rerender(<TestComponent />);
   expect(window.scrollTo).toBeCalledTimes(2);
 });
