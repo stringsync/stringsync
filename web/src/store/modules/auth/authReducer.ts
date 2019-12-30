@@ -7,7 +7,7 @@ import {
 } from './constants';
 import { AuthState, AuthActionTypes } from './types';
 import { getInitialAuthState } from './getInitialAuthState';
-import getNullState from './getNullState';
+import { getNullAuthState } from './getNullAuthState';
 
 export const authReducer = (
   state = getInitialAuthState(),
@@ -21,9 +21,14 @@ export const authReducer = (
       return { isPending: false, isLoggedIn: true, user, errors: [] };
     case REQUEST_AUTH_FAILURE:
       const errors = [...action.payload.errors];
-      return { ...getNullState(), isLoggedIn: false, isPending: false, errors };
+      return {
+        ...getNullAuthState(),
+        isLoggedIn: false,
+        isPending: false,
+        errors,
+      };
     case CLEAR_AUTH:
-      return getNullState();
+      return getNullAuthState();
     case CLEAR_AUTH_ERRORS:
       return { ...state, errors: [] };
     default:

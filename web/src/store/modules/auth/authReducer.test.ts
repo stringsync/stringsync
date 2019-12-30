@@ -3,6 +3,9 @@ import { getInitialAuthState } from './getInitialAuthState';
 import { getRequestAuthPendingAction } from './getRequestAuthPendingAction';
 import { getRequestAuthSuccessAction } from './getRequestAuthSuccessAction';
 import { getRequestAuthFailureAction } from './getRequestAuthFailureAction';
+import { getClearAuthAction } from './getClearAuthAction';
+import { getNullAuthState } from './getNullAuthState';
+import { getClearAuthErrorsAction } from './getClearAuthErrorsAction';
 
 it('handles REQUEST_AUTH_PENDING actions', () => {
   const action = getRequestAuthPendingAction();
@@ -43,4 +46,23 @@ it('handles REQUEST_AUTH_FAILURE actions', () => {
   const state = authReducer(undefined, action);
 
   expect(state.errors).toEqual(errors);
+});
+
+it('handles CLEAR_AUTH actions', () => {
+  const action = getClearAuthAction();
+
+  const state = authReducer(undefined, action);
+
+  expect(state).toStrictEqual(getNullAuthState());
+});
+
+it('handles CLEAR_AUTH_ERRORS actions', () => {
+  const action = getClearAuthErrorsAction();
+
+  const state = authReducer(
+    { ...getInitialAuthState(), errors: ['error1'] },
+    action
+  );
+
+  expect(state.errors).toHaveLength(0);
 });

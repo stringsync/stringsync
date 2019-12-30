@@ -1,9 +1,9 @@
 import { AuthState } from '.';
-import { getNullAuthUser } from './getNullState';
+import { getNullAuthState } from './getNullAuthState';
 
 export const getInitialAuthState = (): AuthState => ({
+  ...getNullAuthState(),
   isPending: true, // assume there is a mechanism to reauth on init
-  user: getNullAuthUser(),
   isLoggedIn: false,
   errors: [],
 });
