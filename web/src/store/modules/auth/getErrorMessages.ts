@@ -5,7 +5,6 @@ export const getErrorMessages = (error: any): string[] => {
       errorMessages.push(graphQLError.message);
     }
   } else {
-    console.error(error);
     errorMessages.push('something went wrong');
   }
   return errorMessages;
