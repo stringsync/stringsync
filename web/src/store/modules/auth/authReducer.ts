@@ -4,7 +4,7 @@ import {
   REQUEST_AUTH_FAILURE,
   CLEAR_AUTH_ERRORS,
   CLEAR_AUTH,
-} from '.';
+} from './constants';
 import { AuthState, AuthActionTypes } from './types';
 import { getInitialAuthState } from './getInitialAuthState';
 import getNullState from './getNullState';
