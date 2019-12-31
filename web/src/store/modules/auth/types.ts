@@ -6,6 +6,7 @@ import {
   REQUEST_AUTH_PENDING,
   REQUEST_AUTH_SUCCESS,
 } from './constants';
+import { ThunkAction } from '../../types';
 
 export type AuthUser = Pick<User, 'id' | 'email' | 'username' | 'role'>;
 
