@@ -1,12 +1,12 @@
 import * as Viewport from './modules/viewport';
 import * as Device from './modules/device';
 import * as Auth from './modules/auth';
-import { createStore } from './createStore';
+import { getStore } from './getStore';
 import { createApolloClient } from '../util';
 import { ThunkAction as BaseThunkAction } from 'redux-thunk';
 import { Action } from 'redux';
 
-export type Store = ReturnType<typeof createStore>;
+export type Store = ReturnType<typeof getStore>;
 
 export type Actions =
   | Viewport.ViewportActionTypes

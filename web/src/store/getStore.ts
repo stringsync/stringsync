@@ -1,6 +1,6 @@
 import {
   combineReducers,
-  createStore as doCreateStore,
+  createStore,
   applyMiddleware,
   compose,
   DeepPartial,
@@ -22,7 +22,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
 });
 
-export const createStore = (
+export const getStore = (
   apollo: ApolloClient<NormalizedCacheObject>,
   partialPreloadedState?: DeepPartial<RootState>
 ) => {
@@ -30,7 +30,7 @@ export const createStore = (
   const reduxDevtools = (window as any)[REDUX_DEVTOOLS_KEY] || compose;
   const preloadedState = merge(getPreloadedState(), partialPreloadedState);
 
-  return doCreateStore(
+  return createStore(
     rootReducer,
     preloadedState,
     compose(applyMiddleware(...middlewares), reduxDevtools())

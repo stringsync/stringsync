@@ -1,6 +1,6 @@
 import React from 'react';
-import { createApolloClient } from '../util';
-import { createStore, RootState } from '../store';
+import { RootState } from '../store';
+import { getTestStore } from './getTestStore';
 import Root from '../modules/root/Root';
 import { DeepPartial } from 'common/types';
 
@@ -9,8 +9,7 @@ export const getTestComponent = function<P>(
   props: P,
   partialPreloadedState?: DeepPartial<RootState>
 ) {
-  const apollo = createApolloClient();
-  const store = createStore(apollo, partialPreloadedState);
+  const { store, apollo } = getTestStore(partialPreloadedState);
 
   const TestComponent = () => (
     <Root store={store}>

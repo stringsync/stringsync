@@ -1,4 +1,4 @@
 export * from './types';
 export * from './modules';
 export * from './selectors';
-export { createStore } from './createStore';
+export { getStore } from './getStore';
