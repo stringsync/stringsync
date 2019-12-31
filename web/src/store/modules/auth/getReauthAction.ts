@@ -38,19 +38,23 @@ export const getReauthAction = (): ThunkAction<void, AuthActionTypes> => async (
 ) => {
   const requestAuthPendingAction = getRequestAuthPendingAction();
   dispatch(requestAuthPendingAction);
+
   try {
     const res = await ctx.apollo.mutate<ReauthData>({
       mutation: REAUTH_MUTATION,
     });
+
     if (!res.data) {
       throw new Error('user session expired or invalid');
     }
+
     const user = pick(res.data.reauth.user, [
       'id',
       'username',
       'email',
       'role',
     ]);
+
     const requestAuthSuccessAction = getRequestAuthSuccessAction(user);
     dispatch(requestAuthSuccessAction);
   } catch (error) {
