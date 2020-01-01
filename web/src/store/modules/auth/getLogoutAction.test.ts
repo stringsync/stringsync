@@ -1,6 +1,7 @@
 import { getLogoutAction } from './getLogoutAction';
 import { getTestStore } from '../../../testing';
 import { AuthUser } from './types';
+import { getNullAuthState } from './getNullAuthState';
 
 const USER: AuthUser = {
   id: 'id',
@@ -8,6 +9,8 @@ const USER: AuthUser = {
   email: 'email',
   role: 'teacher',
 };
+
+const NULL_USER = getNullAuthState().user;
 
 it('logs the user out', async () => {
   const { store, apollo } = getTestStore({
@@ -23,6 +26,6 @@ it('logs the user out', async () => {
 
   const { auth } = store.getState();
   expect(auth.isLoggedIn).toBe(false);
-  expect(auth.user).not.toBe(USER);
+  expect(auth.user).toBe(NULL_USER);
   expect(auth.errors).toHaveLength(0);
 });
