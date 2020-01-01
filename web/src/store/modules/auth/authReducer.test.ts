@@ -6,6 +6,7 @@ import { getRequestAuthFailureAction } from './getRequestAuthFailureAction';
 import { getClearAuthAction } from './getClearAuthAction';
 import { getNullAuthState } from './getNullAuthState';
 import { getClearAuthErrorsAction } from './getClearAuthErrorsAction';
+import { AuthUser } from './types';
 
 it('handles REQUEST_AUTH_PENDING actions', () => {
   const action = getRequestAuthPendingAction();
@@ -20,7 +21,7 @@ it('handles REQUEST_AUTH_PENDING actions', () => {
 });
 
 it('handles REQUEST_AUTH_SUCCESS actions', () => {
-  const user = {
+  const user: AuthUser = {
     email: 'email',
     id: 'id',
     role: 'teacher',
