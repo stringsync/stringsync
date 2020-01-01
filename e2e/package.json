@@ -1,0 +1,18 @@
+{
+  "name": "string-sync-e2e",
+  "version": "1.0.0",
+  "description": "Runs end-to-end tests for stringsync.com",
+  "license": "MIT",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaredjj3/string-sync.git"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Jared Johnson",
+  "devDependencies": {
+    "jest": "^24.9.0"
+  }
+}
