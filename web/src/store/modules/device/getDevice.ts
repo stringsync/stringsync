@@ -1,6 +1,8 @@
 import { Device } from './types';
 import { getUserAgent } from './getUserAgent';
 
+// src: https://github.com/kaimallea/isMobile
+
 const appleIphone = /iPhone/i;
 const appleIpod = /iPod/i;
 const appleTablet = /iPad/i;
