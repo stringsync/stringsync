@@ -1,26 +1,28 @@
-import { getLogoutAction, LOGOUT_MUTATION } from './getLogoutAction';
+import { getLogoutAction } from './getLogoutAction';
 import { getTestStore } from '../../../testing';
-import { CLEAR_AUTH } from './constants';
+import { AuthUser } from './types';
 
-it('dispatches a CLEAR_AUTH action', async () => {
-  const { store, apollo } = getTestStore();
-  const dispatchSpy = jest.spyOn(store, 'dispatch');
+const USER: AuthUser = {
+  id: 'id',
+  username: 'username',
+  email: 'email',
+  role: 'teacher',
+};
+
+it('logs the user out', async () => {
+  const { store, apollo } = getTestStore({
+    auth: {
+      isLoggedIn: true,
+      user: USER,
+      errors: ['error1'],
+    },
+  });
   jest.spyOn(apollo, 'mutate').mockResolvedValue({});
 
   await getLogoutAction()(store.dispatch, store.getState, { apollo });
 
-  expect(dispatchSpy).toHaveBeenCalledWith({
-    type: CLEAR_AUTH,
-  });
-});
-
-it('mutates logout', async () => {
-  const { store, apollo } = getTestStore();
-  jest.spyOn(apollo, 'mutate').mockResolvedValue({});
-
-  await getLogoutAction()(store.dispatch, store.getState, { apollo });
-
-  expect(apollo.mutate).toHaveBeenCalledWith({
-    mutation: LOGOUT_MUTATION,
-  });
+  const { auth } = store.getState();
+  expect(auth.isLoggedIn).toBe(false);
+  expect(auth.user).not.toBe(USER);
+  expect(auth.errors).toHaveLength(0);
 });
