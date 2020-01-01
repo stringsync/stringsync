@@ -87,20 +87,20 @@ export const getDevice = (userAgent?: string): Device => {
       blackberry10: match(otherBlackBerry10, userAgent),
       opera: match(otherOpera, userAgent),
       firefox: match(otherFirefox, userAgent),
-      chrome: match(otherChrome, userAgent),
+      chrome: match(otherChrome, userAgent) && !match(androidPhone, userAgent),
       device:
         match(otherBlackBerry, userAgent) ||
         match(otherBlackBerry10, userAgent) ||
         match(otherOpera, userAgent) ||
         match(otherFirefox, userAgent) ||
-        match(otherChrome, userAgent),
+        (match(otherChrome, userAgent) && !match(androidPhone, userAgent)),
     },
-    any: false,
+    mobile: false,
     phone: false,
     tablet: false,
   };
 
-  device.any =
+  device.mobile =
     device.apple.device ||
     device.android.device ||
     device.windows.device ||

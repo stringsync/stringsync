@@ -32,7 +32,7 @@ export type Device = {
   };
   phone: boolean;
   tablet: boolean;
-  any: boolean;
+  mobile: boolean;
 };
 
 export interface DeviceState {
