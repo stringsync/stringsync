@@ -1,4 +1,4 @@
-import { BreakpointName, ViewportState } from '.';
+import { BreakpointName, ViewportState } from './types';
 
 export const getViewportState = (
   breakpointName: BreakpointName
