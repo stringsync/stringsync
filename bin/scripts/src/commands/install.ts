@@ -8,6 +8,7 @@ const INSTALLATION_DIRS = [
   ROOT_PATH,
   path.join(ROOT_PATH, 'server'),
   path.join(ROOT_PATH, 'web'),
+  path.join(ROOT_PATH, 'e2e'),
 ];
 
 export default class Install extends Command {
