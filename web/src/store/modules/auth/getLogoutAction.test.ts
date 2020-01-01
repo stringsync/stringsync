@@ -26,6 +26,6 @@ it('logs the user out', async () => {
 
   const { auth } = store.getState();
   expect(auth.isLoggedIn).toBe(false);
-  expect(auth.user).toBe(NULL_USER);
+  expect(auth.user).toEqual(NULL_USER);
   expect(auth.errors).toHaveLength(0);
 });

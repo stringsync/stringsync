@@ -1,4 +1,4 @@
-import { getReauthAction, REAUTH_MUTATION } from './getReauthAction';
+import { getReauthAction } from './getReauthAction';
 import { getTestStore } from '../../../testing';
 import { AuthUser } from './types';
 
