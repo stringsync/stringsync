@@ -4,7 +4,7 @@ import { ThunkAction } from '../..';
 import { AuthActionTypes } from './types';
 import { pick } from 'lodash';
 import { message } from 'antd';
-import { getErrorMessages } from './getErrorMessages';
+import { getErrorMessages } from '../../../util';
 import { getRequestAuthPendingAction } from './getRequestAuthPendingAction';
 import { getRequestAuthSuccessAction } from './getRequestAuthSuccessAction';
 import { getRequestAuthFailureAction } from './getRequestAuthFailureAction';
