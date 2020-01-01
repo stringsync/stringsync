@@ -13,7 +13,7 @@ interface LogoutData {
   };
 }
 
-const LOGOUT_MUTATION = gql`
+export const LOGOUT_MUTATION = gql`
   mutation {
     logout {
       user {
