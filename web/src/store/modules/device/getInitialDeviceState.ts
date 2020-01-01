@@ -5,8 +5,5 @@ import { DeviceState } from './types';
 export const getInitialDeviceState = (): DeviceState => {
   const userAgent = getUserAgent();
   const device = getDevice(userAgent);
-  return {
-    userAgent,
-    ...device,
-  };
+  return { userAgent, device };
 };

@@ -10,7 +10,7 @@ export const deviceReducer = (
   switch (action.type) {
     case SET_USER_AGENT:
       const { userAgent } = action.payload;
-      return { userAgent, ...getDevice(userAgent) };
+      return { userAgent, device: { ...getDevice(userAgent) } };
     default:
       return state;
   }

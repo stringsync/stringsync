@@ -35,9 +35,10 @@ export type Device = {
   any: boolean;
 };
 
-export type DeviceState = Device & {
+export interface DeviceState {
   userAgent: string;
-};
+  device: Device;
+}
 
 export interface SetUserAgentInput {
   userAgent: string;
