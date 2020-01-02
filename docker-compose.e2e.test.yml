@@ -1,0 +1,116 @@
+version: '3.7'
+
+services:
+  test-e2e-db:
+    container_name: ss_test_e2e_db
+    image: postgres:11
+    restart: always
+    environment:
+      POSTGRES_DB: stringsync
+      POSTGRES_USER: stringsync
+      POSTGRES_PASSWORD: stringsync
+    networks:
+      - test-e2e-network
+
+  test-e2e-server:
+    container_name: ss_test_e2e_server
+    image: ss-server:latest
+    build:
+      context: ./server
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      CLIENT_URI: http://localhost:8080
+      DB_NAME: stringsync
+      DB_USERNAME: stringsync
+      DB_PASSWORD: stringsync
+      DB_HOST: test-e2e-db
+      DB_PORT: 5432
+    volumes:
+      - type: bind
+        source: ./common
+        target: /string-sync/common
+      - type: bind
+        source: ./server/src
+        target: /string-sync/server/src
+    links:
+      - test-e2e-db
+    depends_on:
+      - test-e2e-db
+    ports:
+      - '3000:3000'
+    networks:
+      - test-e2e-network
+    command: ['yarn', 'build:dev']
+
+  test-e2e-scripts:
+    image: ss-server:latest
+    container_name: ss_test_e2e_scripts
+    environment:
+      NODE_ENV: development
+      DB_NAME: stringsync
+      DB_USERNAME: stringsync
+      DB_PASSWORD: stringsync
+      DB_HOST: db
+      DB_PORT: 5432
+    volumes:
+      - type: bind
+        source: ./common
+        target: /string-sync/common
+      - type: bind
+        source: ./server/src
+        target: /string-sync/server/src
+    links:
+      - test-e2e-db
+    networks:
+      - test-e2e-network
+    command: ['yarn', 'start:scripts:dev']
+
+  test-e2e-web:
+    container_name: ss_test_e2e_web
+    image: ss-web:latest
+    build:
+      context: ./web
+      dockerfile: ./Dockerfile
+    volumes:
+      - type: bind
+        source: ./common
+        target: /string-sync/common
+      - type: bind
+        source: ./web/src
+        target: /string-sync/web/src
+      - type: bind
+        source: ./web/public
+        target: /string-sync/web/public
+    environment:
+      NODE_ENV: development
+    ports:
+      - '8080:8080'
+    links:
+      - test-e2e-server
+    networks:
+      - test-e2e-network
+    command: ['yarn', 'start']
+
+  test-e2e:
+    container_name: ss_test_e2e
+    image: ss-e2e:latest
+    build:
+      context: ./e2e
+      dockerfile: ./Dockerfile
+    volumes:
+      - type: bind
+        source: ./e2e/web
+        target: /string-sync/e2e/web
+    environment:
+      WEB_URI: http://test-e2e-web:8080
+    command: 'wait-for-it.sh test-e2e-web:8080 -t 60 -s -- yarn test'
+    links:
+      - test-e2e-web
+    networks:
+      - test-e2e-network
+
+networks:
+  test-e2e-network:
+    name: ss_test_e2e_network

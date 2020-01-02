@@ -4,6 +4,59 @@ import { ROOT_PATH } from '../util/constants';
 import { execSync } from 'child_process';
 import { cmd } from '../util/cmd';
 
+const getRunTestCmd = (
+  service: string,
+  dockerComposeFile: string,
+  watch: boolean
+): string => {
+  switch (service) {
+    case 'server':
+      return cmd(
+        'docker-compose',
+        '-f',
+        dockerComposeFile,
+        'run',
+        '--rm',
+        'test-server',
+        'yarn',
+        'test',
+        `--watchAll=${watch}`
+      );
+    case 'web':
+      return cmd(
+        'docker-compose',
+        '-f',
+        dockerComposeFile,
+        'run',
+        '--rm',
+        'test-web',
+        'yarn',
+        'test',
+        `--watchAll=${watch}`
+      );
+    case 'e2e':
+      return cmd(
+        'docker-compose',
+        '-f',
+        dockerComposeFile,
+        'run',
+        '--rm',
+        'test-e2e',
+        'wait-for-it.sh',
+        '-t',
+        '60',
+        '-s',
+        'test-e2e-web:8080',
+        '--',
+        'yarn',
+        'test',
+        `--watchAll=${watch}`
+      );
+    default:
+      return '';
+  }
+};
+
 export default class Test extends Command {
   static description = 'describe the command here';
 
@@ -12,7 +65,7 @@ export default class Test extends Command {
   };
 
   static args = [
-    { name: 'service', required: true, options: ['server', 'web'] },
+    { name: 'service', required: true, options: ['server', 'web', 'e2e'] },
   ];
 
   async run() {
@@ -33,24 +86,15 @@ export default class Test extends Command {
 
     let exit = 0;
     try {
-      execSync(
-        cmd(
-          'docker-compose',
-          '-f',
-          dockerComposeFile,
-          'run',
-          '--rm',
-          `test-${args.service}`,
-          'yarn',
-          'run',
-          'test',
-          `--watchAll=${flags.watch}`
-        ),
-        {
-          stdio: 'inherit',
-          cwd: ROOT_PATH,
-        }
+      const runTestCmd = getRunTestCmd(
+        args.service,
+        dockerComposeFile,
+        flags.watch
       );
+      execSync(runTestCmd, {
+        stdio: 'inherit',
+        cwd: ROOT_PATH,
+      });
     } catch (e) {
       exit = 1;
     }

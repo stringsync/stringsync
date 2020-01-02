@@ -8,6 +8,7 @@ module.exports = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
+  setupFilesAfterEnv: ['./jest.setup.js'],
   moduleNameMapper: {
     '^common/(.*)': '<rootDir>/../common/$1',
   },
