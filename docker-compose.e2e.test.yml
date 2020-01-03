@@ -105,7 +105,6 @@ services:
         target: /string-sync/e2e/web
     environment:
       WEB_URI: http://test-e2e-web:8080
-    command: 'wait-for-it.sh test-e2e-web:8080 -t 60 -s -- yarn test'
     links:
       - test-e2e-web
     networks:
