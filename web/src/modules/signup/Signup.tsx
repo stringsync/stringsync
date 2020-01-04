@@ -125,7 +125,7 @@ const Signup = enhance((props: Props) => {
   });
 
   return (
-    <>
+    <div data-testid="signup">
       <Row type="flex" justify="center" align="middle">
         <Col {...SPANS}>
           <RoundedBox>
@@ -203,7 +203,7 @@ const Signup = enhance((props: Props) => {
           </RoundedBox>
         </Col>
       </Row>
-    </>
+    </div>
   );
 });
 

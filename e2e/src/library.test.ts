@@ -20,7 +20,7 @@ afterAll(async () => {
   await browser.close();
 });
 
-it('loads the signup page', async () => {
+it('loads the library page', async () => {
   page.emulate({
     viewport: {
       width: 800,
@@ -30,9 +30,10 @@ it('loads the signup page', async () => {
   });
 
   const url = new URL(config.WEB_URI);
-  url.pathname = '/signup';
+  url.pathname = '/library';
 
   page.goto(url.href);
-  const el = await page.waitForSelector('[data-testid=signup]');
+  const el = await page.waitForSelector('[data-testid=library]');
+
   expect(el).not.toBeNull();
 });

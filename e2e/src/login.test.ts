@@ -33,7 +33,7 @@ it('loads the login page', async () => {
   url.pathname = '/login';
 
   page.goto(url.href);
-  const el = await page.waitForSelector('[data-testid=login');
+  const el = await page.waitForSelector('[data-testid=login]');
 
   expect(el).not.toBeNull();
 });
