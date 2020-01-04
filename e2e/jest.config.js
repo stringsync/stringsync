@@ -8,7 +8,9 @@ module.exports = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
-  globalSetup: './globalSetup.js',
+  globalSetup: './setup.js',
+  globalTeardown: './teardown.js',
+  testEnvironment: './puppeteer_environment.js',
   setupFilesAfterEnv: ['./jest.setup.js'],
   moduleNameMapper: {
     '^common/(.*)': '<rootDir>/../common/$1',

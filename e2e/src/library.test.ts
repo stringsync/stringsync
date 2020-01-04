@@ -1,23 +1,16 @@
-import { Browser, Page } from 'puppeteer';
-import { getBrowser, getConfig, CHROME_USER_AGENT } from './util';
+import { Page } from 'puppeteer';
+import { getConfig, CHROME_USER_AGENT } from './util';
 
 const config = getConfig(process.env);
 const userAgent = CHROME_USER_AGENT;
 
-let browser: Browser;
 let page: Page;
 
-beforeAll(async () => {
-  browser = await getBrowser();
-});
 beforeEach(async () => {
-  page = await browser.newPage();
+  page = await (global as any).__BROWSER__.newPage();
 });
 afterEach(async () => {
   await page.close();
-});
-afterAll(async () => {
-  await browser.close();
 });
 
 it('loads the library page', async () => {

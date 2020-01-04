@@ -13,6 +13,7 @@
   },
   "author": "Jared Johnson",
   "devDependencies": {
+    "@types/expect-puppeteer": "^3.3.3",
     "@types/faker": "^4.1.8",
     "faker": "^4.1.0",
     "jest": "^24.9.0",

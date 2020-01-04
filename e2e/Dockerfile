@@ -19,5 +19,7 @@ RUN yarn
 
 COPY jest.config.js .
 COPY jest.setup.js .
-COPY globalSetup.js .
+COPY setup.js .
+COPY teardown.js .
+COPY puppeteer_environment.js .
 COPY tsconfig.json .
