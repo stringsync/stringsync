@@ -1,5 +1,5 @@
 import { Browser, Page } from 'puppeteer';
-import { getBrowser, getConfig, CHROME_USER_AGENT } from '../util';
+import { getBrowser, getConfig, CHROME_USER_AGENT } from './util';
 
 const config = getConfig(process.env);
 const userAgent = CHROME_USER_AGENT;
