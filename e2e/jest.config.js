@@ -10,7 +10,7 @@ module.exports = {
   },
   globalSetup: './setup.js',
   globalTeardown: './teardown.js',
-  testEnvironment: './puppeteer_environment.js',
+  testEnvironment: './PuppeteerEnvironment.js',
   setupFilesAfterEnv: ['./jest.setup.js'],
   moduleNameMapper: {
     '^common/(.*)': '<rootDir>/../common/$1',
