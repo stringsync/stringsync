@@ -50,6 +50,7 @@ const getRunTestCmd = (
         '--',
         'yarn',
         'test',
+        '--runInBand',
         `--watchAll=${watch}`
       );
     default:
