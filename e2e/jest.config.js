@@ -4,10 +4,11 @@ module.exports = {
       tsConfig: 'tsconfig.json',
     },
   },
-  roots: ['<rootDir>/web/'],
+  roots: ['<rootDir>/src/'],
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
+  globalSetup: './globalSetup.js',
   setupFilesAfterEnv: ['./jest.setup.js'],
   moduleNameMapper: {
     '^common/(.*)': '<rootDir>/../common/$1',

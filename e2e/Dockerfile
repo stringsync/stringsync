@@ -19,4 +19,5 @@ RUN yarn
 
 COPY jest.config.js .
 COPY jest.setup.js .
+COPY globalSetup.js .
 COPY tsconfig.json .

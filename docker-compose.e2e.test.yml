@@ -101,8 +101,8 @@ services:
       dockerfile: ./Dockerfile
     volumes:
       - type: bind
-        source: ./e2e/web
-        target: /string-sync/e2e/web
+        source: ./e2e/src
+        target: /string-sync/e2e/src
     environment:
       WEB_URI: http://test-e2e-web:8080
     links:
