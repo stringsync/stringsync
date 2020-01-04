@@ -98,7 +98,7 @@ const Login: React.FC = enhance((props: Props) => {
   });
 
   return (
-    <>
+    <div data-testid="login">
       <Row type="flex" justify="center" align="middle">
         <Col {...SPANS}>
           <RoundedBox>
@@ -169,7 +169,7 @@ const Login: React.FC = enhance((props: Props) => {
           </RoundedBox>
         </Col>
       </Row>
-    </>
+    </div>
   );
 });
 
