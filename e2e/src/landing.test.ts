@@ -13,13 +13,8 @@ afterEach(async () => {
   await page.close();
 });
 
-it.each([
-  { width: 414, height: 896 }, // iPhone XR
-  { width: 375, height: 812 }, // iPhone XS
-  { width: 1024, height: 1366 }, // iPad Pro
-  { width: 412, height: 732 }, // Nexus 6P
-])('loads the page', async (viewport) => {
-  page.emulate({ viewport, userAgent });
+it('loads the page', async () => {
+  page.emulate({ viewport: { width: 1024, height: 1366 }, userAgent });
   await page.goto(config.WEB_URI);
   const el = await page.waitForSelector('[data-testid="landing"]');
   expect(el).not.toBeNull();
