@@ -3,7 +3,7 @@ import { Config } from './types';
 const getMaybeValidConfig = (env: NodeJS.ProcessEnv): Partial<Config> => ({
   NODE_ENV: env.NODE_ENV,
   PORT: env.PORT,
-  CLIENT_URI: env.CLIENT_URI,
+  WEB_URI: env.WEB_URI,
   DB_NAME: env.DB_NAME,
   DB_USERNAME: env.DB_USERNAME,
   DB_PASSWORD: env.DB_PASSWORD,

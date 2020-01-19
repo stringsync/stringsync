@@ -3,7 +3,7 @@ import { getConfig } from './getConfig';
 const MOCK_ENV = Object.freeze({
   NODE_ENV: 'NODE_ENV',
   PORT: 'PORT',
-  CLIENT_URI: 'CLIENT_URI',
+  WEB_URI: 'WEB_URI',
   DB_NAME: 'DB_NAME',
   DB_USERNAME: 'DB_USERNAME',
   DB_PASSWORD: 'DB_PASSWORD',

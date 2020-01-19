@@ -10,6 +10,6 @@ export const getServer = (db: Db, schema: GraphQLSchema, config: Config) => {
     schema,
     context: getRequestContextCreator(db),
     formatError: getErrorFormatter(config.NODE_ENV),
-    cors: { origin: config.CLIENT_URI, credentials: true },
+    cors: { origin: config.WEB_URI, credentials: true },
   });
 };

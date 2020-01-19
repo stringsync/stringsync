@@ -21,7 +21,7 @@ services:
     environment:
       NODE_ENV: development
       PORT: 3000
-      CLIENT_URI: http://localhost:8080
+      WEB_URI: http://localhost:8080
       DB_NAME: stringsync
       DB_USERNAME: stringsync
       DB_PASSWORD: stringsync

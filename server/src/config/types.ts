@@ -1,7 +1,7 @@
 export interface Config {
   NODE_ENV: string;
   PORT: string;
-  CLIENT_URI: string;
+  WEB_URI: string;
   DB_NAME: string;
   DB_USERNAME: string;
   DB_PASSWORD: string;

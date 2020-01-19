@@ -39,7 +39,7 @@ it('wraps the ApolloServer constructor', () => {
     context: requestContextCreator,
     formatError: errorFormatter,
     cors: {
-      origin: config.CLIENT_URI,
+      origin: config.WEB_URI,
       credentials: true,
     },
   });
