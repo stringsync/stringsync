@@ -28,12 +28,8 @@ services:
       DB_HOST: test-e2e-db
       DB_PORT: 5432
     volumes:
-      - type: bind
-        source: ./common
-        target: /string-sync/common
-      - type: bind
-        source: ./server/src
-        target: /string-sync/server/src
+      - ./common:/string-sync/common
+      - ./server/src:/string-sync/server/src
     links:
       - test-e2e-db
     depends_on:
@@ -55,12 +51,8 @@ services:
       DB_HOST: test-e2e-db
       DB_PORT: 5432
     volumes:
-      - type: bind
-        source: ./common
-        target: /string-sync/common
-      - type: bind
-        source: ./server/src
-        target: /string-sync/server/src
+      - ./common:/string-sync/common
+      - ./server/src:/string-sync/server/src
     links:
       - test-e2e-db
     networks:
@@ -74,15 +66,9 @@ services:
       context: ./web
       dockerfile: ./Dockerfile
     volumes:
-      - type: bind
-        source: ./common
-        target: /string-sync/common
-      - type: bind
-        source: ./web/src
-        target: /string-sync/web/src
-      - type: bind
-        source: ./web/public
-        target: /string-sync/web/public
+      - ./common:/string-sync/common
+      - ./web/src:/string-sync/web/src
+      - ./web/public:/string-sync/web/public
     environment:
       NODE_ENV: test
       REACT_APP_SERVER_URI: http://test-e2e-server:3000/graphql
@@ -102,9 +88,7 @@ services:
       context: ./e2e
       dockerfile: ./Dockerfile
     volumes:
-      - type: bind
-        source: ./e2e/src
-        target: /string-sync/e2e/src
+      - ./e2e/src:/string-sync/e2e/src
     environment:
       WEB_URI: http://test-e2e-web:8080
     links:

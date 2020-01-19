@@ -28,12 +28,8 @@ services:
       DB_HOST: test-db
       DB_PORT: 5432
     volumes:
-      - type: bind
-        source: ./common
-        target: /string-sync/common
-      - type: bind
-        source: ./server/src
-        target: /string-sync/server/src
+      - ./common:/string-sync/common
+      - ./server/src:/string-sync/server/src
     links:
       - test-db
     depends_on:

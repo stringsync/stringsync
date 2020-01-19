@@ -8,15 +8,9 @@ services:
       context: ./web
       dockerfile: ./Dockerfile
     volumes:
-      - type: bind
-        source: ./common
-        target: /string-sync/common
-      - type: bind
-        source: ./web/src
-        target: /string-sync/web/src
-      - type: bind
-        source: ./web/public
-        target: /string-sync/web/public
+      - ./common:/string-sync/common
+      - ./web/src:/string-sync/web/src
+      - ./web/public:/string-sync/web/public
     environment:
       NODE_ENV: test
       REACT_APP_SERVER_URI: ''

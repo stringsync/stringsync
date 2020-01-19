@@ -28,12 +28,8 @@ services:
       DB_HOST: db
       DB_PORT: 5432
     volumes:
-      - type: bind
-        source: ./common
-        target: /string-sync/common
-      - type: bind
-        source: ./server/src
-        target: /string-sync/server/src
+      - ./common:/string-sync/common
+      - ./server/src:/string-sync/server/src
     links:
       - db
     depends_on:
@@ -55,12 +51,8 @@ services:
       DB_HOST: db
       DB_PORT: 5432
     volumes:
-      - type: bind
-        source: ./common
-        target: /string-sync/common
-      - type: bind
-        source: ./server/src
-        target: /string-sync/server/src
+      - ./common:/string-sync/common
+      - ./server/src:/string-sync/server/src
     links:
       - db
     networks:
@@ -74,15 +66,9 @@ services:
       context: ./web
       dockerfile: ./Dockerfile
     volumes:
-      - type: bind
-        source: ./common
-        target: /string-sync/common
-      - type: bind
-        source: ./web/src
-        target: /string-sync/web/src
-      - type: bind
-        source: ./web/public
-        target: /string-sync/web/public
+      - ./common:/string-sync/common
+      - ./web/src:/string-sync/web/src
+      - ./web/public:/string-sync/web/public
     environment:
       NODE_ENV: development
       REACT_APP_SERVER_URI: 'http://localhost:3000/graphql'
