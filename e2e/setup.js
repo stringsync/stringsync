@@ -1,4 +1,3 @@
-// setup.js
 const puppeteer = require('puppeteer');
 const mkdirp = require('mkdirp');
 const path = require('path');
@@ -10,12 +9,9 @@ const DIR = path.join(os.tmpdir(), 'jest_puppeteer_global_setup');
 module.exports = async function() {
   const browser = await puppeteer.launch({
     args: [
-      // Required for Docker version of Puppeteer
-      '--no-sandbox',
+      '--no-sandbox', // Required for Docker version of Puppeteer
       '--disable-setuid-sandbox',
-      // This will write shared memory files into /tmp instead of /dev/shm,
-      // because Docker’s default for /dev/shm is 64MB
-      '--disable-dev-shm-usage',
+      '--incognito',
     ],
   });
   // store the browser instance so we can teardown it later

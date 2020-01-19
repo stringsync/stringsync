@@ -138,18 +138,27 @@ const Signup = enhance((props: Props) => {
             <Form onSubmit={validateThenSignup}>
               <Form.Item>
                 {emailFieldDecorator(
-                  <Input placeholder="email" disabled={isAuthPending} />
+                  <Input
+                    placeholder="email"
+                    name="email"
+                    disabled={isAuthPending}
+                  />
                 )}
               </Form.Item>
               <Form.Item>
                 {usernameFieldDecorator(
-                  <Input placeholder="username" disabled={isAuthPending} />
+                  <Input
+                    placeholder="username"
+                    name="username"
+                    disabled={isAuthPending}
+                  />
                 )}
               </Form.Item>
               <Form.Item>
                 {passwordFieldDecorator(
                   <Input.Password
                     placeholder="password"
+                    name="password"
                     disabled={isAuthPending}
                   />
                 )}

@@ -5,6 +5,6 @@ COPY ./package.json .
 COPY ./yarn.lock .
 RUN yarn
 
-COPY .env.development .
+COPY .env .
 COPY config-overrides.js .
 COPY tsconfig.json .
