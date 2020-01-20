@@ -1,7 +1,7 @@
 version: '3.7'
 
 services:
-  test-web:
+  web:
     container_name: ss_test_web
     image: ss-web:latest
     build:
@@ -14,11 +14,3 @@ services:
     environment:
       NODE_ENV: test
       REACT_APP_SERVER_URI: ''
-    ports:
-      - '8080:8080'
-    networks:
-      - test-web-network
-
-networks:
-  test-web-network:
-    name: ss_test_web_network

@@ -2,18 +2,14 @@ version: '3.7'
 
 services:
   db:
-    container_name: ss_db
     image: postgres:11
     restart: always
     environment:
       POSTGRES_DB: stringsync
       POSTGRES_USER: stringsync
       POSTGRES_PASSWORD: stringsync
-    networks:
-      - dev-network
 
   server:
-    container_name: ss_server
     image: ss-server:latest
     build:
       context: ./server
@@ -36,13 +32,10 @@ services:
       - db
     ports:
       - '3000:3000'
-    networks:
-      - dev-network
     command: ['yarn', 'build:dev']
 
   scripts:
     image: ss-server:latest
-    container_name: ss_scripts
     environment:
       NODE_ENV: development
       DB_NAME: stringsync
@@ -55,12 +48,9 @@ services:
       - ./server/src:/string-sync/server/src
     links:
       - db
-    networks:
-      - dev-network
     command: ['yarn', 'start:scripts:dev']
 
   web:
-    container_name: ss_web
     image: ss-web:latest
     build:
       context: ./web
@@ -76,10 +66,4 @@ services:
       - '8080:8080'
     links:
       - server
-    networks:
-      - dev-network
     command: ['yarn', 'start']
-
-networks:
-  dev-network:
-    name: ss_dev_network

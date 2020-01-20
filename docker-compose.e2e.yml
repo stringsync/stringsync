@@ -28,8 +28,6 @@ services:
       - ./server/src:/string-sync/server/src
     links:
       - db
-    ports:
-      - '3000:3000'
     command: ['yarn', 'build:dev']
 
   scripts:
@@ -60,8 +58,6 @@ services:
     environment:
       NODE_ENV: test
       REACT_APP_SERVER_URI: http://server:3000/graphql
-    ports:
-      - '8080:8080'
     links:
       - server
     command: ['yarn', 'start']

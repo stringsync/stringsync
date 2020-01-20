@@ -1,19 +1,15 @@
 version: '3.7'
 
 services:
-  test-db:
-    container_name: ss_test_db
+  db:
     image: postgres:11
     restart: always
     environment:
       POSTGRES_DB: stringsync
       POSTGRES_USER: stringsync
       POSTGRES_PASSWORD: stringsync
-    networks:
-      - test-server-network
 
-  test-server:
-    container_name: ss_test_server
+  server:
     image: ss-server:latest
     build:
       context: ./server
@@ -21,24 +17,14 @@ services:
     environment:
       NODE_ENV: test
       PORT: 3000
-      WEB_URI: http://localhost:8080
+      WEB_URI: ''
       DB_NAME: stringsync
       DB_USERNAME: stringsync
       DB_PASSWORD: stringsync
-      DB_HOST: test-db
+      DB_HOST: db
       DB_PORT: 5432
     volumes:
       - ./common:/string-sync/common
       - ./server/src:/string-sync/server/src
     links:
-      - test-db
-    depends_on:
-      - test-db
-    ports:
-      - '3000:3000'
-    networks:
-      - test-server-network
-
-networks:
-  test-server-network:
-    name: ss_test_server_network
+      - db
