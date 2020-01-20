@@ -1,9 +1,7 @@
 import { Command, flags } from '@oclif/command';
-import { ROOT_PATH } from '../util/constants';
 import * as path from 'path';
 import * as fs from 'fs';
-import { execSync } from 'child_process';
-import { cmd } from '../util';
+import { cmd, execSyncFromRootPath, ROOT_PATH } from '../util';
 
 const INSTALLATION_DIRS = [
   ROOT_PATH,
@@ -28,8 +26,8 @@ export default class Install extends Command {
         ? 'reinstalling'
         : 'installing';
       this.log(`🦑  ${installing} node_modules in ${dir}`);
-      execSync(cmd('rm', '-rf', nodeModulesPath));
-      execSync(cmd(`(cd ${dir} && yarn)`));
+      execSyncFromRootPath(cmd('rm', '-rf', nodeModulesPath));
+      execSyncFromRootPath(cmd(`(cd ${dir} && yarn)`));
     }
   }
 }

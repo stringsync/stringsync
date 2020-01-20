@@ -1,6 +1,10 @@
 import { Command, flags } from '@oclif/command';
-import { execSync } from 'child_process';
-import { getDockerComposeFile, cmd, ROOT_PATH, PROJECT_ARG } from '../util';
+import {
+  getDockerComposeFile,
+  cmd,
+  PROJECT_ARG,
+  execSyncFromRootPath,
+} from '../util';
 
 export default class Exec extends Command {
   static description = 'Follows the logs for a particular service.';
@@ -16,7 +20,7 @@ export default class Exec extends Command {
 
   async run() {
     const { args } = this.parse(Exec);
-    execSync(
+    execSyncFromRootPath(
       cmd(
         'docker-compose',
         '-f',
@@ -26,11 +30,7 @@ export default class Exec extends Command {
         'logs',
         '-f',
         args.service
-      ),
-      {
-        stdio: 'inherit',
-        cwd: ROOT_PATH,
-      }
+      )
     );
   }
 }

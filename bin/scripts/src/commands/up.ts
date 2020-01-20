@@ -1,11 +1,11 @@
 import { Command, flags } from '@oclif/command';
-import { execSync } from 'child_process';
 import {
   ROOT_PATH,
   getBuildDockerImageCmd,
   cmd,
   getDockerComposeCmd,
   PROJECT_ARG,
+  execSyncFromRootPath,
 } from '../util';
 
 export default class Up extends Command {
@@ -21,22 +21,17 @@ export default class Up extends Command {
   async run() {
     const { flags, args } = this.parse(Up);
 
-    execSync(getBuildDockerImageCmd('ss-root:latest', 'Dockerfile', '.'), {
-      stdio: 'inherit',
-      cwd: ROOT_PATH,
-    });
+    execSyncFromRootPath(
+      getBuildDockerImageCmd('ss-root:latest', 'Dockerfile', '.')
+    );
 
-    execSync(
+    execSyncFromRootPath(
       cmd(
         getDockerComposeCmd(args.project),
         'up',
         '--build',
         flags.attach ? '' : '-d'
-      ),
-      {
-        stdio: 'inherit',
-        cwd: ROOT_PATH,
-      }
+      )
     );
   }
 }

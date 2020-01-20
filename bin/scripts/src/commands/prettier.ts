@@ -1,6 +1,5 @@
 import { Command, flags } from '@oclif/command';
-import { execSync } from 'child_process';
-import { ROOT_PATH } from '../util/constants';
+import { execSyncFromRootPath } from '../util';
 
 export default class Prettier extends Command {
   static description = 'describe the command here';
@@ -25,6 +24,6 @@ export default class Prettier extends Command {
         : '"common/**/*.ts" "server/src/**/*.ts" "bin/scripts/src/**/*.ts" "web/src/**/*.ts" "web/src/**/*.tsx" "e2e/src/**/*.ts"',
     ].join(' ');
 
-    execSync(cmd, { stdio: 'inherit', cwd: ROOT_PATH });
+    execSyncFromRootPath(cmd);
   }
 }

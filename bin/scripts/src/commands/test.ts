@@ -6,6 +6,7 @@ import {
   getBuildDockerImageCmd,
   getDockerComposeCmd,
   cmd,
+  execSyncFromRootPath,
 } from '../util';
 
 export default class Test extends Command {
@@ -20,30 +21,20 @@ export default class Test extends Command {
   async run() {
     const { args, flags } = this.parse(Test);
 
-    execSync(getBuildDockerImageCmd('ss-root:latest', 'Dockerfile', '.'), {
-      stdio: 'inherit',
-      cwd: ROOT_PATH,
-    });
+    execSyncFromRootPath(
+      getBuildDockerImageCmd('ss-root:latest', 'Dockerfile', '.')
+    );
 
-    execSync(cmd(getDockerComposeCmd(args.project), 'build'), {
-      stdio: 'inherit',
-      cwd: ROOT_PATH,
-    });
+    execSyncFromRootPath(cmd(getDockerComposeCmd(args.project), 'build'));
 
     let exit = 0;
     try {
-      execSync(getRunTestCmd(args.project, flags.watch), {
-        stdio: 'inherit',
-        cwd: ROOT_PATH,
-      });
+      execSyncFromRootPath(getRunTestCmd(args.project, flags.watch));
     } catch (e) {
       exit = 1;
     }
 
-    execSync(cmd('./bin/ss', 'down', args.project), {
-      stdio: 'inherit',
-      cwd: ROOT_PATH,
-    });
+    execSyncFromRootPath(cmd('./bin/ss', 'down', args.project));
 
     this.exit(exit);
   }
