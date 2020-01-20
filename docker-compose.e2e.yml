@@ -1,19 +1,15 @@
 version: '3.7'
 
 services:
-  test-e2e-db:
-    container_name: ss_test_e2e_db
+  db:
     image: postgres:11
     restart: always
     environment:
       POSTGRES_DB: stringsync
       POSTGRES_USER: stringsync
       POSTGRES_PASSWORD: stringsync
-    networks:
-      - test-e2e-network
 
-  test-e2e-server:
-    container_name: ss_test_e2e_server
+  server:
     image: ss-server:latest
     build:
       context: ./server
@@ -21,46 +17,38 @@ services:
     environment:
       NODE_ENV: development
       PORT: 3000
-      WEB_URI: http://test-e2e-web:8080
+      WEB_URI: http://web:8080
       DB_NAME: stringsync
       DB_USERNAME: stringsync
       DB_PASSWORD: stringsync
-      DB_HOST: test-e2e-db
+      DB_HOST: db
       DB_PORT: 5432
     volumes:
       - ./common:/string-sync/common
       - ./server/src:/string-sync/server/src
     links:
-      - test-e2e-db
-    depends_on:
-      - test-e2e-db
+      - db
     ports:
       - '3000:3000'
-    networks:
-      - test-e2e-network
     command: ['yarn', 'build:dev']
 
-  test-e2e-scripts:
+  scripts:
     image: ss-server:latest
-    container_name: ss_test_e2e_scripts
     environment:
       NODE_ENV: test
       DB_NAME: stringsync
       DB_USERNAME: stringsync
       DB_PASSWORD: stringsync
-      DB_HOST: test-e2e-db
+      DB_HOST: db
       DB_PORT: 5432
     volumes:
       - ./common:/string-sync/common
       - ./server/src:/string-sync/server/src
     links:
-      - test-e2e-db
-    networks:
-      - test-e2e-network
+      - db
     command: ['yarn', 'start:scripts:dev']
 
-  test-e2e-web:
-    container_name: ss_test_e2e_web
+  web:
     image: ss-web:latest
     build:
       context: ./web
@@ -71,17 +59,14 @@ services:
       - ./web/public:/string-sync/web/public
     environment:
       NODE_ENV: test
-      REACT_APP_SERVER_URI: http://test-e2e-server:3000/graphql
+      REACT_APP_SERVER_URI: http://server:3000/graphql
     ports:
       - '8080:8080'
     links:
-      - test-e2e-server
-    networks:
-      - test-e2e-network
+      - server
     command: ['yarn', 'start']
 
-  test-e2e:
-    container_name: ss_test_e2e
+  test:
     image: ss-e2e:latest
     shm_size: '1g'
     build:
@@ -90,14 +75,8 @@ services:
     volumes:
       - ./e2e/src:/string-sync/e2e/src
     environment:
-      WEB_URI: http://test-e2e-web:8080
+      WEB_URI: http://web:8080
     links:
-      - test-e2e-server
-      - test-e2e-web
-      - test-e2e-scripts
-    networks:
-      - test-e2e-network
-
-networks:
-  test-e2e-network:
-    name: ss_test_e2e_network
+      - server
+      - web
+      - scripts
