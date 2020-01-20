@@ -5,3 +5,10 @@ import { Project } from './types';
 export const ROOT_PATH = path.join(__dirname, '..', '..', '..', '..');
 
 export const PROJECTS: Project[] = ['main', 'e2e', 'server', 'web'];
+
+export const PROJECT_ARG = {
+  name: 'project',
+  required: false,
+  default: 'main',
+  options: PROJECTS,
+};

@@ -1,7 +1,7 @@
 import { Command, flags } from '@oclif/command';
 import { execSync } from 'child_process';
 import { cmd } from '../util/cmd';
-import { PROJECTS, getDockerComposeFile, Project } from '../util';
+import { getDockerComposeFile, Project, PROJECT_ARG, ROOT_PATH } from '../util';
 
 export default class Exec extends Command {
   static description = 'Runs docker-compose exec on an running container.';
@@ -14,7 +14,7 @@ export default class Exec extends Command {
   };
 
   static args = [
-    { name: 'project', required: false, default: 'main', options: PROJECTS },
+    { ...PROJECT_ARG, required: true },
     { name: 'service', required: true },
     { name: 'cmd', required: true },
   ];
@@ -38,6 +38,6 @@ export default class Exec extends Command {
     );
 
     this.log(`exec '${execCmd}' on ${service}:`);
-    execSync(execCmd, { stdio: 'inherit' });
+    execSync(execCmd, { stdio: 'inherit', cwd: ROOT_PATH });
   }
 }

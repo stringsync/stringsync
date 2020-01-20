@@ -1,6 +1,6 @@
 import { Command, flags } from '@oclif/command';
 import { execSync } from 'child_process';
-import { ROOT_PATH } from '../util';
+import { ROOT_PATH, cmd } from '../util';
 
 export default class Db extends Command {
   static description = 'Runs a db console.';
@@ -11,9 +11,12 @@ export default class Db extends Command {
 
   async run() {
     this.parse(Db);
-    execSync('./bin/ss exec db psql -U stringsync', {
-      stdio: 'inherit',
-      cwd: ROOT_PATH,
-    });
+    execSync(
+      cmd('./bin/ss', 'exec', 'main', 'db', 'psql', '-U', 'stringsync'),
+      {
+        stdio: 'inherit',
+        cwd: ROOT_PATH,
+      }
+    );
   }
 }
