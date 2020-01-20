@@ -5,4 +5,4 @@ export * from './execSyncFromRootPath';
 export * from './getBuildDockerImageCmd';
 export * from './getDockerComposeFile';
 export * from './getDockerComposeCmd';
-export * from './getRunTestCmd';
+export * from './getTestCmd';

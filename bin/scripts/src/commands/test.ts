@@ -1,8 +1,7 @@
 import { Command, flags } from '@oclif/command';
-import { ROOT_PATH, PROJECTS, PROJECT_ARG } from '../util/constants';
-import { execSync } from 'child_process';
+import { PROJECT_ARG } from '../util/constants';
 import {
-  getRunTestCmd,
+  getTestCmd,
   getBuildDockerImageCmd,
   getDockerComposeCmd,
   cmd,
@@ -29,7 +28,7 @@ export default class Test extends Command {
 
     let exit = 0;
     try {
-      execSyncFromRootPath(getRunTestCmd(args.project, flags.watch));
+      execSyncFromRootPath(getTestCmd(args.project, flags.watch));
     } catch (e) {
       exit = 1;
     }

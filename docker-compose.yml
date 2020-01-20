@@ -2,6 +2,7 @@ version: '3.7'
 
 services:
   db:
+    container_name: db
     image: postgres:11
     restart: always
     environment:
@@ -10,6 +11,7 @@ services:
       POSTGRES_PASSWORD: stringsync
 
   server:
+    container_name: server
     image: ss-server:latest
     build:
       context: ./server
@@ -35,6 +37,7 @@ services:
     command: ['yarn', 'build:dev']
 
   scripts:
+    container_name: scripts
     image: ss-server:latest
     environment:
       NODE_ENV: development
@@ -51,6 +54,7 @@ services:
     command: ['yarn', 'start:scripts:dev']
 
   web:
+    container_name: web
     image: ss-web:latest
     build:
       context: ./web

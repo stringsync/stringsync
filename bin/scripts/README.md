@@ -1,5 +1,4 @@
-scripts
-=======
+# scripts
 
 StringSync Scripts.
 
@@ -9,11 +8,15 @@ StringSync Scripts.
 [![License](https://img.shields.io/npm/l/scripts.svg)](https://github.com/jaredjj3/string-sync/blob/master/package.json)
 
 <!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
-<!-- tocstop -->
+
+- [Usage](#usage)
+- [Commands](#commands)
+  <!-- tocstop -->
+
 # Usage
+
 <!-- usage -->
+
 ```sh-session
 $ npm install -g scripts
 $ ss COMMAND
@@ -25,35 +28,24 @@ USAGE
   $ ss COMMAND
 ...
 ```
+
 <!-- usagestop -->
+
 # Commands
+
 <!-- commands -->
-* [`ss bounce`](#ss-bounce)
-* [`ss db`](#ss-db)
-* [`ss down`](#ss-down)
-* [`ss exec SERVICE CMD`](#ss-exec-service-cmd)
-* [`ss help [COMMAND]`](#ss-help-command)
-* [`ss install`](#ss-install)
-* [`ss lint`](#ss-lint)
-* [`ss logs SERVICE`](#ss-logs-service)
-* [`ss prettier`](#ss-prettier)
-* [`ss sql CMD`](#ss-sql-cmd)
-* [`ss test [FILE]`](#ss-test-file)
-* [`ss up`](#ss-up)
 
-## `ss bounce`
-
-Performs a hard reset on the development environment
-
-```
-USAGE
-  $ ss bounce
-
-OPTIONS
-  -h, --help  show CLI help
-```
-
-_See code: [src/commands/bounce.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/bounce.ts)_
+- [`ss db`](#ss-db)
+- [`ss down`](#ss-down)
+- [`ss exec SERVICE CMD`](#ss-exec-service-cmd)
+- [`ss help [COMMAND]`](#ss-help-command)
+- [`ss install`](#ss-install)
+- [`ss lint`](#ss-lint)
+- [`ss logs SERVICE`](#ss-logs-service)
+- [`ss prettier`](#ss-prettier)
+- [`ss sql CMD`](#ss-sql-cmd)
+- [`ss test [FILE]`](#ss-test-file)
+- [`ss up`](#ss-up)
 
 ## `ss db`
 
@@ -220,4 +212,5 @@ OPTIONS
 ```
 
 _See code: [src/commands/up.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/up.ts)_
+
 <!-- commandsstop -->

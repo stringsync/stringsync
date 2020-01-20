@@ -2,13 +2,15 @@ import { Project } from './types';
 import { cmd } from './cmd';
 import { getDockerComposeCmd } from './getDockerComposeCmd';
 
-export const getRunTestCmd = (project: Project, watch: boolean): string => {
+export const getTestCmd = (project: Project, watch: boolean): string => {
   switch (project) {
     case 'server':
       return cmd(
         getDockerComposeCmd(project),
         'run',
         '--rm',
+        '--name',
+        'server_test',
         'server',
         'yarn',
         'test',
@@ -19,6 +21,8 @@ export const getRunTestCmd = (project: Project, watch: boolean): string => {
         getDockerComposeCmd(project),
         'run',
         '--rm',
+        '--name',
+        'web_test',
         'web',
         'yarn',
         'test',
@@ -29,6 +33,8 @@ export const getRunTestCmd = (project: Project, watch: boolean): string => {
         getDockerComposeCmd(project),
         'run',
         '--rm',
+        '--name',
+        'e2e_test',
         'e2e',
         'wait-for-it.sh',
         '-t',
