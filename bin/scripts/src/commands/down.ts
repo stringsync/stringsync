@@ -1,6 +1,7 @@
 import { Command, flags } from '@oclif/command';
 import { execSync } from 'child_process';
-import { ROOT_PATH } from '../util/constants';
+import { ROOT_PATH, PROJECTS } from '../util/constants';
+import { cmd, getDockerComposeFile } from '../util';
 
 export default class Down extends Command {
   static description = 'Turns down a docker-compose environment.';
@@ -10,14 +11,26 @@ export default class Down extends Command {
   };
 
   static args = [
-    { name: 'file', required: false, default: 'docker-compose.yml' },
+    { name: 'project', required: false, default: 'main', options: PROJECTS },
   ];
 
   async run() {
     const { args } = this.parse(Down);
 
-    execSync(`docker-compose -f ${args.file} down --volumes`, {
-      cwd: ROOT_PATH,
-    });
+    execSync(
+      cmd(
+        'docker-compose',
+        '-f',
+        getDockerComposeFile(args.project),
+        '-p',
+        args.project,
+        'down',
+        '--volumes'
+      ),
+      {
+        stdio: 'inherit',
+        cwd: ROOT_PATH,
+      }
+    );
   }
 }

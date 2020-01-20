@@ -55,13 +55,13 @@ services:
     build:
       context: ./web
       dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: development
+      REACT_APP_SERVER_URI: 'http://localhost:3000/graphql'
     volumes:
       - ./common:/string-sync/common
       - ./web/src:/string-sync/web/src
       - ./web/public:/string-sync/web/public
-    environment:
-      NODE_ENV: development
-      REACT_APP_SERVER_URI: 'http://localhost:3000/graphql'
     ports:
       - '8080:8080'
     links:

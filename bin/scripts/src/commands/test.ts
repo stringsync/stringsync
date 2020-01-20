@@ -1,23 +1,26 @@
 import { Command, flags } from '@oclif/command';
 import { buildDockerImageSync } from '../util/buildDockerImageSync';
-import { ROOT_PATH } from '../util/constants';
+import { ROOT_PATH, PROJECTS } from '../util/constants';
 import { execSync } from 'child_process';
 import { cmd } from '../util/cmd';
+import { getDockerComposeFile, Project } from '../util';
 
 const getRunTestCmd = (
-  service: string,
+  project: Project,
   dockerComposeFile: string,
   watch: boolean
 ): string => {
-  switch (service) {
+  switch (project) {
     case 'server':
       return cmd(
         'docker-compose',
         '-f',
         dockerComposeFile,
+        '-p',
+        project,
         'run',
         '--rm',
-        'test-server',
+        'server',
         'yarn',
         'test',
         `--watchAll=${watch}`
@@ -27,9 +30,11 @@ const getRunTestCmd = (
         'docker-compose',
         '-f',
         dockerComposeFile,
+        '-p',
+        project,
         'run',
         '--rm',
-        'test-web',
+        'web',
         'yarn',
         'test',
         `--watchAll=${watch}`
@@ -39,14 +44,16 @@ const getRunTestCmd = (
         'docker-compose',
         '-f',
         dockerComposeFile,
+        '-p',
+        project,
         'run',
         '--rm',
-        'test-e2e',
+        'e2e',
         'wait-for-it.sh',
         '-t',
         '60',
         '-s',
-        'test-e2e-web:8080',
+        'web:8080',
         '--',
         'yarn',
         'test',
@@ -54,7 +61,7 @@ const getRunTestCmd = (
         `--watchAll=${watch}`
       );
     default:
-      return '';
+      throw new TypeError(`unexpected project: ${project}`);
   }
 };
 
@@ -65,14 +72,12 @@ export default class Test extends Command {
     watch: flags.boolean({ char: 'w', default: false }),
   };
 
-  static args = [
-    { name: 'service', required: true, options: ['server', 'web', 'e2e'] },
-  ];
+  static args = [{ name: 'project', required: true, options: PROJECTS }];
 
   async run() {
     const { args, flags } = this.parse(Test);
 
-    const dockerComposeFile = `docker-compose.${args.service}.test.yml`;
+    const dockerComposeFile = getDockerComposeFile(args.project);
 
     buildDockerImageSync({
       imageTagName: 'ss-root:latest',
@@ -80,19 +85,14 @@ export default class Test extends Command {
       dockerContextPath: '.',
       cwd: ROOT_PATH,
     });
-    execSync(`docker-compose -f ${dockerComposeFile} build`, {
+    execSync(cmd('docker-compose', '-f', dockerComposeFile, 'build'), {
       stdio: 'inherit',
       cwd: ROOT_PATH,
     });
 
     let exit = 0;
     try {
-      const runTestCmd = getRunTestCmd(
-        args.service,
-        dockerComposeFile,
-        flags.watch
-      );
-      execSync(runTestCmd, {
+      execSync(getRunTestCmd(args.project, dockerComposeFile, flags.watch), {
         stdio: 'inherit',
         cwd: ROOT_PATH,
       });
@@ -100,7 +100,7 @@ export default class Test extends Command {
       exit = 1;
     }
 
-    execSync(`./bin/ss down ${dockerComposeFile}`, {
+    execSync(cmd('./bin/ss', 'down', args.project), {
       stdio: 'inherit',
       cwd: ROOT_PATH,
     });

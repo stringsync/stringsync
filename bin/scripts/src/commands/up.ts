@@ -1,7 +1,12 @@
 import { Command, flags } from '@oclif/command';
 import { execSync } from 'child_process';
-import { buildDockerImageSync } from '../util/buildDockerImageSync';
-import { ROOT_PATH } from '../util/constants';
+import {
+  ROOT_PATH,
+  PROJECTS,
+  buildDockerImageSync,
+  cmd,
+  getDockerComposeFile,
+} from '../util';
 
 export default class Up extends Command {
   static description = 'Spins up a development environment';
@@ -11,14 +16,12 @@ export default class Up extends Command {
     attach: flags.boolean({ char: 'a' }),
   };
 
-  async run() {
-    const { flags } = this.parse(Up);
-    const cmd = 'docker-compose';
-    const args = ['up', '--build'];
+  static args = [
+    { name: 'project', required: false, default: 'main', options: PROJECTS },
+  ];
 
-    if (!flags.attach) {
-      args.push('-d'); // detach mode
-    }
+  async run() {
+    const { flags, args } = this.parse(Up);
 
     buildDockerImageSync({
       imageTagName: 'ss-root:latest',
@@ -27,6 +30,21 @@ export default class Up extends Command {
       cwd: ROOT_PATH,
     });
 
-    execSync([cmd, ...args].join(' '), { stdio: 'inherit' });
+    execSync(
+      cmd(
+        'docker-compose',
+        '-f',
+        getDockerComposeFile(args.project),
+        '-p',
+        args.project,
+        'up',
+        '--build',
+        flags.attach ? '' : '-d'
+      ),
+      {
+        stdio: 'inherit',
+        cwd: ROOT_PATH,
+      }
+    );
   }
 }

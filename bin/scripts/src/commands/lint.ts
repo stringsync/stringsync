@@ -1,6 +1,7 @@
 import { Command, flags } from '@oclif/command';
 import { execSync } from 'child_process';
 import { ROOT_PATH } from '../util/constants';
+import { cmd } from '../util';
 
 export default class Lint extends Command {
   static description = 'Lints the entire project (except node_modules).';
@@ -13,16 +14,17 @@ export default class Lint extends Command {
   async run() {
     const { flags } = this.parse(Lint);
 
-    const cmd = [
-      flags.gitStagedOnly
-        ? 'git diff --diff-filter=d --cached --name-only | grep ".*tsx\\?$" | xargs'
-        : '',
-      'yarn eslint --max-warnings 1 --ext ts,tsx',
-      flags.gitStagedOnly ? '' : 'common server/src bin/scripts/src web/src',
-    ]
-      .filter((str) => str.length > 0)
-      .join(' ');
-
-    execSync(cmd, { stdio: 'inherit', cwd: ROOT_PATH });
+    execSync(
+      cmd(
+        flags.gitStagedOnly
+          ? 'git diff --diff-filter=d --cached --name-only | grep ".*tsx\\?$" | xargs'
+          : '',
+        'yarn eslint --max-warnings 1 --ext ts,tsx',
+        flags.gitStagedOnly
+          ? ''
+          : 'common server/src bin/scripts/src web/src e2e/src'
+      ),
+      { stdio: 'inherit', cwd: ROOT_PATH }
+    );
   }
 }

@@ -22,7 +22,7 @@ export default class Prettier extends Command {
       flags.fix ? '--write' : '--check',
       flags.gitStagedOnly
         ? ''
-        : '"common/**/*.ts" "server/src/**/*.ts" "bin/scripts/src/**/*.ts" "web/src/**/*.ts" "web/src/**/*.tsx"',
+        : '"common/**/*.ts" "server/src/**/*.ts" "bin/scripts/src/**/*.ts" "web/src/**/*.ts" "web/src/**/*.tsx" "e2e/src/**/*.ts"',
     ].join(' ');
 
     execSync(cmd, { stdio: 'inherit', cwd: ROOT_PATH });

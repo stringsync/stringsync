@@ -23,6 +23,7 @@ services:
       DB_PASSWORD: stringsync
       DB_HOST: db
       DB_PORT: 5432
+      WEB_URI: 'http://localhost'
     volumes:
       - ./common:/string-sync/common
       - ./server/src:/string-sync/server/src

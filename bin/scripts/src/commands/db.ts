@@ -1,6 +1,6 @@
 import { Command, flags } from '@oclif/command';
 import { execSync } from 'child_process';
-import { ROOT_PATH } from '../util/constants';
+import { ROOT_PATH } from '../util';
 
 export default class Db extends Command {
   static description = 'Runs a db console.';

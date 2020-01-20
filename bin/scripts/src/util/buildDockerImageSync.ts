@@ -1,14 +1,14 @@
 import { execSync } from 'child_process';
 import { cmd } from './cmd';
 
-interface BuildDOckerImageSyncOptions {
+interface BuildDockerImageSyncOptions {
   imageTagName: string;
   dockerfilePath: string;
   dockerContextPath: string;
   cwd: string;
 }
 
-export const buildDockerImageSync = (opts: BuildDOckerImageSyncOptions) => {
+export const buildDockerImageSync = (opts: BuildDockerImageSyncOptions) => {
   execSync(
     cmd(
       'docker',
