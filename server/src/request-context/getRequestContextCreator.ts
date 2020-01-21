@@ -29,6 +29,7 @@ export const getRequestContextCreator = (db: Db, logger: Logger) => async <
     cookies,
     dataLoaders,
     db,
+    logger,
     req,
     res,
   };

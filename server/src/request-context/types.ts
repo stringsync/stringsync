@@ -1,6 +1,7 @@
 import { Db, RawUser } from '../db';
 import { getDataLoaders } from '../data-loaders';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
+import { Logger } from 'winston';
 
 export interface Auth {
   user: RawUser | null;
@@ -18,6 +19,7 @@ export interface RequestContext<E extends ExpressContext = ExpressContext> {
   cookies: Cookies;
   dataLoaders: ReturnType<typeof getDataLoaders>;
   db: Db;
+  logger: Logger;
   req: E['req'];
   res: E['res'];
 }
