@@ -3,12 +3,13 @@ import { Db, getAuthenticatedUser } from '../db';
 import { getCookies } from './getCookies';
 import { Auth, RequestContext } from './types';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
+import { Logger } from 'winston';
 
 /**
  * This function returns a context creator that is used to create the request context
  * on each request.
  */
-export const getRequestContextCreator = (db: Db) => async <
+export const getRequestContextCreator = (db: Db, logger: Logger) => async <
   E extends ExpressContext
 >(
   expressCtx: E,

@@ -5,6 +5,7 @@ import {
   getFixtures,
   getCookieStr,
 } from '../testing';
+import { getLogger } from '../util';
 
 const FIXTURES = getFixtures();
 const USER = FIXTURES.User.student1;
@@ -26,7 +27,8 @@ it(
       },
     });
 
-    const createRequestContext = getRequestContextCreator(db);
+    const logger = getLogger();
+    const createRequestContext = getRequestContextCreator(db, logger);
     const ctx = await createRequestContext(expressContext);
 
     expect(ctx.cookies).toEqual(cookies);
@@ -39,7 +41,8 @@ it(
     const now = new Date();
     const expressContext = getMockExpressContext({});
 
-    const createRequestContext = getRequestContextCreator(db);
+    const logger = getLogger();
+    const createRequestContext = getRequestContextCreator(db, logger);
     const ctx = await createRequestContext(expressContext, now);
 
     expect(ctx.requestedAt).toEqual(now);
@@ -51,7 +54,8 @@ it(
   useTestDb({}, async (db) => {
     const expressContext = getMockExpressContext({});
 
-    const createRequestContext = getRequestContextCreator(db);
+    const logger = getLogger();
+    const createRequestContext = getRequestContextCreator(db, logger);
     const ctx = await createRequestContext(expressContext);
 
     expect(ctx.db).toBe(db);
@@ -72,7 +76,8 @@ it(
       },
     });
 
-    const createRequestContext = getRequestContextCreator(db);
+    const logger = getLogger();
+    const createRequestContext = getRequestContextCreator(db, logger);
     const ctx = await createRequestContext(
       expressContext,
       USER_SESSION.issuedAt
@@ -91,7 +96,8 @@ it(
   useTestDb({}, async (db) => {
     const expressContext = getMockExpressContext({});
 
-    const createRequestContext = getRequestContextCreator(db);
+    const logger = getLogger();
+    const createRequestContext = getRequestContextCreator(db, logger);
     const ctx = await createRequestContext(expressContext);
 
     const { auth } = ctx;
