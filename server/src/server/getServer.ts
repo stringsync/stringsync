@@ -16,7 +16,7 @@ export const getServer = (
 ) => {
   return new ApolloServer({
     schema,
-    context: getRequestContextCreator(db, logger),
+    context: getRequestContextCreator(db, logger, redis),
     formatError: getErrorFormatter(config.NODE_ENV),
     cors: { origin: config.WEB_URI, credentials: true },
   });

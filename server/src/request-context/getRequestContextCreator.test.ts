@@ -6,6 +6,8 @@ import {
   getCookieStr,
 } from '../testing';
 import { getLogger } from '../util';
+import { getConfig } from '../config';
+import { connectToRedis } from '../redis';
 
 const FIXTURES = getFixtures();
 const USER = FIXTURES.User.student1;
@@ -28,7 +30,9 @@ it(
     });
 
     const logger = getLogger();
-    const createRequestContext = getRequestContextCreator(db, logger);
+    const config = getConfig(process.env);
+    const redis = connectToRedis(config);
+    const createRequestContext = getRequestContextCreator(db, logger, redis);
     const ctx = await createRequestContext(expressContext);
 
     expect(ctx.cookies).toEqual(cookies);
@@ -42,7 +46,9 @@ it(
     const expressContext = getMockExpressContext({});
 
     const logger = getLogger();
-    const createRequestContext = getRequestContextCreator(db, logger);
+    const config = getConfig(process.env);
+    const redis = connectToRedis(config);
+    const createRequestContext = getRequestContextCreator(db, logger, redis);
     const ctx = await createRequestContext(expressContext, now);
 
     expect(ctx.requestedAt).toEqual(now);
@@ -55,7 +61,9 @@ it(
     const expressContext = getMockExpressContext({});
 
     const logger = getLogger();
-    const createRequestContext = getRequestContextCreator(db, logger);
+    const config = getConfig(process.env);
+    const redis = connectToRedis(config);
+    const createRequestContext = getRequestContextCreator(db, logger, redis);
     const ctx = await createRequestContext(expressContext);
 
     expect(ctx.db).toBe(db);
@@ -77,7 +85,9 @@ it(
     });
 
     const logger = getLogger();
-    const createRequestContext = getRequestContextCreator(db, logger);
+    const config = getConfig(process.env);
+    const redis = connectToRedis(config);
+    const createRequestContext = getRequestContextCreator(db, logger, redis);
     const ctx = await createRequestContext(
       expressContext,
       USER_SESSION.issuedAt
@@ -97,7 +107,9 @@ it(
     const expressContext = getMockExpressContext({});
 
     const logger = getLogger();
-    const createRequestContext = getRequestContextCreator(db, logger);
+    const config = getConfig(process.env);
+    const redis = connectToRedis(config);
+    const createRequestContext = getRequestContextCreator(db, logger, redis);
     const ctx = await createRequestContext(expressContext);
 
     const { auth } = ctx;

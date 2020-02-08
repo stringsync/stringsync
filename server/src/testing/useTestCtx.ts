@@ -1,9 +1,11 @@
+import { connectToRedis } from '../redis';
+import { createLogger } from 'winston';
+import { FixtureMap, CtxOptions, CtxCallback } from './types';
+import { getConfig } from '../config';
+import { getCookieStr } from './getCookieStr';
 import { getMockExpressContext } from './getMockExpressContext';
 import { getRequestContextCreator } from '../request-context';
-import { FixtureMap, CtxOptions, CtxCallback } from './types';
 import { useTestDb } from './useTestDb';
-import { getCookieStr } from './getCookieStr';
-import { createLogger } from 'winston';
 
 export const useTestCtx = <A extends any[]>(
   fixtureMap: FixtureMap,
@@ -19,7 +21,9 @@ export const useTestCtx = <A extends any[]>(
       },
     });
     const logger = createLogger();
-    const createRequestContext = getRequestContextCreator(db, logger);
+    const config = getConfig(process.env);
+    const redis = connectToRedis(config);
+    const createRequestContext = getRequestContextCreator(db, logger, redis);
     const ctx = await createRequestContext(expressCtx, ctxOpts.requestedAt);
     await callback(ctx, ...args);
   });
