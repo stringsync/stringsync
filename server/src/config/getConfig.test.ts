@@ -9,6 +9,8 @@ const MOCK_ENV = Object.freeze({
   DB_PASSWORD: 'DB_PASSWORD',
   DB_HOST: 'DB_HOST',
   DB_PORT: 'DB_PORT',
+  REDIS_HOST: 'REDIS_HOST',
+  REDIS_PORT: 'REDIS_PORT',
 });
 
 it('succeeds when all variables are specified', () => {
