@@ -10,6 +10,10 @@ services:
       POSTGRES_USER: stringsync
       POSTGRES_PASSWORD: stringsync
 
+  redis:
+    container_name: redis
+    image: redis:5.0
+
   server:
     container_name: server
     image: ss-server:latest
@@ -30,8 +34,7 @@ services:
       - ./server/src:/string-sync/server/src
     links:
       - db
-    depends_on:
-      - db
+      - redis
     ports:
       - '3000:3000'
     command: ['yarn', 'build:dev']
