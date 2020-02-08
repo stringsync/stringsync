@@ -3,7 +3,7 @@ import { Queue, QueueOptions } from 'bullmq';
 import { Queues } from './types';
 import { Redis } from 'ioredis';
 
-export const getQueues = (redis: Redis): Queues => {
+export const createQueues = (redis: Redis): Queues => {
   const queueOptions: Readonly<QueueOptions> = Object.freeze({
     connection: redis,
   });

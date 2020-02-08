@@ -1,4 +1,4 @@
 export * from './constants';
 export * from './types';
-export * from './getQueues';
-export * from './getWorkers';
+export * from './createQueues';
+export * from './createWorkers';

@@ -5,7 +5,7 @@ import { Redis } from 'ioredis';
 import { Logger } from 'winston';
 import { getMailJobProcessor } from './getMailJobProcessor';
 
-export const getWorkers = (redis: Redis, logger: Logger): Workers => {
+export const createWorkers = (redis: Redis, logger: Logger): Workers => {
   const workerOptions: Readonly<WorkerOptions> = Object.freeze({
     connection: redis,
   });
