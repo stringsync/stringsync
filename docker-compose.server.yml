@@ -10,7 +10,6 @@ services:
       POSTGRES_PASSWORD: stringsync
 
   redis:
-    container_name: redis
     image: redis:5.0
 
   server:

@@ -9,6 +9,9 @@ services:
       POSTGRES_USER: stringsync
       POSTGRES_PASSWORD: stringsync
 
+  redis:
+    image: redis:5.0
+
   server:
     image: ss-server:latest
     build:
@@ -23,6 +26,8 @@ services:
       DB_PASSWORD: stringsync
       DB_HOST: db
       DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     volumes:
       - ./common:/string-sync/common
       - ./server/src:/string-sync/server/src
