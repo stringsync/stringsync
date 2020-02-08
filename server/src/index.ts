@@ -1,13 +1,17 @@
 import { connectToDb } from './db';
+import { connectToRedis } from './redis';
 import { getConfig } from './config';
-import { getServer } from './server';
-import { getSchema } from './resolvers';
 import { getLogger } from './util';
+import { getSchema } from './resolvers';
+import { getServer } from './server';
 
 const main = async (): Promise<void> => {
   const logger = getLogger();
   const config = getConfig(process.env);
   logger.info(`🦑  running in '${config.NODE_ENV}'`);
+
+  const redis = connectToRedis(config);
+  logger.info(`🦑  connected to redis`);
 
   const db = connectToDb(config);
   await db.authenticate({ logging: false });
