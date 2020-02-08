@@ -5,11 +5,13 @@ import { getRequestContextCreator } from '../request-context';
 import { Config } from '../config';
 import { getErrorFormatter } from './getErrorFormatter';
 import { Logger } from 'winston';
+import { Redis } from 'ioredis';
 
 export const getServer = (
   db: Db,
   schema: GraphQLSchema,
   logger: Logger,
+  redis: Redis,
   config: Config
 ) => {
   return new ApolloServer({

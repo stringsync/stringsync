@@ -18,7 +18,7 @@ const main = async (): Promise<void> => {
   logger.info('🦑  connected to db');
 
   const schema = getSchema();
-  const server = getServer(db, schema, logger, config);
+  const server = getServer(db, schema, logger, redis, config);
   const port = config.PORT;
   await server.listen(port);
   logger.info(`🦑  ready on port ${port}`);
