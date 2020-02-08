@@ -1,27 +1,19 @@
-import { connectToDb } from './db';
-import { connectToRedis } from './redis';
-import { getConfig } from './config';
-import { getLogger } from './util';
 import { getSchema } from './resolvers';
+import { createGlobalCtx } from './ctx';
 import { getServer } from './server';
+import { getConfig } from './config';
 
 const main = async (): Promise<void> => {
-  const logger = getLogger();
+  // create global ctx
   const config = getConfig(process.env);
-  logger.info(`🦑  running in '${config.NODE_ENV}'`);
+  const ctx = createGlobalCtx(config);
 
-  const redis = connectToRedis(config);
-  logger.info(`🦑  connected to redis`);
-
-  const db = connectToDb(config);
-  await db.authenticate({ logging: false });
-  logger.info('🦑  connected to db');
-
+  // create server
   const schema = getSchema();
-  const server = getServer(db, schema, logger, redis, config);
-  const port = config.PORT;
-  await server.listen(port);
-  logger.info(`🦑  ready on port ${port}`);
+  const server = getServer(schema, ctx);
+
+  // run server
+  await server.listen(config.PORT);
 };
 
 if (require.main === module) {

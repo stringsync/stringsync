@@ -1,23 +1,14 @@
-import { Db } from '../db';
 import { ApolloServer } from 'apollo-server';
-import { GraphQLSchema } from 'graphql';
 import { getRequestContextCreator } from '../request-context';
-import { Config } from '../config';
 import { getErrorFormatter } from './getErrorFormatter';
-import { Logger } from 'winston';
-import { Redis } from 'ioredis';
+import { GlobalCtx } from '../ctx';
+import { GraphQLSchema } from 'graphql';
 
-export const getServer = (
-  db: Db,
-  schema: GraphQLSchema,
-  logger: Logger,
-  redis: Redis,
-  config: Config
-) => {
+export const getServer = (schema: GraphQLSchema, ctx: GlobalCtx) => {
   return new ApolloServer({
     schema,
-    context: getRequestContextCreator(db, logger, redis),
-    formatError: getErrorFormatter(config.NODE_ENV),
-    cors: { origin: config.WEB_URI, credentials: true },
+    context: getRequestContextCreator(ctx),
+    formatError: getErrorFormatter(ctx.config.NODE_ENV),
+    cors: { origin: ctx.config.WEB_URI, credentials: true },
   });
 };

@@ -8,6 +8,7 @@ import {
 import { getLogger } from '../util';
 import { getConfig } from '../config';
 import { connectToRedis } from '../redis';
+import { createGlobalCtx } from '../ctx';
 
 const FIXTURES = getFixtures();
 const USER = FIXTURES.User.student1;
@@ -29,10 +30,9 @@ it(
       },
     });
 
-    const logger = getLogger();
     const config = getConfig(process.env);
-    const redis = connectToRedis(config);
-    const createRequestContext = getRequestContextCreator(db, logger, redis);
+    const globalCtx = createGlobalCtx(config);
+    const createRequestContext = getRequestContextCreator(globalCtx);
     const ctx = await createRequestContext(expressContext);
 
     expect(ctx.cookies).toEqual(cookies);
@@ -45,10 +45,9 @@ it(
     const now = new Date();
     const expressContext = getMockExpressContext({});
 
-    const logger = getLogger();
     const config = getConfig(process.env);
-    const redis = connectToRedis(config);
-    const createRequestContext = getRequestContextCreator(db, logger, redis);
+    const globalCtx = createGlobalCtx(config);
+    const createRequestContext = getRequestContextCreator(globalCtx);
     const ctx = await createRequestContext(expressContext, now);
 
     expect(ctx.requestedAt).toEqual(now);
@@ -60,10 +59,9 @@ it(
   useTestDb({}, async (db) => {
     const expressContext = getMockExpressContext({});
 
-    const logger = getLogger();
     const config = getConfig(process.env);
-    const redis = connectToRedis(config);
-    const createRequestContext = getRequestContextCreator(db, logger, redis);
+    const globalCtx = createGlobalCtx(config);
+    const createRequestContext = getRequestContextCreator(globalCtx);
     const ctx = await createRequestContext(expressContext);
 
     expect(ctx.db).toBe(db);
@@ -84,10 +82,9 @@ it(
       },
     });
 
-    const logger = getLogger();
     const config = getConfig(process.env);
-    const redis = connectToRedis(config);
-    const createRequestContext = getRequestContextCreator(db, logger, redis);
+    const globalCtx = createGlobalCtx(config);
+    const createRequestContext = getRequestContextCreator(globalCtx);
     const ctx = await createRequestContext(
       expressContext,
       USER_SESSION.issuedAt
@@ -106,10 +103,9 @@ it(
   useTestDb({}, async (db) => {
     const expressContext = getMockExpressContext({});
 
-    const logger = getLogger();
     const config = getConfig(process.env);
-    const redis = connectToRedis(config);
-    const createRequestContext = getRequestContextCreator(db, logger, redis);
+    const globalCtx = createGlobalCtx(config);
+    const createRequestContext = getRequestContextCreator(globalCtx);
     const ctx = await createRequestContext(expressContext);
 
     const { auth } = ctx;
