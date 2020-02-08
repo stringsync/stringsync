@@ -1,12 +1,12 @@
 import { guardAuthenticated } from './guardAuthenticated';
-import { RequestContext } from '../request-context';
+import { ReqCtx } from '../ctx';
 
 it('throws an error when not logged in', () => {
   const ctx = {
     auth: {
       isLoggedIn: false,
     },
-  } as RequestContext;
+  } as ReqCtx;
 
   expect(() => guardAuthenticated(ctx)).toThrow();
 });
@@ -16,7 +16,7 @@ it('does not throw an error when logged in', () => {
     auth: {
       isLoggedIn: true,
     },
-  } as RequestContext;
+  } as ReqCtx;
 
   expect(() => guardAuthenticated(ctx)).not.toThrow();
 });

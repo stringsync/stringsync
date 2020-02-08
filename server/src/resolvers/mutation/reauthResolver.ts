@@ -5,7 +5,7 @@ import {
   shouldRefreshUserSession,
   getExpiresAt,
 } from '../../user-session';
-import { RequestContext } from '../../request-context';
+import { ReqCtx } from '../../ctx';
 import { ReauthPayload } from 'common/types';
 
 interface Args {}
@@ -15,7 +15,7 @@ const BAD_SESSION_TOKEN_MSG = 'invalid or expired credentials';
 export const reauthResolver = async (
   parent: undefined,
   args: Args,
-  ctx: RequestContext
+  ctx: ReqCtx
 ): Promise<ReauthPayload> => {
   const { isLoggedIn, user, token } = ctx.auth;
 

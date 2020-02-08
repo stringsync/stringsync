@@ -7,7 +7,7 @@ import {
   Cookies,
 } from 'node-mocks-http';
 import { Request, Response } from 'express';
-import { RequestContext } from '../request-context';
+import { ReqCtx } from '../ctx';
 
 export interface MockExpressContext {
   req: MockRequest<Request>;
@@ -33,6 +33,6 @@ export type FixtureMap = Partial<
 export type DbCallback<A extends any[]> = (db: Db, ...args: A) => Promise<any>;
 
 export type CtxCallback<A extends any[]> = (
-  ctx: RequestContext<MockExpressContext>,
+  ctx: ReqCtx<MockExpressContext>,
   ...args: A
 ) => any;

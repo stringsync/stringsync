@@ -1,13 +1,11 @@
-import { getRequestContextCreator } from './getRequestContextCreator';
+import { getReqCtxCreator } from './getReqCtxCreator';
 import {
   useTestDb,
   getMockExpressContext,
   getFixtures,
   getCookieStr,
 } from '../testing';
-import { getLogger } from '../util';
 import { getConfig } from '../config';
-import { connectToRedis } from '../redis';
 import { createGlobalCtx } from '../ctx';
 
 const FIXTURES = getFixtures();
@@ -32,7 +30,7 @@ it(
 
     const config = getConfig(process.env);
     const globalCtx = createGlobalCtx(config);
-    const createRequestContext = getRequestContextCreator(globalCtx);
+    const createRequestContext = getReqCtxCreator(globalCtx);
     const ctx = await createRequestContext(expressContext);
 
     expect(ctx.cookies).toEqual(cookies);
@@ -47,7 +45,7 @@ it(
 
     const config = getConfig(process.env);
     const globalCtx = createGlobalCtx(config);
-    const createRequestContext = getRequestContextCreator(globalCtx);
+    const createRequestContext = getReqCtxCreator(globalCtx);
     const ctx = await createRequestContext(expressContext, now);
 
     expect(ctx.requestedAt).toEqual(now);
@@ -61,7 +59,7 @@ it(
 
     const config = getConfig(process.env);
     const globalCtx = createGlobalCtx(config);
-    const createRequestContext = getRequestContextCreator(globalCtx);
+    const createRequestContext = getReqCtxCreator(globalCtx);
     const ctx = await createRequestContext(expressContext);
 
     expect(ctx.db).toBe(db);
@@ -84,7 +82,7 @@ it(
 
     const config = getConfig(process.env);
     const globalCtx = createGlobalCtx(config);
-    const createRequestContext = getRequestContextCreator(globalCtx);
+    const createRequestContext = getReqCtxCreator(globalCtx);
     const ctx = await createRequestContext(
       expressContext,
       USER_SESSION.issuedAt
@@ -105,7 +103,7 @@ it(
 
     const config = getConfig(process.env);
     const globalCtx = createGlobalCtx(config);
-    const createRequestContext = getRequestContextCreator(globalCtx);
+    const createRequestContext = getReqCtxCreator(globalCtx);
     const ctx = await createRequestContext(expressContext);
 
     const { auth } = ctx;

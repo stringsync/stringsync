@@ -1,20 +1,15 @@
-import { Auth, RequestContext } from './types';
-import { getAuthenticatedUser } from '../db';
+import { GlobalCtx, ReqCtx, Auth } from './types';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
+import { getDataLoaders } from '../data-loaders';
 import { getCookies } from './getCookies';
-import { getDataLoaders } from '../data-loaders/getDataLoaders';
-import { GlobalCtx } from '../ctx';
+import { getAuthenticatedUser } from '../db';
 
-/**
- * This function returns a context creator that is used to create the request context
- * on each request.
- */
-export const getRequestContextCreator = (globalCtx: GlobalCtx) => async <
+export const getReqCtxCreator = (globalCtx: GlobalCtx) => async <
   E extends ExpressContext
 >(
   expressCtx: E,
-  requestedAt?: Date // used for testing
-): Promise<RequestContext<E>> => {
+  requestedAt?: Date
+): Promise<ReqCtx<E>> => {
   requestedAt = requestedAt || new Date();
   const { req, res } = expressCtx;
   const dataLoaders = getDataLoaders(globalCtx.db);

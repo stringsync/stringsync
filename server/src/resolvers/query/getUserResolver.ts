@@ -1,5 +1,5 @@
 import { GetUserInput } from 'common/types';
-import { RequestContext } from '../../request-context';
+import { ReqCtx } from '../../ctx';
 
 interface Args {
   input: GetUserInput;
@@ -8,7 +8,7 @@ interface Args {
 export const getUserResolver = async (
   parent: undefined,
   args: Args,
-  ctx: RequestContext
+  ctx: ReqCtx
 ) => {
   return await ctx.dataLoaders.usersById.load(args.input.id);
 };

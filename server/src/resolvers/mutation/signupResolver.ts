@@ -3,7 +3,7 @@ import { ForbiddenError, UserInputError } from 'apollo-server';
 import { getEncryptedPassword } from '../../password';
 import { toCanonicalUser, transaction } from '../../db';
 import { setUserSessionTokenCookie, getExpiresAt } from '../../user-session';
-import { RequestContext } from '../../request-context';
+import { ReqCtx } from '../../ctx';
 
 interface Args {
   input: SignupInput;
@@ -12,7 +12,7 @@ interface Args {
 export const signupResolver = async (
   parent: undefined,
   args: Args,
-  ctx: RequestContext
+  ctx: ReqCtx
 ): Promise<SignupPayload> => {
   if (ctx.auth.isLoggedIn) {
     throw new ForbiddenError('already logged in');

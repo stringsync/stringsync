@@ -3,7 +3,7 @@ import { LoginInput } from 'common/types';
 import { setUserSessionTokenCookie, getExpiresAt } from '../../user-session';
 import { isPassword } from '../../password';
 import { toCanonicalUser } from '../../db';
-import { RequestContext } from '../../request-context';
+import { ReqCtx } from '../../ctx';
 import { or } from 'sequelize';
 
 interface Args {
@@ -15,7 +15,7 @@ export const WRONG_CREDENTIALS_MSG = 'wrong username, email, or password';
 export const loginResolver = async (
   parent: undefined,
   args: Args,
-  ctx: RequestContext
+  ctx: ReqCtx
 ) => {
   const userModel = await ctx.db.models.User.findOne({
     where: {
