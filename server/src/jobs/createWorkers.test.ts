@@ -1,11 +1,9 @@
 import { createWorkers } from './createWorkers';
-import { getConfig } from '../config';
-import { connectToRedis } from '../redis';
-import { getLogger } from '../util';
+import { useTestGlobalCtx } from '../testing';
 
-it('runs without crashing', () => {
-  const config = getConfig(process.env);
-  const redis = connectToRedis(config);
-  const logger = getLogger();
-  expect(() => createWorkers(redis, logger)).not.toThrow();
-});
+it(
+  'runs without crashing',
+  useTestGlobalCtx({}, async (ctx) => {
+    expect(() => createWorkers(ctx)).not.toThrow();
+  })
+);

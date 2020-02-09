@@ -1,9 +1,10 @@
 import { MailQueueData } from './types';
 import { Processor, Job } from 'bullmq';
-import { Logger } from 'winston';
+import { createTransport } from 'nodemailer';
+import { GlobalCtx } from '../ctx';
 
-export const getMailJobProcessor = (logger: Logger): Processor => async (
+export const getMailJobProcessor = (ctx: GlobalCtx): Processor => async (
   job: Job<MailQueueData, Promise<void>>
 ) => {
-  logger.info(job.data);
+  const transporter = createTransport({});
 };

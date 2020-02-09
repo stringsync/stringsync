@@ -1,19 +1,18 @@
 import { MAIL_QUEUE } from './constants';
 import { Workers } from './types';
 import { WorkerOptions, Worker } from 'bullmq';
-import { Redis } from 'ioredis';
-import { Logger } from 'winston';
 import { getMailJobProcessor } from './getMailJobProcessor';
+import { GlobalCtx } from '../ctx';
 
-export const createWorkers = (redis: Redis, logger: Logger): Workers => {
+export const createWorkers = (ctx: GlobalCtx): Workers => {
   const workerOptions: Readonly<WorkerOptions> = Object.freeze({
-    connection: redis,
+    connection: ctx.redis,
   });
 
   return {
     [MAIL_QUEUE]: new Worker(
       MAIL_QUEUE,
-      getMailJobProcessor(logger),
+      getMailJobProcessor(ctx),
       workerOptions
     ),
   };

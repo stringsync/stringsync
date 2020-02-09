@@ -13,7 +13,7 @@ const server = async (config: Config): Promise<void> => {
 
 const worker = (config: Config): void => {
   const ctx = createGlobalCtx(config);
-  createWorkers(ctx.redis, ctx.logger);
+  createWorkers(ctx);
 };
 
 if (require.main === module) {

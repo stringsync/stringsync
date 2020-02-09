@@ -1,7 +1,9 @@
 import { getMailJobProcessor } from './getMailJobProcessor';
-import { getLogger } from '../util';
+import { useTestGlobalCtx } from '../testing';
 
-it('runs without crashing', () => {
-  const logger = getLogger();
-  expect(() => getMailJobProcessor(logger)).not.toThrow();
-});
+it(
+  'runs without crashing',
+  useTestGlobalCtx({}, async (ctx) => {
+    expect(() => getMailJobProcessor(ctx)).not.toThrow();
+  })
+);
