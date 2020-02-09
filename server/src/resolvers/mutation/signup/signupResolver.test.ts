@@ -35,6 +35,22 @@ it(
 );
 
 it(
+  'sends a confirmation mail when successful',
+  useTestReqCtx({}, async (ctx) => {
+    const input: SignupInput = {
+      email: USER.email,
+      password: PASSWORD,
+      username: USER.username,
+    };
+
+    await signupResolver(undefined, { input }, ctx);
+
+    const jobCounts = await ctx.queues.MAIL.count();
+    expect(jobCounts).toBe(1);
+  })
+);
+
+it(
   'returns the newly created user',
   useTestReqCtx({}, async (ctx) => {
     const input: SignupInput = {

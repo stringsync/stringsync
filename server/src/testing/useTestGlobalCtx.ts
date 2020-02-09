@@ -28,6 +28,7 @@ export const useTestGlobalCtx = <A extends any[]>(
     // cleanup services
     await db.close();
     await Promise.all(Object.values(queues).map((queue) => queue.close()));
+    await redis.flushall();
     redis.disconnect();
 
     if (!(e instanceof ForcedRollback)) throw e;
