@@ -1,8 +1,8 @@
 import { reauthResolver } from './reauthResolver';
-import { useTestReqCtx, getFixtures } from '../../testing';
-import { shouldRefreshUserSession } from '../../user-session/shouldRefreshUserSession';
+import { useTestReqCtx, getFixtures } from '../../../testing';
+import { shouldRefreshUserSession } from '../../../user-session/shouldRefreshUserSession';
 
-jest.mock('../../user-session/shouldRefreshUserSession', () => ({
+jest.mock('../../../user-session/shouldRefreshUserSession', () => ({
   shouldRefreshUserSession: jest.fn(),
 }));
 

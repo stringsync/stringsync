@@ -1,5 +1,5 @@
-import { ReqCtx } from '../../ctx';
-import { toCanonicalUser } from '../../db';
+import { ReqCtx } from '../../../ctx';
+import { toCanonicalUser } from '../../../db';
 
 interface Args {}
 

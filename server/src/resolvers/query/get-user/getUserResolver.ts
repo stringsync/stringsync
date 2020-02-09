@@ -1,5 +1,5 @@
 import { GetUserInput } from 'common/types';
-import { ReqCtx } from '../../ctx';
+import { ReqCtx } from '../../../ctx';
 
 interface Args {
   input: GetUserInput;

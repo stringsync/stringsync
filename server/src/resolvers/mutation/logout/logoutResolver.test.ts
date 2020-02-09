@@ -1,5 +1,5 @@
 import { logoutResolver } from './logoutResolver';
-import { getFixtures, useTestReqCtx } from '../../testing';
+import { getFixtures, useTestReqCtx } from '../../../testing';
 
 const FIXTURES = getFixtures();
 const USER = FIXTURES.User.student1;

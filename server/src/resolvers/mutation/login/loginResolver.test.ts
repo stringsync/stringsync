@@ -1,6 +1,6 @@
 import { loginResolver } from './loginResolver';
 import { LoginInput } from 'common/types';
-import { getFixtures, useTestReqCtx } from '../../testing';
+import { getFixtures, useTestReqCtx } from '../../../testing';
 
 const USER1 = getFixtures().User.student1;
 const PASSWORD = 'password'; // decrypted password from fixtures file

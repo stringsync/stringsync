@@ -1,9 +1,9 @@
 import { ForbiddenError } from 'apollo-server';
 import { LoginInput } from 'common/types';
-import { setUserSessionTokenCookie, getExpiresAt } from '../../user-session';
-import { isPassword } from '../../password';
-import { toCanonicalUser } from '../../db';
-import { ReqCtx } from '../../ctx';
+import { setUserSessionTokenCookie, getExpiresAt } from '../../../user-session';
+import { isPassword } from '../../../password';
+import { toCanonicalUser } from '../../../db';
+import { ReqCtx } from '../../../ctx';
 import { or } from 'sequelize';
 
 interface Args {

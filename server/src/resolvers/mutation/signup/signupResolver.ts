@@ -1,9 +1,9 @@
 import { SignupInput, SignupPayload } from 'common/types';
 import { ForbiddenError, UserInputError } from 'apollo-server';
-import { getEncryptedPassword } from '../../password';
-import { toCanonicalUser, transaction } from '../../db';
-import { setUserSessionTokenCookie, getExpiresAt } from '../../user-session';
-import { ReqCtx } from '../../ctx';
+import { getEncryptedPassword } from '../../../password';
+import { toCanonicalUser, transaction } from '../../../db';
+import { setUserSessionTokenCookie, getExpiresAt } from '../../../user-session';
+import { ReqCtx } from '../../../ctx';
 
 interface Args {
   input: SignupInput;

@@ -1,11 +1,11 @@
 import { ForbiddenError } from 'apollo-server';
-import { toCanonicalUser, transaction } from '../../db';
+import { toCanonicalUser, transaction } from '../../../db';
 import {
   setUserSessionTokenCookie,
   shouldRefreshUserSession,
   getExpiresAt,
-} from '../../user-session';
-import { ReqCtx } from '../../ctx';
+} from '../../../user-session';
+import { ReqCtx } from '../../../ctx';
 import { ReauthPayload } from 'common/types';
 
 interface Args {}

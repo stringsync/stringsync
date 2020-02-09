@@ -1,2 +1,2 @@
-export * from './getUserResolver';
-export * from './getUsersResolver';
+export * from './get-user';
+export * from './get-users';

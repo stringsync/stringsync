@@ -1,6 +1,6 @@
 import { getUserResolver } from './getUserResolver';
 import { GetUserInput } from 'common/types';
-import { useTestReqCtx, getFixtures } from '../../testing';
+import { useTestReqCtx, getFixtures } from '../../../testing';
 
 const USER_FIXTURES = getFixtures().User;
 const USER1 = USER_FIXTURES.student1;

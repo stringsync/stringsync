@@ -1,5 +1,5 @@
 import { getUsersResolver } from './getUsersResolver';
-import { getFixtures, useTestReqCtx } from '../../testing';
+import { getFixtures, useTestReqCtx } from '../../../testing';
 
 const USERS = Object.values(getFixtures().User);
 
