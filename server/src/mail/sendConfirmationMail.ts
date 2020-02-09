@@ -10,7 +10,7 @@ export const sendConfirmationMail = async (
   const confirmHref = url.format({
     protocol: 'http',
     hostname: ctx.config.WEB_URI,
-    pathname: 'confirm',
+    pathname: 'confirm-email',
     query: { confirmationToken },
   });
 
