@@ -1,10 +1,10 @@
 import { Sequelize } from 'sequelize';
 import { defineModels } from './models';
-import { Db } from './types';
+import { Db, DbLogger } from './types';
 import { Config } from '../config';
 import { TRANSACTION_NAMESPACE } from './constants';
 
-export const connectToDb = (config: Config, logging = true) => {
+export const connectToDb = (config: Config, logger: DbLogger) => {
   Sequelize.useCLS(TRANSACTION_NAMESPACE);
 
   const connection = new Sequelize({
@@ -14,7 +14,7 @@ export const connectToDb = (config: Config, logging = true) => {
     password: config.DB_PASSWORD,
     host: config.DB_HOST,
     port: parseInt(config.DB_PORT, 10),
-    logging,
+    logging: (msg: string) => logger(msg),
   });
 
   defineModels(connection);

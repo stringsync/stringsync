@@ -7,7 +7,7 @@ import { createQueues } from '../jobs';
 
 export const createGlobalCtx = (config: Config): Readonly<GlobalCtx> => {
   const logger = getLogger();
-  const db = connectToDb(config);
+  const db = connectToDb(config, logger.debug);
   const redis = connectToRedis(config);
   const queues = createQueues(redis);
 
