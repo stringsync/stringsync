@@ -1,6 +1,7 @@
 import { getConfig } from './getConfig';
 
 const MOCK_ENV = Object.freeze({
+  ROLE: 'ROLE',
   NODE_ENV: 'NODE_ENV',
   PORT: 'PORT',
   WEB_URI: 'WEB_URI',

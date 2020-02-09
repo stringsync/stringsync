@@ -9,4 +9,5 @@ export interface Config {
   DB_PORT: string;
   REDIS_HOST: string;
   REDIS_PORT: string;
+  ROLE: string;
 }

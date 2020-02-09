@@ -11,6 +11,7 @@ const getMaybeValidConfig = (env: NodeJS.ProcessEnv): Partial<Config> => ({
   DB_PORT: env.DB_PORT,
   REDIS_HOST: env.REDIS_HOST,
   REDIS_PORT: env.REDIS_PORT,
+  ROLE: env.ROLE,
 });
 
 export const getConfig = (env: NodeJS.ProcessEnv): Config => {

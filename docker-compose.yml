@@ -21,6 +21,7 @@ services:
       context: ./server
       dockerfile: ./Dockerfile
     environment:
+      ROLE: server
       NODE_ENV: development
       PORT: 3000
       WEB_URI: http://localhost:8080
@@ -39,6 +40,32 @@ services:
       - redis
     ports:
       - '3000:3000'
+    command: ['yarn', 'build:dev']
+
+  worker:
+    container_name: worker
+    image: ss-server:latest
+    build:
+      context: ./server
+      dockerfile: ./Dockerfile
+    environment:
+      ROLE: worker
+      NODE_ENV: development
+      PORT: 3001
+      WEB_URI: http://localhost:8080
+      DB_NAME: stringsync
+      DB_USERNAME: stringsync
+      DB_PASSWORD: stringsync
+      DB_HOST: db
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    volumes:
+      - ./common:/string-sync/common
+      - ./server/src:/string-sync/server/src
+    links:
+      - db
+      - redis
     command: ['yarn', 'build:dev']
 
   scripts:

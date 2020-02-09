@@ -1,21 +1,32 @@
 import { getSchema } from './resolvers';
 import { createGlobalCtx } from './ctx';
 import { getServer } from './server';
-import { getConfig } from './config';
+import { getConfig, Config } from './config';
+import { createWorkers } from './jobs';
 
-const main = async (): Promise<void> => {
-  // create global ctx
-  const config = getConfig(process.env);
+const server = async (config: Config): Promise<void> => {
   const ctx = createGlobalCtx(config);
-
-  // create server
   const schema = getSchema();
   const server = getServer(schema, ctx);
-
-  // run server
   await server.listen(config.PORT);
 };
 
+const worker = (config: Config): void => {
+  const ctx = createGlobalCtx(config);
+  createWorkers(ctx.redis, ctx.logger);
+};
+
 if (require.main === module) {
-  main();
+  const config = getConfig(process.env);
+
+  switch (config.ROLE) {
+    case 'server':
+      server(config);
+      break;
+    case 'worker':
+      worker(config);
+      break;
+    default:
+      throw new TypeError(`config.ROLE not supported: ${config.ROLE}`);
+  }
 }
