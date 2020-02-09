@@ -1,5 +1,5 @@
 import { logoutResolver } from './logoutResolver';
-import { getFixtures, useTestCtx } from '../../testing';
+import { getFixtures, useTestReqCtx } from '../../testing';
 
 const FIXTURES = getFixtures();
 const USER = FIXTURES.User.student1;
@@ -9,9 +9,12 @@ const NOW = USER_SESSION.issuedAt;
 
 it(
   'should clear the user session token from cookies',
-  useTestCtx(
-    { User: [USER], UserSession: [USER_SESSION] },
-    { requestedAt: NOW, cookies: { USER_SESSION_TOKEN } },
+  useTestReqCtx(
+    {
+      fixtures: { User: [USER], UserSession: [USER_SESSION] },
+      requestedAt: NOW,
+      cookies: { USER_SESSION_TOKEN },
+    },
     async (ctx) => {
       await logoutResolver(undefined, {}, ctx);
 
@@ -22,9 +25,12 @@ it(
 
 it(
   'should remove the user session from the database',
-  useTestCtx(
-    { User: [USER], UserSession: [USER_SESSION] },
-    { requestedAt: NOW, cookies: { USER_SESSION_TOKEN } },
+  useTestReqCtx(
+    {
+      fixtures: { User: [USER], UserSession: [USER_SESSION] },
+      requestedAt: NOW,
+      cookies: { USER_SESSION_TOKEN },
+    },
     async (ctx) => {
       await logoutResolver(undefined, {}, ctx);
 
@@ -38,9 +44,12 @@ it(
 
 it(
   'returns the user that was logged out',
-  useTestCtx(
-    { User: [USER], UserSession: [USER_SESSION] },
-    { requestedAt: NOW, cookies: { USER_SESSION_TOKEN } },
+  useTestReqCtx(
+    {
+      fixtures: { User: [USER], UserSession: [USER_SESSION] },
+      requestedAt: NOW,
+      cookies: { USER_SESSION_TOKEN },
+    },
     async (ctx) => {
       const { user } = await logoutResolver(undefined, {}, ctx);
 

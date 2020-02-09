@@ -1,11 +1,11 @@
 import { getUsersResolver } from './getUsersResolver';
-import { getFixtures, useTestCtx } from '../../testing';
+import { getFixtures, useTestReqCtx } from '../../testing';
 
 const USERS = Object.values(getFixtures().User);
 
 it(
   'returns all users',
-  useTestCtx({ User: USERS }, {}, async (ctx) => {
+  useTestReqCtx({ fixtures: { User: USERS } }, async (ctx) => {
     const users = await getUsersResolver(undefined, {}, ctx);
 
     expect(users).toHaveLength(USERS.length);

@@ -1,5 +1,5 @@
 import { getAuthenticatedUser } from './getAuthenticatedUser';
-import { getFixtures, useTestDb } from '../../../testing';
+import { getFixtures, useTestGlobalCtx } from '../../../testing';
 
 const TOKEN = '23dd7932-a42e-42af-95fc-045ef1080bfd';
 const NOW = new Date('2019-01-01');
@@ -12,30 +12,32 @@ const STUDENT1_SESSION = FIXTURES.UserSession.student1Session;
 
 it(
   'returns null when the token is empty',
-  useTestDb({}, async (db) => {
+  useTestGlobalCtx({}, async (ctx) => {
     const token = '';
-    const rawUser = await getAuthenticatedUser(db, token, NOW);
+    const rawUser = await getAuthenticatedUser(ctx.db, token, NOW);
     expect(rawUser).toBeNull();
   })
 );
 
 it(
   'returns null when there is no user session in the db for it',
-  useTestDb({}, async (db) => {
-    const rawUser = await getAuthenticatedUser(db, TOKEN, NOW);
+  useTestGlobalCtx({}, async (ctx) => {
+    const rawUser = await getAuthenticatedUser(ctx.db, TOKEN, NOW);
     expect(rawUser).toBeNull();
   })
 );
 
 it(
   'returns null when the db user session is expired',
-  useTestDb(
+  useTestGlobalCtx(
     {
-      User: [STUDENT1],
-      UserSession: [{ ...STUDENT1_SESSION, expiresAt: PAST }],
+      fixtures: {
+        User: [STUDENT1],
+        UserSession: [{ ...STUDENT1_SESSION, expiresAt: PAST }],
+      },
     },
-    async (db) => {
-      const rawUser = await getAuthenticatedUser(db, TOKEN, NOW);
+    async (ctx) => {
+      const rawUser = await getAuthenticatedUser(ctx.db, TOKEN, NOW);
 
       expect(rawUser).toBeNull();
     }
@@ -44,13 +46,15 @@ it(
 
 it(
   'returns user when the db user session is active ',
-  useTestDb(
+  useTestGlobalCtx(
     {
-      User: [STUDENT1],
-      UserSession: [{ ...STUDENT1_SESSION, expiresAt: FUTURE }],
+      fixtures: {
+        User: [STUDENT1],
+        UserSession: [{ ...STUDENT1_SESSION, expiresAt: FUTURE }],
+      },
     },
-    async (db) => {
-      const rawUser = await getAuthenticatedUser(db, TOKEN, NOW);
+    async (ctx) => {
+      const rawUser = await getAuthenticatedUser(ctx.db, TOKEN, NOW);
       expect(rawUser).not.toBeNull();
       expect(rawUser!.id).toBe(STUDENT1.id);
     }

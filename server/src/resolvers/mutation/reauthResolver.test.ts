@@ -1,5 +1,5 @@
 import { reauthResolver } from './reauthResolver';
-import { useTestCtx, getFixtures } from '../../testing';
+import { useTestReqCtx, getFixtures } from '../../testing';
 import { shouldRefreshUserSession } from '../../user-session/shouldRefreshUserSession';
 
 jest.mock('../../user-session/shouldRefreshUserSession', () => ({
@@ -17,7 +17,7 @@ const USER_SESSION_TOKEN = USER_SESSION.token;
 
 it(
   'throws an error when not logged in',
-  useTestCtx({}, {}, async (ctx) => {
+  useTestReqCtx({}, async (ctx) => {
     await expect(reauthResolver(undefined, {}, ctx)).rejects.toThrowError(
       'invalid or expired credentials'
     );
@@ -26,7 +26,7 @@ it(
 
 it(
   'throws an error when user session does not exist',
-  useTestCtx({ User: [USER] }, {}, async (ctx) => {
+  useTestReqCtx({ fixtures: { User: [USER] } }, async (ctx) => {
     await expect(reauthResolver(undefined, {}, ctx)).rejects.toThrowError(
       'invalid or expired credentials'
     );
@@ -35,9 +35,12 @@ it(
 
 it(
   'does not throw an error when user session exists',
-  useTestCtx(
-    { User: [USER], UserSession: [USER_SESSION] },
-    { requestedAt: USER_SESSION.issuedAt, cookies: { USER_SESSION_TOKEN } },
+  useTestReqCtx(
+    {
+      fixtures: { User: [USER], UserSession: [USER_SESSION] },
+      requestedAt: USER_SESSION.issuedAt,
+      cookies: { USER_SESSION_TOKEN },
+    },
     async (ctx) => {
       await expect(reauthResolver(undefined, {}, ctx)).resolves.not.toThrow();
     }
@@ -46,9 +49,12 @@ it(
 
 it(
   'destroy the old session token if it should refresh',
-  useTestCtx(
-    { User: [USER], UserSession: [USER_SESSION] },
-    { requestedAt: USER_SESSION.issuedAt, cookies: { USER_SESSION_TOKEN } },
+  useTestReqCtx(
+    {
+      fixtures: { User: [USER], UserSession: [USER_SESSION] },
+      requestedAt: USER_SESSION.issuedAt,
+      cookies: { USER_SESSION_TOKEN },
+    },
     async (ctx) => {
       (shouldRefreshUserSession as jest.Mock).mockReturnValueOnce(true);
 
@@ -64,9 +70,12 @@ it(
 
 it(
   'creates a new session token if it should refresh',
-  useTestCtx(
-    { User: [USER], UserSession: [USER_SESSION] },
-    { requestedAt: USER_SESSION.issuedAt, cookies: { USER_SESSION_TOKEN } },
+  useTestReqCtx(
+    {
+      fixtures: { User: [USER], UserSession: [USER_SESSION] },
+      requestedAt: USER_SESSION.issuedAt,
+      cookies: { USER_SESSION_TOKEN },
+    },
     async (ctx) => {
       (shouldRefreshUserSession as jest.Mock).mockReturnValueOnce(true);
 
@@ -82,9 +91,12 @@ it(
 
 it(
   'sets the new session token in the cookies',
-  useTestCtx(
-    { User: [USER], UserSession: [USER_SESSION] },
-    { requestedAt: USER_SESSION.issuedAt, cookies: { USER_SESSION_TOKEN } },
+  useTestReqCtx(
+    {
+      fixtures: { User: [USER], UserSession: [USER_SESSION] },
+      requestedAt: USER_SESSION.issuedAt,
+      cookies: { USER_SESSION_TOKEN },
+    },
     async (ctx) => {
       (shouldRefreshUserSession as jest.Mock).mockReturnValueOnce(true);
 
@@ -103,9 +115,12 @@ it(
 
 it(
   'does not destroy the user session if it should not refresh',
-  useTestCtx(
-    { User: [USER], UserSession: [USER_SESSION] },
-    { requestedAt: USER_SESSION.issuedAt, cookies: { USER_SESSION_TOKEN } },
+  useTestReqCtx(
+    {
+      fixtures: { User: [USER], UserSession: [USER_SESSION] },
+      requestedAt: USER_SESSION.issuedAt,
+      cookies: { USER_SESSION_TOKEN },
+    },
     async (ctx) => {
       (shouldRefreshUserSession as jest.Mock).mockReturnValueOnce(false);
 
@@ -121,9 +136,12 @@ it(
 
 it(
   'keeps the user session token in the cookies if it should not refresh',
-  useTestCtx(
-    { User: [USER], UserSession: [USER_SESSION] },
-    { requestedAt: USER_SESSION.issuedAt, cookies: { USER_SESSION_TOKEN } },
+  useTestReqCtx(
+    {
+      fixtures: { User: [USER], UserSession: [USER_SESSION] },
+      requestedAt: USER_SESSION.issuedAt,
+      cookies: { USER_SESSION_TOKEN },
+    },
     async (ctx) => {
       (shouldRefreshUserSession as jest.Mock).mockReturnValueOnce(false);
 
@@ -138,9 +156,12 @@ it(
 
 it(
   'returns the logged in user',
-  useTestCtx(
-    { User: [USER], UserSession: [USER_SESSION] },
-    { requestedAt: USER_SESSION.issuedAt, cookies: { USER_SESSION_TOKEN } },
+  useTestReqCtx(
+    {
+      fixtures: { User: [USER], UserSession: [USER_SESSION] },
+      requestedAt: USER_SESSION.issuedAt,
+      cookies: { USER_SESSION_TOKEN },
+    },
     async (ctx) => {
       const reauthPayload = await reauthResolver(undefined, {}, ctx);
 

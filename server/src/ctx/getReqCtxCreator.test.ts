@@ -1,6 +1,6 @@
 import { getReqCtxCreator } from './getReqCtxCreator';
 import {
-  useTestDb,
+  useTestGlobalCtx,
   getMockExpressContext,
   getFixtures,
   getCookieStr,
@@ -15,11 +15,12 @@ const USER_SESSION_TOKEN = USER_SESSION.token;
 
 it(
   'sets cookies',
-  useTestDb({}, async (db) => {
+  useTestGlobalCtx({}, async (globalCtx) => {
     const cookies = {
       USER_SESSION_TOKEN,
       OTHER_COOKIE: 'bar',
     };
+
     const expressContext = getMockExpressContext({
       req: {
         headers: {
@@ -27,28 +28,23 @@ it(
         },
       },
     });
+    const createReqCtx = getReqCtxCreator(globalCtx);
+    const reqCtx = await createReqCtx(expressContext);
 
-    const config = getConfig(process.env);
-    const globalCtx = createGlobalCtx(config);
-    const createRequestContext = getReqCtxCreator(globalCtx);
-    const ctx = await createRequestContext(expressContext);
-
-    expect(ctx.cookies).toEqual(cookies);
+    expect(reqCtx.cookies).toEqual(cookies);
   })
 );
 
 it(
   'can override requestedAt',
-  useTestDb({}, async (db) => {
+  useTestGlobalCtx({}, async (globalCtx) => {
     const now = new Date();
     const expressContext = getMockExpressContext({});
 
-    const config = getConfig(process.env);
-    const globalCtx = createGlobalCtx(config);
-    const createRequestContext = getReqCtxCreator(globalCtx);
-    const ctx = await createRequestContext(expressContext, now);
+    const createReqCtx = getReqCtxCreator(globalCtx);
+    const reqCtx = await createReqCtx(expressContext, now);
 
-    expect(ctx.requestedAt).toEqual(now);
+    expect(reqCtx.requestedAt).toEqual(now);
   })
 );
 
@@ -56,53 +52,49 @@ it('uses the global db connection', async () => {
   const expressContext = getMockExpressContext({});
   const config = getConfig(process.env);
   const globalCtx = createGlobalCtx(config);
-  const createRequestContext = getReqCtxCreator(globalCtx);
-  const reqCtx = await createRequestContext(expressContext);
+  const createReqCtx = getReqCtxCreator(globalCtx);
+  const reqCtx = await createReqCtx(expressContext);
 
   expect(reqCtx.db).toBe(globalCtx.db);
 });
 
 it(
   'creates the auth object when logged in',
-  useTestDb({ User: [USER], UserSession: [USER_SESSION] }, async (db) => {
-    const cookies = {
-      USER_SESSION_TOKEN,
-    };
-    const expressContext = getMockExpressContext({
-      req: {
-        headers: {
-          cookie: getCookieStr(cookies),
+  useTestGlobalCtx(
+    { fixtures: { User: [USER], UserSession: [USER_SESSION] } },
+    async (globalCtx) => {
+      const cookies = {
+        USER_SESSION_TOKEN,
+      };
+      const expressContext = getMockExpressContext({
+        req: {
+          headers: {
+            cookie: getCookieStr(cookies),
+          },
         },
-      },
-    });
+      });
 
-    const config = getConfig(process.env);
-    const globalCtx = createGlobalCtx(config);
-    const createRequestContext = getReqCtxCreator(globalCtx);
-    const ctx = await createRequestContext(
-      expressContext,
-      USER_SESSION.issuedAt
-    );
+      const createReqCtx = getReqCtxCreator(globalCtx);
+      const reqCtx = await createReqCtx(expressContext, USER_SESSION.issuedAt);
 
-    const { auth } = ctx;
-    expect(auth.isLoggedIn).toBe(true);
-    expect(auth.user).not.toBeNull();
-    expect(auth.user!.id).toBe(USER.id);
-    expect(auth.token).toBe(USER_SESSION_TOKEN);
-  })
+      const { auth } = reqCtx;
+      expect(auth.isLoggedIn).toBe(true);
+      expect(auth.user).not.toBeNull();
+      expect(auth.user!.id).toBe(USER.id);
+      expect(auth.token).toBe(USER_SESSION_TOKEN);
+    }
+  )
 );
 
 it(
   'creates the auth object when not logged in',
-  useTestDb({}, async (db) => {
+  useTestGlobalCtx({}, async (globalCtx) => {
     const expressContext = getMockExpressContext({});
 
-    const config = getConfig(process.env);
-    const globalCtx = createGlobalCtx(config);
-    const createRequestContext = getReqCtxCreator(globalCtx);
-    const ctx = await createRequestContext(expressContext);
+    const createReqCtx = getReqCtxCreator(globalCtx);
+    const reqCtx = await createReqCtx(expressContext);
 
-    const { auth } = ctx;
+    const { auth } = reqCtx;
     expect(auth.isLoggedIn).toBe(false);
     expect(auth.user).toBeNull();
     expect(auth.token).toBe('');

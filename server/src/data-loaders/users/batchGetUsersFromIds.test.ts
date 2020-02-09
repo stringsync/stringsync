@@ -1,5 +1,5 @@
 import { batchGetUsersFromIds } from './batchGetUsersFromIds';
-import { useTestDb, getFixtures } from '../../testing';
+import { useTestGlobalCtx, getFixtures } from '../../testing';
 import { User } from 'common/types';
 
 const USER_FIXTURES = getFixtures().User;
@@ -13,15 +13,15 @@ afterEach(() => {
 
 it(
   'fetches multiple users',
-  useTestDb(
+  useTestGlobalCtx(
     {
-      User: [STUDENT1, STUDENT2, TEACHER1],
+      fixtures: { User: [STUDENT1, STUDENT2, TEACHER1] },
     },
-    async (db) => {
+    async (ctx) => {
       const providedUsers = [STUDENT1, STUDENT2, TEACHER1];
       const providedUserIds = providedUsers.map((user) => user.id);
 
-      const actualUsers = await batchGetUsersFromIds(db)(providedUserIds);
+      const actualUsers = await batchGetUsersFromIds(ctx.db)(providedUserIds);
       const actualUserIds = actualUsers
         .filter((value): value is User => Boolean(value))
         .map((user) => user.id);
@@ -34,18 +34,18 @@ it(
 
 it(
   'does not over-fetch users',
-  useTestDb(
+  useTestGlobalCtx(
     {
-      User: [STUDENT1, STUDENT2, TEACHER1],
+      fixtures: { User: [STUDENT1, STUDENT2, TEACHER1] },
     },
-    async (db) => {
+    async (ctx) => {
       const providedUsers = [STUDENT1, TEACHER1];
       const providedUserIds = providedUsers.map((user) => user.id);
       // test correctness of test
-      const userCount = await db.models.User.count();
+      const userCount = await ctx.db.models.User.count();
       expect(providedUsers.length).toBeLessThan(userCount);
 
-      const actualUsers = await batchGetUsersFromIds(db)(providedUserIds);
+      const actualUsers = await batchGetUsersFromIds(ctx.db)(providedUserIds);
       const actualUserIds = actualUsers
         .filter((value): value is User => Boolean(value))
         .map((user) => user.id);
@@ -58,16 +58,16 @@ it(
 
 it(
   'fills missing values with null',
-  useTestDb(
+  useTestGlobalCtx(
     {
-      User: [TEACHER1],
+      fixtures: { User: [TEACHER1] },
     },
-    async (db) => {
+    async (ctx) => {
       const providedUsers = [STUDENT1, STUDENT2, TEACHER1];
       const missingUsers = [STUDENT1, STUDENT2];
       const providedUserIds = providedUsers.map((user) => user.id);
 
-      const actualUsers = await batchGetUsersFromIds(db)(providedUserIds);
+      const actualUsers = await batchGetUsersFromIds(ctx.db)(providedUserIds);
       const missingErrors = actualUsers.filter(
         (value): value is null => !value
       );

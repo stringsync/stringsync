@@ -1,5 +1,5 @@
 import { signupResolver } from './signupResolver';
-import { useTestCtx, getFixtures } from '../../testing';
+import { useTestReqCtx, getFixtures } from '../../testing';
 import { SignupInput } from 'common/types';
 import { ForbiddenError, UserInputError } from 'apollo-server';
 import { isPassword } from '../../password';
@@ -13,7 +13,7 @@ const PASSWORD = 'password';
 
 it(
   'creates user in the db',
-  useTestCtx({}, {}, async (ctx) => {
+  useTestReqCtx({}, async (ctx) => {
     const input: SignupInput = {
       email: USER.email,
       password: PASSWORD,
@@ -36,7 +36,7 @@ it(
 
 it(
   'returns the newly created user',
-  useTestCtx({}, {}, async (ctx) => {
+  useTestReqCtx({}, async (ctx) => {
     const input: SignupInput = {
       email: USER.email,
       password: PASSWORD,
@@ -52,7 +52,7 @@ it(
 
 it(
   'logs in the newly created user',
-  useTestCtx({}, {}, async (ctx) => {
+  useTestReqCtx({}, async (ctx) => {
     const input: SignupInput = {
       email: USER.email,
       password: PASSWORD,
@@ -75,9 +75,12 @@ it(
 
 it(
   'throws a forbidden error when already logged in',
-  useTestCtx(
-    { User: [USER], UserSession: [USER_SESSION] },
-    { requestedAt: USER_SESSION.issuedAt, cookies: { USER_SESSION_TOKEN } },
+  useTestReqCtx(
+    {
+      fixtures: { User: [USER], UserSession: [USER_SESSION] },
+      requestedAt: USER_SESSION.issuedAt,
+      cookies: { USER_SESSION_TOKEN },
+    },
     async (ctx) => {
       const input: SignupInput = {
         email: 'foo272@gmail.com',
@@ -94,7 +97,7 @@ it(
 
 it(
   'throws a validation error when the user is already created',
-  useTestCtx({ User: [USER] }, {}, async (ctx) => {
+  useTestReqCtx({ fixtures: { User: [USER] } }, async (ctx) => {
     const input: SignupInput = {
       email: USER.email,
       password: PASSWORD,
@@ -109,7 +112,7 @@ it(
 
 it(
   'throws a user input error when password is < 6 chars',
-  useTestCtx({}, {}, async (ctx) => {
+  useTestReqCtx({}, async (ctx) => {
     const input: SignupInput = {
       email: USER.email,
       password: 'short',
@@ -126,7 +129,7 @@ it(
 
 it(
   'throws a user input error when password is > 256 chars',
-  useTestCtx({}, {}, async (ctx) => {
+  useTestReqCtx({}, async (ctx) => {
     const chars = new Array<string>(257);
     for (let i = 0; i < 257; i++) {
       chars[i] = 'a';
