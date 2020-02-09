@@ -1,4 +1,4 @@
-import { MAIL_QUEUE } from './constants';
+import { MAIL } from './constants';
 import { Queue, QueueOptions } from 'bullmq';
 import { Queues } from './types';
 import { Redis } from 'ioredis';
@@ -9,6 +9,6 @@ export const createQueues = (redis: Redis): Queues => {
   });
 
   return {
-    [MAIL_QUEUE]: new Queue(MAIL_QUEUE, queueOptions),
+    [MAIL]: new Queue(MAIL, queueOptions),
   };
 };

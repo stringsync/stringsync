@@ -1,7 +1,7 @@
-import { MAIL_QUEUE } from './constants';
+import { MAIL } from './constants';
 import { Workers } from './types';
 import { WorkerOptions, Worker } from 'bullmq';
-import { getMailJobProcessor } from './getMailJobProcessor';
+import { getMailJobProcessor } from './processors';
 import { GlobalCtx } from '../ctx';
 
 export const createWorkers = (ctx: GlobalCtx): Workers => {
@@ -10,10 +10,6 @@ export const createWorkers = (ctx: GlobalCtx): Workers => {
   });
 
   return {
-    [MAIL_QUEUE]: new Worker(
-      MAIL_QUEUE,
-      getMailJobProcessor(ctx),
-      workerOptions
-    ),
+    [MAIL]: new Worker(MAIL, getMailJobProcessor(ctx), workerOptions),
   };
 };

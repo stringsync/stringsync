@@ -36,7 +36,7 @@ export type DbCallback<A extends any[]> = (db: Db, ...args: A) => Promise<any>;
 export type GlobalCtxCallback<A extends any[]> = (
   ctx: GlobalCtx,
   ...args: A
-) => Promise<any>;
+) => any;
 
 export type CtxCallback<A extends any[]> = (
   ctx: ReqCtx<MockExpressContext>,

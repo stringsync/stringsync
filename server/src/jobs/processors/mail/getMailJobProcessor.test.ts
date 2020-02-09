@@ -1,5 +1,5 @@
 import { getMailJobProcessor } from './getMailJobProcessor';
-import { useTestGlobalCtx } from '../testing';
+import { useTestGlobalCtx } from '../../../testing';
 
 it(
   'runs without crashing',

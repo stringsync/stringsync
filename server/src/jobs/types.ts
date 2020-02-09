@@ -1,13 +1,11 @@
-import { MAIL_QUEUE } from './constants';
+import { MAIL } from './constants';
 import { Queue, Worker } from 'bullmq';
-import Mail from 'nodemailer/lib/mailer';
-
-export type MailQueueData = Mail.Options;
+import { MailQueueData } from './processors';
 
 export type Queues = {
-  [MAIL_QUEUE]: Queue<MailQueueData>;
+  [MAIL]: Queue<MailQueueData>;
 };
 
 export interface Workers {
-  [MAIL_QUEUE]: Worker;
+  [MAIL]: Worker;
 }
