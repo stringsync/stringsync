@@ -54,7 +54,15 @@ const typeDefs = gql`
   }
 
   type LogoutPayload {
-    user: User
+    user: User!
+  }
+
+  input ConfirmEmailInput {
+    confirmationToken: String!
+  }
+
+  type ConfirmEmailPayload {
+    id: String!
   }
 
   # Query
@@ -69,6 +77,7 @@ const typeDefs = gql`
     login(input: LoginInput!): LoginPayload!
     logout: LogoutPayload!
     reauth: ReauthPayload!
+    confirmEmail(input: ConfirmEmailInput!): ConfirmEmailPayload!
   }
 `;
 

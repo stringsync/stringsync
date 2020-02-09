@@ -51,3 +51,11 @@ export interface Notation {
 export interface GetUserInput {
   id: string;
 }
+
+export interface ConfirmEmailInput {
+  confirmationToken: string;
+}
+
+export interface ConfirmEmailPayload {
+  id: string;
+}

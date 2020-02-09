@@ -5,6 +5,7 @@ import {
   logoutResolver,
   signupResolver,
   reauthResolver,
+  confirmEmailResolver,
 } from './mutation';
 import { notationsResolver } from './user';
 
@@ -21,5 +22,6 @@ export const getResolvers = (): IResolvers => ({
     logout: logoutResolver,
     signup: signupResolver,
     reauth: reauthResolver,
+    confirmEmail: confirmEmailResolver,
   },
 });
