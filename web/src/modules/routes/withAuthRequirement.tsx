@@ -16,6 +16,7 @@ export enum AuthRequirements {
 export const withAuthRequirement = (authReqs: AuthRequirements) =>
   function<P>(Component: React.ComponentType<P>): React.FC<P> {
     return (props) => {
+      const isAuthPending = useStoreState((state) => state.auth.isPending);
       const isLoggedIn = useStoreState((state) => state.auth.isLoggedIn);
       const userRole = useStoreState((state) => state.auth.user.role);
       const meetsAuthReqs = useRef(true);
@@ -46,7 +47,7 @@ export const withAuthRequirement = (authReqs: AuthRequirements) =>
       }
 
       useEffect(() => {
-        if (meetsAuthReqs.current) {
+        if (isAuthPending || meetsAuthReqs.current) {
           return;
         }
         const navigateTo = (path: string) => {
@@ -75,7 +76,7 @@ export const withAuthRequirement = (authReqs: AuthRequirements) =>
             navigateTo(isLoggedIn ? 'library' : 'login');
             break;
         }
-      }, [history, isLoggedIn, meetsAuthReqs]);
+      }, [history, isAuthPending, isLoggedIn, meetsAuthReqs]);
 
       return meetsAuthReqs.current ? <Component {...props} /> : null;
     };
