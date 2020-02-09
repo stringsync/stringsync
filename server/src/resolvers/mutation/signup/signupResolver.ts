@@ -4,6 +4,8 @@ import { getEncryptedPassword } from '../../../password';
 import { toCanonicalUser, transaction } from '../../../db';
 import { setUserSessionTokenCookie, getExpiresAt } from '../../../user-session';
 import { ReqCtx } from '../../../ctx';
+import uuid from 'uuid';
+import { sendConfirmationMail } from '../../../mail';
 
 interface Args {
   input: SignupInput;
@@ -27,18 +29,26 @@ export const signupResolver = async (
   }
 
   const encryptedPassword = await getEncryptedPassword(password);
+  const confirmationToken = uuid.v4();
+
   return transaction(ctx.db, async () => {
     const userModel = await ctx.db.models.User.create({
       username,
       email,
       encryptedPassword,
+      confirmationToken,
     });
+
     const userSessionModel = await ctx.db.models.UserSession.create({
       issuedAt: ctx.requestedAt,
       userId: userModel.id,
       expiresAt: getExpiresAt(ctx.requestedAt),
     });
+
     setUserSessionTokenCookie(userSessionModel, ctx.res);
+
+    await sendConfirmationMail(email, confirmationToken, ctx);
+
     return { user: toCanonicalUser(userModel) };
   });
 };
