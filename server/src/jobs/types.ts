@@ -7,9 +7,9 @@ export interface MailQueueData {
   email: string;
 }
 
-export interface Queues {
+export type Queues = {
   [MAIL_QUEUE]: Queue<MailQueueData>;
-}
+};
 
 export interface Workers {
   [MAIL_QUEUE]: Worker;

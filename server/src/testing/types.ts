@@ -7,7 +7,8 @@ import {
   Cookies,
 } from 'node-mocks-http';
 import { Request, Response } from 'express';
-import { ReqCtx } from '../ctx';
+import { ReqCtx, GlobalCtx } from '../ctx';
+import { Config } from '../config';
 
 export interface MockExpressContext {
   req: MockRequest<Request>;
@@ -32,7 +33,22 @@ export type FixtureMap = Partial<
 
 export type DbCallback<A extends any[]> = (db: Db, ...args: A) => Promise<any>;
 
+export type GlobalCtxCallback<A extends any[]> = (
+  ctx: GlobalCtx,
+  ...args: A
+) => Promise<any>;
+
 export type CtxCallback<A extends any[]> = (
   ctx: ReqCtx<MockExpressContext>,
   ...args: A
 ) => any;
+
+export interface GlobalCtxPatch {
+  config?: Partial<Config>;
+  fixtures?: FixtureMap;
+}
+
+export interface ReqCtxPatch extends GlobalCtxPatch {
+  requestedAt?: Date;
+  cookies?: Cookies;
+}
