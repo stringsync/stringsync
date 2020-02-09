@@ -26,6 +26,11 @@ const WrappedUpload = compose(
   withScrollRestoration
 )(React.lazy(() => import('../upload/Upload')));
 
+const WrappedConfirmEmail = compose(
+  withAuthRequirement(AuthRequirements.LOGGED_IN),
+  withScrollRestoration
+)(React.lazy(() => import('../confirm-email/ConfirmEmail')));
+
 export const Routes: React.FC = () => {
   return (
     <>
@@ -34,6 +39,7 @@ export const Routes: React.FC = () => {
       <Route path="/signup" component={WrappedSignup} />
       <Route path="/login" component={WrappedLogin} />
       <Route path="/upload" component={WrappedUpload} />
+      <Route path="/confirm-email" component={WrappedConfirmEmail} />
     </>
   );
 };
