@@ -1,4 +1,4 @@
-import { alignOneToOne } from '../../align-arrays';
+import { alignOneToOne } from '../align-arrays';
 import { Db, toCanonicalUser } from '../../db';
 import { User } from 'common/types';
 
