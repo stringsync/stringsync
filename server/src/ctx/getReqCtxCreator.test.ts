@@ -92,7 +92,7 @@ it(
   })
 );
 
-it.skip(
+it(
   'creates the auth object when not logged in',
   useTestDb({}, async (db) => {
     const expressContext = getMockExpressContext({});

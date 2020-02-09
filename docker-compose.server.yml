@@ -34,3 +34,4 @@ services:
       - ./server/src:/string-sync/server/src
     links:
       - db
+      - redis

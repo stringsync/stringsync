@@ -30,6 +30,7 @@ export const useTestDb = <A extends any[]>(
       throw new ForcedRollback();
     });
   } catch (e) {
+    await db.close();
     if (!(e instanceof ForcedRollback)) throw e;
   }
 };

@@ -15,6 +15,7 @@ export const getTestCmd = (project: Project, watch: boolean): string => {
         'yarn',
         'test',
         '--runInBand',
+        '--detectOpenHandles',
         `--watchAll=${watch}`
       );
     case 'web':
