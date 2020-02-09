@@ -6,7 +6,7 @@ const DEFAULT_COOKIES: Cookies = Object.freeze({
   USER_SESSION_TOKEN: '',
 });
 
-export const getCookies = (headerCookies: string | undefined) => {
+export const parseCookies = (headerCookies: string | undefined) => {
   const cookies = cookie.parse(headerCookies || '');
   return defaults(cookies, DEFAULT_COOKIES);
 };
