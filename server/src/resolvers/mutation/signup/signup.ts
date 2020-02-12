@@ -11,7 +11,7 @@ interface Args {
   input: SignupInput;
 }
 
-export const signupResolver = async (
+export const signup = async (
   parent: undefined,
   args: Args,
   ctx: ReqCtx

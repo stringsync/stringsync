@@ -1,1 +1,1 @@
-export * from './confirmEmailResolver';
+export * from './confirmEmail';

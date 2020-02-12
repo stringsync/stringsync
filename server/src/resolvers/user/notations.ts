@@ -3,6 +3,6 @@ import { ReqCtx } from '../../ctx';
 
 interface Args {}
 
-export const notationsResolver = (user: User, args: Args, ctx: ReqCtx) => {
+export const notations = (user: User, args: Args, ctx: ReqCtx) => {
   return ctx.dataLoaders.notationsByUserId.load(user.id);
 };

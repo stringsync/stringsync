@@ -27,7 +27,8 @@ export interface SignupPayload {
   user: User;
 }
 
-export interface ReauthPayload {
+export interface AuthenticatePayload {
+  xsrfToken: string;
   user: User;
 }
 

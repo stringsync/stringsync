@@ -12,11 +12,7 @@ interface Args {
 
 export const WRONG_CREDENTIALS_MSG = 'wrong username, email, or password';
 
-export const loginResolver = async (
-  parent: undefined,
-  args: Args,
-  ctx: ReqCtx
-) => {
+export const login = async (parent: undefined, args: Args, ctx: ReqCtx) => {
   const userModel = await ctx.db.models.User.findOne({
     where: {
       ...or(

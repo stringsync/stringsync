@@ -1,4 +1,4 @@
-import { signupResolver } from './signupResolver';
+import { signup } from './signup';
 import { useTestReqCtx, getFixtures } from '../../../testing';
 import { SignupInput } from 'common/types';
 import { ForbiddenError, UserInputError } from 'apollo-server';
@@ -20,7 +20,7 @@ it(
       username: USER.username,
     };
 
-    const { user } = await signupResolver(undefined, { input }, ctx);
+    const { user } = await signup(undefined, { input }, ctx);
 
     const userModel = await ctx.db.models.User.findByPk(user.id);
     expect(userModel).not.toBeNull();
@@ -43,7 +43,7 @@ it(
       username: USER.username,
     };
 
-    await signupResolver(undefined, { input }, ctx);
+    await signup(undefined, { input }, ctx);
 
     const jobCounts = await ctx.queues.MAIL.count();
     expect(jobCounts).toBe(1);
@@ -59,7 +59,7 @@ it(
       username: USER.username,
     };
 
-    const { user } = await signupResolver(undefined, { input }, ctx);
+    const { user } = await signup(undefined, { input }, ctx);
 
     expect(user.email).toBe(input.email);
     expect(user.username).toBe(input.username);
@@ -75,7 +75,7 @@ it(
       username: USER.username,
     };
 
-    const { user } = await signupResolver(undefined, { input }, ctx);
+    const { user } = await signup(undefined, { input }, ctx);
 
     const cookie = ctx.res.cookies['USER_SESSION_TOKEN'];
     expect(cookie).not.toBeNull();
@@ -104,9 +104,9 @@ it(
         username: 'foo272',
       };
 
-      await expect(
-        signupResolver(undefined, { input }, ctx)
-      ).rejects.toThrowError(new ForbiddenError('already logged in'));
+      await expect(signup(undefined, { input }, ctx)).rejects.toThrowError(
+        new ForbiddenError('already logged in')
+      );
     }
   )
 );
@@ -120,9 +120,9 @@ it(
       username: USER.username,
     };
 
-    await expect(
-      signupResolver(undefined, { input }, ctx)
-    ).rejects.toThrowError(ValidationError);
+    await expect(signup(undefined, { input }, ctx)).rejects.toThrowError(
+      ValidationError
+    );
   })
 );
 
@@ -135,9 +135,7 @@ it(
       username: USER.username,
     };
 
-    await expect(
-      signupResolver(undefined, { input }, ctx)
-    ).rejects.toThrowError(
+    await expect(signup(undefined, { input }, ctx)).rejects.toThrowError(
       new UserInputError('password must be at least 6 characters')
     );
   })
@@ -158,9 +156,7 @@ it(
       username: USER.username,
     };
 
-    await expect(
-      signupResolver(undefined, { input }, ctx)
-    ).rejects.toThrowError(
+    await expect(signup(undefined, { input }, ctx)).rejects.toThrowError(
       new UserInputError('password must be at most 256 characters')
     );
   })

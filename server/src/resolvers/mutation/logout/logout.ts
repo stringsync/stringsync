@@ -5,7 +5,7 @@ import { LogoutPayload } from 'common/types';
 
 interface Args {}
 
-export const logoutResolver = async (
+export const logout = async (
   parent: undefined,
   args: Args,
   ctx: ReqCtx

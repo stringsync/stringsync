@@ -1,4 +1,4 @@
-import { confirmEmailResolver } from './confirmEmailResolver';
+import { confirmEmail } from './confirmEmail';
 import { useTestReqCtx, getFixtures } from '../../../testing';
 
 const FIXTURES = getFixtures();
@@ -26,7 +26,7 @@ it(
       },
     },
     async (ctx) => {
-      const payload = await confirmEmailResolver(
+      const payload = await confirmEmail(
         undefined,
         {
           input: { confirmationToken: TOKEN1 },
@@ -46,11 +46,7 @@ it(
   'throws an error if the user is not logged in',
   useTestReqCtx({}, async (ctx) => {
     expect(
-      confirmEmailResolver(
-        undefined,
-        { input: { confirmationToken: TOKEN1 } },
-        ctx
-      )
+      confirmEmail(undefined, { input: { confirmationToken: TOKEN1 } }, ctx)
     ).rejects.toThrow();
   })
 );
@@ -75,7 +71,7 @@ it(
     },
     async (ctx) => {
       expect(
-        confirmEmailResolver(
+        confirmEmail(
           undefined,
           {
             input: { confirmationToken: TOKEN1 },
@@ -107,7 +103,7 @@ it(
     },
     async (ctx) => {
       expect(
-        confirmEmailResolver(
+        confirmEmail(
           undefined,
           {
             input: { confirmationToken: TOKEN2 },

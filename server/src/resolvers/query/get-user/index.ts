@@ -1,1 +1,1 @@
-export * from './getUserResolver';
+export * from './getUser';

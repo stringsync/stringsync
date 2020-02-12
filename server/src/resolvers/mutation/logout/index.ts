@@ -1,1 +1,1 @@
-export * from './logoutResolver';
+export * from './logout';

@@ -1,4 +1,4 @@
-import { loginResolver } from './loginResolver';
+import { login } from './login';
 import { LoginInput } from 'common/types';
 import { getFixtures, useTestReqCtx } from '../../../testing';
 
@@ -17,7 +17,7 @@ it.each([USER1.email, USER1.username])(
         emailOrUsername,
         password: PASSWORD,
       };
-      const { user } = await loginResolver(undefined, { input }, ctx);
+      const { user } = await login(undefined, { input }, ctx);
 
       expect(await UserSession.count()).toBe(1);
       const createdUserSession = await UserSession.findOne();
@@ -37,7 +37,7 @@ it(
       password: PASSWORD,
     };
 
-    await expect(loginResolver(undefined, { input }, ctx)).rejects.toThrowError(
+    await expect(login(undefined, { input }, ctx)).rejects.toThrowError(
       'wrong username, email, or password'
     );
   })
@@ -51,7 +51,7 @@ it(
       password: 'wrong password',
     };
 
-    await expect(loginResolver(undefined, { input }, ctx)).rejects.toThrowError(
+    await expect(login(undefined, { input }, ctx)).rejects.toThrowError(
       'wrong username, email, or password'
     );
   })

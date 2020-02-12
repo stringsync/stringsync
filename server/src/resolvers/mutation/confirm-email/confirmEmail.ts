@@ -6,7 +6,7 @@ interface Args {
   input: ConfirmEmailInput;
 }
 
-export const confirmEmailResolver = async (
+export const confirmEmail = async (
   parent: undefined,
   args: Args,
   ctx: ReqCtx

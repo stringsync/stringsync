@@ -1,4 +1,4 @@
-import { logoutResolver } from './logoutResolver';
+import { logout } from './logout';
 import { getFixtures, useTestReqCtx } from '../../../testing';
 
 const FIXTURES = getFixtures();
@@ -16,7 +16,7 @@ it(
       cookies: { USER_SESSION_TOKEN },
     },
     async (ctx) => {
-      await logoutResolver(undefined, {}, ctx);
+      await logout(undefined, {}, ctx);
 
       expect(ctx.res.cookies['USER_SESSION_TOKEN'].value).toBe('');
     }
@@ -32,7 +32,7 @@ it(
       cookies: { USER_SESSION_TOKEN },
     },
     async (ctx) => {
-      await logoutResolver(undefined, {}, ctx);
+      await logout(undefined, {}, ctx);
 
       const userSession = await ctx.db.models.UserSession.findOne({
         where: { token: USER_SESSION_TOKEN },
@@ -51,7 +51,7 @@ it(
       cookies: { USER_SESSION_TOKEN },
     },
     async (ctx) => {
-      const { user } = await logoutResolver(undefined, {}, ctx);
+      const { user } = await logout(undefined, {}, ctx);
 
       expect(user).not.toBeNull();
       expect(user!.id).toBe(USER.id);

@@ -6,17 +6,17 @@ import {
   getExpiresAt,
 } from '../../../user-session';
 import { ReqCtx } from '../../../ctx';
-import { ReauthPayload } from 'common/types';
+import { AuthenticatePayload } from 'common/types';
 
 interface Args {}
 
 const BAD_SESSION_TOKEN_MSG = 'invalid or expired credentials';
 
-export const reauthResolver = async (
+export const authenticate = async (
   parent: undefined,
   args: Args,
   ctx: ReqCtx
-): Promise<ReauthPayload> => {
+): Promise<AuthenticatePayload> => {
   const { isLoggedIn, user, token } = ctx.auth;
 
   if (!isLoggedIn || !user || !token) {
@@ -50,5 +50,5 @@ export const reauthResolver = async (
     setUserSessionTokenCookie(oldUserSessionModel, ctx.res);
   }
 
-  return { user: toCanonicalUser(user) };
+  return { xsrfToken: '', user: toCanonicalUser(user) };
 };

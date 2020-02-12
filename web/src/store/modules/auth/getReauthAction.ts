@@ -8,7 +8,8 @@ import { getRequestAuthSuccessAction } from './getRequestAuthSuccessAction';
 import { UserRoles } from 'common/types';
 
 export interface ReauthData {
-  reauth: {
+  authenticate: {
+    xsrfToken: string;
     user: {
       id: string;
       username: string;
@@ -20,7 +21,8 @@ export interface ReauthData {
 
 export const REAUTH_MUTATION = gql`
   mutation {
-    reauth {
+    authenticate {
+      xsrfToken
       user {
         id
         username
@@ -48,7 +50,7 @@ export const getReauthAction = (): ThunkAction<void, AuthActionTypes> => async (
       throw new Error('user session expired or invalid');
     }
 
-    const user = pick(res.data.reauth.user, [
+    const user = pick(res.data.authenticate.user, [
       'id',
       'username',
       'email',

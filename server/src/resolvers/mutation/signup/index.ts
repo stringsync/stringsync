@@ -1,1 +1,1 @@
-export * from './signupResolver';
+export * from './signup';

@@ -1,4 +1,4 @@
-import { reauthResolver } from './reauthResolver';
+import { authenticate } from './authenticate';
 import { useTestReqCtx, getFixtures } from '../../../testing';
 import { shouldRefreshUserSession } from '../../../user-session/shouldRefreshUserSession';
 
@@ -18,7 +18,7 @@ const USER_SESSION_TOKEN = USER_SESSION.token;
 it(
   'throws an error when not logged in',
   useTestReqCtx({}, async (ctx) => {
-    await expect(reauthResolver(undefined, {}, ctx)).rejects.toThrowError(
+    await expect(authenticate(undefined, {}, ctx)).rejects.toThrowError(
       'invalid or expired credentials'
     );
   })
@@ -27,7 +27,7 @@ it(
 it(
   'throws an error when user session does not exist',
   useTestReqCtx({ fixtures: { User: [USER] } }, async (ctx) => {
-    await expect(reauthResolver(undefined, {}, ctx)).rejects.toThrowError(
+    await expect(authenticate(undefined, {}, ctx)).rejects.toThrowError(
       'invalid or expired credentials'
     );
   })
@@ -42,7 +42,7 @@ it(
       cookies: { USER_SESSION_TOKEN },
     },
     async (ctx) => {
-      await expect(reauthResolver(undefined, {}, ctx)).resolves.not.toThrow();
+      await expect(authenticate(undefined, {}, ctx)).resolves.not.toThrow();
     }
   )
 );
@@ -58,7 +58,7 @@ it(
     async (ctx) => {
       (shouldRefreshUserSession as jest.Mock).mockReturnValueOnce(true);
 
-      await reauthResolver(undefined, {}, ctx);
+      await authenticate(undefined, {}, ctx);
 
       const userSession = await ctx.db.models.UserSession.findOne({
         where: { token: USER_SESSION_TOKEN },
@@ -79,7 +79,7 @@ it(
     async (ctx) => {
       (shouldRefreshUserSession as jest.Mock).mockReturnValueOnce(true);
 
-      await reauthResolver(undefined, {}, ctx);
+      await authenticate(undefined, {}, ctx);
 
       const userSessions = await ctx.db.models.UserSession.findAll();
       expect(userSessions).toHaveLength(1);
@@ -100,7 +100,7 @@ it(
     async (ctx) => {
       (shouldRefreshUserSession as jest.Mock).mockReturnValueOnce(true);
 
-      await reauthResolver(undefined, {}, ctx);
+      await authenticate(undefined, {}, ctx);
 
       const userSession = await ctx.db.models.UserSession.findOne({
         where: { userId: USER.id },
@@ -124,7 +124,7 @@ it(
     async (ctx) => {
       (shouldRefreshUserSession as jest.Mock).mockReturnValueOnce(false);
 
-      await reauthResolver(undefined, {}, ctx);
+      await authenticate(undefined, {}, ctx);
 
       const userSession = await ctx.db.models.UserSession.findOne({
         where: { token: USER_SESSION_TOKEN },
@@ -145,7 +145,7 @@ it(
     async (ctx) => {
       (shouldRefreshUserSession as jest.Mock).mockReturnValueOnce(false);
 
-      await reauthResolver(undefined, {}, ctx);
+      await authenticate(undefined, {}, ctx);
 
       expect(ctx.res.cookies['USER_SESSION_TOKEN'].value).toBe(
         USER_SESSION_TOKEN
@@ -163,9 +163,9 @@ it(
       cookies: { USER_SESSION_TOKEN },
     },
     async (ctx) => {
-      const reauthPayload = await reauthResolver(undefined, {}, ctx);
+      const payload = await authenticate(undefined, {}, ctx);
 
-      expect(reauthPayload.user.id).toBe(USER.id);
+      expect(payload.user.id).toBe(USER.id);
     }
   )
 );

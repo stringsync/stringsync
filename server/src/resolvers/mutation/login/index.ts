@@ -1,1 +1,1 @@
-export * from './loginResolver';
+export * from './login';
