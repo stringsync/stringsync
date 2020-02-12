@@ -1,18 +1,18 @@
 import React from 'react';
 import { AuthenticateOnce } from './AuthenticateOnce';
-import { getReauthAction } from '../../store';
+import { getAuthenticateAction } from '../../store';
 import { render } from '@testing-library/react';
 import { getTestComponent } from '../../testing';
 
-jest.mock('../../store/modules/auth/getReauthAction', () => ({
-  getReauthAction: jest.fn(),
+jest.mock('../../store/modules/auth/getAuthenticateAction', () => ({
+  getAuthenticateAction: jest.fn(),
 }));
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
-it('dispatches a reauth action once', () => {
+it('dispatches a authentication action once', () => {
   const { TestComponent, store } = getTestComponent(AuthenticateOnce, {});
 
   const dispatchSpy = jest
@@ -24,5 +24,5 @@ it('dispatches a reauth action once', () => {
 
   expect(container).toBeInTheDocument();
   expect(dispatchSpy).toBeCalledTimes(1);
-  expect(getReauthAction).toBeCalledTimes(1);
+  expect(getAuthenticateAction).toBeCalledTimes(1);
 });

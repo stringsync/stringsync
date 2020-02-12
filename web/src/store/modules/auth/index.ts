@@ -4,7 +4,7 @@ export { getClearAuthAction } from './getClearAuthAction';
 export { getClearAuthErrorsAction } from './getClearAuthErrorsAction';
 export { getLoginAction } from './getLoginAction';
 export { authReducer } from './authReducer';
-export { getReauthAction } from './getReauthAction';
+export * from './getAuthenticateAction';
 export { getLogoutAction } from './getLogoutAction';
 export { getSignupAction } from './getSignupAction';
 export { getInitialAuthState } from './getInitialAuthState';

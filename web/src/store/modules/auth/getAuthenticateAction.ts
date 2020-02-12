@@ -7,7 +7,7 @@ import { getRequestAuthPendingAction } from './getRequestAuthPendingAction';
 import { getRequestAuthSuccessAction } from './getRequestAuthSuccessAction';
 import { UserRoles } from 'common/types';
 
-export interface ReauthData {
+export interface AuthenticateData {
   authenticate: {
     xsrfToken: string;
     user: {
@@ -19,7 +19,7 @@ export interface ReauthData {
   };
 }
 
-export const REAUTH_MUTATION = gql`
+export const AUTHENTICATE_MUTATION = gql`
   mutation {
     authenticate {
       xsrfToken
@@ -33,17 +33,16 @@ export const REAUTH_MUTATION = gql`
   }
 `;
 
-export const getReauthAction = (): ThunkAction<void, AuthActionTypes> => async (
-  dispatch,
-  getState,
-  ctx
-) => {
+export const getAuthenticateAction = (): ThunkAction<
+  void,
+  AuthActionTypes
+> => async (dispatch, getState, ctx) => {
   const requestAuthPendingAction = getRequestAuthPendingAction();
   dispatch(requestAuthPendingAction);
 
   try {
-    const res = await ctx.apollo.mutate<ReauthData>({
-      mutation: REAUTH_MUTATION,
+    const res = await ctx.apollo.mutate<AuthenticateData>({
+      mutation: AUTHENTICATE_MUTATION,
     });
 
     if (!res.data) {
