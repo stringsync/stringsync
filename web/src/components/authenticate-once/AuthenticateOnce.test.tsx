@@ -1,5 +1,5 @@
 import React from 'react';
-import { ReauthOnce } from './ReauthOnce';
+import { AuthenticateOnce } from './AuthenticateOnce';
 import { getReauthAction } from '../../store';
 import { render } from '@testing-library/react';
 import { getTestComponent } from '../../testing';
@@ -13,7 +13,7 @@ afterEach(() => {
 });
 
 it('dispatches a reauth action once', () => {
-  const { TestComponent, store } = getTestComponent(ReauthOnce, {});
+  const { TestComponent, store } = getTestComponent(AuthenticateOnce, {});
 
   const dispatchSpy = jest
     .spyOn(store, 'dispatch')

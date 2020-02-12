@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { getReauthAction } from '../../store';
 import { useEffectOnce } from '../../hooks';
 
-export const ReauthOnce: React.FC = () => {
+export const AuthenticateOnce: React.FC = () => {
   const dispatch = useDispatch();
   useEffectOnce(() => {
     const reauthAction = getReauthAction();

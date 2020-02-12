@@ -4,6 +4,7 @@ import { AuthUser } from './types';
 
 it('reauths the user', async () => {
   const { store, apollo } = getTestStore();
+  const xsrfToken = 'xsrfToken';
   const user: AuthUser = {
     id: 'id',
     username: 'username',
@@ -11,7 +12,7 @@ it('reauths the user', async () => {
     role: 'teacher',
   };
   jest.spyOn(apollo, 'mutate').mockResolvedValue({
-    data: { reauth: { user } },
+    data: { authenticate: { xsrfToken, user } },
   });
 
   await getReauthAction()(store.dispatch, store.getState, { apollo });
