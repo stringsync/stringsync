@@ -19,6 +19,7 @@ services:
       dockerfile: ./Dockerfile
     environment:
       ROLE: server
+      CSRF_SECRET: CSRF_SECRET
       NODE_ENV: test
       PORT: 3000
       WEB_URI: ''
