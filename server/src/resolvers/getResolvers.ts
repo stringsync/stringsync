@@ -1,5 +1,5 @@
 import { IResolvers } from 'apollo-server';
-import { getUser, getUsers } from './query';
+import { getUser, getUsers, getCsrfToken } from './query';
 import { login, logout, signup, authenticate, confirmEmail } from './mutation';
 import { notations } from './user';
 
@@ -10,6 +10,7 @@ export const getResolvers = (): IResolvers => ({
   Query: {
     getUsers,
     getUser,
+    getCsrfToken,
   },
   Mutation: {
     login,
