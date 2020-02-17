@@ -1,6 +1,5 @@
 import { ReqCtx } from '../../../ctx';
-import jwt from 'jsonwebtoken';
-import { CsrfTokenPayload } from '../../../csrf';
+import { CsrfTokenPayload, encryptCsrfToken } from '../../../csrf';
 
 interface Args {}
 
@@ -10,13 +9,9 @@ export const getCsrfToken = (
   ctx: ReqCtx
 ): string => {
   const payload: CsrfTokenPayload = {
-    sessionToken: '',
-    issuedAt: ctx.requestedAt,
+    session: ctx.auth.token,
+    iat: ctx.requestedAt,
   };
 
-  if (ctx.auth.isLoggedIn) {
-    payload.sessionToken = ctx.auth.token;
-  }
-
-  return jwt.sign(JSON.stringify(payload), ctx.config.CSRF_SECRET);
+  return encryptCsrfToken(payload, ctx.config.CSRF_SECRET);
 };

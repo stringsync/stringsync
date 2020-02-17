@@ -1,4 +1,4 @@
 export interface CsrfTokenPayload {
-  sessionToken: string;
-  issuedAt: Date;
+  session: string;
+  iat: Date;
 }
