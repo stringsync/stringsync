@@ -16,6 +16,7 @@ export const useTestReqCtx = <A extends any[]>(
     const expressCtx = getMockExpressContext({
       req: {
         headers: {
+          ...patch.headers,
           cookie: getCookieStr(patch.cookies || {}),
         },
       },

@@ -1,5 +1,5 @@
 import { getCsrfToken } from './getCsrfToken';
-import { decryptCsrfToken } from '../../../csrf';
+import { convertCsrfToSession } from '../../../csrf';
 import { useTestReqCtx, getFixtures } from '../../../testing';
 
 const NOW = new Date();
@@ -12,10 +12,9 @@ it(
   'returns a token for logged out sessions',
   useTestReqCtx({ requestedAt: NOW, config: { CSRF_SECRET } }, (ctx) => {
     const csrfToken = getCsrfToken(undefined, {}, ctx);
-    const payload = decryptCsrfToken(csrfToken, CSRF_SECRET);
+    const sessionToken = convertCsrfToSession(csrfToken, CSRF_SECRET);
 
-    expect(payload.iat).toStrictEqual(NOW);
-    expect(payload.session).toBe('');
+    expect(sessionToken).toBe('');
   })
 );
 
@@ -35,10 +34,9 @@ it(
     },
     (ctx) => {
       const csrfToken = getCsrfToken(undefined, {}, ctx);
-      const payload = decryptCsrfToken(csrfToken, CSRF_SECRET);
+      const sessionToken = convertCsrfToSession(csrfToken, CSRF_SECRET);
 
-      expect(payload.iat).toStrictEqual(NOW);
-      expect(payload.session).toBe(USER_SESSION.token);
+      expect(sessionToken).toBe(USER_SESSION.token);
     }
   )
 );

@@ -51,4 +51,5 @@ export interface GlobalCtxPatch {
 export interface ReqCtxPatch extends GlobalCtxPatch {
   requestedAt?: Date;
   cookies?: Cookies;
+  headers?: object;
 }
