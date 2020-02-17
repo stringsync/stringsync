@@ -30,7 +30,6 @@ export const typeDefs = gql`
   }
 
   type AuthenticatePayload {
-    xsrfToken: String!
     user: User!
   }
 

@@ -28,7 +28,6 @@ export interface SignupPayload {
 }
 
 export interface AuthenticatePayload {
-  xsrfToken: string;
   user: User;
 }
 

@@ -50,5 +50,5 @@ export const authenticate = async (
     setUserSessionTokenCookie(oldUserSessionModel, ctx.res);
   }
 
-  return { xsrfToken: '', user: toCanonicalUser(user) };
+  return { user: toCanonicalUser(user) };
 };
