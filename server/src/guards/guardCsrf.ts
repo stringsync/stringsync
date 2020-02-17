@@ -10,13 +10,11 @@ export const guardCsrf = (ctx: ReqCtx) => {
   }
 
   const csrfToken = ctx.req.headers[CSRF_HEADER_NAME];
-
   if (typeof csrfToken !== 'string') {
     throw new ForbiddenError(ERROR_MSG);
   }
 
   const sessionToken = convertCsrfToSession(csrfToken, ctx.config.CSRF_SECRET);
-
   if (sessionToken !== ctx.auth.token) {
     throw new ForbiddenError(ERROR_MSG);
   }
