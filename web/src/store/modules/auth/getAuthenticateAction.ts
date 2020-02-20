@@ -9,7 +9,6 @@ import { UserRoles } from 'common/types';
 
 export interface AuthenticateData {
   authenticate: {
-    xsrfToken: string;
     user: {
       id: string;
       username: string;
@@ -22,7 +21,6 @@ export interface AuthenticateData {
 export const AUTHENTICATE_MUTATION = gql`
   mutation {
     authenticate {
-      xsrfToken
       user {
         id
         username
