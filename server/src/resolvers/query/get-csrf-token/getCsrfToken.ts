@@ -1,5 +1,5 @@
 import { ReqCtx } from '../../../ctx';
-import { CsrfTokenPayload, convertSessionToCsrf } from '../../../csrf';
+import { convertSessionToCsrf } from '../../../csrf';
 
 interface Args {}
 
