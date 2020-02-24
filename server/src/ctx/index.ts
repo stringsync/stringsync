@@ -1,3 +1,3 @@
 export * from './types';
 export * from './createGlobalCtx';
-export * from './getReqCtxCreator';
+export * from './getReqCtxFactory';

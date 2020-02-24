@@ -1,7 +1,7 @@
 import { CtxCallback, ReqCtxPatch } from './types';
 import { getCookieStr } from './getCookieStr';
 import { getMockExpressContext } from './getMockExpressContext';
-import { getReqCtxCreator } from '../ctx';
+import { getReqCtxFactory } from '../ctx';
 import { useTestGlobalCtx } from './useTestGlobalCtx';
 
 /**
@@ -21,7 +21,7 @@ export const useTestReqCtx = <A extends any[]>(
         },
       },
     });
-    const createReqCtx = getReqCtxCreator(globalCtx);
+    const createReqCtx = getReqCtxFactory(globalCtx);
     const reqCtx = await createReqCtx(expressCtx, patch.requestedAt);
     await callback(reqCtx, ...args);
   });

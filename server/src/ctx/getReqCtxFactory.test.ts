@@ -1,4 +1,4 @@
-import { getReqCtxCreator } from './getReqCtxCreator';
+import { getReqCtxFactory } from './getReqCtxFactory';
 import {
   useTestGlobalCtx,
   getMockExpressContext,
@@ -28,7 +28,7 @@ it(
         },
       },
     });
-    const createReqCtx = getReqCtxCreator(globalCtx);
+    const createReqCtx = getReqCtxFactory(globalCtx);
     const reqCtx = await createReqCtx(expressContext);
 
     expect(reqCtx.cookies).toEqual(cookies);
@@ -41,7 +41,7 @@ it(
     const now = new Date();
     const expressContext = getMockExpressContext({});
 
-    const createReqCtx = getReqCtxCreator(globalCtx);
+    const createReqCtx = getReqCtxFactory(globalCtx);
     const reqCtx = await createReqCtx(expressContext, now);
 
     expect(reqCtx.requestedAt).toEqual(now);
@@ -52,7 +52,7 @@ it('uses the global db connection', async () => {
   const expressContext = getMockExpressContext({});
   const config = getConfig(process.env);
   const globalCtx = createGlobalCtx(config);
-  const createReqCtx = getReqCtxCreator(globalCtx);
+  const createReqCtx = getReqCtxFactory(globalCtx);
   const reqCtx = await createReqCtx(expressContext);
 
   expect(reqCtx.db).toBe(globalCtx.db);
@@ -74,7 +74,7 @@ it(
         },
       });
 
-      const createReqCtx = getReqCtxCreator(globalCtx);
+      const createReqCtx = getReqCtxFactory(globalCtx);
       const reqCtx = await createReqCtx(expressContext, USER_SESSION.issuedAt);
 
       const { auth } = reqCtx;
@@ -91,7 +91,7 @@ it(
   useTestGlobalCtx({}, async (globalCtx) => {
     const expressContext = getMockExpressContext({});
 
-    const createReqCtx = getReqCtxCreator(globalCtx);
+    const createReqCtx = getReqCtxFactory(globalCtx);
     const reqCtx = await createReqCtx(expressContext);
 
     const { auth } = reqCtx;

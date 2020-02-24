@@ -4,7 +4,7 @@ import { getDataLoaders } from '../data-loaders';
 import { parseCookies } from './parseCookies';
 import { getAuthenticatedUser } from '../db';
 
-export const getReqCtxCreator = (globalCtx: GlobalCtx) => async <
+export const getReqCtxFactory = (globalCtx: GlobalCtx) => async <
   E extends ExpressContext
 >(
   expressCtx: E,
