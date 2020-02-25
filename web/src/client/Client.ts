@@ -1,4 +1,4 @@
-import { CsrfTokenSetter, ObjectOf } from './types';
+import { CsrfTokenSetter, ObjectOf, StringSyncClient } from './types';
 import { getApolloFactory } from './getApolloFactory';
 import { DocNodeAnalyzer } from './DocNodeAnalyzer';
 import { extractResData } from './extractResData';
@@ -9,9 +9,9 @@ import {
   DocumentNode,
 } from 'apollo-boost';
 
-export class Client {
-  public readonly apollo: ApolloClient<NormalizedCacheObject>;
-  public readonly setCsrfToken: CsrfTokenSetter;
+export class Client implements StringSyncClient {
+  private readonly apollo: ApolloClient<NormalizedCacheObject>;
+  private readonly setCsrfToken: CsrfTokenSetter;
 
   public static create(uri: string): Client {
     const createApollo = getApolloFactory();
@@ -27,7 +27,10 @@ export class Client {
     this.setCsrfToken = setCsrfToken;
   }
 
-  public async call<T, V>(doc: DocumentNode, variables?: V): Promise<T> {
+  public async call<T, V = undefined>(
+    doc: DocumentNode,
+    variables?: V
+  ): Promise<T> {
     const csrfToken = await this.getCsrfToken();
     this.setCsrfToken(csrfToken);
 

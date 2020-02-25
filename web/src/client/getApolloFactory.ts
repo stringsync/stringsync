@@ -1,4 +1,4 @@
-import { CSRF_HEADER_NAME } from 'common/constants';
+// import { CSRF_HEADER_NAME } from 'common/constants';
 import { CsrfTokenSetter } from './types';
 import {
   ApolloClient as Apollo,
@@ -16,22 +16,22 @@ export const getApolloFactory = () => {
   };
 
   return (uri: string) => {
-    const httpLink = new HttpLink({
-      uri,
-      credentials: 'include',
-    });
-
     const csrfLink = new ApolloLink((req, next) => {
       req.setContext({
         headers: {
-          [CSRF_HEADER_NAME]: csrfToken,
+          'CSRF-TOKEN': csrfToken,
         },
       });
 
       return next(req);
     });
 
-    const link = httpLink.concat(csrfLink);
+    const httpLink = new HttpLink({
+      uri,
+      credentials: 'include',
+    });
+
+    const link = csrfLink.concat(httpLink);
     const cache = new InMemoryCache();
     const apollo = new Apollo({ link, cache });
     return { apollo, setCsrfToken };
