@@ -1,8 +1,7 @@
 import { gql } from 'apollo-boost';
-import { SignupInput, UserRoles } from '../../../common/types';
+import { SignupInput, UserRoles, InputOf } from '../../../common/types';
 import { ThunkAction } from '../..';
 import { AuthActionTypes } from './types';
-import { pick } from 'lodash';
 import { message } from 'antd';
 import { getErrorMessages } from '../../../util';
 import { getRequestAuthPendingAction } from './getRequestAuthPendingAction';
@@ -10,13 +9,11 @@ import { getRequestAuthSuccessAction } from './getRequestAuthSuccessAction';
 import { getRequestAuthFailureAction } from './getRequestAuthFailureAction';
 
 interface SignupData {
-  signup: {
-    user: {
-      id: string;
-      username: string;
-      email: string;
-      role: UserRoles;
-    };
+  user: {
+    id: string;
+    username: string;
+    email: string;
+    role: UserRoles;
   };
 }
 
@@ -40,22 +37,17 @@ export const getSignupAction = (
   dispatch(requestAuthPendingAction);
 
   try {
-    const res = await ctx.apollo.mutate<SignupData>({
-      mutation: SIGNUP_MUTATION,
-      variables: {
+    const res = await ctx.client.call<SignupData, InputOf<SignupInput>>(
+      SIGNUP_MUTATION,
+      {
         input,
-      },
-    });
-    if (!res.data) {
-      throw new Error('no data returned from the server');
-    }
-    const data = res.data.signup;
-    const user = pick(data.user, ['id', 'username', 'email', 'role']);
+      }
+    );
 
-    const requestAuthSuccessAction = getRequestAuthSuccessAction(user);
+    const requestAuthSuccessAction = getRequestAuthSuccessAction(res.user);
     dispatch(requestAuthSuccessAction);
 
-    message.info(`logged in as @${user.username}`);
+    message.info(`logged in as @${res.user.username}`);
   } catch (error) {
     const errorMessages = getErrorMessages(error);
     const requestAuthFailureAction = getRequestAuthFailureAction(errorMessages);

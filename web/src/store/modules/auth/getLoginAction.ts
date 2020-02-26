@@ -1,7 +1,6 @@
 import { gql } from 'apollo-boost';
-import { LoginInput, UserRoles } from '../../../common/types';
+import { LoginInput, UserRoles, InputOf } from '../../../common/types';
 import { ThunkAction } from '../..';
-import { pick } from 'lodash';
 import { message } from 'antd';
 import { getErrorMessages } from '../../../util';
 import { AuthActionTypes } from './types';
@@ -10,13 +9,11 @@ import { getRequestAuthFailureAction } from './getRequestAuthFailureAction';
 import { getRequestAuthSuccessAction } from './getRequestAuthSuccessAction';
 
 interface LoginData {
-  login: {
-    user: {
-      id: string;
-      username: string;
-      email: string;
-      role: UserRoles;
-    };
+  user: {
+    id: string;
+    username: string;
+    email: string;
+    role: UserRoles;
   };
 }
 
@@ -40,22 +37,17 @@ export const getLoginAction = (
   dispatch(requestAuthPendingAction);
 
   try {
-    const res = await ctx.apollo.mutate<LoginData>({
-      mutation: LOGIN_MUTATION,
-      variables: {
+    const res = await ctx.client.call<LoginData, InputOf<LoginInput>>(
+      LOGIN_MUTATION,
+      {
         input,
-      },
-    });
-    if (!res.data) {
-      throw new Error('no data returned from the server');
-    }
-    const data = res.data.login;
-    const user = pick(data.user, ['id', 'username', 'email', 'role']);
+      }
+    );
 
-    const requestAuthSuccessAction = getRequestAuthSuccessAction(user);
+    const requestAuthSuccessAction = getRequestAuthSuccessAction(res.user);
     dispatch(requestAuthSuccessAction);
 
-    message.info(`logged in as @${user.username}`);
+    message.info(`logged in as @${res.user.username}`);
   } catch (error) {
     const errorMessages = getErrorMessages(error);
     const requestAuthFailureAction = getRequestAuthFailureAction(errorMessages);

@@ -6,6 +6,8 @@ export type DeepPartial<T> = {
     : T[P];
 };
 
+export type InputOf<T> = { input: T };
+
 export type UserRoles = 'student' | 'teacher' | 'admin';
 
 export interface User {

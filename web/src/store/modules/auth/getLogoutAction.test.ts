@@ -13,16 +13,16 @@ const USER: AuthUser = {
 const NULL_USER = getNullAuthState().user;
 
 it('logs the user out', async () => {
-  const { store, apollo } = getTestStore({
+  const { store, client } = getTestStore({
     auth: {
       isLoggedIn: true,
       user: USER,
       errors: ['error1'],
     },
   });
-  jest.spyOn(apollo, 'mutate').mockResolvedValue({});
+  jest.spyOn(client, 'call').mockResolvedValue({});
 
-  await getLogoutAction()(store.dispatch, store.getState, { apollo });
+  await getLogoutAction()(store.dispatch, store.getState, { client });
 
   const { auth } = store.getState();
   expect(auth.isLoggedIn).toBe(false);

@@ -4,10 +4,11 @@ import Root from './modules/root/Root';
 import App from './modules/app/App';
 import * as serviceWorker from './serviceWorker';
 import { getStore } from './store';
-import { createApolloClient } from './util';
+import { Client } from './client';
 
-const apollo = createApolloClient();
-const store = getStore(apollo);
+const uri = process.env.REACT_APP_SERVER_URI;
+const client = Client.create(uri || '');
+const store = getStore(client);
 
 ReactDOM.render(
   <Root store={store}>

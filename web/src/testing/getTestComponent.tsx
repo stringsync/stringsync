@@ -9,7 +9,7 @@ export const getTestComponent = function<P>(
   props: P,
   partialPreloadedState?: DeepPartial<RootState>
 ) {
-  const { store, apollo } = getTestStore(partialPreloadedState);
+  const { store, client } = getTestStore(partialPreloadedState);
 
   const TestComponent = () => (
     <Root store={store}>
@@ -17,5 +17,5 @@ export const getTestComponent = function<P>(
     </Root>
   );
 
-  return { apollo, store, TestComponent };
+  return { client, store, TestComponent };
 };

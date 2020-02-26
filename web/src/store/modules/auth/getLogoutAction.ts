@@ -34,9 +34,7 @@ export const getLogoutAction = (): ThunkAction<void, AuthActionTypes> => async (
   dispatch(clearAuthAction);
 
   try {
-    ctx.apollo.mutate<LogoutData>({
-      mutation: LOGOUT_MUTATION,
-    });
+    ctx.client.call<LogoutData>(LOGOUT_MUTATION);
   } catch (error) {
     // TODO use sentry or some other tool that will track
     // when logouts fail

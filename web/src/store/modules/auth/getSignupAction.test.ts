@@ -10,16 +10,14 @@ const USER: AuthUser = {
 };
 
 it('signs up the user', async () => {
-  const { store, apollo } = getTestStore();
-  jest.spyOn(apollo, 'mutate').mockResolvedValue({
-    data: { signup: { user: USER } },
-  });
+  const { store, client } = getTestStore();
+  jest.spyOn(client, 'call').mockResolvedValue({ user: USER });
 
   await getSignupAction({
     email: 'email',
     password: 'password',
     username: 'username',
-  })(store.dispatch, store.getState, { apollo });
+  })(store.dispatch, store.getState, { client });
 
   const { auth } = store.getState();
   expect(auth.errors).toHaveLength(0);

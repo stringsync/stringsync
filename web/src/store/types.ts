@@ -2,9 +2,9 @@ import * as Viewport from './modules/viewport';
 import * as Device from './modules/device';
 import * as Auth from './modules/auth';
 import { getStore } from './getStore';
-import { createApolloClient } from '../util';
 import { ThunkAction as BaseThunkAction } from 'redux-thunk';
 import { Action } from 'redux';
+import { StringSyncClient } from '../client';
 
 export type Store = ReturnType<typeof getStore>;
 
@@ -20,7 +20,7 @@ export interface RootState {
 }
 
 export interface ThunkContext {
-  apollo: ReturnType<typeof createApolloClient>;
+  client: StringSyncClient;
 }
 
 export type ThunkAction<R, A extends Action> = BaseThunkAction<

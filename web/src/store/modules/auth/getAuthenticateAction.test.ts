@@ -3,19 +3,16 @@ import { getTestStore } from '../../../testing';
 import { AuthUser } from './types';
 
 it('authenticates the user', async () => {
-  const { store, apollo } = getTestStore();
-  const xsrfToken = 'xsrfToken';
+  const { store, client } = getTestStore();
   const user: AuthUser = {
     id: 'id',
     username: 'username',
     email: 'email',
     role: 'teacher',
   };
-  jest.spyOn(apollo, 'mutate').mockResolvedValue({
-    data: { authenticate: { xsrfToken, user } },
-  });
+  jest.spyOn(client, 'call').mockResolvedValue(user);
 
-  await getAuthenticateAction()(store.dispatch, store.getState, { apollo });
+  await getAuthenticateAction()(store.dispatch, store.getState, { client });
 
   const { auth } = store.getState();
   expect(auth.user).toEqual(user);
