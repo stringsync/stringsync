@@ -10,7 +10,7 @@ it('authenticates the user', async () => {
     email: 'email',
     role: 'teacher',
   };
-  jest.spyOn(client, 'call').mockResolvedValue(user);
+  jest.spyOn(client, 'call').mockResolvedValue({ user });
 
   await getAuthenticateAction()(store.dispatch, store.getState, { client });
 
