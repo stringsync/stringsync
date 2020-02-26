@@ -22,10 +22,6 @@ export default class Up extends Command {
     const { flags, args } = this.parse(Up);
 
     execSyncFromRootPath(
-      getBuildDockerImageCmd('ss-root:latest', 'Dockerfile', '.')
-    );
-
-    execSyncFromRootPath(
       cmd(
         getDockerComposeCmd(args.project),
         'up',

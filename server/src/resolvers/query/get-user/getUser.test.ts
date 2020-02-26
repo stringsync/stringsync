@@ -1,5 +1,5 @@
 import { getUser } from './getUser';
-import { GetUserInput } from 'common/types';
+import { GetUserInput } from '../../../common/types';
 import { useTestReqCtx, getFixtures } from '../../../testing';
 
 const USER_FIXTURES = getFixtures().User;

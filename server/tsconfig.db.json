@@ -1,8 +1,0 @@
-{
-  "extends": "../tsconfig.base.json",
-  "compilerOptions": {
-    "outDir": "tsc"
-  },
-  "include": ["src/db/**/*.ts"],
-  "exclude": ["node_modules"]
-}

@@ -1,5 +1,5 @@
 import { login } from './login';
-import { LoginInput } from 'common/types';
+import { LoginInput } from '../../../common/types';
 import { getFixtures, useTestReqCtx } from '../../../testing';
 
 const USER1 = getFixtures().User.student1;

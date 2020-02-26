@@ -8,44 +8,42 @@ StringSync Scripts.
 [![License](https://img.shields.io/npm/l/scripts.svg)](https://github.com/jaredjj3/string-sync/blob/master/package.json)
 
 <!-- toc -->
-
-- [Usage](#usage)
-- [Commands](#commands)
-  <!-- tocstop -->
+* [scripts](#scripts)
+* [Usage](#usage)
+* [Commands](#commands)
+<!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g scripts
 $ ss COMMAND
 running command...
 $ ss (-v|--version|version)
-scripts/0.0.0 darwin-x64 node-v12.4.0
+scripts/0.0.0 darwin-x64 node-v13.5.0
 $ ss --help [COMMAND]
 USAGE
   $ ss COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-
-- [`ss db`](#ss-db)
-- [`ss down`](#ss-down)
-- [`ss exec SERVICE CMD`](#ss-exec-service-cmd)
-- [`ss help [COMMAND]`](#ss-help-command)
-- [`ss install`](#ss-install)
-- [`ss lint`](#ss-lint)
-- [`ss logs SERVICE`](#ss-logs-service)
-- [`ss prettier`](#ss-prettier)
-- [`ss sql CMD`](#ss-sql-cmd)
-- [`ss test [FILE]`](#ss-test-file)
-- [`ss up`](#ss-up)
+* [`ss db`](#ss-db)
+* [`ss down [PROJECT]`](#ss-down-project)
+* [`ss exec PROJECT SERVICE CMD`](#ss-exec-project-service-cmd)
+* [`ss help [COMMAND]`](#ss-help-command)
+* [`ss install`](#ss-install)
+* [`ss lint`](#ss-lint)
+* [`ss logs PROJECT [SERVICE]`](#ss-logs-project-service)
+* [`ss prettier`](#ss-prettier)
+* [`ss sql CMD`](#ss-sql-cmd)
+* [`ss sync-common [FILE]`](#ss-sync-common-file)
+* [`ss test PROJECT`](#ss-test-project)
+* [`ss up [PROJECT]`](#ss-up-project)
 
 ## `ss db`
 
@@ -61,13 +59,13 @@ OPTIONS
 
 _See code: [src/commands/db.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/db.ts)_
 
-## `ss down`
+## `ss down [PROJECT]`
 
-Turns down a development environment.
+Turns down a docker-compose environment.
 
 ```
 USAGE
-  $ ss down
+  $ ss down [PROJECT]
 
 OPTIONS
   -h, --help  show CLI help
@@ -75,13 +73,13 @@ OPTIONS
 
 _See code: [src/commands/down.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/down.ts)_
 
-## `ss exec SERVICE CMD`
+## `ss exec PROJECT SERVICE CMD`
 
 Runs docker-compose exec on an running container.
 
 ```
 USAGE
-  $ ss exec SERVICE CMD
+  $ ss exec PROJECT SERVICE CMD
 
 OPTIONS
   -T, --psuedoTty
@@ -136,17 +134,16 @@ OPTIONS
 
 _See code: [src/commands/lint.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/lint.ts)_
 
-## `ss logs SERVICE`
+## `ss logs PROJECT [SERVICE]`
 
 Follows the logs for a particular service.
 
 ```
 USAGE
-  $ ss logs SERVICE
+  $ ss logs PROJECT [SERVICE]
 
 OPTIONS
-  -h, --help   show CLI help
-  --tail=tail  [default: 1000]
+  -h, --help  show CLI help
 ```
 
 _See code: [src/commands/logs.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/logs.ts)_
@@ -182,13 +179,13 @@ OPTIONS
 
 _See code: [src/commands/sql.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/sql.ts)_
 
-## `ss test [FILE]`
+## `ss sync-common [FILE]`
 
 describe the command here
 
 ```
 USAGE
-  $ ss test [FILE]
+  $ ss sync-common [FILE]
 
 OPTIONS
   -f, --force
@@ -196,15 +193,29 @@ OPTIONS
   -n, --name=name  name to print
 ```
 
+_See code: [src/commands/sync-common.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/sync-common.ts)_
+
+## `ss test PROJECT`
+
+describe the command here
+
+```
+USAGE
+  $ ss test PROJECT
+
+OPTIONS
+  -w, --watch
+```
+
 _See code: [src/commands/test.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/test.ts)_
 
-## `ss up`
+## `ss up [PROJECT]`
 
 Spins up a development environment
 
 ```
 USAGE
-  $ ss up
+  $ ss up [PROJECT]
 
 OPTIONS
   -a, --attach
@@ -212,5 +223,4 @@ OPTIONS
 ```
 
 _See code: [src/commands/up.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/up.ts)_
-
 <!-- commandsstop -->

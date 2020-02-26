@@ -5,7 +5,7 @@ import { pick } from 'lodash';
 import { getLogoutAction } from './getLogoutAction';
 import { getRequestAuthPendingAction } from './getRequestAuthPendingAction';
 import { getRequestAuthSuccessAction } from './getRequestAuthSuccessAction';
-import { UserRoles } from 'common/types';
+import { UserRoles } from '../../../common/types';
 
 export interface AuthenticateData {
   authenticate: {

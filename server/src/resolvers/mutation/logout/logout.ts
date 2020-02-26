@@ -1,7 +1,7 @@
 import { clearUserSessionTokenCookie } from '../../../user-session/';
 import { toCanonicalUser } from '../../../db';
 import { ReqCtx } from '../../../ctx';
-import { LogoutPayload } from 'common/types';
+import { LogoutPayload } from '../../../common/types';
 
 interface Args {}
 

@@ -1,5 +1,5 @@
 import { getDevice } from './getDevice';
-import { DeepPartial } from 'common/types';
+import { DeepPartial } from '../../../common/types';
 import { Device } from './types';
 import { merge } from 'lodash';
 

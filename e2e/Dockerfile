@@ -1,4 +1,4 @@
-FROM ss-root:latest
+FROM node:12.4.0
 
 RUN  apt-get update \
   # Install latest chrome dev package, which installs the necessary libs to
@@ -12,7 +12,7 @@ RUN  apt-get update \
   && wget --quiet https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh -O /usr/sbin/wait-for-it.sh \
   && chmod +x /usr/sbin/wait-for-it.sh
 
-WORKDIR /string-sync/e2e
+WORKDIR /e2e
 COPY ./package.json .
 COPY ./yarn.lock .
 RUN yarn

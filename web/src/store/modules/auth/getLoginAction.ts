@@ -1,5 +1,5 @@
 import { gql } from 'apollo-boost';
-import { LoginInput, UserRoles } from 'common/types';
+import { LoginInput, UserRoles } from '../../../common/types';
 import { ThunkAction } from '../..';
 import { pick } from 'lodash';
 import { message } from 'antd';

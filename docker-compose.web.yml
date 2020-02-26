@@ -7,9 +7,8 @@ services:
       context: ./web
       dockerfile: ./Dockerfile
     volumes:
-      - ./common:/string-sync/common
-      - ./web/src:/string-sync/web/src
-      - ./web/public:/string-sync/web/public
+      - ./web/src:/web/src
+      - ./web/public:/web/public
     environment:
       NODE_ENV: test
       REACT_APP_SERVER_URI: ''

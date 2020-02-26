@@ -1,5 +1,5 @@
 import { ReqCtx } from '../../../ctx';
-import { ConfirmEmailInput, ConfirmEmailPayload } from 'common/types';
+import { ConfirmEmailInput, ConfirmEmailPayload } from '../../../common/types';
 import { ForbiddenError } from 'apollo-server';
 
 interface Args {

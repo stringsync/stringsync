@@ -1,4 +1,4 @@
-import { GetUserInput } from 'common/types';
+import { GetUserInput } from '../../../common/types';
 import { ReqCtx } from '../../../ctx';
 
 interface Args {

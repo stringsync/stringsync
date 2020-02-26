@@ -1,7 +1,7 @@
 import { Sequelize, DataTypes } from 'sequelize';
 import { UserModel } from './types';
 import { StaticModel } from '../types';
-import { UserRoles } from 'common/types';
+import { UserRoles } from '../../../common/types';
 
 // TODO(jared) fix this import
 // import { USER_ROLE_HIEARCHY } from 'common/user-roles';

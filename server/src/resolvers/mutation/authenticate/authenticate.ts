@@ -6,7 +6,7 @@ import {
   getExpiresAt,
 } from '../../../user-session';
 import { ReqCtx } from '../../../ctx';
-import { AuthenticatePayload } from 'common/types';
+import { AuthenticatePayload } from '../../../common/types';
 
 interface Args {}
 

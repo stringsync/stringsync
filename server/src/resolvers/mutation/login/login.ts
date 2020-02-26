@@ -1,5 +1,5 @@
 import { ForbiddenError } from 'apollo-server';
-import { LoginInput } from 'common/types';
+import { LoginInput } from '../../../common/types';
 import { setUserSessionTokenCookie, getExpiresAt } from '../../../user-session';
 import { isPassword } from '../../../password';
 import { toCanonicalUser } from '../../../db';

@@ -2,7 +2,7 @@ import React from 'react';
 import { Menu } from './Menu';
 import { getTestComponent } from '../../testing';
 import { render } from '@testing-library/react';
-import { UserRoles } from 'common/types';
+import { UserRoles } from '../../common/types';
 
 it('shows login and signup when not logged in', () => {
   const { TestComponent } = getTestComponent(

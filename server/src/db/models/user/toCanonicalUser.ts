@@ -1,4 +1,4 @@
-import { User } from 'common/types';
+import { User } from '../../../common/types';
 
 type UserLike = {
   [P in keyof User]: User[P];

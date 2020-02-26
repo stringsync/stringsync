@@ -1,6 +1,6 @@
 import { alignOneToOne } from '../align-arrays';
 import { Db, toCanonicalUser } from '../../db';
-import { User } from 'common/types';
+import { User } from '../../common/types';
 
 export const batchGetUsersFromIds = (db: Db) => async (
   ids: string[]

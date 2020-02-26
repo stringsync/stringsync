@@ -1,6 +1,6 @@
-FROM ss-root:latest
+FROM node:12.4.0
 
-WORKDIR /string-sync/web
+WORKDIR /web
 COPY ./package.json .
 COPY ./yarn.lock .
 RUN yarn

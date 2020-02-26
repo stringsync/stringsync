@@ -1,5 +1,5 @@
 import { guardUserRole } from './guardUserRole';
-import { User } from 'common/types';
+import { User } from '../common/types';
 
 const BASE_USER: User = {
   id: '1',

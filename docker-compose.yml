@@ -34,8 +34,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
     volumes:
-      - ./common:/string-sync/common
-      - ./server/src:/string-sync/server/src
+      - ./server/src:/server/src
     links:
       - db
       - redis
@@ -62,8 +61,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
     volumes:
-      - ./common:/string-sync/common
-      - ./server/src:/string-sync/server/src
+      - ./server/src:/server/src
     links:
       - db
       - redis
@@ -80,8 +78,7 @@ services:
       DB_HOST: db
       DB_PORT: 5432
     volumes:
-      - ./common:/string-sync/common
-      - ./server/src:/string-sync/server/src
+      - ./server/src:/server/src
     links:
       - db
     command: ['yarn', 'start:scripts:dev']
@@ -96,9 +93,8 @@ services:
       NODE_ENV: development
       REACT_APP_SERVER_URI: 'http://localhost:3000/graphql'
     volumes:
-      - ./common:/string-sync/common
-      - ./web/src:/string-sync/web/src
-      - ./web/public:/string-sync/web/public
+      - ./web/src:/web/src
+      - ./web/public:/web/public
     ports:
       - '8080:8080'
     links:

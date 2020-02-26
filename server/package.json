@@ -7,13 +7,12 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "tsc:db": "tsc --project ./tsconfig.db.json",
     "build": "NODE_ENV=production webpack",
     "build:dev": "webpack",
     "start": "node ./dst/index.js",
     "start:dev": "nodemon -V --watch ./dst/index.js",
-    "start:scripts:dev": "yarn tsc:db && sequelize db:migrate && sequelize db:seed:all && yarn tsc:db --watch",
-    "pretest": "yarn tsc:db && sequelize db:migrate",
+    "start:scripts:dev": "yarn tsc && sequelize db:migrate && sequelize db:seed:all && yarn tsc --watch",
+    "pretest": "yarn tsc && sequelize db:migrate",
     "test": "jest"
   },
   "dependencies": {

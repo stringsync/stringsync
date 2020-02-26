@@ -1,5 +1,5 @@
 import { compareUserRoles } from './compareUserRoles';
-import { UserRoles } from 'common/types';
+import { UserRoles } from '../common/types';
 
 it.each([
   {

@@ -2,7 +2,6 @@ import { Command, flags } from '@oclif/command';
 import { PROJECT_ARG } from '../util/constants';
 import {
   getTestCmd,
-  getBuildDockerImageCmd,
   getDockerComposeCmd,
   cmd,
   execSyncFromRootPath,
@@ -19,10 +18,6 @@ export default class Test extends Command {
 
   async run() {
     const { args, flags } = this.parse(Test);
-
-    execSyncFromRootPath(
-      getBuildDockerImageCmd('ss-root:latest', 'Dockerfile', '.')
-    );
 
     execSyncFromRootPath(cmd(getDockerComposeCmd(args.project), 'build'));
 

@@ -1,6 +1,6 @@
 import { signup } from './signup';
 import { useTestReqCtx, getFixtures } from '../../../testing';
-import { SignupInput } from 'common/types';
+import { SignupInput } from '../../../common/types';
 import { ForbiddenError, UserInputError } from 'apollo-server';
 import { isPassword } from '../../../password';
 import { ValidationError } from 'sequelize';

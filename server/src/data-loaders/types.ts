@@ -1,4 +1,4 @@
-import { User, Notation } from 'common/types';
+import { User, Notation } from '../common/types';
 import DataLoader = require('dataloader');
 
 export interface DataLoaders {

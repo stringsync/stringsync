@@ -1,4 +1,4 @@
-import { SignupInput, SignupPayload } from 'common/types';
+import { SignupInput, SignupPayload } from '../../../common/types';
 import { ForbiddenError, UserInputError } from 'apollo-server';
 import { getEncryptedPassword } from '../../../password';
 import { toCanonicalUser, transaction } from '../../../db';

@@ -1,10 +1,20 @@
 {
-  "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dst",
     "allowJs": true,
-    "lib": ["es2017"]
+    "lib": ["es2017"],
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "downlevelIteration": true
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "src/db/migrations/**/*", "src/db/seeders/**/*"]
+  "exclude": ["node_modules"]
 }

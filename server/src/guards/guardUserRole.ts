@@ -1,4 +1,4 @@
-import { User, UserRoles } from 'common/types';
+import { User, UserRoles } from '../common/types';
 import { compareUserRoles } from '../util';
 import { ForbiddenError } from 'apollo-server';
 
