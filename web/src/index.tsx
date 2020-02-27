@@ -5,9 +5,10 @@ import App from './modules/app/App';
 import * as serviceWorker from './serviceWorker';
 import { getStore } from './store';
 import { Client } from './client';
+import { getConfig } from './util/getConfig';
 
-const uri = process.env.REACT_APP_SERVER_URI;
-const client = Client.create(uri || '');
+const config = getConfig(process.env);
+const client = Client.create(config.REACT_APP_SERVER_URI);
 const store = getStore(client);
 
 ReactDOM.render(
