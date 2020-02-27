@@ -1,2 +1,1 @@
-export const CSRF_HEADER_NAME = 'CSRF-TOKEN';
-export const CSRF_TOKEN_MAX_AGE_MS = 86400000;
+export const FOO = 'FOO';

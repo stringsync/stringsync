@@ -68,7 +68,6 @@ export const typeDefs = gql`
   type Query {
     getUsers: [User]!
     getUser(input: GetUserInput!): User
-    getCsrfToken: String!
   }
 
   # Mutation
