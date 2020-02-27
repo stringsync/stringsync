@@ -1,5 +1,5 @@
 import React from 'react';
-import { compose } from '../../util';
+import { compose } from '../../common';
 import { withLayout, Layouts } from '../../hocs';
 
 const enhance = compose(withLayout(Layouts.DEFAULT));

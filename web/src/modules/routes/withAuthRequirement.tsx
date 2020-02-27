@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { message } from 'antd';
-import { compareUserRoles } from '../../util';
+import { compareUserRoles } from '../../common';
 import { useHistory } from 'react-router';
 import { useStoreState } from '../../hooks/useStoreState';
 

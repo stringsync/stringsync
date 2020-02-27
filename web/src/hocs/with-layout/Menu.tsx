@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { getLogoutAction } from '../../store';
-import { compareUserRoles } from '../../util';
+import { compareUserRoles } from '../../common';
 import { useStoreState } from '../../hooks';
 
 const MenuIcon = styled(Icon)`

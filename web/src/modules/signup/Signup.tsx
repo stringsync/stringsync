@@ -5,7 +5,7 @@ import { FormComponentProps } from 'antd/lib/form';
 import { Link } from 'react-router-dom';
 import { Wordmark } from '../../components/wordmark';
 import { useDispatch } from 'react-redux';
-import { compose } from '../../util';
+import { compose } from '../../common';
 import { withLayout } from '../../hocs';
 import { Layouts } from '../../hocs/with-layout/Layouts';
 import { useEffectOnce, useStoreState } from '../../hooks';
