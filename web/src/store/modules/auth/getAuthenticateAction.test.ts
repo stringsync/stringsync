@@ -3,7 +3,7 @@ import { getTestStore } from '../../../testing';
 import { AuthUser } from './types';
 
 it('authenticates the user', async () => {
-  const { store, client } = getTestStore();
+  const { store, client, thunkArgs } = getTestStore();
   const user: AuthUser = {
     id: 'id',
     username: 'username',
@@ -12,7 +12,7 @@ it('authenticates the user', async () => {
   };
   jest.spyOn(client, 'call').mockResolvedValue({ user });
 
-  await getAuthenticateAction()(store.dispatch, store.getState, { client });
+  await getAuthenticateAction()(...thunkArgs);
 
   const { auth } = store.getState();
   expect(auth.user).toEqual(user);

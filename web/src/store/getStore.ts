@@ -4,13 +4,17 @@ import {
   applyMiddleware,
   compose,
   DeepPartial,
+  Store,
 } from 'redux';
+import {
+  viewportReducer,
+  deviceReducer,
+  authReducer,
+  emailReducer,
+} from './modules';
 import { getPreloadedState } from './getPreloadedState';
 import thunk from 'redux-thunk';
-import { viewportReducer } from './modules/viewport';
-import { deviceReducer } from './modules/device';
-import { authReducer } from './modules/auth';
-import { RootState } from './types';
+import { RootState, Actions } from './types';
 import { merge } from 'lodash';
 import { StringSyncClient } from '../client/types';
 
@@ -20,12 +24,13 @@ const rootReducer = combineReducers({
   viewport: viewportReducer,
   device: deviceReducer,
   auth: authReducer,
+  email: emailReducer,
 });
 
 export const getStore = (
   client: StringSyncClient,
   partialPreloadedState?: DeepPartial<RootState>
-) => {
+): Store<RootState, Actions> => {
   const middlewares = [thunk.withExtraArgument({ client })];
   const reduxDevtools = (window as any)[REDUX_DEVTOOLS_KEY] || compose;
   const preloadedState = merge(getPreloadedState(), partialPreloadedState);

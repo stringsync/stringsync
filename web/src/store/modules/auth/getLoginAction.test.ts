@@ -10,13 +10,13 @@ const USER: AuthUser = {
 };
 
 it('logs the user in', async () => {
-  const { store, client } = getTestStore();
+  const { store, client, thunkArgs } = getTestStore();
   jest.spyOn(client, 'call').mockResolvedValue({ user: USER });
 
   await getLoginAction({
     emailOrUsername: 'emailOrUsername',
     password: 'password',
-  })(store.dispatch, store.getState, { client });
+  })(...thunkArgs);
 
   const { auth } = store.getState();
   expect(auth.isLoggedIn).toBe(true);

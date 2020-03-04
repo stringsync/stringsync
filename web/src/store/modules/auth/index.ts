@@ -1,10 +1,10 @@
 export * from './types';
 export * from './constants';
-export { getClearAuthAction } from './getClearAuthAction';
-export { getClearAuthErrorsAction } from './getClearAuthErrorsAction';
-export { getLoginAction } from './getLoginAction';
-export { authReducer } from './authReducer';
+export * from './getClearAuthAction';
+export * from './getClearAuthErrorsAction';
+export * from './getLoginAction';
+export * from './authReducer';
 export * from './getAuthenticateAction';
-export { getLogoutAction } from './getLogoutAction';
-export { getSignupAction } from './getSignupAction';
-export { getInitialAuthState } from './getInitialAuthState';
+export * from './getLogoutAction';
+export * from './getSignupAction';
+export * from './getInitialAuthState';

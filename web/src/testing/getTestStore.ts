@@ -1,5 +1,5 @@
-import { getStore, RootState } from '../store';
-import { DeepPartial } from 'redux';
+import { getStore, RootState, Actions, ThunkContext } from '../store';
+import { DeepPartial, Dispatch } from 'redux';
 import { Client } from '../client';
 
 export const getTestStore = (
@@ -7,5 +7,10 @@ export const getTestStore = (
 ) => {
   const client = Client.create('');
   const store = getStore(client, partialPreloadedState);
-  return { client, store };
+  const thunkArgs: [Dispatch<Actions>, () => RootState, ThunkContext] = [
+    store.dispatch,
+    store.getState,
+    { client },
+  ];
+  return { client, store, thunkArgs };
 };
