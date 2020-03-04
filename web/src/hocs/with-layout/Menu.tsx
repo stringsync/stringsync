@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { logout } from '../../store';
 import { compareUserRoles } from '../../common';
-import { useStoreState } from '../../hooks';
+import { useSelector } from '../../hooks';
 
 const MenuIcon = styled(Icon)`
   font-size: 22px;
@@ -26,13 +26,13 @@ interface Props {}
 export const Menu: React.FC<Props> = (props) => {
   const dispatch = useDispatch();
 
-  const isLoggedIn = useStoreState((state) => state.auth.isLoggedIn);
-  const isLtEqMdViewport = useStoreState((state) => {
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const isLtEqMdViewport = useSelector((state) => {
     const { xs, sm, md } = state.viewport;
     return xs || sm || md;
   });
-  const isAuthPending = useStoreState((state) => state.auth.isPending);
-  const user = useStoreState((state) => state.auth.user);
+  const isAuthPending = useSelector((state) => state.auth.isPending);
+  const user = useSelector((state) => state.auth.user);
 
   const isGtEqTeacher = compareUserRoles(user.role, 'teacher') >= 0;
 

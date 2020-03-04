@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { message } from 'antd';
 import { compareUserRoles } from '../../common';
 import { useHistory } from 'react-router';
-import { useStoreState } from '../../hooks/useStoreState';
+import { useSelector } from '../../hooks/useSelector';
 
 export enum AuthRequirements {
   NONE,
@@ -16,9 +16,9 @@ export enum AuthRequirements {
 export const withAuthRequirement = (authReqs: AuthRequirements) =>
   function<P>(Component: React.ComponentType<P>): React.FC<P> {
     return (props) => {
-      const isAuthPending = useStoreState((state) => state.auth.isPending);
-      const isLoggedIn = useStoreState((state) => state.auth.isLoggedIn);
-      const userRole = useStoreState((state) => state.auth.user.role);
+      const isAuthPending = useSelector((state) => state.auth.isPending);
+      const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+      const userRole = useSelector((state) => state.auth.user.role);
       const meetsAuthReqs = useRef(true);
       const history = useHistory();
 

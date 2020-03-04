@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { FormComponentProps } from 'antd/lib/form';
 import { useDispatch } from 'react-redux';
 import { Wordmark } from '../../components/wordmark';
-import { useEffectOnce, useStoreState } from '../../hooks';
+import { useEffectOnce, useSelector } from '../../hooks';
 import { clearAuthErrors, login } from '../../store';
 
 const RoundedBox = styled.div`
@@ -68,8 +68,8 @@ const enhance = compose(
 
 const Login: React.FC = enhance((props: Props) => {
   const dispatch = useDispatch();
-  const isAuthPending = useStoreState((state) => state.auth.isPending);
-  const authErrors = useStoreState((state) => state.auth.errors);
+  const isAuthPending = useSelector((state) => state.auth.isPending);
+  const authErrors = useSelector((state) => state.auth.errors);
 
   const validateThenLogin: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();

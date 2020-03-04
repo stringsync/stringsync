@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux';
 import { compose } from '../../common';
 import { withLayout } from '../../hocs';
 import { Layouts } from '../../hocs/with-layout/Layouts';
-import { useEffectOnce, useStoreState } from '../../hooks';
+import { useEffectOnce, useSelector } from '../../hooks';
 import { signup, clearAuthErrors } from '../../store';
 
 const RoundedBox = styled.div`
@@ -89,7 +89,7 @@ const enhance = compose(
 
 const Signup = enhance((props: Props) => {
   const dispatch = useDispatch();
-  const { isAuthPending, authErrors } = useStoreState((state) => ({
+  const { isAuthPending, authErrors } = useSelector((state) => ({
     isAuthPending: state.auth.isPending,
     authErrors: state.auth.errors,
   }));

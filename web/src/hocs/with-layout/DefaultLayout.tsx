@@ -1,7 +1,7 @@
 import React from 'react';
 import { Layout, Row, Col, Divider } from 'antd';
 import styled from 'styled-components';
-import { useStoreState } from '../../hooks';
+import { useSelector } from '../../hooks';
 import { Wordmark } from '../../components/wordmark';
 import { Logo } from '../../components/logo';
 import { Link } from 'react-router-dom';
@@ -32,7 +32,7 @@ const Lane = styled.div`
 `;
 
 export const DefaultLayout: React.FC = (props) => {
-  const isLtEqMdViewport = useStoreState(
+  const isLtEqMdViewport = useSelector(
     (state) => state.viewport.xs || state.viewport.sm || state.viewport.md
   );
 

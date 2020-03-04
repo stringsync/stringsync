@@ -20,7 +20,7 @@ export const CONFIRM_EMAIL_MUTATION = gql`
   }
 `;
 
-export const getConfirmEmailAction = (
+export const confirmEmail = (
   input: ConfirmEmailInput
 ): ThunkAction<void, EmailActionTypes> => async (dispatch, getState, ctx) => {
   dispatch(confirmEmailPending());

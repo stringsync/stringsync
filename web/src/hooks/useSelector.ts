@@ -1,10 +1,10 @@
-import { useSelector } from 'react-redux';
+import { useSelector as _useSelector } from 'react-redux';
 import { RootState } from '../store';
 
 /**
  * A wrapper around useSelector tied to the RootState.
  */
-export const useStoreState = <T>(
+export const useSelector = <T>(
   selector: (state: RootState) => T,
   equalityFn?: (left: T, right: T) => boolean
-) => useSelector<RootState, T>(selector, equalityFn);
+) => _useSelector<RootState, T>(selector, equalityFn);

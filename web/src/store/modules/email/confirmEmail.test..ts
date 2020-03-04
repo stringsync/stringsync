@@ -1,4 +1,4 @@
-import { getConfirmEmailAction } from './getConfirmEmailAction';
+import { confirmEmail } from './confirmEmail';
 import { getTestStore } from '../../../testing';
 
 it('confirms the email', async () => {
@@ -8,7 +8,7 @@ it('confirms the email', async () => {
 
   jest.spyOn(client, 'call').mockResolvedValueOnce({ id });
 
-  await getConfirmEmailAction({
+  await confirmEmail({
     confirmationToken,
   })(...thunkArgs);
 
