@@ -1,11 +1,11 @@
 import { deviceReducer } from './deviceReducer';
 import { getDevice } from './getDevice';
-import { getSetUserAgentAction } from './getSetUserAgentAction';
+import { setUserAgent } from './setUserAgent';
 
 it('handles SET_USER_AGENT actions', () => {
   const userAgent = 'userAgent';
   const device = getDevice(userAgent);
-  const action = getSetUserAgentAction({ userAgent });
+  const action = setUserAgent({ userAgent });
 
   const state = deviceReducer(undefined, action);
 

@@ -1,9 +1,7 @@
 import { SET_USER_AGENT } from './constants';
 import { SetUserAgentInput, SetUserAgentAction } from './types';
 
-export const getSetUserAgentAction = (
-  input: SetUserAgentInput
-): SetUserAgentAction => ({
+export const setUserAgent = (input: SetUserAgentInput): SetUserAgentAction => ({
   type: SET_USER_AGENT,
   payload: input,
 });
