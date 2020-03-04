@@ -1,7 +1,7 @@
 import {
-  REQUEST_AUTH_PENDING,
-  REQUEST_AUTH_SUCCESS,
-  REQUEST_AUTH_FAILURE,
+  AUTH_PENDING,
+  AUTH_SUCCESS,
+  AUTH_FAILURE,
   CLEAR_AUTH_ERRORS,
   CLEAR_AUTH,
 } from './constants';
@@ -14,12 +14,12 @@ export const authReducer = (
   action: AuthActionTypes
 ): AuthState => {
   switch (action.type) {
-    case REQUEST_AUTH_PENDING:
+    case AUTH_PENDING:
       return { ...state, isPending: true, errors: [] };
-    case REQUEST_AUTH_SUCCESS:
+    case AUTH_SUCCESS:
       const user = { ...action.payload.user };
       return { isPending: false, isLoggedIn: true, user, errors: [] };
-    case REQUEST_AUTH_FAILURE:
+    case AUTH_FAILURE:
       const errors = [...action.payload.errors];
       return {
         ...getNullAuthState(),

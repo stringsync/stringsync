@@ -1,7 +1,7 @@
 import { gql } from 'apollo-boost';
 import { ThunkAction } from '../..';
 import { AuthActionTypes } from './types';
-import { getClearAuthAction } from './getClearAuthAction';
+import { clearAuth } from './clearAuth';
 
 interface LogoutData {
   logout: {
@@ -25,13 +25,12 @@ export const LOGOUT_MUTATION = gql`
   }
 `;
 
-export const getLogoutAction = (): ThunkAction<void, AuthActionTypes> => async (
+export const logout = (): ThunkAction<void, AuthActionTypes> => async (
   dispatch,
   getState,
   ctx
 ) => {
-  const clearAuthAction = getClearAuthAction();
-  dispatch(clearAuthAction);
+  dispatch(clearAuth());
 
   try {
     ctx.client.call<LogoutData>(LOGOUT_MUTATION);

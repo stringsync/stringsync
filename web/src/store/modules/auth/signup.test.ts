@@ -1,4 +1,4 @@
-import { getSignupAction } from './getSignupAction';
+import { signup } from './signup';
 import { getTestStore } from '../../../testing';
 import { AuthUser } from './types';
 
@@ -13,7 +13,7 @@ it('signs up the user', async () => {
   const { store, client, thunkArgs } = getTestStore();
   jest.spyOn(client, 'call').mockResolvedValue({ user: USER });
 
-  await getSignupAction({
+  await signup({
     email: 'email',
     password: 'password',
     username: 'username',

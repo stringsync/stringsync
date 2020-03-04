@@ -1,10 +1,10 @@
-import { getSetBreakpointNameAction } from './getSetBreakpointNameAction';
+import { setBreakpointName } from './setBreakpointName';
 import { SET_BREAKPOINT_NAME } from './constants';
 
 it('creates SET_BREAKPOINT_NAME actions', () => {
   const breakpointName = 'xs';
 
-  const action = getSetBreakpointNameAction({
+  const action = setBreakpointName({
     breakpointName,
   });
 

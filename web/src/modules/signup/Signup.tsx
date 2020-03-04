@@ -9,7 +9,7 @@ import { compose } from '../../common';
 import { withLayout } from '../../hocs';
 import { Layouts } from '../../hocs/with-layout/Layouts';
 import { useEffectOnce, useStoreState } from '../../hooks';
-import { getSignupAction, getClearAuthErrorsAction } from '../../store';
+import { signup, clearAuthErrors } from '../../store';
 
 const RoundedBox = styled.div`
   margin: 0 auto;
@@ -101,13 +101,11 @@ const Signup = enhance((props: Props) => {
         console.error(errors);
         return;
       }
-      const signupAction = getSignupAction(user);
-      dispatch(signupAction);
+      dispatch(signup(user));
     });
   };
   const clearErrors = () => {
-    const clearAuthErrorsAction = getClearAuthErrorsAction();
-    dispatch(clearAuthErrorsAction);
+    dispatch(clearAuthErrors());
   };
   useEffectOnce(() => {
     clearErrors();

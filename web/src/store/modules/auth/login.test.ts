@@ -1,4 +1,4 @@
-import { getLoginAction } from './getLoginAction';
+import { login } from './login';
 import { getTestStore } from '../../../testing';
 import { AuthUser } from './types';
 
@@ -13,7 +13,7 @@ it('logs the user in', async () => {
   const { store, client, thunkArgs } = getTestStore();
   jest.spyOn(client, 'call').mockResolvedValue({ user: USER });
 
-  await getLoginAction({
+  await login({
     emailOrUsername: 'emailOrUsername',
     password: 'password',
   })(...thunkArgs);

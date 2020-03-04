@@ -8,7 +8,7 @@ import { FormComponentProps } from 'antd/lib/form';
 import { useDispatch } from 'react-redux';
 import { Wordmark } from '../../components/wordmark';
 import { useEffectOnce, useStoreState } from '../../hooks';
-import { getClearAuthErrorsAction, getLoginAction } from '../../store';
+import { clearAuthErrors, login } from '../../store';
 
 const RoundedBox = styled.div`
   margin: 0 auto;
@@ -77,14 +77,12 @@ const Login: React.FC = enhance((props: Props) => {
       if (errors) {
         return;
       }
-      const loginAction = getLoginAction(loginInput);
-      dispatch(loginAction);
+      dispatch(login(loginInput));
     });
   };
 
   const clearErrors = () => {
-    const clearAuthErrorsAction = getClearAuthErrorsAction();
-    dispatch(clearAuthErrorsAction);
+    dispatch(clearAuthErrors());
   };
   useEffectOnce(() => {
     clearErrors();

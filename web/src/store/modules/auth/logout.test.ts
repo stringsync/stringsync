@@ -1,4 +1,4 @@
-import { getLogoutAction } from './getLogoutAction';
+import { logout } from './logout';
 import { getTestStore } from '../../../testing';
 import { AuthUser } from './types';
 import { getNullAuthState } from './getNullAuthState';
@@ -22,7 +22,7 @@ it('logs the user out', async () => {
   });
   jest.spyOn(client, 'call').mockResolvedValue({});
 
-  await getLogoutAction()(...thunkArgs);
+  await logout()(...thunkArgs);
 
   const { auth } = store.getState();
   expect(auth.isLoggedIn).toBe(false);

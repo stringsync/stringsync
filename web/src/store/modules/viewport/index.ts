@@ -1,5 +1,5 @@
 export * from './constants';
 export * from './types';
-export { getSetBreakpointNameAction } from './getSetBreakpointNameAction';
+export { setBreakpointName } from './setBreakpointName';
 export { viewportReducer } from './viewportReducer';
 export { getInitialViewportState } from './getInitialViewportState';

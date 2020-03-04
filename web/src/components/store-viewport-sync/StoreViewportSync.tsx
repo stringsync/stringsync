@@ -1,5 +1,5 @@
 import React from 'react';
-import { BreakpointName, getSetBreakpointNameAction } from '../../store';
+import { BreakpointName, setBreakpointName } from '../../store';
 import { useMedia } from '../../hooks';
 import { useDispatch } from 'react-redux';
 import { useStoreState } from '../../hooks/useStoreState';
@@ -28,10 +28,11 @@ export const StoreViewportSync: React.FC<Props> = (props) => {
   );
 
   if (nextBreakpointName !== breakpointName) {
-    const setBreakpointNameAction = getSetBreakpointNameAction({
-      breakpointName: nextBreakpointName,
-    });
-    dispatch(setBreakpointNameAction);
+    dispatch(
+      setBreakpointName({
+        breakpointName: nextBreakpointName,
+      })
+    );
   }
   return null;
 };

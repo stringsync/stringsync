@@ -3,7 +3,7 @@ import { Button, Row, Icon, Col, Modal, Avatar, message } from 'antd';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { getLogoutAction } from '../../store';
+import { logout } from '../../store';
 import { compareUserRoles } from '../../common';
 import { useStoreState } from '../../hooks';
 
@@ -43,8 +43,7 @@ export const Menu: React.FC<Props> = (props) => {
   ]);
 
   const handleLogoutClick = () => {
-    const logoutAction = getLogoutAction();
-    dispatch(logoutAction);
+    dispatch(logout());
     hideModal();
     message.success('logged out');
   };

@@ -4,9 +4,9 @@ import { ThunkAction } from '../..';
 import { message } from 'antd';
 import { getErrorMessages } from '../../../util';
 import { AuthActionTypes } from './types';
-import { getRequestAuthPendingAction } from './getRequestAuthPendingAction';
-import { getRequestAuthFailureAction } from './getRequestAuthFailureAction';
-import { getRequestAuthSuccessAction } from './getRequestAuthSuccessAction';
+import { authPending } from './authPending';
+import { authFailure } from './authFailure';
+import { authSuccess } from './authSuccess';
 
 interface LoginData {
   user: {
@@ -30,11 +30,10 @@ export const LOGIN_MUTATION = gql`
   }
 `;
 
-export const getLoginAction = (
+export const login = (
   input: LoginInput
 ): ThunkAction<void, AuthActionTypes> => async (dispatch, getState, ctx) => {
-  const requestAuthPendingAction = getRequestAuthPendingAction();
-  dispatch(requestAuthPendingAction);
+  dispatch(authPending());
 
   try {
     const res = await ctx.client.call<LoginData, InputOf<LoginInput>>(
@@ -43,14 +42,10 @@ export const getLoginAction = (
         input,
       }
     );
-
-    const requestAuthSuccessAction = getRequestAuthSuccessAction(res.user);
-    dispatch(requestAuthSuccessAction);
-
+    dispatch(authSuccess(res.user));
     message.info(`logged in as @${res.user.username}`);
   } catch (error) {
     const errorMessages = getErrorMessages(error);
-    const requestAuthFailureAction = getRequestAuthFailureAction(errorMessages);
-    dispatch(requestAuthFailureAction);
+    dispatch(authFailure(errorMessages));
   }
 };

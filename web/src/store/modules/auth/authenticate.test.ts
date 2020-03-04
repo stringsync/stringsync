@@ -1,4 +1,4 @@
-import { getAuthenticateAction } from './getAuthenticateAction';
+import { authenticate } from './authenticate';
 import { getTestStore } from '../../../testing';
 import { AuthUser } from './types';
 
@@ -12,7 +12,7 @@ it('authenticates the user', async () => {
   };
   jest.spyOn(client, 'call').mockResolvedValue({ user });
 
-  await getAuthenticateAction()(...thunkArgs);
+  await authenticate()(...thunkArgs);
 
   const { auth } = store.getState();
   expect(auth.user).toEqual(user);

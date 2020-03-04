@@ -2,9 +2,9 @@ import { User } from '../../../common/types';
 import {
   CLEAR_AUTH,
   CLEAR_AUTH_ERRORS,
-  REQUEST_AUTH_FAILURE,
-  REQUEST_AUTH_PENDING,
-  REQUEST_AUTH_SUCCESS,
+  AUTH_FAILURE,
+  AUTH_PENDING,
+  AUTH_SUCCESS,
 } from './constants';
 
 export type AuthUser = Pick<User, 'id' | 'email' | 'username' | 'role'>;
@@ -24,23 +24,23 @@ export interface ClearAuthErrorsAction {
   type: typeof CLEAR_AUTH_ERRORS;
 }
 
-export interface RequestAuthFailureAction {
-  type: typeof REQUEST_AUTH_FAILURE;
+export interface AuthFailureAction {
+  type: typeof AUTH_FAILURE;
   payload: { errors: string[] };
 }
 
-export interface RequestAuthPendingAction {
-  type: typeof REQUEST_AUTH_PENDING;
+export interface AuthPendingAction {
+  type: typeof AUTH_PENDING;
 }
 
-export interface RequestAuthSuccessAction {
-  type: typeof REQUEST_AUTH_SUCCESS;
+export interface AuthSuccessAction {
+  type: typeof AUTH_SUCCESS;
   payload: { user: AuthUser };
 }
 
 export type AuthActionTypes =
-  | RequestAuthPendingAction
-  | RequestAuthSuccessAction
-  | RequestAuthFailureAction
+  | AuthPendingAction
+  | AuthSuccessAction
+  | AuthFailureAction
   | ClearAuthAction
   | ClearAuthErrorsAction;

@@ -1,11 +1,11 @@
 import React from 'react';
 import { AuthenticateOnce } from './AuthenticateOnce';
-import { getAuthenticateAction } from '../../store';
+import { authenticate } from '../../store';
 import { render } from '@testing-library/react';
 import { getTestComponent } from '../../testing';
 
-jest.mock('../../store/modules/auth/getAuthenticateAction', () => ({
-  getAuthenticateAction: jest.fn(),
+jest.mock('../../store/modules/auth/authenticate', () => ({
+  authenticate: jest.fn(),
 }));
 
 afterEach(() => {
@@ -24,5 +24,5 @@ it('dispatches a authentication action once', () => {
 
   expect(container).toBeInTheDocument();
   expect(dispatchSpy).toBeCalledTimes(1);
-  expect(getAuthenticateAction).toBeCalledTimes(1);
+  expect(authenticate).toBeCalledTimes(1);
 });
