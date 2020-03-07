@@ -1,5 +1,6 @@
 import React from 'react';
-import { ClientContext, StringSyncClient } from '../../client';
+import { StringSyncClient } from './types';
+import { ClientContext } from './ClientContext';
 
 interface Props {
   client: StringSyncClient;

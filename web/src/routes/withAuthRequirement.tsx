@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import { message } from 'antd';
-import { compareUserRoles } from '../../common';
+import { compareUserRoles } from '../common';
 import { useHistory } from 'react-router';
-import { useSelector } from '../../hooks';
+import { useSelector } from '../hooks';
 
 export enum AuthRequirements {
   NONE,

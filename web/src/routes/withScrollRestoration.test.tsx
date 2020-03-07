@@ -1,7 +1,7 @@
 import React from 'react';
 import { withScrollRestoration } from './withScrollRestoration';
 import { render } from '@testing-library/react';
-import { getTestComponent } from '../../testing';
+import { getTestComponent } from '../testing';
 import { useHistory } from 'react-router';
 
 afterEach(() => {

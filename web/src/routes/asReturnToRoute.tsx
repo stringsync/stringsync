@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { useSelector } from '../../hooks';
+import { useSelector } from '../hooks';
 import { useLocation } from 'react-router';
 import { useDispatch } from 'react-redux';
-import { setReturnToRoute } from '../../store';
+import { setReturnToRoute } from '../store';
 
 export const asReturnToRoute = function<P>(
   Component: React.ComponentType<P>

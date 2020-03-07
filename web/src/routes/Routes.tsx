@@ -1,9 +1,9 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import Landing from '../landing/Landing';
-import Library from '../library/Library';
+import Landing from '../pages/Landing/Landing';
+import Library from '../pages/Library/Library';
 import { withScrollRestoration } from './withScrollRestoration';
-import { compose } from '../../common';
+import { compose } from '../common';
 import { withAuthRequirement, AuthRequirements } from './withAuthRequirement';
 import { asReturnToRoute } from './asReturnToRoute';
 
@@ -16,24 +16,24 @@ const WrappedLibrary = compose(
 const WrappedSignup = compose(
   withAuthRequirement(AuthRequirements.LOGGED_OUT),
   withScrollRestoration
-)(React.lazy(() => import('../signup/Signup')));
+)(React.lazy(() => import('../pages/Signup/Signup')));
 
 const WrappedLogin = compose(
   withAuthRequirement(AuthRequirements.LOGGED_OUT),
   withScrollRestoration
-)(React.lazy(() => import('../login/Login')));
+)(React.lazy(() => import('../pages/Login/Login')));
 
 const WrappedUpload = compose(
   asReturnToRoute,
   withAuthRequirement(AuthRequirements.LOGGED_IN_AS_TEACHER),
   withScrollRestoration
-)(React.lazy(() => import('../upload/Upload')));
+)(React.lazy(() => import('../pages/Upload/Upload')));
 
 const WrappedConfirmEmail = compose(
   asReturnToRoute,
   withAuthRequirement(AuthRequirements.LOGGED_IN),
   withScrollRestoration
-)(React.lazy(() => import('../confirm-email/ConfirmEmail')));
+)(React.lazy(() => import('../pages/ConfirmEmail/ConfirmEmail')));
 
 export const Routes: React.FC = () => {
   return (

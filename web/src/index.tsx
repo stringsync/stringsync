@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Root from './modules/root/Root';
-import App from './modules/app/App';
+import Root from './pages/Root/Root';
+import App from './pages/App/App';
 import * as serviceWorker from './serviceWorker';
 import { getStore } from './store';
 import { Client } from './client';
