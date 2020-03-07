@@ -21,6 +21,7 @@ export default {
       {
         username: 'jessicaplayspiano',
         email: 'jessica@hotmail.com',
+        role: 'student',
         created_at: NOW,
         updated_at: NOW,
         encrypted_password: encryptedPassword,
@@ -30,6 +31,7 @@ export default {
       {
         username: 'jordanplaysflute',
         email: 'jordan@yahoo.com',
+        role: 'teacher',
         created_at: NOW,
         updated_at: NOW,
         encrypted_password: encryptedPassword,

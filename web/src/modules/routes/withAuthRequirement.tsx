@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { message } from 'antd';
 import { compareUserRoles } from '../../common';
 import { useHistory } from 'react-router';
-import { useSelector } from '../../hooks/useSelector';
+import { useSelector } from '../../hooks';
 
 export enum AuthRequirements {
   NONE,
@@ -19,6 +19,7 @@ export const withAuthRequirement = (authReqs: AuthRequirements) =>
       const isAuthPending = useSelector((state) => state.auth.isPending);
       const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
       const userRole = useSelector((state) => state.auth.user.role);
+      const returnToRoute = useSelector((state) => state.history.returnToRoute);
       const meetsAuthReqs = useRef(true);
       const history = useHistory();
 
@@ -53,6 +54,8 @@ export const withAuthRequirement = (authReqs: AuthRequirements) =>
         const navigateTo = (path: string) => {
           history.push(path);
         };
+        // when the current session fails to meet auth
+        // reqs, redirect the user to somewhere reasonable
         switch (authReqs) {
           case AuthRequirements.NONE:
             break;
@@ -61,7 +64,7 @@ export const withAuthRequirement = (authReqs: AuthRequirements) =>
             navigateTo('login');
             break;
           case AuthRequirements.LOGGED_OUT:
-            navigateTo('library');
+            navigateTo(returnToRoute);
             break;
           case AuthRequirements.LOGGED_IN_AS_STUDENT:
             message.error('must be logged in as a student');
@@ -76,7 +79,7 @@ export const withAuthRequirement = (authReqs: AuthRequirements) =>
             navigateTo(isLoggedIn ? 'library' : 'login');
             break;
         }
-      }, [history, isAuthPending, isLoggedIn, meetsAuthReqs]);
+      }, [history, isAuthPending, isLoggedIn, meetsAuthReqs, returnToRoute]);
 
       return meetsAuthReqs.current ? <Component {...props} /> : null;
     };
