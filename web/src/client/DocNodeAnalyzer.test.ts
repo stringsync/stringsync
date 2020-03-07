@@ -20,3 +20,13 @@ it('identifies mutations', () => {
 
   expect(operationType).toBe('mutation');
 });
+
+it('gets the resolver name', () => {
+  const resolverName = DocNodeAnalyzer.getResolverName(gql`
+    query {
+      foo
+    }
+  `);
+
+  expect(resolverName).toBe('foo');
+});
