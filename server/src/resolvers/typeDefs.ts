@@ -65,6 +65,14 @@ export const typeDefs = gql`
     user: User!
   }
 
+  input ResendConfirmationInput {
+    email: String!
+  }
+
+  type ResendConfirmationPayload {
+    email: String!
+  }
+
   # Query
   type Query {
     getUsers: [User]!
@@ -78,5 +86,8 @@ export const typeDefs = gql`
     logout: LogoutPayload!
     authenticate: AuthenticatePayload!
     confirmEmail(input: ConfirmEmailInput!): ConfirmEmailPayload!
+    resendConfirmation(
+      input: ResendConfirmationInput!
+    ): ResendConfirmationPayload!
   }
 `;

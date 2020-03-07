@@ -62,3 +62,11 @@ export interface ConfirmEmailInput {
 export interface ConfirmEmailPayload {
   user: User;
 }
+
+export interface ResendConfirmationInput {
+  email: string;
+}
+
+export interface ResendConfirmationPayload {
+  email: string;
+}
