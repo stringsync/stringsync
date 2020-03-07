@@ -1,1 +1,1 @@
-export * from './with-layout';
+export * from './withLayout';
