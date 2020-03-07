@@ -1,15 +1,19 @@
 import { Client } from './Client';
-import { gql } from 'apollo-boost';
+import { gql, NetworkStatus } from 'apollo-boost';
 
 const QUERY = gql`
   query {
-    foo
+    foo {
+      bar
+    }
   }
 `;
 
 const MUTATION = gql`
   mutation {
-    bar
+    foo {
+      bar
+    }
   }
 `;
 
@@ -23,7 +27,7 @@ const VARIABLES = {
 const RES = {
   data: {},
   loading: false,
-  networkStatus: undefined,
+  networkStatus: NetworkStatus.ready,
   stale: false,
 };
 
