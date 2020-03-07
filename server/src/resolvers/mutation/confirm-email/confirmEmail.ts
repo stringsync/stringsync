@@ -1,6 +1,7 @@
 import { ReqCtx } from '../../../ctx';
 import { ConfirmEmailInput, ConfirmEmailPayload } from '../../../common/types';
 import { ForbiddenError } from 'apollo-server';
+import { toCanonicalUser } from '../../../db';
 
 interface Args {
   input: ConfirmEmailInput;
@@ -37,5 +38,5 @@ export const confirmEmail = async (
   userModel.confirmedAt = ctx.requestedAt;
   await userModel.save();
 
-  return { id: userModel.id };
+  return { user: toCanonicalUser(userModel) };
 };

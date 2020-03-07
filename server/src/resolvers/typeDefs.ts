@@ -17,6 +17,7 @@ export const typeDefs = gql`
     email: String!
     createdAt: Date!
     updatedAt: Date!
+    confirmedAt: Date
     notations: [Notation]
     role: UserRoles!
   }
@@ -61,7 +62,7 @@ export const typeDefs = gql`
   }
 
   type ConfirmEmailPayload {
-    id: String!
+    user: User!
   }
 
   # Query

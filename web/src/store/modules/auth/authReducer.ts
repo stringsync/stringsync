@@ -4,6 +4,7 @@ import {
   AUTH_FAILURE,
   CLEAR_AUTH_ERRORS,
   CLEAR_AUTH,
+  CONFIRM_EMAIL,
 } from './constants';
 import { AuthState, AuthActionTypes } from './types';
 import { getInitialAuthState } from './getInitialAuthState';
@@ -26,6 +27,11 @@ export const authReducer = (
         isLoggedIn: false,
         isPending: false,
         errors,
+      };
+    case CONFIRM_EMAIL:
+      return {
+        ...state,
+        user: { ...state.user, confirmedAt: action.payload.confirmedAt },
       };
     case CLEAR_AUTH:
       return getNullAuthState();

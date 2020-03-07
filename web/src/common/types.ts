@@ -16,6 +16,7 @@ export interface User {
   email: string;
   createdAt: Date;
   updatedAt: Date;
+  confirmedAt: Date | null;
   role: UserRoles;
 }
 
@@ -59,5 +60,5 @@ export interface ConfirmEmailInput {
 }
 
 export interface ConfirmEmailPayload {
-  id: string;
+  user: User;
 }

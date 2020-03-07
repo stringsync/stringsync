@@ -1,5 +1,6 @@
 import React from 'react';
-import { Icon, Spin } from 'antd';
+import { Spin } from 'antd';
+import Icon from 'antd/lib/icon';
 import styled from 'styled-components';
 import { SpinProps } from 'antd/lib/spin';
 

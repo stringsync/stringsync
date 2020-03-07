@@ -42,7 +42,7 @@ const StyledH1 = styled.h1`
   font-size: 32px;
 `;
 
-const Callout = styled.h4`
+const Message = styled.h4`
   color: ${(props) => props.theme['@muted']};
   text-align: center;
   margin: 0 16px 24px 16px;
@@ -132,7 +132,7 @@ const Signup = enhance((props: Props) => {
                 <Wordmark />
               </StyledH1>
             </Link>
-            <Callout>Signup to gain access to exclusive features</Callout>
+            <Message>Signup to gain access to exclusive features</Message>
             <Form onSubmit={validateThenSignup}>
               <Form.Item>
                 {emailFieldDecorator(

@@ -8,6 +8,7 @@ it('creates AUTH_SUCCESS actions', () => {
     email: 'email',
     role: 'admin',
     username: 'username',
+    confirmedAt: new Date(),
   };
 
   const action = authSuccess(user);

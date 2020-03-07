@@ -7,4 +7,5 @@ export * from './authReducer';
 export * from './authenticate';
 export * from './logout';
 export * from './signup';
+export * from './confirmEmail';
 export * from './getInitialAuthState';

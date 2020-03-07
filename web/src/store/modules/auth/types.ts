@@ -5,9 +5,13 @@ import {
   AUTH_FAILURE,
   AUTH_PENDING,
   AUTH_SUCCESS,
+  CONFIRM_EMAIL,
 } from './constants';
 
-export type AuthUser = Pick<User, 'id' | 'email' | 'username' | 'role'>;
+export type AuthUser = Pick<
+  User,
+  'id' | 'email' | 'username' | 'role' | 'confirmedAt'
+>;
 
 export interface AuthState {
   isPending: boolean;
@@ -38,9 +42,15 @@ export interface AuthSuccessAction {
   payload: { user: AuthUser };
 }
 
+export interface ConfirmEmailAction {
+  type: typeof CONFIRM_EMAIL;
+  payload: { confirmedAt: Date };
+}
+
 export type AuthActionTypes =
   | AuthPendingAction
   | AuthSuccessAction
   | AuthFailureAction
+  | ConfirmEmailAction
   | ClearAuthAction
   | ClearAuthErrorsAction;

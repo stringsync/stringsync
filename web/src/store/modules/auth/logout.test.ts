@@ -8,6 +8,7 @@ const USER: AuthUser = {
   username: 'username',
   email: 'email',
   role: 'teacher',
+  confirmedAt: new Date(),
 };
 
 const NULL_USER = getNullAuthState().user;

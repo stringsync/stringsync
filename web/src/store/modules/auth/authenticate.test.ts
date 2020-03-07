@@ -9,6 +9,7 @@ it('authenticates the user', async () => {
     username: 'username',
     email: 'email',
     role: 'teacher',
+    confirmedAt: new Date(),
   };
   jest.spyOn(client, 'call').mockResolvedValue({ user });
 

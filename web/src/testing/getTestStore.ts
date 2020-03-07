@@ -5,7 +5,7 @@ import { Client } from '../client';
 export const getTestStore = (
   partialPreloadedState?: DeepPartial<RootState>
 ) => {
-  const client = Client.create('');
+  const client = Client.create(Client.TEST_URI);
   const store = getStore(client, partialPreloadedState);
   const thunkArgs: [Dispatch<Actions>, () => RootState, ThunkContext] = [
     store.dispatch,

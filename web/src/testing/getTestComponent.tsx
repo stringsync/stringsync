@@ -12,7 +12,7 @@ export const getTestComponent = function<P>(
   const { store, client } = getTestStore(partialPreloadedState);
 
   const TestComponent = () => (
-    <Root store={store}>
+    <Root store={store} client={client}>
       <Component {...props} />
     </Root>
   );

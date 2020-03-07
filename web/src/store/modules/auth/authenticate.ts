@@ -12,6 +12,7 @@ export interface AuthenticateData {
     username: string;
     email: string;
     role: UserRoles;
+    confirmedAt: Date | null;
   };
 }
 
@@ -23,6 +24,7 @@ export const AUTHENTICATE_MUTATION = gql`
         username
         email
         role
+        confirmedAt
       }
     }
   }

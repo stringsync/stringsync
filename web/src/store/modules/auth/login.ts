@@ -14,6 +14,7 @@ interface LoginData {
     username: string;
     email: string;
     role: UserRoles;
+    confirmedAt: Date;
   };
 }
 
@@ -25,6 +26,7 @@ export const LOGIN_MUTATION = gql`
         username
         email
         role
+        confirmedAt
       }
     }
   }

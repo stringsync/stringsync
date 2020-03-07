@@ -6,6 +6,7 @@ const BASE_USER: User = {
   role: 'student',
   createdAt: new Date(),
   updatedAt: new Date(),
+  confirmedAt: new Date(),
   username: 'username',
   email: 'email@email.com',
 };

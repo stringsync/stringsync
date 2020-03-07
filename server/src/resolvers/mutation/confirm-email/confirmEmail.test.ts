@@ -34,7 +34,7 @@ it(
         ctx
       );
 
-      const userModel = await ctx.db.models.User.findByPk(payload.id);
+      const userModel = await ctx.db.models.User.findByPk(payload.user.id);
 
       expect(userModel).not.toBeNull();
       expect(userModel!.confirmedAt).not.toBeNull();

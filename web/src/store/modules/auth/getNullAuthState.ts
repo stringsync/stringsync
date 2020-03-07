@@ -7,6 +7,7 @@ export const getNullAuthState = (): AuthState => ({
     username: '',
     email: '',
     role: 'student',
+    confirmedAt: null,
   },
   isLoggedIn: false,
   errors: [],

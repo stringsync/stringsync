@@ -7,6 +7,7 @@ const USER: AuthUser = {
   username: 'username',
   email: 'email',
   role: 'teacher',
+  confirmedAt: new Date(),
 };
 
 it('signs up the user', async () => {

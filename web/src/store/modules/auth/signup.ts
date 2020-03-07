@@ -14,6 +14,7 @@ interface SignupData {
     username: string;
     email: string;
     role: UserRoles;
+    confirmedAt: Date;
   };
 }
 
@@ -25,6 +26,7 @@ const SIGNUP_MUTATION = gql`
         username
         email
         role
+        confirmedAt
       }
     }
   }

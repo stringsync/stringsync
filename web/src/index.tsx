@@ -12,7 +12,7 @@ const client = Client.create(config.REACT_APP_SERVER_URI);
 const store = getStore(client);
 
 ReactDOM.render(
-  <Root store={store}>
+  <Root store={store} client={client}>
     <App />
   </Root>,
   document.getElementById('root')

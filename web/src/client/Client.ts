@@ -1,5 +1,6 @@
 import { ObjectOf, StringSyncClient } from './types';
 import { DocNodeAnalyzer } from './DocNodeAnalyzer';
+import { NotCallableError } from './NotCallableError';
 import {
   ApolloClient,
   NormalizedCacheObject,
@@ -11,6 +12,10 @@ import {
 } from 'apollo-boost';
 
 export class Client implements StringSyncClient {
+  public static NULL_URI = '';
+  public static TEST_URI = 'http://stringsync.test:8080';
+
+  public readonly isCallable: boolean;
   private readonly apollo: ApolloClient<NormalizedCacheObject>;
 
   public static create(uri: string): Client {
@@ -20,7 +25,8 @@ export class Client implements StringSyncClient {
     });
     const cache = new InMemoryCache();
     const apollo = new ApolloClient({ link: httpLink, cache });
-    return new Client(apollo);
+    const isCallable = uri.length > 0;
+    return new Client(apollo, isCallable);
   }
 
   private static extractData<T>(
@@ -34,11 +40,19 @@ export class Client implements StringSyncClient {
     return res.data[resolverName];
   }
 
-  private constructor(apollo: ApolloClient<NormalizedCacheObject>) {
+  private constructor(
+    apollo: ApolloClient<NormalizedCacheObject>,
+    isCallable: boolean
+  ) {
     this.apollo = apollo;
+    this.isCallable = isCallable;
   }
 
   public async call<T, V>(doc: DocumentNode, variables: V): Promise<T> {
+    if (!this.isCallable) {
+      throw new NotCallableError();
+    }
+
     const operationType = DocNodeAnalyzer.getOperationType(doc);
     switch (operationType) {
       case 'query':

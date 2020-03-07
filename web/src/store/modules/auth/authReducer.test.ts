@@ -26,6 +26,7 @@ it('handles AUTH_SUCCESS actions', () => {
     id: 'id',
     role: 'teacher',
     username: 'username',
+    confirmedAt: new Date(),
   };
   const action = authSuccess(user);
 
