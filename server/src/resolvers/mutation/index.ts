@@ -2,5 +2,5 @@ export * from './login';
 export * from './logout';
 export * from './authenticate';
 export * from './signup';
-export * from './confirm-email';
-export * from './resend-confirmation';
+export * from './confirmEmail';
+export * from './resendConfirmation';
