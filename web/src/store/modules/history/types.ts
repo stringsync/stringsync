@@ -1,12 +1,12 @@
-import { SET_RETURN_TO_PAGE } from './constants';
+import { SET_RETURN_TO_ROUTE } from './constants';
 
 export interface HistoryState {
-  returnToPage: string;
+  returnToRoute: string;
 }
 
-export interface SetReturnToPageAction {
-  type: typeof SET_RETURN_TO_PAGE;
-  payload: { returnToPage: string };
+export interface SetReturnToRouteAction {
+  type: typeof SET_RETURN_TO_ROUTE;
+  payload: { returnToRoute: string };
 }
 
-export type HistoryActions = SetReturnToPageAction;
+export type HistoryActions = SetReturnToRouteAction;

@@ -1,1 +1,1 @@
-export const SET_RETURN_TO_PAGE = 'history/SET_RETURN_TO_PAGE';
+export const SET_RETURN_TO_ROUTE = 'history/SET_RETURN_TO_ROUTE';

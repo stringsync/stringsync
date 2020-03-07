@@ -5,8 +5,10 @@ import Library from '../library/Library';
 import { withScrollRestoration } from './withScrollRestoration';
 import { compose } from '../../common';
 import { withAuthRequirement, AuthRequirements } from './withAuthRequirement';
+import { asReturnToRoute } from './asReturnToRoute';
 
 const WrappedLibrary = compose(
+  asReturnToRoute,
   withAuthRequirement(AuthRequirements.NONE),
   withScrollRestoration
 )(Library);
@@ -22,11 +24,13 @@ const WrappedLogin = compose(
 )(React.lazy(() => import('../login/Login')));
 
 const WrappedUpload = compose(
+  asReturnToRoute,
   withAuthRequirement(AuthRequirements.LOGGED_IN_AS_TEACHER),
   withScrollRestoration
 )(React.lazy(() => import('../upload/Upload')));
 
 const WrappedConfirmEmail = compose(
+  asReturnToRoute,
   withAuthRequirement(AuthRequirements.LOGGED_IN),
   withScrollRestoration
 )(React.lazy(() => import('../confirm-email/ConfirmEmail')));

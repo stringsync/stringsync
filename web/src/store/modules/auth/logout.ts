@@ -33,10 +33,9 @@ export const logout = (): ThunkAction<void, AuthActionTypes> => async (
   dispatch(clearAuth());
 
   try {
-    ctx.client.call<LogoutData>(LOGOUT_MUTATION);
+    await ctx.client.call<LogoutData>(LOGOUT_MUTATION);
   } catch (error) {
     // TODO use sentry or some other tool that will track
     // when logouts fail
-    console.error(error);
   }
 };
