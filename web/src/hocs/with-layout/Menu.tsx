@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { logout } from '../../store';
 import { compareUserRoles } from '../../common';
 import { useSelector } from '../../hooks';
+import { useHistory } from 'react-router';
 
 const MenuIcon = styled(Icon)`
   font-size: 22px;
@@ -25,7 +26,6 @@ interface Props {}
 
 export const Menu: React.FC<Props> = (props) => {
   const dispatch = useDispatch();
-
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const isLtEqMdViewport = useSelector((state) => {
     const { xs, sm, md } = state.viewport;
@@ -33,6 +33,7 @@ export const Menu: React.FC<Props> = (props) => {
   });
   const isAuthPending = useSelector((state) => state.auth.isPending);
   const user = useSelector((state) => state.auth.user);
+  const history = useHistory();
 
   const isGtEqTeacher = compareUserRoles(user.role, 'teacher') >= 0;
 
@@ -46,6 +47,7 @@ export const Menu: React.FC<Props> = (props) => {
     dispatch(logout());
     hideModal();
     message.success('logged out');
+    history.push('library');
   };
 
   const gutterPx = isLoggedIn ? 16 : 8;

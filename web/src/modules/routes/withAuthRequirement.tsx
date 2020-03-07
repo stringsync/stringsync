@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { message } from 'antd';
 import { compareUserRoles } from '../../common';
 import { useHistory } from 'react-router';
@@ -22,6 +22,12 @@ export const withAuthRequirement = (authReqs: AuthRequirements) =>
       const returnToRoute = useSelector((state) => state.history.returnToRoute);
       const meetsAuthReqs = useRef(true);
       const history = useHistory();
+      const navigateTo = useCallback(
+        (path: string) => {
+          history.push(path);
+        },
+        [history]
+      );
 
       switch (authReqs) {
         case AuthRequirements.NONE:
@@ -51,9 +57,6 @@ export const withAuthRequirement = (authReqs: AuthRequirements) =>
         if (isAuthPending || meetsAuthReqs.current) {
           return;
         }
-        const navigateTo = (path: string) => {
-          history.push(path);
-        };
         // when the current session fails to meet auth
         // reqs, redirect the user to somewhere reasonable
         switch (authReqs) {
@@ -79,7 +82,14 @@ export const withAuthRequirement = (authReqs: AuthRequirements) =>
             navigateTo(isLoggedIn ? 'library' : 'login');
             break;
         }
-      }, [history, isAuthPending, isLoggedIn, meetsAuthReqs, returnToRoute]);
+      }, [
+        history,
+        isAuthPending,
+        isLoggedIn,
+        meetsAuthReqs,
+        navigateTo,
+        returnToRoute,
+      ]);
 
       return meetsAuthReqs.current ? <Component {...props} /> : null;
     };
