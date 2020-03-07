@@ -1,5 +1,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { compose, InputOf, ConfirmEmailInput } from '../../common';
+import {
+  compose,
+  InputOf,
+  ConfirmEmailInput,
+  ResendConfirmationInput,
+} from '../../common';
 import { withLayout, Layouts } from '../../hocs';
 import { useLocation } from 'react-router';
 import { EMAIL_CONF_TOKEN_QUERY_PARAM_NAME } from '../../common';
@@ -27,6 +32,18 @@ interface ConfirmEmailData {
   user: {
     confirmedAt: Date;
   };
+}
+
+const RESEND_CONFIRMATION_MUTATION = gql`
+  mutation($input: ResendConfirmationInput!) {
+    resendConfirmation(input: $input) {
+      email
+    }
+  }
+`;
+
+interface ResendConfirmationData {
+  email: string;
 }
 
 const SPANS = Object.freeze({
@@ -106,6 +123,10 @@ const ConfirmEmail = enhance(() => {
   const resendConfirmationEmail = useCallback(async () => {
     setLoading(true);
     try {
+      await client.call<
+        ResendConfirmationData,
+        InputOf<ResendConfirmationInput>
+      >(RESEND_CONFIRMATION_MUTATION, { input: { email } });
       message.info('resent confirmation email');
       history.push('library');
     } catch (error) {
@@ -113,7 +134,7 @@ const ConfirmEmail = enhance(() => {
       setErrors(errorMessages);
     }
     setLoading(false);
-  }, [history]);
+  }, [client, email, history]);
 
   useEffect(() => {
     if (isConfirmed) {
