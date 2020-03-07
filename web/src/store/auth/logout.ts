@@ -1,5 +1,5 @@
 import { gql } from 'apollo-boost';
-import { ThunkAction } from '../..';
+import { ThunkAction } from '../';
 import { AuthActionTypes } from './types';
 import { clearAuth } from './clearAuth';
 

@@ -6,12 +6,10 @@ import {
   DeepPartial,
   Store,
 } from 'redux';
-import {
-  viewportReducer,
-  deviceReducer,
-  authReducer,
-  historyReducer,
-} from './modules';
+import { viewportReducer } from './viewport';
+import { deviceReducer } from './device';
+import { authReducer } from './auth';
+import { historyReducer } from './history';
 import { getPreloadedState } from './getPreloadedState';
 import thunk from 'redux-thunk';
 import { RootState, Actions } from './types';

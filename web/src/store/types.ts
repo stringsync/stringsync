@@ -1,7 +1,7 @@
-import * as Viewport from './modules/viewport';
-import * as Device from './modules/device';
-import * as Auth from './modules/auth';
-import * as History from './modules/history';
+import * as Viewport from './viewport';
+import * as Device from './device';
+import * as Auth from './auth';
+import * as History from './history';
 import { getStore } from './getStore';
 import { ThunkAction as _ThunkAction } from 'redux-thunk';
 import { Action } from 'redux';

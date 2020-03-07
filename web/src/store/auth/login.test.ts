@@ -1,5 +1,5 @@
-import { signup } from './signup';
-import { getTestStore } from '../../../testing';
+import { login } from './login';
+import { getTestStore } from '../../testing';
 import { AuthUser } from './types';
 
 const USER: AuthUser = {
@@ -10,19 +10,18 @@ const USER: AuthUser = {
   confirmedAt: new Date(),
 };
 
-it('signs up the user', async () => {
+it('logs the user in', async () => {
   const { store, client, thunkArgs } = getTestStore();
   jest.spyOn(client, 'call').mockResolvedValue({ user: USER });
 
-  await signup({
-    email: 'email',
+  await login({
+    emailOrUsername: 'emailOrUsername',
     password: 'password',
-    username: 'username',
   })(...thunkArgs);
 
   const { auth } = store.getState();
-  expect(auth.errors).toHaveLength(0);
   expect(auth.isLoggedIn).toBe(true);
   expect(auth.isPending).toBe(false);
+  expect(auth.errors).toHaveLength(0);
   expect(auth.user).toEqual(USER);
 });

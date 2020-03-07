@@ -1,5 +1,5 @@
 import { authenticate } from './authenticate';
-import { getTestStore } from '../../../testing';
+import { getTestStore } from '../../testing';
 import { AuthUser } from './types';
 
 it('authenticates the user', async () => {

@@ -1,5 +1,5 @@
 import { logout } from './logout';
-import { getTestStore } from '../../../testing';
+import { getTestStore } from '../../testing';
 import { AuthUser } from './types';
 import { getNullAuthState } from './getNullAuthState';
 

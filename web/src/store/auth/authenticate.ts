@@ -1,10 +1,10 @@
 import { gql } from 'apollo-boost';
-import { ThunkAction } from '../../';
+import { ThunkAction } from '../';
 import { AuthActionTypes } from './types';
 import { logout } from './logout';
 import { authPending } from './authPending';
 import { authSuccess } from './authSuccess';
-import { UserRoles } from '../../../common/types';
+import { UserRoles } from '../../common/types';
 
 export interface AuthenticateData {
   user: {

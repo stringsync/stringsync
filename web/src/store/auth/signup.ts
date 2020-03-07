@@ -1,9 +1,9 @@
 import { gql } from 'apollo-boost';
-import { SignupInput, UserRoles, InputOf } from '../../../common/types';
-import { ThunkAction } from '../..';
+import { SignupInput, UserRoles, InputOf } from '../../common/types';
+import { ThunkAction } from '../';
 import { AuthActionTypes } from './types';
 import { message } from 'antd';
-import { getErrorMessages } from '../../../util';
+import { getErrorMessages } from '../../util';
 import { authPending } from './authPending';
 import { authSuccess } from './authSuccess';
 import { authFailure } from './authFailure';

@@ -4,7 +4,7 @@ import { authenticate } from '../../store';
 import { render } from '@testing-library/react';
 import { getTestComponent } from '../../testing';
 
-jest.mock('../../store/modules/auth/authenticate', () => ({
+jest.mock('../../store/auth/authenticate', () => ({
   authenticate: jest.fn(),
 }));
 

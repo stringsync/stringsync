@@ -1,4 +1,4 @@
-import { User } from '../../../common/types';
+import { User } from '../../common/types';
 import {
   CLEAR_AUTH,
   CLEAR_AUTH_ERRORS,
