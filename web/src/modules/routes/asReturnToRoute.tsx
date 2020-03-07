@@ -11,7 +11,7 @@ export const asReturnToRoute = function<P>(
     const returnToRoute = useSelector((state) => state.history.returnToRoute);
     const dispatch = useDispatch();
     const location = useLocation();
-    const nextReturnToRoute = `${location.pathname}${location.search}`;
+    const nextReturnToRoute = `${location.pathname}${location.search}${location.hash}`;
 
     useEffect(() => {
       if (returnToRoute !== nextReturnToRoute) {
