@@ -16,7 +16,7 @@ export class Client implements StringSyncClient {
   public static TEST_URI = 'http://stringsync.test:8080';
 
   public readonly isCallable: boolean;
-  private readonly apollo: ApolloClient<NormalizedCacheObject>;
+  public readonly apollo: ApolloClient<NormalizedCacheObject>;
 
   public static create(uri: string): Client {
     const httpLink = new HttpLink({
