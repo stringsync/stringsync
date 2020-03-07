@@ -1,5 +1,5 @@
 import React from 'react';
-import { StoreViewportSync } from '../../components/store-viewport-sync';
+import { StoreViewportSync } from '../../components/StoreViewportSync';
 import { AuthenticateOnce } from '../../components/AuthenticateOnce';
 import { Routes } from '../routes/Routes';
 

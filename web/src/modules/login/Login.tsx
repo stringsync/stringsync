@@ -6,7 +6,7 @@ import { Alert, Form, Row, Col, Input, Button } from 'antd';
 import { Link } from 'react-router-dom';
 import { FormComponentProps } from 'antd/lib/form';
 import { useDispatch } from 'react-redux';
-import { Wordmark } from '../../components/wordmark';
+import { Wordmark } from '../../components/Wordmark';
 import { useEffectOnce, useSelector } from '../../hooks';
 import { clearAuthErrors, login } from '../../store';
 

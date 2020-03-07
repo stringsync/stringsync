@@ -7,8 +7,6 @@ const StyledSpan = styled.span`
   color: ${(props) => props.theme['@primary-color']};
 `;
 
-interface Props {}
-
-export const Wordmark: React.FC<Props> = (props) => {
+export const Wordmark: React.FC = (props) => {
   return <StyledSpan>StringSync</StyledSpan>;
 };

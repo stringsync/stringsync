@@ -2,7 +2,7 @@ import React from 'react';
 import { Layout, Row, Col, Divider } from 'antd';
 import styled from 'styled-components';
 import { useSelector } from '../../hooks';
-import { Wordmark } from '../../components/wordmark';
+import { Wordmark } from '../../components/Wordmark';
 import { Logo } from '../../components/Logo';
 import { Link } from 'react-router-dom';
 import { Menu } from './Menu';
