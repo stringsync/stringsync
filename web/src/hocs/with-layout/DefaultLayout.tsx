@@ -3,7 +3,7 @@ import { Layout, Row, Col, Divider } from 'antd';
 import styled from 'styled-components';
 import { useSelector } from '../../hooks';
 import { Wordmark } from '../../components/wordmark';
-import { Logo } from '../../components/logo';
+import { Logo } from '../../components/Logo';
 import { Link } from 'react-router-dom';
 import { Menu } from './Menu';
 
