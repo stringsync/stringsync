@@ -71,7 +71,7 @@ const SPANS = Object.freeze({
   md: 8,
   lg: 7,
   xl: 6,
-  xxl: 5,
+  xxl: 6,
 });
 
 interface Props extends FormComponentProps {}
