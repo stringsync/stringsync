@@ -1,7 +1,8 @@
 import { Command, flags } from '@oclif/command';
 import * as path from 'path';
-import * as fs from 'fs';
-import { cmd, execSyncFromRootPath, ROOT_PATH } from '../util';
+import { spawn } from 'child_process';
+import { ROOT_PATH } from '../util';
+import rimraf from 'rimraf';
 
 const INSTALLATION_DIRS = [
   ROOT_PATH,
@@ -20,14 +21,17 @@ export default class Install extends Command {
   async run() {
     this.parse(Install);
 
-    for (const dir of INSTALLATION_DIRS) {
-      const nodeModulesPath = path.join(dir, 'node_modules');
-      const installing = fs.existsSync(nodeModulesPath)
-        ? 'reinstalling'
-        : 'installing';
-      this.log(`🦑  ${installing} node_modules in ${dir}`);
-      execSyncFromRootPath(cmd('rm', '-rf', nodeModulesPath));
-      execSyncFromRootPath(cmd(`(cd ${dir} && yarn)`));
-    }
+    this.log('🦑  removing node_modules');
+    INSTALLATION_DIRS.map((dir) => path.join(dir, 'node_modules')).forEach(
+      (dir) =>
+        rimraf(dir, (err) => {
+          if (err) {
+            this.log(err);
+          }
+        })
+    );
+
+    this.log('🦑  installing node_modules');
+    INSTALLATION_DIRS.forEach((cwd) => spawn('yarn', { cwd }));
   }
 }
