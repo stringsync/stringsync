@@ -11,25 +11,32 @@ const INSTALLATION_DIRS = [
   path.join(ROOT_PATH, 'e2e'),
 ];
 
+const NODE_MODULE_DIRS = INSTALLATION_DIRS.map((dir) =>
+  path.join(dir, 'node_modules')
+);
+
 export default class Install extends Command {
-  static description = 'Reinstalls node_modules throughout the project.';
+  static description = 'Installs node_modules throughout the project.';
 
   static flags = {
     help: flags.help({ char: 'h' }),
+    delete: flags.boolean({ char: 'd', default: false }),
   };
 
   async run() {
-    this.parse(Install);
+    const { flags } = this.parse(Install);
 
-    this.log('🦑  removing node_modules');
-    INSTALLATION_DIRS.map((dir) => path.join(dir, 'node_modules')).forEach(
-      (dir) =>
-        rimraf(dir, (err) => {
-          if (err) {
-            this.log(err);
-          }
-        })
-    );
+    if (flags.delete) {
+      this.log('🦑  deleting node_modules');
+      NODE_MODULE_DIRS.map((dir) => path.join(dir, 'node_modules')).forEach(
+        (dir) =>
+          rimraf(dir, (err) => {
+            if (err) {
+              this.log(err.toString());
+            }
+          })
+      );
+    }
 
     this.log('🦑  installing node_modules');
     INSTALLATION_DIRS.forEach((cwd) => spawn('yarn', { cwd }));
