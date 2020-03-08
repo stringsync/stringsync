@@ -27,7 +27,7 @@ export default class Exec extends Command {
         'logs',
         '-f',
         args.service,
-      ],
+      ].filter((arg) => arg),
       { cwd: ROOT_PATH, stdio: 'inherit' }
     );
   }
