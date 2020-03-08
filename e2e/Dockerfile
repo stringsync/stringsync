@@ -1,4 +1,4 @@
-FROM node:12.4.0
+FROM node:13
 
 RUN  apt-get update \
   # Install latest chrome dev package, which installs the necessary libs to
