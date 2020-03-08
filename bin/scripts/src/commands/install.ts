@@ -27,7 +27,7 @@ export default class Install extends Command {
     const { flags } = this.parse(Install);
 
     if (flags.delete) {
-      this.log('🦑  deleting node_modules');
+      this.log('deleting node_modules');
       NODE_MODULE_DIRS.map((dir) => path.join(dir, 'node_modules')).forEach(
         (dir) =>
           rimraf(dir, (err) => {
@@ -38,7 +38,7 @@ export default class Install extends Command {
       );
     }
 
-    this.log('🦑  installing node_modules');
+    this.log('installing node_modules');
     INSTALLATION_DIRS.forEach((cwd) => spawn('yarn', { cwd }));
   }
 }

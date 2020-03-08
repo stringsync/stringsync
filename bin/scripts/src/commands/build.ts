@@ -19,7 +19,7 @@ export default class Build extends Command {
     const tag = `ss-${args.service}:${flags.tag}`;
     const cwd = path.join(ROOT_PATH, args.service);
 
-    this.log(`🦑  building ${tag} from ${cwd}`);
+    this.log(`building ${tag} from ${cwd}`);
     await exec(`docker build -t ${tag} .`, { cwd });
   }
 }
