@@ -9,7 +9,7 @@
     "compile:server": "yarn tsc --noEmit --project server/tsconfig.json",
     "compile:web": "yarn tsc --noEmit --project web/tsconfig.json",
     "compile:e2e": "yarn tsc --noEmit --project e2e/tsconfig.json",
-    "precommit": "yarn compile:server && yarn compile:web && yarn compile:e2e"
+    "precommit": "yarn compile:server & yarn compile:web & yarn compile:e2e"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^4.2.4",
