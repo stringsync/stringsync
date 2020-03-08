@@ -12,6 +12,7 @@
     "@oclif/config": "^1",
     "@oclif/plugin-help": "^2",
     "@types/rimraf": "^2.0.3",
+    "aws-sdk": "^2.635.0",
     "rimraf": "^3.0.2",
     "tslib": "^1"
   },
