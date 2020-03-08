@@ -32,6 +32,7 @@ USAGE
 # Commands
 
 <!-- commands -->
+* [`ss build [FILE]`](#ss-build-file)
 * [`ss db`](#ss-db)
 * [`ss down [PROJECT]`](#ss-down-project)
 * [`ss exec PROJECT SERVICE CMD`](#ss-exec-project-service-cmd)
@@ -41,9 +42,25 @@ USAGE
 * [`ss logs PROJECT [SERVICE]`](#ss-logs-project-service)
 * [`ss prettier`](#ss-prettier)
 * [`ss sql CMD`](#ss-sql-cmd)
-* [`ss sync-common [FILE]`](#ss-sync-common-file)
+* [`ss sync-common`](#ss-sync-common)
 * [`ss test PROJECT`](#ss-test-project)
 * [`ss up [PROJECT]`](#ss-up-project)
+
+## `ss build [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ ss build [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/build.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/build.ts)_
 
 ## `ss db`
 
@@ -179,18 +196,16 @@ OPTIONS
 
 _See code: [src/commands/sql.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/sql.ts)_
 
-## `ss sync-common [FILE]`
+## `ss sync-common`
 
-describe the command here
+Copies the common dir to all the projects.
 
 ```
 USAGE
-  $ ss sync-common [FILE]
+  $ ss sync-common
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -h, --help  show CLI help
 ```
 
 _See code: [src/commands/sync-common.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/sync-common.ts)_
