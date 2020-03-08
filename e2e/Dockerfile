@@ -23,3 +23,4 @@ COPY setup.js .
 COPY teardown.js .
 COPY PuppeteerEnvironment.js .
 COPY tsconfig.json .
+COPY src src/

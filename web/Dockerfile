@@ -8,3 +8,4 @@ RUN yarn
 COPY .env .
 COPY config-overrides.js .
 COPY tsconfig.json .
+COPY src src/

@@ -10,3 +10,4 @@ COPY jest.config.js .
 COPY sequelize.config.js .
 COPY tsconfig.json .
 COPY webpack.config.js .
+COPY src src/
