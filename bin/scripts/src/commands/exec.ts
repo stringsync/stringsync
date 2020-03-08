@@ -1,11 +1,6 @@
 import { Command, flags } from '@oclif/command';
-import { cmd } from '../util/cmd';
-import {
-  getDockerComposeFile,
-  Project,
-  PROJECT_ARG,
-  execSyncFromRootPath,
-} from '../util';
+import { getDockerComposeFile, Project, PROJECT_ARG, ROOT_PATH } from '../util';
+import { spawn } from 'child_process';
 
 export default class Exec extends Command {
   static description = 'Runs docker-compose exec on an running container.';
@@ -14,7 +9,6 @@ export default class Exec extends Command {
 
   static flags = {
     help: flags.help({ char: 'h' }),
-    psuedoTty: flags.boolean({ char: 'T' }),
   };
 
   static args = [
@@ -24,24 +18,26 @@ export default class Exec extends Command {
   ];
 
   async run() {
-    const { argv, flags } = this.parse(Exec);
+    const { argv } = this.parse(Exec);
     const [project, service, ...cmdv] = argv;
 
-    const execCmd = cmd(
+    spawn(
       'docker-compose',
-      '-f',
-      getDockerComposeFile(project as Project),
-      '-p',
-      project,
-      'exec',
-      flags.psuedoTty ? '-T' : '',
-      service,
-      'bash',
-      '-c',
-      `"${cmdv.join(' ')}"`
+      [
+        '-f',
+        getDockerComposeFile(project as Project),
+        '-p',
+        project,
+        'exec',
+        service,
+        'bash',
+        '-c',
+        cmdv.join(' '),
+      ].filter((arg) => arg),
+      {
+        cwd: ROOT_PATH,
+        stdio: 'inherit',
+      }
     );
-
-    this.log(`exec '${execCmd}' on ${service}:`);
-    execSyncFromRootPath(execCmd);
   }
 }

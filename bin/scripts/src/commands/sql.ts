@@ -1,8 +1,8 @@
 import { Command, flags } from '@oclif/command';
-import { execSync } from 'child_process';
+import { spawn } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import { cmd, execSyncFromRootPath } from '../util';
+import { ROOT_PATH } from '../util';
 
 const ALL_CMDS = [
   'db:migrate',
@@ -40,7 +40,7 @@ const WHITELISTED_CMDS = (() => {
 })();
 const GENERATE_MIGRATION_CMD = 'migration:generate';
 const GENERATE_SEED_CMD = 'seed:generate';
-const SERVER_ROOT_PATH = path.resolve('..', 'server');
+const SERVER_ROOT_PATH = path.join(ROOT_PATH, 'server');
 const SERVER_SRC_DB_PATH = path.resolve(SERVER_ROOT_PATH, 'src', 'db');
 const SERVER_MIGRATION_PATH = path.resolve(SERVER_SRC_DB_PATH, 'migrations');
 const SERVER_SEEDERS_PATH = path.resolve(SERVER_SRC_DB_PATH, 'seeders');
@@ -90,29 +90,18 @@ export default class Sql extends Command {
 
   async run() {
     const { argv, flags, args } = this.parse(Sql);
-    const command = args.cmd;
+    const command: string = args.cmd;
 
     // ensure cmd is allowed
-    if (!WHITELISTED_CMDS.includes(command) || command === 'help') {
-      const buffer = execSync('./bin/ss exec -T server yarn sequelize help', {
-        stdio: 'pipe',
-      });
-
-      const msg = buffer
-        .toString()
-        .split('\n')
-        // very slow but simple algorithm
-        // don't expect the blacklist to grow
-        // could use trie if needed
-        .filter((line) => !BLACKLISTED_CMDS.some((cmd) => line.includes(cmd)))
-        .join('\n');
-      this.log(msg);
-      this.exit(command === 'help' ? 0 : 1);
+    if (!WHITELISTED_CMDS.includes(command)) {
+      this.log(`invalid command: '${command}'`);
+      this.log(`allowed commands:\n${WHITELISTED_CMDS.join('\n')}`);
+      this.exit(1);
     }
 
     // intercept generate: command and run custom generator
     // the script will exit after running custom generator
-    if (command.startsWith('generate:')) {
+    if (command.endsWith(':generate')) {
       if (!flags.name) {
         this.log('--name flag required');
         this.exit(1);
@@ -130,8 +119,13 @@ export default class Sql extends Command {
     }
 
     // run the actual command against the sequelize library
-    execSyncFromRootPath(
-      cmd('./bin/ss', 'exec', 'scripts', 'yarn', 'sequelize', ...argv)
+    spawn(
+      './bin/ss',
+      ['exec', 'main', 'scripts', 'yarn', 'sequelize', ...argv],
+      {
+        cwd: ROOT_PATH,
+        stdio: 'inherit',
+      }
     );
   }
 }

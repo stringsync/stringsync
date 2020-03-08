@@ -1,17 +1,15 @@
-import { cmd } from './cmd';
-
 export const getBuildDockerImageCmd = (
   imageTagName: string,
   dockerfilePath: string,
   dockerContextPath: string
 ) => {
-  return cmd(
+  return [
     'docker',
     'build',
     '-t',
     imageTagName,
     '-f',
     dockerfilePath,
-    dockerContextPath
-  );
+    dockerContextPath,
+  ].join(' ');
 };

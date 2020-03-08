@@ -7,10 +7,9 @@
   "private": true,
   "scripts": {
     "compile:server": "yarn tsc --noEmit --project server/tsconfig.json",
-    "compile:web": "yarn tsc --project server/tsconfig.json",
-    "lint": "./bin/ss lint",
-    "format": "./bin/ss prettier",
-    "precommit": "yarn compile:server --noEmit && yarn compile:web --noEmit && yarn lint -s && yarn format -s -f"
+    "compile:web": "yarn tsc --noEmit --project web/tsconfig.json",
+    "compile:e2e": "yarn tsc --noEmit --project e2e/tsconfig.json",
+    "precommit": "yarn compile:server && yarn compile:web && yarn compile:e2e"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^4.2.4",

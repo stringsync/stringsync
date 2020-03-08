@@ -23,6 +23,7 @@ export default class Up extends Command {
         args.project,
         'up',
         '--build',
+        '-d',
       ],
       { cwd: ROOT_PATH, stdio: 'inherit' }
     );

@@ -1,12 +1,14 @@
 import { Project } from './types';
-import { cmd } from './cmd';
-import { getDockerComposeCmd } from './getDockerComposeCmd';
+import { getDockerComposeFile } from './getDockerComposeFile';
 
-export const getTestCmd = (project: Project, watch: boolean): string => {
+export const getTestCmdArgs = (project: Project, watch: boolean): string[] => {
   switch (project) {
     case 'server':
-      return cmd(
-        getDockerComposeCmd(project),
+      return [
+        '-f',
+        getDockerComposeFile(project),
+        '-p',
+        project,
         'run',
         '--rm',
         '--name',
@@ -14,11 +16,14 @@ export const getTestCmd = (project: Project, watch: boolean): string => {
         'server',
         'yarn',
         'test',
-        `--watchAll=${watch}`
-      );
+        `--watchAll=${watch}`,
+      ];
     case 'web':
-      return cmd(
-        getDockerComposeCmd(project),
+      return [
+        '-f',
+        getDockerComposeFile(project),
+        '-p',
+        project,
         'run',
         '--rm',
         '--name',
@@ -26,11 +31,14 @@ export const getTestCmd = (project: Project, watch: boolean): string => {
         'web',
         'yarn',
         'test',
-        `--watchAll=${watch}`
-      );
+        `--watchAll=${watch}`,
+      ];
     case 'e2e':
-      return cmd(
-        getDockerComposeCmd(project),
+      return [
+        '-f',
+        getDockerComposeFile(project),
+        '-p',
+        project,
         'run',
         '--rm',
         '--name',
@@ -45,8 +53,8 @@ export const getTestCmd = (project: Project, watch: boolean): string => {
         'yarn',
         'test',
         '--runInBand',
-        `--watchAll=${watch}`
-      );
+        `--watchAll=${watch}`,
+      ];
     default:
       throw new TypeError(`unexpected project: ${project}`);
   }
