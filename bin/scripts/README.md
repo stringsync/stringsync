@@ -8,16 +8,14 @@ StringSync Scripts.
 [![License](https://img.shields.io/npm/l/scripts.svg)](https://github.com/jaredjj3/string-sync/blob/master/package.json)
 
 <!-- toc -->
-
-- [scripts](#scripts)
-- [Usage](#usage)
-- [Commands](#commands)
-  <!-- tocstop -->
+* [scripts](#scripts)
+* [Usage](#usage)
+* [Commands](#commands)
+<!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g scripts
 $ ss COMMAND
@@ -29,39 +27,37 @@ USAGE
   $ ss COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
+* [`ss build [SERVICE]`](#ss-build-service)
+* [`ss db`](#ss-db)
+* [`ss down [PROJECT]`](#ss-down-project)
+* [`ss exec PROJECT SERVICE CMD`](#ss-exec-project-service-cmd)
+* [`ss help [COMMAND]`](#ss-help-command)
+* [`ss install`](#ss-install)
+* [`ss lint`](#ss-lint)
+* [`ss logs PROJECT [SERVICE]`](#ss-logs-project-service)
+* [`ss pretty`](#ss-pretty)
+* [`ss push [FILE]`](#ss-push-file)
+* [`ss sql CMD`](#ss-sql-cmd)
+* [`ss sync-common`](#ss-sync-common)
+* [`ss test PROJECT`](#ss-test-project)
+* [`ss up [PROJECT]`](#ss-up-project)
 
-- [`ss build [FILE]`](#ss-build-file)
-- [`ss db`](#ss-db)
-- [`ss down [PROJECT]`](#ss-down-project)
-- [`ss exec PROJECT SERVICE CMD`](#ss-exec-project-service-cmd)
-- [`ss help [COMMAND]`](#ss-help-command)
-- [`ss install`](#ss-install)
-- [`ss lint`](#ss-lint)
-- [`ss logs PROJECT [SERVICE]`](#ss-logs-project-service)
-- [`ss pretty`](#ss-pretty)
-- [`ss sql CMD`](#ss-sql-cmd)
-- [`ss sync-common`](#ss-sync-common)
-- [`ss test PROJECT`](#ss-test-project)
-- [`ss up [PROJECT]`](#ss-up-project)
+## `ss build [SERVICE]`
 
-## `ss build [FILE]`
-
-describe the command here
+Builds a StringSync service.
 
 ```
 USAGE
-  $ ss build [FILE]
+  $ ss build [SERVICE]
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -h, --help     show CLI help
+  -t, --tag=tag  [default: latest]
 ```
 
 _See code: [src/commands/build.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/build.ts)_
@@ -103,8 +99,7 @@ USAGE
   $ ss exec PROJECT SERVICE CMD
 
 OPTIONS
-  -T, --psuedoTty
-  -h, --help       show CLI help
+  -h, --help  show CLI help
 ```
 
 _See code: [src/commands/exec.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/exec.ts)_
@@ -128,14 +123,15 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.1
 
 ## `ss install`
 
-Reinstalls node_modules throughout the project.
+Installs node_modules throughout the project.
 
 ```
 USAGE
   $ ss install
 
 OPTIONS
-  -h, --help  show CLI help
+  -d, --delete
+  -h, --help    show CLI help
 ```
 
 _See code: [src/commands/install.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/install.ts)_
@@ -149,8 +145,7 @@ USAGE
   $ ss lint
 
 OPTIONS
-  -h, --help           show CLI help
-  -s, --gitStagedOnly
+  -h, --help  show CLI help
 ```
 
 _See code: [src/commands/lint.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/lint.ts)_
@@ -178,12 +173,26 @@ USAGE
   $ ss pretty
 
 OPTIONS
-  -f, --fix
-  -h, --help           show CLI help
-  -s, --gitStagedOnly
+  -h, --help  show CLI help
 ```
 
 _See code: [src/commands/pretty.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/pretty.ts)_
+
+## `ss push [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ ss push [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/push.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/push.ts)_
 
 ## `ss sql CMD`
 
@@ -237,10 +246,8 @@ USAGE
   $ ss up [PROJECT]
 
 OPTIONS
-  -a, --attach
-  -h, --help    show CLI help
+  -h, --help  show CLI help
 ```
 
 _See code: [src/commands/up.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/up.ts)_
-
 <!-- commandsstop -->
