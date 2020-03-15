@@ -9,7 +9,7 @@ export const createGlobalCtx = (config: Config): Readonly<GlobalCtx> => {
   const logger = getLogger();
   const db = connectToDb(config, logger);
   const redis = connectToRedis(config);
-  const queues = createQueues(redis);
+  const queues = createQueues(config);
 
   return Object.freeze({
     config,
