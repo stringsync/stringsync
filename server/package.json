@@ -7,12 +7,14 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "NODE_ENV=production webpack",
-    "build:dev": "webpack",
+    "build": "tsc",
+    "premigrate": "yarn build",
+    "migrate": "sequelize db:migrate",
+    "preseed": "yarn migrate",
+    "seed": "sequelize db:seed:all",
+    "prestart": "yarn build",
     "start": "node ./dst/index.js",
-    "start:dev": "nodemon -V --watch ./dst/index.js",
-    "start:scripts:dev": "yarn tsc && sequelize db:migrate && sequelize db:seed:all && yarn tsc --watch",
-    "pretest": "yarn tsc && sequelize db:migrate",
+    "dev": "nodemon",
     "test": "jest"
   },
   "dependencies": {
@@ -53,10 +55,7 @@
     "sequelize-cli": "^5.5.1",
     "ts-jest": "^24.3.0",
     "ts-loader": "^6.0.4",
-    "typescript": "~3.4.3",
-    "webpack": "^4.39.2",
-    "webpack-cli": "^3.3.6",
-    "webpack-node-externals": "^1.7.2",
-    "webpack-shell-plugin": "^0.5.0"
+    "ts-node": "^8.6.2",
+    "typescript": "~3.4.3"
   }
 }

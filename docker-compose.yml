@@ -22,7 +22,6 @@ services:
       dockerfile: ./Dockerfile
     environment:
       ROLE: server
-      CSRF_SECRET: CSRF_SECRET
       NODE_ENV: development
       PORT: 3000
       WEB_URI: http://localhost:8080
@@ -38,9 +37,11 @@ services:
     links:
       - db
       - redis
+    depends_on:
+      - seeder
     ports:
       - '3000:3000'
-    command: ['yarn', 'build:dev']
+    command: ['yarn', 'dev']
 
   worker:
     container_name: worker
@@ -50,7 +51,6 @@ services:
       dockerfile: ./Dockerfile
     environment:
       ROLE: worker
-      CSRF_SECRET: CSRF_SECRET
       NODE_ENV: development
       PORT: 3001
       WEB_URI: http://localhost:8080
@@ -66,10 +66,12 @@ services:
     links:
       - db
       - redis
-    command: ['yarn', 'build:dev']
+    depends_on:
+      - seeder
+    command: ['yarn', 'dev']
 
-  scripts:
-    container_name: scripts
+  seeder:
+    container_name: seeder
     image: ss-server:latest
     environment:
       NODE_ENV: development
@@ -82,7 +84,7 @@ services:
       - ./server/src:/server/src
     links:
       - db
-    command: ['yarn', 'start:scripts:dev']
+    command: ['yarn', 'seed']
 
   web:
     container_name: web

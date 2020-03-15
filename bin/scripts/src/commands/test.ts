@@ -2,7 +2,6 @@ import { Command, flags } from '@oclif/command';
 import { PROJECT_ARG, ROOT_PATH } from '../util/constants';
 import { getTestCmdArgs } from '../util';
 import { spawn } from 'child_process';
-import { promisify } from 'util';
 
 export default class Test extends Command {
   static description = 'describe the command here';
