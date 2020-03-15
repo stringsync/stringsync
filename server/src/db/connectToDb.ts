@@ -8,7 +8,7 @@ import { Logger } from 'winston';
 export const connectToDb = (config: Config, logger: Logger) => {
   Sequelize.useCLS(TRANSACTION_NAMESPACE);
 
-  const opts: Options = {
+  const connection = new Sequelize({
     dialect: 'postgres',
     database: config.DB_NAME,
     username: config.DB_USERNAME,
@@ -16,15 +16,7 @@ export const connectToDb = (config: Config, logger: Logger) => {
     host: config.DB_HOST,
     port: parseInt(config.DB_PORT, 10),
     logging: (msg: string) => logger.debug(msg),
-  };
-
-  if (config.NODE_ENV === 'production') {
-    opts.dialectOptions = {
-      ssl: 'Amazon RDS',
-    };
-  }
-
-  const connection = new Sequelize(opts);
+  });
 
   defineModels(connection);
 
