@@ -35,3 +35,4 @@ services:
     links:
       - db
       - redis
+    command: ['yarn', 'test']

@@ -15,6 +15,7 @@
     "prestart": "yarn build",
     "start": "node ./dst/index.js",
     "dev": "nodemon",
+    "pretest": "yarn migrate",
     "test": "jest"
   },
   "dependencies": {
