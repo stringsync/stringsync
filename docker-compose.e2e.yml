@@ -34,7 +34,9 @@ services:
     links:
       - db
       - redis
-    command: ['yarn', 'build:dev']
+    depends_on:
+      - migrater
+    command: ['yarn', 'start']
 
   worker:
     image: ss-server:latest
@@ -58,12 +60,15 @@ services:
     links:
       - db
       - redis
-    command: ['yarn', 'build:dev']
+    depends_on:
+      - migrater
+    command: ['yarn', 'start']
 
-  scripts:
+  migrater:
+    container_name: migrater
     image: ss-server:latest
     environment:
-      NODE_ENV: test
+      NODE_ENV: development
       DB_NAME: stringsync
       DB_USERNAME: stringsync
       DB_PASSWORD: stringsync
@@ -73,7 +78,7 @@ services:
       - ./server/src:/server/src
     links:
       - db
-    command: ['yarn', 'start:scripts:dev']
+    command: ['yarn', 'migrate']
 
   web:
     image: ss-web:latest
@@ -103,4 +108,3 @@ services:
     links:
       - server
       - web
-      - scripts
