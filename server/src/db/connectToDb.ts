@@ -1,4 +1,4 @@
-import { Sequelize, Options } from 'sequelize';
+import { Sequelize } from 'sequelize';
 import { defineModels } from './models';
 import { Db } from './types';
 import { Config } from '../config';
