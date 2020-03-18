@@ -8,4 +8,7 @@ RUN yarn
 COPY .env .
 COPY config-overrides.js .
 COPY tsconfig.json .
+COPY public public/
 COPY src src/
+
+CMD ["yarn", "start"]

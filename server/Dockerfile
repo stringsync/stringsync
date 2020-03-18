@@ -11,3 +11,5 @@ COPY sequelize.config.js .
 COPY tsconfig.json .
 COPY nodemon.json .
 COPY src src/
+
+CMD ["yarn", "start"]
