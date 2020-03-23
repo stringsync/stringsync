@@ -21,11 +21,10 @@ export default class Common extends Command {
     this.parse(Common);
 
     for (const dstDir of DST_DIRS) {
-      rimraf(path.join(dstDir, 'common'), (err) => {
-        if (err) {
-          console.error(err);
-        }
-      });
+      rimraf.sync(path.join(dstDir, 'common'));
+    }
+
+    for (const dstDir of DST_DIRS) {
       spawn('cp', ['-R', SRC_DIR, dstDir], {
         cwd: ROOT_PATH,
         stdio: 'inherit',
