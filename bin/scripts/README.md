@@ -8,14 +8,16 @@ StringSync Scripts.
 [![License](https://img.shields.io/npm/l/scripts.svg)](https://github.com/jaredjj3/string-sync/blob/master/package.json)
 
 <!-- toc -->
-* [scripts](#scripts)
-* [Usage](#usage)
-* [Commands](#commands)
-<!-- tocstop -->
+
+- [scripts](#scripts)
+- [Usage](#usage)
+- [Commands](#commands)
+  <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
+
 ```sh-session
 $ npm install -g scripts
 $ ss COMMAND
@@ -27,25 +29,26 @@ USAGE
   $ ss COMMAND
 ...
 ```
+
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-* [`ss build [SERVICE]`](#ss-build-service)
-* [`ss db`](#ss-db)
-* [`ss down [PROJECT]`](#ss-down-project)
-* [`ss exec PROJECT SERVICE CMD`](#ss-exec-project-service-cmd)
-* [`ss help [COMMAND]`](#ss-help-command)
-* [`ss install`](#ss-install)
-* [`ss lint`](#ss-lint)
-* [`ss logs PROJECT [SERVICE]`](#ss-logs-project-service)
-* [`ss pretty`](#ss-pretty)
-* [`ss push [FILE]`](#ss-push-file)
-* [`ss sql CMD`](#ss-sql-cmd)
-* [`ss sync-common`](#ss-sync-common)
-* [`ss test PROJECT`](#ss-test-project)
-* [`ss up [PROJECT]`](#ss-up-project)
+
+- [`ss build [SERVICE]`](#ss-build-service)
+- [`ss db`](#ss-db)
+- [`ss down [PROJECT]`](#ss-down-project)
+- [`ss exec PROJECT SERVICE CMD`](#ss-exec-project-service-cmd)
+- [`ss help [COMMAND]`](#ss-help-command)
+- [`ss install`](#ss-install)
+- [`ss lint`](#ss-lint)
+- [`ss logs PROJECT [SERVICE]`](#ss-logs-project-service)
+- [`ss pretty`](#ss-pretty)
+- [`ss sql CMD`](#ss-sql-cmd)
+- [`ss sync-common`](#ss-sync-common)
+- [`ss test PROJECT`](#ss-test-project)
+- [`ss up [PROJECT]`](#ss-up-project)
 
 ## `ss build [SERVICE]`
 
@@ -176,22 +179,6 @@ OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src/commands/pretty.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/pretty.ts)_
-
-## `ss push [FILE]`
-
-describe the command here
-
-```
-USAGE
-  $ ss push [FILE]
-
-OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
-```
-
 _See code: [src/commands/push.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/push.ts)_
 
 ## `ss sql CMD`
@@ -250,4 +237,5 @@ OPTIONS
 ```
 
 _See code: [src/commands/up.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/up.ts)_
+
 <!-- commandsstop -->
