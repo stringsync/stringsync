@@ -46,7 +46,7 @@ USAGE
 - [`ss logs PROJECT [SERVICE]`](#ss-logs-project-service)
 - [`ss pretty`](#ss-pretty)
 - [`ss sql CMD`](#ss-sql-cmd)
-- [`ss sync-common`](#ss-sync-common)
+- [`ss common`](#ss-common)
 - [`ss test PROJECT`](#ss-test-project)
 - [`ss up [PROJECT]`](#ss-up-project)
 
@@ -196,19 +196,19 @@ OPTIONS
 
 _See code: [src/commands/sql.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/sql.ts)_
 
-## `ss sync-common`
+## `ss common`
 
 Copies the common dir to all the projects.
 
 ```
 USAGE
-  $ ss sync-common
+  $ ss common
 
 OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src/commands/sync-common.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/sync-common.ts)_
+_See code: [src/commands/common.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/common.ts)_
 
 ## `ss test PROJECT`
 

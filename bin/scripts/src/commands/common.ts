@@ -10,7 +10,7 @@ const DST_DIRS = [
   path.join(ROOT_PATH, 'web', 'src'),
 ];
 
-export default class SyncCommon extends Command {
+export default class Common extends Command {
   static description = 'Copies the common dir to all the projects.';
 
   static flags = {
@@ -18,7 +18,7 @@ export default class SyncCommon extends Command {
   };
 
   async run() {
-    this.parse(SyncCommon);
+    this.parse(Common);
 
     for (const dstDir of DST_DIRS) {
       rimraf(path.join(dstDir, 'common'), (err) => {
