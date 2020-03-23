@@ -2,11 +2,19 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: A stack for deploying StringSync in AWS.
 
 Resources:
-  Repo:
+  Repository:
     Type: AWS::CodeCommit::Repository
     Properties:
       RepositoryDescription: The code for StringSync's frontend and backend.
       RepositoryName: string-sync
+      Tags:
+        - Key: project
+          Value: string-sync
+
+  ArtifactStore:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: Private
       Tags:
         - Key: project
           Value: string-sync
