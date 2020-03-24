@@ -7,15 +7,9 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       AccessControl: Private
-      Tags:
-        - Key: project
-          Value: string-sync
 
   Repository:
     Type: AWS::CodeCommit::Repository
     Properties:
       RepositoryDescription: The code for StringSync's frontend and backend.
       RepositoryName: string-sync
-      Tags:
-        - Key: project
-          Value: string-sync
