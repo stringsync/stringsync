@@ -125,6 +125,16 @@ Resources:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/standard:1.0
+        EnvironmentVariables:
+          - Name: AWS_ACCOUNT_ID
+            Type: PLAINTEXT
+            Value: !Ref AWS::AccountId
+          - Name: IMAGE_REPO_NAME
+            Type: PLAINTEXT
+            Value: !Ref ServerImageRepository
+          - Name: IMAGE_TAG
+            Type: PLAINTEXT
+            Value: latest
       Source:
         Type: CODEPIPELINE
         BuildSpec: ./server/buildspec.yml
@@ -168,15 +178,4 @@ Resources:
               Configuration:
                 ProjectName: !Ref CodeBuildProject
                 PrimarySource: SourceOutput
-                Environment:
-                  EnvironmentVariables:
-                    - Name: AWS_ACCOUNT_ID
-                      Type: PLAINTEXT
-                      Value: !Ref AWS::AccountId
-                    - Name: IMAGE_REPO_NAME
-                      Type: PLAINTEXT
-                      Value: !Ref ServerImageRepository
-                    - Name: IMAGE_TAG
-                      Type: PLAINTEXT
-                      Value: latest
       RestartExecutionOnUpdate: false
