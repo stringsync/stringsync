@@ -75,7 +75,7 @@ Resources:
         detail-type:
           - "CodeCommit Repository State Change"
         resources:
-          - !GetAtt CodeCommit.Arn
+          - !GetAtt CodeCommitRepository.Arn
         detail:
           event:
             - referenceCreated
