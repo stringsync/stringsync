@@ -1,7 +1,6 @@
 import { MAIL } from './constants';
 import { Queue, QueueOptions } from 'bullmq';
 import { Queues } from './types';
-import { Redis } from 'ioredis';
 import { Config } from '../config';
 
 export const createQueues = (config: Config): Queues => {
