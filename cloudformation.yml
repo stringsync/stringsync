@@ -64,18 +64,7 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: codepipeline:StartPipelineExecution
-                Resource:
-                  !Join [
-                    "",
-                    [
-                      "arn:aws:codepipeline:",
-                      !Ref "AWS::Region",
-                      ":",
-                      !Ref "AWS::AccountId",
-                      ":",
-                      !Ref CodePipeline,
-                    ],
-                  ]
+                Resource: "*"
 
   CloudWatchEventRule:
     Type: AWS::Events::Rule
@@ -86,17 +75,7 @@ Resources:
         detail-type:
           - "CodeCommit Repository State Change"
         resources:
-          - !Join [
-              "",
-              [
-                "arn:aws:codecommit:",
-                !Ref "AWS::Region",
-                ":",
-                !Ref "AWS::AccountId",
-                ":",
-                !Ref CodeCommitRepository,
-              ],
-            ]
+          - !GetAtt CodeCommit.Arn
         detail:
           event:
             - referenceCreated
