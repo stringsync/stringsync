@@ -176,6 +176,8 @@ Resources:
     Properties:
       Name: !Ref AWS::StackName
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      Cache:
+        Type: LOCAL
       Artifacts:
         Type: CODEPIPELINE
       Environment:
