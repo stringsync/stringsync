@@ -178,6 +178,8 @@ Resources:
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Cache:
         Type: LOCAL
+        Modes:
+          - LOCAL_DOCKER_LAYER_CACHE
       Artifacts:
         Type: CODEPIPELINE
       Environment:
