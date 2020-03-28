@@ -41,6 +41,7 @@ Resources:
                   - "logs:*"
                   - "ec2:*"
                   - "s3:*"
+                  - "ecr:*"
                 Resource: "*"
 
   CodePipelineServiceRole:
