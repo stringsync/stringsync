@@ -2,7 +2,7 @@ import { createGlobalCtx } from './createGlobalCtx';
 import { getConfig } from '../config';
 import { cleanup } from '../testing';
 
-it.skip('runs without crashing', async () => {
+it('runs without crashing', async () => {
   const config = getConfig(process.env);
   expect(async () => {
     const { db, redis, queues } = createGlobalCtx(config);
