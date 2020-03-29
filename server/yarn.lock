@@ -605,9 +605,9 @@
     "@types/node" "*"
 
 "@types/node@*":
-  version "13.9.1"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.9.1.tgz#96f606f8cd67fb018847d9b61e93997dabdefc72"
-  integrity sha512-E6M6N0blf/jiZx8Q3nb0vNaswQeEyn0XlupO+xN6DtJ6r6IT4nXrTry7zhIfYvFCl3/8Cu6WIysmUBKiqV0bqQ==
+  version "13.9.5"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.9.5.tgz#59738bf30b31aea1faa2df7f4a5f55613750cf00"
+  integrity sha512-hkzMMD3xu6BrJpGVLeQ3htQQNAcOrJjX7WFmtK8zWQpz2UJf13LCFF2ALA7c9OVdvc2vQJeDdjfR35M0sBCxvw==
 
 "@types/node@^10.1.0":
   version "10.17.13"
@@ -1311,9 +1311,9 @@ buffer-writer@2.0.0:
   integrity sha512-a7ZpuTZU1TRtnwyCNW3I5dc0wWNC3VR9S++Ewyk2HHZdrO3CQJqSpd+95Us590V6AL7JqUAH2IwZ/398PmNFgw==
 
 bullmq@^1.6.7:
-  version "1.8.3"
-  resolved "https://registry.yarnpkg.com/bullmq/-/bullmq-1.8.3.tgz#efcde50fab3cdc0c941c5564e6c3cf807c4d1451"
-  integrity sha512-N8cVwHVV0p4jhlGZhbOtfoKutKbDvBYSnr7ajqEg3ViA84y3oUiC9j/kXnvJiKidSszheOReX97KOanAxIIvjw==
+  version "1.8.4"
+  resolved "https://registry.yarnpkg.com/bullmq/-/bullmq-1.8.4.tgz#a78ccd74f9b23bd936c85fe8b92de3550a8e619b"
+  integrity sha512-ra3cfH8OdaXLWroSvUxx7ajn2yyhlkdcH24G2AsHlc81y7rxGWgCc1gwoFEVAY1NahTdclsAli3jqK+Z8XbAAQ==
   dependencies:
     "@types/ioredis" "^4.0.13"
     cron-parser "^2.7.3"
@@ -2771,9 +2771,9 @@ ioredis@^4.14.1:
     standard-as-callback "^2.0.1"
 
 ioredis@^4.3.0:
-  version "4.16.0"
-  resolved "https://registry.yarnpkg.com/ioredis/-/ioredis-4.16.0.tgz#44d51288e20da14e5b6f687b2db0312e69106556"
-  integrity sha512-tlalhtuvnxXJNtrPjec1nGicuOCpi9ErYV/fRfwaWSzktX9ESrzHlcFwj1pVAL326E8dmt7h9pPQZyyVPPksRA==
+  version "4.16.1"
+  resolved "https://registry.yarnpkg.com/ioredis/-/ioredis-4.16.1.tgz#377c21d2a4fa8cc31fe9028c666f8dd16a6255bf"
+  integrity sha512-g76Mm9dE7BLuewncu1MimGZw5gDDjDwjoRony/VoSxSJEKAhuYncDEwYKYjtHi2NWsTNIB6XXRjE64uVa/wpKQ==
   dependencies:
     cluster-key-slot "^1.1.0"
     debug "^4.1.1"
