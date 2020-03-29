@@ -16,6 +16,7 @@ export const getTestCmdArgs = (project: Project, watch: boolean): string[] => {
         'server',
         'yarn',
         'test',
+        '--testPathPattern=src/config',
         `--watchAll=${watch}`,
       ];
     case 'web':
