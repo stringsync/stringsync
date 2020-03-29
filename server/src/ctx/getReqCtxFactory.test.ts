@@ -13,7 +13,7 @@ const USER = FIXTURES.User.student1;
 const USER_SESSION = FIXTURES.UserSession.student1Session;
 const USER_SESSION_TOKEN = USER_SESSION.token;
 
-it.skip(
+it(
   'sets cookies',
   useTestGlobalCtx({}, async (globalCtx) => {
     const cookies = {
@@ -35,7 +35,7 @@ it.skip(
   })
 );
 
-it.skip(
+it(
   'can override requestedAt',
   useTestGlobalCtx({}, async (globalCtx) => {
     const now = new Date();
@@ -48,7 +48,7 @@ it.skip(
   })
 );
 
-it.skip('uses the global db connection', async () => {
+it('uses the global db connection', async () => {
   const expressContext = getMockExpressContext({});
   const config = getConfig(process.env);
   const globalCtx = createGlobalCtx(config);
@@ -58,7 +58,7 @@ it.skip('uses the global db connection', async () => {
   expect(reqCtx.db).toBe(globalCtx.db);
 });
 
-it.skip(
+it(
   'creates the auth object when logged in',
   useTestGlobalCtx(
     { fixtures: { User: [USER], UserSession: [USER_SESSION] } },
@@ -86,7 +86,7 @@ it.skip(
   )
 );
 
-it.skip(
+it(
   'creates the auth object when not logged in',
   useTestGlobalCtx({}, async (globalCtx) => {
     const expressContext = getMockExpressContext({});

@@ -1,11 +1,7 @@
 import { Project } from './types';
 import { getDockerComposeFile } from './getDockerComposeFile';
 
-export const getTestCmdArgs = (
-  project: Project,
-  dir: string,
-  watch: boolean
-): string[] => {
+export const getTestCmdArgs = (project: Project, watch: boolean): string[] => {
   switch (project) {
     case 'server':
       return [
@@ -20,7 +16,7 @@ export const getTestCmdArgs = (
         'server',
         'yarn',
         'test',
-        `--testPathPattern=src/${dir}`,
+        '--forceExit',
         `--watchAll=${watch}`,
       ];
     case 'web':
