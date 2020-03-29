@@ -10,6 +10,7 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+      - ./bin/ss down server
   build:
     commands:
       - echo Build started on `date`
