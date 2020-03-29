@@ -20,8 +20,6 @@ phases:
       # - ./bin/ss test server -d ctx
       # - echo checking jobs
       # - ./bin/ss test server -d jobs
-      - echo checking mail
-      - ./bin/ss test server -d mail
       - echo checking password
       - ./bin/ss test server -d password
       - echo checking redis
