@@ -8,7 +8,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - (cd scripts && yarn install)
+      - (cd ./bin/scripts && yarn install)
       - ./bin/ss test server
       - ./bin/ss test web
       - docker tag ss-server $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
@@ -20,4 +20,4 @@ phases:
 
 cache:
   paths:
-    - ./scripts/node_modules/**/*
+    - ./bin/scripts/node_modules/**/*
