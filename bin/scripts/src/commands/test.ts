@@ -1,7 +1,7 @@
 import { Command, flags } from '@oclif/command';
 import { PROJECT_ARG, ROOT_PATH } from '../util/constants';
 import { getTestCmdArgs } from '../util';
-import { spawn } from 'child_process';
+import { execSync } from 'child_process';
 
 export default class Test extends Command {
   static description = 'describe the command here';
@@ -15,23 +15,31 @@ export default class Test extends Command {
   async run() {
     const { args, flags } = this.parse(Test);
 
-    spawn('./bin/ss', ['build', args.project], {
+    execSync(['./bin/ss', 'build', args.project].join(' '), {
       cwd: ROOT_PATH,
       stdio: 'inherit',
-    }).on('exit', () => {
-      spawn('docker-compose', getTestCmdArgs(args.project, flags.watch), {
-        cwd: ROOT_PATH,
-        stdio: 'inherit',
-      }).on('exit', (code) => {
-        spawn('./bin/ss', ['down', args.project], {
+    });
+
+    let exit = 0;
+    try {
+      execSync(
+        ['docker-compose', ...getTestCmdArgs(args.project, flags.watch)].join(
+          ' '
+        ),
+        {
           cwd: ROOT_PATH,
           stdio: 'inherit',
-        }).on('exit', () => {
-          if (typeof code === 'number' && code !== 0) {
-            this.exit(code);
-          }
-        });
-      });
+        }
+      );
+    } catch (e) {
+      exit = 1;
+    }
+
+    execSync(['./bin/ss', 'down', args.project].join(' '), {
+      cwd: ROOT_PATH,
+      stdio: 'inherit',
     });
+
+    this.exit(exit);
   }
 }
