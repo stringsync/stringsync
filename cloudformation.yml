@@ -194,12 +194,8 @@ Resources:
           - Name: IMAGE_REPO_NAME
             Type: PLAINTEXT
             Value: !Ref ServerImageRepository
-          - Name: IMAGE_TAG
-            Type: PLAINTEXT
-            Value: latest
       Source:
         Type: CODEPIPELINE
-        BuildSpec: ./server/buildspec.yml
 
   CodePipeline:
     Type: AWS::CodePipeline::Pipeline
