@@ -20,6 +20,7 @@ it('succeeds when all variables are specified', () => {
 });
 
 it('fails when missing a variable', () => {
+  fail();
   expect(() => getConfig({})).toThrow();
 });
 
