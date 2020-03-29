@@ -8,9 +8,10 @@ phases:
   build:
     commands:
       - echo Build started on `date`
+      - which yarn
       - ./bin/ss test server
       - ./bin/ss test web
-      - docker tag ss-server:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
+      - docker tag ss-server $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
   post_build:
     commands:
       - echo Build completed on `date`
