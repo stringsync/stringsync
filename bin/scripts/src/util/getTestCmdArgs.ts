@@ -16,6 +16,7 @@ export const getTestCmdArgs = (project: Project, watch: boolean): string[] => {
         'server',
         'yarn',
         'test',
+        '--detectOpenHandles',
         `--watchAll=${watch}`,
       ];
     case 'web':
