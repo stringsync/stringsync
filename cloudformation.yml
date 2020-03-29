@@ -180,6 +180,7 @@ Resources:
         Type: LOCAL
         Modes:
           - LOCAL_DOCKER_LAYER_CACHE
+          - LOCAL_CUSTOM_CACHE
       Artifacts:
         Type: CODEPIPELINE
       Environment:
