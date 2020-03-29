@@ -15,11 +15,6 @@ export default class Test extends Command {
   async run() {
     const { args, flags } = this.parse(Test);
 
-    execSync(['./bin/ss', 'down', args.project].join(' '), {
-      cwd: ROOT_PATH,
-      stdio: 'inherit',
-    });
-
     execSync(['./bin/ss', 'build', args.project].join(' '), {
       cwd: ROOT_PATH,
       stdio: 'inherit',
