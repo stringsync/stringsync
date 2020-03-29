@@ -22,10 +22,8 @@ phases:
       # - ./bin/ss test server -d jobs
       # - echo checking redis
       # - ./bin/ss test server -d redis
-      - echo checking resolvers
-      - ./bin/ss test server -d resolvers
-      - echo checking server
-      - ./bin/ss test server -d server
+      # - echo checking server
+      # - ./bin/ss test server -d server
       - echo checking user-session
       - ./bin/ss test server -d user-session
       - echo checking util
