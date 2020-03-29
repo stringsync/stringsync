@@ -37,4 +37,4 @@ phases:
 
 cache:
   paths:
-    - ./bin/scripts/node_modules/**/*
+    - "./bin/scripts/node_modules/**/*"
