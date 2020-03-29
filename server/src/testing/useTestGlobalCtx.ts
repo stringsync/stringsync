@@ -4,6 +4,7 @@ import { createGlobalCtx } from '../ctx';
 import { transaction } from '../db';
 import { createFixtures } from './createFixtures';
 import { ForcedRollback } from './ForcedRollback';
+import { cleanup } from './cleanup';
 
 /**
  * The canonical way of accessing the global ctx in a test environment.
@@ -25,12 +26,7 @@ export const useTestGlobalCtx = <A extends any[]>(
       throw new ForcedRollback();
     });
   } catch (e) {
-    // cleanup services
-    await db.close();
-    await Promise.all(Object.values(queues).map((queue) => queue.close()));
-    await redis.flushall();
-    await redis.quit();
-
+    cleanup({ db, redis, queues });
     if (!(e instanceof ForcedRollback)) throw e;
   }
 };

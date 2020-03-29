@@ -16,18 +16,14 @@ phases:
       - echo Build started on `date`
       - docker build -t ss-server ./server
       - docker tag ss-server $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
-      # - echo checking ctx
-      # - ./bin/ss test server -d ctx
+      - echo checking ctx
+      - ./bin/ss test server -d ctx
       # - echo checking jobs
       # - ./bin/ss test server -d jobs
       # - echo checking redis
       # - ./bin/ss test server -d redis
       # - echo checking server
       # - ./bin/ss test server -d server
-      - echo checking user-session
-      - ./bin/ss test server -d user-session
-      - echo checking util
-      - ./bin/ss test server -d util
 
   post_build:
     commands:

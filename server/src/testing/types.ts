@@ -9,6 +9,8 @@ import {
 import { Request, Response } from 'express';
 import { ReqCtx, GlobalCtx } from '../ctx';
 import { Config } from '../config';
+import { Queues } from '../jobs';
+import { Redis } from 'ioredis';
 
 export interface MockExpressContext {
   req: MockRequest<Request>;
@@ -52,4 +54,10 @@ export interface ReqCtxPatch extends GlobalCtxPatch {
   requestedAt?: Date;
   cookies?: Cookies;
   headers?: object;
+}
+
+export interface CleanupServices {
+  db?: Db;
+  queues?: Queues;
+  redis?: Redis;
 }
