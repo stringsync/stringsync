@@ -11,18 +11,26 @@ phases:
       - echo Logging in to Amazon ECR...
       - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
       - ./bin/ss down server
+
   build:
     commands:
-      - echo Build started on `date`
+      - echo Building images...
       - ./bin/ss build server
-      - docker tag ss-server $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
+      - ./bin/ss build web
+      - echo Testing images...
       - ./bin/ss test server
+      - ./bin/ss test web
 
   post_build:
     commands:
-      - echo Build completed on `date`
-      - echo Pushing the Docker image...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
+      - |
+        if [$CODEBUILD_BUILD_SUCCEEDING -eq 1 ]; then
+          echo Pushing server images...
+          docker tag ss-server $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
+          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
+        else
+          echo Build failed, skipping post_build step
+        fi
 
 cache:
   paths:
