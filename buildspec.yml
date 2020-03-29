@@ -26,7 +26,8 @@ phases:
   post_build:
     commands:
       - |
-        if [$CODEBUILD_BUILD_SUCCEEDING -eq 1 ]; then
+        if [ "$CODEBUILD_BUILD_SUCCEEDING" -eq 1 ]
+        then
           echo Pushing server images...
           docker tag ss-server $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
