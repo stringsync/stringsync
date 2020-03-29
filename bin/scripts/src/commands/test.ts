@@ -8,6 +8,7 @@ export default class Test extends Command {
 
   static flags = {
     watch: flags.boolean({ char: 'w', default: false }),
+    dir: flags.string({ char: 'd', default: '' }),
   };
 
   static args = [{ ...PROJECT_ARG, required: true }];
@@ -23,9 +24,10 @@ export default class Test extends Command {
     let exit = 0;
     try {
       execSync(
-        ['docker-compose', ...getTestCmdArgs(args.project, flags.watch)].join(
-          ' '
-        ),
+        [
+          'docker-compose',
+          ...getTestCmdArgs(args.project, flags.dir, flags.watch),
+        ].join(' '),
         {
           cwd: ROOT_PATH,
           stdio: 'inherit',
