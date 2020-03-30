@@ -16,9 +16,6 @@ phases:
 
   build:
     commands:
-      - echo $CODEBUILD_SRC_DIR
-      - pwd
-      - ls
       - echo Building images...
       - ./bin/ss build server
       - ./bin/ss build web
@@ -40,4 +37,4 @@ phases:
 
 cache:
   paths:
-    - "./bin/scripts/node_modules/**/*"
+    - bin/scripts/node_modules/**/*
