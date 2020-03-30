@@ -16,6 +16,9 @@ phases:
 
   build:
     commands:
+      - echo $CODEBUILD_SRC_DIR
+      - pwd
+      - ls
       - echo Building images...
       - ./bin/ss build server
       - ./bin/ss build web
