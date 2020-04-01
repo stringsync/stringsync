@@ -1,6 +1,26 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: A stack for deploying StringSync in AWS
 
+Mappings:
+  # Hard values for the subnet masks. These masks define
+  # the range of internal IP addresses that can be assigned.
+  # The VPC can have all IP's from 10.0.0.0 to 10.0.255.255
+  # There are two subnets which cover the ranges:
+  #
+  # 10.0.0.0 - 10.0.0.255
+  # 10.0.1.0 - 10.0.1.255
+  #
+  # If you need more IP addresses (perhaps you have so many
+  # instances that you run out) then you can customize these
+  # ranges to add more
+  SubnetConfig:
+    VPC:
+      CIDR: "10.0.0.0/16"
+    PublicOne:
+      CIDR: "10.0.0.0/24"
+    PublicTwo:
+      CIDR: "10.0.1.0/24"
+
 Parameters:
   BranchName:
     Description: CodeCommit repository branch name
