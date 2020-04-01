@@ -278,3 +278,14 @@ Resources:
                 ProjectName: !Ref CodeBuildProject
                 PrimarySource: SourceOutput
       RestartExecutionOnUpdate: false
+
+  # VPC in which containers will be networked.
+  # It has two public subnets
+  # We distribute the subnets across the first two available subnets
+  # for the region, for high availability.
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      CidrBlock: !FindInMap ["SubnetConfig", "VPC", "CIDR"]
