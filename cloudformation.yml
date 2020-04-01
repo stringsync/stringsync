@@ -16,9 +16,9 @@ Mappings:
   SubnetConfig:
     VPC:
       CIDR: "10.0.0.0/16"
-    PublicOne:
+    Public1:
       CIDR: "10.0.0.0/24"
-    PublicTwo:
+    Public2:
       CIDR: "10.0.1.0/24"
 
 Parameters:
@@ -289,3 +289,20 @@ Resources:
       EnableDnsSupport: true
       EnableDnsHostnames: true
       CidrBlock: !FindInMap ["SubnetConfig", "VPC", "CIDR"]
+
+  # Two public subnets, where containers can have public IP addresses
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select [0, !GetAZs { Ref: "AWS::Region" }]
+      VpcId: !Ref "VPC"
+      CidrBlock: !FindInMap ["SubnetConfig", "Public1", "CIDR"]
+      MapPublicIpOnLaunch: true
+
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select [1, Fn::GetAZs: { Ref: "AWS::Region" }]
+      VpcId: !Ref "VPC"
+      CidrBlock: !FindInMap ["SubnetConfig", "Public2", "CIDR"]
+      MapPublicIpOnLaunch: true
