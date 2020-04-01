@@ -20,6 +20,10 @@ Mappings:
       CIDR: "10.0.0.0/24"
     Public2:
       CIDR: "10.0.1.0/24"
+    Private1:
+      CIDR: "10.0.2.0/24"
+    Private2:
+      CIDR: "10.0.3.0/24"
 
 Parameters:
   BranchName:
@@ -311,6 +315,28 @@ Resources:
       VpcId: !Ref "VPC"
       CidrBlock: !FindInMap ["SubnetConfig", "Public2", "CIDR"]
       MapPublicIpOnLaunch: true
+
+  # Two private subnets where containers will only have private
+  # IP addresses, and will only be reachable by other members of the
+  # VPC
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: { Ref: "AWS::Region" }
+      VpcId: !Ref "VPC"
+      CidrBlock: !FindInMap ["SubnetConfig", "Private1", "CIDR"]
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: { Ref: "AWS::Region" }
+      VpcId: !Ref "VPC"
+      CidrBlock: !FindInMap ["SubnetConfig", "Private2", "CIDR"]
 
   # Setup networking resources for the public subnets. Containers
   # in the public subnets have public IP addresses and the routing table
