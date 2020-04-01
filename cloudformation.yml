@@ -294,15 +294,20 @@ Resources:
   PublicSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: !Select [0, !GetAZs { Ref: "AWS::Region" }]
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: { Ref: "AWS::Region" }
       VpcId: !Ref "VPC"
       CidrBlock: !FindInMap ["SubnetConfig", "Public1", "CIDR"]
       MapPublicIpOnLaunch: true
-
   PublicSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: !Select [1, Fn::GetAZs: { Ref: "AWS::Region" }]
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: { Ref: "AWS::Region" }
       VpcId: !Ref "VPC"
       CidrBlock: !FindInMap ["SubnetConfig", "Public2", "CIDR"]
       MapPublicIpOnLaunch: true
