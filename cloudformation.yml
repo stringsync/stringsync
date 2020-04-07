@@ -568,3 +568,102 @@ Resources:
       LoadBalancerArn: !Ref "PrivateLoadBalancer"
       Port: 80
       Protocol: HTTP
+
+  # This is an IAM role which authorizes ECS to manage resources on your
+  # account on your behalf, such as updating your load balancer with the
+  # details of where your containers are, so that traffic can reach your
+  # containers.
+  ECSRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: [ecs.amazonaws.com]
+            Action: ["sts:AssumeRole"]
+      Path: /
+      Policies:
+        - PolicyName: ecs-service
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  # Rules which allow ECS to attach network interfaces to instances
+                  # on your behalf in order for awsvpc networking mode to work right
+                  - "ec2:AttachNetworkInterface"
+                  - "ec2:CreateNetworkInterface"
+                  - "ec2:CreateNetworkInterfacePermission"
+                  - "ec2:DeleteNetworkInterface"
+                  - "ec2:DeleteNetworkInterfacePermission"
+                  - "ec2:Describe*"
+                  - "ec2:DetachNetworkInterface"
+
+                  # Rules which allow ECS to update load balancers on your behalf
+                  # with the information sabout how to send traffic to your containers
+                  - "elasticloadbalancing:DeregisterInstancesFromLoadBalancer"
+                  - "elasticloadbalancing:DeregisterTargets"
+                  - "elasticloadbalancing:Describe*"
+                  - "elasticloadbalancing:RegisterInstancesWithLoadBalancer"
+                  - "elasticloadbalancing:RegisterTargets"
+                Resource: "*"
+
+  # This is a role which is used by the ECS tasks themselves.
+  ECSTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: [ecs-tasks.amazonaws.com]
+            Action: ["sts:AssumeRole"]
+      Path: /
+      Policies:
+        - PolicyName: AmazonECSTaskExecutionRolePolicy
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  # Allow the ECS Tasks to download images from ECR
+                  - "ecr:GetAuthorizationToken"
+                  - "ecr:BatchCheckLayerAvailability"
+                  - "ecr:GetDownloadUrlForLayer"
+                  - "ecr:BatchGetImage"
+
+                  # Allow the ECS tasks to upload logs to CloudWatch
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: "*"
+
+  ElasticacheSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Access to the Elasticache service.
+      VpcId: !Ref "VPC"
+  ElasticacheSecurityGroupIngressFromFargate:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Ingress from Fargate Containers
+      GroupId: !Ref "ElasticacheSecurityGroup"
+      IpProtocol: -1
+      SourceSecurityGroupId: !Ref "FargateContainerSecurityGroup"
+  ElasticacheSubnetGroup:
+    Type: "AWS::ElastiCache::SubnetGroup"
+    Properties:
+      Description: Cache Subnet Group
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+  ElasticacheCluster:
+    Type: AWS::ElastiCache::CacheCluster
+    Properties:
+      Engine: redis
+      EngineVersion: "5.0.0"
+      CacheNodeType: cache.t2.micro
+      NumCacheNodes: 1
+      CacheSubnetGroupName: !Ref ElasticacheSubnetGroup
+      VpcSecurityGroupIds:
+        - !GetAtt
+          - ElasticacheSecurityGroup
+          - GroupId
