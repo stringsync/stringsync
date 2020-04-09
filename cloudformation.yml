@@ -33,6 +33,7 @@ Parameters:
 
 Resources:
   CodePipelineArtifactStore:
+    DeletionPolicy: Delete
     Type: AWS::S3::Bucket
 
   CodeCommitRepository:
@@ -42,6 +43,7 @@ Resources:
 
   ServerImageRepository:
     Type: AWS::ECR::Repository
+    DeletionPolicy: Delete
     Properties:
       LifecyclePolicy:
         LifecyclePolicyText: |
