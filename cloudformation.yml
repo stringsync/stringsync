@@ -6,9 +6,7 @@ Parameters:
     Description: CodeCommit repository branch name
     Type: String
     Default: master
-
   DBName:
-    Default: MyDatabase
     Description: The database name
     Type: String
     MinLength: "1"
@@ -17,7 +15,7 @@ Parameters:
     ConstraintDescription:
       must begin with a letter and contain only alphanumeric
       characters.
-  DBUserName:
+  DBUsername:
     NoEcho: true
     Description: The database admin account username
     Type: String
@@ -36,16 +34,16 @@ Parameters:
     AllowedPattern: "[a-zA-Z0-9]+"
     ConstraintDescription: must contain only alphanumeric characters.
   DBAllocatedStorage:
-    Default: "5"
+    Default: "20"
     Description: The size of the database (Gb)
     Type: Number
-    MinValue: "5"
+    MinValue: "20"
     MaxValue: "1024"
     ConstraintDescription: must be between 5 and 1024Gb.
   DBInstanceClass:
     Description: The database instance type
     Type: String
-    Default: db.t2.small
+    Default: db.t2.micro
     AllowedValues:
       - db.t1.micro
       - db.m1.small
@@ -741,3 +739,26 @@ Resources:
         - !GetAtt
           - ElasticacheSecurityGroup
           - GroupId
+
+  MasterDBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: DB subnet group for the master DB
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+  MasterDB:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Snapshot
+    Properties:
+      DBName: !Ref "DBName"
+      AllocatedStorage: !Ref "DBAllocatedStorage"
+      DBInstanceClass: !Ref "DBInstanceClass"
+      Engine: postgres
+      EngineVersion: "11.6"
+      MasterUsername: !Ref "DBUsername"
+      MasterUserPassword: !Ref "DBPassword"
+      MultiAZ: false
+      DBSubnetGroupName: !Ref MasterDBSubnetGroup
+      VPCSecurityGroups:
+        - !Ref PrivateLoadBalancerSG
