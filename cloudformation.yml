@@ -76,6 +76,18 @@ Parameters:
       - db.t2.medium
       - db.t2.large
     ConstraintDescription: must select a valid database instance type.
+  ServerCpu:
+    Type: Number
+    Default: 256
+    Description: How much CPU to give the container. 1024 is 1 CPU.
+  ServerMemory:
+    Type: Number
+    Default: 512
+    Description: How much memory in megabytes to give the container.
+  ServerPort:
+    Type: Number
+    Default: 80
+    Description: What port number the application inside the docker container is binding to
 
 Mappings:
   # Hard values for the subnet masks. These masks define
@@ -762,3 +774,60 @@ Resources:
       DBSubnetGroupName: !Ref MasterDBSubnetGroup
       VPCSecurityGroups:
         - !Ref PrivateLoadBalancerSG
+
+  # This is a role which is used by the ECS tasks themselves.
+  ECSTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: [ecs-tasks.amazonaws.com]
+          Action: ['sts:AssumeRole']
+      Path: /
+      Policies:
+        - PolicyName: AmazonECSTaskExecutionRolePolicy
+          PolicyDocument:
+            Statement:
+            - Effect: Allow
+              Action:
+                # Allow the ECS Tasks to download images from ECR
+                - 'ecr:GetAuthorizationToken'
+                - 'ecr:BatchCheckLayerAvailability'
+                - 'ecr:GetDownloadUrlForLayer'
+                - 'ecr:BatchGetImage'
+
+                # Allow the ECS tasks to upload logs to CloudWatch
+                - 'logs:CreateLogStream'
+                - 'logs:PutLogEvents'
+              Resource: '*'
+
+  # The task definition. This is a simple metadata description of what
+  # container to run, and what resource requirements it has.
+  ServerTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Cpu: !Ref "ServerCpu"
+      Memory: !Ref "ServerMemory"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      ExecutionRoleArn: !Ref "ECSTaskExecutionRole"
+      ContainerDefinitions:
+        - Name: server  
+          Cpu: !Ref "ServerCpu"
+          Memory: !Ref "ServerMemory"
+          PortMappings:
+            - ContainerPort: !Ref "ServerPort"
+          Image: 
+            !Join [
+              "",
+              [
+                !Ref "AWS::AccountId",
+                ".dkr.ecr.",
+                !Ref "AWS::Region",
+                ".amazonaws.com/",
+                !Ref "ServerImageRepository"
+              ]
+            ]
