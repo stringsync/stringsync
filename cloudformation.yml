@@ -86,7 +86,7 @@ Parameters:
     Description: How much memory in megabytes to give the container.
   ServerPort:
     Type: Number
-    Default: 80
+    Default: 3000
     Description: What port number the application inside the docker container is binding to
 
 Mappings:
@@ -831,3 +831,6 @@ Resources:
                 !Ref "ServerImageRepository"
               ]
             ]
+
+  ServerCluster:
+    Type: AWS::ECS::Cluster
