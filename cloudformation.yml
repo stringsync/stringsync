@@ -876,13 +876,14 @@ Resources:
   ServerTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      HealthCheckIntervalSeconds: 6
+      Name: server
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPort: !Ref ServerPort
       HealthCheckPath: /
       HealthCheckProtocol: HTTP
-      HealthCheckTimeoutSeconds: 5
+      HealthCheckTimeoutSeconds: 10
       HealthyThresholdCount: 2
       TargetType: ip
-      Name: server
       Port: !Ref 'ServerPort'
       Protocol: HTTP
       UnhealthyThresholdCount: 2
