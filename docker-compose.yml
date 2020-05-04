@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 
 services:
   db:
@@ -40,8 +40,8 @@ services:
     depends_on:
       - seeder
     ports:
-      - '3000:3000'
-    command: ['yarn', 'dev']
+      - "3000:3000"
+    command: ["yarn", "dev"]
 
   worker:
     container_name: worker
@@ -68,7 +68,7 @@ services:
       - redis
     depends_on:
       - seeder
-    command: ['yarn', 'dev']
+    command: ["yarn", "dev"]
 
   seeder:
     container_name: seeder
@@ -84,7 +84,7 @@ services:
       - ./server/src:/server/src
     links:
       - db
-    command: ['yarn', 'seed']
+    command: ["yarn", "seed"]
 
   web:
     container_name: web
@@ -94,12 +94,12 @@ services:
       dockerfile: ./Dockerfile
     environment:
       NODE_ENV: development
-      REACT_APP_SERVER_URI: 'http://localhost:3000/graphql'
+      REACT_APP_SERVER_URI: "http://localhost:3000/graphql"
     volumes:
       - ./web/src:/web/src
       - ./web/public:/web/public
     ports:
-      - '8080:8080'
+      - "8080:8080"
     links:
       - server
-    command: ['yarn', 'start']
+    command: ["yarn", "start"]
