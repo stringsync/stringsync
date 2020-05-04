@@ -3,6 +3,15 @@ import { createGlobalCtx } from './ctx';
 import { getServer } from './server';
 import { getConfig, Config } from './config';
 import { createWorkers } from './jobs';
+import express from 'express';
+
+const dummy = async (config: Config): Promise<void> => {
+  const app = express();
+  app.get('/', (req, res) => res.send('Hello World!'));
+  app.listen(config.PORT, () => {
+    console.log(`App running at http://localhost:${config.PORT}`);
+  });
+};
 
 const server = async (config: Config): Promise<void> => {
   const ctx = createGlobalCtx(config);
@@ -25,6 +34,9 @@ if (require.main === module) {
       break;
     case 'worker':
       worker(config);
+      break;
+    case 'dummy':
+      dummy(config);
       break;
     default:
       throw new TypeError(`config.ROLE not supported: ${config.ROLE}`);
