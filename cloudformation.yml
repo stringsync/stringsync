@@ -827,6 +827,29 @@ Resources:
                 !Ref "ServerImageRepository"
               ]
             ]
+          Environment:
+            - Name: NODE_ENV
+              Value: production
+            - Name: PORT
+              Value: !Ref ServerPort
+            - Name: WEB_URI
+              Value: WEB_URI
+            - Name: DB_NAME
+              Value: !Ref DBName
+            - Name: DB_USERNAME
+              Value: !Ref DBUsername
+            - Name: DB_PASSWORD
+              Value: !Ref DBPassword
+            - Name: DB_HOST
+              Value: 'DB_HOST'
+            - Name: DB_PORT
+              Value: '5432'
+            - Name: REDIS_HOST
+              Value: REDIS_HOST
+            - Name: REDIS_PORT
+              Value: '6379'
+            - Name: ROLE
+              Value: dummy
 
   ServerCluster:
     Type: AWS::ECS::Cluster
