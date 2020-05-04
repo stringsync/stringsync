@@ -572,7 +572,6 @@ Resources:
   DummyTargetGroupPublic:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      HealthCheckEnabled: false
       HealthCheckIntervalSeconds: 6
       HealthCheckPath: /
       HealthCheckProtocol: HTTP
@@ -628,7 +627,6 @@ Resources:
   DummyTargetGroupPrivate:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      HealthCheckEnabled: false
       HealthCheckIntervalSeconds: 6
       HealthCheckPath: /
       HealthCheckProtocol: HTTP
