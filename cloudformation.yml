@@ -877,7 +877,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       Name: server
-      HealthCheckIntervalSeconds: 10
+      HealthCheckIntervalSeconds: 20
       HealthCheckPort: !Ref ServerPort
       HealthCheckPath: /
       HealthCheckProtocol: HTTP
