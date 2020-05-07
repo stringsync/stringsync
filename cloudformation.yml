@@ -914,3 +914,4 @@ Resources:
         - ContainerName: server
           ContainerPort: !Ref 'ServerPort'
           TargetGroupArn: !Ref 'ServerTargetGroup'
+# Force ECR to build
