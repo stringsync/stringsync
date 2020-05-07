@@ -744,9 +744,7 @@ Resources:
       NumCacheNodes: 1
       CacheSubnetGroupName: !Ref ElasticacheSubnetGroup
       VpcSecurityGroupIds:
-        - !GetAtt
-          - ElasticacheSecurityGroup
-          - GroupId
+        - !GetAtt ElasticacheSecurityGroup.GroupId
 
   MasterDBSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
@@ -841,13 +839,13 @@ Resources:
             - Name: DB_PASSWORD
               Value: !Ref DBPassword
             - Name: DB_HOST
-              Value: 'DB_HOST'
+              Value: !GetAtt MasterDB.Address
             - Name: DB_PORT
-              Value: '5432'
+              Value: Value: !GetAtt MasterDB.Port
             - Name: REDIS_HOST
-              Value: REDIS_HOST
+              Value: !GetAtt ElasticacheCluster.Address
             - Name: REDIS_PORT
-              Value: '6379'
+              Value: !GetAtt ElasticacheCluster.Port
             - Name: ROLE
               Value: dummy
 
