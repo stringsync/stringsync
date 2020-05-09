@@ -890,28 +890,27 @@ Resources:
   # The service. The service is a resource which allows you to run multiple
   # copies of a type of task, and gather up their logs and metrics, as well
   # as monitor the number of running tasks and replace any that have crashed
-  ServerService:
-    Type: AWS::ECS::Service
-    DependsOn: LoadBalancerRule
-    Properties:
-      ServiceName: server
-      Cluster: !Ref ServerCluster
-      LaunchType: FARGATE
-      DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 75
-      DesiredCount: 2
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          AssignPublicIp: ENABLED
-          SecurityGroups:
-            - !Ref 'FargateContainerSecurityGroup'
-          Subnets:
-            - !Ref PublicSubnet1
-            - !Ref PublicSubnet2
-      TaskDefinition: !Ref 'ServerTaskDefinition'
-      LoadBalancers:
-        - ContainerName: server
-          ContainerPort: !Ref 'ServerPort'
-          TargetGroupArn: !Ref 'ServerTargetGroup'
-# Force ECR to build
+  # ServerService:
+  #   Type: AWS::ECS::Service
+  #   DependsOn: LoadBalancerRule
+  #   Properties:
+  #     ServiceName: server
+  #     Cluster: !Ref ServerCluster
+  #     LaunchType: FARGATE
+  #     DeploymentConfiguration:
+  #       MaximumPercent: 200
+  #       MinimumHealthyPercent: 75
+  #     DesiredCount: 2
+  #     NetworkConfiguration:
+  #       AwsvpcConfiguration:
+  #         AssignPublicIp: ENABLED
+  #         SecurityGroups:
+  #           - !Ref 'FargateContainerSecurityGroup'
+  #         Subnets:
+  #           - !Ref PublicSubnet1
+  #           - !Ref PublicSubnet2
+  #     TaskDefinition: !Ref 'ServerTaskDefinition'
+  #     LoadBalancers:
+  #       - ContainerName: server
+  #         ContainerPort: !Ref 'ServerPort'
+  #         TargetGroupArn: !Ref 'ServerTargetGroup'
