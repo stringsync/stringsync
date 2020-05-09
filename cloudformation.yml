@@ -809,7 +809,9 @@ Resources:
         - FARGATE
       ExecutionRoleArn: !Ref "ECSTaskExecutionRole"
       ContainerDefinitions:
-        - Name: server  
+        - Name: server
+          LogConfiguration:
+              LogDriver: awslogs
           Cpu: !Ref "ServerCpu"
           Memory: !Ref "ServerMemory"
           PortMappings:
@@ -839,13 +841,13 @@ Resources:
             - Name: DB_PASSWORD
               Value: !Ref DBPassword
             - Name: DB_HOST
-              Value: !GetAtt MasterDB.Address
+              Value: !GetAtt MasterDB.Endpoint.Address
             - Name: DB_PORT
-              Value: !GetAtt MasterDB.Port
+              Value: !GetAtt MasterDB.Endpoint.Port
             - Name: REDIS_HOST
-              Value: !GetAtt ElasticacheCluster.Address
+              Value: !GetAtt ElasticacheCluster.RedisEndpoint.Address
             - Name: REDIS_PORT
-              Value: !GetAtt ElasticacheCluster.Port
+              Value: !GetAtt ElasticacheCluster.RedisEndpoint.Port
             - Name: ROLE
               Value: dummy
 
