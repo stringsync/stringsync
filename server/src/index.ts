@@ -20,7 +20,7 @@ const dummy = async (config: Config): Promise<void> => {
     const redisUs = parseInt(redisTimes[0], 10) * 1000;
     const redisNow = new Date(redisUs);
 
-    res.send(`dbNow: ${dbNow}\nredisNow: ${redisNow}`);
+    res.send(`TEST123, dbNow: ${dbNow}\nredisNow: ${redisNow}`);
   });
 
   app.listen(config.PORT, () => {
