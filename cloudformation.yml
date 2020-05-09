@@ -841,7 +841,7 @@ Resources:
             - Name: DB_HOST
               Value: !GetAtt MasterDB.Address
             - Name: DB_PORT
-              Value: Value: !GetAtt MasterDB.Port
+              Value: !GetAtt MasterDB.Port
             - Name: REDIS_HOST
               Value: !GetAtt ElasticacheCluster.Address
             - Name: REDIS_PORT
