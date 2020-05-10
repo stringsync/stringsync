@@ -34,7 +34,9 @@ phases:
         else
           echo Build failed, skipping post_build step...
         fi
-      - printf '[{"name":"server","imageUri":"'"$AWS_ACCOUNT_ID"'.dkr.ecr.'"$AWS_DEFAULT_REGION"'.amazonaws.com/'"$IMAGE_REPO_NAME"':latest"}]' > imagedefinitions.json
+      - |
+        IMAGE_URI="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest"
+        printf '[{"name":"server","imageUri":"'$IMAGE_URI'"}, {"name":"worker","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.json
 
 cache:
   paths:

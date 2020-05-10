@@ -393,7 +393,7 @@ Resources:
                 ClusterName: !Ref ServerCluster
                 ServiceName: !Ref ServerService
             - Name: DeployWorker
-              RunOrder: 4
+              RunOrder: 3
               ActionTypeId:
                 Category: Deploy
                 Owner: AWS

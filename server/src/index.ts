@@ -22,7 +22,7 @@ const serverExpress = (config: Config): void => {
   const app = express();
 
   app.get('/', (req, res) => {
-    res.send('hello, world!');
+    res.send('goodbye, world!');
   });
 
   app.get('/health', async (req, res) => {
