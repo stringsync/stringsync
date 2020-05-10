@@ -378,10 +378,19 @@ Resources:
               Configuration:
                 ProjectName: !Ref CodeBuildProject
                 PrimarySource: SourceOutput
+        - Name: Approve
+          Actions:
+            - Name: ApproveAction
+              RunOrder: 3
+              ActionTypeId:
+                Category: Approval
+                Owner: AWS
+                Provider: Manual
+                Version: "1"
         - Name: Deploy
           Actions:
             - Name: DeployServer
-              RunOrder: 3
+              RunOrder: 4
               ActionTypeId:
                 Category: Deploy
                 Owner: AWS
@@ -393,7 +402,7 @@ Resources:
                 ClusterName: !Ref ServerCluster
                 ServiceName: !Ref ServerService
             - Name: DeployWorker
-              RunOrder: 3
+              RunOrder: 4
               ActionTypeId:
                 Category: Deploy
                 Owner: AWS

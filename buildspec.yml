@@ -43,4 +43,5 @@ cache:
     - bin/scripts/node_modules/**/*
 
 artifacts:
-  files: imagedefinitions.json
+  files:
+    - imagedefinitions.json
