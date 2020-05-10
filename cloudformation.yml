@@ -917,15 +917,15 @@ Resources:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
           SecurityGroups:
-            - !Ref 'FargateContainerSecurityGroup'
+            - !Ref FargateContainerSecurityGroup
           Subnets:
             - !Ref PublicSubnet1
             - !Ref PublicSubnet2
-      TaskDefinition: !Ref 'ServerTaskDefinition'
+      TaskDefinition: !Ref ServerTaskDefinition
       LoadBalancers:
         - ContainerName: server
-          ContainerPort: !Ref 'ServerPort'
-          TargetGroupArn: !Ref 'ServerTargetGroup'
+          ContainerPort: !Ref ServerPort
+          TargetGroupArn: !Ref ServerTargetGroup
 
   # The task definition. This is a simple metadata description of what
   # container to run, and what resource requirements it has.
