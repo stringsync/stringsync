@@ -184,28 +184,6 @@ Resources:
                   - "cloudwatch:*"
                 Resource: "*"
 
-  CodeDeployServiceRole:
-    Type: AWS::IAM::Role
-    Properties:
-      Path: /
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - codedeploy.amazonaws.com
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: AWS-CodeDeploy-Service-3
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "sts:AssumeRole"
-                Resource: "*"
-
   CloudWatchEventRole:
     Type: AWS::IAM::Role
     Properties:
@@ -400,9 +378,9 @@ Resources:
               Configuration:
                 ProjectName: !Ref CodeBuildProject
                 PrimarySource: SourceOutput
-        - Name: Deploy Server
+        - Name: Deploy
           Actions:
-            - Name: DeployAction
+            - Name: DeployServer
               RunOrder: 3
               ActionTypeId:
                 Category: Deploy
@@ -414,9 +392,7 @@ Resources:
               Configuration:
                 ClusterName: !Ref ServerCluster
                 ServiceName: !Ref ServerService
-        - Name: Deploy Worker
-          Actions:
-            - Name: DeployAction
+            - Name: DeployWorker
               RunOrder: 4
               ActionTypeId:
                 Category: Deploy
@@ -428,6 +404,7 @@ Resources:
               Configuration:
                 ClusterName: !Ref WorkerCluster
                 ServiceName: !Ref WorkerService
+            
 
   # VPC in which containers will be networked.
   # It has two public subnets
