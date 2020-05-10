@@ -38,3 +38,6 @@ phases:
 cache:
   paths:
     - bin/scripts/node_modules/**/*
+
+artifacts:
+  files: "**/*"
