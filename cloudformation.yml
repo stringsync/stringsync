@@ -87,7 +87,19 @@ Parameters:
   ServerPort:
     Type: Number
     Default: 3000
-    Description: What port number the application inside the docker container is binding to
+    Description: What port number the application inside the docker container is binding to.
+  WorkerCpu:
+    Type: Number
+    Default: 256
+    Description: How much CPU to give the container. 1024 is 1 CPU.
+  WorkerMemory:
+    Type: Number
+    Default: 512
+    Description: How much memory in megabytes to give the container.
+  WorkerPort:
+    Type: Number
+    Default: 3000
+    Description: What port number the application inside the docker container is binding to.
 
 Mappings:
   # Hard values for the subnet masks. These masks define
@@ -914,3 +926,79 @@ Resources:
         - ContainerName: server
           ContainerPort: !Ref 'ServerPort'
           TargetGroupArn: !Ref 'ServerTargetGroup'
+
+  # The task definition. This is a simple metadata description of what
+  # container to run, and what resource requirements it has.
+  WorkerTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Cpu: !Ref WorkerCpu
+      Memory: !Ref WorkerMemory
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      ExecutionRoleArn: !Ref "ECSTaskExecutionRole"
+      ContainerDefinitions:
+        - Name: worker
+          Cpu: !Ref WorkerCpu
+          Memory: !Ref WorkerMemory
+          Image: 
+            !Join [
+              "",
+              [
+                !Ref "AWS::AccountId",
+                ".dkr.ecr.",
+                !Ref "AWS::Region",
+                ".amazonaws.com/",
+                !Ref "ServerImageRepository"
+              ]
+            ]
+          Environment:
+            - Name: NODE_ENV
+              Value: production
+            - Name: PORT
+              Value: 80
+            - Name: WEB_URI
+              Value: WEB_URI
+            - Name: DB_NAME
+              Value: !Ref DBName
+            - Name: DB_USERNAME
+              Value: !Ref DBUsername
+            - Name: DB_PASSWORD
+              Value: !Ref DBPassword
+            - Name: DB_HOST
+              Value: !GetAtt MasterDB.Endpoint.Address
+            - Name: DB_PORT
+              Value: !GetAtt MasterDB.Endpoint.Port
+            - Name: REDIS_HOST
+              Value: !GetAtt ElasticacheCluster.RedisEndpoint.Address
+            - Name: REDIS_PORT
+              Value: !GetAtt ElasticacheCluster.RedisEndpoint.Port
+            - Name: ROLE
+              Value: worker
+
+  WorkerCluster:
+    Type: AWS::ECS::Cluster
+  
+  # The service. The service is a resource which allows you to run multiple
+  # copies of a type of task, and gather up their logs and metrics, as well
+  # as monitor the number of running tasks and replace any that have crashed
+  WorkerService:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: worker
+      Cluster: !Ref WorkerCluster
+      LaunchType: FARGATE
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 75
+      DesiredCount: 1
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+            - !Ref FargateContainerSecurityGroup
+          Subnets:
+            - !Ref PublicSubnet1
+            - !Ref PublicSubnet2
+      TaskDefinition: !Ref WorkTaskDefinition
