@@ -889,12 +889,12 @@ Resources:
       Name: server
       HealthCheckIntervalSeconds: 20
       HealthCheckPort: !Ref ServerPort
-      HealthCheckPath: /
+      HealthCheckPath: /health
       HealthCheckProtocol: HTTP
       HealthCheckTimeoutSeconds: 10
       HealthyThresholdCount: 2
       TargetType: ip
-      Port: !Ref 'ServerPort'
+      Port: !Ref ServerPort
       Protocol: HTTP
       UnhealthyThresholdCount: 2
       VpcId: !Ref VPC
