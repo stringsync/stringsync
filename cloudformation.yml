@@ -400,7 +400,7 @@ Resources:
               Configuration:
                 ProjectName: !Ref CodeBuildProject
                 PrimarySource: SourceOutput
-        - Name: Deploy
+        - Name: Deploy Server
           Actions:
             - Name: DeployAction
               RunOrder: 3
@@ -414,6 +414,20 @@ Resources:
               Configuration:
                 ClusterName: !Ref ServerCluster
                 ServiceName: !Ref ServerService
+        - Name: Deploy Worker
+          Actions:
+            - Name: DeployAction
+              RunOrder: 4
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: ECS
+                Version: "1"
+              InputArtifacts:
+                - Name: BuildOutput
+              Configuration:
+                ClusterName: !Ref WorkerCluster
+                ServiceName: !Ref WorkerService
 
   # VPC in which containers will be networked.
   # It has two public subnets
