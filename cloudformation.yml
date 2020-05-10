@@ -825,7 +825,7 @@ Resources:
           Cpu: !Ref "ServerCpu"
           Memory: !Ref "ServerMemory"
           PortMappings:
-            - ContainerPort: !Ref "ServerPort"
+            - ContainerPort: !Ref ServerPort
           Image: 
             !Join [
               "",
@@ -942,6 +942,8 @@ Resources:
         - Name: worker
           Cpu: !Ref WorkerCpu
           Memory: !Ref WorkerMemory
+          PortMappings:
+            - ContainerPort: !Ref WorkerPort
           Image: 
             !Join [
               "",
