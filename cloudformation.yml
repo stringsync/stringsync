@@ -1005,6 +1005,9 @@ Resources:
             - !Ref PublicSubnet2
       TaskDefinition: !Ref WorkerTaskDefinition
 
+  CommandCluster:
+    Type: AWS::ECS::Cluster
+
   MigrateDbTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
