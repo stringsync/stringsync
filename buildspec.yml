@@ -36,7 +36,7 @@ phases:
         fi
       - |
         IMAGE_URI="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest"
-        printf '[{"name":"server","imageUri":"'$IMAGE_URI'"}, {"name":"worker","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.json
+        printf '[{"name":"server","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.json
 
 cache:
   paths:

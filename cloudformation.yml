@@ -966,7 +966,7 @@ Resources:
         - FARGATE
       ExecutionRoleArn: !Ref "ECSTaskExecutionRole"
       ContainerDefinitions:
-        - Name: worker
+        - Name: server
           Cpu: !Ref WorkerCpu
           Memory: !Ref WorkerMemory
           PortMappings:
