@@ -373,8 +373,6 @@ Resources:
                 Version: "1"
               InputArtifacts:
                 - Name: SourceOutput
-              OutputArtifacts:
-                - Name: BuildOutput
               Configuration:
                 ProjectName: !Ref CodeBuildProject
                 PrimarySource: SourceOutput
@@ -387,8 +385,6 @@ Resources:
                 Owner: AWS
                 Provider: ECS
                 Version: "1"
-              InputArtifacts:
-                - Name: BuildOutput
               Configuration:
                 ClusterName: !Ref ServerCluster
                 ServiceName: !Ref ServerService
@@ -399,8 +395,6 @@ Resources:
                 Owner: AWS
                 Provider: ECS
                 Version: "1"
-              InputArtifacts:
-                - Name: BuildOutput
               Configuration:
                 ClusterName: !Ref WorkerCluster
                 ServiceName: !Ref WorkerService
