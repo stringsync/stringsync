@@ -364,6 +364,7 @@ Resources:
     Type: AWS::CodePipeline::Pipeline
     Properties:
       RoleArn: !GetAtt CodePipelineServiceRole.Arn
+      RestartExecutionOnUpdate: false
       ArtifactStore:
         Type: S3
         Location: !Ref CodePipelineArtifactStore
@@ -399,7 +400,20 @@ Resources:
               Configuration:
                 ProjectName: !Ref CodeBuildProject
                 PrimarySource: SourceOutput
-      RestartExecutionOnUpdate: false
+        - Name: Deploy
+          Actions:
+            - Name: DeployAction
+              RunOrder: 3
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: ECS
+                Version: "1"
+              InputArtifacts:
+                - Name: BuildOutput
+              Configuration:
+                ClusterName: !Ref ServerCluster
+                ServiceName: !Ref ServerService
 
   # VPC in which containers will be networked.
   # It has two public subnets
@@ -891,7 +905,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::ListenerRule
     Properties:
       Actions:
-        - TargetGroupArn: !Ref 'ServerTargetGroup'
+        - TargetGroupArn: !Ref ServerTargetGroup
           Type: 'forward'
       Conditions:
         - Field: path-pattern
@@ -1070,18 +1084,3 @@ Resources:
               Value: !GetAtt MasterDB.Endpoint.Address
             - Name: DB_PORT
               Value: !GetAtt MasterDB.Endpoint.Port
-
-  ServerApplication:
-    Type: AWS::CodeDeploy::Application
-    Properties:
-      ComputePlatform: ECS
-
-  ServerDeploymentGroup:
-    Type: AWS::CodeDeploy::DeploymentGroup
-    Properties:
-      ApplicationName: !Ref ServerApplication
-      DeploymentConfigName: CodeDeployDefault.AllAtOnce
-      DeploymentStyle:
-        DeploymentType: BLUE_GREEN
-        DeploymentOption: WITH_TRAFFIC_CONTROL
-      ServiceRoleArn: !GetAtt CodeDeployServiceRole.Arn
