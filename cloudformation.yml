@@ -184,6 +184,28 @@ Resources:
                   - "cloudwatch:*"
                 Resource: "*"
 
+  CodeDeployServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - codedeploy.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: AWS-CodeDeploy-Service-3
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "sts:AssumeRole"
+                Resource: "*"
+
   CloudWatchEventRole:
     Type: AWS::IAM::Role
     Properties:
@@ -1048,3 +1070,18 @@ Resources:
               Value: !GetAtt MasterDB.Endpoint.Address
             - Name: DB_PORT
               Value: !GetAtt MasterDB.Endpoint.Port
+
+  ServerApplication:
+    Type: AWS::CodeDeploy::Application
+    Properties:
+      ComputePlatform: ECS
+
+  ServerDeploymentGroup:
+    Type: AWS::CodeDeploy::DeploymentGroup
+    Properties:
+      ApplicationName: !Ref ServerApplication
+      DeploymentConfigName: CodeDeployDefault.AllAtOnce
+      DeploymentStyle:
+        DeploymentType: BLUE_GREEN
+        DeploymentOption: WITH_TRAFFIC_CONTROL
+      ServiceRoleArn: !GetAtt CodeDeployServiceRole.Arn
