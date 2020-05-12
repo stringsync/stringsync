@@ -130,6 +130,17 @@ Resources:
     DeletionPolicy: Delete
     Type: AWS::S3::Bucket
 
+  FrontendBucket:
+    DeletionPolicy: Delete
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: PublicRead
+      BucketName: frontend-bucket
+      MetricsConfigurations: 
+        - Id: EntireBucket
+      WebsiteConfiguration:
+        IndexDocument: index.html
+
   CodeCommitRepository:
     Type: AWS::CodeCommit::Repository
     Properties:
@@ -413,6 +424,18 @@ Resources:
               Configuration:
                 ClusterName: !Ref WorkerCluster
                 ServiceName: !Ref WorkerService
+            - Name: DeployFrontend
+              RunOrder: 4
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: S3
+                Version: "1"
+              InputArtifacts:
+                - Name: BuildOutput
+              Configuration:
+                S3Bucket: !Ref FrontendBucket
+                Extract: true
             
 
   # VPC in which containers will be networked.
