@@ -31,12 +31,16 @@ phases:
           echo Pushing server images...
           docker tag ss-server $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
+
+          echo Writing imagedefinitions.json...
+          IMAGE_URI="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest"
+          printf '[{"name":"server","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.json
+
+          echo Building web project...
+          (cd web && yarn build)
         else
           echo Build failed, skipping post_build step...
         fi
-      - |
-        IMAGE_URI="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest"
-        printf '[{"name":"server","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.json
 
 cache:
   paths:
@@ -45,3 +49,4 @@ cache:
 artifacts:
   files:
     - imagedefinitions.json
+    - web/build/**/*
