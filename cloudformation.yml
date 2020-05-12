@@ -135,7 +135,6 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       AccessControl: PublicRead
-      BucketName: frontend-bucket
       MetricsConfigurations: 
         - Id: EntireBucket
       WebsiteConfiguration:
@@ -434,7 +433,7 @@ Resources:
               InputArtifacts:
                 - Name: BuildOutput
               Configuration:
-                S3Bucket: !Ref FrontendBucket
+                BucketName: !Ref FrontendBucket
                 Extract: true
             
 

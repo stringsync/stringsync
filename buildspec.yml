@@ -37,7 +37,7 @@ phases:
           printf '[{"name":"server","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.json
 
           echo Building web project...
-          (cd web && yarn build)
+          (cd web && yarn install && yarn build)
         else
           echo Build failed, skipping post_build step...
         fi
