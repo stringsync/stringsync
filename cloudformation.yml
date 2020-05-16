@@ -130,6 +130,19 @@ Resources:
     DeletionPolicy: Delete
     Type: AWS::S3::Bucket
 
+  FrontendBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: FrontendBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Sid: "AddPerm"
+          Effect: Allow
+          Principal: "*"
+          Action: "s3:GetObject"
+          Resource: !GetAtt FrontendBucket.Arn
+
   FrontendBucket:
     DeletionPolicy: Delete
     Type: AWS::S3::Bucket
