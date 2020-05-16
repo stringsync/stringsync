@@ -38,6 +38,7 @@ phases:
 
           echo Adding REACT_APP_SERVER_URI to .env
           echo REACT_APP_SERVER_URI=$REACT_APP_SERVER_URI >> web/.env
+          cat web/.env
 
           echo Building web project...
           (cd web && yarn install && yarn build)
