@@ -49,4 +49,8 @@ cache:
 artifacts:
   files:
     - imagedefinitions.json
-    - web/build/**/*
+  secondary-artifacts:
+    web:
+      base-directory: web/build
+      files:
+        - "**/*"
