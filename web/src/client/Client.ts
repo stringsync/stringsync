@@ -22,9 +22,15 @@ export class Client implements StringSyncClient {
     const httpLink = new HttpLink({
       uri,
       credentials: 'include',
+      fetchOptions: {
+        mode: 'no-cors',
+      },
     });
     const cache = new InMemoryCache();
-    const apollo = new ApolloClient({ link: httpLink, cache });
+    const apollo = new ApolloClient({
+      link: httpLink,
+      cache,
+    });
     const isCallable = uri.length > 0;
     return new Client(apollo, isCallable);
   }
