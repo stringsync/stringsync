@@ -36,6 +36,9 @@ phases:
           IMAGE_URI="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest"
           printf '[{"name":"server","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.json
 
+          echo Adding REACT_APP_SERVER_URI to .env
+          echo REACT_APP_SERVER_URI=$REACT_APP_SERVER_URI >> web/build/.env
+
           echo Building web project...
           (cd web && yarn install && yarn build)
         else

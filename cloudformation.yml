@@ -358,6 +358,9 @@ Resources:
           - Name: IMAGE_REPO_NAME
             Type: PLAINTEXT
             Value: !Ref ServerImageRepository
+          - Name: REACT_APP_SREVER_URI
+            Type: PLAINTEXT
+            Value: !GetAtt PublicLoadBalancer.DNSName
       Source:
         Type: CODEPIPELINE
 
