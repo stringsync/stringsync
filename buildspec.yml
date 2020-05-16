@@ -50,10 +50,7 @@ cache:
     - bin/scripts/node_modules/**/*
 
 artifacts:
+  discard-paths: yes
   files:
     - imagedefinitions.json
-  secondary-artifacts:
-    web:
-      base-directory: web/build
-      files:
-        - "**/*"
+    - web/build/**/*
