@@ -41,6 +41,11 @@ phases:
 
           echo Building web project...
           (cd web && yarn install && yarn build)
+
+          echo Moving everything into root build dir...
+          mkdir deploy
+          mv imagedefinitions.json deploy
+          mv web/build/* deploy
         else
           echo Build failed, skipping post_build step...
         fi
@@ -50,7 +55,6 @@ cache:
     - bin/scripts/node_modules/**/*
 
 artifacts:
-  discard-paths: yes
+  base-directory: deploy
   files:
-    - imagedefinitions.json
-    - web/build/**/*
+    - "**/*"
