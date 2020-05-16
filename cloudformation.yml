@@ -360,7 +360,7 @@ Resources:
             Value: !Ref ServerImageRepository
           - Name: REACT_APP_SERVER_URI
             Type: PLAINTEXT
-            Value: !GetAtt PublicLoadBalancer.DNSName
+            Value: !Join ["", ["http://", !GetAtt PublicLoadBalancer.DNSName]]
       Source:
         Type: CODEPIPELINE
 
