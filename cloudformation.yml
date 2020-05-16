@@ -133,15 +133,15 @@ Resources:
   FrontendBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: FrontendBucket
+      Bucket: !Ref FrontendBucket
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
-          Sid: "AddPerm"
+          Sid: PublicReadForGetBucketObjects
           Effect: Allow
           Principal: "*"
           Action: "s3:GetObject"
-          Resource: !GetAtt FrontendBucket.Arn
+          Resource: !Join ["", ["arn:aws:s3:::", !Ref FrontendBucket, "/*"]]
 
   FrontendBucket:
     DeletionPolicy: Delete
