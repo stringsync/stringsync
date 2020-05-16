@@ -14,14 +14,14 @@ phases:
       - ./bin/ss down server
       - ./bin/ss down web
 
-  build:
-    commands:
-      - echo Building images...
-      - ./bin/ss build server
-      - ./bin/ss build web
-      - echo Testing images...
-      - ./bin/ss test server
-      - ./bin/ss test web
+  # build:
+  #   commands:
+  #     - echo Building images...
+  #     - ./bin/ss build server
+  #     - ./bin/ss build web
+  #     - echo Testing images...
+  #     - ./bin/ss test server
+  #     - ./bin/ss test web
 
   post_build:
     commands:
