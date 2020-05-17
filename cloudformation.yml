@@ -889,6 +889,12 @@ Resources:
         - Name: server
           Cpu: !Ref "ServerCpu"
           Memory: !Ref "ServerMemory"
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Join ["", [!Ref "AWS::StackName", "server"]]
+              awslogs-stream-prefix: ecs-task-id
           PortMappings:
             - ContainerPort: !Ref ServerPort
           Image: 
@@ -1007,6 +1013,12 @@ Resources:
         - Name: server
           Cpu: !Ref WorkerCpu
           Memory: !Ref WorkerMemory
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Join ["", [!Ref "AWS::StackName", "worker"]]
+              awslogs-stream-prefix: ecs-task-id
           PortMappings:
             - ContainerPort: !Ref WorkerPort
           Image: 
@@ -1084,6 +1096,12 @@ Resources:
       ExecutionRoleArn: !Ref ECSTaskExecutionRole
       ContainerDefinitions:
         - Name: migrate-db
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Join ["", [!Ref "AWS::StackName", "migrate-db"]]
+              awslogs-stream-prefix: ecs-task-id
           Command:
             - "/usr/local/bin/yarn"
             - "migrate"
