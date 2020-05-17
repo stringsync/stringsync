@@ -22,6 +22,7 @@ const serverExpress = (config: Config): void => {
   const app = express();
 
   app.get('/', (req, res) => {
+    ctx.logger.info('testing logs');
     res.send('hello again, world!');
   });
 
