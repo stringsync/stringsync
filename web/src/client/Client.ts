@@ -19,12 +19,9 @@ export class Client implements StringSyncClient {
   public readonly apollo: ApolloClient<NormalizedCacheObject>;
 
   public static create(uri: string): Client {
+    debugger;
     const httpLink = new HttpLink({
       uri,
-      credentials: 'include',
-      fetchOptions: {
-        mode: 'no-cors',
-      },
     });
     const cache = new InMemoryCache();
     const apollo = new ApolloClient({
