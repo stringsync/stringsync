@@ -892,6 +892,7 @@ Resources:
           LogConfiguration:
             LogDriver: awslogs
             Options:
+              awslogs-create-group: true
               awslogs-region: !Ref AWS::Region
               awslogs-group: !Join ["", [!Ref "AWS::StackName", "server"]]
               awslogs-stream-prefix: ecs-task-id
@@ -1016,6 +1017,7 @@ Resources:
           LogConfiguration:
             LogDriver: awslogs
             Options:
+              awslogs-create-group: true
               awslogs-region: !Ref AWS::Region
               awslogs-group: !Join ["", [!Ref "AWS::StackName", "worker"]]
               awslogs-stream-prefix: ecs-task-id
@@ -1099,6 +1101,7 @@ Resources:
           LogConfiguration:
             LogDriver: awslogs
             Options:
+              awslogs-create-group: true
               awslogs-region: !Ref AWS::Region
               awslogs-group: !Join ["", [!Ref "AWS::StackName", "migrate-db"]]
               awslogs-stream-prefix: ecs-task-id
