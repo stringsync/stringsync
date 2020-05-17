@@ -88,6 +88,10 @@ Parameters:
     Type: Number
     Default: 3000
     Description: What port number the application inside the docker container is binding to.
+  ServerDesiredCount:
+    Type: Number
+    Default: 0
+    Description: The number of desired server instances.
   WorkerCpu:
     Type: Number
     Default: 256
@@ -100,6 +104,10 @@ Parameters:
     Type: Number
     Default: 3000
     Description: What port number the application inside the docker container is binding to.
+  WorkerDesiredCount:
+    Type: Number
+    Default: 0
+    Description: The number of desired worker instances.
 
 Mappings:
   # Hard values for the subnet masks. These masks define
@@ -957,7 +965,7 @@ Resources:
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
-      DesiredCount: 1
+      DesiredCount: !Ref ServerDesiredCount
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
@@ -1046,7 +1054,7 @@ Resources:
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
-      DesiredCount: 1
+      DesiredCount: !Ref WorkerDesiredCount
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
