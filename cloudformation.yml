@@ -915,7 +915,7 @@ Resources:
             - Name: PORT
               Value: !Ref ServerPort
             - Name: WEB_URI
-              Value: WEB_URI
+              Value: !Join ["", ["http://", !GetAtt "FrontendBucket.WebsiteURL"]]
             - Name: DB_NAME
               Value: !Ref DBName
             - Name: DB_USERNAME
