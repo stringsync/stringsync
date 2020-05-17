@@ -21,7 +21,7 @@ services:
       context: ./server
       dockerfile: ./Dockerfile
     environment:
-      ROLE: server-express
+      ROLE: server
       NODE_ENV: development
       PORT: 3000
       WEB_URI: http://localhost:8080
