@@ -1,10 +1,13 @@
 import { SignupInput, SignupPayload } from '../../../common/types';
-import { getEncryptedPassword } from '../../../password';
-import { toCanonicalUser, transaction } from '../../../db';
-import { setUserSessionTokenCookie, getExpiresAt } from '../../../user-session';
-import { ReqCtx } from '../../../ctx';
+import { getEncryptedPassword } from '../../../util/password';
+import { toCanonicalUser, transaction } from '../../../data/db';
+import {
+  setUserSessionTokenCookie,
+  getExpiresAt,
+} from '../../../util/user-session';
+import { ReqCtx } from '../../../util/ctx';
 import uuid from 'uuid';
-import { sendConfirmationMail } from '../../../mail';
+import { sendConfirmationMail } from '../../../jobs/mail';
 
 interface Args {
   input: SignupInput;

@@ -1,7 +1,7 @@
 import { GlobalCtxPatch, DbCallback, GlobalCtxCallback } from './types';
 import { getConfig } from '../config';
-import { createGlobalCtx } from '../ctx';
-import { transaction } from '../db';
+import { createGlobalCtx } from '../util/ctx';
+import { transaction } from '../data/db';
 import { createFixtures } from './createFixtures';
 import { ForcedRollback } from './ForcedRollback';
 import { cleanup } from './cleanup';

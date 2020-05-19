@@ -1,5 +1,5 @@
 import { FixtureMap } from './types';
-import { Db, Models, StaticModel } from '../db';
+import { Db, Models, StaticModel } from '../data/db';
 
 type Model = Models[keyof Models];
 

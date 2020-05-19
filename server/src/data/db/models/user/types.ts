@@ -1,4 +1,4 @@
-import { UserRoles } from '../../../common/types';
+import { UserRoles } from '../../../../common';
 import { Model, HasManyCreateAssociationMixin } from 'sequelize';
 import { UserSessionModel } from '../user-session';
 

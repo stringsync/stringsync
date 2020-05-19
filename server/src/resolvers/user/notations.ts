@@ -1,5 +1,5 @@
 import { User } from '../../common/types';
-import { ReqCtx } from '../../ctx';
+import { ReqCtx } from '../../util/ctx';
 
 interface Args {}
 

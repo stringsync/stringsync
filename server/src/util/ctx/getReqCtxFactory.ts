@@ -1,8 +1,7 @@
 import { GlobalCtx, ReqCtx, Auth } from './types';
-import { RequestHandler } from 'express';
-import { getDataLoaders } from '../data-loaders';
+import { getDataLoaders } from '../../data/data-loaders';
+import { getAuthenticatedUser } from '../../data/db';
 import { parseCookies } from './parseCookies';
-import { getAuthenticatedUser } from '../db';
 
 export const getReqCtxFactory = (globalCtx: GlobalCtx) => async <E extends any>(
   expressCtx: E,

@@ -1,5 +1,5 @@
 import IORedis, { Redis } from 'ioredis';
-import { Config } from '../config';
+import { Config } from '../../config';
 
 export const connectToRedis = (config: Config): Redis => {
   const host = config.REDIS_HOST;

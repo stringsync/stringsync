@@ -1,6 +1,6 @@
-import { ReqCtx } from '../../../ctx';
+import { ReqCtx } from '../../../util/ctx';
 import { ConfirmEmailInput, ConfirmEmailPayload } from '../../../common/types';
-import { toCanonicalUser } from '../../../db';
+import { toCanonicalUser } from '../../../data/db';
 
 interface Args {
   input: ConfirmEmailInput;

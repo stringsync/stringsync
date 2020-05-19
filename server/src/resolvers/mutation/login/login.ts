@@ -1,8 +1,11 @@
 import { LoginInput } from '../../../common/types';
-import { setUserSessionTokenCookie, getExpiresAt } from '../../../user-session';
-import { isPassword } from '../../../password';
-import { toCanonicalUser } from '../../../db';
-import { ReqCtx } from '../../../ctx';
+import {
+  setUserSessionTokenCookie,
+  getExpiresAt,
+} from '../../../util/user-session';
+import { isPassword } from '../../../util/password';
+import { toCanonicalUser } from '../../../data/db';
+import { ReqCtx } from '../../../util/ctx';
 import { or } from 'sequelize';
 
 interface Args {

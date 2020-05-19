@@ -1,6 +1,6 @@
 import { MailQueueData } from './types';
 import { Processor, Job } from 'bullmq';
-import { GlobalCtx } from '../../../ctx';
+import { GlobalCtx } from '../../../util/ctx';
 import { getTransporter } from './getTransporter';
 import { getTestMessageUrl } from 'nodemailer';
 

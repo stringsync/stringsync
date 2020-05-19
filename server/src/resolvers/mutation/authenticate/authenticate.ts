@@ -1,10 +1,10 @@
-import { toCanonicalUser, transaction } from '../../../db';
+import { toCanonicalUser, transaction } from '../../../data/db';
 import {
   setUserSessionTokenCookie,
   shouldRefreshUserSession,
   getExpiresAt,
-} from '../../../user-session';
-import { ReqCtx } from '../../../ctx';
+} from '../../../util/user-session';
+import { ReqCtx } from '../../../util/ctx';
 import { AuthenticatePayload } from '../../../common/types';
 
 interface Args {}

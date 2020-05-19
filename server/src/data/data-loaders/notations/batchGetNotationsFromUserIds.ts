@@ -1,6 +1,6 @@
 import { alignOneToMany } from '../align-arrays';
 import { Db } from '../../db';
-import { Notation } from '../../common/types';
+import { Notation } from '../../../common';
 import { flatten } from 'lodash';
 
 export const batchGetNotationsFromUserIds = (db: Db) => async (

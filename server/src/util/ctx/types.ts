@@ -1,9 +1,9 @@
 import { Redis } from 'ioredis';
-import { Db, RawUser } from '../db';
+import { Db, RawUser } from '../../data/db';
 import { Logger } from 'winston';
-import { Queues } from '../jobs';
-import { Config } from '../config';
-import { getDataLoaders } from '../data-loaders';
+import { Queues } from '../../jobs';
+import { Config } from '../../config';
+import { getDataLoaders } from '../../data/data-loaders';
 
 export interface GlobalCtx {
   config: Config;

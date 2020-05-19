@@ -1,4 +1,4 @@
-import { Models, Db } from '../db';
+import { Models, Db } from '../data/db';
 import {
   RequestOptions,
   ResponseOptions,
@@ -7,7 +7,7 @@ import {
   Cookies,
 } from 'node-mocks-http';
 import { Request, Response } from 'express';
-import { ReqCtx, GlobalCtx } from '../ctx';
+import { ReqCtx, GlobalCtx } from '../util/ctx';
 import { Config } from '../config';
 import { Queues } from '../jobs';
 import { Redis } from 'ioredis';

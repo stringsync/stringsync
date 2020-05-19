@@ -1,7 +1,7 @@
 import { CtxCallback, ReqCtxPatch } from './types';
 import { getCookieStr } from './getCookieStr';
 import { getMockExpressContext } from './getMockExpressContext';
-import { getReqCtxFactory } from '../ctx';
+import { getReqCtxFactory } from '../util/ctx';
 import { useTestGlobalCtx } from './useTestGlobalCtx';
 
 /**

@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize';
 import { defineModels } from './models';
 import { Db } from './types';
-import { Config } from '../config';
+import { Config } from '../../config';
 import { TRANSACTION_NAMESPACE } from './constants';
 import { Logger } from 'winston';
 

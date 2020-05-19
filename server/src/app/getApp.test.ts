@@ -1,4 +1,4 @@
-import { getServer } from './getServer';
+import { getApp } from './getApp';
 import { getSchema } from '../resolvers';
 import { getConfig } from '../config';
 import { createGlobalCtx } from '../ctx';
@@ -8,5 +8,5 @@ it('runs without crashing', () => {
   const config = getConfig(process.env);
   const ctx = createGlobalCtx(config);
 
-  expect(() => getServer(schema, ctx)).not.toThrow();
+  expect(() => getApp(schema, ctx)).not.toThrow();
 });

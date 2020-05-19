@@ -1,4 +1,4 @@
-import { SignupInput, UserRoles } from '../../common/types';
+import { SignupInput, UserRoles } from '../../common';
 import { ThunkAction } from '../';
 import { AuthActionTypes } from './types';
 import { getErrorMessages } from '../../util';

@@ -1,11 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import graphqlHTTP from 'express-graphql';
-import { GlobalCtx } from '../ctx';
+import { GlobalCtx } from '../util/ctx';
 import { Resolvers } from './types';
 import { buildSchema } from 'graphql';
 
-export const getServer = (
+export const getApp = (
   ctx: GlobalCtx,
   schema: string,
   resolvers: Resolvers

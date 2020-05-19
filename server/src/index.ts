@@ -1,12 +1,12 @@
-import { createGlobalCtx } from './ctx';
-import { getServer } from './server';
+import { createGlobalCtx } from './util/ctx';
+import { getApp } from './app';
 import { getConfig, Config } from './config';
 import { createWorkers } from './jobs';
 
 const server = async (config: Config): Promise<void> => {
   const ctx = createGlobalCtx(config);
 
-  const server = getServer(
+  const server = getApp(
     ctx,
     `
     type Query {

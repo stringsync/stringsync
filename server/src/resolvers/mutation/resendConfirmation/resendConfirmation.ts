@@ -1,10 +1,10 @@
-import { ReqCtx } from '../../../ctx';
+import { ReqCtx } from '../../../util/ctx';
 import {
   ResendConfirmationInput,
   ResendConfirmationPayload,
 } from '../../../common';
-import { sendConfirmationMail } from '../../../mail';
-import { transaction } from '../../../db';
+import { sendConfirmationMail } from '../../../jobs/mail';
+import { transaction } from '../../../data/db';
 import uuid = require('uuid');
 
 interface Args {

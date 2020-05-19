@@ -1,4 +1,4 @@
-import { GlobalCtx } from '../../../ctx';
+import { GlobalCtx } from '../../../util/ctx';
 import { createTestAccount, createTransport } from 'nodemailer';
 
 export const getTransporter = async (ctx: GlobalCtx) => {

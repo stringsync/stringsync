@@ -1,4 +1,4 @@
-import { User, UserRoles, compareUserRoles } from '../common';
+import { User, UserRoles, compareUserRoles } from '../../common';
 
 export const guardUserRole = (role: UserRoles, user: User | null) => {
   if (!user) {

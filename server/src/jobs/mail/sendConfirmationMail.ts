@@ -1,4 +1,4 @@
-import { GlobalCtx } from '../ctx';
+import { GlobalCtx } from '../../util/ctx';
 import { CONFIRMATION_MAIL } from './constants';
 import url from 'url';
 
