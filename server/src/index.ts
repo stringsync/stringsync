@@ -2,21 +2,13 @@ import { createGlobalCtx } from './util/ctx';
 import { getApp } from './app';
 import { getConfig, Config } from './config';
 import { createWorkers } from './jobs';
+import { getSchema, getResolvers } from './resolvers';
 
 const server = async (config: Config): Promise<void> => {
   const ctx = createGlobalCtx(config);
-
-  const server = getApp(
-    ctx,
-    `
-    type Query {
-      hello: String
-    }
-  `,
-    {
-      hello: () => 'Hello from the server!',
-    }
-  );
+  const schema = getSchema();
+  const resolvers = getResolvers();
+  const server = getApp(ctx, schema, resolvers);
 
   await server.listen(config.PORT, () => {
     console.log(`running server at port ${config.PORT}`);
