@@ -1,6 +1,6 @@
 import { createGlobalCtx } from './createGlobalCtx';
-import { getConfig } from '../config';
-import { cleanup } from '../testing';
+import { getConfig } from '../../config';
+import { cleanup } from '../../testing';
 
 it('runs without crashing', async () => {
   const config = getConfig(process.env);

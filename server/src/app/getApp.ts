@@ -2,7 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import graphqlHTTP from 'express-graphql';
 import { GlobalCtx } from '../util/ctx';
-import { buildSchema, GraphQLSchema } from 'graphql';
+import { GraphQLSchema } from 'graphql';
+import cookieParser from 'cookie-parser';
 
 export const getApp = (ctx: GlobalCtx, schema: GraphQLSchema) => {
   const app = express();
@@ -20,6 +21,8 @@ export const getApp = (ctx: GlobalCtx, schema: GraphQLSchema) => {
       throw new Error('health check failed');
     }
   });
+
+  app.use(cookieParser());
 
   app.use(
     '/graphql',
