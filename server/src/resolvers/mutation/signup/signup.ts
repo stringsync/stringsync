@@ -5,19 +5,17 @@ import {
   setUserSessionTokenCookie,
   getExpiresAt,
 } from '../../../util/user-session';
-import { ReqCtx } from '../../../util/ctx';
 import uuid from 'uuid';
 import { sendConfirmationMail } from '../../../jobs/mail';
+import { Resolver } from '../../types';
 
 interface Args {
   input: SignupInput;
 }
 
-export const signup = async (
-  parent: undefined,
-  args: Args,
-  ctx: ReqCtx
-): Promise<SignupPayload> => {
+type Signup = Resolver<Promise<SignupPayload>, undefined, Args>;
+
+export const signup: Signup = async (parent, args, ctx) => {
   if (ctx.auth.isLoggedIn) {
     throw new Error('already logged in');
   }
@@ -42,9 +40,9 @@ export const signup = async (
     });
 
     const userSessionModel = await ctx.db.models.UserSession.create({
-      issuedAt: ctx.requestedAt,
+      issuedAt: ctx.reqAt,
       userId: userModel.id,
-      expiresAt: getExpiresAt(ctx.requestedAt),
+      expiresAt: getExpiresAt(ctx.reqAt),
     });
 
     setUserSessionTokenCookie(userSessionModel, ctx.res);

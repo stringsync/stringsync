@@ -1,16 +1,15 @@
-import { ReqCtx } from '../../../util/ctx';
+import { GraphQLCtx } from '../../../util/ctx';
 import { ConfirmEmailInput, ConfirmEmailPayload } from '../../../common/types';
 import { toCanonicalUser } from '../../../data/db';
+import { Resolver } from '../../types';
 
 interface Args {
   input: ConfirmEmailInput;
 }
 
-export const confirmEmail = async (
-  parent: undefined,
-  args: Args,
-  ctx: ReqCtx
-): Promise<ConfirmEmailPayload> => {
+type ConfirmEmail = Resolver<Promise<ConfirmEmailPayload>, undefined, Args>;
+
+export const confirmEmail: ConfirmEmail = async (parent, args, ctx) => {
   const userModel = await ctx.db.models.User.findOne({
     include: [
       {
@@ -34,7 +33,7 @@ export const confirmEmail = async (
     throw new Error('invalid confirmation token');
   }
 
-  userModel.confirmedAt = ctx.requestedAt;
+  userModel.confirmedAt = ctx.reqAt;
   await userModel.save();
 
   return { user: toCanonicalUser(userModel) };

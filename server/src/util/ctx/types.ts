@@ -3,7 +3,8 @@ import { Db, RawUser } from '../../data/db';
 import { Logger } from 'winston';
 import { Queues } from '../../jobs';
 import { Config } from '../../config';
-import { getDataLoaders } from '../../data/data-loaders';
+import { DataLoaders } from '../../data/data-loaders';
+import { Request, Response } from 'express';
 
 export interface GlobalCtx {
   config: Config;
@@ -23,12 +24,12 @@ export type Cookies = {
   USER_SESSION_TOKEN: string;
 };
 
-export interface ReqCtx<E extends any = any> extends GlobalCtx {
-  requestedAt: Date;
+export interface GraphQLCtx extends GlobalCtx {
+  req: Request;
+  res: Response;
+  reqAt: Date;
   auth: Auth;
   cookies: Cookies;
-  dataLoaders: ReturnType<typeof getDataLoaders>;
+  dataLoaders: DataLoaders;
   logger: Logger;
-  req: E['req'];
-  res: E['res'];
 }

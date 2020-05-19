@@ -1,10 +1,12 @@
-import { GetUserInput } from '../../../common/types';
-import { ReqCtx } from '../../../util/ctx';
+import { GetUserInput, User } from '../../../common';
+import { Resolver } from '../../types';
 
 interface Args {
   input: GetUserInput;
 }
 
-export const getUser = async (parent: undefined, args: Args, ctx: ReqCtx) => {
+type GetUser = Resolver<Promise<User | null>, undefined, Args>;
+
+export const getUser: GetUser = async (parent, args, ctx) => {
   return await ctx.dataLoaders.usersById.load(args.input.id);
 };

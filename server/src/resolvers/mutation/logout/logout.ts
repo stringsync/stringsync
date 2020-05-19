@@ -1,15 +1,13 @@
 import { clearUserSessionTokenCookie } from '../../../util/user-session';
 import { toCanonicalUser } from '../../../data/db';
-import { ReqCtx } from '../../../util/ctx';
 import { LogoutPayload } from '../../../common/types';
+import { Resolver } from '../../types';
 
-interface Args {}
-
-export const logout = async (
-  parent: undefined,
-  args: Args,
-  ctx: ReqCtx
-): Promise<LogoutPayload> => {
+export const logout: Resolver<Promise<LogoutPayload>> = async (
+  parent,
+  args,
+  ctx
+) => {
   clearUserSessionTokenCookie(ctx.res);
 
   if (!ctx.auth.user) {

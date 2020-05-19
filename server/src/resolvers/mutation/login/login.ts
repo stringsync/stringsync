@@ -5,7 +5,7 @@ import {
 } from '../../../util/user-session';
 import { isPassword } from '../../../util/password';
 import { toCanonicalUser } from '../../../data/db';
-import { ReqCtx } from '../../../util/ctx';
+import { GraphQLCtx } from '../../../util/ctx';
 import { or } from 'sequelize';
 
 interface Args {
@@ -14,7 +14,7 @@ interface Args {
 
 export const WRONG_CREDENTIALS_MSG = 'wrong username, email, or password';
 
-export const login = async (parent: undefined, args: Args, ctx: ReqCtx) => {
+export const login = async (parent: undefined, args: Args, ctx: GraphQLCtx) => {
   const userModel = await ctx.db.models.User.findOne({
     where: {
       ...or(
@@ -33,9 +33,9 @@ export const login = async (parent: undefined, args: Args, ctx: ReqCtx) => {
   }
 
   const userSessionModel = await ctx.db.models.UserSession.create({
-    issuedAt: ctx.requestedAt,
+    issuedAt: ctx.reqAt,
     userId: userModel.id,
-    expiresAt: getExpiresAt(ctx.requestedAt),
+    expiresAt: getExpiresAt(ctx.reqAt),
   });
 
   setUserSessionTokenCookie(userSessionModel, ctx.res);

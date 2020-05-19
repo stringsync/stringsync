@@ -4,7 +4,7 @@ import {
   shouldRefreshUserSession,
   getExpiresAt,
 } from '../../../util/user-session';
-import { ReqCtx } from '../../../util/ctx';
+import { GraphQLCtx } from '../../../util/ctx';
 import { AuthenticatePayload } from '../../../common/types';
 
 interface Args {}
@@ -14,7 +14,7 @@ const BAD_SESSION_TOKEN_MSG = 'invalid or expired credentials';
 export const authenticate = async (
   parent: undefined,
   args: Args,
-  ctx: ReqCtx
+  ctx: GraphQLCtx
 ): Promise<AuthenticatePayload> => {
   const { isLoggedIn, user, token } = ctx.auth;
 
@@ -30,17 +30,17 @@ export const authenticate = async (
     throw new Error(BAD_SESSION_TOKEN_MSG);
   }
 
-  if (oldUserSessionModel.expiresAt < ctx.requestedAt) {
+  if (oldUserSessionModel.expiresAt < ctx.reqAt) {
     throw new Error(BAD_SESSION_TOKEN_MSG);
   }
 
-  if (shouldRefreshUserSession(ctx.requestedAt, oldUserSessionModel.issuedAt)) {
+  if (shouldRefreshUserSession(ctx.reqAt, oldUserSessionModel.issuedAt)) {
     await transaction(ctx.db, async () => {
       await oldUserSessionModel.destroy();
       const newUserSessionModel = await ctx.db.models.UserSession.create({
-        issuedAt: ctx.requestedAt,
+        issuedAt: ctx.reqAt,
         userId: user.id,
-        expiresAt: getExpiresAt(ctx.requestedAt),
+        expiresAt: getExpiresAt(ctx.reqAt),
       });
       setUserSessionTokenCookie(newUserSessionModel, ctx.res);
     });

@@ -1,21 +1,27 @@
-import { ReqCtx } from '../../../util/ctx';
 import {
   ResendConfirmationInput,
   ResendConfirmationPayload,
 } from '../../../common';
 import { sendConfirmationMail } from '../../../jobs/mail';
 import { transaction } from '../../../data/db';
-import uuid = require('uuid');
+import { Resolver } from '../../types';
+import uuid from 'uuid';
 
 interface Args {
   input: ResendConfirmationInput;
 }
 
-export const resendConfirmation = async (
-  parent: undefined,
-  args: Args,
-  ctx: ReqCtx
-): Promise<ResendConfirmationPayload> => {
+type ResendConfirmation = Resolver<
+  Promise<ResendConfirmationPayload>,
+  undefined,
+  Args
+>;
+
+export const resendConfirmation: ResendConfirmation = async (
+  parent,
+  args,
+  ctx
+) => {
   const { email } = args.input;
 
   return transaction(ctx.db, async () => {

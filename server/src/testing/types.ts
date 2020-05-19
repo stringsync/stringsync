@@ -7,7 +7,7 @@ import {
   Cookies,
 } from 'node-mocks-http';
 import { Request, Response } from 'express';
-import { ReqCtx, GlobalCtx } from '../util/ctx';
+import { GraphQLCtx, GlobalCtx } from '../util/ctx';
 import { Config } from '../config';
 import { Queues } from '../jobs';
 import { Redis } from 'ioredis';
@@ -40,18 +40,15 @@ export type GlobalCtxCallback<A extends any[]> = (
   ...args: A
 ) => any;
 
-export type CtxCallback<A extends any[]> = (
-  ctx: ReqCtx<MockExpressContext>,
-  ...args: A
-) => any;
+export type CtxCallback<A extends any[]> = (ctx: GraphQLCtx, ...args: A) => any;
 
 export interface GlobalCtxPatch {
   config?: Partial<Config>;
   fixtures?: FixtureMap;
 }
 
-export interface ReqCtxPatch extends GlobalCtxPatch {
-  requestedAt?: Date;
+export interface GraphQLCtxPatch extends GlobalCtxPatch {
+  reqAt?: Date;
   cookies?: Cookies;
   headers?: object;
 }
