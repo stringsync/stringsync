@@ -1,4 +1,4 @@
-import { ReqCtx } from '../../ctx';
+import { ReqCtx } from '../../util/ctx';
 
 export const guardAuthenticated = (ctx: ReqCtx) => {
   if (!ctx.auth.isLoggedIn) {
