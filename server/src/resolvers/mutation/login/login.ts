@@ -1,4 +1,3 @@
-import { ForbiddenError } from 'apollo-server';
 import { LoginInput } from '../../../common/types';
 import { setUserSessionTokenCookie, getExpiresAt } from '../../../user-session';
 import { isPassword } from '../../../password';
@@ -23,11 +22,11 @@ export const login = async (parent: undefined, args: Args, ctx: ReqCtx) => {
   });
 
   if (!userModel) {
-    throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
+    throw new Error(WRONG_CREDENTIALS_MSG);
   }
 
   if (!(await isPassword(args.input.password, userModel.encryptedPassword))) {
-    throw new ForbiddenError(WRONG_CREDENTIALS_MSG);
+    throw new Error(WRONG_CREDENTIALS_MSG);
   }
 
   const userSessionModel = await ctx.db.models.UserSession.create({

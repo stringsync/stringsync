@@ -19,7 +19,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "apollo-server": "^2.10.0",
     "bcrypt": "^3.0.8",
     "bullmq": "^1.6.7",
     "cls-hooked": "^4.2.2",

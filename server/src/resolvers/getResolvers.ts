@@ -1,4 +1,3 @@
-import { IResolvers } from 'apollo-server';
 import { getUser, getUsers } from './query';
 import { notations } from './user';
 import {
@@ -10,7 +9,7 @@ import {
   resendConfirmation,
 } from './mutation';
 
-export const getResolvers = (): IResolvers => ({
+export const getResolvers = () => ({
   User: {
     notations,
   },

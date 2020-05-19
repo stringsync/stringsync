@@ -3,7 +3,6 @@ import {
   ResendConfirmationInput,
   ResendConfirmationPayload,
 } from '../../../common';
-import { UserInputError, ForbiddenError } from 'apollo-server';
 import { sendConfirmationMail } from '../../../mail';
 import { transaction } from '../../../db';
 import uuid = require('uuid');
@@ -27,11 +26,11 @@ export const resendConfirmation = async (
     });
 
     if (!userModel) {
-      throw new UserInputError('invalid email');
+      throw new Error('invalid email');
     }
 
     if (userModel.id !== ctx.auth.user!.id) {
-      throw new ForbiddenError(`must be logged in as ${email}`);
+      throw new Error(`must be logged in as ${email}`);
     }
 
     if (userModel.confirmedAt) {

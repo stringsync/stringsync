@@ -1,5 +1,4 @@
 import { SignupInput, SignupPayload } from '../../../common/types';
-import { ForbiddenError, UserInputError } from 'apollo-server';
 import { getEncryptedPassword } from '../../../password';
 import { toCanonicalUser, transaction } from '../../../db';
 import { setUserSessionTokenCookie, getExpiresAt } from '../../../user-session';
@@ -17,15 +16,15 @@ export const signup = async (
   ctx: ReqCtx
 ): Promise<SignupPayload> => {
   if (ctx.auth.isLoggedIn) {
-    throw new ForbiddenError('already logged in');
+    throw new Error('already logged in');
   }
 
   const { username, email, password } = args.input;
   if (password.length < 6) {
-    throw new UserInputError('password must be at least 6 characters');
+    throw new Error('password must be at least 6 characters');
   }
   if (password.length > 256) {
-    throw new UserInputError('password must be at most 256 characters');
+    throw new Error('password must be at most 256 characters');
   }
 
   const encryptedPassword = await getEncryptedPassword(password);

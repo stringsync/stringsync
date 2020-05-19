@@ -1,12 +1,10 @@
 import { GlobalCtx, ReqCtx, Auth } from './types';
-import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
+import { RequestHandler } from 'express';
 import { getDataLoaders } from '../data-loaders';
 import { parseCookies } from './parseCookies';
 import { getAuthenticatedUser } from '../db';
 
-export const getReqCtxFactory = (globalCtx: GlobalCtx) => async <
-  E extends ExpressContext
->(
+export const getReqCtxFactory = (globalCtx: GlobalCtx) => async <E extends any>(
   expressCtx: E,
   requestedAt?: Date
 ): Promise<ReqCtx<E>> => {

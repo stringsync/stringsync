@@ -1,4 +1,3 @@
-import { ForbiddenError } from 'apollo-server';
 import { toCanonicalUser, transaction } from '../../../db';
 import {
   setUserSessionTokenCookie,
@@ -20,7 +19,7 @@ export const authenticate = async (
   const { isLoggedIn, user, token } = ctx.auth;
 
   if (!isLoggedIn || !user || !token) {
-    throw new ForbiddenError(BAD_SESSION_TOKEN_MSG);
+    throw new Error(BAD_SESSION_TOKEN_MSG);
   }
 
   const oldUserSessionModel = await ctx.db.models.UserSession.findOne({
@@ -28,11 +27,11 @@ export const authenticate = async (
   });
 
   if (!oldUserSessionModel) {
-    throw new ForbiddenError(BAD_SESSION_TOKEN_MSG);
+    throw new Error(BAD_SESSION_TOKEN_MSG);
   }
 
   if (oldUserSessionModel.expiresAt < ctx.requestedAt) {
-    throw new ForbiddenError(BAD_SESSION_TOKEN_MSG);
+    throw new Error(BAD_SESSION_TOKEN_MSG);
   }
 
   if (shouldRefreshUserSession(ctx.requestedAt, oldUserSessionModel.issuedAt)) {

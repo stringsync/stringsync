@@ -1,6 +1,5 @@
 import { ReqCtx } from '../../../ctx';
 import { ConfirmEmailInput, ConfirmEmailPayload } from '../../../common/types';
-import { ForbiddenError } from 'apollo-server';
 import { toCanonicalUser } from '../../../db';
 
 interface Args {
@@ -24,15 +23,15 @@ export const confirmEmail = async (
   });
 
   if (!userModel) {
-    throw new ForbiddenError('user is not logged in');
+    throw new Error('user is not logged in');
   }
 
   if (userModel.confirmedAt) {
-    throw new ForbiddenError('invalid confirmation token');
+    throw new Error('invalid confirmation token');
   }
 
   if (userModel.confirmationToken !== args.input.confirmationToken) {
-    throw new ForbiddenError('invalid confirmation token');
+    throw new Error('invalid confirmation token');
   }
 
   userModel.confirmedAt = ctx.requestedAt;

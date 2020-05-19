@@ -13,9 +13,7 @@ const Library: React.FC<Props> = enhance(() => {
     fetch('http://localhost:3000/graphql', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        query: `{ hello }`,
-      }),
+      body: JSON.stringify({ query: `{ hello }` }),
     })
       .then((res) => res.json())
       .then((json) => setResult(json));
