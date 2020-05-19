@@ -10,6 +10,8 @@ export type InputOf<T> = { input: T };
 
 export type UserRoles = 'student' | 'teacher' | 'admin';
 
+export const USER_ROLE_HIEARCHY: UserRoles[] = ['student', 'teacher', 'admin'];
+
 export interface User {
   id: string;
   username: string;

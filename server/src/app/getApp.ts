@@ -2,14 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import graphqlHTTP from 'express-graphql';
 import { GlobalCtx } from '../util/ctx';
-import { Resolvers } from './types';
-import { buildSchema } from 'graphql';
+import { buildSchema, GraphQLSchema } from 'graphql';
 
-export const getApp = (
-  ctx: GlobalCtx,
-  schema: string,
-  resolvers: Resolvers
-) => {
+export const getApp = (ctx: GlobalCtx, schema: GraphQLSchema) => {
   const app = express();
 
   app.use(cors());
@@ -29,8 +24,7 @@ export const getApp = (
   app.use(
     '/graphql',
     graphqlHTTP({
-      schema: buildSchema(schema),
-      rootValue: resolvers,
+      schema,
       graphiql: true,
     })
   );

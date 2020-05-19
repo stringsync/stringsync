@@ -1,8 +1,60 @@
-export const getSchema = () => `
-type Query {
-  hello: String
-}
-`;
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLSchema,
+  GraphQLScalarType,
+  Kind,
+  GraphQLEnumType,
+  GraphQLNonNull,
+} from 'graphql';
+import { GlobalCtx } from '../util/ctx';
+
+export const getSchema = () => {
+  const dateType = new GraphQLScalarType({
+    name: 'Date',
+    description: 'Date custom scalar type',
+    parseValue(value: string) {
+      return new Date(value);
+    },
+    serialize(date: Date) {
+      return date.getTime();
+    },
+    parseLiteral(ast) {
+      // Only accept string dates
+      if (ast.kind === Kind.STRING) {
+        return new Date(ast.value);
+      }
+      return null;
+    },
+  });
+
+  const userRolesType = new GraphQLEnumType({
+    name: 'UserRoles',
+    values: {
+      STUDENT: { value: 'student' },
+      TEACHER: { value: 'teacher' },
+      ADMIN: { value: 'admin' },
+    },
+  });
+
+  const queryType = new GraphQLObjectType<undefined, GlobalCtx>({
+    name: 'Query',
+    fields: {
+      hello: {
+        type: new GraphQLNonNull(GraphQLString),
+        resolve: () => {
+          return 'Hello, from the server!';
+        },
+      },
+    },
+  });
+
+  return new GraphQLSchema({
+    description: 'GraphQL Schema for StringSync',
+    query: queryType,
+    types: [dateType, userRolesType],
+  });
+};
 
 // export const getSchema = () => `
 // # Scalar

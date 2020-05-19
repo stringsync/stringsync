@@ -1,6 +1,6 @@
 const path = require('path');
 
-const TSC_DB_PATH = path.resolve(__dirname, 'dst', 'db');
+const TSC_DB_PATH = path.resolve(__dirname, 'dst', 'data', 'db');
 
 module.exports = {
   config: path.resolve(__dirname, 'sequelize.config.js'),
