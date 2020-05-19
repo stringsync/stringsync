@@ -12,7 +12,7 @@ const USER: AuthUser = {
 
 it('signs up the user', async () => {
   const { store, client, thunkArgs } = getTestStore();
-  jest.spyOn(client, 'call').mockResolvedValue({ user: USER });
+  // jest.spyOn(client, 'hello').mockResolvedValue({ user: USER });
 
   await signup({
     email: 'email',

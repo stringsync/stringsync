@@ -1,11 +1,17 @@
 import { getStore, RootState, Actions, ThunkContext } from '../store';
 import { DeepPartial, Dispatch } from 'redux';
-import { Client } from '../client';
+import { StringSyncClient } from '../client';
+
+class DummyClient implements StringSyncClient {
+  hello() {
+    return Promise.resolve('Hi');
+  }
+}
 
 export const getTestStore = (
   partialPreloadedState?: DeepPartial<RootState>
 ) => {
-  const client = Client.create(Client.TEST_URI);
+  const client = new DummyClient();
   const store = getStore(client, partialPreloadedState);
   const thunkArgs: [Dispatch<Actions>, () => RootState, ThunkContext] = [
     store.dispatch,

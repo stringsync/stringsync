@@ -14,14 +14,14 @@ const USER: AuthUser = {
 const NULL_USER = getNullAuthState().user;
 
 it('logs the user out', async () => {
-  const { store, client, thunkArgs } = getTestStore({
+  const { store, thunkArgs } = getTestStore({
     auth: {
       isLoggedIn: true,
       user: USER,
       errors: ['error1'],
     },
   });
-  jest.spyOn(client, 'call').mockResolvedValue({});
+  // jest.spyOn(client, 'call').mockResolvedValue({});
 
   await logout()(...thunkArgs);
 

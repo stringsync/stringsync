@@ -1,11 +1,8 @@
-import { gql } from 'apollo-boost';
-import { SignupInput, UserRoles, InputOf } from '../../common/types';
+import { SignupInput, UserRoles } from '../../common/types';
 import { ThunkAction } from '../';
 import { AuthActionTypes } from './types';
-import { message } from 'antd';
 import { getErrorMessages } from '../../util';
 import { authPending } from './authPending';
-import { authSuccess } from './authSuccess';
 import { authFailure } from './authFailure';
 
 interface SignupData {
@@ -18,19 +15,19 @@ interface SignupData {
   };
 }
 
-const SIGNUP_MUTATION = gql`
-  mutation($input: SignupInput!) {
-    signup(input: $input) {
-      user {
-        id
-        username
-        email
-        role
-        confirmedAt
-      }
-    }
-  }
-`;
+// const SIGNUP_MUTATION = gql`
+//   mutation($input: SignupInput!) {
+//     signup(input: $input) {
+//       user {
+//         id
+//         username
+//         email
+//         role
+//         confirmedAt
+//       }
+//     }
+//   }
+// `;
 
 export const signup = (
   input: SignupInput
@@ -38,14 +35,14 @@ export const signup = (
   dispatch(authPending());
 
   try {
-    const res = await ctx.client.call<SignupData, InputOf<SignupInput>>(
-      SIGNUP_MUTATION,
-      {
-        input,
-      }
-    );
-    dispatch(authSuccess(res.user));
-    message.info(`logged in as @${res.user.username}`);
+    // const res = await ctx.client.call<SignupData, InputOf<SignupInput>>(
+    //   SIGNUP_MUTATION,
+    //   {
+    //     input,
+    //   }
+    // );
+    // dispatch(authSuccess(res.user));
+    // message.info(`logged in as @${res.user.username}`);
   } catch (error) {
     const errorMessages = getErrorMessages(error);
     dispatch(authFailure(errorMessages));

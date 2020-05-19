@@ -14,7 +14,7 @@ import { getPreloadedState } from './getPreloadedState';
 import thunk from 'redux-thunk';
 import { RootState, Actions } from './types';
 import { merge } from 'lodash';
-import { StringSyncClient } from '../client/types';
+import { StringSyncClient } from '../client';
 
 const REDUX_DEVTOOLS_KEY = '__REDUX_DEVTOOLS_EXTENSION__';
 

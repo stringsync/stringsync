@@ -11,7 +11,7 @@ const Dummy = asReturnToRoute(() => <div data-testid="dummy" />);
 const Routes = () => <Route path="/dummy" component={Dummy} />;
 
 it('sets the returnToRoute in the store', () => {
-  const store = getStore(Client.create(Client.TEST_URI));
+  const store = getStore(new Client(''));
   const history = createMemoryHistory();
 
   expect(store.getState().history.returnToRoute).toBe(

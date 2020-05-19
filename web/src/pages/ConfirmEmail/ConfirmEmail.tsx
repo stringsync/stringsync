@@ -1,50 +1,13 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import {
-  compose,
-  InputOf,
-  ConfirmEmailInput,
-  ResendConfirmationInput,
-} from '../../common';
+import { compose } from '../../common';
 import { withLayout, Layouts } from '../../hocs';
 import { useLocation } from 'react-router';
-import { EMAIL_CONF_TOKEN_QUERY_PARAM_NAME } from '../../common';
+// import { EMAIL_CONF_TOKEN_QUERY_PARAM_NAME } from '../../common';
 import { useSelector } from '../../hooks';
-import { useClient } from '../../hooks/useClient';
-import { gql } from 'apollo-boost';
 import { getErrorMessages } from '../../util';
 import { Button, message, Row, Col, Alert } from 'antd';
-import { useDispatch } from 'react-redux';
-import { confirmEmail as confirmEmailAction } from '../../store';
 import styled from 'styled-components';
 import { useHistory } from 'react-router';
-
-const CONFIRM_EMAIL_MUTATION = gql`
-  mutation($input: ConfirmEmailInput!) {
-    confirmEmail(input: $input) {
-      user {
-        confirmedAt
-      }
-    }
-  }
-`;
-
-interface ConfirmEmailData {
-  user: {
-    confirmedAt: Date;
-  };
-}
-
-const RESEND_CONFIRMATION_MUTATION = gql`
-  mutation($input: ResendConfirmationInput!) {
-    resendConfirmation(input: $input) {
-      email
-    }
-  }
-`;
-
-interface ResendConfirmationData {
-  email: string;
-}
 
 const SPANS = Object.freeze({
   xs: 18,
@@ -94,39 +57,40 @@ const ConfirmEmail = enhance(() => {
   const isAuthPending = useSelector((state) => state.auth.isPending);
   const isConfirmed = useSelector((state) => !!state.auth.user.confirmedAt);
   const email = useSelector((state) => state.auth.user.email);
-  const dispatch = useDispatch();
-  const client = useClient();
+  // const dispatch = useDispatch();
+  // const client = useClient();
   const [isLoading, setLoading] = useState(false);
   const [errors, setErrors] = useState(new Array<string>());
   const clearErrors = useCallback(() => setErrors([]), [setErrors]);
   const history = useHistory();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-  const confirmationToken = params.get(EMAIL_CONF_TOKEN_QUERY_PARAM_NAME) || '';
+  console.log(params);
+  // const confirmationToken = params.get(EMAIL_CONF_TOKEN_QUERY_PARAM_NAME) || '';
 
   const confirmEmail = useCallback(async () => {
     setLoading(true);
     clearErrors();
     try {
-      const res = await client.call<
-        ConfirmEmailData,
-        InputOf<ConfirmEmailInput>
-      >(CONFIRM_EMAIL_MUTATION, { input: { confirmationToken } });
-      dispatch(confirmEmailAction(res.user.confirmedAt));
+      // const res = await client.call<
+      //   ConfirmEmailData,
+      //   InputOf<ConfirmEmailInput>
+      // >(CONFIRM_EMAIL_MUTATION, { input: { confirmationToken } });
+      // dispatch(confirmEmailAction(res.user.confirmedAt));
     } catch (error) {
       const errorMessages = getErrorMessages(error);
       setErrors(errorMessages);
     }
     setLoading(false);
-  }, [clearErrors, client, confirmationToken, dispatch]);
+  }, [clearErrors]);
 
   const resendConfirmationEmail = useCallback(async () => {
     setLoading(true);
     try {
-      await client.call<
-        ResendConfirmationData,
-        InputOf<ResendConfirmationInput>
-      >(RESEND_CONFIRMATION_MUTATION, { input: { email } });
+      // await client.call<
+      //   ResendConfirmationData,
+      //   InputOf<ResendConfirmationInput>
+      // >(RESEND_CONFIRMATION_MUTATION, { input: { email } });
       message.info('resent confirmation email');
       history.push('library');
     } catch (error) {
@@ -134,7 +98,7 @@ const ConfirmEmail = enhance(() => {
       setErrors(errorMessages);
     }
     setLoading(false);
-  }, [client, email, history]);
+  }, [history]);
 
   useEffect(() => {
     if (isConfirmed) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ClientProvider } from '../../client/ClientProvider';
+import { ClientProvider } from '../../client';
 import { ConfigProvider } from 'antd';
 import { Provider as StoreProvider } from 'react-redux';
 import { Store } from '../../store';

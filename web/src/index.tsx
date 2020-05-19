@@ -8,7 +8,7 @@ import { Client } from './client';
 import { getConfig } from './util/getConfig';
 
 const config = getConfig(process.env);
-const client = Client.create(config.REACT_APP_SERVER_URI);
+const client = new Client(config.REACT_APP_SERVER_URI);
 const store = getStore(client);
 
 ReactDOM.render(

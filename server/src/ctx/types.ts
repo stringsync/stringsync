@@ -4,7 +4,6 @@ import { Logger } from 'winston';
 import { Queues } from '../jobs';
 import { Config } from '../config';
 import { getDataLoaders } from '../data-loaders';
-import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 
 export interface GlobalCtx {
   config: Config;
@@ -24,8 +23,7 @@ export type Cookies = {
   USER_SESSION_TOKEN: string;
 };
 
-export interface ReqCtx<E extends ExpressContext = ExpressContext>
-  extends GlobalCtx {
+export interface ReqCtx<E extends any = any> extends GlobalCtx {
   requestedAt: Date;
   auth: Auth;
   cookies: Cookies;

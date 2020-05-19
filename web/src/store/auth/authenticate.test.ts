@@ -3,7 +3,7 @@ import { getTestStore } from '../../testing';
 import { AuthUser } from './types';
 
 it('authenticates the user', async () => {
-  const { store, client, thunkArgs } = getTestStore();
+  const { store, thunkArgs } = getTestStore();
   const user: AuthUser = {
     id: 'id',
     username: 'username',
@@ -11,7 +11,7 @@ it('authenticates the user', async () => {
     role: 'teacher',
     confirmedAt: new Date(),
   };
-  jest.spyOn(client, 'call').mockResolvedValue({ user });
+  // jest.spyOn(client, 'call').mockResolvedValue({ user });
 
   await authenticate()(...thunkArgs);
 

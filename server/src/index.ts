@@ -14,12 +14,12 @@ const server = async (config: Config): Promise<void> => {
     }
   `,
     {
-      hello: () => 'Hello, world!',
+      hello: () => 'Hello from the server!',
     }
   );
 
   await server.listen(config.PORT, () => {
-    console.log(`server at port ${config.PORT}`);
+    console.log(`running server at port ${config.PORT}`);
   });
 };
 
