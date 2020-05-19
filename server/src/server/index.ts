@@ -1,2 +1,2 @@
+export * from './types';
 export * from './getServer';
-export * from './getExpressServer';

@@ -1,4 +1,3 @@
-import { getSchema } from './resolvers';
 import { createGlobalCtx } from './ctx';
 import { getServer } from './server';
 import { getConfig, Config } from './config';
@@ -6,9 +5,22 @@ import { createWorkers } from './jobs';
 
 const server = async (config: Config): Promise<void> => {
   const ctx = createGlobalCtx(config);
-  const schema = getSchema();
-  const server = getServer(schema, ctx);
-  await server.listen(config.PORT);
+
+  const server = getServer(
+    ctx,
+    `
+    type Query {
+      hello: String
+    }
+  `,
+    {
+      hello: () => 'Hello, world!',
+    }
+  );
+
+  await server.listen(config.PORT, () => {
+    console.log(`server at port ${config.PORT}`);
+  });
 };
 
 const worker = (config: Config): void => {
@@ -27,6 +39,6 @@ if (require.main === module) {
       worker(config);
       break;
     default:
-      throw new TypeError(`config.ROLE not supported: ${config.ROLE}`);
+      throw new TypeError(`ROLE not supported: ${config.ROLE}`);
   }
 }

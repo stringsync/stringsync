@@ -1,21 +1,39 @@
-import { ApolloServer } from 'apollo-server-express';
-import { getReqCtxFactory } from '../ctx';
-import { getErrorFormatter } from './getErrorFormatter';
+import express from 'express';
+import cors from 'cors';
+import graphqlHTTP from 'express-graphql';
 import { GlobalCtx } from '../ctx';
-import { GraphQLSchema } from 'graphql';
-import { getExpressServer } from './getExpressServer';
+import { Resolvers } from './types';
+import { buildSchema } from 'graphql';
 
-export const getServer = (schema: GraphQLSchema, ctx: GlobalCtx) => {
-  const expressServer = getExpressServer(ctx);
+export const getServer = (
+  ctx: GlobalCtx,
+  schema: string,
+  resolvers: Resolvers
+) => {
+  const app = express();
 
-  const apolloServer = new ApolloServer({
-    schema,
-    debug: true,
-    context: getReqCtxFactory(ctx),
-    formatError: getErrorFormatter(ctx.config.NODE_ENV),
+  app.use(cors());
+
+  app.get('/health', async (req, res) => {
+    try {
+      await ctx.db.query('SELECT NOW();');
+      await ctx.redis.time();
+      ctx.logger.info('health check succeeded');
+      res.send('ok');
+    } catch {
+      ctx.logger.info('health check failed');
+      throw new Error('health check failed');
+    }
   });
 
-  apolloServer.applyMiddleware({ app: expressServer });
+  app.use(
+    '/graphql',
+    graphqlHTTP({
+      schema: buildSchema(schema),
+      rootValue: resolvers,
+      graphiql: true,
+    })
+  );
 
-  return expressServer;
+  return app;
 };
