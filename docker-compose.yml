@@ -85,20 +85,21 @@ services:
     links:
       - db
     command: ["yarn", "seed"]
-  # web:
-  #   container_name: web
-  #   image: ss-web:latest
-  #   build:
-  #     context: ./web
-  #     dockerfile: ./Dockerfile
-  #   environment:
-  #     NODE_ENV: development
-  #     REACT_APP_SERVER_URI: "http://localhost:3000/graphql"
-  #   volumes:
-  #     - ./web/src:/web/src
-  #     - ./web/public:/web/public
-  #   ports:
-  #     - "8080:8080"
-  #   links:
-  #     - server
-  #   command: ["yarn", "start"]
+
+  web:
+    container_name: web
+    image: ss-web:latest
+    build:
+      context: ./web
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: development
+      REACT_APP_SERVER_URI: "http://localhost:3000/graphql"
+    volumes:
+      - ./web/src:/web/src
+      - ./web/public:/web/public
+    ports:
+      - "8080:8080"
+    links:
+      - server
+    command: ["yarn", "start"]
