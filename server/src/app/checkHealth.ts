@@ -1,4 +1,4 @@
-import { Handler } from '../types';
+import { Handler } from './types';
 
 export const checkHealth: Handler = (ctx) => async (req, res) => {
   await ctx.db.query('SELECT NOW();');
