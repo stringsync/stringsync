@@ -4,7 +4,7 @@ import { getLogger } from '../../util';
 import { connectToDb } from '../../data/db';
 import { connectToRedis } from '../../data/redis';
 import { createQueues } from '../../jobs';
-import { getSchema } from '../../resolvers';
+import { getSchema } from '../../graphql';
 
 export const createGlobalCtx = (config: Config): Readonly<GlobalCtx> => {
   const logger = getLogger();

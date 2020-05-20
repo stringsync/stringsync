@@ -1,11 +1,11 @@
-import { toCanonicalUser, transaction } from '../data/db';
+import { toCanonicalUser, transaction } from '../../data/db';
 import {
   setUserSessionTokenCookie,
   shouldRefreshUserSession,
   getExpiresAt,
-} from '../util/user-session';
-import { GraphQLCtx } from '../util/ctx';
-import { AuthenticateOutput } from '../common';
+} from '../../util/user-session';
+import { GraphQLCtx } from '../../util/ctx';
+import { AuthenticateOutput } from '../../common';
 import { IFieldResolver } from 'graphql-tools';
 
 const BAD_SESSION_TOKEN_MSG = 'invalid or expired credentials';

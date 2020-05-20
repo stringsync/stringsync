@@ -1,7 +1,7 @@
-import { ConfirmEmailInput, ConfirmEmailOutput } from '../common';
-import { toCanonicalUser } from '../data/db';
+import { ConfirmEmailInput, ConfirmEmailOutput } from '../../common';
+import { toCanonicalUser } from '../../data/db';
 import { IFieldResolver } from 'graphql-tools';
-import { GraphQLCtx } from '../util/ctx';
+import { GraphQLCtx } from '../../util/ctx';
 
 type ConfirmEmailResolver = IFieldResolver<
   undefined,

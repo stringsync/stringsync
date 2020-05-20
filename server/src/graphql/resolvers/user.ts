@@ -1,5 +1,5 @@
-import { UserInput, User } from '../../../common';
-import { GraphQLCtx } from '../util/ctx';
+import { UserInput, User } from '../../common';
+import { GraphQLCtx } from '../../util/ctx';
 import { IFieldResolver } from 'graphql-tools';
 
 type UserResolver = IFieldResolver<undefined, GraphQLCtx, { input: UserInput }>;

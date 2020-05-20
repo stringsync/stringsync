@@ -1,8 +1,11 @@
-import { LoginInput, LoginOutput } from '../common';
-import { setUserSessionTokenCookie, getExpiresAt } from '../util/user-session';
-import { isPassword } from '../util/password';
-import { toCanonicalUser } from '../data/db';
-import { GraphQLCtx } from '../util/ctx';
+import { LoginInput, LoginOutput } from '../../common';
+import {
+  setUserSessionTokenCookie,
+  getExpiresAt,
+} from '../../util/user-session';
+import { isPassword } from '../../util/password';
+import { toCanonicalUser } from '../../data/db';
+import { GraphQLCtx } from '../../util/ctx';
 import { or } from 'sequelize';
 import { IFieldResolver } from 'graphql-tools';
 

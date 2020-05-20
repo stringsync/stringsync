@@ -1,11 +1,14 @@
-import { SignupInput, SignupOutput } from '../common';
-import { getEncryptedPassword } from '../util/password';
-import { toCanonicalUser, transaction } from '../data/db';
-import { setUserSessionTokenCookie, getExpiresAt } from '../util/user-session';
+import { SignupInput, SignupOutput } from '../../common';
+import { getEncryptedPassword } from '../../util/password';
+import { toCanonicalUser, transaction } from '../../data/db';
 import uuid from 'uuid';
-import { sendConfirmationMail } from '../jobs/mail';
+import { sendConfirmationMail } from '../../jobs/mail';
 import { IFieldResolver } from 'graphql-tools';
-import { GraphQLCtx } from '../util/ctx';
+import { GraphQLCtx } from '../../util/ctx';
+import {
+  setUserSessionTokenCookie,
+  getExpiresAt,
+} from '../../util/user-session';
 
 type SignupResolver = IFieldResolver<
   undefined,

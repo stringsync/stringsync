@@ -1,7 +1,7 @@
-import { toCanonicalUser } from '../data/db';
-import { User } from '../../../common';
+import { toCanonicalUser } from '../../data/db';
+import { User } from '../../common';
 import { IFieldResolver } from 'graphql-tools';
-import { GraphQLCtx } from '../util/ctx';
+import { GraphQLCtx } from '../../util/ctx';
 
 type UsersResolver = IFieldResolver<undefined, GraphQLCtx, {}>;
 

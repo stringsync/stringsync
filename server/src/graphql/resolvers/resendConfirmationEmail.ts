@@ -1,11 +1,11 @@
 import {
   ResendConfirmationEmailInput,
   ResendConfirmationEmailOutput,
-} from '../common';
-import { sendConfirmationMail } from '../jobs/mail';
-import { transaction } from '../data/db';
+} from '../../common';
+import { sendConfirmationMail } from '../../jobs/mail';
+import { transaction } from '../../data/db';
 import uuid from 'uuid';
-import { GraphQLCtx } from '../util/ctx';
+import { GraphQLCtx } from '../../util/ctx';
 import { IFieldResolver } from 'graphql-tools';
 
 type ResendConfirmationEmailResolver = IFieldResolver<
