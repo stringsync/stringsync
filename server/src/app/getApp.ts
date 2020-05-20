@@ -1,8 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import { GlobalCtx } from '../util/ctx';
-import { checkHealth } from './health';
-import { graphqlMiddleware } from './graphql';
+import { checkHealth } from './checkHealth';
+import { graphqlMiddleware } from './graphqlMiddleware';
 
 export const getApp = (ctx: GlobalCtx) => {
   const app = express();
