@@ -25,15 +25,15 @@ export const getSchema = () => {
   let notationType: GraphQLObjectType;
   let userInputType: GraphQLInputObjectType;
   let userOutputType: GraphQLObjectType;
-  let usersInputType: GraphQLInputObjectType;
+  let usersInputType: undefined;
   let usersOutputType: GraphQLOutputType;
-  let authenticateInputType: GraphQLInputObjectType;
+  let authenticateInputType: undefined;
   let authenticateOutputType: GraphQLOutputType;
   let signupInputType: GraphQLInputObjectType;
   let signupOutputType: GraphQLOutputType;
   let loginInputType: GraphQLInputObjectType;
   let loginOutputType: GraphQLOutputType;
-  let logoutInputType: GraphQLInputObjectType;
+  let logoutInputType: undefined;
   let logoutOutputType: GraphQLOutputType;
   let confirmEmailInputType: GraphQLInputObjectType;
   let confirmEmailOutputType: GraphQLOutputType;
@@ -94,17 +94,11 @@ export const getSchema = () => {
 
   userOutputType = userType;
 
-  usersInputType = new GraphQLInputObjectType({
-    name: 'UsersInput',
-    fields: () => ({}),
-  });
+  usersInputType = undefined;
 
   usersOutputType = new GraphQLList(userType);
 
-  authenticateInputType = new GraphQLInputObjectType({
-    name: 'AuthenticateInput',
-    fields: () => ({}),
-  });
+  authenticateInputType = undefined;
 
   authenticateOutputType = userType;
 
@@ -129,10 +123,7 @@ export const getSchema = () => {
 
   loginOutputType = userType;
 
-  logoutInputType = new GraphQLInputObjectType({
-    name: 'LogoutInput',
-    fields: () => ({}),
-  });
+  logoutInputType = undefined;
 
   logoutOutputType = userType;
 
@@ -162,7 +153,7 @@ export const getSchema = () => {
         type: userOutputType,
       },
       users: {
-        args: { input: { type: usersInputType } },
+        args: undefined,
         type: usersOutputType,
       },
     }),
@@ -172,7 +163,7 @@ export const getSchema = () => {
     name: 'Mutation',
     fields: () => ({
       authenticate: {
-        args: { input: { type: authenticateInputType } },
+        args: undefined,
         type: authenticateOutputType,
       },
       signup: {
@@ -184,7 +175,7 @@ export const getSchema = () => {
         type: loginOutputType,
       },
       logout: {
-        args: { input: { type: logoutInputType } },
+        args: undefined,
         type: logoutOutputType,
       },
       confirmEmail: {
