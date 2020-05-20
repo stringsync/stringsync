@@ -2,14 +2,11 @@ import { Handler } from '../types';
 import graphqlHTTP from 'express-graphql';
 
 export const graphqlMiddleware: Handler = (ctx) => (req, res) => {
+  const context = { ...ctx };
   const graphqlHttpMiddleware = graphqlHTTP({
     schema: ctx.schema,
     graphiql: true,
-    context: {
-      req,
-      res,
-      ...ctx,
-    },
+    context,
   });
   return graphqlHttpMiddleware(req, res);
 };
