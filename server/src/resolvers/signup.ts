@@ -1,21 +1,23 @@
-import { SignupInput, SignupPayload } from '../../../common/types';
-import { getEncryptedPassword } from '../../../util/password';
-import { toCanonicalUser, transaction } from '../../../data/db';
-import {
-  setUserSessionTokenCookie,
-  getExpiresAt,
-} from '../../../util/user-session';
+import { SignupInput, SignupOutput } from '../common';
+import { getEncryptedPassword } from '../util/password';
+import { toCanonicalUser, transaction } from '../data/db';
+import { setUserSessionTokenCookie, getExpiresAt } from '../util/user-session';
 import uuid from 'uuid';
-import { sendConfirmationMail } from '../../../jobs/mail';
-import { Resolver } from '../../types';
+import { sendConfirmationMail } from '../jobs/mail';
+import { IFieldResolver } from 'graphql-tools';
+import { GraphQLCtx } from '../util/ctx';
 
-interface Args {
-  input: SignupInput;
-}
+type SignupResolver = IFieldResolver<
+  undefined,
+  GraphQLCtx,
+  { input: SignupInput }
+>;
 
-type Signup = Resolver<Promise<SignupPayload>, undefined, Args>;
-
-export const signup: Signup = async (parent, args, ctx) => {
+export const signup: SignupResolver = async (
+  src,
+  args,
+  ctx
+): Promise<SignupOutput> => {
   if (ctx.auth.isLoggedIn) {
     throw new Error('already logged in');
   }

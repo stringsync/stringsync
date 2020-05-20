@@ -1,14 +1,19 @@
-import { ConfirmEmailInput, ConfirmEmailPayload } from '../../../common/types';
-import { toCanonicalUser } from '../../../data/db';
-import { Resolver } from '../../types';
+import { ConfirmEmailInput, ConfirmEmailOutput } from '../common';
+import { toCanonicalUser } from '../data/db';
+import { IFieldResolver } from 'graphql-tools';
+import { GraphQLCtx } from '../util/ctx';
 
-interface Args {
-  input: ConfirmEmailInput;
-}
+type ConfirmEmailResolver = IFieldResolver<
+  undefined,
+  GraphQLCtx,
+  { input: ConfirmEmailInput }
+>;
 
-type ConfirmEmail = Resolver<Promise<ConfirmEmailPayload>, undefined, Args>;
-
-export const confirmEmail: ConfirmEmail = async (parent, args, ctx) => {
+export const confirmEmail: ConfirmEmailResolver = async (
+  src,
+  args,
+  ctx
+): Promise<ConfirmEmailOutput> => {
   const userModel = await ctx.db.models.User.findOne({
     include: [
       {

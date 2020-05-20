@@ -6,8 +6,6 @@ export type DeepPartial<T> = {
     : T[P];
 };
 
-export type InputOf<T> = { input: T };
-
 export type UserRoles = 'student' | 'teacher' | 'admin';
 
 export const USER_ROLE_HIEARCHY: UserRoles[] = ['student', 'teacher', 'admin'];
@@ -28,15 +26,15 @@ export interface SignupInput {
   password: string;
 }
 
-export interface SignupPayload {
+export interface SignupOutput {
   user: User;
 }
 
-export interface AuthenticatePayload {
+export interface AuthenticateOutput {
   user: User;
 }
 
-export interface LogoutPayload {
+export interface LogoutOutput {
   user: User | null;
 }
 
@@ -45,7 +43,7 @@ export interface LoginInput {
   password: string;
 }
 
-export interface LoginPayload {
+export interface LoginOutput {
   user: User;
 }
 
@@ -53,7 +51,7 @@ export interface Notation {
   id: string;
 }
 
-export interface GetUserInput {
+export interface UserInput {
   id: string;
 }
 
@@ -61,14 +59,14 @@ export interface ConfirmEmailInput {
   confirmationToken: string;
 }
 
-export interface ConfirmEmailPayload {
+export interface ConfirmEmailOutput {
   user: User;
 }
 
-export interface ResendConfirmationInput {
+export interface ResendConfirmationEmailInput {
   email: string;
 }
 
-export interface ResendConfirmationPayload {
+export interface ResendConfirmationEmailOutput {
   email: string;
 }

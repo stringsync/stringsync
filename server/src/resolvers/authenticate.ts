@@ -1,21 +1,22 @@
-import { toCanonicalUser, transaction } from '../../../data/db';
+import { toCanonicalUser, transaction } from '../data/db';
 import {
   setUserSessionTokenCookie,
   shouldRefreshUserSession,
   getExpiresAt,
-} from '../../../util/user-session';
-import { GraphQLCtx } from '../../../util/ctx';
-import { AuthenticatePayload } from '../../../common/types';
-
-interface Args {}
+} from '../util/user-session';
+import { GraphQLCtx } from '../util/ctx';
+import { AuthenticateOutput } from '../common';
+import { IFieldResolver } from 'graphql-tools';
 
 const BAD_SESSION_TOKEN_MSG = 'invalid or expired credentials';
 
-export const authenticate = async (
-  parent: undefined,
-  args: Args,
-  ctx: GraphQLCtx
-): Promise<AuthenticatePayload> => {
+type AuthenticateResolver = IFieldResolver<undefined, GraphQLCtx, {}>;
+
+export const authenticate: AuthenticateResolver = async (
+  src,
+  args,
+  ctx
+): Promise<AuthenticateOutput> => {
   const { isLoggedIn, user, token } = ctx.auth;
 
   if (!isLoggedIn || !user || !token) {

@@ -1,12 +1,10 @@
-import { LoginInput } from '../../../common/types';
-import {
-  setUserSessionTokenCookie,
-  getExpiresAt,
-} from '../../../util/user-session';
-import { isPassword } from '../../../util/password';
-import { toCanonicalUser } from '../../../data/db';
-import { GraphQLCtx } from '../../../util/ctx';
+import { LoginInput, LoginOutput } from '../common';
+import { setUserSessionTokenCookie, getExpiresAt } from '../util/user-session';
+import { isPassword } from '../util/password';
+import { toCanonicalUser } from '../data/db';
+import { GraphQLCtx } from '../util/ctx';
 import { or } from 'sequelize';
+import { IFieldResolver } from 'graphql-tools';
 
 interface Args {
   input: LoginInput;
@@ -14,7 +12,17 @@ interface Args {
 
 export const WRONG_CREDENTIALS_MSG = 'wrong username, email, or password';
 
-export const login = async (parent: undefined, args: Args, ctx: GraphQLCtx) => {
+type LoginResolver = IFieldResolver<
+  undefined,
+  GraphQLCtx,
+  { input: LoginInput }
+>;
+
+export const login: LoginResolver = async (
+  src,
+  args,
+  ctx
+): Promise<LoginOutput> => {
   const userModel = await ctx.db.models.User.findOne({
     where: {
       ...or(

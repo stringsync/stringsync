@@ -1,27 +1,24 @@
 import {
-  ResendConfirmationInput,
-  ResendConfirmationPayload,
-} from '../../../common';
-import { sendConfirmationMail } from '../../../jobs/mail';
-import { transaction } from '../../../data/db';
-import { Resolver } from '../../types';
+  ResendConfirmationEmailInput,
+  ResendConfirmationEmailOutput,
+} from '../common';
+import { sendConfirmationMail } from '../jobs/mail';
+import { transaction } from '../data/db';
 import uuid from 'uuid';
+import { GraphQLCtx } from '../util/ctx';
+import { IFieldResolver } from 'graphql-tools';
 
-interface Args {
-  input: ResendConfirmationInput;
-}
-
-type ResendConfirmation = Resolver<
-  Promise<ResendConfirmationPayload>,
+type ResendConfirmationEmailResolver = IFieldResolver<
   undefined,
-  Args
+  GraphQLCtx,
+  { input: ResendConfirmationEmailInput }
 >;
 
-export const resendConfirmation: ResendConfirmation = async (
-  parent,
+export const resendConfirmationEmail: ResendConfirmationEmailResolver = async (
+  src,
   args,
   ctx
-) => {
+): Promise<ResendConfirmationEmailOutput> => {
   const { email } = args.input;
 
   return transaction(ctx.db, async () => {
