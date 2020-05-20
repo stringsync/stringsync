@@ -1,3 +1,4 @@
+export const typeDefs = `
 # Roots
 
 type Query {
@@ -89,3 +90,4 @@ input ResendConfirmationEmailInput {
 type ResendConfirmationEmailOutput {
   email: String!
 }
+`;
