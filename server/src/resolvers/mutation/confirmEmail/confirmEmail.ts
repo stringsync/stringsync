@@ -1,4 +1,3 @@
-import { GraphQLCtx } from '../../../util/ctx';
 import { ConfirmEmailInput, ConfirmEmailPayload } from '../../../common/types';
 import { toCanonicalUser } from '../../../data/db';
 import { Resolver } from '../../types';

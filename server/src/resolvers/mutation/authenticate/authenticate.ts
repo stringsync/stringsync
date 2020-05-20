@@ -42,11 +42,11 @@ export const authenticate = async (
         userId: user.id,
         expiresAt: getExpiresAt(ctx.reqAt),
       });
-      setUserSessionTokenCookie(newUserSessionModel, ctx.res);
+      // setUserSessionTokenCookie(newUserSessionModel, ctx.res);
     });
   } else {
     // should be a noop, but we set it anyway for tests
-    setUserSessionTokenCookie(oldUserSessionModel, ctx.res);
+    // setUserSessionTokenCookie(oldUserSessionModel, ctx.res);
   }
 
   return { user: toCanonicalUser(user) };

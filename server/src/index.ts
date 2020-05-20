@@ -1,17 +1,12 @@
+import { getConfig, Config } from './config';
 import { createGlobalCtx } from './util/ctx';
 import { getApp } from './app';
-import { getConfig, Config } from './config';
 import { createWorkers } from './jobs';
-import { getSchema } from './resolvers';
 
 const server = async (config: Config): Promise<void> => {
   const ctx = createGlobalCtx(config);
-  const schema = getSchema();
-  const server = getApp(ctx, schema);
-
-  await server.listen(config.PORT, () => {
-    console.log(`running server at port ${config.PORT}`);
-  });
+  const app = getApp(ctx);
+  await app.listen(config.PORT);
 };
 
 const worker = (config: Config): void => {
@@ -21,7 +16,6 @@ const worker = (config: Config): void => {
 
 if (require.main === module) {
   const config = getConfig(process.env);
-
   switch (config.ROLE) {
     case 'server':
       server(config);

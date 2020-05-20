@@ -8,7 +8,7 @@ export const logout: Resolver<Promise<LogoutPayload>> = async (
   args,
   ctx
 ) => {
-  clearUserSessionTokenCookie(ctx.res);
+  // clearUserSessionTokenCookie(ctx.res);
 
   if (!ctx.auth.user) {
     return { user: null };

@@ -40,7 +40,7 @@ export type GlobalCtxCallback<A extends any[]> = (
   ...args: A
 ) => any;
 
-export type CtxCallback<A extends any[]> = (ctx: GraphQLCtx, ...args: A) => any;
+export type CtxCallback<A extends any[]> = (ctx: GlobalCtx, ...args: A) => any;
 
 export interface GlobalCtxPatch {
   config?: Partial<Config>;

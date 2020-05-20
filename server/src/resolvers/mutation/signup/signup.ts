@@ -45,7 +45,7 @@ export const signup: Signup = async (parent, args, ctx) => {
       expiresAt: getExpiresAt(ctx.reqAt),
     });
 
-    setUserSessionTokenCookie(userSessionModel, ctx.res);
+    // setUserSessionTokenCookie(userSessionModel, ctx.res);
 
     await sendConfirmationMail(email, confirmationToken, ctx);
 

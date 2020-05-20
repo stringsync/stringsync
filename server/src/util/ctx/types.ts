@@ -4,7 +4,8 @@ import { Logger } from 'winston';
 import { Queues } from '../../jobs';
 import { Config } from '../../config';
 import { DataLoaders } from '../../data/data-loaders';
-import { Request, Response } from 'express';
+import { Request } from 'express';
+import { GraphQLSchema } from 'graphql';
 
 export interface GlobalCtx {
   config: Config;
@@ -12,6 +13,7 @@ export interface GlobalCtx {
   db: Db;
   redis: Redis;
   queues: Queues;
+  schema: GraphQLSchema;
 }
 
 export interface Auth {
@@ -26,7 +28,6 @@ export type Cookies = {
 
 export interface GraphQLCtx extends GlobalCtx {
   req: Request;
-  res: Response;
   reqAt: Date;
   auth: Auth;
   cookies: Cookies;

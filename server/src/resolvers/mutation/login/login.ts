@@ -38,7 +38,7 @@ export const login = async (parent: undefined, args: Args, ctx: GraphQLCtx) => {
     expiresAt: getExpiresAt(ctx.reqAt),
   });
 
-  setUserSessionTokenCookie(userSessionModel, ctx.res);
+  // setUserSessionTokenCookie(userSessionModel, ctx.res);
 
   return { user: toCanonicalUser(userModel) };
 };
