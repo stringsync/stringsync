@@ -6,12 +6,14 @@ import {
   logout,
   resendConfirmationEmail,
   signup,
+  me,
 } from './resolvers';
 
 export const getResolvers = () => ({
   Query: {
     user,
     users,
+    me,
   },
   Mutation: {
     signup,
