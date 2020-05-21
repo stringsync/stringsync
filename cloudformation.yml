@@ -917,6 +917,8 @@ Resources:
               Value: !GetAtt ElasticacheCluster.RedisEndpoint.Port
             - Name: ROLE
               Value: server
+            - Name: SESSION_SECRET
+              Value: !Ref ServerSessionSecret
 
   ServerCluster:
     Type: AWS::ECS::Cluster
