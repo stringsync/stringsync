@@ -1,2 +1,2 @@
-export * from './getEncryptedPassword';
+export * from './makeEncryptedPassword';
 export * from './isPassword';
