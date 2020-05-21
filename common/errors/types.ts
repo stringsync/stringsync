@@ -9,6 +9,6 @@ export type HttpStatuses = { [key in Keys]: number };
 
 export type HttpStatus = HttpStatuses[keyof HttpStatuses];
 
-export interface ErrorObject {
-  detail: string;
+export interface Extensions {
+  status: number;
 }

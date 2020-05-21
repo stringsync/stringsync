@@ -1,29 +1,36 @@
-import { HttpStatus } from './types';
+import { HttpStatus, Extensions } from './types';
 import { HTTP_STATUSES } from './constants';
 
-export class HttpStatusError extends Error {
-  public readonly status: HttpStatus;
+abstract class HttpStatusError extends Error {
+  public static status: HttpStatus;
+  public readonly extensions: Extensions;
 
-  constructor(message: string, status: HttpStatus) {
+  constructor(message: string, extensions: Extensions) {
     super(message);
-    this.status = status;
+    this.extensions = extensions;
   }
 }
 
 export class BadRequestError extends HttpStatusError {
+  static status = HTTP_STATUSES.BAD_REQUEST;
+
   constructor(message: string) {
-    super(message, HTTP_STATUSES.BAD_REQUEST);
+    super(message, { status: BadRequestError.status });
   }
 }
 
 export class ForbiddenError extends HttpStatusError {
+  static status = HTTP_STATUSES.FORBIDDEN;
+
   constructor(message: string) {
-    super(message, HTTP_STATUSES.FORBIDDEN);
+    super(message, { status: ForbiddenError.status });
   }
 }
 
 export class NotFoundError extends HttpStatusError {
+  static status = HTTP_STATUSES.NOT_FOUND;
+
   constructor(message: string) {
-    super(message, HTTP_STATUSES.NOT_FOUND);
+    super(message, { status: NotFoundError.status });
   }
 }
