@@ -11,7 +11,7 @@ export const resolver: IFieldResolver<undefined, ResolverCtx, {}> = async (
   ctx,
   info
 ): Promise<User | null> => {
-  const pk = ctx.req.session.id;
+  const pk = ctx.req.session.user.id;
   return await ctx.dataLoaders.usersById.load(pk);
 };
 

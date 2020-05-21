@@ -5,6 +5,7 @@ import { IFieldResolver } from 'graphql-tools';
 import { ForbiddenError } from '../../../common/errors';
 import { toSessionUser } from '../../../util/session';
 import { withAuthRequirement } from '../../middlewares';
+import { or } from 'sequelize';
 import {
   LoginInput,
   LoginOutput,
@@ -24,7 +25,7 @@ export const resolver: IFieldResolver<
   const email = args.input.emailOrUsername;
   const username = args.input.emailOrUsername;
   const user = await ctx.db.models.User.findOne({
-    where: { or: [{ email }, { username }] },
+    where: { ...or({ email }, { username }) },
   });
 
   if (!user) {
