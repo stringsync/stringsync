@@ -16,7 +16,7 @@ export const resolver: IFieldResolver<undefined, ResolverCtx, {}> = async (
   ctx
 ): Promise<LogoutOutput> => {
   const pk = ctx.req.session.user.id;
-  const user = await ctx.db.models.User.findByPk(pk);
+  const user = await ctx.dataLoaders.usersById.load(pk);
 
   if (!user) {
     throw new NotFoundError('user not found');
@@ -24,7 +24,7 @@ export const resolver: IFieldResolver<undefined, ResolverCtx, {}> = async (
 
   ctx.req.session.user = getNullSessionUser();
 
-  return { user: toCanonicalUser(user) };
+  return { user };
 };
 
 export const logout = middleware(resolver);
