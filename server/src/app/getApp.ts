@@ -8,7 +8,7 @@ import { authMiddleware } from './authMiddleware';
 export const getApp = (ctx: GlobalCtx) => {
   const app = express();
 
-  app.set('trust proxy', true);
+  app.set('trust proxy', 1);
 
   app.use(cors());
 
