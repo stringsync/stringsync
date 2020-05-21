@@ -10,4 +10,5 @@ export interface Config {
   REDIS_HOST: string;
   REDIS_PORT: string;
   ROLE: string;
+  SESSION_SECRET: string;
 }

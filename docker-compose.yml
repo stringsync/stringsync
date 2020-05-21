@@ -32,6 +32,7 @@ services:
       DB_PORT: 5432
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      SESSION_SECRET: secret
     volumes:
       - ./server/src:/server/src
     links:
@@ -61,6 +62,7 @@ services:
       DB_PORT: 5432
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      SESSION_SECRET: secret
     volumes:
       - ./server/src:/server/src
     links:

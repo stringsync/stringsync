@@ -12,7 +12,7 @@ export const authMiddleware: Handler = (ctx) => (req, res, next) => {
   const store = new RedisStore({ client: ctx.redis as any });
 
   const sessionMiddleware = session({
-    secret: 'keyboard cat',
+    secret: ctx.config.SESSION_SECRET,
     cookie: { httpOnly: true, sameSite: 'none', maxAge: MAX_AGE_MS },
     genid: () => uuid.v4(),
     proxy: undefined,

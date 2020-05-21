@@ -30,6 +30,7 @@ services:
       WEB_URI: 'http://localhost'
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      SESSION_SECRET: secret
     volumes:
       - ./server/src:/server/src
     links:

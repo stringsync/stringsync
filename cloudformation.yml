@@ -9,9 +9,9 @@ Parameters:
   DBName:
     Description: The database name
     Type: String
-    MinLength: '1'
-    MaxLength: '64'
-    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    MinLength: "1"
+    MaxLength: "64"
+    AllowedPattern: "[a-zA-Z][a-zA-Z0-9]*"
     ConstraintDescription:
       must begin with a letter and contain only alphanumeric
       characters.
@@ -19,9 +19,9 @@ Parameters:
     NoEcho: true
     Description: The database admin account username
     Type: String
-    MinLength: '1'
-    MaxLength: '16'
-    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    MinLength: "1"
+    MaxLength: "16"
+    AllowedPattern: "[a-zA-Z][a-zA-Z0-9]*"
     ConstraintDescription:
       must begin with a letter and contain only alphanumeric
       characters.
@@ -29,16 +29,16 @@ Parameters:
     NoEcho: true
     Description: The database admin account password
     Type: String
-    MinLength: '1'
-    MaxLength: '41'
-    AllowedPattern: '[a-zA-Z0-9]+'
+    MinLength: "1"
+    MaxLength: "41"
+    AllowedPattern: "[a-zA-Z0-9]+"
     ConstraintDescription: must contain only alphanumeric characters.
   DBAllocatedStorage:
-    Default: '20'
+    Default: "20"
     Description: The size of the database (Gb)
     Type: Number
-    MinValue: '20'
-    MaxValue: '1024'
+    MinValue: "20"
+    MaxValue: "1024"
     ConstraintDescription: must be between 5 and 1024Gb.
   DBInstanceClass:
     Description: The database instance type
@@ -92,6 +92,10 @@ Parameters:
     Type: Number
     Default: 0
     Description: The number of desired server instances.
+  ServerSessionSecret:
+    Type: String
+    NoEcho: true
+    Description: The secret string used to sign session cookies.
   WorkerCpu:
     Type: Number
     Default: 256
@@ -123,15 +127,15 @@ Mappings:
   # ranges to add more
   SubnetConfig:
     VPC:
-      CIDR: '10.0.0.0/16'
+      CIDR: "10.0.0.0/16"
     Public1:
-      CIDR: '10.0.0.0/24'
+      CIDR: "10.0.0.0/24"
     Public2:
-      CIDR: '10.0.1.0/24'
+      CIDR: "10.0.1.0/24"
     Private1:
-      CIDR: '10.0.2.0/24'
+      CIDR: "10.0.2.0/24"
     Private2:
-      CIDR: '10.0.3.0/24'
+      CIDR: "10.0.3.0/24"
 
 Resources:
   CodePipelineArtifactStore:
@@ -143,13 +147,13 @@ Resources:
     Properties:
       Bucket: !Ref FrontendBucket
       PolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           Sid: PublicReadForGetBucketObjects
           Effect: Allow
-          Principal: '*'
-          Action: 's3:GetObject'
-          Resource: !Join ['', ['arn:aws:s3:::', !Ref FrontendBucket, '/*']]
+          Principal: "*"
+          Action: "s3:GetObject"
+          Resource: !Join ["", ["arn:aws:s3:::", !Ref FrontendBucket, "/*"]]
 
   FrontendBucket:
     DeletionPolicy: Delete
@@ -194,7 +198,7 @@ Resources:
     Properties:
       Path: /
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -204,22 +208,22 @@ Resources:
       Policies:
         - PolicyName: AWS-CodeBuild-Service-3
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
-                  - 'logs:*'
-                  - 'ec2:*'
-                  - 's3:*'
-                  - 'ecr:*'
-                  - 'cloudwatch:*'
-                Resource: '*'
+                  - "logs:*"
+                  - "ec2:*"
+                  - "s3:*"
+                  - "ecr:*"
+                  - "cloudwatch:*"
+                Resource: "*"
 
   CloudWatchEventRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -230,11 +234,11 @@ Resources:
       Policies:
         - PolicyName: cwe-pipeline-execution
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action: codepipeline:StartPipelineExecution
-                Resource: '*'
+                Resource: "*"
 
   CloudWatchEventRule:
     Type: AWS::Events::Rule
@@ -243,7 +247,7 @@ Resources:
         source:
           - aws.codecommit
         detail-type:
-          - 'CodeCommit Repository State Change'
+          - "CodeCommit Repository State Change"
         resources:
           - !GetAtt CodeCommitRepository.Arn
         detail:
@@ -257,13 +261,13 @@ Resources:
       Targets:
         - Arn:
             !Join [
-              '',
+              "",
               [
-                'arn:aws:codepipeline:',
-                !Ref 'AWS::Region',
-                ':',
-                !Ref 'AWS::AccountId',
-                ':',
+                "arn:aws:codepipeline:",
+                !Ref "AWS::Region",
+                ":",
+                !Ref "AWS::AccountId",
+                ":",
                 !Ref CodePipeline,
               ],
             ]
@@ -275,7 +279,7 @@ Resources:
     Properties:
       Path: /
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -285,61 +289,61 @@ Resources:
       Policies:
         - PolicyName: AWS-CodePipeline-Service-3
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
-                  - 'codecommit:CancelUploadArchive'
-                  - 'codecommit:GetBranch'
-                  - 'codecommit:GetCommit'
-                  - 'codecommit:GetUploadArchiveStatus'
-                  - 'codecommit:UploadArchive'
-                Resource: '*'
+                  - "codecommit:CancelUploadArchive"
+                  - "codecommit:GetBranch"
+                  - "codecommit:GetCommit"
+                  - "codecommit:GetUploadArchiveStatus"
+                  - "codecommit:UploadArchive"
+                Resource: "*"
               - Effect: Allow
                 Action:
-                  - 'codedeploy:CreateDeployment'
-                  - 'codedeploy:GetApplicationRevision'
-                  - 'codedeploy:GetDeployment'
-                  - 'codedeploy:GetDeploymentConfig'
-                  - 'codedeploy:RegisterApplicationRevision'
-                Resource: '*'
+                  - "codedeploy:CreateDeployment"
+                  - "codedeploy:GetApplicationRevision"
+                  - "codedeploy:GetDeployment"
+                  - "codedeploy:GetDeploymentConfig"
+                  - "codedeploy:RegisterApplicationRevision"
+                Resource: "*"
               - Effect: Allow
                 Action:
-                  - 'codebuild:BatchGetBuilds'
-                  - 'codebuild:StartBuild'
-                Resource: '*'
+                  - "codebuild:BatchGetBuilds"
+                  - "codebuild:StartBuild"
+                Resource: "*"
               - Effect: Allow
                 Action:
-                  - 'devicefarm:ListProjects'
-                  - 'devicefarm:ListDevicePools'
-                  - 'devicefarm:GetRun'
-                  - 'devicefarm:GetUpload'
-                  - 'devicefarm:CreateUpload'
-                  - 'devicefarm:ScheduleRun'
-                Resource: '*'
+                  - "devicefarm:ListProjects"
+                  - "devicefarm:ListDevicePools"
+                  - "devicefarm:GetRun"
+                  - "devicefarm:GetUpload"
+                  - "devicefarm:CreateUpload"
+                  - "devicefarm:ScheduleRun"
+                Resource: "*"
               - Effect: Allow
                 Action:
-                  - 'lambda:InvokeFunction'
-                  - 'lambda:ListFunctions'
-                Resource: '*'
+                  - "lambda:InvokeFunction"
+                  - "lambda:ListFunctions"
+                Resource: "*"
               - Effect: Allow
                 Action:
-                  - 'iam:PassRole'
-                Resource: '*'
+                  - "iam:PassRole"
+                Resource: "*"
               - Effect: Allow
                 Action:
-                  - 'elasticbeanstalk:*'
-                  - 'ec2:*'
-                  - 'elasticloadbalancing:*'
-                  - 'autoscaling:*'
-                  - 'cloudwatch:*'
-                  - 's3:*'
-                  - 'sns:*'
-                  - 'cloudformation:*'
-                  - 'rds:*'
-                  - 'sqs:*'
-                  - 'ecs:*'
-                Resource: '*'
+                  - "elasticbeanstalk:*"
+                  - "ec2:*"
+                  - "elasticloadbalancing:*"
+                  - "autoscaling:*"
+                  - "cloudwatch:*"
+                  - "s3:*"
+                  - "sns:*"
+                  - "cloudformation:*"
+                  - "rds:*"
+                  - "sqs:*"
+                  - "ecs:*"
+                Resource: "*"
 
   CodeBuildProject:
     Type: AWS::CodeBuild::Project
@@ -368,7 +372,7 @@ Resources:
             Value: !Ref ServerImageRepository
           - Name: REACT_APP_SERVER_URI
             Type: PLAINTEXT
-            Value: !Join ['', ['http://', !GetAtt PublicLoadBalancer.DNSName]]
+            Value: !Join ["", ["http://", !GetAtt PublicLoadBalancer.DNSName]]
       Source:
         Type: CODEPIPELINE
 
@@ -389,7 +393,7 @@ Resources:
                 Category: Source
                 Owner: AWS
                 Provider: CodeCommit
-                Version: '1'
+                Version: "1"
               OutputArtifacts:
                 - Name: SourceOutput
               Configuration:
@@ -404,7 +408,7 @@ Resources:
                 Category: Build
                 Owner: AWS
                 Provider: CodeBuild
-                Version: '1'
+                Version: "1"
               InputArtifacts:
                 - Name: SourceOutput
               OutputArtifacts:
@@ -420,7 +424,7 @@ Resources:
                 Category: Deploy
                 Owner: AWS
                 Provider: ECS
-                Version: '1'
+                Version: "1"
               InputArtifacts:
                 - Name: BuildOutput
               Configuration:
@@ -432,7 +436,7 @@ Resources:
                 Category: Deploy
                 Owner: AWS
                 Provider: ECS
-                Version: '1'
+                Version: "1"
               InputArtifacts:
                 - Name: BuildOutput
               Configuration:
@@ -444,7 +448,7 @@ Resources:
                 Category: Deploy
                 Owner: AWS
                 Provider: S3
-                Version: '1'
+                Version: "1"
               InputArtifacts:
                 - Name: BuildOutput
               Configuration:
@@ -460,7 +464,7 @@ Resources:
     Properties:
       EnableDnsSupport: true
       EnableDnsHostnames: true
-      CidrBlock: !FindInMap ['SubnetConfig', 'VPC', 'CIDR']
+      CidrBlock: !FindInMap ["SubnetConfig", "VPC", "CIDR"]
 
   # Two public subnets, where containers can have public IP addresses
   PublicSubnet1:
@@ -469,9 +473,9 @@ Resources:
       AvailabilityZone:
         Fn::Select:
           - 0
-          - Fn::GetAZs: { Ref: 'AWS::Region' }
-      VpcId: !Ref 'VPC'
-      CidrBlock: !FindInMap ['SubnetConfig', 'Public1', 'CIDR']
+          - Fn::GetAZs: { Ref: "AWS::Region" }
+      VpcId: !Ref "VPC"
+      CidrBlock: !FindInMap ["SubnetConfig", "Public1", "CIDR"]
       MapPublicIpOnLaunch: true
   PublicSubnet2:
     Type: AWS::EC2::Subnet
@@ -479,9 +483,9 @@ Resources:
       AvailabilityZone:
         Fn::Select:
           - 1
-          - Fn::GetAZs: { Ref: 'AWS::Region' }
-      VpcId: !Ref 'VPC'
-      CidrBlock: !FindInMap ['SubnetConfig', 'Public2', 'CIDR']
+          - Fn::GetAZs: { Ref: "AWS::Region" }
+      VpcId: !Ref "VPC"
+      CidrBlock: !FindInMap ["SubnetConfig", "Public2", "CIDR"]
       MapPublicIpOnLaunch: true
 
   # Two private subnets where containers will only have private
@@ -493,18 +497,18 @@ Resources:
       AvailabilityZone:
         Fn::Select:
           - 0
-          - Fn::GetAZs: { Ref: 'AWS::Region' }
-      VpcId: !Ref 'VPC'
-      CidrBlock: !FindInMap ['SubnetConfig', 'Private1', 'CIDR']
+          - Fn::GetAZs: { Ref: "AWS::Region" }
+      VpcId: !Ref "VPC"
+      CidrBlock: !FindInMap ["SubnetConfig", "Private1", "CIDR"]
   PrivateSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
       AvailabilityZone:
         Fn::Select:
           - 1
-          - Fn::GetAZs: { Ref: 'AWS::Region' }
-      VpcId: !Ref 'VPC'
-      CidrBlock: !FindInMap ['SubnetConfig', 'Private2', 'CIDR']
+          - Fn::GetAZs: { Ref: "AWS::Region" }
+      VpcId: !Ref "VPC"
+      CidrBlock: !FindInMap ["SubnetConfig", "Private2", "CIDR"]
 
   # Setup networking resources for the public subnets. Containers
   # in the public subnets have public IP addresses and the routing table
@@ -514,19 +518,19 @@ Resources:
   GatewayAttachement:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
-      VpcId: !Ref 'VPC'
-      InternetGatewayId: !Ref 'InternetGateway'
+      VpcId: !Ref "VPC"
+      InternetGatewayId: !Ref "InternetGateway"
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !Ref 'VPC'
+      VpcId: !Ref "VPC"
   PublicRoute:
     Type: AWS::EC2::Route
     DependsOn: GatewayAttachement
     Properties:
-      RouteTableId: !Ref 'PublicRouteTable'
-      DestinationCidrBlock: '0.0.0.0/0'
-      GatewayId: !Ref 'InternetGateway'
+      RouteTableId: !Ref "PublicRouteTable"
+      DestinationCidrBlock: "0.0.0.0/0"
+      GatewayId: !Ref "InternetGateway"
   PublicSubnet1RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
@@ -565,7 +569,7 @@ Resources:
   PrivateRouteTable1:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !Ref 'VPC'
+      VpcId: !Ref "VPC"
   PrivateRoute1:
     Type: AWS::EC2::Route
     Properties:
@@ -580,7 +584,7 @@ Resources:
   PrivateRouteTable2:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !Ref 'VPC'
+      VpcId: !Ref "VPC"
   PrivateRoute2:
     Type: AWS::EC2::Route
     Properties:
@@ -603,28 +607,28 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Access to the Fargate containers
-      VpcId: !Ref 'VPC'
+      VpcId: !Ref "VPC"
   EcsSecurityGroupIngressFromPublicALB:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       Description: Ingress from the public ALB
-      GroupId: !Ref 'FargateContainerSecurityGroup'
+      GroupId: !Ref "FargateContainerSecurityGroup"
       IpProtocol: -1
-      SourceSecurityGroupId: !Ref 'PublicLoadBalancerSG'
+      SourceSecurityGroupId: !Ref "PublicLoadBalancerSG"
   EcsSecurityGroupIngressFromPrivateALB:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       Description: Ingress from the private ALB
-      GroupId: !Ref 'FargateContainerSecurityGroup'
+      GroupId: !Ref "FargateContainerSecurityGroup"
       IpProtocol: -1
-      SourceSecurityGroupId: !Ref 'PrivateLoadBalancerSG'
+      SourceSecurityGroupId: !Ref "PrivateLoadBalancerSG"
   EcsSecurityGroupIngressFromSelf:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       Description: Ingress from other containers in the same security group
-      GroupId: !Ref 'FargateContainerSecurityGroup'
+      GroupId: !Ref "FargateContainerSecurityGroup"
       IpProtocol: -1
-      SourceSecurityGroupId: !Ref 'FargateContainerSecurityGroup'
+      SourceSecurityGroupId: !Ref "FargateContainerSecurityGroup"
 
   # A public facing load balancer, this is used for accepting traffic from the public
   # internet and directing it to public facing microservices
@@ -632,7 +636,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Access to the public facing load balancer
-      VpcId: !Ref 'VPC'
+      VpcId: !Ref "VPC"
       SecurityGroupIngress:
         # Allow access to ALB from anywhere on the internet
         - CidrIp: 0.0.0.0/0
@@ -644,7 +648,7 @@ Resources:
       Scheme: internet-facing
       LoadBalancerAttributes:
         - Key: idle_timeout.timeout_seconds
-          Value: '30'
+          Value: "30"
       Subnets:
         # The load balancer is placed into the public subnets, so that traffic
         # from the internet can reach the load balancer directly via the internet gateway
@@ -661,20 +665,20 @@ Resources:
       HealthCheckProtocol: HTTP
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 2
-      Name: !Join ['-', [!Ref 'AWS::StackName', 'drop-1']]
+      Name: !Join ["-", [!Ref "AWS::StackName", "drop-1"]]
       Port: 80
       Protocol: HTTP
       UnhealthyThresholdCount: 2
-      VpcId: !Ref 'VPC'
+      VpcId: !Ref "VPC"
   PublicLoadBalancerListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     DependsOn:
       - PublicLoadBalancer
     Properties:
       DefaultActions:
-        - TargetGroupArn: !Ref 'DummyTargetGroupPublic'
-          Type: 'forward'
-      LoadBalancerArn: !Ref 'PublicLoadBalancer'
+        - TargetGroupArn: !Ref "DummyTargetGroupPublic"
+          Type: "forward"
+      LoadBalancerArn: !Ref "PublicLoadBalancer"
       Port: 80
       Protocol: HTTP
 
@@ -685,27 +689,27 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Access to the internal load balancer
-      VpcId: !Ref 'VPC'
+      VpcId: !Ref "VPC"
   PrivateLoadBalancerIngressFromECS:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       Description: Only accept traffic from a container in the fargate container security group
-      GroupId: !Ref 'PrivateLoadBalancerSG'
+      GroupId: !Ref "PrivateLoadBalancerSG"
       IpProtocol: -1
-      SourceSecurityGroupId: !Ref 'FargateContainerSecurityGroup'
+      SourceSecurityGroupId: !Ref "FargateContainerSecurityGroup"
   PrivateLoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
       Scheme: internal
       LoadBalancerAttributes:
         - Key: idle_timeout.timeout_seconds
-          Value: '30'
+          Value: "30"
       Subnets:
         # This load balancer is put into the private subnet, so that there is no
         # route for the public to even be able to access the private load balancer.
         - !Ref PrivateSubnet1
         - !Ref PrivateSubnet2
-      SecurityGroups: [!Ref 'PrivateLoadBalancerSG']
+      SecurityGroups: [!Ref "PrivateLoadBalancerSG"]
   # This dummy target group is used to setup the ALB to just drop traffic
   # initially, before any real service target groups have been added.
   DummyTargetGroupPrivate:
@@ -716,20 +720,20 @@ Resources:
       HealthCheckProtocol: HTTP
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 2
-      Name: !Join ['-', [!Ref 'AWS::StackName', 'drop-2']]
+      Name: !Join ["-", [!Ref "AWS::StackName", "drop-2"]]
       Port: 80
       Protocol: HTTP
       UnhealthyThresholdCount: 2
-      VpcId: !Ref 'VPC'
+      VpcId: !Ref "VPC"
   PrivateLoadBalancerListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     DependsOn:
       - PrivateLoadBalancer
     Properties:
       DefaultActions:
-        - TargetGroupArn: !Ref 'DummyTargetGroupPrivate'
-          Type: 'forward'
-      LoadBalancerArn: !Ref 'PrivateLoadBalancer'
+        - TargetGroupArn: !Ref "DummyTargetGroupPrivate"
+          Type: "forward"
+      LoadBalancerArn: !Ref "PrivateLoadBalancer"
       Port: 80
       Protocol: HTTP
 
@@ -745,7 +749,7 @@ Resources:
           - Effect: Allow
             Principal:
               Service: [ecs.amazonaws.com]
-            Action: ['sts:AssumeRole']
+            Action: ["sts:AssumeRole"]
       Path: /
       Policies:
         - PolicyName: ecs-service
@@ -755,37 +759,37 @@ Resources:
                 Action:
                   # Rules which allow ECS to attach network interfaces to instances
                   # on your behalf in order for awsvpc networking mode to work right
-                  - 'ec2:AttachNetworkInterface'
-                  - 'ec2:CreateNetworkInterface'
-                  - 'ec2:CreateNetworkInterfacePermission'
-                  - 'ec2:DeleteNetworkInterface'
-                  - 'ec2:DeleteNetworkInterfacePermission'
-                  - 'ec2:Describe*'
-                  - 'ec2:DetachNetworkInterface'
+                  - "ec2:AttachNetworkInterface"
+                  - "ec2:CreateNetworkInterface"
+                  - "ec2:CreateNetworkInterfacePermission"
+                  - "ec2:DeleteNetworkInterface"
+                  - "ec2:DeleteNetworkInterfacePermission"
+                  - "ec2:Describe*"
+                  - "ec2:DetachNetworkInterface"
 
                   # Rules which allow ECS to update load balancers on your behalf
                   # with the information sabout how to send traffic to your containers
-                  - 'elasticloadbalancing:DeregisterInstancesFromLoadBalancer'
-                  - 'elasticloadbalancing:DeregisterTargets'
-                  - 'elasticloadbalancing:Describe*'
-                  - 'elasticloadbalancing:RegisterInstancesWithLoadBalancer'
-                  - 'elasticloadbalancing:RegisterTargets'
-                Resource: '*'
+                  - "elasticloadbalancing:DeregisterInstancesFromLoadBalancer"
+                  - "elasticloadbalancing:DeregisterTargets"
+                  - "elasticloadbalancing:Describe*"
+                  - "elasticloadbalancing:RegisterInstancesWithLoadBalancer"
+                  - "elasticloadbalancing:RegisterTargets"
+                Resource: "*"
 
   ElasticacheSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Access to the Elasticache service.
-      VpcId: !Ref 'VPC'
+      VpcId: !Ref "VPC"
   ElasticacheSecurityGroupIngressFromFargate:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       Description: Ingress from Fargate Containers
-      GroupId: !Ref 'ElasticacheSecurityGroup'
+      GroupId: !Ref "ElasticacheSecurityGroup"
       IpProtocol: -1
-      SourceSecurityGroupId: !Ref 'FargateContainerSecurityGroup'
+      SourceSecurityGroupId: !Ref "FargateContainerSecurityGroup"
   ElasticacheSubnetGroup:
-    Type: 'AWS::ElastiCache::SubnetGroup'
+    Type: "AWS::ElastiCache::SubnetGroup"
     Properties:
       Description: Cache Subnet Group
       SubnetIds:
@@ -795,7 +799,7 @@ Resources:
     Type: AWS::ElastiCache::CacheCluster
     Properties:
       Engine: redis
-      EngineVersion: '5.0.0'
+      EngineVersion: "5.0.0"
       CacheNodeType: cache.t2.micro
       NumCacheNodes: 1
       CacheSubnetGroupName: !Ref ElasticacheSubnetGroup
@@ -813,13 +817,13 @@ Resources:
     Type: AWS::RDS::DBInstance
     DeletionPolicy: Snapshot
     Properties:
-      DBName: !Ref 'DBName'
-      AllocatedStorage: !Ref 'DBAllocatedStorage'
-      DBInstanceClass: !Ref 'DBInstanceClass'
+      DBName: !Ref "DBName"
+      AllocatedStorage: !Ref "DBAllocatedStorage"
+      DBInstanceClass: !Ref "DBInstanceClass"
       Engine: postgres
-      EngineVersion: '11.6'
-      MasterUsername: !Ref 'DBUsername'
-      MasterUserPassword: !Ref 'DBPassword'
+      EngineVersion: "11.6"
+      MasterUsername: !Ref "DBUsername"
+      MasterUserPassword: !Ref "DBPassword"
       MultiAZ: false
       DBSubnetGroupName: !Ref MasterDBSubnetGroup
       VPCSecurityGroups:
@@ -834,7 +838,7 @@ Resources:
           - Effect: Allow
             Principal:
               Service: [ecs-tasks.amazonaws.com]
-            Action: ['sts:AssumeRole']
+            Action: ["sts:AssumeRole"]
       Path: /
       Policies:
         - PolicyName: AmazonECSTaskExecutionRolePolicy
@@ -843,50 +847,50 @@ Resources:
               - Effect: Allow
                 Action:
                   # Allow the ECS Tasks to download images from ECR
-                  - 'ecr:GetAuthorizationToken'
-                  - 'ecr:BatchCheckLayerAvailability'
-                  - 'ecr:GetDownloadUrlForLayer'
-                  - 'ecr:BatchGetImage'
+                  - "ecr:GetAuthorizationToken"
+                  - "ecr:BatchCheckLayerAvailability"
+                  - "ecr:GetDownloadUrlForLayer"
+                  - "ecr:BatchGetImage"
 
                   # Allow the ECS tasks to upload logs to CloudWatch
-                  - 'logs:CreateLogStream'
-                  - 'logs:CreateLogGroup'
-                  - 'logs:PutLogEvents'
-                Resource: '*'
+                  - "logs:CreateLogStream"
+                  - "logs:CreateLogGroup"
+                  - "logs:PutLogEvents"
+                Resource: "*"
 
   # The task definition. This is a simple metadata description of what
   # container to run, and what resource requirements it has.
   ServerTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Cpu: !Ref 'ServerCpu'
-      Memory: !Ref 'ServerMemory'
+      Cpu: !Ref "ServerCpu"
+      Memory: !Ref "ServerMemory"
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
-      ExecutionRoleArn: !Ref 'ECSTaskExecutionRole'
+      ExecutionRoleArn: !Ref "ECSTaskExecutionRole"
       ContainerDefinitions:
         - Name: server
-          Cpu: !Ref 'ServerCpu'
-          Memory: !Ref 'ServerMemory'
+          Cpu: !Ref "ServerCpu"
+          Memory: !Ref "ServerMemory"
           LogConfiguration:
             LogDriver: awslogs
             Options:
               awslogs-create-group: true
               awslogs-region: !Ref AWS::Region
-              awslogs-group: !Join ['', [!Ref 'AWS::StackName', 'server']]
+              awslogs-group: !Join ["", [!Ref "AWS::StackName", "server"]]
               awslogs-stream-prefix: ecs
           PortMappings:
             - ContainerPort: !Ref ServerPort
           Image:
             !Join [
-              '',
+              "",
               [
-                !Ref 'AWS::AccountId',
-                '.dkr.ecr.',
-                !Ref 'AWS::Region',
-                '.amazonaws.com/',
-                !Ref 'ServerImageRepository',
+                !Ref "AWS::AccountId",
+                ".dkr.ecr.",
+                !Ref "AWS::Region",
+                ".amazonaws.com/",
+                !Ref "ServerImageRepository",
               ],
             ]
           Environment:
@@ -896,7 +900,7 @@ Resources:
               Value: !Ref ServerPort
             - Name: WEB_URI
               Value:
-                !Join ['', ['http://', !GetAtt 'FrontendBucket.WebsiteURL']]
+                !Join ["", ["http://", !GetAtt "FrontendBucket.WebsiteURL"]]
             - Name: DB_NAME
               Value: !Ref DBName
             - Name: DB_USERNAME
@@ -923,11 +927,11 @@ Resources:
     Properties:
       Actions:
         - TargetGroupArn: !Ref ServerTargetGroup
-          Type: 'forward'
+          Type: "forward"
       Conditions:
         - Field: path-pattern
           Values:
-            - '*'
+            - "*"
       ListenerArn: !Ref PublicLoadBalancerListener
       Priority: 1
 
@@ -990,7 +994,7 @@ Resources:
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
-      ExecutionRoleArn: !Ref 'ECSTaskExecutionRole'
+      ExecutionRoleArn: !Ref "ECSTaskExecutionRole"
       ContainerDefinitions:
         - Name: server
           Cpu: !Ref WorkerCpu
@@ -1000,19 +1004,19 @@ Resources:
             Options:
               awslogs-create-group: true
               awslogs-region: !Ref AWS::Region
-              awslogs-group: !Join ['', [!Ref 'AWS::StackName', 'worker']]
+              awslogs-group: !Join ["", [!Ref "AWS::StackName", "worker"]]
               awslogs-stream-prefix: ecs
           PortMappings:
             - ContainerPort: !Ref WorkerPort
           Image:
             !Join [
-              '',
+              "",
               [
-                !Ref 'AWS::AccountId',
-                '.dkr.ecr.',
-                !Ref 'AWS::Region',
-                '.amazonaws.com/',
-                !Ref 'ServerImageRepository',
+                !Ref "AWS::AccountId",
+                ".dkr.ecr.",
+                !Ref "AWS::Region",
+                ".amazonaws.com/",
+                !Ref "ServerImageRepository",
               ],
             ]
           Environment:
@@ -1080,8 +1084,8 @@ Resources:
       ContainerDefinitions:
         - Name: migrate-db
           Command:
-            - '/usr/local/bin/yarn'
-            - 'migrate'
+            - "/usr/local/bin/yarn"
+            - "migrate"
           Cpu: 256
           Memory: 512
           LogConfiguration:
@@ -1089,17 +1093,17 @@ Resources:
             Options:
               awslogs-create-group: true
               awslogs-region: !Ref AWS::Region
-              awslogs-group: !Join ['', [!Ref 'AWS::StackName', 'migrate-db']]
+              awslogs-group: !Join ["", [!Ref "AWS::StackName", "migrate-db"]]
               awslogs-stream-prefix: ecs
           Image:
             !Join [
-              '',
+              "",
               [
-                !Ref 'AWS::AccountId',
-                '.dkr.ecr.',
-                !Ref 'AWS::Region',
-                '.amazonaws.com/',
-                !Ref 'ServerImageRepository',
+                !Ref "AWS::AccountId",
+                ".dkr.ecr.",
+                !Ref "AWS::Region",
+                ".amazonaws.com/",
+                !Ref "ServerImageRepository",
               ],
             ]
           Environment:

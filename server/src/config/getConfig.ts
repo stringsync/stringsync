@@ -12,6 +12,7 @@ const getMaybeValidConfig = (env: NodeJS.ProcessEnv): Partial<Config> => ({
   REDIS_HOST: env.REDIS_HOST,
   REDIS_PORT: env.REDIS_PORT,
   ROLE: env.ROLE,
+  SESSION_SECRET: env.SESSION_SECRET,
 });
 
 export const getConfig = (env: NodeJS.ProcessEnv): Config => {
