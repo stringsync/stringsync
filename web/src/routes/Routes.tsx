@@ -3,8 +3,8 @@ import { Route } from 'react-router-dom';
 import Landing from '../pages/Landing/Landing';
 import Library from '../pages/Library/Library';
 import { withScrollRestoration } from './withScrollRestoration';
-import { compose } from '../common';
-import { withAuthRequirement, AuthRequirements } from './withAuthRequirement';
+import { compose, AuthRequirements } from '../common';
+import { withAuthRequirement } from './withAuthRequirement';
 import { asReturnToRoute } from './asReturnToRoute';
 
 const WrappedLibrary = compose(

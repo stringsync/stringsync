@@ -3,10 +3,10 @@ import { createGlobalCtx } from './util/ctx';
 import { getApp } from './app';
 import { createWorkers } from './jobs';
 
-const server = async (config: Config): Promise<void> => {
+const server = (config: Config): void => {
   const ctx = createGlobalCtx(config);
   const app = getApp(ctx);
-  await app.listen(config.PORT);
+  app.listen(config.PORT);
 };
 
 const worker = (config: Config): void => {

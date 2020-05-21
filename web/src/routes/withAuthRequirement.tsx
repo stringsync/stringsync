@@ -1,17 +1,8 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import { message } from 'antd';
-import { compareUserRoles } from '../common';
+import { compareUserRoles, AuthRequirements } from '../common';
 import { useHistory } from 'react-router';
 import { useSelector } from '../hooks';
-
-export enum AuthRequirements {
-  NONE,
-  LOGGED_IN,
-  LOGGED_OUT,
-  LOGGED_IN_AS_STUDENT,
-  LOGGED_IN_AS_TEACHER,
-  LOGGED_IN_AS_ADMIN,
-}
 
 export const withAuthRequirement = (authReqs: AuthRequirements) =>
   function<P>(Component: React.ComponentType<P>): React.FC<P> {

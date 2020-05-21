@@ -6,7 +6,7 @@ import { Config } from '../../config';
 import { DataLoaders } from '../../data/data-loaders';
 import { Request, Response } from 'express';
 import { GraphQLSchema } from 'graphql';
-import { UserRoles } from '../../common';
+import { SessionUser } from '../session';
 
 export interface GlobalCtx {
   config: Config;

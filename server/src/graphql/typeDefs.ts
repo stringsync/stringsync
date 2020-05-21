@@ -4,7 +4,7 @@ export const typeDefs = gql`
   # Roots
 
   type Query {
-    users(input: UsersInput!): [User]!
+    users: [User]!
     user(input: UserInput!): User
   }
 
@@ -52,7 +52,7 @@ export const typeDefs = gql`
   }
 
   input UsersInput {
-    id: [String]
+    ids: [String]
   }
 
   type UserOutput {

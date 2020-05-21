@@ -1,30 +1,12 @@
-import { makeExecutableSchema } from 'graphql-tools';
 import { typeDefs } from './typeDefs';
-import {
-  user,
-  users,
-  confirmEmail,
-  login,
-  resendConfirmationEmail,
-  signup,
-} from './resolvers';
+import { makeExecutableSchema } from 'graphql-tools';
+import { getResolvers } from './getResolvers';
 
-export const getSchema = () =>
-  makeExecutableSchema({
+export const getSchema = () => {
+  const resolvers = getResolvers();
+  return makeExecutableSchema({
     typeDefs,
-    resolvers: {
-      Query: {
-        user,
-        users,
-      },
-      Mutation: {
-        confirmEmail,
-        login,
-        resendConfirmationEmail,
-        signup,
-      },
-    },
-    allowUndefinedInResolve: false,
+    resolvers,
     resolverValidationOptions: {
       requireResolversForArgs: true,
       requireResolversForNonScalar: false,
@@ -32,3 +14,4 @@ export const getSchema = () =>
       allowResolversNotInSchema: false,
     },
   });
+};

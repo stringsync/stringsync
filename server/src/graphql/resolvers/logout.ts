@@ -3,7 +3,7 @@ import { LogoutOutput } from '../../common/';
 import { IFieldResolver } from 'graphql-tools';
 import { ResolverCtx } from '../../util/ctx';
 import { getNullSessionUser } from '../../util/session';
-import { NotFoundError } from '../../common/errors/NotFoundError';
+import { NotFoundError } from '../../common/errors';
 
 type Resolver = IFieldResolver<undefined, ResolverCtx, {}>;
 

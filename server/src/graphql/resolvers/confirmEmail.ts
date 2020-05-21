@@ -2,8 +2,7 @@ import { ConfirmEmailInput, ConfirmEmailOutput } from '../../common';
 import { toCanonicalUser } from '../../data/db';
 import { IFieldResolver } from 'graphql-tools';
 import { ResolverCtx } from '../../util/ctx';
-import { BadRequestError } from '../../common/errors/BadRequestError';
-import { NotFoundError } from '../../common/errors/NotFoundError';
+import { BadRequestError, NotFoundError } from '../../common/errors';
 
 type Resolver = IFieldResolver<
   undefined,

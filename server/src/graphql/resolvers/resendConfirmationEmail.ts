@@ -7,8 +7,7 @@ import { transaction } from '../../data/db';
 import uuid from 'uuid';
 import { ResolverCtx } from '../../util/ctx';
 import { IFieldResolver } from 'graphql-tools';
-import { NotFoundError } from '../../common/errors/NotFoundError';
-import { BadRequestError } from '../../common/errors/BadRequestError';
+import { NotFoundError, BadRequestError } from '../../common/errors';
 
 type Resolver = IFieldResolver<
   undefined,

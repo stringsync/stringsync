@@ -7,7 +7,7 @@ import {
   Cookies,
 } from 'node-mocks-http';
 import { Request, Response } from 'express';
-import { GraphQLCtx, GlobalCtx } from '../util/ctx';
+import { ResolverCtx, GlobalCtx } from '../util/ctx';
 import { Config } from '../config';
 import { Queues } from '../jobs';
 import { Redis } from 'ioredis';
@@ -47,7 +47,7 @@ export interface GlobalCtxPatch {
   fixtures?: FixtureMap;
 }
 
-export interface GraphQLCtxPatch extends GlobalCtxPatch {
+export interface ResolverCtxPatch extends GlobalCtxPatch {
   reqAt?: Date;
   cookies?: Cookies;
   headers?: object;

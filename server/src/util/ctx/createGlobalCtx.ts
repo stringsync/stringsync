@@ -13,12 +13,12 @@ export const createGlobalCtx = (config: Config): Readonly<GlobalCtx> => {
   const queues = createQueues(config);
   const schema = getSchema();
 
-  return Object.freeze({
+  return {
     config,
     logger,
     db,
     redis,
     queues,
     schema,
-  });
+  };
 };

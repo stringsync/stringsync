@@ -1,4 +1,4 @@
-import { CtxCallback, GraphQLCtxPatch } from './types';
+import { CtxCallback } from './types';
 import { getCookieStr } from './getCookieStr';
 import { getMockExpressContext } from './getMockExpressContext';
 import { useTestGlobalCtx } from './useTestGlobalCtx';
@@ -8,7 +8,7 @@ import { useTestGlobalCtx } from './useTestGlobalCtx';
  * changes will be rolled back after the test is done.
  */
 export const useTestReqCtx = <A extends any[]>(
-  patch: GraphQLCtxPatch,
+  patch: any,
   callback: CtxCallback<A>
 ) =>
   useTestGlobalCtx<A>(patch, async (globalCtx, ...args) => {

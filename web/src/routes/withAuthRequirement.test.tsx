@@ -1,8 +1,8 @@
 import React from 'react';
-import { AuthRequirements, withAuthRequirement } from './withAuthRequirement';
+import { withAuthRequirement } from './withAuthRequirement';
 import { getTestComponent } from '../testing';
 import { render } from '@testing-library/react';
-import { UserRoles } from '../../../common/types';
+import { UserRoles, AuthRequirements } from '../../../common';
 
 const Dummy = () => <div data-testid="dummy" />;
 

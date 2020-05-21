@@ -6,6 +6,15 @@ export type DeepPartial<T> = {
     : T[P];
 };
 
+export enum AuthRequirements {
+  NONE,
+  LOGGED_IN,
+  LOGGED_OUT,
+  LOGGED_IN_AS_STUDENT,
+  LOGGED_IN_AS_TEACHER,
+  LOGGED_IN_AS_ADMIN,
+}
+
 export type UserRoles = 'student' | 'teacher' | 'admin';
 
 export const USER_ROLE_HIEARCHY: UserRoles[] = ['student', 'teacher', 'admin'];
