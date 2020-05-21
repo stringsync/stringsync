@@ -5,7 +5,7 @@ import connectRedis from 'connect-redis';
 
 const MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
 
-export const authMiddleware: Handler = (ctx) => (req, res, next) => {
+export const authMiddleware: Handler = (ctx) => async (req, res, next) => {
   const RedisStore = connectRedis(session);
   // Problem with @types/connect-redis, typecasting to any should still work
   // https://github.com/tj/connect-redis/issues/300#issuecomment-580038867
@@ -18,7 +18,7 @@ export const authMiddleware: Handler = (ctx) => (req, res, next) => {
     proxy: undefined,
     resave: false,
     rolling: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     store,
   });
 
