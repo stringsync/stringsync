@@ -1,13 +1,9 @@
 import { UserInput, User } from '../../common';
-import { GraphQLCtx } from '../../util/ctx';
+import { ResolverCtx } from '../../util/ctx';
 import { IFieldResolver } from 'graphql-tools';
 
-type UserResolver = IFieldResolver<undefined, GraphQLCtx, { input: UserInput }>;
+type Resolver = IFieldResolver<undefined, ResolverCtx, { input: UserInput }>;
 
-export const user: UserResolver = async (
-  src,
-  args,
-  ctx
-): Promise<User | null> => {
+export const user: Resolver = async (src, args, ctx): Promise<User | null> => {
   return await ctx.dataLoaders.usersById.load(args.input.id);
 };

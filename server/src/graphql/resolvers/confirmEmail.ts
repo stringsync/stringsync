@@ -3,6 +3,7 @@ import { toCanonicalUser } from '../../data/db';
 import { IFieldResolver } from 'graphql-tools';
 import { ResolverCtx } from '../../util/ctx';
 import { BadRequestError } from '../../common/errors/BadRequestError';
+import { NotFoundError } from '../../common/errors/NotFoundError';
 
 type Resolver = IFieldResolver<
   undefined,
@@ -16,14 +17,18 @@ export const confirmEmail: Resolver = async (
   ctx
 ): Promise<ConfirmEmailOutput> => {
   const pk = ctx.req.session.user.id;
-  const user = (await ctx.db.models.User.findByPk(pk))!;
+  const user = await ctx.db.models.User.findByPk(pk);
 
-  const isBadRequest =
-    user.confirmedAt ||
-    !args.input.confirmationToken ||
-    user.confirmationToken !== args.input.confirmationToken;
-
-  if (isBadRequest) {
+  if (!user) {
+    throw new NotFoundError('user not found');
+  }
+  if (user.confirmedAt) {
+    throw new BadRequestError('invalid confirmation token');
+  }
+  if (!args.input.confirmationToken) {
+    throw new BadRequestError('invalid confirmation token');
+  }
+  if (user.confirmationToken !== args.input.confirmationToken) {
     throw new BadRequestError('invalid confirmation token');
   }
 

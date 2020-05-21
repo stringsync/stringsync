@@ -51,6 +51,10 @@ export interface UserInput {
   id: string;
 }
 
+export interface UsersInput {
+  ids: string[] | null;
+}
+
 export interface ConfirmEmailInput {
   confirmationToken: string;
 }

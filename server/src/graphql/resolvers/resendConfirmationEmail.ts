@@ -7,6 +7,8 @@ import { transaction } from '../../data/db';
 import uuid from 'uuid';
 import { ResolverCtx } from '../../util/ctx';
 import { IFieldResolver } from 'graphql-tools';
+import { NotFoundError } from '../../common/errors/NotFoundError';
+import { BadRequestError } from '../../common/errors/BadRequestError';
 
 type Resolver = IFieldResolver<
   undefined,
@@ -18,28 +20,24 @@ export const resendConfirmationEmail: Resolver = async (
   src,
   args,
   ctx
-): Promise<ResendConfirmationEmailOutput> => {
-  const { email } = args.input;
+): Promise<ResendConfirmationEmailOutput> =>
+  transaction(ctx.db, async () => {
+    const { email } = args.input;
+    const user = await ctx.db.models.User.findOne({ where: { email } });
 
-  return transaction(ctx.db, async () => {
-    const user = await ctx.db.models.User.findOne({
-      where: { email },
-    });
-
+    if (!user) {
+      throw new NotFoundError(`user not found: ${email}`);
+    }
     if (user.id !== ctx.req.session.user.id) {
       throw new Error(`must be logged in as ${email}`);
     }
-
-    if (userModel.confirmedAt) {
-      // don't allow users to tell if an email is confirmed or not,
-      // fail silently
-      return { email };
+    if (user.confirmedAt) {
+      throw new BadRequestError('email already confirmed');
     }
 
     const confirmationToken = uuid.v4();
-    userModel.update({ confirmationToken });
+    user.update({ confirmationToken });
     await sendConfirmationMail(email, confirmationToken, ctx);
 
     return { email };
   });
-};
