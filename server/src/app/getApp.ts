@@ -1,22 +1,23 @@
 import express from 'express';
 import cors from 'cors';
 import { GlobalCtx } from '../util/ctx';
-import { checkHealth } from './checkHealth';
-import { graphqlMiddleware } from './graphqlMiddleware';
-import { authMiddleware } from './authMiddleware';
+import { withGraphQL, withSession, withSessionUser } from './middlewares';
+import { getHealth } from './routes';
 
 export const getApp = (ctx: GlobalCtx) => {
   const app = express();
 
+  // settings
   app.set('trust proxy', 1);
 
+  // middlewares
   app.use(cors());
+  app.use(withSession(ctx));
+  app.use(withSessionUser(ctx));
+  app.use('/graphql', withGraphQL(ctx));
 
-  app.use(authMiddleware(ctx));
-
-  app.use('/graphql', graphqlMiddleware(ctx));
-
-  app.get('/health', checkHealth(ctx));
+  // routes
+  app.get('/health', getHealth(ctx));
 
   return app;
 };

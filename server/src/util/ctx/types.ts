@@ -1,11 +1,12 @@
 import { Redis } from 'ioredis';
-import { Db, RawUser } from '../../data/db';
+import { Db } from '../../data/db';
 import { Logger } from 'winston';
 import { Queues } from '../../jobs';
 import { Config } from '../../config';
 import { DataLoaders } from '../../data/data-loaders';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { GraphQLSchema } from 'graphql';
+import { UserRoles } from '../../common';
 
 export interface GlobalCtx {
   config: Config;
@@ -16,21 +17,20 @@ export interface GlobalCtx {
   schema: GraphQLSchema;
 }
 
-export interface Auth {
-  user: RawUser | null;
+export interface SessionUser {
+  id: string;
+  role: UserRoles;
   isLoggedIn: boolean;
-  token: string;
 }
 
-export type Cookies = {
-  USER_SESSION_TOKEN: string;
+export type SessionRequest = Request & {
+  session: Express.Session & { user: SessionUser };
+  sessionID: string;
 };
 
-export interface GraphQLCtx extends GlobalCtx {
-  req: Request;
+export interface ResolverCtx extends GlobalCtx {
+  req: SessionRequest;
+  res: Response;
   reqAt: Date;
-  auth: Auth;
-  cookies: Cookies;
   dataLoaders: DataLoaders;
-  logger: Logger;
 }

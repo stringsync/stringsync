@@ -31,7 +31,7 @@ export interface SignupOutput {
 }
 
 export interface AuthenticateOutput {
-  user: User;
+  user: User | null;
 }
 
 export interface LogoutOutput {

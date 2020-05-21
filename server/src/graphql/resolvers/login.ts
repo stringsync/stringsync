@@ -5,10 +5,6 @@ import { GraphQLCtx } from '../../util/ctx';
 import { or } from 'sequelize';
 import { IFieldResolver } from 'graphql-tools';
 
-interface Args {
-  input: LoginInput;
-}
-
 export const WRONG_CREDENTIALS_MSG = 'wrong username, email, or password';
 
 type LoginResolver = IFieldResolver<

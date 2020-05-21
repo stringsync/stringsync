@@ -19,6 +19,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@graphql-modules/core": "^0.7.17",
     "@types/connect-redis": "^0.0.14",
     "bcrypt": "^3.0.8",
     "bullmq": "^1.6.7",

@@ -30,10 +30,6 @@ export interface SignupOutput {
   user: User;
 }
 
-export interface AuthenticateOutput {
-  user: User;
-}
-
 export interface LogoutOutput {
   user: User | null;
 }

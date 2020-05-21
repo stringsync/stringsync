@@ -12,7 +12,6 @@ export const typeDefs = gql`
     signup(input: SignupInput!): SignupOutput!
     login(input: LoginInput!): LoginOutput!
     logout: LogoutOutput!
-    authenticate: AuthenticateOutput!
     confirmEmail(input: ConfirmEmailInput!): ConfirmEmailOutput!
     resendConfirmationEmail(
       input: ResendConfirmationEmailInput!
@@ -53,10 +52,6 @@ export const typeDefs = gql`
   }
 
   type UserOutput {
-    user: User!
-  }
-
-  type AuthenticateOutput {
     user: User!
   }
 
