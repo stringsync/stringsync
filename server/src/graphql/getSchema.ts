@@ -3,7 +3,6 @@ import { typeDefs } from './typeDefs';
 import {
   user,
   users,
-  authenticate,
   confirmEmail,
   login,
   resendConfirmationEmail,
@@ -19,7 +18,6 @@ export const getSchema = () =>
         users,
       },
       Mutation: {
-        authenticate,
         confirmEmail,
         login,
         resendConfirmationEmail,
