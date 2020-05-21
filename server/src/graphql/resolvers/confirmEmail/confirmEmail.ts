@@ -1,20 +1,24 @@
-import { ConfirmEmailInput, ConfirmEmailOutput } from '../../common';
-import { toCanonicalUser } from '../../data/db';
+import { toCanonicalUser } from '../../../data/db';
 import { IFieldResolver } from 'graphql-tools';
-import { ResolverCtx } from '../../util/ctx';
-import { BadRequestError, NotFoundError } from '../../common/errors';
+import { ResolverCtx } from '../../../util/ctx';
+import { BadRequestError, NotFoundError } from '../../../common/errors';
+import { withAuthRequirement } from '../../middlewares';
+import {
+  ConfirmEmailInput,
+  ConfirmEmailOutput,
+  compose,
+  AuthRequirements,
+} from '../../../common';
 
-type Resolver = IFieldResolver<
+export const middleware = compose(
+  withAuthRequirement(AuthRequirements.LOGGED_IN)
+);
+
+export const resolver: IFieldResolver<
   undefined,
   ResolverCtx,
   { input: ConfirmEmailInput }
->;
-
-export const confirmEmail: Resolver = async (
-  src,
-  args,
-  ctx
-): Promise<ConfirmEmailOutput> => {
+> = async (src, args, ctx): Promise<ConfirmEmailOutput> => {
   const pk = ctx.req.session.user.id;
   const user = await ctx.db.models.User.findByPk(pk);
 
@@ -37,3 +41,5 @@ export const confirmEmail: Resolver = async (
 
   return { user: toCanonicalUser(user) };
 };
+
+export const confirmEmail = middleware(resolver);

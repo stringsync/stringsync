@@ -1,25 +1,26 @@
 import {
   ResendConfirmationEmailInput,
   ResendConfirmationEmailOutput,
-} from '../../common';
-import { sendConfirmationMail } from '../../jobs/mail';
-import { transaction } from '../../data/db';
+  compose,
+  AuthRequirements,
+} from '../../../common';
+import { sendConfirmationMail } from '../../../jobs/mail';
+import { transaction } from '../../../data/db';
 import uuid from 'uuid';
-import { ResolverCtx } from '../../util/ctx';
+import { ResolverCtx } from '../../../util/ctx';
 import { IFieldResolver } from 'graphql-tools';
-import { NotFoundError, BadRequestError } from '../../common/errors';
+import { NotFoundError, BadRequestError } from '../../../common/errors';
+import { withAuthRequirement } from '../../middlewares';
 
-type Resolver = IFieldResolver<
+export const middleware = compose(
+  withAuthRequirement(AuthRequirements.LOGGED_IN)
+);
+
+export const resolver: IFieldResolver<
   undefined,
   ResolverCtx,
   { input: ResendConfirmationEmailInput }
->;
-
-export const resendConfirmationEmail: Resolver = async (
-  src,
-  args,
-  ctx
-): Promise<ResendConfirmationEmailOutput> =>
+> = async (src, args, ctx): Promise<ResendConfirmationEmailOutput> =>
   transaction(ctx.db, async () => {
     const { email } = args.input;
     const user = await ctx.db.models.User.findOne({ where: { email } });
@@ -40,3 +41,5 @@ export const resendConfirmationEmail: Resolver = async (
 
     return { email };
   });
+
+export const resendConfirmationEmail = middleware(resolver);
