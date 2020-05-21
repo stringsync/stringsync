@@ -4,7 +4,9 @@ import { IFieldResolver } from 'graphql-tools';
 import { ResolverCtx } from '../../../util/ctx';
 import { withAuthRequirement } from '../../middlewares';
 
-export const middleware = compose(withAuthRequirement(AuthRequirements.NONE));
+export const middleware = compose(
+  withAuthRequirement(AuthRequirements.LOGGED_IN_AS_ADMIN)
+);
 
 export const resolver: IFieldResolver<
   undefined,
