@@ -17,12 +17,6 @@ export interface GlobalCtx {
   schema: GraphQLSchema;
 }
 
-export interface SessionUser {
-  id: string;
-  role: UserRoles;
-  isLoggedIn: boolean;
-}
-
 export type SessionRequest = Request & {
   session: Express.Session & { user: SessionUser };
   sessionID: string;

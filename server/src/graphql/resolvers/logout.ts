@@ -1,22 +1,20 @@
 import { toCanonicalUser } from '../../data/db';
 import { LogoutOutput } from '../../common/';
 import { IFieldResolver } from 'graphql-tools';
-import { GraphQLCtx } from '../../util/ctx';
+import { ResolverCtx } from '../../util/ctx';
+import { getNullSessionUser } from '../../util/session';
 
-type LogoutResolver = IFieldResolver<undefined, GraphQLCtx, {}>;
+type Resolver = IFieldResolver<undefined, ResolverCtx, {}>;
 
-export const logout: LogoutResolver = async (
+export const logout: Resolver = async (
   src,
   args,
   ctx
 ): Promise<LogoutOutput> => {
-  // clearUserSessionTokenCookie(ctx.res);
+  const pk = ctx.req.session.user.id;
+  const user = (await ctx.db.models.User.findByPk(pk))!;
 
-  if (!ctx.auth.user) {
-    return { user: null };
-  }
+  ctx.req.session.user = getNullSessionUser();
 
-  await ctx.db.models.UserSession.destroy({ where: { token: ctx.auth.token } });
-
-  return { user: toCanonicalUser(ctx.auth.user) };
+  return { user: toCanonicalUser(user) };
 };

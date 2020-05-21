@@ -5,16 +5,16 @@ import {
 import { sendConfirmationMail } from '../../jobs/mail';
 import { transaction } from '../../data/db';
 import uuid from 'uuid';
-import { GraphQLCtx } from '../../util/ctx';
+import { ResolverCtx } from '../../util/ctx';
 import { IFieldResolver } from 'graphql-tools';
 
-type ResendConfirmationEmailResolver = IFieldResolver<
+type Resolver = IFieldResolver<
   undefined,
-  GraphQLCtx,
+  ResolverCtx,
   { input: ResendConfirmationEmailInput }
 >;
 
-export const resendConfirmationEmail: ResendConfirmationEmailResolver = async (
+export const resendConfirmationEmail: Resolver = async (
   src,
   args,
   ctx
@@ -22,17 +22,11 @@ export const resendConfirmationEmail: ResendConfirmationEmailResolver = async (
   const { email } = args.input;
 
   return transaction(ctx.db, async () => {
-    const userModel = await ctx.db.models.User.findOne({
-      where: {
-        email,
-      },
+    const user = await ctx.db.models.User.findOne({
+      where: { email },
     });
 
-    if (!userModel) {
-      throw new Error('invalid email');
-    }
-
-    if (userModel.id !== ctx.auth.user!.id) {
+    if (user.id !== ctx.req.session.user.id) {
       throw new Error(`must be logged in as ${email}`);
     }
 

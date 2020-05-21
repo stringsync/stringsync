@@ -1,10 +1,6 @@
 import { User } from '../../../../common';
 
-type UserLike = {
-  [P in keyof User]: User[P];
-};
-
-export const toCanonicalUser = (userLike: UserLike): User => ({
+export const toCanonicalUser = (userLike: User): User => ({
   id: userLike.id,
   email: userLike.email,
   role: userLike.role,
