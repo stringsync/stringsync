@@ -1,23 +1,15 @@
 import { LoginInput, LoginOutput } from '../../common';
 import { isPassword } from '../../util/password';
 import { toCanonicalUser } from '../../data/db';
-import { GraphQLCtx } from '../../util/ctx';
+import { ResolverCtx } from '../../util/ctx';
 import { or } from 'sequelize';
 import { IFieldResolver } from 'graphql-tools';
 
 export const WRONG_CREDENTIALS_MSG = 'wrong username, email, or password';
 
-type LoginResolver = IFieldResolver<
-  undefined,
-  GraphQLCtx,
-  { input: LoginInput }
->;
+type Resolver = IFieldResolver<undefined, ResolverCtx, { input: LoginInput }>;
 
-export const login: LoginResolver = async (
-  src,
-  args,
-  ctx
-): Promise<LoginOutput> => {
+export const login: Resolver = async (src, args, ctx): Promise<LoginOutput> => {
   const userModel = await ctx.db.models.User.findOne({
     where: {
       ...or(

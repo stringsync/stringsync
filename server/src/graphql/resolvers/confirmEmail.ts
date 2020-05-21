@@ -1,44 +1,35 @@
 import { ConfirmEmailInput, ConfirmEmailOutput } from '../../common';
 import { toCanonicalUser } from '../../data/db';
 import { IFieldResolver } from 'graphql-tools';
-import { GraphQLCtx } from '../../util/ctx';
+import { ResolverCtx } from '../../util/ctx';
+import { BadRequestError } from '../../common/errors/BadRequestError';
 
-type ConfirmEmailResolver = IFieldResolver<
+type Resolver = IFieldResolver<
   undefined,
-  GraphQLCtx,
+  ResolverCtx,
   { input: ConfirmEmailInput }
 >;
 
-export const confirmEmail: ConfirmEmailResolver = async (
+export const confirmEmail: Resolver = async (
   src,
   args,
   ctx
 ): Promise<ConfirmEmailOutput> => {
-  const userModel = await ctx.db.models.User.findOne({
-    include: [
-      {
-        model: ctx.db.models.UserSession,
-        where: {
-          token: ctx.cookies.USER_SESSION_TOKEN,
-        },
-      },
-    ],
-  });
+  const pk = ctx.req.session.user.id;
+  const user = (await ctx.db.models.User.findByPk(pk))!;
 
-  if (!userModel) {
-    throw new Error('user is not logged in');
+  const isBadRequest =
+    user.confirmedAt ||
+    !args.input.confirmationToken ||
+    user.confirmationToken !== args.input.confirmationToken;
+
+  if (isBadRequest) {
+    throw new BadRequestError('invalid confirmation token');
   }
 
-  if (userModel.confirmedAt) {
-    throw new Error('invalid confirmation token');
-  }
+  user.confirmedAt = ctx.reqAt;
+  user.confirmationToken = null;
+  await user.save();
 
-  if (userModel.confirmationToken !== args.input.confirmationToken) {
-    throw new Error('invalid confirmation token');
-  }
-
-  userModel.confirmedAt = ctx.reqAt;
-  await userModel.save();
-
-  return { user: toCanonicalUser(userModel) };
+  return { user: toCanonicalUser(user) };
 };

@@ -1,4 +1,3 @@
-export * from './authenticate';
 export * from './confirmEmail';
 export * from './login';
 export * from './resendConfirmationEmail';
