@@ -1,6 +1,6 @@
 import { Config } from '../../config';
 import { GlobalCtx } from './types';
-import { getLogger } from '../../util';
+import { getLogger } from '../../util/logger';
 import { connectToDb } from '../../data/db';
 import { connectToRedis } from '../../data/redis';
 import { createQueues } from '../../jobs';

@@ -5,10 +5,6 @@ import uuid from 'uuid';
 import { sendConfirmationMail } from '../../jobs/mail';
 import { IFieldResolver } from 'graphql-tools';
 import { GraphQLCtx } from '../../util/ctx';
-import {
-  setUserSessionTokenCookie,
-  getExpiresAt,
-} from '../../util/user-session';
 
 type SignupResolver = IFieldResolver<
   undefined,
@@ -44,11 +40,11 @@ export const signup: SignupResolver = async (
       confirmationToken,
     });
 
-    const userSessionModel = await ctx.db.models.UserSession.create({
-      issuedAt: ctx.reqAt,
-      userId: userModel.id,
-      expiresAt: getExpiresAt(ctx.reqAt),
-    });
+    // const userSessionModel = await ctx.db.models.UserSession.create({
+    //   issuedAt: ctx.reqAt,
+    //   userId: userModel.id,
+    //   expiresAt: getExpiresAt(ctx.reqAt),
+    // });
 
     // setUserSessionTokenCookie(userSessionModel, ctx.res);
 

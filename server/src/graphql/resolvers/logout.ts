@@ -1,4 +1,3 @@
-import { clearUserSessionTokenCookie } from '../../util/user-session';
 import { toCanonicalUser } from '../../data/db';
 import { LogoutOutput } from '../../common/';
 import { IFieldResolver } from 'graphql-tools';

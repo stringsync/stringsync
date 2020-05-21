@@ -1,9 +1,4 @@
 import { toCanonicalUser, transaction } from '../../data/db';
-import {
-  setUserSessionTokenCookie,
-  shouldRefreshUserSession,
-  getExpiresAt,
-} from '../../util/user-session';
 import { GraphQLCtx } from '../../util/ctx';
 import { AuthenticateOutput } from '../../common';
 import { IFieldResolver } from 'graphql-tools';
@@ -35,20 +30,20 @@ export const authenticate: AuthenticateResolver = async (
     throw new Error(BAD_SESSION_TOKEN_MSG);
   }
 
-  if (shouldRefreshUserSession(ctx.reqAt, oldUserSessionModel.issuedAt)) {
-    await transaction(ctx.db, async () => {
-      await oldUserSessionModel.destroy();
-      const newUserSessionModel = await ctx.db.models.UserSession.create({
-        issuedAt: ctx.reqAt,
-        userId: user.id,
-        expiresAt: getExpiresAt(ctx.reqAt),
-      });
-      // setUserSessionTokenCookie(newUserSessionModel, ctx.res);
-    });
-  } else {
-    // should be a noop, but we set it anyway for tests
-    // setUserSessionTokenCookie(oldUserSessionModel, ctx.res);
-  }
+  // if (shouldRefreshUserSession(ctx.reqAt, oldUserSessionModel.issuedAt)) {
+  //   await transaction(ctx.db, async () => {
+  //     await oldUserSessionModel.destroy();
+  //     const newUserSessionModel = await ctx.db.models.UserSession.create({
+  //       issuedAt: ctx.reqAt,
+  //       userId: user.id,
+  //       expiresAt: getExpiresAt(ctx.reqAt),
+  //     });
+  //     // setUserSessionTokenCookie(newUserSessionModel, ctx.res);
+  //   });
+  // } else {
+  //   // should be a noop, but we set it anyway for tests
+  //   // setUserSessionTokenCookie(oldUserSessionModel, ctx.res);
+  // }
 
   return { user: toCanonicalUser(user) };
 };

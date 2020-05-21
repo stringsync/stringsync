@@ -1,8 +1,4 @@
 import { LoginInput, LoginOutput } from '../../common';
-import {
-  setUserSessionTokenCookie,
-  getExpiresAt,
-} from '../../util/user-session';
 import { isPassword } from '../../util/password';
 import { toCanonicalUser } from '../../data/db';
 import { GraphQLCtx } from '../../util/ctx';
@@ -43,11 +39,11 @@ export const login: LoginResolver = async (
     throw new Error(WRONG_CREDENTIALS_MSG);
   }
 
-  const userSessionModel = await ctx.db.models.UserSession.create({
-    issuedAt: ctx.reqAt,
-    userId: userModel.id,
-    expiresAt: getExpiresAt(ctx.reqAt),
-  });
+  // const userSessionModel = await ctx.db.models.UserSession.create({
+  //   issuedAt: ctx.reqAt,
+  //   userId: userModel.id,
+  //   expiresAt: getExpiresAt(ctx.reqAt),
+  // });
 
   // setUserSessionTokenCookie(userSessionModel, ctx.res);
 
