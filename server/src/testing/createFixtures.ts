@@ -1,14 +1,25 @@
-import { FixtureMap } from './types';
-import { Db, Models, StaticModel } from '../data/db';
+import { Db, RawUser } from '../data/db';
+import { makeEncryptedPassword } from '../util/password';
+import faker from 'faker';
 
-type Model = Models[keyof Models];
+type Attrs<T, K extends string = 'id'> = Omit<Partial<T>, K>;
 
-const MODEL_CREATE_ORDER: (keyof Models)[] = ['User', 'UserSession'];
+export const createUser = async (db: Db, attrs: Attrs<RawUser> = {}) => {
+  const refDate = faker.date.recent();
 
-export const createFixtures = async (db: Db, fixtureMap: FixtureMap) => {
-  for (const modelName of MODEL_CREATE_ORDER) {
-    const fixtures = fixtureMap[modelName] || [];
-    const model: StaticModel<Model> = db.models[modelName];
-    await model.bulkCreate(fixtures);
-  }
+  return db.models.User.create({
+    username: faker.internet.userName(),
+    email: faker.internet.email(),
+    createdAt: faker.date.past(undefined, refDate),
+    updatedAt: faker.date.future(undefined, refDate),
+    role: 'student',
+    avatarUrl: null,
+    confirmationToken: null,
+    confirmedAt: null,
+    encryptedPassword:
+      '$2b$10$OlF1bUqORoywn42UmkEq/O9H5X3QdDG8Iwn5tPuBFjGqGo3dA7mDe', // password = 'password',
+    resetPasswordToken: null,
+    resetPasswordTokenSentAt: null,
+    ...attrs,
+  });
 };
