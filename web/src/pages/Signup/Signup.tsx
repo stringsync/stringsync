@@ -100,7 +100,7 @@ const Signup = enhance((props: Props) => {
         console.error(errors);
         return;
       }
-      dispatch(signup(user));
+      dispatch(signup({ input: user }));
     });
   };
   const clearErrors = () => {

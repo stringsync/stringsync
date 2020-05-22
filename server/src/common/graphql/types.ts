@@ -1,64 +1,54 @@
-export type UserRoles = 'student' | 'teacher' | 'admin';
+import { User } from '../data';
 
-export const USER_ROLE_HIEARCHY: UserRoles[] = ['student', 'teacher', 'admin'];
+export type Input<T> = {
+  input: T;
+};
 
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  createdAt: Date;
-  updatedAt: Date;
-  confirmedAt: Date | null;
-  role: UserRoles;
-}
+export type Output<T> = T;
 
-export interface SignupInput {
+export type SignupInput = Input<{
   username: string;
   email: string;
   password: string;
-}
+}>;
 
-export interface SignupOutput {
+export type SignupOutput = Output<{
   user: User;
-}
+}>;
 
-export interface LogoutOutput {
+export type LogoutOutput = Output<{
   user: User | null;
-}
+}>;
 
-export interface LoginInput {
+export type LoginInput = Input<{
   emailOrUsername: string;
   password: string;
-}
+}>;
 
-export interface LoginOutput {
+export type LoginOutput = Output<{
   user: User;
-}
+}>;
 
-export interface Notation {
+export type UserInput = Input<{
   id: string;
-}
+}>;
 
-export interface UserInput {
-  id: string;
-}
-
-export interface UsersInput {
+export type UsersInput = Input<{
   ids: string[] | null;
-}
+}>;
 
-export interface ConfirmEmailInput {
+export type ConfirmEmailInput = Input<{
   confirmationToken: string;
-}
+}>;
 
-export interface ConfirmEmailOutput {
+export type ConfirmEmailOutput = Output<{
   user: User;
-}
+}>;
 
-export interface ResendConfirmationEmailInput {
+export type ResendConfirmationEmailInput = Input<{
   email: string;
-}
+}>;
 
-export interface ResendConfirmationEmailOutput {
+export type ResendConfirmationEmailOutput = Output<{
   email: string;
-}
+}>;

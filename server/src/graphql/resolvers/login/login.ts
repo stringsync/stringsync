@@ -20,7 +20,7 @@ export const middleware = compose(
 export const resolver: IFieldResolver<
   undefined,
   ResolverCtx,
-  { input: LoginInput }
+  LoginInput
 > = async (src, args, ctx): Promise<LoginOutput> => {
   const email = args.input.emailOrUsername;
   const username = args.input.emailOrUsername;

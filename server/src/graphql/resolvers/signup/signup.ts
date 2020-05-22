@@ -21,7 +21,7 @@ export const middleware = compose(
 export const resolver: IFieldResolver<
   undefined,
   ResolverCtx,
-  { input: SignupInput }
+  SignupInput
 > = async (src, args, ctx): Promise<SignupOutput> => {
   const { username, email, password } = args.input;
   const encryptedPassword = await makeEncryptedPassword(password);

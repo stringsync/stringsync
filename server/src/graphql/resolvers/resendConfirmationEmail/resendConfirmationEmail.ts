@@ -19,7 +19,7 @@ export const middleware = compose(
 export const resolver: IFieldResolver<
   undefined,
   ResolverCtx,
-  { input: ResendConfirmationEmailInput }
+  ResendConfirmationEmailInput
 > = async (src, args, ctx): Promise<ResendConfirmationEmailOutput> => {
   const { email } = args.input;
   const pk = ctx.req.session.user.id;

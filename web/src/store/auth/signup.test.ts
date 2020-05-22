@@ -15,9 +15,11 @@ it('signs up the user', async () => {
   // jest.spyOn(client, 'hello').mockResolvedValue({ user: USER });
 
   await signup({
-    email: 'email',
-    password: 'password',
-    username: 'username',
+    input: {
+      email: 'email',
+      password: 'password',
+      username: 'username',
+    },
   })(...thunkArgs);
 
   const { auth } = store.getState();

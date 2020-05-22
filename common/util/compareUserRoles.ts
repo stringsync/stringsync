@@ -1,4 +1,4 @@
-import { UserRoles } from '../graphql';
+import { UserRoles } from '../data';
 
 const USER_ROLE_HIEARCHY: UserRoles[] = ['student', 'teacher', 'admin'];
 

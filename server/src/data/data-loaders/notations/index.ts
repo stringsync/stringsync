@@ -1,1 +1,1 @@
-export { batchGetNotationsFromUserIds } from './batchGetNotationsFromUserIds';
+export * from './batchGetNotationsFromUserIds';

@@ -17,7 +17,7 @@ export const middleware = compose(
 export const resolver: IFieldResolver<
   undefined,
   ResolverCtx,
-  { input: ConfirmEmailInput }
+  ConfirmEmailInput
 > = async (src, args, ctx): Promise<ConfirmEmailOutput> => {
   const pk = ctx.req.session.user.id;
   const user = await ctx.db.models.User.findByPk(pk);

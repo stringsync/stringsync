@@ -1,5 +1,5 @@
 import { compareUserRoles } from './compareUserRoles';
-import { UserRoles } from '../graphql';
+import { UserRoles } from '../data';
 
 it.each([
   {

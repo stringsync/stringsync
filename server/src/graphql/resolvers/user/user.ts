@@ -8,7 +8,7 @@ export const middleware = compose(withAuthRequirement(AuthRequirements.NONE));
 export const resolver: IFieldResolver<
   undefined,
   ResolverCtx,
-  { input: UserInput }
+  UserInput
 > = async (src, args, ctx): Promise<User | null> => {
   return await ctx.dataLoaders.usersById.load(args.input.id);
 };

@@ -77,7 +77,7 @@ const Login: React.FC = enhance((props: Props) => {
       if (errors) {
         return;
       }
-      dispatch(login(loginInput));
+      dispatch(login({ input: loginInput }));
     });
   };
 

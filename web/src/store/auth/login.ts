@@ -1,4 +1,4 @@
-import { LoginInput } from '../../common/types';
+import { LoginInput } from '../../common';
 import { ThunkAction } from '../';
 // import { message } from 'antd';
 import { getErrorMessages } from '../../util';
