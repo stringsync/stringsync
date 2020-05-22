@@ -1,10 +1,12 @@
 import { User } from '../data';
 
-export type Input<T> = {
+type Input<T> = {
   input: T;
 };
 
-export type Output<T> = T;
+type NullInput = {};
+
+type Output<T> = T;
 
 export type UserInput = Input<{
   id: string;
@@ -18,7 +20,7 @@ export type UsersInput = Input<{
 
 export type UsersOutput = Output<User[]>;
 
-export type WhoamiInput = undefined;
+export type WhoamiInput = NullInput;
 
 export type WhoamiOutput = Output<User | null>;
 
@@ -41,7 +43,7 @@ export type LoginOutput = Output<{
   user: User;
 }>;
 
-export type LogoutInput = undefined;
+export type LogoutInput = NullInput;
 
 export type LogoutOutput = Output<{
   user: User | null;
