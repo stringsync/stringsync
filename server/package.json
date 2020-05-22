@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "tsc",
+    "build": "yarn tsc",
     "premigrate": "yarn build",
     "migrate": "sequelize db:migrate",
     "preseed": "yarn migrate",
@@ -63,6 +63,6 @@
     "ts-jest": "^24.3.0",
     "ts-loader": "^6.0.4",
     "ts-node-dev": "^1.0.0-pre.44",
-    "typescript": "^3.5.0"
+    "typescript": "3.9.3"
   }
 }

@@ -2,6 +2,7 @@ import { Middleware } from './types';
 import session from 'express-session';
 import uuid from 'uuid';
 import connectRedis from 'connect-redis';
+import { Handler } from 'express';
 
 const MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
 
@@ -20,5 +21,5 @@ export const withSession: Middleware = (ctx) => {
     rolling: false,
     saveUninitialized: false,
     store,
-  });
+  }) as Handler;
 };
