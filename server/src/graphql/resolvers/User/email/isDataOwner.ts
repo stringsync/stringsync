@@ -2,7 +2,7 @@ import { ResolverCtx } from '../../../../util/ctx';
 import { IFieldResolver } from 'graphql-tools';
 import { User } from '../../../../common';
 
-export const canAccessEmail: IFieldResolver<User, ResolverCtx> = (
+export const isDataOwner: IFieldResolver<User, ResolverCtx> = (
   src,
   args,
   ctx,

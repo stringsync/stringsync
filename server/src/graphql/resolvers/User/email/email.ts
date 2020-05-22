@@ -12,7 +12,7 @@ import {
 } from '../../../middlewares';
 import { IFieldResolver } from 'graphql-tools';
 import { ResolverCtx } from '../../../../util/ctx';
-import { canAccessEmail } from './canAccessEmail';
+import { isDataOwner } from './isDataOwner';
 
 export const middleware = compose(
   withErrorHandler((err) => {
@@ -22,7 +22,7 @@ export const middleware = compose(
     throw err;
   }),
   branch(
-    canAccessEmail,
+    isDataOwner,
     identity,
     withAuthRequirement(AuthRequirements.LOGGED_IN_AS_ADMIN)
   )
