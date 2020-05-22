@@ -1,3 +1,3 @@
-export * from './types';
-export * from './cleanup';
+export * from './setup';
+export * from './teardown';
 export * from './createFixtures';
