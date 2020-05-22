@@ -10,9 +10,8 @@ import {
   identity,
   withErrorHandler,
 } from '../../../middlewares';
-import { IFieldResolver } from 'graphql-tools';
-import { ResolverCtx } from '../../../../util/ctx';
 import { isDataOwner } from './isDataOwner';
+import { Resolver } from '../../../types';
 
 export const middleware = compose(
   withErrorHandler((err) => {
@@ -28,12 +27,7 @@ export const middleware = compose(
   )
 );
 
-export const resolver: IFieldResolver<User, ResolverCtx> = (
-  src,
-  args,
-  ctx,
-  info
-) => {
+export const resolver: Resolver<string, User> = (src, args, ctx, info) => {
   return src.email;
 };
 

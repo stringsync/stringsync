@@ -1,19 +1,25 @@
-import { LogoutOutput, compose, AuthRequirements } from '../../../../common/';
-import { IFieldResolver } from 'graphql-tools';
+import {
+  LogoutOutput,
+  compose,
+  AuthRequirements,
+  LogoutInput,
+} from '../../../../common/';
 import { ResolverCtx } from '../../../../util/ctx';
 import { getNullSessionUser } from '../../../../util/session';
 import { NotFoundError } from '../../../../common/errors';
 import { withAuthRequirement } from '../../../middlewares';
+import { Resolver } from '../../../types';
 
 export const middleware = compose(
   withAuthRequirement(AuthRequirements.LOGGED_IN)
 );
 
-export const resolver: IFieldResolver<undefined, ResolverCtx, {}> = async (
-  src,
-  args,
-  ctx
-): Promise<LogoutOutput> => {
+export const resolver: Resolver<
+  Promise<LogoutOutput>,
+  undefined,
+  LogoutInput,
+  ResolverCtx
+> = async (src, args, ctx) => {
   const pk = ctx.req.session.user.id;
   const user = await ctx.dataLoaders.usersById.load(pk);
 

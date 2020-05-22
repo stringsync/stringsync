@@ -7,20 +7,22 @@ import {
 import { sendConfirmationMail } from '../../../../jobs/mail';
 import uuid from 'uuid';
 import { ResolverCtx } from '../../../../util/ctx';
-import { IFieldResolver } from 'graphql-tools';
+
 import { NotFoundError, BadRequestError } from '../../../../common/errors';
 import { withAuthRequirement, withTransaction } from '../../../middlewares';
+import { Resolver } from '../../../types';
 
 export const middleware = compose(
   withAuthRequirement(AuthRequirements.LOGGED_IN),
   withTransaction
 );
 
-export const resolver: IFieldResolver<
+export const resolver: Resolver<
+  Promise<ResendConfirmationEmailOutput>,
   undefined,
-  ResolverCtx,
-  ResendConfirmationEmailInput
-> = async (src, args, ctx): Promise<ResendConfirmationEmailOutput> => {
+  ResendConfirmationEmailInput,
+  ResolverCtx
+> = async (src, args, ctx) => {
   const { email } = args.input;
   const pk = ctx.req.session.user.id;
   const user = await ctx.db.models.User.findByPk(pk);

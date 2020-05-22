@@ -1,7 +1,6 @@
 import { isPassword } from '../../../../util/password';
 import { toUser } from '../../../../data/db';
 import { ResolverCtx } from '../../../../util/ctx';
-import { IFieldResolver } from 'graphql-tools';
 import { ForbiddenError } from '../../../../common/errors';
 import { toSessionUser } from '../../../../util/session';
 import { withAuthRequirement } from '../../../middlewares';
@@ -12,16 +11,18 @@ import {
   compose,
   AuthRequirements,
 } from '../../../../common';
+import { Resolver } from '../../../types';
 
 export const middleware = compose(
   withAuthRequirement(AuthRequirements.LOGGED_OUT)
 );
 
-export const resolver: IFieldResolver<
+export const resolver: Resolver<
+  Promise<LoginOutput>,
   undefined,
-  ResolverCtx,
-  LoginInput
-> = async (src, args, ctx): Promise<LoginOutput> => {
+  LoginInput,
+  ResolverCtx
+> = async (src, args, ctx) => {
   const email = args.input.emailOrUsername;
   const username = args.input.emailOrUsername;
   const user = await ctx.db.models.User.findOne({

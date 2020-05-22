@@ -5,24 +5,25 @@ import {
   AuthRequirements,
 } from '../../../../common';
 import { makeEncryptedPassword } from '../../../../util/password';
-import { toUser, transaction } from '../../../../data/db';
+import { toUser } from '../../../../data/db';
 import { sendConfirmationMail } from '../../../../jobs/mail';
-import { IFieldResolver } from 'graphql-tools';
 import { ResolverCtx } from '../../../../util/ctx';
 import { toSessionUser } from '../../../../util/session';
 import uuid from 'uuid';
 import { withAuthRequirement, withTransaction } from '../../../middlewares';
+import { Resolver } from '../../../types';
 
 export const middleware = compose(
   withAuthRequirement(AuthRequirements.LOGGED_OUT),
   withTransaction
 );
 
-export const resolver: IFieldResolver<
+export const resolver: Resolver<
+  Promise<SignupOutput>,
   undefined,
-  ResolverCtx,
-  SignupInput
-> = async (src, args, ctx): Promise<SignupOutput> => {
+  SignupInput,
+  ResolverCtx
+> = async (src, args, ctx) => {
   const { username, email, password } = args.input;
   const encryptedPassword = await makeEncryptedPassword(password);
   const confirmationToken = uuid.v4();

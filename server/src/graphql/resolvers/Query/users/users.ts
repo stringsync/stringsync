@@ -5,19 +5,20 @@ import {
   AuthRequirements,
   UsersOutput,
 } from '../../../../common';
-import { IFieldResolver } from 'graphql-tools';
 import { ResolverCtx } from '../../../../util/ctx';
 import { withAuthRequirement } from '../../../middlewares';
+import { Resolver } from '../../../types';
 
 export const middleware = compose(
   withAuthRequirement(AuthRequirements.LOGGED_IN_AS_ADMIN)
 );
 
-export const resolver: IFieldResolver<
+export const resolver: Resolver<
+  Promise<UsersOutput>,
   undefined,
-  ResolverCtx,
-  UsersInput
-> = async (src, args, ctx): Promise<UsersOutput> => {
+  UsersInput,
+  ResolverCtx
+> = async (src, args, ctx) => {
   const users = await ctx.db.models.User.findAll();
   return users.map(toUser);
 };

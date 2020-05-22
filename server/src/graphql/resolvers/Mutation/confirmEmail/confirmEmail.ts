@@ -1,5 +1,4 @@
 import { toUser } from '../../../../data/db';
-import { IFieldResolver } from 'graphql-tools';
 import { ResolverCtx } from '../../../../util/ctx';
 import { BadRequestError, NotFoundError } from '../../../../common/errors';
 import { withAuthRequirement } from '../../../middlewares';
@@ -9,16 +8,18 @@ import {
   compose,
   AuthRequirements,
 } from '../../../../common';
+import { Resolver } from '../../../types';
 
 export const middleware = compose(
   withAuthRequirement(AuthRequirements.LOGGED_IN)
 );
 
-export const resolver: IFieldResolver<
+export const resolver: Resolver<
+  Promise<ConfirmEmailOutput>,
   undefined,
-  ResolverCtx,
-  ConfirmEmailInput
-> = async (src, args, ctx): Promise<ConfirmEmailOutput> => {
+  ConfirmEmailInput,
+  ResolverCtx
+> = async (src, args, ctx) => {
   const pk = ctx.req.session.user.id;
   const user = await ctx.db.models.User.findByPk(pk);
 
