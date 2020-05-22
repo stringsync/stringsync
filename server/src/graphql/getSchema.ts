@@ -7,6 +7,7 @@ export const getSchema = () => {
   return makeExecutableSchema({
     typeDefs,
     resolvers,
+    allowUndefinedInResolve: false,
     resolverValidationOptions: {
       requireResolversForArgs: true,
       requireResolversForNonScalar: false,
