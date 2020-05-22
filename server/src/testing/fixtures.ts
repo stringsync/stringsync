@@ -1,16 +1,15 @@
 import { Db, RawUser } from '../data/db';
-import faker from 'faker';
 
 type Attrs<T, K extends string = 'id'> = Omit<Partial<T>, K>;
 
 export const createUser = async (db: Db, attrs: Attrs<RawUser> = {}) => {
-  const refDate = faker.date.recent();
+  const now = new Date();
 
   return db.models.User.create({
-    username: faker.internet.userName(),
-    email: faker.internet.email(),
-    createdAt: faker.date.past(undefined, refDate),
-    updatedAt: faker.date.future(undefined, refDate),
+    username: 'username',
+    email: 'email',
+    createdAt: now,
+    updatedAt: now,
     role: 'student',
     avatarUrl: null,
     confirmationToken: null,

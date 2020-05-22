@@ -16,7 +16,6 @@ export const getTestCmdArgs = (project: Project, watch: boolean): string[] => {
         'server',
         'yarn',
         'test',
-        '--forceExit',
         `--watchAll=${watch}`,
       ];
     case 'web':

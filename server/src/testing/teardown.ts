@@ -13,4 +13,6 @@ export const teardown = async (ctx: GlobalCtx) => {
   promises.push(ctx.redis.quit());
 
   await Promise.all(promises);
+
+  jest.clearAllMocks();
 };

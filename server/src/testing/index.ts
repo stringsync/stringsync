@@ -1,3 +1,3 @@
 export * from './setup';
 export * from './teardown';
-export * from './createFixtures';
+export * from './fixtures';

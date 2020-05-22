@@ -1,5 +1,5 @@
 import { connectToRedis } from './connectToRedis';
-import { getConfig } from '../config';
+import { getConfig } from '../../config';
 
 const config = getConfig(process.env);
 
