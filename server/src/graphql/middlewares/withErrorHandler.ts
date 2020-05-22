@@ -2,9 +2,9 @@ import { Middleware } from './types';
 
 type ErrorHandler = (err: Error) => any;
 
-export const withErrorHandler = (errorHandler: ErrorHandler): Middleware => (
-  next
-) => async (src, args, ctx, info) => {
+export const withErrorHandler = (
+  errorHandler: ErrorHandler
+): Middleware<any, any, any> => (next) => async (src, args, ctx, info) => {
   try {
     return await next(src, args, ctx, info);
   } catch (err) {

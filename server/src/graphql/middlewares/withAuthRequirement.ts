@@ -2,9 +2,9 @@ import { Middleware } from './types';
 import { ForbiddenError } from '../../common/errors';
 import { AuthRequirements, compareUserRoles } from '../../common';
 
-export const withAuthRequirement = (authReqs: AuthRequirements): Middleware => (
-  next
-) => async (src, args, ctx, info) => {
+export const withAuthRequirement = (
+  authReqs: AuthRequirements
+): Middleware<any, any, any> => (next) => async (src, args, ctx, info) => {
   const { isLoggedIn, role } = ctx.req.session.user;
 
   switch (authReqs) {

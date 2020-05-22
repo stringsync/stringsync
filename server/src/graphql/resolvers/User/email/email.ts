@@ -16,7 +16,6 @@ import { canAccessEmail } from './canAccessEmail';
 
 export const middleware = compose(
   withErrorHandler((err) => {
-    console.log(err.constructor);
     if (err instanceof ForbiddenError) {
       throw new ForbiddenError('must be logged in as data owner or admin');
     }
