@@ -5,7 +5,6 @@ import { Queues } from '../../jobs';
 import { Config } from '../../config';
 import { DataLoaders } from '../../data/data-loaders';
 import { Request, Response } from 'express';
-import { GraphQLSchema } from 'graphql';
 import { SessionUser } from '../session';
 
 export interface GlobalCtx {
@@ -14,7 +13,6 @@ export interface GlobalCtx {
   db: Db;
   redis: Redis;
   queues: Queues;
-  schema: GraphQLSchema;
 }
 
 export type SessionRequest = Request & {
