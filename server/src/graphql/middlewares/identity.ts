@@ -1,6 +1,6 @@
 import { Middleware } from './types';
 
-export const identity: Middleware<any, any, any> = (next) => (
+export const identity: Middleware<any, any, any, any> = (next) => (
   src,
   args,
   ctx,

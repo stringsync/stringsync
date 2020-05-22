@@ -1,6 +1,5 @@
 import {
   UserInput,
-  User,
   compose,
   AuthRequirements,
   UserOutput,

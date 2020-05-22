@@ -4,7 +4,7 @@ import { AuthRequirements, compareUserRoles } from '../../common';
 
 export const withAuthRequirement = (
   authReqs: AuthRequirements
-): Middleware<any, any, any> => (next) => async (src, args, ctx, info) => {
+): Middleware<any, any, any, any> => (next) => async (src, args, ctx, info) => {
   const { isLoggedIn, role } = ctx.req.session.user;
 
   switch (authReqs) {

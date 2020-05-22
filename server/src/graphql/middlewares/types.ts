@@ -1,19 +1,15 @@
-import { IFieldResolver, IGraphQLToolsResolveInfo } from 'graphql-tools';
+import { Resolver } from '../';
 import { ResolverCtx } from '../../util/ctx';
 
 export type Middleware<
+  R = any,
   S = undefined,
-  C = ResolverCtx,
-  A = Record<string, any>
-> = (next: IFieldResolver<S, C, A>) => IFieldResolver<S, C, A>;
+  A = Record<string, any>,
+  C = ResolverCtx
+> = (next: Resolver<R, S, A, C>) => Resolver<R, S, A, C>;
 
 export type Predicate<
   S = undefined,
-  C = ResolverCtx,
-  A = Record<string, any>
-> = (
-  src: S,
-  args: A,
-  ctx: C,
-  info: IGraphQLToolsResolveInfo
-) => Promise<boolean> | boolean;
+  A = Record<string, any>,
+  C = ResolverCtx
+> = Resolver<Promise<boolean> | boolean, S, A, C>;
