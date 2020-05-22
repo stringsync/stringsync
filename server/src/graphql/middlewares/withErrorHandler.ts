@@ -4,10 +4,10 @@ type ErrorHandler = (err: Error) => any;
 
 export const withErrorHandler = (errorHandler: ErrorHandler): Middleware => (
   next
-) => (src, args, ctx, info) => {
+) => async (src, args, ctx, info) => {
   try {
-    return next(src, args, ctx, info);
+    return await next(src, args, ctx, info);
   } catch (err) {
-    errorHandler(err);
+    return await errorHandler(err);
   }
 };

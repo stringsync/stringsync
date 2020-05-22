@@ -8,6 +8,7 @@ abstract class HttpStatusError extends Error {
   constructor(message: string, extensions: Extensions) {
     super(message);
     this.extensions = extensions;
+    Object.setPrototypeOf(this, HttpStatusError.prototype);
   }
 }
 
@@ -16,6 +17,7 @@ export class BadRequestError extends HttpStatusError {
 
   constructor(message: string) {
     super(message, { status: BadRequestError.status });
+    Object.setPrototypeOf(this, BadRequestError.prototype);
   }
 }
 
@@ -24,6 +26,7 @@ export class ForbiddenError extends HttpStatusError {
 
   constructor(message: string) {
     super(message, { status: ForbiddenError.status });
+    Object.setPrototypeOf(this, ForbiddenError.prototype);
   }
 }
 
@@ -32,5 +35,6 @@ export class NotFoundError extends HttpStatusError {
 
   constructor(message: string) {
     super(message, { status: NotFoundError.status });
+    Object.setPrototypeOf(this, NotFoundError.prototype);
   }
 }

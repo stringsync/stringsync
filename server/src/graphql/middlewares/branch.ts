@@ -3,15 +3,16 @@ import { Middleware } from './types';
 import { identity } from './identity';
 
 export const branch = (
-  test: <S, A, C>(
-    src: S,
-    args: A,
-    ctx: C,
+  test: (
+    src: any,
+    args: any,
+    ctx: any,
     info: GraphQLResolveInfo
   ) => Promise<boolean> | boolean,
   left: Middleware,
   right: Middleware = identity
 ): Middleware => (next) => async (src, args, ctx, info) => {
   const result = await test(src, args, ctx, info);
-  return result ? left(next) : right(next);
+  const resolver = result ? left(next) : right(next);
+  return resolver(src, args, ctx, info);
 };
