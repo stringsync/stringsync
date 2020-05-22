@@ -1,5 +1,10 @@
 import { toCanonicalUser } from '../../../data/db';
-import { User, UsersInput, compose, AuthRequirements } from '../../../common';
+import {
+  UsersInput,
+  compose,
+  AuthRequirements,
+  UsersOutput,
+} from '../../../common';
 import { IFieldResolver } from 'graphql-tools';
 import { ResolverCtx } from '../../../util/ctx';
 import { withAuthRequirement } from '../../middlewares';
@@ -11,8 +16,8 @@ export const middleware = compose(
 export const resolver: IFieldResolver<
   undefined,
   ResolverCtx,
-  { input: UsersInput }
-> = async (src, args, ctx): Promise<User[]> => {
+  UsersInput
+> = async (src, args, ctx): Promise<UsersOutput> => {
   const users = await ctx.db.models.User.findAll();
   return users.map(toCanonicalUser);
 };

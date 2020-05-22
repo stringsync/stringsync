@@ -6,6 +6,22 @@ export type Input<T> = {
 
 export type Output<T> = T;
 
+export type UserInput = Input<{
+  id: string;
+}>;
+
+export type UserOutput = Output<User | null>;
+
+export type UsersInput = Input<{
+  ids: string[] | null;
+}>;
+
+export type UsersOutput = Output<User[]>;
+
+export type WhoamiInput = undefined;
+
+export type WhoamiOutput = Output<User | null>;
+
 export type SignupInput = Input<{
   username: string;
   email: string;
@@ -14,10 +30,6 @@ export type SignupInput = Input<{
 
 export type SignupOutput = Output<{
   user: User;
-}>;
-
-export type LogoutOutput = Output<{
-  user: User | null;
 }>;
 
 export type LoginInput = Input<{
@@ -29,12 +41,10 @@ export type LoginOutput = Output<{
   user: User;
 }>;
 
-export type UserInput = Input<{
-  id: string;
-}>;
+export type LogoutInput = undefined;
 
-export type UsersInput = Input<{
-  ids: string[] | null;
+export type LogoutOutput = Output<{
+  user: User | null;
 }>;
 
 export type ConfirmEmailInput = Input<{

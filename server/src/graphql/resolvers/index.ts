@@ -5,4 +5,4 @@ export * from './signup';
 export * from './user';
 export * from './users';
 export * from './logout';
-export * from './me';
+export * from './whoami';
