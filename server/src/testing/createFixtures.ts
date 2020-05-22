@@ -1,5 +1,4 @@
 import { Db, RawUser } from '../data/db';
-import { makeEncryptedPassword } from '../util/password';
 import faker from 'faker';
 
 type Attrs<T, K extends string = 'id'> = Omit<Partial<T>, K>;
