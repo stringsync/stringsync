@@ -5,7 +5,7 @@ import {
   AuthRequirements,
 } from '../../../../common';
 import { makeEncryptedPassword } from '../../../../util/password';
-import { toCanonicalUser, transaction } from '../../../../data/db';
+import { toUser, transaction } from '../../../../data/db';
 import { sendConfirmationMail } from '../../../../jobs/mail';
 import { IFieldResolver } from 'graphql-tools';
 import { ResolverCtx } from '../../../../util/ctx';
@@ -37,7 +37,7 @@ export const resolver: IFieldResolver<
 
   await sendConfirmationMail(email, confirmationToken, ctx);
 
-  return { user: toCanonicalUser(user) };
+  return { user: toUser(user) };
 };
 
 export const signup = middleware(resolver);

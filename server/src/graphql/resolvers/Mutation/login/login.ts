@@ -1,5 +1,5 @@
 import { isPassword } from '../../../../util/password';
-import { toCanonicalUser } from '../../../../data/db';
+import { toUser } from '../../../../data/db';
 import { ResolverCtx } from '../../../../util/ctx';
 import { IFieldResolver } from 'graphql-tools';
 import { ForbiddenError } from '../../../../common/errors';
@@ -37,7 +37,7 @@ export const resolver: IFieldResolver<
 
   ctx.req.session.user = toSessionUser(user);
 
-  return { user: toCanonicalUser(user) };
+  return { user: toUser(user) };
 };
 
 export const login = middleware(resolver);

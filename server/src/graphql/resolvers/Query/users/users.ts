@@ -1,4 +1,4 @@
-import { toCanonicalUser } from '../../../../data/db';
+import { toUser } from '../../../../data/db';
 import {
   UsersInput,
   compose,
@@ -19,7 +19,7 @@ export const resolver: IFieldResolver<
   UsersInput
 > = async (src, args, ctx): Promise<UsersOutput> => {
   const users = await ctx.db.models.User.findAll();
-  return users.map(toCanonicalUser);
+  return users.map(toUser);
 };
 
 export const users = middleware(resolver);

@@ -1,5 +1,5 @@
 import { alignOneToOne } from '../align-arrays';
-import { Db, toCanonicalUser } from '../../db';
+import { Db, toUser } from '../../db';
 import { User } from '../../../common';
 
 export const batchGetUsersFromIds = (db: Db) => async (
@@ -10,7 +10,7 @@ export const batchGetUsersFromIds = (db: Db) => async (
       raw: true,
       where: { id: ids },
     })
-  ).map(toCanonicalUser);
+  ).map(toUser);
 
   return alignOneToOne(ids, users, {
     getKey: (user) => user.id,

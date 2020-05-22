@@ -1,4 +1,4 @@
-import { toCanonicalUser } from '../../../../data/db';
+import { toUser } from '../../../../data/db';
 import { IFieldResolver } from 'graphql-tools';
 import { ResolverCtx } from '../../../../util/ctx';
 import { BadRequestError, NotFoundError } from '../../../../common/errors';
@@ -39,7 +39,7 @@ export const resolver: IFieldResolver<
   user.confirmationToken = null;
   await user.save();
 
-  return { user: toCanonicalUser(user) };
+  return { user: toUser(user) };
 };
 
 export const confirmEmail = middleware(resolver);
