@@ -6,7 +6,7 @@ export const withErrorHandler = (errorHandler: ErrorHandler): Middleware => (
   next
 ) => (src, args, ctx, info) => {
   try {
-    next(src, args, ctx, info);
+    return next(src, args, ctx, info);
   } catch (err) {
     errorHandler(err);
   }
