@@ -3,10 +3,10 @@ import {
   AuthRequirements,
   WhoamiInput,
   WhoamiOutput,
-} from '../../../common';
-import { withAuthRequirement } from '../../middlewares';
+} from '../../../../common';
+import { withAuthRequirement } from '../../../middlewares';
 import { IFieldResolver } from 'graphql-tools';
-import { ResolverCtx } from '../../../util/ctx';
+import { ResolverCtx } from '../../../../util/ctx';
 
 export const middleware = compose(withAuthRequirement(AuthRequirements.NONE));
 

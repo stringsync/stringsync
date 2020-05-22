@@ -4,10 +4,10 @@ import {
   compose,
   AuthRequirements,
   UserOutput,
-} from '../../../common';
-import { ResolverCtx } from '../../../util/ctx';
+} from '../../../../common';
+import { ResolverCtx } from '../../../../util/ctx';
 import { IFieldResolver } from 'graphql-tools';
-import { withAuthRequirement } from '../../middlewares';
+import { withAuthRequirement } from '../../../middlewares';
 
 export const middleware = compose(withAuthRequirement(AuthRequirements.NONE));
 

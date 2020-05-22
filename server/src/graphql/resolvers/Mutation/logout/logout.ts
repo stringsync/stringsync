@@ -1,10 +1,9 @@
-import { toCanonicalUser } from '../../../data/db';
-import { LogoutOutput, compose, AuthRequirements } from '../../../common/';
+import { LogoutOutput, compose, AuthRequirements } from '../../../../common/';
 import { IFieldResolver } from 'graphql-tools';
-import { ResolverCtx } from '../../../util/ctx';
-import { getNullSessionUser } from '../../../util/session';
-import { NotFoundError } from '../../../common/errors';
-import { withAuthRequirement } from '../../middlewares';
+import { ResolverCtx } from '../../../../util/ctx';
+import { getNullSessionUser } from '../../../../util/session';
+import { NotFoundError } from '../../../../common/errors';
+import { withAuthRequirement } from '../../../middlewares';
 
 export const middleware = compose(
   withAuthRequirement(AuthRequirements.LOGGED_IN)

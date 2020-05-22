@@ -1,17 +1,17 @@
-import { isPassword } from '../../../util/password';
-import { toCanonicalUser } from '../../../data/db';
-import { ResolverCtx } from '../../../util/ctx';
+import { isPassword } from '../../../../util/password';
+import { toCanonicalUser } from '../../../../data/db';
+import { ResolverCtx } from '../../../../util/ctx';
 import { IFieldResolver } from 'graphql-tools';
-import { ForbiddenError } from '../../../common/errors';
-import { toSessionUser } from '../../../util/session';
-import { withAuthRequirement } from '../../middlewares';
+import { ForbiddenError } from '../../../../common/errors';
+import { toSessionUser } from '../../../../util/session';
+import { withAuthRequirement } from '../../../middlewares';
 import { or } from 'sequelize';
 import {
   LoginInput,
   LoginOutput,
   compose,
   AuthRequirements,
-} from '../../../common';
+} from '../../../../common';
 
 export const middleware = compose(
   withAuthRequirement(AuthRequirements.LOGGED_OUT)

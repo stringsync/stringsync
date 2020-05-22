@@ -1,13 +1,13 @@
-import { toCanonicalUser } from '../../../data/db';
+import { toCanonicalUser } from '../../../../data/db';
 import {
   UsersInput,
   compose,
   AuthRequirements,
   UsersOutput,
-} from '../../../common';
+} from '../../../../common';
 import { IFieldResolver } from 'graphql-tools';
-import { ResolverCtx } from '../../../util/ctx';
-import { withAuthRequirement } from '../../middlewares';
+import { ResolverCtx } from '../../../../util/ctx';
+import { withAuthRequirement } from '../../../middlewares';
 
 export const middleware = compose(
   withAuthRequirement(AuthRequirements.LOGGED_IN_AS_ADMIN)

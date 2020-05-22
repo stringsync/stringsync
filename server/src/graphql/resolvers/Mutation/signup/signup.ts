@@ -3,15 +3,15 @@ import {
   SignupOutput,
   compose,
   AuthRequirements,
-} from '../../../common';
-import { makeEncryptedPassword } from '../../../util/password';
-import { toCanonicalUser, transaction } from '../../../data/db';
-import { sendConfirmationMail } from '../../../jobs/mail';
+} from '../../../../common';
+import { makeEncryptedPassword } from '../../../../util/password';
+import { toCanonicalUser, transaction } from '../../../../data/db';
+import { sendConfirmationMail } from '../../../../jobs/mail';
 import { IFieldResolver } from 'graphql-tools';
-import { ResolverCtx } from '../../../util/ctx';
-import { toSessionUser } from '../../../util/session';
+import { ResolverCtx } from '../../../../util/ctx';
+import { toSessionUser } from '../../../../util/session';
 import uuid from 'uuid';
-import { withAuthRequirement, withTransaction } from '../../middlewares';
+import { withAuthRequirement, withTransaction } from '../../../middlewares';
 
 export const middleware = compose(
   withAuthRequirement(AuthRequirements.LOGGED_OUT),

@@ -3,13 +3,13 @@ import {
   ResendConfirmationEmailOutput,
   compose,
   AuthRequirements,
-} from '../../../common';
-import { sendConfirmationMail } from '../../../jobs/mail';
+} from '../../../../common';
+import { sendConfirmationMail } from '../../../../jobs/mail';
 import uuid from 'uuid';
-import { ResolverCtx } from '../../../util/ctx';
+import { ResolverCtx } from '../../../../util/ctx';
 import { IFieldResolver } from 'graphql-tools';
-import { NotFoundError, BadRequestError } from '../../../common/errors';
-import { withAuthRequirement, withTransaction } from '../../middlewares';
+import { NotFoundError, BadRequestError } from '../../../../common/errors';
+import { withAuthRequirement, withTransaction } from '../../../middlewares';
 
 export const middleware = compose(
   withAuthRequirement(AuthRequirements.LOGGED_IN),

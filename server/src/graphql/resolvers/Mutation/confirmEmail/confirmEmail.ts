@@ -1,14 +1,14 @@
-import { toCanonicalUser } from '../../../data/db';
+import { toCanonicalUser } from '../../../../data/db';
 import { IFieldResolver } from 'graphql-tools';
-import { ResolverCtx } from '../../../util/ctx';
-import { BadRequestError, NotFoundError } from '../../../common/errors';
-import { withAuthRequirement } from '../../middlewares';
+import { ResolverCtx } from '../../../../util/ctx';
+import { BadRequestError, NotFoundError } from '../../../../common/errors';
+import { withAuthRequirement } from '../../../middlewares';
 import {
   ConfirmEmailInput,
   ConfirmEmailOutput,
   compose,
   AuthRequirements,
-} from '../../../common';
+} from '../../../../common';
 
 export const middleware = compose(
   withAuthRequirement(AuthRequirements.LOGGED_IN)
