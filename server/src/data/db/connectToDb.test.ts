@@ -2,24 +2,24 @@ import { Db } from './types';
 import { connectToDb } from './connectToDb';
 import { getConfig } from '../../config';
 import { getLogger } from '../../util/logger';
-import { createUser, randStr } from '../../testing';
+import { createUser } from '../../testing';
 import { ForcedRollback } from './ForcedRollback';
-import { uniq } from 'lodash';
-import { createNamespace, Namespace } from 'cls-hooked';
+import { TRANSACTION_NAMESPACE, TRANSACTION_NAMESPACE_NAME } from './constants';
 
-const NAMESPACE_NAME = 'transaction';
+const ID1 = '8aYmBzhvRC';
+const ID2 = 'wjTMDY3ECg';
 
 let db: Db;
-let namespace: Namespace;
+const namespace = TRANSACTION_NAMESPACE;
 const config = getConfig(process.env);
 const logger = getLogger();
 
 beforeEach(() => {
-  namespace = createNamespace(NAMESPACE_NAME);
   db = connectToDb(config, namespace, logger);
 });
 
 afterEach(async () => {
+  await db.User.destroy({ where: { id: [ID1, ID2] }, force: true });
   await db.sequelize.close();
 });
 
@@ -30,7 +30,7 @@ const isUserPersisted = async (db: Db, id: string): Promise<boolean> => {
 
 it('sets the namespace within the callback', async () => {
   await db.transaction(async (t) => {
-    const nst = namespace.get(NAMESPACE_NAME);
+    const nst = namespace.get(TRANSACTION_NAMESPACE_NAME);
     expect(nst).toBeDefined();
     expect(t).toBe(nst);
   });
@@ -38,62 +38,61 @@ it('sets the namespace within the callback', async () => {
 
 it('unsets the namespace outside the callback', async () => {
   await db.transaction(async () => {});
-  const nst = namespace.get(NAMESPACE_NAME);
+  const nst = namespace.get(TRANSACTION_NAMESPACE_NAME);
   expect(nst).toBeUndefined();
 });
 
 it('commits when no error thrown', async () => {
-  const id = randStr(10);
-
   await db.transaction(async () => {
-    await createUser(db, { id });
-    expect(await isUserPersisted(db, id)).toBe(true);
+    await createUser(db, { id: ID1 });
+    expect(await isUserPersisted(db, ID1)).toBe(true);
   });
 
-  expect(await isUserPersisted(db, id)).toBe(true);
+  expect(await isUserPersisted(db, ID1)).toBe(true);
 });
 
 it('rolls back when error thrown', async () => {
-  const id = randStr(10);
-
   try {
     await db.transaction(async () => {
-      await createUser(db, { id });
-      expect(await isUserPersisted(db, id)).toBe(true);
+      await createUser(db, { id: ID1 });
+      expect(await isUserPersisted(db, ID1)).toBe(true);
       throw new ForcedRollback();
     });
   } catch (e) {
     expect(e).toBeInstanceOf(ForcedRollback);
   }
 
-  expect(await isUserPersisted(db, id)).toBe(false);
+  expect(await isUserPersisted(db, ID1)).toBe(false);
 });
 
 it('returns the task return value', async () => {
-  const symbol = Symbol(randStr(5));
+  const symbol = Symbol();
   const val = await db.sequelize.transaction(async () => symbol);
   expect(val).toBe(symbol);
 });
 
 it('nests transactions', async () => {
-  await db.transaction(async (t1) => {
-    await db.transaction(async (t2) => {
-      expect(t1).toBe(t2);
+  await db.transaction(async () => {
+    await createUser(db, { id: ID1 });
+    expect(await isUserPersisted(db, ID1)).toBe(true);
+
+    await db.transaction(async () => {
+      await createUser(db, { id: ID2 });
+      expect(await isUserPersisted(db, ID1)).toBe(true);
+      expect(await isUserPersisted(db, ID2)).toBe(true);
     });
+
+    expect(await isUserPersisted(db, ID1)).toBe(true);
+    expect(await isUserPersisted(db, ID2)).toBe(true);
   });
 });
 
 it('supports concurrent transactions', async () => {
-  const users = await Promise.all([
-    db.transaction(async (t) => createUser(db)),
-    db.transaction(async (t) => createUser(db)),
-    db.transaction(async (t) => createUser(db)),
+  await Promise.all([
+    db.transaction(async (t) => createUser(db, { id: ID1 })),
+    db.transaction(async (t) => createUser(db, { id: ID2 })),
   ]);
 
-  const ids = users.map((user) => user.id);
-  expect(uniq(ids)).toHaveLength(3);
-
-  for (const id of ids) {
-    expect(await isUserPersisted(db, id)).toBe(true);
-  }
+  expect(await isUserPersisted(db, ID1)).toBe(true);
+  expect(await isUserPersisted(db, ID2)).toBe(true);
 });
