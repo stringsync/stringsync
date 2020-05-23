@@ -1,18 +1,14 @@
 import { GlobalCtx } from '../util/ctx';
 
 export const teardown = async (ctx: GlobalCtx) => {
-  const promises = new Array<Promise<any>>();
+  await ctx.db.drop();
+  await ctx.db.close();
 
-  promises.push(ctx.db.close());
+  const queues = Object.values(ctx.queues);
+  await Promise.all(queues.map((queue) => queue.close()));
 
-  for (const queue of Object.values(ctx.queues)) {
-    promises.push(queue.close());
-  }
-
-  promises.push(ctx.redis.flushall());
-  promises.push(ctx.redis.quit());
-
-  await Promise.all(promises);
+  await ctx.redis.flushall();
+  await ctx.redis.quit();
 
   jest.clearAllMocks();
 };

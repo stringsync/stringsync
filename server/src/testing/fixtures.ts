@@ -7,7 +7,7 @@ export const createUser = async (db: Db, attrs: Attrs<RawUser> = {}) => {
 
   return db.models.User.create({
     username: 'username',
-    email: 'email',
+    email: 'email@domain.tld',
     createdAt: now,
     updatedAt: now,
     role: 'student',

@@ -1,7 +1,9 @@
 import { GlobalCtx, createGlobalCtx } from '../util/ctx';
 import { getConfig } from '../config';
 
-export const setup = (): GlobalCtx => {
+export const setup = async (): Promise<GlobalCtx> => {
   const config = getConfig(process.env);
-  return createGlobalCtx(config);
+  const ctx = createGlobalCtx(config);
+  await ctx.db.sync();
+  return ctx;
 };
