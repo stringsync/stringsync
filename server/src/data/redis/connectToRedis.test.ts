@@ -8,7 +8,6 @@ it('runs without crashing', async () => {
     const redis = connectToRedis(config);
     await redis.ping();
     await redis.quit();
-    return Promise.resolve();
   };
   await expect(fn()).resolves.not.toThrow();
 });
