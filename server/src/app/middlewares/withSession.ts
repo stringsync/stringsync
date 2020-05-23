@@ -1,12 +1,12 @@
-import { Middleware } from './types';
 import session from 'express-session';
 import uuid from 'uuid';
 import connectRedis from 'connect-redis';
 import { Handler } from 'express';
+import { GlobalCtx } from '../../util/ctx';
 
 const MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
 
-export const withSession: Middleware = (ctx) => {
+export const withSession = (ctx: GlobalCtx): Handler => {
   const RedisStore = connectRedis(session);
   // Problem with @types/connect-redis, typecasting to any should still work
   // https://github.com/tj/connect-redis/issues/300#issuecomment-580038867

@@ -4,8 +4,14 @@ import {
   getNullSessionUser,
   toSessionUser,
 } from '../../util/session';
+import { Handler } from 'express';
+import { GlobalCtx } from '../../util/ctx';
 
-export const withSessionUser: Middleware = (ctx) => async (req, res, next) => {
+export const withSessionUser = (ctx: GlobalCtx): Handler => async (
+  req,
+  res,
+  next
+) => {
   if ('user' in req.session!) {
     const sessionUser: SessionUser = req.session!.user;
     const user = await ctx.db.User.findByPk(sessionUser.id);

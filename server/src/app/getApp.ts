@@ -14,9 +14,9 @@ export const getApp = (ctx: GlobalCtx) => {
 
   // middlewares
   app.use(cors() as Handler);
-  app.use(withSession(ctx));
-  app.use(withSessionUser(ctx));
-  app.use('/graphql', withGraphQL(schema)(ctx));
+  app.use('/graphql', withSession(ctx));
+  app.use('/graphql', withSessionUser(ctx));
+  app.use('/graphql', withGraphQL(ctx, schema));
 
   // routes
   app.get('/health', getHealth(ctx));

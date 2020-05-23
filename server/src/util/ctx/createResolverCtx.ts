@@ -1,16 +1,17 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { GlobalCtx, ResolverCtx, SessionRequest } from './types';
 import { getDataLoaders } from '../../data/data-loaders';
 
 export const createResolverCtx = (
   ctx: GlobalCtx,
-  req: Request,
-  res: Response
+  req: SessionRequest,
+  res: Response,
+  reqAt?: Date // used for testing
 ): ResolverCtx => {
-  const reqAt = new Date();
+  reqAt = new Date();
   const dataLoaders = getDataLoaders(ctx.db);
   return {
-    req: req as SessionRequest,
+    req,
     res,
     reqAt,
     dataLoaders,
