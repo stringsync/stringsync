@@ -5,7 +5,7 @@ type Attrs<T, K extends string = 'id'> = Omit<Partial<T>, K>;
 export const createUser = async (db: Db, attrs: Attrs<RawUser> = {}) => {
   const now = new Date();
 
-  return db.models.User.create({
+  return db.User.create({
     username: 'username',
     email: 'email@domain.tld',
     createdAt: now,

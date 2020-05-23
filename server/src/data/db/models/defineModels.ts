@@ -2,10 +2,17 @@ import { defineUserModel } from './user';
 import { defineUserSessionModel } from './user-session';
 import { Sequelize } from 'sequelize';
 
-export const defineModels = (dbConnection: Sequelize) => {
-  const User = defineUserModel(dbConnection);
-  const UserSession = defineUserSessionModel(dbConnection);
+export const defineModels = (sequelize: Sequelize) => {
+  const models = {
+    User: defineUserModel(sequelize),
+    UserSession: defineUserSessionModel(sequelize),
+  };
 
-  UserSession.belongsTo(User, { foreignKey: 'user_id' });
-  User.hasMany(UserSession);
+  for (const model of Object.values(models)) {
+    if (typeof model.associate === 'function') {
+      model.associate(models);
+    }
+  }
+
+  return models;
 };

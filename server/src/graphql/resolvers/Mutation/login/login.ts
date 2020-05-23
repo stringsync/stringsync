@@ -25,7 +25,7 @@ export const resolver: Resolver<
 > = async (src, args, ctx) => {
   const email = args.input.emailOrUsername;
   const username = args.input.emailOrUsername;
-  const user = await ctx.db.models.User.findOne({
+  const user = await ctx.db.User.findOne({
     where: { ...or({ email }, { username }) },
   });
 

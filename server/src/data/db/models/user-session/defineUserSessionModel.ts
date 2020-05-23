@@ -2,8 +2,8 @@ import { DataTypes, Sequelize } from 'sequelize';
 import { UserSessionModel } from './types';
 import { StaticModel } from '../types';
 
-export const defineUserSessionModel = (dbConnection: Sequelize) =>
-  dbConnection.define(
+export const defineUserSessionModel = (sequelize: Sequelize) => {
+  const UserSession = sequelize.define(
     'UserSession',
     {
       id: {
@@ -37,3 +37,10 @@ export const defineUserSessionModel = (dbConnection: Sequelize) =>
       timestamps: false,
     }
   ) as StaticModel<UserSessionModel>;
+
+  UserSession.associate = (models) => {
+    UserSession.belongsTo(models.User, { foreignKey: 'user_id' });
+  };
+
+  return UserSession;
+};

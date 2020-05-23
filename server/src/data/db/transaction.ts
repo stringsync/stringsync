@@ -10,5 +10,7 @@ type AutoCallback<T> = (t: Transaction) => PromiseLike<T>;
  */
 export const transaction = <T>(db: Db, task: AutoCallback<T>) => {
   const currTransaction = TRANSACTION_NAMESPACE.get('transaction');
-  return currTransaction ? task(currTransaction) : db.transaction(task);
+  return currTransaction
+    ? task(currTransaction)
+    : db.sequelize.transaction(task);
 };

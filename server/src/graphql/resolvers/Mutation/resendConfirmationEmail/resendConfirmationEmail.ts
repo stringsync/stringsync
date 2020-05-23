@@ -25,7 +25,7 @@ export const resolver: Resolver<
 > = async (src, args, ctx) => {
   const { email } = args.input;
   const pk = ctx.req.session.user.id;
-  const user = await ctx.db.models.User.findByPk(pk);
+  const user = await ctx.db.User.findByPk(pk);
 
   if (!user) {
     throw new NotFoundError(`user not found: ${email}`);

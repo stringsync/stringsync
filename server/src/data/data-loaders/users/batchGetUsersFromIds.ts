@@ -6,7 +6,7 @@ export const batchGetUsersFromIds = (db: Db) => async (
   ids: string[]
 ): Promise<Array<User | null>> => {
   const users = (
-    await db.models.User.findAll({
+    await db.User.findAll({
       raw: true,
       where: { id: ids },
     })

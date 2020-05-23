@@ -3,8 +3,8 @@ import { UserModel } from './types';
 import { StaticModel } from '../types';
 import { USER_ROLE_HIEARCHY } from '../../../../common';
 
-export const defineUserModel = (dbConnection: Sequelize) =>
-  dbConnection.define(
+export const defineUserModel = (sequelize: Sequelize) => {
+  const User = sequelize.define(
     'User',
     {
       id: {
@@ -84,3 +84,10 @@ export const defineUserModel = (dbConnection: Sequelize) =>
       tableName: 'users',
     }
   ) as StaticModel<UserModel>;
+
+  User.associate = (models) => {
+    User.hasMany(models.UserSession);
+  };
+
+  return User;
+};

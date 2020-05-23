@@ -5,10 +5,10 @@ import { Config } from '../../config';
 import { TRANSACTION_NAMESPACE } from './constants';
 import { Logger } from 'winston';
 
-export const connectToDb = (config: Config, logger: Logger) => {
+export const connectToDb = (config: Config, logger: Logger): Db => {
   Sequelize.useCLS(TRANSACTION_NAMESPACE);
 
-  const connection = new Sequelize({
+  const sequelize = new Sequelize({
     dialect: 'postgres',
     database: config.DB_NAME,
     username: config.DB_USERNAME,
@@ -18,7 +18,10 @@ export const connectToDb = (config: Config, logger: Logger) => {
     logging: (msg: string) => logger.debug(msg),
   });
 
-  defineModels(connection);
+  const models = defineModels(sequelize);
 
-  return connection as Db;
+  return {
+    sequelize,
+    ...models,
+  };
 };

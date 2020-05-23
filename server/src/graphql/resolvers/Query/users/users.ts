@@ -19,7 +19,7 @@ export const resolver: Resolver<
   UsersInput,
   ResolverCtx
 > = async (src, args, ctx) => {
-  const users = await ctx.db.models.User.findAll();
+  const users = await ctx.db.User.findAll();
   return users.map(toUser);
 };
 

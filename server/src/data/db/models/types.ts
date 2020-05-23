@@ -9,8 +9,9 @@ export interface Models {
 
 export type StaticModel<M> = typeof Model & {
   new (values?: object, options?: BuildOptions): M;
+  associate?: (models: StaticModels) => void;
 };
 
-export type StaticModelMap = {
+export type StaticModels = {
   [M in keyof Models]: StaticModel<Models[M]>;
 };

@@ -21,7 +21,7 @@ export const resolver: Resolver<
   ResolverCtx
 > = async (src, args, ctx) => {
   const pk = ctx.req.session.user.id;
-  const user = await ctx.db.models.User.findByPk(pk);
+  const user = await ctx.db.User.findByPk(pk);
 
   if (!user) {
     throw new NotFoundError('user not found');

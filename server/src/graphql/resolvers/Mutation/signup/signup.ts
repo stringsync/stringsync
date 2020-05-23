@@ -27,7 +27,7 @@ export const resolver: Resolver<
   const { username, email, password } = args.input;
   const encryptedPassword = await makeEncryptedPassword(password);
   const confirmationToken = uuid.v4();
-  const user = await ctx.db.models.User.create({
+  const user = await ctx.db.User.create({
     username,
     email,
     encryptedPassword,

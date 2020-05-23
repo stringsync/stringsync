@@ -1,6 +1,8 @@
 import { Sequelize } from 'sequelize';
-import { StaticModelMap } from './models';
+import { StaticModels } from './models';
 
-export type Db = Sequelize & {
-  models: StaticModelMap;
+export type Db = {
+  sequelize: Sequelize;
+} & {
+  [M in keyof StaticModels]: StaticModels[M];
 };
