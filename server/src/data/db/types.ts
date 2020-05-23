@@ -10,7 +10,6 @@ export type Db = {
   sequelize: Sequelize;
   Sequelize: typeof Sequelize;
   transaction: TransactionWrapper;
-  namespace: Namespace;
 } & {
   [M in keyof StaticModels]: StaticModels[M];
 };

@@ -1,1 +1,1 @@
-export const TRANSACTION_NAMESPACE = 'transaction';
+export const TRANSACTION_NAMESPACE_NAME = 'transaction';

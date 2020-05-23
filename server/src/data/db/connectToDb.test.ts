@@ -4,15 +4,19 @@ import { getConfig } from '../../config';
 import { getLogger } from '../../util/logger';
 import { createUser, randStr } from '../../testing';
 import { ForcedRollback } from './ForcedRollback';
-import { TRANSACTION_NAMESPACE } from './constants';
 import { uniq } from 'lodash';
+import { createNamespace, Namespace } from 'cls-hooked';
+
+const NAMESPACE_NAME = 'transaction';
 
 let db: Db;
+let namespace: Namespace;
 const config = getConfig(process.env);
 const logger = getLogger();
 
 beforeEach(() => {
-  db = connectToDb(config, logger);
+  namespace = createNamespace(NAMESPACE_NAME);
+  db = connectToDb(config, namespace, logger);
 });
 
 afterEach(async () => {
@@ -26,7 +30,7 @@ const isUserPersisted = async (db: Db, id: string): Promise<boolean> => {
 
 it('sets the namespace within the callback', async () => {
   await db.transaction(async (t) => {
-    const nst = db.namespace.get(TRANSACTION_NAMESPACE);
+    const nst = namespace.get(NAMESPACE_NAME);
     expect(nst).toBeDefined();
     expect(t).toBe(nst);
   });
@@ -34,7 +38,7 @@ it('sets the namespace within the callback', async () => {
 
 it('unsets the namespace outside the callback', async () => {
   await db.transaction(async () => {});
-  const nst = db.namespace.get(TRANSACTION_NAMESPACE);
+  const nst = namespace.get(NAMESPACE_NAME);
   expect(nst).toBeUndefined();
 });
 
