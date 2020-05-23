@@ -1,13 +1,12 @@
 import { Db, RawUser } from '../data/db';
+import { randStr } from './rand';
 
-type Attrs<T, K extends string = 'id'> = Omit<Partial<T>, K>;
-
-export const createUser = async (db: Db, attrs: Attrs<RawUser> = {}) => {
+export const createUser = async (db: Db, attrs: Partial<RawUser> = {}) => {
   const now = new Date();
 
   return db.User.create({
-    username: 'username',
-    email: 'email@domain.tld',
+    username: randStr(10),
+    email: `${randStr(8)}@${randStr(5)}.com`,
     createdAt: now,
     updatedAt: now,
     role: 'student',

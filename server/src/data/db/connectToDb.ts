@@ -4,9 +4,11 @@ import { Db } from './types';
 import { Config } from '../../config';
 import { Logger } from 'winston';
 import { createNamespace } from 'cls-hooked';
+import { TRANSACTION_NAMESPACE } from './constants';
+import { transactionFactory } from './transactionFactory';
 
 export const connectToDb = (config: Config, logger: Logger): Db => {
-  const namespace = createNamespace('transaction');
+  const namespace = createNamespace(TRANSACTION_NAMESPACE);
   Sequelize.useCLS(namespace);
 
   const sequelize = new Sequelize({
@@ -21,8 +23,11 @@ export const connectToDb = (config: Config, logger: Logger): Db => {
 
   const models = defineModels(sequelize);
 
+  const transaction = transactionFactory(sequelize, namespace);
+
   return {
     namespace,
+    transaction,
     sequelize,
     Sequelize,
     ...models,

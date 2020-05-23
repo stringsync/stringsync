@@ -1,5 +1,4 @@
 import { Middleware } from './types';
-import { transaction } from '../../data/db';
 
 export const withTransaction: Middleware<any, any, any> = (next) => (
   src,
@@ -7,5 +6,7 @@ export const withTransaction: Middleware<any, any, any> = (next) => (
   ctx,
   info
 ) => {
-  return transaction(ctx.db, () => next(src, args, ctx, info));
+  return ctx.db.sequelize.transaction(
+    async () => await next(src, args, ctx, info)
+  );
 };
