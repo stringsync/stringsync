@@ -2,11 +2,12 @@ import { Sequelize } from 'sequelize';
 import { defineModels } from './models';
 import { Db } from './types';
 import { Config } from '../../config';
-import { TRANSACTION_NAMESPACE } from './constants';
 import { Logger } from 'winston';
+import { createNamespace } from 'cls-hooked';
 
 export const connectToDb = (config: Config, logger: Logger): Db => {
-  Sequelize.useCLS(TRANSACTION_NAMESPACE);
+  const namespace = createNamespace('transaction');
+  Sequelize.useCLS(namespace);
 
   const sequelize = new Sequelize({
     dialect: 'postgres',
@@ -21,7 +22,9 @@ export const connectToDb = (config: Config, logger: Logger): Db => {
   const models = defineModels(sequelize);
 
   return {
+    namespace,
     sequelize,
+    Sequelize,
     ...models,
   };
 };
