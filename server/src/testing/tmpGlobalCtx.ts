@@ -1,15 +1,16 @@
 import { GlobalCtx, createGlobalCtx } from '../util/ctx';
 import { Config, getConfig } from '../config';
 import { ForcedRollback } from '../data/db';
+import { DeepPartial } from '../common';
 
 type Callback = (ctx: GlobalCtx) => any;
 
-const DEFAULT_CONFIG = getConfig(process.env);
+type Patch = DeepPartial<{
+  config: Config;
+}>;
 
-export const tmpGlobalCtx = async (
-  callback: Callback,
-  config: Config = DEFAULT_CONFIG
-) => {
+export const tmpGlobalCtx = async (callback: Callback, patch: Patch) => {
+  const config = { ...getConfig(process.env), ...patch.config };
   const ctx = createGlobalCtx(config);
 
   try {

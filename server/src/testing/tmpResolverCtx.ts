@@ -8,16 +8,17 @@ import { IGraphQLToolsResolveInfo } from 'graphql-tools';
 
 type Callback = (ctx: ResolverCtx, info: IGraphQLToolsResolveInfo) => any;
 
-export const tmpResolverCtx = async (
-  callback: Callback,
-  reqPatch: DeepPartial<SessionRequest> = {},
-  resPatch: DeepPartial<Response> = {},
-  infoPatch: DeepPartial<IGraphQLToolsResolveInfo> = {}
-) => {
+type Patch = DeepPartial<{
+  req: SessionRequest;
+  res: Response;
+  info: IGraphQLToolsResolveInfo;
+}>;
+
+export const tmpResolverCtx = async (callback: Callback, patch: Patch) => {
   await tmpGlobalCtx(async (gctx) => {
-    const req = merge({}, reqPatch) as SessionRequest;
-    const res = merge({}, resPatch) as Response;
-    const info = merge({}, infoPatch) as IGraphQLToolsResolveInfo;
+    const req = merge({}, patch.req) as SessionRequest;
+    const res = merge({}, patch.res) as Response;
+    const info = merge({}, patch.info) as IGraphQLToolsResolveInfo;
     const rctx = createResolverCtx(gctx, req, res);
     await callback(rctx, info);
   });
