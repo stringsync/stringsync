@@ -5,12 +5,11 @@ it('calls the resolver unconditionally', () => {
   const resolver = jest.fn();
 
   return Provider.run({}, async (p) => {
-    const { rctx, info } = p;
-
+    const { src, args, rctx, info } = p;
     const wrapped = identity(resolver);
-    expect(resolver).not.toHaveBeenCalled();
 
-    wrapped(undefined, {}, rctx, info);
+    wrapped(src, args, rctx, info);
+
     expect(resolver).toHaveBeenCalled();
   });
 });

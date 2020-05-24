@@ -8,10 +8,11 @@ it('calls left resolver when test returns true', () => {
   const right = jest.fn().mockReturnValue(resolver);
 
   return Provider.run({}, async (p) => {
+    const { src, args, rctx, info } = p;
     const middleware = branch(test, left, right);
     const wrapped = middleware(resolver);
 
-    await wrapped(undefined, {}, p.rctx, p.info);
+    await wrapped(src, args, rctx, info);
 
     expect(left).toHaveBeenCalled();
     expect(right).not.toHaveBeenCalled();
@@ -25,10 +26,11 @@ it('calls right resolver when test returns false', () => {
   const right = jest.fn().mockReturnValue(resolver);
 
   return Provider.run({}, async (p) => {
+    const { src, args, rctx, info } = p;
     const middleware = branch(test, left, right);
     const wrapped = middleware(resolver);
 
-    await wrapped(undefined, {}, p.rctx, p.info);
+    await wrapped(src, args, rctx, info);
 
     expect(left).not.toHaveBeenCalled();
     expect(right).toHaveBeenCalled();
