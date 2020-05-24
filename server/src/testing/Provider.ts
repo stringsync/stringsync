@@ -52,15 +52,15 @@ export class Provider {
   }
 
   private async run(callback: Callback) {
-    await this.gctx.db.transaction(async () => {
-      try {
+    try {
+      await this.gctx.db.transaction(async () => {
         await callback(this);
         throw new ProviderForcedRollback();
-      } catch (e) {
-        await this.cleanup();
-        if (!(e instanceof ProviderForcedRollback)) throw e;
-      }
-    });
+      });
+    } catch (e) {
+      await this.cleanup();
+      if (!(e instanceof ProviderForcedRollback)) throw e;
+    }
   }
 
   @memoize()
