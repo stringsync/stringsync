@@ -2,11 +2,11 @@ import { GlobalCtx, createGlobalCtx } from '../util/ctx';
 import { Config, getConfig } from '../config';
 import { ForcedRollback } from '../data/db';
 
-type Callback = <R>(ctx: GlobalCtx) => R;
+type Callback = (ctx: GlobalCtx) => any;
 
 const DEFAULT_CONFIG = getConfig(process.env);
 
-export const useGlobalCtx = async (
+export const tmpGlobalCtx = async (
   callback: Callback,
   config: Config = DEFAULT_CONFIG
 ) => {

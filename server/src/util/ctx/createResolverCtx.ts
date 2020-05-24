@@ -8,13 +8,7 @@ export const createResolverCtx = (
   res: Response,
   reqAt?: Date // used for testing
 ): ResolverCtx => {
-  reqAt = new Date();
+  reqAt = reqAt || new Date();
   const dataLoaders = getDataLoaders(ctx.db);
-  return {
-    req,
-    res,
-    reqAt,
-    dataLoaders,
-    ...ctx,
-  };
+  return { req, res, reqAt, dataLoaders, ...ctx };
 };
