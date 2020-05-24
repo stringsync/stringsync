@@ -4,22 +4,14 @@ import {
   SessionRequest,
   createGlobalCtx,
   createResolverCtx,
+  GlobalCtx,
+  ResolverCtx,
 } from '../util/ctx';
 import { Response } from 'express';
 import { IGraphQLToolsResolveInfo } from 'graphql-tools';
 import { merge } from 'lodash';
 import { ForcedRollback } from '../data/db';
-import { memoize } from '../util/memoize';
-
-type Patch = DeepPartial<{
-  config: Config;
-  req: SessionRequest;
-  reqAt: Date;
-  res: Response;
-  info: IGraphQLToolsResolveInfo;
-}>;
-
-type Callback = (provider: Provider) => any;
+import { GraphQLResolveInfo } from 'graphql';
 
 class ProviderForcedRollback extends ForcedRollback {
   constructor() {
@@ -28,19 +20,27 @@ class ProviderForcedRollback extends ForcedRollback {
   }
 }
 
-/**
- * Provides easy access to resources for testing.
- *
- * Example usage:
- *
- * Provider.run({}, async (p) => {
- *   const gctx = p.gctx;
- *   const user = await createUser(ctx.db);
- *   expect(user).not.toBeNull();
- * });
- */
+type Patch = DeepPartial<{
+  config: Config;
+  req: SessionRequest;
+  res: Response;
+  info: IGraphQLToolsResolveInfo;
+}> & { reqAt?: Date };
+
+type Memo = Partial<{
+  gctx: GlobalCtx;
+  rctx: ResolverCtx;
+  config: Config;
+  req: SessionRequest;
+  res: Response;
+  info: GraphQLResolveInfo;
+}>;
+
+type Callback = (provider: Provider) => any;
+
 export class Provider {
   public readonly patch: Patch;
+  private memo: Memo = {};
 
   public static async run(patch: Patch, callback: Callback): Promise<void> {
     const provider = new Provider(patch);
@@ -58,48 +58,45 @@ export class Provider {
         throw new ProviderForcedRollback();
       });
     } catch (e) {
-      await this.cleanup();
       if (!(e instanceof ProviderForcedRollback)) throw e;
     }
   }
 
-  @memoize()
   public get gctx() {
-    return createGlobalCtx(this.config);
+    if (this.memo.gctx) return this.memo.gctx;
+    this.memo.gctx = createGlobalCtx(this.config);
+    return this.memo.gctx;
   }
 
-  @memoize()
   public get rctx() {
-    return createResolverCtx(this.gctx, this.req, this.res);
+    if (this.memo.rctx) return this.memo.rctx;
+    const { reqAt } = this.patch;
+    this.memo.rctx = createResolverCtx(this.gctx, this.req, this.res, reqAt);
+    return this.memo.rctx;
   }
 
-  @memoize()
   public get config() {
+    if (this.memo.config) return this.memo.config;
     const config = getConfig(process.env);
-    return merge(config, this.patch.config);
+    this.memo.config = merge(config, this.patch.config) as Config;
+    return this.memo.config;
   }
 
-  @memoize()
   public get req() {
-    return merge({}, this.patch.req) as SessionRequest;
+    if (this.memo.req) return this.memo.req;
+    this.memo.req = merge({}, this.patch.req) as SessionRequest;
+    return this.memo.req;
   }
 
-  @memoize()
   public get res() {
-    return merge({}, this.patch.res) as Response;
+    if (this.memo.res) return this.memo.res;
+    this.memo.res = merge({}, this.patch.res) as Response;
+    return this.memo.res;
   }
 
-  @memoize()
   public get info() {
-    return merge({}, this.patch.info) as IGraphQLToolsResolveInfo;
-  }
-
-  private async cleanup() {
-    await this.gctx.db.sequelize.close();
-
-    const queues = Object.values(this.gctx.queues);
-    await Promise.all(queues.map((queue) => queue.close()));
-
-    await this.gctx.redis.quit();
+    if (this.memo.info) return this.memo.info;
+    this.memo.info = merge({}, this.patch.info) as IGraphQLToolsResolveInfo;
+    return this.memo.info;
   }
 }
