@@ -8,10 +8,10 @@ export const branch = <R, S, A, C>(
 ): Middleware<Promise<R>, S, A, C> => (next) => async (
   src,
   args,
-  ctx,
+  rctx,
   info
 ) => {
-  const result = await test(src, args, ctx, info);
+  const result = await test(src, args, rctx, info);
   const resolver = result ? left(next) : right(next);
-  return resolver(src, args, ctx, info);
+  return resolver(src, args, rctx, info);
 };

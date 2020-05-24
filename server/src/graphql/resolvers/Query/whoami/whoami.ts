@@ -15,9 +15,9 @@ export const resolver: Resolver<
   undefined,
   WhoamiInput,
   ResolverCtx
-> = async (src, args, ctx, info) => {
-  const pk = ctx.req.session.user.id;
-  return await ctx.dataLoaders.usersById.load(pk);
+> = async (src, args, rctx, info) => {
+  const pk = rctx.req.session.user.id;
+  return await rctx.dataLoaders.usersById.load(pk);
 };
 
 export const whoami = middleware(resolver);

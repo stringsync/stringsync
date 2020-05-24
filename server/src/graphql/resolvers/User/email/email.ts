@@ -27,7 +27,7 @@ export const middleware = compose(
   )
 );
 
-export const resolver: Resolver<string, User> = (src, args, ctx, info) => {
+export const resolver: Resolver<string, User> = (src, args, rctx, info) => {
   return src.email;
 };
 

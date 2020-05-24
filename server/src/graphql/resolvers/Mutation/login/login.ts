@@ -22,10 +22,10 @@ export const resolver: Resolver<
   undefined,
   LoginInput,
   ResolverCtx
-> = async (src, args, ctx) => {
+> = async (src, args, rctx) => {
   const email = args.input.emailOrUsername;
   const username = args.input.emailOrUsername;
-  const user = await ctx.db.User.findOne({
+  const user = await rctx.db.User.findOne({
     where: { ...or({ email }, { username }) },
   });
 
@@ -36,7 +36,7 @@ export const resolver: Resolver<
     throw new ForbiddenError('wrong username, email, or password');
   }
 
-  ctx.req.session.user = toSessionUser(user);
+  rctx.req.session.user = toSessionUser(user);
 
   return { user: toUser(user) };
 };

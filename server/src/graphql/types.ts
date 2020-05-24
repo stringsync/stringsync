@@ -6,4 +6,4 @@ export type Resolver<
   S = undefined,
   A = Record<string, any>,
   C = ResolverCtx
-> = (src: S, args: A, ctx: C, info: IGraphQLToolsResolveInfo) => R;
+> = (src: S, args: A, rctx: C, info: IGraphQLToolsResolveInfo) => R;

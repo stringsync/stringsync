@@ -34,7 +34,7 @@ class ProviderForcedRollback extends ForcedRollback {
  * Example usage:
  *
  * Provider.run({}, async (p) => {
- *   const ctx = p.gctx; // globalCtx
+ *   const gctx = p.gctx;
  *   const user = await createUser(ctx.db);
  *   expect(user).not.toBeNull();
  * });

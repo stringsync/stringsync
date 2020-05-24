@@ -8,10 +8,10 @@ export const middleware = compose(withAuthRequirement(AuthRequirements.NONE));
 export const resolver: Resolver<Promise<Notation[]>, User> = async (
   src,
   args,
-  ctx,
+  rctx,
   info
 ) => {
-  return await ctx.dataLoaders.notationsByUserId.load(src.id);
+  return await rctx.dataLoaders.notationsByUserId.load(src.id);
 };
 
 export const notations = middleware(resolver);

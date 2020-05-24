@@ -15,8 +15,8 @@ export const resolver: Resolver<
   undefined,
   UserInput,
   ResolverCtx
-> = async (src, args, ctx) => {
-  return await ctx.dataLoaders.usersById.load(args.input.id);
+> = async (src, args, rctx) => {
+  return await rctx.dataLoaders.usersById.load(args.input.id);
 };
 
 export const user = middleware(resolver);

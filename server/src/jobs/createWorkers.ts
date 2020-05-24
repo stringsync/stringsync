@@ -4,12 +4,12 @@ import { WorkerOptions, Worker } from 'bullmq';
 import { getMailJobProcessor } from './processors';
 import { GlobalCtx } from '../util/ctx';
 
-export const createWorkers = (ctx: GlobalCtx): Workers => {
+export const createWorkers = (gctx: GlobalCtx): Workers => {
   const workerOptions: Readonly<WorkerOptions> = Object.freeze({
-    connection: ctx.redis,
+    connection: gctx.redis,
   });
 
   return {
-    [MAIL]: new Worker(MAIL, getMailJobProcessor(ctx), workerOptions),
+    [MAIL]: new Worker(MAIL, getMailJobProcessor(gctx), workerOptions),
   };
 };

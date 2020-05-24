@@ -22,10 +22,10 @@ export const resolver: Resolver<
   undefined,
   ResendConfirmationEmailInput,
   ResolverCtx
-> = async (src, args, ctx) => {
+> = async (src, args, rctx) => {
   const { email } = args.input;
-  const pk = ctx.req.session.user.id;
-  const user = await ctx.db.User.findByPk(pk);
+  const pk = rctx.req.session.user.id;
+  const user = await rctx.db.User.findByPk(pk);
 
   if (!user) {
     throw new NotFoundError(`user not found: ${email}`);
@@ -39,7 +39,7 @@ export const resolver: Resolver<
 
   user.confirmationToken = uuid.v4();
   await user.save();
-  await sendConfirmationMail(user.email, user.confirmationToken, ctx);
+  await sendConfirmationMail(user.email, user.confirmationToken, rctx);
 
   return { email };
 };

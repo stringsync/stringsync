@@ -5,7 +5,7 @@ import { withGraphQL, withSession, withSessionUser } from './middlewares';
 import { getHealth } from './routes';
 import { getSchema } from '../graphql';
 
-export const getApp = (ctx: GlobalCtx) => {
+export const getApp = (gctx: GlobalCtx) => {
   const app = express();
   const schema = getSchema();
 
@@ -14,12 +14,12 @@ export const getApp = (ctx: GlobalCtx) => {
 
   // middlewares
   app.use(cors() as Handler);
-  app.use('/graphql', withSession(ctx));
-  app.use('/graphql', withSessionUser(ctx));
-  app.use('/graphql', withGraphQL(ctx, schema));
+  app.use('/graphql', withSession(gctx));
+  app.use('/graphql', withSessionUser(gctx));
+  app.use('/graphql', withGraphQL(gctx, schema));
 
   // routes
-  app.get('/health', getHealth(ctx));
+  app.get('/health', getHealth(gctx));
 
   return app;
 };

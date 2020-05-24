@@ -19,9 +19,9 @@ export const resolver: Resolver<
   undefined,
   ConfirmEmailInput,
   ResolverCtx
-> = async (src, args, ctx) => {
-  const pk = ctx.req.session.user.id;
-  const user = await ctx.db.User.findByPk(pk);
+> = async (src, args, rctx) => {
+  const pk = rctx.req.session.user.id;
+  const user = await rctx.db.User.findByPk(pk);
 
   if (!user) {
     throw new NotFoundError('user not found');
@@ -36,7 +36,7 @@ export const resolver: Resolver<
     throw new BadRequestError('invalid confirmation token');
   }
 
-  user.confirmedAt = ctx.reqAt;
+  user.confirmedAt = rctx.reqAt;
   user.confirmationToken = null;
   await user.save();
 

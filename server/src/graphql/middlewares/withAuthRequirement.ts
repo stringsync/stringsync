@@ -4,39 +4,44 @@ import { AuthRequirements, compareUserRoles } from '../../common';
 
 export const withAuthRequirement = (
   authReqs: AuthRequirements
-): Middleware<any, any, any, any> => (next) => async (src, args, ctx, info) => {
-  const { isLoggedIn, role } = ctx.req.session.user;
+): Middleware<any, any, any, any> => (next) => async (
+  src,
+  args,
+  rctx,
+  info
+) => {
+  const { isLoggedIn, role } = rctx.req.session.user;
 
   switch (authReqs) {
     case AuthRequirements.NONE:
-      return next(src, args, ctx, info);
+      return next(src, args, rctx, info);
     case AuthRequirements.LOGGED_IN:
       if (isLoggedIn) {
-        return next(src, args, ctx, info);
+        return next(src, args, rctx, info);
       } else {
         throw new ForbiddenError('must be logged in');
       }
     case AuthRequirements.LOGGED_OUT:
       if (!isLoggedIn) {
-        return next(src, args, ctx, info);
+        return next(src, args, rctx, info);
       } else {
         throw new ForbiddenError('must be logged out');
       }
     case AuthRequirements.LOGGED_IN_AS_STUDENT:
       if (isLoggedIn && compareUserRoles(role, 'student') >= 0) {
-        return next(src, args, ctx, info);
+        return next(src, args, rctx, info);
       } else {
         throw new ForbiddenError('must be logged in as a student');
       }
     case AuthRequirements.LOGGED_IN_AS_TEACHER:
       if (isLoggedIn && compareUserRoles(role, 'teacher') >= 0) {
-        return next(src, args, ctx, info);
+        return next(src, args, rctx, info);
       } else {
         throw new ForbiddenError('must be logged in as a teacher');
       }
     case AuthRequirements.LOGGED_IN_AS_ADMIN:
       if (isLoggedIn && compareUserRoles(role, 'admin') >= 0) {
-        return next(src, args, ctx, info);
+        return next(src, args, rctx, info);
       } else {
         throw new ForbiddenError('must be logged in as a admin');
       }

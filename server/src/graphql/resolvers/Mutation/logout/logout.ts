@@ -19,15 +19,15 @@ export const resolver: Resolver<
   undefined,
   LogoutInput,
   ResolverCtx
-> = async (src, args, ctx) => {
-  const pk = ctx.req.session.user.id;
-  const user = await ctx.dataLoaders.usersById.load(pk);
+> = async (src, args, rctx) => {
+  const pk = rctx.req.session.user.id;
+  const user = await rctx.dataLoaders.usersById.load(pk);
 
   if (!user) {
     throw new NotFoundError('user not found');
   }
 
-  ctx.req.session.user = getNullSessionUser();
+  rctx.req.session.user = getNullSessionUser();
 
   return { user };
 };

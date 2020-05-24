@@ -4,14 +4,14 @@ import { getApp } from './app';
 import { createWorkers } from './jobs';
 
 const server = (config: Config): void => {
-  const ctx = createGlobalCtx(config);
-  const app = getApp(ctx);
+  const gctx = createGlobalCtx(config);
+  const app = getApp(gctx);
   app.listen(config.PORT);
 };
 
 const worker = (config: Config): void => {
-  const ctx = createGlobalCtx(config);
-  createWorkers(ctx);
+  const gctx = createGlobalCtx(config);
+  createWorkers(gctx);
 };
 
 if (require.main === module) {

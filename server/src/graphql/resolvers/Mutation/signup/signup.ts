@@ -23,20 +23,20 @@ export const resolver: Resolver<
   undefined,
   SignupInput,
   ResolverCtx
-> = async (src, args, ctx) => {
+> = async (src, args, rctx) => {
   const { username, email, password } = args.input;
   const encryptedPassword = await makeEncryptedPassword(password);
   const confirmationToken = uuid.v4();
-  const user = await ctx.db.User.create({
+  const user = await rctx.db.User.create({
     username,
     email,
     encryptedPassword,
     confirmationToken,
   });
 
-  ctx.req.session.user = toSessionUser(user);
+  rctx.req.session.user = toSessionUser(user);
 
-  await sendConfirmationMail(email, confirmationToken, ctx);
+  await sendConfirmationMail(email, confirmationToken, rctx);
 
   return { user: toUser(user) };
 };

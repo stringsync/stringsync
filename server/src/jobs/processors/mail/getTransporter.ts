@@ -1,8 +1,8 @@
 import { GlobalCtx } from '../../../util/ctx';
 import { createTestAccount, createTransport } from 'nodemailer';
 
-export const getTransporter = async (ctx: GlobalCtx) => {
-  switch (ctx.config.NODE_ENV) {
+export const getTransporter = async (gctx: GlobalCtx) => {
+  switch (gctx.config.NODE_ENV) {
     case 'development':
       const testAccount = await createTestAccount();
       return createTransport({
@@ -17,6 +17,6 @@ export const getTransporter = async (ctx: GlobalCtx) => {
     case 'test':
       return createTransport({});
     default:
-      throw new Error(`no transporter for NODE_ENV: ${ctx.config.NODE_ENV}`);
+      throw new Error(`no transporter for NODE_ENV: ${gctx.config.NODE_ENV}`);
   }
 };
