@@ -91,3 +91,20 @@ it('patches reqAt', async () => {
     expect(p.rctx.reqAt).toBe(reqAt);
   });
 });
+
+it('patches src', async () => {
+  const src = {
+    foo: 'bar',
+    baz: 'bam',
+  };
+  await Provider.run({ src }, async (p) => {
+    expect(p.src).toStrictEqual(src);
+  });
+});
+
+it('patches args', async () => {
+  const args = { input: { foo: 'bar' } };
+  await Provider.run({ args }, async (p) => {
+    expect(p.args).toStrictEqual(args);
+  });
+});

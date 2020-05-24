@@ -25,6 +25,8 @@ type Patch = DeepPartial<{
   req: SessionRequest;
   res: Response;
   info: IGraphQLToolsResolveInfo;
+  src: any;
+  args: Record<string, any>;
 }> & { reqAt?: Date };
 
 type Memo = Partial<{
@@ -34,6 +36,8 @@ type Memo = Partial<{
   req: SessionRequest;
   res: Response;
   info: GraphQLResolveInfo;
+  src: any;
+  args: Record<string, any>;
 }>;
 
 type Callback = (provider: Provider) => any;
@@ -98,5 +102,18 @@ export class Provider {
     if (this.memo.info) return this.memo.info;
     this.memo.info = merge({}, this.patch.info) as IGraphQLToolsResolveInfo;
     return this.memo.info;
+  }
+
+  public get src() {
+    // src can validly be undefined
+    if ('src' in this.memo) return this.memo.src;
+    this.memo.src = this.patch.src;
+    return this.memo.src;
+  }
+
+  public get args() {
+    if (this.memo.args) return this.memo.args;
+    this.memo.args = merge({}, this.patch.args);
+    return this.memo.args;
   }
 }
