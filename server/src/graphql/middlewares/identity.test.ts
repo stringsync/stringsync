@@ -4,7 +4,7 @@ import { Provider } from '../../testing';
 it('calls the resolver unconditionally', () => {
   const resolver = jest.fn();
 
-  Provider.run({}, async (p) => {
+  return Provider.run({}, async (p) => {
     const { rctx, info } = p;
 
     const wrapped = identity(resolver);
