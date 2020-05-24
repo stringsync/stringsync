@@ -1,12 +1,11 @@
 import { branch } from './branch';
 import { Provider } from '../../testing';
-import { identity } from './identity';
 
 it('calls left resolver when test returns true', () => {
   const test = jest.fn().mockReturnValue(true);
   const resolver = jest.fn();
-  const left = jest.fn().mockImplementation(identity);
-  const right = jest.fn().mockImplementation(identity);
+  const left = jest.fn().mockReturnValue(resolver);
+  const right = jest.fn().mockReturnValue(resolver);
 
   return Provider.run({}, async (p) => {
     const middleware = branch(test, left, right);
@@ -16,5 +15,22 @@ it('calls left resolver when test returns true', () => {
 
     expect(left).toHaveBeenCalled();
     expect(right).not.toHaveBeenCalled();
+  });
+});
+
+it('calls right resolver when test returns false', () => {
+  const test = jest.fn().mockReturnValue(false);
+  const resolver = jest.fn();
+  const left = jest.fn().mockReturnValue(resolver);
+  const right = jest.fn().mockReturnValue(resolver);
+
+  return Provider.run({}, async (p) => {
+    const middleware = branch(test, left, right);
+    const wrapped = middleware(resolver);
+
+    await wrapped(undefined, {}, p.rctx, p.info);
+
+    expect(left).not.toHaveBeenCalled();
+    expect(right).toHaveBeenCalled();
   });
 });
