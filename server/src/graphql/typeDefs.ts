@@ -4,7 +4,7 @@ export const typeDefs = gql`
   # Roots
 
   type Query {
-    users: [User]!
+    users(input: UsersInput!): [User]!
     user(input: UserInput!): User
     whoami: User
   }

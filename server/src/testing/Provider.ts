@@ -37,7 +37,7 @@ type Memo = Partial<{
   res: Response;
   info: GraphQLResolveInfo;
   src: any;
-  args: Record<string, any>;
+  args: any;
 }>;
 
 type Callback = (provider: Provider) => any;

@@ -1,10 +1,11 @@
 import { Db, RawUser } from '../data/db';
 import { randStr } from './rand';
 
-export const createUser = async (db: Db, attrs: Partial<RawUser> = {}) => {
+export const buildUser = (attrs: Partial<RawUser> = {}): RawUser => {
   const now = new Date();
 
-  return db.User.create({
+  return {
+    id: randStr(10),
     username: randStr(10),
     email: `${randStr(8)}@${randStr(5)}.com`,
     createdAt: now,
@@ -18,5 +19,10 @@ export const createUser = async (db: Db, attrs: Partial<RawUser> = {}) => {
     resetPasswordToken: null,
     resetPasswordTokenSentAt: null,
     ...attrs,
-  });
+  };
+};
+
+export const createUser = async (db: Db, attrs: Partial<RawUser> = {}) => {
+  const user = buildUser(attrs);
+  return db.User.create(user);
 };

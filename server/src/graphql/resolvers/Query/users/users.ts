@@ -4,6 +4,7 @@ import {
   compose,
   AuthRequirements,
   UsersOutput,
+  User,
 } from '../../../../common';
 import { ResolverCtx } from '../../../../util/ctx';
 import { withAuthRequirement } from '../../../middlewares';
@@ -19,8 +20,15 @@ export const resolver: Resolver<
   UsersInput,
   ResolverCtx
 > = async (src, args, rctx) => {
-  const users = await rctx.db.User.findAll();
-  return users.map(toUser);
+  const { ids } = args.input;
+
+  if (ids) {
+    const users = await rctx.db.User.findAll({ where: { id: ids } });
+    return users.map(toUser);
+  } else {
+    const users = await rctx.db.User.findAll();
+    return users.map(toUser);
+  }
 };
 
 export const users = middleware(resolver);
