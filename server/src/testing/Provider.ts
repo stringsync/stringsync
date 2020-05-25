@@ -106,9 +106,7 @@ export class Provider {
 
   public get src() {
     // src can validly be undefined
-    if ('src' in this.memo) return this.memo.src;
-    this.memo.src = this.patch.src;
-    return this.memo.src;
+    return this.patch.src;
   }
 
   public get args() {

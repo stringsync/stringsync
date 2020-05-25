@@ -6,9 +6,9 @@ it('calls the resolver unconditionally', () => {
 
   return Provider.run({}, async (p) => {
     const { src, args, rctx, info } = p;
-    const wrapped = identity(resolver);
+    const newResolver = identity(resolver);
 
-    wrapped(src, args, rctx, info);
+    newResolver(src, args, rctx, info);
 
     expect(resolver).toHaveBeenCalled();
   });

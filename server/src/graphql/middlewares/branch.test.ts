@@ -10,9 +10,9 @@ it('calls left resolver when test returns true', () => {
   return Provider.run({}, async (p) => {
     const { src, args, rctx, info } = p;
     const middleware = branch(test, left, right);
-    const wrapped = middleware(resolver);
+    const newResolver = middleware(resolver);
 
-    await wrapped(src, args, rctx, info);
+    await newResolver(src, args, rctx, info);
 
     expect(left).toHaveBeenCalled();
     expect(right).not.toHaveBeenCalled();
@@ -28,9 +28,9 @@ it('calls right resolver when test returns false', () => {
   return Provider.run({}, async (p) => {
     const { src, args, rctx, info } = p;
     const middleware = branch(test, left, right);
-    const wrapped = middleware(resolver);
+    const newResolver = middleware(resolver);
 
-    await wrapped(src, args, rctx, info);
+    await newResolver(src, args, rctx, info);
 
     expect(left).not.toHaveBeenCalled();
     expect(right).toHaveBeenCalled();
