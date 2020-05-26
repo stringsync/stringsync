@@ -8,7 +8,4 @@ module.exports = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
-  moduleNameMapper: {
-    '^common/(.*)': '<rootDir>/../common/$1',
-  },
 };
