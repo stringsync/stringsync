@@ -1,9 +1,7 @@
 {
-  "name": "string-sync-root",
+  "name": "stringsync",
   "version": "1.0.0",
   "repository": "git@github.com:jaredjj3/string-sync.git",
-  "author": "Jared Johnson <jared@jaredjohnson.dev>",
-  "license": "MIT",
   "private": true,
   "devDependencies": {
     "@testing-library/jest-dom": "^4.2.4",
@@ -26,8 +24,5 @@
     "react": "^16.9.0",
     "ts-jest": "^24.1.0",
     "typescript": "^3.6.4"
-  },
-  "dependencies": {
-    "@types/chance": "^1.1.0"
   }
 }
