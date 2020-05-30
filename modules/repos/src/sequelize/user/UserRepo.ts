@@ -10,8 +10,12 @@ export class UserRepo extends SequelizeRepo<User> {
     this.db = db;
   }
 
+  async get(id: string) {
+    return (await this.db.User.findByPk(id, { raw: true })) as User | null;
+  }
+
   async create(user: User) {
-    return await this.db.User.create(user, { raw: true });
+    return (await this.db.User.create(user, { raw: true })) as User;
   }
 
   async update(user: User) {
