@@ -1,8 +1,7 @@
-version: '3.7'
+version: "3.7"
 
 services:
   db:
-    container_name: db
     image: postgres:11
     restart: always
     environment:
@@ -11,14 +10,12 @@ services:
       POSTGRES_PASSWORD: stringsync
 
   redis:
-    container_name: redis
     image: redis:5.0
 
-  server:
-    container_name: server
-    image: ss-server:latest
+  graphql:
+    image: stringsync/graphql:latest
     build:
-      context: ./server
+      context: .
       dockerfile: ./Dockerfile
     environment:
       ROLE: server
@@ -34,77 +31,10 @@ services:
       REDIS_PORT: 6379
       SESSION_SECRET: secret
     volumes:
-      - ./server/src:/server/src
+      - .:/stringsync
     links:
       - db
       - redis
-    depends_on:
-      - seeder
     ports:
-      - '3000:3000'
-    command: ['yarn', 'dev']
-
-  worker:
-    container_name: worker
-    image: ss-server:latest
-    build:
-      context: ./server
-      dockerfile: ./Dockerfile
-    environment:
-      ROLE: worker
-      NODE_ENV: development
-      PORT: 3001
-      WEB_URI: http://localhost:8080
-      DB_NAME: stringsync
-      DB_USERNAME: stringsync
-      DB_PASSWORD: stringsync
-      DB_HOST: db
-      DB_PORT: 5432
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      SESSION_SECRET: secret
-    volumes:
-      - ./server/src:/server/src
-    links:
-      - db
-      - redis
-    depends_on:
-      - seeder
-    command: ['yarn', 'dev']
-
-  seeder:
-    container_name: seeder
-    image: ss-server:latest
-    build:
-      context: ./server
-      dockerfile: ./Dockerfile
-    environment:
-      NODE_ENV: development
-      DB_NAME: stringsync
-      DB_USERNAME: stringsync
-      DB_PASSWORD: stringsync
-      DB_HOST: db
-      DB_PORT: 5432
-    volumes:
-      - ./server/src:/server/src
-    links:
-      - db
-    command: ['yarn', 'seed']
-
-  web:
-    container_name: web
-    image: ss-web:latest
-    build:
-      context: ./web
-      dockerfile: ./Dockerfile
-    environment:
-      NODE_ENV: development
-      REACT_APP_SERVER_URI: 'http://localhost:3000/graphql'
-    volumes:
-      - ./web/src:/web/src
-      - ./web/public:/web/public
-    ports:
-      - '8080:8080'
-    links:
-      - server
-    command: ['yarn', 'start']
+      - "3000:3000"
+    command: ["yarn", "graphql", "dev"]
