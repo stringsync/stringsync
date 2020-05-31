@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { Config } from './config';
 import { getContainer, TYPES } from './container';
 import { getApp } from './app';
