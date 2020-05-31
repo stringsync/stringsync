@@ -9,8 +9,8 @@ export const getContainer = () => {
   const config = getConfig(process.env);
   container.bind<Config>(TYPES.Config).toConstantValue(config);
 
-  // const reposModule = getReposModule(config);
-  // container.load(reposModule);
+  const reposModule = getReposModule(config);
+  container.load(reposModule);
 
   return container;
 };
