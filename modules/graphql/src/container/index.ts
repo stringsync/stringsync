@@ -1,2 +1,2 @@
-export * from './TYPE';
+export * from './TYPES';
 export * from './getContainer';

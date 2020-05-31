@@ -1,12 +1,16 @@
-import { Config } from '../config';
+import { Config, getConfig } from '../config';
 import { Container } from 'inversify';
+import { TYPES } from './TYPES';
 import { getReposModule } from './getReposModule';
 
-export const getContainer = (config: Config) => {
+export const getContainer = () => {
   const container = new Container();
 
-  const reposModule = getReposModule(config);
-  container.load(reposModule);
+  const config = getConfig(process.env);
+  container.bind<Config>(TYPES.Config).toConstantValue(config);
+
+  // const reposModule = getReposModule(config);
+  // container.load(reposModule);
 
   return container;
 };

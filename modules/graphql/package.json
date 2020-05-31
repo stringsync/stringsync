@@ -5,6 +5,9 @@
   "main": "src/index.ts",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "dev": "nodemon --watch 'src/**/*.ts' --ext ts --exec 'ts-node-dev src/index.ts'"
+  },
   "dependencies": {
     "@stringsync/domain": "1.0.0",
     "@stringsync/repos": "1.0.0",

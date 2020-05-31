@@ -1,4 +1,5 @@
 export const TYPES = {
-  Db: 'Db',
-  UserRepo: 'UserRepo',
+  Db: Symbol('Db'),
+  UserRepo: Symbol('UserRepo'),
+  Config: Symbol('Config'),
 };
