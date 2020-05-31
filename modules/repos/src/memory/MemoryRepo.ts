@@ -1,6 +1,6 @@
 import { Repo } from '../Repo';
 
-export abstract class MemoryRepo<T> extends Repo<T> {
+export abstract class MemoryRepo<T> implements Repo<T> {
   public readonly store: { [id: string]: T } = {};
 
   protected abstract getId(entity: T): string;

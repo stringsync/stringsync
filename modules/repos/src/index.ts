@@ -1,3 +1,3 @@
-export * from './Repo';
+export * from './UserRepo';
 export * from './sequelize';
 export * from './memory';

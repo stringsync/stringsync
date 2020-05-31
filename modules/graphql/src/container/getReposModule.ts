@@ -1,14 +1,13 @@
 import { Config } from '../config';
 import { ContainerModule } from 'inversify';
 import { TYPES } from '@stringsync/common';
-import { UserSequelizeRepo, Db, connectToDb, UserMemoryRepo, Repo } from '@stringsync/repos';
-import { User } from '@stringsync/domain';
+import { UserSequelizeRepo, Db, connectToDb, UserMemoryRepo, UserRepo } from '@stringsync/repos';
 
 export const getReposModule = (config: Config) => {
   return new ContainerModule((bind) => {
     switch (config.NODE_ENV) {
       case 'test':
-        bind<Repo<User>>(TYPES.UserRepo).to(UserMemoryRepo);
+        bind<UserRepo>(TYPES.UserRepo).to(UserMemoryRepo);
         return;
       default:
         const db = connectToDb({
@@ -20,7 +19,7 @@ export const getReposModule = (config: Config) => {
           namespaceName: 'transaction',
         });
         bind<Db>(TYPES.Db).toConstantValue(db);
-        bind<Repo<User>>(TYPES.UserRepo).to(UserSequelizeRepo);
+        bind<UserRepo>(TYPES.UserRepo).to(UserSequelizeRepo);
         return;
     }
   });

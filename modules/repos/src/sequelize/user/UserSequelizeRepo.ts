@@ -1,12 +1,11 @@
 import { User } from '@stringsync/domain';
-import { SequelizeRepo } from '../SequelizeRepo';
 import { Db } from '../Db';
+import { UserRepo } from '../../UserRepo';
 
-export class UserSequelizeRepo extends SequelizeRepo<User> {
+export class UserSequelizeRepo implements UserRepo {
   public readonly db: Db;
 
   constructor(db: Db) {
-    super();
     this.db = db;
   }
 

@@ -1,3 +1,3 @@
 import { Repo } from '../Repo';
 
-export abstract class SequelizeRepo<T> extends Repo<T> {}
+export interface SequelizeRepo<T> extends Repo<T> {}
