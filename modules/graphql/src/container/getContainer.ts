@@ -2,12 +2,20 @@ import { Config, getConfig } from '../config';
 import { Container } from 'inversify';
 import { TYPES } from './TYPES';
 import { getReposModule } from './getReposModule';
+import IORedis, { Redis } from 'ioredis';
 
-export const getContainer = () => {
+const DEFAULT_CONFIG = getConfig(process.env);
+
+export const getContainer = (config = DEFAULT_CONFIG) => {
   const container = new Container();
 
-  const config = getConfig(process.env);
   container.bind<Config>(TYPES.Config).toConstantValue(config);
+
+  const redis = new IORedis({
+    host: config.REDIS_HOST,
+    port: parseInt(config.REDIS_PORT, 10),
+  });
+  container.bind<Redis>(TYPES.Redis).toConstantValue(redis);
 
   const reposModule = getReposModule(config);
   container.load(reposModule);
