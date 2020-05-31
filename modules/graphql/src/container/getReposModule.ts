@@ -9,7 +9,7 @@ export const getReposModule = (config: Config) => {
     switch (config.NODE_ENV) {
       case 'test':
         bind<Repo<User>>(TYPES.UserRepo).to(UserMemoryRepo);
-        break;
+        return;
       default:
         const db = connectToDb({
           databaseName: config.DB_NAME,
@@ -21,7 +21,7 @@ export const getReposModule = (config: Config) => {
         });
         bind<Db>(TYPES.Db).toConstantValue(db);
         bind<Repo<User>>(TYPES.UserRepo).to(UserSequelizeRepo);
-        break;
+        return;
     }
   });
 };
