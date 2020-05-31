@@ -1,6 +1,6 @@
 import { Config } from '../config';
 import { ContainerModule } from 'inversify';
-import { TYPES } from './TYPES';
+import { TYPES } from '@stringsync/common';
 import { UserSequelizeRepo, Db, connectToDb, UserMemoryRepo, Repo } from '@stringsync/repos';
 import { User } from '@stringsync/domain';
 

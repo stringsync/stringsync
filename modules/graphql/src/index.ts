@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { Config } from './config';
-import { getContainer, TYPES } from './container';
+import { getContainer } from './container';
+import { TYPES } from '@stringsync/common';
 import { getApp } from './app';
 
 const container = getContainer();

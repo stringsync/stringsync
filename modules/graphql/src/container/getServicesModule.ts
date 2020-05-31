@@ -1,6 +1,6 @@
 import { Config } from '../config';
 import { ContainerModule } from 'inversify';
-import { TYPES } from './TYPES';
+import { TYPES } from '@stringsync/common';
 import { HealthCheckerService } from '@stringsync/services';
 
 export const getServicesModule = (config: Config) =>

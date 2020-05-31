@@ -1,6 +1,6 @@
 import { Config, getConfig } from '../config';
 import { Container } from 'inversify';
-import { TYPES } from './TYPES';
+import { TYPES } from '@stringsync/common';
 import { getReposModule } from './getReposModule';
 import IORedis, { Redis } from 'ioredis';
 import { getServicesModule } from './getServicesModule';
