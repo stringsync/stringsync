@@ -3,4 +3,5 @@ export const TYPES = {
   UserRepo: Symbol('UserRepo'),
   Config: Symbol('Config'),
   Redis: Symbol('Redis'),
+  HealthCheckerService: Symbol('HealthCheckerService'),
 };

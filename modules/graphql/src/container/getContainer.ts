@@ -3,6 +3,7 @@ import { Container } from 'inversify';
 import { TYPES } from './TYPES';
 import { getReposModule } from './getReposModule';
 import IORedis, { Redis } from 'ioredis';
+import { getServicesModule } from './getServicesModule';
 
 const DEFAULT_CONFIG = getConfig(process.env);
 
@@ -18,7 +19,9 @@ export const getContainer = (config = DEFAULT_CONFIG) => {
   container.bind<Redis>(TYPES.Redis).toConstantValue(redis);
 
   const reposModule = getReposModule(config);
-  container.load(reposModule);
+  const servicesModule = getServicesModule(config);
+
+  container.load(reposModule, servicesModule);
 
   return container;
 };
