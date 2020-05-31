@@ -1,0 +1,11 @@
+{
+  "name": "@stringsync/services",
+  "version": "1.0.0",
+  "description": "Use cases for operations on @stringsync domain objects.",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@stringsync/repos": "1.0.0"
+  }
+}
