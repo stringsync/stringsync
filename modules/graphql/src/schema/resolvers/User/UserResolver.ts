@@ -1,11 +1,22 @@
-import { Resolver, Query } from 'type-graphql';
-import { injectable } from 'inversify';
+import { Resolver, Query, Args } from 'type-graphql';
+import { injectable, inject } from 'inversify';
+import { TYPES } from '@stringsync/common';
+import { UserService } from '@stringsync/services';
+import { User } from './User';
+import { UserArgs } from './UserArgs';
+import * as domain from '@stringsync/domain';
 
 @Resolver()
 @injectable()
 export class UserResolver {
-  @Query()
-  foo(): string {
-    return 'hello, world!';
+  readonly userService: UserService;
+
+  constructor(@inject(TYPES.UserService) userService: UserService) {
+    this.userService = userService;
+  }
+
+  @Query((returns) => User, { nullable: true })
+  async user(@Args() args: UserArgs): Promise<domain.User | null> {
+    return await this.userService.get(args.id);
   }
 }

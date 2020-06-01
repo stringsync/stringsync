@@ -27,18 +27,18 @@ export class User implements domain.User {
   @Field((type) => UserRoles)
   role!: UserRoles;
 
-  @Field({ nullable: true })
+  @Field((type) => String, { nullable: true })
   confirmationToken!: string | null;
 
-  @Field({ nullable: true })
+  @Field((type) => Date, { nullable: true })
   confirmedAt!: Date | null;
 
-  @Field({ nullable: true })
+  @Field((type) => String, { nullable: true })
   resetPasswordToken!: string | null;
 
-  @Field({ nullable: true })
+  @Field((type) => Date, { nullable: true })
   resetPasswordTokenSentAt!: Date | null;
 
-  @Field({ nullable: true })
+  @Field((type) => String, { nullable: true })
   avatarUrl!: string | null;
 }

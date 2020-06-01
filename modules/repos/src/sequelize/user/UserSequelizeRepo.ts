@@ -1,11 +1,14 @@
 import { User } from '@stringsync/domain';
 import { Db } from '../Db';
 import { UserRepo } from '../../UserRepo';
+import { injectable, inject } from 'inversify';
+import { TYPES } from '@stringsync/common';
 
+@injectable()
 export class UserSequelizeRepo implements UserRepo {
   public readonly db: Db;
 
-  constructor(db: Db) {
+  constructor(@inject(TYPES.Db) db: Db) {
     this.db = db;
   }
 
