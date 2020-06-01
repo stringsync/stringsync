@@ -1,7 +1,8 @@
 export const TYPES = {
-  Db: Symbol('Db'),
-  UserRepo: Symbol('UserRepo'),
   Config: Symbol('Config'),
-  Redis: Symbol('Redis'),
+  Db: Symbol('Db'),
   HealthCheckerService: Symbol('HealthCheckerService'),
+  Redis: Symbol('Redis'),
+  UserRepo: Symbol('UserRepo'),
+  UserService: Symbol('UserService'),
 };
