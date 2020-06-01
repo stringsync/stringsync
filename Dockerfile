@@ -1,5 +1,6 @@
 FROM node:13
 
 WORKDIR /stringsync
-COPY . .
+COPY ./package.json .
+COPY ./yarn.lock .
 RUN yarn

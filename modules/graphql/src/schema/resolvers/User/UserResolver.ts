@@ -1,11 +1,11 @@
-import * as domain from '@stringsync/domain';
-import { User } from './User';
 import { Resolver, Query } from 'type-graphql';
+import { injectable } from 'inversify';
 
 @Resolver()
+@injectable()
 export class UserResolver {
   @Query()
-  async foo(): Promise<string> {
-    return Promise.resolve('hello, world!');
+  foo(): string {
+    return 'hello, world!';
   }
 }

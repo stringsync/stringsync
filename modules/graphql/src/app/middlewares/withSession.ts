@@ -1,5 +1,5 @@
 import session from 'express-session';
-import uuid from 'uuid';
+import * as uuid from 'uuid';
 import connectRedis from 'connect-redis';
 import { Handler } from 'express';
 import { Container } from 'inversify';

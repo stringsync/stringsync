@@ -5,8 +5,6 @@ import { UserResolver } from './resolvers';
 export const generateSchema = (container: Container) => {
   return buildSchemaSync({
     resolvers: [UserResolver],
-    container: {
-      get: (klass) => container.get(klass),
-    },
+    container,
   });
 };
