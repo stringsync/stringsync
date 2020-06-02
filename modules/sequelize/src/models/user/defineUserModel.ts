@@ -1,5 +1,5 @@
 import { Sequelize, DataTypes } from 'sequelize';
-import { StaticModel } from '../StaticModel';
+import { StaticModel } from '../StaticModels';
 import { UserModel } from './UserModel';
 import { USER_ROLES } from '@stringsync/domain';
 
@@ -84,8 +84,6 @@ export const defineUserModel = (sequelize: Sequelize) => {
       tableName: 'users',
     }
   ) as StaticModel<UserModel>;
-
-  User.associate = (models) => undefined;
 
   return User;
 };

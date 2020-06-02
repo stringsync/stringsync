@@ -1,4 +1,4 @@
-import { Db } from '@stringsync/repos';
+import { Db } from '@stringsync/sequelize';
 import { Redis } from 'ioredis';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '@stringsync/common';

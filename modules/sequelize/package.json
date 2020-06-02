@@ -5,10 +5,21 @@
   "main": "src/index.ts",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "build": "yarn tsc",
+    "premigrate": "yarn build",
+    "migrate": "yarn sequelize db:migrate",
+    "predev": "yarn migrate && yarn seed",
+    "seed": "yarn sequelize db:seed:all"
+  },
   "dependencies": {
+    "bcrypt": "^4.0.1",
     "sequelize": "^5.21.11"
   },
   "devDependencies": {
-    "@types/sequelize": "^4.28.9"
+    "@types/bcrypt": "^3.0.0",
+    "@types/node": "^14.0.9",
+    "@types/sequelize": "^4.28.9",
+    "sequelize-cli": "^5.5.1"
   }
 }

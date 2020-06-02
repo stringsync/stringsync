@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "outDir": "dst",
     "allowJs": true,
     "jsx": "react",
@@ -17,5 +18,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
   },
+  "include": ["modules"],
   "exclude": ["node_modules"]
 }

@@ -6,3 +6,4 @@ e2e
 .vscode
 .devcontainer
 bin
+dst

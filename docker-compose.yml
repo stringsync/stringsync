@@ -31,10 +31,10 @@ services:
       REDIS_PORT: 6379
       SESSION_SECRET: secret
     volumes:
-      - .:/stringsync
+      - ./modules:/stringsync/modules
     links:
       - db
       - redis
     ports:
       - "3000:3000"
-    command: ["yarn", "graphql", "dev"]
+    command: ["yarn", "dev"]

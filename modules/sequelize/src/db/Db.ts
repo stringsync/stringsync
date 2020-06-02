@@ -1,5 +1,5 @@
 import { Transaction, Sequelize } from 'sequelize/types';
-import { StaticModels } from './StaticModel';
+import { StaticModels } from '../models';
 
 export type Task<T> = (transaction: Transaction) => PromiseLike<T>;
 
