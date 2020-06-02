@@ -1,6 +1,6 @@
 import { Db } from './Db';
 import { Sequelize } from 'sequelize';
-import { defineModels } from './defineModels';
+import { defineModels } from '../models/defineModels';
 import { createNamespace } from 'cls-hooked';
 import { DbConfig } from './DbConfig';
 import { transactionFactory } from './transactionFactory';

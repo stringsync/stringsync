@@ -85,7 +85,7 @@ export const defineUserModel = (sequelize: Sequelize) => {
     }
   ) as StaticModel<UserModel>;
 
-  User.associate = (models) => {};
+  User.associate = (models) => undefined;
 
   return User;
 };

@@ -1,0 +1,14 @@
+{
+  "name": "@stringsync/sequelize",
+  "version": "1.0.0",
+  "description": "Sequelize integration for @stringsync.",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "sequelize": "^5.21.11"
+  },
+  "devDependencies": {
+    "@types/sequelize": "^4.28.9"
+  }
+}

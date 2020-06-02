@@ -5,6 +5,7 @@ import { getReposModule } from './getReposModule';
 import { getServicesModule } from './getServicesModule';
 import { getGraphqlModule } from './getGraphqlModule';
 import { getRedisModule } from './getRedisModule';
+import { getSequelizeModule } from './getSequelizeModule';
 
 const DEFAULT_CONFIG = getConfig(process.env);
 
@@ -17,8 +18,9 @@ export const getContainer = (config = DEFAULT_CONFIG) => {
   const servicesModule = getServicesModule(config);
   const graphqlModule = getGraphqlModule();
   const redisModule = getRedisModule(config);
+  const sequelizeModule = getSequelizeModule(config);
 
-  container.load(reposModule, servicesModule, graphqlModule, redisModule);
+  container.load(reposModule, servicesModule, graphqlModule, redisModule, sequelizeModule);
 
   return container;
 };
