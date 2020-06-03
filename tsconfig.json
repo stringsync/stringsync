@@ -19,5 +19,5 @@
     "emitDecoratorMetadata": true,
   },
   "include": ["modules"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "dst"]
 }

@@ -69,15 +69,13 @@ StringSync was developed using VSCode. Project settings are stored in a `.vscode
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "tsc server",
+      "label": "tsc",
       "type": "process",
       "command": "yarn",
       "args": [
         "tsc",
         "--watch",
         "--noEmit",
-        "--project",
-        "server/tsconfig.json"
       ],
       "problemMatcher": ["$tsc"],
       "group": "build",
@@ -91,23 +89,6 @@ StringSync was developed using VSCode. Project settings are stored in a `.vscode
         "focus": false
       }
     },
-    {
-      "label": "tsc web",
-      "type": "process",
-      "command": "yarn",
-      "args": ["tsc", "--watch", "--noEmit", "--project", "web/tsconfig.json"],
-      "problemMatcher": ["$tsc"],
-      "group": "build",
-      "isBackground": true,
-      "runOptions": {
-        "runOn": "folderOpen"
-      },
-      "presentation": {
-        "echo": false,
-        "reveal": "never",
-        "focus": false
-      }
-    }
   ]
 }
 ```
