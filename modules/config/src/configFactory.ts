@@ -1,5 +1,7 @@
 import { ConfigKind, ConfigSpec, Config } from './types';
 
+class ConfigError extends Error {}
+
 const cast = (val: string, kind: ConfigKind) => {
   switch (kind) {
     case ConfigKind.STRING:
@@ -20,13 +22,13 @@ export const configFactory = <S extends ConfigSpec>(spec: S) => (env = process.e
   for (const [key, kind] of Object.entries(spec)) {
     const val = env[key];
     if (!val) {
-      throw new Error(`expected ${key} to be defined as ${kind}, got: ${val}`);
+      throw new ConfigError(`expected ${key} to be defined as ${kind}, got: ${val}`);
     }
 
     try {
       config[key] = cast(val, kind);
     } catch (e) {
-      throw new Error(`expected ${key} to be defined as ${kind}, got: ${val}`);
+      throw new ConfigError(`expected ${key} to be defined as ${kind}, got: ${val}`);
     }
   }
 
