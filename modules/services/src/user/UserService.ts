@@ -14,4 +14,8 @@ export class UserService {
   async get(id: string): Promise<domain.User | null> {
     return await this.userRepo.get(id);
   }
+
+  async all(): Promise<domain.User[]> {
+    return await this.userRepo.all();
+  }
 }

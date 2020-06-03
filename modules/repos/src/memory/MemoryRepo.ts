@@ -10,6 +10,11 @@ export abstract class MemoryRepo<T> implements Repo<T> {
     return Promise.resolve(entity);
   }
 
+  async all() {
+    const entities = Object.values(this.store);
+    return Promise.resolve(entities);
+  }
+
   async create(entity: T) {
     const id = this.getId(entity);
 

@@ -16,6 +16,10 @@ export class UserSequelizeRepo implements UserRepo {
     return (await this.db.User.findByPk(id, { raw: true })) as User | null;
   }
 
+  async all() {
+    return (await this.db.User.findAll({ raw: true })) as User[];
+  }
+
   async create(user: User) {
     return (await this.db.User.create(user, { raw: true })) as User;
   }
