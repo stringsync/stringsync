@@ -9,7 +9,8 @@
     "build": "yarn tsc",
     "premigrate": "yarn build",
     "migrate": "yarn sequelize db:migrate",
-    "predev": "yarn migrate && yarn seed",
+    "reset": "yarn sequelize db:drop && yarn sequelize db:create",
+    "dev:migrate": "yarn reset && yarn migrate && yarn seed",
     "seed": "yarn sequelize db:seed:all"
   },
   "dependencies": {

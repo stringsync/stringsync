@@ -13,7 +13,7 @@ services:
     image: redis:5.0
 
   graphql:
-    image: stringsync/graphql:latest
+    image: stringsync:latest
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -38,3 +38,20 @@ services:
     ports:
       - "3000:3000"
     command: ["yarn", "dev"]
+
+  migrate:
+    image: stringsync:latest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      DB_NAME: stringsync
+      DB_USERNAME: stringsync
+      DB_PASSWORD: stringsync
+      DB_HOST: db
+      DB_PORT: 5432
+    volumes:
+      - ./modules:/stringsync/modules
+    links:
+      - db
+    command: ["yarn", "dev:migrate"]
