@@ -1,7 +1,3 @@
-export enum UserRoles {
-  STUDENT = 'STUDENT',
-  TEACHER = 'TEACHER',
-  ADMIN = 'ADMIN',
-}
+import { UserRoles } from './types';
 
 export const USER_ROLES: UserRoles[] = [UserRoles.STUDENT, UserRoles.TEACHER, UserRoles.ADMIN];

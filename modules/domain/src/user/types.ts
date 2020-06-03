@@ -1,5 +1,3 @@
-import { UserRoles } from './UserRoles';
-
 export interface User {
   id: string;
   createdAt: Date;
@@ -13,4 +11,10 @@ export interface User {
   resetPasswordToken: string | null;
   resetPasswordTokenSentAt: Date | null;
   avatarUrl: string | null;
+}
+
+export enum UserRoles {
+  STUDENT = 'STUDENT',
+  TEACHER = 'TEACHER',
+  ADMIN = 'ADMIN',
 }
