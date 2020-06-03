@@ -9,7 +9,7 @@ export const getGraphqlConfig = configFactory({
   DB_USERNAME: ConfigKind.STRING,
   DB_PASSWORD: ConfigKind.STRING,
   DB_HOST: ConfigKind.STRING,
-  DB_PORT: ConfigKind.STRING,
+  DB_PORT: ConfigKind.INT,
   REDIS_HOST: ConfigKind.STRING,
   REDIS_PORT: ConfigKind.INT,
   SESSION_SECRET: ConfigKind.STRING,

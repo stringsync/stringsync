@@ -10,7 +10,7 @@ export const getSequelizeModule = (config: GraphqlConfig) =>
       host: config.DB_HOST,
       password: config.DB_PASSWORD,
       username: config.DB_NAME,
-      port: parseInt(config.DB_PORT, 10),
+      port: config.DB_PORT,
       namespaceName: 'transaction',
     });
     bind<Db>(TYPES.Db).toConstantValue(db);
