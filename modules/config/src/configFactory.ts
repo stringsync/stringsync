@@ -1,4 +1,4 @@
-import { ConfigKind, ConfigSpec, Config } from './types';
+import { ConfigKind, ConfigSpec, Config, ConfigGetter } from './types';
 
 class ConfigError extends Error {}
 
@@ -20,15 +20,23 @@ const cast = (val: string, kind: ConfigKind) => {
     case ConfigKind.STRING:
       return val;
     case ConfigKind.INT:
-      return parseInt(val, 10);
+      const int = parseInt(val, 10);
+      if (int.toString() !== val) {
+        throw new TypeError(`can't cast to INT: ${val}`);
+      }
+      return int;
     case ConfigKind.FLOAT:
-      return parseFloat(val);
+      const float = parseFloat(val);
+      if (Number.isNaN(float)) {
+        throw new TypeError(`can't cast to FLOAT: ${val}`);
+      }
+      return float;
     default:
       throw new TypeError(`unknown ConfigKind: ${kind}`);
   }
 };
 
-export const configFactory = <S extends ConfigSpec>(spec: S) => (env = process.env): Config<S> => {
+export const configFactory = <S extends ConfigSpec>(spec: S): ConfigGetter<S> => (env = process.env) => {
   // any typecast is workaround to avoid indexing issue with Config<S>
   const config = {} as any;
 
@@ -45,5 +53,5 @@ export const configFactory = <S extends ConfigSpec>(spec: S) => (env = process.e
     }
   }
 
-  return config as Config<S>;
+  return config;
 };

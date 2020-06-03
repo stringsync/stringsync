@@ -6,6 +6,8 @@ export enum ConfigKind {
 
 export type ConfigSpec = Record<string, ConfigKind>;
 
+export type ConfigGetter<S extends ConfigSpec> = (env: NodeJS.ProcessEnv) => Config<S>;
+
 export type Config<S extends ConfigSpec> = Readonly<
   {
     [K in keyof S]: S[K] extends ConfigKind.INT
