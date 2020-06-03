@@ -51,6 +51,7 @@ services:
       DB_PORT: 5432
     volumes:
       - ./modules:/stringsync/modules
+      - /stringsync/modules/sequelize/dst/
     links:
       - db
     command: ["yarn", "sequelize", "dev"]
