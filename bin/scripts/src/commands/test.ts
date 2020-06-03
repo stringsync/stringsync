@@ -29,8 +29,13 @@ export default class Test extends Command {
           'run',
           '--rm',
           'test',
-          // wait for migration container to exit, then run yarn test --watchAll=<true|false>
-          `bash -c "while ping -c1 migration &>/dev/null; do sleep 1; done && yarn test --watchAll=${flags.watch}"`,
+          'yarn',
+          'sequelize',
+          'migrate',
+          '&&',
+          'yarn',
+          'test',
+          `--watchAll=${flags.watch}`,
         ].join(' '),
         {
           cwd: ROOT_PATH,

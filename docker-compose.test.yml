@@ -34,26 +34,6 @@ services:
     links:
       - db
       - redis
-      - migration:migration
-    depends_on:
-      - migration
     ports:
       - "3000:3000"
-
-  migration:
-    image: stringsync:latest
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    environment:
-      DB_NAME: stringsync
-      DB_USERNAME: stringsync
-      DB_PASSWORD: stringsync
-      DB_HOST: db
-      DB_PORT: 5432
-    volumes:
-      - ./modules:/stringsync/modules
-      - /stringsync/modules/sequelize/dst/
-    links:
-      - db
-    command: ["yarn", "sequelize", "migrate"]
+    # command is dynamic, should use docker-compose run
