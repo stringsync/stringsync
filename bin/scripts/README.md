@@ -41,12 +41,10 @@ USAGE
 - [`ss down [PROJECT]`](#ss-down-project)
 - [`ss exec PROJECT SERVICE CMD`](#ss-exec-project-service-cmd)
 - [`ss help [COMMAND]`](#ss-help-command)
-- [`ss install`](#ss-install)
 - [`ss lint`](#ss-lint)
 - [`ss logs PROJECT [SERVICE]`](#ss-logs-project-service)
 - [`ss pretty`](#ss-pretty)
 - [`ss sql CMD`](#ss-sql-cmd)
-- [`ss common`](#ss-common)
 - [`ss test PROJECT`](#ss-test-project)
 - [`ss up [PROJECT]`](#ss-up-project)
 
@@ -124,21 +122,6 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.1/src/commands/help.ts)_
 
-## `ss install`
-
-Installs node_modules throughout the project.
-
-```
-USAGE
-  $ ss install
-
-OPTIONS
-  -d, --delete
-  -h, --help    show CLI help
-```
-
-_See code: [src/commands/install.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/install.ts)_
-
 ## `ss lint`
 
 Lints the entire project (except node_modules).
@@ -195,20 +178,6 @@ OPTIONS
 ```
 
 _See code: [src/commands/sql.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/sql.ts)_
-
-## `ss common`
-
-Copies the common dir to all the projects.
-
-```
-USAGE
-  $ ss common
-
-OPTIONS
-  -h, --help  show CLI help
-```
-
-_See code: [src/commands/common.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/common.ts)_
 
 ## `ss test PROJECT`
 
