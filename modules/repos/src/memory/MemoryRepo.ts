@@ -1,4 +1,4 @@
-import { Repo } from '../Repo';
+import { Repo } from '../types';
 
 export abstract class MemoryRepo<T> implements Repo<T> {
   public readonly store: { [id: string]: T } = {};

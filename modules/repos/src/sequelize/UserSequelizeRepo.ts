@@ -1,6 +1,6 @@
 import { User } from '@stringsync/domain';
 import { Db } from '@stringsync/sequelize';
-import { UserRepo } from '../UserRepo';
+import { UserRepo } from '../types';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '@stringsync/common';
 
