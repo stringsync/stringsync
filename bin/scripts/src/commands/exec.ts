@@ -23,17 +23,9 @@ export default class Exec extends Command {
 
     spawn(
       'docker-compose',
-      [
-        '-f',
-        getDockerComposeFile(project as Project),
-        '-p',
-        project,
-        'exec',
-        service,
-        'bash',
-        '-c',
-        cmdv.join(' '),
-      ].filter((arg) => arg),
+      ['-f', getDockerComposeFile(project as Project), 'exec', service, 'bash', '-c', cmdv.join(' ')].filter(
+        (arg) => arg
+      ),
       {
         cwd: ROOT_PATH,
         stdio: 'inherit',

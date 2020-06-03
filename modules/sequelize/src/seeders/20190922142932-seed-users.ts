@@ -25,8 +25,7 @@ export default {
         created_at: NOW,
         updated_at: NOW,
         encrypted_password: encryptedPassword,
-        avatar_url:
-          'https://images.unsplash.com/photo-1524593689594-aae2f26b75ab',
+        avatar_url: 'https://images.unsplash.com/photo-1524593689594-aae2f26b75ab',
       },
       {
         username: 'jordanplaysflute',

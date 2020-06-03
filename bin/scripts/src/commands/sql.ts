@@ -40,22 +40,17 @@ const WHITELISTED_CMDS = (() => {
 })();
 const GENERATE_MIGRATION_CMD = 'migration:generate';
 const GENERATE_SEED_CMD = 'seed:generate';
-const SERVER_ROOT_PATH = path.join(ROOT_PATH, 'server');
-const SERVER_SRC_DB_PATH = path.resolve(SERVER_ROOT_PATH, 'src', 'db');
-const SERVER_MIGRATION_PATH = path.resolve(SERVER_SRC_DB_PATH, 'migrations');
-const SERVER_SEEDERS_PATH = path.resolve(SERVER_SRC_DB_PATH, 'seeders');
-const TEMPLATE = path.resolve(
-  __dirname,
-  '../templates',
-  'migration.template.ts'
-);
+const SEQUELIZE_PATH = path.resolve(ROOT_PATH, 'modules', 'sequelize', 'src');
+const MIGRATION_PATH = path.resolve(SEQUELIZE_PATH, 'migrations');
+const SEEDERS_PATH = path.resolve(SEQUELIZE_PATH, 'seeders');
+const TEMPLATE = path.resolve(__dirname, '../templates', 'migration.template.ts');
 
 const getGenerateDirPath = (cmd: string) => {
   switch (cmd) {
     case GENERATE_MIGRATION_CMD:
-      return SERVER_MIGRATION_PATH;
+      return MIGRATION_PATH;
     case GENERATE_SEED_CMD:
-      return SERVER_SEEDERS_PATH;
+      return SEEDERS_PATH;
     default:
       throw new TypeError(`no generate directory for cmd: ${cmd}`);
   }
@@ -109,23 +104,16 @@ export default class Sql extends Command {
       this.log(`running custom ${command} command on host`);
       this.log('copying migration.template.ts');
       const src = TEMPLATE;
-      const dst = path.resolve(
-        getGenerateDirPath(command),
-        getGeneratedFilename(`-${flags.name}.ts`)
-      );
+      const dst = path.resolve(getGenerateDirPath(command), getGeneratedFilename(`-${flags.name}.ts`));
       fs.copyFileSync(src, dst);
       this.log(`created ${dst}`);
       return this.exit();
     }
 
     // run the actual command against the sequelize library
-    spawn(
-      './bin/ss',
-      ['exec', 'main', 'scripts', 'yarn', 'sequelize', ...argv],
-      {
-        cwd: ROOT_PATH,
-        stdio: 'inherit',
-      }
-    );
+    spawn('./bin/ss', ['exec', 'main', 'scripts', 'yarn', 'sequelize', ...argv], {
+      cwd: ROOT_PATH,
+      stdio: 'inherit',
+    });
   }
 }

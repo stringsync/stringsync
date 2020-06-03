@@ -3,7 +3,7 @@ import { ROOT_PATH } from '../util';
 import { spawn } from 'child_process';
 
 export default class Lint extends Command {
-  static description = 'Lints the entire project (except node_modules).';
+  static description = 'Lints the entire project.';
 
   static flags = {
     help: flags.help({ char: 'h' }),
@@ -12,21 +12,9 @@ export default class Lint extends Command {
   async run() {
     this.parse(Lint);
 
-    spawn(
-      'yarn',
-      [
-        'eslint',
-        '--max-warnings',
-        '1',
-        '--ext',
-        'ts,tsx',
-        'common',
-        'server/src',
-        'bin/scripts/src',
-        'web/src',
-        'e2e/src',
-      ],
-      { cwd: ROOT_PATH, stdio: 'inherit' }
-    );
+    spawn('yarn', ['eslint', '--max-warnings', '1', '--ext', 'ts,tsx', 'modules'], {
+      cwd: ROOT_PATH,
+      stdio: 'inherit',
+    });
   }
 }

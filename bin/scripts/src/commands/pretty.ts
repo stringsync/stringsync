@@ -12,19 +12,9 @@ export default class Pretty extends Command {
   async run() {
     this.parse(Pretty);
 
-    spawn(
-      'yarn',
-      [
-        'prettier',
-        '--check',
-        'common/**/*.ts',
-        'server/src/**/*.ts',
-        'bin/scripts/src/**/*.ts',
-        'web/src/**/*.ts',
-        'web/src/**/*.tsx',
-        'e2e/src/**/*.ts',
-      ],
-      { cwd: ROOT_PATH, stdio: 'inherit' }
-    );
+    spawn('yarn', ['prettier', '--check', 'bin/scripts/src/**/*.ts', 'modules/**/*.ts', 'modules/**/*.tsx'], {
+      cwd: ROOT_PATH,
+      stdio: 'inherit',
+    });
   }
 }
