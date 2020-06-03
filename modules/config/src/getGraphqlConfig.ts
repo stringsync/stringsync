@@ -14,3 +14,5 @@ export const getGraphqlConfig = configFactory({
   REDIS_PORT: ConfigKind.INT,
   SESSION_SECRET: ConfigKind.STRING,
 });
+
+export type GraphqlConfig = ReturnType<typeof getGraphqlConfig>;

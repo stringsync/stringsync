@@ -1,4 +1,4 @@
-import { Config, getConfig } from '../config';
+import { GraphqlConfig, getGraphqlConfig } from '@stringsync/config';
 import { Container } from 'inversify';
 import { TYPES } from '@stringsync/common';
 import { getReposModule } from './getReposModule';
@@ -7,12 +7,12 @@ import { getGraphqlModule } from './getGraphqlModule';
 import { getRedisModule } from './getRedisModule';
 import { getSequelizeModule } from './getSequelizeModule';
 
-const DEFAULT_CONFIG = getConfig(process.env);
+const DEFAULT_CONFIG = getGraphqlConfig();
 
-export const getContainer = (config = DEFAULT_CONFIG) => {
+export const getContainer = (config: GraphqlConfig = DEFAULT_CONFIG) => {
   const container = new Container();
 
-  container.bind<Config>(TYPES.Config).toConstantValue(config);
+  container.bind<GraphqlConfig>(TYPES.GraphqlConfig).toConstantValue(config);
 
   const reposModule = getReposModule(config);
   const servicesModule = getServicesModule(config);

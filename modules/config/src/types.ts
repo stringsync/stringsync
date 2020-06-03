@@ -6,12 +6,14 @@ export enum ConfigKind {
 
 export type ConfigSpec = Record<string, ConfigKind>;
 
-export type Config<S extends ConfigSpec> = {
-  [K in keyof S]: S[K] extends ConfigKind.INT
-    ? number
-    : S[K] extends ConfigKind.FLOAT
-    ? number
-    : S[K] extends ConfigKind.STRING
-    ? string
-    : never;
-};
+export type Config<S extends ConfigSpec> = Readonly<
+  {
+    [K in keyof S]: S[K] extends ConfigKind.INT
+      ? number
+      : S[K] extends ConfigKind.FLOAT
+      ? number
+      : S[K] extends ConfigKind.STRING
+      ? string
+      : never;
+  }
+>;

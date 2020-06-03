@@ -1,13 +1,13 @@
 import { ContainerModule } from 'inversify';
-import { Config } from '../config';
+import { GraphqlConfig } from '@stringsync/config';
 import IORedis, { Redis } from 'ioredis';
 import { TYPES } from '@stringsync/common';
 
-export const getRedisModule = (config: Config) =>
+export const getRedisModule = (config: GraphqlConfig) =>
   new ContainerModule((bind) => {
     const redis = new IORedis({
       host: config.REDIS_HOST,
-      port: parseInt(config.REDIS_PORT, 10),
+      port: config.REDIS_PORT,
     });
     bind<Redis>(TYPES.Redis).toConstantValue(redis);
   });
