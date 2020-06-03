@@ -1,1 +1,1 @@
-export * from './TYPES';
+export * from './constants';
