@@ -15,17 +15,9 @@ export default class Down extends Command {
   async run() {
     const { args } = this.parse(Down);
 
-    spawn(
-      'docker-compose',
-      [
-        '-f',
-        getDockerComposeFile(args.project),
-        '-p',
-        args.project,
-        'down',
-        '--volumes',
-      ],
-      { cwd: ROOT_PATH, stdio: 'inherit' }
-    );
+    spawn('docker-compose', ['-f', getDockerComposeFile(args.project), 'down', '--volumes'], {
+      cwd: ROOT_PATH,
+      stdio: 'inherit',
+    });
   }
 }

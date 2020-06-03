@@ -12,13 +12,13 @@ services:
   redis:
     image: redis:5.0
 
-  graphql:
+  test:
     image: stringsync:latest
     build:
       context: .
       dockerfile: ./Dockerfile
     environment:
-      NODE_ENV: development
+      NODE_ENV: test
       PORT: 3000
       WEB_URI: http://localhost:8080
       DB_NAME: stringsync
@@ -34,9 +34,11 @@ services:
     links:
       - db
       - redis
+      - migration:migration
+    depends_on:
+      - migration
     ports:
       - "3000:3000"
-    command: ["yarn", "graphql", "dev"]
 
   migration:
     image: stringsync:latest
@@ -54,4 +56,4 @@ services:
       - /stringsync/modules/sequelize/dst/
     links:
       - db
-    command: ["yarn", "sequelize", "dev"]
+    command: ["yarn", "sequelize", "migrate"]

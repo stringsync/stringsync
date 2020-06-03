@@ -1,21 +1,20 @@
 import { Command, flags } from '@oclif/command';
-import { PROJECT_ARG, ROOT_PATH } from '../util/constants';
-import { getTestCmdArgs } from '../util';
+import { ROOT_PATH } from '../util/constants';
 import { execSync } from 'child_process';
+import { getDockerComposeFile } from '../util';
 
 export default class Test extends Command {
-  static description = 'describe the command here';
+  static description = 'Run all of the StringSync tests.';
 
   static flags = {
     watch: flags.boolean({ char: 'w', default: false }),
   };
 
-  static args = [{ ...PROJECT_ARG, required: true }];
-
   async run() {
-    const { args, flags } = this.parse(Test);
+    const { flags } = this.parse(Test);
+    const project = 'test';
 
-    execSync(['./bin/ss', 'build', args.project].join(' '), {
+    execSync(['./bin/ss', 'build'].join(' '), {
       cwd: ROOT_PATH,
       stdio: 'inherit',
     });
@@ -23,9 +22,16 @@ export default class Test extends Command {
     let exit = 0;
     try {
       execSync(
-        ['docker-compose', ...getTestCmdArgs(args.project, flags.watch)].join(
-          ' '
-        ),
+        [
+          'docker-compose',
+          '-f',
+          getDockerComposeFile(project),
+          'run',
+          '--rm',
+          'test',
+          // wait for migration container to exit, then run yarn test --watchAll=<true|false>
+          `bash -c "while ping -c1 migration &>/dev/null; do sleep 1; done && yarn test --watchAll=${flags.watch}"`,
+        ].join(' '),
         {
           cwd: ROOT_PATH,
           stdio: 'inherit',
@@ -35,7 +41,7 @@ export default class Test extends Command {
       exit = 1;
     }
 
-    execSync(['./bin/ss', 'down', args.project].join(' '), {
+    execSync(['./bin/ss', 'down', project].join(' '), {
       cwd: ROOT_PATH,
       stdio: 'inherit',
     });
