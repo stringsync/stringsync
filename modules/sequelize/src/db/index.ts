@@ -1,4 +1,3 @@
-export * from './DbConfig';
-export * from './Db';
+export * from './types';
 export * from './transactionFactory';
 export * from './connectToDb';

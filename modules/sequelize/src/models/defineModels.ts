@@ -1,4 +1,4 @@
-import { defineUserModel } from './user';
+import { defineUserModel } from './User';
 import { Sequelize } from 'sequelize';
 
 export const defineModels = (sequelize: Sequelize) => {

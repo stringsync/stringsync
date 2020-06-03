@@ -36,7 +36,7 @@ services:
       - redis
     ports:
       - "3000:3000"
-    command: ["yarn", "dev"]
+    command: ["yarn", "graphql", "dev"]
 
   migrate:
     image: stringsync:latest
@@ -53,4 +53,4 @@ services:
       - ./modules:/stringsync/modules
     links:
       - db
-    command: ["yarn", "dev:migrate"]
+    command: ["yarn", "sequelize", "dev"]

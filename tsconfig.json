@@ -6,6 +6,7 @@
     "jsx": "react",
     "module": "commonjs",
     "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "strict": true,

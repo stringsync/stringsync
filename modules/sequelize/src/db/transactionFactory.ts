@@ -1,5 +1,5 @@
 import { Sequelize, Transaction } from 'sequelize';
-import { Task } from './Db';
+import { Task } from './types';
 import { Namespace } from 'cls-hooked';
 
 export const transactionFactory = (sequelize: Sequelize, namespaceName: string, namespace: Namespace) => async <T>(

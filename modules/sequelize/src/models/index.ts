@@ -1,3 +1,3 @@
-export * from './StaticModels';
-export * from './User';
+export * from './types';
 export * from './defineModels';
+export * from './User';

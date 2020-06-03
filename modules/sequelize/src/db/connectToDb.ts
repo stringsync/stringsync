@@ -1,8 +1,7 @@
-import { Db } from './Db';
+import { Db, DbConfig } from './types';
 import { Sequelize } from 'sequelize';
 import { defineModels } from '../models/defineModels';
 import { createNamespace } from 'cls-hooked';
-import { DbConfig } from './DbConfig';
 import { transactionFactory } from './transactionFactory';
 
 export const connectToDb = (config: DbConfig): Db => {

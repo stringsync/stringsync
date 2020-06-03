@@ -1,6 +1,6 @@
 import { Sequelize, DataTypes } from 'sequelize';
-import { StaticModel } from '../StaticModels';
-import { UserModel } from './UserModel';
+import { StaticModel } from '../types';
+import { UserModel } from './types';
 import { USER_ROLES } from '@stringsync/domain';
 
 export const defineUserModel = (sequelize: Sequelize) => {

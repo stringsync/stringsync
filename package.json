@@ -8,9 +8,7 @@
   ],
   "scripts": {
     "graphql": "yarn workspace @stringsync/graphql",
-    "sequelize": "yarn workspace @stringsync/sequelize",
-    "dev:migrate": "yarn sequelize dev:migrate",
-    "dev": "yarn graphql dev"
+    "sequelize": "yarn workspace @stringsync/sequelize"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^4.2.4",

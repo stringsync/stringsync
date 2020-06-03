@@ -1,5 +1,5 @@
 import { Model, BuildOptions } from 'sequelize';
-import { UserModel } from './user';
+import { UserModel } from './User';
 
 export interface Models {
   User: UserModel;
