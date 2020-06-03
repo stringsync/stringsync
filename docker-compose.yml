@@ -31,27 +31,10 @@ services:
       SESSION_SECRET: keyboardcat
     volumes:
       - ./modules:/stringsync/modules
+      - /stringsync/modules/sequelize/dst/
     links:
       - db
       - redis
     ports:
       - "3000:3000"
-    command: ["yarn", "graphql", "dev"]
-
-  migration:
-    image: stringsync:latest
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    environment:
-      DB_NAME: stringsync
-      DB_USERNAME: stringsync
-      DB_PASSWORD: stringsync
-      DB_HOST: db
-      DB_PORT: 5432
-    volumes:
-      - ./modules:/stringsync/modules
-      - /stringsync/modules/sequelize/dst/
-    links:
-      - db
-    command: ["yarn", "sequelize", "dev"]
+    command: ["yarn", "dev"]

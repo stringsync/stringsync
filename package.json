@@ -9,6 +9,7 @@
   "scripts": {
     "graphql": "yarn workspace @stringsync/graphql",
     "sequelize": "yarn workspace @stringsync/sequelize",
+    "dev": "yarn sequelize dev && yarn graphql dev",
     "test": "jest"
   },
   "devDependencies": {
