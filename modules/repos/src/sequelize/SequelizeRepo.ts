@@ -29,8 +29,8 @@ export abstract class SequelizeRepo<T extends object, M> implements Repo<T> {
   }
 
   async create(entity: T) {
-    const newEntitiy = this.model.create(entity, { raw: true }) as unknown;
-    return newEntitiy as T;
+    const newEntity = await this.model.create(entity, { raw: true });
+    return newEntity.get({ plain: true }) as T;
   }
 
   async update(entity: T) {
