@@ -1,10 +1,10 @@
-import { Container } from 'inversify';
 import { buildSchemaSync } from 'type-graphql';
 import { UserResolver } from './resolvers';
+import { Container } from '@stringsync/container';
 
-export const generateSchema = (container: Container) => {
+export const generateSchema = () => {
   return buildSchemaSync({
     resolvers: [UserResolver],
-    container,
+    container: Container.instance,
   });
 };

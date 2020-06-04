@@ -1,17 +1,16 @@
 import graphqlHTTP from 'express-graphql';
-import { Container } from 'inversify';
 import { GraphQLSchema } from 'graphql';
 import { Handler } from 'express';
-import { TYPES } from '@stringsync/container';
+import { Container, TYPES } from '@stringsync/container';
 import { ContainerConfig } from '@stringsync/config';
 
-export const withGraphQL = (container: Container, schema: GraphQLSchema): Handler => (req, res) => {
-  const config = container.get<ContainerConfig>(TYPES.GraphqlConfig);
+export const withGraphQL = (schema: GraphQLSchema): Handler => (req, res) => {
+  const config = Container.instance.get<ContainerConfig>(TYPES.ContainerConfig);
 
   const middleware = graphqlHTTP({
     schema,
     graphiql: config.NODE_ENV !== 'production',
-    context: { container, req, res },
+    context: { req, res },
   });
 
   return middleware(req, res);

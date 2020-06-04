@@ -1,6 +1,6 @@
 export const TYPES = {
   Db: Symbol('Db'),
-  GraphqlConfig: Symbol('GraphqlConfig'),
+  ContainerConfig: Symbol('ContainerConfig'),
   HealthCheckerService: Symbol('HealthCheckerService'),
   HealthController: Symbol('HealthController'),
   Redis: Symbol('Redis'),

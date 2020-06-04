@@ -6,11 +6,12 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "@stringsync/container": "1.0.0",
     "@stringsync/graphql": "1.0.0",
     "@stringsync/repos": "1.0.0",
     "@stringsync/sequelize": "1.0.0",
     "@stringsync/services": "1.0.0",
-    "@stringsync/container": "1.0.0",
-    "inversify": "^5.0.1"
+    "inversify": "^5.0.1",
+    "reflect-metadata": "^0.1.13"
   }
 }

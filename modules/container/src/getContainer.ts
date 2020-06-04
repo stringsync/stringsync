@@ -7,16 +7,14 @@ import { getGraphqlModule } from './getGraphqlModule';
 import { getRedisModule } from './getRedisModule';
 import { getSequelizeModule } from './getSequelizeModule';
 
-const DEFAULT_CONFIG = getContainerConfig();
-
-export const getContainer = (config: ContainerConfig = DEFAULT_CONFIG) => {
+export const getContainer = (config: ContainerConfig) => {
   const container = new Container();
 
-  container.bind<ContainerConfig>(TYPES.GraphqlConfig).toConstantValue(config);
+  container.bind<ContainerConfig>(TYPES.ContainerConfig).toConstantValue(config);
 
   const reposModule = getReposModule(config);
   const servicesModule = getServicesModule(config);
-  const graphqlModule = getGraphqlModule();
+  const graphqlModule = getGraphqlModule(config);
   const redisModule = getRedisModule(config);
   const sequelizeModule = getSequelizeModule(config);
 
