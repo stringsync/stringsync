@@ -1,7 +1,7 @@
 import { Repo } from '../types';
 import { RepoFactory, Cleanup } from './types';
 
-export const testRepo = <T>(repoFactory: RepoFactory<T>, cleanup: Cleanup<T>) => {
+export const testRepo = <T extends object>(repoFactory: RepoFactory<T>, cleanup: Cleanup<T>) => {
   let repo: Repo<T>;
 
   beforeEach(() => {

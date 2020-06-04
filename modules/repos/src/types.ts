@@ -1,6 +1,6 @@
 import { User } from '@stringsync/domain';
 
-export interface Repo<T> {
+export interface Repo<T extends object> {
   get(id: any): Promise<T | null>;
   all(): Promise<T[]>;
   destroyAll(): Promise<void>;

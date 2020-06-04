@@ -1,34 +1,20 @@
-import { User } from '@stringsync/domain';
-import { Db } from '@stringsync/sequelize';
 import { UserRepo } from '../types';
 import { injectable, inject } from 'inversify';
-import { TYPES } from '@stringsync/container';
+import { User } from '@stringsync/domain';
+import { SequelizeRepo } from './SequelizeRepo';
+import { UserModel } from '@stringsync/sequelize';
 
 @injectable()
-export class UserSequelizeRepo implements UserRepo {
-  public readonly db: Db;
-
-  constructor(@inject(TYPES.Db) db: Db) {
-    this.db = db;
+export class UserSequelizeRepo extends SequelizeRepo<User, UserModel> implements UserRepo {
+  get model() {
+    return this.db.User;
   }
 
-  async get(id: string) {
-    return (await this.db.User.findByPk(id, { raw: true })) as User | null;
+  get idName() {
+    return 'id';
   }
 
-  async all() {
-    return (await this.db.User.findAll({ raw: true })) as User[];
-  }
-
-  async destroyAll() {
-    await this.db.User.destroy({ truncate: true });
-  }
-
-  async create(user: User) {
-    return (await this.db.User.create(user, { raw: true })) as User;
-  }
-
-  async update(user: User) {
-    await this.db.User.update(user, { where: { id: user.id } });
+  getId(user: User) {
+    return user.id;
   }
 }
