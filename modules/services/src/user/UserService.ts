@@ -11,11 +11,11 @@ export class UserService {
     this.userRepo = userRepo;
   }
 
-  async get(id: string): Promise<domain.User | null> {
-    return await this.userRepo.get(id);
+  async find(id: string): Promise<domain.User | null> {
+    return await this.userRepo.find(id);
   }
 
-  async all(): Promise<domain.User[]> {
-    return await this.userRepo.all();
+  async findAll(): Promise<domain.User[]> {
+    return await this.userRepo.findAll();
   }
 }

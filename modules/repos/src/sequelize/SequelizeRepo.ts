@@ -14,12 +14,12 @@ export abstract class SequelizeRepo<T extends object, M> implements Repo<T> {
 
   protected abstract get model(): StaticModel<M>;
 
-  async get(id: string | number) {
+  async find(id: string | number) {
     const entity = (await this.model.findByPk(id, { raw: true })) as unknown;
     return entity as T | null;
   }
 
-  async all() {
+  async findAll() {
     const entities = (await this.model.findAll({ raw: true })) as unknown;
     return entities as T[];
   }

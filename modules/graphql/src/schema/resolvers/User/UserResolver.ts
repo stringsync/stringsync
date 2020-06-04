@@ -17,11 +17,11 @@ export class UserResolver {
 
   @Query((returns) => User, { nullable: true })
   async user(@Args() args: UserArgs): Promise<domain.User | null> {
-    return await this.userService.get(args.id);
+    return await this.userService.find(args.id);
   }
 
   @Query((returns) => [User])
   async users(): Promise<domain.User[]> {
-    return await this.userService.all();
+    return await this.userService.findAll();
   }
 }

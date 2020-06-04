@@ -5,12 +5,12 @@ export abstract class MemoryRepo<T extends object> implements Repo<T> {
   pk = 'id';
   public readonly store: { [id: string]: T } = {};
 
-  async get(id: string) {
+  async find(id: string) {
     const entity = this.store[id] || null;
     return Promise.resolve(entity);
   }
 
-  async all() {
+  async findAll() {
     const entities = Object.values(this.store);
     return Promise.resolve(entities);
   }

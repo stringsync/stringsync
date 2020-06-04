@@ -14,9 +14,9 @@ export const testRepo = <T extends object>(config: TestRepoConfig<T>) => {
     await cleanup(repo);
   });
 
-  describe('all', () => {
+  describe('findAll', () => {
     it('returns an empty array initially', async () => {
-      const entities = await repo.all();
+      const entities = await repo.findAll();
       expect(entities).toHaveLength(0);
     });
 
@@ -24,7 +24,7 @@ export const testRepo = <T extends object>(config: TestRepoConfig<T>) => {
       const entity1 = await repo.create(entityFactory());
       const entity2 = await repo.create(entityFactory());
 
-      const entities = await repo.all();
+      const entities = await repo.findAll();
 
       expect(entities.sort()).toStrictEqual([entity1, entity2].sort());
     });
