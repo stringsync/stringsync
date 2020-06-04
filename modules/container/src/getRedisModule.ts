@@ -1,7 +1,7 @@
 import { ContainerModule } from 'inversify';
 import { GraphqlConfig } from '@stringsync/config';
 import IORedis, { Redis } from 'ioredis';
-import { TYPES } from '@stringsync/common';
+import { TYPES } from '@stringsync/container';
 
 export const getRedisModule = (config: GraphqlConfig) =>
   new ContainerModule((bind) => {

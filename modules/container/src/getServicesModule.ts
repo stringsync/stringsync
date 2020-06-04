@@ -1,6 +1,6 @@
 import { GraphqlConfig } from '@stringsync/config';
 import { ContainerModule } from 'inversify';
-import { TYPES } from '@stringsync/common';
+import { TYPES } from '@stringsync/container';
 import { HealthCheckerService, UserService } from '@stringsync/services';
 
 export const getServicesModule = (config: GraphqlConfig) =>

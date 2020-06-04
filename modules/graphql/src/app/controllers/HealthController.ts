@@ -1,7 +1,7 @@
 import { HealthCheckerService } from '@stringsync/services';
 import { inject, injectable } from 'inversify';
 import { RequestHandler } from 'express';
-import { TYPES } from '@stringsync/common';
+import { TYPES } from '@stringsync/container';
 import { Controller } from './types';
 
 @injectable()

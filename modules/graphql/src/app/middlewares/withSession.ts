@@ -4,7 +4,7 @@ import connectRedis from 'connect-redis';
 import { Handler } from 'express';
 import { Container } from 'inversify';
 import { GraphqlConfig } from '@stringsync/config';
-import { TYPES } from '@stringsync/common';
+import { TYPES } from '@stringsync/container';
 import { Redis } from 'ioredis';
 
 const MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000; // 14 days

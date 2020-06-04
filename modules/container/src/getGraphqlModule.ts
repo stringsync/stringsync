@@ -1,7 +1,6 @@
 import { ContainerModule } from 'inversify';
-import { UserResolver } from '../schema';
-import { HealthController } from '../app';
-import { TYPES } from '@stringsync/common';
+import { UserResolver, HealthController } from '@stringsync/graphql';
+import { TYPES } from './constants';
 
 export const getGraphqlModule = () =>
   new ContainerModule((bind) => {

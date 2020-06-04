@@ -2,7 +2,7 @@ import { User } from '@stringsync/domain';
 import { Db } from '@stringsync/sequelize';
 import { UserRepo } from '../types';
 import { injectable, inject } from 'inversify';
-import { TYPES } from '@stringsync/common';
+import { TYPES } from '@stringsync/container';
 
 @injectable()
 export class UserSequelizeRepo implements UserRepo {

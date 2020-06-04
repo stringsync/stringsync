@@ -1,6 +1,6 @@
 import { GraphqlConfig } from '@stringsync/config';
 import { ContainerModule } from 'inversify';
-import { TYPES } from '@stringsync/common';
+import { TYPES } from '@stringsync/container';
 import { UserMemoryRepo, UserSequelizeRepo, UserRepo } from '@stringsync/repos';
 
 export const getReposModule = (config: GraphqlConfig) => {

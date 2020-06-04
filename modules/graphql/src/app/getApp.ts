@@ -4,7 +4,7 @@ import { Container } from 'inversify';
 import { withSession, withGraphQL } from './middlewares';
 import { generateSchema } from '../schema';
 import { HealthController } from './controllers';
-import { TYPES } from '@stringsync/common';
+import { TYPES } from '@stringsync/container';
 
 export const getApp = (container: Container) => {
   const app = express();

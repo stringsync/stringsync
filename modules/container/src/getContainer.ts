@@ -1,6 +1,6 @@
 import { GraphqlConfig, getGraphqlConfig } from '@stringsync/config';
 import { Container } from 'inversify';
-import { TYPES } from '@stringsync/common';
+import { TYPES } from './constants';
 import { getReposModule } from './getReposModule';
 import { getServicesModule } from './getServicesModule';
 import { getGraphqlModule } from './getGraphqlModule';

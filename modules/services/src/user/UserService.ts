@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { TYPES } from '@stringsync/common';
+import { TYPES } from '@stringsync/container';
 import { UserRepo } from '@stringsync/repos';
 import * as domain from '@stringsync/domain';
 

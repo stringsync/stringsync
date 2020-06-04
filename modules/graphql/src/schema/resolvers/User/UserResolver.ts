@@ -1,6 +1,6 @@
 import { Resolver, Query, Args } from 'type-graphql';
 import { injectable, inject } from 'inversify';
-import { TYPES } from '@stringsync/common';
+import { TYPES } from '@stringsync/container';
 import { UserService } from '@stringsync/services';
 import { User } from './User';
 import { UserArgs } from './UserArgs';
