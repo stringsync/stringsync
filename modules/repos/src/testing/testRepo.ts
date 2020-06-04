@@ -1,7 +1,11 @@
 import { Repo } from '../types';
-import { RepoFactory, Cleanup } from './types';
+import { TestRepoConfig } from './types';
+import { omit } from 'lodash';
 
-export const testRepo = <T extends object>(repoFactory: RepoFactory<T>, cleanup: Cleanup<T>) => {
+const withoutUpdatedAt = (objs: any[]) => objs.map((obj) => omit(obj, 'updatedAt'));
+
+export const testRepo = <T extends object>(config: TestRepoConfig<T>) => {
+  const { repoFactory, entityFactory, cleanup } = config;
   let repo: Repo<T>;
 
   beforeEach(() => {
@@ -13,9 +17,22 @@ export const testRepo = <T extends object>(repoFactory: RepoFactory<T>, cleanup:
   });
 
   describe('all', () => {
-    it('returns an empty array', async () => {
-      const all = await repo.all();
-      expect(all).toHaveLength(0);
+    it('returns an empty array initially', async () => {
+      const entities = await repo.all();
+      expect(entities).toHaveLength(0);
+    });
+
+    it('returns all entities', async () => {
+      const entity1 = entityFactory();
+      const entity2 = entityFactory();
+      await repo.create(entity1);
+      await repo.create(entity2);
+
+      const entities = await repo.all();
+
+      const expected = withoutUpdatedAt([entity1, entity2]).sort();
+      const actual = withoutUpdatedAt(entities).sort();
+      expect(actual).toStrictEqual(expected);
     });
   });
 };

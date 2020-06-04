@@ -5,7 +5,7 @@ export interface User {
   username: string;
   email: string;
   encryptedPassword: string;
-  role: UserRoles;
+  role: UserRole;
   confirmationToken: string | null;
   confirmedAt: Date | null;
   resetPasswordToken: string | null;
@@ -13,7 +13,7 @@ export interface User {
   avatarUrl: string | null;
 }
 
-export enum UserRoles {
+export enum UserRole {
   STUDENT = 'STUDENT',
   TEACHER = 'TEACHER',
   ADMIN = 'ADMIN',

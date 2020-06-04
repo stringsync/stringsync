@@ -1,8 +1,8 @@
 import { ObjectType, Field, ID, registerEnumType } from 'type-graphql';
 import * as domain from '@stringsync/domain';
-import { UserRoles } from '@stringsync/domain';
+import { UserRole } from '@stringsync/domain';
 
-registerEnumType(UserRoles, { name: 'UserRoles' });
+registerEnumType(UserRole, { name: 'UserRoles' });
 
 @ObjectType()
 export class User implements domain.User {
@@ -24,8 +24,8 @@ export class User implements domain.User {
   @Field()
   encryptedPassword!: string;
 
-  @Field((type) => UserRoles)
-  role!: UserRoles;
+  @Field((type) => UserRole)
+  role!: UserRole;
 
   @Field((type) => String, { nullable: true })
   confirmationToken!: string | null;

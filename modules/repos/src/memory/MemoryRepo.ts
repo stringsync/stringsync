@@ -1,9 +1,9 @@
 import { Repo } from '../types';
+import { randStr } from '@stringsync/common';
 
 export abstract class MemoryRepo<T extends object> implements Repo<T> {
+  pk = 'id';
   public readonly store: { [id: string]: T } = {};
-
-  protected abstract getId(entity: T): string;
 
   async get(id: string) {
     const entity = this.store[id] || null;
@@ -34,7 +34,7 @@ export abstract class MemoryRepo<T extends object> implements Repo<T> {
   }
 
   async update(entity: T) {
-    const id = this.getId(entity);
+    const id = this.getId(entity) || this.getUniqId();
 
     if (!(id in this.store)) {
       throw new Error(`cannot update entity, does not exist: ${id}`);
@@ -43,5 +43,19 @@ export abstract class MemoryRepo<T extends object> implements Repo<T> {
     this.store[id] = { ...entity };
 
     return Promise.resolve();
+  }
+
+  protected getId(entity: T): string {
+    const id = entity[this.pk as keyof T];
+    return String(id);
+  }
+
+  protected getUniqId() {
+    const ids = new Set(Object.keys(this.store));
+    let id: string = randStr(8);
+    while (ids.has(id)) {
+      id = randStr(8);
+    }
+    return id;
   }
 }

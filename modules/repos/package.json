@@ -11,9 +11,11 @@
     "@stringsync/domain": "1.0.0",
     "@stringsync/sequelize": "1.0.0",
     "cls-hooked": "^4.2.2",
-    "inversify": "^5.0.1"
+    "inversify": "^5.0.1",
+    "lodash": "^4.17.15"
   },
   "devDependencies": {
-    "@types/cls-hooked": "^4.3.0"
+    "@types/cls-hooked": "^4.3.0",
+    "lodash": "^4.17.15"
   }
 }

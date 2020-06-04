@@ -1,3 +1,3 @@
-import { UserRoles } from './types';
+import { UserRole } from './types';
 
-export const USER_ROLES: UserRoles[] = [UserRoles.STUDENT, UserRoles.TEACHER, UserRoles.ADMIN];
+export const USER_ROLES: UserRole[] = [UserRole.STUDENT, UserRole.TEACHER, UserRole.ADMIN];

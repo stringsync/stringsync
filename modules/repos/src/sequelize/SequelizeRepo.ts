@@ -6,16 +6,13 @@ import { inject, injectable } from 'inversify';
 @injectable()
 export abstract class SequelizeRepo<T extends object, M> implements Repo<T> {
   public readonly db: Db;
+  pk = 'id';
 
   constructor(@inject(TYPES.Db) db: Db) {
     this.db = db;
   }
 
   protected abstract get model(): StaticModel<M>;
-
-  protected abstract get idName(): string;
-
-  protected abstract getId(entity: T): string;
 
   async get(id: string | number) {
     const entity = (await this.model.findByPk(id, { raw: true })) as unknown;
@@ -38,6 +35,11 @@ export abstract class SequelizeRepo<T extends object, M> implements Repo<T> {
 
   async update(entity: T) {
     const id = this.getId(entity);
-    await this.model.update(entity, { where: { [this.idName]: id } });
+    await this.model.update(entity, { where: { [this.pk]: id } });
+  }
+
+  protected getId(entity: T): string {
+    const id = entity[this.pk as keyof T];
+    return String(id);
   }
 }

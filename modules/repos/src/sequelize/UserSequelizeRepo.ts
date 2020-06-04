@@ -9,12 +9,4 @@ export class UserSequelizeRepo extends SequelizeRepo<User, UserModel> implements
   get model() {
     return this.db.User;
   }
-
-  get idName() {
-    return 'id';
-  }
-
-  getId(user: User) {
-    return user.id;
-  }
 }
