@@ -9,6 +9,7 @@
     "@stringsync/common": "1.0.0",
     "@stringsync/domain": "1.0.0",
     "@stringsync/sequelize": "1.0.0",
+    "@stringsync/container": "1.0.0",
     "cls-hooked": "^4.2.2",
     "inversify": "^5.0.1"
   },

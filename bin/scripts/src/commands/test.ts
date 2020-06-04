@@ -30,11 +30,8 @@ export default class Test extends Command {
           '--rm',
           'test',
           'yarn',
-          'sequelize',
-          'migrate',
-          '&&',
-          'yarn',
           'test',
+          '--runInBand',
           `--watchAll=${flags.watch}`,
         ].join(' '),
         {

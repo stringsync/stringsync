@@ -15,6 +15,12 @@ export abstract class MemoryRepo<T> implements Repo<T> {
     return Promise.resolve(entities);
   }
 
+  async destroyAll() {
+    for (const key of Object.keys(this.store)) {
+      delete this.store[key];
+    }
+  }
+
   async create(entity: T) {
     const id = this.getId(entity);
 

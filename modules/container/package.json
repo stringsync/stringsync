@@ -6,12 +6,16 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@stringsync/container": "1.0.0",
+    "@stringsync/config": "1.0.0",
     "@stringsync/graphql": "1.0.0",
     "@stringsync/repos": "1.0.0",
     "@stringsync/sequelize": "1.0.0",
     "@stringsync/services": "1.0.0",
     "inversify": "^5.0.1",
+    "ioredis": "^4.17.3",
     "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "@types/ioredis": "^4.16.3"
   }
 }

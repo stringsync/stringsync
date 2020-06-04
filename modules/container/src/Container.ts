@@ -1,6 +1,6 @@
 import { Container as InverisfyContainer } from 'inversify';
-import { getContainer } from './getContainer';
 import { getContainerConfig } from '@stringsync/config';
+import { getContainer } from './getContainer';
 
 let cache: InverisfyContainer;
 

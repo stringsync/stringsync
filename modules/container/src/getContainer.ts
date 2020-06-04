@@ -1,11 +1,11 @@
-import { ContainerConfig, getContainerConfig } from '@stringsync/config';
 import { Container } from 'inversify';
 import { TYPES } from './constants';
+import { ContainerConfig } from '@stringsync/config';
 import { getReposModule } from './getReposModule';
 import { getServicesModule } from './getServicesModule';
-import { getGraphqlModule } from './getGraphqlModule';
 import { getRedisModule } from './getRedisModule';
 import { getSequelizeModule } from './getSequelizeModule';
+import { getGraphqlModule } from './getGraphqlModule';
 
 export const getContainer = (config: ContainerConfig) => {
   const container = new Container();

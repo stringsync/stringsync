@@ -20,6 +20,10 @@ export class UserSequelizeRepo implements UserRepo {
     return (await this.db.User.findAll({ raw: true })) as User[];
   }
 
+  async destroyAll() {
+    await this.db.User.destroy({ truncate: true });
+  }
+
   async create(user: User) {
     return (await this.db.User.create(user, { raw: true })) as User;
   }
