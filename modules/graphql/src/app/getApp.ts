@@ -1,13 +1,15 @@
 import express from 'express';
 import cors from 'cors';
 import { Container } from 'inversify';
-import { getHealth } from './routes';
 import { withSession, withGraphQL } from './middlewares';
 import { generateSchema } from '../schema';
+import { HealthController } from './controllers';
+import { TYPES } from '@stringsync/common';
 
 export const getApp = (container: Container) => {
   const app = express();
   const schema = generateSchema(container);
+  const healthController = container.get<HealthController>(TYPES.HealthController);
 
   app.set('trust proxy', 1);
 
@@ -16,7 +18,7 @@ export const getApp = (container: Container) => {
   app.use('/graphql', withSession(container));
   app.use('/graphql', withGraphQL(container, schema));
 
-  app.get('/health', getHealth(container));
+  app.get('/health', healthController.get);
 
   return app;
 };
