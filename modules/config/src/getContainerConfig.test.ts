@@ -1,4 +1,4 @@
-import { getContainerConfig, ContainerConfig } from './getContainerConfig';
+import { getContainerConfig } from './getContainerConfig';
 
 it('runs without crashing', () => {
   const env = {
