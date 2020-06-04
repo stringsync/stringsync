@@ -3,10 +3,10 @@ import { Container } from 'inversify';
 import { GraphQLSchema } from 'graphql';
 import { Handler } from 'express';
 import { TYPES } from '@stringsync/container';
-import { GraphqlConfig } from '@stringsync/config';
+import { ContainerConfig } from '@stringsync/config';
 
 export const withGraphQL = (container: Container, schema: GraphQLSchema): Handler => (req, res) => {
-  const config = container.get<GraphqlConfig>(TYPES.GraphqlConfig);
+  const config = container.get<ContainerConfig>(TYPES.GraphqlConfig);
 
   const middleware = graphqlHTTP({
     schema,

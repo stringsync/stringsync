@@ -1,9 +1,9 @@
 import { ContainerModule } from 'inversify';
-import { GraphqlConfig } from '@stringsync/config';
+import { ContainerConfig } from '@stringsync/config';
 import { TYPES } from '@stringsync/container';
 import { connectToDb, Db } from '@stringsync/sequelize';
 
-export const getSequelizeModule = (config: GraphqlConfig) =>
+export const getSequelizeModule = (config: ContainerConfig) =>
   new ContainerModule((bind) => {
     const db = connectToDb({
       databaseName: config.DB_NAME,

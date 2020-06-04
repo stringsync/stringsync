@@ -1,4 +1,4 @@
 export * from './types';
 export * from './configFactory';
-export * from './getGraphqlConfig';
+export * from './getContainerConfig';
 export * from './getMigraterConfig';

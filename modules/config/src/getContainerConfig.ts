@@ -1,7 +1,7 @@
 import { configFactory } from './configFactory';
 import { ConfigKind } from './types';
 
-export const getGraphqlConfig = configFactory({
+export const getContainerConfig = configFactory({
   NODE_ENV: ConfigKind.STRING,
   PORT: ConfigKind.INT,
   WEB_URI: ConfigKind.STRING,
@@ -15,4 +15,4 @@ export const getGraphqlConfig = configFactory({
   SESSION_SECRET: ConfigKind.STRING,
 });
 
-export type GraphqlConfig = ReturnType<typeof getGraphqlConfig>;
+export type ContainerConfig = ReturnType<typeof getContainerConfig>;
