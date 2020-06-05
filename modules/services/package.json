@@ -8,6 +8,7 @@
   "dependencies": {
     "@stringsync/repos": "1.0.0",
     "@stringsync/sequelize": "1.0.0",
+    "@stringsync/container": "1.0.0",
     "inversify": "^5.0.1",
     "ioredis": "^4.17.3"
   }
