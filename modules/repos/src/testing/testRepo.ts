@@ -14,6 +14,16 @@ export const testRepo = <T extends object>(config: TestRepoConfig<T>) => {
     await cleanup(repo);
   });
 
+  describe('getId', () => {
+    it('returns a string identifier', async () => {
+      const entity = await repo.create(entityFactory());
+
+      const id = repo.getId(entity);
+
+      expect(Object.values(entity).includes(id)).toBe(true);
+    });
+  });
+
   describe('create', () => {
     it('creates an entity', async () => {
       const createdEntity = await repo.create(entityFactory());
