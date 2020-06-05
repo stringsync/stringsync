@@ -5,25 +5,25 @@ import { Db } from '@stringsync/sequelize';
 import { TYPES } from './constants';
 import { Redis } from 'ioredis';
 
-let cache: InverisfyContainer | undefined;
-
 export class Container {
+  static cache: InverisfyContainer | undefined;
+
   static get instance(): InverisfyContainer {
-    if (!cache) {
+    if (!Container.cache) {
       const config = getContainerConfig();
-      cache = getContainer(config);
+      Container.cache = getContainer(config);
     }
-    return cache;
+    return Container.cache;
   }
 
   static async reset() {
-    if (!cache) {
+    if (!Container.cache) {
       return;
     }
 
-    Container.cleanup(cache);
+    Container.cleanup(Container.cache);
 
-    cache = undefined;
+    Container.cache = undefined;
   }
 
   private static async cleanup(container: InverisfyContainer) {
