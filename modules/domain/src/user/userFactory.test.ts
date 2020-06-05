@@ -1,12 +1,12 @@
-import { userFactory } from './userFactory';
+import { buildUser } from './userFactory';
 import { randStr } from '@stringsync/common';
 
 it('runs without crashing', () => {
-  expect(userFactory).not.toThrow();
+  expect(buildUser).not.toThrow();
 });
 
 it('can accept attrs', () => {
   const username = randStr(10);
-  const user = userFactory({ username });
+  const user = buildUser({ username });
   expect(user.username).toBe(username);
 });

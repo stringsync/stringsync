@@ -1,7 +1,9 @@
 import { Repo } from '../types';
 import { randStr } from '@stringsync/common';
 import { set } from 'lodash';
+import { injectable } from 'inversify';
 
+@injectable()
 export abstract class MemoryRepo<T extends object> implements Repo<T> {
   idName = 'id';
   public readonly store: { [id: string]: T } = {};

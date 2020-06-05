@@ -1,7 +1,7 @@
 import { User, UserRole } from '@stringsync/domain';
 import { randStr } from '@stringsync/common';
 
-export const userFactory = (attrs: Partial<User> = {}): User => {
+export const buildUser = (attrs: Partial<User> = {}): User => {
   const now = new Date();
 
   return {

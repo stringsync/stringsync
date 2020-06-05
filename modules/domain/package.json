@@ -4,5 +4,8 @@
   "description": "Encapsulates business entities and core rules for @stringsync.",
   "main": "src/index.ts",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "@stringsync/common": "1.0.0"
+  }
 }
