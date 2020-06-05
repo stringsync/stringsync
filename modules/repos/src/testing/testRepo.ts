@@ -14,6 +14,17 @@ export const testRepo = <T extends object>(config: TestRepoConfig<T>) => {
     await cleanup(repo);
   });
 
+  describe('create', () => {
+    it('creates an entity', async () => {
+      const createdEntity = await repo.create(entityFactory());
+
+      const id = repo.getId(createdEntity);
+      const refetchedEntity = await repo.find(id);
+
+      expect(refetchedEntity).toStrictEqual(createdEntity);
+    });
+  });
+
   describe('findAll', () => {
     it('returns an empty array initially', async () => {
       const entities = await repo.findAll();

@@ -2,8 +2,13 @@ import { Repo } from '../types';
 import { randStr } from '@stringsync/common';
 
 export abstract class MemoryRepo<T extends object> implements Repo<T> {
-  pk = 'id';
+  idName = 'id';
   public readonly store: { [id: string]: T } = {};
+
+  getId(entity: T) {
+    const id = entity[this.idName as keyof T];
+    return String(id);
+  }
 
   async find(id: string) {
     const entity = this.store[id] || null;
@@ -43,11 +48,6 @@ export abstract class MemoryRepo<T extends object> implements Repo<T> {
     this.store[id] = { ...entity };
 
     return Promise.resolve();
-  }
-
-  protected getId(entity: T): string {
-    const id = entity[this.pk as keyof T];
-    return String(id);
   }
 
   protected getUniqId() {
