@@ -1,5 +1,6 @@
 import { Repo } from '../types';
 import { randStr } from '@stringsync/common';
+import { set } from 'lodash';
 
 export abstract class MemoryRepo<T extends object> implements Repo<T> {
   idName = 'id';
@@ -45,7 +46,11 @@ export abstract class MemoryRepo<T extends object> implements Repo<T> {
       throw new Error(`cannot update entity, does not exist: ${id}`);
     }
 
-    this.store[id] = { ...entity };
+    const updatedEntity = { ...entity };
+    if ('updatedAt' in updatedEntity) {
+      set(updatedEntity, 'updatedAt', new Date());
+    }
+    this.store[id] = updatedEntity;
 
     return Promise.resolve();
   }

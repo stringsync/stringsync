@@ -4,7 +4,7 @@ import { TYPES } from '@stringsync/container';
 import { inject, injectable } from 'inversify';
 
 @injectable()
-export abstract class SequelizeRepo<T extends object, M> implements Repo<T> {
+export abstract class SequelizeRepo<T extends object, M extends StaticModel<any>> implements Repo<T> {
   public readonly db: Db;
   idName = 'id';
 
@@ -12,7 +12,7 @@ export abstract class SequelizeRepo<T extends object, M> implements Repo<T> {
     this.db = db;
   }
 
-  protected abstract get model(): StaticModel<M>;
+  protected abstract get model(): M;
 
   getId(entity: T): string {
     const id = entity[this.idName as keyof T];

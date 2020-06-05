@@ -10,4 +10,4 @@ export type RepoFactory<T extends object> = () => Repo<T>;
 
 export type Cleanup<T extends object> = (repo: Repo<T>) => Promise<void>;
 
-export type EntityFactory<T extends object> = () => T;
+export type EntityFactory<T extends object> = (attrs?: Partial<T>) => T;

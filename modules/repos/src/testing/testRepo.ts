@@ -1,9 +1,14 @@
 import { Repo } from '../types';
 import { TestRepoConfig } from './types';
-import { omit } from 'lodash';
+import { omit, get } from 'lodash';
 
 export const testRepo = <T extends object>(config: TestRepoConfig<T>) => {
   const { repoFactory, entityFactory, cleanup } = config;
+
+  const ENTITY_METADATA = {
+    hasUpdatedAt: 'updatedAt' in entityFactory(),
+  };
+
   let repo: Repo<T>;
 
   beforeEach(() => {
@@ -33,6 +38,53 @@ export const testRepo = <T extends object>(config: TestRepoConfig<T>) => {
 
       expect(refetchedEntity).toStrictEqual(createdEntity);
     });
+
+    it('throws an error if the entity already exists', async () => {
+      const entity = await repo.create(entityFactory());
+
+      await expect(repo.create(entity)).rejects.toThrow();
+    });
+  });
+
+  describe('update', () => {
+    const perturbEntity = (entity: T, repo: Repo<T>): T => ({
+      ...entityFactory(),
+      [repo.idName]: repo.getId(entity),
+    });
+
+    it('updates an entity', async () => {
+      const entity = await repo.create(entityFactory());
+      const perturbedEntity = perturbEntity(entity, repo);
+
+      await repo.update(perturbedEntity);
+      const id = repo.getId(entity);
+      const updatedEntity = await repo.find(id);
+
+      const expected = omit(perturbedEntity, 'updatedAt');
+      const actual = omit(updatedEntity, 'updatedAt');
+      expect(expected).toStrictEqual(actual);
+    });
+
+    it('updates updatedAt', async () => {
+      if (!ENTITY_METADATA.hasUpdatedAt) {
+        return;
+      }
+
+      const past = new Date();
+      past.setDate(past.getDate() - 1);
+      const attrs: any = { updatedAt: past };
+
+      const entity = await repo.create(entityFactory(attrs));
+      const perturbedEntity = perturbEntity(entity, repo);
+
+      await repo.update(perturbedEntity);
+      const id = repo.getId(entity);
+      const updatedEntity = await repo.find(id);
+
+      const before = get(entity, 'updatedAt').getTime();
+      const after = get(updatedEntity, 'updatedAt').getTime();
+      expect(after).toBeGreaterThan(before);
+    });
   });
 
   describe('findAll', () => {
@@ -48,6 +100,18 @@ export const testRepo = <T extends object>(config: TestRepoConfig<T>) => {
       const entities = await repo.findAll();
 
       expect(entities.sort()).toStrictEqual([entity1, entity2].sort());
+    });
+  });
+
+  describe('destroyAll', () => {
+    it('destroys all entites from the underlying store', async () => {
+      await repo.create(entityFactory());
+      await repo.create(entityFactory());
+
+      await repo.destroyAll();
+
+      const entities = await repo.findAll();
+      expect(entities).toHaveLength(0);
     });
   });
 };
