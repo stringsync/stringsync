@@ -12,12 +12,3 @@ export type Db = {
 } & {
   [M in keyof StaticModels]: StaticModels[M];
 };
-
-export interface DbConfig {
-  namespaceName: string;
-  databaseName: string;
-  username: string;
-  password: string;
-  host: string;
-  port: number;
-}
