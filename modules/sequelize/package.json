@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@stringsync/sequelize": "1.0.0",
+    "@stringsync/config": "1.0.0",
     "bcrypt": "^4.0.1",
     "sequelize": "^5.21.11"
   },
