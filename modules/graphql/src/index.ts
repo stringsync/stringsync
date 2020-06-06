@@ -3,6 +3,7 @@ import { Container, TYPES } from '@stringsync/container';
 import { ContainerConfig } from '@stringsync/config';
 
 export * from './app';
+export * from './schema';
 
 if (require.main === module) {
   const config = Container.instance.get<ContainerConfig>(TYPES.ContainerConfig);
