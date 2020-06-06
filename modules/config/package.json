@@ -1,0 +1,11 @@
+{
+  "name": "@stringsync/config",
+  "version": "1.0.0",
+  "description": "Config utility for @stringsync.",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "@types/node": "^14.0.11"
+  }
+}

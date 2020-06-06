@@ -5,6 +5,7 @@ WORKDIR /stringsync
 COPY ./package.json .
 COPY ./yarn.lock .
 COPY ./modules/common/package.json ./modules/common/
+COPY ./modules/config/package.json ./modules/config/
 
 RUN yarn
 
