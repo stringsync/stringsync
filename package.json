@@ -7,10 +7,6 @@
     "modules/*"
   ],
   "scripts": {
-    "graphql": "yarn workspace @stringsync/graphql",
-    "sequelize": "yarn workspace @stringsync/sequelize",
-    "dev": "yarn sequelize dev && yarn graphql dev",
-    "pretest": "yarn sequelize migrate",
     "test": "node --expose-gc ./node_modules/.bin/jest"
   },
   "devDependencies": {
