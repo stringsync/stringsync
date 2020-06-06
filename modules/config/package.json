@@ -6,6 +6,7 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
+    "@stringsync/entrypoint": "1.0.0",
     "@types/node": "^14.0.11"
   }
 }

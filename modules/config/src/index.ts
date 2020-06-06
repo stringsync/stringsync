@@ -1,3 +1,5 @@
+import '@stringsy';
+
 export * from './types';
 export * from './configFactory';
 export * from './getContainerConfig';

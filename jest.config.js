@@ -4,6 +4,7 @@ module.exports = {
       tsConfig: 'tsconfig.json',
     },
   },
+  resetModules: true,
   roots: ['<rootDir>/modules'],
   transform: {
     '^.+\\.tsx?$': 'ts-jest',

@@ -6,6 +6,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@stringsync/common": "1.0.0"
+    "@stringsync/common": "1.0.0",
+    "@stringsync/entrypoint": "1.0.0"
   }
 }

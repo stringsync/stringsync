@@ -4,5 +4,8 @@
   "description": "Common resources for @stringsync.",
   "main": "src/index.ts",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "@stringsync/entrypoint": "1.0.0"
+  }
 }
