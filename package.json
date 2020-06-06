@@ -11,7 +11,7 @@
     "sequelize": "yarn workspace @stringsync/sequelize",
     "dev": "yarn sequelize dev && yarn graphql dev",
     "pretest": "yarn sequelize migrate",
-    "test": "jest"
+    "test": "node --expose-gc ./node_modules/.bin/jest"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^4.2.4",

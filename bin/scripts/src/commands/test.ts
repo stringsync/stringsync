@@ -32,6 +32,7 @@ export default class Test extends Command {
           'yarn',
           'test',
           '--runInBand',
+          '--logHeapUsage',
           `--watchAll=${flags.watch}`,
         ].join(' '),
         {
