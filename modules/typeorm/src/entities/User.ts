@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm';
 import * as domain from '@stringsync/domain';
 
-@Entity()
+@Entity({ name: 'users' })
 export class User implements domain.User {
   @PrimaryColumn()
   id!: string;

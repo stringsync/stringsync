@@ -1,9 +1,10 @@
 import { createConnection } from 'typeorm';
 import { ContainerConfig } from '@stringsync/config';
+import { SnakeNamingStrategy } from './SnakeNamingStrategy';
 import * as entities from './entities';
 
-export const connectToDb = async (config: ContainerConfig) =>
-  await createConnection({
+export const connectToDb = async (config: ContainerConfig) => {
+  return await createConnection({
     type: 'postgres',
     host: config.DB_HOST,
     port: config.DB_PORT,
@@ -13,4 +14,6 @@ export const connectToDb = async (config: ContainerConfig) =>
     entities: [entities.User],
     synchronize: false,
     logging: false,
+    namingStrategy: new SnakeNamingStrategy(),
   });
+};

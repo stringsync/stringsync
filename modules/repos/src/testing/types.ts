@@ -6,7 +6,7 @@ export type TestRepoConfig<T extends object> = {
   cleanup: Cleanup<T>;
 };
 
-export type RepoFactory<T extends object> = () => Repo<T>;
+export type RepoFactory<T extends object> = () => Repo<T> | Promise<Repo<T>>;
 
 export type Cleanup<T extends object> = (repo: Repo<T>) => Promise<void>;
 

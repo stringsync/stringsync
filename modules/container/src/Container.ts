@@ -1,15 +1,16 @@
 import { Container as InverisfyContainer } from 'inversify';
 import { getContainerConfig } from '@stringsync/config';
 import { getContainer } from './getContainer';
+import { Connection } from 'typeorm';
 import { TYPES } from './constants';
 
 export class Container {
   static cache: InverisfyContainer | undefined;
 
-  static get instance(): InverisfyContainer {
+  static async instance(): Promise<InverisfyContainer> {
     if (!Container.cache) {
       const config = getContainerConfig();
-      Container.cache = getContainer(config);
+      Container.cache = await getContainer(config);
     }
     return Container.cache;
   }
@@ -26,8 +27,8 @@ export class Container {
 
   private static async cleanup(container: InverisfyContainer) {
     // const redis = container.get<Redis>(TYPES.Redis);
-    // const db = container.get<Db>(TYPES.Db);
     // redis.disconnect();
-    // await db.sequelize.close();
+    const connection = container.get<Connection>(TYPES.Connection);
+    await connection.close();
   }
 }

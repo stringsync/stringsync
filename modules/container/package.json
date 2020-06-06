@@ -8,6 +8,7 @@
   "dependencies": {
     "@stringsync/config": "1.0.0",
     "@stringsync/entrypoint": "1.0.0",
-    "inversify": "^5.0.1"
+    "inversify": "^5.0.1",
+    "typeorm": "^0.2.25"
   }
 }

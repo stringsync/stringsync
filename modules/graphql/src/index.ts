@@ -1,12 +1,11 @@
 import { getApp } from './app';
-import { Container, TYPES } from '@stringsync/container';
-import { ContainerConfig } from '@stringsync/config';
+import { getContainerConfig } from '@stringsync/config';
 
 export * from './app';
 export * from './schema';
 
 if (require.main === module) {
-  const config = Container.instance.get<ContainerConfig>(TYPES.ContainerConfig);
+  const config = getContainerConfig();
   const app = getApp();
 
   app.listen(config.PORT, () => {

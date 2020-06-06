@@ -10,8 +10,8 @@ export const testRepo = <T extends object>(config: TestRepoConfig<T>) => {
 
   let repo: Repo<T>;
 
-  beforeEach(() => {
-    repo = repoFactory();
+  beforeEach(async () => {
+    repo = await repoFactory();
   });
 
   afterEach(async () => {
@@ -98,6 +98,7 @@ export const testRepo = <T extends object>(config: TestRepoConfig<T>) => {
 
       const entities = await repo.findAll();
 
+      expect(entities).toHaveLength(2);
       expect(entities.sort()).toStrictEqual([entity1, entity2].sort());
     });
   });

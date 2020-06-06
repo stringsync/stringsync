@@ -4,7 +4,7 @@ module.exports = {
       tsConfig: 'tsconfig.json',
     },
   },
-  resetModules: true,
+  resetModules: false,
   roots: ['<rootDir>/modules'],
   setupFilesAfterEnv: ['<rootDir>/modules/container/src/resetContainerAfterTestSuite.ts'],
   transform: {
