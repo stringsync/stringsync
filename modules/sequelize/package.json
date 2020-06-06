@@ -1,0 +1,30 @@
+{
+  "name": "@stringsync/sequelize",
+  "version": "1.0.0",
+  "description": "Sequelize integration for @stringsync.",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "env:check": "yarn ts-node ./scripts/check",
+    "migrate": "yarn env:check && yarn tsc && yarn sequelize db:migrate",
+    "reset": "yarn sequelize db:drop && yarn sequelize db:create",
+    "dev": "yarn env:check && yarn tsc && yarn reset && yarn sequelize db:migrate && yarn sequelize db:seed:all"
+  },
+  "dependencies": {
+    "@stringsync/config": "1.0.0",
+    "@stringsync/sequelize": "1.0.0",
+    "bcrypt": "^4.0.1",
+    "cls-hooked": "^4.2.2",
+    "pg": "^8.2.1",
+    "sequelize": "^5.21.11"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^3.0.0",
+    "@types/cls-hooked": "^4.3.0",
+    "@types/node": "^14.0.9",
+    "@types/sequelize": "^4.28.9",
+    "sequelize-cli": "^5.5.1",
+    "ts-node": "^8.10.2"
+  }
+}
