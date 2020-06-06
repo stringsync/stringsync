@@ -11,7 +11,7 @@ COPY ./modules/config/package.json ./modules/config/
 COPY ./modules/domain/package.json ./modules/domain/
 COPY ./modules/repos/package.json ./modules/repos/
 COPY ./modules/graphql/package.json ./modules/graphql/
-COPY ./modules/sequelize/package.json ./modules/sequelize/
+COPY ./modules/typeorm/package.json ./modules/typeorm/
 
 RUN yarn
 

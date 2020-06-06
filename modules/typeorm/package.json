@@ -1,0 +1,21 @@
+{
+  "name": "@stringsync/typeorm",
+  "version": "1.0.0",
+  "description": "TypeOrm management for @stringsync.",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "migrate": "ts-node ../../node_modules/typeorm/cli.js migration:run"
+  },
+  "dependencies": {
+    "@stringsync/config": "1.0.0",
+    "@stringsync/domain": "1.0.0",
+    "@stringsync/entrypoint": "1.0.0",
+    "pg": "^8.2.1",
+    "typeorm": "^0.2.25"
+  },
+  "devDependencies": {
+    "ts-node": "^8.10.2"
+  }
+}
