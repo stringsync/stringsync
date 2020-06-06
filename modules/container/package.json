@@ -1,0 +1,13 @@
+{
+  "name": "@stringsync/container",
+  "version": "1.0.0",
+  "description": "Inversion of control container for @stringsync.",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@stringsync/config": "1.0.0",
+    "@stringsync/entrypoint": "1.0.0",
+    "inversify": "^5.0.1"
+  }
+}

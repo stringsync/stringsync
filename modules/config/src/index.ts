@@ -1,4 +1,4 @@
-import '@stringsy';
+import '@stringsync/entrypoint';
 
 export * from './types';
 export * from './configFactory';

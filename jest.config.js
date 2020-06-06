@@ -6,6 +6,7 @@ module.exports = {
   },
   resetModules: true,
   roots: ['<rootDir>/modules'],
+  setupFilesAfterEnv: ['<rootDir>/modules/container/src/resetContainerAfterTestSuite.ts'],
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
