@@ -2,8 +2,8 @@ import { app } from './app';
 import { getContainerConfig } from '@stringsync/config';
 import { createContainer } from '@stringsync/container';
 
-export * from './app';
 export * from './schema';
+export * from './app';
 
 const main = async () => {
   const config = getContainerConfig();
