@@ -12,6 +12,7 @@
     "@stringsync/config": "1.0.0",
     "@stringsync/container": "1.0.0",
     "@stringsync/entrypoint": "1.0.0",
+    "@stringsync/services": "1.0.0",
     "connect-redis": "^4.0.4",
     "cors": "^2.8.5",
     "express": "^4.17.1",

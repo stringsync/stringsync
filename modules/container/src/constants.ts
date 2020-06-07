@@ -1,4 +1,5 @@
 export const TYPES = {
+  AuthResolver: Symbol('AuthResolver'),
   Connection: Symbol('Connection'),
   ContainerConfig: Symbol('ContainerConfig'),
   HealthCheckerService: Symbol('HealthCheckerService'),
