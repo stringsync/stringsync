@@ -1,10 +1,13 @@
 import { UserRepo } from '@stringsync/repos';
 import * as domain from '@stringsync/domain';
+import { injectable, inject } from 'inversify';
+import { TYPES } from '@stringsync/container';
 
+@injectable()
 export class UserService {
   readonly userRepo: UserRepo;
 
-  constructor(userRepo: UserRepo) {
+  constructor(@inject(TYPES.UserRepo) userRepo: UserRepo) {
     this.userRepo = userRepo;
   }
 

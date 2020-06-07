@@ -15,11 +15,11 @@
     "connect-redis": "^4.0.4",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "express-graphql": "^0.9.0",
     "express-session": "^1.17.1",
-    "graphql": "^15.0.0",
+    "graphql": "^14.4.1",
     "inversify": "^5.0.1",
-    "redis": "^3.0.2",
-    "type-graphql": "^1.0.0-rc.2",
+    "type-graphql": "^0.17.6",
     "uuid": "^8.1.0"
   },
   "devDependencies": {

@@ -21,7 +21,7 @@ export class User implements domain.User {
   @Column()
   encryptedPassword!: string;
 
-  @Column()
+  @Column({ type: 'text' })
   role!: domain.UserRole;
 
   @Column({ type: 'text', nullable: true })

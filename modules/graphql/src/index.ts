@@ -9,7 +9,7 @@ const main = async () => {
   const config = getContainerConfig();
   const container = await createContainer(config);
 
-  app(container).listen(config, () => {
+  app(container).listen(config.PORT, () => {
     console.log(`app running at http://localhost:${config.PORT}`);
   });
 };

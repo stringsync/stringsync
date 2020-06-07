@@ -9,7 +9,7 @@
   "scripts": {
     "graphql": "yarn workspace @stringsync/graphql",
     "typeorm": "yarn workspace @stringsync/typeorm",
-    "dev": "yarn graphql dev",
+    "dev": "yarn typeorm dev && yarn graphql dev",
     "pretest": "yarn typeorm migrate",
     "test": "node --expose-gc ./node_modules/.bin/jest"
   },

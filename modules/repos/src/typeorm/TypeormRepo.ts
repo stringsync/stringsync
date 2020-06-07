@@ -1,21 +1,21 @@
 import { Repo } from '../types';
-import { Connection, getRepository, Repository, ObjectType } from 'typeorm';
-import { injectable } from 'inversify';
+import { Connection, getRepository, ObjectType } from 'typeorm';
+import { injectable, inject } from 'inversify';
+import { TYPES } from '@stringsync/container';
 
 @injectable()
 export abstract class TypeormRepo<T extends object> implements Repo<T> {
+  abstract entityClass: ObjectType<T>;
   idName = 'id';
 
   readonly connection: Connection;
-  readonly entityClass: ObjectType<T>;
 
-  protected repo: Repository<T>;
-
-  constructor(connection: Connection, entityClass: ObjectType<T>) {
+  constructor(@inject(TYPES.Connection) connection: Connection) {
     this.connection = connection;
-    this.entityClass = entityClass;
+  }
 
-    this.repo = getRepository<T>(entityClass);
+  get repo() {
+    return getRepository(this.entityClass);
   }
 
   getId(entity: T) {

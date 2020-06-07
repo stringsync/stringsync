@@ -3,7 +3,6 @@ import { testRepo } from '../testing';
 import { buildUser } from '@stringsync/domain';
 import { Connection } from 'typeorm';
 import { TYPES, createContainer, cleanupContainer } from '@stringsync/container';
-import { User } from '@stringsync/typeorm';
 import { Container } from 'inversify';
 
 let container: Container;
@@ -19,7 +18,7 @@ afterEach(async () => {
 testRepo({
   repoFactory: async () => {
     const connection = container.get<Connection>(TYPES.Connection);
-    return new UserTypeormRepo(connection, User);
+    return new UserTypeormRepo(connection);
   },
   entityFactory: buildUser,
   cleanup: async () => {

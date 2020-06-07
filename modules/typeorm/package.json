@@ -6,7 +6,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "migrate": "ts-node ../../node_modules/typeorm/cli.js migration:run"
+    "migrate": "ts-node ../../node_modules/typeorm/cli.js migration:run",
+    "dev": "yarn migrate"
   },
   "dependencies": {
     "@stringsync/config": "1.0.0",

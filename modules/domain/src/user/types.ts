@@ -14,7 +14,7 @@ export interface User {
 }
 
 export enum UserRole {
-  STUDENT = 'STUDENT',
-  TEACHER = 'TEACHER',
-  ADMIN = 'ADMIN',
+  STUDENT = 'student',
+  TEACHER = 'teacher',
+  ADMIN = 'admin',
 }
