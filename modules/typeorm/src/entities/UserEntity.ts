@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryColumn } from 'typeorm';
 import * as domain from '@stringsync/domain';
 
 @Entity({ name: 'users' })
-export class User implements domain.User {
+export class UserEntity implements domain.User {
   @PrimaryColumn()
   id!: string;
 

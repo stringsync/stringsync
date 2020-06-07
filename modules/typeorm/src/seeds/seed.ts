@@ -1,7 +1,7 @@
 import { getContainerConfig } from '@stringsync/config';
 import * as bcrypt from 'bcrypt';
 import { connectToDb } from '../connectToDb';
-import { User } from '../entities';
+import { UserEntity } from '../entities';
 import { UserRole } from '@stringsync/domain';
 import { Connection } from 'typeorm';
 
@@ -11,7 +11,7 @@ const NOW = new Date();
 
 const seedUsers = async (connection: Connection) => {
   const encryptedPassword = await bcrypt.hash(PASSWORD, HASH_ROUNDS);
-  const userRepo = connection.getRepository(User);
+  const userRepo = connection.getRepository(UserEntity);
 
   const user1 = userRepo.create({
     username: 'jaredplaysguitar',

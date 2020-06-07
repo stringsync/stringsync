@@ -1,4 +1,4 @@
-import { createConnection, getConnection } from 'typeorm';
+import { createConnection } from 'typeorm';
 import { ContainerConfig } from '@stringsync/config';
 import { SnakeNamingStrategy } from './SnakeNamingStrategy';
 import * as entities from './entities';
@@ -11,7 +11,7 @@ export const connectToDb = async (config: ContainerConfig) => {
     username: config.DB_USERNAME,
     password: config.DB_PASSWORD,
     database: config.DB_NAME,
-    entities: [entities.User],
+    entities: [entities.UserEntity],
     synchronize: false,
     logging: false,
     namingStrategy: new SnakeNamingStrategy(),
