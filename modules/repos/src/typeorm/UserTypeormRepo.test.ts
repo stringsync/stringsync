@@ -1,13 +1,29 @@
 import { UserTypeormRepo } from './UserTypeormRepo';
 import { testRepo } from '../testing';
 import { buildUser } from '@stringsync/domain';
-import { User } from '@stringsync/typeorm';
-import { Container, TYPES } from '@stringsync/container';
 import { Connection } from 'typeorm';
+import { TYPES, createContainer, cleanupContainer } from '@stringsync/container';
+import { User } from '@stringsync/typeorm';
+import { Container } from 'inversify';
+
+let container: Container | undefined;
+
+beforeEach(async () => {
+  container = await createContainer();
+});
+
+afterEach(async () => {
+  if (container) {
+    await cleanupContainer(container);
+  }
+  container = undefined;
+});
 
 testRepo({
   repoFactory: async () => {
-    const container = await Container.instance();
+    if (!container) {
+      throw Error('no container found');
+    }
     const connection = container.get<Connection>(TYPES.Connection);
     return new UserTypeormRepo(connection, User);
   },

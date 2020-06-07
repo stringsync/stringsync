@@ -1,4 +1,4 @@
-import { createConnection } from 'typeorm';
+import { createConnection, getConnection } from 'typeorm';
 import { ContainerConfig } from '@stringsync/config';
 import { SnakeNamingStrategy } from './SnakeNamingStrategy';
 import * as entities from './entities';

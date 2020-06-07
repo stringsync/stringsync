@@ -51,7 +51,7 @@ export const testRepo = <T extends object>(config: TestRepoConfig<T>) => {
       [repo.idName]: repo.getId(entity),
     });
 
-    it.skip('updates an entity', async () => {
+    it('updates an entity', async () => {
       const entity = await repo.create(entityFactory());
       const perturbedEntity = perturbEntity(entity, repo);
 
@@ -61,10 +61,16 @@ export const testRepo = <T extends object>(config: TestRepoConfig<T>) => {
 
       const expected = { ...perturbedEntity };
       const actual = { ...updatedEntity };
+
+      if (ENTITY_METADATA.hasUpdatedAt) {
+        delete (expected as any).updatedAt;
+        delete (actual as any).updatedAt;
+      }
+
       expect(expected).toStrictEqual(actual);
     });
 
-    it.skip('updates updatedAt', async () => {
+    it('updates updatedAt', async () => {
       if (!ENTITY_METADATA.hasUpdatedAt) {
         return;
       }
