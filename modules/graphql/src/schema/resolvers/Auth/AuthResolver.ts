@@ -37,4 +37,14 @@ export class AuthResolver {
 
     return user;
   }
+
+  @Mutation((returns) => Boolean)
+  async logout(@Ctx() ctx: ResolverCtx): Promise<boolean> {
+    const wasLoggedIn = ctx.req.session.user.isLoggedIn;
+
+    // Clear the session user for next requests.
+    ctx.req.session.user = this.authService.toSessionUser(null);
+
+    return wasLoggedIn;
+  }
 }
