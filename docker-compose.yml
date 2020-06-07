@@ -31,7 +31,6 @@ services:
       SESSION_SECRET: keyboardcat
     volumes:
       - ./modules:/stringsync/modules
-      - /stringsync/modules/sequelize/dst/
     links:
       - db
       - redis
