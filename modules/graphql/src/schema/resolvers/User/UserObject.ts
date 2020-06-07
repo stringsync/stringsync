@@ -1,6 +1,7 @@
-import { ObjectType, Field, ID, registerEnumType } from 'type-graphql';
+import { ObjectType, Field, ID, registerEnumType, UseMiddleware } from 'type-graphql';
 import * as domain from '@stringsync/domain';
 import { UserRole } from '@stringsync/domain';
+import { IsDataOwner } from './IsDataOwner';
 
 registerEnumType(UserRole, { name: 'UserRoles' });
 
@@ -19,6 +20,7 @@ export class UserObject implements domain.User {
   username!: string;
 
   @Field()
+  @UseMiddleware(IsDataOwner)
   email!: string;
 
   @Field()
