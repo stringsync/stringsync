@@ -8,4 +8,9 @@ export class UserMemoryRepo extends MemoryRepo<User> implements UserRepo {
   getId(user: User) {
     return user.id;
   }
+
+  async findByUsernameOrEmail(usernameOrEmail: string) {
+    const users = await this.findAll();
+    return users.find((user) => user.email === usernameOrEmail || user.username === usernameOrEmail) || null;
+  }
 }

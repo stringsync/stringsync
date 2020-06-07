@@ -3,6 +3,7 @@ import { UserRepo } from '@stringsync/repos';
 import { TYPES } from '@stringsync/container';
 import { SessionUser } from './types';
 import { User, UserRole } from '@stringsync/domain';
+import * as bcrypt from 'bcrypt';
 
 @injectable()
 export class AuthService {
@@ -29,5 +30,14 @@ export class AuthService {
       return null;
     }
     return await this.userRepo.find(id);
+  }
+
+  async isPassword(usernameOrEmail: string, password: string) {
+    const user = await this.userRepo.findByUsernameOrEmail(usernameOrEmail);
+    if (!user) {
+      return false;
+    }
+
+    return await bcrypt.compare(password, user.encryptedPassword);
   }
 }

@@ -10,4 +10,6 @@ export interface Repo<T extends object> {
   update(entity: T): Promise<void>;
 }
 
-export interface UserRepo extends Repo<User> {}
+export interface UserRepo extends Repo<User> {
+  findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null>;
+}
