@@ -5,5 +5,6 @@ export const TYPES = {
   HealthController: Symbol('HealthController'),
   Redis: Symbol('Redis'),
   UserRepo: Symbol('UserRepo'),
+  UserResolver: Symbol('UserResolver'),
   UserService: Symbol('UserService'),
 };
