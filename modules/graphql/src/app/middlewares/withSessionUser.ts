@@ -1,17 +1,21 @@
-import { SessionUser, getNullSessionUser, toSessionUser } from '../session';
-import { Handler } from 'express';
+import { Handler, Request } from 'express';
 import { Container } from 'inversify';
-import { UserRepo } from '@stringsync/repos';
+import { AuthService } from '@stringsync/services';
 import { TYPES } from '@stringsync/container';
 
-export const withSessionUser = (container: Container): Handler => async (req, res, next) => {
-  if ('user' in req.session!) {
-    const userRepo = container.get<UserRepo>(TYPES.UserRepo);
-    const sessionUser: SessionUser = req.session!.user;
-    const user = await userRepo.find(sessionUser.id);
-    req.session!.user = user ? toSessionUser(user) : getNullSessionUser();
-  } else {
-    req.session!.user = getNullSessionUser();
+const getId = (req: Request): string => {
+  if (!('session' in req)) {
+    return '';
   }
+  if (!('user' in req.session!)) {
+    return '';
+  }
+  return req.session!.user.id || '';
+};
+
+export const withSessionUser = (container: Container): Handler => async (req, res, next) => {
+  const authService = container.get<AuthService>(TYPES.AuthService);
+  const id = getId(req);
+  req.session!.user = await authService.getSessionUser(id);
   next();
 };
