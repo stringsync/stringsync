@@ -4,7 +4,7 @@ import { TYPES } from '@stringsync/container';
 import { UserService } from '@stringsync/services';
 import { UserObject } from './UserObject';
 import { UserArgs } from './UserArgs';
-import * as domain from '@stringsync/domain';
+import { User } from '@stringsync/domain';
 
 @Resolver()
 @injectable()
@@ -16,12 +16,12 @@ export class UserResolver {
   }
 
   @Query((returns) => UserObject, { nullable: true })
-  async user(@Args() args: UserArgs): Promise<domain.User | null> {
+  async user(@Args() args: UserArgs): Promise<User | null> {
     return await this.userService.find(args.id);
   }
 
   @Query((returns) => [UserObject])
-  async users(): Promise<domain.User[]> {
+  async users(): Promise<User[]> {
     return await this.userService.findAll();
   }
 }
