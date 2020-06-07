@@ -5,7 +5,7 @@ import { UserRole } from '@stringsync/domain';
 registerEnumType(UserRole, { name: 'UserRoles' });
 
 @ObjectType()
-export class User implements domain.User {
+export class UserObject implements domain.User {
   @Field((type) => ID)
   id!: string;
 

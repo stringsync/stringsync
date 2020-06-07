@@ -4,7 +4,7 @@ import { AuthService } from '@stringsync/services';
 import { TYPES } from '@stringsync/container';
 import * as domain from '@stringsync/domain';
 import { ResolverCtx } from '../../types';
-import { User } from '../User';
+import { UserObject } from '../User';
 
 @Resolver()
 @injectable()
@@ -15,7 +15,7 @@ export class AuthResolver {
     this.authService = authService;
   }
 
-  @Query((returns) => User, { nullable: true })
+  @Query((returns) => UserObject, { nullable: true })
   async whoami(@Ctx() ctx: ResolverCtx): Promise<domain.User | null> {
     const id = ctx.req.session.id;
     return await this.authService.whoami(id);
