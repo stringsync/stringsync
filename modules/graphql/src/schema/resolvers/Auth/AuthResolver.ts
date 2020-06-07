@@ -1,4 +1,4 @@
-import { Resolver, Query, Ctx, Mutation, Arg } from 'type-graphql';
+import { Resolver, Query, Ctx, Mutation, Arg, UseMiddleware } from 'type-graphql';
 import { injectable, inject } from 'inversify';
 import { AuthService } from '@stringsync/services';
 import { TYPES } from '@stringsync/container';
@@ -6,7 +6,8 @@ import { User } from '@stringsync/domain';
 import { ResolverCtx } from '../../types';
 import { UserObject } from '../User';
 import { LoginInput } from './LoginInput';
-import { ForbiddenError } from '@stringsync/common';
+import { ForbiddenError, AuthRequirement } from '@stringsync/common';
+import { WithAuthRequirement } from '../../middlewares';
 
 @Resolver()
 @injectable()
@@ -24,6 +25,7 @@ export class AuthResolver {
   }
 
   @Mutation((returns) => UserObject)
+  @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_OUT))
   async login(@Arg('input') input: LoginInput, @Ctx() ctx: ResolverCtx): Promise<User> {
     const { usernameOrEmail, password } = input;
 
@@ -39,6 +41,7 @@ export class AuthResolver {
   }
 
   @Mutation((returns) => Boolean)
+  @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN))
   async logout(@Ctx() ctx: ResolverCtx): Promise<boolean> {
     const wasLoggedIn = ctx.req.session.user.isLoggedIn;
 
