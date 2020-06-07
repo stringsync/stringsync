@@ -1,4 +1,4 @@
-import { getApp } from './getApp';
+import { app } from './app';
 import { Container } from 'inversify';
 import { createContainer, cleanupContainer } from '@stringsync/container';
 
@@ -13,5 +13,5 @@ afterEach(async () => {
 });
 
 it('runs without crashing', () => {
-  expect(() => getApp(container)).not.toThrow();
+  expect(() => app(container)).not.toThrow();
 });

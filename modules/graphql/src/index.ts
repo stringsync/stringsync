@@ -1,4 +1,4 @@
-import { getApp } from './app';
+import { app } from './app';
 import { getContainerConfig } from '@stringsync/config';
 import { createContainer } from '@stringsync/container';
 
@@ -9,9 +9,7 @@ const main = async () => {
   const config = getContainerConfig();
   const container = await createContainer(config);
 
-  const app = getApp(container);
-
-  app.listen(config.PORT, () => {
+  app(container).listen(config, () => {
     console.log(`app running at http://localhost:${config.PORT}`);
   });
 };
