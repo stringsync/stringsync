@@ -5,6 +5,7 @@ import { TYPES } from '@stringsync/container';
 import cors from 'cors';
 import { withSession, withGraphQL } from './middlewares';
 import { generateSchema } from '../schema';
+import { withSessionUser } from './middlewares/withSessionUser';
 
 export const app = (container: Container) => {
   const app = express();
@@ -18,6 +19,7 @@ export const app = (container: Container) => {
   app.get('/health', healthController.get);
 
   app.use('/graphql', withSession(container));
+  app.use('/graphql', withSessionUser(container));
   app.use('/graphql', withGraphQL(container, schema));
 
   return app;
