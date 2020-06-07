@@ -4,7 +4,6 @@ import { buildUser } from '@stringsync/domain';
 import { User } from '@stringsync/typeorm';
 import { Container, TYPES } from '@stringsync/container';
 import { Connection } from 'typeorm';
-import { noop } from '@stringsync/common';
 
 testRepo({
   repoFactory: async () => {

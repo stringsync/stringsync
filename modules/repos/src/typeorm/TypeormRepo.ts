@@ -1,6 +1,8 @@
 import { Repo } from '../types';
 import { Connection, getRepository, Repository, ObjectType } from 'typeorm';
+import { injectable } from 'inversify';
 
+@injectable()
 export abstract class TypeormRepo<T extends object> implements Repo<T> {
   idName = 'id';
 
