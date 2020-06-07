@@ -1,10 +1,12 @@
-import { Resolver, Query, Ctx } from 'type-graphql';
+import { Resolver, Query, Ctx, Mutation, Arg } from 'type-graphql';
 import { injectable, inject } from 'inversify';
 import { AuthService } from '@stringsync/services';
 import { TYPES } from '@stringsync/container';
 import * as domain from '@stringsync/domain';
 import { ResolverCtx } from '../../types';
 import { UserObject } from '../User';
+import { LoginInput } from './LoginInput';
+import { ForbiddenError } from '@stringsync/common';
 
 @Resolver()
 @injectable()
@@ -17,7 +19,22 @@ export class AuthResolver {
 
   @Query((returns) => UserObject, { nullable: true })
   async whoami(@Ctx() ctx: ResolverCtx): Promise<domain.User | null> {
-    const id = ctx.req.session.id;
+    const id = ctx.req.session.user.id;
     return await this.authService.whoami(id);
+  }
+
+  @Mutation((returns) => UserObject)
+  async login(@Arg('input') input: LoginInput, @Ctx() ctx: ResolverCtx): Promise<domain.User> {
+    const { usernameOrEmail, password } = input;
+
+    const user = await this.authService.getAuthenticatedUser(usernameOrEmail, password);
+    if (!user) {
+      throw new ForbiddenError('wrong username, email, or password');
+    }
+
+    // Persist the session user info between requests.
+    ctx.req.session.user = this.authService.toSessionUser(user);
+
+    return user;
   }
 }
