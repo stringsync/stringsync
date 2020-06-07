@@ -14,6 +14,7 @@
     "@stringsync/entrypoint": "1.0.0",
     "express": "^4.17.1",
     "graphql": "^15.0.0",
+    "inversify": "^5.0.1",
     "type-graphql": "^1.0.0-rc.2"
   },
   "devDependencies": {
