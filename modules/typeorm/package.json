@@ -6,17 +6,20 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "seed": "ts-node ./src/seeds/seed.ts",
     "migrate": "ts-node ../../node_modules/typeorm/cli.js migration:run",
-    "dev": "yarn migrate"
+    "dev": "yarn migrate && yarn seed"
   },
   "dependencies": {
     "@stringsync/config": "1.0.0",
     "@stringsync/domain": "1.0.0",
     "@stringsync/entrypoint": "1.0.0",
+    "bcrypt": "^4.0.1",
     "pg": "^8.2.1",
     "typeorm": "^0.2.25"
   },
   "devDependencies": {
+    "@types/bcrypt": "^3.0.0",
     "ts-node": "^8.10.2"
   }
 }
