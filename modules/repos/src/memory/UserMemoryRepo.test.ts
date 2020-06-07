@@ -1,9 +1,9 @@
 import { UserMemoryRepo } from './UserMemoryRepo';
-import { testRepo } from '../testing';
+import { testRepo, testUserRepo } from '../testing';
 import { noop } from '@stringsync/common';
 import { buildUser } from '@stringsync/domain';
 
-testRepo({
+testUserRepo({
   repoFactory: () => new UserMemoryRepo(),
   entityFactory: buildUser,
   cleanup: noop,

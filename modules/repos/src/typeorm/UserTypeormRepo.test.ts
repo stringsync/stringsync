@@ -1,5 +1,5 @@
 import { UserTypeormRepo } from './UserTypeormRepo';
-import { testRepo } from '../testing';
+import { testUserRepo } from '../testing';
 import { buildUser } from '@stringsync/domain';
 import { Connection } from 'typeorm';
 import { TYPES, createContainer, cleanupContainer } from '@stringsync/container';
@@ -15,7 +15,7 @@ afterEach(async () => {
   await cleanupContainer(container);
 });
 
-testRepo({
+testUserRepo({
   repoFactory: async () => {
     const connection = container.get<Connection>(TYPES.Connection);
     return new UserTypeormRepo(connection);
