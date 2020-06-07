@@ -1,0 +1,18 @@
+{
+  "name": "@stringsync/services",
+  "version": "1.0.0",
+  "description": "Use cases for operations on @stringsync domain objects.",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@stringsync/container": "1.0.0",
+    "@stringsync/domain": "1.0.0",
+    "@stringsync/repos": "1.0.0",
+    "@stringsync/typeorm": "1.0.0",
+    "@types/ioredis": "^4.16.4",
+    "inversify": "^5.0.1",
+    "ioredis": "^4.17.3",
+    "typeorm": "^0.2.25"
+  }
+}
