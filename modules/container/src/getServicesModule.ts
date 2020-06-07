@@ -1,9 +1,10 @@
 import { ContainerConfig } from '@stringsync/config';
 import { ContainerModule } from 'inversify';
 import { TYPES } from '@stringsync/container';
-import { UserService } from '@stringsync/services';
+import { UserService, HealthCheckerService } from '@stringsync/services';
 
 export const getServicesModule = (config: ContainerConfig) =>
   new ContainerModule(async (bind) => {
+    bind<HealthCheckerService>(TYPES.HealthCheckerService).to(HealthCheckerService);
     bind<UserService>(TYPES.UserService).to(UserService);
   });
