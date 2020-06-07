@@ -18,14 +18,12 @@ afterEach(async () => {
 
 testRepo({
   repoFactory: async () => {
-    if (!container) {
-      throw Error('no container found');
-    }
     const connection = container.get<Connection>(TYPES.Connection);
     return new UserTypeormRepo(connection, User);
   },
   entityFactory: buildUser,
-  cleanup: async (repo) => {
-    await repo.destroyAll();
+  cleanup: async () => {
+    const connection = container.get<Connection>(TYPES.Connection);
+    await connection.synchronize(true);
   },
 });
