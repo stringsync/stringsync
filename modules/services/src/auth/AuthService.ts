@@ -23,4 +23,11 @@ export class AuthService {
     const user = await this.userRepo.find(id);
     return AuthService.toSessionUser(user);
   }
+
+  async whoami(id: string): Promise<User | null> {
+    if (!id) {
+      return null;
+    }
+    return await this.userRepo.find(id);
+  }
 }
