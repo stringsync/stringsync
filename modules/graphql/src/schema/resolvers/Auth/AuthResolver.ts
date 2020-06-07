@@ -2,7 +2,7 @@ import { Resolver, Query, Ctx, Mutation, Arg } from 'type-graphql';
 import { injectable, inject } from 'inversify';
 import { AuthService } from '@stringsync/services';
 import { TYPES } from '@stringsync/container';
-import * as domain from '@stringsync/domain';
+import { User } from '@stringsync/domain';
 import { ResolverCtx } from '../../types';
 import { UserObject } from '../User';
 import { LoginInput } from './LoginInput';
@@ -18,13 +18,13 @@ export class AuthResolver {
   }
 
   @Query((returns) => UserObject, { nullable: true })
-  async whoami(@Ctx() ctx: ResolverCtx): Promise<domain.User | null> {
+  async whoami(@Ctx() ctx: ResolverCtx): Promise<User | null> {
     const id = ctx.req.session.user.id;
     return await this.authService.whoami(id);
   }
 
   @Mutation((returns) => UserObject)
-  async login(@Arg('input') input: LoginInput, @Ctx() ctx: ResolverCtx): Promise<domain.User> {
+  async login(@Arg('input') input: LoginInput, @Ctx() ctx: ResolverCtx): Promise<User> {
     const { usernameOrEmail, password } = input;
 
     const user = await this.authService.getAuthenticatedUser(usernameOrEmail, password);
