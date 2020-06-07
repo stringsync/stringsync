@@ -1,7 +1,0 @@
-{
-  "compilerOptions": {
-    "outDir": "dst",
-  },
-  "extends": "../../tsconfig.json",
-  "include": ["src"],
-}
