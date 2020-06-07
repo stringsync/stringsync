@@ -6,5 +6,6 @@ export const generateSchema = (container: Container) => {
   return buildSchemaSync({
     resolvers: [UserResolver],
     container,
+    validate: false,
   });
 };
