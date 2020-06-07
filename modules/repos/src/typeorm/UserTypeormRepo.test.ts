@@ -6,17 +6,14 @@ import { TYPES, createContainer, cleanupContainer } from '@stringsync/container'
 import { User } from '@stringsync/typeorm';
 import { Container } from 'inversify';
 
-let container: Container | undefined;
+let container: Container;
 
 beforeEach(async () => {
   container = await createContainer();
 });
 
 afterEach(async () => {
-  if (container) {
-    await cleanupContainer(container);
-  }
-  container = undefined;
+  await cleanupContainer(container);
 });
 
 testRepo({

@@ -1,15 +1,11 @@
 import { createContainer } from './createContainer';
-import { getContainerConfig } from '@stringsync/config';
 import { Container } from 'inversify';
 import { cleanupContainer } from './cleanupContainer';
 
-let container: Container | undefined;
+let container: Container;
 
 afterEach(async () => {
-  if (container) {
-    cleanupContainer(container);
-  }
-  container = undefined;
+  await cleanupContainer(container);
 });
 
 it('runs without crashing', async () => {
