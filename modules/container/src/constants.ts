@@ -5,6 +5,7 @@ export const TYPES = {
   ContainerConfig: Symbol('ContainerConfig'),
   HealthCheckerService: Symbol('HealthCheckerService'),
   HealthController: Symbol('HealthController'),
+  NotificationService: Symbol('NotificationService'),
   Redis: Symbol('Redis'),
   UserRepo: Symbol('UserRepo'),
   UserResolver: Symbol('UserResolver'),
