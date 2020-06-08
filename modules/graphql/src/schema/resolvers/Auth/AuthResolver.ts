@@ -34,8 +34,7 @@ export class AuthResolver {
       throw new ForbiddenError('wrong username, email, or password');
     }
 
-    // Persist the session user info between requests.
-    ctx.req.session.user = this.authService.toSessionUser(user);
+    this.persistLogin(ctx, user);
 
     return user;
   }
@@ -45,9 +44,16 @@ export class AuthResolver {
   async logout(@Ctx() ctx: ResolverCtx): Promise<boolean> {
     const wasLoggedIn = ctx.req.session.user.isLoggedIn;
 
-    // Clear the session user for next requests.
-    ctx.req.session.user = this.authService.toSessionUser(null);
+    this.persistLogout(ctx);
 
     return wasLoggedIn;
+  }
+
+  private persistLogin(ctx: ResolverCtx, user: User) {
+    ctx.req.session.user = this.authService.toSessionUser(user);
+  }
+
+  private persistLogout(ctx: ResolverCtx) {
+    ctx.req.session.user = this.authService.toSessionUser(null);
   }
 }
