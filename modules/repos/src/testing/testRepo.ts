@@ -6,6 +6,7 @@ export const testRepo = <T extends object>(config: TestRepoConfig<T>) => {
     const { repoFactory, entityFactory, cleanup } = config;
 
     const ENTITY_METADATA = {
+      hasId: 'id' in entityFactory(),
       hasUpdatedAt: 'updatedAt' in entityFactory(),
     };
 
@@ -37,6 +38,19 @@ export const testRepo = <T extends object>(config: TestRepoConfig<T>) => {
         const refetchedEntity = await repo.find(id);
 
         expect(refetchedEntity).toStrictEqual(createdEntity);
+      });
+
+      it('assigns an id', async () => {
+        if (!ENTITY_METADATA.hasId) {
+          return;
+        }
+
+        const entity: any = entityFactory();
+        delete entity.id;
+
+        const createdEntity: any = await repo.create(entity);
+
+        expect(createdEntity.id).toBeTruthy();
       });
 
       it('throws an error if the entity already exists', async () => {

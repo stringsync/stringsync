@@ -5,7 +5,7 @@ export const buildUser = (attrs: Partial<User> = {}): User => {
   const now = new Date();
 
   return {
-    id: randStr(8),
+    id: Math.floor(Math.random() * 1000000),
     username: randStr(8),
     email: `${randStr(8)}@${randStr(5)}.com`,
     createdAt: now,

@@ -5,7 +5,7 @@ import { UserRole } from '@stringsync/domain';
 @Entity({ name: 'users' })
 export class UserEntity implements domain.User {
   @PrimaryGeneratedColumn()
-  id!: string;
+  id!: number;
 
   @Column()
   createdAt!: Date;

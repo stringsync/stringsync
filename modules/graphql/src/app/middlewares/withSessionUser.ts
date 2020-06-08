@@ -3,14 +3,14 @@ import { Container } from 'inversify';
 import { AuthService } from '@stringsync/services';
 import { TYPES } from '@stringsync/container';
 
-const getId = (req: Request): string => {
+const getId = (req: Request): number => {
   if (!('session' in req)) {
-    return '';
+    return 0;
   }
   if (!('user' in req.session!)) {
-    return '';
+    return 0;
   }
-  return req.session!.user.id || '';
+  return req.session!.user.id || 0;
 };
 
 export const withSessionUser = (container: Container): Handler => async (req, res, next) => {

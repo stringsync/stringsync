@@ -17,20 +17,20 @@ afterEach(async () => {
 
 describe('getSessionUser', () => {
   it('returns a null session user when the id is empty', async () => {
-    const sessionUser = await authService.getSessionUser('');
+    const sessionUser = await authService.getSessionUser(0);
 
     expect(sessionUser).toStrictEqual({
-      id: '',
+      id: 0,
       role: UserRole.STUDENT,
       isLoggedIn: false,
     });
   });
 
   it('returns a null session user when the id does not exist', async () => {
-    const sessionUser = await authService.getSessionUser('does-not-exist-id');
+    const sessionUser = await authService.getSessionUser(0);
 
     expect(sessionUser).toStrictEqual({
-      id: '',
+      id: 0,
       role: UserRole.STUDENT,
       isLoggedIn: false,
     });

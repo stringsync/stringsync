@@ -6,7 +6,7 @@ export class CreateUsersTable1591470450912 implements MigrationInterface {
 CREATE TYPE roles AS ENUM ('student', 'teacher', 'admin');
 
 CREATE TABLE users (
-    id TEXT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     email TEXT UNIQUE NOT NULL,
     username TEXT UNIQUE NOT NULL,
     encrypted_password TEXT NOT NULL,
@@ -20,7 +20,6 @@ CREATE TABLE users (
     role roles DEFAULT 'student'
 );
 
-CREATE TRIGGER trigger_generate_id BEFORE INSERT ON users FOR EACH ROW EXECUTE PROCEDURE unique_short_id();
 CREATE INDEX index_users_on_confirmation_token ON users(confirmation_token);
 CREATE INDEX index_users_on_reset_password_token ON users(reset_password_token);
     `);

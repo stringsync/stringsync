@@ -1,7 +1,7 @@
 import { UserRole } from '@stringsync/domain';
 
 export interface SessionUser {
-  id: string;
+  id: number;
   role: UserRole;
   isLoggedIn: boolean;
 }

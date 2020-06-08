@@ -9,7 +9,7 @@ export abstract class MemoryRepo<T extends object> implements Repo<T> {
 
   getId(entity: T) {
     const id = entity[this.idName as keyof T];
-    return String(id);
+    return Number(id);
   }
 
   async find(id: string) {
@@ -29,15 +29,15 @@ export abstract class MemoryRepo<T extends object> implements Repo<T> {
   }
 
   async create(entity: T) {
-    const id = this.getId(entity);
+    const id = this.getId(entity) || this.getUniqId();
 
     if (id in this.store) {
       throw new Error(`cannot create entity, already exists: ${id}`);
     }
 
-    this.store[id] = { ...entity };
+    this.store[id] = { ...entity, id };
 
-    return Promise.resolve({ ...entity });
+    return Promise.resolve({ ...entity, id });
   }
 
   async update(entity: T) {

@@ -11,7 +11,7 @@ export class UserService {
     this.userRepo = userRepo;
   }
 
-  async find(id: string): Promise<domain.User | null> {
+  async find(id: number): Promise<domain.User | null> {
     return await this.userRepo.find(id);
   }
 
