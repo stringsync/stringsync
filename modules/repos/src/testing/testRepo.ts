@@ -120,7 +120,8 @@ export const testRepo = <T extends object>(config: TestRepoConfig<T>) => {
         const entities = await repo.findAll();
 
         expect(entities).toHaveLength(2);
-        expect(entities.sort()).toStrictEqual([entity1, entity2].sort());
+        const byId = (a: any, b: any) => (a.id > b.id ? 1 : -1);
+        expect(entities.sort(byId)).toStrictEqual([entity1, entity2].sort(byId));
       });
     });
 

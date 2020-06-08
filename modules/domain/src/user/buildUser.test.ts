@@ -1,4 +1,4 @@
-import { buildUser } from './userFactory';
+import { buildUser } from './buildUser';
 import { randStr } from '@stringsync/common';
 
 it('runs without crashing', () => {

@@ -1,4 +1,4 @@
 export * from './types';
 export * from './constants';
-export * from './userFactory';
+export * from './buildUser';
 export * from './compareUserRoles';

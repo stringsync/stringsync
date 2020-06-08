@@ -1,11 +1,11 @@
 import { User, UserRole } from './';
-import { randStr } from '@stringsync/common';
+import { randStr, randNum } from '@stringsync/common';
 
 export const buildUser = (attrs: Partial<User> = {}): User => {
   const now = new Date();
 
   return {
-    id: Math.floor(Math.random() * 1000000),
+    id: randNum(0, 1000000),
     username: randStr(8),
     email: `${randStr(8)}@${randStr(5)}.com`,
     createdAt: now,

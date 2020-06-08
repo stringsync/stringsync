@@ -1,18 +1,18 @@
 import { Repo } from '../types';
-import { randStr } from '@stringsync/common';
+import { randStr, randNum } from '@stringsync/common';
 import { injectable } from 'inversify';
 
 @injectable()
 export abstract class MemoryRepo<T extends object> implements Repo<T> {
   idName = 'id';
-  public readonly store: { [id: string]: T } = {};
+  public readonly store: { [id: number]: T } = {};
 
   getId(entity: T) {
     const id = entity[this.idName as keyof T];
     return Number(id);
   }
 
-  async find(id: string) {
+  async find(id: number) {
     const entity = this.store[id] || null;
     return Promise.resolve(entity);
   }
@@ -24,7 +24,7 @@ export abstract class MemoryRepo<T extends object> implements Repo<T> {
 
   async destroyAll() {
     for (const key of Object.keys(this.store)) {
-      delete this.store[key];
+      delete this.store[Number(key)];
     }
   }
 
@@ -57,10 +57,9 @@ export abstract class MemoryRepo<T extends object> implements Repo<T> {
   }
 
   protected getUniqId() {
-    const ids = new Set(Object.keys(this.store));
-    let id: string = randStr(8);
-    while (ids.has(id)) {
-      id = randStr(8);
+    let id: number = randNum(1, 100000);
+    while (id in this.store) {
+      id = randNum(1, 100000);
     }
     return id;
   }
