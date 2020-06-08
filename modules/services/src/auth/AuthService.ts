@@ -4,7 +4,7 @@ import { TYPES } from '@stringsync/container';
 import { SessionUser } from './types';
 import { User, UserRole } from '@stringsync/domain';
 import * as bcrypt from 'bcrypt';
-import uuid from 'uuid';
+import * as uuid from 'uuid';
 
 @injectable()
 export class AuthService {

@@ -1,9 +1,10 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import * as domain from '@stringsync/domain';
+import { UserRole } from '@stringsync/domain';
 
 @Entity({ name: 'users' })
 export class UserEntity implements domain.User {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id!: string;
 
   @Column()
@@ -21,7 +22,7 @@ export class UserEntity implements domain.User {
   @Column()
   encryptedPassword!: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', default: UserRole.STUDENT })
   role!: domain.UserRole;
 
   @Column({ type: 'text', nullable: true })
