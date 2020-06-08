@@ -5,6 +5,7 @@ import { SessionUser } from './types';
 import { User, UserRole } from '@stringsync/domain';
 import * as bcrypt from 'bcrypt';
 import * as uuid from 'uuid';
+import { BadRequestError, NotFoundError } from '@stringsync/common';
 
 @injectable()
 export class AuthService {
@@ -40,9 +41,7 @@ export class AuthService {
     if (!user) {
       return null;
     }
-
     const isPassword = await bcrypt.compare(password, user.encryptedPassword);
-
     return isPassword ? user : null;
   }
 
@@ -58,5 +57,27 @@ export class AuthService {
     });
 
     return user;
+  }
+
+  async confirmEmail(id: string, confirmationToken: string, confirmedAt: Date): Promise<User> {
+    const user = await this.userRepo.find(id);
+
+    if (!user) {
+      throw new NotFoundError('user not found');
+    }
+    if (user.confirmedAt) {
+      throw new BadRequestError('invalid confirmation token');
+    }
+    if (!confirmationToken) {
+      throw new BadRequestError('invalid confirmation token');
+    }
+    if (user.confirmationToken !== confirmationToken) {
+      throw new BadRequestError('invalid confirmation token');
+    }
+
+    const confirmedUser = { ...user, confirmationToken: null, confirmedAt };
+    await this.userRepo.update(confirmedUser);
+
+    return confirmedUser;
   }
 }

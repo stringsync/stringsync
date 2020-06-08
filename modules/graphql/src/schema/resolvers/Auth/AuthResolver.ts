@@ -1,6 +1,6 @@
 import { Resolver, Query, Ctx, Mutation, Arg, UseMiddleware } from 'type-graphql';
 import { injectable, inject } from 'inversify';
-import { AuthService } from '@stringsync/services';
+import { AuthService, UserService } from '@stringsync/services';
 import { TYPES } from '@stringsync/container';
 import { User } from '@stringsync/domain';
 import { ResolverCtx } from '../../types';
@@ -9,6 +9,7 @@ import { LoginInput } from './LoginInput';
 import { ForbiddenError, AuthRequirement } from '@stringsync/common';
 import { WithAuthRequirement } from '../../middlewares';
 import { SignupInput } from './SignupInput';
+import { ConfirmEmailInput } from './ConfirmEmailInput';
 
 @Resolver()
 @injectable()
@@ -51,6 +52,14 @@ export class AuthResolver {
   async signup(@Arg('input') input: SignupInput, @Ctx() ctx: ResolverCtx): Promise<User> {
     const user = await this.authService.signup(input.username, input.email, input.password);
     this.persistLogin(ctx, user);
+    return user;
+  }
+
+  @Mutation((returns) => UserObject)
+  @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN))
+  async confirmEmail(@Arg('input') input: ConfirmEmailInput, @Ctx() ctx: ResolverCtx): Promise<User> {
+    const id = ctx.req.session.user.id;
+    const user = await this.authService.confirmEmail(id, input.confirmationToken, ctx.reqAt);
     return user;
   }
 
