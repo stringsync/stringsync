@@ -12,7 +12,8 @@
     "@stringsync/typeorm": "1.0.0",
     "inversify": "^5.0.1",
     "redis": "^3.0.2",
-    "typeorm": "^0.2.25"
+    "typeorm": "^0.2.25",
+    "uuid": "^8.1.0"
   },
   "devDependencies": {
     "@types/redis": "^2.8.22"

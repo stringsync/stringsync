@@ -4,10 +4,13 @@ import { TYPES } from '@stringsync/container';
 import { SessionUser } from './types';
 import { User, UserRole } from '@stringsync/domain';
 import * as bcrypt from 'bcrypt';
+import uuid from 'uuid';
 
 @injectable()
 export class AuthService {
   readonly userRepo: UserRepo;
+
+  static HASH_ROUNDS = 10;
 
   constructor(@inject(TYPES.UserRepo) userRepo: UserRepo) {
     this.userRepo = userRepo;
@@ -41,5 +44,19 @@ export class AuthService {
     const isPassword = await bcrypt.compare(password, user.encryptedPassword);
 
     return isPassword ? user : null;
+  }
+
+  async signup(username: string, email: string, password: string): Promise<User> {
+    const encryptedPassword = await bcrypt.hash(password, AuthService.HASH_ROUNDS);
+    const confirmationToken = uuid.v4();
+
+    const user = await this.userRepo.create({
+      username,
+      email,
+      encryptedPassword,
+      confirmationToken,
+    });
+
+    return user;
   }
 }
