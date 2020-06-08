@@ -1,12 +1,13 @@
 import { ObjectType, Field, ID, registerEnumType, UseMiddleware } from 'type-graphql';
-import * as domain from '@stringsync/domain';
-import { UserRole } from '@stringsync/domain';
+import { User, UserRole } from '@stringsync/domain';
 import { IsDataOwner } from './IsDataOwner';
+
+type PublicFacingUser = Omit<User, 'encryptedPassword' | 'confirmationToken' | 'confirmedAt' | 'resetPasswordToken'>;
 
 registerEnumType(UserRole, { name: 'UserRoles' });
 
 @ObjectType()
-export class UserObject implements domain.User {
+export class UserObject implements PublicFacingUser {
   @Field((type) => ID)
   id!: string;
 
@@ -23,20 +24,11 @@ export class UserObject implements domain.User {
   @UseMiddleware(IsDataOwner)
   email!: string;
 
-  @Field()
-  encryptedPassword!: string;
-
   @Field((type) => UserRole)
   role!: UserRole;
 
-  @Field((type) => String, { nullable: true })
-  confirmationToken!: string | null;
-
   @Field((type) => Date, { nullable: true })
   confirmedAt!: Date | null;
-
-  @Field((type) => String, { nullable: true })
-  resetPasswordToken!: string | null;
 
   @Field((type) => Date, { nullable: true })
   resetPasswordTokenSentAt!: Date | null;
