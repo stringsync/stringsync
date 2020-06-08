@@ -8,6 +8,7 @@ import { UserObject } from '../User';
 import { LoginInput } from './LoginInput';
 import { ForbiddenError, AuthRequirement } from '@stringsync/common';
 import { WithAuthRequirement } from '../../middlewares';
+import { SignupInput } from './SignupInput';
 
 @Resolver()
 @injectable()
@@ -27,9 +28,7 @@ export class AuthResolver {
   @Mutation((returns) => UserObject)
   @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_OUT))
   async login(@Arg('input') input: LoginInput, @Ctx() ctx: ResolverCtx): Promise<User> {
-    const { usernameOrEmail, password } = input;
-
-    const user = await this.authService.getAuthenticatedUser(usernameOrEmail, password);
+    const user = await this.authService.getAuthenticatedUser(input.usernameOrEmail, input.password);
     if (!user) {
       throw new ForbiddenError('wrong username, email, or password');
     }
@@ -43,10 +42,15 @@ export class AuthResolver {
   @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN))
   async logout(@Ctx() ctx: ResolverCtx): Promise<boolean> {
     const wasLoggedIn = ctx.req.session.user.isLoggedIn;
-
     this.persistLogout(ctx);
-
     return wasLoggedIn;
+  }
+
+  @Mutation((returns) => UserObject)
+  async signup(@Arg('input') input: SignupInput, @Ctx() ctx: ResolverCtx): Promise<User> {
+    const user = await this.authService.signup(input.username, input.email, input.password);
+    this.persistLogin(ctx, user);
+    return user;
   }
 
   private persistLogin(ctx: ResolverCtx, user: User) {
