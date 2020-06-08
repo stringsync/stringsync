@@ -81,19 +81,19 @@ export class AuthService {
     return confirmedUser;
   }
 
-  async resetConfirmationToken(id: string): Promise<void> {
+  async resetConfirmationToken(id: string): Promise<User | null> {
     const user = await this.userRepo.find(id);
 
-    // Fail silently to not let a client know the confirmation
-    // state of the user.
     if (!user) {
-      return;
+      return null;
     }
     if (user.confirmedAt) {
-      return;
+      return null;
     }
 
     user.confirmationToken = uuid.v4();
     await this.userRepo.update(user);
+
+    return user;
   }
 }
