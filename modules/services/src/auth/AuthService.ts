@@ -80,4 +80,20 @@ export class AuthService {
 
     return confirmedUser;
   }
+
+  async resetConfirmationToken(id: string): Promise<void> {
+    const user = await this.userRepo.find(id);
+
+    // Fail silently to not let a client know the confirmation
+    // state of the user.
+    if (!user) {
+      return;
+    }
+    if (user.confirmedAt) {
+      return;
+    }
+
+    user.confirmationToken = uuid.v4();
+    await this.userRepo.update(user);
+  }
 }
