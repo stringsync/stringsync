@@ -1,5 +1,6 @@
 import { Repo } from '../types';
 import { TestRepoConfig } from './types';
+import { sortBy } from 'lodash';
 
 export const testRepo = <T extends object>(config: TestRepoConfig<T>) => {
   describe('Repo', () => {
@@ -120,8 +121,7 @@ export const testRepo = <T extends object>(config: TestRepoConfig<T>) => {
         const entities = await repo.findAll();
 
         expect(entities).toHaveLength(2);
-        const byId = (a: any, b: any) => (a.id > b.id ? 1 : -1);
-        expect(entities.sort(byId)).toStrictEqual([entity1, entity2].sort(byId));
+        expect(sortBy(entities, 'id')).toStrictEqual(sortBy([entity1, entity2], 'id'));
       });
     });
 
