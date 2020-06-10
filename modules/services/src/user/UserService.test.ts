@@ -29,6 +29,6 @@ describe('findAll', () => {
 
     expect(users).toHaveLength(2);
     const byId = (a: any, b: any) => (a.id > b.id ? 1 : -1);
-    expect(users.sort()).toStrictEqual([user1, user2].sort());
+    expect(users.sort(byId)).toStrictEqual([user1, user2].sort(byId));
   });
 });
