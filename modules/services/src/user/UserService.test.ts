@@ -1,6 +1,7 @@
 import { UserService } from './UserService';
 import { UserRepo, UserMemoryRepo } from '@stringsync/repos';
 import { buildUser } from '@stringsync/domain';
+import { sortBy } from 'lodash';
 
 let userService: UserService;
 let userRepo: UserRepo;
@@ -28,7 +29,6 @@ describe('findAll', () => {
     const users = await userService.findAll();
 
     expect(users).toHaveLength(2);
-    const byId = (a: any, b: any) => (a.id > b.id ? 1 : -1);
-    expect(users.sort(byId)).toStrictEqual([user1, user2].sort(byId));
+    expect(sortBy(users, 'id')).toStrictEqual(sortBy([user1, user2], 'id'));
   });
 });
