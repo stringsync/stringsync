@@ -1,1 +1,0 @@
-export { resendConfirmationEmail } from './resendConfirmationEmail';
