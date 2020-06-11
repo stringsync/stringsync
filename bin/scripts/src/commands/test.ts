@@ -1,5 +1,5 @@
 import { Command, flags } from '@oclif/command';
-import { ROOT_PATH } from '../util/constants';
+import { ROOT_PATH, PROJECT_ARG } from '../util/constants';
 import { execSync } from 'child_process';
 import { getDockerComposeFile } from '../util';
 
@@ -10,9 +10,17 @@ export default class Test extends Command {
     watch: flags.boolean({ char: 'w', default: false }),
   };
 
+  static args = [
+    {
+      name: 'project',
+      required: true,
+      default: 'server',
+      options: ['server', 'web'],
+    },
+  ];
+
   async run() {
-    const { flags } = this.parse(Test);
-    const project = 'test';
+    const { flags, args } = this.parse(Test);
 
     execSync(['./bin/ss', 'build'].join(' '), {
       cwd: ROOT_PATH,
@@ -25,7 +33,9 @@ export default class Test extends Command {
         [
           'docker-compose',
           '-f',
-          getDockerComposeFile(project),
+          getDockerComposeFile(args.project),
+          '-p',
+          args.project,
           'run',
           '--rm',
           'test',
@@ -44,7 +54,7 @@ export default class Test extends Command {
       exit = 1;
     }
 
-    execSync(['./bin/ss', 'down', project].join(' '), {
+    execSync(['./bin/ss', 'down', args.project].join(' '), {
       cwd: ROOT_PATH,
       stdio: 'inherit',
     });

@@ -1,6 +1,6 @@
 import { Command, flags } from '@oclif/command';
 import { spawn } from 'child_process';
-import { ROOT_PATH } from '../util';
+import { ROOT_PATH, PROJECT_ARG } from '../util';
 
 export default class Db extends Command {
   static description = 'Runs a db console.';
@@ -9,10 +9,12 @@ export default class Db extends Command {
     help: flags.help({ char: 'h' }),
   };
 
-  async run() {
-    this.parse(Db);
+  static args = [PROJECT_ARG];
 
-    spawn('./bin/ss', ['exec', 'main', 'db', 'psql', '-U', 'stringsync'], {
+  async run() {
+    const { args } = this.parse(Db);
+
+    spawn('./bin/ss', ['exec', args.project, 'db', 'psql', '-U', 'stringsync'], {
       cwd: ROOT_PATH,
       stdio: 'inherit',
     });

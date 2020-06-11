@@ -111,7 +111,7 @@ export default class Sql extends Command {
     }
 
     // run the actual command against the sequelize library
-    spawn('./bin/ss', ['exec', 'main', 'scripts', 'yarn', 'sequelize', ...argv], {
+    spawn('./bin/ss', ['exec', 'main', 'graphql', 'yarn', 'sequelize', ...argv], {
       cwd: ROOT_PATH,
       stdio: 'inherit',
     });

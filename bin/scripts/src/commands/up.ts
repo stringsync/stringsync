@@ -14,7 +14,7 @@ export default class Up extends Command {
   async run() {
     const { args } = this.parse(Up);
 
-    spawn('docker-compose', ['-f', getDockerComposeFile(args.project), 'up', '--build', '-d'], {
+    spawn('docker-compose', ['-p', args.project, '-f', getDockerComposeFile(args.project), 'up', '--build', '-d'], {
       cwd: ROOT_PATH,
       stdio: 'inherit',
     });
