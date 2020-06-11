@@ -1,12 +1,13 @@
 import { authSuccess } from './authSuccess';
 import { AUTH_SUCCESS } from './constants';
 import { AuthUser } from './types';
+import { UserRole } from '@stringsync/domain';
 
 it('creates AUTH_SUCCESS actions', () => {
   const user: AuthUser = {
-    id: 'id',
+    id: 0,
     email: 'email',
-    role: 'admin',
+    role: UserRole.ADMIN,
     username: 'username',
     confirmedAt: new Date(),
   };

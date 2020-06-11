@@ -1,6 +1,6 @@
 import React from 'react';
 import { withLayout, Layouts } from '../../hocs';
-import { compose } from '../../common';
+import { compose } from '@stringsync/common';
 
 const enhance = compose(withLayout(Layouts.DEFAULT));
 

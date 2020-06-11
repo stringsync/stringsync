@@ -1,5 +1,5 @@
 import React from 'react';
-import { compose } from '../../common';
+import { compose } from '@stringsync/common';
 import { Layouts, withLayout } from '../../hocs';
 
 interface Props {}

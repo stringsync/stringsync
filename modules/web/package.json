@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^4.2.1",
+    "@stringsync/common": "1.0.0",
+    "@stringsync/domain": "1.0.0",
     "@types/react-router-dom": "^5.1.5",
     "@types/styled-components": "^5.1.0",
     "antd": "^4.3.3",

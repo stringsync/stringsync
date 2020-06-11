@@ -1,12 +1,9 @@
 import { getDevice } from './getDevice';
-import { DeepPartial } from '../../common/types';
+import { DeepPartial } from '@stringsync/common';
 import { Device } from './types';
 import { merge } from 'lodash';
 
-const assertDevice = (
-  actualDevice: Device,
-  partialDeviceExpectation: DeepPartial<Device>
-) => {
+const assertDevice = (actualDevice: Device, partialDeviceExpectation: DeepPartial<Device>) => {
   const falseDevice: Device = {
     amazon: {
       device: false,

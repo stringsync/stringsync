@@ -2,7 +2,7 @@ import React from 'react';
 import { RootState } from '../store';
 import { getTestStore } from './getTestStore';
 import Root from '../pages/Root/Root';
-import { DeepPartial } from '../common/types';
+import { DeepPartial } from '@stringsync/common';
 
 export const getTestComponent = function<P>(
   Component: React.ComponentType<P>,

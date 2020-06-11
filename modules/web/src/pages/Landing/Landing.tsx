@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { compose } from '../../common';
+import { compose } from '@stringsync/common';
 import { withLayout, Layouts } from '../../hocs';
 import { useEffectOnce } from '../../hooks';
 import { useClient } from '../../hooks/useClient';

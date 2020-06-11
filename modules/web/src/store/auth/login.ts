@@ -1,4 +1,3 @@
-import { LoginInput } from '../../common';
 import { ThunkAction } from '../';
 // import { message } from 'antd';
 import { getErrorMessages } from '../../util';
@@ -7,9 +6,7 @@ import { authPending } from './authPending';
 import { authFailure } from './authFailure';
 // import { authSuccess } from './authSuccess';
 
-export const login = (
-  input: LoginInput
-): ThunkAction<void, AuthActionTypes> => async (dispatch, getState, ctx) => {
+export const login = (input: any): ThunkAction<void, AuthActionTypes> => async (dispatch, getState, ctx) => {
   dispatch(authPending());
 
   try {

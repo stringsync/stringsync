@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { compose } from '../../common';
+import { compose } from '@stringsync/common';
 import { withLayout, Layouts } from '../../hocs';
 import { useLocation } from 'react-router';
 // import { EMAIL_CONF_TOKEN_QUERY_PARAM_NAME } from '../../common';

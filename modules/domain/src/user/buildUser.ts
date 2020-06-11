@@ -10,7 +10,7 @@ export const buildUser = (attrs: Partial<User> = {}): User => {
     email: `${randStr(8)}@${randStr(5)}.com`,
     createdAt: now,
     updatedAt: now,
-    role: 'student' as UserRole,
+    role: UserRole.STUDENT,
     avatarUrl: null,
     confirmationToken: null,
     confirmedAt: null,

@@ -3,25 +3,25 @@ import { Route } from 'react-router-dom';
 import Landing from '../pages/Landing/Landing';
 import Library from '../pages/Library/Library';
 import { withScrollRestoration } from './withScrollRestoration';
-import { compose, AuthRequirements } from '../common';
+import { compose, AuthRequirement } from '@stringsync/common';
 import { withAuthRequirement } from './withAuthRequirement';
 import { asReturnToRoute } from './asReturnToRoute';
 
 const WrappedLibrary = compose(
   asReturnToRoute,
-  withAuthRequirement(AuthRequirements.NONE),
+  withAuthRequirement(AuthRequirement.NONE),
   withScrollRestoration
 )(Library);
 
 const WrappedUpload = compose(
   asReturnToRoute,
-  withAuthRequirement(AuthRequirements.LOGGED_IN_AS_TEACHER),
+  withAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER),
   withScrollRestoration
 )(React.lazy(() => import('../pages/Upload/Upload')));
 
 const WrappedConfirmEmail = compose(
   asReturnToRoute,
-  withAuthRequirement(AuthRequirements.LOGGED_IN),
+  withAuthRequirement(AuthRequirement.LOGGED_IN),
   withScrollRestoration
 )(React.lazy(() => import('../pages/ConfirmEmail/ConfirmEmail')));
 

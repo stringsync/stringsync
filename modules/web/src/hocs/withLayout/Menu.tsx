@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { logout } from '../../store';
-import { compareUserRoles } from '../../common';
+import { compareUserRoles, UserRole } from '@stringsync/domain';
 import { useSelector } from '../../hooks';
 import { useHistory } from 'react-router';
 
@@ -36,7 +36,7 @@ export const Menu: React.FC<Props> = (props) => {
   const user = useSelector((state) => state.auth.user);
   const history = useHistory();
 
-  const isGtEqTeacher = compareUserRoles(user.role, 'teacher') >= 0;
+  const isGtEqTeacher = compareUserRoles(user.role, UserRole.TEACHER) >= 0;
 
   const [isModalVisible, setModalVisible] = useState(false);
   const showModal = useCallback(() => setModalVisible(true), [setModalVisible]);

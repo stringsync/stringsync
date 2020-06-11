@@ -1,4 +1,4 @@
-import { SignupInput, UserRoles } from '../../common';
+import { UserRole } from '@stringsync/domain';
 import { ThunkAction } from '../';
 import { AuthActionTypes } from './types';
 import { getErrorMessages } from '../../util';
@@ -10,7 +10,7 @@ interface SignupData {
     id: string;
     username: string;
     email: string;
-    role: UserRoles;
+    role: UserRole;
     confirmedAt: Date;
   };
 }
@@ -29,9 +29,7 @@ interface SignupData {
 //   }
 // `;
 
-export const signup = (
-  input: SignupInput
-): ThunkAction<void, AuthActionTypes> => async (dispatch, getState, ctx) => {
+export const signup = (input: any): ThunkAction<void, AuthActionTypes> => async (dispatch, getState, ctx) => {
   dispatch(authPending());
 
   try {

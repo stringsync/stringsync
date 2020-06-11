@@ -2,12 +2,13 @@ import { logout } from './logout';
 import { getTestStore } from '../../testing';
 import { AuthUser } from './types';
 import { getNullAuthState } from './getNullAuthState';
+import { UserRole } from '@stringsync/domain';
 
 const USER: AuthUser = {
-  id: 'id',
+  id: 123,
   username: 'username',
   email: 'email',
-  role: 'teacher',
+  role: UserRole.TEACHER,
   confirmedAt: new Date(),
 };
 

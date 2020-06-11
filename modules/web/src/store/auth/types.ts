@@ -1,17 +1,7 @@
-import { User } from '../../common';
-import {
-  CLEAR_AUTH,
-  CLEAR_AUTH_ERRORS,
-  AUTH_FAILURE,
-  AUTH_PENDING,
-  AUTH_SUCCESS,
-  CONFIRM_EMAIL,
-} from './constants';
+import { User } from '@stringsync/domain';
+import { CLEAR_AUTH, CLEAR_AUTH_ERRORS, AUTH_FAILURE, AUTH_PENDING, AUTH_SUCCESS, CONFIRM_EMAIL } from './constants';
 
-export type AuthUser = Pick<
-  User,
-  'id' | 'email' | 'username' | 'role' | 'confirmedAt'
->;
+export type AuthUser = Pick<User, 'id' | 'email' | 'username' | 'role' | 'confirmedAt'>;
 
 export interface AuthState {
   isPending: boolean;
