@@ -6,7 +6,6 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@stringsync/entrypoint": "1.0.0",
     "dataloader": "^2.0.0"
   }
 }

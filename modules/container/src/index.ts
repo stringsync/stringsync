@@ -1,4 +1,4 @@
-import '@stringsync/entrypoint';
+import 'reflect-metadata';
 
 export * from './constants';
 export * from './createContainer';

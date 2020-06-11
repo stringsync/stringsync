@@ -1,4 +1,5 @@
-node_modules
+.git
+**/node_modules
 common
 server
 web
@@ -7,3 +8,4 @@ e2e
 .devcontainer
 bin
 dst
+.DS_STORE

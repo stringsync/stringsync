@@ -8,5 +8,6 @@ module.exports = {
     '^.+\\.tsx?$': 'ts-jest',
   },
   resetModules: false,
+  testPathIgnorePatterns: ['node_modules', 'web'],
   roots: ['<rootDir>/modules'],
 };

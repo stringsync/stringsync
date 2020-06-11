@@ -7,10 +7,10 @@
   "private": true,
   "dependencies": {
     "@stringsync/config": "1.0.0",
-    "@stringsync/entrypoint": "1.0.0",
     "@stringsync/services": "1.0.0",
     "inversify": "^5.0.1",
     "redis": "^3.0.2",
+    "reflect-metadata": "^0.1.13",
     "typeorm": "^0.2.25"
   },
   "devDependencies": {

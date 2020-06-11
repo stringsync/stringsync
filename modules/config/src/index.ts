@@ -1,5 +1,3 @@
-import '@stringsync/entrypoint';
-
 export * from './types';
 export * from './configFactory';
 export * from './getContainerConfig';

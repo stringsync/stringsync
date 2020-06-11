@@ -1,3 +1,4 @@
+import '@stringsync/container';
 import { MemoryRepo } from './MemoryRepo';
 import { User } from '@stringsync/domain';
 import { UserRepo } from '../types';
