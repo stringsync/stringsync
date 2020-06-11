@@ -1,0 +1,13 @@
+version: "3.7"
+
+services:
+  test:
+    image: stringsync:latest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: test
+      REACT_APP_SERVER_URI: ""
+    volumes:
+      - ./modules:/stringsync/modules

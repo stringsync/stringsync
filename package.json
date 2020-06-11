@@ -11,8 +11,9 @@
     "typeorm": "yarn workspace @stringsync/typeorm",
     "web": "yarn workspace @stringsync/web",
     "dev": "yarn typeorm dev && yarn graphql dev",
-    "pretest": "yarn typeorm migrate",
-    "test": "node --expose-gc ./node_modules/.bin/jest"
+    "pretest:server": "yarn typeorm migrate",
+    "test:server": "node --expose-gc ./node_modules/.bin/jest",
+    "test:web": "yarn web test"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^4.2.4",

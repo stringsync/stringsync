@@ -9,7 +9,7 @@ export const getDockerComposeFile = (project: Project): string => {
     case 'server':
       return 'docker-compose.server.test.yml';
     case 'web':
-      return 'docker-compose.web.yml';
+      return 'docker-compose.web.test.yml';
     case 'test':
       return 'docker-compose.test.yml';
     default:

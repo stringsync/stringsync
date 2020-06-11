@@ -40,7 +40,7 @@ export default class Test extends Command {
           '--rm',
           'test',
           'yarn',
-          'test',
+          `test:${args.project}`,
           '--runInBand',
           '--logHeapUsage',
           `--watchAll=${flags.watch}`,
