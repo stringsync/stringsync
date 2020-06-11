@@ -109,12 +109,10 @@ const ConfirmEmail = enhance(() => {
 
   return (
     <div data-testid="confirm-email">
-      <Row type="flex" justify="center" align="middle">
+      <Row justify="center" align="middle">
         <Col {...SPANS}>
           <RoundedBox>
-            <Message>
-              Confirm {email} to gain access to exclusive features
-            </Message>
+            <Message>Confirm {email} to gain access to exclusive features</Message>
             {errors.length ? (
               <Button
                 block
@@ -126,13 +124,7 @@ const ConfirmEmail = enhance(() => {
                 Resend Confirmation Email
               </Button>
             ) : (
-              <Button
-                block
-                disabled={isAuthPending}
-                type="default"
-                onClick={confirmEmail}
-                loading={isLoading}
-              >
+              <Button block disabled={isAuthPending} type="default" onClick={confirmEmail} loading={isLoading}>
                 Confirm Email
               </Button>
             )}
@@ -141,7 +133,7 @@ const ConfirmEmail = enhance(() => {
       </Row>
 
       {errors.length ? (
-        <Row type="flex" justify="center" align="middle">
+        <Row justify="center" align="middle">
           <Col {...SPANS}>
             <StyledAlert
               closable

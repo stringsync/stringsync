@@ -4,7 +4,7 @@ import Icon from 'antd/lib/icon';
 import styled from 'styled-components';
 import { SpinProps } from 'antd/lib/spin';
 
-const StyledIcon = styled(Icon)`
+const StyledIcon: any = styled(Icon)`
   font-size: 5em;
 `;
 

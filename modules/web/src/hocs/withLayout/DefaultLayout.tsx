@@ -7,7 +7,7 @@ import { Logo } from '../../components/Logo';
 import { Link } from 'react-router-dom';
 import { Menu } from './Menu';
 
-const StyledLogo = styled(Logo)`
+const StyledLogo: any = styled(Logo)`
   font-size: 22px;
 `;
 
@@ -32,15 +32,13 @@ const Lane = styled.div`
 `;
 
 export const DefaultLayout: React.FC = (props) => {
-  const isLtEqMdViewport = useSelector(
-    (state) => state.viewport.xs || state.viewport.sm || state.viewport.md
-  );
+  const isLtEqMdViewport = useSelector((state) => state.viewport.xs || state.viewport.sm || state.viewport.md);
 
   return (
     <StyledLayout data-testid="default-layout">
       <StyledHeader>
         <Lane>
-          <Row type="flex" justify="space-between">
+          <Row justify="space-between">
             <Col>
               <Link to="library">
                 <StyledLogo />

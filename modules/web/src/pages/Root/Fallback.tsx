@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
-import { Icon, Spin } from 'antd';
+import { Spin } from 'antd';
 import { styled } from '../../util';
+import Icon from '@ant-design/icons';
 
 export const Fallback: React.FC = () => {
   // FIXME: If these styled components are created outside of this

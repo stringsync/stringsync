@@ -13,16 +13,6 @@ const WrappedLibrary = compose(
   withScrollRestoration
 )(Library);
 
-const WrappedSignup = compose(
-  withAuthRequirement(AuthRequirements.LOGGED_OUT),
-  withScrollRestoration
-)(React.lazy(() => import('../pages/Signup/Signup')));
-
-const WrappedLogin = compose(
-  withAuthRequirement(AuthRequirements.LOGGED_OUT),
-  withScrollRestoration
-)(React.lazy(() => import('../pages/Login/Login')));
-
 const WrappedUpload = compose(
   asReturnToRoute,
   withAuthRequirement(AuthRequirements.LOGGED_IN_AS_TEACHER),
@@ -40,8 +30,6 @@ export const Routes: React.FC = () => {
     <>
       <Route path="/" exact component={Landing} />
       <Route path="/library" component={WrappedLibrary} />
-      <Route path="/signup" component={WrappedSignup} />
-      <Route path="/login" component={WrappedLogin} />
       <Route path="/upload" component={WrappedUpload} />
       <Route path="/confirm-email" component={WrappedConfirmEmail} />
     </>

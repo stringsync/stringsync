@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { Button, Row, Icon, Col, Modal, Avatar, message } from 'antd';
+import { Button, Row, Col, Modal, Avatar, message } from 'antd';
+import Icon from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -39,9 +40,7 @@ export const Menu: React.FC<Props> = (props) => {
 
   const [isModalVisible, setModalVisible] = useState(false);
   const showModal = useCallback(() => setModalVisible(true), [setModalVisible]);
-  const hideModal = useCallback(() => setModalVisible(false), [
-    setModalVisible,
-  ]);
+  const hideModal = useCallback(() => setModalVisible(false), [setModalVisible]);
 
   const handleLogoutClick = () => {
     dispatch(logout());
@@ -53,15 +52,14 @@ export const Menu: React.FC<Props> = (props) => {
   const gutterPx = isLoggedIn ? 16 : 8;
 
   const isLibraryVisible = !isAuthPending && !isLtEqMdViewport && isLoggedIn;
-  const isUploadVisible =
-    !isAuthPending && !isLtEqMdViewport && isLoggedIn && isGtEqTeacher;
+  const isUploadVisible = !isAuthPending && !isLtEqMdViewport && isLoggedIn && isGtEqTeacher;
   const isLoginVisible = !isAuthPending && !isLoggedIn;
   const isSignupVisible = !isAuthPending && !isLoggedIn;
   const isSettingsVisible = !isAuthPending && isLoggedIn;
 
   return (
     <>
-      <Row type="flex" justify="center" align="middle" gutter={gutterPx}>
+      <Row justify="center" align="middle" gutter={gutterPx}>
         {isLibraryVisible ? (
           <Col>
             <Button type="link" size="large" shape="circle">
@@ -116,7 +114,7 @@ export const Menu: React.FC<Props> = (props) => {
           closable
           closeIcon={null}
           title={
-            <Row type="flex" gutter={8}>
+            <Row gutter={8}>
               <Col>
                 <Avatar icon="user" />{' '}
               </Col>
