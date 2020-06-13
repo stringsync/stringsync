@@ -8,53 +8,50 @@ StringSync Scripts.
 [![License](https://img.shields.io/npm/l/scripts.svg)](https://github.com/jaredjj3/string-sync/blob/master/package.json)
 
 <!-- toc -->
-
-- [scripts](#scripts)
-- [Usage](#usage)
-- [Commands](#commands)
-  <!-- tocstop -->
+* [scripts](#scripts)
+* [Usage](#usage)
+* [Commands](#commands)
+<!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g scripts
 $ ss COMMAND
 running command...
 $ ss (-v|--version|version)
-scripts/0.0.0 darwin-x64 node-v13.5.0
+scripts/0.0.0 darwin-x64 node-v14.3.0
 $ ss --help [COMMAND]
 USAGE
   $ ss COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
+* [`ss build`](#ss-build)
+* [`ss db [PROJECT]`](#ss-db-project)
+* [`ss down [PROJECT]`](#ss-down-project)
+* [`ss exec PROJECT SERVICE CMD`](#ss-exec-project-service-cmd)
+* [`ss help [COMMAND]`](#ss-help-command)
+* [`ss lint`](#ss-lint)
+* [`ss logs PROJECT [SERVICE]`](#ss-logs-project-service)
+* [`ss pretty`](#ss-pretty)
+* [`ss sql CMD`](#ss-sql-cmd)
+* [`ss test PROJECT`](#ss-test-project)
+* [`ss typegen [FILE]`](#ss-typegen-file)
+* [`ss up [PROJECT]`](#ss-up-project)
 
-- [`ss build [SERVICE]`](#ss-build-service)
-- [`ss db`](#ss-db)
-- [`ss down [PROJECT]`](#ss-down-project)
-- [`ss exec PROJECT SERVICE CMD`](#ss-exec-project-service-cmd)
-- [`ss help [COMMAND]`](#ss-help-command)
-- [`ss lint`](#ss-lint)
-- [`ss logs PROJECT [SERVICE]`](#ss-logs-project-service)
-- [`ss pretty`](#ss-pretty)
-- [`ss sql CMD`](#ss-sql-cmd)
-- [`ss test PROJECT`](#ss-test-project)
-- [`ss up [PROJECT]`](#ss-up-project)
-
-## `ss build [SERVICE]`
+## `ss build`
 
 Builds a StringSync service.
 
 ```
 USAGE
-  $ ss build [SERVICE]
+  $ ss build
 
 OPTIONS
   -h, --help     show CLI help
@@ -63,13 +60,13 @@ OPTIONS
 
 _See code: [src/commands/build.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/build.ts)_
 
-## `ss db`
+## `ss db [PROJECT]`
 
 Runs a db console.
 
 ```
 USAGE
-  $ ss db
+  $ ss db [PROJECT]
 
 OPTIONS
   -h, --help  show CLI help
@@ -124,7 +121,7 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.1
 
 ## `ss lint`
 
-Lints the entire project (except node_modules).
+Lints the entire project.
 
 ```
 USAGE
@@ -162,7 +159,7 @@ OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src/commands/push.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/push.ts)_
+_See code: [src/commands/pretty.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/pretty.ts)_
 
 ## `ss sql CMD`
 
@@ -181,7 +178,7 @@ _See code: [src/commands/sql.ts](https://github.com/jaredjj3/string-sync/blob/v0
 
 ## `ss test PROJECT`
 
-describe the command here
+Run all of the StringSync tests.
 
 ```
 USAGE
@@ -192,6 +189,22 @@ OPTIONS
 ```
 
 _See code: [src/commands/test.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/test.ts)_
+
+## `ss typegen [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ ss typegen [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/typegen.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/typegen.ts)_
 
 ## `ss up [PROJECT]`
 
@@ -206,5 +219,4 @@ OPTIONS
 ```
 
 _See code: [src/commands/up.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/up.ts)_
-
 <!-- commandsstop -->

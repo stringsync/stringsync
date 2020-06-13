@@ -1,5 +1,5 @@
 import { Command, flags } from '@oclif/command';
-import { ROOT_PATH, PROJECT_ARG } from '../util/constants';
+import { ROOT_PATH } from '../util/constants';
 import { execSync } from 'child_process';
 import { getDockerComposeFile } from '../util';
 
