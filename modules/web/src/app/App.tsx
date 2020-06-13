@@ -1,10 +1,10 @@
 import React from 'react';
-import { Button } from 'antd';
+import { Routes } from './routes';
 
 export const App: React.FC = () => {
   return (
     <div data-testid="app">
-      <Button>Hello</Button>
+      <Routes />
     </div>
   );
 };
