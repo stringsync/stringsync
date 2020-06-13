@@ -11,13 +11,17 @@ const StyledLogo: any = styled(Logo)`
 `;
 
 const StyledLayout = styled(Layout)`
-  min-height: 100vh;
+  && {
+    min-height: 100vh;
+  }
 `;
 
 const StyledHeader = styled(Layout.Header)`
-  background: #ffffff;
-  border-bottom: 1px solid #e8e8e8;
-  padding: 0 16px;
+  && {
+    background: #ffffff;
+    border-bottom: 1px solid #e8e8e8;
+    padding: 0 16px;
+  }
 `;
 
 const StyledFooter = styled(Layout.Footer)`
@@ -41,13 +45,15 @@ export const DefaultLayout: React.FC = (props) => {
           <Row justify="space-between">
             <Col>
               <Link to="library">
-                <StyledLogo />
-                {isLtEqMdViewport ? null : (
-                  <>
-                    <Divider type="vertical" />
-                    <Wordmark />
-                  </>
-                )}
+                <Row align="middle">
+                  <StyledLogo />
+                  {isLtEqMdViewport ? null : (
+                    <>
+                      <Divider type="vertical" />
+                      <Wordmark />
+                    </>
+                  )}
+                </Row>
               </Link>
             </Col>
             <Col>

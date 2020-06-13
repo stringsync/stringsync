@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, BrowserRouter } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import { Landing } from './Landing';
 import { Fallback } from './Fallback';
 import { compose } from '@stringsync/common';
@@ -10,12 +10,10 @@ const Signup = compose()(React.lazy(() => import('./Signup')));
 
 export const Routes: React.FC = () => {
   return (
-    <BrowserRouter>
-      <React.Suspense fallback={<Fallback />}>
-        <Route path="/" exact component={Landing} />
-        <Route path="/library" component={Library} />
-        <Route path="/signup" component={Signup} />
-      </React.Suspense>
-    </BrowserRouter>
+    <React.Suspense fallback={<Fallback />}>
+      <Route path="/" exact component={Landing} />
+      <Route path="/library" component={Library} />
+      <Route path="/signup" component={Signup} />
+    </React.Suspense>
   );
 };
