@@ -18,9 +18,7 @@ export const App: React.FC<Props> = (props) => {
       <StoreProvider store={props.store}>
         <ConfigProvider locale={enUS}>
           <ThemeProvider theme={theme}>
-            <BrowserRouter>
-              <Routes />
-            </BrowserRouter>
+            <BrowserRouter>{props.children}</BrowserRouter>
           </ThemeProvider>
         </ConfigProvider>
       </StoreProvider>
