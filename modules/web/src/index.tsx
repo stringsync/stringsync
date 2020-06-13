@@ -1,24 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Root from './pages/Root/Root';
-import App from './pages/App/App';
 import * as serviceWorker from './serviceWorker';
-import { getStore } from './store';
-import { Client } from './client';
+import { App } from './app';
+import { createStore } from './store';
 import { getWebConfig } from '@stringsync/config';
+import { Provider } from 'react-redux';
 
 const config = getWebConfig(process.env);
-const client = new Client(config.REACT_APP_SERVER_URI);
-const store = getStore(client);
+const store = createStore();
 
 ReactDOM.render(
-  <Root store={store} client={client}>
-    <App />
-  </Root>,
+  <React.StrictMode>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </React.StrictMode>,
   document.getElementById('root')
 );
 
-if (process.env.NODE_ENV === 'production') {
+if (config.NODE_ENV === 'production') {
   serviceWorker.register();
 } else {
   serviceWorker.unregister();

@@ -1,1 +1,0 @@
-export const SET_BREAKPOINT_NAME = 'viewport/SET_BREAKPOINT_NAME';
