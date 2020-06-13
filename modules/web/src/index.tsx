@@ -5,9 +5,9 @@ import App from './pages/App/App';
 import * as serviceWorker from './serviceWorker';
 import { getStore } from './store';
 import { Client } from './client';
-import { getConfig } from './util/getConfig';
+import { getWebConfig } from '@stringsync/config';
 
-const config = getConfig(process.env);
+const config = getWebConfig(process.env);
 const client = new Client(config.REACT_APP_SERVER_URI);
 const store = getStore(client);
 
