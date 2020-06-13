@@ -104,7 +104,7 @@ export const testRepo = <T extends object>(config: TestRepoConfig<T>) => {
 
         const before = (entity as any).updatedAt.getTime();
         const after = (updatedEntity as any).updatedAt.getTime();
-        expect(after).toBeGreaterThan(before);
+        expect(after).toBeGreaterThanOrEqual(before);
       });
     });
 
