@@ -1,22 +1,25 @@
 import React from 'react';
-import { Box } from '../../components/Box';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+import { FormPage } from '../../components/FormPage';
+import Form from 'antd/lib/form/Form';
 
-const Outer = styled.div`
-  margin: 0 auto;
-  max-width: 320px;
-`;
-
-const StyledBox = styled(Box)`
-  margin-top: 24px;
+const Center = styled.div`
+  text-align: center;
 `;
 
 const Signup: React.FC = () => {
   return (
-    <Outer data-testid="signup">
-      <StyledBox />
-      <StyledBox />
-    </Outer>
+    <div data-testid="signup">
+      <FormPage
+        main={<Form></Form>}
+        footer={
+          <Center>
+            Have an account? <Link to="login">login</Link>
+          </Center>
+        }
+      />
+    </div>
   );
 };
 
