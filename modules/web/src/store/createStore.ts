@@ -11,4 +11,10 @@ export const createStore = () => {
   });
 };
 
-export type AppStore = ReturnType<typeof createStore>;
+const dummyStore = createStore();
+
+export type AppStore = typeof dummyStore;
+
+export type AppDispatch = typeof dummyStore.dispatch;
+
+export type RootState = ReturnType<typeof dummyStore.getState>;
