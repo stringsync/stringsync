@@ -8,7 +8,7 @@ const Dummy: React.FC = () => <div></div>;
 it('renders without crashing', () => {
   const { container } = render(
     <Test>
-      <FormPage main={Dummy} />
+      <FormPage main={<Dummy />} />
     </Test>
   );
   expect(container).toBeInTheDocument();

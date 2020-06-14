@@ -33,7 +33,7 @@ const StyledH1 = styled.h1`
 `;
 
 type Props = {
-  wordmarked: boolean;
+  wordmarked?: boolean;
   main: JSX.Element;
   footer?: JSX.Element;
 };
