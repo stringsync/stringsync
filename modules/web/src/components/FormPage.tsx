@@ -1,4 +1,4 @@
-import React, { ComponentType } from 'react';
+import React from 'react';
 import { Box } from './Box';
 import styled from 'styled-components';
 import { Row, Col } from 'antd';
