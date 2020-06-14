@@ -6,14 +6,19 @@ import { Row, Col } from 'antd';
 const SPANS = {
   xs: 18,
   sm: 16,
-  md: 8,
-  lg: 7,
-  xl: 6,
+  md: 10,
+  lg: 8,
+  xl: 7,
   xxl: 6,
 };
 
 const StyledRow = styled(Row)`
   margin-top: 24px;
+`;
+
+const MaxWidth = styled.div`
+  max-width: 320px;
+  margin: 0 auto;
 `;
 
 const StyledBox = styled(Box)`
@@ -27,13 +32,13 @@ type Props = {
 
 export const FormPage: React.FC<Props> = (props) => {
   return (
-    <div data-testid="form-page">
-      <StyledRow justify="center">
-        <Col {...SPANS}>
-          <Box>{props.main}</Box>
+    <StyledRow data-testid="form-page" justify="center" align="middle">
+      <Col {...SPANS}>
+        <MaxWidth>
+          <StyledBox>{props.main}</StyledBox>
           {props.footer ? <StyledBox>{props.footer}</StyledBox> : null}
-        </Col>
-      </StyledRow>
-    </div>
+        </MaxWidth>
+      </Col>
+    </StyledRow>
   );
 };
