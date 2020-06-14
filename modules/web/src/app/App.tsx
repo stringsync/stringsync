@@ -13,7 +13,7 @@ type Props = {
 
 export const App: React.FC<Props> = (props) => {
   return (
-    <StoreProvider store={props.store} data-testid="app">
+    <StoreProvider data-testid="app" store={props.store}>
       <ConfigProvider locale={enUS}>
         <ThemeProvider theme={theme}>
           <BrowserRouter>{props.children}</BrowserRouter>
