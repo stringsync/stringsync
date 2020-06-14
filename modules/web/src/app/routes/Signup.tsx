@@ -7,16 +7,15 @@ const Outer = styled.div`
   max-width: 320px;
 `;
 
-const Inner = styled.div`
+const StyledBox = styled(Box)`
   margin-top: 24px;
 `;
 
 const Signup: React.FC = () => {
   return (
     <Outer data-testid="signup">
-      <Inner>
-        <Box />
-      </Inner>
+      <StyledBox />
+      <StyledBox />
     </Outer>
   );
 };
