@@ -1,8 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { deviceSlice } from './device';
 
 export const createStore = () => {
   return configureStore({
-    reducer: {},
+    reducer: {
+      device: deviceSlice.reducer,
+    },
   });
 };
 
