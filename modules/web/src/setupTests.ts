@@ -13,3 +13,7 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: jest.fn(),
   })),
 });
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
