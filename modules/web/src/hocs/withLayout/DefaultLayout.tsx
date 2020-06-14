@@ -6,10 +6,6 @@ import { Logo } from '../../components/Logo';
 import { Link } from 'react-router-dom';
 import { Menu } from './Menu';
 
-const StyledLogo: any = styled(Logo)`
-  font-size: 22px;
-`;
-
 const StyledLayout = styled(Layout)`
   && {
     min-height: 100vh;
@@ -46,7 +42,7 @@ export const DefaultLayout: React.FC = (props) => {
             <Col>
               <Link to="library">
                 <Row align="middle">
-                  <StyledLogo />
+                  <Logo size={22} />
                   {isLtEqMdViewport ? null : (
                     <>
                       <Divider type="vertical" />

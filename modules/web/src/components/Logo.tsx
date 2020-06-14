@@ -1,6 +1,5 @@
 import React from 'react';
 import Icon from '@ant-design/icons';
-import { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 
 const LogoSvg = () => (
   <svg width="1em" height="1em" fill="currentColor" viewBox="0 0 1156 1156">
@@ -27,6 +26,10 @@ const LogoSvg = () => (
   </svg>
 );
 
-export const Logo: React.FC<CustomIconComponentProps> = (props) => {
-  return <Icon component={LogoSvg} {...props} />;
+type Props = {
+  size: string | number;
+};
+
+export const Logo: React.FC<Props> = (props) => {
+  return <Icon component={LogoSvg} style={{ fontSize: props.size }} />;
 };
