@@ -13,14 +13,12 @@ type Props = {
 
 export const App: React.FC<Props> = (props) => {
   return (
-    <div data-testid="app">
-      <StoreProvider store={props.store}>
-        <ConfigProvider locale={enUS}>
-          <ThemeProvider theme={theme}>
-            <BrowserRouter>{props.children}</BrowserRouter>
-          </ThemeProvider>
-        </ConfigProvider>
-      </StoreProvider>
-    </div>
+    <StoreProvider store={props.store} data-testid="app">
+      <ConfigProvider locale={enUS}>
+        <ThemeProvider theme={theme}>
+          <BrowserRouter>{props.children}</BrowserRouter>
+        </ThemeProvider>
+      </ConfigProvider>
+    </StoreProvider>
   );
 };

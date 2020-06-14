@@ -13,9 +13,7 @@ const BREAKPOINT_QUERIES = [
 
 const BREAKPOINTS: Breakpoint[] = ['xs', 'sm', 'md', 'lg', 'xl'];
 
-interface Props {}
-
-export const StoreViewportSync: React.FC<Props> = (props) => {
+export const ViewportSync: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const breakpoint = useSelector<RootState, Breakpoint>((state) => state.viewport.breakpoint);
   const nextBreakpoint = useMedia(BREAKPOINT_QUERIES, BREAKPOINTS, 'xxl');
