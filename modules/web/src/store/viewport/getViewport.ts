@@ -1,7 +1,7 @@
 import { Breakpoint, Viewport } from './types';
 
 export const getViewport = (breakpoint: Breakpoint): Viewport => {
-  const state = {
+  const viewport = {
     xs: false,
     sm: false,
     md: false,
@@ -10,6 +10,6 @@ export const getViewport = (breakpoint: Breakpoint): Viewport => {
     xxl: false,
     breakpoint,
   };
-  state[breakpoint] = true;
-  return state;
+  viewport[breakpoint] = true;
+  return viewport;
 };
