@@ -1,12 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { deviceSlice } from './device';
 import { viewportSlice } from './viewport';
+import { authSlice } from './auth';
 
 export const createStore = () => {
   return configureStore({
     reducer: {
       device: deviceSlice.reducer,
       viewport: viewportSlice.reducer,
+      auth: authSlice.reducer,
     },
   });
 };

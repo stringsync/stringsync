@@ -2,6 +2,8 @@ import React from 'react';
 import { Box } from './Box';
 import styled from 'styled-components';
 import { Row, Col } from 'antd';
+import { Link } from 'react-router-dom';
+import { Wordmark } from './Wordmark';
 
 const SPANS = {
   xs: 18,
@@ -25,7 +27,13 @@ const StyledBox = styled(Box)`
   margin-top: 24px;
 `;
 
+const StyledH1 = styled.h1`
+  text-align: center;
+  font-size: 32px;
+`;
+
 type Props = {
+  wordmarked: boolean;
   main: JSX.Element;
   footer?: JSX.Element;
 };
@@ -35,7 +43,16 @@ export const FormPage: React.FC<Props> = (props) => {
     <StyledRow data-testid="form-page" justify="center" align="middle">
       <Col {...SPANS}>
         <MaxWidth>
-          <StyledBox>{props.main}</StyledBox>
+          <StyledBox>
+            {props.wordmarked ? (
+              <Link to="library">
+                <StyledH1>
+                  <Wordmark />
+                </StyledH1>
+              </Link>
+            ) : null}
+            {props.main}
+          </StyledBox>
           {props.footer ? <StyledBox>{props.footer}</StyledBox> : null}
         </MaxWidth>
       </Col>

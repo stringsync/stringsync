@@ -2,22 +2,20 @@ import React, { useState, useCallback } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { FormPage } from '../../components/FormPage';
-import { Wordmark } from '../../components/Wordmark';
 import { Form, Input, Button } from 'antd';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
 
 const Center = styled.div`
   text-align: center;
 `;
 
-const StyledH1 = styled.h1`
-  text-align: center;
-  font-size: 32px;
-`;
-
 export const Login: React.FC = () => {
   const [form] = Form.useForm();
+
   const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
+  const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
 
   const onUsernameOrEmailChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,20 +33,28 @@ export const Login: React.FC = () => {
   return (
     <div data-testid="signup">
       <FormPage
+        wordmarked
         main={
           <>
-            <StyledH1>
-              <Wordmark></Wordmark>
-            </StyledH1>
             <Form form={form}>
               <Form.Item name="username-or-email">
-                <Input placeholder="username or email" value={usernameOrEmail} onChange={onUsernameOrEmailChange} />
+                <Input
+                  placeholder="username or email"
+                  value={usernameOrEmail}
+                  onChange={onUsernameOrEmailChange}
+                  disabled={isAuthPending}
+                />
               </Form.Item>
               <Form.Item name="password">
-                <Input.Password placeholder="username or email" value={password} onChange={onPasswordChange} />
+                <Input.Password
+                  placeholder="username or email"
+                  value={password}
+                  onChange={onPasswordChange}
+                  disabled={isAuthPending}
+                />
               </Form.Item>
               <Form.Item>
-                <Button block type="primary" htmlType="submit">
+                <Button block type="primary" htmlType="submit" disabled={isAuthPending}>
                   login
                 </Button>
               </Form.Item>
