@@ -1,10 +1,13 @@
 import { Fetch } from './types';
+import { injectable, inject } from 'inversify';
+import { TYPES } from '@stringsync/container';
 
+@injectable()
 export class GraphqlClient {
   public readonly uri: string;
   public readonly fetch: Fetch;
 
-  constructor(uri: string, fetch: Fetch) {
+  constructor(@inject(TYPES.GraphqlServerUri) uri: string, @inject(TYPES.Fetch) fetch: Fetch) {
     this.uri = uri;
     this.fetch = fetch;
   }

@@ -7,9 +7,7 @@ import { getReposModule } from './getReposModule';
 import { getServicesModule } from './getServicesModule';
 import { getGraphqlModule } from './getGraphqlModule';
 
-const DEFAULT_CONFIG = getContainerConfig(process.env);
-
-export const createContainer = async (config: ContainerConfig = DEFAULT_CONFIG) => {
+export const createContainer = async (config: ContainerConfig = getContainerConfig()) => {
   const container = new Container();
 
   container.bind<ContainerConfig>(TYPES.ContainerConfig).toConstantValue(config);
