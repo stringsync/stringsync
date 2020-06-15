@@ -1,5 +1,5 @@
 import { Command, flags } from '@oclif/command';
-import { spawnSync } from 'child_process';
+import { execSync } from 'child_process';
 import { ROOT_PATH } from '../util';
 import fetch from 'node-fetch';
 
@@ -21,15 +21,15 @@ export default class Typegen extends Command {
 
     if (!wasGraphqlUp) {
       this.log('temporarily bringing up main project');
-      spawnSync('./bin/ss', ['up'], { cwd: ROOT_PATH });
+      execSync('./bin/ss up', { cwd: ROOT_PATH, stdio: 'inherit' });
       await this.waitForGraphql();
     }
 
-    spawnSync('yarn', ['web', 'typegen'], { cwd: ROOT_PATH, stdio: 'inherit' });
+    execSync('yarn web typegen', { cwd: ROOT_PATH, stdio: 'inherit' });
 
     if (!wasGraphqlUp) {
       this.log('bringing down main project');
-      spawnSync('./bin/ss', ['down'], { cwd: ROOT_PATH });
+      execSync('./bin/ss down', { cwd: ROOT_PATH, stdio: 'inherit' });
     }
   }
 
