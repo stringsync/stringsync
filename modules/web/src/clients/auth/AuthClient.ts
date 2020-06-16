@@ -1,5 +1,5 @@
 import { GraphqlClient } from '../graphql';
-import { Query, Mutation, LoginInput } from '../graphqlTypes';
+import { Query, Mutation, LoginInput, SignupInput } from '../graphqlTypes';
 import { gql } from '../gql';
 import { getWebConfig } from '@stringsync/config';
 
@@ -53,5 +53,22 @@ export class AuthClient {
         logout
       }
     `);
+  }
+
+  async signup(input: SignupInput) {
+    return this.graphql.call<Mutation['signup'], 'signup', { input: SignupInput }>(
+      gql`
+        mutation signup($input: SignupInput!) {
+          signup(input: $input) {
+            id
+            email
+            username
+            role
+            confirmedAt
+          }
+        }
+      `,
+      { input }
+    );
   }
 }

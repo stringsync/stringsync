@@ -1,7 +1,7 @@
 import { createSlice, CaseReducer, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { AuthUser } from './types';
 import { getNullAuthUser } from './getNullAuthUser';
-import { AuthClient, LoginInput } from '../../clients';
+import { AuthClient, LoginInput, SignupInput } from '../../clients';
 import { toAuthUser } from './toAuthUser';
 
 type State = {
@@ -54,6 +54,21 @@ export const login = createAsyncThunk<LoginReturned, LoginThunkArg, LoginThunkCo
       return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
     }
     return { user: toAuthUser(data.login) };
+  }
+);
+
+type SignupReturned = { user: AuthUser };
+type SignupThunkArg = SignupInput;
+type SignupThunkConfig = { rejectValue: { errors: string[] } };
+export const signup = createAsyncThunk<SignupReturned, SignupThunkArg, SignupThunkConfig>(
+  'auth/signup',
+  async (input, thunk) => {
+    const client = AuthClient.create();
+    const { data, errors } = await client.signup(input);
+    if (errors) {
+      return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
+    }
+    return { user: toAuthUser(data.signup) };
   }
 );
 
@@ -136,6 +151,25 @@ export const authSlice = createSlice<State, Reducers>({
     builder.addCase(logout.rejected, (state, action) => {
       state.isPending = false;
       if (action.error.message) {
+        state.errors = [action.error.message];
+      } else {
+        state.errors = ['unknown error'];
+      }
+    });
+
+    builder.addCase(signup.pending, (state) => {
+      state.isPending = true;
+      state.errors = [];
+    });
+    builder.addCase(signup.fulfilled, (state, action) => {
+      state.isPending = false;
+      state.user = action.payload.user;
+    });
+    builder.addCase(signup.rejected, (state, action) => {
+      state.isPending = false;
+      if (action.payload) {
+        state.errors = action.payload.errors;
+      } else if (action.error.message) {
         state.errors = [action.error.message];
       } else {
         state.errors = ['unknown error'];
