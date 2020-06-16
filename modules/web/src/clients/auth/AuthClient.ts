@@ -46,4 +46,12 @@ export class AuthClient {
       { input }
     );
   }
+
+  async logout() {
+    return this.graphql.call<Mutation['logout'], 'logout'>(gql`
+      mutation logout {
+        logout
+      }
+    `);
+  }
 }

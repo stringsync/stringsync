@@ -57,6 +57,21 @@ export const login = createAsyncThunk<LoginReturned, LoginThunkArg, LoginThunkCo
   }
 );
 
+type LogoutReturned = boolean;
+type LogoutThunkArg = void;
+type LogoutThunkConfig = { rejectValue: { errors: string[] } };
+export const logout = createAsyncThunk<LogoutReturned, LogoutThunkArg, LogoutThunkConfig>(
+  'auth/logout',
+  async (_, thunk) => {
+    const client = AuthClient.create();
+    const { data, errors } = await client.logout();
+    if (errors) {
+      return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
+    }
+    return data.logout;
+  }
+);
+
 export const authSlice = createSlice<State, Reducers>({
   name: 'auth',
   initialState: getNullState(),
@@ -84,8 +99,10 @@ export const authSlice = createSlice<State, Reducers>({
       state.isPending = false;
       if (action.payload) {
         state.errors = action.payload.errors;
+      } else if (action.error.message) {
+        state.errors = [action.error.message];
       } else {
-        state.errors = [action.error.message || ''];
+        state.errors = ['unknown error'];
       }
     });
 
@@ -101,8 +118,27 @@ export const authSlice = createSlice<State, Reducers>({
       state.isPending = false;
       if (action.payload) {
         state.errors = action.payload.errors;
+      } else if (action.error.message) {
+        state.errors = [action.error.message];
       } else {
-        state.errors = [action.error.message || ''];
+        state.errors = ['unknown error'];
+      }
+    });
+
+    builder.addCase(logout.pending, (state) => {
+      state.isPending = true;
+      state.errors = [];
+    });
+    builder.addCase(logout.fulfilled, (state) => {
+      state.isPending = false;
+      state.user = getNullAuthUser();
+    });
+    builder.addCase(logout.rejected, (state, action) => {
+      state.isPending = false;
+      if (action.error.message) {
+        state.errors = [action.error.message];
+      } else {
+        state.errors = ['unknown error'];
       }
     });
   },
