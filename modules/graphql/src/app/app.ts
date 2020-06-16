@@ -6,15 +6,17 @@ import cors from 'cors';
 import { withSession, withGraphQL } from './middlewares';
 import { generateSchema } from '../schema';
 import { withSessionUser } from './middlewares/withSessionUser';
+import { ContainerConfig } from '@stringsync/config';
 
 export const app = (container: Container) => {
   const app = express();
   const healthController = container.get<HealthController>(TYPES.HealthController);
+  const config = container.get<ContainerConfig>(TYPES.ContainerConfig);
   const schema = generateSchema(container);
 
   app.set('trust proxy', 1);
 
-  app.use(cors());
+  app.use(cors({ origin: [config.WEB_URI], credentials: true }));
 
   app.get('/health', healthController.get);
 

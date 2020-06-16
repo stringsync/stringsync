@@ -1,3 +1,5 @@
+import { CallResponse } from './types';
+
 export class GraphqlClient {
   public readonly uri: string;
 
@@ -5,12 +7,18 @@ export class GraphqlClient {
     this.uri = uri;
   }
 
-  async call<T, V extends Record<string, any>>(query: string, variables?: V): Promise<T> {
+  async call<T, N extends string, V extends Record<string, any> | void = void>(
+    query: string,
+    variables?: V
+  ): Promise<CallResponse<T, N>> {
     const res = await fetch(this.uri, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({ query, variables }),
+      credentials: 'include',
+      mode: 'cors',
     });
+
     return await res.json();
   }
 }

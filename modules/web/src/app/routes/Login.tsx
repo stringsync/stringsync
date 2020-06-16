@@ -3,14 +3,16 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { FormPage } from '../../components/FormPage';
 import { Form, Input, Button } from 'antd';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch, login } from '../../store';
 
 const Center = styled.div`
   text-align: center;
 `;
 
 export const Login: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+
   const [form] = Form.useForm();
 
   const [usernameOrEmail, setUsernameOrEmail] = useState('');
@@ -29,6 +31,9 @@ export const Login: React.FC = () => {
     },
     [setPassword]
   );
+  const onFinish = useCallback(() => {
+    dispatch(login({ usernameOrEmail, password }));
+  }, [dispatch, password, usernameOrEmail]);
 
   return (
     <div data-testid="signup">
@@ -36,7 +41,7 @@ export const Login: React.FC = () => {
         wordmarked
         main={
           <>
-            <Form form={form}>
+            <Form form={form} onFinish={onFinish}>
               <Form.Item name="username-or-email">
                 <Input
                   placeholder="username or email"

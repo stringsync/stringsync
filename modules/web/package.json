@@ -31,11 +31,12 @@
     "webpack": "4.42.0"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^1.15.3",
+    "@graphql-codegen/typescript": "^1.15.3",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
-    "@graphql-codegen/cli": "^1.15.3",
-    "@graphql-codegen/typescript": "^1.15.3",
+    "@types/graphql": "^14.5.0",
     "@types/jest": "^24.0.0",
     "@types/jest-when": "^2.7.1",
     "@types/lodash": "^4.14.155",

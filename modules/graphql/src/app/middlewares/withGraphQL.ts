@@ -6,8 +6,8 @@ import { ContainerConfig } from '@stringsync/config';
 import { Container } from 'inversify';
 
 export const withGraphQL = (container: Container, schema: GraphQLSchema): Handler => (req, res) => {
-  const config = container.get<ContainerConfig>(TYPES.ContainerConfig);
   const reqAt = new Date();
+  const config = container.get<ContainerConfig>(TYPES.ContainerConfig);
 
   const middleware = graphqlHTTP({
     schema,

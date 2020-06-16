@@ -4,6 +4,7 @@ it('runs without crashing', () => {
   const env = {
     NODE_ENV: 'NODE_ENV',
     REACT_APP_SERVER_URI: 'REACT_APP_SERVER_URI',
+    REACT_APP_GRAPHQL_ENDPOINT: 'REACT_APP_GRAPHQL_ENDPOINT',
   };
 
   expect(() => getWebConfig(env)).not.toThrow();

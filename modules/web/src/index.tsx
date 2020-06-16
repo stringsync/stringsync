@@ -5,6 +5,7 @@ import { App, Routes } from './app';
 import { createStore } from './store';
 import { getWebConfig } from '@stringsync/config';
 import { ViewportSync } from './components/ViewportSync';
+import { AuthSync } from './components/AuthSync';
 
 const config = getWebConfig(process.env);
 const store = createStore();
@@ -13,6 +14,7 @@ ReactDOM.render(
   <React.StrictMode>
     <App store={store}>
       <ViewportSync />
+      <AuthSync />
       <Routes />
     </App>
   </React.StrictMode>,
