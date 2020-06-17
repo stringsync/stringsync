@@ -5,6 +5,7 @@ import { FormPage } from '../../components/FormPage';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState, signup } from '../../store';
 import { Form, Input, Button, message } from 'antd';
+import { useEffectOnce } from '../../hooks';
 
 const Center = styled.div`
   text-align: center;
@@ -19,6 +20,10 @@ const Signup: React.FC = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  useEffectOnce(() => {
+    dispatch(clearAuthErrors());
+  });
 
   const onUsernameChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
