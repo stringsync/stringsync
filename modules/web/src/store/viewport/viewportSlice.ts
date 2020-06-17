@@ -1,19 +1,13 @@
-import { createSlice, CaseReducer, PayloadAction } from '@reduxjs/toolkit';
-import { Viewport, Breakpoint } from './types';
-import { getViewport } from './getViewport';
+import { createSlice } from '@reduxjs/toolkit';
+import { ViewportState, ViewportReducers } from './types';
+import { getViewportState } from './getViewportState';
 
-type State = Viewport;
-
-type Reducers = {
-  setBreakpoint: CaseReducer<State, PayloadAction<{ breakpoint: Breakpoint }>>;
-};
-
-export const viewportSlice = createSlice<State, Reducers>({
+export const viewportSlice = createSlice<ViewportState, ViewportReducers>({
   name: 'viewport',
-  initialState: getViewport('xs'),
+  initialState: getViewportState('xs'),
   reducers: {
     setBreakpoint(state, action) {
-      return getViewport(action.payload.breakpoint);
+      return getViewportState(action.payload.breakpoint);
     },
   },
 });

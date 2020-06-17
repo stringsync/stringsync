@@ -1,8 +1,8 @@
-import { getViewport } from './getViewport';
+import { getViewportState } from './getViewportState';
 import { Breakpoint } from './types';
 
 it.each(['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] as Breakpoint[])('creates a viewport object', (breakpoint) => {
-  const viewport = getViewport(breakpoint);
+  const viewport = getViewportState(breakpoint);
 
   expect(viewport.breakpoint).toBe(breakpoint);
 
