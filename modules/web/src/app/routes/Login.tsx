@@ -12,12 +12,12 @@ const Center = styled.div`
 
 export const Login: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
 
   const [form] = Form.useForm();
 
   const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
-  const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
 
   const onUsernameOrEmailChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,20 +43,10 @@ export const Login: React.FC = () => {
           <>
             <Form form={form} onFinish={onFinish}>
               <Form.Item name="username-or-email">
-                <Input
-                  placeholder="username or email"
-                  value={usernameOrEmail}
-                  onChange={onUsernameOrEmailChange}
-                  disabled={isAuthPending}
-                />
+                <Input placeholder="username or email" value={usernameOrEmail} onChange={onUsernameOrEmailChange} />
               </Form.Item>
               <Form.Item name="password">
-                <Input.Password
-                  placeholder="username or email"
-                  value={password}
-                  onChange={onPasswordChange}
-                  disabled={isAuthPending}
-                />
+                <Input.Password placeholder="password" value={password} onChange={onPasswordChange} />
               </Form.Item>
               <Form.Item>
                 <Button block type="primary" htmlType="submit" disabled={isAuthPending}>
