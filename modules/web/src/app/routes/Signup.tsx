@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { FormPage } from '../../components/FormPage';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState, signup } from '../../store';
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 
 const Center = styled.div`
   text-align: center;
@@ -38,8 +38,11 @@ const Signup: React.FC = () => {
     },
     [setPassword]
   );
-  const onFinish = useCallback(() => {
-    dispatch(signup({ username, password, email }));
+  const onFinish = useCallback(async () => {
+    const action = await dispatch(signup({ username, password, email }));
+    if (action.payload && 'user' in action.payload) {
+      message.success(`logged in as ${action.payload.user.username}`);
+    }
   }, [dispatch, email, password, username]);
 
   return (
