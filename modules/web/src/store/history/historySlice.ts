@@ -1,14 +1,7 @@
-import { CaseReducer, PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { HistoryState, HistoryReducers } from './types';
+import { createSlice } from '@reduxjs/toolkit';
 
-type State = {
-  returnToRoute: string;
-};
-
-type Reducers = {
-  setReturnToRoute: CaseReducer<State, PayloadAction<string>>;
-};
-
-export const historySlice = createSlice<State, Reducers, 'history'>({
+export const historySlice = createSlice<HistoryState, HistoryReducers, 'history'>({
   name: 'history',
   initialState: { returnToRoute: '/library' },
   reducers: {
