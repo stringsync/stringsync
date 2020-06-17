@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { FormPage } from '../../components/FormPage';
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch, login, clearAuthErrors } from '../../store';
 
@@ -38,8 +38,11 @@ export const Login: React.FC = () => {
     },
     [dispatch]
   );
-  const onFinish = useCallback(() => {
-    dispatch(login({ usernameOrEmail, password }));
+  const onFinish = useCallback(async () => {
+    const action = await dispatch(login({ usernameOrEmail, password }));
+    if (action.payload && 'user' in action.payload) {
+      message.success(`logged in as ${action.payload.user.username}`);
+    }
   }, [dispatch, password, usernameOrEmail]);
 
   return (

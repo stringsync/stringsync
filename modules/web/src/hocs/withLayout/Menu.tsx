@@ -124,7 +124,7 @@ export const Menu: React.FC<Props> = (props) => {
               </Col>
               <Col>
                 <div>
-                  <Username>@{user.username}</Username>
+                  <Username>{user.username}</Username>
                   <Role>admin</Role>
                 </div>
               </Col>
