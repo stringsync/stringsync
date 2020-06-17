@@ -18,6 +18,6 @@ it('initializes state', () => {
 });
 
 it('sets user agent', () => {
-  store.dispatch(setUserAgent({ userAgent: '' }));
+  store.dispatch(setUserAgent(''));
   expect(store.getState().device).toStrictEqual(getDevice(''));
 });

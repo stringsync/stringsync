@@ -3,8 +3,9 @@ import { compose } from '@stringsync/common';
 import { Route } from 'react-router-dom';
 import { Landing } from './Landing';
 import { Fallback } from './Fallback';
+import { asReturnToRoute } from '../../hocs';
 
-const Library = compose()(React.lazy(() => import('./Library')));
+const Library = compose(asReturnToRoute)(React.lazy(() => import('./Library')));
 
 const Signup = compose()(React.lazy(() => import('./Signup')));
 

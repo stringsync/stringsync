@@ -5,7 +5,7 @@ import { getDevice } from './getDevice';
 type State = Device;
 
 type Reducers = {
-  setUserAgent: CaseReducer<State, PayloadAction<{ userAgent: string }>>;
+  setUserAgent: CaseReducer<State, PayloadAction<string>>;
 };
 
 export const deviceSlice = createSlice<State, Reducers, 'device'>({
@@ -13,7 +13,7 @@ export const deviceSlice = createSlice<State, Reducers, 'device'>({
   initialState: getDevice(navigator.userAgent || ''),
   reducers: {
     setUserAgent(state, action) {
-      return getDevice(action.payload.userAgent);
+      return getDevice(action.payload);
     },
   },
 });

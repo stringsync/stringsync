@@ -5,15 +5,17 @@ type State = {
 };
 
 type Reducers = {
-  setReturnToRoute: CaseReducer<State, PayloadAction<{ returnToRoute: string }>>;
+  setReturnToRoute: CaseReducer<State, PayloadAction<string>>;
 };
 
 export const historySlice = createSlice<State, Reducers, 'history'>({
   name: 'history',
-  initialState: { returnToRoute: '' },
+  initialState: { returnToRoute: '/library' },
   reducers: {
     setReturnToRoute(state, action) {
-      state.returnToRoute = action.payload.returnToRoute;
+      state.returnToRoute = action.payload;
     },
   },
 });
+
+export const { setReturnToRoute } = historySlice.actions;

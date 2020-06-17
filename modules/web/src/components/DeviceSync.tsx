@@ -6,7 +6,7 @@ import { useEffectOnce } from '../hooks';
 export const DeviceSync: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   useEffectOnce(() => {
-    dispatch(setUserAgent({ userAgent: navigator.userAgent }));
+    dispatch(setUserAgent(navigator.userAgent));
   });
   return null;
 };
