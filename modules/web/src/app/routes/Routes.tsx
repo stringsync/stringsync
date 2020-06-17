@@ -1,15 +1,18 @@
 import React from 'react';
-import { compose } from '@stringsync/common';
+import { compose, AuthRequirement } from '@stringsync/common';
 import { Route } from 'react-router-dom';
 import { Landing } from './Landing';
 import { Fallback } from './Fallback';
-import { asReturnToRoute } from '../../hocs';
+import { asReturnToRoute, withAuthRequirement } from '../../hocs';
 
-const Library = compose(asReturnToRoute)(React.lazy(() => import('./Library')));
+const Library = compose(
+  asReturnToRoute,
+  withAuthRequirement(AuthRequirement.NONE)
+)(React.lazy(() => import('./Library')));
 
-const Signup = compose()(React.lazy(() => import('./Signup')));
+const Signup = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(React.lazy(() => import('./Signup')));
 
-const Login = compose()(React.lazy(() => import('./Login')));
+const Login = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(React.lazy(() => import('./Login')));
 
 export const Routes: React.FC = () => {
   return (

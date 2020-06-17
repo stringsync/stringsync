@@ -1,29 +1,10 @@
-import { createSlice, CaseReducer, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { AuthUser } from './types';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { AuthUser, AuthState, AuthReducers } from './types';
 import { getNullAuthUser } from './getNullAuthUser';
 import { AuthClient, LoginInput, SignupInput } from '../../clients';
 import { toAuthUser } from './toAuthUser';
 import { RootState } from '../createStore';
-
-type State = {
-  isPending: boolean;
-  user: AuthUser;
-  isLoggedIn: boolean;
-  errors: string[];
-};
-
-type Reducers = {
-  confirmEmail: CaseReducer<State, PayloadAction<{ confirmedAt: Date }>>;
-  clearAuth: CaseReducer<State>;
-  clearAuthErrors: CaseReducer<State>;
-};
-
-const getNullState = (): State => ({
-  isPending: true,
-  user: getNullAuthUser(),
-  isLoggedIn: false,
-  errors: [],
-});
+import { getNullAuthState } from './getNullAuthState';
 
 type AuthenticateReturned = { user: AuthUser };
 type AuthenticateThunkArg = { shouldClearAuthOnError: boolean };
@@ -95,15 +76,15 @@ export const logout = createAsyncThunk<LogoutReturned, LogoutThunkArg, LogoutThu
   }
 );
 
-export const authSlice = createSlice<State, Reducers>({
+export const authSlice = createSlice<AuthState, AuthReducers>({
   name: 'auth',
-  initialState: getNullState(),
+  initialState: getNullAuthState(),
   reducers: {
     confirmEmail(state, action) {
       state.user.confirmedAt = action.payload.confirmedAt;
     },
     clearAuth() {
-      return getNullState();
+      return getNullAuthState();
     },
     clearAuthErrors(state) {
       state.errors = [];
