@@ -13,6 +13,7 @@ const Center = styled.div`
 
 const Signup: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const errors = useSelector<RootState, string[]>((state) => state.auth.errors);
   const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
 
   const [form] = Form.useForm();
@@ -43,6 +44,12 @@ const Signup: React.FC = () => {
     },
     [setPassword]
   );
+  const onErrorsClose = useCallback<React.MouseEventHandler<HTMLButtonElement>>(
+    (event) => {
+      dispatch(clearAuthErrors());
+    },
+    [dispatch]
+  );
   const onFinish = useCallback(async () => {
     const action = await dispatch(signup({ username, password, email }));
     if (action.payload && 'user' in action.payload) {
@@ -54,6 +61,8 @@ const Signup: React.FC = () => {
     <div data-testid="signup">
       <FormPage
         wordmarked
+        errors={errors}
+        onErrorsClose={onErrorsClose}
         main={
           <>
             <Form form={form} onFinish={onFinish}>
