@@ -1,4 +1,4 @@
-import Icon, { UserOutlined, UploadOutlined, CompassOutlined, SettingOutlined } from '@ant-design/icons';
+import { UserOutlined, UploadOutlined, CompassOutlined, SettingOutlined } from '@ant-design/icons';
 import { compareUserRoles, UserRole } from '@stringsync/domain';
 import { Avatar, Button, Col, Modal, Row, message } from 'antd';
 import React, { useCallback, useState } from 'react';
@@ -7,7 +7,15 @@ import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { isLoggedInSelector, RootState, AuthUser, logout, AppDispatch } from '../../store';
 
-const MenuIcon = styled(Icon)`
+const StyledUploadOutlined = styled(UploadOutlined)`
+  font-size: 22px;
+`;
+
+const StyledCompassOutlined = styled(CompassOutlined)`
+  font-size: 22px;
+`;
+
+const StyledSettingOutlined = styled(SettingOutlined)`
   font-size: 22px;
 `;
 
@@ -60,7 +68,7 @@ export const Menu: React.FC<Props> = (props) => {
           <Col>
             <Button type="link" size="large" shape="circle">
               <Link to="library">
-                <CompassOutlined />
+                <StyledCompassOutlined />
               </Link>
             </Button>
           </Col>
@@ -70,7 +78,7 @@ export const Menu: React.FC<Props> = (props) => {
           <Col>
             <Button type="link" size="large" shape="circle">
               <Link to="upload">
-                <UploadOutlined />
+                <StyledUploadOutlined />
               </Link>
             </Button>
           </Col>
@@ -79,7 +87,7 @@ export const Menu: React.FC<Props> = (props) => {
         {isSettingsVisible ? (
           <Col>
             <Button type="link" size="large" shape="circle" onClick={showModal}>
-              <SettingOutlined />
+              <StyledSettingOutlined />
             </Button>
           </Col>
         ) : null}
