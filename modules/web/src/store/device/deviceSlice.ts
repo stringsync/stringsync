@@ -1,19 +1,13 @@
-import { createSlice, CaseReducer, PayloadAction } from '@reduxjs/toolkit';
-import { Device } from './types';
-import { getDevice } from './getDevice';
+import { createSlice } from '@reduxjs/toolkit';
+import { DeviceState, DeviceReducers } from './types';
+import { getDeviceState } from './getDeviceState';
 
-type State = Device;
-
-type Reducers = {
-  setUserAgent: CaseReducer<State, PayloadAction<string>>;
-};
-
-export const deviceSlice = createSlice<State, Reducers, 'device'>({
+export const deviceSlice = createSlice<DeviceState, DeviceReducers, 'device'>({
   name: 'device',
-  initialState: getDevice(navigator.userAgent || ''),
+  initialState: getDeviceState(navigator.userAgent || ''),
   reducers: {
     setUserAgent(state, action) {
-      return getDevice(action.payload);
+      return getDeviceState(action.payload);
     },
   },
 });

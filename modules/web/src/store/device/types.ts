@@ -1,4 +1,6 @@
-export type Device = {
+import { CaseReducer, PayloadAction } from '@reduxjs/toolkit';
+
+export type DeviceState = {
   apple: {
     phone: boolean;
     ipod: boolean;
@@ -31,4 +33,8 @@ export type Device = {
   phone: boolean;
   tablet: boolean;
   mobile: boolean;
+};
+
+export type DeviceReducers = {
+  setUserAgent: CaseReducer<DeviceState, PayloadAction<string>>;
 };
