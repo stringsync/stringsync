@@ -1,8 +1,11 @@
-import React, { useState, useCallback } from 'react';
-import { Button, Row, Col, Modal, Avatar } from 'antd';
-import Icon from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import Icon, { UserOutlined, UploadOutlined, CompassOutlined, SettingOutlined } from '@ant-design/icons';
+import { compareUserRoles, UserRole } from '@stringsync/domain';
+import { Avatar, Button, Col, Modal, Row, message } from 'antd';
+import React, { useCallback, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
+import { isLoggedInSelector, RootState, AuthUser, logout, AppDispatch } from '../../store';
 
 const MenuIcon = styled(Icon)`
   font-size: 22px;
@@ -21,14 +24,27 @@ const Role = styled.div`
 interface Props {}
 
 export const Menu: React.FC<Props> = (props) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const isLoggedIn = useSelector<RootState, boolean>(isLoggedInSelector);
+  const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
+  const isLtEqMdViewport = useSelector<RootState, boolean>((state) => {
+    const { xs, sm, md } = state.viewport;
+    return xs || sm || md;
+  });
+  const user = useSelector<RootState, AuthUser>((state) => state.auth.user);
+
   const [isModalVisible, setModalVisible] = useState(false);
+  const history = useHistory();
+  const isGtEqTeacher = compareUserRoles(user.role, UserRole.TEACHER) >= 0;
+
   const showModal = useCallback(() => setModalVisible(true), [setModalVisible]);
   const hideModal = useCallback(() => setModalVisible(false), [setModalVisible]);
-
-  const isLoggedIn = false;
-  const isAuthPending = false;
-  const isLtEqMdViewport = false;
-  const isGtEqTeacher = false;
+  const handleLogoutClick = useCallback(() => {
+    dispatch(logout());
+    hideModal();
+    message.success('logged out');
+    history.push('library');
+  }, [dispatch, hideModal, history]);
 
   const gutterPx = isLoggedIn ? 16 : 8;
   const isLibraryVisible = !isAuthPending && !isLtEqMdViewport && isLoggedIn;
@@ -44,7 +60,7 @@ export const Menu: React.FC<Props> = (props) => {
           <Col>
             <Button type="link" size="large" shape="circle">
               <Link to="library">
-                <MenuIcon type="compass" />
+                <CompassOutlined />
               </Link>
             </Button>
           </Col>
@@ -54,7 +70,7 @@ export const Menu: React.FC<Props> = (props) => {
           <Col>
             <Button type="link" size="large" shape="circle">
               <Link to="upload">
-                <MenuIcon type="upload" />
+                <UploadOutlined />
               </Link>
             </Button>
           </Col>
@@ -63,7 +79,7 @@ export const Menu: React.FC<Props> = (props) => {
         {isSettingsVisible ? (
           <Col>
             <Button type="link" size="large" shape="circle" onClick={showModal}>
-              <MenuIcon type="setting" />
+              <SettingOutlined />
             </Button>
           </Col>
         ) : null}
@@ -96,11 +112,11 @@ export const Menu: React.FC<Props> = (props) => {
           title={
             <Row gutter={8}>
               <Col>
-                <Avatar icon="user" />{' '}
+                <Avatar icon={<UserOutlined />} />{' '}
               </Col>
               <Col>
                 <div>
-                  <Username>@username</Username>
+                  <Username>@{user.username}</Username>
                   <Role>admin</Role>
                 </div>
               </Col>
@@ -110,7 +126,7 @@ export const Menu: React.FC<Props> = (props) => {
           onCancel={hideModal}
           footer={null}
         >
-          <Button block disabled={!isLoggedIn}>
+          <Button block onClick={handleLogoutClick} disabled={!isLoggedIn}>
             logout
           </Button>
         </Modal>
