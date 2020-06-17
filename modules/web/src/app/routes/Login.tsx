@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { FormPage } from '../../components/FormPage';
 import { Form, Input, Button } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch, login } from '../../store';
+import { RootState, AppDispatch, login, clearAuthErrors } from '../../store';
 
 const Center = styled.div`
   text-align: center;
@@ -12,6 +12,7 @@ const Center = styled.div`
 
 export const Login: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const errors = useSelector<RootState, string[]>((state) => state.auth.errors);
   const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
 
   const [form] = Form.useForm();
@@ -19,17 +20,23 @@ export const Login: React.FC = () => {
   const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const onUsernameOrEmailChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onUsernameOrEmailChange = useCallback<React.ChangeEventHandler<HTMLInputElement>>(
+    (event) => {
       setUsernameOrEmail(event.currentTarget.value);
     },
     [setUsernameOrEmail]
   );
-  const onPasswordChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onPasswordChange = useCallback<React.ChangeEventHandler<HTMLInputElement>>(
+    (event) => {
       setPassword(event.currentTarget.value);
     },
     [setPassword]
+  );
+  const onErrorsClose = useCallback<React.MouseEventHandler<HTMLButtonElement>>(
+    (event) => {
+      dispatch(clearAuthErrors());
+    },
+    [dispatch]
   );
   const onFinish = useCallback(() => {
     dispatch(login({ usernameOrEmail, password }));
@@ -39,6 +46,8 @@ export const Login: React.FC = () => {
     <div data-testid="signup">
       <FormPage
         wordmarked
+        errors={errors}
+        onErrorsClose={onErrorsClose}
         main={
           <>
             <Form form={form} onFinish={onFinish}>

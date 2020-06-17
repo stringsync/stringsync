@@ -3,6 +3,7 @@ import { AuthUser } from './types';
 import { getNullAuthUser } from './getNullAuthUser';
 import { AuthClient, LoginInput, SignupInput } from '../../clients';
 import { toAuthUser } from './toAuthUser';
+import { RootState } from '../createStore';
 
 type State = {
   isPending: boolean;
@@ -25,13 +26,20 @@ const getNullState = (): State => ({
 });
 
 type AuthenticateReturned = { user: AuthUser };
-type AuthenticateThunkArg = void;
-type AuthenticateThunkConfig = { rejectValue: { errors: string[] } };
+type AuthenticateThunkArg = { shouldClearAuthOnError: boolean };
+type AuthenticateThunkConfig = { state: RootState; rejectValue: { errors: string[] } };
 export const authenticate = createAsyncThunk<AuthenticateReturned, AuthenticateThunkArg, AuthenticateThunkConfig>(
   'auth/authenticate',
-  async (_, thunk) => {
+  async (args, thunk) => {
     const client = AuthClient.create();
     const { data, errors } = await client.whoami();
+
+    const hasError = errors || !data.whoami;
+
+    if (hasError && args.shouldClearAuthOnError) {
+      thunk.dispatch(clearAuth());
+      return { user: thunk.getState().auth.user };
+    }
     if (errors) {
       return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
     }

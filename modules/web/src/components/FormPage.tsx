@@ -52,7 +52,7 @@ type Props = {
   main: JSX.Element;
   footer?: JSX.Element;
   errors?: string[];
-  onClose?: React.MouseEventHandler<HTMLButtonElement>;
+  onErrorsClose?: React.MouseEventHandler<HTMLButtonElement>;
 };
 
 export const FormPage: React.FC<Props> = (props) => {
@@ -77,7 +77,7 @@ export const FormPage: React.FC<Props> = (props) => {
               closable
               type="error"
               showIcon
-              onClose={props.onClose}
+              onClose={props.onErrorsClose}
               message="Error"
               description={
                 <StyledUl>

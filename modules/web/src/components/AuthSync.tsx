@@ -7,7 +7,7 @@ import { authenticate } from '../store';
 export const AuthSync: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   useEffectOnce(() => {
-    dispatch(authenticate());
+    dispatch(authenticate({ shouldClearAuthOnError: true }));
   });
   return null;
 };
