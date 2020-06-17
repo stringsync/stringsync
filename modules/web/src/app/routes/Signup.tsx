@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { FormPage } from '../../components/FormPage';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState, signup } from '../../store';
+import { AppDispatch, RootState, signup, clearAuthErrors } from '../../store';
 import { Form, Input, Button, message } from 'antd';
 import { useEffectOnce } from '../../hooks';
 

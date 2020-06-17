@@ -125,7 +125,7 @@ export const Menu: React.FC<Props> = (props) => {
               <Col>
                 <div>
                   <Username>{user.username}</Username>
-                  <Role>admin</Role>
+                  <Role>{user.role.toLowerCase()}</Role>
                 </div>
               </Col>
             </Row>
