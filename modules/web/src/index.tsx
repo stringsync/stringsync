@@ -4,6 +4,7 @@ import * as serviceWorker from './serviceWorker';
 import { App, Routes } from './app';
 import { createStore } from './store';
 import { getWebConfig } from '@stringsync/config';
+import { DeviceSync } from './components/DeviceSync';
 import { ViewportSync } from './components/ViewportSync';
 import { AuthSync } from './components/AuthSync';
 
@@ -13,6 +14,7 @@ const store = createStore();
 ReactDOM.render(
   <React.StrictMode>
     <App store={store}>
+      <DeviceSync />
       <ViewportSync />
       <AuthSync />
       <Routes />
