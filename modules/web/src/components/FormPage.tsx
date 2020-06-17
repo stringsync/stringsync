@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from './Box';
 import styled from 'styled-components';
-import { Row, Col } from 'antd';
+import { Row, Col, Alert } from 'antd';
 import { Link } from 'react-router-dom';
 import { Wordmark } from './Wordmark';
 
@@ -32,13 +32,32 @@ const StyledH1 = styled.h1`
   font-size: 32px;
 `;
 
+const StyledAlert = styled(Alert)`
+  width: 100%;
+  max-width: 320px;
+  && {
+    margin: 0 auto;
+    margin-top: 24px;
+  }
+`;
+
+const StyledUl = styled.ul`
+  list-style: none;
+  margin: 0;
+  padding: 0;
+`;
+
 type Props = {
   wordmarked?: boolean;
   main: JSX.Element;
   footer?: JSX.Element;
+  errors?: string[];
+  onClose?: React.MouseEventHandler<HTMLButtonElement>;
 };
 
 export const FormPage: React.FC<Props> = (props) => {
+  const hasErrors = props.errors && props.errors.length > 0;
+
   return (
     <StyledRow data-testid="form-page" justify="center" align="middle">
       <Col {...SPANS}>
@@ -53,6 +72,22 @@ export const FormPage: React.FC<Props> = (props) => {
             ) : null}
             {props.main}
           </StyledBox>
+          {hasErrors ? (
+            <StyledAlert
+              closable
+              type="error"
+              showIcon
+              onClose={props.onClose}
+              message="Error"
+              description={
+                <StyledUl>
+                  {props.errors!.map((error, ndx) => {
+                    return <li key={ndx}>{error}</li>;
+                  })}
+                </StyledUl>
+              }
+            />
+          ) : null}
           {props.footer ? <StyledBox>{props.footer}</StyledBox> : null}
         </MaxWidth>
       </Col>
