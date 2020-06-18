@@ -6,6 +6,26 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState, signup, clearAuthErrors } from '../../store';
 import { Form, Input, Button, message } from 'antd';
 import { useEffectOnce } from '../../hooks';
+import { Rule } from 'antd/lib/form';
+
+const usernameRules: Rule[] = [
+  { required: true, message: 'username is required' },
+  { pattern: /^[a-zA-Z0-9_-]*$/, message: 'username must only contain letters, numbers, dashes, and underscores' },
+  { min: 3, message: 'username must be at least 3 characeters' },
+  { max: 36, message: 'username must be at most 36 characeters' },
+];
+
+const emailRules: Rule[] = [
+  { required: true, message: 'email is required' },
+  { type: 'email', message: 'email must be valid' },
+  { max: 36, message: 'email must be at most 36 characeters' },
+];
+
+const passwordRules: Rule[] = [
+  { required: true, message: 'password is required' },
+  { min: 8, message: 'password must be at least 8 characeters' },
+  { max: 256, message: 'password must be at most 256 characeters' },
+];
 
 const Center = styled.div`
   text-align: center;
@@ -66,13 +86,13 @@ const Signup: React.FC = () => {
         main={
           <>
             <Form form={form} onFinish={onFinish}>
-              <Form.Item name="username">
+              <Form.Item hasFeedback name="username" rules={usernameRules}>
                 <Input placeholder="username" value={username} onChange={onUsernameChange} />
               </Form.Item>
-              <Form.Item name="email">
+              <Form.Item hasFeedback name="email" rules={emailRules}>
                 <Input placeholder="email" value={email} onChange={onEmailChange} />
               </Form.Item>
-              <Form.Item name="password">
+              <Form.Item hasFeedback name="password" rules={passwordRules}>
                 <Input.Password placeholder="password" value={password} onChange={onPasswordChange} />
               </Form.Item>
               <Form.Item>
