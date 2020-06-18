@@ -59,10 +59,10 @@ export const Login: React.FC = () => {
         main={
           <>
             <Form form={form} onFinish={onFinish}>
-              <Form.Item name="username-or-email">
+              <Form.Item name="username-or-email" rules={[{ required: true, message: 'username or email required' }]}>
                 <Input placeholder="username or email" value={usernameOrEmail} onChange={onUsernameOrEmailChange} />
               </Form.Item>
-              <Form.Item name="password">
+              <Form.Item name="password" rules={[{ required: true, message: 'password is required' }]}>
                 <Input.Password placeholder="password" value={password} onChange={onPasswordChange} />
               </Form.Item>
               <Form.Item>
