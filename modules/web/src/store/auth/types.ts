@@ -1,7 +1,9 @@
 import { User } from '@stringsync/domain';
 import { PayloadAction, CaseReducer } from '@reduxjs/toolkit';
 
-export type AuthUser = Pick<User, 'id' | 'email' | 'username' | 'role' | 'confirmedAt'>;
+export type AuthUser = Pick<User, 'id' | 'email' | 'username' | 'role'> & {
+  confirmedAt: string;
+};
 
 export type AuthState = {
   isPending: boolean;
