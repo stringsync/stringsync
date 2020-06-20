@@ -1,11 +1,12 @@
+import React, { useCallback, useState, useContext } from 'react';
 import { UserOutlined, UploadOutlined, CompassOutlined, SettingOutlined } from '@ant-design/icons';
 import { compareUserRoles, UserRole } from '@stringsync/domain';
 import { Avatar, Button, Col, Modal, Row, message } from 'antd';
-import React, { useCallback, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { isLoggedInSelector, RootState, AuthUser, logout, AppDispatch } from '../../store';
+import { ClientsContext } from '../../clients';
 
 const StyledUploadOutlined = styled(UploadOutlined)`
   font-size: 22px;
@@ -32,6 +33,7 @@ const Role = styled.div`
 interface Props {}
 
 export const Menu: React.FC<Props> = (props) => {
+  const clients = useContext(ClientsContext);
   const dispatch = useDispatch<AppDispatch>();
   const isLoggedIn = useSelector<RootState, boolean>(isLoggedInSelector);
   const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
@@ -48,11 +50,11 @@ export const Menu: React.FC<Props> = (props) => {
   const showModal = useCallback(() => setModalVisible(true), [setModalVisible]);
   const hideModal = useCallback(() => setModalVisible(false), [setModalVisible]);
   const handleLogoutClick = useCallback(() => {
-    dispatch(logout());
+    dispatch(logout({ authClient: clients.authClient }));
     hideModal();
     message.success('logged out');
     history.push('library');
-  }, [dispatch, hideModal, history]);
+  }, [clients.authClient, dispatch, hideModal, history]);
 
   const gutterPx = isLoggedIn ? 16 : 8;
   const isLibraryVisible = !isAuthPending && !isLtEqMdViewport && isLoggedIn;

@@ -7,13 +7,12 @@ import { RootState } from '../createStore';
 import { getNullAuthState } from './getNullAuthState';
 
 type AuthenticateReturned = { user: AuthUser };
-type AuthenticateThunkArg = { shouldClearAuthOnError: boolean };
+type AuthenticateThunkArg = { authClient: AuthClient; shouldClearAuthOnError: boolean };
 type AuthenticateThunkConfig = { state: RootState; rejectValue: { errors: string[] } };
 export const authenticate = createAsyncThunk<AuthenticateReturned, AuthenticateThunkArg, AuthenticateThunkConfig>(
   'auth/authenticate',
   async (args, thunk) => {
-    const client = AuthClient.create();
-    const { data, errors } = await client.whoami();
+    const { data, errors } = await args.authClient.whoami();
 
     const hasError = errors || !data.whoami;
 
@@ -32,13 +31,12 @@ export const authenticate = createAsyncThunk<AuthenticateReturned, AuthenticateT
 );
 
 type LoginReturned = { user: AuthUser };
-type LoginThunkArg = LoginInput;
+type LoginThunkArg = { authClient: AuthClient; input: LoginInput };
 type LoginThunkConfig = { rejectValue: { errors: string[] } };
 export const login = createAsyncThunk<LoginReturned, LoginThunkArg, LoginThunkConfig>(
   'auth/login',
-  async (input, thunk) => {
-    const client = AuthClient.create();
-    const { data, errors } = await client.login(input);
+  async (args, thunk) => {
+    const { data, errors } = await args.authClient.login(args.input);
     if (errors) {
       return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
     }
@@ -47,13 +45,12 @@ export const login = createAsyncThunk<LoginReturned, LoginThunkArg, LoginThunkCo
 );
 
 type SignupReturned = { user: AuthUser };
-type SignupThunkArg = SignupInput;
+type SignupThunkArg = { authClient: AuthClient; input: SignupInput };
 type SignupThunkConfig = { rejectValue: { errors: string[] } };
 export const signup = createAsyncThunk<SignupReturned, SignupThunkArg, SignupThunkConfig>(
   'auth/signup',
-  async (input, thunk) => {
-    const client = AuthClient.create();
-    const { data, errors } = await client.signup(input);
+  async (args, thunk) => {
+    const { data, errors } = await args.authClient.signup(args.input);
     if (errors) {
       return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
     }
@@ -62,13 +59,12 @@ export const signup = createAsyncThunk<SignupReturned, SignupThunkArg, SignupThu
 );
 
 type LogoutReturned = boolean;
-type LogoutThunkArg = void;
+type LogoutThunkArg = { authClient: AuthClient };
 type LogoutThunkConfig = { rejectValue: { errors: string[] } };
 export const logout = createAsyncThunk<LogoutReturned, LogoutThunkArg, LogoutThunkConfig>(
   'auth/logout',
-  async (_, thunk) => {
-    const client = AuthClient.create();
-    const { data, errors } = await client.logout();
+  async (args, thunk) => {
+    const { data, errors } = await args.authClient.logout();
     if (errors) {
       return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
     }

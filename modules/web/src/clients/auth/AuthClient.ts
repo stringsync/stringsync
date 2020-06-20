@@ -1,16 +1,9 @@
 import { GraphqlClient } from '../graphql';
 import { Query, Mutation, LoginInput, SignupInput } from '../graphqlTypes';
 import { gql } from '../gql';
-import { getWebConfig } from '@stringsync/config';
 
 export class AuthClient {
   readonly graphqlClient: GraphqlClient;
-
-  static create(): AuthClient {
-    const config = getWebConfig(process.env);
-    const graphqlClient = new GraphqlClient(config.REACT_APP_SERVER_URI + config.REACT_APP_GRAPHQL_ENDPOINT);
-    return new AuthClient(graphqlClient);
-  }
 
   constructor(graphqlClient: GraphqlClient) {
     this.graphqlClient = graphqlClient;
