@@ -1,9 +1,9 @@
 import { viewportSlice, setBreakpoint } from './viewportSlice';
 import { EnhancedStore, configureStore } from '@reduxjs/toolkit';
 import { getViewportState } from './getViewportState';
-import { Breakpoint } from './types';
+import { Breakpoint, ViewportState } from './types';
 
-let store: EnhancedStore;
+let store: EnhancedStore<{ viewport: ViewportState }>;
 
 beforeEach(() => {
   store = configureStore({
