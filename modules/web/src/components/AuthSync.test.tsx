@@ -81,3 +81,22 @@ it('swallows errors silently', async () => {
   expect(state.auth.user).toStrictEqual(getNullAuthUser());
   expect(state.auth.errors).toHaveLength(0);
 });
+
+it('authenticates once', async () => {
+  const whoamiSpy = jest.spyOn(clients.authClient, 'whoami');
+  whoamiSpy.mockResolvedValue({ data: { whoami: null }, errors: [new GraphQLError('error message 1')] });
+
+  const { rerender } = render(
+    <Test store={store} clients={clients}>
+      <AuthSync />
+    </Test>
+  );
+
+  rerender(
+    <Test store={store} clients={clients}>
+      <AuthSync />
+    </Test>
+  );
+
+  expect(whoamiSpy).toHaveBeenCalledTimes(1);
+});
