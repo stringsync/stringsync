@@ -21,8 +21,7 @@ CREATE TABLE users (
 );
 
 CREATE INDEX index_users_on_confirmation_token ON users(confirmation_token);
-CREATE INDEX index_users_on_reset_password_token ON users(reset_password_token);
-    `);
+CREATE INDEX index_users_on_reset_password_token ON users(reset_password_token);`);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -32,7 +31,6 @@ DROP TYPE roles;
 
 DROP TRIGGER trigger_generate_id ON users;
 DROP INDEX index_users_on_confirmation_token;
-DROP INDEX index_users_on_reset_password_token;
-    `);
+DROP INDEX index_users_on_reset_password_token;`);
   }
 }
