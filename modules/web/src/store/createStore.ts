@@ -1,10 +1,12 @@
+import { DeepPartial } from '@stringsync/common';
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { deviceSlice } from './device';
 import { viewportSlice } from './viewport';
 import { authSlice } from './auth';
 import { historySlice } from './history';
+import { RootState, AppStore } from './types';
 
-export const createStore = () => {
+export const createStore = (preloadedState: DeepPartial<RootState> = {}): AppStore => {
   return configureStore({
     reducer: {
       device: deviceSlice.reducer,
@@ -17,13 +19,6 @@ export const createStore = () => {
         ignoredPaths: ['auth/authenticate', 'auth/login', 'auth/signup'],
       },
     }),
+    preloadedState,
   });
 };
-
-const dummyStore = createStore();
-
-export type AppStore = typeof dummyStore;
-
-export type AppDispatch = typeof dummyStore.dispatch;
-
-export type RootState = ReturnType<typeof dummyStore.getState>;

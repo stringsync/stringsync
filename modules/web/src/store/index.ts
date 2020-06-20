@@ -1,3 +1,4 @@
+export * from './types';
 export * from './createStore';
 export * from './device';
 export * from './viewport';

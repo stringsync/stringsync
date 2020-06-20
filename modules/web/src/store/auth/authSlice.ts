@@ -3,7 +3,7 @@ import { AuthUser, AuthState, AuthReducers } from './types';
 import { getNullAuthUser } from './getNullAuthUser';
 import { AuthClient, LoginInput, SignupInput } from '../../clients';
 import { toAuthUser } from './toAuthUser';
-import { RootState } from '../createStore';
+import { RootState } from '../types';
 import { getNullAuthState } from './getNullAuthState';
 
 type AuthenticateReturned = { user: AuthUser };

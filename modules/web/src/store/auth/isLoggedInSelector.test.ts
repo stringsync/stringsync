@@ -1,6 +1,6 @@
 import { createStore } from './../createStore';
 import { isLoggedInSelector } from './isLoggedInSelector';
-import { AppStore } from '../createStore';
+import { AppStore } from '../types';
 
 let store: AppStore;
 

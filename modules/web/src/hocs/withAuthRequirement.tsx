@@ -6,6 +6,31 @@ import { useSelector } from 'react-redux';
 import { RootState, isLoggedInSelector } from '../store';
 import { AuthRequirement } from '@stringsync/common';
 
+const isMeetingAuthReqs = (
+  authReqs: AuthRequirement,
+  isLoggedIn: boolean,
+  userRole: UserRole,
+  isAuthPending: boolean
+) => {
+  switch (authReqs) {
+    case AuthRequirement.NONE:
+      return true;
+    case AuthRequirement.LOGGED_IN:
+      return !isAuthPending && isLoggedIn;
+    case AuthRequirement.LOGGED_OUT:
+      return !isAuthPending && !isLoggedIn;
+    case AuthRequirement.LOGGED_IN_AS_STUDENT:
+      return !isAuthPending && isLoggedIn && gtEqStudent(userRole);
+    case AuthRequirement.LOGGED_IN_AS_TEACHER:
+      return !isAuthPending && isLoggedIn && gtEqTeacher(userRole);
+    case AuthRequirement.LOGGED_IN_AS_ADMIN:
+      return !isAuthPending && isLoggedIn && gtEqAdmin(userRole);
+    default:
+      // fail open for unhandled authReqs
+      return true;
+  }
+};
+
 export const withAuthRequirement = (authReqs: AuthRequirement) =>
   function<P>(Component: React.ComponentType<P>): React.FC<P> {
     return (props) => {
@@ -13,30 +38,9 @@ export const withAuthRequirement = (authReqs: AuthRequirement) =>
       const isLoggedIn = useSelector<RootState, boolean>(isLoggedInSelector);
       const userRole = useSelector<RootState, UserRole>((state) => state.auth.user.role);
       const returnToRoute = useSelector<RootState, string>((state) => state.history.returnToRoute);
-
-      const meetsAuthReqs = useRef(true);
       const history = useHistory();
 
-      switch (authReqs) {
-        case AuthRequirement.NONE:
-          meetsAuthReqs.current = true;
-          break;
-        case AuthRequirement.LOGGED_IN:
-          meetsAuthReqs.current = isLoggedIn;
-          break;
-        case AuthRequirement.LOGGED_OUT:
-          meetsAuthReqs.current = !isLoggedIn;
-          break;
-        case AuthRequirement.LOGGED_IN_AS_STUDENT:
-          meetsAuthReqs.current = isLoggedIn && gtEqStudent(userRole);
-          break;
-        case AuthRequirement.LOGGED_IN_AS_TEACHER:
-          meetsAuthReqs.current = isLoggedIn && gtEqTeacher(userRole);
-          break;
-        case AuthRequirement.LOGGED_IN_AS_ADMIN:
-          meetsAuthReqs.current = isLoggedIn && gtEqAdmin(userRole);
-          break;
-      }
+      const meetsAuthReqs = useRef(isMeetingAuthReqs(authReqs, isLoggedIn, userRole, isAuthPending));
 
       useEffect(() => {
         if (isAuthPending || meetsAuthReqs.current) {
@@ -56,15 +60,15 @@ export const withAuthRequirement = (authReqs: AuthRequirement) =>
             break;
           case AuthRequirement.LOGGED_IN_AS_STUDENT:
             message.error('must be logged in as a student');
-            history.push(isLoggedIn ? 'library' : 'login');
+            history.push(isLoggedIn ? returnToRoute : 'login');
             break;
           case AuthRequirement.LOGGED_IN_AS_TEACHER:
             message.error('must be logged in as a teacher');
-            history.push(isLoggedIn ? 'library' : 'login');
+            history.push(isLoggedIn ? returnToRoute : 'login');
             break;
           case AuthRequirement.LOGGED_IN_AS_ADMIN:
             message.error('must be logged in as a admin');
-            history.push(isLoggedIn ? 'library' : 'login');
+            history.push(isLoggedIn ? returnToRoute : 'login');
             break;
         }
       }, [history, isAuthPending, isLoggedIn, meetsAuthReqs, returnToRoute]);
