@@ -40,9 +40,9 @@ const WHITELISTED_CMDS = (() => {
 })();
 const GENERATE_MIGRATION_CMD = 'migration:generate';
 const GENERATE_SEED_CMD = 'seed:generate';
-const SEQUELIZE_PATH = path.resolve(ROOT_PATH, 'modules', 'sequelize', 'src');
-const MIGRATION_PATH = path.resolve(SEQUELIZE_PATH, 'migrations');
-const SEEDERS_PATH = path.resolve(SEQUELIZE_PATH, 'seeders');
+const TYPEORM_PATH = path.resolve(ROOT_PATH, 'modules', 'typeorm', 'src');
+const MIGRATION_PATH = path.resolve(TYPEORM_PATH, 'migrations');
+const SEEDERS_PATH = path.resolve(TYPEORM_PATH, 'seeders');
 const TEMPLATE = path.resolve(__dirname, '../templates', 'migration.template.ts');
 
 const getGenerateDirPath = (cmd: string) => {
@@ -99,7 +99,7 @@ export default class Sql extends Command {
     if (command.endsWith(':generate')) {
       if (!flags.name) {
         this.log('--name flag required');
-        this.exit(1);
+        return this.exit(1);
       }
       this.log(`running custom ${command} command on host`);
       this.log('copying migration.template.ts');
