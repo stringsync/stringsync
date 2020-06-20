@@ -1,7 +1,7 @@
 import React from 'react';
 import { AuthSync } from './AuthSync';
 import { Clients, createClients, UserRoles } from '../clients';
-import { render, waitFor, wait } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { Test } from '../testing';
 import { AppStore, createStore } from '../store';
 import { UserRole } from '@stringsync/domain';
