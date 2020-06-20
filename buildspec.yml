@@ -12,16 +12,15 @@ phases:
       - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
       - echo Cleaning up previous builds
       - ./bin/ss down server
-      - ./bin/ss down web
 
   build:
     commands:
       - echo Building images...
       - ./bin/ss build server
       - ./bin/ss build web
-  #     - echo Testing images...
-  #     - ./bin/ss test server
-  #     - ./bin/ss test web
+      - echo Testing images...
+      - ./bin/ss test server
+      - ./bin/ss test web
 
   post_build:
     commands:
@@ -29,7 +28,7 @@ phases:
         if [ "$CODEBUILD_BUILD_SUCCEEDING" -eq 1 ]
         then
           echo Pushing server images...
-          docker tag ss-server $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
+          docker tag stringsync/server $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
 
           echo Writing imagedefinitions.json...
@@ -37,15 +36,15 @@ phases:
           printf '[{"name":"server","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.json
 
           echo Adding REACT_APP_SERVER_URI to .env
-          echo REACT_APP_SERVER_URI=$REACT_APP_SERVER_URI >> web/.env
+          echo REACT_APP_SERVER_URI=$REACT_APP_SERVER_URI >> modules/web/.env
 
           echo Building web project...
-          (cd web && yarn install && yarn build)
+          (yarn web install && yarn web build)
 
           echo Moving everything into root build dir...
           mkdir deploy
           mv imagedefinitions.json deploy
-          mv web/build/* deploy
+          mv modules/web/build/* deploy
         else
           echo Build failed, skipping post_build step...
         fi
