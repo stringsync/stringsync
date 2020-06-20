@@ -5,7 +5,7 @@ export class CreateTagsTable1592688390349 implements MigrationInterface {
     queryRunner.query(`
       CREATE TABLE tags (
           id SERIAL PRIMARY KEY,
-          email TEXT UNIQUE NOT NULL
+          name TEXT UNIQUE NOT NULL
       );
     `);
   }
