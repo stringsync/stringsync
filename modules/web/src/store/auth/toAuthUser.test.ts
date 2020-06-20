@@ -1,9 +1,9 @@
 import { AuthUser } from './types';
-import { UserObject, UserRoles } from './../../clients';
+import { UserObject, UserRoles as TypegenUserRole } from './../../clients';
 import { toAuthUser } from './toAuthUser';
-import { UserRole } from '@stringsync/domain';
+import { UserRole as DomainUserRole } from '@stringsync/domain';
 
-it('converts a UserObject to an auth user', () => {
+it('converts a UserObject to an AuthUser', () => {
   const now = new Date().toJSON();
 
   const user: UserObject = {
@@ -11,7 +11,7 @@ it('converts a UserObject to an auth user', () => {
     createdAt: now,
     updatedAt: now,
     email: 'foo@bar.com',
-    role: UserRoles.TEACHER,
+    role: TypegenUserRole.TEACHER,
     username: 'foo',
     confirmedAt: now,
   };
@@ -19,7 +19,7 @@ it('converts a UserObject to an auth user', () => {
   const expected: AuthUser = {
     id: 1,
     email: 'foo@bar.com',
-    role: UserRole.TEACHER,
+    role: DomainUserRole.TEACHER,
     username: 'foo',
     confirmedAt: now,
   };

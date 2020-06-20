@@ -1,10 +1,10 @@
 import React from 'react';
 import { AuthSync } from './AuthSync';
-import { Clients, createClients, UserRoles } from '../clients';
+import { Clients, createClients, UserRoles as TypegenUserRole } from '../clients';
 import { render, waitFor } from '@testing-library/react';
 import { Test } from '../testing';
 import { AppStore, createStore } from '../store';
-import { UserRole } from '@stringsync/domain';
+import { UserRole as DomainUserRole } from '@stringsync/domain';
 import { getNullAuthUser } from '../store/auth/getNullAuthUser';
 import { GraphQLError } from 'graphql';
 
@@ -26,7 +26,7 @@ it('updates auth user when logged in', async () => {
         createdAt: now.toJSON(),
         updatedAt: now.toJSON(),
         email: 'email@domain.tld',
-        role: UserRoles.TEACHER,
+        role: TypegenUserRole.TEACHER,
         username: 'username',
         confirmedAt: now.toJSON(),
       },
@@ -45,7 +45,7 @@ it('updates auth user when logged in', async () => {
     id: 1,
     email: 'email@domain.tld',
     username: 'username',
-    role: UserRole.TEACHER,
+    role: DomainUserRole.TEACHER,
     confirmedAt: now.toJSON(),
   });
 });

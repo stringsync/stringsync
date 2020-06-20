@@ -1,12 +1,12 @@
-import { UserRole } from '@stringsync/domain';
-import { UserRoles } from './../../clients/graphqlTypes';
+import { UserRole as DomainUserRole } from '@stringsync/domain';
+import { UserRoles as TypegenUserRole } from './../../clients/graphqlTypes';
 import { toUserRole } from './toUserRole';
 
 it.each([
-  { graphqlType: UserRoles.STUDENT, domainType: UserRole.STUDENT },
-  { graphqlType: UserRoles.TEACHER, domainType: UserRole.TEACHER },
-  { graphqlType: UserRoles.ADMIN, domainType: UserRole.ADMIN },
-])('converts graphQL types to domain types', (t) => {
-  const userRole = toUserRole(t.graphqlType);
+  { typegenType: TypegenUserRole.STUDENT, domainType: DomainUserRole.STUDENT },
+  { typegenType: TypegenUserRole.TEACHER, domainType: DomainUserRole.TEACHER },
+  { typegenType: TypegenUserRole.ADMIN, domainType: DomainUserRole.ADMIN },
+])('converts typegen UserRoles to domain UserRoles', (t) => {
+  const userRole = toUserRole(t.typegenType);
   expect(userRole).toBe(t.domainType);
 });
