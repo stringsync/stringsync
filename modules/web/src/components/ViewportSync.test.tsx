@@ -1,11 +1,10 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { createStore, Breakpoint } from '../store';
+import { createStore, Breakpoint, AppStore } from '../store';
 import { Test } from '../testing';
 import { ViewportSync } from './ViewportSync';
-import { EnhancedStore } from '@reduxjs/toolkit';
 
-let store: EnhancedStore;
+let store: AppStore;
 
 beforeEach(() => {
   store = createStore();

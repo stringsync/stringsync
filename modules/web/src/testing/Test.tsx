@@ -1,11 +1,10 @@
 import React from 'react';
-import { Store } from 'redux';
 import { App } from '../app';
-import { createStore } from '../store';
+import { createStore, AppStore } from '../store';
 import { Clients, createClients } from '../clients';
 
 type Props = {
-  store?: Store;
+  store?: AppStore;
   clients?: Partial<Clients>;
 };
 

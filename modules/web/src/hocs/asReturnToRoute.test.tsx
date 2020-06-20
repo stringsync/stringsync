@@ -1,7 +1,6 @@
 import React from 'react';
 import { asReturnToRoute } from './asReturnToRoute';
-import { EnhancedStore } from '@reduxjs/toolkit';
-import { RootState, createStore } from '../store';
+import { createStore, AppStore } from '../store';
 import { render } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { Route, Router } from 'react-router';
@@ -10,7 +9,7 @@ import { Provider } from 'react-redux';
 const Dummy: React.FC = asReturnToRoute(() => <div data-testid="dummy"></div>);
 const Routes = () => <Route path="/dummy" component={Dummy} />;
 
-let store: EnhancedStore<RootState>;
+let store: AppStore;
 
 beforeEach(() => {
   store = createStore();
