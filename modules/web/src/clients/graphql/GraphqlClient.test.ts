@@ -12,9 +12,9 @@ it('makes graphql requests', async () => {
   const fetchSpy = jest.spyOn(window, 'fetch');
   fetchSpy.mockResolvedValue({ json: jest.fn().mockResolvedValue({ secret: 'secret' }) } as any);
 
-  const graphql = new GraphqlClient(uri);
+  const graphqlClient = new GraphqlClient(uri);
 
-  const res = await graphql.call(query, variables);
+  const res = await graphqlClient.call(query, variables);
 
   expect(res).toStrictEqual({ secret: 'secret' });
 });
