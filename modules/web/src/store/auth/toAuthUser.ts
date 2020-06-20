@@ -7,5 +7,5 @@ export const toAuthUser = (user: UserObject): AuthUser => ({
   email: user.email,
   role: toUserRole(user.role),
   username: user.username,
-  confirmedAt: user.confirmedAt,
+  confirmedAt: user.confirmedAt || null,
 });

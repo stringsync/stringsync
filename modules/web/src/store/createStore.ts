@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { deviceSlice } from './device';
 import { viewportSlice } from './viewport';
 import { authSlice } from './auth';
@@ -12,6 +12,11 @@ export const createStore = () => {
       auth: authSlice.reducer,
       history: historySlice.reducer,
     },
+    middleware: getDefaultMiddleware({
+      serializableCheck: {
+        ignoredPaths: ['auth/authenticate', 'auth/login', 'auth/signup'],
+      },
+    }),
   });
 };
 
