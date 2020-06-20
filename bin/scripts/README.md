@@ -40,7 +40,6 @@ USAGE
 * [`ss lint`](#ss-lint)
 * [`ss logs PROJECT [SERVICE]`](#ss-logs-project-service)
 * [`ss pretty`](#ss-pretty)
-* [`ss sql CMD`](#ss-sql-cmd)
 * [`ss test PROJECT`](#ss-test-project)
 * [`ss typegen [FILE]`](#ss-typegen-file)
 * [`ss up [PROJECT]`](#ss-up-project)
@@ -160,21 +159,6 @@ OPTIONS
 ```
 
 _See code: [src/commands/pretty.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/pretty.ts)_
-
-## `ss sql CMD`
-
-Runs sequelize commands on a running server service.
-
-```
-USAGE
-  $ ss sql CMD
-
-OPTIONS
-  -h, --help       show CLI help
-  -n, --name=name
-```
-
-_See code: [src/commands/sql.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/sql.ts)_
 
 ## `ss test PROJECT`
 
