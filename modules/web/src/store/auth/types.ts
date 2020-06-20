@@ -2,7 +2,7 @@ import { User } from '@stringsync/domain';
 import { PayloadAction, CaseReducer } from '@reduxjs/toolkit';
 
 export type AuthUser = Pick<User, 'id' | 'email' | 'username' | 'role'> & {
-  confirmedAt: string;
+  confirmedAt: null | string;
 };
 
 export type AuthState = {
@@ -12,7 +12,7 @@ export type AuthState = {
 };
 
 export type AuthReducers = {
-  confirmEmail: CaseReducer<AuthState, PayloadAction<{ confirmedAt: Date }>>;
+  confirmEmail: CaseReducer<AuthState, PayloadAction<{ confirmedAt: string }>>;
   clearAuth: CaseReducer<AuthState>;
   clearAuthErrors: CaseReducer<AuthState>;
 };

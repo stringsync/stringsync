@@ -1,8 +1,9 @@
+import { DeviceState } from './types';
 import { deviceSlice, setUserAgent } from './deviceSlice';
 import { configureStore, EnhancedStore } from '@reduxjs/toolkit';
 import { getDeviceState } from './getDeviceState';
 
-let store: EnhancedStore;
+let store: EnhancedStore<{ device: DeviceState }>;
 
 beforeEach(() => {
   store = configureStore({
