@@ -16,3 +16,21 @@ export const compareUserRoles = (role1: UserRole, role2: UserRole) => {
   }
   return 0;
 };
+
+export const ltStudent = (role: UserRole) => compareUserRoles(role, UserRole.STUDENT) < 0;
+export const ltEqStudent = (role: UserRole) => compareUserRoles(role, UserRole.STUDENT) <= 0;
+export const eqStudent = (role: UserRole) => compareUserRoles(role, UserRole.STUDENT) === 0;
+export const gtEqStudent = (role: UserRole) => compareUserRoles(role, UserRole.STUDENT) >= 0;
+export const gtStudent = (role: UserRole) => compareUserRoles(role, UserRole.STUDENT) > 0;
+
+export const ltTeacher = (role: UserRole) => compareUserRoles(role, UserRole.TEACHER) < 0;
+export const ltEqTeacher = (role: UserRole) => compareUserRoles(role, UserRole.TEACHER) <= 0;
+export const eqTeacher = (role: UserRole) => compareUserRoles(role, UserRole.TEACHER) === 0;
+export const gtEqTeacher = (role: UserRole) => compareUserRoles(role, UserRole.TEACHER) >= 0;
+export const gtTeacher = (role: UserRole) => compareUserRoles(role, UserRole.TEACHER) > 0;
+
+export const ltAdmin = (role: UserRole) => compareUserRoles(role, UserRole.ADMIN) < 0;
+export const ltEqAdmin = (role: UserRole) => compareUserRoles(role, UserRole.ADMIN) <= 0;
+export const eqAdmin = (role: UserRole) => compareUserRoles(role, UserRole.ADMIN) === 0;
+export const gtEqAdmin = (role: UserRole) => compareUserRoles(role, UserRole.ADMIN) >= 0;
+export const gtAdmin = (role: UserRole) => compareUserRoles(role, UserRole.ADMIN) > 0;

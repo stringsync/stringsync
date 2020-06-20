@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { message } from 'antd';
-import { compareUserRoles, UserRole } from '@stringsync/domain';
+import { UserRole, gtEqStudent, gtEqTeacher, gtEqAdmin } from '@stringsync/domain';
 import { useHistory } from 'react-router';
 import { useSelector } from 'react-redux';
 import { RootState, isLoggedInSelector } from '../store';
@@ -28,13 +28,13 @@ export const withAuthRequirement = (authReqs: AuthRequirement) =>
           meetsAuthReqs.current = !isLoggedIn;
           break;
         case AuthRequirement.LOGGED_IN_AS_STUDENT:
-          meetsAuthReqs.current = isLoggedIn && compareUserRoles(userRole, UserRole.STUDENT) >= 0;
+          meetsAuthReqs.current = isLoggedIn && gtEqStudent(userRole);
           break;
         case AuthRequirement.LOGGED_IN_AS_TEACHER:
-          meetsAuthReqs.current = isLoggedIn && compareUserRoles(userRole, UserRole.TEACHER) >= 0;
+          meetsAuthReqs.current = isLoggedIn && gtEqTeacher(userRole);
           break;
         case AuthRequirement.LOGGED_IN_AS_ADMIN:
-          meetsAuthReqs.current = isLoggedIn && compareUserRoles(userRole, UserRole.ADMIN) >= 0;
+          meetsAuthReqs.current = isLoggedIn && gtEqAdmin(userRole);
           break;
       }
 

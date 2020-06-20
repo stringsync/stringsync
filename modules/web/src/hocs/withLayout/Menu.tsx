@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useContext } from 'react';
 import { UserOutlined, UploadOutlined, CompassOutlined, SettingOutlined } from '@ant-design/icons';
-import { compareUserRoles, UserRole } from '@stringsync/domain';
+import { gtEqTeacher } from '@stringsync/domain';
 import { Avatar, Button, Col, Modal, Row, message } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
@@ -45,7 +45,7 @@ export const Menu: React.FC<Props> = (props) => {
 
   const [isModalVisible, setModalVisible] = useState(false);
   const history = useHistory();
-  const isGtEqTeacher = compareUserRoles(user.role, UserRole.TEACHER) >= 0;
+  const isGtEqTeacher = gtEqTeacher(user.role);
 
   const showModal = useCallback(() => setModalVisible(true), [setModalVisible]);
   const hideModal = useCallback(() => setModalVisible(false), [setModalVisible]);
