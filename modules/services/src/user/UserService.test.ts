@@ -1,7 +1,5 @@
 import { UserRepo } from '@stringsync/repos';
-import { TYPES } from './../../../container/src/constants';
-import { cleanupContainer } from './../../../container/src/cleanupContainer';
-import { createContainer } from '@stringsync/container';
+import { TYPES, cleanupContainer, createContainer } from '@stringsync/container';
 import { UserService } from './UserService';
 import { buildUser } from '@stringsync/domain';
 import { sortBy } from 'lodash';
