@@ -33,6 +33,9 @@ export class NotationObject implements Notation {
   @Field()
   featured!: boolean;
 
+  @Field()
+  transcriberId!: number;
+
   @Field((type) => UserObject)
   transcriber!: User;
 

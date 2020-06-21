@@ -11,6 +11,7 @@ export interface Notation {
   durationMs: number;
   bpm: number;
   featured: boolean;
-  transcriber: User | Promise<User>;
-  tags: Tag[] | Promise<Tag[]>;
+  transcriberId: number;
+  transcriber: User;
+  tags: Tag[];
 }

@@ -1,9 +1,13 @@
 import { NotationEntity } from './NotationEntity';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 'typeorm';
-import { Tag, Notation } from '@stringsync/domain';
+import { Tag } from '@stringsync/domain';
+
+interface Props extends Omit<Tag, 'notations'> {
+  notations: NotationEntity[] | Promise<NotationEntity[]>;
+}
 
 @Entity({ name: 'tags' })
-export class TagEntity implements Tag {
+export class TagEntity implements Props {
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -25,5 +29,5 @@ export class TagEntity implements Tag {
       referencedColumnName: 'id',
     },
   })
-  notations!: Promise<Notation[]>;
+  notations!: NotationEntity[] | Promise<NotationEntity[]>;
 }

@@ -1,9 +1,13 @@
 import { NotationEntity } from './NotationEntity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { User, UserRole, Notation } from '@stringsync/domain';
+import { User, UserRole } from '@stringsync/domain';
+
+interface Props extends Omit<User, 'notations'> {
+  notations: NotationEntity[] | Promise<NotationEntity[]>;
+}
 
 @Entity({ name: 'users' })
-export class UserEntity implements User {
+export class UserEntity implements Props {
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -44,5 +48,5 @@ export class UserEntity implements User {
     (type) => NotationEntity,
     (notation) => notation.transcriber
   )
-  notations!: Promise<Notation[]>;
+  notations!: NotationEntity[] | Promise<NotationEntity[]>;
 }

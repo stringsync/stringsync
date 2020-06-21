@@ -2,10 +2,15 @@ import { TagEntity } from './TagEntity';
 import { UserEntity } from './UserEntity';
 import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne, ManyToMany } from 'typeorm';
 import { JoinTable, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { Notation, Tag } from '@stringsync/domain';
+import { Notation } from '@stringsync/domain';
+
+interface Props extends Omit<Notation, 'transcriber' | 'tags'> {
+  transcriber: UserEntity | Promise<UserEntity>;
+  tags: TagEntity[] | Promise<TagEntity[]>;
+}
 
 @Entity({ name: 'notations' })
-export class NotationEntity implements Notation {
+export class NotationEntity implements Props {
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -38,7 +43,10 @@ export class NotationEntity implements Notation {
     (transcriber) => transcriber.notations
   )
   @JoinColumn({ name: 'transcriber_id' })
-  transcriber!: UserEntity;
+  transcriber!: UserEntity | Promise<UserEntity>;
+
+  @Column({ type: 'int', nullable: true })
+  transcriberId!: number;
 
   @ManyToMany(
     (type) => TagEntity,
@@ -55,5 +63,5 @@ export class NotationEntity implements Notation {
       referencedColumnName: 'id',
     },
   })
-  tags!: Promise<Tag[]>;
+  tags!: TagEntity[] | Promise<TagEntity[]>;
 }

@@ -13,7 +13,7 @@ export interface User {
   resetPasswordToken: string | null;
   resetPasswordTokenSentAt: Date | null;
   avatarUrl: string | null;
-  notations: Notation[] | Promise<Notation[]>;
+  notations: Notation[];
 }
 
 export enum UserRole {
