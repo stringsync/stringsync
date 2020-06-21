@@ -12,6 +12,6 @@ export interface Notation {
   bpm: number;
   featured: boolean;
   transcriberId: number;
-  transcriber: User;
+  transcriber?: User;
   tags: Tag[];
 }
