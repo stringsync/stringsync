@@ -1,5 +1,6 @@
-import { ObjectType, Field, ID, registerEnumType, UseMiddleware } from 'type-graphql';
-import { User, UserRole } from '@stringsync/domain';
+import { NotationObject } from './../Notation';
+import { ObjectType, Field, ID, registerEnumType } from 'type-graphql';
+import { User, UserRole, Notation } from '@stringsync/domain';
 import { RestrictedField } from './RestrictedField';
 import { IsDataOwner } from './IsDataOwner';
 
@@ -38,4 +39,7 @@ export class UserObject implements PublicFacingUser {
   @Field((type) => Date, { nullable: true })
   @RestrictedField(IsDataOwner)
   resetPasswordTokenSentAt!: Date | null;
+
+  @Field((type) => [NotationObject])
+  notations!: Notation[];
 }

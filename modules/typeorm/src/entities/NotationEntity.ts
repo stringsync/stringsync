@@ -1,5 +1,5 @@
 import { UserEntity } from '@stringsync/typeorm';
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne } from 'typeorm';
 import { Notation } from '@stringsync/domain';
 
 @Entity({ name: 'tags' })
@@ -31,7 +31,10 @@ export class NotationEntity implements Notation {
   @Column()
   featured!: boolean;
 
-  @OneToOne((type) => UserEntity)
-  @JoinColumn()
-  transcriberId!: number;
+  @ManyToOne(
+    (type) => UserEntity,
+    (transcriber) => transcriber.notations
+  )
+  @JoinColumn({ name: 'transcriber_id' })
+  transcriber!: UserEntity;
 }

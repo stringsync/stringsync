@@ -1,3 +1,5 @@
+import { User } from './../user';
+
 export interface Notation {
   id: number;
   createdAt: Date;
@@ -8,5 +10,5 @@ export interface Notation {
   durationMs: number;
   bpm: number;
   featured: boolean;
-  transcriberId: number;
+  transcriber: User | Promise<User>;
 }

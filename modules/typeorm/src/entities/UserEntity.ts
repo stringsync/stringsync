@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { NotationEntity } from './NotationEntity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { User, UserRole } from '@stringsync/domain';
 
 @Entity({ name: 'users' })
@@ -38,4 +39,10 @@ export class UserEntity implements User {
 
   @Column({ type: 'text', nullable: true })
   avatarUrl!: string | null;
+
+  @OneToMany(
+    (type) => NotationEntity,
+    (notation) => notation.transcriber
+  )
+  notations!: Promise<NotationEntity[]>;
 }

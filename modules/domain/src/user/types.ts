@@ -1,3 +1,5 @@
+import { Notation } from '../notation';
+
 export interface User {
   id: number;
   createdAt: Date;
@@ -11,6 +13,7 @@ export interface User {
   resetPasswordToken: string | null;
   resetPasswordTokenSentAt: Date | null;
   avatarUrl: string | null;
+  notations: Notation[] | Promise<Notation[]>;
 }
 
 export enum UserRole {
