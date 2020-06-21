@@ -17,11 +17,11 @@ export class TagEntity implements Tag {
   @JoinTable({
     name: 'taggings',
     joinColumn: {
-      name: 'tags',
+      name: 'tag_id',
       referencedColumnName: 'id',
     },
     inverseJoinColumn: {
-      name: 'notations',
+      name: 'notation_id',
       referencedColumnName: 'id',
     },
   })

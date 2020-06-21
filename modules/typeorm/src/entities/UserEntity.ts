@@ -1,5 +1,5 @@
 import { NotationEntity } from './NotationEntity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { User, UserRole, Notation } from '@stringsync/domain';
 
 @Entity({ name: 'users' })
@@ -7,10 +7,10 @@ export class UserEntity implements User {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
+  @CreateDateColumn({ type: 'timestamp' })
   createdAt!: Date;
 
-  @Column()
+  @UpdateDateColumn({ type: 'timestamp' })
   updatedAt!: Date;
 
   @Column()

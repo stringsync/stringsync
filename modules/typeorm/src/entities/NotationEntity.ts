@@ -1,17 +1,18 @@
 import { TagEntity } from './TagEntity';
-import { UserEntity } from '@stringsync/typeorm';
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
+import { UserEntity } from './UserEntity';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne, ManyToMany } from 'typeorm';
+import { JoinTable, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Notation, Tag } from '@stringsync/domain';
 
-@Entity({ name: 'tags' })
+@Entity({ name: 'notations' })
 export class NotationEntity implements Notation {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
+  @CreateDateColumn({ type: 'timestamp' })
   createdAt!: Date;
 
-  @Column()
+  @UpdateDateColumn({ type: 'timestamp' })
   updatedAt!: Date;
 
   @Column()
@@ -20,16 +21,16 @@ export class NotationEntity implements Notation {
   @Column()
   artistName!: string;
 
-  @Column()
+  @Column({ type: 'integer', default: 0 })
   deadTimeMs!: number;
 
-  @Column()
+  @Column({ type: 'integer', default: 0 })
   durationMs!: number;
 
-  @Column()
+  @Column({ type: 'decimal', default: 120 })
   bpm!: number;
 
-  @Column()
+  @Column({ default: false })
   featured!: boolean;
 
   @ManyToOne(
@@ -46,11 +47,11 @@ export class NotationEntity implements Notation {
   @JoinTable({
     name: 'taggings',
     joinColumn: {
-      name: 'notations',
+      name: 'notation_id',
       referencedColumnName: 'id',
     },
     inverseJoinColumn: {
-      name: 'tags',
+      name: 'tag_id',
       referencedColumnName: 'id',
     },
   })

@@ -1,3 +1,5 @@
+import { TagEntity } from './../entities/TagEntity';
+import { NotationEntity } from './../entities/NotationEntity';
 import { getContainerConfig } from '@stringsync/config';
 import * as bcrypt from 'bcrypt';
 import { connectToDb } from '../connectToDb';
@@ -9,11 +11,11 @@ const PASSWORD = 'password';
 const HASH_ROUNDS = 10;
 const NOW = new Date();
 
-const seedUsers = async (connection: Connection) => {
+const seed = async (connection: Connection) => {
   const encryptedPassword = await bcrypt.hash(PASSWORD, HASH_ROUNDS);
-  const userRepo = connection.getRepository(UserEntity);
 
-  const user1 = userRepo.create({
+  const userRepo = connection.getRepository(UserEntity);
+  let user1 = userRepo.create({
     username: 'jaredplaysguitar',
     email: 'jared@gmail.com',
     role: UserRole.ADMIN,
@@ -22,7 +24,7 @@ const seedUsers = async (connection: Connection) => {
     encryptedPassword: encryptedPassword,
     avatarUrl: 'https://images.unsplash.com/photo-1543610892-0b1f7e6d8ac1',
   });
-  const user2 = userRepo.create({
+  let user2 = userRepo.create({
     username: 'jessicaplayspiano',
     email: 'jessica@hotmail.com',
     role: UserRole.STUDENT,
@@ -31,7 +33,7 @@ const seedUsers = async (connection: Connection) => {
     encryptedPassword: encryptedPassword,
     avatarUrl: 'https://images.unsplash.com/photo-1524593689594-aae2f26b75ab',
   });
-  const user3 = userRepo.create({
+  let user3 = userRepo.create({
     username: 'jordanplaysflute',
     email: 'jordan@yahoo.com',
     role: UserRole.TEACHER,
@@ -40,8 +42,24 @@ const seedUsers = async (connection: Connection) => {
     encryptedPassword: encryptedPassword,
     avatarUrl: 'https://images.unsplash.com/photo-1552673304-23f6ad21aada',
   });
-  const users = userRepo.create([user1, user2, user3]);
-  await userRepo.save(users);
+  user1 = await userRepo.save(user1);
+  user2 = await userRepo.save(user2);
+  user3 = await userRepo.save(user3);
+
+  const notationRepo = connection.getRepository(NotationEntity);
+  let notation1 = notationRepo.create({
+    songName: 'good mourning',
+    artistName: 'jaredplaysguitar',
+    transcriber: user1,
+  });
+  notation1 = await notationRepo.save(notation1);
+
+  const tagRepo = connection.getRepository(TagEntity);
+  let tag1 = tagRepo.create({
+    name: 'funeral',
+    notations: [notation1] as any,
+  });
+  tag1 = await tagRepo.save(tag1);
 };
 
 const main = async () => {
@@ -49,7 +67,7 @@ const main = async () => {
   const connection = await connectToDb(config);
 
   try {
-    await seedUsers(connection);
+    await seed(connection);
   } finally {
     await connection.close();
   }

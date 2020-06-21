@@ -11,7 +11,7 @@ export const connectToDb = async (config: ContainerConfig) => {
     username: config.DB_USERNAME,
     password: config.DB_PASSWORD,
     database: config.DB_NAME,
-    entities: [entities.UserEntity],
+    entities: [entities.UserEntity, entities.NotationEntity, entities.TagEntity],
     synchronize: false,
     logging: false,
     namingStrategy: new SnakeNamingStrategy(),
