@@ -1,6 +1,6 @@
 import { NotationEntity } from './NotationEntity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { User, UserRole } from '@stringsync/domain';
+import { User, UserRole, Notation } from '@stringsync/domain';
 
 @Entity({ name: 'users' })
 export class UserEntity implements User {
@@ -44,5 +44,5 @@ export class UserEntity implements User {
     (type) => NotationEntity,
     (notation) => notation.transcriber
   )
-  notations!: Promise<NotationEntity[]>;
+  notations!: Promise<Notation[]>;
 }

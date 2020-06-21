@@ -1,6 +1,7 @@
+import { TagEntity } from './TagEntity';
 import { UserEntity } from '@stringsync/typeorm';
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne } from 'typeorm';
-import { Notation } from '@stringsync/domain';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
+import { Notation, Tag } from '@stringsync/domain';
 
 @Entity({ name: 'tags' })
 export class NotationEntity implements Notation {
@@ -37,4 +38,21 @@ export class NotationEntity implements Notation {
   )
   @JoinColumn({ name: 'transcriber_id' })
   transcriber!: UserEntity;
+
+  @ManyToMany(
+    (type) => TagEntity,
+    (tag) => tag.notations
+  )
+  @JoinTable({
+    name: 'taggings',
+    joinColumn: {
+      name: 'notations',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'tags',
+      referencedColumnName: 'id',
+    },
+  })
+  tags!: Promise<Tag[]>;
 }

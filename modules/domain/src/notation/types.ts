@@ -1,3 +1,4 @@
+import { Tag } from './../tag';
 import { User } from './../user';
 
 export interface Notation {
@@ -11,4 +12,5 @@ export interface Notation {
   bpm: number;
   featured: boolean;
   transcriber: User | Promise<User>;
+  tags: Tag[] | Promise<Tag[]>;
 }
