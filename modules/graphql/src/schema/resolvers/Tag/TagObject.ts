@@ -1,5 +1,4 @@
-import { UserObject } from './../User';
-import { Tag, User, Notation } from '@stringsync/domain';
+import { Tag, Notation } from '@stringsync/domain';
 import { ObjectType, Field, ID } from 'type-graphql';
 
 @ObjectType()
