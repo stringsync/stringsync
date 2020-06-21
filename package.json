@@ -9,9 +9,10 @@
   "scripts": {
     "graphql": "yarn workspace @stringsync/graphql",
     "typeorm": "yarn workspace @stringsync/typeorm",
+    "sequelize": "yarn workspace @stringsync/sequelize",
     "web": "yarn workspace @stringsync/web",
-    "dev": "yarn typeorm dev && yarn graphql dev",
-    "pretest:server": "yarn typeorm migrate",
+    "dev": "yarn sequelize dev && yarn graphql dev",
+    "pretest:server": "yarn sequelize migrate",
     "test:server": "node --expose-gc ./node_modules/.bin/jest",
     "test:web": "yarn web test"
   },
