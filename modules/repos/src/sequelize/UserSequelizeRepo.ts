@@ -13,7 +13,7 @@ export class UserSequelizeRepo implements UserRepo {
     });
   }
 
-  async find(id: number): Promise<User | null> {
+  async find(id: string): Promise<User | null> {
     return await UserModel.findByPk(id, { raw: true });
   }
 
