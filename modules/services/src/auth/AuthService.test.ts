@@ -20,7 +20,7 @@ describe('getSessionUser', () => {
     const sessionUser = await authService.getSessionUser('');
 
     expect(sessionUser).toStrictEqual({
-      id: 0,
+      id: '',
       role: UserRole.STUDENT,
       isLoggedIn: false,
     });
@@ -30,7 +30,7 @@ describe('getSessionUser', () => {
     const sessionUser = await authService.getSessionUser('');
 
     expect(sessionUser).toStrictEqual({
-      id: 0,
+      id: '',
       role: UserRole.STUDENT,
       isLoggedIn: false,
     });
