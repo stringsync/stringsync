@@ -11,5 +11,4 @@ export const connectToDb = (config: ContainerConfig) =>
     username: config.DB_USERNAME,
     password: config.DB_PASSWORD,
     models: [UserModel, NotationModel, TaggingModel, TagModel],
-    omitNull: true,
   });
