@@ -10,7 +10,6 @@ COPY ./modules/config/package.json ./modules/config/
 COPY ./modules/domain/package.json ./modules/domain/
 COPY ./modules/repos/package.json ./modules/repos/
 COPY ./modules/graphql/package.json ./modules/graphql/
-COPY ./modules/typeorm/package.json ./modules/typeorm/
 COPY ./modules/services/package.json ./modules/services/
 COPY ./modules/dataloaders/package.json ./modules/dataloaders/
 COPY ./modules/web/package.json ./modules/web/

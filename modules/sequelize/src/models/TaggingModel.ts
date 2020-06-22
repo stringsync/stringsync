@@ -1,13 +1,15 @@
 import { TagModel } from './TagModel';
 import { NotationModel } from './NotationModel';
-import { Table, Model, PrimaryKey, Column, ForeignKey } from 'sequelize-typescript';
+import { Table, Model, PrimaryKey, Column, ForeignKey, AutoIncrement } from 'sequelize-typescript';
 import { Tagging } from '@stringsync/domain';
 
 @Table({
   tableName: 'taggings',
+  underscored: true,
 })
 export class TaggingModel extends Model<TaggingModel> implements Tagging {
   @PrimaryKey
+  @AutoIncrement
   @Column
   id!: number;
 

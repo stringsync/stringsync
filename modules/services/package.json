@@ -9,14 +9,15 @@
     "@stringsync/container": "1.0.0",
     "@stringsync/domain": "1.0.0",
     "@stringsync/repos": "1.0.0",
-    "@stringsync/typeorm": "1.0.0",
+    "bcrypt": "^5.0.0",
     "inversify": "^5.0.1",
     "lodash": "^4.17.15",
     "redis": "^3.0.2",
-    "typeorm": "^0.2.25",
+    "sequelize-typescript": "^1.1.0",
     "uuid": "^8.1.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^3.0.0",
     "@types/lodash": "^4.14.155",
     "@types/redis": "^2.8.22"
   }

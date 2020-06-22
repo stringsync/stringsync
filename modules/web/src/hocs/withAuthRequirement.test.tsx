@@ -34,7 +34,7 @@ describe('with AuthRequirement.NONE', () => {
     const store = createStore({
       auth: {
         user: {
-          id: 1,
+          id: '23g23g32',
           confirmedAt: new Date().toJSON(),
           email: 'email@domain.tld',
           role: UserRole.STUDENT,
@@ -65,7 +65,7 @@ describe('with AuthRequirement.LOGGED_IN', () => {
       auth: {
         isPending: false,
         user: {
-          id: 1,
+          id: '23h23h2h',
           confirmedAt: new Date().toJSON(),
           email: 'email@domain.tld',
           role: UserRole.STUDENT,
@@ -116,7 +116,7 @@ describe('with AuthRequirement.LOGGED_IN_AS_STUDENT', () => {
         auth: {
           isPending: false,
           user: {
-            id: 1,
+            id: 'g23g32g',
             confirmedAt: new Date().toJSON(),
             email: 'email@domain.tld',
             role,
@@ -166,7 +166,7 @@ describe('with AuthRequirement.LOGGED_IN_AS_TEACHER', () => {
       auth: {
         isPending: false,
         user: {
-          id: 1,
+          id: '32g23g23',
           confirmedAt: new Date().toJSON(),
           email: 'email@domain.tld',
           role,
@@ -192,7 +192,7 @@ describe('with AuthRequirement.LOGGED_IN_AS_TEACHER', () => {
       auth: {
         isPending: false,
         user: {
-          id: 1,
+          id: 'f32f23gg',
           confirmedAt: new Date().toJSON(),
           email: 'email@domain.tld',
           role: UserRole.STUDENT,
@@ -241,7 +241,7 @@ describe('with AuthRequirement.LOGGED_IN_AS_ADMIN', () => {
       auth: {
         isPending: false,
         user: {
-          id: 1,
+          id: 'g23g32g',
           confirmedAt: new Date().toJSON(),
           email: 'email@domain.tld',
           role: UserRole.ADMIN,
@@ -267,7 +267,7 @@ describe('with AuthRequirement.LOGGED_IN_AS_ADMIN', () => {
       auth: {
         isPending: false,
         user: {
-          id: 1,
+          id: 'sadf312g',
           confirmedAt: new Date().toJSON(),
           email: 'email@domain.tld',
           role,

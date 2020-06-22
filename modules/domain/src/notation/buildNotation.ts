@@ -15,7 +15,6 @@ export const buildNotation = (attrs: Partial<Notation> = {}): Notation => {
     durationMs: 1,
     featured: true,
     songName: randStr(8),
-    tags: [],
     transcriberId: 0,
     ...attrs,
   };

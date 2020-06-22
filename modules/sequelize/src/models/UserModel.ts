@@ -1,17 +1,20 @@
+import { injectable } from 'inversify';
+import { AllowNull, Default, AutoIncrement } from 'sequelize-typescript';
 import { Table, Model, PrimaryKey, Column, CreatedAt, UpdatedAt, HasMany, DataType } from 'sequelize-typescript';
-import { AllowNull } from 'sequelize-typescript';
 import { User, UserRole, USER_ROLES } from '@stringsync/domain';
 import { NotationModel } from './NotationModel';
 
 @Table({
   tableName: 'users',
+  underscored: true,
 })
+@injectable()
 export class UserModel extends Model<UserModel> implements User {
   @PrimaryKey
   @Column
-  id!: number;
+  id!: string;
 
-  @HasMany(() => NotationModel)
+  @HasMany(() => NotationModel, 'transcriberId')
   notations?: NotationModel[];
 
   @CreatedAt
@@ -31,26 +34,27 @@ export class UserModel extends Model<UserModel> implements User {
   @Column
   encryptedPassword!: string;
 
-  @Column({ type: DataType.ENUM(...USER_ROLES) })
+  @Default(UserRole.STUDENT)
+  @Column(DataType.ENUM(...USER_ROLES))
   role!: UserRole;
 
-  @Column
   @AllowNull
+  @Column
   confirmationToken!: string;
 
-  @Column
   @AllowNull
+  @Column
   confirmedAt!: Date;
 
-  @Column
   @AllowNull
+  @Column
   resetPasswordToken!: string;
 
-  @Column
   @AllowNull
+  @Column
   resetPasswordTokenSentAt!: Date;
 
-  @Column
   @AllowNull
+  @Column
   avatarUrl!: string;
 }

@@ -11,7 +11,7 @@ registerEnumType(UserRole, { name: 'UserRoles' });
 @ObjectType()
 export class UserObject implements PublicFacingUser {
   @Field((type) => ID)
-  id!: number;
+  id!: string;
 
   @Field()
   createdAt!: Date;

@@ -17,7 +17,7 @@ export class AuthService {
     this.userRepo = userRepo;
   }
 
-  async getSessionUser(id: number): Promise<SessionUser> {
+  async getSessionUser(id: string): Promise<SessionUser> {
     const user = await this.userRepo.find(id);
     return this.toSessionUser(user);
   }
@@ -26,10 +26,10 @@ export class AuthService {
     if (user) {
       return { id: user.id, role: user.role, isLoggedIn: true };
     }
-    return { id: 0, role: UserRole.STUDENT, isLoggedIn: false };
+    return { id: '', role: UserRole.STUDENT, isLoggedIn: false };
   }
 
-  async whoami(id: number): Promise<User | null> {
+  async whoami(id: string): Promise<User | null> {
     if (!id) {
       return null;
     }
@@ -59,7 +59,7 @@ export class AuthService {
     return user;
   }
 
-  async confirmEmail(id: number, confirmationToken: string, confirmedAt: Date): Promise<User> {
+  async confirmEmail(id: string, confirmationToken: string, confirmedAt: Date): Promise<User> {
     const user = await this.userRepo.find(id);
 
     if (!user) {
@@ -81,7 +81,7 @@ export class AuthService {
     return confirmedUser;
   }
 
-  async resetConfirmationToken(id: number): Promise<User | null> {
+  async resetConfirmationToken(id: string): Promise<User | null> {
     const user = await this.userRepo.find(id);
 
     if (!user) {

@@ -9,10 +9,8 @@
     "@stringsync/common": "1.0.0",
     "@stringsync/container": "1.0.0",
     "@stringsync/domain": "1.0.0",
-    "@stringsync/typeorm": "1.0.0",
     "inversify": "^5.0.1",
-    "lodash": "^4.17.15",
-    "typeorm": "^0.2.25"
+    "lodash": "^4.17.15"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.155"

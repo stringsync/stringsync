@@ -17,7 +17,7 @@ afterEach(async () => {
 
 describe('getSessionUser', () => {
   it('returns a null session user when the id is empty', async () => {
-    const sessionUser = await authService.getSessionUser(0);
+    const sessionUser = await authService.getSessionUser('');
 
     expect(sessionUser).toStrictEqual({
       id: 0,
@@ -27,7 +27,7 @@ describe('getSessionUser', () => {
   });
 
   it('returns a null session user when the id does not exist', async () => {
-    const sessionUser = await authService.getSessionUser(0);
+    const sessionUser = await authService.getSessionUser('');
 
     expect(sessionUser).toStrictEqual({
       id: 0,

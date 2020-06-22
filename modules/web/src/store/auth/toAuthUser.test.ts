@@ -7,7 +7,7 @@ it('converts a UserObject to an AuthUser', () => {
   const now = new Date().toJSON();
 
   const user: UserObject = {
-    id: '1',
+    id: 'asdfasdf',
     createdAt: now,
     updatedAt: now,
     email: 'foo@bar.com',
@@ -17,7 +17,7 @@ it('converts a UserObject to an AuthUser', () => {
   };
 
   const expected: AuthUser = {
-    id: 1,
+    id: 'asdfasdf',
     email: 'foo@bar.com',
     role: DomainUserRole.TEACHER,
     username: 'foo',

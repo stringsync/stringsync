@@ -3,7 +3,7 @@ import { AuthUser } from './types';
 import { toUserRole } from './toUserRole';
 
 export const toAuthUser = (user: UserObject): AuthUser => ({
-  id: parseInt(user.id, 10),
+  id: user.id,
   email: user.email,
   role: toUserRole(user.role),
   username: user.username,

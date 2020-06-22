@@ -8,7 +8,6 @@
   ],
   "scripts": {
     "graphql": "yarn workspace @stringsync/graphql",
-    "typeorm": "yarn workspace @stringsync/typeorm",
     "sequelize": "yarn workspace @stringsync/sequelize",
     "web": "yarn workspace @stringsync/web",
     "dev": "yarn sequelize dev && yarn graphql dev",

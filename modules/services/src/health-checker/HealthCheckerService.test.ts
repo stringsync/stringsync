@@ -16,7 +16,7 @@ afterEach(async () => {
 
 describe('checkHealth', () => {
   it('authenticates the db connection', async () => {
-    const spy = jest.spyOn(healthCheckerService.connection, 'query');
+    const spy = jest.spyOn(healthCheckerService.sequelize, 'authenticate');
 
     await healthCheckerService.checkHealth();
 

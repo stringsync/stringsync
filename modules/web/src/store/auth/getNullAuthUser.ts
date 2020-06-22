@@ -2,7 +2,7 @@ import { AuthUser } from './types';
 import { UserRole } from '@stringsync/domain';
 
 export const getNullAuthUser = (): AuthUser => ({
-  id: 0,
+  id: '',
   username: '',
   email: '',
   role: UserRole.STUDENT,

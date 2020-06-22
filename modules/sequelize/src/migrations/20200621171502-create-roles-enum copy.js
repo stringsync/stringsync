@@ -1,7 +1,7 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.query(`
-      CREATE TYPE roles AS ENUM ('student', 'teacher', 'admin');
+      CREATE TYPE roles AS ENUM ('STUDENT', 'TEACHER', 'ADMIN');
     `);
   },
 

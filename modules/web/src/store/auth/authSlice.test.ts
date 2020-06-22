@@ -38,7 +38,7 @@ it('clears auth', () => {
         errors: ['error1', 'error2', 'error3'],
         isPending: true,
         user: {
-          id: 1,
+          id: '2g323gs',
           role: UserRole.TEACHER,
         },
       },
@@ -60,7 +60,7 @@ it('clears auth errors', () => {
         errors: ['error1', 'error2', 'error3'],
         isPending: true,
         user: {
-          id: 1,
+          id: 'adsfsadf3',
           username: 'foo',
           role: UserRole.TEACHER,
         },
@@ -96,7 +96,7 @@ describe('authenticate', () => {
           errors: ['error1', 'error2', 'error3'],
           isPending: true,
           user: {
-            id: 1,
+            id: 'df32f32fg',
             role: UserRole.TEACHER,
           },
         },

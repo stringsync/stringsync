@@ -1,19 +1,21 @@
 import { TaggingModel } from './TaggingModel';
-import { Table, Model, PrimaryKey, Column, CreatedAt, UpdatedAt, BelongsTo, HasMany } from 'sequelize-typescript';
-import { BelongsToMany } from 'sequelize-typescript';
+import { BelongsToMany, AutoIncrement, ForeignKey } from 'sequelize-typescript';
+import { Table, Model, PrimaryKey, Column, CreatedAt, UpdatedAt, BelongsTo } from 'sequelize-typescript';
 import { Notation } from '@stringsync/domain';
 import { UserModel } from './UserModel';
 import { TagModel } from './TagModel';
 
 @Table({
   tableName: 'notations',
+  underscored: true,
 })
 export class NotationModel extends Model<NotationModel> implements Notation {
   @PrimaryKey
+  @AutoIncrement
   @Column
   id!: number;
 
-  @BelongsTo(() => UserModel)
+  @BelongsTo(() => UserModel, 'transcriberId')
   transcriber!: UserModel;
 
   @BelongsToMany(
@@ -48,6 +50,7 @@ export class NotationModel extends Model<NotationModel> implements Notation {
   @Column
   featured!: boolean;
 
+  @ForeignKey(() => UserModel)
   @Column
   transcriberId!: number;
 }

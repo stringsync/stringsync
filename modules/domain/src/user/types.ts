@@ -1,7 +1,5 @@
-import { Notation } from '../notation';
-
 export interface User {
-  id: number;
+  id: string;
   createdAt: Date;
   updatedAt: Date;
   username: string;
@@ -13,11 +11,10 @@ export interface User {
   resetPasswordToken: string | null;
   resetPasswordTokenSentAt: Date | null;
   avatarUrl: string | null;
-  notations?: Notation[];
 }
 
 export enum UserRole {
-  STUDENT = 'student',
-  TEACHER = 'teacher',
-  ADMIN = 'admin',
+  STUDENT = 'STUDENT',
+  TEACHER = 'TEACHER',
+  ADMIN = 'ADMIN',
 }
