@@ -6,6 +6,7 @@ export interface Repo<T extends object> {
   destroyAll(): Promise<void>;
   create(entity: Partial<T>): Promise<T>;
   update(entity: T): Promise<void>;
+  count(): Promise<number>;
 }
 
 export interface UserRepo extends Repo<User> {
