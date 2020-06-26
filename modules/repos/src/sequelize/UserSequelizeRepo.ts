@@ -46,8 +46,4 @@ export class UserSequelizeRepo implements UserRepo {
     }
     return await this.userModel.update(attrs, { where: { id: attrs.id } });
   }
-
-  async destroyAll(): Promise<void> {
-    await this.userModel.destroy({ where: {}, truncate: true });
-  }
 }

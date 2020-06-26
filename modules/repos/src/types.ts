@@ -3,7 +3,6 @@ import { User, Notation } from '@stringsync/domain';
 export interface Repo<T extends object> {
   find(id: string): Promise<T | null>;
   findAll(): Promise<T[]>;
-  destroyAll(): Promise<void>;
   create(entity: Partial<T>): Promise<T>;
   bulkCreate(entity: Partial<T>[]): Promise<T[]>;
   update(entity: T): Promise<void>;
