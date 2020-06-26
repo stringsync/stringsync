@@ -66,9 +66,25 @@ describe('find', () => {
 
 describe('findAll', () => {
   it('returns all user records', async () => {
-    const users1 = [buildUser(), buildUser(), buildUser()];
-    await userRepo.bulkCreate(users1);
-    const users2 = await userRepo.findAll();
-    expect(sortBy(users2, 'id')).toStrictEqual(sortBy(users1, 'id'));
+    const users = [buildUser(), buildUser(), buildUser()];
+    await userRepo.bulkCreate(users);
+    const foundUsers = await userRepo.findAll();
+    expect(sortBy(foundUsers, 'id')).toStrictEqual(sortBy(users, 'id'));
+  });
+});
+
+describe('findByUsernameOrEmail', () => {
+  it('finds by username', async () => {
+    const user = buildUser();
+    await userRepo.create(user);
+    const foundUser = await userRepo.findByUsernameOrEmail(user.username);
+    expect(foundUser).toStrictEqual(user);
+  });
+
+  it('finds by email', async () => {
+    const user = buildUser();
+    await userRepo.create(user);
+    const foundUser = await userRepo.findByUsernameOrEmail(user.email);
+    expect(foundUser).toStrictEqual(user);
   });
 });
