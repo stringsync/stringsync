@@ -1,22 +1,17 @@
 import { UserRepo } from '@stringsync/repos';
-import { TYPES, cleanupContainer, createContainer } from '@stringsync/container';
+import { TYPES, useTestContainer } from '@stringsync/container';
 import { UserService } from './UserService';
 import { buildUser } from '@stringsync/domain';
 import { sortBy } from 'lodash';
-import { Container } from 'inversify';
+
+const container = useTestContainer();
 
 let userService: UserService;
 let userRepo: UserRepo;
-let container: Container;
 
-beforeEach(async () => {
-  container = await createContainer();
+beforeEach(() => {
   userService = container.get<UserService>(TYPES.UserService);
   userRepo = userService.userRepo;
-});
-
-afterEach(async () => {
-  cleanupContainer(container);
 });
 
 describe.skip('find', () => {

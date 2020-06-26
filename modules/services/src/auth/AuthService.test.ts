@@ -1,18 +1,13 @@
 import { AuthService } from './AuthService';
-import { Container } from 'inversify';
-import { createContainer, cleanupContainer, TYPES } from '@stringsync/container';
+import { useTestContainer, TYPES } from '@stringsync/container';
 import { UserRole, buildUser } from '@stringsync/domain';
 
-let container: Container;
+const container = useTestContainer();
+
 let authService: AuthService;
 
 beforeEach(async () => {
-  container = await createContainer();
   authService = container.get<AuthService>(TYPES.AuthService);
-});
-
-afterEach(async () => {
-  await cleanupContainer(container);
 });
 
 describe('getSessionUser', () => {

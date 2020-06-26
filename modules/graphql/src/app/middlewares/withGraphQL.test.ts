@@ -1,17 +1,8 @@
-import { createContainer, cleanupContainer } from '@stringsync/container';
+import { useTestContainer } from '@stringsync/container';
 import { withGraphQL } from './withGraphQL';
-import { Container } from 'inversify';
 import { generateSchema } from '../../schema';
 
-let container: Container;
-
-beforeEach(async () => {
-  container = await createContainer();
-});
-
-afterEach(async () => {
-  await cleanupContainer(container);
-});
+const container = useTestContainer();
 
 it('runs without crashing', () => {
   const schema = generateSchema(container);

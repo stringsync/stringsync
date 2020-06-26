@@ -1,17 +1,11 @@
-import { createContainer, cleanupContainer, TYPES } from '@stringsync/container';
+import { useTestContainer, TYPES } from '@stringsync/container';
 import { HealthController } from './HealthController';
-import { Container } from 'inversify';
 
-let container: Container;
+const container = useTestContainer();
 let healthController: HealthController;
 
-beforeEach(async () => {
-  container = await createContainer();
+beforeEach(() => {
   healthController = container.get<HealthController>(TYPES.HealthController);
-});
-
-afterEach(async () => {
-  await cleanupContainer(container);
 });
 
 describe('get', () => {

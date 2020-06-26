@@ -1,16 +1,7 @@
-import { createContainer, cleanupContainer } from '@stringsync/container';
-import { Container } from 'inversify';
+import { useTestContainer } from '@stringsync/container';
 import { generateSchema } from './generateSchema';
 
-let container: Container;
-
-beforeEach(async () => {
-  container = await createContainer();
-});
-
-afterEach(async () => {
-  await cleanupContainer(container);
-});
+const container = useTestContainer();
 
 it('runs without crashing', () => {
   expect(container).toBeDefined();
