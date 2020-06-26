@@ -1,4 +1,4 @@
-import { buildUser } from '@stringsync/domain';
+import { buildUser, User } from '@stringsync/domain';
 import { UserModel } from '@stringsync/sequelize';
 import { UserRepo } from './../types';
 import { UserSequelizeRepo } from './UserSequelizeRepo';
@@ -12,6 +12,19 @@ let userRepo: UserRepo;
 beforeEach(() => {
   userModel = container.get<typeof UserModel>(TYPES.UserModel);
   userRepo = new UserSequelizeRepo(userModel);
+});
+
+describe('count', () => {
+  it('counts the number of users', async () => {
+    const count = 3;
+    const promises = new Array<Promise<User>>(count);
+    for (let ndx = 0; ndx < count; ndx++) {
+      promises.push(userRepo.create(buildUser()));
+    }
+    await Promise.all(promises);
+
+    expect(await userRepo.count()).toBe(count);
+  });
 });
 
 describe('create', () => {
@@ -31,7 +44,7 @@ describe('create', () => {
     expect(user!.id).toBe(id);
   });
 
-  it('throws an error if id already exists', async () => {
+  it('disallows duplicate ids', async () => {
     const user = buildUser({ id: 'id' });
 
     await expect(userRepo.create(user)).resolves.not.toThrow();
