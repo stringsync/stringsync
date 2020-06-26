@@ -1,3 +1,4 @@
+import { randStr } from '@stringsync/common';
 import { buildUser } from '@stringsync/domain';
 import { UserModel } from '@stringsync/sequelize';
 import { UserRepo } from './../types';
@@ -86,5 +87,21 @@ describe('findByUsernameOrEmail', () => {
     await userRepo.create(user);
     const foundUser = await userRepo.findByUsernameOrEmail(user.email);
     expect(foundUser).toStrictEqual(user);
+  });
+});
+
+describe('update', () => {
+  it('updates a user', async () => {
+    const user = buildUser();
+    await userRepo.create(user);
+    const username = randStr(8);
+
+    const updatedUser = { ...user, username };
+    await userRepo.update(updatedUser);
+
+    const foundUser = await userRepo.find(user.id);
+
+    expect(foundUser).not.toBeNull();
+    expect(foundUser!.username).toBe(username);
   });
 });
