@@ -51,3 +51,19 @@ describe('create', () => {
     await expect(userRepo.create(user)).rejects.toThrow();
   });
 });
+
+describe('find', () => {
+  it('returns the user matching the id', async () => {
+    const id = 'id';
+    await userRepo.create(buildUser({ id }));
+    const user = await userRepo.find(id);
+
+    expect(user).not.toBeNull();
+    expect(user!.id).toBe(id);
+  });
+
+  it('returns null when no user found', async () => {
+    const user = await userRepo.find('id');
+    expect(user).toBeNull();
+  });
+});
