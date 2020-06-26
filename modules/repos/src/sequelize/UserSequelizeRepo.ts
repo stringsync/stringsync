@@ -36,6 +36,10 @@ export class UserSequelizeRepo implements UserRepo {
     return await this.userModel.create(attrs, { raw: true });
   }
 
+  async bulkCreate(bulkAttrs: Partial<User>[]): Promise<User[]> {
+    return await this.userModel.bulkCreate(bulkAttrs);
+  }
+
   async update(attrs: Partial<User>): Promise<void> {
     if (!attrs.id) {
       throw new Error('no id specified');

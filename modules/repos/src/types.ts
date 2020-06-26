@@ -5,6 +5,7 @@ export interface Repo<T extends object> {
   findAll(): Promise<T[]>;
   destroyAll(): Promise<void>;
   create(entity: Partial<T>): Promise<T>;
+  bulkCreate(entity: Partial<T>[]): Promise<T[]>;
   update(entity: T): Promise<void>;
   count(): Promise<number>;
 }

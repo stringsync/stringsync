@@ -1,8 +1,9 @@
-import { buildUser, User } from '@stringsync/domain';
+import { buildUser } from '@stringsync/domain';
 import { UserModel } from '@stringsync/sequelize';
 import { UserRepo } from './../types';
 import { UserSequelizeRepo } from './UserSequelizeRepo';
 import { useTestContainer, TYPES } from '@stringsync/container';
+import { sortBy } from 'lodash';
 
 const container = useTestContainer();
 
@@ -16,14 +17,9 @@ beforeEach(() => {
 
 describe('count', () => {
   it('counts the number of users', async () => {
-    const count = 3;
-    const promises = new Array<Promise<User>>(count);
-    for (let ndx = 0; ndx < count; ndx++) {
-      promises.push(userRepo.create(buildUser()));
-    }
-    await Promise.all(promises);
-
-    expect(await userRepo.count()).toBe(count);
+    await userRepo.bulkCreate([buildUser(), buildUser(), buildUser()]);
+    const count = await userRepo.count();
+    expect(count).toBe(3);
   });
 });
 
@@ -65,5 +61,14 @@ describe('find', () => {
   it('returns null when no user found', async () => {
     const user = await userRepo.find('id');
     expect(user).toBeNull();
+  });
+});
+
+describe('findAll', () => {
+  it('returns all user records', async () => {
+    const users1 = [buildUser(), buildUser(), buildUser()];
+    await userRepo.bulkCreate(users1);
+    const users2 = await userRepo.findAll();
+    expect(sortBy(users2, 'id')).toStrictEqual(sortBy(users1, 'id'));
   });
 });
