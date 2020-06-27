@@ -1,6 +1,6 @@
 import { NotationModel } from './NotationModel';
 import { TaggingModel } from './TaggingModel';
-import { Table, Model, PrimaryKey, Column, BelongsToMany, AutoIncrement } from 'sequelize-typescript';
+import { Table, Model, PrimaryKey, Column, BelongsToMany } from 'sequelize-typescript';
 import { Tag } from '@stringsync/domain';
 
 @Table({
@@ -9,16 +9,14 @@ import { Tag } from '@stringsync/domain';
 })
 export class TagModel extends Model<TagModel> implements Tag {
   @PrimaryKey
-  @AutoIncrement
   @Column
-  id!: number;
+  id!: string;
 
-  // @BelongsToMany(
-  //   () => NotationModel,
-  //   () => TaggingModel
-  // )
-  // @Column
-  // notations!: NotationModel[];
+  @BelongsToMany(
+    () => NotationModel,
+    () => TaggingModel
+  )
+  notations!: NotationModel[];
 
   @Column
   name!: string;

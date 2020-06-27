@@ -1,18 +1,14 @@
-import { randStr, buildRandUser } from '@stringsync/common';
-import { UserModel } from '@stringsync/sequelize';
-import { UserRepo } from './../types';
+import { buildRandUser, randStr } from '@stringsync/common';
+import { TYPES, useTestContainer } from '@stringsync/container';
+import { isPlainObject, sortBy } from 'lodash';
 import { UserSequelizeRepo } from './UserSequelizeRepo';
-import { useTestContainer, TYPES } from '@stringsync/container';
-import { sortBy, isPlainObject } from 'lodash';
 
 const container = useTestContainer();
 
-let userModel: typeof UserModel;
-let userRepo: UserRepo;
+let userRepo: UserSequelizeRepo;
 
 beforeEach(() => {
-  userModel = container.get<typeof UserModel>(TYPES.UserModel);
-  userRepo = new UserSequelizeRepo(userModel);
+  userRepo = container.get<UserSequelizeRepo>(TYPES.UserSequelizeRepo);
 });
 
 describe('count', () => {

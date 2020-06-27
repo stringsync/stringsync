@@ -1,28 +1,22 @@
+import { buildRandNotation, buildRandUser, randStr } from '@stringsync/common';
+import { TYPES, useTestContainer } from '@stringsync/container';
 import { User } from '@stringsync/domain';
-import { UserRepo, UserSequelizeRepo } from '@stringsync/repos';
+import { UserSequelizeRepo } from '@stringsync/repos';
+import { isPlainObject, sortBy } from 'lodash';
 import { NotationSequelizeRepo } from './NotationSequelizeRepo';
-import { randStr, buildRandNotation, buildRandUser } from '@stringsync/common';
-import { NotationModel, UserModel } from '@stringsync/sequelize';
-import { NotationRepo } from './../types';
-import { useTestContainer, TYPES } from '@stringsync/container';
-import { sortBy, isPlainObject } from 'lodash';
 
 const container = useTestContainer();
 
-let notationModel: typeof NotationModel;
-let notationRepo: NotationRepo;
+let notationRepo: NotationSequelizeRepo;
+let userRepo: UserSequelizeRepo;
 
-let userModel: typeof UserModel;
-let userRepo: UserRepo;
 let user: User;
 let transcriberId: string;
 
 beforeEach(async () => {
-  notationModel = container.get<typeof NotationModel>(TYPES.NotationModel);
-  notationRepo = new NotationSequelizeRepo(notationModel);
+  notationRepo = container.get<NotationSequelizeRepo>(TYPES.NotationSequelizeRepo);
+  userRepo = container.get<UserSequelizeRepo>(TYPES.UserSequelizeRepo);
 
-  userModel = container.get<typeof UserModel>(TYPES.UserModel);
-  userRepo = new UserSequelizeRepo(userModel);
   user = await userRepo.create(buildRandUser());
   transcriberId = user.id;
 });

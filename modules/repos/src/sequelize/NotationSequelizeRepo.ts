@@ -2,7 +2,7 @@ import { TYPES } from '@stringsync/container';
 import { NotationModel } from '@stringsync/sequelize';
 import { inject, injectable } from 'inversify';
 import { NotationRepo } from '../types';
-import { Notation, User } from '@stringsync/domain';
+import { Notation } from '@stringsync/domain';
 
 @injectable()
 export class NotationSequelizeRepo implements NotationRepo {
@@ -31,7 +31,7 @@ export class NotationSequelizeRepo implements NotationRepo {
 
   async bulkCreate(bulkAttrs: Partial<Notation>[]): Promise<Notation[]> {
     const notationModels = await this.notationModel.bulkCreate(bulkAttrs);
-    return notationModels.map((notationModel: NotationModel) => notationModel.toJSON()) as Notation[];
+    return notationModels.map((notationModel: NotationModel) => notationModel.get({ plain: true })) as Notation[];
   }
 
   async update(id: string, attrs: Partial<Notation>): Promise<void> {

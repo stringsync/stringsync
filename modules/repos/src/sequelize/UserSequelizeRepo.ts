@@ -39,7 +39,7 @@ export class UserSequelizeRepo implements UserRepo {
 
   async bulkCreate(bulkAttrs: Partial<User>[]): Promise<User[]> {
     const userModels: UserModel[] = await this.userModel.bulkCreate(bulkAttrs);
-    return userModels.map((userModel: UserModel) => userModel.toJSON()) as User[];
+    return userModels.map((userModel: UserModel) => userModel.get({ plain: true })) as User[];
   }
 
   async update(id: string, attrs: Partial<User>): Promise<void> {
