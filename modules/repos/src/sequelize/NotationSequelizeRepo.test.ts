@@ -45,4 +45,9 @@ describe('find', () => {
     const notation = await notationRepo.find(id);
     expect(notation).not.toBeNull();
   });
+
+  it('returns null if notation is missing', async () => {
+    const notation = await notationRepo.find(randStr(8));
+    expect(notation).toBeNull();
+  });
 });
