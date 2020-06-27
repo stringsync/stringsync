@@ -1,5 +1,5 @@
 import { User, UserRole } from './';
-import { randStr, randNum } from '@stringsync/common';
+import { randStr } from '@stringsync/common';
 
 export const buildUser = (attrs: Partial<User> = {}): User => {
   const now = new Date();
