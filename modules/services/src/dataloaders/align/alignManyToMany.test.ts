@@ -1,5 +1,5 @@
 import { alignManyToMany } from './alignManyToMany';
-import { identity, noop } from '../../../common';
+import { identity, noop } from '@stringsync/common';
 
 const KEY1 = 'KEY1';
 const KEY2 = 'KEY2';

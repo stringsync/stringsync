@@ -12,6 +12,10 @@ export class NotationSequelizeRepo implements NotationRepo {
     this.notationModel = notationModel;
   }
 
+  async findAllByTranscriberIds(transcriberIds: string[]): Promise<Notation[]> {
+    return await this.notationModel.findAll({ where: { transcriberId: transcriberIds }, raw: true });
+  }
+
   async count(): Promise<number> {
     return await this.notationModel.count();
   }

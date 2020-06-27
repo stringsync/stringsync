@@ -1,5 +1,5 @@
 import { alignOneToMany } from './alignOneToMany';
-import { noop } from '../../../common';
+import { noop } from '@stringsync/common';
 
 interface Value {
   id: number;

@@ -13,6 +13,8 @@ export interface UserRepo extends Repo<User> {
   findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null>;
 }
 
-export interface NotationRepo extends Repo<Notation> {}
+export interface NotationRepo extends Repo<Notation> {
+  findAllByTranscriberIds(transcriberIds: string[]): Promise<Notation[]>;
+}
 
 export interface TagRepo extends Repo<Tag> {}
