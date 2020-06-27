@@ -5,13 +5,9 @@ import { ContainerConfig } from '@stringsync/config';
 
 export const getGraphqlModule = (config: ContainerConfig) =>
   new ContainerModule((bind) => {
-    bind<UserResolver>(UserResolver)
-      .toSelf()
-      .inSingletonScope();
+    bind<UserResolver>(UserResolver).toSelf();
 
-    bind<AuthResolver>(AuthResolver)
-      .toSelf()
-      .inSingletonScope();
+    bind<AuthResolver>(AuthResolver).toSelf();
 
     bind<HealthController>(TYPES.HealthController).to(HealthController);
   });

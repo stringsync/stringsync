@@ -1,4 +1,4 @@
-import { Resolver, Query, Args, UseMiddleware } from 'type-graphql';
+import { Resolver, Query, Args, UseMiddleware, Info } from 'type-graphql';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '@stringsync/container';
 import { UserService } from '@stringsync/services';

@@ -1,3 +1,4 @@
+import { Notation } from '@stringsync/domain';
 export interface User {
   id: string;
   createdAt: Date;
@@ -11,6 +12,7 @@ export interface User {
   resetPasswordToken: string | null;
   resetPasswordTokenSentAt: Date | null;
   avatarUrl: string | null;
+  notations?: Notation[];
 }
 
 export enum UserRole {

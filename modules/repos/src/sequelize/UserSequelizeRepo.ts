@@ -1,9 +1,9 @@
 import { TYPES } from '@stringsync/container';
-import { UserModel } from '@stringsync/sequelize';
 import { User } from '@stringsync/domain';
-import { UserRepo } from './../types';
-import { injectable, inject } from 'inversify';
+import { UserModel } from '@stringsync/sequelize';
+import { inject, injectable } from 'inversify';
 import { or } from 'sequelize';
+import { UserRepo } from './../types';
 
 @injectable()
 export class UserSequelizeRepo implements UserRepo {
