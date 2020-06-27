@@ -8,5 +8,5 @@ export interface Notation {
   durationMs: number;
   bpm: number;
   featured: boolean;
-  transcriberId: number;
+  transcriberId: string;
 }

@@ -52,5 +52,5 @@ export class NotationModel extends Model<NotationModel> implements Notation {
 
   @ForeignKey(() => UserModel)
   @Column
-  transcriberId!: number;
+  transcriberId!: string;
 }
