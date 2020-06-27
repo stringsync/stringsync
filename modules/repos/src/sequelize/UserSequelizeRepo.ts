@@ -40,10 +40,7 @@ export class UserSequelizeRepo implements UserRepo {
     return await this.userModel.bulkCreate(bulkAttrs);
   }
 
-  async update(attrs: Partial<User>): Promise<void> {
-    if (!attrs.id) {
-      throw new Error('no id specified');
-    }
-    return await this.userModel.update(attrs, { where: { id: attrs.id } });
+  async update(id: string, attrs: Partial<User>): Promise<void> {
+    await this.userModel.update(attrs, { where: { id } });
   }
 }

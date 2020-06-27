@@ -2,7 +2,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { ContainerConfig } from '@stringsync/config';
 import { ContainerModule } from 'inversify';
 import { TYPES } from './constants';
-import { Db, UserModel } from '@stringsync/sequelize';
+import { Db, UserModel, NotationModel } from '@stringsync/sequelize';
 
 export const getSequelizeModule = (config: ContainerConfig) =>
   new ContainerModule((bind) => {
@@ -15,4 +15,5 @@ export const getSequelizeModule = (config: ContainerConfig) =>
     });
     bind<Sequelize>(TYPES.Sequelize).toConstantValue(sequelize);
     bind<typeof UserModel>(TYPES.UserModel).toConstructor(UserModel);
+    bind<typeof NotationModel>(TYPES.NotationModel).toConstructor(NotationModel);
   });

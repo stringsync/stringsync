@@ -9,6 +9,7 @@ export const TYPES = {
   HealthCheckerService: Symbol('HealthCheckerService'),
   HealthController: Symbol('HealthController'),
   NotificationService: Symbol('NotificationService'),
+  NotationModel: Symbol('NotationModel'),
   Redis: Symbol('Redis'),
   Sequelize: Symbol('Sequelize'),
   UserModel: Symbol('UserModel'),

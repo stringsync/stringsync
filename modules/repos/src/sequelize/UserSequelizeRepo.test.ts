@@ -79,14 +79,16 @@ describe('findByUsernameOrEmail', () => {
     const user = buildUser();
     await userRepo.create(user);
     const foundUser = await userRepo.findByUsernameOrEmail(user.username);
-    expect(foundUser).toStrictEqual(user);
+    expect(foundUser).not.toBeNull();
+    expect(foundUser!.id).toBe(user.id);
   });
 
   it('finds by email', async () => {
     const user = buildUser();
     await userRepo.create(user);
     const foundUser = await userRepo.findByUsernameOrEmail(user.email);
-    expect(foundUser).toStrictEqual(user);
+    expect(foundUser).not.toBeNull();
+    expect(foundUser!.id).toBe(user.id);
   });
 });
 
@@ -97,7 +99,7 @@ describe('update', () => {
     const username = randStr(8);
 
     const updatedUser = { ...user, username };
-    await userRepo.update(updatedUser);
+    await userRepo.update(user.id, updatedUser);
 
     const foundUser = await userRepo.find(user.id);
 

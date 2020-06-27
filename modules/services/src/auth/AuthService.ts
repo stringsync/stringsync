@@ -76,7 +76,7 @@ export class AuthService {
     }
 
     const confirmedUser = { ...user, confirmationToken: null, confirmedAt };
-    await this.userRepo.update(confirmedUser);
+    await this.userRepo.update(confirmedUser.id, confirmedUser);
 
     return confirmedUser;
   }
@@ -92,7 +92,7 @@ export class AuthService {
     }
 
     user.confirmationToken = uuid.v4();
-    await this.userRepo.update(user);
+    await this.userRepo.update(user.id, user);
 
     return user;
   }
