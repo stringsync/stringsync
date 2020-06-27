@@ -1,4 +1,4 @@
-import { User, Notation } from '@stringsync/domain';
+import { User, Notation, Tag } from '@stringsync/domain';
 
 export interface Repo<T extends object> {
   find(id: string): Promise<T | null>;
@@ -14,3 +14,5 @@ export interface UserRepo extends Repo<User> {
 }
 
 export interface NotationRepo extends Repo<Notation> {}
+
+export interface TagRepo extends Repo<Tag> {}

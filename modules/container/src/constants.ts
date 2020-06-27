@@ -12,6 +12,7 @@ export const TYPES = {
   NotationModel: Symbol('NotationModel'),
   Redis: Symbol('Redis'),
   Sequelize: Symbol('Sequelize'),
+  TagModel: Symbol('TagModel'),
   UserModel: Symbol('UserModel'),
   UserRepo: Symbol('UserRepo'),
   UserResolver: Symbol('UserResolver'),
