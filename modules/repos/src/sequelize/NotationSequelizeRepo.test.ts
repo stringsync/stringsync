@@ -107,7 +107,7 @@ describe('create', () => {
   });
 
   it('disallows duplicate ids', async () => {
-    const notation = buildRandUser();
+    const notation = buildRandNotation({ transcriberId });
 
     await expect(notationRepo.create(notation)).resolves.not.toThrow();
     await expect(notationRepo.create(notation)).rejects.toThrow();
