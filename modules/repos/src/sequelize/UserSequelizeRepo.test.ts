@@ -14,7 +14,9 @@ beforeEach(() => {
 describe('count', () => {
   it('counts the number of users', async () => {
     await userRepo.bulkCreate([buildRandUser(), buildRandUser(), buildRandUser()]);
+
     const count = await userRepo.count();
+
     expect(count).toBe(3);
   });
 });
@@ -38,6 +40,7 @@ describe('create', () => {
 
   it('returns a plain object', async () => {
     const user = await userRepo.create(buildRandUser());
+
     expect(isPlainObject(user)).toBe(true);
   });
 
@@ -51,8 +54,9 @@ describe('create', () => {
 
 describe('find', () => {
   it('returns the user matching the id', async () => {
-    const id = 'id';
+    const id = randStr(8);
     await userRepo.create(buildRandUser({ id }));
+
     const user = await userRepo.find(id);
 
     expect(user).not.toBeNull();
@@ -61,12 +65,15 @@ describe('find', () => {
 
   it('returns a plain object', async () => {
     const { id } = await userRepo.create(buildRandUser());
+
     const user = await userRepo.find(id);
+
     expect(isPlainObject(user)).toBe(true);
   });
 
   it('returns null when no user found', async () => {
     const user = await userRepo.find('id');
+
     expect(user).toBeNull();
   });
 });
@@ -75,14 +82,18 @@ describe('findAll', () => {
   it('returns all user records', async () => {
     const users = [buildRandUser(), buildRandUser(), buildRandUser()];
     await userRepo.bulkCreate(users);
+
     const foundUsers = await userRepo.findAll();
+
     expect(sortBy(foundUsers, 'id')).toStrictEqual(sortBy(users, 'id'));
   });
 
   it('returns plain objects', async () => {
     const users = [buildRandUser(), buildRandUser(), buildRandUser()];
     await userRepo.bulkCreate(users);
+
     const foundUsers = await userRepo.findAll();
+
     expect(foundUsers.every(isPlainObject)).toBe(true);
   });
 });
@@ -91,7 +102,9 @@ describe('findByUsernameOrEmail', () => {
   it('finds by username', async () => {
     const user = buildRandUser();
     await userRepo.create(user);
+
     const foundUser = await userRepo.findByUsernameOrEmail(user.username);
+
     expect(foundUser).not.toBeNull();
     expect(foundUser!.id).toBe(user.id);
   });
@@ -99,7 +112,9 @@ describe('findByUsernameOrEmail', () => {
   it('finds by email', async () => {
     const user = buildRandUser();
     await userRepo.create(user);
+
     const foundUser = await userRepo.findByUsernameOrEmail(user.email);
+
     expect(foundUser).not.toBeNull();
     expect(foundUser!.id).toBe(user.id);
   });
@@ -107,7 +122,9 @@ describe('findByUsernameOrEmail', () => {
   it('returns a plain object', async () => {
     const user = buildRandUser();
     await userRepo.create(user);
+
     const foundUser = await userRepo.findByUsernameOrEmail(user.username);
+
     expect(isPlainObject(foundUser)).toBe(true);
   });
 });
@@ -117,12 +134,11 @@ describe('update', () => {
     const user = buildRandUser();
     await userRepo.create(user);
     const username = randStr(8);
-
     const updatedUser = { ...user, username };
+
     await userRepo.update(user.id, updatedUser);
 
     const foundUser = await userRepo.find(user.id);
-
     expect(foundUser).not.toBeNull();
     expect(foundUser!.username).toBe(username);
   });

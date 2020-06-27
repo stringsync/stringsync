@@ -28,7 +28,9 @@ describe('count', () => {
       buildRandNotation({ transcriberId }),
       buildRandNotation({ transcriberId }),
     ]);
+
     const count = await notationRepo.count();
+
     expect(count).toBe(3);
   });
 });
@@ -37,17 +39,20 @@ describe('find', () => {
   it('finds notations', async () => {
     const { id } = await notationRepo.create(buildRandNotation({ transcriberId }));
     const notation = await notationRepo.find(id);
+
     expect(notation).not.toBeNull();
   });
 
   it('returns null if notation is missing', async () => {
     const notation = await notationRepo.find(randStr(8));
+
     expect(notation).toBeNull();
   });
 
   it('returns a plain object', async () => {
     const { id } = await notationRepo.create(buildRandNotation({ transcriberId }));
     const notation = await notationRepo.find(id);
+
     expect(isPlainObject(notation)).toBe(true);
   });
 });
@@ -59,7 +64,9 @@ describe('findAll', () => {
       buildRandNotation({ transcriberId }),
       buildRandNotation({ transcriberId }),
     ]);
+
     const foundNotations = await notationRepo.findAll();
+
     expect(sortBy(foundNotations, 'id')).toStrictEqual(sortBy(notations, 'id'));
   });
 
@@ -69,7 +76,9 @@ describe('findAll', () => {
       buildRandNotation({ transcriberId }),
       buildRandNotation({ transcriberId }),
     ]);
+
     const foundNotations = await notationRepo.findAll();
+
     expect(foundNotations.every(isPlainObject)).toBe(true);
   });
 });
@@ -79,19 +88,29 @@ describe('create', () => {
     const beforeCount = await notationRepo.count();
     await notationRepo.create(buildRandNotation({ transcriberId }));
     const afterCount = await notationRepo.count();
+
     expect(afterCount).toBe(beforeCount + 1);
   });
 
   it('creates a queryable notation', async () => {
     const notation = await notationRepo.create(buildRandNotation({ transcriberId }));
     const foundNotation = await notationRepo.find(notation.id);
+
     expect(foundNotation).toStrictEqual(notation);
   });
 
   it('returns a plain object', async () => {
     const notation = await notationRepo.create(buildRandNotation({ transcriberId }));
     const foundNotation = await notationRepo.find(notation.id);
+
     expect(isPlainObject(foundNotation)).toBe(true);
+  });
+
+  it('disallows duplicate ids', async () => {
+    const notation = buildRandUser();
+
+    await expect(notationRepo.create(notation)).resolves.not.toThrow();
+    await expect(notationRepo.create(notation)).rejects.toThrow();
   });
 });
 
@@ -102,7 +121,9 @@ describe('bulkCreate', () => {
       buildRandNotation({ transcriberId }),
       buildRandNotation({ transcriberId }),
     ]);
+
     const foundNotations = await notationRepo.findAll();
+
     expect(sortBy(foundNotations, 'id')).toStrictEqual(sortBy(notations, 'id'));
   });
 
@@ -112,6 +133,7 @@ describe('bulkCreate', () => {
       buildRandNotation({ transcriberId }),
       buildRandNotation({ transcriberId }),
     ]);
+
     expect(notations.every(isPlainObject)).toBe(true);
   });
 });
@@ -122,8 +144,8 @@ describe('update', () => {
     const songName = randStr(8);
 
     await notationRepo.update(notation.id, { songName });
-    const foundNotation = await notationRepo.find(notation.id);
 
+    const foundNotation = await notationRepo.find(notation.id);
     expect(foundNotation).not.toBeNull();
     expect(foundNotation!.songName).toBe(songName);
   });

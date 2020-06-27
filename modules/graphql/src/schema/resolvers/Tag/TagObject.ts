@@ -5,7 +5,7 @@ import { ObjectType, Field, ID } from 'type-graphql';
 @ObjectType()
 export class TagObject implements Tag {
   @Field((type) => ID)
-  id!: number;
+  id!: string;
 
   @Field()
   name!: string;
