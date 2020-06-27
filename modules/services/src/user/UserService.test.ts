@@ -1,7 +1,7 @@
 import { UserRepo } from '@stringsync/repos';
 import { TYPES, useTestContainer } from '@stringsync/container';
 import { UserService } from './UserService';
-import { buildUser } from '@stringsync/domain';
+import { buildRandUser } from '@stringsync/common';
 import { sortBy } from 'lodash';
 
 const container = useTestContainer();
@@ -16,7 +16,7 @@ beforeEach(() => {
 
 describe.skip('find', () => {
   it('finds an entity', async () => {
-    const user = await userRepo.create(buildUser());
+    const user = await userRepo.create(buildRandUser());
 
     const foundUser = await userService.find(user.id);
 
@@ -26,8 +26,8 @@ describe.skip('find', () => {
 
 describe.skip('findAll', () => {
   it('finds all entities', async () => {
-    const user1 = await userRepo.create(buildUser());
-    const user2 = await userRepo.create(buildUser());
+    const user1 = await userRepo.create(buildRandUser());
+    const user2 = await userRepo.create(buildRandUser());
 
     const users = await userService.findAll();
 

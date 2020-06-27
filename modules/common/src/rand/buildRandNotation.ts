@@ -1,7 +1,7 @@
 import { randStr, randInt } from '@stringsync/common';
-import { Notation } from './types';
+import { Notation } from '@stringsync/domain';
 
-export const buildNotation = (attrs: Partial<Notation> = {}): Notation => {
+export const buildRandNotation = (attrs: Partial<Notation> = {}): Notation => {
   const now = new Date();
 
   return {

@@ -6,5 +6,6 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "@stringsync/domain": "1.0.0"
   }
 }

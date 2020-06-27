@@ -1,5 +1,4 @@
-import { randStr } from '@stringsync/common';
-import { buildUser } from '@stringsync/domain';
+import { randStr, buildRandUser } from '@stringsync/common';
 import { UserModel } from '@stringsync/sequelize';
 import { UserRepo } from './../types';
 import { UserSequelizeRepo } from './UserSequelizeRepo';
@@ -18,7 +17,7 @@ beforeEach(() => {
 
 describe('count', () => {
   it('counts the number of users', async () => {
-    await userRepo.bulkCreate([buildUser(), buildUser(), buildUser()]);
+    await userRepo.bulkCreate([buildRandUser(), buildRandUser(), buildRandUser()]);
     const count = await userRepo.count();
     expect(count).toBe(3);
   });
@@ -27,14 +26,14 @@ describe('count', () => {
 describe('create', () => {
   it('creates a user record', async () => {
     const countBefore = await userRepo.count();
-    await userRepo.create(buildUser());
+    await userRepo.create(buildRandUser());
     const countAfter = await userRepo.count();
 
     expect(countAfter).toBe(countBefore + 1);
   });
 
   it('creates a findable user record', async () => {
-    const { id } = await userRepo.create(buildUser());
+    const { id } = await userRepo.create(buildRandUser());
     const user = await userRepo.find(id);
 
     expect(user).not.toBeNull();
@@ -42,7 +41,7 @@ describe('create', () => {
   });
 
   it('disallows duplicate ids', async () => {
-    const user = buildUser({ id: 'id' });
+    const user = buildRandUser({ id: 'id' });
 
     await expect(userRepo.create(user)).resolves.not.toThrow();
     await expect(userRepo.create(user)).rejects.toThrow();
@@ -52,7 +51,7 @@ describe('create', () => {
 describe('find', () => {
   it('returns the user matching the id', async () => {
     const id = 'id';
-    await userRepo.create(buildUser({ id }));
+    await userRepo.create(buildRandUser({ id }));
     const user = await userRepo.find(id);
 
     expect(user).not.toBeNull();
@@ -67,7 +66,7 @@ describe('find', () => {
 
 describe('findAll', () => {
   it('returns all user records', async () => {
-    const users = [buildUser(), buildUser(), buildUser()];
+    const users = [buildRandUser(), buildRandUser(), buildRandUser()];
     await userRepo.bulkCreate(users);
     const foundUsers = await userRepo.findAll();
     expect(sortBy(foundUsers, 'id')).toStrictEqual(sortBy(users, 'id'));
@@ -76,7 +75,7 @@ describe('findAll', () => {
 
 describe('findByUsernameOrEmail', () => {
   it('finds by username', async () => {
-    const user = buildUser();
+    const user = buildRandUser();
     await userRepo.create(user);
     const foundUser = await userRepo.findByUsernameOrEmail(user.username);
     expect(foundUser).not.toBeNull();
@@ -84,7 +83,7 @@ describe('findByUsernameOrEmail', () => {
   });
 
   it('finds by email', async () => {
-    const user = buildUser();
+    const user = buildRandUser();
     await userRepo.create(user);
     const foundUser = await userRepo.findByUsernameOrEmail(user.email);
     expect(foundUser).not.toBeNull();
@@ -94,7 +93,7 @@ describe('findByUsernameOrEmail', () => {
 
 describe('update', () => {
   it('updates a user', async () => {
-    const user = buildUser();
+    const user = buildRandUser();
     await userRepo.create(user);
     const username = randStr(8);
 
