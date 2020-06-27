@@ -43,7 +43,7 @@ export class NotationModel extends Model<NotationModel> implements Notation {
   @Column
   durationMs!: number;
 
-  @Column(DataType.DECIMAL(4))
+  @Column(DataType.DECIMAL)
   bpm!: number;
 
   @Column
