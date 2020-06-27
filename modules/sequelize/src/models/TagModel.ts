@@ -14,12 +14,12 @@ export class TagModel extends Model<TagModel> implements Tag {
   @Column
   id!: string;
 
-  @Column
-  name!: string;
-
   @BelongsToMany(
     () => NotationModel,
     () => TaggingModel
   )
   notations!: NotationModel[];
+
+  @Column
+  name!: string;
 }
