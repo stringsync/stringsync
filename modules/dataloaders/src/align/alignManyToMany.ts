@@ -1,8 +1,4 @@
-import {
-  KeysGetter,
-  UniqueIdentifierGetter,
-  MissingValueGetter,
-} from './types';
+import { KeysGetter, UniqueIdentifierGetter, MissingValueGetter } from './types';
 import { uniqBy } from 'lodash';
 
 interface Getters<V, M> {
