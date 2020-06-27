@@ -25,7 +25,8 @@ export class NotationSequelizeRepo implements NotationRepo {
   }
 
   async create(attrs: Partial<Notation>) {
-    return await this.notationModel.create(attrs, { raw: true });
+    const notationModel = await this.notationModel.create(attrs, { raw: true });
+    return notationModel.get({ plain: true }) as Notation;
   }
 
   async bulkCreate(bulkAttrs: Partial<Notation>[]): Promise<Notation[]> {

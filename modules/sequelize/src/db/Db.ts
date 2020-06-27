@@ -4,7 +4,7 @@ import { models } from '../models';
 
 export class Db {
   static connect(config: DbConfig): Sequelize {
-    return new Sequelize({
+    const sequelize = new Sequelize({
       dialect: 'postgres',
       host: config.host,
       port: config.port,
@@ -14,6 +14,12 @@ export class Db {
       models: models,
       logging: config.logging,
     });
+
+    // Postgres will return strings for decimals
+    // https://github.com/sequelize/sequelize/issues/8019
+    (Sequelize as any).postgres.DECIMAL.parse = parseFloat;
+
+    return sequelize;
   }
 
   static async cleanup(sequelize: Sequelize) {

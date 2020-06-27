@@ -1,5 +1,5 @@
 import { TaggingModel } from './TaggingModel';
-import { BelongsToMany, AutoIncrement, ForeignKey } from 'sequelize-typescript';
+import { BelongsToMany, AutoIncrement, ForeignKey, DataType } from 'sequelize-typescript';
 import { Table, Model, PrimaryKey, Column, CreatedAt, UpdatedAt, BelongsTo } from 'sequelize-typescript';
 import { Notation } from '@stringsync/domain';
 import { UserModel } from './UserModel';
@@ -43,7 +43,7 @@ export class NotationModel extends Model<NotationModel> implements Notation {
   @Column
   durationMs!: number;
 
-  @Column
+  @Column(DataType.DECIMAL(4))
   bpm!: number;
 
   @Column
