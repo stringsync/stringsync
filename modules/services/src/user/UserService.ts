@@ -1,5 +1,5 @@
 import { UserRepo } from '@stringsync/repos';
-import * as domain from '@stringsync/domain';
+import { User } from '@stringsync/domain';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '@stringsync/container';
 
@@ -11,11 +11,11 @@ export class UserService {
     this.userRepo = userRepo;
   }
 
-  async find(id: string): Promise<domain.User | null> {
+  async find(id: string): Promise<User | null> {
     return await this.userRepo.find(id);
   }
 
-  async findAll(): Promise<domain.User[]> {
+  async findAll(): Promise<User[]> {
     return await this.userRepo.findAll();
   }
 }

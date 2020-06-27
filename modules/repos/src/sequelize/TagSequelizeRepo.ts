@@ -29,7 +29,8 @@ export class TagSequelizeRepo implements TagRepo {
   }
 
   async bulkCreate(bulkAttrs: Partial<Tag>[]): Promise<Tag[]> {
-    return await this.tagModel.bulkCreate(bulkAttrs).map((model: TagModel) => model.toJSON());
+    const tagModels = await this.tagModel.bulkCreate(bulkAttrs);
+    return tagModels.map((tagModel: TagModel) => tagModel.toJSON()) as TagModel[];
   }
 
   async update(id: string, attrs: Partial<Tag>): Promise<void> {

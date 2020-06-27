@@ -14,7 +14,7 @@ beforeEach(() => {
   userRepo = userService.userRepo;
 });
 
-describe.skip('find', () => {
+describe('find', () => {
   it('finds an entity', async () => {
     const user = await userRepo.create(buildRandUser());
 
@@ -24,14 +24,12 @@ describe.skip('find', () => {
   });
 });
 
-describe.skip('findAll', () => {
+describe('findAll', () => {
   it('finds all entities', async () => {
-    const user1 = await userRepo.create(buildRandUser());
-    const user2 = await userRepo.create(buildRandUser());
-
-    const users = await userService.findAll();
+    const users = await userRepo.bulkCreate([buildRandUser(), buildRandUser()]);
+    const foundUsers = await userService.findAll();
 
     expect(users).toHaveLength(2);
-    expect(sortBy(users, 'id')).toStrictEqual(sortBy([user1, user2], 'id'));
+    expect(sortBy(foundUsers, 'id')).toStrictEqual(sortBy(users, 'id'));
   });
 });

@@ -3,7 +3,7 @@ import { UserModel } from '@stringsync/sequelize';
 import { UserRepo } from './../types';
 import { UserSequelizeRepo } from './UserSequelizeRepo';
 import { useTestContainer, TYPES } from '@stringsync/container';
-import { sortBy } from 'lodash';
+import { sortBy, isPlainObject } from 'lodash';
 
 const container = useTestContainer();
 
@@ -40,6 +40,11 @@ describe('create', () => {
     expect(user!.id).toBe(id);
   });
 
+  it('returns a plain object', async () => {
+    const user = await userRepo.create(buildRandUser());
+    expect(isPlainObject(user)).toBe(true);
+  });
+
   it('disallows duplicate ids', async () => {
     const user = buildRandUser({ id: 'id' });
 
@@ -58,6 +63,12 @@ describe('find', () => {
     expect(user!.id).toBe(id);
   });
 
+  it('returns a plain object', async () => {
+    const { id } = await userRepo.create(buildRandUser());
+    const user = await userRepo.find(id);
+    expect(isPlainObject(user)).toBe(true);
+  });
+
   it('returns null when no user found', async () => {
     const user = await userRepo.find('id');
     expect(user).toBeNull();
@@ -70,6 +81,13 @@ describe('findAll', () => {
     await userRepo.bulkCreate(users);
     const foundUsers = await userRepo.findAll();
     expect(sortBy(foundUsers, 'id')).toStrictEqual(sortBy(users, 'id'));
+  });
+
+  it('returns plain objects', async () => {
+    const users = [buildRandUser(), buildRandUser(), buildRandUser()];
+    await userRepo.bulkCreate(users);
+    const foundUsers = await userRepo.findAll();
+    expect(foundUsers.every(isPlainObject)).toBe(true);
   });
 });
 
@@ -88,6 +106,13 @@ describe('findByUsernameOrEmail', () => {
     const foundUser = await userRepo.findByUsernameOrEmail(user.email);
     expect(foundUser).not.toBeNull();
     expect(foundUser!.id).toBe(user.id);
+  });
+
+  it('returns a plain object', async () => {
+    const user = buildRandUser();
+    await userRepo.create(user);
+    const foundUser = await userRepo.findByUsernameOrEmail(user.username);
+    expect(isPlainObject(foundUser)).toBe(true);
   });
 });
 
