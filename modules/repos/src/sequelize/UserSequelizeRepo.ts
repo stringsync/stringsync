@@ -9,23 +9,6 @@ import { or } from 'sequelize';
 export class UserSequelizeRepo implements UserRepo {
   readonly userModel: typeof UserModel;
 
-  private static toPojo(model: UserModel): User {
-    return {
-      id: model.id,
-      username: model.username,
-      email: model.email,
-      avatarUrl: model.avatarUrl,
-      confirmationToken: model.confirmationToken,
-      confirmedAt: model.confirmedAt,
-      createdAt: model.createdAt,
-      encryptedPassword: model.encryptedPassword,
-      resetPasswordToken: model.resetPasswordToken,
-      resetPasswordTokenSentAt: model.resetPasswordTokenSentAt,
-      role: model.role,
-      updatedAt: model.updatedAt,
-    };
-  }
-
   constructor(@inject(TYPES.UserModel) userModel: typeof UserModel) {
     this.userModel = userModel;
   }
