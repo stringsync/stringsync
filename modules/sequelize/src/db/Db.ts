@@ -33,6 +33,6 @@ export class Db {
   }
 
   static async teardown(sequelize: Sequelize) {
-    await sequelize.close();
+    sequelize.close();
   }
 }

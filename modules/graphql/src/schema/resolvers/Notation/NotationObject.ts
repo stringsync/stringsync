@@ -7,7 +7,7 @@ import { ObjectType, Field, ID } from 'type-graphql';
 @ObjectType()
 export class NotationObject implements Notation {
   @Field((type) => ID)
-  id!: number;
+  id!: string;
 
   @Field()
   createdAt!: Date;

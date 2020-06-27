@@ -1,11 +1,11 @@
-import { randStr, randInt } from '@stringsync/common';
+import { randStr } from '@stringsync/common';
 import { Notation } from '@stringsync/domain';
 
 export const buildRandNotation = (attrs: Partial<Notation> = {}): Notation => {
   const now = new Date();
 
   return {
-    id: randInt(0, 1000000),
+    id: randStr(8),
     artistName: randStr(8),
     bpm: 120,
     createdAt: now,

@@ -11,9 +11,8 @@ import { TagModel } from './TagModel';
 })
 export class NotationModel extends Model<NotationModel> implements Notation {
   @PrimaryKey
-  @AutoIncrement
   @Column
-  id!: number;
+  id!: string;
 
   @BelongsTo(() => UserModel, 'transcriberId')
   transcriber!: UserModel;

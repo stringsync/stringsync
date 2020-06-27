@@ -1,5 +1,5 @@
 export interface Notation {
-  id: number;
+  id: string;
   createdAt: Date;
   updatedAt: Date;
   songName: string;
