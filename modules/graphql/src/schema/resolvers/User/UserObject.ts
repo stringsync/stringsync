@@ -1,5 +1,5 @@
 import { NotationObject } from './../Notation';
-import { ObjectType, Field, ID, registerEnumType } from 'type-graphql';
+import { ObjectType, Field, ID, registerEnumType, Root } from 'type-graphql';
 import { User, UserRole, Notation } from '@stringsync/domain';
 import { RestrictedField } from './RestrictedField';
 import { IsDataOwner } from './IsDataOwner';
@@ -41,5 +41,7 @@ export class UserObject implements PublicFacingUser {
   resetPasswordTokenSentAt!: Date | null;
 
   @Field((type) => [NotationObject])
-  notations!: Notation[];
+  async notations(@Root() user: User): Promise<Partial<Notation>[]> {
+    return [{ id: user.id }];
+  }
 }
