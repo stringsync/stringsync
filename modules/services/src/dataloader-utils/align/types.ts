@@ -12,3 +12,7 @@ export class MissingValueError extends Error {
     Object.setPrototypeOf(this, MissingValueError.prototype);
   }
 }
+
+export type Identifiable = {
+  id: any;
+};

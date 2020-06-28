@@ -26,5 +26,26 @@ module.exports = {
     '@typescript-eslint/prefer-namespace-keyword': OFF,
     '@typescript-eslint/no-non-null-assertion': OFF,
     '@typescript-eslint/no-empty-interface': OFF,
+    '@typescript-eslint/explicit-member-accessibility': [ERROR, { accessibility: 'no-public' }],
+    '@typescript-eslint/member-ordering': [
+      ERROR,
+      {
+        default: [
+          'public-static-field',
+          'protected-static-field',
+          'private-static-field',
+          'public-static-method',
+          'protected-static-method',
+          'private-static-method',
+          'public-instance-field',
+          'protected-instance-field',
+          'private-instance-field',
+          'constructor',
+          'public-instance-method',
+          'protected-instance-method',
+          'private-instance-method',
+        ],
+      },
+    ],
   },
 };

@@ -2,8 +2,8 @@ import { HttpStatus, Extensions } from './types';
 import { HTTP_STATUSES } from './constants';
 
 abstract class HttpStatusError extends Error {
-  public static status: HttpStatus;
-  public readonly extensions: Extensions;
+  static status: HttpStatus;
+  extensions: Extensions;
 
   constructor(message: string, extensions: Extensions) {
     super(message);

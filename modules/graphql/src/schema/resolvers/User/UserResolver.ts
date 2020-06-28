@@ -1,17 +1,17 @@
-import { Resolver, Query, Args, UseMiddleware, Info } from 'type-graphql';
-import { injectable, inject } from 'inversify';
-import { TYPES } from '@stringsync/container';
-import { UserService } from '@stringsync/services';
-import { UserObject } from './UserObject';
-import { UserArgs } from './UserArgs';
-import { User } from '@stringsync/domain';
-import { WithAuthRequirement } from '../../middlewares';
 import { AuthRequirement } from '@stringsync/common';
+import { TYPES } from '@stringsync/container';
+import { User } from '@stringsync/domain';
+import { UserService } from '@stringsync/services';
+import { inject, injectable } from 'inversify';
+import { Args, Query, Resolver, UseMiddleware } from 'type-graphql';
+import { WithAuthRequirement } from '../../middlewares';
+import { UserArgs } from './UserArgs';
+import { UserObject } from './UserObject';
 
 @Resolver()
 @injectable()
 export class UserResolver {
-  readonly userService: UserService;
+  userService: UserService;
 
   constructor(@inject(TYPES.UserService) userService: UserService) {
     this.userService = userService;

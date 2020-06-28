@@ -6,7 +6,7 @@ import { Notation } from '@stringsync/domain';
 
 @injectable()
 export class NotationSequelizeRepo implements NotationRepo {
-  readonly notationModel: typeof NotationModel;
+  notationModel: typeof NotationModel;
 
   constructor(@inject(TYPES.NotationModel) notationModel: typeof NotationModel) {
     this.notationModel = notationModel;

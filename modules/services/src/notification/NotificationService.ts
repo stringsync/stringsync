@@ -6,7 +6,7 @@ import { User } from '@stringsync/domain';
 
 @injectable()
 export class NotificationService {
-  readonly config: ContainerConfig;
+  config: ContainerConfig;
 
   constructor(@inject(TYPES.ContainerConfig) config: ContainerConfig) {
     this.config = config;

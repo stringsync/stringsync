@@ -3,7 +3,7 @@ import { Query, Mutation, LoginInput, SignupInput } from '../graphqlTypes';
 import { gql } from '../gql';
 
 export class AuthClient {
-  readonly graphqlClient: GraphqlClient;
+  graphqlClient: GraphqlClient;
 
   constructor(graphqlClient: GraphqlClient) {
     this.graphqlClient = graphqlClient;

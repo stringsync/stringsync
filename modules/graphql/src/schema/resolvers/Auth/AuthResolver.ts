@@ -14,8 +14,8 @@ import { ConfirmEmailInput } from './ConfirmEmailInput';
 @Resolver()
 @injectable()
 export class AuthResolver {
-  readonly authService: AuthService;
-  readonly notificationService: NotificationService;
+  authService: AuthService;
+  notificationService: NotificationService;
 
   constructor(
     @inject(TYPES.AuthService) authService: AuthService,

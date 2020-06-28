@@ -6,7 +6,7 @@ import { Controller } from './types';
 
 @injectable()
 export class HealthController implements Controller {
-  readonly healthCheckerService: HealthCheckerService;
+  healthCheckerService: HealthCheckerService;
 
   constructor(@inject(TYPES.HealthCheckerService) healthCheckerService: HealthCheckerService) {
     this.healthCheckerService = healthCheckerService;

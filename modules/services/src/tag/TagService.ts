@@ -4,7 +4,7 @@ import { TagRepo } from '@stringsync/repos';
 
 @injectable()
 export class TagService {
-  readonly tagRepo: TagRepo;
+  tagRepo: TagRepo;
 
   constructor(@inject(TYPES.TagRepo) tagRepo: TagRepo) {
     this.tagRepo = tagRepo;

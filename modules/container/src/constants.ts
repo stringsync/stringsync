@@ -14,6 +14,7 @@ export const TYPES = {
   NotationService: Symbol('NotationService'),
   NotificationService: Symbol('NotificationService'),
   Redis: Symbol('Redis'),
+  ReqId: Symbol('ReqId'),
   Sequelize: Symbol('Sequelize'),
   TagModel: Symbol('TagModel'),
   TagRepo: Symbol('TagRepo'),

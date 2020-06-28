@@ -6,7 +6,7 @@ import { Tag } from '@stringsync/domain';
 
 @injectable()
 export class TagSequelizeRepo implements TagRepo {
-  readonly tagModel: typeof TagModel;
+  tagModel: typeof TagModel;
 
   constructor(@inject(TYPES.TagModel) tagModel: typeof TagModel) {
     this.tagModel = tagModel;

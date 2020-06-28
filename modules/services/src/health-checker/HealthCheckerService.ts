@@ -6,8 +6,8 @@ import { promisify } from 'util';
 
 @injectable()
 export class HealthCheckerService {
-  readonly sequelize: Sequelize;
-  readonly redis: Redis;
+  sequelize: Sequelize;
+  redis: Redis;
 
   constructor(@inject(TYPES.Sequelize) sequelize: Sequelize, @inject(TYPES.Redis) redis: Redis) {
     this.sequelize = sequelize;

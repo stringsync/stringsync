@@ -9,9 +9,9 @@ import { BadRequestError, NotFoundError } from '@stringsync/common';
 
 @injectable()
 export class AuthService {
-  readonly userRepo: UserRepo;
-
   static HASH_ROUNDS = 10;
+
+  userRepo: UserRepo;
 
   constructor(@inject(TYPES.UserRepo) userRepo: UserRepo) {
     this.userRepo = userRepo;

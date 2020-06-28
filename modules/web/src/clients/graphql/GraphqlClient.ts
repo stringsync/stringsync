@@ -1,7 +1,7 @@
 import { CallResponse } from './types';
 
 export class GraphqlClient {
-  public readonly uri: string;
+  readonly uri: string;
 
   constructor(uri: string) {
     this.uri = uri;

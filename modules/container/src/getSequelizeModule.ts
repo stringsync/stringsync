@@ -12,6 +12,7 @@ export const getSequelizeModule = (config: ContainerConfig) =>
       port: config.DB_PORT,
       password: config.DB_PASSWORD,
       username: config.DB_USERNAME,
+      logging: config.NODE_ENV === 'test' ? undefined : console.log,
     });
     bind<Sequelize>(TYPES.Sequelize).toConstantValue(sequelize);
     bind<typeof UserModel>(TYPES.UserModel).toConstructor(UserModel);

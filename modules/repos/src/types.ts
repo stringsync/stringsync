@@ -11,6 +11,7 @@ export interface Repo<T extends object> {
 
 export interface UserRepo extends Repo<User> {
   findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null>;
+  findAllByIds(ids: string[]): Promise<User[]>;
 }
 
 export interface NotationRepo extends Repo<Notation> {

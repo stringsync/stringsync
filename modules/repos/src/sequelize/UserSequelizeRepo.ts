@@ -7,7 +7,7 @@ import { UserRepo } from './../types';
 
 @injectable()
 export class UserSequelizeRepo implements UserRepo {
-  readonly userModel: typeof UserModel;
+  userModel: typeof UserModel;
 
   constructor(@inject(TYPES.UserModel) userModel: typeof UserModel) {
     this.userModel = userModel;
@@ -30,6 +30,10 @@ export class UserSequelizeRepo implements UserRepo {
 
   async findAll(): Promise<User[]> {
     return await this.userModel.findAll({ raw: true });
+  }
+
+  async findAllByIds(ids: string[]): Promise<User[]> {
+    return await this.userModel.findAll({ where: { id: ids }, raw: true });
   }
 
   async create(attrs: Partial<User>): Promise<User> {

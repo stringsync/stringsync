@@ -1,5 +1,9 @@
+import { ReqCtx } from '../../../ctx';
+import { TYPES } from '@stringsync/container';
+import { NotationService } from '@stringsync/services';
+import { injectable, inject } from 'inversify';
 import { NotationObject } from './../Notation';
-import { ObjectType, Field, ID, registerEnumType, Root } from 'type-graphql';
+import { ObjectType, Field, ID, registerEnumType, Root, Ctx } from 'type-graphql';
 import { User, UserRole, Notation } from '@stringsync/domain';
 import { RestrictedField } from './RestrictedField';
 import { IsDataOwner } from './IsDataOwner';
@@ -41,7 +45,8 @@ export class UserObject implements PublicFacingUser {
   resetPasswordTokenSentAt!: Date | null;
 
   @Field((type) => [NotationObject])
-  async notations(@Root() user: User): Promise<Partial<Notation>[]> {
-    return [{ id: user.id }];
+  async notations(@Root() user: User, @Ctx() ctx: ReqCtx): Promise<Partial<Notation>[]> {
+    const notationService = ctx.container.get<NotationService>(TYPES.NotationService);
+    return await notationService.findByTranscriberId(user.id);
   }
 }
