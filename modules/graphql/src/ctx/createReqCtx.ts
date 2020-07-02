@@ -8,9 +8,7 @@ import { Container } from 'inversify';
 export const createReqCtx = (req: Request, res: Response, container: Container): ReqCtx => {
   const reqAt = new Date();
   const reqId = uuid.v4();
-
   const reqContainer = createReqContainerHack(container);
   applyRebindings(reqContainer);
-
   return { reqAt, reqId, req, res, container: reqContainer };
 };
