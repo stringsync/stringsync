@@ -11,7 +11,7 @@ import { RedisClient } from 'redis';
 import { Db } from '@stringsync/sequelize';
 import { Redis } from './redis';
 
-export class Ioc {
+export class DI {
   static create(config: ContainerConfig = getContainerConfig()) {
     const container = new InversifyContainer();
 

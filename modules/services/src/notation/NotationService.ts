@@ -13,7 +13,6 @@ export class NotationService {
   private notationsByTranscriberIdsLoader: Dataloader<string, Notation[]>;
 
   constructor(@inject(TYPES.NotationRepo) notationRepo: NotationRepo, @inject(TYPES.TagRepo) tagRepo: TagRepo) {
-    console.log('notation repo made');
     this.notationRepo = notationRepo;
     this.tagRepo = tagRepo;
 

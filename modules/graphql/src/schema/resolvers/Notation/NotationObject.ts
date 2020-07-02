@@ -1,8 +1,11 @@
-import { Tag } from './../../../../../domain/src/tag/types';
-import { TagObject } from './../Tag/TagObject';
-import { UserObject } from './../User';
-import { Notation, User } from '@stringsync/domain';
-import { ObjectType, Field, ID } from 'type-graphql';
+import { NotFoundError } from '@stringsync/common';
+import { TYPES } from '@stringsync/container';
+import { Notation, Tag, User } from '@stringsync/domain';
+import { UserService } from '@stringsync/services';
+import { Ctx, Field, ID, ObjectType, Root } from 'type-graphql';
+import { ReqCtx } from '../../../ctx';
+import { TagObject } from '../Tag';
+import { UserObject } from '../User';
 
 @ObjectType()
 export class NotationObject implements Notation {
@@ -36,9 +39,16 @@ export class NotationObject implements Notation {
   @Field()
   transcriberId!: string;
 
-  @Field((type) => UserObject)
-  transcriber!: User;
-
   @Field((type) => TagObject)
   tags!: Tag[];
+
+  @Field((type) => UserObject)
+  async transcriber(@Root() notation: Notation, @Ctx() ctx: ReqCtx): Promise<User> {
+    const userService = ctx.container.get<UserService>(TYPES.UserService);
+    const user = await userService.find(notation.transcriberId);
+    if (!user) {
+      throw new NotFoundError('user not found');
+    }
+    return user;
+  }
 }

@@ -1,22 +1,16 @@
-import { TYPES } from '@stringsync/container';
+import { applyRebindings } from './applyRebindings';
+import { createReqContainerHack } from './createReqContainerHack';
 import { ReqCtx } from './types';
-import { Container } from 'inversify';
 import { Request, Response } from 'express';
 import * as uuid from 'uuid';
+import { Container } from 'inversify';
 
-const bindAsSingleton = <T>(container: Container, identifier: symbol) => {
-  const instance: T = container.get<T>(identifier);
-  container.bind<T>(identifier).toConstantValue(instance);
-};
-
-export const createReqCtx = (req: Request, res: Response, parent: Container): ReqCtx => {
+export const createReqCtx = (req: Request, res: Response, container: Container): ReqCtx => {
   const reqAt = new Date();
   const reqId = uuid.v4();
-  const container = parent.createChild();
 
-  bindAsSingleton(container, TYPES.UserService);
-  bindAsSingleton(container, TYPES.NotationService);
-  bindAsSingleton(container, TYPES.TagService);
+  const reqContainer = createReqContainerHack(container);
+  applyRebindings(reqContainer);
 
-  return { reqAt, reqId, req, res, container };
+  return { reqAt, reqId, req, res, container: reqContainer };
 };

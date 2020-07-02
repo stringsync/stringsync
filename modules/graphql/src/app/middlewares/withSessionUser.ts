@@ -1,21 +1,12 @@
-import { Handler, Request } from 'express';
+import { Handler } from 'express';
 import { Container } from 'inversify';
 import { AuthService } from '@stringsync/services';
 import { TYPES } from '@stringsync/container';
-
-const getId = (req: Request): string => {
-  if (!('session' in req)) {
-    return '';
-  }
-  if (!('user' in req.session!)) {
-    return '';
-  }
-  return req.session!.user.id || '';
-};
+import { get } from 'lodash';
 
 export const withSessionUser = (container: Container): Handler => async (req, res, next) => {
   const authService = container.get<AuthService>(TYPES.AuthService);
-  const id = getId(req);
+  const id = get(req, 'session.user.id', '');
   req.session!.user = await authService.getSessionUser(id);
   next();
 };

@@ -12,7 +12,7 @@ export const app = (container: Container) => {
   const app = express();
   const healthController = container.get<HealthController>(TYPES.HealthController);
   const config = container.get<ContainerConfig>(TYPES.ContainerConfig);
-  const schema = generateSchema(container);
+  const schema = generateSchema();
 
   app.set('trust proxy', 1);
 

@@ -23,6 +23,10 @@ export class Db {
   }
 
   static async cleanup(sequelize: Sequelize) {
+    const env = process.env.NODE_ENV;
+    if (env !== 'development' && env !== 'test') {
+      throw new Error(`can only cleanup in development and test environemnts, got: ${env}`);
+    }
     await sequelize.query(`
       DO
       $func$

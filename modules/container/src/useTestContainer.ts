@@ -1,14 +1,14 @@
-import { Ioc } from './Ioc';
+import { DI } from './DI';
 
 export const useTestContainer = () => {
-  const container = Ioc.create();
+  const container = DI.create();
 
   afterEach(async () => {
-    await Ioc.cleanup(container);
+    await DI.cleanup(container);
   });
 
   afterAll(async () => {
-    await Ioc.teardown(container);
+    await DI.teardown(container);
   });
 
   return container;
