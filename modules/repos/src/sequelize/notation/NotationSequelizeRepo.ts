@@ -1,19 +1,24 @@
 import { TYPES } from '@stringsync/container';
 import { NotationModel } from '@stringsync/sequelize';
 import { inject, injectable } from 'inversify';
-import { NotationRepo } from '../types';
+import { NotationRepo, NotationLoader } from '../../types';
 import { Notation } from '@stringsync/domain';
 
 @injectable()
 export class NotationSequelizeRepo implements NotationRepo {
   notationModel: typeof NotationModel;
+  notationLoader: NotationLoader;
 
-  constructor(@inject(TYPES.NotationModel) notationModel: typeof NotationModel) {
+  constructor(
+    @inject(TYPES.NotationModel) notationModel: typeof NotationModel,
+    @inject(TYPES.NotationLoader) notationLoader: NotationLoader
+  ) {
     this.notationModel = notationModel;
+    this.notationLoader = notationLoader;
   }
 
-  async findAllByTranscriberIds(transcriberIds: string[]): Promise<Notation[]> {
-    return await this.notationModel.findAll({ where: { transcriberId: transcriberIds }, raw: true });
+  async findByTranscriberId(transcriberId: string): Promise<Notation[]> {
+    return await this.notationLoader.findByTranscriberId(transcriberId);
   }
 
   async count(): Promise<number> {

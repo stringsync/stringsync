@@ -9,6 +9,7 @@
     "dev": "ts-node-dev ./src/index.ts"
   },
   "dependencies": {
+    "@stringsync/common": "1.0.0",
     "@stringsync/config": "1.0.0",
     "@stringsync/container": "1.0.0",
     "@stringsync/domain": "1.0.0",

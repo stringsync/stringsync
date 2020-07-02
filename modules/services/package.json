@@ -11,7 +11,6 @@
     "@stringsync/domain": "1.0.0",
     "@stringsync/repos": "1.0.0",
     "bcrypt": "^5.0.0",
-    "dataloader": "^2.0.0",
     "inversify": "^5.0.1",
     "lodash": "^4.17.15",
     "redis": "^3.0.2",

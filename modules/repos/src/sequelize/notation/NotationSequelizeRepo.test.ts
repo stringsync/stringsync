@@ -150,39 +150,3 @@ describe('update', () => {
     expect(foundNotation!.songName).toBe(songName);
   });
 });
-
-describe('findAllByTranscriberIds', () => {
-  it('finds users by transcriber ids', async () => {
-    const [transcriber1, transcriber2, transcriber3] = await userRepo.bulkCreate([
-      buildRandUser(),
-      buildRandUser(),
-      buildRandUser(),
-    ]);
-    const [notation1, notation2, notation3] = await notationRepo.bulkCreate([
-      buildRandNotation({ transcriberId: transcriber1.id }),
-      buildRandNotation({ transcriberId: transcriber2.id }),
-      buildRandNotation({ transcriberId: transcriber3.id }),
-    ]);
-
-    const notations = await notationRepo.findAllByTranscriberIds([transcriber1.id, transcriber2.id]);
-
-    expect(sortBy(notations, 'id')).toStrictEqual(sortBy([notation1, notation2], 'id'));
-  });
-
-  it('returns plain objects', async () => {
-    const [transcriber1, transcriber2, transcriber3] = await userRepo.bulkCreate([
-      buildRandUser(),
-      buildRandUser(),
-      buildRandUser(),
-    ]);
-    await notationRepo.bulkCreate([
-      buildRandNotation({ transcriberId: transcriber1.id }),
-      buildRandNotation({ transcriberId: transcriber2.id }),
-      buildRandNotation({ transcriberId: transcriber3.id }),
-    ]);
-
-    const notations = await notationRepo.findAllByTranscriberIds([transcriber1.id, transcriber2.id, transcriber3.id]);
-
-    expect(notations.every(isPlainObject)).toBe(true);
-  });
-});

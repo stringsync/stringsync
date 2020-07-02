@@ -11,11 +11,22 @@ export interface Repo<T extends object> {
 
 export interface UserRepo extends Repo<User> {
   findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null>;
-  findAllByIds(ids: string[]): Promise<User[]>;
+}
+
+export interface UserLoader {
+  clearById(id: string): void;
+  primeById(id: string, user: User | null): void;
+  findById(id: string): Promise<User | null>;
 }
 
 export interface NotationRepo extends Repo<Notation> {
-  findAllByTranscriberIds(transcriberIds: string[]): Promise<Notation[]>;
+  findByTranscriberId(transcriberId: string): Promise<Notation[]>;
+}
+
+export interface NotationLoader {
+  clearByTranscriberId(transcriberId: string): void;
+  primeByTranscriberId(transcriberId: string, notations: Notation[]): void;
+  findByTranscriberId(transcriberId: string): Promise<Notation[]>;
 }
 
 export interface TagRepo extends Repo<Tag> {}

@@ -1,7 +1,7 @@
 import { isPlainObject, sortBy } from 'lodash';
 import { buildRandTag, randStr } from '@stringsync/common';
 import { TYPES, useTestContainer } from '@stringsync/container';
-import { TagRepo } from '../types';
+import { TagRepo } from '../../types';
 
 const container = useTestContainer();
 

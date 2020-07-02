@@ -1,16 +1,19 @@
+import { UserLoader } from './../../types';
 import { TYPES } from '@stringsync/container';
 import { User } from '@stringsync/domain';
 import { UserModel } from '@stringsync/sequelize';
 import { inject, injectable } from 'inversify';
 import { or } from 'sequelize';
-import { UserRepo } from './../types';
+import { UserRepo } from '../../types';
 
 @injectable()
 export class UserSequelizeRepo implements UserRepo {
   userModel: typeof UserModel;
+  userLoader: UserLoader;
 
-  constructor(@inject(TYPES.UserModel) userModel: typeof UserModel) {
+  constructor(@inject(TYPES.UserModel) userModel: typeof UserModel, @inject(TYPES.UserLoader) userLoader: UserLoader) {
     this.userModel = userModel;
+    this.userLoader = userLoader;
   }
 
   async findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null> {
@@ -25,15 +28,11 @@ export class UserSequelizeRepo implements UserRepo {
   }
 
   async find(id: string): Promise<User | null> {
-    return await this.userModel.findByPk(id, { raw: true });
+    return await this.userLoader.findById(id);
   }
 
   async findAll(): Promise<User[]> {
     return await this.userModel.findAll({ raw: true });
-  }
-
-  async findAllByIds(ids: string[]): Promise<User[]> {
-    return await this.userModel.findAll({ where: { id: ids }, raw: true });
   }
 
   async create(attrs: Partial<User>): Promise<User> {

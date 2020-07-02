@@ -10,6 +10,7 @@
     "@stringsync/container": "1.0.0",
     "@stringsync/domain": "1.0.0",
     "@stringsync/sequelize": "1.0.0",
+    "dataloader": "^2.0.0",
     "inversify": "^5.0.1",
     "lodash": "^4.17.15"
   },
