@@ -17,14 +17,10 @@ export class UserSequelizeRepo implements UserRepo {
   }
 
   async findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null> {
-    const user = await this.userModel.findOne({
+    return await this.userModel.findOne({
       where: { ...or({ username: usernameOrEmail }, { email: usernameOrEmail }) },
       raw: true,
     });
-    if (user) {
-      this.userLoader.primeById(user.id, user);
-    }
-    return user;
   }
 
   async count(): Promise<number> {
@@ -42,21 +38,16 @@ export class UserSequelizeRepo implements UserRepo {
   async create(attrs: Partial<User>): Promise<User> {
     const userModel = await this.userModel.create(attrs, { raw: true });
     const user = userModel.get({ plain: true }) as User;
-    this.userLoader.primeById(user.id, user);
     return user;
   }
 
   async bulkCreate(bulkAttrs: Partial<User>[]): Promise<User[]> {
     const userModels: UserModel[] = await this.userModel.bulkCreate(bulkAttrs);
     const users = userModels.map((userModel: UserModel) => userModel.get({ plain: true })) as User[];
-    for (const user of users) {
-      this.userLoader.primeById(user.id, user);
-    }
     return users;
   }
 
   async update(id: string, attrs: Partial<User>): Promise<void> {
     await this.userModel.update(attrs, { where: { id } });
-    this.userLoader.clearById(id);
   }
 }

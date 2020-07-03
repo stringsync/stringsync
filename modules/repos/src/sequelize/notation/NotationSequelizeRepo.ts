@@ -26,7 +26,7 @@ export class NotationSequelizeRepo implements NotationRepo {
   }
 
   async find(id: string): Promise<Notation | null> {
-    return await this.notationModel.findByPk(id, { raw: true });
+    return this.notationLoader.findById(id);
   }
 
   async findAll(): Promise<Notation[]> {
@@ -35,12 +35,14 @@ export class NotationSequelizeRepo implements NotationRepo {
 
   async create(attrs: Partial<Notation>) {
     const notationModel = await this.notationModel.create(attrs, { raw: true });
-    return notationModel.get({ plain: true }) as Notation;
+    const notation = notationModel.get({ plain: true }) as Notation;
+    return notation;
   }
 
   async bulkCreate(bulkAttrs: Partial<Notation>[]): Promise<Notation[]> {
-    const notationModels = await this.notationModel.bulkCreate(bulkAttrs);
-    return notationModels.map((notationModel: NotationModel) => notationModel.get({ plain: true })) as Notation[];
+    const notationModels: NotationModel[] = await this.notationModel.bulkCreate(bulkAttrs);
+    const notations = notationModels.map((notationModel) => notationModel.get({ plain: true })) as Notation[];
+    return notations;
   }
 
   async update(id: string, attrs: Partial<Notation>): Promise<void> {

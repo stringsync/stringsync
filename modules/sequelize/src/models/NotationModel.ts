@@ -1,5 +1,5 @@
 import { TaggingModel } from './TaggingModel';
-import { BelongsToMany, AutoIncrement, ForeignKey, DataType } from 'sequelize-typescript';
+import { BelongsToMany, ForeignKey, DataType } from 'sequelize-typescript';
 import { Table, Model, PrimaryKey, Column, CreatedAt, UpdatedAt, BelongsTo } from 'sequelize-typescript';
 import { Notation } from '@stringsync/domain';
 import { UserModel } from './UserModel';

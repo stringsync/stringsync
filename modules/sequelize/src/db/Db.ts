@@ -1,6 +1,6 @@
 import { DbConfig } from './types';
 import { Sequelize } from 'sequelize-typescript';
-import { models } from '../models';
+import { UserModel, NotationModel, TagModel, TaggingModel } from '../models';
 
 export class Db {
   static connect(config: DbConfig): Sequelize {
@@ -11,7 +11,7 @@ export class Db {
       database: config.database,
       username: config.username,
       password: config.password,
-      models: models,
+      models: [UserModel, NotationModel, TagModel, TaggingModel],
       logging: config.logging,
     });
 

@@ -14,8 +14,6 @@ export interface UserRepo extends Repo<User> {
 }
 
 export interface UserLoader {
-  clearById(id: string): void;
-  primeById(id: string, user: User | null): void;
   findById(id: string): Promise<User | null>;
 }
 
@@ -24,9 +22,8 @@ export interface NotationRepo extends Repo<Notation> {
 }
 
 export interface NotationLoader {
-  clearByTranscriberId(transcriberId: string): void;
-  primeByTranscriberId(transcriberId: string, notations: Notation[]): void;
   findByTranscriberId(transcriberId: string): Promise<Notation[]>;
+  findById(id: string): Promise<Notation | null>;
 }
 
 export interface TagRepo extends Repo<Tag> {}

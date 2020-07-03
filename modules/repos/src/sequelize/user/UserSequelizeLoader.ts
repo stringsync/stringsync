@@ -18,16 +18,9 @@ export class UserSequelizeLoader implements UserLoader {
     this.byIdLoader = new Dataloader(this.loadAllById.bind(this));
   }
 
-  primeById(id: string, user: User | null) {
-    this.byIdLoader.prime(id, user);
-  }
-
-  clearById(id: string) {
-    this.byIdLoader.clear(id);
-  }
-
   async findById(id: string): Promise<User | null> {
     const user = await this.byIdLoader.load(id);
+    this.byIdLoader.clearAll();
     return ensureNotError(user);
   }
 
