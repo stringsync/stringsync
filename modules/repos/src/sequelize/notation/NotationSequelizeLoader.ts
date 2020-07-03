@@ -4,7 +4,7 @@ import { TYPES } from '@stringsync/container';
 import { NotationModel } from '@stringsync/sequelize';
 import { inject, injectable } from 'inversify';
 import { Notation } from '@stringsync/domain';
-import { alignOneToMany, alignOneToOne, ensureNoErrors, ensureNotError } from '../../dataloader-utils';
+import { alignOneToMany, alignOneToOne, ensureNoErrors } from '../../dataloader-utils';
 
 @injectable()
 export class NotationSequelizeLoader implements NotationLoader {
@@ -23,7 +23,7 @@ export class NotationSequelizeLoader implements NotationLoader {
   async findById(id: string) {
     const notation = this.byIdLoader.load(id);
     this.byIdLoader.clearAll();
-    return ensureNotError(notation);
+    return ensureNoErrors(notation);
   }
 
   async findByTranscriberId(transcriberId: string) {

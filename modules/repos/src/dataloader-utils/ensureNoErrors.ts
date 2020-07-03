@@ -1,8 +1,9 @@
-import { ensureNotError } from './ensureNotError';
-
-export const ensureNoErrors = <T>(array: Array<Error | T>): Array<T> => {
-  for (const el of array) {
-    ensureNotError(el);
+export const ensureNoErrors = <T extends any>(thing: T): T => {
+  const wrapped: any[] = Array.isArray(thing) ? thing : [thing];
+  for (const el of wrapped) {
+    if (el instanceof Error) {
+      throw el;
+    }
   }
-  return array as Array<T>;
+  return thing as T;
 };

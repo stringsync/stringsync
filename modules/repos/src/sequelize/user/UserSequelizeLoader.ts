@@ -4,7 +4,7 @@ import { TYPES } from '@stringsync/container';
 import { UserModel } from '@stringsync/sequelize';
 import { inject, injectable } from 'inversify';
 import { User } from '@stringsync/domain';
-import { alignOneToOne, ensureNotError } from '../../dataloader-utils';
+import { alignOneToOne, ensureNoErrors } from '../../dataloader-utils';
 
 @injectable()
 export class UserSequelizeLoader implements UserLoader {
@@ -21,7 +21,7 @@ export class UserSequelizeLoader implements UserLoader {
   async findById(id: string): Promise<User | null> {
     const user = await this.byIdLoader.load(id);
     this.byIdLoader.clearAll();
-    return ensureNotError(user);
+    return ensureNoErrors(user);
   }
 
   private async loadAllById(ids: readonly string[]): Promise<Array<User | null>> {
