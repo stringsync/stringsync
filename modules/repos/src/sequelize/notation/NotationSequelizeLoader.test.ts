@@ -7,8 +7,6 @@ import { useTestContainer, TYPES } from '@stringsync/container';
 
 const container = useTestContainer();
 
-let userRepo: UserSequelizeRepo;
-let notationRepo: NotationSequelizeRepo;
 let notationLoader: NotationSequelizeLoader;
 
 let transcriber1: User;
@@ -18,9 +16,10 @@ let notation2: Notation;
 let notation3: Notation;
 
 beforeEach(async () => {
-  userRepo = container.get<UserSequelizeRepo>(TYPES.UserSequelizeRepo);
-  notationRepo = container.get<NotationSequelizeRepo>(TYPES.NotationSequelizeRepo);
   notationLoader = container.get<NotationSequelizeLoader>(TYPES.NotationSequelizeLoader);
+
+  const userRepo = container.get<UserSequelizeRepo>(TYPES.UserSequelizeRepo);
+  const notationRepo = container.get<NotationSequelizeRepo>(TYPES.NotationSequelizeRepo);
 
   [transcriber1, transcriber2] = await userRepo.bulkCreate([buildRandUser(), buildRandUser()]);
   [notation1, notation2, notation3] = await notationRepo.bulkCreate([
