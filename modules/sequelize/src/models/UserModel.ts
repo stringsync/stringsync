@@ -79,7 +79,6 @@ export class UserModel extends Model<UserModel> implements User {
   }
 
   static emitPrimeCache(id: string, user: User) {
-    console.log('primed:', id);
     UserModel.emitter.emit(UserModel.PRIME_CACHE, id, user);
   }
 
