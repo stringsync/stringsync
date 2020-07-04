@@ -1,7 +1,7 @@
 import { AuthService } from './AuthService';
 import { useTestContainer, TYPES } from '@stringsync/container';
 import { UserRole } from '@stringsync/domain';
-import { buildRandUser } from '@stringsync/common';
+import { TestFactory } from '@stringsync/common';
 
 const container = useTestContainer();
 
@@ -33,7 +33,7 @@ describe('getSessionUser', () => {
   });
 
   it('returns a session user when the id exists', async () => {
-    const user = await authService.userRepo.create(buildRandUser());
+    const user = await authService.userRepo.create(TestFactory.buildRandUser());
 
     const sessionUser = await authService.getSessionUser(user.id);
 

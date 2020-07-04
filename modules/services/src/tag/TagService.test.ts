@@ -3,7 +3,7 @@ import { TagRepo, UserRepo, NotationRepo, TaggingRepo } from '@stringsync/repos'
 import { useTestContainer, TYPES } from '@stringsync/container';
 import { TagService } from './TagService';
 import { Tag, User, Notation, Tagging } from '@stringsync/domain';
-import { buildRandTag, buildRandUser, buildRandNotation, randStr, buildRandTagging } from '@stringsync/common';
+import { randStr, TestFactory } from '@stringsync/common';
 
 const container = useTestContainer();
 
@@ -15,7 +15,7 @@ let tagService: TagService;
 
 beforeEach(async () => {
   tagRepo = container.get<TagRepo>(TYPES.TagRepo);
-  [tag1, tag2] = await tagRepo.bulkCreate([buildRandTag(), buildRandTag()]);
+  [tag1, tag2] = await tagRepo.bulkCreate([TestFactory.buildRandTag(), TestFactory.buildRandTag()]);
 
   tagService = container.get<TagService>(TYPES.TagService);
 });
@@ -66,19 +66,19 @@ describe('findAllByNotationId', () => {
 
   beforeEach(async () => {
     userRepo = container.get<UserRepo>(TYPES.UserRepo);
-    [user1, user2] = await userRepo.bulkCreate([buildRandUser(), buildRandUser()]);
+    [user1, user2] = await userRepo.bulkCreate([TestFactory.buildRandUser(), TestFactory.buildRandUser()]);
 
     notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
     [notation1, notation2] = await notationRepo.bulkCreate([
-      buildRandNotation({ transcriberId: user1.id }),
-      buildRandNotation({ transcriberId: user1.id }),
+      TestFactory.buildRandNotation({ transcriberId: user1.id }),
+      TestFactory.buildRandNotation({ transcriberId: user1.id }),
     ]);
 
     taggingRepo = container.get<TaggingRepo>(TYPES.TaggingRepo);
     [tagging1, tagging2] = await taggingRepo.bulkCreate([
-      buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
-      buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
-      buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
+      TestFactory.buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
+      TestFactory.buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
+      TestFactory.buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
     ]);
   });
 

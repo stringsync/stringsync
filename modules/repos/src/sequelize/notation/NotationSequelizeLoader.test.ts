@@ -1,6 +1,6 @@
 import { sortBy, isPlainObject } from 'lodash';
 import { Notation, User } from '@stringsync/domain';
-import { randStr, buildRandNotation, buildRandUser } from '@stringsync/common';
+import { randStr, TestFactory } from '@stringsync/common';
 import { NotationSequelizeLoader, NotationSequelizeRepo } from './';
 import { UserSequelizeRepo } from '../user';
 import { useTestContainer, TYPES } from '@stringsync/container';
@@ -21,11 +21,11 @@ beforeEach(async () => {
   const userRepo = container.get<UserSequelizeRepo>(TYPES.UserSequelizeRepo);
   const notationRepo = container.get<NotationSequelizeRepo>(TYPES.NotationSequelizeRepo);
 
-  [transcriber1, transcriber2] = await userRepo.bulkCreate([buildRandUser(), buildRandUser()]);
+  [transcriber1, transcriber2] = await userRepo.bulkCreate([TestFactory.buildRandUser(), TestFactory.buildRandUser()]);
   [notation1, notation2, notation3] = await notationRepo.bulkCreate([
-    buildRandNotation({ transcriberId: transcriber1.id }),
-    buildRandNotation({ transcriberId: transcriber1.id }),
-    buildRandNotation({ transcriberId: transcriber2.id }),
+    TestFactory.buildRandNotation({ transcriberId: transcriber1.id }),
+    TestFactory.buildRandNotation({ transcriberId: transcriber1.id }),
+    TestFactory.buildRandNotation({ transcriberId: transcriber2.id }),
   ]);
 });
 

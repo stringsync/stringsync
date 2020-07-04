@@ -1,5 +1,5 @@
 import { isPlainObject } from 'lodash';
-import { buildRandUser, randStr } from '@stringsync/common';
+import { TestFactory, randStr } from '@stringsync/common';
 import { UserSequelizeLoader } from './UserSequelizeLoader';
 import { UserSequelizeRepo } from './UserSequelizeRepo';
 import { User } from '@stringsync/domain';
@@ -16,7 +16,7 @@ let user2: User;
 beforeEach(async () => {
   userLoader = container.get<UserSequelizeLoader>(TYPES.UserSequelizeLoader);
   userRepo = container.get<UserSequelizeRepo>(TYPES.UserSequelizeRepo);
-  [user1, user2] = await userRepo.bulkCreate([buildRandUser(), buildRandUser()]);
+  [user1, user2] = await userRepo.bulkCreate([TestFactory.buildRandUser(), TestFactory.buildRandUser()]);
 });
 
 describe('findById', () => {

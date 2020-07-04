@@ -1,4 +1,4 @@
-import { buildRandUser, randStr } from '@stringsync/common';
+import { TestFactory, randStr } from '@stringsync/common';
 import { TYPES, useTestContainer } from '@stringsync/container';
 import { isPlainObject, sortBy } from 'lodash';
 import { UserSequelizeRepo } from './UserSequelizeRepo';
@@ -13,7 +13,7 @@ beforeEach(() => {
 
 describe('count', () => {
   it('counts the number of users', async () => {
-    await userRepo.bulkCreate([buildRandUser(), buildRandUser(), buildRandUser()]);
+    await userRepo.bulkCreate([TestFactory.buildRandUser(), TestFactory.buildRandUser(), TestFactory.buildRandUser()]);
 
     const count = await userRepo.count();
 
@@ -24,14 +24,14 @@ describe('count', () => {
 describe('create', () => {
   it('creates a user record', async () => {
     const countBefore = await userRepo.count();
-    await userRepo.create(buildRandUser());
+    await userRepo.create(TestFactory.buildRandUser());
     const countAfter = await userRepo.count();
 
     expect(countAfter).toBe(countBefore + 1);
   });
 
   it('creates a findable user record', async () => {
-    const { id } = await userRepo.create(buildRandUser());
+    const { id } = await userRepo.create(TestFactory.buildRandUser());
     const user = await userRepo.find(id);
 
     expect(user).not.toBeNull();
@@ -39,13 +39,13 @@ describe('create', () => {
   });
 
   it('returns a plain object', async () => {
-    const user = await userRepo.create(buildRandUser());
+    const user = await userRepo.create(TestFactory.buildRandUser());
 
     expect(isPlainObject(user)).toBe(true);
   });
 
   it('disallows duplicate ids', async () => {
-    const user = buildRandUser({ id: 'id' });
+    const user = TestFactory.buildRandUser({ id: 'id' });
 
     await expect(userRepo.create(user)).resolves.not.toThrow();
     await expect(userRepo.create(user)).rejects.toThrow();
@@ -55,7 +55,7 @@ describe('create', () => {
 describe('find', () => {
   it('returns the user matching the id', async () => {
     const id = randStr(8);
-    await userRepo.create(buildRandUser({ id }));
+    await userRepo.create(TestFactory.buildRandUser({ id }));
 
     const user = await userRepo.find(id);
 
@@ -64,7 +64,7 @@ describe('find', () => {
   });
 
   it('returns a plain object', async () => {
-    const { id } = await userRepo.create(buildRandUser());
+    const { id } = await userRepo.create(TestFactory.buildRandUser());
 
     const user = await userRepo.find(id);
 
@@ -80,7 +80,7 @@ describe('find', () => {
 
 describe('findAll', () => {
   it('returns all user records', async () => {
-    const users = [buildRandUser(), buildRandUser(), buildRandUser()];
+    const users = [TestFactory.buildRandUser(), TestFactory.buildRandUser(), TestFactory.buildRandUser()];
     await userRepo.bulkCreate(users);
 
     const foundUsers = await userRepo.findAll();
@@ -89,7 +89,7 @@ describe('findAll', () => {
   });
 
   it('returns plain objects', async () => {
-    const users = [buildRandUser(), buildRandUser(), buildRandUser()];
+    const users = [TestFactory.buildRandUser(), TestFactory.buildRandUser(), TestFactory.buildRandUser()];
     await userRepo.bulkCreate(users);
 
     const foundUsers = await userRepo.findAll();
@@ -100,7 +100,7 @@ describe('findAll', () => {
 
 describe('findByUsernameOrEmail', () => {
   it('finds by username', async () => {
-    const user = buildRandUser();
+    const user = TestFactory.buildRandUser();
     await userRepo.create(user);
 
     const foundUser = await userRepo.findByUsernameOrEmail(user.username);
@@ -110,7 +110,7 @@ describe('findByUsernameOrEmail', () => {
   });
 
   it('finds by email', async () => {
-    const user = buildRandUser();
+    const user = TestFactory.buildRandUser();
     await userRepo.create(user);
 
     const foundUser = await userRepo.findByUsernameOrEmail(user.email);
@@ -120,7 +120,7 @@ describe('findByUsernameOrEmail', () => {
   });
 
   it('returns a plain object', async () => {
-    const user = buildRandUser();
+    const user = TestFactory.buildRandUser();
     await userRepo.create(user);
 
     const foundUser = await userRepo.findByUsernameOrEmail(user.username);
@@ -131,7 +131,7 @@ describe('findByUsernameOrEmail', () => {
 
 describe('update', () => {
   it('updates a user', async () => {
-    const user = buildRandUser();
+    const user = TestFactory.buildRandUser();
     await userRepo.create(user);
     const username = randStr(8);
     const updatedUser = { ...user, username };

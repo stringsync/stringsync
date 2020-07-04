@@ -1,5 +1,5 @@
 import { isPlainObject, sortBy } from 'lodash';
-import { buildRandTag, randStr } from '@stringsync/common';
+import { TestFactory, randStr } from '@stringsync/common';
 import { TYPES, useTestContainer } from '@stringsync/container';
 import { TagRepo } from '../../types';
 
@@ -13,7 +13,7 @@ beforeEach(async () => {
 
 describe('count', () => {
   it('returns the number of tags', async () => {
-    await tagRepo.bulkCreate([buildRandTag(), buildRandTag(), buildRandTag()]);
+    await tagRepo.bulkCreate([TestFactory.buildRandTag(), TestFactory.buildRandTag(), TestFactory.buildRandTag()]);
     const count = await tagRepo.count();
 
     expect(count).toBe(3);
@@ -23,13 +23,13 @@ describe('count', () => {
 describe('create', () => {
   it('creates a tag record', async () => {
     const countBefore = await tagRepo.count();
-    await tagRepo.create(buildRandTag());
+    await tagRepo.create(TestFactory.buildRandTag());
     const countAfter = await tagRepo.count();
     expect(countAfter).toBe(countBefore + 1);
   });
 
   it('creates a findable user record', async () => {
-    const { id } = await tagRepo.create(buildRandTag());
+    const { id } = await tagRepo.create(TestFactory.buildRandTag());
     const tag = await tagRepo.find(id);
 
     expect(tag).not.toBeNull();
@@ -37,14 +37,14 @@ describe('create', () => {
   });
 
   it('returns a plain object', async () => {
-    const tag = await tagRepo.create(buildRandTag());
+    const tag = await tagRepo.create(TestFactory.buildRandTag());
 
     expect(isPlainObject(tag)).toBe(true);
   });
 
   it('disallows duplicate ids', async () => {
     const id = randStr(8);
-    const tag = buildRandTag({ id });
+    const tag = TestFactory.buildRandTag({ id });
 
     await expect(tagRepo.create(tag)).resolves.not.toThrow();
     await expect(tagRepo.create(tag)).rejects.toThrow();
@@ -54,7 +54,7 @@ describe('create', () => {
 describe('find', () => {
   it('returns the tag matching the id', async () => {
     const id = randStr(8);
-    await tagRepo.create(buildRandTag({ id }));
+    await tagRepo.create(TestFactory.buildRandTag({ id }));
 
     const tag = await tagRepo.find(id);
 
@@ -63,7 +63,7 @@ describe('find', () => {
   });
 
   it('returns a plain object', async () => {
-    const { id } = await tagRepo.create(buildRandTag());
+    const { id } = await tagRepo.create(TestFactory.buildRandTag());
 
     const tag = await tagRepo.find(id);
 
@@ -79,7 +79,7 @@ describe('find', () => {
 
 describe('findAll', () => {
   it('returns all tag records', async () => {
-    const tags = [buildRandTag(), buildRandTag(), buildRandTag()];
+    const tags = [TestFactory.buildRandTag(), TestFactory.buildRandTag(), TestFactory.buildRandTag()];
     await tagRepo.bulkCreate(tags);
 
     const foundTags = await tagRepo.findAll();
@@ -88,7 +88,7 @@ describe('findAll', () => {
   });
 
   it('returns plain objects', async () => {
-    const tags = [buildRandTag(), buildRandTag(), buildRandTag()];
+    const tags = [TestFactory.buildRandTag(), TestFactory.buildRandTag(), TestFactory.buildRandTag()];
     await tagRepo.bulkCreate(tags);
 
     const foundTags = await tagRepo.findAll();
@@ -99,7 +99,7 @@ describe('findAll', () => {
 
 describe('update', () => {
   it('updates a tag', async () => {
-    const tag = buildRandTag();
+    const tag = TestFactory.buildRandTag();
     await tagRepo.create(tag);
     const name = randStr(8);
     const updatedTag = { ...tag, name };
