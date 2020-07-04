@@ -31,3 +31,9 @@ export interface NotationLoader {
 }
 
 export interface TagRepo extends Repo<Tag> {}
+
+export interface TagLoader {
+  findById(id: string): Promise<Tag | null>;
+  startListeningForChanges(): void;
+  stopListeningForChanges(): void;
+}

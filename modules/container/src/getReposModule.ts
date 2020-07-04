@@ -2,9 +2,9 @@ import { Ctor } from '@stringsync/common';
 import { ContainerConfig } from '@stringsync/config';
 import { ContainerModule } from 'inversify';
 import { TYPES } from '@stringsync/container';
-import { UserSequelizeLoader, UserLoader, UserSequelizeRepo, UserRepo } from '@stringsync/repos';
+import { UserSequelizeLoader, UserLoader, UserSequelizeRepo, UserRepo, TagLoader } from '@stringsync/repos';
 import { NotationSequelizeLoader, NotationLoader, NotationRepo, NotationSequelizeRepo } from '@stringsync/repos';
-import { TagRepo, TagSequelizeRepo } from '@stringsync/repos';
+import { TagRepo, TagSequelizeRepo, TagSequelizeLoader } from '@stringsync/repos';
 
 export const getReposModule = (config: ContainerConfig) => {
   return new ContainerModule((bind) => {
@@ -16,6 +16,8 @@ export const getReposModule = (config: ContainerConfig) => {
     bind<Ctor<NotationLoader>>(TYPES.NotationLoaderCtor).toConstructor(NotationSequelizeLoader);
     bind<NotationRepo>(TYPES.NotationRepo).to(NotationSequelizeRepo);
 
+    bind<TagLoader>(TYPES.TagLoader).to(TagSequelizeLoader);
+    bind<Ctor<TagLoader>>(TYPES.TagLoaderCtor).toConstructor(TagSequelizeLoader);
     bind<TagRepo>(TYPES.TagRepo).to(TagSequelizeRepo);
 
     if (config.NODE_ENV === 'test') {
