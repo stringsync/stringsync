@@ -28,14 +28,12 @@ export class NotationSequelizeLoader implements NotationLoader {
   startListeningForChanges() {
     this.notationModel.emitter.addListener(this.notationModel.PRIME_CACHE, this.primeById);
     this.notationModel.emitter.addListener(this.notationModel.CLEAR_CACHE, this.clearById);
-
     this.userModel.emitter.addListener(this.userModel.CLEAR_CACHE, this.clearByTranscriberId);
   }
 
   stopListeningForChanges() {
     this.notationModel.emitter.removeListener(this.notationModel.PRIME_CACHE, this.primeById);
     this.notationModel.emitter.removeListener(this.notationModel.CLEAR_CACHE, this.clearById);
-
     this.userModel.emitter.removeListener(this.userModel.CLEAR_CACHE, this.clearByTranscriberId);
   }
 
