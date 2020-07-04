@@ -1,3 +1,4 @@
+import { isPlainObject } from 'lodash';
 import { buildRandUser, randStr } from '@stringsync/common';
 import { UserSequelizeLoader } from './UserSequelizeLoader';
 import { UserSequelizeRepo } from './UserSequelizeRepo';
@@ -28,5 +29,10 @@ describe('findById', () => {
   it('returns null for a user that does not exist', async () => {
     const user = await userLoader.findById(randStr(10));
     expect(user).toBeNull();
+  });
+
+  it('returns a plain object', async () => {
+    const user = await userLoader.findById(user1.id);
+    expect(isPlainObject(user)).toBe(true);
   });
 });

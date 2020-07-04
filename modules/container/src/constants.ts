@@ -14,6 +14,8 @@ export const TYPES = {
   Redis: Symbol('Redis'),
   Sequelize: Symbol('Sequelize'),
   TaggingModel: Symbol('TaggingModel'),
+  TaggingRepo: Symbol('TaggingRepo'),
+  TaggingSequelizeRepo: Symbol('TaggingSequelizeRepo'),
   TagLoader: Symbol('TagLoader'),
   TagLoaderCtor: Symbol('TagLoaderCtor'),
   TagModel: Symbol('TagModel'),

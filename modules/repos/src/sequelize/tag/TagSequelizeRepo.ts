@@ -25,8 +25,8 @@ export class TagSequelizeRepo implements TagRepo {
   }
 
   async create(attrs: Partial<Tag>): Promise<Tag> {
-    const tagModel = await this.tagModel.create(attrs, { raw: true });
-    return tagModel.get({ plain: true }) as Tag;
+    const tagEntity = await this.tagModel.create(attrs, { raw: true });
+    return tagEntity.get({ plain: true }) as Tag;
   }
 
   async find(id: string): Promise<Tag | null> {
@@ -42,8 +42,8 @@ export class TagSequelizeRepo implements TagRepo {
   }
 
   async bulkCreate(bulkAttrs: Partial<Tag>[]): Promise<Tag[]> {
-    const tagModels = await this.tagModel.bulkCreate(bulkAttrs);
-    return tagModels.map((tagModel: TagModel) => tagModel.get({ plain: true })) as TagModel[];
+    const tagEntities = await this.tagModel.bulkCreate(bulkAttrs);
+    return tagEntities.map((tagEntity: TagModel) => tagEntity.get({ plain: true })) as Tag[];
   }
 
   async update(id: string, attrs: Partial<Tag>): Promise<void> {
