@@ -1,0 +1,77 @@
+import { sortBy, isPlainObject } from 'lodash';
+import { User, Notation, Tag, Tagging } from '@stringsync/domain';
+import { NotationSequelizeRepo, UserSequelizeRepo, TagSequelizeRepo, TaggingSequelizeRepo } from '@stringsync/repos';
+import { useTestContainer, TYPES } from '@stringsync/container';
+import { buildRandUser, buildRandNotation, buildRandTag, buildRandTagging, randStr } from '@stringsync/common';
+import { NotationService } from './NotationService';
+
+const container = useTestContainer();
+
+let userRepo: UserSequelizeRepo;
+let notationRepo: NotationSequelizeRepo;
+
+let user: User;
+let notation1: Notation;
+let notation2: Notation;
+
+let notationService: NotationService;
+
+beforeEach(async () => {
+  userRepo = container.get<UserSequelizeRepo>(TYPES.UserSequelizeRepo);
+  notationRepo = container.get<NotationSequelizeRepo>(TYPES.NotationSequelizeRepo);
+
+  user = await userRepo.create(buildRandUser());
+  [notation1, notation2] = await notationRepo.bulkCreate([
+    buildRandNotation({ transcriberId: user.id }),
+    buildRandNotation({ transcriberId: user.id }),
+  ]);
+
+  notationService = container.get<NotationService>(TYPES.NotationService);
+});
+
+describe('findAllByTranscriberId', () => {
+  it('returns notations belonging to the user', async () => {
+    const notations = await notationService.findAllByTranscriberId(user.id);
+    expect(sortBy(notations, 'id')).toStrictEqual(sortBy([notation1, notation2], 'id'));
+  });
+
+  it('returns an array of plain objects', async () => {
+    const notations = await notationService.findAllByTranscriberId(user.id);
+    expect(notations).toHaveLength(2);
+    expect(notations.every(isPlainObject)).toBe(true);
+  });
+
+  it('returns an empty array for users that do not exist', async () => {
+    const notations = await notationService.findAllByTranscriberId(randStr(10));
+    expect(notations).toBeInstanceOf(Array);
+    expect(notations).toHaveLength(0);
+  });
+});
+
+describe('findAllByTagId', () => {
+  let tagRepo: TagSequelizeRepo;
+  let tag1: Tag;
+  let tag2: Tag;
+
+  let taggingRepo: TaggingSequelizeRepo;
+  let tagging1: Tagging;
+  let tagging2: Tagging;
+
+  beforeEach(async () => {
+    tagRepo = container.get<TagSequelizeRepo>(TYPES.TagSequelizeRepo);
+    [tag1, tag2] = await tagRepo.bulkCreate([buildRandTag(), buildRandTag()]);
+
+    taggingRepo = container.get<TaggingSequelizeRepo>(TYPES.TaggingSequelizeRepo);
+    [tagging1, tagging2] = await taggingRepo.bulkCreate([
+      buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
+      buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
+      buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
+    ]);
+  });
+
+  it('finds all notations by tag id', async () => {
+    const notations = await notationService.findAllByTagId(tag1.id);
+    expect(notations).toHaveLength(2);
+    expect(sortBy(notations, 'id')).toStrictEqual(sortBy([notation1, notation2], 'id'));
+  });
+});
