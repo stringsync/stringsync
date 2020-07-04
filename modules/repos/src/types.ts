@@ -26,6 +26,8 @@ export interface NotationRepo extends Repo<Notation> {
 export interface NotationLoader {
   findByTranscriberId(transcriberId: string): Promise<Notation[]>;
   findById(id: string): Promise<Notation | null>;
+  startListeningForChanges(): void;
+  stopListeningForChanges(): void;
 }
 
 export interface TagRepo extends Repo<Tag> {}
