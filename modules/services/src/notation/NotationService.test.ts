@@ -1,14 +1,14 @@
 import { sortBy, isPlainObject } from 'lodash';
 import { User, Notation, Tag, Tagging } from '@stringsync/domain';
-import { NotationSequelizeRepo, UserSequelizeRepo, TagSequelizeRepo, TaggingSequelizeRepo } from '@stringsync/repos';
+import { UserRepo, NotationRepo, TagRepo, TaggingRepo } from '@stringsync/repos';
 import { useTestContainer, TYPES } from '@stringsync/container';
 import { buildRandUser, buildRandNotation, buildRandTag, buildRandTagging, randStr } from '@stringsync/common';
 import { NotationService } from './NotationService';
 
 const container = useTestContainer();
 
-let userRepo: UserSequelizeRepo;
-let notationRepo: NotationSequelizeRepo;
+let userRepo: UserRepo;
+let notationRepo: NotationRepo;
 
 let user: User;
 let notation1: Notation;
@@ -17,8 +17,8 @@ let notation2: Notation;
 let notationService: NotationService;
 
 beforeEach(async () => {
-  userRepo = container.get<UserSequelizeRepo>(TYPES.UserSequelizeRepo);
-  notationRepo = container.get<NotationSequelizeRepo>(TYPES.NotationSequelizeRepo);
+  userRepo = container.get<UserRepo>(TYPES.UserRepo);
+  notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
 
   user = await userRepo.create(buildRandUser());
   [notation1, notation2] = await notationRepo.bulkCreate([
@@ -49,19 +49,19 @@ describe('findAllByTranscriberId', () => {
 });
 
 describe('findAllByTagId', () => {
-  let tagRepo: TagSequelizeRepo;
+  let tagRepo: TagRepo;
   let tag1: Tag;
   let tag2: Tag;
 
-  let taggingRepo: TaggingSequelizeRepo;
+  let taggingRepo: TaggingRepo;
   let tagging1: Tagging;
   let tagging2: Tagging;
 
   beforeEach(async () => {
-    tagRepo = container.get<TagSequelizeRepo>(TYPES.TagSequelizeRepo);
+    tagRepo = container.get<TagRepo>(TYPES.TagRepo);
     [tag1, tag2] = await tagRepo.bulkCreate([buildRandTag(), buildRandTag()]);
 
-    taggingRepo = container.get<TaggingSequelizeRepo>(TYPES.TaggingSequelizeRepo);
+    taggingRepo = container.get<TaggingRepo>(TYPES.TaggingRepo);
     [tagging1, tagging2] = await taggingRepo.bulkCreate([
       buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
       buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
