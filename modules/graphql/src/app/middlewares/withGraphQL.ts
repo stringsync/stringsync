@@ -1,14 +1,21 @@
-import { TYPES } from '@stringsync/container';
 import { ContainerConfig } from '@stringsync/config';
-import { createReqCtx } from '../../ctx';
+import { TYPES } from '@stringsync/container';
+import { Handler } from 'express';
 import graphqlHTTP from 'express-graphql';
 import { GraphQLSchema } from 'graphql';
-import { Handler } from 'express';
 import { Container } from 'inversify';
+import { createReqCtx } from '../../ctx';
+import { startListeningForChanges } from './startListeningForChanges';
+import { stopListeningForChanges } from './stopListeningForChanges';
 
 export const withGraphQL = (container: Container, schema: GraphQLSchema): Handler => (req, res) => {
   const context = createReqCtx(req, res, container);
   const config = container.get<ContainerConfig>(TYPES.ContainerConfig);
   const middleware = graphqlHTTP({ schema, context, graphiql: config.NODE_ENV !== 'production' });
-  return middleware(req, res);
+  try {
+    startListeningForChanges(context.container);
+    middleware(req, res);
+  } finally {
+    stopListeningForChanges(context.container);
+  }
 };

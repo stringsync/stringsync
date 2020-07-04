@@ -7,13 +7,14 @@ import { useTestContainer, TYPES } from '@stringsync/container';
 const container = useTestContainer();
 
 let userLoader: UserSequelizeLoader;
+let userRepo: UserSequelizeRepo;
 
 let user1: User;
 let user2: User;
 
 beforeEach(async () => {
   userLoader = container.get<UserSequelizeLoader>(TYPES.UserSequelizeLoader);
-  const userRepo = container.get<UserSequelizeRepo>(TYPES.UserSequelizeRepo);
+  userRepo = container.get<UserSequelizeRepo>(TYPES.UserSequelizeRepo);
   [user1, user2] = await userRepo.bulkCreate([buildRandUser(), buildRandUser()]);
 });
 

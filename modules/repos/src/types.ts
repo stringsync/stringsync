@@ -15,6 +15,8 @@ export interface UserRepo extends Repo<User> {
 
 export interface UserLoader {
   findById(id: string): Promise<User | null>;
+  startListeningForChanges(): void;
+  stopListeningForChanges(): void;
 }
 
 export interface NotationRepo extends Repo<Notation> {

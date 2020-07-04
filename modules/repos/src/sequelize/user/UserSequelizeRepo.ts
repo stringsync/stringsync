@@ -48,6 +48,6 @@ export class UserSequelizeRepo implements UserRepo {
   }
 
   async update(id: string, attrs: Partial<User>): Promise<void> {
-    await this.userModel.update(attrs, { where: { id } });
+    await this.userModel.update(attrs, { where: { id }, individualHooks: true });
   }
 }
