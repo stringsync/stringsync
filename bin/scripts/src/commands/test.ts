@@ -8,6 +8,7 @@ export default class Test extends Command {
 
   static flags = {
     watch: flags.boolean({ char: 'w', default: false }),
+    coverage: flags.boolean({ char: 'c', default: false }),
   };
 
   static args = [
@@ -43,7 +44,10 @@ export default class Test extends Command {
           `test:${args.project}`,
           '--runInBand',
           `--watchAll=${flags.watch}`,
-        ].join(' '),
+          flags.coverage ? '--collectCoverage' : '',
+        ]
+          .filter((part) => part)
+          .join(' '),
         {
           cwd: ROOT_PATH,
           stdio: 'inherit',
