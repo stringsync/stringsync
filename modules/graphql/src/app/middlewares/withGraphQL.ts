@@ -11,7 +11,9 @@ import { stopListeningForChanges } from './stopListeningForChanges';
 export const withGraphQL = (container: Container, schema: GraphQLSchema): Handler => (req, res) => {
   const context = createReqCtx(req, res, container);
   const config = container.get<ContainerConfig>(TYPES.ContainerConfig);
+
   const middleware = graphqlHTTP({ schema, context, graphiql: config.NODE_ENV !== 'production' });
+
   try {
     startListeningForChanges(context.container);
     middleware(req, res);
