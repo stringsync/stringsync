@@ -17,8 +17,12 @@ export class NotationSequelizeRepo implements NotationRepo {
     this.notationLoader = notationLoader;
   }
 
-  async findByTranscriberId(transcriberId: string): Promise<Notation[]> {
-    return await this.notationLoader.findByTranscriberId(transcriberId);
+  async findAllByTranscriberId(transcriberId: string): Promise<Notation[]> {
+    return await this.notationLoader.findAllByTranscriberId(transcriberId);
+  }
+
+  async findAllByTag(tagId: string): Promise<Notation[]> {
+    return await this.notationLoader.findAllByTagId(tagId);
   }
 
   async count(): Promise<number> {
@@ -26,11 +30,15 @@ export class NotationSequelizeRepo implements NotationRepo {
   }
 
   async find(id: string): Promise<Notation | null> {
-    return this.notationLoader.findById(id);
+    return await this.notationLoader.findById(id);
   }
 
   async findAll(): Promise<Notation[]> {
-    return this.notationModel.findAll({ raw: true });
+    return await this.notationModel.findAll({ raw: true });
+  }
+
+  async findAllByTagId(tagId: string): Promise<Notation[]> {
+    return await this.notationLoader.findAllByTagId(tagId);
   }
 
   async create(attrs: Partial<Notation>) {

@@ -46,6 +46,6 @@ export class UserObject implements PublicFacingUser {
   @Field((type) => [NotationObject])
   async notations(@Root() user: User, @Ctx() ctx: ReqCtx): Promise<Notation[]> {
     const notationService = ctx.container.get<NotationService>(TYPES.NotationService);
-    return await notationService.findByTranscriberId(user.id);
+    return await notationService.findAllByTranscriberId(user.id);
   }
 }

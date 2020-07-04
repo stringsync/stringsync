@@ -20,20 +20,25 @@ export interface UserLoader {
 }
 
 export interface NotationRepo extends Repo<Notation> {
-  findByTranscriberId(transcriberId: string): Promise<Notation[]>;
+  findAllByTranscriberId(transcriberId: string): Promise<Notation[]>;
+  findAllByTagId(tagId: string): Promise<Notation[]>;
 }
 
 export interface NotationLoader {
-  findByTranscriberId(transcriberId: string): Promise<Notation[]>;
   findById(id: string): Promise<Notation | null>;
+  findAllByTranscriberId(transcriberId: string): Promise<Notation[]>;
+  findAllByTagId(tagId: string): Promise<Notation[]>;
   startListeningForChanges(): void;
   stopListeningForChanges(): void;
 }
 
-export interface TagRepo extends Repo<Tag> {}
+export interface TagRepo extends Repo<Tag> {
+  findAllByNotationId(notationId: string): Promise<Tag[]>;
+}
 
 export interface TagLoader {
   findById(id: string): Promise<Tag | null>;
+  findAllByNotationId(notationId: string): Promise<Tag[]>;
   startListeningForChanges(): void;
   stopListeningForChanges(): void;
 }

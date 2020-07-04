@@ -49,18 +49,18 @@ describe('findById', () => {
 
 describe('findByTranscriberId', () => {
   it('finds a notation by transcriberId', async () => {
-    const notations = await notationLoader.findByTranscriberId(transcriber1.id);
+    const notations = await notationLoader.findAllByTranscriberId(transcriber1.id);
     expect(notations).toHaveLength(2);
     expect(sortBy(notations, 'id')).toStrictEqual(sortBy([notation1, notation2], 'id'));
   });
 
   it('returns an empty array for a missing transcriber', async () => {
-    const notations = await notationLoader.findByTranscriberId(randStr(10));
+    const notations = await notationLoader.findAllByTranscriberId(randStr(10));
     expect(notations).toStrictEqual([]);
   });
 
   it('returns plain objects', async () => {
-    const notations = await notationLoader.findByTranscriberId(transcriber1.id);
+    const notations = await notationLoader.findAllByTranscriberId(transcriber1.id);
     expect(notations).toHaveLength(2);
     expect(notations.every(isPlainObject)).toBe(true);
   });

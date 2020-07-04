@@ -1,5 +1,5 @@
 export interface Tagging {
-  id: number;
-  notationId: number;
-  tagId: number;
+  id: string;
+  notationId: string;
+  tagId: string;
 }

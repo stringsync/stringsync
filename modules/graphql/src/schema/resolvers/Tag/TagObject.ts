@@ -1,6 +1,9 @@
-import { NotationObject } from './../Notation/NotationObject';
+import { TYPES } from '@stringsync/container';
+import { NotationService } from '@stringsync/services';
+import { ReqCtx } from '../../../ctx';
+import { NotationObject } from '../Notation';
 import { Tag, Notation } from '@stringsync/domain';
-import { ObjectType, Field, ID } from 'type-graphql';
+import { ObjectType, Field, ID, Root, Ctx } from 'type-graphql';
 
 @ObjectType()
 export class TagObject implements Tag {
@@ -11,5 +14,8 @@ export class TagObject implements Tag {
   name!: string;
 
   @Field((type) => [NotationObject])
-  notations!: Notation[];
+  async notations(@Root() tag: Tag, @Ctx() ctx: ReqCtx): Promise<Notation[]> {
+    const notationService = ctx.container.get<NotationService>(TYPES.NotationService);
+    return await notationService.findAllByTagId(tag.id);
+  }
 }

@@ -13,6 +13,7 @@ export const TYPES = {
   NotificationService: Symbol('NotificationService'),
   Redis: Symbol('Redis'),
   Sequelize: Symbol('Sequelize'),
+  TaggingModel: Symbol('TaggingModel'),
   TagLoader: Symbol('TagLoader'),
   TagLoaderCtor: Symbol('TagLoaderCtor'),
   TagModel: Symbol('TagModel'),

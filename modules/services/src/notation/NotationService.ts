@@ -13,7 +13,11 @@ export class NotationService {
     this.tagRepo = tagRepo;
   }
 
-  async findByTranscriberId(transcriberId: string): Promise<Notation[]> {
-    return await this.notationRepo.findByTranscriberId(transcriberId);
+  async findAllByTranscriberId(transcriberId: string): Promise<Notation[]> {
+    return await this.notationRepo.findAllByTranscriberId(transcriberId);
+  }
+
+  async findAllByTagId(tagId: string): Promise<Notation[]> {
+    return await this.notationRepo.findAllByTagId(tagId);
   }
 }

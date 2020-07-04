@@ -1,16 +1,22 @@
 import { TYPES } from '@stringsync/container';
 import { injectable, inject } from 'inversify';
 import { TagRepo, TagLoader } from '../../types';
-import { TagModel } from '@stringsync/sequelize';
+import { TagModel, TaggingModel } from '@stringsync/sequelize';
 import { Tag } from '@stringsync/domain';
 
 @injectable()
 export class TagSequelizeRepo implements TagRepo {
   tagModel: typeof TagModel;
+  taggingModel: typeof TaggingModel;
   tagLoader: TagLoader;
 
-  constructor(@inject(TYPES.TagModel) tagModel: typeof TagModel, @inject(TYPES.TagLoader) tagLoader: TagLoader) {
+  constructor(
+    @inject(TYPES.TagModel) tagModel: typeof TagModel,
+    @inject(TYPES.TaggingModel) taggingModel: typeof TaggingModel,
+    @inject(TYPES.TagLoader) tagLoader: TagLoader
+  ) {
     this.tagModel = tagModel;
+    this.taggingModel = taggingModel;
     this.tagLoader = tagLoader;
   }
 
@@ -29,6 +35,10 @@ export class TagSequelizeRepo implements TagRepo {
 
   async findAll(): Promise<Tag[]> {
     return await this.tagModel.findAll({ raw: true });
+  }
+
+  async findAllByNotationId(notationId: string): Promise<Tag[]> {
+    return await this.tagLoader.findAllByNotationId(notationId);
   }
 
   async bulkCreate(bulkAttrs: Partial<Tag>[]): Promise<Tag[]> {

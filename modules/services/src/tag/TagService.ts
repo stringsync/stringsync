@@ -18,4 +18,8 @@ export class TagService {
   async findAll(): Promise<Tag[]> {
     return await this.tagRepo.findAll();
   }
+
+  async findAllByNotationId(notationId: string): Promise<Tag[]> {
+    return await this.tagRepo.findAllByNotationId(notationId);
+  }
 }
