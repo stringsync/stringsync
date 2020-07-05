@@ -1,6 +1,6 @@
 import { NotationObject } from './NotationObject';
 import { ObjectType, Field } from 'type-graphql';
-import { Edge, ConnectionCursor } from 'graphql-relay';
+import { Edge, ConnectionCursor } from '../Pagination';
 import { Notation } from '@stringsync/domain';
 
 @ObjectType()

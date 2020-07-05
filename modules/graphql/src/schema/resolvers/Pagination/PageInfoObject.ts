@@ -1,5 +1,5 @@
 import { ObjectType, Field } from 'type-graphql';
-import { ConnectionCursor, PageInfo } from 'graphql-relay';
+import { ConnectionCursor, PageInfo } from './types';
 
 @ObjectType()
 export class PageInfoObject implements PageInfo {

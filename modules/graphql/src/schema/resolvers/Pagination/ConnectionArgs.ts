@@ -1,5 +1,5 @@
 import { ArgsType, Field } from 'type-graphql';
-import { ConnectionArguments, ConnectionCursor } from 'graphql-relay';
+import { ConnectionArguments, ConnectionCursor } from './types';
 
 @ArgsType()
 export class ConnectionArgs implements ConnectionArguments {
