@@ -9,6 +9,7 @@ export interface Repo<T extends object> {
 }
 
 export interface UserRepo extends Repo<User> {
+  userLoader: UserLoader;
   findAll(): Promise<User[]>;
   findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null>;
 }
