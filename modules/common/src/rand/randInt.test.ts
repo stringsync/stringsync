@@ -9,3 +9,10 @@ it('returns a random integer between min and max', () => {
   expect(int).toBeGreaterThanOrEqual(min);
   expect(int).toBeLessThanOrEqual(max);
 });
+
+it('throws an error when min is greater than max', () => {
+  const min = 10;
+  const max = 0;
+
+  expect(() => randInt(min, max)).toThrow();
+});
