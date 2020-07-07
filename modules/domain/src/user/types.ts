@@ -19,3 +19,8 @@ export enum UserRole {
   TEACHER = 'TEACHER',
   ADMIN = 'ADMIN',
 }
+
+export type PublicUser = Omit<
+  User,
+  'encryptedPassword' | 'confirmationToken' | 'confirmedAt' | 'resetPasswordToken' | 'rank'
+>;

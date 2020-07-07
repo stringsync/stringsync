@@ -15,6 +15,7 @@ module.exports = {
       );
 
       CREATE TRIGGER trigger_generate_notation_id BEFORE INSERT ON notations FOR EACH ROW EXECUTE PROCEDURE unique_short_id();
+      CREATE INDEX index_notations_on_rank ON notations (rank);
     `);
   },
 
@@ -23,6 +24,7 @@ module.exports = {
       DROP TABLE notations;
 
       DROP TRIGGER trigger_generate_notation_id ON notations;
+      DROP INDEX index_notations_on_rank;
     `);
   },
 };

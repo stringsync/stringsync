@@ -1,5 +1,6 @@
 export interface Notation {
   id: string;
+  rank: number;
   createdAt: Date;
   updatedAt: Date;
   songName: string;
@@ -10,3 +11,5 @@ export interface Notation {
   featured: boolean;
   transcriberId: string;
 }
+
+export type PublicNotation = Omit<Notation, 'rank'>;

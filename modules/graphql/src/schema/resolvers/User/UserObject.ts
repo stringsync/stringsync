@@ -1,5 +1,5 @@
 import { TYPES } from '@stringsync/container';
-import { Notation, User, UserRole } from '@stringsync/domain';
+import { Notation, User, UserRole, PublicUser } from '@stringsync/domain';
 import { NotationService } from '@stringsync/services';
 import { Ctx, Field, ID, ObjectType, registerEnumType, Root } from 'type-graphql';
 import { ReqCtx } from '../../../ctx';
@@ -7,15 +7,10 @@ import { NotationObject } from './../Notation/NotationObject';
 import { IsDataOwner } from './IsDataOwner';
 import { RestrictedField } from './RestrictedField';
 
-type PublicFacingUser = Omit<
-  User,
-  'encryptedPassword' | 'confirmationToken' | 'confirmedAt' | 'resetPasswordToken' | 'rank'
->;
-
 registerEnumType(UserRole, { name: 'UserRoles' });
 
 @ObjectType()
-export class UserObject implements PublicFacingUser {
+export class UserObject implements PublicUser {
   @Field((type) => ID)
   id!: string;
 

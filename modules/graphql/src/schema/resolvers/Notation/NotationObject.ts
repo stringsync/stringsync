@@ -1,6 +1,6 @@
 import { NotFoundError } from '@stringsync/common';
 import { TYPES } from '@stringsync/container';
-import { Notation, Tag, User } from '@stringsync/domain';
+import { PublicNotation, Notation, Tag, User } from '@stringsync/domain';
 import { UserService, TagService } from '@stringsync/services';
 import { Ctx, Field, ID, ObjectType, Root } from 'type-graphql';
 import { ReqCtx } from '../../../ctx';
@@ -8,7 +8,7 @@ import { TagObject } from '../Tag';
 import { UserObject } from '../User';
 
 @ObjectType()
-export class NotationObject implements Notation {
+export class NotationObject implements PublicNotation {
   @Field((type) => ID)
   id!: string;
 

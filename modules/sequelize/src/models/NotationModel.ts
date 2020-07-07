@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import { TaggingModel } from './TaggingModel';
 import { BelongsToMany, ForeignKey, DataType, AfterCreate, AfterDestroy, AfterUpdate } from 'sequelize-typescript';
 import { AfterSave, AfterUpsert, AfterBulkCreate, AfterBulkUpdate } from 'sequelize-typescript';
-import { Table, Model, PrimaryKey, Column, CreatedAt, UpdatedAt } from 'sequelize-typescript';
+import { Table, Model, PrimaryKey, Column, CreatedAt, UpdatedAt, AutoIncrement } from 'sequelize-typescript';
 import { BelongsTo, AfterBulkDestroy } from 'sequelize-typescript';
 import { Notation } from '@stringsync/domain';
 import { UserModel } from './UserModel';
@@ -129,4 +129,8 @@ export class NotationModel extends Model<NotationModel> implements Notation {
   @ForeignKey(() => UserModel)
   @Column
   transcriberId!: string;
+
+  @AutoIncrement
+  @Column
+  rank!: number;
 }
