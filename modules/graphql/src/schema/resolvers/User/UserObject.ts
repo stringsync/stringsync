@@ -3,11 +3,14 @@ import { Notation, User, UserRole } from '@stringsync/domain';
 import { NotationService } from '@stringsync/services';
 import { Ctx, Field, ID, ObjectType, registerEnumType, Root } from 'type-graphql';
 import { ReqCtx } from '../../../ctx';
-import { NotationObject } from './../Notation';
+import { NotationObject } from './../Notation/NotationObject';
 import { IsDataOwner } from './IsDataOwner';
 import { RestrictedField } from './RestrictedField';
 
-type PublicFacingUser = Omit<User, 'encryptedPassword' | 'confirmationToken' | 'confirmedAt' | 'resetPasswordToken'>;
+type PublicFacingUser = Omit<
+  User,
+  'encryptedPassword' | 'confirmationToken' | 'confirmedAt' | 'resetPasswordToken' | 'rank'
+>;
 
 registerEnumType(UserRole, { name: 'UserRoles' });
 
@@ -43,7 +46,7 @@ export class UserObject implements PublicFacingUser {
   @RestrictedField(IsDataOwner)
   resetPasswordTokenSentAt!: Date | null;
 
-  @Field((type) => [NotationObject])
+  @Field((type) => NotationObject)
   async notations(@Root() user: User, @Ctx() ctx: ReqCtx): Promise<Notation[]> {
     const notationService = ctx.container.get<NotationService>(TYPES.NotationService);
     return await notationService.findAllByTranscriberId(user.id);

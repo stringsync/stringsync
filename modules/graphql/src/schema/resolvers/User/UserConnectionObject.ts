@@ -2,13 +2,13 @@ import { Connection, Edge } from '@stringsync/common';
 import { Notation } from '@stringsync/domain';
 import { Field, ObjectType } from 'type-graphql';
 import { PageInfoObject } from './../Paging';
-import { NotationEdgeObject } from './NotationEdgeObject';
+import { UserEdgeObject } from './UserEdgeObject';
 
 @ObjectType()
-export class NotationConnectionObject implements Connection<Notation> {
+export class UserConnectionObject implements Connection<Notation> {
   @Field()
   pageInfo!: PageInfoObject;
 
-  @Field(() => [NotationEdgeObject])
+  @Field(() => [UserEdgeObject])
   edges!: Edge<Notation>[];
 }

@@ -1,8 +1,8 @@
 import { TYPES } from '@stringsync/container';
+import { Notation } from '@stringsync/domain';
 import { NotationModel } from '@stringsync/sequelize';
 import { inject, injectable } from 'inversify';
-import { NotationRepo, NotationLoader } from '../../types';
-import { Notation } from '@stringsync/domain';
+import { NotationLoader, NotationRepo } from '../../types';
 
 @injectable()
 export class NotationSequelizeRepo implements NotationRepo {

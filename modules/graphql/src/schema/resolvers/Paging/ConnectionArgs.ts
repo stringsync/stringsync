@@ -1,14 +1,17 @@
 import { ArgsType, Field } from 'type-graphql';
-import { ConnectionArguments, ConnectionCursor } from './types';
+import { ConnectionArgs as ConnectionArgsInterface } from '@stringsync/common';
 
 @ArgsType()
-export class ConnectionArgs implements ConnectionArguments {
+export class ConnectionArgs implements ConnectionArgsInterface {
   @Field({ nullable: true, description: 'Paginate before opaque cursor' })
-  before?: ConnectionCursor;
+  before?: string;
+
   @Field({ nullable: true, description: 'Paginate after opaque cursor' })
-  after?: ConnectionCursor;
+  after?: string;
+
   @Field({ nullable: true, description: 'Paginate first' })
   first?: number;
+
   @Field({ nullable: true, description: 'Paginate last' })
   last?: number;
 }

@@ -3,6 +3,7 @@ module.exports = {
     return queryInterface.sequelize.query(`
       CREATE TABLE users (
           id TEXT PRIMARY KEY,
+          rank SERIAL UNIQUE NOT NULL,
           email TEXT UNIQUE NOT NULL,
           username TEXT UNIQUE NOT NULL,
           encrypted_password TEXT NOT NULL,
@@ -17,6 +18,7 @@ module.exports = {
       );
 
       CREATE TRIGGER trigger_generate_user_id BEFORE INSERT ON users FOR EACH ROW EXECUTE PROCEDURE unique_short_id();
+      CREATE INDEX index_users_on_rank ON users (rank);
     `);
   },
 
@@ -25,6 +27,7 @@ module.exports = {
       DROP TABLE users;
 
       DROP TRIGGER trigger_generate_user_id ON users;
+      DROP INDEX index_users_on_rank;
     `);
   },
 };

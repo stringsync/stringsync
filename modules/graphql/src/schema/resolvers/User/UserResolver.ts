@@ -1,10 +1,12 @@
-import { AuthRequirement } from '@stringsync/common';
+import { UserConnectionObject } from './UserConnectionObject';
+import { AuthRequirement, Connection } from '@stringsync/common';
 import { TYPES } from '@stringsync/container';
 import { User } from '@stringsync/domain';
 import { UserService } from '@stringsync/services';
 import { inject, injectable } from 'inversify';
 import { Args, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { WithAuthRequirement } from '../../middlewares';
+import { ConnectionArgs } from './../Paging';
 import { UserArgs } from './UserArgs';
 import { UserObject } from './UserObject';
 
@@ -22,9 +24,9 @@ export class UserResolver {
     return await this.userService.find(args.id);
   }
 
-  @Query((returns) => [UserObject])
+  @Query((returns) => UserConnectionObject)
   @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN_AS_ADMIN))
-  async users(): Promise<User[]> {
-    return await this.userService.findAll();
+  async users(@Args() args: ConnectionArgs): Promise<Connection<User>> {
+    return await this.userService.findPage(args);
   }
 }

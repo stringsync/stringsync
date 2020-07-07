@@ -1,3 +1,4 @@
+import { randInt } from './randInt';
 import { randStr } from './randStr';
 import { User, UserRole, Notation, Tag, Tagging } from '@stringsync/domain';
 
@@ -18,6 +19,7 @@ export class TestFactory {
       encryptedPassword: '$2b$10$OlF1bUqORoywn42UmkEq/O9H5X3QdDG8Iwn5tPuBFjGqGo3dA7mDe', // password = 'password',
       resetPasswordToken: null,
       resetPasswordTokenSentAt: null,
+      rank: randInt(0, 100000),
       ...attrs,
     };
   }

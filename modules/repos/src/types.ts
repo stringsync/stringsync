@@ -1,4 +1,5 @@
 import { User, Notation, Tag, Tagging } from '@stringsync/domain';
+import { Connection, ConnectionArgs } from '@stringsync/common';
 
 export interface Repo<T extends object> {
   count(): Promise<number>;
@@ -11,6 +12,7 @@ export interface Repo<T extends object> {
 export interface UserRepo extends Repo<User> {
   userLoader: UserLoader;
   findAll(): Promise<User[]>;
+  findPage(connectionArgs: ConnectionArgs): Promise<Connection<User>>;
   findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null>;
 }
 

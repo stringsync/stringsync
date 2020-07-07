@@ -4,6 +4,7 @@ import { injectable } from 'inversify';
 import { AllowNull, Default, AfterUpdate, AfterCreate, AfterDestroy, AfterSave } from 'sequelize-typescript';
 import { Table, Model, PrimaryKey, Column, CreatedAt, UpdatedAt, HasMany, DataType } from 'sequelize-typescript';
 import { AfterUpsert, AfterBulkCreate, AfterBulkDestroy, AfterBulkUpdate } from 'sequelize-typescript';
+import { AutoIncrement } from 'sequelize-typescript';
 import { User, UserRole, USER_ROLES } from '@stringsync/domain';
 import { NotationModel } from './NotationModel';
 
@@ -133,4 +134,8 @@ export class UserModel extends Model<UserModel> implements User {
   @AllowNull
   @Column
   avatarUrl!: string;
+
+  @AutoIncrement
+  @Column
+  rank!: number;
 }
