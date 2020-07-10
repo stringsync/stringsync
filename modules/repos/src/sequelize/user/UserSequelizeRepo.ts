@@ -98,14 +98,14 @@ export class UserSequelizeRepo implements UserRepo {
   }
 
   private async pageNone(limit: number): Promise<Connection<User>> {
-    const queriedLimit = limit + 1;
-    const queriedUsers = await this.userModel.findAll({
-      order: [['rank', 'DESC']],
-      limit: queriedLimit,
-    });
-
-    const edgeUsers = take(queriedUsers, limit);
-    const edges = edgeUsers.map((user) => ({
+    const [users, count] = await Promise.all([
+      this.userModel.findAll({
+        order: [['rank', 'DESC']],
+        limit,
+      }),
+      this.count(),
+    ]);
+    const edges = users.map((user) => ({
       node: user,
       cursor: UserSequelizeRepo.encodeRankCursor(user.rank),
     }));
@@ -115,33 +115,35 @@ export class UserSequelizeRepo implements UserRepo {
       pageInfo: {
         startCursor: edges.length ? first(edges)!.cursor : null,
         endCursor: edges.length ? last(edges)!.cursor : null,
-        hasNextPage: queriedUsers.length === queriedLimit,
-        hasPreviousPage: Math.min(-1, ...edgeUsers.map((user) => user.rank)) > 0,
+        hasNextPage: edges.length < count,
+        hasPreviousPage: false,
       },
     };
   }
 
   private async pageForward(limit: number, after: string | null): Promise<Connection<User>> {
-    const queriedLimit = limit + 1;
-    const queriedUsers = await this.userModel.findAll({
-      where: typeof after === 'string' ? { rank: { [Op.lt]: UserSequelizeRepo.decodeRankCursor(after) } } : undefined,
-      order: [['rank', 'DESC']],
-      limit: queriedLimit,
-    });
-
-    const edgeUsers = take(queriedUsers, limit);
-    const edges = edgeUsers.map((user) => ({
+    const [users, min, max] = await Promise.all([
+      this.userModel.findAll({
+        where: typeof after === 'string' ? { rank: { [Op.lt]: UserSequelizeRepo.decodeRankCursor(after) } } : undefined,
+        order: [['rank', 'DESC']],
+        limit,
+      }),
+      this.userModel.min<UserModel, number>('rank'),
+      this.userModel.max<UserModel, number>('rank'),
+    ]);
+    const edges = users.map((user) => ({
       cursor: UserSequelizeRepo.encodeRankCursor(user.rank),
       node: user,
     }));
+    const ranks = edges.map((edge) => edge.node.rank);
 
     return {
       edges,
       pageInfo: {
         startCursor: edges.length ? first(edges)!.cursor : null,
         endCursor: edges.length ? last(edges)!.cursor : null,
-        hasNextPage: queriedUsers.length === queriedLimit,
-        hasPreviousPage: Math.min(-1, ...edgeUsers.map((user) => user.rank)) > 0,
+        hasNextPage: Math.max(Infinity, ...ranks) < max,
+        hasPreviousPage: Math.min(-Infinity, ...ranks) > min,
       },
     };
   }

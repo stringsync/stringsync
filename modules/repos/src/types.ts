@@ -17,6 +17,7 @@ export interface UserRepo extends Repo<User> {
 }
 
 export interface NotationRepo extends Repo<Notation> {
+  findPage(connectionArgs: ConnectionArgs): Promise<Connection<Notation>>;
   findAllByTranscriberId(transcriberId: string): Promise<Notation[]>;
   findAllByTagId(tagId: string): Promise<Notation[]>;
 }

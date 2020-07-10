@@ -3,6 +3,7 @@ module.exports = {
     return queryInterface.sequelize.query(`
       CREATE TABLE notations (
           id TEXT PRIMARY KEY,
+          rank SERIAL UNIQUE NOT NULL,
           created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
           updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
           song_name TEXT NOT NULL,
