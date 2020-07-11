@@ -26,7 +26,6 @@ export class AuthResolver {
   }
 
   @Query((returns) => UserObject, { nullable: true })
-  @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN))
   async whoami(@Ctx() ctx: ResolverCtx): Promise<User | null> {
     const id = this.getSessionUserId(ctx);
     return await this.authService.whoami(id);
