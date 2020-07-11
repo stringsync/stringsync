@@ -1,18 +1,18 @@
 import { Base64, Connection, Paging, ConnectionArgs, PagingType } from '@stringsync/common';
-import { UserLoader } from './../../types';
+import { UserLoader } from '../../types';
 import { TYPES } from '@stringsync/container';
 import { User } from '@stringsync/domain';
 import { UserModel } from '@stringsync/sequelize';
 import { inject, injectable } from 'inversify';
 import { or, Op } from 'sequelize';
 import { UserRepo } from '../../types';
-import { last, first, take } from 'lodash';
+import { last, first } from 'lodash';
 
 @injectable()
 export class UserSequelizeRepo implements UserRepo {
   static CURSOR_TYPE = 'user';
   static CURSOR_DELIMITER = ':';
-  static FIND_ALL_PAGING_LIMIT = 50;
+  static PAGE_LIMIT = 50;
 
   static decodeRankCursor(cursor: string): number {
     const [cursorType, rank] = Base64.decode(cursor).split(UserSequelizeRepo.CURSOR_DELIMITER);
@@ -80,15 +80,15 @@ export class UserSequelizeRepo implements UserRepo {
 
     switch (pagingMeta.pagingType) {
       case PagingType.NONE:
-        return await this.pageNone(UserSequelizeRepo.FIND_ALL_PAGING_LIMIT);
+        return await this.pageNone(UserSequelizeRepo.PAGE_LIMIT);
 
       case PagingType.FORWARD:
-        const first = pagingMeta.first || UserSequelizeRepo.FIND_ALL_PAGING_LIMIT;
+        const first = pagingMeta.first || UserSequelizeRepo.PAGE_LIMIT;
         const after = pagingMeta.after;
         return await this.pageForward(first, after);
 
       case PagingType.BACKWARD:
-        const last = pagingMeta.last || UserSequelizeRepo.FIND_ALL_PAGING_LIMIT;
+        const last = pagingMeta.last || UserSequelizeRepo.PAGE_LIMIT;
         const before = pagingMeta.before;
         return await this.pageBackward(last, before);
 
@@ -102,6 +102,7 @@ export class UserSequelizeRepo implements UserRepo {
       this.userModel.findAll({
         order: [['rank', 'DESC']],
         limit,
+        raw: true,
       }),
       this.count(),
     ]);
@@ -127,6 +128,7 @@ export class UserSequelizeRepo implements UserRepo {
         where: typeof after === 'string' ? { rank: { [Op.lt]: UserSequelizeRepo.decodeRankCursor(after) } } : undefined,
         order: [['rank', 'DESC']],
         limit,
+        raw: true,
       }),
       this.userModel.min<UserModel, number>('rank'),
       this.userModel.max<UserModel, number>('rank'),

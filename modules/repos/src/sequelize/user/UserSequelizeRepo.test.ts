@@ -1,7 +1,9 @@
+import { ConnectionArgs } from './../../../../common/src/paging/types';
 import { TestFactory, randStr } from '@stringsync/common';
 import { TYPES, useTestContainer } from '@stringsync/container';
-import { isPlainObject, sortBy } from 'lodash';
+import { isPlainObject, sortBy, first, take, takeRight } from 'lodash';
 import { UserSequelizeRepo } from './UserSequelizeRepo';
+import { User } from '@stringsync/domain';
 
 const container = useTestContainer();
 
@@ -141,5 +143,82 @@ describe('update', () => {
     const foundUser = await userRepo.find(user.id);
     expect(foundUser).not.toBeNull();
     expect(foundUser!.username).toBe(username);
+  });
+});
+
+describe('findPage', () => {
+  const NUM_USERS = UserSequelizeRepo.PAGE_LIMIT + 1;
+
+  let users: User[];
+
+  beforeEach(async () => {
+    users = new Array(NUM_USERS);
+    for (let ndx = 0; ndx < NUM_USERS; ndx++) {
+      users[ndx] = TestFactory.buildRandUser({ rank: ndx + 1 });
+    }
+    users = await userRepo.bulkCreate(users);
+  });
+
+  it('returns the first PAGE_LIMIT records by default', async () => {
+    const userConnection = await userRepo.findPage({});
+
+    const actualUsers = userConnection.edges.map((edge) => edge.node);
+    const expectedUsers = take(sortBy(users, 'rank').reverse(), UserSequelizeRepo.PAGE_LIMIT);
+
+    expect(actualUsers).toHaveLength(UserSequelizeRepo.PAGE_LIMIT);
+    expect(sortBy(actualUsers, 'id')).toStrictEqual(sortBy(expectedUsers, 'id'));
+  });
+
+  it('returns the first N records by reverse rank', async () => {
+    const userConnection = await userRepo.findPage({ first: 5 });
+
+    const actualUsers = userConnection.edges.map((edge) => edge.node);
+    const expectedUsers = take(sortBy(users, 'rank').reverse(), 5);
+
+    expect(actualUsers).toHaveLength(5);
+    expect(actualUsers).toStrictEqual(expectedUsers);
+  });
+
+  it('returns the first N records after a cursor', async () => {
+    const { pageInfo } = await userRepo.findPage({ first: 1 });
+    const userConnection = await userRepo.findPage({ first: 2, after: pageInfo.endCursor });
+
+    const actualUsers = userConnection.edges.map((edge) => edge.node);
+    const expectedUsers = take(
+      sortBy(users, 'rank')
+        .reverse()
+        .slice(1),
+      2
+    );
+
+    expect(actualUsers).toHaveLength(2);
+    expect(actualUsers).toStrictEqual(expectedUsers);
+  });
+
+  it('returns all records when limit is greater than the records', async () => {
+    const limit = users.length + 1;
+    const userConnection = await userRepo.findPage({ first: limit });
+
+    const actualUsers = userConnection.edges.map((edge) => edge.node);
+    const expectedUsers = sortBy(users, 'rank').reverse();
+
+    expect(actualUsers).toStrictEqual(expectedUsers);
+  });
+
+  it('returns all records when limit is greater than remaining records after a cursor', async () => {
+    const { pageInfo } = await userRepo.findPage({ first: 1 });
+    const userConnection = await userRepo.findPage({ first: users.length + 1, after: pageInfo.endCursor });
+
+    const actualUsers = userConnection.edges.map((edge) => edge.node);
+    const expectedUsers = sortBy(users)
+      .reverse()
+      .slice(1);
+
+    expect(actualUsers).toHaveLength(expectedUsers.length);
+    expect(actualUsers).toStrictEqual(expectedUsers);
+  });
+
+  it('does not allow backwards pagination', async () => {
+    await expect(userRepo.findPage({ last: 1 })).rejects.toThrow();
   });
 });
