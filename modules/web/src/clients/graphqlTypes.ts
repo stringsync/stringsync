@@ -10,37 +10,15 @@ export type Scalars = {
   DateTime: any;
 };
 
-export type Query = {
-  __typename?: 'Query';
-  user?: Maybe<UserObject>;
-  users: Array<UserObject>;
-  whoami?: Maybe<UserObject>;
+export type ConfirmEmailInput = {
+  confirmationToken: Scalars['String'];
 };
 
 
-export type QueryUserArgs = {
-  id: Scalars['Float'];
+export type LoginInput = {
+  usernameOrEmail: Scalars['String'];
+  password: Scalars['String'];
 };
-
-export type UserObject = {
-  __typename?: 'UserObject';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  email: Scalars['String'];
-  username: Scalars['String'];
-  avatarUrl?: Maybe<Scalars['String']>;
-  role: UserRoles;
-  confirmedAt?: Maybe<Scalars['DateTime']>;
-  resetPasswordTokenSentAt?: Maybe<Scalars['DateTime']>;
-};
-
-
-export enum UserRoles {
-  STUDENT = 'STUDENT',
-  TEACHER = 'TEACHER',
-  ADMIN = 'ADMIN'
-}
 
 export type Mutation = {
   __typename?: 'Mutation';
@@ -66,9 +44,71 @@ export type MutationConfirmEmailArgs = {
   input: ConfirmEmailInput;
 };
 
-export type LoginInput = {
-  usernameOrEmail: Scalars['String'];
-  password: Scalars['String'];
+export type NotationConnectionObject = {
+  __typename?: 'NotationConnectionObject';
+  pageInfo: PageInfoObject;
+  edges: Array<NotationEdgeObject>;
+};
+
+export type NotationEdgeObject = {
+  __typename?: 'NotationEdgeObject';
+  node: NotationObject;
+  /** Used in `before` and `after` args */
+  cursor: Scalars['String'];
+};
+
+export type NotationObject = {
+  __typename?: 'NotationObject';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  songName: Scalars['String'];
+  artistName: Scalars['String'];
+  deadTimeMs: Scalars['Float'];
+  durationMs: Scalars['Float'];
+  bpm: Scalars['Float'];
+  featured: Scalars['Boolean'];
+  transcriberId: Scalars['String'];
+  transcriber: UserObject;
+  tags: Array<TagObject>;
+};
+
+export type PageInfoObject = {
+  __typename?: 'PageInfoObject';
+  hasNextPage: Scalars['Boolean'];
+  hasPreviousPage: Scalars['Boolean'];
+  startCursor?: Maybe<Scalars['String']>;
+  endCursor?: Maybe<Scalars['String']>;
+};
+
+export type Query = {
+  __typename?: 'Query';
+  user?: Maybe<UserObject>;
+  users: UserConnectionObject;
+  notations: NotationConnectionObject;
+  tags: Array<TagObject>;
+  whoami?: Maybe<UserObject>;
+};
+
+
+export type QueryUserArgs = {
+  id: Scalars['String'];
+};
+
+
+export type QueryUsersArgs = {
+  before?: Maybe<Scalars['String']>;
+  after?: Maybe<Scalars['String']>;
+  first?: Maybe<Scalars['Float']>;
+  last?: Maybe<Scalars['Float']>;
+};
+
+
+export type QueryNotationsArgs = {
+  before?: Maybe<Scalars['String']>;
+  after?: Maybe<Scalars['String']>;
+  first?: Maybe<Scalars['Float']>;
+  last?: Maybe<Scalars['Float']>;
 };
 
 export type SignupInput = {
@@ -77,6 +117,41 @@ export type SignupInput = {
   password: Scalars['String'];
 };
 
-export type ConfirmEmailInput = {
-  confirmationToken: Scalars['String'];
+export type TagObject = {
+  __typename?: 'TagObject';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  notations: Array<NotationObject>;
 };
+
+export type UserConnectionObject = {
+  __typename?: 'UserConnectionObject';
+  pageInfo: PageInfoObject;
+  edges: Array<UserEdgeObject>;
+};
+
+export type UserEdgeObject = {
+  __typename?: 'UserEdgeObject';
+  node: UserObject;
+  cursor: Scalars['String'];
+};
+
+export type UserObject = {
+  __typename?: 'UserObject';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  email: Scalars['String'];
+  username: Scalars['String'];
+  avatarUrl?: Maybe<Scalars['String']>;
+  role: UserRoles;
+  confirmedAt?: Maybe<Scalars['DateTime']>;
+  resetPasswordTokenSentAt?: Maybe<Scalars['DateTime']>;
+  notations: NotationObject;
+};
+
+export enum UserRoles {
+  STUDENT = 'STUDENT',
+  TEACHER = 'TEACHER',
+  ADMIN = 'ADMIN'
+}
