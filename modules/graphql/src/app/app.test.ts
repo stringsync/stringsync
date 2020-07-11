@@ -1,8 +1,15 @@
 import { app } from './app';
 import { useTestContainer } from '@stringsync/container';
+import request, { SuperTest, Test } from 'supertest';
+
+let req: SuperTest<Test>;
 
 const container = useTestContainer();
 
-it('runs without crashing', () => {
-  expect(() => app(container)).not.toThrow();
+beforeEach(() => {
+  req = request(app(container));
+});
+
+it('GET /health', () => {
+  req.get('/health').expect(200);
 });

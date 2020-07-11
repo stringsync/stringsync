@@ -147,7 +147,7 @@ export type UserObject = {
   role: UserRoles;
   confirmedAt?: Maybe<Scalars['DateTime']>;
   resetPasswordTokenSentAt?: Maybe<Scalars['DateTime']>;
-  notations: NotationObject;
+  notations?: Maybe<NotationObject>;
 };
 
 export enum UserRoles {

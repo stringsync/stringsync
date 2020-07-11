@@ -41,7 +41,7 @@ export class UserObject implements PublicUser {
   @RestrictedField(IsDataOwner)
   resetPasswordTokenSentAt!: Date | null;
 
-  @Field((type) => NotationObject)
+  @Field((type) => NotationObject, { nullable: true })
   async notations(@Root() user: User, @Ctx() ctx: ReqCtx): Promise<Notation[]> {
     const notationService = ctx.container.get<NotationService>(TYPES.NotationService);
     return await notationService.findAllByTranscriberId(user.id);
