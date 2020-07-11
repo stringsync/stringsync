@@ -6,13 +6,13 @@ import { inject, injectable } from 'inversify';
 import { first, last } from 'lodash';
 import { Op } from 'sequelize';
 import { NotationLoader, NotationRepo } from '../../types';
-import { Base64 } from './../../../../common/src/util/Base64';
+import { Base64 } from '@stringsync/common';
 
 @injectable()
 export class NotationSequelizeRepo implements NotationRepo {
   static CURSOR_TYPE = 'notation';
   static CURSOR_DELIMITER = ':';
-  static FIND_ALL_PAGING_LIMIT = 50;
+  static PAGE_LIMIT = 50;
 
   static decodeRankCursor(cursor: string): number {
     const [cursorType, rank] = Base64.decode(cursor).split(NotationSequelizeRepo.CURSOR_DELIMITER);
@@ -88,15 +88,15 @@ export class NotationSequelizeRepo implements NotationRepo {
 
     switch (pagingMeta.pagingType) {
       case PagingType.NONE:
-        return await this.pageNone(NotationSequelizeRepo.FIND_ALL_PAGING_LIMIT);
+        return await this.pageNone(NotationSequelizeRepo.PAGE_LIMIT);
 
       case PagingType.FORWARD:
-        const first = pagingMeta.first || NotationSequelizeRepo.FIND_ALL_PAGING_LIMIT;
+        const first = pagingMeta.first || NotationSequelizeRepo.PAGE_LIMIT;
         const after = pagingMeta.after;
         return await this.pageForward(first, after);
 
       case PagingType.BACKWARD:
-        const last = pagingMeta.last || NotationSequelizeRepo.FIND_ALL_PAGING_LIMIT;
+        const last = pagingMeta.last || NotationSequelizeRepo.PAGE_LIMIT;
         const before = pagingMeta.before;
         return await this.pageBackward(last, before);
 
@@ -107,7 +107,7 @@ export class NotationSequelizeRepo implements NotationRepo {
 
   private async pageNone(limit: number): Promise<Connection<Notation>> {
     const [notations, count] = await Promise.all([
-      this.notationModel.findAll({ order: [['rank', 'DESC']], limit }),
+      this.notationModel.findAll({ order: [['rank', 'DESC']], limit, raw: true }),
       this.count(),
     ]);
     const edges = notations.map((notation) => ({
@@ -132,6 +132,7 @@ export class NotationSequelizeRepo implements NotationRepo {
         where: after ? { rank: { [Op.lt]: NotationSequelizeRepo.decodeRankCursor(after) } } : undefined,
         order: [['rank', 'DESC']],
         limit,
+        raw: true,
       }),
       this.notationModel.min<NotationModel, number>('rank'),
       this.notationModel.max<NotationModel, number>('rank'),
@@ -139,6 +140,7 @@ export class NotationSequelizeRepo implements NotationRepo {
     const edges = notation.map((notation) => ({
       node: notation,
       cursor: NotationSequelizeRepo.encodeRankCursor(notation.rank),
+      raw: true,
     }));
     const ranks = edges.map((edge) => edge.node.rank);
 

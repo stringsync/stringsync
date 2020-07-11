@@ -1,8 +1,8 @@
 import { TestFactory, randStr } from '@stringsync/common';
 import { TYPES, useTestContainer } from '@stringsync/container';
-import { User } from '@stringsync/domain';
+import { User, Notation } from '@stringsync/domain';
 import { UserSequelizeRepo } from '@stringsync/repos';
-import { isPlainObject, sortBy } from 'lodash';
+import { isPlainObject, sortBy, take } from 'lodash';
 import { NotationSequelizeRepo } from './NotationSequelizeRepo';
 
 const container = useTestContainer();
@@ -148,5 +148,91 @@ describe('update', () => {
     const foundNotation = await notationRepo.find(notation.id);
     expect(foundNotation).not.toBeNull();
     expect(foundNotation!.songName).toBe(songName);
+  });
+});
+
+describe('findPage', () => {
+  const NUM_USERS = 2;
+  const NUM_NOTATIONS = NotationSequelizeRepo.PAGE_LIMIT + 1;
+
+  let users: User[];
+  let notations: Notation[];
+
+  beforeEach(async () => {
+    users = new Array(NUM_USERS);
+    for (let ndx = 0; ndx < NUM_USERS; ndx++) {
+      users[ndx] = TestFactory.buildRandUser({ rank: ndx + 1 });
+    }
+    users = await userRepo.bulkCreate(users);
+
+    notations = new Array(NUM_NOTATIONS);
+    for (let ndx = 0; ndx < NUM_NOTATIONS; ndx++) {
+      const transcriber = ndx % 2 === 0 ? users[0] : users[1];
+      notations[ndx] = TestFactory.buildRandNotation({ rank: ndx + 1, transcriberId: transcriber.id });
+    }
+    notations = await notationRepo.bulkCreate(notations);
+  });
+
+  it('returns the first PAGE_LIMIT records by default', async () => {
+    const notationConnection = await notationRepo.findPage({});
+
+    const actualNotations = notationConnection.edges.map((edge) => edge.node);
+    const expectedNotations = take(sortBy(notations, 'rank').reverse(), NotationSequelizeRepo.PAGE_LIMIT);
+
+    expect(actualNotations).toHaveLength(NotationSequelizeRepo.PAGE_LIMIT);
+    expect(sortBy(actualNotations, 'id')).toStrictEqual(sortBy(expectedNotations, 'id'));
+  });
+
+  it('returns the first N records by reverse rank', async () => {
+    const notationConnection = await notationRepo.findPage({ first: 5 });
+
+    const actualNotations = notationConnection.edges.map((edge) => edge.node);
+    const expectedNotations = take(sortBy(notations, 'rank').reverse(), 5);
+
+    expect(actualNotations).toHaveLength(5);
+    expect(actualNotations).toStrictEqual(expectedNotations);
+  });
+
+  it('returns the first N records after a cursor', async () => {
+    const { pageInfo } = await notationRepo.findPage({ first: 1 });
+    const notationConnection = await notationRepo.findPage({ first: 2, after: pageInfo.endCursor });
+
+    const actualNotations = notationConnection.edges.map((edge) => edge.node);
+    const expectedNotations = take(
+      sortBy(notations, 'rank')
+        .reverse()
+        .slice(1),
+      2
+    );
+
+    expect(actualNotations).toHaveLength(2);
+    expect(actualNotations).toStrictEqual(expectedNotations);
+  });
+
+  it('returns all records when limit is greater than the records', async () => {
+    const limit = NUM_NOTATIONS + 1;
+    const notationConnection = await notationRepo.findPage({ first: limit });
+
+    const actualNotations = notationConnection.edges.map((edge) => edge.node);
+    const expectedNotations = sortBy(notations, 'rank').reverse();
+
+    expect(actualNotations).toStrictEqual(expectedNotations);
+  });
+
+  it('returns all records when limit is greater than remaining records after a cursor', async () => {
+    const { pageInfo } = await notationRepo.findPage({ first: 1 });
+    const notationConnection = await notationRepo.findPage({ first: NUM_NOTATIONS + 1, after: pageInfo.endCursor });
+
+    const actualNotations = notationConnection.edges.map((edge) => edge.node);
+    const expectedNotations = sortBy(notations)
+      .reverse()
+      .slice(1);
+
+    expect(actualNotations).toHaveLength(expectedNotations.length);
+    expect(actualNotations).toStrictEqual(expectedNotations);
+  });
+
+  it('does not allow backwards pagination', async () => {
+    await expect(notationRepo.findPage({ last: 1 })).rejects.toThrow();
   });
 });

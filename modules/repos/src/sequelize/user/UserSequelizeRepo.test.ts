@@ -196,7 +196,7 @@ describe('findPage', () => {
   });
 
   it('returns all records when limit is greater than the records', async () => {
-    const limit = users.length + 1;
+    const limit = NUM_USERS + 1;
     const userConnection = await userRepo.findPage({ first: limit });
 
     const actualUsers = userConnection.edges.map((edge) => edge.node);
@@ -207,7 +207,7 @@ describe('findPage', () => {
 
   it('returns all records when limit is greater than remaining records after a cursor', async () => {
     const { pageInfo } = await userRepo.findPage({ first: 1 });
-    const userConnection = await userRepo.findPage({ first: users.length + 1, after: pageInfo.endCursor });
+    const userConnection = await userRepo.findPage({ first: NUM_USERS + 1, after: pageInfo.endCursor });
 
     const actualUsers = userConnection.edges.map((edge) => edge.node);
     const expectedUsers = sortBy(users)
