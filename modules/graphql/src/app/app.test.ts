@@ -1,6 +1,14 @@
 import { app } from './app';
 import { useTestContainer } from '@stringsync/container';
-import request, { SuperTest, Test, CallbackHandler } from 'supertest';
+import request, { SuperTest, Test } from 'supertest';
+import { HTTP_STATUSES, OnlyKey } from '@stringsync/common';
+import { GraphQLError } from 'graphql';
+import { Query } from './graphqlTypes';
+
+type CallResponse<T, N extends string> = {
+  errors?: GraphQLError[];
+  data: OnlyKey<N, T>;
+};
 
 let req: SuperTest<Test>;
 
@@ -19,8 +27,12 @@ describe('GET /health', () => {
 describe('POST /graphql', () => {
   const gql = (strings: TemplateStringsArray) => strings.join('');
 
-  const gqlReq = (query: string, variables?: Record<string, any>, status = 200) =>
-    new Promise<any>((resolve, reject) => {
+  const gqlReq = <T, N extends string, V extends Record<string, any> | void>(
+    status: number,
+    query: string,
+    variables?: V
+  ) =>
+    new Promise<CallResponse<T, N>>((resolve, reject) => {
       req
         .post('/graphql')
         .set('Content-Type', 'application/json')
@@ -29,21 +41,26 @@ describe('POST /graphql', () => {
         .expect(status)
         .end((err, res) => {
           if (err) reject(err);
+          expect(res.body).toBeInstanceOf(Object);
           expect(res.body).toHaveProperty('data');
-          resolve(res.body.data);
+          resolve(res.body);
         });
     });
 
   describe('whoami', () => {
     it('returns null when logged out', async () => {
-      const data = await gqlReq(gql`
-        query {
-          whoami {
-            id
+      const res = await gqlReq<Query['whoami'], 'whoami', undefined>(
+        HTTP_STATUSES.OK,
+        gql`
+          query {
+            whoami {
+              id
+            }
           }
-        }
-      `);
-      expect(data.whoami).toBeNull();
+        `
+      );
+
+      expect(res.data.whoami).toBeNull();
     });
   });
 });

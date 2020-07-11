@@ -26,6 +26,7 @@ export default class Typegen extends Command {
     }
 
     execSync('yarn web typegen', { cwd: ROOT_PATH, stdio: 'inherit' });
+    execSync('yarn graphql typegen', { cwd: ROOT_PATH, stdio: 'inherit' });
 
     if (!wasGraphqlUp) {
       this.log('bringing down main project');

@@ -5,3 +5,7 @@ export type DeepPartial<T> = {
 export type Ctor<T> = {
   new (...args: any[]): T;
 };
+
+export type OnlyKey<K extends string, V = any> = {
+  [P in K]: V;
+};
