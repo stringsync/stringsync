@@ -15,6 +15,7 @@ export type ConfirmEmailInput = {
   confirmationToken: Scalars['String'];
 };
 
+
 export type LoginInput = {
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -29,13 +30,16 @@ export type Mutation = {
   resendConfirmationEmail: Scalars['Boolean'];
 };
 
+
 export type MutationLoginArgs = {
   input: LoginInput;
 };
 
+
 export type MutationSignupArgs = {
   input: SignupInput;
 };
+
 
 export type MutationConfirmEmailArgs = {
   input: ConfirmEmailInput;
@@ -87,9 +91,11 @@ export type Query = {
   whoami?: Maybe<UserObject>;
 };
 
+
 export type QueryUserArgs = {
   id: Scalars['String'];
 };
+
 
 export type QueryUsersArgs = {
   before?: Maybe<Scalars['String']>;
@@ -97,6 +103,7 @@ export type QueryUsersArgs = {
   first?: Maybe<Scalars['Float']>;
   last?: Maybe<Scalars['Float']>;
 };
+
 
 export type QueryNotationsArgs = {
   before?: Maybe<Scalars['String']>;
@@ -147,5 +154,5 @@ export type UserObject = {
 export enum UserRoles {
   STUDENT = 'STUDENT',
   TEACHER = 'TEACHER',
-  ADMIN = 'ADMIN',
+  ADMIN = 'ADMIN'
 }
