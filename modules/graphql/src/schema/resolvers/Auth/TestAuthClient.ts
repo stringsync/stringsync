@@ -55,4 +55,14 @@ export class TestAuthClient {
       { input }
     );
   }
+
+  async logout() {
+    return await this.graphqlClient.call<Mutation['logout'], 'logout'>(
+      gql`
+        mutation {
+          logout
+        }
+      `
+    );
+  }
 }
