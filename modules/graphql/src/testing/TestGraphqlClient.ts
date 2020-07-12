@@ -30,6 +30,7 @@ export class TestGraphqlClient {
           }
           if (res.error) {
             // HTTP req was successful, but there was an error.
+            console.log(res.error);
             const status = get(
               JSON.parse(res.error.text),
               'errors[0].extensions.status',
