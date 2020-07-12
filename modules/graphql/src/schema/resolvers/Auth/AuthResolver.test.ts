@@ -96,3 +96,36 @@ describe('login', () => {
     expect(loginRes2.statusCode).toBe(HTTP_STATUSES.FORBIDDEN);
   });
 });
+
+describe('logout', () => {
+  let username: string;
+  let email: string;
+  let password: string;
+
+  beforeEach(async () => {
+    username = randStr(10);
+    email = `${username}@domain.tld`;
+    password = randStr(10);
+
+    await authClient.signup({ username, email, password });
+    await authClient.logout();
+  });
+
+  it('logs a user out', async () => {
+    const loginRes = await authClient.login({ usernameOrEmail: username, password });
+    expect(loginRes.statusCode).toBe(HTTP_STATUSES.OK);
+
+    const logoutRes = await authClient.logout();
+    expect(logoutRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(logoutRes.body.data.logout).toBe(true);
+
+    const whoamiRes = await authClient.whoami();
+    expect(whoamiRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(whoamiRes.body.data.whoami).toBeNull();
+  });
+
+  it('returns a forbidden status when already logged out', async () => {
+    const logoutRes = await authClient.logout();
+    expect(logoutRes.statusCode).toBe(HTTP_STATUSES.FORBIDDEN);
+  });
+});
