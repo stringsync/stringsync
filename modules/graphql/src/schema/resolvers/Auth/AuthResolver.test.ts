@@ -87,4 +87,12 @@ describe('login', () => {
     expect(whoamiRes.statusCode).toBe(HTTP_STATUSES.OK);
     expect(whoamiRes.body.data.whoami).toBeNull();
   });
+
+  it('returns a forbidden status when already logged in', async () => {
+    const loginRes1 = await authClient.login({ usernameOrEmail: username, password });
+    expect(loginRes1.statusCode).toBe(HTTP_STATUSES.OK);
+
+    const loginRes2 = await authClient.login({ usernameOrEmail: username, password });
+    expect(loginRes2.statusCode).toBe(HTTP_STATUSES.FORBIDDEN);
+  });
 });
