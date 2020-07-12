@@ -1,6 +1,6 @@
 schema: http://localhost:3000/graphql
 generates:
-  src/app/graphqlTypes.ts:
+  src/testing/graphqlTypes.ts:
     plugins:
       - typescript
 config:

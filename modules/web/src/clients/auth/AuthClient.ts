@@ -10,7 +10,7 @@ export class AuthClient {
   }
 
   async whoami() {
-    return this.graphqlClient.call<Query['whoami'], 'whoami'>(gql`
+    return await this.graphqlClient.call<Query['whoami'], 'whoami'>(gql`
       query {
         whoami {
           id
@@ -24,7 +24,7 @@ export class AuthClient {
   }
 
   async login(input: LoginInput) {
-    return this.graphqlClient.call<Mutation['login'], 'login', { input: LoginInput }>(
+    return await this.graphqlClient.call<Mutation['login'], 'login', { input: LoginInput }>(
       gql`
         mutation login($input: LoginInput!) {
           login(input: $input) {
@@ -41,7 +41,7 @@ export class AuthClient {
   }
 
   async logout() {
-    return this.graphqlClient.call<Mutation['logout'], 'logout'>(gql`
+    return await this.graphqlClient.call<Mutation['logout'], 'logout'>(gql`
       mutation logout {
         logout
       }
@@ -49,7 +49,7 @@ export class AuthClient {
   }
 
   async signup(input: SignupInput) {
-    return this.graphqlClient.call<Mutation['signup'], 'signup', { input: SignupInput }>(
+    return await this.graphqlClient.call<Mutation['signup'], 'signup', { input: SignupInput }>(
       gql`
         mutation signup($input: SignupInput!) {
           signup(input: $input) {

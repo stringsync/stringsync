@@ -1,18 +1,17 @@
-import express from 'express';
-import { Container } from 'inversify';
-import { HealthController } from './controllers';
+import { ContainerConfig } from '@stringsync/config';
 import { TYPES } from '@stringsync/container';
 import cors from 'cors';
-import { withSession, withGraphQL } from './middlewares';
-import { generateSchema } from '../schema';
+import express from 'express';
+import { GraphQLSchema } from 'graphql';
+import { Container } from 'inversify';
+import { HealthController } from './controllers';
+import { withGraphQL, withSession } from './middlewares';
 import { withSessionUser } from './middlewares/withSessionUser';
-import { ContainerConfig } from '@stringsync/config';
 
-export const app = (container: Container) => {
+export const app = (container: Container, schema: GraphQLSchema) => {
   const app = express();
   const healthController = container.get<HealthController>(TYPES.HealthController);
   const config = container.get<ContainerConfig>(TYPES.ContainerConfig);
-  const schema = generateSchema();
 
   app.set('trust proxy', 1);
 
