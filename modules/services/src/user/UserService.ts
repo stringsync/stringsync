@@ -13,6 +13,10 @@ export class UserService {
     this.userRepo = userRepo;
   }
 
+  async findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null> {
+    return await this.userRepo.findByUsernameOrEmail(usernameOrEmail);
+  }
+
   async find(id: string): Promise<User | null> {
     return await this.userRepo.find(id);
   }

@@ -1,9 +1,11 @@
-import { useTestApp } from '../../../testing/useTestApp';
-import { TestAuthClient } from './TestAuthClient';
-import { TestGraphqlClient } from '../../../testing';
 import { HTTP_STATUSES, randStr } from '@stringsync/common';
+import { TYPES } from '@stringsync/container';
+import { User } from '@stringsync/domain';
+import { AuthService, UserService } from '@stringsync/services';
+import { TestGraphqlClient, useTestApp } from '../../../testing';
+import { TestAuthClient } from './TestAuthClient';
 
-const { app } = useTestApp();
+const { app, container } = useTestApp();
 
 let graphqlClient: TestGraphqlClient;
 let authClient: TestAuthClient;
@@ -127,5 +129,86 @@ describe('logout', () => {
   it('returns a forbidden status when already logged out', async () => {
     const logoutRes = await authClient.logout();
     expect(logoutRes.statusCode).toBe(HTTP_STATUSES.FORBIDDEN);
+  });
+});
+
+describe('confirmEmail', () => {
+  let username: string;
+  let email: string;
+  let password: string;
+  let confirmationToken: string;
+
+  beforeEach(async () => {
+    username = randStr(10);
+    email = `${username}@domain.tld`;
+    password = randStr(10);
+
+    const res = await authClient.signup({ username, email, password });
+    const { id } = res.body.data.signup!;
+    await authClient.logout();
+
+    const userService = container.get<UserService>(TYPES.UserService);
+    const user = await userService.find(id);
+    expect(user).not.toBeNull();
+    expect(user!.confirmationToken).not.toBeNull();
+    confirmationToken = user!.confirmationToken!;
+  });
+
+  it('sets confirmed at for logged in user', async () => {
+    const loginRes = await authClient.login({ usernameOrEmail: username, password });
+    expect(loginRes.statusCode).toBe(HTTP_STATUSES.OK);
+
+    const whoamiRes = await authClient.whoami();
+    expect(whoamiRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(whoamiRes.body.data.whoami).not.toBeNull();
+    expect(whoamiRes.body.data.whoami!.confirmedAt).toBeNull();
+
+    const confirmEmailRes = await authClient.confirmEmail({ confirmationToken });
+    expect(confirmEmailRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(confirmEmailRes.body.data.confirmEmail.confirmedAt).not.toBeNull();
+  });
+
+  it('returns a forbidden status when not logged in', async () => {
+    const confirmEmailRes = await authClient.confirmEmail({ confirmationToken });
+    expect(confirmEmailRes.statusCode).toBe(HTTP_STATUSES.FORBIDDEN);
+  });
+});
+
+describe('confirmEmail', () => {
+  let userService: UserService;
+  let username: string;
+  let email: string;
+  let password: string;
+
+  beforeEach(async () => {
+    username = randStr(10);
+    email = `${username}@domain.tld`;
+    password = randStr(10);
+
+    userService = container.get<UserService>(TYPES.UserService);
+
+    await authClient.signup({ username, email, password });
+    await authClient.logout();
+  });
+
+  it('resets the logged in user confirmation token', async () => {
+    const beforeUser = await userService.findByUsernameOrEmail(username);
+    const beforeConfirmationToken = beforeUser!.confirmationToken;
+    expect(beforeUser).not.toBeNull();
+    expect(beforeConfirmationToken).not.toBeNull();
+
+    const loginRes = await authClient.login({ usernameOrEmail: username, password });
+    expect(loginRes.statusCode).toBe(HTTP_STATUSES.OK);
+
+    const resendConfirmationEmailRes = await authClient.resendConfirmationEmail();
+    expect(resendConfirmationEmailRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(resendConfirmationEmailRes.body.data.resendConfirmationEmail).toBe(true);
+
+    const afterUser = await userService.findByUsernameOrEmail(username);
+    const afterConfirmationToken = afterUser!.confirmationToken;
+    expect(afterUser).not.toBeNull();
+    expect(afterConfirmationToken).not.toBeNull();
+
+    expect(afterConfirmationToken).not.toBe(beforeConfirmationToken);
   });
 });

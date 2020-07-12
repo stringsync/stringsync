@@ -1,5 +1,5 @@
 import { TestGraphqlClient, gql } from '../../../testing';
-import { Query, Mutation, LoginInput, SignupInput } from '../../../testing/graphqlTypes';
+import { Query, Mutation, LoginInput, SignupInput, ConfirmEmailInput } from '../../../testing/graphqlTypes';
 
 export class TestAuthClient {
   graphqlClient: TestGraphqlClient;
@@ -61,6 +61,33 @@ export class TestAuthClient {
       gql`
         mutation {
           logout
+        }
+      `
+    );
+  }
+
+  async confirmEmail(input: ConfirmEmailInput) {
+    return await this.graphqlClient.call<Mutation['confirmEmail'], 'confirmEmail', { input: ConfirmEmailInput }>(
+      gql`
+        mutation confirmEmail($input: ConfirmEmailInput!) {
+          confirmEmail(input: $input) {
+            id
+            email
+            username
+            role
+            confirmedAt
+          }
+        }
+      `,
+      { input }
+    );
+  }
+
+  async resendConfirmationEmail() {
+    return await this.graphqlClient.call<Mutation['resendConfirmationEmail'], 'resendConfirmationEmail'>(
+      gql`
+        mutation {
+          resendConfirmationEmail
         }
       `
     );
