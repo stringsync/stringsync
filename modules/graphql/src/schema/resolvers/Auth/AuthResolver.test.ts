@@ -179,16 +179,23 @@ describe('resendConfirmationEmail', () => {
   let username: string;
   let email: string;
   let password: string;
+  let confirmationToken: string;
 
   beforeEach(async () => {
+    userService = container.get<UserService>(TYPES.UserService);
+
     username = randStr(10);
     email = `${username}@domain.tld`;
     password = randStr(10);
 
-    userService = container.get<UserService>(TYPES.UserService);
-
-    await authClient.signup({ username, email, password });
+    const res = await authClient.signup({ username, email, password });
+    const { id } = res.body.data.signup!;
     await authClient.logout();
+
+    const user = await userService.find(id);
+    expect(user).not.toBeNull();
+    expect(user!.confirmationToken).not.toBeNull();
+    confirmationToken = user!.confirmationToken!;
   });
 
   it('resets the logged in user confirmation token', async () => {
@@ -210,5 +217,17 @@ describe('resendConfirmationEmail', () => {
     expect(afterConfirmationToken).not.toBeNull();
 
     expect(afterConfirmationToken).not.toBe(beforeConfirmationToken);
+  });
+
+  it('silently fails if already confirmed', async () => {
+    const loginRes = await authClient.login({ usernameOrEmail: username, password });
+    expect(loginRes.statusCode).toBe(HTTP_STATUSES.OK);
+
+    const confirmEmailRes = await authClient.confirmEmail({ confirmationToken });
+    expect(confirmEmailRes.statusCode).toBe(HTTP_STATUSES.OK);
+
+    const resendConfirmationEmailRes = await authClient.resendConfirmationEmail();
+    expect(resendConfirmationEmailRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(resendConfirmationEmailRes.body.data.resendConfirmationEmail).toBe(true);
   });
 });
