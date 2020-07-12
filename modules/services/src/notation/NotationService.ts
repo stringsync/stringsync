@@ -14,6 +14,10 @@ export class NotationService {
     this.tagRepo = tagRepo;
   }
 
+  async find(id: string): Promise<Notation | null> {
+    return await this.notationRepo.find(id);
+  }
+
   async findAllByTranscriberId(transcriberId: string): Promise<Notation[]> {
     return await this.notationRepo.findAllByTranscriberId(transcriberId);
   }
@@ -24,5 +28,9 @@ export class NotationService {
 
   async findPage(connectionArgs: ConnectionArgs): Promise<Connection<Notation>> {
     return await this.notationRepo.findPage(connectionArgs);
+  }
+
+  async create(songName: string, artistName: string): Promise<Notation> {
+    return await this.notationRepo.create({ songName, artistName });
   }
 }
