@@ -174,7 +174,7 @@ describe('confirmEmail', () => {
   });
 });
 
-describe('confirmEmail', () => {
+describe('resendConfirmationEmail', () => {
   let userService: UserService;
   let username: string;
   let email: string;
