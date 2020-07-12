@@ -11,10 +11,10 @@ export class TestGraphqlClient {
     this.agent = request.agent(app);
   }
 
-  call<T, N extends string, V extends Record<string, any> | void = void>(
+  call = async <T, N extends string, V extends Record<string, any> | void = void>(
     query: string,
     variables?: V
-  ): Promise<Response & { body: CallResponse<T, N> }> {
+  ): Promise<Response & { body: CallResponse<T, N> }> => {
     return new Promise((resolve, reject) =>
       this.agent
         .post('/graphql')
@@ -28,5 +28,5 @@ export class TestGraphqlClient {
           resolve(res as any);
         })
     );
-  }
+  };
 }

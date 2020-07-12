@@ -1,5 +1,5 @@
 import { TestGraphqlClient, gql } from '../../../testing';
-import { Query, LoginInput, Mutation } from '../../../testing/graphqlTypes';
+import { Query, Mutation, LoginInput, SignupInput } from '../../../testing/graphqlTypes';
 
 export class TestAuthClient {
   graphqlClient: TestGraphqlClient;
@@ -27,6 +27,23 @@ export class TestAuthClient {
       gql`
         mutation login($input: LoginInput!) {
           login(input: $input) {
+            id
+            email
+            username
+            role
+            confirmedAt
+          }
+        }
+      `,
+      { input }
+    );
+  }
+
+  async signup(input: SignupInput) {
+    return await this.graphqlClient.call<Mutation['signup'], 'signup', { input: SignupInput }>(
+      gql`
+        mutation signup($input: SignupInput!) {
+          signup(input: $input) {
             id
             email
             username

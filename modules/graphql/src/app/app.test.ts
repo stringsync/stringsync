@@ -1,11 +1,7 @@
-import { HTTP_STATUSES } from '@stringsync/common';
 import request, { SuperTest, Test } from 'supertest';
-import { useTestApp, TestGraphqlClient, gql } from '../testing';
-import { Query, Mutation, LoginInput } from '../testing/graphqlTypes';
-import { AuthService } from '@stringsync/services';
-import { TYPES } from '@stringsync/container';
+import { useTestApp } from '../testing';
 
-const { app, container } = useTestApp();
+const { app } = useTestApp();
 
 let req: SuperTest<Test>;
 
