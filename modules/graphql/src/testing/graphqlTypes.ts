@@ -15,6 +15,11 @@ export type ConfirmEmailInput = {
   confirmationToken: Scalars['String'];
 };
 
+export type CreateNotationInput = {
+  songName: Scalars['String'];
+  artistName: Scalars['String'];
+};
+
 
 export type LoginInput = {
   usernameOrEmail: Scalars['String'];
@@ -23,11 +28,17 @@ export type LoginInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createNotation: NotationObject;
   login: UserObject;
   logout: Scalars['Boolean'];
   signup: UserObject;
   confirmEmail: UserObject;
   resendConfirmationEmail: Scalars['Boolean'];
+};
+
+
+export type MutationCreateNotationArgs = {
+  input: CreateNotationInput;
 };
 
 
@@ -87,6 +98,7 @@ export type Query = {
   user?: Maybe<UserObject>;
   users: UserConnectionObject;
   notations: NotationConnectionObject;
+  notation: NotationObject;
   tags: Array<TagObject>;
   whoami?: Maybe<UserObject>;
 };
@@ -110,6 +122,11 @@ export type QueryNotationsArgs = {
   after?: Maybe<Scalars['String']>;
   first?: Maybe<Scalars['Float']>;
   last?: Maybe<Scalars['Float']>;
+};
+
+
+export type QueryNotationArgs = {
+  id: Scalars['String'];
 };
 
 export type SignupInput = {
