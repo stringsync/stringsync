@@ -30,7 +30,7 @@ export class NotationService {
     return await this.notationRepo.findPage(connectionArgs);
   }
 
-  async create(songName: string, artistName: string): Promise<Notation> {
-    return await this.notationRepo.create({ songName, artistName });
+  async create(songName: string, artistName: string, transcriberId: string): Promise<Notation> {
+    return await this.notationRepo.create({ songName, artistName, transcriberId });
   }
 }

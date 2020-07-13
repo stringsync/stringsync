@@ -46,7 +46,7 @@ export class TestNotationClient {
   async notation(args: NotationArgs) {
     return await this.graphqlClient.call<Query['notation'], 'notation', NotationArgs>(
       gql`
-        query notation($id: String) {
+        query notation($id: String!) {
           notation(id: $id) {
             id
             createdAt
@@ -68,7 +68,7 @@ export class TestNotationClient {
   async createNotation(input: CreateNotationInput) {
     return await this.graphqlClient.call<Mutation['createNotation'], 'createNotation', { input: CreateNotationInput }>(
       gql`
-        query createNotation($input: CreateNotationInput!) {
+        mutation createNotation($input: CreateNotationInput!) {
           createNotation(input: $input) {
             id
             createdAt

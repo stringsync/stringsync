@@ -98,7 +98,7 @@ export type Query = {
   user?: Maybe<UserObject>;
   users: UserConnectionObject;
   notations: NotationConnectionObject;
-  notation: NotationObject;
+  notation?: Maybe<NotationObject>;
   tags: Array<TagObject>;
   whoami?: Maybe<UserObject>;
 };
