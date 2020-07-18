@@ -1,8 +1,9 @@
-import { TestFactory, randStr } from '@stringsync/common';
+import { randStr, TestFactory } from '@stringsync/common';
 import { TYPES, useTestContainer } from '@stringsync/container';
-import { isPlainObject, sortBy, first, take, takeRight } from 'lodash';
-import { UserSequelizeRepo } from './UserSequelizeRepo';
 import { User } from '@stringsync/domain';
+import { isPlainObject, sortBy, take } from 'lodash';
+import { UserSequelizeRepo } from './UserSequelizeRepo';
+import * as uuid from 'uuid';
 
 const container = useTestContainer();
 
@@ -146,6 +147,29 @@ describe('findByEmail', () => {
     await userRepo.create(user);
 
     const foundUser = await userRepo.findByEmail(user.email);
+
+    expect(isPlainObject(foundUser)).toBe(true);
+  });
+});
+
+describe('findByResetPasswordToken', () => {
+  it('finds by resetPasswordToken', async () => {
+    const resetPasswordToken = uuid.v4();
+    const user = TestFactory.buildRandUser({ resetPasswordToken });
+    await userRepo.create(user);
+
+    const foundUser = await userRepo.findByResetPasswordToken(resetPasswordToken);
+
+    expect(foundUser).not.toBeNull();
+    expect(foundUser!.id).toBe(user.id);
+  });
+
+  it('returns a plain object', async () => {
+    const resetPasswordToken = uuid.v4();
+    const user = TestFactory.buildRandUser({ resetPasswordToken });
+    await userRepo.create(user);
+
+    const foundUser = await userRepo.findByResetPasswordToken(resetPasswordToken);
 
     expect(isPlainObject(foundUser)).toBe(true);
   });

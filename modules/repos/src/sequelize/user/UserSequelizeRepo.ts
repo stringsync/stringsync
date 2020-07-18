@@ -54,6 +54,13 @@ export class UserSequelizeRepo implements UserRepo {
     });
   }
 
+  async findByResetPasswordToken(resetPasswordToken: string): Promise<User | null> {
+    return await this.userModel.findOne({
+      where: { resetPasswordToken },
+      raw: true,
+    });
+  }
+
   async count(): Promise<number> {
     return await this.userModel.count();
   }
