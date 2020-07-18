@@ -14,6 +14,7 @@ export interface UserRepo extends Repo<User> {
   findAll(): Promise<User[]>;
   findPage(connectionArgs: ConnectionArgs): Promise<Connection<User>>;
   findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null>;
+  findByEmail(email: string): Promise<User | null>;
 }
 
 export interface NotationRepo extends Repo<Notation> {

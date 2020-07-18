@@ -1,4 +1,3 @@
-import { ConnectionArgs } from './../../../../common/src/paging/types';
 import { TestFactory, randStr } from '@stringsync/common';
 import { TYPES, useTestContainer } from '@stringsync/container';
 import { isPlainObject, sortBy, first, take, takeRight } from 'lodash';
@@ -126,6 +125,27 @@ describe('findByUsernameOrEmail', () => {
     await userRepo.create(user);
 
     const foundUser = await userRepo.findByUsernameOrEmail(user.username);
+
+    expect(isPlainObject(foundUser)).toBe(true);
+  });
+});
+
+describe('findByEmail', () => {
+  it('finds by email', async () => {
+    const user = TestFactory.buildRandUser();
+    await userRepo.create(user);
+
+    const foundUser = await userRepo.findByEmail(user.email);
+
+    expect(foundUser).not.toBeNull();
+    expect(foundUser!.id).toBe(user.id);
+  });
+
+  it('returns a plain object', async () => {
+    const user = TestFactory.buildRandUser();
+    await userRepo.create(user);
+
+    const foundUser = await userRepo.findByEmail(user.email);
 
     expect(isPlainObject(foundUser)).toBe(true);
   });

@@ -47,6 +47,13 @@ export class UserSequelizeRepo implements UserRepo {
     });
   }
 
+  async findByEmail(email: string): Promise<User | null> {
+    return await this.userModel.findOne({
+      where: { email },
+      raw: true,
+    });
+  }
+
   async count(): Promise<number> {
     return await this.userModel.count();
   }
