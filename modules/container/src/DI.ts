@@ -1,20 +1,22 @@
-import { Sequelize } from 'sequelize-typescript';
-import { TYPES } from './constants';
-import { getContainerConfig, ContainerConfig } from '@stringsync/config';
-import { Container as InversifyContainer } from 'inversify';
-import { getSequelizeModule } from './getSequelizeModule';
-import { getGraphqlModule } from './getGraphqlModule';
-import { getReposModule } from './getReposModule';
-import { getServicesModule } from './getServicesModule';
-import { getRedisModule } from './getRedisModule';
-import { getLoggerModule } from './getLoggerModule';
-import { RedisClient } from 'redis';
+import { ContainerConfig, getContainerConfig } from '@stringsync/config';
 import { Db } from '@stringsync/sequelize';
+import { Container as InversifyContainer } from 'inversify';
+import { RedisClient } from 'redis';
+import { Sequelize } from 'sequelize-typescript';
+import * as winston from 'winston';
+import { TYPES } from './constants';
+import { getGraphqlModule } from './getGraphqlModule';
+import { getLoggerModule } from './getLoggerModule';
+import { getRedisModule } from './getRedisModule';
+import { getReposModule } from './getReposModule';
+import { getSequelizeModule } from './getSequelizeModule';
+import { getServicesModule } from './getServicesModule';
 import { Redis } from './redis';
 
 export class DI {
   static create(config: ContainerConfig = getContainerConfig()) {
     const container = new InversifyContainer();
+    const logger = winston.createLogger();
 
     container.bind<ContainerConfig>(TYPES.ContainerConfig).toConstantValue(config);
 
@@ -22,10 +24,10 @@ export class DI {
     const servicesModule = getServicesModule(config);
     const reposModule = getReposModule(config);
     const graphqlModule = getGraphqlModule(config);
-    const sequelizeModule = getSequelizeModule(config);
-    const loggerModule = getLoggerModule(config);
+    const sequelizeModule = getSequelizeModule(config, logger);
+    const loggerModule = getLoggerModule(config, logger);
 
-    container.load(redisModule, servicesModule, reposModule, graphqlModule, sequelizeModule);
+    container.load(redisModule, servicesModule, reposModule, graphqlModule, sequelizeModule, loggerModule);
 
     return container;
   }

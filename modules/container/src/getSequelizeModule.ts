@@ -3,8 +3,9 @@ import { ContainerConfig } from '@stringsync/config';
 import { ContainerModule } from 'inversify';
 import { TYPES } from './constants';
 import { Db, UserModel, NotationModel, TagModel, TaggingModel } from '@stringsync/sequelize';
+import { Logger } from './Logger';
 
-export const getSequelizeModule = (config: ContainerConfig) =>
+export const getSequelizeModule = (config: ContainerConfig, logger: Logger) =>
   new ContainerModule((bind) => {
     const sequelize = Db.connect({
       database: config.DB_NAME,
@@ -12,7 +13,7 @@ export const getSequelizeModule = (config: ContainerConfig) =>
       port: config.DB_PORT,
       password: config.DB_PASSWORD,
       username: config.DB_USERNAME,
-      logging: config.NODE_ENV === 'test' ? undefined : console.log,
+      logging: logger.info,
     });
     bind<Sequelize>(TYPES.Sequelize).toConstantValue(sequelize);
     bind<typeof UserModel>(TYPES.UserModel).toConstructor(UserModel);
