@@ -1,7 +1,7 @@
 import { Resolver, Query, Ctx, Mutation, Arg, UseMiddleware } from 'type-graphql';
 import { injectable, inject } from 'inversify';
 import { AuthService, NotificationService } from '@stringsync/services';
-import { TYPES } from '@stringsync/container';
+import { TYPES, Logger } from '@stringsync/container';
 import { User } from '@stringsync/domain';
 import { ResolverCtx } from '../../types';
 import { UserObject } from '../User';
@@ -16,13 +16,16 @@ import { ResetPasswordInput } from './ResetPasswordInput';
 @Resolver()
 @injectable()
 export class AuthResolver {
+  logger: Logger;
   authService: AuthService;
   notificationService: NotificationService;
 
   constructor(
+    @inject(TYPES.Logger) logger: Logger,
     @inject(TYPES.AuthService) authService: AuthService,
     @inject(TYPES.NotificationService) notificationService: NotificationService
   ) {
+    this.logger = logger;
     this.authService = authService;
     this.notificationService = notificationService;
   }
@@ -80,7 +83,7 @@ export class AuthResolver {
         await this.notificationService.sendConfirmationEmail(user);
       }
     } catch (e) {
-      console.error(`resendConfirmationEmail attempted for userId: ${id}, got error ${e}`);
+      this.logger.error(`resendConfirmationEmail attempted for userId: ${id}, got error ${e}`);
     }
 
     // Silently fail to prevent attackers from inferring the confirmation state.

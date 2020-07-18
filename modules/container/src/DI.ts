@@ -16,7 +16,13 @@ import { Redis } from './redis';
 export class DI {
   static create(config: ContainerConfig = getContainerConfig()) {
     const container = new InversifyContainer();
-    const logger = winston.createLogger();
+    const logger = winston.createLogger({
+      transports: [
+        new winston.transports.Console({
+          format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
+        }),
+      ],
+    });
 
     container.bind<ContainerConfig>(TYPES.ContainerConfig).toConstantValue(config);
 

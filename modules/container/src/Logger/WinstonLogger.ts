@@ -19,4 +19,8 @@ export class WinstonLogger implements Logger {
   warn(msg: string) {
     this.winston.warn(msg);
   }
+
+  debug(msg: string) {
+    this.winston.debug(msg);
+  }
 }
