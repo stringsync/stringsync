@@ -10,6 +10,7 @@ export const getContainerConfig = configFactory({
   DB_PASSWORD: ConfigKind.STRING,
   DB_HOST: ConfigKind.STRING,
   DB_PORT: ConfigKind.INT,
+  LOG_LEVEL: ConfigKind.STRING,
   REDIS_HOST: ConfigKind.STRING,
   REDIS_PORT: ConfigKind.INT,
   SESSION_SECRET: ConfigKind.STRING,

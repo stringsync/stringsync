@@ -17,6 +17,7 @@ export class DI {
   static create(config: ContainerConfig = getContainerConfig()) {
     const container = new InversifyContainer();
     const logger = winston.createLogger({
+      level: config.LOG_LEVEL,
       transports: [
         new winston.transports.Console({
           format: winston.format.combine(winston.format.colorize(), winston.format.simple()),

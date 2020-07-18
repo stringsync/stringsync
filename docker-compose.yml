@@ -26,6 +26,7 @@ services:
       DB_PASSWORD: stringsync
       DB_HOST: db
       DB_PORT: 5432
+      LOG_LEVEL: info
       REDIS_HOST: redis
       REDIS_PORT: 6379
       SESSION_SECRET: keyboardcat

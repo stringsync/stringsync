@@ -915,6 +915,8 @@ Resources:
               Value: !GetAtt ElasticacheCluster.RedisEndpoint.Address
             - Name: REDIS_PORT
               Value: !GetAtt ElasticacheCluster.RedisEndpoint.Port
+            - Name: LOG_LEVEL
+              Value: info
             - Name: ROLE
               Value: server
             - Name: SESSION_SECRET

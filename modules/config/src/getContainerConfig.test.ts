@@ -10,6 +10,7 @@ it('runs without crashing', () => {
     DB_PASSWORD: 'DB_PASSWORD',
     DB_HOST: 'DB_HOST',
     DB_PORT: '5432',
+    LOG_LEVEL: 'debug',
     REDIS_HOST: 'REDIS_HOST',
     REDIS_PORT: '4000',
     SESSION_SECRET: 'SESSION_SECRET',
