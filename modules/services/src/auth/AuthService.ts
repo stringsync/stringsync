@@ -9,6 +9,8 @@ import { BadRequestError, NotFoundError } from '@stringsync/common';
 
 @injectable()
 export class AuthService {
+  static MAX_RESET_PASSWORD_TOKEN_AGE_MS = 86400 * 1000; // 1 day
+  static MIN_PASSWORD_LENGTH = 6;
   static HASH_ROUNDS = 10;
 
   userRepo: UserRepo;
@@ -43,7 +45,7 @@ export class AuthService {
   }
 
   async signup(username: string, email: string, password: string): Promise<User> {
-    const encryptedPassword = await bcrypt.hash(password, AuthService.HASH_ROUNDS);
+    const encryptedPassword = await this.validateAndEncryptPassword(password);
     const confirmationToken = uuid.v4();
 
     const user = await this.userRepo.create({
@@ -58,7 +60,6 @@ export class AuthService {
 
   async confirmEmail(id: string, confirmationToken: string, confirmedAt: Date): Promise<User> {
     const user = await this.userRepo.find(id);
-
     if (!user) {
       throw new NotFoundError('user not found');
     }
@@ -80,7 +81,6 @@ export class AuthService {
 
   async resetConfirmationToken(id: string): Promise<User> {
     const user = await this.userRepo.find(id);
-
     if (!user) {
       throw new NotFoundError('user not found');
     }
@@ -96,7 +96,6 @@ export class AuthService {
 
   async reqPasswordReset(email: string, reqAt: Date): Promise<User> {
     const user = await this.userRepo.findByEmail(email);
-
     if (!user) {
       throw new NotFoundError('user not found');
     }
@@ -105,5 +104,34 @@ export class AuthService {
     await this.userRepo.update(updatedUser.id, updatedUser);
 
     return updatedUser;
+  }
+
+  async resetPassword(resetPasswordToken: string, password: string, reqAt: Date): Promise<User> {
+    const user = await this.userRepo.findByResetPasswordToken(resetPasswordToken);
+    if (!user) {
+      throw new NotFoundError('user not found');
+    }
+    if (!user.resetPasswordTokenSentAt) {
+      // user is in a bad state somehow, have them request another token
+      throw new BadRequestError('invalid reset password token');
+    }
+
+    const resetPasswordTokenAgeMs = reqAt.getTime() - user.resetPasswordTokenSentAt.getTime();
+    if (resetPasswordTokenAgeMs > AuthService.MAX_RESET_PASSWORD_TOKEN_AGE_MS) {
+      throw new BadRequestError('invalid reset password token');
+    }
+
+    const encryptedPassword = await this.validateAndEncryptPassword(password);
+    const updatedUser: User = { ...user, resetPasswordToken: null, resetPasswordTokenSentAt: null, encryptedPassword };
+    await this.userRepo.update(updatedUser.id, updatedUser);
+
+    return updatedUser;
+  }
+
+  private async validateAndEncryptPassword(password: string): Promise<string> {
+    if (password.length < AuthService.MIN_PASSWORD_LENGTH) {
+      throw new BadRequestError(`password must be at least ${AuthService.MIN_PASSWORD_LENGTH} characters`);
+    }
+    return await bcrypt.hash(password, AuthService.HASH_ROUNDS);
   }
 }

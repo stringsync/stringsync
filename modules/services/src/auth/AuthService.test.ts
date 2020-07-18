@@ -5,6 +5,7 @@ import { TestFactory, randStr, NotFoundError, BadRequestError } from '@stringsyn
 import { UserRepo } from '@stringsync/repos';
 import * as bcrypt from 'bcrypt';
 import { isPlainObject } from 'lodash';
+import * as uuid from 'uuid';
 
 const container = useTestContainer();
 
@@ -277,5 +278,56 @@ describe('reqPasswordReset', () => {
     const resetPasswordTokenUser = await authService.reqPasswordReset(user.email, reqAt);
     expect(resetPasswordTokenUser).not.toBeNull();
     expect(isPlainObject(resetPasswordTokenUser)).toBe(true);
+  });
+});
+
+describe('resetPassword', () => {
+  let user: User;
+  let email: string;
+  let oldPassword: string;
+  let newPassword: string;
+  const reqAt = new Date();
+
+  beforeEach(async () => {
+    const username = randStr(10);
+    email = `${randStr(8)}@${randStr(8)}.com`;
+    oldPassword = randStr(10);
+    newPassword = randStr(11);
+    user = await authService.signup(username, email, oldPassword);
+  });
+
+  it('updates a password', async () => {
+    const { resetPasswordToken } = await authService.reqPasswordReset(email, new Date());
+    const resetPasswordUser = await authService.resetPassword(resetPasswordToken!, newPassword, reqAt);
+    expect(resetPasswordUser.encryptedPassword).not.toBe(user.encryptedPassword);
+
+    // try logging in with the new password
+    const authenticatedUser1 = await authService.getAuthenticatedUser(email, newPassword);
+    expect(authenticatedUser1).not.toBeNull();
+
+    // ensure old password doesn't work
+    const authenticatedUser2 = await authService.getAuthenticatedUser(email, oldPassword);
+    expect(authenticatedUser2).toBeNull();
+  });
+
+  it('throws if the resetPasswordToken is invalid', async () => {
+    const invalidResetPasswordToken = uuid.v4();
+    await expect(authService.resetPassword(invalidResetPasswordToken, newPassword, reqAt)).rejects.toThrow();
+  });
+
+  it('throws if the resetPasswordTokenSentAt is missing', async () => {
+    const reqPasswordResetUser = await authService.reqPasswordReset(email, new Date());
+    // in theory this kind of update should never happen
+    await userRepo.update(reqPasswordResetUser.id, { ...reqPasswordResetUser, resetPasswordTokenSentAt: null });
+
+    await expect(
+      authService.resetPassword(reqPasswordResetUser.resetPasswordToken!, newPassword, reqAt)
+    ).rejects.toThrow();
+  });
+
+  it('throws if the resetPasswordToken is too old', async () => {
+    const resetPasswordTokenSentAt = new Date(reqAt.getTime() - AuthService.MAX_RESET_PASSWORD_TOKEN_AGE_MS - 1);
+    const { resetPasswordToken } = await authService.reqPasswordReset(email, resetPasswordTokenSentAt);
+    await expect(authService.resetPassword(resetPasswordToken!, newPassword, reqAt)).rejects.toThrow();
   });
 });
