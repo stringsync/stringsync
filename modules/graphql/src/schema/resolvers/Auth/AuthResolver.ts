@@ -10,6 +10,8 @@ import { ForbiddenError, AuthRequirement } from '@stringsync/common';
 import { WithAuthRequirement } from '../../middlewares';
 import { SignupInput } from './SignupInput';
 import { ConfirmEmailInput } from './ConfirmEmailInput';
+import { ReqPasswordResetInput } from './ReqPasswordResetInput';
+import { ResetPasswordInput } from './ResetPasswordInput';
 
 @Resolver()
 @injectable()
@@ -82,6 +84,18 @@ export class AuthResolver {
     }
 
     // Silently fail to prevent attackers from inferring the confirmation state.
+    return true;
+  }
+
+  @Mutation((returns) => Boolean)
+  async reqPasswordReset(@Ctx() ctx: ResolverCtx, @Arg('input') input: ReqPasswordResetInput): Promise<true> {
+    await this.authService.reqPasswordReset(input.email, ctx.reqAt);
+    return true;
+  }
+
+  @Mutation((returns) => Boolean)
+  async resetPassword(@Ctx() ctx: ResolverCtx, @Arg('input') input: ResetPasswordInput): Promise<true> {
+    await this.authService.resetPassword(input.resetPasswordToken, input.password, ctx.reqAt);
     return true;
   }
 

@@ -1,5 +1,7 @@
 import { TestGraphqlClient, gql } from '../../../testing';
 import { Query, Mutation, LoginInput, SignupInput, ConfirmEmailInput } from '../../../testing/graphqlTypes';
+import { ReqPasswordResetInput } from './ReqPasswordResetInput';
+import { ResetPasswordInput } from './ResetPasswordInput';
 
 export class TestAuthClient {
   graphqlClient: TestGraphqlClient;
@@ -90,6 +92,32 @@ export class TestAuthClient {
           resendConfirmationEmail
         }
       `
+    );
+  }
+
+  async reqPasswordReset(input: ReqPasswordResetInput) {
+    return await this.graphqlClient.call<
+      Mutation['reqPasswordReset'],
+      'reqPasswordReset',
+      { input: ReqPasswordResetInput }
+    >(
+      gql`
+        mutation reqPasswordReset($input: ReqPasswordResetInput!) {
+          reqPasswordReset(input: $input)
+        }
+      `,
+      { input }
+    );
+  }
+
+  async resetPassword(input: ResetPasswordInput) {
+    return await this.graphqlClient.call<Mutation['resetPassword'], 'resetPassword', { input: ResetPasswordInput }>(
+      gql`
+        mutation resetPassword($input: ResetPasswordInput!) {
+          resetPassword(input: $input)
+        }
+      `,
+      { input }
     );
   }
 }

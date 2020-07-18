@@ -3,6 +3,8 @@ import { TYPES } from '@stringsync/container';
 import { UserService } from '@stringsync/services';
 import { TestGraphqlClient, useTestApp } from '../../../testing';
 import { TestAuthClient } from './TestAuthClient';
+import { User } from '@stringsync/domain';
+import { UserRepo } from '@stringsync/repos';
 
 const { app, container } = useTestApp();
 
@@ -228,5 +230,91 @@ describe('resendConfirmationEmail', () => {
     const resendConfirmationEmailRes = await authClient.resendConfirmationEmail();
     expect(resendConfirmationEmailRes.statusCode).toBe(HTTP_STATUSES.OK);
     expect(resendConfirmationEmailRes.body.data.resendConfirmationEmail).toBe(true);
+  });
+});
+
+describe('reqPasswordReset', () => {
+  let userService: UserService;
+
+  let email: string;
+  let user: User;
+
+  beforeEach(async () => {
+    userService = container.get<UserService>(TYPES.UserService);
+    userService.userRepo.userLoader.startListeningForChanges();
+
+    const username = randStr(10);
+    email = `${username}@domain.tld`;
+    const password = randStr(10);
+
+    const signupRes = await authClient.signup({ username, email, password });
+    const { id } = signupRes.body.data.signup;
+    user = (await userService.find(id))!;
+    await authClient.logout();
+  });
+
+  afterEach(() => {
+    userService.userRepo.userLoader.stopListeningForChanges();
+  });
+
+  it('resets passwordResetToken', async () => {
+    const reqPasswordResetRes = await authClient.reqPasswordReset({ email });
+    expect(reqPasswordResetRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(reqPasswordResetRes.body.data.reqPasswordReset).toBe(true);
+
+    const reloadedUser = await userService.find(user.id);
+
+    expect(reloadedUser).not.toBeNull();
+    expect(reloadedUser!.resetPasswordToken).not.toBeNull();
+    expect(reloadedUser!.resetPasswordTokenSentAt).not.toBeNull();
+  });
+});
+
+describe('reqPasswordReset', () => {
+  let userService: UserService;
+
+  let email: string;
+  let user: User;
+
+  beforeEach(async () => {
+    userService = container.get<UserService>(TYPES.UserService);
+    userService.userRepo.userLoader.startListeningForChanges();
+
+    const username = randStr(10);
+    email = `${username}@domain.tld`;
+    const password = randStr(10);
+
+    const signupRes = await authClient.signup({ username, email, password });
+    const { id } = signupRes.body.data.signup;
+    user = (await userService.find(id))!;
+    await authClient.logout();
+  });
+
+  afterEach(() => {
+    userService.userRepo.userLoader.stopListeningForChanges();
+  });
+
+  it('resets the password', async () => {
+    const reqPasswordResetRes = await authClient.reqPasswordReset({ email });
+    expect(reqPasswordResetRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(reqPasswordResetRes.body.data.reqPasswordReset).toBe(true);
+
+    const reloadedUser = await userService.find(user.id);
+
+    const newPassword = randStr(11);
+    const resetPasswordRes = await authClient.resetPassword({
+      resetPasswordToken: reloadedUser!.resetPasswordToken!,
+      password: newPassword,
+    });
+    expect(resetPasswordRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(resetPasswordRes.body.data.resetPassword).toBe(true);
+
+    const loginRes = await authClient.login({ usernameOrEmail: email, password: newPassword });
+    expect(loginRes.statusCode).toBe(HTTP_STATUSES.OK);
+
+    const whoamiRes = await authClient.whoami();
+    expect(whoamiRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(whoamiRes.body.data.whoami).not.toBeNull();
+    expect(whoamiRes.body.data.whoami!.id).toBe(user.id);
   });
 });

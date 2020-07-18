@@ -33,6 +33,8 @@ export type Mutation = {
   signup: UserObject;
   confirmEmail: UserObject;
   resendConfirmationEmail: Scalars['Boolean'];
+  reqPasswordReset: Scalars['Boolean'];
+  resetPassword: Scalars['Boolean'];
 };
 
 
@@ -53,6 +55,16 @@ export type MutationSignupArgs = {
 
 export type MutationConfirmEmailArgs = {
   input: ConfirmEmailInput;
+};
+
+
+export type MutationReqPasswordResetArgs = {
+  input: ReqPasswordResetInput;
+};
+
+
+export type MutationResetPasswordArgs = {
+  input: ResetPasswordInput;
 };
 
 export type NotationConnectionObject = {
@@ -126,6 +138,15 @@ export type QueryNotationsArgs = {
 
 export type QueryNotationArgs = {
   id: Scalars['String'];
+};
+
+export type ReqPasswordResetInput = {
+  email: Scalars['String'];
+};
+
+export type ResetPasswordInput = {
+  resetPasswordToken: Scalars['String'];
+  password: Scalars['String'];
 };
 
 export type SignupInput = {
