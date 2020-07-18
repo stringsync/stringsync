@@ -3,6 +3,7 @@ export const TYPES = {
   ContainerConfig: Symbol('ContainerConfig'),
   HealthCheckerService: Symbol('HealthCheckerService'),
   HealthController: Symbol('HealthController'),
+  Logger: Symbol('Logger'),
   NotationLoader: Symbol('NotationLoader'),
   NotationLoaderCtor: Symbol('NotationLoaderCtor'),
   NotationModel: Symbol('NotationModel'),

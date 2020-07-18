@@ -7,6 +7,7 @@ import { getGraphqlModule } from './getGraphqlModule';
 import { getReposModule } from './getReposModule';
 import { getServicesModule } from './getServicesModule';
 import { getRedisModule } from './getRedisModule';
+import { getLoggerModule } from './getLoggerModule';
 import { RedisClient } from 'redis';
 import { Db } from '@stringsync/sequelize';
 import { Redis } from './redis';
@@ -22,6 +23,7 @@ export class DI {
     const reposModule = getReposModule(config);
     const graphqlModule = getGraphqlModule(config);
     const sequelizeModule = getSequelizeModule(config);
+    const loggerModule = getLoggerModule(config);
 
     container.load(redisModule, servicesModule, reposModule, graphqlModule, sequelizeModule);
 
