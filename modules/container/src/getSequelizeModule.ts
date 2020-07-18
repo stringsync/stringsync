@@ -3,7 +3,7 @@ import { ContainerConfig } from '@stringsync/config';
 import { ContainerModule } from 'inversify';
 import { TYPES } from './constants';
 import { Db, UserModel, NotationModel, TagModel, TaggingModel } from '@stringsync/sequelize';
-import { Logger } from './Logger';
+import { Logger } from './logger';
 
 export const getSequelizeModule = (config: ContainerConfig, logger: Logger) =>
   new ContainerModule((bind) => {
