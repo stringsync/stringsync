@@ -3,8 +3,9 @@ import { EventEmitter } from 'events';
 import { TaggingModel } from './TaggingModel';
 import { BelongsToMany, ForeignKey, DataType, AfterCreate, AfterDestroy, AfterUpdate } from 'sequelize-typescript';
 import { AfterSave, AfterUpsert, AfterBulkCreate, AfterBulkUpdate } from 'sequelize-typescript';
-import { Table, Model, PrimaryKey, Column, CreatedAt, UpdatedAt, AutoIncrement } from 'sequelize-typescript';
+import { Table, Model, PrimaryKey, Column, CreatedAt, UpdatedAt, AutoIncrement, Default } from 'sequelize-typescript';
 import { BelongsTo, AfterBulkDestroy } from 'sequelize-typescript';
+import { IsDate, Min, Length, Is } from 'sequelize-typescript';
 import { Notation } from '@stringsync/domain';
 import { UserModel } from './UserModel';
 import { TagModel } from './TagModel';
@@ -100,29 +101,41 @@ export class NotationModel extends Model<NotationModel> implements Notation {
   )
   tags!: TagModel[];
 
+  @IsDate
   @CreatedAt
   @Column
   createdAt!: Date;
 
+  @IsDate
   @UpdatedAt
   @Column
   updatedAt!: Date;
 
+  @Is(/^[A-Za-z0-9!?\s()']*$/)
+  @Length({ min: 1, max: 64 })
   @Column
   songName!: string;
 
+  @Is(/^[A-Za-z0-9!?\s()@']*$/)
+  @Length({ min: 1, max: 64 })
   @Column
   artistName!: string;
 
+  @Default(0)
   @Column
   deadTimeMs!: number;
 
+  @Min(0)
+  @Default(0)
   @Column
   durationMs!: number;
 
+  @Min(0)
+  @Default(0)
   @Column(DataType.DECIMAL)
   bpm!: number;
 
+  @Default(false)
   @Column
   featured!: boolean;
 
