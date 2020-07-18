@@ -72,9 +72,13 @@ export class AuthResolver {
   @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN))
   async resendConfirmationEmail(@Ctx() ctx: ResolverCtx): Promise<true> {
     const id = this.getSessionUserId(ctx);
-    const user = await this.authService.resetConfirmationToken(id);
-    if (user) {
-      await this.notificationService.sendConfirmationEmail(user);
+    try {
+      const user = await this.authService.resetConfirmationToken(id);
+      if (user) {
+        await this.notificationService.sendConfirmationEmail(user);
+      }
+    } catch (e) {
+      console.error(`resendConfirmationEmail attempted for userId: ${id}, got error ${e}`);
     }
 
     // Silently fail to prevent attackers from inferring the confirmation state.
