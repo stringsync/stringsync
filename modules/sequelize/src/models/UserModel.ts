@@ -4,6 +4,7 @@ import { injectable } from 'inversify';
 import { AllowNull, Default, AfterUpdate, AfterCreate, AfterDestroy, AfterSave } from 'sequelize-typescript';
 import { Table, Model, PrimaryKey, Column, CreatedAt, UpdatedAt, HasMany, DataType } from 'sequelize-typescript';
 import { AfterUpsert, AfterBulkCreate, AfterBulkDestroy, AfterBulkUpdate } from 'sequelize-typescript';
+import { IsEmail, IsUrl, IsDate, Is, IsUUID } from 'sequelize-typescript';
 import { AutoIncrement } from 'sequelize-typescript';
 import { User, UserRole, USER_ROLES } from '@stringsync/domain';
 import { NotationModel } from './NotationModel';
@@ -94,17 +95,21 @@ export class UserModel extends Model<UserModel> implements User {
   @HasMany(() => NotationModel, 'transcriberId')
   notations?: NotationModel[];
 
+  @IsDate
   @CreatedAt
   @Column
   createdAt!: Date;
 
+  @IsDate
   @UpdatedAt
   @Column
   updatedAt!: Date;
 
+  @Is(/^[A-Za-z0-9-_.]*$/)
   @Column
   username!: string;
 
+  @IsEmail
   @Column
   email!: string;
 
@@ -115,6 +120,7 @@ export class UserModel extends Model<UserModel> implements User {
   @Column(DataType.ENUM(...USER_ROLES))
   role!: UserRole;
 
+  @IsUUID(4)
   @AllowNull
   @Column
   confirmationToken!: string;
@@ -123,6 +129,7 @@ export class UserModel extends Model<UserModel> implements User {
   @Column
   confirmedAt!: Date;
 
+  @IsUUID(4)
   @AllowNull
   @Column
   resetPasswordToken!: string;
@@ -131,6 +138,7 @@ export class UserModel extends Model<UserModel> implements User {
   @Column
   resetPasswordTokenSentAt!: Date;
 
+  @IsUrl
   @AllowNull
   @Column
   avatarUrl!: string;
