@@ -30,9 +30,6 @@ export class AuthService {
   }
 
   async whoami(id: string): Promise<User | null> {
-    if (!id) {
-      return null;
-    }
     return await this.userRepo.find(id);
   }
 
