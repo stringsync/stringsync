@@ -4,6 +4,7 @@ import { UserRole, User } from '@stringsync/domain';
 import { TestFactory, randStr, NotFoundError, BadRequestError } from '@stringsync/common';
 import { UserRepo } from '@stringsync/repos';
 import * as bcrypt from 'bcrypt';
+import { isPlainObject } from 'lodash';
 
 const container = useTestContainer();
 
@@ -238,5 +239,45 @@ describe('resetConfirmationToken', () => {
     await authService.confirmEmail(user.id, user.confirmationToken!, new Date());
     const resetConfirmationTokenUser = await authService.resetConfirmationToken(user.id);
     expect(resetConfirmationTokenUser).toBeNull();
+  });
+});
+
+describe('reqPasswordReset', () => {
+  let user: User;
+  const reqAt = new Date();
+
+  beforeEach(async () => {
+    const username = randStr(10);
+    const email = `${randStr(8)}@${randStr(8)}.com`;
+    const password = randStr(10);
+    user = await authService.signup(username, email, password);
+  });
+
+  it('sets a resetPasswordToken', async () => {
+    const resetPasswordTokenUser = await authService.reqPasswordReset(user.email, reqAt);
+    expect(resetPasswordTokenUser).not.toBeNull();
+    expect(resetPasswordTokenUser!.resetPasswordToken).not.toBeNull();
+    expect(resetPasswordTokenUser!.resetPasswordTokenSentAt).toBe(reqAt);
+  });
+
+  it('resets a resetPasswordToken', async () => {
+    const resetPasswordTokenUser1 = await authService.reqPasswordReset(user.email, reqAt);
+    const resetPasswordTokenUser2 = await authService.reqPasswordReset(user.email, reqAt);
+
+    expect(resetPasswordTokenUser1).not.toBeNull();
+    expect(resetPasswordTokenUser2).not.toBeNull();
+
+    expect(resetPasswordTokenUser2!.resetPasswordToken).not.toBeNull();
+    expect(resetPasswordTokenUser2!.resetPasswordToken).not.toBe(resetPasswordTokenUser1!.resetPasswordToken);
+  });
+
+  it('throws for an invalid email', async () => {
+    await expect(authService.reqPasswordReset(randStr(10), reqAt)).rejects.toThrow();
+  });
+
+  it('returns a plain object', async () => {
+    const resetPasswordTokenUser = await authService.reqPasswordReset(user.email, reqAt);
+    expect(resetPasswordTokenUser).not.toBeNull();
+    expect(isPlainObject(resetPasswordTokenUser)).toBe(true);
   });
 });

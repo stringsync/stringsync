@@ -88,9 +88,22 @@ export class AuthService {
       return null;
     }
 
-    const resetUser = { ...user, confirmationToken: uuid.v4() };
-    await this.userRepo.update(resetUser.id, resetUser);
+    const updatedUser: User = { ...user, confirmationToken: uuid.v4() };
+    await this.userRepo.update(updatedUser.id, updatedUser);
 
-    return resetUser;
+    return updatedUser;
+  }
+
+  async reqPasswordReset(email: string, reqAt: Date): Promise<User> {
+    const user = await this.userRepo.findByEmail(email);
+
+    if (!user) {
+      throw new NotFoundError('user not found');
+    }
+
+    const updatedUser: User = { ...user, resetPasswordToken: uuid.v4(), resetPasswordTokenSentAt: reqAt };
+    await this.userRepo.update(updatedUser.id, updatedUser);
+
+    return updatedUser;
   }
 }
