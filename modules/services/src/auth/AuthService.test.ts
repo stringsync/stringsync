@@ -230,15 +230,13 @@ describe('resetConfirmationToken', () => {
     expect(foundUser!.confirmationToken).not.toBe(user.confirmationToken);
   });
 
-  it('returns null when user does not exist', async () => {
-    const resetConfirmationTokenUser = await authService.resetConfirmationToken(randStr(10));
-    expect(resetConfirmationTokenUser).toBeNull();
+  it('throws when user does not exist', async () => {
+    await expect(authService.resetConfirmationToken(randStr(10))).rejects.toThrow();
   });
 
-  it('returns null when user is already confirmed', async () => {
+  it('throws when user is already confirmed', async () => {
     await authService.confirmEmail(user.id, user.confirmationToken!, new Date());
-    const resetConfirmationTokenUser = await authService.resetConfirmationToken(user.id);
-    expect(resetConfirmationTokenUser).toBeNull();
+    await expect(authService.resetConfirmationToken(randStr(10))).rejects.toThrow();
   });
 });
 

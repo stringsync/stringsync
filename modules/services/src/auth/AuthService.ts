@@ -78,14 +78,14 @@ export class AuthService {
     return confirmedUser;
   }
 
-  async resetConfirmationToken(id: string): Promise<User | null> {
+  async resetConfirmationToken(id: string): Promise<User> {
     const user = await this.userRepo.find(id);
 
     if (!user) {
-      return null;
+      throw new NotFoundError('user not found');
     }
     if (user.confirmedAt) {
-      return null;
+      throw new BadRequestError('user already confirmed');
     }
 
     const updatedUser: User = { ...user, confirmationToken: uuid.v4() };
