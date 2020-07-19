@@ -233,7 +233,7 @@ describe('resendConfirmationEmail', () => {
   });
 });
 
-describe('reqPasswordReset', () => {
+describe('sendResetPasswordEmail', () => {
   let userService: UserService;
 
   let email: string;
@@ -258,9 +258,9 @@ describe('reqPasswordReset', () => {
   });
 
   it('resets passwordResetToken', async () => {
-    const reqPasswordResetRes = await authClient.reqPasswordReset({ email });
-    expect(reqPasswordResetRes.statusCode).toBe(HTTP_STATUSES.OK);
-    expect(reqPasswordResetRes.body.data.reqPasswordReset).toBe(true);
+    const sendResetPasswordEmailRes = await authClient.sendResetPasswordEmail({ email });
+    expect(sendResetPasswordEmailRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(sendResetPasswordEmailRes.body.data.sendResetPasswordEmail).toBe(true);
 
     const reloadedUser = await userService.find(user.id);
 
@@ -270,7 +270,7 @@ describe('reqPasswordReset', () => {
   });
 });
 
-describe('reqPasswordReset', () => {
+describe('sendResetPasswordEmail', () => {
   let userService: UserService;
 
   let email: string;
@@ -295,9 +295,9 @@ describe('reqPasswordReset', () => {
   });
 
   it('resets the password', async () => {
-    const reqPasswordResetRes = await authClient.reqPasswordReset({ email });
-    expect(reqPasswordResetRes.statusCode).toBe(HTTP_STATUSES.OK);
-    expect(reqPasswordResetRes.body.data.reqPasswordReset).toBe(true);
+    const sendResetPasswordEmailRes = await authClient.sendResetPasswordEmail({ email });
+    expect(sendResetPasswordEmailRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(sendResetPasswordEmailRes.body.data.sendResetPasswordEmail).toBe(true);
 
     const reloadedUser = await userService.find(user.id);
 

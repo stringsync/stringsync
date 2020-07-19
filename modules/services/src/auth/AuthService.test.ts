@@ -241,7 +241,7 @@ describe('resetConfirmationToken', () => {
   });
 });
 
-describe('reqPasswordReset', () => {
+describe('refreshResetPasswordToken', () => {
   let user: User;
   const reqAt = new Date();
 
@@ -253,15 +253,15 @@ describe('reqPasswordReset', () => {
   });
 
   it('sets a resetPasswordToken', async () => {
-    const resetPasswordTokenUser = await authService.reqPasswordReset(user.email, reqAt);
+    const resetPasswordTokenUser = await authService.refreshResetPasswordToken(user.email, reqAt);
     expect(resetPasswordTokenUser).not.toBeNull();
     expect(resetPasswordTokenUser!.resetPasswordToken).not.toBeNull();
     expect(resetPasswordTokenUser!.resetPasswordTokenSentAt).toBe(reqAt);
   });
 
   it('resets a resetPasswordToken', async () => {
-    const resetPasswordTokenUser1 = await authService.reqPasswordReset(user.email, reqAt);
-    const resetPasswordTokenUser2 = await authService.reqPasswordReset(user.email, reqAt);
+    const resetPasswordTokenUser1 = await authService.refreshResetPasswordToken(user.email, reqAt);
+    const resetPasswordTokenUser2 = await authService.refreshResetPasswordToken(user.email, reqAt);
 
     expect(resetPasswordTokenUser1).not.toBeNull();
     expect(resetPasswordTokenUser2).not.toBeNull();
@@ -271,11 +271,11 @@ describe('reqPasswordReset', () => {
   });
 
   it('throws for an invalid email', async () => {
-    await expect(authService.reqPasswordReset(randStr(10), reqAt)).rejects.toThrow();
+    await expect(authService.refreshResetPasswordToken(randStr(10), reqAt)).rejects.toThrow();
   });
 
   it('returns a plain object', async () => {
-    const resetPasswordTokenUser = await authService.reqPasswordReset(user.email, reqAt);
+    const resetPasswordTokenUser = await authService.refreshResetPasswordToken(user.email, reqAt);
     expect(resetPasswordTokenUser).not.toBeNull();
     expect(isPlainObject(resetPasswordTokenUser)).toBe(true);
   });
@@ -297,7 +297,7 @@ describe('resetPassword', () => {
   });
 
   it('updates a password', async () => {
-    const { resetPasswordToken } = await authService.reqPasswordReset(email, new Date());
+    const { resetPasswordToken } = await authService.refreshResetPasswordToken(email, new Date());
     const resetPasswordUser = await authService.resetPassword(resetPasswordToken!, newPassword, reqAt);
     expect(resetPasswordUser.encryptedPassword).not.toBe(user.encryptedPassword);
 
@@ -316,7 +316,7 @@ describe('resetPassword', () => {
   });
 
   it('throws if the resetPasswordTokenSentAt is missing', async () => {
-    const reqPasswordResetUser = await authService.reqPasswordReset(email, new Date());
+    const reqPasswordResetUser = await authService.refreshResetPasswordToken(email, new Date());
     // in theory this kind of update should never happen
     await userRepo.update(reqPasswordResetUser.id, { ...reqPasswordResetUser, resetPasswordTokenSentAt: null });
 
@@ -327,7 +327,7 @@ describe('resetPassword', () => {
 
   it('throws if the resetPasswordToken is too old', async () => {
     const resetPasswordTokenSentAt = new Date(reqAt.getTime() - AuthService.MAX_RESET_PASSWORD_TOKEN_AGE_MS - 1);
-    const { resetPasswordToken } = await authService.reqPasswordReset(email, resetPasswordTokenSentAt);
+    const { resetPasswordToken } = await authService.refreshResetPasswordToken(email, resetPasswordTokenSentAt);
     await expect(authService.resetPassword(resetPasswordToken!, newPassword, reqAt)).rejects.toThrow();
   });
 });

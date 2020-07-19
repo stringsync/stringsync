@@ -94,7 +94,7 @@ export class AuthService {
     return updatedUser;
   }
 
-  async reqPasswordReset(email: string, reqAt: Date): Promise<User> {
+  async refreshResetPasswordToken(email: string, reqAt: Date): Promise<User> {
     const user = await this.userRepo.findByEmail(email);
     if (!user) {
       throw new NotFoundError('user not found');

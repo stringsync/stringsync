@@ -33,7 +33,7 @@ export type Mutation = {
   signup: UserObject;
   confirmEmail: UserObject;
   resendConfirmationEmail: Scalars['Boolean'];
-  reqPasswordReset: Scalars['Boolean'];
+  sendResetPasswordEmail: Scalars['Boolean'];
   resetPassword: Scalars['Boolean'];
 };
 
@@ -58,7 +58,7 @@ export type MutationConfirmEmailArgs = {
 };
 
 
-export type MutationReqPasswordResetArgs = {
+export type MutationSendResetPasswordEmailArgs = {
   input: ReqPasswordResetInput;
 };
 

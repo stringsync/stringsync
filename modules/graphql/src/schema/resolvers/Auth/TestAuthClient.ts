@@ -95,15 +95,15 @@ export class TestAuthClient {
     );
   }
 
-  async reqPasswordReset(input: ReqPasswordResetInput) {
+  async sendResetPasswordEmail(input: ReqPasswordResetInput) {
     return await this.graphqlClient.call<
-      Mutation['reqPasswordReset'],
-      'reqPasswordReset',
+      Mutation['sendResetPasswordEmail'],
+      'sendResetPasswordEmail',
       { input: ReqPasswordResetInput }
     >(
       gql`
-        mutation reqPasswordReset($input: ReqPasswordResetInput!) {
-          reqPasswordReset(input: $input)
+        mutation sendResetPasswordEmail($input: ReqPasswordResetInput!) {
+          sendResetPasswordEmail(input: $input)
         }
       `,
       { input }
