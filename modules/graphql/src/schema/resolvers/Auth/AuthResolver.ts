@@ -92,7 +92,8 @@ export class AuthResolver {
 
   @Mutation((returns) => Boolean)
   async reqPasswordReset(@Ctx() ctx: ResolverCtx, @Arg('input') input: ReqPasswordResetInput): Promise<true> {
-    await this.authService.reqPasswordReset(input.email, ctx.reqAt);
+    const user = await this.authService.reqPasswordReset(input.email, ctx.reqAt);
+    this.notificationService.sendResetPasswordEmail(user);
     return true;
   }
 
