@@ -1,17 +1,22 @@
+import { AuthResolver, HealthController, NotationResolver, TagResolver, UserResolver } from '@stringsync/graphql';
+import { AuthService, HealthCheckerService, NotationService, TagService, UserService } from '@stringsync/services';
+import { Container as InversifyContainer, ContainerModule } from 'inversify';
 import { ContainerConfig, getContainerConfig } from '@stringsync/config';
-import { Db } from '@stringsync/sequelize';
-import { Container as InversifyContainer } from 'inversify';
+import { Ctor } from '@stringsync/common';
+import { Mailer, NodemailerMailer } from './mailer';
+import { NotationSequelizeLoader, NotationLoader, NotationRepo, NotationSequelizeRepo } from '@stringsync/repos';
+import { NotificationService } from '@stringsync/services/src/notification';
+import { Redis } from './redis';
 import { RedisClient } from 'redis';
 import { Sequelize } from 'sequelize-typescript';
-import * as winston from 'winston';
+import { TaggingRepo, TaggingSequelizeRepo } from '@stringsync/repos';
+import { TagLoader, TagRepo, TagSequelizeRepo, TagSequelizeLoader } from '@stringsync/repos';
 import { TYPES } from './constants';
-import { getGraphqlModule } from './getGraphqlModule';
-import { getLoggerModule } from './getLoggerModule';
-import { getRedisModule } from './getRedisModule';
-import { getReposModule } from './getReposModule';
-import { getSequelizeModule } from './getSequelizeModule';
-import { getServicesModule } from './getServicesModule';
-import { Redis } from './redis';
+import { UserSequelizeLoader, UserLoader, UserSequelizeRepo, UserRepo } from '@stringsync/repos';
+import * as winston from 'winston';
+import nodemailer from 'nodemailer';
+import { Logger } from './logger';
+import { Db, UserModel, NotationModel, TagModel, TaggingModel } from '@stringsync/sequelize';
 
 export class DI {
   static create(config: ContainerConfig = getContainerConfig()) {
@@ -25,16 +30,16 @@ export class DI {
       ],
     });
 
-    container.bind<ContainerConfig>(TYPES.ContainerConfig).toConstantValue(config);
-
-    const redisModule = getRedisModule(config);
-    const servicesModule = getServicesModule(config);
-    const reposModule = getReposModule(config);
-    const graphqlModule = getGraphqlModule(config);
-    const sequelizeModule = getSequelizeModule(config, logger);
-    const loggerModule = getLoggerModule(config, logger);
-
-    container.load(redisModule, servicesModule, reposModule, graphqlModule, sequelizeModule, loggerModule);
+    container.load(
+      DI.getConfigModule(config),
+      DI.getMailerModule(config),
+      DI.getGraphqlModule(config),
+      DI.getRedisModule(config),
+      DI.getServicesModule(config),
+      DI.getReposModule(config),
+      DI.getSequelizeModule(config, logger),
+      DI.getLoggerModule(config, logger)
+    );
 
     return container;
   }
@@ -57,5 +62,120 @@ export class DI {
     const dbTeardownPromise = Db.teardown(sequelize);
 
     await Promise.all([redisTeardownPromise, dbTeardownPromise]);
+  }
+
+  private static getConfigModule(config: ContainerConfig) {
+    return new ContainerModule((bind) => {
+      bind<ContainerConfig>(TYPES.ContainerConfig).toConstantValue(config);
+    });
+  }
+
+  private static getMailerModule(config: ContainerConfig) {
+    const transporter = nodemailer.createTransport({});
+    const mailer = new NodemailerMailer(transporter);
+    return new ContainerModule((bind) => {
+      bind<Mailer>(TYPES.Mailer).toConstantValue(mailer);
+    });
+  }
+
+  private static getGraphqlModule(config: ContainerConfig) {
+    return new ContainerModule((bind) => {
+      bind<UserResolver>(UserResolver)
+        .toSelf()
+        .inSingletonScope();
+      bind<TagResolver>(TagResolver)
+        .toSelf()
+        .inSingletonScope();
+      bind<NotationResolver>(NotationResolver)
+        .toSelf()
+        .inSingletonScope();
+
+      bind<AuthResolver>(AuthResolver).toSelf();
+
+      bind<HealthController>(TYPES.HealthController).to(HealthController);
+    });
+  }
+
+  private static getRedisModule(config: ContainerConfig) {
+    return new ContainerModule((bind) => {
+      const redis = Redis.create({
+        host: config.REDIS_HOST,
+        port: config.REDIS_PORT,
+      });
+      bind<RedisClient>(TYPES.Redis).toConstantValue(redis);
+    });
+  }
+
+  private static getServicesModule(config: ContainerConfig) {
+    return new ContainerModule(async (bind) => {
+      bind<HealthCheckerService>(TYPES.HealthCheckerService).to(HealthCheckerService);
+      bind<AuthService>(TYPES.AuthService).to(AuthService);
+      bind<NotificationService>(TYPES.NotificationService).to(NotificationService);
+
+      bind<UserService>(TYPES.UserService)
+        .to(UserService)
+        .inRequestScope();
+      bind<NotationService>(TYPES.NotationService)
+        .to(NotationService)
+        .inRequestScope();
+      bind<TagService>(TYPES.TagService)
+        .to(TagService)
+        .inRequestScope();
+    });
+  }
+
+  private static getReposModule(config: ContainerConfig) {
+    return new ContainerModule((bind) => {
+      bind<UserLoader>(TYPES.UserLoader).to(UserSequelizeLoader);
+      bind<Ctor<UserLoader>>(TYPES.UserLoaderCtor).toConstructor(UserSequelizeLoader);
+      bind<UserRepo>(TYPES.UserRepo).to(UserSequelizeRepo);
+
+      bind<NotationLoader>(TYPES.NotationLoader).to(NotationSequelizeLoader);
+      bind<Ctor<NotationLoader>>(TYPES.NotationLoaderCtor).toConstructor(NotationSequelizeLoader);
+      bind<NotationRepo>(TYPES.NotationRepo).to(NotationSequelizeRepo);
+
+      bind<TagLoader>(TYPES.TagLoader).to(TagSequelizeLoader);
+      bind<Ctor<TagLoader>>(TYPES.TagLoaderCtor).toConstructor(TagSequelizeLoader);
+      bind<TagRepo>(TYPES.TagRepo).to(TagSequelizeRepo);
+
+      bind<TaggingRepo>(TYPES.TaggingRepo).to(TaggingSequelizeRepo);
+
+      if (config.NODE_ENV === 'test') {
+        bind<UserSequelizeLoader>(TYPES.UserSequelizeLoader).to(UserSequelizeLoader);
+        bind<UserSequelizeRepo>(TYPES.UserSequelizeRepo).to(UserSequelizeRepo);
+
+        bind<NotationSequelizeLoader>(TYPES.NotationSequelizeLoader).to(NotationSequelizeLoader);
+        bind<NotationSequelizeRepo>(TYPES.NotationSequelizeRepo).to(NotationSequelizeRepo);
+
+        bind<TagSequelizeLoader>(TYPES.TagSequelizeLoader).to(TagSequelizeLoader);
+        bind<TagSequelizeRepo>(TYPES.TagSequelizeRepo).to(TagSequelizeRepo);
+
+        bind<TaggingSequelizeRepo>(TYPES.TaggingSequelizeRepo).to(TaggingSequelizeRepo);
+      }
+    });
+  }
+
+  private static getSequelizeModule(config: ContainerConfig, logger: Logger) {
+    return new ContainerModule((bind) => {
+      const sequelize = Db.connect({
+        database: config.DB_NAME,
+        host: config.DB_HOST,
+        port: config.DB_PORT,
+        password: config.DB_PASSWORD,
+        username: config.DB_USERNAME,
+        logging: logger.debug,
+      });
+      bind<Sequelize>(TYPES.Sequelize).toConstantValue(sequelize);
+      bind<typeof UserModel>(TYPES.UserModel).toConstructor(UserModel);
+      bind<typeof NotationModel>(TYPES.NotationModel).toConstructor(NotationModel);
+      bind<typeof TagModel>(TYPES.TagModel).toConstructor(TagModel);
+      bind<typeof TaggingModel>(TYPES.TaggingModel).toConstructor(TaggingModel);
+    });
+  }
+
+  private static getLoggerModule(config: ContainerConfig, logger: Logger) {
+    return new ContainerModule((bind) => {
+      bind<Logger>(TYPES.Logger).toConstantValue(logger);
+    });
   }
 }

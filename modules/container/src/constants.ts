@@ -4,6 +4,7 @@ export const TYPES = {
   HealthCheckerService: Symbol('HealthCheckerService'),
   HealthController: Symbol('HealthController'),
   Logger: Symbol('Logger'),
+  Mailer: Symbol('Mailer'),
   NotationLoader: Symbol('NotationLoader'),
   NotationLoaderCtor: Symbol('NotationLoaderCtor'),
   NotationModel: Symbol('NotationModel'),
