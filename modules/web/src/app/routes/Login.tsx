@@ -53,7 +53,7 @@ export const Login: React.FC = () => {
   }, [clients.authClient, dispatch, password, usernameOrEmail]);
 
   return (
-    <div data-testid="signup">
+    <div data-testid="login">
       <FormPage
         wordmarked
         errors={errors}
@@ -72,6 +72,9 @@ export const Login: React.FC = () => {
                   login
                 </Button>
               </Form.Item>
+              <Center>
+                <Link to="request-password-reset">Forgot password?</Link>
+              </Center>
             </Form>
           </>
         }

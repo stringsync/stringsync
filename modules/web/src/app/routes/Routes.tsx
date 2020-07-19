@@ -14,6 +14,10 @@ const Signup = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(React.la
 
 const Login = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(React.lazy(() => import('./Login')));
 
+const ReqPasswordReset = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(
+  React.lazy(() => import('./ReqPasswordReset'))
+);
+
 export const Routes: React.FC = () => {
   return (
     <React.Suspense fallback={<Fallback />}>
@@ -21,6 +25,7 @@ export const Routes: React.FC = () => {
       <Route path="/library" component={Library} />
       <Route path="/signup" component={Signup} />
       <Route path="/login" component={Login} />
+      <Route path="/request-password-reset" component={ReqPasswordReset} />
     </React.Suspense>
   );
 };
