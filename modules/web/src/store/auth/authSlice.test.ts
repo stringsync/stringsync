@@ -1,6 +1,16 @@
 import { getNullAuthUser } from './getNullAuthUser';
 import { getNullAuthState } from './getNullAuthState';
-import { authSlice, confirmEmail, clearAuth, clearAuthErrors, authenticate, login, signup, logout } from './authSlice';
+import {
+  authSlice,
+  confirmEmail,
+  clearAuth,
+  clearAuthErrors,
+  authenticate,
+  login,
+  signup,
+  logout,
+  sendResetPasswordEmail,
+} from './authSlice';
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { Clients, createClients, UserRoles as TypegenUserRole } from '../../clients';
 import { UserRole } from '@stringsync/domain';
@@ -74,7 +84,7 @@ it('clears auth errors', () => {
   expect(store.getState().auth.errors).toHaveLength(0);
 
   const { user } = state.auth;
-  expect(user.id).toBe(1);
+  expect(user.id).toBe('adsfsadf3');
   expect(user.username).toBe('foo');
   expect(user.role).toBe(UserRole.TEACHER);
 });
@@ -149,7 +159,7 @@ describe('authenticate', () => {
     expect(state.auth.errors).toHaveLength(0);
     expect(state.auth.isPending).toBe(false);
     expect(state.auth.user).toStrictEqual({
-      id: 1,
+      id: '1',
       email: 'email@domain.tld',
       role: UserRole.TEACHER,
       username: 'username',
@@ -314,7 +324,7 @@ describe('login', () => {
     expect(state.auth.errors).toHaveLength(0);
     expect(state.auth.isPending).toBe(false);
     expect(state.auth.user).toStrictEqual({
-      id: 1,
+      id: '1',
       email: 'email@domain.tld',
       role: UserRole.TEACHER,
       username: 'username',
@@ -436,7 +446,7 @@ describe('signup', () => {
     expect(state.auth.errors).toHaveLength(0);
     expect(state.auth.isPending).toBe(false);
     expect(state.auth.user).toStrictEqual({
-      id: 1,
+      id: '1',
       email: 'email@domain.tld',
       role: UserRole.TEACHER,
       username: 'username',
@@ -556,6 +566,84 @@ describe('logout', () => {
     logoutSpy.mockRejectedValue(new Error('error1'));
 
     await store.dispatch(logout({ authClient: clients.authClient }));
+
+    const state = store.getState();
+    expect(state.auth.errors).toStrictEqual(['error1']);
+    expect(state.auth.isPending).toBe(false);
+  });
+});
+
+describe('sendResetPasswordEmail', () => {
+  let clients: Clients;
+
+  beforeEach(() => {
+    clients = createClients();
+  });
+
+  it('pending', () => {
+    const store = configureStore({
+      reducer: {
+        auth: authSlice.reducer,
+      },
+      middleware: getDefaultMiddleware({
+        serializableCheck: {
+          ignoredActions: [sendResetPasswordEmail.name],
+        },
+      }),
+    });
+
+    store.dispatch(
+      sendResetPasswordEmail.pending('requestId', {
+        input: { email: 'email@domain.tld' },
+        authClient: clients.authClient,
+      })
+    );
+
+    const state = store.getState();
+    expect(state.auth.isPending).toBe(true);
+    expect(state.auth.errors).toHaveLength(0);
+  });
+
+  it('fulfilled', async () => {
+    const store = configureStore({
+      reducer: {
+        auth: authSlice.reducer,
+      },
+      middleware: getDefaultMiddleware({
+        serializableCheck: {
+          ignoredActions: [sendResetPasswordEmail.name],
+        },
+      }),
+    });
+    const logoutSpy = jest.spyOn(clients.authClient, 'sendResetPasswordEmail');
+    logoutSpy.mockResolvedValue({ data: { sendResetPasswordEmail: true } });
+
+    await store.dispatch(
+      sendResetPasswordEmail({ input: { email: 'email@domain.tld' }, authClient: clients.authClient })
+    );
+
+    const state = store.getState();
+    expect(state.auth.errors).toHaveLength(0);
+    expect(state.auth.isPending).toBe(false);
+  });
+
+  it('rejected with thrown error', async () => {
+    const store = configureStore({
+      reducer: {
+        auth: authSlice.reducer,
+      },
+      middleware: getDefaultMiddleware({
+        serializableCheck: {
+          ignoredActions: [sendResetPasswordEmail.name],
+        },
+      }),
+    });
+    const logoutSpy = jest.spyOn(clients.authClient, 'sendResetPasswordEmail');
+    logoutSpy.mockRejectedValue(new Error('error1'));
+
+    await store.dispatch(
+      sendResetPasswordEmail({ input: { email: 'email@domain.tld' }, authClient: clients.authClient })
+    );
 
     const state = store.getState();
     expect(state.auth.errors).toStrictEqual(['error1']);

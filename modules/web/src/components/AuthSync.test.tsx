@@ -42,7 +42,7 @@ it('updates auth user when logged in', async () => {
   await waitFor(() => expect(whoamiSpy).toHaveBeenCalledTimes(1));
 
   expect(store.getState().auth.user).toStrictEqual({
-    id: 1,
+    id: '1',
     email: 'email@domain.tld',
     username: 'username',
     role: DomainUserRole.TEACHER,
