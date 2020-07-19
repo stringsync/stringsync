@@ -185,8 +185,8 @@ export const authSlice = createSlice<AuthState, AuthReducers>({
     });
     builder.addCase(sendResetPasswordEmail.rejected, (state, action) => {
       state.isPending = false;
-      if (action.error.message) {
-        state.errors = [action.error.message];
+      if (action.payload && action.payload.errors) {
+        state.errors = action.payload.errors;
       } else {
         state.errors = ['unknown error'];
       }

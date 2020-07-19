@@ -6,25 +6,20 @@ import { useSelector } from 'react-redux';
 import { RootState, isLoggedInSelector } from '../store';
 import { AuthRequirement } from '@stringsync/common';
 
-const isMeetingAuthReqs = (
-  authReqs: AuthRequirement,
-  isLoggedIn: boolean,
-  userRole: UserRole,
-  isAuthPending: boolean
-) => {
+const isMeetingAuthReqs = (authReqs: AuthRequirement, isLoggedIn: boolean, userRole: UserRole) => {
   switch (authReqs) {
     case AuthRequirement.NONE:
       return true;
     case AuthRequirement.LOGGED_IN:
-      return !isAuthPending && isLoggedIn;
+      return isLoggedIn;
     case AuthRequirement.LOGGED_OUT:
-      return !isAuthPending && !isLoggedIn;
+      return !isLoggedIn;
     case AuthRequirement.LOGGED_IN_AS_STUDENT:
-      return !isAuthPending && isLoggedIn && gtEqStudent(userRole);
+      return isLoggedIn && gtEqStudent(userRole);
     case AuthRequirement.LOGGED_IN_AS_TEACHER:
-      return !isAuthPending && isLoggedIn && gtEqTeacher(userRole);
+      return isLoggedIn && gtEqTeacher(userRole);
     case AuthRequirement.LOGGED_IN_AS_ADMIN:
-      return !isAuthPending && isLoggedIn && gtEqAdmin(userRole);
+      return isLoggedIn && gtEqAdmin(userRole);
     default:
       // fail open for unhandled authReqs
       return true;
@@ -41,7 +36,9 @@ export const withAuthRequirement = (authReqs: AuthRequirement) =>
       const history = useHistory();
       const meetsAuthReqs = useRef(true);
 
-      meetsAuthReqs.current = isMeetingAuthReqs(authReqs, isLoggedIn, userRole, isAuthPending);
+      if (!isAuthPending) {
+        meetsAuthReqs.current = isMeetingAuthReqs(authReqs, isLoggedIn, userRole);
+      }
 
       useEffect(() => {
         if (isAuthPending || meetsAuthReqs.current) {

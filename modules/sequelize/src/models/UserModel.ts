@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import { EventEmitter } from 'events';
 import { injectable } from 'inversify';
-import { AllowNull, Default, AfterUpdate, AfterCreate, AfterDestroy, AfterSave } from 'sequelize-typescript';
+import { AllowNull, Default, AfterUpdate, AfterCreate, AfterDestroy, AfterSave, Unique } from 'sequelize-typescript';
 import { Table, Model, PrimaryKey, Column, CreatedAt, UpdatedAt, HasMany, DataType } from 'sequelize-typescript';
 import { AfterUpsert, AfterBulkCreate, AfterBulkDestroy, AfterBulkUpdate } from 'sequelize-typescript';
 import { IsEmail, IsUrl, IsDate, Is, IsUUID, Length } from 'sequelize-typescript';
@@ -107,10 +107,12 @@ export class UserModel extends Model<UserModel> implements User {
 
   @Is(/^[A-Za-z0-9-_.]*$/)
   @Length({ min: 3, max: 24 })
+  @Unique
   @Column
   username!: string;
 
   @IsEmail
+  @Unique
   @Column
   email!: string;
 
@@ -122,6 +124,7 @@ export class UserModel extends Model<UserModel> implements User {
   role!: UserRole;
 
   @IsUUID(4)
+  @Unique
   @AllowNull
   @Column
   confirmationToken!: string;

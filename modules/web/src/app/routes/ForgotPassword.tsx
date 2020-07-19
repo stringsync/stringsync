@@ -1,16 +1,16 @@
-import { Button, Form, Input } from 'antd';
-import React, { useCallback, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Button, Form, Input, message } from 'antd';
+import React, { useCallback, useState, useContext } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { FormPage } from '../../components/FormPage';
-import { RootState } from '../../store';
+import { RootState, AppDispatch, sendResetPasswordEmail, clearAuthErrors } from '../../store';
 import { Rule } from 'antd/lib/form';
+import { ClientsContext } from '../../clients';
 
 const EMAIL_RULES: Rule[] = [
   { required: true, message: 'email is required' },
   { type: 'email', message: 'email must be valid' },
-  { max: 36, message: 'email must be at most 36 characeters' },
 ];
 
 const Center = styled.div`
@@ -18,8 +18,12 @@ const Center = styled.div`
 `;
 
 export const ForgotPassword: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const clients = useContext(ClientsContext);
   const errors = useSelector<RootState, string[]>((state) => state.auth.errors);
   const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
+  const returnToRoute = useSelector<RootState, string>((state) => state.history.returnToRoute);
+  const history = useHistory();
 
   const [form] = Form.useForm();
 
@@ -28,16 +32,33 @@ export const ForgotPassword: React.FC = () => {
   const onEmailChange = useCallback<React.ChangeEventHandler<HTMLInputElement>>((event) => {
     setEmail(event.currentTarget.value);
   }, []);
+  const onErrorsClose = useCallback<React.MouseEventHandler<HTMLButtonElement>>(
+    (event) => {
+      dispatch(clearAuthErrors());
+    },
+    [dispatch]
+  );
+  const onFinish = useCallback(
+    async (event) => {
+      const action = await dispatch(sendResetPasswordEmail({ input: { email }, authClient: clients.authClient }));
+      const maybeSendResetPasswordEmailRes = action.payload; // boolean | { errors: string [] }
+      if (maybeSendResetPasswordEmailRes === true) {
+        message.success(`sent reset password email to ${email}`);
+        history.push(returnToRoute);
+      }
+    },
+    [clients.authClient, dispatch, email, history, returnToRoute]
+  );
 
   return (
-    <div data-testid="req-password-reset">
+    <div data-testid="forgot-password">
       <FormPage
         wordmarked
         errors={errors}
-        onErrorsClose={() => undefined}
+        onErrorsClose={onErrorsClose}
         main={
           <>
-            <Form form={form}>
+            <Form form={form} onFinish={onFinish}>
               <Form.Item name="email" rules={EMAIL_RULES}>
                 <Input placeholder="email" value={email} onChange={onEmailChange} />
               </Form.Item>
