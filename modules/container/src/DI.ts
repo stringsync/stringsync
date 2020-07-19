@@ -71,8 +71,13 @@ export class DI {
   }
 
   private static getMailerModule(config: ContainerConfig) {
-    const transporter = nodemailer.createTransport({});
-    const mailer = new NodemailerMailer(transporter);
+    let mailer: Mailer;
+    if (config.NODE_ENV === 'test') {
+      mailer = { send: jest.fn() };
+    } else {
+      const transporter = nodemailer.createTransport({});
+      mailer = new NodemailerMailer(transporter);
+    }
     return new ContainerModule((bind) => {
       bind<Mailer>(TYPES.Mailer).toConstantValue(mailer);
     });

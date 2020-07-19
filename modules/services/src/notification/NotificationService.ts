@@ -3,15 +3,17 @@ import url from 'url';
 import { TYPES } from '@stringsync/container';
 import { ContainerConfig } from '@stringsync/config';
 import { User } from '@stringsync/domain';
-import { BadRequestError } from '@stringsync/common';
+import { Mailer } from '@stringsync/container/src/mailer';
 
 @injectable()
 export class NotificationService {
   static INFO_EMAIL = 'StringSync <info@stringsync.com>';
 
+  mailer: Mailer;
   config: ContainerConfig;
 
-  constructor(@inject(TYPES.ContainerConfig) config: ContainerConfig) {
+  constructor(@inject(TYPES.Mailer) mailer: Mailer, @inject(TYPES.ContainerConfig) config: ContainerConfig) {
+    this.mailer = mailer;
     this.config = config;
   }
 
@@ -23,7 +25,8 @@ export class NotificationService {
       query: { confirmationToken: user.confirmationToken },
     });
 
-    const emailOptions = {
+    this.mailer.send({
+      subject: 'Confirm your email for StringSync',
       from: NotificationService.INFO_EMAIL,
       to: user.email,
       html: `
@@ -31,7 +34,7 @@ export class NotificationService {
           Please confirm your email for <a href="${confirmHref}">StringSync<a/>
         </p>
       `,
-    };
+    });
   }
 
   async sendResetPasswordEmail(user: User): Promise<void> {
@@ -46,7 +49,8 @@ export class NotificationService {
       query: { resetPasswordToken: user.resetPasswordToken },
     });
 
-    const emailOptions = {
+    this.mailer.send({
+      subject: 'Reset your password for StringSync',
       from: NotificationService.INFO_EMAIL,
       to: user.email,
       html: `
@@ -54,6 +58,6 @@ export class NotificationService {
           Reset your password at <a href="${resetPasswordHref}">StringSync<a/>
         </p>
       `,
-    };
+    });
   }
 }
