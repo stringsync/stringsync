@@ -10,7 +10,7 @@ import { ForbiddenError, AuthRequirement } from '@stringsync/common';
 import { WithAuthRequirement } from '../../middlewares';
 import { SignupInput } from './SignupInput';
 import { ConfirmEmailInput } from './ConfirmEmailInput';
-import { ReqPasswordResetInput } from './ReqPasswordResetInput';
+import { SendResetPasswordEmailInput } from './SendResetPasswordEmailInput';
 import { ResetPasswordInput } from './ResetPasswordInput';
 
 @Resolver()
@@ -91,7 +91,10 @@ export class AuthResolver {
   }
 
   @Mutation((returns) => Boolean)
-  async sendResetPasswordEmail(@Ctx() ctx: ResolverCtx, @Arg('input') input: ReqPasswordResetInput): Promise<true> {
+  async sendResetPasswordEmail(
+    @Ctx() ctx: ResolverCtx,
+    @Arg('input') input: SendResetPasswordEmailInput
+  ): Promise<true> {
     const user = await this.authService.refreshResetPasswordToken(input.email, ctx.reqAt);
     this.notificationService.sendResetPasswordEmail(user);
     return true;

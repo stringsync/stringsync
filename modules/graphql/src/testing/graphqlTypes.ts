@@ -60,7 +60,7 @@ export type MutationConfirmEmailArgs = {
 
 
 export type MutationSendResetPasswordEmailArgs = {
-  input: ReqPasswordResetInput;
+  input: SendResetPasswordEmailInput;
 };
 
 
@@ -141,13 +141,13 @@ export type QueryUsersArgs = {
   last?: Maybe<Scalars['Float']>;
 };
 
-export type ReqPasswordResetInput = {
-  email: Scalars['String'];
-};
-
 export type ResetPasswordInput = {
   resetPasswordToken: Scalars['String'];
   password: Scalars['String'];
+};
+
+export type SendResetPasswordEmailInput = {
+  email: Scalars['String'];
 };
 
 export type SignupInput = {

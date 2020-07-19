@@ -1,7 +1,13 @@
 import { GraphqlClient } from '../graphql';
 import { gql } from '../gql';
 import { Query, Mutation } from '../graphqlTypes';
-import { LoginInput, SignupInput, ConfirmEmailInput, ReqPasswordResetInput, ResetPasswordInput } from '../graphqlTypes';
+import {
+  LoginInput,
+  SignupInput,
+  ConfirmEmailInput,
+  SendResetPasswordEmailInput,
+  ResetPasswordInput,
+} from '../graphqlTypes';
 
 export class AuthClient {
   graphqlClient: GraphqlClient;
@@ -87,14 +93,14 @@ export class AuthClient {
     `);
   }
 
-  async sendResetPasswordEmail(input: ReqPasswordResetInput) {
+  async sendResetPasswordEmail(input: SendResetPasswordEmailInput) {
     return await this.graphqlClient.call<
       Mutation['sendResetPasswordEmail'],
       'sendResetPasswordEmail',
-      { input: ReqPasswordResetInput }
+      { input: SendResetPasswordEmailInput }
     >(
       gql`
-        mutation sendResetPasswordEmail($input: ReqPasswordResetInput!) {
+        mutation sendResetPasswordEmail($input: SendResetPasswordEmailInput!) {
           sendResetPasswordEmail(input: $input)
         }
       `,

@@ -1,7 +1,13 @@
 import { TestGraphqlClient, gql } from '../../../testing';
-import { Query, Mutation, LoginInput, SignupInput, ConfirmEmailInput } from '../../../testing/graphqlTypes';
-import { ReqPasswordResetInput } from './ReqPasswordResetInput';
-import { ResetPasswordInput } from './ResetPasswordInput';
+import {
+  Query,
+  Mutation,
+  LoginInput,
+  SignupInput,
+  ConfirmEmailInput,
+  ResetPasswordInput,
+  SendResetPasswordEmailInput,
+} from '../../../testing/graphqlTypes';
 
 export class TestAuthClient {
   graphqlClient: TestGraphqlClient;
@@ -95,14 +101,14 @@ export class TestAuthClient {
     );
   }
 
-  async sendResetPasswordEmail(input: ReqPasswordResetInput) {
+  async sendResetPasswordEmail(input: SendResetPasswordEmailInput) {
     return await this.graphqlClient.call<
       Mutation['sendResetPasswordEmail'],
       'sendResetPasswordEmail',
-      { input: ReqPasswordResetInput }
+      { input: SendResetPasswordEmailInput }
     >(
       gql`
-        mutation sendResetPasswordEmail($input: ReqPasswordResetInput!) {
+        mutation sendResetPasswordEmail($input: SendResetPasswordEmailInput!) {
           sendResetPasswordEmail(input: $input)
         }
       `,

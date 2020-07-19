@@ -1,7 +1,7 @@
 import { InputType, Field } from 'type-graphql';
 
 @InputType()
-export class ReqPasswordResetInput {
+export class SendResetPasswordEmailInput {
   @Field()
   email!: string;
 }
