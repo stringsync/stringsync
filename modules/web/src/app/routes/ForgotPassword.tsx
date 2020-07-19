@@ -17,7 +17,7 @@ const Center = styled.div`
   text-align: center;
 `;
 
-export const ReqPasswordReset: React.FC = () => {
+export const ForgotPassword: React.FC = () => {
   const errors = useSelector<RootState, string[]>((state) => state.auth.errors);
   const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
 
@@ -59,4 +59,4 @@ export const ReqPasswordReset: React.FC = () => {
   );
 };
 
-export default ReqPasswordReset;
+export default ForgotPassword;

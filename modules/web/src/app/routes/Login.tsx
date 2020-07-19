@@ -73,7 +73,7 @@ export const Login: React.FC = () => {
                 </Button>
               </Form.Item>
               <Center>
-                <Link to="request-password-reset">Forgot password?</Link>
+                <Link to="forgot-password">Forgot password?</Link>
               </Center>
             </Form>
           </>

@@ -1,12 +1,12 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { Test } from '../../testing';
-import { ReqPasswordReset } from './ReqPasswordReset';
+import { ForgotPassword } from './ForgotPassword';
 
 it('renders without crashing', () => {
   const { container } = render(
     <Test>
-      <ReqPasswordReset />
+      <ForgotPassword />
     </Test>
   );
   expect(container).toBeInTheDocument();
