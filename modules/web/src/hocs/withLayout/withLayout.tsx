@@ -1,20 +1,20 @@
 import React from 'react';
-import { Layouts } from './types';
+import { Layout } from './types';
 import { DefaultLayout } from './DefaultLayout';
 import { NoneLayout } from './NoneLayout';
 
-const getLayout = (layout: Layouts) => {
+const getLayout = (layout: Layout) => {
   switch (layout) {
-    case Layouts.DEFAULT:
+    case Layout.DEFAULT:
       return DefaultLayout;
-    case Layouts.NONE:
+    case Layout.NONE:
       return NoneLayout;
     default:
       throw new TypeError(`unrecognized layout: '${layout}'`);
   }
 };
 
-export const withLayout = (layout: Layouts) => {
+export const withLayout = (layout: Layout) => {
   const Layout = getLayout(layout);
   return function<P>(Component: React.ComponentType<P>) {
     return (props: P) => (

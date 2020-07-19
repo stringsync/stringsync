@@ -1,4 +1,4 @@
-export enum Layouts {
+export enum Layout {
   DEFAULT = 'DEFAULT',
   NONE = 'NONE',
 }

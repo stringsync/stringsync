@@ -63,7 +63,7 @@ export const DefaultLayout: React.FC = (props) => {
       </Layout.Content>
       {isLtEqMdViewport ? null : (
         <StyledFooter>
-          <Lane>StringSync LLC © 2019</Lane>
+          <Lane>StringSync LLC © 2020</Lane>
         </StyledFooter>
       )}
     </StyledLayout>
