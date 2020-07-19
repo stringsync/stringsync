@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { AuthUser, AuthState, AuthReducers } from './types';
 import { getNullAuthUser } from './getNullAuthUser';
-import { AuthClient, LoginInput, SignupInput } from '../../clients';
+import { AuthClient, LoginInput, SignupInput, SendResetPasswordEmailInput } from '../../clients';
 import { toAuthUser } from './toAuthUser';
 import { RootState } from '../types';
 import { getNullAuthState } from './getNullAuthState';
@@ -71,6 +71,21 @@ export const logout = createAsyncThunk<LogoutReturned, LogoutThunkArg, LogoutThu
     return data.logout;
   }
 );
+
+type SendResetPasswordEmailReturned = boolean;
+type SendResetPasswordEmailThunkArg = { authClient: AuthClient; input: SendResetPasswordEmailInput };
+type SendResetPasswordEmailConfig = { rejectValue: { errors: string[] } };
+export const sendResetPasswordEmail = createAsyncThunk<
+  SendResetPasswordEmailReturned,
+  SendResetPasswordEmailThunkArg,
+  SendResetPasswordEmailConfig
+>('auth/sendResetPasswordEmail', async (args, thunk) => {
+  const { data, errors } = await args.authClient.sendResetPasswordEmail(args.input);
+  if (errors) {
+    return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
+  }
+  return data.sendResetPasswordEmail;
+});
 
 export const authSlice = createSlice<AuthState, AuthReducers>({
   name: 'auth',
@@ -155,6 +170,22 @@ export const authSlice = createSlice<AuthState, AuthReducers>({
       if (action.payload) {
         state.errors = action.payload.errors;
       } else if (action.error.message) {
+        state.errors = [action.error.message];
+      } else {
+        state.errors = ['unknown error'];
+      }
+    });
+
+    builder.addCase(sendResetPasswordEmail.pending, (state) => {
+      state.isPending = true;
+      state.errors = [];
+    });
+    builder.addCase(sendResetPasswordEmail.fulfilled, (state, action) => {
+      state.isPending = false;
+    });
+    builder.addCase(sendResetPasswordEmail.rejected, (state, action) => {
+      state.isPending = false;
+      if (action.error.message) {
         state.errors = [action.error.message];
       } else {
         state.errors = ['unknown error'];
