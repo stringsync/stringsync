@@ -107,25 +107,12 @@ export type PageInfoObject = {
 
 export type Query = {
   __typename?: 'Query';
-  user?: Maybe<UserObject>;
-  users: UserConnectionObject;
   notations: NotationConnectionObject;
   notation?: Maybe<NotationObject>;
   tags: Array<TagObject>;
+  user?: Maybe<UserObject>;
+  users: UserConnectionObject;
   whoami?: Maybe<UserObject>;
-};
-
-
-export type QueryUserArgs = {
-  id: Scalars['String'];
-};
-
-
-export type QueryUsersArgs = {
-  before?: Maybe<Scalars['String']>;
-  after?: Maybe<Scalars['String']>;
-  first?: Maybe<Scalars['Float']>;
-  last?: Maybe<Scalars['Float']>;
 };
 
 
@@ -139,6 +126,19 @@ export type QueryNotationsArgs = {
 
 export type QueryNotationArgs = {
   id: Scalars['String'];
+};
+
+
+export type QueryUserArgs = {
+  id: Scalars['String'];
+};
+
+
+export type QueryUsersArgs = {
+  before?: Maybe<Scalars['String']>;
+  after?: Maybe<Scalars['String']>;
+  first?: Maybe<Scalars['Float']>;
+  last?: Maybe<Scalars['Float']>;
 };
 
 export type ReqPasswordResetInput = {
