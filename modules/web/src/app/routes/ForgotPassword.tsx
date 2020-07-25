@@ -1,12 +1,11 @@
 import { Button, Form, Input, message } from 'antd';
-import React, { useCallback, useState, useContext } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { Rule } from 'antd/lib/form';
+import React, { useCallback, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { FormPage } from '../../components/FormPage';
-import { RootState, AppDispatch, sendResetPasswordEmail, clearAuthErrors } from '../../store';
-import { Rule } from 'antd/lib/form';
-import { ClientsContext } from '../../clients';
+import { AppDispatch, clearAuthErrors, RootState, sendResetPasswordEmail } from '../../store';
 
 const EMAIL_RULES: Rule[] = [
   { required: true, message: 'email is required' },
@@ -19,7 +18,6 @@ const Center = styled.div`
 
 export const ForgotPassword: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const clients = useContext(ClientsContext);
   const errors = useSelector<RootState, string[]>((state) => state.auth.errors);
   const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
   const returnToRoute = useSelector<RootState, string>((state) => state.history.returnToRoute);
@@ -40,14 +38,14 @@ export const ForgotPassword: React.FC = () => {
   );
   const onFinish = useCallback(
     async (event) => {
-      const action = await dispatch(sendResetPasswordEmail({ input: { email }, authClient: clients.authClient }));
+      const action = await dispatch(sendResetPasswordEmail({ input: { email } }));
       const maybeSendResetPasswordEmailRes = action.payload; // boolean | { errors: string [] }
       if (maybeSendResetPasswordEmailRes === true) {
         message.success(`sent reset password email to ${email}`);
         history.push(returnToRoute);
       }
     },
-    [clients.authClient, dispatch, email, history, returnToRoute]
+    [dispatch, email, history, returnToRoute]
   );
 
   return (

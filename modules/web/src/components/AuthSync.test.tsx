@@ -1,24 +1,29 @@
-import React from 'react';
-import { AuthSync } from './AuthSync';
-import { Clients, createClients, UserRoles as TypegenUserRole } from '../clients';
-import { render, waitFor } from '@testing-library/react';
-import { Test } from '../testing';
-import { AppStore, createStore } from '../store';
 import { UserRole as DomainUserRole } from '@stringsync/domain';
-import { getNullAuthUser } from '../store/auth/getNullAuthUser';
+import { render, waitFor } from '@testing-library/react';
 import { GraphQLError } from 'graphql';
+import React from 'react';
+import { UserRoles as TypegenUserRole, AuthClient } from '../clients';
+import { AppStore, createStore } from '../store';
+import { getNullAuthUser } from '../store/auth/getNullAuthUser';
+import { Test } from '../testing';
+import { AuthSync } from './AuthSync';
 
 let store: AppStore;
-let clients: Clients;
+let authClient: AuthClient;
 
 beforeEach(() => {
   store = createStore();
-  clients = createClients();
+  authClient = AuthClient.create();
+  jest.spyOn(AuthClient, 'create').mockReturnValue(authClient);
+});
+
+afterEach(() => {
+  jest.clearAllMocks();
 });
 
 it('updates auth user when logged in', async () => {
   const now = new Date();
-  const whoamiSpy = jest.spyOn(clients.authClient, 'whoami');
+  const whoamiSpy = jest.spyOn(authClient, 'whoami');
   whoamiSpy.mockResolvedValue({
     data: {
       whoami: {
@@ -34,7 +39,7 @@ it('updates auth user when logged in', async () => {
   });
 
   render(
-    <Test store={store} clients={clients}>
+    <Test store={store}>
       <AuthSync />
     </Test>
   );
@@ -51,11 +56,11 @@ it('updates auth user when logged in', async () => {
 });
 
 it('updates user when logged out', async () => {
-  const whoamiSpy = jest.spyOn(clients.authClient, 'whoami');
+  const whoamiSpy = jest.spyOn(authClient, 'whoami');
   whoamiSpy.mockResolvedValue({ data: { whoami: null } });
 
   render(
-    <Test store={store} clients={clients}>
+    <Test store={store}>
       <AuthSync />
     </Test>
   );
@@ -66,11 +71,11 @@ it('updates user when logged out', async () => {
 });
 
 it('swallows errors silently', async () => {
-  const whoamiSpy = jest.spyOn(clients.authClient, 'whoami');
+  const whoamiSpy = jest.spyOn(authClient, 'whoami');
   whoamiSpy.mockResolvedValue({ data: { whoami: null }, errors: [new GraphQLError('error message 1')] });
 
   render(
-    <Test store={store} clients={clients}>
+    <Test store={store}>
       <AuthSync />
     </Test>
   );
@@ -83,17 +88,17 @@ it('swallows errors silently', async () => {
 });
 
 it('authenticates once', async () => {
-  const whoamiSpy = jest.spyOn(clients.authClient, 'whoami');
+  const whoamiSpy = jest.spyOn(authClient, 'whoami');
   whoamiSpy.mockResolvedValue({ data: { whoami: null }, errors: [new GraphQLError('error message 1')] });
 
   const { rerender } = render(
-    <Test store={store} clients={clients}>
+    <Test store={store}>
       <AuthSync />
     </Test>
   );
 
   rerender(
-    <Test store={store} clients={clients}>
+    <Test store={store}>
       <AuthSync />
     </Test>
   );

@@ -1,12 +1,11 @@
-import React, { useState, useCallback, useContext } from 'react';
-import styled from 'styled-components';
+import { Button, Form, Input, message } from 'antd';
+import React, { useCallback, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import styled from 'styled-components';
 import { FormPage } from '../../components/FormPage';
-import { Form, Input, Button, message } from 'antd';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch, login, clearAuthErrors } from '../../store';
 import { useEffectOnce } from '../../hooks';
-import { ClientsContext } from '../../clients';
+import { AppDispatch, clearAuthErrors, login, RootState } from '../../store';
 
 const Center = styled.div`
   text-align: center;
@@ -14,7 +13,6 @@ const Center = styled.div`
 
 export const Login: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const clients = useContext(ClientsContext);
   const errors = useSelector<RootState, string[]>((state) => state.auth.errors);
   const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
 
@@ -46,11 +44,11 @@ export const Login: React.FC = () => {
     [dispatch]
   );
   const onFinish = useCallback(async () => {
-    const action = await dispatch(login({ authClient: clients.authClient, input: { usernameOrEmail, password } }));
+    const action = await dispatch(login({ input: { usernameOrEmail, password } }));
     if (action.payload && 'user' in action.payload) {
       message.success(`logged in as ${action.payload.user.username}`);
     }
-  }, [clients.authClient, dispatch, password, usernameOrEmail]);
+  }, [dispatch, password, usernameOrEmail]);
 
   return (
     <div data-testid="login">

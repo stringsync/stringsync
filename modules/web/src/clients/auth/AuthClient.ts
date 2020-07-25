@@ -12,6 +12,11 @@ import {
 export class AuthClient {
   graphqlClient: GraphqlClient;
 
+  static create() {
+    const graphqlClient = GraphqlClient.create();
+    return new AuthClient(graphqlClient);
+  }
+
   constructor(graphqlClient: GraphqlClient) {
     this.graphqlClient = graphqlClient;
   }

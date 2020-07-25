@@ -7,15 +7,13 @@ import { getWebConfig } from '@stringsync/config';
 import { DeviceSync } from './components/DeviceSync';
 import { ViewportSync } from './components/ViewportSync';
 import { AuthSync } from './components/AuthSync';
-import { createClients } from './clients';
 
 const config = getWebConfig(process.env);
 const store = createStore();
-const clients = createClients();
 
 ReactDOM.render(
   <React.StrictMode>
-    <App store={store} clients={clients}>
+    <App store={store}>
       <DeviceSync />
       <ViewportSync />
       <AuthSync />

@@ -1,20 +1,31 @@
-import { getNullAuthUser } from './getNullAuthUser';
-import { getNullAuthState } from './getNullAuthState';
-import {
-  authSlice,
-  confirmEmail,
-  clearAuth,
-  clearAuthErrors,
-  authenticate,
-  login,
-  signup,
-  logout,
-  sendResetPasswordEmail,
-} from './authSlice';
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
-import { Clients, createClients, UserRoles as TypegenUserRole } from '../../clients';
+import { configureStore } from '@reduxjs/toolkit';
 import { UserRole } from '@stringsync/domain';
 import { GraphQLError } from 'graphql';
+import { AuthClient, UserRoles as TypegenUserRole } from '../../clients';
+import {
+  authenticate,
+  authSlice,
+  clearAuth,
+  clearAuthErrors,
+  confirmEmail,
+  login,
+  logout,
+  sendResetPasswordEmail,
+  signup,
+} from './authSlice';
+import { getNullAuthState } from './getNullAuthState';
+import { getNullAuthUser } from './getNullAuthUser';
+
+let authClient: AuthClient;
+
+beforeEach(() => {
+  authClient = AuthClient.create();
+  jest.spyOn(AuthClient, 'create').mockReturnValue(authClient);
+});
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
 it('initializes state', () => {
   const store = configureStore({
@@ -90,12 +101,6 @@ it('clears auth errors', () => {
 });
 
 describe('authenticate', () => {
-  let clients: Clients;
-
-  beforeEach(() => {
-    clients = createClients();
-  });
-
   it('pending', () => {
     const store = configureStore({
       reducer: {
@@ -111,16 +116,9 @@ describe('authenticate', () => {
           },
         },
       },
-      middleware: getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [authenticate.name],
-        },
-      }),
     });
 
-    store.dispatch(
-      authenticate.pending('requestId', { authClient: clients.authClient, shouldClearAuthOnError: false })
-    );
+    store.dispatch(authenticate.pending('requestId', { shouldClearAuthOnError: false }));
 
     const state = store.getState();
     expect(state.auth.isPending).toBe(true);
@@ -133,13 +131,8 @@ describe('authenticate', () => {
       reducer: {
         auth: authSlice.reducer,
       },
-      middleware: getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [authenticate.name],
-        },
-      }),
     });
-    const whoamiSpy = jest.spyOn(clients.authClient, 'whoami');
+    const whoamiSpy = jest.spyOn(authClient, 'whoami');
     whoamiSpy.mockResolvedValue({
       data: {
         whoami: {
@@ -153,7 +146,7 @@ describe('authenticate', () => {
       },
     });
 
-    await store.dispatch(authenticate({ authClient: clients.authClient, shouldClearAuthOnError: false }));
+    await store.dispatch(authenticate({ shouldClearAuthOnError: false }));
 
     const state = store.getState();
     expect(state.auth.errors).toHaveLength(0);
@@ -172,16 +165,11 @@ describe('authenticate', () => {
       reducer: {
         auth: authSlice.reducer,
       },
-      middleware: getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [authenticate.name],
-        },
-      }),
     });
-    const whoamiSpy = jest.spyOn(clients.authClient, 'whoami');
+    const whoamiSpy = jest.spyOn(authClient, 'whoami');
     whoamiSpy.mockResolvedValue({ data: { whoami: null } });
 
-    await store.dispatch(authenticate({ authClient: clients.authClient, shouldClearAuthOnError: true }));
+    await store.dispatch(authenticate({ shouldClearAuthOnError: true }));
 
     const state = store.getState();
     expect(state.auth.errors).toHaveLength(0);
@@ -194,16 +182,11 @@ describe('authenticate', () => {
       reducer: {
         auth: authSlice.reducer,
       },
-      middleware: getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [authenticate.name],
-        },
-      }),
     });
-    const whoamiSpy = jest.spyOn(clients.authClient, 'whoami');
+    const whoamiSpy = jest.spyOn(authClient, 'whoami');
     whoamiSpy.mockResolvedValue({ data: { whoami: null } });
 
-    await store.dispatch(authenticate({ authClient: clients.authClient, shouldClearAuthOnError: false }));
+    await store.dispatch(authenticate({ shouldClearAuthOnError: false }));
 
     const state = store.getState();
     expect(state.auth.isPending).toBe(false);
@@ -216,19 +199,14 @@ describe('authenticate', () => {
       reducer: {
         auth: authSlice.reducer,
       },
-      middleware: getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [authenticate.name],
-        },
-      }),
     });
-    const whoamiSpy = jest.spyOn(clients.authClient, 'whoami');
+    const whoamiSpy = jest.spyOn(authClient, 'whoami');
     whoamiSpy.mockResolvedValue({
       data: { whoami: null },
       errors: [new GraphQLError('error1'), new GraphQLError('error2')],
     });
 
-    await store.dispatch(authenticate({ authClient: clients.authClient, shouldClearAuthOnError: false }));
+    await store.dispatch(authenticate({ shouldClearAuthOnError: false }));
 
     const state = store.getState();
     expect(state.auth.isPending).toBe(false);
@@ -241,16 +219,11 @@ describe('authenticate', () => {
       reducer: {
         auth: authSlice.reducer,
       },
-      middleware: getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [authenticate.name],
-        },
-      }),
     });
-    const whoamiSpy = jest.spyOn(clients.authClient, 'whoami');
+    const whoamiSpy = jest.spyOn(authClient, 'whoami');
     whoamiSpy.mockRejectedValue(new Error('error1'));
 
-    await store.dispatch(authenticate({ authClient: clients.authClient, shouldClearAuthOnError: false }));
+    await store.dispatch(authenticate({ shouldClearAuthOnError: false }));
 
     const state = store.getState();
     expect(state.auth.isPending).toBe(false);
@@ -260,27 +233,15 @@ describe('authenticate', () => {
 });
 
 describe('login', () => {
-  let clients: Clients;
-
-  beforeEach(() => {
-    clients = createClients();
-  });
-
   it('pending', () => {
     const store = configureStore({
       reducer: {
         auth: authSlice.reducer,
       },
-      middleware: getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [login.name],
-        },
-      }),
     });
 
     store.dispatch(
       login.pending('requestId', {
-        authClient: clients.authClient,
         input: { usernameOrEmail: 'email@domain.tld', password: 'password' },
       })
     );
@@ -296,13 +257,8 @@ describe('login', () => {
       reducer: {
         auth: authSlice.reducer,
       },
-      middleware: getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [login.name],
-        },
-      }),
     });
-    const loginSpy = jest.spyOn(clients.authClient, 'login');
+    const loginSpy = jest.spyOn(authClient, 'login');
     loginSpy.mockResolvedValue({
       data: {
         login: {
@@ -316,9 +272,7 @@ describe('login', () => {
       },
     });
 
-    await store.dispatch(
-      login({ authClient: clients.authClient, input: { usernameOrEmail: 'email@domain.tld', password: 'password' } })
-    );
+    await store.dispatch(login({ input: { usernameOrEmail: 'email@domain.tld', password: 'password' } }));
 
     const state = store.getState();
     expect(state.auth.errors).toHaveLength(0);
@@ -337,18 +291,11 @@ describe('login', () => {
       reducer: {
         auth: authSlice.reducer,
       },
-      middleware: getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [login.name],
-        },
-      }),
     });
-    const loginSpy = jest.spyOn(clients.authClient, 'login');
+    const loginSpy = jest.spyOn(authClient, 'login');
     loginSpy.mockResolvedValue({ errors: [new GraphQLError('error1')] } as any);
 
-    await store.dispatch(
-      login({ authClient: clients.authClient, input: { usernameOrEmail: 'email@domain.tld', password: 'password' } })
-    );
+    await store.dispatch(login({ input: { usernameOrEmail: 'email@domain.tld', password: 'password' } }));
 
     const state = store.getState();
     expect(state.auth.errors).toStrictEqual(['error1']);
@@ -361,18 +308,13 @@ describe('login', () => {
       reducer: {
         auth: authSlice.reducer,
       },
-      middleware: getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [login.name],
-        },
-      }),
     });
-    const loginSpy = jest.spyOn(clients.authClient, 'login');
+    const authClient = AuthClient.create();
+    jest.spyOn(AuthClient, 'create').mockReturnValue(authClient);
+    const loginSpy = jest.spyOn(authClient, 'login');
     loginSpy.mockRejectedValue(new Error('error1'));
 
-    await store.dispatch(
-      login({ authClient: clients.authClient, input: { usernameOrEmail: 'email@domain.tld', password: 'password' } })
-    );
+    await store.dispatch(login({ input: { usernameOrEmail: 'email@domain.tld', password: 'password' } }));
 
     const state = store.getState();
     expect(state.auth.errors).toStrictEqual(['error1']);
@@ -382,27 +324,15 @@ describe('login', () => {
 });
 
 describe('signup', () => {
-  let clients: Clients;
-
-  beforeEach(() => {
-    clients = createClients();
-  });
-
   it('pending', () => {
     const store = configureStore({
       reducer: {
         auth: authSlice.reducer,
       },
-      middleware: getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [signup.name],
-        },
-      }),
     });
 
     store.dispatch(
       signup.pending('requestId', {
-        authClient: clients.authClient,
         input: { email: 'email@domain.tld', username: 'username', password: 'password' },
       })
     );
@@ -418,13 +348,10 @@ describe('signup', () => {
       reducer: {
         auth: authSlice.reducer,
       },
-      middleware: getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [signup.name],
-        },
-      }),
     });
-    const loginSpy = jest.spyOn(clients.authClient, 'login');
+    const authClient = AuthClient.create();
+    jest.spyOn(AuthClient, 'create').mockReturnValue(authClient);
+    const loginSpy = jest.spyOn(authClient, 'login');
     loginSpy.mockResolvedValue({
       data: {
         login: {
@@ -438,9 +365,7 @@ describe('signup', () => {
       },
     });
 
-    await store.dispatch(
-      login({ authClient: clients.authClient, input: { usernameOrEmail: 'email@domain.tld', password: 'password' } })
-    );
+    await store.dispatch(login({ input: { usernameOrEmail: 'email@domain.tld', password: 'password' } }));
 
     const state = store.getState();
     expect(state.auth.errors).toHaveLength(0);
@@ -459,18 +384,13 @@ describe('signup', () => {
       reducer: {
         auth: authSlice.reducer,
       },
-      middleware: getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [signup.name],
-        },
-      }),
     });
-    const loginSpy = jest.spyOn(clients.authClient, 'login');
+    const authClient = AuthClient.create();
+    jest.spyOn(AuthClient, 'create').mockReturnValue(authClient);
+    const loginSpy = jest.spyOn(authClient, 'login');
     loginSpy.mockResolvedValue({ errors: [new GraphQLError('error1')] } as any);
 
-    await store.dispatch(
-      login({ authClient: clients.authClient, input: { usernameOrEmail: 'email@domain.tld', password: 'password' } })
-    );
+    await store.dispatch(login({ input: { usernameOrEmail: 'email@domain.tld', password: 'password' } }));
 
     const state = store.getState();
     expect(state.auth.errors).toStrictEqual(['error1']);
@@ -483,18 +403,13 @@ describe('signup', () => {
       reducer: {
         auth: authSlice.reducer,
       },
-      middleware: getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [signup.name],
-        },
-      }),
     });
-    const loginSpy = jest.spyOn(clients.authClient, 'login');
+    const authClient = AuthClient.create();
+    jest.spyOn(AuthClient, 'create').mockReturnValue(authClient);
+    const loginSpy = jest.spyOn(authClient, 'login');
     loginSpy.mockRejectedValue(new Error('error1'));
 
-    await store.dispatch(
-      login({ authClient: clients.authClient, input: { usernameOrEmail: 'email@domain.tld', password: 'password' } })
-    );
+    await store.dispatch(login({ input: { usernameOrEmail: 'email@domain.tld', password: 'password' } }));
 
     const state = store.getState();
     expect(state.auth.errors).toStrictEqual(['error1']);
@@ -504,25 +419,14 @@ describe('signup', () => {
 });
 
 describe('logout', () => {
-  let clients: Clients;
-
-  beforeEach(() => {
-    clients = createClients();
-  });
-
   it('pending', () => {
     const store = configureStore({
       reducer: {
         auth: authSlice.reducer,
       },
-      middleware: getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [logout.name],
-        },
-      }),
     });
 
-    store.dispatch(logout.pending('requestId', { authClient: clients.authClient }));
+    store.dispatch(logout.pending('requestId', {}));
 
     const state = store.getState();
     expect(state.auth.isPending).toBe(true);
@@ -534,16 +438,11 @@ describe('logout', () => {
       reducer: {
         auth: authSlice.reducer,
       },
-      middleware: getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [logout.name],
-        },
-      }),
     });
-    const logoutSpy = jest.spyOn(clients.authClient, 'logout');
+    const logoutSpy = jest.spyOn(authClient, 'logout');
     logoutSpy.mockResolvedValue({ data: { logout: true } });
 
-    await store.dispatch(logout({ authClient: clients.authClient }));
+    await store.dispatch(logout({}));
 
     const state = store.getState();
     expect(state.auth.errors).toHaveLength(0);
@@ -556,16 +455,11 @@ describe('logout', () => {
       reducer: {
         auth: authSlice.reducer,
       },
-      middleware: getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [logout.name],
-        },
-      }),
     });
-    const logoutSpy = jest.spyOn(clients.authClient, 'logout');
+    const logoutSpy = jest.spyOn(authClient, 'logout');
     logoutSpy.mockRejectedValue(new Error('error1'));
 
-    await store.dispatch(logout({ authClient: clients.authClient }));
+    await store.dispatch(logout({}));
 
     const state = store.getState();
     expect(state.auth.errors).toStrictEqual(['error1']);
@@ -574,28 +468,16 @@ describe('logout', () => {
 });
 
 describe('sendResetPasswordEmail', () => {
-  let clients: Clients;
-
-  beforeEach(() => {
-    clients = createClients();
-  });
-
   it('pending', () => {
     const store = configureStore({
       reducer: {
         auth: authSlice.reducer,
       },
-      middleware: getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [sendResetPasswordEmail.name],
-        },
-      }),
     });
 
     store.dispatch(
       sendResetPasswordEmail.pending('requestId', {
         input: { email: 'email@domain.tld' },
-        authClient: clients.authClient,
       })
     );
 
@@ -609,18 +491,11 @@ describe('sendResetPasswordEmail', () => {
       reducer: {
         auth: authSlice.reducer,
       },
-      middleware: getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [sendResetPasswordEmail.name],
-        },
-      }),
     });
-    const logoutSpy = jest.spyOn(clients.authClient, 'sendResetPasswordEmail');
+    const logoutSpy = jest.spyOn(authClient, 'sendResetPasswordEmail');
     logoutSpy.mockResolvedValue({ data: { sendResetPasswordEmail: true } });
 
-    await store.dispatch(
-      sendResetPasswordEmail({ input: { email: 'email@domain.tld' }, authClient: clients.authClient })
-    );
+    await store.dispatch(sendResetPasswordEmail({ input: { email: 'email@domain.tld' } }));
 
     const state = store.getState();
     expect(state.auth.errors).toHaveLength(0);
@@ -632,18 +507,13 @@ describe('sendResetPasswordEmail', () => {
       reducer: {
         auth: authSlice.reducer,
       },
-      middleware: getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [sendResetPasswordEmail.name],
-        },
-      }),
     });
-    const logoutSpy = jest.spyOn(clients.authClient, 'sendResetPasswordEmail');
-    logoutSpy.mockRejectedValue(new Error('error1'));
+    const authClient = AuthClient.create();
+    jest.spyOn(AuthClient, 'create').mockReturnValue(authClient);
+    const sendResetPasswordEmailSpy = jest.spyOn(authClient, 'sendResetPasswordEmail');
+    sendResetPasswordEmailSpy.mockRejectedValue(new Error('error1'));
 
-    await store.dispatch(
-      sendResetPasswordEmail({ input: { email: 'email@domain.tld' }, authClient: clients.authClient })
-    );
+    await store.dispatch(sendResetPasswordEmail({ input: { email: 'email@domain.tld' } }));
 
     const state = store.getState();
     expect(state.auth.errors).toStrictEqual(['error1']);

@@ -1,5 +1,5 @@
 import { DeepPartial } from '@stringsync/common';
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import { deviceSlice } from './device';
 import { viewportSlice } from './viewport';
 import { authSlice } from './auth';
@@ -14,11 +14,6 @@ export const createStore = (preloadedState: DeepPartial<RootState> = {}): AppSto
       auth: authSlice.reducer,
       history: historySlice.reducer,
     },
-    middleware: getDefaultMiddleware({
-      serializableCheck: {
-        ignoredPaths: ['auth/authenticate', 'auth/login', 'auth/signup'],
-      },
-    }),
     preloadedState,
   });
 };

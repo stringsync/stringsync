@@ -6,19 +6,21 @@ import { toAuthUser } from './toAuthUser';
 import { RootState } from '../types';
 import { getNullAuthState } from './getNullAuthState';
 
-type AuthenticateReturned = { user: AuthUser };
-type AuthenticateThunkArg = { authClient: AuthClient; shouldClearAuthOnError: boolean };
-type AuthenticateThunkConfig = { state: RootState; rejectValue: { errors: string[] } };
+export type AuthenticateReturned = { user: AuthUser };
+export type AuthenticateThunkArg = { shouldClearAuthOnError: boolean };
+export type AuthenticateThunkConfig = { rejectValue: { errors: string[] } };
 export const authenticate = createAsyncThunk<AuthenticateReturned, AuthenticateThunkArg, AuthenticateThunkConfig>(
   'auth/authenticate',
   async (args, thunk) => {
-    const { data, errors } = await args.authClient.whoami();
+    const authClient = AuthClient.create();
+    const { data, errors } = await authClient.whoami();
 
     const hasError = errors || !data.whoami;
 
     if (hasError && args.shouldClearAuthOnError) {
       thunk.dispatch(clearAuth());
-      return { user: thunk.getState().auth.user };
+      const state = thunk.getState() as RootState;
+      return { user: state.auth.user };
     }
     if (errors) {
       return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
@@ -31,12 +33,13 @@ export const authenticate = createAsyncThunk<AuthenticateReturned, AuthenticateT
 );
 
 type LoginReturned = { user: AuthUser };
-type LoginThunkArg = { authClient: AuthClient; input: LoginInput };
+type LoginThunkArg = { input: LoginInput };
 type LoginThunkConfig = { rejectValue: { errors: string[] } };
 export const login = createAsyncThunk<LoginReturned, LoginThunkArg, LoginThunkConfig>(
   'auth/login',
   async (args, thunk) => {
-    const { data, errors } = await args.authClient.login(args.input);
+    const authClient = AuthClient.create();
+    const { data, errors } = await authClient.login(args.input);
     if (errors) {
       return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
     }
@@ -45,12 +48,13 @@ export const login = createAsyncThunk<LoginReturned, LoginThunkArg, LoginThunkCo
 );
 
 type SignupReturned = { user: AuthUser };
-type SignupThunkArg = { authClient: AuthClient; input: SignupInput };
+type SignupThunkArg = { input: SignupInput };
 type SignupThunkConfig = { rejectValue: { errors: string[] } };
 export const signup = createAsyncThunk<SignupReturned, SignupThunkArg, SignupThunkConfig>(
   'auth/signup',
   async (args, thunk) => {
-    const { data, errors } = await args.authClient.signup(args.input);
+    const authClient = AuthClient.create();
+    const { data, errors } = await authClient.signup(args.input);
     if (errors) {
       return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
     }
@@ -59,12 +63,13 @@ export const signup = createAsyncThunk<SignupReturned, SignupThunkArg, SignupThu
 );
 
 type LogoutReturned = boolean;
-type LogoutThunkArg = { authClient: AuthClient };
+type LogoutThunkArg = {};
 type LogoutThunkConfig = { rejectValue: { errors: string[] } };
 export const logout = createAsyncThunk<LogoutReturned, LogoutThunkArg, LogoutThunkConfig>(
   'auth/logout',
   async (args, thunk) => {
-    const { data, errors } = await args.authClient.logout();
+    const authClient = AuthClient.create();
+    const { data, errors } = await authClient.logout();
     if (errors) {
       return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
     }
@@ -73,14 +78,15 @@ export const logout = createAsyncThunk<LogoutReturned, LogoutThunkArg, LogoutThu
 );
 
 type SendResetPasswordEmailReturned = boolean;
-type SendResetPasswordEmailThunkArg = { authClient: AuthClient; input: SendResetPasswordEmailInput };
+type SendResetPasswordEmailThunkArg = { input: SendResetPasswordEmailInput };
 type SendResetPasswordEmailConfig = { rejectValue: { errors: string[] } };
 export const sendResetPasswordEmail = createAsyncThunk<
   SendResetPasswordEmailReturned,
   SendResetPasswordEmailThunkArg,
   SendResetPasswordEmailConfig
 >('auth/sendResetPasswordEmail', async (args, thunk) => {
-  const { data, errors } = await args.authClient.sendResetPasswordEmail(args.input);
+  const authClient = AuthClient.create();
+  const { data, errors } = await authClient.sendResetPasswordEmail(args.input);
   if (errors) {
     return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
   }
@@ -185,8 +191,10 @@ export const authSlice = createSlice<AuthState, AuthReducers>({
     });
     builder.addCase(sendResetPasswordEmail.rejected, (state, action) => {
       state.isPending = false;
-      if (action.payload && action.payload.errors) {
+      if (action.payload) {
         state.errors = action.payload.errors;
+      } else if (action.error.message) {
+        state.errors = [action.error.message];
       } else {
         state.errors = ['unknown error'];
       }

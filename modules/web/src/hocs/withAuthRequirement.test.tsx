@@ -8,6 +8,7 @@ import { UserRole } from '@stringsync/domain';
 import { Router } from 'react-router';
 import { Provider } from 'react-redux';
 import { createMemoryHistory } from 'history';
+import { getNullAuthUser } from '../store/auth/getNullAuthUser';
 
 const Dummy: React.FC = (props) => <div data-testid="dummy">{props.children}</div>;
 
@@ -87,7 +88,9 @@ describe('with AuthRequirement.LOGGED_IN', () => {
   });
 
   it('does not render when logged out', () => {
-    const store = createStore();
+    const store = createStore({
+      auth: { isPending: false, user: getNullAuthUser() },
+    });
     const history = createMemoryHistory();
 
     const { getByTestId } = render(
@@ -110,7 +113,7 @@ describe('with AuthRequirement.LOGGED_IN_AS_STUDENT', () => {
   });
 
   it.each([UserRole.STUDENT, UserRole.TEACHER, UserRole.ADMIN])(
-    'renders when logged in as student or greater',
+    'renders when logged in as student for greater',
     (role) => {
       const store = createStore({
         auth: {
@@ -139,7 +142,9 @@ describe('with AuthRequirement.LOGGED_IN_AS_STUDENT', () => {
   );
 
   it('does not render when logged out', () => {
-    const store = createStore();
+    const store = createStore({
+      auth: { isPending: false, user: getNullAuthUser() },
+    });
     const history = createMemoryHistory();
 
     const { getByTestId } = render(
@@ -214,7 +219,9 @@ describe('with AuthRequirement.LOGGED_IN_AS_TEACHER', () => {
   });
 
   it('does not render when logged out', () => {
-    const store = createStore();
+    const store = createStore({
+      auth: { isPending: false, user: getNullAuthUser() },
+    });
     const history = createMemoryHistory();
 
     const { getByTestId } = render(
@@ -289,7 +296,9 @@ describe('with AuthRequirement.LOGGED_IN_AS_ADMIN', () => {
   });
 
   it('does not render when logged out', () => {
-    const store = createStore();
+    const store = createStore({
+      auth: { isPending: false, user: getNullAuthUser() },
+    });
     const history = createMemoryHistory();
 
     const { getByTestId } = render(

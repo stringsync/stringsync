@@ -1,13 +1,12 @@
-import React, { useState, useCallback, useContext } from 'react';
-import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import { FormPage } from '../../components/FormPage';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState, signup, clearAuthErrors } from '../../store';
-import { Form, Input, Button, message } from 'antd';
-import { useEffectOnce } from '../../hooks';
+import { Button, Form, Input, message } from 'antd';
 import { Rule } from 'antd/lib/form';
-import { ClientsContext } from '../../clients';
+import React, { useCallback, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+import { FormPage } from '../../components/FormPage';
+import { useEffectOnce } from '../../hooks';
+import { AppDispatch, clearAuthErrors, RootState, signup } from '../../store';
 
 const USERNAME_RULES: Rule[] = [
   { required: true, message: 'username is required' },
@@ -34,7 +33,6 @@ const Center = styled.div`
 
 const Signup: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const clients = useContext(ClientsContext);
   const errors = useSelector<RootState, string[]>((state) => state.auth.errors);
   const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
 
@@ -73,11 +71,11 @@ const Signup: React.FC = () => {
     [dispatch]
   );
   const onFinish = useCallback(async () => {
-    const action = await dispatch(signup({ authClient: clients.authClient, input: { username, password, email } }));
+    const action = await dispatch(signup({ input: { username, password, email } }));
     if (action.payload && 'user' in action.payload) {
       message.success(`logged in as ${action.payload.user.username}`);
     }
-  }, [clients.authClient, dispatch, email, password, username]);
+  }, [dispatch, email, password, username]);
 
   return (
     <div data-testid="signup">

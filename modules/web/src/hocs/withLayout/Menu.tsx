@@ -1,12 +1,11 @@
-import React, { useCallback, useState, useContext } from 'react';
-import { UserOutlined, UploadOutlined, CompassOutlined, SettingOutlined } from '@ant-design/icons';
+import { CompassOutlined, SettingOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons';
 import { gtEqTeacher } from '@stringsync/domain';
-import { Avatar, Button, Col, Modal, Row, message } from 'antd';
-import { useSelector, useDispatch } from 'react-redux';
+import { Avatar, Button, Col, message, Modal, Row } from 'antd';
+import React, { useCallback, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import { isLoggedInSelector, RootState, AuthUser, logout, AppDispatch } from '../../store';
-import { ClientsContext } from '../../clients';
+import { AppDispatch, AuthUser, isLoggedInSelector, logout, RootState } from '../../store';
 
 const StyledUploadOutlined = styled(UploadOutlined)`
   font-size: 22px;
@@ -33,7 +32,6 @@ const Role = styled.div`
 interface Props {}
 
 export const Menu: React.FC<Props> = (props) => {
-  const clients = useContext(ClientsContext);
   const dispatch = useDispatch<AppDispatch>();
   const isLoggedIn = useSelector<RootState, boolean>(isLoggedInSelector);
   const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
@@ -50,11 +48,11 @@ export const Menu: React.FC<Props> = (props) => {
   const showModal = useCallback(() => setModalVisible(true), [setModalVisible]);
   const hideModal = useCallback(() => setModalVisible(false), [setModalVisible]);
   const handleLogoutClick = useCallback(() => {
-    dispatch(logout({ authClient: clients.authClient }));
+    dispatch(logout({}));
     hideModal();
     message.success('logged out');
     history.push('library');
-  }, [clients.authClient, dispatch, hideModal, history]);
+  }, [dispatch, hideModal, history]);
 
   const gutterPx = isLoggedIn ? 16 : 8;
   const isLibraryVisible = !isAuthPending && !isLtEqMdViewport && isLoggedIn;
