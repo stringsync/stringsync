@@ -3,12 +3,14 @@ import { AuthState } from './auth/types';
 import { ViewportState } from './viewport/types';
 import { DeviceState } from './device/types';
 import { EnhancedStore, ThunkDispatch, AnyAction, Dispatch } from '@reduxjs/toolkit';
+import { LibraryState } from './library/types';
 
 export type RootState = {
   device: DeviceState;
   viewport: ViewportState;
   auth: AuthState;
   history: HistoryState;
+  library: LibraryState;
 };
 
 export type AppStore = EnhancedStore<RootState>;

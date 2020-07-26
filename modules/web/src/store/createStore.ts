@@ -4,6 +4,7 @@ import { deviceSlice } from './device';
 import { viewportSlice } from './viewport';
 import { authSlice } from './auth';
 import { historySlice } from './history';
+import { librarySlice } from './library';
 import { RootState, AppStore } from './types';
 
 export const createStore = (preloadedState: DeepPartial<RootState> = {}): AppStore => {
@@ -13,6 +14,7 @@ export const createStore = (preloadedState: DeepPartial<RootState> = {}): AppSto
       viewport: viewportSlice.reducer,
       auth: authSlice.reducer,
       history: historySlice.reducer,
+      library: librarySlice.reducer,
     },
     preloadedState,
   });
