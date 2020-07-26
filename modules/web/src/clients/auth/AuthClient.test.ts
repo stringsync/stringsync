@@ -1,13 +1,13 @@
 import { GraphqlClient } from './../graphql/GraphqlClient';
 import { AuthClient } from './AuthClient';
 
-let graphqlClient: GraphqlClient;
 let authClient: AuthClient;
+let graphqlClient: GraphqlClient;
 const fakeRes = { data: {} };
 
 beforeEach(() => {
-  graphqlClient = new GraphqlClient('uri');
-  authClient = new AuthClient(graphqlClient);
+  authClient = AuthClient.create();
+  graphqlClient = authClient.graphqlClient;
 });
 
 it('queries whoami', async () => {
