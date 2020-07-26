@@ -1,11 +1,11 @@
-import React from 'react';
 import { compose, PageInfo } from '@stringsync/common';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Layout, withLayout } from '../../hocs';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../../store';
-import { NotationPreview } from '../../store/library/types';
-import { getNotationPage } from '../../store/library';
 import { useEffectOnce } from '../../hooks';
+import { AppDispatch, RootState } from '../../store';
+import { getNotationPage } from '../../store/library';
+import { NotationPreview } from '../../store/library/types';
 
 const PAGE_SIZE = 10;
 
@@ -24,7 +24,7 @@ const Library: React.FC<Props> = enhance(() => {
     }
   });
 
-  return <div data-testid="library">Library</div>;
+  return <div data-testid="library">{JSON.stringify(pageInfo, null, 2)}</div>;
 });
 
 export default Library;
