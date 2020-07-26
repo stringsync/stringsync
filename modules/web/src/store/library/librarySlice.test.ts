@@ -1,41 +1,85 @@
-import { LibraryState, NotationPreview } from './types';
-import { librarySlice, addNotations } from './librarySlice';
-import { EnhancedStore, configureStore } from '@reduxjs/toolkit';
-import { TestFactory } from '@stringsync/common';
-import { pick } from 'lodash';
+import { configureStore } from '@reduxjs/toolkit';
+import { TestFactory, randStr } from '@stringsync/common';
+import { NotationClient, NotationEdgeObject, UserRoles } from '../../clients';
+import { getNotationPage, librarySlice } from './librarySlice';
 
-let store: EnhancedStore<{ library: LibraryState }>;
+const buildRandNotationEdge = (): NotationEdgeObject => {
+  const transcriber = TestFactory.buildRandUser();
+  const notation = TestFactory.buildRandNotation({ transcriberId: transcriber.id });
+  return {
+    node: { ...notation, transcriber: { ...transcriber, role: UserRoles.TEACHER }, tags: [] },
+    cursor: randStr(8),
+  };
+};
+
+let notationClient: NotationClient;
 
 beforeEach(() => {
-  store = configureStore({
+  notationClient = NotationClient.create();
+  jest.spyOn(NotationClient, 'create').mockReturnValue(notationClient);
+});
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
+it('initializes state', () => {
+  const store = configureStore({
     reducer: {
       library: librarySlice.reducer,
     },
   });
-});
 
-const buildRandNotationPreview = (): NotationPreview => {
-  const notation = pick(TestFactory.buildRandNotation(), 'id', 'createdAt', 'updatedAt', 'songName', 'artistName');
-  const transcriber = pick(TestFactory.buildRandUser(), 'id', 'username', 'role', 'avatarUrl');
-  const json = JSON.stringify({ ...notation, transcriber });
-  return JSON.parse(json);
-};
-
-it('initializes state', () => {
   expect(store.getState().library.notations).toStrictEqual([]);
 });
 
-describe('addNotations', () => {
-  it('appends notations to the state', () => {
-    const notation1 = buildRandNotationPreview();
-    const notation2 = buildRandNotationPreview();
-    const notation3 = buildRandNotationPreview();
-    const notation4 = buildRandNotationPreview();
+describe('getNotationPage', () => {
+  it('pending', () => {
+    const store = configureStore({
+      reducer: {
+        library: librarySlice.reducer,
+      },
+      preloadedState: {
+        library: {
+          isPending: false,
+          errors: ['error1', 'error2'],
+        },
+      },
+    });
 
-    store.dispatch(addNotations({ notations: [notation1, notation2] }));
-    expect(store.getState().library.notations).toStrictEqual([notation1, notation2]);
+    store.dispatch(getNotationPage.pending('requestId', {}));
 
-    store.dispatch(addNotations({ notations: [notation3, notation4] }));
-    expect(store.getState().library.notations).toStrictEqual([notation1, notation2, notation3, notation4]);
+    const state = store.getState();
+    expect(state.library.isPending).toBe(true);
+    expect(state.library.errors).toHaveLength(0);
+  });
+
+  it('fulfilled', async () => {
+    const store = configureStore({
+      reducer: {
+        library: librarySlice.reducer,
+      },
+    });
+
+    const edge1 = buildRandNotationEdge();
+    const edge2 = buildRandNotationEdge();
+    const notationsSpy = jest.spyOn(notationClient, 'notations');
+    notationsSpy.mockResolvedValue({
+      data: {
+        notations: {
+          edges: [edge1, edge2],
+          pageInfo: { startCursor: edge1.cursor, endCursor: edge2.cursor, hasNextPage: false, hasPreviousPage: false },
+        },
+      },
+    });
+
+    const state = store.getState();
+    const { notations, isPending, pageInfo } = state.library;
+    expect(notations).toStrictEqual([edge1.node, edge2.node]);
+    expect(isPending).toBe(false);
+    expect(pageInfo.startCursor).toBe(edge1.cursor);
+    expect(pageInfo.endCursor).toBe(edge2.cursor);
+    expect(pageInfo.hasNextPage).toBe(false);
+    expect(pageInfo.hasPreviousPage).toBe(false);
   });
 });

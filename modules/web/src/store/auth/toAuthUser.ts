@@ -1,6 +1,5 @@
-import { UserObject } from '../../clients';
+import { UserObject, toUserRole } from '../../clients';
 import { AuthUser } from './types';
-import { toUserRole } from './toUserRole';
 
 export const toAuthUser = (user: UserObject): AuthUser => ({
   id: user.id,

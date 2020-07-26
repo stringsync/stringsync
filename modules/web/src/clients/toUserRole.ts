@@ -1,4 +1,4 @@
-import { UserRoles } from '../../clients';
+import { UserRoles } from './graphqlTypes';
 import { UserRole } from '@stringsync/domain';
 
 export const toUserRole = (role: UserRoles): UserRole => {
