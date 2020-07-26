@@ -1,22 +1,40 @@
-import { AuthResolver, HealthController, NotationResolver, TagResolver, UserResolver } from '@stringsync/graphql';
-import { AuthService, HealthCheckerService, NotationService, TagService, UserService } from '@stringsync/services';
-import { Container as InversifyContainer, ContainerModule } from 'inversify';
-import { ContainerConfig, getContainerConfig } from '@stringsync/config';
 import { Ctor } from '@stringsync/common';
-import { Mailer, NodemailerMailer } from './mailer';
-import { NotationSequelizeLoader, NotationLoader, NotationRepo, NotationSequelizeRepo } from '@stringsync/repos';
-import { NotificationService } from '@stringsync/services/src/notification';
-import { Redis } from './redis';
+import { ContainerConfig, getContainerConfig } from '@stringsync/config';
+import { AuthResolver, HealthController, NotationResolver, TagResolver, UserResolver } from '@stringsync/graphql';
+import {
+  NotationLoader,
+  NotationRepo,
+  NotationSequelizeLoader,
+  NotationSequelizeRepo,
+  TaggingRepo,
+  TaggingSequelizeRepo,
+  TagLoader,
+  TagRepo,
+  TagSequelizeLoader,
+  TagSequelizeRepo,
+  UserLoader,
+  UserRepo,
+  UserSequelizeLoader,
+  UserSequelizeRepo,
+} from '@stringsync/repos';
+import { Db, NotationModel, TaggingModel, TagModel, UserModel } from '@stringsync/sequelize';
+import {
+  AuthService,
+  HealthCheckerService,
+  NotationService,
+  NotificationService,
+  TagService,
+  UserService,
+} from '@stringsync/services';
+import { Container as InversifyContainer, ContainerModule } from 'inversify';
+import nodemailer from 'nodemailer';
 import { RedisClient } from 'redis';
 import { Sequelize } from 'sequelize-typescript';
-import { TaggingRepo, TaggingSequelizeRepo } from '@stringsync/repos';
-import { TagLoader, TagRepo, TagSequelizeRepo, TagSequelizeLoader } from '@stringsync/repos';
-import { TYPES } from './constants';
-import { UserSequelizeLoader, UserLoader, UserSequelizeRepo, UserRepo } from '@stringsync/repos';
 import * as winston from 'winston';
-import nodemailer from 'nodemailer';
+import { TYPES } from './constants';
 import { Logger } from './logger';
-import { Db, UserModel, NotationModel, TagModel, TaggingModel } from '@stringsync/sequelize';
+import { Mailer, NodemailerMailer } from './mailer';
+import { Redis } from './redis';
 
 export class DI {
   static create(config: ContainerConfig = getContainerConfig()) {
