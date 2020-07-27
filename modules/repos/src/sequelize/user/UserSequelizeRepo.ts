@@ -158,8 +158,8 @@ export class UserSequelizeRepo implements UserRepo {
       pageInfo: {
         startCursor: edges.length ? first(edges)!.cursor : null,
         endCursor: edges.length ? last(edges)!.cursor : null,
-        hasNextPage: Math.max(Infinity, ...ranks) < max,
-        hasPreviousPage: Math.min(-Infinity, ...ranks) > min,
+        hasNextPage: Math.min(...ranks) > min,
+        hasPreviousPage: Math.max(...ranks) < max,
       },
     };
   }
