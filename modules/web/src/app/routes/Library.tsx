@@ -1,5 +1,6 @@
+import React, { useCallback } from 'react';
 import { compose, PageInfo } from '@stringsync/common';
-import React from 'react';
+import { Button } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { Layout, withLayout } from '../../hocs';
 import { useEffectOnce } from '../../hooks';
@@ -18,13 +19,19 @@ const Library: React.FC<Props> = enhance(() => {
   const notations = useSelector<RootState, NotationPreview[]>((state) => state.library.notations);
   const pageInfo = useSelector<RootState, PageInfo>((state) => state.library.pageInfo);
 
-  useEffectOnce(() => {
-    if (notations.length === 0 && pageInfo.hasNextPage) {
+  const loadNextNotationPage = useCallback(() => {
+    if (pageInfo.hasNextPage) {
       dispatch(getNotationPage({ first: PAGE_SIZE, after: pageInfo.endCursor }));
+    }
+  }, [dispatch, pageInfo.endCursor, pageInfo.hasNextPage]);
+
+  useEffectOnce(() => {
+    if (notations.length === 0) {
+      loadNextNotationPage();
     }
   });
 
-  return <div data-testid="library">{JSON.stringify(pageInfo, null, 2)}</div>;
+  return <div data-testid="library">Library</div>;
 });
 
 export default Library;

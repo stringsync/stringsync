@@ -149,8 +149,8 @@ export class NotationSequelizeRepo implements NotationRepo {
       pageInfo: {
         startCursor: edges.length ? first(edges)!.cursor : null,
         endCursor: edges.length ? last(edges)!.cursor : null,
-        hasNextPage: Math.max(Infinity, ...ranks) < max,
-        hasPreviousPage: Math.min(-Infinity, ...ranks) > min,
+        hasNextPage: Math.min(...ranks) > min,
+        hasPreviousPage: Math.max(...ranks) < max,
       },
     };
   }
