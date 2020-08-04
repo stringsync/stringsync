@@ -15,10 +15,13 @@ export const withSession = (container: Container): Handler => {
 
   const RedisStore = connectRedis(session);
   const store = new RedisStore({ client: redis });
+  const isProduction = config.NODE_ENV === 'production';
+  const secure = isProduction;
+  const sameSite = isProduction ? 'none' : undefined;
 
   return session({
     secret: config.SESSION_SECRET,
-    cookie: { httpOnly: true, sameSite: 'none', maxAge: MAX_AGE_MS, secure: true },
+    cookie: { httpOnly: true, maxAge: MAX_AGE_MS, secure, sameSite },
     genid: () => uuid.v4(),
     proxy: undefined,
     resave: false,
