@@ -18,7 +18,7 @@ export const withSession = (container: Container): Handler => {
 
   return session({
     secret: config.SESSION_SECRET,
-    cookie: { httpOnly: true, sameSite: 'none', maxAge: MAX_AGE_MS },
+    cookie: { httpOnly: true, sameSite: 'none', maxAge: MAX_AGE_MS, secure: true },
     genid: () => uuid.v4(),
     proxy: undefined,
     resave: false,

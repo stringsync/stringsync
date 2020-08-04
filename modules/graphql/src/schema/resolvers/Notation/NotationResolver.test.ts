@@ -1,4 +1,4 @@
-import { HTTP_STATUSES, TestFactory, randStr } from '@stringsync/common';
+import { HttpStatus, TestFactory, randStr } from '@stringsync/common';
 import { TYPES } from '@stringsync/container';
 import { Notation, User, UserRole } from '@stringsync/domain';
 import { NotationRepo, UserRepo } from '@stringsync/repos';
@@ -49,7 +49,7 @@ beforeEach(async () => {
 describe('notations', () => {
   it('returns the notation records', async () => {
     const notationsRes = await notationClient.notations({});
-    expect(notationsRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(notationsRes.statusCode).toBe(HttpStatus.OK);
 
     const notationIds = notationsRes.body.data.notations.edges.map((edge) => edge.node.id);
     const expectedNotationIds = notations.map((notation) => notation.id);
@@ -58,7 +58,7 @@ describe('notations', () => {
 
   it('returns the first N records', async () => {
     const notationsRes = await notationClient.notations({ first: 1 });
-    expect(notationsRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(notationsRes.statusCode).toBe(HttpStatus.OK);
 
     const notationIds = notationsRes.body.data.notations.edges.map((edge) => edge.node.id);
     const firstNotationIdByRank = sortBy(notations, (notation) => notation.rank).reverse()[0].id;
@@ -71,7 +71,7 @@ describe('notation', () => {
     const id = notations[0].id;
 
     const notationRes = await notationClient.notation({ id });
-    expect(notationRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(notationRes.statusCode).toBe(HttpStatus.OK);
 
     const notation = notationRes.body.data.notation;
     expect(notation!.id).toBe(id);
@@ -81,7 +81,7 @@ describe('notation', () => {
     const id = randStr(12);
 
     const notationRes = await notationClient.notation({ id });
-    expect(notationRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(notationRes.statusCode).toBe(HttpStatus.OK);
     expect(notationRes.body.data.notation).toBeNull();
   });
 });
@@ -97,16 +97,16 @@ describe('createNotation', () => {
 
   it('creates a notation record when logged in as teacher', async () => {
     const loginRes = await authClient.login({ usernameOrEmail: teacher.username, password });
-    expect(loginRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(loginRes.statusCode).toBe(HttpStatus.OK);
 
     const createNotationRes = await notationClient.createNotation({ songName, artistName });
-    expect(createNotationRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(createNotationRes.statusCode).toBe(HttpStatus.OK);
     const notation = createNotationRes.body.data.createNotation;
     expect(notation.songName).toBe(songName);
     expect(notation.artistName).toBe(artistName);
 
     const notationRes = await notationClient.notation({ id: notation.id });
-    expect(notationRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(notationRes.statusCode).toBe(HttpStatus.OK);
     const foundNotation = notationRes.body.data.notation;
     expect(foundNotation).not.toBeNull();
     expect(foundNotation!.id).toBe(notation.id);
@@ -114,16 +114,16 @@ describe('createNotation', () => {
 
   it('creates a notation record when logged in as admin', async () => {
     const loginRes = await authClient.login({ usernameOrEmail: teacher.username, password });
-    expect(loginRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(loginRes.statusCode).toBe(HttpStatus.OK);
 
     const createNotationRes = await notationClient.createNotation({ songName, artistName });
-    expect(createNotationRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(createNotationRes.statusCode).toBe(HttpStatus.OK);
     const notation = createNotationRes.body.data.createNotation;
     expect(notation.songName).toBe(songName);
     expect(notation.artistName).toBe(artistName);
 
     const notationRes = await notationClient.notation({ id: notation.id });
-    expect(notationRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(notationRes.statusCode).toBe(HttpStatus.OK);
     const foundNotation = notationRes.body.data.notation;
     expect(foundNotation).not.toBeNull();
     expect(foundNotation!.id).toBe(notation.id);
@@ -131,7 +131,7 @@ describe('createNotation', () => {
 
   it('forbids notation creation when not logged in', async () => {
     const createNotationRes = await notationClient.createNotation({ songName, artistName });
-    expect(createNotationRes.statusCode).toBe(HTTP_STATUSES.FORBIDDEN);
+    expect(createNotationRes.statusCode).toBe(HttpStatus.OK);
   });
 
   it('forbids notation creation when logged in as student', async () => {
@@ -139,9 +139,9 @@ describe('createNotation', () => {
     const student = await userRepo.create(TestFactory.buildRandUser({ encryptedPassword, role: UserRole.STUDENT }));
 
     const loginRes = await authClient.login({ usernameOrEmail: student.username, password });
-    expect(loginRes.statusCode).toBe(HTTP_STATUSES.OK);
+    expect(loginRes.statusCode).toBe(HttpStatus.OK);
 
     const createNotationRes = await notationClient.createNotation({ songName, artistName });
-    expect(createNotationRes.statusCode).toBe(HTTP_STATUSES.FORBIDDEN);
+    expect(createNotationRes.statusCode).toBe(HttpStatus.OK);
   });
 });

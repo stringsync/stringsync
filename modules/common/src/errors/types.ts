@@ -1,14 +1,12 @@
-type Keys =
-  | 'OK'
-  | 'BAD_REQUEST'
-  | 'FORBIDDEN'
-  | 'INTERNAL_SERVER_ERROR'
-  | 'NOT_FOUND';
+export enum HttpStatus {
+  OK = 200,
+  INTERNAL_SERVER_ERROR = 500,
+}
 
-export type HttpStatuses = { [key in Keys]: number };
-
-export type HttpStatus = HttpStatuses[keyof HttpStatuses];
-
-export interface Extensions {
-  status: number;
+export enum ErrorCode {
+  UNKNOWN,
+  FORBIDDEN,
+  CONFLICT,
+  BAD_REQUEST,
+  NOT_FOUND,
 }
