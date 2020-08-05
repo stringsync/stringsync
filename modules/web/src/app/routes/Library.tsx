@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react';
 import { compose, PageInfo } from '@stringsync/common';
-import { Button } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { Layout, withLayout } from '../../hocs';
 import { useEffectOnce } from '../../hooks';

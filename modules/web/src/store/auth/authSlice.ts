@@ -5,6 +5,7 @@ import { AuthClient, LoginInput, SignupInput, SendResetPasswordEmailInput } from
 import { toAuthUser } from './toAuthUser';
 import { RootState } from '../types';
 import { getNullAuthState } from './getNullAuthState';
+import { UNKNOWN_ERROR_MSG } from '@stringsync/common';
 
 export type AuthenticateReturned = { user: AuthUser };
 export type AuthenticateThunkArg = { shouldClearAuthOnError: boolean };
@@ -43,6 +44,9 @@ export const login = createAsyncThunk<LoginReturned, LoginThunkArg, LoginThunkCo
     if (errors) {
       return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
     }
+    if (!data.login) {
+      return thunk.rejectWithValue({ errors: [UNKNOWN_ERROR_MSG] });
+    }
     return { user: toAuthUser(data.login) };
   }
 );
@@ -55,8 +59,12 @@ export const signup = createAsyncThunk<SignupReturned, SignupThunkArg, SignupThu
   async (args, thunk) => {
     const authClient = AuthClient.create();
     const { data, errors } = await authClient.signup(args.input);
+    debugger;
     if (errors) {
       return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
+    }
+    if (!data.signup) {
+      return thunk.rejectWithValue({ errors: [UNKNOWN_ERROR_MSG] });
     }
     return { user: toAuthUser(data.signup) };
   }
@@ -72,6 +80,9 @@ export const logout = createAsyncThunk<LogoutReturned, LogoutThunkArg, LogoutThu
     const { data, errors } = await authClient.logout();
     if (errors) {
       return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
+    }
+    if (!data.logout) {
+      return thunk.rejectWithValue({ errors: [UNKNOWN_ERROR_MSG] });
     }
     return data.logout;
   }
@@ -89,6 +100,9 @@ export const sendResetPasswordEmail = createAsyncThunk<
   const { data, errors } = await authClient.sendResetPasswordEmail(args.input);
   if (errors) {
     return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
+  }
+  if (!data.sendResetPasswordEmail) {
+    return thunk.rejectWithValue({ errors: [UNKNOWN_ERROR_MSG] });
   }
   return data.sendResetPasswordEmail;
 });

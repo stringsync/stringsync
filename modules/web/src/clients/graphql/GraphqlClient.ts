@@ -1,6 +1,5 @@
 import { CallResponse } from './types';
 import { getWebConfig } from '@stringsync/config';
-
 export class GraphqlClient {
   readonly uri: string;
 
@@ -22,17 +21,13 @@ export class GraphqlClient {
     query: string,
     variables?: V
   ): Promise<CallResponse<T, N>> => {
-    try {
-      const res = await fetch(this.uri, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ query, variables }),
-        credentials: 'include',
-        mode: 'cors',
-      });
-      return await res.json();
-    } catch (e) {
-      return { errors: [e.message] };
-    }
+    const res = await fetch(this.uri, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ query, variables }),
+      credentials: 'include',
+      mode: 'cors',
+    });
+    return await res.json();
   };
 }
