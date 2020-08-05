@@ -28,14 +28,14 @@ export type LoginInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createNotation: NotationObject;
-  login: UserObject;
-  logout: Scalars['Boolean'];
-  signup: UserObject;
-  confirmEmail: UserObject;
-  resendConfirmationEmail: Scalars['Boolean'];
-  sendResetPasswordEmail: Scalars['Boolean'];
-  resetPassword: Scalars['Boolean'];
+  createNotation?: Maybe<NotationObject>;
+  login?: Maybe<UserObject>;
+  logout?: Maybe<Scalars['Boolean']>;
+  signup?: Maybe<UserObject>;
+  confirmEmail?: Maybe<UserObject>;
+  resendConfirmationEmail?: Maybe<Scalars['Boolean']>;
+  sendResetPasswordEmail?: Maybe<Scalars['Boolean']>;
+  resetPassword?: Maybe<Scalars['Boolean']>;
 };
 
 
