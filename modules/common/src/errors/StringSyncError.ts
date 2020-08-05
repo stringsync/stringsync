@@ -1,6 +1,6 @@
 import { ErrorCode } from './types';
 
-abstract class StringSyncError extends Error {
+export class StringSyncError extends Error {
   code: ErrorCode;
 
   constructor(message: string, code: ErrorCode) {

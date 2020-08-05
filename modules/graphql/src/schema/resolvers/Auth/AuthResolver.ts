@@ -36,7 +36,7 @@ export class AuthResolver {
     return await this.authService.whoami(id);
   }
 
-  @Mutation((returns) => UserObject)
+  @Mutation((returns) => UserObject, { nullable: true })
   @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_OUT))
   async login(@Arg('input') input: LoginInput, @Ctx() ctx: ResolverCtx): Promise<User> {
     const user = await this.authService.getAuthenticatedUser(input.usernameOrEmail, input.password);
@@ -49,7 +49,7 @@ export class AuthResolver {
     return user;
   }
 
-  @Mutation((returns) => Boolean)
+  @Mutation((returns) => Boolean, { nullable: true })
   @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN))
   async logout(@Ctx() ctx: ResolverCtx): Promise<boolean> {
     const wasLoggedIn = ctx.req.session.user.isLoggedIn;
@@ -57,7 +57,7 @@ export class AuthResolver {
     return wasLoggedIn;
   }
 
-  @Mutation((returns) => UserObject)
+  @Mutation((returns) => UserObject, { nullable: true })
   @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_OUT))
   async signup(@Arg('input') input: SignupInput, @Ctx() ctx: ResolverCtx): Promise<User> {
     const user = await this.authService.signup(input.username, input.email, input.password);
@@ -65,7 +65,7 @@ export class AuthResolver {
     return user;
   }
 
-  @Mutation((returns) => UserObject)
+  @Mutation((returns) => UserObject, { nullable: true })
   @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN))
   async confirmEmail(@Arg('input') input: ConfirmEmailInput, @Ctx() ctx: ResolverCtx): Promise<User> {
     const id = this.getSessionUserId(ctx);
@@ -73,7 +73,7 @@ export class AuthResolver {
     return user;
   }
 
-  @Mutation((returns) => Boolean)
+  @Mutation((returns) => Boolean, { nullable: true })
   @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN))
   async resendConfirmationEmail(@Ctx() ctx: ResolverCtx): Promise<true> {
     const id = this.getSessionUserId(ctx);
@@ -90,7 +90,7 @@ export class AuthResolver {
     return true;
   }
 
-  @Mutation((returns) => Boolean)
+  @Mutation((returns) => Boolean, { nullable: true })
   async sendResetPasswordEmail(
     @Ctx() ctx: ResolverCtx,
     @Arg('input') input: SendResetPasswordEmailInput
@@ -100,7 +100,7 @@ export class AuthResolver {
     return true;
   }
 
-  @Mutation((returns) => Boolean)
+  @Mutation((returns) => Boolean, { nullable: true })
   async resetPassword(@Ctx() ctx: ResolverCtx, @Arg('input') input: ResetPasswordInput): Promise<true> {
     await this.authService.resetPassword(input.resetPasswordToken, input.password, ctx.reqAt);
     return true;

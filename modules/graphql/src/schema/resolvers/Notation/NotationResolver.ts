@@ -31,7 +31,7 @@ export class NotationResolver {
     return await this.notationService.find(args.id);
   }
 
-  @Mutation((returns) => NotationObject)
+  @Mutation((returns) => NotationObject, { nullable: true })
   @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER))
   async createNotation(@Arg('input') input: CreateNotationInput, @Ctx() ctx: ResolverCtx): Promise<Notation> {
     return await this.notationService.create(input.songName, input.artistName, ctx.req.session.user.id);
