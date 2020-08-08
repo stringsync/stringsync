@@ -59,7 +59,6 @@ export const signup = createAsyncThunk<SignupReturned, SignupThunkArg, SignupThu
   async (args, thunk) => {
     const authClient = AuthClient.create();
     const { data, errors } = await authClient.signup(args.input);
-    debugger;
     if (errors) {
       return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
     }
