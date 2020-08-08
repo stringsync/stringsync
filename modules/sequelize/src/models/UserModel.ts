@@ -108,12 +108,12 @@ export class UserModel extends Model<UserModel> implements User {
 
   @Is(/^[A-Za-z0-9-_.]*$/)
   @Length({ min: 3, max: 24 })
-  @Unique
+  @Unique({ name: 'username', msg: 'username already taken' })
   @Column
   username!: string;
 
   @IsEmail
-  @Unique
+  @Unique({ name: 'email', msg: 'email already taken' })
   @Column
   email!: string;
 
