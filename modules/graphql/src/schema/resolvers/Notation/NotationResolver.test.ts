@@ -101,7 +101,8 @@ describe('createNotation', () => {
 
     const createNotationRes = await notationClient.createNotation({ songName, artistName });
     expect(createNotationRes.statusCode).toBe(HttpStatus.OK);
-    const notation = createNotationRes.body.data.createNotation;
+    expect(createNotationRes.body.data.createNotation).not.toBeNull();
+    const notation = createNotationRes.body.data.createNotation!;
     expect(notation.songName).toBe(songName);
     expect(notation.artistName).toBe(artistName);
 
@@ -118,7 +119,8 @@ describe('createNotation', () => {
 
     const createNotationRes = await notationClient.createNotation({ songName, artistName });
     expect(createNotationRes.statusCode).toBe(HttpStatus.OK);
-    const notation = createNotationRes.body.data.createNotation;
+    expect(createNotationRes.body.data.createNotation).not.toBeNull();
+    const notation = createNotationRes.body.data.createNotation!;
     expect(notation.songName).toBe(songName);
     expect(notation.artistName).toBe(artistName);
 

@@ -166,7 +166,8 @@ describe('confirmEmail', () => {
 
     const confirmEmailRes = await authClient.confirmEmail({ confirmationToken });
     expect(confirmEmailRes.statusCode).toBe(HttpStatus.OK);
-    expect(confirmEmailRes.body.data.confirmEmail.confirmedAt).not.toBeNull();
+    expect(confirmEmailRes.body.data.confirmEmail).not.toBeNull();
+    expect(confirmEmailRes.body.data.confirmEmail!.confirmedAt).not.toBeNull();
   });
 
   it('returns a forbidden status when not logged in', async () => {
@@ -248,7 +249,9 @@ describe('sendResetPasswordEmail', () => {
     const password = randStr(10);
 
     const signupRes = await authClient.signup({ username, email, password });
-    const { id } = signupRes.body.data.signup;
+    expect(signupRes.body.data.signup).not.toBeNull();
+    const { id } = signupRes.body.data.signup!;
+
     user = (await userService.find(id))!;
     await authClient.logout();
   });
@@ -285,7 +288,8 @@ describe('sendResetPasswordEmail', () => {
     const password = randStr(10);
 
     const signupRes = await authClient.signup({ username, email, password });
-    const { id } = signupRes.body.data.signup;
+    expect(signupRes.body.data.signup).not.toBeNull();
+    const { id } = signupRes.body.data.signup!;
     user = (await userService.find(id))!;
     await authClient.logout();
   });
