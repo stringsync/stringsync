@@ -130,11 +130,6 @@ export class NotationModel extends Model<NotationModel> implements Notation {
   @Column
   durationMs!: number;
 
-  @Min(0)
-  @Default(0)
-  @Column(DataType.DECIMAL)
-  bpm!: number;
-
   @Default(false)
   @Column
   featured!: boolean;

@@ -10,7 +10,6 @@ module.exports = {
           artist_name TEXT NOT NULL,
           dead_time_ms integer DEFAULT 0 NOT NULL,
           duration_ms integer DEFAULT 0 NOT NULL,
-          bpm decimal DEFAULT 120 NOT NULL,
           featured BOOLEAN default false NOT NULL,
           transcriber_id TEXT REFERENCES users (id) ON DELETE CASCADE
       );

@@ -30,7 +30,6 @@ export class TestFactory {
     return {
       id: randStr(8),
       artistName: randStr(8),
-      bpm: 120,
       createdAt: now,
       updatedAt: now,
       deadTimeMs: 0,

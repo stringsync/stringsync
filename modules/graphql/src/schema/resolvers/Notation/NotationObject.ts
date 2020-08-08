@@ -31,9 +31,6 @@ export class NotationObject implements PublicNotation {
   durationMs!: number;
 
   @Field()
-  bpm!: number;
-
-  @Field()
   featured!: boolean;
 
   @Field()

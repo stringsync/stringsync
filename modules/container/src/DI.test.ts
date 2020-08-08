@@ -6,7 +6,7 @@ let container: Container | undefined;
 
 afterEach(async () => {
   if (container) {
-    await DI.cleanup(container);
+    await DI.teardown(container);
   }
   container = undefined;
 });

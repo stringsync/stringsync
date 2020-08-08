@@ -7,7 +7,6 @@ export interface Notation {
   artistName: string;
   deadTimeMs: number;
   durationMs: number;
-  bpm: number;
   featured: boolean;
   transcriberId: string;
 }

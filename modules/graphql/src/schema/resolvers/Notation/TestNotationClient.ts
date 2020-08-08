@@ -31,7 +31,6 @@ export class TestNotationClient {
                 artistName
                 deadTimeMs
                 durationMs
-                bpm
                 featured
                 transcriberId
               }
@@ -55,7 +54,6 @@ export class TestNotationClient {
             artistName
             deadTimeMs
             durationMs
-            bpm
             featured
             transcriberId
           }
@@ -77,7 +75,6 @@ export class TestNotationClient {
             artistName
             deadTimeMs
             durationMs
-            bpm
             featured
             transcriberId
           }

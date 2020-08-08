@@ -90,7 +90,6 @@ export type NotationObject = {
   artistName: Scalars['String'];
   deadTimeMs: Scalars['Float'];
   durationMs: Scalars['Float'];
-  bpm: Scalars['Float'];
   featured: Scalars['Boolean'];
   transcriberId: Scalars['String'];
   transcriber: UserObject;

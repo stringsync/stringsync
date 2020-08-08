@@ -44,6 +44,7 @@ export default class Test extends Command {
           `test:${args.project}`,
           '--runInBand',
           `--watchAll=${flags.watch}`,
+          './modules/container',
           flags.coverage ? '--collectCoverage' : '',
         ]
           .filter((part) => part)
