@@ -8,7 +8,6 @@ import { IsEmail, IsUrl, IsDate, Is, IsUUID, Length } from 'sequelize-typescript
 import { AutoIncrement } from 'sequelize-typescript';
 import { User, UserRole, USER_ROLES } from '@stringsync/domain';
 import { NotationModel } from './NotationModel';
-import { BadRequestError } from '@stringsync/common';
 
 @Table({
   tableName: 'users',
