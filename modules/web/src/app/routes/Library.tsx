@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { compose, PageInfo } from '@stringsync/common';
 import { useDispatch, useSelector } from 'react-redux';
 import { Layout, withLayout } from '../../hocs';
@@ -7,8 +7,11 @@ import { getNotationPage } from '../../store/library';
 import { NotationPreview } from '../../store/library/types';
 import { NotationList } from '../../components/NotationList';
 import styled from 'styled-components';
-import { Input, Row, Tag } from 'antd';
+import { Input, Row, Tag as AntdTag } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
+import { Tag } from '@stringsync/domain';
+import { TagClient } from '../../clients';
+import { useEffectOnce } from '../../hooks';
 
 const PAGE_SIZE = 9;
 
@@ -36,10 +39,17 @@ const Library: React.FC<Props> = enhance(() => {
   const hasNextPage = useSelector<RootState, boolean>(
     (state) => !state.library.isPending && Boolean(state.library.pageInfo.hasNextPage)
   );
-  const tags = [
-    { id: 'asdf', name: 'acoustic' },
-    { id: 'asdf23', name: 'ambient' },
-  ];
+  const [tags, setTags] = useState(new Array<Tag>());
+
+  useEffectOnce(() => {
+    const tagClient = TagClient.create();
+    // https://github.com/facebook/react/issues/14326#issuecomment-441680293
+    const call = async () => {
+      const tagsRes = await tagClient.tags();
+      setTags(tagsRes.data.tags);
+    };
+    call();
+  });
 
   const loadNextNotationPage = useCallback(() => {
     dispatch(getNotationPage({ first: PAGE_SIZE, after: pageInfo.endCursor }));
@@ -50,7 +60,7 @@ const Library: React.FC<Props> = enhance(() => {
       <Input placeholder="song, artist, or transcriber name" prefix={<SearchIcon />} />
       <TagSearchRow justify="center" align="middle">
         {tags.map((tag) => (
-          <Tag.CheckableTag checked={false}>{tag.name}</Tag.CheckableTag>
+          <AntdTag.CheckableTag checked={false}>{tag.name}</AntdTag.CheckableTag>
         ))}
       </TagSearchRow>
       <br />
