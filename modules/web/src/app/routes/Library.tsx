@@ -34,15 +34,7 @@ const Library: React.FC<Props> = enhance(() => {
   return (
     <Outer data-testid="library" xs={xs}>
       <NotationList
-        grid={{
-          gutter: 16,
-          xs: 1,
-          sm: 2,
-          md: 2,
-          lg: 3,
-          xl: 3,
-          xxl: 3,
-        }}
+        grid={{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 3 }}
         notations={notations}
         hasNextPage={hasNextPage}
         loadMore={loadNextNotationPage}
