@@ -6,10 +6,12 @@ import { getNotationPage, librarySlice } from './librarySlice';
 const buildRandNotationEdge = (): NotationEdgeObject => {
   const transcriber = TestFactory.buildRandUser();
   const notation = TestFactory.buildRandNotation({ transcriberId: transcriber.id });
-  return {
-    node: { ...notation, transcriber: { ...transcriber, role: UserRoles.TEACHER }, tags: [] },
-    cursor: randStr(8),
-  };
+  return JSON.parse(
+    JSON.stringify({
+      node: { ...notation, transcriber: { ...transcriber, role: UserRoles.TEACHER }, tags: [] },
+      cursor: randStr(8),
+    })
+  );
 };
 
 let notationClient: NotationClient;
@@ -72,6 +74,8 @@ describe('getNotationPage', () => {
         },
       },
     });
+
+    await store.dispatch(getNotationPage({}));
 
     const state = store.getState();
     const { notations, isPending, pageInfo } = state.library;
