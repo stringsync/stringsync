@@ -1,7 +1,16 @@
 import { get } from 'lodash';
 import { EventEmitter } from 'events';
 import { TaggingModel } from './TaggingModel';
-import { BelongsToMany, ForeignKey, DataType, AfterCreate, AfterDestroy, AfterUpdate } from 'sequelize-typescript';
+import {
+  BelongsToMany,
+  ForeignKey,
+  DataType,
+  AfterCreate,
+  AfterDestroy,
+  AfterUpdate,
+  IsUrl,
+  AllowNull,
+} from 'sequelize-typescript';
 import { AfterSave, AfterUpsert, AfterBulkCreate, AfterBulkUpdate } from 'sequelize-typescript';
 import { Table, Model, PrimaryKey, Column, CreatedAt, UpdatedAt, AutoIncrement, Default } from 'sequelize-typescript';
 import { BelongsTo, AfterBulkDestroy } from 'sequelize-typescript';
@@ -141,4 +150,9 @@ export class NotationModel extends Model<NotationModel> implements Notation {
   @AutoIncrement
   @Column
   rank!: number;
+
+  @IsUrl
+  @AllowNull
+  @Column
+  thumbnailUrl!: string;
 }

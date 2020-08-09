@@ -11,7 +11,8 @@ module.exports = {
           dead_time_ms integer DEFAULT 0 NOT NULL,
           duration_ms integer DEFAULT 0 NOT NULL,
           featured BOOLEAN default false NOT NULL,
-          transcriber_id TEXT REFERENCES users (id) ON DELETE CASCADE
+          transcriber_id TEXT REFERENCES users (id) ON DELETE CASCADE,
+          thumbnail_url TEXT
       );
 
       CREATE TRIGGER trigger_generate_notation_id BEFORE INSERT ON notations FOR EACH ROW EXECUTE PROCEDURE unique_short_id();

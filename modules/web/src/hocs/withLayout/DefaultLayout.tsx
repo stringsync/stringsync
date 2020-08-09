@@ -5,6 +5,8 @@ import { Wordmark } from '../../components/Wordmark';
 import { Logo } from '../../components/Logo';
 import { Link } from 'react-router-dom';
 import { Menu } from './Menu';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
 
 const StyledLayout = styled(Layout)`
   && {
@@ -31,17 +33,18 @@ const Lane = styled.div`
 `;
 
 export const DefaultLayout: React.FC = (props) => {
-  // const isLtEqMdViewport = useSelector((state) => state.viewport.xs || state.viewport.sm || state.viewport.md);
-  const isLtEqMdViewport = false;
+  const isLtEqMdViewport = useSelector<RootState, boolean>(
+    (state) => state.viewport.xs || state.viewport.sm || state.viewport.md
+  );
 
   return (
     <StyledLayout data-testid="default-layout">
       <StyledHeader>
         <Lane>
-          <Row justify="space-between">
+          <Row align="middle" justify="space-between">
             <Col>
               <Link to="library">
-                <Row align="middle">
+                <Row align="middle" justify="center">
                   <Logo size={22} />
                   {isLtEqMdViewport ? null : (
                     <>

@@ -38,6 +38,7 @@ export class TestFactory {
       songName: randStr(8),
       transcriberId: randStr(8),
       rank: randInt(0, 100000),
+      thumbnailUrl: null,
       ...attrs,
     };
   }

@@ -9,6 +9,7 @@ export interface Notation {
   durationMs: number;
   featured: boolean;
   transcriberId: string;
+  thumbnailUrl: string | null;
 }
 
 export type PublicNotation = Omit<Notation, 'rank'>;

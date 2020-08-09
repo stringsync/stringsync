@@ -92,6 +92,7 @@ export type NotationObject = {
   durationMs: Scalars['Float'];
   featured: Scalars['Boolean'];
   transcriberId: Scalars['String'];
+  thumbnailUrl?: Maybe<Scalars['String']>;
   transcriber: UserObject;
   tags: Array<TagObject>;
 };

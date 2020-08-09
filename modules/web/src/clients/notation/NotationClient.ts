@@ -27,11 +27,16 @@ export class NotationClient {
                 updatedAt
                 songName
                 artistName
+                thumbnailUrl
                 transcriber {
                   id
                   username
                   role
                   avatarUrl
+                }
+                tags {
+                  id
+                  name
                 }
               }
             }
