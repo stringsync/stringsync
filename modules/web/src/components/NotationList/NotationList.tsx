@@ -25,7 +25,10 @@ export const NotationList: React.FC<Props> = (props) => {
           dataSource={props.notations}
           renderItem={(notation) => (
             <List.Item>
-              <Card cover={notation.thumbnailUrl ? <img src={notation.thumbnailUrl} alt={notation.songName} /> : null}>
+              <Card
+                hoverable
+                cover={notation.thumbnailUrl ? <img src={notation.thumbnailUrl} alt={notation.songName} /> : null}
+              >
                 <Card.Meta
                   avatar={notation.transcriber.avatarUrl ? <Avatar src={notation.transcriber.avatarUrl} /> : <Avatar />}
                   title={notation.transcriber.username}
