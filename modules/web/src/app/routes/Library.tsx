@@ -12,6 +12,8 @@ import { Tag } from '@stringsync/domain';
 import { SearchOutlined } from '@ant-design/icons';
 import { useEffectOnce } from '../../hooks';
 
+const { CheckableTag } = AntdTag;
+
 const PAGE_SIZE = 9;
 
 const Outer = styled.div<{ xs: boolean }>`
@@ -68,9 +70,9 @@ const Library: React.FC<Props> = enhance(() => {
         <Input placeholder="song, artist, or transcriber name" prefix={<SearchIcon />} />
         <TagSearch justify="center" align="middle">
           {tags.map((tag) => (
-            <AntdTag.CheckableTag key={tag.id} checked={tagChecks[tag.id] || false} onChange={onTagCheckChange(tag.id)}>
+            <CheckableTag key={tag.id} checked={tagChecks[tag.id] || false} onChange={onTagCheckChange(tag.id)}>
               {tag.name}
-            </AntdTag.CheckableTag>
+            </CheckableTag>
           ))}
         </TagSearch>
       </Search>
