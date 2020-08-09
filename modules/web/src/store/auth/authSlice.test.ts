@@ -426,7 +426,7 @@ describe('logout', () => {
       },
     });
 
-    store.dispatch(logout.pending('requestId', {}));
+    store.dispatch(logout.pending('requestId'));
 
     const state = store.getState();
     expect(state.auth.isPending).toBe(true);
@@ -442,7 +442,7 @@ describe('logout', () => {
     const logoutSpy = jest.spyOn(authClient, 'logout');
     logoutSpy.mockResolvedValue({ data: { logout: true } });
 
-    await store.dispatch(logout({}));
+    await store.dispatch(logout());
 
     const state = store.getState();
     expect(state.auth.errors).toHaveLength(0);
@@ -459,7 +459,7 @@ describe('logout', () => {
     const logoutSpy = jest.spyOn(authClient, 'logout');
     logoutSpy.mockRejectedValue(new Error('error1'));
 
-    await store.dispatch(logout({}));
+    await store.dispatch(logout());
 
     const state = store.getState();
     expect(state.auth.errors).toStrictEqual(['error1']);
