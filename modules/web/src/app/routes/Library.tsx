@@ -2,21 +2,24 @@ import React, { useCallback, useState } from 'react';
 import { compose, PageInfo } from '@stringsync/common';
 import { useDispatch, useSelector } from 'react-redux';
 import { Layout, withLayout } from '../../hocs';
-import { AppDispatch, RootState } from '../../store';
+import { AppDispatch, RootState, getTags } from '../../store';
 import { getNotationPage } from '../../store/library';
 import { NotationPreview } from '../../store/library/types';
 import { NotationList } from '../../components/NotationList';
 import styled from 'styled-components';
 import { Input, Row, Tag as AntdTag } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
 import { Tag } from '@stringsync/domain';
-import { TagClient } from '../../clients';
+import { SearchOutlined } from '@ant-design/icons';
 import { useEffectOnce } from '../../hooks';
 
 const PAGE_SIZE = 9;
 
 const Outer = styled.div<{ xs: boolean }>`
   margin: 48px ${(props) => (props.xs ? 0 : 24)}px;
+`;
+
+const Search = styled.div<{ xs: boolean }>`
+  margin: 0 ${(props) => (props.xs ? 24 : 0)}px;
 `;
 
 const SearchIcon = styled(SearchOutlined)`
@@ -34,21 +37,25 @@ interface Props {}
 const Library: React.FC<Props> = enhance(() => {
   const dispatch = useDispatch<AppDispatch>();
   const notations = useSelector<RootState, NotationPreview[]>((state) => state.library.notations);
+  const tags = useSelector<RootState, Tag[]>((state) => state.tag.tags);
   const pageInfo = useSelector<RootState, PageInfo>((state) => state.library.pageInfo);
   const xs = useSelector<RootState, boolean>((state) => state.viewport.xs);
   const hasNextPage = useSelector<RootState, boolean>(
     (state) => !state.library.isPending && Boolean(state.library.pageInfo.hasNextPage)
   );
-  const [tags, setTags] = useState(new Array<Tag>());
+
+  const [tagChecks, setTagChecks] = useState<{ [key: string]: boolean }>({});
+  const onTagCheckChange = useCallback(
+    (tagId: string) => (isChecked: boolean) =>
+      setTagChecks({
+        ...tagChecks,
+        [tagId]: isChecked,
+      }),
+    [tagChecks]
+  );
 
   useEffectOnce(() => {
-    const tagClient = TagClient.create();
-    // https://github.com/facebook/react/issues/14326#issuecomment-441680293
-    const call = async () => {
-      const tagsRes = await tagClient.tags();
-      setTags(tagsRes.data.tags);
-    };
-    call();
+    dispatch(getTags());
   });
 
   const loadNextNotationPage = useCallback(() => {
@@ -57,12 +64,16 @@ const Library: React.FC<Props> = enhance(() => {
 
   return (
     <Outer data-testid="library" xs={xs}>
-      <Input placeholder="song, artist, or transcriber name" prefix={<SearchIcon />} />
-      <TagSearch justify="center" align="middle">
-        {tags.map((tag) => (
-          <AntdTag.CheckableTag checked={false}>{tag.name}</AntdTag.CheckableTag>
-        ))}
-      </TagSearch>
+      <Search xs={xs}>
+        <Input placeholder="song, artist, or transcriber name" prefix={<SearchIcon />} />
+        <TagSearch justify="center" align="middle">
+          {tags.map((tag) => (
+            <AntdTag.CheckableTag key={tag.id} checked={tagChecks[tag.id] || false} onChange={onTagCheckChange(tag.id)}>
+              {tag.name}
+            </AntdTag.CheckableTag>
+          ))}
+        </TagSearch>
+      </Search>
       <br />
       <br />
       <NotationList

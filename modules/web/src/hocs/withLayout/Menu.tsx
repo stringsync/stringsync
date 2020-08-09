@@ -48,7 +48,7 @@ export const Menu: React.FC<Props> = (props) => {
   const showModal = useCallback(() => setModalVisible(true), [setModalVisible]);
   const hideModal = useCallback(() => setModalVisible(false), [setModalVisible]);
   const handleLogoutClick = useCallback(() => {
-    dispatch(logout({}));
+    dispatch(logout());
     hideModal();
     message.success('logged out');
     history.push('library');

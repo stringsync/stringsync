@@ -4,6 +4,7 @@ import { ViewportState } from './viewport/types';
 import { DeviceState } from './device/types';
 import { EnhancedStore, ThunkDispatch, AnyAction, Dispatch } from '@reduxjs/toolkit';
 import { LibraryState } from './library/types';
+import { TagState } from './tag/types';
 
 export type RootState = {
   device: DeviceState;
@@ -11,6 +12,7 @@ export type RootState = {
   auth: AuthState;
   history: HistoryState;
   library: LibraryState;
+  tag: TagState;
 };
 
 export type AppStore = EnhancedStore<RootState>;

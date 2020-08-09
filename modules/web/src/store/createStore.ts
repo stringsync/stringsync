@@ -6,6 +6,7 @@ import { authSlice } from './auth';
 import { historySlice } from './history';
 import { librarySlice } from './library';
 import { RootState, AppStore } from './types';
+import { tagSlice } from './tag';
 
 export const createStore = (preloadedState: DeepPartial<RootState> = {}): AppStore => {
   return configureStore({
@@ -15,6 +16,7 @@ export const createStore = (preloadedState: DeepPartial<RootState> = {}): AppSto
       auth: authSlice.reducer,
       history: historySlice.reducer,
       library: librarySlice.reducer,
+      tag: tagSlice.reducer,
     },
     preloadedState,
   });

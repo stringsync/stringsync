@@ -70,11 +70,11 @@ export const signup = createAsyncThunk<SignupReturned, SignupThunkArg, SignupThu
 );
 
 type LogoutReturned = boolean;
-type LogoutThunkArg = {};
+type LogoutThunkArg = void;
 type LogoutThunkConfig = { rejectValue: { errors: string[] } };
 export const logout = createAsyncThunk<LogoutReturned, LogoutThunkArg, LogoutThunkConfig>(
   'auth/logout',
-  async (args, thunk) => {
+  async (_, thunk) => {
     const authClient = AuthClient.create();
     const { data, errors } = await authClient.logout();
     if (errors) {
@@ -136,7 +136,7 @@ export const authSlice = createSlice<AuthState, AuthReducers>({
       } else if (action.error.message) {
         state.errors = [action.error.message];
       } else {
-        state.errors = ['unknown error'];
+        state.errors = [UNKNOWN_ERROR_MSG];
       }
     });
 
@@ -155,7 +155,7 @@ export const authSlice = createSlice<AuthState, AuthReducers>({
       } else if (action.error.message) {
         state.errors = [action.error.message];
       } else {
-        state.errors = ['unknown error'];
+        state.errors = [UNKNOWN_ERROR_MSG];
       }
     });
 
@@ -172,7 +172,7 @@ export const authSlice = createSlice<AuthState, AuthReducers>({
       if (action.error.message) {
         state.errors = [action.error.message];
       } else {
-        state.errors = ['unknown error'];
+        state.errors = [UNKNOWN_ERROR_MSG];
       }
     });
 
@@ -191,7 +191,7 @@ export const authSlice = createSlice<AuthState, AuthReducers>({
       } else if (action.error.message) {
         state.errors = [action.error.message];
       } else {
-        state.errors = ['unknown error'];
+        state.errors = [UNKNOWN_ERROR_MSG];
       }
     });
 
@@ -209,7 +209,7 @@ export const authSlice = createSlice<AuthState, AuthReducers>({
       } else if (action.error.message) {
         state.errors = [action.error.message];
       } else {
-        state.errors = ['unknown error'];
+        state.errors = [UNKNOWN_ERROR_MSG];
       }
     });
   },
