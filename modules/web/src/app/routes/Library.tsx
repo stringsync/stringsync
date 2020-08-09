@@ -14,9 +14,9 @@ const Outer = styled.div<{ xs: boolean }>`
   margin: 48px ${(props) => (props.xs ? 0 : 24)}px;
 `;
 
-interface Props {}
-
 const enhance = compose(withLayout(Layout.DEFAULT));
+
+interface Props {}
 
 const Library: React.FC<Props> = enhance(() => {
   const dispatch = useDispatch<AppDispatch>();
