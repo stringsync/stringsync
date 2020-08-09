@@ -3,7 +3,7 @@ import { randStr } from '@stringsync/common';
 import { UserRole } from '@stringsync/domain';
 import { NotationList } from './NotationList';
 import { render } from '@testing-library/react';
-import { NotationPreview } from '../../store/library/types';
+import { NotationPreview } from '../store/library/types';
 
 it('renders without crashing', async () => {
   const now = new Date();

@@ -1,7 +1,7 @@
 import { List, Card, Divider, Tag, Avatar } from 'antd';
 import React from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
-import { NotationPreview } from '../../store/library/types';
+import { NotationPreview } from '../store/library/types';
 import { ListGridType } from 'antd/lib/list';
 import styled from 'styled-components';
 
