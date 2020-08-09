@@ -23,7 +23,7 @@ const SearchIcon = styled(SearchOutlined)`
   color: rgba(0, 0, 0, 0.25);
 `;
 
-const TagSearchRow = styled(Row)`
+const TagSearch = styled(Row)`
   margin-top: 8px;
 `;
 
@@ -58,11 +58,11 @@ const Library: React.FC<Props> = enhance(() => {
   return (
     <Outer data-testid="library" xs={xs}>
       <Input placeholder="song, artist, or transcriber name" prefix={<SearchIcon />} />
-      <TagSearchRow justify="center" align="middle">
+      <TagSearch justify="center" align="middle">
         {tags.map((tag) => (
           <AntdTag.CheckableTag checked={false}>{tag.name}</AntdTag.CheckableTag>
         ))}
-      </TagSearchRow>
+      </TagSearch>
       <br />
       <br />
       <NotationList
