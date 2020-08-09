@@ -6,7 +6,7 @@ import { ListGridType } from 'antd/lib/list';
 import styled from 'styled-components';
 
 const Tags = styled.div`
-  margin-top: 12px;
+  margin-top: 8px;
 `;
 
 interface Props {
@@ -30,18 +30,20 @@ export const NotationList: React.FC<Props> = (props) => {
                   avatar={notation.transcriber.avatarUrl ? <Avatar src={notation.transcriber.avatarUrl} /> : <Avatar />}
                   title={notation.transcriber.username}
                   description={
-                    <div>
-                      <span>{notation.songName}</span>
-                      <Divider type="vertical" />
-                      <small>{notation.artistName}</small>
-                    </div>
+                    <>
+                      <div>
+                        <span>{notation.songName}</span>
+                        <Divider type="vertical" />
+                        <small>{notation.artistName}</small>
+                      </div>
+                      <Tags>
+                        {notation.tags.map((tag) => (
+                          <Tag key={tag.id}>{tag.name}</Tag>
+                        ))}
+                      </Tags>
+                    </>
                   }
                 />
-                <Tags>
-                  {notation.tags.map((tag) => (
-                    <Tag key={tag.id}>{tag.name}</Tag>
-                  ))}
-                </Tags>
               </Card>
             </List.Item>
           )}
