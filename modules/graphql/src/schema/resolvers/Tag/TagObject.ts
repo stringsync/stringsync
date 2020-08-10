@@ -13,7 +13,7 @@ export class TagObject implements Tag {
   @Field()
   name!: string;
 
-  @Field((type) => [NotationObject])
+  @Field((type) => [NotationObject], { nullable: true })
   async notations(@Root() tag: Tag, @Ctx() ctx: ReqCtx): Promise<Notation[]> {
     const notationService = ctx.container.get<NotationService>(TYPES.NotationService);
     return await notationService.findAllByTagId(tag.id);

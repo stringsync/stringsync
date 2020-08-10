@@ -159,7 +159,7 @@ export type TagObject = {
   __typename?: 'TagObject';
   id: Scalars['ID'];
   name: Scalars['String'];
-  notations: Array<NotationObject>;
+  notations?: Maybe<Array<NotationObject>>;
 };
 
 export type UserConnectionObject = {
