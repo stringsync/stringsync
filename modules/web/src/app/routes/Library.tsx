@@ -34,10 +34,14 @@ const TagSearch = styled(Row)`
   margin-top: 8px;
 `;
 
-const AffixInner = styled.div<{ affixed: boolean }>`
+const AffixInner = styled.div<{ xs: boolean; affixed: boolean }>`
   background: ${(props) => (props.affixed ? '#FFFFFF' : 'transparent')};
-  padding: ${(props) => (props.affixed ? '0 24px' : '0')};
+  padding: ${(props) => (props.affixed && !props.xs ? '0 24px' : '0')};
   transition: all 150ms ease-in;
+`;
+
+const AlertOuter = styled.div<{ xs: boolean }>`
+  margin: 0 ${(props) => (props.xs ? 24 : 0)}px;
 `;
 
 const enhance = compose(withLayout(Layout.DEFAULT));
@@ -94,11 +98,13 @@ const Library: React.FC<Props> = enhance(() => {
   return (
     <Outer data-testid="library" xs={xs}>
       {errors.length ? (
-        <Alert showIcon type="error" message={errors.join('; ')} closeText="try again" onClose={onAlertClose} />
+        <AlertOuter xs={xs}>
+          <Alert showIcon type="error" message={errors.join('; ')} closeText="try again" onClose={onAlertClose} />
+        </AlertOuter>
       ) : null}
 
       <Affix onChange={onAffixChange}>
-        <AffixInner affixed={affixed}>
+        <AffixInner xs={xs} affixed={affixed}>
           <Search xs={xs}>
             <Input
               value={queryString}
