@@ -1,5 +1,6 @@
 import { PageInfo } from '@stringsync/common';
 import { PublicNotation, PublicUser, Tag } from '@stringsync/domain';
+import { CaseReducer } from '@reduxjs/toolkit';
 
 export type Notation = Pick<
   PublicNotation,
@@ -17,4 +18,6 @@ export type LibraryState = {
   errors: string[];
 };
 
-export type LibraryReducers = {};
+export type LibraryReducers = {
+  clearErrors: CaseReducer<LibraryState>;
+};

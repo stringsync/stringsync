@@ -3,11 +3,11 @@ import { compose, PageInfo } from '@stringsync/common';
 import { useDispatch, useSelector } from 'react-redux';
 import { Layout, withLayout } from '../../hocs';
 import { AppDispatch, RootState, getTags } from '../../store';
-import { getNotationPage } from '../../store/library';
+import { getNotationPage, clearErrors } from '../../store/library';
 import { NotationPreview } from '../../store/library/types';
 import { NotationList } from '../../components/NotationList';
 import styled from 'styled-components';
-import { Input, Row, Tag as AntdTag, Button, Affix } from 'antd';
+import { Input, Row, Tag as AntdTag, Button, Affix, Alert } from 'antd';
 import { Tag } from '@stringsync/domain';
 import { SearchOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { useEffectOnce } from '../../hooks';
@@ -46,12 +46,13 @@ interface Props {}
 
 const Library: React.FC<Props> = enhance(() => {
   const dispatch = useDispatch<AppDispatch>();
+  const errors = useSelector<RootState, string[]>((state) => state.library.errors);
   const notations = useSelector<RootState, NotationPreview[]>((state) => state.library.notations);
   const tags = useSelector<RootState, Tag[]>((state) => state.tag.tags);
   const pageInfo = useSelector<RootState, PageInfo>((state) => state.library.pageInfo);
   const xs = useSelector<RootState, boolean>((state) => state.viewport.xs);
   const hasNextPage = useSelector<RootState, boolean>(
-    (state) => !state.library.isPending && Boolean(state.library.pageInfo.hasNextPage)
+    (state) => !state.library.isPending && Boolean(state.library.pageInfo.hasNextPage) && !state.library.errors.length
   );
 
   const [queryString, setQueryString] = useState('');
@@ -82,12 +83,20 @@ const Library: React.FC<Props> = enhance(() => {
     dispatch(getNotationPage({ first: PAGE_SIZE, after: pageInfo.endCursor }));
   }, [dispatch, pageInfo.endCursor]);
 
+  const onAlertClose = useCallback(() => {
+    dispatch(clearErrors());
+  }, [dispatch]);
+
   useEffectOnce(() => {
     dispatch(getTags());
   });
 
   return (
     <Outer data-testid="library" xs={xs}>
+      {errors.length ? (
+        <Alert showIcon type="error" message={errors.join('; ')} closeText="try again" onClose={onAlertClose} />
+      ) : null}
+
       <Affix onChange={onAffixChange}>
         <AffixInner affixed={affixed}>
           <Search xs={xs}>
