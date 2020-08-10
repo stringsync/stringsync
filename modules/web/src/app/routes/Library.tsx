@@ -1,4 +1,4 @@
-import React, { useCallback, useState, ChangeEvent } from 'react';
+import React, { useCallback, useState, ChangeEvent, useEffect } from 'react';
 import { compose, PageInfo } from '@stringsync/common';
 import { useDispatch, useSelector } from 'react-redux';
 import { Layout, withLayout } from '../../hocs';
@@ -12,6 +12,7 @@ import { Tag } from '@stringsync/domain';
 import { SearchOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { useEffectOnce } from '../../hooks';
 import { mapValues } from 'lodash';
+import { scrollToTop } from '../../util/scrollToTop';
 
 const { CheckableTag } = AntdTag;
 
@@ -77,6 +78,9 @@ const Library: React.FC<Props> = enhance(() => {
     setQueryString('');
     setQueryTags(mapValues(queryTags, () => false));
   }, [queryTags]);
+  useEffect(() => {
+    scrollToTop();
+  }, [queryString, queryTags]);
 
   const [affixed, setAffixed] = useState(false);
   const onAffixChange = useCallback((affixed) => {
