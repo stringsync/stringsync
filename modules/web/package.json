@@ -19,7 +19,7 @@
     "graphql": "^14.0.2",
     "less": "^3.11.3",
     "less-loader": "^6.1.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "react": "^16.13.1",
     "react-app-rewired": "^2.1.6",
     "react-dom": "^16.13.1",
