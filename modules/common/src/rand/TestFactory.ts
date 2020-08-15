@@ -37,7 +37,7 @@ export class TestFactory {
       featured: true,
       songName: randStr(8),
       transcriberId: randStr(8),
-      rank: randInt(0, 100000),
+      cursor: randInt(0, 100000),
       thumbnailUrl: null,
       ...attrs,
     };

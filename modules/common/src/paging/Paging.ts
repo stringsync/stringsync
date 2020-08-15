@@ -1,5 +1,6 @@
 import { PagingMeta } from '../paging';
-import { ConnectionArgs, PagingType } from './types';
+import { ConnectionArgs, PagingType, Connection, Edge, ConnectionFromArgs } from './types';
+import { first, last, sortBy } from 'lodash';
 
 export class Paging {
   static NONE_META: PagingMeta = { pagingType: PagingType.NONE };
@@ -26,5 +27,25 @@ export class Paging {
       return { pagingType: PagingType.BACKWARD, before, last };
     }
     return Paging.NONE_META;
+  }
+
+  static connectionFrom<T>(args: ConnectionFromArgs<T>): Connection<T> {
+    const { entities, minDecodedCursor, maxDecodedCursor, getDecodedCursor, encodeCursor } = args;
+    const sortedEntities = sortBy(entities, (entity) => getDecodedCursor(entity));
+    const edges: Array<Edge<T>> = sortedEntities.map((entity) => ({
+      node: entity,
+      cursor: encodeCursor(getDecodedCursor(entity)),
+    }));
+    const decodedCursors = edges.map((edge) => edge.node).map(getDecodedCursor);
+
+    return {
+      edges,
+      pageInfo: {
+        startCursor: edges.length ? first(edges)!.cursor : null,
+        endCursor: edges.length ? last(edges)!.cursor : null,
+        hasNextPage: Math.max(...decodedCursors) < maxDecodedCursor,
+        hasPreviousPage: Math.min(...decodedCursors) > minDecodedCursor,
+      },
+    };
   }
 }

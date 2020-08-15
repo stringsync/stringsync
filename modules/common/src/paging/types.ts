@@ -5,6 +5,11 @@ export interface ConnectionArgs {
   last?: number | null;
 }
 
+export interface NotationConnectionArgs extends ConnectionArgs {
+  query?: string | null;
+  tagIds?: string[] | null;
+}
+
 export enum PagingType {
   NONE,
   FORWARD,
@@ -32,3 +37,11 @@ export type PagingMeta =
   | { pagingType: PagingType.FORWARD; after: string | null; first: number | null }
   | { pagingType: PagingType.BACKWARD; before: string | null; last: number | null }
   | { pagingType: PagingType.NONE };
+
+export type ConnectionFromArgs<T> = {
+  entities: T[];
+  minDecodedCursor: number;
+  maxDecodedCursor: number;
+  getDecodedCursor: (entity: T) => number;
+  encodeCursor: (decodedCursor: number) => string;
+};

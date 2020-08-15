@@ -149,7 +149,7 @@ export class NotationModel extends Model<NotationModel> implements Notation {
 
   @AutoIncrement
   @Column
-  rank!: number;
+  cursor!: number;
 
   @IsUrl
   @AllowNull

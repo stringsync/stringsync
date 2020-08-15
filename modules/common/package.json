@@ -6,6 +6,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@stringsync/domain": "1.0.0"
+    "@stringsync/domain": "1.0.0",
+    "lodash": "^4.17.20"
   }
 }

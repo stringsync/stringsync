@@ -1,12 +1,18 @@
-import { Connection, ConnectionArgs, Paging, PagingType } from '@stringsync/common';
+import {
+  Base64,
+  Connection,
+  NotationConnectionArgs,
+  Paging,
+  PagingType,
+  BadRequestError,
+  PagingMeta,
+} from '@stringsync/common';
 import { TYPES } from '@stringsync/container';
 import { Notation } from '@stringsync/domain';
 import { NotationModel } from '@stringsync/sequelize';
 import { inject, injectable } from 'inversify';
-import { first, last } from 'lodash';
-import { Op } from 'sequelize';
+import { Op, FindOptions } from 'sequelize';
 import { NotationLoader, NotationRepo } from '../../types';
-import { Base64 } from '@stringsync/common';
 
 @injectable()
 export class NotationSequelizeRepo implements NotationRepo {
@@ -14,22 +20,22 @@ export class NotationSequelizeRepo implements NotationRepo {
   static CURSOR_DELIMITER = ':';
   static PAGE_LIMIT = 50;
 
-  static decodeRankCursor(cursor: string): number {
-    const [cursorType, rank] = Base64.decode(cursor).split(NotationSequelizeRepo.CURSOR_DELIMITER);
+  static decodeCursor(encodedCursor: string): number {
+    const [cursorType, cursor] = Base64.decode(encodedCursor).split(NotationSequelizeRepo.CURSOR_DELIMITER);
     if (cursorType !== NotationSequelizeRepo.CURSOR_TYPE) {
       throw new Error(`expected cursor type '${NotationSequelizeRepo.CURSOR_TYPE}', got: ${cursorType}`);
     }
     try {
-      return parseInt(rank, 10);
+      return parseInt(cursor, 10);
     } catch (e) {
       throw new Error(`cannot decode cursor: ${cursor}`);
     }
   }
 
-  static encodeRankCursor(rank: number): string {
+  static encodeCursor(decodedCursor: number): string {
     const cursorType = NotationSequelizeRepo.CURSOR_TYPE;
     const cursorDelimiter = NotationSequelizeRepo.CURSOR_DELIMITER;
-    return Base64.encode(`${cursorType}${cursorDelimiter}${rank}`);
+    return Base64.encode(`${cursorType}${cursorDelimiter}${decodedCursor}`);
   }
 
   notationModel: typeof NotationModel;
@@ -83,79 +89,51 @@ export class NotationSequelizeRepo implements NotationRepo {
     await this.notationModel.update(attrs, { where: { id } });
   }
 
-  async findPage(connectionArgs: ConnectionArgs): Promise<Connection<Notation>> {
-    const pagingMeta = Paging.meta(connectionArgs);
+  async findPage(args: NotationConnectionArgs): Promise<Connection<Notation>> {
+    const pagingMeta = Paging.meta(args);
+    const findOptions = this.getFindOptions(pagingMeta);
+    const [notations, min, max] = await Promise.all([
+      this.notationModel.findAll(findOptions),
+      this.notationModel.min<NotationModel, number>('cursor'),
+      this.notationModel.max<NotationModel, number>('cursor'),
+    ]);
+
+    return Paging.connectionFrom<Notation>({
+      entities: notations,
+      minDecodedCursor: min,
+      maxDecodedCursor: max,
+      getDecodedCursor: (notation) => notation.cursor,
+      encodeCursor: NotationSequelizeRepo.encodeCursor,
+    });
+  }
+
+  private getFindOptions(pagingMeta: PagingMeta): FindOptions {
+    const findOptions: FindOptions = { raw: true };
 
     switch (pagingMeta.pagingType) {
       case PagingType.NONE:
-        return await this.pageNone(NotationSequelizeRepo.PAGE_LIMIT);
+        findOptions.order = [['cursor', 'ASC']];
+        findOptions.limit = NotationSequelizeRepo.PAGE_LIMIT;
+        break;
 
       case PagingType.FORWARD:
-        const first = pagingMeta.first || NotationSequelizeRepo.PAGE_LIMIT;
-        const after = pagingMeta.after;
-        return await this.pageForward(first, after);
+        const { after } = pagingMeta;
+        findOptions.where = after ? { cursor: { [Op.gt]: NotationSequelizeRepo.decodeCursor(after) } } : undefined;
+        findOptions.order = [['cursor', 'ASC']];
+        findOptions.limit = pagingMeta.first || NotationSequelizeRepo.PAGE_LIMIT;
+        break;
 
       case PagingType.BACKWARD:
-        const last = pagingMeta.last || NotationSequelizeRepo.PAGE_LIMIT;
-        const before = pagingMeta.before;
-        return await this.pageBackward(last, before);
+        const { before } = pagingMeta;
+        findOptions.where = before ? { cursor: { [Op.lt]: NotationSequelizeRepo.decodeCursor(before) } } : undefined;
+        findOptions.order = [['cursor', 'DESC']];
+        findOptions.limit = pagingMeta.last || NotationSequelizeRepo.PAGE_LIMIT;
+        break;
 
       default:
-        throw new Error(`operation not supported`);
+        throw new BadRequestError('operation not supported');
     }
-  }
 
-  private async pageNone(limit: number): Promise<Connection<Notation>> {
-    const [notations, count] = await Promise.all([
-      this.notationModel.findAll({ order: [['rank', 'DESC']], limit, raw: true }),
-      this.count(),
-    ]);
-    const edges = notations.map((notation) => ({
-      node: notation,
-      cursor: NotationSequelizeRepo.encodeRankCursor(notation.rank),
-    }));
-
-    return {
-      edges,
-      pageInfo: {
-        startCursor: edges.length ? first(edges)!.cursor : null,
-        endCursor: edges.length ? last(edges)!.cursor : null,
-        hasNextPage: edges.length < count,
-        hasPreviousPage: false,
-      },
-    };
-  }
-
-  private async pageForward(limit: number, after: string | null): Promise<Connection<Notation>> {
-    const [notation, min, max] = await Promise.all([
-      this.notationModel.findAll({
-        where: after ? { rank: { [Op.lt]: NotationSequelizeRepo.decodeRankCursor(after) } } : undefined,
-        order: [['rank', 'DESC']],
-        limit,
-        raw: true,
-      }),
-      this.notationModel.min<NotationModel, number>('rank'),
-      this.notationModel.max<NotationModel, number>('rank'),
-    ]);
-    const edges = notation.map((notation) => ({
-      node: notation,
-      cursor: NotationSequelizeRepo.encodeRankCursor(notation.rank),
-      raw: true,
-    }));
-    const ranks = edges.map((edge) => edge.node.rank);
-
-    return {
-      edges,
-      pageInfo: {
-        startCursor: edges.length ? first(edges)!.cursor : null,
-        endCursor: edges.length ? last(edges)!.cursor : null,
-        hasNextPage: Math.min(...ranks) > min,
-        hasPreviousPage: Math.max(...ranks) < max,
-      },
-    };
-  }
-
-  private async pageBackward(last: number, before: string | null): Promise<Connection<Notation>> {
-    throw new Error('not implemented');
+    return findOptions;
   }
 }

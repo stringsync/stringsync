@@ -1,10 +1,10 @@
+import { NotationConnectionArgs as INotationConnectionArgs } from '@stringsync/common';
 import { ArgsType, Field } from 'type-graphql';
-import { ConnectionArgs as IConnectionArgs } from '@stringsync/common';
 import { injectable } from 'inversify';
 
 @ArgsType()
 @injectable()
-export class ConnectionArgs implements IConnectionArgs {
+export class NotationConnectionArgs implements INotationConnectionArgs {
   @Field({ nullable: true, description: 'paginate before opaque cursor' })
   before!: string;
 
@@ -16,4 +16,10 @@ export class ConnectionArgs implements IConnectionArgs {
 
   @Field({ nullable: true, description: 'paginate last' })
   last!: number;
+
+  @Field({ nullable: true, description: 'song, artist, or transcriber name' })
+  query!: string;
+
+  @Field(() => [String], { nullable: true, description: 'tag ids' })
+  tagIds!: string[];
 }

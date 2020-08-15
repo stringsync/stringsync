@@ -168,7 +168,7 @@ describe('findPage', () => {
     notations = new Array(NUM_NOTATIONS);
     for (let ndx = 0; ndx < NUM_NOTATIONS; ndx++) {
       const transcriber = ndx % 2 === 0 ? users[0] : users[1];
-      notations[ndx] = TestFactory.buildRandNotation({ rank: ndx + 1, transcriberId: transcriber.id });
+      notations[ndx] = TestFactory.buildRandNotation({ cursor: ndx + 1, transcriberId: transcriber.id });
     }
     notations = await notationRepo.bulkCreate(notations);
   });
@@ -177,17 +177,23 @@ describe('findPage', () => {
     const notationConnection = await notationRepo.findPage({});
 
     const actualNotations = notationConnection.edges.map((edge) => edge.node);
-    const expectedNotations = take(sortBy(notations, 'rank').reverse(), NotationSequelizeRepo.PAGE_LIMIT);
+    const expectedNotations = take(
+      sortBy(notations, (notation) => notation.cursor),
+      NotationSequelizeRepo.PAGE_LIMIT
+    );
 
     expect(actualNotations).toHaveLength(NotationSequelizeRepo.PAGE_LIMIT);
-    expect(sortBy(actualNotations, 'id')).toStrictEqual(sortBy(expectedNotations, 'id'));
+    expect(actualNotations).toStrictEqual(sortBy(expectedNotations, (notation) => notation.cursor));
   });
 
-  it('returns the first N records by reverse rank', async () => {
+  it('returns the first N records', async () => {
     const notationConnection = await notationRepo.findPage({ first: 5 });
 
     const actualNotations = notationConnection.edges.map((edge) => edge.node);
-    const expectedNotations = take(sortBy(notations, 'rank').reverse(), 5);
+    const expectedNotations = take(
+      sortBy(notations, (notation) => notation.cursor),
+      5
+    );
 
     expect(actualNotations).toHaveLength(5);
     expect(actualNotations).toStrictEqual(expectedNotations);
@@ -198,11 +204,30 @@ describe('findPage', () => {
     const notationConnection = await notationRepo.findPage({ first: 2, after: pageInfo.endCursor });
 
     const actualNotations = notationConnection.edges.map((edge) => edge.node);
-    const expectedNotations = take(
-      sortBy(notations, 'rank')
-        .reverse()
-        .slice(1),
-      2
+    const expectedNotations = sortBy(notations, (notation) => notation.cursor).slice(1, 3);
+
+    expect(actualNotations).toHaveLength(2);
+    expect(actualNotations).toStrictEqual(expectedNotations);
+  });
+
+  it('returns the last N records', async () => {
+    const notationConnection = await notationRepo.findPage({ last: 5 });
+
+    const actualNotations = notationConnection.edges.map((edge) => edge.node);
+    const expectedNotations = sortBy(notations, (notation) => notation.cursor).slice(NUM_NOTATIONS - 5);
+
+    expect(actualNotations).toHaveLength(5);
+    expect(actualNotations).toStrictEqual(expectedNotations);
+  });
+
+  it('returns the last N records before a cursor', async () => {
+    const { pageInfo } = await notationRepo.findPage({ last: 1 });
+    const notationConnection = await notationRepo.findPage({ last: 2, before: pageInfo.startCursor });
+
+    const actualNotations = notationConnection.edges.map((edge) => edge.node);
+    const expectedNotations = sortBy(notations, (notation) => notation.cursor).slice(
+      NUM_NOTATIONS - 3,
+      NUM_NOTATIONS - 1
     );
 
     expect(actualNotations).toHaveLength(2);
@@ -214,7 +239,7 @@ describe('findPage', () => {
     const notationConnection = await notationRepo.findPage({ first: limit });
 
     const actualNotations = notationConnection.edges.map((edge) => edge.node);
-    const expectedNotations = sortBy(notations, 'rank').reverse();
+    const expectedNotations = sortBy(notations, (notation) => notation.cursor);
 
     expect(actualNotations).toStrictEqual(expectedNotations);
   });
@@ -224,15 +249,9 @@ describe('findPage', () => {
     const notationConnection = await notationRepo.findPage({ first: NUM_NOTATIONS + 1, after: pageInfo.endCursor });
 
     const actualNotations = notationConnection.edges.map((edge) => edge.node);
-    const expectedNotations = sortBy(notations)
-      .reverse()
-      .slice(1);
+    const expectedNotations = sortBy(notations, (notation) => notation.cursor).slice(1);
 
     expect(actualNotations).toHaveLength(expectedNotations.length);
     expect(actualNotations).toStrictEqual(expectedNotations);
-  });
-
-  it('does not allow backwards pagination', async () => {
-    await expect(notationRepo.findPage({ last: 1 })).rejects.toThrow();
   });
 });

@@ -2,7 +2,7 @@ import { TYPES } from '@stringsync/container';
 import { injectable, inject } from 'inversify';
 import { NotationRepo, TagRepo } from '@stringsync/repos';
 import { Notation } from '@stringsync/domain';
-import { ConnectionArgs, Connection } from '@stringsync/common';
+import { ConnectionArgs, Connection, NotationConnectionArgs } from '@stringsync/common';
 
 @injectable()
 export class NotationService {
@@ -26,8 +26,8 @@ export class NotationService {
     return await this.notationRepo.findAllByTagId(tagId);
   }
 
-  async findPage(connectionArgs: ConnectionArgs): Promise<Connection<Notation>> {
-    return await this.notationRepo.findPage(connectionArgs);
+  async findPage(args: NotationConnectionArgs): Promise<Connection<Notation>> {
+    return await this.notationRepo.findPage(args);
   }
 
   async create(songName: string, artistName: string, transcriberId: string): Promise<Notation> {

@@ -1,16 +1,16 @@
-import { NotationConnectionObject } from './NotationConnectionObject';
-import { Connection, AuthRequirement } from '@stringsync/common';
+import { AuthRequirement, Connection } from '@stringsync/common';
 import { TYPES } from '@stringsync/container';
 import { Notation } from '@stringsync/domain';
 import { NotationService } from '@stringsync/services';
 import { inject, injectable } from 'inversify';
-import { Args, Query, Resolver, Arg, UseMiddleware, Mutation, Ctx } from 'type-graphql';
-import { ConnectionArgs } from './../Paging';
+import { Arg, Args, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { NotationObject } from '.';
 import { WithAuthRequirement } from '../../middlewares';
+import { ResolverCtx } from '../../types';
 import { CreateNotationInput } from './CreateNotationInput';
 import { NotationArgs } from './NotationArgs';
-import { ResolverCtx } from '../../types';
+import { NotationConnectionObject } from './NotationConnectionObject';
+import { NotationConnectionArgs } from './NotationConnectionArgs';
 
 @Resolver()
 @injectable()
@@ -22,7 +22,7 @@ export class NotationResolver {
   }
 
   @Query((returns) => NotationConnectionObject)
-  async notations(@Args() args: ConnectionArgs): Promise<Connection<Notation>> {
+  async notations(@Args() args: NotationConnectionArgs): Promise<Connection<Notation>> {
     return await this.notationService.findPage(args);
   }
 

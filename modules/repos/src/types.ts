@@ -1,5 +1,5 @@
 import { User, Notation, Tag, Tagging } from '@stringsync/domain';
-import { Connection, ConnectionArgs } from '@stringsync/common';
+import { Connection, ConnectionArgs, NotationConnectionArgs } from '@stringsync/common';
 
 export interface Repo<T extends object> {
   count(): Promise<number>;
@@ -19,7 +19,7 @@ export interface UserRepo extends Repo<User> {
 }
 
 export interface NotationRepo extends Repo<Notation> {
-  findPage(connectionArgs: ConnectionArgs): Promise<Connection<Notation>>;
+  findPage(connectionArgs: NotationConnectionArgs): Promise<Connection<Notation>>;
   findAllByTranscriberId(transcriberId: string): Promise<Notation[]>;
   findAllByTagId(tagId: string): Promise<Notation[]>;
 }

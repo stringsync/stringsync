@@ -1,6 +1,6 @@
 export interface Notation {
   id: string;
-  rank: number;
+  cursor: number;
   createdAt: Date;
   updatedAt: Date;
   songName: string;
@@ -12,4 +12,4 @@ export interface Notation {
   thumbnailUrl: string | null;
 }
 
-export type PublicNotation = Omit<Notation, 'rank'>;
+export type PublicNotation = Omit<Notation, 'cursor'>;

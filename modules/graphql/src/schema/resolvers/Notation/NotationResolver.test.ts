@@ -4,7 +4,7 @@ import { Notation, User, UserRole } from '@stringsync/domain';
 import { NotationRepo, UserRepo } from '@stringsync/repos';
 import { TestGraphqlClient, useTestApp } from '../../../testing';
 import { TestNotationClient } from './TestNotationClient';
-import { sortBy } from 'lodash';
+import { sortBy, first } from 'lodash';
 import { TestAuthClient } from '../Auth/TestAuthClient';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from '@stringsync/services';
@@ -61,8 +61,9 @@ describe('notations', () => {
     expect(notationsRes.statusCode).toBe(HttpStatus.OK);
 
     const notationIds = notationsRes.body.data.notations.edges.map((edge) => edge.node.id);
-    const firstNotationIdByRank = sortBy(notations, (notation) => notation.rank).reverse()[0].id;
-    expect(notationIds).toStrictEqual([firstNotationIdByRank]);
+    expect(notationIds).toHaveLength(1);
+    const firstNotationById = first(sortBy(notations, (notation) => notation.cursor))!.id;
+    expect(notationIds).toStrictEqual([firstNotationById]);
   });
 });
 

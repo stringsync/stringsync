@@ -3,7 +3,7 @@ module.exports = {
     return queryInterface.sequelize.query(`
       CREATE TABLE notations (
           id TEXT PRIMARY KEY,
-          rank SERIAL UNIQUE NOT NULL,
+          cursor SERIAL UNIQUE NOT NULL,
           created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
           updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
           song_name TEXT NOT NULL,
@@ -16,7 +16,7 @@ module.exports = {
       );
 
       CREATE TRIGGER trigger_generate_notation_id BEFORE INSERT ON notations FOR EACH ROW EXECUTE PROCEDURE unique_short_id();
-      CREATE INDEX index_notations_on_rank ON notations (rank);
+      CREATE INDEX index_notations_on_cursor ON notations (cursor);
     `);
   },
 
@@ -25,7 +25,7 @@ module.exports = {
       DROP TABLE notations;
 
       DROP TRIGGER trigger_generate_notation_id ON notations;
-      DROP INDEX index_notations_on_rank;
+      DROP INDEX index_notations_on_cursor;
     `);
   },
 };
