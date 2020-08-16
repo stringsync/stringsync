@@ -1,24 +1,27 @@
 import {
   Base64,
   Connection,
+  Edge,
   NotationConnectionArgs,
   Paging,
   PagingType,
-  BadRequestError,
-  PagingMeta,
+  UnknownError,
+  UNKNOWN_ERROR_MSG,
 } from '@stringsync/common';
 import { TYPES } from '@stringsync/container';
 import { Notation } from '@stringsync/domain';
 import { NotationModel } from '@stringsync/sequelize';
 import { inject, injectable } from 'inversify';
-import { Op, FindOptions } from 'sequelize';
+import { first, last } from 'lodash';
+import { camelCaseKeys, findNotationPageQuery } from '../../queries';
 import { NotationLoader, NotationRepo } from '../../types';
+import { QueryTypes } from 'sequelize';
 
 @injectable()
 export class NotationSequelizeRepo implements NotationRepo {
   static CURSOR_TYPE = 'notation';
   static CURSOR_DELIMITER = ':';
-  static PAGE_LIMIT = 50;
+  static PAGE_LIMIT = 10;
 
   static decodeCursor(encodedCursor: string): number {
     const [cursorType, cursor] = Base64.decode(encodedCursor).split(NotationSequelizeRepo.CURSOR_DELIMITER);
@@ -90,50 +93,152 @@ export class NotationSequelizeRepo implements NotationRepo {
   }
 
   async findPage(args: NotationConnectionArgs): Promise<Connection<Notation>> {
+    if (!this.notationModel.sequelize) {
+      throw new UnknownError(UNKNOWN_ERROR_MSG);
+    }
+
+    const getExactNotations = (
+      overNotations: Notation[],
+      exactLimit: number,
+      exactCursor: number,
+      backward: boolean
+    ): Notation[] => {
+      const exactNotations = new Array<Notation>();
+      for (const notation of overNotations) {
+        if (exactNotations.length >= exactLimit) {
+          break;
+        }
+        if (backward ? notation.cursor < exactCursor : notation.cursor > exactCursor) {
+          exactNotations.push(notation);
+        }
+      }
+      return exactNotations;
+    };
+
+    const sequelize = this.notationModel.sequelize;
+    const defaultLimit = NotationSequelizeRepo.PAGE_LIMIT;
+    const tagIds = args.tagIds || null;
+    const query = args.query ? `%${args.query}%` : null;
     const pagingMeta = Paging.meta(args);
-    const findOptions = this.getFindOptions(pagingMeta);
-    const [notations, min, max] = await Promise.all([
-      this.notationModel.findAll(findOptions),
-      this.notationModel.min<NotationModel, number>('cursor'),
-      this.notationModel.max<NotationModel, number>('cursor'),
-    ]);
+    const encode = NotationSequelizeRepo.encodeCursor;
+    const decode = NotationSequelizeRepo.decodeCursor;
 
-    return Paging.connectionFrom<Notation>({
-      entities: notations,
-      minDecodedCursor: min,
-      maxDecodedCursor: max,
-      getDecodedCursor: (notation) => notation.cursor,
-      encodeCursor: NotationSequelizeRepo.encodeCursor,
-    });
-  }
+    let exactCursor: number;
+    let exactLimit: number;
+    let overCursor: number;
+    let overLimit: number;
 
-  private getFindOptions(pagingMeta: PagingMeta): FindOptions {
-    const findOptions: FindOptions = { raw: true };
+    let rows: any[];
+    let overNotations: Notation[];
+    let exactNotations: Notation[];
+    let overCursors: number[];
+    let exactCursors: number[];
+    let edges: Array<Edge<Notation>>;
 
     switch (pagingMeta.pagingType) {
       case PagingType.NONE:
-        findOptions.order = [['cursor', 'ASC']];
-        findOptions.limit = NotationSequelizeRepo.PAGE_LIMIT;
-        break;
+        exactLimit = defaultLimit;
+        exactCursor = 0;
+        overLimit = exactLimit + 1;
+        overCursor = exactCursor;
+
+        rows = await sequelize.query(
+          findNotationPageQuery({
+            cursor: overCursor,
+            cursorOrder: 'asc',
+            cursorCmp: '>',
+            limit: overLimit,
+            query,
+            tagIds,
+          }),
+          { type: QueryTypes.SELECT }
+        );
+
+        overNotations = camelCaseKeys(rows);
+        exactNotations = getExactNotations(overNotations, exactLimit, exactCursor, false);
+        overCursors = overNotations.map((notation) => notation.cursor);
+        exactCursors = exactNotations.map((notation) => notation.cursor);
+        edges = exactNotations.map((notation) => ({ node: notation, cursor: encode(notation.cursor) }));
+
+        return {
+          edges,
+          pageInfo: {
+            startCursor: edges.length ? first(edges)!.cursor : null,
+            endCursor: edges.length ? last(edges)!.cursor : null,
+            hasNextPage: Math.max(...overCursors) > Math.max(...exactCursors),
+            hasPreviousPage: Math.min(...overCursors) < Math.min(...exactCursors),
+          },
+        };
 
       case PagingType.FORWARD:
-        const { after } = pagingMeta;
-        findOptions.where = after ? { cursor: { [Op.gt]: NotationSequelizeRepo.decodeCursor(after) } } : undefined;
-        findOptions.order = [['cursor', 'ASC']];
-        findOptions.limit = pagingMeta.first || NotationSequelizeRepo.PAGE_LIMIT;
-        break;
+        exactLimit = typeof pagingMeta.first === 'number' ? pagingMeta.first : defaultLimit;
+        exactCursor = pagingMeta.after ? decode(pagingMeta.after) : 0;
+        overLimit = exactLimit + 2;
+        overCursor = exactCursor - 1;
+
+        rows = await sequelize.query(
+          findNotationPageQuery({
+            cursor: overCursor,
+            cursorOrder: 'asc',
+            cursorCmp: '>',
+            limit: overLimit,
+            query,
+            tagIds,
+          }),
+          { type: QueryTypes.SELECT }
+        );
+
+        overNotations = camelCaseKeys(rows);
+        exactNotations = getExactNotations(overNotations, exactLimit, exactCursor, false);
+        overCursors = overNotations.map((notation) => notation.cursor);
+        exactCursors = exactNotations.map((notation) => notation.cursor);
+        edges = exactNotations.map((notation) => ({ node: notation, cursor: encode(notation.cursor) }));
+
+        return {
+          edges,
+          pageInfo: {
+            startCursor: edges.length ? first(edges)!.cursor : null,
+            endCursor: edges.length ? last(edges)!.cursor : null,
+            hasNextPage: Math.max(...overCursors) > Math.max(...exactCursors),
+            hasPreviousPage: Math.min(...overCursors) < Math.min(...exactCursors),
+          },
+        };
 
       case PagingType.BACKWARD:
-        const { before } = pagingMeta;
-        findOptions.where = before ? { cursor: { [Op.lt]: NotationSequelizeRepo.decodeCursor(before) } } : undefined;
-        findOptions.order = [['cursor', 'DESC']];
-        findOptions.limit = pagingMeta.last || NotationSequelizeRepo.PAGE_LIMIT;
-        break;
+        exactLimit = typeof pagingMeta.last === 'number' ? pagingMeta.last : defaultLimit;
+        exactCursor = pagingMeta.before ? decode(pagingMeta.before) : 2147483645;
+        overLimit = exactLimit + 2;
+        overCursor = exactCursor + 1;
+        rows = await sequelize.query(
+          findNotationPageQuery({
+            cursor: overCursor,
+            cursorOrder: 'desc',
+            cursorCmp: '<',
+            limit: overLimit,
+            query,
+            tagIds,
+          }),
+          { type: QueryTypes.SELECT }
+        );
+
+        overNotations = camelCaseKeys(rows);
+        exactNotations = getExactNotations(overNotations, exactLimit, exactCursor, true);
+        overCursors = overNotations.map((notation) => notation.cursor);
+        exactCursors = exactNotations.map((notation) => notation.cursor);
+        edges = exactNotations.map((notation) => ({ node: notation, cursor: encode(notation.cursor) }));
+
+        return {
+          edges: edges.reverse(),
+          pageInfo: {
+            startCursor: edges.length ? first(edges)!.cursor : null,
+            endCursor: edges.length ? last(edges)!.cursor : null,
+            hasNextPage: Math.min(...overCursors) < Math.min(...exactCursors),
+            hasPreviousPage: Math.max(...overCursors) > Math.max(...exactCursors),
+          },
+        };
 
       default:
-        throw new BadRequestError('operation not supported');
+        throw new UnknownError(UNKNOWN_ERROR_MSG);
     }
-
-    return findOptions;
   }
 }

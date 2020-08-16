@@ -20,8 +20,8 @@ module.exports = {
       CREATE TRIGGER trigger_generate_user_id BEFORE INSERT ON users FOR EACH ROW EXECUTE PROCEDURE unique_short_id();
       CREATE INDEX index_users_on_rank ON users (rank);
       CREATE INDEX index_users_on_email ON users (email);
-      CREATE INDEX index_users_on_username ON users (username);
       CREATE INDEX index_users_on_reset_password_token ON users (reset_password_token);
+      CREATE INDEX trgm_index_users_on_username ON users USING GIN (username gin_trgm_ops);
     `);
   },
 
@@ -31,10 +31,11 @@ module.exports = {
 
       DROP TRIGGER trigger_generate_user_id ON users;
       DROP INDEX index_users_on_rank;
-      DROP INDEX index_users_on_rank ON users (rank);
-      DROP INDEX index_users_on_email ON users (email);
-      DROP INDEX index_users_on_username ON users (username);
-      DROP INDEX index_users_on_reset_password_token ON users (reset_password_token);
+      DROP INDEX index_users_on_rank;
+      DROP INDEX index_users_on_email;
+      DROP INDEX index_users_on_username;
+      DROP INDEX index_users_on_reset_password_token;
+      DROP INDEX trgm_index_users_on_username;
     `);
   },
 };

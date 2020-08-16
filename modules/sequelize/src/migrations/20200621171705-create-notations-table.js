@@ -17,6 +17,8 @@ module.exports = {
 
       CREATE TRIGGER trigger_generate_notation_id BEFORE INSERT ON notations FOR EACH ROW EXECUTE PROCEDURE unique_short_id();
       CREATE INDEX index_notations_on_cursor ON notations (cursor);
+      CREATE INDEX trgm_index_notations_on_song_name ON notations USING GIN (song_name gin_trgm_ops);
+      CREATE INDEX trgm_index_notations_on_artist_name ON notations USING GIN (artist_name gin_trgm_ops);
     `);
   },
 
@@ -26,6 +28,8 @@ module.exports = {
 
       DROP TRIGGER trigger_generate_notation_id ON notations;
       DROP INDEX index_notations_on_cursor;
+      DROP INDEX trgm_index_notations_on_song_name;
+      DROP INDEX trgm_index_notations_on_song_name;
     `);
   },
 };
