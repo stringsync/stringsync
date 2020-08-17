@@ -32,7 +32,7 @@ export const findNotationPageQuery = (args: FindNotationpageQueryArgs): string =
     q.leftJoin('taggings', 'taggings.notation_id', 'notations.id')
       .whereIn('taggings.tag_id', tagIds)
       .groupBy('notations.id')
-      .having('count(distinct(taggings.tag_id))', '>=', tagIds.length);
+      .having(sql.raw('count(distinct(taggings.tag_id)) >= ?', tagIds.length));
   }
 
   return q.toString();

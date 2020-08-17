@@ -1,24 +1,13 @@
-import {
-  Base64,
-  Connection,
-  Edge,
-  NotationConnectionArgs,
-  Pager,
-  PagingType,
-  UnknownError,
-  UNKNOWN_ERROR_MSG,
-  PagingCtx,
-} from '@stringsync/common';
+import { Connection, NotationConnectionArgs, PagingCtx, PagingType } from '@stringsync/common';
+import { Pager } from '../../util';
 import { TYPES } from '@stringsync/container';
 import { Notation } from '@stringsync/domain';
 import { NotationModel } from '@stringsync/sequelize';
 import { inject, injectable } from 'inversify';
-import { first, last } from 'lodash';
+import { QueryTypes } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
 import { camelCaseKeys, findNotationPageQuery } from '../../queries';
 import { NotationLoader, NotationRepo } from '../../types';
-import { QueryTypes } from 'sequelize';
-import { NotationSequelizePager } from './NotationSequelizePager';
-import { Sequelize } from 'sequelize-typescript';
 
 @injectable()
 export class NotationSequelizeRepo implements NotationRepo {

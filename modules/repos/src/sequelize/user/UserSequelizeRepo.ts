@@ -1,4 +1,5 @@
-import { Base64, Connection, Pager, ConnectionArgs, PagingType } from '@stringsync/common';
+import { Base64, Connection, ConnectionArgs, PagingType } from '@stringsync/common';
+import { Pager } from '../../util';
 import { UserLoader } from '../../types';
 import { TYPES } from '@stringsync/container';
 import { User } from '@stringsync/domain';

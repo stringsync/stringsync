@@ -1,4 +1,5 @@
-import { Base64, Pager } from '@stringsync/common';
+import { Base64 } from '@stringsync/common';
+import { Pager } from '../../util';
 import { Notation } from '@stringsync/domain';
 import { injectable } from 'inversify';
 

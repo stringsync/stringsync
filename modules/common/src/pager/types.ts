@@ -46,4 +46,4 @@ export type PagingCtx = {
   pagingType: PagingType;
 };
 
-export type PageFinder<T> = (pagingCtx: PagingCtx) => Promise<T[]>;
+export type PageFinder<T extends PagingEntity> = (pagingCtx: PagingCtx) => Promise<T[]>;

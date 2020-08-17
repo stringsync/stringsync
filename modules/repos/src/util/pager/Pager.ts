@@ -1,7 +1,16 @@
 import { first, last } from 'lodash';
-import { InternalError, UnknownError, UNKNOWN_ERROR_MSG } from '../errors';
-import { PagingMeta } from '../pager';
-import { Connection, ConnectionArgs, Edge, PageFinder, PageInfo, PagingCtx, PagingEntity, PagingType } from './types';
+import { InternalError, UnknownError, UNKNOWN_ERROR_MSG } from '@stringsync/common';
+import {
+  PagingMeta,
+  Connection,
+  ConnectionArgs,
+  Edge,
+  PageFinder,
+  PageInfo,
+  PagingCtx,
+  PagingEntity,
+  PagingType,
+} from '@stringsync/common';
 import { injectable } from 'inversify';
 
 type FetchCtx = {

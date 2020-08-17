@@ -1,4 +1,4 @@
-import { Ctor, Pager } from '@stringsync/common';
+import { Pager } from '@stringsync/repos';
 import { ContainerConfig, getContainerConfig } from '@stringsync/config';
 import { AuthResolver, HealthController, NotationResolver, TagResolver, UserResolver } from '@stringsync/graphql';
 import {
@@ -37,6 +37,7 @@ import { Logger } from './logger';
 import { Mailer, NodemailerMailer } from './mailer';
 import { Redis } from './redis';
 import { Notation } from '@stringsync/domain';
+import { Ctor } from '@stringsync/common';
 
 export class DI {
   static create(config: ContainerConfig = getContainerConfig()) {
