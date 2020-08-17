@@ -3,7 +3,7 @@ import {
   Connection,
   Edge,
   NotationConnectionArgs,
-  Paging,
+  Pager,
   PagingType,
   UnknownError,
   UNKNOWN_ERROR_MSG,
@@ -119,7 +119,7 @@ export class NotationSequelizeRepo implements NotationRepo {
     const defaultLimit = NotationSequelizeRepo.PAGE_LIMIT;
     const tagIds = args.tagIds || null;
     const query = args.query ? `%${args.query}%` : null;
-    const pagingMeta = Paging.meta(args);
+    const pagingMeta = Pager.meta(args);
     const encode = NotationSequelizeRepo.encodeCursor;
     const decode = NotationSequelizeRepo.decodeCursor;
 

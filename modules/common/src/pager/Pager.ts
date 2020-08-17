@@ -1,7 +1,7 @@
 import { PagingMeta } from '../pager';
 import { ConnectionArgs, PagingType } from './types';
 
-export class Paging {
+export class Pager {
   static NONE_META: PagingMeta = { pagingType: PagingType.NONE };
 
   static meta(connectionArgs: ConnectionArgs): PagingMeta {
@@ -25,6 +25,6 @@ export class Paging {
     if (isBackwardPaging) {
       return { pagingType: PagingType.BACKWARD, before, last };
     }
-    return Paging.NONE_META;
+    return Pager.NONE_META;
   }
 }

@@ -1,4 +1,4 @@
-import { Base64, Connection, Paging, ConnectionArgs, PagingType } from '@stringsync/common';
+import { Base64, Connection, Pager, ConnectionArgs, PagingType } from '@stringsync/common';
 import { UserLoader } from '../../types';
 import { TYPES } from '@stringsync/container';
 import { User } from '@stringsync/domain';
@@ -90,7 +90,7 @@ export class UserSequelizeRepo implements UserRepo {
   }
 
   async findPage(connectionArgs: ConnectionArgs): Promise<Connection<User>> {
-    const pagingMeta = Paging.meta(connectionArgs);
+    const pagingMeta = Pager.meta(connectionArgs);
 
     switch (pagingMeta.pagingType) {
       case PagingType.NONE:
