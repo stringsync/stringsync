@@ -1,22 +1,23 @@
 import { sql } from './sql';
+import { PagingType } from '@stringsync/common';
 
 export type FindNotationpageQueryArgs = {
   cursor: number;
-  cursorCmp: '<' | '>';
-  cursorOrder: 'asc' | 'desc';
+  pagingType: PagingType;
   limit: number;
   tagIds: string[] | null;
   query: string | null;
 };
 
 export const findNotationPageQuery = (args: FindNotationpageQueryArgs): string => {
-  const { cursor, tagIds, query, cursorCmp, cursorOrder, limit } = args;
+  const { cursor, tagIds, pagingType, query, limit } = args;
+  const isPagingBackward = pagingType === PagingType.BACKWARD;
 
   const q = sql
     .select('notations.*')
     .from('notations')
-    .where('cursor', cursorCmp, cursor)
-    .orderBy('notations.cursor', cursorOrder)
+    .where('cursor', isPagingBackward ? '<' : '>', cursor)
+    .orderBy('notations.cursor', isPagingBackward ? 'desc' : 'asc')
     .limit(limit);
 
   if (query) {

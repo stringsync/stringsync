@@ -8,6 +8,7 @@ export const TYPES = {
   NotationLoader: Symbol('NotationLoader'),
   NotationLoaderCtor: Symbol('NotationLoaderCtor'),
   NotationModel: Symbol('NotationModel'),
+  NotationPager: Symbol('NotationPager'),
   NotationRepo: Symbol('NotationRepo'),
   NotationSequelizeLoader: Symbol('NotationSequelizeLoader'),
   NotationSequelizeRepo: Symbol('NotationSequelizeRepo'),

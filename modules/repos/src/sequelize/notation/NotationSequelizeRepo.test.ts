@@ -4,6 +4,7 @@ import { User, Notation } from '@stringsync/domain';
 import { UserSequelizeRepo } from '@stringsync/repos';
 import { isPlainObject, sortBy, take } from 'lodash';
 import { NotationSequelizeRepo } from './NotationSequelizeRepo';
+import { NotationSequelizePager } from './NotationSequelizePager';
 
 const container = useTestContainer();
 
@@ -153,7 +154,7 @@ describe('update', () => {
 
 describe('findPage', () => {
   const NUM_USERS = 2;
-  const NUM_NOTATIONS = NotationSequelizeRepo.PAGE_LIMIT + 1;
+  const NUM_NOTATIONS = 11;
 
   let users: User[];
   let notations: Notation[];
@@ -179,10 +180,10 @@ describe('findPage', () => {
     const actualNotations = notationConnection.edges.map((edge) => edge.node);
     const expectedNotations = take(
       sortBy(notations, (notation) => notation.cursor),
-      NotationSequelizeRepo.PAGE_LIMIT
+      10
     );
 
-    expect(actualNotations).toHaveLength(NotationSequelizeRepo.PAGE_LIMIT);
+    expect(actualNotations).toHaveLength(10);
     expect(actualNotations).toStrictEqual(sortBy(expectedNotations, (notation) => notation.cursor));
   });
 

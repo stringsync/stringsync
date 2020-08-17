@@ -9,4 +9,5 @@ export enum ErrorCode {
   CONFLICT,
   BAD_REQUEST,
   NOT_FOUND,
+  INTERNAL,
 }

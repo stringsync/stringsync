@@ -93,9 +93,6 @@ export class UserSequelizeRepo implements UserRepo {
     const pagingMeta = Pager.meta(connectionArgs);
 
     switch (pagingMeta.pagingType) {
-      case PagingType.NONE:
-        return await this.pageNone(UserSequelizeRepo.PAGE_LIMIT);
-
       case PagingType.FORWARD:
         const first = pagingMeta.first || UserSequelizeRepo.PAGE_LIMIT;
         const after = pagingMeta.after;

@@ -42,3 +42,9 @@ export class NotFoundError extends StringSyncError {
     super(message, ErrorCode.NOT_FOUND);
   }
 }
+
+export class InternalError extends StringSyncError {
+  constructor(message: string) {
+    super(message, ErrorCode.INTERNAL);
+  }
+}
