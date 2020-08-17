@@ -5,7 +5,7 @@ import { TYPES } from '@stringsync/container';
 import { NotationModel, UserModel, TaggingModel } from '@stringsync/sequelize';
 import { inject, injectable } from 'inversify';
 import { Notation, Tagging } from '@stringsync/domain';
-import { alignOneToMany, alignOneToOne, ensureNoErrors, alignManyToMany } from '../../dataloader-utils';
+import { alignOneToMany, alignOneToOne, ensureNoErrors, alignManyToMany } from '../../util';
 
 @injectable()
 export class NotationSequelizeLoader implements NotationLoader {

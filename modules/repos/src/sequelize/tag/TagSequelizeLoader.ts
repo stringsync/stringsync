@@ -1,4 +1,4 @@
-import { ensureNoErrors, alignManyToMany, alignOneToOne } from './../../dataloader-utils';
+import { ensureNoErrors, alignManyToMany, alignOneToOne } from './../../util';
 import { TagLoader } from '../../types';
 import Dataloader from 'dataloader';
 import { TYPES } from '@stringsync/container';

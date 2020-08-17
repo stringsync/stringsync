@@ -4,7 +4,7 @@ import { TYPES } from '@stringsync/container';
 import { UserModel } from '@stringsync/sequelize';
 import { inject, injectable } from 'inversify';
 import { User } from '@stringsync/domain';
-import { alignOneToOne, ensureNoErrors } from '../../dataloader-utils';
+import { alignOneToOne, ensureNoErrors } from '../../util';
 
 @injectable()
 export class UserSequelizeLoader implements UserLoader {
