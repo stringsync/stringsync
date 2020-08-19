@@ -4,7 +4,6 @@ import { User, Notation } from '@stringsync/domain';
 import { UserSequelizeRepo } from '@stringsync/repos';
 import { isPlainObject, sortBy, take } from 'lodash';
 import { NotationSequelizeRepo } from './NotationSequelizeRepo';
-import { NotationSequelizePager } from './NotationSequelizePager';
 
 const container = useTestContainer();
 

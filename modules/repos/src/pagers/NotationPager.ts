@@ -1,5 +1,5 @@
 import { Base64 } from '@stringsync/common';
-import { Pager } from '../../util';
+import { Pager } from '../util';
 import { Notation } from '@stringsync/domain';
 import { injectable } from 'inversify';
 
@@ -7,7 +7,7 @@ const CURSOR_TYPE = 'notation';
 const CURSOR_DELIMITER = ':';
 
 @injectable()
-export class NotationSequelizePager extends Pager<Notation> {
+export class NotationPager extends Pager<Notation> {
   defaultLimit = 10;
 
   decodeCursor(encodedCursor: string): number {

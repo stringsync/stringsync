@@ -1,8 +1,9 @@
-import { Pager } from '@stringsync/repos';
+import { Ctor } from '@stringsync/common';
 import { ContainerConfig, getContainerConfig } from '@stringsync/config';
 import { AuthResolver, HealthController, NotationResolver, TagResolver, UserResolver } from '@stringsync/graphql';
 import {
   NotationLoader,
+  NotationPager,
   NotationRepo,
   NotationSequelizeLoader,
   NotationSequelizeRepo,
@@ -16,7 +17,6 @@ import {
   UserRepo,
   UserSequelizeLoader,
   UserSequelizeRepo,
-  NotationSequelizePager,
 } from '@stringsync/repos';
 import { Db, NotationModel, TaggingModel, TagModel, UserModel } from '@stringsync/sequelize';
 import {
@@ -36,8 +36,6 @@ import { TYPES } from './constants';
 import { Logger } from './logger';
 import { Mailer, NodemailerMailer } from './mailer';
 import { Redis } from './redis';
-import { Notation } from '@stringsync/domain';
-import { Ctor } from '@stringsync/common';
 
 export class DI {
   static create(config: ContainerConfig = getContainerConfig()) {
@@ -159,7 +157,7 @@ export class DI {
       bind<NotationLoader>(TYPES.NotationLoader).to(NotationSequelizeLoader);
       bind<Ctor<NotationLoader>>(TYPES.NotationLoaderCtor).toConstructor(NotationSequelizeLoader);
       bind<NotationRepo>(TYPES.NotationRepo).to(NotationSequelizeRepo);
-      bind<Pager<Notation>>(TYPES.NotationPager).to(NotationSequelizePager);
+      bind<NotationPager>(TYPES.NotationPager).to(NotationPager);
 
       bind<TagLoader>(TYPES.TagLoader).to(TagSequelizeLoader);
       bind<Ctor<TagLoader>>(TYPES.TagLoaderCtor).toConstructor(TagSequelizeLoader);

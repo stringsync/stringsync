@@ -8,18 +8,19 @@ import { QueryTypes } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { camelCaseKeys, findNotationPageQuery } from '../../queries';
 import { NotationLoader, NotationRepo } from '../../types';
+import { NotationPager } from '../../pagers';
 
 @injectable()
 export class NotationSequelizeRepo implements NotationRepo {
   notationModel: typeof NotationModel;
   notationLoader: NotationLoader;
-  notationPager: Pager<Notation>;
+  notationPager: NotationPager;
   sequelize: Sequelize;
 
   constructor(
     @inject(TYPES.NotationModel) notationModel: typeof NotationModel,
     @inject(TYPES.NotationLoader) notationLoader: NotationLoader,
-    @inject(TYPES.NotationPager) notationPager: Pager<Notation>,
+    @inject(TYPES.NotationPager) notationPager: NotationPager,
     @inject(TYPES.Sequelize) sequelize: Sequelize
   ) {
     this.notationModel = notationModel;
