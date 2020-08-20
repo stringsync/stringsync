@@ -5,7 +5,7 @@ import {
   Connection,
   ConnectionArgs,
   Edge,
-  PageFinder,
+  EntityFinder,
   PageInfo,
   PagingCtx,
   PagingEntity,
@@ -50,11 +50,11 @@ export abstract class Pager<T extends PagingEntity> {
 
   abstract decodeCursor(encodedCursor: string): number;
 
-  async connect(connectionArgs: ConnectionArgs, findPage: PageFinder<T>): Promise<Connection<T>> {
+  async connect(connectionArgs: ConnectionArgs, findEntities: EntityFinder<T>): Promise<Connection<T>> {
     const pagingMeta = Pager.meta(connectionArgs);
     const fetchCtx = this.getFetchCtx(pagingMeta);
 
-    const overFetchEntities = await findPage(fetchCtx.over);
+    const overFetchEntities = await findEntities(fetchCtx.over);
     this.validate(fetchCtx.over, overFetchEntities);
 
     const exactFetchEntities = this.getExactFetchEntities(fetchCtx, overFetchEntities);
@@ -109,6 +109,14 @@ export abstract class Pager<T extends PagingEntity> {
     if (entities.length > limit) {
       throw new InternalError('too many entities returned');
     }
+
+    for (let ndx = 0; ndx < entities.length - 1; ndx++) {
+      const [curr, next] = entities.slice(ndx, ndx + 2);
+      if (curr.cursor > next.cursor) {
+        throw new InternalError('entities must be sorted in ascending cursors');
+      }
+    }
+
     switch (pagingType) {
       case PagingType.FORWARD:
         if (entities.some((entity) => entity.cursor < cursor)) {
@@ -161,12 +169,14 @@ export abstract class Pager<T extends PagingEntity> {
     let hasPreviousPage: boolean;
     switch (fetchCtx.exact.pagingType) {
       case PagingType.FORWARD:
-        hasNextPage = Math.max(...overFetchCursors) > Math.max(...exactFetchCursors);
-        hasPreviousPage = Math.min(...overFetchCursors) < Math.min(...exactFetchCursors);
+        hasNextPage = exactFetchCursors.length > 0 && Math.max(...overFetchCursors) > Math.max(...exactFetchCursors);
+        hasPreviousPage =
+          exactFetchCursors.length === 0 || Math.min(...overFetchCursors) < Math.min(...exactFetchCursors);
         break;
       case PagingType.BACKWARD:
-        hasNextPage = Math.min(...overFetchCursors) < Math.min(...exactFetchCursors);
-        hasPreviousPage = Math.max(...overFetchCursors) > Math.max(...exactFetchCursors);
+        hasNextPage = exactFetchCursors.length > 0 && Math.min(...overFetchCursors) < Math.min(...exactFetchCursors);
+        hasPreviousPage =
+          exactFetchCursors.length === 0 || Math.max(...overFetchCursors) > Math.max(...exactFetchCursors);
         break;
       default:
         throw new UnknownError(UNKNOWN_ERROR_MSG);
