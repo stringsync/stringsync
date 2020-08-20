@@ -1,9 +1,10 @@
 import { TestFactory, randStr } from '@stringsync/common';
 import { TYPES, useTestContainer } from '@stringsync/container';
-import { User, Notation } from '@stringsync/domain';
+import { User, Notation, Tagging, Tag } from '@stringsync/domain';
 import { UserSequelizeRepo } from '@stringsync/repos';
-import { isPlainObject, sortBy, take } from 'lodash';
+import { isPlainObject, sortBy, take, times, first, last } from 'lodash';
 import { NotationSequelizeRepo } from './NotationSequelizeRepo';
+import { TagRepo, TaggingRepo } from '../../types';
 
 const container = useTestContainer();
 
@@ -253,5 +254,171 @@ describe('findPage', () => {
 
     expect(actualNotations).toHaveLength(expectedNotations.length);
     expect(actualNotations).toStrictEqual(expectedNotations);
+  });
+});
+
+describe('findPage', () => {
+  let tagRepo: TagRepo;
+  let taggingRepo: TaggingRepo;
+
+  beforeEach(async () => {
+    tagRepo = container.get<TagRepo>(TYPES.TagRepo);
+    taggingRepo = container.get<TaggingRepo>(TYPES.TaggingRepo);
+  });
+
+  it('defaults to paging forward', async () => {
+    const notations = await notationRepo.bulkCreate(
+      times(11, (ndx) => TestFactory.buildRandNotation({ transcriberId, cursor: ndx + 1 }))
+    );
+
+    const { edges, pageInfo } = await notationRepo.findPage({});
+
+    expect(edges).toHaveLength(10);
+    expect(edges.map((edge) => edge.node)).toStrictEqual(take(notations, 10));
+    expect(pageInfo.startCursor).toBe(first(edges)!.cursor);
+    expect(pageInfo.endCursor).toBe(last(edges)!.cursor);
+    expect(pageInfo.hasNextPage).toBe(true);
+    expect(pageInfo.hasPreviousPage).toBe(false);
+  });
+
+  it('returns the first N notations', async () => {
+    const notations = await notationRepo.bulkCreate([
+      TestFactory.buildRandNotation({ transcriberId, cursor: 1 }),
+      TestFactory.buildRandNotation({ transcriberId, cursor: 2 }),
+    ]);
+
+    const { edges } = await notationRepo.findPage({ first: 1 });
+
+    expect(edges.map((edge) => edge.node)).toStrictEqual(notations.slice(0, 1));
+  });
+
+  it('returns the last N notations', async () => {
+    const notations = await notationRepo.bulkCreate([
+      TestFactory.buildRandNotation({ transcriberId, cursor: 1 }),
+      TestFactory.buildRandNotation({ transcriberId, cursor: 2 }),
+    ]);
+
+    const { edges } = await notationRepo.findPage({ last: 1 });
+
+    expect(edges.map((edge) => edge.node)).toStrictEqual(notations.slice(-1));
+  });
+
+  describe('with search parameters', () => {
+    let user1: User;
+    let user2: User;
+    let user3: User;
+
+    let notation1: Notation;
+    let notation2: Notation;
+    let notation3: Notation;
+
+    let tag1: Tag;
+    let tag2: Tag;
+    let tag3: Tag;
+
+    beforeEach(async () => {
+      [user1, user2, user3] = await userRepo.bulkCreate([
+        TestFactory.buildRandUser({ username: 'foo' }),
+        TestFactory.buildRandUser({ username: 'bar' }),
+        TestFactory.buildRandUser({ username: 'foobar' }),
+      ]);
+
+      [notation1, notation2, notation3] = await notationRepo.bulkCreate([
+        TestFactory.buildRandNotation({
+          songName: 'yikes',
+          artistName: 'bach',
+          transcriberId: user1.id,
+          cursor: 1,
+        }),
+        TestFactory.buildRandNotation({
+          songName: 'overnight',
+          artistName: 'loony',
+          transcriberId: user2.id,
+          cursor: 2,
+        }),
+        TestFactory.buildRandNotation({
+          songName: 'bull fighter',
+          artistName: 'jean dawson',
+          transcriberId: user3.id,
+          cursor: 3,
+        }),
+      ]);
+
+      [tag1, tag2, tag3] = await tagRepo.bulkCreate([
+        TestFactory.buildRandTag(),
+        TestFactory.buildRandTag(),
+        TestFactory.buildRandTag(),
+      ]);
+
+      await taggingRepo.bulkCreate([
+        TestFactory.buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
+        TestFactory.buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
+        TestFactory.buildRandTagging({ notationId: notation2.id, tagId: tag2.id }),
+        TestFactory.buildRandTagging({ notationId: notation2.id, tagId: tag3.id }),
+      ]);
+    });
+
+    it('returns notations that have a transcriber username matching query', async () => {
+      const { edges, pageInfo } = await notationRepo.findPage({ first: 3, query: 'foo' });
+
+      expect(edges).toHaveLength(2);
+      expect(edges.map((edge) => edge.node)).toStrictEqual([notation1, notation3]);
+      expect(pageInfo.hasNextPage).toBe(false);
+      expect(pageInfo.hasPreviousPage).toBe(false);
+      expect(pageInfo.startCursor).toBe(first(edges)!.cursor);
+      expect(pageInfo.endCursor).toBe(last(edges)!.cursor);
+    });
+
+    it('returns notations that have a song name matching query', async () => {
+      const { edges, pageInfo } = await notationRepo.findPage({ first: 3, query: 'over' });
+
+      expect(edges).toHaveLength(1);
+      expect(edges.map((edge) => edge.node)).toStrictEqual([notation2]);
+      expect(pageInfo.hasNextPage).toBe(false);
+      expect(pageInfo.hasPreviousPage).toBe(false);
+      expect(pageInfo.startCursor).toBe(first(edges)!.cursor);
+      expect(pageInfo.endCursor).toBe(last(edges)!.cursor);
+    });
+
+    it('returns notations that have a artist name matching query', async () => {
+      const { edges, pageInfo } = await notationRepo.findPage({ first: 3, query: 'daws' });
+
+      expect(edges).toHaveLength(1);
+      expect(edges.map((edge) => edge.node)).toStrictEqual([notation3]);
+      expect(pageInfo.hasNextPage).toBe(false);
+      expect(pageInfo.hasPreviousPage).toBe(false);
+      expect(pageInfo.startCursor).toBe(first(edges)!.cursor);
+      expect(pageInfo.endCursor).toBe(last(edges)!.cursor);
+    });
+
+    it('returns notations that have a tagId', async () => {
+      const { edges, pageInfo } = await notationRepo.findPage({ first: 3, tagIds: [tag2.id] });
+
+      expect(edges).toHaveLength(2);
+      expect(edges.map((edge) => edge.node)).toStrictEqual([notation1, notation2]);
+      expect(pageInfo.hasNextPage).toBe(false);
+      expect(pageInfo.hasPreviousPage).toBe(false);
+      expect(pageInfo.startCursor).toBe(first(edges)!.cursor);
+    });
+
+    it('returns notations that have all tagIds', async () => {
+      const { edges, pageInfo } = await notationRepo.findPage({ first: 3, tagIds: [tag1.id, tag2.id] });
+
+      expect(edges).toHaveLength(1);
+      expect(edges.map((edge) => edge.node)).toStrictEqual([notation1]);
+      expect(pageInfo.hasNextPage).toBe(false);
+      expect(pageInfo.hasPreviousPage).toBe(false);
+      expect(pageInfo.startCursor).toBe(first(edges)!.cursor);
+    });
+
+    it('returns notations that have all tagIds', async () => {
+      const { edges, pageInfo } = await notationRepo.findPage({ first: 3, tagIds: [tag1.id, tag2.id] });
+
+      expect(edges).toHaveLength(1);
+      expect(edges.map((edge) => edge.node)).toStrictEqual([notation1]);
+      expect(pageInfo.hasNextPage).toBe(false);
+      expect(pageInfo.hasPreviousPage).toBe(false);
+      expect(pageInfo.startCursor).toBe(first(edges)!.cursor);
+    });
   });
 });
