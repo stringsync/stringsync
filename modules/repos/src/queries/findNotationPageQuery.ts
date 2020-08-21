@@ -1,7 +1,8 @@
-import { sql } from './sql';
 import { PagingType } from '@stringsync/common';
+import { QueryBuilder } from 'knex';
+import { sql } from './sql';
 
-export type FindNotationpageQueryArgs = {
+export type FindNotationPageQueryArgs = {
   cursor: number;
   pagingType: PagingType;
   limit: number;
@@ -9,31 +10,60 @@ export type FindNotationpageQueryArgs = {
   query: string | null;
 };
 
-export const findNotationPageQuery = (args: FindNotationpageQueryArgs): string => {
+const applyQuery = (b: QueryBuilder, query: string | null) => {
+  if (query) {
+    b.join('users', 'users.id', 'notations.transcriber_id').where((b) => {
+      b.orWhere('notations.song_name', 'ilike', query);
+      b.orWhere('notations.artist_name', 'ilike', query);
+      b.orWhere('users.username', 'ilike', query);
+    });
+  }
+};
+
+const applyTagIds = (b: QueryBuilder, tagIds: string[] | null) => {
+  if (tagIds) {
+    b.leftJoin('taggings', 'taggings.notation_id', 'notations.id')
+      .whereIn('taggings.tag_id', tagIds)
+      .groupBy('notations.id')
+      .having(sql.raw('count(distinct(taggings.tag_id)) >= ?', tagIds.length));
+  }
+};
+
+export const findNotationPageQuery = (args: FindNotationPageQueryArgs): string => {
   const { cursor, tagIds, pagingType, query, limit } = args;
   const isPagingBackward = pagingType === PagingType.BACKWARD;
 
-  const q = sql
+  const b = sql
     .select('notations.*')
     .from('notations')
     .where('cursor', isPagingBackward ? '<' : '>', cursor)
     .orderBy('notations.cursor', isPagingBackward ? 'desc' : 'asc')
     .limit(limit);
 
-  if (query) {
-    q.join('users', 'users.id', 'notations.transcriber_id').where((b) => {
-      b.orWhere('notations.song_name', 'ilike', query);
-      b.orWhere('notations.artist_name', 'ilike', query);
-      b.orWhere('users.username', 'ilike', query);
-    });
-  }
+  applyQuery(b, query);
+  applyTagIds(b, tagIds);
 
-  if (tagIds) {
-    q.leftJoin('taggings', 'taggings.notation_id', 'notations.id')
-      .whereIn('taggings.tag_id', tagIds)
-      .groupBy('notations.id')
-      .having(sql.raw('count(distinct(taggings.tag_id)) >= ?', tagIds.length));
-  }
+  return b.toString();
+};
 
-  return q.toString();
+export const findNotationPageMinQuery = (args: FindNotationPageQueryArgs): string => {
+  const { tagIds, query } = args;
+  const b = sql.select('cursor').from('notations');
+  applyQuery(b, query);
+  applyTagIds(b, tagIds);
+  return sql
+    .from(b)
+    .min('cursor')
+    .toString();
+};
+
+export const findNotationPageMaxQuery = (args: FindNotationPageQueryArgs): string => {
+  const { tagIds, query } = args;
+  const b = sql.select('cursor').from('notations');
+  applyQuery(b, query);
+  applyTagIds(b, tagIds);
+  return sql
+    .from(b)
+    .max('cursor')
+    .toString();
 };
