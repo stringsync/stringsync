@@ -1,8 +1,9 @@
-import { PagingCtx, PagingType, TestFactory, UNKNOWN_ERROR_MSG, UnknownError, Connection } from '@stringsync/common';
+import { PagingType, TestFactory, UnknownError } from '@stringsync/common';
 import { TYPES, useTestContainer } from '@stringsync/container';
 import { Notation } from '@stringsync/domain';
-import { first, last, sortBy, minBy, maxBy } from 'lodash';
+import { first, last, sortBy } from 'lodash';
 import { NotationPager } from './NotationPager';
+import { PagingCtx } from '../util';
 
 const container = useTestContainer();
 
@@ -23,7 +24,7 @@ describe('encoding', () => {
   });
 });
 
-describe('connect', () => {
+describe.only('connect', () => {
   const NUM_NOTATIONS = 15;
 
   const notations = new Array<Notation>(NUM_NOTATIONS);
@@ -35,22 +36,30 @@ describe('connect', () => {
   });
 
   const findEntities = async (pagingCtx: PagingCtx) => {
+    let entities: Notation[];
+
     switch (pagingCtx.pagingType) {
       case PagingType.FORWARD:
-        return sortBy(notations, (notation) => notation.cursor)
+        entities = sortBy(notations, (notation) => notation.cursor)
           .filter((notation) => notation.cursor > pagingCtx.cursor)
           .slice(0, pagingCtx.limit);
+        break;
 
       case PagingType.BACKWARD:
-        return sortBy(notations, (notation) => notation.cursor)
-          .reverse()
+        entities = sortBy(notations, (notation) => notation.cursor)
           .filter((notation) => notation.cursor < pagingCtx.cursor)
-          .slice(0, pagingCtx.limit)
-          .reverse();
+          .slice(-pagingCtx.limit);
+        break;
 
       default:
-        throw new UnknownError(UNKNOWN_ERROR_MSG);
+        throw new UnknownError();
     }
+
+    const cursors = notations.map((notation) => notation.cursor);
+    const min = Math.min(...cursors);
+    const max = Math.max(...cursors);
+
+    return { entities, min, max };
   };
 
   it('defaults to forward paging', async () => {

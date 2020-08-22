@@ -35,15 +35,3 @@ export interface Edge<T> {
 export type PagingMeta =
   | { pagingType: PagingType.FORWARD; after: string | null; first: number | null }
   | { pagingType: PagingType.BACKWARD; before: string | null; last: number | null };
-
-export type PagingEntity = {
-  cursor: number;
-};
-
-export type PagingCtx = {
-  cursor: number;
-  limit: number;
-  pagingType: PagingType;
-};
-
-export type EntityFinder<T extends PagingEntity> = (pagingCtx: PagingCtx) => Promise<T[]>;

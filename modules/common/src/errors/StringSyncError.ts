@@ -1,4 +1,5 @@
 import { ErrorCode } from './types';
+import { UNKNOWN_ERROR_MSG } from './constants';
 
 export class StringSyncError extends Error {
   code: ErrorCode;
@@ -14,7 +15,7 @@ export class StringSyncError extends Error {
 }
 
 export class UnknownError extends StringSyncError {
-  constructor(message: string) {
+  constructor(message: string = UNKNOWN_ERROR_MSG) {
     super(message, ErrorCode.UNKNOWN);
   }
 }

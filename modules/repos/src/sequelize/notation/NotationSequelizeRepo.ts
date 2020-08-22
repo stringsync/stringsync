@@ -1,14 +1,20 @@
-import { Connection, NotationConnectionArgs, PagingCtx, PagingType } from '@stringsync/common';
-import { Pager } from '../../util';
+import { Connection, NotationConnectionArgs, PagingType } from '@stringsync/common';
+import { PagingCtx } from '../../util';
 import { TYPES } from '@stringsync/container';
 import { Notation } from '@stringsync/domain';
 import { NotationModel } from '@stringsync/sequelize';
 import { inject, injectable } from 'inversify';
 import { QueryTypes } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
-import { camelCaseKeys, findNotationPageQuery } from '../../queries';
+import {
+  camelCaseKeys,
+  findNotationPageQuery,
+  findNotationPageMinQuery,
+  findNotationPageMaxQuery,
+} from '../../queries';
 import { NotationLoader, NotationRepo } from '../../types';
 import { NotationPager } from '../../pagers';
+import { get } from 'lodash';
 
 @injectable()
 export class NotationSequelizeRepo implements NotationRepo {
@@ -75,14 +81,22 @@ export class NotationSequelizeRepo implements NotationRepo {
 
     return this.notationPager.connect(args, async (pagingCtx: PagingCtx) => {
       const { cursor, limit, pagingType } = pagingCtx;
+      const queryArgs = { cursor, pagingType, limit, query, tagIds };
 
-      const rows = await this.sequelize.query(findNotationPageQuery({ cursor, pagingType, limit, query, tagIds }), {
-        type: QueryTypes.SELECT,
-      });
+      const [entityRows, minRows, maxRows] = await Promise.all([
+        this.sequelize.query(findNotationPageQuery(queryArgs), { type: QueryTypes.SELECT }),
+        this.sequelize.query(findNotationPageMinQuery(queryArgs), { type: QueryTypes.SELECT }),
+        this.sequelize.query(findNotationPageMaxQuery(queryArgs), { type: QueryTypes.SELECT }),
+      ]);
 
-      const notations = camelCaseKeys(rows) as Notation[];
+      const entities = camelCaseKeys(entityRows) as Notation[];
+      if (pagingType === PagingType.BACKWARD) {
+        entities.reverse();
+      }
+      const min = get(minRows, '[0].min', Infinity);
+      const max = get(maxRows, '[0].max', -Infinity);
 
-      return pagingType === PagingType.BACKWARD ? notations.reverse() : notations;
+      return { entities, min, max };
     });
   }
 }

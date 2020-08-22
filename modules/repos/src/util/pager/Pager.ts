@@ -1,22 +1,17 @@
-import { first, last } from 'lodash';
-import { InternalError, UnknownError, UNKNOWN_ERROR_MSG } from '@stringsync/common';
 import {
-  PagingMeta,
   Connection,
   ConnectionArgs,
   Edge,
-  EntityFinder,
+  InternalError,
   PageInfo,
-  PagingCtx,
-  PagingEntity,
+  PagingMeta,
   PagingType,
+  UnknownError,
+  UNKNOWN_ERROR_MSG,
 } from '@stringsync/common';
 import { injectable } from 'inversify';
-
-type FetchCtx = {
-  exact: PagingCtx;
-  over: PagingCtx;
-};
+import { first, last } from 'lodash';
+import { PagingCtx, PagingEntity, EntityFinder, EntityFinderResults } from './types';
 
 @injectable()
 export abstract class Pager<T extends PagingEntity> {
@@ -24,7 +19,7 @@ export abstract class Pager<T extends PagingEntity> {
   static DEFAULT_BACKWARD_CURSOR = 2147483645;
 
   static meta(connectionArgs: ConnectionArgs): PagingMeta {
-    const { first = 0, last = 0, after = null, before = null } = connectionArgs;
+    const { first = null, last = null, after = null, before = null } = connectionArgs;
     const isForwardPaging = !!first || !!after;
     const isBackwardPaging = !!last || !!before;
 
@@ -51,61 +46,51 @@ export abstract class Pager<T extends PagingEntity> {
   abstract decodeCursor(encodedCursor: string): number;
 
   async connect(connectionArgs: ConnectionArgs, findEntities: EntityFinder<T>): Promise<Connection<T>> {
-    const pagingMeta = Pager.meta(connectionArgs);
-    const fetchCtx = this.getFetchCtx(pagingMeta);
+    const pagingCtx = this.getPagingCtx(connectionArgs);
+    const results = await findEntities(pagingCtx);
+    this.validate(results, pagingCtx);
 
-    const overFetchEntities = await findEntities(fetchCtx.over);
-    this.validate(fetchCtx.over, overFetchEntities);
-
-    const exactFetchEntities = this.getExactFetchEntities(fetchCtx, overFetchEntities);
-    this.validate(fetchCtx.exact, exactFetchEntities);
-
-    const edges = this.getEdges(exactFetchEntities);
-    const pageInfo = this.getPageInfo(fetchCtx, overFetchEntities, exactFetchEntities);
+    const edges = this.getEdges(results);
+    const pageInfo = this.getPageInfo(results, pagingCtx);
 
     return { edges, pageInfo };
   }
 
-  private getFetchCtx(pagingMeta: PagingMeta): FetchCtx {
-    let exactFetchLimit: number;
-    let exactFetchCursor: number;
-    let overFetchLimit: number;
-    let overFetchCursor: number;
+  private getPagingCtx(connectionArgs: ConnectionArgs): PagingCtx {
+    const pagingMeta = Pager.meta(connectionArgs);
 
     switch (pagingMeta.pagingType) {
       case PagingType.FORWARD:
-        exactFetchLimit = pagingMeta.first || this.defaultLimit;
-        exactFetchCursor = pagingMeta.after ? this.decodeCursor(pagingMeta.after) : Pager.DEFAULT_FORWARD_CURSOR;
-        overFetchLimit = exactFetchLimit + 2;
-        overFetchCursor = exactFetchCursor - 1;
-        break;
+        return {
+          cursor: pagingMeta.after ? this.decodeCursor(pagingMeta.after) : Pager.DEFAULT_FORWARD_CURSOR,
+          limit: typeof pagingMeta.first === 'number' ? pagingMeta.first : this.defaultLimit,
+          pagingType: pagingMeta.pagingType,
+        };
 
       case PagingType.BACKWARD:
-        exactFetchLimit = pagingMeta.last || this.defaultLimit;
-        exactFetchCursor = pagingMeta.before ? this.decodeCursor(pagingMeta.before) : Pager.DEFAULT_BACKWARD_CURSOR;
-        overFetchLimit = exactFetchLimit + 2;
-        overFetchCursor = exactFetchCursor + 1;
-        break;
-      default:
-        throw new UnknownError(UNKNOWN_ERROR_MSG);
-    }
+        return {
+          cursor: pagingMeta.before ? this.decodeCursor(pagingMeta.before) : Pager.DEFAULT_BACKWARD_CURSOR,
+          limit: typeof pagingMeta.last === 'number' ? pagingMeta.last : this.defaultLimit,
+          pagingType: pagingMeta.pagingType,
+        };
 
-    return {
-      exact: {
-        limit: exactFetchLimit,
-        cursor: exactFetchCursor,
-        pagingType: pagingMeta.pagingType,
-      },
-      over: {
-        limit: overFetchLimit,
-        cursor: overFetchCursor,
-        pagingType: pagingMeta.pagingType,
-      },
-    };
+      default:
+        throw new UnknownError();
+    }
   }
 
-  private validate(pagingCtx: PagingCtx, entities: T[]): void {
+  private validate(results: EntityFinderResults<T>, pagingCtx: PagingCtx): void {
     const { cursor, limit, pagingType } = pagingCtx;
+    const { entities, min, max } = results;
+
+    if (typeof min !== 'number') {
+      throw new InternalError('min must be a number');
+    }
+
+    if (typeof max !== 'number') {
+      throw new InternalError('max must be a number');
+    }
+
     if (entities.length > limit) {
       throw new InternalError('too many entities returned');
     }
@@ -135,52 +120,34 @@ export abstract class Pager<T extends PagingEntity> {
     }
   }
 
-  private getExactFetchEntities(fetchCtx: FetchCtx, overFetchEntities: T[]): T[] {
-    switch (fetchCtx.exact.pagingType) {
-      case PagingType.FORWARD:
-        return overFetchEntities
-          .filter((notation) => notation.cursor > fetchCtx.exact.cursor)
-          .slice(0, fetchCtx.exact.limit);
-      case PagingType.BACKWARD:
-        return overFetchEntities
-          .filter((notation) => notation.cursor < fetchCtx.exact.cursor)
-          .slice(-fetchCtx.exact.limit);
-      default:
-        throw new UnknownError(UNKNOWN_ERROR_MSG);
-    }
+  private getEdges(results: EntityFinderResults<T>): Array<Edge<T>> {
+    return results.entities.map((entity) => ({ node: entity, cursor: this.encodeCursor(entity.cursor) }));
   }
 
-  private getEdges(exactFetchEntities: T[]): Array<Edge<T>> {
-    return exactFetchEntities.map((entity) => ({ node: entity, cursor: this.encodeCursor(entity.cursor) }));
-  }
-
-  private getPageInfo(fetchCtx: FetchCtx, overFetchEntities: T[], exactFetchEntities: T[]): PageInfo {
-    if (exactFetchEntities.length > overFetchEntities.length) {
-      throw new InternalError('exact entities must be smaller than over fetched entities');
-    }
-
-    const startCursor = exactFetchEntities.length ? this.encodeCursor(first(exactFetchEntities)!.cursor) : null;
-    const endCursor = exactFetchEntities.length ? this.encodeCursor(last(exactFetchEntities)!.cursor) : null;
-
-    const overFetchCursors = overFetchEntities.map((entity) => entity.cursor);
-    const exactFetchCursors = exactFetchEntities.map((entity) => entity.cursor);
+  private getPageInfo(results: EntityFinderResults<T>, pagingCtx: PagingCtx): PageInfo {
+    const { cursor, pagingType } = pagingCtx;
+    const { entities, min, max } = results;
 
     let hasNextPage: boolean;
     let hasPreviousPage: boolean;
-    switch (fetchCtx.exact.pagingType) {
+    const cursors = entities.map((entity) => entity.cursor);
+    switch (pagingType) {
       case PagingType.FORWARD:
-        hasNextPage = exactFetchCursors.length > 0 && Math.max(...overFetchCursors) > Math.max(...exactFetchCursors);
-        hasPreviousPage =
-          exactFetchCursors.length === 0 || Math.min(...overFetchCursors) < Math.min(...exactFetchCursors);
+        hasNextPage = Boolean(cursors.length) && max > Math.max(...cursors);
+        hasPreviousPage = cursor > min && min < Math.min(...cursors);
         break;
+
       case PagingType.BACKWARD:
-        hasNextPage = exactFetchCursors.length > 0 && Math.min(...overFetchCursors) < Math.min(...exactFetchCursors);
-        hasPreviousPage =
-          exactFetchCursors.length === 0 || Math.max(...overFetchCursors) > Math.max(...exactFetchCursors);
+        hasNextPage = Boolean(cursors.length) && min < Math.min(...cursors);
+        hasPreviousPage = cursor < max && max > Math.max(...cursors);
         break;
+
       default:
-        throw new UnknownError(UNKNOWN_ERROR_MSG);
+        throw new UnknownError();
     }
+
+    const startCursor = entities.length ? this.encodeCursor(first(entities)!.cursor) : null;
+    const endCursor = entities.length ? this.encodeCursor(last(entities)!.cursor) : null;
 
     return { startCursor, endCursor, hasNextPage, hasPreviousPage };
   }

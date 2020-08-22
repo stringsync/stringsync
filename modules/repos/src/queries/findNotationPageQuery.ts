@@ -48,22 +48,28 @@ export const findNotationPageQuery = (args: FindNotationPageQueryArgs): string =
 
 export const findNotationPageMinQuery = (args: FindNotationPageQueryArgs): string => {
   const { tagIds, query } = args;
-  const b = sql.select('cursor').from('notations');
+  const b = sql
+    .select('cursor')
+    .from('notations')
+    .as('cursors');
   applyQuery(b, query);
   applyTagIds(b, tagIds);
   return sql
-    .from(b)
     .min('cursor')
+    .from(b)
     .toString();
 };
 
 export const findNotationPageMaxQuery = (args: FindNotationPageQueryArgs): string => {
   const { tagIds, query } = args;
-  const b = sql.select('cursor').from('notations');
+  const b = sql
+    .select('cursor')
+    .from('notations')
+    .as('cursors');
   applyQuery(b, query);
   applyTagIds(b, tagIds);
   return sql
-    .from(b)
     .max('cursor')
+    .from(b)
     .toString();
 };

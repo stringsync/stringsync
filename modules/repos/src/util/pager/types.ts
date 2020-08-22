@@ -10,4 +10,10 @@ export type PagingCtx = {
   pagingType: PagingType;
 };
 
-export type PageFinder<T> = (pagingCtx: PagingCtx) => Promise<T[]>;
+export type EntityFinderResults<T extends PagingEntity> = {
+  entities: T[];
+  min: number;
+  max: number;
+};
+
+export type EntityFinder<T extends PagingEntity> = (pagingCtx: PagingCtx) => Promise<EntityFinderResults<T>>;
