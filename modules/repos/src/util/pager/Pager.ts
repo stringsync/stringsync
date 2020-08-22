@@ -134,12 +134,12 @@ export abstract class Pager<T extends PagingEntity> {
     switch (pagingType) {
       case PagingType.FORWARD:
         hasNextPage = Boolean(cursors.length) && max > Math.max(...cursors);
-        hasPreviousPage = cursor > min && min < Math.min(...cursors);
+        hasPreviousPage = cursor >= min && min < Math.min(...cursors);
         break;
 
       case PagingType.BACKWARD:
         hasNextPage = Boolean(cursors.length) && min < Math.min(...cursors);
-        hasPreviousPage = cursor < max && max > Math.max(...cursors);
+        hasPreviousPage = cursor <= max && max > Math.max(...cursors);
         break;
 
       default:

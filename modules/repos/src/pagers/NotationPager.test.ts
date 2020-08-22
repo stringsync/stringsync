@@ -24,7 +24,7 @@ describe('encoding', () => {
   });
 });
 
-describe.only('connect', () => {
+describe('connect', () => {
   const NUM_NOTATIONS = 15;
 
   const notations = new Array<Notation>(NUM_NOTATIONS);
@@ -122,7 +122,7 @@ describe.only('connect', () => {
     expect(pageInfo.hasPreviousPage).toBe(true);
   });
 
-  it('returns the first N records before a cursor', async () => {
+  it('returns the last N records before a cursor', async () => {
     const connection = await notationPager.connect({ last: 1 }, findEntities);
     expect(connection.pageInfo.startCursor).not.toBeNull();
     const before = connection.pageInfo.startCursor!;
