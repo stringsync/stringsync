@@ -11,6 +11,7 @@ const Tags = styled.div`
 
 interface Props {
   notations: NotationPreview[];
+  shouldLoad: boolean;
   loadMore: (pageNumber: number) => void;
   hasNextPage: boolean;
   grid?: ListGridType;
@@ -19,7 +20,7 @@ interface Props {
 export const NotationList: React.FC<Props> = (props) => {
   return (
     <div data-testid="notation-list">
-      <InfiniteScroll initialLoad={true} loadMore={props.loadMore} hasMore={props.hasNextPage}>
+      <InfiniteScroll initialLoad={props.shouldLoad} loadMore={props.loadMore} hasMore={props.hasNextPage}>
         <List
           grid={props.grid}
           dataSource={props.notations}

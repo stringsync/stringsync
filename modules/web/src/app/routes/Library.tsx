@@ -1,22 +1,24 @@
-import React, { useCallback, useState, ChangeEvent, useEffect } from 'react';
-import { compose, PageInfo } from '@stringsync/common';
-import { useDispatch, useSelector } from 'react-redux';
-import { Layout, withLayout } from '../../hocs';
-import { AppDispatch, RootState, getTags } from '../../store';
-import { getNotationPage, clearErrors } from '../../store/library';
-import { NotationPreview } from '../../store/library/types';
-import { NotationList } from '../../components/NotationList';
-import styled from 'styled-components';
-import { Input, Row, Tag as AntdTag, Button, Affix, Alert } from 'antd';
+import { CloseCircleOutlined, LoadingOutlined, SearchOutlined } from '@ant-design/icons';
+import { compose, NotationConnectionArgs, PageInfo } from '@stringsync/common';
 import { Tag } from '@stringsync/domain';
-import { SearchOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Affix, Alert, Button, Input, Row, Tag as AntdTag } from 'antd';
+import { debounce, difference, mapValues } from 'lodash';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
+import { NotationList } from '../../components/NotationList';
+import { Layout, withLayout } from '../../hocs';
 import { useEffectOnce } from '../../hooks';
-import { mapValues } from 'lodash';
-import { scrollToTop } from '../../util/scrollToTop';
+import { usePrevious } from '../../hooks/usePrevious';
+import { AppDispatch, getTags, RootState } from '../../store';
+import { clearErrors, clearPages, getNotationPage } from '../../store/library';
+import { NotationPreview } from '../../store/library/types';
 
 const { CheckableTag } = AntdTag;
 
 const PAGE_SIZE = 9;
+
+const DEBOUNCE_DELAY_MS = 300;
 
 const Outer = styled.div<{ xs: boolean }>`
   margin: 24px ${(props) => (props.xs ? 0 : 24)}px;
@@ -59,37 +61,48 @@ const Library: React.FC<Props> = enhance(() => {
   const hasNextPage = useSelector<RootState, boolean>(
     (state) => !state.library.isPending && Boolean(state.library.pageInfo.hasNextPage) && !state.library.errors.length
   );
+  const [query, setQuery] = useState('');
+  const prevQuery = usePrevious(query);
+  const [isCheckedByTagId, setIsCheckedByTagId] = useState<{ [key: string]: boolean }>({});
+  const [isSearching, setSearching] = useState(false);
+  const [affixed, setAffixed] = useState(false);
+  const tagIds = Object.keys(isCheckedByTagId).filter((tagId) => isCheckedByTagId[tagId]);
+  const prevTagIds = usePrevious(tagIds);
+  const hasQueryOrTagChecked = Boolean(query.length || tagIds.length);
 
-  const [queryString, setQueryString] = useState('');
-  const [queryTags, setQueryTags] = useState<{ [key: string]: boolean }>({});
-  const isQueryClearAllowed = queryString.length > 0 || Object.values(queryTags).some((isChecked) => isChecked);
-  const onQueryStringChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setQueryString(event.target.value);
+  const onQueryChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
   }, []);
+
   const onQueryTagCheckChange = useCallback(
     (tagId: string) => (isChecked: boolean) =>
-      setQueryTags({
-        ...queryTags,
+      setIsCheckedByTagId({
+        ...isCheckedByTagId,
         [tagId]: isChecked,
       }),
-    [queryTags]
+    [isCheckedByTagId]
   );
-  const onQueryClear = useCallback(() => {
-    setQueryString('');
-    setQueryTags(mapValues(queryTags, () => false));
-  }, [queryTags]);
-  useEffect(() => {
-    scrollToTop();
-  }, [queryString, queryTags]);
 
-  const [affixed, setAffixed] = useState(false);
+  const onQueryClear = useCallback(() => {
+    setQuery('');
+    setIsCheckedByTagId(mapValues(isCheckedByTagId, () => false));
+  }, [isCheckedByTagId]);
+
   const onAffixChange = useCallback((affixed) => {
     setAffixed(affixed);
   }, []);
 
-  const loadNextNotationPage = useCallback(() => {
-    dispatch(getNotationPage({ first: PAGE_SIZE, after: pageInfo.endCursor }));
-  }, [dispatch, pageInfo.endCursor]);
+  const loadNextNotationPage = useCallback(async () => {
+    const connectionArgs: NotationConnectionArgs = { last: PAGE_SIZE, before: pageInfo.endCursor };
+    if (query) {
+      connectionArgs.query = query;
+    }
+    if (tagIds.length) {
+      connectionArgs.tagIds = tagIds;
+    }
+    await dispatch(getNotationPage(connectionArgs));
+    setSearching(false);
+  }, [dispatch, pageInfo.endCursor, query, tagIds]);
 
   const onAlertClose = useCallback(() => {
     dispatch(clearErrors());
@@ -98,6 +111,26 @@ const Library: React.FC<Props> = enhance(() => {
   useEffectOnce(() => {
     dispatch(getTags());
   });
+
+  const onQueryOrTagCheckChange = useCallback(
+    debounce(async () => {
+      dispatch(clearPages());
+    }, DEBOUNCE_DELAY_MS),
+    [dispatch]
+  );
+
+  useEffect(() => {
+    const didQueryChange = typeof prevQuery !== 'undefined' && query !== prevQuery;
+
+    const sortedTagIds = tagIds.sort();
+    const sortedPrevTagIds = (prevTagIds || []).sort();
+    const didTagIdsChange =
+      difference(sortedTagIds, sortedPrevTagIds).length > 0 || difference(sortedPrevTagIds, sortedTagIds).length > 0;
+    if (didQueryChange || didTagIdsChange) {
+      setSearching(true);
+      onQueryOrTagCheckChange();
+    }
+  }, [dispatch, onQueryOrTagCheckChange, prevQuery, prevTagIds, query, tagIds]);
 
   return (
     <Outer data-testid="library" xs={xs}>
@@ -111,17 +144,17 @@ const Library: React.FC<Props> = enhance(() => {
         <AffixInner xs={xs} affixed={affixed}>
           <Search xs={xs}>
             <Input
-              value={queryString}
-              onChange={onQueryStringChange}
+              value={query}
+              onChange={onQueryChange}
               placeholder="song, artist, or transcriber name"
-              prefix={<SearchIcon />}
-              suffix={isQueryClearAllowed ? <CloseCircleOutlined onClick={onQueryClear} /> : null}
+              prefix={isSearching ? <LoadingOutlined /> : <SearchIcon />}
+              suffix={hasQueryOrTagChecked ? <CloseCircleOutlined onClick={onQueryClear} /> : null}
             />
             <TagSearch justify="center" align="middle">
               {tags.map((tag) => (
                 <CheckableTag
                   key={tag.id}
-                  checked={queryTags[tag.id] || false}
+                  checked={isCheckedByTagId[tag.id] || false}
                   onChange={onQueryTagCheckChange(tag.id)}
                 >
                   {tag.name}
@@ -133,7 +166,7 @@ const Library: React.FC<Props> = enhance(() => {
       </Affix>
 
       <Row justify="center">
-        {isQueryClearAllowed ? (
+        {hasQueryOrTagChecked ? (
           <Button type="link" size="small" onClick={onQueryClear}>
             remove filters
           </Button>
@@ -147,6 +180,7 @@ const Library: React.FC<Props> = enhance(() => {
 
       <NotationList
         grid={{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 3 }}
+        shouldLoad={true}
         notations={notations}
         hasNextPage={hasNextPage}
         loadMore={loadNextNotationPage}

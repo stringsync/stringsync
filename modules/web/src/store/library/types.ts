@@ -20,4 +20,5 @@ export type LibraryState = {
 
 export type LibraryReducers = {
   clearErrors: CaseReducer<LibraryState>;
+  clearPages: CaseReducer<LibraryState>;
 };

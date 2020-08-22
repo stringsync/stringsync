@@ -48,6 +48,11 @@ export const librarySlice = createSlice<LibraryState, LibraryReducers, 'library'
     clearErrors(state) {
       state.errors = [];
     },
+    clearPages(state) {
+      state.notations = [];
+      state.errors = [];
+      state.pageInfo = { startCursor: null, endCursor: null, hasNextPage: true, hasPreviousPage: false };
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getNotationPage.pending, (state) => {
@@ -56,7 +61,7 @@ export const librarySlice = createSlice<LibraryState, LibraryReducers, 'library'
     });
     builder.addCase(getNotationPage.fulfilled, (state, action) => {
       state.isPending = false;
-      state.notations = [...state.notations, ...action.payload.notations];
+      state.notations = [...action.payload.notations];
       state.pageInfo = action.payload.pageInfo;
     });
     builder.addCase(getNotationPage.rejected, (state, action) => {
@@ -72,4 +77,4 @@ export const librarySlice = createSlice<LibraryState, LibraryReducers, 'library'
   },
 });
 
-export const { clearErrors } = librarySlice.actions;
+export const { clearErrors, clearPages } = librarySlice.actions;
