@@ -61,7 +61,7 @@ export const librarySlice = createSlice<LibraryState, LibraryReducers, 'library'
     });
     builder.addCase(getNotationPage.fulfilled, (state, action) => {
       state.isPending = false;
-      state.notations = [...action.payload.notations];
+      state.notations = [...state.notations, ...action.payload.notations];
       state.pageInfo = action.payload.pageInfo;
     });
     builder.addCase(getNotationPage.rejected, (state, action) => {
