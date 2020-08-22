@@ -19,7 +19,7 @@ interface Props {
 export const NotationList: React.FC<Props> = (props) => {
   return (
     <div data-testid="notation-list">
-      <InfiniteScroll initialLoad={true} loadMore={props.loadMore} hasMore={props.hasNextPage}>
+      <InfiniteScroll initialLoad={false} loadMore={props.loadMore} hasMore={props.hasNextPage}>
         <List
           grid={props.grid}
           dataSource={props.notations}

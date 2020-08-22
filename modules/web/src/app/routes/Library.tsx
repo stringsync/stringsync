@@ -57,6 +57,7 @@ const Library: React.FC<Props> = enhance(() => {
   const notations = useSelector<RootState, NotationPreview[]>((state) => state.library.notations);
   const tags = useSelector<RootState, Tag[]>((state) => state.tag.tags);
   const pageInfo = useSelector<RootState, PageInfo>((state) => state.library.pageInfo);
+  const isPending = useSelector<RootState, boolean>((state) => state.library.isPending);
   const xs = useSelector<RootState, boolean>((state) => state.viewport.xs);
   const hasNextPage = useSelector<RootState, boolean>(
     (state) => !state.library.isPending && Boolean(state.library.pageInfo.hasNextPage) && !state.library.errors.length
@@ -64,8 +65,9 @@ const Library: React.FC<Props> = enhance(() => {
   const [query, setQuery] = useState('');
   const prevQuery = usePrevious(query);
   const [isCheckedByTagId, setIsCheckedByTagId] = useState<{ [key: string]: boolean }>({});
-  const [isSearching, setSearching] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [affixed, setAffixed] = useState(false);
+  const [shouldLoadFirstPage, setShouldLoadFirstPage] = useState(false);
   const tagIds = Object.keys(isCheckedByTagId).filter((tagId) => isCheckedByTagId[tagId]);
   const prevTagIds = usePrevious(tagIds);
   const hasQueryOrTagChecked = Boolean(query.length || tagIds.length);
@@ -84,12 +86,14 @@ const Library: React.FC<Props> = enhance(() => {
       connectionArgs.tagIds = tagIds;
     }
     await dispatch(getNotationPage(connectionArgs));
-    setSearching(false);
+    setIsSearching(false);
+    setShouldLoadFirstPage(false);
   }, [dispatch, pageInfo.endCursor, query, tagIds]);
 
   const debouncedClearPages = useRef(
     debounce(() => {
       dispatch(clearPages());
+      setShouldLoadFirstPage(true);
     }, DEBOUNCE_DELAY_MS)
   );
 
@@ -125,10 +129,21 @@ const Library: React.FC<Props> = enhance(() => {
 
   useEffect(() => {
     if (didQueryChange || didTagIdsChange) {
-      setSearching(true);
+      setIsSearching(true);
       debouncedClearPages.current();
     }
   }, [didQueryChange, didTagIdsChange]);
+
+  useEffectOnce(() => {
+    loadNextPage();
+  });
+
+  useEffect(() => {
+    if (shouldLoadFirstPage && !isPending) {
+      loadNextPage();
+      setShouldLoadFirstPage(false);
+    }
+  }, [isPending, loadNextPage, shouldLoadFirstPage]);
 
   return (
     <Outer data-testid="library" xs={xs}>
@@ -176,12 +191,14 @@ const Library: React.FC<Props> = enhance(() => {
       <br />
       <br />
 
-      <NotationList
-        grid={{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 3 }}
-        notations={notations}
-        hasNextPage={hasNextPage}
-        loadMore={loadNextPage}
-      />
+      {isSearching ? null : (
+        <NotationList
+          grid={{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 3 }}
+          notations={notations}
+          hasNextPage={hasNextPage}
+          loadMore={loadNextPage}
+        />
+      )}
     </Outer>
   );
 });
