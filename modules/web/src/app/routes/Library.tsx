@@ -57,7 +57,6 @@ const Library: React.FC<Props> = enhance(() => {
   const notations = useSelector<RootState, NotationPreview[]>((state) => state.library.notations);
   const tags = useSelector<RootState, Tag[]>((state) => state.tag.tags);
   const pageInfo = useSelector<RootState, PageInfo>((state) => state.library.pageInfo);
-  const isPending = useSelector<RootState, boolean>((state) => state.library.isPending);
   const xs = useSelector<RootState, boolean>((state) => state.viewport.xs);
   const hasNextPage = useSelector<RootState, boolean>(
     (state) => !state.library.isPending && Boolean(state.library.pageInfo.hasNextPage) && !state.library.errors.length
@@ -139,11 +138,11 @@ const Library: React.FC<Props> = enhance(() => {
   });
 
   useEffect(() => {
-    if (shouldLoadFirstPage && !isPending) {
+    if (shouldLoadFirstPage) {
       loadNextPage();
       setShouldLoadFirstPage(false);
     }
-  }, [isPending, loadNextPage, shouldLoadFirstPage]);
+  }, [loadNextPage, shouldLoadFirstPage]);
 
   return (
     <Outer data-testid="library" xs={xs}>
