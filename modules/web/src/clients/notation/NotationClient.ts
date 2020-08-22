@@ -17,8 +17,15 @@ export class NotationClient {
   async notations(args: QueryNotationsArgs) {
     return await this.graphqlClient.call<Query['notations'], 'notations', QueryNotationsArgs>(
       gql`
-        query notations($first: Float, $last: Float, $after: String, $before: String) {
-          notations(first: $first, last: $last, after: $after, before: $before) {
+        query notations(
+          $first: Float
+          $last: Float
+          $after: String
+          $before: String
+          $query: String
+          $tagIds: [String!]
+        ) {
+          notations(first: $first, last: $last, after: $after, before: $before, query: $query, tagIds: $tagIds) {
             edges {
               cursor
               node {
