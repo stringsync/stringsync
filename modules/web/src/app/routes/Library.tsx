@@ -3,7 +3,7 @@ import { compose, NotationConnectionArgs, PageInfo } from '@stringsync/common';
 import { Tag } from '@stringsync/domain';
 import { Affix, Alert, Button, Input, Row, Tag as AntdTag } from 'antd';
 import { debounce, difference, mapValues } from 'lodash';
-import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { NotationList } from '../../components/NotationList';
@@ -69,6 +69,29 @@ const Library: React.FC<Props> = enhance(() => {
   const tagIds = Object.keys(isCheckedByTagId).filter((tagId) => isCheckedByTagId[tagId]);
   const prevTagIds = usePrevious(tagIds);
   const hasQueryOrTagChecked = Boolean(query.length || tagIds.length);
+  const didQueryChange = typeof prevQuery !== 'undefined' && query !== prevQuery;
+  const sortedTagIds = tagIds.sort();
+  const sortedPrevTagIds = (prevTagIds || []).sort();
+  const didTagIdsChange =
+    difference(sortedTagIds, sortedPrevTagIds).length > 0 || difference(sortedPrevTagIds, sortedTagIds).length > 0;
+
+  const loadNextPage = useCallback(async () => {
+    const connectionArgs: NotationConnectionArgs = { last: PAGE_SIZE, before: pageInfo.endCursor };
+    if (query) {
+      connectionArgs.query = query;
+    }
+    if (tagIds.length) {
+      connectionArgs.tagIds = tagIds;
+    }
+    await dispatch(getNotationPage(connectionArgs));
+    setSearching(false);
+  }, [dispatch, pageInfo.endCursor, query, tagIds]);
+
+  const debouncedClearPages = useRef(
+    debounce(() => {
+      dispatch(clearPages());
+    }, DEBOUNCE_DELAY_MS)
+  );
 
   const onQueryChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -92,18 +115,6 @@ const Library: React.FC<Props> = enhance(() => {
     setAffixed(affixed);
   }, []);
 
-  const loadNextNotationPage = useCallback(async () => {
-    const connectionArgs: NotationConnectionArgs = { last: PAGE_SIZE, before: pageInfo.endCursor };
-    if (query) {
-      connectionArgs.query = query;
-    }
-    if (tagIds.length) {
-      connectionArgs.tagIds = tagIds;
-    }
-    await dispatch(getNotationPage(connectionArgs));
-    setSearching(false);
-  }, [dispatch, pageInfo.endCursor, query, tagIds]);
-
   const onAlertClose = useCallback(() => {
     dispatch(clearErrors());
   }, [dispatch]);
@@ -112,25 +123,12 @@ const Library: React.FC<Props> = enhance(() => {
     dispatch(getTags());
   });
 
-  const onQueryOrTagCheckChange = useCallback(
-    debounce(async () => {
-      dispatch(clearPages());
-    }, DEBOUNCE_DELAY_MS),
-    [dispatch]
-  );
-
   useEffect(() => {
-    const didQueryChange = typeof prevQuery !== 'undefined' && query !== prevQuery;
-
-    const sortedTagIds = tagIds.sort();
-    const sortedPrevTagIds = (prevTagIds || []).sort();
-    const didTagIdsChange =
-      difference(sortedTagIds, sortedPrevTagIds).length > 0 || difference(sortedPrevTagIds, sortedTagIds).length > 0;
     if (didQueryChange || didTagIdsChange) {
       setSearching(true);
-      onQueryOrTagCheckChange();
+      debouncedClearPages.current();
     }
-  }, [dispatch, onQueryOrTagCheckChange, prevQuery, prevTagIds, query, tagIds]);
+  }, [didQueryChange, didTagIdsChange]);
 
   return (
     <Outer data-testid="library" xs={xs}>
@@ -180,10 +178,9 @@ const Library: React.FC<Props> = enhance(() => {
 
       <NotationList
         grid={{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 3 }}
-        shouldLoad={true}
         notations={notations}
         hasNextPage={hasNextPage}
-        loadMore={loadNextNotationPage}
+        loadMore={loadNextPage}
       />
     </Outer>
   );
