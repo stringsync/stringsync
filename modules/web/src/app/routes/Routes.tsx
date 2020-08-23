@@ -5,6 +5,7 @@ import { Landing } from './Landing';
 import { Fallback } from './Fallback';
 import { withAuthRequirement } from '../../hocs';
 import { ReturnToRoute } from '../../components/ReturnToRoute';
+import NotFound from './NotFound';
 
 const Library = compose(withAuthRequirement(AuthRequirement.NONE))(React.lazy(() => import('./Library')));
 
@@ -27,6 +28,7 @@ export const Routes: React.FC = () => {
       <Route path="/signup" component={Signup} />
       <Route path="/login" component={Login} />
       <Route path="/forgot-password" component={ForgotPassword} />
+      <Route path="*" component={NotFound} />
     </React.Suspense>
   );
 };
