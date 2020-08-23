@@ -6,13 +6,12 @@ import { debounce, difference, mapValues } from 'lodash';
 import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { NotationList } from '../../components/NotationList';
-import { Layout, withLayout } from '../../hocs';
-import { useEffectOnce } from '../../hooks';
-import { usePrevious } from '../../hooks/usePrevious';
-import { AppDispatch, getTags, RootState } from '../../store';
-import { clearErrors, clearPages, getNotationPage } from '../../store/library';
-import { NotationPreview } from '../../store/library/types';
+import { NotationList } from './NotationList';
+import { Layout, withLayout } from '../../../hocs';
+import { useEffectOnce, usePrevious } from '../../../hooks';
+import { AppDispatch, getTags, RootState } from '../../../store';
+import { clearErrors, clearPages, getNotationPage } from '../../../store/library';
+import { NotationPreview } from '../../../store/library/types';
 
 const { CheckableTag } = AntdTag;
 

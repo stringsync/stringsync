@@ -2,7 +2,7 @@ import { List } from 'antd';
 import { ListGridType } from 'antd/lib/list';
 import React, { useMemo } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
-import { NotationPreview } from '../store/library/types';
+import { NotationPreview } from '../../../store/library/types';
 import { NotationCard } from './NotationCard';
 import { sortBy } from 'lodash';
 

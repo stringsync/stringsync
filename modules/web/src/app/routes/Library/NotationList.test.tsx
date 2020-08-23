@@ -3,7 +3,7 @@ import { randStr } from '@stringsync/common';
 import { UserRole } from '@stringsync/domain';
 import { NotationList } from './NotationList';
 import { render } from '@testing-library/react';
-import { NotationPreview } from '../store/library/types';
+import { NotationPreview } from '../../../store/library/types';
 
 it('renders without crashing', async () => {
   const now = new Date();
@@ -11,8 +11,8 @@ it('renders without crashing', async () => {
     {
       id: randStr(8),
       artistName: randStr(10),
-      createdAt: now,
-      updatedAt: now,
+      createdAt: now.toISOString(),
+      updatedAt: now.toISOString(),
       songName: randStr(10),
       thumbnailUrl: randStr(10),
       tags: [],

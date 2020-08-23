@@ -9,7 +9,7 @@ export type Notation = Pick<
 
 export type Transcriber = Pick<PublicUser, 'id' | 'username' | 'role' | 'avatarUrl'>;
 
-export type NotationPreview = Notation & {
+export type NotationPreview = Omit<Notation, 'createdAt' | 'updatedAt'> & {
   transcriber: Transcriber;
   tags: Tag[];
   createdAt: string;
