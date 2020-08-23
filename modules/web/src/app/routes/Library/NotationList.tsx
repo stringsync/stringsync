@@ -4,6 +4,7 @@ import React from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { NotationPreview } from '../../../store/library/types';
 import { NotationCard } from './NotationCard';
+import { Link } from 'react-router-dom';
 
 interface Props {
   isPending: boolean;
@@ -25,7 +26,9 @@ export const NotationList: React.FC<Props> = (props) => {
             dataSource={props.notations}
             renderItem={(notation) => (
               <List.Item>
-                <NotationCard notation={notation} query={props.query} isTagChecked={props.isTagChecked} />
+                <Link to={`/n/${notation.id}`}>
+                  <NotationCard notation={notation} query={props.query} isTagChecked={props.isTagChecked} />
+                </Link>
               </List.Item>
             )}
           />
