@@ -1,7 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { TestFactory, randStr } from '@stringsync/common';
 import { NotationClient, NotationEdgeObject, UserRoles } from '../../clients';
-import { getNotationPage, librarySlice } from './librarySlice';
+import { getNotationPage, librarySlice, clearErrors, clearPages } from './librarySlice';
+import { UserRole } from '@stringsync/domain';
 
 const buildRandNotationEdge = (): NotationEdgeObject => {
   const transcriber = TestFactory.buildRandUser();
@@ -33,6 +34,73 @@ it('initializes state', () => {
   });
 
   expect(store.getState().library.notations).toStrictEqual([]);
+});
+
+it('clears errors', () => {
+  const store = configureStore({
+    reducer: {
+      library: librarySlice.reducer,
+    },
+    preloadedState: {
+      library: {
+        errors: ['error1', 'error2'],
+      },
+    },
+  });
+
+  store.dispatch(clearErrors());
+
+  const state = store.getState();
+  expect(state.library.errors).toHaveLength(0);
+});
+
+it('clears pages', () => {
+  const nowStr = new Date().toString();
+  const store = configureStore({
+    reducer: {
+      library: librarySlice.reducer,
+    },
+    preloadedState: {
+      library: {
+        notations: [
+          {
+            id: randStr(8),
+            artistName: randStr(10),
+            createdAt: nowStr,
+            updatedAt: nowStr,
+            songName: randStr(10),
+            thumbnailUrl: randStr(10),
+            tags: [],
+            transcriber: {
+              id: randStr(8),
+              avatarUrl: randStr(10),
+              role: UserRole.TEACHER,
+              username: randStr(8),
+            },
+          },
+        ],
+        errors: ['error1', 'error2'],
+        pageInfo: {
+          startCursor: randStr(16),
+          endCursor: randStr(16),
+          hasNextPage: true,
+          hasPreviousPage: false,
+        },
+      },
+    },
+  });
+
+  store.dispatch(clearPages());
+
+  const state = store.getState();
+  expect(state.library.notations).toHaveLength(0);
+  expect(state.library.errors).toHaveLength(0);
+  expect(state.library.pageInfo).toStrictEqual({
+    startCursor: null,
+    endCursor: null,
+    hasNextPage: true,
+    hasPreviousPage: false,
+  });
 });
 
 describe('getNotationPage', () => {
