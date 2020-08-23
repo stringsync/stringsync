@@ -1,6 +1,6 @@
 import React from 'react';
 import { compose, AuthRequirement } from '@stringsync/common';
-import { Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import { Landing } from './Landing';
 import { Fallback } from './Fallback';
 import { withAuthRequirement } from '../../hocs';
@@ -22,13 +22,15 @@ const ForgotPassword = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(
 export const Routes: React.FC = () => {
   return (
     <React.Suspense fallback={<Fallback />}>
-      <Route path="/" exact component={Landing} />
-      <ReturnToRoute path="/library" component={Library} />
-      <ReturnToRoute path="/n/:id" component={NotationPlayer} />
-      <Route path="/signup" component={Signup} />
-      <Route path="/login" component={Login} />
-      <Route path="/forgot-password" component={ForgotPassword} />
-      <Route path="*" component={NotFound} />
+      <Switch>
+        <Route path="/" exact component={Landing} />
+        <ReturnToRoute path="/library" component={Library} />
+        <ReturnToRoute path="/n/:id" component={NotationPlayer} />
+        <Route path="/signup" component={Signup} />
+        <Route path="/login" component={Login} />
+        <Route path="/forgot-password" component={ForgotPassword} />
+        <Route path="*" component={NotFound} />
+      </Switch>
     </React.Suspense>
   );
 };
