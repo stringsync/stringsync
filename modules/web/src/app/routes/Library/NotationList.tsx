@@ -18,8 +18,8 @@ interface Props {
 export const NotationList: React.FC<Props> = (props) => {
   return (
     <div data-testid="notation-list">
-      <InfiniteScroll initialLoad={false} loadMore={props.loadNextPage} hasMore={props.hasNextPage}>
-        {!props.notations.length && props.isPending ? null : (
+      {!props.notations.length && props.isPending ? null : (
+        <InfiniteScroll initialLoad={false} loadMore={props.loadNextPage} hasMore={props.hasNextPage}>
           <List
             grid={props.grid}
             dataSource={props.notations}
@@ -29,8 +29,8 @@ export const NotationList: React.FC<Props> = (props) => {
               </List.Item>
             )}
           />
-        )}
-      </InfiniteScroll>
+        </InfiniteScroll>
+      )}
     </div>
   );
 };

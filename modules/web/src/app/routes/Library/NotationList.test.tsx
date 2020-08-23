@@ -6,13 +6,13 @@ import { render } from '@testing-library/react';
 import { NotationPreview } from '../../../store/library/types';
 
 it('renders without crashing', async () => {
-  const now = new Date();
+  const nowStr = new Date().toString();
   const notations: NotationPreview[] = [
     {
       id: randStr(8),
       artistName: randStr(10),
-      createdAt: now.toISOString(),
-      updatedAt: now.toISOString(),
+      createdAt: nowStr,
+      updatedAt: nowStr,
       songName: randStr(10),
       thumbnailUrl: randStr(10),
       tags: [],
@@ -24,10 +24,22 @@ it('renders without crashing', async () => {
       },
     },
   ];
-  const loadMore = jest.fn();
+  const loadNextPage = jest.fn();
+  const isTagChecked = () => true;
+  const query = '';
   const hasNextPage = false;
 
-  const { container } = render(<NotationList notations={notations} loadMore={loadMore} hasNextPage={hasNextPage} />);
+  const { container } = render(
+    <NotationList
+      grid={{}}
+      isPending={false}
+      query={query}
+      notations={notations}
+      loadNextPage={loadNextPage}
+      hasNextPage={hasNextPage}
+      isTagChecked={isTagChecked}
+    />
+  );
 
   expect(container).toBeInTheDocument();
 });

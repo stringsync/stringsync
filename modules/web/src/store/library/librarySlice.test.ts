@@ -79,7 +79,7 @@ describe('getNotationPage', () => {
 
     const state = store.getState();
     const { notations, isPending, pageInfo } = state.library;
-    expect(notations).toStrictEqual([edge1.node, edge2.node]);
+    expect(notations).toStrictEqual([edge2.node, edge1.node]);
     expect(isPending).toBe(false);
     expect(pageInfo.startCursor).toBe(edge1.cursor);
     expect(pageInfo.endCursor).toBe(edge2.cursor);
