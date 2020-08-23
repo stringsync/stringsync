@@ -1,6 +1,13 @@
 import { QueryMatch } from './types';
 
 export const getQueryMatches = (query: string, str: string): QueryMatch[] => {
+  if (!query) {
+    return [
+      { str: '', matches: true },
+      { str, matches: false },
+    ];
+  }
+
   const ndx = str.indexOf(query);
   if (ndx < 0) {
     return [{ str, matches: false }];
