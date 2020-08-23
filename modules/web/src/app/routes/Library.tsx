@@ -66,7 +66,7 @@ const Library: React.FC<Props> = enhance(() => {
   const [isCheckedByTagId, setIsCheckedByTagId] = useState<{ [key: string]: boolean }>({});
   const [isSearching, setIsSearching] = useState(false);
   const [affixed, setAffixed] = useState(false);
-  const [shouldLoadFirstPage, setShouldLoadFirstPage] = useState(false);
+  const [shouldLoadFirstPage, setShouldLoadFirstPage] = useState(true);
   const tagIds = Object.keys(isCheckedByTagId).filter((tagId) => isCheckedByTagId[tagId]);
   const prevTagIds = usePrevious(tagIds);
   const hasQueryOrTagChecked = Boolean(query.length || tagIds.length);
@@ -133,14 +133,10 @@ const Library: React.FC<Props> = enhance(() => {
     }
   }, [didQueryChange, didTagIdsChange]);
 
-  useEffectOnce(() => {
-    loadNextPage();
-  });
-
   useEffect(() => {
     if (shouldLoadFirstPage) {
-      loadNextPage();
       setShouldLoadFirstPage(false);
+      loadNextPage();
     }
   }, [loadNextPage, shouldLoadFirstPage]);
 
