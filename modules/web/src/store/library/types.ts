@@ -9,7 +9,12 @@ export type Notation = Pick<
 
 export type Transcriber = Pick<PublicUser, 'id' | 'username' | 'role' | 'avatarUrl'>;
 
-export type NotationPreview = Notation & { transcriber: Transcriber; tags: Tag[] };
+export type NotationPreview = Notation & {
+  transcriber: Transcriber;
+  tags: Tag[];
+  createdAt: string;
+  updatedAt: string;
+};
 
 export type LibraryState = {
   isPending: boolean;

@@ -18,7 +18,7 @@ const { CheckableTag } = AntdTag;
 
 const PAGE_SIZE = 9;
 
-const DEBOUNCE_DELAY_MS = 300;
+const DEBOUNCE_DELAY_MS = 500;
 
 const Outer = styled.div<{ xs: boolean }>`
   margin: 24px ${(props) => (props.xs ? 0 : 24)}px;
@@ -77,7 +77,7 @@ const Library: React.FC<Props> = enhance(() => {
     difference(sortedTagIds, sortedPrevTagIds).length > 0 || difference(sortedPrevTagIds, sortedTagIds).length > 0;
 
   const loadNextPage = useCallback(async () => {
-    const connectionArgs: NotationConnectionArgs = { last: PAGE_SIZE, before: pageInfo.endCursor };
+    const connectionArgs: NotationConnectionArgs = { last: PAGE_SIZE, before: pageInfo.startCursor };
     if (query) {
       connectionArgs.query = query;
     }
@@ -87,7 +87,7 @@ const Library: React.FC<Props> = enhance(() => {
     await dispatch(getNotationPage(connectionArgs));
     setIsSearching(false);
     setShouldLoadFirstPage(false);
-  }, [dispatch, pageInfo.endCursor, query, tagIds]);
+  }, [dispatch, pageInfo.startCursor, query, tagIds]);
 
   const debouncedClearPages = useRef(
     debounce(() => {
