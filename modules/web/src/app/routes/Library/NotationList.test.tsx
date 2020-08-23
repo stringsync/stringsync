@@ -4,6 +4,7 @@ import { UserRole } from '@stringsync/domain';
 import { NotationList } from './NotationList';
 import { render } from '@testing-library/react';
 import { NotationPreview } from '../../../store/library/types';
+import { Test } from '../../../testing';
 
 it('renders without crashing', async () => {
   const nowStr = new Date().toString();
@@ -30,15 +31,17 @@ it('renders without crashing', async () => {
   const hasNextPage = false;
 
   const { container } = render(
-    <NotationList
-      grid={{}}
-      isPending={false}
-      query={query}
-      notations={notations}
-      loadNextPage={loadNextPage}
-      hasNextPage={hasNextPage}
-      isTagChecked={isTagChecked}
-    />
+    <Test>
+      <NotationList
+        grid={{}}
+        isPending={false}
+        query={query}
+        notations={notations}
+        loadNextPage={loadNextPage}
+        hasNextPage={hasNextPage}
+        isTagChecked={isTagChecked}
+      />
+    </Test>
   );
 
   expect(container).toBeInTheDocument();

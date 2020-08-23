@@ -1,13 +1,12 @@
 import React from 'react';
-import { asReturnToRoute } from './asReturnToRoute';
-import { createStore, AppStore } from '../store';
+import { ReturnToRoute } from './ReturnToRoute';
 import { render } from '@testing-library/react';
-import { createMemoryHistory } from 'history';
-import { Route, Router } from 'react-router';
+import { AppStore, createStore } from '../store';
 import { Provider } from 'react-redux';
+import { Router } from 'react-router';
+import { createMemoryHistory } from 'history';
 
-const Dummy: React.FC = asReturnToRoute(() => <div data-testid="dummy"></div>);
-const Routes = () => <Route path="/dummy" component={Dummy} />;
+const Dummy = () => <div data-testid="dummy"></div>;
 
 let store: AppStore;
 
@@ -19,10 +18,11 @@ it('sets returnToRoute when mounted', () => {
   const history = createMemoryHistory();
 
   history.push('/dummy?foo=bar#baz');
+
   const { queryByTestId } = render(
     <Provider store={store}>
       <Router history={history}>
-        <Routes />
+        <ReturnToRoute component={Dummy} />
       </Router>
     </Provider>
   );

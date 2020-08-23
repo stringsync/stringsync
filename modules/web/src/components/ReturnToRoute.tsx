@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useLocation } from 'react-router';
-import { setReturnToRoute, RootState, AppDispatch } from '../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { Route, RouteProps, useLocation } from 'react-router';
+import { AppDispatch, RootState, setReturnToRoute } from '../store';
 
 export const asReturnToRoute = function<P>(Component: React.ComponentType<P>): React.FC<P> {
   return (props) => {
@@ -18,4 +18,10 @@ export const asReturnToRoute = function<P>(Component: React.ComponentType<P>): R
 
     return <Component {...props} />;
   };
+};
+
+export const ReturnToRoute: React.FC<RouteProps> = (props) => {
+  const component = props.component ? asReturnToRoute(props.component) : undefined;
+  const routeProps = { ...props, component };
+  return <Route {...routeProps} />;
 };

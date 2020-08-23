@@ -3,12 +3,10 @@ import { compose, AuthRequirement } from '@stringsync/common';
 import { Route } from 'react-router-dom';
 import { Landing } from './Landing';
 import { Fallback } from './Fallback';
-import { asReturnToRoute, withAuthRequirement } from '../../hocs';
+import { withAuthRequirement } from '../../hocs';
+import { ReturnToRoute } from '../../components/ReturnToRoute';
 
-const Library = compose(
-  asReturnToRoute,
-  withAuthRequirement(AuthRequirement.NONE)
-)(React.lazy(() => import('./Library')));
+const Library = compose(withAuthRequirement(AuthRequirement.NONE))(React.lazy(() => import('./Library')));
 
 const Signup = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(React.lazy(() => import('./Signup')));
 
@@ -22,7 +20,7 @@ export const Routes: React.FC = () => {
   return (
     <React.Suspense fallback={<Fallback />}>
       <Route path="/" exact component={Landing} />
-      <Route path="/library" component={Library} />
+      <ReturnToRoute path="/library" component={Library} />
       <Route path="/signup" component={Signup} />
       <Route path="/login" component={Login} />
       <Route path="/forgot-password" component={ForgotPassword} />
