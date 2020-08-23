@@ -1,11 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { ConnectionArgs, PageInfo } from '@stringsync/common';
+import { PageInfo, NotationConnectionArgs } from '@stringsync/common';
 import { toUserRole } from '../../clients';
 import { NotationClient } from '../../clients/notation';
 import { LibraryReducers, LibraryState, NotationPreview } from './types';
 
 export type GetNotationPageReturned = { notations: NotationPreview[]; pageInfo: PageInfo };
-export type GetNotationPageThunkArg = ConnectionArgs;
+export type GetNotationPageThunkArg = NotationConnectionArgs;
 export type GetNotationPageThunkConfig = { rejectValue: { errors: string[] } };
 export const getNotationPage = createAsyncThunk<
   GetNotationPageReturned,
@@ -22,11 +22,13 @@ export const getNotationPage = createAsyncThunk<
   const notationConnection = data.notations;
   const pageInfo = notationConnection.pageInfo;
   return {
-    notations: notationConnection.edges.map((edge) => {
-      const role = toUserRole(edge.node.transcriber.role);
-      const transcriber = { ...edge.node.transcriber, role };
-      return { ...edge.node, transcriber } as NotationPreview;
-    }),
+    notations: notationConnection.edges
+      .map((edge) => {
+        const role = toUserRole(edge.node.transcriber.role);
+        const transcriber = { ...edge.node.transcriber, role };
+        return { ...edge.node, transcriber } as NotationPreview;
+      })
+      .reverse(), // the server sorts by ascending cursor for us
     pageInfo: {
       startCursor: pageInfo.startCursor || null,
       endCursor: pageInfo.endCursor || null,

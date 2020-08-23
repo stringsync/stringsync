@@ -1,34 +1,35 @@
 import { List } from 'antd';
 import { ListGridType } from 'antd/lib/list';
-import React, { useMemo } from 'react';
+import React from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { NotationPreview } from '../../../store/library/types';
 import { NotationCard } from './NotationCard';
-import { sortBy } from 'lodash';
 
 interface Props {
+  isPending: boolean;
   notations: NotationPreview[];
-  loadMore: (pageNumber: number) => void;
   hasNextPage: boolean;
-  grid?: ListGridType;
+  query: string;
+  grid: ListGridType;
+  loadNextPage: (pageNumber: number) => void;
+  isTagChecked: (tagId: string) => boolean;
 }
 
 export const NotationList: React.FC<Props> = (props) => {
-  const notations = useMemo(() => sortBy(props.notations, (notation) => -new Date(notation.createdAt).getTime()), [
-    props.notations,
-  ]);
   return (
     <div data-testid="notation-list">
-      <InfiniteScroll initialLoad={false} loadMore={props.loadMore} hasMore={props.hasNextPage}>
-        <List
-          grid={props.grid}
-          dataSource={notations}
-          renderItem={(notation) => (
-            <List.Item>
-              <NotationCard notation={notation} />
-            </List.Item>
-          )}
-        />
+      <InfiniteScroll initialLoad={false} loadMore={props.loadNextPage} hasMore={props.hasNextPage}>
+        {!props.notations.length && props.isPending ? null : (
+          <List
+            grid={props.grid}
+            dataSource={props.notations}
+            renderItem={(notation) => (
+              <List.Item>
+                <NotationCard notation={notation} query={props.query} isTagChecked={props.isTagChecked} />
+              </List.Item>
+            )}
+          />
+        )}
       </InfiniteScroll>
     </div>
   );

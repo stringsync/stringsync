@@ -3,8 +3,16 @@ import { NotationPreview } from '../../../store/library/types';
 import { Card, Avatar, Divider, Skeleton, Tag } from 'antd';
 import styled from 'styled-components';
 import { useEffectOnce } from '../../../hooks';
+import { theme } from '../../../theme';
+import { getQueryMatches } from './getQueryMatches';
 
 const LOAD_TIMEOUT_MS = 3000;
+
+const HIGHLIGHT_COLOR = theme['@highlight-color'];
+
+const ColoredSpan = styled.span`
+  color: ${HIGHLIGHT_COLOR};
+`;
 
 const Tags = styled.div`
   margin-top: 8px;
@@ -16,6 +24,8 @@ const StyledSkeleton = styled(Skeleton)`
 
 interface Props {
   notation: NotationPreview;
+  query: string;
+  isTagChecked: (tagId: string) => boolean;
 }
 
 export const NotationCard: React.FC<Props> = (props) => {
@@ -70,18 +80,38 @@ export const NotationCard: React.FC<Props> = (props) => {
       <Skeleton avatar active loading={loading} paragraph={{ rows: 1 }}>
         <Card.Meta
           avatar={transcriber.avatarUrl ? <Avatar src={transcriber.avatarUrl} /> : <Avatar />}
-          title={transcriber.username}
+          title={
+            <span>
+              {getQueryMatches(props.query, transcriber.username).map((queryMatch) =>
+                queryMatch.matches ? <ColoredSpan>{queryMatch.str}</ColoredSpan> : <span>{queryMatch.str}</span>
+              )}
+            </span>
+          }
           description={
             <>
               <div>
-                <span>{songName}</span>
+                <span>
+                  {getQueryMatches(props.query, songName).map((queryMatch) =>
+                    queryMatch.matches ? <ColoredSpan>{queryMatch.str}</ColoredSpan> : <span>{queryMatch.str}</span>
+                  )}
+                </span>
                 <Divider type="vertical" />
-                <small>{artistName}</small>
+                <small>
+                  {getQueryMatches(props.query, artistName).map((queryMatch) =>
+                    queryMatch.matches ? <ColoredSpan>{queryMatch.str}</ColoredSpan> : <span>{queryMatch.str}</span>
+                  )}
+                </small>
               </div>
               <Tags>
-                {tags.map((tag) => (
-                  <Tag key={tag.id}>{tag.name}</Tag>
-                ))}
+                {tags.map((tag) => {
+                  const isTagChecked = props.isTagChecked(tag.id);
+                  const color = isTagChecked ? HIGHLIGHT_COLOR : undefined;
+                  return (
+                    <Tag key={tag.id} color={color}>
+                      {tag.name}
+                    </Tag>
+                  );
+                })}
               </Tags>
             </>
           }

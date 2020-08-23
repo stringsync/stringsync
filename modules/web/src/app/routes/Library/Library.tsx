@@ -51,15 +51,19 @@ const enhance = compose(withLayout(Layout.DEFAULT));
 interface Props {}
 
 const Library: React.FC<Props> = enhance(() => {
+  // store state
   const dispatch = useDispatch<AppDispatch>();
   const errors = useSelector<RootState, string[]>((state) => state.library.errors);
   const notations = useSelector<RootState, NotationPreview[]>((state) => state.library.notations);
   const tags = useSelector<RootState, Tag[]>((state) => state.tag.tags);
   const pageInfo = useSelector<RootState, PageInfo>((state) => state.library.pageInfo);
   const xs = useSelector<RootState, boolean>((state) => state.viewport.xs);
+  const isPending = useSelector<RootState, boolean>((state) => state.library.isPending);
   const hasNextPage = useSelector<RootState, boolean>(
     (state) => !state.library.isPending && Boolean(state.library.pageInfo.hasNextPage) && !state.library.errors.length
   );
+
+  // local state
   const [query, setQuery] = useState('');
   const prevQuery = usePrevious(query);
   const [isCheckedByTagId, setIsCheckedByTagId] = useState<{ [key: string]: boolean }>({});
@@ -75,6 +79,7 @@ const Library: React.FC<Props> = enhance(() => {
   const didTagIdsChange =
     difference(sortedTagIds, sortedPrevTagIds).length > 0 || difference(sortedPrevTagIds, sortedTagIds).length > 0;
 
+  // callbacks
   const loadNextPage = useCallback(async () => {
     const connectionArgs: NotationConnectionArgs = { last: PAGE_SIZE, before: pageInfo.startCursor };
     if (query) {
@@ -121,6 +126,9 @@ const Library: React.FC<Props> = enhance(() => {
     dispatch(clearErrors());
   }, [dispatch]);
 
+  const isTagChecked = useCallback((id) => isCheckedByTagId[id] || false, [isCheckedByTagId]);
+
+  // effects
   useEffectOnce(() => {
     dispatch(getTags());
   });
@@ -187,10 +195,13 @@ const Library: React.FC<Props> = enhance(() => {
 
       {isSearching ? null : (
         <NotationList
+          isPending={isPending}
           grid={{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 3 }}
           notations={notations}
+          query={query}
           hasNextPage={hasNextPage}
-          loadMore={loadNextPage}
+          loadNextPage={loadNextPage}
+          isTagChecked={isTagChecked}
         />
       )}
     </Outer>
