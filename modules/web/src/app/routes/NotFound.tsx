@@ -9,7 +9,7 @@ const Outer = styled.div`
   margin-top: 24px;
 `;
 
-const NotFound: React.FC<Props> = () => {
+export const NotFound: React.FC<Props> = () => {
   return (
     <Outer>
       <h1>page not found</h1>
@@ -17,5 +17,3 @@ const NotFound: React.FC<Props> = () => {
     </Outer>
   );
 };
-
-export default NotFound;

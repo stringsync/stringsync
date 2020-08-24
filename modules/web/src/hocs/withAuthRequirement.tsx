@@ -34,7 +34,7 @@ export const withAuthRequirement = (authReqs: AuthRequirement) =>
       const userRole = useSelector<RootState, UserRole>((state) => state.auth.user.role);
       const returnToRoute = useSelector<RootState, string>((state) => state.history.returnToRoute);
       const history = useHistory();
-      const meetsAuthReqs = useRef(true);
+      const meetsAuthReqs = useRef(false);
 
       if (!isAuthPending) {
         meetsAuthReqs.current = isMeetingAuthReqs(authReqs, isLoggedIn, userRole);

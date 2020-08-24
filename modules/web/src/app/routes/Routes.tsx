@@ -5,7 +5,7 @@ import { Landing } from './Landing';
 import { Fallback } from './Fallback';
 import { withAuthRequirement } from '../../hocs';
 import { ReturnToRoute } from '../../components/ReturnToRoute';
-import NotFound from './NotFound';
+import { NotFound } from './NotFound';
 
 const Library = compose(withAuthRequirement(AuthRequirement.NONE))(React.lazy(() => import('./Library')));
 
@@ -19,6 +19,8 @@ const ForgotPassword = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(
   React.lazy(() => import('./ForgotPassword'))
 );
 
+const Upload = compose(withAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER))(React.lazy(() => import('./Upload')));
+
 export const Routes: React.FC = () => {
   return (
     <React.Suspense fallback={<Fallback />}>
@@ -29,6 +31,7 @@ export const Routes: React.FC = () => {
         <Route path="/signup" component={Signup} />
         <Route path="/login" component={Login} />
         <Route path="/forgot-password" component={ForgotPassword} />
+        <ReturnToRoute path="/upload" component={Upload} />
         <Route path="*" component={NotFound} />
       </Switch>
     </React.Suspense>
