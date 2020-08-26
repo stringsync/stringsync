@@ -41,7 +41,7 @@ const Upload: React.FC<Props> = enhance(() => {
   const [pathname, setPathname] = useState('');
   const [selectedTagNames, setSelectedTagNames] = useState(new Array<string>());
   const shouldBlockNavigation = useRef(true);
-  shouldBlockNavigation.current = !!tags.length;
+  shouldBlockNavigation.current = !!selectedTagNames.length;
 
   const onStepChange = (stepNdx: number) => {
     setStepNdx(stepNdx);
