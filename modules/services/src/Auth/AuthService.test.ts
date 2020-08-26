@@ -15,11 +15,6 @@ let userRepo: UserRepo;
 beforeEach(() => {
   authService = container.get<AuthService>(TYPES.AuthService);
   userRepo = authService.userRepo;
-  userRepo.userLoader.startListeningForChanges();
-});
-
-afterEach(() => {
-  userRepo.userLoader.stopListeningForChanges();
 });
 
 describe('getSessionUser', () => {

@@ -1,102 +1,32 @@
-import { get } from 'lodash';
-import { EventEmitter } from 'events';
-import { TaggingModel } from './TaggingModel';
-import {
-  BelongsToMany,
-  ForeignKey,
-  DataType,
-  AfterCreate,
-  AfterDestroy,
-  AfterUpdate,
-  IsUrl,
-  AllowNull,
-} from 'sequelize-typescript';
-import { AfterSave, AfterUpsert, AfterBulkCreate, AfterBulkUpdate } from 'sequelize-typescript';
-import { Table, Model, PrimaryKey, Column, CreatedAt, UpdatedAt, AutoIncrement, Default } from 'sequelize-typescript';
-import { BelongsTo, AfterBulkDestroy } from 'sequelize-typescript';
-import { IsDate, Min, Length, Is } from 'sequelize-typescript';
 import { Notation } from '@stringsync/domain';
-import { UserModel } from './UserModel';
+import {
+  AllowNull,
+  AutoIncrement,
+  BelongsTo,
+  BelongsToMany,
+  Column,
+  CreatedAt,
+  Default,
+  ForeignKey,
+  Is,
+  IsDate,
+  IsUrl,
+  Length,
+  Min,
+  Model,
+  PrimaryKey,
+  Table,
+  UpdatedAt,
+} from 'sequelize-typescript';
+import { TaggingModel } from './TaggingModel';
 import { TagModel } from './TagModel';
+import { UserModel } from './UserModel';
 
 @Table({
   tableName: 'notations',
   underscored: true,
 })
 export class NotationModel extends Model<NotationModel> implements Notation {
-  static CLEAR_CACHE = Symbol('CLEAR_CACHE');
-  static PRIME_CACHE = Symbol('PRIME_CACHE');
-
-  static emitter = new EventEmitter();
-
-  @AfterCreate
-  static afterCreateHook(instance: NotationModel) {
-    const notation = instance.get({ plain: true }) as Notation;
-    NotationModel.emitPrimeCache(notation.id, notation);
-  }
-
-  @AfterDestroy
-  static afterDestroyHook(instance: NotationModel) {
-    const user = instance.get({ plain: true }) as Notation;
-    NotationModel.emitClearCache(user.id);
-  }
-
-  @AfterUpdate
-  static afterUpdateHook(instance: NotationModel) {
-    const user = instance.get({ plain: true }) as Notation;
-    NotationModel.emitClearCache(user.id);
-  }
-
-  @AfterSave
-  static afterSaveHook(instance: NotationModel) {
-    const user = instance.get({ plain: true }) as Notation;
-    NotationModel.emitPrimeCache(user.id, user);
-  }
-
-  @AfterUpsert
-  static afterUpsertHook(instance: NotationModel) {
-    const user = instance.get({ plain: true }) as Notation;
-    NotationModel.emitPrimeCache(user.id, user);
-  }
-
-  @AfterBulkCreate
-  static afterBulkCreateHook(instances: NotationModel[]) {
-    const users = instances.map((instance) => instance.get({ plain: true }) as Notation);
-    for (const user of users) {
-      NotationModel.emitPrimeCache(user.id, user);
-    }
-  }
-
-  @AfterBulkDestroy
-  static afterBulkDestroyHook(opts: any) {
-    const whereId = get(opts, 'where.id', '');
-    const ids: unknown[] = Array.isArray(whereId) ? whereId : [whereId];
-    for (const id of ids) {
-      if (typeof id === 'string') {
-        NotationModel.emitClearCache(id);
-      }
-    }
-  }
-
-  @AfterBulkUpdate
-  static afterBulkUpdateHooks(opts: any) {
-    const whereId = get(opts, 'where.id', '');
-    const ids: unknown[] = Array.isArray(whereId) ? whereId : [whereId];
-    for (const id of ids) {
-      if (typeof id === 'string') {
-        NotationModel.emitClearCache(id);
-      }
-    }
-  }
-
-  static emitPrimeCache(id: string, notation: Notation) {
-    NotationModel.emitter.emit(NotationModel.PRIME_CACHE, id, notation);
-  }
-
-  static emitClearCache(id: string) {
-    NotationModel.emitter.emit(NotationModel.CLEAR_CACHE, id);
-  }
-
   @PrimaryKey
   @Column
   id!: string;

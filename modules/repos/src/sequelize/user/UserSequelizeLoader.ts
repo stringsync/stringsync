@@ -18,18 +18,9 @@ export class UserSequelizeLoader implements UserLoader {
     this.byIdLoader = new Dataloader(this.loadAllById);
   }
 
-  startListeningForChanges() {
-    this.userModel.emitter.addListener(this.userModel.PRIME_CACHE, this.primeById);
-    this.userModel.emitter.addListener(this.userModel.CLEAR_CACHE, this.clearById);
-  }
-
-  stopListeningForChanges() {
-    this.userModel.emitter.removeListener(this.userModel.PRIME_CACHE, this.primeById);
-    this.userModel.emitter.removeListener(this.userModel.CLEAR_CACHE, this.clearById);
-  }
-
   async findById(id: string): Promise<User | null> {
     const user = await this.byIdLoader.load(id);
+    this.byIdLoader.clearAll();
     return ensureNoErrors(user);
   }
 
@@ -40,13 +31,5 @@ export class UserSequelizeLoader implements UserLoader {
       getUniqueIdentifier: (user) => user.id,
       getMissingValue: () => null,
     });
-  };
-
-  private primeById = (id: string, user: User) => {
-    this.byIdLoader.prime(id, user);
-  };
-
-  private clearById = (id: string) => {
-    this.byIdLoader.clear(id);
   };
 }

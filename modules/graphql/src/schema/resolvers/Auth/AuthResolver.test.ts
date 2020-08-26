@@ -242,7 +242,6 @@ describe('sendResetPasswordEmail', () => {
 
   beforeEach(async () => {
     userService = container.get<UserService>(TYPES.UserService);
-    userService.userRepo.userLoader.startListeningForChanges();
 
     const username = randStr(10);
     email = `${username}@domain.tld`;
@@ -254,10 +253,6 @@ describe('sendResetPasswordEmail', () => {
 
     user = (await userService.find(id))!;
     await authClient.logout();
-  });
-
-  afterEach(() => {
-    userService.userRepo.userLoader.stopListeningForChanges();
   });
 
   it('resets passwordResetToken', async () => {
@@ -281,7 +276,6 @@ describe('sendResetPasswordEmail', () => {
 
   beforeEach(async () => {
     userService = container.get<UserService>(TYPES.UserService);
-    userService.userRepo.userLoader.startListeningForChanges();
 
     const username = randStr(10);
     email = `${username}@domain.tld`;
@@ -292,10 +286,6 @@ describe('sendResetPasswordEmail', () => {
     const { id } = signupRes.body.data.signup!;
     user = (await userService.find(id))!;
     await authClient.logout();
-  });
-
-  afterEach(() => {
-    userService.userRepo.userLoader.stopListeningForChanges();
   });
 
   it('resets the password', async () => {

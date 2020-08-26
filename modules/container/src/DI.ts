@@ -188,7 +188,7 @@ export class DI {
         port: config.DB_PORT,
         password: config.DB_PASSWORD,
         username: config.DB_USERNAME,
-        logging: logger.debug,
+        logging: console.log,
       });
       bind<Sequelize>(TYPES.Sequelize).toConstantValue(sequelize);
       bind<typeof UserModel>(TYPES.UserModel).toConstructor(UserModel);

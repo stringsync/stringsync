@@ -31,30 +31,21 @@ export class NotationSequelizeLoader implements NotationLoader {
     this.byTagIdLoader = new Dataloader(this.loadByTagId);
   }
 
-  startListeningForChanges() {
-    this.notationModel.emitter.addListener(this.notationModel.PRIME_CACHE, this.primeById);
-    this.notationModel.emitter.addListener(this.notationModel.CLEAR_CACHE, this.clearById);
-    this.userModel.emitter.addListener(this.userModel.CLEAR_CACHE, this.clearByTranscriberId);
-  }
-
-  stopListeningForChanges() {
-    this.notationModel.emitter.removeListener(this.notationModel.PRIME_CACHE, this.primeById);
-    this.notationModel.emitter.removeListener(this.notationModel.CLEAR_CACHE, this.clearById);
-    this.userModel.emitter.removeListener(this.userModel.CLEAR_CACHE, this.clearByTranscriberId);
-  }
-
   async findById(id: string) {
     const notation = this.byIdLoader.load(id);
+    this.byIdLoader.clearAll();
     return ensureNoErrors(notation);
   }
 
   async findAllByTranscriberId(transcriberId: string) {
     const notations = await this.byTranscriberIdLoader.load(transcriberId);
+    this.byTranscriberIdLoader.clearAll();
     return ensureNoErrors(notations);
   }
 
   async findAllByTagId(tagId: string) {
     const notations = await this.byTagIdLoader.load(tagId);
+    this.byTagIdLoader.clearAll();
     return ensureNoErrors(notations);
   }
 
@@ -97,17 +88,5 @@ export class NotationSequelizeLoader implements NotationLoader {
       getUniqueIdentifier: (notation) => notation.id,
       getMissingValue: () => [],
     });
-  };
-
-  private primeById = (id: string, notation: Notation) => {
-    this.byIdLoader.prime(id, notation);
-  };
-
-  private clearById = (id: string) => {
-    this.byIdLoader.clear(id);
-  };
-
-  private clearByTranscriberId = (transcriberId: string) => {
-    this.byTranscriberIdLoader.clear(transcriberId);
   };
 }

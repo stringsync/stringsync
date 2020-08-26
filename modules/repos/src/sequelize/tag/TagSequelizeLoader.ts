@@ -26,23 +26,15 @@ export class TagSequelizeLoader implements TagLoader {
     this.byNotationIdLoader = new Dataloader(this.loadAllByNotationIds);
   }
 
-  startListeningForChanges(): void {
-    this.tagModel.emitter.addListener(this.tagModel.PRIME_CACHE, this.primeById);
-    this.tagModel.emitter.addListener(this.tagModel.CLEAR_CACHE, this.clearById);
-  }
-
-  stopListeningForChanges(): void {
-    this.tagModel.emitter.removeListener(this.tagModel.PRIME_CACHE, this.primeById);
-    this.tagModel.emitter.removeListener(this.tagModel.CLEAR_CACHE, this.clearById);
-  }
-
   async findById(id: string): Promise<Tag | null> {
     const tag = await this.byIdLoader.load(id);
+    this.byIdLoader.clearAll();
     return ensureNoErrors(tag);
   }
 
   async findAllByNotationId(notationId: string): Promise<Tag[]> {
     const tags = await this.byNotationIdLoader.load(notationId);
+    this.byNotationIdLoader.clearAll();
     return ensureNoErrors(tags);
   }
 
@@ -73,13 +65,5 @@ export class TagSequelizeLoader implements TagLoader {
       getUniqueIdentifier: (tag) => tag.id,
       getMissingValue: () => [],
     });
-  };
-
-  private primeById = (notationId: string, tags: Tag[]) => {
-    this.byNotationIdLoader.prime(notationId, tags);
-  };
-
-  private clearById = (notationId: string) => {
-    this.byNotationIdLoader.clear(notationId);
   };
 }

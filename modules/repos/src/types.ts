@@ -33,21 +33,15 @@ export interface TaggingRepo extends Repo<Tagging> {}
 
 export interface UserLoader {
   findById(id: string): Promise<User | null>;
-  startListeningForChanges(): void;
-  stopListeningForChanges(): void;
 }
 
 export interface NotationLoader {
   findById(id: string): Promise<Notation | null>;
   findAllByTranscriberId(transcriberId: string): Promise<Notation[]>;
   findAllByTagId(tagId: string): Promise<Notation[]>;
-  startListeningForChanges(): void;
-  stopListeningForChanges(): void;
 }
 
 export interface TagLoader {
   findById(id: string): Promise<Tag | null>;
   findAllByNotationId(notationId: string): Promise<Tag[]>;
-  startListeningForChanges(): void;
-  stopListeningForChanges(): void;
 }

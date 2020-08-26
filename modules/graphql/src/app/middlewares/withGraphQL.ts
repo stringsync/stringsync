@@ -5,8 +5,6 @@ import graphqlHTTP from 'express-graphql';
 import { GraphQLSchema } from 'graphql';
 import { Container } from 'inversify';
 import { createReqCtx } from '../../ctx';
-import { startListeningForChanges } from './startListeningForChanges';
-import { stopListeningForChanges } from './stopListeningForChanges';
 import { formatError } from './formatError';
 
 export const withGraphQL = (container: Container, schema: GraphQLSchema): Handler => (req, res) => {
@@ -22,10 +20,8 @@ export const withGraphQL = (container: Container, schema: GraphQLSchema): Handle
   });
 
   try {
-    startListeningForChanges(context.container);
     middleware(req, res);
   } catch (e) {
     logger.error(e);
   }
-  stopListeningForChanges(context.container);
 };
