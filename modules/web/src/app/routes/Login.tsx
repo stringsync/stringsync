@@ -65,14 +65,14 @@ export const Login: React.FC = () => {
                 </Button>
               </Form.Item>
               <Center>
-                <Link to="forgot-password">Forgot password?</Link>
+                <Link to="/forgot-password">Forgot password?</Link>
               </Center>
             </Form>
           </>
         }
         footer={
           <Center>
-            Don't have an account? <Link to="signup">signup</Link>
+            Don't have an account? <Link to="/signup">signup</Link>
           </Center>
         }
       />

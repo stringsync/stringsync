@@ -43,7 +43,7 @@ export const DefaultLayout: React.FC = (props) => {
         <Lane>
           <Row align="middle" justify="space-between">
             <Col>
-              <Link to="library">
+              <Link to="/library">
                 <Row align="middle" justify="center">
                   <Logo size={22} />
                   {isLtEqMdViewport ? null : (

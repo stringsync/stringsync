@@ -66,7 +66,7 @@ export const ForgotPassword: React.FC = () => {
         }
         footer={
           <Center>
-            Remember your password? <Link to="login">login</Link>
+            Remember your password? <Link to="/login">login</Link>
           </Center>
         }
       />

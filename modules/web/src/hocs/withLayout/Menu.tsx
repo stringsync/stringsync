@@ -67,7 +67,7 @@ export const Menu: React.FC<Props> = (props) => {
         {isLibraryVisible ? (
           <Col>
             <Button type="link" size="large" shape="circle">
-              <Link to="library">
+              <Link to="/library">
                 <StyledCompassOutlined />
               </Link>
             </Button>
@@ -77,7 +77,7 @@ export const Menu: React.FC<Props> = (props) => {
         {isUploadVisible ? (
           <Col>
             <Button type="link" size="large" shape="circle">
-              <Link to="upload">
+              <Link to="/upload">
                 <StyledUploadOutlined />
               </Link>
             </Button>
@@ -94,7 +94,7 @@ export const Menu: React.FC<Props> = (props) => {
 
         {isLoginVisible ? (
           <Col>
-            <Link to="login">
+            <Link to="/login">
               <Button size="small" type="primary">
                 login
               </Button>
@@ -104,7 +104,7 @@ export const Menu: React.FC<Props> = (props) => {
 
         {isSignupVisible ? (
           <Col>
-            <Link to="signup">
+            <Link to="/signup">
               <Button size="small" type="link">
                 signup
               </Button>

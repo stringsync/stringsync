@@ -93,7 +93,7 @@ const Signup: React.FC = () => {
         }
         footer={
           <Center>
-            Have an account? <Link to="login">login</Link>
+            Have an account? <Link to="/login">login</Link>
           </Center>
         }
       />

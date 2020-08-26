@@ -64,7 +64,7 @@ export const FormPage: React.FC<Props> = (props) => {
         <MaxWidth>
           <StyledBox>
             {props.wordmarked ? (
-              <Link to="library">
+              <Link to="/library">
                 <StyledH1>
                   <Wordmark />
                 </StyledH1>
