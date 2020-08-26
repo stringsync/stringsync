@@ -1,6 +1,6 @@
 import { Button, Form, Input, message } from 'antd';
 import { Rule } from 'antd/lib/form';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -46,36 +46,24 @@ const Signup: React.FC = () => {
     dispatch(clearAuthErrors());
   });
 
-  const onUsernameChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setUsername(event.currentTarget.value);
-    },
-    [setUsername]
-  );
-  const onEmailChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setEmail(event.currentTarget.value);
-    },
-    [setEmail]
-  );
-  const onPasswordChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setPassword(event.currentTarget.value);
-    },
-    [setPassword]
-  );
-  const onErrorsClose = useCallback<React.MouseEventHandler<HTMLButtonElement>>(
-    (event) => {
-      dispatch(clearAuthErrors());
-    },
-    [dispatch]
-  );
-  const onFinish = useCallback(async () => {
+  const onUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUsername(event.currentTarget.value);
+  };
+  const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(event.currentTarget.value);
+  };
+  const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(event.currentTarget.value);
+  };
+  const onErrorsClose: React.MouseEventHandler<HTMLButtonElement> = (event) => {
+    dispatch(clearAuthErrors());
+  };
+  const onFinish = async () => {
     const action = await dispatch(signup({ input: { username, password, email } }));
     if (action.payload && 'user' in action.payload) {
       message.success(`logged in as ${action.payload.user.username}`);
     }
-  }, [dispatch, email, password, username]);
+  };
 
   return (
     <div data-testid="signup">

@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, RouteProps, useLocation } from 'react-router';
 import { AppDispatch, RootState, setReturnToRoute } from '../store';
 
-export const asReturnToRoute = function<P>(Component: React.ComponentType<P>): React.FC<P> {
+const asReturnToRoute = function<P>(Component: React.ComponentType<P>): React.FC<P> {
   return (props) => {
     const dispatch = useDispatch<AppDispatch>();
     const returnToRoute = useSelector<RootState, string>((state) => state.history.returnToRoute);
@@ -21,7 +21,7 @@ export const asReturnToRoute = function<P>(Component: React.ComponentType<P>): R
 };
 
 export const ReturnToRoute: React.FC<RouteProps> = (props) => {
-  const component = props.component ? asReturnToRoute(props.component) : undefined;
+  const component = useMemo(() => (props.component ? asReturnToRoute(props.component) : undefined), [props.component]);
   const routeProps = { ...props, component };
   return <Route {...routeProps} />;
 };

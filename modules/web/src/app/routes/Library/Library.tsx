@@ -100,33 +100,32 @@ const Library: React.FC<Props> = enhance(() => {
     }, DEBOUNCE_DELAY_MS)
   );
 
-  const onQueryChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+  const onQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
-  }, []);
+  };
 
-  const onQueryTagCheckChange = useCallback(
-    (tagId: string) => (isChecked: boolean) =>
-      setIsCheckedByTagId({
-        ...isCheckedByTagId,
-        [tagId]: isChecked,
-      }),
-    [isCheckedByTagId]
-  );
+  const onQueryTagCheckChange = (tagId: string) => (isChecked: boolean) =>
+    setIsCheckedByTagId({
+      ...isCheckedByTagId,
+      [tagId]: isChecked,
+    });
 
-  const onQueryClear = useCallback(() => {
+  const onQueryClear = () => {
     setQuery('');
     setIsCheckedByTagId(mapValues(isCheckedByTagId, () => false));
-  }, [isCheckedByTagId]);
+  };
 
-  const onAffixChange = useCallback((affixed) => {
-    setAffixed(affixed);
-  }, []);
+  const onAffixChange = (affixed?: boolean | undefined) => {
+    if (typeof affixed === 'boolean') {
+      setAffixed(affixed);
+    }
+  };
 
-  const onAlertClose = useCallback(() => {
+  const onAlertClose = () => {
     dispatch(clearErrors());
-  }, [dispatch]);
+  };
 
-  const isTagChecked = useCallback((id) => isCheckedByTagId[id] || false, [isCheckedByTagId]);
+  const isTagChecked = useCallback((tagId: string) => isCheckedByTagId[tagId] || false, [isCheckedByTagId]);
 
   // effects
   useEffectOnce(() => {

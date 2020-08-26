@@ -1,7 +1,7 @@
 import { CompassOutlined, SettingOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons';
 import { gtEqTeacher } from '@stringsync/domain';
 import { Avatar, Button, Col, message, Modal, Row } from 'antd';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -45,14 +45,14 @@ export const Menu: React.FC<Props> = (props) => {
   const history = useHistory();
   const isGtEqTeacher = gtEqTeacher(user.role);
 
-  const showModal = useCallback(() => setModalVisible(true), [setModalVisible]);
-  const hideModal = useCallback(() => setModalVisible(false), [setModalVisible]);
-  const handleLogoutClick = useCallback(() => {
+  const showModal = () => setModalVisible(true);
+  const hideModal = () => setModalVisible(false);
+  const handleLogoutClick = () => {
     dispatch(logout());
     hideModal();
     message.success('logged out');
     history.push('library');
-  }, [dispatch, hideModal, history]);
+  };
 
   const gutterPx = isLoggedIn ? 16 : 8;
   const isLibraryVisible = !isAuthPending && !isLtEqMdViewport && isLoggedIn;

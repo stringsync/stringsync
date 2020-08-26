@@ -1,6 +1,6 @@
 import { Button, Form, Input, message } from 'antd';
 import { Rule } from 'antd/lib/form';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -27,26 +27,22 @@ export const ForgotPassword: React.FC = () => {
 
   const [email, setEmail] = useState('');
 
-  const onEmailChange = useCallback<React.ChangeEventHandler<HTMLInputElement>>((event) => {
+  const onEmailChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     setEmail(event.currentTarget.value);
-  }, []);
-  const onErrorsClose = useCallback<React.MouseEventHandler<HTMLButtonElement>>(
-    (event) => {
-      dispatch(clearAuthErrors());
-    },
-    [dispatch]
-  );
-  const onFinish = useCallback(
-    async (event) => {
-      const action = await dispatch(sendResetPasswordEmail({ input: { email } }));
-      const maybeSendResetPasswordEmailRes = action.payload; // boolean | { errors: string [] }
-      if (maybeSendResetPasswordEmailRes === true) {
-        message.success(`sent reset password email to ${email}`);
-        history.push(returnToRoute);
-      }
-    },
-    [dispatch, email, history, returnToRoute]
-  );
+  };
+
+  const onErrorsClose: React.MouseEventHandler<HTMLButtonElement> = () => {
+    dispatch(clearAuthErrors());
+  };
+
+  const onFinish = async () => {
+    const action = await dispatch(sendResetPasswordEmail({ input: { email } }));
+    const maybeSendResetPasswordEmailRes = action.payload; // boolean | { errors: string [] }
+    if (maybeSendResetPasswordEmailRes === true) {
+      message.success(`sent reset password email to ${email}`);
+      history.push(returnToRoute);
+    }
+  };
 
   return (
     <div data-testid="forgot-password">

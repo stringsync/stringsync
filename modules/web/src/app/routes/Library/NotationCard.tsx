@@ -1,8 +1,8 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { NotationPreview } from '../../../store/library/types';
-import { Card, Avatar, Divider, Skeleton, Tag } from 'antd';
+import { Avatar, Card, Divider, Skeleton, Tag } from 'antd';
+import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useEffectOnce } from '../../../hooks';
+import { NotationPreview } from '../../../store/library/types';
 import { theme } from '../../../theme';
 import { getQueryMatches } from './getQueryMatches';
 
@@ -38,13 +38,13 @@ export const NotationCard: React.FC<Props> = (props) => {
   const thumbnailImg = useRef(new Image());
   const avatarImg = useRef(new Image());
 
-  const onThumbnailLoad = useCallback(() => {
+  const onThumbnailLoad = () => {
     setThumbnailLoading(false);
-  }, []);
+  };
 
-  const onAvatarLoad = useCallback(() => {
+  const onAvatarLoad = () => {
     setAvatarLoading(false);
-  }, []);
+  };
 
   useEffectOnce(() => {
     if (thumbnailUrl) {
