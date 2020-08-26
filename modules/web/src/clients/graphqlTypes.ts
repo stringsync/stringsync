@@ -120,6 +120,8 @@ export type QueryNotationsArgs = {
   after?: Maybe<Scalars['String']>;
   first?: Maybe<Scalars['Float']>;
   last?: Maybe<Scalars['Float']>;
+  query?: Maybe<Scalars['String']>;
+  tagIds?: Maybe<Array<Scalars['String']>>;
 };
 
 
