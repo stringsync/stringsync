@@ -3,7 +3,7 @@ import { gtEqTeacher } from '@stringsync/domain';
 import { Avatar, Button, Col, message, Modal, Row } from 'antd';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { AppDispatch, AuthUser, isLoggedInSelector, logout, RootState } from '../../store';
 
@@ -42,7 +42,6 @@ export const Menu: React.FC<Props> = (props) => {
   const user = useSelector<RootState, AuthUser>((state) => state.auth.user);
 
   const [isModalVisible, setModalVisible] = useState(false);
-  const history = useHistory();
   const isGtEqTeacher = gtEqTeacher(user.role);
 
   const showModal = () => setModalVisible(true);
@@ -51,7 +50,6 @@ export const Menu: React.FC<Props> = (props) => {
     dispatch(logout());
     hideModal();
     message.success('logged out');
-    history.push('library');
   };
 
   const gutterPx = isLoggedIn ? 16 : 8;
