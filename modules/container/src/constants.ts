@@ -26,6 +26,7 @@ export const TYPES = {
   TagSequelizeLoader: Symbol('TagSequelizeLoader'),
   TagSequelizeRepo: Symbol('TagSequelizeRepo'),
   TagService: Symbol('TagService'),
+  UploaderService: Symbol('UploaderService'),
   UserLoader: Symbol('UserLoader'),
   UserLoaderCtor: Symbol('UserLoaderCtor'),
   UserModel: Symbol('UserModel'),

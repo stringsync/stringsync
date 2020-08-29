@@ -26,6 +26,7 @@ import {
   NotificationService,
   TagService,
   UserService,
+  UploaderService,
 } from '@stringsync/services';
 import { Container as InversifyContainer, ContainerModule } from 'inversify';
 import nodemailer from 'nodemailer';
@@ -135,16 +136,10 @@ export class DI {
       bind<HealthCheckerService>(TYPES.HealthCheckerService).to(HealthCheckerService);
       bind<AuthService>(TYPES.AuthService).to(AuthService);
       bind<NotificationService>(TYPES.NotificationService).to(NotificationService);
-
-      bind<UserService>(TYPES.UserService)
-        .to(UserService)
-        .inRequestScope();
-      bind<NotationService>(TYPES.NotationService)
-        .to(NotationService)
-        .inRequestScope();
-      bind<TagService>(TYPES.TagService)
-        .to(TagService)
-        .inRequestScope();
+      bind<UserService>(TYPES.UserService).to(UserService);
+      bind<NotationService>(TYPES.NotationService).to(NotationService);
+      bind<TagService>(TYPES.TagService).to(TagService);
+      bind<UploaderService>(TYPES.UploaderService).to(UploaderService);
     });
   }
 
@@ -188,7 +183,7 @@ export class DI {
         port: config.DB_PORT,
         password: config.DB_PASSWORD,
         username: config.DB_USERNAME,
-        logging: console.log,
+        logging: logger.debug,
       });
       bind<Sequelize>(TYPES.Sequelize).toConstantValue(sequelize);
       bind<typeof UserModel>(TYPES.UserModel).toConstructor(UserModel);
