@@ -1,7 +1,9 @@
 import { AuthRequirement, Connection } from '@stringsync/common';
-import { TYPES } from '@stringsync/container';
+import { Logger, TYPES } from '@stringsync/container';
 import { Notation } from '@stringsync/domain';
-import { NotationService } from '@stringsync/services';
+import { NotationService, UploaderService } from '@stringsync/services';
+import { createWriteStream } from 'fs';
+import { FileUpload, GraphQLUpload } from 'graphql-upload';
 import { inject, injectable } from 'inversify';
 import { Arg, Args, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { NotationObject } from '.';
@@ -9,16 +11,24 @@ import { WithAuthRequirement } from '../../middlewares';
 import { ResolverCtx } from '../../types';
 import { CreateNotationInput } from './CreateNotationInput';
 import { NotationArgs } from './NotationArgs';
-import { NotationConnectionObject } from './NotationConnectionObject';
 import { NotationConnectionArgs } from './NotationConnectionArgs';
+import { NotationConnectionObject } from './NotationConnectionObject';
 
 @Resolver()
 @injectable()
 export class NotationResolver {
   notationService: NotationService;
+  uploaderService: UploaderService;
+  logger: Logger;
 
-  constructor(@inject(TYPES.NotationService) notationService: NotationService) {
+  constructor(
+    @inject(TYPES.NotationService) notationService: NotationService,
+    @inject(TYPES.UploaderService) uploaderService: UploaderService,
+    @inject(TYPES.Logger) logger: Logger
+  ) {
     this.notationService = notationService;
+    this.uploaderService = uploaderService;
+    this.logger = logger;
   }
 
   @Query((returns) => NotationConnectionObject)
@@ -35,5 +45,18 @@ export class NotationResolver {
   @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER))
   async createNotation(@Arg('input') input: CreateNotationInput, @Ctx() ctx: ResolverCtx): Promise<Notation> {
     return await this.notationService.create(input.songName, input.artistName, ctx.req.session.user.id);
+  }
+
+  @Mutation((returns) => Boolean)
+  async uploadMedia(@Arg('file', (type) => GraphQLUpload) file: FileUpload, @Ctx() ctx: ResolverCtx): Promise<boolean> {
+    const filename = `${ctx.reqAt.getTime()}-${file.filename}`;
+    const readStream = file.createReadStream();
+    try {
+      await this.uploaderService.upload(filename, readStream);
+      return true;
+    } catch (e) {
+      this.logger.error(e);
+      return false;
+    }
   }
 }

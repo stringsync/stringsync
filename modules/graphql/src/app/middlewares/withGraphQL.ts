@@ -9,13 +9,12 @@ import { formatError } from './formatError';
 
 export const withGraphQL = (container: Container, schema: GraphQLSchema): Handler => (req, res) => {
   const context = createReqCtx(req, res, container);
-  const config = container.get<ContainerConfig>(TYPES.ContainerConfig);
   const logger = container.get<Logger>(TYPES.Logger);
 
   const middleware = graphqlHTTP({
     schema,
     context,
-    graphiql: config.NODE_ENV !== 'production',
+    graphiql: false,
     customFormatErrorFn: formatError,
   });
 

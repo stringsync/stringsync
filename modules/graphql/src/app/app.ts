@@ -7,6 +7,8 @@ import { Container } from 'inversify';
 import { HealthController } from './controllers';
 import { withGraphQL, withSession } from './middlewares';
 import { withSessionUser } from './middlewares/withSessionUser';
+import { graphqlUploadExpress } from 'graphql-upload';
+import { altairExpress } from 'altair-express-middleware';
 
 export const app = (container: Container, schema: GraphQLSchema) => {
   const app = express();
@@ -19,9 +21,22 @@ export const app = (container: Container, schema: GraphQLSchema) => {
 
   app.get('/health', healthController.get);
 
-  app.use('/graphql', withSession(container));
-  app.use('/graphql', withSessionUser(container));
-  app.use('/graphql', withGraphQL(container, schema));
+  app.use(
+    '/graphql',
+    withSession(container),
+    withSessionUser(container),
+    graphqlUploadExpress(),
+    withGraphQL(container, schema)
+  );
+
+  if (config.NODE_ENV === 'development') {
+    app.use(
+      '/altair',
+      altairExpress({
+        endpointURL: '/graphql',
+      })
+    );
+  }
 
   return app;
 };
