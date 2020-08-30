@@ -32,6 +32,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   createNotation?: Maybe<NotationObject>;
   uploadMedia: Scalars['Boolean'];
+  multiUploadMedia: Scalars['Boolean'];
   login?: Maybe<UserObject>;
   logout?: Maybe<Scalars['Boolean']>;
   signup?: Maybe<UserObject>;
@@ -49,6 +50,11 @@ export type MutationCreateNotationArgs = {
 
 export type MutationUploadMediaArgs = {
   file: Scalars['Upload'];
+};
+
+
+export type MutationMultiUploadMediaArgs = {
+  files: Array<Scalars['Upload']>;
 };
 
 

@@ -1,4 +1,4 @@
-import { AuthRequirement, Connection } from '@stringsync/common';
+import { AuthRequirement, Connection, randInt } from '@stringsync/common';
 import { Logger, TYPES } from '@stringsync/container';
 import { Notation } from '@stringsync/domain';
 import { NotationService, UploaderService } from '@stringsync/services';
@@ -58,5 +58,21 @@ export class NotationResolver {
       this.logger.error(e);
       return false;
     }
+  }
+
+  @Mutation((returns) => Boolean)
+  async multiUploadMedia(
+    @Arg('files', (type) => [GraphQLUpload]) files: FileUpload[],
+    @Ctx() ctx: ResolverCtx
+  ): Promise<boolean> {
+    const f = await Promise.all(files);
+    await Promise.all(
+      f.map((file) => {
+        const filename = `${ctx.reqAt.getTime()}-${randInt(10000, 99999)}-${file.filename}`;
+        const readStream = file.createReadStream();
+        return this.uploaderService.upload(filename, readStream);
+      })
+    );
+    return true;
   }
 }

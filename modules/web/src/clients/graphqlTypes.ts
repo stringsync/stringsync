@@ -8,6 +8,8 @@ export type Scalars = {
   Float: number;
   /** The javascript `Date` as string. Type represents date and time as the ISO Date string. */
   DateTime: any;
+  /** The `Upload` scalar type represents a file upload. */
+  Upload: any;
 };
 
 export type ConfirmEmailInput = {
@@ -28,6 +30,8 @@ export type LoginInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   createNotation?: Maybe<NotationObject>;
+  uploadMedia: Scalars['Boolean'];
+  multiUploadMedia: Scalars['Boolean'];
   login?: Maybe<UserObject>;
   logout?: Maybe<Scalars['Boolean']>;
   signup?: Maybe<UserObject>;
@@ -40,6 +44,16 @@ export type Mutation = {
 
 export type MutationCreateNotationArgs = {
   input: CreateNotationInput;
+};
+
+
+export type MutationUploadMediaArgs = {
+  file: Scalars['Upload'];
+};
+
+
+export type MutationMultiUploadMediaArgs = {
+  files: Array<Scalars['Upload']>;
 };
 
 
@@ -163,6 +177,7 @@ export type TagObject = {
   name: Scalars['String'];
   notations?: Maybe<Array<NotationObject>>;
 };
+
 
 export type UserConnectionObject = {
   __typename?: 'UserConnectionObject';
