@@ -47,17 +47,11 @@ export class NotationResolver {
     return await this.notationService.create(input.songName, input.artistName, ctx.req.session.user.id);
   }
 
-  @Mutation((returns) => Boolean)
-  async uploadMedia(@Arg('file', (type) => GraphQLUpload) file: FileUpload, @Ctx() ctx: ResolverCtx): Promise<boolean> {
+  @Mutation((returns) => String)
+  async uploadMedia(@Arg('file', (type) => GraphQLUpload) file: FileUpload, @Ctx() ctx: ResolverCtx): Promise<string> {
     const filename = `${ctx.reqAt.getTime()}-${file.filename}`;
     const readStream = file.createReadStream();
-    try {
-      await this.uploaderService.upload(filename, readStream);
-      return true;
-    } catch (e) {
-      this.logger.error(e);
-      return false;
-    }
+    return await this.uploaderService.upload(filename, readStream);
   }
 
   @Mutation((returns) => Boolean)
