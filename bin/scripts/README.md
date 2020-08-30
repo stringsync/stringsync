@@ -36,12 +36,13 @@ USAGE
 * [`ss db [PROJECT]`](#ss-db-project)
 * [`ss down [PROJECT]`](#ss-down-project)
 * [`ss exec PROJECT SERVICE CMD`](#ss-exec-project-service-cmd)
+* [`ss gensecrets [FILE]`](#ss-gensecrets-file)
 * [`ss help [COMMAND]`](#ss-help-command)
 * [`ss lint`](#ss-lint)
 * [`ss logs PROJECT [SERVICE]`](#ss-logs-project-service)
 * [`ss pretty`](#ss-pretty)
 * [`ss test PROJECT`](#ss-test-project)
-* [`ss typegen [FILE]`](#ss-typegen-file)
+* [`ss typegen`](#ss-typegen)
 * [`ss up [PROJECT]`](#ss-up-project)
 
 ## `ss build`
@@ -100,6 +101,22 @@ OPTIONS
 ```
 
 _See code: [src/commands/exec.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/exec.ts)_
+
+## `ss gensecrets [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ ss gensecrets [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/gensecrets.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/gensecrets.ts)_
 
 ## `ss help [COMMAND]`
 
@@ -169,23 +186,22 @@ USAGE
   $ ss test PROJECT
 
 OPTIONS
+  -c, --coverage
   -w, --watch
 ```
 
 _See code: [src/commands/test.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/test.ts)_
 
-## `ss typegen [FILE]`
+## `ss typegen`
 
-describe the command here
+Runs the graphql code generator
 
 ```
 USAGE
-  $ ss typegen [FILE]
+  $ ss typegen
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -h, --help  show CLI help
 ```
 
 _See code: [src/commands/typegen.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/typegen.ts)_
