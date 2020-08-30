@@ -13,6 +13,8 @@ it('runs without crashing', () => {
     LOG_LEVEL: 'debug',
     REDIS_HOST: 'REDIS_HOST',
     REDIS_PORT: '4000',
+    S3_ACCESS_KEY_ID: 'S3_ACCESS_KEY_ID',
+    S3_SECRET_ACCESS_KEY: 'S3_SECRET_ACCESS_KEY',
     SESSION_SECRET: 'SESSION_SECRET',
   };
 
