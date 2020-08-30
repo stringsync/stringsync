@@ -4,4 +4,3 @@ export * from './Auth';
 export * from './Notification';
 export * from './Notation';
 export * from './Tag';
-export * from './Uploader';

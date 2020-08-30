@@ -1,8 +1,7 @@
 import { AuthRequirement, Connection, randInt } from '@stringsync/common';
-import { Logger, TYPES } from '@stringsync/container';
+import { Logger, TYPES, FileStorage } from '@stringsync/container';
 import { Notation } from '@stringsync/domain';
-import { NotationService, UploaderService } from '@stringsync/services';
-import { createWriteStream } from 'fs';
+import { NotationService } from '@stringsync/services';
 import { FileUpload, GraphQLUpload } from 'graphql-upload';
 import { inject, injectable } from 'inversify';
 import { Arg, Args, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
@@ -18,16 +17,16 @@ import { NotationConnectionObject } from './NotationConnectionObject';
 @injectable()
 export class NotationResolver {
   notationService: NotationService;
-  uploaderService: UploaderService;
+  fileStorage: FileStorage;
   logger: Logger;
 
   constructor(
     @inject(TYPES.NotationService) notationService: NotationService,
-    @inject(TYPES.UploaderService) uploaderService: UploaderService,
+    @inject(TYPES.FileStorage) fileStorage: FileStorage,
     @inject(TYPES.Logger) logger: Logger
   ) {
     this.notationService = notationService;
-    this.uploaderService = uploaderService;
+    this.fileStorage = fileStorage;
     this.logger = logger;
   }
 
@@ -51,7 +50,7 @@ export class NotationResolver {
   async uploadMedia(@Arg('file', (type) => GraphQLUpload) file: FileUpload, @Ctx() ctx: ResolverCtx): Promise<string> {
     const filename = `${ctx.reqAt.getTime()}-${file.filename}`;
     const readStream = file.createReadStream();
-    return await this.uploaderService.upload(filename, readStream);
+    return await this.fileStorage.put(filename, readStream);
   }
 
   @Mutation((returns) => Boolean)
@@ -64,7 +63,7 @@ export class NotationResolver {
       f.map((file) => {
         const filename = `${ctx.reqAt.getTime()}-${randInt(10000, 99999)}-${file.filename}`;
         const readStream = file.createReadStream();
-        return this.uploaderService.upload(filename, readStream);
+        return this.fileStorage.put(filename, readStream);
       })
     );
     return true;

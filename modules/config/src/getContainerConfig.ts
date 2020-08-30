@@ -14,6 +14,7 @@ export const getContainerConfig = configFactory({
   REDIS_PORT: ConfigKind.INT,
   S3_ACCESS_KEY_ID: ConfigKind.STRING,
   S3_SECRET_ACCESS_KEY: ConfigKind.STRING,
+  S3_BUCKET: ConfigKind.STRING,
   SESSION_SECRET: ConfigKind.STRING,
   WEB_URI: ConfigKind.STRING,
 });

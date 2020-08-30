@@ -15,6 +15,7 @@ it('runs without crashing', () => {
     REDIS_PORT: '4000',
     S3_ACCESS_KEY_ID: 'S3_ACCESS_KEY_ID',
     S3_SECRET_ACCESS_KEY: 'S3_SECRET_ACCESS_KEY',
+    S3_BUCKET: 'S3_BUCKET',
     SESSION_SECRET: 'SESSION_SECRET',
   };
 

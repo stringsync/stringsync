@@ -26,7 +26,6 @@ import {
   NotificationService,
   TagService,
   UserService,
-  UploaderService,
 } from '@stringsync/services';
 import { Container as InversifyContainer, ContainerModule } from 'inversify';
 import nodemailer from 'nodemailer';
@@ -37,6 +36,8 @@ import { TYPES } from './constants';
 import { Logger } from './logger';
 import { Mailer, NodemailerMailer } from './mailer';
 import { Redis } from './redis';
+import { S3 } from 'aws-sdk';
+import { FileStorage, S3Storage } from './file-storage';
 
 export class DI {
   static create(config: ContainerConfig = getContainerConfig()) {
@@ -51,6 +52,7 @@ export class DI {
     });
 
     container.load(
+      DI.getFileStorageModule(config),
       DI.getConfigModule(config),
       DI.getMailerModule(config),
       DI.getGraphqlModule(config),
@@ -82,6 +84,17 @@ export class DI {
     const dbTeardownPromise = Db.teardown(sequelize);
 
     await Promise.all([redisTeardownPromise, dbTeardownPromise]);
+  }
+
+  private static getFileStorageModule(config: ContainerConfig) {
+    const s3 = new S3({
+      accessKeyId: config.S3_ACCESS_KEY_ID,
+      secretAccessKey: config.S3_SECRET_ACCESS_KEY,
+    });
+    const s3Storage = new S3Storage(s3, config.S3_BUCKET);
+    return new ContainerModule((bind) => {
+      bind<FileStorage>(TYPES.FileStorage).toConstantValue(s3Storage);
+    });
   }
 
   private static getConfigModule(config: ContainerConfig) {
@@ -139,7 +152,6 @@ export class DI {
       bind<UserService>(TYPES.UserService).to(UserService);
       bind<NotationService>(TYPES.NotationService).to(NotationService);
       bind<TagService>(TYPES.TagService).to(TagService);
-      bind<UploaderService>(TYPES.UploaderService).to(UploaderService);
     });
   }
 
