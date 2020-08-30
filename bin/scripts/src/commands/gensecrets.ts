@@ -5,7 +5,7 @@ import { ROOT_PATH } from '../util';
 
 const GITIGNORE_FILE_NAME = '.gitignore';
 const FILE_NAME = 'secrets.env';
-const FILE_TEMPLATE = 'ACCESS_KEY_ID=\nSECRET_ACCESS_KEY=\n';
+const FILE_TEMPLATE = 'S3_ACCESS_KEY_ID=\nS3_SECRET_ACCESS_KEY=\n';
 
 export default class Gensecrets extends Command {
   static description = 'Creates the secrets.env file needed for local development.';

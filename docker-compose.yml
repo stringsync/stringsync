@@ -17,6 +17,7 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+    env_file: secrets.env
     environment:
       NODE_ENV: development
       PORT: 3000
