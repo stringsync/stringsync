@@ -17,6 +17,7 @@ it('runs without crashing', () => {
     S3_SECRET_ACCESS_KEY: 'S3_SECRET_ACCESS_KEY',
     S3_BUCKET: 'S3_BUCKET',
     SESSION_SECRET: 'SESSION_SECRET',
+    CLOUDFRONT_DOMAIN_NAME: 'CLOUDFRONT_DOMAIN_NAME',
   };
 
   expect(() => getContainerConfig(env)).not.toThrow();

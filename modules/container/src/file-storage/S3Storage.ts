@@ -5,10 +5,12 @@ import { Stream } from 'stream';
 export class S3Storage implements FileStorage {
   s3: S3;
   bucket: string;
+  domainName: string;
 
-  constructor(s3: S3, bucket: string) {
+  constructor(s3: S3, bucket: string, domainName: string) {
     this.s3 = s3;
     this.bucket = bucket;
+    this.domainName = domainName;
   }
 
   async put(filename: string, readStream: Stream) {
@@ -17,7 +19,7 @@ export class S3Storage implements FileStorage {
         if (err) {
           return reject(err);
         }
-        resolve(data.Location);
+        resolve(`https://${this.domainName}/${data.Key}`);
       });
     });
   }

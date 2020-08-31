@@ -31,6 +31,8 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       SESSION_SECRET: keyboardcat
+      S3_BUCKET: stringsync-dev
+      CLOUDFRONT_DOMAIN_NAME: d2yt8e0its832a.cloudfront.net
     volumes:
       - ./modules:/stringsync/modules
     links:

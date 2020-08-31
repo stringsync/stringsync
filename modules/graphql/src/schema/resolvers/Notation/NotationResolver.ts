@@ -48,7 +48,7 @@ export class NotationResolver {
 
   @Mutation((returns) => String)
   async uploadMedia(@Arg('file', (type) => GraphQLUpload) file: FileUpload, @Ctx() ctx: ResolverCtx): Promise<string> {
-    const filename = `${ctx.reqAt.getTime()}-${file.filename}`;
+    const filename = `notations/thumbnail/${ctx.reqAt.getTime()}-${file.filename}`;
     const readStream = file.createReadStream();
     return await this.fileStorage.put(filename, readStream);
   }

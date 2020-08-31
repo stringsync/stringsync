@@ -91,7 +91,7 @@ export class DI {
       accessKeyId: config.S3_ACCESS_KEY_ID,
       secretAccessKey: config.S3_SECRET_ACCESS_KEY,
     });
-    const s3Storage = new S3Storage(s3, config.S3_BUCKET);
+    const s3Storage = new S3Storage(s3, config.S3_BUCKET, config.CLOUDFRONT_DOMAIN_NAME);
     return new ContainerModule((bind) => {
       bind<FileStorage>(TYPES.FileStorage).toConstantValue(s3Storage);
     });
