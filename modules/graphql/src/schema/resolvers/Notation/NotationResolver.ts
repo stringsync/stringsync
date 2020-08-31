@@ -12,6 +12,8 @@ import { CreateNotationInput } from './CreateNotationInput';
 import { NotationArgs } from './NotationArgs';
 import { NotationConnectionArgs } from './NotationConnectionArgs';
 import { NotationConnectionObject } from './NotationConnectionObject';
+import { hashStream } from '../../../util';
+import { extname } from 'path';
 
 @Resolver()
 @injectable()
@@ -48,9 +50,10 @@ export class NotationResolver {
 
   @Mutation((returns) => String)
   async uploadMedia(@Arg('file', (type) => GraphQLUpload) file: FileUpload, @Ctx() ctx: ResolverCtx): Promise<string> {
-    const filename = `notations/thumbnail/${ctx.reqAt.getTime()}-${file.filename}`;
-    const readStream = file.createReadStream();
-    return await this.fileStorage.put(filename, readStream);
+    const ext = extname(file.filename);
+    const hash = await hashStream(file.createReadStream());
+    const filename = `notations/thumbnail/${hash}${ext}`;
+    return await this.fileStorage.put(filename, file.createReadStream());
   }
 
   @Mutation((returns) => Boolean)
