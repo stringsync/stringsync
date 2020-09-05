@@ -33,4 +33,8 @@ export class NotationService {
   async create(songName: string, artistName: string, transcriberId: string): Promise<Notation> {
     return await this.notationRepo.create({ songName, artistName, transcriberId });
   }
+
+  async update(id: string, attrs: Notation): Promise<void> {
+    await this.notationRepo.update(id, attrs);
+  }
 }

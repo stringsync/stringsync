@@ -39,6 +39,9 @@ export class NotationObject implements PublicNotation {
   @Field((type) => String, { nullable: true })
   thumbnailUrl!: string | null;
 
+  @Field((type) => String, { nullable: true })
+  videoUrl!: string | null;
+
   @Field((type) => UserObject)
   async transcriber(@Root() notation: Notation, @Ctx() ctx: ReqCtx): Promise<User> {
     const userService = ctx.container.get<UserService>(TYPES.UserService);

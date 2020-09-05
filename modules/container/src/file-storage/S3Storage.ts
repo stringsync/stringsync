@@ -13,9 +13,9 @@ export class S3Storage implements FileStorage {
     this.domainName = domainName;
   }
 
-  async put(filename: string, readStream: Stream) {
+  async put(filepath: string, readStream: Stream) {
     return await new Promise<string>((resolve, reject) => {
-      this.s3.upload({ Bucket: this.bucket, Key: filename, Body: readStream }, (err, data) => {
+      this.s3.upload({ Bucket: this.bucket, Key: filepath, Body: readStream }, (err, data) => {
         if (err) {
           return reject(err);
         }

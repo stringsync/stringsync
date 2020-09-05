@@ -19,6 +19,8 @@ export type ConfirmEmailInput = {
 export type CreateNotationInput = {
   songName: Scalars['String'];
   artistName: Scalars['String'];
+  thumbnail: Scalars['Upload'];
+  video: Scalars['Upload'];
 };
 
 
@@ -30,8 +32,6 @@ export type LoginInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   createNotation?: Maybe<NotationObject>;
-  uploadMedia: Scalars['Boolean'];
-  multiUploadMedia: Scalars['Boolean'];
   login?: Maybe<UserObject>;
   logout?: Maybe<Scalars['Boolean']>;
   signup?: Maybe<UserObject>;
@@ -44,16 +44,6 @@ export type Mutation = {
 
 export type MutationCreateNotationArgs = {
   input: CreateNotationInput;
-};
-
-
-export type MutationUploadMediaArgs = {
-  file: Scalars['Upload'];
-};
-
-
-export type MutationMultiUploadMediaArgs = {
-  files: Array<Scalars['Upload']>;
 };
 
 
@@ -106,6 +96,7 @@ export type NotationObject = {
   featured: Scalars['Boolean'];
   transcriberId: Scalars['String'];
   thumbnailUrl?: Maybe<Scalars['String']>;
+  videoUrl?: Maybe<Scalars['String']>;
   transcriber: UserObject;
   tags: Array<TagObject>;
 };

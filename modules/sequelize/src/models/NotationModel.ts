@@ -85,4 +85,9 @@ export class NotationModel extends Model<NotationModel> implements Notation {
   @AllowNull
   @Column
   thumbnailUrl!: string;
+
+  @IsUrl
+  @AllowNull
+  @Column
+  videoUrl!: string;
 }

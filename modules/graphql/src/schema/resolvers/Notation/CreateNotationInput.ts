@@ -1,4 +1,5 @@
-import { InputType, Field } from 'type-graphql';
+import { FileUpload, GraphQLUpload } from 'graphql-upload';
+import { Field, InputType } from 'type-graphql';
 
 @InputType()
 export class CreateNotationInput {
@@ -7,4 +8,10 @@ export class CreateNotationInput {
 
   @Field()
   artistName!: string;
+
+  @Field((type) => GraphQLUpload)
+  thumbnail!: FileUpload;
+
+  @Field((type) => GraphQLUpload)
+  video!: FileUpload;
 }

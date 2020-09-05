@@ -1,9 +1,10 @@
 import { AuthRequirement, Connection, randInt } from '@stringsync/common';
-import { Logger, TYPES, FileStorage } from '@stringsync/container';
+import { FileStorage, Logger, TYPES } from '@stringsync/container';
 import { Notation } from '@stringsync/domain';
 import { NotationService } from '@stringsync/services';
 import { FileUpload, GraphQLUpload } from 'graphql-upload';
 import { inject, injectable } from 'inversify';
+import { extname } from 'path';
 import { Arg, Args, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { NotationObject } from '.';
 import { WithAuthRequirement } from '../../middlewares';
@@ -12,8 +13,6 @@ import { CreateNotationInput } from './CreateNotationInput';
 import { NotationArgs } from './NotationArgs';
 import { NotationConnectionArgs } from './NotationConnectionArgs';
 import { NotationConnectionObject } from './NotationConnectionObject';
-import { hashStream } from '../../../util';
-import { extname } from 'path';
 
 @Resolver()
 @injectable()
@@ -45,30 +44,25 @@ export class NotationResolver {
   @Mutation((returns) => NotationObject, { nullable: true })
   @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER))
   async createNotation(@Arg('input') input: CreateNotationInput, @Ctx() ctx: ResolverCtx): Promise<Notation> {
-    return await this.notationService.create(input.songName, input.artistName, ctx.req.session.user.id);
-  }
+    const notation = await this.notationService.create(input.songName, input.artistName, ctx.req.session.user.id);
 
-  @Mutation((returns) => String)
-  async uploadMedia(@Arg('file', (type) => GraphQLUpload) file: FileUpload, @Ctx() ctx: ResolverCtx): Promise<string> {
-    const ext = extname(file.filename);
-    const hash = await hashStream(file.createReadStream());
-    const filename = `notations/thumbnail/${hash}${ext}`;
-    return await this.fileStorage.put(filename, file.createReadStream());
-  }
+    const thumbnail = await input.thumbnail;
+    const video = await input.video;
 
-  @Mutation((returns) => Boolean)
-  async multiUploadMedia(
-    @Arg('files', (type) => [GraphQLUpload]) files: FileUpload[],
-    @Ctx() ctx: ResolverCtx
-  ): Promise<boolean> {
-    const f = await Promise.all(files);
-    await Promise.all(
-      f.map((file) => {
-        const filename = `${ctx.reqAt.getTime()}-${randInt(10000, 99999)}-${file.filename}`;
-        const readStream = file.createReadStream();
-        return this.fileStorage.put(filename, readStream);
-      })
-    );
-    return true;
+    const thumbnailExt = extname(thumbnail.filename);
+    const videoExt = extname(video.filename);
+    const thumbnailFilepath = `notations/thumbnail/${notation.id}${thumbnailExt}`;
+    const videoFilepath = `notations/video/${notation.id}${videoExt}`;
+
+    const [thumbnailUrl, videoUrl] = await Promise.all([
+      this.fileStorage.put(thumbnailFilepath, thumbnail.createReadStream()),
+      this.fileStorage.put(videoFilepath, video.createReadStream()),
+    ]);
+
+    notation.thumbnailUrl = thumbnailUrl;
+    notation.videoUrl = videoUrl;
+    await this.notationService.update(notation.id, notation);
+
+    return notation;
   }
 }

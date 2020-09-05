@@ -39,6 +39,7 @@ export class TestFactory {
       transcriberId: randStr(8),
       cursor: randInt(0, 100000),
       thumbnailUrl: null,
+      videoUrl: null,
       ...attrs,
     };
   }

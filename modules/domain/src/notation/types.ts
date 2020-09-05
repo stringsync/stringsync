@@ -10,6 +10,7 @@ export interface Notation {
   featured: boolean;
   transcriberId: string;
   thumbnailUrl: string | null;
+  videoUrl: string | null;
 }
 
 export type PublicNotation = Omit<Notation, 'cursor'>;
