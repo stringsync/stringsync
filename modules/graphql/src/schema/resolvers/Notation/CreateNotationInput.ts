@@ -10,8 +10,8 @@ export class CreateNotationInput {
   artistName!: string;
 
   @Field((type) => GraphQLUpload)
-  thumbnail!: FileUpload;
+  thumbnail!: Promise<FileUpload>;
 
   @Field((type) => GraphQLUpload)
-  video!: FileUpload;
+  video!: Promise<FileUpload>;
 }
