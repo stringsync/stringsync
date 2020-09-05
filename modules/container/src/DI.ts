@@ -25,6 +25,7 @@ import {
   NotationService,
   NotificationService,
   TagService,
+  TaggingService,
   UserService,
 } from '@stringsync/services';
 import { Container as InversifyContainer, ContainerModule } from 'inversify';
@@ -37,7 +38,7 @@ import { Logger } from './logger';
 import { Mailer, NodemailerMailer } from './mailer';
 import { Redis } from './redis';
 import { S3 } from 'aws-sdk';
-import { FileStorage, S3Storage } from './file-storage';
+import { FileStorage, S3Storage, FakeStorage } from './file-storage';
 
 export class DI {
   static create(config: ContainerConfig = getContainerConfig()) {
@@ -87,13 +88,19 @@ export class DI {
   }
 
   private static getFileStorageModule(config: ContainerConfig) {
-    const s3 = new S3({
-      accessKeyId: config.S3_ACCESS_KEY_ID,
-      secretAccessKey: config.S3_SECRET_ACCESS_KEY,
-    });
-    const s3Storage = new S3Storage(s3, config.S3_BUCKET, config.CLOUDFRONT_DOMAIN_NAME);
+    let storage: FileStorage;
+    if (config.NODE_ENV === 'test') {
+      storage = new FakeStorage();
+    } else {
+      const s3 = new S3({
+        accessKeyId: config.S3_ACCESS_KEY_ID,
+        secretAccessKey: config.S3_SECRET_ACCESS_KEY,
+      });
+      storage = new S3Storage(s3, config.S3_BUCKET, config.CLOUDFRONT_DOMAIN_NAME);
+    }
+
     return new ContainerModule((bind) => {
-      bind<FileStorage>(TYPES.FileStorage).toConstantValue(s3Storage);
+      bind<FileStorage>(TYPES.FileStorage).toConstantValue(storage);
     });
   }
 
@@ -152,6 +159,7 @@ export class DI {
       bind<UserService>(TYPES.UserService).to(UserService);
       bind<NotationService>(TYPES.NotationService).to(NotationService);
       bind<TagService>(TYPES.TagService).to(TagService);
+      bind<TaggingService>(TYPES.TaggingService).to(TaggingService);
     });
   }
 

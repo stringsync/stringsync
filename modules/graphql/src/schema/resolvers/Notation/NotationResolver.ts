@@ -1,8 +1,7 @@
-import { AuthRequirement, Connection, randInt } from '@stringsync/common';
+import { AuthRequirement, Connection } from '@stringsync/common';
 import { FileStorage, Logger, TYPES } from '@stringsync/container';
-import { Notation } from '@stringsync/domain';
-import { NotationService } from '@stringsync/services';
-import { FileUpload, GraphQLUpload } from 'graphql-upload';
+import { Notation, Tagging } from '@stringsync/domain';
+import { NotationService, TaggingService } from '@stringsync/services';
 import { inject, injectable } from 'inversify';
 import { extname } from 'path';
 import { Arg, Args, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
@@ -18,15 +17,18 @@ import { NotationConnectionObject } from './NotationConnectionObject';
 @injectable()
 export class NotationResolver {
   notationService: NotationService;
+  taggingService: TaggingService;
   fileStorage: FileStorage;
   logger: Logger;
 
   constructor(
     @inject(TYPES.NotationService) notationService: NotationService,
+    @inject(TYPES.TaggingService) taggingService: TaggingService,
     @inject(TYPES.FileStorage) fileStorage: FileStorage,
     @inject(TYPES.Logger) logger: Logger
   ) {
     this.notationService = notationService;
+    this.taggingService = taggingService;
     this.fileStorage = fileStorage;
     this.logger = logger;
   }
@@ -62,6 +64,9 @@ export class NotationResolver {
     notation.thumbnailUrl = thumbnailUrl;
     notation.videoUrl = videoUrl;
     await this.notationService.update(notation.id, notation);
+
+    const taggings = input.tagIds.map((tagId) => ({ notationId: notation.id, tagId }));
+    await this.taggingService.bulkCreate(taggings);
 
     return notation;
   }
