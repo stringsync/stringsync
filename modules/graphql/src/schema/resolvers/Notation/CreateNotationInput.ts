@@ -14,4 +14,7 @@ export class CreateNotationInput {
 
   @Field((type) => GraphQLUpload)
   video!: Promise<FileUpload>;
+
+  @Field((type) => [String])
+  tagIds!: string[];
 }
