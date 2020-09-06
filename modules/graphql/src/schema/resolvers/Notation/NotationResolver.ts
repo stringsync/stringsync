@@ -1,6 +1,6 @@
 import { AuthRequirement, Connection } from '@stringsync/common';
 import { FileStorage, Logger, TYPES } from '@stringsync/container';
-import { Notation, Tagging } from '@stringsync/domain';
+import { Notation } from '@stringsync/domain';
 import { NotationService, TaggingService } from '@stringsync/services';
 import { inject, injectable } from 'inversify';
 import { extname } from 'path';
@@ -48,8 +48,8 @@ export class NotationResolver {
   async createNotation(@Arg('input') input: CreateNotationInput, @Ctx() ctx: ResolverCtx): Promise<Notation> {
     const notation = await this.notationService.create(input.songName, input.artistName, ctx.req.session.user.id);
 
-    const thumbnail = await input.thumbnail;
-    const video = await input.video;
+    const thumbnail = await input.thumbnail!;
+    const video = await input.video!;
 
     const thumbnailExt = extname(thumbnail.filename);
     const videoExt = extname(video.filename);

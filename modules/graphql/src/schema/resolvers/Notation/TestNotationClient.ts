@@ -1,7 +1,8 @@
 import { TestGraphqlClient, gql } from '../../../testing';
 import { Query, QueryNotationsArgs, Mutation } from '../../../testing/graphqlTypes';
 import { NotationArgs } from './NotationArgs';
-import { CreateNotationInput } from './CreateNotationInput';
+import { TestCreateNotationInput } from './types';
+import { Replace } from '@stringsync/common';
 
 export class TestNotationClient {
   graphqlClient: TestGraphqlClient;
@@ -63,8 +64,12 @@ export class TestNotationClient {
     );
   }
 
-  async createNotation(input: CreateNotationInput) {
-    return await this.graphqlClient.call<Mutation['createNotation'], 'createNotation', { input: CreateNotationInput }>(
+  async createNotation(input: TestCreateNotationInput) {
+    return await this.graphqlClient.call<
+      Mutation['createNotation'],
+      'createNotation',
+      { input: TestCreateNotationInput }
+    >(
       gql`
         mutation createNotation($input: CreateNotationInput!) {
           createNotation(input: $input) {

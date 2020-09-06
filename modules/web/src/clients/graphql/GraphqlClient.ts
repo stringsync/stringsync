@@ -1,5 +1,5 @@
-import { CallResponse } from './types';
 import { getWebConfig } from '@stringsync/config';
+import { CallResponse } from './types';
 export class GraphqlClient {
   readonly uri: string;
 

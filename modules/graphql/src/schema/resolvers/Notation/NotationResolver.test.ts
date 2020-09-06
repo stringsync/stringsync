@@ -1,15 +1,14 @@
-import { HttpStatus, TestFactory, randStr } from '@stringsync/common';
+import { HttpStatus, randStr, TestFactory } from '@stringsync/common';
 import { TYPES } from '@stringsync/container';
 import { Notation, User, UserRole } from '@stringsync/domain';
 import { NotationRepo, UserRepo } from '@stringsync/repos';
-import { TestGraphqlClient, useTestApp } from '../../../testing';
-import { TestNotationClient } from './TestNotationClient';
-import { sortBy, first } from 'lodash';
-import { TestAuthClient } from '../Auth/TestAuthClient';
-import * as bcrypt from 'bcrypt';
 import { AuthService } from '@stringsync/services';
-import { FileUpload } from 'graphql-upload';
-import { createReadStream } from 'fs';
+import * as bcrypt from 'bcrypt';
+import { first, sortBy } from 'lodash';
+import { TestGraphqlClient, useTestApp } from '../../../testing';
+import { TestAuthClient } from '../Auth/TestAuthClient';
+import { TestNotationClient } from './TestNotationClient';
+import { TestCreateNotationInput } from './types';
 
 const { app, container } = useTestApp();
 
@@ -89,45 +88,29 @@ describe('notation', () => {
   });
 });
 
-describe.skip('createNotation', () => {
-  const getFakeThumbnailFileUpload = (): FileUpload => ({
-    encoding: '7bit',
-    filename: `${randStr(8)}.jpeg`,
-    mimetype: 'image/jpeg',
-    createReadStream: () => createReadStream(''),
-  });
-
-  const getFakeVideoFileUpload = (): FileUpload => ({
-    encoding: '7bit',
-    filename: `${randStr(8)}.mp4`,
-    mimetype: 'video/mp4',
-    createReadStream: () => createReadStream(''),
-  });
-
-  let songName: string;
-  let artistName: string;
-  let thumbnail: Promise<FileUpload>;
-  let video: Promise<FileUpload>;
-  let tagIds: string[];
+describe('createNotation', () => {
+  let input: TestCreateNotationInput;
 
   beforeEach(() => {
-    songName = randStr(12);
-    artistName = randStr(12);
-    thumbnail = Promise.resolve(getFakeThumbnailFileUpload());
-    video = Promise.resolve(getFakeVideoFileUpload());
-    tagIds = new Array<string>();
+    input = {
+      songName: randStr(12),
+      artistName: randStr(12),
+      thumbnail: new Blob(['thumbnail']),
+      video: new Blob(['video']),
+      tagIds: new Array<string>(),
+    };
   });
 
   it('creates a notation record when logged in as teacher', async () => {
     const loginRes = await authClient.login({ usernameOrEmail: teacher.username, password });
     expect(loginRes.statusCode).toBe(HttpStatus.OK);
 
-    const createNotationRes = await notationClient.createNotation({ songName, artistName, thumbnail, video, tagIds });
+    const createNotationRes = await notationClient.createNotation(input);
     expect(createNotationRes.statusCode).toBe(HttpStatus.OK);
     expect(createNotationRes.body.data.createNotation).not.toBeNull();
     const notation = createNotationRes.body.data.createNotation!;
-    expect(notation.songName).toBe(songName);
-    expect(notation.artistName).toBe(artistName);
+    expect(notation.songName).toBe(input.songName);
+    expect(notation.artistName).toBe(input.artistName);
 
     const notationRes = await notationClient.notation({ id: notation.id });
     expect(notationRes.statusCode).toBe(HttpStatus.OK);
@@ -140,12 +123,12 @@ describe.skip('createNotation', () => {
     const loginRes = await authClient.login({ usernameOrEmail: teacher.username, password });
     expect(loginRes.statusCode).toBe(HttpStatus.OK);
 
-    const createNotationRes = await notationClient.createNotation({ songName, artistName, thumbnail, video, tagIds });
+    const createNotationRes = await notationClient.createNotation(input);
     expect(createNotationRes.statusCode).toBe(HttpStatus.OK);
     expect(createNotationRes.body.data.createNotation).not.toBeNull();
     const notation = createNotationRes.body.data.createNotation!;
-    expect(notation.songName).toBe(songName);
-    expect(notation.artistName).toBe(artistName);
+    expect(notation.songName).toBe(input.songName);
+    expect(notation.artistName).toBe(input.artistName);
 
     const notationRes = await notationClient.notation({ id: notation.id });
     expect(notationRes.statusCode).toBe(HttpStatus.OK);
@@ -155,7 +138,7 @@ describe.skip('createNotation', () => {
   });
 
   it('forbids notation creation when not logged in', async () => {
-    const createNotationRes = await notationClient.createNotation({ songName, artistName, thumbnail, video, tagIds });
+    const createNotationRes = await notationClient.createNotation(input);
     expect(createNotationRes.statusCode).toBe(HttpStatus.OK);
   });
 
@@ -166,7 +149,7 @@ describe.skip('createNotation', () => {
     const loginRes = await authClient.login({ usernameOrEmail: student.username, password });
     expect(loginRes.statusCode).toBe(HttpStatus.OK);
 
-    const createNotationRes = await notationClient.createNotation({ songName, artistName, thumbnail, video, tagIds });
+    const createNotationRes = await notationClient.createNotation(input);
     expect(createNotationRes.statusCode).toBe(HttpStatus.OK);
   });
 });

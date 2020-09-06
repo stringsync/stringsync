@@ -1,7 +1,17 @@
+import { randStr } from '@stringsync/common';
 import { Express, Response } from 'express';
+import { extractFiles } from 'extract-files';
 import request, { SuperAgentTest } from 'supertest';
 import { CallResponse } from './types';
-import supertest from 'supertest';
+
+const toBuffer = async (blob: Blob): Promise<Buffer> => {
+  const reader = new FileReader();
+  await new Promise((resolve) => {
+    reader.readAsArrayBuffer(blob);
+    reader.onloadend = resolve;
+  });
+  return Buffer.from(reader.result!);
+};
 
 export class TestGraphqlClient {
   app: Express;
@@ -16,13 +26,37 @@ export class TestGraphqlClient {
     query: string,
     variables?: V
   ): Promise<Response & { body: CallResponse<T, N> }> => {
-    return new Promise((resolve, reject) =>
-      this.agent
+    // extract files
+    const { clone, files } = extractFiles({ query, variables });
+
+    // compute map
+    const map: { [key: string]: string | string[] } = {};
+    const pathGroups = Array.from(files.values());
+    for (let ndx = 0; ndx < pathGroups.length; ndx++) {
+      const paths = pathGroups[ndx];
+      map[ndx] = paths;
+    }
+
+    // compute buffers
+    const promises = new Array<Promise<Buffer>>();
+    for (const [blob, _] of files.entries()) {
+      promises.push(toBuffer(blob as Blob));
+    }
+    const buffers = await Promise.all(promises);
+
+    // make request
+    return new Promise((resolve, reject) => {
+      const req = this.agent
         .post('/graphql')
-        .set('Content-Type', 'application/json')
-        .set('Accept', 'application/json')
-        .send({ query, variables })
-        .end((err, res: any) => (err ? reject(err) : resolve(res)))
-    );
+        .field('operations', JSON.stringify(clone))
+        .field('map', JSON.stringify(map));
+
+      for (let ndx = 0; ndx < buffers.length; ndx++) {
+        const buffer = buffers[ndx];
+        req.attach(ndx.toString(), buffer, { filename: randStr(10) });
+      }
+
+      return req.end((err, res: any) => (err ? reject(err) : resolve(res)));
+    });
   };
 }

@@ -3,6 +3,6 @@ import { Stream } from 'stream';
 
 export class FakeStorage implements FileStorage {
   async put(filename: string, readStream: Stream) {
-    return `http://example.com/${filename}`;
+    return `http://fakestorage.stringsync.com/${filename}`;
   }
 }
