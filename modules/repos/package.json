@@ -9,7 +9,7 @@
     "@stringsync/common": "1.0.0",
     "@stringsync/container": "1.0.0",
     "@stringsync/domain": "1.0.0",
-    "@stringsync/sequelize": "1.0.0",
+    "@stringsync/db": "1.0.0",
     "@types/sequelize": "^4.28.9",
     "dataloader": "^2.0.0",
     "inversify": "^5.0.1",

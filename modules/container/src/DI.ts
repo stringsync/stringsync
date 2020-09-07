@@ -18,7 +18,7 @@ import {
   UserSequelizeLoader,
   UserSequelizeRepo,
 } from '@stringsync/repos';
-import { Db, NotationModel, TaggingModel, TagModel, UserModel } from '@stringsync/sequelize';
+import { Db, NotationModel, TaggingModel, TagModel, UserModel, SequelizeDb } from '@stringsync/db';
 import {
   AuthService,
   HealthCheckerService,
@@ -57,7 +57,7 @@ export class DI {
       DI.getRedisModule(config),
       DI.getServicesModule(config),
       DI.getReposModule(config),
-      DI.getSequelizeModule(config, logger),
+      DI.getDbModule(config, logger),
       DI.getLoggerModule(config, logger)
     );
 
@@ -66,20 +66,20 @@ export class DI {
 
   static async cleanup(container: InversifyContainer) {
     const redis = container.get<RedisClient>(TYPES.Redis);
-    const sequelize = container.get<Sequelize>(TYPES.Sequelize);
+    const db = container.get<Db>(TYPES.Db);
 
     const redisCleanupPromise = Redis.cleanup(redis);
-    const dbCleanupPromise = Db.cleanup(sequelize);
+    const dbCleanupPromise = db.cleanup();
 
     await Promise.all([redisCleanupPromise, dbCleanupPromise]);
   }
 
   static async teardown(container: InversifyContainer) {
     const redis = container.get<RedisClient>(TYPES.Redis);
-    const sequelize = container.get<Sequelize>(TYPES.Sequelize);
+    const db = container.get<Db>(TYPES.Db);
 
     const redisTeardownPromise = Redis.teardown(redis);
-    const dbTeardownPromise = Db.teardown(sequelize);
+    const dbTeardownPromise = db.teardown();
 
     await Promise.all([redisTeardownPromise, dbTeardownPromise]);
   }
@@ -192,17 +192,18 @@ export class DI {
     });
   }
 
-  private static getSequelizeModule(config: ContainerConfig, logger: Logger) {
+  private static getDbModule(config: ContainerConfig, logger: Logger) {
     return new ContainerModule((bind) => {
-      const sequelize = Db.connect({
+      const db = SequelizeDb.create({
         database: config.DB_NAME,
         host: config.DB_HOST,
-        port: config.DB_PORT,
         password: config.DB_PASSWORD,
+        port: config.DB_PORT,
         username: config.DB_USERNAME,
         logging: (msg: string) => logger.debug(msg),
       });
-      bind<Sequelize>(TYPES.Sequelize).toConstantValue(sequelize);
+      bind<Sequelize>(TYPES.Sequelize).toConstantValue(db.sequelize);
+      bind<Db>(TYPES.Db).toConstantValue(db);
       bind<typeof UserModel>(TYPES.UserModel).toConstructor(UserModel);
       bind<typeof NotationModel>(TYPES.NotationModel).toConstructor(NotationModel);
       bind<typeof TagModel>(TYPES.TagModel).toConstructor(TagModel);

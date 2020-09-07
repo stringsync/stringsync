@@ -2,7 +2,7 @@ import { ensureNoErrors, alignManyToMany, alignOneToOne } from './../../util';
 import { TagLoader } from '../../types';
 import Dataloader from 'dataloader';
 import { TYPES } from '@stringsync/container';
-import { TagModel, TaggingModel } from '@stringsync/sequelize';
+import { TagModel, TaggingModel } from '@stringsync/db';
 import { inject, injectable } from 'inversify';
 import { Tag, Tagging } from '@stringsync/domain';
 import { mapValues, groupBy } from 'lodash';

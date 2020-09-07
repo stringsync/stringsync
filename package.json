@@ -8,11 +8,11 @@
   ],
   "scripts": {
     "graphql": "yarn workspace @stringsync/graphql",
-    "sequelize": "yarn workspace @stringsync/sequelize",
+    "db": "yarn workspace @stringsync/db",
     "web": "yarn workspace @stringsync/web",
-    "dev": "yarn sequelize dev && yarn graphql dev",
-    "pretest:server": "yarn sequelize migrate",
-    "test:server": "node --expose-gc ./node_modules/.bin/jest",
+    "dev": "yarn db migrate && yarn db seed && yarn graphql dev",
+    "pretest:server": "yarn db migrate",
+    "test:server": "jest",
     "test:web": "yarn web test"
   },
   "devDependencies": {

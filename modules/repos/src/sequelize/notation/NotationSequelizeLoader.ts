@@ -2,7 +2,7 @@ import { groupBy, mapValues } from 'lodash';
 import { NotationLoader } from '../../types';
 import Dataloader from 'dataloader';
 import { TYPES } from '@stringsync/container';
-import { NotationModel, UserModel, TaggingModel } from '@stringsync/sequelize';
+import { NotationModel, UserModel, TaggingModel } from '@stringsync/db';
 import { inject, injectable } from 'inversify';
 import { Notation, Tagging } from '@stringsync/domain';
 import { alignOneToMany, alignOneToOne, ensureNoErrors, alignManyToMany } from '../../util';

@@ -1,6 +1,7 @@
 export const TYPES = {
   AuthService: Symbol('AuthService'),
   ContainerConfig: Symbol('ContainerConfig'),
+  Db: Symbol('Db'),
   FileStorage: Symbol('FileStorage'),
   HealthCheckerService: Symbol('HealthCheckerService'),
   HealthController: Symbol('HealthController'),

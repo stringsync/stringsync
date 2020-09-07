@@ -15,25 +15,25 @@ export class WinstonLogger implements Logger {
     );
   }
 
-  winston: winston.Logger;
+  logger: winston.Logger;
 
-  constructor(winston: winston.Logger) {
-    this.winston = winston;
+  constructor(logger: winston.Logger) {
+    this.logger = logger;
   }
 
   error(msg: string) {
-    this.winston.error(msg);
+    this.logger.error(msg);
   }
 
   info(msg: string) {
-    this.winston.info(msg);
+    this.logger.info(msg);
   }
 
   warn(msg: string) {
-    this.winston.warn(msg);
+    this.logger.warn(msg);
   }
 
   debug(msg: string) {
-    this.winston.debug(msg);
+    this.logger.debug(msg);
   }
 }

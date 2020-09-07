@@ -1,5 +1,5 @@
 import { TYPES } from '@stringsync/container';
-import { TaggingModel } from '@stringsync/sequelize';
+import { TaggingModel } from '@stringsync/db';
 import { TaggingRepo } from '../../types';
 import { inject, injectable } from 'inversify';
 import { Tagging } from '@stringsync/domain';

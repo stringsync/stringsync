@@ -3,7 +3,7 @@ import { Pager } from '../../util';
 import { UserLoader } from '../../types';
 import { TYPES } from '@stringsync/container';
 import { User } from '@stringsync/domain';
-import { UserModel } from '@stringsync/sequelize';
+import { UserModel } from '@stringsync/db';
 import { inject, injectable } from 'inversify';
 import { or, Op } from 'sequelize';
 import { UserRepo } from '../../types';

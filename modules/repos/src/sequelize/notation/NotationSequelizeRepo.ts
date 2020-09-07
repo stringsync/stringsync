@@ -2,7 +2,7 @@ import { Connection, NotationConnectionArgs, PagingType } from '@stringsync/comm
 import { PagingCtx } from '../../util';
 import { TYPES } from '@stringsync/container';
 import { Notation } from '@stringsync/domain';
-import { NotationModel } from '@stringsync/sequelize';
+import { NotationModel } from '@stringsync/db';
 import { inject, injectable } from 'inversify';
 import { QueryTypes } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';

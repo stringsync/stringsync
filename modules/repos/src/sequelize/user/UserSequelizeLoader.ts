@@ -1,7 +1,7 @@
 import { UserLoader } from '../../types';
 import Dataloader from 'dataloader';
 import { TYPES } from '@stringsync/container';
-import { UserModel } from '@stringsync/sequelize';
+import { UserModel } from '@stringsync/db';
 import { inject, injectable } from 'inversify';
 import { User } from '@stringsync/domain';
 import { alignOneToOne, ensureNoErrors } from '../../util';

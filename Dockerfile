@@ -12,8 +12,8 @@ COPY ./modules/repos/package.json ./modules/repos/
 COPY ./modules/graphql/package.json ./modules/graphql/
 COPY ./modules/services/package.json ./modules/services/
 COPY ./modules/web/package.json ./modules/web/
-COPY ./modules/sequelize/package.json ./modules/sequelize/
 COPY ./modules/util/package.json ./modules/util/
+COPY ./modules/db/package.json ./modules/db/
 
 RUN yarn
 
