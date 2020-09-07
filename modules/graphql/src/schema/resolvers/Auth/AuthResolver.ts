@@ -1,7 +1,8 @@
 import { Resolver, Query, Ctx, Mutation, Arg, UseMiddleware } from 'type-graphql';
 import { injectable, inject } from 'inversify';
 import { AuthService, NotificationService } from '@stringsync/services';
-import { TYPES, Logger } from '@stringsync/container';
+import { TYPES } from '@stringsync/container';
+import { Logger } from '@stringsync/util';
 import { User } from '@stringsync/domain';
 import { ResolverCtx } from '../../types';
 import { UserObject } from '../User';

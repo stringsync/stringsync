@@ -1,10 +1,11 @@
-import { app } from './app';
 import { getContainerConfig } from '@stringsync/config';
-import { DI, Logger, TYPES } from '@stringsync/container';
+import { DI, TYPES } from '@stringsync/container';
+import { Logger } from '@stringsync/util';
+import { app } from './app';
 import { generateSchema } from './schema';
 
-export * from './schema';
 export * from './app';
+export * from './schema';
 
 const main = () => {
   const config = getContainerConfig();

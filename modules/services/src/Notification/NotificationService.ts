@@ -3,7 +3,7 @@ import url from 'url';
 import { TYPES } from '@stringsync/container';
 import { ContainerConfig } from '@stringsync/config';
 import { User } from '@stringsync/domain';
-import { Mailer } from '@stringsync/container/src/mailer';
+import { Mailer } from '@stringsync/util';
 
 @injectable()
 export class NotificationService {

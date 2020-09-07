@@ -1,5 +1,6 @@
 import { AuthRequirement, Connection } from '@stringsync/common';
-import { FileStorage, Logger, TYPES } from '@stringsync/container';
+import { TYPES } from '@stringsync/container';
+import { FileStorage, Logger } from '@stringsync/util';
 import { Notation } from '@stringsync/domain';
 import { NotationService, TaggingService } from '@stringsync/services';
 import { inject, injectable } from 'inversify';

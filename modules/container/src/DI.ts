@@ -24,21 +24,17 @@ import {
   HealthCheckerService,
   NotationService,
   NotificationService,
-  TagService,
   TaggingService,
+  TagService,
   UserService,
 } from '@stringsync/services';
+import { FakeStorage, FileStorage, Logger, Mailer, NodemailerMailer, Redis, S3Storage } from '@stringsync/util';
 import { Container as InversifyContainer, ContainerModule } from 'inversify';
 import nodemailer from 'nodemailer';
 import { RedisClient } from 'redis';
 import { Sequelize } from 'sequelize-typescript';
 import * as winston from 'winston';
 import { TYPES } from './constants';
-import { Logger } from './logger';
-import { Mailer, NodemailerMailer } from './mailer';
-import { Redis } from './redis';
-import { S3 } from 'aws-sdk';
-import { FileStorage, S3Storage, FakeStorage } from './file-storage';
 
 export class DI {
   static create(config: ContainerConfig = getContainerConfig()) {
@@ -92,13 +88,13 @@ export class DI {
     if (config.NODE_ENV === 'test') {
       storage = new FakeStorage();
     } else {
-      const s3 = new S3({
+      storage = S3Storage.create({
         accessKeyId: config.S3_ACCESS_KEY_ID,
         secretAccessKey: config.S3_SECRET_ACCESS_KEY,
+        bucket: config.S3_BUCKET,
+        domainName: config.CLOUDFRONT_DOMAIN_NAME,
       });
-      storage = new S3Storage(s3, config.S3_BUCKET, config.CLOUDFRONT_DOMAIN_NAME);
     }
-
     return new ContainerModule((bind) => {
       bind<FileStorage>(TYPES.FileStorage).toConstantValue(storage);
     });
@@ -203,7 +199,7 @@ export class DI {
         port: config.DB_PORT,
         password: config.DB_PASSWORD,
         username: config.DB_USERNAME,
-        logging: logger.debug,
+        logging: (msg: string) => logger.debug(msg),
       });
       bind<Sequelize>(TYPES.Sequelize).toConstantValue(sequelize);
       bind<typeof UserModel>(TYPES.UserModel).toConstructor(UserModel);
