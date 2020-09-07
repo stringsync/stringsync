@@ -28,25 +28,26 @@ import {
   TagService,
   UserService,
 } from '@stringsync/services';
-import { FakeStorage, FileStorage, Logger, Mailer, NodemailerMailer, Redis, S3Storage } from '@stringsync/util';
+import {
+  FakeStorage,
+  FileStorage,
+  Logger,
+  Mailer,
+  NodemailerMailer,
+  Redis,
+  S3Storage,
+  WinstonLogger,
+} from '@stringsync/util';
 import { Container as InversifyContainer, ContainerModule } from 'inversify';
 import nodemailer from 'nodemailer';
 import { RedisClient } from 'redis';
 import { Sequelize } from 'sequelize-typescript';
-import * as winston from 'winston';
 import { TYPES } from './constants';
 
 export class DI {
   static create(config: ContainerConfig = getContainerConfig()) {
     const container = new InversifyContainer();
-    const logger = winston.createLogger({
-      level: config.LOG_LEVEL,
-      transports: [
-        new winston.transports.Console({
-          format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
-        }),
-      ],
-    });
+    const logger = WinstonLogger.create(config.LOG_LEVEL);
 
     container.load(
       DI.getFileStorageModule(config),

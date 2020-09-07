@@ -9,10 +9,6 @@
     "@stringsync/config": "1.0.0",
     "@stringsync/sequelize": "1.0.0",
     "@stringsync/services": "1.0.0",
-    "@stringsync/util": "1.0.0",
-    "winston": "^3.3.3"
-  },
-  "devDependencies": {
-    "@types/winston": "^2.4.4"
+    "@stringsync/util": "1.0.0"
   }
 }
