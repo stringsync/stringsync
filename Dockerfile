@@ -13,6 +13,7 @@ COPY ./modules/graphql/package.json ./modules/graphql/
 COPY ./modules/services/package.json ./modules/services/
 COPY ./modules/web/package.json ./modules/web/
 COPY ./modules/sequelize/package.json ./modules/sequelize/
+COPY ./modules/util/package.json ./modules/util/
 
 RUN yarn
 
