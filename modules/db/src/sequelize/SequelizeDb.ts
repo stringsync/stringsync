@@ -9,8 +9,6 @@ export class SequelizeDb implements Db {
     // https://github.com/sequelize/sequelize/issues/8019
     (Sequelize as any).postgres.DECIMAL.parse = parseFloat;
 
-    // https://github.com/RobinBuschmann/sequelize-typescript/issues/336#issuecomment-375527175
-
     const sequelize = new Sequelize({
       dialect: 'postgres',
       host: config.host,

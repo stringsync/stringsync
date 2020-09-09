@@ -43,6 +43,7 @@ export default class Test extends Command {
           'yarn',
           `test:${args.project}`,
           '--runInBand',
+          '--logHeapUsage',
           `--watchAll=${flags.watch}`,
           flags.coverage ? '--collectCoverage' : '',
         ]
