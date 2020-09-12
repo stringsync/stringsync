@@ -1,10 +1,10 @@
-import { TestFactory, randStr } from '@stringsync/common';
+import { randStr, TestFactory } from '@stringsync/common';
 import { TYPES, useTestContainer } from '@stringsync/di';
-import { User, Notation, Tagging, Tag } from '@stringsync/domain';
+import { Notation, Tag, User } from '@stringsync/domain';
 import { UserSequelizeRepo } from '@stringsync/repos';
-import { isPlainObject, sortBy, take, times, first, last } from 'lodash';
+import { first, isPlainObject, last, sortBy, take, times } from 'lodash';
+import { TaggingRepo, TagRepo } from '../../types';
 import { NotationSequelizeRepo } from './NotationSequelizeRepo';
-import { TagRepo, TaggingRepo } from '../../types';
 
 const container = useTestContainer();
 
