@@ -1,8 +1,8 @@
+import { Connection, NotationConnectionArgs } from '@stringsync/common';
 import { TYPES } from '@stringsync/di';
-import { injectable, inject } from 'inversify';
-import { NotationRepo, TagRepo } from '@stringsync/repos';
 import { Notation } from '@stringsync/domain';
-import { ConnectionArgs, Connection, NotationConnectionArgs } from '@stringsync/common';
+import { NotationRepo, TagRepo } from '@stringsync/repos';
+import { inject, injectable } from 'inversify';
 
 @injectable()
 export class NotationService {
