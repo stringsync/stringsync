@@ -1,5 +1,6 @@
 import { Ctor } from '@stringsync/common';
 import { ContainerConfig, getContainerConfig } from '@stringsync/config';
+import { Db, NotationModel, SequelizeDb, TaggingModel, TagModel, UserModel } from '@stringsync/db';
 import { AuthResolver, HealthController, NotationResolver, TagResolver, UserResolver } from '@stringsync/graphql';
 import {
   NotationLoader,
@@ -18,7 +19,6 @@ import {
   UserSequelizeLoader,
   UserSequelizeRepo,
 } from '@stringsync/repos';
-import { Db, NotationModel, TaggingModel, TagModel, UserModel, SequelizeDb } from '@stringsync/db';
 import {
   AuthService,
   HealthCheckerService,
@@ -29,18 +29,19 @@ import {
   UserService,
 } from '@stringsync/services';
 import {
-  FakeStorage,
+  Cache,
+  NoopStorage,
   FileStorage,
   Logger,
   Mailer,
   NodemailerMailer,
+  NoopMailer,
   Redis,
+  RedisCache,
   S3Storage,
   WinstonLogger,
 } from '@stringsync/util';
 import { Container as InversifyContainer, ContainerModule } from 'inversify';
-import nodemailer from 'nodemailer';
-import { RedisClient } from 'redis';
 import { Sequelize } from 'sequelize-typescript';
 import { TYPES } from './constants';
 
@@ -50,73 +51,20 @@ export class DI {
     const logger = WinstonLogger.create(config.LOG_LEVEL);
 
     container.load(
-      DI.getFileStorageModule(config),
       DI.getConfigModule(config),
-      DI.getMailerModule(config),
-      DI.getGraphqlModule(config),
-      DI.getRedisModule(config),
-      DI.getServicesModule(config),
-      DI.getReposModule(config),
       DI.getDbModule(config, logger),
-      DI.getLoggerModule(config, logger)
+      DI.getGraphqlModule(config),
+      DI.getReposModule(config),
+      DI.getServicesModule(config),
+      DI.getUtilModule(config, logger)
     );
 
     return container;
   }
 
-  static async cleanup(container: InversifyContainer) {
-    const redis = container.get<RedisClient>(TYPES.Redis);
-    const db = container.get<Db>(TYPES.Db);
-
-    const redisCleanupPromise = Redis.cleanup(redis);
-    const dbCleanupPromise = db.cleanup();
-
-    await Promise.all([redisCleanupPromise, dbCleanupPromise]);
-  }
-
-  static async teardown(container: InversifyContainer) {
-    const redis = container.get<RedisClient>(TYPES.Redis);
-    const db = container.get<Db>(TYPES.Db);
-
-    const redisTeardownPromise = Redis.teardown(redis);
-    const dbTeardownPromise = db.teardown();
-
-    await Promise.all([redisTeardownPromise, dbTeardownPromise]);
-  }
-
-  private static getFileStorageModule(config: ContainerConfig) {
-    let storage: FileStorage;
-    if (config.NODE_ENV === 'test') {
-      storage = new FakeStorage();
-    } else {
-      storage = S3Storage.create({
-        accessKeyId: config.S3_ACCESS_KEY_ID,
-        secretAccessKey: config.S3_SECRET_ACCESS_KEY,
-        bucket: config.S3_BUCKET,
-        domainName: config.CLOUDFRONT_DOMAIN_NAME,
-      });
-    }
-    return new ContainerModule((bind) => {
-      bind<FileStorage>(TYPES.FileStorage).toConstantValue(storage);
-    });
-  }
-
   private static getConfigModule(config: ContainerConfig) {
     return new ContainerModule((bind) => {
       bind<ContainerConfig>(TYPES.ContainerConfig).toConstantValue(config);
-    });
-  }
-
-  private static getMailerModule(config: ContainerConfig) {
-    let mailer: Mailer;
-    if (config.NODE_ENV === 'test') {
-      mailer = { send: jest.fn() };
-    } else {
-      const transporter = nodemailer.createTransport({});
-      mailer = new NodemailerMailer(transporter);
-    }
-    return new ContainerModule((bind) => {
-      bind<Mailer>(TYPES.Mailer).toConstantValue(mailer);
     });
   }
 
@@ -138,18 +86,8 @@ export class DI {
     });
   }
 
-  private static getRedisModule(config: ContainerConfig) {
-    return new ContainerModule((bind) => {
-      const redis = Redis.create({
-        host: config.REDIS_HOST,
-        port: config.REDIS_PORT,
-      });
-      bind<RedisClient>(TYPES.Redis).toConstantValue(redis);
-    });
-  }
-
   private static getServicesModule(config: ContainerConfig) {
-    return new ContainerModule(async (bind) => {
+    return new ContainerModule((bind) => {
       bind<HealthCheckerService>(TYPES.HealthCheckerService).to(HealthCheckerService);
       bind<AuthService>(TYPES.AuthService).to(AuthService);
       bind<NotificationService>(TYPES.NotificationService).to(NotificationService);
@@ -211,9 +149,36 @@ export class DI {
     });
   }
 
-  private static getLoggerModule(config: ContainerConfig, logger: Logger) {
+  private static getUtilModule(config: ContainerConfig, logger: Logger) {
     return new ContainerModule((bind) => {
+      bind<Cache>(TYPES.Cache).to(RedisCache);
       bind<Logger>(TYPES.Logger).toConstantValue(logger);
+
+      const redis = RedisCache.createRedisClient({
+        host: config.REDIS_HOST,
+        port: config.REDIS_PORT,
+      });
+      bind<Redis>(TYPES.Redis).toConstantValue(redis);
+
+      if (config.NODE_ENV === 'test') {
+        bind<FileStorage>(TYPES.FileStorage).to(NoopStorage);
+      } else {
+        bind<FileStorage>(TYPES.FileStorage).toConstantValue(
+          S3Storage.create({
+            accessKeyId: config.S3_ACCESS_KEY_ID,
+            secretAccessKey: config.S3_SECRET_ACCESS_KEY,
+            bucket: config.S3_BUCKET,
+            domainName: config.CLOUDFRONT_DOMAIN_NAME,
+          })
+        );
+      }
+
+      if (config.NODE_ENV === 'test') {
+        bind<Mailer>(TYPES.Mailer).to(NoopMailer);
+      } else {
+        const transporter = NodemailerMailer.createTransporter();
+        bind<Mailer>(TYPES.Mailer).toConstantValue(new NodemailerMailer(transporter));
+      }
     });
   }
 }

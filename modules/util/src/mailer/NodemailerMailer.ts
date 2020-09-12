@@ -1,7 +1,11 @@
-import { Transporter } from 'nodemailer';
+import { Transporter, createTransport } from 'nodemailer';
 import { Mailer, Mail } from './types';
 
 export class NodemailerMailer implements Mailer {
+  static createTransporter(): Transporter {
+    return createTransport({});
+  }
+
   transporter: Transporter;
 
   constructor(transporter: Transporter) {

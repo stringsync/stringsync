@@ -1,4 +1,1 @@
-export type RedisConfig = {
-  host: string;
-  port: number;
-};
+export { RedisClient as Redis } from 'redis';

@@ -1,22 +1,20 @@
 import { Cache, RedisConfig } from './types';
 import { RedisClient, createClient } from 'redis';
-import { injectable } from 'inversify';
+import { injectable, inject } from 'inversify';
 import { Logger } from '../logger';
+import { TYPES } from '@stringsync/container';
 
 @injectable()
 export class RedisCache implements Cache {
-  static create(logger: Logger, config: RedisConfig): RedisCache {
-    const redis = createClient({
-      host: config.host,
-      port: config.port,
-    });
-    return new RedisCache(redis, logger);
+  static createRedisClient(config: RedisConfig): RedisClient {
+    const { host, port } = config;
+    return createClient({ host, port });
   }
 
   redis: RedisClient;
   logger: Logger;
 
-  constructor(redis: RedisClient, logger: Logger) {
+  constructor(@inject(TYPES.Redis) redis: RedisClient, @inject(TYPES.Logger) logger: Logger) {
     this.redis = redis;
     this.logger = logger;
   }

@@ -1,21 +1,9 @@
 import { TYPES } from '@stringsync/container';
-import { Container } from 'inversify';
-import { DI } from './DI';
+import { useTestContainer } from './useTestContainer';
 
-let container: Container | undefined;
+const container = useTestContainer();
 
-afterEach(async () => {
-  if (container) {
-    await DI.teardown(container);
-  }
-  container = undefined;
-});
-
-it('returns an instance for each identifier', () => {
-  container = DI.create();
-
-  for (const identifier of Object.values(TYPES)) {
-    const object = container.get(identifier);
-    expect(object).toBeDefined();
-  }
+it.each(Object.values(TYPES))('returns an instance for identifier', (identifier) => {
+  const object = container.get(identifier);
+  expect(object).toBeDefined();
 });

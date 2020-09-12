@@ -1,5 +1,6 @@
 export const TYPES = {
   AuthService: Symbol('AuthService'),
+  Cache: Symbol('Cache'),
   ContainerConfig: Symbol('ContainerConfig'),
   Db: Symbol('Db'),
   FileStorage: Symbol('FileStorage'),
