@@ -10,4 +10,5 @@ module.exports = {
   resetModules: false,
   testPathIgnorePatterns: ['node_modules', 'web'],
   roots: ['<rootDir>/modules'],
+  watchPlugins: ['jest-watch-typeahead/filename', 'jest-watch-typeahead/testname'],
 };
