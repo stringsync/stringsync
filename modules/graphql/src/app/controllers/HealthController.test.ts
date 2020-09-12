@@ -1,4 +1,4 @@
-import { useTestContainer, TYPES } from '@stringsync/container';
+import { useTestContainer, TYPES } from '@stringsync/di';
 import { HealthController } from './HealthController';
 
 const container = useTestContainer();

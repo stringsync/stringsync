@@ -2,7 +2,7 @@ import { Cache, RedisConfig } from './types';
 import { RedisClient, createClient } from 'redis';
 import { injectable, inject } from 'inversify';
 import { Logger } from '../logger';
-import { TYPES } from '@stringsync/container';
+import { TYPES } from '@stringsync/di';
 
 @injectable()
 export class RedisCache implements Cache {

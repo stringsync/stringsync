@@ -1,5 +1,5 @@
 import { PagingType, TestFactory, UnknownError } from '@stringsync/common';
-import { TYPES, useTestContainer } from '@stringsync/container';
+import { TYPES, useTestContainer } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
 import { first, last, sortBy } from 'lodash';
 import { NotationPager } from './NotationPager';

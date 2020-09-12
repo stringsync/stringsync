@@ -1,6 +1,6 @@
 import { UserLoader } from '../../types';
 import Dataloader from 'dataloader';
-import { TYPES } from '@stringsync/container';
+import { TYPES } from '@stringsync/di';
 import { UserModel } from '@stringsync/db';
 import { inject, injectable } from 'inversify';
 import { User } from '@stringsync/domain';

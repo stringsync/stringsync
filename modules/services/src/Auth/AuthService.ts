@@ -1,6 +1,6 @@
 import { injectable, inject } from 'inversify';
 import { UserRepo } from '@stringsync/repos';
-import { TYPES } from '@stringsync/container';
+import { TYPES } from '@stringsync/di';
 import { SessionUser } from './types';
 import { User, UserRole } from '@stringsync/domain';
 import * as bcrypt from 'bcrypt';

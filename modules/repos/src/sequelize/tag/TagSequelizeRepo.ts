@@ -1,4 +1,4 @@
-import { TYPES } from '@stringsync/container';
+import { TYPES } from '@stringsync/di';
 import { injectable, inject } from 'inversify';
 import { TagRepo, TagLoader } from '../../types';
 import { TagModel, TaggingModel } from '@stringsync/db';

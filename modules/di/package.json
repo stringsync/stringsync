@@ -1,5 +1,5 @@
 {
-  "name": "@stringsync/container",
+  "name": "@stringsync/di",
   "version": "1.0.0",
   "description": "Inversion of control container for @stringsync.",
   "main": "src/index.ts",

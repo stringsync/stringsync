@@ -1,7 +1,7 @@
 import { Base64, Connection, ConnectionArgs, PagingType } from '@stringsync/common';
 import { Pager } from '../../util';
 import { UserLoader } from '../../types';
-import { TYPES } from '@stringsync/container';
+import { TYPES } from '@stringsync/di';
 import { User } from '@stringsync/domain';
 import { UserModel } from '@stringsync/db';
 import { inject, injectable } from 'inversify';

@@ -1,5 +1,5 @@
 import { randStr, TestFactory } from '@stringsync/common';
-import { TYPES, useTestContainer } from '@stringsync/container';
+import { TYPES, useTestContainer } from '@stringsync/di';
 import { User } from '@stringsync/domain';
 import { isPlainObject, sortBy, take } from 'lodash';
 import { UserSequelizeRepo } from './UserSequelizeRepo';

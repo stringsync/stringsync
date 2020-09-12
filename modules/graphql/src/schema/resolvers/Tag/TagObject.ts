@@ -1,4 +1,4 @@
-import { TYPES } from '@stringsync/container';
+import { TYPES } from '@stringsync/di';
 import { NotationService } from '@stringsync/services';
 import { ReqCtx } from '../../../ctx';
 import { NotationObject } from '../Notation';

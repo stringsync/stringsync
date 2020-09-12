@@ -1,5 +1,5 @@
 import { NotationModel } from './NotationModel';
-import { useTestContainer, TYPES } from '@stringsync/container';
+import { useTestContainer, TYPES } from '@stringsync/di';
 import { TestFactory } from '@stringsync/common';
 
 const container = useTestContainer();

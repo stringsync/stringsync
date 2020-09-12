@@ -1,5 +1,5 @@
 import { HealthCheckerService } from './HealthCheckerService';
-import { useTestContainer, TYPES } from '@stringsync/container';
+import { useTestContainer, TYPES } from '@stringsync/di';
 
 const container = useTestContainer();
 

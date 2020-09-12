@@ -1,5 +1,5 @@
 import { HttpStatus, randStr } from '@stringsync/common';
-import { TYPES } from '@stringsync/container';
+import { TYPES } from '@stringsync/di';
 import { UserService } from '@stringsync/services';
 import { TestGraphqlClient, useTestApp } from '../../../testing';
 import { TestAuthClient } from './TestAuthClient';

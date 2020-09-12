@@ -1,5 +1,5 @@
 import { TestFactory } from './../../../common/src/rand/TestFactory';
-import { useTestContainer, TYPES } from '@stringsync/container';
+import { useTestContainer, TYPES } from '@stringsync/di';
 import { NotificationService } from './NotificationService';
 import { UserRepo } from '@stringsync/repos';
 import { User } from '@stringsync/domain';

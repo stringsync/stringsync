@@ -2,7 +2,7 @@ import Dataloader from 'dataloader';
 import { UserRepo } from '@stringsync/repos';
 import { User } from '@stringsync/domain';
 import { injectable, inject } from 'inversify';
-import { TYPES } from '@stringsync/container';
+import { TYPES } from '@stringsync/di';
 import { ConnectionArgs, Connection } from '@stringsync/common';
 
 @injectable()

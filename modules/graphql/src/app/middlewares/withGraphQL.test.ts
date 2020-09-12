@@ -1,4 +1,4 @@
-import { useTestContainer } from '@stringsync/container';
+import { useTestContainer } from '@stringsync/di';
 import { withGraphQL } from './withGraphQL';
 import { generateSchema } from '../../schema';
 

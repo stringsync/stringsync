@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize-typescript';
 import { RedisClient as Redis } from 'redis';
 import { inject, injectable } from 'inversify';
-import { TYPES } from '@stringsync/container';
+import { TYPES } from '@stringsync/di';
 import { promisify } from 'util';
 
 @injectable()

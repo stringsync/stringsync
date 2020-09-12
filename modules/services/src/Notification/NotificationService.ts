@@ -1,6 +1,6 @@
 import { injectable, inject } from 'inversify';
 import url from 'url';
-import { TYPES } from '@stringsync/container';
+import { TYPES } from '@stringsync/di';
 import { ContainerConfig } from '@stringsync/config';
 import { User } from '@stringsync/domain';
 import { Mailer } from '@stringsync/util';

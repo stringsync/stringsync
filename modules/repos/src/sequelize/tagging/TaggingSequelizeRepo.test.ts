@@ -1,5 +1,5 @@
 import { TestFactory, randStr } from '@stringsync/common';
-import { TYPES, useTestContainer } from '@stringsync/container';
+import { TYPES, useTestContainer } from '@stringsync/di';
 import { Notation, Tag, Tagging, User } from '@stringsync/domain';
 import { isPlainObject } from 'lodash';
 import { NotationSequelizeRepo } from '../notation';

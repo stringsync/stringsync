@@ -1,4 +1,4 @@
-import { TYPES } from '@stringsync/container';
+import { TYPES } from '@stringsync/di';
 import { Notation, User, UserRole, PublicUser } from '@stringsync/domain';
 import { NotationService } from '@stringsync/services';
 import { Ctx, Field, ID, ObjectType, registerEnumType, Root } from 'type-graphql';

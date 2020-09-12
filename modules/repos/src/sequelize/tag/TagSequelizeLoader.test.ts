@@ -4,7 +4,7 @@ import { TaggingSequelizeRepo } from '../tagging';
 import { isPlainObject, sortBy } from 'lodash';
 import { randStr, TestFactory } from '@stringsync/common';
 import { Tag, Notation, Tagging, User } from '@stringsync/domain';
-import { useTestContainer, TYPES } from '@stringsync/container';
+import { useTestContainer, TYPES } from '@stringsync/di';
 import { TagSequelizeLoader } from './TagSequelizeLoader';
 import { TagSequelizeRepo } from './TagSequelizeRepo';
 

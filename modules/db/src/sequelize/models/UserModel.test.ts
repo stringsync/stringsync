@@ -1,5 +1,5 @@
 import { UserModel } from './UserModel';
-import { useTestContainer, TYPES } from '@stringsync/container';
+import { useTestContainer, TYPES } from '@stringsync/di';
 import { TestFactory } from '@stringsync/common';
 import * as uuid from 'uuid';
 

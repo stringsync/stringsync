@@ -3,7 +3,7 @@ import { TestFactory, randStr } from '@stringsync/common';
 import { UserSequelizeLoader } from './UserSequelizeLoader';
 import { UserSequelizeRepo } from './UserSequelizeRepo';
 import { User } from '@stringsync/domain';
-import { useTestContainer, TYPES } from '@stringsync/container';
+import { useTestContainer, TYPES } from '@stringsync/di';
 
 const container = useTestContainer();
 

@@ -1,4 +1,4 @@
-import { TYPES } from '@stringsync/container';
+import { TYPES } from '@stringsync/di';
 import { useTestContainer } from './useTestContainer';
 
 const container = useTestContainer();

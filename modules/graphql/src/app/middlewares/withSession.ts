@@ -3,7 +3,7 @@ import * as uuid from 'uuid';
 import connectRedis from 'connect-redis';
 import { Handler } from 'express';
 import { ContainerConfig } from '@stringsync/config';
-import { TYPES } from '@stringsync/container';
+import { TYPES } from '@stringsync/di';
 import { RedisClient as Redis } from 'redis';
 import { Container } from 'inversify';
 

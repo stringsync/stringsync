@@ -1,5 +1,5 @@
 import { Container } from 'inversify';
-import { TYPES } from '@stringsync/container';
+import { TYPES } from '@stringsync/di';
 import { UserLoader, NotationLoader, TagLoader } from '@stringsync/repos';
 import { Ctor } from '@stringsync/common';
 

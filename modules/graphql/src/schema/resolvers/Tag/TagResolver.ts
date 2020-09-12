@@ -1,4 +1,4 @@
-import { TYPES } from '@stringsync/container';
+import { TYPES } from '@stringsync/di';
 import { Tag } from '@stringsync/domain';
 import { TagObject } from './TagObject';
 import { TagService } from '@stringsync/services';

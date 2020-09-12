@@ -1,7 +1,7 @@
-import { DI } from './DI';
-import { Cache } from '@stringsync/util';
-import { TYPES } from './constants';
 import { Db } from '@stringsync/db';
+import { Cache } from '@stringsync/util';
+import { DI } from './DI';
+import { TYPES } from './TYPES';
 
 export const useTestContainer = () => {
   const container = DI.create();

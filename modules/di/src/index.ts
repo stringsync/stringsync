@@ -1,5 +1,5 @@
 import 'reflect-metadata';
 
-export * from './constants';
+export * from './TYPES';
 export * from './DI';
 export * from './useTestContainer';

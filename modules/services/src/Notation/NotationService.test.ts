@@ -1,7 +1,7 @@
 import { sortBy, isPlainObject } from 'lodash';
 import { User, Notation, Tag, Tagging } from '@stringsync/domain';
 import { UserRepo, NotationRepo, TagRepo, TaggingRepo } from '@stringsync/repos';
-import { useTestContainer, TYPES } from '@stringsync/container';
+import { useTestContainer, TYPES } from '@stringsync/di';
 import { TestFactory, randStr } from '@stringsync/common';
 import { NotationService } from './NotationService';
 

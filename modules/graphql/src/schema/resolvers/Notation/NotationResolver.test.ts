@@ -1,5 +1,5 @@
 import { HttpStatus, randStr, TestFactory } from '@stringsync/common';
-import { TYPES } from '@stringsync/container';
+import { TYPES } from '@stringsync/di';
 import { Notation, User, UserRole } from '@stringsync/domain';
 import { NotationRepo, UserRepo } from '@stringsync/repos';
 import { AuthService } from '@stringsync/services';

@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@stringsync/config": "1.0.0",
-    "@stringsync/container": "1.0.0",
+    "@stringsync/di": "1.0.0",
     "@stringsync/domain": "1.0.0",
     "pg": "^8.2.1",
     "reflect-metadata": "^0.1.13",

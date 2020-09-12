@@ -1,5 +1,5 @@
 import { NotFoundError } from '@stringsync/common';
-import { TYPES } from '@stringsync/container';
+import { TYPES } from '@stringsync/di';
 import { PublicNotation, Notation, Tag, User } from '@stringsync/domain';
 import { UserService, TagService } from '@stringsync/services';
 import { Ctx, Field, ID, ObjectType, Root } from 'type-graphql';

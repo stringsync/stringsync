@@ -1,4 +1,4 @@
-import { TYPES } from '@stringsync/container';
+import { TYPES } from '@stringsync/di';
 import { injectable, inject } from 'inversify';
 import { NotationRepo, TagRepo } from '@stringsync/repos';
 import { Notation } from '@stringsync/domain';

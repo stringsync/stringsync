@@ -1,5 +1,5 @@
 import { UserRepo } from '@stringsync/repos';
-import { TYPES, useTestContainer } from '@stringsync/container';
+import { TYPES, useTestContainer } from '@stringsync/di';
 import { UserService } from './UserService';
 import { TestFactory } from '@stringsync/common';
 import { sortBy } from 'lodash';

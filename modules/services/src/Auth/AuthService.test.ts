@@ -1,5 +1,5 @@
 import { AuthService } from './AuthService';
-import { useTestContainer, TYPES } from '@stringsync/container';
+import { useTestContainer, TYPES } from '@stringsync/di';
 import { UserRole, User } from '@stringsync/domain';
 import { TestFactory, randStr, NotFoundError, BadRequestError } from '@stringsync/common';
 import { UserRepo } from '@stringsync/repos';

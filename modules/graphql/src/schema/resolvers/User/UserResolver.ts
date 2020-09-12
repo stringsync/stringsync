@@ -1,6 +1,6 @@
 import { UserConnectionObject } from './UserConnectionObject';
 import { AuthRequirement, Connection } from '@stringsync/common';
-import { TYPES } from '@stringsync/container';
+import { TYPES } from '@stringsync/di';
 import { User } from '@stringsync/domain';
 import { UserService } from '@stringsync/services';
 import { inject, injectable } from 'inversify';

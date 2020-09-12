@@ -12,7 +12,7 @@
   "dependencies": {
     "@stringsync/common": "1.0.0",
     "@stringsync/config": "1.0.0",
-    "@stringsync/container": "1.0.0",
+    "@stringsync/di": "1.0.0",
     "@stringsync/domain": "1.0.0",
     "@stringsync/services": "1.0.0",
     "@stringsync/util": "1.0.0",

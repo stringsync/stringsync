@@ -1,5 +1,5 @@
 import { getContainerConfig } from '@stringsync/config';
-import { DI, TYPES } from '@stringsync/container';
+import { DI, TYPES } from '@stringsync/di';
 import { Logger } from '@stringsync/util';
 import { app } from './app';
 import { generateSchema } from './schema';

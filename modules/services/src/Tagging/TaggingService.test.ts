@@ -1,6 +1,6 @@
 import { TaggingService } from './TaggingService';
 import { TaggingRepo, TagRepo, NotationRepo, UserRepo } from '@stringsync/repos';
-import { useTestContainer, TYPES } from '@stringsync/container';
+import { useTestContainer, TYPES } from '@stringsync/di';
 import { Notation, Tag } from '@stringsync/domain';
 import { TestFactory } from '@stringsync/common';
 import { sortBy } from 'lodash';

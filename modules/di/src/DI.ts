@@ -30,12 +30,12 @@ import {
 } from '@stringsync/services';
 import {
   Cache,
-  NoopStorage,
   FileStorage,
   Logger,
   Mailer,
   NodemailerMailer,
   NoopMailer,
+  NoopStorage,
   Redis,
   RedisCache,
   S3Storage,
@@ -43,7 +43,7 @@ import {
 } from '@stringsync/util';
 import { Container as InversifyContainer, ContainerModule } from 'inversify';
 import { Sequelize } from 'sequelize-typescript';
-import { TYPES } from './constants';
+import { TYPES } from './TYPES';
 
 export class DI {
   static create(config: ContainerConfig = getContainerConfig()) {

@@ -1,5 +1,5 @@
 import { ContainerConfig } from '@stringsync/config';
-import { TYPES } from '@stringsync/container';
+import { TYPES } from '@stringsync/di';
 import cors from 'cors';
 import express from 'express';
 import { GraphQLSchema } from 'graphql';

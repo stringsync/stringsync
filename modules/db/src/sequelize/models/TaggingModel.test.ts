@@ -1,4 +1,4 @@
-import { useTestContainer, TYPES } from '@stringsync/container';
+import { useTestContainer, TYPES } from '@stringsync/di';
 import { TaggingModel } from './TaggingModel';
 import { TestFactory } from '@stringsync/common';
 

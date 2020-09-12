@@ -1,6 +1,6 @@
 import { Connection, NotationConnectionArgs, PagingType } from '@stringsync/common';
 import { PagingCtx } from '../../util';
-import { TYPES } from '@stringsync/container';
+import { TYPES } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
 import { NotationModel } from '@stringsync/db';
 import { inject, injectable } from 'inversify';
