@@ -13,7 +13,7 @@
     "@oclif/plugin-help": "^2",
     "@types/rimraf": "^2.0.3",
     "aws-sdk": "^2.635.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "rimraf": "^3.0.2",
     "tslib": "^1"
   },
