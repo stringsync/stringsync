@@ -1,7 +1,8 @@
-import { Db } from '../types';
+import { Db, TransactionCallback } from '../types';
 import { SequelizeDbConfig } from './types';
 import { Sequelize } from 'sequelize-typescript';
 import { TaggingModel, UserModel, NotationModel, TagModel } from './models';
+import { Transaction } from 'sequelize';
 
 export class SequelizeDb implements Db {
   static create(config: SequelizeDbConfig) {
@@ -29,8 +30,8 @@ export class SequelizeDb implements Db {
     this.sequelize = sequelize;
   }
 
-  async transaction<T extends any>(task: () => Promise<T>) {
-    return await this.sequelize.transaction<T>(task);
+  async transaction<R extends any>(task: TransactionCallback<Transaction, R>) {
+    return await this.sequelize.transaction<R>(task);
   }
 
   async cleanup() {

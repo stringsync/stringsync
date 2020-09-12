@@ -1,5 +1,7 @@
+export type TransactionCallback<T, R> = (transaction: T) => Promise<R>;
+
 export interface Db {
-  transaction<T extends any>(task: () => Promise<T>): Promise<T>;
+  transaction<R>(task: TransactionCallback<any, R>): Promise<R>;
 
   cleanup(): Promise<void>;
 
