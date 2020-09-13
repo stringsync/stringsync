@@ -1,93 +1,119 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Notation } from '@stringsync/domain';
-import {
-  AllowNull,
-  AutoIncrement,
-  BelongsTo,
-  BelongsToMany,
-  Column,
-  CreatedAt,
-  Default,
-  ForeignKey,
-  Is,
-  IsDate,
-  IsUrl,
-  Length,
-  Min,
-  Model,
-  PrimaryKey,
-  Table,
-  UpdatedAt,
-} from 'sequelize-typescript';
+import { Association, DataTypes, Model, Sequelize } from 'sequelize';
 import { TaggingModel } from './TaggingModel';
 import { TagModel } from './TagModel';
 import { UserModel } from './UserModel';
 
-@Table({
-  tableName: 'notations',
-  underscored: true,
-})
-export class NotationModel extends Model<NotationModel> implements Notation {
-  @PrimaryKey
-  @Column
+export class NotationModel extends Model<Notation, Partial<Notation>> implements Notation {
+  static initColumns(sequelize: Sequelize) {
+    NotationModel.init(
+      {
+        id: {
+          type: DataTypes.TEXT,
+          primaryKey: true,
+          unique: true,
+        },
+        createdAt: {
+          type: DataTypes.DATE,
+        },
+        updatedAt: {
+          type: DataTypes.DATE,
+        },
+        songName: {
+          type: DataTypes.TEXT,
+          allowNull: false,
+          unique: false,
+          validate: {
+            is: /^[A-Za-z0-9!?\s()']*$/,
+            len: [1, 64],
+          },
+        },
+        artistName: {
+          type: DataTypes.TEXT,
+          allowNull: false,
+          unique: false,
+          validate: {
+            is: /^[A-Za-z0-9!?\s()@']*$/,
+            len: [1, 64],
+          },
+        },
+        deadTimeMs: {
+          type: DataTypes.INTEGER,
+          defaultValue: 0,
+          allowNull: false,
+          unique: false,
+        },
+        durationMs: {
+          type: DataTypes.INTEGER,
+          defaultValue: 0,
+          allowNull: false,
+          unique: false,
+          validate: {
+            min: 0,
+          },
+        },
+        featured: {
+          type: DataTypes.BOOLEAN,
+          defaultValue: false,
+          allowNull: false,
+          unique: false,
+        },
+        transcriberId: {
+          type: DataTypes.TEXT,
+          allowNull: false,
+          unique: false,
+        },
+        cursor: {
+          type: DataTypes.INTEGER,
+          autoIncrement: true,
+        },
+        thumbnailUrl: {
+          type: DataTypes.TEXT,
+          allowNull: true,
+          unique: false,
+        },
+        videoUrl: {
+          type: DataTypes.TEXT,
+          allowNull: true,
+          unique: false,
+        },
+      },
+      {
+        sequelize,
+        tableName: 'notations',
+        modelName: 'Notation',
+        underscored: true,
+      }
+    );
+  }
+
+  static initAssociations() {
+    NotationModel.belongsTo(UserModel, { foreignKey: 'transcriberId', as: 'transcriber' });
+    NotationModel.hasMany(TaggingModel, { foreignKey: 'notationId', as: 'taggings' });
+    NotationModel.belongsToMany(TagModel, { through: TaggingModel as any, uniqueKey: 'id', as: 'tags' });
+  }
+
+  static associations: {
+    transcriber: Association<NotationModel, UserModel>;
+    tags: Association<NotationModel, TagModel>;
+    taggings: Association<NotationModel, TaggingModel>;
+  };
+
+  transcriber?: UserModel;
+  tags?: TagModel[];
+  taggings?: TaggingModel[];
+
   id!: string;
-
-  @BelongsTo(() => UserModel, 'transcriberId')
-  transcriber!: UserModel;
-
-  @BelongsToMany(
-    () => TagModel,
-    () => TaggingModel
-  )
-  tags!: TagModel[];
-
-  @IsDate
-  @CreatedAt
-  @Column
   createdAt!: Date;
-
-  @IsDate
-  @UpdatedAt
-  @Column
   updatedAt!: Date;
-
-  @Is(/^[A-Za-z0-9!?\s()']*$/)
-  @Length({ min: 1, max: 64 })
-  @Column
   songName!: string;
-
-  @Is(/^[A-Za-z0-9!?\s()@']*$/)
-  @Length({ min: 1, max: 64 })
-  @Column
   artistName!: string;
-
-  @Default(0)
-  @Column
   deadTimeMs!: number;
-
-  @Min(0)
-  @Default(0)
-  @Column
   durationMs!: number;
-
-  @Default(false)
-  @Column
   featured!: boolean;
-
-  @ForeignKey(() => UserModel)
-  @Column
   transcriberId!: string;
-
-  @AutoIncrement
-  @Column
   cursor!: number;
-
-  @IsUrl
-  @AllowNull
-  @Column
-  thumbnailUrl!: string;
-
-  @IsUrl
-  @AllowNull
-  @Column
-  videoUrl!: string;
+  thumbnailUrl!: string | null;
+  videoUrl!: string | null;
 }

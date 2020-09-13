@@ -5,7 +5,7 @@ import { TYPES } from '@stringsync/di';
 import { User } from '@stringsync/domain';
 import { UserModel } from '@stringsync/db';
 import { inject, injectable } from 'inversify';
-import { or, Op } from 'sequelize';
+import { Op } from 'sequelize';
 import { UserRepo } from '../../types';
 import { last, first } from 'lodash';
 
@@ -42,8 +42,10 @@ export class UserSequelizeRepo implements UserRepo {
   }
 
   async findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null> {
+    const username = usernameOrEmail;
+    const email = usernameOrEmail;
     return await this.userModel.findOne({
-      where: { ...or({ username: usernameOrEmail }, { email: usernameOrEmail }) },
+      where: { [Op.or]: [{ username }, { email }] } as any,
       raw: true,
     });
   }
@@ -142,8 +144,8 @@ export class UserSequelizeRepo implements UserRepo {
         limit,
         raw: true,
       }),
-      this.userModel.min<UserModel, number>('rank'),
-      this.userModel.max<UserModel, number>('rank'),
+      this.userModel.min<number, UserModel>('rank'),
+      this.userModel.max<number, UserModel>('rank'),
     ]);
     const edges = users.map((user) => ({
       cursor: UserSequelizeRepo.encodeRankCursor(user.rank),

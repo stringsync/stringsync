@@ -1,4 +1,4 @@
-import { Sequelize } from 'sequelize-typescript';
+import { Sequelize } from 'sequelize';
 import { RedisClient as Redis } from 'redis';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '@stringsync/di';

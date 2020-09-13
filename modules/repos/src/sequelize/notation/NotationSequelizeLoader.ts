@@ -2,30 +2,18 @@ import { groupBy, mapValues } from 'lodash';
 import { NotationLoader } from '../../types';
 import Dataloader from 'dataloader';
 import { TYPES } from '@stringsync/di';
-import { NotationModel, UserModel, TaggingModel } from '@stringsync/db';
+import { NotationModel, UserModel, TaggingModel, TagModel } from '@stringsync/db';
 import { inject, injectable } from 'inversify';
 import { Notation, Tagging } from '@stringsync/domain';
 import { alignOneToMany, alignOneToOne, ensureNoErrors, alignManyToMany } from '../../util';
 
 @injectable()
 export class NotationSequelizeLoader implements NotationLoader {
-  notationModel: typeof NotationModel;
-  userModel: typeof UserModel;
-  taggingModel: typeof TaggingModel;
-
   byIdLoader: Dataloader<string, Notation | null>;
   byTranscriberIdLoader: Dataloader<string, Notation[]>;
   byTagIdLoader: Dataloader<string, Notation[]>;
 
-  constructor(
-    @inject(TYPES.NotationModel) notationModel: typeof NotationModel,
-    @inject(TYPES.UserModel) userModel: typeof UserModel,
-    @inject(TYPES.TaggingModel) taggingModel: typeof TaggingModel
-  ) {
-    this.notationModel = notationModel;
-    this.userModel = userModel;
-    this.taggingModel = taggingModel;
-
+  constructor() {
     this.byIdLoader = new Dataloader(this.loadById);
     this.byTranscriberIdLoader = new Dataloader(this.loadAllByTranscriberId);
     this.byTagIdLoader = new Dataloader(this.loadByTagId);
@@ -50,7 +38,7 @@ export class NotationSequelizeLoader implements NotationLoader {
   }
 
   private loadById = async (ids: readonly string[]): Promise<Array<Notation | null>> => {
-    const notations: Notation[] = await this.notationModel.findAll({ where: { id: [...ids] }, raw: true });
+    const notations: Notation[] = await NotationModel.findAll({ where: { id: [...ids] }, raw: true });
     return alignOneToOne([...ids], notations, {
       getKey: (notation) => notation.id,
       getUniqueIdentifier: (notation) => notation.id,
@@ -59,7 +47,7 @@ export class NotationSequelizeLoader implements NotationLoader {
   };
 
   private loadAllByTranscriberId = async (transcriberIds: readonly string[]): Promise<Notation[][]> => {
-    const notations: Notation[] = await this.notationModel.findAll({
+    const notations: Notation[] = await NotationModel.findAll({
       where: { transcriberId: [...transcriberIds] },
       raw: true,
     });
@@ -71,14 +59,16 @@ export class NotationSequelizeLoader implements NotationLoader {
   };
 
   private loadByTagId = async (tagIds: readonly string[]): Promise<Notation[][]> => {
-    const taggingEntities = await this.taggingModel.findAll({
+    const taggingModels = await TaggingModel.findAll({
       where: { tagId: [...tagIds] },
-      include: [{ model: this.notationModel, required: true }],
+      include: [{ model: NotationModel as any, as: 'notation', required: true }],
     });
-    const notationEntities = taggingEntities.map((tagging) => tagging.notation);
+    const notationModels = taggingModels.map((tagging) => tagging.notation!);
 
-    const taggings = taggingEntities.map((taggingEntity) => taggingEntity.get({ plain: true })) as Tagging[];
-    const notations = notationEntities.map((notationEntity) => notationEntity.get({ plain: true })) as Notation[];
+    const taggings = taggingModels.map<Tagging>((taggingModel) => taggingModel.get({ plain: true }));
+    const notations = notationModels.map<Notation>((notationModel: NotationModel) =>
+      notationModel.get({ plain: true })
+    );
 
     const taggingsByNotationId = groupBy(taggings, 'notationId');
     const tagIdsByNotationId = mapValues(taggingsByNotationId, (taggings) => taggings.map((tagging) => tagging.tagId));

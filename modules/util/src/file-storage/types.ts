@@ -1,7 +1,9 @@
 import { Stream } from 'stream';
 
+type Location = string;
+
 export interface FileStorage {
-  put(filepath: string, readStream: Stream): Promise<string>;
+  put(filepath: string, readStream: Stream): Promise<Location>;
 }
 
 export type S3Config = {

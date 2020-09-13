@@ -50,26 +50,24 @@ export class NotationService {
     const thumbnailExt = path.extname(thumbnail.filename);
     const videoExt = path.extname(video.filename);
 
-    return this.db.transaction<Notation>(async (tx) => {
-      const notation = await this.notationRepo.create({ artistName, songName, transcriberId });
+    const notation = await this.notationRepo.create({ artistName, songName, transcriberId });
 
-      const thumbnailFilepath = `notations/thumbnail/${notation.id}${thumbnailExt}`;
-      const videoFilepath = `notations/video/${notation.id}${videoExt}`;
+    const thumbnailFilepath = `notations/thumbnail/${notation.id}${thumbnailExt}`;
+    const videoFilepath = `notations/video/${notation.id}${videoExt}`;
 
-      const taggings = tagIds.map((tagId) => ({ notationId: notation.id, tagId }));
+    const taggings = tagIds.map((tagId) => ({ notationId: notation.id, tagId }));
 
-      const [thumbnailUrl, videoUrl] = await Promise.all([
-        this.fileStorage.put(thumbnailFilepath, thumbnail.createReadStream()),
-        this.fileStorage.put(videoFilepath, video.createReadStream()),
-        this.taggingService.bulkCreate(taggings),
-      ]);
+    const [thumbnailUrl, videoUrl] = await Promise.all([
+      this.fileStorage.put(thumbnailFilepath, thumbnail.createReadStream()),
+      this.fileStorage.put(videoFilepath, video.createReadStream()),
+      this.taggingService.bulkCreate(taggings),
+    ]);
 
-      notation.thumbnailUrl = thumbnailUrl;
-      notation.videoUrl = videoUrl;
-      await this.update(notation.id, notation);
+    notation.thumbnailUrl = thumbnailUrl;
+    notation.videoUrl = videoUrl;
+    await this.update(notation.id, notation);
 
-      return notation;
-    });
+    return notation;
   }
 
   async update(id: string, attrs: Notation): Promise<void> {

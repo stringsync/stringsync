@@ -1,27 +1,17 @@
-import { ensureNoErrors, alignManyToMany, alignOneToOne } from './../../util';
-import { TagLoader } from '../../types';
-import Dataloader from 'dataloader';
-import { TYPES } from '@stringsync/di';
-import { TagModel, TaggingModel } from '@stringsync/db';
-import { inject, injectable } from 'inversify';
+import { TaggingModel, TagModel } from '@stringsync/db';
 import { Tag, Tagging } from '@stringsync/domain';
-import { mapValues, groupBy } from 'lodash';
+import Dataloader from 'dataloader';
+import { injectable } from 'inversify';
+import { groupBy, mapValues } from 'lodash';
+import { TagLoader } from '../../types';
+import { alignManyToMany, alignOneToOne, ensureNoErrors } from './../../util';
 
 @injectable()
 export class TagSequelizeLoader implements TagLoader {
-  tagModel: typeof TagModel;
-  taggingModel: typeof TaggingModel;
-
   byIdLoader: Dataloader<string, Tag | null>;
   byNotationIdLoader: Dataloader<string, Tag[]>;
 
-  constructor(
-    @inject(TYPES.TagModel) tagModel: typeof TagModel,
-    @inject(TYPES.TaggingModel) taggingModel: typeof TaggingModel
-  ) {
-    this.tagModel = tagModel;
-    this.taggingModel = taggingModel;
-
+  constructor() {
     this.byIdLoader = new Dataloader(this.loadByIds);
     this.byNotationIdLoader = new Dataloader(this.loadAllByNotationIds);
   }
@@ -39,7 +29,7 @@ export class TagSequelizeLoader implements TagLoader {
   }
 
   private loadByIds = async (ids: readonly string[]): Promise<Array<Tag | null>> => {
-    const tags = await this.tagModel.findAll({ where: { id: [...ids] }, raw: true });
+    const tags = await TagModel.findAll({ where: { id: [...ids] }, raw: true });
     return alignOneToOne([...ids], tags, {
       getKey: (tag) => tag.id,
       getUniqueIdentifier: (tag) => tag.id,
@@ -48,14 +38,14 @@ export class TagSequelizeLoader implements TagLoader {
   };
 
   private loadAllByNotationIds = async (notationIds: readonly string[]): Promise<Tag[][]> => {
-    const taggingEntities = await this.taggingModel.findAll({
+    const taggingDaos = await TaggingModel.findAll({
       where: { notationId: [...notationIds] },
-      include: [{ model: this.tagModel, required: true }],
+      include: [{ model: TagModel as any, as: 'tag', required: true }],
     });
-    const tagEntities = taggingEntities.map((tagging) => tagging.tag);
+    const tagDaos = taggingDaos.map((taggingDao: TaggingModel) => taggingDao.tag!);
 
-    const taggings = taggingEntities.map((taggingEntity) => taggingEntity.get({ plain: true })) as Tagging[];
-    const tags = tagEntities.map((tagEntity) => tagEntity.get({ plain: true })) as Tag[];
+    const taggings = taggingDaos.map((taggingDao: TaggingModel) => taggingDao.get({ plain: true })) as Tagging[];
+    const tags = tagDaos.map((tagDao: TagModel) => tagDao.get({ plain: true })) as Tag[];
 
     const taggingsByTagId = groupBy(taggings, 'tagId');
     const notationIdsByTagId = mapValues(taggingsByTagId, (taggings) => taggings.map((tagging) => tagging.notationId));

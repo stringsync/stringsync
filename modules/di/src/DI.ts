@@ -1,6 +1,6 @@
 import { Ctor } from '@stringsync/common';
 import { ContainerConfig, getContainerConfig } from '@stringsync/config';
-import { Db, NotationModel, SequelizeDb, TaggingModel, TagModel, UserModel } from '@stringsync/db';
+import { Db, NotationModel, SequelizeDb, TaggingModel, TagModel, UserModel, Sequelize } from '@stringsync/db';
 import { AuthResolver, HealthController, NotationResolver, TagResolver, UserResolver } from '@stringsync/graphql';
 import {
   NotationLoader,
@@ -42,7 +42,6 @@ import {
   WinstonLogger,
 } from '@stringsync/util';
 import { Container as InversifyContainer, ContainerModule } from 'inversify';
-import { Sequelize } from 'sequelize-typescript';
 import { TYPES } from './TYPES';
 
 export class DI {

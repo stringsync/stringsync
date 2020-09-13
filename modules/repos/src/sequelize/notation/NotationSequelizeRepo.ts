@@ -4,8 +4,7 @@ import { TYPES } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
 import { NotationModel } from '@stringsync/db';
 import { inject, injectable } from 'inversify';
-import { QueryTypes } from 'sequelize';
-import { Sequelize } from 'sequelize-typescript';
+import { Sequelize, QueryTypes } from 'sequelize';
 import {
   camelCaseKeys,
   findNotationPageQuery,

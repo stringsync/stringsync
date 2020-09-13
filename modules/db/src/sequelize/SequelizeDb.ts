@@ -1,15 +1,10 @@
-import { Db, TransactionCallback } from '../types';
+import { Sequelize } from 'sequelize';
+import { Db } from '../types';
+import { NotationModel, TaggingModel, TagModel, UserModel } from './models';
 import { SequelizeDbConfig } from './types';
-import { Sequelize } from 'sequelize-typescript';
-import { TaggingModel, UserModel, NotationModel, TagModel } from './models';
-import { Transaction } from 'sequelize';
 
 export class SequelizeDb implements Db {
   static create(config: SequelizeDbConfig) {
-    // Postgres will return strings for decimals
-    // https://github.com/sequelize/sequelize/issues/8019
-    (Sequelize as any).postgres.DECIMAL.parse = parseFloat;
-
     const sequelize = new Sequelize({
       dialect: 'postgres',
       host: config.host,
@@ -17,9 +12,18 @@ export class SequelizeDb implements Db {
       database: config.database,
       username: config.username,
       password: config.password,
-      models: [NotationModel, TaggingModel, TagModel, UserModel],
       logging: config.logging,
     });
+
+    TaggingModel.initColumns(sequelize);
+    UserModel.initColumns(sequelize);
+    NotationModel.initColumns(sequelize);
+    TagModel.initColumns(sequelize);
+
+    TaggingModel.initAssociations();
+    UserModel.initAssociations();
+    NotationModel.initAssociations();
+    TagModel.initAssociations();
 
     return new SequelizeDb(sequelize);
   }
@@ -28,10 +32,6 @@ export class SequelizeDb implements Db {
 
   constructor(sequelize: Sequelize) {
     this.sequelize = sequelize;
-  }
-
-  async transaction<R extends any>(task: TransactionCallback<Transaction, R>) {
-    return await this.sequelize.transaction<R>(task);
   }
 
   async cleanup() {
