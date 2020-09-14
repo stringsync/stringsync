@@ -3,11 +3,13 @@ import { ContainerConfig, getContainerConfig } from '@stringsync/config';
 import { Db, Sequelize, SequelizeDb } from '@stringsync/db';
 import { AuthResolver, HealthController, NotationResolver, TagResolver, UserResolver } from '@stringsync/graphql';
 import {
+  Factory,
   NotationLoader,
   NotationPager,
   NotationRepo,
   NotationSequelizeLoader,
   NotationSequelizeRepo,
+  SequelizeFactory,
   TaggingRepo,
   TaggingSequelizeRepo,
   TagLoader,
@@ -141,6 +143,10 @@ export class DI {
       });
       bind<Sequelize>(TYPES.Sequelize).toConstantValue(db.sequelize);
       bind<Db>(TYPES.Db).toConstantValue(db);
+
+      if (config.NODE_ENV === 'test') {
+        bind<Factory>(TYPES.Factory).to(SequelizeFactory);
+      }
     });
   }
 

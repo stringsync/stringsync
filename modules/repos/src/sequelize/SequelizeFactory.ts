@@ -1,8 +1,29 @@
 import { randInt, randStr } from '@stringsync/common';
 import { Notation, Tag, Tagging, User, UserRole } from '@stringsync/domain';
-import { Factory } from '../types';
+import { Factory, NotationRepo, TaggingRepo, TagRepo, UserRepo } from '../types';
+import { inject, injectable } from 'inversify';
+import { TYPES } from '@stringsync/di';
+import { times } from 'lodash';
 
+@injectable()
 export class SequelizeFactory implements Factory {
+  userRepo: UserRepo;
+  notationRepo: NotationRepo;
+  taggingRepo: TaggingRepo;
+  tagRepo: TagRepo;
+
+  constructor(
+    @inject(TYPES.UserRepo) userRepo: UserRepo,
+    @inject(TYPES.NotationRepo) notationRepo: NotationRepo,
+    @inject(TYPES.TaggingRepo) taggingRepo: TaggingRepo,
+    @inject(TYPES.TagRepo) tagRepo: TagRepo
+  ) {
+    this.userRepo = userRepo;
+    this.notationRepo = notationRepo;
+    this.taggingRepo = taggingRepo;
+    this.tagRepo = tagRepo;
+  }
+
   buildRandUser(attrs: Partial<User> = {}): User {
     const now = new Date();
 
@@ -59,5 +80,45 @@ export class SequelizeFactory implements Factory {
       tagId: randStr(8),
       ...attrs,
     };
+  }
+
+  async createRandUser(attrs: Partial<User> = {}): Promise<User> {
+    return await this.userRepo.create(this.buildRandUser({ ...attrs }));
+  }
+
+  async createRandNotation(attrs: Partial<Notation> = {}): Promise<Notation> {
+    const transcriberId = attrs.transcriberId || (await this.createRandUser()).id;
+    return await this.notationRepo.create(this.buildRandNotation({ ...attrs, transcriberId }));
+  }
+
+  async createRandTag(attrs: Partial<Tag> = {}): Promise<Tag> {
+    return await this.tagRepo.create({ ...attrs });
+  }
+
+  async createRandTagging(attrs: Partial<Tagging> = {}): Promise<Tagging> {
+    const tagId = attrs.tagId || (await this.createRandTag()).id;
+    const notationId = attrs.notationId || (await this.createRandNotation()).id;
+    return await this.taggingRepo.create({ ...attrs, tagId, notationId });
+  }
+
+  async createRandUsers(num: number): Promise<User[]> {
+    return await this.userRepo.bulkCreate(times(num, () => this.buildRandUser()));
+  }
+
+  async createRandNotations(num: number): Promise<Notation[]> {
+    const transcribers = await this.createRandUsers(num);
+    const notations = times(num, (ndx) => this.buildRandNotation({ transcriberId: transcribers[ndx].id }));
+    return await this.notationRepo.bulkCreate(notations);
+  }
+
+  async createRandTaggings(num: number): Promise<Tagging[]> {
+    const [tags, notations] = await Promise.all([this.createRandTags(num), this.createRandNotations(num)]);
+    return await this.taggingRepo.bulkCreate(
+      times(num, (ndx) => this.buildRandTagging({ tagId: tags[ndx].id, notationId: notations[ndx].id }))
+    );
+  }
+
+  async createRandTags(num: number): Promise<Tag[]> {
+    return await this.tagRepo.bulkCreate(times(num, () => this.buildRandTag()));
   }
 }
