@@ -33,39 +33,37 @@ export class UserSequelizeRepo implements UserRepo {
     return Base64.encode(`${cursorType}${cursorDelimiter}${rank}`);
   }
 
-  userModel: typeof UserModel;
   userLoader: UserLoader;
 
-  constructor(@inject(TYPES.UserModel) userModel: typeof UserModel, @inject(TYPES.UserLoader) userLoader: UserLoader) {
-    this.userModel = userModel;
+  constructor(@inject(TYPES.UserLoader) userLoader: UserLoader) {
     this.userLoader = userLoader;
   }
 
   async findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null> {
     const username = usernameOrEmail;
     const email = usernameOrEmail;
-    return await this.userModel.findOne({
+    return await UserModel.findOne({
       where: { [Op.or]: [{ username }, { email }] } as any,
       raw: true,
     });
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return await this.userModel.findOne({
+    return await UserModel.findOne({
       where: { email },
       raw: true,
     });
   }
 
   async findByResetPasswordToken(resetPasswordToken: string): Promise<User | null> {
-    return await this.userModel.findOne({
+    return await UserModel.findOne({
       where: { resetPasswordToken },
       raw: true,
     });
   }
 
   async count(): Promise<number> {
-    return await this.userModel.count();
+    return await UserModel.count();
   }
 
   async find(id: string): Promise<User | null> {
@@ -73,23 +71,23 @@ export class UserSequelizeRepo implements UserRepo {
   }
 
   async findAll(): Promise<User[]> {
-    return await this.userModel.findAll({ order: [['rank', 'DESC']], raw: true });
+    return await UserModel.findAll({ order: [['rank', 'DESC']], raw: true });
   }
 
   async create(attrs: Partial<User>): Promise<User> {
-    const userModel = await this.userModel.create(attrs, { raw: true });
+    const userModel = await UserModel.create(attrs, { raw: true });
     const user = userModel.get({ plain: true }) as User;
     return user;
   }
 
   async bulkCreate(bulkAttrs: Partial<User>[]): Promise<User[]> {
-    const userModels: UserModel[] = await this.userModel.bulkCreate(bulkAttrs);
+    const userModels: UserModel[] = await UserModel.bulkCreate(bulkAttrs);
     const users = userModels.map((userModel: UserModel) => userModel.get({ plain: true })) as User[];
     return users;
   }
 
   async update(id: string, attrs: Partial<User>): Promise<void> {
-    await this.userModel.update(attrs, { where: { id } });
+    await UserModel.update(attrs, { where: { id } });
   }
 
   async findPage(connectionArgs: ConnectionArgs): Promise<Connection<User>> {
@@ -113,7 +111,7 @@ export class UserSequelizeRepo implements UserRepo {
 
   private async pageNone(limit: number): Promise<Connection<User>> {
     const [users, count] = await Promise.all([
-      this.userModel.findAll({
+      UserModel.findAll({
         order: [['rank', 'DESC']],
         limit,
         raw: true,
@@ -138,14 +136,14 @@ export class UserSequelizeRepo implements UserRepo {
 
   private async pageForward(limit: number, after: string | null): Promise<Connection<User>> {
     const [users, min, max] = await Promise.all([
-      this.userModel.findAll({
+      UserModel.findAll({
         where: typeof after === 'string' ? { rank: { [Op.lt]: UserSequelizeRepo.decodeRankCursor(after) } } : undefined,
         order: [['rank', 'DESC']],
         limit,
         raw: true,
       }),
-      this.userModel.min<number, UserModel>('rank'),
-      this.userModel.max<number, UserModel>('rank'),
+      UserModel.min<number, UserModel>('rank'),
+      UserModel.max<number, UserModel>('rank'),
     ]);
     const edges = users.map((user) => ({
       cursor: UserSequelizeRepo.encodeRankCursor(user.rank),

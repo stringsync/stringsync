@@ -1,36 +1,29 @@
-import { TYPES } from '@stringsync/di';
 import { TaggingModel } from '@stringsync/db';
-import { TaggingRepo } from '../../types';
-import { inject, injectable } from 'inversify';
 import { Tagging } from '@stringsync/domain';
+import { injectable } from 'inversify';
+import { TaggingRepo } from '../../types';
 
 @injectable()
 export class TaggingSequelizeRepo implements TaggingRepo {
-  taggingModel: typeof TaggingModel;
-
-  constructor(@inject(TYPES.TaggingModel) taggingModel: typeof TaggingModel) {
-    this.taggingModel = taggingModel;
-  }
-
   async count(): Promise<number> {
-    return await this.taggingModel.count();
+    return await TaggingModel.count();
   }
 
   async create(attrs: Partial<Tagging>): Promise<Tagging> {
-    const taggingEntity = await this.taggingModel.create(attrs);
+    const taggingEntity = await TaggingModel.create(attrs);
     return taggingEntity.get({ plain: true }) as Tagging;
   }
 
   async find(id: string): Promise<Tagging | null> {
-    return await this.taggingModel.findByPk(id, { raw: true });
+    return await TaggingModel.findByPk(id, { raw: true });
   }
 
   async bulkCreate(bulkAttrs: Partial<Tagging>[]): Promise<Tagging[]> {
-    const taggingEntites = await this.taggingModel.bulkCreate(bulkAttrs);
+    const taggingEntites = await TaggingModel.bulkCreate(bulkAttrs);
     return taggingEntites.map((tagEntity: TaggingModel) => tagEntity.get({ plain: true })) as Tagging[];
   }
 
   async update(id: string, attrs: Partial<Tagging>): Promise<void> {
-    await this.taggingModel.update(attrs, { where: { id } });
+    await TaggingModel.update(attrs, { where: { id } });
   }
 }

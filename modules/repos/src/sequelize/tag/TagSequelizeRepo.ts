@@ -1,31 +1,23 @@
+import { TagModel } from '@stringsync/db';
 import { TYPES } from '@stringsync/di';
-import { injectable, inject } from 'inversify';
-import { TagRepo, TagLoader } from '../../types';
-import { TagModel, TaggingModel } from '@stringsync/db';
 import { Tag } from '@stringsync/domain';
+import { inject, injectable } from 'inversify';
+import { TagLoader, TagRepo } from '../../types';
 
 @injectable()
 export class TagSequelizeRepo implements TagRepo {
-  tagModel: typeof TagModel;
-  taggingModel: typeof TaggingModel;
   tagLoader: TagLoader;
 
-  constructor(
-    @inject(TYPES.TagModel) tagModel: typeof TagModel,
-    @inject(TYPES.TaggingModel) taggingModel: typeof TaggingModel,
-    @inject(TYPES.TagLoader) tagLoader: TagLoader
-  ) {
-    this.tagModel = tagModel;
-    this.taggingModel = taggingModel;
+  constructor(@inject(TYPES.TagLoader) tagLoader: TagLoader) {
     this.tagLoader = tagLoader;
   }
 
   async count(): Promise<number> {
-    return await this.tagModel.count();
+    return await TagModel.count();
   }
 
   async create(attrs: Partial<Tag>): Promise<Tag> {
-    const tagEntity = await this.tagModel.create(attrs, { raw: true });
+    const tagEntity = await TagModel.create(attrs, { raw: true });
     return tagEntity.get({ plain: true }) as Tag;
   }
 
@@ -34,7 +26,7 @@ export class TagSequelizeRepo implements TagRepo {
   }
 
   async findAll(): Promise<Tag[]> {
-    return await this.tagModel.findAll({ raw: true });
+    return await TagModel.findAll({ raw: true });
   }
 
   async findAllByNotationId(notationId: string): Promise<Tag[]> {
@@ -42,11 +34,11 @@ export class TagSequelizeRepo implements TagRepo {
   }
 
   async bulkCreate(bulkAttrs: Partial<Tag>[]): Promise<Tag[]> {
-    const tagEntities = await this.tagModel.bulkCreate(bulkAttrs);
+    const tagEntities = await TagModel.bulkCreate(bulkAttrs);
     return tagEntities.map((tagEntity: TagModel) => tagEntity.get({ plain: true })) as Tag[];
   }
 
   async update(id: string, attrs: Partial<Tag>): Promise<void> {
-    await this.tagModel.update(attrs, { where: { id } });
+    await TagModel.update(attrs, { where: { id } });
   }
 }

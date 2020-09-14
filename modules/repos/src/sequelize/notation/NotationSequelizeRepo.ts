@@ -1,34 +1,31 @@
 import { Connection, NotationConnectionArgs, PagingType } from '@stringsync/common';
-import { PagingCtx } from '../../util';
+import { NotationModel } from '@stringsync/db';
 import { TYPES } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
-import { NotationModel } from '@stringsync/db';
 import { inject, injectable } from 'inversify';
-import { Sequelize, QueryTypes } from 'sequelize';
+import { get } from 'lodash';
+import { QueryTypes, Sequelize } from 'sequelize';
+import { NotationPager } from '../../pagers';
 import {
   camelCaseKeys,
-  findNotationPageQuery,
-  findNotationPageMinQuery,
   findNotationPageMaxQuery,
+  findNotationPageMinQuery,
+  findNotationPageQuery,
 } from '../../queries';
 import { NotationLoader, NotationRepo } from '../../types';
-import { NotationPager } from '../../pagers';
-import { get } from 'lodash';
+import { PagingCtx } from '../../util';
 
 @injectable()
 export class NotationSequelizeRepo implements NotationRepo {
-  notationModel: typeof NotationModel;
   notationLoader: NotationLoader;
   notationPager: NotationPager;
   sequelize: Sequelize;
 
   constructor(
-    @inject(TYPES.NotationModel) notationModel: typeof NotationModel,
     @inject(TYPES.NotationLoader) notationLoader: NotationLoader,
     @inject(TYPES.NotationPager) notationPager: NotationPager,
     @inject(TYPES.Sequelize) sequelize: Sequelize
   ) {
-    this.notationModel = notationModel;
     this.notationLoader = notationLoader;
     this.notationPager = notationPager;
     this.sequelize = sequelize;
@@ -43,7 +40,7 @@ export class NotationSequelizeRepo implements NotationRepo {
   }
 
   async count(): Promise<number> {
-    return await this.notationModel.count();
+    return await NotationModel.count();
   }
 
   async find(id: string): Promise<Notation | null> {
@@ -51,7 +48,7 @@ export class NotationSequelizeRepo implements NotationRepo {
   }
 
   async findAll(): Promise<Notation[]> {
-    return await this.notationModel.findAll({ raw: true });
+    return await NotationModel.findAll({ raw: true });
   }
 
   async findAllByTagId(tagId: string): Promise<Notation[]> {
@@ -59,19 +56,19 @@ export class NotationSequelizeRepo implements NotationRepo {
   }
 
   async create(attrs: Partial<Notation>) {
-    const notationModel = await this.notationModel.create(attrs, { raw: true });
+    const notationModel = await NotationModel.create(attrs, { raw: true });
     const notation = notationModel.get({ plain: true }) as Notation;
     return notation;
   }
 
   async bulkCreate(bulkAttrs: Partial<Notation>[]): Promise<Notation[]> {
-    const notationModels: NotationModel[] = await this.notationModel.bulkCreate(bulkAttrs);
+    const notationModels: NotationModel[] = await NotationModel.bulkCreate(bulkAttrs);
     const notations = notationModels.map((notationModel) => notationModel.get({ plain: true })) as Notation[];
     return notations;
   }
 
   async update(id: string, attrs: Partial<Notation>): Promise<void> {
-    await this.notationModel.update(attrs, { where: { id } });
+    await NotationModel.update(attrs, { where: { id } });
   }
 
   async findPage(args: NotationConnectionArgs): Promise<Connection<Notation>> {

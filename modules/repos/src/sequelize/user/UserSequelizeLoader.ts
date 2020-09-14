@@ -1,20 +1,15 @@
-import { UserLoader } from '../../types';
-import Dataloader from 'dataloader';
-import { TYPES } from '@stringsync/di';
 import { UserModel } from '@stringsync/db';
-import { inject, injectable } from 'inversify';
 import { User } from '@stringsync/domain';
+import Dataloader from 'dataloader';
+import { injectable } from 'inversify';
+import { UserLoader } from '../../types';
 import { alignOneToOne, ensureNoErrors } from '../../util';
 
 @injectable()
 export class UserSequelizeLoader implements UserLoader {
-  userModel: typeof UserModel;
-
   byIdLoader: Dataloader<string, User | null>;
 
-  constructor(@inject(TYPES.UserModel) userModel: typeof UserModel) {
-    this.userModel = userModel;
-
+  constructor() {
     this.byIdLoader = new Dataloader(this.loadAllById);
   }
 
@@ -25,7 +20,7 @@ export class UserSequelizeLoader implements UserLoader {
   }
 
   private loadAllById = async (ids: readonly string[]): Promise<Array<User | null>> => {
-    const users: User[] = await this.userModel.findAll({ where: { id: [...ids] }, raw: true });
+    const users: User[] = await UserModel.findAll({ where: { id: [...ids] }, raw: true });
     return alignOneToOne([...ids], users, {
       getKey: (user) => user.id,
       getUniqueIdentifier: (user) => user.id,

@@ -1,6 +1,6 @@
 import { Ctor } from '@stringsync/common';
 import { ContainerConfig, getContainerConfig } from '@stringsync/config';
-import { Db, NotationModel, SequelizeDb, TaggingModel, TagModel, UserModel, Sequelize } from '@stringsync/db';
+import { Db, Sequelize, SequelizeDb } from '@stringsync/db';
 import { AuthResolver, HealthController, NotationResolver, TagResolver, UserResolver } from '@stringsync/graphql';
 import {
   NotationLoader,
@@ -141,10 +141,6 @@ export class DI {
       });
       bind<Sequelize>(TYPES.Sequelize).toConstantValue(db.sequelize);
       bind<Db>(TYPES.Db).toConstantValue(db);
-      bind<typeof UserModel>(TYPES.UserModel).toConstructor(UserModel);
-      bind<typeof NotationModel>(TYPES.NotationModel).toConstructor(NotationModel);
-      bind<typeof TagModel>(TYPES.TagModel).toConstructor(TagModel);
-      bind<typeof TaggingModel>(TYPES.TaggingModel).toConstructor(TaggingModel);
     });
   }
 
