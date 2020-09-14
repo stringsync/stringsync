@@ -2,7 +2,7 @@ import { randInt } from './randInt';
 import { randStr } from './randStr';
 import { User, UserRole, Notation, Tag, Tagging } from '@stringsync/domain';
 
-export class TestFactory {
+export class EntityBuilder {
   static buildRandUser(attrs: Partial<User> = {}): User {
     const now = new Date();
 

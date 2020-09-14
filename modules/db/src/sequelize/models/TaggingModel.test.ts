@@ -1,6 +1,6 @@
 import { useTestContainer, TYPES } from '@stringsync/di';
 import { TaggingModel } from './TaggingModel';
-import { TestFactory } from '@stringsync/common';
+import { EntityBuilder } from '@stringsync/common';
 import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from '@stringsync/repos';
 import { Notation, Tag, Tagging, User } from '@stringsync/domain';
 import { NotationModel } from './NotationModel';
@@ -23,14 +23,14 @@ beforeEach(async () => {
   userRepo = container.get<UserRepo>(TYPES.UserRepo);
   taggingRepo = container.get<TaggingRepo>(TYPES.TaggingRepo);
 
-  tag = await tagRepo.create(TestFactory.buildRandTag());
-  user = await userRepo.create(TestFactory.buildRandUser());
-  notation = await notationRepo.create(TestFactory.buildRandNotation({ transcriberId: user.id }));
-  tagging = await taggingRepo.create(TestFactory.buildRandTagging({ notationId: notation.id, tagId: tag.id }));
+  tag = await tagRepo.create(EntityBuilder.buildRandTag());
+  user = await userRepo.create(EntityBuilder.buildRandUser());
+  notation = await notationRepo.create(EntityBuilder.buildRandNotation({ transcriberId: user.id }));
+  tagging = await taggingRepo.create(EntityBuilder.buildRandTagging({ notationId: notation.id, tagId: tag.id }));
 });
 
 it('permits valid taggings', async () => {
-  const tagging = TaggingModel.build(TestFactory.buildRandTagging());
+  const tagging = TaggingModel.build(EntityBuilder.buildRandTagging());
   await expect(tagging.validate()).resolves.not.toThrow();
 });
 

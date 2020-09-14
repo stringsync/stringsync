@@ -2,7 +2,7 @@ import { sortBy, isPlainObject } from 'lodash';
 import { User, Notation, Tag, Tagging } from '@stringsync/domain';
 import { UserRepo, NotationRepo, TagRepo, TaggingRepo } from '@stringsync/repos';
 import { useTestContainer, TYPES } from '@stringsync/di';
-import { TestFactory, randStr } from '@stringsync/common';
+import { EntityBuilder, randStr } from '@stringsync/common';
 import { NotationService } from './NotationService';
 
 const container = useTestContainer();
@@ -20,10 +20,10 @@ beforeEach(async () => {
   userRepo = container.get<UserRepo>(TYPES.UserRepo);
   notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
 
-  user = await userRepo.create(TestFactory.buildRandUser());
+  user = await userRepo.create(EntityBuilder.buildRandUser());
   [notation1, notation2] = await notationRepo.bulkCreate([
-    TestFactory.buildRandNotation({ transcriberId: user.id }),
-    TestFactory.buildRandNotation({ transcriberId: user.id }),
+    EntityBuilder.buildRandNotation({ transcriberId: user.id }),
+    EntityBuilder.buildRandNotation({ transcriberId: user.id }),
   ]);
 
   notationService = container.get<NotationService>(TYPES.NotationService);
@@ -59,13 +59,13 @@ describe('findAllByTagId', () => {
 
   beforeEach(async () => {
     tagRepo = container.get<TagRepo>(TYPES.TagRepo);
-    [tag1, tag2] = await tagRepo.bulkCreate([TestFactory.buildRandTag(), TestFactory.buildRandTag()]);
+    [tag1, tag2] = await tagRepo.bulkCreate([EntityBuilder.buildRandTag(), EntityBuilder.buildRandTag()]);
 
     taggingRepo = container.get<TaggingRepo>(TYPES.TaggingRepo);
     [tagging1, tagging2] = await taggingRepo.bulkCreate([
-      TestFactory.buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
-      TestFactory.buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
-      TestFactory.buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
+      EntityBuilder.buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
+      EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
+      EntityBuilder.buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
     ]);
   });
 

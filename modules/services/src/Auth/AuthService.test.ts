@@ -1,7 +1,7 @@
 import { AuthService } from './AuthService';
 import { useTestContainer, TYPES } from '@stringsync/di';
 import { UserRole, User } from '@stringsync/domain';
-import { TestFactory, randStr, NotFoundError, BadRequestError } from '@stringsync/common';
+import { EntityBuilder, randStr, NotFoundError, BadRequestError } from '@stringsync/common';
 import { UserRepo } from '@stringsync/repos';
 import * as bcrypt from 'bcrypt';
 import { isPlainObject } from 'lodash';
@@ -39,7 +39,7 @@ describe('getSessionUser', () => {
   });
 
   it('returns a session user when the id exists', async () => {
-    const user = await authService.userRepo.create(TestFactory.buildRandUser());
+    const user = await authService.userRepo.create(EntityBuilder.buildRandUser());
     const sessionUser = await authService.getSessionUser(user.id);
     expect(sessionUser).toStrictEqual({
       id: user.id,
@@ -51,7 +51,7 @@ describe('getSessionUser', () => {
 
 describe('toSessionUser', () => {
   it('converts a user to a session user', () => {
-    const user = TestFactory.buildRandUser();
+    const user = EntityBuilder.buildRandUser();
     const sessionUser = authService.toSessionUser(user);
     expect(sessionUser).toStrictEqual({
       id: user.id,
@@ -77,7 +77,7 @@ describe('whoami', () => {
   });
 
   it('returns the user matching the id', async () => {
-    const user = await userRepo.create(TestFactory.buildRandUser());
+    const user = await userRepo.create(EntityBuilder.buildRandUser());
     const whoami = await authService.whoami(user.id);
     expect(whoami).toStrictEqual(user);
   });

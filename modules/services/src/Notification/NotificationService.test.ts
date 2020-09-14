@@ -1,4 +1,4 @@
-import { TestFactory } from './../../../common/src/rand/TestFactory';
+import { EntityBuilder } from './../../../common/src/rand/EntityBuilder';
 import { useTestContainer, TYPES } from '@stringsync/di';
 import { NotificationService } from './NotificationService';
 import { UserRepo } from '@stringsync/repos';
@@ -18,7 +18,7 @@ describe('sendConfirmationEmail', () => {
   let user: User;
 
   beforeEach(async () => {
-    user = await userRepo.create(TestFactory.buildRandUser());
+    user = await userRepo.create(EntityBuilder.buildRandUser());
   });
 
   it('runs without crashing', async () => {

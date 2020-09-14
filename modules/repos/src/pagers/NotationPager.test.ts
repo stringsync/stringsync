@@ -1,4 +1,4 @@
-import { PagingType, TestFactory, UnknownError } from '@stringsync/common';
+import { PagingType, EntityBuilder, UnknownError } from '@stringsync/common';
 import { TYPES, useTestContainer } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
 import { first, last, sortBy } from 'lodash';
@@ -31,7 +31,7 @@ describe('connect', () => {
 
   beforeEach(() => {
     for (let ndx = 0; ndx < NUM_NOTATIONS; ndx++) {
-      notations[ndx] = TestFactory.buildRandNotation({ cursor: ndx + 1 });
+      notations[ndx] = EntityBuilder.buildRandNotation({ cursor: ndx + 1 });
     }
   });
 

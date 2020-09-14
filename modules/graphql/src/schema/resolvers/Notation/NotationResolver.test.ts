@@ -1,4 +1,4 @@
-import { HttpStatus, randStr, TestFactory } from '@stringsync/common';
+import { HttpStatus, randStr, EntityBuilder } from '@stringsync/common';
 import { TYPES } from '@stringsync/di';
 import { Notation, User, UserRole } from '@stringsync/domain';
 import { NotationRepo, UserRepo } from '@stringsync/repos';
@@ -37,13 +37,13 @@ beforeEach(async () => {
   password = randStr(10);
   const encryptedPassword = await bcrypt.hash(password, AuthService.HASH_ROUNDS);
   [teacher, admin] = await userRepo.bulkCreate([
-    TestFactory.buildRandUser({ encryptedPassword, role: UserRole.TEACHER }),
-    TestFactory.buildRandUser({ encryptedPassword, role: UserRole.ADMIN }),
+    EntityBuilder.buildRandUser({ encryptedPassword, role: UserRole.TEACHER }),
+    EntityBuilder.buildRandUser({ encryptedPassword, role: UserRole.ADMIN }),
   ]);
   notations = await notationRepo.bulkCreate([
-    TestFactory.buildRandNotation({ transcriberId: teacher.id }),
-    TestFactory.buildRandNotation({ transcriberId: teacher.id }),
-    TestFactory.buildRandNotation({ transcriberId: teacher.id }),
+    EntityBuilder.buildRandNotation({ transcriberId: teacher.id }),
+    EntityBuilder.buildRandNotation({ transcriberId: teacher.id }),
+    EntityBuilder.buildRandNotation({ transcriberId: teacher.id }),
   ]);
 });
 
@@ -144,7 +144,7 @@ describe('createNotation', () => {
 
   it('forbids notation creation when logged in as student', async () => {
     const encryptedPassword = await bcrypt.hash(password, AuthService.HASH_ROUNDS);
-    const student = await userRepo.create(TestFactory.buildRandUser({ encryptedPassword, role: UserRole.STUDENT }));
+    const student = await userRepo.create(EntityBuilder.buildRandUser({ encryptedPassword, role: UserRole.STUDENT }));
 
     const loginRes = await authClient.login({ usernameOrEmail: student.username, password });
     expect(loginRes.statusCode).toBe(HttpStatus.OK);

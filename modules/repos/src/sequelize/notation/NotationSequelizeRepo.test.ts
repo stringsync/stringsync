@@ -1,4 +1,4 @@
-import { randStr, TestFactory } from '@stringsync/common';
+import { randStr, EntityBuilder } from '@stringsync/common';
 import { TYPES, useTestContainer } from '@stringsync/di';
 import { Notation, Tag, User } from '@stringsync/domain';
 import { UserSequelizeRepo } from '@stringsync/repos';
@@ -18,16 +18,16 @@ beforeEach(async () => {
   notationRepo = container.get<NotationSequelizeRepo>(TYPES.NotationSequelizeRepo);
   userRepo = container.get<UserSequelizeRepo>(TYPES.UserSequelizeRepo);
 
-  user = await userRepo.create(TestFactory.buildRandUser());
+  user = await userRepo.create(EntityBuilder.buildRandUser());
   transcriberId = user.id;
 });
 
 describe('count', () => {
   it('counts the number of notations', async () => {
     await notationRepo.bulkCreate([
-      TestFactory.buildRandNotation({ transcriberId }),
-      TestFactory.buildRandNotation({ transcriberId }),
-      TestFactory.buildRandNotation({ transcriberId }),
+      EntityBuilder.buildRandNotation({ transcriberId }),
+      EntityBuilder.buildRandNotation({ transcriberId }),
+      EntityBuilder.buildRandNotation({ transcriberId }),
     ]);
 
     const count = await notationRepo.count();
@@ -38,7 +38,7 @@ describe('count', () => {
 
 describe('find', () => {
   it('finds notations', async () => {
-    const { id } = await notationRepo.create(TestFactory.buildRandNotation({ transcriberId }));
+    const { id } = await notationRepo.create(EntityBuilder.buildRandNotation({ transcriberId }));
     const notation = await notationRepo.find(id);
 
     expect(notation).not.toBeNull();
@@ -51,7 +51,7 @@ describe('find', () => {
   });
 
   it('returns a plain object', async () => {
-    const { id } = await notationRepo.create(TestFactory.buildRandNotation({ transcriberId }));
+    const { id } = await notationRepo.create(EntityBuilder.buildRandNotation({ transcriberId }));
     const notation = await notationRepo.find(id);
 
     expect(isPlainObject(notation)).toBe(true);
@@ -61,9 +61,9 @@ describe('find', () => {
 describe('findAll', () => {
   it('finds all notations', async () => {
     const notations = await notationRepo.bulkCreate([
-      TestFactory.buildRandNotation({ transcriberId }),
-      TestFactory.buildRandNotation({ transcriberId }),
-      TestFactory.buildRandNotation({ transcriberId }),
+      EntityBuilder.buildRandNotation({ transcriberId }),
+      EntityBuilder.buildRandNotation({ transcriberId }),
+      EntityBuilder.buildRandNotation({ transcriberId }),
     ]);
 
     const foundNotations = await notationRepo.findAll();
@@ -73,9 +73,9 @@ describe('findAll', () => {
 
   it('returns plain objects', async () => {
     const notations = await notationRepo.bulkCreate([
-      TestFactory.buildRandNotation({ transcriberId }),
-      TestFactory.buildRandNotation({ transcriberId }),
-      TestFactory.buildRandNotation({ transcriberId }),
+      EntityBuilder.buildRandNotation({ transcriberId }),
+      EntityBuilder.buildRandNotation({ transcriberId }),
+      EntityBuilder.buildRandNotation({ transcriberId }),
     ]);
 
     const foundNotations = await notationRepo.findAll();
@@ -87,28 +87,28 @@ describe('findAll', () => {
 describe('create', () => {
   it('creates a notation', async () => {
     const beforeCount = await notationRepo.count();
-    await notationRepo.create(TestFactory.buildRandNotation({ transcriberId }));
+    await notationRepo.create(EntityBuilder.buildRandNotation({ transcriberId }));
     const afterCount = await notationRepo.count();
 
     expect(afterCount).toBe(beforeCount + 1);
   });
 
   it('creates a queryable notation', async () => {
-    const notation = await notationRepo.create(TestFactory.buildRandNotation({ transcriberId }));
+    const notation = await notationRepo.create(EntityBuilder.buildRandNotation({ transcriberId }));
     const foundNotation = await notationRepo.find(notation.id);
 
     expect(foundNotation).toStrictEqual(notation);
   });
 
   it('returns a plain object', async () => {
-    const notation = await notationRepo.create(TestFactory.buildRandNotation({ transcriberId }));
+    const notation = await notationRepo.create(EntityBuilder.buildRandNotation({ transcriberId }));
     const foundNotation = await notationRepo.find(notation.id);
 
     expect(isPlainObject(foundNotation)).toBe(true);
   });
 
   it('disallows duplicate ids', async () => {
-    const notation = TestFactory.buildRandNotation({ transcriberId });
+    const notation = EntityBuilder.buildRandNotation({ transcriberId });
 
     await expect(notationRepo.create(notation)).resolves.not.toThrow();
     await expect(notationRepo.create(notation)).rejects.toThrow();
@@ -118,9 +118,9 @@ describe('create', () => {
 describe('bulkCreate', () => {
   it('creates many notations', async () => {
     const notations = await notationRepo.bulkCreate([
-      TestFactory.buildRandNotation({ transcriberId }),
-      TestFactory.buildRandNotation({ transcriberId }),
-      TestFactory.buildRandNotation({ transcriberId }),
+      EntityBuilder.buildRandNotation({ transcriberId }),
+      EntityBuilder.buildRandNotation({ transcriberId }),
+      EntityBuilder.buildRandNotation({ transcriberId }),
     ]);
 
     const foundNotations = await notationRepo.findAll();
@@ -130,9 +130,9 @@ describe('bulkCreate', () => {
 
   it('returns plain objects', async () => {
     const notations = await notationRepo.bulkCreate([
-      TestFactory.buildRandNotation({ transcriberId }),
-      TestFactory.buildRandNotation({ transcriberId }),
-      TestFactory.buildRandNotation({ transcriberId }),
+      EntityBuilder.buildRandNotation({ transcriberId }),
+      EntityBuilder.buildRandNotation({ transcriberId }),
+      EntityBuilder.buildRandNotation({ transcriberId }),
     ]);
 
     expect(notations.every(isPlainObject)).toBe(true);
@@ -141,7 +141,7 @@ describe('bulkCreate', () => {
 
 describe('update', () => {
   it('updates a notation', async () => {
-    const notation = await notationRepo.create(TestFactory.buildRandNotation({ transcriberId }));
+    const notation = await notationRepo.create(EntityBuilder.buildRandNotation({ transcriberId }));
     const songName = randStr(8);
 
     await notationRepo.update(notation.id, { songName });
@@ -162,14 +162,14 @@ describe('findPage', () => {
   beforeEach(async () => {
     users = new Array(NUM_USERS);
     for (let ndx = 0; ndx < NUM_USERS; ndx++) {
-      users[ndx] = TestFactory.buildRandUser({ rank: ndx + 1 });
+      users[ndx] = EntityBuilder.buildRandUser({ rank: ndx + 1 });
     }
     users = await userRepo.bulkCreate(users);
 
     notations = new Array(NUM_NOTATIONS);
     for (let ndx = 0; ndx < NUM_NOTATIONS; ndx++) {
       const transcriber = ndx % 2 === 0 ? users[0] : users[1];
-      notations[ndx] = TestFactory.buildRandNotation({ cursor: ndx + 1, transcriberId: transcriber.id });
+      notations[ndx] = EntityBuilder.buildRandNotation({ cursor: ndx + 1, transcriberId: transcriber.id });
     }
     notations = await notationRepo.bulkCreate(notations);
   });
@@ -268,7 +268,7 @@ describe('findPage', () => {
 
   it('defaults to paging forward', async () => {
     const notations = await notationRepo.bulkCreate(
-      times(11, (ndx) => TestFactory.buildRandNotation({ transcriberId, cursor: ndx + 1 }))
+      times(11, (ndx) => EntityBuilder.buildRandNotation({ transcriberId, cursor: ndx + 1 }))
     );
 
     const { edges, pageInfo } = await notationRepo.findPage({});
@@ -283,8 +283,8 @@ describe('findPage', () => {
 
   it('returns the first N notations', async () => {
     const notations = await notationRepo.bulkCreate([
-      TestFactory.buildRandNotation({ transcriberId, cursor: 1 }),
-      TestFactory.buildRandNotation({ transcriberId, cursor: 2 }),
+      EntityBuilder.buildRandNotation({ transcriberId, cursor: 1 }),
+      EntityBuilder.buildRandNotation({ transcriberId, cursor: 2 }),
     ]);
 
     const { edges } = await notationRepo.findPage({ first: 1 });
@@ -294,8 +294,8 @@ describe('findPage', () => {
 
   it('returns the last N notations', async () => {
     const notations = await notationRepo.bulkCreate([
-      TestFactory.buildRandNotation({ transcriberId, cursor: 1 }),
-      TestFactory.buildRandNotation({ transcriberId, cursor: 2 }),
+      EntityBuilder.buildRandNotation({ transcriberId, cursor: 1 }),
+      EntityBuilder.buildRandNotation({ transcriberId, cursor: 2 }),
     ]);
 
     const { edges } = await notationRepo.findPage({ last: 1 });
@@ -318,25 +318,25 @@ describe('findPage', () => {
 
     beforeEach(async () => {
       [user1, user2, user3] = await userRepo.bulkCreate([
-        TestFactory.buildRandUser({ username: 'foo' }),
-        TestFactory.buildRandUser({ username: 'bar' }),
-        TestFactory.buildRandUser({ username: 'foobar' }),
+        EntityBuilder.buildRandUser({ username: 'foo' }),
+        EntityBuilder.buildRandUser({ username: 'bar' }),
+        EntityBuilder.buildRandUser({ username: 'foobar' }),
       ]);
 
       [notation1, notation2, notation3] = await notationRepo.bulkCreate([
-        TestFactory.buildRandNotation({
+        EntityBuilder.buildRandNotation({
           songName: 'yikes',
           artistName: 'bach',
           transcriberId: user1.id,
           cursor: 1,
         }),
-        TestFactory.buildRandNotation({
+        EntityBuilder.buildRandNotation({
           songName: 'overnight',
           artistName: 'loony',
           transcriberId: user2.id,
           cursor: 2,
         }),
-        TestFactory.buildRandNotation({
+        EntityBuilder.buildRandNotation({
           songName: 'bull fighter',
           artistName: 'jean dawson',
           transcriberId: user3.id,
@@ -345,16 +345,16 @@ describe('findPage', () => {
       ]);
 
       [tag1, tag2, tag3] = await tagRepo.bulkCreate([
-        TestFactory.buildRandTag(),
-        TestFactory.buildRandTag(),
-        TestFactory.buildRandTag(),
+        EntityBuilder.buildRandTag(),
+        EntityBuilder.buildRandTag(),
+        EntityBuilder.buildRandTag(),
       ]);
 
       await taggingRepo.bulkCreate([
-        TestFactory.buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
-        TestFactory.buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
-        TestFactory.buildRandTagging({ notationId: notation2.id, tagId: tag2.id }),
-        TestFactory.buildRandTagging({ notationId: notation2.id, tagId: tag3.id }),
+        EntityBuilder.buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
+        EntityBuilder.buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
+        EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag2.id }),
+        EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag3.id }),
       ]);
     });
 

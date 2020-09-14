@@ -1,12 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { TestFactory, randStr } from '@stringsync/common';
+import { EntityBuilder, randStr } from '@stringsync/common';
 import { NotationClient, NotationEdgeObject, UserRoles } from '../../clients';
 import { getNotationPage, librarySlice, clearErrors, clearPages } from './librarySlice';
 import { UserRole } from '@stringsync/domain';
 
 const buildRandNotationEdge = (): NotationEdgeObject => {
-  const transcriber = TestFactory.buildRandUser();
-  const notation = TestFactory.buildRandNotation({ transcriberId: transcriber.id });
+  const transcriber = EntityBuilder.buildRandUser();
+  const notation = EntityBuilder.buildRandNotation({ transcriberId: transcriber.id });
   return JSON.parse(
     JSON.stringify({
       node: { ...notation, transcriber: { ...transcriber, role: UserRoles.TEACHER }, tags: [] },

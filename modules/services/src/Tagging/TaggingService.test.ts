@@ -2,7 +2,7 @@ import { TaggingService } from './TaggingService';
 import { TaggingRepo, TagRepo, NotationRepo, UserRepo } from '@stringsync/repos';
 import { useTestContainer, TYPES } from '@stringsync/di';
 import { Notation, Tag } from '@stringsync/domain';
-import { TestFactory } from '@stringsync/common';
+import { EntityBuilder } from '@stringsync/common';
 import { sortBy } from 'lodash';
 
 const container = useTestContainer();
@@ -27,13 +27,13 @@ describe('bulkCreate', () => {
   it('creates many taggings', async () => {
     expect(await taggingRepo.count()).toBe(0);
 
-    const user = await userRepo.create(TestFactory.buildRandUser());
+    const user = await userRepo.create(EntityBuilder.buildRandUser());
     const [tag1, tag2, tag3] = await tagRepo.bulkCreate([
-      TestFactory.buildRandTag(),
-      TestFactory.buildRandTag(),
-      TestFactory.buildRandTag(),
+      EntityBuilder.buildRandTag(),
+      EntityBuilder.buildRandTag(),
+      EntityBuilder.buildRandTag(),
     ]);
-    const notation = await notationRepo.create(TestFactory.buildRandNotation({ transcriberId: user.id }));
+    const notation = await notationRepo.create(EntityBuilder.buildRandNotation({ transcriberId: user.id }));
 
     const taggings = await taggingService.bulkCreate([
       { notationId: notation.id, tagId: tag1.id },

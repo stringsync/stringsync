@@ -1,4 +1,4 @@
-import { TestFactory, randStr } from '@stringsync/common';
+import { EntityBuilder, randStr } from '@stringsync/common';
 import { TYPES, useTestContainer } from '@stringsync/di';
 import { Notation, Tag, Tagging, User } from '@stringsync/domain';
 import { isPlainObject } from 'lodash';
@@ -24,22 +24,22 @@ let tagging2: Tagging;
 
 beforeEach(async () => {
   const userRepo = container.get<UserSequelizeRepo>(TYPES.UserSequelizeRepo);
-  [user1, user2] = await userRepo.bulkCreate([TestFactory.buildRandUser(), TestFactory.buildRandUser()]);
+  [user1, user2] = await userRepo.bulkCreate([EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser()]);
 
   const notationRepo = container.get<NotationSequelizeRepo>(TYPES.NotationSequelizeRepo);
   [notation1, notation2] = await notationRepo.bulkCreate([
-    TestFactory.buildRandNotation({ transcriberId: user1.id }),
-    TestFactory.buildRandNotation({ transcriberId: user2.id }),
+    EntityBuilder.buildRandNotation({ transcriberId: user1.id }),
+    EntityBuilder.buildRandNotation({ transcriberId: user2.id }),
   ]);
 
   const tagRepo = container.get<TagSequelizeRepo>(TYPES.TagSequelizeRepo);
-  [tag1, tag2] = await tagRepo.bulkCreate([TestFactory.buildRandTag(), TestFactory.buildRandTag()]);
+  [tag1, tag2] = await tagRepo.bulkCreate([EntityBuilder.buildRandTag(), EntityBuilder.buildRandTag()]);
 
   taggingRepo = container.get<TaggingSequelizeRepo>(TYPES.TaggingSequelizeRepo);
   [tagging1, tagging2] = await taggingRepo.bulkCreate([
-    TestFactory.buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
-    TestFactory.buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
-    TestFactory.buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
+    EntityBuilder.buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
+    EntityBuilder.buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
+    EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
   ]);
 });
 
@@ -53,14 +53,16 @@ describe('count', () => {
 describe('create', () => {
   it('creates a tagging record', async () => {
     const countBefore = await taggingRepo.count();
-    await taggingRepo.create(TestFactory.buildRandTagging({ notationId: notation2.id, tagId: tag2.id }));
+    await taggingRepo.create(EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag2.id }));
     const countAfter = await taggingRepo.count();
 
     expect(countAfter).toBe(countBefore + 1);
   });
 
   it('creates a findable tagging record', async () => {
-    const { id } = await taggingRepo.create(TestFactory.buildRandTagging({ notationId: notation2.id, tagId: tag2.id }));
+    const { id } = await taggingRepo.create(
+      EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag2.id })
+    );
     const tagging = await taggingRepo.find(id);
 
     expect(tagging).not.toBeNull();
@@ -69,14 +71,14 @@ describe('create', () => {
 
   it('returns a plain object', async () => {
     const tagging = await taggingRepo.create(
-      TestFactory.buildRandTagging({ notationId: notation2.id, tagId: tag2.id })
+      EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag2.id })
     );
 
     expect(isPlainObject(tagging)).toBe(true);
   });
 
   it('disallows duplicate ids', async () => {
-    const tagging = TestFactory.buildRandTagging({ id: randStr(8), notationId: notation2.id, tagId: tag2.id });
+    const tagging = EntityBuilder.buildRandTagging({ id: randStr(8), notationId: notation2.id, tagId: tag2.id });
 
     await expect(taggingRepo.create(tagging)).resolves.not.toThrow();
     await expect(taggingRepo.create(tagging)).rejects.toThrow();

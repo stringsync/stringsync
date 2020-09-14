@@ -1,7 +1,7 @@
 import { UserRepo } from '@stringsync/repos';
 import { TYPES, useTestContainer } from '@stringsync/di';
 import { UserService } from './UserService';
-import { TestFactory } from '@stringsync/common';
+import { EntityBuilder } from '@stringsync/common';
 import { sortBy } from 'lodash';
 
 const container = useTestContainer();
@@ -16,7 +16,7 @@ beforeEach(() => {
 
 describe('find', () => {
   it('finds an entity', async () => {
-    const user = await userRepo.create(TestFactory.buildRandUser());
+    const user = await userRepo.create(EntityBuilder.buildRandUser());
 
     const foundUser = await userService.find(user.id);
 
@@ -26,7 +26,7 @@ describe('find', () => {
 
 describe('findAll', () => {
   it('finds all entities', async () => {
-    const users = await userRepo.bulkCreate([TestFactory.buildRandUser(), TestFactory.buildRandUser()]);
+    const users = await userRepo.bulkCreate([EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser()]);
     const foundUsers = await userService.findAll();
 
     expect(users).toHaveLength(2);

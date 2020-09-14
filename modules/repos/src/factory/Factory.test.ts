@@ -21,62 +21,6 @@ beforeEach(async () => {
   tagRepo = factory.tagRepo;
 });
 
-describe('buildRandUser', () => {
-  it('can accept attrs', () => {
-    const username = randStr(10);
-    const user = factory.buildRandUser({ username });
-    expect(user.username).toBe(username);
-  });
-
-  it('does not persist data', async () => {
-    const user = factory.buildRandUser();
-    const foundUser = await userRepo.find(user.id);
-    expect(foundUser).toBeNull();
-  });
-});
-
-describe('buildRandNotation', () => {
-  it('can accept attrs', () => {
-    const songName = randStr(10);
-    const notation = factory.buildRandNotation({ songName });
-    expect(notation.songName).toBe(songName);
-  });
-
-  it('does not persist data', async () => {
-    const notation = factory.buildRandNotation();
-    const foundNotation = await notationRepo.find(notation.id);
-    expect(foundNotation).toBeNull();
-  });
-});
-
-describe('buildRandTag', () => {
-  it('can accept attrs', () => {
-    const name = randStr(10);
-    const tag = factory.buildRandTag({ name });
-    expect(tag.name).toBe(name);
-  });
-
-  it('does not persist data', async () => {
-    const tag = factory.buildRandTag();
-    const foundTag = await tagRepo.find(tag.id);
-    expect(foundTag).toBeNull();
-  });
-});
-
-describe('buildRandTagging', () => {
-  it('can accept attrs', () => {
-    const notationId = randStr(10);
-    const tagging = factory.buildRandTagging({ notationId });
-    expect(tagging.notationId).toBe(notationId);
-  });
-
-  it('does not persist data', async () => {
-    const tagging = factory.buildRandTagging();
-    const foundTagging = await taggingRepo.find(tagging.id);
-    expect(foundTagging).toBeNull();
-  });
-});
-
 describe('createRandUser', () => {
   it('can accept attrs', async () => {
     const id = randStr(8);
