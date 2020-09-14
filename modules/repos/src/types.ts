@@ -1,25 +1,6 @@
 import { User, Notation, Tag, Tagging } from '@stringsync/domain';
 import { Connection, ConnectionArgs, NotationConnectionArgs } from '@stringsync/common';
 
-// Factory
-
-export interface Factory {
-  buildRandUser(attrs: Partial<User>): User;
-  buildRandNotation(attrs: Partial<Notation>): Notation;
-  buildRandTag(attrs: Partial<Tag>): Tag;
-  buildRandTagging(attrs: Partial<Tagging>): Tagging;
-
-  createRandUser(attrs: Partial<User>): Promise<User>;
-  createRandNotation(attrs: Partial<Notation>): Promise<Notation>;
-  createRandTag(attrs: Partial<Tag>): Promise<Tag>;
-  createRandTagging(attrs: Partial<Tagging>): Promise<Tagging>;
-
-  createRandUsers(num: number): Promise<User[]>;
-  createRandNotations(num: number): Promise<Notation[]>;
-  createRandTags(num: number): Promise<Tag[]>;
-  createRandTaggings(num: number): Promise<Tagging[]>;
-}
-
 // Repo
 
 export interface Repo<T extends object> {

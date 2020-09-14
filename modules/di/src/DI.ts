@@ -9,7 +9,6 @@ import {
   NotationRepo,
   NotationSequelizeLoader,
   NotationSequelizeRepo,
-  SequelizeFactory,
   TaggingRepo,
   TaggingSequelizeRepo,
   TagLoader,
@@ -145,7 +144,7 @@ export class DI {
       bind<Db>(TYPES.Db).toConstantValue(db);
 
       if (config.NODE_ENV === 'test') {
-        bind<Factory>(TYPES.Factory).to(SequelizeFactory);
+        bind<Factory>(TYPES.Factory).to(Factory);
       }
     });
   }

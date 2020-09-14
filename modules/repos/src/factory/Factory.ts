@@ -1,12 +1,12 @@
 import { randInt, randStr } from '@stringsync/common';
 import { Notation, Tag, Tagging, User, UserRole } from '@stringsync/domain';
-import { Factory, NotationRepo, TaggingRepo, TagRepo, UserRepo } from '../types';
+import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from '../types';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '@stringsync/di';
 import { times } from 'lodash';
 
 @injectable()
-export class SequelizeFactory implements Factory {
+export class Factory {
   userRepo: UserRepo;
   notationRepo: NotationRepo;
   taggingRepo: TaggingRepo;
@@ -92,13 +92,13 @@ export class SequelizeFactory implements Factory {
   }
 
   async createRandTag(attrs: Partial<Tag> = {}): Promise<Tag> {
-    return await this.tagRepo.create({ ...attrs });
+    return await this.tagRepo.create(this.buildRandTag({ ...attrs }));
   }
 
   async createRandTagging(attrs: Partial<Tagging> = {}): Promise<Tagging> {
     const tagId = attrs.tagId || (await this.createRandTag()).id;
     const notationId = attrs.notationId || (await this.createRandNotation()).id;
-    return await this.taggingRepo.create({ ...attrs, tagId, notationId });
+    return await this.taggingRepo.create(this.buildRandTagging({ ...attrs, tagId, notationId }));
   }
 
   async createRandUsers(num: number): Promise<User[]> {

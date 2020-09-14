@@ -17,7 +17,7 @@ export class TagSequelizeRepo implements TagRepo {
   }
 
   async create(attrs: Partial<Tag>): Promise<Tag> {
-    const tagEntity = await TagModel.create(attrs, { raw: true });
+    const tagEntity = await TagModel.create(attrs);
     return tagEntity.get({ plain: true }) as Tag;
   }
 
