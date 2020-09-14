@@ -1,6 +1,25 @@
 import { User, Notation, Tag, Tagging } from '@stringsync/domain';
 import { Connection, ConnectionArgs, NotationConnectionArgs } from '@stringsync/common';
 
+export interface Factory {
+  buildRandUser(attrs: Partial<User>): User;
+  buildRandNotation(attrs: Partial<Notation>): Notation;
+  buildRandTag(attrs: Partial<Tag>): Tag;
+  buildRandTagging(attrs: Partial<Tagging>): Tagging;
+
+  createRandUser(attrs: { user: Partial<User> }): { user: User };
+  createRandNotation(attrs: {
+    notation: Partial<Notation>;
+    transcriber: Partial<User>;
+    tags: Partial<Tag[]>;
+  }): { notation: Notation; transcriber: User; tags: Tag[]; taggings: Tagging[] };
+  createRandTag(attrs: {
+    tag: Partial<Tag>;
+    notations: Partial<Notation[]>;
+  }): { tag: Tag; taggings: Tagging[]; notations: Notation[] };
+  createRandTaggings(attrs: { tagging: Partial<Tagging> }): { tagging: Tagging; tag: Tag; notation: Notation };
+}
+
 export interface Repo<T extends object> {
   count(): Promise<number>;
   find(id: string): Promise<T | null>;
