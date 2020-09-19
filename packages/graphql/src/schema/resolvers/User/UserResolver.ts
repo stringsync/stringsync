@@ -36,16 +36,7 @@ export class UserResolver {
   @Mutation((returns) => UserObject)
   async updateUser(@Arg('input') input: UpdateUserInput, @Ctx() ctx: ResolverCtx): Promise<User> {
     const { id } = input;
-
-    const user = await this.userService.find(id);
-    if (!user) {
-      throw new NotFoundError('user not found');
-    }
-
     const attrs = pick(input, ['username', 'email', 'role']);
-    const updatedUser = { ...user, ...attrs };
-    await this.userService.update(id, updatedUser);
-
-    return updatedUser;
+    return await this.userService.update(id, attrs);
   }
 }

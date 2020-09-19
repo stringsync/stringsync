@@ -29,7 +29,7 @@ export class UserService {
     return await this.userRepo.findPage(connectionArgs);
   }
 
-  async update(id: string, attrs: User): Promise<void> {
-    await this.userRepo.update(id, attrs);
+  async update(id: string, attrs: Partial<User>): Promise<User> {
+    return await this.userRepo.update(id, attrs);
   }
 }
