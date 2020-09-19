@@ -1,3 +1,4 @@
+import { NotFoundError } from '@stringsync/common';
 import { TagModel } from '@stringsync/db';
 import { TYPES } from '@stringsync/di';
 import { Tag } from '@stringsync/domain';
@@ -38,7 +39,12 @@ export class TagSequelizeRepo implements TagRepo {
     return tagEntities.map((tagEntity: TagModel) => tagEntity.get({ plain: true })) as Tag[];
   }
 
-  async update(id: string, attrs: Partial<Tag>): Promise<void> {
-    await TagModel.update(attrs, { where: { id } });
+  async update(id: string, attrs: Partial<Tag>): Promise<Tag> {
+    const [_, tagEntities] = await TagModel.update(attrs, { where: { id }, returning: true });
+    const tagEntity = tagEntities[0];
+    if (!tagEntity) {
+      throw new NotFoundError('tag not found');
+    }
+    return tagEntity.get({ plain: true });
   }
 }

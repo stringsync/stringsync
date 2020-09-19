@@ -106,12 +106,19 @@ describe('update', () => {
     const tag = EntityBuilder.buildRandTag();
     await tagRepo.create(tag);
     const name = randStr(8);
-    const updatedTag = { ...tag, name };
 
-    await tagRepo.update(tag.id, updatedTag);
+    const updatedTag = await tagRepo.update(tag.id, { ...tag, name });
 
-    const foundTag = await tagRepo.find(tag.id);
-    expect(foundTag).not.toBeNull();
-    expect(foundTag!.name).toBe(name);
+    expect(updatedTag.name).toBe(name);
+  });
+
+  it('returns plain objects', async () => {
+    const tag = EntityBuilder.buildRandTag();
+    await tagRepo.create(tag);
+    const name = randStr(8);
+
+    const updatedTag = await tagRepo.update(tag.id, { ...tag, name });
+
+    expect(isPlainObject(updatedTag)).toBe(true);
   });
 });

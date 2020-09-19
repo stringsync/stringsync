@@ -181,16 +181,21 @@ describe('findByResetPasswordToken', () => {
 
 describe('update', () => {
   it('updates a user', async () => {
-    const user = EntityBuilder.buildRandUser();
-    await userRepo.create(user);
+    const user = await userRepo.create(EntityBuilder.buildRandUser());
     const username = randStr(8);
-    const updatedUser = { ...user, username };
 
-    await userRepo.update(user.id, updatedUser);
+    const updatedUser = await userRepo.update(user.id, { ...user, username });
 
-    const foundUser = await userRepo.find(user.id);
-    expect(foundUser).not.toBeNull();
-    expect(foundUser!.username).toBe(username);
+    expect(updatedUser.username).toBe(username);
+  });
+
+  it('returns plain objects', async () => {
+    const user = await userRepo.create(EntityBuilder.buildRandUser());
+    const username = randStr(8);
+
+    const updatedUser = await userRepo.update(user.id, { ...user, username });
+
+    expect(updatedUser.username).toBe(username);
   });
 });
 

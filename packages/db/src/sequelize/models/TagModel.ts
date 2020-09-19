@@ -23,7 +23,7 @@ export class TagModel extends Model<Tag, Partial<Tag>> implements Tag {
       {
         sequelize,
         tableName: 'tags',
-        modelName: 'Tag',
+        modelName: 'tag',
         timestamps: false,
         underscored: true,
       }

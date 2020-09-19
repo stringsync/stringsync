@@ -82,7 +82,7 @@ export class NotationModel extends Model<Notation, Partial<Notation>> implements
       {
         sequelize,
         tableName: 'notations',
-        modelName: 'Notation',
+        modelName: 'notation',
         underscored: true,
       }
     );

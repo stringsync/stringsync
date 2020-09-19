@@ -1,4 +1,4 @@
-import { Connection, NotationConnectionArgs, PagingType } from '@stringsync/common';
+import { Connection, NotationConnectionArgs, NotFoundError, PagingType } from '@stringsync/common';
 import { NotationModel } from '@stringsync/db';
 import { TYPES } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
@@ -67,8 +67,13 @@ export class NotationSequelizeRepo implements NotationRepo {
     return notations;
   }
 
-  async update(id: string, attrs: Partial<Notation>): Promise<void> {
+  async update(id: string, attrs: Partial<Notation>): Promise<Notation> {
     await NotationModel.update(attrs, { where: { id } });
+    const notation = await this.find(id);
+    if (!notation) {
+      throw new NotFoundError('notation not found');
+    }
+    return notation;
   }
 
   async findPage(args: NotationConnectionArgs): Promise<Connection<Notation>> {

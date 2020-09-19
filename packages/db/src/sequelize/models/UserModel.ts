@@ -84,7 +84,7 @@ export class UserModel extends Model<User, Partial<User>> implements User {
       {
         sequelize,
         tableName: 'users',
-        modelName: 'User',
+        modelName: 'user',
         underscored: true,
       }
     );

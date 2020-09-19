@@ -1,4 +1,4 @@
-import { Base64, Connection, ConnectionArgs, PagingType } from '@stringsync/common';
+import { Base64, Connection, ConnectionArgs, NotFoundError, PagingType } from '@stringsync/common';
 import { Pager } from '../../util';
 import { UserLoader } from '../../types';
 import { TYPES } from '@stringsync/di';
@@ -86,8 +86,13 @@ export class UserSequelizeRepo implements UserRepo {
     return users;
   }
 
-  async update(id: string, attrs: Partial<User>): Promise<void> {
-    await UserModel.update(attrs, { where: { id } });
+  async update(id: string, attrs: Partial<User>): Promise<User> {
+    const [_, userEntities] = await UserModel.update(attrs, { where: { id }, returning: true });
+    const userEntity = userEntities[0];
+    if (!userEntity) {
+      throw new NotFoundError('user missing');
+    }
+    return userEntity.get({ plain: true });
   }
 
   async findPage(connectionArgs: ConnectionArgs): Promise<Connection<User>> {
