@@ -17,6 +17,12 @@ StringSync uses `yarn` as a package management solution. You will need this if y
 
 - [install yarn](https://yarnpkg.com/lang/en/docs/install/)
 
+Project dependencies can be installed by running the following command:
+
+```
+yarn newinstall
+```
+
 ### Commands
 
 StringSync commands are run using the `./bin/ss` command.
@@ -27,19 +33,37 @@ To view all the commands, run:
 ./bin/ss help
 ```
 
-To run the project, start Docker engine and run:
+To run the server, start Docker engine and run:
 
 ```
 ./bin/ss up
 ```
 
 - http://localhost:8080 frontend UI
-- http://localhost:3000 backend GraphQL query playground
+- http://localhost:3000/altair backend GraphQL query playground
 
-To stop the project, run:
+To stop the server, run:
 
 ```
 ./bin/ss down
+```
+
+To run server tests in watch mode, run:
+
+```
+./bin/ss test server -w
+```
+
+To run the web project, run:
+
+```
+yarn web dev
+```
+
+To run web tests in watch mode, run:
+
+```
+./bin/ss test web -w
 ```
 
 ## VSCode Setup
