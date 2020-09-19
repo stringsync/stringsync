@@ -18,10 +18,11 @@ export default class Test extends Command {
       default: 'server',
       options: ['server', 'web'],
     },
+    { name: 'cmd', required: false },
   ];
 
   async run() {
-    const { flags, args } = this.parse(Test);
+    const { flags, args, argv } = this.parse(Test);
 
     execSync(['./bin/ss', 'build'].join(' '), {
       cwd: ROOT_PATH,
@@ -46,6 +47,7 @@ export default class Test extends Command {
           '--logHeapUsage',
           `--watchAll=${flags.watch}`,
           flags.coverage ? '--collectCoverage' : '',
+          ...argv.slice(1), // the first arg is project
         ]
           .filter((part) => part)
           .join(' '),
