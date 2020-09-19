@@ -19,4 +19,5 @@ RUN yarn
 
 COPY ./tsconfig.json .
 COPY ./jest.config.js .
+COPY ./jest.d.ts .
 COPY ./ServerTestEnvironment.js .
