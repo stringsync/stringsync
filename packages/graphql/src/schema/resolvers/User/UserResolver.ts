@@ -43,7 +43,7 @@ export class UserResolver {
     }
 
     const attrs = pick(input, ['username', 'email', 'role']);
-    const updatedUser = { ...attrs, ...user };
+    const updatedUser = { ...user, ...attrs };
     await this.userService.update(id, updatedUser);
 
     return updatedUser;
