@@ -1,17 +1,8 @@
 import { randStr } from '@stringsync/common';
 import { Express, Response } from 'express';
-import { extractFiles } from 'extract-files';
 import request, { SuperAgentTest } from 'supertest';
 import { CallResponse } from './types';
-
-const toBuffer = async (blob: Blob): Promise<Buffer> => {
-  const reader = new FileReader();
-  await new Promise((resolve) => {
-    reader.readAsArrayBuffer(blob);
-    reader.onloadend = resolve;
-  });
-  return Buffer.from(reader.result!);
-};
+import { ExtractableFile, extractFiles } from 'extract-files';
 
 export class TestGraphqlClient {
   app: Express;
@@ -27,7 +18,11 @@ export class TestGraphqlClient {
     variables?: V
   ): Promise<Response & { body: CallResponse<T, N> }> => {
     // extract files
-    const { clone, files } = extractFiles({ query, variables });
+    const { clone, files } = extractFiles(
+      { query, variables },
+      undefined,
+      (value: any): value is ExtractableFile => value instanceof Buffer
+    );
 
     // compute map
     const map: { [key: string]: string | string[] } = {};
@@ -39,8 +34,8 @@ export class TestGraphqlClient {
 
     // compute buffers
     const promises = new Array<Promise<Buffer>>();
-    for (const [blob, _] of files.entries()) {
-      promises.push(toBuffer(blob as Blob));
+    for (const [buffer, _] of files.entries()) {
+      promises.push(buffer as any);
     }
     const buffers = await Promise.all(promises);
 

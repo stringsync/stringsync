@@ -133,6 +133,7 @@ export class DI {
   private static getDbModule(config: ContainerConfig, logger: Logger) {
     return new ContainerModule((bind) => {
       const db = SequelizeDb.create({
+        env: config.NODE_ENV,
         database: config.DB_NAME,
         host: config.DB_HOST,
         password: config.DB_PASSWORD,

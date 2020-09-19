@@ -95,8 +95,8 @@ describe('createNotation', () => {
     input = {
       songName: randStr(12),
       artistName: randStr(12),
-      thumbnail: new Blob(['thumbnail']),
-      video: new Blob(['video']),
+      thumbnail: Buffer.from(['thumbnail']),
+      video: Buffer.from(['video']),
       tagIds: new Array<string>(),
     };
   });

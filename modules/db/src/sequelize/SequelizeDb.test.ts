@@ -7,6 +7,7 @@ let db: SequelizeDb;
 
 beforeEach(async () => {
   db = SequelizeDb.create({
+    env: 'test',
     database: config.DB_NAME,
     host: config.DB_HOST,
     password: config.DB_PASSWORD,

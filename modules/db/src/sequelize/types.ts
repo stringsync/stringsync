@@ -1,4 +1,5 @@
 export type SequelizeDbConfig = {
+  env: string;
   host: string;
   port: number;
   database: string;
