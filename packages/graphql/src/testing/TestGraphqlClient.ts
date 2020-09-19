@@ -40,7 +40,7 @@ export class TestGraphqlClient {
     const buffers = await Promise.all(promises);
 
     // make request
-    return new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       const req = this.agent
         .post('/graphql')
         .field('operations', JSON.stringify(clone))
