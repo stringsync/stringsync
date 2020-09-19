@@ -46,7 +46,7 @@ export const Menu: React.FC<Props> = (props) => {
 
   const showModal = () => setModalVisible(true);
   const hideModal = () => setModalVisible(false);
-  const handleLogoutClick = () => {
+  const onLogoutClick = () => {
     dispatch(logout());
     hideModal();
     message.success('logged out');
@@ -132,7 +132,7 @@ export const Menu: React.FC<Props> = (props) => {
           onCancel={hideModal}
           footer={null}
         >
-          <Button block onClick={handleLogoutClick} disabled={!isLoggedIn}>
+          <Button block onClick={onLogoutClick} disabled={!isLoggedIn}>
             logout
           </Button>
         </Modal>
