@@ -11,5 +11,6 @@ module.exports = {
   testPathIgnorePatterns: ['node_modules', 'web'],
   testEnvironment: '<rootDir>/ServerTestEnvironment.js',
   roots: ['<rootDir>/packages'],
+  setupFilesAfterEnv: ['jest-extended'],
   watchPlugins: ['jest-watch-typeahead/filename', 'jest-watch-typeahead/testname'],
 };
