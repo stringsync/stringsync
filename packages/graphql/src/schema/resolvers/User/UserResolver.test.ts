@@ -1,11 +1,12 @@
-import { EntityBuilder, HttpStatus, randStr } from '@stringsync/common';
+import { EntityBuilder, ErrorCode, HttpStatus, identity, randStr } from '@stringsync/common';
 import { TYPES } from '@stringsync/di';
-import { eqTeacher, User, UserRole } from '@stringsync/domain';
+import { User, UserRole } from '@stringsync/domain';
 import { Factory, UserRepo } from '@stringsync/repos';
 import { AuthService } from '@stringsync/services';
 import { TestGraphqlClient, useTestApp } from '../../../testing';
 import { TestAuthClient } from '../Auth/TestAuthClient';
 import { TestUserClient } from './TestUserClient';
+import { get } from 'lodash';
 
 const { app, container } = useTestApp();
 
@@ -19,6 +20,7 @@ let userClient: TestUserClient;
 let password: string;
 
 let student: User;
+let teacher: User;
 let admin: User;
 
 beforeEach(() => {
@@ -33,8 +35,9 @@ beforeEach(() => {
 beforeEach(async () => {
   password = randStr(10);
   const encryptedPassword = await AuthService.encryptPassword(password);
-  [student, admin] = await userRepo.bulkCreate([
+  [student, teacher, admin] = await userRepo.bulkCreate([
     EntityBuilder.buildRandUser({ encryptedPassword, role: UserRole.STUDENT }),
+    EntityBuilder.buildRandUser({ encryptedPassword, role: UserRole.TEACHER }),
     EntityBuilder.buildRandUser({ encryptedPassword, role: UserRole.ADMIN }),
   ]);
 });
@@ -72,6 +75,22 @@ describe('updateUser', () => {
 
     expect(updateUserRes.body.data.updateUser).toBeNull();
     expect(updateUserRes.body.errors).toBeDefined();
-    expect(updateUserRes.body.errors!.length).toBeGreaterThan(0);
+    const errorCodes = updateUserRes.body.errors!.map((error) => get(error, 'extensions.code')).filter(identity);
+    expect(errorCodes.some((errorCode) => errorCode === ErrorCode.FORBIDDEN)).toBe(true);
+  });
+
+  it('disallows users from updating another user', async () => {
+    const user = await factory.createRandUser();
+
+    const loginRes = await authClient.login({ usernameOrEmail: student.username, password });
+    expect(loginRes.statusCode).toBe(HttpStatus.OK);
+
+    const username = randStr(12);
+    const updateUserRes = await userClient.updateUser({ id: user.id, username });
+    expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
+
+    expect(updateUserRes.body.data.updateUser).toBeNull();
+    const errorCodes = updateUserRes.body.errors!.map((error) => get(error, 'extensions.code')).filter(identity);
+    expect(errorCodes.some((errorCode) => errorCode === ErrorCode.FORBIDDEN)).toBe(true);
   });
 });

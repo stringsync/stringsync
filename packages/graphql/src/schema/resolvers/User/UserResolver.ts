@@ -34,6 +34,7 @@ export class UserResolver {
   }
 
   @Mutation((returns) => UserObject, { nullable: true })
+  @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN))
   async updateUser(@Arg('input') input: UpdateUserInput, @Ctx() ctx: ResolverCtx): Promise<User | null> {
     const { id } = input;
     const attrs = pick(input, ['username', 'email', 'role']);
