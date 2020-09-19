@@ -78,7 +78,7 @@ describe('updateUser', () => {
 
     const updatedUser = updateUserRes.body.data.updateUser;
     expect(updatedUser).not.toBeNull();
-    expect(updatedUser.role).toBe(UserRole.TEACHER);
+    expect(updatedUser!.role).toBe(UserRole.TEACHER);
   });
 
   it('disallows logged out users', async () => {
