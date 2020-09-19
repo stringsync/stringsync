@@ -33,6 +33,7 @@ export type LoginInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   createNotation?: Maybe<NotationObject>;
+  updateUser: UserObject;
   login?: Maybe<UserObject>;
   logout?: Maybe<Scalars['Boolean']>;
   signup?: Maybe<UserObject>;
@@ -45,6 +46,11 @@ export type Mutation = {
 
 export type MutationCreateNotationArgs = {
   input: CreateNotationInput;
+};
+
+
+export type MutationUpdateUserArgs = {
+  input: UpdateUserInput;
 };
 
 
@@ -168,6 +174,13 @@ export type TagObject = {
   id: Scalars['ID'];
   name: Scalars['String'];
   notations?: Maybe<Array<NotationObject>>;
+};
+
+export type UpdateUserInput = {
+  id: Scalars['String'];
+  username?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  role?: Maybe<UserRoles>;
 };
 
 
