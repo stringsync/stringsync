@@ -7,6 +7,7 @@
     "packages/*"
   ],
   "scripts": {
+    "newinstall": "yarn install && (cd ./bin/scripts/ && yarn install)",
     "graphql": "yarn workspace @stringsync/graphql",
     "db": "yarn workspace @stringsync/db",
     "web": "yarn workspace @stringsync/web",
