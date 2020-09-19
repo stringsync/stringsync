@@ -69,6 +69,18 @@ describe('updateUser', () => {
     expect(updatedUser.email).toBe(admin.email);
   });
 
+  it('allows admins to update the role of other users', async () => {
+    const loginRes = await authClient.login({ usernameOrEmail: admin.username, password });
+    expect(loginRes.statusCode).toBe(HttpStatus.OK);
+
+    const updateUserRes = await userClient.updateUser({ id: student.id, role: UserRole.TEACHER });
+    expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
+
+    const updatedUser = updateUserRes.body.data.updateUser;
+    expect(updatedUser).not.toBeNull();
+    expect(updatedUser.role).toBe(UserRole.TEACHER);
+  });
+
   it('disallows logged out users', async () => {
     const updateUserRes = await userClient.updateUser({ id: student.id, username: randStr(12) });
     expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
