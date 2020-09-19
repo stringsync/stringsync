@@ -9,6 +9,7 @@ import { Router } from 'react-router';
 import { Provider } from 'react-redux';
 import { createMemoryHistory } from 'history';
 import { getNullAuthUser } from '../store/auth/getNullAuthUser';
+import { getNullAuthState } from '../store/auth/getNullAuthState';
 
 const Dummy: React.FC = (props) => <div data-testid="dummy">{props.children}</div>;
 
@@ -20,7 +21,12 @@ describe('with AuthRequirement.NONE', () => {
   });
 
   it('renders when logged out', () => {
-    const store = createStore();
+    const store = createStore({
+      auth: {
+        ...getNullAuthState(),
+        isPending: false,
+      },
+    });
 
     const { getByTestId } = render(
       <Test store={store}>

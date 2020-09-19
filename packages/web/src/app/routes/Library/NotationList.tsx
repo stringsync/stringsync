@@ -25,7 +25,7 @@ export const NotationList: React.FC<Props> = (props) => {
             grid={props.grid}
             dataSource={props.notations}
             renderItem={(notation) => (
-              <List.Item>
+              <List.Item key={notation.id}>
                 <Link to={`/n/${notation.id}`}>
                   <NotationCard notation={notation} query={props.query} isTagChecked={props.isTagChecked} />
                 </Link>

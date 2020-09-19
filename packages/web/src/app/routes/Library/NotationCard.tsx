@@ -83,7 +83,11 @@ export const NotationCard: React.FC<Props> = (props) => {
           title={
             <span>
               {getQueryMatches(props.query, transcriber.username).map((queryMatch) =>
-                queryMatch.matches ? <ColoredSpan>{queryMatch.str}</ColoredSpan> : <span>{queryMatch.str}</span>
+                queryMatch.matches ? (
+                  <ColoredSpan key={queryMatch.str}>{queryMatch.str}</ColoredSpan>
+                ) : (
+                  <span key={queryMatch.str}>{queryMatch.str}</span>
+                )
               )}
             </span>
           }
@@ -92,13 +96,21 @@ export const NotationCard: React.FC<Props> = (props) => {
               <div>
                 <span>
                   {getQueryMatches(props.query, songName).map((queryMatch) =>
-                    queryMatch.matches ? <ColoredSpan>{queryMatch.str}</ColoredSpan> : <span>{queryMatch.str}</span>
+                    queryMatch.matches ? (
+                      <ColoredSpan key={queryMatch.str}>{queryMatch.str}</ColoredSpan>
+                    ) : (
+                      <span key={queryMatch.str}>{queryMatch.str}</span>
+                    )
                   )}
                 </span>
                 <Divider type="vertical" />
                 <small>
                   {getQueryMatches(props.query, artistName).map((queryMatch) =>
-                    queryMatch.matches ? <ColoredSpan>{queryMatch.str}</ColoredSpan> : <span>{queryMatch.str}</span>
+                    queryMatch.matches ? (
+                      <ColoredSpan key={queryMatch.str}>{queryMatch.str}</ColoredSpan>
+                    ) : (
+                      <span key={queryMatch.str}>{queryMatch.str}</span>
+                    )
                   )}
                 </small>
               </div>
