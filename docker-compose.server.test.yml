@@ -35,7 +35,7 @@ services:
       S3_SECRET_ACCESS_KEY: S3_SECRET_ACCESS_KEY
       CLOUDFRONT_DOMAIN_NAME: example.com
     volumes:
-      - ./modules:/stringsync/modules
+      - ./packages:/stringsync/packages
     links:
       - db
       - redis

@@ -6,7 +6,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "ts-node-dev ./src/index.ts",
+    "dev": "ts-node-dev --poll ./src/index.ts",
     "typegen": "graphql-codegen"
   },
   "dependencies": {

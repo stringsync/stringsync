@@ -4,16 +4,16 @@ WORKDIR /stringsync
 
 COPY ./package.json .
 COPY ./yarn.lock .
-COPY ./modules/common/package.json ./modules/common/
-COPY ./modules/di/package.json ./modules/di/
-COPY ./modules/config/package.json ./modules/config/
-COPY ./modules/domain/package.json ./modules/domain/
-COPY ./modules/repos/package.json ./modules/repos/
-COPY ./modules/graphql/package.json ./modules/graphql/
-COPY ./modules/services/package.json ./modules/services/
-COPY ./modules/web/package.json ./modules/web/
-COPY ./modules/util/package.json ./modules/util/
-COPY ./modules/db/package.json ./modules/db/
+COPY ./packages/common/package.json ./packages/common/
+COPY ./packages/di/package.json ./packages/di/
+COPY ./packages/config/package.json ./packages/config/
+COPY ./packages/domain/package.json ./packages/domain/
+COPY ./packages/repos/package.json ./packages/repos/
+COPY ./packages/graphql/package.json ./packages/graphql/
+COPY ./packages/services/package.json ./packages/services/
+COPY ./packages/web/package.json ./packages/web/
+COPY ./packages/util/package.json ./packages/util/
+COPY ./packages/db/package.json ./packages/db/
 
 RUN yarn
 

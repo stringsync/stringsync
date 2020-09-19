@@ -34,7 +34,7 @@ services:
       S3_BUCKET: stringsync-dev
       CLOUDFRONT_DOMAIN_NAME: d2yt8e0its832a.cloudfront.net
     volumes:
-      - ./modules:/stringsync/modules
+      - ./packages:/stringsync/packages
     links:
       - db
       - redis

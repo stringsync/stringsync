@@ -4,7 +4,7 @@
   "repository": "git@github.com:jaredjj3/string-sync.git",
   "private": true,
   "workspaces": [
-    "modules/*"
+    "packages/*"
   ],
   "scripts": {
     "graphql": "yarn workspace @stringsync/graphql",

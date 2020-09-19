@@ -10,6 +10,6 @@ module.exports = {
   resetModules: false,
   testPathIgnorePatterns: ['node_modules', 'web'],
   testEnvironment: '<rootDir>/ServerTestEnvironment.js',
-  roots: ['<rootDir>/modules'],
+  roots: ['<rootDir>/packages'],
   watchPlugins: ['jest-watch-typeahead/filename', 'jest-watch-typeahead/testname'],
 };

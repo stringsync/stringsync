@@ -11,4 +11,4 @@ services:
       REACT_APP_SERVER_URI: fake_app_server_uri
       REACT_APP_GRAPHQL_ENDPOINT: /graphql
     volumes:
-      - ./modules:/stringsync/modules
+      - ./packages:/stringsync/packages

@@ -36,7 +36,7 @@ phases:
           printf '[{"name":"server","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.json
 
           echo Adding REACT_APP_SERVER_URI to .env
-          echo REACT_APP_SERVER_URI=$REACT_APP_SERVER_URI >> modules/web/.env
+          echo REACT_APP_SERVER_URI=$REACT_APP_SERVER_URI >> packages/web/.env
 
           echo Building web project...
           (yarn web install && yarn web build)
@@ -44,7 +44,7 @@ phases:
           echo Moving everything into root build dir...
           mkdir deploy
           mv imagedefinitions.json deploy
-          mv modules/web/build/* deploy
+          mv packages/web/build/* deploy
         else
           echo Build failed, skipping post_build step...
         fi

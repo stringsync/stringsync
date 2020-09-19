@@ -12,7 +12,7 @@ export default class Lint extends Command {
   async run() {
     this.parse(Lint);
 
-    spawn('yarn', ['eslint', '--max-warnings', '1', '--ext', 'ts,tsx', 'modules'], {
+    spawn('yarn', ['eslint', '--max-warnings', '1', '--ext', 'ts,tsx', 'packages'], {
       cwd: ROOT_PATH,
       stdio: 'inherit',
     });
