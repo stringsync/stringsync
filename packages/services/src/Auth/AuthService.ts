@@ -13,6 +13,10 @@ export class AuthService {
   static MIN_PASSWORD_LENGTH = 6;
   static HASH_ROUNDS = 10;
 
+  static async encryptPassword(password: string): Promise<string> {
+    return await bcrypt.hash(password, AuthService.HASH_ROUNDS);
+  }
+
   userRepo: UserRepo;
 
   constructor(@inject(TYPES.UserRepo) userRepo: UserRepo) {

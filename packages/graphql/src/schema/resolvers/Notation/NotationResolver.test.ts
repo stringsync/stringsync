@@ -35,7 +35,7 @@ beforeEach(() => {
 
 beforeEach(async () => {
   password = randStr(10);
-  const encryptedPassword = await bcrypt.hash(password, AuthService.HASH_ROUNDS);
+  const encryptedPassword = await AuthService.encryptPassword(password);
   [teacher, admin] = await userRepo.bulkCreate([
     EntityBuilder.buildRandUser({ encryptedPassword, role: UserRole.TEACHER }),
     EntityBuilder.buildRandUser({ encryptedPassword, role: UserRole.ADMIN }),
