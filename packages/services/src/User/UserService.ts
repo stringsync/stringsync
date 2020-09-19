@@ -1,9 +1,8 @@
-import Dataloader from 'dataloader';
-import { UserRepo } from '@stringsync/repos';
-import { User } from '@stringsync/domain';
-import { injectable, inject } from 'inversify';
+import { Connection, ConnectionArgs } from '@stringsync/common';
 import { TYPES } from '@stringsync/di';
-import { ConnectionArgs, Connection } from '@stringsync/common';
+import { User } from '@stringsync/domain';
+import { UserRepo } from '@stringsync/repos';
+import { inject, injectable } from 'inversify';
 
 @injectable()
 export class UserService {

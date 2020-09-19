@@ -33,8 +33,8 @@ export class UserResolver {
     return await this.userService.findPage(args);
   }
 
-  @Mutation((returns) => UserObject)
-  async updateUser(@Arg('input') input: UpdateUserInput, @Ctx() ctx: ResolverCtx): Promise<User> {
+  @Mutation((returns) => UserObject, { nullable: true })
+  async updateUser(@Arg('input') input: UpdateUserInput, @Ctx() ctx: ResolverCtx): Promise<User | null> {
     const { id } = input;
     const attrs = pick(input, ['username', 'email', 'role']);
     return await this.userService.update(id, attrs);

@@ -65,4 +65,13 @@ describe('updateUser', () => {
     expect(updatedUser.username).toBe(username);
     expect(updatedUser.email).toBe(admin.email);
   });
+
+  it('disallows logged out users', async () => {
+    const updateUserRes = await userClient.updateUser({ id: student.id, username: randStr(12) });
+    expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
+
+    expect(updateUserRes.body.data.updateUser).toBeNull();
+    expect(updateUserRes.body.errors).toBeDefined();
+    expect(updateUserRes.body.errors!.length).toBeGreaterThan(0);
+  });
 });
