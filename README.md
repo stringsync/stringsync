@@ -20,7 +20,7 @@ StringSync uses `yarn` as a package management solution. You will need this if y
 Project dependencies can be installed by running the following command:
 
 ```
-yarn newinstall
+yarn setup
 ```
 
 ### Commands
@@ -32,6 +32,14 @@ To view all the commands, run:
 ```
 ./bin/ss help
 ```
+
+Before running the server for the first time, you will need to generate a secrets file (not tracked by .git):
+
+```
+./bin/ss gensecrets
+```
+
+These will initially have fake credentials, but this should be OK as long as you don't interact with dev AWS resources (such as uploading a file to AWS).
 
 To run the server, start Docker engine and run:
 
