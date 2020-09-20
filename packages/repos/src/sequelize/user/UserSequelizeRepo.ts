@@ -87,11 +87,11 @@ export class UserSequelizeRepo implements UserRepo {
   }
 
   async update(id: string, attrs: Partial<User>): Promise<User> {
-    const [_, userEntities] = await UserModel.update(attrs, { where: { id }, returning: true });
-    const userEntity = userEntities[0];
+    const userEntity = await UserModel.findByPk(id);
     if (!userEntity) {
       throw new NotFoundError('user missing');
     }
+    await userEntity.update(attrs);
     return userEntity.get({ plain: true });
   }
 

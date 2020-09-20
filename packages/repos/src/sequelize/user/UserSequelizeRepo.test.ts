@@ -184,7 +184,7 @@ describe('update', () => {
     const user = await userRepo.create(EntityBuilder.buildRandUser());
     const username = randStr(8);
 
-    const updatedUser = await userRepo.update(user.id, { ...user, username });
+    const updatedUser = await userRepo.update(user.id, { username });
 
     expect(updatedUser.username).toBe(username);
   });
@@ -193,9 +193,33 @@ describe('update', () => {
     const user = await userRepo.create(EntityBuilder.buildRandUser());
     const username = randStr(8);
 
-    const updatedUser = await userRepo.update(user.id, { ...user, username });
+    const updatedUser = await userRepo.update(user.id, { username });
 
     expect(updatedUser.username).toBe(username);
+  });
+
+  it('unsets confirmationToken when updating email', async () => {
+    const confirmationToken = uuid.v4();
+    const user = await userRepo.create(EntityBuilder.buildRandUser({ confirmationToken }));
+
+    const email = `${randStr(8)}@example.com`;
+    const updatedUser = await userRepo.update(user.id, { email });
+
+    expect(updatedUser.email).toBe(email);
+    expect(updatedUser.confirmationToken).toBeNull();
+    expect(updatedUser.confirmedAt).toBeNull();
+  });
+
+  it('unsets confirmedAt when updating email', async () => {
+    const confirmedAt = new Date();
+    const user = await userRepo.create(EntityBuilder.buildRandUser({ confirmedAt }));
+
+    const email = `${randStr(8)}@example.com`;
+    const updatedUser = await userRepo.update(user.id, { email });
+
+    expect(updatedUser.email).toBe(email);
+    expect(updatedUser.confirmationToken).toBeNull();
+    expect(updatedUser.confirmedAt).toBeNull();
   });
 });
 
