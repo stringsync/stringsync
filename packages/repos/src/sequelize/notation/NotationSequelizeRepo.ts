@@ -68,12 +68,12 @@ export class NotationSequelizeRepo implements NotationRepo {
   }
 
   async update(id: string, attrs: Partial<Notation>): Promise<Notation> {
-    await NotationModel.update(attrs, { where: { id } });
-    const notation = await this.find(id);
-    if (!notation) {
+    const notationEntity = await NotationModel.findByPk(id);
+    if (!notationEntity) {
       throw new NotFoundError('notation not found');
     }
-    return notation;
+    await notationEntity.update(attrs);
+    return notationEntity.get({ plain: true });
   }
 
   async findPage(args: NotationConnectionArgs): Promise<Connection<Notation>> {
