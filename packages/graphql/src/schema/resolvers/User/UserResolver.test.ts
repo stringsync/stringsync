@@ -115,4 +115,13 @@ describe('updateUser', () => {
     expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
     expect(updateUserRes).toHaveErrorCode(ErrorCode.BAD_REQUEST);
   });
+
+  it('disallows users from updating role', async () => {
+    const loginRes = await authClient.login({ usernameOrEmail: student.username, password });
+    expect(loginRes.statusCode).toBe(HttpStatus.OK);
+
+    const updateUserRes = await userClient.updateUser({ id: student.id, username: 'adsf23fg2g', role: UserRole.ADMIN });
+    expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
+    expect(updateUserRes).toHaveErrorCode(ErrorCode.BAD_REQUEST);
+  });
 });
