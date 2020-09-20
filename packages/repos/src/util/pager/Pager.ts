@@ -10,7 +10,7 @@ import {
   UnknownError,
   UNKNOWN_ERROR_MSG,
 } from '@stringsync/common';
-import { first, last } from 'lodash';
+import { first, last, min } from 'lodash';
 import { EntityFinder, EntityFinderResults, PagingCtx, PagingEntity } from './types';
 
 export class Pager<T extends PagingEntity> {
@@ -65,7 +65,8 @@ export class Pager<T extends PagingEntity> {
 
   async connect(connectionArgs: ConnectionArgs, findEntities: EntityFinder<T>): Promise<Connection<T>> {
     const pagingCtx = this.getPagingCtx(connectionArgs);
-    const results = await findEntities(pagingCtx);
+    let results = await findEntities(pagingCtx);
+    results = this.sanitizeNaNs(results);
     this.validate(results, pagingCtx);
 
     const edges = this.getEdges(results);
@@ -95,6 +96,14 @@ export class Pager<T extends PagingEntity> {
       default:
         throw new UnknownError();
     }
+  }
+
+  private sanitizeNaNs(results: EntityFinderResults<T>): EntityFinderResults<T> {
+    return {
+      ...results,
+      min: isNaN(results.min) ? -Infinity : results.min,
+      max: isNaN(results.max) ? +Infinity : results.max,
+    };
   }
 
   private validate(results: EntityFinderResults<T>, pagingCtx: PagingCtx): void {
