@@ -16,7 +16,7 @@ import { Pager, PagingCtx } from '../../util';
 
 @injectable()
 export class NotationSequelizeRepo implements NotationRepo {
-  static notationPager = new Pager<Notation>(10, 'notation');
+  static pager = new Pager<Notation>(10, 'notation');
 
   notationLoader: NotationLoader;
   sequelize: Sequelize;
@@ -78,7 +78,7 @@ export class NotationSequelizeRepo implements NotationRepo {
     const tagIds = args.tagIds || null;
     const query = args.query ? `%${args.query}%` : null;
 
-    return NotationSequelizeRepo.notationPager.connect(args, async (pagingCtx: PagingCtx) => {
+    return await NotationSequelizeRepo.pager.connect(args, async (pagingCtx: PagingCtx) => {
       const { cursor, limit, pagingType } = pagingCtx;
       const queryArgs = { cursor, pagingType, limit, query, tagIds };
 

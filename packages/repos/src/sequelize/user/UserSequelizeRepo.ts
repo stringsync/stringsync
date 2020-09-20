@@ -1,15 +1,17 @@
-import { Connection, NotFoundError, NotImplementedError, UserConnectionArgs } from '@stringsync/common';
+import { Connection, NotFoundError, NotImplementedError, PagingType, UserConnectionArgs } from '@stringsync/common';
 import { UserModel } from '@stringsync/db';
 import { TYPES } from '@stringsync/di';
 import { User } from '@stringsync/domain';
 import { inject, injectable } from 'inversify';
+import { get } from 'lodash';
 import { Op } from 'sequelize';
+import { camelCaseKeys } from '../../queries';
 import { UserLoader, UserRepo } from '../../types';
-import { Pager } from '../../util';
+import { Pager, PagingCtx } from '../../util';
 
 @injectable()
 export class UserSequelizeRepo implements UserRepo {
-  static userPager = new Pager<User>(20, 'user');
+  static pager = new Pager<User>(20, 'user');
 
   userLoader: UserLoader;
 
@@ -74,6 +76,34 @@ export class UserSequelizeRepo implements UserRepo {
   }
 
   async findPage(args: UserConnectionArgs): Promise<Connection<User>> {
-    throw new NotImplementedError();
+    return await UserSequelizeRepo.pager.connect(args, async (pagingCtx: PagingCtx) => {
+      const { cursor, limit, pagingType } = pagingCtx;
+
+      const cmp = pagingType === PagingType.FORWARD ? Op.gt : Op.lt;
+
+      const [entities, min, max] = await Promise.all([
+        UserModel.findAll({
+          where: {
+            cursor: {
+              [cmp]: cursor,
+            },
+          },
+          limit,
+          raw: true,
+        }),
+        UserModel.min<number, UserModel>('cursor'),
+        UserModel.max<number, UserModel>('cursor'),
+      ]);
+
+      if (pagingType === PagingType.BACKWARD) {
+        entities.reverse();
+      }
+
+      return {
+        entities,
+        min: typeof min === 'number' ? min : -Infinity,
+        max: typeof max === 'number' ? max : Infinity,
+      };
+    });
   }
 }
