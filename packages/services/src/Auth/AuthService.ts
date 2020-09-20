@@ -13,6 +13,10 @@ export class AuthService {
   static MIN_PASSWORD_LENGTH = 6;
   static HASH_ROUNDS = 10;
 
+  static async encryptPassword(password: string): Promise<string> {
+    return await bcrypt.hash(password, AuthService.HASH_ROUNDS);
+  }
+
   userRepo: UserRepo;
 
   constructor(@inject(TYPES.UserRepo) userRepo: UserRepo) {
@@ -45,7 +49,8 @@ export class AuthService {
   }
 
   async signup(username: string, email: string, password: string): Promise<User> {
-    const encryptedPassword = await this.validateAndEncryptPassword(password);
+    this.validatePassword(password);
+    const encryptedPassword = await AuthService.encryptPassword(password);
     const confirmationToken = uuid.v4();
 
     const user = await this.userRepo.create({
@@ -87,11 +92,7 @@ export class AuthService {
     if (user.confirmedAt) {
       throw new BadRequestError('user already confirmed');
     }
-
-    const updatedUser: User = { ...user, confirmationToken: uuid.v4() };
-    await this.userRepo.update(updatedUser.id, updatedUser);
-
-    return updatedUser;
+    return await this.userRepo.update(id, { confirmationToken: uuid.v4() });
   }
 
   async refreshResetPasswordToken(email: string, reqAt: Date): Promise<User> {
@@ -121,17 +122,17 @@ export class AuthService {
       throw new BadRequestError('invalid reset password token');
     }
 
-    const encryptedPassword = await this.validateAndEncryptPassword(password);
+    this.validatePassword(password);
+    const encryptedPassword = await AuthService.encryptPassword(password);
     const updatedUser: User = { ...user, resetPasswordToken: null, resetPasswordTokenSentAt: null, encryptedPassword };
     await this.userRepo.update(updatedUser.id, updatedUser);
 
     return updatedUser;
   }
 
-  private async validateAndEncryptPassword(password: string): Promise<string> {
+  private async validatePassword(password: string) {
     if (password.length < AuthService.MIN_PASSWORD_LENGTH) {
       throw new BadRequestError(`password must be at least ${AuthService.MIN_PASSWORD_LENGTH} characters`);
     }
-    return await bcrypt.hash(password, AuthService.HASH_ROUNDS);
   }
 }

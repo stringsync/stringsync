@@ -105,3 +105,17 @@ describe('find', () => {
     expect(tagging).toBeNull();
   });
 });
+
+describe('update', () => {
+  it('updates a tagging', async () => {
+    const tagging = await taggingRepo.update(tagging2.id, { notationId: notation1.id });
+
+    expect(tagging.notationId).toBe(notation1.id);
+  });
+
+  it('returns a plain object', async () => {
+    const tagging = await taggingRepo.update(tagging2.id, { notationId: notation1.id });
+
+    expect(isPlainObject(tagging)).toBe(true);
+  });
+});

@@ -1,6 +1,6 @@
 import { UserModel } from './UserModel';
 import { useTestContainer, TYPES } from '@stringsync/di';
-import { EntityBuilder } from '@stringsync/common';
+import { EntityBuilder, randStr } from '@stringsync/common';
 import * as uuid from 'uuid';
 import { NotationRepo, UserRepo } from '@stringsync/repos';
 import { sortBy } from 'lodash';
@@ -91,9 +91,44 @@ it('returns all notations', async () => {
     EntityBuilder.buildRandNotation({ transcriberId: transcriber2.id }),
   ]);
 
-  const userDao = await UserModel.findByPk(transcriber1.id, { include: 'notations' });
+  const userEntity = await UserModel.findByPk(transcriber1.id, { include: 'notations' });
 
-  expect(userDao).not.toBeNull();
-  expect(userDao!.notations).toHaveLength(2);
-  expect(userDao!.notations?.map((notation) => notation.id).sort()).toStrictEqual([notation1.id, notation2.id].sort());
+  expect(userEntity).not.toBeNull();
+  expect(userEntity!.notations).toHaveLength(2);
+  expect(userEntity!.notations?.map((notation) => notation.id).sort()).toStrictEqual(
+    [notation1.id, notation2.id].sort()
+  );
+});
+
+it('does not clear confirmationToken when setting email on a new entity', () => {
+  const confirmationToken = uuid.v4();
+  const userEntity = new UserModel(EntityBuilder.buildRandUser({ confirmationToken }));
+
+  const email = `${randStr(8)}@example.com`;
+  userEntity.email = email;
+
+  expect(userEntity.email).toBe(email);
+  expect(userEntity.confirmationToken).toBe(confirmationToken);
+});
+
+it('clears confirmationToken when setting email on a saved entity', async () => {
+  const confirmationToken = uuid.v4();
+  const userEntity = await UserModel.create(EntityBuilder.buildRandUser({ confirmationToken }));
+
+  const email = `${randStr(8)}@example.com`;
+  userEntity.email = email;
+
+  expect(userEntity.email).toBe(email);
+  expect(userEntity.confirmationToken).toBeNull();
+});
+
+it('clears confirmedAt when setting email on a saved entity', async () => {
+  const confirmedAt = new Date();
+  const userModel = await UserModel.create(EntityBuilder.buildRandUser({ confirmedAt }));
+
+  const email = `${randStr(8)}@example.com`;
+  userModel.email = email;
+
+  expect(userModel.email).toBe(email);
+  expect(userModel.confirmedAt).toBeNull();
 });

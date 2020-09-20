@@ -1,7 +1,7 @@
-import { MiddlewareFn } from 'type-graphql';
-import { ResolverCtx } from '../types';
 import { BadRequestError } from '@stringsync/common';
+import { MiddlewareFn } from 'type-graphql';
+import { ReqCtx } from '../../ctx';
 
-export const Never: MiddlewareFn<ResolverCtx> = async (data, next): Promise<never> => {
+export const Never: MiddlewareFn<ReqCtx> = async (data, next): Promise<never> => {
   throw new BadRequestError('invalid request');
 };

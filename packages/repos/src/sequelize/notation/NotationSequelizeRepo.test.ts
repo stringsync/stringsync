@@ -144,12 +144,19 @@ describe('update', () => {
     const notation = await notationRepo.create(EntityBuilder.buildRandNotation({ transcriberId }));
     const songName = randStr(8);
 
-    await notationRepo.update(notation.id, { songName });
+    const updatedNotation = await notationRepo.update(notation.id, { songName });
 
-    const foundNotation = await notationRepo.find(notation.id);
-    expect(foundNotation).not.toBeNull();
-    expect(foundNotation!.songName).toBe(songName);
+    expect(updatedNotation.songName).toBe(songName);
   });
+
+  it('returns plain objects', async () => {
+    const notation = await notationRepo.create(EntityBuilder.buildRandNotation({ transcriberId }));
+    const songName = randStr(8);
+
+    const updatedNotation = await notationRepo.update(notation.id, { songName });
+
+    expect(isPlainObject(updatedNotation)).toBe(true);
+  })
 });
 
 describe('findPage', () => {

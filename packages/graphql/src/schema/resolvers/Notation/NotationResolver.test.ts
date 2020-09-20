@@ -35,7 +35,7 @@ beforeEach(() => {
 
 beforeEach(async () => {
   password = randStr(10);
-  const encryptedPassword = await bcrypt.hash(password, AuthService.HASH_ROUNDS);
+  const encryptedPassword = await AuthService.encryptPassword(password);
   [teacher, admin] = await userRepo.bulkCreate([
     EntityBuilder.buildRandUser({ encryptedPassword, role: UserRole.TEACHER }),
     EntityBuilder.buildRandUser({ encryptedPassword, role: UserRole.ADMIN }),
@@ -140,10 +140,12 @@ describe('createNotation', () => {
   it('forbids notation creation when not logged in', async () => {
     const createNotationRes = await notationClient.createNotation(input);
     expect(createNotationRes.statusCode).toBe(HttpStatus.OK);
+
+    expect(createNotationRes.body.data.createNotation).toBeNull();
   });
 
   it('forbids notation creation when logged in as student', async () => {
-    const encryptedPassword = await bcrypt.hash(password, AuthService.HASH_ROUNDS);
+    const encryptedPassword = await AuthService.encryptPassword(password);
     const student = await userRepo.create(EntityBuilder.buildRandUser({ encryptedPassword, role: UserRole.STUDENT }));
 
     const loginRes = await authClient.login({ usernameOrEmail: student.username, password });
@@ -151,5 +153,7 @@ describe('createNotation', () => {
 
     const createNotationRes = await notationClient.createNotation(input);
     expect(createNotationRes.statusCode).toBe(HttpStatus.OK);
+
+    expect(createNotationRes.body.data.createNotation).toBeNull();
   });
 });

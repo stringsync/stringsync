@@ -16,8 +16,9 @@
     "noImplicitThis": true,
     "target": "ES2020",
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "types": ["jest-extended"]
   },
-  "include": ["packages"],
+  "include": ["packages", "jest.d.ts"],
   "exclude": ["node_modules", "dst"]
 }

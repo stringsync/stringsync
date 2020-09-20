@@ -1,4 +1,4 @@
 import { MiddlewareFn } from 'type-graphql';
-import { ResolverCtx } from '../types';
+import { ReqCtx } from '../../ctx';
 
-export const Identity: MiddlewareFn<ResolverCtx> = async (data, next) => next();
+export const Identity: MiddlewareFn<ReqCtx> = async (data, next) => next();

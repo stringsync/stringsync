@@ -17,18 +17,24 @@ export class TaggingModel extends Model<Tagging, Partial<Tagging>> implements Ta
         notationId: {
           type: DataTypes.TEXT,
           allowNull: false,
-          key: 'id',
+          references: {
+            model: 'notations',
+            key: 'id',
+          },
         },
         tagId: {
           type: DataTypes.TEXT,
           allowNull: false,
-          key: 'id',
+          references: {
+            model: 'tags',
+            key: 'id',
+          },
         },
-      },
+      } as any,
       {
         sequelize,
         tableName: 'taggings',
-        modelName: 'Tagging',
+        modelName: 'tagging',
         timestamps: false,
         underscored: true,
       }

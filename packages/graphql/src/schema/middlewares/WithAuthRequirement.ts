@@ -1,9 +1,9 @@
 import { MiddlewareFn } from 'type-graphql';
-import { ResolverCtx } from '../types';
 import { AuthRequirement, ForbiddenError } from '@stringsync/common';
 import { gtEqStudent, gtEqTeacher, gtEqAdmin } from '@stringsync/domain';
+import { ReqCtx } from '../../ctx';
 
-export const WithAuthRequirement = (authReq: AuthRequirement): MiddlewareFn<ResolverCtx> => async (data, next) => {
+export const WithAuthRequirement = (authReq: AuthRequirement): MiddlewareFn<ReqCtx> => async (data, next) => {
   const { isLoggedIn, role } = data.context.req.session.user;
 
   switch (authReq) {

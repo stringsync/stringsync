@@ -1,12 +1,12 @@
 import { MiddlewareFn } from 'type-graphql';
-import { ResolverCtx } from '../types';
+import { ReqCtx } from '../../ctx';
 import { Predicate } from './types';
 
 export const Branch = (
-  test: Predicate<ResolverCtx>,
-  left: MiddlewareFn<ResolverCtx>,
-  right: MiddlewareFn<ResolverCtx>
-): MiddlewareFn<ResolverCtx> => async (data, next): Promise<any> => {
+  test: Predicate<ReqCtx>,
+  left: MiddlewareFn<ReqCtx>,
+  right: MiddlewareFn<ReqCtx>
+): MiddlewareFn<ReqCtx> => async (data, next): Promise<any> => {
   const result = await test(data, next);
   const middleware = result ? left : right;
   return middleware(data, next);

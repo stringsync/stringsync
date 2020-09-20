@@ -34,7 +34,7 @@ export type LoginInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   createNotation?: Maybe<NotationObject>;
-  updateUser: UserObject;
+  updateUser?: Maybe<UserObject>;
   login?: Maybe<UserObject>;
   logout?: Maybe<Scalars['Boolean']>;
   signup?: Maybe<UserObject>;

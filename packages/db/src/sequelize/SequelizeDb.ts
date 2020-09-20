@@ -10,9 +10,9 @@ export class SequelizeDb implements Db {
       SequelizeDb.hackClsNamespace();
     }
 
-    // const namespace = getNamespace('transaction') || createNamespace('transaction');
+    const namespace = getNamespace('transaction') || createNamespace('transaction');
 
-    // Sequelize.useCLS(namespace);
+    Sequelize.useCLS(namespace);
 
     const sequelize = new Sequelize({
       dialect: 'postgres',
@@ -40,8 +40,8 @@ export class SequelizeDb implements Db {
   private static hackClsNamespace() {
     // process.namespaces gets overwritten when importing cls-hooked:
     // https://github.com/Jeff-Lewis/cls-hooked/blob/master/context.js#L453
-    // As a workaround, process.testClsNamespace gets set by TestEnvironment.js,
-    // and then re-set here.
+    // As a workaround, process.stringSyncTransactionNamespace gets set by
+    // ServerTestEnvironment.js, and then re-set here.
     const p = process as any;
     p.namespaces.transaction = p.stringSyncTransactionNamespace;
   }
