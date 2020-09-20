@@ -1,5 +1,6 @@
 export interface User {
   id: string;
+  cursor: number;
   createdAt: Date;
   updatedAt: Date;
   username: string;
@@ -11,7 +12,6 @@ export interface User {
   resetPasswordToken: string | null;
   resetPasswordTokenSentAt: Date | null;
   avatarUrl: string | null;
-  rank: number;
 }
 
 export enum UserRole {
@@ -22,5 +22,5 @@ export enum UserRole {
 
 export type PublicUser = Omit<
   User,
-  'encryptedPassword' | 'confirmationToken' | 'confirmedAt' | 'resetPasswordToken' | 'rank'
+  'encryptedPassword' | 'confirmationToken' | 'confirmedAt' | 'resetPasswordToken' | 'cursor'
 >;

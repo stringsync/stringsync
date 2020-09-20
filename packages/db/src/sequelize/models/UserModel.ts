@@ -13,6 +13,10 @@ export class UserModel extends Model<User, Partial<User>> implements User {
           primaryKey: true,
           unique: true,
         },
+        cursor: {
+          type: DataTypes.INTEGER,
+          autoIncrement: true,
+        },
         createdAt: {
           type: DataTypes.DATE,
         },
@@ -83,10 +87,6 @@ export class UserModel extends Model<User, Partial<User>> implements User {
             isUrl: true,
           },
         },
-        rank: {
-          type: DataTypes.INTEGER,
-          autoIncrement: true,
-        },
       },
       {
         sequelize,
@@ -108,6 +108,7 @@ export class UserModel extends Model<User, Partial<User>> implements User {
   notations?: NotationModel[];
 
   id!: string;
+  cursor!: number;
   createdAt!: Date;
   updatedAt!: Date;
   username!: string;
@@ -119,5 +120,4 @@ export class UserModel extends Model<User, Partial<User>> implements User {
   resetPasswordToken!: string | null;
   resetPasswordTokenSentAt!: Date | null;
   avatarUrl!: string | null;
-  rank!: number;
 }

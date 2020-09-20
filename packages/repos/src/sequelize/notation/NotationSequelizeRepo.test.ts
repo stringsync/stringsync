@@ -156,7 +156,7 @@ describe('update', () => {
     const updatedNotation = await notationRepo.update(notation.id, { songName });
 
     expect(isPlainObject(updatedNotation)).toBe(true);
-  })
+  });
 });
 
 describe('findPage', () => {
@@ -169,7 +169,7 @@ describe('findPage', () => {
   beforeEach(async () => {
     users = new Array(NUM_USERS);
     for (let ndx = 0; ndx < NUM_USERS; ndx++) {
-      users[ndx] = EntityBuilder.buildRandUser({ rank: ndx + 1 });
+      users[ndx] = EntityBuilder.buildRandUser({ cursor: ndx + 1 });
     }
     users = await userRepo.bulkCreate(users);
 
