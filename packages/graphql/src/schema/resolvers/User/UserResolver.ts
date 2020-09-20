@@ -1,5 +1,5 @@
 import { UserConnectionObject } from './UserConnectionObject';
-import { AuthRequirement, Connection, NotFoundError } from '@stringsync/common';
+import { AuthRequirement, BadRequestError, Connection, NotFoundError } from '@stringsync/common';
 import { TYPES } from '@stringsync/di';
 import { User } from '@stringsync/domain';
 import { UserService } from '@stringsync/services';
@@ -36,8 +36,12 @@ export class UserResolver {
   @Mutation((returns) => UserObject, { nullable: true })
   @UseMiddleware(
     WithAuthRequirement(AuthRequirement.LOGGED_IN),
-    WithValidator(async (data: ResolverData<ReqCtx>) => {
-      const input: UpdateUserInput = data.args.input;
+    WithValidator(async (data) => {
+      const input: UpdateUserInput | undefined = data.args.input;
+      if (!input) {
+        throw new BadRequestError('input required');
+      }
+      await UpdateUserInput.validate(input, data.context);
     })
   )
   async updateUser(@Arg('input') input: UpdateUserInput, @Ctx() ctx: ReqCtx): Promise<User | null> {

@@ -103,15 +103,16 @@ describe('updateUser', () => {
     expect(updateUserRes).toHaveErrorCode(ErrorCode.FORBIDDEN);
   });
 
-  it.skip.each<Omit<UpdateUserInput, 'id'>>([
+  it.each<Omit<UpdateUserInput, 'id'>>([
     { email: 'updatedemail123@gmail.com' },
     { email: 'asdfasdf@gmail.com', username: 'newusername' },
     { username: 'newusername24' },
   ])('disallows admins from updating other non role attributes', async (attrs) => {
-    const loginRes = await authClient.login({ usernameOrEmail: student.username, password });
+    const loginRes = await authClient.login({ usernameOrEmail: admin.username, password });
     expect(loginRes.statusCode).toBe(HttpStatus.OK);
 
     const updateUserRes = await userClient.updateUser({ id: student.id, ...attrs });
+    expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
     expect(updateUserRes).toHaveErrorCode(ErrorCode.BAD_REQUEST);
   });
 });
