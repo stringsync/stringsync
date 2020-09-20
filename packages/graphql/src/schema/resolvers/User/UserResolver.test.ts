@@ -6,6 +6,7 @@ import { AuthService } from '@stringsync/services';
 import { TestGraphqlClient, useTestApp } from '../../../testing';
 import { TestAuthClient } from '../Auth/TestAuthClient';
 import { TestUserClient } from './TestUserClient';
+import { UpdateUserInput } from './UpdateUserInput';
 
 const { app, container } = useTestApp();
 
@@ -100,5 +101,17 @@ describe('updateUser', () => {
 
     expect(updateUserRes.body.data.updateUser).toBeNull();
     expect(updateUserRes).toHaveErrorCode(ErrorCode.FORBIDDEN);
+  });
+
+  it.each<Omit<UpdateUserInput, 'id'>>([
+    { email: 'updatedemail123@gmail.com' },
+    { email: 'asdfasdf@gmail.com', username: 'newusername' },
+    { username: 'newusername24' },
+  ])('disallows admins from updating other non role attributes', async (attrs) => {
+    const loginRes = await authClient.login({ usernameOrEmail: student.username, password });
+    expect(loginRes.statusCode).toBe(HttpStatus.OK);
+
+    const updateUserRes = await userClient.updateUser({ id: student.id, ...attrs });
+    expect(updateUserRes).toHaveErrorCode(ErrorCode.BAD_REQUEST);
   });
 });
