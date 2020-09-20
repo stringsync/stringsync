@@ -92,8 +92,9 @@ export class NotationSequelizeRepo implements NotationRepo {
       if (pagingType === PagingType.BACKWARD) {
         entities.reverse();
       }
+
       const min = get(minRows, '[0].min') || -Infinity;
-      const max = get(maxRows, '[0].max') || Infinity;
+      const max = get(maxRows, '[0].max') || +Infinity;
 
       return { entities, min, max };
     });
