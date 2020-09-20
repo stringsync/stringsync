@@ -35,6 +35,13 @@ export class UserModel extends Model<User, Partial<User>> implements User {
           validate: {
             isEmail: true,
           },
+          set(value: string) {
+            this.setDataValue('email', value);
+            if (!this.isNewRecord && this.previous('email') !== value) {
+              this.confirmedAt = null;
+              this.confirmationToken = null;
+            }
+          },
         },
         encryptedPassword: {
           type: DataTypes.TEXT,
