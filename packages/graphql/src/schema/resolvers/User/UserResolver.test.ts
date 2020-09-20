@@ -6,7 +6,6 @@ import { AuthService } from '@stringsync/services';
 import { TestGraphqlClient, useTestApp } from '../../../testing';
 import { TestAuthClient } from '../Auth/TestAuthClient';
 import { TestUserClient } from './TestUserClient';
-import { get } from 'lodash';
 
 const { app, container } = useTestApp();
 
