@@ -99,11 +99,7 @@ export class UserSequelizeRepo implements UserRepo {
         entities.reverse();
       }
 
-      return {
-        entities,
-        min: typeof min === 'number' ? min : -Infinity,
-        max: typeof max === 'number' ? max : Infinity,
-      };
+      return { entities, min, max };
     });
   }
 }
