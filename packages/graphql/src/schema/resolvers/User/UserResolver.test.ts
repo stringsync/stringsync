@@ -93,7 +93,7 @@ describe('updateUser', () => {
     const user = await factory.createRandUser();
 
     const loginRes = await authClient.login({ usernameOrEmail: student.username, password });
-    expect(loginRes).toHaveHttpStatus(HttpStatus.OK);
+    expect(loginRes.statusCode).toBe(HttpStatus.OK);
 
     const username = randStr(12);
     const updateUserRes = await userClient.updateUser({ id: user.id, username });

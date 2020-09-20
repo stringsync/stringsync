@@ -1,6 +1,5 @@
-import { toHaveHttpStatus, toHaveErrorCode } from './matchers';
+import { toHaveErrorCode } from './matchers';
 
 expect.extend({
-  toHaveHttpStatus,
   toHaveErrorCode,
 });
