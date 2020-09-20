@@ -39,7 +39,7 @@ Before running the server for the first time, you will need to generate a secret
 ./bin/ss gensecrets
 ```
 
-These will initially have fake credentials, but this should be OK as long as you don't interact with dev AWS resources (such as uploading a file to AWS).
+The file it generates will have fake credentials, but this should be OK as long as you don't interact with dev AWS resources (such as uploading a file to AWS).
 
 To run the server, start Docker engine and run:
 
