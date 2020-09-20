@@ -10,6 +10,8 @@ export interface NotationConnectionArgs extends ConnectionArgs {
   tagIds?: string[] | null;
 }
 
+export interface UserConnectionArgs extends ConnectionArgs {}
+
 export enum PagingType {
   FORWARD,
   BACKWARD,

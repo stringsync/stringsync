@@ -8,6 +8,7 @@ export class EntityBuilder {
 
     return {
       id: randStr(8),
+      cursor: randInt(0, 100000),
       username: randStr(8),
       email: `${randStr(8)}@${randStr(5)}.com`,
       createdAt: now,
@@ -19,7 +20,6 @@ export class EntityBuilder {
       encryptedPassword: '$2b$10$OlF1bUqORoywn42UmkEq/O9H5X3QdDG8Iwn5tPuBFjGqGo3dA7mDe', // password = 'password',
       resetPasswordToken: null,
       resetPasswordTokenSentAt: null,
-      rank: randInt(0, 100000),
       ...attrs,
     };
   }

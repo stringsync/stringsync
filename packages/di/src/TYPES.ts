@@ -11,7 +11,6 @@ export const TYPES = {
   Mailer: Symbol('Mailer'),
   NotationLoader: Symbol('NotationLoader'),
   NotationLoaderCtor: Symbol('NotationLoaderCtor'),
-  NotationPager: Symbol('NotationPager'),
   NotationRepo: Symbol('NotationRepo'),
   NotationSequelizeLoader: Symbol('NotationSequelizeLoader'),
   NotationSequelizeRepo: Symbol('NotationSequelizeRepo'),

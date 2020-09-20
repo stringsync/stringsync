@@ -1,9 +1,9 @@
-import { randStr, EntityBuilder } from '@stringsync/common';
+import { EntityBuilder, randStr } from '@stringsync/common';
 import { TYPES, useTestContainer } from '@stringsync/di';
 import { User } from '@stringsync/domain';
 import { isPlainObject, sortBy, take } from 'lodash';
-import { UserSequelizeRepo } from './UserSequelizeRepo';
 import * as uuid from 'uuid';
+import { UserSequelizeRepo } from './UserSequelizeRepo';
 
 const container = useTestContainer();
 
@@ -224,33 +224,33 @@ describe('update', () => {
 });
 
 describe('findPage', () => {
-  const NUM_USERS = UserSequelizeRepo.PAGE_LIMIT + 1;
+  const NUM_USERS = 21;
 
   let users: User[];
 
   beforeEach(async () => {
     users = new Array(NUM_USERS);
     for (let ndx = 0; ndx < NUM_USERS; ndx++) {
-      users[ndx] = EntityBuilder.buildRandUser({ rank: ndx + 1 });
+      users[ndx] = EntityBuilder.buildRandUser({ cursor: ndx + 1 });
     }
     users = await userRepo.bulkCreate(users);
   });
 
-  it('returns the first PAGE_LIMIT records by default', async () => {
+  it('returns the first 20 records by default', async () => {
     const userConnection = await userRepo.findPage({});
 
     const actualUsers = userConnection.edges.map((edge) => edge.node);
-    const expectedUsers = take(sortBy(users, 'rank').reverse(), UserSequelizeRepo.PAGE_LIMIT);
+    const expectedUsers = take(sortBy(users, 'cursor'), 20);
 
-    expect(actualUsers).toHaveLength(UserSequelizeRepo.PAGE_LIMIT);
-    expect(sortBy(actualUsers, 'id')).toStrictEqual(sortBy(expectedUsers, 'id'));
+    expect(actualUsers).toHaveLength(20);
+    expect(actualUsers).toIncludeSameMembers(expectedUsers);
   });
 
-  it('returns the first N records by reverse rank', async () => {
+  it('returns the first N records by reverse cursor', async () => {
     const userConnection = await userRepo.findPage({ first: 5 });
 
     const actualUsers = userConnection.edges.map((edge) => edge.node);
-    const expectedUsers = take(sortBy(users, 'rank').reverse(), 5);
+    const expectedUsers = take(sortBy(users, 'cursor'), 5);
 
     expect(actualUsers).toHaveLength(5);
     expect(actualUsers).toStrictEqual(expectedUsers);
@@ -261,12 +261,7 @@ describe('findPage', () => {
     const userConnection = await userRepo.findPage({ first: 2, after: pageInfo.endCursor });
 
     const actualUsers = userConnection.edges.map((edge) => edge.node);
-    const expectedUsers = take(
-      sortBy(users, 'rank')
-        .reverse()
-        .slice(1),
-      2
-    );
+    const expectedUsers = take(sortBy(users, 'cursor').slice(1), 2);
 
     expect(actualUsers).toHaveLength(2);
     expect(actualUsers).toStrictEqual(expectedUsers);
@@ -277,7 +272,7 @@ describe('findPage', () => {
     const userConnection = await userRepo.findPage({ first: limit });
 
     const actualUsers = userConnection.edges.map((edge) => edge.node);
-    const expectedUsers = sortBy(users, 'rank').reverse();
+    const expectedUsers = sortBy(users, 'cursor');
 
     expect(actualUsers).toStrictEqual(expectedUsers);
   });
@@ -287,15 +282,9 @@ describe('findPage', () => {
     const userConnection = await userRepo.findPage({ first: NUM_USERS + 1, after: pageInfo.endCursor });
 
     const actualUsers = userConnection.edges.map((edge) => edge.node);
-    const expectedUsers = sortBy(users)
-      .reverse()
-      .slice(1);
+    const expectedUsers = sortBy(users, 'cursor').slice(1);
 
     expect(actualUsers).toHaveLength(expectedUsers.length);
     expect(actualUsers).toStrictEqual(expectedUsers);
-  });
-
-  it('does not allow backwards pagination', async () => {
-    await expect(userRepo.findPage({ last: 1 })).rejects.toThrow();
   });
 });

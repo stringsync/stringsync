@@ -6,12 +6,12 @@ import { UserService } from '@stringsync/services';
 import { inject, injectable } from 'inversify';
 import { Arg, Args, Ctx, Mutation, Query, Resolver, ResolverData, UseMiddleware } from 'type-graphql';
 import { WithAuthRequirement, WithValidator } from '../../middlewares';
-import { ConnectionArgs } from './../Paging';
 import { UserArgs } from './UserArgs';
 import { UserObject } from './UserObject';
 import { UpdateUserInput } from './UpdateUserInput';
 import { pick } from 'lodash';
 import { ReqCtx } from '../../../ctx';
+import { UserConnectionArgs } from './UserConnectionArgs';
 
 @Resolver()
 @injectable()
@@ -29,7 +29,7 @@ export class UserResolver {
 
   @Query((returns) => UserConnectionObject)
   @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN_AS_ADMIN))
-  async users(@Args() args: ConnectionArgs): Promise<Connection<User>> {
+  async users(@Args() args: UserConnectionArgs): Promise<Connection<User>> {
     return await this.userService.findPage(args);
   }
 

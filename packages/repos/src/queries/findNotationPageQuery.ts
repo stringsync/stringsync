@@ -36,7 +36,7 @@ export const findNotationPageQuery = (args: FindNotationPageQueryArgs): string =
   const b = sql
     .select('notations.*')
     .from('notations')
-    .where('cursor', isPagingBackward ? '<' : '>', cursor)
+    .where('notations.cursor', isPagingBackward ? '<' : '>', cursor)
     .orderBy('notations.cursor', isPagingBackward ? 'desc' : 'asc')
     .limit(limit);
 
@@ -49,13 +49,13 @@ export const findNotationPageQuery = (args: FindNotationPageQueryArgs): string =
 export const findNotationPageMinQuery = (args: FindNotationPageQueryArgs): string => {
   const { tagIds, query } = args;
   const b = sql
-    .select('cursor')
+    .select('notations.cursor')
     .from('notations')
     .as('cursors');
   applyQuery(b, query);
   applyTagIds(b, tagIds);
   return sql
-    .min('cursor')
+    .min('cursors.cursor')
     .from(b)
     .toString();
 };
@@ -63,13 +63,13 @@ export const findNotationPageMinQuery = (args: FindNotationPageQueryArgs): strin
 export const findNotationPageMaxQuery = (args: FindNotationPageQueryArgs): string => {
   const { tagIds, query } = args;
   const b = sql
-    .select('cursor')
+    .select('notations.cursor')
     .from('notations')
     .as('cursors');
   applyQuery(b, query);
   applyTagIds(b, tagIds);
   return sql
-    .max('cursor')
+    .max('cursors.cursor')
     .from(b)
     .toString();
 };

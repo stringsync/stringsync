@@ -10,4 +10,5 @@ export enum ErrorCode {
   BAD_REQUEST,
   NOT_FOUND,
   INTERNAL,
+  NOT_IMPLEMENTED,
 }
