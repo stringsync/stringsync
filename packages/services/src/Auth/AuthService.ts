@@ -91,11 +91,7 @@ export class AuthService {
     if (user.confirmedAt) {
       throw new BadRequestError('user already confirmed');
     }
-
-    const updatedUser: User = { ...user, confirmationToken: uuid.v4() };
-    await this.userRepo.update(updatedUser.id, updatedUser);
-
-    return updatedUser;
+    return await this.userRepo.update(id, { confirmationToken: uuid.v4() });
   }
 
   async refreshResetPasswordToken(email: string, reqAt: Date): Promise<User> {
