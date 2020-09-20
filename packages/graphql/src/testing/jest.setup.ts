@@ -1,8 +1,5 @@
+import { toHaveHttpStatus } from './matchers';
+
 expect.extend({
-  toFailForSure() {
-    return {
-      pass: false,
-      message: () => 'this will always fail',
-    };
-  },
+  toHaveHttpStatus,
 });

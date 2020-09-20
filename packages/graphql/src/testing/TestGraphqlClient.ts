@@ -1,8 +1,8 @@
 import { randStr } from '@stringsync/common';
-import { Express, Response } from 'express';
-import request, { SuperAgentTest } from 'supertest';
-import { CallResponse } from './types';
+import { Express } from 'express';
 import { ExtractableFile, extractFiles } from 'extract-files';
+import request, { SuperAgentTest } from 'supertest';
+import { Response } from './types';
 
 export class TestGraphqlClient {
   app: Express;
@@ -16,7 +16,7 @@ export class TestGraphqlClient {
   call = async <T, N extends string, V extends Record<string, any> | void = void>(
     query: string,
     variables?: V
-  ): Promise<Response & { body: CallResponse<T, N> }> => {
+  ): Promise<Response<T, N>> => {
     // extract files
     const { clone, files } = extractFiles(
       { query, variables },
