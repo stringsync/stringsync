@@ -4,9 +4,9 @@ import { WithAuthRequirement, WithErrorHandler } from '../../middlewares';
 import { AuthRequirement, ForbiddenError } from '@stringsync/common';
 import { UseMiddleware } from 'type-graphql';
 import { Predicate } from '../../middlewares/types';
-import { ResolverCtx } from '../../types';
+import { ReqCtx } from '../../../ctx';
 
-export const RestrictedField = (IsDataOwner: Predicate<ResolverCtx>) =>
+export const RestrictedField = (IsDataOwner: Predicate<ReqCtx>) =>
   UseMiddleware(
     WithErrorHandler((err) => {
       if (err instanceof ForbiddenError) {

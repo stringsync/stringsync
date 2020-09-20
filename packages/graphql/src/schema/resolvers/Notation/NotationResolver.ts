@@ -6,8 +6,8 @@ import { FileStorage, Logger } from '@stringsync/util';
 import { inject, injectable } from 'inversify';
 import { Arg, Args, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { NotationObject } from '.';
+import { ReqCtx } from '../../../ctx';
 import { WithAuthRequirement } from '../../middlewares';
-import { ResolverCtx } from '../../types';
 import { CreateNotationInput } from './CreateNotationInput';
 import { NotationArgs } from './NotationArgs';
 import { NotationConnectionArgs } from './NotationConnectionArgs';
@@ -42,7 +42,7 @@ export class NotationResolver {
 
   @Mutation((returns) => NotationObject, { nullable: true })
   @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER))
-  async createNotation(@Arg('input') input: CreateNotationInput, @Ctx() ctx: ResolverCtx): Promise<Notation> {
+  async createNotation(@Arg('input') input: CreateNotationInput, @Ctx() ctx: ReqCtx): Promise<Notation> {
     const { artistName, songName, tagIds } = input;
     const [thumbnail, video] = await Promise.all([input.thumbnail!, input.video!]);
     return await this.notationService.create({

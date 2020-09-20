@@ -4,14 +4,14 @@ import { TYPES } from '@stringsync/di';
 import { User } from '@stringsync/domain';
 import { UserService } from '@stringsync/services';
 import { inject, injectable } from 'inversify';
-import { Arg, Args, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
-import { WithAuthRequirement } from '../../middlewares';
+import { Arg, Args, Ctx, Mutation, Query, Resolver, ResolverData, UseMiddleware } from 'type-graphql';
+import { WithAuthRequirement, WithValidator } from '../../middlewares';
 import { ConnectionArgs } from './../Paging';
 import { UserArgs } from './UserArgs';
 import { UserObject } from './UserObject';
 import { UpdateUserInput } from './UpdateUserInput';
-import { ResolverCtx } from '../../types';
 import { pick } from 'lodash';
+import { ReqCtx } from '../../../ctx';
 
 @Resolver()
 @injectable()
@@ -34,8 +34,13 @@ export class UserResolver {
   }
 
   @Mutation((returns) => UserObject, { nullable: true })
-  @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN))
-  async updateUser(@Arg('input') input: UpdateUserInput, @Ctx() ctx: ResolverCtx): Promise<User | null> {
+  @UseMiddleware(
+    WithAuthRequirement(AuthRequirement.LOGGED_IN),
+    WithValidator(async (data: ResolverData<ReqCtx>) => {
+      const input: UpdateUserInput = data.args.input;
+    })
+  )
+  async updateUser(@Arg('input') input: UpdateUserInput, @Ctx() ctx: ReqCtx): Promise<User | null> {
     const { id } = input;
     const attrs = pick(input, ['username', 'email', 'role']);
     return await this.userService.update(id, attrs);
