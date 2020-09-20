@@ -86,9 +86,7 @@ describe('updateUser', () => {
     expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
 
     expect(updateUserRes.body.data.updateUser).toBeNull();
-    expect(updateUserRes.body.errors).toBeDefined();
-    const errorCodes = updateUserRes.body.errors!.map((error) => get(error, 'extensions.code')).filter(identity);
-    expect(errorCodes.some((errorCode) => errorCode === ErrorCode.FORBIDDEN)).toBe(true);
+    expect(updateUserRes).toHaveErrorCode(ErrorCode.FORBIDDEN);
   });
 
   it('disallows users from updating another user', async () => {
@@ -102,7 +100,6 @@ describe('updateUser', () => {
     expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
 
     expect(updateUserRes.body.data.updateUser).toBeNull();
-    const errorCodes = updateUserRes.body.errors!.map((error) => get(error, 'extensions.code')).filter(identity);
-    expect(errorCodes.some((errorCode) => errorCode === ErrorCode.FORBIDDEN)).toBe(true);
+    expect(updateUserRes).toHaveErrorCode(ErrorCode.FORBIDDEN);
   });
 });
