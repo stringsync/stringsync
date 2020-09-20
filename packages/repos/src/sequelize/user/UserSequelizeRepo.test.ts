@@ -1,9 +1,9 @@
-import { randStr, EntityBuilder } from '@stringsync/common';
+import { EntityBuilder, randStr } from '@stringsync/common';
 import { TYPES, useTestContainer } from '@stringsync/di';
 import { User } from '@stringsync/domain';
 import { isPlainObject, sortBy, take } from 'lodash';
-import { UserSequelizeRepo } from './UserSequelizeRepo';
 import * as uuid from 'uuid';
+import { UserSequelizeRepo } from './UserSequelizeRepo';
 
 const container = useTestContainer();
 
@@ -224,7 +224,7 @@ describe('update', () => {
 });
 
 describe.skip('findPage', () => {
-  const NUM_USERS = UserSequelizeRepo.PAGE_LIMIT + 1;
+  const NUM_USERS = 21;
 
   let users: User[];
 
@@ -240,9 +240,9 @@ describe.skip('findPage', () => {
     const userConnection = await userRepo.findPage({});
 
     const actualUsers = userConnection.edges.map((edge) => edge.node);
-    const expectedUsers = take(sortBy(users, 'cursor').reverse(), UserSequelizeRepo.PAGE_LIMIT);
+    const expectedUsers = take(sortBy(users, 'cursor').reverse(), 20);
 
-    expect(actualUsers).toHaveLength(UserSequelizeRepo.PAGE_LIMIT);
+    expect(actualUsers).toHaveLength(20);
     expect(sortBy(actualUsers, 'id')).toStrictEqual(sortBy(expectedUsers, 'id'));
   });
 

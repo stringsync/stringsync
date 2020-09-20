@@ -5,7 +5,6 @@ import { AuthResolver, HealthController, NotationResolver, TagResolver, UserReso
 import {
   Factory,
   NotationLoader,
-  NotationPager,
   NotationRepo,
   NotationSequelizeLoader,
   NotationSequelizeRepo,
@@ -16,7 +15,6 @@ import {
   TagSequelizeLoader,
   TagSequelizeRepo,
   UserLoader,
-  UserPager,
   UserRepo,
   UserSequelizeLoader,
   UserSequelizeRepo,
@@ -104,12 +102,10 @@ export class DI {
       bind<UserLoader>(TYPES.UserLoader).to(UserSequelizeLoader);
       bind<Ctor<UserLoader>>(TYPES.UserLoaderCtor).toConstructor(UserSequelizeLoader);
       bind<UserRepo>(TYPES.UserRepo).to(UserSequelizeRepo);
-      bind<UserPager>(TYPES.UserPager).to(UserPager);
 
       bind<NotationLoader>(TYPES.NotationLoader).to(NotationSequelizeLoader);
       bind<Ctor<NotationLoader>>(TYPES.NotationLoaderCtor).toConstructor(NotationSequelizeLoader);
       bind<NotationRepo>(TYPES.NotationRepo).to(NotationSequelizeRepo);
-      bind<NotationPager>(TYPES.NotationPager).to(NotationPager);
 
       bind<TagLoader>(TYPES.TagLoader).to(TagSequelizeLoader);
       bind<Ctor<TagLoader>>(TYPES.TagLoaderCtor).toConstructor(TagSequelizeLoader);

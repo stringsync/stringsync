@@ -1,20 +1,20 @@
-import { Connection, ConnectionArgs, NotFoundError, NotImplementedError } from '@stringsync/common';
+import { Connection, NotFoundError, NotImplementedError, UserConnectionArgs } from '@stringsync/common';
 import { UserModel } from '@stringsync/db';
 import { TYPES } from '@stringsync/di';
 import { User } from '@stringsync/domain';
 import { inject, injectable } from 'inversify';
 import { Op } from 'sequelize';
-import { UserPager } from '../../pagers';
 import { UserLoader, UserRepo } from '../../types';
+import { Pager } from '../../util';
 
 @injectable()
 export class UserSequelizeRepo implements UserRepo {
-  userLoader: UserLoader;
-  userPager: UserPager;
+  static userPager = new Pager<User>(20, 'user');
 
-  constructor(@inject(TYPES.UserLoader) userLoader: UserLoader, @inject(TYPES.UserPager) userPager: UserPager) {
+  userLoader: UserLoader;
+
+  constructor(@inject(TYPES.UserLoader) userLoader: UserLoader) {
     this.userLoader = userLoader;
-    this.userPager = userPager;
   }
 
   async findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null> {
@@ -73,7 +73,7 @@ export class UserSequelizeRepo implements UserRepo {
     return userEntity.get({ plain: true });
   }
 
-  async findPage(connectionArgs: ConnectionArgs): Promise<Connection<User>> {
+  async findPage(args: UserConnectionArgs): Promise<Connection<User>> {
     throw new NotImplementedError();
   }
 }

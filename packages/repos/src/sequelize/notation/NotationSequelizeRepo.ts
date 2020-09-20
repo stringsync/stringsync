@@ -5,7 +5,6 @@ import { Notation } from '@stringsync/domain';
 import { inject, injectable } from 'inversify';
 import { get } from 'lodash';
 import { QueryTypes, Sequelize } from 'sequelize';
-import { NotationPager } from '../../pagers';
 import {
   camelCaseKeys,
   findNotationPageMaxQuery,
@@ -13,21 +12,20 @@ import {
   findNotationPageQuery,
 } from '../../queries';
 import { NotationLoader, NotationRepo } from '../../types';
-import { PagingCtx } from '../../util';
+import { Pager, PagingCtx } from '../../util';
 
 @injectable()
 export class NotationSequelizeRepo implements NotationRepo {
+  static notationPager = new Pager<Notation>(10, 'notation');
+
   notationLoader: NotationLoader;
-  notationPager: NotationPager;
   sequelize: Sequelize;
 
   constructor(
     @inject(TYPES.NotationLoader) notationLoader: NotationLoader,
-    @inject(TYPES.NotationPager) notationPager: NotationPager,
     @inject(TYPES.Sequelize) sequelize: Sequelize
   ) {
     this.notationLoader = notationLoader;
-    this.notationPager = notationPager;
     this.sequelize = sequelize;
   }
 
@@ -80,7 +78,7 @@ export class NotationSequelizeRepo implements NotationRepo {
     const tagIds = args.tagIds || null;
     const query = args.query ? `%${args.query}%` : null;
 
-    return this.notationPager.connect(args, async (pagingCtx: PagingCtx) => {
+    return NotationSequelizeRepo.notationPager.connect(args, async (pagingCtx: PagingCtx) => {
       const { cursor, limit, pagingType } = pagingCtx;
       const queryArgs = { cursor, pagingType, limit, query, tagIds };
 

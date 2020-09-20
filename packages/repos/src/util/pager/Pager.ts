@@ -1,4 +1,5 @@
 import {
+  Base64,
   Connection,
   ConnectionArgs,
   Edge,
@@ -9,14 +10,13 @@ import {
   UnknownError,
   UNKNOWN_ERROR_MSG,
 } from '@stringsync/common';
-import { injectable } from 'inversify';
 import { first, last } from 'lodash';
-import { PagingCtx, PagingEntity, EntityFinder, EntityFinderResults } from './types';
+import { EntityFinder, EntityFinderResults, PagingCtx, PagingEntity } from './types';
 
-@injectable()
-export abstract class Pager<T extends PagingEntity> {
+export class Pager<T extends PagingEntity> {
   static DEFAULT_FORWARD_CURSOR = 0;
   static DEFAULT_BACKWARD_CURSOR = 2147483645;
+  static CURSOR_DELIMITER = ':';
 
   static meta(connectionArgs: ConnectionArgs): PagingMeta {
     const { first = null, last = null, after = null, before = null } = connectionArgs;
@@ -39,11 +39,29 @@ export abstract class Pager<T extends PagingEntity> {
     return { pagingType: PagingType.FORWARD, after, first };
   }
 
-  abstract defaultLimit: number;
+  readonly defaultLimit: number;
+  readonly cursorType: string;
 
-  abstract encodeCursor(decodedCursor: number): string;
+  constructor(defaultLimit: number, cursorType: string) {
+    this.defaultLimit = defaultLimit;
+    this.cursorType = cursorType;
+  }
 
-  abstract decodeCursor(encodedCursor: string): number;
+  decodeCursor(encodedCursor: string): number {
+    const [cursorType, cursor] = Base64.decode(encodedCursor).split(Pager.CURSOR_DELIMITER);
+    if (cursorType !== this.cursorType) {
+      throw new Error(`expected cursor type '${this.cursorType}', got: ${cursorType}`);
+    }
+    try {
+      return parseInt(cursor, 10);
+    } catch (e) {
+      throw new Error(`cannot decode cursor: ${cursor}`);
+    }
+  }
+
+  encodeCursor(decodedCursor: number): string {
+    return Base64.encode(`${this.cursorType}${Pager.CURSOR_DELIMITER}${decodedCursor}`);
+  }
 
   async connect(connectionArgs: ConnectionArgs, findEntities: EntityFinder<T>): Promise<Connection<T>> {
     const pagingCtx = this.getPagingCtx(connectionArgs);
