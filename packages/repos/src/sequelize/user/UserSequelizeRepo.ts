@@ -1,24 +1,20 @@
-import { Base64, Connection, ConnectionArgs, NotFoundError, NotImplementedError, PagingType } from '@stringsync/common';
-import { Pager } from '../../util';
-import { UserLoader } from '../../types';
+import { Connection, ConnectionArgs, NotFoundError, NotImplementedError } from '@stringsync/common';
+import { UserModel } from '@stringsync/db';
 import { TYPES } from '@stringsync/di';
 import { User } from '@stringsync/domain';
-import { UserModel } from '@stringsync/db';
 import { inject, injectable } from 'inversify';
 import { Op } from 'sequelize';
-import { UserRepo } from '../../types';
-import { last, first } from 'lodash';
+import { UserPager } from '../../pagers';
+import { UserLoader, UserRepo } from '../../types';
 
 @injectable()
 export class UserSequelizeRepo implements UserRepo {
-  static CURSOR_TYPE = 'user';
-  static CURSOR_DELIMITER = ':';
-  static PAGE_LIMIT = 50;
-
   userLoader: UserLoader;
+  userPager: UserPager;
 
-  constructor(@inject(TYPES.UserLoader) userLoader: UserLoader) {
+  constructor(@inject(TYPES.UserLoader) userLoader: UserLoader, @inject(TYPES.UserPager) userPager: UserPager) {
     this.userLoader = userLoader;
+    this.userPager = userPager;
   }
 
   async findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null> {

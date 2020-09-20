@@ -30,6 +30,7 @@ export const TYPES = {
   TagService: Symbol('TagService'),
   UserLoader: Symbol('UserLoader'),
   UserLoaderCtor: Symbol('UserLoaderCtor'),
+  UserPager: Symbol('UserPager'),
   UserRepo: Symbol('UserRepo'),
   UserSequelizeLoader: Symbol('UserSequelizeLoader'),
   UserSequelizeRepo: Symbol('UserSequelizeRepo'),

@@ -16,6 +16,7 @@ import {
   TagSequelizeLoader,
   TagSequelizeRepo,
   UserLoader,
+  UserPager,
   UserRepo,
   UserSequelizeLoader,
   UserSequelizeRepo,
@@ -103,6 +104,7 @@ export class DI {
       bind<UserLoader>(TYPES.UserLoader).to(UserSequelizeLoader);
       bind<Ctor<UserLoader>>(TYPES.UserLoaderCtor).toConstructor(UserSequelizeLoader);
       bind<UserRepo>(TYPES.UserRepo).to(UserSequelizeRepo);
+      bind<UserPager>(TYPES.UserPager).to(UserPager);
 
       bind<NotationLoader>(TYPES.NotationLoader).to(NotationSequelizeLoader);
       bind<Ctor<NotationLoader>>(TYPES.NotationLoaderCtor).toConstructor(NotationSequelizeLoader);
