@@ -25,11 +25,11 @@ export class TaggingSequelizeRepo implements TaggingRepo {
   }
 
   async update(id: string, attrs: Partial<Tagging>): Promise<Tagging> {
-    const [_, taggingEntities] = await TaggingModel.update(attrs, { where: { id }, returning: true });
-    const taggingEntity = taggingEntities[0];
+    const taggingEntity = await TaggingModel.findByPk(id);
     if (!taggingEntity) {
-      throw new NotFoundError(`tagging not found: ${id}`);
+      throw new NotFoundError('tagging not found');
     }
+    await taggingEntity.update(attrs);
     return taggingEntity.get({ plain: true });
   }
 }

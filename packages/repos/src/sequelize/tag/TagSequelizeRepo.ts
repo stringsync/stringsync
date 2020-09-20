@@ -40,11 +40,11 @@ export class TagSequelizeRepo implements TagRepo {
   }
 
   async update(id: string, attrs: Partial<Tag>): Promise<Tag> {
-    const [_, tagEntities] = await TagModel.update(attrs, { where: { id }, returning: true });
-    const tagEntity = tagEntities[0];
+    const tagEntity = await TagModel.findByPk(id);
     if (!tagEntity) {
       throw new NotFoundError('tag not found');
     }
+    await tagEntity.update(attrs);
     return tagEntity.get({ plain: true });
   }
 }
