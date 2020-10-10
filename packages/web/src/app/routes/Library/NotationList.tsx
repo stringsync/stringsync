@@ -20,12 +20,12 @@ export const NotationList: React.FC<Props> = (props) => {
   return (
     <div data-testid="notation-list">
       {!props.notations.length && props.isPending ? null : (
-        <InfiniteScroll initialLoad={false} loadMore={props.loadNextPage} hasMore={props.hasNextPage}>
+        <InfiniteScroll loadMore={props.loadNextPage} hasMore={props.hasNextPage}>
           <List
             grid={props.grid}
             dataSource={props.notations}
             renderItem={(notation) => (
-              <List.Item key={notation.id}>
+              <List.Item>
                 <Link to={`/n/${notation.id}`}>
                   <NotationCard notation={notation} query={props.query} isTagChecked={props.isTagChecked} />
                 </Link>

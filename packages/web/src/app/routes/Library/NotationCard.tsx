@@ -1,5 +1,7 @@
 import { Avatar, Card, Divider, Skeleton, Tag } from 'antd';
 import React, { useRef, useState } from 'react';
+import { Transition } from 'react-transition-group';
+import { TransitionStatus } from 'react-transition-group/Transition';
 import styled from 'styled-components';
 import { useEffectOnce } from '../../../hooks';
 import { NotationPreview } from '../../../store/library/types';
@@ -8,7 +10,20 @@ import { getQueryMatches } from './getQueryMatches';
 
 const LOAD_TIMEOUT_MS = 3000;
 
+const FADE_IN_DURATION_MS = 150;
+
 const HIGHLIGHT_COLOR = theme['@highlight-color'];
+
+const getOpacity = (state: TransitionStatus) => {
+  switch (state) {
+    case 'entering':
+      return 0;
+    case 'entered':
+      return 1;
+    default:
+      return 0;
+  }
+};
 
 const ColoredSpan = styled.span`
   color: ${HIGHLIGHT_COLOR};
@@ -20,6 +35,11 @@ const Tags = styled.div`
 
 const StyledSkeleton = styled(Skeleton)`
   padding: ${(props) => (props.loading ? 24 : 0)}px;
+`;
+
+const StyledImg = styled.img<{ state: TransitionStatus }>`
+  opacity: ${({ state }) => getOpacity(state)};
+  transition: opacity ${FADE_IN_DURATION_MS}ms ease-in-out;
 `;
 
 interface Props {
@@ -73,7 +93,11 @@ export const NotationCard: React.FC<Props> = (props) => {
       hoverable
       cover={
         <StyledSkeleton active loading={loading} paragraph={{ rows: 7 }}>
-          {thumbnailUrl ? <img src={thumbnailUrl} alt={songName} /> : null}
+          {thumbnailUrl ? (
+            <Transition appear in={!loading} timeout={FADE_IN_DURATION_MS}>
+              {(state) => <StyledImg state={state} src={thumbnailUrl} alt={songName} />}
+            </Transition>
+          ) : null}
         </StyledSkeleton>
       }
     >
