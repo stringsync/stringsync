@@ -17,7 +17,7 @@ const MemoizedNotationCard = React.memo(
 interface Props {
   isPending: boolean;
   notations: NotationPreview[];
-  hasNextPage: boolean;
+  shouldLoadMore: boolean;
   query: string;
   grid: ListGridType;
   loadNextPage: (pageNumber: number) => void;
@@ -26,23 +26,26 @@ interface Props {
 
 export const NotationList: React.FC<Props> = (props) => {
   return (
-    <div data-testid="notation-list">
-      <InfiniteScroll loadMore={props.loadNextPage} hasMore={props.hasNextPage}>
-        {!props.notations.length && props.isPending ? null : (
-          <List
-            grid={props.grid}
-            dataSource={props.notations}
-            rowKey={(notation) => notation.id}
-            renderItem={(notation) => (
-              <List.Item key={notation.id}>
-                <Link to={`/n/${notation.id}`}>
-                  <MemoizedNotationCard notation={notation} query={props.query} isTagChecked={props.isTagChecked} />
-                </Link>
-              </List.Item>
-            )}
-          />
-        )}
-      </InfiniteScroll>
-    </div>
+    <InfiniteScroll
+      data-testid="notation-list"
+      threshold={20}
+      loadMore={props.loadNextPage}
+      hasMore={props.shouldLoadMore}
+    >
+      {!props.notations.length && props.isPending ? null : (
+        <List
+          grid={props.grid}
+          dataSource={props.notations}
+          rowKey={(notation) => notation.id}
+          renderItem={(notation) => (
+            <List.Item key={notation.id}>
+              <Link to={`/n/${notation.id}`}>
+                <MemoizedNotationCard notation={notation} query={props.query} isTagChecked={props.isTagChecked} />
+              </Link>
+            </List.Item>
+          )}
+        />
+      )}
+    </InfiniteScroll>
   );
 };

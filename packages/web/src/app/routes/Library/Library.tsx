@@ -31,15 +31,16 @@ const Library: React.FC<Props> = enhance(() => {
   const pageInfo = useSelector<RootState, PageInfo>((state) => state.library.pageInfo);
   const xs = useSelector<RootState, boolean>((state) => state.viewport.xs);
   const isPending = useSelector<RootState, boolean>((state) => state.library.isPending);
-  const hasNextPage = useSelector<RootState, boolean>(
-    (state) => !state.library.isPending && Boolean(state.library.pageInfo.hasNextPage) && !state.library.errors.length
-  );
+  const hasErrors = useSelector<RootState, boolean>((state) => state.library.errors.length > 0);
 
   // local state
   const [query, setQuery] = useState('');
   const [tagIds, setTagIds] = useState(new Set<string>());
   const [isSearching, setIsSearching] = useState(false);
   const [isListVisible, setIsListVisible] = useState(true);
+
+  // computed state
+  const shouldLoadMore = Boolean(pageInfo.hasNextPage) && !isPending && !hasErrors;
 
   // callbacks
   const loadNextPage = useCallback(async () => {
@@ -115,7 +116,7 @@ const Library: React.FC<Props> = enhance(() => {
           grid={{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 3 }}
           notations={notations}
           query={query}
-          hasNextPage={hasNextPage}
+          shouldLoadMore={shouldLoadMore}
           loadNextPage={loadNextPage}
           isTagChecked={isTagChecked}
         />
