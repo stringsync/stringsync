@@ -8,6 +8,7 @@ import { useEffectOnce } from '../../../hooks';
 import { AppDispatch, getTags, RootState } from '../../../store';
 import { clearPages, getNotationPage } from '../../../store/library';
 import { NotationPreview } from '../../../store/library/types';
+import { LibraryErrors } from './LibraryErrors';
 import { LibrarySearch } from './LibrarySearch';
 import { NotationList } from './NotationList';
 
@@ -95,6 +96,8 @@ const Library: React.FC<Props> = enhance(() => {
 
   return (
     <Outer data-testid="library" xs={xs}>
+      <LibraryErrors />
+
       <LibrarySearch
         query={query}
         tagIds={tagIds}
