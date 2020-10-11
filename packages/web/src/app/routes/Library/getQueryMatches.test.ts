@@ -33,6 +33,11 @@ it.each<{ query: string; str: string; expectation: QueryMatch[] }>([
     str: 'foo',
     expectation: [{ str: 'foo', matches: false }],
   },
+  {
+    query: 'FOOF',
+    str: 'foo',
+    expectation: [{ str: 'foo', matches: false }],
+  },
 ])('partitions the first match in the string', (t) => {
   const queryMatches = getQueryMatches(t.query, t.str);
   expect(queryMatches).toStrictEqual(t.expectation);
