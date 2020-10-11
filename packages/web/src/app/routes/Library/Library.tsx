@@ -89,8 +89,8 @@ const Library: React.FC<Props> = enhance(() => {
 
   // effects
   useEffectOnce(() => {
-    dispatch(clearPages());
     dispatch(getTags());
+    dispatch(clearPages());
   });
 
   return (
@@ -106,7 +106,7 @@ const Library: React.FC<Props> = enhance(() => {
       <br />
       <br />
 
-      {isListVisible ? (
+      {isListVisible && (
         <NotationList
           isPending={isPending}
           grid={{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 3 }}
@@ -116,7 +116,7 @@ const Library: React.FC<Props> = enhance(() => {
           loadNextPage={loadNextPage}
           isTagChecked={isTagChecked}
         />
-      ) : null}
+      )}
     </Outer>
   );
 });
