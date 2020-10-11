@@ -8,7 +8,10 @@ import { Link } from 'react-router-dom';
 
 const MemoizedNotationCard = React.memo(
   NotationCard,
-  (prevProps, nextProps) => prevProps.notation.id === nextProps.notation.id && prevProps.query === nextProps.query
+  (prevProps, nextProps) =>
+    prevProps.notation.id === nextProps.notation.id &&
+    prevProps.query === nextProps.query &&
+    prevProps.isTagChecked === nextProps.isTagChecked
 );
 
 interface Props {
