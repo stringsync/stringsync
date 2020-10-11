@@ -6,6 +6,11 @@ import { NotationPreview } from '../../../store/library/types';
 import { NotationCard } from './NotationCard';
 import { Link } from 'react-router-dom';
 
+const MemoizedNotationCard = React.memo(
+  NotationCard,
+  (prevProps, nextProps) => prevProps.notation.id === nextProps.notation.id && prevProps.query === nextProps.query
+);
+
 interface Props {
   isPending: boolean;
   notations: NotationPreview[];
@@ -24,10 +29,11 @@ export const NotationList: React.FC<Props> = (props) => {
           <List
             grid={props.grid}
             dataSource={props.notations}
+            rowKey={(notation) => notation.id}
             renderItem={(notation) => (
-              <List.Item>
+              <List.Item key={notation.id}>
                 <Link to={`/n/${notation.id}`}>
-                  <NotationCard notation={notation} query={props.query} isTagChecked={props.isTagChecked} />
+                  <MemoizedNotationCard notation={notation} query={props.query} isTagChecked={props.isTagChecked} />
                 </Link>
               </List.Item>
             )}
