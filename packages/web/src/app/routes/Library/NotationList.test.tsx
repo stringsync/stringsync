@@ -28,7 +28,7 @@ it('renders without crashing', async () => {
   const loadNextPage = jest.fn();
   const isTagChecked = () => true;
   const query = '';
-  const hasNextPage = false;
+  const shouldLoadMore = false;
 
   const { container } = render(
     <Test>
@@ -38,7 +38,7 @@ it('renders without crashing', async () => {
         query={query}
         notations={notations}
         loadNextPage={loadNextPage}
-        hasNextPage={hasNextPage}
+        shouldLoadMore={shouldLoadMore}
         isTagChecked={isTagChecked}
       />
     </Test>

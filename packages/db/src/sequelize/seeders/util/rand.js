@@ -13,7 +13,7 @@ const randInt = (min, max) => Math.floor(Math.random() * (max - min) + min);
 
 const randId = () => randStr(8);
 
-const sample = (arr) => arr[randInt(0, arr.length - 1)];
+const sample = (arr) => arr[randInt(0, arr.length)];
 
 const shuffle = (arr) => {
   for (let i = arr.length - 1; i > 0; i--) {

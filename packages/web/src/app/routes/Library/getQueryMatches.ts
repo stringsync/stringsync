@@ -8,7 +8,7 @@ export const getQueryMatches = (query: string, str: string): QueryMatch[] => {
     ];
   }
 
-  const ndx = str.indexOf(query);
+  const ndx = str.toLowerCase().indexOf(query.toLowerCase());
   if (ndx < 0) {
     return [{ str, matches: false }];
   }

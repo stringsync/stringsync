@@ -6,10 +6,18 @@ import { NotationPreview } from '../../../store/library/types';
 import { NotationCard } from './NotationCard';
 import { Link } from 'react-router-dom';
 
+const MemoizedNotationCard = React.memo(
+  NotationCard,
+  (prevProps, nextProps) =>
+    prevProps.notation.id === nextProps.notation.id &&
+    prevProps.query === nextProps.query &&
+    prevProps.isTagChecked === nextProps.isTagChecked
+);
+
 interface Props {
   isPending: boolean;
   notations: NotationPreview[];
-  hasNextPage: boolean;
+  shouldLoadMore: boolean;
   query: string;
   grid: ListGridType;
   loadNextPage: (pageNumber: number) => void;
@@ -18,22 +26,26 @@ interface Props {
 
 export const NotationList: React.FC<Props> = (props) => {
   return (
-    <div data-testid="notation-list">
+    <InfiniteScroll
+      data-testid="notation-list"
+      threshold={20}
+      loadMore={props.loadNextPage}
+      hasMore={props.shouldLoadMore}
+    >
       {!props.notations.length && props.isPending ? null : (
-        <InfiniteScroll initialLoad={false} loadMore={props.loadNextPage} hasMore={props.hasNextPage}>
-          <List
-            grid={props.grid}
-            dataSource={props.notations}
-            renderItem={(notation) => (
-              <List.Item key={notation.id}>
-                <Link to={`/n/${notation.id}`}>
-                  <NotationCard notation={notation} query={props.query} isTagChecked={props.isTagChecked} />
-                </Link>
-              </List.Item>
-            )}
-          />
-        </InfiniteScroll>
+        <List
+          grid={props.grid}
+          dataSource={props.notations}
+          rowKey={(notation) => notation.id}
+          renderItem={(notation) => (
+            <List.Item key={notation.id}>
+              <Link to={`/n/${notation.id}`}>
+                <MemoizedNotationCard notation={notation} query={props.query} isTagChecked={props.isTagChecked} />
+              </Link>
+            </List.Item>
+          )}
+        />
       )}
-    </div>
+    </InfiniteScroll>
   );
 };
