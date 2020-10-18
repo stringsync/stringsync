@@ -1,12 +1,12 @@
 import { compose, NotationConnectionArgs, PageInfo } from '@stringsync/common';
-import { debounce } from 'lodash';
+import { debounce, isEqual } from 'lodash';
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Layout, withLayout } from '../../../hocs';
 import { useEffectOnce } from '../../../hooks';
 import { AppDispatch, getTags, RootState } from '../../../store';
-import { clearPages, getNotationPage } from '../../../store/library';
+import { clearPages, getNotationPage, setQuery, setTagIds } from '../../../store/library';
 import { NotationPreview } from '../../../store/library/types';
 import { LibraryErrors } from './LibraryErrors';
 import { LibrarySearch } from './LibrarySearch';
@@ -27,6 +27,8 @@ interface Props {}
 const Library: React.FC<Props> = enhance(() => {
   // store state
   const dispatch = useDispatch<AppDispatch>();
+  const query = useSelector<RootState, string>(state => state.library.query);
+  const tagIds = useSelector<RootState, Set<string>>(state => new Set<string>(state.library.tagIds), isEqual);
   const notations = useSelector<RootState, NotationPreview[]>((state) => state.library.notations);
   const pageInfo = useSelector<RootState, PageInfo>((state) => state.library.pageInfo);
   const xs = useSelector<RootState, boolean>((state) => state.viewport.xs);
@@ -34,8 +36,6 @@ const Library: React.FC<Props> = enhance(() => {
   const hasErrors = useSelector<RootState, boolean>((state) => state.library.errors.length > 0);
 
   // local state
-  const [query, setQuery] = useState('');
-  const [tagIds, setTagIds] = useState(new Set<string>());
   const [isSearching, setIsSearching] = useState(false);
   const [isListVisible, setIsListVisible] = useState(true);
 
@@ -69,20 +69,20 @@ const Library: React.FC<Props> = enhance(() => {
 
   const onQueryChange = useCallback(
     (query: string) => {
-      setQuery(query);
+      dispatch(setQuery({ query }));
       dispatch(clearPages());
-      showListWhenStable();
       setIsSearching(true);
+      showListWhenStable();
     },
     [dispatch, showListWhenStable]
   );
 
   const onTagIdsChange = useCallback(
     (tagIds: Set<string>) => {
-      setTagIds(tagIds);
+      dispatch(setTagIds({ tagIds: Array.from(tagIds) }));
       dispatch(clearPages());
-      showListWhenStable();
       setIsSearching(true);
+      showListWhenStable();
     },
     [dispatch, showListWhenStable]
   );
@@ -92,7 +92,6 @@ const Library: React.FC<Props> = enhance(() => {
   // effects
   useEffectOnce(() => {
     dispatch(getTags());
-    dispatch(clearPages());
   });
 
   return (

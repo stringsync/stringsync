@@ -26,8 +26,8 @@ export type LibraryState = {
 };
 
 export type LibraryReducers = {
-  setQuery: CaseReducer<LibraryState, PayloadAction<string>>;
-  setTagIds: CaseReducer<LibraryState, PayloadAction<string[]>>;
+  setQuery: CaseReducer<LibraryState, PayloadAction<{ query: string }>>;
+  setTagIds: CaseReducer<LibraryState, PayloadAction<{ tagIds: string[] }>>;
   clearErrors: CaseReducer<LibraryState>;
   clearPages: CaseReducer<LibraryState>;
 };

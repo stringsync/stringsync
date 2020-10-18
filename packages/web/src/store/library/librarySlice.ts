@@ -50,17 +50,15 @@ export const librarySlice = createSlice<LibraryState, LibraryReducers, 'library'
   },
   reducers: {
     setQuery(state, action) {
-      state.query = action.payload;
+      state.query = action.payload.query;
     },
     setTagIds(state, action) {
-      state.tagIds = action.payload;
+      state.tagIds = action.payload.tagIds;
     },
     clearErrors(state) {
       state.errors = [];
     },
     clearPages(state) {
-      state.query = '';
-      state.tagIds = [];
       state.notations = [];
       state.errors = [];
       state.pageInfo = { startCursor: null, endCursor: null, hasNextPage: true, hasPreviousPage: false };
