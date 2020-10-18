@@ -82,14 +82,14 @@ StringSync was developed using VSCode. Project settings are stored in a `.vscode
 
 ```json
 {
-  "editor.formatOnSave": true,
-  "eslint.enable": true,
-  "eslint.validate": ["javascript", "typescript", "typescriptreact"],
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "eslint.packageManager": "yarn",
   "typescript.preferences.importModuleSpecifier": "relative",
   "javascript.preferences.importModuleSpecifier": "relative",
+  "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": true,
+    "source.organizeImports": true
   }
 }
 ```

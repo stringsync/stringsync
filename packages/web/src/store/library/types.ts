@@ -1,6 +1,6 @@
 import { PageInfo } from '@stringsync/common';
 import { PublicNotation, PublicUser, Tag } from '@stringsync/domain';
-import { CaseReducer } from '@reduxjs/toolkit';
+import { CaseReducer, PayloadAction } from '@reduxjs/toolkit';
 
 export type Notation = Pick<
   PublicNotation,
@@ -17,6 +17,8 @@ export type NotationPreview = Omit<Notation, 'createdAt' | 'updatedAt'> & {
 };
 
 export type LibraryState = {
+  query: string;
+  tagIds: string[];
   isPending: boolean;
   notations: NotationPreview[];
   pageInfo: PageInfo;
@@ -24,6 +26,8 @@ export type LibraryState = {
 };
 
 export type LibraryReducers = {
+  setQuery: CaseReducer<LibraryState, PayloadAction<{ query: string }>>;
+  setTagIds: CaseReducer<LibraryState, PayloadAction<{ tagIds: string[] }>>;
   clearErrors: CaseReducer<LibraryState>;
   clearPages: CaseReducer<LibraryState>;
 };

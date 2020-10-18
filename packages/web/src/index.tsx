@@ -1,12 +1,12 @@
+import { getWebConfig } from '@stringsync/config';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import * as serviceWorker from './serviceWorker';
 import { App, Routes } from './app';
-import { createStore } from './store';
-import { getWebConfig } from '@stringsync/config';
+import { AuthSync } from './components/AuthSync';
 import { DeviceSync } from './components/DeviceSync';
 import { ViewportSync } from './components/ViewportSync';
-import { AuthSync } from './components/AuthSync';
+import * as serviceWorker from './serviceWorker';
+import { createStore } from './store';
 
 const config = getWebConfig(process.env);
 const store = createStore();

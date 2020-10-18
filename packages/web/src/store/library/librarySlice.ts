@@ -1,11 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { PageInfo, NotationConnectionArgs } from '@stringsync/common';
+import { NotationConnectionArgs, PageInfo } from '@stringsync/common';
 import { toUserRole } from '../../clients';
 import { NotationClient } from '../../clients/notation';
+import { RootState } from '../types';
 import { LibraryReducers, LibraryState, NotationPreview } from './types';
 
 export type GetNotationPageReturned = { notations: NotationPreview[]; pageInfo: PageInfo };
-export type GetNotationPageThunkArg = NotationConnectionArgs;
+export type GetNotationPageThunkArg = { pageSize: number };
 export type GetNotationPageThunkConfig = { rejectValue: { errors: string[] } };
 export const getNotationPage = createAsyncThunk<
   GetNotationPageReturned,
@@ -13,7 +14,20 @@ export const getNotationPage = createAsyncThunk<
   GetNotationPageThunkConfig
 >('library/getNotationPage', async (args, thunk) => {
   const notationClient = NotationClient.create();
-  const { data, errors } = await notationClient.notations(args);
+
+  const state = thunk.getState() as RootState;
+  const connectionArgs: NotationConnectionArgs = {
+    last: args.pageSize,
+    before: state.library.pageInfo.endCursor,
+  };
+  if (state.library.query.length) {
+    connectionArgs.query = state.library.query;
+  }
+  if (state.library.tagIds.length) {
+    connectionArgs.tagIds = state.library.tagIds;
+  }
+
+  const { data, errors } = await notationClient.notations(connectionArgs);
 
   if (errors) {
     return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
@@ -42,11 +56,19 @@ export const librarySlice = createSlice<LibraryState, LibraryReducers, 'library'
   name: 'library',
   initialState: {
     isPending: false,
+    query: '',
+    tagIds: [],
     notations: [],
     errors: [],
     pageInfo: { startCursor: null, endCursor: null, hasNextPage: true, hasPreviousPage: false },
   },
   reducers: {
+    setQuery(state, action) {
+      state.query = action.payload.query;
+    },
+    setTagIds(state, action) {
+      state.tagIds = action.payload.tagIds;
+    },
     clearErrors(state) {
       state.errors = [];
     },
@@ -79,4 +101,4 @@ export const librarySlice = createSlice<LibraryState, LibraryReducers, 'library'
   },
 });
 
-export const { clearErrors, clearPages } = librarySlice.actions;
+export const { setQuery, setTagIds, clearErrors, clearPages } = librarySlice.actions;

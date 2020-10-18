@@ -1,4 +1,4 @@
-export * from './useMedia';
+export * from './useDidMount';
 export * from './useEffectOnce';
-export * from './useDidMountEffect';
+export * from './useMedia';
 export * from './usePrevious';
