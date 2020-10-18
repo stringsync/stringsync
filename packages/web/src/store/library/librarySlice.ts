@@ -89,4 +89,4 @@ export const librarySlice = createSlice<LibraryState, LibraryReducers, 'library'
   },
 });
 
-export const { clearErrors, clearPages } = librarySlice.actions;
+export const { setQuery, setTagIds, clearErrors, clearPages } = librarySlice.actions;
