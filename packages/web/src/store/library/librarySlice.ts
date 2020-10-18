@@ -59,6 +59,8 @@ export const librarySlice = createSlice<LibraryState, LibraryReducers, 'library'
       state.errors = [];
     },
     clearPages(state) {
+      state.query = '';
+      state.tagIds = [];
       state.notations = [];
       state.errors = [];
       state.pageInfo = { startCursor: null, endCursor: null, hasNextPage: true, hasPreviousPage: false };
