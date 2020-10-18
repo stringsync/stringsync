@@ -42,6 +42,8 @@ export const librarySlice = createSlice<LibraryState, LibraryReducers, 'library'
   name: 'library',
   initialState: {
     isPending: false,
+    query: '',
+    tagIds: [],
     notations: [],
     errors: [],
     pageInfo: { startCursor: null, endCursor: null, hasNextPage: true, hasPreviousPage: false },

@@ -17,6 +17,8 @@ export type NotationPreview = Omit<Notation, 'createdAt' | 'updatedAt'> & {
 };
 
 export type LibraryState = {
+  query: string;
+  tagIds: string[];
   isPending: boolean;
   notations: NotationPreview[];
   pageInfo: PageInfo;
