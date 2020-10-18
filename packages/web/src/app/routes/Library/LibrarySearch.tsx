@@ -2,10 +2,13 @@ import { CloseCircleOutlined, LoadingOutlined, SearchOutlined } from '@ant-desig
 import { Tag } from '@stringsync/domain';
 import { Affix, Button, Input, Row } from 'antd';
 import CheckableTag from 'antd/lib/tag/CheckableTag';
-import React, { ChangeEvent, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { isEqual } from 'lodash';
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { RootState } from '../../../store';
+import { useEffectOnce } from '../../../hooks';
+import { AppDispatch, getTags, RootState } from '../../../store';
+import { clearPages, setQuery, setTagIds } from '../../../store/library';
 
 const AffixInner = styled.div<{ xs: boolean; affixed: boolean }>`
   background: ${(props) => (props.affixed ? '#FFFFFF' : 'transparent')};
@@ -26,24 +29,23 @@ const SearchIcon = styled(SearchOutlined)`
   color: rgba(0, 0, 0, 0.25);
 `;
 
-interface Props {
-  query: string;
-  tagIds: Set<string>;
-  isSearching: boolean;
-  onQueryChange: (query: string) => void;
-  onTagIdsChange: (tagIds: Set<string>) => void;
-}
+interface Props {}
 
 export const LibrarySearch: React.FC<Props> = (props) => {
   // store state
+  const dispatch = useDispatch<AppDispatch>();
   const xs = useSelector<RootState, boolean>((state) => state.viewport.xs);
   const tags = useSelector<RootState, Tag[]>((state) => state.tag.tags);
+  const query = useSelector<RootState, string>((state) => state.library.query);
+  const tagIds = useSelector<RootState, Set<string>>((state) => new Set(state.library.tagIds), isEqual);
+  const isPending = useSelector<RootState, boolean>((state) => state.library.isPending);
 
   // local state
   const [affixed, setAffixed] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   // computed
-  const hasQueryOrTagChecked = Boolean(props.query.length || props.tagIds.size);
+  const hasSearchTerm = Boolean(query.length || tagIds.size);
 
   // callbacks
   const onAffixChange = (affixed?: boolean | undefined) => {
@@ -53,23 +55,40 @@ export const LibrarySearch: React.FC<Props> = (props) => {
   };
 
   const onQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
-    props.onQueryChange(event.target.value);
+    setIsSearching(true);
+    dispatch(clearPages());
+    dispatch(setQuery({ query: event.target.value }));
   };
 
   const onQueryTagCheckChange = (tagId: string) => (isChecked: boolean) => {
-    const tagIds = new Set(Array.from(props.tagIds));
+    const nextTagIds = new Set(Array.from(tagIds));
     if (isChecked) {
-      tagIds.add(tagId);
+      nextTagIds.add(tagId);
     } else {
-      tagIds.delete(tagId);
+      nextTagIds.delete(tagId);
     }
-    props.onTagIdsChange(tagIds);
+    setIsSearching(true);
+    dispatch(clearPages());
+    dispatch(setTagIds({ tagIds: Array.from(nextTagIds) }));
   };
 
   const onQueryClear = () => {
-    props.onQueryChange('');
-    props.onTagIdsChange(new Set());
+    setIsSearching(true);
+    dispatch(clearPages());
+    dispatch(setQuery({ query: '' }));
+    dispatch(setTagIds({ tagIds: [] }));
   };
+
+  // effects
+  useEffectOnce(() => {
+    dispatch(getTags());
+  });
+
+  useEffect(() => {
+    if (!isPending) {
+      setIsSearching(false);
+    }
+  }, [isPending]);
 
   return (
     <>
@@ -77,15 +96,15 @@ export const LibrarySearch: React.FC<Props> = (props) => {
         <AffixInner xs={xs} affixed={affixed}>
           <Search xs={xs}>
             <Input
-              value={props.query}
+              value={query}
               onChange={onQueryChange}
               placeholder="song, artist, or transcriber name"
-              prefix={props.isSearching ? <LoadingOutlined /> : <SearchIcon />}
-              suffix={hasQueryOrTagChecked ? <CloseCircleOutlined onClick={onQueryClear} /> : null}
+              prefix={isSearching ? <LoadingOutlined /> : <SearchIcon />}
+              suffix={hasSearchTerm ? <CloseCircleOutlined onClick={onQueryClear} /> : null}
             />
             <TagSearch justify="center" align="middle">
               {tags.map((tag) => (
-                <CheckableTag key={tag.id} checked={props.tagIds.has(tag.id)} onChange={onQueryTagCheckChange(tag.id)}>
+                <CheckableTag key={tag.id} checked={tagIds.has(tag.id)} onChange={onQueryTagCheckChange(tag.id)}>
                   {tag.name}
                 </CheckableTag>
               ))}
@@ -95,7 +114,7 @@ export const LibrarySearch: React.FC<Props> = (props) => {
       </Affix>
 
       <Row justify="center">
-        {hasQueryOrTagChecked ? (
+        {hasSearchTerm ? (
           <Button type="link" size="small" onClick={onQueryClear}>
             remove filters
           </Button>

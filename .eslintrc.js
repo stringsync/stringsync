@@ -9,7 +9,7 @@ module.exports = {
     ecmaVersion: 9,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint', 'react'],
+  plugins: ['@typescript-eslint', 'react', 'prettier'],
   extends: ['plugin:@typescript-eslint/recommended', 'react-app'],
   env: {
     es6: true,

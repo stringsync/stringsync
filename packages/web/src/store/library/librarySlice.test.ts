@@ -1,8 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { EntityBuilder, randStr } from '@stringsync/common';
-import { NotationClient, NotationEdgeObject, UserRoles } from '../../clients';
-import { getNotationPage, librarySlice, clearErrors, clearPages } from './librarySlice';
 import { UserRole } from '@stringsync/domain';
+import { NotationClient, NotationEdgeObject, UserRoles } from '../../clients';
+import { clearErrors, clearPages, getNotationPage, librarySlice } from './librarySlice';
 
 const buildRandNotationEdge = (): NotationEdgeObject => {
   const transcriber = EntityBuilder.buildRandUser();
@@ -117,7 +117,7 @@ describe('getNotationPage', () => {
       },
     });
 
-    store.dispatch(getNotationPage.pending('requestId', {}));
+    store.dispatch(getNotationPage.pending('requestId', { pageSize: 9 }));
 
     const state = store.getState();
     expect(state.library.isPending).toBe(true);
@@ -143,7 +143,7 @@ describe('getNotationPage', () => {
       },
     });
 
-    await store.dispatch(getNotationPage({}));
+    await store.dispatch(getNotationPage({ pageSize: 9 }));
 
     const state = store.getState();
     const { notations, isPending, pageInfo } = state.library;

@@ -24,7 +24,6 @@ export type CreateNotationInput = {
   tagIds: Array<Scalars['String']>;
 };
 
-
 export type LoginInput = {
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -43,36 +42,29 @@ export type Mutation = {
   resetPassword?: Maybe<Scalars['Boolean']>;
 };
 
-
 export type MutationCreateNotationArgs = {
   input: CreateNotationInput;
 };
-
 
 export type MutationUpdateUserArgs = {
   input: UpdateUserInput;
 };
 
-
 export type MutationLoginArgs = {
   input: LoginInput;
 };
-
 
 export type MutationSignupArgs = {
   input: SignupInput;
 };
 
-
 export type MutationConfirmEmailArgs = {
   input: ConfirmEmailInput;
 };
 
-
 export type MutationSendResetPasswordEmailArgs = {
   input: SendResetPasswordEmailInput;
 };
-
 
 export type MutationResetPasswordArgs = {
   input: ResetPasswordInput;
@@ -126,7 +118,6 @@ export type Query = {
   whoami?: Maybe<UserObject>;
 };
 
-
 export type QueryNotationsArgs = {
   before?: Maybe<Scalars['String']>;
   after?: Maybe<Scalars['String']>;
@@ -136,16 +127,13 @@ export type QueryNotationsArgs = {
   tagIds?: Maybe<Array<Scalars['String']>>;
 };
 
-
 export type QueryNotationArgs = {
   id: Scalars['String'];
 };
 
-
 export type QueryUserArgs = {
   id: Scalars['String'];
 };
-
 
 export type QueryUsersArgs = {
   before?: Maybe<Scalars['String']>;
@@ -183,7 +171,6 @@ export type UpdateUserInput = {
   role?: Maybe<UserRoles>;
 };
 
-
 export type UserConnectionObject = {
   __typename?: 'UserConnectionObject';
   pageInfo: PageInfoObject;
@@ -213,5 +200,5 @@ export type UserObject = {
 export enum UserRoles {
   STUDENT = 'STUDENT',
   TEACHER = 'TEACHER',
-  ADMIN = 'ADMIN'
+  ADMIN = 'ADMIN',
 }
