@@ -7,7 +7,7 @@ import { NotationPreview } from '../../../store/library/types';
 import { theme } from '../../../theme';
 import { getQueryMatches } from './getQueryMatches';
 
-const FADE_IN_DURATION_MS = 150;
+const FADE_IN_DURATION_MS = 300;
 
 const HIGHLIGHT_COLOR = theme['@highlight-color'];
 
