@@ -16,6 +16,7 @@
     "babel-plugin-import": "^1.13.0",
     "customize-cra": "^1.0.0",
     "eslint-loader": "^4.0.2",
+    "extract-files": "^9.0.0",
     "graphql": "^14.0.2",
     "less": "^3.11.3",
     "less-loader": "^6.1.0",
