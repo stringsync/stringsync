@@ -2,7 +2,7 @@ import { randStr } from '@stringsync/common';
 import { Express } from 'express';
 import { ExtractableFile, extractFiles } from 'extract-files';
 import request, { SuperAgentTest } from 'supertest';
-import { Response } from './types';
+import { RequestType, Response } from './types';
 
 export class TestGraphqlClient {
   app: Express;
@@ -13,7 +13,11 @@ export class TestGraphqlClient {
     this.agent = request.agent(app);
   }
 
-  call = async <T, N extends string, V extends Record<string, any> | void = void>(
+  call = async <
+    T extends RequestType,
+    N extends Exclude<keyof T, '__typename'>,
+    V extends Record<string, any> | void = void
+  >(
     query: string,
     variables?: V
   ): Promise<Response<T, N>> => {

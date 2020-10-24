@@ -1,8 +1,7 @@
-import { TestGraphqlClient, gql } from '../../../testing';
-import { Query, QueryNotationsArgs, Mutation } from '../../../testing/graphqlTypes';
+import { gql, TestGraphqlClient } from '../../../testing';
+import { Mutation, Query, QueryNotationsArgs } from '../../../testing/graphqlTypes';
 import { NotationArgs } from './NotationArgs';
 import { TestCreateNotationInput } from './types';
-import { Replace } from '@stringsync/common';
 
 export class TestNotationClient {
   graphqlClient: TestGraphqlClient;
@@ -12,7 +11,7 @@ export class TestNotationClient {
   }
 
   async notations(args: QueryNotationsArgs) {
-    return await this.graphqlClient.call<Query['notations'], 'notations', QueryNotationsArgs>(
+    return await this.graphqlClient.call<Query, 'notations', QueryNotationsArgs>(
       gql`
         query notations($before: String, $after: String, $first: Float, $last: Float) {
           notations(before: $before, after: $after, first: $first, last: $last) {
@@ -44,7 +43,7 @@ export class TestNotationClient {
   }
 
   async notation(args: NotationArgs) {
-    return await this.graphqlClient.call<Query['notation'], 'notation', NotationArgs>(
+    return await this.graphqlClient.call<Query, 'notation', NotationArgs>(
       gql`
         query notation($id: String!) {
           notation(id: $id) {
@@ -65,11 +64,7 @@ export class TestNotationClient {
   }
 
   async createNotation(input: TestCreateNotationInput) {
-    return await this.graphqlClient.call<
-      Mutation['createNotation'],
-      'createNotation',
-      { input: TestCreateNotationInput }
-    >(
+    return await this.graphqlClient.call<Mutation, 'createNotation', { input: TestCreateNotationInput }>(
       gql`
         mutation createNotation($input: CreateNotationInput!) {
           createNotation(input: $input) {

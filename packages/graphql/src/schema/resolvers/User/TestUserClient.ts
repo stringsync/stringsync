@@ -10,7 +10,7 @@ export class TestUserClient {
   }
 
   async updateUser(input: UpdateUserInput) {
-    return await this.graphqlClient.call<Mutation['updateUser'], 'updateUser', { input: UpdateUserInput }>(
+    return await this.graphqlClient.call<Mutation, 'updateUser', { input: UpdateUserInput }>(
       gql`
         mutation updateUser($input: UpdateUserInput!) {
           updateUser(input: $input) {
