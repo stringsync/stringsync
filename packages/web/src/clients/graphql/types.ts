@@ -2,7 +2,7 @@ import { OnlyKey } from '@stringsync/common';
 import { GraphQLError } from 'graphql';
 import { Mutation, Query } from '../graphqlTypes';
 
-export type Request = Query | Mutation;
+export type RequestType = Query | Mutation;
 
 export type RequestBody<V extends Record<string, any> | void = void> = {
   query?: string;
@@ -10,7 +10,7 @@ export type RequestBody<V extends Record<string, any> | void = void> = {
   variables: V;
 };
 
-export type Response<T extends Request, N extends Exclude<keyof T, '__typename'>> = {
+export type Response<T extends RequestType, N extends Exclude<keyof T, '__typename'>> = {
   errors?: GraphQLError[];
   data: OnlyKey<N, T[N]>;
 };

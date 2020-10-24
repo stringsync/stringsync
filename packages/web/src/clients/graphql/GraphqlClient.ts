@@ -1,5 +1,5 @@
 import { getWebConfig } from '@stringsync/config';
-import { Request, Response } from './types';
+import { RequestType, Response } from './types';
 
 export class GraphqlClient {
   readonly uri: string;
@@ -19,7 +19,7 @@ export class GraphqlClient {
   }
 
   call = async <
-    T extends Request,
+    T extends RequestType,
     N extends Exclude<keyof T, '__typename'>,
     V extends Record<string, any> | void = void
   >(
