@@ -1,10 +1,10 @@
+import { AuthRequirement, compose } from '@stringsync/common';
 import React from 'react';
-import { compose, AuthRequirement } from '@stringsync/common';
 import { Route, Switch } from 'react-router-dom';
-import { Landing } from './Landing';
-import { Fallback } from './Fallback';
-import { withAuthRequirement } from '../../hocs';
 import { ReturnToRoute } from '../../components/ReturnToRoute';
+import { withAuthRequirement } from '../../hocs';
+import { Fallback } from './Fallback';
+import { Landing } from './Landing';
 import { NotFound } from './NotFound';
 
 const Library = compose(withAuthRequirement(AuthRequirement.NONE))(React.lazy(() => import('./Library')));

@@ -18,7 +18,7 @@ export const getNotationPage = createAsyncThunk<
   const state = thunk.getState() as RootState;
   const connectionArgs: NotationConnectionArgs = {
     last: args.pageSize,
-    before: state.library.pageInfo.endCursor,
+    before: state.library.pageInfo.startCursor,
   };
   if (state.library.query.length) {
     connectionArgs.query = state.library.query;
