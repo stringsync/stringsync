@@ -4,7 +4,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { Wordmark } from '../../../components/Wordmark';
 import { Layout, withLayout } from '../../../hocs';
-import landing1 from './landing1.jpg';
+
+const LANDING1_SRC = 'https://dpwvs3j3j2uwp.cloudfront.net/landing1.jpg';
 
 const Outer = styled.div`
   background-color: white;
@@ -81,7 +82,7 @@ export const Landing: React.FC = enhance(() => {
           </BreathingRoom>
         </Col>
         <Col sm={24} md={12}>
-          <Img src={landing1} alt="landing1" />
+          <Img src={LANDING1_SRC} alt="landing1" />
         </Col>
       </Row>
     </Outer>
