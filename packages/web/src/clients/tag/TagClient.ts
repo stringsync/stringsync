@@ -1,6 +1,6 @@
+import { gql } from '../gql';
 import { GraphqlClient } from '../graphql';
 import { Query } from '../graphqlTypes';
-import { gql } from '../gql';
 
 export class TagClient {
   graphqlClient: GraphqlClient;
@@ -15,7 +15,7 @@ export class TagClient {
   }
 
   async tags() {
-    return await this.graphqlClient.call<Query['tags'], 'tags'>(
+    return await this.graphqlClient.call<Query, 'tags'>(
       gql`
         query {
           tags {

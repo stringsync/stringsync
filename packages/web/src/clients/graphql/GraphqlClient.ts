@@ -1,5 +1,5 @@
 import { getWebConfig } from '@stringsync/config';
-import { CallResponse } from './types';
+import { Request, Response } from './types';
 
 export class GraphqlClient {
   readonly uri: string;
@@ -18,10 +18,14 @@ export class GraphqlClient {
     this.uri = uri;
   }
 
-  call = async <T, N extends string, V extends Record<string, any> | void = void>(
+  call = async <
+    T extends Request,
+    N extends Exclude<keyof T, '__typename'>,
+    V extends Record<string, any> | void = void
+  >(
     query: string,
     variables?: V
-  ): Promise<CallResponse<T, N>> => {
+  ): Promise<Response<T, N>> => {
     const res = await fetch(this.uri, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },

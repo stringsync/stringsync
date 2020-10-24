@@ -1,6 +1,6 @@
+import { gql } from '../gql';
 import { GraphqlClient } from '../graphql';
 import { Query, QueryNotationsArgs } from '../graphqlTypes';
-import { gql } from '../gql';
 
 export class NotationClient {
   graphqlClient: GraphqlClient;
@@ -15,7 +15,7 @@ export class NotationClient {
   }
 
   async notations(args: QueryNotationsArgs) {
-    return await this.graphqlClient.call<Query['notations'], 'notations', QueryNotationsArgs>(
+    return await this.graphqlClient.call<Query, 'notations', QueryNotationsArgs>(
       gql`
         query notations(
           $first: Float

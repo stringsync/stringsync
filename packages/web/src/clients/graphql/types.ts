@@ -1,16 +1,16 @@
+import { OnlyKey } from '@stringsync/common';
 import { GraphQLError } from 'graphql';
+import { Mutation, Query } from '../graphqlTypes';
 
-export type OnlyKey<K extends string, V = any> = {
-  [P in K]: V;
-};
-
-export type CallResponse<T, N extends string> = {
-  errors?: GraphQLError[];
-  data: OnlyKey<N, T>;
-};
+export type Request = Query | Mutation;
 
 export type RequestBody<V extends Record<string, any> | void = void> = {
   query?: string;
   mutation?: string;
   variables: V;
+};
+
+export type Response<T extends Request, N extends Exclude<keyof T, '__typename'>> = {
+  errors?: GraphQLError[];
+  data: OnlyKey<N, T[N]>;
 };
