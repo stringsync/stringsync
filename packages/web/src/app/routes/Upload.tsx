@@ -103,7 +103,7 @@ const Upload: React.FC<Props> = enhance(() => {
 
           <Form form={form}>
             <HideableFormItem hidden={stepNdx !== 0}>
-              <Dragger multiple={false}>
+              <Dragger listType="picture" multiple={false}>
                 <p className="ant-upload-drag-icon">
                   <VideoCameraOutlined />
                 </p>
@@ -113,7 +113,7 @@ const Upload: React.FC<Props> = enhance(() => {
             </HideableFormItem>
 
             <HideableFormItem hidden={stepNdx !== 1}>
-              <Dragger multiple={false}>
+              <Dragger listType="picture" multiple={false}>
                 <p className="ant-upload-drag-icon">
                   <PictureOutlined />
                 </p>
