@@ -53,7 +53,7 @@ export class GraphqlClient {
     const files = Array.from(fileMap.keys());
     for (let ndx = 0; ndx < files.length; ndx++) {
       const file = files[ndx];
-      formData.append(ndx.toString(), file as Blob);
+      formData.append(ndx.toString(), file as File | Blob);
     }
 
     const res = await fetch(this.uri, {
