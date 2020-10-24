@@ -1,12 +1,12 @@
-import { TestGraphqlClient, gql } from '../../../testing';
+import { gql, TestGraphqlClient } from '../../../testing';
 import {
-  Query,
-  Mutation,
-  LoginInput,
-  SignupInput,
   ConfirmEmailInput,
+  LoginInput,
+  Mutation,
+  Query,
   ResetPasswordInput,
   SendResetPasswordEmailInput,
+  SignupInput,
 } from '../../../testing/graphqlTypes';
 
 export class TestAuthClient {
@@ -17,7 +17,7 @@ export class TestAuthClient {
   }
 
   async whoami() {
-    return await this.graphqlClient.call<Query['whoami'], 'whoami'>(gql`
+    return await this.graphqlClient.call<Query, 'whoami'>(gql`
       query {
         whoami {
           id
@@ -31,7 +31,7 @@ export class TestAuthClient {
   }
 
   async login(input: LoginInput) {
-    return await this.graphqlClient.call<Mutation['login'], 'login', { input: LoginInput }>(
+    return await this.graphqlClient.call<Mutation, 'login', { input: LoginInput }>(
       gql`
         mutation login($input: LoginInput!) {
           login(input: $input) {
@@ -48,7 +48,7 @@ export class TestAuthClient {
   }
 
   async signup(input: SignupInput) {
-    return await this.graphqlClient.call<Mutation['signup'], 'signup', { input: SignupInput }>(
+    return await this.graphqlClient.call<Mutation, 'signup', { input: SignupInput }>(
       gql`
         mutation signup($input: SignupInput!) {
           signup(input: $input) {
@@ -65,7 +65,7 @@ export class TestAuthClient {
   }
 
   async logout() {
-    return await this.graphqlClient.call<Mutation['logout'], 'logout'>(
+    return await this.graphqlClient.call<Mutation, 'logout'>(
       gql`
         mutation {
           logout
@@ -75,7 +75,7 @@ export class TestAuthClient {
   }
 
   async confirmEmail(input: ConfirmEmailInput) {
-    return await this.graphqlClient.call<Mutation['confirmEmail'], 'confirmEmail', { input: ConfirmEmailInput }>(
+    return await this.graphqlClient.call<Mutation, 'confirmEmail', { input: ConfirmEmailInput }>(
       gql`
         mutation confirmEmail($input: ConfirmEmailInput!) {
           confirmEmail(input: $input) {
@@ -92,7 +92,7 @@ export class TestAuthClient {
   }
 
   async resendConfirmationEmail() {
-    return await this.graphqlClient.call<Mutation['resendConfirmationEmail'], 'resendConfirmationEmail'>(
+    return await this.graphqlClient.call<Mutation, 'resendConfirmationEmail'>(
       gql`
         mutation {
           resendConfirmationEmail
@@ -102,11 +102,7 @@ export class TestAuthClient {
   }
 
   async sendResetPasswordEmail(input: SendResetPasswordEmailInput) {
-    return await this.graphqlClient.call<
-      Mutation['sendResetPasswordEmail'],
-      'sendResetPasswordEmail',
-      { input: SendResetPasswordEmailInput }
-    >(
+    return await this.graphqlClient.call<Mutation, 'sendResetPasswordEmail', { input: SendResetPasswordEmailInput }>(
       gql`
         mutation sendResetPasswordEmail($input: SendResetPasswordEmailInput!) {
           sendResetPasswordEmail(input: $input)
@@ -117,7 +113,7 @@ export class TestAuthClient {
   }
 
   async resetPassword(input: ResetPasswordInput) {
-    return await this.graphqlClient.call<Mutation['resetPassword'], 'resetPassword', { input: ResetPasswordInput }>(
+    return await this.graphqlClient.call<Mutation, 'resetPassword', { input: ResetPasswordInput }>(
       gql`
         mutation resetPassword($input: ResetPasswordInput!) {
           resetPassword(input: $input)
