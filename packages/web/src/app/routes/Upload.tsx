@@ -45,7 +45,9 @@ const Upload: React.FC<Props> = enhance(() => {
   const [thumbnail, setThumbnail] = useState<File | Blob | undefined>(undefined);
   const [songName, setSongName] = useState('');
   const [artistName, setArtistName] = useState('');
+
   const shouldBlockNavigation = useRef(true);
+
   shouldBlockNavigation.current = selectedTagNames.length > 0 || !!video || !!thumbnail || !!songName || !!artistName;
 
   const onStepChange = (stepNdx: number) => {
@@ -135,7 +137,12 @@ const Upload: React.FC<Props> = enhance(() => {
           <br />
 
           <Form form={form} onFinish={onFinish}>
-            <HideableFormItem hidden={stepNdx !== 0}>
+            <HideableFormItem
+              hasFeedback
+              name="video"
+              hidden={stepNdx !== 0}
+              rules={[{ required: true, message: 'video required' }]}
+            >
               <Dragger
                 multiple={false}
                 listType="picture"
@@ -151,7 +158,12 @@ const Upload: React.FC<Props> = enhance(() => {
               </Dragger>
             </HideableFormItem>
 
-            <HideableFormItem hidden={stepNdx !== 1}>
+            <HideableFormItem
+              hasFeedback
+              name="video"
+              hidden={stepNdx !== 1}
+              rules={[{ required: true, message: 'thumbnail required' }]}
+            >
               <Dragger
                 multiple={false}
                 listType="picture"
@@ -167,12 +179,24 @@ const Upload: React.FC<Props> = enhance(() => {
               </Dragger>
             </HideableFormItem>
 
-            <HideableFormItem hidden={stepNdx !== 2}>
+            <HideableFormItem
+              hasFeedback
+              name="thumbnail"
+              hidden={stepNdx !== 2}
+              rules={[{ required: true, message: 'song name required' }]}
+            >
               <Input placeholder="song name" value={songName} onChange={onSongNameChange} />
             </HideableFormItem>
-            <HideableFormItem hidden={stepNdx !== 2}>
+
+            <HideableFormItem
+              hasFeedback
+              name="artist-name"
+              hidden={stepNdx !== 2}
+              rules={[{ required: true, message: 'artist name required' }]}
+            >
               <Input placeholder="artist name" value={artistName} onChange={onArtistNameChange} />
             </HideableFormItem>
+
             <HideableFormItem hidden={stepNdx !== 2}>
               <Select mode="multiple" placeholder="tags" onSelect={onTagSelect} onDeselect={onTagDeselect}>
                 {tags.map((tag) => (
