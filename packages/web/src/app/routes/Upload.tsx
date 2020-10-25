@@ -93,6 +93,10 @@ const Upload: React.FC<Props> = enhance(() => {
     setSelectedTagNames(selectedTagNames.filter((tagName) => tagName !== value));
   };
 
+  const onFinish = async () => {};
+
+  const beforeUpload = () => false;
+
   useEffectOnce(() => {
     history.block((location) => {
       if (!shouldBlockNavigation.current) {
@@ -130,9 +134,15 @@ const Upload: React.FC<Props> = enhance(() => {
           <br />
           <br />
 
-          <Form form={form}>
+          <Form form={form} onFinish={onFinish}>
             <HideableFormItem hidden={stepNdx !== 0}>
-              <Dragger listType="picture" multiple={false} onChange={onVideoChange} onRemove={onVideoRemove}>
+              <Dragger
+                multiple={false}
+                listType="picture"
+                onChange={onVideoChange}
+                onRemove={onVideoRemove}
+                beforeUpload={beforeUpload}
+              >
                 <p className="ant-upload-drag-icon">
                   <VideoCameraOutlined />
                 </p>
@@ -142,7 +152,13 @@ const Upload: React.FC<Props> = enhance(() => {
             </HideableFormItem>
 
             <HideableFormItem hidden={stepNdx !== 1}>
-              <Dragger listType="picture" multiple={false} onChange={onThumbnailChange} onRemove={onThumbnailRemove}>
+              <Dragger
+                multiple={false}
+                listType="picture"
+                onChange={onThumbnailChange}
+                onRemove={onThumbnailRemove}
+                beforeUpload={beforeUpload}
+              >
                 <p className="ant-upload-drag-icon">
                   <PictureOutlined />
                 </p>
