@@ -1,6 +1,6 @@
 import { gql } from '../gql';
 import { GraphqlClient } from '../graphql';
-import { Query, QueryNotationsArgs } from '../graphqlTypes';
+import { CreateNotationInput, Mutation, Query, QueryNotationsArgs } from '../graphqlTypes';
 
 export class NotationClient {
   graphqlClient: GraphqlClient;
@@ -57,6 +57,19 @@ export class NotationClient {
         }
       `,
       args
+    );
+  }
+
+  async createNotation(input: CreateNotationInput) {
+    return await this.graphqlClient.call<Mutation, 'createNotation', { input: CreateNotationInput }>(
+      gql`
+        mutation createNotation($input: CreateNotationInput!) {
+          createNotation(input: $input) {
+            id
+          }
+        }
+      `,
+      { input }
     );
   }
 }

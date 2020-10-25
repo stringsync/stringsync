@@ -2,7 +2,7 @@ import { PageInfo } from '@stringsync/common';
 import { List } from 'antd';
 import { ListGridType } from 'antd/lib/list';
 import { isEqual } from 'lodash';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -37,7 +37,7 @@ export const NotationList: React.FC<Props> = (props) => {
 
   // computed state
   const shouldLoadMore = Boolean(pageInfo.hasNextPage) && !isPending && !hasErrors;
-  const tagIdSet = new Set(tagIds);
+  const tagIdSet = useMemo(() => new Set(tagIds), [tagIds]);
 
   // callbacks
   const loadMore = useCallback(async () => {

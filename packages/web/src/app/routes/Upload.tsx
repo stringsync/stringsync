@@ -2,10 +2,12 @@ import { FormOutlined, PictureOutlined, VideoCameraOutlined } from '@ant-design/
 import { compose } from '@stringsync/common';
 import { Tag } from '@stringsync/domain';
 import { Button, Form, Input, Modal, Select, Steps, Upload as AntdUpload } from 'antd';
+import { RcFile } from 'antd/lib/upload';
 import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
+import { NotationClient } from '../../clients';
 import { Box } from '../../components/Box';
 import { Layout, withLayout } from '../../hocs';
 import { useEffectOnce } from '../../hooks';
@@ -40,11 +42,47 @@ const Upload: React.FC<Props> = enhance(() => {
   const [isNavigateAwayVisible, setNavigateAwayVisibility] = useState(false);
   const [pathname, setPathname] = useState('');
   const [selectedTagNames, setSelectedTagNames] = useState(new Array<string>());
+  const [video, setVideo] = useState<File | Blob | undefined>(undefined);
+  const [thumbnail, setThumbnail] = useState<File | Blob | undefined>(undefined);
+  const [songName, setSongName] = useState('');
+  const [artistName, setArtistName] = useState('');
+
   const shouldBlockNavigation = useRef(true);
-  shouldBlockNavigation.current = selectedTagNames.length > 0;
+  shouldBlockNavigation.current = selectedTagNames.length > 0 || !!video || !!thumbnail || !!songName || !!artistName;
+
+  const tagIdByTagName = tags.reduce<{ [key: string]: string }>((obj, tag) => {
+    obj[tag.name] = tag.id;
+    return obj;
+  }, {});
 
   const onStepChange = (stepNdx: number) => {
     setStepNdx(stepNdx);
+  };
+
+  const beforeVideoUpload = (file: RcFile) => {
+    setVideo(file);
+    return false;
+  };
+
+  const onVideoRemove = () => {
+    setVideo(undefined);
+  };
+
+  const beforeThumbnailUpload = (file: RcFile) => {
+    setThumbnail(file);
+    return false;
+  };
+
+  const onThumbnailRemove = () => {
+    setThumbnail(undefined);
+  };
+
+  const onSongNameChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+    setSongName(event.currentTarget.value);
+  };
+
+  const onArtistNameChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+    setArtistName(event.currentTarget.value);
   };
 
   const onConfirmNavigationOk = () => {
@@ -62,6 +100,12 @@ const Upload: React.FC<Props> = enhance(() => {
 
   const onTagDeselect = (value: any) => {
     setSelectedTagNames(selectedTagNames.filter((tagName) => tagName !== value));
+  };
+
+  const onFinish = async () => {
+    const notationClient = NotationClient.create();
+    const tagIds = selectedTagNames.map((tagName) => tagIdByTagName[tagName]);
+    await notationClient.createNotation({ songName, artistName, tagIds, thumbnail, video });
   };
 
   useEffectOnce(() => {
@@ -101,9 +145,14 @@ const Upload: React.FC<Props> = enhance(() => {
           <br />
           <br />
 
-          <Form form={form}>
-            <HideableFormItem hidden={stepNdx !== 0}>
-              <Dragger multiple={false}>
+          <Form form={form} onFinish={onFinish}>
+            <HideableFormItem
+              hasFeedback
+              name="video"
+              hidden={stepNdx !== 0}
+              rules={[{ required: true, message: 'video required' }]}
+            >
+              <Dragger multiple={false} listType="picture" onRemove={onVideoRemove} beforeUpload={beforeVideoUpload}>
                 <p className="ant-upload-drag-icon">
                   <VideoCameraOutlined />
                 </p>
@@ -112,8 +161,18 @@ const Upload: React.FC<Props> = enhance(() => {
               </Dragger>
             </HideableFormItem>
 
-            <HideableFormItem hidden={stepNdx !== 1}>
-              <Dragger multiple={false}>
+            <HideableFormItem
+              hasFeedback
+              name="video"
+              hidden={stepNdx !== 1}
+              rules={[{ required: true, message: 'thumbnail required' }]}
+            >
+              <Dragger
+                multiple={false}
+                listType="picture"
+                onRemove={onThumbnailRemove}
+                beforeUpload={beforeThumbnailUpload}
+              >
                 <p className="ant-upload-drag-icon">
                   <PictureOutlined />
                 </p>
@@ -122,12 +181,24 @@ const Upload: React.FC<Props> = enhance(() => {
               </Dragger>
             </HideableFormItem>
 
-            <HideableFormItem hidden={stepNdx !== 2}>
-              <Input placeholder="song name" />
+            <HideableFormItem
+              hasFeedback
+              name="thumbnail"
+              hidden={stepNdx !== 2}
+              rules={[{ required: true, message: 'song name required' }]}
+            >
+              <Input placeholder="song name" value={songName} onChange={onSongNameChange} />
             </HideableFormItem>
-            <HideableFormItem hidden={stepNdx !== 2}>
-              <Input placeholder="artist name" />
+
+            <HideableFormItem
+              hasFeedback
+              name="artist-name"
+              hidden={stepNdx !== 2}
+              rules={[{ required: true, message: 'artist name required' }]}
+            >
+              <Input placeholder="artist name" value={artistName} onChange={onArtistNameChange} />
             </HideableFormItem>
+
             <HideableFormItem hidden={stepNdx !== 2}>
               <Select mode="multiple" placeholder="tags" onSelect={onTagSelect} onDeselect={onTagDeselect}>
                 {tags.map((tag) => (

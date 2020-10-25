@@ -11,6 +11,8 @@ const FADE_IN_DURATION_MS = 300;
 
 const HIGHLIGHT_COLOR = theme['@highlight-color'];
 
+const THUMBNAIL_PLACEHOLDER = 'https://dpwvs3j3j2uwp.cloudfront.net/thumbnail_placeholder.jpg';
+
 const getOpacity = (state: TransitionStatus) => {
   switch (state) {
     case 'entering':
@@ -43,6 +45,7 @@ interface Props {
 
 export const NotationCard: React.FC<Props> = (props) => {
   const { thumbnailUrl, songName, transcriber, artistName, tags } = props.notation;
+  const url = thumbnailUrl || THUMBNAIL_PLACEHOLDER;
 
   const [thumbnailLoading, setThumbnailLoading] = useState(true);
 
@@ -54,11 +57,9 @@ export const NotationCard: React.FC<Props> = (props) => {
     <Card
       hoverable
       cover={
-        thumbnailUrl && (
-          <Transition appear in={!thumbnailLoading} timeout={FADE_IN_DURATION_MS}>
-            {(state) => <StyledImg onLoad={onThumbnailLoad} state={state} src={thumbnailUrl} alt={songName} />}
-          </Transition>
-        )
+        <Transition appear in={!thumbnailLoading} timeout={FADE_IN_DURATION_MS}>
+          {(state) => <StyledImg onLoad={onThumbnailLoad} state={state} src={url} alt={songName} />}
+        </Transition>
       }
     >
       <Skeleton avatar active loading={thumbnailLoading} paragraph={{ rows: 1 }}>
