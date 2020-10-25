@@ -1,12 +1,12 @@
+import { Col, Divider, Layout, Row } from 'antd';
 import React from 'react';
-import { Layout, Row, Col, Divider } from 'antd';
-import styled from 'styled-components';
-import { Wordmark } from '../../components/Wordmark';
-import { Logo } from '../../components/Logo';
-import { Link } from 'react-router-dom';
-import { Menu } from './Menu';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+import { Logo } from '../../components/Logo';
+import { Wordmark } from '../../components/Wordmark';
 import { RootState } from '../../store';
+import { Menu } from './Menu';
 
 const StyledLayout = styled(Layout)`
   && {
@@ -43,7 +43,7 @@ export const DefaultLayout: React.FC = (props) => {
         <Lane>
           <Row align="middle" justify="space-between">
             <Col>
-              <Link to="/library">
+              <Link to="/">
                 <Row align="middle" justify="center">
                   <Logo size={22} />
                   {isLtEqMdViewport ? null : (

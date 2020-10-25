@@ -1,7 +1,10 @@
+import { CustomerServiceOutlined, SearchOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { compose } from '@stringsync/common';
 import { Button, Col, Divider, Row } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
+import { Box } from '../../../components/Box';
+import { Logo } from '../../../components/Logo';
 import { Wordmark } from '../../../components/Wordmark';
 import { Layout, withLayout } from '../../../hocs';
 
@@ -15,29 +18,57 @@ const Jumbotron = styled.div`
   padding-top: 128px;
   padding-bottom: 128px;
   text-align: center;
-  background: white;
+  background: url("${LANDING_SRC}") no-repeat center center fixed;
+  position: relative;
+`;
+
+const Overlay = styled.div`
+  background-color: rgba(0, 0, 0, 0.6);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+`;
+
+const WhiteBox = styled(Box)`
+  width: 55%;
+  min-width: 300px;
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  color: ${(props) => props.theme['@primary-color']};
 `;
 
 const Header = styled.h1`
   font-size: 4em;
   font-weight: lighter;
   margin-bottom: 0;
+  background: white;
 `;
 
 const SubHeader = styled.h2`
-  font-size: 1.5em;
+  font-size: 1.2em;
+  margin-bottom: 1em;
 `;
 
 const Title = styled.h3`
   color: ${(props) => props.theme['@primary-color']};
 `;
 
-const Img = styled.img`
-  width: 100%;
-`;
-
-const BreathingRoom = styled.div`
+const Footer = styled.div`
   padding: 24px 48px;
+  text-align: center;
+  display: flex;
+
+  svg {
+    width: 2.5em;
+    height: 2.5em;
+    color: ${(props) => props.theme['@secondary-color']};
+  }
 `;
 
 const enhance = compose(withLayout(Layout.DEFAULT));
@@ -46,45 +77,50 @@ export const Landing: React.FC = enhance(() => {
   return (
     <Outer data-testid="landing">
       <Jumbotron>
-        <Header>
-          <Wordmark />
-        </Header>
-        <SubHeader>learn how to play guitar for free</SubHeader>
-        <div>
-          <Button type="primary" size="large" href="/library">
-            start learning
-          </Button>
-        </div>
+        <Overlay />
+        <WhiteBox>
+          <Logo size="5em" />
+          <Header>
+            <Wordmark />
+          </Header>
+          <SubHeader>learn how to play guitar for free</SubHeader>
+          <div>
+            <Button type="primary" size="large" href="/library">
+              start learning
+            </Button>
+          </div>
+        </WhiteBox>
       </Jumbotron>
 
-      <Divider style={{ margin: 0 }} />
-
-      <Row align="middle" justify="space-around">
-        <Col sm={24} md={12}>
-          <BreathingRoom>
+      <Footer>
+        <Row align="middle" justify="space-around">
+          <Col xs={24} md={6}>
+            <ThunderboltOutlined />
             <Title>Learn fast</Title>
-            <p>
-              Practice makes perfect. StringSync helps you learn music by making it super easy loop and slow down
-              sections of music.
-            </p>
+            <p>StringSync helps you learn music by making it super easy loop and slow down sections of music.</p>
+          </Col>
 
+          <Col xs={0} md={1}>
+            <Divider type="vertical" style={{ height: 72 }} />
+          </Col>
+
+          <Col xs={24} md={6}>
+            <CustomerServiceOutlined />
             <Title>Develop your skills</Title>
-            <p>
-              Grow your improvisation skills using our note suggestions. They allow you to tap into the secrets of music
-              theory without hours of reading.
-            </p>
+            <p>Grow your improvisation skills using our note suggestions.</p>
+          </Col>
 
+          <Col xs={0} md={1}>
+            <Divider type="vertical" style={{ height: 72 }} />
+          </Col>
+
+          <Col xs={24} md={6}>
+            <SearchOutlined />
             <Title>Explore music</Title>
-            <p>
-              We have a wide variety of music for you to learn and enjoy. Use our tagging system to find that
-              gospel-metal-jazz sound you've been looking to learn!
-            </p>
-          </BreathingRoom>
-        </Col>
-        <Col sm={24} md={12}>
-          <Img src={LANDING_SRC} alt="landing1" />
-        </Col>
-      </Row>
+            <p>Use our tagging system to find that gospel-metal-jazz sound you've been looking to learn!</p>
+          </Col>
+        </Row>
+      </Footer>
     </Outer>
   );
 });
