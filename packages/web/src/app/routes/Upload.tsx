@@ -2,11 +2,12 @@ import { FormOutlined, PictureOutlined, VideoCameraOutlined } from '@ant-design/
 import { compose } from '@stringsync/common';
 import { Tag } from '@stringsync/domain';
 import { Button, Form, Input, Modal, Select, Steps, Upload as AntdUpload } from 'antd';
-import { UploadChangeParam } from 'antd/lib/upload';
+import { RcFile } from 'antd/lib/upload';
 import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
+import { NotationClient } from '../../clients';
 import { Box } from '../../components/Box';
 import { Layout, withLayout } from '../../hocs';
 import { useEffectOnce } from '../../hooks';
@@ -47,23 +48,29 @@ const Upload: React.FC<Props> = enhance(() => {
   const [artistName, setArtistName] = useState('');
 
   const shouldBlockNavigation = useRef(true);
-
   shouldBlockNavigation.current = selectedTagNames.length > 0 || !!video || !!thumbnail || !!songName || !!artistName;
+
+  const tagIdByTagName = tags.reduce<{ [key: string]: string }>((obj, tag) => {
+    obj[tag.name] = tag.id;
+    return obj;
+  }, {});
 
   const onStepChange = (stepNdx: number) => {
     setStepNdx(stepNdx);
   };
 
-  const onVideoChange = (info: UploadChangeParam) => {
-    setVideo(info.file.originFileObj);
+  const beforeVideoUpload = (file: RcFile) => {
+    setVideo(file);
+    return false;
   };
 
   const onVideoRemove = () => {
     setVideo(undefined);
   };
 
-  const onThumbnailChange = (info: UploadChangeParam) => {
-    setVideo(info.file.originFileObj);
+  const beforeThumbnailUpload = (file: RcFile) => {
+    setThumbnail(file);
+    return false;
   };
 
   const onThumbnailRemove = () => {
@@ -95,9 +102,11 @@ const Upload: React.FC<Props> = enhance(() => {
     setSelectedTagNames(selectedTagNames.filter((tagName) => tagName !== value));
   };
 
-  const onFinish = async () => {};
-
-  const beforeUpload = () => false;
+  const onFinish = async () => {
+    const notationClient = NotationClient.create();
+    const tagIds = selectedTagNames.map((tagName) => tagIdByTagName[tagName]);
+    await notationClient.createNotation({ songName, artistName, tagIds, thumbnail, video });
+  };
 
   useEffectOnce(() => {
     history.block((location) => {
@@ -143,13 +152,7 @@ const Upload: React.FC<Props> = enhance(() => {
               hidden={stepNdx !== 0}
               rules={[{ required: true, message: 'video required' }]}
             >
-              <Dragger
-                multiple={false}
-                listType="picture"
-                onChange={onVideoChange}
-                onRemove={onVideoRemove}
-                beforeUpload={beforeUpload}
-              >
+              <Dragger multiple={false} listType="picture" onRemove={onVideoRemove} beforeUpload={beforeVideoUpload}>
                 <p className="ant-upload-drag-icon">
                   <VideoCameraOutlined />
                 </p>
@@ -167,9 +170,8 @@ const Upload: React.FC<Props> = enhance(() => {
               <Dragger
                 multiple={false}
                 listType="picture"
-                onChange={onThumbnailChange}
                 onRemove={onThumbnailRemove}
-                beforeUpload={beforeUpload}
+                beforeUpload={beforeThumbnailUpload}
               >
                 <p className="ant-upload-drag-icon">
                   <PictureOutlined />
