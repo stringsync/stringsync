@@ -3,6 +3,7 @@ export const TYPES = {
   Cache: Symbol('Cache'),
   ContainerConfig: Symbol('ContainerConfig'),
   Db: Symbol('Db'),
+  DocStore: Symbol('DocStore'),
   Factory: Symbol('Factory'),
   FileStorage: Symbol('FileStorage'),
   HealthCheckerService: Symbol('HealthCheckerService'),

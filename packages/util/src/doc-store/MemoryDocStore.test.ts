@@ -1,10 +1,13 @@
 import { NotFoundError } from '@stringsync/common';
+import { useTestContainer } from '@stringsync/di';
 import { MemoryDocStore } from './MemoryDocStore';
+
+const container = useTestContainer();
 
 let store: MemoryDocStore;
 
 beforeEach(() => {
-  store = new MemoryDocStore();
+  store = container.get(MemoryDocStore);
 });
 
 describe('has', () => {

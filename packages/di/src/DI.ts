@@ -1,4 +1,4 @@
-import { Ctor } from '@stringsync/common';
+import { Ctor, NotImplementedError } from '@stringsync/common';
 import { ContainerConfig, getContainerConfig } from '@stringsync/config';
 import { Db, Sequelize, SequelizeDb } from '@stringsync/db';
 import { AuthResolver, HealthController, NotationResolver, TagResolver, UserResolver } from '@stringsync/graphql';
@@ -30,9 +30,11 @@ import {
 } from '@stringsync/services';
 import {
   Cache,
+  DocStore,
   FileStorage,
   Logger,
   Mailer,
+  MemoryDocStore,
   NodemailerMailer,
   NoopMailer,
   NoopStorage,
@@ -177,6 +179,15 @@ export class DI {
       } else {
         const transporter = NodemailerMailer.createTransporter();
         bind<Mailer>(TYPES.Mailer).toConstantValue(new NodemailerMailer(transporter));
+      }
+
+      if (config.NODE_ENV === 'test') {
+        bind<DocStore>(TYPES.DocStore).to(MemoryDocStore);
+        bind<MemoryDocStore>(MemoryDocStore).toSelf();
+      } else {
+        bind<DocStore>(TYPES.DocStore).toFactory(() => {
+          throw new NotImplementedError(`DocStore not ready for env: ${config.NODE_ENV}`);
+        });
       }
     });
   }

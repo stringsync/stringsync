@@ -1,7 +1,7 @@
 import { Command, flags } from '@oclif/command';
-import { ROOT_PATH } from '../util/constants';
 import { execSync } from 'child_process';
 import { getDockerComposeFile } from '../util';
+import { ROOT_PATH } from '../util/constants';
 
 export default class Test extends Command {
   static description = 'Run all of the StringSync tests.';
@@ -44,7 +44,6 @@ export default class Test extends Command {
           'yarn',
           `test:${args.project}`,
           '--runInBand',
-          '--logHeapUsage',
           `--watchAll=${flags.watch}`,
           flags.coverage ? '--collectCoverage' : '',
           ...argv.slice(1), // the first arg is project

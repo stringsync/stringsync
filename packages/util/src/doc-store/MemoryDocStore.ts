@@ -1,6 +1,8 @@
 import { NotFoundError } from '@stringsync/common';
+import { injectable } from 'inversify';
 import { DocStore } from './types';
 
+@injectable()
 export class MemoryDocStore implements DocStore {
   private store: { [key: string]: any } = {};
 
