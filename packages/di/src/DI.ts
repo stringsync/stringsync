@@ -182,7 +182,7 @@ export class DI {
       }
 
       if (config.NODE_ENV === 'test') {
-        bind<DocStore>(TYPES.DocStore).to(MemoryDocStore);
+        bind<DocStore>(TYPES.DocStore).toConstantValue(new MemoryDocStore());
         bind<MemoryDocStore>(MemoryDocStore).toSelf();
       } else {
         bind<DocStore>(TYPES.DocStore).toFactory(() => {
