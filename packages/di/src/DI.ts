@@ -1,4 +1,4 @@
-import { Ctor, NotImplementedError } from '@stringsync/common';
+import { Ctor } from '@stringsync/common';
 import { ContainerConfig, getContainerConfig } from '@stringsync/config';
 import { Db, Sequelize, SequelizeDb } from '@stringsync/db';
 import { AuthResolver, HealthController, NotationResolver, TagResolver, UserResolver } from '@stringsync/graphql';
@@ -43,6 +43,7 @@ import {
   S3Storage,
   WinstonLogger,
 } from '@stringsync/util';
+import { DynamoDbDocStore } from '@stringsync/util/src/doc-store/DynamoDbDocStore';
 import { Container as InversifyContainer, ContainerModule } from 'inversify';
 import { TYPES } from './TYPES';
 
@@ -166,8 +167,8 @@ export class DI {
       } else {
         bind<FileStorage>(TYPES.FileStorage).toConstantValue(
           S3Storage.create({
-            accessKeyId: config.S3_ACCESS_KEY_ID,
-            secretAccessKey: config.S3_SECRET_ACCESS_KEY,
+            accessKeyId: config.AWS_ACCESS_KEY_ID,
+            secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
             bucket: config.S3_BUCKET,
             domainName: config.CLOUDFRONT_DOMAIN_NAME,
           })
@@ -182,12 +183,16 @@ export class DI {
       }
 
       if (config.NODE_ENV === 'test') {
-        bind<DocStore>(TYPES.DocStore).toConstantValue(new MemoryDocStore());
+        bind<DocStore>(TYPES.VideoMetadataStore).toConstantValue(new MemoryDocStore());
         bind<MemoryDocStore>(MemoryDocStore).toSelf();
       } else {
-        bind<DocStore>(TYPES.DocStore).toFactory(() => {
-          throw new NotImplementedError(`DocStore not ready for env: ${config.NODE_ENV}`);
-        });
+        bind<DocStore>(TYPES.VideoMetadataStore).toConstantValue(
+          DynamoDbDocStore.create({
+            accessKeyId: config.AWS_ACCESS_KEY_ID,
+            secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
+            table: config.VIDEO_METADATA_TABLE_NAME,
+          })
+        );
       }
     });
   }
