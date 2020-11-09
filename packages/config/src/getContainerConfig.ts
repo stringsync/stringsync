@@ -4,6 +4,7 @@ import { ConfigKind } from './types';
 export const getContainerConfig = configFactory({
   AWS_ACCESS_KEY_ID: ConfigKind.STRING,
   AWS_SECRET_ACCESS_KEY: ConfigKind.STRING,
+  AWS_REGION: ConfigKind.STRING,
   CLOUDFRONT_DOMAIN_NAME: ConfigKind.STRING,
   DB_HOST: ConfigKind.STRING,
   DB_NAME: ConfigKind.STRING,

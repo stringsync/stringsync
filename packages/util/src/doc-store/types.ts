@@ -5,5 +5,6 @@ export interface DocStore {
 export type DynamoDbConfig = {
   accessKeyId: string;
   secretAccessKey: string;
+  region: string;
   table: string;
 };

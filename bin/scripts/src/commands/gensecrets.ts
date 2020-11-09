@@ -5,7 +5,8 @@ import { ROOT_PATH } from '../util';
 
 const GITIGNORE_FILE_NAME = '.gitignore';
 const FILE_NAME = 'secrets.env';
-const FILE_TEMPLATE = 'AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID\nAWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY\n';
+const FILE_TEMPLATE =
+  'AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID\nAWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY\nAWS_REGION=YOUR_AWS_REGION';
 
 export default class Gensecrets extends Command {
   static description = 'Creates the secrets.env file needed for local development.';

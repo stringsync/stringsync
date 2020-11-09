@@ -4,6 +4,7 @@ it('runs without crashing', () => {
   const env = {
     AWS_ACCESS_KEY_ID: 'AWS_ACCESS_KEY_ID',
     AWS_SECRET_ACCESS_KEY: 'AWS_SECRET_ACCESS_KEY',
+    AWS_REGION: 'AWS_REGION',
     CLOUDFRONT_DOMAIN_NAME: 'CLOUDFRONT_DOMAIN_NAME',
     DB_HOST: 'DB_HOST',
     DB_NAME: 'DB_NAME',

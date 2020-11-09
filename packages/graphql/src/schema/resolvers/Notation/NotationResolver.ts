@@ -3,6 +3,7 @@ import { TYPES } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
 import { NotationService } from '@stringsync/services';
 import { FileStorage, Logger } from '@stringsync/util';
+import { DynamoDbDocStore } from '@stringsync/util/src/doc-store/DynamoDbDocStore';
 import { inject, injectable } from 'inversify';
 import { Arg, Args, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { NotationObject } from '.';
@@ -53,5 +54,12 @@ export class NotationResolver {
       video,
       transcriberId: ctx.req.session.user.id,
     });
+  }
+
+  @Query((returns) => String, { nullable: false })
+  async test(@Ctx() ctx: ReqCtx): Promise<string> {
+    const store = ctx.container.get<DynamoDbDocStore>(TYPES.VideoMetadataStore);
+    const metadata = await store.get('266db80e-5ba0-4b08-9c57-d15cb9404435');
+    return JSON.stringify(metadata);
   }
 }
