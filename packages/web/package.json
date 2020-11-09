@@ -34,6 +34,7 @@
     "redux": "^4.0.5",
     "styled-components": "^5.1.1",
     "typescript": "~3.7.2",
+    "video.js": "^7.10.2",
     "webpack": "4.42.0"
   },
   "devDependencies": {
@@ -55,6 +56,7 @@
     "@types/react-router": "^5.1.7",
     "@types/react-scroll": "^1.5.5",
     "@types/react-transition-group": "^4.4.0",
+    "@types/video.js": "^7.3.11",
     "dayjs": "^1.8.18",
     "jest": "^26.0.1",
     "jest-environment-jsdom-sixteen": "^1.0.3",
