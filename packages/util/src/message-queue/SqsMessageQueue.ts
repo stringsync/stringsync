@@ -1,43 +1,66 @@
 import { NotFoundError } from '@stringsync/common';
 import { SQS } from 'aws-sdk';
-import { MessageList } from 'aws-sdk/clients/sqs';
-import { MessageQueue, SqsConfig } from './types';
+import { stringType } from 'aws-sdk/clients/iam';
+import { Logger } from '../logger';
+import { Message, MessageQueue, SqsConfig } from './types';
+
+const DEFAULT_VISIBILITY_TIMEOUT_S = 60;
 
 export class SqsMessageQueue implements MessageQueue {
-  static create(config: SqsConfig): SqsMessageQueue {
+  static create(logger: Logger, config: SqsConfig): SqsMessageQueue {
     const sqs = new SQS({
       region: config.region,
       accessKeyId: config.accessKeyId,
       secretAccessKey: config.secretAccessKey,
     });
-    return new SqsMessageQueue(sqs);
+    return new SqsMessageQueue(logger, sqs);
   }
 
+  logger: Logger;
   sqs: SQS;
+
   private queueUrlsByQueueName: { [key: string]: string } = {};
 
-  constructor(sqs: SQS) {
+  constructor(logger: Logger, sqs: SQS) {
+    this.logger = logger;
     this.sqs = sqs;
   }
 
-  async receive<T>(queueName: string): Promise<T[]> {
+  async get(queueName: stringType): Promise<Message | null> {
     const queueUrl = await this.getQueueUrl(queueName);
 
-    const messages = await new Promise<MessageList>((resolve) => {
-      this.sqs.receiveMessage({ QueueUrl: queueUrl, MaxNumberOfMessages: 1 }, (err, data) => {
-        if (err) {
-          throw err;
-        }
-        resolve(data.Messages);
-      });
-    });
+    const res = await this.sqs
+      .receiveMessage({
+        QueueUrl: queueUrl,
+        VisibilityTimeout: DEFAULT_VISIBILITY_TIMEOUT_S,
+        MaxNumberOfMessages: 1,
+      })
+      .promise();
 
-    return messages
-      .filter((message) => typeof message.Attributes !== 'undefined')
-      .map((message) => {
-        const attrs = message.Attributes as unknown;
-        return attrs as T;
-      });
+    const messages = res.Messages;
+    if (!messages) {
+      this.logger.info(`no messages from queue: ${queueName}`);
+      return null;
+    }
+
+    const message = messages[0];
+    if (!message) {
+      this.logger.info(`no messages from queue: ${queueName}`);
+      return null;
+    }
+
+    return {
+      id: message.MessageId!,
+      body: message.Body!,
+      recieptHandle: message.ReceiptHandle!,
+      queueName,
+    };
+  }
+
+  async ack(message: Message): Promise<void> {
+    const queueUrl = await this.getQueueUrl(message.queueName);
+    this.logger.info(`acking message: ${message.id}`);
+    await this.sqs.deleteMessage({ QueueUrl: queueUrl, ReceiptHandle: message.recieptHandle }).promise();
   }
 
   private async getQueueUrl(queueName: string): Promise<string> {
@@ -46,15 +69,9 @@ export class SqsMessageQueue implements MessageQueue {
       return this.queueUrlsByQueueName[queueName];
     }
 
-    const queueUrl = await new Promise<string | undefined>((resolve) => {
-      this.sqs.getQueueUrl((err, data) => {
-        if (err) {
-          throw err;
-        }
-        resolve(data.QueueUrl);
-      });
-    });
+    const res = await this.sqs.getQueueUrl({ QueueName: queueName }).promise();
 
+    const queueUrl = res.QueueUrl;
     if (!queueUrl) {
       throw new NotFoundError(`queue url not found for: ${queueName}`);
     }

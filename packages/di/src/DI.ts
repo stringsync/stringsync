@@ -195,7 +195,7 @@ export class DI {
       }
 
       bind<MessageQueue>(TYPES.MessageQueue).toConstantValue(
-        SqsMessageQueue.create({
+        SqsMessageQueue.create(logger, {
           accessKeyId: config.AWS_ACCESS_KEY_ID,
           secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
           region: config.AWS_REGION,

@@ -4,6 +4,14 @@ export type SqsConfig = {
   region: string;
 };
 
+export type Message = {
+  id: string;
+  body: string;
+  recieptHandle: string;
+  queueName: string;
+};
+
 export interface MessageQueue {
-  receive<T>(queueName: string): Promise<T[]>;
+  get(queueName: string): Promise<Message | null>;
+  ack(message: Message): Promise<void>;
 }
