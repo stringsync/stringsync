@@ -4,6 +4,7 @@ export enum Names {
 
 export interface Queue<T> {
   enqueue(data: T): void;
+  drain(): Promise<void>;
 }
 
 export interface Worker<T> {

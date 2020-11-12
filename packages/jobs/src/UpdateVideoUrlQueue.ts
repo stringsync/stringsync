@@ -18,4 +18,8 @@ export class UpdateVideoUrlQueue implements Queue<UpdateVideoUrlData> {
   enqueue(data: UpdateVideoUrlData) {
     this.queue.add(uuid.v4(), data);
   }
+
+  async drain() {
+    await this.queue.drain();
+  }
 }
