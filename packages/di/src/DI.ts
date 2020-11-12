@@ -31,11 +31,9 @@ import {
 } from '@stringsync/services';
 import {
   Cache,
-  DocStore,
   FileStorage,
   Logger,
   Mailer,
-  MemoryDocStore,
   NodemailerMailer,
   NoopMailer,
   NoopStorage,
@@ -44,7 +42,6 @@ import {
   S3Storage,
   WinstonLogger,
 } from '@stringsync/util';
-import { DynamoDbDocStore } from '@stringsync/util/src/doc-store/DynamoDbDocStore';
 import { Container as InversifyContainer, ContainerModule } from 'inversify';
 import { UpdateVideoUrlQueue, UpdateVideoUrlWorker } from '../../jobs/src';
 import { TYPES } from './TYPES';
@@ -184,20 +181,6 @@ export class DI {
       } else {
         const transporter = NodemailerMailer.createTransporter();
         bind<Mailer>(TYPES.Mailer).toConstantValue(new NodemailerMailer(transporter));
-      }
-
-      if (config.NODE_ENV === 'test') {
-        bind<DocStore>(TYPES.VideoMetadataStore).toConstantValue(new MemoryDocStore());
-        bind<MemoryDocStore>(MemoryDocStore).toSelf();
-      } else {
-        bind<DocStore>(TYPES.VideoMetadataStore).toConstantValue(
-          DynamoDbDocStore.create({
-            accessKeyId: config.AWS_ACCESS_KEY_ID,
-            secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
-            region: config.AWS_REGION,
-            table: config.VIDEO_METADATA_TABLE_NAME,
-          })
-        );
       }
     });
   }
