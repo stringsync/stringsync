@@ -34,12 +34,14 @@ import {
   FileStorage,
   Logger,
   Mailer,
+  MessageQueue,
   NodemailerMailer,
   NoopMailer,
   NoopStorage,
   Redis,
   RedisCache,
   S3Storage,
+  SqsMessageQueue,
   WinstonLogger,
 } from '@stringsync/util';
 import { Container as InversifyContainer, ContainerModule } from 'inversify';
@@ -182,6 +184,14 @@ export class DI {
         const transporter = NodemailerMailer.createTransporter();
         bind<Mailer>(TYPES.Mailer).toConstantValue(new NodemailerMailer(transporter));
       }
+
+      bind<MessageQueue>(TYPES.MessageQueue).toConstantValue(
+        SqsMessageQueue.create({
+          accessKeyId: config.AWS_ACCESS_KEY_ID,
+          secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
+          region: config.AWS_REGION,
+        })
+      );
     });
   }
 
