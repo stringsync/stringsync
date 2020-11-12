@@ -41,4 +41,33 @@ services:
       - redis
     ports:
       - "3000:3000"
-    command: ["yarn", "dev"]
+    command: ["yarn", "dev:graphql"]
+
+  workers:
+    image: stringsync:latest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    env_file: secrets.env
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      WEB_URI: http://localhost:8080
+      DB_NAME: stringsync
+      DB_USERNAME: stringsync
+      DB_PASSWORD: stringsync
+      DB_HOST: db
+      DB_PORT: 5432
+      LOG_LEVEL: info
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SESSION_SECRET: keyboardcat
+      S3_BUCKET: stringsync-dev
+      VIDEO_METADATA_TABLE_NAME: ss-vids-dev
+      CLOUDFRONT_DOMAIN_NAME: d2yt8e0its832a.cloudfront.net
+    volumes:
+      - ./packages:/stringsync/packages
+    links:
+      - db
+      - redis
+    command: ["yarn", "dev:queues"]

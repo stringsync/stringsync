@@ -1,5 +1,5 @@
 import { Ctor } from '@stringsync/common';
-import { ContainerConfig, getContainerConfig } from '@stringsync/config';
+import { ContainerConfig, getContainerConfig, getWorkersConfig, WorkersConfig } from '@stringsync/config';
 import { Db, Sequelize, SequelizeDb } from '@stringsync/db';
 import { AuthResolver, HealthController, NotationResolver, TagResolver, UserResolver } from '@stringsync/graphql';
 import {
@@ -67,6 +67,7 @@ export class DI {
   private static getConfigModule(config: ContainerConfig) {
     return new ContainerModule((bind) => {
       bind<ContainerConfig>(TYPES.ContainerConfig).toConstantValue(config);
+      bind<WorkersConfig>(TYPES.WorkersConfig).toConstantValue(getWorkersConfig());
     });
   }
 
@@ -190,6 +191,7 @@ export class DI {
           DynamoDbDocStore.create({
             accessKeyId: config.AWS_ACCESS_KEY_ID,
             secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
+            region: config.AWS_REGION,
             table: config.VIDEO_METADATA_TABLE_NAME,
           })
         );
