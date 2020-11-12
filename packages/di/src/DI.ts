@@ -46,6 +46,7 @@ import {
 } from '@stringsync/util';
 import { DynamoDbDocStore } from '@stringsync/util/src/doc-store/DynamoDbDocStore';
 import { Container as InversifyContainer, ContainerModule } from 'inversify';
+import { UpdateVideoUrlQueue, UpdateVideoUrlWorker } from '../../jobs/src';
 import { TYPES } from './TYPES';
 
 export class DI {
@@ -59,7 +60,8 @@ export class DI {
       DI.getGraphqlModule(config),
       DI.getReposModule(config),
       DI.getServicesModule(config),
-      DI.getUtilModule(config, logger)
+      DI.getUtilModule(config, logger),
+      DI.getJobsModule(config)
     );
 
     return container;
@@ -197,6 +199,17 @@ export class DI {
           })
         );
       }
+    });
+  }
+
+  private static getJobsModule(config: ContainerConfig) {
+    return new ContainerModule((bind) => {
+      bind<UpdateVideoUrlQueue>(TYPES.UpdateVideoUrlQueue)
+        .to(UpdateVideoUrlQueue)
+        .inSingletonScope();
+      bind<UpdateVideoUrlWorker>(TYPES.UpdateVideoUrlWorker)
+        .to(UpdateVideoUrlWorker)
+        .inSingletonScope();
     });
   }
 }
