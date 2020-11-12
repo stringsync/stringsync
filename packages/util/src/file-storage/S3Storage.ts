@@ -1,6 +1,6 @@
-import { FileStorage, S3Config } from './types';
 import { S3 } from 'aws-sdk';
 import { Stream } from 'stream';
+import { FileStorage, S3Config } from './types';
 
 export class S3Storage implements FileStorage {
   static create(config: S3Config): S3Storage {
@@ -20,13 +20,7 @@ export class S3Storage implements FileStorage {
   }
 
   async put(filepath: string, readStream: Stream) {
-    return await new Promise<string>((resolve, reject) => {
-      this.s3.upload({ Bucket: this.bucket, Key: filepath, Body: readStream }, (err, data) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve(`https://${this.domainName}/${data.Key}`);
-      });
-    });
+    const res = await this.s3.upload({ Bucket: this.bucket, Key: filepath, Body: readStream }).promise();
+    return `https://${this.domainName}/${res.Key}`;
   }
 }
