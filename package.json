@@ -11,9 +11,9 @@
     "graphql": "yarn workspace @stringsync/graphql",
     "db": "yarn workspace @stringsync/db",
     "web": "yarn workspace @stringsync/web",
-    "workers": "yarn workspace @stringsync/workers",
+    "jobs": "yarn workspace @stringsync/jobs",
     "dev:graphql": "yarn db migrate && yarn db seed && yarn graphql dev",
-    "dev:workers": "yarn workers dev",
+    "dev:jobs": "yarn jobs dev",
     "pretest:server": "yarn db migrate",
     "test:server": "node --expose-gc ./node_modules/.bin/jest",
     "test:web": "yarn web test"

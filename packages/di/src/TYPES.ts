@@ -7,6 +7,7 @@ export const TYPES = {
   FileStorage: Symbol('FileStorage'),
   HealthCheckerService: Symbol('HealthCheckerService'),
   HealthController: Symbol('HealthController'),
+  JobConfig: Symbol('JobConfig'),
   Logger: Symbol('Logger'),
   Mailer: Symbol('Mailer'),
   NotationLoader: Symbol('NotationLoader'),
@@ -35,5 +36,4 @@ export const TYPES = {
   UserService: Symbol('UserService'),
   UpdateVideoUrlAssembly: Symbol('Queue'),
   VideoMetadataStore: Symbol('VideoMetadataStore'),
-  WorkersConfig: Symbol('WorkersConfig'),
 };

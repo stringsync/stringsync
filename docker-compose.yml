@@ -70,4 +70,4 @@ services:
     links:
       - db
       - redis
-    command: ["yarn", "dev:queues"]
+    command: ["yarn", "dev:jobs"]
