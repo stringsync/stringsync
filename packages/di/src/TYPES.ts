@@ -10,6 +10,7 @@ export const TYPES = {
   JobConfig: Symbol('JobConfig'),
   Logger: Symbol('Logger'),
   Mailer: Symbol('Mailer'),
+  MessageQueue: Symbol('MessageQueue'),
   NotationLoader: Symbol('NotationLoader'),
   NotationLoaderCtor: Symbol('NotationLoaderCtor'),
   NotationRepo: Symbol('NotationRepo'),
