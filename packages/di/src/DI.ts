@@ -2,7 +2,14 @@ import { Ctor, noop } from '@stringsync/common';
 import { ContainerConfig, getContainerConfig } from '@stringsync/config';
 import { getJobConfig, JobConfig } from '@stringsync/config/src/getJobConfig';
 import { Db, Sequelize, SequelizeDb } from '@stringsync/db';
-import { AuthResolver, HealthController, NotationResolver, TagResolver, UserResolver } from '@stringsync/graphql';
+import {
+  AuthResolver,
+  ExperimentResolver,
+  HealthController,
+  NotationResolver,
+  TagResolver,
+  UserResolver,
+} from '@stringsync/graphql';
 import {
   Factory,
   NotationLoader,
@@ -81,6 +88,9 @@ export class DI {
         .toSelf()
         .inSingletonScope();
       bind<NotationResolver>(NotationResolver)
+        .toSelf()
+        .inSingletonScope();
+      bind<ExperimentResolver>(ExperimentResolver)
         .toSelf()
         .inSingletonScope();
 

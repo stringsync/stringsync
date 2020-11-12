@@ -1,9 +1,9 @@
 import { buildSchemaSync } from 'type-graphql';
-import { UserResolver, NotationResolver, AuthResolver } from './resolvers';
+import { AuthResolver, ExperimentResolver, NotationResolver, UserResolver } from './resolvers';
 
 export const generateSchema = () => {
   return buildSchemaSync({
-    resolvers: [UserResolver, AuthResolver, NotationResolver],
+    resolvers: [UserResolver, AuthResolver, NotationResolver, ExperimentResolver],
     container: ({ context }) => context.container,
     validate: false,
   });
