@@ -1,7 +1,7 @@
 import { JobsOptions, Queue, Worker } from 'bullmq';
 import * as uuid from 'uuid';
 
-export abstract class Job<T = void> {
+export abstract class BaseJob<T = void> {
   private _queue: Queue<T> | null = null;
   private _worker: Worker<T> | null = null;
 

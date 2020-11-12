@@ -1,4 +1,4 @@
-import { Ctor, noop } from '@stringsync/common';
+import { Ctor } from '@stringsync/common';
 import { ContainerConfig, getContainerConfig } from '@stringsync/config';
 import { getJobConfig, JobConfig } from '@stringsync/config/src/getJobConfig';
 import { Db, Sequelize, SequelizeDb } from '@stringsync/db';
@@ -52,6 +52,7 @@ import {
   WinstonLogger,
 } from '@stringsync/util';
 import { Container as InversifyContainer, ContainerModule } from 'inversify';
+import { UpdateVideoUrlJob } from '../../jobs/src/UpdateVideoUrlJob';
 import { TYPES } from './TYPES';
 
 export class DI {
@@ -205,6 +206,10 @@ export class DI {
   }
 
   private static getJobsModule(config: ContainerConfig) {
-    return new ContainerModule(noop);
+    return new ContainerModule((bind) => {
+      bind<UpdateVideoUrlJob>(TYPES.UpdateVideoUrlJob)
+        .to(UpdateVideoUrlJob)
+        .inSingletonScope();
+    });
   }
 }

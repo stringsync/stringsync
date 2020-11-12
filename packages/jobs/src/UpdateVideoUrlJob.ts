@@ -3,11 +3,11 @@ import { TYPES } from '@stringsync/di';
 import { Logger, MessageQueue } from '@stringsync/util';
 import { Queue, Worker } from 'bullmq';
 import { inject, injectable } from 'inversify';
-import { Job } from './Job';
+import { BaseJob } from './BaseJob';
 import { JobName } from './types';
 
 @injectable()
-export class UpdateVideoUrlJob extends Job {
+export class UpdateVideoUrlJob extends BaseJob {
   messageQueue: MessageQueue;
   logger: Logger;
   config: JobConfig;
