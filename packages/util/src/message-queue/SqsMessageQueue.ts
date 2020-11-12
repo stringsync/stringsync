@@ -29,6 +29,7 @@ export class SqsMessageQueue implements MessageQueue {
   async get(queueName: stringType): Promise<Message | null> {
     const queueUrl = await this.getQueueUrl(queueName);
 
+    this.logger.info(`getting messages from queue: ${queueName}`);
     const res = await this.sqs
       .receiveMessage({
         QueueUrl: queueUrl,
@@ -39,16 +40,17 @@ export class SqsMessageQueue implements MessageQueue {
 
     const messages = res.Messages;
     if (!messages) {
-      this.logger.info(`no messages from queue: ${queueName}`);
+      this.logger.info(`got no messages from queue: ${queueName}`);
       return null;
     }
 
     const message = messages[0];
     if (!message) {
-      this.logger.info(`no messages from queue: ${queueName}`);
+      this.logger.info(`got no messages from queue: ${queueName}`);
       return null;
     }
 
+    this.logger.info(`got message: ${message.MessageId}`);
     return {
       id: message.MessageId!,
       body: message.Body!,

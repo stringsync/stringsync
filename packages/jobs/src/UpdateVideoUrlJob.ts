@@ -1,7 +1,7 @@
-import { JobConfig } from '@stringsync/config';
+import { ContainerConfig } from '@stringsync/config';
 import { TYPES } from '@stringsync/di';
 import { Logger, MessageQueue } from '@stringsync/util';
-import { Queue, Worker } from 'bullmq';
+import { Queue, QueueScheduler, Worker } from 'bullmq';
 import { inject, injectable } from 'inversify';
 import { BaseJob } from './BaseJob';
 import { JobName } from './types';
@@ -10,14 +10,15 @@ import { JobName } from './types';
 export class UpdateVideoUrlJob extends BaseJob {
   messageQueue: MessageQueue;
   logger: Logger;
-  config: JobConfig;
+  config: ContainerConfig;
 
   constructor(
     @inject(TYPES.MessageQueue) messageQueue: MessageQueue,
     @inject(TYPES.Logger) logger: Logger,
-    @inject(TYPES.JobConfig) config: JobConfig
+    @inject(TYPES.ContainerConfig) config: ContainerConfig
   ) {
     super();
+
     this.messageQueue = messageQueue;
     this.logger = logger;
     this.config = config;
@@ -25,6 +26,12 @@ export class UpdateVideoUrlJob extends BaseJob {
 
   createQueue() {
     return new Queue(JobName.UPDATE_VIDEO_URL, {
+      connection: { host: this.config.REDIS_HOST, port: this.config.REDIS_PORT },
+    });
+  }
+
+  createScheduler() {
+    return new QueueScheduler(JobName.UPDATE_VIDEO_URL, {
       connection: { host: this.config.REDIS_HOST, port: this.config.REDIS_PORT },
     });
   }
@@ -38,7 +45,7 @@ export class UpdateVideoUrlJob extends BaseJob {
           return;
         }
 
-        this.logger.info(`got message: ${message.body}`);
+        this.logger.info(message.body);
 
         await this.messageQueue.ack(message);
       },
@@ -49,5 +56,9 @@ export class UpdateVideoUrlJob extends BaseJob {
         },
       }
     );
+  }
+
+  async getJobId() {
+    return `eternal:${JobName.UPDATE_VIDEO_URL}`;
   }
 }

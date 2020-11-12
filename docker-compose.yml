@@ -43,7 +43,7 @@ services:
       - "3000:3000"
     command: ["yarn", "dev:graphql"]
 
-  workers:
+  jobs:
     image: stringsync:latest
     build:
       context: .
