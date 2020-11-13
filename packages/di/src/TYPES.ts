@@ -1,10 +1,10 @@
 export const TYPES = {
   AuthService: Symbol('AuthService'),
+  BlobStorage: Symbol('BlobStorage'),
   Cache: Symbol('Cache'),
   ContainerConfig: Symbol('ContainerConfig'),
   Db: Symbol('Db'),
   Factory: Symbol('Factory'),
-  FileStorage: Symbol('FileStorage'),
   HealthCheckerService: Symbol('HealthCheckerService'),
   HealthController: Symbol('HealthController'),
   JobConfig: Symbol('JobConfig'),

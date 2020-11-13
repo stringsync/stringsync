@@ -38,8 +38,8 @@ import {
   VideoMessageService,
 } from '@stringsync/services';
 import {
+  BlobStorage,
   Cache,
-  FileStorage,
   Logger,
   Mailer,
   MessageQueue,
@@ -178,13 +178,12 @@ export class DI {
       bind<Redis>(TYPES.Redis).toConstantValue(redis);
 
       if (config.NODE_ENV === 'test') {
-        bind<FileStorage>(TYPES.FileStorage).to(NoopStorage);
+        bind<BlobStorage>(TYPES.BlobStorage).to(NoopStorage);
       } else {
-        bind<FileStorage>(TYPES.FileStorage).toConstantValue(
+        bind<BlobStorage>(TYPES.BlobStorage).toConstantValue(
           S3Storage.create({
             accessKeyId: config.AWS_ACCESS_KEY_ID,
             secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
-            bucket: config.S3_BUCKET,
             domainName: config.CLOUDFRONT_DOMAIN_NAME,
           })
         );

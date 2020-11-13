@@ -32,8 +32,9 @@ services:
       REDIS_PORT: 6379
       SESSION_SECRET: keyboardcat
       S3_BUCKET: stringsync-dev
-      VIDEO_METADATA_TABLE_NAME: ss-vids-dev
+      S3_VIDEO_SRC_BUCKET: ss-vids-dev-source-p35827dydqh3
       CLOUDFRONT_DOMAIN_NAME: d2yt8e0its832a.cloudfront.net
+      VIDEO_MESSAGE_QUEUE_NAME: ss-vids-dev
     volumes:
       - ./packages:/stringsync/packages
     links:
@@ -63,8 +64,9 @@ services:
       REDIS_PORT: 6379
       SESSION_SECRET: keyboardcat
       S3_BUCKET: stringsync-dev
-      VIDEO_METADATA_TABLE_NAME: ss-vids-dev
+      S3_VIDEO_SRC_BUCKET: ss-vids-dev-source-p35827dydqh3
       CLOUDFRONT_DOMAIN_NAME: d2yt8e0its832a.cloudfront.net
+      VIDEO_MESSAGE_QUEUE_NAME: ss-vids-dev
     volumes:
       - ./packages:/stringsync/packages
     links:

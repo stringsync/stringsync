@@ -17,8 +17,8 @@ export const getContainerConfig = configFactory({
   REDIS_HOST: ConfigKind.STRING,
   REDIS_PORT: ConfigKind.INT,
   S3_BUCKET: ConfigKind.STRING,
+  S3_VIDEO_SRC_BUCKET: ConfigKind.STRING,
   SESSION_SECRET: ConfigKind.STRING,
-  VIDEO_METADATA_TABLE_NAME: ConfigKind.STRING,
   WEB_URI: ConfigKind.STRING,
   VIDEO_MESSAGE_QUEUE_NAME: ConfigKind.STRING,
 });

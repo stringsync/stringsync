@@ -1,6 +1,7 @@
 import { ContainerConfig } from '@stringsync/config';
 import { TYPES } from '@stringsync/di';
-import { Logger, MessageQueue } from '@stringsync/util';
+import { VideoMessageService } from '@stringsync/services';
+import { Logger } from '@stringsync/util';
 import { Queue, QueueScheduler, Worker } from 'bullmq';
 import { inject, injectable } from 'inversify';
 import { BaseJob } from './BaseJob';
@@ -8,18 +9,18 @@ import { JobName } from './types';
 
 @injectable()
 export class UpdateVideoUrlJob extends BaseJob {
-  messageQueue: MessageQueue;
+  videoMessageService: VideoMessageService;
   logger: Logger;
   config: ContainerConfig;
 
   constructor(
-    @inject(TYPES.MessageQueue) messageQueue: MessageQueue,
+    @inject(TYPES.VideoMessageService) videoMessageService: VideoMessageService,
     @inject(TYPES.Logger) logger: Logger,
     @inject(TYPES.ContainerConfig) config: ContainerConfig
   ) {
     super();
 
-    this.messageQueue = messageQueue;
+    this.videoMessageService = videoMessageService;
     this.logger = logger;
     this.config = config;
   }
@@ -40,14 +41,9 @@ export class UpdateVideoUrlJob extends BaseJob {
     return new Worker(
       JobName.UPDATE_VIDEO_URL,
       async () => {
-        const message = await this.messageQueue.get('ss-vids-dev');
-        if (!message) {
-          return;
-        }
+        this.logger.info('checking for processed video messages');
 
-        this.logger.info(message.body);
-
-        await this.messageQueue.ack(message);
+        await this.videoMessageService.call();
       },
       {
         connection: {
