@@ -182,7 +182,7 @@ export class DI {
           S3Storage.create({
             accessKeyId: config.AWS_ACCESS_KEY_ID,
             secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
-            domainName: config.CLOUDFRONT_DOMAIN_NAME,
+            domainName: config.CLOUDFRONT_DISTRIBUTION_ID,
           })
         );
       }

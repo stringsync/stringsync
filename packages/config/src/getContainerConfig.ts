@@ -3,9 +3,9 @@ import { ConfigKind } from './types';
 
 export const getContainerConfig = configFactory({
   AWS_ACCESS_KEY_ID: ConfigKind.STRING,
-  AWS_SECRET_ACCESS_KEY: ConfigKind.STRING,
   AWS_REGION: ConfigKind.STRING,
-  CLOUDFRONT_DOMAIN_NAME: ConfigKind.STRING,
+  AWS_SECRET_ACCESS_KEY: ConfigKind.STRING,
+  CLOUDFRONT_DISTRIBUTION_ID: ConfigKind.STRING,
   DB_HOST: ConfigKind.STRING,
   DB_NAME: ConfigKind.STRING,
   DB_PASSWORD: ConfigKind.STRING,
@@ -19,8 +19,8 @@ export const getContainerConfig = configFactory({
   S3_BUCKET: ConfigKind.STRING,
   S3_VIDEO_SRC_BUCKET: ConfigKind.STRING,
   SESSION_SECRET: ConfigKind.STRING,
+  SQS_VIDEO_QUEUE_NAME: ConfigKind.STRING,
   WEB_URI: ConfigKind.STRING,
-  VIDEO_MESSAGE_QUEUE_NAME: ConfigKind.STRING,
 });
 
 export type ContainerConfig = ReturnType<typeof getContainerConfig>;
