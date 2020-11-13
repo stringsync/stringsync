@@ -1,6 +1,5 @@
 import { Ctor } from '@stringsync/common';
 import { ContainerConfig, getContainerConfig } from '@stringsync/config';
-import { getJobConfig, JobConfig } from '@stringsync/config/src/getJobConfig';
 import { Db, Sequelize, SequelizeDb } from '@stringsync/db';
 import {
   AuthResolver,
@@ -77,7 +76,6 @@ export class DI {
   private static getConfigModule(config: ContainerConfig) {
     return new ContainerModule((bind) => {
       bind<ContainerConfig>(TYPES.ContainerConfig).toConstantValue(config);
-      bind<JobConfig>(TYPES.JobConfig).toConstantValue(getJobConfig());
     });
   }
 

@@ -8,7 +8,6 @@ export const TYPES = {
   Factory: Symbol('Factory'),
   HealthCheckerService: Symbol('HealthCheckerService'),
   HealthController: Symbol('HealthController'),
-  JobConfig: Symbol('JobConfig'),
   Logger: Symbol('Logger'),
   Mailer: Symbol('Mailer'),
   MessageQueue: Symbol('MessageQueue'),
