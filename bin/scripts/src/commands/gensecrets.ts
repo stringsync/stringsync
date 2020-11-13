@@ -16,7 +16,7 @@ export default class Gensecrets extends Command {
   };
 
   async run() {
-    const filepath = path.join(ROOT_PATH, FILE_NAME);
+    const filepath = path.join(ROOT_PATH, 'env', FILE_NAME);
     const gitignorePath = path.join(ROOT_PATH, GITIGNORE_FILE_NAME);
 
     if (existsSync(filepath)) {

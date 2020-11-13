@@ -17,9 +17,10 @@ it('runs without crashing', () => {
     REDIS_HOST: 'REDIS_HOST',
     REDIS_PORT: '4000',
     S3_BUCKET: 'S3_BUCKET',
+    S3_VIDEO_SRC_BUCKET: 'S3_VIDEO_SRC_BUCKET',
     SESSION_SECRET: 'SESSION_SECRET',
-    VIDEO_METADATA_TABLE_NAME: 'VIDEO_METADATA_TABLE_NAME',
     WEB_URI: 'WEB_URI',
+    VIDEO_MESSAGE_QUEUE_NAME: 'VIDEO_MESSAGE_QUEUE_NAME',
   };
 
   expect(() => getContainerConfig(env)).not.toThrow();
