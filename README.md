@@ -65,7 +65,7 @@ To run server tests in watch mode, run:
 To run the web project, run:
 
 ```
-yarn web dev
+./bin/ss up web
 ```
 
 To run web tests in watch mode, run:
