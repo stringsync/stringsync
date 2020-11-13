@@ -8,6 +8,7 @@
   "dependencies": {
     "@stringsync/config": "1.0.0",
     "@stringsync/db": "1.0.0",
+    "@stringsync/jobs": "1.0.0",
     "@stringsync/services": "1.0.0",
     "@stringsync/util": "1.0.0"
   }

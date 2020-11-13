@@ -2,7 +2,7 @@ import { AuthRequirement, Connection } from '@stringsync/common';
 import { TYPES } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
 import { NotationService } from '@stringsync/services';
-import { FileStorage, Logger } from '@stringsync/util';
+import { BlobStorage, Logger } from '@stringsync/util';
 import { inject, injectable } from 'inversify';
 import { Arg, Args, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { NotationObject } from '.';
@@ -17,16 +17,16 @@ import { NotationConnectionObject } from './NotationConnectionObject';
 @injectable()
 export class NotationResolver {
   notationService: NotationService;
-  fileStorage: FileStorage;
+  blobStorage: BlobStorage;
   logger: Logger;
 
   constructor(
     @inject(TYPES.NotationService) notationService: NotationService,
-    @inject(TYPES.FileStorage) fileStorage: FileStorage,
+    @inject(TYPES.BlobStorage) blobStorage: BlobStorage,
     @inject(TYPES.Logger) logger: Logger
   ) {
     this.notationService = notationService;
-    this.fileStorage = fileStorage;
+    this.blobStorage = blobStorage;
     this.logger = logger;
   }
 

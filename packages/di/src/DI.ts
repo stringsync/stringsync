@@ -1,7 +1,15 @@
 import { Ctor } from '@stringsync/common';
 import { ContainerConfig, getContainerConfig } from '@stringsync/config';
+import { getJobConfig, JobConfig } from '@stringsync/config/src/getJobConfig';
 import { Db, Sequelize, SequelizeDb } from '@stringsync/db';
-import { AuthResolver, HealthController, NotationResolver, TagResolver, UserResolver } from '@stringsync/graphql';
+import {
+  AuthResolver,
+  ExperimentResolver,
+  HealthController,
+  NotationResolver,
+  TagResolver,
+  UserResolver,
+} from '@stringsync/graphql';
 import {
   Factory,
   NotationLoader,
@@ -27,21 +35,25 @@ import {
   TaggingService,
   TagService,
   UserService,
+  VideoMessageService,
 } from '@stringsync/services';
 import {
+  BlobStorage,
   Cache,
-  FileStorage,
   Logger,
   Mailer,
+  MessageQueue,
   NodemailerMailer,
   NoopMailer,
   NoopStorage,
   Redis,
   RedisCache,
   S3Storage,
+  SqsMessageQueue,
   WinstonLogger,
 } from '@stringsync/util';
 import { Container as InversifyContainer, ContainerModule } from 'inversify';
+import { UpdateVideoUrlJob } from '../../jobs/src/UpdateVideoUrlJob';
 import { TYPES } from './TYPES';
 
 export class DI {
@@ -55,7 +67,8 @@ export class DI {
       DI.getGraphqlModule(config),
       DI.getReposModule(config),
       DI.getServicesModule(config),
-      DI.getUtilModule(config, logger)
+      DI.getUtilModule(config, logger),
+      DI.getJobsModule(config)
     );
 
     return container;
@@ -64,6 +77,7 @@ export class DI {
   private static getConfigModule(config: ContainerConfig) {
     return new ContainerModule((bind) => {
       bind<ContainerConfig>(TYPES.ContainerConfig).toConstantValue(config);
+      bind<JobConfig>(TYPES.JobConfig).toConstantValue(getJobConfig());
     });
   }
 
@@ -76,6 +90,9 @@ export class DI {
         .toSelf()
         .inSingletonScope();
       bind<NotationResolver>(NotationResolver)
+        .toSelf()
+        .inSingletonScope();
+      bind<ExperimentResolver>(ExperimentResolver)
         .toSelf()
         .inSingletonScope();
 
@@ -94,6 +111,7 @@ export class DI {
       bind<NotationService>(TYPES.NotationService).to(NotationService);
       bind<TagService>(TYPES.TagService).to(TagService);
       bind<TaggingService>(TYPES.TaggingService).to(TaggingService);
+      bind<VideoMessageService>(TYPES.VideoMessageService).to(VideoMessageService);
     });
   }
 
@@ -160,13 +178,12 @@ export class DI {
       bind<Redis>(TYPES.Redis).toConstantValue(redis);
 
       if (config.NODE_ENV === 'test') {
-        bind<FileStorage>(TYPES.FileStorage).to(NoopStorage);
+        bind<BlobStorage>(TYPES.BlobStorage).to(NoopStorage);
       } else {
-        bind<FileStorage>(TYPES.FileStorage).toConstantValue(
+        bind<BlobStorage>(TYPES.BlobStorage).toConstantValue(
           S3Storage.create({
-            accessKeyId: config.S3_ACCESS_KEY_ID,
-            secretAccessKey: config.S3_SECRET_ACCESS_KEY,
-            bucket: config.S3_BUCKET,
+            accessKeyId: config.AWS_ACCESS_KEY_ID,
+            secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
             domainName: config.CLOUDFRONT_DOMAIN_NAME,
           })
         );
@@ -178,6 +195,22 @@ export class DI {
         const transporter = NodemailerMailer.createTransporter();
         bind<Mailer>(TYPES.Mailer).toConstantValue(new NodemailerMailer(transporter));
       }
+
+      bind<MessageQueue>(TYPES.MessageQueue).toConstantValue(
+        SqsMessageQueue.create(logger, {
+          accessKeyId: config.AWS_ACCESS_KEY_ID,
+          secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
+          region: config.AWS_REGION,
+        })
+      );
+    });
+  }
+
+  private static getJobsModule(config: ContainerConfig) {
+    return new ContainerModule((bind) => {
+      bind<UpdateVideoUrlJob>(TYPES.UpdateVideoUrlJob)
+        .to(UpdateVideoUrlJob)
+        .inSingletonScope();
     });
   }
 }

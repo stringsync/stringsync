@@ -14,6 +14,7 @@ COPY ./packages/services/package.json ./packages/services/
 COPY ./packages/web/package.json ./packages/web/
 COPY ./packages/util/package.json ./packages/util/
 COPY ./packages/db/package.json ./packages/db/
+COPY ./packages/jobs/package.json ./packages/jobs/
 
 RUN yarn
 

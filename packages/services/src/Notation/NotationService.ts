@@ -1,31 +1,35 @@
-import { TYPES } from '@stringsync/di';
-import { injectable, inject } from 'inversify';
-import { NotationRepo, TagRepo } from '@stringsync/repos';
-import { Notation } from '@stringsync/domain';
 import { Connection, NotationConnectionArgs } from '@stringsync/common';
-import { CreateArgs } from './types';
-import { TaggingService } from '../Tagging';
+import { ContainerConfig } from '@stringsync/config';
 import { Db } from '@stringsync/db';
+import { TYPES } from '@stringsync/di';
+import { Notation } from '@stringsync/domain';
+import { NotationRepo } from '@stringsync/repos';
+import { BlobStorage } from '@stringsync/util';
+import { inject, injectable } from 'inversify';
 import path from 'path';
-import { FileStorage } from '@stringsync/util';
+import { TaggingService } from '../Tagging';
+import { CreateArgs } from './types';
 
 @injectable()
 export class NotationService {
   db: Db;
   taggingService: TaggingService;
   notationRepo: NotationRepo;
-  fileStorage: FileStorage;
+  blobStorage: BlobStorage;
+  config: ContainerConfig;
 
   constructor(
     @inject(TYPES.Db) db: Db,
     @inject(TYPES.TaggingService) taggingService: TaggingService,
     @inject(TYPES.NotationRepo) notationRepo: NotationRepo,
-    @inject(TYPES.FileStorage) fileStorage: FileStorage
+    @inject(TYPES.BlobStorage) blobStorage: BlobStorage,
+    @inject(TYPES.ContainerConfig) config: ContainerConfig
   ) {
     this.db = db;
     this.taggingService = taggingService;
     this.notationRepo = notationRepo;
-    this.fileStorage = fileStorage;
+    this.blobStorage = blobStorage;
+    this.config = config;
   }
 
   async find(id: string): Promise<Notation | null> {
@@ -53,24 +57,25 @@ export class NotationService {
     const notation = await this.notationRepo.create({ artistName, songName, transcriberId });
 
     const thumbnailFilepath = `notations/thumbnail/${notation.id}${thumbnailExt}`;
-    const videoFilepath = `notations/video/${notation.id}${videoExt}`;
+    const videoFilepath = `${notation.id}${videoExt}`;
 
     const taggings = tagIds.map((tagId) => ({ notationId: notation.id, tagId }));
 
-    const [thumbnailUrl, videoUrl] = await Promise.all([
-      this.fileStorage.put(thumbnailFilepath, thumbnail.createReadStream()),
-      this.fileStorage.put(videoFilepath, video.createReadStream()),
+    const [thumbnailUrl] = await Promise.all([
+      this.blobStorage.put(thumbnailFilepath, this.config.S3_BUCKET, thumbnail.createReadStream()),
+      // Putting in this bucket kicks off an external process to process the video. The UpdateVideoUrlJob will
+      // take care of associating the video URL with the notation.
+      this.blobStorage.put(videoFilepath, this.config.S3_VIDEO_SRC_BUCKET, video.createReadStream()),
       this.taggingService.bulkCreate(taggings),
     ]);
 
     notation.thumbnailUrl = thumbnailUrl;
-    notation.videoUrl = videoUrl;
     await this.update(notation.id, notation);
 
     return notation;
   }
 
-  async update(id: string, attrs: Notation): Promise<void> {
+  async update(id: string, attrs: Partial<Notation>): Promise<void> {
     await this.notationRepo.update(id, attrs);
   }
 }

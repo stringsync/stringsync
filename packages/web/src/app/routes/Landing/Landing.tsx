@@ -18,7 +18,9 @@ const Jumbotron = styled.div`
   padding-top: 128px;
   padding-bottom: 128px;
   text-align: center;
-  background: url("${LANDING_SRC}") no-repeat center center fixed;
+  background-image: url("${LANDING_SRC}");
+  background-repeat: no-repeat;
+  background-size: cover;
   position: relative;
 `;
 
