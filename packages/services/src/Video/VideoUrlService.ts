@@ -3,11 +3,10 @@ import { ContainerConfig } from '@stringsync/config';
 import { TYPES } from '@stringsync/di';
 import { Logger, Message, MessageQueue } from '@stringsync/util';
 import { inject, injectable } from 'inversify';
-import path from 'path';
 import { NotationService } from '../Notation';
 
 @injectable()
-export class VideoMessageService {
+export class VideoUrlService {
   logger: Logger;
   messageQueue: MessageQueue;
   notationService: NotationService;
@@ -25,7 +24,7 @@ export class VideoMessageService {
     this.config = config;
   }
 
-  async call(): Promise<void> {
+  async processNextMessage(): Promise<void> {
     const queueName = this.config.VIDEO_MESSAGE_QUEUE_NAME;
 
     const message = await this.messageQueue.get(queueName);
@@ -55,11 +54,9 @@ export class VideoMessageService {
       throw new UnknownError(`message data missing 'hlsUrl' property`);
     }
 
-    const ext = path.extname(srcVideo);
-    const notationId = path.basename(srcVideo, ext);
-    const notation = await this.notationService.find(notationId);
+    const notation = await this.notationService.findByVideoFilename(srcVideo);
     if (!notation) {
-      throw new NotFoundError(`could not find notation ${notationId} from srcVideo: ${srcVideo}`);
+      throw new NotFoundError(`could not find notation from srcVideo: ${srcVideo}`);
     }
 
     await this.notationService.update(notation.id, { videoUrl: hlsUrl });

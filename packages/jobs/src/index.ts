@@ -1,8 +1,9 @@
 import { getContainerConfig } from '@stringsync/config';
 import { DI, TYPES } from '@stringsync/di';
 import { Logger } from '@stringsync/util';
-import { UpdateVideoUrlJob } from './UpdateVideoUrlJob';
+import { AssociateVideoUrlJob } from './AssociateVideoUrlJob';
 
+export * from './AssociateVideoUrlJob';
 export * from './types';
 
 const main = async () => {
@@ -10,17 +11,12 @@ const main = async () => {
   const container = DI.create(config);
   const logger = container.get<Logger>(TYPES.Logger);
 
-  // get jobs
-  const updateVideoUrlJob = container.get<UpdateVideoUrlJob>(TYPES.UpdateVideoUrlJob);
+  const updateVideoUrlJob = container.get<AssociateVideoUrlJob>(TYPES.AssociateVideoUrlJob);
   updateVideoUrlJob.setupQueue();
   updateVideoUrlJob.setupWorker();
-  await updateVideoUrlJob.enqueue(undefined, {
-    repeat: {
-      every: 60000, // milliseconds
-    },
-  });
+  await updateVideoUrlJob.runForever();
 
-  logger.info('jobs setup');
+  logger.info('jobs successfully setup');
 };
 
 if (require.main === module) {

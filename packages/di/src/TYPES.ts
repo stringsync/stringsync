@@ -1,4 +1,5 @@
 export const TYPES = {
+  AssociateVideoUrlJob: Symbol('AssociateVideoUrlJob'),
   AuthService: Symbol('AuthService'),
   BlobStorage: Symbol('BlobStorage'),
   Cache: Symbol('Cache'),
@@ -29,12 +30,11 @@ export const TYPES = {
   TagSequelizeLoader: Symbol('TagSequelizeLoader'),
   TagSequelizeRepo: Symbol('TagSequelizeRepo'),
   TagService: Symbol('TagService'),
-  UpdateVideoUrlJob: Symbol('UpdateVideoUrlJob'),
   UserLoader: Symbol('UserLoader'),
   UserLoaderCtor: Symbol('UserLoaderCtor'),
   UserRepo: Symbol('UserRepo'),
   UserSequelizeLoader: Symbol('UserSequelizeLoader'),
   UserSequelizeRepo: Symbol('UserSequelizeRepo'),
   UserService: Symbol('UserService'),
-  VideoMessageService: Symbol('VideoMessageService'),
+  VideoUrlService: Symbol('VideoUrlService'),
 };

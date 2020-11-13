@@ -10,6 +10,7 @@ import {
   TagResolver,
   UserResolver,
 } from '@stringsync/graphql';
+import { AssociateVideoUrlJob } from '@stringsync/jobs';
 import {
   Factory,
   NotationLoader,
@@ -35,7 +36,7 @@ import {
   TaggingService,
   TagService,
   UserService,
-  VideoMessageService,
+  VideoUrlService,
 } from '@stringsync/services';
 import {
   BlobStorage,
@@ -53,7 +54,6 @@ import {
   WinstonLogger,
 } from '@stringsync/util';
 import { Container as InversifyContainer, ContainerModule } from 'inversify';
-import { UpdateVideoUrlJob } from '../../jobs/src/UpdateVideoUrlJob';
 import { TYPES } from './TYPES';
 
 export class DI {
@@ -111,7 +111,7 @@ export class DI {
       bind<NotationService>(TYPES.NotationService).to(NotationService);
       bind<TagService>(TYPES.TagService).to(TagService);
       bind<TaggingService>(TYPES.TaggingService).to(TaggingService);
-      bind<VideoMessageService>(TYPES.VideoMessageService).to(VideoMessageService);
+      bind<VideoUrlService>(TYPES.VideoUrlService).to(VideoUrlService);
     });
   }
 
@@ -208,8 +208,8 @@ export class DI {
 
   private static getJobsModule(config: ContainerConfig) {
     return new ContainerModule((bind) => {
-      bind<UpdateVideoUrlJob>(TYPES.UpdateVideoUrlJob)
-        .to(UpdateVideoUrlJob)
+      bind<AssociateVideoUrlJob>(TYPES.AssociateVideoUrlJob)
+        .to(AssociateVideoUrlJob)
         .inSingletonScope();
     });
   }
