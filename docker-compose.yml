@@ -18,8 +18,8 @@ services:
       context: .
       dockerfile: ./Dockerfile
     env_file:
-      - .env
-      - secrets.env
+      - env/dev.env
+      - env/secrets.env
     volumes:
       - ./packages:/stringsync/packages
     links:
@@ -35,8 +35,8 @@ services:
       context: .
       dockerfile: ./Dockerfile
     env_file:
-      - .env
-      - secrets.env
+      - env/dev.env
+      - env/secrets.env
     volumes:
       - ./packages:/stringsync/packages
     links:

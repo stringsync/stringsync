@@ -17,25 +17,8 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    environment:
-      NODE_ENV: test
-      PORT: 3000
-      WEB_URI: http://localhost:8080
-      DB_NAME: stringsync
-      DB_USERNAME: stringsync
-      DB_PASSWORD: stringsync
-      DB_HOST: db
-      DB_PORT: 5432
-      LOG_LEVEL: info
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      SESSION_SECRET: keyboardcat
-      S3_BUCKET: S3_BUCKET
-      AWS_ACCESS_KEY_ID: AWS_ACCESS_KEY_ID
-      AWS_SECRET_ACCESS_KEY: AWS_SECRET_ACCESS_KEY
-      AWS_REGION: AWS_REGION
-      CLOUDFRONT_DOMAIN_NAME: example.com
-      VIDEO_METADATA_TABLE_NAME: VIDEO_METADATA_TABLE_NAME
+    env_file:
+      - env/server.test.env
     volumes:
       - ./packages:/stringsync/packages
     links:
