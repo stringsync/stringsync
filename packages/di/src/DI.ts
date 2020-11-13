@@ -10,6 +10,7 @@ import {
   TagResolver,
   UserResolver,
 } from '@stringsync/graphql';
+import { AssociateVideoUrlJob } from '@stringsync/jobs';
 import {
   Factory,
   NotationLoader,
@@ -53,7 +54,6 @@ import {
   WinstonLogger,
 } from '@stringsync/util';
 import { Container as InversifyContainer, ContainerModule } from 'inversify';
-import { UpdateVideoUrlJob } from '../../jobs/src/UpdateVideoUrlJob';
 import { TYPES } from './TYPES';
 
 export class DI {
@@ -208,8 +208,8 @@ export class DI {
 
   private static getJobsModule(config: ContainerConfig) {
     return new ContainerModule((bind) => {
-      bind<UpdateVideoUrlJob>(TYPES.UpdateVideoUrlJob)
-        .to(UpdateVideoUrlJob)
+      bind<AssociateVideoUrlJob>(TYPES.AssociateVideoUrlJob)
+        .to(AssociateVideoUrlJob)
         .inSingletonScope();
     });
   }

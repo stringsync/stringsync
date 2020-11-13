@@ -1,8 +1,9 @@
 import { getContainerConfig } from '@stringsync/config';
 import { DI, TYPES } from '@stringsync/di';
 import { Logger } from '@stringsync/util';
-import { UpdateVideoUrlJob } from './UpdateVideoUrlJob';
+import { AssociateVideoUrlJob } from './AssociateVideoUrlJob';
 
+export * from './AssociateVideoUrlJob';
 export * from './types';
 
 const main = async () => {
@@ -10,7 +11,7 @@ const main = async () => {
   const container = DI.create(config);
   const logger = container.get<Logger>(TYPES.Logger);
 
-  const updateVideoUrlJob = container.get<UpdateVideoUrlJob>(TYPES.UpdateVideoUrlJob);
+  const updateVideoUrlJob = container.get<AssociateVideoUrlJob>(TYPES.AssociateVideoUrlJob);
   updateVideoUrlJob.setupQueue();
   updateVideoUrlJob.setupWorker();
   await updateVideoUrlJob.runForever();

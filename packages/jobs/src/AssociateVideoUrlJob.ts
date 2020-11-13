@@ -8,7 +8,7 @@ import { Job } from './Job';
 import { JobName } from './types';
 
 @injectable()
-export class UpdateVideoUrlJob extends Job {
+export class AssociateVideoUrlJob extends Job {
   videoUrlService: VideoUrlService;
   logger: Logger;
   config: ContainerConfig;
