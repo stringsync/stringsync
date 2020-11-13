@@ -48,23 +48,23 @@ export class NotationService {
     return await this.notationRepo.findPage(args);
   }
 
+  async findByVideoFilename(filename: string): Promise<Notation | null> {
+    const ext = path.extname(filename);
+    const id = path.basename(filename, ext);
+    return await this.find(id);
+  }
+
   async create(args: CreateArgs): Promise<Notation> {
     const { artistName, songName, tagIds, transcriberId, thumbnail, video } = args;
 
-    const thumbnailExt = path.extname(thumbnail.filename);
-    const videoExt = path.extname(video.filename);
-
     const notation = await this.notationRepo.create({ artistName, songName, transcriberId });
 
-    const thumbnailFilepath = `notations/thumbnail/${notation.id}${thumbnailExt}`;
-    const videoFilepath = `${notation.id}${videoExt}`;
-
+    const thumbnailFilepath = this.getThumbnailFilepath(thumbnail.filename, notation);
+    const videoFilepath = this.getVideoFilepath(video.filename, notation);
     const taggings = tagIds.map((tagId) => ({ notationId: notation.id, tagId }));
 
     const [thumbnailUrl] = await Promise.all([
       this.blobStorage.put(thumbnailFilepath, this.config.S3_BUCKET, thumbnail.createReadStream()),
-      // Putting in this bucket kicks off an external process to process the video. The UpdateVideoUrlJob will
-      // take care of associating the video URL with the notation.
       this.blobStorage.put(videoFilepath, this.config.S3_VIDEO_SRC_BUCKET, video.createReadStream()),
       this.taggingService.bulkCreate(taggings),
     ]);
@@ -77,5 +77,15 @@ export class NotationService {
 
   async update(id: string, attrs: Partial<Notation>): Promise<void> {
     await this.notationRepo.update(id, attrs);
+  }
+
+  private getThumbnailFilepath(originalFilename: string, notation: Notation): string {
+    const ext = path.extname(originalFilename);
+    return `notations/thumbnail/${notation.id}${ext}`;
+  }
+
+  private getVideoFilepath(originalFilename: string, notation: Notation): string {
+    const ext = path.extname(originalFilename);
+    return `${notation.id}${ext}`;
   }
 }

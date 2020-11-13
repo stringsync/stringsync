@@ -35,7 +35,7 @@ import {
   TaggingService,
   TagService,
   UserService,
-  VideoMessageService,
+  VideoUrlService,
 } from '@stringsync/services';
 import {
   BlobStorage,
@@ -111,7 +111,7 @@ export class DI {
       bind<NotationService>(TYPES.NotationService).to(NotationService);
       bind<TagService>(TYPES.TagService).to(TagService);
       bind<TaggingService>(TYPES.TaggingService).to(TaggingService);
-      bind<VideoMessageService>(TYPES.VideoMessageService).to(VideoMessageService);
+      bind<VideoUrlService>(TYPES.VideoUrlService).to(VideoUrlService);
     });
   }
 

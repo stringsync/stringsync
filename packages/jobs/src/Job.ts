@@ -4,7 +4,7 @@ import { injectable } from 'inversify';
 import * as uuid from 'uuid';
 
 @injectable()
-export abstract class BaseJob<T = void> {
+export abstract class Job<T = undefined> {
   private _queue: Queue<T> | null = null;
   private _worker: Worker<T> | null = null;
   private _scheduler: QueueScheduler | null = null;

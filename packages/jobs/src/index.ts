@@ -10,17 +10,12 @@ const main = async () => {
   const container = DI.create(config);
   const logger = container.get<Logger>(TYPES.Logger);
 
-  // get jobs
   const updateVideoUrlJob = container.get<UpdateVideoUrlJob>(TYPES.UpdateVideoUrlJob);
   updateVideoUrlJob.setupQueue();
   updateVideoUrlJob.setupWorker();
-  await updateVideoUrlJob.enqueue(undefined, {
-    repeat: {
-      every: 60000, // milliseconds
-    },
-  });
+  await updateVideoUrlJob.runForever();
 
-  logger.info('jobs setup');
+  logger.info('jobs successfully setup');
 };
 
 if (require.main === module) {
