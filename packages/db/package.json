@@ -6,6 +6,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "dev": "yarn migrate && yarn seed",
     "seed": "sequelize db:seed:all",
     "migrate": "sequelize db:migrate"
   },

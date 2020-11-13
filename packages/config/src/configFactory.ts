@@ -1,4 +1,4 @@
-import { ConfigKind, ConfigSpec, Config, ConfigGetter } from './types';
+import { ConfigGetter, ConfigKind, ConfigSpec } from './types';
 
 class ConfigError extends Error {}
 
