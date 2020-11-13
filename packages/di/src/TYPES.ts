@@ -36,4 +36,5 @@ export const TYPES = {
   UserSequelizeLoader: Symbol('UserSequelizeLoader'),
   UserSequelizeRepo: Symbol('UserSequelizeRepo'),
   UserService: Symbol('UserService'),
+  VideoMessageService: Symbol('VideoMessageService'),
 };

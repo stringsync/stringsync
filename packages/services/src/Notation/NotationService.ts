@@ -1,13 +1,13 @@
-import { TYPES } from '@stringsync/di';
-import { injectable, inject } from 'inversify';
-import { NotationRepo, TagRepo } from '@stringsync/repos';
-import { Notation } from '@stringsync/domain';
 import { Connection, NotationConnectionArgs } from '@stringsync/common';
-import { CreateArgs } from './types';
-import { TaggingService } from '../Tagging';
 import { Db } from '@stringsync/db';
-import path from 'path';
+import { TYPES } from '@stringsync/di';
+import { Notation } from '@stringsync/domain';
+import { NotationRepo } from '@stringsync/repos';
 import { FileStorage } from '@stringsync/util';
+import { inject, injectable } from 'inversify';
+import path from 'path';
+import { TaggingService } from '../Tagging';
+import { CreateArgs } from './types';
 
 @injectable()
 export class NotationService {
@@ -70,7 +70,7 @@ export class NotationService {
     return notation;
   }
 
-  async update(id: string, attrs: Notation): Promise<void> {
+  async update(id: string, attrs: Partial<Notation>): Promise<void> {
     await this.notationRepo.update(id, attrs);
   }
 }

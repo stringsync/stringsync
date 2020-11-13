@@ -20,6 +20,7 @@ export const getContainerConfig = configFactory({
   SESSION_SECRET: ConfigKind.STRING,
   VIDEO_METADATA_TABLE_NAME: ConfigKind.STRING,
   WEB_URI: ConfigKind.STRING,
+  VIDEO_MESSAGE_QUEUE_NAME: ConfigKind.STRING,
 });
 
 export type ContainerConfig = ReturnType<typeof getContainerConfig>;

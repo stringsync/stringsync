@@ -35,6 +35,7 @@ import {
   TaggingService,
   TagService,
   UserService,
+  VideoMessageService,
 } from '@stringsync/services';
 import {
   Cache,
@@ -110,6 +111,7 @@ export class DI {
       bind<NotationService>(TYPES.NotationService).to(NotationService);
       bind<TagService>(TYPES.TagService).to(TagService);
       bind<TaggingService>(TYPES.TaggingService).to(TaggingService);
+      bind<VideoMessageService>(TYPES.VideoMessageService).to(VideoMessageService);
     });
   }
 
