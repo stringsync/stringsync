@@ -9,7 +9,7 @@ export const getContainerConfig = configFactory({
   AWS_ACCESS_KEY_ID: ConfigKind.STRING,
   AWS_REGION: ConfigKind.STRING,
   AWS_SECRET_ACCESS_KEY: ConfigKind.STRING,
-  CDN_DISTRIBUTION_ID: ConfigKind.STRING,
+  CDN_DOMAIN_NAME: ConfigKind.STRING,
   DB_HOST: ConfigKind.STRING,
   DB_NAME: ConfigKind.STRING,
   DB_PASSWORD: ConfigKind.STRING,

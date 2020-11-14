@@ -4,7 +4,7 @@ import { Db } from '@stringsync/db';
 import { TYPES } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
 import { NotationRepo } from '@stringsync/repos';
-import { BlobStorage, Cdn } from '@stringsync/util';
+import { BlobStorage } from '@stringsync/util';
 import { inject, injectable } from 'inversify';
 import path from 'path';
 import { TaggingService } from '../Tagging';
@@ -16,7 +16,6 @@ export class NotationService {
   taggingService: TaggingService;
   notationRepo: NotationRepo;
   blobStorage: BlobStorage;
-  cdn: Cdn;
   config: ContainerConfig;
 
   constructor(
@@ -24,14 +23,12 @@ export class NotationService {
     @inject(TYPES.TaggingService) taggingService: TaggingService,
     @inject(TYPES.NotationRepo) notationRepo: NotationRepo,
     @inject(TYPES.BlobStorage) blobStorage: BlobStorage,
-    @inject(TYPES.Cdn) cdn: Cdn,
     @inject(TYPES.ContainerConfig) config: ContainerConfig
   ) {
     this.db = db;
     this.taggingService = taggingService;
     this.notationRepo = notationRepo;
     this.blobStorage = blobStorage;
-    this.cdn = cdn;
     this.config = config;
   }
 
@@ -93,7 +90,6 @@ export class NotationService {
   }
 
   private async getThumbnailUrl(thumbnailKey: string): Promise<string> {
-    const domainName = await this.cdn.getDomainName(this.config.CDN_DISTRIBUTION_ID);
-    return `https://${domainName}/${thumbnailKey}`;
+    return `https://${this.config.CDN_DOMAIN_NAME}/${thumbnailKey}`;
   }
 }

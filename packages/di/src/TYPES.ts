@@ -3,7 +3,6 @@ export const TYPES = {
   AuthService: Symbol('AuthService'),
   BlobStorage: Symbol('BlobStorage'),
   Cache: Symbol('Cache'),
-  Cdn: Symbol('Cdn'),
   ContainerConfig: Symbol('ContainerConfig'),
   Db: Symbol('Db'),
   Factory: Symbol('Factory'),

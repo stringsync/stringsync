@@ -40,13 +40,10 @@ import {
 import {
   BlobStorage,
   Cache,
-  Cdn,
-  CloudFrontCdn,
   Logger,
   Mailer,
   MessageQueue,
   NodemailerMailer,
-  NoopCdn,
   NoopMailer,
   NoopMessageQueue,
   NoopStorage,
@@ -186,7 +183,7 @@ export class DI {
           S3Storage.create({
             accessKeyId: config.AWS_ACCESS_KEY_ID,
             secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
-            domainName: config.CDN_DISTRIBUTION_ID,
+            domainName: config.CDN_DOMAIN_NAME,
           })
         );
       }
@@ -203,18 +200,6 @@ export class DI {
       } else {
         bind<MessageQueue>(TYPES.MessageQueue).toConstantValue(
           SqsMessageQueue.create(logger, {
-            accessKeyId: config.AWS_ACCESS_KEY_ID,
-            secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
-            region: config.AWS_REGION,
-          })
-        );
-      }
-
-      if (config.NODE_ENV === 'test') {
-        bind<Cdn>(TYPES.Cdn).toConstantValue(new NoopCdn());
-      } else {
-        bind<Cdn>(TYPES.Cdn).toConstantValue(
-          CloudFrontCdn.create({
             accessKeyId: config.AWS_ACCESS_KEY_ID,
             secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
             region: config.AWS_REGION,
