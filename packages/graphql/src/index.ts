@@ -13,8 +13,8 @@ const main = () => {
   const schema = generateSchema();
   const logger = container.get<Logger>(TYPES.Logger);
 
-  app(container, schema).listen(config.PORT, () => {
-    logger.info(`app running at http://localhost:${config.PORT}`);
+  app(container, schema).listen(config.APP_GRAPHQL_PORT, () => {
+    logger.info(`app running at http://localhost:${config.APP_GRAPHQL_PORT}`);
   });
 };
 
