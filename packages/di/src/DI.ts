@@ -40,6 +40,7 @@ import {
 import {
   BlobStorage,
   Cache,
+  Cdn,
   CloudFrontCdn,
   Logger,
   Mailer,
@@ -203,7 +204,7 @@ export class DI {
         })
       );
 
-      bind<CloudFrontCdn>(TYPES.CloudFrontCdn).toConstantValue(
+      bind<Cdn>(TYPES.Cdn).toConstantValue(
         CloudFrontCdn.create({
           accessKeyId: config.AWS_ACCESS_KEY_ID,
           secretAccessKey: config.AWS_SECRET_ACCESS_KEY,

@@ -4,7 +4,7 @@ import { Db } from '@stringsync/db';
 import { TYPES } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
 import { NotationRepo } from '@stringsync/repos';
-import { BlobStorage } from '@stringsync/util';
+import { BlobStorage, Cdn } from '@stringsync/util';
 import { inject, injectable } from 'inversify';
 import path from 'path';
 import { TaggingService } from '../Tagging';
@@ -16,6 +16,7 @@ export class NotationService {
   taggingService: TaggingService;
   notationRepo: NotationRepo;
   blobStorage: BlobStorage;
+  cdn: Cdn;
   config: ContainerConfig;
 
   constructor(
@@ -23,12 +24,14 @@ export class NotationService {
     @inject(TYPES.TaggingService) taggingService: TaggingService,
     @inject(TYPES.NotationRepo) notationRepo: NotationRepo,
     @inject(TYPES.BlobStorage) blobStorage: BlobStorage,
+    @inject(TYPES.Cdn) cdn: Cdn,
     @inject(TYPES.ContainerConfig) config: ContainerConfig
   ) {
     this.db = db;
     this.taggingService = taggingService;
     this.notationRepo = notationRepo;
     this.blobStorage = blobStorage;
+    this.cdn = cdn;
     this.config = config;
   }
 
@@ -63,13 +66,13 @@ export class NotationService {
     const videoFilepath = this.getVideoFilepath(video.filename, notation);
     const taggings = tagIds.map((tagId) => ({ notationId: notation.id, tagId }));
 
-    const [thumbnailUrl] = await Promise.all([
+    const [thubmanailKey] = await Promise.all([
       this.blobStorage.put(thumbnailFilepath, this.config.S3_BUCKET, thumbnail.createReadStream()),
       this.blobStorage.put(videoFilepath, this.config.S3_VIDEO_SRC_BUCKET, video.createReadStream()),
       this.taggingService.bulkCreate(taggings),
     ]);
 
-    notation.thumbnailUrl = thumbnailUrl;
+    notation.thumbnailUrl = await this.getThumbnailUrl(thubmanailKey);
     await this.update(notation.id, notation);
 
     return notation;
@@ -87,5 +90,10 @@ export class NotationService {
   private getVideoFilepath(originalFilename: string, notation: Notation): string {
     const ext = path.extname(originalFilename);
     return `${notation.id}${ext}`;
+  }
+
+  private async getThumbnailUrl(thumbnailKey: string): Promise<string> {
+    const domainName = await this.cdn.getDomainName(this.config.CDN_DISTRIBUTION_ID);
+    return `https://${domainName}/${thumbnailKey}`;
   }
 }

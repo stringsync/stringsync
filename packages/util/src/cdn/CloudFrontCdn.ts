@@ -20,7 +20,7 @@ export class CloudFrontCdn implements Cdn {
     this.cloudFront = cloudFront;
   }
 
-  async getUrl(cdnId: string) {
+  async getDomainName(cdnId: string) {
     // check cache
     if (cdnId in this.domainNameByCdnId) {
       return this.domainNameByCdnId[cdnId];

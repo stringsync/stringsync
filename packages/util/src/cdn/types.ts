@@ -5,5 +5,5 @@ export type CloudFrontCdnConfig = {
 };
 
 export interface Cdn {
-  getUrl(cdnId: string): Promise<string>;
+  getDomainName(cdnId: string): Promise<string>;
 }

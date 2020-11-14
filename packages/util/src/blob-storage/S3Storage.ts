@@ -19,6 +19,6 @@ export class S3Storage implements BlobStorage {
 
   async put(filepath: string, bucket: string, readStream: Stream) {
     const res = await this.s3.upload({ Bucket: bucket, Key: filepath, Body: readStream }).promise();
-    return `https://${this.domainName}/${res.Key}`;
+    return res.Key;
   }
 }
