@@ -40,6 +40,7 @@ import {
 import {
   BlobStorage,
   Cache,
+  CloudFrontCdn,
   Logger,
   Mailer,
   MessageQueue,
@@ -196,6 +197,14 @@ export class DI {
 
       bind<MessageQueue>(TYPES.MessageQueue).toConstantValue(
         SqsMessageQueue.create(logger, {
+          accessKeyId: config.AWS_ACCESS_KEY_ID,
+          secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
+          region: config.AWS_REGION,
+        })
+      );
+
+      bind<CloudFrontCdn>(TYPES.CloudFrontCdn).toConstantValue(
+        CloudFrontCdn.create({
           accessKeyId: config.AWS_ACCESS_KEY_ID,
           secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
           region: config.AWS_REGION,
