@@ -46,7 +46,9 @@ import {
   Mailer,
   MessageQueue,
   NodemailerMailer,
+  NoopCdn,
   NoopMailer,
+  NoopMessageQueue,
   NoopStorage,
   Redis,
   RedisCache,
@@ -196,21 +198,29 @@ export class DI {
         bind<Mailer>(TYPES.Mailer).toConstantValue(new NodemailerMailer(transporter));
       }
 
-      bind<MessageQueue>(TYPES.MessageQueue).toConstantValue(
-        SqsMessageQueue.create(logger, {
-          accessKeyId: config.AWS_ACCESS_KEY_ID,
-          secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
-          region: config.AWS_REGION,
-        })
-      );
+      if (config.NODE_ENV === 'test') {
+        bind<MessageQueue>(TYPES.MessageQueue).toConstantValue(new NoopMessageQueue());
+      } else {
+        bind<MessageQueue>(TYPES.MessageQueue).toConstantValue(
+          SqsMessageQueue.create(logger, {
+            accessKeyId: config.AWS_ACCESS_KEY_ID,
+            secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
+            region: config.AWS_REGION,
+          })
+        );
+      }
 
-      bind<Cdn>(TYPES.Cdn).toConstantValue(
-        CloudFrontCdn.create({
-          accessKeyId: config.AWS_ACCESS_KEY_ID,
-          secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
-          region: config.AWS_REGION,
-        })
-      );
+      if (config.NODE_ENV === 'test') {
+        bind<Cdn>(TYPES.Cdn).toConstantValue(new NoopCdn());
+      } else {
+        bind<Cdn>(TYPES.Cdn).toConstantValue(
+          CloudFrontCdn.create({
+            accessKeyId: config.AWS_ACCESS_KEY_ID,
+            secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
+            region: config.AWS_REGION,
+          })
+        );
+      }
     });
   }
 
