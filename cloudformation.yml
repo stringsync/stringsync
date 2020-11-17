@@ -127,6 +127,14 @@ Parameters:
     Default: "0"
     Description: The number of desired worker instances.
 
+  S3VideoSrcBucket:
+    Type: String
+    Description: The name of the source S3 bucket for video processing.
+
+  SQSVideoQueueName:
+    Type: String
+    Description: The name of the SQS Queue for video processing.
+
 Mappings:
   # Hard values for the subnet masks. These masks define
   # the range of internal IP addresses that can be assigned.
@@ -806,6 +814,7 @@ Resources:
       SubnetIds:
         - !Ref PrivateSubnet1
         - !Ref PrivateSubnet2
+
   MasterDB:
     Type: AWS::RDS::DBInstance
     DeletionPolicy: Snapshot
@@ -821,6 +830,9 @@ Resources:
       DBSubnetGroupName: !Ref MasterDBSubnetGroup
       VPCSecurityGroups:
         - !Ref PrivateLoadBalancerSG
+
+  PrimaryBucket:
+    Type: AWS::S3::Bucket
 
   # This is a role which is used by the ECS tasks themselves.
   ECSTaskExecutionRole:
@@ -885,35 +897,30 @@ Resources:
               Value: !Ref ServerSessionSecret
             - Name: APP_WEB_URI
               Value: !Join ["", ["http://", !GetAtt "FrontendBucket.WebsiteURL"]]
-              
-
-
-            - Name: NODE_ENV
-              Value: production
-            - Name: PORT
-              Value: !Ref ServerPort
-            - Name: WEB_URI
-              Value: !Join ["", ["http://", !GetAtt "FrontendBucket.WebsiteURL"]]
-            - Name: DB_NAME
-              Value: !Ref DBName
-            - Name: DB_USERNAME
-              Value: !Ref DBUsername
-            - Name: DB_PASSWORD
-              Value: !Ref DBPassword
+            - Name: CDN_DOMAIN_NAME
+              Value: "example.com"
             - Name: DB_HOST
               Value: !GetAtt MasterDB.Endpoint.Address
+            - Name: DB_NAME
+              Value: !Ref DBName
+            - Name: DB_PASSWORD
+              Value: !Ref DBPassword
             - Name: DB_PORT
               Value: !GetAtt MasterDB.Endpoint.Port
+            - Name: DB_USERNAME
+              Value: !Ref DBUsername
+            - Name: NODE_ENV
+              Value: production
             - Name: REDIS_HOST
               Value: !GetAtt ElasticacheCluster.RedisEndpoint.Address
             - Name: REDIS_PORT
               Value: !GetAtt ElasticacheCluster.RedisEndpoint.Port
-            - Name: LOG_LEVEL
-              Value: info
-            - Name: ROLE
-              Value: server
-            - Name: SESSION_SECRET
-              Value: !Ref ServerSessionSecret
+            - Name: S3_BUCKET
+              Value: !Ref PrimaryBucket
+            - Name: S3_VIDEO_SRC_BUCKET
+              Value: !Ref VideoSrcBucket
+            - Name: SQS_VIDEO_QUEUE_NAME
+              Value: !Ref SQSVideoQueueName
 
   ServerCluster:
     Type: AWS::ECS::Cluster
@@ -1007,28 +1014,38 @@ Resources:
             - ContainerPort: !Ref WorkerPort
           Image: !Join ["", [!Ref "AWS::AccountId", ".dkr.ecr.", !Ref "AWS::Region", ".amazonaws.com/", !Ref "ServerImageRepository"]]
           Environment:
-            - Name: NODE_ENV
-              Value: production
-            - Name: PORT
-              Value: "80"
-            - Name: WEB_URI
-              Value: WEB_URI
-            - Name: DB_NAME
-              Value: !Ref DBName
-            - Name: DB_USERNAME
-              Value: !Ref DBUsername
-            - Name: DB_PASSWORD
-              Value: !Ref DBPassword
+            - Name: APP_GRAPHQL_PORT
+              Value: !Ref ServerPort
+            - Name: APP_LOG_LEVEL
+              Value: debug
+            - Name: APP_SESSION_SECRET
+              Value: !Ref ServerSessionSecret
+            - Name: APP_WEB_URI
+              Value: !Join ["", ["http://", !GetAtt "FrontendBucket.WebsiteURL"]]
+            - Name: CDN_DOMAIN_NAME
+              Value: "example.com"
             - Name: DB_HOST
               Value: !GetAtt MasterDB.Endpoint.Address
+            - Name: DB_NAME
+              Value: !Ref DBName
+            - Name: DB_PASSWORD
+              Value: !Ref DBPassword
             - Name: DB_PORT
               Value: !GetAtt MasterDB.Endpoint.Port
+            - Name: DB_USERNAME
+              Value: !Ref DBUsername
+            - Name: NODE_ENV
+              Value: production
             - Name: REDIS_HOST
               Value: !GetAtt ElasticacheCluster.RedisEndpoint.Address
             - Name: REDIS_PORT
               Value: !GetAtt ElasticacheCluster.RedisEndpoint.Port
-            - Name: ROLE
-              Value: worker
+            - Name: S3_BUCKET
+              Value: !Ref PrimaryBucket
+            - Name: S3_VIDEO_SRC_BUCKET
+              Value: !Ref VideoSrcBucket
+            - Name: SQS_VIDEO_QUEUE_NAME
+              Value: !Ref SQSVideoQueueName
 
   WorkerCluster:
     Type: AWS::ECS::Cluster
