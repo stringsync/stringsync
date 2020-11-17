@@ -8,12 +8,15 @@ import { graphqlUploadExpress } from 'graphql-upload';
 import { Container } from 'inversify';
 import { HealthController } from './controllers';
 import { withGraphQL, withSession } from './middlewares';
+import { withLogging } from './middlewares/withLogging';
 import { withSessionUser } from './middlewares/withSessionUser';
 
 export const app = (container: Container, schema: GraphQLSchema) => {
   const app = express();
   const healthController = container.get<HealthController>(TYPES.HealthController);
   const config = container.get<ContainerConfig>(TYPES.ContainerConfig);
+
+  app.use(withLogging(container));
 
   app.set('trust proxy', 1);
 

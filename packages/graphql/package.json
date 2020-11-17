@@ -27,6 +27,7 @@
     "graphql-upload": "^11.0.0",
     "inversify": "^5.0.1",
     "lodash": "^4.17.20",
+    "morgan": "^1.10.0",
     "type-graphql": "^0.17.6",
     "uuid": "^8.1.0"
   },
@@ -42,6 +43,7 @@
     "@types/graphql": "^14.0.7",
     "@types/graphql-upload": "^8.0.3",
     "@types/lodash": "^4.14.161",
+    "@types/morgan": "^1.9.2",
     "@types/redis": "^2.8.22",
     "@types/supertest": "^2.0.10",
     "@types/uuid": "^8.0.0",
