@@ -2,17 +2,13 @@ import { NotFoundError } from '@stringsync/common';
 import { SQS } from 'aws-sdk';
 import { stringType } from 'aws-sdk/clients/iam';
 import { Logger } from '../logger';
-import { Message, MessageQueue, SqsConfig } from './types';
+import { Message, MessageQueue } from './types';
 
 const DEFAULT_VISIBILITY_TIMEOUT_S = 60;
 
 export class SqsMessageQueue implements MessageQueue {
-  static create(logger: Logger, config: SqsConfig): SqsMessageQueue {
-    const sqs = new SQS({
-      region: config.region,
-      accessKeyId: config.accessKeyId,
-      secretAccessKey: config.secretAccessKey,
-    });
+  static create(logger: Logger): SqsMessageQueue {
+    const sqs = new SQS();
     return new SqsMessageQueue(logger, sqs);
   }
 

@@ -4,9 +4,8 @@ import { BlobStorage, S3Config } from './types';
 
 export class S3Storage implements BlobStorage {
   static create(config: S3Config): S3Storage {
-    const { accessKeyId, secretAccessKey, domainName } = config;
-    const s3 = new S3({ accessKeyId, secretAccessKey });
-    return new S3Storage(s3, domainName);
+    const s3 = new S3();
+    return new S3Storage(s3, config.domainName);
   }
 
   s3: S3;

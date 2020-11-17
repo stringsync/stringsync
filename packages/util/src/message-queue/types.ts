@@ -1,6 +1,4 @@
 export type SqsConfig = {
-  accessKeyId: string;
-  secretAccessKey: string;
   region: string;
 };
 

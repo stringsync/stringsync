@@ -181,8 +181,6 @@ export class DI {
       } else {
         bind<BlobStorage>(TYPES.BlobStorage).toConstantValue(
           S3Storage.create({
-            accessKeyId: config.AWS_ACCESS_KEY_ID,
-            secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
             domainName: config.CDN_DOMAIN_NAME,
           })
         );
@@ -198,13 +196,7 @@ export class DI {
       if (config.NODE_ENV === 'test') {
         bind<MessageQueue>(TYPES.MessageQueue).toConstantValue(new NoopMessageQueue());
       } else {
-        bind<MessageQueue>(TYPES.MessageQueue).toConstantValue(
-          SqsMessageQueue.create(logger, {
-            accessKeyId: config.AWS_ACCESS_KEY_ID,
-            secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
-            region: config.AWS_REGION,
-          })
-        );
+        bind<MessageQueue>(TYPES.MessageQueue).toConstantValue(SqsMessageQueue.create(logger));
       }
     });
   }

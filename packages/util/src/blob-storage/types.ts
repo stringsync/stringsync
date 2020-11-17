@@ -7,7 +7,5 @@ export interface BlobStorage {
 }
 
 export type S3Config = {
-  accessKeyId: string;
-  secretAccessKey: string;
   domainName: string;
 };
