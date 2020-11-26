@@ -21,8 +21,6 @@ phases:
       - rm .docker.key
       - echo Building images...
       - ./bin/ss build
-      - echo Logging out of docker...
-      - docker logout
       - echo Testing images...
       - ./bin/ss test server
       - ./bin/ss test web
@@ -33,7 +31,7 @@ phases:
         if [ "$CODEBUILD_BUILD_SUCCEEDING" -eq 1 ]
         then
           echo Pushing server images...
-          docker tag stringsync/server $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
+          docker tag stringsync $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
 
           echo Writing imagedefinitions.json...
@@ -53,6 +51,9 @@ phases:
         else
           echo Build failed, skipping post_build step...
         fi
+        
+        echo Logging out of docker...
+        docker logout
 
 cache:
   paths:
