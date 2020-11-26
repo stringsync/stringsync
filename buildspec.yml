@@ -16,7 +16,7 @@ phases:
   build:
     commands:
       - echo Logging into docker...
-      - aws s3 cp s3://$AWS_SECRETS_BUCKET/.docker.key .docker.key
+      - aws s3 cp s3://$S3_SECRETS_BUCKET/.docker.key .docker.key
       - docker login -u stringsync --password-stdin < .docker.key
       - rm .docker.key
       - echo Building images...

@@ -361,7 +361,7 @@ Resources:
           - Name: REACT_APP_SERVER_URI
             Type: PLAINTEXT
             Value: !Join ["", ["http://", !GetAtt PublicLoadBalancer.DNSName]]
-          - Name: AWS_SECRETS_BUCKET
+          - Name: S3_SECRETS_BUCKET
             Type: PLAINTEXT
             Value: !Ref CodeBuildSecretsBucket
       Source:
