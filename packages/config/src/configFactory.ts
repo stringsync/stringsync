@@ -1,4 +1,4 @@
-import { ConfigKind, ConfigSpec, Config, ConfigGetter } from './types';
+import { ConfigGetter, ConfigKind, ConfigSpec } from './types';
 
 class ConfigError extends Error {}
 
@@ -40,10 +40,15 @@ export const configFactory = <S extends ConfigSpec>(spec: S): ConfigGetter<S> =>
   // any typecast is workaround to avoid indexing issue with Config<S>
   const config = {} as any;
 
-  for (const [key, kind] of Object.entries(spec)) {
+  for (const [key, { kind, nullable }] of Object.entries(spec)) {
     const val = env[key];
     if (!val) {
-      throw new ConfigError(`expected ${key} to be defined as '${toHumanReadable(kind)}', got: ${val}`);
+      if (nullable) {
+        config[key] = null;
+        continue;
+      } else {
+        throw new ConfigError(`expected ${key} to be defined as '${toHumanReadable(kind)}', got: ${val}`);
+      }
     }
 
     try {

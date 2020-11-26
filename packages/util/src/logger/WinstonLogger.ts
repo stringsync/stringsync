@@ -1,5 +1,5 @@
-import { Logger } from './types';
 import winston from 'winston';
+import { Logger } from './types';
 
 export class WinstonLogger implements Logger {
   static create(logLevel: string): WinstonLogger {

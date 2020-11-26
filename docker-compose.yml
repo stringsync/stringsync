@@ -27,7 +27,7 @@ services:
       - redis
     ports:
       - "3000:3000"
-    command: ["yarn", "dev:graphql"]
+    command: ["yarn", "graphql", "dev"]
 
   jobs:
     image: stringsync:latest
@@ -42,4 +42,17 @@ services:
     links:
       - db
       - redis
-    command: ["yarn", "dev:jobs"]
+    command: ["yarn", "jobs", "dev"]
+
+  migrate:
+    image: stringsync:latest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    env_file:
+      - env/dev.env
+    volumes:
+      - ./packages:/stringsync/packages
+    links:
+      - db
+    command: ["yarn", "db", "dev"]

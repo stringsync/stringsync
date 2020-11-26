@@ -6,6 +6,7 @@ Parameters:
     Description: CodeCommit repository branch name
     Type: String
     Default: master
+
   DBName:
     Description: The database name
     Type: String
@@ -15,6 +16,7 @@ Parameters:
     ConstraintDescription:
       must begin with a letter and contain only alphanumeric
       characters.
+
   DBUsername:
     NoEcho: true
     Description: The database admin account username
@@ -25,6 +27,7 @@ Parameters:
     ConstraintDescription:
       must begin with a letter and contain only alphanumeric
       characters.
+
   DBPassword:
     NoEcho: true
     Description: The database admin account password
@@ -33,6 +36,7 @@ Parameters:
     MaxLength: "41"
     AllowedPattern: "[a-zA-Z0-9]+"
     ConstraintDescription: must contain only alphanumeric characters.
+
   DBAllocatedStorage:
     Default: "20"
     Description: The size of the database (Gb)
@@ -40,78 +44,70 @@ Parameters:
     MinValue: "20"
     MaxValue: "1024"
     ConstraintDescription: must be between 5 and 1024Gb.
+
   DBInstanceClass:
     Description: The database instance type
     Type: String
-    Default: db.t2.micro
+    Default: db.t3.micro
     AllowedValues:
-      - db.t1.micro
-      - db.m1.small
-      - db.m1.medium
-      - db.m1.large
-      - db.m1.xlarge
-      - db.m2.xlarge
-      - db.m2.2xlarge
-      - db.m2.4xlarge
-      - db.m3.medium
-      - db.m3.large
-      - db.m3.xlarge
-      - db.m3.2xlarge
-      - db.m4.large
-      - db.m4.xlarge
-      - db.m4.2xlarge
-      - db.m4.4xlarge
-      - db.m4.10xlarge
-      - db.r3.large
-      - db.r3.xlarge
-      - db.r3.2xlarge
-      - db.r3.4xlarge
-      - db.r3.8xlarge
-      - db.m2.xlarge
-      - db.m2.2xlarge
-      - db.m2.4xlarge
-      - db.cr1.8xlarge
-      - db.t2.micro
-      - db.t2.small
-      - db.t2.medium
-      - db.t2.large
+      - db.t3.micro
+      - db.t3.small
+      - db.t3.medium
+      - db.t3.large
     ConstraintDescription: must select a valid database instance type.
+
   ServerCpu:
     Type: Number
-    Default: 256
+    Default: "256"
     Description: How much CPU to give the container. 1024 is 1 CPU.
+
   ServerMemory:
     Type: Number
-    Default: 512
+    Default: "512"
     Description: How much memory in megabytes to give the container.
+
   ServerPort:
     Type: Number
-    Default: 3000
+    Default: "3000"
     Description: What port number the application inside the docker container is binding to.
+
   ServerDesiredCount:
     Type: Number
-    Default: 0
+    Default: "0"
     Description: The number of desired server instances.
+
   ServerSessionSecret:
     Type: String
     NoEcho: true
     Description: The secret string used to sign session cookies.
+
   WorkerCpu:
     Type: Number
-    Default: 256
+    Default: "256"
     Description: How much CPU to give the container. 1024 is 1 CPU.
+
   WorkerMemory:
     Type: Number
-    Default: 512
+    Default: "512"
     Description: How much memory in megabytes to give the container.
+
   WorkerPort:
     Type: Number
-    Default: 3000
+    Default: "3000"
     Description: What port number the application inside the docker container is binding to.
+
   WorkerDesiredCount:
     Type: Number
-    Default: 0
+    Default: "0"
     Description: The number of desired worker instances.
+
+  S3VideoSrcBucket:
+    Type: String
+    Description: The name of the source S3 bucket for video processing.
+
+  SQSVideoQueueName:
+    Type: String
+    Description: The name of the SQS Queue for video processing.
 
 Mappings:
   # Hard values for the subnet masks. These masks define
@@ -259,18 +255,7 @@ Resources:
           referenceName:
             - !Ref BranchName
       Targets:
-        - Arn:
-            !Join [
-              "",
-              [
-                "arn:aws:codepipeline:",
-                !Ref "AWS::Region",
-                ":",
-                !Ref "AWS::AccountId",
-                ":",
-                !Ref CodePipeline,
-              ],
-            ]
+        - Arn: !Join ["", ["arn:aws:codepipeline:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":", !Ref CodePipeline]]
           RoleArn: !GetAtt CloudWatchEventRole.Arn
           Id: !Ref AWS::StackName
 
@@ -464,26 +449,22 @@ Resources:
     Properties:
       EnableDnsSupport: true
       EnableDnsHostnames: true
+      
       CidrBlock: !FindInMap ["SubnetConfig", "VPC", "CIDR"]
 
   # Two public subnets, where containers can have public IP addresses
   PublicSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone:
-        Fn::Select:
-          - 0
-          - Fn::GetAZs: { Ref: "AWS::Region" }
+      AvailabilityZone: !Select [0, Fn::GetAZs: { Ref: "AWS::Region" }]
       VpcId: !Ref "VPC"
       CidrBlock: !FindInMap ["SubnetConfig", "Public1", "CIDR"]
       MapPublicIpOnLaunch: true
+    
   PublicSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone:
-        Fn::Select:
-          - 1
-          - Fn::GetAZs: { Ref: "AWS::Region" }
+      AvailabilityZone: !Select [1, Fn::GetAZs: { Ref: "AWS::Region" }]
       VpcId: !Ref "VPC"
       CidrBlock: !FindInMap ["SubnetConfig", "Public2", "CIDR"]
       MapPublicIpOnLaunch: true
@@ -494,19 +475,13 @@ Resources:
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone:
-        Fn::Select:
-          - 0
-          - Fn::GetAZs: { Ref: "AWS::Region" }
+      AvailabilityZone: !Select [0, Fn::GetAZs: { Ref: "AWS::Region" }]
       VpcId: !Ref "VPC"
       CidrBlock: !FindInMap ["SubnetConfig", "Private1", "CIDR"]
   PrivateSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone:
-        Fn::Select:
-          - 1
-          - Fn::GetAZs: { Ref: "AWS::Region" }
+      AvailabilityZone: !Select [1, Fn::GetAZs: { Ref: "AWS::Region" }]
       VpcId: !Ref "VPC"
       CidrBlock: !FindInMap ["SubnetConfig", "Private2", "CIDR"]
 
@@ -613,21 +588,21 @@ Resources:
     Properties:
       Description: Ingress from the public ALB
       GroupId: !Ref "FargateContainerSecurityGroup"
-      IpProtocol: -1
+      IpProtocol: "-1"
       SourceSecurityGroupId: !Ref "PublicLoadBalancerSG"
   EcsSecurityGroupIngressFromPrivateALB:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       Description: Ingress from the private ALB
       GroupId: !Ref "FargateContainerSecurityGroup"
-      IpProtocol: -1
+      IpProtocol: "-1"
       SourceSecurityGroupId: !Ref "PrivateLoadBalancerSG"
   EcsSecurityGroupIngressFromSelf:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       Description: Ingress from other containers in the same security group
       GroupId: !Ref "FargateContainerSecurityGroup"
-      IpProtocol: -1
+      IpProtocol: "-1"
       SourceSecurityGroupId: !Ref "FargateContainerSecurityGroup"
 
   # A public facing load balancer, this is used for accepting traffic from the public
@@ -640,7 +615,7 @@ Resources:
       SecurityGroupIngress:
         # Allow access to ALB from anywhere on the internet
         - CidrIp: 0.0.0.0/0
-          IpProtocol: -1
+          IpProtocol: "-1"
   PublicLoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     DependsOn: GatewayAttachement
@@ -786,7 +761,7 @@ Resources:
     Properties:
       Description: Ingress from Fargate Containers
       GroupId: !Ref "ElasticacheSecurityGroup"
-      IpProtocol: -1
+      IpProtocol: "-1"
       SourceSecurityGroupId: !Ref "FargateContainerSecurityGroup"
   ElasticacheSubnetGroup:
     Type: "AWS::ElastiCache::SubnetGroup"
@@ -813,6 +788,7 @@ Resources:
       SubnetIds:
         - !Ref PrivateSubnet1
         - !Ref PrivateSubnet2
+
   MasterDB:
     Type: AWS::RDS::DBInstance
     DeletionPolicy: Snapshot
@@ -828,6 +804,9 @@ Resources:
       DBSubnetGroupName: !Ref MasterDBSubnetGroup
       VPCSecurityGroups:
         - !Ref PrivateLoadBalancerSG
+
+  PrimaryBucket:
+    Type: AWS::S3::Bucket
 
   # This is a role which is used by the ECS tasks themselves.
   ECSTaskExecutionRole:
@@ -882,45 +861,40 @@ Resources:
               awslogs-stream-prefix: ecs
           PortMappings:
             - ContainerPort: !Ref ServerPort
-          Image:
-            !Join [
-              "",
-              [
-                !Ref "AWS::AccountId",
-                ".dkr.ecr.",
-                !Ref "AWS::Region",
-                ".amazonaws.com/",
-                !Ref "ServerImageRepository",
-              ],
-            ]
+          Image: !Join ["", [!Ref "AWS::AccountId", ".dkr.ecr.", !Ref "AWS::Region", ".amazonaws.com/", !Ref "ServerImageRepository"]]
           Environment:
-            - Name: NODE_ENV
-              Value: production
-            - Name: PORT
+            - Name: APP_GRAPHQL_PORT
               Value: !Ref ServerPort
-            - Name: WEB_URI
-              Value:
-                !Join ["", ["http://", !GetAtt "FrontendBucket.WebsiteURL"]]
-            - Name: DB_NAME
-              Value: !Ref DBName
-            - Name: DB_USERNAME
-              Value: !Ref DBUsername
-            - Name: DB_PASSWORD
-              Value: !Ref DBPassword
+            - Name: APP_LOG_LEVEL
+              Value: debug
+            - Name: APP_SESSION_SECRET
+              Value: !Ref ServerSessionSecret
+            - Name: APP_WEB_URI
+              Value: !Join ["", ["http://", !GetAtt "FrontendBucket.WebsiteURL"]]
+            - Name: CDN_DOMAIN_NAME
+              Value: "example.com"
             - Name: DB_HOST
               Value: !GetAtt MasterDB.Endpoint.Address
+            - Name: DB_NAME
+              Value: !Ref DBName
+            - Name: DB_PASSWORD
+              Value: !Ref DBPassword
             - Name: DB_PORT
               Value: !GetAtt MasterDB.Endpoint.Port
+            - Name: DB_USERNAME
+              Value: !Ref DBUsername
+            - Name: NODE_ENV
+              Value: production
             - Name: REDIS_HOST
               Value: !GetAtt ElasticacheCluster.RedisEndpoint.Address
             - Name: REDIS_PORT
               Value: !GetAtt ElasticacheCluster.RedisEndpoint.Port
-            - Name: LOG_LEVEL
-              Value: info
-            - Name: ROLE
-              Value: server
-            - Name: SESSION_SECRET
-              Value: !Ref ServerSessionSecret
+            - Name: S3_BUCKET
+              Value: !Ref PrimaryBucket
+            - Name: S3_VIDEO_SRC_BUCKET
+              Value: !Ref S3VideoSrcBucket
+            - Name: SQS_VIDEO_QUEUE_NAME
+              Value: !Ref SQSVideoQueueName
 
   ServerCluster:
     Type: AWS::ECS::Cluster
@@ -1012,40 +986,40 @@ Resources:
               awslogs-stream-prefix: ecs
           PortMappings:
             - ContainerPort: !Ref WorkerPort
-          Image:
-            !Join [
-              "",
-              [
-                !Ref "AWS::AccountId",
-                ".dkr.ecr.",
-                !Ref "AWS::Region",
-                ".amazonaws.com/",
-                !Ref "ServerImageRepository",
-              ],
-            ]
+          Image: !Join ["", [!Ref "AWS::AccountId", ".dkr.ecr.", !Ref "AWS::Region", ".amazonaws.com/", !Ref "ServerImageRepository"]]
           Environment:
-            - Name: NODE_ENV
-              Value: production
-            - Name: PORT
-              Value: 80
-            - Name: WEB_URI
-              Value: WEB_URI
-            - Name: DB_NAME
-              Value: !Ref DBName
-            - Name: DB_USERNAME
-              Value: !Ref DBUsername
-            - Name: DB_PASSWORD
-              Value: !Ref DBPassword
+            - Name: APP_GRAPHQL_PORT
+              Value: !Ref ServerPort
+            - Name: APP_LOG_LEVEL
+              Value: debug
+            - Name: APP_SESSION_SECRET
+              Value: !Ref ServerSessionSecret
+            - Name: APP_WEB_URI
+              Value: !Join ["", ["http://", !GetAtt "FrontendBucket.WebsiteURL"]]
+            - Name: CDN_DOMAIN_NAME
+              Value: "example.com"
             - Name: DB_HOST
               Value: !GetAtt MasterDB.Endpoint.Address
+            - Name: DB_NAME
+              Value: !Ref DBName
+            - Name: DB_PASSWORD
+              Value: !Ref DBPassword
             - Name: DB_PORT
               Value: !GetAtt MasterDB.Endpoint.Port
+            - Name: DB_USERNAME
+              Value: !Ref DBUsername
+            - Name: NODE_ENV
+              Value: production
             - Name: REDIS_HOST
               Value: !GetAtt ElasticacheCluster.RedisEndpoint.Address
             - Name: REDIS_PORT
               Value: !GetAtt ElasticacheCluster.RedisEndpoint.Port
-            - Name: ROLE
-              Value: worker
+            - Name: S3_BUCKET
+              Value: !Ref PrimaryBucket
+            - Name: S3_VIDEO_SRC_BUCKET
+              Value: !Ref S3VideoSrcBucket
+            - Name: SQS_VIDEO_QUEUE_NAME
+              Value: !Ref SQSVideoQueueName
 
   WorkerCluster:
     Type: AWS::ECS::Cluster
@@ -1079,8 +1053,8 @@ Resources:
   MigrateDbTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Cpu: 256
-      Memory: 512
+      Cpu: "256"
+      Memory: "512"
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
@@ -1099,17 +1073,7 @@ Resources:
               awslogs-region: !Ref AWS::Region
               awslogs-group: !Join ["", [!Ref "AWS::StackName", "migrate-db"]]
               awslogs-stream-prefix: ecs
-          Image:
-            !Join [
-              "",
-              [
-                !Ref "AWS::AccountId",
-                ".dkr.ecr.",
-                !Ref "AWS::Region",
-                ".amazonaws.com/",
-                !Ref "ServerImageRepository",
-              ],
-            ]
+          Image: !Join ["", [!Ref "AWS::AccountId", ".dkr.ecr.", !Ref "AWS::Region", ".amazonaws.com/", !Ref "ServerImageRepository"]]
           Environment:
             - Name: NODE_ENV
               Value: production

@@ -16,8 +16,7 @@ phases:
   build:
     commands:
       - echo Building images...
-      - ./bin/ss build server
-      - ./bin/ss build web
+      - ./bin/ss build
       - echo Testing images...
       - ./bin/ss test server
       - ./bin/ss test web

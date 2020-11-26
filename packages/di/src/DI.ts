@@ -1,6 +1,5 @@
 import { Ctor } from '@stringsync/common';
 import { ContainerConfig, getContainerConfig } from '@stringsync/config';
-import { getJobConfig, JobConfig } from '@stringsync/config/src/getJobConfig';
 import { Db, Sequelize, SequelizeDb } from '@stringsync/db';
 import {
   AuthResolver,
@@ -46,6 +45,7 @@ import {
   MessageQueue,
   NodemailerMailer,
   NoopMailer,
+  NoopMessageQueue,
   NoopStorage,
   Redis,
   RedisCache,
@@ -59,7 +59,7 @@ import { TYPES } from './TYPES';
 export class DI {
   static create(config: ContainerConfig = getContainerConfig()) {
     const container = new InversifyContainer();
-    const logger = WinstonLogger.create(config.LOG_LEVEL);
+    const logger = WinstonLogger.create(config.APP_LOG_LEVEL);
 
     container.load(
       DI.getConfigModule(config),
@@ -77,7 +77,6 @@ export class DI {
   private static getConfigModule(config: ContainerConfig) {
     return new ContainerModule((bind) => {
       bind<ContainerConfig>(TYPES.ContainerConfig).toConstantValue(config);
-      bind<JobConfig>(TYPES.JobConfig).toConstantValue(getJobConfig());
     });
   }
 
@@ -182,9 +181,7 @@ export class DI {
       } else {
         bind<BlobStorage>(TYPES.BlobStorage).toConstantValue(
           S3Storage.create({
-            accessKeyId: config.AWS_ACCESS_KEY_ID,
-            secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
-            domainName: config.CLOUDFRONT_DOMAIN_NAME,
+            domainName: config.CDN_DOMAIN_NAME,
           })
         );
       }
@@ -196,13 +193,11 @@ export class DI {
         bind<Mailer>(TYPES.Mailer).toConstantValue(new NodemailerMailer(transporter));
       }
 
-      bind<MessageQueue>(TYPES.MessageQueue).toConstantValue(
-        SqsMessageQueue.create(logger, {
-          accessKeyId: config.AWS_ACCESS_KEY_ID,
-          secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
-          region: config.AWS_REGION,
-        })
-      );
+      if (config.NODE_ENV === 'test') {
+        bind<MessageQueue>(TYPES.MessageQueue).toConstantValue(new NoopMessageQueue());
+      } else {
+        bind<MessageQueue>(TYPES.MessageQueue).toConstantValue(SqsMessageQueue.create(logger));
+      }
     });
   }
 

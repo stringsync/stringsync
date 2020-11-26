@@ -2,25 +2,25 @@ import { getContainerConfig } from './getContainerConfig';
 
 it('runs without crashing', () => {
   const env = {
+    APP_GRAPHQL_PORT: '3000',
+    APP_LOG_LEVEL: 'info',
+    APP_SESSION_SECRET: 'APP_SESSION_SECRET',
+    APP_WEB_URI: 'http://localhost:8080',
     AWS_ACCESS_KEY_ID: 'AWS_ACCESS_KEY_ID',
-    AWS_SECRET_ACCESS_KEY: 'AWS_SECRET_ACCESS_KEY',
     AWS_REGION: 'AWS_REGION',
-    CLOUDFRONT_DOMAIN_NAME: 'CLOUDFRONT_DOMAIN_NAME',
-    DB_HOST: 'DB_HOST',
-    DB_NAME: 'DB_NAME',
-    DB_PASSWORD: 'DB_PASSWORD',
+    AWS_SECRET_ACCESS_KEY: 'AWS_SECRET_ACCESS_KEY',
+    CDN_DOMAIN_NAME: 'CDN_DOMAIN_NAME',
+    DB_HOST: 'db',
+    DB_NAME: 'stringsync',
+    DB_PASSWORD: 'stringsync',
     DB_PORT: '5432',
-    DB_USERNAME: 'DB_USERNAME',
-    LOG_LEVEL: 'debug',
+    DB_USERNAME: 'stringsync',
     NODE_ENV: 'test',
-    PORT: '3000',
-    REDIS_HOST: 'REDIS_HOST',
-    REDIS_PORT: '4000',
+    REDIS_HOST: 'redis',
+    REDIS_PORT: '6379',
     S3_BUCKET: 'S3_BUCKET',
     S3_VIDEO_SRC_BUCKET: 'S3_VIDEO_SRC_BUCKET',
-    SESSION_SECRET: 'SESSION_SECRET',
-    WEB_URI: 'WEB_URI',
-    VIDEO_MESSAGE_QUEUE_NAME: 'VIDEO_MESSAGE_QUEUE_NAME',
+    SQS_VIDEO_QUEUE_NAME: 'SQS_VIDEO_QUEUE_NAME',
   };
 
   expect(() => getContainerConfig(env)).not.toThrow();

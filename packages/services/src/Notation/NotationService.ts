@@ -63,13 +63,13 @@ export class NotationService {
     const videoFilepath = this.getVideoFilepath(video.filename, notation);
     const taggings = tagIds.map((tagId) => ({ notationId: notation.id, tagId }));
 
-    const [thumbnailUrl] = await Promise.all([
+    const [thubmanailKey] = await Promise.all([
       this.blobStorage.put(thumbnailFilepath, this.config.S3_BUCKET, thumbnail.createReadStream()),
       this.blobStorage.put(videoFilepath, this.config.S3_VIDEO_SRC_BUCKET, video.createReadStream()),
       this.taggingService.bulkCreate(taggings),
     ]);
 
-    notation.thumbnailUrl = thumbnailUrl;
+    notation.thumbnailUrl = await this.getThumbnailUrl(thubmanailKey);
     await this.update(notation.id, notation);
 
     return notation;
@@ -87,5 +87,9 @@ export class NotationService {
   private getVideoFilepath(originalFilename: string, notation: Notation): string {
     const ext = path.extname(originalFilename);
     return `${notation.id}${ext}`;
+  }
+
+  private async getThumbnailUrl(thumbnailKey: string): Promise<string> {
+    return `https://${this.config.CDN_DOMAIN_NAME}/${thumbnailKey}`;
   }
 }

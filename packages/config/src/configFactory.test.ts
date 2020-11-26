@@ -1,11 +1,11 @@
 import { configFactory } from './configFactory';
-import { ConfigKind, ConfigGetter } from './types';
+import { ConfigGetter, ConfigKind } from './types';
 
 describe('when STRING value', () => {
-  let getConfig: ConfigGetter<{ ENV_VAR: ConfigKind.STRING }>;
+  let getConfig: ConfigGetter<{ ENV_VAR: { kind: ConfigKind.STRING; nullable: false } }>;
 
   beforeEach(() => {
-    getConfig = configFactory({ ENV_VAR: ConfigKind.STRING });
+    getConfig = configFactory({ ENV_VAR: { kind: ConfigKind.STRING, nullable: false } });
   });
 
   it.each(['helloworld', '123', '456.789'])('parses', (val) => {
@@ -21,10 +21,10 @@ describe('when STRING value', () => {
 });
 
 describe('when INT value', () => {
-  let getConfig: ConfigGetter<{ ENV_VAR: ConfigKind.INT }>;
+  let getConfig: ConfigGetter<{ ENV_VAR: { kind: ConfigKind.INT; nullable: false } }>;
 
   beforeEach(() => {
-    getConfig = configFactory({ ENV_VAR: ConfigKind.INT });
+    getConfig = configFactory({ ENV_VAR: { kind: ConfigKind.INT, nullable: false } });
   });
 
   it.each([
@@ -44,10 +44,10 @@ describe('when INT value', () => {
 });
 
 describe('when FLOAT value', () => {
-  let getConfig: ConfigGetter<{ ENV_VAR: ConfigKind.FLOAT }>;
+  let getConfig: ConfigGetter<{ ENV_VAR: { kind: ConfigKind.FLOAT; nullable: false } }>;
 
   beforeEach(() => {
-    getConfig = configFactory({ ENV_VAR: ConfigKind.FLOAT });
+    getConfig = configFactory({ ENV_VAR: { kind: ConfigKind.FLOAT, nullable: false } });
   });
 
   it.each([
@@ -71,7 +71,7 @@ describe('when FLOAT value', () => {
 });
 
 it.each([ConfigKind.STRING, ConfigKind.INT, ConfigKind.FLOAT])('throws when val is undefined', (kind) => {
-  const getConfig = configFactory({ ENV_VAR: kind });
+  const getConfig = configFactory({ ENV_VAR: { kind, nullable: false } });
   const env = {};
   expect(() => getConfig(env)).toThrow();
 });

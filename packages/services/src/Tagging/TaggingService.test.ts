@@ -1,9 +1,7 @@
-import { TaggingService } from './TaggingService';
-import { TaggingRepo, TagRepo, NotationRepo, UserRepo } from '@stringsync/repos';
-import { useTestContainer, TYPES } from '@stringsync/di';
-import { Notation, Tag } from '@stringsync/domain';
 import { EntityBuilder } from '@stringsync/common';
-import { sortBy } from 'lodash';
+import { TYPES, useTestContainer } from '@stringsync/di';
+import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from '@stringsync/repos';
+import { TaggingService } from './TaggingService';
 
 const container = useTestContainer();
 
