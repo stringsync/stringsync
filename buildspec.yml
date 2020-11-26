@@ -22,8 +22,8 @@ phases:
       - echo Building images...
       - ./bin/ss build
       - echo Testing images...
-      - ./bin/ss test server
-      - ./bin/ss test web
+      # - ./bin/ss test server
+      # - ./bin/ss test web
 
   post_build:
     commands:
@@ -51,7 +51,7 @@ phases:
         else
           echo Build failed, skipping post_build step...
         fi
-        
+
         echo Logging out of docker...
         docker logout
 
