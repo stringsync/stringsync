@@ -215,6 +215,9 @@ Resources:
                   - "cloudwatch:*"
                 Resource: "*"
 
+  CodeBuildSecretsBucket:
+    Type: AWS::S3::Bucket
+
   CloudWatchEventRole:
     Type: AWS::IAM::Role
     Properties:
@@ -358,6 +361,9 @@ Resources:
           - Name: REACT_APP_SERVER_URI
             Type: PLAINTEXT
             Value: !Join ["", ["http://", !GetAtt PublicLoadBalancer.DNSName]]
+          - Name: CODEBUILD_SECRETS_BUCKET
+            Type: PLAINTEXT
+            Value: !Ref CodeBuildSecretsBucket
       Source:
         Type: CODEPIPELINE
 

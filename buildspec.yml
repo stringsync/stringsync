@@ -15,8 +15,14 @@ phases:
 
   build:
     commands:
+      - echo Logging into docker...
+      - aws s3 cp s3://$CODEBUILD_SECRETS_BUCKET/.docker.key .docker.key
+      - docker login -u stringsync --password-stdin < .docker.key
+      - rm .docker.key
       - echo Building images...
       - ./bin/ss build
+      - echo Logging out of docker...
+      - docker logout
       - echo Testing images...
       - ./bin/ss test server
       - ./bin/ss test web
