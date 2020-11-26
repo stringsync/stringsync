@@ -338,7 +338,7 @@ Resources:
     Properties:
       Name: !Ref AWS::StackName
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
-      TimeoutInMinutes: 10
+      TimeoutInMinutes: 15
       Cache:
         Type: LOCAL
         Modes:
