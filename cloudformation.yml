@@ -419,7 +419,7 @@ Resources:
               InputArtifacts:
                 - Name: BuildOutput
               Configuration:
-                ClusterName: !Ref ServerCluster
+                ClusterName: !Ref MainCluster
                 ServiceName: !Ref ServerService
             - Name: DeployWorker
               RunOrder: 3
@@ -431,7 +431,7 @@ Resources:
               InputArtifacts:
                 - Name: BuildOutput
               Configuration:
-                ClusterName: !Ref WorkerCluster
+                ClusterName: !Ref MainCluster
                 ServiceName: !Ref WorkerService
             - Name: DeployFrontend
               RunOrder: 3
@@ -863,8 +863,8 @@ Resources:
             Options:
               awslogs-create-group: true
               awslogs-region: !Ref AWS::Region
-              awslogs-group: !Join ["", [!Ref "AWS::StackName", "server"]]
-              awslogs-stream-prefix: ecs
+              awslogs-group: !Join ["-", [!Ref "AWS::StackName", "server"]]
+              awslogs-stream-prefix: server
           PortMappings:
             - ContainerPort: !Ref ServerPort
           Image: !Join ["", [!Ref "AWS::AccountId", ".dkr.ecr.", !Ref "AWS::Region", ".amazonaws.com/", !Ref "ServerImageRepository"]]
@@ -902,7 +902,7 @@ Resources:
             - Name: SQS_VIDEO_QUEUE_NAME
               Value: !Ref SQSVideoQueueName
 
-  ServerCluster:
+  MainCluster:
     Type: AWS::ECS::Cluster
 
   # Create a rule on the load balancer for routing traffic to the target group
@@ -948,7 +948,7 @@ Resources:
     DependsOn: LoadBalancerRule
     Properties:
       ServiceName: server
-      Cluster: !Ref ServerCluster
+      Cluster: !Ref MainCluster
       LaunchType: FARGATE
       DeploymentConfiguration:
         MaximumPercent: 200
@@ -988,7 +988,7 @@ Resources:
             Options:
               awslogs-create-group: true
               awslogs-region: !Ref AWS::Region
-              awslogs-group: !Join ["", [!Ref "AWS::StackName", "worker"]]
+              awslogs-group: !Join ["-", [!Ref "AWS::StackName", "worker"]]
               awslogs-stream-prefix: ecs
           PortMappings:
             - ContainerPort: !Ref WorkerPort
@@ -1027,9 +1027,6 @@ Resources:
             - Name: SQS_VIDEO_QUEUE_NAME
               Value: !Ref SQSVideoQueueName
 
-  WorkerCluster:
-    Type: AWS::ECS::Cluster
-
   # The service. The service is a resource which allows you to run multiple
   # copies of a type of task, and gather up their logs and metrics, as well
   # as monitor the number of running tasks and replace any that have crashed
@@ -1037,7 +1034,7 @@ Resources:
     Type: AWS::ECS::Service
     Properties:
       ServiceName: worker
-      Cluster: !Ref WorkerCluster
+      Cluster: !Ref MainCluster
       LaunchType: FARGATE
       DeploymentConfiguration:
         MaximumPercent: 200
@@ -1052,44 +1049,3 @@ Resources:
             - !Ref PublicSubnet1
             - !Ref PublicSubnet2
       TaskDefinition: !Ref WorkerTaskDefinition
-
-  CommandCluster:
-    Type: AWS::ECS::Cluster
-
-  MigrateDbTaskDefinition:
-    Type: AWS::ECS::TaskDefinition
-    Properties:
-      Cpu: "256"
-      Memory: "512"
-      NetworkMode: awsvpc
-      RequiresCompatibilities:
-        - FARGATE
-      ExecutionRoleArn: !Ref ECSTaskExecutionRole
-      ContainerDefinitions:
-        - Name: migrate-db
-          Command:
-            - "/usr/local/bin/yarn"
-            - "migrate"
-          Cpu: 256
-          Memory: 512
-          LogConfiguration:
-            LogDriver: awslogs
-            Options:
-              awslogs-create-group: true
-              awslogs-region: !Ref AWS::Region
-              awslogs-group: !Join ["", [!Ref "AWS::StackName", "migrate-db"]]
-              awslogs-stream-prefix: ecs
-          Image: !Join ["", [!Ref "AWS::AccountId", ".dkr.ecr.", !Ref "AWS::Region", ".amazonaws.com/", !Ref "ServerImageRepository"]]
-          Environment:
-            - Name: NODE_ENV
-              Value: production
-            - Name: DB_NAME
-              Value: !Ref DBName
-            - Name: DB_USERNAME
-              Value: !Ref DBUsername
-            - Name: DB_PASSWORD
-              Value: !Ref DBPassword
-            - Name: DB_HOST
-              Value: !GetAtt MasterDB.Endpoint.Address
-            - Name: DB_PORT
-              Value: !GetAtt MasterDB.Endpoint.Port
