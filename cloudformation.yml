@@ -888,6 +888,11 @@ Resources:
               Value: { Fn::ImportValue: !Sub "${VideoProcessingStack}:Source" }
             - Name: SQS_VIDEO_QUEUE_URL
               Value: { Fn::ImportValue: !Sub "${VideoProcessingStack}:SqsQueue" }
+          EntryPoint:
+            - yarn
+          Command:
+            - graphql
+            - prod
 
   Cluster:
     Type: AWS::ECS::Cluster
@@ -1015,7 +1020,7 @@ Resources:
           EntryPoint:
             - yarn
           Command:
-            - graphql
+            - jobs
             - prod
 
   # The service. The service is a resource which allows you to run multiple
