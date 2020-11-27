@@ -59,7 +59,7 @@ Parameters:
   ServerCpu:
     Type: Number
     Default: "256"
-    Description: How much CPU to give the container. 1024 is 1 CPU.
+    Description: How much CPU to give the container. 1024 is 1 CPU.x
 
   ServerMemory:
     Type: Number
@@ -70,6 +70,11 @@ Parameters:
     Type: Number
     Default: "3000"
     Description: What port number the application inside the docker container is binding to.
+
+  ServerSessionSecret:
+    NoEcho: true
+    Type: String
+    Description: The secret to encrypt session data on the server.
 
   WorkerCpu:
     Type: Number
@@ -90,14 +95,6 @@ Parameters:
     Type: String
     Default: ""
     Description: The name of the video processing stack.
-
-  S3VideoSrcBucket:
-    Type: String
-    Description: The name of the source S3 bucket for video processing.
-
-  SQSVideoQueueName:
-    Type: String
-    Description: The name of the SQS Queue for video processing.
 
 Mappings:
   # Hard values for the subnet masks. These masks define
@@ -409,7 +406,7 @@ Resources:
               InputArtifacts:
                 - Name: BuildOutput
               Configuration:
-                ClusterName: !Ref MainCluster
+                ClusterName: !Ref Cluster
                 ServiceName: !Ref ServerService
             - Name: DeployWorker
               RunOrder: 3
@@ -421,7 +418,7 @@ Resources:
               InputArtifacts:
                 - Name: BuildOutput
               Configuration:
-                ClusterName: !Ref MainCluster
+                ClusterName: !Ref Cluster
                 ServiceName: !Ref WorkerService
             - Name: DeployFrontend
               RunOrder: 3
@@ -892,7 +889,7 @@ Resources:
             - Name: SQS_VIDEO_QUEUE_URL
               Value: { Fn::ImportValue: !Sub "${VideoProcessingStack}:SqsQueue" }
 
-  MainCluster:
+  Cluster:
     Type: AWS::ECS::Cluster
 
   # Create a rule on the load balancer for routing traffic to the target group
@@ -938,7 +935,7 @@ Resources:
     DependsOn: LoadBalancerRule
     Properties:
       ServiceName: server
-      Cluster: !Ref MainCluster
+      Cluster: !Ref Cluster
       LaunchType: FARGATE
       DeploymentConfiguration:
         MaximumPercent: 200
@@ -1015,6 +1012,11 @@ Resources:
               Value: { Fn::ImportValue: !Sub "${VideoProcessingStack}:Source" }
             - Name: SQS_VIDEO_QUEUE_URL
               Value: { Fn::ImportValue: !Sub "${VideoProcessingStack}:SqsQueue" }
+          EntryPoint:
+            - yarn
+          Command:
+            - graphql
+            - prod
 
   # The service. The service is a resource which allows you to run multiple
   # copies of a type of task, and gather up their logs and metrics, as well
@@ -1023,7 +1025,7 @@ Resources:
     Type: AWS::ECS::Service
     Properties:
       ServiceName: worker
-      Cluster: !Ref MainCluster
+      Cluster: !Ref Cluster
       LaunchType: FARGATE
       DeploymentConfiguration:
         MaximumPercent: 200
