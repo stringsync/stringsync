@@ -71,16 +71,6 @@ Parameters:
     Default: "3000"
     Description: What port number the application inside the docker container is binding to.
 
-  ServerDesiredCount:
-    Type: Number
-    Default: "0"
-    Description: The number of desired server instances.
-
-  ServerSessionSecret:
-    Type: String
-    NoEcho: true
-    Description: The secret string used to sign session cookies.
-
   WorkerCpu:
     Type: Number
     Default: "256"
@@ -95,11 +85,6 @@ Parameters:
     Type: Number
     Default: "3000"
     Description: What port number the application inside the docker container is binding to.
-
-  WorkerDesiredCount:
-    Type: Number
-    Default: "0"
-    Description: The number of desired worker instances.
 
   S3VideoSrcBucket:
     Type: String
@@ -360,7 +345,7 @@ Resources:
             Value: !Ref ServerImageRepository
           - Name: REACT_APP_SERVER_URI
             Type: PLAINTEXT
-            Value: !Join ["", ["http://", !GetAtt PublicLoadBalancer.DNSName]]
+            Value: !GetAtt PublicLoadBalancer.DNSName
           - Name: S3_SECRETS_BUCKET
             Type: PLAINTEXT
             Value: !Ref CodeBuildSecretsBucket
@@ -953,7 +938,6 @@ Resources:
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
-      DesiredCount: !Ref ServerDesiredCount
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
@@ -1039,7 +1023,6 @@ Resources:
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
-      DesiredCount: !Ref WorkerDesiredCount
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
