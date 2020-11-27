@@ -884,7 +884,7 @@ Resources:
               Value: !Ref PrimaryBucket
             - Name: S3_VIDEO_SRC_BUCKET
               Value: !Ref S3VideoSrcBucket
-            - Name: SQS_VIDEO_QUEUE_NAME
+            - Name: SQS_VIDEO_QUEUE_URL
               Value: !Ref SQSVideoQueueName
 
   MainCluster:
@@ -1008,7 +1008,7 @@ Resources:
               Value: !Ref PrimaryBucket
             - Name: S3_VIDEO_SRC_BUCKET
               Value: !Ref S3VideoSrcBucket
-            - Name: SQS_VIDEO_QUEUE_NAME
+            - Name: SQS_VIDEO_QUEUE_URL
               Value: !Ref SQSVideoQueueName
 
   # The service. The service is a resource which allows you to run multiple

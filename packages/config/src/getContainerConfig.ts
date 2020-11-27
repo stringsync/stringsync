@@ -23,7 +23,7 @@ export const getContainerConfig = configFactory({
   REDIS_PORT: { kind: ConfigKind.INT, nullable: false },
   S3_BUCKET: { kind: ConfigKind.STRING, nullable: false },
   S3_VIDEO_SRC_BUCKET: { kind: ConfigKind.STRING, nullable: false },
-  SQS_VIDEO_QUEUE_NAME: { kind: ConfigKind.STRING, nullable: false },
+  SQS_VIDEO_QUEUE_URL: { kind: ConfigKind.STRING, nullable: false },
 });
 
 export type ContainerConfig = ReturnType<typeof getContainerConfig>;
