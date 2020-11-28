@@ -2,7 +2,7 @@
   "name": "@stringsync/app",
   "version": "1.0.0",
   "description": "The GraphQL server for StringSync.",
-  "main": "index.js",
+  "main": "dst/index.js",
   "license": "MIT",
   "private": true,
   "dependencies": {
