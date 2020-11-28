@@ -2,7 +2,8 @@
   "name": "@stringsync/config",
   "version": "1.0.0",
   "description": "Config utility for @stringsync.",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "license": "MIT",
   "private": true,
   "devDependencies": {
