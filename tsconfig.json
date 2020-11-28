@@ -19,6 +19,6 @@
     "emitDecoratorMetadata": true,
     "types": ["jest-extended"]
   },
-  "include": ["packages", "jest.d.ts"],
+  "include": ["packages/**/*.ts", "jest.d.ts"],
   "exclude": ["node_modules", "dst"]
 }
