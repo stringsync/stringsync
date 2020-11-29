@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { EntityBuilder, randStr } from '@stringsync/common';
-import { UserRole } from '@stringsync/domain';
+import { randStr } from '@stringsync/common';
+import { EntityBuilder, UserRole } from '@stringsync/domain';
 import { NotationClient, NotationEdgeObject, UserRoles } from '../../clients';
 import { clearErrors, clearPages, getNotationPage, librarySlice } from './librarySlice';
 
