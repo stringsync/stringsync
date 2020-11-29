@@ -2,7 +2,8 @@
   "name": "@stringsync/domain",
   "version": "1.0.0",
   "description": "Encapsulates business entities and core rules for @stringsync.",
-  "main": "src/index.ts",
+  "main": "dist/index.ts",
+  "typings": "dist/index.d.ts",
   "license": "MIT",
   "private": true,
   "dependencies": {

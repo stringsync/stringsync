@@ -1,4 +1,4 @@
-import { randStr } from './randStr';
+import { randStr } from '@stringsync/common';
 import { EntityBuilder } from './EntityBuilder';
 
 describe('buildRandUser', () => {

@@ -1,6 +1,8 @@
-import { randInt } from './randInt';
-import { randStr } from './randStr';
-import { User, UserRole, Notation, Tag, Tagging } from '@stringsync/domain';
+import { randInt, randStr } from '@stringsync/common';
+import { Notation } from '../notation';
+import { Tag } from '../tag';
+import { Tagging } from '../tagging';
+import { User, UserRole } from '../user';
 
 export class EntityBuilder {
   static buildRandUser(attrs: Partial<User> = {}): User {
