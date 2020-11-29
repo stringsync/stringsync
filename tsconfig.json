@@ -19,5 +19,5 @@
     "types": ["node", "jest-extended"]
   },
   "include": ["packages/**/*.ts"],
-  "exclude": ["dist"]
+  "exclude": ["dist", "web"]
 }

@@ -1,13 +1,12 @@
-import { Mailer, Mail } from './types';
-import { injectable, inject } from 'inversify';
+import { injectable } from 'inversify';
 import { Logger } from '../logger';
-import { TYPES } from '@stringsync/di';
+import { Mail, Mailer } from './types';
 
 @injectable()
 export class NoopMailer implements Mailer {
   logger: Logger;
 
-  constructor(@inject(TYPES.Logger) logger: Logger) {
+  constructor(logger: Logger) {
     this.logger = logger;
   }
 
