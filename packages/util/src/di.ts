@@ -1,5 +1,6 @@
-import { DI } from '@stringsync/di';
+import { DI, TYPES } from '@stringsync/di';
 import { Container, ContainerModule } from 'inversify';
+import { Cache, RedisCache } from './cache';
 
 export default class implements DI {
   getContainer() {
@@ -9,7 +10,7 @@ export default class implements DI {
 
   getContainerModule() {
     return new ContainerModule((bind) => {
-      // noop
+      bind<Cache>(TYPES.Cache).to(RedisCache);
     });
   }
 }

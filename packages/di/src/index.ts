@@ -6,4 +6,10 @@ export interface DI {
   getContainerModule(): interfaces.ContainerModule;
 }
 
-export const TYPES = Object.freeze({});
+export const TYPES = Object.freeze({
+  BlobStorage: Symbol('BlobStorage'),
+  Cache: Symbol('Cache'),
+  Logger: Symbol('Logger'),
+  Mailer: Symbol('Mailer'),
+  MessageQueue: Symbol('MessageQueue'),
+});
