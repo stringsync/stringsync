@@ -1,0 +1,15 @@
+{
+  "name": "@stringsync/di",
+  "version": "1.0.0",
+  "description": "Dependency injection code for StringSync.",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "inversify": "^5.0.1",
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "@types/inversify": "^2.0.33"
+  }
+}
