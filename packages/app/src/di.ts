@@ -3,7 +3,8 @@ import { Container, ContainerModule } from 'inversify';
 
 export default class implements DI {
   getContainer() {
-    return new Container();
+    const container = new Container();
+    return container;
   }
 
   getContainerModule() {
