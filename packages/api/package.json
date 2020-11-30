@@ -1,7 +1,7 @@
 {
-  "name": "@stringsync/app",
+  "name": "@stringsync/api",
   "version": "1.0.0",
-  "description": "The GraphQL server for StringSync.",
+  "description": "The GraphQL API server for StringSync.",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "license": "MIT",
