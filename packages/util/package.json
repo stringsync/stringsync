@@ -6,6 +6,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "@stringsync/config": "1.0.0",
     "aws-sdk": "^2.742.0",
     "inversify": "^5.0.1",
     "nodemailer": "^6.4.10",

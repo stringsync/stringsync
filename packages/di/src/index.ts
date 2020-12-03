@@ -1,9 +1,9 @@
 import { interfaces } from 'inversify';
 import 'reflect-metadata';
 
-export interface DI {
-  getContainer(): interfaces.Container;
-  getContainerModule(): interfaces.ContainerModule;
+export abstract class DI {
+  abstract getContainer(): interfaces.Container;
+  abstract getContainerModule(): interfaces.ContainerModule;
 }
 
 export const TYPES = Object.freeze({

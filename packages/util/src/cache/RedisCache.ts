@@ -5,9 +5,10 @@ import { Cache, RedisConfig } from './types';
 
 @injectable()
 export class RedisCache implements Cache {
-  static create(config: RedisConfig): RedisClient {
+  static create(config: RedisConfig, logger: Logger): RedisCache {
     const { host, port } = config;
-    return createClient({ host, port });
+    const redisClient = createClient({ host, port });
+    return new RedisCache(redisClient, logger);
   }
 
   redis: RedisClient;

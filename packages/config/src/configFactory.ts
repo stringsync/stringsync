@@ -42,7 +42,7 @@ export const configFactory = <S extends ConfigSpec>(spec: S): ConfigGetter<S> =>
 
   for (const [key, { kind, nullable }] of Object.entries(spec)) {
     const val = env[key];
-    if (!val) {
+    if (typeof val === 'undefined') {
       if (nullable) {
         config[key] = null;
         continue;
