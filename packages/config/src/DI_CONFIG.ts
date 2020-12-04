@@ -1,5 +1,5 @@
-import { ConfigKind } from '.';
 import { configFactory } from './configFactory';
+import { ConfigKind } from './types';
 
 export const DI_CONFIG = configFactory({
   APP_GRAPHQL_PORT: { kind: ConfigKind.INT, nullable: false },
