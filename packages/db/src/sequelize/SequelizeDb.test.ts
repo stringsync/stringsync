@@ -1,8 +1,8 @@
 import { noop } from '@stringsync/common';
-import { getContainerConfig } from '@stringsync/config';
+import { getDbConfig } from '@stringsync/config';
 import { SequelizeDb } from './SequelizeDb';
 
-const config = getContainerConfig();
+const config = getDbConfig();
 let db: SequelizeDb;
 
 beforeEach(async () => {

@@ -44,7 +44,7 @@ export const getWorkerConfig = configFactory({
   SQS_VIDEO_QUEUE_URL: { kind: ConfigKind.STRING, nullable: false },
 });
 
-export const getMigraterConfig = configFactory({
+export const getDbConfig = configFactory({
   DB_HOST: { kind: ConfigKind.STRING, nullable: false },
   DB_NAME: { kind: ConfigKind.STRING, nullable: false },
   DB_PASSWORD: { kind: ConfigKind.STRING, nullable: false },

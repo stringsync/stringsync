@@ -6,9 +6,10 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "yarn migrate && yarn seed",
-    "seed": "sequelize db:seed:all",
-    "migrate": "sequelize db:migrate"
+    "checkenv": "ts-node scripts/checkenv.ts",
+    "dev": "yarn checkenv && yarn migrate && yarn seed",
+    "seed": "yarn checkenv && sequelize db:seed:all",
+    "migrate": "yarn checkenv && sequelize db:migrate"
   },
   "dependencies": {
     "@stringsync/config": "1.0.0",
