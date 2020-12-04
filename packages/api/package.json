@@ -2,8 +2,7 @@
   "name": "@stringsync/api",
   "version": "1.0.0",
   "description": "The GraphQL API server for StringSync.",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "main": "src/index.ts",
   "license": "MIT",
   "private": true,
   "dependencies": {
@@ -14,6 +13,7 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.9",
-    "@types/inversify": "^2.0.33"
+    "@types/inversify": "^2.0.33",
+    "ts-node-dev": "^1.0.0"
   }
 }

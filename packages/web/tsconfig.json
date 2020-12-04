@@ -16,6 +16,15 @@
     "jsx": "react"
   },
   "include": ["src"],
-  "exclude": ["**/*.js"],
-  "references": [{ "path": "../common" }, { "path": "../config" }, { "path": "../domain" }]
+  "references": [
+    {
+      "path": "../common"
+    },
+    {
+      "path": "../config"
+    },
+    {
+      "path": "../domain"
+    }
+  ]
 }

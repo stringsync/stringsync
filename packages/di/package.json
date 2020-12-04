@@ -2,7 +2,7 @@
   "name": "@stringsync/di",
   "version": "1.0.0",
   "description": "Dependency injection code for StringSync.",
-  "main": "dist/index.js",
+  "main": "src/index.ts",
   "license": "MIT",
   "private": true,
   "dependencies": {
