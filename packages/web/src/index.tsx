@@ -1,4 +1,4 @@
-import { WEB_CONFIG } from '@stringsync/config';
+import { getWebConfig } from '@stringsync/config';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { App, Routes } from './app';
@@ -8,7 +8,7 @@ import { ViewportSync } from './components/ViewportSync';
 import * as serviceWorker from './serviceWorker';
 import { createStore } from './store';
 
-const config = WEB_CONFIG(process.env);
+const config = getWebConfig(process.env);
 const store = createStore();
 
 ReactDOM.render(
