@@ -1,4 +1,4 @@
-import { getWebConfig } from '@stringsync/config';
+import { WEB_CONFIG } from '@stringsync/config';
 import { ExtractableFile, extractFiles } from 'extract-files';
 import { RequestType, Response } from './types';
 
@@ -11,7 +11,7 @@ export class GraphqlClient {
   }
 
   static getGraphqlUri(env = process.env): string {
-    const config = getWebConfig(env);
+    const config = WEB_CONFIG(env);
     return config.REACT_APP_SERVER_URI + config.REACT_APP_GRAPHQL_ENDPOINT;
   }
 
