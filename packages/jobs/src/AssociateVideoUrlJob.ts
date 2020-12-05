@@ -1,4 +1,4 @@
-import { ContainerConfig } from '@stringsync/config';
+import { ApiConfig } from '@stringsync/config';
 import { TYPES } from '@stringsync/di';
 import { VideoUrlService } from '@stringsync/services';
 import { Logger } from '@stringsync/util';
@@ -11,12 +11,12 @@ import { JobName } from './types';
 export class AssociateVideoUrlJob extends Job {
   videoUrlService: VideoUrlService;
   logger: Logger;
-  config: ContainerConfig;
+  config: ApiConfig;
 
   constructor(
     @inject(TYPES.VideoUrlService) videoUrlService: VideoUrlService,
     @inject(TYPES.Logger) logger: Logger,
-    @inject(TYPES.ContainerConfig) config: ContainerConfig
+    @inject(TYPES.ApiConfig) config: ApiConfig
   ) {
     super();
 
