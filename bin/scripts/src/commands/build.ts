@@ -13,6 +13,6 @@ export default class Build extends Command {
   async run() {
     const { flags } = this.parse(Build);
     const tag = `stringsync:${flags.tag}`;
-    execSync(`docker build -t ${tag} .`, { cwd: ROOT_PATH, stdio: 'inherit' });
+    execSync(`docker build -f ./docker/Dockerfile -t ${tag} .`, { cwd: ROOT_PATH, stdio: 'inherit' });
   }
 }

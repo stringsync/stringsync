@@ -1,4 +1,4 @@
-version: "3.7"
+version: '3.7'
 
 services:
   db:
@@ -15,12 +15,12 @@ services:
   test:
     image: stringsync:latest
     build:
-      context: .
+      context: ../
       dockerfile: ./Dockerfile
     env_file:
-      - env/server.test.env
+      - ../env/server.test.env
     volumes:
-      - ./packages:/stringsync/packages
+      - ../packages:/stringsync/packages
     links:
       - db
       - redis

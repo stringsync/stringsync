@@ -1,7 +1,7 @@
 import { Command, flags } from '@oclif/command';
 import { execSync } from 'child_process';
 import { getDockerComposeFile } from '../util';
-import { ROOT_PATH } from '../util/constants';
+import { DOCKER_PATH, ROOT_PATH } from '../util/constants';
 
 export default class Test extends Command {
   static description = 'Run all of the StringSync tests.';
@@ -51,7 +51,7 @@ export default class Test extends Command {
           .filter((part) => part)
           .join(' '),
         {
-          cwd: ROOT_PATH,
+          cwd: DOCKER_PATH,
           stdio: 'inherit',
         }
       );
