@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "setup": "yarn install && (cd ./bin/scripts/ && yarn install) && ./bin/ss gensecrets",
-    "graphql": "yarn workspace @stringsync/graphql",
+    "api": "yarn workspace @stringsync/api",
     "db": "yarn workspace @stringsync/db",
     "web": "yarn workspace @stringsync/web",
     "jobs": "yarn workspace @stringsync/jobs",
