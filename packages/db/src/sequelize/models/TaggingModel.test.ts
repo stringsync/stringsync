@@ -1,9 +1,9 @@
-// import { useTestContainer, TYPES } from '@stringsync/di';
-// import { TaggingModel } from './TaggingModel';
 // import { EntityBuilder } from '@stringsync/common';
-// import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from '@stringsync/repos';
+// import { TYPES, useTestContainer } from '@stringsync/di';
 // import { Notation, Tag, Tagging, User } from '@stringsync/domain';
+// import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from '@stringsync/repos';
 // import { NotationModel } from './NotationModel';
+// import { TaggingModel } from './TaggingModel';
 
 // const container = useTestContainer();
 

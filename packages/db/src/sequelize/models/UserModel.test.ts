@@ -1,9 +1,8 @@
-// import { UserModel } from './UserModel';
-// import { useTestContainer, TYPES } from '@stringsync/di';
 // import { EntityBuilder, randStr } from '@stringsync/common';
-// import * as uuid from 'uuid';
+// import { TYPES } from '@stringsync/di';
 // import { NotationRepo, UserRepo } from '@stringsync/repos';
-// import { sortBy } from 'lodash';
+// import * as uuid from 'uuid';
+// import { UserModel } from './UserModel';
 
 // const container = useTestContainer();
 

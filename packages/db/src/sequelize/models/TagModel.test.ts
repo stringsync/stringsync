@@ -1,6 +1,6 @@
-// import { useTestContainer, TYPES } from '@stringsync/di';
-// import { TagModel } from './TagModel';
 // import { EntityBuilder } from '@stringsync/common';
+// import { useTestContainer } from '@stringsync/di';
+// import { TagModel } from './TagModel';
 
 // const container = useTestContainer();
 

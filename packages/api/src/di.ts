@@ -1,15 +1,13 @@
 import { DI } from '@stringsync/di';
 import { Container, ContainerModule } from 'inversify';
 
-export default class implements DI {
-  getContainer() {
-    const container = new Container();
-    return container;
-  }
-
-  getContainerModule() {
+export const API: DI = {
+  getContainer: () => {
+    return new Container();
+  },
+  getContainerModule: () => {
     return new ContainerModule((bind) => {
       // noop
     });
-  }
-}
+  },
+};
