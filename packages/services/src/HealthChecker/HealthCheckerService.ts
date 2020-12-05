@@ -1,7 +1,7 @@
-import { Sequelize } from 'sequelize';
-import { RedisClient as Redis } from 'redis';
-import { inject, injectable } from 'inversify';
 import { TYPES } from '@stringsync/di';
+import { inject, injectable } from 'inversify';
+import { RedisClient as Redis } from 'redis';
+import { Sequelize } from 'sequelize';
 import { promisify } from 'util';
 
 @injectable()

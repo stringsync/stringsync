@@ -25,6 +25,7 @@ export const getApiConfig = configFactory({
   S3_VIDEO_SRC_BUCKET: { kind: ConfigKind.STRING, nullable: false },
   SQS_VIDEO_QUEUE_URL: { kind: ConfigKind.STRING, nullable: false },
 });
+export type ApiConfig = ReturnType<typeof getApiConfig>;
 
 export const getWorkerConfig = configFactory({
   AWS_ACCESS_KEY_ID: { kind: ConfigKind.STRING, nullable: true },
@@ -43,6 +44,7 @@ export const getWorkerConfig = configFactory({
   S3_VIDEO_SRC_BUCKET: { kind: ConfigKind.STRING, nullable: false },
   SQS_VIDEO_QUEUE_URL: { kind: ConfigKind.STRING, nullable: false },
 });
+export type WorkerConfig = ReturnType<typeof getWorkerConfig>;
 
 export const getDbConfig = configFactory({
   DB_HOST: { kind: ConfigKind.STRING, nullable: false },
@@ -52,9 +54,11 @@ export const getDbConfig = configFactory({
   DB_USERNAME: { kind: ConfigKind.STRING, nullable: false },
   NODE_ENV: { kind: ConfigKind.STRING, nullable: false },
 });
+export type DbConfig = ReturnType<typeof getDbConfig>;
 
 export const getWebConfig = configFactory({
   NODE_ENV: { kind: ConfigKind.STRING, nullable: false },
   REACT_APP_SERVER_URI: { kind: ConfigKind.STRING, nullable: false },
   REACT_APP_GRAPHQL_ENDPOINT: { kind: ConfigKind.STRING, nullable: false },
 });
+export type WebConfig = ReturnType<typeof getWebConfig>;

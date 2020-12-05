@@ -1,4 +1,4 @@
-import { ContainerConfig } from '@stringsync/config';
+import { ApiConfig } from '@stringsync/config';
 import { TYPES } from '@stringsync/di';
 import { User } from '@stringsync/domain';
 import { Mailer } from '@stringsync/util';
@@ -10,9 +10,9 @@ export class NotificationService {
   static INFO_EMAIL = 'StringSync <info@stringsync.com>';
 
   mailer: Mailer;
-  config: ContainerConfig;
+  config: ApiConfig;
 
-  constructor(@inject(TYPES.Mailer) mailer: Mailer, @inject(TYPES.ContainerConfig) config: ContainerConfig) {
+  constructor(@inject(TYPES.Mailer) mailer: Mailer, @inject(TYPES.ApiConfig) config: ApiConfig) {
     this.mailer = mailer;
     this.config = config;
   }

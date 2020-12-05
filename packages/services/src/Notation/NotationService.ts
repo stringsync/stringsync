@@ -1,5 +1,5 @@
 import { Connection, NotationConnectionArgs } from '@stringsync/common';
-import { ContainerConfig } from '@stringsync/config';
+import { ApiConfig } from '@stringsync/config';
 import { Db } from '@stringsync/db';
 import { TYPES } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
@@ -16,14 +16,14 @@ export class NotationService {
   taggingService: TaggingService;
   notationRepo: NotationRepo;
   blobStorage: BlobStorage;
-  config: ContainerConfig;
+  config: ApiConfig;
 
   constructor(
     @inject(TYPES.Db) db: Db,
     @inject(TYPES.TaggingService) taggingService: TaggingService,
     @inject(TYPES.NotationRepo) notationRepo: NotationRepo,
     @inject(TYPES.BlobStorage) blobStorage: BlobStorage,
-    @inject(TYPES.ContainerConfig) config: ContainerConfig
+    @inject(TYPES.ApiConfig) config: ApiConfig
   ) {
     this.db = db;
     this.taggingService = taggingService;
