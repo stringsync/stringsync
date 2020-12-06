@@ -9,8 +9,10 @@
     { "path": "../common" },
     { "path": "../config" },
     { "path": "../di" },
+    { "path": "../db" },
     { "path": "../domain" },
     { "path": "../services" },
+    { "path": "../repos" },
     { "path": "../util" }
   ]
 }

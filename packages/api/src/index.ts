@@ -2,14 +2,14 @@ import { TYPES } from '@stringsync/di';
 import { Logger } from '@stringsync/util';
 import { app } from './app';
 import { ApiConfig } from './config';
-import { createContainer } from './di';
+import { createApiContainer } from './di';
 import { generateSchema } from './schema';
 
 export * from './app';
 export * from './schema';
 
 const main = async () => {
-  const container = await createContainer();
+  const container = await createApiContainer();
   const schema = generateSchema();
   const config = container.get<ApiConfig>(TYPES.ApiConfig);
   const logger = container.get<Logger>(TYPES.Logger);

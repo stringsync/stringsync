@@ -11,7 +11,7 @@ import {
 } from './sequelize';
 import { NotationLoader, NotationRepo, TaggingRepo, TagLoader, TagRepo, UserLoader, UserRepo } from './types';
 
-export const API = new SyncMod((bind) => {
+export const REPOS = new SyncMod((bind) => {
   const config = REPOS_CONFIG();
   bind<ReposConfig>(TYPES.ReposConfig).toConstantValue(config);
 

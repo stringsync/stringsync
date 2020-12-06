@@ -37,7 +37,7 @@ export class SequelizeDb implements Db {
       database: config.DB_NAME,
       username: config.DB_USERNAME,
       password: config.DB_PASSWORD,
-      logging: logger.debug,
+      logging: (sql: string) => logger.debug(sql),
     });
 
     TaggingModel.initColumns(sequelize);

@@ -4,6 +4,7 @@ import { AssociateVideoUrlJob } from './AssociateVideoUrlJob';
 import { createJobsContainer } from './di';
 
 export * from './AssociateVideoUrlJob';
+export * from './di';
 export * from './types';
 
 const main = async () => {
