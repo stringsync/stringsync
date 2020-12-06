@@ -1,9 +1,8 @@
 import { Connection, NotationConnectionArgs } from '@stringsync/common';
-import { TYPES } from '@stringsync/di';
+import { inject, injectable, TYPES } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
 import { NotationRepo } from '@stringsync/repos';
 import { BlobStorage } from '@stringsync/util';
-import { inject, injectable } from 'inversify';
 import path from 'path';
 import { ServicesConfig } from '../config';
 import { TaggingService } from '../Tagging';

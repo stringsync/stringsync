@@ -78,4 +78,8 @@ export class SequelizeDb implements Db {
   async teardown() {
     await this.sequelize.close();
   }
+
+  async checkHealth() {
+    await this.sequelize.authenticate();
+  }
 }

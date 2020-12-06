@@ -1,15 +1,13 @@
-import { Transporter, createTransport } from 'nodemailer';
-import { Mailer, Mail } from './types';
+import { injectable } from '@stringsync/di';
+import { createTransport, Transporter } from 'nodemailer';
+import { Mail, Mailer } from './types';
 
-export class NodemailerMailer implements Mailer {
-  static createTransporter(): Transporter {
-    return createTransport({});
-  }
-
+@injectable()
+export class Nodemailer implements Mailer {
   transporter: Transporter;
 
-  constructor(transporter: Transporter) {
-    this.transporter = transporter;
+  constructor() {
+    this.transporter = createTransport({});
   }
 
   async send(mail: Mail): Promise<void> {

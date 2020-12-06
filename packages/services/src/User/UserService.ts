@@ -1,8 +1,7 @@
 import { Connection, ConnectionArgs } from '@stringsync/common';
-import { TYPES } from '@stringsync/di';
+import { inject, injectable, TYPES } from '@stringsync/di';
 import { User } from '@stringsync/domain';
 import { UserRepo } from '@stringsync/repos';
-import { inject, injectable } from 'inversify';
 
 @injectable()
 export class UserService {

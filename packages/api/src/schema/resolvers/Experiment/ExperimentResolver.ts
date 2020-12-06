@@ -1,7 +1,6 @@
 import { AuthRequirement } from '@stringsync/common';
-import { TYPES } from '@stringsync/di';
+import { inject, injectable, TYPES } from '@stringsync/di';
 import { Logger, MessageQueue } from '@stringsync/util';
-import { inject, injectable } from 'inversify';
 import { Query, Resolver, UseMiddleware } from 'type-graphql';
 import { WithAuthRequirement } from '../../middlewares';
 

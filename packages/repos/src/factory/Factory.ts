@@ -1,6 +1,5 @@
-import { TYPES } from '@stringsync/di';
+import { inject, injectable, TYPES } from '@stringsync/di';
 import { EntityBuilder, Notation, Tag, Tagging, User } from '@stringsync/domain';
-import { inject, injectable } from 'inversify';
 import { times } from 'lodash';
 import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from '../types';
 

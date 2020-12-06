@@ -1,8 +1,7 @@
-import { TYPES } from '@stringsync/di';
+import { inject, injectable, TYPES } from '@stringsync/di';
 import { VideoUrlService } from '@stringsync/services';
 import { Logger } from '@stringsync/util';
 import { Queue, QueueScheduler, Worker } from 'bullmq';
-import { inject, injectable } from 'inversify';
 import { JobsConfig } from './config';
 import { Job } from './Job';
 import { JobName } from './types';

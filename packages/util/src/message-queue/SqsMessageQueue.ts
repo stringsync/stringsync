@@ -1,21 +1,18 @@
+import { inject, injectable, TYPES } from '@stringsync/di';
 import { SQS } from 'aws-sdk';
 import { Logger } from '../logger';
 import { Message, MessageQueue } from './types';
 
 const DEFAULT_VISIBILITY_TIMEOUT_S = 60;
 
+@injectable()
 export class SqsMessageQueue implements MessageQueue {
-  static create(logger: Logger): SqsMessageQueue {
-    const sqs = new SQS();
-    return new SqsMessageQueue(logger, sqs);
-  }
-
   logger: Logger;
   sqs: SQS;
 
-  constructor(logger: Logger, sqs: SQS) {
+  constructor(@inject(TYPES.Logger) logger: Logger) {
     this.logger = logger;
-    this.sqs = sqs;
+    this.sqs = new SQS();
   }
 
   async get(queueUrl: string): Promise<Message | null> {

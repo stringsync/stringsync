@@ -1,6 +1,6 @@
-import { ArgsType, Field } from 'type-graphql';
 import { ConnectionArgs as IConnectionArgs } from '@stringsync/common';
-import { injectable } from 'inversify';
+import { injectable } from '@stringsync/di';
+import { ArgsType, Field } from 'type-graphql';
 
 @ArgsType()
 @injectable()

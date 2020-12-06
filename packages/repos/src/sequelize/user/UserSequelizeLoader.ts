@@ -1,7 +1,7 @@
 import { UserModel } from '@stringsync/db';
+import { injectable } from '@stringsync/di';
 import { User } from '@stringsync/domain';
 import Dataloader from 'dataloader';
-import { injectable } from 'inversify';
 import { UserLoader } from '../../types';
 import { alignOneToOne, ensureNoErrors } from '../../util';
 

@@ -12,4 +12,4 @@ export const JOBS = new SyncMod((bind) => {
     .inSingletonScope();
 });
 
-export const createContainer = containerFactory(SERVICES);
+export const createJobsContainer = containerFactory(SERVICES);

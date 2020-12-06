@@ -20,9 +20,7 @@ export const TYPES = {
   NotationSequelizeRepo: Symbol('NotationSequelizeRepo'),
   NotationService: Symbol('NotationService'),
   NotificationService: Symbol('NotificationService'),
-  Redis: Symbol('Redis'),
   ReposConfig: Symbol('ReposConfig'),
-  Sequelize: Symbol('Sequelize'),
   ServicesConfig: Symbol('ServicesConfig'),
   TaggingRepo: Symbol('TaggingRepo'),
   TaggingSequelizeRepo: Symbol('TaggingSequelizeRepo'),
@@ -39,5 +37,6 @@ export const TYPES = {
   UserSequelizeLoader: Symbol('UserSequelizeLoader'),
   UserSequelizeRepo: Symbol('UserSequelizeRepo'),
   UserService: Symbol('UserService'),
+  UtilConfig: Symbol('UtilConfig'),
   VideoUrlService: Symbol('VideoUrlService'),
 };

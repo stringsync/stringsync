@@ -1,7 +1,6 @@
-import { injectable, inject } from 'inversify';
-import { TaggingRepo } from '@stringsync/repos';
-import { TYPES } from '@stringsync/di';
+import { inject, injectable, TYPES } from '@stringsync/di';
 import { Tagging } from '@stringsync/domain';
+import { TaggingRepo } from '@stringsync/repos';
 
 @injectable()
 export class TaggingService {

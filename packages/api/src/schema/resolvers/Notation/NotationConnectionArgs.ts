@@ -1,6 +1,6 @@
 import { NotationConnectionArgs as INotationConnectionArgs } from '@stringsync/common';
+import { injectable } from '@stringsync/di';
 import { ArgsType, Field } from 'type-graphql';
-import { injectable } from 'inversify';
 
 @ArgsType()
 @injectable()

@@ -1,11 +1,8 @@
-import { Connection, NotFoundError, NotImplementedError, PagingType, UserConnectionArgs } from '@stringsync/common';
+import { Connection, NotFoundError, PagingType, UserConnectionArgs } from '@stringsync/common';
 import { UserModel } from '@stringsync/db';
-import { TYPES } from '@stringsync/di';
+import { inject, injectable, TYPES } from '@stringsync/di';
 import { User } from '@stringsync/domain';
-import { inject, injectable } from 'inversify';
-import { get } from 'lodash';
 import { Op } from 'sequelize';
-import { camelCaseKeys } from '../../queries';
 import { UserLoader, UserRepo } from '../../types';
 import { Pager, PagingCtx } from '../../util';
 

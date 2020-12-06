@@ -1,6 +1,6 @@
+import { Container } from '@stringsync/di';
 import { SessionUser } from '@stringsync/services';
 import { Request, Response } from 'express';
-import { Container } from 'inversify';
 
 export type SessionRequest = Request & {
   session: { user: SessionUser };

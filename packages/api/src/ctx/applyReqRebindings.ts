@@ -1,7 +1,6 @@
 import { Ctor } from '@stringsync/common';
-import { TYPES } from '@stringsync/di';
+import { Container, TYPES } from '@stringsync/di';
 import { NotationLoader, TagLoader, UserLoader } from '@stringsync/repos';
-import { Container } from 'inversify';
 
 export const applyReqRebindings = (container: Container) => {
   const UserLoaderCtor = container.get<Ctor<UserLoader>>(TYPES.UserLoaderCtor);

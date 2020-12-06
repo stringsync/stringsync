@@ -1,9 +1,9 @@
 import { ConfigKind, ConfigSpec } from './types';
 
 export const NODE_ENV: ConfigSpec<ConfigKind.STRING, false> = { kind: ConfigKind.STRING, nullable: false };
+export const LOG_LEVEL: ConfigSpec<ConfigKind.STRING, false> = { kind: ConfigKind.STRING, nullable: false };
 
 export const APP_GRAPHQL_PORT: ConfigSpec<ConfigKind.INT, false> = { kind: ConfigKind.INT, nullable: false };
-export const APP_LOG_LEVEL: ConfigSpec<ConfigKind.STRING, false> = { kind: ConfigKind.STRING, nullable: false };
 export const APP_SESSION_SECRET: ConfigSpec<ConfigKind.STRING, false> = { kind: ConfigKind.STRING, nullable: false };
 export const APP_WEB_URI: ConfigSpec<ConfigKind.STRING, false> = { kind: ConfigKind.STRING, nullable: false };
 

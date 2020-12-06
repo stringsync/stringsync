@@ -1,6 +1,6 @@
 import { UserConnectionArgs as IUserConnectionArgs } from '@stringsync/common';
+import { injectable } from '@stringsync/di';
 import { ArgsType, Field } from 'type-graphql';
-import { injectable } from 'inversify';
 
 @ArgsType()
 @injectable()

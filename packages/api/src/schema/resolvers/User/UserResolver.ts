@@ -1,17 +1,16 @@
-import { UserConnectionObject } from './UserConnectionObject';
-import { AuthRequirement, BadRequestError, Connection, NotFoundError } from '@stringsync/common';
-import { TYPES } from '@stringsync/di';
+import { AuthRequirement, BadRequestError, Connection } from '@stringsync/common';
+import { inject, injectable, TYPES } from '@stringsync/di';
 import { User } from '@stringsync/domain';
 import { UserService } from '@stringsync/services';
-import { inject, injectable } from 'inversify';
-import { Arg, Args, Ctx, Mutation, Query, Resolver, ResolverData, UseMiddleware } from 'type-graphql';
-import { WithAuthRequirement, WithValidator } from '../../middlewares';
-import { UserArgs } from './UserArgs';
-import { UserObject } from './UserObject';
-import { UpdateUserInput } from './UpdateUserInput';
 import { pick } from 'lodash';
+import { Arg, Args, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { ReqCtx } from '../../../ctx';
+import { WithAuthRequirement, WithValidator } from '../../middlewares';
+import { UpdateUserInput } from './UpdateUserInput';
+import { UserArgs } from './UserArgs';
 import { UserConnectionArgs } from './UserConnectionArgs';
+import { UserConnectionObject } from './UserConnectionObject';
+import { UserObject } from './UserObject';
 
 @Resolver()
 @injectable()

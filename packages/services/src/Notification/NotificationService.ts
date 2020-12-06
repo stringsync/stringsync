@@ -1,7 +1,6 @@
-import { TYPES } from '@stringsync/di';
+import { inject, injectable, TYPES } from '@stringsync/di';
 import { User } from '@stringsync/domain';
 import { Mailer } from '@stringsync/util';
-import { inject, injectable } from 'inversify';
 import url from 'url';
 import { ServicesConfig } from '../config';
 

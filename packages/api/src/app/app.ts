@@ -1,17 +1,16 @@
-import { ApiConfig } from '@stringsync/config';
-import { TYPES } from '@stringsync/di';
+import { Container, TYPES } from '@stringsync/di';
 import { altairExpress } from 'altair-express-middleware';
 import cors from 'cors';
 import express from 'express';
 import { GraphQLSchema } from 'graphql';
 import { graphqlUploadExpress } from 'graphql-upload';
-import { interfaces } from 'inversify';
+import { ApiConfig } from '../config';
 import { HealthController } from './controllers';
 import { withGraphQL, withSession } from './middlewares';
 import { withLogging } from './middlewares/withLogging';
 import { withSessionUser } from './middlewares/withSessionUser';
 
-export const app = (container: interfaces.Container, schema: GraphQLSchema) => {
+export const app = (container: Container, schema: GraphQLSchema) => {
   const app = express();
   const healthController = container.get<HealthController>(TYPES.HealthController);
   const config = container.get<ApiConfig>(TYPES.ApiConfig);

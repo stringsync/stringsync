@@ -1,8 +1,7 @@
 import { NotFoundError } from '@stringsync/common';
 import { TagModel } from '@stringsync/db';
-import { TYPES } from '@stringsync/di';
+import { inject, injectable, TYPES } from '@stringsync/di';
 import { Tag } from '@stringsync/domain';
-import { inject, injectable } from 'inversify';
 import { TagLoader, TagRepo } from '../../types';
 
 @injectable()

@@ -4,4 +4,5 @@ export interface Db {
   sequelize: Sequelize;
   cleanup(): Promise<void>;
   teardown(): Promise<void>;
+  checkHealth(): Promise<void>;
 }

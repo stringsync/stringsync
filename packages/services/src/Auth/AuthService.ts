@@ -1,11 +1,10 @@
-import { injectable, inject } from 'inversify';
-import { UserRepo } from '@stringsync/repos';
-import { TYPES } from '@stringsync/di';
-import { SessionUser } from './types';
+import { BadRequestError, NotFoundError } from '@stringsync/common';
+import { inject, injectable, TYPES } from '@stringsync/di';
 import { User, UserRole } from '@stringsync/domain';
+import { UserRepo } from '@stringsync/repos';
 import * as bcrypt from 'bcrypt';
 import * as uuid from 'uuid';
-import { BadRequestError, NotFoundError } from '@stringsync/common';
+import { SessionUser } from './types';
 
 @injectable()
 export class AuthService {

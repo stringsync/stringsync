@@ -1,18 +1,17 @@
-import { Resolver, Query, Ctx, Mutation, Arg, UseMiddleware } from 'type-graphql';
-import { injectable, inject } from 'inversify';
-import { AuthService, NotificationService } from '@stringsync/services';
-import { TYPES } from '@stringsync/di';
-import { Logger } from '@stringsync/util';
+import { AuthRequirement, ForbiddenError } from '@stringsync/common';
+import { inject, injectable, TYPES } from '@stringsync/di';
 import { User } from '@stringsync/domain';
-import { UserObject } from '../User';
-import { LoginInput } from './LoginInput';
-import { ForbiddenError, AuthRequirement } from '@stringsync/common';
-import { WithAuthRequirement } from '../../middlewares';
-import { SignupInput } from './SignupInput';
-import { ConfirmEmailInput } from './ConfirmEmailInput';
-import { SendResetPasswordEmailInput } from './SendResetPasswordEmailInput';
-import { ResetPasswordInput } from './ResetPasswordInput';
+import { AuthService, NotificationService } from '@stringsync/services';
+import { Logger } from '@stringsync/util';
+import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { ReqCtx } from '../../../ctx';
+import { WithAuthRequirement } from '../../middlewares';
+import { UserObject } from '../User';
+import { ConfirmEmailInput } from './ConfirmEmailInput';
+import { LoginInput } from './LoginInput';
+import { ResetPasswordInput } from './ResetPasswordInput';
+import { SendResetPasswordEmailInput } from './SendResetPasswordEmailInput';
+import { SignupInput } from './SignupInput';
 
 @Resolver()
 @injectable()

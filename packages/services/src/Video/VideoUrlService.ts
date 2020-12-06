@@ -1,7 +1,6 @@
 import { NotFoundError, UnknownError } from '@stringsync/common';
-import { TYPES } from '@stringsync/di';
+import { inject, injectable, TYPES } from '@stringsync/di';
 import { Logger, Message, MessageQueue } from '@stringsync/util';
-import { inject, injectable } from 'inversify';
 import { ServicesConfig } from '../config';
 import { NotationService } from '../Notation';
 

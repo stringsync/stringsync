@@ -1,9 +1,8 @@
 import { AuthRequirement, Connection } from '@stringsync/common';
-import { TYPES } from '@stringsync/di';
+import { inject, injectable, TYPES } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
 import { NotationService } from '@stringsync/services';
 import { BlobStorage, Logger } from '@stringsync/util';
-import { inject, injectable } from 'inversify';
 import { Arg, Args, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { NotationObject } from '.';
 import { ReqCtx } from '../../../ctx';

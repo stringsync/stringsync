@@ -1,8 +1,7 @@
 import { Connection, NotationConnectionArgs, NotFoundError, PagingType } from '@stringsync/common';
 import { Db, NotationModel } from '@stringsync/db';
-import { TYPES } from '@stringsync/di';
+import { inject, injectable, TYPES } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
-import { inject, injectable } from 'inversify';
 import { get } from 'lodash';
 import { QueryTypes } from 'sequelize';
 import {

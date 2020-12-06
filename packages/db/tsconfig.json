@@ -5,5 +5,5 @@
     "outDir": "dist"
   },
   "include": ["src"],
-  "references": [{ "path": "../config" }, { "path": "../di" }, { "path": "../domain" }]
+  "references": [{ "path": "../config" }, { "path": "../di" }, { "path": "../domain" }, { "path": "../util" }]
 }

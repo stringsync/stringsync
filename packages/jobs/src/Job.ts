@@ -1,6 +1,6 @@
 import { UnknownError } from '@stringsync/common';
+import { injectable } from '@stringsync/di';
 import { JobsOptions, Queue, QueueScheduler, Worker } from 'bullmq';
-import { injectable } from 'inversify';
 import * as uuid from 'uuid';
 
 @injectable()

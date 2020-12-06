@@ -1,20 +1,18 @@
-import { TYPES } from '@stringsync/di';
-import { inject, injectable } from 'inversify';
-import { RedisClient as Redis } from 'redis';
-import { Sequelize } from 'sequelize';
-import { promisify } from 'util';
+import { Db } from '@stringsync/db';
+import { inject, injectable, TYPES } from '@stringsync/di';
+import { Cache } from '@stringsync/util';
 
 @injectable()
 export class HealthCheckerService {
-  sequelize: Sequelize;
-  redis: Redis;
+  db: Db;
+  cache: Cache;
 
-  constructor(@inject(TYPES.Sequelize) sequelize: Sequelize, @inject(TYPES.Redis) redis: Redis) {
-    this.sequelize = sequelize;
-    this.redis = redis;
+  constructor(@inject(TYPES.Db) db: Db, @inject(TYPES.Cache) cache: Cache) {
+    this.db = db;
+    this.cache = cache;
   }
 
   async checkHealth() {
-    await Promise.all([this.sequelize.authenticate(), promisify(this.redis.time).bind(this.redis)()]);
+    await Promise.all([this.db.checkHealth(), this.cache.checkHealth()]);
   }
 }

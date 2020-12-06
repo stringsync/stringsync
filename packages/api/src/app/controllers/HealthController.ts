@@ -1,7 +1,6 @@
+import { inject, injectable, TYPES } from '@stringsync/di';
 import { HealthCheckerService } from '@stringsync/services';
-import { inject, injectable } from 'inversify';
 import { RequestHandler } from 'express';
-import { TYPES } from '@stringsync/di';
 import { Controller } from './types';
 
 @injectable()
