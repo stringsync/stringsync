@@ -4,6 +4,6 @@
     "composite": false,
     "noEmit": true
   },
-  "include": ["packages/**/src/*.ts"],
+  "include": ["packages"],
   "exclude": ["dist", "build", "node_modules"]
 }
