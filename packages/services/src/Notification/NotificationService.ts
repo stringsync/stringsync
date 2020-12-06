@@ -1,18 +1,18 @@
-import { ApiConfig } from '@stringsync/config';
 import { TYPES } from '@stringsync/di';
 import { User } from '@stringsync/domain';
 import { Mailer } from '@stringsync/util';
 import { inject, injectable } from 'inversify';
 import url from 'url';
+import { ServicesConfig } from '../config';
 
 @injectable()
 export class NotificationService {
   static INFO_EMAIL = 'StringSync <info@stringsync.com>';
 
   mailer: Mailer;
-  config: ApiConfig;
+  config: ServicesConfig;
 
-  constructor(@inject(TYPES.Mailer) mailer: Mailer, @inject(TYPES.ApiConfig) config: ApiConfig) {
+  constructor(@inject(TYPES.Mailer) mailer: Mailer, @inject(TYPES.ServicesConfig) config: ServicesConfig) {
     this.mailer = mailer;
     this.config = config;
   }

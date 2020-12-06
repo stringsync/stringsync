@@ -1,8 +1,8 @@
 import { NotFoundError, UnknownError } from '@stringsync/common';
-import { ApiConfig } from '@stringsync/config';
 import { TYPES } from '@stringsync/di';
 import { Logger, Message, MessageQueue } from '@stringsync/util';
 import { inject, injectable } from 'inversify';
+import { ServicesConfig } from '../config';
 import { NotationService } from '../Notation';
 
 @injectable()
@@ -10,13 +10,13 @@ export class VideoUrlService {
   logger: Logger;
   messageQueue: MessageQueue;
   notationService: NotationService;
-  config: ApiConfig;
+  config: ServicesConfig;
 
   constructor(
     @inject(TYPES.Logger) logger: Logger,
     @inject(TYPES.MessageQueue) messageQueue: MessageQueue,
     @inject(TYPES.NotationService) notationService: NotationService,
-    @inject(TYPES.ApiConfig) config: ApiConfig
+    @inject(TYPES.ServicesConfig) config: ServicesConfig
   ) {
     this.logger = logger;
     this.messageQueue = messageQueue;

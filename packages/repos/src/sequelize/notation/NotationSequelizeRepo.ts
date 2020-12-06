@@ -1,10 +1,10 @@
 import { Connection, NotationConnectionArgs, NotFoundError, PagingType } from '@stringsync/common';
-import { NotationModel } from '@stringsync/db';
+import { Db, NotationModel } from '@stringsync/db';
 import { TYPES } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
 import { inject, injectable } from 'inversify';
 import { get } from 'lodash';
-import { QueryTypes, Sequelize } from 'sequelize';
+import { QueryTypes } from 'sequelize';
 import {
   camelCaseKeys,
   findNotationPageMaxQuery,
@@ -19,14 +19,11 @@ export class NotationSequelizeRepo implements NotationRepo {
   static pager = new Pager<Notation>(10, 'notation');
 
   notationLoader: NotationLoader;
-  sequelize: Sequelize;
+  db: Db;
 
-  constructor(
-    @inject(TYPES.NotationLoader) notationLoader: NotationLoader,
-    @inject(TYPES.Sequelize) sequelize: Sequelize
-  ) {
+  constructor(@inject(TYPES.NotationLoader) notationLoader: NotationLoader, @inject(TYPES.Db) db: Db) {
     this.notationLoader = notationLoader;
-    this.sequelize = sequelize;
+    this.db = db;
   }
 
   async findAllByTranscriberId(transcriberId: string): Promise<Notation[]> {
@@ -83,9 +80,9 @@ export class NotationSequelizeRepo implements NotationRepo {
       const queryArgs = { cursor, pagingType, limit, query, tagIds };
 
       const [entityRows, minRows, maxRows] = await Promise.all([
-        this.sequelize.query(findNotationPageQuery(queryArgs), { type: QueryTypes.SELECT }),
-        this.sequelize.query(findNotationPageMinQuery(queryArgs), { type: QueryTypes.SELECT }),
-        this.sequelize.query(findNotationPageMaxQuery(queryArgs), { type: QueryTypes.SELECT }),
+        this.db.sequelize.query(findNotationPageQuery(queryArgs), { type: QueryTypes.SELECT }),
+        this.db.sequelize.query(findNotationPageMinQuery(queryArgs), { type: QueryTypes.SELECT }),
+        this.db.sequelize.query(findNotationPageMaxQuery(queryArgs), { type: QueryTypes.SELECT }),
       ]);
 
       const entities = camelCaseKeys(entityRows) as Notation[];

@@ -1,31 +1,27 @@
 import { Connection, NotationConnectionArgs } from '@stringsync/common';
-import { ApiConfig } from '@stringsync/config';
-import { Db } from '@stringsync/db';
 import { TYPES } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
 import { NotationRepo } from '@stringsync/repos';
 import { BlobStorage } from '@stringsync/util';
 import { inject, injectable } from 'inversify';
 import path from 'path';
+import { ServicesConfig } from '../config';
 import { TaggingService } from '../Tagging';
 import { CreateArgs } from './types';
 
 @injectable()
 export class NotationService {
-  db: Db;
   taggingService: TaggingService;
   notationRepo: NotationRepo;
   blobStorage: BlobStorage;
-  config: ApiConfig;
+  config: ServicesConfig;
 
   constructor(
-    @inject(TYPES.Db) db: Db,
     @inject(TYPES.TaggingService) taggingService: TaggingService,
     @inject(TYPES.NotationRepo) notationRepo: NotationRepo,
     @inject(TYPES.BlobStorage) blobStorage: BlobStorage,
-    @inject(TYPES.ApiConfig) config: ApiConfig
+    @inject(TYPES.ServicesConfig) config: ServicesConfig
   ) {
-    this.db = db;
     this.taggingService = taggingService;
     this.notationRepo = notationRepo;
     this.blobStorage = blobStorage;

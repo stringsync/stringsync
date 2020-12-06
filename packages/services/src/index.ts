@@ -1,4 +1,5 @@
 export * from './Auth';
+export * from './di';
 export * from './HealthChecker';
 export * from './Notation';
 export * from './Notification';

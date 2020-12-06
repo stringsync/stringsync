@@ -1,9 +1,9 @@
-import { ApiConfig } from '@stringsync/config';
 import { TYPES } from '@stringsync/di';
 import { VideoUrlService } from '@stringsync/services';
 import { Logger } from '@stringsync/util';
 import { Queue, QueueScheduler, Worker } from 'bullmq';
 import { inject, injectable } from 'inversify';
+import { JobsConfig } from './config';
 import { Job } from './Job';
 import { JobName } from './types';
 
@@ -11,12 +11,12 @@ import { JobName } from './types';
 export class AssociateVideoUrlJob extends Job {
   videoUrlService: VideoUrlService;
   logger: Logger;
-  config: ApiConfig;
+  config: JobsConfig;
 
   constructor(
     @inject(TYPES.VideoUrlService) videoUrlService: VideoUrlService,
     @inject(TYPES.Logger) logger: Logger,
-    @inject(TYPES.ApiConfig) config: ApiConfig
+    @inject(TYPES.JobsConfig) config: JobsConfig
   ) {
     super();
 

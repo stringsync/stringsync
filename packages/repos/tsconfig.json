@@ -5,5 +5,11 @@
     "outDir": "dist"
   },
   "include": ["src"],
-  "references": [{ "path": "../common" }, { "path": "../db" }, { "path": "../di" }, { "path": "../domain" }]
+  "references": [
+    { "path": "../common" },
+    { "path": "../config" },
+    { "path": "../db" },
+    { "path": "../di" },
+    { "path": "../domain" }
+  ]
 }

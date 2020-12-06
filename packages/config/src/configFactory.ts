@@ -1,6 +1,10 @@
-import { ConfigGetter, ConfigKind, ConfigSpec } from './types';
+import { ConfigGetter, ConfigKind, ConfigMapping } from './types';
 
-class ConfigError extends Error {}
+class ConfigError extends Error {
+  constructor(messages: string[]) {
+    super(messages.join('\n'));
+  }
+}
 
 const toHumanReadable = (kind: ConfigKind): string => {
   switch (kind) {
@@ -36,26 +40,31 @@ const cast = (val: string, kind: ConfigKind) => {
   }
 };
 
-export const configFactory = <S extends ConfigSpec>(spec: S): ConfigGetter<S> => (env = process.env) => {
+export const configFactory = <M extends ConfigMapping>(mapping: M): ConfigGetter<M> => (env = process.env) => {
   // any typecast is workaround to avoid indexing issue with Config<S>
   const config = {} as any;
+  const messages = new Array<string>();
 
-  for (const [key, { kind, nullable }] of Object.entries(spec)) {
+  for (const [key, { kind, nullable }] of Object.entries(mapping)) {
     const val = env[key];
     if (typeof val === 'undefined') {
       if (nullable) {
         config[key] = null;
-        continue;
       } else {
-        throw new ConfigError(`expected ${key} to be defined as '${toHumanReadable(kind)}', got: ${val}`);
+        messages.push(`expected ${key} to be defined as '${toHumanReadable(kind)}', got: ${val}`);
       }
+      continue;
     }
 
     try {
       config[key] = cast(val, kind);
     } catch (e) {
-      throw new ConfigError(`expected ${key} to be defined as '${toHumanReadable(kind)}', got: ${val}`);
+      messages.push(`expected ${key} to be defined as '${toHumanReadable(kind)}', got: ${val}`);
     }
+  }
+
+  if (messages.length > 0) {
+    throw new ConfigError(messages);
   }
 
   return config;
