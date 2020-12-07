@@ -27,6 +27,7 @@ export default class Productionize extends Command {
         const json = JSON.parse(input);
         json['main'] = PACKAGE_JSON_MAIN;
         const output = JSON.stringify(json, null, 2);
+        fs.writeFileSync(file, output);
       });
   }
 }
