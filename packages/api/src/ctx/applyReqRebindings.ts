@@ -1,24 +1,23 @@
-import { Ctor } from '@stringsync/common';
+import { ctor } from '@stringsync/common';
 import { Container, TYPES } from '@stringsync/di';
 import { NotationLoader, TagLoader, UserLoader } from '@stringsync/repos';
 
 export const applyReqRebindings = (container: Container) => {
-  const UserLoaderCtor = container.get<Ctor<UserLoader>>(TYPES.UserLoaderCtor);
-  const NotationLoaderCtor = container.get<Ctor<NotationLoader>>(TYPES.NotationLoaderCtor);
-  const TagLoaderCtor = container.get<Ctor<TagLoader>>(TYPES.TagLoaderCtor);
-
+  const userLoader = container.get<UserLoader>(TYPES.UserLoader);
   container
     .rebind(TYPES.UserLoader)
-    .to(UserLoaderCtor)
+    .to(ctor(userLoader))
     .inSingletonScope();
 
+  const notationLoader = container.get<NotationLoader>(TYPES.NotationLoader);
   container
     .rebind(TYPES.NotationLoader)
-    .to(NotationLoaderCtor)
+    .to(ctor(notationLoader))
     .inSingletonScope();
 
+  const tagLoader = container.get<TagLoader>(TYPES.TagLoader);
   container
     .rebind(TYPES.TagLoader)
-    .to(TagLoaderCtor)
+    .to(ctor(tagLoader))
     .inSingletonScope();
 };
