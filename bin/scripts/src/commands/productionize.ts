@@ -15,10 +15,9 @@ export default class Productionize extends Command {
   };
 
   async run() {
-    const { flags } = this.parse(Productionize);
+    this.parse(Productionize);
 
-    const files = fs
-      .readdirSync(PACKAGES_PATH, { withFileTypes: true })
+    fs.readdirSync(PACKAGES_PATH, { withFileTypes: true })
       .filter((src) => src.isDirectory())
       .map((dir) => path.join(PACKAGES_PATH, dir.name, 'package.json'))
       .filter((file) => fs.existsSync(file))
