@@ -13,10 +13,10 @@ services:
     image: redis:5.0
 
   api:
-    image: stringsync:latest
+    image: stringsync-dev:latest
     build:
       context: ../
-      dockerfile: ./docker/Dockerfile
+      dockerfile: ./docker/Dockerfile.dev
     env_file:
       - ../env/dev.env
       - ../env/secrets.env
@@ -30,10 +30,10 @@ services:
     command: ['yarn', 'api', 'dev']
 
   jobs:
-    image: stringsync:latest
+    image: stringsync-dev:latest
     build:
       context: ../
-      dockerfile: ./docker/Dockerfile
+      dockerfile: ./docker/Dockerfile.dev
     env_file:
       - ../env/dev.env
       - ../env/secrets.env
@@ -48,7 +48,7 @@ services:
     image: stringsync:latest
     build:
       context: ../
-      dockerfile: ./docker/Dockerfile
+      dockerfile: ./docker/Dockerfile.dev
     env_file:
       - ../env/dev.env
     volumes:

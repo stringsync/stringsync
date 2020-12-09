@@ -5,7 +5,7 @@ services:
     image: stringsync:latest
     build:
       context: ../
-      dockerfile: ./Dockerfile
+      dockerfile: ./docker/Dockerfile.dev
     env_file:
       - ../env/web.test.env
     volumes:

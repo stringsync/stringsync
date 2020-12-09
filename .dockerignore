@@ -6,6 +6,5 @@ web
 e2e
 .vscode
 .devcontainer
-bin
 dst
 .DS_STORE
