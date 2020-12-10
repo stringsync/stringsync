@@ -4,7 +4,7 @@ import { Notation } from '@stringsync/domain';
 import { NotationRepo } from '@stringsync/repos';
 import { BlobStorage } from '@stringsync/util';
 import path from 'path';
-import { ServicesConfig } from '../config';
+import { ServicesConfig } from '../SERVICES';
 import { TaggingService } from '../Tagging';
 import { CreateArgs } from './types';
 

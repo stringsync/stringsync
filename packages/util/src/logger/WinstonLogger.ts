@@ -1,7 +1,10 @@
-import { inject, injectable, TYPES } from '@stringsync/di';
+import { inject, injectable } from '@stringsync/di';
 import winston from 'winston';
 import { UtilConfig } from '../config';
+import { UTIL } from '../UTIL';
 import { Logger } from './types';
+
+const TYPES = { ...UTIL.TYPES };
 
 @injectable()
 export class WinstonLogger implements Logger {

@@ -1,8 +1,11 @@
-import { inject, injectable, TYPES } from '@stringsync/di';
+import { inject, injectable } from '@stringsync/di';
 import { createClient, RedisClient } from 'redis';
 import { UtilConfig } from '../config';
 import { Logger } from '../logger';
+import { UTIL } from '../UTIL';
 import { Cache } from './types';
+
+const TYPES = { ...UTIL.TYPES };
 
 @injectable()
 export class RedisCache implements Cache {

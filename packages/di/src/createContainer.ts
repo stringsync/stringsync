@@ -1,22 +1,29 @@
-import { AsyncContainerModule, Container, ContainerModule } from 'inversify';
-import { Mod } from './types';
+import { AsyncContainerModule, Container } from 'inversify';
+import { Bindings, Pkg } from './types';
 
-const isContainerModule = (module: Mod): module is ContainerModule => {
-  return module instanceof ContainerModule;
+const getBindings = (pkgs: Pkg<any>[], seen = new Set<string>()): Bindings[] => {
+  let bindings = new Array<Bindings>();
+  for (const pkg of pkgs) {
+    if (seen.has(pkg.name)) {
+      continue;
+    }
+    seen.add(pkg.name);
+    bindings.push(pkg.bindings);
+    for (const dep of pkg.deps) {
+      if (!seen.has(pkg.name)) {
+        bindings = [...bindings, ...getBindings([dep], seen)];
+      }
+    }
+  }
+  return bindings;
 };
 
-const isAsyncContainerModule = (module: Mod): module is AsyncContainerModule => {
-  return module instanceof AsyncContainerModule;
-};
-
-export const containerFactory = (...mods: Mod[]) => async () => {
+export const createContainer = async (...pkgs: Pkg<any>[]) => {
   const container = new Container();
 
-  const syncMods = mods.filter(isContainerModule);
-  container.load(...syncMods);
-
-  const asyncMods = mods.filter(isAsyncContainerModule);
-  await container.loadAsync(...asyncMods);
+  const bindings = getBindings(pkgs);
+  const mods = bindings.map((binding) => new AsyncContainerModule(binding));
+  await container.loadAsync(...mods);
 
   return container;
 };

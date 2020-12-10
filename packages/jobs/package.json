@@ -11,10 +11,8 @@
   "dependencies": {
     "@stringsync/config": "1.0.0",
     "@stringsync/di": "1.0.0",
-    "@stringsync/db": "1.0.0",
     "@stringsync/util": "1.0.0",
     "@stringsync/services": "1.0.0",
-    "@stringsync/repos": "1.0.0",
     "bullmq": "^1.10.0"
   }
 }

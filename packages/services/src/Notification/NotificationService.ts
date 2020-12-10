@@ -2,7 +2,7 @@ import { inject, injectable, TYPES } from '@stringsync/di';
 import { User } from '@stringsync/domain';
 import { Mailer } from '@stringsync/util';
 import url from 'url';
-import { ServicesConfig } from '../config';
+import { ServicesConfig } from '../SERVICES';
 
 @injectable()
 export class NotificationService {

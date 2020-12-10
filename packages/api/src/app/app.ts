@@ -4,7 +4,7 @@ import cors from 'cors';
 import express from 'express';
 import { GraphQLSchema } from 'graphql';
 import { graphqlUploadExpress } from 'graphql-upload';
-import { ApiConfig } from '../config';
+import { ApiConfig } from '../API';
 import { HealthController } from './controllers';
 import { withGraphQL, withSession } from './middlewares';
 import { withLogging } from './middlewares/withLogging';

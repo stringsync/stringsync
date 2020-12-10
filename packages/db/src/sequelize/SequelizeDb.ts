@@ -2,7 +2,7 @@ import { inject, injectable, TYPES } from '@stringsync/di';
 import { Logger } from '@stringsync/util';
 import { createNamespace, getNamespace } from 'cls-hooked';
 import { Sequelize } from 'sequelize';
-import { DbConfig } from '../config';
+import { DbConfig } from '../DB';
 import { Db } from '../types';
 import { NotationModel, TaggingModel, TagModel, UserModel } from './models';
 

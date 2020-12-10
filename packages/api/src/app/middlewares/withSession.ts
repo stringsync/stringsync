@@ -4,7 +4,7 @@ import connectRedis from 'connect-redis';
 import { Handler } from 'express';
 import session from 'express-session';
 import * as uuid from 'uuid';
-import { ApiConfig } from '../../config';
+import { ApiConfig } from '../../API';
 
 const MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
 

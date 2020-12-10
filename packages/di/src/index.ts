@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 
-export { AsyncContainerModule as AsyncMod, Container, ContainerModule as SyncMod, inject, injectable } from 'inversify';
-export * from './constants';
+export { Container, inject, injectable } from 'inversify';
 export * from './createContainer';
 export * from './types';

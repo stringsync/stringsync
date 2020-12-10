@@ -2,8 +2,8 @@ import { inject, injectable, TYPES } from '@stringsync/di';
 import { VideoUrlService } from '@stringsync/services';
 import { Logger } from '@stringsync/util';
 import { Queue, QueueScheduler, Worker } from 'bullmq';
-import { JobsConfig } from './config';
 import { Job } from './Job';
+import { JobsConfig } from './JOBS';
 import { JobName } from './types';
 
 @injectable()

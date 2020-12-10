@@ -1,10 +1,10 @@
 import { TYPES } from '@stringsync/di';
 import { Logger } from '@stringsync/util';
 import { AssociateVideoUrlJob } from './AssociateVideoUrlJob';
-import { createJobsContainer } from './di';
+import { createJobsContainer } from './JOBS';
 
 export * from './AssociateVideoUrlJob';
-export * from './di';
+export * from './JOBS';
 export * from './types';
 
 const main = async () => {

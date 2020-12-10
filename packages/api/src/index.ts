@@ -1,8 +1,7 @@
 import { TYPES } from '@stringsync/di';
 import { Logger } from '@stringsync/util';
+import { ApiConfig, createApiContainer } from './API';
 import { app } from './app';
-import { ApiConfig } from './config';
-import { createApiContainer } from './di';
 import { generateSchema } from './schema';
 
 export * from './app';
