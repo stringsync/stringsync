@@ -1,1 +1,1 @@
-export type Project = 'main' | 'e2e' | 'server' | 'web' | 'test';
+export type Project = 'main' | 'e2e' | 'api' | 'web';

@@ -15,8 +15,7 @@ export default class Test extends Command {
     {
       name: 'project',
       required: true,
-      default: 'server',
-      options: ['server', 'web'],
+      options: ['api', 'web'],
     },
     { name: 'cmd', required: false },
   ];

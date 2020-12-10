@@ -6,8 +6,8 @@ export const getDockerComposeFile = (project: Project): string => {
       return 'docker-compose.yml';
     case 'e2e':
       return 'docker-compose.e2e.yml';
-    case 'server':
-      return 'docker-compose.server.test.yml';
+    case 'api':
+      return 'docker-compose.api.test.yml';
     case 'web':
       return 'docker-compose.web.test.yml';
     default:
