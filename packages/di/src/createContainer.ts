@@ -1,27 +1,23 @@
 import { AsyncContainerModule, Container } from 'inversify';
 import { Bindings, Pkg } from './types';
 
-const getBindings = (pkgs: Pkg<any>[], seen = new Set<string>()): Bindings[] => {
+const getBindings = (pkg: Pkg, seen = new Set<string>()): Bindings[] => {
   let bindings = new Array<Bindings>();
-  for (const pkg of pkgs) {
-    if (seen.has(pkg.name)) {
-      continue;
-    }
-    seen.add(pkg.name);
-    bindings.push(pkg.bindings);
-    for (const dep of pkg.deps) {
-      if (!seen.has(pkg.name)) {
-        bindings = [...bindings, ...getBindings([dep], seen)];
-      }
+  seen.add(pkg.name);
+  bindings.push(pkg.bindings);
+  for (const dep of pkg.deps) {
+    if (!seen.has(dep.name)) {
+      bindings = [...bindings, ...getBindings(dep, seen)];
     }
   }
+
   return bindings;
 };
 
-export const createContainer = async (...pkgs: Pkg<any>[]) => {
+export const createContainer = async (pkg: Pkg) => {
   const container = new Container();
 
-  const bindings = getBindings(pkgs);
+  const bindings = getBindings(pkg);
   const mods = bindings.map((binding) => new AsyncContainerModule(binding));
   await container.loadAsync(...mods);
 

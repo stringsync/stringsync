@@ -1,17 +1,15 @@
 import { inject, injectable } from '@stringsync/di';
 import winston from 'winston';
 import { UtilConfig } from '../config';
-import { UTIL } from '../UTIL';
+import { UTIL_TYPES } from '../UTIL_TYPES';
 import { Logger } from './types';
-
-const TYPES = { ...UTIL.TYPES };
 
 @injectable()
 export class WinstonLogger implements Logger {
   logger: winston.Logger;
   config: UtilConfig;
 
-  constructor(@inject(TYPES.UtilConfig) config: UtilConfig) {
+  constructor(@inject(UTIL_TYPES.UtilConfig) config: UtilConfig) {
     this.logger = winston.createLogger({
       level: config.LOG_LEVEL,
       transports: [

@@ -1,5 +1,5 @@
 import { Connection, NotationConnectionArgs, NotFoundError, PagingType } from '@stringsync/common';
-import { Database, DB, NotationModel } from '@stringsync/db';
+import { Database, DB_TYPES, NotationModel } from '@stringsync/db';
 import { inject, injectable } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
 import { get } from 'lodash';
@@ -10,11 +10,9 @@ import {
   findNotationPageMinQuery,
   findNotationPageQuery,
 } from '../../queries';
-import { REPOS } from '../../REPOS';
+import { REPOS_TYPES } from '../../REPOS_TYPES';
 import { NotationLoader, NotationRepo } from '../../types';
 import { Pager, PagingCtx } from '../../util';
-
-const TYPES = { ...REPOS.TYPES, ...DB.TYPES };
 
 @injectable()
 export class NotationSequelizeRepo implements NotationRepo {
@@ -23,7 +21,10 @@ export class NotationSequelizeRepo implements NotationRepo {
   notationLoader: NotationLoader;
   db: Database;
 
-  constructor(@inject(TYPES.NotationLoader) notationLoader: NotationLoader, @inject(TYPES.Database) db: Database) {
+  constructor(
+    @inject(REPOS_TYPES.NotationLoader) notationLoader: NotationLoader,
+    @inject(DB_TYPES.Database) db: Database
+  ) {
     this.notationLoader = notationLoader;
     this.db = db;
   }

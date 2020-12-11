@@ -1,14 +1,13 @@
 import { Connection, NotationConnectionArgs } from '@stringsync/common';
 import { inject, injectable } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
-import { NotationRepo, REPOS } from '@stringsync/repos';
-import { BlobStorage, UTIL } from '@stringsync/util';
+import { NotationRepo, REPOS_TYPES } from '@stringsync/repos';
+import { BlobStorage, UTIL_TYPES } from '@stringsync/util';
 import path from 'path';
-import { SERVICES, ServicesConfig } from '../SERVICES';
+import { ServicesConfig } from '../SERVICES_CONFIG';
+import { SERVICES_TYPES } from '../SERVICES_TYPES';
 import { TaggingService } from '../Tagging';
 import { CreateArgs } from './types';
-
-const TYPES = { ...SERVICES.TYPES, ...REPOS.TYPES, ...UTIL.TYPES };
 
 @injectable()
 export class NotationService {
@@ -18,10 +17,10 @@ export class NotationService {
   config: ServicesConfig;
 
   constructor(
-    @inject(TYPES.TaggingService) taggingService: TaggingService,
-    @inject(TYPES.NotationRepo) notationRepo: NotationRepo,
-    @inject(TYPES.BlobStorage) blobStorage: BlobStorage,
-    @inject(TYPES.ServicesConfig) config: ServicesConfig
+    @inject(SERVICES_TYPES.TaggingService) taggingService: TaggingService,
+    @inject(SERVICES_TYPES.ServicesConfig) config: ServicesConfig,
+    @inject(REPOS_TYPES.NotationRepo) notationRepo: NotationRepo,
+    @inject(UTIL_TYPES.BlobStorage) blobStorage: BlobStorage
   ) {
     this.taggingService = taggingService;
     this.notationRepo = notationRepo;

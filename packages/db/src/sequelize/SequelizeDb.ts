@@ -1,12 +1,11 @@
 import { inject, injectable } from '@stringsync/di';
-import { Logger, UTIL } from '@stringsync/util';
+import { Logger, UTIL_TYPES } from '@stringsync/util';
 import { createNamespace, getNamespace } from 'cls-hooked';
 import { Sequelize } from 'sequelize';
-import { DB, DbConfig } from '../DB';
+import { DbConfig } from '../DB_CONFIG';
+import { DB_TYPES } from '../DB_TYPES';
 import { Database } from '../types';
 import { NotationModel, TaggingModel, TagModel, UserModel } from './models';
-
-const TYPES = { ...DB.TYPES, ...UTIL.TYPES };
 
 @injectable()
 export class SequelizeDb implements Database {
@@ -23,7 +22,7 @@ export class SequelizeDb implements Database {
   logger: Logger;
   config: DbConfig;
 
-  constructor(@inject(TYPES.Logger) logger: Logger, @inject(TYPES.DbConfig) config: DbConfig) {
+  constructor(@inject(UTIL_TYPES.Logger) logger: Logger, @inject(DB_TYPES.DbConfig) config: DbConfig) {
     if (config.NODE_ENV === 'test') {
       SequelizeDb.hackClsNamespace();
     }

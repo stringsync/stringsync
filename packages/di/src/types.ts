@@ -2,9 +2,8 @@ import { interfaces } from 'inversify';
 
 export type Bindings = (bind: interfaces.Bind) => Promise<void>;
 
-export type Pkg<T extends Record<string, symbol>> = {
-  TYPES: T;
+export type Pkg = {
   name: string;
-  deps: Pkg<any>[];
+  deps: Pkg[];
   bindings: Bindings;
 };

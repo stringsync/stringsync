@@ -1,15 +1,13 @@
 import { inject, injectable } from '@stringsync/di';
-import { HealthCheckerService, SERVICES } from '@stringsync/services';
+import { HealthCheckerService, SERVICES_TYPES } from '@stringsync/services';
 import { RequestHandler } from 'express';
 import { Controller } from './types';
-
-const TYPES = { ...SERVICES.TYPES };
 
 @injectable()
 export class HealthController implements Controller {
   healthCheckerService: HealthCheckerService;
 
-  constructor(@inject(TYPES.HealthCheckerService) healthCheckerService: HealthCheckerService) {
+  constructor(@inject(SERVICES_TYPES.HealthCheckerService) healthCheckerService: HealthCheckerService) {
     this.healthCheckerService = healthCheckerService;
   }
 

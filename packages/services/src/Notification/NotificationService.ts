@@ -1,10 +1,9 @@
 import { inject, injectable } from '@stringsync/di';
 import { User } from '@stringsync/domain';
-import { Mailer, UTIL } from '@stringsync/util';
+import { Mailer, UTIL_TYPES } from '@stringsync/util';
 import url from 'url';
-import { SERVICES, ServicesConfig } from '../SERVICES';
-
-const TYPES = { ...SERVICES.TYPES, ...UTIL.TYPES };
+import { ServicesConfig } from '../SERVICES_CONFIG';
+import { SERVICES_TYPES } from '../SERVICES_TYPES';
 
 @injectable()
 export class NotificationService {
@@ -13,7 +12,10 @@ export class NotificationService {
   mailer: Mailer;
   config: ServicesConfig;
 
-  constructor(@inject(TYPES.Mailer) mailer: Mailer, @inject(TYPES.ServicesConfig) config: ServicesConfig) {
+  constructor(
+    @inject(SERVICES_TYPES.ServicesConfig) config: ServicesConfig,
+    @inject(UTIL_TYPES.Mailer) mailer: Mailer
+  ) {
     this.mailer = mailer;
     this.config = config;
   }

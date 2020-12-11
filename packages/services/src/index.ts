@@ -3,6 +3,8 @@ export * from './HealthChecker';
 export * from './Notation';
 export * from './Notification';
 export * from './SERVICES';
+export * from './SERVICES_CONFIG';
+export * from './SERVICES_TYPES';
 export * from './Tag';
 export * from './Tagging';
 export * from './User';

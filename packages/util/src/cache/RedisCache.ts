@@ -2,17 +2,15 @@ import { inject, injectable } from '@stringsync/di';
 import { createClient, RedisClient } from 'redis';
 import { UtilConfig } from '../config';
 import { Logger } from '../logger';
-import { UTIL } from '../UTIL';
+import { UTIL_TYPES } from '../UTIL_TYPES';
 import { Cache } from './types';
-
-const TYPES = { ...UTIL.TYPES };
 
 @injectable()
 export class RedisCache implements Cache {
   logger: Logger;
   redis: RedisClient;
 
-  constructor(@inject(TYPES.Logger) logger: Logger, @inject(TYPES.UtilConfig) config: UtilConfig) {
+  constructor(@inject(UTIL_TYPES.Logger) logger: Logger, @inject(UTIL_TYPES.UtilConfig) config: UtilConfig) {
     this.logger = logger;
     this.redis = createClient({ host: config.REDIS_HOST, port: config.REDIS_PORT });
   }

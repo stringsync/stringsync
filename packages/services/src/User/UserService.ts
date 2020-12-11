@@ -1,15 +1,13 @@
 import { Connection, ConnectionArgs } from '@stringsync/common';
 import { inject, injectable } from '@stringsync/di';
 import { User } from '@stringsync/domain';
-import { REPOS, UserRepo } from '@stringsync/repos';
-
-const TYPES = { ...REPOS.TYPES };
+import { REPOS_TYPES, UserRepo } from '@stringsync/repos';
 
 @injectable()
 export class UserService {
   userRepo: UserRepo;
 
-  constructor(@inject(TYPES.UserRepo) userRepo: UserRepo) {
+  constructor(@inject(REPOS_TYPES.UserRepo) userRepo: UserRepo) {
     this.userRepo = userRepo;
   }
 

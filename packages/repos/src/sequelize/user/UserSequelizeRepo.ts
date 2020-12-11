@@ -3,11 +3,9 @@ import { UserModel } from '@stringsync/db';
 import { inject, injectable } from '@stringsync/di';
 import { User } from '@stringsync/domain';
 import { Op } from 'sequelize';
-import { REPOS } from '../../REPOS';
+import { REPOS_TYPES } from '../../REPOS_TYPES';
 import { UserLoader, UserRepo } from '../../types';
 import { Pager, PagingCtx } from '../../util';
-
-const TYPES = { ...REPOS.TYPES };
 
 @injectable()
 export class UserSequelizeRepo implements UserRepo {
@@ -15,7 +13,7 @@ export class UserSequelizeRepo implements UserRepo {
 
   userLoader: UserLoader;
 
-  constructor(@inject(TYPES.UserLoader) userLoader: UserLoader) {
+  constructor(@inject(REPOS_TYPES.UserLoader) userLoader: UserLoader) {
     this.userLoader = userLoader;
   }
 

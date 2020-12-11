@@ -1,7 +1,7 @@
 import { AuthRequirement, BadRequestError, Connection } from '@stringsync/common';
 import { inject, injectable } from '@stringsync/di';
 import { User } from '@stringsync/domain';
-import { SERVICES, UserService } from '@stringsync/services';
+import { SERVICES_TYPES, UserService } from '@stringsync/services';
 import { pick } from 'lodash';
 import { Arg, Args, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { ReqCtx } from '../../../ctx';
@@ -12,14 +12,12 @@ import { UserConnectionArgs } from './UserConnectionArgs';
 import { UserConnectionObject } from './UserConnectionObject';
 import { UserObject } from './UserObject';
 
-const TYPES = { ...SERVICES.TYPES };
-
 @Resolver()
 @injectable()
 export class UserResolver {
   userService: UserService;
 
-  constructor(@inject(TYPES.UserService) userService: UserService) {
+  constructor(@inject(SERVICES_TYPES.UserService) userService: UserService) {
     this.userService = userService;
   }
 

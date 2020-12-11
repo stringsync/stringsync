@@ -1,8 +1,8 @@
 import { AuthRequirement, ForbiddenError } from '@stringsync/common';
 import { inject, injectable } from '@stringsync/di';
 import { User } from '@stringsync/domain';
-import { AuthService, NotificationService, SERVICES } from '@stringsync/services';
-import { Logger, UTIL } from '@stringsync/util';
+import { AuthService, NotificationService, SERVICES_TYPES } from '@stringsync/services';
+import { Logger, UTIL_TYPES } from '@stringsync/util';
 import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { ReqCtx } from '../../../ctx';
 import { WithAuthRequirement } from '../../middlewares';
@@ -13,8 +13,6 @@ import { ResetPasswordInput } from './ResetPasswordInput';
 import { SendResetPasswordEmailInput } from './SendResetPasswordEmailInput';
 import { SignupInput } from './SignupInput';
 
-const TYPES = { ...UTIL.TYPES, ...SERVICES.TYPES };
-
 @Resolver()
 @injectable()
 export class AuthResolver {
@@ -23,9 +21,9 @@ export class AuthResolver {
   notificationService: NotificationService;
 
   constructor(
-    @inject(TYPES.Logger) logger: Logger,
-    @inject(TYPES.AuthService) authService: AuthService,
-    @inject(TYPES.NotificationService) notificationService: NotificationService
+    @inject(UTIL_TYPES.Logger) logger: Logger,
+    @inject(SERVICES_TYPES.AuthService) authService: AuthService,
+    @inject(SERVICES_TYPES.NotificationService) notificationService: NotificationService
   ) {
     this.logger = logger;
     this.authService = authService;

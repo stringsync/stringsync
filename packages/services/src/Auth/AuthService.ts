@@ -1,12 +1,10 @@
 import { BadRequestError, NotFoundError } from '@stringsync/common';
 import { inject, injectable } from '@stringsync/di';
 import { User, UserRole } from '@stringsync/domain';
-import { REPOS, UserRepo } from '@stringsync/repos';
+import { REPOS_TYPES, UserRepo } from '@stringsync/repos';
 import * as bcrypt from 'bcrypt';
 import * as uuid from 'uuid';
 import { SessionUser } from './types';
-
-const TYPES = { ...REPOS.TYPES };
 
 @injectable()
 export class AuthService {
@@ -20,7 +18,7 @@ export class AuthService {
 
   userRepo: UserRepo;
 
-  constructor(@inject(TYPES.UserRepo) userRepo: UserRepo) {
+  constructor(@inject(REPOS_TYPES.UserRepo) userRepo: UserRepo) {
     this.userRepo = userRepo;
   }
 

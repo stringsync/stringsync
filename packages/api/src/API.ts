@@ -1,31 +1,17 @@
-import { APP_GRAPHQL_PORT, APP_SESSION_SECRET, APP_WEB_URI, configFactory, NODE_ENV } from '@stringsync/config';
 import { createContainer, Pkg } from '@stringsync/di';
 import { SERVICES } from '@stringsync/services';
 import { UTIL } from '@stringsync/util';
+import { ApiConfig, API_CONFIG } from './API_CONFIG';
+import { API_TYPES } from './API_TYPES';
 import { HealthController } from './app';
 import { AuthResolver, ExperimentResolver, NotationResolver, TagResolver, UserResolver } from './schema';
 
-export const API_CONFIG = configFactory({
-  NODE_ENV: NODE_ENV,
-  APP_GRAPHQL_PORT: APP_GRAPHQL_PORT,
-  APP_SESSION_SECRET: APP_SESSION_SECRET,
-  APP_WEB_URI: APP_WEB_URI,
-});
-
-export type ApiConfig = ReturnType<typeof API_CONFIG>;
-
-export const TYPES = {
-  ApiConfig: Symbol('ApiConfig'),
-  HealthController: Symbol('HealthController'),
-};
-
-export const API: Pkg<typeof TYPES> = {
+export const API: Pkg = {
   name: 'API',
-  TYPES,
   deps: [UTIL, SERVICES],
   bindings: async (bind) => {
     const config = API_CONFIG();
-    bind<ApiConfig>(TYPES.ApiConfig).toConstantValue(config);
+    bind<ApiConfig>(API_TYPES.ApiConfig).toConstantValue(config);
 
     bind<AuthResolver>(AuthResolver)
       .toSelf()
@@ -43,7 +29,7 @@ export const API: Pkg<typeof TYPES> = {
       .toSelf()
       .inSingletonScope();
 
-    bind<HealthController>(TYPES.HealthController).to(HealthController);
+    bind<HealthController>(API_TYPES.HealthController).to(HealthController);
   },
 };
 

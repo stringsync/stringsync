@@ -1,8 +1,8 @@
 import { AuthRequirement, Connection } from '@stringsync/common';
 import { inject, injectable } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
-import { NotationService, SERVICES } from '@stringsync/services';
-import { BlobStorage, Logger, UTIL } from '@stringsync/util';
+import { NotationService, SERVICES_TYPES } from '@stringsync/services';
+import { BlobStorage, Logger, UTIL_TYPES } from '@stringsync/util';
 import { Arg, Args, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { NotationObject } from '.';
 import { ReqCtx } from '../../../ctx';
@@ -12,8 +12,6 @@ import { NotationArgs } from './NotationArgs';
 import { NotationConnectionArgs } from './NotationConnectionArgs';
 import { NotationConnectionObject } from './NotationConnectionObject';
 
-const TYPES = { ...SERVICES.TYPES, ...UTIL.TYPES };
-
 @Resolver()
 @injectable()
 export class NotationResolver {
@@ -22,9 +20,9 @@ export class NotationResolver {
   logger: Logger;
 
   constructor(
-    @inject(TYPES.NotationService) notationService: NotationService,
-    @inject(TYPES.BlobStorage) blobStorage: BlobStorage,
-    @inject(TYPES.Logger) logger: Logger
+    @inject(SERVICES_TYPES.NotationService) notationService: NotationService,
+    @inject(UTIL_TYPES.BlobStorage) blobStorage: BlobStorage,
+    @inject(UTIL_TYPES.Logger) logger: Logger
   ) {
     this.notationService = notationService;
     this.blobStorage = blobStorage;

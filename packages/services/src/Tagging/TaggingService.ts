@@ -1,14 +1,12 @@
 import { inject, injectable } from '@stringsync/di';
 import { Tagging } from '@stringsync/domain';
-import { REPOS, TaggingRepo } from '@stringsync/repos';
-
-const TYPES = { ...REPOS.TYPES };
+import { REPOS_TYPES, TaggingRepo } from '@stringsync/repos';
 
 @injectable()
 export class TaggingService {
   taggingRepo: TaggingRepo;
 
-  constructor(@inject(TYPES.TaggingRepo) taggingRepo: TaggingRepo) {
+  constructor(@inject(REPOS_TYPES.TaggingRepo) taggingRepo: TaggingRepo) {
     this.taggingRepo = taggingRepo;
   }
 

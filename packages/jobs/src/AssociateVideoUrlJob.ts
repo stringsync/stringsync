@@ -1,12 +1,11 @@
 import { inject, injectable } from '@stringsync/di';
-import { SERVICES, VideoUrlService } from '@stringsync/services';
-import { Logger, UTIL } from '@stringsync/util';
+import { SERVICES_TYPES, VideoUrlService } from '@stringsync/services';
+import { Logger, UTIL_TYPES } from '@stringsync/util';
 import { Queue, QueueScheduler, Worker } from 'bullmq';
 import { Job } from './Job';
-import { JOBS, JobsConfig } from './JOBS';
+import { JobsConfig } from './JOBS_CONFIG';
+import { JOBS_TYPES } from './JOBS_TYPES';
 import { JobName } from './types';
-
-const TYPES = { ...JOBS.TYPES, ...SERVICES.TYPES, ...UTIL.TYPES };
 
 @injectable()
 export class AssociateVideoUrlJob extends Job {
@@ -15,9 +14,9 @@ export class AssociateVideoUrlJob extends Job {
   config: JobsConfig;
 
   constructor(
-    @inject(TYPES.VideoUrlService) videoUrlService: VideoUrlService,
-    @inject(TYPES.Logger) logger: Logger,
-    @inject(TYPES.JobsConfig) config: JobsConfig
+    @inject(SERVICES_TYPES.VideoUrlService) videoUrlService: VideoUrlService,
+    @inject(UTIL_TYPES.Logger) logger: Logger,
+    @inject(JOBS_TYPES.JobsConfig) config: JobsConfig
   ) {
     super();
 
