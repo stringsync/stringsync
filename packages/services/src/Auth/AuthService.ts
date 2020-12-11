@@ -6,6 +6,8 @@ import * as bcrypt from 'bcrypt';
 import * as uuid from 'uuid';
 import { SessionUser } from './types';
 
+const TYPES = { ...REPOS_TYPES };
+
 @injectable()
 export class AuthService {
   static MAX_RESET_PASSWORD_TOKEN_AGE_MS = 86400 * 1000; // 1 day
@@ -16,11 +18,7 @@ export class AuthService {
     return await bcrypt.hash(password, AuthService.HASH_ROUNDS);
   }
 
-  userRepo: UserRepo;
-
-  constructor(@inject(REPOS_TYPES.UserRepo) userRepo: UserRepo) {
-    this.userRepo = userRepo;
-  }
+  constructor(@inject(TYPES.UserRepo) public userRepo: UserRepo) {}
 
   async getSessionUser(id: string): Promise<SessionUser> {
     const user = await this.userRepo.find(id);

@@ -13,22 +13,24 @@ import {
 } from './sequelize';
 import { NotationLoader, NotationRepo, TaggingRepo, TagLoader, TagRepo, UserLoader, UserRepo } from './types';
 
+const TYPES = { ...REPOS_TYPES };
+
 export const REPOS: Pkg = {
   name: 'REPOS',
   deps: [DB],
   bindings: async (bind) => {
     const config = REPOS_CONFIG();
-    bind<ReposConfig>(REPOS_TYPES.ReposConfig).toConstantValue(config);
+    bind<ReposConfig>(TYPES.ReposConfig).toConstantValue(config);
 
-    bind<UserLoader>(REPOS_TYPES.UserLoader).to(UserSequelizeLoader);
-    bind<UserRepo>(REPOS_TYPES.UserRepo).to(UserSequelizeRepo);
+    bind<UserLoader>(TYPES.UserLoader).to(UserSequelizeLoader);
+    bind<UserRepo>(TYPES.UserRepo).to(UserSequelizeRepo);
 
-    bind<NotationLoader>(REPOS_TYPES.NotationLoader).to(NotationSequelizeLoader);
-    bind<NotationRepo>(REPOS_TYPES.NotationRepo).to(NotationSequelizeRepo);
+    bind<NotationLoader>(TYPES.NotationLoader).to(NotationSequelizeLoader);
+    bind<NotationRepo>(TYPES.NotationRepo).to(NotationSequelizeRepo);
 
-    bind<TagLoader>(REPOS_TYPES.TagLoader).to(TagSequelizeLoader);
-    bind<TagRepo>(REPOS_TYPES.TagRepo).to(TagSequelizeRepo);
+    bind<TagLoader>(TYPES.TagLoader).to(TagSequelizeLoader);
+    bind<TagRepo>(TYPES.TagRepo).to(TagSequelizeRepo);
 
-    bind<TaggingRepo>(REPOS_TYPES.TaggingRepo).to(TaggingSequelizeRepo);
+    bind<TaggingRepo>(TYPES.TaggingRepo).to(TaggingSequelizeRepo);
   },
 };

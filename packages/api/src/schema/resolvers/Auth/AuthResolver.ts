@@ -13,22 +13,16 @@ import { ResetPasswordInput } from './ResetPasswordInput';
 import { SendResetPasswordEmailInput } from './SendResetPasswordEmailInput';
 import { SignupInput } from './SignupInput';
 
+const TYPES = { ...UTIL_TYPES, ...SERVICES_TYPES };
+
 @Resolver()
 @injectable()
 export class AuthResolver {
-  logger: Logger;
-  authService: AuthService;
-  notificationService: NotificationService;
-
   constructor(
-    @inject(UTIL_TYPES.Logger) logger: Logger,
-    @inject(SERVICES_TYPES.AuthService) authService: AuthService,
-    @inject(SERVICES_TYPES.NotificationService) notificationService: NotificationService
-  ) {
-    this.logger = logger;
-    this.authService = authService;
-    this.notificationService = notificationService;
-  }
+    @inject(TYPES.Logger) public logger: Logger,
+    @inject(TYPES.AuthService) public authService: AuthService,
+    @inject(TYPES.NotificationService) public notificationService: NotificationService
+  ) {}
 
   @Query((returns) => UserObject, { nullable: true })
   async whoami(@Ctx() ctx: ReqCtx): Promise<User | null> {

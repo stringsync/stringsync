@@ -12,6 +12,8 @@ import { NotationArgs } from './NotationArgs';
 import { NotationConnectionArgs } from './NotationConnectionArgs';
 import { NotationConnectionObject } from './NotationConnectionObject';
 
+const TYPES = { ...SERVICES_TYPES, ...UTIL_TYPES };
+
 @Resolver()
 @injectable()
 export class NotationResolver {
@@ -20,9 +22,9 @@ export class NotationResolver {
   logger: Logger;
 
   constructor(
-    @inject(SERVICES_TYPES.NotationService) notationService: NotationService,
-    @inject(UTIL_TYPES.BlobStorage) blobStorage: BlobStorage,
-    @inject(UTIL_TYPES.Logger) logger: Logger
+    @inject(TYPES.NotationService) notationService: NotationService,
+    @inject(TYPES.BlobStorage) blobStorage: BlobStorage,
+    @inject(TYPES.Logger) logger: Logger
   ) {
     this.notationService = notationService;
     this.blobStorage = blobStorage;

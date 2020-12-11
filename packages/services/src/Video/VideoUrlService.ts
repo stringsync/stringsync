@@ -5,24 +5,16 @@ import { NotationService } from '../Notation';
 import { ServicesConfig } from '../SERVICES_CONFIG';
 import { SERVICES_TYPES } from '../SERVICES_TYPES';
 
+const TYPES = { ...SERVICES_TYPES, ...UTIL_TYPES };
+
 @injectable()
 export class VideoUrlService {
-  logger: Logger;
-  messageQueue: MessageQueue;
-  notationService: NotationService;
-  config: ServicesConfig;
-
   constructor(
-    @inject(UTIL_TYPES.Logger) logger: Logger,
-    @inject(UTIL_TYPES.MessageQueue) messageQueue: MessageQueue,
-    @inject(SERVICES_TYPES.NotationService) notationService: NotationService,
-    @inject(SERVICES_TYPES.ServicesConfig) config: ServicesConfig
-  ) {
-    this.logger = logger;
-    this.messageQueue = messageQueue;
-    this.notationService = notationService;
-    this.config = config;
-  }
+    @inject(TYPES.Logger) public logger: Logger,
+    @inject(TYPES.MessageQueue) public messageQueue: MessageQueue,
+    @inject(TYPES.NotationService) public notationService: NotationService,
+    @inject(TYPES.ServicesConfig) public config: ServicesConfig
+  ) {}
 
   async processNextMessage(): Promise<void> {
     const queueName = this.config.SQS_VIDEO_QUEUE_URL;

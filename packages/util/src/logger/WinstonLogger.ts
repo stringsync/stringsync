@@ -4,12 +4,13 @@ import { UtilConfig } from '../config';
 import { UTIL_TYPES } from '../UTIL_TYPES';
 import { Logger } from './types';
 
+const TYPES = { ...UTIL_TYPES };
+
 @injectable()
 export class WinstonLogger implements Logger {
   logger: winston.Logger;
-  config: UtilConfig;
 
-  constructor(@inject(UTIL_TYPES.UtilConfig) config: UtilConfig) {
+  constructor(@inject(TYPES.UtilConfig) public config: UtilConfig) {
     this.logger = winston.createLogger({
       level: config.LOG_LEVEL,
       transports: [
@@ -18,7 +19,6 @@ export class WinstonLogger implements Logger {
         }),
       ],
     });
-    this.config = config;
   }
 
   error(msg: string) {

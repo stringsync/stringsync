@@ -7,11 +7,13 @@ import * as uuid from 'uuid';
 import { ApiConfig } from '../../API_CONFIG';
 import { API_TYPES } from '../../API_TYPES';
 
+const TYPES = { ...API_TYPES, ...UTIL_TYPES };
+
 const MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
 
 export const withSession = (container: Container): Handler => {
-  const config = container.get<ApiConfig>(API_TYPES.ApiConfig);
-  const cache = container.get<Cache>(UTIL_TYPES.Cache);
+  const config = container.get<ApiConfig>(TYPES.ApiConfig);
+  const cache = container.get<Cache>(TYPES.Cache);
 
   const RedisStore = connectRedis(session);
   const store = new RedisStore({ client: cache.redis });

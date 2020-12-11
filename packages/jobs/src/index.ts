@@ -9,11 +9,13 @@ export * from './JOBS_CONFIG';
 export * from './JOBS_TYPES';
 export * from './types';
 
+const TYPES = { ...UTIL_TYPES, ...JOBS_TYPES };
+
 const main = async () => {
   const container = await createJobsContainer();
-  const logger = container.get<Logger>(UTIL_TYPES.Logger);
+  const logger = container.get<Logger>(TYPES.Logger);
 
-  const updateVideoUrlJob = container.get<AssociateVideoUrlJob>(JOBS_TYPES.AssociateVideoUrlJob);
+  const updateVideoUrlJob = container.get<AssociateVideoUrlJob>(TYPES.AssociateVideoUrlJob);
   updateVideoUrlJob.setupQueue();
   updateVideoUrlJob.setupWorker();
   await updateVideoUrlJob.runForever();

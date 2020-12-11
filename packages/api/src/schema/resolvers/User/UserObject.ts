@@ -6,6 +6,8 @@ import { NotationObject } from './../Notation/NotationObject';
 import { IsDataOwner } from './IsDataOwner';
 import { RestrictedField } from './RestrictedField';
 
+const TYPES = { ...SERVICES_TYPES };
+
 registerEnumType(UserRole, { name: 'UserRoles' });
 
 @ObjectType()
@@ -42,7 +44,7 @@ export class UserObject implements PublicUser {
 
   @Field((type) => NotationObject, { nullable: true })
   async notations(@Root() user: User, @Ctx() ctx: ReqCtx): Promise<Notation[]> {
-    const notationService = ctx.container.get<NotationService>(SERVICES_TYPES.NotationService);
+    const notationService = ctx.container.get<NotationService>(TYPES.NotationService);
     return await notationService.findAllByTranscriberId(user.id);
   }
 }

@@ -12,14 +12,12 @@ import { UserConnectionArgs } from './UserConnectionArgs';
 import { UserConnectionObject } from './UserConnectionObject';
 import { UserObject } from './UserObject';
 
+const TYPES = { ...SERVICES_TYPES };
+
 @Resolver()
 @injectable()
 export class UserResolver {
-  userService: UserService;
-
-  constructor(@inject(SERVICES_TYPES.UserService) userService: UserService) {
-    this.userService = userService;
-  }
+  constructor(@inject(TYPES.UserService) public userService: UserService) {}
 
   @Query((returns) => UserObject, { nullable: true })
   async user(@Args() args: UserArgs): Promise<User | null> {

@@ -7,6 +7,8 @@ import { DB_TYPES } from '../DB_TYPES';
 import { Database } from '../types';
 import { NotationModel, TaggingModel, TagModel, UserModel } from './models';
 
+const TYPES = { ...UTIL_TYPES, ...DB_TYPES };
+
 @injectable()
 export class SequelizeDb implements Database {
   private static hackClsNamespace() {
@@ -18,11 +20,11 @@ export class SequelizeDb implements Database {
     p.namespaces.transaction = p.stringSyncTransactionNamespace;
   }
 
-  sequelize: Sequelize;
   logger: Logger;
   config: DbConfig;
+  sequelize: Sequelize;
 
-  constructor(@inject(UTIL_TYPES.Logger) logger: Logger, @inject(DB_TYPES.DbConfig) config: DbConfig) {
+  constructor(@inject(TYPES.Logger) logger: Logger, @inject(TYPES.DbConfig) config: DbConfig) {
     if (config.NODE_ENV === 'test') {
       SequelizeDb.hackClsNamespace();
     }

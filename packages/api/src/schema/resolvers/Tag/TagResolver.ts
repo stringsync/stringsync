@@ -4,12 +4,14 @@ import { SERVICES_TYPES, TagService } from '@stringsync/services';
 import { Query, Resolver } from 'type-graphql';
 import { TagObject } from './TagObject';
 
+const TYPES = { ...SERVICES_TYPES };
+
 @Resolver()
 @injectable()
 export class TagResolver {
   tagService: TagService;
 
-  constructor(@inject(SERVICES_TYPES.TagService) tagService: TagService) {
+  constructor(@inject(TYPES.TagService) tagService: TagService) {
     this.tagService = tagService;
   }
 

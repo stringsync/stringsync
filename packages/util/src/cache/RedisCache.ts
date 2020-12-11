@@ -5,13 +5,13 @@ import { Logger } from '../logger';
 import { UTIL_TYPES } from '../UTIL_TYPES';
 import { Cache } from './types';
 
+const TYPES = { ...UTIL_TYPES };
+
 @injectable()
 export class RedisCache implements Cache {
-  logger: Logger;
   redis: RedisClient;
 
-  constructor(@inject(UTIL_TYPES.Logger) logger: Logger, @inject(UTIL_TYPES.UtilConfig) config: UtilConfig) {
-    this.logger = logger;
+  constructor(@inject(TYPES.Logger) public logger: Logger, @inject(TYPES.UtilConfig) public config: UtilConfig) {
     this.redis = createClient({ host: config.REDIS_HOST, port: config.REDIS_PORT });
   }
 

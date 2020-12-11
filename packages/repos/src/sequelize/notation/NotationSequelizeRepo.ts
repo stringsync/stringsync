@@ -14,20 +14,16 @@ import { REPOS_TYPES } from '../../REPOS_TYPES';
 import { NotationLoader, NotationRepo } from '../../types';
 import { Pager, PagingCtx } from '../../util';
 
+const TYPES = { ...REPOS_TYPES, ...DB_TYPES };
+
 @injectable()
 export class NotationSequelizeRepo implements NotationRepo {
   static pager = new Pager<Notation>(10, 'notation');
 
-  notationLoader: NotationLoader;
-  db: Database;
-
   constructor(
-    @inject(REPOS_TYPES.NotationLoader) notationLoader: NotationLoader,
-    @inject(DB_TYPES.Database) db: Database
-  ) {
-    this.notationLoader = notationLoader;
-    this.db = db;
-  }
+    @inject(TYPES.NotationLoader) public notationLoader: NotationLoader,
+    @inject(TYPES.Database) public db: Database
+  ) {}
 
   async findAllByTranscriberId(transcriberId: string): Promise<Notation[]> {
     return await this.notationLoader.findAllByTranscriberId(transcriberId);

@@ -11,10 +11,12 @@ import { withGraphQL, withSession } from './middlewares';
 import { withLogging } from './middlewares/withLogging';
 import { withSessionUser } from './middlewares/withSessionUser';
 
+const TYPES = { ...API_TYPES };
+
 export const app = (container: Container, schema: GraphQLSchema) => {
   const app = express();
-  const healthController = container.get<HealthController>(API_TYPES.HealthController);
-  const config = container.get<ApiConfig>(API_TYPES.ApiConfig);
+  const healthController = container.get<HealthController>(TYPES.HealthController);
+  const config = container.get<ApiConfig>(TYPES.ApiConfig);
 
   app.use(withLogging(container));
 

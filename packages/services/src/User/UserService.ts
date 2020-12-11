@@ -3,13 +3,11 @@ import { inject, injectable } from '@stringsync/di';
 import { User } from '@stringsync/domain';
 import { REPOS_TYPES, UserRepo } from '@stringsync/repos';
 
+const TYPES = { ...REPOS_TYPES };
+
 @injectable()
 export class UserService {
-  userRepo: UserRepo;
-
-  constructor(@inject(REPOS_TYPES.UserRepo) userRepo: UserRepo) {
-    this.userRepo = userRepo;
-  }
+  constructor(@inject(TYPES.UserRepo) public userRepo: UserRepo) {}
 
   async findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null> {
     return await this.userRepo.findByUsernameOrEmail(usernameOrEmail);

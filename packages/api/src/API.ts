@@ -6,12 +6,14 @@ import { API_TYPES } from './API_TYPES';
 import { HealthController } from './app';
 import { AuthResolver, ExperimentResolver, NotationResolver, TagResolver, UserResolver } from './schema';
 
+const TYPES = { ...API_TYPES };
+
 export const API: Pkg = {
   name: 'API',
   deps: [UTIL, SERVICES],
   bindings: async (bind) => {
     const config = API_CONFIG();
-    bind<ApiConfig>(API_TYPES.ApiConfig).toConstantValue(config);
+    bind<ApiConfig>(TYPES.ApiConfig).toConstantValue(config);
 
     bind<AuthResolver>(AuthResolver)
       .toSelf()
@@ -29,7 +31,7 @@ export const API: Pkg = {
       .toSelf()
       .inSingletonScope();
 
-    bind<HealthController>(API_TYPES.HealthController).to(HealthController);
+    bind<HealthController>(TYPES.HealthController).to(HealthController);
   },
 };
 

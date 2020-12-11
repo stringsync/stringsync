@@ -9,24 +9,16 @@ import { SERVICES_TYPES } from '../SERVICES_TYPES';
 import { TaggingService } from '../Tagging';
 import { CreateArgs } from './types';
 
+const TYPES = { ...SERVICES_TYPES, ...REPOS_TYPES, ...UTIL_TYPES };
+
 @injectable()
 export class NotationService {
-  taggingService: TaggingService;
-  notationRepo: NotationRepo;
-  blobStorage: BlobStorage;
-  config: ServicesConfig;
-
   constructor(
-    @inject(SERVICES_TYPES.TaggingService) taggingService: TaggingService,
-    @inject(SERVICES_TYPES.ServicesConfig) config: ServicesConfig,
-    @inject(REPOS_TYPES.NotationRepo) notationRepo: NotationRepo,
-    @inject(UTIL_TYPES.BlobStorage) blobStorage: BlobStorage
-  ) {
-    this.taggingService = taggingService;
-    this.notationRepo = notationRepo;
-    this.blobStorage = blobStorage;
-    this.config = config;
-  }
+    @inject(TYPES.TaggingService) public taggingService: TaggingService,
+    @inject(TYPES.ServicesConfig) public config: ServicesConfig,
+    @inject(TYPES.NotationRepo) public notationRepo: NotationRepo,
+    @inject(TYPES.BlobStorage) public blobStorage: BlobStorage
+  ) {}
 
   async find(id: string): Promise<Notation | null> {
     return await this.notationRepo.find(id);

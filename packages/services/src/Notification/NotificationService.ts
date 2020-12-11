@@ -5,20 +5,16 @@ import url from 'url';
 import { ServicesConfig } from '../SERVICES_CONFIG';
 import { SERVICES_TYPES } from '../SERVICES_TYPES';
 
+const TYPES = { ...SERVICES_TYPES, ...UTIL_TYPES };
+
 @injectable()
 export class NotificationService {
   static INFO_EMAIL = 'StringSync <info@stringsync.com>';
 
-  mailer: Mailer;
-  config: ServicesConfig;
-
   constructor(
-    @inject(SERVICES_TYPES.ServicesConfig) config: ServicesConfig,
-    @inject(UTIL_TYPES.Mailer) mailer: Mailer
-  ) {
-    this.mailer = mailer;
-    this.config = config;
-  }
+    @inject(TYPES.Mailer) public mailer: Mailer,
+    @inject(TYPES.ServicesConfig) public config: ServicesConfig
+  ) {}
 
   async sendConfirmationEmail(user: User): Promise<void> {
     const confirmHref = url.format({

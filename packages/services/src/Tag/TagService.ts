@@ -2,13 +2,11 @@ import { inject, injectable } from '@stringsync/di';
 import { Tag } from '@stringsync/domain';
 import { REPOS_TYPES, TagRepo } from '@stringsync/repos';
 
+const TYPES = { ...REPOS_TYPES };
+
 @injectable()
 export class TagService {
-  tagRepo: TagRepo;
-
-  constructor(@inject(REPOS_TYPES.TagRepo) tagRepo: TagRepo) {
-    this.tagRepo = tagRepo;
-  }
+  constructor(@inject(TYPES.TagRepo) public tagRepo: TagRepo) {}
 
   async find(id: string): Promise<Tag | null> {
     return await this.tagRepo.find(id);

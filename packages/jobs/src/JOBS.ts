@@ -5,14 +5,16 @@ import { AssociateVideoUrlJob } from './AssociateVideoUrlJob';
 import { JobsConfig, JOBS_CONFIG } from './JOBS_CONFIG';
 import { JOBS_TYPES } from './JOBS_TYPES';
 
+const TYPES = { ...JOBS_TYPES };
+
 export const JOBS: Pkg = {
   name: 'JOBS',
   deps: [UTIL, SERVICES],
   bindings: async (bind) => {
     const config = JOBS_CONFIG();
-    bind<JobsConfig>(JOBS_TYPES.JobsConfig).toConstantValue(config);
+    bind<JobsConfig>(TYPES.JobsConfig).toConstantValue(config);
 
-    bind<AssociateVideoUrlJob>(JOBS_TYPES.AssociateVideoUrlJob)
+    bind<AssociateVideoUrlJob>(TYPES.AssociateVideoUrlJob)
       .to(AssociateVideoUrlJob)
       .inSingletonScope();
   },

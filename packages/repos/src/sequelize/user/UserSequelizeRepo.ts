@@ -7,15 +7,13 @@ import { REPOS_TYPES } from '../../REPOS_TYPES';
 import { UserLoader, UserRepo } from '../../types';
 import { Pager, PagingCtx } from '../../util';
 
+const TYPES = { ...REPOS_TYPES };
+
 @injectable()
 export class UserSequelizeRepo implements UserRepo {
   static pager = new Pager<User>(20, 'user');
 
-  userLoader: UserLoader;
-
-  constructor(@inject(REPOS_TYPES.UserLoader) userLoader: UserLoader) {
-    this.userLoader = userLoader;
-  }
+  constructor(@inject(TYPES.UserLoader) public userLoader: UserLoader) {}
 
   async findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null> {
     const username = usernameOrEmail;

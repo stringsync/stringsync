@@ -3,13 +3,11 @@ import { HealthCheckerService, SERVICES_TYPES } from '@stringsync/services';
 import { RequestHandler } from 'express';
 import { Controller } from './types';
 
+const TYPES = { ...SERVICES_TYPES };
+
 @injectable()
 export class HealthController implements Controller {
-  healthCheckerService: HealthCheckerService;
-
-  constructor(@inject(SERVICES_TYPES.HealthCheckerService) healthCheckerService: HealthCheckerService) {
-    this.healthCheckerService = healthCheckerService;
-  }
+  constructor(@inject(TYPES.HealthCheckerService) public healthCheckerService: HealthCheckerService) {}
 
   get: RequestHandler = async (req, res) => {
     await this.healthCheckerService.checkHealth();

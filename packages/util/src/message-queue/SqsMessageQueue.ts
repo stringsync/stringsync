@@ -4,15 +4,15 @@ import { Logger } from '../logger';
 import { UTIL_TYPES } from '../UTIL_TYPES';
 import { Message, MessageQueue } from './types';
 
+const TYPES = { ...UTIL_TYPES };
+
 const DEFAULT_VISIBILITY_TIMEOUT_S = 60;
 
 @injectable()
 export class SqsMessageQueue implements MessageQueue {
-  logger: Logger;
   sqs: SQS;
 
-  constructor(@inject(UTIL_TYPES.Logger) logger: Logger) {
-    this.logger = logger;
+  constructor(@inject(TYPES.Logger) public logger: Logger) {
     this.sqs = new SQS();
   }
 

@@ -6,6 +6,8 @@ import { ReqCtx } from '../../../ctx';
 import { TagObject } from '../Tag';
 import { UserObject } from '../User';
 
+const TYPES = { ...SERVICES_TYPES };
+
 @ObjectType()
 export class NotationObject implements PublicNotation {
   @Field((type) => ID)
@@ -43,7 +45,7 @@ export class NotationObject implements PublicNotation {
 
   @Field((type) => UserObject)
   async transcriber(@Root() notation: Notation, @Ctx() ctx: ReqCtx): Promise<User> {
-    const userService = ctx.container.get<UserService>(SERVICES_TYPES.UserService);
+    const userService = ctx.container.get<UserService>(TYPES.UserService);
     const user = await userService.find(notation.transcriberId);
     if (!user) {
       throw new NotFoundError('user not found');
@@ -53,7 +55,7 @@ export class NotationObject implements PublicNotation {
 
   @Field((type) => [TagObject])
   async tags(@Root() notation: Notation, @Ctx() ctx: ReqCtx): Promise<Tag[]> {
-    const tagService = ctx.container.get<TagService>(SERVICES_TYPES.TagService);
+    const tagService = ctx.container.get<TagService>(TYPES.TagService);
     return await tagService.findAllByNotationId(notation.id);
   }
 }

@@ -12,20 +12,22 @@ import { TaggingService } from './Tagging';
 import { UserService } from './User';
 import { VideoUrlService } from './Video';
 
+const TYPES = { ...SERVICES_TYPES };
+
 export const SERVICES: Pkg = {
   name: 'SERVICES',
   deps: [REPOS, UTIL],
   bindings: async (bind) => {
     const config = SERVICES_CONFIG();
-    bind<ServicesConfig>(SERVICES_TYPES.ServicesConfig).toConstantValue(config);
+    bind<ServicesConfig>(TYPES.ServicesConfig).toConstantValue(config);
 
-    bind<HealthCheckerService>(SERVICES_TYPES.HealthCheckerService).to(HealthCheckerService);
-    bind<AuthService>(SERVICES_TYPES.AuthService).to(AuthService);
-    bind<NotificationService>(SERVICES_TYPES.NotificationService).to(NotificationService);
-    bind<UserService>(SERVICES_TYPES.UserService).to(UserService);
-    bind<NotationService>(SERVICES_TYPES.NotationService).to(NotationService);
-    bind<TagService>(SERVICES_TYPES.TagService).to(TagService);
-    bind<TaggingService>(SERVICES_TYPES.TaggingService).to(TaggingService);
-    bind<VideoUrlService>(SERVICES_TYPES.VideoUrlService).to(VideoUrlService);
+    bind<HealthCheckerService>(TYPES.HealthCheckerService).to(HealthCheckerService);
+    bind<AuthService>(TYPES.AuthService).to(AuthService);
+    bind<NotificationService>(TYPES.NotificationService).to(NotificationService);
+    bind<UserService>(TYPES.UserService).to(UserService);
+    bind<NotationService>(TYPES.NotationService).to(NotationService);
+    bind<TagService>(TYPES.TagService).to(TagService);
+    bind<TaggingService>(TYPES.TaggingService).to(TaggingService);
+    bind<VideoUrlService>(TYPES.VideoUrlService).to(VideoUrlService);
   },
 };
