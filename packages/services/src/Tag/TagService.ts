@@ -1,6 +1,8 @@
-import { inject, injectable, TYPES } from '@stringsync/di';
+import { inject, injectable } from '@stringsync/di';
 import { Tag } from '@stringsync/domain';
-import { TagRepo } from '@stringsync/repos';
+import { REPOS, TagRepo } from '@stringsync/repos';
+
+const TYPES = { ...REPOS.TYPES };
 
 @injectable()
 export class TagService {

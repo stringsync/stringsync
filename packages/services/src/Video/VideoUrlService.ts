@@ -1,8 +1,10 @@
 import { NotFoundError, UnknownError } from '@stringsync/common';
-import { inject, injectable, TYPES } from '@stringsync/di';
-import { Logger, Message, MessageQueue } from '@stringsync/util';
+import { inject, injectable } from '@stringsync/di';
+import { Logger, Message, MessageQueue, UTIL } from '@stringsync/util';
 import { NotationService } from '../Notation';
-import { ServicesConfig } from '../SERVICES';
+import { SERVICES, ServicesConfig } from '../SERVICES';
+
+const TYPES = { ...SERVICES.TYPES, ...UTIL.TYPES };
 
 @injectable()
 export class VideoUrlService {

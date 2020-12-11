@@ -1,11 +1,12 @@
-import { TYPES } from '@stringsync/di';
-import { Logger } from '@stringsync/util';
+import { Logger, UTIL } from '@stringsync/util';
 import { AssociateVideoUrlJob } from './AssociateVideoUrlJob';
-import { createJobsContainer } from './JOBS';
+import { createJobsContainer, JOBS } from './JOBS';
 
 export * from './AssociateVideoUrlJob';
 export * from './JOBS';
 export * from './types';
+
+const TYPES = { ...UTIL.TYPES, ...JOBS.TYPES };
 
 const main = async () => {
   const container = await createJobsContainer();

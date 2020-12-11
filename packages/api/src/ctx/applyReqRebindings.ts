@@ -1,6 +1,8 @@
 import { ctor } from '@stringsync/common';
-import { Container, TYPES } from '@stringsync/di';
-import { NotationLoader, TagLoader, UserLoader } from '@stringsync/repos';
+import { Container } from '@stringsync/di';
+import { NotationLoader, REPOS, TagLoader, UserLoader } from '@stringsync/repos';
+
+const TYPES = { ...REPOS.TYPES };
 
 export const applyReqRebindings = (container: Container) => {
   const userLoader = container.get<UserLoader>(TYPES.UserLoader);

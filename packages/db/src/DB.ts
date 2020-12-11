@@ -2,7 +2,7 @@ import { configFactory, DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USERNAME, NOD
 import { Pkg } from '@stringsync/di';
 import { UTIL } from '@stringsync/util';
 import { SequelizeDb } from './sequelize';
-import { Db } from './types';
+import { Database } from './types';
 
 export const DB_CONFIG = configFactory({
   NODE_ENV: NODE_ENV,
@@ -16,7 +16,7 @@ export const DB_CONFIG = configFactory({
 export type DbConfig = ReturnType<typeof DB_CONFIG>;
 
 export const TYPES = {
-  Db: Symbol('Db'),
+  Database: Symbol('Database'),
   DbConfig: Symbol('DbConfig'),
 };
 
@@ -28,7 +28,7 @@ export const DB: Pkg<typeof TYPES> = {
     const config = DB_CONFIG();
     bind<DbConfig>(TYPES.DbConfig).toConstantValue(config);
 
-    bind<Db>(TYPES.Db)
+    bind<Database>(TYPES.Database)
       .to(SequelizeDb)
       .inSingletonScope();
   },

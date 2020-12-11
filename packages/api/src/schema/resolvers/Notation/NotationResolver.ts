@@ -1,8 +1,8 @@
 import { AuthRequirement, Connection } from '@stringsync/common';
-import { inject, injectable, TYPES } from '@stringsync/di';
+import { inject, injectable } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
-import { NotationService } from '@stringsync/services';
-import { BlobStorage, Logger } from '@stringsync/util';
+import { NotationService, SERVICES } from '@stringsync/services';
+import { BlobStorage, Logger, UTIL } from '@stringsync/util';
 import { Arg, Args, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { NotationObject } from '.';
 import { ReqCtx } from '../../../ctx';
@@ -11,6 +11,8 @@ import { CreateNotationInput } from './CreateNotationInput';
 import { NotationArgs } from './NotationArgs';
 import { NotationConnectionArgs } from './NotationConnectionArgs';
 import { NotationConnectionObject } from './NotationConnectionObject';
+
+const TYPES = { ...SERVICES.TYPES, ...UTIL.TYPES };
 
 @Resolver()
 @injectable()

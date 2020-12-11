@@ -1,13 +1,15 @@
-import { inject, injectable, TYPES } from '@stringsync/di';
-import { Logger } from '@stringsync/util';
+import { inject, injectable } from '@stringsync/di';
+import { Logger, UTIL } from '@stringsync/util';
 import { createNamespace, getNamespace } from 'cls-hooked';
 import { Sequelize } from 'sequelize';
-import { DbConfig } from '../DB';
-import { Db } from '../types';
+import { DB, DbConfig } from '../DB';
+import { Database } from '../types';
 import { NotationModel, TaggingModel, TagModel, UserModel } from './models';
 
+const TYPES = { ...DB.TYPES, ...UTIL.TYPES };
+
 @injectable()
-export class SequelizeDb implements Db {
+export class SequelizeDb implements Database {
   private static hackClsNamespace() {
     // process.namespaces gets overwritten when importing cls-hooked:
     // https://github.com/Jeff-Lewis/cls-hooked/blob/master/context.js#L453

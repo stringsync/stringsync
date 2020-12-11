@@ -1,13 +1,15 @@
-import { Db } from '@stringsync/db';
-import { inject, injectable, TYPES } from '@stringsync/di';
-import { Cache } from '@stringsync/util';
+import { Database, DB } from '@stringsync/db';
+import { inject, injectable } from '@stringsync/di';
+import { Cache, UTIL } from '@stringsync/util';
+
+const TYPES = { ...DB.TYPES, ...UTIL.TYPES };
 
 @injectable()
 export class HealthCheckerService {
-  db: Db;
+  db: Database;
   cache: Cache;
 
-  constructor(@inject(TYPES.Db) db: Db, @inject(TYPES.Cache) cache: Cache) {
+  constructor(@inject(TYPES.Database) db: Database, @inject(TYPES.Cache) cache: Cache) {
     this.db = db;
     this.cache = cache;
   }

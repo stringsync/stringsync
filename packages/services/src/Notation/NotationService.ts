@@ -1,12 +1,14 @@
 import { Connection, NotationConnectionArgs } from '@stringsync/common';
-import { inject, injectable, TYPES } from '@stringsync/di';
+import { inject, injectable } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
-import { NotationRepo } from '@stringsync/repos';
-import { BlobStorage } from '@stringsync/util';
+import { NotationRepo, REPOS } from '@stringsync/repos';
+import { BlobStorage, UTIL } from '@stringsync/util';
 import path from 'path';
-import { ServicesConfig } from '../SERVICES';
+import { SERVICES, ServicesConfig } from '../SERVICES';
 import { TaggingService } from '../Tagging';
 import { CreateArgs } from './types';
+
+const TYPES = { ...SERVICES.TYPES, ...REPOS.TYPES, ...UTIL.TYPES };
 
 @injectable()
 export class NotationService {

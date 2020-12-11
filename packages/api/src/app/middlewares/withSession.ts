@@ -1,10 +1,12 @@
-import { Container, TYPES } from '@stringsync/di';
-import { Cache } from '@stringsync/util';
+import { Container } from '@stringsync/di';
+import { Cache, UTIL } from '@stringsync/util';
 import connectRedis from 'connect-redis';
 import { Handler } from 'express';
 import session from 'express-session';
 import * as uuid from 'uuid';
-import { ApiConfig } from '../../API';
+import { API, ApiConfig } from '../../API';
+
+const TYPES = { ...API.TYPES, ...UTIL.TYPES };
 
 const MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
 

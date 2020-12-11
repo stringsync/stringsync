@@ -1,7 +1,9 @@
-import { Container, TYPES } from '@stringsync/di';
-import { Logger } from '@stringsync/util';
+import { Container } from '@stringsync/di';
+import { Logger, UTIL } from '@stringsync/util';
 import { Handler } from 'express';
 import morgan from 'morgan';
+
+const TYPES = { ...UTIL.TYPES };
 
 export const withLogging = (container: Container): Handler => {
   const logger = container.get<Logger>(TYPES.Logger);

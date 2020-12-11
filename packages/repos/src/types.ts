@@ -1,5 +1,5 @@
-import { User, Notation, Tag, Tagging } from '@stringsync/domain';
 import { Connection, ConnectionArgs, NotationConnectionArgs } from '@stringsync/common';
+import { Notation, Tag, Tagging, User } from '@stringsync/domain';
 
 // Repo
 

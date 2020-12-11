@@ -1,7 +1,9 @@
-import { Container, TYPES } from '@stringsync/di';
-import { AuthService } from '@stringsync/services';
+import { Container } from '@stringsync/di';
+import { AuthService, SERVICES } from '@stringsync/services';
 import { Handler } from 'express';
 import { get } from 'lodash';
+
+const TYPES = { ...SERVICES.TYPES };
 
 export const withSessionUser = (container: Container): Handler => async (req, res, next) => {
   const authService = container.get<AuthService>(TYPES.AuthService);

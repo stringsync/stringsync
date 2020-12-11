@@ -1,11 +1,12 @@
-import { TYPES } from '@stringsync/di';
-import { Notation, User, UserRole, PublicUser } from '@stringsync/domain';
-import { NotationService } from '@stringsync/services';
+import { Notation, PublicUser, User, UserRole } from '@stringsync/domain';
+import { NotationService, SERVICES } from '@stringsync/services';
 import { Ctx, Field, ID, ObjectType, registerEnumType, Root } from 'type-graphql';
 import { ReqCtx } from '../../../ctx';
 import { NotationObject } from './../Notation/NotationObject';
 import { IsDataOwner } from './IsDataOwner';
 import { RestrictedField } from './RestrictedField';
+
+const TYPES = { ...SERVICES.TYPES };
 
 registerEnumType(UserRole, { name: 'UserRoles' });
 

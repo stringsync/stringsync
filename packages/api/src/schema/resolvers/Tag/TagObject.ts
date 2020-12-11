@@ -1,9 +1,10 @@
-import { TYPES } from '@stringsync/di';
-import { NotationService } from '@stringsync/services';
+import { Notation, Tag } from '@stringsync/domain';
+import { NotationService, SERVICES } from '@stringsync/services';
+import { Ctx, Field, ID, ObjectType, Root } from 'type-graphql';
 import { ReqCtx } from '../../../ctx';
 import { NotationObject } from '../Notation';
-import { Tag, Notation } from '@stringsync/domain';
-import { ObjectType, Field, ID, Root, Ctx } from 'type-graphql';
+
+const TYPES = { ...SERVICES.TYPES };
 
 @ObjectType()
 export class TagObject implements Tag {

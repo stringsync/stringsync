@@ -1,7 +1,10 @@
-import { inject, injectable, TYPES } from '@stringsync/di';
+import { inject, injectable } from '@stringsync/di';
 import { EntityBuilder, Notation, Tag, Tagging, User } from '@stringsync/domain';
 import { times } from 'lodash';
+import { REPOS } from '../REPOS';
 import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from '../types';
+
+const TYPES = { ...REPOS.TYPES };
 
 @injectable()
 export class Factory {

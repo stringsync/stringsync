@@ -1,8 +1,10 @@
-import { inject, injectable, TYPES } from '@stringsync/di';
+import { inject, injectable } from '@stringsync/di';
 import { Tag } from '@stringsync/domain';
-import { TagService } from '@stringsync/services';
+import { SERVICES, TagService } from '@stringsync/services';
 import { Query, Resolver } from 'type-graphql';
 import { TagObject } from './TagObject';
+
+const TYPES = { ...SERVICES.TYPES };
 
 @Resolver()
 @injectable()

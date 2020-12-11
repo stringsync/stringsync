@@ -1,10 +1,13 @@
 import { Connection, NotFoundError, PagingType, UserConnectionArgs } from '@stringsync/common';
 import { UserModel } from '@stringsync/db';
-import { inject, injectable, TYPES } from '@stringsync/di';
+import { inject, injectable } from '@stringsync/di';
 import { User } from '@stringsync/domain';
 import { Op } from 'sequelize';
+import { REPOS } from '../../REPOS';
 import { UserLoader, UserRepo } from '../../types';
 import { Pager, PagingCtx } from '../../util';
+
+const TYPES = { ...REPOS.TYPES };
 
 @injectable()
 export class UserSequelizeRepo implements UserRepo {

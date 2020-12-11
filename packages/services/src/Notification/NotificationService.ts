@@ -1,8 +1,10 @@
-import { inject, injectable, TYPES } from '@stringsync/di';
+import { inject, injectable } from '@stringsync/di';
 import { User } from '@stringsync/domain';
-import { Mailer } from '@stringsync/util';
+import { Mailer, UTIL } from '@stringsync/util';
 import url from 'url';
-import { ServicesConfig } from '../SERVICES';
+import { SERVICES, ServicesConfig } from '../SERVICES';
+
+const TYPES = { ...SERVICES.TYPES, ...UTIL.TYPES };
 
 @injectable()
 export class NotificationService {

@@ -1,11 +1,12 @@
-import { TYPES } from '@stringsync/di';
-import { Logger } from '@stringsync/util';
-import { ApiConfig, createApiContainer } from './API';
+import { Logger, UTIL } from '@stringsync/util';
+import { API, ApiConfig, createApiContainer } from './API';
 import { app } from './app';
 import { generateSchema } from './schema';
 
 export * from './app';
 export * from './schema';
+
+const TYPES = { ...API.TYPES, ...UTIL.TYPES };
 
 const main = async () => {
   const container = await createApiContainer();

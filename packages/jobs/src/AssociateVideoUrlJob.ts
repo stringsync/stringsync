@@ -1,10 +1,12 @@
-import { inject, injectable, TYPES } from '@stringsync/di';
-import { VideoUrlService } from '@stringsync/services';
-import { Logger } from '@stringsync/util';
+import { inject, injectable } from '@stringsync/di';
+import { SERVICES, VideoUrlService } from '@stringsync/services';
+import { Logger, UTIL } from '@stringsync/util';
 import { Queue, QueueScheduler, Worker } from 'bullmq';
 import { Job } from './Job';
-import { JobsConfig } from './JOBS';
+import { JOBS, JobsConfig } from './JOBS';
 import { JobName } from './types';
+
+const TYPES = { ...JOBS.TYPES, ...SERVICES.TYPES, ...UTIL.TYPES };
 
 @injectable()
 export class AssociateVideoUrlJob extends Job {

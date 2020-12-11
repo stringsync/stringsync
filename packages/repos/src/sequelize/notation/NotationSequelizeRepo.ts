@@ -1,6 +1,6 @@
 import { Connection, NotationConnectionArgs, NotFoundError, PagingType } from '@stringsync/common';
-import { Db, NotationModel } from '@stringsync/db';
-import { inject, injectable, TYPES } from '@stringsync/di';
+import { Database, DB, NotationModel } from '@stringsync/db';
+import { inject, injectable } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
 import { get } from 'lodash';
 import { QueryTypes } from 'sequelize';
@@ -10,17 +10,20 @@ import {
   findNotationPageMinQuery,
   findNotationPageQuery,
 } from '../../queries';
+import { REPOS } from '../../REPOS';
 import { NotationLoader, NotationRepo } from '../../types';
 import { Pager, PagingCtx } from '../../util';
+
+const TYPES = { ...REPOS.TYPES, ...DB.TYPES };
 
 @injectable()
 export class NotationSequelizeRepo implements NotationRepo {
   static pager = new Pager<Notation>(10, 'notation');
 
   notationLoader: NotationLoader;
-  db: Db;
+  db: Database;
 
-  constructor(@inject(TYPES.NotationLoader) notationLoader: NotationLoader, @inject(TYPES.Db) db: Db) {
+  constructor(@inject(TYPES.NotationLoader) notationLoader: NotationLoader, @inject(TYPES.Database) db: Database) {
     this.notationLoader = notationLoader;
     this.db = db;
   }

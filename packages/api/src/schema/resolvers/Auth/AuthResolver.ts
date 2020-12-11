@@ -1,8 +1,8 @@
 import { AuthRequirement, ForbiddenError } from '@stringsync/common';
-import { inject, injectable, TYPES } from '@stringsync/di';
+import { inject, injectable } from '@stringsync/di';
 import { User } from '@stringsync/domain';
-import { AuthService, NotificationService } from '@stringsync/services';
-import { Logger } from '@stringsync/util';
+import { AuthService, NotificationService, SERVICES } from '@stringsync/services';
+import { Logger, UTIL } from '@stringsync/util';
 import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { ReqCtx } from '../../../ctx';
 import { WithAuthRequirement } from '../../middlewares';
@@ -12,6 +12,8 @@ import { LoginInput } from './LoginInput';
 import { ResetPasswordInput } from './ResetPasswordInput';
 import { SendResetPasswordEmailInput } from './SendResetPasswordEmailInput';
 import { SignupInput } from './SignupInput';
+
+const TYPES = { ...UTIL.TYPES, ...SERVICES.TYPES };
 
 @Resolver()
 @injectable()

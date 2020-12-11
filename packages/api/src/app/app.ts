@@ -1,14 +1,16 @@
-import { Container, TYPES } from '@stringsync/di';
+import { Container } from '@stringsync/di';
 import { altairExpress } from 'altair-express-middleware';
 import cors from 'cors';
 import express from 'express';
 import { GraphQLSchema } from 'graphql';
 import { graphqlUploadExpress } from 'graphql-upload';
-import { ApiConfig } from '../API';
+import { API, ApiConfig } from '../API';
 import { HealthController } from './controllers';
 import { withGraphQL, withSession } from './middlewares';
 import { withLogging } from './middlewares/withLogging';
 import { withSessionUser } from './middlewares/withSessionUser';
+
+const TYPES = { ...API.TYPES };
 
 export const app = (container: Container, schema: GraphQLSchema) => {
   const app = express();

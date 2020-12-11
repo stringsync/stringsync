@@ -1,8 +1,10 @@
 import { AuthRequirement } from '@stringsync/common';
-import { inject, injectable, TYPES } from '@stringsync/di';
-import { Logger, MessageQueue } from '@stringsync/util';
+import { inject, injectable } from '@stringsync/di';
+import { Logger, MessageQueue, UTIL } from '@stringsync/util';
 import { Query, Resolver, UseMiddleware } from 'type-graphql';
 import { WithAuthRequirement } from '../../middlewares';
+
+const TYPES = { ...UTIL.TYPES };
 
 @Resolver()
 @injectable()

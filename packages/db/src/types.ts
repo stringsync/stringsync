@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize';
 
-export interface Db {
+export interface Database {
   sequelize: Sequelize;
   cleanup(): Promise<void>;
   teardown(): Promise<void>;

@@ -1,7 +1,9 @@
 import { Connection, ConnectionArgs } from '@stringsync/common';
-import { inject, injectable, TYPES } from '@stringsync/di';
+import { inject, injectable } from '@stringsync/di';
 import { User } from '@stringsync/domain';
-import { UserRepo } from '@stringsync/repos';
+import { REPOS, UserRepo } from '@stringsync/repos';
+
+const TYPES = { ...REPOS.TYPES };
 
 @injectable()
 export class UserService {
