@@ -9,15 +9,27 @@ export default class Build extends Command {
     help: flags.help({ char: 'h' }),
     tag: flags.string({ char: 't', default: 'latest' }),
     prod: flags.boolean({ char: 'p', default: false }),
+    dev: flags.boolean({ char: 'd', default: false }),
   };
 
   async run() {
     const { flags } = this.parse(Build);
 
-    this.buildDevSync(flags.tag);
+    this.buildBaseSync(flags.tag);
+
+    if (flags.dev) {
+      this.buildDevSync(flags.tag);
+    }
     if (flags.prod) {
       this.buildProdSync(flags.tag);
     }
+  }
+
+  private buildBaseSync(tag: string) {
+    execSync(`docker build . -f ./docker/Dockerfile.base -t stringsync-base:${tag}`, {
+      cwd: ROOT_PATH,
+      stdio: 'inherit',
+    });
   }
 
   private buildDevSync(tag: string) {

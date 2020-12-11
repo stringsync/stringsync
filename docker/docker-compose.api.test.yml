@@ -13,7 +13,7 @@ services:
     image: redis:5.0
 
   test:
-    image: stringsync:latest
+    image: stringsync-dev:latest
     build:
       context: ../
       dockerfile: ./docker/Dockerfile.dev
