@@ -3,8 +3,10 @@ import { Bindings, Pkg } from './types';
 
 const getBindings = (pkg: Pkg, seen = new Set<string>()): Bindings[] => {
   let bindings = new Array<Bindings>();
+
   seen.add(pkg.name);
   bindings.push(pkg.bindings);
+
   for (const dep of pkg.deps) {
     if (!seen.has(dep.name)) {
       bindings = [...bindings, ...getBindings(dep, seen)];

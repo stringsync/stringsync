@@ -12,8 +12,8 @@
     "db": "yarn workspace @stringsync/db",
     "web": "yarn workspace @stringsync/web",
     "jobs": "yarn workspace @stringsync/jobs",
-    "pretest:server": "yarn db migrate",
-    "test:server": "node --expose-gc ./node_modules/.bin/jest",
+    "pretest:api": "yarn db migrate",
+    "test:api": "node --expose-gc ./node_modules/.bin/jest",
     "test:web": "yarn web test"
   },
   "devDependencies": {
