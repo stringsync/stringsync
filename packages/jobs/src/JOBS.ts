@@ -1,4 +1,4 @@
-import { createContainer, Pkg } from '@stringsync/di';
+import { Pkg } from '@stringsync/di';
 import { SERVICES } from '@stringsync/services';
 import { UTIL } from '@stringsync/util';
 import { AssociateVideoUrlJob } from './AssociateVideoUrlJob';
@@ -19,5 +19,3 @@ export const JOBS: Pkg = {
       .inSingletonScope();
   },
 };
-
-export const createJobsContainer = async () => await createContainer(JOBS);

@@ -1,9 +1,11 @@
+import { createContainer } from '@stringsync/di';
 import { Logger, UTIL_TYPES } from '@stringsync/util';
-import { createApiContainer } from './API';
+import { API } from './API';
 import { ApiConfig } from './API_CONFIG';
 import { API_TYPES } from './API_TYPES';
 import { app } from './app';
 import { generateSchema } from './schema';
+import { onExit } from './util';
 
 export * from './API';
 export * from './API_CONFIG';
@@ -13,11 +15,17 @@ export * from './schema';
 
 const TYPES = { ...API_TYPES, ...UTIL_TYPES };
 
+const MAX_TEARDOWN_WAIT_MS = 10000;
+
 const main = async () => {
-  const container = await createApiContainer();
-  const schema = generateSchema();
+  const { container, teardown } = await createContainer(API);
   const config = container.get<ApiConfig>(TYPES.ApiConfig);
+  const schema = generateSchema();
   const logger = container.get<Logger>(TYPES.Logger);
+
+  if (config.NODE_ENV === 'production') {
+    onExit(teardown, MAX_TEARDOWN_WAIT_MS);
+  }
 
   app(container, schema).listen(config.APP_GRAPHQL_PORT, () => {
     logger.info(`app running at http://localhost:${config.APP_GRAPHQL_PORT}`);

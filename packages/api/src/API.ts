@@ -1,4 +1,4 @@
-import { createContainer, Pkg } from '@stringsync/di';
+import { Pkg } from '@stringsync/di';
 import { SERVICES } from '@stringsync/services';
 import { UTIL } from '@stringsync/util';
 import { ApiConfig, API_CONFIG } from './API_CONFIG';
@@ -34,5 +34,3 @@ export const API: Pkg = {
     bind<HealthController>(TYPES.HealthController).to(HealthController);
   },
 };
-
-export const createApiContainer = async () => await createContainer(API);

@@ -4,3 +4,4 @@ export * from './ctor';
 export * from './identity';
 export * from './noop';
 export * from './types';
+export * from './wait';

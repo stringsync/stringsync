@@ -41,4 +41,14 @@ export const UTIL: Pkg = {
       bind<MessageQueue>(TYPES.MessageQueue).to(SqsMessageQueue);
     }
   },
+  cleanup: async (container) => {
+    const cache = container.get<Cache>(TYPES.Cache);
+    await cache.cleanup();
+  },
+  teardown: async (container) => {
+    const logger = container.get<Logger>(TYPES.Logger);
+    logger.info('tearing down cache connection');
+    const cache = container.get<Cache>(TYPES.Cache);
+    await cache.teardown();
+  },
 };
