@@ -24,6 +24,11 @@ export const createContainer = async (pkg: Pkg) => {
   const mods = pkgs.map((pkg) => new AsyncContainerModule(pkg.bindings));
   await container.loadAsync(...mods);
 
+  const setups = pkgs.filter((pkg) => pkg.setup).map((pkg) => pkg.setup!);
+  const setup = async () => {
+    await Promise.all(setups.map((setup) => setup(container)));
+  };
+
   const cleanups = pkgs.filter((pkg) => pkg.cleanup).map((pkg) => pkg.cleanup!);
   const cleanup = async () => {
     if (process.env.NODE_ENV === 'production') {
@@ -37,5 +42,5 @@ export const createContainer = async (pkg: Pkg) => {
     await Promise.all(teardowns.map((teardown) => teardown(container)));
   };
 
-  return { container, cleanup, teardown };
+  return { container, setup, cleanup, teardown };
 };

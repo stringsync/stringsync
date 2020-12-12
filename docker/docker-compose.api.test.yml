@@ -18,7 +18,7 @@ services:
       context: ../
       dockerfile: ./docker/Dockerfile.dev
     env_file:
-      - ../env/server.test.env
+      - ../env/api.test.env
     volumes:
       - ../packages:/stringsync/packages
     links:

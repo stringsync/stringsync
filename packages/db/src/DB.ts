@@ -1,5 +1,5 @@
 import { Pkg } from '@stringsync/di';
-import { Logger, UTIL, UTIL_TYPES } from '@stringsync/util';
+import { UTIL, UTIL_TYPES } from '@stringsync/util';
 import { DbConfig, DB_CONFIG } from './DB_CONFIG';
 import { DB_TYPES } from './DB_TYPES';
 import { SequelizeDb } from './sequelize';
@@ -18,13 +18,14 @@ export const DB: Pkg = {
       .to(SequelizeDb)
       .inSingletonScope();
   },
+  setup: async (container) => {
+    container.get<Database>(TYPES.Database);
+  },
   cleanup: async (container) => {
     const db = container.get<Database>(TYPES.Database);
     await db.cleanup();
   },
   teardown: async (container) => {
-    const logger = container.get<Logger>(TYPES.Logger);
-    logger.info('tearing down db connection');
     const db = container.get<Database>(TYPES.Database);
     await db.teardown();
   },

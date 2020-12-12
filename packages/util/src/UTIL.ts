@@ -46,8 +46,6 @@ export const UTIL: Pkg = {
     await cache.cleanup();
   },
   teardown: async (container) => {
-    const logger = container.get<Logger>(TYPES.Logger);
-    logger.info('tearing down cache connection');
     const cache = container.get<Cache>(TYPES.Cache);
     await cache.teardown();
   },
