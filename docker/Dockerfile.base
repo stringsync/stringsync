@@ -20,4 +20,3 @@ RUN yarn
 
 COPY ./tsconfig.base.json .
 COPY ./tsconfig.json .
-COPY ./packages ./packages/
