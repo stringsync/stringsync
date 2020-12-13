@@ -13,10 +13,10 @@ services:
     image: redis:5.0
 
   test:
-    image: stringsync-dev:latest
+    image: stringsync-test:latest
     build:
       context: ../
-      dockerfile: ./docker/Dockerfile.dev
+      dockerfile: ./docker/Dockerfile.test
     env_file:
       - ../env/api.test.env
     volumes:

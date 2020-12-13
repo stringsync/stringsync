@@ -1,9 +1,3 @@
 FROM stringsync-base:latest
 
-COPY ./jest.config.js .
-COPY ./ServerTestEnvironment.js .
-
-COPY ./packages ./packages/
-RUN yarn
-
 CMD [ "yarn", "api", "dev" ]

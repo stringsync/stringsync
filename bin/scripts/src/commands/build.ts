@@ -7,40 +7,30 @@ export default class Build extends Command {
 
   static flags = {
     help: flags.help({ char: 'h' }),
-    tag: flags.string({ char: 't', default: 'latest' }),
-    prod: flags.boolean({ char: 'p', default: false }),
+    tag: flags.string({ default: 'latest' }),
     dev: flags.boolean({ char: 'd', default: false }),
+    test: flags.boolean({ char: 't', default: false }),
+    prod: flags.boolean({ char: 'p', default: false }),
   };
 
   async run() {
     const { flags } = this.parse(Build);
 
-    this.buildBaseSync(flags.tag);
+    this.build('Dockerfile.base', 'stringsync-base', flags.tag);
 
+    if (flags.test) {
+      this.build('Dockerfile.test', 'stringsync-test', flags.tag);
+    }
     if (flags.dev) {
-      this.buildDevSync(flags.tag);
+      this.build('Dockerfile.dev', 'stringsync-dev', flags.tag);
     }
     if (flags.prod) {
-      this.buildProdSync(flags.tag);
+      this.build('Dockerfile.prod', 'stringsync', flags.tag);
     }
   }
 
-  private buildBaseSync(tag: string) {
-    execSync(`docker build . -f ./docker/Dockerfile.base -t stringsync-base:${tag}`, {
-      cwd: ROOT_PATH,
-      stdio: 'inherit',
-    });
-  }
-
-  private buildDevSync(tag: string) {
-    execSync(`docker build . -f ./docker/Dockerfile.dev -t stringsync-dev:${tag}`, {
-      cwd: ROOT_PATH,
-      stdio: 'inherit',
-    });
-  }
-
-  private buildProdSync(tag: string) {
-    execSync(`docker build . -f ./docker/Dockerfile.prod -t stringsync:${tag}`, {
+  private build(dockerfile: string, image: string, tag: string) {
+    execSync(`docker build . -f ./docker/${dockerfile} -t ${image}:${tag}`, {
       cwd: ROOT_PATH,
       stdio: 'inherit',
     });
