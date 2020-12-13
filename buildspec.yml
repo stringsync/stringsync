@@ -22,8 +22,8 @@ phases:
       - echo Building images...
       - ./bin/ss build -p
       - echo Testing images...
-      - ./bin/ss test api
-      - ./bin/ss test web
+      # - ./bin/ss test api
+      # - ./bin/ss test web
 
   post_build:
     commands:
