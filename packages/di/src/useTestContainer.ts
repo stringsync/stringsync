@@ -4,13 +4,17 @@ import { Pkg, TestContainerRef } from './types';
 export const useTestContainer = (pkg: Pkg): TestContainerRef => {
   const ref: Partial<TestContainerRef> = {};
 
-  beforeEach(async () => {
+  const init = async () => {
     const { container, setup, cleanup, teardown } = await createContainer(pkg);
     ref.container = container;
     ref.setup = setup;
     ref.cleanup = cleanup;
     ref.teardown = teardown;
-  });
+  };
+
+  beforeAll(init);
+
+  beforeEach(init);
 
   beforeEach(async () => {
     if (ref.setup && ref.container) {
