@@ -1,10 +1,11 @@
 export const REPOS_TYPES = {
-  ReposConfig: Symbol('ReposConfig'),
-  UserLoader: Symbol('UserLoader'),
-  UserRepo: Symbol('UserRepo'),
+  Factory: Symbol('Factory'),
   NotationLoader: Symbol('NotationLoader'),
   NotationRepo: Symbol('NotationRepo'),
+  ReposConfig: Symbol('ReposConfig'),
+  TaggingRepo: Symbol('TaggingRepo'),
   TagLoader: Symbol('TagLoader'),
   TagRepo: Symbol('TagRepo'),
-  TaggingRepo: Symbol('TaggingRepo'),
+  UserLoader: Symbol('UserLoader'),
+  UserRepo: Symbol('UserRepo'),
 };

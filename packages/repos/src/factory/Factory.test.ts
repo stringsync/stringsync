@@ -1,176 +1,186 @@
-// import { randInt, randStr } from '@stringsync/common';
-// import { TYPES, useTestContainer } from '@stringsync/di';
-// import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from '../types';
-// import { Factory } from './Factory';
+import { randInt, randStr } from '@stringsync/common';
+import { Container, useTestContainer } from '@stringsync/di';
+import { REPOS } from '../REPOS';
+import { REPOS_TYPES } from '../REPOS_TYPES';
+import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from '../types';
+import { Factory } from './Factory';
 
-// const container = useTestContainer();
+const TYPES = { ...REPOS_TYPES };
 
-// let factory: Factory;
+const ref = useTestContainer(REPOS);
 
-// let userRepo: UserRepo;
-// let notationRepo: NotationRepo;
-// let taggingRepo: TaggingRepo;
-// let tagRepo: TagRepo;
+let container: Container;
 
-// beforeEach(async () => {
-//   factory = container.get<Factory>(TYPES.Factory);
+let factory: Factory;
 
-//   userRepo = factory.userRepo;
-//   notationRepo = factory.notationRepo;
-//   taggingRepo = factory.taggingRepo;
-//   tagRepo = factory.tagRepo;
-// });
+let userRepo: UserRepo;
+let notationRepo: NotationRepo;
+let taggingRepo: TaggingRepo;
+let tagRepo: TagRepo;
 
-// describe('createRandUser', () => {
-//   it('can accept attrs', async () => {
-//     const id = randStr(8);
-//     const username = randStr(8);
+beforeEach(() => {
+  container = ref.container;
+});
 
-//     const user = await factory.createRandUser({ id, username });
+beforeEach(async () => {
+  factory = container.get<Factory>(TYPES.Factory);
 
-//     expect(user.id).toBe(id);
-//     expect(user.username).toBe(username);
-//   });
+  userRepo = factory.userRepo;
+  notationRepo = factory.notationRepo;
+  taggingRepo = factory.taggingRepo;
+  tagRepo = factory.tagRepo;
+});
 
-//   it('persists data', async () => {
-//     const user = await factory.createRandUser();
+describe('createRandUser', () => {
+  it('can accept attrs', async () => {
+    const id = randStr(8);
+    const username = randStr(8);
 
-//     const foundUser = await userRepo.find(user.id);
-//     expect(foundUser).not.toBeNull();
-//     expect(foundUser!.id).toBe(user.id);
-//   });
-// });
+    const user = await factory.createRandUser({ id, username });
 
-// describe('createRandNotation', () => {
-//   it('can accept attrs', async () => {
-//     const id = randStr(8);
-//     const songName = randStr(8);
+    expect(user.id).toBe(id);
+    expect(user.username).toBe(username);
+  });
 
-//     const notation = await factory.createRandNotation({ id, songName });
+  it('persists data', async () => {
+    const user = await factory.createRandUser();
 
-//     expect(notation.id).toBe(id);
-//     expect(notation.songName).toBe(songName);
-//   });
+    const foundUser = await userRepo.find(user.id);
+    expect(foundUser).not.toBeNull();
+    expect(foundUser!.id).toBe(user.id);
+  });
+});
 
-//   it('persists data', async () => {
-//     const notation = await factory.createRandNotation();
+describe('createRandNotation', () => {
+  it('can accept attrs', async () => {
+    const id = randStr(8);
+    const songName = randStr(8);
 
-//     const foundNotation = await notationRepo.find(notation.id);
-//     expect(foundNotation).not.toBeNull();
-//     expect(foundNotation!.id).toBe(notation.id);
-//   });
+    const notation = await factory.createRandNotation({ id, songName });
 
-//   it('creates a transcriber', async () => {
-//     const notation = await factory.createRandNotation();
+    expect(notation.id).toBe(id);
+    expect(notation.songName).toBe(songName);
+  });
 
-//     const transcriber = await userRepo.find(notation.transcriberId);
-//     expect(transcriber).not.toBeNull();
-//     expect(transcriber!.id).toBe(notation.transcriberId);
-//   });
-// });
+  it('persists data', async () => {
+    const notation = await factory.createRandNotation();
 
-// describe('createRandTag', () => {
-//   it('can accept attrs', async () => {
-//     const id = randStr(8);
-//     const name = randStr(10);
+    const foundNotation = await notationRepo.find(notation.id);
+    expect(foundNotation).not.toBeNull();
+    expect(foundNotation!.id).toBe(notation.id);
+  });
 
-//     const tag = await factory.createRandTag({ id, name });
+  it('creates a transcriber', async () => {
+    const notation = await factory.createRandNotation();
 
-//     expect(tag.id).toBe(id);
-//     expect(tag.name).toBe(name);
-//   });
+    const transcriber = await userRepo.find(notation.transcriberId);
+    expect(transcriber).not.toBeNull();
+    expect(transcriber!.id).toBe(notation.transcriberId);
+  });
+});
 
-//   it('persists data', async () => {
-//     const tag = await factory.createRandTag();
+describe('createRandTag', () => {
+  it('can accept attrs', async () => {
+    const id = randStr(8);
+    const name = randStr(10);
 
-//     const foundTag = await tagRepo.find(tag.id);
-//     expect(foundTag).not.toBeNull();
-//     expect(foundTag!.id).toBe(tag.id);
-//   });
-// });
+    const tag = await factory.createRandTag({ id, name });
 
-// describe('createRandTagging', () => {
-//   it('can accept attrs', async () => {
-//     const id = randStr(8);
+    expect(tag.id).toBe(id);
+    expect(tag.name).toBe(name);
+  });
 
-//     const tagging = await factory.createRandTagging({ id });
+  it('persists data', async () => {
+    const tag = await factory.createRandTag();
 
-//     expect(tagging.id).toBe(id);
-//   });
+    const foundTag = await tagRepo.find(tag.id);
+    expect(foundTag).not.toBeNull();
+    expect(foundTag!.id).toBe(tag.id);
+  });
+});
 
-//   it('persists data', async () => {
-//     const tagging = await factory.createRandTagging();
+describe('createRandTagging', () => {
+  it('can accept attrs', async () => {
+    const id = randStr(8);
 
-//     const foundTagging = await taggingRepo.find(tagging.id);
-//     expect(foundTagging).not.toBeNull();
-//     expect(foundTagging!.id).toBe(tagging.id);
-//   });
+    const tagging = await factory.createRandTagging({ id });
 
-//   it('creates a notation', async () => {
-//     const tagging = await factory.createRandTagging();
+    expect(tagging.id).toBe(id);
+  });
 
-//     const notation = await notationRepo.find(tagging.notationId);
-//     expect(notation).not.toBeNull();
-//     expect(notation!.id).toBe(tagging.notationId);
-//   });
+  it('persists data', async () => {
+    const tagging = await factory.createRandTagging();
 
-//   it('creates a tag', async () => {
-//     const tagging = await factory.createRandTagging();
+    const foundTagging = await taggingRepo.find(tagging.id);
+    expect(foundTagging).not.toBeNull();
+    expect(foundTagging!.id).toBe(tagging.id);
+  });
 
-//     const tag = await tagRepo.find(tagging.tagId);
-//     expect(tag).not.toBeNull();
-//     expect(tag!.id).toBe(tagging.tagId);
-//   });
-// });
+  it('creates a notation', async () => {
+    const tagging = await factory.createRandTagging();
 
-// describe('createRandUsers', () => {
-//   it('creates num users', async () => {
-//     const num = randInt(2, 5);
+    const notation = await notationRepo.find(tagging.notationId);
+    expect(notation).not.toBeNull();
+    expect(notation!.id).toBe(tagging.notationId);
+  });
 
-//     await factory.createRandUsers(num);
+  it('creates a tag', async () => {
+    const tagging = await factory.createRandTagging();
 
-//     const userCount = await userRepo.count();
-//     expect(userCount).toBe(num);
-//   });
-// });
+    const tag = await tagRepo.find(tagging.tagId);
+    expect(tag).not.toBeNull();
+    expect(tag!.id).toBe(tagging.tagId);
+  });
+});
 
-// describe('createRandNotations', () => {
-//   it('creates num notations and transcribers', async () => {
-//     const num = randInt(2, 5);
+describe('createRandUsers', () => {
+  it('creates num users', async () => {
+    const num = randInt(2, 5);
 
-//     await factory.createRandNotations(num);
+    await factory.createRandUsers(num);
 
-//     const [notationCount, userCount] = await Promise.all([notationRepo.count(), userRepo.count()]);
-//     expect(notationCount).toBe(num);
-//     expect(userCount).toBe(num);
-//   });
-// });
+    const userCount = await userRepo.count();
+    expect(userCount).toBe(num);
+  });
+});
 
-// describe('createRandTags', () => {
-//   it('creates num tags', async () => {
-//     const num = randInt(2, 5);
+describe('createRandNotations', () => {
+  it('creates num notations and transcribers', async () => {
+    const num = randInt(2, 5);
 
-//     await factory.createRandTags(num);
+    await factory.createRandNotations(num);
 
-//     const tagCount = await tagRepo.count();
-//     expect(tagCount).toBe(num);
-//   });
-// });
+    const [notationCount, userCount] = await Promise.all([notationRepo.count(), userRepo.count()]);
+    expect(notationCount).toBe(num);
+    expect(userCount).toBe(num);
+  });
+});
 
-// describe('createRandTaggings', () => {
-//   it('creates num taggings, notations, and tags', async () => {
-//     const num = randInt(2, 5);
+describe('createRandTags', () => {
+  it('creates num tags', async () => {
+    const num = randInt(2, 5);
 
-//     await factory.createRandTaggings(num);
+    await factory.createRandTags(num);
 
-//     const [taggingCount, notationCount, tagCount] = await Promise.all([
-//       taggingRepo.count(),
-//       notationRepo.count(),
-//       tagRepo.count(),
-//     ]);
+    const tagCount = await tagRepo.count();
+    expect(tagCount).toBe(num);
+  });
+});
 
-//     expect(taggingCount).toBe(num);
-//     expect(notationCount).toBe(num);
-//     expect(tagCount).toBe(num);
-//   });
-// });
+describe('createRandTaggings', () => {
+  it('creates num taggings, notations, and tags', async () => {
+    const num = randInt(2, 5);
+
+    await factory.createRandTaggings(num);
+
+    const [taggingCount, notationCount, tagCount] = await Promise.all([
+      taggingRepo.count(),
+      notationRepo.count(),
+      tagRepo.count(),
+    ]);
+
+    expect(taggingCount).toBe(num);
+    expect(notationCount).toBe(num);
+    expect(tagCount).toBe(num);
+  });
+});

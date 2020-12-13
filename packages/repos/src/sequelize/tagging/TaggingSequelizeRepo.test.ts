@@ -1,121 +1,133 @@
-// import { EntityBuilder, randStr } from '@stringsync/common';
-// import { TYPES, useTestContainer } from '@stringsync/di';
-// import { Notation, Tag, Tagging, User } from '@stringsync/domain';
-// import { isPlainObject } from 'lodash';
-// import { NotationSequelizeRepo } from '../notation';
-// import { TagSequelizeRepo } from '../tag';
-// import { UserSequelizeRepo } from '../user';
-// import { TaggingSequelizeRepo } from './TaggingSequelizeRepo';
+import { randStr } from '@stringsync/common';
+import { Container, useTestContainer } from '@stringsync/di';
+import { EntityBuilder, Notation, Tag, Tagging, User } from '@stringsync/domain';
+import { isPlainObject } from 'lodash';
+import { REPOS } from '../../REPOS';
+import { REPOS_TYPES } from '../../REPOS_TYPES';
+import { NotationSequelizeRepo } from '../notation';
+import { TagSequelizeRepo } from '../tag';
+import { UserSequelizeRepo } from '../user';
+import { TaggingSequelizeRepo } from './TaggingSequelizeRepo';
 
-// const container = useTestContainer();
+const TYPES = { ...REPOS_TYPES };
 
-// let user1: User;
-// let user2: User;
+const ref = useTestContainer(REPOS);
 
-// let notation1: Notation;
-// let notation2: Notation;
+let container: Container;
 
-// let tag1: Tag;
-// let tag2: Tag;
+let taggingRepo: TaggingSequelizeRepo;
 
-// let taggingRepo: TaggingSequelizeRepo;
-// let tagging1: Tagging;
-// let tagging2: Tagging;
+let user1: User;
+let user2: User;
 
-// beforeEach(async () => {
-//   const userRepo = container.get<UserSequelizeRepo>(TYPES.UserSequelizeRepo);
-//   [user1, user2] = await userRepo.bulkCreate([EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser()]);
+let notation1: Notation;
+let notation2: Notation;
 
-//   const notationRepo = container.get<NotationSequelizeRepo>(TYPES.NotationSequelizeRepo);
-//   [notation1, notation2] = await notationRepo.bulkCreate([
-//     EntityBuilder.buildRandNotation({ transcriberId: user1.id }),
-//     EntityBuilder.buildRandNotation({ transcriberId: user2.id }),
-//   ]);
+let tag1: Tag;
+let tag2: Tag;
 
-//   const tagRepo = container.get<TagSequelizeRepo>(TYPES.TagSequelizeRepo);
-//   [tag1, tag2] = await tagRepo.bulkCreate([EntityBuilder.buildRandTag(), EntityBuilder.buildRandTag()]);
+let tagging1: Tagging;
+let tagging2: Tagging;
 
-//   taggingRepo = container.get<TaggingSequelizeRepo>(TYPES.TaggingSequelizeRepo);
-//   [tagging1, tagging2] = await taggingRepo.bulkCreate([
-//     EntityBuilder.buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
-//     EntityBuilder.buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
-//     EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
-//   ]);
-// });
+beforeEach(() => {
+  container = ref.container;
+  container.rebind<TaggingSequelizeRepo>(TYPES.TaggingRepo).to(TaggingSequelizeRepo);
+});
 
-// describe('count', () => {
-//   it('counts the number of taggings', async () => {
-//     const count = await taggingRepo.count();
-//     expect(count).toBe(3);
-//   });
-// });
+beforeEach(async () => {
+  const userRepo = container.get<UserSequelizeRepo>(TYPES.UserRepo);
+  [user1, user2] = await userRepo.bulkCreate([EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser()]);
 
-// describe('create', () => {
-//   it('creates a tagging record', async () => {
-//     const countBefore = await taggingRepo.count();
-//     await taggingRepo.create(EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag2.id }));
-//     const countAfter = await taggingRepo.count();
+  const notationRepo = container.get<NotationSequelizeRepo>(TYPES.NotationRepo);
+  [notation1, notation2] = await notationRepo.bulkCreate([
+    EntityBuilder.buildRandNotation({ transcriberId: user1.id }),
+    EntityBuilder.buildRandNotation({ transcriberId: user2.id }),
+  ]);
 
-//     expect(countAfter).toBe(countBefore + 1);
-//   });
+  const tagRepo = container.get<TagSequelizeRepo>(TYPES.TagRepo);
+  [tag1, tag2] = await tagRepo.bulkCreate([EntityBuilder.buildRandTag(), EntityBuilder.buildRandTag()]);
 
-//   it('creates a findable tagging record', async () => {
-//     const { id } = await taggingRepo.create(
-//       EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag2.id })
-//     );
-//     const tagging = await taggingRepo.find(id);
+  taggingRepo = container.get<TaggingSequelizeRepo>(TYPES.TaggingRepo);
+  [tagging1, tagging2] = await taggingRepo.bulkCreate([
+    EntityBuilder.buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
+    EntityBuilder.buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
+    EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
+  ]);
+});
 
-//     expect(tagging).not.toBeNull();
-//     expect(tagging!.id).toBe(id);
-//   });
+describe('count', () => {
+  it('counts the number of taggings', async () => {
+    const count = await taggingRepo.count();
+    expect(count).toBe(3);
+  });
+});
 
-//   it('returns a plain object', async () => {
-//     const tagging = await taggingRepo.create(
-//       EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag2.id })
-//     );
+describe('create', () => {
+  it('creates a tagging record', async () => {
+    const countBefore = await taggingRepo.count();
+    await taggingRepo.create(EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag2.id }));
+    const countAfter = await taggingRepo.count();
 
-//     expect(isPlainObject(tagging)).toBe(true);
-//   });
+    expect(countAfter).toBe(countBefore + 1);
+  });
 
-//   it('disallows duplicate ids', async () => {
-//     const tagging = EntityBuilder.buildRandTagging({ id: randStr(8), notationId: notation2.id, tagId: tag2.id });
+  it('creates a findable tagging record', async () => {
+    const { id } = await taggingRepo.create(
+      EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag2.id })
+    );
+    const tagging = await taggingRepo.find(id);
 
-//     await expect(taggingRepo.create(tagging)).resolves.not.toThrow();
-//     await expect(taggingRepo.create(tagging)).rejects.toThrow();
-//   });
-// });
+    expect(tagging).not.toBeNull();
+    expect(tagging!.id).toBe(id);
+  });
 
-// describe('find', () => {
-//   it('returns the tagging matching the id', async () => {
-//     const tagging = await taggingRepo.find(tagging1.id);
+  it('returns a plain object', async () => {
+    const tagging = await taggingRepo.create(
+      EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag2.id })
+    );
 
-//     expect(tagging).not.toBeNull();
-//     expect(tagging!.id).toBe(tagging1.id);
-//   });
+    expect(isPlainObject(tagging)).toBe(true);
+  });
 
-//   it('returns a plain object', async () => {
-//     const tagging = await taggingRepo.find(tagging1.id);
+  it('disallows duplicate ids', async () => {
+    const tagging = EntityBuilder.buildRandTagging({ id: randStr(8), notationId: notation2.id, tagId: tag2.id });
 
-//     expect(isPlainObject(tagging)).toBe(true);
-//   });
+    await expect(taggingRepo.create(tagging)).resolves.not.toThrow();
+    await expect(taggingRepo.create(tagging)).rejects.toThrow();
+  });
+});
 
-//   it('returns null when no user found', async () => {
-//     const tagging = await taggingRepo.find('id');
+describe('find', () => {
+  it('returns the tagging matching the id', async () => {
+    const tagging = await taggingRepo.find(tagging1.id);
 
-//     expect(tagging).toBeNull();
-//   });
-// });
+    expect(tagging).not.toBeNull();
+    expect(tagging!.id).toBe(tagging1.id);
+  });
 
-// describe('update', () => {
-//   it('updates a tagging', async () => {
-//     const tagging = await taggingRepo.update(tagging2.id, { notationId: notation1.id });
+  it('returns a plain object', async () => {
+    const tagging = await taggingRepo.find(tagging1.id);
 
-//     expect(tagging.notationId).toBe(notation1.id);
-//   });
+    expect(isPlainObject(tagging)).toBe(true);
+  });
 
-//   it('returns a plain object', async () => {
-//     const tagging = await taggingRepo.update(tagging2.id, { notationId: notation1.id });
+  it('returns null when no user found', async () => {
+    const tagging = await taggingRepo.find('id');
 
-//     expect(isPlainObject(tagging)).toBe(true);
-//   });
-// });
+    expect(tagging).toBeNull();
+  });
+});
+
+describe('update', () => {
+  it('updates a tagging', async () => {
+    const tagging = await taggingRepo.update(tagging2.id, { notationId: notation1.id });
+
+    expect(tagging.notationId).toBe(notation1.id);
+  });
+
+  it('returns a plain object', async () => {
+    const tagging = await taggingRepo.update(tagging2.id, { notationId: notation1.id });
+
+    expect(isPlainObject(tagging)).toBe(true);
+  });
+});

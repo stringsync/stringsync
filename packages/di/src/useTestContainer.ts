@@ -14,8 +14,6 @@ export const useTestContainer = (pkg: Pkg): TestContainerRef => {
 
   beforeAll(init);
 
-  beforeEach(init);
-
   beforeEach(async () => {
     if (ref.setup && ref.container) {
       await ref.setup(ref.container);

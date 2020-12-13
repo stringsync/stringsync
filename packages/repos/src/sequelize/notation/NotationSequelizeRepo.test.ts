@@ -6,8 +6,6 @@ import { first, isPlainObject, last, sortBy, take, times } from 'lodash';
 import { REPOS } from '../../REPOS';
 import { REPOS_TYPES } from '../../REPOS_TYPES';
 import { TaggingRepo, TagRepo } from '../../types';
-import { UserSequelizeLoader } from '../user';
-import { NotationSequelizeLoader } from './NotationSequelizeLoader';
 import { NotationSequelizeRepo } from './NotationSequelizeRepo';
 
 const TYPES = { ...REPOS_TYPES };
@@ -24,11 +22,7 @@ let transcriberId: string;
 
 beforeEach(() => {
   container = ref.container;
-
   container.rebind<NotationSequelizeRepo>(TYPES.NotationRepo).to(NotationSequelizeRepo);
-  container.rebind<NotationSequelizeLoader>(TYPES.NotationLoader).to(NotationSequelizeLoader);
-  container.rebind<UserSequelizeRepo>(TYPES.UserRepo).to(UserSequelizeRepo);
-  container.rebind<UserSequelizeLoader>(TYPES.UserLoader).to(UserSequelizeLoader);
 });
 
 beforeEach(async () => {

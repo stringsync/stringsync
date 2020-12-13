@@ -1,5 +1,6 @@
 import { DB } from '@stringsync/db';
 import { Pkg } from '@stringsync/di';
+import { Factory } from './factory';
 import { ReposConfig, REPOS_CONFIG } from './REPOS_CONFIG';
 import { REPOS_TYPES } from './REPOS_TYPES';
 import {
@@ -21,6 +22,8 @@ export const REPOS: Pkg = {
   bindings: async (bind) => {
     const config = REPOS_CONFIG();
     bind<ReposConfig>(TYPES.ReposConfig).toConstantValue(config);
+
+    bind<Factory>(TYPES.Factory).to(Factory);
 
     bind<UserLoader>(TYPES.UserLoader).to(UserSequelizeLoader);
     bind<UserRepo>(TYPES.UserRepo).to(UserSequelizeRepo);

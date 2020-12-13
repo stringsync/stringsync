@@ -1,290 +1,301 @@
-// import { EntityBuilder, randStr } from '@stringsync/common';
-// import { TYPES, useTestContainer } from '@stringsync/di';
-// import { User } from '@stringsync/domain';
-// import { isPlainObject, sortBy, take } from 'lodash';
-// import * as uuid from 'uuid';
-// import { UserSequelizeRepo } from './UserSequelizeRepo';
+import { randStr } from '@stringsync/common';
+import { Container, useTestContainer } from '@stringsync/di';
+import { EntityBuilder, User } from '@stringsync/domain';
+import { isPlainObject, sortBy, take } from 'lodash';
+import * as uuid from 'uuid';
+import { REPOS } from '../../REPOS';
+import { REPOS_TYPES } from '../../REPOS_TYPES';
+import { UserSequelizeRepo } from './UserSequelizeRepo';
 
-// const container = useTestContainer();
+const TYPES = { ...REPOS_TYPES };
 
-// let userRepo: UserSequelizeRepo;
+const ref = useTestContainer(REPOS);
 
-// beforeEach(() => {
-//   userRepo = container.get<UserSequelizeRepo>(TYPES.UserSequelizeRepo);
-// });
+let container: Container;
 
-// describe('count', () => {
-//   it('counts the number of users', async () => {
-//     await userRepo.bulkCreate([
-//       EntityBuilder.buildRandUser(),
-//       EntityBuilder.buildRandUser(),
-//       EntityBuilder.buildRandUser(),
-//     ]);
+let userRepo: UserSequelizeRepo;
 
-//     const count = await userRepo.count();
+beforeEach(() => {
+  container = ref.container;
+  container.rebind<UserSequelizeRepo>(TYPES.UserRepo).to(UserSequelizeRepo);
+});
 
-//     expect(count).toBe(3);
-//   });
-// });
+beforeEach(() => {
+  userRepo = container.get<UserSequelizeRepo>(TYPES.UserRepo);
+});
 
-// describe('create', () => {
-//   it('creates a user record', async () => {
-//     const countBefore = await userRepo.count();
-//     await userRepo.create(EntityBuilder.buildRandUser());
-//     const countAfter = await userRepo.count();
+describe('count', () => {
+  it('counts the number of users', async () => {
+    await userRepo.bulkCreate([
+      EntityBuilder.buildRandUser(),
+      EntityBuilder.buildRandUser(),
+      EntityBuilder.buildRandUser(),
+    ]);
 
-//     expect(countAfter).toBe(countBefore + 1);
-//   });
+    const count = await userRepo.count();
 
-//   it('creates a findable user record', async () => {
-//     const { id } = await userRepo.create(EntityBuilder.buildRandUser());
-//     const user = await userRepo.find(id);
+    expect(count).toBe(3);
+  });
+});
 
-//     expect(user).not.toBeNull();
-//     expect(user!.id).toBe(id);
-//   });
+describe('create', () => {
+  it('creates a user record', async () => {
+    const countBefore = await userRepo.count();
+    await userRepo.create(EntityBuilder.buildRandUser());
+    const countAfter = await userRepo.count();
 
-//   it('returns a plain object', async () => {
-//     const user = await userRepo.create(EntityBuilder.buildRandUser());
+    expect(countAfter).toBe(countBefore + 1);
+  });
 
-//     expect(isPlainObject(user)).toBe(true);
-//   });
+  it('creates a findable user record', async () => {
+    const { id } = await userRepo.create(EntityBuilder.buildRandUser());
+    const user = await userRepo.find(id);
 
-//   it('disallows duplicate ids', async () => {
-//     const user = EntityBuilder.buildRandUser({ id: 'id' });
+    expect(user).not.toBeNull();
+    expect(user!.id).toBe(id);
+  });
 
-//     await expect(userRepo.create(user)).resolves.not.toThrow();
-//     await expect(userRepo.create(user)).rejects.toThrow();
-//   });
-// });
+  it('returns a plain object', async () => {
+    const user = await userRepo.create(EntityBuilder.buildRandUser());
 
-// describe('find', () => {
-//   it('returns the user matching the id', async () => {
-//     const id = randStr(8);
-//     await userRepo.create(EntityBuilder.buildRandUser({ id }));
+    expect(isPlainObject(user)).toBe(true);
+  });
 
-//     const user = await userRepo.find(id);
+  it('disallows duplicate ids', async () => {
+    const user = EntityBuilder.buildRandUser({ id: 'id' });
 
-//     expect(user).not.toBeNull();
-//     expect(user!.id).toBe(id);
-//   });
+    await expect(userRepo.create(user)).resolves.not.toThrow();
+    await expect(userRepo.create(user)).rejects.toThrow();
+  });
+});
 
-//   it('returns a plain object', async () => {
-//     const { id } = await userRepo.create(EntityBuilder.buildRandUser());
+describe('find', () => {
+  it('returns the user matching the id', async () => {
+    const id = randStr(8);
+    await userRepo.create(EntityBuilder.buildRandUser({ id }));
 
-//     const user = await userRepo.find(id);
+    const user = await userRepo.find(id);
 
-//     expect(isPlainObject(user)).toBe(true);
-//   });
+    expect(user).not.toBeNull();
+    expect(user!.id).toBe(id);
+  });
 
-//   it('returns null when no user found', async () => {
-//     const user = await userRepo.find('id');
+  it('returns a plain object', async () => {
+    const { id } = await userRepo.create(EntityBuilder.buildRandUser());
 
-//     expect(user).toBeNull();
-//   });
-// });
+    const user = await userRepo.find(id);
 
-// describe('findAll', () => {
-//   it('returns all user records', async () => {
-//     const users = [EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser()];
-//     await userRepo.bulkCreate(users);
+    expect(isPlainObject(user)).toBe(true);
+  });
 
-//     const foundUsers = await userRepo.findAll();
+  it('returns null when no user found', async () => {
+    const user = await userRepo.find('id');
 
-//     expect(sortBy(foundUsers, 'id')).toStrictEqual(sortBy(users, 'id'));
-//   });
+    expect(user).toBeNull();
+  });
+});
 
-//   it('returns plain objects', async () => {
-//     const users = [EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser()];
-//     await userRepo.bulkCreate(users);
+describe('findAll', () => {
+  it('returns all user records', async () => {
+    const users = [EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser()];
+    await userRepo.bulkCreate(users);
 
-//     const foundUsers = await userRepo.findAll();
+    const foundUsers = await userRepo.findAll();
 
-//     expect(foundUsers.every(isPlainObject)).toBe(true);
-//   });
-// });
+    expect(sortBy(foundUsers, 'id')).toStrictEqual(sortBy(users, 'id'));
+  });
 
-// describe('findByUsernameOrEmail', () => {
-//   it('finds by username', async () => {
-//     const user = EntityBuilder.buildRandUser();
-//     await userRepo.create(user);
+  it('returns plain objects', async () => {
+    const users = [EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser()];
+    await userRepo.bulkCreate(users);
 
-//     const foundUser = await userRepo.findByUsernameOrEmail(user.username);
+    const foundUsers = await userRepo.findAll();
 
-//     expect(foundUser).not.toBeNull();
-//     expect(foundUser!.id).toBe(user.id);
-//   });
+    expect(foundUsers.every(isPlainObject)).toBe(true);
+  });
+});
 
-//   it('finds by email', async () => {
-//     const user = EntityBuilder.buildRandUser();
-//     await userRepo.create(user);
+describe('findByUsernameOrEmail', () => {
+  it('finds by username', async () => {
+    const user = EntityBuilder.buildRandUser();
+    await userRepo.create(user);
 
-//     const foundUser = await userRepo.findByUsernameOrEmail(user.email);
+    const foundUser = await userRepo.findByUsernameOrEmail(user.username);
 
-//     expect(foundUser).not.toBeNull();
-//     expect(foundUser!.id).toBe(user.id);
-//   });
+    expect(foundUser).not.toBeNull();
+    expect(foundUser!.id).toBe(user.id);
+  });
 
-//   it('returns a plain object', async () => {
-//     const user = EntityBuilder.buildRandUser();
-//     await userRepo.create(user);
+  it('finds by email', async () => {
+    const user = EntityBuilder.buildRandUser();
+    await userRepo.create(user);
 
-//     const foundUser = await userRepo.findByUsernameOrEmail(user.username);
+    const foundUser = await userRepo.findByUsernameOrEmail(user.email);
 
-//     expect(isPlainObject(foundUser)).toBe(true);
-//   });
-// });
+    expect(foundUser).not.toBeNull();
+    expect(foundUser!.id).toBe(user.id);
+  });
 
-// describe('findByEmail', () => {
-//   it('finds by email', async () => {
-//     const user = EntityBuilder.buildRandUser();
-//     await userRepo.create(user);
+  it('returns a plain object', async () => {
+    const user = EntityBuilder.buildRandUser();
+    await userRepo.create(user);
 
-//     const foundUser = await userRepo.findByEmail(user.email);
+    const foundUser = await userRepo.findByUsernameOrEmail(user.username);
 
-//     expect(foundUser).not.toBeNull();
-//     expect(foundUser!.id).toBe(user.id);
-//   });
+    expect(isPlainObject(foundUser)).toBe(true);
+  });
+});
 
-//   it('returns a plain object', async () => {
-//     const user = EntityBuilder.buildRandUser();
-//     await userRepo.create(user);
+describe('findByEmail', () => {
+  it('finds by email', async () => {
+    const user = EntityBuilder.buildRandUser();
+    await userRepo.create(user);
 
-//     const foundUser = await userRepo.findByEmail(user.email);
+    const foundUser = await userRepo.findByEmail(user.email);
 
-//     expect(isPlainObject(foundUser)).toBe(true);
-//   });
-// });
+    expect(foundUser).not.toBeNull();
+    expect(foundUser!.id).toBe(user.id);
+  });
 
-// describe('findByResetPasswordToken', () => {
-//   it('finds by resetPasswordToken', async () => {
-//     const resetPasswordToken = uuid.v4();
-//     const user = EntityBuilder.buildRandUser({ resetPasswordToken });
-//     await userRepo.create(user);
+  it('returns a plain object', async () => {
+    const user = EntityBuilder.buildRandUser();
+    await userRepo.create(user);
 
-//     const foundUser = await userRepo.findByResetPasswordToken(resetPasswordToken);
+    const foundUser = await userRepo.findByEmail(user.email);
 
-//     expect(foundUser).not.toBeNull();
-//     expect(foundUser!.id).toBe(user.id);
-//   });
+    expect(isPlainObject(foundUser)).toBe(true);
+  });
+});
 
-//   it('returns a plain object', async () => {
-//     const resetPasswordToken = uuid.v4();
-//     const user = EntityBuilder.buildRandUser({ resetPasswordToken });
-//     await userRepo.create(user);
+describe('findByResetPasswordToken', () => {
+  it('finds by resetPasswordToken', async () => {
+    const resetPasswordToken = uuid.v4();
+    const user = EntityBuilder.buildRandUser({ resetPasswordToken });
+    await userRepo.create(user);
 
-//     const foundUser = await userRepo.findByResetPasswordToken(resetPasswordToken);
+    const foundUser = await userRepo.findByResetPasswordToken(resetPasswordToken);
 
-//     expect(isPlainObject(foundUser)).toBe(true);
-//   });
-// });
+    expect(foundUser).not.toBeNull();
+    expect(foundUser!.id).toBe(user.id);
+  });
 
-// describe('update', () => {
-//   it('updates a user', async () => {
-//     const user = await userRepo.create(EntityBuilder.buildRandUser());
-//     const username = randStr(8);
+  it('returns a plain object', async () => {
+    const resetPasswordToken = uuid.v4();
+    const user = EntityBuilder.buildRandUser({ resetPasswordToken });
+    await userRepo.create(user);
 
-//     const updatedUser = await userRepo.update(user.id, { username });
+    const foundUser = await userRepo.findByResetPasswordToken(resetPasswordToken);
 
-//     expect(updatedUser.username).toBe(username);
-//   });
+    expect(isPlainObject(foundUser)).toBe(true);
+  });
+});
 
-//   it('returns plain objects', async () => {
-//     const user = await userRepo.create(EntityBuilder.buildRandUser());
-//     const username = randStr(8);
+describe('update', () => {
+  it('updates a user', async () => {
+    const user = await userRepo.create(EntityBuilder.buildRandUser());
+    const username = randStr(8);
 
-//     const updatedUser = await userRepo.update(user.id, { username });
+    const updatedUser = await userRepo.update(user.id, { username });
 
-//     expect(updatedUser.username).toBe(username);
-//   });
+    expect(updatedUser.username).toBe(username);
+  });
 
-//   it('unsets confirmationToken when updating email', async () => {
-//     const confirmationToken = uuid.v4();
-//     const user = await userRepo.create(EntityBuilder.buildRandUser({ confirmationToken }));
+  it('returns plain objects', async () => {
+    const user = await userRepo.create(EntityBuilder.buildRandUser());
+    const username = randStr(8);
 
-//     const email = `${randStr(8)}@example.com`;
-//     const updatedUser = await userRepo.update(user.id, { email });
+    const updatedUser = await userRepo.update(user.id, { username });
 
-//     expect(updatedUser.email).toBe(email);
-//     expect(updatedUser.confirmationToken).toBeNull();
-//     expect(updatedUser.confirmedAt).toBeNull();
-//   });
+    expect(updatedUser.username).toBe(username);
+  });
 
-//   it('unsets confirmedAt when updating email', async () => {
-//     const confirmedAt = new Date();
-//     const user = await userRepo.create(EntityBuilder.buildRandUser({ confirmedAt }));
+  it('unsets confirmationToken when updating email', async () => {
+    const confirmationToken = uuid.v4();
+    const user = await userRepo.create(EntityBuilder.buildRandUser({ confirmationToken }));
 
-//     const email = `${randStr(8)}@example.com`;
-//     const updatedUser = await userRepo.update(user.id, { email });
+    const email = `${randStr(8)}@example.com`;
+    const updatedUser = await userRepo.update(user.id, { email });
 
-//     expect(updatedUser.email).toBe(email);
-//     expect(updatedUser.confirmationToken).toBeNull();
-//     expect(updatedUser.confirmedAt).toBeNull();
-//   });
-// });
+    expect(updatedUser.email).toBe(email);
+    expect(updatedUser.confirmationToken).toBeNull();
+    expect(updatedUser.confirmedAt).toBeNull();
+  });
 
-// describe('findPage', () => {
-//   const NUM_USERS = 21;
+  it('unsets confirmedAt when updating email', async () => {
+    const confirmedAt = new Date();
+    const user = await userRepo.create(EntityBuilder.buildRandUser({ confirmedAt }));
 
-//   let users: User[];
+    const email = `${randStr(8)}@example.com`;
+    const updatedUser = await userRepo.update(user.id, { email });
 
-//   beforeEach(async () => {
-//     users = new Array(NUM_USERS);
-//     for (let ndx = 0; ndx < NUM_USERS; ndx++) {
-//       users[ndx] = EntityBuilder.buildRandUser({ cursor: ndx + 1 });
-//     }
-//     users = await userRepo.bulkCreate(users);
-//   });
+    expect(updatedUser.email).toBe(email);
+    expect(updatedUser.confirmationToken).toBeNull();
+    expect(updatedUser.confirmedAt).toBeNull();
+  });
+});
 
-//   it('returns the first 20 records by default', async () => {
-//     const userConnection = await userRepo.findPage({});
+describe('findPage', () => {
+  const NUM_USERS = 21;
 
-//     const actualUsers = userConnection.edges.map((edge) => edge.node);
-//     const expectedUsers = take(sortBy(users, 'cursor'), 20);
+  let users: User[];
 
-//     expect(actualUsers).toHaveLength(20);
-//     expect(actualUsers).toIncludeSameMembers(expectedUsers);
-//   });
+  beforeEach(async () => {
+    users = new Array(NUM_USERS);
+    for (let ndx = 0; ndx < NUM_USERS; ndx++) {
+      users[ndx] = EntityBuilder.buildRandUser({ cursor: ndx + 1 });
+    }
+    users = await userRepo.bulkCreate(users);
+  });
 
-//   it('returns the first N records by reverse cursor', async () => {
-//     const userConnection = await userRepo.findPage({ first: 5 });
+  it('returns the first 20 records by default', async () => {
+    const userConnection = await userRepo.findPage({});
 
-//     const actualUsers = userConnection.edges.map((edge) => edge.node);
-//     const expectedUsers = take(sortBy(users, 'cursor'), 5);
+    const actualUsers = userConnection.edges.map((edge) => edge.node);
+    const expectedUsers = take(sortBy(users, 'cursor'), 20);
 
-//     expect(actualUsers).toHaveLength(5);
-//     expect(actualUsers).toStrictEqual(expectedUsers);
-//   });
+    expect(actualUsers).toHaveLength(20);
+    expect(actualUsers).toIncludeSameMembers(expectedUsers);
+  });
 
-//   it('returns the first N records after a cursor', async () => {
-//     const { pageInfo } = await userRepo.findPage({ first: 1 });
-//     const userConnection = await userRepo.findPage({ first: 2, after: pageInfo.endCursor });
+  it('returns the first N records by reverse cursor', async () => {
+    const userConnection = await userRepo.findPage({ first: 5 });
 
-//     const actualUsers = userConnection.edges.map((edge) => edge.node);
-//     const expectedUsers = take(sortBy(users, 'cursor').slice(1), 2);
+    const actualUsers = userConnection.edges.map((edge) => edge.node);
+    const expectedUsers = take(sortBy(users, 'cursor'), 5);
 
-//     expect(actualUsers).toHaveLength(2);
-//     expect(actualUsers).toStrictEqual(expectedUsers);
-//   });
+    expect(actualUsers).toHaveLength(5);
+    expect(actualUsers).toStrictEqual(expectedUsers);
+  });
 
-//   it('returns all records when limit is greater than the records', async () => {
-//     const limit = NUM_USERS + 1;
-//     const userConnection = await userRepo.findPage({ first: limit });
+  it('returns the first N records after a cursor', async () => {
+    const { pageInfo } = await userRepo.findPage({ first: 1 });
+    const userConnection = await userRepo.findPage({ first: 2, after: pageInfo.endCursor });
 
-//     const actualUsers = userConnection.edges.map((edge) => edge.node);
-//     const expectedUsers = sortBy(users, 'cursor');
+    const actualUsers = userConnection.edges.map((edge) => edge.node);
+    const expectedUsers = take(sortBy(users, 'cursor').slice(1), 2);
 
-//     expect(actualUsers).toStrictEqual(expectedUsers);
-//   });
+    expect(actualUsers).toHaveLength(2);
+    expect(actualUsers).toStrictEqual(expectedUsers);
+  });
 
-//   it('returns all records when limit is greater than remaining records after a cursor', async () => {
-//     const { pageInfo } = await userRepo.findPage({ first: 1 });
-//     const userConnection = await userRepo.findPage({ first: NUM_USERS + 1, after: pageInfo.endCursor });
+  it('returns all records when limit is greater than the records', async () => {
+    const limit = NUM_USERS + 1;
+    const userConnection = await userRepo.findPage({ first: limit });
 
-//     const actualUsers = userConnection.edges.map((edge) => edge.node);
-//     const expectedUsers = sortBy(users, 'cursor').slice(1);
+    const actualUsers = userConnection.edges.map((edge) => edge.node);
+    const expectedUsers = sortBy(users, 'cursor');
 
-//     expect(actualUsers).toHaveLength(expectedUsers.length);
-//     expect(actualUsers).toStrictEqual(expectedUsers);
-//   });
-// });
+    expect(actualUsers).toStrictEqual(expectedUsers);
+  });
+
+  it('returns all records when limit is greater than remaining records after a cursor', async () => {
+    const { pageInfo } = await userRepo.findPage({ first: 1 });
+    const userConnection = await userRepo.findPage({ first: NUM_USERS + 1, after: pageInfo.endCursor });
+
+    const actualUsers = userConnection.edges.map((edge) => edge.node);
+    const expectedUsers = sortBy(users, 'cursor').slice(1);
+
+    expect(actualUsers).toHaveLength(expectedUsers.length);
+    expect(actualUsers).toStrictEqual(expectedUsers);
+  });
+});

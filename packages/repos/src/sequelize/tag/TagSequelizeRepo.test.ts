@@ -1,124 +1,137 @@
-// import { EntityBuilder, randStr } from '@stringsync/common';
-// import { TYPES, useTestContainer } from '@stringsync/di';
-// import { isPlainObject, sortBy } from 'lodash';
-// import { TagRepo } from '../../types';
+import { randStr } from '@stringsync/common';
+import { Container, useTestContainer } from '@stringsync/di';
+import { EntityBuilder } from '@stringsync/domain';
+import { isPlainObject, sortBy } from 'lodash';
+import { REPOS } from '../../REPOS';
+import { REPOS_TYPES } from '../../REPOS_TYPES';
+import { TagRepo } from '../../types';
+import { TagSequelizeRepo } from './TagSequelizeRepo';
 
-// const container = useTestContainer();
+const TYPES = { ...REPOS_TYPES };
 
-// let tagRepo: TagRepo;
+const ref = useTestContainer(REPOS);
 
-// beforeEach(async () => {
-//   tagRepo = container.get<TagRepo>(TYPES.TagSequelizeRepo);
-// });
+let container: Container;
 
-// describe('count', () => {
-//   it('returns the number of tags', async () => {
-//     await tagRepo.bulkCreate([
-//       EntityBuilder.buildRandTag(),
-//       EntityBuilder.buildRandTag(),
-//       EntityBuilder.buildRandTag(),
-//     ]);
-//     const count = await tagRepo.count();
+let tagRepo: TagRepo;
 
-//     expect(count).toBe(3);
-//   });
-// });
+beforeEach(() => {
+  container = ref.container;
+  container.rebind<TagRepo>(TYPES.TagRepo).to(TagSequelizeRepo);
+});
 
-// describe('create', () => {
-//   it('creates a tag record', async () => {
-//     const countBefore = await tagRepo.count();
-//     await tagRepo.create(EntityBuilder.buildRandTag());
-//     const countAfter = await tagRepo.count();
-//     expect(countAfter).toBe(countBefore + 1);
-//   });
+beforeEach(async () => {
+  tagRepo = container.get<TagRepo>(TYPES.TagRepo);
+});
 
-//   it('creates a findable user record', async () => {
-//     const { id } = await tagRepo.create(EntityBuilder.buildRandTag());
-//     const tag = await tagRepo.find(id);
+describe('count', () => {
+  it('returns the number of tags', async () => {
+    await tagRepo.bulkCreate([
+      EntityBuilder.buildRandTag(),
+      EntityBuilder.buildRandTag(),
+      EntityBuilder.buildRandTag(),
+    ]);
+    const count = await tagRepo.count();
 
-//     expect(tag).not.toBeNull();
-//     expect(tag!.id).toBe(id);
-//   });
+    expect(count).toBe(3);
+  });
+});
 
-//   it('returns a plain object', async () => {
-//     const tag = await tagRepo.create(EntityBuilder.buildRandTag());
+describe('create', () => {
+  it('creates a tag record', async () => {
+    const countBefore = await tagRepo.count();
+    await tagRepo.create(EntityBuilder.buildRandTag());
+    const countAfter = await tagRepo.count();
+    expect(countAfter).toBe(countBefore + 1);
+  });
 
-//     expect(isPlainObject(tag)).toBe(true);
-//   });
+  it('creates a findable user record', async () => {
+    const { id } = await tagRepo.create(EntityBuilder.buildRandTag());
+    const tag = await tagRepo.find(id);
 
-//   it('disallows duplicate ids', async () => {
-//     const id = randStr(8);
-//     const tag = EntityBuilder.buildRandTag({ id });
+    expect(tag).not.toBeNull();
+    expect(tag!.id).toBe(id);
+  });
 
-//     await expect(tagRepo.create(tag)).resolves.not.toThrow();
-//     await expect(tagRepo.create(tag)).rejects.toThrow();
-//   });
-// });
+  it('returns a plain object', async () => {
+    const tag = await tagRepo.create(EntityBuilder.buildRandTag());
 
-// describe('find', () => {
-//   it('returns the tag matching the id', async () => {
-//     const id = randStr(8);
-//     await tagRepo.create(EntityBuilder.buildRandTag({ id }));
+    expect(isPlainObject(tag)).toBe(true);
+  });
 
-//     const tag = await tagRepo.find(id);
+  it('disallows duplicate ids', async () => {
+    const id = randStr(8);
+    const tag = EntityBuilder.buildRandTag({ id });
 
-//     expect(tag).not.toBeNull();
-//     expect(tag!.id).toBe(id);
-//   });
+    await expect(tagRepo.create(tag)).resolves.not.toThrow();
+    await expect(tagRepo.create(tag)).rejects.toThrow();
+  });
+});
 
-//   it('returns a plain object', async () => {
-//     const { id } = await tagRepo.create(EntityBuilder.buildRandTag());
+describe('find', () => {
+  it('returns the tag matching the id', async () => {
+    const id = randStr(8);
+    await tagRepo.create(EntityBuilder.buildRandTag({ id }));
 
-//     const tag = await tagRepo.find(id);
+    const tag = await tagRepo.find(id);
 
-//     expect(isPlainObject(tag)).toBe(true);
-//   });
+    expect(tag).not.toBeNull();
+    expect(tag!.id).toBe(id);
+  });
 
-//   it('returns null when no tag found', async () => {
-//     const tag = await tagRepo.find('id');
+  it('returns a plain object', async () => {
+    const { id } = await tagRepo.create(EntityBuilder.buildRandTag());
 
-//     expect(tag).toBeNull();
-//   });
-// });
+    const tag = await tagRepo.find(id);
 
-// describe('findAll', () => {
-//   it('returns all tag records', async () => {
-//     const tags = [EntityBuilder.buildRandTag(), EntityBuilder.buildRandTag(), EntityBuilder.buildRandTag()];
-//     await tagRepo.bulkCreate(tags);
+    expect(isPlainObject(tag)).toBe(true);
+  });
 
-//     const foundTags = await tagRepo.findAll();
+  it('returns null when no tag found', async () => {
+    const tag = await tagRepo.find('id');
 
-//     expect(sortBy(foundTags, 'id')).toStrictEqual(sortBy(tags, 'id'));
-//   });
+    expect(tag).toBeNull();
+  });
+});
 
-//   it('returns plain objects', async () => {
-//     const tags = [EntityBuilder.buildRandTag(), EntityBuilder.buildRandTag(), EntityBuilder.buildRandTag()];
-//     await tagRepo.bulkCreate(tags);
+describe('findAll', () => {
+  it('returns all tag records', async () => {
+    const tags = [EntityBuilder.buildRandTag(), EntityBuilder.buildRandTag(), EntityBuilder.buildRandTag()];
+    await tagRepo.bulkCreate(tags);
 
-//     const foundTags = await tagRepo.findAll();
+    const foundTags = await tagRepo.findAll();
 
-//     expect(foundTags.every(isPlainObject)).toBe(true);
-//   });
-// });
+    expect(sortBy(foundTags, 'id')).toStrictEqual(sortBy(tags, 'id'));
+  });
 
-// describe('update', () => {
-//   it('updates a tag', async () => {
-//     const tag = EntityBuilder.buildRandTag();
-//     await tagRepo.create(tag);
-//     const name = randStr(8);
+  it('returns plain objects', async () => {
+    const tags = [EntityBuilder.buildRandTag(), EntityBuilder.buildRandTag(), EntityBuilder.buildRandTag()];
+    await tagRepo.bulkCreate(tags);
 
-//     const updatedTag = await tagRepo.update(tag.id, { ...tag, name });
+    const foundTags = await tagRepo.findAll();
 
-//     expect(updatedTag.name).toBe(name);
-//   });
+    expect(foundTags.every(isPlainObject)).toBe(true);
+  });
+});
 
-//   it('returns plain objects', async () => {
-//     const tag = EntityBuilder.buildRandTag();
-//     await tagRepo.create(tag);
-//     const name = randStr(8);
+describe('update', () => {
+  it('updates a tag', async () => {
+    const tag = EntityBuilder.buildRandTag();
+    await tagRepo.create(tag);
+    const name = randStr(8);
 
-//     const updatedTag = await tagRepo.update(tag.id, { ...tag, name });
+    const updatedTag = await tagRepo.update(tag.id, { ...tag, name });
 
-//     expect(isPlainObject(updatedTag)).toBe(true);
-//   });
-// });
+    expect(updatedTag.name).toBe(name);
+  });
+
+  it('returns plain objects', async () => {
+    const tag = EntityBuilder.buildRandTag();
+    await tagRepo.create(tag);
+    const name = randStr(8);
+
+    const updatedTag = await tagRepo.update(tag.id, { ...tag, name });
+
+    expect(isPlainObject(updatedTag)).toBe(true);
+  });
+});
