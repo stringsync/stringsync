@@ -1,11 +1,11 @@
 import { randStr } from '@stringsync/common';
 import { Container, useTestContainer } from '@stringsync/di';
 import { EntityBuilder, Notation, Tag, User } from '@stringsync/domain';
-import { UserSequelizeRepo } from '@stringsync/repos';
 import { first, isPlainObject, last, sortBy, take, times } from 'lodash';
 import { REPOS } from '../../REPOS';
 import { REPOS_TYPES } from '../../REPOS_TYPES';
-import { TaggingRepo, TagRepo } from '../../types';
+import { TaggingRepo, TagRepo, UserRepo } from '../../types';
+import { UserSequelizeRepo } from '../user';
 import { NotationSequelizeRepo } from './NotationSequelizeRepo';
 
 const TYPES = { ...REPOS_TYPES };
@@ -27,7 +27,7 @@ beforeEach(() => {
 
 beforeEach(async () => {
   notationRepo = container.get<NotationSequelizeRepo>(TYPES.NotationRepo);
-  userRepo = container.get<UserSequelizeRepo>(TYPES.UserRepo);
+  userRepo = container.get<UserRepo>(TYPES.UserRepo);
 
   user = await userRepo.create(EntityBuilder.buildRandUser());
   transcriberId = user.id;

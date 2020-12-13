@@ -72,7 +72,7 @@ Parameters:
   ApiSessionSecret:
     NoEcho: true
     Type: String
-    Description: The secret to encrypt session data on the server.
+    Description: The secret to encrypt session data for the API.
 
   WorkerCpu:
     Type: Number
@@ -202,6 +202,7 @@ Resources:
 
   CodeBuildSecretsBucket:
     Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
 
   CloudWatchEventRole:
     Type: AWS::IAM::Role
@@ -322,6 +323,9 @@ Resources:
                   - 'ecs:*'
                 Resource: '*'
 
+  CodeBuildCacheBucket:
+    Type: AWS::S3::Bucket
+
   CodeBuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
@@ -329,7 +333,8 @@ Resources:
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       TimeoutInMinutes: 15
       Cache:
-        Type: LOCAL
+        Type: S3
+        Location: !Ref CodeBuildCacheBucket
         Modes:
           - LOCAL_DOCKER_LAYER_CACHE
           - LOCAL_CUSTOM_CACHE

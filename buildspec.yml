@@ -11,7 +11,7 @@ phases:
       - echo Logging in to Amazon ECR...
       - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
       - echo Cleaning up previous builds
-      - ./bin/ss down server
+      - ./bin/ss down api
 
   build:
     commands:
@@ -20,10 +20,10 @@ phases:
       - docker login -u stringsync --password-stdin < .docker.key
       - rm .docker.key
       - echo Building images...
-      - ./bin/ss build
+      - ./bin/ss build -p
       - echo Testing images...
-      # - ./bin/ss test server
-      # - ./bin/ss test web
+      - ./bin/ss test api
+      - ./bin/ss test web
 
   post_build:
     commands:
@@ -36,7 +36,7 @@ phases:
 
           echo Writing imagedefinitions.json...
           IMAGE_URI="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest"
-          printf '[{"name":"server","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.json
+          printf '[{"name":"api","imageUri":"'$IMAGE_URI'"},{"name":"worker","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.json
 
           echo Adding REACT_APP_SERVER_URI to .env
           echo REACT_APP_SERVER_URI=$REACT_APP_SERVER_URI >> packages/web/.env
@@ -62,4 +62,4 @@ cache:
 artifacts:
   base-directory: deploy
   files:
-    - "**/*"
+    - '**/*'
