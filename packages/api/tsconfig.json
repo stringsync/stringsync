@@ -11,6 +11,7 @@
     { "path": "../di" },
     { "path": "../domain" },
     { "path": "../services" },
+    { "path": "../repos" },
     { "path": "../util" }
   ]
 }

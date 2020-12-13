@@ -1,8 +1,9 @@
-// import { useTestContainer } from '@stringsync/di';
-// import { applyReqRebindings } from './applyReqRebindings';
+import { useTestContainer } from '@stringsync/di';
+import { API } from '../API';
+import { applyReqRebindings } from './applyReqRebindings';
 
-// const container = useTestContainer();
+const ref = useTestContainer(API);
 
-// it('runs without crashing', () => {
-//   expect(() => applyReqRebindings(container)).not.toThrow();
-// });
+it('runs without crashing', () => {
+  expect(() => applyReqRebindings(ref.container)).not.toThrow();
+});

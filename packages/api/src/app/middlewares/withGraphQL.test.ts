@@ -1,10 +1,11 @@
-// import { useTestContainer } from '@stringsync/di';
-// import { generateSchema } from '../../schema';
-// import { withGraphQL } from './withGraphQL';
+import { useTestContainer } from '@stringsync/di';
+import { API } from '../../API';
+import { generateSchema } from '../../schema';
+import { withGraphQL } from './withGraphQL';
 
-// const container = useTestContainer();
+const ref = useTestContainer(API);
 
-// it('runs without crashing', () => {
-//   const schema = generateSchema();
-//   expect(() => withGraphQL(container, schema)).not.toThrow();
-// });
+it('runs without crashing', () => {
+  const schema = generateSchema();
+  expect(() => withGraphQL(ref.container, schema)).not.toThrow();
+});

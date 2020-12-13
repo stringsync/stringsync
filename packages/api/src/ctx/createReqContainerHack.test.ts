@@ -1,8 +1,9 @@
-// import { useTestContainer } from '@stringsync/di';
-// import { createReqContainerHack } from './createReqContainerHack';
+import { useTestContainer } from '@stringsync/di';
+import { API } from '../API';
+import { createReqContainerHack } from './createReqContainerHack';
 
-// const container = useTestContainer();
+const ref = useTestContainer(API);
 
-// it('runs without crashing', () => {
-//   expect(() => createReqContainerHack(container)).not.toThrow();
-// });
+it('runs without crashing', () => {
+  expect(() => createReqContainerHack(ref.container)).not.toThrow();
+});

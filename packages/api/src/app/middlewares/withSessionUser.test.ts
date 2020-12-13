@@ -1,8 +1,9 @@
-// import { useTestContainer } from '@stringsync/di';
-// import { withSessionUser } from './withSessionUser';
+import { useTestContainer } from '@stringsync/di';
+import { API } from '../../API';
+import { withSessionUser } from './withSessionUser';
 
-// const container = useTestContainer();
+const ref = useTestContainer(API);
 
-// it('runs without crashing', () => {
-//   expect(() => withSessionUser(container)).not.toThrow();
-// });
+it('runs without crashing', () => {
+  expect(() => withSessionUser(ref.container)).not.toThrow();
+});
