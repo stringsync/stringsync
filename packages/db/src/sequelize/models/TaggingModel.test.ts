@@ -1,16 +1,12 @@
-import { useTestContainer, TYPES } from '@stringsync/di';
-import { TaggingModel } from './TaggingModel';
-import { EntityBuilder } from '@stringsync/common';
-import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from '@stringsync/repos';
-import { Notation, Tag, Tagging, User } from '@stringsync/domain';
+import { useTestContainer } from '@stringsync/di';
+import { EntityBuilder, Notation, Tag, Tagging, User } from '@stringsync/domain';
+import { DB } from '../../DB';
 import { NotationModel } from './NotationModel';
+import { TaggingModel } from './TaggingModel';
+import { TagModel } from './TagModel';
+import { UserModel } from './UserModel';
 
-const container = useTestContainer();
-
-let tagRepo: TagRepo;
-let notationRepo: NotationRepo;
-let userRepo: UserRepo;
-let taggingRepo: TaggingRepo;
+useTestContainer(DB);
 
 let tag: Tag;
 let user: User;
@@ -18,15 +14,12 @@ let notation: Notation;
 let tagging: Tagging;
 
 beforeEach(async () => {
-  tagRepo = container.get<TagRepo>(TYPES.TagRepo);
-  notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
-  userRepo = container.get<UserRepo>(TYPES.UserRepo);
-  taggingRepo = container.get<TaggingRepo>(TYPES.TaggingRepo);
-
-  tag = await tagRepo.create(EntityBuilder.buildRandTag());
-  user = await userRepo.create(EntityBuilder.buildRandUser());
-  notation = await notationRepo.create(EntityBuilder.buildRandNotation({ transcriberId: user.id }));
-  tagging = await taggingRepo.create(EntityBuilder.buildRandTagging({ notationId: notation.id, tagId: tag.id }));
+  [tag, user] = await Promise.all([
+    TagModel.create(EntityBuilder.buildRandTag()),
+    UserModel.create(EntityBuilder.buildRandUser()),
+  ]);
+  notation = await NotationModel.create(EntityBuilder.buildRandNotation({ transcriberId: user.id }));
+  tagging = await TaggingModel.create(EntityBuilder.buildRandTagging({ notationId: notation.id, tagId: tag.id }));
 });
 
 it('permits valid taggings', async () => {

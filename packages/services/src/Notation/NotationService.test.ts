@@ -1,11 +1,17 @@
-import { sortBy, isPlainObject } from 'lodash';
-import { User, Notation, Tag, Tagging } from '@stringsync/domain';
-import { UserRepo, NotationRepo, TagRepo, TaggingRepo } from '@stringsync/repos';
-import { useTestContainer, TYPES } from '@stringsync/di';
-import { EntityBuilder, randStr } from '@stringsync/common';
+import { randStr } from '@stringsync/common';
+import { Container, useTestContainer } from '@stringsync/di';
+import { EntityBuilder, Notation, Tag, Tagging, User } from '@stringsync/domain';
+import { NotationRepo, REPOS_TYPES, TaggingRepo, TagRepo, UserRepo } from '@stringsync/repos';
+import { isPlainObject, sortBy } from 'lodash';
+import { SERVICES } from '../SERVICES';
+import { SERVICES_TYPES } from '../SERVICES_TYPES';
 import { NotationService } from './NotationService';
 
-const container = useTestContainer();
+const TYPES = { ...SERVICES_TYPES, ...REPOS_TYPES };
+
+const ref = useTestContainer(SERVICES);
+
+let container: Container;
 
 let userRepo: UserRepo;
 let notationRepo: NotationRepo;
@@ -15,6 +21,10 @@ let notation1: Notation;
 let notation2: Notation;
 
 let notationService: NotationService;
+
+beforeEach(() => {
+  container = ref.container;
+});
 
 beforeEach(async () => {
   userRepo = container.get<UserRepo>(TYPES.UserRepo);

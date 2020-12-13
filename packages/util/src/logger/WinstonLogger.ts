@@ -1,24 +1,24 @@
+import { inject, injectable } from '@stringsync/di';
 import winston from 'winston';
+import { UtilConfig } from '../config';
+import { UTIL_TYPES } from '../UTIL_TYPES';
 import { Logger } from './types';
 
-export class WinstonLogger implements Logger {
-  static create(logLevel: string): WinstonLogger {
-    return new WinstonLogger(
-      winston.createLogger({
-        level: logLevel,
-        transports: [
-          new winston.transports.Console({
-            format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
-          }),
-        ],
-      })
-    );
-  }
+const TYPES = { ...UTIL_TYPES };
 
+@injectable()
+export class WinstonLogger implements Logger {
   logger: winston.Logger;
 
-  constructor(logger: winston.Logger) {
-    this.logger = logger;
+  constructor(@inject(TYPES.UtilConfig) public config: UtilConfig) {
+    this.logger = winston.createLogger({
+      level: config.LOG_LEVEL,
+      transports: [
+        new winston.transports.Console({
+          format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
+        }),
+      ],
+    });
   }
 
   error(msg: string) {

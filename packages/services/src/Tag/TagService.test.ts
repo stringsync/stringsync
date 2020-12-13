@@ -1,17 +1,27 @@
+import { randStr } from '@stringsync/common';
+import { Container, useTestContainer } from '@stringsync/di';
+import { EntityBuilder, Notation, Tag, Tagging, User } from '@stringsync/domain';
+import { NotationRepo, REPOS_TYPES, TaggingRepo, TagRepo, UserRepo } from '@stringsync/repos';
 import { isPlainObject, sortBy } from 'lodash';
-import { TagRepo, UserRepo, NotationRepo, TaggingRepo } from '@stringsync/repos';
-import { useTestContainer, TYPES } from '@stringsync/di';
+import { SERVICES } from '../SERVICES';
+import { SERVICES_TYPES } from '../SERVICES_TYPES';
 import { TagService } from './TagService';
-import { Tag, User, Notation, Tagging } from '@stringsync/domain';
-import { randStr, EntityBuilder } from '@stringsync/common';
 
-const container = useTestContainer();
+const TYPES = { ...SERVICES_TYPES, ...REPOS_TYPES };
+
+const ref = useTestContainer(SERVICES);
+
+let container: Container;
 
 let tagRepo: TagRepo;
 let tag1: Tag;
 let tag2: Tag;
 
 let tagService: TagService;
+
+beforeEach(() => {
+  container = ref.container;
+});
 
 beforeEach(async () => {
   tagRepo = container.get<TagRepo>(TYPES.TagRepo);

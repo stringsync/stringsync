@@ -1,23 +1,19 @@
-import { Connection, NotFoundError, NotImplementedError, PagingType, UserConnectionArgs } from '@stringsync/common';
+import { Connection, NotFoundError, PagingType, UserConnectionArgs } from '@stringsync/common';
 import { UserModel } from '@stringsync/db';
-import { TYPES } from '@stringsync/di';
+import { inject, injectable } from '@stringsync/di';
 import { User } from '@stringsync/domain';
-import { inject, injectable } from 'inversify';
-import { get } from 'lodash';
 import { Op } from 'sequelize';
-import { camelCaseKeys } from '../../queries';
+import { REPOS_TYPES } from '../../REPOS_TYPES';
 import { UserLoader, UserRepo } from '../../types';
 import { Pager, PagingCtx } from '../../util';
+
+const TYPES = { ...REPOS_TYPES };
 
 @injectable()
 export class UserSequelizeRepo implements UserRepo {
   static pager = new Pager<User>(20, 'user');
 
-  userLoader: UserLoader;
-
-  constructor(@inject(TYPES.UserLoader) userLoader: UserLoader) {
-    this.userLoader = userLoader;
-  }
+  constructor(@inject(TYPES.UserLoader) public userLoader: UserLoader) {}
 
   async findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null> {
     const username = usernameOrEmail;

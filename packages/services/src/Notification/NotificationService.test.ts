@@ -1,13 +1,22 @@
-import { EntityBuilder } from './../../../common/src/rand/EntityBuilder';
-import { useTestContainer, TYPES } from '@stringsync/di';
+import { Container, useTestContainer } from '@stringsync/di';
+import { EntityBuilder, User } from '@stringsync/domain';
+import { REPOS_TYPES, UserRepo } from '@stringsync/repos';
+import { SERVICES } from '../SERVICES';
+import { SERVICES_TYPES } from '../SERVICES_TYPES';
 import { NotificationService } from './NotificationService';
-import { UserRepo } from '@stringsync/repos';
-import { User } from '@stringsync/domain';
 
-const container = useTestContainer();
+const TYPES = { ...SERVICES_TYPES, ...REPOS_TYPES };
+
+const ref = useTestContainer(SERVICES);
+
+let container: Container;
 
 let notificationService: NotificationService;
 let userRepo: UserRepo;
+
+beforeEach(() => {
+  container = ref.container;
+});
 
 beforeEach(() => {
   notificationService = container.get<NotificationService>(TYPES.NotificationService);

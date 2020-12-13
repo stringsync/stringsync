@@ -1,14 +1,27 @@
+import { randStr } from '@stringsync/common';
+import { Container, useTestContainer } from '@stringsync/di';
+import { EntityBuilder } from '@stringsync/domain';
 import { isPlainObject, sortBy } from 'lodash';
-import { EntityBuilder, randStr } from '@stringsync/common';
-import { TYPES, useTestContainer } from '@stringsync/di';
+import { REPOS } from '../../REPOS';
+import { REPOS_TYPES } from '../../REPOS_TYPES';
 import { TagRepo } from '../../types';
+import { TagSequelizeRepo } from './TagSequelizeRepo';
 
-const container = useTestContainer();
+const TYPES = { ...REPOS_TYPES };
+
+const ref = useTestContainer(REPOS);
+
+let container: Container;
 
 let tagRepo: TagRepo;
 
+beforeEach(() => {
+  container = ref.container;
+  container.rebind<TagRepo>(TYPES.TagRepo).to(TagSequelizeRepo);
+});
+
 beforeEach(async () => {
-  tagRepo = container.get<TagRepo>(TYPES.TagSequelizeRepo);
+  tagRepo = container.get<TagRepo>(TYPES.TagRepo);
 });
 
 describe('count', () => {

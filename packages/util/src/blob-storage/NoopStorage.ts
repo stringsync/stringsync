@@ -1,4 +1,4 @@
-import { injectable } from 'inversify';
+import { injectable } from '@stringsync/di';
 import { Stream } from 'stream';
 import { BlobStorage } from './types';
 

@@ -8,12 +8,12 @@
   ],
   "scripts": {
     "setup": "yarn install && (cd ./bin/scripts/ && yarn install) && ./bin/ss gensecrets",
-    "graphql": "yarn workspace @stringsync/graphql",
+    "api": "yarn workspace @stringsync/api",
     "db": "yarn workspace @stringsync/db",
     "web": "yarn workspace @stringsync/web",
     "jobs": "yarn workspace @stringsync/jobs",
-    "pretest:server": "yarn db migrate",
-    "test:server": "node --expose-gc ./node_modules/.bin/jest",
+    "pretest:api": "yarn db migrate",
+    "test:api": "node --expose-gc ./node_modules/.bin/jest",
     "test:web": "yarn web test"
   },
   "devDependencies": {
@@ -39,7 +39,6 @@
     "jest-extended": "^0.11.5",
     "jest-watch-typeahead": "^0.6.1",
     "prettier": "^1.19.1",
-    "react": "^16.9.0",
     "ts-jest": "^24.1.0",
     "typescript": "^3.6.4"
   }

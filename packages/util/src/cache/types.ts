@@ -1,9 +1,7 @@
-export type RedisConfig = {
-  host: string;
-  port: number;
-};
+import { RedisClient } from 'redis';
 
 export interface Cache {
+  redis: RedisClient;
   cleanup(): Promise<void>;
   teardown(): Promise<void>;
   checkHealth(): Promise<boolean>;

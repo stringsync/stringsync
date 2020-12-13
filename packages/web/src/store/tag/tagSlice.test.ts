@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { EntityBuilder } from '@stringsync/common';
+import { EntityBuilder } from '@stringsync/domain';
 import { TagClient } from '../../clients';
 import { getTags, tagSlice } from './tagSlice';
 

@@ -1,21 +1,20 @@
-import { ContainerConfig } from '@stringsync/config';
-import { TYPES } from '@stringsync/di';
+import { inject, injectable } from '@stringsync/di';
 import { User } from '@stringsync/domain';
-import { Mailer } from '@stringsync/util';
-import { inject, injectable } from 'inversify';
+import { Mailer, UTIL_TYPES } from '@stringsync/util';
 import url from 'url';
+import { ServicesConfig } from '../SERVICES_CONFIG';
+import { SERVICES_TYPES } from '../SERVICES_TYPES';
+
+const TYPES = { ...SERVICES_TYPES, ...UTIL_TYPES };
 
 @injectable()
 export class NotificationService {
   static INFO_EMAIL = 'StringSync <info@stringsync.com>';
 
-  mailer: Mailer;
-  config: ContainerConfig;
-
-  constructor(@inject(TYPES.Mailer) mailer: Mailer, @inject(TYPES.ContainerConfig) config: ContainerConfig) {
-    this.mailer = mailer;
-    this.config = config;
-  }
+  constructor(
+    @inject(TYPES.Mailer) public mailer: Mailer,
+    @inject(TYPES.ServicesConfig) public config: ServicesConfig
+  ) {}
 
   async sendConfirmationEmail(user: User): Promise<void> {
     const confirmHref = url.format({

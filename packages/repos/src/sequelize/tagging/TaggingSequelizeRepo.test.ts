@@ -1,13 +1,21 @@
-import { EntityBuilder, randStr } from '@stringsync/common';
-import { TYPES, useTestContainer } from '@stringsync/di';
-import { Notation, Tag, Tagging, User } from '@stringsync/domain';
+import { randStr } from '@stringsync/common';
+import { Container, useTestContainer } from '@stringsync/di';
+import { EntityBuilder, Notation, Tag, Tagging, User } from '@stringsync/domain';
 import { isPlainObject } from 'lodash';
+import { REPOS } from '../../REPOS';
+import { REPOS_TYPES } from '../../REPOS_TYPES';
 import { NotationSequelizeRepo } from '../notation';
 import { TagSequelizeRepo } from '../tag';
 import { UserSequelizeRepo } from '../user';
 import { TaggingSequelizeRepo } from './TaggingSequelizeRepo';
 
-const container = useTestContainer();
+const TYPES = { ...REPOS_TYPES };
+
+const ref = useTestContainer(REPOS);
+
+let container: Container;
+
+let taggingRepo: TaggingSequelizeRepo;
 
 let user1: User;
 let user2: User;
@@ -18,24 +26,28 @@ let notation2: Notation;
 let tag1: Tag;
 let tag2: Tag;
 
-let taggingRepo: TaggingSequelizeRepo;
 let tagging1: Tagging;
 let tagging2: Tagging;
 
+beforeEach(() => {
+  container = ref.container;
+  container.rebind<TaggingSequelizeRepo>(TYPES.TaggingRepo).to(TaggingSequelizeRepo);
+});
+
 beforeEach(async () => {
-  const userRepo = container.get<UserSequelizeRepo>(TYPES.UserSequelizeRepo);
+  const userRepo = container.get<UserSequelizeRepo>(TYPES.UserRepo);
   [user1, user2] = await userRepo.bulkCreate([EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser()]);
 
-  const notationRepo = container.get<NotationSequelizeRepo>(TYPES.NotationSequelizeRepo);
+  const notationRepo = container.get<NotationSequelizeRepo>(TYPES.NotationRepo);
   [notation1, notation2] = await notationRepo.bulkCreate([
     EntityBuilder.buildRandNotation({ transcriberId: user1.id }),
     EntityBuilder.buildRandNotation({ transcriberId: user2.id }),
   ]);
 
-  const tagRepo = container.get<TagSequelizeRepo>(TYPES.TagSequelizeRepo);
+  const tagRepo = container.get<TagSequelizeRepo>(TYPES.TagRepo);
   [tag1, tag2] = await tagRepo.bulkCreate([EntityBuilder.buildRandTag(), EntityBuilder.buildRandTag()]);
 
-  taggingRepo = container.get<TaggingSequelizeRepo>(TYPES.TaggingSequelizeRepo);
+  taggingRepo = container.get<TaggingSequelizeRepo>(TYPES.TaggingRepo);
   [tagging1, tagging2] = await taggingRepo.bulkCreate([
     EntityBuilder.buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
     EntityBuilder.buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),

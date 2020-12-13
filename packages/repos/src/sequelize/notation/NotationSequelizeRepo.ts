@@ -1,33 +1,29 @@
 import { Connection, NotationConnectionArgs, NotFoundError, PagingType } from '@stringsync/common';
-import { NotationModel } from '@stringsync/db';
-import { TYPES } from '@stringsync/di';
+import { Database, DB_TYPES, NotationModel } from '@stringsync/db';
+import { inject, injectable } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
-import { inject, injectable } from 'inversify';
 import { get } from 'lodash';
-import { QueryTypes, Sequelize } from 'sequelize';
+import { QueryTypes } from 'sequelize';
 import {
   camelCaseKeys,
   findNotationPageMaxQuery,
   findNotationPageMinQuery,
   findNotationPageQuery,
 } from '../../queries';
+import { REPOS_TYPES } from '../../REPOS_TYPES';
 import { NotationLoader, NotationRepo } from '../../types';
 import { Pager, PagingCtx } from '../../util';
+
+const TYPES = { ...REPOS_TYPES, ...DB_TYPES };
 
 @injectable()
 export class NotationSequelizeRepo implements NotationRepo {
   static pager = new Pager<Notation>(10, 'notation');
 
-  notationLoader: NotationLoader;
-  sequelize: Sequelize;
-
   constructor(
-    @inject(TYPES.NotationLoader) notationLoader: NotationLoader,
-    @inject(TYPES.Sequelize) sequelize: Sequelize
-  ) {
-    this.notationLoader = notationLoader;
-    this.sequelize = sequelize;
-  }
+    @inject(TYPES.NotationLoader) public notationLoader: NotationLoader,
+    @inject(TYPES.Database) public db: Database
+  ) {}
 
   async findAllByTranscriberId(transcriberId: string): Promise<Notation[]> {
     return await this.notationLoader.findAllByTranscriberId(transcriberId);
@@ -83,9 +79,9 @@ export class NotationSequelizeRepo implements NotationRepo {
       const queryArgs = { cursor, pagingType, limit, query, tagIds };
 
       const [entityRows, minRows, maxRows] = await Promise.all([
-        this.sequelize.query(findNotationPageQuery(queryArgs), { type: QueryTypes.SELECT }),
-        this.sequelize.query(findNotationPageMinQuery(queryArgs), { type: QueryTypes.SELECT }),
-        this.sequelize.query(findNotationPageMaxQuery(queryArgs), { type: QueryTypes.SELECT }),
+        this.db.sequelize.query(findNotationPageQuery(queryArgs), { type: QueryTypes.SELECT }),
+        this.db.sequelize.query(findNotationPageMinQuery(queryArgs), { type: QueryTypes.SELECT }),
+        this.db.sequelize.query(findNotationPageMaxQuery(queryArgs), { type: QueryTypes.SELECT }),
       ]);
 
       const entities = camelCaseKeys(entityRows) as Notation[];

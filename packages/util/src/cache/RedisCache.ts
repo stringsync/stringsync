@@ -1,22 +1,18 @@
-import { Cache, RedisConfig } from './types';
-import { RedisClient, createClient } from 'redis';
-import { injectable, inject } from 'inversify';
+import { inject, injectable } from '@stringsync/di';
+import { createClient, RedisClient } from 'redis';
+import { UtilConfig } from '../config';
 import { Logger } from '../logger';
-import { TYPES } from '@stringsync/di';
+import { UTIL_TYPES } from '../UTIL_TYPES';
+import { Cache } from './types';
+
+const TYPES = { ...UTIL_TYPES };
 
 @injectable()
 export class RedisCache implements Cache {
-  static createRedisClient(config: RedisConfig): RedisClient {
-    const { host, port } = config;
-    return createClient({ host, port });
-  }
-
   redis: RedisClient;
-  logger: Logger;
 
-  constructor(@inject(TYPES.Redis) redis: RedisClient, @inject(TYPES.Logger) logger: Logger) {
-    this.redis = redis;
-    this.logger = logger;
+  constructor(@inject(TYPES.Logger) public logger: Logger, @inject(TYPES.UtilConfig) public config: UtilConfig) {
+    this.redis = createClient({ host: config.REDIS_HOST, port: config.REDIS_PORT });
   }
 
   async cleanup() {
@@ -53,7 +49,7 @@ export class RedisCache implements Cache {
           reject(err);
           return;
         }
-        resolve(res);
+        resolve(res || '');
       });
     });
   }

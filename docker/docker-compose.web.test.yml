@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+  test:
+    image: stringsync-dev:latest
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile.dev
+    env_file:
+      - ../env/web.test.env
+    volumes:
+      - ../packages:/stringsync/packages

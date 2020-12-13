@@ -15,11 +15,15 @@ phases:
 
   build:
     commands:
+      - echo Logging into docker...
+      - aws s3 cp s3://$S3_SECRETS_BUCKET/.docker.key .docker.key
+      - docker login -u stringsync --password-stdin < .docker.key
+      - rm .docker.key
       - echo Building images...
       - ./bin/ss build
       - echo Testing images...
-      - ./bin/ss test server
-      - ./bin/ss test web
+      # - ./bin/ss test server
+      # - ./bin/ss test web
 
   post_build:
     commands:
@@ -27,7 +31,7 @@ phases:
         if [ "$CODEBUILD_BUILD_SUCCEEDING" -eq 1 ]
         then
           echo Pushing server images...
-          docker tag stringsync/server $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
+          docker tag stringsync $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
 
           echo Writing imagedefinitions.json...
@@ -47,6 +51,9 @@ phases:
         else
           echo Build failed, skipping post_build step...
         fi
+
+        echo Logging out of docker...
+        docker logout
 
 cache:
   paths:

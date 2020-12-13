@@ -1,24 +1,9 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
-    "outDir": "dst",
-    "allowJs": true,
-    "jsx": "react",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "strict": true,
-    "strictNullChecks": true,
-    "resolveJsonModule": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "target": "ES2020",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "types": ["jest-extended"]
+    "composite": false,
+    "noEmit": true
   },
-  "include": ["packages", "jest.d.ts"],
-  "exclude": ["node_modules", "dst"]
+  "include": ["packages"],
+  "exclude": ["dist", "build", "node_modules"]
 }

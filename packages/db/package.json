@@ -6,14 +6,16 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "yarn migrate && yarn seed",
-    "seed": "sequelize db:seed:all",
-    "migrate": "sequelize db:migrate"
+    "checkenv": "ts-node scripts/checkenv.ts",
+    "dev": "yarn checkenv && yarn migrate && yarn seed",
+    "seed": "yarn checkenv && sequelize db:seed:all",
+    "migrate": "yarn checkenv && sequelize db:migrate"
   },
   "dependencies": {
     "@stringsync/config": "1.0.0",
     "@stringsync/di": "1.0.0",
     "@stringsync/domain": "1.0.0",
+    "@stringsync/util": "1.0.0",
     "cls-hooked": "^4.2.2",
     "pg": "^8.2.1",
     "reflect-metadata": "^0.1.13",

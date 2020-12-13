@@ -1,16 +1,26 @@
-import { AuthService } from './AuthService';
-import { useTestContainer, TYPES } from '@stringsync/di';
-import { UserRole, User } from '@stringsync/domain';
-import { EntityBuilder, randStr, NotFoundError, BadRequestError } from '@stringsync/common';
+import { BadRequestError, NotFoundError, randStr } from '@stringsync/common';
+import { Container, useTestContainer } from '@stringsync/di';
+import { EntityBuilder, User, UserRole } from '@stringsync/domain';
 import { UserRepo } from '@stringsync/repos';
 import * as bcrypt from 'bcrypt';
 import { isPlainObject } from 'lodash';
 import * as uuid from 'uuid';
+import { SERVICES } from '../SERVICES';
+import { SERVICES_TYPES } from '../SERVICES_TYPES';
+import { AuthService } from './AuthService';
 
-const container = useTestContainer();
+const TYPES = { ...SERVICES_TYPES };
+
+const ref = useTestContainer(SERVICES);
+
+let container: Container;
 
 let authService: AuthService;
 let userRepo: UserRepo;
+
+beforeEach(() => {
+  container = ref.container;
+});
 
 beforeEach(() => {
   authService = container.get<AuthService>(TYPES.AuthService);

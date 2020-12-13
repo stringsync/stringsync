@@ -1,13 +1,23 @@
+import { Container, useTestContainer } from '@stringsync/di';
+import { EntityBuilder } from '@stringsync/domain';
 import { UserRepo } from '@stringsync/repos';
-import { TYPES, useTestContainer } from '@stringsync/di';
-import { UserService } from './UserService';
-import { EntityBuilder } from '@stringsync/common';
 import { sortBy } from 'lodash';
+import { SERVICES } from '../SERVICES';
+import { SERVICES_TYPES } from '../SERVICES_TYPES';
+import { UserService } from './UserService';
 
-const container = useTestContainer();
+const TYPES = { ...SERVICES_TYPES };
+
+const ref = useTestContainer(SERVICES);
+
+let container: Container;
 
 let userService: UserService;
 let userRepo: UserRepo;
+
+beforeEach(() => {
+  container = ref.container;
+});
 
 beforeEach(() => {
   userService = container.get<UserService>(TYPES.UserService);

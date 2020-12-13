@@ -1,36 +1,24 @@
 import { Connection, NotationConnectionArgs } from '@stringsync/common';
-import { ContainerConfig } from '@stringsync/config';
-import { Db } from '@stringsync/db';
-import { TYPES } from '@stringsync/di';
+import { inject, injectable } from '@stringsync/di';
 import { Notation } from '@stringsync/domain';
-import { NotationRepo } from '@stringsync/repos';
-import { BlobStorage } from '@stringsync/util';
-import { inject, injectable } from 'inversify';
+import { NotationRepo, REPOS_TYPES } from '@stringsync/repos';
+import { BlobStorage, UTIL_TYPES } from '@stringsync/util';
 import path from 'path';
+import { ServicesConfig } from '../SERVICES_CONFIG';
+import { SERVICES_TYPES } from '../SERVICES_TYPES';
 import { TaggingService } from '../Tagging';
 import { CreateArgs } from './types';
 
+const TYPES = { ...SERVICES_TYPES, ...REPOS_TYPES, ...UTIL_TYPES };
+
 @injectable()
 export class NotationService {
-  db: Db;
-  taggingService: TaggingService;
-  notationRepo: NotationRepo;
-  blobStorage: BlobStorage;
-  config: ContainerConfig;
-
   constructor(
-    @inject(TYPES.Db) db: Db,
-    @inject(TYPES.TaggingService) taggingService: TaggingService,
-    @inject(TYPES.NotationRepo) notationRepo: NotationRepo,
-    @inject(TYPES.BlobStorage) blobStorage: BlobStorage,
-    @inject(TYPES.ContainerConfig) config: ContainerConfig
-  ) {
-    this.db = db;
-    this.taggingService = taggingService;
-    this.notationRepo = notationRepo;
-    this.blobStorage = blobStorage;
-    this.config = config;
-  }
+    @inject(TYPES.TaggingService) public taggingService: TaggingService,
+    @inject(TYPES.ServicesConfig) public config: ServicesConfig,
+    @inject(TYPES.NotationRepo) public notationRepo: NotationRepo,
+    @inject(TYPES.BlobStorage) public blobStorage: BlobStorage
+  ) {}
 
   async find(id: string): Promise<Notation | null> {
     return await this.notationRepo.find(id);

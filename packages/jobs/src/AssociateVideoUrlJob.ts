@@ -1,28 +1,22 @@
-import { ContainerConfig } from '@stringsync/config';
-import { TYPES } from '@stringsync/di';
-import { VideoUrlService } from '@stringsync/services';
-import { Logger } from '@stringsync/util';
+import { inject, injectable } from '@stringsync/di';
+import { SERVICES_TYPES, VideoUrlService } from '@stringsync/services';
+import { Logger, UTIL_TYPES } from '@stringsync/util';
 import { Queue, QueueScheduler, Worker } from 'bullmq';
-import { inject, injectable } from 'inversify';
 import { Job } from './Job';
+import { JobsConfig } from './JOBS_CONFIG';
+import { JOBS_TYPES } from './JOBS_TYPES';
 import { JobName } from './types';
+
+const TYPES = { ...SERVICES_TYPES, ...UTIL_TYPES, ...JOBS_TYPES };
 
 @injectable()
 export class AssociateVideoUrlJob extends Job {
-  videoUrlService: VideoUrlService;
-  logger: Logger;
-  config: ContainerConfig;
-
   constructor(
-    @inject(TYPES.VideoUrlService) videoUrlService: VideoUrlService,
-    @inject(TYPES.Logger) logger: Logger,
-    @inject(TYPES.ContainerConfig) config: ContainerConfig
+    @inject(TYPES.VideoUrlService) public videoUrlService: VideoUrlService,
+    @inject(TYPES.Logger) public logger: Logger,
+    @inject(TYPES.JobsConfig) public config: JobsConfig
   ) {
     super();
-
-    this.videoUrlService = videoUrlService;
-    this.logger = logger;
-    this.config = config;
   }
 
   async runForever() {

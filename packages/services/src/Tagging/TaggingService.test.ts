@@ -1,9 +1,15 @@
-import { EntityBuilder } from '@stringsync/common';
-import { TYPES, useTestContainer } from '@stringsync/di';
-import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from '@stringsync/repos';
+import { Container, useTestContainer } from '@stringsync/di';
+import { EntityBuilder } from '@stringsync/domain';
+import { NotationRepo, REPOS_TYPES, TaggingRepo, TagRepo, UserRepo } from '@stringsync/repos';
+import { SERVICES } from '../SERVICES';
+import { SERVICES_TYPES } from '../SERVICES_TYPES';
 import { TaggingService } from './TaggingService';
 
-const container = useTestContainer();
+const TYPES = { ...SERVICES_TYPES, ...REPOS_TYPES };
+
+const ref = useTestContainer(SERVICES);
+
+let container: Container;
 
 let taggingRepo: TaggingRepo;
 let tagRepo: TagRepo;
@@ -11,6 +17,10 @@ let notationRepo: NotationRepo;
 let userRepo: UserRepo;
 
 let taggingService: TaggingService;
+
+beforeEach(() => {
+  container = ref.container;
+});
 
 beforeEach(() => {
   taggingRepo = container.get<TaggingRepo>(TYPES.TaggingRepo);

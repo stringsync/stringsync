@@ -1,17 +1,15 @@
 import { NotFoundError } from '@stringsync/common';
 import { TagModel } from '@stringsync/db';
-import { TYPES } from '@stringsync/di';
+import { inject, injectable } from '@stringsync/di';
 import { Tag } from '@stringsync/domain';
-import { inject, injectable } from 'inversify';
+import { REPOS_TYPES } from '../../REPOS_TYPES';
 import { TagLoader, TagRepo } from '../../types';
+
+const TYPES = { ...REPOS_TYPES };
 
 @injectable()
 export class TagSequelizeRepo implements TagRepo {
-  tagLoader: TagLoader;
-
-  constructor(@inject(TYPES.TagLoader) tagLoader: TagLoader) {
-    this.tagLoader = tagLoader;
-  }
+  constructor(@inject(TYPES.TagLoader) public tagLoader: TagLoader) {}
 
   async count(): Promise<number> {
     return await TagModel.count();

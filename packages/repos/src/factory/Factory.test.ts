@@ -1,9 +1,15 @@
 import { randInt, randStr } from '@stringsync/common';
-import { TYPES, useTestContainer } from '@stringsync/di';
+import { Container, useTestContainer } from '@stringsync/di';
+import { REPOS } from '../REPOS';
+import { REPOS_TYPES } from '../REPOS_TYPES';
 import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from '../types';
 import { Factory } from './Factory';
 
-const container = useTestContainer();
+const TYPES = { ...REPOS_TYPES };
+
+const ref = useTestContainer(REPOS);
+
+let container: Container;
 
 let factory: Factory;
 
@@ -11,6 +17,10 @@ let userRepo: UserRepo;
 let notationRepo: NotationRepo;
 let taggingRepo: TaggingRepo;
 let tagRepo: TagRepo;
+
+beforeEach(() => {
+  container = ref.container;
+});
 
 beforeEach(async () => {
   factory = container.get<Factory>(TYPES.Factory);

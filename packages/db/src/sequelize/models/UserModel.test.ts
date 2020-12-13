@@ -1,19 +1,11 @@
-import { UserModel } from './UserModel';
-import { useTestContainer, TYPES } from '@stringsync/di';
-import { EntityBuilder, randStr } from '@stringsync/common';
+import { randStr } from '@stringsync/common';
+import { useTestContainer } from '@stringsync/di';
+import { EntityBuilder } from '@stringsync/domain';
 import * as uuid from 'uuid';
-import { NotationRepo, UserRepo } from '@stringsync/repos';
-import { sortBy } from 'lodash';
+import { DB } from '../../DB';
+import { UserModel } from './UserModel';
 
-const container = useTestContainer();
-
-let userRepo: UserRepo;
-let notationRepo: NotationRepo;
-
-beforeEach(() => {
-  userRepo = container.get<UserRepo>(TYPES.UserRepo);
-  notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
-});
+useTestContainer(DB);
 
 it('permits valid users', async () => {
   const user = UserModel.build(EntityBuilder.buildRandUser());
@@ -78,26 +70,6 @@ it('permits valid avatar urls', async () => {
 it('disallows invalid avatar urls', async () => {
   const user = UserModel.build(EntityBuilder.buildRandUser({ avatarUrl: 'notagoodurl/asdfasd' }));
   await expect(user.validate()).rejects.toThrow();
-});
-
-it('returns all notations', async () => {
-  const [transcriber1, transcriber2] = await userRepo.bulkCreate([
-    EntityBuilder.buildRandUser(),
-    EntityBuilder.buildRandUser(),
-  ]);
-  const [notation1, notation2, notation3] = await notationRepo.bulkCreate([
-    EntityBuilder.buildRandNotation({ transcriberId: transcriber1.id }),
-    EntityBuilder.buildRandNotation({ transcriberId: transcriber1.id }),
-    EntityBuilder.buildRandNotation({ transcriberId: transcriber2.id }),
-  ]);
-
-  const userEntity = await UserModel.findByPk(transcriber1.id, { include: 'notations' });
-
-  expect(userEntity).not.toBeNull();
-  expect(userEntity!.notations).toHaveLength(2);
-  expect(userEntity!.notations?.map((notation) => notation.id).sort()).toStrictEqual(
-    [notation1.id, notation2.id].sort()
-  );
 });
 
 it('does not clear confirmationToken when setting email on a new entity', () => {

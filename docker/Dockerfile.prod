@@ -1,0 +1,17 @@
+FROM stringsync-base:latest
+
+RUN npm install pm2 -g
+
+COPY ./ecosystem.config.js .
+COPY ./bin/scripts/package.json ./bin/scripts/
+COPY ./bin/scripts/yarn.lock ./bin/scripts/
+
+RUN (cd ./bin/scripts && yarn)
+
+COPY ./bin ./bin/
+
+RUN ./bin/ss productionize
+RUN yarn tsc --build packages/*
+
+ENTRYPOINT [ "pm2-runtime", "./ecosystem.config.js", "--only" ]
+CMD [ "api" ]

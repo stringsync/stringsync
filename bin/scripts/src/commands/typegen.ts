@@ -1,7 +1,7 @@
 import { Command, flags } from '@oclif/command';
 import { execSync } from 'child_process';
-import { ROOT_PATH } from '../util';
 import fetch from 'node-fetch';
+import { ROOT_PATH } from '../util';
 
 export default class Typegen extends Command {
   static GRAPHQL_SERVER_URI = 'http://localhost:3000/graphql';
@@ -26,7 +26,7 @@ export default class Typegen extends Command {
     }
 
     execSync('yarn web typegen', { cwd: ROOT_PATH, stdio: 'inherit' });
-    execSync('yarn graphql typegen', { cwd: ROOT_PATH, stdio: 'inherit' });
+    execSync('yarn api typegen', { cwd: ROOT_PATH, stdio: 'inherit' });
 
     if (!wasGraphqlUp) {
       this.log('bringing down main project');

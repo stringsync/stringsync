@@ -1,25 +1,35 @@
+import { Container, useTestContainer } from '@stringsync/di';
+import { SERVICES } from '../SERVICES';
+import { SERVICES_TYPES } from '../SERVICES_TYPES';
 import { HealthCheckerService } from './HealthCheckerService';
-import { useTestContainer, TYPES } from '@stringsync/di';
 
-const container = useTestContainer();
+const TYPES = { ...SERVICES_TYPES };
+
+const ref = useTestContainer(SERVICES);
+
+let container: Container;
 
 let healthCheckerService: HealthCheckerService;
+
+beforeEach(() => {
+  container = ref.container;
+});
 
 beforeEach(() => {
   healthCheckerService = container.get<HealthCheckerService>(TYPES.HealthCheckerService);
 });
 
 describe('checkHealth', () => {
-  it('authenticates the db connection', async () => {
-    const spy = jest.spyOn(healthCheckerService.sequelize, 'authenticate');
+  it('checks on the db health', async () => {
+    const spy = jest.spyOn(healthCheckerService.db, 'checkHealth');
 
     await healthCheckerService.checkHealth();
 
     expect(spy).toBeCalledTimes(1);
   });
 
-  it('checks the time on the redis connection', async () => {
-    const spy = jest.spyOn(healthCheckerService.redis, 'time');
+  it('checks on the cache health', async () => {
+    const spy = jest.spyOn(healthCheckerService.cache, 'checkHealth');
 
     await healthCheckerService.checkHealth();
 

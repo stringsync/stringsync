@@ -1,23 +1,17 @@
+import { useTestContainer } from '@stringsync/di';
+import { EntityBuilder, Notation, User } from '@stringsync/domain';
+import { DB } from '../../DB';
 import { NotationModel } from './NotationModel';
-import { useTestContainer, TYPES } from '@stringsync/di';
-import { EntityBuilder } from '@stringsync/common';
-import { Notation, User } from '@stringsync/domain';
-import { NotationRepo, UserRepo } from '@stringsync/repos';
+import { UserModel } from './UserModel';
 
-const container = useTestContainer();
-
-let userRepo: UserRepo;
-let notationRepo: NotationRepo;
+useTestContainer(DB);
 
 let transcriber: User;
 let notation: Notation;
 
 beforeEach(async () => {
-  userRepo = container.get<UserRepo>(TYPES.UserRepo);
-  notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
-
-  transcriber = await userRepo.create(EntityBuilder.buildRandUser());
-  notation = await notationRepo.create(EntityBuilder.buildRandNotation({ transcriberId: transcriber.id }));
+  transcriber = await UserModel.create(EntityBuilder.buildRandUser());
+  notation = await NotationModel.create(EntityBuilder.buildRandNotation({ transcriberId: transcriber.id }));
 });
 
 it('permits valid notations', async () => {
@@ -55,8 +49,8 @@ it.each(['; ATTEMPTED SQL INJECTION', '<script>ATTEMPTED XSS</script>'])(
 );
 
 it('fetches the transcriber association', async () => {
-  const notationDao = await NotationModel.findByPk(notation.id, { include: 'transcriber' });
-  expect(notationDao).not.toBeNull();
-  expect(notationDao!.transcriber).not.toBeNull();
-  expect(notationDao!.transcriber!.id).toBe(transcriber.id);
+  const notationEntity = await NotationModel.findByPk(notation.id, { include: 'transcriber' });
+  expect(notationEntity).not.toBeNull();
+  expect(notationEntity!.transcriber).not.toBeNull();
+  expect(notationEntity!.transcriber!.id).toBe(transcriber.id);
 });

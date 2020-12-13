@@ -15,7 +15,7 @@ describe('when STRING value', () => {
   });
 
   it('throws when falsy', () => {
-    const env = { ENV_VAR: '' };
+    const env = { ENV_VAR: undefined };
     expect(() => getConfig(env)).toThrow();
   });
 });

@@ -1,11 +1,18 @@
+import { randStr } from '@stringsync/common';
+import { Container, useTestContainer } from '@stringsync/di';
+import { EntityBuilder, User } from '@stringsync/domain';
 import { isPlainObject } from 'lodash';
-import { EntityBuilder, randStr } from '@stringsync/common';
+import { REPOS } from '../../REPOS';
+import { REPOS_TYPES } from '../../REPOS_TYPES';
+import { UserRepo } from '../../types';
 import { UserSequelizeLoader } from './UserSequelizeLoader';
 import { UserSequelizeRepo } from './UserSequelizeRepo';
-import { User } from '@stringsync/domain';
-import { useTestContainer, TYPES } from '@stringsync/di';
 
-const container = useTestContainer();
+const TYPES = { ...REPOS_TYPES };
+
+const ref = useTestContainer(REPOS);
+
+let container: Container;
 
 let userLoader: UserSequelizeLoader;
 let userRepo: UserSequelizeRepo;
@@ -13,9 +20,14 @@ let userRepo: UserSequelizeRepo;
 let user1: User;
 let user2: User;
 
+beforeEach(() => {
+  container = ref.container;
+  container.rebind<UserSequelizeLoader>(TYPES.UserLoader).to(UserSequelizeLoader);
+});
+
 beforeEach(async () => {
-  userLoader = container.get<UserSequelizeLoader>(TYPES.UserSequelizeLoader);
-  userRepo = container.get<UserSequelizeRepo>(TYPES.UserSequelizeRepo);
+  userLoader = container.get<UserSequelizeLoader>(TYPES.UserLoader);
+  userRepo = container.get<UserRepo>(TYPES.UserRepo);
   [user1, user2] = await userRepo.bulkCreate([EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser()]);
 });
 

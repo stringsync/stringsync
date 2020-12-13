@@ -1,11 +1,17 @@
-import { sortBy, isPlainObject } from 'lodash';
-import { Notation, User } from '@stringsync/domain';
-import { randStr, EntityBuilder } from '@stringsync/common';
-import { NotationSequelizeLoader, NotationSequelizeRepo } from './';
-import { UserSequelizeRepo } from '../user';
-import { useTestContainer, TYPES } from '@stringsync/di';
+import { randStr } from '@stringsync/common';
+import { Container, useTestContainer } from '@stringsync/di';
+import { EntityBuilder, Notation, User } from '@stringsync/domain';
+import { isPlainObject, sortBy } from 'lodash';
+import { REPOS } from '../../REPOS';
+import { REPOS_TYPES } from '../../REPOS_TYPES';
+import { NotationRepo, UserRepo } from '../../types';
+import { NotationSequelizeLoader } from './';
 
-const container = useTestContainer();
+const TYPES = { ...REPOS_TYPES };
+
+const ref = useTestContainer(REPOS);
+
+let container: Container;
 
 let notationLoader: NotationSequelizeLoader;
 
@@ -16,10 +22,15 @@ let notation2: Notation;
 let notation3: Notation;
 
 beforeEach(async () => {
-  notationLoader = container.get<NotationSequelizeLoader>(TYPES.NotationSequelizeLoader);
+  container = ref.container;
+  container.rebind<NotationSequelizeLoader>(TYPES.NotationLoader).to(NotationSequelizeLoader);
+});
 
-  const userRepo = container.get<UserSequelizeRepo>(TYPES.UserSequelizeRepo);
-  const notationRepo = container.get<NotationSequelizeRepo>(TYPES.NotationSequelizeRepo);
+beforeEach(async () => {
+  notationLoader = container.get<NotationSequelizeLoader>(TYPES.NotationLoader);
+
+  const userRepo = container.get<UserRepo>(TYPES.UserRepo);
+  const notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
 
   [transcriber1, transcriber2] = await userRepo.bulkCreate([
     EntityBuilder.buildRandUser(),

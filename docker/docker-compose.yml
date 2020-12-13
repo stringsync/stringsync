@@ -1,0 +1,58 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:11
+    restart: always
+    environment:
+      POSTGRES_DB: stringsync
+      POSTGRES_USER: stringsync
+      POSTGRES_PASSWORD: stringsync
+
+  redis:
+    image: redis:5.0
+
+  api:
+    image: stringsync-dev:latest
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile.dev
+    env_file:
+      - ../env/dev.env
+      - ../env/secrets.env
+    volumes:
+      - ../packages:/stringsync/packages
+    links:
+      - db
+      - redis
+    ports:
+      - '3000:3000'
+    command: ['yarn', 'api', 'dev']
+
+  jobs:
+    image: stringsync-dev:latest
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile.dev
+    env_file:
+      - ../env/dev.env
+      - ../env/secrets.env
+    volumes:
+      - ../packages:/stringsync/packages
+    links:
+      - db
+      - redis
+    command: ['yarn', 'jobs', 'dev']
+
+  migrate:
+    image: stringsync:latest
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile.dev
+    env_file:
+      - ../env/dev.env
+    volumes:
+      - ../packages:/stringsync/packages
+    links:
+      - db
+    command: ['yarn', 'db', 'dev']

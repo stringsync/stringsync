@@ -1,8 +1,8 @@
-import { Notation, Tag, Tagging, User } from '@stringsync/domain';
+import { Sequelize } from 'sequelize';
 
-export { Sequelize } from 'sequelize';
-
-export interface Db {
+export interface Database {
+  sequelize: Sequelize;
   cleanup(): Promise<void>;
   teardown(): Promise<void>;
+  checkHealth(): Promise<void>;
 }

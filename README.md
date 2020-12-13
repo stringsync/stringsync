@@ -33,7 +33,7 @@ To view all the commands, run:
 ./bin/ss help
 ```
 
-Before running the server for the first time, you will need to generate a secrets file (not tracked by .git):
+Before running the api for the first time, you will need to generate a secrets file (not tracked by .git):
 
 ```
 ./bin/ss gensecrets
@@ -41,7 +41,7 @@ Before running the server for the first time, you will need to generate a secret
 
 The file it generates will have fake credentials, but this should be OK as long as you don't interact with dev AWS resources (such as uploading a file to AWS).
 
-To run the server, start Docker engine and run:
+To run the api, start Docker engine and run:
 
 ```
 ./bin/ss up
@@ -50,16 +50,16 @@ To run the server, start Docker engine and run:
 - http://localhost:8080 frontend UI
 - http://localhost:3000/altair backend GraphQL query playground
 
-To stop the server, run:
+To stop the api, run:
 
 ```
 ./bin/ss down
 ```
 
-To run server tests in watch mode, run:
+To run api tests in watch mode, run:
 
 ```
-./bin/ss test server -w
+./bin/ss test api -w
 ```
 
 To run the web project, run:
@@ -91,36 +91,5 @@ StringSync was developed using VSCode. Project settings are stored in a `.vscode
     "source.fixAll.eslint": true,
     "source.organizeImports": true
   }
-}
-```
-
-`tasks.json`
-
-```json
-{
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "tsc",
-      "type": "process",
-      "command": "yarn",
-      "args": [
-        "tsc",
-        "--watch",
-        "--noEmit",
-      ],
-      "problemMatcher": ["$tsc"],
-      "group": "build",
-      "isBackground": true,
-      "runOptions": {
-        "runOn": "folderOpen"
-      },
-      "presentation": {
-        "echo": false,
-        "reveal": "never",
-        "focus": false
-      }
-    },
-  ]
 }
 ```
