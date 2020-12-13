@@ -1,35 +1,45 @@
-// import { UserRepo } from '@stringsync/repos';
-// import { TYPES, useTestContainer } from '@stringsync/di';
-// import { UserService } from './UserService';
-// import { EntityBuilder } from '@stringsync/common';
-// import { sortBy } from 'lodash';
+import { Container, useTestContainer } from '@stringsync/di';
+import { EntityBuilder } from '@stringsync/domain';
+import { UserRepo } from '@stringsync/repos';
+import { sortBy } from 'lodash';
+import { SERVICES } from '../SERVICES';
+import { SERVICES_TYPES } from '../SERVICES_TYPES';
+import { UserService } from './UserService';
 
-// const container = useTestContainer();
+const TYPES = { ...SERVICES_TYPES };
 
-// let userService: UserService;
-// let userRepo: UserRepo;
+const ref = useTestContainer(SERVICES);
 
-// beforeEach(() => {
-//   userService = container.get<UserService>(TYPES.UserService);
-//   userRepo = userService.userRepo;
-// });
+let container: Container;
 
-// describe('find', () => {
-//   it('finds an entity', async () => {
-//     const user = await userRepo.create(EntityBuilder.buildRandUser());
+let userService: UserService;
+let userRepo: UserRepo;
 
-//     const foundUser = await userService.find(user.id);
+beforeEach(() => {
+  container = ref.container;
+});
 
-//     expect(foundUser).toStrictEqual(user);
-//   });
-// });
+beforeEach(() => {
+  userService = container.get<UserService>(TYPES.UserService);
+  userRepo = userService.userRepo;
+});
 
-// describe('findAll', () => {
-//   it('finds all entities', async () => {
-//     const users = await userRepo.bulkCreate([EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser()]);
-//     const foundUsers = await userService.findAll();
+describe('find', () => {
+  it('finds an entity', async () => {
+    const user = await userRepo.create(EntityBuilder.buildRandUser());
 
-//     expect(users).toHaveLength(2);
-//     expect(sortBy(foundUsers, 'id')).toStrictEqual(sortBy(users, 'id'));
-//   });
-// });
+    const foundUser = await userService.find(user.id);
+
+    expect(foundUser).toStrictEqual(user);
+  });
+});
+
+describe('findAll', () => {
+  it('finds all entities', async () => {
+    const users = await userRepo.bulkCreate([EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser()]);
+    const foundUsers = await userService.findAll();
+
+    expect(users).toHaveLength(2);
+    expect(sortBy(foundUsers, 'id')).toStrictEqual(sortBy(users, 'id'));
+  });
+});

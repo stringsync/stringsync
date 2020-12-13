@@ -1,95 +1,105 @@
-// import { isPlainObject, sortBy } from 'lodash';
-// import { TagRepo, UserRepo, NotationRepo, TaggingRepo } from '@stringsync/repos';
-// import { useTestContainer, TYPES } from '@stringsync/di';
-// import { TagService } from './TagService';
-// import { Tag, User, Notation, Tagging } from '@stringsync/domain';
-// import { randStr, EntityBuilder } from '@stringsync/common';
+import { randStr } from '@stringsync/common';
+import { Container, useTestContainer } from '@stringsync/di';
+import { EntityBuilder, Notation, Tag, Tagging, User } from '@stringsync/domain';
+import { NotationRepo, REPOS_TYPES, TaggingRepo, TagRepo, UserRepo } from '@stringsync/repos';
+import { isPlainObject, sortBy } from 'lodash';
+import { SERVICES } from '../SERVICES';
+import { SERVICES_TYPES } from '../SERVICES_TYPES';
+import { TagService } from './TagService';
 
-// const container = useTestContainer();
+const TYPES = { ...SERVICES_TYPES, ...REPOS_TYPES };
 
-// let tagRepo: TagRepo;
-// let tag1: Tag;
-// let tag2: Tag;
+const ref = useTestContainer(SERVICES);
 
-// let tagService: TagService;
+let container: Container;
 
-// beforeEach(async () => {
-//   tagRepo = container.get<TagRepo>(TYPES.TagRepo);
-//   [tag1, tag2] = await tagRepo.bulkCreate([EntityBuilder.buildRandTag(), EntityBuilder.buildRandTag()]);
+let tagRepo: TagRepo;
+let tag1: Tag;
+let tag2: Tag;
 
-//   tagService = container.get<TagService>(TYPES.TagService);
-// });
+let tagService: TagService;
 
-// describe('find', () => {
-//   it('finds tag by id', async () => {
-//     const tag = await tagService.find(tag1.id);
-//     expect(tag).not.toBeNull();
-//     expect(tag!.id).toBe(tag1.id);
-//   });
+beforeEach(() => {
+  container = ref.container;
+});
 
-//   it('returns not if tag does not exist', async () => {
-//     const tag = await tagService.find(randStr(10));
-//     expect(tag).toBeNull();
-//   });
+beforeEach(async () => {
+  tagRepo = container.get<TagRepo>(TYPES.TagRepo);
+  [tag1, tag2] = await tagRepo.bulkCreate([EntityBuilder.buildRandTag(), EntityBuilder.buildRandTag()]);
 
-//   it('returns a plain object', async () => {
-//     const tag = await tagService.find(tag1.id);
-//     expect(tag).not.toBeNull();
-//     expect(isPlainObject(tag)).toBe(true);
-//   });
-// });
+  tagService = container.get<TagService>(TYPES.TagService);
+});
 
-// describe('findAll', () => {
-//   it('returns all tags', async () => {
-//     const tags = await tagService.findAll();
-//     expect(sortBy(tags, 'id')).toStrictEqual(sortBy([tag1, tag2], 'id'));
-//   });
+describe('find', () => {
+  it('finds tag by id', async () => {
+    const tag = await tagService.find(tag1.id);
+    expect(tag).not.toBeNull();
+    expect(tag!.id).toBe(tag1.id);
+  });
 
-//   it('returns plain objects', async () => {
-//     const tags = await tagService.findAll();
-//     expect(tags.every(isPlainObject)).toBe(true);
-//   });
-// });
+  it('returns not if tag does not exist', async () => {
+    const tag = await tagService.find(randStr(10));
+    expect(tag).toBeNull();
+  });
 
-// describe('findAllByNotationId', () => {
-//   let userRepo: UserRepo;
-//   let user1: User;
-//   let user2: User;
+  it('returns a plain object', async () => {
+    const tag = await tagService.find(tag1.id);
+    expect(tag).not.toBeNull();
+    expect(isPlainObject(tag)).toBe(true);
+  });
+});
 
-//   let notationRepo: NotationRepo;
-//   let notation1: Notation;
-//   let notation2: Notation;
+describe('findAll', () => {
+  it('returns all tags', async () => {
+    const tags = await tagService.findAll();
+    expect(sortBy(tags, 'id')).toStrictEqual(sortBy([tag1, tag2], 'id'));
+  });
 
-//   let taggingRepo: TaggingRepo;
-//   let tagging1: Tagging;
-//   let tagging2: Tagging;
+  it('returns plain objects', async () => {
+    const tags = await tagService.findAll();
+    expect(tags.every(isPlainObject)).toBe(true);
+  });
+});
 
-//   beforeEach(async () => {
-//     userRepo = container.get<UserRepo>(TYPES.UserRepo);
-//     [user1, user2] = await userRepo.bulkCreate([EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser()]);
+describe('findAllByNotationId', () => {
+  let userRepo: UserRepo;
+  let user1: User;
+  let user2: User;
 
-//     notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
-//     [notation1, notation2] = await notationRepo.bulkCreate([
-//       EntityBuilder.buildRandNotation({ transcriberId: user1.id }),
-//       EntityBuilder.buildRandNotation({ transcriberId: user1.id }),
-//     ]);
+  let notationRepo: NotationRepo;
+  let notation1: Notation;
+  let notation2: Notation;
 
-//     taggingRepo = container.get<TaggingRepo>(TYPES.TaggingRepo);
-//     [tagging1, tagging2] = await taggingRepo.bulkCreate([
-//       EntityBuilder.buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
-//       EntityBuilder.buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
-//       EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
-//     ]);
-//   });
+  let taggingRepo: TaggingRepo;
+  let tagging1: Tagging;
+  let tagging2: Tagging;
 
-//   it('returns all tags related to a notation', async () => {
-//     const tags = await tagService.findAllByNotationId(notation1.id);
-//     expect(sortBy(tags, 'id')).toStrictEqual(sortBy([tag1, tag2], 'id'));
-//   });
+  beforeEach(async () => {
+    userRepo = container.get<UserRepo>(TYPES.UserRepo);
+    [user1, user2] = await userRepo.bulkCreate([EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser()]);
 
-//   it('returns plain objects', async () => {
-//     const tags = await tagService.findAllByNotationId(notation1.id);
-//     expect(tags).toHaveLength(2);
-//     expect(tags.every(isPlainObject)).toBe(true);
-//   });
-// });
+    notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
+    [notation1, notation2] = await notationRepo.bulkCreate([
+      EntityBuilder.buildRandNotation({ transcriberId: user1.id }),
+      EntityBuilder.buildRandNotation({ transcriberId: user1.id }),
+    ]);
+
+    taggingRepo = container.get<TaggingRepo>(TYPES.TaggingRepo);
+    [tagging1, tagging2] = await taggingRepo.bulkCreate([
+      EntityBuilder.buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
+      EntityBuilder.buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
+      EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
+    ]);
+  });
+
+  it('returns all tags related to a notation', async () => {
+    const tags = await tagService.findAllByNotationId(notation1.id);
+    expect(sortBy(tags, 'id')).toStrictEqual(sortBy([tag1, tag2], 'id'));
+  });
+
+  it('returns plain objects', async () => {
+    const tags = await tagService.findAllByNotationId(notation1.id);
+    expect(tags).toHaveLength(2);
+    expect(tags.every(isPlainObject)).toBe(true);
+  });
+});
