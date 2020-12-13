@@ -10,7 +10,7 @@ export const withLogging = (container: Container): Handler => {
   return morgan('combined', {
     stream: {
       write: (msg: string) => {
-        logger.info(msg.trim());
+        logger.debug(msg.trim());
       },
     },
   });
