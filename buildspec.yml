@@ -47,7 +47,8 @@ phases:
 
           echo Moving everything into root build dir...
           mkdir deploy
-          mv imagedefinitions.json deploy
+          mv imagedefinitions.api.json deploy
+          mv imagedefinitions.worker.json deploy
           mv packages/web/build/* deploy
         else
           echo Build failed, skipping post_build step...
