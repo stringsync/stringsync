@@ -20,7 +20,7 @@ phases:
       - docker login -u stringsync --password-stdin < .docker.key
       - rm .docker.key
       - echo Building images...
-      - ./bin/ss build -p
+      - ./bin/ss build -pd
       - echo Testing images...
       # - ./bin/ss test api
       # - ./bin/ss test web
