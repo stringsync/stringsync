@@ -882,7 +882,7 @@ Resources:
           Environment:
             - Name: APP_GRAPHQL_PORT
               Value: !Ref ApiPort
-            - Name: APP_LOG_LEVEL
+            - Name: LOG_LEVEL
               Value: debug
             - Name: APP_SESSION_SECRET
               Value: !Ref ApiSessionSecret
@@ -1013,7 +1013,7 @@ Resources:
           Environment:
             - Name: APP_GRAPHQL_PORT
               Value: !Ref ApiPort
-            - Name: APP_LOG_LEVEL
+            - Name: LOG_LEVEL
               Value: debug
             - Name: APP_SESSION_SECRET
               Value: !Ref ApiSessionSecret
