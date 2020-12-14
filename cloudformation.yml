@@ -342,7 +342,7 @@ Resources:
         Type: CODEPIPELINE
       Environment:
         Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_SMALL
+        ComputeType: BUILD_GENERAL1_MEDIUM
         Image: aws/codebuild/standard:4.0
         PrivilegedMode: true
         EnvironmentVariables:
@@ -853,6 +853,7 @@ Resources:
   # container to run, and what resource requirements it has.
   ApiTaskDefinition:
     Type: AWS::ECS::TaskDefinition
+    DeletionPolicy: Delete
     Properties:
       Cpu: !Ref 'ApiCpu'
       Memory: !Ref 'ApiMemory'
@@ -911,11 +912,8 @@ Resources:
               Value: { Fn::ImportValue: !Sub '${VideoProcessingStack}:Source' }
             - Name: SQS_VIDEO_QUEUE_URL
               Value: { Fn::ImportValue: !Sub '${VideoProcessingStack}:SqsQueue' }
-          EntryPoint:
-            - yarn
           Command:
-            - graphql
-            - prod
+            - api
 
   Cluster:
     Type: AWS::ECS::Cluster
@@ -986,6 +984,7 @@ Resources:
   # container to run, and what resource requirements it has.
   WorkerTaskDefinition:
     Type: AWS::ECS::TaskDefinition
+    DeletionPolicy: Delete
     Properties:
       Cpu: !Ref WorkerCpu
       Memory: !Ref WorkerMemory
