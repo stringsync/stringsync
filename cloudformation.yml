@@ -403,7 +403,7 @@ Resources:
                 PrimarySource: SourceOutput
         - Name: Deploy
           Actions:
-            - Name: DeployServer
+            - Name: DeployApi
               RunOrder: 3
               ActionTypeId:
                 Category: Deploy
@@ -415,6 +415,7 @@ Resources:
               Configuration:
                 ClusterName: !Ref Cluster
                 ServiceName: !Ref ApiService
+                FileName: imagedefinitions.api.json
             - Name: DeployWorker
               RunOrder: 3
               ActionTypeId:
@@ -427,6 +428,7 @@ Resources:
               Configuration:
                 ClusterName: !Ref Cluster
                 ServiceName: !Ref WorkerService
+                FileName: imagedefinitions.worker.json
             - Name: DeployFrontend
               RunOrder: 3
               ActionTypeId:
@@ -1043,11 +1045,8 @@ Resources:
               Value: { Fn::ImportValue: !Sub '${VideoProcessingStack}:Source' }
             - Name: SQS_VIDEO_QUEUE_URL
               Value: { Fn::ImportValue: !Sub '${VideoProcessingStack}:SqsQueue' }
-          EntryPoint:
-            - yarn
           Command:
             - jobs
-            - prod
 
   # The service. The service is a resource which allows you to run multiple
   # copies of a type of task, and gather up their logs and metrics, as well

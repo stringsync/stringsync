@@ -36,7 +36,8 @@ phases:
 
           echo Writing imagedefinitions.json...
           IMAGE_URI="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest"
-          printf '[{"name":"api","imageUri":"'$IMAGE_URI'"},{"name":"worker","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.json
+          printf '[{"name":"api","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.api.json
+          printf '[{"name":"worker","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.worker.json
 
           echo Adding REACT_APP_SERVER_URI to .env
           echo REACT_APP_SERVER_URI=$REACT_APP_SERVER_URI >> packages/web/.env
