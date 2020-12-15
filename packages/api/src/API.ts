@@ -6,7 +6,6 @@ import { API_TYPES } from './API_TYPES';
 import { HealthController } from './app';
 import { AuthResolver, ExperimentResolver, NotationResolver, TagResolver, UserResolver } from './schema';
 
-// force codebuild
 const TYPES = { ...API_TYPES };
 
 export const API: Pkg = {
