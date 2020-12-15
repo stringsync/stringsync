@@ -21,6 +21,7 @@ services:
       - ../env/api.test.env
     volumes:
       - ../packages:/app/packages
+      - ../reports:/app/reports
     links:
       - db
       - redis

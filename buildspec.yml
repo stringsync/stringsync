@@ -22,10 +22,10 @@ phases:
   build:
     commands:
       - echo Building images...
-      - ./bin/ss build --dev --prod --cacheFrom $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
-      # - echo Testing images...
-      # - ./bin/ss test api
-      # - ./bin/ss test web
+      - ./bin/ss build --dev --test --prod --cacheFrom $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
+      - echo Testing images...
+      - ./bin/ss test api --ci
+      - ./bin/ss test web --ci
 
   post_build:
     commands:
@@ -41,7 +41,7 @@ phases:
           printf '[{"name":"api","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.api.json
           printf '[{"name":"worker","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.worker.json
 
-          echo creating artifacts dir...
+          echo Creating artifacts dir...
           mkdir artifacts
 
           echo Building web project in artifacts directory...
@@ -65,6 +65,14 @@ phases:
 cache:
   paths:
     - /root/.yarn/**/*
+
+reports:
+  jest_reports:
+    files:
+      - junit.web.xml
+      - junit.api.xml
+    file-format: JUNITXML
+    base-directory: reports
 
 artifacts:
   base-directory: artifacts

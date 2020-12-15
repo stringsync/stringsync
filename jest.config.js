@@ -7,6 +7,7 @@ module.exports = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
+  reporters: ['default', 'jest-junit'],
   resetModules: false,
   testPathIgnorePatterns: ['node_modules', 'web', 'build', 'dist'],
   testEnvironment: '<rootDir>/ServerTestEnvironment.js',

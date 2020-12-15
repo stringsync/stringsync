@@ -3,12 +3,17 @@ import { execSync } from 'child_process';
 import { getDockerComposeFile } from '../util';
 import { DOCKER_PATH, ROOT_PATH } from '../util/constants';
 
+const bashC = (...parts: string[]) => {
+  return `bash -c "${parts.filter((part) => part).join(' ')}"`;
+};
+
 export default class Test extends Command {
   static description = 'Run all of the StringSync tests.';
 
   static flags = {
     watch: flags.boolean({ char: 'w', default: false }),
     coverage: flags.boolean({ char: 'c', default: false }),
+    ci: flags.boolean({ default: false }),
   };
 
   static args = [
@@ -22,6 +27,11 @@ export default class Test extends Command {
 
   async run() {
     const { flags, args, argv } = this.parse(Test);
+
+    if (flags.ci && flags.watch) {
+      this.log('cannot specify ci=true and watch=true');
+      this.exit(1);
+    }
 
     execSync(['./bin/ss', 'build', '-t'].join(' '), {
       cwd: ROOT_PATH,
@@ -40,12 +50,20 @@ export default class Test extends Command {
           'run',
           '--rm',
           'test',
-          'yarn',
-          `test:${args.project}`,
-          '--runInBand',
-          `--watchAll=${flags.watch}`,
-          flags.coverage ? '--collectCoverage' : '',
-          ...argv.slice(1), // the first arg is project
+          bashC(
+            flags.ci ? 'CI=true' : '',
+            flags.ci ? `JEST_SUITE_NAME=${args.project}` : '',
+            flags.ci ? 'JEST_JUNIT_SUITE_NAME="{filename}"' : '',
+            flags.ci ? `JEST_JUNIT_OUTPUT_NAME="junit.${args.project}.xml"` : '',
+            flags.ci ? `JEST_JUNIT_OUTPUT_DIR="${args.project === 'web' ? '../../reports' : 'reports'}"` : '',
+            'yarn',
+            `test:${args.project}`,
+            '--runInBand',
+            `--watchAll=${flags.watch}`,
+            flags.coverage ? '--collectCoverage' : '',
+            flags.ci ? '--reporters=jest-junit' : '',
+            ...argv.slice(1) // the first arg is project
+          ),
         ]
           .filter((part) => part)
           .join(' '),
