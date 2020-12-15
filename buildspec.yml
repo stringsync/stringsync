@@ -6,7 +6,6 @@ phases:
       - echo Configuring yarn...
       - yarn config set cache-folder /root/.yarn
       - yarn config set install.prefer-offline true
-      - yarn config get
       - echo Installing script node_modules...
       - (cd ./bin/scripts && yarn install)
 
