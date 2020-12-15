@@ -17,6 +17,7 @@ phases:
     commands:
       - echo Logging into docker...
       - aws s3 cp s3://$S3_SECRETS_BUCKET/.docker.key .docker.key
+      - docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest || true
       - docker login -u stringsync --password-stdin < .docker.key
       - rm .docker.key
       - echo Building images...
