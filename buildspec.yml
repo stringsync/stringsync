@@ -14,7 +14,6 @@ phases:
       - echo Logging in to Amazon ECR...
       - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
       - docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest || true
-      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest stringsync:latest || true
       - echo Logging into docker...
       - aws s3 cp s3://$S3_SECRETS_BUCKET/.docker.key .docker.key
       - docker login -u stringsync --password-stdin < .docker.key
@@ -24,11 +23,11 @@ phases:
 
   build:
     commands:
+      - echo Building prod image...
+      - ./bin/ss build --prod --cacheFrom $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
       - echo Testing images...
       - ./bin/ss test api --ci
       - ./bin/ss test web --ci
-      - echo Building prod image...
-      - ./bin/ss build --prod
 
   post_build:
     commands:
