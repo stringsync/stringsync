@@ -26,6 +26,6 @@
     "@types/node": "^14.0.13",
     "@types/validator": "^13.0.0",
     "sequelize-cli": "^5.5.1",
-    "ts-node": "^8.10.2"
+    "ts-node": "^9.1.1"
   }
 }
