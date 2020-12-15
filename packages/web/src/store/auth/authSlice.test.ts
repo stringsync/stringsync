@@ -28,10 +28,6 @@ afterEach(() => {
 });
 
 describe('authSlice', () => {
-  it('fails on purpose', () => {
-    throw new Error('will this be a message');
-  });
-
   it('initializes state', () => {
     const store = configureStore({
       reducer: {
