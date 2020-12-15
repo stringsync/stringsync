@@ -10,19 +10,17 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
-      - echo Cleaning up previous builds
-      - ./bin/ss down api
+      - docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest || true
+      - echo Logging into docker...
+      - aws s3 cp s3://$S3_SECRETS_BUCKET/.docker.key .docker.key
+      - docker login -u stringsync --password-stdin < .docker.key
+      - rm .docker.key
 
   build:
     commands:
-      - echo Logging into docker...
-      - aws s3 cp s3://$S3_SECRETS_BUCKET/.docker.key .docker.key
-      - docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest || true
-      - docker login -u stringsync --password-stdin < .docker.key
-      - rm .docker.key
       - echo Building images...
-      - ./bin/ss build -pd
-      - echo Testing images...
+      - ./bin/ss build --dev --prod --cache-from $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
+      # - echo Testing images...
       # - ./bin/ss test api
       # - ./bin/ss test web
 
@@ -54,6 +52,9 @@ phases:
         else
           echo Build failed, skipping post_build step...
         fi
+
+        echo Cleaning up previous builds...
+      - ./bin/ss down api
 
         echo Logging out of docker...
         docker logout
