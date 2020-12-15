@@ -19,7 +19,7 @@ phases:
   build:
     commands:
       - echo Building images...
-      - ./bin/ss build --dev --prod --cache-from $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
+      - ./bin/ss build --dev --prod --cacheFrom $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
       # - echo Testing images...
       # - ./bin/ss test api
       # - ./bin/ss test web
