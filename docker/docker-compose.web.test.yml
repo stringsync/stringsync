@@ -9,4 +9,4 @@ services:
     env_file:
       - ../env/web.test.env
     volumes:
-      - ../packages:/stringsync/packages
+      - ../packages:/app/packages

@@ -20,7 +20,7 @@ services:
     env_file:
       - ../env/api.test.env
     volumes:
-      - ../packages:/stringsync/packages
+      - ../packages:/app/packages
     links:
       - db
       - redis

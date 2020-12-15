@@ -21,7 +21,7 @@ services:
       - ../env/dev.env
       - ../env/secrets.env
     volumes:
-      - ../packages:/stringsync/packages
+      - ../packages:/app/packages
     links:
       - db
       - redis
@@ -38,7 +38,7 @@ services:
       - ../env/dev.env
       - ../env/secrets.env
     volumes:
-      - ../packages:/stringsync/packages
+      - ../packages:/app/packages
     links:
       - db
       - redis
@@ -52,7 +52,7 @@ services:
     env_file:
       - ../env/dev.env
     volumes:
-      - ../packages:/stringsync/packages
+      - ../packages:/app/packages
     links:
       - db
     command: ['yarn', 'db', 'dev']

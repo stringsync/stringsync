@@ -41,17 +41,17 @@ phases:
           printf '[{"name":"api","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.api.json
           printf '[{"name":"worker","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.worker.json
 
-          echo Adding REACT_APP_SERVER_URI to .env
-          echo REACT_APP_SERVER_URI=$REACT_APP_SERVER_URI >> packages/web/.env
+          echo creating artifacts dir...
+          mkdir artifacts
 
-          echo Building web project...
-          (yarn web install && yarn web build)
+          echo Building web project in artifacts directory...
+          # We use docker to build the project to avoid having to install the packages needed
+          # to build it on the host. The docker image already has the packages installed.
+          docker run --volume $(pwd)/artifacts/build:/app/packages/web/build stringsync-dev:latest bash -c "REACT_APP_SERVER_URI=$REACT_APP_SERVER_URI yarn web build"
 
-          echo Moving everything into root build dir...
-          mkdir deploy
-          mv imagedefinitions.api.json deploy
-          mv imagedefinitions.worker.json deploy
-          mv packages/web/build/* deploy
+          echo Moving everything else into root artifacts dir...
+          mv imagedefinitions.api.json artifacts
+          mv imagedefinitions.worker.json artifacts
         else
           echo Build failed, skipping post_build step...
         fi
@@ -67,6 +67,6 @@ cache:
     - /root/.yarn/**/*
 
 artifacts:
-  base-directory: deploy
+  base-directory: artifacts
   files:
     - '**/*'
