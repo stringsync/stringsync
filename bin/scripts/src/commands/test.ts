@@ -53,7 +53,8 @@ export default class Test extends Command {
           bashC(
             flags.ci ? 'CI=true' : '',
             flags.ci ? `JEST_SUITE_NAME=${args.project}` : '',
-            flags.ci ? 'JEST_JUNIT_SUITE_NAME="{filename}"' : '',
+            flags.ci ? 'JEST_JUNIT_SUITE_NAME="{displayName}"' : '',
+            flags.ci ? 'JEST_JUNIT_CLASSNAME="{classname}"' : '',
             flags.ci ? `JEST_JUNIT_OUTPUT_NAME="junit.${args.project}.xml"` : '',
             flags.ci ? `JEST_JUNIT_OUTPUT_DIR="${args.project === 'web' ? '../../reports' : 'reports'}"` : '',
             'yarn',
