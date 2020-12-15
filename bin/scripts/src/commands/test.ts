@@ -14,6 +14,7 @@ export default class Test extends Command {
     watch: flags.boolean({ char: 'w', default: false }),
     coverage: flags.boolean({ char: 'c', default: false }),
     ci: flags.boolean({ default: false }),
+    cacheFrom: flags.string({ default: '' }),
   };
 
   static args = [
@@ -33,7 +34,7 @@ export default class Test extends Command {
       this.exit(1);
     }
 
-    execSync(['./bin/ss', 'build', '-t'].join(' '), {
+    execSync(['./bin/ss', 'build', '-t', '--cacheFrom', flags.cacheFrom].join(' '), {
       cwd: ROOT_PATH,
       stdio: 'inherit',
     });
