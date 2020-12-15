@@ -331,7 +331,7 @@ Resources:
     Properties:
       Name: !Ref AWS::StackName
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
-      TimeoutInMinutes: 15
+      TimeoutInMinutes: 30
       Cache:
         Type: S3
         Location: !Ref CodeBuildCacheBucket
