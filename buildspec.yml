@@ -61,8 +61,9 @@ phases:
 
 cache:
   paths:
-    # - bin/scripts/node_modules/**/*
-    # - node_modules/**/*
+    - bin/scripts/node_modules/**/*
+    - node_modules/**/*
+    - packages/web/node_modules/**/*
 
 artifacts:
   base-directory: deploy
