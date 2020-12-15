@@ -56,9 +56,6 @@ phases:
           echo Build failed, skipping post_build step...
         fi
 
-        echo Cleaning up previous builds...
-        ./bin/ss down api
-
         echo Logging out of docker...
         docker logout
 
