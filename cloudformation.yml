@@ -127,6 +127,49 @@ Resources:
     DeletionPolicy: Delete
     Type: AWS::S3::Bucket
 
+  WebBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WebBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${WebBucketOriginAccessIdentity}
+            Action: s3:GetObject
+            Resource: !Sub arn:aws:s3:::${WebBucket}/*
+
+  WebBucketOriginAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Sub access-identity-${WebBucket}
+
+  WebDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: Serves the application frontend
+        PriceClass: PriceClass_All
+        Origins:
+          - DomainName: !GetAtt WebBucket.DomainName
+            Id: S3-web
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub origin-access-identity/cloudfront/${WebBucketOriginAccessIdentity}
+        DefaultRootObject: index.html
+        DefaultCacheBehavior:
+          TargetOriginId: S3-web
+          ViewerProtocolPolicy: allow-all
+          AllowedMethods:
+            - HEAD
+            - GET
+          ForwardedValues:
+            QueryString: true
+            Cookies:
+              Forward: all
+
   CodeCommitRepository:
     Type: AWS::CodeCommit::Repository
     Properties:
