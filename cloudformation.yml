@@ -331,6 +331,7 @@ Resources:
     Properties:
       Name: !Ref AWS::StackName
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      BadgeEnabled: true
       TimeoutInMinutes: 30
       Cache:
         Type: S3
