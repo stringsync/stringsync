@@ -1,18 +1,20 @@
 import { randInt } from './randInt';
 
-it('returns a random integer between min and max', () => {
-  const min = 0;
-  const max = 10;
+describe('randInt', () => {
+  it('returns a random integer between min and max', () => {
+    const min = 0;
+    const max = 10;
 
-  const int = randInt(min, max);
+    const int = randInt(min, max);
 
-  expect(int).toBeGreaterThanOrEqual(min);
-  expect(int).toBeLessThanOrEqual(max);
-});
+    expect(int).toBeGreaterThanOrEqual(min);
+    expect(int).toBeLessThanOrEqual(max);
+  });
 
-it('throws an error when min is greater than max', () => {
-  const min = 10;
-  const max = 0;
+  it('throws an error when min is greater than max', () => {
+    const min = 10;
+    const max = 0;
 
-  expect(() => randInt(min, max)).toThrow();
+    expect(() => randInt(min, max)).toThrow();
+  });
 });
