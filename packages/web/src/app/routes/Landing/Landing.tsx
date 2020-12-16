@@ -1,7 +1,8 @@
 import { CustomerServiceOutlined, SearchOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { compose } from '@stringsync/common';
-import { Button, Col, Divider, Row } from 'antd';
+import { Col, Divider, Row } from 'antd';
 import React from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Box } from '../../../components/Box';
 import { Logo } from '../../../components/Logo';
@@ -86,11 +87,9 @@ export const Landing: React.FC = enhance(() => {
             <Wordmark />
           </Header>
           <SubHeader>learn how to play guitar for free</SubHeader>
-          <div>
-            <Button type="primary" size="large" href="/library">
-              start learning
-            </Button>
-          </div>
+          <Link to="/library" className="ant-btn ant-btn-primary">
+            start learning
+          </Link>
         </WhiteBox>
       </Jumbotron>
 
