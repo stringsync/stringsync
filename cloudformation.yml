@@ -123,28 +123,9 @@ Resources:
     DeletionPolicy: Delete
     Type: AWS::S3::Bucket
 
-  WebBucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref WebBucket
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          Sid: PublicReadForGetBucketObjects
-          Effect: Allow
-          Principal: '*'
-          Action: 's3:GetObject'
-          Resource: !Join ['', ['arn:aws:s3:::', !Ref WebBucket, '/*']]
-
   WebBucket:
     DeletionPolicy: Delete
     Type: AWS::S3::Bucket
-    Properties:
-      AccessControl: PublicRead
-      MetricsConfigurations:
-        - Id: EntireBucket
-      WebsiteConfiguration:
-        IndexDocument: index.html
 
   CodeCommitRepository:
     Type: AWS::CodeCommit::Repository
