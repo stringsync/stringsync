@@ -10,41 +10,43 @@ import { UserSequelizeRepo } from './UserSequelizeRepo';
 
 const TYPES = { ...REPOS_TYPES };
 
-const ref = useTestContainer(REPOS);
+describe('UserSequelizeLoader', () => {
+  const ref = useTestContainer(REPOS);
 
-let container: Container;
+  let container: Container;
 
-let userLoader: UserSequelizeLoader;
-let userRepo: UserSequelizeRepo;
+  let userLoader: UserSequelizeLoader;
+  let userRepo: UserSequelizeRepo;
 
-let user1: User;
-let user2: User;
+  let user1: User;
+  let user2: User;
 
-beforeEach(() => {
-  container = ref.container;
-  container.rebind<UserSequelizeLoader>(TYPES.UserLoader).to(UserSequelizeLoader);
-});
-
-beforeEach(async () => {
-  userLoader = container.get<UserSequelizeLoader>(TYPES.UserLoader);
-  userRepo = container.get<UserRepo>(TYPES.UserRepo);
-  [user1, user2] = await userRepo.bulkCreate([EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser()]);
-});
-
-describe('findById', () => {
-  it('finds a user by id', async () => {
-    const user = await userLoader.findById(user1.id);
-    expect(user).not.toBeNull();
-    expect(user!.id).toBe(user1.id);
+  beforeEach(() => {
+    container = ref.container;
+    container.rebind<UserSequelizeLoader>(TYPES.UserLoader).to(UserSequelizeLoader);
   });
 
-  it('returns null for a user that does not exist', async () => {
-    const user = await userLoader.findById(randStr(10));
-    expect(user).toBeNull();
+  beforeEach(async () => {
+    userLoader = container.get<UserSequelizeLoader>(TYPES.UserLoader);
+    userRepo = container.get<UserRepo>(TYPES.UserRepo);
+    [user1, user2] = await userRepo.bulkCreate([EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser()]);
   });
 
-  it('returns a plain object', async () => {
-    const user = await userLoader.findById(user1.id);
-    expect(isPlainObject(user)).toBe(true);
+  describe('findById', () => {
+    it('finds a user by id', async () => {
+      const user = await userLoader.findById(user1.id);
+      expect(user).not.toBeNull();
+      expect(user!.id).toBe(user1.id);
+    });
+
+    it('returns null for a user that does not exist', async () => {
+      const user = await userLoader.findById(randStr(10));
+      expect(user).toBeNull();
+    });
+
+    it('returns a plain object', async () => {
+      const user = await userLoader.findById(user1.id);
+      expect(isPlainObject(user)).toBe(true);
+    });
   });
 });

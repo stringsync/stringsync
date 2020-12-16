@@ -3,231 +3,237 @@ import { first, last, sortBy } from 'lodash';
 import { Pager } from './Pager';
 import { PagingCtx, PagingEntity } from './types';
 
-let entityPager: Pager<PagingEntity>;
-
-beforeEach(() => {
-  entityPager = new Pager<PagingEntity>(10, 'entity');
-});
-
-describe('encoding', () => {
-  it('can encode and decode a cursor', () => {
-    const cursor = 1;
-
-    const encodedCursor = entityPager.encodeCursor(cursor);
-    const decodedCursor = entityPager.decodeCursor(encodedCursor);
-
-    expect(decodedCursor).toBe(cursor);
-  });
-
-  it('throws an error for invalid cursors', () => {
-    expect(() => entityPager.decodeCursor('fakeCursor')).toThrow();
-  });
-});
-
-describe('connect', () => {
-  const NUM_ENTITIES = 15;
-
-  let allEntities: PagingEntity[];
+describe('Pager', () => {
+  let entityPager: Pager<PagingEntity>;
 
   beforeEach(() => {
-    allEntities = new Array<PagingEntity>(NUM_ENTITIES);
-    for (let ndx = 0; ndx < NUM_ENTITIES; ndx++) {
-      allEntities[ndx] = { cursor: ndx + 1 };
-    }
+    entityPager = new Pager<PagingEntity>(10, 'entity');
   });
 
-  const findEntities = async (pagingCtx: PagingCtx) => {
-    let entities: PagingEntity[];
+  describe('encoding', () => {
+    it('can encode and decode a cursor', () => {
+      const cursor = 1;
 
-    switch (pagingCtx.pagingType) {
-      case PagingType.FORWARD:
-        entities = sortBy(allEntities, (entity) => entity.cursor)
-          .filter((entity) => entity.cursor > pagingCtx.cursor)
-          .slice(0, pagingCtx.limit);
-        break;
+      const encodedCursor = entityPager.encodeCursor(cursor);
+      const decodedCursor = entityPager.decodeCursor(encodedCursor);
 
-      case PagingType.BACKWARD:
-        entities = sortBy(allEntities, (entity) => entity.cursor)
-          .filter((entity) => entity.cursor < pagingCtx.cursor)
-          .slice(-pagingCtx.limit);
-        break;
+      expect(decodedCursor).toBe(cursor);
+    });
 
-      default:
-        throw new UnknownError();
-    }
-
-    const cursors = allEntities.map((entity) => entity.cursor);
-    const min = Math.min(...cursors);
-    const max = Math.max(...cursors);
-
-    return { entities, min, max };
-  };
-
-  it('defaults to forward paging', async () => {
-    const { edges, pageInfo } = await entityPager.connect({}, findEntities);
-
-    expect(edges.length).toBeGreaterThan(0);
-    expect(edges).toHaveLength(entityPager.defaultLimit);
-    expect(pageInfo.startCursor).toBe(first(edges)!.cursor);
-    expect(pageInfo.endCursor).toBe(last(edges)!.cursor);
-    expect(pageInfo.hasNextPage).toBe(true);
-    expect(pageInfo.hasPreviousPage).toBe(false);
+    it('throws an error for invalid cursors', () => {
+      expect(() => entityPager.decodeCursor('fakeCursor')).toThrow();
+    });
   });
 
-  it('returns the first N records when forward paging', async () => {
-    const cursors = allEntities.map((entity) => entity.cursor);
-    const minCursor = Math.min(...cursors);
+  describe('connect', () => {
+    const NUM_ENTITIES = 15;
 
-    const { edges, pageInfo } = await entityPager.connect({ first: 1 }, findEntities);
+    let allEntities: PagingEntity[];
 
-    expect(edges).toHaveLength(1);
-    const edge = edges[0];
-    expect(edge.node.cursor).toBe(minCursor);
-    expect(edge.cursor).toBe(entityPager.encodeCursor(minCursor));
-    expect(pageInfo.startCursor).toBe(edge.cursor);
-    expect(pageInfo.endCursor).toBe(edge.cursor);
-    expect(pageInfo.hasNextPage).toBe(true);
-    expect(pageInfo.hasPreviousPage).toBe(false);
-  });
+    beforeEach(() => {
+      allEntities = new Array<PagingEntity>(NUM_ENTITIES);
+      for (let ndx = 0; ndx < NUM_ENTITIES; ndx++) {
+        allEntities[ndx] = { cursor: ndx + 1 };
+      }
+    });
 
-  it('returns the last N records when backward paging', async () => {
-    const cursors = allEntities.map((entity) => entity.cursor);
-    const maxCursor = Math.max(...cursors);
+    const findEntities = async (pagingCtx: PagingCtx) => {
+      let entities: PagingEntity[];
 
-    const { edges, pageInfo } = await entityPager.connect({ last: 1 }, findEntities);
+      switch (pagingCtx.pagingType) {
+        case PagingType.FORWARD:
+          entities = sortBy(allEntities, (entity) => entity.cursor)
+            .filter((entity) => entity.cursor > pagingCtx.cursor)
+            .slice(0, pagingCtx.limit);
+          break;
 
-    expect(edges).toHaveLength(1);
-    const edge = edges[0];
-    expect(edge.node.cursor).toBe(maxCursor);
-    expect(edge.cursor).toBe(entityPager.encodeCursor(maxCursor));
-    expect(pageInfo.startCursor).toBe(edge.cursor);
-    expect(pageInfo.endCursor).toBe(edge.cursor);
-    expect(pageInfo.hasNextPage).toBe(true);
-    expect(pageInfo.hasPreviousPage).toBe(false);
-  });
+        case PagingType.BACKWARD:
+          entities = sortBy(allEntities, (entity) => entity.cursor)
+            .filter((entity) => entity.cursor < pagingCtx.cursor)
+            .slice(-pagingCtx.limit);
+          break;
 
-  it('returns the first N records after a cursor', async () => {
-    const connection = await entityPager.connect({ first: 1 }, findEntities);
-    expect(connection.pageInfo.startCursor).not.toBeNull();
-    const after = connection.pageInfo.startCursor!;
+        default:
+          throw new UnknownError();
+      }
 
-    const { edges, pageInfo } = await entityPager.connect({ first: 1, after }, findEntities);
+      const cursors = allEntities.map((entity) => entity.cursor);
+      const min = Math.min(...cursors);
+      const max = Math.max(...cursors);
 
-    expect(edges).toHaveLength(1);
-    const edge = edges[0];
-    expect(edge.node.cursor).toBeGreaterThan(entityPager.decodeCursor(after));
-    expect(edge.cursor).toBe(entityPager.encodeCursor(edge.node.cursor));
-    expect(pageInfo.startCursor).toBe(edge.cursor);
-    expect(pageInfo.endCursor).toBe(edge.cursor);
-    expect(pageInfo.hasNextPage).toBe(true);
-    expect(pageInfo.hasPreviousPage).toBe(true);
-  });
+      return { entities, min, max };
+    };
 
-  it('returns the last N records before a cursor', async () => {
-    const connection = await entityPager.connect({ last: 1 }, findEntities);
-    expect(connection.pageInfo.startCursor).not.toBeNull();
-    const before = connection.pageInfo.startCursor!;
+    it('defaults to forward paging', async () => {
+      const { edges, pageInfo } = await entityPager.connect({}, findEntities);
 
-    const { edges, pageInfo } = await entityPager.connect({ last: 1, before }, findEntities);
+      expect(edges.length).toBeGreaterThan(0);
+      expect(edges).toHaveLength(entityPager.defaultLimit);
+      expect(pageInfo.startCursor).toBe(first(edges)!.cursor);
+      expect(pageInfo.endCursor).toBe(last(edges)!.cursor);
+      expect(pageInfo.hasNextPage).toBe(true);
+      expect(pageInfo.hasPreviousPage).toBe(false);
+    });
 
-    expect(edges).toHaveLength(1);
-    const edge = edges[0];
-    expect(edge.node.cursor).toBeLessThan(entityPager.decodeCursor(before));
-    expect(edge.cursor).toBe(entityPager.encodeCursor(edge.node.cursor));
-    expect(pageInfo.startCursor).toBe(edge.cursor);
-    expect(pageInfo.endCursor).toBe(edge.cursor);
-    expect(pageInfo.hasNextPage).toBe(true);
-    expect(pageInfo.hasPreviousPage).toBe(true);
-  });
+    it('returns the first N records when forward paging', async () => {
+      const cursors = allEntities.map((entity) => entity.cursor);
+      const minCursor = Math.min(...cursors);
 
-  it('returns records in the same order regardless of paging type', async () => {
-    const forwardEntityConnection = await entityPager.connect({ first: NUM_ENTITIES }, findEntities);
-    const backwardEntityConnection = await entityPager.connect({ last: NUM_ENTITIES }, findEntities);
-    expect(forwardEntityConnection).toStrictEqual(backwardEntityConnection);
-  });
+      const { edges, pageInfo } = await entityPager.connect({ first: 1 }, findEntities);
 
-  it('returns an empty array when paging after the last record', async () => {
-    const connection = await entityPager.connect({ last: 1 }, findEntities);
-    expect(connection.pageInfo.startCursor).not.toBeNull();
-    const after = connection.pageInfo.startCursor!;
+      expect(edges).toHaveLength(1);
+      const edge = edges[0];
+      expect(edge.node.cursor).toBe(minCursor);
+      expect(edge.cursor).toBe(entityPager.encodeCursor(minCursor));
+      expect(pageInfo.startCursor).toBe(edge.cursor);
+      expect(pageInfo.endCursor).toBe(edge.cursor);
+      expect(pageInfo.hasNextPage).toBe(true);
+      expect(pageInfo.hasPreviousPage).toBe(false);
+    });
 
-    const { edges, pageInfo } = await entityPager.connect({ first: 1, after }, findEntities);
+    it('returns the last N records when backward paging', async () => {
+      const cursors = allEntities.map((entity) => entity.cursor);
+      const maxCursor = Math.max(...cursors);
 
-    expect(edges).toHaveLength(0);
-    expect(pageInfo.startCursor).toBeNull();
-    expect(pageInfo.endCursor).toBeNull();
-    expect(pageInfo.hasNextPage).toBe(false);
-    expect(pageInfo.hasPreviousPage).toBe(true);
-  });
+      const { edges, pageInfo } = await entityPager.connect({ last: 1 }, findEntities);
 
-  it('returns an empty array when paging before the first record', async () => {
-    const connection = await entityPager.connect({ first: 1 }, findEntities);
-    expect(connection.pageInfo.startCursor).not.toBeNull();
-    const before = connection.pageInfo.startCursor!;
+      expect(edges).toHaveLength(1);
+      const edge = edges[0];
+      expect(edge.node.cursor).toBe(maxCursor);
+      expect(edge.cursor).toBe(entityPager.encodeCursor(maxCursor));
+      expect(pageInfo.startCursor).toBe(edge.cursor);
+      expect(pageInfo.endCursor).toBe(edge.cursor);
+      expect(pageInfo.hasNextPage).toBe(true);
+      expect(pageInfo.hasPreviousPage).toBe(false);
+    });
 
-    const { edges, pageInfo } = await entityPager.connect({ last: 1, before }, findEntities);
+    it('returns the first N records after a cursor', async () => {
+      const connection = await entityPager.connect({ first: 1 }, findEntities);
+      expect(connection.pageInfo.startCursor).not.toBeNull();
+      const after = connection.pageInfo.startCursor!;
 
-    expect(edges).toHaveLength(0);
-    expect(pageInfo.startCursor).toBeNull();
-    expect(pageInfo.endCursor).toBeNull();
-    expect(pageInfo.hasNextPage).toBe(false);
-    expect(pageInfo.hasPreviousPage).toBe(true);
-  });
+      const { edges, pageInfo } = await entityPager.connect({ first: 1, after }, findEntities);
 
-  it('handles NaN mins and maxes', async () => {
-    const entities = sortBy(allEntities, 'cursor').slice(0, 1);
-    expect(entities).toHaveLength(1);
-    const entity = first(entities)!;
+      expect(edges).toHaveLength(1);
+      const edge = edges[0];
+      expect(edge.node.cursor).toBeGreaterThan(entityPager.decodeCursor(after));
+      expect(edge.cursor).toBe(entityPager.encodeCursor(edge.node.cursor));
+      expect(pageInfo.startCursor).toBe(edge.cursor);
+      expect(pageInfo.endCursor).toBe(edge.cursor);
+      expect(pageInfo.hasNextPage).toBe(true);
+      expect(pageInfo.hasPreviousPage).toBe(true);
+    });
 
-    const { edges, pageInfo } = await entityPager.connect({ first: 1 }, () =>
-      Promise.resolve({ entities, min: NaN, max: NaN })
-    );
+    it('returns the last N records before a cursor', async () => {
+      const connection = await entityPager.connect({ last: 1 }, findEntities);
+      expect(connection.pageInfo.startCursor).not.toBeNull();
+      const before = connection.pageInfo.startCursor!;
 
-    expect(edges).toHaveLength(1);
-    expect(pageInfo.startCursor).toBe(entityPager.encodeCursor(entity.cursor));
-    expect(pageInfo.endCursor).toBe(entityPager.encodeCursor(entity.cursor));
-    // assume that there are next and previous pages, even though we didn't find anything
-    expect(pageInfo.hasNextPage).toBe(true);
-    expect(pageInfo.hasPreviousPage).toBe(true);
-  });
+      const { edges, pageInfo } = await entityPager.connect({ last: 1, before }, findEntities);
 
-  it('pages after a NaN min or max page', async () => {
-    // get the last entity
-    const entities = sortBy(allEntities, 'cursor').slice(-1);
-    expect(entities).toHaveLength(1);
+      expect(edges).toHaveLength(1);
+      const edge = edges[0];
+      expect(edge.node.cursor).toBeLessThan(entityPager.decodeCursor(before));
+      expect(edge.cursor).toBe(entityPager.encodeCursor(edge.node.cursor));
+      expect(pageInfo.startCursor).toBe(edge.cursor);
+      expect(pageInfo.endCursor).toBe(edge.cursor);
+      expect(pageInfo.hasNextPage).toBe(true);
+      expect(pageInfo.hasPreviousPage).toBe(true);
+    });
 
-    // get the first page
-    const connection = await entityPager.connect({ first: 1 }, () => Promise.resolve({ entities, min: NaN, max: NaN }));
+    it('returns records in the same order regardless of paging type', async () => {
+      const forwardEntityConnection = await entityPager.connect({ first: NUM_ENTITIES }, findEntities);
+      const backwardEntityConnection = await entityPager.connect({ last: NUM_ENTITIES }, findEntities);
+      expect(forwardEntityConnection).toStrictEqual(backwardEntityConnection);
+    });
 
-    // get the next page, which actually ends up not returning anything
-    const { edges, pageInfo } = await entityPager.connect({ first: 1, after: connection.pageInfo.endCursor }, () =>
-      Promise.resolve({ entities: [], min: NaN, max: NaN })
-    );
+    it('returns an empty array when paging after the last record', async () => {
+      const connection = await entityPager.connect({ last: 1 }, findEntities);
+      expect(connection.pageInfo.startCursor).not.toBeNull();
+      const after = connection.pageInfo.startCursor!;
 
-    expect(edges).toHaveLength(0);
-    expect(pageInfo.startCursor).toBeNull();
-    expect(pageInfo.endCursor).toBeNull();
-    expect(pageInfo.hasNextPage).toBe(false);
-    expect(pageInfo.hasPreviousPage).toBe(true);
-  });
+      const { edges, pageInfo } = await entityPager.connect({ first: 1, after }, findEntities);
 
-  it('pages before a NaN min or max page', async () => {
-    // get the first entity
-    const entities = sortBy(allEntities, 'cursor').slice(0, 1);
-    expect(entities).toHaveLength(1);
+      expect(edges).toHaveLength(0);
+      expect(pageInfo.startCursor).toBeNull();
+      expect(pageInfo.endCursor).toBeNull();
+      expect(pageInfo.hasNextPage).toBe(false);
+      expect(pageInfo.hasPreviousPage).toBe(true);
+    });
 
-    // get the first page
-    const connection = await entityPager.connect({ last: 1 }, () => Promise.resolve({ entities, min: NaN, max: NaN }));
+    it('returns an empty array when paging before the first record', async () => {
+      const connection = await entityPager.connect({ first: 1 }, findEntities);
+      expect(connection.pageInfo.startCursor).not.toBeNull();
+      const before = connection.pageInfo.startCursor!;
 
-    // get the previous page, which actually ends up not returning anything
-    const { edges, pageInfo } = await entityPager.connect({ last: 1, before: connection.pageInfo.startCursor }, () =>
-      Promise.resolve({ entities: [], min: NaN, max: NaN })
-    );
+      const { edges, pageInfo } = await entityPager.connect({ last: 1, before }, findEntities);
 
-    expect(edges).toHaveLength(0);
-    expect(pageInfo.startCursor).toBeNull();
-    expect(pageInfo.endCursor).toBeNull();
-    expect(pageInfo.hasNextPage).toBe(false);
-    expect(pageInfo.hasPreviousPage).toBe(true);
+      expect(edges).toHaveLength(0);
+      expect(pageInfo.startCursor).toBeNull();
+      expect(pageInfo.endCursor).toBeNull();
+      expect(pageInfo.hasNextPage).toBe(false);
+      expect(pageInfo.hasPreviousPage).toBe(true);
+    });
+
+    it('handles NaN mins and maxes', async () => {
+      const entities = sortBy(allEntities, 'cursor').slice(0, 1);
+      expect(entities).toHaveLength(1);
+      const entity = first(entities)!;
+
+      const { edges, pageInfo } = await entityPager.connect({ first: 1 }, () =>
+        Promise.resolve({ entities, min: NaN, max: NaN })
+      );
+
+      expect(edges).toHaveLength(1);
+      expect(pageInfo.startCursor).toBe(entityPager.encodeCursor(entity.cursor));
+      expect(pageInfo.endCursor).toBe(entityPager.encodeCursor(entity.cursor));
+      // assume that there are next and previous pages, even though we didn't find anything
+      expect(pageInfo.hasNextPage).toBe(true);
+      expect(pageInfo.hasPreviousPage).toBe(true);
+    });
+
+    it('pages after a NaN min or max page', async () => {
+      // get the last entity
+      const entities = sortBy(allEntities, 'cursor').slice(-1);
+      expect(entities).toHaveLength(1);
+
+      // get the first page
+      const connection = await entityPager.connect({ first: 1 }, () =>
+        Promise.resolve({ entities, min: NaN, max: NaN })
+      );
+
+      // get the next page, which actually ends up not returning anything
+      const { edges, pageInfo } = await entityPager.connect({ first: 1, after: connection.pageInfo.endCursor }, () =>
+        Promise.resolve({ entities: [], min: NaN, max: NaN })
+      );
+
+      expect(edges).toHaveLength(0);
+      expect(pageInfo.startCursor).toBeNull();
+      expect(pageInfo.endCursor).toBeNull();
+      expect(pageInfo.hasNextPage).toBe(false);
+      expect(pageInfo.hasPreviousPage).toBe(true);
+    });
+
+    it('pages before a NaN min or max page', async () => {
+      // get the first entity
+      const entities = sortBy(allEntities, 'cursor').slice(0, 1);
+      expect(entities).toHaveLength(1);
+
+      // get the first page
+      const connection = await entityPager.connect({ last: 1 }, () =>
+        Promise.resolve({ entities, min: NaN, max: NaN })
+      );
+
+      // get the previous page, which actually ends up not returning anything
+      const { edges, pageInfo } = await entityPager.connect({ last: 1, before: connection.pageInfo.startCursor }, () =>
+        Promise.resolve({ entities: [], min: NaN, max: NaN })
+      );
+
+      expect(edges).toHaveLength(0);
+      expect(pageInfo.startCursor).toBeNull();
+      expect(pageInfo.endCursor).toBeNull();
+      expect(pageInfo.hasNextPage).toBe(false);
+      expect(pageInfo.hasPreviousPage).toBe(true);
+    });
   });
 });
