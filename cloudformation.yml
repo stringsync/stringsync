@@ -440,7 +440,7 @@ Resources:
               InputArtifacts:
                 - Name: BuildOutput
               Configuration:
-                BucketName: !Ref FrontendBucket
+                BucketName: !Ref WebBucket
                 Extract: true
 
   # VPC in which containers will be networked.
