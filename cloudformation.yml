@@ -123,10 +123,10 @@ Resources:
     DeletionPolicy: Delete
     Type: AWS::S3::Bucket
 
-  FrontendBucketPolicy:
+  WebBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: !Ref FrontendBucket
+      Bucket: !Ref WebBucket
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -134,9 +134,9 @@ Resources:
           Effect: Allow
           Principal: '*'
           Action: 's3:GetObject'
-          Resource: !Join ['', ['arn:aws:s3:::', !Ref FrontendBucket, '/*']]
+          Resource: !Join ['', ['arn:aws:s3:::', !Ref WebBucket, '/*']]
 
-  FrontendBucket:
+  WebBucket:
     DeletionPolicy: Delete
     Type: AWS::S3::Bucket
     Properties:
@@ -331,7 +331,6 @@ Resources:
     Properties:
       Name: !Ref AWS::StackName
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
-      BadgeEnabled: true
       TimeoutInMinutes: 30
       Cache:
         Type: S3
@@ -440,7 +439,7 @@ Resources:
               InputArtifacts:
                 - Name: BuildOutput
               Configuration:
-                BucketName: !Ref FrontendBucket
+                BucketName: !Ref WebBucket
                 Extract: true
 
   # VPC in which containers will be networked.
@@ -890,7 +889,7 @@ Resources:
             - Name: APP_SESSION_SECRET
               Value: !Ref ApiSessionSecret
             - Name: APP_WEB_URI
-              Value: !Join ['', ['http://', !GetAtt 'FrontendBucket.WebsiteURL']]
+              Value: !Join ['', ['http://', !GetAtt 'WebBucket.WebsiteURL']]
             - Name: CDN_DOMAIN_NAME
               Value: 'example.com'
             - Name: DB_HOST
@@ -1021,7 +1020,7 @@ Resources:
             - Name: APP_SESSION_SECRET
               Value: !Ref ApiSessionSecret
             - Name: APP_WEB_URI
-              Value: !Join ['', ['http://', !GetAtt 'FrontendBucket.WebsiteURL']]
+              Value: !Join ['', ['http://', !GetAtt 'WebBucket.WebsiteURL']]
             - Name: CDN_DOMAIN_NAME
               Value: 'example.com'
             - Name: DB_HOST
