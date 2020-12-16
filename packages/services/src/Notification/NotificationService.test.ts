@@ -7,30 +7,32 @@ import { NotificationService } from './NotificationService';
 
 const TYPES = { ...SERVICES_TYPES, ...REPOS_TYPES };
 
-const ref = useTestContainer(SERVICES);
+describe('NotificationService', () => {
+  const ref = useTestContainer(SERVICES);
 
-let container: Container;
+  let container: Container;
 
-let notificationService: NotificationService;
-let userRepo: UserRepo;
+  let notificationService: NotificationService;
+  let userRepo: UserRepo;
 
-beforeEach(() => {
-  container = ref.container;
-});
-
-beforeEach(() => {
-  notificationService = container.get<NotificationService>(TYPES.NotificationService);
-  userRepo = container.get<UserRepo>(TYPES.UserRepo);
-});
-
-describe('sendConfirmationEmail', () => {
-  let user: User;
-
-  beforeEach(async () => {
-    user = await userRepo.create(EntityBuilder.buildRandUser());
+  beforeEach(() => {
+    container = ref.container;
   });
 
-  it('runs without crashing', async () => {
-    expect(() => notificationService.sendConfirmationEmail(user)).not.toThrow();
+  beforeEach(() => {
+    notificationService = container.get<NotificationService>(TYPES.NotificationService);
+    userRepo = container.get<UserRepo>(TYPES.UserRepo);
+  });
+
+  describe('sendConfirmationEmail', () => {
+    let user: User;
+
+    beforeEach(async () => {
+      user = await userRepo.create(EntityBuilder.buildRandUser());
+    });
+
+    it('runs without crashing', async () => {
+      expect(() => notificationService.sendConfirmationEmail(user)).not.toThrow();
+    });
   });
 });

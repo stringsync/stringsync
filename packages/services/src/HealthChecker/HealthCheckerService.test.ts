@@ -5,34 +5,36 @@ import { HealthCheckerService } from './HealthCheckerService';
 
 const TYPES = { ...SERVICES_TYPES };
 
-const ref = useTestContainer(SERVICES);
+describe('HealthCheckerService', () => {
+  const ref = useTestContainer(SERVICES);
 
-let container: Container;
+  let container: Container;
 
-let healthCheckerService: HealthCheckerService;
+  let healthCheckerService: HealthCheckerService;
 
-beforeEach(() => {
-  container = ref.container;
-});
-
-beforeEach(() => {
-  healthCheckerService = container.get<HealthCheckerService>(TYPES.HealthCheckerService);
-});
-
-describe('checkHealth', () => {
-  it('checks on the db health', async () => {
-    const spy = jest.spyOn(healthCheckerService.db, 'checkHealth');
-
-    await healthCheckerService.checkHealth();
-
-    expect(spy).toBeCalledTimes(1);
+  beforeEach(() => {
+    container = ref.container;
   });
 
-  it('checks on the cache health', async () => {
-    const spy = jest.spyOn(healthCheckerService.cache, 'checkHealth');
+  beforeEach(() => {
+    healthCheckerService = container.get<HealthCheckerService>(TYPES.HealthCheckerService);
+  });
 
-    await healthCheckerService.checkHealth();
+  describe('checkHealth', () => {
+    it('checks on the db health', async () => {
+      const spy = jest.spyOn(healthCheckerService.db, 'checkHealth');
 
-    expect(spy).toBeCalledTimes(1);
+      await healthCheckerService.checkHealth();
+
+      expect(spy).toBeCalledTimes(1);
+    });
+
+    it('checks on the cache health', async () => {
+      const spy = jest.spyOn(healthCheckerService.cache, 'checkHealth');
+
+      await healthCheckerService.checkHealth();
+
+      expect(spy).toBeCalledTimes(1);
+    });
   });
 });
