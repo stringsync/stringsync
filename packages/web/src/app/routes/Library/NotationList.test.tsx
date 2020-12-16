@@ -3,12 +3,14 @@ import React from 'react';
 import { Test } from '../../../testing';
 import { NotationList } from './NotationList';
 
-it('renders without crashing', async () => {
-  const { container } = render(
-    <Test>
-      <NotationList grid={{}} />
-    </Test>
-  );
+describe('NotationList', () => {
+  it('renders without crashing', async () => {
+    const { container } = render(
+      <Test>
+        <NotationList grid={{}} />
+      </Test>
+    );
 
-  expect(container).toBeInTheDocument();
+    expect(container).toBeInTheDocument();
+  });
 });

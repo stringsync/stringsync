@@ -1,5 +1,7 @@
 import { getNullAuthState } from './getNullAuthState';
 
-it('runs without crashing', () => {
-  expect(getNullAuthState).not.toThrow();
+describe('getNullAuthState', () => {
+  it('runs without crashing', () => {
+    expect(getNullAuthState).not.toThrow();
+  });
 });

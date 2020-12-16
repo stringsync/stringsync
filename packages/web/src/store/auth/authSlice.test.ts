@@ -16,18 +16,18 @@ import {
 import { getNullAuthState } from './getNullAuthState';
 import { getNullAuthUser } from './getNullAuthUser';
 
-let authClient: AuthClient;
-
-beforeEach(() => {
-  authClient = AuthClient.create();
-  jest.spyOn(AuthClient, 'create').mockReturnValue(authClient);
-});
-
-afterEach(() => {
-  jest.clearAllMocks();
-});
-
 describe('authSlice', () => {
+  let authClient: AuthClient;
+
+  beforeEach(() => {
+    authClient = AuthClient.create();
+    jest.spyOn(AuthClient, 'create').mockReturnValue(authClient);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('initializes state', () => {
     const store = configureStore({
       reducer: {

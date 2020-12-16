@@ -1,30 +1,32 @@
-import { AuthUser } from './types';
+import { UserRole as DomainUserRole } from '@stringsync/domain';
 import { UserObject, UserRoles as TypegenUserRole } from './../../clients';
 import { toAuthUser } from './toAuthUser';
-import { UserRole as DomainUserRole } from '@stringsync/domain';
+import { AuthUser } from './types';
 
-it('converts a UserObject to an AuthUser', () => {
-  const now = new Date().toJSON();
+describe('toAuthUser', () => {
+  it('converts a UserObject to an AuthUser', () => {
+    const now = new Date().toJSON();
 
-  const user: UserObject = {
-    id: 'asdfasdf',
-    createdAt: now,
-    updatedAt: now,
-    email: 'foo@bar.com',
-    role: TypegenUserRole.TEACHER,
-    username: 'foo',
-    confirmedAt: now,
-  };
+    const user: UserObject = {
+      id: 'asdfasdf',
+      createdAt: now,
+      updatedAt: now,
+      email: 'foo@bar.com',
+      role: TypegenUserRole.TEACHER,
+      username: 'foo',
+      confirmedAt: now,
+    };
 
-  const expected: AuthUser = {
-    id: 'asdfasdf',
-    email: 'foo@bar.com',
-    role: DomainUserRole.TEACHER,
-    username: 'foo',
-    confirmedAt: now,
-  };
+    const expected: AuthUser = {
+      id: 'asdfasdf',
+      email: 'foo@bar.com',
+      role: DomainUserRole.TEACHER,
+      username: 'foo',
+      confirmedAt: now,
+    };
 
-  const actual = toAuthUser(user);
+    const actual = toAuthUser(user);
 
-  expect(actual).toStrictEqual(expected);
+    expect(actual).toStrictEqual(expected);
+  });
 });

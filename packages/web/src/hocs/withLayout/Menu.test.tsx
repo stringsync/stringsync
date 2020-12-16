@@ -1,14 +1,16 @@
-import React from 'react';
-import { Menu } from './Menu';
 import { render } from '@testing-library/react';
+import React from 'react';
 import { Test } from '../../testing';
+import { Menu } from './Menu';
 
-it('renders without crashing', () => {
-  const { container } = render(
-    <Test>
-      <Menu />
-    </Test>
-  );
+describe('Menu', () => {
+  it('renders without crashing', () => {
+    const { container } = render(
+      <Test>
+        <Menu />
+      </Test>
+    );
 
-  expect(container).toBeInTheDocument();
+    expect(container).toBeInTheDocument();
+  });
 });

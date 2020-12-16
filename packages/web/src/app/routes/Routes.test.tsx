@@ -1,13 +1,15 @@
-import React from 'react';
 import { render } from '@testing-library/react';
+import React from 'react';
 import { Test } from '../../testing';
 import { Routes } from './Routes';
 
-it('renders without crashing', () => {
-  const { container } = render(
-    <Test>
-      <Routes />
-    </Test>
-  );
-  expect(container).toBeInTheDocument();
+describe('Routes', () => {
+  it('renders without crashing', () => {
+    const { container } = render(
+      <Test>
+        <Routes />
+      </Test>
+    );
+    expect(container).toBeInTheDocument();
+  });
 });

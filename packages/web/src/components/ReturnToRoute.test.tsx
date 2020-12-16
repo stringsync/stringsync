@@ -1,32 +1,34 @@
-import React from 'react';
-import { ReturnToRoute } from './ReturnToRoute';
 import { render } from '@testing-library/react';
-import { AppStore, createStore } from '../store';
+import { createMemoryHistory } from 'history';
+import React from 'react';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router';
-import { createMemoryHistory } from 'history';
+import { AppStore, createStore } from '../store';
+import { ReturnToRoute } from './ReturnToRoute';
 
-const Dummy = () => <div data-testid="dummy"></div>;
+describe('ReturnToRoute', () => {
+  const Dummy = () => <div data-testid="dummy"></div>;
 
-let store: AppStore;
+  let store: AppStore;
 
-beforeEach(() => {
-  store = createStore();
-});
+  beforeEach(() => {
+    store = createStore();
+  });
 
-it('sets returnToRoute when mounted', () => {
-  const history = createMemoryHistory();
+  it('sets returnToRoute when mounted', () => {
+    const history = createMemoryHistory();
 
-  history.push('/dummy?foo=bar#baz');
+    history.push('/dummy?foo=bar#baz');
 
-  const { queryByTestId } = render(
-    <Provider store={store}>
-      <Router history={history}>
-        <ReturnToRoute component={Dummy} />
-      </Router>
-    </Provider>
-  );
+    const { queryByTestId } = render(
+      <Provider store={store}>
+        <Router history={history}>
+          <ReturnToRoute component={Dummy} />
+        </Router>
+      </Provider>
+    );
 
-  expect(queryByTestId('dummy')).toBeInTheDocument();
-  expect(store.getState().history.returnToRoute).toBe('/dummy?foo=bar#baz');
+    expect(queryByTestId('dummy')).toBeInTheDocument();
+    expect(store.getState().history.returnToRoute).toBe('/dummy?foo=bar#baz');
+  });
 });
