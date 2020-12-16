@@ -2,18 +2,20 @@ import { Express } from 'express';
 import request, { SuperTest, Test } from 'supertest';
 import { useTestApp } from '../testing';
 
-const ref = useTestApp();
+describe('app', () => {
+  const ref = useTestApp();
 
-let app: Express;
-let req: SuperTest<Test>;
+  let app: Express;
+  let req: SuperTest<Test>;
 
-beforeEach(() => {
-  app = ref.app;
-  req = request(app);
-});
+  beforeEach(() => {
+    app = ref.app;
+    req = request(app);
+  });
 
-describe('GET /health', () => {
-  it('responds with 200', (done) => {
-    req.get('/health').expect(200, done);
+  describe('GET /health', () => {
+    it('responds with 200', (done) => {
+      req.get('/health').expect(200, done);
+    });
   });
 });

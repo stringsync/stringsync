@@ -2,8 +2,10 @@ import { useTestContainer } from '@stringsync/di';
 import { API } from '../../API';
 import { withSession } from './withSession';
 
-const ref = useTestContainer(API);
+describe('withSession', () => {
+  const ref = useTestContainer(API);
 
-it('runs without crashing', () => {
-  expect(() => withSession(ref.container)).not.toThrow();
+  it('runs without crashing', () => {
+    expect(() => withSession(ref.container)).not.toThrow();
+  });
 });

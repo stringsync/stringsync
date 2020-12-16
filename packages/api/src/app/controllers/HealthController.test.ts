@@ -5,25 +5,27 @@ import { HealthController } from './HealthController';
 
 const TYPES = { ...API_TYPES };
 
-const ref = useTestContainer(API);
+describe('HealthController', () => {
+  const ref = useTestContainer(API);
 
-let healthController: HealthController;
+  let healthController: HealthController;
 
-beforeEach(() => {
-  healthController = ref.container.get<HealthController>(TYPES.HealthController);
-});
+  beforeEach(() => {
+    healthController = ref.container.get<HealthController>(TYPES.HealthController);
+  });
 
-describe('get', () => {
-  it('runs without crashing', async () => {
-    const checkHealth = jest.spyOn(healthController.healthCheckerService, 'checkHealth').mockResolvedValue();
-    const req = {} as any;
-    const send = jest.fn();
-    const res = { send } as any;
-    const next = jest.fn();
+  describe('get', () => {
+    it('runs without crashing', async () => {
+      const checkHealth = jest.spyOn(healthController.healthCheckerService, 'checkHealth').mockResolvedValue();
+      const req = {} as any;
+      const send = jest.fn();
+      const res = { send } as any;
+      const next = jest.fn();
 
-    await healthController.get(req, res, next);
+      await healthController.get(req, res, next);
 
-    expect(checkHealth).toHaveBeenCalledTimes(1);
-    expect(send).toHaveBeenCalledTimes(1);
+      expect(checkHealth).toHaveBeenCalledTimes(1);
+      expect(send).toHaveBeenCalledTimes(1);
+    });
   });
 });

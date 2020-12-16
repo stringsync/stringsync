@@ -11,128 +11,134 @@ import { UpdateUserInput } from './UpdateUserInput';
 
 const TYPES = { ...SERVICES_TYPES, ...REPOS_TYPES };
 
-const ref = useTestApp();
+describe('UserResolver', () => {
+  const ref = useTestApp();
 
-let app: Express;
-let container: Container;
+  let app: Express;
+  let container: Container;
 
-let userRepo: UserRepo;
-let factory: Factory;
+  let userRepo: UserRepo;
+  let factory: Factory;
 
-let graphqlClient: TestGraphqlClient;
-let authClient: TestAuthClient;
-let userClient: TestUserClient;
+  let graphqlClient: TestGraphqlClient;
+  let authClient: TestAuthClient;
+  let userClient: TestUserClient;
 
-let password: string;
+  let password: string;
 
-let student: User;
-let teacher: User;
-let admin: User;
+  let student: User;
+  let teacher: User;
+  let admin: User;
 
-beforeEach(() => {
-  container = ref.container;
-  app = ref.app;
-});
-
-beforeEach(() => {
-  factory = container.get<Factory>(TYPES.Factory);
-  userRepo = container.get<UserRepo>(TYPES.UserRepo);
-
-  graphqlClient = new TestGraphqlClient(app);
-  authClient = new TestAuthClient(graphqlClient);
-  userClient = new TestUserClient(graphqlClient);
-});
-
-beforeEach(async () => {
-  password = randStr(10);
-  const encryptedPassword = await AuthService.encryptPassword(password);
-  [student, teacher, admin] = await userRepo.bulkCreate([
-    EntityBuilder.buildRandUser({ encryptedPassword, role: UserRole.STUDENT }),
-    EntityBuilder.buildRandUser({ encryptedPassword, role: UserRole.TEACHER }),
-    EntityBuilder.buildRandUser({ encryptedPassword, role: UserRole.ADMIN }),
-  ]);
-});
-
-describe('updateUser', () => {
-  it('updates a logged in student', async () => {
-    const loginRes = await authClient.login({ usernameOrEmail: student.username, password });
-    expect(loginRes.statusCode).toBe(HttpStatus.OK);
-
-    const username = randStr(12);
-    const updateUserRes = await userClient.updateUser({ id: student.id, username });
-    expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
-
-    const updatedUser = updateUserRes.body.data.updateUser!;
-    expect(updatedUser.username).toBe(username);
-    expect(updatedUser.email).toBe(student.email);
+  beforeEach(() => {
+    container = ref.container;
+    app = ref.app;
   });
 
-  it('updates a logged in admin', async () => {
-    const loginRes = await authClient.login({ usernameOrEmail: admin.username, password });
-    expect(loginRes.statusCode).toBe(HttpStatus.OK);
+  beforeEach(() => {
+    factory = container.get<Factory>(TYPES.Factory);
+    userRepo = container.get<UserRepo>(TYPES.UserRepo);
 
-    const username = randStr(12);
-    const updateUserRes = await userClient.updateUser({ id: admin.id, username });
-    expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
-
-    const updatedUser = updateUserRes.body.data.updateUser!;
-    expect(updatedUser.username).toBe(username);
-    expect(updatedUser.email).toBe(admin.email);
+    graphqlClient = new TestGraphqlClient(app);
+    authClient = new TestAuthClient(graphqlClient);
+    userClient = new TestUserClient(graphqlClient);
   });
 
-  it('allows admins to update the role of other users', async () => {
-    const loginRes = await authClient.login({ usernameOrEmail: admin.username, password });
-    expect(loginRes.statusCode).toBe(HttpStatus.OK);
-
-    const updateUserRes = await userClient.updateUser({ id: student.id, role: UserRole.TEACHER });
-    expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
-
-    const updatedUser = updateUserRes.body.data.updateUser;
-    expect(updatedUser).not.toBeNull();
-    expect(updatedUser!.role).toBe(UserRole.TEACHER);
+  beforeEach(async () => {
+    password = randStr(10);
+    const encryptedPassword = await AuthService.encryptPassword(password);
+    [student, teacher, admin] = await userRepo.bulkCreate([
+      EntityBuilder.buildRandUser({ encryptedPassword, role: UserRole.STUDENT }),
+      EntityBuilder.buildRandUser({ encryptedPassword, role: UserRole.TEACHER }),
+      EntityBuilder.buildRandUser({ encryptedPassword, role: UserRole.ADMIN }),
+    ]);
   });
 
-  it('disallows logged out users', async () => {
-    const updateUserRes = await userClient.updateUser({ id: student.id, username: randStr(12) });
-    expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
+  describe('updateUser', () => {
+    it('updates a logged in student', async () => {
+      const loginRes = await authClient.login({ usernameOrEmail: student.username, password });
+      expect(loginRes.statusCode).toBe(HttpStatus.OK);
 
-    expect(updateUserRes.body.data.updateUser).toBeNull();
-    expect(updateUserRes).toHaveErrorCode(ErrorCode.FORBIDDEN);
-  });
+      const username = randStr(12);
+      const updateUserRes = await userClient.updateUser({ id: student.id, username });
+      expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
 
-  it('disallows users from updating another user', async () => {
-    const user = await factory.createRandUser();
+      const updatedUser = updateUserRes.body.data.updateUser!;
+      expect(updatedUser.username).toBe(username);
+      expect(updatedUser.email).toBe(student.email);
+    });
 
-    const loginRes = await authClient.login({ usernameOrEmail: student.username, password });
-    expect(loginRes.statusCode).toBe(HttpStatus.OK);
+    it('updates a logged in admin', async () => {
+      const loginRes = await authClient.login({ usernameOrEmail: admin.username, password });
+      expect(loginRes.statusCode).toBe(HttpStatus.OK);
 
-    const username = randStr(12);
-    const updateUserRes = await userClient.updateUser({ id: user.id, username });
-    expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
+      const username = randStr(12);
+      const updateUserRes = await userClient.updateUser({ id: admin.id, username });
+      expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
 
-    expect(updateUserRes.body.data.updateUser).toBeNull();
-    expect(updateUserRes).toHaveErrorCode(ErrorCode.FORBIDDEN);
-  });
+      const updatedUser = updateUserRes.body.data.updateUser!;
+      expect(updatedUser.username).toBe(username);
+      expect(updatedUser.email).toBe(admin.email);
+    });
 
-  it.each<Omit<UpdateUserInput, 'id'>>([
-    { email: 'updatedemail123@gmail.com' },
-    { email: 'asdfasdf@gmail.com', username: 'newusername' },
-    { username: 'newusername24' },
-  ])('disallows admins from updating other non role attributes', async (attrs) => {
-    const loginRes = await authClient.login({ usernameOrEmail: admin.username, password });
-    expect(loginRes.statusCode).toBe(HttpStatus.OK);
+    it('allows admins to update the role of other users', async () => {
+      const loginRes = await authClient.login({ usernameOrEmail: admin.username, password });
+      expect(loginRes.statusCode).toBe(HttpStatus.OK);
 
-    const updateUserRes = await userClient.updateUser({ id: student.id, ...attrs });
-    expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
-    expect(updateUserRes).toHaveErrorCode(ErrorCode.BAD_REQUEST);
-  });
+      const updateUserRes = await userClient.updateUser({ id: student.id, role: UserRole.TEACHER });
+      expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
 
-  it('disallows users from updating role', async () => {
-    const loginRes = await authClient.login({ usernameOrEmail: student.username, password });
-    expect(loginRes.statusCode).toBe(HttpStatus.OK);
+      const updatedUser = updateUserRes.body.data.updateUser;
+      expect(updatedUser).not.toBeNull();
+      expect(updatedUser!.role).toBe(UserRole.TEACHER);
+    });
 
-    const updateUserRes = await userClient.updateUser({ id: student.id, username: 'adsf23fg2g', role: UserRole.ADMIN });
-    expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
-    expect(updateUserRes).toHaveErrorCode(ErrorCode.BAD_REQUEST);
+    it('disallows logged out users', async () => {
+      const updateUserRes = await userClient.updateUser({ id: student.id, username: randStr(12) });
+      expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
+
+      expect(updateUserRes.body.data.updateUser).toBeNull();
+      expect(updateUserRes).toHaveErrorCode(ErrorCode.FORBIDDEN);
+    });
+
+    it('disallows users from updating another user', async () => {
+      const user = await factory.createRandUser();
+
+      const loginRes = await authClient.login({ usernameOrEmail: student.username, password });
+      expect(loginRes.statusCode).toBe(HttpStatus.OK);
+
+      const username = randStr(12);
+      const updateUserRes = await userClient.updateUser({ id: user.id, username });
+      expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
+
+      expect(updateUserRes.body.data.updateUser).toBeNull();
+      expect(updateUserRes).toHaveErrorCode(ErrorCode.FORBIDDEN);
+    });
+
+    it.each<Omit<UpdateUserInput, 'id'>>([
+      { email: 'updatedemail123@gmail.com' },
+      { email: 'asdfasdf@gmail.com', username: 'newusername' },
+      { username: 'newusername24' },
+    ])('disallows admins from updating other non role attributes', async (attrs) => {
+      const loginRes = await authClient.login({ usernameOrEmail: admin.username, password });
+      expect(loginRes.statusCode).toBe(HttpStatus.OK);
+
+      const updateUserRes = await userClient.updateUser({ id: student.id, ...attrs });
+      expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
+      expect(updateUserRes).toHaveErrorCode(ErrorCode.BAD_REQUEST);
+    });
+
+    it('disallows users from updating role', async () => {
+      const loginRes = await authClient.login({ usernameOrEmail: student.username, password });
+      expect(loginRes.statusCode).toBe(HttpStatus.OK);
+
+      const updateUserRes = await userClient.updateUser({
+        id: student.id,
+        username: 'adsf23fg2g',
+        role: UserRole.ADMIN,
+      });
+      expect(updateUserRes.statusCode).toBe(HttpStatus.OK);
+      expect(updateUserRes).toHaveErrorCode(ErrorCode.BAD_REQUEST);
+    });
   });
 });
