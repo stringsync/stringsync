@@ -464,6 +464,7 @@ Resources:
                 - Name: BuildOutput
               Configuration:
                 BucketName: !Ref WebBucket
+                ObjectKey: build.zip
                 Extract: true
 
   # VPC in which containers will be networked.
