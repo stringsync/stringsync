@@ -50,13 +50,11 @@ phases:
           # We use docker to build the project to avoid having to install the packages needed
           # to build it on the host. The docker image already has the packages installed.
           docker run --volume $(pwd)/build:/app/packages/web/build stringsync-dev:latest bash -c "REACT_APP_SERVER_URI=$REACT_APP_SERVER_URI yarn web build"
-          zip -r build.zip ./build
 
           echo Moving everything else into root artifacts dir...
-          mv build.zip artifacts
+          mv build/* artifacts
           mv imagedefinitions.api.json artifacts
           mv imagedefinitions.worker.json artifacts
-          ls artifacts
         else
           echo Build failed, skipping post_build step...
         fi
