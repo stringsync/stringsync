@@ -56,6 +56,7 @@ phases:
           mv build.zip artifacts
           mv imagedefinitions.api.json artifacts
           mv imagedefinitions.worker.json artifacts
+          ls artifacts
         else
           echo Build failed, skipping post_build step...
         fi
@@ -78,4 +79,6 @@ reports:
 artifacts:
   base-directory: artifacts
   files:
-    - '**/*'
+    - build.zip
+    - imagedefinitions.api.json
+    - imagedefinitions.worker.json
