@@ -79,6 +79,4 @@ reports:
 artifacts:
   base-directory: artifacts
   files:
-    - build.zip
-    - imagedefinitions.api.json
-    - imagedefinitions.worker.json
+    - '**/*'
