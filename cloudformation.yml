@@ -465,7 +465,7 @@ Resources:
               Configuration:
                 BucketName: !Ref WebBucket
                 ObjectKey: build.zip
-                Extract: true
+                Extract: false
 
   # VPC in which containers will be networked.
   # It has two public subnets
