@@ -152,6 +152,13 @@ Resources:
       DistributionConfig:
         Enabled: true
         Comment: Serves the application frontend
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
         PriceClass: PriceClass_All
         Origins:
           - DomainName: !GetAtt WebBucket.DomainName
@@ -421,7 +428,8 @@ Resources:
               InputArtifacts:
                 - Name: SourceOutput
               OutputArtifacts:
-                - Name: BuildOutput
+                - Name: BuildImageDefinitionsOutput
+                - Name: BuildWebOutput
               Configuration:
                 ProjectName: !Ref CodeBuildProject
                 PrimarySource: SourceOutput
@@ -435,7 +443,7 @@ Resources:
                 Provider: ECS
                 Version: '1'
               InputArtifacts:
-                - Name: BuildOutput
+                - Name: BuildImageDefinitionsOutput
               Configuration:
                 ClusterName: !Ref Cluster
                 ServiceName: !Ref ApiService
@@ -448,12 +456,12 @@ Resources:
                 Provider: ECS
                 Version: '1'
               InputArtifacts:
-                - Name: BuildOutput
+                - Name: BuildImageDefinitionsOutput
               Configuration:
                 ClusterName: !Ref Cluster
                 ServiceName: !Ref WorkerService
                 FileName: imagedefinitions.worker.json
-            - Name: DeployFrontend
+            - Name: DeployWeb
               RunOrder: 3
               ActionTypeId:
                 Category: Deploy
@@ -461,7 +469,7 @@ Resources:
                 Provider: S3
                 Version: '1'
               InputArtifacts:
-                - Name: BuildOutput
+                - Name: BuildWebOutput
               Configuration:
                 BucketName: !Ref WebBucket
                 Extract: true

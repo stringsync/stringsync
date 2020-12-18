@@ -45,6 +45,7 @@ phases:
 
           echo Creating artifacts dir...
           mkdir artifacts
+          mkdir web-artifacts
 
           echo Building web project in artifacts directory...
           # We use docker to build the project to avoid having to install the packages needed
@@ -52,7 +53,7 @@ phases:
           docker run --volume $(pwd)/build:/app/packages/web/build stringsync-dev:latest bash -c "REACT_APP_SERVER_URI=$REACT_APP_SERVER_URI yarn web build"
 
           echo Moving everything else into root artifacts dir...
-          mv build/* artifacts
+          mv build/* web-artifacts
           mv imagedefinitions.api.json artifacts
           mv imagedefinitions.worker.json artifacts
         else
@@ -77,4 +78,11 @@ reports:
 artifacts:
   base-directory: artifacts
   files:
-    - '**/*'
+    - imagedefinitions.api.json
+    - imagedefinitions.worker.json
+  secondary-artifacts:
+    - BuildWebOutput:
+        name: web
+        base-directory: web-artifacts
+        files:
+          - '**/*'
