@@ -44,7 +44,7 @@ phases:
           printf '[{"name":"worker","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.worker.json
 
           echo Creating artifacts dir...
-          mkdir artifacts
+          mkdir imagedefinitions-artifacts
           mkdir web-artifacts
 
           echo Building web project in artifacts directory...
@@ -54,8 +54,14 @@ phases:
 
           echo Moving everything else into root artifacts dir...
           mv build/* web-artifacts
-          mv imagedefinitions.api.json artifacts
-          mv imagedefinitions.worker.json artifacts
+          mv imagedefinitions.api.json imagedefinitions-artifacts
+          mv imagedefinitions.worker.json imagedefinitions-artifacts
+
+          echo web-artifacts
+          ls web-artifacts
+
+          echo imagedefinitions-artifacts
+          ls imagedefinitions-artifacts
         else
           echo Build failed, skipping post_build step...
         fi
@@ -76,13 +82,16 @@ reports:
     base-directory: reports
 
 artifacts:
-  base-directory: artifacts
   files:
-    - imagedefinitions.api.json
-    - imagedefinitions.worker.json
+    - '**/*'
   secondary-artifacts:
+    BuildImageDefinitionsOutput:
+      name: BuildImageDefinitionsOutput
+      base-directory: imagedefinitions-artifacts
+      files:
+        - '**/*'
     BuildWebOutput:
-      name: web
+      name: BuildWebOutput
       base-directory: web-artifacts
       files:
         - '**/*'
