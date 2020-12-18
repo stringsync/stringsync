@@ -81,8 +81,8 @@ artifacts:
     - imagedefinitions.api.json
     - imagedefinitions.worker.json
   secondary-artifacts:
-    - BuildWebOutput:
-        name: web
-        base-directory: web-artifacts
-        files:
-          - '**/*'
+    BuildWebOutput:
+      name: web
+      base-directory: web-artifacts
+      files:
+        - '**/*'
