@@ -26,8 +26,8 @@ phases:
       - echo Building prod image...
       - ./bin/ss build --prod --dev --test --cacheFrom $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
       - echo Testing images...
-      # - ./bin/ss test api --ci --cacheFrom stringsync-test:latest
-      # - ./bin/ss test web --ci --cacheFrom stringsync-test:latest
+      - ./bin/ss test api --ci --cacheFrom stringsync-test:latest
+      - ./bin/ss test web --ci --cacheFrom stringsync-test:latest
 
   post_build:
     commands:
