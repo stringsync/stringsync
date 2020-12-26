@@ -146,6 +146,24 @@ Resources:
       CloudFrontOriginAccessIdentityConfig:
         Comment: !Sub access-identity-${WebBucket}
 
+  WebDistributionCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        Name: WebDistributionCachePolicy
+        Comment: Cache policy for the web distribution
+        DefaultTTL: 1800
+        MinTTL: 1800
+        MaxTTL: 3600
+        ParametersInCacheKeyAndForwardedToOrigin:
+          CookiesConfig:
+            CookieBehavior: none
+          EnableAcceptEncodingGzip: false
+          HeadersConfig:
+            HeaderBehavior: none
+          QueryStringsConfig:
+            QueryStringBehavior: none
+
   WebDistribution:
     Type: AWS::CloudFront::Distribution
     Properties:
@@ -172,10 +190,7 @@ Resources:
           AllowedMethods:
             - HEAD
             - GET
-          ForwardedValues:
-            QueryString: true
-            Cookies:
-              Forward: all
+          CachePolicyId: !Ref WebDistributionCachePolicy
 
   CodeCommitRepository:
     Type: AWS::CodeCommit::Repository
