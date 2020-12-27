@@ -94,6 +94,11 @@ Parameters:
     Default: ''
     Description: The name of the video processing stack.
 
+  DomainName:
+    Type: String
+    Default: ''
+    Description: The application domain name.
+
 Mappings:
   # Hard values for the subnet masks. These masks define
   # the range of internal IP addresses that can be assigned.
