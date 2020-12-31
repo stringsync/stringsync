@@ -97,7 +97,7 @@ Parameters:
   DomainName:
     Type: String
     Default: ''
-    Description: The fully qualified application domain name, e.g. www.example.com
+    Description: The application domain name, e.g. example.com
 
 Mappings:
   # Hard values for the subnet masks. These masks define
@@ -197,10 +197,28 @@ Resources:
             - GET
           CachePolicyId: !Ref WebDistributionCachePolicy
 
-  AppHostedZone:
+  HostedZone:
     Type: AWS::Route53::HostedZone
     Properties:
       Name: !Ref DomainName
+
+  DNS:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      RecordSets:
+        - Name: !Ref DomainName
+          Type: A
+          AliasTarget:
+            HostedZoneId: Z2FDTNDATAQYW2
+            DNSName: !GetAtt
+              - WebDistribution
+              - DomainName
+        - Name: !Sub www.${DomainName}
+          Type: A
+          AliasTarget:
+            HostedZoneId: !Ref HostedZone
+            DNSName: !Ref DomainName
 
   CodeCommitRepository:
     Type: AWS::CodeCommit::Repository
