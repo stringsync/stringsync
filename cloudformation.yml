@@ -220,6 +220,14 @@ Resources:
             HostedZoneId: !Ref HostedZone
             DNSName: !Ref DomainName
 
+  DomainCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      SubjectAlternativeNames:
+        - !Sub '*.${DomainName}'
+      ValidationMethod: DNS
+
   CodeCommitRepository:
     Type: AWS::CodeCommit::Repository
     Properties:
