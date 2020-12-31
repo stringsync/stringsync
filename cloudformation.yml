@@ -197,7 +197,7 @@ Resources:
         DefaultRootObject: index.html
         DefaultCacheBehavior:
           TargetOriginId: S3-web
-          ViewerProtocolPolicy: allow-all
+          ViewerProtocolPolicy: redirect-to-https
           AllowedMethods:
             - HEAD
             - GET
@@ -217,14 +217,17 @@ Resources:
           Type: A
           AliasTarget:
             HostedZoneId: Z2FDTNDATAQYW2
-            DNSName: !GetAtt
-              - WebDistribution
-              - DomainName
+            DNSName: !GetAtt WebDistribution.DomainName
         - Name: !Sub www.${DomainName}
           Type: A
           AliasTarget:
             HostedZoneId: !Ref HostedZone
             DNSName: !Ref DomainName
+        - Name: !Sub api.${DomainName}
+          Type: A
+          AliasTarget:
+            HostedZoneId: !GetAtt PublicLoadBalancer.CanonicalHostedZoneID
+            DNSName: !GetAtt PublicLoadBalancer.DNSName
 
   DomainCertificate:
     Type: AWS::CertificateManager::Certificate
@@ -721,7 +724,6 @@ Resources:
           IpProtocol: '-1'
   PublicLoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    DependsOn: GatewayAttachement
     Properties:
       Scheme: internet-facing
       LoadBalancerAttributes:
@@ -748,17 +750,30 @@ Resources:
       Protocol: HTTP
       UnhealthyThresholdCount: 2
       VpcId: !Ref 'VPC'
-  PublicLoadBalancerListener:
+
+  PublicLoadBalancerHttpListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
-    DependsOn:
-      - PublicLoadBalancer
     Properties:
-      DefaultActions:
-        - TargetGroupArn: !Ref 'DummyTargetGroupPublic'
-          Type: 'forward'
-      LoadBalancerArn: !Ref 'PublicLoadBalancer'
       Port: 80
       Protocol: HTTP
+      LoadBalancerArn: !Ref PublicLoadBalancer
+      DefaultActions:
+        - Type: redirect
+          RedirectConfig:
+            StatusCode: 'HTTP_301'
+            Port: '443'
+
+  PublicLoadBalancerHttpsListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      Port: 443
+      Protocol: HTTPS
+      LoadBalancerArn: !Ref PublicLoadBalancer
+      Certificates:
+        - CertificateArn: !Ref DomainCertificate
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref ServerTargetGroup
 
   # An internal load balancer, this would be used for a service that is not
   # directly accessible to the public, but instead should only receive traffic
@@ -1020,7 +1035,7 @@ Resources:
         - Field: path-pattern
           Values:
             - '*'
-      ListenerArn: !Ref PublicLoadBalancerListener
+      ListenerArn: !Ref PublicLoadBalancerHttpsListener
       Priority: 1
 
   # A target group. This is used for keeping track of all the tasks, and
