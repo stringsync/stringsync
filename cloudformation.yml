@@ -445,7 +445,7 @@ Resources:
             Value: !Ref ApiImageRepository
           - Name: REACT_APP_SERVER_URI
             Type: PLAINTEXT
-            Value: !GetAtt PublicLoadBalancer.DNSName
+            Value: !Sub https://api.${DNSName}
           - Name: S3_SECRETS_BUCKET
             Type: PLAINTEXT
             Value: !Ref CodeBuildSecretsBucket
