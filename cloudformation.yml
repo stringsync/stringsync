@@ -200,6 +200,7 @@ Resources:
           AllowedMethods:
             - HEAD
             - GET
+            - OPTIONS
           CachePolicyId: !Ref WebDistributionCachePolicy
 
   WebWWWRedirectBucket:
@@ -244,6 +245,7 @@ Resources:
           AllowedMethods:
             - HEAD
             - GET
+            - OPTIONS
           CachePolicyId: !Ref WebDistributionCachePolicy
 
   HostedZone:
