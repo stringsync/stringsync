@@ -97,7 +97,7 @@ Parameters:
   DomainName:
     Type: String
     Default: ''
-    Description: The application domain name, e.g. example.com
+    Description: The application naked domain name, e.g. example.com (not www.example.com)
 
 Mappings:
   # Hard values for the subnet masks. These masks define
