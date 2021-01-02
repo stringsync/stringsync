@@ -803,6 +803,7 @@ Resources:
       DefaultActions:
         - Type: redirect
           RedirectConfig:
+            Protocol: HTTPS
             StatusCode: 'HTTP_301'
             Port: '443'
 
