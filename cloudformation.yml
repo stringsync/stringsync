@@ -132,6 +132,12 @@ Resources:
     DeletionPolicy: Delete
     Type: AWS::S3::Bucket
 
+  WebBucketOriginAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Sub access-identity-${WebBucket}
+
   WebBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
@@ -144,12 +150,6 @@ Resources:
               AWS: !Sub arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${WebBucketOriginAccessIdentity}
             Action: s3:GetObject
             Resource: !Sub arn:aws:s3:::${WebBucket}/*
-
-  WebBucketOriginAccessIdentity:
-    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
-    Properties:
-      CloudFrontOriginAccessIdentityConfig:
-        Comment: !Sub access-identity-${WebBucket}
 
   WebDistributionCachePolicy:
     Type: AWS::CloudFront::CachePolicy
@@ -185,7 +185,6 @@ Resources:
         PriceClass: PriceClass_All
         Aliases:
           - !Ref DomainName
-          - !Sub www.${DomainName}
         ViewerCertificate:
           AcmCertificateArn: !Ref DomainCertificate
           SslSupportMethod: sni-only
@@ -197,6 +196,50 @@ Resources:
         DefaultRootObject: index.html
         DefaultCacheBehavior:
           TargetOriginId: S3-web
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - HEAD
+            - GET
+          CachePolicyId: !Ref WebDistributionCachePolicy
+
+  WebWWWRedirectBucket:
+    DeletionPolicy: Delete
+    Type: AWS::S3::Bucket
+    Properties:
+      WebsiteConfiguration:
+        RedirectAllRequestsTo:
+          HostName: !Ref DomainName
+          Protocol: http
+
+  WebWWWRedirectBucketOriginAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Sub access-identity-${WebWWWRedirectBucket}
+
+  WebWWWRedirectDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: !Sub Redirects to ${DomainName}
+        PriceClass: PriceClass_All
+        Aliases:
+          - !Sub www.${DomainName}
+        ViewerCertificate:
+          AcmCertificateArn: !Ref DomainCertificate
+          SslSupportMethod: sni-only
+        Origins:
+          - DomainName: !Select
+              - 1
+              - !Split
+                - '//'
+                - !GetAtt WebWWWRedirectBucket.WebsiteURL
+            Id: S3-www-web
+            CustomOriginConfig:
+              OriginProtocolPolicy: https-only
+        DefaultCacheBehavior:
+          TargetOriginId: S3-www-web
           ViewerProtocolPolicy: redirect-to-https
           AllowedMethods:
             - HEAD
@@ -445,7 +488,7 @@ Resources:
             Value: !Ref ApiImageRepository
           - Name: REACT_APP_SERVER_URI
             Type: PLAINTEXT
-            Value: !Sub https://api.${DNSName}
+            Value: !Sub https://api.${DomainName}
           - Name: S3_SECRETS_BUCKET
             Type: PLAINTEXT
             Value: !Ref CodeBuildSecretsBucket
@@ -993,7 +1036,7 @@ Resources:
             - Name: APP_SESSION_SECRET
               Value: !Ref ApiSessionSecret
             - Name: APP_WEB_URI
-              Value: !Join ['', ['http://', !GetAtt 'WebBucket.WebsiteURL']]
+              Value: !Sub https://${DomainName}
             - Name: CDN_DOMAIN_NAME
               Value: 'example.com'
             - Name: DB_HOST
@@ -1124,7 +1167,7 @@ Resources:
             - Name: APP_SESSION_SECRET
               Value: !Ref ApiSessionSecret
             - Name: APP_WEB_URI
-              Value: !Join ['', ['http://', !GetAtt 'WebBucket.WebsiteURL']]
+              Value: !Join ['', ['https://', !GetAtt 'WebBucket.WebsiteURL']]
             - Name: CDN_DOMAIN_NAME
               Value: 'example.com'
             - Name: DB_HOST
