@@ -1041,7 +1041,7 @@ Resources:
             - Name: APP_WEB_URI
               Value: !Sub https://${DomainName}
             - Name: CDN_DOMAIN_NAME
-              Value: 'example.com'
+              Value: !GetAtt WebDistribution.DomainName
             - Name: DB_HOST
               Value: !GetAtt Db.Endpoint.Address
             - Name: DB_NAME
@@ -1170,9 +1170,9 @@ Resources:
             - Name: APP_SESSION_SECRET
               Value: !Ref ApiSessionSecret
             - Name: APP_WEB_URI
-              Value: !Join ['', ['https://', !GetAtt 'WebBucket.WebsiteURL']]
+              Value: !Sub https://${DomainName}
             - Name: CDN_DOMAIN_NAME
-              Value: 'example.com'
+              Value: !GetAtt WebDistribution.DomainName
             - Name: DB_HOST
               Value: !GetAtt Db.Endpoint.Address
             - Name: DB_NAME

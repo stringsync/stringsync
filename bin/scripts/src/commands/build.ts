@@ -11,6 +11,7 @@ export default class Build extends Command {
     dev: flags.boolean({ char: 'd', default: false }),
     test: flags.boolean({ char: 't', default: false }),
     prod: flags.boolean({ char: 'p', default: false }),
+    cmd: flags.boolean({ char: 'c', default: false }),
     cacheFrom: flags.string({ default: '' }),
   };
 
@@ -27,6 +28,9 @@ export default class Build extends Command {
     }
     if (flags.prod) {
       this.build('Dockerfile.prod', 'stringsync', flags.tag, flags.cacheFrom);
+    }
+    if (flags.cmd) {
+      this.build('Dockerfile.cmd', 'stringsync-cmd', flags.tag, flags.cacheFrom);
     }
   }
 
