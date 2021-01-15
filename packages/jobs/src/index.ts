@@ -1,4 +1,4 @@
-import { createContainer } from '@stringsync/di/dist';
+import { createContainer } from '@stringsync/di';
 import { Logger, UTIL_TYPES } from '@stringsync/util';
 import { AssociateVideoUrlJob } from './AssociateVideoUrlJob';
 import { JOBS } from './JOBS';
