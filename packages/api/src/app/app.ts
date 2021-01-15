@@ -23,6 +23,7 @@ export const app = (container: Container, schema: GraphQLSchema) => {
   app.set('trust proxy', 1);
 
   app.use(cors({ origin: [config.APP_WEB_URI], credentials: true }));
+  app.options('*', cors());
 
   app.get('/health', healthController.get);
 
