@@ -2,7 +2,7 @@ import { gql } from './../gql';
 import { GraphqlClient } from './GraphqlClient';
 
 describe('GraphqlClient', () => {
-  it('makes graphql requests', async () => {
+  it.skip('makes graphql requests', async () => {
     const query = gql`
       query($input: Input) {
         foo(input: $input)

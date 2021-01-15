@@ -34,10 +34,15 @@ export default class Test extends Command {
       this.exit(1);
     }
 
-    execSync(['./bin/ss', 'build', '-t', '--cacheFrom', flags.cacheFrom].join(' '), {
-      cwd: ROOT_PATH,
-      stdio: 'inherit',
-    });
+    execSync(
+      ['./bin/ss', 'build', '-t', flags.cacheFrom ? `--cacheFrom ${flags.cacheFrom}` : '']
+        .filter((part) => part)
+        .join(' '),
+      {
+        cwd: ROOT_PATH,
+        stdio: 'inherit',
+      }
+    );
 
     let exit = 0;
     try {
