@@ -517,6 +517,9 @@ Resources:
           - Name: REACT_APP_SERVER_URI
             Type: PLAINTEXT
             Value: !Sub https://api.${DomainName}
+          - Name: DOMAIN_NAME
+            Type: PLAINTEXT
+            Value: !Ref DomainName
           - Name: S3_SECRETS_BUCKET
             Type: PLAINTEXT
             Value: !Ref CodeBuildSecretsBucket
