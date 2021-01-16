@@ -9,7 +9,6 @@ export type SessionRequest = Request & {
 
 export type ReqCtx = {
   req: SessionRequest;
-  reqId: string;
   reqAt: Date;
   res: Response;
   container: Container;
