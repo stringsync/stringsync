@@ -24,7 +24,7 @@ phases:
   build:
     commands:
       - echo Building prod image...
-      - ./bin/ss build --prod --dev --test --cacheFrom $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
+      - ./bin/ss build --prod --dev --test --cmd --cacheFrom $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
       - echo Testing images...
       - ./bin/ss test api --ci --cacheFrom stringsync-test:latest
       - ./bin/ss test web --ci --cacheFrom stringsync-test:latest
@@ -34,11 +34,16 @@ phases:
       - |
         if [ "$CODEBUILD_BUILD_SUCCEEDING" -eq 1 ]
         then
-          echo Pushing server images...
+          echo Pushing api images...
           docker tag stringsync $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
 
+          echo Pushing cmd images...
+          docker tag stringsync-cmd $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$CMD_IMAGE_REPO_NAME:latest
+          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$CMD_IMAGE_REPO_NAME:latest
+
           echo Writing imagedefinitions.json...
+          # We don't need one for the cmd image because there is no service running them
           IMAGE_URI="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest"
           printf '[{"name":"api","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.api.json
           printf '[{"name":"worker","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.worker.json

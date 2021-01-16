@@ -310,6 +310,29 @@ Resources:
             ]
           }
 
+  CmdImageRepository:
+    Type: AWS::ECR::Repository
+    DeletionPolicy: Delete
+    Properties:
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Keep only one untagged image, expire all others",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 1
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
   CodeBuildServiceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -488,6 +511,9 @@ Resources:
           - Name: IMAGE_REPO_NAME
             Type: PLAINTEXT
             Value: !Ref ApiImageRepository
+          - Name: CMD_IMAGE_REPO_NAME
+            Type: PLAINTEXT
+            Value: !Ref CmdImageRepository
           - Name: REACT_APP_SERVER_URI
             Type: PLAINTEXT
             Value: !Sub https://api.${DomainName}
