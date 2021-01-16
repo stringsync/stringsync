@@ -45,14 +45,14 @@ services:
     command: ['yarn', 'jobs', 'dev']
 
   migrate:
-    image: stringsync:latest
+    image: stringsync-cmd:latest
     build:
       context: ../
-      dockerfile: ./docker/Dockerfile.dev
+      dockerfile: ./docker/Dockerfile.cmd
     env_file:
       - ../env/dev.env
     volumes:
       - ../packages:/app/packages
     links:
       - db
-    command: ['yarn', 'db', 'dev']
+    command: ['db', 'dev']
