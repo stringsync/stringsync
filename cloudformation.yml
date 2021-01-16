@@ -1093,6 +1093,49 @@ Resources:
           Command:
             - api
 
+  DbMigrateTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    DeletionPolicy: Delete
+    Properties:
+      Cpu: '256'
+      Memory: '512'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      ExecutionRoleArn: !Ref 'ECSTaskExecutionRole'
+      ContainerDefinitions:
+        - Name: db-migrate
+          Cpu: 256
+          Memory: 512
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-create-group: true
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Join ['-', [!Ref 'AWS::StackName', 'db-migrate']]
+              awslogs-stream-prefix: db-migrate
+          Image:
+            !Join [
+              '',
+              [!Ref 'AWS::AccountId', '.dkr.ecr.', !Ref 'AWS::Region', '.amazonaws.com/', !Ref 'CmdImageRepository'],
+            ]
+          Environment:
+            - Name: DB_HOST
+              Value: !GetAtt Db.Endpoint.Address
+            - Name: DB_NAME
+              Value: !Ref DbName
+            - Name: DB_PASSWORD
+              Value: !Ref DbPassword
+            - Name: DB_PORT
+              Value: !GetAtt Db.Endpoint.Port
+            - Name: DB_USERNAME
+              Value: !Ref DbUsername
+            - Name: NODE_ENV
+              Value: production
+          Command:
+            - db
+            - migrate
+
   Cluster:
     Type: AWS::ECS::Cluster
 
