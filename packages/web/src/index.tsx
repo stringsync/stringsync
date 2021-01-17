@@ -1,3 +1,4 @@
+import { notification } from 'antd';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { App, Routes } from './app';
@@ -8,7 +9,25 @@ import * as serviceWorker from './serviceWorker';
 import { createStore } from './store';
 
 const store = createStore();
-serviceWorker.register();
+
+serviceWorker.register({
+  onUpdate: () => {
+    notification.info({
+      message: 'new content',
+      description: 'New content is available and will be used when all tabs for this page are closed.',
+      placement: 'bottomLeft',
+      duration: null,
+    });
+  },
+  onSuccess: () => {
+    notification.info({
+      message: 'offline availability',
+      description: 'Content is available for offline use.',
+      placement: 'bottomLeft',
+      duration: 5,
+    });
+  },
+});
 
 ReactDOM.render(
   <React.StrictMode>
