@@ -11,11 +11,17 @@ export class WinstonLogger implements Logger {
   logger: winston.Logger;
 
   constructor(@inject(TYPES.UtilConfig) public config: UtilConfig) {
+    const formats = new Array<winston.Logform.Format>();
+    if (config.NODE_ENV !== 'production') {
+      formats.push(winston.format.colorize());
+    }
+    formats.push(winston.format.simple());
+
     this.logger = winston.createLogger({
       level: config.LOG_LEVEL,
       transports: [
         new winston.transports.Console({
-          format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
+          format: winston.format.combine(...formats),
         }),
       ],
     });
