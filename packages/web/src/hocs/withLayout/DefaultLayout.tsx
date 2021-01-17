@@ -19,6 +19,8 @@ const StyledHeader = styled(Layout.Header)`
     background: #ffffff;
     border-bottom: 1px solid #e8e8e8;
     padding: 0 16px;
+    display: flex;
+    align-items: center;
   }
 `;
 
