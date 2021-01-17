@@ -4,20 +4,22 @@ export enum ConfigKind {
   FLOAT,
 }
 
-export type ConfigSpec = Record<string, { kind: ConfigKind; nullable: boolean }>;
+export type ConfigSpec<K extends ConfigKind, N extends boolean> = { kind: K; nullable: N };
 
-export type ConfigGetter<S extends ConfigSpec> = (env?: any) => Config<S>;
+export type ConfigMapping = Record<string, ConfigSpec<ConfigKind, boolean>>;
 
-export type Config<S extends ConfigSpec> = Readonly<
+export type ConfigGetter<M extends ConfigMapping> = (env?: any) => Config<M>;
+
+export type Config<M extends ConfigMapping> = Readonly<
   {
-    [K in keyof S]:
-      | (S[K] extends { kind: ConfigKind.INT }
+    [K in keyof M]:
+      | (M[K] extends { kind: ConfigKind.INT }
           ? number
-          : S[K] extends { kind: ConfigKind.FLOAT }
+          : M[K] extends { kind: ConfigKind.FLOAT }
           ? number
-          : S[K] extends { kind: ConfigKind.STRING }
+          : M[K] extends { kind: ConfigKind.STRING }
           ? string
           : never)
-      | (S[K] extends { nullable: true } ? null : never);
+      | (M[K] extends { nullable: true } ? null : never);
   }
 >;

@@ -1,6 +1,4 @@
-import { NotationModel } from './NotationModel';
-import { TaggingModel } from './TaggingModel';
-import { TagModel } from './TagModel';
-import { UserModel } from './UserModel';
-
-export { NotationModel, TaggingModel, TagModel, UserModel };
+export * from './NotationModel';
+export * from './TaggingModel';
+export * from './TagModel';
+export * from './UserModel';

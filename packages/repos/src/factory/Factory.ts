@@ -1,28 +1,19 @@
-import { EntityBuilder } from '@stringsync/common';
-import { TYPES } from '@stringsync/di';
-import { Notation, Tag, Tagging, User } from '@stringsync/domain';
-import { inject, injectable } from 'inversify';
+import { inject, injectable } from '@stringsync/di';
+import { EntityBuilder, Notation, Tag, Tagging, User } from '@stringsync/domain';
 import { times } from 'lodash';
+import { REPOS_TYPES } from '../REPOS_TYPES';
 import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from '../types';
+
+const TYPES = { ...REPOS_TYPES };
 
 @injectable()
 export class Factory {
-  userRepo: UserRepo;
-  notationRepo: NotationRepo;
-  taggingRepo: TaggingRepo;
-  tagRepo: TagRepo;
-
   constructor(
-    @inject(TYPES.UserRepo) userRepo: UserRepo,
-    @inject(TYPES.NotationRepo) notationRepo: NotationRepo,
-    @inject(TYPES.TaggingRepo) taggingRepo: TaggingRepo,
-    @inject(TYPES.TagRepo) tagRepo: TagRepo
-  ) {
-    this.userRepo = userRepo;
-    this.notationRepo = notationRepo;
-    this.taggingRepo = taggingRepo;
-    this.tagRepo = tagRepo;
-  }
+    @inject(TYPES.UserRepo) public userRepo: UserRepo,
+    @inject(TYPES.NotationRepo) public notationRepo: NotationRepo,
+    @inject(TYPES.TaggingRepo) public taggingRepo: TaggingRepo,
+    @inject(TYPES.TagRepo) public tagRepo: TagRepo
+  ) {}
 
   async createRandUser(attrs: Partial<User> = {}): Promise<User> {
     return await this.userRepo.create(EntityBuilder.buildRandUser({ ...attrs }));

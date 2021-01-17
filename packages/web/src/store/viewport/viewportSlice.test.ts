@@ -1,23 +1,25 @@
-import { viewportSlice, setBreakpoint } from './viewportSlice';
-import { EnhancedStore, configureStore } from '@reduxjs/toolkit';
+import { configureStore, EnhancedStore } from '@reduxjs/toolkit';
 import { getViewportState } from './getViewportState';
 import { Breakpoint, ViewportState } from './types';
+import { setBreakpoint, viewportSlice } from './viewportSlice';
 
-let store: EnhancedStore<{ viewport: ViewportState }>;
+describe('viewportSlice', () => {
+  let store: EnhancedStore<{ viewport: ViewportState }>;
 
-beforeEach(() => {
-  store = configureStore({
-    reducer: {
-      viewport: viewportSlice.reducer,
-    },
+  beforeEach(() => {
+    store = configureStore({
+      reducer: {
+        viewport: viewportSlice.reducer,
+      },
+    });
   });
-});
 
-it('initializes state', () => {
-  expect(store.getState().viewport).toStrictEqual(getViewportState('xs'));
-});
+  it('initializes state', () => {
+    expect(store.getState().viewport).toStrictEqual(getViewportState('xs'));
+  });
 
-it.each(['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] as Breakpoint[])('sets breakpoints', (breakpoint) => {
-  store.dispatch(setBreakpoint({ breakpoint }));
-  expect(store.getState().viewport).toStrictEqual(getViewportState(breakpoint));
+  it.each(['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] as Breakpoint[])('sets breakpoints', (breakpoint) => {
+    store.dispatch(setBreakpoint({ breakpoint }));
+    expect(store.getState().viewport).toStrictEqual(getViewportState(breakpoint));
+  });
 });

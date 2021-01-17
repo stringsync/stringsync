@@ -1,6 +1,6 @@
 import { Command, flags } from '@oclif/command';
-import { getDockerComposeFile, Project, PROJECT_ARG, ROOT_PATH } from '../util';
 import { spawn } from 'child_process';
+import { DOCKER_PATH, getDockerComposeFile, Project, PROJECT_ARG } from '../util';
 
 export default class Exec extends Command {
   static description = 'Runs docker-compose exec on an running container.';
@@ -35,7 +35,7 @@ export default class Exec extends Command {
         cmdv.join(' '),
       ].filter((arg) => arg),
       {
-        cwd: ROOT_PATH,
+        cwd: DOCKER_PATH,
         stdio: 'inherit',
       }
     );

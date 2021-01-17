@@ -1,7 +1,11 @@
 import { Command, flags } from '@oclif/command';
 import { execSync } from 'child_process';
 import { getDockerComposeFile } from '../util';
-import { ROOT_PATH } from '../util/constants';
+import { DOCKER_PATH, ROOT_PATH } from '../util/constants';
+
+const bashC = (...parts: string[]) => {
+  return `bash -c "${parts.filter((part) => part).join(' ')}"`;
+};
 
 export default class Test extends Command {
   static description = 'Run all of the StringSync tests.';
@@ -9,14 +13,15 @@ export default class Test extends Command {
   static flags = {
     watch: flags.boolean({ char: 'w', default: false }),
     coverage: flags.boolean({ char: 'c', default: false }),
+    ci: flags.boolean({ default: false }),
+    cacheFrom: flags.string({ default: '' }),
   };
 
   static args = [
     {
       name: 'project',
       required: true,
-      default: 'server',
-      options: ['server', 'web'],
+      options: ['api', 'web'],
     },
     { name: 'cmd', required: false },
   ];
@@ -24,10 +29,20 @@ export default class Test extends Command {
   async run() {
     const { flags, args, argv } = this.parse(Test);
 
-    execSync(['./bin/ss', 'build'].join(' '), {
-      cwd: ROOT_PATH,
-      stdio: 'inherit',
-    });
+    if (flags.ci && flags.watch) {
+      this.log('cannot specify ci=true and watch=true');
+      this.exit(1);
+    }
+
+    execSync(
+      ['./bin/ss', 'build', '-t', flags.cacheFrom ? `--cacheFrom ${flags.cacheFrom}` : '']
+        .filter((part) => part)
+        .join(' '),
+      {
+        cwd: ROOT_PATH,
+        stdio: 'inherit',
+      }
+    );
 
     let exit = 0;
     try {
@@ -41,17 +56,26 @@ export default class Test extends Command {
           'run',
           '--rm',
           'test',
-          'yarn',
-          `test:${args.project}`,
-          '--runInBand',
-          `--watchAll=${flags.watch}`,
-          flags.coverage ? '--collectCoverage' : '',
-          ...argv.slice(1), // the first arg is project
+          bashC(
+            flags.ci ? 'CI=true' : '',
+            flags.ci ? `JEST_SUITE_NAME=${args.project}` : '',
+            flags.ci ? 'JEST_JUNIT_SUITE_NAME="{displayName}"' : '',
+            flags.ci ? 'JEST_JUNIT_CLASSNAME="{classname}"' : '',
+            flags.ci ? `JEST_JUNIT_OUTPUT_NAME="junit.${args.project}.xml"` : '',
+            flags.ci ? `JEST_JUNIT_OUTPUT_DIR="${args.project === 'web' ? '../../reports' : 'reports'}"` : '',
+            'yarn',
+            `test:${args.project}`,
+            '--runInBand',
+            `--watchAll=${flags.watch}`,
+            flags.coverage ? '--collectCoverage' : '',
+            flags.ci ? '--reporters=jest-junit' : '',
+            ...argv.slice(1) // the first arg is project
+          ),
         ]
           .filter((part) => part)
           .join(' '),
         {
-          cwd: ROOT_PATH,
+          cwd: DOCKER_PATH,
           stdio: 'inherit',
         }
       );

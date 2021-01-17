@@ -1,16 +1,13 @@
 import { Connection, ConnectionArgs } from '@stringsync/common';
-import { TYPES } from '@stringsync/di';
+import { inject, injectable } from '@stringsync/di';
 import { User } from '@stringsync/domain';
-import { UserRepo } from '@stringsync/repos';
-import { inject, injectable } from 'inversify';
+import { REPOS_TYPES, UserRepo } from '@stringsync/repos';
+
+const TYPES = { ...REPOS_TYPES };
 
 @injectable()
 export class UserService {
-  userRepo: UserRepo;
-
-  constructor(@inject(TYPES.UserRepo) userRepo: UserRepo) {
-    this.userRepo = userRepo;
-  }
+  constructor(@inject(TYPES.UserRepo) public userRepo: UserRepo) {}
 
   async findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null> {
     return await this.userRepo.findByUsernameOrEmail(usernameOrEmail);

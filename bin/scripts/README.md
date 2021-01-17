@@ -36,18 +36,19 @@ USAGE
 * [`ss db [PROJECT]`](#ss-db-project)
 * [`ss down [PROJECT]`](#ss-down-project)
 * [`ss exec PROJECT SERVICE CMD`](#ss-exec-project-service-cmd)
-* [`ss gensecrets [FILE]`](#ss-gensecrets-file)
+* [`ss gensecrets`](#ss-gensecrets)
 * [`ss help [COMMAND]`](#ss-help-command)
 * [`ss lint`](#ss-lint)
 * [`ss logs PROJECT [SERVICE]`](#ss-logs-project-service)
 * [`ss pretty`](#ss-pretty)
-* [`ss test PROJECT`](#ss-test-project)
+* [`ss productionize [FILE]`](#ss-productionize-file)
+* [`ss test PROJECT [CMD]`](#ss-test-project-cmd)
 * [`ss typegen`](#ss-typegen)
 * [`ss up [PROJECT]`](#ss-up-project)
 
 ## `ss build`
 
-Builds a StringSync service.
+Builds the stringsync image
 
 ```
 USAGE
@@ -102,18 +103,16 @@ OPTIONS
 
 _See code: [src/commands/exec.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/exec.ts)_
 
-## `ss gensecrets [FILE]`
+## `ss gensecrets`
 
-describe the command here
+Creates the secrets.env file needed for local development.
 
 ```
 USAGE
-  $ ss gensecrets [FILE]
+  $ ss gensecrets
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -h, --help  show CLI help
 ```
 
 _See code: [src/commands/gensecrets.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/gensecrets.ts)_
@@ -177,13 +176,29 @@ OPTIONS
 
 _See code: [src/commands/pretty.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/pretty.ts)_
 
-## `ss test PROJECT`
+## `ss productionize [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ ss productionize [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/productionize.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/productionize.ts)_
+
+## `ss test PROJECT [CMD]`
 
 Run all of the StringSync tests.
 
 ```
 USAGE
-  $ ss test PROJECT
+  $ ss test PROJECT [CMD]
 
 OPTIONS
   -c, --coverage

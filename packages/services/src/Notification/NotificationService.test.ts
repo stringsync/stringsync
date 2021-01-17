@@ -1,27 +1,38 @@
-import { EntityBuilder } from './../../../common/src/rand/EntityBuilder';
-import { useTestContainer, TYPES } from '@stringsync/di';
+import { Container, useTestContainer } from '@stringsync/di';
+import { EntityBuilder, User } from '@stringsync/domain';
+import { REPOS_TYPES, UserRepo } from '@stringsync/repos';
+import { SERVICES } from '../SERVICES';
+import { SERVICES_TYPES } from '../SERVICES_TYPES';
 import { NotificationService } from './NotificationService';
-import { UserRepo } from '@stringsync/repos';
-import { User } from '@stringsync/domain';
 
-const container = useTestContainer();
+const TYPES = { ...SERVICES_TYPES, ...REPOS_TYPES };
 
-let notificationService: NotificationService;
-let userRepo: UserRepo;
+describe('NotificationService', () => {
+  const ref = useTestContainer(SERVICES);
 
-beforeEach(() => {
-  notificationService = container.get<NotificationService>(TYPES.NotificationService);
-  userRepo = container.get<UserRepo>(TYPES.UserRepo);
-});
+  let container: Container;
 
-describe('sendConfirmationEmail', () => {
-  let user: User;
+  let notificationService: NotificationService;
+  let userRepo: UserRepo;
 
-  beforeEach(async () => {
-    user = await userRepo.create(EntityBuilder.buildRandUser());
+  beforeEach(() => {
+    container = ref.container;
   });
 
-  it('runs without crashing', async () => {
-    expect(() => notificationService.sendConfirmationEmail(user)).not.toThrow();
+  beforeEach(() => {
+    notificationService = container.get<NotificationService>(TYPES.NotificationService);
+    userRepo = container.get<UserRepo>(TYPES.UserRepo);
+  });
+
+  describe('sendConfirmationEmail', () => {
+    let user: User;
+
+    beforeEach(async () => {
+      user = await userRepo.create(EntityBuilder.buildRandUser());
+    });
+
+    it('runs without crashing', async () => {
+      expect(() => notificationService.sendConfirmationEmail(user)).not.toThrow();
+    });
   });
 });

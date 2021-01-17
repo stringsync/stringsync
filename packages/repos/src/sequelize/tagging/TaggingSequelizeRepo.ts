@@ -1,7 +1,7 @@
 import { NotFoundError } from '@stringsync/common';
 import { TaggingModel } from '@stringsync/db';
+import { injectable } from '@stringsync/di';
 import { Tagging } from '@stringsync/domain';
-import { injectable } from 'inversify';
 import { TaggingRepo } from '../../types';
 
 @injectable()

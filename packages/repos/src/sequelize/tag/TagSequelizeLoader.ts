@@ -1,7 +1,7 @@
 import { TaggingModel, TagModel } from '@stringsync/db';
+import { injectable } from '@stringsync/di';
 import { Tag, Tagging } from '@stringsync/domain';
 import Dataloader from 'dataloader';
-import { injectable } from 'inversify';
 import { groupBy, mapValues } from 'lodash';
 import { TagLoader } from '../../types';
 import { alignManyToMany, alignOneToOne, ensureNoErrors } from './../../util';

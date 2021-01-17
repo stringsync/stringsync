@@ -1,15 +1,15 @@
 {
   "name": "@stringsync/di",
   "version": "1.0.0",
-  "description": "Inversion of control container for @stringsync.",
+  "description": "Dependency injection code for StringSync.",
   "main": "src/index.ts",
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@stringsync/config": "1.0.0",
-    "@stringsync/db": "1.0.0",
-    "@stringsync/jobs": "1.0.0",
-    "@stringsync/services": "1.0.0",
-    "@stringsync/util": "1.0.0"
+    "inversify": "^5.0.1",
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "@types/inversify": "^2.0.33"
   }
 }

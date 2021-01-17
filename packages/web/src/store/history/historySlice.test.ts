@@ -1,23 +1,25 @@
-import { HistoryState } from './types';
+import { configureStore, EnhancedStore } from '@reduxjs/toolkit';
 import { historySlice, setReturnToRoute } from './historySlice';
-import { EnhancedStore, configureStore } from '@reduxjs/toolkit';
+import { HistoryState } from './types';
 
-let store: EnhancedStore<{ history: HistoryState }>;
+describe('historySlice', () => {
+  let store: EnhancedStore<{ history: HistoryState }>;
 
-beforeEach(() => {
-  store = configureStore({
-    reducer: {
-      history: historySlice.reducer,
-    },
+  beforeEach(() => {
+    store = configureStore({
+      reducer: {
+        history: historySlice.reducer,
+      },
+    });
   });
-});
 
-it('initializes state', () => {
-  expect(store.getState().history.returnToRoute).toStrictEqual('/library');
-});
+  it('initializes state', () => {
+    expect(store.getState().history.returnToRoute).toStrictEqual('/library');
+  });
 
-it('sets return to route', () => {
-  const route = '/foo?bar#baz';
-  store.dispatch(setReturnToRoute(route));
-  expect(store.getState().history.returnToRoute).toBe(route);
+  it('sets return to route', () => {
+    const route = '/foo?bar#baz';
+    store.dispatch(setReturnToRoute(route));
+    expect(store.getState().history.returnToRoute).toBe(route);
+  });
 });

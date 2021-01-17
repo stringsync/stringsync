@@ -1,5 +1,7 @@
 import { createStore } from './createStore';
 
-it('runs without crashing', () => {
-  expect(createStore).not.toThrow();
+describe('createStore', () => {
+  it('runs without crashing', () => {
+    expect(createStore).not.toThrow();
+  });
 });

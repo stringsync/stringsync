@@ -1,12 +1,31 @@
+import { inject, injectable } from '@stringsync/di';
+import { Logger, UTIL_TYPES } from '@stringsync/util';
 import { createNamespace, getNamespace } from 'cls-hooked';
 import { Sequelize } from 'sequelize';
-import { Db } from '../types';
+import { DbConfig } from '../DB_CONFIG';
+import { DB_TYPES } from '../DB_TYPES';
+import { Database } from '../types';
 import { NotationModel, TaggingModel, TagModel, UserModel } from './models';
-import { SequelizeDbConfig } from './types';
 
-export class SequelizeDb implements Db {
-  static create(config: SequelizeDbConfig) {
-    if (config.env === 'test') {
+const TYPES = { ...UTIL_TYPES, ...DB_TYPES };
+
+@injectable()
+export class SequelizeDb implements Database {
+  private static hackClsNamespace() {
+    // process.namespaces gets overwritten when importing cls-hooked:
+    // https://github.com/Jeff-Lewis/cls-hooked/blob/master/context.js#L453
+    // As a workaround, process.stringSyncTransactionNamespace gets set by
+    // ServerTestEnvironment.js, and then re-set here.
+    const p = process as any;
+    p.namespaces.transaction = p.stringSyncTransactionNamespace;
+  }
+
+  logger: Logger;
+  config: DbConfig;
+  sequelize: Sequelize;
+
+  constructor(@inject(TYPES.Logger) logger: Logger, @inject(TYPES.DbConfig) config: DbConfig) {
+    if (config.NODE_ENV === 'test') {
       SequelizeDb.hackClsNamespace();
     }
 
@@ -16,12 +35,12 @@ export class SequelizeDb implements Db {
 
     const sequelize = new Sequelize({
       dialect: 'postgres',
-      host: config.host,
-      port: config.port,
-      database: config.database,
-      username: config.username,
-      password: config.password,
-      logging: config.logging,
+      host: config.DB_HOST,
+      port: config.DB_PORT,
+      database: config.DB_NAME,
+      username: config.DB_USERNAME,
+      password: config.DB_PASSWORD,
+      logging: (sql: string) => logger.debug(sql),
     });
 
     TaggingModel.initColumns(sequelize);
@@ -34,26 +53,13 @@ export class SequelizeDb implements Db {
     NotationModel.initAssociations();
     TagModel.initAssociations();
 
-    return new SequelizeDb(sequelize);
-  }
-
-  private static hackClsNamespace() {
-    // process.namespaces gets overwritten when importing cls-hooked:
-    // https://github.com/Jeff-Lewis/cls-hooked/blob/master/context.js#L453
-    // As a workaround, process.stringSyncTransactionNamespace gets set by
-    // ServerTestEnvironment.js, and then re-set here.
-    const p = process as any;
-    p.namespaces.transaction = p.stringSyncTransactionNamespace;
-  }
-
-  sequelize: Sequelize;
-
-  constructor(sequelize: Sequelize) {
+    this.logger = logger;
+    this.config = config;
     this.sequelize = sequelize;
   }
 
   async cleanup() {
-    const env = process.env.NODE_ENV;
+    const env = this.config.NODE_ENV;
     if (env !== 'development' && env !== 'test') {
       throw new Error(`can only cleanup in development and test environemnts, got: ${env}`);
     }
@@ -74,5 +80,9 @@ export class SequelizeDb implements Db {
 
   async teardown() {
     await this.sequelize.close();
+  }
+
+  async checkHealth() {
+    await this.sequelize.authenticate();
   }
 }

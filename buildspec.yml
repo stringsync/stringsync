@@ -3,6 +3,9 @@ version: 0.2
 phases:
   install:
     commands:
+      - echo Configuring yarn...
+      - yarn config set cache-folder /root/.yarn
+      - yarn config set install.prefer-offline true
       - echo Installing script node_modules...
       - (cd ./bin/scripts && yarn install)
 
@@ -10,49 +13,90 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
-      - echo Cleaning up previous builds
-      - ./bin/ss down server
+      - docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest || true
+      - echo Logging into docker...
+      - aws s3 cp s3://$S3_SECRETS_BUCKET/.docker.key .docker.key
+      - docker login -u stringsync --password-stdin < .docker.key
+      - rm .docker.key
+      - echo Making reports dir...
+      - mkdir reports
 
   build:
     commands:
-      - echo Building images...
-      - ./bin/ss build
+      - echo Building prod image...
+      - ./bin/ss build --prod --dev --test --cmd --cacheFrom $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
       - echo Testing images...
-      - ./bin/ss test server
-      - ./bin/ss test web
+      - ./bin/ss test api --ci --cacheFrom stringsync-test:latest
+      - ./bin/ss test web --ci --cacheFrom stringsync-test:latest
 
   post_build:
     commands:
       - |
         if [ "$CODEBUILD_BUILD_SUCCEEDING" -eq 1 ]
         then
-          echo Pushing server images...
-          docker tag stringsync/server $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
+          echo Pushing api images...
+          docker tag stringsync $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
 
+          echo Pushing cmd images...
+          docker tag stringsync-cmd $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$CMD_IMAGE_REPO_NAME:latest
+          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$CMD_IMAGE_REPO_NAME:latest
+
           echo Writing imagedefinitions.json...
+          # We don't need one for the cmd image because there is no service running them
           IMAGE_URI="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest"
-          printf '[{"name":"server","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.json
+          printf '[{"name":"api","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.api.json
+          printf '[{"name":"worker","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.worker.json
 
-          echo Adding REACT_APP_SERVER_URI to .env
-          echo REACT_APP_SERVER_URI=$REACT_APP_SERVER_URI >> packages/web/.env
+          echo Creating artifacts dir...
+          mkdir imagedefinitions-artifacts
+          mkdir web-artifacts
 
-          echo Building web project...
-          (yarn web install && yarn web build)
+          echo Building web project in artifacts directory...
+          # We use docker to build the project to avoid having to install the packages needed
+          # to build it on the host. The docker image already has the packages installed.
+          docker run --volume $(pwd)/build:/app/packages/web/build stringsync-dev:latest bash -c "REACT_APP_SERVER_URI=$REACT_APP_SERVER_URI PUBLIC_URL=https://$DOMAIN_NAME yarn web build"
 
-          echo Moving everything into root build dir...
-          mkdir deploy
-          mv imagedefinitions.json deploy
-          mv packages/web/build/* deploy
+          echo Moving everything else into root artifacts dir...
+          mv build/* web-artifacts
+          mv imagedefinitions.api.json imagedefinitions-artifacts
+          mv imagedefinitions.worker.json imagedefinitions-artifacts
+
+          echo web-artifacts
+          ls web-artifacts
+
+          echo imagedefinitions-artifacts
+          ls imagedefinitions-artifacts
         else
           echo Build failed, skipping post_build step...
         fi
 
+        echo Logging out of docker...
+        docker logout
+
 cache:
   paths:
-    - bin/scripts/node_modules/**/*
+    - /root/.yarn/**/*
+
+reports:
+  jest_reports:
+    files:
+      - junit.web.xml
+      - junit.api.xml
+    file-format: JUNITXML
+    base-directory: reports
 
 artifacts:
-  base-directory: deploy
   files:
-    - "**/*"
+    - '**/*'
+  secondary-artifacts:
+    BuildImageDefinitionsOutput:
+      name: BuildImageDefinitionsOutput
+      base-directory: imagedefinitions-artifacts
+      files:
+        - '**/*'
+    BuildWebOutput:
+      name: BuildWebOutput
+      base-directory: web-artifacts
+      files:
+        - '**/*'

@@ -1,43 +1,55 @@
-import { EntityBuilder } from '@stringsync/common';
-import { TYPES, useTestContainer } from '@stringsync/di';
-import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from '@stringsync/repos';
+import { Container, useTestContainer } from '@stringsync/di';
+import { EntityBuilder } from '@stringsync/domain';
+import { NotationRepo, REPOS_TYPES, TaggingRepo, TagRepo, UserRepo } from '@stringsync/repos';
+import { SERVICES } from '../SERVICES';
+import { SERVICES_TYPES } from '../SERVICES_TYPES';
 import { TaggingService } from './TaggingService';
 
-const container = useTestContainer();
+const TYPES = { ...SERVICES_TYPES, ...REPOS_TYPES };
 
-let taggingRepo: TaggingRepo;
-let tagRepo: TagRepo;
-let notationRepo: NotationRepo;
-let userRepo: UserRepo;
+describe('TaggingService', () => {
+  const ref = useTestContainer(SERVICES);
 
-let taggingService: TaggingService;
+  let container: Container;
 
-beforeEach(() => {
-  taggingRepo = container.get<TaggingRepo>(TYPES.TaggingRepo);
-  tagRepo = container.get<TagRepo>(TYPES.TagRepo);
-  notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
-  userRepo = container.get<UserRepo>(TYPES.UserRepo);
+  let taggingRepo: TaggingRepo;
+  let tagRepo: TagRepo;
+  let notationRepo: NotationRepo;
+  let userRepo: UserRepo;
 
-  taggingService = container.get<TaggingService>(TYPES.TaggingService);
-});
+  let taggingService: TaggingService;
 
-describe('bulkCreate', () => {
-  it('creates many taggings', async () => {
-    expect(await taggingRepo.count()).toBe(0);
+  beforeEach(() => {
+    container = ref.container;
+  });
 
-    const user = await userRepo.create(EntityBuilder.buildRandUser());
-    const [tag1, tag2, tag3] = await tagRepo.bulkCreate([
-      EntityBuilder.buildRandTag(),
-      EntityBuilder.buildRandTag(),
-      EntityBuilder.buildRandTag(),
-    ]);
-    const notation = await notationRepo.create(EntityBuilder.buildRandNotation({ transcriberId: user.id }));
+  beforeEach(() => {
+    taggingRepo = container.get<TaggingRepo>(TYPES.TaggingRepo);
+    tagRepo = container.get<TagRepo>(TYPES.TagRepo);
+    notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
+    userRepo = container.get<UserRepo>(TYPES.UserRepo);
 
-    const taggings = await taggingService.bulkCreate([
-      { notationId: notation.id, tagId: tag1.id },
-      { notationId: notation.id, tagId: tag2.id },
-    ]);
+    taggingService = container.get<TaggingService>(TYPES.TaggingService);
+  });
 
-    expect(await taggingRepo.count()).toBe(2);
+  describe('bulkCreate', () => {
+    it('creates many taggings', async () => {
+      expect(await taggingRepo.count()).toBe(0);
+
+      const user = await userRepo.create(EntityBuilder.buildRandUser());
+      const [tag1, tag2, tag3] = await tagRepo.bulkCreate([
+        EntityBuilder.buildRandTag(),
+        EntityBuilder.buildRandTag(),
+        EntityBuilder.buildRandTag(),
+      ]);
+      const notation = await notationRepo.create(EntityBuilder.buildRandNotation({ transcriberId: user.id }));
+
+      const taggings = await taggingService.bulkCreate([
+        { notationId: notation.id, tagId: tag1.id },
+        { notationId: notation.id, tagId: tag2.id },
+      ]);
+
+      expect(await taggingRepo.count()).toBe(2);
+    });
   });
 });

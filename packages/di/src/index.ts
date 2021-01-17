@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 
-export * from './TYPES';
-export * from './DI';
+export { Container, inject, injectable } from 'inversify';
+export * from './createContainer';
+export * from './types';
 export * from './useTestContainer';

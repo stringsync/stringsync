@@ -1,31 +1,23 @@
 import { NotFoundError, UnknownError } from '@stringsync/common';
-import { ContainerConfig } from '@stringsync/config';
-import { TYPES } from '@stringsync/di';
-import { Logger, Message, MessageQueue } from '@stringsync/util';
-import { inject, injectable } from 'inversify';
+import { inject, injectable } from '@stringsync/di';
+import { Logger, Message, MessageQueue, UTIL_TYPES } from '@stringsync/util';
 import { NotationService } from '../Notation';
+import { ServicesConfig } from '../SERVICES_CONFIG';
+import { SERVICES_TYPES } from '../SERVICES_TYPES';
+
+const TYPES = { ...SERVICES_TYPES, ...UTIL_TYPES };
 
 @injectable()
 export class VideoUrlService {
-  logger: Logger;
-  messageQueue: MessageQueue;
-  notationService: NotationService;
-  config: ContainerConfig;
-
   constructor(
-    @inject(TYPES.Logger) logger: Logger,
-    @inject(TYPES.MessageQueue) messageQueue: MessageQueue,
-    @inject(TYPES.NotationService) notationService: NotationService,
-    @inject(TYPES.ContainerConfig) config: ContainerConfig
-  ) {
-    this.logger = logger;
-    this.messageQueue = messageQueue;
-    this.notationService = notationService;
-    this.config = config;
-  }
+    @inject(TYPES.Logger) public logger: Logger,
+    @inject(TYPES.MessageQueue) public messageQueue: MessageQueue,
+    @inject(TYPES.NotationService) public notationService: NotationService,
+    @inject(TYPES.ServicesConfig) public config: ServicesConfig
+  ) {}
 
   async processNextMessage(): Promise<void> {
-    const queueName = this.config.SQS_VIDEO_QUEUE_NAME;
+    const queueName = this.config.SQS_VIDEO_QUEUE_URL;
 
     const message = await this.messageQueue.get(queueName);
     if (!message) {

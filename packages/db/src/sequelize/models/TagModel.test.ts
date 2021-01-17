@@ -1,10 +1,13 @@
-import { useTestContainer, TYPES } from '@stringsync/di';
+import { useTestContainer } from '@stringsync/di';
+import { EntityBuilder } from '@stringsync/domain';
+import { DB } from '../../DB';
 import { TagModel } from './TagModel';
-import { EntityBuilder } from '@stringsync/common';
 
-const container = useTestContainer();
+describe('TagModel', () => {
+  useTestContainer(DB);
 
-it('permits valid tags', async () => {
-  const tag = TagModel.build(EntityBuilder.buildRandTag());
-  await expect(tag.validate()).resolves.not.toThrow();
+  it('permits valid tags', async () => {
+    const tag = TagModel.build(EntityBuilder.buildRandTag());
+    await expect(tag.validate()).resolves.not.toThrow();
+  });
 });

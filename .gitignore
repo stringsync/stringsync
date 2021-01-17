@@ -14,6 +14,9 @@ build
 lib
 package-lock.json
 tmp
+tsconfig.tsbuildinfo
+reports
+artifacts
 
 # local env files
 .env.local

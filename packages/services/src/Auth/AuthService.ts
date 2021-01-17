@@ -1,11 +1,12 @@
-import { injectable, inject } from 'inversify';
-import { UserRepo } from '@stringsync/repos';
-import { TYPES } from '@stringsync/di';
-import { SessionUser } from './types';
+import { BadRequestError, NotFoundError } from '@stringsync/common';
+import { inject, injectable } from '@stringsync/di';
 import { User, UserRole } from '@stringsync/domain';
+import { REPOS_TYPES, UserRepo } from '@stringsync/repos';
 import * as bcrypt from 'bcrypt';
 import * as uuid from 'uuid';
-import { BadRequestError, NotFoundError } from '@stringsync/common';
+import { SessionUser } from './types';
+
+const TYPES = { ...REPOS_TYPES };
 
 @injectable()
 export class AuthService {
@@ -17,11 +18,7 @@ export class AuthService {
     return await bcrypt.hash(password, AuthService.HASH_ROUNDS);
   }
 
-  userRepo: UserRepo;
-
-  constructor(@inject(TYPES.UserRepo) userRepo: UserRepo) {
-    this.userRepo = userRepo;
-  }
+  constructor(@inject(TYPES.UserRepo) public userRepo: UserRepo) {}
 
   async getSessionUser(id: string): Promise<SessionUser> {
     const user = await this.userRepo.find(id);

@@ -1,24 +1,34 @@
-import { Db } from '@stringsync/db';
-import { Cache } from '@stringsync/util';
-import { DI } from './DI';
-import { TYPES } from './TYPES';
+import { createContainer } from './createContainer';
+import { Pkg, TestContainerRef } from './types';
 
-export const useTestContainer = () => {
-  const container = DI.create();
+export const useTestContainer = (pkg: Pkg): TestContainerRef => {
+  const ref: Partial<TestContainerRef> = {};
+
+  beforeAll(async () => {
+    const { container, setup, cleanup, teardown } = await createContainer(pkg);
+    ref.container = container;
+    ref.setup = setup;
+    ref.cleanup = cleanup;
+    ref.teardown = teardown;
+  });
+
+  beforeEach(async () => {
+    if (ref.setup && ref.container) {
+      await ref.setup(ref.container);
+    }
+  });
 
   afterEach(async () => {
-    const cache = container.get<Cache>(TYPES.Cache);
-    const db = container.get<Db>(TYPES.Db);
-
-    await Promise.all([cache.cleanup(), db.cleanup()]);
+    if (ref.cleanup && ref.container) {
+      await ref.cleanup(ref.container);
+    }
   });
 
   afterAll(async () => {
-    const cache = container.get<Cache>(TYPES.Cache);
-    const db = container.get<Db>(TYPES.Db);
-
-    await Promise.all([cache.teardown(), db.teardown()]);
+    if (ref.teardown && ref.container) {
+      await ref.teardown(ref.container);
+    }
   });
 
-  return container;
+  return ref as TestContainerRef;
 };

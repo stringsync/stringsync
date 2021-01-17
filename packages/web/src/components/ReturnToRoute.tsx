@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Route, RouteProps, useLocation } from 'react-router';
 import { AppDispatch, RootState, setReturnToRoute } from '../store';
 
-const asReturnToRoute = function<P>(Component: React.ComponentType<P>): React.FC<P> {
+const asReturnToRoute = function<P>(Component: React.ComponentType<any>): React.FC<P> {
   return (props) => {
     const dispatch = useDispatch<AppDispatch>();
     const returnToRoute = useSelector<RootState, string>((state) => state.history.returnToRoute);

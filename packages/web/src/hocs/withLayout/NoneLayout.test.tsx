@@ -1,13 +1,15 @@
-import React from 'react';
-import { NoneLayout } from './NoneLayout';
-import { Test } from '../../testing';
 import { render } from '@testing-library/react';
+import React from 'react';
+import { Test } from '../../testing';
+import { NoneLayout } from './NoneLayout';
 
-it('renders without crashing', () => {
-  const { container } = render(
-    <Test>
-      <NoneLayout />
-    </Test>
-  );
-  expect(container).toBeInTheDocument();
+describe('NoneLayout', () => {
+  it('renders without crashing', () => {
+    const { container } = render(
+      <Test>
+        <NoneLayout />
+      </Test>
+    );
+    expect(container).toBeInTheDocument();
+  });
 });

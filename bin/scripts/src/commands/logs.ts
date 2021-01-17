@@ -1,6 +1,6 @@
 import { Command, flags } from '@oclif/command';
-import { getDockerComposeFile, PROJECT_ARG, ROOT_PATH } from '../util';
 import { spawn } from 'child_process';
+import { DOCKER_PATH, getDockerComposeFile, PROJECT_ARG } from '../util';
 
 export default class Exec extends Command {
   static description = 'Follows the logs for a particular service.';
@@ -20,7 +20,7 @@ export default class Exec extends Command {
     spawn(
       'docker-compose',
       ['-p', args.project, '-f', getDockerComposeFile(args.project), 'logs', '-f', args.service].filter((arg) => arg),
-      { cwd: ROOT_PATH, stdio: 'inherit' }
+      { cwd: DOCKER_PATH, stdio: 'inherit' }
     );
   }
 }

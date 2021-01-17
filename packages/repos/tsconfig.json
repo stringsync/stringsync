@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "include": ["src"],
+  "references": [
+    { "path": "../common" },
+    { "path": "../config" },
+    { "path": "../db" },
+    { "path": "../di" },
+    { "path": "../domain" }
+  ]
+}

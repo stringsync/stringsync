@@ -1,5 +1,5 @@
-import { getWebConfig } from '@stringsync/config';
 import { ExtractableFile, extractFiles } from 'extract-files';
+import { WEB_CONFIG } from '../../config';
 import { RequestType, Response } from './types';
 
 export class GraphqlClient {
@@ -11,7 +11,7 @@ export class GraphqlClient {
   }
 
   static getGraphqlUri(env = process.env): string {
-    const config = getWebConfig(env);
+    const config = WEB_CONFIG(env);
     return config.REACT_APP_SERVER_URI + config.REACT_APP_GRAPHQL_ENDPOINT;
   }
 
@@ -56,6 +56,8 @@ export class GraphqlClient {
       formData.append(ndx.toString(), file as File);
     }
 
+    await this.checkHealth();
+
     const res = await fetch(this.uri, {
       method: 'POST',
       headers: { Accept: 'application/json' },
@@ -65,4 +67,17 @@ export class GraphqlClient {
     });
     return await res.json();
   };
+
+  private async checkHealth() {
+    const res = await fetch(this.uri.replace('/graphql', '/health'), {
+      method: 'GET',
+    });
+
+    if (!res.ok) {
+      console.error('health check unsuccessful');
+      throw new Error('server unreachable');
+    }
+
+    console.log('health check successful');
+  }
 }

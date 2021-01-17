@@ -1,0 +1,33 @@
+FROM node:14.9.0
+
+WORKDIR /app
+
+# install process manager
+RUN npm install pm2 -g
+
+# make bin/ss commands work
+COPY bin/scripts/package.json bin/scripts/
+COPY bin/scripts/yarn.lock bin/scripts/
+RUN (cd bin/scripts && yarn)
+COPY bin bin
+
+# install node_modules for packages
+COPY package.json .
+COPY yarn.lock .
+COPY packages/api/package.json packages/api/
+COPY packages/common/package.json packages/common/
+COPY packages/config/package.json packages/config/
+COPY packages/db/package.json packages/db/
+COPY packages/di/package.json packages/di/
+COPY packages/domain/package.json packages/domain/
+COPY packages/jobs/package.json packages/jobs/
+COPY packages/repos/package.json packages/repos/
+COPY packages/services/package.json packages/services/
+COPY packages/util/package.json packages/util/
+COPY packages/web/package.json packages/web/
+RUN yarn
+
+# copy the main files over
+COPY tsconfig.base.json .
+COPY tsconfig.json .
+COPY packages packages
