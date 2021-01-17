@@ -24,7 +24,7 @@ export class NotificationService {
       query: { confirmationToken: user.confirmationToken },
     });
 
-    this.mailer.send({
+    await this.mailer.send({
       subject: 'Confirm your email for StringSync',
       from: NotificationService.INFO_EMAIL,
       to: user.email,
@@ -48,7 +48,7 @@ export class NotificationService {
       query: { resetPasswordToken: user.resetPasswordToken },
     });
 
-    this.mailer.send({
+    await this.mailer.send({
       subject: 'Reset your password for StringSync',
       from: NotificationService.INFO_EMAIL,
       to: user.email,
