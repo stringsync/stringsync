@@ -237,6 +237,73 @@ Resources:
     DeletionPolicy: Delete
     Type: AWS::S3::Bucket
 
+  MediaBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+
+  MediaBucketOriginAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Sub access-identity-${MediaBucket}
+
+  MediaBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref MediaBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${MediaBucketOriginAccessIdentity}
+            Action: s3:GetObject
+            Resource: !Sub arn:aws:s3:::${MediaBucket}/*
+
+  MediaDistributionCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        Name: MediaDistributionCachePolicy
+        Comment: Cache policy for the web distribution
+        DefaultTTL: 1800
+        MinTTL: 1800
+        MaxTTL: 3600
+        ParametersInCacheKeyAndForwardedToOrigin:
+          CookiesConfig:
+            CookieBehavior: none
+          EnableAcceptEncodingGzip: false
+          HeadersConfig:
+            HeaderBehavior: none
+          QueryStringsConfig:
+            QueryStringBehavior: none
+
+  MediaDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: Serves the application frontend
+        PriceClass: PriceClass_All
+        Aliases:
+          - !Sub media.${DomainName}
+        ViewerCertificate:
+          AcmCertificateArn: !Ref DomainCertificate
+          SslSupportMethod: sni-only
+        Origins:
+          - DomainName: !GetAtt MediaBucket.DomainName
+            Id: S3-media
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub origin-access-identity/cloudfront/${MediaBucketOriginAccessIdentity}
+        DefaultCacheBehavior:
+          TargetOriginId: S3-media
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - HEAD
+            - GET
+            - OPTIONS
+          CachePolicyId: !Ref MediaDistributionCachePolicy
+
   WebBucket:
     DeletionPolicy: Delete
     Type: AWS::S3::Bucket
@@ -377,6 +444,11 @@ Resources:
           AliasTarget:
             HostedZoneId: Z2FDTNDATAQYW2
             DNSName: !GetAtt WebWWWRedirectDistribution.DomainName
+        - Name: !Sub media.${DomainName}
+          Type: A
+          AliasTarget:
+            HostedZoneId: Z2FDTNDATAQYW2
+            DNSName: !GetAtt MediaDistribution.DomainName
         - Name: !Sub api.${DomainName}
           Type: A
           AliasTarget:
@@ -1107,9 +1179,6 @@ Resources:
       VPCSecurityGroups:
         - !Ref PrivateLoadBalancerSG
 
-  PrimaryBucket:
-    Type: AWS::S3::Bucket
-
   # This is a role which is used by the ECS tasks themselves.
   ECSTaskExecutionRole:
     Type: AWS::IAM::Role
@@ -1160,8 +1229,8 @@ Resources:
             Options:
               awslogs-create-group: true
               awslogs-region: !Ref AWS::Region
-              awslogs-group: !Join ['-', [!Ref 'AWS::StackName', 'api']]
-              awslogs-stream-prefix: api
+              awslogs-group: !Sub /aws/ecs/${AWS::StackName}-api
+              awslogs-stream-prefix: !Ref AWS::StackName
           PortMappings:
             - ContainerPort: !Ref ApiPort
           Image:
@@ -1197,7 +1266,7 @@ Resources:
             - Name: REDIS_PORT
               Value: !GetAtt ElasticacheCluster.RedisEndpoint.Port
             - Name: S3_BUCKET
-              Value: !Ref PrimaryBucket
+              Value: !Ref MediaBucket
             - Name: S3_VIDEO_SRC_BUCKET
               Value: !Ref Source
             - Name: SQS_VIDEO_QUEUE_URL
@@ -1224,8 +1293,8 @@ Resources:
             Options:
               awslogs-create-group: true
               awslogs-region: !Ref AWS::Region
-              awslogs-group: !Join ['-', [!Ref 'AWS::StackName', 'db-migrate']]
-              awslogs-stream-prefix: db-migrate
+              awslogs-group: !Sub /aws/ecs/${AWS::StackName}-db-migrate
+              awslogs-stream-prefix: !Ref AWS::StackName
           Image:
             !Join [
               '',
@@ -1334,8 +1403,8 @@ Resources:
             Options:
               awslogs-create-group: true
               awslogs-region: !Ref AWS::Region
-              awslogs-group: !Join ['-', [!Ref 'AWS::StackName', 'worker']]
-              awslogs-stream-prefix: ecs
+              awslogs-group: !Sub /aws/ecs/${AWS::StackName}-worker
+              awslogs-stream-prefix: !Ref AWS::StackName
           PortMappings:
             - ContainerPort: !Ref WorkerPort
           Image:
@@ -1371,7 +1440,7 @@ Resources:
             - Name: REDIS_PORT
               Value: !GetAtt ElasticacheCluster.RedisEndpoint.Port
             - Name: S3_BUCKET
-              Value: !Ref PrimaryBucket
+              Value: !Ref MediaBucket
             - Name: S3_VIDEO_SRC_BUCKET
               Value: !Ref Source
             - Name: SQS_VIDEO_QUEUE_URL
