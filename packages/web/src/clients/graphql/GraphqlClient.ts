@@ -56,8 +56,6 @@ export class GraphqlClient {
       formData.append(ndx.toString(), file as File);
     }
 
-    await this.checkHealth();
-
     const res = await fetch(this.uri, {
       method: 'POST',
       headers: { Accept: 'application/json' },
@@ -67,17 +65,4 @@ export class GraphqlClient {
     });
     return await res.json();
   };
-
-  private async checkHealth() {
-    const res = await fetch(this.uri.replace('/graphql', '/health'), {
-      method: 'GET',
-    });
-
-    if (!res.ok) {
-      console.error('health check unsuccessful');
-      throw new Error('server unreachable');
-    }
-
-    console.log('health check successful');
-  }
 }
