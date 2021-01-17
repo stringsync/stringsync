@@ -47,7 +47,7 @@ const WhiteBox = styled(Box)`
 `;
 
 const Header = styled.h1`
-  font-size: 4em;
+  font-size: 3em;
   font-weight: lighter;
   margin-bottom: 0;
   background: white;
