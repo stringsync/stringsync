@@ -19,14 +19,6 @@ serviceWorker.register({
       duration: null,
     });
   },
-  onSuccess: () => {
-    notification.info({
-      message: 'offline availability',
-      description: 'Content is available for offline use.',
-      placement: 'bottomLeft',
-      duration: 5,
-    });
-  },
 });
 
 ReactDOM.render(
