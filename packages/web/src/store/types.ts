@@ -1,10 +1,10 @@
-import { HistoryState } from './history/types';
+import { AnyAction, Dispatch, EnhancedStore, ThunkDispatch } from '@reduxjs/toolkit';
 import { AuthState } from './auth/types';
-import { ViewportState } from './viewport/types';
 import { DeviceState } from './device/types';
-import { EnhancedStore, ThunkDispatch, AnyAction, Dispatch } from '@reduxjs/toolkit';
+import { HistoryState } from './history/types';
 import { LibraryState } from './library/types';
 import { TagState } from './tag/types';
+import { ViewportState } from './viewport/types';
 
 export type RootState = {
   device: DeviceState;
