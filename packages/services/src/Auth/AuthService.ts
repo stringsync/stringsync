@@ -81,10 +81,7 @@ export class AuthService {
       throw new BadRequestError('invalid confirmation token');
     }
 
-    const confirmedUser = { ...user, confirmationToken: null, confirmedAt };
-    await this.userRepo.update(confirmedUser.id, confirmedUser);
-
-    return confirmedUser;
+    return await this.userRepo.update(user.id, { confirmationToken: null, confirmedAt });
   }
 
   async resetConfirmationToken(id: string): Promise<User> {
@@ -104,14 +101,10 @@ export class AuthService {
       throw new NotFoundError('user not found');
     }
 
-    const updatedUser: User = {
-      ...user,
+    return await this.userRepo.update(user.id, {
       resetPasswordToken: this.generateResetPasswordToken(),
       resetPasswordTokenSentAt: reqAt,
-    };
-    await this.userRepo.update(updatedUser.id, updatedUser);
-
-    return updatedUser;
+    });
   }
 
   async resetPassword(email: string, resetPasswordToken: string, password: string, reqAt: Date): Promise<User> {
@@ -148,8 +141,11 @@ export class AuthService {
 
     this.validatePassword(password);
     const encryptedPassword = await AuthService.encryptPassword(password);
-    const updatedUser: User = { ...user, resetPasswordToken: null, resetPasswordTokenSentAt: null, encryptedPassword };
-    return await this.userRepo.update(updatedUser.id, updatedUser);
+    return await this.userRepo.update(user.id, {
+      resetPasswordToken: null,
+      resetPasswordTokenSentAt: null,
+      encryptedPassword,
+    });
   }
 
   private async validatePassword(password: string) {
