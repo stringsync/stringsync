@@ -48,12 +48,8 @@ export const ResetPassword: React.FC = (props) => {
     setErrors([]);
 
     try {
+      const { email, password, resetPasswordToken } = form.getFieldsValue();
       const authClient = AuthClient.create();
-
-      const email = form.getFieldValue('email');
-      const password = form.getFieldValue('password');
-      const resetPasswordToken = form.getFieldValue('resetPasswordToken');
-
       const { data, errors } = await authClient.resetPassword({
         email,
         password,
