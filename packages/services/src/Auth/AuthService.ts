@@ -1,24 +1,26 @@
-import { BadRequestError, NotFoundError } from '@stringsync/common';
+import { BadRequestError, NotFoundError, randInt, randStr } from '@stringsync/common';
 import { inject, injectable } from '@stringsync/di';
 import { User, UserRole } from '@stringsync/domain';
 import { REPOS_TYPES, UserRepo } from '@stringsync/repos';
+import { Logger, UTIL_TYPES } from '@stringsync/util';
 import * as bcrypt from 'bcrypt';
 import * as uuid from 'uuid';
 import { SessionUser } from './types';
 
-const TYPES = { ...REPOS_TYPES };
+const TYPES = { ...REPOS_TYPES, ...UTIL_TYPES };
 
 @injectable()
 export class AuthService {
   static MAX_RESET_PASSWORD_TOKEN_AGE_MS = 86400 * 1000; // 1 day
   static MIN_PASSWORD_LENGTH = 6;
   static HASH_ROUNDS = 10;
+  static RESET_PASSWORD_TOKEN_LENGTH = 10;
 
   static async encryptPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, AuthService.HASH_ROUNDS);
   }
 
-  constructor(@inject(TYPES.UserRepo) public userRepo: UserRepo) {}
+  constructor(@inject(TYPES.UserRepo) public userRepo: UserRepo, @inject(TYPES.Logger) public logger: Logger) {}
 
   async getSessionUser(id: string): Promise<SessionUser> {
     const user = await this.userRepo.find(id);
@@ -98,38 +100,72 @@ export class AuthService {
       throw new NotFoundError('user not found');
     }
 
-    const updatedUser: User = { ...user, resetPasswordToken: uuid.v4(), resetPasswordTokenSentAt: reqAt };
+    const updatedUser: User = {
+      ...user,
+      resetPasswordToken: this.generateResetPasswordToken(),
+      resetPasswordTokenSentAt: reqAt,
+    };
     await this.userRepo.update(updatedUser.id, updatedUser);
 
     return updatedUser;
   }
 
-  async resetPassword(resetPasswordToken: string, password: string, reqAt: Date): Promise<User> {
-    const user = await this.userRepo.findByResetPasswordToken(resetPasswordToken);
+  async resetPassword(email: string, resetPasswordToken: string, password: string, reqAt: Date): Promise<User> {
+    const user = await this.userRepo.findByEmail(email);
     if (!user) {
-      throw new NotFoundError('user not found');
+      this.logger.warn(`no user found for ${email}`);
+      throw new BadRequestError('invalid reset password token');
     }
+
+    if (!user.resetPasswordToken) {
+      this.logger.warn(`missing resetPasswordToken for ${email}`);
+      throw new BadRequestError('invalid reset password token');
+    }
+
     if (!user.resetPasswordTokenSentAt) {
-      // user is in a bad state somehow, have them request another token
+      this.logger.warn(`missing resetPasswordTokenSentAt for ${email}`);
       throw new BadRequestError('invalid reset password token');
     }
 
     const resetPasswordTokenAgeMs = reqAt.getTime() - user.resetPasswordTokenSentAt.getTime();
     if (resetPasswordTokenAgeMs > AuthService.MAX_RESET_PASSWORD_TOKEN_AGE_MS) {
+      this.logger.warn(`expired resetPasswordToken for ${email}`);
+      throw new BadRequestError('invalid reset password token');
+    }
+
+    const resetPasswordTokensMatch = await this.resetPasswordTokensMatch(user.resetPasswordToken, resetPasswordToken);
+    if (!resetPasswordTokensMatch) {
+      this.logger.warn(`resetPasswordTokens do not match for: ${email}`);
       throw new BadRequestError('invalid reset password token');
     }
 
     this.validatePassword(password);
     const encryptedPassword = await AuthService.encryptPassword(password);
     const updatedUser: User = { ...user, resetPasswordToken: null, resetPasswordTokenSentAt: null, encryptedPassword };
-    await this.userRepo.update(updatedUser.id, updatedUser);
-
-    return updatedUser;
+    return await this.userRepo.update(updatedUser.id, updatedUser);
   }
 
   private async validatePassword(password: string) {
     if (password.length < AuthService.MIN_PASSWORD_LENGTH) {
       throw new BadRequestError(`password must be at least ${AuthService.MIN_PASSWORD_LENGTH} characters`);
     }
+  }
+
+  private normalizeResetPasswordToken(resetPasswordToken: string) {
+    return resetPasswordToken.toUpperCase();
+  }
+
+  private generateResetPasswordToken(): string {
+    return this.normalizeResetPasswordToken(randStr(AuthService.RESET_PASSWORD_TOKEN_LENGTH));
+  }
+
+  private async resetPasswordTokensMatch(token1: string, token2: string): Promise<boolean> {
+    // Prevent timing attacks
+    return await new Promise((resolve) => {
+      const result = this.normalizeResetPasswordToken(token1) === this.normalizeResetPasswordToken(token2);
+      setTimeout(() => {
+        resolve(result);
+      }, randInt(100, 200));
+    });
   }
 }

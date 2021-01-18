@@ -1,5 +1,7 @@
 export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: any }> = { [K in keyof T]: T[K] };
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -25,6 +27,7 @@ export type CreateNotationInput = {
   tagIds: Array<Scalars['String']>;
 };
 
+
 export type LoginInput = {
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -43,29 +46,36 @@ export type Mutation = {
   resetPassword?: Maybe<Scalars['Boolean']>;
 };
 
+
 export type MutationCreateNotationArgs = {
   input: CreateNotationInput;
 };
+
 
 export type MutationUpdateUserArgs = {
   input: UpdateUserInput;
 };
 
+
 export type MutationLoginArgs = {
   input: LoginInput;
 };
+
 
 export type MutationSignupArgs = {
   input: SignupInput;
 };
 
+
 export type MutationConfirmEmailArgs = {
   input: ConfirmEmailInput;
 };
 
+
 export type MutationSendResetPasswordEmailArgs = {
   input: SendResetPasswordEmailInput;
 };
+
 
 export type MutationResetPasswordArgs = {
   input: ResetPasswordInput;
@@ -117,7 +127,9 @@ export type Query = {
   user?: Maybe<UserObject>;
   users: UserConnectionObject;
   whoami?: Maybe<UserObject>;
+  sqs?: Maybe<Scalars['String']>;
 };
+
 
 export type QueryNotationsArgs = {
   before?: Maybe<Scalars['String']>;
@@ -128,13 +140,16 @@ export type QueryNotationsArgs = {
   tagIds?: Maybe<Array<Scalars['String']>>;
 };
 
+
 export type QueryNotationArgs = {
   id: Scalars['String'];
 };
 
+
 export type QueryUserArgs = {
   id: Scalars['String'];
 };
+
 
 export type QueryUsersArgs = {
   before?: Maybe<Scalars['String']>;
@@ -144,6 +159,7 @@ export type QueryUsersArgs = {
 };
 
 export type ResetPasswordInput = {
+  email: Scalars['String'];
   resetPasswordToken: Scalars['String'];
   password: Scalars['String'];
 };
@@ -171,6 +187,7 @@ export type UpdateUserInput = {
   email?: Maybe<Scalars['String']>;
   role?: Maybe<UserRoles>;
 };
+
 
 export type UserConnectionObject = {
   __typename?: 'UserConnectionObject';
@@ -201,5 +218,5 @@ export type UserObject = {
 export enum UserRoles {
   STUDENT = 'STUDENT',
   TEACHER = 'TEACHER',
-  ADMIN = 'ADMIN',
+  ADMIN = 'ADMIN'
 }

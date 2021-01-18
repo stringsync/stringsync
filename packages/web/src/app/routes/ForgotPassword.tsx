@@ -20,7 +20,6 @@ export const ForgotPassword: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const errors = useSelector<RootState, string[]>((state) => state.auth.errors);
   const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
-  const returnToRoute = useSelector<RootState, string>((state) => state.history.returnToRoute);
   const history = useHistory();
 
   const [form] = Form.useForm();
@@ -40,7 +39,7 @@ export const ForgotPassword: React.FC = () => {
     const maybeSendResetPasswordEmailRes = action.payload; // boolean | { errors: string [] }
     if (maybeSendResetPasswordEmailRes === true) {
       message.success(`sent reset password email to ${email}`);
-      history.push(returnToRoute);
+      history.push(`/reset-password?email=${email}`);
     }
   };
 

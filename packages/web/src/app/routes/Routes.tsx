@@ -19,6 +19,10 @@ const ForgotPassword = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(
   React.lazy(() => import('./ForgotPassword'))
 );
 
+const ResetPassword = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(
+  React.lazy(() => import('./ResetPassword'))
+);
+
 const Upload = compose(withAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER))(React.lazy(() => import('./Upload')));
 
 export const Routes: React.FC = () => {
@@ -31,6 +35,7 @@ export const Routes: React.FC = () => {
         <Route path="/signup" component={Signup} />
         <Route path="/login" component={Login} />
         <Route path="/forgot-password" component={ForgotPassword} />
+        <Route path="/reset-password" component={ResetPassword} />
         <ReturnToRoute path="/upload" component={Upload} />
         <Route path="*" component={NotFound} />
       </Switch>

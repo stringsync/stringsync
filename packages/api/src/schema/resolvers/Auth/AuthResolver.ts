@@ -92,8 +92,8 @@ export class AuthResolver {
       const user = await this.authService.refreshResetPasswordToken(email, ctx.reqAt);
       await this.notificationService.sendResetPasswordEmail(user);
     } catch (e) {
-      this.logger.error(e.message);
-      this.logger.warn(`could not send reset password email for '${email}', skipping`);
+      this.logger.error(`could not send reset password email for '${email}', skipping:\n${e.message}`);
+      // TODO send an email saying that an attempt was made
     }
 
     return true;
@@ -101,7 +101,7 @@ export class AuthResolver {
 
   @Mutation((returns) => Boolean, { nullable: true })
   async resetPassword(@Ctx() ctx: ReqCtx, @Arg('input') input: ResetPasswordInput): Promise<true> {
-    await this.authService.resetPassword(input.resetPasswordToken, input.password, ctx.reqAt);
+    await this.authService.resetPassword(input.email, input.resetPasswordToken, input.password, ctx.reqAt);
     return true;
   }
 
