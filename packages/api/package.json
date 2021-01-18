@@ -2,7 +2,6 @@
   "name": "@stringsync/api",
   "version": "1.0.0",
   "description": "GraphQL server for @stringsync.",
-  "main": "src/index.ts",
   "license": "MIT",
   "private": true,
   "scripts": {
