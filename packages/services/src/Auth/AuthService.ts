@@ -70,10 +70,14 @@ export class AuthService {
     if (user.confirmedAt) {
       throw new BadRequestError('invalid confirmation token');
     }
+    if (!user.confirmationToken) {
+      throw new BadRequestError('invalid confirmation token');
+    }
     if (!confirmationToken) {
       throw new BadRequestError('invalid confirmation token');
     }
-    if (user.confirmationToken !== confirmationToken) {
+    const confirmationTokensMatch = await this.tokensMatch(user.confirmationToken, confirmationToken);
+    if (!confirmationTokensMatch) {
       throw new BadRequestError('invalid confirmation token');
     }
 
@@ -133,7 +137,10 @@ export class AuthService {
       throw new BadRequestError('invalid reset password token');
     }
 
-    const resetPasswordTokensMatch = await this.resetPasswordTokensMatch(user.resetPasswordToken, resetPasswordToken);
+    const resetPasswordTokensMatch = await this.tokensMatch(
+      this.normalizeResetPasswordToken(user.resetPasswordToken),
+      this.normalizeResetPasswordToken(resetPasswordToken)
+    );
     if (!resetPasswordTokensMatch) {
       this.logger.warn(`resetPasswordTokens do not match for: ${email}`);
       throw new BadRequestError('invalid reset password token');
@@ -159,12 +166,11 @@ export class AuthService {
     return this.normalizeResetPasswordToken(randStr(AuthService.RESET_PASSWORD_TOKEN_LENGTH));
   }
 
-  private async resetPasswordTokensMatch(token1: string, token2: string): Promise<boolean> {
+  private async tokensMatch(token1: string, token2: string): Promise<boolean> {
     // Prevent timing attacks
     return await new Promise((resolve) => {
-      const result = this.normalizeResetPasswordToken(token1) === this.normalizeResetPasswordToken(token2);
       setTimeout(() => {
-        resolve(result);
+        resolve(token1 === token2);
       }, randInt(100, 200));
     });
   }
