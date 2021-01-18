@@ -1,6 +1,6 @@
 import { Button, Form, Input, message } from 'antd';
 import { Rule } from 'antd/lib/form';
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -31,34 +31,28 @@ const Center = styled.div`
   text-align: center;
 `;
 
+type FormValues = {
+  username: string;
+  email: string;
+  password: string;
+};
+
 const Signup: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const errors = useSelector<RootState, string[]>((state) => state.auth.errors);
   const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
 
-  const [form] = Form.useForm();
-
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [form] = Form.useForm<FormValues>();
 
   useEffectOnce(() => {
     dispatch(clearAuthErrors());
   });
 
-  const onUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(event.currentTarget.value);
-  };
-  const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.currentTarget.value);
-  };
-  const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.currentTarget.value);
-  };
   const onErrorsClose: React.MouseEventHandler<HTMLButtonElement> = (event) => {
     dispatch(clearAuthErrors());
   };
   const onFinish = async () => {
+    const { username, password, email } = form.getFieldsValue();
     const action = await dispatch(signup({ input: { username, password, email } }));
     if (action.payload && 'user' in action.payload) {
       message.success(`logged in as ${action.payload.user.username}`);
@@ -75,13 +69,13 @@ const Signup: React.FC = () => {
           <>
             <Form form={form} onFinish={onFinish}>
               <Form.Item hasFeedback name="username" rules={USERNAME_RULES}>
-                <Input placeholder="username" value={username} onChange={onUsernameChange} />
+                <Input placeholder="username" />
               </Form.Item>
               <Form.Item hasFeedback name="email" rules={EMAIL_RULES}>
-                <Input placeholder="email" value={email} onChange={onEmailChange} />
+                <Input placeholder="email" />
               </Form.Item>
               <Form.Item hasFeedback name="password" rules={PASSWORD_RULES}>
-                <Input.Password placeholder="password" value={password} onChange={onPasswordChange} />
+                <Input.Password placeholder="password" />
               </Form.Item>
               <Form.Item>
                 <Button block type="primary" htmlType="submit" disabled={isAuthPending}>
