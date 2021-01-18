@@ -1,6 +1,6 @@
 import { Button, Form, Input, message } from 'antd';
 import { Rule } from 'antd/lib/form';
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -16,6 +16,10 @@ const Center = styled.div`
   text-align: center;
 `;
 
+type FormValues = {
+  email: string;
+};
+
 export const ForgotPassword: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const errors = useSelector<RootState, string[]>((state) => state.auth.errors);
@@ -24,17 +28,12 @@ export const ForgotPassword: React.FC = () => {
 
   const [form] = Form.useForm();
 
-  const [email, setEmail] = useState('');
-
-  const onEmailChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
-    setEmail(event.currentTarget.value);
-  };
-
   const onErrorsClose: React.MouseEventHandler<HTMLButtonElement> = () => {
     dispatch(clearAuthErrors());
   };
 
   const onFinish = async () => {
+    const { email } = form.getFieldsValue();
     const action = await dispatch(sendResetPasswordEmail({ input: { email } }));
     const maybeSendResetPasswordEmailRes = action.payload; // boolean | { errors: string [] }
     if (maybeSendResetPasswordEmailRes === true) {
@@ -53,7 +52,7 @@ export const ForgotPassword: React.FC = () => {
           <>
             <Form form={form} onFinish={onFinish}>
               <Form.Item name="email" rules={EMAIL_RULES}>
-                <Input placeholder="email" value={email} onChange={onEmailChange} />
+                <Input placeholder="email" />
               </Form.Item>
               <Form.Item>
                 <Button block type="primary" htmlType="submit" disabled={isAuthPending}>

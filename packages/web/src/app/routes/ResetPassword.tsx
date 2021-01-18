@@ -55,7 +55,6 @@ export const ResetPassword: React.FC = (props) => {
         password,
         resetPasswordToken,
       });
-
       if (errors) {
         setErrors(errors.map((error) => error.message));
         return;
