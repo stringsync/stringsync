@@ -283,7 +283,7 @@ Resources:
     Properties:
       DistributionConfig:
         Enabled: true
-        Comment: Serves the application frontend
+        Comment: Serves media saved in the media bucket
         PriceClass: PriceClass_All
         Aliases:
           - !Sub media.${DomainName}
