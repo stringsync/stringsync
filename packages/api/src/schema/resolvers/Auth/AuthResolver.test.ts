@@ -298,6 +298,7 @@ describe('AuthResolver', () => {
 
       const newPassword = randStr(11);
       const resetPasswordRes = await authClient.resetPassword({
+        email,
         resetPasswordToken: reloadedUser!.resetPasswordToken!,
         password: newPassword,
       });

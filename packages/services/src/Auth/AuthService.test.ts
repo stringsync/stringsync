@@ -304,7 +304,7 @@ describe('AuthService', () => {
 
     it('updates a password', async () => {
       const { resetPasswordToken } = await authService.refreshResetPasswordToken(email, new Date());
-      const resetPasswordUser = await authService.resetPassword(resetPasswordToken!, newPassword, reqAt);
+      const resetPasswordUser = await authService.resetPassword(email, resetPasswordToken!, newPassword, reqAt);
       expect(resetPasswordUser.encryptedPassword).not.toBe(user.encryptedPassword);
 
       // try logging in with the new password
@@ -318,7 +318,7 @@ describe('AuthService', () => {
 
     it('throws if the resetPasswordToken is invalid', async () => {
       const invalidResetPasswordToken = uuid.v4();
-      await expect(authService.resetPassword(invalidResetPasswordToken, newPassword, reqAt)).rejects.toThrow();
+      await expect(authService.resetPassword(email, invalidResetPasswordToken, newPassword, reqAt)).rejects.toThrow();
     });
 
     it('throws if the resetPasswordTokenSentAt is missing', async () => {
@@ -327,14 +327,14 @@ describe('AuthService', () => {
       await userRepo.update(reqPasswordResetUser.id, { ...reqPasswordResetUser, resetPasswordTokenSentAt: null });
 
       await expect(
-        authService.resetPassword(reqPasswordResetUser.resetPasswordToken!, newPassword, reqAt)
+        authService.resetPassword(email, reqPasswordResetUser.resetPasswordToken!, newPassword, reqAt)
       ).rejects.toThrow();
     });
 
     it('throws if the resetPasswordToken is too old', async () => {
       const resetPasswordTokenSentAt = new Date(reqAt.getTime() - AuthService.MAX_RESET_PASSWORD_TOKEN_AGE_MS - 1);
       const { resetPasswordToken } = await authService.refreshResetPasswordToken(email, resetPasswordTokenSentAt);
-      await expect(authService.resetPassword(resetPasswordToken!, newPassword, reqAt)).rejects.toThrow();
+      await expect(authService.resetPassword(email, resetPasswordToken!, newPassword, reqAt)).rejects.toThrow();
     });
   });
 });

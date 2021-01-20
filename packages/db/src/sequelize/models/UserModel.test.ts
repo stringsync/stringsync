@@ -58,11 +58,6 @@ describe('UserModel', () => {
     await expect(user.validate()).resolves.not.toThrow();
   });
 
-  it('disallows invalid reset password tokens', async () => {
-    const user = UserModel.build(EntityBuilder.buildRandUser({ resetPasswordToken: 'not-a-v4-uuid' }));
-    await expect(user.validate()).rejects.toThrow();
-  });
-
   it('permits valid avatar urls', async () => {
     const user = UserModel.build(EntityBuilder.buildRandUser({ avatarUrl: 'http://avatars.com/rasdfsdfdf' }));
     await expect(user.validate()).resolves.not.toThrow();
