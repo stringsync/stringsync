@@ -2,7 +2,7 @@ import { Pkg } from '@stringsync/di';
 import { BlobStorage, NoopStorage, S3Storage } from './blob-storage';
 import { Cache, RedisCache } from './cache';
 import { Logger, WinstonLogger } from './logger';
-import { Mailer, Nodemailer, NoopMailer } from './mailer';
+import { DevMailer, Mailer, Nodemailer, NoopMailer } from './mailer';
 import { MessageQueue, NoopMessageQueue, SqsMessageQueue } from './message-queue';
 import { UtilConfig, UTIL_CONFIG } from './UTIL_CONFIG';
 import { UTIL_TYPES } from './UTIL_TYPES';
@@ -31,6 +31,8 @@ export const UTIL: Pkg = {
 
     if (config.NODE_ENV === 'test') {
       bind<Mailer>(TYPES.Mailer).to(NoopMailer);
+    } else if (config.NODE_ENV === 'development') {
+      bind<Mailer>(TYPES.Mailer).to(DevMailer);
     } else {
       bind<Mailer>(TYPES.Mailer).to(Nodemailer);
     }

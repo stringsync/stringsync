@@ -1,3 +1,4 @@
-export * from './types';
-export * from './NodemailerMailer';
+export * from './DevMailer';
+export * from './Nodemailer';
 export * from './NoopMailer';
+export * from './types';

@@ -1,6 +1,6 @@
 import { inject, injectable } from '@stringsync/di';
 import winston from 'winston';
-import { UtilConfig } from '../config';
+import { UtilConfig } from '../UTIL_CONFIG';
 import { UTIL_TYPES } from '../UTIL_TYPES';
 import { Logger } from './types';
 

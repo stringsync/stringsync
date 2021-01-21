@@ -1,7 +1,7 @@
 import { inject, injectable } from '@stringsync/di';
 import { createClient, RedisClient } from 'redis';
-import { UtilConfig } from '../config';
 import { Logger } from '../logger';
+import { UtilConfig } from '../UTIL_CONFIG';
 import { UTIL_TYPES } from '../UTIL_TYPES';
 import { Cache } from './types';
 
@@ -61,7 +61,7 @@ export class RedisCache implements Cache {
           reject(err);
           return;
         }
-        resolve();
+        resolve(undefined);
       });
     });
   }
