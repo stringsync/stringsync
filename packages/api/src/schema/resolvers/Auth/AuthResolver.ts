@@ -55,6 +55,7 @@ export class AuthResolver {
   @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_OUT))
   async signup(@Arg('input') input: SignupInput, @Ctx() ctx: ReqCtx): Promise<User> {
     const user = await this.authService.signup(input.username, input.email, input.password);
+    await this.notificationService.sendConfirmationEmail(user);
     this.persistLogin(ctx, user);
     return user;
   }
