@@ -17,6 +17,7 @@ export const CDN_DOMAIN_NAME: ConfigSpec<ConfigKind.STRING, false> = { kind: Con
 export const S3_BUCKET: ConfigSpec<ConfigKind.STRING, false> = { kind: ConfigKind.STRING, nullable: false };
 export const S3_VIDEO_SRC_BUCKET: ConfigSpec<ConfigKind.STRING, false> = { kind: ConfigKind.STRING, nullable: false };
 export const SQS_VIDEO_QUEUE_URL: ConfigSpec<ConfigKind.STRING, false> = { kind: ConfigKind.STRING, nullable: false };
+export const SES_DEV_EMAIL: ConfigSpec<ConfigKind.STRING, true> = { kind: ConfigKind.STRING, nullable: true };
 
 export const DB_HOST: ConfigSpec<ConfigKind.STRING, false> = { kind: ConfigKind.STRING, nullable: false };
 export const DB_NAME: ConfigSpec<ConfigKind.STRING, false> = { kind: ConfigKind.STRING, nullable: false };
