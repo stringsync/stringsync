@@ -19,7 +19,7 @@ export class NotificationService {
   async sendConfirmationEmail(user: User): Promise<void> {
     const confirmHref = url.format({
       protocol: 'https',
-      hostname: this.config.APP_WEB_URI,
+      hostname: this.config.APP_WEB_ORIGIN,
       pathname: 'confirm-email',
       query: { confirmationToken: user.confirmationToken },
     });
@@ -43,7 +43,7 @@ export class NotificationService {
 
     const resetPasswordHref = url.format({
       protocol: 'https',
-      hostname: this.config.APP_WEB_URI,
+      hostname: this.config.APP_WEB_ORIGIN,
       pathname: 'reset-password',
       query: { resetPasswordToken: user.resetPasswordToken },
     });

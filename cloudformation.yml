@@ -1245,7 +1245,7 @@ Resources:
               Value: debug
             - Name: APP_SESSION_SECRET
               Value: !Ref ApiSessionSecret
-            - Name: APP_WEB_URI
+            - Name: APP_WEB_ORIGIN
               Value: !Sub https://${DomainName}
             - Name: CDN_DOMAIN_NAME
               Value: !GetAtt WebDistribution.DomainName
@@ -1419,7 +1419,7 @@ Resources:
               Value: debug
             - Name: APP_SESSION_SECRET
               Value: !Ref ApiSessionSecret
-            - Name: APP_WEB_URI
+            - Name: APP_WEB_ORIGIN
               Value: !Sub https://${DomainName}
             - Name: CDN_DOMAIN_NAME
               Value: !GetAtt WebDistribution.DomainName

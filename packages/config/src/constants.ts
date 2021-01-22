@@ -5,7 +5,7 @@ export const LOG_LEVEL: ConfigSpec<ConfigKind.STRING, false> = { kind: ConfigKin
 
 export const APP_GRAPHQL_PORT: ConfigSpec<ConfigKind.INT, false> = { kind: ConfigKind.INT, nullable: false };
 export const APP_SESSION_SECRET: ConfigSpec<ConfigKind.STRING, false> = { kind: ConfigKind.STRING, nullable: false };
-export const APP_WEB_URI: ConfigSpec<ConfigKind.STRING, false> = { kind: ConfigKind.STRING, nullable: false };
+export const APP_WEB_ORIGIN: ConfigSpec<ConfigKind.STRING, false> = { kind: ConfigKind.STRING, nullable: false };
 
 // The SDK automatically detects AWS credentials set as env variables and uses them for SDK requests
 // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-environment.html
