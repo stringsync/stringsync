@@ -15,22 +15,13 @@ export class NotificationService {
   ) {}
 
   async sendConfirmationEmail(user: User): Promise<void> {
-    const confirmHref = url.format({
-      protocol: 'https',
-      hostname: this.config.APP_WEB_ORIGIN,
-      pathname: 'confirm-email',
-      query: { confirmationToken: user.confirmationToken },
-    });
+    const confirmHref = this.getHref('/confirm-email', { confirmationToken: user.confirmationToken });
 
     await this.mailer.send({
       subject: 'Confirm your email for StringSync',
       from: this.config.INFO_EMAIL,
       to: user.email,
-      html: `
-        <p>
-          Please confirm your email for <a href="${confirmHref}">StringSync<a/>
-        </p>
-      `,
+      html: `<p>Please confirm your email for <a href="${confirmHref}">StringSync</a>.</p>`,
     });
   }
 
@@ -39,22 +30,30 @@ export class NotificationService {
       throw new Error('user must have a reset password token');
     }
 
-    const resetPasswordHref = url.format({
-      protocol: 'https',
-      hostname: this.config.APP_WEB_ORIGIN,
-      pathname: 'reset-password',
-      query: { resetPasswordToken: user.resetPasswordToken },
+    const resetPasswordHref = this.getHref('/reset-password', {
+      email: user.email,
+      'reset-password-token': user.resetPasswordToken,
     });
 
     await this.mailer.send({
       subject: 'Reset your password for StringSync',
       from: this.config.INFO_EMAIL,
       to: user.email,
-      html: `
-        <p>
-          Reset your password at <a href="${resetPasswordHref}">StringSync<a/>
-        </p>
-      `,
+      html: `<p>Reset your password at <a href="${resetPasswordHref}">StringSync</a>.</p>`,
+    });
+  }
+
+  private getHref<T extends NodeJS.Dict<string | number | boolean | string[] | number[] | boolean[] | null>>(
+    pathname: string,
+    query: T
+  ): string {
+    const origin = new URL(this.config.APP_WEB_ORIGIN);
+    return url.format({
+      protocol: origin.protocol,
+      hostname: origin.hostname,
+      port: origin.port,
+      pathname,
+      query,
     });
   }
 }
