@@ -22,14 +22,14 @@ export class DevMailer implements Mailer {
   }
 
   async send(mail: Mail): Promise<void> {
-    const from = this.config.DEV_FROM_EMAIL;
+    const from = this.config.INFO_EMAIL;
     if (!from) {
-      throw new InternalError('missing config: DEV_FROM_EMAIL');
+      throw new InternalError('missing config: INFO_EMAIL');
     }
 
-    const to = this.config.DEV_TO_EMAIL;
+    const to = this.config.DEV_EMAIL;
     if (!to) {
-      throw new InternalError('missing config: DEV_TO_EMAIL');
+      throw new InternalError('missing config: DEV_EMAIL');
     }
 
     const oldMail = mail;

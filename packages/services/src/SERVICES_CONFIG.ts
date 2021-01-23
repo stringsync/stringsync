@@ -2,6 +2,7 @@ import {
   APP_WEB_ORIGIN,
   CDN_DOMAIN_NAME,
   configFactory,
+  INFO_EMAIL,
   NODE_ENV,
   S3_BUCKET,
   S3_VIDEO_SRC_BUCKET,
@@ -15,6 +16,7 @@ export const SERVICES_CONFIG = configFactory({
   S3_BUCKET: S3_BUCKET,
   S3_VIDEO_SRC_BUCKET: S3_VIDEO_SRC_BUCKET,
   SQS_VIDEO_QUEUE_URL: SQS_VIDEO_QUEUE_URL,
+  INFO_EMAIL: INFO_EMAIL,
 });
 
 export type ServicesConfig = ReturnType<typeof SERVICES_CONFIG>;

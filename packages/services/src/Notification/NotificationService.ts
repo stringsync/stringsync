@@ -9,8 +9,6 @@ const TYPES = { ...SERVICES_TYPES, ...UTIL_TYPES };
 
 @injectable()
 export class NotificationService {
-  static INFO_EMAIL = 'StringSync <info@stringsync.com>';
-
   constructor(
     @inject(TYPES.Mailer) public mailer: Mailer,
     @inject(TYPES.ServicesConfig) public config: ServicesConfig
@@ -26,7 +24,7 @@ export class NotificationService {
 
     await this.mailer.send({
       subject: 'Confirm your email for StringSync',
-      from: NotificationService.INFO_EMAIL,
+      from: this.config.INFO_EMAIL,
       to: user.email,
       html: `
         <p>
@@ -50,7 +48,7 @@ export class NotificationService {
 
     await this.mailer.send({
       subject: 'Reset your password for StringSync',
-      from: NotificationService.INFO_EMAIL,
+      from: this.config.INFO_EMAIL,
       to: user.email,
       html: `
         <p>

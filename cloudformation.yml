@@ -2,6 +2,10 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: A stack for deploying StringSync in AWS
 
 Parameters:
+  FriendlyName:
+    Description: The customer facing name of the app
+    Type: String
+
   BranchName:
     Description: CodeCommit repository branch name
     Type: String
@@ -1271,6 +1275,8 @@ Resources:
               Value: !Ref Source
             - Name: SQS_VIDEO_QUEUE_URL
               Value: !Ref SqsQueue
+            - Name: INFO_EMAIL
+              Value: !Sub ${FriendlyName} <info@${DomainName}>
           Command:
             - api
 
@@ -1445,6 +1451,8 @@ Resources:
               Value: !Ref Source
             - Name: SQS_VIDEO_QUEUE_URL
               Value: !Ref SqsQueue
+            - Name: INFO_EMAIL
+              Value: !Sub ${FriendlyName} <info@${DomainName}>
           Command:
             - jobs
 
