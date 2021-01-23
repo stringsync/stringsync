@@ -8,8 +8,6 @@ import { ViewportSync } from './components/ViewportSync';
 import * as serviceWorker from './serviceWorker';
 import { createStore } from './store';
 
-const store = createStore();
-
 serviceWorker.register({
   onUpdate: () => {
     notification.info({
@@ -21,7 +19,9 @@ serviceWorker.register({
   },
 });
 
-ReactDOM.render(
+const store = createStore();
+
+const StringSync = () => (
   <React.StrictMode>
     <App store={store}>
       <DeviceSync />
@@ -29,6 +29,12 @@ ReactDOM.render(
       <AuthSync />
       <Routes />
     </App>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );
+
+const rootElement = document.getElementById('root');
+if (rootElement?.hasChildNodes()) {
+  ReactDOM.hydrate(<StringSync />, rootElement);
+} else {
+  ReactDOM.render(<StringSync />, rootElement);
+}

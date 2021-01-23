@@ -62,12 +62,14 @@
     "jest": "^26.0.1",
     "jest-environment-jsdom-sixteen": "^1.0.3",
     "jest-when": "^2.7.2",
-    "react-is": "^16.13.1"
+    "react-is": "^16.13.1",
+    "react-snap": "^1.23.0"
   },
   "scripts": {
     "dev": "yarn start",
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
+    "postbuild": "react-snap",
     "test": "react-app-rewired test --env=jest-environment-jsdom-sixteen",
     "eject": "react-app-rewired eject",
     "typegen": "graphql-codegen"
