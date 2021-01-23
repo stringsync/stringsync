@@ -22,22 +22,15 @@ export class DevMailer implements Mailer {
   }
 
   async send(mail: Mail): Promise<void> {
-    const from = this.config.INFO_EMAIL;
-    if (!from) {
-      throw new InternalError('missing config: INFO_EMAIL');
-    }
-
     const to = this.config.DEV_EMAIL;
     if (!to) {
       throw new InternalError('missing config: DEV_EMAIL');
     }
 
     const oldMail = mail;
-    const newMail = { ...mail, from, to };
+    const newMail = { ...mail, to };
 
-    this.logger.info(
-      `redirecting email:\n\tfrom: (${oldMail.from} -> ${oldMail.to})\n\tto: (${newMail.from} -> ${newMail.to})`
-    );
+    this.logger.info(`redirecting email: (${oldMail.from} -> ${oldMail.to}) / (${newMail.from} -> ${newMail.to})`);
 
     await this.transporter.sendMail(newMail);
   }
