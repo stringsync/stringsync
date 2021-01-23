@@ -30,7 +30,7 @@ export class DevMailer implements Mailer {
     const oldMail = mail;
     const newMail = { ...mail, to };
 
-    this.logger.info(`redirecting email: (${oldMail.from} -> ${oldMail.to}) / (${newMail.from} -> ${newMail.to})`);
+    this.logger.info(`redirecting email from '${oldMail.to}', to: '${newMail.to}'`);
 
     await this.transporter.sendMail(newMail);
   }
