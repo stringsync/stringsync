@@ -37,7 +37,7 @@ export const createContainer = async (pkg: Pkg) => {
     await Promise.all(cleanups.map((cleanup) => cleanup(container)));
   };
 
-  const teardowns = pkgs.filter((pkg) => pkg.cleanup).map((pkg) => pkg.teardown!);
+  const teardowns = pkgs.filter((pkg) => pkg.teardown).map((pkg) => pkg.teardown!);
   const teardown = async () => {
     await Promise.all(teardowns.map((teardown) => teardown(container)));
   };

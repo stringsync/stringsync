@@ -26,9 +26,8 @@ const main = async () => {
   }
 
   const updateVideoUrlJob = container.get<AssociateVideoUrlJob>(TYPES.AssociateVideoUrlJob);
-  updateVideoUrlJob.setupQueue();
-  updateVideoUrlJob.setupWorker();
-  await updateVideoUrlJob.runForever();
+  updateVideoUrlJob.enqueue(undefined, { repeat: { every: 60000 } });
+  updateVideoUrlJob.work();
 
   logger.info('jobs successfully setup');
 };
