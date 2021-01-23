@@ -1,10 +1,9 @@
 import { Container, Pkg } from '@stringsync/di';
 import { SERVICES } from '@stringsync/services';
 import { UTIL } from '@stringsync/util';
-import { AssociateVideoUrlJob } from './AssociateVideoUrlJob';
-import { Job } from './Job';
 import { JobsConfig, JOBS_CONFIG } from './JOBS_CONFIG';
 import { JOBS_TYPES } from './JOBS_TYPES';
+import { UpdateVideoUrlJob } from './UpdateVideoUrlJob';
 
 const TYPES = { ...JOBS_TYPES };
 
@@ -15,12 +14,12 @@ export const JOBS: Pkg = {
     const config = JOBS_CONFIG();
     bind<JobsConfig>(TYPES.JobsConfig).toConstantValue(config);
 
-    bind<AssociateVideoUrlJob>(TYPES.AssociateVideoUrlJob)
-      .to(AssociateVideoUrlJob)
+    bind<UpdateVideoUrlJob>(TYPES.UpdateVideoUrlJob)
+      .to(UpdateVideoUrlJob)
       .inSingletonScope();
   },
   teardown: async (container: Container) => {
-    const jobs: Job[] = [container.get<AssociateVideoUrlJob>(TYPES.AssociateVideoUrlJob)];
+    const jobs = [container.get<UpdateVideoUrlJob>(TYPES.UpdateVideoUrlJob)];
     await Promise.all(jobs.map((job) => job.teardown()));
   },
 };

@@ -23,9 +23,7 @@ const main = async () => {
   const schema = generateSchema();
   const logger = container.get<Logger>(TYPES.Logger);
 
-  if (config.NODE_ENV === 'production') {
-    onExit(teardown, MAX_TEARDOWN_WAIT_MS);
-  }
+  onExit(teardown, MAX_TEARDOWN_WAIT_MS);
 
   app(container, schema).listen(config.APP_GRAPHQL_PORT, () => {
     logger.info(`app running at http://localhost:${config.APP_GRAPHQL_PORT}`);
