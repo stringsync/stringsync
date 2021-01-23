@@ -1,4 +1,4 @@
-import { wait } from '@stringsync/common';
+import { wait } from './wait';
 
 export const onExit = (callback: () => Promise<void>, maxWaitMs: number) => {
   const cb = async () => {

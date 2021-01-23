@@ -1,3 +1,4 @@
+import { onExit } from '@stringsync/common';
 import { createContainer } from '@stringsync/di';
 import { Logger, UTIL_TYPES } from '@stringsync/util';
 import { API } from './API';
@@ -5,7 +6,6 @@ import { ApiConfig } from './API_CONFIG';
 import { API_TYPES } from './API_TYPES';
 import { app } from './app';
 import { generateSchema } from './schema';
-import { onExit } from './util';
 
 export * from './API';
 export * from './API_CONFIG';

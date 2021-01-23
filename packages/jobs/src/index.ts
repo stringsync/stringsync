@@ -1,9 +1,9 @@
+import { onExit } from '@stringsync/common';
 import { createContainer } from '@stringsync/di';
 import { Logger, UTIL_TYPES } from '@stringsync/util';
 import { JOBS } from './JOBS';
 import { JOBS_TYPES } from './JOBS_TYPES';
 import { UpdateVideoUrlJob } from './UpdateVideoUrlJob';
-import { onExit } from './util';
 
 export * from './JOBS';
 export * from './JOBS_CONFIG';
