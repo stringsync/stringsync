@@ -26,7 +26,7 @@ export const ForgotPassword: React.FC = () => {
   const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
   const history = useHistory();
 
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<FormValues>();
 
   const onErrorsClose: React.MouseEventHandler<HTMLButtonElement> = () => {
     dispatch(clearAuthErrors());
