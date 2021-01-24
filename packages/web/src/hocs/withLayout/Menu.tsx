@@ -53,6 +53,7 @@ export const Menu: React.FC<Props> = (props) => {
 
   const [isModalVisible, setModalVisible] = useState(false);
   const isGtEqTeacher = gtEqTeacher(user.role);
+  const settingsButtonClassName = isModalVisible ? 'active-link' : '';
 
   const showModal = () => setModalVisible(true);
   const hideModal = () => setModalVisible(false);
@@ -94,7 +95,7 @@ export const Menu: React.FC<Props> = (props) => {
 
         {isSettingsVisible ? (
           <Col>
-            <Button type="link" size="large" shape="circle" onClick={showModal}>
+            <Button type="link" size="large" shape="circle" onClick={showModal} className={settingsButtonClassName}>
               <StyledSettingOutlined />
             </Button>
           </Col>
