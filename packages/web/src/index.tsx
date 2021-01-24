@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { App, Routes } from './app';
 import { AuthSync } from './components/AuthSync';
 import { DeviceSync } from './components/DeviceSync';
+import { ServiceWorkerSync } from './components/ServiceWorkerSync';
 import { ViewportSync } from './components/ViewportSync';
 import * as serviceWorker from './serviceWorker';
 import { createStore, swSlice } from './store';
@@ -21,6 +22,7 @@ serviceWorker.register({
 const StringSync = () => (
   <React.StrictMode>
     <App store={store}>
+      <ServiceWorkerSync />
       <DeviceSync />
       <ViewportSync />
       <AuthSync />

@@ -1,6 +1,7 @@
 import { AuthRequirement, compose } from '@stringsync/common';
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
+import { Nothing } from '../../components/Nothing';
 import { ReturnToRoute } from '../../components/ReturnToRoute';
 import { withAuthRequirement } from '../../hocs';
 import { Fallback } from './Fallback';
@@ -37,6 +38,7 @@ export const Routes: React.FC = () => {
         <Route path="/forgot-password" component={ForgotPassword} />
         <Route path="/reset-password" component={ResetPassword} />
         <ReturnToRoute path="/upload" component={Upload} />
+        <Route path="/200.html" component={Nothing} />
         <Route path="*" component={NotFound} />
       </Switch>
     </React.Suspense>

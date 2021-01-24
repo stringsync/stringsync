@@ -3,6 +3,7 @@ import { AuthState } from './auth/types';
 import { DeviceState } from './device/types';
 import { HistoryState } from './history/types';
 import { LibraryState } from './library/types';
+import { SwState } from './sw/types';
 import { TagState } from './tag/types';
 import { ViewportState } from './viewport/types';
 
@@ -13,6 +14,7 @@ export type RootState = {
   history: HistoryState;
   library: LibraryState;
   tag: TagState;
+  sw: SwState;
 };
 
 export type AppStore = EnhancedStore<RootState>;

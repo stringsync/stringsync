@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -10,9 +10,18 @@ const Outer = styled.div`
 `;
 
 export const NotFound: React.FC<Props> = () => {
+  useEffect(() => {
+    const originalTitle = document.title;
+    document.title = `404 - ${originalTitle}`;
+    return () => {
+      document.title = originalTitle;
+    };
+  }, []);
+
   return (
     <Outer>
-      <h1>page not found</h1>
+      <h1>404</h1>
+      <h2>page not found</h2>
       <Link to="/library">library</Link>
     </Outer>
   );
