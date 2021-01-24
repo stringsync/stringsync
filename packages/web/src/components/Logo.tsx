@@ -1,5 +1,5 @@
-import React from 'react';
 import Icon from '@ant-design/icons';
+import React from 'react';
 
 const LogoSvg = () => (
   <svg width="1em" height="1em" fill="currentColor" viewBox="0 0 1156 1156">

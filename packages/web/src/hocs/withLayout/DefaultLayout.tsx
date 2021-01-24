@@ -1,10 +1,11 @@
-import { Col, Divider, Layout, Row } from 'antd';
+import { Col, Layout, Row } from 'antd';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Logo } from '../../components/Logo';
 import { Wordmark } from '../../components/Wordmark';
+import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 import { RootState } from '../../store';
 import { Menu } from './Menu';
 
@@ -34,10 +35,19 @@ const Lane = styled.div`
   margin: 0 auto;
 `;
 
+const Offline = styled.em`
+  font-weight: lighter;
+  color: ${(props) => props.theme['@muted']};
+`;
+
 export const DefaultLayout: React.FC = (props) => {
-  const isLtEqMdViewport = useSelector<RootState, boolean>(
-    (state) => state.viewport.xs || state.viewport.sm || state.viewport.md
+  const isGtMdViewport = useSelector<RootState, boolean>(
+    (state) => state.viewport.lg || state.viewport.xl || state.viewport.xxl
   );
+
+  const isOnline = useOnlineStatus();
+  const isWordmarkVisible = isOnline && isGtMdViewport;
+  const isOfflineVisible = !isOnline;
 
   return (
     <StyledLayout data-testid="default-layout">
@@ -46,13 +56,21 @@ export const DefaultLayout: React.FC = (props) => {
           <Row align="middle" justify="space-between">
             <Col>
               <Link to="/library">
-                <Row align="middle" justify="center">
-                  <Logo size={22} />
-                  {isLtEqMdViewport ? null : (
-                    <>
-                      <Divider type="vertical" />
+                <Row align="middle" gutter={8}>
+                  <Col>
+                    <Row align="middle">
+                      <Logo size={22} />
+                    </Row>
+                  </Col>
+                  {isWordmarkVisible && (
+                    <Col>
                       <Wordmark />
-                    </>
+                    </Col>
+                  )}
+                  {isOfflineVisible && (
+                    <Col>
+                      <Offline>offline</Offline>
+                    </Col>
                   )}
                 </Row>
               </Link>
@@ -66,7 +84,7 @@ export const DefaultLayout: React.FC = (props) => {
       <Layout.Content>
         <Lane>{props.children}</Lane>
       </Layout.Content>
-      {isLtEqMdViewport ? null : (
+      {isGtMdViewport && (
         <StyledFooter>
           <Lane>StringSync LLC © 2020</Lane>
         </StyledFooter>
