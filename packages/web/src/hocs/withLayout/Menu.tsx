@@ -77,7 +77,7 @@ export const Menu: React.FC<Props> = (props) => {
           <Col>
             <Button type="link" size="large" shape="circle">
               <NavLink to="/library" activeClassName="active-link">
-                <StyledCompassOutlined color="black" />
+                <StyledCompassOutlined />
               </NavLink>
             </Button>
           </Col>
@@ -87,7 +87,7 @@ export const Menu: React.FC<Props> = (props) => {
           <Col>
             <Button type="link" size="large" shape="circle">
               <NavLink to="/upload" activeClassName="active-link">
-                <StyledUploadOutlined color="black" />
+                <StyledUploadOutlined />
               </NavLink>
             </Button>
           </Col>
