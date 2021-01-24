@@ -3,9 +3,19 @@ import { gtEqTeacher } from '@stringsync/domain';
 import { Avatar, Button, Col, message, Modal, Row } from 'antd';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import { AppDispatch, AuthUser, isLoggedInSelector, logout, RootState } from '../../store';
+
+const StyledRow = styled(Row)`
+  svg {
+    color: ${(props) => props.theme['@muted']};
+  }
+
+  .active-link svg {
+    color: ${(props) => props.theme['@primary-color']};
+  }
+`;
 
 const StyledUploadOutlined = styled(UploadOutlined)`
   font-size: 22px;
@@ -61,13 +71,13 @@ export const Menu: React.FC<Props> = (props) => {
 
   return (
     <>
-      <Row justify="center" align="middle" gutter={gutterPx}>
+      <StyledRow justify="center" align="middle" gutter={gutterPx}>
         {isLibraryVisible ? (
           <Col>
             <Button type="link" size="large" shape="circle">
-              <Link to="/library">
-                <StyledCompassOutlined />
-              </Link>
+              <NavLink to="/library" activeClassName="active-link">
+                <StyledCompassOutlined color="black" />
+              </NavLink>
             </Button>
           </Col>
         ) : null}
@@ -75,9 +85,9 @@ export const Menu: React.FC<Props> = (props) => {
         {isUploadVisible ? (
           <Col>
             <Button type="link" size="large" shape="circle">
-              <Link to="/upload">
-                <StyledUploadOutlined />
-              </Link>
+              <NavLink to="/upload" activeClassName="active-link">
+                <StyledUploadOutlined color="black" />
+              </NavLink>
             </Button>
           </Col>
         ) : null}
@@ -109,7 +119,7 @@ export const Menu: React.FC<Props> = (props) => {
             </Link>
           </Col>
         ) : null}
-      </Row>
+      </StyledRow>
 
       {isLoggedIn ? (
         <Modal
