@@ -7,11 +7,11 @@ import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
-import { NotationClient } from '../../clients';
-import { Box } from '../../components/Box';
-import { Layout, withLayout } from '../../hocs';
-import { useEffectOnce } from '../../hooks';
-import { getTags, RootState } from '../../store';
+import { NotationClient } from '../../../clients';
+import { Box } from '../../../components/Box';
+import { Layout, withLayout } from '../../../hocs';
+import { useEffectOnce } from '../../../hooks';
+import { getTags, RootState } from '../../../store';
 
 const { Step } = Steps;
 const { Dragger } = AntdUpload;

@@ -4,9 +4,9 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { FormPage } from '../../components/FormPage';
-import { useEffectOnce } from '../../hooks';
-import { AppDispatch, clearAuthErrors, RootState, signup } from '../../store';
+import { FormPage } from '../../../components/FormPage';
+import { useEffectOnce } from '../../../hooks';
+import { AppDispatch, clearAuthErrors, RootState, signup } from '../../../store';
 
 const USERNAME_RULES: Rule[] = [
   { required: true, message: 'username is required' },
