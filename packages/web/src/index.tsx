@@ -1,10 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { App, Routes } from './app';
-import { AuthSync } from './components/AuthSync';
-import { DeviceSync } from './components/DeviceSync';
-import { ServiceWorkerSync } from './components/ServiceWorkerSync';
-import { ViewportSync } from './components/ViewportSync';
+import { StringSync } from './app';
 import * as serviceWorker from './serviceWorker';
 import { createStore, swSlice } from './store';
 
@@ -19,21 +15,9 @@ serviceWorker.register({
   },
 });
 
-const StringSync = () => (
-  <React.StrictMode>
-    <App store={store}>
-      <ServiceWorkerSync />
-      <DeviceSync />
-      <ViewportSync />
-      <AuthSync />
-      <Routes />
-    </App>
-  </React.StrictMode>
-);
-
 const rootElement = document.getElementById('root');
 if (rootElement?.hasChildNodes()) {
-  ReactDOM.hydrate(<StringSync />, rootElement);
+  ReactDOM.hydrate(<StringSync store={store} />, rootElement);
 } else {
-  ReactDOM.render(<StringSync />, rootElement);
+  ReactDOM.render(<StringSync store={store} />, rootElement);
 }
