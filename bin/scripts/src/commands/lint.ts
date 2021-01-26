@@ -1,9 +1,9 @@
 import { Command, flags } from '@oclif/command';
-import { ROOT_PATH } from '../util';
 import { spawn } from 'child_process';
+import { ROOT_PATH } from '../util';
 
 export default class Lint extends Command {
-  static description = 'Lints the entire project.';
+  static description = 'lints the entire project';
 
   static flags = {
     help: flags.help({ char: 'h' }),

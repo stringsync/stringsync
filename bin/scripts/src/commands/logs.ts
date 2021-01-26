@@ -3,7 +3,7 @@ import { spawn } from 'child_process';
 import { DOCKER_PATH, getDockerComposeFile, PROJECT_ARG } from '../util';
 
 export default class Exec extends Command {
-  static description = 'Follows the logs for a particular service.';
+  static description = 'tail logs for a particular service';
 
   static flags = {
     help: flags.help({ char: 'h' }),

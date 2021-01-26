@@ -3,7 +3,7 @@ import { execSync } from 'child_process';
 import { ROOT_PATH } from '../util';
 
 export default class Build extends Command {
-  static description = 'Builds the stringsync image';
+  static description = 'build docker images for stringsync';
 
   static flags = {
     help: flags.help({ char: 'h' }),

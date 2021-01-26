@@ -8,7 +8,7 @@ const PACKAGES_PATH = path.join(ROOT_PATH, 'packages');
 const PACKAGE_JSON_MAIN = 'dist/index.js';
 
 export default class Productionize extends Command {
-  static description = 'describe the command here';
+  static description = 'update files for production';
 
   static flags = {
     help: flags.help({ char: 'h' }),

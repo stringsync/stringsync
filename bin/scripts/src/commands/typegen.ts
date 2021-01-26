@@ -8,7 +8,7 @@ export default class Typegen extends Command {
 
   static MAX_WAIT_MS = 1200000; // 2 minutes
 
-  static description = 'Runs the graphql code generator ';
+  static description = 'generate typescript types for graphql schema';
 
   static flags = {
     help: flags.help({ char: 'h' }),

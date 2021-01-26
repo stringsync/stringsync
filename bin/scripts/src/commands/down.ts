@@ -4,7 +4,7 @@ import { getDockerComposeFile } from '../util';
 import { DOCKER_PATH, PROJECT_ARG } from '../util/constants';
 
 export default class Down extends Command {
-  static description = 'Turns down a docker-compose environment.';
+  static description = 'shutdown a development environment';
 
   static flags = {
     help: flags.help({ char: 'h' }),

@@ -1,9 +1,9 @@
 import { Command, flags } from '@oclif/command';
 import { spawn } from 'child_process';
-import { ROOT_PATH, PROJECT_ARG } from '../util';
+import { PROJECT_ARG, ROOT_PATH } from '../util';
 
 export default class Db extends Command {
-  static description = 'Runs a db console.';
+  static description = 'runs a db console';
 
   static flags = {
     help: flags.help({ char: 'h' }),

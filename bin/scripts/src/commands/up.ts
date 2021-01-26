@@ -3,7 +3,7 @@ import { execSync, spawn } from 'child_process';
 import { DOCKER_PATH, getDockerComposeFile, PROJECT_ARG } from '../util';
 
 export default class Up extends Command {
-  static description = 'Spins up a development environment';
+  static description = 'spins up a development environment';
 
   static flags = {
     help: flags.help({ char: 'h' }),

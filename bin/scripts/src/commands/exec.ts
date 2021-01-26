@@ -3,7 +3,7 @@ import { spawn } from 'child_process';
 import { DOCKER_PATH, getDockerComposeFile, Project, PROJECT_ARG } from '../util';
 
 export default class Exec extends Command {
-  static description = 'Runs docker-compose exec on an running container.';
+  static description = 'run a command against a container';
 
   static strict = false;
 

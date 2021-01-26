@@ -8,7 +8,7 @@ const bashC = (...parts: string[]) => {
 };
 
 export default class Test extends Command {
-  static description = 'Run all of the StringSync tests.';
+  static description = 'run stringsync tests';
 
   static flags = {
     watch: flags.boolean({ char: 'w', default: false }),
