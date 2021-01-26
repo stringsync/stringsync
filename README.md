@@ -41,6 +41,12 @@ Before running the api for the first time, you will need to generate a secrets f
 
 The file it generates will have fake credentials, but this should be OK as long as you don't interact with dev AWS resources (such as uploading a file to AWS).
 
+First, build the docker images. You only need to do this once:
+
+```
+./bin/ss build
+```
+
 To run the api, start Docker engine and run:
 
 ```
