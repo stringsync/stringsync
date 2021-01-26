@@ -21,7 +21,7 @@ $ npm install -g scripts
 $ ss COMMAND
 running command...
 $ ss (-v|--version|version)
-scripts/0.0.0 darwin-x64 node-v14.3.0
+scripts/0.0.0 darwin-x64 node-v14.15.4
 $ ss --help [COMMAND]
 USAGE
   $ ss COMMAND
@@ -41,29 +41,34 @@ USAGE
 * [`ss lint`](#ss-lint)
 * [`ss logs PROJECT [SERVICE]`](#ss-logs-project-service)
 * [`ss pretty`](#ss-pretty)
-* [`ss productionize [FILE]`](#ss-productionize-file)
+* [`ss productionize`](#ss-productionize)
 * [`ss test PROJECT [CMD]`](#ss-test-project-cmd)
 * [`ss typegen`](#ss-typegen)
 * [`ss up [PROJECT]`](#ss-up-project)
 
 ## `ss build`
 
-Builds the stringsync image
+build docker images for stringsync
 
 ```
 USAGE
   $ ss build
 
 OPTIONS
-  -h, --help     show CLI help
-  -t, --tag=tag  [default: latest]
+  -c, --cmd
+  -d, --dev
+  -h, --help             show CLI help
+  -p, --prod
+  -t, --test
+  --cacheFrom=cacheFrom
+  --tag=tag              [default: latest]
 ```
 
 _See code: [src/commands/build.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/build.ts)_
 
 ## `ss db [PROJECT]`
 
-Runs a db console.
+runs a db console
 
 ```
 USAGE
@@ -77,7 +82,7 @@ _See code: [src/commands/db.ts](https://github.com/jaredjj3/string-sync/blob/v0.
 
 ## `ss down [PROJECT]`
 
-Turns down a docker-compose environment.
+shutdown a development environment
 
 ```
 USAGE
@@ -91,7 +96,7 @@ _See code: [src/commands/down.ts](https://github.com/jaredjj3/string-sync/blob/v
 
 ## `ss exec PROJECT SERVICE CMD`
 
-Runs docker-compose exec on an running container.
+run a command against a container
 
 ```
 USAGE
@@ -105,7 +110,7 @@ _See code: [src/commands/exec.ts](https://github.com/jaredjj3/string-sync/blob/v
 
 ## `ss gensecrets`
 
-Creates the secrets.env file needed for local development.
+create the secrets.env file needed for local development
 
 ```
 USAGE
@@ -136,7 +141,7 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.1
 
 ## `ss lint`
 
-Lints the entire project.
+lints the entire project
 
 ```
 USAGE
@@ -150,7 +155,7 @@ _See code: [src/commands/lint.ts](https://github.com/jaredjj3/string-sync/blob/v
 
 ## `ss logs PROJECT [SERVICE]`
 
-Follows the logs for a particular service.
+tail logs for a particular service
 
 ```
 USAGE
@@ -164,7 +169,7 @@ _See code: [src/commands/logs.ts](https://github.com/jaredjj3/string-sync/blob/v
 
 ## `ss pretty`
 
-describe the command here
+check the code formatting
 
 ```
 USAGE
@@ -176,25 +181,23 @@ OPTIONS
 
 _See code: [src/commands/pretty.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/pretty.ts)_
 
-## `ss productionize [FILE]`
+## `ss productionize`
 
-describe the command here
+update files for production
 
 ```
 USAGE
-  $ ss productionize [FILE]
+  $ ss productionize
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -h, --help  show CLI help
 ```
 
 _See code: [src/commands/productionize.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/productionize.ts)_
 
 ## `ss test PROJECT [CMD]`
 
-Run all of the StringSync tests.
+run stringsync tests
 
 ```
 USAGE
@@ -203,13 +206,15 @@ USAGE
 OPTIONS
   -c, --coverage
   -w, --watch
+  --cacheFrom=cacheFrom
+  --ci
 ```
 
 _See code: [src/commands/test.ts](https://github.com/jaredjj3/string-sync/blob/v0.0.0/src/commands/test.ts)_
 
 ## `ss typegen`
 
-Runs the graphql code generator
+generate typescript types for graphql schema
 
 ```
 USAGE
@@ -223,7 +228,7 @@ _See code: [src/commands/typegen.ts](https://github.com/jaredjj3/string-sync/blo
 
 ## `ss up [PROJECT]`
 
-Spins up a development environment
+spins up a development environment
 
 ```
 USAGE
