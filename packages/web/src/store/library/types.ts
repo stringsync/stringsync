@@ -1,6 +1,6 @@
+import { CaseReducer, PayloadAction } from '@reduxjs/toolkit';
 import { PageInfo } from '@stringsync/common';
 import { PublicNotation, PublicUser, Tag } from '@stringsync/domain';
-import { CaseReducer, PayloadAction } from '@reduxjs/toolkit';
 
 export type Notation = Pick<
   PublicNotation,

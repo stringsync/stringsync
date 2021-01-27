@@ -10,7 +10,7 @@ import {
   UnknownError,
   UNKNOWN_ERROR_MSG,
 } from '@stringsync/common';
-import { first, last, min } from 'lodash';
+import { first, last } from 'lodash';
 import { EntityFinder, EntityFinderResults, PagingCtx, PagingEntity } from './types';
 
 export class Pager<T extends PagingEntity> {
