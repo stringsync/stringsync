@@ -17,6 +17,9 @@ export const useLibraryState = (): LibraryState => {
 
   const clearNotations = () => {
     setNotations([]);
+    setErrors([]);
+    setPageInfo(getInitialPageInfo());
+    setStatus(LibraryStatus.IDLE);
   };
 
   const clearErrors = () => {

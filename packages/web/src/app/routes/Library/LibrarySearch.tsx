@@ -2,11 +2,14 @@ import { CloseCircleOutlined, LoadingOutlined, SearchOutlined } from '@ant-desig
 import { PublicTag } from '@stringsync/domain';
 import { Affix, Button, Input, Row } from 'antd';
 import CheckableTag from 'antd/lib/tag/CheckableTag';
-import React, { ChangeEventHandler, MouseEventHandler, useState } from 'react';
+import { debounce } from 'lodash';
+import React, { ChangeEventHandler, MouseEventHandler, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useEffectOnce } from '../../../hooks';
 import { AppDispatch, getTags, RootState } from '../../../store';
+
+const DEBOUNCE_DELAY_MS = 500;
 
 const AffixInner = styled.div<{ xs: boolean; affixed: boolean }>`
   background: ${(props) => (props.affixed ? '#FFFFFF' : 'transparent')};
@@ -27,7 +30,11 @@ const SearchIcon = styled(SearchOutlined)`
   color: rgba(0, 0, 0, 0.25);
 `;
 
-interface Props {}
+interface Props {
+  isInitialized: boolean;
+  onQueryCommit: (query: string) => void;
+  onTagIdsCommit: (tagIds: Set<string>) => void;
+}
 
 export const LibrarySearch: React.FC<Props> = (props) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -64,9 +71,33 @@ export const LibrarySearch: React.FC<Props> = (props) => {
     setTagIds(nextTagIds);
   };
 
+  const debouncedOnQueryCommit = useCallback(debounce(props.onQueryCommit, DEBOUNCE_DELAY_MS), [props]);
+
+  const debouncedOnTagIdsCommit = useCallback(debounce(props.onTagIdsCommit, DEBOUNCE_DELAY_MS), [props]);
+
   useEffectOnce(() => {
     dispatch(getTags());
   });
+
+  useEffect(() => {
+    debouncedOnQueryCommit(query);
+  }, [debouncedOnQueryCommit, query]);
+
+  useEffect(() => {
+    debouncedOnTagIdsCommit(tagIds);
+  }, [debouncedOnTagIdsCommit, tagIds]);
+
+  useEffect(() => {
+    if (query.length > 0 || tagIds.size > 0) {
+      setIsSearching(true);
+    }
+  }, [query, tagIds]);
+
+  useEffect(() => {
+    if (props.isInitialized) {
+      setIsSearching(false);
+    }
+  }, [props.isInitialized]);
 
   return (
     <>
