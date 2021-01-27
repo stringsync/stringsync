@@ -21,7 +21,9 @@ const LOADER_TRIGGER_ID = 'loader-trigger';
 
 const CLEAR_ERRORS_ANIMATION_DELAY_MS = 500;
 
-const SCROLL_DURATION_PER_PAGE_MS = 300;
+const SCROLL_DURATION_PER_PAGE_MS = 100;
+
+const MAX_SCROLL_DURATION_MS = 1000;
 
 const Outer = styled.div<{ xs: boolean }>`
   margin: 24px ${(props) => (props.xs ? 0 : 24)}px;
@@ -76,7 +78,8 @@ const Library: React.FC<Props> = enhance(() => {
 
   const onBackToTopClick = () => {
     const numPages = Math.floor(notations.length / PAGE_SIZE);
-    const totalScrollDurationMs = SCROLL_DURATION_PER_PAGE_MS * numPages;
+    let totalScrollDurationMs = SCROLL_DURATION_PER_PAGE_MS * numPages;
+    totalScrollDurationMs = Math.min(totalScrollDurationMs, MAX_SCROLL_DURATION_MS);
     scrollToTop({ duration: totalScrollDurationMs });
   };
 
@@ -160,7 +163,7 @@ const Library: React.FC<Props> = enhance(() => {
               <NoMore>no more content</NoMore>
             </Row>
           )}
-          {notations.length >= PAGE_SIZE && (
+          {notations.length >= 9 && (
             <Row justify="center">
               <Button size="large" type="primary" onClick={onBackToTopClick}>
                 back to top
