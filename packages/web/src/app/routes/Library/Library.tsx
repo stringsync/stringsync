@@ -35,7 +35,7 @@ const NoMore = styled.h2`
   color: ${(props) => props.theme['@muted']};
 `;
 
-const PAGE_SIZE = 1000;
+const PAGE_SIZE = 9;
 
 const LOADER_TRIGGER_ID = 'loader-trigger';
 
