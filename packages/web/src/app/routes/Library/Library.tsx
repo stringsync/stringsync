@@ -131,11 +131,13 @@ const Library: React.FC<Props> = enhance(() => {
           <Row justify="center">
             <NoMore>no more content</NoMore>
           </Row>
-          <Row justify="center">
-            <Button size="large" type="primary" onClick={scrollToTop}>
-              back to top
-            </Button>
-          </Row>
+          {notations.length >= PAGE_SIZE && (
+            <Row justify="center">
+              <Button size="large" type="primary" onClick={scrollToTop}>
+                back to top
+              </Button>
+            </Row>
+          )}
         </>
       )}
     </Outer>
