@@ -9,6 +9,7 @@ import { Layout, withLayout } from '../../../hocs';
 import { useIntersection } from '../../../hooks';
 import { RootState } from '../../../store';
 import { scrollToTop } from '../../../util/scrollToTop';
+import { LibrarySearch } from './LibrarySearch';
 import { NotationCard } from './NotationCard';
 import { LibraryStatus } from './types';
 import { useLibraryState } from './useLibraryState';
@@ -48,6 +49,8 @@ const Library: React.FC<Props> = enhance(() => {
   const xs = useSelector<RootState, boolean>((state) => state.viewport.xs);
 
   const [isInitialized, setIsInitialized] = useState(false);
+  const [query, setQuery] = useState('');
+  const [tagIds, setTagIds] = useState(new Array<string>());
   const isLoading = useRef(false);
   const isLoaderTriggerVisible = useIntersection(LOADER_TRIGGER_ID);
   const { errors, status, notations, pageInfo, loadMoreNotations, clearErrors } = useLibraryState();
@@ -85,6 +88,8 @@ const Library: React.FC<Props> = enhance(() => {
 
   return (
     <Outer data-testid="library" xs={xs}>
+      <LibrarySearch />
+
       {isInitialized && (
         <>
           <br />

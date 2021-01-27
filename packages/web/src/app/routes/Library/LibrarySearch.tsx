@@ -1,14 +1,12 @@
 import { CloseCircleOutlined, LoadingOutlined, SearchOutlined } from '@ant-design/icons';
-import { Tag } from '@stringsync/domain';
+import { PublicTag } from '@stringsync/domain';
 import { Affix, Button, Input, Row } from 'antd';
 import CheckableTag from 'antd/lib/tag/CheckableTag';
-import { isEqual } from 'lodash';
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEventHandler, MouseEventHandler, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useEffectOnce } from '../../../hooks';
 import { AppDispatch, getTags, RootState } from '../../../store';
-import { clearPages, setQuery, setTagIds } from '../../../store/library';
 
 const AffixInner = styled.div<{ xs: boolean; affixed: boolean }>`
   background: ${(props) => (props.affixed ? '#FFFFFF' : 'transparent')};
@@ -32,32 +30,28 @@ const SearchIcon = styled(SearchOutlined)`
 interface Props {}
 
 export const LibrarySearch: React.FC<Props> = (props) => {
-  // store state
   const dispatch = useDispatch<AppDispatch>();
+  const tags = useSelector<RootState, PublicTag[]>((state) => state.tag.tags);
   const xs = useSelector<RootState, boolean>((state) => state.viewport.xs);
-  const tags = useSelector<RootState, Tag[]>((state) => state.tag.tags);
-  const query = useSelector<RootState, string>((state) => state.library.query);
-  const tagIds = useSelector<RootState, Set<string>>((state) => new Set(state.library.tagIds), isEqual);
-  const isPending = useSelector<RootState, boolean>((state) => state.library.isPending);
 
-  // local state
   const [affixed, setAffixed] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [query, setQuery] = useState('');
+  const [tagIds, setTagIds] = useState(new Set<string>());
 
-  // computed
-  const hasSearchTerm = Boolean(query.length || tagIds.size);
+  const hasSearchTerm = query.length > 0 || tagIds.size > 0;
 
-  // callbacks
-  const onAffixChange = (affixed?: boolean | undefined) => {
-    if (typeof affixed === 'boolean') {
-      setAffixed(affixed);
-    }
+  const onAffixChange = (affixed?: boolean) => {
+    setAffixed(!!affixed);
   };
 
-  const onQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setIsSearching(true);
-    dispatch(clearPages());
-    dispatch(setQuery({ query: event.target.value }));
+  const onQueryChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    setQuery(event.target.value);
+  };
+
+  const onQueryClear: MouseEventHandler<HTMLSpanElement> = (event) => {
+    setQuery('');
+    setTagIds(new Set());
   };
 
   const onQueryTagCheckChange = (tagId: string) => (isChecked: boolean) => {
@@ -67,28 +61,12 @@ export const LibrarySearch: React.FC<Props> = (props) => {
     } else {
       nextTagIds.delete(tagId);
     }
-    setIsSearching(true);
-    dispatch(clearPages());
-    dispatch(setTagIds({ tagIds: Array.from(nextTagIds) }));
+    setTagIds(nextTagIds);
   };
 
-  const onQueryClear = () => {
-    setIsSearching(true);
-    dispatch(clearPages());
-    dispatch(setQuery({ query: '' }));
-    dispatch(setTagIds({ tagIds: [] }));
-  };
-
-  // effects
   useEffectOnce(() => {
     dispatch(getTags());
   });
-
-  useEffect(() => {
-    if (!isPending) {
-      setIsSearching(false);
-    }
-  }, [isPending]);
 
   return (
     <>
