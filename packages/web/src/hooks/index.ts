@@ -3,3 +3,4 @@ export * from './useEffectOnce';
 export * from './useIntersection';
 export * from './useMedia';
 export * from './usePrevious';
+export * from './useQueryParams';
