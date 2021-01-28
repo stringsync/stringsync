@@ -18,5 +18,5 @@ export const useQueryParams = () => {
     setQueryParams(new URLSearchParams(location.search));
   }, [location.search]);
 
-  return [queryParams, pushQueryParams];
+  return { queryParams, pushQueryParams };
 };
