@@ -86,16 +86,19 @@ const Library: React.FC<Props> = enhance(() => {
 
   const isTagChecked = (tagId: string) => tagIds.has(tagId);
 
-  const updateQueryParams = (query: string, tagIds: string[]) => {
-    const nextQueryParams: Record<string, any> = {};
-    if (query) {
-      nextQueryParams.query = query;
-    }
-    if (tagIds.length) {
-      nextQueryParams.tagIds = tagIds;
-    }
-    pushQueryParams(new URLSearchParams(nextQueryParams));
-  };
+  const updateQueryParams = useCallback(
+    (query: string, tagIds: string[]) => {
+      const nextQueryParams: Record<string, any> = {};
+      if (query) {
+        nextQueryParams.query = query;
+      }
+      if (tagIds.length) {
+        nextQueryParams.tagIds = tagIds;
+      }
+      pushQueryParams(new URLSearchParams(nextQueryParams));
+    },
+    [pushQueryParams]
+  );
 
   // prevent the Load More antd List component placeholder from showing on initial load
   useEffect(() => {
