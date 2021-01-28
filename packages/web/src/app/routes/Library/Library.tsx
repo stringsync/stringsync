@@ -10,6 +10,7 @@ import { Layout, withLayout } from '../../../hocs';
 import { useIntersection, usePrevious, useQueryParams } from '../../../hooks';
 import { RootState } from '../../../store';
 import { scrollToTop } from '../../../util/scrollToTop';
+import { QUERY_PARAM_NAME, TAG_IDS_PARAM_NAME } from './constants';
 import { LibrarySearch } from './LibrarySearch';
 import { NotationCard } from './NotationCard';
 import { LibraryStatus } from './types';
@@ -61,7 +62,7 @@ const Library: React.FC<Props> = enhance(() => {
   const isLoading = useRef(false);
   const isLoaderTriggerVisible = useIntersection(LOADER_TRIGGER_ID);
   const { errors, status, notations, pageInfo, loadMoreNotations, clearErrors, clearNotations } = useLibraryState();
-  const { queryParams, pushQueryParams } = useQueryParams();
+  const { queryParams } = useQueryParams();
   const errorMessage = errors.map((error) => error.message).join('; ');
 
   const onQueryCommit = useCallback((nextQuery: string) => {
@@ -86,20 +87,6 @@ const Library: React.FC<Props> = enhance(() => {
 
   const isTagChecked = (tagId: string) => tagIds.has(tagId);
 
-  const updateQueryParams = useCallback(
-    (query: string, tagIds: string[]) => {
-      const nextQueryParams: Record<string, any> = {};
-      if (query) {
-        nextQueryParams.query = query;
-      }
-      if (tagIds.length) {
-        nextQueryParams.tagIds = tagIds;
-      }
-      pushQueryParams(new URLSearchParams(nextQueryParams));
-    },
-    [pushQueryParams]
-  );
-
   // prevent the Load More antd List component placeholder from showing on initial load
   useEffect(() => {
     if (!isInitialized && status === LibraryStatus.SUCCESS) {
@@ -110,11 +97,15 @@ const Library: React.FC<Props> = enhance(() => {
   // react to when the loader trigger element is in view, meaning the user is at the bottom
   // of the page
   useEffect(() => {
+    const queryQuery = queryParams.get(QUERY_PARAM_NAME) || '';
+    const queryTagIds = new Set(queryParams.getAll(TAG_IDS_PARAM_NAME));
+    const areQueryParamsSynced = isEqual(queryQuery, query) && isEqual(queryTagIds, tagIds);
+
     const isReadyForAnotherRequest =
       !isLoading.current && // is not loading from *this* components perspective
       (status === LibraryStatus.SUCCESS || status === LibraryStatus.IDLE);
 
-    if (isLoaderTriggerVisible && isReadyForAnotherRequest && pageInfo.hasNextPage) {
+    if (isLoaderTriggerVisible && isReadyForAnotherRequest && areQueryParamsSynced && pageInfo.hasNextPage) {
       loadMoreNotations({
         last: PAGE_SIZE,
         before: pageInfo.startCursor,
@@ -122,7 +113,16 @@ const Library: React.FC<Props> = enhance(() => {
         tagIds: tagIds.size ? Array.from(tagIds) : null,
       });
     }
-  }, [isLoaderTriggerVisible, loadMoreNotations, pageInfo.hasNextPage, pageInfo.startCursor, query, status, tagIds]);
+  }, [
+    isLoaderTriggerVisible,
+    loadMoreNotations,
+    pageInfo.hasNextPage,
+    pageInfo.startCursor,
+    query,
+    queryParams,
+    status,
+    tagIds,
+  ]);
 
   // synchronize library status (asynchronously updated) so that we don't have to wait on
   // React to rerender the DOM with the updated status value
@@ -134,9 +134,8 @@ const Library: React.FC<Props> = enhance(() => {
     if (!isEqual(prevQuery, query) || !isEqual(prevTagIds, tagIds)) {
       clearNotations();
       setIsInitialized(false);
-      updateQueryParams(query, Array.from(tagIds));
     }
-  }, [clearNotations, prevQuery, prevTagIds, pushQueryParams, query, tagIds, updateQueryParams]);
+  }, [clearNotations, prevQuery, prevTagIds, query, tagIds]);
 
   return (
     <Outer data-testid="library" xs={xs}>

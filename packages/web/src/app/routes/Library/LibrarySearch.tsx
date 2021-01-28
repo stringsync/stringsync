@@ -6,8 +6,9 @@ import { debounce } from 'lodash';
 import React, { ChangeEventHandler, MouseEventHandler, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { useEffectOnce } from '../../../hooks';
+import { useEffectOnce, useQueryParams } from '../../../hooks';
 import { AppDispatch, getTags, RootState } from '../../../store';
+import { QUERY_PARAM_NAME, TAG_IDS_PARAM_NAME } from './constants';
 
 const DEBOUNCE_DELAY_MS = 500;
 
@@ -43,8 +44,10 @@ export const LibrarySearch: React.FC<Props> = (props) => {
 
   const [affixed, setAffixed] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [isQueryInitialized, setIsQueryInitialized] = useState(false);
   const [query, setQuery] = useState('');
   const [tagIds, setTagIds] = useState(new Set<string>());
+  const { queryParams, pushQueryParams } = useQueryParams();
 
   const hasSearchTerm = query.length > 0 || tagIds.size > 0;
 
@@ -75,8 +78,35 @@ export const LibrarySearch: React.FC<Props> = (props) => {
 
   const debouncedOnTagIdsCommit = useCallback(debounce(props.onTagIdsCommit, DEBOUNCE_DELAY_MS), [props]);
 
+  const syncQueryParams = useCallback(() => {
+    const nextQueryParams = new URLSearchParams();
+    if (query) {
+      nextQueryParams.append(QUERY_PARAM_NAME, query);
+    }
+    if (tagIds.size) {
+      for (const tagId of Array.from(tagIds).sort()) {
+        nextQueryParams.append(TAG_IDS_PARAM_NAME, tagId);
+      }
+    }
+    if (queryParams.toString() !== nextQueryParams.toString()) {
+      pushQueryParams(nextQueryParams);
+    }
+  }, [pushQueryParams, query, queryParams, tagIds]);
+
   useEffectOnce(() => {
     dispatch(getTags());
+  });
+
+  useEffectOnce(() => {
+    const initialQuery = queryParams.get(QUERY_PARAM_NAME);
+    if (initialQuery) {
+      setQuery(initialQuery);
+    }
+    const initialTagIds = queryParams.getAll(TAG_IDS_PARAM_NAME);
+    if (initialTagIds) {
+      setTagIds(new Set(initialTagIds));
+    }
+    setIsQueryInitialized(true);
   });
 
   useEffect(() => {
@@ -98,6 +128,12 @@ export const LibrarySearch: React.FC<Props> = (props) => {
       setIsSearching(false);
     }
   }, [props.isInitialized]);
+
+  useEffect(() => {
+    if (isQueryInitialized) {
+      syncQueryParams();
+    }
+  }, [isQueryInitialized, query, syncQueryParams, tagIds]);
 
   return (
     <>
