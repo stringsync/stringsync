@@ -16,6 +16,10 @@ const Signup = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(React.la
 
 const Login = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(React.lazy(() => import('./Login')));
 
+const ConfirmEmail = compose(withAuthRequirement(AuthRequirement.LOGGED_IN))(
+  React.lazy(() => import('./ConfirmEmail'))
+);
+
 const ForgotPassword = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(
   React.lazy(() => import('./ForgotPassword'))
 );
@@ -35,6 +39,7 @@ export const Routes: React.FC = () => {
         <ReturnToRoute path="/n/:id" component={NotationPlayer} />
         <Route path="/signup" component={Signup} />
         <Route path="/login" component={Login} />
+        <Route path="/confirm-email" component={ConfirmEmail} />
         <Route path="/forgot-password" component={ForgotPassword} />
         <Route path="/reset-password" component={ResetPassword} />
         <ReturnToRoute path="/upload" component={Upload} />
