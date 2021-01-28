@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Layout, withLayout } from '../../../hocs';
-import { useIntersection, usePrevious } from '../../../hooks';
+import { useIntersection, usePrevious, useQueryParams } from '../../../hooks';
 import { RootState } from '../../../store';
 import { scrollToTop } from '../../../util/scrollToTop';
 import { LibrarySearch } from './LibrarySearch';
@@ -61,6 +61,7 @@ const Library: React.FC<Props> = enhance(() => {
   const isLoading = useRef(false);
   const isLoaderTriggerVisible = useIntersection(LOADER_TRIGGER_ID);
   const { errors, status, notations, pageInfo, loadMoreNotations, clearErrors, clearNotations } = useLibraryState();
+  const { queryParams, pushQueryParams } = useQueryParams();
   const errorMessage = errors.map((error) => error.message).join('; ');
 
   const onQueryCommit = useCallback((nextQuery: string) => {
@@ -84,6 +85,17 @@ const Library: React.FC<Props> = enhance(() => {
   };
 
   const isTagChecked = (tagId: string) => tagIds.has(tagId);
+
+  const updateQueryParams = (query: string, tagIds: string[]) => {
+    const nextQueryParams: Record<string, any> = {};
+    if (query) {
+      nextQueryParams.query = query;
+    }
+    if (tagIds.length) {
+      nextQueryParams.tagIds = tagIds;
+    }
+    pushQueryParams(new URLSearchParams(nextQueryParams));
+  };
 
   // prevent the Load More antd List component placeholder from showing on initial load
   useEffect(() => {
@@ -119,8 +131,9 @@ const Library: React.FC<Props> = enhance(() => {
     if (!isEqual(prevQuery, query) || !isEqual(prevTagIds, tagIds)) {
       clearNotations();
       setIsInitialized(false);
+      updateQueryParams(query, Array.from(tagIds));
     }
-  }, [clearNotations, prevQuery, prevTagIds, query, tagIds]);
+  }, [clearNotations, prevQuery, prevTagIds, pushQueryParams, query, tagIds, updateQueryParams]);
 
   return (
     <Outer data-testid="library" xs={xs}>
