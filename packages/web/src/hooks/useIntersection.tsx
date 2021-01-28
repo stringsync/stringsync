@@ -1,3 +1,4 @@
+import 'intersection-observer';
 import { useEffect, useRef, useState } from 'react';
 
 export const useIntersection = (triggerId: string, options?: IntersectionObserverInit) => {
