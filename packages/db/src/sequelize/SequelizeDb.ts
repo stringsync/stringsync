@@ -15,7 +15,7 @@ export class SequelizeDb implements Database {
     // process.namespaces gets overwritten when importing cls-hooked:
     // https://github.com/Jeff-Lewis/cls-hooked/blob/master/context.js#L453
     // As a workaround, process.stringSyncTransactionNamespace gets set by
-    // ServerTestEnvironment.js, and then re-set here.
+    // ApiTestEnvironment.js, and then re-set here.
     const p = process as any;
     p.namespaces.transaction = p.stringSyncTransactionNamespace;
   }

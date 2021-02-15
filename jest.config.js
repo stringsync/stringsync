@@ -10,7 +10,7 @@ module.exports = {
   reporters: ['default', 'jest-junit'],
   resetModules: false,
   testPathIgnorePatterns: ['node_modules', 'web', 'build', 'dist'],
-  testEnvironment: '<rootDir>/ServerTestEnvironment.js',
+  testEnvironment: '<rootDir>/ApiTestEnvironment.js',
   roots: ['<rootDir>/packages'],
   setupFilesAfterEnv: ['jest-extended', '<rootDir>/packages/api/src/testing/jest.setup.ts'],
   watchPlugins: ['jest-watch-typeahead/filename', 'jest-watch-typeahead/testname'],
