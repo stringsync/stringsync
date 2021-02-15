@@ -1,79 +1,139 @@
-import { LoadingOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, LoadingOutlined, SearchOutlined } from '@ant-design/icons';
 import { compose } from '@stringsync/common';
-import { Alert, Button, List, Row } from 'antd';
-import { isEqual } from 'lodash';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { PublicTag } from '@stringsync/domain';
+import { Affix, Alert, Button, Input, List, Row } from 'antd';
+import CheckableTag from 'antd/lib/tag/CheckableTag';
+import { isEqual, uniq, without } from 'lodash';
+import React, { ChangeEventHandler, MouseEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Layout, withLayout } from '../../../hocs';
-import { useIntersection, usePrevious, useQueryParams } from '../../../hooks';
-import { RootState } from '../../../store';
+import { useDebounce, useEffectOnce, useIntersection } from '../../../hooks';
+import { AppDispatch, getTags, RootState } from '../../../store';
 import { scrollToTop } from '../../../util/scrollToTop';
-import { QUERY_PARAM_NAME, TAG_IDS_PARAM_NAME } from './constants';
-import { LibrarySearch } from './LibrarySearch';
 import { NotationCard } from './NotationCard';
 import { LibraryStatus } from './types';
 import { useLibraryState } from './useLibraryState';
 
-const PAGE_SIZE = 9;
-
-const LOADER_TRIGGER_ID = 'loader-trigger';
-
+const DEBOUNCE_DELAY_MS = 500;
 const CLEAR_ERRORS_ANIMATION_DELAY_MS = 500;
-
+const PAGE_SIZE = 9;
+const LOADER_TRIGGER_ID = 'loader-trigger';
 const SCROLL_DURATION_PER_PAGE_MS = 100;
-
 const MAX_SCROLL_DURATION_MS = 1000;
 
 const Outer = styled.div<{ xs: boolean }>`
   margin: 24px ${(props) => (props.xs ? 0 : 24)}px;
 `;
 
-const Icon = styled(LoadingOutlined)`
-  font-size: 5em;
-  color: ${(props) => props.theme['@border-color']};
+const AffixInner = styled.div<{ xs: boolean; affixed: boolean }>`
+  background: ${(props) => (props.affixed ? '#FFFFFF' : 'transparent')};
+  padding: ${(props) => (props.affixed && !props.xs ? '0 24px' : '0')};
+  transition: all 150ms ease-in;
 `;
 
-const InvisibleIcon = styled(Icon)`
-  color: transparent;
+const Search = styled.div<{ xs: boolean }>`
+  padding: 24px 0;
+  margin: 0 ${(props) => (props.xs ? 24 : 0)}px;
+`;
+
+const TagSearch = styled(Row)`
+  margin-top: 8px;
 `;
 
 const AlertOuter = styled.div<{ xs: boolean }>`
   margin: 0 ${(props) => (props.xs ? 24 : 0)}px;
 `;
 
+const LoadingIcon = styled(LoadingOutlined)`
+  font-size: 5em;
+  color: ${(props) => props.theme['@border-color']};
+`;
+
+const SearchIcon = styled(SearchOutlined)`
+  color: rgba(0, 0, 0, 0.25);
+`;
+
+const InvisibleLoadingIcon = styled(LoadingIcon)`
+  color: transparent;
+`;
+
 const NoMore = styled.h2`
   color: ${(props) => props.theme['@muted']};
 `;
 
+const normalizeTagIds = (tagIds: string[]) => uniq(tagIds).sort();
+
 const enhance = compose(withLayout(Layout.DEFAULT));
 
-interface Props {}
+type Props = {};
 
-const Library: React.FC<Props> = enhance(() => {
+export const Library: React.FC<Props> = enhance(() => {
+  const dispatch = useDispatch<AppDispatch>();
   const xs = useSelector<RootState, boolean>((state) => state.viewport.xs);
+  const tags = useSelector<RootState, PublicTag[]>((state) => state.tag.tags);
 
-  const [isInitialized, setIsInitialized] = useState(false);
+  const {
+    errors,
+    status,
+    notations,
+    pageInfo,
+    isInitialized,
+    loadMoreNotations,
+    clearErrors,
+    resetLibrary,
+  } = useLibraryState();
   const [query, setQuery] = useState('');
-  const prevQuery = usePrevious(query);
-  const [tagIds, setTagIds] = useState(new Set<string>());
-  const prevTagIds = usePrevious(tagIds);
-  const isLoading = useRef(false);
+  const [tagIds, setTagIds] = useState(new Array<string>());
+  const debouncedQuery = useDebounce(query, DEBOUNCE_DELAY_MS);
+  const debouncedTagIds = useDebounce(tagIds, DEBOUNCE_DELAY_MS);
+  const isQueryDebouncing = !isEqual(query, debouncedQuery);
+  const isTagIdsDebouncing = !isEqual(tagIds, debouncedTagIds);
+  const [affixed, setAffixed] = useState(false);
   const isLoaderTriggerVisible = useIntersection(LOADER_TRIGGER_ID);
-  const { errors, status, notations, pageInfo, loadMoreNotations, clearErrors, clearNotations } = useLibraryState();
-  const { queryParams } = useQueryParams();
   const errorMessage = errors.map((error) => error.message).join('; ');
+  const hasErrors = errors.length > 0;
+  const isLoading = status === LibraryStatus.PENDING;
+  const hasSearchTerm = query.length > 0 || tagIds.length > 0;
 
-  const onQueryCommit = useCallback((nextQuery: string) => {
-    setQuery(nextQuery);
-  }, []);
+  const tagIdsSet = useMemo(() => new Set(tagIds), [tagIds]);
+  const isTagChecked = useCallback((tagId: string) => tagIdsSet.has(tagId), [tagIdsSet]);
 
-  const onTagIdsCommit = useCallback((nextTagIds: Set<string>) => {
-    setTagIds(nextTagIds);
-  }, []);
+  const onAffixChange = (affixed?: boolean) => {
+    setAffixed(!!affixed);
+  };
 
-  // allow the alert closing animation to play
+  const onQueryChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    setQuery(event.target.value);
+    if (isInitialized) {
+      resetLibrary();
+    }
+  };
+
+  const onTagIdsChange = (tagId: string) => (isChecked: boolean) => {
+    let nextTagIds: string[];
+    if (isChecked) {
+      nextTagIds = normalizeTagIds([...tagIds, tagId]);
+    } else {
+      nextTagIds = normalizeTagIds(without([...tagIds], tagId));
+    }
+    if (!isEqual(tagIds, nextTagIds)) {
+      setTagIds(nextTagIds);
+    }
+    if (isInitialized) {
+      resetLibrary();
+    }
+  };
+
+  const onSearchTermClear: MouseEventHandler<HTMLSpanElement> = (event) => {
+    setQuery('');
+    setTagIds([]);
+    if (isInitialized) {
+      resetLibrary();
+    }
+  };
+
   const onAlertClose = () => {
     setTimeout(clearErrors, CLEAR_ERRORS_ANIMATION_DELAY_MS);
   };
@@ -85,61 +145,74 @@ const Library: React.FC<Props> = enhance(() => {
     scrollToTop({ duration: totalScrollDurationMs });
   };
 
-  const isTagChecked = (tagId: string) => tagIds.has(tagId);
+  useEffectOnce(() => {
+    dispatch(getTags());
+  });
 
-  // prevent the Load More antd List component placeholder from showing on initial load
   useEffect(() => {
-    if (!isInitialized && status === LibraryStatus.SUCCESS) {
-      setIsInitialized(true);
-    }
-  }, [isInitialized, status]);
-
-  // react to when the loader trigger element is in view, meaning the user is at the bottom
-  // of the page
-  useEffect(() => {
-    const queryQuery = queryParams.get(QUERY_PARAM_NAME) || '';
-    const queryTagIds = new Set(queryParams.getAll(TAG_IDS_PARAM_NAME));
-    const areQueryParamsSynced = isEqual(queryQuery, query) && isEqual(queryTagIds, tagIds);
-
-    const isReadyForAnotherRequest =
-      !isLoading.current && // is not loading from *this* components perspective
-      (status === LibraryStatus.SUCCESS || status === LibraryStatus.IDLE);
-
-    if (isLoaderTriggerVisible && isReadyForAnotherRequest && areQueryParamsSynced && pageInfo.hasNextPage) {
+    if (
+      isLoaderTriggerVisible &&
+      !isLoading &&
+      !hasErrors &&
+      !isQueryDebouncing &&
+      !isTagIdsDebouncing &&
+      pageInfo.hasNextPage
+    ) {
       loadMoreNotations({
         last: PAGE_SIZE,
         before: pageInfo.startCursor,
-        query: query.length ? query : null,
-        tagIds: tagIds.size ? Array.from(tagIds) : null,
+        query: debouncedQuery.length ? debouncedQuery : null,
+        tagIds: debouncedTagIds.length ? debouncedTagIds : null,
       });
     }
   }, [
+    debouncedQuery,
+    debouncedTagIds,
+    hasErrors,
     isLoaderTriggerVisible,
+    isLoading,
+    isQueryDebouncing,
+    isTagIdsDebouncing,
     loadMoreNotations,
     pageInfo.hasNextPage,
     pageInfo.startCursor,
-    query,
-    queryParams,
-    status,
-    tagIds,
   ]);
-
-  // synchronize library status (asynchronously updated) so that we don't have to wait on
-  // React to rerender the DOM with the updated status value
-  useEffect(() => {
-    isLoading.current = status === LibraryStatus.PENDING;
-  }, [status]);
-
-  useEffect(() => {
-    if (!isEqual(prevQuery, query) || !isEqual(prevTagIds, tagIds)) {
-      clearNotations();
-      setIsInitialized(false);
-    }
-  }, [clearNotations, prevQuery, prevTagIds, query, tagIds]);
 
   return (
     <Outer data-testid="library" xs={xs}>
-      <LibrarySearch isInitialized={isInitialized} onQueryCommit={onQueryCommit} onTagIdsCommit={onTagIdsCommit} />
+      <>
+        <Affix onChange={onAffixChange}>
+          <AffixInner xs={xs} affixed={affixed}>
+            <Search xs={xs}>
+              <Input
+                value={query}
+                onChange={onQueryChange}
+                placeholder="song, artist, or transcriber name"
+                prefix={<SearchIcon />}
+                suffix={hasSearchTerm && <CloseCircleOutlined onClick={onSearchTermClear} />}
+              />
+              <TagSearch justify="center" align="middle">
+                {tags.map((tag) => (
+                  <CheckableTag key={tag.id} checked={isTagChecked(tag.id)} onChange={onTagIdsChange(tag.id)}>
+                    {tag.name}
+                  </CheckableTag>
+                ))}
+              </TagSearch>
+            </Search>
+          </AffixInner>
+        </Affix>
+
+        <Row justify="center">
+          {hasSearchTerm ? (
+            <Button type="link" size="small" onClick={onSearchTermClear}>
+              remove filters
+            </Button>
+          ) : (
+            <Button size="small">{/* Dummy button for DOM spacing */}</Button>
+          )}
+        </Row>
+      </>
+
       {isInitialized && (
         <>
           <br />
@@ -159,18 +232,22 @@ const Library: React.FC<Props> = enhance(() => {
           />
         </>
       )}
+
       {/* When this is visible, trigger loading  */}
       <div id={LOADER_TRIGGER_ID}></div>
-      {status === LibraryStatus.ERROR && (
+      {hasErrors && (
         <AlertOuter xs={xs}>
           <Alert showIcon type="error" message={errorMessage} closeText="try again" onClose={onAlertClose} />
         </AlertOuter>
       )}
+
       <br />
       <br />
+
       {pageInfo.hasNextPage && (
-        <Row justify="center">{status === LibraryStatus.PENDING ? <Icon /> : <InvisibleIcon />}</Row>
+        <Row justify="center">{isLoading || !isInitialized ? <LoadingIcon /> : <InvisibleLoadingIcon />}</Row>
       )}
+
       {!pageInfo.hasNextPage && (
         <>
           {notations.length > 0 && (
