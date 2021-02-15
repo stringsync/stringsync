@@ -5,8 +5,6 @@ import { QueryNotationsArgs } from '../../../clients';
 export enum LibraryStatus {
   IDLE,
   PENDING,
-  SUCCESS,
-  ERROR,
 }
 export type Transcriber = Pick<PublicUser, 'id' | 'username' | 'role' | 'avatarUrl'>;
 
@@ -26,8 +24,9 @@ export type LibraryState = {
   status: LibraryStatus;
   notations: NotationPreview[];
   pageInfo: PageInfo;
+  isInitialized: boolean;
   errors: Error[];
   loadMoreNotations: (args: QueryNotationsArgs) => void;
-  clearNotations: () => void;
+  resetLibrary: () => void;
   clearErrors: () => void;
 };

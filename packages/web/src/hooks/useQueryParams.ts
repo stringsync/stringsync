@@ -1,22 +1,13 @@
 import { useEffect, useState } from 'react';
-import { useHistory, useLocation } from 'react-router';
+import { useLocation } from 'react-router';
 
 export const useQueryParams = () => {
   const location = useLocation();
-  const history = useHistory();
   const [queryParams, setQueryParams] = useState(new URLSearchParams(location.search));
-
-  const pushQueryParams = (nextQueryParams: URLSearchParams) => {
-    history.push({
-      pathname: location.pathname,
-      hash: location.hash,
-      search: `?${nextQueryParams.toString()}`,
-    });
-  };
 
   useEffect(() => {
     setQueryParams(new URLSearchParams(location.search));
   }, [location.search]);
 
-  return { queryParams, pushQueryParams };
+  return queryParams;
 };

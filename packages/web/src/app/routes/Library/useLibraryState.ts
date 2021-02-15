@@ -10,15 +10,17 @@ const toNotationPreview = (edge: NotationEdgeObject): NotationPreview => {
 };
 
 export const useLibraryState = (): LibraryState => {
+  const [isInitialized, setIsInitialized] = useState(false);
   const [status, setStatus] = useState(LibraryStatus.IDLE);
   const [notations, setNotations] = useState(new Array<NotationPreview>());
   const [pageInfo, setPageInfo] = useState(getInitialPageInfo());
   const [errors, setErrors] = useState(new Array<Error>());
 
-  const clearNotations = () => {
+  const resetLibrary = () => {
     setNotations([]);
     setErrors([]);
     setPageInfo(getInitialPageInfo());
+    setIsInitialized(false);
     setStatus(LibraryStatus.IDLE);
   };
 
@@ -49,12 +51,13 @@ export const useLibraryState = (): LibraryState => {
         hasNextPage: connection.pageInfo.hasNextPage,
         hasPreviousPage: connection.pageInfo.hasPreviousPage,
       });
-      setStatus(LibraryStatus.SUCCESS);
     } catch (e) {
       setErrors(Array.isArray(e) ? e : [e]);
-      setStatus(LibraryStatus.ERROR);
+    } finally {
+      setStatus(LibraryStatus.IDLE);
+      setIsInitialized(true);
     }
   }, []);
 
-  return { status, notations, pageInfo, errors, loadMoreNotations, clearErrors, clearNotations };
+  return { status, notations, pageInfo, errors, isInitialized, loadMoreNotations, clearErrors, resetLibrary };
 };
