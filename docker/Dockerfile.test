@@ -1,4 +1,0 @@
-FROM stringsync-base:latest
-
-COPY ./jest.config.js .
-COPY ./ApiTestEnvironment.js .

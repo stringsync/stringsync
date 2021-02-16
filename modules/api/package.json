@@ -61,6 +61,8 @@
     "@types/validator": "^13.1.3",
     "@types/winston": "^2.4.4",
     "sequelize-cli": "^6.2.0",
-    "supertest": "^6.1.3"
+    "supertest": "^6.1.3",
+    "ts-node-dev": "^1.1.1",
+    "typescript": "^4.1.5"
   }
 }

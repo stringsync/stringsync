@@ -12,16 +12,19 @@ services:
   redis:
     image: redis:5.0
 
-  test:
-    image: stringsync-test:latest
+  api:
+    image: stringsync:latest
     build:
-      context: ../
-      dockerfile: ./docker/Dockerfile.test
+      context: .
+      dockerfile: ./Dockerfile
     env_file:
-      - ../env/api.test.env
+      - ../../env/dev.env
+      - ../../env/secrets.env
     volumes:
-      - ../packages:/app/packages
-      - ../reports:/app/reports
+      - ./src:/app/src
     links:
       - db
       - redis
+    ports:
+      - '3000:3000'
+    command: ['pm2', 'start', 'ecosystem.config.js', '--no-daemon']
