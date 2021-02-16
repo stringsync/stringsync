@@ -16,4 +16,5 @@ COPY tsconfig.json .
 COPY codegen.yml .
 COPY ApiTestEnvironment.js .
 COPY ecosystem.config.js .
+COPY jest.config.js .
 COPY src src
