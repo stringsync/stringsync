@@ -3,19 +3,6 @@
   "version": "1.0.0",
   "repository": "git@github.com:jaredjj3/string-sync.git",
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
-  "scripts": {
-    "setup": "yarn install && (cd ./bin/scripts/ && yarn install) && ./bin/ss gensecrets",
-    "api": "yarn workspace @stringsync/api",
-    "db": "yarn workspace @stringsync/db",
-    "web": "yarn workspace @stringsync/web",
-    "jobs": "yarn workspace @stringsync/jobs",
-    "pretest:api": "yarn db migrate",
-    "test:api": "node --expose-gc ./node_modules/.bin/jest",
-    "test:web": "yarn web test"
-  },
   "devDependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@types/jest": "^24.0.19",
@@ -40,6 +27,7 @@
     "jest-junit": "^12.0.0",
     "jest-watch-typeahead": "^0.6.1",
     "prettier": "^1.19.1",
+    "prettier-plugin-organize-imports": "^1.1.1",
     "ts-jest": "^24.1.0",
     "ts-node": "^9.1.1",
     "typescript": "^3.6.4"
