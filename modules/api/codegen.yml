@@ -1,0 +1,8 @@
+schema: http://localhost:3000/graphql
+generates:
+  src/testing/graphqlTypes.ts:
+    plugins:
+      - typescript
+config:
+  namingConvention:
+    enumValues: keep

@@ -1,4 +1,5 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
@@ -15,16 +16,5 @@
     "noEmit": true,
     "jsx": "react"
   },
-  "include": ["src"],
-  "references": [
-    {
-      "path": "../common"
-    },
-    {
-      "path": "../config"
-    },
-    {
-      "path": "../domain"
-    }
-  ]
+  "include": ["src"]
 }
