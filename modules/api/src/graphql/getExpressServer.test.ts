@@ -1,7 +1,9 @@
+import { getServerConfig } from '../config';
 import { getExpressServer } from './getExpressServer';
 
 describe('getExpressServer', () => {
   it('runs without crashing', () => {
-    expect(getExpressServer).not.toThrow();
+    const config = getServerConfig();
+    expect(() => getExpressServer(config)).not.toThrow();
   });
 });
