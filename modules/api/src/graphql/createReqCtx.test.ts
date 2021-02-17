@@ -1,4 +1,4 @@
-import { container } from '../../inversify.config';
+import { container } from '../inversify.config';
 import { createReqCtx } from './createReqCtx';
 
 describe('createReqCtx', () => {

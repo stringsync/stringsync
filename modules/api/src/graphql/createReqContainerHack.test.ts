@@ -1,4 +1,4 @@
-import { container } from '../../inversify.config';
+import { container } from '../inversify.config';
 import { createReqContainerHack } from './createReqContainerHack';
 
 describe('createReqContainerHack', () => {

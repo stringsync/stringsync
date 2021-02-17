@@ -1,6 +1,6 @@
 import { Container } from 'inversify';
-import { TYPES } from '../../inversify.constants';
-import { ctor } from '../../util/ctor';
+import { TYPES } from '../inversify.constants';
+import { ctor } from '../util';
 
 export const applyReqRebindings = (container: Container) => {
   for (const [type, id] of Object.entries<symbol>(TYPES)) {
