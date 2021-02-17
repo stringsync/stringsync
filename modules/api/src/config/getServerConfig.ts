@@ -48,7 +48,3 @@ export const getServerConfig = configFactory({
 });
 
 export type ServerConfig = ReturnType<typeof getServerConfig>;
-
-export const getJobConfig = configFactory({});
-
-export type JobConfig = ReturnType<typeof getJobConfig>;
