@@ -1,7 +1,7 @@
 import express from 'express';
-import { $config } from '../config';
+import { ServerConfig } from '../config';
 
-export const getExpressServer = (config: $config.ServerConfig) => {
+export const getExpressServer = (config: ServerConfig) => {
   const app = express();
 
   app.get('/health', (req, res) => {
