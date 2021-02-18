@@ -1,9 +1,9 @@
 import request from 'supertest';
-import { getServerConfig } from '../config';
+import { getConfig } from '../config';
 import { getExpressServer } from './getExpressServer';
 
 describe('getExpressServer', () => {
-  const config = getServerConfig();
+  const config = getConfig();
 
   it('runs without crashing', () => {
     expect(() => getExpressServer(config)).not.toThrow();

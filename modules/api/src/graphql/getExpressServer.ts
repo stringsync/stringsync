@@ -1,9 +1,9 @@
 import { altairExpress } from 'altair-express-middleware';
 import cors from 'cors';
 import express from 'express';
-import { ServerConfig } from '../config';
+import { Config } from '../config';
 
-export const getExpressServer = (config: ServerConfig) => {
+export const getExpressServer = (config: Config) => {
   const app = express();
 
   app.set('trust proxy', 1);

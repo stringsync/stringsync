@@ -1,7 +1,7 @@
-import { getServerConfig } from '../config';
+import { getConfig } from '../config';
 import { getExpressServer } from '../graphql';
 
-const config = getServerConfig();
+const config = getConfig();
 const server = getExpressServer(config);
 
 server.listen(config.APP_GRAPHQL_PORT);

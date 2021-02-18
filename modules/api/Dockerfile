@@ -14,7 +14,8 @@ RUN yarn
 # copy the main files over
 COPY tsconfig.json .
 COPY codegen.yml .
-COPY ApiTestEnvironment.js .
 COPY ecosystem.config.js .
 COPY jest.config.js .
+COPY .sequelizerc .
+COPY sequelize.config.js .
 COPY src src

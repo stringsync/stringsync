@@ -1,4 +1,4 @@
-import { getServerConfig } from './getServerConfig';
+import { getConfig } from './getConfig';
 
 describe('getServerConfig', () => {
   it('parses an environment', () => {
@@ -26,7 +26,7 @@ describe('getServerConfig', () => {
       REDIS_PORT: '6379',
     };
 
-    const config = getServerConfig(env);
+    const config = getConfig(env);
 
     expect(config).toStrictEqual({
       NODE_ENV: 'development',
@@ -55,6 +55,6 @@ describe('getServerConfig', () => {
 
   it('throws an error when missing a value', () => {
     const env = {};
-    expect(() => getServerConfig(env)).toThrow();
+    expect(() => getConfig(env)).toThrow();
   });
 });

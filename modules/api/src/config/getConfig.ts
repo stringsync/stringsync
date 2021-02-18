@@ -23,7 +23,7 @@ import {
   SQS_VIDEO_QUEUE_URL,
 } from './constants';
 
-export const getServerConfig = configFactory({
+export const getConfig = configFactory({
   NODE_ENV: NODE_ENV,
   LOG_LEVEL: LOG_LEVEL,
   APP_GRAPHQL_PORT: APP_GRAPHQL_PORT,
@@ -47,4 +47,4 @@ export const getServerConfig = configFactory({
   REDIS_PORT: REDIS_PORT,
 });
 
-export type ServerConfig = ReturnType<typeof getServerConfig>;
+export type Config = ReturnType<typeof getConfig>;
