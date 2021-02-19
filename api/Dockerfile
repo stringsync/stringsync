@@ -1,6 +1,6 @@
 FROM node:14.9.0
 
-WORKDIR /app
+WORKDIR /api
 
 # install process manager
 RUN npm install pm2 -g

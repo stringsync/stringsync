@@ -18,7 +18,7 @@ services:
       context: .
       dockerfile: ./Dockerfile
     env_file:
-      - ../../env/api.test.env
+      - ../env/api.test.env
     volumes:
       - ./src:/app/src
     links:

@@ -18,10 +18,10 @@ services:
       context: .
       dockerfile: ./Dockerfile
     env_file:
-      - ../../env/dev.env
-      - ../../env/secrets.env
+      - ../env/dev.env
+      - ../env/secrets.env
     volumes:
-      - ./src:/app/src
+      - ./src:/api/src
     links:
       - db
       - redis
