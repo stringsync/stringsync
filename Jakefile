@@ -1,5 +1,6 @@
 const { task, desc, namespace } = require('jake');
 const { spawn } = require('child_process');
+const chalk = require('chalk');
 
 const env = (name, fallback = undefined) => {
   const val = process.env[name];
@@ -60,11 +61,11 @@ namespace('test', () => {
     const runTests = async () => {
       await new Promise((resolve, reject) => {
         const succeed = () => {
-          console.log('tests succeeded');
+          console.log(chalk.green('tests succeeded'));
           resolve();
         };
         const fail = () => {
-          console.log('tests failed');
+          console.log(chalk.red('tests failed'));
           reject();
         };
         const dockerCompose = spawn(
