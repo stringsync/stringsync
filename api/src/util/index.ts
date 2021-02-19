@@ -1,4 +1,7 @@
+export * from './align';
+export * from './base64';
 export * from './ctor';
+export * from './ensureNoErrors';
 export * from './logger';
 export * from './pager';
 export * from './randInt';

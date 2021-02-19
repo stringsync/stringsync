@@ -1,5 +1,7 @@
 export const TYPES = {
-  Logger: Symbol('Logger'),
   Config: Symbol('Config'),
   Db: Symbol('Db'),
+  Logger: Symbol('Logger'),
+  TagLoader: Symbol('TagLoader'),
+  UserLoader: Symbol('UserLoader'),
 };
