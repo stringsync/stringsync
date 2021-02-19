@@ -14,23 +14,72 @@ const env = (name, fallback = undefined) => {
   return val;
 };
 
+const log = (msg) => console.log(`jake: ${msg}`);
+
+const noop = () => undefined;
+
+const DEFAULT_CMD_OPTS = { cwd: __dirname, onSuccess: noop, onFailure: noop };
+
+const cmd = (command) => {
+  let isCommandChecked = false;
+  let isCommandAvailable = false;
+
+  return async (args, opts) => {
+    opts = { ...DEFAULT_CMD_OPTS, ...opts };
+    const VERBOSE = env('VERBOSE', 'true') === 'true';
+
+    if (!isCommandChecked) {
+      await new Promise((resolve) => {
+        const which = spawn('which', [command]);
+        which.on('close', (exitCode) => {
+          isCommandAvailable = exitCode === 0;
+          isCommandChecked = true;
+          resolve();
+        });
+      });
+    }
+    if (!isCommandAvailable) {
+      throw new Error(`command not available: \`${command}\``);
+    }
+
+    await new Promise((resolve, reject) => {
+      const cmdStr = [command, ...args].join(' ');
+      log(chalk.yellow(cmdStr));
+
+      const stdio = VERBOSE ? 'inherit' : 'ignore';
+      const child = spawn(command, args, { cwd: opts.cwd, stdio });
+      child.on('close', (exitCode) => {
+        if (exitCode === 0) {
+          opts.onSuccess();
+          resolve();
+        } else {
+          opts.onFailure();
+          reject(new Error(`nonzero exit code: ${exitCode}`));
+        }
+      });
+      child.on('error', (err) => {
+        opts.onFailure();
+        reject(err);
+      });
+    });
+  };
+};
+
+const yarn = cmd('yarn');
+
+const dockerCompose = cmd('docker-compose');
+
+const docker = cmd('docker');
+
 namespace('install', () => {
   desc('installs api dependencies');
-  task('api', async () => {
-    await new Promise((resolve, reject) => {
-      const yarn = spawn('yarn', { cwd: 'api', stdio: 'inherit' });
-      yarn.on('close', resolve);
-      yarn.on('error', reject);
-    });
+  task('api', [], async () => {
+    await yarn([], { cwd: 'api' });
   });
 
   desc('installs web dependencies');
   task('web', async () => {
-    await new Promise((resolve, reject) => {
-      const yarn = spawn('yarn', { cwd: 'web', stdio: 'inherit' });
-      yarn.on('close', resolve);
-      yarn.on('error', reject);
-    });
+    await yarn([], { cwd: 'web' });
   });
 });
 
@@ -43,11 +92,7 @@ namespace('db', () => {
     env('DB_HOST');
     env('DB_PORT');
 
-    await new Promise((resolve, reject) => {
-      const yarn = spawn('yarn', ['migrate'], { cwd: 'api', stdio: 'inherit' });
-      yarn.on('close', resolve);
-      yarn.on('error', reject);
-    });
+    yarn(['migrate'], { cwd: 'api' });
   });
 });
 
@@ -56,68 +101,49 @@ namespace('build', () => {
   task('api', [], async () => {
     const DOCKER_TAG = env('DOCKER_TAG', 'latest');
 
-    await new Promise((resolve, reject) => {
-      const docker = spawn('docker', ['build', '-t', `stringsync:${DOCKER_TAG}`, '.'], {
-        cwd: 'api',
-        stdio: 'inherit',
-      });
-      docker.on('close', resolve);
-      docker.on('error', reject);
-    });
+    await docker(['build', '-t', `stringsync:${DOCKER_TAG}`, '.'], { cwd: 'api' });
   });
 
   desc('builds the stringsync production build');
   task('web', ['install:web'], async () => {
-    await new Promise((resolve, reject) => {
-      const yarn = spawn('yarn', ['build'], { cwd: 'web', stdio: 'inherit' });
-      yarn.on('close', resolve);
-      yarn.on('error', reject);
-    });
+    await yarn(['build'], { cwd: 'web' });
   });
 });
 
 namespace('test', () => {
+  desc('tests each project');
+  task('all', ['test:api', 'test:web'], { concurrency: 2 }, noop);
+
   desc('tests the api project');
   task('api', ['build:api'], async () => {
     const WATCH = env('WATCH', 'false') === 'true';
+    const CI = env('CI', 'false') === 'true';
 
     const runTests = async () => {
-      await new Promise((resolve, reject) => {
-        const succeed = () => {
-          console.log(chalk.green('tests succeeded'));
-          resolve();
-        };
-        const fail = () => {
-          console.log(chalk.red('tests failed'));
-          reject();
-        };
-        const dockerCompose = spawn(
-          'docker-compose',
-          ['-f', './api/docker-compose.test.yml', 'run', '--rm', 'test', 'yarn', 'test', `--watchAll=${WATCH}`],
-          { stdio: 'inherit' }
-        );
-        dockerCompose.on('close', (exitCode) => {
-          if (exitCode === 0) {
-            succeed();
-          } else {
-            fail();
-          }
-        });
-        dockerCompose.on('error', fail);
-      });
+      const onSuccess = () => {
+        log(chalk.green('api tests succeeded'));
+      };
+      const onFailure = () => {
+        log(chalk.red('api tests failed'));
+      };
+      await dockerCompose(
+        [
+          '-f',
+          './api/docker-compose.test.yml',
+          'run',
+          '--rm',
+          'test',
+          'yarn',
+          'test',
+          `--watchAll=${WATCH}`,
+          CI ? '--no-colors' : '--colors',
+        ],
+        { onSuccess, onFailure }
+      );
     };
 
     const cleanupTests = async () => {
-      await new Promise((resolve, reject) => {
-        const dockerCompose = spawn('docker-compose', [
-          '-f',
-          './api/docker-compose.test.yml',
-          'down',
-          '--remove-orphans',
-        ]);
-        dockerCompose.on('close', resolve);
-        dockerCompose.on('error', reject);
-      });
+      await dockerCompose(['-f', './api/docker-compose.test.yml', 'down', '--remove-orphans']);
     };
 
     try {
@@ -125,5 +151,19 @@ namespace('test', () => {
     } finally {
       await cleanupTests();
     }
+  });
+
+  desc('tests the web project');
+  task('web', ['install:web'], async () => {
+    const WATCH = env('WATCH', 'false') === 'true';
+    const CI = env('CI', 'false') === 'true';
+
+    const onSuccess = () => {
+      log(chalk.green('web tests succeeded'));
+    };
+    const onFailure = () => {
+      log(chalk.red('web tests failed'));
+    };
+    await yarn(['test', `--watchAll=${WATCH}`, CI ? '--no-colors' : '--colors'], { cwd: 'web', onSuccess, onFailure });
   });
 });
