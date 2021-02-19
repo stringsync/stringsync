@@ -2,12 +2,12 @@ import Dataloader from 'dataloader';
 import { injectable } from 'inversify';
 import { groupBy, mapValues } from 'lodash';
 import { TaggingModel, TagModel } from '../../../db';
-import { Tag } from '../../../domain';
+import { Tag, Tagging } from '../../../domain';
 import { alignManyToMany, alignOneToOne, ensureNoErrors } from '../../../util';
 import { TagLoader } from '../../types';
 
 @injectable()
-export class TagSequelizeLoader implements TagLoader {
+export class SequelizeTagLoader implements TagLoader {
   byIdLoader: Dataloader<string, Tag | null>;
   byNotationIdLoader: Dataloader<string, Tag[]>;
 

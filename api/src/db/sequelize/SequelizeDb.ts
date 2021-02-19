@@ -1,8 +1,9 @@
 import { createNamespace } from 'cls-hooked';
 import { inject, injectable } from 'inversify';
-import { Sequelize } from 'sequelize';
+import { QueryTypes, Sequelize } from 'sequelize';
 import { Config } from '../../config';
 import { TYPES } from '../../inversify.constants';
+import { camelCaseKeys } from '../../repos/queries';
 import { Logger } from '../../util';
 import { Db, Task } from './../types';
 import { NotationModel, TaggingModel, TagModel, UserModel } from './models';
@@ -57,5 +58,10 @@ export class SequelizeDb extends Db {
 
   async closeConnection() {
     await this.sequelize.close();
+  }
+
+  async query<T>(sql: string): Promise<T[]> {
+    const rows = await this.sequelize.query(sql, { type: QueryTypes.SELECT });
+    return camelCaseKeys<T>(rows);
   }
 }
