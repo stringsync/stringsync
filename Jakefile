@@ -13,14 +13,41 @@ const env = (name, fallback = undefined) => {
   return val;
 };
 
+namespace('install', () => {
+  desc('installs api dependencies');
+  task('api', async () => {
+    await new Promise((resolve) => {
+      const yarn = spawn('yarn', { cwd: 'api' });
+      yarn.on('close', resolve);
+    });
+  });
+});
+
+namespace('db', () => {
+  desc('migrates the database');
+  task('migrate', ['install:api'], async () => {
+    env('DB_NAME');
+    env('DB_USERNAME');
+    env('DB_PASSWORD');
+    env('DB_HOST');
+    env('DB_PORT');
+
+    await new Promise((resolve) => {
+      const yarn = spawn('yarn', ['migrate'], { cwd: 'api', stdio: 'inherit' });
+      yarn.on('close', resolve);
+    });
+  });
+});
+
 namespace('build', () => {
   desc('builds the stringsync docker image');
   task('api', [], async () => {
     const DOCKER_TAG = env('DOCKER_TAG', 'latest');
 
-    await new Promise((resolve) => {
+    await new Promise((resolve, reject) => {
       const docker = spawn('docker', ['build', '-t', `stringsync:${DOCKER_TAG}`, './api']);
       docker.on('close', resolve);
+      docker.on('error', reject);
     });
   });
 });
@@ -32,6 +59,14 @@ namespace('test', () => {
 
     const runTests = async () => {
       await new Promise((resolve, reject) => {
+        const succeed = () => {
+          console.log('tests succeeded');
+          resolve();
+        };
+        const fail = () => {
+          console.log('tests failed');
+          reject();
+        };
         const dockerCompose = spawn(
           'docker-compose',
           ['-f', './api/docker-compose.test.yml', 'run', '--rm', 'test', 'yarn', 'test', `--watchAll=${WATCH}`],
@@ -39,13 +74,12 @@ namespace('test', () => {
         );
         dockerCompose.on('close', (exitCode) => {
           if (exitCode === 0) {
-            console.log('tests succeeded');
-            resolve();
+            succeed();
           } else {
-            console.log('tests failed');
-            reject();
+            fail();
           }
         });
+        dockerCompose.on('error', fail);
       });
     };
 
