@@ -10,7 +10,6 @@ expect.extend({
 let db: Db;
 
 beforeAll(() => {
-  // init DB
   db = container.get<Db>(TYPES.Db);
 });
 
