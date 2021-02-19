@@ -1,10 +1,10 @@
 #!/bin/bash
 
-parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+parent_path=$(cd "$(dirname "$0")" ; pwd -P)
 
-if [ -z "$@" ]
+if [ $# -eq 0 ]
 then
-  (cd "$parent_path" && yarn jake -t)
+  (cd $parent_path && yarn jake -t)
 else
-  (cd "$parent_path" && yarn jake "$@")
+  (cd $parent_path && yarn jake "$@")
 fi
