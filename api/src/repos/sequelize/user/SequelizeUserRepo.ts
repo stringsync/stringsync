@@ -70,7 +70,7 @@ export class SequelizeUserRepo implements UserRepo {
   }
 
   async findPage(args: UserConnectionArgs): Promise<Connection<User>> {
-    return await UserSequelizeRepo.pager.connect(args, async (pagingCtx: PagingCtx) => {
+    return await SequelizeUserRepo.pager.connect(args, async (pagingCtx: PagingCtx) => {
       const { cursor, limit, pagingType } = pagingCtx;
 
       const cmp = pagingType === PagingType.FORWARD ? Op.gt : Op.lt;

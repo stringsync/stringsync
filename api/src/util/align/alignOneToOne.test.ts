@@ -1,4 +1,4 @@
-import { identity, noop } from '@stringsync/common';
+import { identity, noop } from '../../util';
 import { alignOneToOne } from './alignOneToOne';
 
 describe('alignOneToOne', () => {

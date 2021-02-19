@@ -3,25 +3,14 @@ import { Notation, Tag, Tagging, User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
 import { EntityBuilder } from '../testing';
-import { randStr } from '../util';
+import { ctor, randStr } from '../util';
 import { SequelizeTaggingRepo } from './sequelize';
 import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from './types';
 
+const ORIGINAL_TAGGING_REPO = ctor(container.get<TaggingRepo>(TYPES.TaggingRepo));
+
 describe.each([['SequelizeTaggingRepo', SequelizeTaggingRepo]])('%s', (name, Ctor) => {
-  const id = Symbol(name);
   let taggingRepo: TaggingRepo;
-
-  beforeAll(() => {
-    container.bind<TaggingRepo>(id).to(Ctor);
-  });
-
-  beforeEach(() => {
-    taggingRepo = container.get<TaggingRepo>(id);
-  });
-
-  afterAll(() => {
-    container.unbind(id);
-  });
 
   let user1: User;
   let user2: User;
@@ -34,6 +23,18 @@ describe.each([['SequelizeTaggingRepo', SequelizeTaggingRepo]])('%s', (name, Cto
 
   let tagging1: Tagging;
   let tagging2: Tagging;
+
+  beforeAll(() => {
+    container.rebind<TaggingRepo>(TYPES.TaggingRepo).to(Ctor);
+  });
+
+  beforeEach(() => {
+    taggingRepo = container.get<TaggingRepo>(TYPES.TaggingRepo);
+  });
+
+  afterAll(() => {
+    container.rebind<TaggingRepo>(TYPES.TaggingRepo).to(ORIGINAL_TAGGING_REPO);
+  });
 
   beforeEach(async () => {
     const userRepo = container.get<UserRepo>(TYPES.UserRepo);

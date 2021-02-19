@@ -1,24 +1,26 @@
 import { isPlainObject, sortBy } from 'lodash';
 import { container } from '../inversify.config';
+import { TYPES } from '../inversify.constants';
 import { EntityBuilder } from '../testing';
-import { randStr } from '../util';
+import { ctor, randStr } from '../util';
 import { SequelizeTagRepo } from './sequelize';
 import { TagRepo } from './types';
 
+const ORIGINAL_TAG_REPO = ctor(container.get<TagRepo>(TYPES.TagRepo));
+
 describe.each([['SequelizeTagRepo', SequelizeTagRepo]])('%s', (name, Ctor) => {
-  const id = Symbol(name);
   let tagRepo: TagRepo;
 
   beforeAll(() => {
-    container.bind<TagRepo>(id).to(Ctor);
+    container.rebind<TagRepo>(TYPES.TagRepo).to(Ctor);
   });
 
   beforeEach(() => {
-    tagRepo = container.get<TagRepo>(id);
+    tagRepo = container.get<TagRepo>(TYPES.TagRepo);
   });
 
   afterAll(() => {
-    container.unbind(id);
+    container.rebind<TagRepo>(TYPES.TagRepo).to(ORIGINAL_TAG_REPO);
   });
 
   describe('count', () => {

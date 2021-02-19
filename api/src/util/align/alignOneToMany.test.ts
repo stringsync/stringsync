@@ -1,4 +1,4 @@
-import { noop } from '@stringsync/common';
+import { noop } from '../../util';
 import { alignOneToMany } from './alignOneToMany';
 
 interface Value {

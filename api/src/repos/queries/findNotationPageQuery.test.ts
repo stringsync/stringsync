@@ -1,4 +1,4 @@
-import { PagingType } from '@stringsync/common';
+import { PagingType } from '../../util';
 import {
   findNotationPageMaxQuery,
   findNotationPageMinQuery,

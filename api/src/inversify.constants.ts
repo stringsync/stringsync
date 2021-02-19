@@ -4,6 +4,7 @@ export const TYPES = {
   Logger: Symbol('Logger'),
   TagLoader: Symbol('TagLoader'),
   TagRepo: Symbol('TagRepo'),
+  TaggingRepo: Symbol('TaggingRepo'),
   UserLoader: Symbol('UserLoader'),
   UserRepo: Symbol('UserRepo'),
   NotationLoader: Symbol('NotationLoader'),

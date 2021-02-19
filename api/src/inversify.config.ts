@@ -8,10 +8,12 @@ import {
   NotationRepo,
   SequelizeNotationLoader,
   SequelizeNotationRepo,
+  SequelizeTaggingRepo,
   SequelizeTagLoader,
   SequelizeTagRepo,
   SequelizeUserLoader,
   SequelizeUserRepo,
+  TaggingRepo,
   TagLoader,
   TagRepo,
   UserLoader,
@@ -38,3 +40,5 @@ container.bind<UserLoader>(TYPES.UserLoader).to(SequelizeUserLoader);
 
 container.bind<NotationRepo>(TYPES.NotationRepo).to(SequelizeNotationRepo);
 container.bind<NotationLoader>(TYPES.NotationLoader).to(SequelizeNotationLoader);
+
+container.bind<TaggingRepo>(TYPES.TaggingRepo).to(SequelizeTaggingRepo);
