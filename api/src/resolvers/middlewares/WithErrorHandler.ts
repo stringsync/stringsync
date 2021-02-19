@@ -1,9 +1,8 @@
 import { MiddlewareFn } from 'type-graphql';
-import { ReqCtx } from '../../types';
 
 type ErrorHandler = (err: Error) => any;
 
-export const WithErrorHandler = (errorHandler: ErrorHandler): MiddlewareFn<ReqCtx> => async (data, next) => {
+export const WithErrorHandler = (errorHandler: ErrorHandler): MiddlewareFn => async (data, next) => {
   try {
     await next();
   } catch (err) {

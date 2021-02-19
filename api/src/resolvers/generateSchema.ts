@@ -1,5 +1,5 @@
 import { buildSchemaSync } from 'type-graphql';
-import { ExperimentResolver } from './resolvers';
+import { ExperimentResolver } from './Experiment';
 
 export const generateSchema = () => {
   return buildSchemaSync({

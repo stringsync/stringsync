@@ -1,8 +1,8 @@
 import { MiddlewareFn } from 'type-graphql';
-import { AuthRequirement } from '../../../auth';
-import { gtEqAdmin, gtEqStudent, gtEqTeacher } from '../../../domain';
-import { ForbiddenError } from '../../../errors';
-import { ReqCtx } from '../../types';
+import { AuthRequirement } from '../../auth';
+import { gtEqAdmin, gtEqStudent, gtEqTeacher } from '../../domain';
+import { ForbiddenError } from '../../errors';
+import { ReqCtx } from '../../graphql';
 
 export const WithAuthRequirement = (authReq: AuthRequirement): MiddlewareFn<ReqCtx> => async (data, next) => {
   const { isLoggedIn, role } = data.context.req.session.user;
