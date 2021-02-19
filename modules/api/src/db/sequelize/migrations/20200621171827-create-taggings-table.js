@@ -3,8 +3,8 @@ module.exports = {
     return queryInterface.sequelize.query(`
       CREATE TABLE taggings (
           id TEXT PRIMARY KEY,
-          notation_id TEXT REFERENCES notations (id) ON DELETE CASCADE ON UPDATE CASCADE,
-          tag_id TEXT REFERENCES tags (id) ON DELETE CASCADE ON UPDATE CASCADE
+          notation_id TEXT REFERENCES notations (id) ON DELETE CASCADE,
+          tag_id TEXT REFERENCES tags (id) ON DELETE CASCADE
       );
 
       CREATE TRIGGER trigger_generate_tagging_id BEFORE INSERT ON taggings FOR EACH ROW EXECUTE PROCEDURE unique_short_id();

@@ -6,15 +6,17 @@ import { TYPES } from '../../inversify.constants';
 import { Logger } from '../../util';
 import { Db, Task } from './../types';
 import { initModels } from './initModels';
+import { NotationModel, TaggingModel, TagModel, UserModel } from './models';
 
 const namespace = createNamespace('transaction');
 Sequelize.useCLS(namespace);
 
 @injectable()
-export class SequelizeDb implements Db {
+export class SequelizeDb extends Db {
   sequelize: Sequelize;
 
   constructor(@inject(TYPES.Logger) logger: Logger, @inject(TYPES.Config) config: Config) {
+    super();
     const sequelize = new Sequelize({
       dialect: 'postgres',
       host: config.DB_HOST,
@@ -30,11 +32,21 @@ export class SequelizeDb implements Db {
     this.sequelize = sequelize;
   }
 
+  async doCleanup() {
+    // Destroy is preferred over TRUNCATE table CASCADE because this
+    // approach is much faster. The model ordering is intentional to
+    // prevent foreign key constraints.
+    await TaggingModel.destroy({ where: {} });
+    await TagModel.destroy({ where: {} });
+    await NotationModel.destroy({ where: {} });
+    await UserModel.destroy({ where: {} });
+  }
+
   async transaction(task: Task) {
     await this.sequelize.transaction(task);
   }
 
-  async teardown() {
+  async closeConnection() {
     await this.sequelize.close();
   }
 }

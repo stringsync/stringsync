@@ -7,6 +7,7 @@ module.exports = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
+  globalSetup: '<rootDir>/src/testing/globalSetup.js',
   reporters: ['default', 'jest-junit'],
   resetModules: false,
   testPathIgnorePatterns: ['node_modules'],

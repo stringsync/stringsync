@@ -7,5 +7,21 @@ expect.extend({
   toHaveErrorCode,
 });
 
-// init DB
-container.get<Db>(TYPES.Db);
+let db: Db;
+
+beforeAll(() => {
+  // init DB
+  db = container.get<Db>(TYPES.Db);
+});
+
+afterEach(async () => {
+  if (db) {
+    await db.cleanup();
+  }
+});
+
+afterAll(async () => {
+  if (db) {
+    await db.closeConnection();
+  }
+});

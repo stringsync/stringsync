@@ -1,6 +1,7 @@
 const NodeEnvironment = require('jest-environment-node');
 const { createNamespace } = require('cls-hooked');
 const { Sequelize } = require('sequelize');
+const { getWorkerDbName } = require('./workers');
 
 const namespace = createNamespace('transaction');
 Sequelize.useCLS(namespace);
@@ -10,21 +11,21 @@ class TestEnvironment extends NodeEnvironment {
     await super.setup();
 
     const logLevel = (process.env.LOG_LEVEL || '').toUpperCase();
+    const workerId = process.env.JEST_WORKER_ID || '0';
 
     this.sequelize = new Sequelize({
       dialect: 'postgres',
       host: process.env.DB_HOST,
       port: process.env.DB_PORT,
-      database: process.env.DB_NAME,
+      database: getWorkerDbName(workerId),
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
-      logging: logLevel === 'DEBUG' ? console.log : undefined,
+      logging: logLevel === 'DEBUG' ? console.log : false,
     });
 
     const ctx = this.getVmContext();
     if (ctx) {
-      ctx.process.STRINGSYNC_sequelize = this.sequelize;
-      ctx.process.STRINGSYNC_namespace = namespace;
+      ctx.process.env.DB_NAME = getWorkerDbName(workerId);
     }
   }
 
@@ -35,9 +36,6 @@ class TestEnvironment extends NodeEnvironment {
 
   async handleTestEvent(event, state) {
     switch (event.name) {
-      case 'test_start':
-        await this.onTestStart();
-        break;
       case 'test_done':
         await this.onTestDone();
         break;
@@ -46,17 +44,8 @@ class TestEnvironment extends NodeEnvironment {
     }
   }
 
-  async onTestStart() {
-    if (!this.transaction) {
-      this.transaction = await this.sequelize.transaction();
-    }
-  }
-
   async onTestDone() {
-    if (this.transaction) {
-      await this.transaction.rollback();
-      this.transaction = undefined;
-    }
+    // await this.sequelize.truncate({ logging: console.log });
   }
 }
 

@@ -1,0 +1,26 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:11
+    restart: always
+    environment:
+      POSTGRES_DB: stringsync
+      POSTGRES_USER: stringsync
+      POSTGRES_PASSWORD: stringsync
+
+  redis:
+    image: redis:5.0
+
+  test:
+    image: stringsync:latest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    env_file:
+      - ../../env/api.test.env
+    volumes:
+      - ./src:/app/src
+    links:
+      - db
+      - redis
