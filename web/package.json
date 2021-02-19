@@ -31,8 +31,7 @@
     "redux": "^4.0.5",
     "styled-components": "^5.1.1",
     "typescript": "~3.7.2",
-    "video.js": "^7.10.2",
-    "webpack": "4.42.0"
+    "video.js": "^7.10.2"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^1.15.3",
