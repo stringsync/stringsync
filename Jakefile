@@ -18,7 +18,7 @@ namespace('install', () => {
   desc('installs api dependencies');
   task('api', async () => {
     await new Promise((resolve, reject) => {
-      const yarn = spawn('yarn', { cwd: 'api' });
+      const yarn = spawn('yarn', { cwd: 'api', stdio: 'inherit' });
       yarn.on('close', resolve);
       yarn.on('error', reject);
     });
@@ -27,7 +27,7 @@ namespace('install', () => {
   desc('installs web dependencies');
   task('web', async () => {
     await new Promise((resolve, reject) => {
-      const yarn = spawn('yarn', { cwd: 'web' });
+      const yarn = spawn('yarn', { cwd: 'web', stdio: 'inherit' });
       yarn.on('close', resolve);
       yarn.on('error', reject);
     });
@@ -57,7 +57,10 @@ namespace('build', () => {
     const DOCKER_TAG = env('DOCKER_TAG', 'latest');
 
     await new Promise((resolve, reject) => {
-      const docker = spawn('docker', ['build', '-t', `stringsync:${DOCKER_TAG}`, '.'], { cwd: 'api' });
+      const docker = spawn('docker', ['build', '-t', `stringsync:${DOCKER_TAG}`, '.'], {
+        cwd: 'api',
+        stdio: 'inherit',
+      });
       docker.on('close', resolve);
       docker.on('error', reject);
     });
@@ -66,7 +69,7 @@ namespace('build', () => {
   desc('builds the stringsync production build');
   task('web', ['install:web'], async () => {
     await new Promise((resolve, reject) => {
-      const yarn = spawn('yarn', ['build'], { cwd: 'web' });
+      const yarn = spawn('yarn', ['build'], { cwd: 'web', stdio: 'inherit' });
       yarn.on('close', resolve);
       yarn.on('error', reject);
     });
