@@ -17,17 +17,19 @@ const env = (name, fallback = undefined) => {
 namespace('install', () => {
   desc('installs api dependencies');
   task('api', async () => {
-    await new Promise((resolve) => {
+    await new Promise((resolve, reject) => {
       const yarn = spawn('yarn', { cwd: 'api' });
       yarn.on('close', resolve);
+      yarn.on('error', reject);
     });
   });
 
   desc('installs web dependencies');
   task('web', async () => {
-    await new Promise((resolve) => {
+    await new Promise((resolve, reject) => {
       const yarn = spawn('yarn', { cwd: 'web' });
       yarn.on('close', resolve);
+      yarn.on('error', reject);
     });
   });
 });
@@ -41,9 +43,10 @@ namespace('db', () => {
     env('DB_HOST');
     env('DB_PORT');
 
-    await new Promise((resolve) => {
+    await new Promise((resolve, reject) => {
       const yarn = spawn('yarn', ['migrate'], { cwd: 'api', stdio: 'inherit' });
       yarn.on('close', resolve);
+      yarn.on('error', reject);
     });
   });
 });
@@ -54,9 +57,18 @@ namespace('build', () => {
     const DOCKER_TAG = env('DOCKER_TAG', 'latest');
 
     await new Promise((resolve, reject) => {
-      const docker = spawn('docker', ['build', '-t', `stringsync:${DOCKER_TAG}`, './api']);
+      const docker = spawn('docker', ['build', '-t', `stringsync:${DOCKER_TAG}`, '.'], { cwd: 'api' });
       docker.on('close', resolve);
       docker.on('error', reject);
+    });
+  });
+
+  desc('builds the stringsync production build');
+  task('web', ['install:web'], async () => {
+    await new Promise((resolve, reject) => {
+      const yarn = spawn('yarn', ['build'], { cwd: 'web' });
+      yarn.on('close', resolve);
+      yarn.on('error', reject);
     });
   });
 });
@@ -93,7 +105,7 @@ namespace('test', () => {
     };
 
     const cleanupTests = async () => {
-      await new Promise((resolve) => {
+      await new Promise((resolve, reject) => {
         const dockerCompose = spawn('docker-compose', [
           '-f',
           './api/docker-compose.test.yml',
@@ -101,6 +113,7 @@ namespace('test', () => {
           '--remove-orphans',
         ]);
         dockerCompose.on('close', resolve);
+        dockerCompose.on('error', reject);
       });
     };
 
