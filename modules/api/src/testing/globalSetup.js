@@ -14,7 +14,7 @@ module.exports = async () => {
 
   // create worker dbs
   const dbName = sequelize.getDatabaseName();
-  const numWorkers = parseInt(process.env.JEST_WORKERS || '1');
+  const numWorkers = parseInt(process.env.JEST_NUM_WORKERS || '1');
   const workerDbNames = getWorkerDbNames(numWorkers);
   // only 1 user allowed to access main db at a time
   for (const workerDbName of workerDbNames) {

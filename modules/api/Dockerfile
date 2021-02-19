@@ -18,4 +18,5 @@ COPY ecosystem.config.js .
 COPY jest.config.js .
 COPY .sequelizerc .
 COPY sequelize.config.js .
+COPY bin bin
 COPY src src

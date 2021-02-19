@@ -4,6 +4,11 @@
   "description": "GraphQL server for @stringsync",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "migrate": "yarn sequelize db:migrate",
+    "pretest": "yarn migrate",
+    "test": "yarn jest --maxWorkers=$JEST_NUM_WORKERS"
+  },
   "dependencies": {
     "altair-express-middleware": "^3.2.1",
     "aws-sdk": "^2.844.0",

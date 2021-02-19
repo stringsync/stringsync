@@ -24,3 +24,4 @@ services:
     links:
       - db
       - redis
+    entrypoint: ['./bin/wait-for-it.sh', 'db:5432', '--']
