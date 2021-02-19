@@ -22,6 +22,14 @@ namespace('install', () => {
       yarn.on('close', resolve);
     });
   });
+
+  desc('installs web dependencies');
+  task('web', async () => {
+    await new Promise((resolve) => {
+      const yarn = spawn('yarn', { cwd: 'web' });
+      yarn.on('close', resolve);
+    });
+  });
 });
 
 namespace('db', () => {
