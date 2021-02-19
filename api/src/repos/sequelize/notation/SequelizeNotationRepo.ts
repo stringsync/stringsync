@@ -63,7 +63,7 @@ export class SequelizeNotationRepo implements NotationRepo {
     const tagIds = args.tagIds || null;
     const query = args.query ? `%${args.query}%` : null;
 
-    return await NotationSequelizeRepo.pager.connect(args, async (pagingCtx: PagingCtx) => {
+    return await SequelizeNotationRepo.pager.connect(args, async (pagingCtx: PagingCtx) => {
       const { cursor, limit, pagingType } = pagingCtx;
       const queryArgs = { cursor, pagingType, limit, query, tagIds };
 
