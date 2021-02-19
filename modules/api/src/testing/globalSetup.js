@@ -1,6 +1,7 @@
 const { Sequelize } = require('sequelize');
 const { getWorkerDbNames } = require('./workers');
 
+// create worker dbs
 module.exports = async () => {
   const sequelize = new Sequelize({
     dialect: 'postgres',
@@ -12,7 +13,6 @@ module.exports = async () => {
     logging: false,
   });
 
-  // create worker dbs
   const dbName = sequelize.getDatabaseName();
   const numWorkers = parseInt(process.env.JEST_NUM_WORKERS || '1');
   const workerDbNames = getWorkerDbNames(numWorkers);
