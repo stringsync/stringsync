@@ -20,7 +20,7 @@ services:
     env_file:
       - ../env/api.test.env
     volumes:
-      - ./src:/app/src
+      - ./src:/api/src
     links:
       - db
       - redis

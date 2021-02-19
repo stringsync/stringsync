@@ -5,7 +5,6 @@ import { Config } from '../../config';
 import { TYPES } from '../../inversify.constants';
 import { Logger } from '../../util';
 import { Db, Task } from './../types';
-import { initModels } from './initModels';
 import { NotationModel, TaggingModel, TagModel, UserModel } from './models';
 
 const namespace = createNamespace('transaction');
@@ -15,23 +14,31 @@ Sequelize.useCLS(namespace);
 export class SequelizeDb extends Db {
   sequelize: Sequelize;
 
-  constructor(@inject(TYPES.Logger) logger: Logger, @inject(TYPES.Config) config: Config) {
+  constructor(@inject(TYPES.Logger) private logger: Logger, @inject(TYPES.Config) private config: Config) {
     super();
     const sequelize = new Sequelize({
       dialect: 'postgres',
-      host: config.DB_HOST,
-      port: config.DB_PORT,
-      database: config.DB_NAME,
-      username: config.DB_USERNAME,
-      password: config.DB_PASSWORD,
-      logging: (sql: string) => logger.debug(sql),
+      host: this.config.DB_HOST,
+      port: this.config.DB_PORT,
+      database: this.config.DB_NAME,
+      username: this.config.DB_USERNAME,
+      password: this.config.DB_PASSWORD,
+      logging: (sql: string) => this.logger.debug(sql),
     });
 
     this.sequelize = sequelize;
   }
 
   async init() {
-    initModels(this.sequelize);
+    TaggingModel.initColumns(this.sequelize);
+    UserModel.initColumns(this.sequelize);
+    NotationModel.initColumns(this.sequelize);
+    TagModel.initColumns(this.sequelize);
+
+    TaggingModel.initAssociations();
+    UserModel.initAssociations();
+    NotationModel.initAssociations();
+    TagModel.initAssociations();
   }
 
   async doCleanup() {
