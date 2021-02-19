@@ -12,6 +12,7 @@ describe.each([['SequelizeDb', SequelizeDb]])('%s', (name, Ctor) => {
   });
 
   afterAll(async () => {
+    container.unbind(id);
     await db.closeConnection();
   });
 
