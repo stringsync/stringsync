@@ -8,7 +8,7 @@ import { Connection, Pager, PagingCtx, PagingType, UserConnectionArgs } from '..
 import { UserLoader, UserRepo } from '../../types';
 
 @injectable()
-export class UserSequelizeRepo implements UserRepo {
+export class SequelizeUserRepo implements UserRepo {
   static pager = new Pager<User>(20, 'user');
 
   constructor(@inject(TYPES.UserLoader) public userLoader: UserLoader) {}

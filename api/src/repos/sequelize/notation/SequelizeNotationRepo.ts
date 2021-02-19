@@ -9,7 +9,7 @@ import { findNotationPageMaxQuery, findNotationPageMinQuery, findNotationPageQue
 import { NotationLoader, NotationRepo } from '../../types';
 
 @injectable()
-export class NotationSequelizeRepo implements NotationRepo {
+export class SequelizeNotationRepo implements NotationRepo {
   static pager = new Pager<Notation>(10, 'notation');
 
   constructor(@inject(TYPES.NotationLoader) private notationLoader: NotationLoader, @inject(TYPES.Db) private db: Db) {}

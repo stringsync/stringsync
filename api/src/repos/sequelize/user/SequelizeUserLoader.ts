@@ -6,7 +6,7 @@ import { alignOneToOne, ensureNoErrors } from '../../../util';
 import { UserLoader } from '../../types';
 
 @injectable()
-export class UserSequelizeLoader implements UserLoader {
+export class SequelizeUserLoader implements UserLoader {
   byIdLoader: Dataloader<string, User | null>;
 
   constructor() {

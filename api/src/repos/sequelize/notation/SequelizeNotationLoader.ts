@@ -7,7 +7,7 @@ import { alignManyToMany, alignOneToMany, alignOneToOne, ensureNoErrors } from '
 import { NotationLoader } from '../../types';
 
 @injectable()
-export class NotationSequelizeLoader implements NotationLoader {
+export class SequelizeNotationLoader implements NotationLoader {
   byIdLoader: Dataloader<string, Notation | null>;
   byTranscriberIdLoader: Dataloader<string, Notation[]>;
   byTagIdLoader: Dataloader<string, Notation[]>;
