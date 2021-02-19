@@ -9,8 +9,9 @@ expect.extend({
 
 let db: Db;
 
-beforeAll(() => {
+beforeAll(async () => {
   db = container.get<Db>(TYPES.Db);
+  await db.init();
 });
 
 afterEach(async () => {

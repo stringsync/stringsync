@@ -27,9 +27,11 @@ export class SequelizeDb extends Db {
       logging: (sql: string) => logger.debug(sql),
     });
 
-    initModels(sequelize);
-
     this.sequelize = sequelize;
+  }
+
+  async init() {
+    initModels(this.sequelize);
   }
 
   async doCleanup() {
