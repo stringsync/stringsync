@@ -60,7 +60,7 @@ export class SequelizeDb extends Db {
     await this.sequelize.close();
   }
 
-  async query<T>(sql: string): Promise<T[]> {
+  async query<T = unknown>(sql: string): Promise<T[]> {
     const rows = await this.sequelize.query(sql, { type: QueryTypes.SELECT });
     return camelCaseKeys<T>(rows);
   }

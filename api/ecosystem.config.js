@@ -6,6 +6,7 @@ module.exports = {
       script: './src/entrypoints/api.ts',
       instances: 1,
       kill_timeout: 10000,
+      max_memory_restart: '1G',
     },
     {
       name: 'worker',
@@ -13,6 +14,7 @@ module.exports = {
       script: './src/entrypoints/worker.ts',
       instances: 1,
       kill_timeout: 10000,
+      max_memory_restart: '1G',
     },
   ],
 };

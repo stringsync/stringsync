@@ -12,7 +12,7 @@ export abstract class Db {
     await this.doCleanup();
   }
 
-  abstract query<T>(sql: string): Promise<T[]>;
+  abstract query<T = unknown>(sql: string): Promise<T[]>;
   abstract checkHealth(): Promise<boolean>;
   abstract init(): Promise<void>;
   abstract transaction(task: Task): Promise<void>;
