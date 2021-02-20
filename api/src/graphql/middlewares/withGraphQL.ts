@@ -1,8 +1,11 @@
-import { Response } from 'express';
+import { Handler, Response } from 'express';
+import { graphqlHTTP } from 'express-graphql';
+import { GraphQLSchema } from 'graphql';
 import { Container } from 'inversify';
-import { TYPES } from '../inversify.constants';
-import { ctor } from '../util';
-import { ReqCtx, SessionRequest } from './types';
+import { TYPES } from '../../inversify.constants';
+import { ctor } from '../../util';
+import { ReqCtx, SessionRequest } from '../types';
+import { formatError } from './formatError';
 
 /**
  * Creating a child does not copy its underlying binding dictionary, which is a map that resolves
@@ -30,9 +33,22 @@ const applyReqRebindings = (container: Container) => {
   }
 };
 
-export const createReqCtx = (req: SessionRequest, res: Response, container: Container): ReqCtx => {
+const createReqCtx = (req: SessionRequest, res: Response, container: Container): ReqCtx => {
   const reqAt = new Date();
   const reqContainer = createReqContainerHack(container);
   applyReqRebindings(reqContainer);
   return { reqAt, req, res, container };
+};
+
+export const withGraphQL = (container: Container, schema: GraphQLSchema): Handler => (req, res) => {
+  const context = createReqCtx(req as SessionRequest, res, container);
+
+  const middleware = graphqlHTTP({
+    schema,
+    context,
+    graphiql: false,
+    customFormatErrorFn: formatError,
+  });
+
+  return middleware(req, res);
 };
