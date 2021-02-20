@@ -54,6 +54,12 @@ container
   .bind<Db>(TYPES.Db)
   .to(SequelizeDb)
   .inSingletonScope();
+
+container
+  .bind<Cache>(TYPES.Cache)
+  .to(RedisCache)
+  .inSingletonScope();
+
 container.bind<Logger>(TYPES.Logger).to(WinstonLogger);
 container.bind<Config>(TYPES.Config).toConstantValue(getConfig());
 
@@ -73,8 +79,6 @@ container.bind<UserLoader>(TYPES.UserLoader).to(SequelizeUserLoader);
 container.bind<NotationRepo>(TYPES.NotationRepo).to(SequelizeNotationRepo);
 container.bind<NotationLoader>(TYPES.NotationLoader).to(SequelizeNotationLoader);
 container.bind<TaggingRepo>(TYPES.TaggingRepo).to(SequelizeTaggingRepo);
-
-container.bind<Cache>(TYPES.Cache).to(RedisCache);
 
 if (config.NODE_ENV === 'test') {
   container.bind<MessageQueue>(TYPES.MessageQueue).to(NoopMessageQueue);

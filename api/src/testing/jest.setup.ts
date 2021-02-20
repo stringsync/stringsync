@@ -1,6 +1,7 @@
 import { Db } from '../db';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
+import { Cache } from '../util';
 import { toHaveErrorCode } from './matchers';
 
 expect.extend({
@@ -8,20 +9,18 @@ expect.extend({
 });
 
 let db: Db;
+let cache: Cache;
 
 beforeAll(async () => {
   db = container.get<Db>(TYPES.Db);
+  cache = container.get<Cache>(TYPES.Cache);
   await db.init();
 });
 
 afterEach(async () => {
-  if (db) {
-    await db.cleanup();
-  }
+  await Promise.all([db.cleanup(), cache.cleanup()]);
 });
 
 afterAll(async () => {
-  if (db) {
-    await db.closeConnection();
-  }
+  await Promise.all([db.closeConnection(), cache.teardown()]);
 });
