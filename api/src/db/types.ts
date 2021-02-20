@@ -13,6 +13,7 @@ export abstract class Db {
   }
 
   abstract query<T>(sql: string): Promise<T[]>;
+  abstract checkHealth(): Promise<boolean>;
   abstract init(): Promise<void>;
   abstract transaction(task: Task): Promise<void>;
   abstract closeConnection(): Promise<void>;

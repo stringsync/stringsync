@@ -64,4 +64,14 @@ export class SequelizeDb extends Db {
     const rows = await this.sequelize.query(sql, { type: QueryTypes.SELECT });
     return camelCaseKeys<T>(rows);
   }
+
+  async checkHealth(): Promise<boolean> {
+    try {
+      await this.sequelize.authenticate();
+      return true;
+    } catch (err) {
+      this.logger.error(err.message);
+      return false;
+    }
+  }
 }

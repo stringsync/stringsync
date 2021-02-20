@@ -1,0 +1,36 @@
+import { sortBy } from 'lodash';
+import { container } from '../../inversify.config';
+import { TYPES } from '../../inversify.constants';
+import { UserRepo } from '../../repos';
+import { EntityBuilder } from '../../testing';
+import { UserService } from './UserService';
+
+describe('UserService', () => {
+  let userService: UserService;
+  let userRepo: UserRepo;
+
+  beforeEach(() => {
+    userService = container.get<UserService>(TYPES.UserService);
+    userRepo = userService.userRepo;
+  });
+
+  describe('find', () => {
+    it('finds an entity', async () => {
+      const user = await userRepo.create(EntityBuilder.buildRandUser());
+
+      const foundUser = await userService.find(user.id);
+
+      expect(foundUser).toStrictEqual(user);
+    });
+  });
+
+  describe('findAll', () => {
+    it('finds all entities', async () => {
+      const users = await userRepo.bulkCreate([EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser()]);
+      const foundUsers = await userService.findAll();
+
+      expect(users).toHaveLength(2);
+      expect(sortBy(foundUsers, 'id')).toStrictEqual(sortBy(users, 'id'));
+    });
+  });
+});
