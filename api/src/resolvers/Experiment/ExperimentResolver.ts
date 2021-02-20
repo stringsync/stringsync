@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 import { Query, Resolver, UseMiddleware } from 'type-graphql';
-import { AuthRequirement } from '../../auth';
+import { AuthRequirement } from '../../services';
 import { WithAuthRequirement } from '../middlewares';
 
 @Resolver()
