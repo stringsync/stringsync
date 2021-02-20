@@ -11,7 +11,6 @@ type State = {
   reqId: string;
   sessionUser: SessionUser;
   container: Container;
-  largeObject: any[];
 };
 
 export class Ctx {
@@ -31,7 +30,6 @@ export class Ctx {
     reqAt: new Date(),
     reqId: uuid.v4(),
     container: createReqContainerHack(container),
-    largeObject: new Array(100).fill(null).map(() => createReqContainerHack(container)),
   };
 
   private constructor() {
