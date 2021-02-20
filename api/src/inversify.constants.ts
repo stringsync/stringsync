@@ -11,6 +11,8 @@ export const TYPES = {
   NotationRepo: Symbol('NotationRepo'),
   NotationService: Symbol('NotationService'),
   NotificationService: Symbol('NotificationService'),
+  Redis: Symbol('Redis'),
+  Server: Symbol('Server'),
   TaggingRepo: Symbol('TaggingRepo'),
   TaggingService: Symbol('TaggingService'),
   TagLoader: Symbol('TagLoader'),

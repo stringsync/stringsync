@@ -1,6 +1,6 @@
 import { GraphQLError, GraphQLFormattedError } from 'graphql';
 import { get } from 'lodash';
-import { UNKNOWN_ERROR_MSG } from '../../errors';
+import { UNKNOWN_ERROR_MSG } from '../../../errors';
 
 const getMessage = (error: GraphQLError): string => {
   if (get(error.originalError, 'name') === 'SequelizeUniqueConstraintError') {

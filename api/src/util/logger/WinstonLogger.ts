@@ -2,11 +2,12 @@ import { inject, injectable } from 'inversify';
 import winston from 'winston';
 import { Config } from '../../config';
 import { TYPES } from '../../inversify.constants';
-import { Logger } from './types';
+import { Logger, LoggerMeta } from './types';
 
 @injectable()
 export class WinstonLogger implements Logger {
   logger: winston.Logger;
+  meta: LoggerMeta = {};
 
   constructor(@inject(TYPES.Config) public config: Config) {
     const formats = new Array<winston.Logform.Format>();
@@ -25,19 +26,31 @@ export class WinstonLogger implements Logger {
     });
   }
 
+  getMeta() {
+    return this.meta;
+  }
+
+  mergeMeta(meta: LoggerMeta) {
+    this.meta = { ...this.meta, ...meta };
+  }
+
+  setMeta(meta: LoggerMeta) {
+    this.meta = meta;
+  }
+
   error(msg: string) {
-    this.logger.error(msg);
+    this.logger.error(msg, this.meta);
   }
 
   info(msg: string) {
-    this.logger.info(msg);
+    this.logger.info(msg, this.meta);
   }
 
   warn(msg: string) {
-    this.logger.warn(msg);
+    this.logger.warn(msg, this.meta);
   }
 
   debug(msg: string) {
-    this.logger.debug(msg);
+    this.logger.debug(msg, this.meta);
   }
 }

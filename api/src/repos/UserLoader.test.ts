@@ -43,6 +43,11 @@ describe.each([['SequelizeUserLoader', SequelizeUserLoader]])('%s', (name, Ctor)
       expect(user).toBeNull();
     });
 
+    it('returns null for an empty id', async () => {
+      const user = await userLoader.findById('');
+      expect(user).toBeNull();
+    });
+
     it('returns a plain object', async () => {
       const user = await userLoader.findById(user1.id);
       expect(isPlainObject(user)).toBe(true);

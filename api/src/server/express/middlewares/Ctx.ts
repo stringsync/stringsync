@@ -1,10 +1,11 @@
 import { Request } from 'express';
 import { Container } from 'inversify';
 import * as uuid from 'uuid';
-import { InternalError } from '../errors';
-import { container } from '../inversify.config';
-import { SessionUser } from '../services';
-import { createReqContainerHack } from './middlewares/createReqContainerHack';
+import { InternalError } from '../../../errors';
+import { container } from '../../../inversify.config';
+import { SessionUser } from '../../types';
+import { applyReqContainerRebindings } from './applyReqContainerRebindings';
+import { createReqContainerHack } from './createReqContainerHack';
 
 type State = {
   reqAt: Date;
@@ -22,27 +23,27 @@ export class Ctx {
     Ctx.bindings.set(req, ctx);
   }
 
-  static get(req: Request): Ctx | null {
-    return Ctx.bindings.get(req) || null;
+  static get(req: Request): Ctx {
+    const ctx = Ctx.bindings.get(req);
+    if (!ctx) {
+      throw new InternalError(`ctx not bound to req`);
+    }
+    return ctx;
   }
 
   private state: Partial<State> = {
     reqAt: new Date(),
     reqId: uuid.v4(),
-    container: createReqContainerHack(container),
   };
 
-  private constructor() {
-    // noop
+  toObject(): State {
+    return {
+      reqAt: this.getReqAt(),
+      reqId: this.getReqId(),
+      sessionUser: this.getSessionUser(),
+      container: this.getContainer(),
+    };
   }
-
-  // toObject(): State {
-  //   return {
-  //     reqAt: this.getReqAt(),
-  //     reqId: this.getReqId(),
-  //     sessionUser: this.getSessionUser(),
-  //   };
-  // }
 
   getReqAt(): Date {
     return this.fetch('reqAt');
@@ -58,6 +59,16 @@ export class Ctx {
 
   getSessionUser(): SessionUser {
     return this.fetch('sessionUser');
+  }
+
+  getContainer(): Container {
+    if (this.state.container) {
+      return this.state.container;
+    }
+    const reqContainer = createReqContainerHack(container);
+    applyReqContainerRebindings(reqContainer, { reqId: this.getReqId(), sessionUser: this.getSessionUser() });
+    this.state.container = reqContainer;
+    return reqContainer;
   }
 
   private fetch<T extends keyof State>(field: T): State[T] {

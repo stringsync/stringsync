@@ -22,7 +22,7 @@ export class AuthService {
   constructor(@inject(TYPES.UserRepo) public userRepo: UserRepo, @inject(TYPES.Logger) public logger: Logger) {}
 
   async getSessionUser(id: string): Promise<SessionUser> {
-    const user = await this.userRepo.find(id);
+    const user = id ? await this.userRepo.find(id) : null;
     return this.toSessionUser(user);
   }
 

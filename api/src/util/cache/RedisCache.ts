@@ -1,17 +1,12 @@
 import { inject, injectable } from 'inversify';
-import { createClient, RedisClient } from 'redis';
-import { Config } from '../../config';
+import { RedisClient } from 'redis';
 import { TYPES } from '../../inversify.constants';
 import { Logger } from '../logger';
 import { Cache } from './types';
 
 @injectable()
 export class RedisCache implements Cache {
-  redis: RedisClient;
-
-  constructor(@inject(TYPES.Logger) private logger: Logger, @inject(TYPES.Config) private config: Config) {
-    this.redis = createClient({ host: config.REDIS_HOST, port: config.REDIS_PORT });
-  }
+  constructor(@inject(TYPES.Logger) private logger: Logger, @inject(TYPES.Redis) private redis: RedisClient) {}
 
   async cleanup() {
     await new Promise((resolve) => {

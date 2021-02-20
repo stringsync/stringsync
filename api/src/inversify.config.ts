@@ -1,4 +1,5 @@
 import { Container } from 'inversify';
+import { createClient, RedisClient } from 'redis';
 import 'reflect-metadata';
 import { Config, getConfig } from './config';
 import { Db, SequelizeDb } from './db';
@@ -19,6 +20,8 @@ import {
   UserLoader,
   UserRepo,
 } from './repos';
+import { ExperimentResolver } from './resolvers';
+import { DevExpressServer, ExpressServer, Server } from './server';
 import {
   AuthService,
   HealthCheckerService,
@@ -54,6 +57,9 @@ container
   .bind<Db>(TYPES.Db)
   .to(SequelizeDb)
   .inSingletonScope();
+
+const redis = createClient({ host: config.REDIS_HOST, port: config.REDIS_PORT });
+container.bind<RedisClient>(TYPES.Redis).toConstantValue(redis);
 
 container
   .bind<Cache>(TYPES.Cache)
@@ -99,3 +105,14 @@ if (config.NODE_ENV === 'test') {
 } else {
   container.bind<Mailer>(TYPES.Mailer).to(Nodemailer);
 }
+
+if (config.NODE_ENV === 'development') {
+  container.bind<Server>(TYPES.Server).to(DevExpressServer);
+} else {
+  container.bind<Server>(TYPES.Server).to(ExpressServer);
+}
+
+container
+  .bind<ExperimentResolver>(ExperimentResolver)
+  .toSelf()
+  .inSingletonScope();
