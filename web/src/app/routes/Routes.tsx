@@ -1,9 +1,10 @@
-import { AuthRequirement, compose } from '@stringsync/common';
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { Nothing } from '../../components/Nothing';
 import { ReturnToRoute } from '../../components/ReturnToRoute';
 import { withAuthRequirement } from '../../hocs';
+import { compose } from '../../util/compose';
+import { AuthRequirement } from '../../util/types';
 import { Fallback } from './Fallback';
 import { Landing } from './Landing';
 import { NotFound } from './NotFound';

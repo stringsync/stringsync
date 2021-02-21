@@ -1,9 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { DeepPartial } from '@stringsync/common';
+import { DeepPartial } from '../util/types';
 import { authSlice } from './auth';
 import { deviceSlice } from './device';
 import { historySlice } from './history';
-import { librarySlice } from './library';
 import { swSlice } from './sw';
 import { tagSlice } from './tag';
 import { AppStore, RootState } from './types';
@@ -16,7 +15,6 @@ export const createStore = (preloadedState: DeepPartial<RootState> = {}): AppSto
       viewport: viewportSlice.reducer,
       auth: authSlice.reducer,
       history: historySlice.reducer,
-      library: librarySlice.reducer,
       tag: tagSlice.reducer,
       sw: swSlice.reducer,
     },

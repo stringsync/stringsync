@@ -1,5 +1,5 @@
-import { User } from '@stringsync/domain';
-import { PayloadAction, CaseReducer } from '@reduxjs/toolkit';
+import { CaseReducer, PayloadAction } from '@reduxjs/toolkit';
+import { User } from '../../domain';
 
 export type AuthUser = Pick<User, 'id' | 'email' | 'username' | 'role'> & {
   confirmedAt: null | string;

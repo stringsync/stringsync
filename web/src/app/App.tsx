@@ -1,9 +1,9 @@
-import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
-import { Provider as StoreProvider } from 'react-redux';
-import { Store } from 'redux';
 import { ConfigProvider } from 'antd';
 import enUS from 'antd/lib/locale-provider/en_US';
+import React from 'react';
+import { Provider as StoreProvider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
+import { Store } from 'redux';
 import { ThemeProvider } from 'styled-components';
 import { theme } from '../theme';
 

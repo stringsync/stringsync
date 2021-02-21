@@ -1,4 +1,3 @@
-import { UnknownError, UNKNOWN_ERROR_MSG } from '@stringsync/common';
 import { Button, Form, Input, message } from 'antd';
 import { Rule } from 'antd/lib/form';
 import React, { useEffect, useState } from 'react';
@@ -7,6 +6,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { AuthClient } from '../../../clients';
 import { FormPage } from '../../../components/FormPage';
+import { UnknownError, UNKNOWN_ERROR_MSG } from '../../../errors';
 
 const EMAIL_RULES: Rule[] = [
   { required: true, message: 'email is required' },

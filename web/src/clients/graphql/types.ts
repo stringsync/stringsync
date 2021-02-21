@@ -1,5 +1,5 @@
-import { OnlyKey } from '@stringsync/common';
 import { GraphQLError } from 'graphql';
+import { OnlyKey } from '../../util/types';
 import { Mutation, Query } from '../graphqlTypes';
 
 export type RequestType = Query | Mutation;

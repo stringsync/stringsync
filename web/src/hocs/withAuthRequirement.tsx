@@ -1,10 +1,10 @@
-import React, { useEffect, useRef } from 'react';
 import { message } from 'antd';
-import { UserRole, gtEqStudent, gtEqTeacher, gtEqAdmin } from '@stringsync/domain';
-import { useHistory } from 'react-router';
+import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { RootState, isLoggedInSelector } from '../store';
-import { AuthRequirement } from '@stringsync/common';
+import { useHistory } from 'react-router';
+import { gtEqAdmin, gtEqStudent, gtEqTeacher, UserRole } from '../domain';
+import { isLoggedInSelector, RootState } from '../store';
+import { AuthRequirement } from '../util/types';
 
 const isMeetingAuthReqs = (authReqs: AuthRequirement, isLoggedIn: boolean, userRole: UserRole) => {
   switch (authReqs) {

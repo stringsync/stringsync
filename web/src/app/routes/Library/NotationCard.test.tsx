@@ -1,31 +1,24 @@
-import { randStr } from '@stringsync/common';
-import { UserRole } from '@stringsync/domain';
 import { render } from '@testing-library/react';
 import React from 'react';
+import { EntityBuilder } from '../../../testing';
 import { NotationCard } from './NotationCard';
+import { NotationPreview } from './types';
 
 describe('NotationCard', () => {
   it('runs without crashing', async () => {
-    const nowStr = new Date().toString();
-    const notation = {
-      id: randStr(8),
-      artistName: randStr(10),
-      createdAt: nowStr,
-      updatedAt: nowStr,
-      songName: randStr(10),
-      thumbnailUrl: randStr(10),
+    const transcriber = EntityBuilder.buildRandUser();
+    const notation = EntityBuilder.buildRandNotation();
+    const notationPreview: NotationPreview = {
+      ...notation,
+      transcriber,
       tags: [],
-      transcriber: {
-        id: randStr(8),
-        avatarUrl: randStr(10),
-        role: UserRole.TEACHER,
-        username: randStr(8),
-      },
+      createdAt: notation.createdAt.toISOString(),
+      updatedAt: notation.updatedAt.toISOString(),
     };
     const isTagChecked = () => true;
     const query = '';
 
-    const { container } = render(<NotationCard notation={notation} query={query} isTagChecked={isTagChecked} />);
+    const { container } = render(<NotationCard notation={notationPreview} query={query} isTagChecked={isTagChecked} />);
 
     expect(container).toBeInTheDocument();
   });

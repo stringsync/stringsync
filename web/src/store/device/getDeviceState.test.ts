@@ -1,5 +1,5 @@
-import { DeepPartial } from '@stringsync/common';
 import { merge } from 'lodash';
+import { DeepPartial } from '../../util/types';
 import { getDeviceState } from './getDeviceState';
 import { DeviceState } from './types';
 

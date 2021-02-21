@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { Transition } from 'react-transition-group';
 import { TransitionStatus } from 'react-transition-group/Transition';
 import styled from 'styled-components';
-import { NotationPreview } from '../../../store/library/types';
 import { theme } from '../../../theme';
 import { getQueryMatches } from './getQueryMatches';
+import { NotationPreview } from './types';
 
 const FADE_IN_DURATION_MS = 300;
 

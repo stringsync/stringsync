@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { TagClient } from '../../clients';
+import { Tag } from '../../domain';
 import { TagReducers, TagState } from './types';
-import { Tag } from '@stringsync/domain';
 
 export type GetTagsReturned = { tags: Tag[] };
 export type GetTagsThunkArg = void;

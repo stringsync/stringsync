@@ -1,10 +1,10 @@
 import { CompassOutlined, SettingOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons';
-import { gtEqTeacher } from '@stringsync/domain';
 import { Avatar, Button, Col, message, Modal, Row } from 'antd';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, NavLink } from 'react-router-dom';
 import styled from 'styled-components';
+import { gtEqTeacher } from '../../domain';
 import { AppDispatch, AuthUser, isLoggedInSelector, logout, RootState } from '../../store';
 
 const StyledRow = styled(Row)`

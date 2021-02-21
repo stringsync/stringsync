@@ -1,7 +1,7 @@
 import React from 'react';
-import { Breakpoint, AppDispatch, RootState, setBreakpoint } from '../store';
-import { useMedia } from '../hooks';
 import { useDispatch, useSelector } from 'react-redux';
+import { useMedia } from '../hooks';
+import { AppDispatch, Breakpoint, RootState, setBreakpoint } from '../store';
 
 const BREAKPOINT_QUERIES = [
   '(max-width: 575px)',

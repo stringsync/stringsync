@@ -1,11 +1,11 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { AuthUser, AuthState, AuthReducers } from './types';
-import { getNullAuthUser } from './getNullAuthUser';
-import { AuthClient, LoginInput, SignupInput, SendResetPasswordEmailInput } from '../../clients';
-import { toAuthUser } from './toAuthUser';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { AuthClient, LoginInput, SendResetPasswordEmailInput, SignupInput } from '../../clients';
+import { UNKNOWN_ERROR_MSG } from '../../errors';
 import { RootState } from '../types';
 import { getNullAuthState } from './getNullAuthState';
-import { UNKNOWN_ERROR_MSG } from '@stringsync/common';
+import { getNullAuthUser } from './getNullAuthUser';
+import { toAuthUser } from './toAuthUser';
+import { AuthReducers, AuthState, AuthUser } from './types';
 
 export type AuthenticateReturned = { user: AuthUser };
 export type AuthenticateThunkArg = { shouldClearAuthOnError: boolean };

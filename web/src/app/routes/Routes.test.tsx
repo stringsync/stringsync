@@ -4,7 +4,7 @@ import { Test } from '../../testing';
 import { Routes } from './Routes';
 
 describe('Routes', () => {
-  it('renders without crashing', () => {
+  fit('renders without crashing', () => {
     const { container } = render(
       <Test>
         <Routes />

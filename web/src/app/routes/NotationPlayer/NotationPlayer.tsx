@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router';
-import { compose } from '@stringsync/common';
-import { withLayout, Layout } from '../../../hocs';
+import { Layout, withLayout } from '../../../hocs';
+import { compose } from '../../../util/compose';
 
 const enhance = compose(withLayout(Layout.DEFAULT));
 

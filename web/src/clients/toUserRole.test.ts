@@ -1,4 +1,4 @@
-import { UserRole as DomainUserRole } from '@stringsync/domain';
+import { UserRole as DomainUserRole } from '../domain';
 import { UserRoles as TypegenUserRole } from './graphqlTypes';
 import { toUserRole } from './toUserRole';
 

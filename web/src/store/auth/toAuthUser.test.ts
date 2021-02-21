@@ -1,4 +1,4 @@
-import { UserRole as DomainUserRole } from '@stringsync/domain';
+import { UserRole as DomainUserRole } from '../../domain';
 import { UserObject, UserRoles as TypegenUserRole } from './../../clients';
 import { toAuthUser } from './toAuthUser';
 import { AuthUser } from './types';

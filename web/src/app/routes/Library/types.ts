@@ -1,14 +1,14 @@
-import { PageInfo } from '@stringsync/common';
-import { PublicNotation, PublicUser, Tag } from '@stringsync/domain';
 import { QueryNotationsArgs } from '../../../clients';
+import { Notation, Tag, User } from '../../../domain';
+import { PageInfo } from '../../../util/pager';
 
 export enum LibraryStatus {
   IDLE,
   PENDING,
 }
-export type Transcriber = Pick<PublicUser, 'id' | 'username' | 'role' | 'avatarUrl'>;
+export type Transcriber = Pick<User, 'id' | 'username' | 'role' | 'avatarUrl'>;
 
-export type NotationPreview = Omit<PublicNotation, 'createdAt' | 'updatedAt'> & {
+export type NotationPreview = Omit<Notation, 'createdAt' | 'updatedAt'> & {
   transcriber: Transcriber;
   tags: Tag[];
   createdAt: string;

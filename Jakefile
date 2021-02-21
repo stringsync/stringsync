@@ -82,6 +82,7 @@ task('typecheck', ['install:api', 'install:web'], async () => {
   const tsc = yarn(['tsc', '--noEmit', '-p', 'api', '-p', 'web', WATCH ? '--watch' : ''].filter(identity), {
     stdio: 'inherit',
   });
+  process.on('SIGINT', tsc.process.kill);
   await tsc.promise;
 });
 

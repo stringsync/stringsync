@@ -1,14 +1,14 @@
-import { AuthRequirement } from '@stringsync/common';
-import { UserRole } from '@stringsync/domain';
 import { render } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router';
+import { UserRole } from '../domain';
 import { createStore } from '../store';
 import { getNullAuthState } from '../store/auth/getNullAuthState';
 import { getNullAuthUser } from '../store/auth/getNullAuthUser';
 import { Test } from '../testing';
+import { AuthRequirement } from '../util/types';
 import { withAuthRequirement } from './withAuthRequirement';
 
 describe('withAuthRequirement', () => {

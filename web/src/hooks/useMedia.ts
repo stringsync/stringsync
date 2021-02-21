@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 /**
  * src: https://usehooks.com/useMedia/
@@ -32,11 +32,11 @@ export const useMedia = <T>(queries: string[], values: T[], defaultValue: T): T 
   useEffect(() => {
     const handler = () => setValue(getValue);
     for (const mediaQueryList of mediaQueryLists) {
-      mediaQueryList.addListener(handler);
+      mediaQueryList.addEventListener('change', handler);
     }
     return () => {
       for (const mediaQueryList of mediaQueryLists) {
-        mediaQueryList.removeListener(handler);
+        mediaQueryList.removeEventListener('change', handler);
       }
     };
   }, [getValue, mediaQueryLists]);

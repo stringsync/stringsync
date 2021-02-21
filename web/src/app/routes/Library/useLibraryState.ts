@@ -1,6 +1,6 @@
-import { getInitialPageInfo } from '@stringsync/common';
 import { useCallback, useState } from 'react';
 import { NotationClient, NotationEdgeObject, QueryNotationsArgs, toUserRole } from '../../../clients';
+import { getInitialPageInfo } from '../../../util/pager';
 import { LibraryState, LibraryStatus, NotationPreview } from './types';
 
 const toNotationPreview = (edge: NotationEdgeObject): NotationPreview => {

@@ -1,5 +1,4 @@
 import { CustomerServiceOutlined, SearchOutlined, ThunderboltOutlined } from '@ant-design/icons';
-import { compose } from '@stringsync/common';
 import { Col, Divider, Row } from 'antd';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -8,6 +7,7 @@ import { Box } from '../../../components/Box';
 import { Logo } from '../../../components/Logo';
 import { Wordmark } from '../../../components/Wordmark';
 import { Layout, withLayout } from '../../../hocs';
+import { compose } from '../../../util/compose';
 
 const LANDING_SRC = 'https://dpwvs3j3j2uwp.cloudfront.net/landing.jpg';
 

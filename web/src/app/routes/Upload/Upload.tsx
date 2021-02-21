@@ -1,6 +1,4 @@
 import { FormOutlined, PictureOutlined, VideoCameraOutlined } from '@ant-design/icons';
-import { compose } from '@stringsync/common';
-import { Tag } from '@stringsync/domain';
 import { Button, Form, Input, Modal, Select, Steps, Upload as AntdUpload } from 'antd';
 import { RcFile } from 'antd/lib/upload';
 import React, { useRef, useState } from 'react';
@@ -9,9 +7,11 @@ import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import { NotationClient } from '../../../clients';
 import { Box } from '../../../components/Box';
+import { Tag } from '../../../domain';
 import { Layout, withLayout } from '../../../hocs';
 import { useEffectOnce } from '../../../hooks';
 import { getTags, RootState } from '../../../store';
+import { compose } from '../../../util/compose';
 
 const { Step } = Steps;
 const { Dragger } = AntdUpload;
@@ -33,11 +33,11 @@ const enhance = compose(withLayout(Layout.DEFAULT));
 
 type Props = {};
 
-type Upload = File | Blob | undefined;
+type Uploadable = File | Blob | undefined;
 
 type FormValues = {
-  video: Upload;
-  thumbnail: Upload;
+  video: Uploadable;
+  thumbnail: Uploadable;
   songName: string;
   artistName: string;
 };

@@ -12,5 +12,3 @@ export interface Notation {
   thumbnailUrl: string | null;
   videoUrl: string | null;
 }
-
-export type PublicNotation = Omit<Notation, 'cursor'>;

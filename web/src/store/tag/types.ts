@@ -1,4 +1,4 @@
-import { Tag } from '@stringsync/domain';
+import { Tag } from '../../domain';
 
 export type TagState = {
   isPending: boolean;

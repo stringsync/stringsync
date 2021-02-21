@@ -1,6 +1,4 @@
 import { CloseCircleOutlined, LoadingOutlined, SearchOutlined } from '@ant-design/icons';
-import { compose } from '@stringsync/common';
-import { PublicTag } from '@stringsync/domain';
 import { Affix, Alert, Button, Input, List, Row } from 'antd';
 import CheckableTag from 'antd/lib/tag/CheckableTag';
 import { isEqual, uniq, without } from 'lodash';
@@ -8,9 +6,11 @@ import React, { ChangeEventHandler, MouseEventHandler, useCallback, useEffect, u
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { Tag } from '../../../domain';
 import { Layout, withLayout } from '../../../hocs';
 import { useDebounce, useEffectOnce, useIntersection } from '../../../hooks';
 import { AppDispatch, getTags, RootState } from '../../../store';
+import { compose } from '../../../util/compose';
 import { scrollToTop } from '../../../util/scrollToTop';
 import { NotationCard } from './NotationCard';
 import { LibraryStatus } from './types';
@@ -72,7 +72,7 @@ type Props = {};
 export const Library: React.FC<Props> = enhance(() => {
   const dispatch = useDispatch<AppDispatch>();
   const xs = useSelector<RootState, boolean>((state) => state.viewport.xs);
-  const tags = useSelector<RootState, PublicTag[]>((state) => state.tag.tags);
+  const tags = useSelector<RootState, Tag[]>((state) => state.tag.tags);
 
   const {
     errors,
