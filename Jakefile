@@ -50,11 +50,11 @@ const cmd = (command) => {
       throw new Error(`command not available: \`${command}\``);
     }
 
+    const child = spawn(command, args, { cwd: opts.cwd, stdio: opts.stdio });
     await new Promise((resolve, reject) => {
       const cmdStr = [command, ...args].join(' ');
       log(chalk.yellow(cmdStr));
 
-      const child = spawn(command, args, { cwd: opts.cwd, stdio: opts.stdio });
       child.on('close', (exitCode) => {
         if (exitCode === 0) {
           opts.onSuccess();
@@ -130,7 +130,7 @@ namespace('build', () => {
 
   desc('builds the stringsync production build');
   task('web', ['install:web'], async () => {
-    await yarn(['build'], { cwd: 'web' });
+    await yarn(['build'], { cwd: 'web', stdio: 'inherit' });
   });
 });
 
@@ -162,7 +162,7 @@ namespace('test', () => {
           `--watchAll=${WATCH}`,
           CI ? '--no-colors' : '--colors',
         ],
-        { onSuccess, onFailure }
+        { stdio: 'inherit', onSuccess, onFailure }
       );
     };
 
@@ -188,6 +188,11 @@ namespace('test', () => {
     const onFailure = () => {
       log(chalk.red('web tests failed'));
     };
-    await yarn(['test', `--watchAll=${WATCH}`, CI ? '--no-colors' : '--colors'], { cwd: 'web', onSuccess, onFailure });
+    await yarn(['test', `--watchAll=${WATCH}`, CI ? '--no-colors' : '--colors'], {
+      cwd: 'web',
+      stdio: 'inherit',
+      onSuccess,
+      onFailure,
+    });
   });
 });

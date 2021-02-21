@@ -32,4 +32,6 @@ services:
       - redis
     ports:
       - '3000:3000'
-    command: ['pm2-runtime', 'start', 'ecosystem.config.js']
+    entrypoint: ['./bin/wait-for-it.sh', 'db:5432', '--']
+    command: >
+      bash -C "yarn migrate && pm2-runtime start ecosystem.config.js"
