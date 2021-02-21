@@ -18,6 +18,8 @@ const log = (msg) => console.log(`jake: ${msg}`);
 
 const noop = () => undefined;
 
+const identity = (x) => x;
+
 const DEFAULT_CMD_OPTS = { cwd: __dirname, stdio: 'ignore' };
 
 const cmd = (command) => (args, opts) => {
@@ -71,6 +73,16 @@ task('dev', ['build:api', 'install:web'], async () => {
     const down = dockerCompose(['down'], { cwd: 'api', stdio: 'inherit' });
     await down.promise;
   }
+});
+
+desc('typechecks all projects');
+task('typecheck', ['install:api', 'install:web'], async () => {
+  const WATCH = env('WATCH', 'true') === 'true';
+
+  const tsc = yarn(['tsc', '--noEmit', '-p', 'api', '-p', 'web', WATCH ? '--watch' : ''].filter(identity), {
+    stdio: 'inherit',
+  });
+  await tsc.promise;
 });
 
 namespace('install', () => {
