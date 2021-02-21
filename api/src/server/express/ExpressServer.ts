@@ -23,6 +23,11 @@ export class ExpressServer implements Server {
   ) {}
 
   start(schema: GraphQLSchema) {
+    this.configure(schema);
+    this.doStart();
+  }
+
+  protected configure(schema: GraphQLSchema) {
     const { app, logger, config, redis, authService } = this;
 
     app.set('trust proxy', 1);
@@ -41,7 +46,10 @@ export class ExpressServer implements Server {
     app.use('/graphql', graphqlUploadExpress(), withGraphQL(schema));
 
     app.use(withErrorHandler);
+  }
 
+  protected doStart() {
+    const { app, logger, config } = this;
     app.listen(config.APP_GRAPHQL_PORT, () => {
       logger.info(`server running on port: ${config.APP_GRAPHQL_PORT}`);
     });

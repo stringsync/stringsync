@@ -1,5 +1,6 @@
 import { Request } from 'express';
 import { Container } from 'inversify';
+import { set } from 'lodash';
 import * as uuid from 'uuid';
 import { InternalError } from '../../../errors';
 import { container } from '../../../inversify.config';
@@ -7,6 +8,10 @@ import { SessionUser } from '../../types';
 import { applyReqContainerRebindings } from './applyReqContainerRebindings';
 import { createReqContainerHack } from './createReqContainerHack';
 
+// The state object allows us to start with a partial state,
+// then ensure defined values are retrieved in Ctx.fetch.
+// Otherwise, we would have to make Ctx's properties public
+// in order to index typings.
 type State = {
   reqAt: Date;
   reqId: string;
@@ -19,6 +24,9 @@ export class Ctx {
   private static bindings = new WeakMap<Request, Ctx>();
 
   static bind(req: Request): void {
+    if (Ctx.bindings.has(req)) {
+      throw new InternalError(`cannot bind req more than once`);
+    }
     const ctx = new Ctx();
     Ctx.bindings.set(req, ctx);
   }
@@ -36,15 +44,6 @@ export class Ctx {
     reqId: uuid.v4(),
   };
 
-  toObject(): State {
-    return {
-      reqAt: this.getReqAt(),
-      reqId: this.getReqId(),
-      sessionUser: this.getSessionUser(),
-      container: this.getContainer(),
-    };
-  }
-
   getReqAt(): Date {
     return this.fetch('reqAt');
   }
@@ -53,8 +52,11 @@ export class Ctx {
     return this.fetch('reqId');
   }
 
-  setSessionUser(sessionUser: SessionUser): void {
+  setSessionUser(req: Request, sessionUser: SessionUser): void {
     this.state.sessionUser = sessionUser;
+    // express-session requires us to mutate the req object to
+    // persist between requests
+    set(req, 'session.user', sessionUser);
   }
 
   getSessionUser(): SessionUser {
@@ -62,12 +64,15 @@ export class Ctx {
   }
 
   getContainer(): Container {
-    if (this.state.container) {
-      return this.state.container;
+    if (!this.state.container) {
+      this.state.container = this.createContainer();
     }
+    return this.state.container;
+  }
+
+  private createContainer(): Container {
     const reqContainer = createReqContainerHack(container);
     applyReqContainerRebindings(reqContainer, { reqId: this.getReqId(), sessionUser: this.getSessionUser() });
-    this.state.container = reqContainer;
     return reqContainer;
   }
 

@@ -1,7 +1,8 @@
 import { MiddlewareFn } from 'type-graphql';
 import { gtEqAdmin, gtEqStudent, gtEqTeacher } from '../../domain';
 import { ForbiddenError } from '../../errors';
-import { AuthRequirement, SessionUser } from '../../services';
+import { SessionUser } from '../../server';
+import { AuthRequirement } from '../../services';
 
 export const WithAuthRequirement = (authReq: AuthRequirement): MiddlewareFn<{ sessionUser: SessionUser }> => async (
   data,

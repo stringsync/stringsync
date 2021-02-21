@@ -5,6 +5,9 @@ import { Logger } from '../../../util';
 import { Ctx } from './Ctx';
 
 export const withErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
+  if (res.headersSent) {
+    return next(err);
+  }
   const ctx = Ctx.get(req);
   const container = ctx.getContainer();
   const logger = container.get<Logger>(TYPES.Logger);
