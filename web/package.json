@@ -60,7 +60,6 @@
     "react-snap": "^1.23.0"
   },
   "scripts": {
-    "dev": "yarn start",
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "postbuild": "react-snap",

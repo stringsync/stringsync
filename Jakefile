@@ -18,7 +18,7 @@ const log = (msg) => console.log(`jake: ${msg}`);
 
 const noop = () => undefined;
 
-const DEFAULT_CMD_OPTS = { cwd: __dirname, onSuccess: noop, onFailure: noop };
+const DEFAULT_CMD_OPTS = { cwd: __dirname, stdio: 'ignore', onSuccess: noop, onFailure: noop };
 
 const cmd = (command) => {
   let isCommandChecked = false;
@@ -26,7 +26,15 @@ const cmd = (command) => {
 
   return async (args, opts) => {
     opts = { ...DEFAULT_CMD_OPTS, ...opts };
-    const VERBOSE = env('VERBOSE', 'true') === 'true';
+    const VERBOSE = env('VERBOSE', 'false') === 'true';
+    const QUIET = env('VERBOSE', 'false') === 'true';
+
+    if (VERBOSE && QUIET) {
+      throw new Error('cannot specify VERBOSE=true and QUIET=true env vars');
+    }
+
+    opts.stdio = VERBOSE ? 'inherit' : opts.stdio;
+    opts.stdio = QUIET ? 'ignore' : opts.stdio;
 
     if (!isCommandChecked) {
       await new Promise((resolve) => {
@@ -46,8 +54,7 @@ const cmd = (command) => {
       const cmdStr = [command, ...args].join(' ');
       log(chalk.yellow(cmdStr));
 
-      const stdio = VERBOSE ? 'inherit' : 'ignore';
-      const child = spawn(command, args, { cwd: opts.cwd, stdio });
+      const child = spawn(command, args, { cwd: opts.cwd, stdio: opts.stdio });
       child.on('close', (exitCode) => {
         if (exitCode === 0) {
           opts.onSuccess();
@@ -70,6 +77,23 @@ const yarn = cmd('yarn');
 const dockerCompose = cmd('docker-compose');
 
 const docker = cmd('docker');
+
+desc('brings up all projects');
+task('dev', ['build:api', 'install:web'], async () => {
+  // Ctrl+C is used to kill the yarn start subprocess
+  // Do nothing in the task so it can teardown gracefully.
+  process.on('SIGINT', noop);
+
+  try {
+    const api = dockerCompose(['up', '--detach'], { cwd: 'api' });
+    const web = yarn(['start'], { cwd: 'web', stdio: 'inherit' });
+    await Promise.all([api, web]);
+  } catch (e) {
+    // noop, who cares the dev process is down
+  } finally {
+    await dockerCompose(['down'], { cwd: 'api', stdio: 'inherit' });
+  }
+});
 
 namespace('install', () => {
   desc('installs api dependencies');
