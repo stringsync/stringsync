@@ -9,7 +9,7 @@ beforeEach(() => {
       onchange: null,
       addListener: jest.fn(), // deprecated
       removeListener: jest.fn(), // deprecated
-      addEventListener: () => ({ fuckYou: 'lol ' }),
+      addEventListener: jest.fn(),
       removeEventListener: jest.fn(),
       dispatchEvent: jest.fn(),
     })),
@@ -18,4 +18,5 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.clearAllMocks();
+  jest.restoreAllMocks();
 });

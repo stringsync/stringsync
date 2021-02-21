@@ -24,10 +24,6 @@ describe('authSlice', () => {
     jest.spyOn(AuthClient, 'create').mockReturnValue(authClient);
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('initializes state', () => {
     const store = configureStore({
       reducer: {
@@ -509,8 +505,7 @@ describe('authSlice', () => {
           auth: authSlice.reducer,
         },
       });
-      const authClient = AuthClient.create();
-      jest.spyOn(AuthClient, 'create').mockReturnValue(authClient);
+
       const sendResetPasswordEmailSpy = jest.spyOn(authClient, 'sendResetPasswordEmail');
       sendResetPasswordEmailSpy.mockRejectedValue(new Error('error1'));
 

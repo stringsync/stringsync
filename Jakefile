@@ -132,7 +132,7 @@ namespace('build', () => {
 
 namespace('test', () => {
   desc('tests each project');
-  task('all', ['test:api', 'test:web'], { concurrency: 2 }, noop);
+  task('all', ['test:api', 'test:web'], noop);
 
   desc('tests the api project');
   task('api', ['build:api'], async () => {
