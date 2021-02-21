@@ -18,58 +18,40 @@ const log = (msg) => console.log(`jake: ${msg}`);
 
 const noop = () => undefined;
 
-const DEFAULT_CMD_OPTS = { cwd: __dirname, stdio: 'ignore', onSuccess: noop, onFailure: noop };
+const DEFAULT_CMD_OPTS = { cwd: __dirname, stdio: 'ignore' };
 
-const cmd = (command) => {
-  let isCommandChecked = false;
-  let isCommandAvailable = false;
+const cmd = (command) => (args, opts) => {
+  opts = { ...DEFAULT_CMD_OPTS, ...opts };
+  const VERBOSE = env('VERBOSE', 'false') === 'true';
+  const QUIET = env('VERBOSE', 'false') === 'true';
 
-  return async (args, opts) => {
-    opts = { ...DEFAULT_CMD_OPTS, ...opts };
-    const VERBOSE = env('VERBOSE', 'false') === 'true';
-    const QUIET = env('VERBOSE', 'false') === 'true';
+  if (VERBOSE && QUIET) {
+    throw new Error('cannot specify VERBOSE=true and QUIET=true env vars');
+  }
 
-    if (VERBOSE && QUIET) {
-      throw new Error('cannot specify VERBOSE=true and QUIET=true env vars');
-    }
+  opts.stdio = VERBOSE ? 'inherit' : opts.stdio;
+  opts.stdio = QUIET ? 'ignore' : opts.stdio;
 
-    opts.stdio = VERBOSE ? 'inherit' : opts.stdio;
-    opts.stdio = QUIET ? 'ignore' : opts.stdio;
+  const process = spawn(command, args, { cwd: opts.cwd, stdio: opts.stdio });
 
-    if (!isCommandChecked) {
-      await new Promise((resolve) => {
-        const which = spawn('which', [command]);
-        which.on('close', (exitCode) => {
-          isCommandAvailable = exitCode === 0;
-          isCommandChecked = true;
-          resolve();
-        });
-      });
-    }
-    if (!isCommandAvailable) {
-      throw new Error(`command not available: \`${command}\``);
-    }
+  const promise = new Promise((resolve, reject) => {
+    const cmdStr = [command, ...args].join(' ');
+    log(chalk.yellow(cmdStr));
 
-    const child = spawn(command, args, { cwd: opts.cwd, stdio: opts.stdio });
-    await new Promise((resolve, reject) => {
-      const cmdStr = [command, ...args].join(' ');
-      log(chalk.yellow(cmdStr));
-
-      child.on('close', (exitCode) => {
-        if (exitCode === 0) {
-          opts.onSuccess();
-          resolve();
-        } else {
-          opts.onFailure();
-          reject(new Error(`nonzero exit code: ${exitCode}`));
-        }
-      });
-      child.on('error', (err) => {
-        opts.onFailure();
-        reject(err);
-      });
+    process.on('close', (exitCode) => {
+      // exitCode === null means the process was killed
+      if (exitCode === 0 || exitCode === null) {
+        resolve();
+      } else {
+        reject(new Error(`nonzero exit code: ${exitCode}`));
+      }
     });
-  };
+    process.on('error', (err) => {
+      reject(err);
+    });
+  });
+
+  return { process, promise };
 };
 
 const yarn = cmd('yarn');
@@ -80,30 +62,28 @@ const docker = cmd('docker');
 
 desc('brings up all projects');
 task('dev', ['build:api', 'install:web'], async () => {
-  // Ctrl+C is used to kill the yarn start subprocess.
-  // Do nothing in the task so it can teardown gracefully.
-  process.on('SIGINT', noop);
-
   try {
     const api = dockerCompose(['up', '--detach'], { cwd: 'api' });
     const web = yarn(['start'], { cwd: 'web', stdio: 'inherit' });
-    await Promise.all([api, web]);
-  } catch (e) {
-    // noop, who cares the dev process is down
+    process.on('SIGINT', web.process.kill);
+    await Promise.all([api.promise, web.promise]);
   } finally {
-    await dockerCompose(['down'], { cwd: 'api', stdio: 'inherit' });
+    const down = dockerCompose(['down'], { cwd: 'api', stdio: 'inherit' });
+    await down.promise;
   }
 });
 
 namespace('install', () => {
   desc('installs api dependencies');
   task('api', [], async () => {
-    await yarn([], { cwd: 'api' });
+    const install = yarn([], { cwd: 'api' });
+    await install.promise;
   });
 
   desc('installs web dependencies');
   task('web', async () => {
-    await yarn([], { cwd: 'web' });
+    const install = yarn([], { cwd: 'web' });
+    await install.promise;
   });
 });
 
@@ -116,7 +96,8 @@ namespace('db', () => {
     env('DB_HOST');
     env('DB_PORT');
 
-    yarn(['migrate'], { cwd: 'api' });
+    const migrate = yarn(['migrate'], { cwd: 'api' });
+    await migrate.promise;
   });
 });
 
@@ -125,12 +106,14 @@ namespace('build', () => {
   task('api', [], async () => {
     const DOCKER_TAG = env('DOCKER_TAG', 'latest');
 
-    await docker(['build', '-t', `stringsync:${DOCKER_TAG}`, '.'], { cwd: 'api' });
+    const build = docker(['build', '-t', `stringsync:${DOCKER_TAG}`, '.'], { cwd: 'api' });
+    await build.promise;
   });
 
   desc('builds the stringsync production build');
   task('web', ['install:web'], async () => {
-    await yarn(['build'], { cwd: 'web', stdio: 'inherit' });
+    const build = yarn(['build'], { cwd: 'web', stdio: 'inherit' });
+    await build.promise;
   });
 });
 
@@ -144,16 +127,10 @@ namespace('test', () => {
     const CI = env('CI', 'false') === 'true';
 
     const runTests = async () => {
-      const onSuccess = () => {
-        log(chalk.green('api tests succeeded'));
-      };
-      const onFailure = () => {
-        log(chalk.red('api tests failed'));
-      };
-      await dockerCompose(
+      const test = dockerCompose(
         [
           '-f',
-          './api/docker-compose.test.yml',
+          './docker-compose.test.yml',
           'run',
           '--rm',
           'test',
@@ -162,12 +139,20 @@ namespace('test', () => {
           `--watchAll=${WATCH}`,
           CI ? '--no-colors' : '--colors',
         ],
-        { stdio: 'inherit', onSuccess, onFailure }
+        { stdio: 'inherit', cwd: 'api' }
       );
+      try {
+        await test.promise;
+        log(chalk.green('api tests succeeded'));
+      } catch (err) {
+        log(chalk.red('api tests failed'));
+        throw err;
+      }
     };
 
     const cleanupTests = async () => {
-      await dockerCompose(['-f', './api/docker-compose.test.yml', 'down', '--remove-orphans']);
+      const down = dockerCompose(['-f', './docker-compose.test.yml', 'down', '--remove-orphans'], { cwd: 'api' });
+      await down.promise;
     };
 
     try {
@@ -182,17 +167,16 @@ namespace('test', () => {
     const WATCH = env('WATCH', 'false') === 'true';
     const CI = env('CI', 'false') === 'true';
 
-    const onSuccess = () => {
-      log(chalk.green('web tests succeeded'));
-    };
-    const onFailure = () => {
-      log(chalk.red('web tests failed'));
-    };
-    await yarn(['test', `--watchAll=${WATCH}`, CI ? '--no-colors' : '--colors'], {
+    const test = yarn(['test', `--watchAll=${WATCH}`, CI ? '--no-colors' : '--colors'], {
       cwd: 'web',
       stdio: 'inherit',
-      onSuccess,
-      onFailure,
     });
+    try {
+      await test.promise;
+      log(chalk.green('web tests succeeded'));
+    } catch (err) {
+      log(chalk.red('web tests failed'));
+      throw err;
+    }
   });
 });
