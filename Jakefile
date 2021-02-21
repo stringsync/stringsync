@@ -80,7 +80,7 @@ const docker = cmd('docker');
 
 desc('brings up all projects');
 task('dev', ['build:api', 'install:web'], async () => {
-  // Ctrl+C is used to kill the yarn start subprocess
+  // Ctrl+C is used to kill the yarn start subprocess.
   // Do nothing in the task so it can teardown gracefully.
   process.on('SIGINT', noop);
 
