@@ -34,4 +34,4 @@ services:
       - '3000:3000'
     entrypoint: ['./bin/wait-for-it.sh', 'db:5432', '--']
     command: >
-      bash -C "yarn migrate && pm2-runtime start ecosystem.config.js"
+      bash -c "yarn migrate && yarn seed && pm2-runtime start ecosystem.config.js"

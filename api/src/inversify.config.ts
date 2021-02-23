@@ -2,7 +2,7 @@ import { Container } from 'inversify';
 import { createClient, RedisClient } from 'redis';
 import 'reflect-metadata';
 import { Config, getConfig } from './config';
-import { Db, SequelizeDb } from './db';
+import { Db, DevSequelizeDb, SequelizeDb } from './db';
 import { TYPES } from './inversify.constants';
 import {
   NotationLoader,
@@ -20,7 +20,7 @@ import {
   UserLoader,
   UserRepo,
 } from './repos';
-import { ExperimentResolver } from './resolvers';
+import { AuthResolver, ExperimentResolver, NotationResolver, UserResolver } from './resolvers';
 import { DevExpressServer, ExpressServer, Server } from './server';
 import {
   AuthService,
@@ -52,11 +52,19 @@ import {
 export const container = new Container();
 
 const config = getConfig();
+container.bind<Config>(TYPES.Config).toConstantValue(config);
 
-container
-  .bind<Db>(TYPES.Db)
-  .to(SequelizeDb)
-  .inSingletonScope();
+if (config.NODE_ENV === 'production') {
+  container
+    .bind<Db>(TYPES.Db)
+    .to(SequelizeDb)
+    .inSingletonScope();
+} else {
+  container
+    .bind<Db>(TYPES.Db)
+    .to(DevSequelizeDb)
+    .inSingletonScope();
+}
 
 const redis = createClient({ host: config.REDIS_HOST, port: config.REDIS_PORT });
 container.bind<RedisClient>(TYPES.Redis).toConstantValue(redis);
@@ -67,7 +75,6 @@ container
   .inSingletonScope();
 
 container.bind<Logger>(TYPES.Logger).to(WinstonLogger);
-container.bind<Config>(TYPES.Config).toConstantValue(getConfig());
 
 container.bind<AuthService>(TYPES.AuthService).to(AuthService);
 container.bind<HealthCheckerService>(TYPES.HealthCheckerService).to(HealthCheckerService);
@@ -114,5 +121,17 @@ if (config.NODE_ENV === 'development') {
 
 container
   .bind<ExperimentResolver>(ExperimentResolver)
+  .toSelf()
+  .inSingletonScope();
+container
+  .bind<NotationResolver>(NotationResolver)
+  .toSelf()
+  .inSingletonScope();
+container
+  .bind<UserResolver>(UserResolver)
+  .toSelf()
+  .inSingletonScope();
+container
+  .bind<AuthResolver>(AuthResolver)
   .toSelf()
   .inSingletonScope();

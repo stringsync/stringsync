@@ -1,22 +1,10 @@
-import { injectable } from 'inversify';
-
 export type Task = () => Promise<void>;
 
-@injectable()
-export abstract class Db {
-  async cleanup() {
-    const env = process.env.NODE_ENV;
-    if (env !== 'development' && env !== 'test') {
-      throw new Error(`can only cleanup in development and test environemnts, got: ${env}`);
-    }
-    await this.doCleanup();
-  }
-
-  abstract query<T = unknown>(sql: string): Promise<T[]>;
-  abstract checkHealth(): Promise<boolean>;
-  abstract init(): Promise<void>;
-  abstract transaction(task: Task): Promise<void>;
-  abstract closeConnection(): Promise<void>;
-
-  protected abstract doCleanup(): Promise<void>;
+export interface Db {
+  query<T = unknown>(sql: string): Promise<T[]>;
+  checkHealth(): Promise<boolean>;
+  init(): Promise<void>;
+  transaction(task: Task): Promise<void>;
+  closeConnection(): Promise<void>;
+  cleanup(): Promise<void>;
 }

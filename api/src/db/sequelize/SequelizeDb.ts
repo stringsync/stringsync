@@ -2,6 +2,7 @@ import { createNamespace } from 'cls-hooked';
 import { inject, injectable } from 'inversify';
 import { QueryTypes, Sequelize } from 'sequelize';
 import { Config } from '../../config';
+import { NotImplementedError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { camelCaseKeys } from '../../repos/queries';
 import { Logger } from '../../util';
@@ -12,11 +13,10 @@ const namespace = createNamespace('transaction');
 Sequelize.useCLS(namespace);
 
 @injectable()
-export class SequelizeDb extends Db {
+export class SequelizeDb implements Db {
   sequelize: Sequelize;
 
   constructor(@inject(TYPES.Logger) private logger: Logger, @inject(TYPES.Config) private config: Config) {
-    super();
     const sequelize = new Sequelize({
       dialect: 'postgres',
       host: this.config.DB_HOST,
@@ -42,16 +42,6 @@ export class SequelizeDb extends Db {
     TagModel.initAssociations();
   }
 
-  async doCleanup() {
-    // Destroy is preferred over TRUNCATE table CASCADE because this
-    // approach is much faster. The model ordering is intentional to
-    // prevent foreign key constraints.
-    await TaggingModel.destroy({ where: {} });
-    await TagModel.destroy({ where: {} });
-    await NotationModel.destroy({ where: {} });
-    await UserModel.destroy({ where: {} });
-  }
-
   async transaction(task: Task) {
     await this.sequelize.transaction(task);
   }
@@ -73,5 +63,9 @@ export class SequelizeDb extends Db {
       this.logger.error(err.message);
       return false;
     }
+  }
+
+  async cleanup(): Promise<void> {
+    throw new NotImplementedError('cannot cleanup db');
   }
 }

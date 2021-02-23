@@ -12,6 +12,7 @@ export class GraphqlClient {
 
   static getGraphqlUri(env = process.env): string {
     const config = getConfig(env);
+    console.log(config);
     return config.REACT_APP_SERVER_URI + config.REACT_APP_GRAPHQL_ENDPOINT;
   }
 

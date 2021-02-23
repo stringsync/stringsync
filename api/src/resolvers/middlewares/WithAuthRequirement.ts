@@ -1,14 +1,11 @@
 import { MiddlewareFn } from 'type-graphql';
 import { gtEqAdmin, gtEqStudent, gtEqTeacher } from '../../domain';
 import { ForbiddenError } from '../../errors';
-import { SessionUser } from '../../server';
 import { AuthRequirement } from '../../services';
+import { ResolverCtx } from '../types';
 
-export const WithAuthRequirement = (authReq: AuthRequirement): MiddlewareFn<{ sessionUser: SessionUser }> => async (
-  data,
-  next
-) => {
-  const { isLoggedIn, role } = data.context.sessionUser;
+export const WithAuthRequirement = (authReq: AuthRequirement): MiddlewareFn<ResolverCtx> => async (data, next) => {
+  const { isLoggedIn, role } = data.context.getSessionUser();
 
   switch (authReq) {
     case AuthRequirement.NONE:

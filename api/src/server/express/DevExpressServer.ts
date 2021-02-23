@@ -9,6 +9,6 @@ export class DevExpressServer extends ExpressServer implements Server {
   start(schema: GraphQLSchema) {
     this.configure(schema);
     this.app.use('/altair', altairExpress({ endpointURL: '/graphql' }));
-    this.doStart();
+    this.listen();
   }
 }

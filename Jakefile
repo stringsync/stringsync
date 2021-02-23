@@ -75,15 +75,30 @@ task('dev', ['build:api', 'install:web'], async () => {
   }
 });
 
-desc('typechecks all projects');
-task('typecheck', ['install:api', 'install:web'], async () => {
-  const WATCH = env('WATCH', 'true') === 'true';
+namespace('tsc', () => {
+  desc('typechecks the api project');
+  task('api', ['install:api'], async () => {
+    const WATCH = env('WATCH', 'true') === 'true';
 
-  const tsc = yarn(['tsc', '--noEmit', '-p', 'api', '-p', 'web', WATCH ? '--watch' : ''].filter(identity), {
-    stdio: 'inherit',
+    const tsc = yarn(['tsc', '--noEmit', WATCH ? '--watch' : ''].filter(identity), {
+      stdio: 'inherit',
+      cwd: 'api',
+    });
+    process.on('SIGINT', tsc.process.kill);
+    await tsc.promise;
   });
-  process.on('SIGINT', tsc.process.kill);
-  await tsc.promise;
+
+  desc('typechecks the web project');
+  task('web', ['install:web'], async () => {
+    const WATCH = env('WATCH', 'true') === 'true';
+
+    const tsc = yarn(['tsc', '--noEmit', WATCH ? '--watch' : ''].filter(identity), {
+      stdio: 'inherit',
+      cwd: 'web',
+    });
+    process.on('SIGINT', tsc.process.kill);
+    await tsc.promise;
+  });
 });
 
 namespace('install', () => {

@@ -1,5 +1,5 @@
-import { ErrorCode } from './types';
 import { NOT_IMPLEMENTED_MSG, UNKNOWN_ERROR_MSG } from './constants';
+import { ErrorCode } from './types';
 
 export class StringSyncError extends Error {
   code: ErrorCode;

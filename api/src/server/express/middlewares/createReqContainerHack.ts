@@ -1,4 +1,7 @@
 import { Container } from 'inversify';
+import { RedisClient } from 'redis';
+import { Db } from '../../../db';
+import { TYPES } from '../../../inversify.constants';
 
 /**
  * Creating a child does not copy its underlying binding dictionary, which is a map that resolves
@@ -9,7 +12,15 @@ import { Container } from 'inversify';
  * https://github.com/inversify/InversifyJS/issues/1076
  */
 export const createReqContainerHack = (container: Container): Container => {
-  const reqContainer = new Container();
-  (reqContainer as any)._bindingDictionary = (container as any)._bindingDictionary.clone();
+  // copy the container
+  const reqContainer = Container.merge(container, new Container()) as Container;
+
+  // rebind singletons into constants
+  const db = container.get<Db>(TYPES.Db);
+  reqContainer.rebind<Db>(TYPES.Db).toConstantValue(db);
+
+  const redis = container.get<RedisClient>(TYPES.Redis);
+  reqContainer.rebind<RedisClient>(TYPES.Redis).toConstantValue(redis);
+
   return reqContainer;
 };

@@ -1,7 +1,7 @@
 import { MiddlewareFn } from 'type-graphql';
 import { Predicate } from './types';
 
-export const Branch = (test: Predicate, left: MiddlewareFn, right: MiddlewareFn): MiddlewareFn => async (
+export const Branch = <T>(test: Predicate<T>, left: MiddlewareFn<T>, right: MiddlewareFn<T>): MiddlewareFn<T> => async (
   data,
   next
 ): Promise<any> => {
