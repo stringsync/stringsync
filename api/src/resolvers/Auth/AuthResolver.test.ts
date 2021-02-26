@@ -1,4 +1,4 @@
-import { UserRole } from '../../domain';
+import { User, UserRole } from '../../domain';
 import { container } from '../../inversify.config';
 import { TYPES } from '../../inversify.constants';
 import { SessionUser } from '../../server';
@@ -54,18 +54,16 @@ describe('AuthResolver', () => {
   });
 
   describe('login', () => {
-    let authService: AuthService;
-
-    let username: string;
-    let email: string;
+    let user: User;
     let password: string;
 
     beforeEach(async () => {
-      username = randStr(10);
-      email = `${username}@domain.tld`;
+      const username = randStr(10);
+      const email = `${username}@domain.tld`;
       password = randStr(10);
 
-      authService = container.get<AuthService>(TYPES.AuthService);
+      const authService = container.get<AuthService>(TYPES.AuthService);
+      user = await authService.signup(username, email, password);
     });
 
     const login = async (input: LoginInput, sessionUser?: SessionUser) => {
@@ -83,9 +81,7 @@ describe('AuthResolver', () => {
     };
 
     it('logs the user in using username and password', async () => {
-      const user = await authService.signup(username, email, password);
-
-      const { res, ctx } = await login({ usernameOrEmail: username, password });
+      const { res, ctx } = await login({ usernameOrEmail: user.username, password });
 
       expect(res.errors).toBeUndefined();
       expect(res.data.login).not.toBeNull();
@@ -98,9 +94,7 @@ describe('AuthResolver', () => {
     });
 
     it('logs the user in using email and password', async () => {
-      const user = await authService.signup(username, email, password);
-
-      const { res, ctx } = await login({ usernameOrEmail: email, password });
+      const { res, ctx } = await login({ usernameOrEmail: user.email, password });
 
       expect(res.errors).toBeUndefined();
       expect(res.data.login).not.toBeNull();
@@ -113,10 +107,8 @@ describe('AuthResolver', () => {
     });
 
     it('does not log the user in when wrong password', async () => {
-      await authService.signup(username, email, password);
-
       const wrongPassword = randStr(password.length + 1);
-      const { res, ctx } = await login({ usernameOrEmail: username, password: wrongPassword });
+      const { res, ctx } = await login({ usernameOrEmail: user.username, password: wrongPassword });
 
       expect(res.errors).toBeDefined();
 
@@ -127,10 +119,8 @@ describe('AuthResolver', () => {
     });
 
     it('returns errors when already logged in', async () => {
-      const user = await authService.signup(username, email, password);
-
       const { res, ctx } = await login(
-        { usernameOrEmail: username, password },
+        { usernameOrEmail: user.username, password },
         { id: user.id, isLoggedIn: true, role: user.role }
       );
 
@@ -140,6 +130,54 @@ describe('AuthResolver', () => {
       expect(sessionUser.isLoggedIn).toBeTrue();
       expect(sessionUser.id).toBe(user.id);
       expect(sessionUser.role).toBe(user.role);
+    });
+  });
+
+  describe('logout', () => {
+    let user: User;
+    let password: string;
+
+    beforeEach(async () => {
+      const username = randStr(10);
+      const email = `${username}@domain.tld`;
+      password = randStr(10);
+
+      const authService = container.get<AuthService>(TYPES.AuthService);
+      user = await authService.signup(username, email, password);
+    });
+
+    const logout = (sessionUser?: SessionUser) => {
+      return resolve(
+        gql`
+          mutation {
+            logout
+          }
+        `,
+        {},
+        { sessionUser }
+      );
+    };
+
+    it('logs a user out', async () => {
+      const { res, ctx } = await logout({ id: user.id, isLoggedIn: true, role: user.role });
+
+      expect(res.errors).toBeUndefined();
+
+      const sessionUser = ctx.getSessionUser();
+      expect(sessionUser.isLoggedIn).toBeFalse();
+      expect(sessionUser.id).toBeEmpty();
+      expect(sessionUser.role).toBe(UserRole.STUDENT);
+    });
+
+    it('returns errors when already logged out', async () => {
+      const { res, ctx } = await logout();
+
+      expect(res.errors).toBeDefined();
+
+      const sessionUser = ctx.getSessionUser();
+      expect(sessionUser.isLoggedIn).toBeFalse();
+      expect(sessionUser.id).toBeEmpty();
+      expect(sessionUser.role).toBe(UserRole.STUDENT);
     });
   });
 });
