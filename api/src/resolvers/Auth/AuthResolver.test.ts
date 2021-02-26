@@ -68,7 +68,7 @@ describe('AuthResolver', () => {
       authService = container.get<AuthService>(TYPES.AuthService);
     });
 
-    const login = async (input: LoginInput) => {
+    const login = async (input: LoginInput, sessionUser?: SessionUser) => {
       return resolve<Mutation, 'login'>(
         gql`
           mutation login($input: LoginInput!) {
@@ -77,7 +77,8 @@ describe('AuthResolver', () => {
             }
           }
         `,
-        { input }
+        { input },
+        { sessionUser }
       );
     };
 
@@ -112,7 +113,7 @@ describe('AuthResolver', () => {
     });
 
     it('does not log the user in when wrong password', async () => {
-      const user = await authService.signup(username, email, password);
+      await authService.signup(username, email, password);
 
       const wrongPassword = randStr(password.length + 1);
       const { res, ctx } = await login({ usernameOrEmail: username, password: wrongPassword });
@@ -123,6 +124,22 @@ describe('AuthResolver', () => {
       expect(sessionUser.isLoggedIn).toBe(false);
       expect(sessionUser.id).toBeEmpty();
       expect(sessionUser.role).toBe(UserRole.STUDENT);
+    });
+
+    it('returns errors when already logged in', async () => {
+      const user = await authService.signup(username, email, password);
+
+      const { res, ctx } = await login(
+        { usernameOrEmail: username, password },
+        { id: user.id, isLoggedIn: true, role: user.role }
+      );
+
+      expect(res.errors).toBeDefined();
+
+      const sessionUser = ctx.getSessionUser();
+      expect(sessionUser.isLoggedIn).toBeTrue();
+      expect(sessionUser.id).toBe(user.id);
+      expect(sessionUser.role).toBe(user.role);
     });
   });
 });
