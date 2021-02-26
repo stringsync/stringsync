@@ -1,8 +1,11 @@
 import { container } from '../inversify.config';
-import { SequelizeDb } from './sequelize';
+import { DevSequelizeDb, SequelizeDb } from './sequelize';
 import { Db } from './types';
 
-describe.each([['SequelizeDb', SequelizeDb]])('%s', (name, Ctor) => {
+describe.each([
+  ['SequelizeDb', SequelizeDb],
+  ['DevSequelizeDb', DevSequelizeDb],
+])('%s', (name, Ctor) => {
   const id = Symbol(name);
   let db: Db;
 
@@ -20,13 +23,6 @@ describe.each([['SequelizeDb', SequelizeDb]])('%s', (name, Ctor) => {
     it('can be run multiple times', async () => {
       await expect(db.init()).resolves.not.toThrow();
       await expect(db.init()).resolves.not.toThrow();
-    });
-  });
-
-  describe('cleanup', () => {
-    it('can be run multiple times', async () => {
-      await expect(db.cleanup()).resolves.not.toThrow();
-      await expect(db.cleanup()).resolves.not.toThrow();
     });
   });
 });
