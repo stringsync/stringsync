@@ -1,3 +1,4 @@
+import { UserRole } from '../../domain';
 import { container } from '../../inversify.config';
 import { TYPES } from '../../inversify.constants';
 import { SessionUser } from '../../server';
@@ -108,6 +109,20 @@ describe('AuthResolver', () => {
       expect(sessionUser.isLoggedIn).toBeTrue();
       expect(sessionUser.id).toBe(user.id);
       expect(sessionUser.role).toBe(user.role);
+    });
+
+    it('does not log the user in when wrong password', async () => {
+      const user = await authService.signup(username, email, password);
+
+      const wrongPassword = randStr(password.length + 1);
+      const { res, ctx } = await login({ usernameOrEmail: username, password: wrongPassword });
+
+      expect(res.errors).toBeDefined();
+
+      const sessionUser = ctx.getSessionUser();
+      expect(sessionUser.isLoggedIn).toBe(false);
+      expect(sessionUser.id).toBeEmpty();
+      expect(sessionUser.role).toBe(UserRole.STUDENT);
     });
   });
 });
