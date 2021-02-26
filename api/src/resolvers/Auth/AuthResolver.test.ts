@@ -94,5 +94,20 @@ describe('AuthResolver', () => {
       expect(sessionUser.id).toBe(user.id);
       expect(sessionUser.role).toBe(user.role);
     });
+
+    it('logs the user in using email and password', async () => {
+      const user = await authService.signup(username, email, password);
+
+      const { res, ctx } = await login({ usernameOrEmail: email, password });
+
+      expect(res.errors).toBeUndefined();
+      expect(res.data.login).not.toBeNull();
+      expect(res.data.login!.id).toBe(user.id);
+
+      const sessionUser = ctx.getSessionUser();
+      expect(sessionUser.isLoggedIn).toBeTrue();
+      expect(sessionUser.id).toBe(user.id);
+      expect(sessionUser.role).toBe(user.role);
+    });
   });
 });
