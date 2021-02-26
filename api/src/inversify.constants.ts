@@ -4,6 +4,7 @@ export const TYPES = {
   Cache: Symbol('Cache'),
   Config: Symbol('Config'),
   Db: Symbol('Db'),
+  EntityFactory: Symbol('EntityFactory'),
   HealthCheckerService: Symbol('HealthCheckerService'),
   Logger: Symbol('Logger'),
   Mailer: Symbol('Mailer'),
