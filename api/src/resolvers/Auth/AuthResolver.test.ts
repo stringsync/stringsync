@@ -234,5 +234,17 @@ describe('AuthResolver', () => {
       expect(reloadedUser!.confirmedAt).not.toBeNull();
       expect(res.data.confirmEmail!.confirmedAt).toBe(reloadedUser!.confirmedAt!.toISOString());
     });
+
+    it('returns errors for the wrong confirmation token', async () => {
+      const { res } = await confirmEmail({ confirmationToken: randStr(5) }, LoginStatus.LOGGED_IN);
+
+      expect(res.errors).toBeDefined();
+    });
+
+    it('returns errors when not logged in', async () => {
+      const { res } = await confirmEmail({ confirmationToken: user.confirmationToken! }, LoginStatus.LOGGED_OUT);
+
+      expect(res.errors).toBeDefined();
+    });
   });
 });
