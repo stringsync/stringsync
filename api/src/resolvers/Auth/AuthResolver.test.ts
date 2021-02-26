@@ -6,13 +6,16 @@ describe('AuthResolver', () => {
 
   describe('whoami', () => {
     it('returns null when logged out', async () => {
-      const { res } = await resolve<Query, 'whoami'>(gql`
-        query {
-          whoami {
-            id
+      const { res } = await resolve<Query, 'whoami'>(
+        gql`
+          query {
+            whoami {
+              id
+            }
           }
-        }
-      `);
+        `,
+        {}
+      );
 
       expect(res.data.whoami).toBeNull();
     });

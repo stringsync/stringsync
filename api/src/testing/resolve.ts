@@ -23,20 +23,30 @@ type Resolved<T extends RequestType, N extends Exclude<keyof T, '__typename'>> =
   ctx: ResolverCtx;
 };
 
+type ResolveOpts = {
+  reqAt?: Date;
+  reqId?: string;
+  sessionUser?: SessionUser;
+};
+
 export const resolve = async <
   T extends RequestType,
   N extends Exclude<keyof T, '__typename'>,
-  V extends Record<string, any> | void = void
+  V extends Record<string, any> = Record<string, any>
 >(
   query: string,
-  variables?: V
+  variables: V,
+  opts: ResolveOpts = {}
 ): Promise<Resolved<T, N>> => {
   const schema = generateSchema();
 
-  const reqAt = new Date();
-  const reqId = uuid.v4();
+  const reqAt = opts.reqAt || new Date();
+  const reqId = opts.reqId || uuid.v4();
 
   const sessionUserStorage = new SessionUserStorage();
+  if (opts.sessionUser) {
+    sessionUserStorage.set(opts.sessionUser);
+  }
 
   const ctx: ResolverCtx = {
     getReqId: () => reqId,
@@ -48,7 +58,7 @@ export const resolve = async <
     },
   };
 
-  const res = (await graphql(schema, query, undefined, ctx, variables as any)) as Body<T, N>;
+  const res = (await graphql(schema, query, undefined, ctx, variables)) as Body<T, N>;
 
   return { res, ctx };
 };
