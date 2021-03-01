@@ -195,12 +195,11 @@ describe('AuthResolver', () => {
 
   describe('confirmEmail', () => {
     let user: User;
-    let password: string;
 
     beforeEach(async () => {
       const username = randStr(10);
       const email = `${username}@domain.tld`;
-      password = randStr(10);
+      const password = randStr(10);
 
       const authService = container.get<AuthService>(TYPES.AuthService);
       user = await authService.signup(username, email, password);
@@ -245,6 +244,74 @@ describe('AuthResolver', () => {
       const { res } = await confirmEmail({ confirmationToken: user.confirmationToken! }, LoginStatus.LOGGED_OUT);
 
       expect(res.errors).toBeDefined();
+    });
+  });
+
+  describe('resendConfirmationEmail', () => {
+    let userService: UserService;
+    let authService: AuthService;
+
+    let user: User;
+
+    beforeEach(() => {
+      userService = container.get<UserService>(TYPES.UserService);
+      authService = container.get<AuthService>(TYPES.AuthService);
+    });
+
+    beforeEach(async () => {
+      const username = randStr(10);
+      const email = `${username}@domain.tld`;
+      const password = randStr(10);
+
+      const authService = container.get<AuthService>(TYPES.AuthService);
+      user = await authService.signup(username, email, password);
+
+      expect(user.confirmationToken).not.toBeNull();
+    });
+
+    const resendConfirmationEmail = (loginStatus: LoginStatus) => {
+      return resolve<Mutation, 'resendConfirmationEmail'>(
+        gql`
+          mutation resendConfirmationEmail {
+            resendConfirmationEmail
+          }
+        `,
+        {},
+        { sessionUser: getSessionUser(loginStatus, user) }
+      );
+    };
+
+    it('resets the logged in user confirmation token', async () => {
+      const { res } = await resendConfirmationEmail(LoginStatus.LOGGED_IN);
+
+      expect(res.errors).toBeUndefined();
+      expect(res.data.resendConfirmationEmail).toBeTrue();
+
+      const reloadedUser = await userService.find(user.id);
+      expect(reloadedUser).not.toBeNull();
+      expect(reloadedUser!.confirmedAt).toBeNull();
+
+      const beforeConfirmationToken = user.confirmationToken;
+      const afterConfirmationToken = reloadedUser!.confirmationToken;
+      expect(beforeConfirmationToken).not.toBeNull();
+      expect(afterConfirmationToken).not.toBeNull();
+      expect(afterConfirmationToken).not.toBe(beforeConfirmationToken);
+    });
+
+    it('silently fails if already confirmed', async () => {
+      const now = new Date();
+
+      await authService.confirmEmail(user.id, user.confirmationToken!, now);
+
+      const { res } = await resendConfirmationEmail(LoginStatus.LOGGED_IN);
+
+      expect(res.errors).toBeUndefined();
+      expect(res.data.resendConfirmationEmail).toBeTrue();
+
+      const reloadedUser = await userService.find(user.id);
+      expect(reloadedUser).not.toBeNull();
+      expect(reloadedUser!.confirmedAt!.getSeconds()).toBe(now.getSeconds());
+      expect(reloadedUser!.confirmationToken).toBeNull();
     });
   });
 });
