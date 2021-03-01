@@ -4,7 +4,7 @@ import { TYPES } from '../../inversify.constants';
 import { SessionUser } from '../../server';
 import { AuthService, UserService } from '../../services';
 import { ConfirmEmailInput, EntityFactory, gql, LoginInput, Mutation, Query, resolve } from '../../testing';
-import { randStr } from '../../util';
+import { Mailer, randStr } from '../../util';
 
 enum LoginStatus {
   LOGGED_OUT = 'LOGGED_OUT',
@@ -250,12 +250,16 @@ describe('AuthResolver', () => {
   describe('resendConfirmationEmail', () => {
     let userService: UserService;
     let authService: AuthService;
+    let sendSpy: jest.SpyInstance;
 
     let user: User;
 
     beforeEach(() => {
       userService = container.get<UserService>(TYPES.UserService);
       authService = container.get<AuthService>(TYPES.AuthService);
+
+      const mailer = container.get<Mailer>(TYPES.Mailer);
+      sendSpy = jest.spyOn(mailer, 'send');
     });
 
     beforeEach(async () => {
@@ -267,6 +271,10 @@ describe('AuthResolver', () => {
       user = await authService.signup(username, email, password);
 
       expect(user.confirmationToken).not.toBeNull();
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
     });
 
     const resendConfirmationEmail = (loginStatus: LoginStatus) => {
@@ -298,6 +306,12 @@ describe('AuthResolver', () => {
       expect(afterConfirmationToken).not.toBe(beforeConfirmationToken);
     });
 
+    it('sends a resend confirmation email', async () => {
+      await resendConfirmationEmail(LoginStatus.LOGGED_IN);
+
+      expect(sendSpy).toHaveBeenCalledTimes(1);
+    });
+
     it('silently fails if already confirmed', async () => {
       const now = new Date();
 
@@ -312,6 +326,16 @@ describe('AuthResolver', () => {
       expect(reloadedUser).not.toBeNull();
       expect(reloadedUser!.confirmedAt!.getSeconds()).toBe(now.getSeconds());
       expect(reloadedUser!.confirmationToken).toBeNull();
+    });
+
+    it('does not send a resend confirmation email if already confirmed', async () => {
+      const now = new Date();
+
+      await authService.confirmEmail(user.id, user.confirmationToken!, now);
+
+      await resendConfirmationEmail(LoginStatus.LOGGED_IN);
+
+      expect(sendSpy).not.toHaveBeenCalled();
     });
   });
 });

@@ -107,7 +107,10 @@ if (config.NODE_ENV === 'test') {
 }
 
 if (config.NODE_ENV === 'test') {
-  container.bind<Mailer>(TYPES.Mailer).to(NoopMailer);
+  container
+    .bind<Mailer>(TYPES.Mailer)
+    .to(NoopMailer)
+    .inSingletonScope();
 } else if (config.NODE_ENV === 'development') {
   container.bind<Mailer>(TYPES.Mailer).to(DevMailer);
 } else {
