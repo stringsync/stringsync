@@ -5,6 +5,7 @@ import { SessionUser } from '../../server';
 import { AuthService, UserService } from '../../services';
 import { ConfirmEmailInput, EntityFactory, gql, LoginInput, Mutation, Query, resolve } from '../../testing';
 import { Mailer, randStr } from '../../util';
+import { SendResetPasswordEmailInput } from './SendResetPasswordEmailInput';
 
 enum LoginStatus {
   LOGGED_OUT = 'LOGGED_OUT',
@@ -250,7 +251,7 @@ describe('AuthResolver', () => {
   describe('resendConfirmationEmail', () => {
     let userService: UserService;
     let authService: AuthService;
-    let sendSpy: jest.SpyInstance;
+    let mailerSendSpy: jest.SpyInstance;
 
     let user: User;
 
@@ -259,7 +260,7 @@ describe('AuthResolver', () => {
       authService = container.get<AuthService>(TYPES.AuthService);
 
       const mailer = container.get<Mailer>(TYPES.Mailer);
-      sendSpy = jest.spyOn(mailer, 'send');
+      mailerSendSpy = jest.spyOn(mailer, 'send');
     });
 
     beforeEach(async () => {
@@ -309,7 +310,7 @@ describe('AuthResolver', () => {
     it('sends a resend confirmation email', async () => {
       await resendConfirmationEmail(LoginStatus.LOGGED_IN);
 
-      expect(sendSpy).toHaveBeenCalledTimes(1);
+      expect(mailerSendSpy).toHaveBeenCalledTimes(1);
     });
 
     it('silently fails if already confirmed', async () => {
@@ -335,7 +336,65 @@ describe('AuthResolver', () => {
 
       await resendConfirmationEmail(LoginStatus.LOGGED_IN);
 
-      expect(sendSpy).not.toHaveBeenCalled();
+      expect(mailerSendSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('sendResetPasswordEmail', () => {
+    let userService: UserService;
+    let entityFactory: EntityFactory;
+    let mailerSendSpy: jest.SpyInstance;
+
+    let user: User;
+
+    beforeEach(async () => {
+      entityFactory = container.get<EntityFactory>(TYPES.EntityFactory);
+      userService = container.get<UserService>(TYPES.UserService);
+
+      const mailer = container.get<Mailer>(TYPES.Mailer);
+      mailerSendSpy = jest.spyOn(mailer, 'send');
+
+      user = await entityFactory.createRandUser();
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    const sendResetPasswordEmail = (input: SendResetPasswordEmailInput, loginStatus: LoginStatus) => {
+      return resolve<Mutation, 'sendResetPasswordEmail', { input: SendResetPasswordEmailInput }>(
+        gql`
+          mutation sendResetPasswordEmail($input: SendResetPasswordEmailInput!) {
+            sendResetPasswordEmail(input: $input)
+          }
+        `,
+        { input },
+        { sessionUser: getSessionUser(loginStatus, user) }
+      );
+    };
+
+    it('resets passwordResetToken when logged out', async () => {
+      const { res } = await sendResetPasswordEmail({ email: user.email }, LoginStatus.LOGGED_OUT);
+
+      expect(res.errors).toBeUndefined();
+      expect(res.data.sendResetPasswordEmail).toBeTrue();
+
+      const reloadedUser = await userService.find(user.id);
+      expect(reloadedUser).not.toBeNull();
+      expect(reloadedUser!.resetPasswordToken!).not.toBeNull();
+      expect(reloadedUser!.resetPasswordToken).not.toBe(user.resetPasswordToken);
+    });
+
+    it('resets passwordResetToken when logged in', async () => {
+      const { res } = await sendResetPasswordEmail({ email: user.email }, LoginStatus.LOGGED_IN);
+
+      expect(res.errors).toBeUndefined();
+      expect(res.data.sendResetPasswordEmail).toBeTrue();
+
+      const reloadedUser = await userService.find(user.id);
+      expect(reloadedUser).not.toBeNull();
+      expect(reloadedUser!.resetPasswordToken!).not.toBeNull();
+      expect(reloadedUser!.resetPasswordToken).not.toBe(user.resetPasswordToken);
     });
   });
 });
