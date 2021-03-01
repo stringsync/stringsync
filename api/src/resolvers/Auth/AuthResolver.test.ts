@@ -5,6 +5,7 @@ import { SessionUser } from '../../server';
 import { AuthService, UserService } from '../../services';
 import { ConfirmEmailInput, EntityFactory, gql, LoginInput, Mutation, Query, resolve } from '../../testing';
 import { Mailer, randStr } from '../../util';
+import { ResetPasswordInput } from './ResetPasswordInput';
 import { SendResetPasswordEmailInput } from './SendResetPasswordEmailInput';
 
 enum LoginStatus {
@@ -383,6 +384,8 @@ describe('AuthResolver', () => {
       expect(reloadedUser).not.toBeNull();
       expect(reloadedUser!.resetPasswordToken!).not.toBeNull();
       expect(reloadedUser!.resetPasswordToken).not.toBe(user.resetPasswordToken);
+
+      expect(mailerSendSpy).toHaveBeenCalledTimes(1);
     });
 
     it('resets passwordResetToken when logged in', async () => {
@@ -395,6 +398,64 @@ describe('AuthResolver', () => {
       expect(reloadedUser).not.toBeNull();
       expect(reloadedUser!.resetPasswordToken!).not.toBeNull();
       expect(reloadedUser!.resetPasswordToken).not.toBe(user.resetPasswordToken);
+
+      expect(mailerSendSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('resetPassword', () => {
+    let authService: AuthService;
+    let userService: UserService;
+
+    let user: User;
+    let password: string;
+
+    beforeEach(async () => {
+      userService = container.get<UserService>(TYPES.UserService);
+
+      const username = randStr(10);
+      const email = `${username}@domain.tld`;
+      password = randStr(10);
+
+      authService = container.get<AuthService>(TYPES.AuthService);
+
+      user = await authService.signup(username, email, password);
+    });
+
+    const resetPassword = (input: ResetPasswordInput) => {
+      return resolve<Mutation, 'resetPassword', { input: ResetPasswordInput }>(
+        gql`
+          mutation resetPassword($input: ResetPasswordInput!) {
+            resetPassword(input: $input)
+          }
+        `,
+        { input },
+        {}
+      );
+    };
+
+    it('updates the password', async () => {
+      const oldPassword = password;
+      const newPassword = randStr(oldPassword.length + 1);
+
+      const { resetPasswordToken } = await authService.refreshResetPasswordToken(user.email, new Date());
+      expect(resetPasswordToken).not.toBeNull();
+
+      const { res } = await resetPassword({
+        email: user.email,
+        password: newPassword,
+        resetPasswordToken: resetPasswordToken!,
+      });
+
+      expect(res.errors).toBeUndefined();
+      expect(res.data.resetPassword).toBeTrue();
+
+      const oldPasswordUser = await authService.getAuthenticatedUser(user.email, oldPassword);
+      expect(oldPasswordUser).toBeNull();
+
+      const newPasswordUser = await authService.getAuthenticatedUser(user.email, newPassword);
+      expect(newPasswordUser).not.toBeNull();
+      expect(newPasswordUser!.id).toBe(user.id);
     });
   });
 });

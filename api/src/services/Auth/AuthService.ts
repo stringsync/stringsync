@@ -5,8 +5,8 @@ import { User, UserRole } from '../../domain';
 import { BadRequestError, NotFoundError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { UserRepo } from '../../repos';
-import { Logger, randInt, randStr } from '../../util';
 import { SessionUser } from '../../server';
+import { Logger, randInt, randStr } from '../../util';
 
 @injectable()
 export class AuthService {
