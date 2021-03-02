@@ -6,6 +6,7 @@ import { SessionUser } from '../../server';
 import {
   buildRandUser,
   createRandNotation,
+  createRandUpload,
   gql,
   Mutation,
   Query,
@@ -13,6 +14,7 @@ import {
   QueryNotationsArgs,
   resolve,
 } from '../../testing';
+import { randStr, Replace } from '../../util';
 import { CreateNotationInput } from './CreateNotationInput';
 
 describe('NotationResolver', () => {
@@ -126,11 +128,11 @@ describe('NotationResolver', () => {
     const getSessionUser = (loginStatus: LoginStatus): SessionUser => {
       switch (loginStatus) {
         case LoginStatus.LOGGED_IN_AS_ADMIN:
-          return { id: student.id, isLoggedIn: true, role: student.role };
+          return { id: admin.id, isLoggedIn: true, role: admin.role };
         case LoginStatus.LOGGED_IN_AS_TEACHER:
           return { id: teacher.id, isLoggedIn: true, role: teacher.role };
         case LoginStatus.LOGGED_IN_AS_STUDENT:
-          return { id: admin.id, isLoggedIn: true, role: admin.role };
+          return { id: student.id, isLoggedIn: true, role: student.role };
         case LoginStatus.LOGGED_OUT:
           return { id: '', isLoggedIn: false, role: UserRole.STUDENT };
         default:
@@ -138,8 +140,10 @@ describe('NotationResolver', () => {
       }
     };
 
-    const createNotation = (input: CreateNotationInput, loginStatus: LoginStatus) => {
-      return resolve<Mutation, 'createNotation', { input: CreateNotationInput }>(
+    type TestCreateNotationInput = Replace<CreateNotationInput, 'thumbnail' | 'video', unknown>;
+
+    const createNotation = (input: TestCreateNotationInput, loginStatus: LoginStatus) => {
+      return resolve<Mutation, 'createNotation', { input: TestCreateNotationInput }>(
         gql`
           mutation createNotation($input: CreateNotationInput!) {
             createNotation(input: $input) {
@@ -152,7 +156,20 @@ describe('NotationResolver', () => {
       );
     };
 
-    it.todo('creates a notation record when logged in as admin');
+    it.only('creates a notation record when logged in as admin', async () => {
+      const { res } = await createNotation(
+        {
+          songName: randStr(12),
+          artistName: randStr(12),
+          thumbnail: createRandUpload(),
+          video: createRandUpload(),
+          tagIds: [],
+        },
+        LoginStatus.LOGGED_IN_AS_ADMIN
+      );
+
+      expect(res.errors).toBeUndefined();
+    });
 
     it.todo('creates a notation record when logged in as teacher');
 

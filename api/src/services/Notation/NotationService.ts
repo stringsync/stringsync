@@ -54,7 +54,7 @@ export class NotationService {
       this.taggingService.bulkCreate(taggings),
     ]);
 
-    notation.thumbnailUrl = await this.getThumbnailUrl(thubmanailKey);
+    notation.thumbnailUrl = this.getThumbnailUrl(thubmanailKey);
     await this.update(notation.id, notation);
 
     return notation;
@@ -74,7 +74,7 @@ export class NotationService {
     return `${notation.id}${ext}`;
   }
 
-  private async getThumbnailUrl(thumbnailKey: string): Promise<string> {
+  private getThumbnailUrl(thumbnailKey: string): string {
     return `https://${this.config.CDN_DOMAIN_NAME}/${thumbnailKey}`;
   }
 }
