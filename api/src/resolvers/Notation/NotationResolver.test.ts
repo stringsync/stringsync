@@ -1,16 +1,12 @@
 import { Notation, User, UserRole } from '../../domain';
 import { container } from '../../inversify.config';
 import { TYPES } from '../../inversify.constants';
-import { EntityFactory, gql, Query, QueryNotationsArgs, resolve } from '../../testing';
+import { EntityFactory, gql, Query, QueryNotationArgs, QueryNotationsArgs, resolve } from '../../testing';
 
 describe('NotationResolver', () => {
   let entityFactory: EntityFactory;
 
   let notations: Notation[];
-
-  let student: User;
-  let teacher: User;
-  let admin: User;
 
   beforeEach(async () => {
     entityFactory = container.get<EntityFactory>(TYPES.EntityFactory);
@@ -19,12 +15,6 @@ describe('NotationResolver', () => {
       entityFactory.createRandNotation({ cursor: 1 }),
       entityFactory.createRandNotation({ cursor: 2 }),
       entityFactory.createRandNotation({ cursor: 3 }),
-    ]);
-
-    [student, teacher, admin] = await Promise.all([
-      entityFactory.createRandUser({ role: UserRole.STUDENT }),
-      entityFactory.createRandUser({ role: UserRole.TEACHER }),
-      entityFactory.createRandUser({ role: UserRole.ADMIN }),
     ]);
   });
 
@@ -49,7 +39,7 @@ describe('NotationResolver', () => {
       );
     };
 
-    it('returns the first n notations', async () => {
+    it('returns  notations', async () => {
       const { res } = await queryNotations({});
 
       expect(res.errors).toBeUndefined();
@@ -58,5 +48,71 @@ describe('NotationResolver', () => {
       const notationIds = edges.map((edge) => edge.node.id);
       expect(notationIds).toIncludeSameMembers(notations.map((notation) => notation.id));
     });
+
+    it('returns the first N notations', async () => {
+      const { res } = await queryNotations({ first: 2 });
+
+      expect(res.errors).toBeUndefined();
+
+      const { edges } = res.data.notations;
+      const notationIds = edges.map((edge) => edge.node.id);
+      const [notation1, notation2] = notations;
+      expect(notationIds).toIncludeSameMembers([notation1.id, notation2.id]);
+    });
+  });
+
+  describe('notation', () => {
+    const notation = (args: QueryNotationArgs) => {
+      return resolve<Query, 'notation', QueryNotationArgs>(
+        gql`
+          query notation($id: String!) {
+            notation(id: $id) {
+              id
+            }
+          }
+        `,
+        args,
+        {}
+      );
+    };
+
+    it('returns the record matching the id', async () => {
+      const id = notations[0].id;
+
+      const { res } = await notation({ id });
+
+      expect(res.errors).toBeUndefined();
+      expect(res.data.notation).toBeDefined();
+      expect(res.data.notation!.id).toBe(id);
+    });
+
+    it('returns null when no record matches', async () => {
+      const { res } = await notation({ id: 'fake_id_i_promise_since_its_super_long' });
+
+      expect(res.errors).toBeUndefined();
+      expect(res.data.notation).toBeNull();
+    });
+  });
+
+  describe('createNotation', () => {
+    let student: User;
+    let teacher: User;
+    let admin: User;
+
+    beforeEach(async () => {
+      [student, teacher, admin] = await Promise.all([
+        entityFactory.createRandUser({ role: UserRole.STUDENT }),
+        entityFactory.createRandUser({ role: UserRole.TEACHER }),
+        entityFactory.createRandUser({ role: UserRole.ADMIN }),
+      ]);
+    });
+
+    it.todo('creates a notation record when logged in as admin');
+
+    it.todo('creates a notation record when logged in as teacher');
+
+    it.todo('forbids notation creation when logged in as student');
+
+    it.todo('forbids notation creation when not logged in');
   });
 });
