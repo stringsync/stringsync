@@ -1,2 +1,2 @@
-export * from './EntityBuilder';
+export * from './buildRandEntity';
 export * from './Test';

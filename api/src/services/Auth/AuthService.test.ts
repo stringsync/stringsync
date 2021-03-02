@@ -6,7 +6,7 @@ import { BadRequestError, NotFoundError } from '../../errors';
 import { container } from '../../inversify.config';
 import { TYPES } from '../../inversify.constants';
 import { UserRepo } from '../../repos';
-import { EntityBuilder } from '../../testing';
+import { buildRandUser } from '../../testing';
 import { randStr } from '../../util';
 import { AuthService } from './AuthService';
 
@@ -41,7 +41,7 @@ describe('AuthService', () => {
     });
 
     it('returns a session user when the id exists', async () => {
-      const user = await authService.userRepo.create(EntityBuilder.buildRandUser());
+      const user = await authService.userRepo.create(buildRandUser());
       const sessionUser = await authService.getSessionUser(user.id);
       expect(sessionUser).toStrictEqual({
         id: user.id,
@@ -53,7 +53,7 @@ describe('AuthService', () => {
 
   describe('toSessionUser', () => {
     it('converts a user to a session user', () => {
-      const user = EntityBuilder.buildRandUser();
+      const user = buildRandUser();
       const sessionUser = authService.toSessionUser(user);
       expect(sessionUser).toStrictEqual({
         id: user.id,
@@ -79,7 +79,7 @@ describe('AuthService', () => {
     });
 
     it('returns the user matching the id', async () => {
-      const user = await userRepo.create(EntityBuilder.buildRandUser());
+      const user = await userRepo.create(buildRandUser());
       const whoami = await authService.whoami(user.id);
       expect(whoami).toStrictEqual(user);
     });

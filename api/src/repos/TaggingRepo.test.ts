@@ -2,7 +2,7 @@ import { isPlainObject } from 'lodash';
 import { Notation, Tag, Tagging, User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
-import { EntityBuilder } from '../testing';
+import { buildRandNotation, buildRandTag, buildRandTagging, buildRandUser } from '../testing';
 import { ctor, randStr } from '../util';
 import { SequelizeTaggingRepo } from './sequelize';
 import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from './types';
@@ -38,21 +38,21 @@ describe.each([['SequelizeTaggingRepo', SequelizeTaggingRepo]])('%s', (name, Cto
 
   beforeEach(async () => {
     const userRepo = container.get<UserRepo>(TYPES.UserRepo);
-    [user1, user2] = await userRepo.bulkCreate([EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser()]);
+    [user1, user2] = await userRepo.bulkCreate([buildRandUser(), buildRandUser()]);
 
     const notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
     [notation1, notation2] = await notationRepo.bulkCreate([
-      EntityBuilder.buildRandNotation({ transcriberId: user1.id }),
-      EntityBuilder.buildRandNotation({ transcriberId: user2.id }),
+      buildRandNotation({ transcriberId: user1.id }),
+      buildRandNotation({ transcriberId: user2.id }),
     ]);
 
     const tagRepo = container.get<TagRepo>(TYPES.TagRepo);
-    [tag1, tag2] = await tagRepo.bulkCreate([EntityBuilder.buildRandTag(), EntityBuilder.buildRandTag()]);
+    [tag1, tag2] = await tagRepo.bulkCreate([buildRandTag(), buildRandTag()]);
 
     [tagging1, tagging2] = await taggingRepo.bulkCreate([
-      EntityBuilder.buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
-      EntityBuilder.buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
-      EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
+      buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
+      buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
+      buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
     ]);
   });
 
@@ -65,23 +65,21 @@ describe.each([['SequelizeTaggingRepo', SequelizeTaggingRepo]])('%s', (name, Cto
 
   describe('validate', () => {
     it('permits valid taggings', async () => {
-      await expect(taggingRepo.validate(EntityBuilder.buildRandTagging())).resolves.not.toThrow();
+      await expect(taggingRepo.validate(buildRandTagging())).resolves.not.toThrow();
     });
   });
 
   describe('create', () => {
     it('creates a tagging record', async () => {
       const countBefore = await taggingRepo.count();
-      await taggingRepo.create(EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag2.id }));
+      await taggingRepo.create(buildRandTagging({ notationId: notation2.id, tagId: tag2.id }));
       const countAfter = await taggingRepo.count();
 
       expect(countAfter).toBe(countBefore + 1);
     });
 
     it('creates a findable tagging record', async () => {
-      const { id } = await taggingRepo.create(
-        EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag2.id })
-      );
+      const { id } = await taggingRepo.create(buildRandTagging({ notationId: notation2.id, tagId: tag2.id }));
       const tagging = await taggingRepo.find(id);
 
       expect(tagging).not.toBeNull();
@@ -89,15 +87,13 @@ describe.each([['SequelizeTaggingRepo', SequelizeTaggingRepo]])('%s', (name, Cto
     });
 
     it('returns a plain object', async () => {
-      const tagging = await taggingRepo.create(
-        EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag2.id })
-      );
+      const tagging = await taggingRepo.create(buildRandTagging({ notationId: notation2.id, tagId: tag2.id }));
 
       expect(isPlainObject(tagging)).toBe(true);
     });
 
     it('disallows duplicate ids', async () => {
-      const tagging = EntityBuilder.buildRandTagging({ id: randStr(8), notationId: notation2.id, tagId: tag2.id });
+      const tagging = buildRandTagging({ id: randStr(8), notationId: notation2.id, tagId: tag2.id });
 
       await expect(taggingRepo.create(tagging)).resolves.not.toThrow();
       await expect(taggingRepo.create(tagging)).rejects.toThrow();

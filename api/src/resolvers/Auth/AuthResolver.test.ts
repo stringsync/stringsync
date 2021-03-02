@@ -3,7 +3,7 @@ import { container } from '../../inversify.config';
 import { TYPES } from '../../inversify.constants';
 import { SessionUser } from '../../server';
 import { AuthService, UserService } from '../../services';
-import { ConfirmEmailInput, EntityFactory, gql, LoginInput, Mutation, Query, resolve } from '../../testing';
+import { ConfirmEmailInput, createRandUser, gql, LoginInput, Mutation, Query, resolve } from '../../testing';
 import { Mailer, randStr } from '../../util';
 import { ResetPasswordInput } from './ResetPasswordInput';
 import { SendResetPasswordEmailInput } from './SendResetPasswordEmailInput';
@@ -33,8 +33,7 @@ describe('AuthResolver', () => {
     let user: User;
 
     beforeEach(async () => {
-      const entityFactory = container.get<EntityFactory>(TYPES.EntityFactory);
-      user = await entityFactory.createRandUser();
+      user = await createRandUser();
     });
 
     const whoami = async (loginStatus: LoginStatus) => {
@@ -343,19 +342,17 @@ describe('AuthResolver', () => {
 
   describe('sendResetPasswordEmail', () => {
     let userService: UserService;
-    let entityFactory: EntityFactory;
     let mailerSendSpy: jest.SpyInstance;
 
     let user: User;
 
     beforeEach(async () => {
-      entityFactory = container.get<EntityFactory>(TYPES.EntityFactory);
       userService = container.get<UserService>(TYPES.UserService);
 
       const mailer = container.get<Mailer>(TYPES.Mailer);
       mailerSendSpy = jest.spyOn(mailer, 'send');
 
-      user = await entityFactory.createRandUser();
+      user = await createRandUser();
     });
 
     afterEach(() => {

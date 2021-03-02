@@ -3,7 +3,7 @@ import { Notation, Tag, Tagging, User } from '../../domain';
 import { container } from '../../inversify.config';
 import { TYPES } from '../../inversify.constants';
 import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from '../../repos';
-import { EntityBuilder } from '../../testing';
+import { buildRandNotation, buildRandTagging, createRandTags, createRandUsers } from '../../testing';
 import { randStr } from '../../util';
 import { TagService } from './TagService';
 
@@ -16,7 +16,7 @@ describe('TagService', () => {
 
   beforeEach(async () => {
     tagRepo = container.get<TagRepo>(TYPES.TagRepo);
-    [tag1, tag2] = await tagRepo.bulkCreate([EntityBuilder.buildRandTag(), EntityBuilder.buildRandTag()]);
+    [tag1, tag2] = await createRandTags(2);
 
     tagService = container.get<TagService>(TYPES.TagService);
   });
@@ -67,19 +67,19 @@ describe('TagService', () => {
 
     beforeEach(async () => {
       userRepo = container.get<UserRepo>(TYPES.UserRepo);
-      [user1, user2] = await userRepo.bulkCreate([EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser()]);
+      [user1, user2] = await createRandUsers(2);
 
       notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
       [notation1, notation2] = await notationRepo.bulkCreate([
-        EntityBuilder.buildRandNotation({ transcriberId: user1.id }),
-        EntityBuilder.buildRandNotation({ transcriberId: user1.id }),
+        buildRandNotation({ transcriberId: user1.id }),
+        buildRandNotation({ transcriberId: user1.id }),
       ]);
 
       taggingRepo = container.get<TaggingRepo>(TYPES.TaggingRepo);
       [tagging1, tagging2] = await taggingRepo.bulkCreate([
-        EntityBuilder.buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
-        EntityBuilder.buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
-        EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
+        buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
+        buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
+        buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
       ]);
     });
 

@@ -2,7 +2,7 @@ import { first, isPlainObject, last, sortBy, take, times } from 'lodash';
 import { Notation, Tag, User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
-import { EntityBuilder } from '../testing';
+import { buildRandNotation, buildRandTag, buildRandTagging, buildRandUser } from '../testing';
 import { ctor, randStr } from '../util';
 import { SequelizeNotationRepo } from './sequelize';
 import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from './types';
@@ -24,7 +24,7 @@ describe.each([['SequelizeNotationRepo', SequelizeNotationRepo]])('%s', (name, C
     notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
     userRepo = container.get<UserRepo>(TYPES.UserRepo);
 
-    user = await userRepo.create(EntityBuilder.buildRandUser());
+    user = await userRepo.create(buildRandUser());
     transcriberId = user.id;
   });
 
@@ -35,9 +35,9 @@ describe.each([['SequelizeNotationRepo', SequelizeNotationRepo]])('%s', (name, C
   describe('count', () => {
     it('counts the number of notations', async () => {
       await notationRepo.bulkCreate([
-        EntityBuilder.buildRandNotation({ transcriberId }),
-        EntityBuilder.buildRandNotation({ transcriberId }),
-        EntityBuilder.buildRandNotation({ transcriberId }),
+        buildRandNotation({ transcriberId }),
+        buildRandNotation({ transcriberId }),
+        buildRandNotation({ transcriberId }),
       ]);
 
       const count = await notationRepo.count();
@@ -48,38 +48,38 @@ describe.each([['SequelizeNotationRepo', SequelizeNotationRepo]])('%s', (name, C
 
   describe('validate', () => {
     it('permits valid notations', async () => {
-      await expect(notationRepo.validate(EntityBuilder.buildRandNotation())).resolves.not.toThrow();
+      await expect(notationRepo.validate(buildRandNotation())).resolves.not.toThrow();
     });
 
     it.each(['Above And Beyond (The Call Of Love)', `no i don't shave my thighs`, `You Can't Come with Me`])(
       'permits valid song names',
       async (songName) => {
-        await expect(notationRepo.validate(EntityBuilder.buildRandNotation({ songName }))).resolves.not.toThrow();
+        await expect(notationRepo.validate(buildRandNotation({ songName }))).resolves.not.toThrow();
       }
     );
 
     it.each(['; ATTEMPTED SQL INJECTION', '<script>ATTEMPTED XSS</script>'])(
       'disallows invalid song names',
       async (songName) => {
-        await expect(notationRepo.validate(EntityBuilder.buildRandNotation({ songName }))).rejects.toThrow();
+        await expect(notationRepo.validate(buildRandNotation({ songName }))).rejects.toThrow();
       }
     );
 
     it.each(['@jaredplaysguitar', 'tekashi69'])('permits valid artist names', async (artistName) => {
-      await expect(notationRepo.validate(EntityBuilder.buildRandNotation({ artistName }))).resolves.not.toThrow();
+      await expect(notationRepo.validate(buildRandNotation({ artistName }))).resolves.not.toThrow();
     });
 
     it.each(['; ATTEMPTED SQL INJECTION', '<script>ATTEMPTED XSS</script>'])(
       'disallows invalid artist names',
       async (artistName) => {
-        await expect(notationRepo.validate(EntityBuilder.buildRandNotation({ artistName }))).rejects.toThrow();
+        await expect(notationRepo.validate(buildRandNotation({ artistName }))).rejects.toThrow();
       }
     );
   });
 
   describe('find', () => {
     it('finds notations', async () => {
-      const { id } = await notationRepo.create(EntityBuilder.buildRandNotation({ transcriberId }));
+      const { id } = await notationRepo.create(buildRandNotation({ transcriberId }));
       const notation = await notationRepo.find(id);
 
       expect(notation).not.toBeNull();
@@ -92,7 +92,7 @@ describe.each([['SequelizeNotationRepo', SequelizeNotationRepo]])('%s', (name, C
     });
 
     it('returns a plain object', async () => {
-      const { id } = await notationRepo.create(EntityBuilder.buildRandNotation({ transcriberId }));
+      const { id } = await notationRepo.create(buildRandNotation({ transcriberId }));
       const notation = await notationRepo.find(id);
 
       expect(isPlainObject(notation)).toBe(true);
@@ -102,9 +102,9 @@ describe.each([['SequelizeNotationRepo', SequelizeNotationRepo]])('%s', (name, C
   describe('findAll', () => {
     it('finds all notations', async () => {
       const notations = await notationRepo.bulkCreate([
-        EntityBuilder.buildRandNotation({ transcriberId }),
-        EntityBuilder.buildRandNotation({ transcriberId }),
-        EntityBuilder.buildRandNotation({ transcriberId }),
+        buildRandNotation({ transcriberId }),
+        buildRandNotation({ transcriberId }),
+        buildRandNotation({ transcriberId }),
       ]);
 
       const foundNotations = await notationRepo.findAll();
@@ -114,9 +114,9 @@ describe.each([['SequelizeNotationRepo', SequelizeNotationRepo]])('%s', (name, C
 
     it('returns plain objects', async () => {
       const notations = await notationRepo.bulkCreate([
-        EntityBuilder.buildRandNotation({ transcriberId }),
-        EntityBuilder.buildRandNotation({ transcriberId }),
-        EntityBuilder.buildRandNotation({ transcriberId }),
+        buildRandNotation({ transcriberId }),
+        buildRandNotation({ transcriberId }),
+        buildRandNotation({ transcriberId }),
       ]);
 
       const foundNotations = await notationRepo.findAll();
@@ -128,28 +128,28 @@ describe.each([['SequelizeNotationRepo', SequelizeNotationRepo]])('%s', (name, C
   describe('create', () => {
     it('creates a notation', async () => {
       const beforeCount = await notationRepo.count();
-      await notationRepo.create(EntityBuilder.buildRandNotation({ transcriberId }));
+      await notationRepo.create(buildRandNotation({ transcriberId }));
       const afterCount = await notationRepo.count();
 
       expect(afterCount).toBe(beforeCount + 1);
     });
 
     it('creates a queryable notation', async () => {
-      const notation = await notationRepo.create(EntityBuilder.buildRandNotation({ transcriberId }));
+      const notation = await notationRepo.create(buildRandNotation({ transcriberId }));
       const foundNotation = await notationRepo.find(notation.id);
 
       expect(foundNotation).toStrictEqual(notation);
     });
 
     it('returns a plain object', async () => {
-      const notation = await notationRepo.create(EntityBuilder.buildRandNotation({ transcriberId }));
+      const notation = await notationRepo.create(buildRandNotation({ transcriberId }));
       const foundNotation = await notationRepo.find(notation.id);
 
       expect(isPlainObject(foundNotation)).toBe(true);
     });
 
     it('disallows duplicate ids', async () => {
-      const notation = EntityBuilder.buildRandNotation({ transcriberId });
+      const notation = buildRandNotation({ transcriberId });
 
       await expect(notationRepo.create(notation)).resolves.not.toThrow();
       await expect(notationRepo.create(notation)).rejects.toThrow();
@@ -159,9 +159,9 @@ describe.each([['SequelizeNotationRepo', SequelizeNotationRepo]])('%s', (name, C
   describe('bulkCreate', () => {
     it('creates many notations', async () => {
       const notations = await notationRepo.bulkCreate([
-        EntityBuilder.buildRandNotation({ transcriberId }),
-        EntityBuilder.buildRandNotation({ transcriberId }),
-        EntityBuilder.buildRandNotation({ transcriberId }),
+        buildRandNotation({ transcriberId }),
+        buildRandNotation({ transcriberId }),
+        buildRandNotation({ transcriberId }),
       ]);
 
       const foundNotations = await notationRepo.findAll();
@@ -171,9 +171,9 @@ describe.each([['SequelizeNotationRepo', SequelizeNotationRepo]])('%s', (name, C
 
     it('returns plain objects', async () => {
       const notations = await notationRepo.bulkCreate([
-        EntityBuilder.buildRandNotation({ transcriberId }),
-        EntityBuilder.buildRandNotation({ transcriberId }),
-        EntityBuilder.buildRandNotation({ transcriberId }),
+        buildRandNotation({ transcriberId }),
+        buildRandNotation({ transcriberId }),
+        buildRandNotation({ transcriberId }),
       ]);
 
       expect(notations.every(isPlainObject)).toBe(true);
@@ -182,7 +182,7 @@ describe.each([['SequelizeNotationRepo', SequelizeNotationRepo]])('%s', (name, C
 
   describe('update', () => {
     it('updates a notation', async () => {
-      const notation = await notationRepo.create(EntityBuilder.buildRandNotation({ transcriberId }));
+      const notation = await notationRepo.create(buildRandNotation({ transcriberId }));
       const songName = randStr(8);
 
       const updatedNotation = await notationRepo.update(notation.id, { songName });
@@ -191,7 +191,7 @@ describe.each([['SequelizeNotationRepo', SequelizeNotationRepo]])('%s', (name, C
     });
 
     it('returns plain objects', async () => {
-      const notation = await notationRepo.create(EntityBuilder.buildRandNotation({ transcriberId }));
+      const notation = await notationRepo.create(buildRandNotation({ transcriberId }));
       const songName = randStr(8);
 
       const updatedNotation = await notationRepo.update(notation.id, { songName });
@@ -210,14 +210,14 @@ describe.each([['SequelizeNotationRepo', SequelizeNotationRepo]])('%s', (name, C
     beforeEach(async () => {
       users = new Array(NUM_USERS);
       for (let ndx = 0; ndx < NUM_USERS; ndx++) {
-        users[ndx] = EntityBuilder.buildRandUser({ cursor: ndx + 1 });
+        users[ndx] = buildRandUser({ cursor: ndx + 1 });
       }
       users = await userRepo.bulkCreate(users);
 
       notations = new Array(NUM_NOTATIONS);
       for (let ndx = 0; ndx < NUM_NOTATIONS; ndx++) {
         const transcriber = ndx % 2 === 0 ? users[0] : users[1];
-        notations[ndx] = EntityBuilder.buildRandNotation({ cursor: ndx + 1, transcriberId: transcriber.id });
+        notations[ndx] = buildRandNotation({ cursor: ndx + 1, transcriberId: transcriber.id });
       }
       notations = await notationRepo.bulkCreate(notations);
     });
@@ -316,7 +316,7 @@ describe.each([['SequelizeNotationRepo', SequelizeNotationRepo]])('%s', (name, C
 
     it('defaults to paging forward', async () => {
       const notations = await notationRepo.bulkCreate(
-        times(11, (ndx) => EntityBuilder.buildRandNotation({ transcriberId, cursor: ndx + 1 }))
+        times(11, (ndx) => buildRandNotation({ transcriberId, cursor: ndx + 1 }))
       );
 
       const { edges, pageInfo } = await notationRepo.findPage({});
@@ -331,8 +331,8 @@ describe.each([['SequelizeNotationRepo', SequelizeNotationRepo]])('%s', (name, C
 
     it('returns the first N notations', async () => {
       const notations = await notationRepo.bulkCreate([
-        EntityBuilder.buildRandNotation({ transcriberId, cursor: 1 }),
-        EntityBuilder.buildRandNotation({ transcriberId, cursor: 2 }),
+        buildRandNotation({ transcriberId, cursor: 1 }),
+        buildRandNotation({ transcriberId, cursor: 2 }),
       ]);
 
       const { edges } = await notationRepo.findPage({ first: 1 });
@@ -342,8 +342,8 @@ describe.each([['SequelizeNotationRepo', SequelizeNotationRepo]])('%s', (name, C
 
     it('returns the last N notations', async () => {
       const notations = await notationRepo.bulkCreate([
-        EntityBuilder.buildRandNotation({ transcriberId, cursor: 1 }),
-        EntityBuilder.buildRandNotation({ transcriberId, cursor: 2 }),
+        buildRandNotation({ transcriberId, cursor: 1 }),
+        buildRandNotation({ transcriberId, cursor: 2 }),
       ]);
 
       const { edges } = await notationRepo.findPage({ last: 1 });
@@ -366,25 +366,25 @@ describe.each([['SequelizeNotationRepo', SequelizeNotationRepo]])('%s', (name, C
 
       beforeEach(async () => {
         [user1, user2, user3] = await userRepo.bulkCreate([
-          EntityBuilder.buildRandUser({ username: 'foo' }),
-          EntityBuilder.buildRandUser({ username: 'bar' }),
-          EntityBuilder.buildRandUser({ username: 'foobar' }),
+          buildRandUser({ username: 'foo' }),
+          buildRandUser({ username: 'bar' }),
+          buildRandUser({ username: 'foobar' }),
         ]);
 
         [notation1, notation2, notation3] = await notationRepo.bulkCreate([
-          EntityBuilder.buildRandNotation({
+          buildRandNotation({
             songName: 'yikes',
             artistName: 'bach',
             transcriberId: user1.id,
             cursor: 1,
           }),
-          EntityBuilder.buildRandNotation({
+          buildRandNotation({
             songName: 'overnight',
             artistName: 'loony',
             transcriberId: user2.id,
             cursor: 2,
           }),
-          EntityBuilder.buildRandNotation({
+          buildRandNotation({
             songName: 'bull fighter',
             artistName: 'jean dawson',
             transcriberId: user3.id,
@@ -392,17 +392,13 @@ describe.each([['SequelizeNotationRepo', SequelizeNotationRepo]])('%s', (name, C
           }),
         ]);
 
-        [tag1, tag2, tag3] = await tagRepo.bulkCreate([
-          EntityBuilder.buildRandTag(),
-          EntityBuilder.buildRandTag(),
-          EntityBuilder.buildRandTag(),
-        ]);
+        [tag1, tag2, tag3] = await tagRepo.bulkCreate([buildRandTag(), buildRandTag(), buildRandTag()]);
 
         await taggingRepo.bulkCreate([
-          EntityBuilder.buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
-          EntityBuilder.buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
-          EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag2.id }),
-          EntityBuilder.buildRandTagging({ notationId: notation2.id, tagId: tag3.id }),
+          buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
+          buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
+          buildRandTagging({ notationId: notation2.id, tagId: tag2.id }),
+          buildRandTagging({ notationId: notation2.id, tagId: tag3.id }),
         ]);
       });
 

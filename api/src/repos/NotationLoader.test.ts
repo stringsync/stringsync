@@ -2,7 +2,7 @@ import { isPlainObject, sortBy } from 'lodash';
 import { Notation, User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
-import { EntityBuilder } from '../testing';
+import { buildRandNotation, buildRandUser } from '../testing';
 import { ctor, randStr } from '../util';
 import { SequelizeNotationLoader } from './sequelize';
 import { NotationLoader, NotationRepo, UserRepo } from './types';
@@ -28,14 +28,11 @@ describe.each([['SequelizeNotationLoader', SequelizeNotationLoader]])('%s', (nam
     const userRepo = container.get<UserRepo>(TYPES.UserRepo);
     const notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
 
-    [transcriber1, transcriber2] = await userRepo.bulkCreate([
-      EntityBuilder.buildRandUser(),
-      EntityBuilder.buildRandUser(),
-    ]);
+    [transcriber1, transcriber2] = await userRepo.bulkCreate([buildRandUser(), buildRandUser()]);
     [notation1, notation2, notation3] = await notationRepo.bulkCreate([
-      EntityBuilder.buildRandNotation({ transcriberId: transcriber1.id }),
-      EntityBuilder.buildRandNotation({ transcriberId: transcriber1.id }),
-      EntityBuilder.buildRandNotation({ transcriberId: transcriber2.id }),
+      buildRandNotation({ transcriberId: transcriber1.id }),
+      buildRandNotation({ transcriberId: transcriber1.id }),
+      buildRandNotation({ transcriberId: transcriber2.id }),
     ]);
   });
 

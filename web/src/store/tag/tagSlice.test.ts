@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { EntityBuilder } from '../../testing';
 import { TagClient } from '../../clients';
+import { buildRandTag } from '../../testing';
 import { getTags, tagSlice } from './tagSlice';
 
 describe('tagSlice', () => {
@@ -56,8 +56,8 @@ describe('tagSlice', () => {
         },
       });
 
-      const tag1 = EntityBuilder.buildRandTag();
-      const tag2 = EntityBuilder.buildRandTag();
+      const tag1 = buildRandTag();
+      const tag2 = buildRandTag();
       const tagsSpy = jest.spyOn(tagClient, 'tags');
       tagsSpy.mockResolvedValue({
         data: {

@@ -1,22 +1,28 @@
 import { Notation, User, UserRole } from '../../domain';
 import { container } from '../../inversify.config';
 import { TYPES } from '../../inversify.constants';
+import { UserRepo } from '../../repos';
 import { SessionUser } from '../../server';
-import { EntityFactory, gql, Mutation, Query, QueryNotationArgs, QueryNotationsArgs, resolve } from '../../testing';
+import {
+  buildRandUser,
+  createRandNotation,
+  gql,
+  Mutation,
+  Query,
+  QueryNotationArgs,
+  QueryNotationsArgs,
+  resolve,
+} from '../../testing';
 import { CreateNotationInput } from './CreateNotationInput';
 
 describe('NotationResolver', () => {
-  let entityFactory: EntityFactory;
-
   let notations: Notation[];
 
   beforeEach(async () => {
-    entityFactory = container.get<EntityFactory>(TYPES.EntityFactory);
-
     notations = await Promise.all([
-      entityFactory.createRandNotation({ cursor: 1 }),
-      entityFactory.createRandNotation({ cursor: 2 }),
-      entityFactory.createRandNotation({ cursor: 3 }),
+      createRandNotation({ cursor: 1 }),
+      createRandNotation({ cursor: 2 }),
+      createRandNotation({ cursor: 3 }),
     ]);
   });
 
@@ -109,10 +115,11 @@ describe('NotationResolver', () => {
     let admin: User;
 
     beforeEach(async () => {
-      [student, teacher, admin] = await Promise.all([
-        entityFactory.createRandUser({ role: UserRole.STUDENT }),
-        entityFactory.createRandUser({ role: UserRole.TEACHER }),
-        entityFactory.createRandUser({ role: UserRole.ADMIN }),
+      const userRepo = container.get<UserRepo>(TYPES.UserRepo);
+      [student, teacher, admin] = await userRepo.bulkCreate([
+        buildRandUser({ role: UserRole.STUDENT }),
+        buildRandUser({ role: UserRole.TEACHER }),
+        buildRandUser({ role: UserRole.ADMIN }),
       ]);
     });
 

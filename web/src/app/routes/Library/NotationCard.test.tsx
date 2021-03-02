@@ -1,13 +1,13 @@
 import { render } from '@testing-library/react';
 import React from 'react';
-import { EntityBuilder } from '../../../testing';
+import { buildRandNotation, buildRandUser } from '../../../testing';
 import { NotationCard } from './NotationCard';
 import { NotationPreview } from './types';
 
 describe('NotationCard', () => {
   it('runs without crashing', async () => {
-    const transcriber = EntityBuilder.buildRandUser();
-    const notation = EntityBuilder.buildRandNotation();
+    const transcriber = buildRandUser();
+    const notation = buildRandNotation();
     const notationPreview: NotationPreview = {
       ...notation,
       transcriber,

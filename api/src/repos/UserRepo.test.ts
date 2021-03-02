@@ -3,7 +3,7 @@ import * as uuid from 'uuid';
 import { User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
-import { EntityBuilder } from '../testing';
+import { buildRandUser } from '../testing';
 import { ctor, randStr } from '../util';
 import { SequelizeUserRepo } from './sequelize';
 import { UserRepo } from './types';
@@ -27,11 +27,7 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
 
   describe('count', () => {
     it('counts the number of users', async () => {
-      await userRepo.bulkCreate([
-        EntityBuilder.buildRandUser(),
-        EntityBuilder.buildRandUser(),
-        EntityBuilder.buildRandUser(),
-      ]);
+      await userRepo.bulkCreate([buildRandUser(), buildRandUser(), buildRandUser()]);
 
       const count = await userRepo.count();
 
@@ -41,24 +37,24 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
 
   describe('validate', () => {
     it('permits valid users', async () => {
-      const user = EntityBuilder.buildRandUser();
+      const user = buildRandUser();
       await expect(userRepo.validate(user)).resolves.not.toThrow();
     });
 
     it.each(['valid@email.com', 'validemail@123.com'])('permits valid emails', async (email) => {
-      const user = EntityBuilder.buildRandUser({ email });
+      const user = buildRandUser({ email });
       await expect(userRepo.validate(user)).resolves.not.toThrow();
     });
 
     it.each(['invalid_email', 'email@domain'])('disallows invalid emails', async (email) => {
-      const user = EntityBuilder.buildRandUser({ email });
+      const user = buildRandUser({ email });
       await expect(userRepo.validate(user)).rejects.toThrow();
     });
 
     it.each(['username123', '_username_', '-_-Username-_-', 'valid.username', '---', '-___-'])(
       'permits valid usernames',
       async (username) => {
-        const user = EntityBuilder.buildRandUser({ username });
+        const user = buildRandUser({ username });
         await expect(userRepo.validate(user)).resolves.not.toThrow();
       }
     );
@@ -71,32 +67,32 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
       '; ATTEMPTED SQL INJECTION',
       '<script>ATTEMPTED XSS</script>',
     ])('disallows invalid usernames', async (username) => {
-      const user = EntityBuilder.buildRandUser({ username });
+      const user = buildRandUser({ username });
       await expect(userRepo.validate(user)).rejects.toThrow();
     });
 
     it('permits valid confirmation tokens', async () => {
-      const user = EntityBuilder.buildRandUser({ confirmationToken: uuid.v4() });
+      const user = buildRandUser({ confirmationToken: uuid.v4() });
       await expect(userRepo.validate(user)).resolves.not.toThrow();
     });
 
     it('disallows invalid confirmation tokens', async () => {
-      const user = EntityBuilder.buildRandUser({ confirmationToken: 'not-a-v4-uuid' });
+      const user = buildRandUser({ confirmationToken: 'not-a-v4-uuid' });
       await expect(userRepo.validate(user)).rejects.toThrow();
     });
 
     it('permits valid reset password tokens', async () => {
-      const user = EntityBuilder.buildRandUser({ resetPasswordToken: uuid.v4() });
+      const user = buildRandUser({ resetPasswordToken: uuid.v4() });
       await expect(userRepo.validate(user)).resolves.not.toThrow();
     });
 
     it('permits valid avatar urls', async () => {
-      const user = EntityBuilder.buildRandUser({ avatarUrl: 'http://avatars.com/rasdfsdfdf' });
+      const user = buildRandUser({ avatarUrl: 'http://avatars.com/rasdfsdfdf' });
       await expect(userRepo.validate(user)).resolves.not.toThrow();
     });
 
     it('disallows invalid avatar urls', async () => {
-      const user = EntityBuilder.buildRandUser({ avatarUrl: 'notagoodurl/asdfasd' });
+      const user = buildRandUser({ avatarUrl: 'notagoodurl/asdfasd' });
       await expect(userRepo.validate(user)).rejects.toThrow();
     });
   });
@@ -104,14 +100,14 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
   describe('create', () => {
     it('creates a user record', async () => {
       const countBefore = await userRepo.count();
-      await userRepo.create(EntityBuilder.buildRandUser());
+      await userRepo.create(buildRandUser());
       const countAfter = await userRepo.count();
 
       expect(countAfter).toBe(countBefore + 1);
     });
 
     it('creates a findable user record', async () => {
-      const { id } = await userRepo.create(EntityBuilder.buildRandUser());
+      const { id } = await userRepo.create(buildRandUser());
       const user = await userRepo.find(id);
 
       expect(user).not.toBeNull();
@@ -119,13 +115,13 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
     });
 
     it('returns a plain object', async () => {
-      const user = await userRepo.create(EntityBuilder.buildRandUser());
+      const user = await userRepo.create(buildRandUser());
 
       expect(isPlainObject(user)).toBe(true);
     });
 
     it('disallows duplicate ids', async () => {
-      const user = EntityBuilder.buildRandUser({ id: 'id' });
+      const user = buildRandUser({ id: 'id' });
 
       await expect(userRepo.create(user)).resolves.not.toThrow();
       await expect(userRepo.create(user)).rejects.toThrow();
@@ -135,7 +131,7 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
   describe('find', () => {
     it('returns the user matching the id', async () => {
       const id = randStr(8);
-      await userRepo.create(EntityBuilder.buildRandUser({ id }));
+      await userRepo.create(buildRandUser({ id }));
 
       const user = await userRepo.find(id);
 
@@ -144,7 +140,7 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
     });
 
     it('returns a plain object', async () => {
-      const { id } = await userRepo.create(EntityBuilder.buildRandUser());
+      const { id } = await userRepo.create(buildRandUser());
 
       const user = await userRepo.find(id);
 
@@ -160,7 +156,7 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
 
   describe('findAll', () => {
     it('returns all user records', async () => {
-      const users = [EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser()];
+      const users = [buildRandUser(), buildRandUser(), buildRandUser()];
       await userRepo.bulkCreate(users);
 
       const foundUsers = await userRepo.findAll();
@@ -169,7 +165,7 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
     });
 
     it('returns plain objects', async () => {
-      const users = [EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser()];
+      const users = [buildRandUser(), buildRandUser(), buildRandUser()];
       await userRepo.bulkCreate(users);
 
       const foundUsers = await userRepo.findAll();
@@ -180,7 +176,7 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
 
   describe('findByUsernameOrEmail', () => {
     it('finds by username', async () => {
-      const user = EntityBuilder.buildRandUser();
+      const user = buildRandUser();
       await userRepo.create(user);
 
       const foundUser = await userRepo.findByUsernameOrEmail(user.username);
@@ -190,7 +186,7 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
     });
 
     it('finds by email', async () => {
-      const user = EntityBuilder.buildRandUser();
+      const user = buildRandUser();
       await userRepo.create(user);
 
       const foundUser = await userRepo.findByUsernameOrEmail(user.email);
@@ -200,7 +196,7 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
     });
 
     it('returns a plain object', async () => {
-      const user = EntityBuilder.buildRandUser();
+      const user = buildRandUser();
       await userRepo.create(user);
 
       const foundUser = await userRepo.findByUsernameOrEmail(user.username);
@@ -211,7 +207,7 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
 
   describe('findByEmail', () => {
     it('finds by email', async () => {
-      const user = EntityBuilder.buildRandUser();
+      const user = buildRandUser();
       await userRepo.create(user);
 
       const foundUser = await userRepo.findByEmail(user.email);
@@ -221,7 +217,7 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
     });
 
     it('returns a plain object', async () => {
-      const user = EntityBuilder.buildRandUser();
+      const user = buildRandUser();
       await userRepo.create(user);
 
       const foundUser = await userRepo.findByEmail(user.email);
@@ -233,7 +229,7 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
   describe('findByResetPasswordToken', () => {
     it('finds by resetPasswordToken', async () => {
       const resetPasswordToken = uuid.v4();
-      const user = EntityBuilder.buildRandUser({ resetPasswordToken });
+      const user = buildRandUser({ resetPasswordToken });
       await userRepo.create(user);
 
       const foundUser = await userRepo.findByResetPasswordToken(resetPasswordToken);
@@ -244,7 +240,7 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
 
     it('returns a plain object', async () => {
       const resetPasswordToken = uuid.v4();
-      const user = EntityBuilder.buildRandUser({ resetPasswordToken });
+      const user = buildRandUser({ resetPasswordToken });
       await userRepo.create(user);
 
       const foundUser = await userRepo.findByResetPasswordToken(resetPasswordToken);
@@ -255,7 +251,7 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
 
   describe('update', () => {
     it('updates a user', async () => {
-      const user = await userRepo.create(EntityBuilder.buildRandUser());
+      const user = await userRepo.create(buildRandUser());
       const username = randStr(8);
 
       const updatedUser = await userRepo.update(user.id, { username });
@@ -264,7 +260,7 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
     });
 
     it('returns plain objects', async () => {
-      const user = await userRepo.create(EntityBuilder.buildRandUser());
+      const user = await userRepo.create(buildRandUser());
       const username = randStr(8);
 
       const updatedUser = await userRepo.update(user.id, { username });
@@ -274,7 +270,7 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
 
     it('unsets confirmationToken when updating email', async () => {
       const confirmationToken = uuid.v4();
-      const user = await userRepo.create(EntityBuilder.buildRandUser({ confirmationToken }));
+      const user = await userRepo.create(buildRandUser({ confirmationToken }));
 
       const email = `${randStr(8)}@example.com`;
       const updatedUser = await userRepo.update(user.id, { email });
@@ -286,7 +282,7 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
 
     it('unsets confirmedAt when updating email', async () => {
       const confirmedAt = new Date();
-      const user = await userRepo.create(EntityBuilder.buildRandUser({ confirmedAt }));
+      const user = await userRepo.create(buildRandUser({ confirmedAt }));
 
       const email = `${randStr(8)}@example.com`;
       const updatedUser = await userRepo.update(user.id, { email });
@@ -305,7 +301,7 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
     beforeEach(async () => {
       users = new Array(NUM_USERS);
       for (let ndx = 0; ndx < NUM_USERS; ndx++) {
-        users[ndx] = EntityBuilder.buildRandUser({ cursor: ndx + 1 });
+        users[ndx] = buildRandUser({ cursor: ndx + 1 });
       }
       users = await userRepo.bulkCreate(users);
     });

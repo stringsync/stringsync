@@ -32,7 +32,6 @@ import {
   UserService,
   VideoUrlService,
 } from './services';
-import { EntityFactory } from './testing';
 import {
   BlobStorage,
   Cache,
@@ -121,10 +120,6 @@ if (config.NODE_ENV === 'development') {
   container.bind<Server>(TYPES.Server).to(DevExpressServer);
 } else {
   container.bind<Server>(TYPES.Server).to(ExpressServer);
-}
-
-if (config.NODE_ENV === 'test') {
-  container.bind<EntityFactory>(TYPES.EntityFactory).to(EntityFactory);
 }
 
 container

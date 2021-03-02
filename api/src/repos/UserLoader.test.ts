@@ -2,17 +2,15 @@ import { isPlainObject } from 'lodash';
 import { User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
-import { EntityBuilder } from '../testing';
+import { createRandUsers } from '../testing';
 import { ctor, randStr } from '../util';
 import { SequelizeUserLoader } from './sequelize';
-import { UserLoader, UserRepo } from './types';
+import { UserLoader } from './types';
 
 const ORIGINAL_USER_LOADER = ctor(container.get<UserLoader>(TYPES.UserLoader));
 
 describe.each([['SequelizeUserLoader', SequelizeUserLoader]])('%s', (name, Ctor) => {
   let userLoader: UserLoader;
-
-  let userRepo: UserRepo;
 
   let user1: User;
   let user2: User;
@@ -23,8 +21,7 @@ describe.each([['SequelizeUserLoader', SequelizeUserLoader]])('%s', (name, Ctor)
 
   beforeEach(async () => {
     userLoader = container.get<UserLoader>(TYPES.UserLoader);
-    userRepo = container.get<UserRepo>(TYPES.UserRepo);
-    [user1, user2] = await userRepo.bulkCreate([EntityBuilder.buildRandUser(), EntityBuilder.buildRandUser()]);
+    [user1, user2] = await createRandUsers(2);
   });
 
   afterAll(() => {

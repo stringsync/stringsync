@@ -1,7 +1,7 @@
 import { isPlainObject, sortBy } from 'lodash';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
-import { EntityBuilder } from '../testing';
+import { buildRandTag } from '../testing';
 import { ctor, randStr } from '../util';
 import { SequelizeTagRepo } from './sequelize';
 import { TagRepo } from './types';
@@ -25,11 +25,7 @@ describe.each([['SequelizeTagRepo', SequelizeTagRepo]])('%s', (name, Ctor) => {
 
   describe('count', () => {
     it('returns the number of tags', async () => {
-      await tagRepo.bulkCreate([
-        EntityBuilder.buildRandTag(),
-        EntityBuilder.buildRandTag(),
-        EntityBuilder.buildRandTag(),
-      ]);
+      await tagRepo.bulkCreate([buildRandTag(), buildRandTag(), buildRandTag()]);
       const count = await tagRepo.count();
 
       expect(count).toBe(3);
@@ -38,20 +34,20 @@ describe.each([['SequelizeTagRepo', SequelizeTagRepo]])('%s', (name, Ctor) => {
 
   describe('validate', () => {
     it('permits valid tags', async () => {
-      await expect(tagRepo.validate(EntityBuilder.buildRandTag())).resolves.not.toThrow();
+      await expect(tagRepo.validate(buildRandTag())).resolves.not.toThrow();
     });
   });
 
   describe('create', () => {
     it('creates a tag record', async () => {
       const countBefore = await tagRepo.count();
-      await tagRepo.create(EntityBuilder.buildRandTag());
+      await tagRepo.create(buildRandTag());
       const countAfter = await tagRepo.count();
       expect(countAfter).toBe(countBefore + 1);
     });
 
     it('creates a findable user record', async () => {
-      const { id } = await tagRepo.create(EntityBuilder.buildRandTag());
+      const { id } = await tagRepo.create(buildRandTag());
       const tag = await tagRepo.find(id);
 
       expect(tag).not.toBeNull();
@@ -59,14 +55,14 @@ describe.each([['SequelizeTagRepo', SequelizeTagRepo]])('%s', (name, Ctor) => {
     });
 
     it('returns a plain object', async () => {
-      const tag = await tagRepo.create(EntityBuilder.buildRandTag());
+      const tag = await tagRepo.create(buildRandTag());
 
       expect(isPlainObject(tag)).toBe(true);
     });
 
     it('disallows duplicate ids', async () => {
       const id = randStr(8);
-      const tag = EntityBuilder.buildRandTag({ id });
+      const tag = buildRandTag({ id });
 
       await expect(tagRepo.create(tag)).resolves.not.toThrow();
       await expect(tagRepo.create(tag)).rejects.toThrow();
@@ -76,7 +72,7 @@ describe.each([['SequelizeTagRepo', SequelizeTagRepo]])('%s', (name, Ctor) => {
   describe('find', () => {
     it('returns the tag matching the id', async () => {
       const id = randStr(8);
-      await tagRepo.create(EntityBuilder.buildRandTag({ id }));
+      await tagRepo.create(buildRandTag({ id }));
 
       const tag = await tagRepo.find(id);
 
@@ -85,7 +81,7 @@ describe.each([['SequelizeTagRepo', SequelizeTagRepo]])('%s', (name, Ctor) => {
     });
 
     it('returns a plain object', async () => {
-      const { id } = await tagRepo.create(EntityBuilder.buildRandTag());
+      const { id } = await tagRepo.create(buildRandTag());
 
       const tag = await tagRepo.find(id);
 
@@ -101,7 +97,7 @@ describe.each([['SequelizeTagRepo', SequelizeTagRepo]])('%s', (name, Ctor) => {
 
   describe('findAll', () => {
     it('returns all tag records', async () => {
-      const tags = [EntityBuilder.buildRandTag(), EntityBuilder.buildRandTag(), EntityBuilder.buildRandTag()];
+      const tags = [buildRandTag(), buildRandTag(), buildRandTag()];
       await tagRepo.bulkCreate(tags);
 
       const foundTags = await tagRepo.findAll();
@@ -110,7 +106,7 @@ describe.each([['SequelizeTagRepo', SequelizeTagRepo]])('%s', (name, Ctor) => {
     });
 
     it('returns plain objects', async () => {
-      const tags = [EntityBuilder.buildRandTag(), EntityBuilder.buildRandTag(), EntityBuilder.buildRandTag()];
+      const tags = [buildRandTag(), buildRandTag(), buildRandTag()];
       await tagRepo.bulkCreate(tags);
 
       const foundTags = await tagRepo.findAll();
@@ -121,7 +117,7 @@ describe.each([['SequelizeTagRepo', SequelizeTagRepo]])('%s', (name, Ctor) => {
 
   describe('update', () => {
     it('updates a tag', async () => {
-      const tag = EntityBuilder.buildRandTag();
+      const tag = buildRandTag();
       await tagRepo.create(tag);
       const name = randStr(8);
 
@@ -131,7 +127,7 @@ describe.each([['SequelizeTagRepo', SequelizeTagRepo]])('%s', (name, Ctor) => {
     });
 
     it('returns plain objects', async () => {
-      const tag = EntityBuilder.buildRandTag();
+      const tag = buildRandTag();
       await tagRepo.create(tag);
       const name = randStr(8);
 
