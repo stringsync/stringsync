@@ -1,7 +1,9 @@
 import { Notation, User, UserRole } from '../../domain';
 import { container } from '../../inversify.config';
 import { TYPES } from '../../inversify.constants';
-import { EntityFactory, gql, Query, QueryNotationArgs, QueryNotationsArgs, resolve } from '../../testing';
+import { SessionUser } from '../../server';
+import { EntityFactory, gql, Mutation, Query, QueryNotationArgs, QueryNotationsArgs, resolve } from '../../testing';
+import { CreateNotationInput } from './CreateNotationInput';
 
 describe('NotationResolver', () => {
   let entityFactory: EntityFactory;
@@ -95,6 +97,13 @@ describe('NotationResolver', () => {
   });
 
   describe('createNotation', () => {
+    enum LoginStatus {
+      LOGGED_IN_AS_ADMIN = 'LOGGED_IN_AS_ADMIN',
+      LOGGED_IN_AS_TEACHER = 'LOGGED_IN_AS_TEACHER',
+      LOGGED_IN_AS_STUDENT = 'LOGGED_IN_AS_STUDENT',
+      LOGGED_OUT = 'LOGGED_OUT',
+    }
+
     let student: User;
     let teacher: User;
     let admin: User;
@@ -106,6 +115,35 @@ describe('NotationResolver', () => {
         entityFactory.createRandUser({ role: UserRole.ADMIN }),
       ]);
     });
+
+    const getSessionUser = (loginStatus: LoginStatus): SessionUser => {
+      switch (loginStatus) {
+        case LoginStatus.LOGGED_IN_AS_ADMIN:
+          return { id: student.id, isLoggedIn: true, role: student.role };
+        case LoginStatus.LOGGED_IN_AS_TEACHER:
+          return { id: teacher.id, isLoggedIn: true, role: teacher.role };
+        case LoginStatus.LOGGED_IN_AS_STUDENT:
+          return { id: admin.id, isLoggedIn: true, role: admin.role };
+        case LoginStatus.LOGGED_OUT:
+          return { id: '', isLoggedIn: false, role: UserRole.STUDENT };
+        default:
+          throw new Error(`unhandled loging status: ${loginStatus}`);
+      }
+    };
+
+    const createNotation = (input: CreateNotationInput, loginStatus: LoginStatus) => {
+      return resolve<Mutation, 'createNotation', { input: CreateNotationInput }>(
+        gql`
+          mutation createNotation($input: CreateNotationInput!) {
+            createNotation(input: $input) {
+              id
+            }
+          }
+        `,
+        { input },
+        { sessionUser: getSessionUser(loginStatus) }
+      );
+    };
 
     it.todo('creates a notation record when logged in as admin');
 
