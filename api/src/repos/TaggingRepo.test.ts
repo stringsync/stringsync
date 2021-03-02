@@ -63,6 +63,12 @@ describe.each([['SequelizeTaggingRepo', SequelizeTaggingRepo]])('%s', (name, Cto
     });
   });
 
+  describe('validate', () => {
+    it('permits valid taggings', async () => {
+      await expect(taggingRepo.validate(EntityBuilder.buildRandTagging())).resolves.not.toThrow();
+    });
+  });
+
   describe('create', () => {
     it('creates a tagging record', async () => {
       const countBefore = await taggingRepo.count();

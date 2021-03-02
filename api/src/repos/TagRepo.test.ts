@@ -36,6 +36,12 @@ describe.each([['SequelizeTagRepo', SequelizeTagRepo]])('%s', (name, Ctor) => {
     });
   });
 
+  describe('validate', () => {
+    it('permits valid tags', async () => {
+      await expect(tagRepo.validate(EntityBuilder.buildRandTag())).resolves.not.toThrow();
+    });
+  });
+
   describe('create', () => {
     it('creates a tag record', async () => {
       const countBefore = await tagRepo.count();

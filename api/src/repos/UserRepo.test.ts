@@ -39,6 +39,68 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
     });
   });
 
+  describe('validate', () => {
+    it('permits valid users', async () => {
+      const user = EntityBuilder.buildRandUser();
+      await expect(userRepo.validate(user)).resolves.not.toThrow();
+    });
+
+    it.each(['valid@email.com', 'validemail@123.com'])('permits valid emails', async (email) => {
+      const user = EntityBuilder.buildRandUser({ email });
+      await expect(userRepo.validate(user)).resolves.not.toThrow();
+    });
+
+    it.each(['invalid_email', 'email@domain'])('disallows invalid emails', async (email) => {
+      const user = EntityBuilder.buildRandUser({ email });
+      await expect(userRepo.validate(user)).rejects.toThrow();
+    });
+
+    it.each(['username123', '_username_', '-_-Username-_-', 'valid.username', '---', '-___-'])(
+      'permits valid usernames',
+      async (username) => {
+        const user = EntityBuilder.buildRandUser({ username });
+        await expect(userRepo.validate(user)).resolves.not.toThrow();
+      }
+    );
+
+    it.each([
+      'no',
+      'super_long_username_cmon_pick_something_reasonable',
+      'invalid.username!',
+      '(invalidusername)',
+      '; ATTEMPTED SQL INJECTION',
+      '<script>ATTEMPTED XSS</script>',
+    ])('disallows invalid usernames', async (username) => {
+      const user = EntityBuilder.buildRandUser({ username });
+      await expect(userRepo.validate(user)).rejects.toThrow();
+    });
+
+    it('permits valid confirmation tokens', async () => {
+      const user = EntityBuilder.buildRandUser({ confirmationToken: uuid.v4() });
+      await expect(userRepo.validate(user)).resolves.not.toThrow();
+    });
+
+    it('disallows invalid confirmation tokens', async () => {
+      const user = EntityBuilder.buildRandUser({ confirmationToken: 'not-a-v4-uuid' });
+      await expect(userRepo.validate(user)).rejects.toThrow();
+    });
+
+    it('permits valid reset password tokens', async () => {
+      const user = EntityBuilder.buildRandUser({ resetPasswordToken: uuid.v4() });
+      await expect(userRepo.validate(user)).resolves.not.toThrow();
+    });
+
+    it('permits valid avatar urls', async () => {
+      const user = EntityBuilder.buildRandUser({ avatarUrl: 'http://avatars.com/rasdfsdfdf' });
+      await expect(userRepo.validate(user)).resolves.not.toThrow();
+    });
+
+    it('disallows invalid avatar urls', async () => {
+      const user = EntityBuilder.buildRandUser({ avatarUrl: 'notagoodurl/asdfasd' });
+      await expect(userRepo.validate(user)).rejects.toThrow();
+    });
+  });
+
   describe('create', () => {
     it('creates a user record', async () => {
       const countBefore = await userRepo.count();
