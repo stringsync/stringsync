@@ -40,6 +40,10 @@ export class SequelizeUserRepo implements UserRepo {
     return await UserModel.count();
   }
 
+  async validate(user: User): Promise<void> {
+    await UserModel.build(user).validate();
+  }
+
   async find(id: string): Promise<User | null> {
     return await this.userLoader.findById(id);
   }

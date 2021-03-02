@@ -46,6 +46,37 @@ describe.each([['SequelizeNotationRepo', SequelizeNotationRepo]])('%s', (name, C
     });
   });
 
+  describe('validate', () => {
+    it('permits valid notations', async () => {
+      await expect(notationRepo.validate(EntityBuilder.buildRandNotation())).resolves.not.toThrow();
+    });
+
+    it.each(['Above And Beyond (The Call Of Love)', `no i don't shave my thighs`, `You Can't Come with Me`])(
+      'permits valid song names',
+      async (songName) => {
+        await expect(notationRepo.validate(EntityBuilder.buildRandNotation({ songName }))).resolves.not.toThrow();
+      }
+    );
+
+    it.each(['; ATTEMPTED SQL INJECTION', '<script>ATTEMPTED XSS</script>'])(
+      'disallows invalid song names',
+      async (songName) => {
+        await expect(notationRepo.validate(EntityBuilder.buildRandNotation({ songName }))).rejects.toThrow();
+      }
+    );
+
+    it.each(['@jaredplaysguitar', 'tekashi69'])('permits valid artist names', async (artistName) => {
+      await expect(notationRepo.validate(EntityBuilder.buildRandNotation({ artistName }))).resolves.not.toThrow();
+    });
+
+    it.each(['; ATTEMPTED SQL INJECTION', '<script>ATTEMPTED XSS</script>'])(
+      'disallows invalid artist names',
+      async (artistName) => {
+        await expect(notationRepo.validate(EntityBuilder.buildRandNotation({ artistName }))).rejects.toThrow();
+      }
+    );
+  });
+
   describe('find', () => {
     it('finds notations', async () => {
       const { id } = await notationRepo.create(EntityBuilder.buildRandNotation({ transcriberId }));

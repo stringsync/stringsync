@@ -13,6 +13,10 @@ export class SequelizeTagRepo implements TagRepo {
     return await TagModel.count();
   }
 
+  async validate(tag: Tag): Promise<void> {
+    await TagModel.build(tag).validate();
+  }
+
   async create(attrs: Partial<Tag>): Promise<Tag> {
     const tagEntity = await TagModel.create(attrs);
     return tagEntity.get({ plain: true }) as Tag;

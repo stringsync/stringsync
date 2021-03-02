@@ -26,6 +26,10 @@ export class SequelizeNotationRepo implements NotationRepo {
     return await NotationModel.count();
   }
 
+  async validate(notation: Notation): Promise<void> {
+    await NotationModel.build(notation).validate();
+  }
+
   async find(id: string): Promise<Notation | null> {
     return await this.notationLoader.findById(id);
   }

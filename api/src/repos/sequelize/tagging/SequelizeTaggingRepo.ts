@@ -10,6 +10,10 @@ export class SequelizeTaggingRepo implements TaggingRepo {
     return await TaggingModel.count();
   }
 
+  async validate(tagging: Tagging): Promise<void> {
+    await TaggingModel.build(tagging).validate();
+  }
+
   async create(attrs: Partial<Tagging>): Promise<Tagging> {
     const taggingEntity = await TaggingModel.create(attrs);
     return taggingEntity.get({ plain: true }) as Tagging;

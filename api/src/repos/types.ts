@@ -9,6 +9,7 @@ export interface Repo<T extends object> {
   create(entity: Partial<T>): Promise<T>;
   bulkCreate(entities: Partial<T>[]): Promise<T[]>;
   update(id: string, entity: Partial<T>): Promise<T>;
+  validate(entity: T): Promise<void>;
 }
 
 export interface UserRepo extends Repo<User> {
