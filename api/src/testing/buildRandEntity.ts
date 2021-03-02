@@ -1,4 +1,4 @@
-import { Notation, NotationStatuses, Tag, Tagging, User, UserRole } from '../domain';
+import { Notation, Tag, Tagging, User, UserRole } from '../domain';
 import { randInt, randStr } from '../util';
 
 export const buildRandUser = (attrs: Partial<User> = {}): User => {
@@ -30,7 +30,6 @@ export const buildRandNotation = (attrs: Partial<Notation> = {}): Notation => {
     artistName: randStr(8),
     createdAt: now,
     updatedAt: now,
-    status: NotationStatuses.DRAFT,
     deadTimeMs: 0,
     durationMs: 1,
     private: false,
