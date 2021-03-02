@@ -8,7 +8,8 @@
     "migrate": "yarn sequelize db:migrate",
     "seed": "yarn sequelize db:seed:all",
     "pretest": "yarn migrate",
-    "test": "yarn jest --maxWorkers=$JEST_NUM_WORKERS"
+    "test": "yarn jest --maxWorkers=$JEST_NUM_WORKERS",
+    "typegen": "graphql-codegen"
   },
   "dependencies": {
     "altair-express-middleware": "^3.2.1",

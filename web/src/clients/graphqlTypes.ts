@@ -15,6 +15,7 @@ export type Scalars = {
   Upload: any;
 };
 
+
 export type ConfirmEmailInput = {
   confirmationToken: Scalars['String'];
 };
@@ -123,11 +124,10 @@ export type Query = {
   __typename?: 'Query';
   notations: NotationConnectionObject;
   notation?: Maybe<NotationObject>;
-  tags: Array<TagObject>;
   user?: Maybe<UserObject>;
   users: UserConnectionObject;
   whoami?: Maybe<UserObject>;
-  sqs?: Maybe<Scalars['String']>;
+  health?: Maybe<Scalars['String']>;
 };
 
 

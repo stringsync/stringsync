@@ -1,5 +1,6 @@
 const { task, desc, namespace } = require('jake');
 const { spawn } = require('child_process');
+const http = require('http');
 const chalk = require('chalk');
 
 const env = (name, fallback = undefined) => {
@@ -113,6 +114,103 @@ namespace('install', () => {
     const install = yarn([], { cwd: 'web' });
     await install.promise;
   });
+});
+
+desc('generates graphql types for each project');
+task('typegen', [], async () => {
+  const GRAPHQL_HOSTNAME = env('GRAPHQL_HOSTNAME', 'localhost');
+  const GRAPHQL_PORT = env('GRAPHQL_PORT', '3000');
+  const MAX_WAIT_MS = parseInt(env('MAX_WAIT_MS', '1200000'), 10); // 2 minutes
+
+  if (isNaN(MAX_WAIT_MS)) {
+    throw new Error('MAX_WAIT_MS env var is not a number');
+  }
+  if (MAX_WAIT_MS < 0) {
+    throw new Error('MAX_WAIT_MS env var must be a positive number');
+  }
+
+  const isServerUp = () => {
+    return new Promise((resolve) => {
+      const req = http.request(
+        {
+          hostname: GRAPHQL_HOSTNAME,
+          port: GRAPHQL_PORT,
+          path: '/health',
+          method: 'GET',
+        },
+        (res) => {
+          resolve(res.statusCode === 200);
+        }
+      );
+
+      req.on('error', () => {
+        resolve(false);
+      });
+
+      req.end();
+    });
+  };
+
+  const generateGraphqlTypes = async () => {
+    const typegenApi = yarn(['typegen'], { cwd: 'api' });
+    const typegenWeb = yarn(['typegen'], { cwd: 'web' });
+    await Promise.all([typegenApi.promise, typegenWeb.promise]);
+  };
+
+  const waitForServer = async () => {
+    const start = new Date();
+
+    const getElapsedTimeMs = () => {
+      const now = new Date();
+      return now.getTime() - start.getTime();
+    };
+
+    const wait = (ms) => {
+      return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+      });
+    };
+
+    process.stdout.write('waiting for graphql.');
+
+    while (getElapsedTimeMs() < MAX_WAIT_MS) {
+      process.stdout.write('.');
+
+      const isReady = await isServerUp();
+      if (isReady) {
+        process.stdout.write('\n');
+        log('graphql is up');
+        return;
+      }
+
+      await wait(1000);
+    }
+
+    throw new Error('graphql never came up');
+  };
+
+  let up = undefined;
+  const wasServerUp = await isServerUp();
+  try {
+    if (wasServerUp) {
+      log('server already up');
+    } else {
+      log('temporarily starting server');
+      up = dockerCompose(['up', '--detach'], { cwd: 'api' });
+      await up.promise;
+      await waitForServer();
+    }
+
+    await generateGraphqlTypes();
+  } finally {
+    // only kill the up process if it was created
+    up && up.process.kill();
+
+    if (!wasServerUp) {
+      const down = dockerCompose(['down'], { cwd: 'api', stdio: 'inherit' });
+      await down.promise;
+    }
+  }
 });
 
 namespace('db', () => {
