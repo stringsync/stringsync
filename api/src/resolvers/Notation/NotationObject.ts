@@ -1,5 +1,5 @@
-import { Ctx, Field, ID, ObjectType, Root } from 'type-graphql';
-import { Notation, Tag, User } from '../../domain';
+import { Ctx, Field, ID, ObjectType, registerEnumType, Root } from 'type-graphql';
+import { Notation, NotationStatuses, Tag, User } from '../../domain';
 import { NotFoundError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { TagService, UserService } from '../../services';
@@ -8,6 +8,8 @@ import { ResolverCtx } from '../types';
 import { UserObject } from '../User';
 
 type PublicNotation = Omit<Notation, 'cursor'>;
+
+registerEnumType(NotationStatuses, { name: 'NotationStatus' });
 
 @ObjectType()
 export class NotationObject implements PublicNotation {
@@ -20,10 +22,13 @@ export class NotationObject implements PublicNotation {
   @Field()
   updatedAt!: Date;
 
-  @Field()
+  @Field((type) => NotationStatuses)
+  status!: NotationStatuses;
+
+  @Field((type) => String, { nullable: true })
   songName!: string;
 
-  @Field()
+  @Field((type) => String, { nullable: true })
   artistName!: string;
 
   @Field()
@@ -33,7 +38,7 @@ export class NotationObject implements PublicNotation {
   durationMs!: number;
 
   @Field()
-  featured!: boolean;
+  private!: boolean;
 
   @Field()
   transcriberId!: string;

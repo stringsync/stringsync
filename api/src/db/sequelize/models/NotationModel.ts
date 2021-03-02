@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { Association, DataTypes, Model, Sequelize } from 'sequelize';
-import { Notation } from '../../../domain';
+import { Notation, NotationStatuses } from '../../../domain';
 import { TaggingModel } from './TaggingModel';
 import { TagModel } from './TagModel';
 import { UserModel } from './UserModel';
@@ -19,6 +19,11 @@ export class NotationModel extends Model<Notation, Partial<Notation>> implements
         },
         updatedAt: {
           type: DataTypes.DATE,
+        },
+        status: {
+          type: DataTypes.ENUM(NotationStatuses.DRAFT, NotationStatuses.PUBLISH),
+          defaultValue: NotationStatuses.DRAFT,
+          allowNull: false,
         },
         songName: {
           type: DataTypes.TEXT,
@@ -53,9 +58,9 @@ export class NotationModel extends Model<Notation, Partial<Notation>> implements
             min: 0,
           },
         },
-        featured: {
+        private: {
           type: DataTypes.BOOLEAN,
-          defaultValue: false,
+          defaultValue: true,
           allowNull: false,
           unique: false,
         },
@@ -107,11 +112,12 @@ export class NotationModel extends Model<Notation, Partial<Notation>> implements
   id!: string;
   createdAt!: Date;
   updatedAt!: Date;
+  status!: NotationStatuses;
   songName!: string;
   artistName!: string;
   deadTimeMs!: number;
   durationMs!: number;
-  featured!: boolean;
+  private!: boolean;
   transcriberId!: string;
   cursor!: number;
   thumbnailUrl!: string | null;

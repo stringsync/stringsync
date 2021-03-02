@@ -1,4 +1,4 @@
-import { Notation, Tag, Tagging, User, UserRole } from '../domain';
+import { Notation, NotationStatuses, Tag, Tagging, User, UserRole } from '../domain';
 import { randInt, randStr } from '../util';
 
 export class EntityBuilder {
@@ -31,9 +31,10 @@ export class EntityBuilder {
       artistName: randStr(8),
       createdAt: now,
       updatedAt: now,
+      status: NotationStatuses.DRAFT,
       deadTimeMs: 0,
       durationMs: 1,
-      featured: true,
+      private: false,
       songName: randStr(8),
       transcriberId: randStr(8),
       cursor: randInt(0, 100000),

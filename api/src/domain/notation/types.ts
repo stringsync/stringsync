@@ -3,12 +3,18 @@ export interface Notation {
   cursor: number;
   createdAt: Date;
   updatedAt: Date;
+  status: NotationStatuses;
   songName: string;
   artistName: string;
   deadTimeMs: number;
   durationMs: number;
-  featured: boolean;
+  private: boolean;
   transcriberId: string;
   thumbnailUrl: string | null;
   videoUrl: string | null;
+}
+
+export enum NotationStatuses {
+  DRAFT = 'DRAFT',
+  PUBLISH = 'PUBLISH',
 }

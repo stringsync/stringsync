@@ -1,6 +1,8 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.query(`
+      CREATE TYPE user_roles AS ENUM ('STUDENT', 'TEACHER', 'ADMIN');
+
       CREATE TABLE users (
           id TEXT PRIMARY KEY,
           cursor SERIAL UNIQUE NOT NULL,
@@ -14,7 +16,7 @@ module.exports = {
           reset_password_token TEXT UNIQUE,
           reset_password_token_sent_at TIMESTAMP,
           avatar_url TEXT,
-          role roles DEFAULT 'STUDENT'
+          role user_roles DEFAULT 'STUDENT'
       );
 
       CREATE TRIGGER trigger_generate_user_id BEFORE INSERT ON users FOR EACH ROW EXECUTE PROCEDURE unique_short_id();
@@ -27,6 +29,8 @@ module.exports = {
 
   down: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.query(`
+      DROP TYPE user_roles;
+
       DROP TABLE users;
 
       DROP TRIGGER trigger_generate_user_id ON users;
