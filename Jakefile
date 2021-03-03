@@ -1,6 +1,8 @@
 const { task, desc, namespace } = require('jake');
 const { spawn } = require('child_process');
 const http = require('http');
+const path = require('path');
+const fs = require('fs');
 const chalk = require('chalk');
 
 const env = (name, fallback = undefined) => {
@@ -62,6 +64,8 @@ const yarn = cmd('yarn');
 const dockerCompose = cmd('docker-compose');
 
 const docker = cmd('docker');
+
+const cp = cmd('cp');
 
 desc('brings up all projects');
 task('dev', ['build:api', 'install:web'], async () => {
@@ -312,4 +316,18 @@ task('down', [], async () => {
   const apiDown = dockerCompose(['-f', './docker-compose.yml', 'down'], { cwd: 'api' });
   const apiTestDown = dockerCompose(['-f', './docker-compose.test.yml', 'down'], { cwd: 'api' });
   await Promise.all([apiDown.promise, apiTestDown.promise]);
+});
+
+desc('generates the local-only files needed for development');
+task('gensecrets', [], async () => {
+  const secretsFilepath = path.join(__dirname, 'env', 'secrets.env');
+  const secretsTemplateFilepath = path.join(__dirname, 'templates', 'secrets.template.env');
+
+  if (fs.existsSync(secretsFilepath)) {
+    log(chalk.red(`secrets file already exists, skipping: ${secretsFilepath}`));
+  } else {
+    log('secrets file does not exist, copying secrets file from template');
+    const copy = cp([secretsTemplateFilepath, secretsFilepath]);
+    await copy.promise;
+  }
 });
