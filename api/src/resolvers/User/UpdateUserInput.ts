@@ -17,6 +17,10 @@ export class UpdateUserInput {
     const hasAdminFields = UpdateUserInput.ADMIN_FIELDS.some((field) => fields.has(field));
     const hasDataOwnerFields = UpdateUserInput.DATA_OWNER_FIELDS.some((field) => fields.has(field));
 
+    if (!isAdmin && !isDataOwner) {
+      throw new BadRequestError(`must be admin or data owner to update`);
+    }
+
     if (isAdmin && !isDataOwner && hasDataOwnerFields) {
       throw new BadRequestError(`can only specify: ${UpdateUserInput.ADMIN_FIELDS}`);
     }
