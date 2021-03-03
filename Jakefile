@@ -306,3 +306,10 @@ namespace('test', () => {
     }
   });
 });
+
+desc('brings down all the projects');
+task('down', [], async () => {
+  const apiDown = dockerCompose(['-f', './docker-compose.yml', 'down'], { cwd: 'api' });
+  const apiTestDown = dockerCompose(['-f', './docker-compose.test.yml', 'down'], { cwd: 'api' });
+  await Promise.all([apiDown.promise, apiTestDown.promise]);
+});
