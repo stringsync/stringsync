@@ -86,6 +86,7 @@ export class SequelizeUserRepo implements UserRepo {
               [cmp]: cursor,
             },
           },
+          order: [['cursor', pagingType === PagingType.FORWARD ? 'asc' : 'desc']],
           limit,
           raw: true,
         }),

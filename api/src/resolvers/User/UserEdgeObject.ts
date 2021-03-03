@@ -1,12 +1,12 @@
 import { Field, ObjectType } from 'type-graphql';
-import { Notation } from '../../domain';
+import { User } from '../../domain';
 import { Edge } from '../../util';
 import { UserObject } from './UserObject';
 
 @ObjectType()
-export class UserEdgeObject implements Edge<Notation> {
+export class UserEdgeObject implements Edge<User> {
   @Field(() => UserObject)
-  node!: Notation;
+  node!: User;
 
   @Field()
   cursor!: string;
