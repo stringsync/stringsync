@@ -55,6 +55,7 @@
     "@types/video.js": "^7.3.11",
     "dayjs": "^1.8.18",
     "jest-environment-jsdom-sixteen": "^1.0.3",
+    "jest-junit": "^12.0.0",
     "jest-when": "^2.7.2",
     "react-is": "^16.13.1",
     "react-snap": "^1.23.0"
@@ -86,5 +87,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "jest-junit": {
+    "suiteName": "web",
+    "outputName": "junit.web.xml",
+    "outputDirectory": "./reports",
+    "suiteNameTemplate": "{displayName}",
+    "classNameTemplate": "{classname}"
   }
 }

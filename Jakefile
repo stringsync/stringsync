@@ -23,7 +23,7 @@ const noop = () => undefined;
 
 const identity = (x) => x;
 
-const DEFAULT_CMD_OPTS = { cwd: __dirname, stdio: 'ignore' };
+const DEFAULT_CMD_OPTS = { cwd: __dirname, stdio: 'ignore', shell: false };
 
 const cmd = (command) => (args, opts) => {
   opts = { ...DEFAULT_CMD_OPTS, ...opts };
@@ -37,7 +37,7 @@ const cmd = (command) => (args, opts) => {
   opts.stdio = VERBOSE ? 'inherit' : opts.stdio;
   opts.stdio = QUIET ? 'ignore' : opts.stdio;
 
-  const process = spawn(command, args, { cwd: opts.cwd, stdio: opts.stdio });
+  const process = spawn(command, args, { cwd: opts.cwd, stdio: opts.stdio, shell: opts.shell });
 
   const promise = new Promise((resolve, reject) => {
     const cmdStr = [command, ...args].join(' ');
@@ -248,6 +248,25 @@ namespace('build', () => {
 });
 
 namespace('test', () => {
+  const PROJECTS = {
+    api: 'api',
+    web: 'web',
+  };
+
+  const bashC = (...parts) => {
+    return `bash -c "${parts.filter(identity).join(' ')}"`;
+  };
+
+  const getTestCmd = (project, ci, watch) => {
+    return [
+      project === PROJECTS.web ? '' : 'yarn',
+      'test',
+      `--watchAll=${watch}`,
+      ci ? '--no-colors' : '--colors',
+      ci ? '--reporters=jest-junit' : '',
+    ].filter(identity);
+  };
+
   desc('tests each project');
   task('all', ['test:api', 'test:web'], noop);
 
@@ -258,18 +277,12 @@ namespace('test', () => {
 
     const runTests = async () => {
       const test = dockerCompose(
-        [
-          '-f',
-          './docker-compose.test.yml',
-          'run',
-          '--rm',
-          'test',
-          'yarn',
-          'test',
-          `--watchAll=${WATCH}`,
-          CI ? '--no-colors' : '--colors',
-        ],
-        { stdio: 'inherit', cwd: 'api' }
+        ['-f', './docker-compose.test.yml', 'run', '--rm', 'test', bashC(...getTestCmd(PROJECTS.api, CI, WATCH))],
+        {
+          stdio: 'inherit',
+          cwd: 'api',
+          shell: true,
+        }
       );
       try {
         await test.promise;
@@ -297,7 +310,7 @@ namespace('test', () => {
     const WATCH = env('WATCH', 'false') === 'true';
     const CI = env('CI', 'false') === 'true';
 
-    const test = yarn(['test', `--watchAll=${WATCH}`, CI ? '--no-colors' : '--colors'], {
+    const test = yarn(getTestCmd(PROJECTS.web, CI, WATCH), {
       cwd: 'web',
       stdio: 'inherit',
     });
