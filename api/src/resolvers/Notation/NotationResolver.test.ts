@@ -1,11 +1,12 @@
+import { sortBy, take } from 'lodash';
 import { Notation, User, UserRole } from '../../domain';
 import { container } from '../../inversify.config';
 import { TYPES } from '../../inversify.constants';
-import { UserRepo } from '../../repos';
+import { NotationRepo, UserRepo } from '../../repos';
 import { SessionUser } from '../../server';
 import {
   buildRandUser,
-  createRandNotation,
+  createRandNotations,
   createRandUpload,
   gql,
   Mutation,
@@ -18,17 +19,13 @@ import { randStr, Replace } from '../../util';
 import { CreateNotationInput } from './CreateNotationInput';
 
 describe('NotationResolver', () => {
-  let notations: Notation[];
-
-  beforeEach(async () => {
-    notations = await Promise.all([
-      createRandNotation({ cursor: 1 }),
-      createRandNotation({ cursor: 2 }),
-      createRandNotation({ cursor: 3 }),
-    ]);
-  });
-
   describe('notations', () => {
+    let notations: Notation[];
+
+    beforeEach(async () => {
+      notations = await createRandNotations(3);
+    });
+
     // Avoid name clash with notations variable.
     const queryNotations = (args: QueryNotationsArgs) => {
       return resolve<Query, 'notations', QueryNotationsArgs>(
@@ -66,12 +63,21 @@ describe('NotationResolver', () => {
 
       const { edges } = res.data.notations;
       const notationIds = edges.map((edge) => edge.node.id);
-      const [notation1, notation2] = notations;
-      expect(notationIds).toIncludeSameMembers([notation1.id, notation2.id]);
+      const expectedNotations = take(
+        sortBy(notations, (notation) => notation.cursor),
+        2
+      );
+      expect(notationIds).toIncludeSameMembers(expectedNotations.map((notation) => notation.id));
     });
   });
 
   describe('notation', () => {
+    let notations: Notation[];
+
+    beforeEach(async () => {
+      notations = await createRandNotations(3);
+    });
+
     const notation = (args: QueryNotationArgs) => {
       return resolve<Query, 'notation', QueryNotationArgs>(
         gql`
@@ -112,12 +118,17 @@ describe('NotationResolver', () => {
       LOGGED_OUT = 'LOGGED_OUT',
     }
 
+    let userRepo: UserRepo;
+    let notationRepo: NotationRepo;
+
     let student: User;
     let teacher: User;
     let admin: User;
 
     beforeEach(async () => {
-      const userRepo = container.get<UserRepo>(TYPES.UserRepo);
+      userRepo = container.get<UserRepo>(TYPES.UserRepo);
+      notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
+
       [student, teacher, admin] = await userRepo.bulkCreate([
         buildRandUser({ role: UserRole.STUDENT }),
         buildRandUser({ role: UserRole.TEACHER }),
@@ -156,25 +167,47 @@ describe('NotationResolver', () => {
       );
     };
 
-    it.only('creates a notation record when logged in as admin', async () => {
-      const { res } = await createNotation(
-        {
+    it.each([LoginStatus.LOGGED_IN_AS_ADMIN, LoginStatus.LOGGED_IN_AS_TEACHER])(
+      'creates a notation record when %s',
+      async (loginStatus) => {
+        const input = {
           songName: randStr(12),
           artistName: randStr(12),
           thumbnail: createRandUpload(),
           video: createRandUpload(),
           tagIds: [],
-        },
-        LoginStatus.LOGGED_IN_AS_ADMIN
-      );
+        };
 
-      expect(res.errors).toBeUndefined();
-    });
+        const { res } = await createNotation(input, loginStatus);
 
-    it.todo('creates a notation record when logged in as teacher');
+        expect(res.errors).toBeUndefined();
+        expect(res.data.createNotation).toBeDefined();
+        expect(res.data.createNotation).not.toBeNull();
 
-    it.todo('forbids notation creation when logged in as student');
+        const id = res.data.createNotation!.id;
 
-    it.todo('forbids notation creation when not logged in');
+        const notation = await notationRepo.find(id);
+        expect(notation).not.toBeNull();
+        expect(notation!.songName).toBe(input.songName);
+        expect(notation!.artistName).toBe(input.artistName);
+      }
+    );
+
+    it.each([LoginStatus.LOGGED_IN_AS_STUDENT, LoginStatus.LOGGED_OUT])(
+      'forbids notation creation when %s',
+      async (loginStatus) => {
+        const input = {
+          songName: randStr(12),
+          artistName: randStr(12),
+          thumbnail: createRandUpload(),
+          video: createRandUpload(),
+          tagIds: [],
+        };
+
+        const { res } = await createNotation(input, loginStatus);
+
+        expect(res.errors).toBeDefined();
+      }
+    );
   });
 });
