@@ -16,9 +16,7 @@ const env = (name, fallback = undefined) => {
   }
   return val;
 };
-
 const log = (msg) => console.log(`jake: ${msg}`);
-
 const identity = (x) => x;
 
 const DEFAULT_CMD_OPTS = { cwd: __dirname, stdio: 'ignore', shell: false };
@@ -58,14 +56,11 @@ const cmd = (command) => (args, opts) => {
 };
 
 const yarn = cmd('yarn');
-
 const dockerCompose = cmd('docker-compose');
-
 const docker = cmd('docker');
-
 const cp = cmd('cp');
-
 const mkdir = cmd('mkdir');
+const 
 
 desc('brings up all projects');
 task('dev', ['build:api', 'install:web'], async () => {
@@ -215,20 +210,6 @@ task('typegen', [], async () => {
       await down.promise;
     }
   }
-});
-
-namespace('db', () => {
-  desc('migrates the database');
-  task('migrate', ['install:api'], async () => {
-    env('DB_NAME');
-    env('DB_USERNAME');
-    env('DB_PASSWORD');
-    env('DB_HOST');
-    env('DB_PORT');
-
-    const migrate = yarn(['migrate'], { cwd: 'api' });
-    await migrate.promise;
-  });
 });
 
 namespace('build', () => {
