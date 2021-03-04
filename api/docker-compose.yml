@@ -21,7 +21,7 @@ services:
     image: stringsync:latest
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.dev
     env_file:
       - ../env/dev.env
       - ../env/secrets.env
@@ -34,4 +34,4 @@ services:
       - '3000:3000'
     entrypoint: ['./bin/wait-for-it.sh', 'db:5432', '--']
     command: >
-      bash -c "yarn migrate && yarn seed && pm2-runtime start ecosystem.config.js"
+      bash -c "yarn migrate && yarn seed && pm2-runtime start ecosystem.config.dev.js"

@@ -14,9 +14,8 @@ RUN yarn
 # copy the main files over
 COPY tsconfig.json .
 COPY codegen.yml .
-COPY ecosystem.config.js .
+COPY ecosystem.config.dev.js .
 COPY jest.config.js .
 COPY .sequelizerc .
 COPY sequelize.config.js .
 COPY bin bin
-COPY src src

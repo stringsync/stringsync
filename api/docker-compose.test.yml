@@ -17,9 +17,6 @@ services:
   test:
     container_name: test
     image: stringsync:latest
-    build:
-      context: .
-      dockerfile: ./Dockerfile
     env_file:
       - ../env/api.test.env
     volumes:

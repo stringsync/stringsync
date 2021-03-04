@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo "Ensuring docker-compose environment is down..."
+./bin/ss down

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo "Logging out of docker..."
+docker logout
