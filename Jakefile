@@ -234,9 +234,9 @@ namespace('db', () => {
 namespace('build', () => {
   desc('builds the stringsync docker image');
   task('api', [], async () => {
-    const DOCKER_TAG = env('DOCKER_TAG', 'latest');
+    const DOCKER_TAG = env('DOCKER_TAG', 'stringsync:latest');
 
-    const build = docker(['build', '-t', `stringsync:${DOCKER_TAG}`, '.'], { cwd: 'api' });
+    const build = docker(['build', '-t', DOCKER_TAG, '.'], { cwd: 'api' });
     await build.promise;
   });
 
