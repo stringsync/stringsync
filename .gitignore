@@ -14,7 +14,7 @@ build
 lib
 package-lock.json
 tmp
-tsconfig.tsbuildinfo
+*.tsbuildinfo
 reports
 artifacts
 
