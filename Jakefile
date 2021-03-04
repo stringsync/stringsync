@@ -60,7 +60,6 @@ const dockerCompose = cmd('docker-compose');
 const docker = cmd('docker');
 const cp = cmd('cp');
 const mkdir = cmd('mkdir');
-const 
 
 desc('brings up all projects');
 task('dev', ['build:api', 'install:web'], async () => {
