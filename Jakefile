@@ -19,8 +19,6 @@ const env = (name, fallback = undefined) => {
 
 const log = (msg) => console.log(`jake: ${msg}`);
 
-const noop = () => undefined;
-
 const identity = (x) => x;
 
 const DEFAULT_CMD_OPTS = { cwd: __dirname, stdio: 'ignore', shell: false };
@@ -66,6 +64,8 @@ const dockerCompose = cmd('docker-compose');
 const docker = cmd('docker');
 
 const cp = cmd('cp');
+
+const mkdir = cmd('mkdir');
 
 desc('brings up all projects');
 task('dev', ['build:api', 'install:web'], async () => {
@@ -268,7 +268,20 @@ namespace('test', () => {
   };
 
   desc('tests each project');
-  task('all', ['test:api', 'test:web'], noop);
+  task('all', ['test:api', 'test:web'], async () => {
+    const CI = env('CI', 'false') === 'true';
+
+    if (CI) {
+      log('making root reports dir');
+      const mkReportsDir = mkdir(['-p', 'reports'], {});
+      await mkReportsDir.promise;
+
+      log('copying project reports to root reports dir');
+      const cpApiReports = cp(['-R', 'api/reports/*', 'reports'], { shell: true });
+      const cpWebReports = cp(['-R', 'web/reports/*', 'reports'], { shell: true });
+      await Promise.all([cpApiReports.promise, cpWebReports.promise]);
+    }
+  });
 
   desc('tests the api project');
   task('api', ['build:api'], async () => {
