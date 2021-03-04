@@ -1,0 +1,12 @@
+#!/bin/bash
+
+echo "Building stringsync image..."
+IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
+./bin/ss build:api DOCKERFILE=Dockerfile.prod
+docker tag stringsync:latest $IMAGE_URI:latest
+
+echo "Building web project..."
+REACT_APP_SERVER_URI=$REACT_APP_SERVER_URI PUBLIC_URL=https://$DOMAIN_NAME ./bin/ss build:web
+
+echo "Running tests..."
+./bin/ss test:all CI=true
