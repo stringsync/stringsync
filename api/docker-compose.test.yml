@@ -1,0 +1,28 @@
+version: '3.7'
+
+services:
+  db:
+    container_name: db
+    image: postgres:11
+    restart: always
+    environment:
+      POSTGRES_DB: stringsync
+      POSTGRES_USER: stringsync
+      POSTGRES_PASSWORD: stringsync
+
+  redis:
+    container_name: redis
+    image: redis:5.0
+
+  test:
+    container_name: test
+    image: stringsync:latest
+    env_file:
+      - ../env/api.test.env
+    volumes:
+      - ./src:/api/src
+      - ./reports:/api/reports
+    links:
+      - db
+      - redis
+    entrypoint: ['./bin/wait-for-it.sh', 'db:5432', '--']

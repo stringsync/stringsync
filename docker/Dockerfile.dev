@@ -1,3 +1,0 @@
-FROM stringsync-base:latest
-
-CMD [ "yarn", "api", "dev" ]

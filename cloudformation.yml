@@ -495,29 +495,6 @@ Resources:
             ]
           }
 
-  CmdImageRepository:
-    Type: AWS::ECR::Repository
-    DeletionPolicy: Delete
-    Properties:
-      LifecyclePolicy:
-        LifecyclePolicyText: |
-          {
-            "rules": [
-              {
-                "rulePriority": 1,
-                "description": "Keep only one untagged image, expire all others",
-                "selection": {
-                  "tagStatus": "untagged",
-                  "countType": "imageCountMoreThan",
-                  "countNumber": 1
-                },
-                "action": {
-                  "type": "expire"
-                }
-              }
-            ]
-          }
-
   CodeBuildServiceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -686,7 +663,7 @@ Resources:
         Type: CODEPIPELINE
       Environment:
         Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_SMALL
+        ComputeType: BUILD_GENERAL1_MEDIUM
         Image: aws/codebuild/standard:4.0
         PrivilegedMode: true
         EnvironmentVariables:
@@ -696,9 +673,6 @@ Resources:
           - Name: IMAGE_REPO_NAME
             Type: PLAINTEXT
             Value: !Ref ApiImageRepository
-          - Name: CMD_IMAGE_REPO_NAME
-            Type: PLAINTEXT
-            Value: !Ref CmdImageRepository
           - Name: REACT_APP_SERVER_URI
             Type: PLAINTEXT
             Value: !Sub https://api.${DomainName}
@@ -1277,8 +1251,7 @@ Resources:
               Value: !Ref SqsQueue
             - Name: INFO_EMAIL
               Value: !Sub ${FriendlyName} <info@${DomainName}>
-          Command:
-            - api
+          Command: ['pm2-runtime', './ecosystem.prod.config.js', '--only', 'api']
 
   DbMigrateTaskDefinition:
     Type: AWS::ECS::TaskDefinition
@@ -1304,7 +1277,7 @@ Resources:
           Image:
             !Join [
               '',
-              [!Ref 'AWS::AccountId', '.dkr.ecr.', !Ref 'AWS::Region', '.amazonaws.com/', !Ref 'CmdImageRepository'],
+              [!Ref 'AWS::AccountId', '.dkr.ecr.', !Ref 'AWS::Region', '.amazonaws.com/', !Ref 'ApiImageRepository'],
             ]
           Environment:
             - Name: DB_HOST
@@ -1319,9 +1292,7 @@ Resources:
               Value: !Ref DbUsername
             - Name: NODE_ENV
               Value: production
-          Command:
-            - db
-            - migrate
+          Command: ['yarn', 'migrate']
 
   Cluster:
     Type: AWS::ECS::Cluster
@@ -1453,8 +1424,7 @@ Resources:
               Value: !Ref SqsQueue
             - Name: INFO_EMAIL
               Value: !Sub ${FriendlyName} <info@${DomainName}>
-          Command:
-            - jobs
+          Command: ['pm2-runtime', './ecosystem.prod.config.js', '--only', 'worker']
 
   # The service. The service is a resource which allows you to run multiple
   # copies of a type of task, and gather up their logs and metrics, as well

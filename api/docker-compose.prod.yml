@@ -1,0 +1,35 @@
+version: '3.7'
+
+services:
+  db:
+    container_name: db
+    image: postgres:11
+    restart: always
+    environment:
+      POSTGRES_DB: stringsync
+      POSTGRES_USER: stringsync
+      POSTGRES_PASSWORD: stringsync
+
+  redis:
+    container_name: redis
+    image: redis:5.0
+
+  app:
+    container_name: app
+    image: stringsync:prod
+    build:
+      context: .
+      dockerfile: ./Dockerfile.prod
+    env_file:
+      - ../env/dev.env
+      - ../env/secrets.env
+    volumes:
+      - ./src:/api/src
+      - ./reports:/api/reports
+    links:
+      - db
+      - redis
+    ports:
+      - '3000:3000'
+    entrypoint: ['./bin/wait-for-it.sh', 'db:5432', '--']
+    command: ['pm2-runtime', 'ecosystem.prod.config.js']

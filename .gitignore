@@ -10,11 +10,12 @@ dst
 node_modules
 .nyc_output
 dist
-build
+api/**/build
+web/**/build
 lib
 package-lock.json
 tmp
-tsconfig.tsbuildinfo
+*.tsbuildinfo
 reports
 artifacts
 

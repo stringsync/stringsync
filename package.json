@@ -3,27 +3,13 @@
   "version": "1.0.0",
   "repository": "git@github.com:jaredjj3/string-sync.git",
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
-  "scripts": {
-    "setup": "yarn install && (cd ./bin/scripts/ && yarn install) && ./bin/ss gensecrets",
-    "api": "yarn workspace @stringsync/api",
-    "db": "yarn workspace @stringsync/db",
-    "web": "yarn workspace @stringsync/web",
-    "jobs": "yarn workspace @stringsync/jobs",
-    "pretest:api": "yarn db migrate",
-    "test:api": "node --expose-gc ./node_modules/.bin/jest",
-    "test:web": "yarn web test"
-  },
   "devDependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@types/jest": "^24.0.19",
+    "@types/node": "^14.14.30",
     "@typescript-eslint/eslint-plugin": "^2.8.0",
     "@typescript-eslint/parser": "^2.8.0",
     "babel-eslint": "10.x",
-    "cls-hooked": "^4.2.2",
-    "eslint": "^6.7.2",
+    "chalk": "^4.1.0",
+    "eslint": "^7.11.0",
     "eslint-config-prettier": "^6.13.0",
     "eslint-config-react-app": "^5.1.0",
     "eslint-loader": "^4.0.2",
@@ -35,13 +21,9 @@
     "eslint-plugin-react": "7.16.0",
     "eslint-plugin-react-hooks": "^1.6.1",
     "eslint-plugin-testing-library": "^1.3.4",
-    "jest": "^24.9.0",
-    "jest-extended": "^0.11.5",
-    "jest-junit": "^12.0.0",
-    "jest-watch-typeahead": "^0.6.1",
+    "jake": "^10.8.2",
     "prettier": "^1.19.1",
-    "ts-jest": "^24.1.0",
-    "ts-node": "^9.1.1",
-    "typescript": "^3.6.4"
+    "prettier-plugin-organize-imports": "^1.1.1",
+    "typescript": "^4.1.5"
   }
 }

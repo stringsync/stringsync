@@ -1,9 +1,0 @@
-FROM stringsync-base:latest
-
-COPY ecosystem.config.js .
-
-RUN yarn tsc --build packages/*
-RUN bin/ss productionize
-
-ENTRYPOINT [ "pm2-runtime", "./ecosystem.config.js", "--only" ]
-CMD [ "api" ]
