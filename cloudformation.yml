@@ -1254,7 +1254,7 @@ Resources:
               Value: !Ref SqsQueue
             - Name: INFO_EMAIL
               Value: !Sub ${FriendlyName} <info@${DomainName}>
-          Command: ['pm2-runtime', './ecosystem.config.prod.js', '--only', 'api']
+          Command: ['pm2-runtime', './ecosystem.prod.config.js', '--only', 'api']
 
   DbMigrateTaskDefinition:
     Type: AWS::ECS::TaskDefinition
@@ -1427,7 +1427,7 @@ Resources:
               Value: !Ref SqsQueue
             - Name: INFO_EMAIL
               Value: !Sub ${FriendlyName} <info@${DomainName}>
-          Command: ['pm2-runtime', './ecosystem.config.prod.js', '--only', 'worker']
+          Command: ['pm2-runtime', './ecosystem.prod.config.js', '--only', 'worker']
 
   # The service. The service is a resource which allows you to run multiple
   # copies of a type of task, and gather up their logs and metrics, as well
