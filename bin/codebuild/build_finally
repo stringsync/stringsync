@@ -2,3 +2,4 @@
 
 echo "Ensuring docker-compose environment is down..."
 ./bin/ss down
+exit 0
