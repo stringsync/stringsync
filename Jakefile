@@ -62,7 +62,7 @@ const cp = cmd('cp');
 const mkdir = cmd('mkdir');
 
 desc('brings up all projects');
-task('dev', ['build:api', 'install:web'], async () => {
+task('dev', ['build:api', 'install:web', 'gensecrets'], async () => {
   try {
     const api = dockerCompose(['up', '--detach'], { cwd: 'api' });
     const web = yarn(['start'], { cwd: 'web', stdio: 'inherit' });
