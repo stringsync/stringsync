@@ -9,8 +9,6 @@ services:
       POSTGRES_DB: stringsync
       POSTGRES_USER: stringsync
       POSTGRES_PASSWORD: stringsync
-    ports:
-      - 5432:5432
 
   redis:
     container_name: redis
@@ -18,20 +16,20 @@ services:
 
   app:
     container_name: app
-    image: stringsync:latest
+    image: stringsync:prod
     build:
       context: .
-      dockerfile: ./Dockerfile.dev
+      dockerfile: ./Dockerfile.prod
     env_file:
       - ../env/dev.env
       - ../env/secrets.env
     volumes:
       - ./src:/api/src
+      - ./reports:/api/reports
     links:
       - db
       - redis
     ports:
       - '3000:3000'
     entrypoint: ['./bin/wait-for-it.sh', 'db:5432', '--']
-    command: >
-      bash -c "yarn migrate && yarn seed && pm2-runtime ecosystem.dev.config.js"
+    command: ['pm2-runtime', 'ecosystem.prod.config.js']

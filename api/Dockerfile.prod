@@ -13,7 +13,7 @@ RUN yarn
 # copy the main files over
 COPY tsconfig.json .
 COPY tsconfig.prod.json .
-COPY ecosystem.config.prod.js .
+COPY ecosystem.prod.config.js .
 COPY jest.config.js .
 COPY .sequelizerc .
 COPY sequelize.config.js .

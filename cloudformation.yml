@@ -682,6 +682,9 @@ Resources:
           - Name: S3_SECRETS_BUCKET
             Type: PLAINTEXT
             Value: !Ref CodeBuildSecretsBucket
+          - Name: VERBOSE
+            Type: PLAINTEXT
+            Value: 'true'
       Source:
         Type: CODEPIPELINE
 
