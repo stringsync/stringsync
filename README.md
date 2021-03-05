@@ -17,10 +17,10 @@ StringSync uses `yarn` as a package management solution. You will need this if y
 
 - [install yarn](https://yarnpkg.com/lang/en/docs/install/)
 
-Project dependencies can be installed by running the following command:
+Project dependencies can be installed by running the following command in the project directory:
 
 ```
-yarn setup
+yarn install
 ```
 
 ### Commands
@@ -30,7 +30,7 @@ StringSync commands are run using the `./bin/ss` command.
 To view all the commands, run:
 
 ```
-./bin/ss help
+./bin/ss
 ```
 
 Before running the api for the first time, you will need to generate a secrets file (not tracked by .git):
@@ -41,22 +41,18 @@ Before running the api for the first time, you will need to generate a secrets f
 
 The file it generates will have fake credentials, but this should be OK as long as you don't interact with dev AWS resources (such as uploading a file to AWS).
 
-First, build the docker images. You only need to do this once:
-
-```
-./bin/ss build
-```
-
 To run the api, start Docker engine and run:
 
 ```
-./bin/ss up
+./bin/ss dev
 ```
 
 - http://localhost:8080 frontend UI
 - http://localhost:3000/altair backend GraphQL query playground
 
-To stop the api, run:
+Press Ctrl + C to exit. The command should teardown the environment.
+
+To teardown manually, run:
 
 ```
 ./bin/ss down
@@ -65,19 +61,13 @@ To stop the api, run:
 To run api tests in watch mode, run:
 
 ```
-./bin/ss test api -w
-```
-
-To run the web project, run:
-
-```
-./bin/ss up web
+./bin/ss test:api WATCH=true
 ```
 
 To run web tests in watch mode, run:
 
 ```
-./bin/ss test web -w
+./bin/ss test:web WATCH=true
 ```
 
 ## VSCode Setup
