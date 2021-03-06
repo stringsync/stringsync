@@ -1,10 +1,20 @@
+export enum JobName {
+  UPDATE_VIDEO_URL = 'UPDATE_VIDEO_URL',
+}
+
 export type Payload = Record<string, any>;
 
-export type Processor<T extends Payload = Payload> = (payload: T) => Promise<void>;
+export type Processor<P extends Payload> = (payload: P) => Promise<void>;
 
-export type Dispatcher<T extends Payload = Payload> = (payload: T) => void;
-
-export type Job<T extends Payload = Payload> = {
-  process: Processor<T>;
-  dispatch: Dispatcher<T>;
+export type JobOpts = {
+  intervalMs?: number;
 };
+
+export interface Job<P extends Payload> {
+  name: JobName;
+  opts: JobOpts;
+  process: Processor<P>;
+  start(): Promise<void>;
+  stop(): Promise<void>;
+  enqueue(payload: P): Promise<void>;
+}
