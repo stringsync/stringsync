@@ -1,8 +1,8 @@
 import { Queue, QueueScheduler, RedisOptions, Worker } from 'bullmq';
 import { isNumber } from 'lodash';
 import * as uuid from 'uuid';
-import { Config } from '../config';
-import { Job, JobName, JobOpts, Payload, Processor } from './types';
+import { Config } from '../../config';
+import { Job, JobName, JobOpts, Payload, Processor } from '../types';
 
 export class BullMqJob<P extends Payload> implements Job<P> {
   private worker?: Worker<P>;
