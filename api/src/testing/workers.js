@@ -11,4 +11,11 @@ const getWorkerDbNames = (numWorkers) => {
   return workerDbNames;
 };
 
-module.exports = { getWorkerDbName, getWorkerDbNames };
+const getWorkerRedisHost = (workerId) => {
+  if (1 > workerId || workerId > 3) {
+    throw new Error(`can't support workerId '${workerId}', add more redis nodes to docker-compose.test.yml first`);
+  }
+  return `redis${workerId}`;
+};
+
+module.exports = { getWorkerDbName, getWorkerDbNames, getWorkerRedisHost };

@@ -64,6 +64,7 @@ export class BullMqJob<P extends Payload> implements Job<P> {
     return {
       host: this.config.REDIS_HOST,
       port: this.config.REDIS_PORT,
+      retryStrategy: () => null,
     };
   }
 
