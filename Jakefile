@@ -288,7 +288,10 @@ namespace('test', () => {
     };
 
     const cleanupTests = async () => {
-      const down = dockerCompose(['-f', './docker-compose.test.yml', 'down', '--remove-orphans'], { cwd: 'api' });
+      const down = dockerCompose(['-f', './docker-compose.test.yml', 'down', '--remove-orphans'], {
+        cwd: 'api',
+        stdio: 'inherit',
+      });
       await down.promise;
     };
 
