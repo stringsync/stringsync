@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 import { Config } from '../../config';
 import { NotFoundError, UnknownError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
-import { Logger, Message, MessageQueue } from '../../util';
+import { JSONObject, Logger, Message, MessageQueue } from '../../util';
 import { NotationService } from '../Notation';
 
 @injectable()
@@ -32,16 +32,22 @@ export class VideoUrlService {
   }
 
   private async process(message: Message) {
-    const data: any = JSON.parse(message.body);
+    const data: JSONObject = JSON.parse(message.body);
 
     const srcVideo = data.srcVideo;
     if (!srcVideo) {
       throw new UnknownError(`message data missing 'srcVideo' property`);
     }
+    if (typeof srcVideo !== 'string') {
+      throw new UnknownError(`message data corrupt 'srcVideo' property must be a string`);
+    }
 
     const hlsUrl = data.hlsUrl;
     if (!hlsUrl) {
       throw new UnknownError(`message data missing 'hlsUrl' property`);
+    }
+    if (typeof hlsUrl !== 'string') {
+      throw new UnknownError(`message data corrupt 'hlsUrl' property must be a string`);
     }
 
     const notation = await this.notationService.findByVideoFilename(srcVideo);
