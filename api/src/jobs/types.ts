@@ -9,9 +9,6 @@ export type JobOpts = {
 };
 
 export interface Job<P extends Payload> {
-  name: string;
-  opts: JobOpts;
-  process: Processor<P>;
   start(): Promise<void>;
   stop(): Promise<void>;
   enqueue(payload: P, waitForCompletion?: boolean): Promise<void>;
