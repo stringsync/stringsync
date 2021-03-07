@@ -23,6 +23,8 @@ const processor: Processor<Payload> = async (payload) => {
 
 const isMessageProcessed = (message: string): boolean => messages.has(message);
 
+const flush = async () => await Promise.resolve();
+
 const bullMqJob = new BullMqJob<Payload>('FAKE_BULL_MQ_JOB', processor, config, {});
 
 describe.each([['BullMqJob', bullMqJob]])('%s', (name: string, job: Job<Payload>) => {
@@ -34,6 +36,7 @@ describe.each([['BullMqJob', bullMqJob]])('%s', (name: string, job: Job<Payload>
     it('enqueues a job', async () => {
       const message = randStr(10);
       await job.enqueue({ message });
+      await flush();
       await expect(job.count()).resolves.toBe(1);
       expect(isMessageProcessed(message)).toBeFalse();
     });
@@ -44,6 +47,7 @@ describe.each([['BullMqJob', bullMqJob]])('%s', (name: string, job: Job<Payload>
       const message = randStr(10);
       await job.enqueue({ message });
       await job.start();
+      await flush();
       expect(isMessageProcessed(message)).toBeTrue();
     });
   });
