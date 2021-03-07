@@ -2,19 +2,24 @@ import { Queue, QueueScheduler, RedisOptions, Worker } from 'bullmq';
 import { isNumber } from 'lodash';
 import * as uuid from 'uuid';
 import { Config } from '../../config';
-import { Job, JobName, JobOpts, Payload, Processor } from '../types';
+import { Job, JobOpts, Payload, Processor } from '../types';
 
 export class BullMqJob<P extends Payload> implements Job<P> {
   private worker?: Worker<P>;
   private queue?: Queue<P>;
   private scheduler?: QueueScheduler;
 
-  constructor(public name: JobName, public process: Processor<P>, public opts: JobOpts, private config: Config) {}
+  constructor(public name: string, public process: Processor<P>, public config: Config, public opts: JobOpts) {}
 
   async start(): Promise<void> {
-    const worker = this.getWorker(); // creating the worker starts it
-    const scheduler = this.getScheduler(); // creating the scheduler starts it
-    const queue = this.getQueue() as Queue<any>;
+    const queue = this.ensureQueue() as Queue<any>;
+    await queue.waitUntilReady();
+
+    const worker = this.ensureWorker();
+    await worker.waitUntilReady();
+
+    const scheduler = this.ensureScheduler();
+    await scheduler.waitUntilReady();
 
     if (isNumber(this.opts.intervalMs)) {
       const name = this.getRepeatTaskName();
@@ -27,12 +32,15 @@ export class BullMqJob<P extends Payload> implements Job<P> {
 
     if (this.worker) {
       promises.push(this.worker.close());
+      promises.push(this.worker.disconnect());
     }
     if (this.scheduler) {
       promises.push(this.scheduler.close());
+      promises.push(this.scheduler.disconnect());
     }
     if (this.queue) {
       promises.push(this.queue.close());
+      promises.push(this.queue.disconnect());
     }
 
     await Promise.all(promises);
@@ -42,10 +50,14 @@ export class BullMqJob<P extends Payload> implements Job<P> {
     this.queue = undefined;
   }
 
-  async enqueue(payload: P): Promise<void> {
-    const queue = this.getQueue();
+  async enqueue(payload: P, waitForCompletion = false): Promise<void> {
+    const queue = this.ensureQueue();
     const name = this.getTaskName();
     await queue.add(name, payload);
+  }
+
+  async count(): Promise<number> {
+    return await this.ensureQueue().count();
   }
 
   private getConnection(): RedisOptions {
@@ -55,14 +67,14 @@ export class BullMqJob<P extends Payload> implements Job<P> {
     };
   }
 
-  private getQueue(): Queue<P> {
+  private ensureQueue(): Queue<P> {
     if (!this.queue) {
       this.queue = new Queue<P>(this.name, { connection: this.getConnection() });
     }
     return this.queue;
   }
 
-  private getWorker(): Worker<P> {
+  private ensureWorker(): Worker<P> {
     if (!this.worker) {
       this.worker = new Worker<P>(
         this.name,
@@ -75,7 +87,7 @@ export class BullMqJob<P extends Payload> implements Job<P> {
     return this.worker;
   }
 
-  private getScheduler(): QueueScheduler {
+  private ensureScheduler(): QueueScheduler {
     if (!this.scheduler) {
       this.scheduler = new QueueScheduler(this.name, { connection: this.getConnection() });
     }

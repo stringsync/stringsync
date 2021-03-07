@@ -1,8 +1,6 @@
-export enum JobName {
-  UPDATE_VIDEO_URL = 'UPDATE_VIDEO_URL',
-}
+import { JSONObject } from '../util';
 
-export type Payload = Record<string, any>;
+export type Payload = JSONObject;
 
 export type Processor<P extends Payload> = (payload: P) => Promise<void>;
 
@@ -11,10 +9,11 @@ export type JobOpts = {
 };
 
 export interface Job<P extends Payload> {
-  name: JobName;
+  name: string;
   opts: JobOpts;
   process: Processor<P>;
   start(): Promise<void>;
   stop(): Promise<void>;
-  enqueue(payload: P): Promise<void>;
+  enqueue(payload: P, waitForCompletion?: boolean): Promise<void>;
+  count(): Promise<number>;
 }

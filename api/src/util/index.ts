@@ -5,6 +5,7 @@ export * from './cache';
 export * from './ctor';
 export * from './ensureNoErrors';
 export * from './identity';
+export * from './json';
 export * from './logger';
 export * from './mailer';
 export * from './message-queue';
