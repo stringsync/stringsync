@@ -19,6 +19,7 @@ export type Query = {
   __typename?: 'Query';
   notations: NotationConnectionObject;
   notation?: Maybe<NotationObject>;
+  tags: Array<TagObject>;
   user?: Maybe<UserObject>;
   users: UserConnectionObject;
   whoami?: Maybe<UserObject>;
