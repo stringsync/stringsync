@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { Store } from 'redux';
 import { ThemeProvider } from 'styled-components';
 import { theme } from '../theme';
+import './App.less';
 
 type Props = {
   store: Store;

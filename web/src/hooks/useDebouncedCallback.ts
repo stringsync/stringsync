@@ -8,5 +8,6 @@ export const useDebouncedCallback = <T extends (...args: any[]) => any>(
   delay: number = 0,
   options?: DebounceSettings
 ): DebouncedFunc<T> => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   return useCallback(debounce(callback, delay, options), [callback, delay, options]);
 };

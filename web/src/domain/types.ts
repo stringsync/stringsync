@@ -28,7 +28,7 @@ export type Notation = {
   artistName: string;
   deadTimeMs: number;
   durationMs: number;
-  featured: boolean;
+  private: boolean;
   transcriberId: string;
   thumbnailUrl: string | null;
   videoUrl: string | null;
