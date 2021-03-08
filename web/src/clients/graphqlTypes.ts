@@ -100,11 +100,11 @@ export type NotationObject = {
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
-  songName: Scalars['String'];
-  artistName: Scalars['String'];
+  songName?: Maybe<Scalars['String']>;
+  artistName?: Maybe<Scalars['String']>;
   deadTimeMs: Scalars['Float'];
   durationMs: Scalars['Float'];
-  featured: Scalars['Boolean'];
+  private: Scalars['Boolean'];
   transcriberId: Scalars['String'];
   thumbnailUrl?: Maybe<Scalars['String']>;
   videoUrl?: Maybe<Scalars['String']>;
