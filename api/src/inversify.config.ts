@@ -20,7 +20,7 @@ import {
   UserLoader,
   UserRepo,
 } from './repos';
-import { AuthResolver, ExperimentResolver, NotationResolver, UserResolver } from './resolvers';
+import { AuthResolver, ExperimentResolver, NotationResolver, TagResolver, UserResolver } from './resolvers';
 import { DevExpressServer, ExpressServer, Server } from './server';
 import {
   AuthService,
@@ -136,5 +136,9 @@ container
   .inSingletonScope();
 container
   .bind<AuthResolver>(AuthResolver)
+  .toSelf()
+  .inSingletonScope();
+container
+  .bind<TagResolver>(TagResolver)
   .toSelf()
   .inSingletonScope();
