@@ -27,7 +27,7 @@ export const buildRandNotation = (attrs: Partial<Notation> = {}): Notation => {
     updatedAt: now,
     deadTimeMs: 0,
     durationMs: 1,
-    featured: true,
+    private: true,
     songName: randStr(8),
     transcriberId: randStr(8),
     thumbnailUrl: null,
