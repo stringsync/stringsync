@@ -5,8 +5,8 @@ import { useHistory, useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { AuthClient } from '../../../clients';
-import { FormPage } from '../../../components/FormPage';
 import { UnknownError, UNKNOWN_ERROR_MSG } from '../../../errors';
+import { FormPage } from '../../FormPage';
 
 const EMAIL_RULES: Rule[] = [
   { required: true, message: 'email is required' },

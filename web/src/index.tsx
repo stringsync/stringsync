@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { StringSync } from './app';
+import { App } from './App';
 import reportWebVitals from './reportWebVitals';
 import * as serviceWorker from './serviceWorker';
 import { createStore, swSlice } from './store';
@@ -18,9 +18,9 @@ serviceWorker.register({
 
 const rootElement = document.getElementById('root');
 if (rootElement?.hasChildNodes()) {
-  ReactDOM.hydrate(<StringSync store={store} />, rootElement);
+  ReactDOM.hydrate(<App store={store} />, rootElement);
 } else {
-  ReactDOM.render(<StringSync store={store} />, rootElement);
+  ReactDOM.render(<App store={store} />, rootElement);
 }
 
 // If you want to start measuring performance in your app, pass a function

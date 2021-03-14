@@ -3,9 +3,9 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { FormPage } from '../../../components/FormPage';
 import { useEffectOnce } from '../../../hooks';
 import { AppDispatch, clearAuthErrors, login, RootState } from '../../../store';
+import { FormPage } from '../../FormPage';
 
 const Center = styled.div`
   text-align: center;

@@ -3,11 +3,11 @@ import { Col, Divider, Row } from 'antd';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { Box } from '../../../components/Box';
-import { Logo } from '../../../components/Logo';
-import { Wordmark } from '../../../components/Wordmark';
 import { Layout, withLayout } from '../../../hocs';
 import { compose } from '../../../util/compose';
+import { Box } from '../../Box';
+import { Logo } from '../../Logo';
+import { Wordmark } from '../../Wordmark';
 
 const LANDING_SRC = 'https://dpwvs3j3j2uwp.cloudfront.net/landing.jpg';
 

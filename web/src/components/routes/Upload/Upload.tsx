@@ -6,12 +6,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import { NotationClient } from '../../../clients';
-import { Box } from '../../../components/Box';
 import { Tag } from '../../../domain';
 import { Layout, withLayout } from '../../../hocs';
 import { useEffectOnce } from '../../../hooks';
 import { getTags, RootState } from '../../../store';
 import { compose } from '../../../util/compose';
+import { Box } from '../../Box';
 
 const { Step } = Steps;
 const { Dragger } = AntdUpload;
