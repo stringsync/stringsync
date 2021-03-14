@@ -32,9 +32,14 @@ export const withAuthRequirement = (authReqs: AuthRequirement) =>
       const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
       const isLoggedIn = useSelector<RootState, boolean>(isLoggedInSelector);
       const userRole = useSelector<RootState, UserRole>((state) => state.auth.user.role);
-      const returnToRoute = useSelector<RootState, string>((state) => state.history.returnToRoute);
       const history = useHistory();
       const meetsAuthReqs = useRef(false);
+
+      const returnToRoute = useSelector<RootState, string>((state) => {
+        const returnToRoute = state.history.returnToRoute;
+        const historyRoute = history.location.pathname;
+        return historyRoute === returnToRoute ? '/library' : returnToRoute;
+      });
 
       if (!isAuthPending) {
         meetsAuthReqs.current = isMeetingAuthReqs(authReqs, isLoggedIn, userRole);
