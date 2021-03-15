@@ -341,3 +341,12 @@ task('gensecrets', [], async () => {
     await copy.promise;
   }
 });
+
+desc('logs into the dev database');
+task('db', [], async () => {
+  const dockerComposeDb = dockerCompose(['-f', './docker-compose.yml', 'exec', 'db', 'psql', '-U', 'stringsync'], {
+    cwd: 'api',
+    stdio: 'inherit',
+  });
+  await dockerComposeDb.promise;
+});
