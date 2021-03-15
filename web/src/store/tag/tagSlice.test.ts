@@ -1,20 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { TagClient } from '../../graphql';
+import { $queries } from '../../graphql';
 import { buildRandTag } from '../../testing';
 import { getTags, tagSlice } from './tagSlice';
 
 describe('tagSlice', () => {
-  let tagClient: TagClient;
-
-  beforeEach(() => {
-    tagClient = TagClient.create();
-    jest.spyOn(TagClient, 'create').mockReturnValue(tagClient);
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('initializes state', () => {
     const store = configureStore({
       reducer: {
@@ -58,7 +47,7 @@ describe('tagSlice', () => {
 
       const tag1 = buildRandTag();
       const tag2 = buildRandTag();
-      const tagsSpy = jest.spyOn(tagClient, 'tags');
+      const tagsSpy = jest.spyOn($queries, 'tags');
       tagsSpy.mockResolvedValue({
         data: {
           tags: [tag1, tag2],
