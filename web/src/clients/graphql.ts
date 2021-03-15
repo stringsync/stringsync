@@ -1,4 +1,6 @@
 import { ExtractableFile, extractFiles } from 'extract-files';
+import { getGraphqlUri } from './getGraphqlUri';
+import { Mutation, Query } from './graphqlTypes';
 import { RequestType, Response } from './types';
 
 export const graphql = async <
@@ -47,4 +49,23 @@ export const graphql = async <
     mode: 'cors',
   });
   return await res.json();
+};
+
+export const query = async <N extends Exclude<keyof Query, '__typename'>, V extends Record<string, any> | void = void>(
+  query: string,
+  variables?: V
+) => {
+  const uri = getGraphqlUri();
+  return await graphql<Query, N, V>(uri, query, variables);
+};
+
+export const mutation = async <
+  N extends Exclude<keyof Mutation, '__typename'>,
+  V extends Record<string, any> | void = void
+>(
+  query: string,
+  variables?: V
+) => {
+  const uri = getGraphqlUri();
+  return await graphql<Mutation, N, V>(uri, query, variables);
 };
