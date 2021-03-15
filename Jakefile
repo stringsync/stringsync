@@ -350,3 +350,12 @@ task('db', [], async () => {
   });
   await dockerComposeDb.promise;
 });
+
+desc('shows the logs for the dev containers');
+task('logs', [], async () => {
+  const dockerComposeLogs = dockerCompose(['-f', './docker-compose.yml', 'logs', '-f'], {
+    cwd: 'api',
+    stdio: 'inherit',
+  });
+  await dockerComposeLogs.promise;
+});
