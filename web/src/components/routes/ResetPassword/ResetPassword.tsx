@@ -4,8 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { AuthClient } from '../../../clients';
 import { UnknownError, UNKNOWN_ERROR_MSG } from '../../../errors';
+import { AuthClient } from '../../../graphql';
 import { FormPage } from '../../FormPage';
 
 const EMAIL_RULES: Rule[] = [

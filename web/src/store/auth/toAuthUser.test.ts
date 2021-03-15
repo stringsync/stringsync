@@ -1,5 +1,5 @@
 import { UserRole as DomainUserRole } from '../../domain';
-import { UserObject, UserRoles as TypegenUserRole } from './../../clients';
+import { UserObject, UserRoles as TypegenUserRole } from '../../graphql';
 import { toAuthUser } from './toAuthUser';
 import { AuthUser } from './types';
 

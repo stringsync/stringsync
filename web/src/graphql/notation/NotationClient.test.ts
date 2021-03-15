@@ -1,4 +1,4 @@
-import { GraphqlClient } from './../graphql/GraphqlClient';
+import { GraphqlClient } from '../graphql/GraphqlClient';
 import { NotationClient } from './NotationClient';
 
 describe('NotationClient', () => {

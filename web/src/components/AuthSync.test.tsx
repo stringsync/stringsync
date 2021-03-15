@@ -1,8 +1,8 @@
 import { render, waitFor } from '@testing-library/react';
 import { GraphQLError } from 'graphql';
 import React from 'react';
-import { AuthClient, UserRoles as TypegenUserRole } from '../clients';
 import { UserRole as DomainUserRole } from '../domain';
+import { AuthClient, UserRoles as TypegenUserRole } from '../graphql';
 import { AppStore, createStore } from '../store';
 import { getNullAuthUser } from '../store/auth/getNullAuthUser';
 import { Test } from '../testing';

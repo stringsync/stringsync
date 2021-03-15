@@ -1,4 +1,4 @@
-import { UserObject, toUserRole } from '../../clients';
+import { toUserRole, UserObject } from '../../graphql';
 import { AuthUser } from './types';
 
 export const toAuthUser = (user: UserObject): AuthUser => ({

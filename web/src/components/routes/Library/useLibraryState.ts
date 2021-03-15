@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { NotationClient, NotationEdgeObject, QueryNotationsArgs, toUserRole } from '../../../clients';
+import { NotationClient, NotationEdgeObject, QueryNotationsArgs, toUserRole } from '../../../graphql';
 import { getInitialPageInfo } from '../../../util/pager';
 import { LibraryState, LibraryStatus, NotationPreview } from './types';
 

@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { TagClient } from '../../clients';
+import { TagClient } from '../../graphql';
 import { buildRandTag } from '../../testing';
 import { getTags, tagSlice } from './tagSlice';
 

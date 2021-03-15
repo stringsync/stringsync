@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { TagClient } from '../../clients';
 import { Tag } from '../../domain';
+import { TagClient } from '../../graphql';
 import { TagReducers, TagState } from './types';
 
 export type GetTagsReturned = { tags: Tag[] };

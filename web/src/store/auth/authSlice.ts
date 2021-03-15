@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { AuthClient, LoginInput, SendResetPasswordEmailInput, SignupInput } from '../../clients';
 import { UNKNOWN_ERROR_MSG } from '../../errors';
+import { AuthClient, LoginInput, SendResetPasswordEmailInput, SignupInput } from '../../graphql';
 import { RootState } from '../types';
 import { getNullAuthState } from './getNullAuthState';
 import { getNullAuthUser } from './getNullAuthUser';

@@ -1,4 +1,4 @@
-import { gql } from './../gql';
+import { gql } from '../gql';
 import { GraphqlClient } from './GraphqlClient';
 
 describe('GraphqlClient', () => {

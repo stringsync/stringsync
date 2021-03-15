@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { GraphQLError } from 'graphql';
-import { AuthClient, UserRoles as TypegenUserRole } from '../../clients';
 import { UserRole } from '../../domain';
+import { AuthClient, UserRoles as TypegenUserRole } from '../../graphql';
 import {
   authenticate,
   authSlice,
