@@ -1,5 +1,5 @@
 import { gql } from '../gql';
-import { GraphqlClient } from '../graphql';
+import { GraphqlClient } from '../graphql/GraphqlClient';
 import { CreateNotationInput, Mutation, Query, QueryNotationsArgs } from '../graphqlTypes';
 
 export class NotationClient {

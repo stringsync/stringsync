@@ -1,5 +1,5 @@
 import { gql } from '../gql';
-import { GraphqlClient } from '../graphql';
+import { GraphqlClient } from '../graphql/GraphqlClient';
 import { Query } from '../graphqlTypes';
 
 export class TagClient {
