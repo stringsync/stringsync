@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import { Tag } from '../../../domain';
-import { NotationClient } from '../../../graphql';
+import { $queries } from '../../../graphql';
 import { Layout, withLayout } from '../../../hocs';
 import { useEffectOnce } from '../../../hooks';
 import { getTags, RootState } from '../../../store';
@@ -86,9 +86,8 @@ const Upload: React.FC<Props> = enhance(() => {
   };
 
   const onFinish = async () => {
-    const notationClient = NotationClient.create();
     const tagIds = selectedTagNames.map((tagName) => tagIdByTagName[tagName]);
-    await notationClient.createNotation({ songName, artistName, tagIds, thumbnail, video });
+    await $queries.createNotation({ songName, artistName, tagIds, thumbnail, video });
   };
 
   useEffectOnce(() => {

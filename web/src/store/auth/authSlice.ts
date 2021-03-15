@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { UNKNOWN_ERROR_MSG } from '../../errors';
-import { AuthClient, LoginInput, SendResetPasswordEmailInput, SignupInput } from '../../graphql';
+import { $queries, LoginInput, SendResetPasswordEmailInput, SignupInput } from '../../graphql';
 import { RootState } from '../types';
 import { getNullAuthState } from './getNullAuthState';
 import { getNullAuthUser } from './getNullAuthUser';
@@ -13,8 +13,7 @@ export type AuthenticateThunkConfig = { rejectValue: { errors: string[] } };
 export const authenticate = createAsyncThunk<AuthenticateReturned, AuthenticateThunkArg, AuthenticateThunkConfig>(
   'auth/authenticate',
   async (args, thunk) => {
-    const authClient = AuthClient.create();
-    const { data, errors } = await authClient.whoami();
+    const { data, errors } = await $queries.whoami();
 
     const hasError = errors || !data.whoami;
 
@@ -39,8 +38,7 @@ type LoginThunkConfig = { rejectValue: { errors: string[] } };
 export const login = createAsyncThunk<LoginReturned, LoginThunkArg, LoginThunkConfig>(
   'auth/login',
   async (args, thunk) => {
-    const authClient = AuthClient.create();
-    const { data, errors } = await authClient.login(args.input);
+    const { data, errors } = await $queries.login(args.input);
     if (errors) {
       return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
     }
@@ -57,8 +55,7 @@ type SignupThunkConfig = { rejectValue: { errors: string[] } };
 export const signup = createAsyncThunk<SignupReturned, SignupThunkArg, SignupThunkConfig>(
   'auth/signup',
   async (args, thunk) => {
-    const authClient = AuthClient.create();
-    const { data, errors } = await authClient.signup(args.input);
+    const { data, errors } = await $queries.signup(args.input);
     if (errors) {
       return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
     }
@@ -75,8 +72,7 @@ type LogoutThunkConfig = { rejectValue: { errors: string[] } };
 export const logout = createAsyncThunk<LogoutReturned, LogoutThunkArg, LogoutThunkConfig>(
   'auth/logout',
   async (_, thunk) => {
-    const authClient = AuthClient.create();
-    const { data, errors } = await authClient.logout();
+    const { data, errors } = await $queries.logout();
     if (errors) {
       return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
     }
@@ -95,8 +91,7 @@ export const sendResetPasswordEmail = createAsyncThunk<
   SendResetPasswordEmailThunkArg,
   SendResetPasswordEmailConfig
 >('auth/sendResetPasswordEmail', async (args, thunk) => {
-  const authClient = AuthClient.create();
-  const { data, errors } = await authClient.sendResetPasswordEmail(args.input);
+  const { data, errors } = await $queries.sendResetPasswordEmail(args.input);
   if (errors) {
     return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
   }

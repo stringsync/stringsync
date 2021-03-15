@@ -2,7 +2,7 @@ import { render, waitFor } from '@testing-library/react';
 import { GraphQLError } from 'graphql';
 import React from 'react';
 import { UserRole as DomainUserRole } from '../domain';
-import { AuthClient, UserRoles as TypegenUserRole } from '../graphql';
+import { $queries, UserRoles as TypegenUserRole } from '../graphql';
 import { AppStore, createStore } from '../store';
 import { getNullAuthUser } from '../store/auth/getNullAuthUser';
 import { Test } from '../testing';
@@ -10,21 +10,14 @@ import { AuthSync } from './AuthSync';
 
 describe('AuthSync', () => {
   let store: AppStore;
-  let authClient: AuthClient;
 
   beforeEach(() => {
     store = createStore();
-    authClient = AuthClient.create();
-    jest.spyOn(AuthClient, 'create').mockReturnValue(authClient);
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
   });
 
   it('updates auth user when logged in', async () => {
     const now = new Date();
-    const whoamiSpy = jest.spyOn(authClient, 'whoami');
+    const whoamiSpy = jest.spyOn($queries, 'whoami');
     whoamiSpy.mockResolvedValue({
       data: {
         whoami: {
@@ -57,7 +50,7 @@ describe('AuthSync', () => {
   });
 
   it('updates user when logged out', async () => {
-    const whoamiSpy = jest.spyOn(authClient, 'whoami');
+    const whoamiSpy = jest.spyOn($queries, 'whoami');
     whoamiSpy.mockResolvedValue({ data: { whoami: null } });
 
     render(
@@ -72,7 +65,7 @@ describe('AuthSync', () => {
   });
 
   it('swallows errors silently', async () => {
-    const whoamiSpy = jest.spyOn(authClient, 'whoami');
+    const whoamiSpy = jest.spyOn($queries, 'whoami');
     whoamiSpy.mockResolvedValue({ data: { whoami: null }, errors: [new GraphQLError('error message 1')] });
 
     render(
@@ -89,7 +82,7 @@ describe('AuthSync', () => {
   });
 
   it('authenticates once', async () => {
-    const whoamiSpy = jest.spyOn(authClient, 'whoami');
+    const whoamiSpy = jest.spyOn($queries, 'whoami');
     whoamiSpy.mockResolvedValue({ data: { whoami: null }, errors: [new GraphQLError('error message 1')] });
 
     const { rerender } = render(

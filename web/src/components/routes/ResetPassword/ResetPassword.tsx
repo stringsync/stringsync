@@ -5,7 +5,7 @@ import { useHistory, useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { UnknownError, UNKNOWN_ERROR_MSG } from '../../../errors';
-import { AuthClient } from '../../../graphql';
+import { $queries } from '../../../graphql';
 import { FormPage } from '../../FormPage';
 
 const EMAIL_RULES: Rule[] = [
@@ -49,8 +49,7 @@ export const ResetPassword: React.FC = (props) => {
 
     try {
       const { email, password, resetPasswordToken } = form.getFieldsValue();
-      const authClient = AuthClient.create();
-      const { data, errors } = await authClient.resetPassword({
+      const { data, errors } = await $queries.resetPassword({
         email,
         password,
         resetPasswordToken,

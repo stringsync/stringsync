@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { NotationClient, NotationEdgeObject, QueryNotationsArgs, toUserRole } from '../../../graphql';
+import { $queries, NotationEdgeObject, QueryNotationsArgs, toUserRole } from '../../../graphql';
 import { getInitialPageInfo } from '../../../util/pager';
 import { LibraryState, LibraryStatus, NotationPreview } from './types';
 
@@ -34,8 +34,7 @@ export const useLibraryState = (): LibraryState => {
     setStatus(LibraryStatus.PENDING);
 
     try {
-      const client = NotationClient.create();
-      const { data, errors } = await client.notations(args);
+      const { data, errors } = await $queries.notations(args);
       if (errors) {
         throw errors;
       }
