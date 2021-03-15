@@ -682,6 +682,9 @@ Resources:
           - Name: S3_SECRETS_BUCKET
             Type: PLAINTEXT
             Value: !Ref CodeBuildSecretsBucket
+          - Name: S3_WEB_BUCKET
+            Type: PLAINTEXT
+            Value: !Ref WebBucket
       Source:
         Type: CODEPIPELINE
 
