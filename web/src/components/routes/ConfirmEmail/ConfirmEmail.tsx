@@ -1,4 +1,4 @@
-import { Button, Form, Input, message } from 'antd';
+import { Button, Divider, Form, Input, message } from 'antd';
 import { Rule } from 'antd/lib/form';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -119,6 +119,9 @@ export const ConfirmEmail: React.FC = enhance(() => {
                   confirm email
                 </Button>
               </Form.Item>
+
+              <Divider>or</Divider>
+
               <Button block type="link" onClick={onResendConfirmationTokenClick} disabled={disabled}>
                 resend confirmation token
               </Button>
