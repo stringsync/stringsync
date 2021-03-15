@@ -59,9 +59,6 @@ export class UserModel extends Model<User, Partial<User>> implements User {
           type: DataTypes.TEXT,
           unique: true,
           allowNull: true,
-          validate: {
-            isUUID: 4,
-          },
         },
         confirmedAt: {
           type: DataTypes.DATE,

@@ -72,13 +72,8 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
     });
 
     it('permits valid confirmation tokens', async () => {
-      const user = buildRandUser({ confirmationToken: uuid.v4() });
+      const user = buildRandUser({ confirmationToken: randStr(10) });
       await expect(userRepo.validate(user)).resolves.not.toThrow();
-    });
-
-    it('disallows invalid confirmation tokens', async () => {
-      const user = buildRandUser({ confirmationToken: 'not-a-v4-uuid' });
-      await expect(userRepo.validate(user)).rejects.toThrow();
     });
 
     it('permits valid reset password tokens', async () => {

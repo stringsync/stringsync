@@ -14,6 +14,7 @@ export class AuthService {
   static MIN_PASSWORD_LENGTH = 6;
   static HASH_ROUNDS = 10;
   static RESET_PASSWORD_TOKEN_LENGTH = 10;
+  static EMAIL_CONFIRMATION_TOKEN_LENGTH = 10;
 
   static async encryptPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, AuthService.HASH_ROUNDS);
@@ -91,7 +92,7 @@ export class AuthService {
     if (user.confirmedAt) {
       throw new BadRequestError('user already confirmed');
     }
-    return await this.userRepo.update(id, { confirmationToken: uuid.v4() });
+    return await this.userRepo.update(id, { confirmationToken: randStr(AuthService.EMAIL_CONFIRMATION_TOKEN_LENGTH) });
   }
 
   async refreshResetPasswordToken(email: string, reqAt: Date): Promise<User> {
