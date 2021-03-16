@@ -391,7 +391,7 @@ task('deploy', [], async () => {
   const add = git(['add', 'api/package.json', 'web/package.json']);
   await add.promise;
 
-  const commit = git(['commit', '-m', 'Bump app versions'], { stdio: 'inherit' });
+  const commit = git(['commit', '-m', 'Bump app versions.'], { stdio: 'inherit' });
   await commit.promise;
 
   const pushOrigin = git(['push', 'origin'], { stdio: 'inherit' });
