@@ -21,12 +21,13 @@ const env = (name, fallback = undefined) => {
   return val;
 };
 
+const VERBOSE = env('VERBOSE', 'false') === 'true';
+const QUIET = env('QUIET', 'false') === 'true';
+
 const DEFAULT_CMD_OPTS = { cwd: __dirname, stdio: 'ignore', shell: false };
 
 const cmd = (command) => (args, opts) => {
   opts = { ...DEFAULT_CMD_OPTS, ...opts };
-  const VERBOSE = env('VERBOSE', 'false') === 'true';
-  const QUIET = env('VERBOSE', 'false') === 'true';
 
   if (VERBOSE && QUIET) {
     throw new Error('cannot specify VERBOSE=true and QUIET=true env vars');
