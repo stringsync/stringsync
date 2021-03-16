@@ -13,11 +13,11 @@ const env = (name, fallback = undefined) => {
     if (typeof fallback === 'undefined') {
       throw new Error(`env variable is not defined with no fallback: ${name}`);
     } else {
-      log(chalk.yellow(`${name} (default): ${fallback}`));
+      log(chalk.magenta(`${name} (default): ${fallback}`));
       return fallback;
     }
   }
-  log(chalk.yellow(`${name} (provided): ${val}`));
+  log(chalk.magenta(`${name} (provided): ${val}`));
   return val;
 };
 
