@@ -24,14 +24,14 @@ const env = (name, fallback = undefined) => {
 const VERBOSE = env('VERBOSE', 'false') === 'true';
 const QUIET = env('QUIET', 'false') === 'true';
 
+if (VERBOSE && QUIET) {
+  throw new Error('cannot specify VERBOSE=true and QUIET=true env vars');
+}
+
 const DEFAULT_CMD_OPTS = { cwd: __dirname, stdio: 'ignore', shell: false };
 
 const cmd = (command) => (args, opts) => {
   opts = { ...DEFAULT_CMD_OPTS, ...opts };
-
-  if (VERBOSE && QUIET) {
-    throw new Error('cannot specify VERBOSE=true and QUIET=true env vars');
-  }
 
   opts.stdio = VERBOSE ? 'inherit' : opts.stdio;
   opts.stdio = QUIET ? 'ignore' : opts.stdio;
