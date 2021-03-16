@@ -18,6 +18,9 @@ then
   mv web/build/* web-artifacts
   mv imagedefinitions.api.json imagedefinitions-artifacts
   mv imagedefinitions.worker.json imagedefinitions-artifacts
+
+  echo "Deleting current web build..."
+  aws s3 rm --recursive "s3://${S3_WEB_BUCKET}/"
 else
   echo "Build failed, skipping post_build step..."
 fi
