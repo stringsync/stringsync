@@ -381,13 +381,22 @@ task('deploy', [], async () => {
   }
 
   log('bumping api version');
-  const yarnVersionApi = yarn(['version', flag, '--no-git-tag-version'], { cwd: 'api', stdio: 'inherit' });
+  const yarnVersionApi = yarn(['version', flag, '--no-git-tag-version'], { cwd: 'api' });
   await yarnVersionApi.promise;
 
   log('bumping web version');
-  const yarnVersionWeb = yarn(['version', flag], { cwd: 'web', stdio: 'inherit' });
+  const yarnVersionWeb = yarn(['version', flag, '--no-git-tag-version'], { cwd: 'web' });
   await yarnVersionWeb.promise;
 
-  const push = git(['push', 'aws', `${BRANCH}:master`], { stdio: 'inherit' });
-  await push.promise;
+  const add = git(['add', 'api/package.json', 'web/package.json']);
+  await add.promise;
+
+  const commit = git(['commit', '-m', 'Bump app versions'], { stdio: 'inherit' });
+  await commit.promise;
+
+  const pushOrigin = git(['push', 'origin'], { stdio: 'inherit' });
+  await pushOrigin.promise;
+
+  const pushAws = git(['push', 'aws', `${BRANCH}:master`], { stdio: 'inherit' });
+  await pushAws.promise;
 });
