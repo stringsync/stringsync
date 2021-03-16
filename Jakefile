@@ -5,19 +5,21 @@ const path = require('path');
 const fs = require('fs');
 const chalk = require('chalk');
 
+const log = (msg) => console.log(`jake: ${msg}`);
+const identity = (x) => x;
 const env = (name, fallback = undefined) => {
   const val = process.env[name];
   if (typeof val === 'undefined') {
     if (typeof fallback === 'undefined') {
       throw new Error(`env variable is not defined with no fallback: ${name}`);
     } else {
+      log(chalk.yellow(`${name} (default): ${fallback}`));
       return fallback;
     }
   }
+  log(chalk.yellow(`${name} (provided): ${val}`));
   return val;
 };
-const log = (msg) => console.log(`jake: ${msg}`);
-const identity = (x) => x;
 
 const DEFAULT_CMD_OPTS = { cwd: __dirname, stdio: 'ignore', shell: false };
 
@@ -60,6 +62,7 @@ const dockerCompose = cmd('docker-compose');
 const docker = cmd('docker');
 const cp = cmd('cp');
 const mkdir = cmd('mkdir');
+const git = cmd('git');
 
 desc('brings up all projects');
 task('dev', ['build:api', 'install:web', 'gensecrets'], async () => {
@@ -358,4 +361,33 @@ task('logs', [], async () => {
     stdio: 'inherit',
   });
   await dockerComposeLogs.promise;
+});
+
+desc('deploys the app');
+task('deploy', [], async () => {
+  const BUMP_FLAGS = {
+    PATCH: '--patch',
+    MINOR: '--minor',
+    MAJOR: '--major',
+  };
+
+  const BUMP = env('BUMP', 'PATCH');
+  const BRANCH = env('BRANCH', 'master');
+
+  const flag = BUMP_FLAGS[BUMP];
+
+  if (!flag) {
+    throw new Error(`unknown bump env: ${BUMP}`);
+  }
+
+  log('bumping api version');
+  const yarnVersionApi = yarn(['version', flag], { cwd: 'api', stdio: 'inherit' });
+  await yarnVersionApi.promise;
+
+  log('bumping web version');
+  const yarnVersionWeb = yarn(['version', flag, '--no-git-tag-version'], { cwd: 'web', stdio: 'inherit' });
+  await yarnVersionWeb.promise;
+
+  const push = git(['push', 'aws', `${BRANCH}:master`], { stdio: 'inherit' });
+  await push.promise;
 });
