@@ -1,5 +1,5 @@
 {
-  "name": "@stringsync/api",
+  "name": "api",
   "version": "0.1.6",
   "description": "GraphQL server for @stringsync",
   "license": "MIT",
