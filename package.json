@@ -1,6 +1,6 @@
 {
   "name": "stringsync",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "repository": "git@github.com:jaredjj3/string-sync.git",
   "private": true,
   "devDependencies": {
