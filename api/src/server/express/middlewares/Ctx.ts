@@ -23,12 +23,13 @@ export class Ctx {
   // WeakMap is used so that when the request is GC'd, the Ctx instance is, too.
   private static bindings = new WeakMap<Request, Ctx>();
 
-  static bind(req: Request): void {
+  static bind(req: Request): Ctx {
     if (Ctx.bindings.has(req)) {
       throw new InternalError(`cannot bind req more than once`);
     }
     const ctx = new Ctx();
     Ctx.bindings.set(req, ctx);
+    return ctx;
   }
 
   static get(req: Request): Ctx {
