@@ -9,7 +9,15 @@ import { TYPES } from '../../inversify.constants';
 import { AuthService } from '../../services';
 import { Logger } from '../../util';
 import { Server } from '../types';
-import { withCtx, withErrorHandler, withGraphQL, withLogging, withSession, withSessionUser } from './middlewares';
+import {
+  withCtx,
+  withErrorHandler,
+  withGraphQL,
+  withLogging,
+  withSession,
+  withSessionUser,
+  withVersion,
+} from './middlewares';
 
 @injectable()
 export class ExpressServer implements Server {
@@ -33,6 +41,7 @@ export class ExpressServer implements Server {
     app.set('trust proxy', 1);
     app.use(
       cors({ origin: [config.APP_WEB_ORIGIN], credentials: true }),
+      withVersion,
       withCtx,
       withSession(redis, config),
       withSessionUser(authService),
