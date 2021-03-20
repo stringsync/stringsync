@@ -20,8 +20,7 @@ const DEBOUNCE_DELAY_MS = 500;
 const CLEAR_ERRORS_ANIMATION_DELAY_MS = 500;
 const PAGE_SIZE = 9;
 const LOADER_TRIGGER_ID = 'loader-trigger';
-const SCROLL_DURATION_PER_PAGE_MS = 100;
-const MAX_SCROLL_DURATION_MS = 1000;
+const SCROLL_DURATION_MS = 1000;
 
 const Outer = styled.div<{ xs: boolean }>`
   margin: 24px ${(props) => (props.xs ? 0 : 24)}px;
@@ -143,10 +142,7 @@ export const Library: React.FC<Props> = enhance(() => {
   };
 
   const onBackToTopClick = () => {
-    const numPages = Math.floor(notations.length / PAGE_SIZE);
-    let totalScrollDurationMs = SCROLL_DURATION_PER_PAGE_MS * numPages;
-    totalScrollDurationMs = Math.min(totalScrollDurationMs, MAX_SCROLL_DURATION_MS);
-    scrollToTop({ duration: totalScrollDurationMs });
+    scrollToTop({ duration: SCROLL_DURATION_MS });
   };
 
   useEffectOnce(() => {
