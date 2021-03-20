@@ -3,6 +3,8 @@ import { getGraphqlUri } from './getGraphqlUri';
 import { Mutation, Query } from './graphqlTypes';
 import { RequestType, Response } from './types';
 
+const URI = getGraphqlUri();
+
 export const graphql = async <
   T extends RequestType,
   N extends Exclude<keyof T, '__typename'>,
@@ -55,8 +57,7 @@ export const query = async <N extends Exclude<keyof Query, '__typename'>, V exte
   query: string,
   variables?: V
 ) => {
-  const uri = getGraphqlUri();
-  return await graphql<Query, N, V>(uri, query, variables);
+  return await graphql<Query, N, V>(URI, query, variables);
 };
 
 export const mutation = async <
@@ -66,6 +67,5 @@ export const mutation = async <
   query: string,
   variables?: V
 ) => {
-  const uri = getGraphqlUri();
-  return await graphql<Mutation, N, V>(uri, query, variables);
+  return await graphql<Mutation, N, V>(URI, query, variables);
 };
