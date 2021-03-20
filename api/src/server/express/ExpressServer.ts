@@ -1,4 +1,3 @@
-import cors from 'cors';
 import express from 'express';
 import { GraphQLSchema } from 'graphql';
 import { graphqlUploadExpress } from 'graphql-upload';
@@ -10,6 +9,7 @@ import { AuthService } from '../../services';
 import { Logger } from '../../util';
 import { Server } from '../types';
 import {
+  withCors,
   withCtx,
   withErrorHandler,
   withGraphQL,
@@ -40,7 +40,7 @@ export class ExpressServer implements Server {
 
     app.set('trust proxy', 1);
     app.use(
-      cors({ origin: [config.APP_WEB_ORIGIN], credentials: true }),
+      withCors(config),
       withVersion,
       withCtx,
       withSession(redis, config),

@@ -1,3 +1,4 @@
+export * from './withCors';
 export * from './withCtx';
 export * from './withErrorHandler';
 export * from './withGraphQL';
