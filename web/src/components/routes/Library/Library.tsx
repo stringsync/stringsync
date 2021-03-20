@@ -63,6 +63,10 @@ const NoMore = styled.h2`
   color: ${(props) => props.theme['@muted']};
 `;
 
+const StyledCheckableTag = styled(CheckableTag)`
+  margin: 4px;
+`;
+
 const normalizeTagIds = (tagIds: string[]) => uniq(tagIds).sort();
 
 const enhance = compose(withLayout(Layout.DEFAULT));
@@ -193,9 +197,9 @@ export const Library: React.FC<Props> = enhance(() => {
               />
               <TagSearch justify="center" align="middle">
                 {tags.map((tag) => (
-                  <CheckableTag key={tag.id} checked={isTagChecked(tag.id)} onChange={onTagIdsChange(tag.id)}>
+                  <StyledCheckableTag key={tag.id} checked={isTagChecked(tag.id)} onChange={onTagIdsChange(tag.id)}>
                     {tag.name}
-                  </CheckableTag>
+                  </StyledCheckableTag>
                 ))}
               </TagSearch>
             </Search>
