@@ -1,4 +1,5 @@
 export * from './align';
+export * from './APP_VERSION';
 export * from './base64';
 export * from './blob-storage';
 export * from './cache';
