@@ -9,6 +9,7 @@ import './App.less';
 import { AuthSync } from './components/AuthSync';
 import { DeviceSync } from './components/DeviceSync';
 import { Routes } from './components/routes';
+import { ScrollToTop } from './components/ScrollToTop';
 import { ServiceWorkerSync } from './components/ServiceWorkerSync';
 import { ViewportSync } from './components/ViewportSync';
 import { theme } from './theme';
@@ -28,6 +29,7 @@ export const App: React.FC<Props> = (props) => {
               <DeviceSync />
               <ViewportSync />
               <AuthSync />
+              <ScrollToTop />
               <Routes />
             </BrowserRouter>
           </ThemeProvider>
