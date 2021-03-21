@@ -23,7 +23,7 @@ export const useIntersection = (triggerId: string, options?: IntersectionObserve
     return () => {
       observer.disconnect();
     };
-  }, [options, triggerId]);
+  }, [triggerId]);
 
   return isIntersecting;
 };
