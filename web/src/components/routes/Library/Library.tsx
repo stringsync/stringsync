@@ -1,5 +1,5 @@
-import { CloseCircleOutlined, LoadingOutlined, SearchOutlined } from '@ant-design/icons';
-import { Affix, Alert, Button, Input, List, Row } from 'antd';
+import { CaretUpOutlined, CloseCircleOutlined, LoadingOutlined, SearchOutlined } from '@ant-design/icons';
+import { Affix, Alert, BackTop, Button, Input, List, Row } from 'antd';
 import CheckableTag from 'antd/lib/tag/CheckableTag';
 import { isEqual, uniq, without } from 'lodash';
 import React, { ChangeEventHandler, MouseEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
@@ -11,7 +11,6 @@ import { Layout, withLayout } from '../../../hocs';
 import { useDebounce, useEffectOnce, useIntersection } from '../../../hooks';
 import { AppDispatch, getTags, RootState } from '../../../store';
 import { compose } from '../../../util/compose';
-import { scrollToTop } from '../../../util/scrollToTop';
 import { NotationCard } from './NotationCard';
 import { LibraryStatus } from './types';
 import { useLibraryState } from './useLibraryState';
@@ -20,10 +19,11 @@ const DEBOUNCE_DELAY_MS = 500;
 const CLEAR_ERRORS_ANIMATION_DELAY_MS = 500;
 const PAGE_SIZE = 9;
 const LOADER_TRIGGER_ID = 'loader-trigger';
-const SCROLL_DURATION_MS = 1000;
 
 const Outer = styled.div<{ xs: boolean }>`
   margin: 24px ${(props) => (props.xs ? 0 : 24)}px;
+  margin-left: 0;
+  margin-right: 0;
 `;
 
 const AffixInner = styled.div<{ xs: boolean; affixed: boolean }>`
@@ -33,8 +33,8 @@ const AffixInner = styled.div<{ xs: boolean; affixed: boolean }>`
 `;
 
 const Search = styled.div<{ xs: boolean }>`
-  padding: 24px 0;
-  margin: 0 ${(props) => (props.xs ? 24 : 0)}px;
+  padding: 16px 0;
+  margin: 0 ${(props) => (props.xs ? 16 : 0)}px;
 `;
 
 const TagSearch = styled(Row)`
@@ -66,6 +66,17 @@ const StyledCheckableTag = styled(CheckableTag)`
   margin: 4px;
 `;
 
+const BackTopButton = styled.div`
+  height: 40px;
+  width: 40px;
+  line-height: 40px;
+  border-radius: 4px;
+  background-color: ${(props) => props.theme['@primary-color']};
+  color: #fff;
+  text-align: center;
+  font-size: 14px;
+`;
+
 const normalizeTagIds = (tagIds: string[]) => uniq(tagIds).sort();
 
 const enhance = compose(withLayout(Layout.DEFAULT));
@@ -75,6 +86,7 @@ type Props = {};
 export const Library: React.FC<Props> = enhance(() => {
   const dispatch = useDispatch<AppDispatch>();
   const xs = useSelector<RootState, boolean>((state) => state.viewport.xs);
+  const sm = useSelector<RootState, boolean>((state) => state.viewport.sm);
   const tags = useSelector<RootState, Tag[]>((state) => state.tag.tags);
 
   const {
@@ -139,10 +151,6 @@ export const Library: React.FC<Props> = enhance(() => {
 
   const onAlertClose = () => {
     setTimeout(clearErrors, CLEAR_ERRORS_ANIMATION_DELAY_MS);
-  };
-
-  const onBackToTopClick = () => {
-    scrollToTop({ duration: SCROLL_DURATION_MS });
   };
 
   useEffectOnce(() => {
@@ -220,6 +228,7 @@ export const Library: React.FC<Props> = enhance(() => {
 
           <List
             grid={{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 3 }}
+            style={{ padding: xs || sm ? '16px' : 0, margin: '0 auto' }}
             dataSource={notations}
             rowKey={(notation) => notation.id}
             renderItem={(notation) => (
@@ -255,15 +264,14 @@ export const Library: React.FC<Props> = enhance(() => {
               <NoMore>no more content</NoMore>
             </Row>
           )}
-          {notations.length >= 9 && (
-            <Row justify="center">
-              <Button size="large" type="primary" onClick={onBackToTopClick}>
-                back to top
-              </Button>
-            </Row>
-          )}
         </>
       )}
+
+      <BackTop>
+        <BackTopButton>
+          <CaretUpOutlined />
+        </BackTopButton>
+      </BackTop>
     </Outer>
   );
 });

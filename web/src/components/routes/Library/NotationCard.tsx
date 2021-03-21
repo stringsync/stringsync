@@ -37,6 +37,10 @@ const StyledImg = styled.img<{ state: TransitionStatus }>`
   transition: opacity ${FADE_IN_DURATION_MS}ms ease-in-out;
 `;
 
+const StyledCard = styled(Card)`
+  border: 0;
+`;
+
 interface Props {
   notation: NotationPreview;
   query: string;
@@ -54,7 +58,7 @@ export const NotationCard: React.FC<Props> = (props) => {
   };
 
   return (
-    <Card
+    <StyledCard
       hoverable
       cover={
         <Transition appear in={!thumbnailLoading} timeout={FADE_IN_DURATION_MS}>
@@ -114,6 +118,6 @@ export const NotationCard: React.FC<Props> = (props) => {
           }
         />
       </Skeleton>
-    </Card>
+    </StyledCard>
   );
 };
