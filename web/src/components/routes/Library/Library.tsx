@@ -15,7 +15,8 @@ import { NotationCard } from './NotationCard';
 import { LibraryStatus } from './types';
 import { useLibraryState } from './useLibraryState';
 
-const DEBOUNCE_DELAY_MS = 500;
+const QUERY_DEBOUNCE_DELAY_MS = 500;
+const TAG_IDS_DEBOUNCE_DELAY_MS = 1000;
 const CLEAR_ERRORS_ANIMATION_DELAY_MS = 500;
 const PAGE_SIZE = 9;
 const LOADER_TRIGGER_ID = 'loader-trigger';
@@ -101,8 +102,8 @@ export const Library: React.FC<Props> = enhance(() => {
   } = useLibraryState();
   const [query, setQuery] = useState('');
   const [tagIds, setTagIds] = useState(new Array<string>());
-  const debouncedQuery = useDebounce(query, DEBOUNCE_DELAY_MS);
-  const debouncedTagIds = useDebounce(tagIds, DEBOUNCE_DELAY_MS);
+  const debouncedQuery = useDebounce(query, QUERY_DEBOUNCE_DELAY_MS);
+  const debouncedTagIds = useDebounce(tagIds, TAG_IDS_DEBOUNCE_DELAY_MS);
   const isQueryDebouncing = !isEqual(query, debouncedQuery);
   const isTagIdsDebouncing = !isEqual(tagIds, debouncedTagIds);
   const [affixed, setAffixed] = useState(false);
