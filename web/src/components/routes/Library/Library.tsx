@@ -11,6 +11,7 @@ import { Layout, withLayout } from '../../../hocs';
 import { useDebounce, useEffectOnce, useIntersection } from '../../../hooks';
 import { AppDispatch, getTags, RootState } from '../../../store';
 import { compose } from '../../../util/compose';
+import { scrollToTop } from '../../../util/scrollToTop';
 import { NotationCard } from './NotationCard';
 import { LibraryStatus } from './types';
 import { useLibraryState } from './useLibraryState';
@@ -122,6 +123,7 @@ export const Library: React.FC<Props> = enhance(() => {
 
   const onQueryChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     setQuery(event.target.value);
+    scrollToTop({ duration: 0 });
     if (isInitialized) {
       resetLibrary();
     }
@@ -135,6 +137,7 @@ export const Library: React.FC<Props> = enhance(() => {
       nextTagIds = normalizeTagIds(without([...tagIds], tagId));
     }
     if (!isEqual(tagIds, nextTagIds)) {
+      scrollToTop({ duration: 0 });
       setTagIds(nextTagIds);
     }
     if (isInitialized) {
