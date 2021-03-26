@@ -107,17 +107,17 @@ const Upload: React.FC<Props> = enhance(() => {
 
   return (
     <Outer data-testid="upload">
+      <Modal
+        title="confirm navigation"
+        visible={isNavigateAwayVisible}
+        onOk={onConfirmNavigationOk}
+        onCancel={onConfirmNavigationCancel}
+      >
+        <p>are you sure you want to leave?</p>
+      </Modal>
+
       <Inner>
         <Box>
-          <Modal
-            title="confirm navigation"
-            visible={isNavigateAwayVisible}
-            onOk={onConfirmNavigationOk}
-            onCancel={onConfirmNavigationCancel}
-          >
-            <p>are you sure you want to leave?</p>
-          </Modal>
-
           <Steps current={stepNdx} labelPlacement="vertical" onChange={onStepChange}>
             <Step icon={<VideoCameraOutlined />} title="video" />
             <Step icon={<PictureOutlined />} title="thumbnail" />
