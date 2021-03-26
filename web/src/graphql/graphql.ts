@@ -1,4 +1,4 @@
-import { ExtractableFile, extractFiles } from 'extract-files';
+import { extractFiles } from 'extract-files';
 import { getGraphqlUri } from './getGraphqlUri';
 import { Mutation, Query } from './graphqlTypes';
 import { RequestType, Response } from './types';
@@ -15,10 +15,10 @@ export const graphql = async <
   variables?: V
 ): Promise<Response<T, N>> => {
   // extract files
-  const extraction = extractFiles(
+  const extraction = extractFiles<File>(
     { query, variables },
     undefined,
-    (value: any): value is ExtractableFile => value instanceof File
+    (value: any): value is File => value instanceof File
   );
   const clone = extraction.clone;
   const fileMap = extraction.files;
@@ -40,7 +40,7 @@ export const graphql = async <
   const files = Array.from(fileMap.keys());
   for (let ndx = 0; ndx < files.length; ndx++) {
     const file = files[ndx];
-    formData.append(ndx.toString(), file as File);
+    formData.append(ndx.toString(), file, `@${file.name}`);
   }
 
   const res = await fetch(uri, {

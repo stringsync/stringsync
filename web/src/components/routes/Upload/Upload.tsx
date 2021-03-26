@@ -33,7 +33,11 @@ const enhance = compose(withLayout(Layout.DEFAULT));
 
 type Props = {};
 
-type Uploadable = File | Blob | undefined;
+type Uploadable = {
+  file: {
+    originFileObj: File;
+  };
+};
 
 type FormValues = {
   video: Uploadable;
@@ -87,7 +91,19 @@ const Upload: React.FC<Props> = enhance(() => {
 
   const onFinish = async () => {
     const tagIds = selectedTagNames.map((tagName) => tagIdByTagName[tagName]);
-    await $queries.createNotation({ songName, artistName, tagIds, thumbnail, video });
+    const thumbnailFile = thumbnail && thumbnail.file.originFileObj;
+    const videoFile = video && video.file.originFileObj;
+
+    if (!thumbnailFile) {
+      // the validator should prevent this from ever running
+      return;
+    }
+    if (!videoFile) {
+      // the validator should prevent this from ever running
+      return;
+    }
+
+    await $queries.createNotation({ songName, artistName, tagIds, thumbnail: thumbnailFile, video: videoFile });
   };
 
   useEffectOnce(() => {
