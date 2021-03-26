@@ -5,6 +5,12 @@ import { RequestType, Response } from './types';
 
 const URI = getGraphqlUri();
 
+/**
+ * The purpose of this method is to make a request that follows the
+ * graphql multipart spec:
+ *
+ * https://github.com/jaydenseric/graphql-multipart-request-spec
+ */
 export const graphql = async <
   T extends RequestType,
   N extends Exclude<keyof T, '__typename'>,
