@@ -37,6 +37,7 @@ export const findNotationPageQuery = (args: FindNotationPageQueryArgs): string =
     .select('notations.*')
     .from('notations')
     .where('notations.cursor', isPagingBackward ? '<' : '>', cursor)
+    .where('notations.private', '=', false)
     .orderBy('notations.cursor', isPagingBackward ? 'desc' : 'asc')
     .limit(limit);
 
