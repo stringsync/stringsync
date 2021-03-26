@@ -11,27 +11,39 @@ const toNotationPreview = (edge: NotationEdgeObject): NotationPreview => {
 
 export const useLibraryState = (): LibraryState => {
   const [isInitialized, setIsInitialized] = useState(false);
-  const [status, setStatus] = useState(LibraryStatus.IDLE);
+  const [status, setStatus] = useState(LibraryStatus.READY);
   const [notations, setNotations] = useState(new Array<NotationPreview>());
   const [pageInfo, setPageInfo] = useState(getInitialPageInfo());
   const [errors, setErrors] = useState(new Array<Error>());
+
+  const ready = useCallback(() => {
+    setStatus(LibraryStatus.READY);
+  }, []);
+
+  const loading = () => {
+    setStatus(LibraryStatus.LOADING);
+  };
+
+  const loaded = () => {
+    setStatus(LibraryStatus.LOADED);
+  };
 
   const resetLibrary = () => {
     setNotations([]);
     setErrors([]);
     setPageInfo(getInitialPageInfo());
     setIsInitialized(false);
-    setStatus(LibraryStatus.IDLE);
+    ready();
   };
 
   const clearErrors = () => {
     setErrors([]);
-    setStatus(LibraryStatus.IDLE);
+    ready();
   };
 
   const loadMoreNotations = useCallback(async (args: QueryNotationsArgs) => {
     setErrors([]);
-    setStatus(LibraryStatus.PENDING);
+    loading();
 
     try {
       const { data, errors } = await $queries.notations(args);
@@ -53,10 +65,20 @@ export const useLibraryState = (): LibraryState => {
     } catch (e) {
       setErrors(Array.isArray(e) ? e : [e]);
     } finally {
-      setStatus(LibraryStatus.IDLE);
+      loaded();
       setIsInitialized(true);
     }
   }, []);
 
-  return { status, notations, pageInfo, errors, isInitialized, loadMoreNotations, clearErrors, resetLibrary };
+  return {
+    status,
+    notations,
+    pageInfo,
+    errors,
+    isInitialized,
+    loadMoreNotations,
+    clearErrors,
+    resetLibrary,
+    ready,
+  };
 };

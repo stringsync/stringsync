@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Tag } from '../../../domain';
 import { Layout, withLayout } from '../../../hocs';
-import { useDebounce, useEffectOnce, useIntersection } from '../../../hooks';
+import { useDebounce, useEffectOnce, useIntersection, usePrevious } from '../../../hooks';
 import { AppDispatch, getTags, RootState } from '../../../store';
 import { compose } from '../../../util/compose';
 import { scrollToTop } from '../../../util/scrollToTop';
@@ -100,6 +100,7 @@ export const Library: React.FC<Props> = enhance(() => {
     loadMoreNotations,
     clearErrors,
     resetLibrary,
+    ready,
   } = useLibraryState();
   const [query, setQuery] = useState('');
   const [tagIds, setTagIds] = useState(new Array<string>());
@@ -109,9 +110,11 @@ export const Library: React.FC<Props> = enhance(() => {
   const isTagIdsDebouncing = !isEqual(tagIds, debouncedTagIds);
   const [affixed, setAffixed] = useState(false);
   const isLoaderTriggerVisible = useIntersection(LOADER_TRIGGER_ID);
+  const prevIsLoaderTriggerVisible = usePrevious(isLoaderTriggerVisible);
   const errorMessage = errors.map((error) => error.message).join('; ');
   const hasErrors = errors.length > 0;
-  const isLoading = status === LibraryStatus.PENDING;
+  const isLoading = status === LibraryStatus.LOADING;
+  const isReady = status === LibraryStatus.READY;
   const hasSearchTerm = query.length > 0 || tagIds.length > 0;
 
   const tagIdsSet = useMemo(() => new Set(tagIds), [tagIds]);
@@ -164,7 +167,7 @@ export const Library: React.FC<Props> = enhance(() => {
   useEffect(() => {
     if (
       isLoaderTriggerVisible &&
-      !isLoading &&
+      isReady &&
       !hasErrors &&
       !isQueryDebouncing &&
       !isTagIdsDebouncing &&
@@ -182,13 +185,19 @@ export const Library: React.FC<Props> = enhance(() => {
     debouncedTagIds,
     hasErrors,
     isLoaderTriggerVisible,
-    isLoading,
+    isReady,
     isQueryDebouncing,
     isTagIdsDebouncing,
     loadMoreNotations,
     pageInfo.hasNextPage,
     pageInfo.startCursor,
   ]);
+
+  useEffect(() => {
+    if (prevIsLoaderTriggerVisible && !isLoaderTriggerVisible) {
+      ready();
+    }
+  }, [prevIsLoaderTriggerVisible, isLoaderTriggerVisible, ready]);
 
   return (
     <Outer data-testid="library" xs={xs}>
@@ -214,7 +223,7 @@ export const Library: React.FC<Props> = enhance(() => {
           </AffixInner>
         </Affix>
 
-        <Row justify="center">
+        <Row justify="center" align="middle">
           {hasSearchTerm ? (
             <Button type="link" size="small" onClick={onSearchTermClear}>
               remove filters
@@ -232,7 +241,7 @@ export const Library: React.FC<Props> = enhance(() => {
 
           <List
             grid={{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 3 }}
-            style={{ padding: xs || sm ? '16px' : 0, margin: '0 auto' }}
+            style={{ padding: xs || sm ? '16px' : 0, border: '1px solid rgba(255,255,255,0)' }}
             dataSource={notations}
             rowKey={(notation) => notation.id}
             renderItem={(notation) => (

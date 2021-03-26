@@ -3,8 +3,9 @@ import { QueryNotationsArgs } from '../../../graphql';
 import { PageInfo } from '../../../util/pager';
 
 export enum LibraryStatus {
-  IDLE,
-  PENDING,
+  READY,
+  LOADING,
+  LOADED,
 }
 export type Transcriber = Pick<User, 'id' | 'username' | 'role' | 'avatarUrl'>;
 
@@ -29,4 +30,5 @@ export type LibraryState = {
   loadMoreNotations: (args: QueryNotationsArgs) => void;
   resetLibrary: () => void;
   clearErrors: () => void;
+  ready: () => void;
 };
