@@ -26,6 +26,7 @@ const buildNotation = (attrs) => ({
   artist_name: sample(ARTIST_NAMES),
   transcriber_id: randId(),
   thumbnail_url: sample(NOTATION_THUMBNAIL_URLS),
+  private: false,
   ...attrs,
 });
 
