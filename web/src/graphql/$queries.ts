@@ -4,6 +4,7 @@ import {
   ConfirmEmailInput,
   CreateNotationInput,
   LoginInput,
+  QueryNotationArgs,
   QueryNotationsArgs,
   ResetPasswordInput,
   SendResetPasswordEmailInput,
@@ -108,6 +109,30 @@ export const resetPassword = async (input: ResetPasswordInput) => {
       }
     `,
     { input }
+  );
+};
+
+export const notation = async (args: QueryNotationArgs) => {
+  return await query<'notation', QueryNotationArgs>(
+    gql`
+      query notation($id: String) {
+        notation(id: $id) {
+          createdAt
+          updatedAt
+          songName
+          artistName
+          deadTimeMs
+          durationMs
+          private
+          transcriberId
+          thumbnailUrl
+          videoUrl
+          transcriber
+          tags
+        }
+      }
+    `,
+    args
   );
 };
 
