@@ -13,6 +13,10 @@ const Library = compose(withAuthRequirement(AuthRequirement.NONE))(React.lazy(()
 
 const NotationPlayer = compose(withAuthRequirement(AuthRequirement.NONE))(React.lazy(() => import('./NotationPlayer')));
 
+const NotationEditor = compose(withAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER))(
+  React.lazy(() => import('./NotationEditor'))
+);
+
 const Signup = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(React.lazy(() => import('./Signup')));
 
 const Login = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(React.lazy(() => import('./Login')));
@@ -37,7 +41,8 @@ export const Routes: React.FC = () => {
       <Switch>
         <Route path="/" exact component={Landing} />
         <ReturnToRoute path="/library" component={Library} />
-        <ReturnToRoute path="/n/:id" component={NotationPlayer} />
+        <ReturnToRoute exact path="/n/:id" component={NotationPlayer} />
+        <ReturnToRoute exact path="/n/:id/edit" component={NotationEditor} />
         <Route path="/signup" component={Signup} />
         <Route path="/login" component={Login} />
         <Route path="/confirm-email" component={ConfirmEmail} />
