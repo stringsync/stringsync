@@ -5,6 +5,7 @@ import { $queries, NotationObject } from '../../../graphql';
 import { Layout, withLayout } from '../../../hocs';
 import { useEffectOnce } from '../../../hooks';
 import { compose } from '../../../util/compose';
+import { Video } from '../../Video';
 
 const enhance = compose(withLayout(Layout.DEFAULT));
 
@@ -58,7 +59,18 @@ const NotationEditor: React.FC<Props> = enhance(() => {
       <br />
       <div>edit {params.id}</div>
       <hr />
-      {JSON.stringify(notation, null, 2)}
+      {notation && notation.videoUrl && (
+        <Video
+          playerOptions={{
+            sources: [
+              {
+                src: notation.videoUrl,
+                type: 'application/x-mpegURL',
+              },
+            ],
+          }}
+        />
+      )}
     </div>
   );
 });

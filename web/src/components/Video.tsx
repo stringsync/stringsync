@@ -36,9 +36,8 @@ export const Video: React.FC<Props> = (props) => {
       if (props.beforePlayerDestroy) {
         props.beforePlayerDestroy(player);
       }
-      player.dispose();
     };
-  }, [props, videoEl]);
+  }, [props.playerOptions, props.onPlayerReady, props.beforePlayerDestroy, videoEl]);
 
   return <video className="video-js" ref={videoEl}></video>;
 };
