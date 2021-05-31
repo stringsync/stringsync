@@ -115,7 +115,7 @@ export const resetPassword = async (input: ResetPasswordInput) => {
 export const notation = async (args: QueryNotationArgs) => {
   return await query<'notation', QueryNotationArgs>(
     gql`
-      query notation($id: String) {
+      query notation($id: String!) {
         notation(id: $id) {
           createdAt
           updatedAt
@@ -127,8 +127,6 @@ export const notation = async (args: QueryNotationArgs) => {
           transcriberId
           thumbnailUrl
           videoUrl
-          transcriber
-          tags
         }
       }
     `,
