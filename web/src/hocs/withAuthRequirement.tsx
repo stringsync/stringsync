@@ -56,7 +56,7 @@ export const withAuthRequirement = (authReqs: AuthRequirement) =>
             break;
           case AuthRequirement.LOGGED_IN:
             message.error('must be logged in');
-            history.push('login');
+            history.push('/login');
             break;
           case AuthRequirement.LOGGED_OUT:
             history.push(returnToRoute);
