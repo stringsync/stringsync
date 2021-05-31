@@ -10,7 +10,14 @@ interface Props {}
 const NotationEditor: React.FC<Props> = enhance(() => {
   const params = useParams<{ id: string }>();
 
-  return <div>edit {params.id}</div>;
+  return (
+    <div>
+      <br />
+      <br />
+      <div>edit {params.id}</div>
+      <hr />
+    </div>
+  );
 });
 
 export default NotationEditor;
