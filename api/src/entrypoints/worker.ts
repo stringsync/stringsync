@@ -1,3 +1,4 @@
+import { Db } from '../db';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
 import { associateVideoUrl, AssociateVideoUrlPayload, BullMqJob, Job, pulseCheck, PulseCheckPayload } from '../jobs';
@@ -9,8 +10,10 @@ const JOBS: Array<Job<any>> = [
 ];
 
 (async () => {
-  const logger = container.get<Logger>(TYPES.Logger);
+  const db = container.get<Db>(TYPES.Db);
+  await db.init();
 
+  const logger = container.get<Logger>(TYPES.Logger);
   await Promise.all(JOBS.map((job) => job.start()));
 
   logger.info('jobs started');
