@@ -1,6 +1,7 @@
 import { FormOutlined, PictureOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Modal, Select, Steps, Upload as AntdUpload } from 'antd';
 import { RcFile } from 'antd/lib/upload';
+import { get } from 'lodash';
 import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
@@ -103,7 +104,28 @@ const Upload: React.FC<Props> = enhance(() => {
       return;
     }
 
-    await $queries.createNotation({ songName, artistName, tagIds, thumbnail: thumbnailFile, video: videoFile });
+    const res = await $queries.createNotation({
+      songName,
+      artistName,
+      tagIds,
+      thumbnail: thumbnailFile,
+      video: videoFile,
+    });
+    if (res.errors) {
+      // TODO(jared) add error handling
+      console.error(res.errors);
+      return;
+    }
+
+    const notationId = get(res.data.createNotation, 'id');
+    if (!notationId) {
+      // TODO(jared) handle missing notation ids as error
+      console.error('no notation id found');
+      return;
+    }
+
+    shouldBlockNavigation.current = false;
+    history.push(`/n/${notationId}/edit`);
   };
 
   useEffectOnce(() => {

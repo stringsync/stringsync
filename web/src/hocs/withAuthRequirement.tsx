@@ -56,22 +56,22 @@ export const withAuthRequirement = (authReqs: AuthRequirement) =>
             break;
           case AuthRequirement.LOGGED_IN:
             message.error('must be logged in');
-            history.push('login');
+            history.push('/login');
             break;
           case AuthRequirement.LOGGED_OUT:
             history.push(returnToRoute);
             break;
           case AuthRequirement.LOGGED_IN_AS_STUDENT:
             message.error('must be logged in as a student');
-            history.push(isLoggedIn ? returnToRoute : 'login');
+            history.push(isLoggedIn ? returnToRoute : '/login');
             break;
           case AuthRequirement.LOGGED_IN_AS_TEACHER:
             message.error('must be logged in as a teacher');
-            history.push(isLoggedIn ? returnToRoute : 'login');
+            history.push(isLoggedIn ? returnToRoute : '/login');
             break;
           case AuthRequirement.LOGGED_IN_AS_ADMIN:
             message.error('must be logged in as a admin');
-            history.push(isLoggedIn ? returnToRoute : 'login');
+            history.push(isLoggedIn ? returnToRoute : '/login');
             break;
         }
       }, [history, isAuthPending, isLoggedIn, meetsAuthReqs, returnToRoute]);

@@ -19,7 +19,7 @@ export class SequelizeNotationLoader implements NotationLoader {
   }
 
   async findById(id: string) {
-    const notation = this.byIdLoader.load(id);
+    const notation = await this.byIdLoader.load(id);
     this.byIdLoader.clearAll();
     return ensureNoErrors(notation);
   }

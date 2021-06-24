@@ -13,7 +13,10 @@ type Props = {
 };
 
 export const Video: React.FC<Props> = (props) => {
-  const videoEl = useRef(null);
+  const videoEl = useRef<HTMLVideoElement>(null);
+
+  const video = videoEl.current;
+  const { playerOptions, onPlayerReady, beforePlayerDestroy } = props;
 
   useEffect(() => {
     const video = videoEl.current;
@@ -23,22 +26,21 @@ export const Video: React.FC<Props> = (props) => {
 
     const player = videojs(video, {
       ...DEFAULT_PLAYER_OPTIONS,
-      ...props.playerOptions,
+      ...playerOptions,
     });
 
     player.ready(() => {
-      if (props.onPlayerReady) {
-        props.onPlayerReady(player);
+      if (onPlayerReady) {
+        onPlayerReady(player);
       }
     });
 
     return () => {
-      if (props.beforePlayerDestroy) {
-        props.beforePlayerDestroy(player);
+      if (beforePlayerDestroy) {
+        beforePlayerDestroy(player);
       }
-      player.dispose();
     };
-  }, [props, videoEl]);
+  }, [video, playerOptions, onPlayerReady, beforePlayerDestroy]);
 
   return <video className="video-js" ref={videoEl}></video>;
 };
