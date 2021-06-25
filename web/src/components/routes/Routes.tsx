@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import { withAuthRequirement } from '../../hocs';
 import { compose } from '../../util/compose';
 import { AuthRequirement } from '../../util/types';
@@ -39,6 +39,9 @@ export const Routes: React.FC = () => {
   return (
     <React.Suspense fallback={<Fallback />}>
       <Switch>
+        <Route path="/index.html" exact>
+          <Redirect to="/" />
+        </Route>
         <Route path="/" exact component={Landing} />
         <ReturnToRoute path="/library" component={Library} />
         <ReturnToRoute exact path="/n/:id" component={NotationPlayer} />
