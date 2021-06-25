@@ -227,8 +227,15 @@ namespace('build', () => {
 
   desc('builds the stringsync production build');
   task('web', ['install:web'], async () => {
+    const DST_DIR = env('DST_DIR', '');
+
     const build = yarn(['build'], { cwd: 'web', stdio: 'inherit' });
     await build.promise;
+
+    if (DST_DIR) {
+      await mkdir(['-p', DST_DIR], { shell: true }).promise;
+      await cp(['-R', 'web/build/*', DST_DIR], { shell: true }).promise;
+    }
   });
 });
 

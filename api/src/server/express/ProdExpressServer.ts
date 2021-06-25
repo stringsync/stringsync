@@ -5,6 +5,10 @@ import path from 'path';
 import { Server } from '../types';
 import { ExpressServer } from './ExpressServer';
 
+const WEB_DIR = path.join(__dirname, '..', 'web');
+const STATIC_DIR = path.join(WEB_DIR, 'static');
+const INDEX_FILE = path.join(WEB_DIR, 'index.html');
+
 @injectable()
 export class ProdExpressServer extends ExpressServer implements Server {
   start(schema: GraphQLSchema) {
@@ -12,10 +16,12 @@ export class ProdExpressServer extends ExpressServer implements Server {
 
     this.configure(schema);
 
-    app.use('/static', express.static(path.join(__dirname, 'static')));
+    app.use('/static', express.static(STATIC_DIR));
+
+    app.use('/', express.static(WEB_DIR));
 
     app.get('*', (req, res) => {
-      res.sendFile(path.join(__dirname, 'static', 'index.html'));
+      res.sendFile(INDEX_FILE);
     });
 
     this.listen();
