@@ -19,17 +19,13 @@ services:
     image: stringsync:prod
     build:
       context: .
-      dockerfile: ./Dockerfile.prod
     env_file:
-      - ../env/dev.env
-      - ../env/secrets.env
-    volumes:
-      - ./src:/api/src
-      - ./reports:/api/reports
+      - env/dev.env
+      - env/secrets.env
     links:
       - db
       - redis
     ports:
       - '3000:3000'
-    entrypoint: ['./bin/wait-for-it.sh', 'db:5432', '--']
-    command: ['pm2-runtime', 'ecosystem.prod.config.js']
+    entrypoint: ['/app/api/bin/wait-for-it.sh', 'db:5432', '--']
+    command: ['node', '/app/api/build/entrypoints/api.js']
