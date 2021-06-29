@@ -34,7 +34,6 @@
     "css-loader": "^5.1.1",
     "customize-cra": "^1.0.0",
     "dayjs": "^1.10.4",
-    "eslint-loader": "^4.0.2",
     "extract-files": "^9.0.0",
     "graphql": "^15.5.0",
     "intersection-observer": "^0.12.0",

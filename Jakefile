@@ -66,14 +66,12 @@ const mkdir = cmd('mkdir');
 const git = cmd('git');
 
 desc('brings up all projects');
-task('dev', ['build:api', 'install:web', 'gensecrets'], async () => {
+task('dev', ['gensecrets'], async () => {
   try {
-    const api = dockerCompose(['up', '--detach'], { cwd: 'api' });
-    const web = yarn(['start'], { cwd: 'web', stdio: 'inherit' });
-    process.on('SIGINT', web.process.kill);
-    await Promise.all([api.promise, web.promise]);
+    const api = dockerCompose(['-f', 'docker-compose.dev.yml', 'up'], { stdio: 'inherit' });
+    await api.promise;
   } finally {
-    const down = dockerCompose(['down'], { cwd: 'api', stdio: 'inherit' });
+    const down = dockerCompose(['down'], { stdio: 'inherit' });
     await down.promise;
   }
 });

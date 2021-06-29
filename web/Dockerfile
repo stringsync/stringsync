@@ -10,4 +10,5 @@ RUN yarn
 # copy the main files over
 COPY tsconfig.json .
 COPY craco.config.js .
+COPY .env .
 COPY public public

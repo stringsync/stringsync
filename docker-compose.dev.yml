@@ -14,6 +14,19 @@ services:
     container_name: redis
     image: redis:5.0
 
+  migrate:
+    container_name: migrate
+    image: stringsyncapi:dev
+    build:
+      context: ./api
+    env_file:
+      - env/dev.env
+      - env/secrets.env
+    links:
+      - db
+    entrypoint: ['./bin/wait-for-it.sh', 'db:5432', '--']
+    command: 'bash -c yarn migrate && yarn seed'
+
   app:
     container_name: app
     image: stringsyncapi:dev
@@ -30,19 +43,15 @@ services:
     ports:
       - '3000:3000'
     entrypoint: ['./bin/wait-for-it.sh', 'db:5432', '--']
-    command: >
-      bash -c "yarn migrate && yarn seed && pm2-runtime ecosystem.dev.config.js"
+    command: 'pm2-runtime ecosystem.dev.config.js'
 
   web:
     container_name: web
     image: stringsyncweb:dev
     build:
       context: ./web
-      dockerfile: Dockerfile
     volumes:
       - ./web/src:/web/src
     links:
       - app
-    ports:
-      - '8080:3000'
     command: ['yarn', 'start']
