@@ -1,9 +1,8 @@
 import { extractFiles } from 'extract-files';
-import { getGraphqlUri } from './getGraphqlUri';
 import { Mutation, Query } from './graphqlTypes';
 import { RequestType, Response } from './types';
 
-const URI = getGraphqlUri();
+const URI = `${window.location.origin}/graphql`;
 
 /**
  * The purpose of this method is to make a request that follows the

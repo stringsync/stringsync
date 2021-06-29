@@ -2,18 +2,10 @@ import { InternalError } from './errors';
 
 export type Config = {
   NODE_ENV: string;
-  REACT_APP_SERVER_URI: string;
-  REACT_APP_GRAPHQL_ENDPOINT: string;
 };
 
 const isConfig = (config: Record<string, unknown>): config is Config => {
   if (typeof config.NODE_ENV !== 'string') {
-    return false;
-  }
-  if (typeof config.REACT_APP_SERVER_URI !== 'string') {
-    return false;
-  }
-  if (typeof config.REACT_APP_GRAPHQL_ENDPOINT !== 'string') {
     return false;
   }
   return true;

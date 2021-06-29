@@ -67,7 +67,7 @@ const git = cmd('git');
 
 desc('brings up all projects');
 task('dev', ['gensecrets'], async () => {
-  const build = dockerCompose(['-f', 'docker-compose.dev.yml', 'build'], { stdio: 'inherit' });
+  const build = dockerCompose(['-f', 'docker-compose.dev.yml', 'build', 'app'], { stdio: 'inherit' });
   await build.promise;
   try {
     const api = dockerCompose(['-f', 'docker-compose.dev.yml', 'up'], { stdio: 'inherit' });

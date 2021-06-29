@@ -27,13 +27,7 @@ COPY web/src web/src/
 
 # The web project is built before the api project
 # because the api project builds much faster.
-
-# build the web project
-ARG REACT_APP_SERVER_URI
-ENV REACT_APP_SERVER_URI=${REACT_APP_SERVER_URI}
-ARG PUBLIC_URL
-ENV PUBLIC_URL=${PUBLIC_URL}
-RUN REACT_APP_VERSION=$npm_package_version REACT_APP_GRAPHQL_ENDPOINT=/graphql ss build:web
+RUN ss build:web
 
 # copy the api files over
 COPY api/tsconfig.json api/
