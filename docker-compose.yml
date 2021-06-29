@@ -40,7 +40,7 @@ services:
       - redis
     ports:
       - '3000:3000'
-    command: bash -c "cd api && yarn prod:api"
+    command: ['node', '/app/api/build/entrypoints/api.js']
 
   worker:
     container_name: worker
@@ -55,4 +55,4 @@ services:
     links:
       - db
       - redis
-    command: bash -c "cd api && yarn prod:worker"
+    command: ['node', '/app/api/build/entrypoints/worker.js']
