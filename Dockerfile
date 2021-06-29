@@ -29,7 +29,11 @@ COPY web/src web/src/
 # because the api project builds much faster.
 
 # build the web project
-RUN REACT_APP_SERVER_URI=http://localhost:3000 REACT_APP_GRAPHQL_ENDPOINT=/graphql PUBLIC_URL=http://localhost:3000 ss build:web
+ARG REACT_APP_SERVER_URI
+ENV REACT_APP_SERVER_URI=${REACT_APP_SERVER_URI}
+ARG PUBLIC_URL
+ENV PUBLIC_URL=${PUBLIC_URL}
+RUN REACT_APP_VERSION=$npm_package_version REACT_APP_GRAPHQL_ENDPOINT=/graphql ss build:web
 
 # copy the api files over
 COPY api/tsconfig.json api/

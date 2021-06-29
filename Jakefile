@@ -79,8 +79,20 @@ task('dev', ['gensecrets'], async () => {
 });
 
 desc('brings up a prod orchestration using dev resources');
-task('fakeprod', ['build:api', 'gensecrets'], async () => {
-  const build = dockerCompose(['-f', 'docker-compose.yml', 'build'], { stdio: 'inherit' });
+task('fakeprod', ['gensecrets'], async () => {
+  const build = dockerCompose(
+    [
+      '-f',
+      'docker-compose.yml',
+      'build',
+      '--build-arg',
+      'REACT_APP_SERVER_URI=http://localhost:3000',
+      '--build-arg',
+      'PUBLIC_URL=http://localhost:3000',
+      'app',
+    ],
+    { stdio: 'inherit' }
+  );
   await build.promise;
   try {
     const api = dockerCompose(['-f', 'docker-compose.yml', 'up'], { stdio: 'inherit' });
@@ -246,11 +258,6 @@ namespace('build', () => {
 });
 
 namespace('test', () => {
-  const PROJECTS = {
-    api: 'api',
-    web: 'web',
-  };
-
   const bashC = (...parts) => {
     return `bash -c "${parts.filter(identity).join(' ')}"`;
   };
