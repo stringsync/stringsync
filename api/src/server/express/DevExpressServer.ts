@@ -19,12 +19,10 @@ export class DevExpressServer extends ExpressServer implements Server {
 
     this.app.get('/static', async (req, res) => {
       webProxy.web(req, res, { target: PROXY_TARGET });
-      res.end();
     });
 
     this.app.all('/*', async (req, res) => {
       webProxy.web(req, res, { target: PROXY_TARGET });
-      res.end();
     });
 
     const server = http.createServer(this.app);
