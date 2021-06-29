@@ -24,17 +24,15 @@ services:
 
   test:
     container_name: test
-    image: stringsyncapi:test
-    build:
-      context: .
+    image: stringsync:latest
     env_file:
-      - ../env/api.test.env
+      - env/api.test.env
     volumes:
-      - ./src:/api/src
-      - ./reports:/api/reports
+      - ./api/src:/app/api/src
+      - ./api/reports:/app/api/reports
     links:
       - db
       - redis1
       - redis2
       - redis3
-    entrypoint: ['./bin/wait-for-it.sh', 'db:5432', '--']
+    entrypoint: ['/app/api/bin/wait-for-it.sh', 'db:5432', '--']

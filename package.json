@@ -3,6 +3,17 @@
   "version": "0.1.0",
   "repository": "git@github.com:jaredjj3/string-sync.git",
   "private": true,
+  "scripts": {
+    "test:api": "cd api && yarn test",
+    "test:web": "cd web && yarn test",
+    "dev:web": "cd web && yarn start",
+    "dev:api": "cd api && yarn dev:api",
+    "dev:worker": "cd api && yarn dev:worker",
+    "migrate": "cd api && yarn migrate",
+    "seed": "cd api && yarn seed",
+    "prod:api": "cd api && yarn prod:api",
+    "prod:worker": "cd api && yarn prod:worker"
+  },
   "devDependencies": {
     "@types/node": "^14.14.30",
     "@typescript-eslint/eslint-plugin": "^2.8.0",

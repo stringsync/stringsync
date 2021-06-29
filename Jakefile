@@ -66,9 +66,7 @@ const mkdir = cmd('mkdir');
 const git = cmd('git');
 
 desc('brings up all projects');
-task('dev', ['gensecrets'], async () => {
-  const build = dockerCompose(['-f', 'docker-compose.dev.yml', 'build', 'app'], { stdio: 'inherit' });
-  await build.promise;
+task('dev', ['build:docker', 'gensecrets'], async () => {
   try {
     const api = dockerCompose(['-f', 'docker-compose.dev.yml', 'up'], { stdio: 'inherit' });
     await api.promise;
@@ -79,21 +77,7 @@ task('dev', ['gensecrets'], async () => {
 });
 
 desc('brings up a prod orchestration using dev resources');
-task('fakeprod', ['gensecrets'], async () => {
-  const build = dockerCompose(
-    [
-      '-f',
-      'docker-compose.yml',
-      'build',
-      '--build-arg',
-      'REACT_APP_SERVER_URI=http://localhost:3000',
-      '--build-arg',
-      'PUBLIC_URL=http://localhost:3000',
-      'app',
-    ],
-    { stdio: 'inherit' }
-  );
-  await build.promise;
+task('fakeprod', ['build:docker', 'gensecrets'], async () => {
   try {
     const api = dockerCompose(['-f', 'docker-compose.yml', 'up'], { stdio: 'inherit' });
     await api.promise;
@@ -104,7 +88,7 @@ task('fakeprod', ['gensecrets'], async () => {
 });
 
 namespace('tsc', () => {
-  desc('typechecks the api project');
+  desc('locally typechecks the api project');
   task('api', ['install:api'], async () => {
     const WATCH = env('WATCH', 'true') === 'true';
 
@@ -116,7 +100,7 @@ namespace('tsc', () => {
     await tsc.promise;
   });
 
-  desc('typechecks the web project');
+  desc('locally typechecks the web project');
   task('web', ['install:web'], async () => {
     const WATCH = env('WATCH', 'true') === 'true';
 
@@ -241,16 +225,16 @@ task('typegen', [], async () => {
 });
 
 namespace('build', () => {
-  desc('builds the stringsync prod docker image');
-  task('prod', [], async () => {
-    const DOCKER_TAG = env('DOCKER_TAG', 'stringsync:prod');
+  desc('builds the stringsync docker image');
+  task('docker', [], async () => {
+    const DOCKER_TAG = env('DOCKER_TAG', 'stringsync:latest');
     const DOCKERFILE = env('DOCKERFILE', 'Dockerfile');
 
     const build = docker(['build', '-f', DOCKERFILE, '-t', DOCKER_TAG, '.'], { stdio: 'inherit' });
     await build.promise;
   });
 
-  desc('builds the stringsync production build');
+  desc('builds the stringsync production web build');
   task('web', ['install:web'], async () => {
     const build = yarn(['build'], { cwd: 'web', stdio: 'inherit' });
     await build.promise;
@@ -258,14 +242,19 @@ namespace('build', () => {
 });
 
 namespace('test', () => {
+  const PROJECTS = {
+    api: 'api',
+    web: 'web',
+  };
+
   const bashC = (...parts) => {
     return `bash -c "${parts.filter(identity).join(' ')}"`;
   };
 
-  const getTestCmd = (ci, watch) => {
+  const getTestCmd = (project, ci, watch) => {
     return [
       'yarn',
-      'test',
+      `test:${project}`,
       `--watchAll=${watch}`,
       ci ? '--no-colors' : '--colors',
       ci ? '--reporters=jest-junit' : '',
@@ -289,22 +278,15 @@ namespace('test', () => {
   });
 
   desc('tests the api project');
-  task('api', [], async () => {
+  task('api', ['build:docker'], async () => {
     const WATCH = env('WATCH', 'false') === 'true';
     const CI = env('CI', 'false') === 'true';
 
-    const buildTests = async () => {
-      log(chalk.yellow('building test images'));
-      const build = dockerCompose(['-f', './docker-compose.test.yml', 'build'], { stdio: 'inherit', cwd: 'api' });
-      await build.promise;
-    };
-
     const runTests = async () => {
       const test = dockerCompose(
-        ['-f', './docker-compose.test.yml', 'run', '--rm', 'test', bashC(...getTestCmd(CI, WATCH))],
+        ['-f', 'docker-compose.api.test.yml', 'run', '--rm', 'test', bashC(...getTestCmd(PROJECTS.api, CI, WATCH))],
         {
           stdio: 'inherit',
-          cwd: 'api',
           shell: true,
         }
       );
@@ -318,14 +300,12 @@ namespace('test', () => {
     };
 
     const cleanupTests = async () => {
-      const down = dockerCompose(['-f', './docker-compose.test.yml', 'down', '--remove-orphans'], {
-        cwd: 'api',
+      const down = dockerCompose(['-f', 'docker-compose.api.test.yml', 'down', '--remove-orphans'], {
         stdio: 'inherit',
       });
       await down.promise;
     };
 
-    await buildTests();
     try {
       await runTests();
     } finally {
@@ -334,20 +314,14 @@ namespace('test', () => {
   });
 
   desc('tests the web project');
-  task('web', ['install:web'], async () => {
+  task('web', ['build:docker'], async () => {
     const WATCH = env('WATCH', 'false') === 'true';
     const CI = env('CI', 'false') === 'true';
 
-    const buildTests = async () => {
-      log(chalk.yellow('building test images'));
-      const build = dockerCompose(['-f', './docker-compose.test.yml', 'build'], { stdio: 'inherit', cwd: 'web' });
-      await build.promise;
-    };
-
     const runTests = async () => {
       const test = dockerCompose(
-        ['-f', './docker-compose.test.yml', 'run', '--rm', 'test', bashC(...getTestCmd(CI, WATCH))],
-        { stdio: 'inherit', cwd: 'web', shell: true }
+        ['-f', 'docker-compose.web.test.yml', 'run', '--rm', 'test', bashC(...getTestCmd(PROJECTS.web, CI, WATCH))],
+        { stdio: 'inherit', shell: true }
       );
       try {
         await test.promise;
@@ -359,14 +333,12 @@ namespace('test', () => {
     };
 
     const cleanupTests = async () => {
-      const down = dockerCompose(['-f', './docker-compose.test.yml', 'down', '--remove-orphans'], {
-        cwd: 'web',
+      const down = dockerCompose(['-f', 'docker-compose.web.test.yml', 'down', '--remove-orphans'], {
         stdio: 'inherit',
       });
       await down.promise;
     };
 
-    await buildTests();
     try {
       await runTests();
     } finally {
@@ -377,9 +349,10 @@ namespace('test', () => {
 
 desc('brings down all the projects');
 task('down', [], async () => {
-  const apiDown = dockerCompose(['-f', './docker-compose.yml', 'down'], { cwd: 'api' });
-  const apiTestDown = dockerCompose(['-f', './docker-compose.test.yml', 'down'], { cwd: 'api' });
-  await Promise.all([apiDown.promise, apiTestDown.promise]);
+  const DOCKER_COMPOSE_FILE = env('DOCKER_COMPOSE_FILE', 'docker-compose.yml');
+
+  const down = dockerCompose(['-f', DOCKER_COMPOSE_FILE, 'down']);
+  await down.promise;
 });
 
 desc('generates the local-only files needed for development');

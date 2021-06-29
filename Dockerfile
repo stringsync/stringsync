@@ -4,6 +4,7 @@ WORKDIR /app
 
 # make ss commands work
 COPY package.json .
+COPY yarn.lock .
 RUN yarn
 COPY bin bin
 COPY Jakefile .
@@ -22,6 +23,7 @@ RUN ss install:web
 # copy the web files over
 COPY web/tsconfig.json web/
 COPY web/craco.config.js web/
+COPY web/.env web/
 COPY web/public web/public/
 COPY web/src web/src/
 
@@ -43,7 +45,7 @@ RUN yarn tsc --project api/tsconfig.prod.json
 
 # copy web build to the api build
 RUN mkdir -p api/build/server/web
-RUN cp -R web/build/* api/build/server/web 
+RUN cp -R web/build/* api/build/server/web
 
 # run the project
-CMD [ "node", "/app/api/build/entrypoints/api.js" ]
+CMD [ "yarn", "prod:api" ]

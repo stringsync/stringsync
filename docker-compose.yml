@@ -16,7 +16,7 @@ services:
 
   migrate:
     container_name: migrate
-    image: stringsync:prod
+    image: stringsync:latest
     build:
       context: .
     env_file:
@@ -29,7 +29,7 @@ services:
 
   app:
     container_name: app
-    image: stringsync:prod
+    image: stringsync:latest
     build:
       context: .
     env_file:
@@ -44,7 +44,7 @@ services:
 
   worker:
     container_name: worker
-    image: stringsync:prod
+    image: stringsync:latest
     build:
       context: .
     env_file:

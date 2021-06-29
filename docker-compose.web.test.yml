@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+  test:
+    container_name: test
+    image: stringsync:latest
+    env_file:
+      - env/web.test.env
+    volumes:
+      - ./web/src:/app/web/src
+      - ./web/reports:/app/web/reports

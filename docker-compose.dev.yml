@@ -16,29 +16,25 @@ services:
 
   migrate:
     container_name: migrate
-    image: stringsyncapi:dev
-    build:
-      context: ./api
+    image: stringsync:latest
     env_file:
       - env/dev.env
       - env/secrets.env
     volumes:
-      - ./api/src:/api/src
+      - ./api/src:/app/api/src
     links:
       - db
-    entrypoint: ['./bin/wait-for-it.sh', 'db:5432', '--']
+    entrypoint: ['/app/api/bin/wait-for-it.sh', 'db:5432', '--']
     command: 'bash -c "yarn migrate && yarn seed"'
 
   app:
     container_name: app
-    image: stringsyncapi:dev
-    build:
-      context: ./api
+    image: stringsync:latest
     env_file:
       - env/dev.env
       - env/secrets.env
     volumes:
-      - ./api/src:/api/src
+      - ./api/src:/app/api/src
     links:
       - db
       - redis
@@ -48,14 +44,12 @@ services:
 
   worker:
     container_name: worker
-    image: stringsyncapi:dev
-    build:
-      context: ./api
+    image: stringsync:latest
     env_file:
       - env/dev.env
       - env/secrets.env
     volumes:
-      - ./api/src:/api/src
+      - ./api/src:/app/api/src
     links:
       - db
       - redis
@@ -63,11 +57,9 @@ services:
 
   web:
     container_name: web
-    image: stringsyncweb:dev
-    build:
-      context: ./web
+    image: stringsync:latest
     volumes:
-      - ./web/src:/web/src
+      - ./web/src:/app/web/src
     links:
       - app
-    command: ['yarn', 'start']
+    command: ['yarn', 'dev:web']
