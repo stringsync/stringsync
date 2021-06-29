@@ -14,18 +14,45 @@ services:
     container_name: redis
     image: redis:5.0
 
+  migrate:
+    container_name: migrate
+    image: stringsync:prod
+    build:
+      context: .
+    env_file:
+      - env/fakeprod.env
+      - env/secrets.env
+    links:
+      - db
+    entrypoint: ['./api/bin/wait-for-it.sh', 'db:5432', '--']
+    command: 'bash -c "cd api && yarn migrate && yarn seed"'
+
   app:
     container_name: app
     image: stringsync:prod
     build:
       context: .
     env_file:
-      - env/dev.env
+      - env/fakeprod.env
       - env/secrets.env
     links:
       - db
       - redis
     ports:
       - '3000:3000'
-    entrypoint: ['/app/api/bin/wait-for-it.sh', 'db:5432', '--']
-    command: ['node', '/app/api/build/entrypoints/api.js']
+    command: bash -c "cd api && yarn prod:api"
+
+  worker:
+    container_name: worker
+    image: stringsync:prod
+    build:
+      context: .
+    env_file:
+      - env/fakeprod.env
+      - env/secrets.env
+    environment:
+      NODE_ENV: production
+    links:
+      - db
+      - redis
+    command: bash -c "cd api && yarn prod:worker"

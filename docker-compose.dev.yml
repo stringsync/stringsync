@@ -22,10 +22,12 @@ services:
     env_file:
       - env/dev.env
       - env/secrets.env
+    volumes:
+      - ./api/src:/api/src
     links:
       - db
     entrypoint: ['./bin/wait-for-it.sh', 'db:5432', '--']
-    command: 'bash -c yarn migrate && yarn seed'
+    command: 'bash -c "yarn migrate && yarn seed"'
 
   app:
     container_name: app
@@ -42,8 +44,22 @@ services:
       - redis
     ports:
       - '3000:3000'
-    entrypoint: ['./bin/wait-for-it.sh', 'db:5432', '--']
-    command: 'pm2-runtime ecosystem.dev.config.js'
+    command: ['yarn', 'dev:api']
+
+  worker:
+    container_name: worker
+    image: stringsyncapi:dev
+    build:
+      context: ./api
+    env_file:
+      - env/dev.env
+      - env/secrets.env
+    volumes:
+      - ./api/src:/api/src
+    links:
+      - db
+      - redis
+    command: ['yarn', 'dev:worker']
 
   web:
     container_name: web

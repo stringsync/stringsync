@@ -19,10 +19,12 @@ export class DevExpressServer extends ExpressServer implements Server {
 
     this.app.get('/static', async (req, res) => {
       webProxy.web(req, res, { target: PROXY_TARGET });
+      res.end();
     });
 
     this.app.all('/*', async (req, res) => {
       webProxy.web(req, res, { target: PROXY_TARGET });
+      res.end();
     });
 
     const server = http.createServer(this.app);
@@ -32,5 +34,6 @@ export class DevExpressServer extends ExpressServer implements Server {
     });
 
     server.listen(this.config.APP_GRAPHQL_PORT);
+    this.logger.info(`dev server running on port: ${this.config.APP_GRAPHQL_PORT}`);
   }
 }

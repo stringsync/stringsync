@@ -68,7 +68,18 @@ const git = cmd('git');
 desc('brings up all projects');
 task('dev', ['gensecrets'], async () => {
   try {
-    const api = dockerCompose(['-f', 'docker-compose.dev.yml', 'up'], { stdio: 'inherit' });
+    const api = dockerCompose(['-f', 'docker-compose.dev.yml', 'up', '--build'], { stdio: 'inherit' });
+    await api.promise;
+  } finally {
+    const down = dockerCompose(['down'], { stdio: 'inherit' });
+    await down.promise;
+  }
+});
+
+desc('brings up a prod orchestration using dev resources');
+task('fakeprod', ['build:api', 'gensecrets'], async () => {
+  try {
+    const api = dockerCompose(['-f', 'docker-compose.yml', 'up'], { stdio: 'inherit' });
     await api.promise;
   } finally {
     const down = dockerCompose(['down'], { stdio: 'inherit' });
@@ -214,12 +225,12 @@ task('typegen', [], async () => {
 });
 
 namespace('build', () => {
-  desc('builds the stringsync docker image');
+  desc('builds the stringsync prod docker image');
   task('api', [], async () => {
-    const DOCKER_TAG = env('DOCKER_TAG', 'stringsync:latest');
-    const DOCKERFILE = env('DOCKERFILE', 'Dockerfile.dev');
+    const DOCKER_TAG = env('DOCKER_TAG', 'stringsync:prod');
+    const DOCKERFILE = env('DOCKERFILE', 'Dockerfile');
 
-    const build = docker(['build', '-f', DOCKERFILE, '-t', DOCKER_TAG, '.'], { cwd: 'api' });
+    const build = docker(['build', '-f', DOCKERFILE, '-t', DOCKER_TAG, '.'], { stdio: 'inherit' });
     await build.promise;
   });
 
