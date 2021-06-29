@@ -278,9 +278,15 @@ namespace('test', () => {
   });
 
   desc('tests the api project');
-  task('api', ['build:api'], async () => {
+  task('api', [], async () => {
     const WATCH = env('WATCH', 'false') === 'true';
     const CI = env('CI', 'false') === 'true';
+
+    const buildTests = async () => {
+      log(chalk.yellow('building test images'));
+      const build = dockerCompose(['-f', './docker-compose.test.yml', 'build'], { stdio: 'inherit', cwd: 'api' });
+      await build.promise;
+    };
 
     const runTests = async () => {
       const test = dockerCompose(
@@ -308,6 +314,7 @@ namespace('test', () => {
       await down.promise;
     };
 
+    await buildTests();
     try {
       await runTests();
     } finally {

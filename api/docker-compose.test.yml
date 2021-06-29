@@ -24,7 +24,9 @@ services:
 
   test:
     container_name: test
-    image: stringsync:latest
+    image: stringsync:test
+    build:
+      context: .
     env_file:
       - ../env/api.test.env
     volumes:

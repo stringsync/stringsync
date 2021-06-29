@@ -34,7 +34,6 @@ RUN REACT_APP_SERVER_URI=http://localhost:3000 REACT_APP_GRAPHQL_ENDPOINT=/graph
 # copy the api files over
 COPY api/tsconfig.json api/
 COPY api/tsconfig.prod.json api/
-COPY api/ecosystem.prod.config.js api/
 COPY api/jest.config.js api/
 COPY api/.sequelizerc api/
 COPY api/sequelize.config.js api/
