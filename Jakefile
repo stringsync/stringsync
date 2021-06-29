@@ -67,8 +67,10 @@ const git = cmd('git');
 
 desc('brings up all projects');
 task('dev', ['gensecrets'], async () => {
+  const build = dockerCompose(['-f', 'docker-compose.dev.yml', 'build'], { stdio: 'inherit' });
+  await build.promise;
   try {
-    const api = dockerCompose(['-f', 'docker-compose.dev.yml', 'up', '--build'], { stdio: 'inherit' });
+    const api = dockerCompose(['-f', 'docker-compose.dev.yml', 'up'], { stdio: 'inherit' });
     await api.promise;
   } finally {
     const down = dockerCompose(['down'], { stdio: 'inherit' });
@@ -78,6 +80,8 @@ task('dev', ['gensecrets'], async () => {
 
 desc('brings up a prod orchestration using dev resources');
 task('fakeprod', ['build:api', 'gensecrets'], async () => {
+  const build = dockerCompose(['-f', 'docker-compose.yml', 'build'], { stdio: 'inherit' });
+  await build.promise;
   try {
     const api = dockerCompose(['-f', 'docker-compose.yml', 'up'], { stdio: 'inherit' });
     await api.promise;
@@ -251,9 +255,9 @@ namespace('test', () => {
     return `bash -c "${parts.filter(identity).join(' ')}"`;
   };
 
-  const getTestCmd = (project, ci, watch) => {
+  const getTestCmd = (ci, watch) => {
     return [
-      project === PROJECTS.web ? '' : 'yarn',
+      'yarn',
       'test',
       `--watchAll=${watch}`,
       ci ? '--no-colors' : '--colors',
@@ -290,7 +294,7 @@ namespace('test', () => {
 
     const runTests = async () => {
       const test = dockerCompose(
-        ['-f', './docker-compose.test.yml', 'run', '--rm', 'test', bashC(...getTestCmd(PROJECTS.api, CI, WATCH))],
+        ['-f', './docker-compose.test.yml', 'run', '--rm', 'test', bashC(...getTestCmd(CI, WATCH))],
         {
           stdio: 'inherit',
           cwd: 'api',
@@ -327,16 +331,39 @@ namespace('test', () => {
     const WATCH = env('WATCH', 'false') === 'true';
     const CI = env('CI', 'false') === 'true';
 
-    const test = yarn(getTestCmd(PROJECTS.web, CI, WATCH), {
-      cwd: 'web',
-      stdio: 'inherit',
-    });
+    const buildTests = async () => {
+      log(chalk.yellow('building test images'));
+      const build = dockerCompose(['-f', './docker-compose.test.yml', 'build'], { stdio: 'inherit', cwd: 'web' });
+      await build.promise;
+    };
+
+    const runTests = async () => {
+      const test = dockerCompose(
+        ['-f', './docker-compose.test.yml', 'run', '--rm', 'test', bashC(...getTestCmd(CI, WATCH))],
+        { stdio: 'inherit', cwd: 'web', shell: true }
+      );
+      try {
+        await test.promise;
+        log(chalk.green('web tests succeeded'));
+      } catch (err) {
+        log(chalk.red('web tests failed'));
+        throw err;
+      }
+    };
+
+    const cleanupTests = async () => {
+      const down = dockerCompose(['-f', './docker-compose.test.yml', 'down', '--remove-orphans'], {
+        cwd: 'web',
+        stdio: 'inherit',
+      });
+      await down.promise;
+    };
+
+    await buildTests();
     try {
-      await test.promise;
-      log(chalk.green('web tests succeeded'));
-    } catch (err) {
-      log(chalk.red('web tests failed'));
-      throw err;
+      await runTests();
+    } finally {
+      await cleanupTests();
     }
   });
 });

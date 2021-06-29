@@ -24,7 +24,7 @@ services:
 
   test:
     container_name: test
-    image: stringsync:test
+    image: stringsyncapi:test
     build:
       context: .
     env_file:
