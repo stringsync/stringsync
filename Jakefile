@@ -242,7 +242,7 @@ task('typegen', [], async () => {
 
 namespace('build', () => {
   desc('builds the stringsync prod docker image');
-  task('api', [], async () => {
+  task('prod', [], async () => {
     const DOCKER_TAG = env('DOCKER_TAG', 'stringsync:prod');
     const DOCKERFILE = env('DOCKERFILE', 'Dockerfile');
 
