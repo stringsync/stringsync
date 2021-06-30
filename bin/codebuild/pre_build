@@ -3,13 +3,13 @@
 echo "Logging in to Amazon ECR..."
 $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
 
-echo "Logging into docker builds..."
-aws s3 cp s3://$S3_SECRETS_BUCKET/.docker.key .docker.key
-docker login -u stringsync --password-stdin < .docker.key
+# echo "Logging into docker builds..."
+# aws s3 cp s3://$S3_SECRETS_BUCKET/.docker.key .docker.key
+# docker login -u stringsync --password-stdin < .docker.key
 
-echo "Pulling existing image..."
-IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
-docker pull $IMAGE_URI:latest || true
+# echo "Pulling existing image..."
+# IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
+# docker pull $IMAGE_URI:latest || true
 
-echo "Tagging $IMAGE_URI:latest as stringsync:latest..."
-docker image inspect $IMAGE_URI:latest >/dev/null 2>&1 && docker tag $IMAGE_URI:latest stringsync:latest
+# echo "Tagging $IMAGE_URI:latest as stringsync:latest..."
+# docker image inspect $IMAGE_URI:latest >/dev/null 2>&1 && docker tag $IMAGE_URI:latest stringsync:latest

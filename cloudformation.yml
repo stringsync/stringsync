@@ -260,9 +260,83 @@ Resources:
             ]
           }
 
+  AppRunnerServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - build.apprunner.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: AWSAppRunnerServicePolicyForECRAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Resource: '*'
+                Action:
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                  - ecr:DescribeImages
+                  - ecr:GetAuthorizationToken
+                  - ecr:BatchCheckLayerAvailability
+
   AppService:
     Type: AWS::AppRunner::Service
     Properties:
       SourceConfiguration:
         AutoDeploymentsEnabled: true
-        ImageRepository: !Ref AppImageRepository
+        AuthenticationConfiguration:
+          AccessRoleArn: !GetAtt AppRunnerServiceRole.Arn
+        ImageRepository:
+          ImageIdentifier: !Join ['', [!GetAtt AppImageRepository.RepositoryUri, ':latest']]
+          ImageRepositoryType: ECR
+          ImageConfiguration:
+            Port: 3000
+            RuntimeEnvironmentVariables:
+              - Name: NODE_ENV
+                Value: production
+              - Name: LOG_LEVEL
+                Value: info
+              - Name: APP_GRAPHQL_PORT
+                Value: 3000
+              - Name: APP_SESSION_SECRET
+                Value: keyboardcat
+              - Name: APP_WEB_ORIGIN
+                Value: hello
+              - Name: AWS_ACCESS_KEY_ID
+                Value: AWS_ACCESS_KEY_ID
+              - Name: AWS_REGION
+                Value: us-east-1
+              - Name: AWS_SECRET_ACCESS_KEY
+                Value: AWS_SECRET_ACCESS_KEY
+              - Name: CDN_DOMAIN_NAME
+                Value: CDN_DOMAIN_NAME
+              - Name: S3_BUCKET
+                Value: S3_BUCKET
+              - Name: S3_VIDEO_SRC_BUCKET
+                Value: S3_VIDEO_SRC_BUCKET
+              - Name: SQS_VIDEO_QUEUE_URL
+                Value: SQS_VIDEO_QUEUE_URL
+              - Name: INFO_EMAIL
+                Value: info@stringsync.com
+              - Name: DEV_EMAIL
+                Value: dev@stringsync.com
+              - Name: DB_HOST
+                Value: db
+              - Name: DB_NAME
+                Value: stringsync
+              - Name: DB_PASSWORD
+                Value: stringsync
+              - Name: DB_PORT
+                Value: 5432
+              - Name: DB_USERNAME
+                Value: stringsync
+              - Name: REDIS_HOST
+                Value: redis
+              - Name: REDIS_PORT
+                Value: 6379
