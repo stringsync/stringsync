@@ -14,6 +14,17 @@ services:
     container_name: redis
     image: redis:5.0
 
+  nginx:
+    container_name: nginx
+    image: nginx:1.21
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf
+      - static-content:/app/web/build
+    links:
+      - api
+    ports:
+      - 80:80
+
   migrate:
     container_name: migrate
     image: stringsync:latest
@@ -27,19 +38,17 @@ services:
     entrypoint: ['./api/bin/wait-for-it.sh', 'db:5432', '--']
     command: 'bash -c "cd api && yarn migrate && yarn seed"'
 
-  app:
-    container_name: app
+  api:
+    container_name: api
     image: stringsync:latest
-    build:
-      context: .
+    volumes:
+      - static-content:/app/web/build
     env_file:
       - env/fakeprod.env
       - env/secrets.env
     links:
       - db
       - redis
-    ports:
-      - '3000:3000'
     command: ['node', '/app/api/build/entrypoints/api.js']
 
   worker:
@@ -56,3 +65,6 @@ services:
       - db
       - redis
     command: ['node', '/app/api/build/entrypoints/worker.js']
+
+volumes:
+  static-content:

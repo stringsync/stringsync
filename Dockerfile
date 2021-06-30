@@ -43,9 +43,5 @@ COPY api/src api/src/
 # build the api project
 RUN yarn tsc --project api/tsconfig.prod.json
 
-# copy web build to the api build
-RUN mkdir -p api/build/server/web
-RUN cp -R web/build/* api/build/server/web
-
 # run the project
 CMD [ "yarn", "prod:api" ]

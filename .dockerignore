@@ -1,8 +1,6 @@
 .git
-**/node_modules
-common
+node_modules
 e2e
 .vscode
 .devcontainer
-dst
 .DS_STORE
