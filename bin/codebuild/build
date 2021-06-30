@@ -4,5 +4,5 @@ IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_
 ./bin/ss build:docker
 docker tag stringsync:latest $IMAGE_URI:latest
 
-echo "Running tests..."
-./bin/ss test:all CI=true
+# echo "Running tests..."
+# ./bin/ss test:all CI=true

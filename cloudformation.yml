@@ -176,7 +176,7 @@ Resources:
         Type: CODEPIPELINE
       Environment:
         Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_SMALL
+        ComputeType: BUILD_GENERAL1_MEDIUM
         Image: aws/codebuild/standard:4.0
         PrivilegedMode: true
         EnvironmentVariables:
