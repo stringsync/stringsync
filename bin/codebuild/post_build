@@ -2,25 +2,9 @@
 
 if [ "$CODEBUILD_BUILD_SUCCEEDING" -eq 1 ]
 then
-  echo "Pushing api images..."
+  echo "Pushing app image..."
   IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
   docker push $IMAGE_URI:latest
-
-  echo "Writing imagedefinitions.json..."
-  printf '[{"name":"api","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.api.json
-  printf '[{"name":"worker","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.worker.json
-
-  echo "Creating artifacts dir..."
-  mkdir imagedefinitions-artifacts
-  mkdir web-artifacts
-
-  echo "Moving everything else into root artifacts dir..."
-  mv web/build/* web-artifacts
-  mv imagedefinitions.api.json imagedefinitions-artifacts
-  mv imagedefinitions.worker.json imagedefinitions-artifacts
-
-  echo "Deleting current web build..."
-  aws s3 rm --recursive "s3://${S3_WEB_BUCKET}/"
 else
   echo "Build failed, skipping post_build step..."
 fi

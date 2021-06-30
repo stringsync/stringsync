@@ -6,6 +6,3 @@ yarn config set install.prefer-offline true
 
 echo "Installing root node_modules..."
 yarn install
-
-echo "Installing web node_modules..."
-./bin/ss install:web
