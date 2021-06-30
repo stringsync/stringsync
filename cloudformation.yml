@@ -158,6 +158,7 @@ Resources:
 
   CodeBuildCacheBucket:
     Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
 
   CodeBuildProject:
     Type: AWS::CodeBuild::Project
@@ -192,8 +193,8 @@ Resources:
         Type: CODEPIPELINE
 
   CodePipelineArtifactStore:
-    DeletionPolicy: Delete
     Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
 
   CodePipeline:
     Type: AWS::CodePipeline::Pipeline
