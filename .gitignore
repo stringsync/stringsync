@@ -18,6 +18,7 @@ tmp
 *.tsbuildinfo
 reports
 artifacts
+tmp
 
 # local env files
 .env.local
