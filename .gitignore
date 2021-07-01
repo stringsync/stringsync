@@ -3,7 +3,6 @@ secrets.env
 
 # general
 .DS_Store
-.vscode
 .devcontainer
 tsc
 dst
@@ -26,7 +25,6 @@ tmp
 
 # Editor directories and files
 .idea
-.vscode
 *.suo
 *.ntvs*
 *.njsproj
