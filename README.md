@@ -47,8 +47,8 @@ To run the api, start Docker engine and run:
 ./bin/ss dev
 ```
 
-- http://localhost:8080 frontend UI
-- http://localhost:3000/altair backend GraphQL query playground
+- http://localhost frontend UI
+- http://localhost/altair backend GraphQL query playground
 
 Press Ctrl + C to exit. The command should teardown the environment.
 
