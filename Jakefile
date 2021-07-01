@@ -463,15 +463,14 @@ namespace('cf', () => {
       await Promise.all([cpRoot.promise, cpNested.promise]);
 
       // Give the user a friendly link to look at the uploaded files.
-      log(
-        chalk.greenBright(
-          `sync successful! you can view the objects using this link:\n\n\thttps://s3.console.aws.amazon.com/s3/buckets/${S3_BUCKET}?region=us-east-1&prefix=${DST_DIR}/\n`
-        )
-      );
+      const dirUrl = `https://s3.console.aws.amazon.com/s3/buckets/${S3_BUCKET}?region=us-east-1&prefix=${DST_DIR}/`;
+      const rootUrl = `https://${S3_BUCKET}.s3.amazonaws.com/${DST_DIR}/${ROOT_FILENAME}`;
+      log(chalk.green(`folder: ${dirUrl}`));
+      log(chalk.green(`root: ${rootUrl}`));
     } catch (e) {
       // On failure, remove the entire dir since we cannot assume it has everything it needs.
       log(chalk.red(`something went wrong, deleting dir: ${e}`));
-      await aws(['s3', 'rm', `s3://${S3_BUCKET}/${DST_DIR}`, '--recursive'], { stdio: 'inherit' }).promise;
+      await aws(['s3', 'rm', `s3://${S3_BUCKET}/${DST_DIR}`, '--recursive']).promise;
     } finally {
       await rm([rootPath]).promise;
     }
