@@ -1,8 +1,42 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: A stack for deploying StringSync in AWS
 
+Parameters:
+  EnableCI:
+    Description: Whether or not CI is enabled
+    Type: String
+    AllowedValues:
+      - 'true'
+      - 'false'
+    Default: 'false'
+
+  BranchName:
+    Description: CodeCommit repository branch name
+    Type: String
+    Default: master
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label: CI
+        Parameters:
+          - EnableCI
+          - BranchName
+
+Conditions:
+  IsCIEnabled:
+    Fn::Equals:
+      - !Ref EnableCI
+      - 'true'
+
 Resources:
-  VpcStack:
+  NetworkStack:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: https://stringsync-cf-templates.s3.amazonaws.com/{{STRINGSYNC_DIR_STRING}}/network.yml
+
+  CIStack:
+    Type: AWS::CloudFormation::Stack
+    Condition: IsCIEnabled
+    Properties:
+      TemplateURL: https://stringsync-cf-templates.s3.amazonaws.com/{{STRINGSYNC_DIR_STRING}}/ci.yml

@@ -1,0 +1,180 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: A stack for deploying StringSync's CI pipeline
+
+Parameters:
+  BranchName:
+    Description: CodeCommit repository branch name
+    Type: String
+    Default: master
+
+Resources:
+  CodeRepository:
+    Type: AWS::CodeCommit::Repository
+
+  ImageRepository:
+    Type: AWS::ECR::Repository
+    DeletionPolicy: Delete
+    Properties:
+      LifecyclePolicy:
+        LifecyclePolicyText:
+          rules:
+            - rulePriority: 1
+              description: Keep only one untagged image, expire all others
+              selection:
+                tagStatus: untagged
+                countType: imageCountMoreThan
+                countNumber: 1
+              action:
+                type: expire
+
+  BuildProjectCacheStore:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+
+  BuildProjectServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: AWSCodeBuildServicePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Sid: CloudWatchLogsPolicy
+                Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+              - Sid: CodeCommitPolicy
+                Effect: Allow
+                Action:
+                  - codecommit:GitPull
+                Resource: !GetAtt CodeRepository.Arn
+              - Sid: S3GetObjectPolicy
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                Resource: !GetAtt BuildProjectCacheStore.Arn
+              - Sid: S3PutObjectPolicy
+                Effect: Allow
+                Action:
+                  - s3:PutObject
+                Resource: !GetAtt BuildProjectCacheStore.Arn
+              - Sid: S3BucketIdentity
+                Effect: Allow
+                Action:
+                  - s3:GetBucketAcl
+                  - s3:GetBucketLocation
+                Resource: !GetAtt BuildProjectCacheStore.Arn
+
+  BuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      ServiceRole: !GetAtt BuildProjectServiceRole.Arn
+      TimeoutInMinutes: 30
+      Cache:
+        Type: S3
+        Location: !Ref BuildProjectCacheStore
+        Modes:
+          - LOCAL_DOCKER_LAYER_CACHE
+          - LOCAL_CUSTOM_CACHE
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_MEDIUM
+        Image: aws/codebuild/standard:4.0
+        PrivilegedMode: true
+        EnvironmentVariables:
+          - Name: IMAGE_REPO_URI
+            Type: PLAINTEXT
+            Value: !GetAtt ImageRepository.RepositoryUri
+      Source:
+        Type: CODEPIPELINE
+
+  PipelineArtifactStore:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+
+  PipelineServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - codepipeline.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: AWS-CodePipeline-Service-3
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Resource: !GetAtt CodeRepository.Arn
+                Action:
+                  - codecommit:CancelUploadArchive
+                  - codecommit:GetBranch
+                  - codecommit:GetCommit
+                  - codecommit:GetUploadArchiveStatus
+                  - codecommit:UploadArchive
+              - Effect: Allow
+                Resource: !GetAtt BuildProject.Arn
+                Action:
+                  - codebuild:BatchGetBuilds
+                  - codebuild:StartBuild
+
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      RoleArn: !GetAtt PipelineServiceRole.Arn
+      RestartExecutionOnUpdate: false
+      ArtifactStore:
+        Type: S3
+        Location: !Ref PipelineArtifactStore
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: SourceAction
+              RunOrder: 1
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Provider: CodeCommit
+                Version: '1'
+              OutputArtifacts:
+                - Name: SourceOutput
+              Configuration:
+                RepositoryName: !Ref CodeRepository
+                BranchName: !Ref BranchName
+                PollForSourceChanges: false
+        - Name: Build
+          Actions:
+            - Name: BuildAction
+              RunOrder: 2
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: '1'
+              InputArtifacts:
+                - Name: SourceOutput
+              OutputArtifacts:
+                - Name: BuildImageDefinitionsOutput
+              Configuration:
+                ProjectName: !Ref BuildProject
+                PrimarySource: SourceOutput

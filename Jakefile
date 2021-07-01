@@ -42,6 +42,10 @@ const cmd = (command) => (args, opts) => {
     const cmdStr = [command, ...args].join(' ');
     log(chalk.yellow(cmdStr));
 
+    process.on('disconnect', () => {
+      resolve();
+    });
+
     process.on('close', (exitCode) => {
       // exitCode === null means the process was killed
       if (exitCode === 0 || exitCode === null) {
@@ -70,10 +74,13 @@ const rm = cmd('rm');
 desc('brings up all projects');
 task('dev', ['build:docker', 'gensecrets'], async () => {
   try {
-    const api = dockerCompose(['-f', 'docker-compose.dev.yml', 'up'], { stdio: 'inherit' });
-    await api.promise;
+    const up = docker(['compose', '-f', 'docker-compose.dev.yml', 'up', '--detach'], { stdio: 'inherit' });
+    await up.promise;
+
+    const logs = docker(['compose', '-f', 'docker-compose.dev.yml', 'logs', '-f'], { stdio: 'inherit', shell: true });
+    await logs.promise;
   } finally {
-    const down = dockerCompose(['down'], { stdio: 'inherit' });
+    const down = dockerCompose(['down', '-v', '--remove-orphans'], { stdio: 'ignore' });
     await down.promise;
   }
 });
@@ -81,10 +88,10 @@ task('dev', ['build:docker', 'gensecrets'], async () => {
 desc('brings up a prod orchestration using dev resources');
 task('fakeprod', ['build:docker', 'gensecrets'], async () => {
   try {
-    const api = dockerCompose(['-f', 'docker-compose.yml', 'up'], { stdio: 'inherit' });
+    const api = docker(['compose', '-f', 'docker-compose.yml', 'up', '--detached'], { stdio: 'inherit' });
     await api.promise;
   } finally {
-    const down = dockerCompose(['down'], { stdio: 'inherit' });
+    const down = dockerCompose(['down', '-v', '--remove-orphans'], { stdio: 'ignore' });
     await down.promise;
   }
 });
@@ -220,7 +227,7 @@ task('typegen', [], async () => {
     up && up.process.kill();
 
     if (!wasServerUp) {
-      const down = dockerCompose(['down'], { cwd: 'api', stdio: 'inherit' });
+      const down = dockerCompose(['down'], { stdio: 'inherit', shell: false });
       await down.promise;
     }
   }
@@ -439,7 +446,7 @@ namespace('cf', () => {
     // Replace the DIR_STRING_TEMPLATE with the s3 directory name.
     const dstDirName = encodeURIComponent(DST_DIR);
     const rootFile = fs.readFileSync(path.join(__dirname, SRC_DIR, ROOT_FILENAME));
-    const rootFileStr = rootFile.toString().replace(DIR_STRING_TEMPLATE, dstDirName);
+    const rootFileStr = rootFile.toString().replace(new RegExp(DIR_STRING_TEMPLATE, 'g'), dstDirName);
     const rootPath = path.join(__dirname, 'tmp', ROOT_FILENAME);
 
     // Ensure a tmp folder is made.
