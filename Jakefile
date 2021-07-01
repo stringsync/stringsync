@@ -435,7 +435,7 @@ namespace('cf', () => {
   const DIR_STRING_TEMPLATE = env('DIR_STRING_TEMPLATE', '{{STRINGSYNC_DIR_STRING}}');
 
   desc('syncs the cloudformation templates to s3');
-  task('sync', [], async () => {
+  task('sync', ['cf:validate'], async () => {
     // Replace the DIR_STRING_TEMPLATE with the s3 directory name.
     const dstDirName = encodeURIComponent(DST_DIR);
     const rootFile = fs.readFileSync(path.join(__dirname, SRC_DIR, ROOT_FILENAME));
@@ -473,6 +473,26 @@ namespace('cf', () => {
       await aws(['s3', 'rm', `s3://${S3_BUCKET}/${DST_DIR}`, '--recursive']).promise;
     } finally {
       await rm([rootPath]).promise;
+    }
+  });
+
+  desc('validates all cloudformation templates');
+  task('validate', [], async () => {
+    const files = fs.readdirSync(SRC_DIR);
+    const failures = [];
+    await Promise.allSettled(
+      files.map((file) => {
+        const validate = aws(['cloudformation', 'validate-template', '--template-body', `file://${SRC_DIR}/${file}`]);
+        return validate.promise.catch((e) => {
+          failures.push(file);
+        });
+      })
+    );
+
+    if (failures.length > 0) {
+      log(chalk.red(`validate failed for files: ${failures.join(', ')}`));
+    } else {
+      log(chalk.green(`validate succeeded!`));
     }
   });
 
