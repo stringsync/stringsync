@@ -64,6 +64,8 @@ const docker = cmd('docker');
 const cp = cmd('cp');
 const mkdir = cmd('mkdir');
 const git = cmd('git');
+const aws = cmd('aws');
+const rm = cmd('rm');
 
 desc('brings up all projects');
 task('dev', ['build:docker', 'gensecrets'], async () => {
@@ -423,4 +425,80 @@ task('deploy', [], async () => {
 
   const pushAws = git(['push', 'aws', `${BRANCH}:master`], { stdio: 'inherit' });
   await pushAws.promise;
+});
+
+namespace('cf', () => {
+  const S3_BUCKET = env('S3_BUCKET', 'stringsync-cf-templates');
+  const SRC_DIR = env('SRC_DIR', 'aws/cloudformation');
+  const DST_DIR = env('DST_DIR', new Date().toISOString());
+  const ROOT_FILENAME = env('ROOT_FILE', 'cloudformation.yml');
+  const DIR_STRING_TEMPLATE = env('DIR_STRING_TEMPLATE', '{{STRINGSYNC_DIR_STRING}}');
+
+  desc('syncs the cloudformation templates to s3');
+  task('sync', ['cf:validate'], async () => {
+    // Replace the DIR_STRING_TEMPLATE with the s3 directory name.
+    const dstDirName = encodeURIComponent(DST_DIR);
+    const rootFile = fs.readFileSync(path.join(__dirname, SRC_DIR, ROOT_FILENAME));
+    const rootFileStr = rootFile.toString().replace(DIR_STRING_TEMPLATE, dstDirName);
+    const rootPath = path.join(__dirname, 'tmp', ROOT_FILENAME);
+
+    // Ensure a tmp folder is made.
+    await mkdir(['-p', 'tmp']).promise;
+
+    try {
+      // Create the tmp root file.
+      fs.writeFileSync(rootPath, rootFileStr);
+
+      // Try to copy the root file and all the files that support it into s3.
+      const cpRoot = aws(['s3', 'cp', rootPath, `s3://${S3_BUCKET}/${DST_DIR}/${ROOT_FILENAME}`]);
+      const cpNested = aws([
+        's3',
+        'cp',
+        SRC_DIR,
+        `s3://${S3_BUCKET}/${DST_DIR}`,
+        '--recursive',
+        '--exclude',
+        ROOT_FILENAME,
+      ]);
+      await Promise.all([cpRoot.promise, cpNested.promise]);
+
+      // Give the user a friendly link to look at the uploaded files.
+      const dirUrl = `https://s3.console.aws.amazon.com/s3/buckets/${S3_BUCKET}?region=us-east-1&prefix=${DST_DIR}/`;
+      const rootUrl = `https://${S3_BUCKET}.s3.amazonaws.com/${DST_DIR}/${ROOT_FILENAME}`;
+      log(chalk.green(`folder: ${dirUrl}`));
+      log(chalk.green(`root: ${rootUrl}`));
+    } catch (e) {
+      // On failure, remove the entire dir since we cannot assume it has everything it needs.
+      log(chalk.red(`something went wrong, deleting dir: ${e}`));
+      await aws(['s3', 'rm', `s3://${S3_BUCKET}/${DST_DIR}`, '--recursive']).promise;
+    } finally {
+      await rm([rootPath]).promise;
+    }
+  });
+
+  desc('validates all cloudformation templates');
+  task('validate', [], async () => {
+    const files = fs.readdirSync(SRC_DIR);
+    const failures = [];
+    await Promise.allSettled(
+      files.map((file) => {
+        const validate = aws(['cloudformation', 'validate-template', '--template-body', `file://${SRC_DIR}/${file}`]);
+        return validate.promise.catch((e) => {
+          failures.push(file);
+        });
+      })
+    );
+
+    if (failures.length > 0) {
+      log(chalk.red(`validate failed for files: ${failures.join(', ')}`));
+    } else {
+      log(chalk.green(`validate succeeded!`));
+    }
+  });
+
+  desc('removes all templates in the templates s3 bucket');
+  task('prune', [], async () => {
+    const rm = aws(['s3', 'rm', `s3://${S3_BUCKET}`, '--recursive']);
+    await rm.promise;
+  });
 });
