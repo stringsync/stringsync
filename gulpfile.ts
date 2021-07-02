@@ -1,10 +1,9 @@
-import { cleanup } from './cleanup';
-import * as constants from './constants';
-import * as docker from './docker';
-import { Env } from './Env';
-import { log } from './util';
-
-process.chdir(constants.ROOT_PATH);
+import { cleanup } from './scripts/cleanup';
+import * as constants from './scripts/constants';
+import * as docker from './scripts/docker';
+import { Env } from './scripts/Env';
+import * as graphqlCodegen from './scripts/graphqlCodegen';
+import { log } from './scripts/util';
 
 async function dev() {
   const composeFile = constants.DOCKER_COMPOSE_DEV_FILE;
@@ -29,11 +28,13 @@ async function down() {
 async function typegen() {
   const GRAPHQL_HOSTNAME = Env.string('GRAPHQL_HOSTNAME').get('localhost');
   const GRAPHQL_PORT = Env.number('GRAPHQL_PORT').get(80);
-  const MAX_WAIT_MS = Env.number('MAX_WAIT_MS').get(1200000);
+  const MAX_WAIT_MS = Env.number('MAX_WAIT_MS').get(1200000); // 2 minutes
 
-  if (MAX_WAIT_MS < 0) {
+  if (MAX_WAIT_MS <= 0) {
     throw new TypeError('MAX_WAIT_MS must be greater than 0');
   }
+
+  await graphqlCodegen.typegen(GRAPHQL_HOSTNAME, GRAPHQL_PORT, MAX_WAIT_MS);
 }
 
 async function gensecrets() {

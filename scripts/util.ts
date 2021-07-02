@@ -1,6 +1,5 @@
 import chalk from 'chalk';
 import execa from 'execa';
-import { ROOT_PATH } from './constants';
 
 export const noop = () => undefined;
 
@@ -13,10 +12,11 @@ export const log = (msg: string) => {
 type CmdOpts = {
   shell?: boolean;
   reject?: boolean;
+  cwd?: string;
 };
 
 export const cmd = async (command: string, args: string[], opts?: CmdOpts) => {
   const cmdStr = [command, ...args].join(' ');
   log(chalk.yellow(cmdStr));
-  return await execa(command, args, { localDir: ROOT_PATH, stdio: 'inherit', ...opts });
+  return await execa(command, args, { stdio: 'inherit', ...opts });
 };

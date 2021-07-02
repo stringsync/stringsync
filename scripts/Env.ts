@@ -1,3 +1,6 @@
+import chalk from 'chalk';
+import { log } from './util';
+
 enum EnvType {
   String,
   Number,
@@ -32,8 +35,11 @@ export class Env<T extends EnvType> {
       if (typeof fallback === 'undefined') {
         throw new TypeError(`env variable is undefined and has no default: '${this.key}'`);
       }
+      log(chalk.magenta(`${this.key} (default): ${fallback}`));
       return fallback;
     }
+
+    log(chalk.magenta(`${this.key} (provided): ${val}`));
 
     switch (this.type) {
       case EnvType.String:
