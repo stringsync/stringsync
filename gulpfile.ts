@@ -1,9 +1,10 @@
+import path from 'path';
 import { cleanup } from './scripts/cleanup';
 import * as constants from './scripts/constants';
 import * as docker from './scripts/docker';
 import { Env } from './scripts/Env';
 import * as graphqlCodegen from './scripts/graphqlCodegen';
-import { log } from './scripts/util';
+import { cmd, log } from './scripts/util';
 
 async function dev() {
   const composeFile = constants.DOCKER_COMPOSE_DEV_FILE;
@@ -38,7 +39,9 @@ async function typegen() {
 }
 
 async function gensecrets() {
-  log('gensecrets');
+  const src = path.join(__dirname, 'templates', 'secrets.template.env');
+  const dst = path.join(__dirname, 'env', 'secrets.env');
+  await cmd('cp', ['-n', src, dst], { reject: false });
 }
 
 async function db() {
