@@ -1,6 +1,7 @@
 import http from 'http';
 import * as constants from './constants';
 import * as docker from './docker';
+import { Project } from './types';
 import { cmd, log } from './util';
 
 const isServerUp = async (hostname: string, port: number) => {
@@ -58,8 +59,8 @@ const waitForServer = async (hostname: string, port: number, maxWaitMs: number) 
 };
 
 const generateGraphqlTypes = async () => {
-  const api = cmd('yarn', ['typegen'], { cwd: 'api' });
-  const web = cmd('yarn', ['typegen'], { cwd: 'web' });
+  const api = cmd('yarn', ['typegen'], { cwd: Project.API });
+  const web = cmd('yarn', ['typegen'], { cwd: Project.WEB });
   await Promise.allSettled([api, web]);
 };
 

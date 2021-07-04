@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import execa from 'execa';
+import { Project } from './types';
 
 export const noop = () => undefined;
 
@@ -12,7 +13,7 @@ export const log = (msg: string) => {
 type CmdOpts = {
   shell?: boolean;
   reject?: boolean;
-  cwd?: string;
+  cwd?: Project;
 };
 
 export const cmd = async (command: string, args: string[], opts?: CmdOpts) => {

@@ -104,6 +104,10 @@ async function db() {
   await docker.db(composeFile, dbUsername);
 }
 
+async function cdk() {
+  await cmd('yarn', ['cdk'], { reject: false, cwd: Project.AWS });
+}
+
 async function tscapi() {
   const watch = WATCH.getOrDefault(true);
 
@@ -132,7 +136,7 @@ async function builddocker() {
 }
 
 async function buildweb() {
-  await cmd('yarn', ['build'], { cwd: 'web' });
+  await cmd('yarn', ['build'], { cwd: Project.WEB });
 }
 
 async function testall() {
@@ -165,10 +169,6 @@ async function testweb() {
   await test.run(Project.WEB, ci, watch);
 }
 
-async function cf() {
-  throw new Error('cf is not implemented');
-}
-
 exports['dev'] = dev;
 exports['fakeprod'] = fakeprod;
 exports['down'] = down;
@@ -177,6 +177,7 @@ exports['gensecrets'] = gensecrets;
 exports['logs'] = logs;
 exports['deploy'] = deploy;
 exports['db'] = db;
+exports['cdk'] = cdk;
 
 exports['tscapi'] = tscapi;
 exports['tscweb'] = tscweb;
@@ -190,5 +191,3 @@ exports['buildweb'] = buildweb;
 exports['testall'] = series(testall, testapi, testweb);
 exports['testapi'] = testapi;
 exports['testweb'] = testweb;
-
-exports['cf'] = cf;
