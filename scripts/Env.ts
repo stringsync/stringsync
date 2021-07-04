@@ -28,19 +28,30 @@ export class Env<T extends EnvType> {
 
   private constructor(readonly key: string, readonly type: T) {}
 
-  get(fallback?: Primitive[T]): Primitive[T] {
+  get(): Primitive[T] {
     const val = process.env[this.key];
 
     if (typeof val === 'undefined') {
-      if (typeof fallback === 'undefined') {
-        throw new TypeError(`env variable is undefined and has no default: '${this.key}'`);
-      }
+      throw new TypeError(`env variable is undefined: '${this.key}'`);
+    }
+
+    log(chalk.magenta(`${this.key} (provided): ${val}`));
+    return this.parse(val);
+  }
+
+  getOrDefault(fallback: Primitive[T]): Primitive[T] {
+    const val = process.env[this.key];
+
+    if (typeof val === 'undefined') {
       log(chalk.magenta(`${this.key} (default): ${fallback}`));
       return fallback;
     }
 
     log(chalk.magenta(`${this.key} (provided): ${val}`));
+    return this.parse(val);
+  }
 
+  private parse(val: string): Primitive[T] {
     switch (this.type) {
       case EnvType.String:
         return this.parseString(val) as Primitive[T];

@@ -12,6 +12,10 @@ export async function down() {
   await cmd('docker', ['compose', 'down', '-v', '--remove-orphans']);
 }
 
-export async function build(dockerFile: string, tag: string) {
-  await cmd('docker', ['build', '-f', dockerFile, '-t', tag, '.']);
+export async function build(dockerfile: string, tag: string) {
+  await cmd('docker', ['build', '-f', dockerfile, '-t', tag, '.']);
+}
+
+export async function db(composeFile: string, dbUsername: string) {
+  await cmd('docker', ['compose', '-f', composeFile, 'exec', 'db', 'psql', '-U', dbUsername]);
 }
