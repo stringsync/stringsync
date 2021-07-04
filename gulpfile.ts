@@ -8,7 +8,7 @@ import * as test from './scripts/test';
 import { Project } from './scripts/types';
 import { cmd, identity, log } from './scripts/util';
 
-const { series } = require('gulp');
+const { series, parallel } = require('gulp');
 
 const BUMP = Env.string('BUMP');
 const BRANCH = Env.string('BRANCH');
@@ -128,6 +128,10 @@ async function installweb() {
   await cmd('yarn', [], { cwd: Project.WEB });
 }
 
+async function installaws() {
+  await cmd('yarn', [], { cwd: Project.AWS });
+}
+
 async function builddocker() {
   const dockerTag = DOCKER_TAG.getOrDefault('stringsync:latest');
   const dockerfile = DOCKERFILE.getOrDefault('Dockerfile');
@@ -182,8 +186,10 @@ exports['cdk'] = cdk;
 exports['tscapi'] = tscapi;
 exports['tscweb'] = tscweb;
 
+exports['install'] = parallel(installapi, installweb, installaws);
 exports['installapi'] = installapi;
 exports['installweb'] = installweb;
+exports['installaws'] = installaws;
 
 exports['builddocker'] = builddocker;
 exports['buildweb'] = buildweb;
