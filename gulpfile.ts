@@ -3,7 +3,7 @@ import { cleanup } from './scripts/cleanup';
 import * as constants from './scripts/constants';
 import * as docker from './scripts/docker';
 import { Env } from './scripts/Env';
-import * as graphqlCodegen from './scripts/graphqlCodegen';
+import * as graphql from './scripts/graphql';
 import { cmd, log } from './scripts/util';
 
 async function dev() {
@@ -35,7 +35,7 @@ async function typegen() {
     throw new TypeError('MAX_WAIT_MS must be greater than 0');
   }
 
-  await graphqlCodegen.typegen(GRAPHQL_HOSTNAME, GRAPHQL_PORT, MAX_WAIT_MS);
+  await graphql.typegen(GRAPHQL_HOSTNAME, GRAPHQL_PORT, MAX_WAIT_MS);
 }
 
 async function gensecrets() {
