@@ -7,7 +7,8 @@ COPY package.json .
 COPY yarn.lock .
 RUN yarn
 COPY bin bin
-COPY Jakefile .
+COPY scripts scripts
+COPY gulpfile.ts .
 ENV PATH="/app/bin:${PATH}"
 
 # install api dependencies

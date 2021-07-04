@@ -4,10 +4,14 @@ import * as constants from './scripts/constants';
 import * as docker from './scripts/docker';
 import { Env } from './scripts/Env';
 import * as graphql from './scripts/graphql';
+import * as test from './scripts/test';
+import { Project } from './scripts/types';
 import { cmd, identity, log } from './scripts/util';
 
-const { series, parallel } = require('gulp');
+const { series } = require('gulp');
 
+const BUMP = Env.string('BUMP');
+const BRANCH = Env.string('BRANCH');
 const CI = Env.boolean('CI');
 const DB_USERNAME = Env.string('DB_USERNAME');
 const DOCKER_COMPOSE_FILE = Env.string('DOCKER_COMPOSE_FILE');
@@ -16,6 +20,7 @@ const DOCKERFILE = Env.string('DOCKERFILE');
 const GRAPHQL_HOSTNAME = Env.string('GRAPHQL_HOSTNAME');
 const GRAPHQL_PORT = Env.number('GRAPHQL_PORT');
 const MAX_WAIT_MS = Env.number('MAX_WAIT_MS');
+const REMOTE = Env.string('REMOTE');
 const WATCH = Env.boolean('WATCH');
 
 async function dev() {
@@ -59,11 +64,37 @@ async function gensecrets() {
 async function logs() {
   const composeFile = DOCKER_COMPOSE_FILE.getOrDefault(constants.DOCKER_COMPOSE_DEV_FILE);
 
-  docker.logs(composeFile);
+  await docker.logs(composeFile);
 }
 
 async function deploy() {
-  throw new Error('deploy is not implemented');
+  const BUMP_FLAGS = {
+    PATCH: '--patch',
+    MINOR: '--minor',
+    MAJOR: '--major',
+  };
+
+  const bump = BUMP.getOrDefault('PATCH');
+  const branch = BRANCH.getOrDefault('master');
+  const remote = REMOTE.getOrDefault('aws');
+
+  if (!(bump in BUMP_FLAGS)) {
+    throw new TypeError(`BUMP must be one of: ${Object.keys(BUMP_FLAGS).join(', ')}, got: ${bump}`);
+  }
+
+  log('bumping api version');
+  await cmd('yarn', [], { cwd: Project.API });
+
+  log('bumping web version');
+  await cmd('yarn', [], { cwd: Project.WEB });
+
+  log('committing version changes');
+  await cmd('git', ['add', 'api/package.json', 'web/package.json']);
+  await cmd('git', ['commit', '-m', 'Bump app versions.']);
+
+  log('pushing to aws remote');
+  await cmd('git', ['push', 'origin']);
+  await cmd('git', ['push', remote, `${branch}:master`]);
 }
 
 async function db() {
@@ -76,21 +107,21 @@ async function db() {
 async function tscapi() {
   const watch = WATCH.getOrDefault(true);
 
-  await cmd('tsc', ['--noEmit', watch ? '--watch' : ''].filter(identity), { cwd: 'api' });
+  await cmd('tsc', ['--noEmit', watch ? '--watch' : ''].filter(identity), { cwd: Project.API });
 }
 
 async function tscweb() {
   const watch = WATCH.getOrDefault(true);
 
-  await cmd('tsc', ['--noEmit', watch ? '--watch' : ''].filter(identity), { cwd: 'web' });
+  await cmd('tsc', ['--noEmit', watch ? '--watch' : ''].filter(identity), { cwd: Project.WEB });
 }
 
 async function installapi() {
-  await cmd('yarn', [], { cwd: 'api' });
+  await cmd('yarn', [], { cwd: Project.API });
 }
 
 async function installweb() {
-  await cmd('yarn', [], { cwd: 'web' });
+  await cmd('yarn', [], { cwd: Project.WEB });
 }
 
 async function builddocker() {
@@ -124,23 +155,18 @@ async function testapi() {
   const watch = WATCH.getOrDefault(false);
   const ci = CI.getOrDefault(false);
 
-  log('testapi');
+  await test.run(Project.API, ci, watch);
 }
 
 async function testweb() {
-  log('testweb');
+  const watch = WATCH.getOrDefault(false);
+  const ci = CI.getOrDefault(false);
+
+  await test.run(Project.WEB, ci, watch);
 }
 
-async function cfsync() {
-  log('cfsync');
-}
-
-async function cfvalidate() {
-  log('cfvalidate');
-}
-
-async function cfprune() {
-  log('cfprune');
+async function cf() {
+  throw new Error('cf is not implemented');
 }
 
 exports['dev'] = dev;
@@ -161,10 +187,8 @@ exports['installweb'] = installweb;
 exports['builddocker'] = builddocker;
 exports['buildweb'] = buildweb;
 
-exports['testall'] = series(testall, parallel(testapi, testweb));
+exports['testall'] = series(testall, testapi, testweb);
 exports['testapi'] = testapi;
 exports['testweb'] = testweb;
 
-exports['cfsync'] = cfsync;
-exports['cfvalidate'] = cfvalidate;
-exports['cfprune'] = cfprune;
+exports['cf'] = cf;
