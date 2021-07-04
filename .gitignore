@@ -11,7 +11,6 @@ node_modules
 dist
 api/**/build
 web/**/build
-lib
 package-lock.json
 tmp
 *.tsbuildinfo

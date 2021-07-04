@@ -6,25 +6,5 @@
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
-  },
-  "yaml.customTags": [
-    "!And",
-    "!If",
-    "!Not",
-    "!Equals",
-    "!Or",
-    "!FindInMap sequence",
-    "!Base64",
-    "!Cidr",
-    "!Ref",
-    "!Sub",
-    "!GetAtt",
-    "!GetAZs",
-    "!ImportValue",
-    "!Select",
-    "!Select sequence",
-    "!Split",
-    "!Join sequence"
-  ],
-  "yaml.format.enable": true
+  }
 }
