@@ -10,12 +10,12 @@ type CIProps = {
 };
 
 export class CI extends cdk.Construct {
-  readonly pipeline: codepipeline.Pipeline;
-
   constructor(scope: cdk.Construct, id: string, props: CIProps) {
     super(scope, id);
 
-    const codeRepository = codecommit.Repository.fromRepositoryName(this, 'CodeRepository', props.repoName);
+    const codeRepository = new codecommit.Repository(this, 'CodeRepository', {
+      repositoryName: props.repoName,
+    });
 
     const imageRepository = new ecr.Repository(this, 'ImageRepository', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -69,7 +69,7 @@ export class CI extends cdk.Construct {
 
     const ecrBuildOutput = new codepipeline.Artifact('EcrBuildOutput');
 
-    this.pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
+    const pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
       restartExecutionOnUpdate: false,
       stages: [
         {
