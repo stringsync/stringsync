@@ -104,10 +104,6 @@ async function db() {
   await docker.db(composeFile, dbUsername);
 }
 
-async function cdk() {
-  await cmd('yarn', ['cdk'], { reject: false, cwd: Project.AWS });
-}
-
 async function tscapi() {
   const watch = WATCH.getOrDefault(true);
 
@@ -173,6 +169,10 @@ async function testweb() {
   await test.run(Project.WEB, ci, watch);
 }
 
+async function cdkdeploy() {
+  await cmd('yarn', ['cdk', 'deploy'], { reject: false, cwd: Project.AWS });
+}
+
 exports['dev'] = dev;
 exports['fakeprod'] = fakeprod;
 exports['down'] = down;
@@ -181,7 +181,6 @@ exports['gensecrets'] = gensecrets;
 exports['logs'] = logs;
 exports['deploy'] = deploy;
 exports['db'] = db;
-exports['cdk'] = cdk;
 
 exports['tscapi'] = tscapi;
 exports['tscweb'] = tscweb;
@@ -197,3 +196,5 @@ exports['buildweb'] = buildweb;
 exports['testall'] = series(testall, testapi, testweb);
 exports['testapi'] = testapi;
 exports['testweb'] = testweb;
+
+exports['cdkdeploy'] = cdkdeploy;
