@@ -58,7 +58,7 @@ export class CI extends cdk.Construct {
             commands: ['./bin/ss builddocker', 'docker tag stringsync:latest $IMAGE_URI:latest', './bin/ss testall'],
             'on-failure': 'ABORT',
           },
-          postBuild: {
+          post_build: {
             commands: [
               'docker push $IMAGE_URI:latest',
               `printf '[{"name":"api","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.api.json`,
