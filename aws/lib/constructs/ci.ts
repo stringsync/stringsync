@@ -59,7 +59,19 @@ export class CI extends cdk.Construct {
             'on-failure': 'ABORT',
           },
           postBuild: {
-            commands: ['docker push $IMAGE_URI:latest'],
+            commands: [
+              'docker push $IMAGE_URI:latest',
+              `printf '[{"name":"api","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.api.json`,
+              `printf '[{"name":"worker","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.worker.json`,
+              'mkdir imagedefinitions-artifacts',
+            ],
+          },
+        },
+        reports: {
+          jest_reports: {
+            'file-format': 'JUNITXML',
+            'base-directory': 'reports',
+            files: ['junit.web.xml', 'junit.api.xml'],
           },
         },
       }),
@@ -67,7 +79,7 @@ export class CI extends cdk.Construct {
 
     const sourceOutput = new codepipeline.Artifact('SourceOutput');
 
-    const ecrBuildOutput = new codepipeline.Artifact('EcrBuildOutput');
+    const ecrBuildOutput = new codepipeline.Artifact('BuildOutput');
 
     const pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
       restartExecutionOnUpdate: false,
@@ -76,7 +88,7 @@ export class CI extends cdk.Construct {
           stageName: 'Source',
           actions: [
             new codepipelineActions.CodeCommitSourceAction({
-              actionName: 'CodeCommit_Source',
+              actionName: 'GetSourceCode',
               branch: 'master',
               repository: codeRepository,
               output: sourceOutput,
@@ -87,7 +99,7 @@ export class CI extends cdk.Construct {
           stageName: 'Build',
           actions: [
             new codepipelineActions.CodeBuildAction({
-              actionName: 'ECR_Build',
+              actionName: 'BuildImage',
               project: ecrBuild,
               input: sourceOutput,
               outputs: [ecrBuildOutput],
