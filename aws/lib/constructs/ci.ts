@@ -70,9 +70,6 @@ export class CI extends cdk.Construct {
           install: {
             commands: ['yarn install'],
           },
-          pre_build: {
-            commands: ['aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION'],
-          },
           build: {
             commands: [
               './bin/ss builddocker',

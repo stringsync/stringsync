@@ -3,6 +3,8 @@ import { App } from './constructs/app';
 import { CI } from './constructs/ci';
 import { Network } from './constructs/network';
 
+const APP_ENABLED = false;
+
 export class AppStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -13,10 +15,12 @@ export class AppStack extends cdk.Stack {
       repoName: 'stringsync',
     });
 
-    const app = new App(this, 'App', {
-      vpc: network.vpc,
-      appRepository: ci.appRepository,
-      workerRepository: ci.workerRepository,
-    });
+    if (APP_ENABLED) {
+      const app = new App(this, 'App', {
+        vpc: network.vpc,
+        appRepository: ci.appRepository,
+        workerRepository: ci.workerRepository,
+      });
+    }
   }
 }

@@ -14,9 +14,10 @@ export class App extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: AppProps) {
     super(scope, id);
 
-    const appCluster = new ecs.Cluster(this, 'AppCluster', { vpc: props.vpc });
+    const cluster = new ecs.Cluster(this, 'Cluster', { vpc: props.vpc });
+
     const appService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'AppService', {
-      cluster: appCluster,
+      cluster,
       desiredCount: 2,
       taskImageOptions: {
         containerName: 'app',
@@ -26,9 +27,8 @@ export class App extends cdk.Construct {
       },
     });
 
-    const workerCluster = new ecs.Cluster(this, 'WorkerCluster', { vpc: props.vpc });
     const workerService = new ecsPatterns.QueueProcessingFargateService(this, 'WorkerService', {
-      cluster: workerCluster,
+      cluster,
       maxScalingCapacity: 2,
       image: ecs.ContainerImage.fromRegistry(props.workerRepository.repositoryUri),
       enableLogging: true,

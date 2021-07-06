@@ -1,3 +1,6 @@
 FROM stringsync:latest
 
+# The reason why the worker has a separate Dockerfile is because
+# ecsPatterns.ApplicationLoadBalancedFargateService does not
+# currently support custom commands.
 CMD [ "yarn", "prod:worker" ]
