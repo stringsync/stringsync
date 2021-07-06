@@ -30,7 +30,7 @@ COPY web/src web/src/
 
 # The web project is built before the api project
 # because the api project builds much faster.
-RUN ss build:web
+RUN ss buildweb
 
 # copy the api files over
 COPY api/tsconfig.json api/
