@@ -61,11 +61,11 @@ export class CI extends cdk.Construct {
           // https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager
           DOCKER_USERNAME: {
             type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
-            value: `DockerCreds:${DOCKER_CREDS_SECRET_ARN}:username:AWSCURRENT`,
+            value: 'DockerCreds:username',
           },
           DOCKER_PASSWORD: {
             type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
-            value: `DockerCreds:${DOCKER_CREDS_SECRET_ARN}:password:AWSCURRENT`,
+            value: 'DockerCreds:password',
           },
           CI: {
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
