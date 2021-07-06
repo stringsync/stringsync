@@ -102,7 +102,7 @@ export class CI extends cdk.Construct {
               'docker tag stringsync:latest $APP_REPO_URI:latest',
               'DOCKERFILE=Dockerfile.worker DOCKER_TAG=stringsyncworker:latest ./bin/ss builddocker',
               'docker tag stringsyncworker:latest $WORKER_REPO_URI:latest',
-              './bin/ss testall',
+              'CI=true ./bin/ss testall',
             ],
             'on-failure': 'ABORT',
           },
