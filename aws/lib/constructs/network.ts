@@ -15,6 +15,7 @@ export class Network extends cdk.Construct {
       cidr: '10.0.0.0/16',
       enableDnsSupport: true,
       enableDnsHostnames: true,
+      maxAzs: 2,
     });
 
     this.publicSubnet1 = this.vpc.publicSubnets[0];

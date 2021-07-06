@@ -1,0 +1,3 @@
+FROM stringsync:latest
+
+CMD [ "yarn", "prod:worker" ]

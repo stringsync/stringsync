@@ -10,6 +10,9 @@ type CIProps = {
 };
 
 export class CI extends cdk.Construct {
+  readonly appRepository: ecr.Repository;
+  readonly workerRepository: ecr.Repository;
+
   constructor(scope: cdk.Construct, id: string, props: CIProps) {
     super(scope, id);
 
@@ -17,7 +20,19 @@ export class CI extends cdk.Construct {
       repositoryName: props.repoName,
     });
 
-    const imageRepository = new ecr.Repository(this, 'ImageRepository', {
+    this.appRepository = new ecr.Repository(this, 'AppRepository', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      lifecycleRules: [
+        {
+          rulePriority: 1,
+          description: 'Keep only one untagged image, expire all others',
+          tagStatus: ecr.TagStatus.UNTAGGED,
+          maxImageCount: 1,
+        },
+      ],
+    });
+
+    this.workerRepository = new ecr.Repository(this, 'WorkerRepository', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       lifecycleRules: [
         {
@@ -39,9 +54,13 @@ export class CI extends cdk.Construct {
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
             value: 'true',
           },
-          IMAGE_REPO_URI: {
+          APP_REPO_URI: {
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
-            value: imageRepository.repositoryUri,
+            value: this.appRepository.repositoryUri,
+          },
+          WORKER_REPO_URI: {
+            type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+            value: this.workerRepository.repositoryUri,
           },
         },
       },
@@ -55,14 +74,20 @@ export class CI extends cdk.Construct {
             commands: ['aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION'],
           },
           build: {
-            commands: ['./bin/ss builddocker', 'docker tag stringsync:latest $IMAGE_URI:latest', './bin/ss testall'],
+            commands: [
+              './bin/ss builddocker',
+              'docker tag stringsync:latest $APP_REPO_URI:latest',
+              'DOCKERFILE=Dockerfile.worker DOCKER_TAG=stringsyncworker:latest ./bin/ss/builddocker',
+              'docker tag stringsyncworker:latest $WORKER_REPO_URI:latest',
+              './bin/ss testall',
+            ],
             'on-failure': 'ABORT',
           },
           post_build: {
             commands: [
               'docker push $IMAGE_URI:latest',
-              `printf '[{"name":"api","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.api.json`,
-              `printf '[{"name":"worker","imageUri":"'$IMAGE_URI'"}]' > imagedefinitions.worker.json`,
+              `printf '[{"name":"api","imageUri":"'$APP_REPO_URI'"}]' > imagedefinitions.api.json`,
+              `printf '[{"name":"worker","imageUri":"'$WORKER_REPO_URI'"}]' > imagedefinitions.worker.json`,
               'mkdir imagedefinitions-artifacts',
             ],
           },

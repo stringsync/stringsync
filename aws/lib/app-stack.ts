@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { App } from './constructs/app';
 import { CI } from './constructs/ci';
 import { Network } from './constructs/network';
 
@@ -10,6 +11,12 @@ export class AppStack extends cdk.Stack {
 
     const ci = new CI(this, 'CI', {
       repoName: 'stringsync',
+    });
+
+    const app = new App(this, 'App', {
+      vpc: network.vpc,
+      appRepository: ci.appRepository,
+      workerRepository: ci.workerRepository,
     });
   }
 }
