@@ -18,11 +18,27 @@ const getTestCmd = (project: Project, ci: boolean, watch: boolean) => {
   ].filter(identity);
 };
 
+const getJestEnvFlags = (project: Project, ci: boolean) => {
+  return [ci ? '-e' : '', ci ? 'JEST_NUM_WORKERS=2' : ''].filter(identity);
+};
+
 const doTest = async (composeFile: string, project: Project, ci: boolean, watch: boolean) => {
   try {
-    await cmd('docker-compose', ['-f', composeFile, 'run', '--rm', 'test', bashC(...getTestCmd(project, ci, watch))], {
-      shell: true,
-    });
+    await cmd(
+      'docker-compose',
+      [
+        '-f',
+        composeFile,
+        'run',
+        '--rm',
+        ...getJestEnvFlags(project, ci),
+        'test',
+        bashC(...getTestCmd(project, ci, watch)),
+      ].filter(identity),
+      {
+        shell: true,
+      }
+    );
     log(chalk.green(`${project} tests succeeded`));
   } catch (err) {
     log(chalk.red(`${project} tests failed`));
