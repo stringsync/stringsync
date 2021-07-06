@@ -14,12 +14,12 @@ ENV PATH="/app/bin:${PATH}"
 # install api dependencies
 COPY api/package.json api/
 COPY api/yarn.lock api/
-RUN ss install:api
+RUN ss installapi
 
 # install web dependencies
 COPY web/package.json web/
 COPY web/yarn.lock web/
-RUN ss install:web
+RUN ss installweb
 
 # copy the web files over
 COPY web/tsconfig.json web/
