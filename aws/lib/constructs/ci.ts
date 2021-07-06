@@ -11,8 +11,6 @@ type CIProps = {
   accountId: string;
 };
 
-const DOCKER_CREDS_SECRET_ARN = 'arn:aws:secretsmanager:us-east-1:735208443400:secret:DockerCreds-kgXr35';
-
 export class CI extends cdk.Construct {
   readonly appRepository: ecr.Repository;
   readonly workerRepository: ecr.Repository;
@@ -50,6 +48,7 @@ export class CI extends cdk.Construct {
 
     const ecrBuild = new codebuild.PipelineProject(this, 'EcrBuild', {
       timeout: cdk.Duration.minutes(30),
+      cache: codebuild.Cache.local(codebuild.LocalCacheMode.DOCKER_LAYER, codebuild.LocalCacheMode.CUSTOM),
       environment: {
         buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
         privileged: true,
@@ -83,6 +82,9 @@ export class CI extends cdk.Construct {
       },
       buildSpec: codebuild.BuildSpec.fromObject({
         version: '0.2',
+        cache: {
+          paths: ['/root/.yarn/**/*/'],
+        },
         phases: {
           install: {
             commands: ['yarn install'],
@@ -92,8 +94,6 @@ export class CI extends cdk.Construct {
               // https://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker.html#sample-docker-files
               'aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com',
               'docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD',
-              'docker pull $APP_REPO_URI:latest || true',
-              'docker image inspect $APP_REPO_URI:latest >/dev/null 2>&1 && docker tag $APP_REPO_URI:latest stringsync:latest',
             ],
           },
           build: {
