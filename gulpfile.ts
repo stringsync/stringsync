@@ -193,7 +193,7 @@ exports['installaws'] = installaws;
 exports['builddocker'] = builddocker;
 exports['buildweb'] = buildweb;
 
-exports['testall'] = series(testall, testapi, testweb);
+exports['testall'] = series(testapi, testweb, testall);
 exports['testapi'] = testapi;
 exports['testweb'] = testweb;
 
