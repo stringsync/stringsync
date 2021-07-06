@@ -35,6 +35,7 @@
     "@aws-cdk/aws-iam": "^1.111.0",
     "@aws-cdk/aws-rds": "^1.111.0",
     "@aws-cdk/aws-s3": "^1.111.0",
+    "@aws-cdk/aws-secretsmanager": "^1.111.0",
     "@aws-cdk/core": "1.111.0",
     "source-map-support": "^0.5.16"
   }

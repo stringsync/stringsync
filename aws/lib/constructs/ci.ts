@@ -11,6 +11,8 @@ type CIProps = {
   accountId: string;
 };
 
+const DOCKER_CREDS_SECRET_ARN = 'arn:aws:secretsmanager:us-east-1:735208443400:secret:DockerCreds-kgXr35';
+
 export class CI extends cdk.Construct {
   readonly appRepository: ecr.Repository;
   readonly workerRepository: ecr.Repository;
@@ -56,6 +58,15 @@ export class CI extends cdk.Construct {
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
             value: props.accountId,
           },
+          // https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager
+          DOCKER_USERNAME: {
+            type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+            value: `DOCKER_USERNAME:${DOCKER_CREDS_SECRET_ARN}:username`,
+          },
+          DOCKER_PASSWORD: {
+            type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+            value: `DOCKER_PASSWORD:${DOCKER_CREDS_SECRET_ARN}:password`,
+          },
           CI: {
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
             value: 'true',
@@ -80,6 +91,7 @@ export class CI extends cdk.Construct {
             commands: [
               // https://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker.html#sample-docker-files
               'aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com',
+              'docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD',
             ],
           },
           build: {
