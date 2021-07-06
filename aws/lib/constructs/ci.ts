@@ -3,6 +3,7 @@ import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipelineActions from '@aws-cdk/aws-codepipeline-actions';
 import * as ecr from '@aws-cdk/aws-ecr';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 
 type CIProps = {
@@ -70,6 +71,12 @@ export class CI extends cdk.Construct {
           install: {
             commands: ['yarn install'],
           },
+          pre_build: {
+            commands: [
+              // https://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker.html#sample-docker-files
+              'aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com',
+            ],
+          },
           build: {
             commands: [
               './bin/ss builddocker',
@@ -82,7 +89,8 @@ export class CI extends cdk.Construct {
           },
           post_build: {
             commands: [
-              'docker push $IMAGE_URI:latest',
+              'docker push $APP_REPO_URI:latest',
+              'docker push $WORKER_REPO_URI:latest',
               `printf '[{"name":"api","imageUri":"'$APP_REPO_URI'"}]' > imagedefinitions.api.json`,
               `printf '[{"name":"worker","imageUri":"'$WORKER_REPO_URI'"}]' > imagedefinitions.worker.json`,
               'mkdir imagedefinitions-artifacts',
@@ -98,6 +106,21 @@ export class CI extends cdk.Construct {
         },
       }),
     });
+    ecrBuild.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: [
+          'ecr:BatchCheckLayerAvailability',
+          'ecr:CompleteLayerUpload',
+          'ecr:GetAuthorizationToken',
+          'ecr:InitiateLayerUpload',
+          'ecr:PutImage',
+          'ecr:UploadLayerPart',
+        ],
+        // We must use '*' for ecr:GetAuthorizationToken
+        resources: ['*'],
+        effect: iam.Effect.ALLOW,
+      })
+    );
 
     const sourceOutput = new codepipeline.Artifact('SourceOutput');
 
