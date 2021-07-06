@@ -193,8 +193,8 @@ exports['installaws'] = installaws;
 exports['builddocker'] = builddocker;
 exports['buildweb'] = buildweb;
 
-exports['testall'] = series(testapi, testweb, testall);
-exports['testapi'] = testapi;
-exports['testweb'] = testweb;
+exports['testall'] = series(gensecrets, testapi, testweb, testall);
+exports['testapi'] = series(gensecrets, testapi);
+exports['testweb'] = series(gensecrets, testweb);
 
 exports['cdkdeploy'] = cdkdeploy;
