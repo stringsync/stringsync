@@ -8,6 +8,7 @@ import * as cdk from '@aws-cdk/core';
 
 type CIProps = {
   repoName: string;
+  accountId: string;
 };
 
 export class CI extends cdk.Construct {
@@ -51,6 +52,10 @@ export class CI extends cdk.Construct {
         buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
         privileged: true,
         environmentVariables: {
+          AWS_ACCOUNT_ID: {
+            type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+            value: props.accountId,
+          },
           CI: {
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
             value: 'true',

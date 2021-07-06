@@ -16,6 +16,7 @@ export class AppStack extends cdk.Stack {
 
     const ci = new CI(this, 'CI', {
       repoName: 'stringsync',
+      accountId: this.account,
     });
 
     const db = new rds.DatabaseInstance(this, 'Database', {
