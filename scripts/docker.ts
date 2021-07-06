@@ -1,15 +1,15 @@
 import { cmd } from './util';
 
 export async function up(composeFile: string) {
-  await cmd('docker', ['compose', '-f', composeFile, 'up', '--detach'], { reject: false });
+  await cmd('docker-compose', ['-f', composeFile, 'up', '--detach'], { reject: false });
 }
 
 export async function logs(composeFile: string) {
-  await cmd('docker', ['compose', '-f', composeFile, 'logs', '-f'], { reject: false });
+  await cmd('docker-compose', ['-f', composeFile, 'logs', '-f'], { reject: false });
 }
 
 export async function down() {
-  await cmd('docker', ['compose', 'down', '-v', '--remove-orphans']);
+  await cmd('docker-compose', ['down', '-v', '--remove-orphans']);
 }
 
 export async function build(dockerfile: string, tag: string) {
@@ -17,5 +17,5 @@ export async function build(dockerfile: string, tag: string) {
 }
 
 export async function db(composeFile: string, dbUsername: string) {
-  await cmd('docker', ['compose', '-f', composeFile, 'exec', 'db', 'psql', '-U', dbUsername]);
+  await cmd('docker-compose', ['-f', composeFile, 'exec', 'db', 'psql', '-U', dbUsername]);
 }
