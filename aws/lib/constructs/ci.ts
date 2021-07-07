@@ -3,6 +3,7 @@ import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipelineActions from '@aws-cdk/aws-codepipeline-actions';
 import * as ecr from '@aws-cdk/aws-ecr';
+import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 
@@ -14,6 +15,9 @@ type CIProps = {
 export class CI extends cdk.Construct {
   readonly appRepository: ecr.Repository;
   readonly workerRepository: ecr.Repository;
+  readonly pipeline: codepipeline.Pipeline;
+
+  private ecrBuildOutput: codepipeline.Artifact;
 
   constructor(scope: cdk.Construct, id: string, props: CIProps) {
     super(scope, id);
@@ -145,7 +149,7 @@ export class CI extends cdk.Construct {
 
     const ecrBuildOutput = new codepipeline.Artifact('BuildOutput');
 
-    const pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
+    this.pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
       restartExecutionOnUpdate: false,
       stages: [
         {
@@ -170,6 +174,28 @@ export class CI extends cdk.Construct {
             }),
           ],
         },
+      ],
+    });
+  }
+
+  addDeployments(appService: ecs.IBaseService, workerService: ecs.IBaseService) {
+    this.pipeline.addStage({
+      stageName: 'Deploy',
+      actions: [
+        new codepipelineActions.EcsDeployAction({
+          actionName: 'DeployApp',
+          runOrder: 1,
+          service: appService,
+          input: this.ecrBuildOutput,
+          imageFile: new codepipeline.ArtifactPath(this.ecrBuildOutput, 'imagedefinitions.api.json'),
+        }),
+        new codepipelineActions.EcsDeployAction({
+          actionName: 'DeployWorker',
+          runOrder: 1,
+          service: workerService,
+          input: this.ecrBuildOutput,
+          imageFile: new codepipeline.ArtifactPath(this.ecrBuildOutput, 'imagedefinitions.worker.json'),
+        }),
       ],
     });
   }

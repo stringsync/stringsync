@@ -37,6 +37,7 @@ export class AppStack extends cdk.Stack {
         appRepository: ci.appRepository,
         workerRepository: ci.workerRepository,
       });
+      ci.addDeployments(app.appService, app.workerService);
     }
   }
 }
