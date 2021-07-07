@@ -6,20 +6,11 @@ import { Cache } from './constructs/Cache';
 import { CI } from './constructs/CI';
 import { Network } from './constructs/Network';
 
+const APP_ENABLED = false;
+
 export class StringsyncStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-
-    const numAppInstances = new cdk.CfnParameter(this, 'NumAppInstances', {
-      description: 'The number of app instances to run. Only set this to >0 when there is an app image in ECR.',
-      type: 'Number',
-      default: 0,
-    });
-    const numWorkerInstances = new cdk.CfnParameter(this, 'NumWorkerInstances', {
-      description: 'The number of worker instances to run. Only set this to >0 when there is an worker image in ECR.',
-      type: 'Number',
-      default: 0,
-    });
 
     const network = new Network(this, 'Network');
 
@@ -30,6 +21,7 @@ export class StringsyncStack extends cdk.Stack {
 
     const db = new rds.DatabaseInstance(this, 'Database', {
       vpc: network.vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
       vpcSubnets: {
         subnetType: ec2.SubnetType.PRIVATE,
       },
@@ -40,11 +32,9 @@ export class StringsyncStack extends cdk.Stack {
       vpc: network.vpc,
     });
 
-    if (numAppInstances.valueAsNumber > 0 && numWorkerInstances.valueAsNumber > 0) {
+    if (APP_ENABLED) {
       const app = new App(this, 'App', {
         vpc: network.vpc,
-        numAppInstances: numAppInstances.valueAsNumber,
-        numWorkerInstances: numWorkerInstances.valueAsNumber,
         appRepository: ci.appRepository,
         workerRepository: ci.workerRepository,
       });
