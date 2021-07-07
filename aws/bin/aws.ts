@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import * as cdk from '@aws-cdk/core';
 import 'source-map-support/register';
-import { StringSyncStack } from '../lib/StringSyncStack';
+import { StringsyncStack } from '../lib/StringsyncStack1';
 
 const app = new cdk.App();
-new StringSyncStack(app, 'stringsync', {
+new StringsyncStack(app, 'stringsync', {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
    * but a single synthesized template can be deployed anywhere. */
