@@ -1,10 +1,10 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as rds from '@aws-cdk/aws-rds';
 import * as cdk from '@aws-cdk/core';
-import { App } from './constructs/app';
-import { Cache } from './constructs/cache';
-import { CI } from './constructs/ci';
-import { Network } from './constructs/network';
+import { App } from './constructs/App';
+import { Cache } from './constructs/Cache';
+import { CI } from './constructs/CI';
+import { Network } from './constructs/Network';
 
 export class StringSyncStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
