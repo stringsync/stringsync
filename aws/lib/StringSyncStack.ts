@@ -6,7 +6,7 @@ import { Cache } from './constructs/cache';
 import { CI } from './constructs/ci';
 import { Network } from './constructs/network';
 
-export class AppStack extends cdk.Stack {
+export class StringSyncStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
