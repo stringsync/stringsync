@@ -6,11 +6,20 @@ import { Cache } from './constructs/cache';
 import { CI } from './constructs/ci';
 import { Network } from './constructs/network';
 
-const APP_ENABLED = false;
-
 export class AppStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    const numAppInstances = new cdk.CfnParameter(this, 'NumAppInstances', {
+      description: 'The number of app instances to run. Only set this to >0 when there is an app image in ECR.',
+      type: 'Number',
+      default: 0,
+    });
+    const numWorkerInstances = new cdk.CfnParameter(this, 'NumWorkerInstances', {
+      description: 'The number of worker instances to run. Only set this to >0 when there is an worker image in ECR.',
+      type: 'Number',
+      default: 0,
+    });
 
     const network = new Network(this, 'Network');
 
@@ -31,9 +40,11 @@ export class AppStack extends cdk.Stack {
       vpc: network.vpc,
     });
 
-    if (APP_ENABLED) {
+    if (numAppInstances.valueAsNumber > 0 && numWorkerInstances.valueAsNumber > 0) {
       const app = new App(this, 'App', {
         vpc: network.vpc,
+        numAppInstances: numAppInstances.valueAsNumber,
+        numWorkerInstances: numWorkerInstances.valueAsNumber,
         appRepository: ci.appRepository,
         workerRepository: ci.workerRepository,
       });

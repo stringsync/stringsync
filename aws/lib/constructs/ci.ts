@@ -147,7 +147,7 @@ export class CI extends cdk.Construct {
 
     const sourceOutput = new codepipeline.Artifact('SourceOutput');
 
-    const ecrBuildOutput = new codepipeline.Artifact('BuildOutput');
+    this.ecrBuildOutput = new codepipeline.Artifact('BuildOutput');
 
     this.pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
       restartExecutionOnUpdate: false,
@@ -170,7 +170,7 @@ export class CI extends cdk.Construct {
               actionName: 'BuildImage',
               project: ecrBuild,
               input: sourceOutput,
-              outputs: [ecrBuildOutput],
+              outputs: [this.ecrBuildOutput],
             }),
           ],
         },
@@ -186,14 +186,12 @@ export class CI extends cdk.Construct {
           actionName: 'DeployApp',
           runOrder: 1,
           service: appService,
-          input: this.ecrBuildOutput,
           imageFile: new codepipeline.ArtifactPath(this.ecrBuildOutput, 'imagedefinitions.api.json'),
         }),
         new codepipelineActions.EcsDeployAction({
           actionName: 'DeployWorker',
           runOrder: 1,
           service: workerService,
-          input: this.ecrBuildOutput,
           imageFile: new codepipeline.ArtifactPath(this.ecrBuildOutput, 'imagedefinitions.worker.json'),
         }),
       ],

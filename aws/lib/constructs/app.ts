@@ -8,6 +8,8 @@ type AppProps = {
   vpc: ec2.IVpc;
   appRepository: ecr.Repository;
   workerRepository: ecr.Repository;
+  numAppInstances: number;
+  numWorkerInstances: number;
 };
 
 export class App extends cdk.Construct {
@@ -21,7 +23,7 @@ export class App extends cdk.Construct {
 
     const app = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'AppService', {
       cluster,
-      desiredCount: 2,
+      desiredCount: props.numAppInstances,
       taskImageOptions: {
         containerName: 'app',
         image: ecs.ContainerImage.fromRegistry(props.appRepository.repositoryUri),
@@ -33,7 +35,8 @@ export class App extends cdk.Construct {
 
     const worker = new ecsPatterns.QueueProcessingFargateService(this, 'WorkerService', {
       cluster,
-      maxScalingCapacity: 2,
+      minScalingCapacity: props.numWorkerInstances,
+      maxScalingCapacity: props.numWorkerInstances,
       image: ecs.ContainerImage.fromRegistry(props.workerRepository.repositoryUri),
       enableLogging: true,
       environment: {},
