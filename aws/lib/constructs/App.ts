@@ -8,6 +8,8 @@ type AppProps = {
   vpc: ec2.IVpc;
   appRepository: ecr.Repository;
   workerRepository: ecr.Repository;
+  environment: Record<string, string>;
+  secrets: Record<string, ecs.Secret>;
 };
 
 export class App extends cdk.Construct {
@@ -26,7 +28,8 @@ export class App extends cdk.Construct {
         containerName: 'app',
         image: ecs.ContainerImage.fromRegistry(props.appRepository.repositoryUri),
         enableLogging: true,
-        environment: {},
+        environment: props.environment,
+        secrets: props.secrets,
       },
     });
     this.appService = app.service;
@@ -37,7 +40,8 @@ export class App extends cdk.Construct {
       maxScalingCapacity: 1,
       image: ecs.ContainerImage.fromRegistry(props.workerRepository.repositoryUri),
       enableLogging: true,
-      environment: {},
+      environment: props.environment,
+      secrets: props.secrets,
     });
     this.workerService = worker.service;
   }
