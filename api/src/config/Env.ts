@@ -2,82 +2,55 @@ export enum EnvType {
   String,
   Number,
   Boolean,
-  Json,
 }
 
 type Primitive = {
   [EnvType.String]: string;
   [EnvType.Number]: number;
   [EnvType.Boolean]: boolean;
-  [EnvType.Json]: Record<string, string>;
 };
 
 export class Env<T extends EnvType> {
-  static string(key: string) {
-    return new Env(key, EnvType.String);
+  static string(key: string, env = process.env) {
+    return new Env(key, EnvType.String, env);
   }
 
-  static number(key: string) {
-    return new Env(key, EnvType.Number);
+  static number(key: string, env = process.env) {
+    return new Env(key, EnvType.Number, env);
   }
 
-  static boolean(key: string) {
-    return new Env(key, EnvType.Boolean);
+  static boolean(key: string, env = process.env) {
+    return new Env(key, EnvType.Boolean, env);
   }
 
-  static json(key: string) {
-    return new Env(key, EnvType.Json);
-  }
-
-  private constructor(readonly key: string, readonly type: T) {}
+  private constructor(readonly key: string, readonly type: T, readonly env: Record<string, string | undefined>) {}
 
   get(): Primitive[T] {
-    const val = process.env[this.key];
+    const val = this.env[this.key];
     if (typeof val === 'undefined') {
       throw new TypeError(`env variable is undefined: '${this.key}'`);
     }
-    return this.parse(val, this.type);
-  }
-
-  getJson(jsonKey: string, envType: EnvType): Primitive[typeof envType] {
-    if (this.type !== EnvType.Json) {
-      throw new TypeError(`env variable is not JSON: ${this.key}`);
-    }
-
-    const val = process.env[this.key];
-    if (typeof val === 'undefined') {
-      throw new TypeError(`env variable is undefined: '${this.key}'`);
-    }
-
-    const json = this.parse(val, EnvType.Json) as Record<string, string>;
-    const jsonVal = json[jsonKey];
-    if (typeof jsonVal === 'undefined') {
-      throw new TypeError(`env variable is undefined: '${this.key}.${jsonKey}'`);
-    }
-
-    return this.parse(jsonVal, envType);
+    return this.parse(val);
   }
 
   getOrDefault(defaultVal: Primitive[T]): Primitive[T] {
-    const val = process.env[this.key];
+    const val = this.env[this.key];
 
     if (typeof val === 'undefined') {
       return defaultVal;
     }
 
-    return this.parse(val, this.type);
+    return this.parse(val);
   }
 
-  private parse(val: string, type: EnvType): Primitive[T] {
-    switch (type) {
+  private parse(val: string): Primitive[T] {
+    switch (this.type) {
       case EnvType.String:
         return this.parseString(val) as Primitive[T];
       case EnvType.Number:
         return this.parseNumber(val) as Primitive[T];
       case EnvType.Boolean:
         return this.parseBoolean(val) as Primitive[T];
-      case EnvType.Json:
-        return this.parseJson(val) as Primitive[T];
       default:
         throw new TypeError(`unknown EnvType: ${this.type}`);
     }
