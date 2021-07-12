@@ -16,9 +16,13 @@ Env.string('AWS_REGION').getOrDefault('');
 Env.string('AWS_SECRET_ACCESS_KEY').getOrDefault('');
 
 const WEB_UI_CDN_DOMAIN_NAME = Env.string('WEB_UI_CDN_DOMAIN_NAME').get();
+
+const MEDIA_CDN_DOMAIN_NAME = Env.string('MEDIA_CDN_DOMAIN_NAME').get();
 const MEDIA_S3_BUCKET = Env.string('MEDIA_S3_BUCKET').get();
+
 const VIDEO_SRC_S3_BUCKET = Env.string('VIDEO_SRC_S3_BUCKET').get();
 const VIDEO_QUEUE_SQS_URL = Env.string('VIDEO_QUEUE_SQS_URL').get();
+
 const INFO_EMAIL = Env.string('INFO_EMAIL').get();
 const DEV_EMAIL = Env.string('DEV_EMAIL').get();
 
@@ -38,6 +42,7 @@ export const config = {
   PORT,
   SESSION_SECRET,
   WEB_UI_CDN_DOMAIN_NAME,
+  MEDIA_CDN_DOMAIN_NAME,
   MEDIA_S3_BUCKET,
   VIDEO_SRC_S3_BUCKET,
   VIDEO_QUEUE_SQS_URL,
