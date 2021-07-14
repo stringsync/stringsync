@@ -111,7 +111,7 @@ Mappings:
       KeyPrefix: 'video-on-demand-on-aws/v5.2.0'
   AnonymousData:
     SendAnonymousData:
-      Data: Yes
+      Data: No
 
 Conditions:
   Metrics: !Equals [!FindInMap [AnonymousData, SendAnonymousData, Data], Yes]
