@@ -1,5 +1,4 @@
 import { Env } from './Env';
-import { getCreds } from './getCreds';
 
 const NODE_ENV = Env.string('NODE_ENV').get();
 const LOG_LEVEL = Env.string('LOG_LEVEL').get();
@@ -29,9 +28,8 @@ const DEV_EMAIL = Env.string('DEV_EMAIL').get();
 const DB_HOST = Env.string('DB_HOST').get();
 const DB_NAME = Env.string('DB_NAME').get();
 const DB_PORT = Env.number('DB_PORT').get();
-const DB_CREDS = getCreds(JSON.parse(Env.string('DB_CREDS').get()));
-const DB_USERNAME = DB_CREDS.username;
-const DB_PASSWORD = DB_CREDS.password;
+const DB_USERNAME = Env.string('DB_USERNAME').get();
+const DB_PASSWORD = Env.string('DB_PASSWORD').get();
 
 const REDIS_HOST = Env.string('REDIS_HOST').get();
 const REDIS_PORT = Env.number('REDIS_PORT').get();
@@ -56,3 +54,5 @@ export const config = {
   REDIS_HOST,
   REDIS_PORT,
 } as const;
+
+export type Config = typeof config;

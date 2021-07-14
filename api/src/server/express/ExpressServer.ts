@@ -59,8 +59,8 @@ export class ExpressServer implements Server {
 
   protected listen() {
     const { app, logger, config } = this;
-    app.listen(config.APP_GRAPHQL_PORT, () => {
-      logger.info(`server running on port: ${config.APP_GRAPHQL_PORT}`);
+    app.listen(config.PORT, () => {
+      logger.info(`server running on port: ${config.PORT}`);
     });
   }
 }

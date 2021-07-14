@@ -74,8 +74,4 @@ export class Env<T extends EnvType> {
     }
     return val === 'true';
   }
-
-  private parseJson(val: string): Record<string, string> {
-    return JSON.parse(val);
-  }
 }

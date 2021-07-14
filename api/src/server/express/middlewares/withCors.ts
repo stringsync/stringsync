@@ -7,7 +7,7 @@ export const withCors = (config: Config): RequestHandler => {
   if (config.NODE_ENV === 'development') {
     opts.origin = true;
   } else {
-    opts.origin = [config.APP_WEB_ORIGIN];
+    opts.origin = [config.WEB_UI_CDN_DOMAIN_NAME];
   }
   return cors(opts);
 };

@@ -1,7 +1,7 @@
 import { Container } from 'inversify';
 import { createClient, RedisClient } from 'redis';
 import 'reflect-metadata';
-import { Config, getConfig } from './config';
+import { Config, config } from './config';
 import { Db, DevSequelizeDb, SequelizeDb } from './db';
 import { TYPES } from './inversify.constants';
 import {
@@ -51,7 +51,6 @@ import {
 
 export const container = new Container();
 
-const config = getConfig();
 container.bind<Config>(TYPES.Config).toConstantValue(config);
 
 if (config.NODE_ENV === 'production') {

@@ -15,7 +15,7 @@ export const withSession = (redis: RedisClient, config: Config): Handler => {
   const sameSite = isProduction ? 'none' : undefined;
 
   return session({
-    secret: config.APP_SESSION_SECRET,
+    secret: config.SESSION_SECRET,
     cookie: { httpOnly: true, maxAge: MAX_AGE_MS, secure, sameSite },
     genid: () => uuid.v4(),
     proxy: undefined,
