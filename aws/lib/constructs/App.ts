@@ -2,10 +2,12 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as ecsPatterns from '@aws-cdk/aws-ecs-patterns';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
 
 type AppProps = {
   vpc: ec2.IVpc;
+  loadBalancer: elbv2.ApplicationLoadBalancer;
   appRepository: ecr.Repository;
   workerRepository: ecr.Repository;
   environment: Record<string, string>;
@@ -24,6 +26,7 @@ export class App extends cdk.Construct {
     const app = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'AppService', {
       cluster,
       desiredCount: 2,
+      loadBalancerName: props.loadBalancer.loadBalancerName,
       taskImageOptions: {
         containerName: 'app',
         image: ecs.ContainerImage.fromRegistry(props.appRepository.repositoryUri),
@@ -37,6 +40,7 @@ export class App extends cdk.Construct {
     const worker = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'WorkerService', {
       cluster,
       desiredCount: 1,
+      loadBalancerName: props.loadBalancer.loadBalancerName,
       taskImageOptions: {
         containerName: 'worker',
         image: ecs.ContainerImage.fromRegistry(props.appRepository.repositoryUri),
