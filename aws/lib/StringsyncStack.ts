@@ -21,6 +21,7 @@ export class StringsyncStack extends cdk.Stack {
       accountId: this.account,
     });
 
+    const dbName = this.stackName;
     const dbCredsSecret = new secretsmanager.Secret(this, 'DbCreds', {
       generateSecretString: {
         secretStringTemplate: JSON.stringify({ username: 'stringsync' }),
@@ -31,6 +32,7 @@ export class StringsyncStack extends cdk.Stack {
     });
     const db = new rds.DatabaseInstance(this, 'Database', {
       vpc: network.vpc,
+      databaseName: dbName,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
       credentials: rds.Credentials.fromSecret(dbCredsSecret),
       vpcSubnets: {
@@ -53,21 +55,24 @@ export class StringsyncStack extends cdk.Stack {
         environment: {
           NODE_ENV: 'production',
           LOG_LEVEL: 'debug',
-          DEV_EMAIL: '',
-          INFO_EMAIL: '',
-          APP_GRAPHQL_PORT: '3000',
-          CDN_DOMAIN_NAME: 'd2yt8e0its832a.cloudfront.net',
+          PORT: '3000',
+          WEB_UI_CDN_DOMAIN_NAME: '',
+          MEDIA_CDN_DOMAIN_NAME: '',
+          MEDIA_S3_BUCKET: '',
+          VIDEO_SRC_S3_BUCKET: '',
+          VIDEO_QUEUE_SQS_URL: '',
+          DEV_EMAIL: 'dev@stringsync.com',
+          INFO_EMAIL: 'info@stringsync.com',
           DB_HOST: db.instanceEndpoint.hostname,
           DB_PORT: db.instanceEndpoint.port.toString(),
+          DB_NAME: dbName,
+          DB_USERNAME: dbCredsSecret.secretValueFromJson('username').toString(),
+          DB_PASSWORD: dbCredsSecret.secretValueFromJson('password').toString(),
           REDIS_HOST: cache.cluster.attrRedisEndpointAddress,
           REDIS_PORT: cache.cluster.attrRedisEndpointPort,
-          S3_BUCKET: '',
-          S3_VIDEO_SRC_BUCKET: '',
-          SQS_VIDEO_QUEUE_URL: '',
         },
         secrets: {
-          APP_SESSION_SECRET: ecs.Secret.fromSecretsManager(appSessionSecret),
-          DB_CREDS: ecs.Secret.fromSecretsManager(dbCredsSecret),
+          SESSION_SECRET: ecs.Secret.fromSecretsManager(appSessionSecret),
         },
       });
 
