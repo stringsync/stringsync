@@ -34,14 +34,16 @@ export class App extends cdk.Construct {
     });
     this.appService = app.service;
 
-    const worker = new ecsPatterns.QueueProcessingFargateService(this, 'WorkerService', {
+    const worker = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'WorkerService', {
       cluster,
-      minScalingCapacity: 1,
-      maxScalingCapacity: 1,
-      image: ecs.ContainerImage.fromRegistry(props.workerRepository.repositoryUri),
-      enableLogging: true,
-      environment: props.environment,
-      secrets: props.secrets,
+      desiredCount: 1,
+      taskImageOptions: {
+        containerName: 'worker',
+        image: ecs.ContainerImage.fromRegistry(props.appRepository.repositoryUri),
+        enableLogging: true,
+        environment: props.environment,
+        secrets: props.secrets,
+      },
     });
     this.workerService = worker.service;
   }
