@@ -2,38 +2,25 @@ import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as origins from '@aws-cdk/aws-cloudfront-origins';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
+import * as ecsPatterns from '@aws-cdk/aws-ecs-patterns';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as rds from '@aws-cdk/aws-rds';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cfninc from '@aws-cdk/cloudformation-include';
 import * as cdk from '@aws-cdk/core';
-import { App } from './constructs/App';
 import { Cache } from './constructs/Cache';
 import { CI } from './constructs/CI';
 import { Network } from './constructs/Network';
 
-const APP_ENABLED = false;
+const APP_ENABLED = true;
 
 export class StringsyncStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const network = new Network(this, 'Network');
-
-    const vodTemplate = new cfninc.CfnInclude(this, 'VodTemplate', {
-      templateFile: 'templates/vod.yml',
-      preserveLogicalIds: true,
-      parameters: {
-        AdminEmail: 'jared@jaredjohnson.dev',
-        EnableSns: 'No',
-        AcceleratedTranscoding: 'DISABLED',
-      },
-    });
-
-    const videoSourceBucketNameOutput = vodTemplate.getOutput('Source');
-
-    const sqsUrlOutput = vodTemplate.getOutput('SqsURL');
 
     const ci = new CI(this, 'CI', {
       repoName: 'stringsync',
@@ -65,6 +52,20 @@ export class StringsyncStack extends cdk.Stack {
     });
 
     if (APP_ENABLED) {
+      const vodTemplate = new cfninc.CfnInclude(this, 'VodTemplate', {
+        templateFile: 'templates/vod.yml',
+        preserveLogicalIds: true,
+        parameters: {
+          AdminEmail: 'jared@jaredjohnson.dev',
+          EnableSns: 'No',
+          AcceleratedTranscoding: 'DISABLED',
+        },
+      });
+
+      const videoSourceBucketNameOutput = vodTemplate.getOutput('Source');
+
+      const sqsUrlOutput = vodTemplate.getOutput('SqsURL');
+
       const appSessionSecret = new secretsmanager.Secret(this, 'AppSessionSecret');
 
       // Cast to any since the cloudfront ec2 reference is stale.
@@ -73,6 +74,7 @@ export class StringsyncStack extends cdk.Stack {
       const loadBalancer = new (elbv2.ApplicationLoadBalancer as any)(this, 'AppLoadBalancer', {
         vpc: network.vpc,
         internetFacing: true,
+        deletionProtection: false,
       });
 
       const webUiCdn = new cloudfront.Distribution(this, 'WebUiCdn', {
@@ -110,36 +112,67 @@ export class StringsyncStack extends cdk.Stack {
         },
       });
 
-      const app = new App(this, 'App', {
-        vpc: network.vpc,
-        loadBalancer,
-        appRepository: ci.appRepository,
-        workerRepository: ci.workerRepository,
-        environment: {
-          NODE_ENV: 'production',
-          LOG_LEVEL: 'debug',
-          PORT: '3000',
-          WEB_UI_CDN_DOMAIN_NAME: webUiCdn.domainName,
-          MEDIA_CDN_DOMAIN_NAME: mediaCdn.domainName,
-          MEDIA_S3_BUCKET: mediaBucket.bucketName,
-          VIDEO_SRC_S3_BUCKET: videoSourceBucketNameOutput.toString(),
-          VIDEO_QUEUE_SQS_URL: sqsUrlOutput.toString(),
-          DEV_EMAIL: 'dev@stringsync.com',
-          INFO_EMAIL: 'info@stringsync.com',
-          DB_HOST: db.instanceEndpoint.hostname,
-          DB_PORT: db.instanceEndpoint.port.toString(),
-          DB_NAME: dbName,
-          DB_USERNAME: dbCredsSecret.secretValueFromJson('username').toString(),
-          DB_PASSWORD: dbCredsSecret.secretValueFromJson('password').toString(),
-          REDIS_HOST: cache.cluster.attrRedisEndpointAddress,
-          REDIS_PORT: cache.cluster.attrRedisEndpointPort,
+      const cluster = new ecs.Cluster(this, 'Cluster', { vpc: network.vpc });
+
+      const environment = {
+        NODE_ENV: 'production',
+        LOG_LEVEL: 'debug',
+        PORT: '3000',
+        WEB_UI_CDN_DOMAIN_NAME: webUiCdn.domainName,
+        MEDIA_CDN_DOMAIN_NAME: mediaCdn.domainName,
+        MEDIA_S3_BUCKET: mediaBucket.bucketName,
+        VIDEO_SRC_S3_BUCKET: videoSourceBucketNameOutput.toString(),
+        VIDEO_QUEUE_SQS_URL: sqsUrlOutput.toString(),
+        DEV_EMAIL: 'dev@stringsync.com',
+        INFO_EMAIL: 'info@stringsync.com',
+        DB_HOST: db.instanceEndpoint.hostname,
+        DB_PORT: db.instanceEndpoint.port.toString(),
+        DB_NAME: dbName,
+        DB_USERNAME: dbCredsSecret.secretValueFromJson('username').toString(),
+        DB_PASSWORD: dbCredsSecret.secretValueFromJson('password').toString(),
+        REDIS_HOST: cache.cluster.attrRedisEndpointAddress,
+        REDIS_PORT: cache.cluster.attrRedisEndpointPort,
+      };
+
+      const secrets = { SESSION_SECRET: ecs.Secret.fromSecretsManager(appSessionSecret) };
+
+      const app = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'AppService', {
+        cluster,
+        assignPublicIp: true,
+        taskSubnets: {
+          subnetType: ec2.SubnetType.PUBLIC,
         },
-        secrets: {
-          SESSION_SECRET: ecs.Secret.fromSecretsManager(appSessionSecret),
+        desiredCount: 1,
+        loadBalancer,
+        loadBalancerName: 'AppLoaderBalancer',
+        taskImageOptions: {
+          containerName: 'app',
+          image: ecs.ContainerImage.fromRegistry(ci.appRepository.repositoryUri),
+          enableLogging: true,
+          environment,
+          secrets,
         },
       });
 
-      ci.addDeployments(app.appService, app.workerService);
+      app.taskDefinition.executionRole?.addManagedPolicy(
+        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPowerUser')
+      );
+
+      // const worker = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'WorkerService', {
+      //   cluster,
+      //   desiredCount: 1,
+      //   loadBalancer,
+      //   loadBalancerName: 'WorkerLoaderBalancer',
+      //   taskImageOptions: {
+      //     containerName: 'worker',
+      //     image: ecs.ContainerImage.fromRegistry(ci.workerRepository.repositoryUri),
+      //     enableLogging: true,
+      //     environment,
+      //     secrets,
+      //   },
+      // });
+
+      ci.addDeployments(app.service);
     }
   }
 }

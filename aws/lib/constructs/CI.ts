@@ -178,7 +178,7 @@ export class CI extends cdk.Construct {
     });
   }
 
-  addDeployments(appService: ecs.IBaseService, workerService: ecs.IBaseService) {
+  addDeployments(appService: ecs.IBaseService, workerService?: ecs.IBaseService) {
     this.pipeline.addStage({
       stageName: 'Deploy',
       actions: [
@@ -188,12 +188,12 @@ export class CI extends cdk.Construct {
           service: appService,
           imageFile: new codepipeline.ArtifactPath(this.ecrBuildOutput, 'imagedefinitions.api.json'),
         }),
-        new codepipelineActions.EcsDeployAction({
-          actionName: 'DeployWorker',
-          runOrder: 1,
-          service: workerService,
-          imageFile: new codepipeline.ArtifactPath(this.ecrBuildOutput, 'imagedefinitions.worker.json'),
-        }),
+        // new codepipelineActions.EcsDeployAction({
+        //   actionName: 'DeployWorker',
+        //   runOrder: 1,
+        //   service: workerService,
+        //   imageFile: new codepipeline.ArtifactPath(this.ecrBuildOutput, 'imagedefinitions.worker.json'),
+        // }),
       ],
     });
   }
