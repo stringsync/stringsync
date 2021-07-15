@@ -90,7 +90,6 @@ export class StringsyncStack extends cdk.Stack {
       fargateContainerSecurityGroup.connections.allowFrom(loadBalancerSecurityGroup, ec2.Port.allTcp());
 
       cache.securityGroup.connections.allowFrom(fargateContainerSecurityGroup, ec2.Port.allTcp());
-      cache.securityGroup.connections.allowTo(fargateContainerSecurityGroup, ec2.Port.allTcp());
 
       const webUiCdn = new cloudfront.Distribution(this, 'WebUiCdn', {
         enabled: true,
