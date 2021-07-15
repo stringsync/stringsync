@@ -173,8 +173,8 @@ async function cdkdeploy() {
   await cmd('yarn', ['cdk', 'deploy'], { reject: false, cwd: Project.AWS });
 }
 
-exports['dev'] = dev;
-exports['fakeprod'] = fakeprod;
+exports['dev'] = series(builddocker, dev);
+exports['fakeprod'] = series(builddocker, fakeprod);
 exports['down'] = down;
 exports['typegen'] = typegen;
 exports['gensecrets'] = gensecrets;

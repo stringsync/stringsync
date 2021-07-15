@@ -68,14 +68,29 @@ export class StringsyncStack extends cdk.Stack {
 
       const appSessionSecret = new secretsmanager.Secret(this, 'AppSessionSecret');
 
+      const loadBalancerSecurityGroup = new ec2.SecurityGroup(this, 'LoadBalancerSecurityGroup', {
+        vpc: network.vpc,
+        allowAllOutbound: true,
+      });
+
       // Cast to any since the cloudfront ec2 reference is stale.
       // For example, Type 'import("/Users/jared/Projects/stringsync/aws/node_modules/@aws-cdk/aws-ec2/lib/vpc").ISubnet[]'
       // is not assignable to type 'import("/Users/jared/Projects/stringsync/aws/node_modules/@aws-cdk/aws-cloudfront/node_modules/@aws-cdk/aws-ec2/lib/vpc").ISubnet[]'.
       const loadBalancer = new (elbv2.ApplicationLoadBalancer as any)(this, 'AppLoadBalancer', {
         vpc: network.vpc,
+        securityGroup: loadBalancerSecurityGroup,
         internetFacing: true,
         deletionProtection: false,
       });
+
+      const fargateContainerSecurityGroup = new ec2.SecurityGroup(this, 'FargateContainerSecurityGroup', {
+        description: 'Access to the Fargate containers',
+        vpc: network.vpc,
+      });
+      fargateContainerSecurityGroup.connections.allowFrom(loadBalancerSecurityGroup, ec2.Port.allTcp());
+
+      cache.securityGroup.connections.allowFrom(fargateContainerSecurityGroup, ec2.Port.allTcp());
+      cache.securityGroup.connections.allowTo(fargateContainerSecurityGroup, ec2.Port.allTcp());
 
       const webUiCdn = new cloudfront.Distribution(this, 'WebUiCdn', {
         enabled: true,
@@ -117,7 +132,7 @@ export class StringsyncStack extends cdk.Stack {
       const environment = {
         NODE_ENV: 'production',
         LOG_LEVEL: 'debug',
-        PORT: '3000',
+        PORT: '80',
         WEB_UI_CDN_DOMAIN_NAME: webUiCdn.domainName,
         MEDIA_CDN_DOMAIN_NAME: mediaCdn.domainName,
         MEDIA_S3_BUCKET: mediaBucket.bucketName,
@@ -142,6 +157,7 @@ export class StringsyncStack extends cdk.Stack {
         taskSubnets: {
           subnetType: ec2.SubnetType.PUBLIC,
         },
+        securityGroups: [fargateContainerSecurityGroup],
         desiredCount: 1,
         loadBalancer,
         loadBalancerName: 'AppLoaderBalancer',
@@ -151,12 +167,18 @@ export class StringsyncStack extends cdk.Stack {
           enableLogging: true,
           environment,
           secrets,
+          containerPort: 80,
         },
       });
 
       app.taskDefinition.executionRole?.addManagedPolicy(
         iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPowerUser')
       );
+
+      app.targetGroup.configureHealthCheck({
+        path: '/health',
+        port: '80',
+      });
 
       // const worker = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'WorkerService', {
       //   cluster,
