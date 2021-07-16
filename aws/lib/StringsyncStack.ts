@@ -15,7 +15,6 @@ import { CI } from './constructs/CI';
 import { Network } from './constructs/Network';
 
 const APP_ENABLED = true;
-const NGINX_REPOSITORY_URI = '735208443400.dkr.ecr.us-east-1.amazonaws.com/nginx:1.:21';
 
 export class StringsyncStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -40,6 +39,7 @@ export class StringsyncStack extends cdk.Stack {
     const db = new rds.DatabaseInstance(this, 'Database', {
       vpc: network.vpc,
       databaseName: dbName,
+      port: 5432,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
       credentials: rds.Credentials.fromSecret(dbCredsSecret),
       vpcSubnets: {
@@ -141,7 +141,7 @@ export class StringsyncStack extends cdk.Stack {
         DEV_EMAIL: 'dev@stringsync.com',
         INFO_EMAIL: 'info@stringsync.com',
         DB_HOST: db.instanceEndpoint.hostname,
-        DB_PORT: db.instanceEndpoint.port.toString(),
+        DB_PORT: '5432',
         DB_NAME: dbName,
         DB_USERNAME: dbCredsSecret.secretValueFromJson('username').toString(),
         DB_PASSWORD: dbCredsSecret.secretValueFromJson('password').toString(),
@@ -160,19 +160,19 @@ export class StringsyncStack extends cdk.Stack {
         securityGroups: [fargateContainerSecurityGroup],
         desiredCount: 1,
         loadBalancer,
-        loadBalancerName: 'AppLoaderBalancer',
         taskImageOptions: {
           containerName: 'nginx',
-          image: ecs.ContainerImage.fromRegistry(NGINX_REPOSITORY_URI),
+          image: ecs.ContainerImage.fromRegistry(ci.nginxRepository.repositoryUri),
           enableLogging: true,
           containerPort: 80,
         },
       });
 
-      app.taskDefinition.addContainer('app', {
-        containerName: 'app',
+      app.taskDefinition.addContainer('api', {
+        containerName: 'api',
         image: ecs.ContainerImage.fromRegistry(ci.appRepository.repositoryUri),
         essential: true,
+        portMappings: [{ containerPort: 3000 }],
         environment,
         secrets,
       });
