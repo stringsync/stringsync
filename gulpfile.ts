@@ -128,9 +128,9 @@ async function installaws() {
   await cmd('yarn', [], { cwd: Project.AWS });
 }
 
-async function builddocker() {
+async function buildapi() {
   const dockerTag = DOCKER_TAG.getOrDefault('stringsync:latest');
-  const dockerfile = DOCKERFILE.getOrDefault('Dockerfile');
+  const dockerfile = DOCKERFILE.getOrDefault('Dockerfile.api');
 
   await docker.build(dockerfile, dockerTag);
 }
@@ -180,8 +180,8 @@ async function cdkdeploy() {
   await cmd('yarn', ['cdk', 'deploy'], { reject: false, cwd: Project.AWS });
 }
 
-exports['dev'] = series(builddocker, dev);
-exports['fakeprod'] = series(buildnginx, builddocker, fakeprod);
+exports['dev'] = series(buildapi, dev);
+exports['fakeprod'] = series(buildnginx, buildapi, fakeprod);
 exports['down'] = down;
 exports['typegen'] = typegen;
 exports['gensecrets'] = gensecrets;
@@ -197,7 +197,8 @@ exports['installapi'] = installapi;
 exports['installweb'] = installweb;
 exports['installaws'] = installaws;
 
-exports['builddocker'] = builddocker;
+exports['buildapi'] = buildapi;
+exports['buildnginx'] = buildnginx;
 exports['buildweb'] = buildweb;
 
 exports['testall'] = series(gensecrets, testapi, testweb, testall);
