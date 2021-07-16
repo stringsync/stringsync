@@ -13,8 +13,7 @@ type CIProps = {
 };
 
 export class CI extends cdk.Construct {
-  readonly apiRepository: ecr.Repository;
-  readonly workerRepository: ecr.Repository;
+  readonly appRepository: ecr.Repository;
   readonly nginxRepository: ecr.Repository;
   readonly pipeline: codepipeline.Pipeline;
 
@@ -27,7 +26,7 @@ export class CI extends cdk.Construct {
       repositoryName: props.repoName,
     });
 
-    this.apiRepository = new ecr.Repository(this, 'ApiRepository', {
+    this.appRepository = new ecr.Repository(this, 'AppRepository', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       lifecycleRules: [
         {
@@ -39,19 +38,7 @@ export class CI extends cdk.Construct {
       ],
     });
 
-    this.workerRepository = new ecr.Repository(this, 'WorkerRepository', {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      lifecycleRules: [
-        {
-          rulePriority: 1,
-          description: 'Keep only one untagged image, expire all others',
-          tagStatus: ecr.TagStatus.UNTAGGED,
-          maxImageCount: 1,
-        },
-      ],
-    });
-
-    this.nginxRepository = new ecr.Repository(this, 'AppRepository', {
+    this.nginxRepository = new ecr.Repository(this, 'NginxRepository', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       lifecycleRules: [
         {
@@ -91,13 +78,9 @@ export class CI extends cdk.Construct {
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
             value: this.nginxRepository.repositoryUri,
           },
-          API_REPO_URI: {
+          APP_REPO_URI: {
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
-            value: this.apiRepository.repositoryUri,
-          },
-          WORKER_REPO_URI: {
-            type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
-            value: this.workerRepository.repositoryUri,
+            value: this.appRepository.repositoryUri,
           },
         },
       },
@@ -119,10 +102,8 @@ export class CI extends cdk.Construct {
           },
           build: {
             commands: [
-              './bin/ss buildapi',
-              'docker tag stringsync:latest $API_REPO_URI:latest',
-              'DOCKERFILE=Dockerfile.worker DOCKER_TAG=stringsyncworker:latest ./bin/ss buildapi',
-              'docker tag stringsyncworker:latest $WORKER_REPO_URI:latest',
+              './bin/ss buildapp',
+              'docker tag stringsync:latest $APP_REPO_URI:latest',
               './bin/ss buildnginx',
               'docker tag stringsync:latest $NGINX_REPO_URI:latest',
               './bin/ss testall',
@@ -131,11 +112,9 @@ export class CI extends cdk.Construct {
           },
           post_build: {
             commands: [
-              'docker push $API_REPO_URI:latest',
-              'docker push $WORKER_REPO_URI:latest',
-              `printf '[{"name":"nginx","imageUri":"'$NGINX_REPO_URI'"}]' > imagedefinitions.nginx.json`,
-              `printf '[{"name":"api","imageUri":"'$API_REPO_URI'"}]' > imagedefinitions.api.json`,
-              `printf '[{"name":"worker","imageUri":"'$WORKER_REPO_URI'"}]' > imagedefinitions.worker.json`,
+              'docker push $APP_REPO_URI:latest',
+              'docker push $NGINX_REPO_URI:latest',
+              `printf '[{"name":"nginx","imageUri":"'$NGINX_REPO_URI'"}, {"name":"app","imageUri":"'$APP_REPO_URI'"}]' > imagedefinitions.app.json`,
               'mkdir imagedefinitions-artifacts',
             ],
           },
@@ -206,7 +185,7 @@ export class CI extends cdk.Construct {
           actionName: 'DeployApp',
           runOrder: 1,
           service: appService,
-          imageFile: new codepipeline.ArtifactPath(this.ecrBuildOutput, 'imagedefinitions.api.json'),
+          imageFile: new codepipeline.ArtifactPath(this.ecrBuildOutput, 'imagedefinitions.app.json'),
         }),
         // new codepipelineActions.EcsDeployAction({
         //   actionName: 'DeployWorker',

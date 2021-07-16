@@ -171,7 +171,7 @@ export class StringsyncStack extends cdk.Stack {
 
       app.taskDefinition.addContainer('app', {
         containerName: 'app',
-        image: ecs.ContainerImage.fromRegistry(ci.apiRepository.repositoryUri),
+        image: ecs.ContainerImage.fromRegistry(ci.appRepository.repositoryUri),
         essential: true,
         environment,
         secrets,
