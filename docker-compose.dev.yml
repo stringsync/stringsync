@@ -19,6 +19,8 @@ services:
     image: nginx:1.21
     volumes:
       - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - web
     links:
       - api
       - web
@@ -69,4 +71,5 @@ services:
     image: stringsync:latest
     volumes:
       - ./web/src:/app/web/src
+      - ./web/public:/app/web/public
     command: ['yarn', 'dev:web']

@@ -1,0 +1,33 @@
+FROM nginx:1.21
+
+# install yarn
+RUN curl https://deb.nodesource.com/setup_12.x | bash
+RUN curl https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+RUN apt-get update && apt-get install -y nodejs yarn
+
+WORKDIR /app
+
+# make ss commands work
+COPY package.json .
+COPY yarn.lock .
+RUN yarn
+COPY bin bin
+COPY scripts scripts
+COPY gulpfile.ts .
+ENV PATH="/app/bin:${PATH}"
+
+# install web dependencies
+COPY web/package.json web/
+COPY web/yarn.lock web/
+RUN ss installweb
+
+# copy the web files over
+COPY web/tsconfig.json web/
+COPY web/craco.config.js web/
+COPY web/.env web/
+COPY web/public web/public/
+COPY web/src web/src/
+RUN ss buildweb
+
+COPY nginx/nginx.conf /etc/nginx/nginx.conf

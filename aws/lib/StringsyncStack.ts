@@ -15,6 +15,7 @@ import { CI } from './constructs/CI';
 import { Network } from './constructs/Network';
 
 const APP_ENABLED = true;
+const NGINX_REPOSITORY_URI = '735208443400.dkr.ecr.us-east-1.amazonaws.com/nginx:1.:21';
 
 export class StringsyncStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -131,7 +132,7 @@ export class StringsyncStack extends cdk.Stack {
       const environment = {
         NODE_ENV: 'production',
         LOG_LEVEL: 'debug',
-        PORT: '80',
+        PORT: '3000',
         WEB_UI_CDN_DOMAIN_NAME: webUiCdn.domainName,
         MEDIA_CDN_DOMAIN_NAME: mediaCdn.domainName,
         MEDIA_S3_BUCKET: mediaBucket.bucketName,
@@ -161,13 +162,19 @@ export class StringsyncStack extends cdk.Stack {
         loadBalancer,
         loadBalancerName: 'AppLoaderBalancer',
         taskImageOptions: {
-          containerName: 'app',
-          image: ecs.ContainerImage.fromRegistry(ci.appRepository.repositoryUri),
+          containerName: 'nginx',
+          image: ecs.ContainerImage.fromRegistry(NGINX_REPOSITORY_URI),
           enableLogging: true,
-          environment,
-          secrets,
           containerPort: 80,
         },
+      });
+
+      app.taskDefinition.addContainer('app', {
+        containerName: 'app',
+        image: ecs.ContainerImage.fromRegistry(ci.appRepository.repositoryUri),
+        essential: true,
+        environment,
+        secrets,
       });
 
       app.taskDefinition.executionRole?.addManagedPolicy(

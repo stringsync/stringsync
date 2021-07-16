@@ -135,6 +135,13 @@ async function builddocker() {
   await docker.build(dockerfile, dockerTag);
 }
 
+async function buildnginx() {
+  const dockerTag = 'stringsyncnginx:latest';
+  const dockerfile = 'Dockerfile.nginx';
+
+  await docker.build(dockerfile, dockerTag);
+}
+
 async function buildweb() {
   await cmd('yarn', ['build'], { cwd: Project.WEB });
 }
@@ -174,7 +181,7 @@ async function cdkdeploy() {
 }
 
 exports['dev'] = series(builddocker, dev);
-exports['fakeprod'] = series(builddocker, fakeprod);
+exports['fakeprod'] = series(buildnginx, builddocker, fakeprod);
 exports['down'] = down;
 exports['typegen'] = typegen;
 exports['gensecrets'] = gensecrets;

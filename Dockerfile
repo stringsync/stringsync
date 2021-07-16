@@ -25,12 +25,6 @@ RUN ss installweb
 COPY web/tsconfig.json web/
 COPY web/craco.config.js web/
 COPY web/.env web/
-COPY web/public web/public/
-COPY web/src web/src/
-
-# The web project is built before the api project
-# because the api project builds much faster.
-RUN ss buildweb
 
 # copy the api files over
 COPY api/tsconfig.json api/
