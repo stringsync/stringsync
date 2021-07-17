@@ -17,6 +17,8 @@ services:
   nginx:
     container_name: nginx
     image: stringsyncnginx:latest
+    volumes:
+      - ./nginx/nginx.fakeprod.conf:/etc/nginx/nginx.conf
     links:
       - api
     ports:

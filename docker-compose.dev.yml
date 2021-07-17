@@ -19,8 +19,6 @@ services:
     image: nginx:1.21
     volumes:
       - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf
-    depends_on:
-      - web
     links:
       - api
       - web

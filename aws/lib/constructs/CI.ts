@@ -13,7 +13,7 @@ type CIProps = {
 };
 
 export class CI extends cdk.Construct {
-  readonly appRepository: ecr.Repository;
+  readonly apiRepository: ecr.Repository;
   readonly nginxRepository: ecr.Repository;
   readonly pipeline: codepipeline.Pipeline;
 
@@ -26,7 +26,7 @@ export class CI extends cdk.Construct {
       repositoryName: props.repoName,
     });
 
-    this.appRepository = new ecr.Repository(this, 'AppRepository', {
+    this.apiRepository = new ecr.Repository(this, 'ApiRepository', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       lifecycleRules: [
         {
@@ -80,7 +80,7 @@ export class CI extends cdk.Construct {
           },
           APP_REPO_URI: {
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
-            value: this.appRepository.repositoryUri,
+            value: this.apiRepository.repositoryUri,
           },
         },
       },
