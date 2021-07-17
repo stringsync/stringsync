@@ -26,7 +26,7 @@ const WATCH = Env.boolean('WATCH');
 async function dev() {
   const composeFile = constants.DOCKER_COMPOSE_DEV_FILE;
 
-  cleanup(docker.down);
+  cleanup(() => docker.down(composeFile));
   await docker.up(composeFile);
   await docker.logs(composeFile);
 }
@@ -34,13 +34,13 @@ async function dev() {
 async function fakeprod() {
   const composeFile = constants.DOCKER_COMPOSE_FAKE_PROD_FILE;
 
-  cleanup(docker.down);
+  cleanup(() => docker.down(composeFile));
   await docker.up(composeFile);
   await docker.logs(composeFile);
 }
 
 async function down() {
-  await docker.down();
+  await docker.down(constants.DOCKER_COMPOSE_FAKE_PROD_FILE);
 }
 
 async function typegen() {
@@ -146,7 +146,7 @@ async function buildweb() {
   await cmd('yarn', ['build'], { cwd: Project.WEB });
 }
 
-async function testall() {
+async function extractReports() {
   const ci = CI.getOrDefault(false);
 
   if (!ci) {
@@ -201,7 +201,7 @@ exports['buildapp'] = buildapp;
 exports['buildnginx'] = buildnginx;
 exports['buildweb'] = buildweb;
 
-exports['testall'] = series(gensecrets, testapi, testweb, testall);
+exports['testall'] = series(gensecrets, testapi, testweb, extractReports);
 exports['testapi'] = series(gensecrets, testapi);
 exports['testweb'] = series(gensecrets, testweb);
 

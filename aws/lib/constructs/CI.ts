@@ -85,7 +85,7 @@ export class CI extends cdk.Construct {
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
             value: this.nginxRepository.repositoryUri,
           },
-          APP_REPO_URI: {
+          API_REPO_URI: {
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
             value: this.apiRepository.repositoryUri,
           },
@@ -105,14 +105,14 @@ export class CI extends cdk.Construct {
               // https://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker.html#sample-docker-files
               'aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com',
               'docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD',
-              '(docker pull $APP_REPO_URI:latest && docker tag $APP_REPO_URI:latest stringsync:latest) || true',
+              '(docker pull $API_REPO_URI:latest && docker tag $API_REPO_URI:latest stringsync:latest) || true',
               '(docker pull $NGINX_REPO_URI:latest && docker tag $NGINX_REPO_URI:latest stringsyncnginx:latest) || true',
             ],
           },
           build: {
             commands: [
               './bin/ss buildapp',
-              'docker tag stringsync:latest $APP_REPO_URI:latest',
+              'docker tag stringsync:latest $API_REPO_URI:latest',
               './bin/ss buildnginx',
               'docker tag stringsyncnginx:latest $NGINX_REPO_URI:latest',
               './bin/ss testall',
@@ -121,9 +121,9 @@ export class CI extends cdk.Construct {
           },
           post_build: {
             commands: [
-              'docker push $APP_REPO_URI:latest',
+              'docker push $API_REPO_URI:latest',
               'docker push $NGINX_REPO_URI:latest',
-              `printf '[{"name":"nginx","imageUri":"'$NGINX_REPO_URI'"}, {"name":"app","imageUri":"'$APP_REPO_URI'"}]' > ${APP_IMAGE_DEFINITION_FILE}`,
+              `printf '[{"name":"nginx","imageUri":"'$NGINX_REPO_URI'"}, {"name":"api","imageUri":"'$API_REPO_URI'"}]' > ${APP_IMAGE_DEFINITION_FILE}`,
               'mkdir imagedefinitions-artifacts',
             ],
           },
@@ -133,6 +133,16 @@ export class CI extends cdk.Construct {
             'file-format': 'JUNITXML',
             'base-directory': 'reports',
             files: ['junit.web.xml', 'junit.api.xml'],
+          },
+        },
+        artifacts: {
+          files: ['**/*'],
+          'secondary-artifacts': {
+            BuildOutput: {
+              name: 'BuildOutput',
+              'base-directory': 'imagedefinitions-artifacts',
+              files: ['**/*'],
+            },
           },
         },
       }),

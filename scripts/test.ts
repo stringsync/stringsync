@@ -62,6 +62,6 @@ export const run = async (project: Project, ci: boolean, watch: boolean) => {
   try {
     await doTest(composeFile, project, ci, watch);
   } finally {
-    await docker.down();
+    await docker.down(composeFile);
   }
 };

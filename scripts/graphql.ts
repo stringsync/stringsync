@@ -78,7 +78,7 @@ export const typegen = async (hostname: string, port: number, maxWaitMs: number)
     await generateGraphqlTypes();
   } finally {
     if (!wasServerUp) {
-      await docker.down();
+      await docker.down(constants.DOCKER_COMPOSE_DEV_FILE);
     }
   }
 };
