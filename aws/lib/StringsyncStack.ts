@@ -1,5 +1,6 @@
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as origins from '@aws-cdk/aws-cloudfront-origins';
+import * as codepipelineActions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
@@ -12,8 +13,6 @@ import * as cdk from '@aws-cdk/core';
 import { Cache } from './constructs/Cache';
 import { CI } from './constructs/CI';
 import { Network } from './constructs/Network';
-
-const APP_ENABLED = true;
 
 export class StringsyncStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -191,5 +190,17 @@ export class StringsyncStack extends cdk.Stack {
     );
 
     targetGroup.addTarget(appService);
+
+    ci.pipeline.addStage({
+      stageName: 'Deploy',
+      actions: [
+        new codepipelineActions.EcsDeployAction({
+          actionName: 'DeployApp',
+          runOrder: 1,
+          service: appService,
+          imageFile: ci.appArtifactPath,
+        }),
+      ],
+    });
   }
 }

@@ -3,7 +3,6 @@ import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipelineActions from '@aws-cdk/aws-codepipeline-actions';
 import * as ecr from '@aws-cdk/aws-ecr';
-import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 
@@ -12,10 +11,13 @@ type CIProps = {
   accountId: string;
 };
 
+const APP_IMAGE_DEFINITION_FILE = 'imagedefinitions.app.json';
+
 export class CI extends cdk.Construct {
   readonly apiRepository: ecr.Repository;
   readonly nginxRepository: ecr.Repository;
   readonly pipeline: codepipeline.Pipeline;
+  readonly appArtifactPath: codepipeline.ArtifactPath;
 
   private ecrBuildOutput: codepipeline.Artifact;
 
@@ -116,7 +118,7 @@ export class CI extends cdk.Construct {
             commands: [
               'docker push $APP_REPO_URI:latest',
               'docker push $NGINX_REPO_URI:latest',
-              `printf '[{"name":"nginx","imageUri":"'$NGINX_REPO_URI'"}, {"name":"app","imageUri":"'$APP_REPO_URI'"}]' > imagedefinitions.app.json`,
+              `printf '[{"name":"nginx","imageUri":"'$NGINX_REPO_URI'"}, {"name":"app","imageUri":"'$APP_REPO_URI'"}]' > ${APP_IMAGE_DEFINITION_FILE}`,
               'mkdir imagedefinitions-artifacts',
             ],
           },
@@ -177,25 +179,7 @@ export class CI extends cdk.Construct {
         },
       ],
     });
-  }
 
-  addDeployments(appService: ecs.IBaseService, workerService?: ecs.IBaseService) {
-    this.pipeline.addStage({
-      stageName: 'Deploy',
-      actions: [
-        new codepipelineActions.EcsDeployAction({
-          actionName: 'DeployApp',
-          runOrder: 1,
-          service: appService,
-          imageFile: new codepipeline.ArtifactPath(this.ecrBuildOutput, 'imagedefinitions.app.json'),
-        }),
-        // new codepipelineActions.EcsDeployAction({
-        //   actionName: 'DeployWorker',
-        //   runOrder: 1,
-        //   service: workerService,
-        //   imageFile: new codepipeline.ArtifactPath(this.ecrBuildOutput, 'imagedefinitions.worker.json'),
-        // }),
-      ],
-    });
+    this.appArtifactPath = new codepipeline.ArtifactPath(this.ecrBuildOutput, APP_IMAGE_DEFINITION_FILE);
   }
 }
