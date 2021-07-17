@@ -12,6 +12,8 @@ type CIProps = {
 };
 
 const APP_IMAGE_DEFINITION_FILE = 'imagedefinitions.app.json';
+const DOCKER_CREDS_SECRET_NAME = 'DockerCreds';
+const DOCKER_USERNAME = 'stringsync';
 
 export class CI extends cdk.Construct {
   readonly apiRepository: ecr.Repository;
@@ -63,14 +65,17 @@ export class CI extends cdk.Construct {
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
             value: props.accountId,
           },
-          // https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager
+          // This is available in the DockerCreds secret under the 'username' key,
+          // but it will filter anything that matches the username in the logs.
+          // For this reason, we just leave it as plain text.
           DOCKER_USERNAME: {
-            type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
-            value: 'DockerCreds:username',
+            type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+            value: DOCKER_USERNAME,
           },
+          // https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager
           DOCKER_PASSWORD: {
             type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
-            value: 'DockerCreds:password',
+            value: `${DOCKER_CREDS_SECRET_NAME}:password`,
           },
           CI: {
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
