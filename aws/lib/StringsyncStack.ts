@@ -84,6 +84,10 @@ export class StringsyncStack extends cdk.Stack {
 
     const targetGroup = publicListener.addTargets('ECS', {
       protocol: elbv2.ApplicationProtocol.HTTP,
+      healthCheck: {
+        interval: cdk.Duration.seconds(30),
+        path: '/health',
+      },
     });
 
     const fargateContainerSecurityGroup = new ec2.SecurityGroup(this, 'FargateContainerSecurityGroup', {
