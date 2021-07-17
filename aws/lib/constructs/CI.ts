@@ -135,6 +135,7 @@ export class CI extends cdk.Construct {
     ecrBuild.addToRolePolicy(
       new iam.PolicyStatement({
         actions: [
+          'ecr:BatchGetImage',
           'ecr:BatchCheckLayerAvailability',
           'ecr:CompleteLayerUpload',
           'ecr:GetAuthorizationToken',
