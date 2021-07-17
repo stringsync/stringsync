@@ -159,14 +159,18 @@ export class StringsyncStack extends cdk.Stack {
       memoryLimitMiB: 512,
     });
 
+    const logDriver = new ecs.AwsLogDriver({ streamPrefix: `${this.stackName}/app` });
+
     appTaskDefinition.addContainer('NginxContainer', {
       containerName: 'nginx',
+      logging: logDriver,
       image: ecs.ContainerImage.fromRegistry(ci.nginxRepository.repositoryUri),
       portMappings: [{ containerPort: 80 }],
     });
 
     appTaskDefinition.addContainer('ApiContainer', {
       containerName: 'api',
+      logging: logDriver,
       image: ecs.ContainerImage.fromRegistry(ci.apiRepository.repositoryUri),
       portMappings: [{ containerPort: 3000 }],
       environment,

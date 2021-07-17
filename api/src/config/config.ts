@@ -1,7 +1,5 @@
 import { Env } from './Env';
 
-console.log(`current env: ${JSON.stringify(process.env)}`);
-
 const NODE_ENV = Env.string('NODE_ENV').get();
 const LOG_LEVEL = Env.string('LOG_LEVEL').get();
 const PORT = Env.number('PORT').get();
