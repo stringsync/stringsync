@@ -98,6 +98,8 @@ export class CI extends cdk.Construct {
               // https://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker.html#sample-docker-files
               'aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com',
               'docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD',
+              '(docker pull $APP_REPO_URI:latest && docker tag $APP_REPO_URI:latest stringsync:latest) || true',
+              '(docker pull $NGINX_REPO_URI:latest && docker tag $NGINX_REPO_URI:latest stringsyncnginx:latest) || true',
             ],
           },
           build: {
