@@ -3,9 +3,9 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import { withAuthRequirement } from '../../hocs';
 import { compose } from '../../util/compose';
 import { AuthRequirement } from '../../util/types';
+import { Fallback } from '../Fallback';
 import { Nothing } from '../Nothing';
 import { ReturnToRoute } from '../ReturnToRoute';
-import { Fallback } from './Fallback';
 import { Landing } from './Landing';
 import { NotFound } from './NotFound';
 
