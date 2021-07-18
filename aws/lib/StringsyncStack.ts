@@ -196,7 +196,7 @@ export class StringsyncStack extends cdk.Stack {
       cluster,
       securityGroups: [fargateContainerSecurityGroup],
       taskDefinition: appTaskDefinition,
-      desiredCount: 0,
+      desiredCount: 1,
       assignPublicIp: true,
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     });
