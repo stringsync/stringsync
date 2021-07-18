@@ -24,7 +24,9 @@ export class Cache extends cdk.Construct {
 
     this.subnetGroup = new elasticache.CfnSubnetGroup(this, 'CacheSubnet', {
       description: 'Cache Subnet Group',
-      subnetIds: props.vpc.privateSubnets.map((subnet) => subnet.subnetId),
+      subnetIds: props.vpc.selectSubnets({
+        subnetType: ec2.SubnetType.ISOLATED,
+      }).subnetIds,
     });
 
     this.cluster = new elasticache.CfnCacheCluster(this, 'CacheCluster', {

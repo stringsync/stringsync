@@ -12,13 +12,27 @@ import * as cfninc from '@aws-cdk/cloudformation-include';
 import * as cdk from '@aws-cdk/core';
 import { Cache } from './constructs/Cache';
 import { CI } from './constructs/CI';
-import { Network } from './constructs/Network';
 
 export class StringsyncStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const network = new Network(this, 'Network');
+    const vpc = new ec2.Vpc(this, 'VPC', {
+      subnetConfiguration: [
+        {
+          name: 'Public',
+          cidrMask: 24,
+          subnetType: ec2.SubnetType.PUBLIC,
+        },
+        {
+          name: 'Isolated',
+          cidrMask: 28,
+          subnetType: ec2.SubnetType.ISOLATED,
+        },
+      ],
+      natGateways: 0,
+      maxAzs: 2,
+    });
 
     const ci = new CI(this, 'CI', {
       repoName: 'stringsync',
@@ -35,20 +49,18 @@ export class StringsyncStack extends cdk.Stack {
       },
     });
     const db = new rds.DatabaseInstance(this, 'Database', {
-      vpc: network.vpc,
+      vpc,
       databaseName: dbName,
       port: 5432,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
       credentials: rds.Credentials.fromSecret(dbCredsSecret),
       vpcSubnets: {
-        subnetType: ec2.SubnetType.PRIVATE,
+        subnetType: ec2.SubnetType.ISOLATED,
       },
       engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_11 }),
     });
 
-    const cache = new Cache(this, 'Cache', {
-      vpc: network.vpc,
-    });
+    const cache = new Cache(this, 'Cache', { vpc });
 
     const vodTemplate = new cfninc.CfnInclude(this, 'VodTemplate', {
       templateFile: 'templates/vod.yml',
@@ -67,12 +79,12 @@ export class StringsyncStack extends cdk.Stack {
     const appSessionSecret = new secretsmanager.Secret(this, 'AppSessionSecret');
 
     const loadBalancerSecurityGroup = new ec2.SecurityGroup(this, 'LoadBalancerSecurityGroup', {
-      vpc: network.vpc,
+      vpc,
       allowAllOutbound: true,
     });
 
     const loadBalancer = new elbv2.ApplicationLoadBalancer(this, 'AppLoadBalancer', {
-      vpc: network.vpc,
+      vpc,
       securityGroup: loadBalancerSecurityGroup,
       internetFacing: true,
       deletionProtection: false,
@@ -92,7 +104,7 @@ export class StringsyncStack extends cdk.Stack {
 
     const fargateContainerSecurityGroup = new ec2.SecurityGroup(this, 'FargateContainerSecurityGroup', {
       description: 'Access to the Fargate containers',
-      vpc: network.vpc,
+      vpc,
     });
     fargateContainerSecurityGroup.connections.allowFrom(loadBalancerSecurityGroup, ec2.Port.allTcp());
 
@@ -133,7 +145,7 @@ export class StringsyncStack extends cdk.Stack {
       },
     });
 
-    const cluster = new ecs.Cluster(this, 'Cluster', { vpc: network.vpc, containerInsights: true });
+    const cluster = new ecs.Cluster(this, 'Cluster', { vpc, containerInsights: true });
 
     const environment = {
       NODE_ENV: 'production',
