@@ -192,6 +192,9 @@ export class StringsyncStack extends cdk.Stack {
 
     const appLogDriver = new ecs.AwsLogDriver({ streamPrefix: `${this.stackName}/app` });
 
+    // Container health checks are not supported for tasks that are part of a service that
+    // is configured to use a Classic Load Balancer.
+    // https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_HealthCheck.html
     appTaskDefinition.addContainer('NginxContainer', {
       containerName: 'nginx',
       logging: appLogDriver,
