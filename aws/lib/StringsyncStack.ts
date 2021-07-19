@@ -186,6 +186,10 @@ export class StringsyncStack extends cdk.Stack {
       memoryLimitMiB: 512,
     });
 
+    appTaskDefinition.executionRole?.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPowerUser')
+    );
+
     const appLogDriver = new ecs.AwsLogDriver({ streamPrefix: `${this.stackName}/app` });
 
     appTaskDefinition.addContainer('NginxContainer', {
@@ -213,16 +217,16 @@ export class StringsyncStack extends cdk.Stack {
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     });
 
-    appTaskDefinition.executionRole?.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPowerUser')
-    );
-
     appTargetGroup.addTarget(appService);
 
     const workerTaskDefinition = new ecs.FargateTaskDefinition(this, 'WorkerTaskDefinition', {
       cpu: 256,
       memoryLimitMiB: 512,
     });
+
+    workerTaskDefinition.executionRole?.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPowerUser')
+    );
 
     const workerLogDriver = new ecs.AwsLogDriver({ streamPrefix: `${this.stackName}/worker` });
 
@@ -231,15 +235,18 @@ export class StringsyncStack extends cdk.Stack {
       command: ['yarn', 'prod:worker'],
       logging: workerLogDriver,
       image: ecs.ContainerImage.fromRegistry(ci.workerRepository.repositoryUri),
-      portMappings: [{ containerPort: 80 }],
+      portMappings: [{ containerPort: 3000 }],
       healthCheck: {
-        command: ['CMD-SHELL', 'curl --fail http://localhost/health || exit 1'],
+        command: ['CMD-SHELL', 'curl --fail http://localhost:3000/health || exit 1'],
         interval: cdk.Duration.seconds(30),
       },
+      environment,
+      secrets,
     });
 
     const workerService = new ecs.FargateService(this, 'WorkerService', {
       cluster,
+      assignPublicIp: true,
       securityGroups: [fargateContainerSecurityGroup],
       taskDefinition: workerTaskDefinition,
       desiredCount: workerServiceTaskCount.valueAsNumber,
