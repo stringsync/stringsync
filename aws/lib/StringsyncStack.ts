@@ -23,6 +23,12 @@ export class StringsyncStack extends cdk.Stack {
       description: 'The number of tasks to run the app service.',
     });
 
+    const workerServiceTaskCount = new cdk.CfnParameter(this, 'WorkerServiceTaskCount', {
+      type: 'Number',
+      default: 0,
+      description: 'The number of tasks to run the worker service.',
+    });
+
     const vpc = new ec2.Vpc(this, 'VPC', {
       subnetConfiguration: [
         {
