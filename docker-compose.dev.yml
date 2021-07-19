@@ -57,11 +57,15 @@ services:
     env_file:
       - env/dev.env
       - env/secrets.env
+    environment:
+      PORT: 3000
     volumes:
       - ./api/src:/app/api/src
     links:
       - db
       - redis
+    ports:
+      - 3000:3000
     command: ['yarn', 'dev:worker']
 
   web:

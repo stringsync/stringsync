@@ -21,7 +21,8 @@ import {
   UserRepo,
 } from './repos';
 import { AuthResolver, ExperimentResolver, NotationResolver, TagResolver, UserResolver } from './resolvers';
-import { ApiServer, DevApiServer, Server } from './server';
+import { ApiServer, DevApiServer, GraphqlServer } from './server';
+import { WorkerServer } from './server/worker';
 import {
   AuthService,
   HealthCheckerService,
@@ -116,10 +117,11 @@ if (config.NODE_ENV === 'test') {
 }
 
 if (config.NODE_ENV === 'development') {
-  container.bind<Server>(TYPES.Server).to(DevApiServer);
+  container.bind<GraphqlServer>(TYPES.ApiServer).to(DevApiServer);
 } else {
-  container.bind<Server>(TYPES.Server).to(ApiServer);
+  container.bind<GraphqlServer>(TYPES.ApiServer).to(ApiServer);
 }
+container.bind<WorkerServer>(TYPES.WorkerServer).to(WorkerServer);
 
 container
   .bind<ExperimentResolver>(ExperimentResolver)

@@ -7,7 +7,7 @@ import { Config } from '../../config';
 import { TYPES } from '../../inversify.constants';
 import { AuthService } from '../../services';
 import { Logger } from '../../util';
-import { Server } from '../types';
+import { GraphqlServer } from '../types';
 import {
   withCors,
   withCtx,
@@ -20,7 +20,7 @@ import {
 } from './middlewares';
 
 @injectable()
-export class ApiServer implements Server {
+export class ApiServer implements GraphqlServer {
   protected app = express();
 
   constructor(
