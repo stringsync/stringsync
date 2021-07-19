@@ -13,7 +13,7 @@ export async function down(composeFile: string) {
 }
 
 export async function build(dockerfile: string, tag: string) {
-  await cmd('docker', ['build', '-f', dockerfile, '-t', tag, '.']);
+  await cmd('docker', ['build', '-f', dockerfile, '--cache-from', tag, '-t', tag, '.']);
 }
 
 export async function db(composeFile: string, dbUsername: string) {
