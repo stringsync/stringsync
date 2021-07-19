@@ -24,7 +24,7 @@ export class CI extends cdk.Construct {
   readonly appArtifactPath: codepipeline.ArtifactPath;
   readonly workerArtifactPath: codepipeline.ArtifactPath;
 
-  private ecrBuildOutput: codepipeline.Artifact;
+  private buildOutput: codepipeline.Artifact;
 
   constructor(scope: cdk.Construct, id: string, props: CIProps) {
     super(scope, id);
@@ -133,9 +133,8 @@ export class CI extends cdk.Construct {
               'docker push $API_REPO_URI:latest',
               'docker push $NGINX_REPO_URI:latest',
               'docker push $WORKER_REPO_URI:latest',
-              'mkdir imagedefinitions-artifacts',
-              `printf '[{"name":"nginx","imageUri":"'$NGINX_REPO_URI'"}, {"name":"api","imageUri":"'$API_REPO_URI'"}]' > imagedefinitions-artifacts/${APP_IMAGE_DEFINITION_FILE}`,
-              `printf '[{"name":"worker","imageUri":"'$WORKER_REPO_URI'"}]' > imagedefinitions-artifacts/${WORKER_IMAGE_DEFINITION_FILE}`,
+              `printf '[{"name":"nginx","imageUri":"'$NGINX_REPO_URI'"}, {"name":"api","imageUri":"'$API_REPO_URI'"}]' > ${APP_IMAGE_DEFINITION_FILE}`,
+              `printf '[{"name":"worker","imageUri":"'$WORKER_REPO_URI'"}]' > ${WORKER_IMAGE_DEFINITION_FILE}`,
             ],
           },
         },
@@ -147,14 +146,7 @@ export class CI extends cdk.Construct {
           },
         },
         artifacts: {
-          files: ['**/*'],
-          'secondary-artifacts': {
-            BuildOutput: {
-              name: 'BuildOutput',
-              'base-directory': 'imagedefinitions-artifacts',
-              files: ['**/*'],
-            },
-          },
+          files: [APP_IMAGE_DEFINITION_FILE, WORKER_IMAGE_DEFINITION_FILE],
         },
       }),
     });
@@ -178,7 +170,7 @@ export class CI extends cdk.Construct {
 
     const sourceOutput = new codepipeline.Artifact('SourceOutput');
 
-    this.ecrBuildOutput = new codepipeline.Artifact('BuildOutput');
+    this.buildOutput = new codepipeline.Artifact('BuildOutput');
 
     this.pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
       restartExecutionOnUpdate: false,
@@ -201,14 +193,14 @@ export class CI extends cdk.Construct {
               actionName: 'BuildImage',
               project: ecrBuild,
               input: sourceOutput,
-              outputs: [this.ecrBuildOutput],
+              outputs: [this.buildOutput],
             }),
           ],
         },
       ],
     });
 
-    this.appArtifactPath = new codepipeline.ArtifactPath(this.ecrBuildOutput, APP_IMAGE_DEFINITION_FILE);
-    this.workerArtifactPath = new codepipeline.ArtifactPath(this.ecrBuildOutput, WORKER_IMAGE_DEFINITION_FILE);
+    this.appArtifactPath = this.buildOutput.atPath(APP_IMAGE_DEFINITION_FILE);
+    this.workerArtifactPath = this.buildOutput.atPath(WORKER_IMAGE_DEFINITION_FILE);
   }
 }
