@@ -162,6 +162,7 @@ export class CI extends cdk.Construct {
       new iam.PolicyStatement({
         actions: [
           'ecr:BatchGetImage',
+          'ecr:GetDownloadUrlForLayer',
           'ecr:BatchCheckLayerAvailability',
           'ecr:CompleteLayerUpload',
           'ecr:GetAuthorizationToken',
