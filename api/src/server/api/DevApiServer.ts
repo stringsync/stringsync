@@ -2,10 +2,10 @@ import { altairExpress } from 'altair-express-middleware';
 import { GraphQLSchema } from 'graphql';
 import { injectable } from 'inversify';
 import { Server } from '../types';
-import { ExpressServer } from './ExpressServer';
+import { ApiServer } from './ApiServer';
 
 @injectable()
-export class DevExpressServer extends ExpressServer implements Server {
+export class DevApiServer extends ApiServer implements Server {
   start(schema: GraphQLSchema) {
     this.configure(schema);
 

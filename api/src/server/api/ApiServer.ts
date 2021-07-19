@@ -20,7 +20,7 @@ import {
 } from './middlewares';
 
 @injectable()
-export class ExpressServer implements Server {
+export class ApiServer implements Server {
   protected app = express();
 
   constructor(
