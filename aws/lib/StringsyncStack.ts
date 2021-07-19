@@ -228,12 +228,13 @@ export class StringsyncStack extends cdk.Stack {
 
     workerTaskDefinition.addContainer('WorkerContainer', {
       containerName: 'worker',
+      command: ['yarn', 'prod:worker'],
       logging: workerLogDriver,
       image: ecs.ContainerImage.fromRegistry(ci.workerRepository.repositoryUri),
       portMappings: [{ containerPort: 80 }],
       healthCheck: {
-        command: ['CMD-SHELL', 'curl -f http://localhost/health || exit 1'],
-        interval: cdk.Duration.minutes(5),
+        command: ['CMD-SHELL', 'curl --fail http://localhost/health || exit 1'],
+        interval: cdk.Duration.seconds(30),
       },
     });
 
