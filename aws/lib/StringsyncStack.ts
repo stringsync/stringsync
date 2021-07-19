@@ -106,7 +106,7 @@ export class StringsyncStack extends cdk.Stack {
       protocol: elbv2.ApplicationProtocol.HTTP,
     });
 
-    const targetGroup = publicListener.addTargets('ECS', {
+    const appTargetGroup = publicListener.addTargets('AppTargetGroup', {
       protocol: elbv2.ApplicationProtocol.HTTP,
       healthCheck: {
         interval: cdk.Duration.seconds(30),
@@ -181,23 +181,23 @@ export class StringsyncStack extends cdk.Stack {
 
     const secrets = { SESSION_SECRET: ecs.Secret.fromSecretsManager(appSessionSecret) };
 
-    const appTaskDefinition = new ecs.FargateTaskDefinition(this, 'AppTask', {
+    const appTaskDefinition = new ecs.FargateTaskDefinition(this, 'AppTaskDefinition', {
       cpu: 256,
       memoryLimitMiB: 512,
     });
 
-    const logDriver = new ecs.AwsLogDriver({ streamPrefix: `${this.stackName}/app` });
+    const appLogDriver = new ecs.AwsLogDriver({ streamPrefix: `${this.stackName}/app` });
 
     appTaskDefinition.addContainer('NginxContainer', {
       containerName: 'nginx',
-      logging: logDriver,
+      logging: appLogDriver,
       image: ecs.ContainerImage.fromRegistry(ci.nginxRepository.repositoryUri),
       portMappings: [{ containerPort: 80 }],
     });
 
     appTaskDefinition.addContainer('ApiContainer', {
       containerName: 'api',
-      logging: logDriver,
+      logging: appLogDriver,
       image: ecs.ContainerImage.fromRegistry(ci.apiRepository.repositoryUri),
       portMappings: [{ containerPort: 3000 }],
       environment,
@@ -217,7 +217,37 @@ export class StringsyncStack extends cdk.Stack {
       iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPowerUser')
     );
 
-    targetGroup.addTarget(appService);
+    appTargetGroup.addTarget(appService);
+
+    const workerTaskDefinition = new ecs.FargateTaskDefinition(this, 'WorkerTaskDefinition', {
+      cpu: 256,
+      memoryLimitMiB: 512,
+    });
+
+    const workerLogDriver = new ecs.AwsLogDriver({ streamPrefix: `${this.stackName}/worker` });
+
+    workerTaskDefinition.addContainer('WorkerContainer', {
+      containerName: 'worker',
+      logging: workerLogDriver,
+      image: ecs.ContainerImage.fromRegistry(ci.workerRepository.repositoryUri),
+      portMappings: [{ containerPort: 80 }],
+      healthCheck: {
+        command: ['CMD-SHELL', 'curl -f http://localhost/health || exit 1'],
+        interval: cdk.Duration.minutes(5),
+      },
+    });
+
+    const workerService = new ecs.FargateService(this, 'WorkerService', {
+      cluster,
+      securityGroups: [fargateContainerSecurityGroup],
+      taskDefinition: workerTaskDefinition,
+      desiredCount: workerServiceTaskCount.valueAsNumber,
+      platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    });
+
+    workerTaskDefinition.executionRole?.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPowerUser')
+    );
 
     ci.pipeline.addStage({
       stageName: 'Deploy',
@@ -227,6 +257,12 @@ export class StringsyncStack extends cdk.Stack {
           runOrder: 1,
           service: appService,
           imageFile: ci.appArtifactPath,
+        }),
+        new codepipelineActions.EcsDeployAction({
+          actionName: 'DeployWorker',
+          runOrder: 1,
+          service: workerService,
+          imageFile: ci.workerArtifactPath,
         }),
       ],
     });

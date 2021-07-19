@@ -22,6 +22,7 @@ export class CI extends cdk.Construct {
   readonly workerRepository: ecr.Repository;
   readonly pipeline: codepipeline.Pipeline;
   readonly appArtifactPath: codepipeline.ArtifactPath;
+  readonly workerArtifactPath: codepipeline.ArtifactPath;
 
   private ecrBuildOutput: codepipeline.Artifact;
 
@@ -207,5 +208,6 @@ export class CI extends cdk.Construct {
     });
 
     this.appArtifactPath = new codepipeline.ArtifactPath(this.ecrBuildOutput, APP_IMAGE_DEFINITION_FILE);
+    this.workerArtifactPath = new codepipeline.ArtifactPath(this.ecrBuildOutput, WORKER_IMAGE_DEFINITION_FILE);
   }
 }
