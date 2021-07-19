@@ -12,12 +12,14 @@ type CIProps = {
 };
 
 const APP_IMAGE_DEFINITION_FILE = 'imagedefinitions.app.json';
+const WORKER_IMAGE_DEFINITION_FILE = 'imagedefinitions.worker.json';
 const DOCKER_CREDS_SECRET_NAME = 'DockerCreds';
 const DOCKER_USERNAME = 'stringsync';
 
 export class CI extends cdk.Construct {
   readonly apiRepository: ecr.Repository;
   readonly nginxRepository: ecr.Repository;
+  readonly workerRepository: ecr.Repository;
   readonly pipeline: codepipeline.Pipeline;
   readonly appArtifactPath: codepipeline.ArtifactPath;
 
@@ -30,28 +32,28 @@ export class CI extends cdk.Construct {
       repositoryName: props.repoName,
     });
 
+    const lifecycleRules: ecr.LifecycleRule[] = [
+      {
+        rulePriority: 1,
+        description: 'Keep only one untagged image, expire all others',
+        tagStatus: ecr.TagStatus.UNTAGGED,
+        maxImageCount: 1,
+      },
+    ];
+
     this.apiRepository = new ecr.Repository(this, 'ApiRepository', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
-      lifecycleRules: [
-        {
-          rulePriority: 1,
-          description: 'Keep only one untagged image, expire all others',
-          tagStatus: ecr.TagStatus.UNTAGGED,
-          maxImageCount: 1,
-        },
-      ],
+      lifecycleRules,
     });
 
     this.nginxRepository = new ecr.Repository(this, 'NginxRepository', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
-      lifecycleRules: [
-        {
-          rulePriority: 1,
-          description: 'Keep only one untagged image, expire all others',
-          tagStatus: ecr.TagStatus.UNTAGGED,
-          maxImageCount: 1,
-        },
-      ],
+      lifecycleRules,
+    });
+
+    this.workerRepository = new ecr.Repository(this, 'WorkerRepository', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      lifecycleRules,
     });
 
     const ecrBuild = new codebuild.PipelineProject(this, 'EcrBuild', {
@@ -89,6 +91,10 @@ export class CI extends cdk.Construct {
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
             value: this.apiRepository.repositoryUri,
           },
+          WORKER_REPO_URI: {
+            type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+            value: this.workerRepository.repositoryUri,
+          },
         },
       },
       buildSpec: codebuild.BuildSpec.fromObject({
@@ -113,6 +119,8 @@ export class CI extends cdk.Construct {
             commands: [
               './bin/ss buildapp',
               'docker tag stringsync:latest $API_REPO_URI:latest',
+              // NB: The api image also runs the workers!
+              'docker tag stringsync:latest $WORKER_REPO_URI:latest',
               './bin/ss buildnginx',
               'docker tag stringsyncnginx:latest $NGINX_REPO_URI:latest',
               './bin/ss testall',
@@ -123,8 +131,10 @@ export class CI extends cdk.Construct {
             commands: [
               'docker push $API_REPO_URI:latest',
               'docker push $NGINX_REPO_URI:latest',
-              `printf '[{"name":"nginx","imageUri":"'$NGINX_REPO_URI'"}, {"name":"api","imageUri":"'$API_REPO_URI'"}]' > ${APP_IMAGE_DEFINITION_FILE}`,
+              'docker push $WORKER_REPO_URI:latest',
               'mkdir imagedefinitions-artifacts',
+              `printf '[{"name":"nginx","imageUri":"'$NGINX_REPO_URI'"}, {"name":"api","imageUri":"'$API_REPO_URI'"}]' > imagedefinitions-artifacts/${APP_IMAGE_DEFINITION_FILE}`,
+              `printf '[{"name":"worker","imageUri":"'$WORKER_REPO_URI'"}]' > imagedefinitions-artifacts/${WORKER_IMAGE_DEFINITION_FILE}`,
             ],
           },
         },
