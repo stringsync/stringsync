@@ -17,6 +17,12 @@ export class StringsyncStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    const appServiceTaskCount = new cdk.CfnParameter(this, 'AppServiceTaskCount', {
+      type: 'Number',
+      default: 0,
+      description: 'The number of tasks to run the app service.',
+    });
+
     const vpc = new ec2.Vpc(this, 'VPC', {
       subnetConfiguration: [
         {
@@ -196,7 +202,7 @@ export class StringsyncStack extends cdk.Stack {
       cluster,
       securityGroups: [fargateContainerSecurityGroup],
       taskDefinition: appTaskDefinition,
-      desiredCount: 1,
+      desiredCount: appServiceTaskCount.valueAsNumber,
       assignPublicIp: true,
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     });
