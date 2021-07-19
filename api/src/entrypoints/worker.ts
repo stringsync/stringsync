@@ -2,7 +2,7 @@ import { Db } from '../db';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
 import { associateVideoUrl, AssociateVideoUrlPayload, BullMqJob, Job, pulseCheck, PulseCheckPayload } from '../jobs';
-import { Server } from '../server';
+import { JobServer } from '../server';
 import { Logger } from '../util';
 
 const JOBS: Array<Job<any>> = [
@@ -19,6 +19,6 @@ const JOBS: Array<Job<any>> = [
 
   logger.info('jobs started');
 
-  const server = container.get<Server>(TYPES.WorkerServer);
-  server.start();
+  const server = container.get<JobServer>(TYPES.WorkerServer);
+  server.start(JOBS);
 })();
