@@ -6,6 +6,8 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as rds from '@aws-cdk/aws-rds';
+import * as route53 from '@aws-cdk/aws-route53';
+import * as route53Targets from '@aws-cdk/aws-route53-targets';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cfninc from '@aws-cdk/cloudformation-include';
@@ -105,6 +107,16 @@ export class StringsyncStack extends cdk.Stack {
       securityGroup: loadBalancerSecurityGroup,
       internetFacing: true,
       deletionProtection: false,
+    });
+
+    const zone = new route53.HostedZone(this, 'Zone', {
+      zoneName: domainName.valueAsString,
+    });
+
+    const appAliasRecord = new route53.ARecord(this, 'AppAliasRecord', {
+      zone,
+      recordName: domainName.valueAsString,
+      target: route53.RecordTarget.fromAlias(new route53Targets.LoadBalancerTarget(loadBalancer)),
     });
 
     const publicListener = loadBalancer.addListener('PublicListener', {
