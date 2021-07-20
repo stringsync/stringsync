@@ -29,6 +29,11 @@ export class StringsyncStack extends cdk.Stack {
       description: 'The number of tasks to run the worker service.',
     });
 
+    const domainName = new cdk.CfnParameter(this, 'DomainName', {
+      type: 'String',
+      description: 'The application naked domain name, e.g. example.com (not www.example.com)',
+    });
+
     const vpc = new ec2.Vpc(this, 'VPC', {
       subnetConfiguration: [
         {
