@@ -186,10 +186,6 @@ export class StringsyncStack extends cdk.Stack {
       memoryLimitMiB: 512,
     });
 
-    appTaskDefinition.executionRole?.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPowerUser')
-    );
-
     const appLogDriver = new ecs.AwsLogDriver({ streamPrefix: `${this.stackName}/app` });
 
     // Container health checks are not supported for tasks that are part of a service that
@@ -213,12 +209,16 @@ export class StringsyncStack extends cdk.Stack {
 
     const appService = new ecs.FargateService(this, 'AppService', {
       cluster,
+      assignPublicIp: true,
       securityGroups: [fargateContainerSecurityGroup],
       taskDefinition: appTaskDefinition,
       desiredCount: appServiceTaskCount.valueAsNumber,
-      assignPublicIp: true,
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     });
+
+    appTaskDefinition.executionRole?.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPowerUser')
+    );
 
     appTargetGroup.addTarget(appService);
 
@@ -226,10 +226,6 @@ export class StringsyncStack extends cdk.Stack {
       cpu: 256,
       memoryLimitMiB: 512,
     });
-
-    workerTaskDefinition.executionRole?.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPowerUser')
-    );
 
     const workerLogDriver = new ecs.AwsLogDriver({ streamPrefix: `${this.stackName}/worker` });
 
