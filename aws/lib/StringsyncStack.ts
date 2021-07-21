@@ -114,6 +114,32 @@ export class StringsyncStack extends cdk.Stack {
       deletionProtection: false,
     });
 
+    const appDistributionCachePolicy = new cloudfront.CachePolicy(this, 'AppDistributionCachePolicy', {
+      defaultTtl: cdk.Duration.minutes(30),
+      minTtl: cdk.Duration.minutes(30),
+      maxTtl: cdk.Duration.minutes(60),
+      cookieBehavior: cloudfront.CacheCookieBehavior.none(),
+      headerBehavior: cloudfront.CacheHeaderBehavior.none(),
+      queryStringBehavior: cloudfront.CacheQueryStringBehavior.none(),
+      enableAcceptEncodingGzip: true,
+    });
+
+    const appDistribution = new cloudfront.Distribution(this, 'AppDistribution', {
+      enabled: true,
+      comment: 'Serves the application frontend',
+      errorResponses: [
+        { httpStatus: 403, responseHttpStatus: 200, responsePagePath: '/' },
+        { httpStatus: 404, responseHttpStatus: 200, responsePagePath: '/' },
+      ],
+      priceClass: cloudfront.PriceClass.PRICE_CLASS_ALL,
+      defaultRootObject: '/',
+      defaultBehavior: {
+        origin: new origins.LoadBalancerV2Origin(loadBalancer),
+        allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
+        cachePolicy: appDistributionCachePolicy,
+      },
+    });
+
     const zone = route53.HostedZone.fromHostedZoneAttributes(this, 'Zone', {
       zoneName: domainName.valueAsString,
       hostedZoneId: hostedZoneId.valueAsString,
@@ -151,37 +177,15 @@ export class StringsyncStack extends cdk.Stack {
 
     cache.securityGroup.connections.allowFrom(fargateContainerSecurityGroup, ec2.Port.allTcp());
 
-    const webUiCdn = new cloudfront.Distribution(this, 'WebUiCdn', {
-      enabled: true,
-      comment: 'Serves the web ui',
-      priceClass: cloudfront.PriceClass.PRICE_CLASS_ALL,
-      defaultBehavior: {
-        origin: new origins.LoadBalancerV2Origin(loadBalancer),
-      },
-      errorResponses: [
-        {
-          httpStatus: 403,
-          responseHttpStatus: 200,
-          responsePagePath: '/',
-        },
-        {
-          httpStatus: 404,
-          responseHttpStatus: 200,
-          responsePagePath: '/',
-        },
-      ],
-    });
-
     const mediaBucket = new s3.Bucket(this, 'MediaBucket', {
       autoDeleteObjects: false,
     });
 
-    const mediaCdn = new cloudfront.Distribution(this, 'MediaCdn', {
+    const mediaDistribution = new cloudfront.Distribution(this, 'MediaDistribution', {
       enabled: true,
       comment: 'Serves media saved in the media bucket',
       priceClass: cloudfront.PriceClass.PRICE_CLASS_ALL,
       defaultBehavior: {
-        // Cast to any since the cloudfront-origins ec2 reference is stale.
         origin: new origins.S3Origin(mediaBucket),
       },
     });
@@ -192,8 +196,8 @@ export class StringsyncStack extends cdk.Stack {
       NODE_ENV: 'production',
       LOG_LEVEL: 'debug',
       PORT: '3000',
-      WEB_UI_CDN_DOMAIN_NAME: webUiCdn.domainName,
-      MEDIA_CDN_DOMAIN_NAME: mediaCdn.domainName,
+      WEB_UI_CDN_DOMAIN_NAME: appDistribution.domainName,
+      MEDIA_CDN_DOMAIN_NAME: mediaDistribution.domainName,
       MEDIA_S3_BUCKET: mediaBucket.bucketName,
       VIDEO_SRC_S3_BUCKET: videoSourceBucketNameOutput.value,
       VIDEO_QUEUE_SQS_URL: sqsUrlOutput.value,
