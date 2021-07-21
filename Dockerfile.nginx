@@ -30,8 +30,6 @@ COPY web/public web/public/
 COPY web/src web/src/
 
 # pull the env from the host container
-ARG PUBLIC_URL
-ENV PUBLIC_URL=$PUBLIC_URL
 ARG REACT_APP_API_URI
 ENV REACT_APP_API_URI=$REACT_APP_API_URI
 

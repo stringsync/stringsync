@@ -19,7 +19,6 @@ const DOCKER_TAG = Env.string('DOCKER_TAG');
 const DOCKERFILE = Env.string('DOCKERFILE');
 const GRAPHQL_HOSTNAME = Env.string('GRAPHQL_HOSTNAME');
 const GRAPHQL_PORT = Env.number('GRAPHQL_PORT');
-const PUBLIC_URL = Env.string('PUBLIC_URL');
 const REACT_APP_API_URI = Env.string('REACT_APP_API_URI');
 const MAX_WAIT_MS = Env.number('MAX_WAIT_MS');
 const REMOTE = Env.string('REMOTE');
@@ -140,20 +139,17 @@ async function buildapp() {
 async function buildnginx() {
   const dockerTag = 'stringsyncnginx:latest';
   const dockerfile = 'Dockerfile.nginx';
-  const publicUrl = PUBLIC_URL.getOrDefault('http://localhost');
   const reactAppApiUri = REACT_APP_API_URI.getOrDefault('http://localhost');
 
   await docker.build(dockerfile, dockerTag, {
-    PUBLIC_URL: publicUrl,
     REACT_APP_API_URI: reactAppApiUri,
   });
 }
 
 async function buildweb() {
-  const publicUrl = PUBLIC_URL.get();
   const reactAppApiUri = REACT_APP_API_URI.get();
 
-  await cmd('yarn', ['build'], { cwd: Project.WEB, env: { PUBLIC_URL: publicUrl, REACT_APP_API_URI: reactAppApiUri } });
+  await cmd('yarn', ['build'], { cwd: Project.WEB, env: { REACT_APP_API_URI: reactAppApiUri } });
 }
 
 async function extractReports() {
