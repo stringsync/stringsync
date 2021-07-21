@@ -61,6 +61,7 @@ export class StringsyncStack extends cdk.Stack {
     const ci = new CI(this, 'CI', {
       repoName: 'stringsync',
       accountId: this.account,
+      domainName: domainName.valueAsString,
     });
 
     const dbName = this.stackName;
@@ -147,16 +148,26 @@ export class StringsyncStack extends cdk.Stack {
       hostedZoneId: hostedZoneId.valueAsString,
     });
 
+    const loadBalancerTarget = route53.RecordTarget.fromAlias(new route53Targets.LoadBalancerTarget(loadBalancer));
+
+    const appDistributionTarget = route53.RecordTarget.fromAlias(new route53Targets.CloudFrontTarget(appDistribution));
+
     const appAliasRecord = new route53.ARecord(this, 'AppAliasRecord', {
       zone,
       recordName: domainName.valueAsString,
-      target: route53.RecordTarget.fromAlias(new route53Targets.LoadBalancerTarget(loadBalancer)),
+      target: appDistributionTarget,
     });
 
     const appWWWAliasRecord = new route53.ARecord(this, 'AppWWWAliasRecord', {
       zone,
       recordName: `www.${domainName.valueAsString}`,
-      target: route53.RecordTarget.fromAlias(new route53Targets.LoadBalancerTarget(loadBalancer)),
+      target: appDistributionTarget,
+    });
+
+    const appApiAliasRecord = new route53.ARecord(this, 'AppApiAliasRecord', {
+      zone,
+      recordName: `api.${domainName.valueAsString}`,
+      target: loadBalancerTarget,
     });
 
     const publicListener = loadBalancer.addListener('PublicListener', {

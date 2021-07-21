@@ -9,6 +9,7 @@ import * as cdk from '@aws-cdk/core';
 type CIProps = {
   repoName: string;
   accountId: string;
+  domainName: string;
 };
 
 const APP_IMAGE_DEFINITION_FILE = 'imagedefinitions.app.json';
@@ -95,6 +96,14 @@ export class CI extends cdk.Construct {
           WORKER_REPO_URI: {
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
             value: this.workerRepository.repositoryUri,
+          },
+          PUBLIC_URL: {
+            type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+            value: `http://${props.domainName}`,
+          },
+          REACT_APP_API_URI: {
+            type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+            value: `http://api.${props.domainName}`,
           },
         },
       },

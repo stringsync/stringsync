@@ -12,8 +12,13 @@ export async function down(composeFile: string) {
   await cmd('docker-compose', ['-f', composeFile, 'down', '-v', '--remove-orphans']);
 }
 
-export async function build(dockerfile: string, tag: string) {
-  await cmd('docker', ['build', '-f', dockerfile, '--cache-from', tag, '-t', tag, '.']);
+export async function build(dockerfile: string, tag: string, buildArgs: Record<string, string> = {}) {
+  const buildArgsFlags = [];
+  for (const [key, val] of Object.entries(buildArgs)) {
+    buildArgsFlags.push('--build-arg');
+    buildArgsFlags.push(`${key}=${val}`);
+  }
+  await cmd('docker', ['build', '-f', dockerfile, '--cache-from', tag, '-t', tag, ...buildArgsFlags, '.']);
 }
 
 export async function db(composeFile: string, dbUsername: string) {
