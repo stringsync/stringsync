@@ -33,7 +33,12 @@ export class StringsyncStack extends cdk.Stack {
 
     const domainName = new cdk.CfnParameter(this, 'DomainName', {
       type: 'String',
-      description: 'The application naked domain name, e.g. example.com (not www.example.com)',
+      description: 'The application naked domain name, e.g. example.com (not www.example.com).',
+    });
+
+    const hostedZoneId = new cdk.CfnParameter(this, 'HostedZoneId', {
+      type: 'String',
+      description: 'The hosted zone that the domain name is in.',
     });
 
     const vpc = new ec2.Vpc(this, 'VPC', {
@@ -109,13 +114,20 @@ export class StringsyncStack extends cdk.Stack {
       deletionProtection: false,
     });
 
-    const zone = new route53.HostedZone(this, 'Zone', {
+    const zone = route53.HostedZone.fromHostedZoneAttributes(this, 'Zone', {
       zoneName: domainName.valueAsString,
+      hostedZoneId: hostedZoneId.valueAsString,
     });
 
     const appAliasRecord = new route53.ARecord(this, 'AppAliasRecord', {
       zone,
       recordName: domainName.valueAsString,
+      target: route53.RecordTarget.fromAlias(new route53Targets.LoadBalancerTarget(loadBalancer)),
+    });
+
+    const appWWWAliasRecord = new route53.ARecord(this, 'AppWWWAliasRecord', {
+      zone,
+      recordName: `www.${domainName.valueAsString}`,
       target: route53.RecordTarget.fromAlias(new route53Targets.LoadBalancerTarget(loadBalancer)),
     });
 
