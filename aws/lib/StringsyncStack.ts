@@ -114,7 +114,7 @@ export class StringsyncStack extends cdk.Stack {
       deletionProtection: false,
     });
 
-    const appDistributionCachePolicy = new cloudfront.CachePolicy(this, 'AppDistributionCachePolicy', {
+    const appCachePolicy = new cloudfront.CachePolicy(this, 'AppCachePolicy', {
       defaultTtl: cdk.Duration.minutes(30),
       minTtl: cdk.Duration.minutes(30),
       maxTtl: cdk.Duration.minutes(60),
@@ -124,6 +124,8 @@ export class StringsyncStack extends cdk.Stack {
       enableAcceptEncodingGzip: true,
     });
 
+    const loadBalancerOrigin = new origins.LoadBalancerV2Origin(loadBalancer);
+
     const appDistribution = new cloudfront.Distribution(this, 'AppDistribution', {
       enabled: true,
       comment: 'Serves the application frontend',
@@ -132,11 +134,11 @@ export class StringsyncStack extends cdk.Stack {
         { httpStatus: 404, responseHttpStatus: 200, responsePagePath: '/' },
       ],
       priceClass: cloudfront.PriceClass.PRICE_CLASS_ALL,
-      defaultRootObject: '/',
+      defaultRootObject: 'index.html',
       defaultBehavior: {
-        origin: new origins.LoadBalancerV2Origin(loadBalancer),
+        origin: loadBalancerOrigin,
         allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
-        cachePolicy: appDistributionCachePolicy,
+        cachePolicy: appCachePolicy,
       },
     });
 
