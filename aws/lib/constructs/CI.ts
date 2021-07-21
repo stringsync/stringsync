@@ -99,11 +99,11 @@ export class CI extends cdk.Construct {
           },
           PUBLIC_URL: {
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
-            value: `http://${props.domainName}`,
+            value: `https://${props.domainName}`,
           },
           REACT_APP_API_URI: {
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
-            value: `http://api.${props.domainName}`,
+            value: `https://api.${props.domainName}`,
           },
         },
       },
