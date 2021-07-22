@@ -1,3 +1,4 @@
+import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as origins from '@aws-cdk/aws-cloudfront-origins';
 import * as codepipelineActions from '@aws-cdk/aws-codepipeline-actions';
@@ -23,23 +24,23 @@ export class StringsyncStack extends cdk.Stack {
       type: 'Number',
       default: 0,
       description: 'The number of tasks to run the app service.',
-    });
+    }).valueAsNumber;
 
     const workerServiceTaskCount = new cdk.CfnParameter(this, 'WorkerServiceTaskCount', {
       type: 'Number',
       default: 0,
       description: 'The number of tasks to run the worker service.',
-    });
+    }).valueAsNumber;
 
     const domainName = new cdk.CfnParameter(this, 'DomainName', {
       type: 'String',
       description: 'The application naked domain name, e.g. example.com (not www.example.com).',
-    });
+    }).valueAsString;
 
     const hostedZoneId = new cdk.CfnParameter(this, 'HostedZoneId', {
       type: 'String',
       description: 'The hosted zone that the domain name is in.',
-    });
+    }).valueAsString;
 
     const vpc = new ec2.Vpc(this, 'VPC', {
       subnetConfiguration: [
@@ -58,10 +59,15 @@ export class StringsyncStack extends cdk.Stack {
       maxAzs: 2,
     });
 
+    const zone = route53.HostedZone.fromHostedZoneAttributes(this, 'Zone', {
+      zoneName: domainName,
+      hostedZoneId: hostedZoneId,
+    });
+
     const ci = new CI(this, 'CI', {
       repoName: 'stringsync',
       accountId: this.account,
-      domainName: domainName.valueAsString,
+      domainName,
     });
 
     const dbName = this.stackName;
@@ -125,6 +131,12 @@ export class StringsyncStack extends cdk.Stack {
       enableAcceptEncodingGzip: true,
     });
 
+    const domainCertificate = new certificatemanager.Certificate(this, 'DomainCertificate', {
+      domainName,
+      subjectAlternativeNames: [`www.${domainName}`, `api.${domainName}`, `media.${domainName}`],
+      validation: certificatemanager.CertificateValidation.fromDns(zone),
+    });
+
     const loadBalancerOrigin = new origins.LoadBalancerV2Origin(loadBalancer);
 
     const appDistribution = new cloudfront.Distribution(this, 'AppDistribution', {
@@ -141,11 +153,8 @@ export class StringsyncStack extends cdk.Stack {
         allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
         cachePolicy: appCachePolicy,
       },
-    });
-
-    const zone = route53.HostedZone.fromHostedZoneAttributes(this, 'Zone', {
-      zoneName: domainName.valueAsString,
-      hostedZoneId: hostedZoneId.valueAsString,
+      domainNames: [domainName, `www.${domainName}`],
+      certificate: domainCertificate,
     });
 
     const loadBalancerTarget = route53.RecordTarget.fromAlias(new route53Targets.LoadBalancerTarget(loadBalancer));
@@ -154,24 +163,31 @@ export class StringsyncStack extends cdk.Stack {
 
     const appAliasRecord = new route53.ARecord(this, 'AppAliasRecord', {
       zone,
-      recordName: domainName.valueAsString,
+      recordName: domainName,
       target: appDistributionTarget,
     });
 
     const appWWWAliasRecord = new route53.ARecord(this, 'AppWWWAliasRecord', {
       zone,
-      recordName: `www.${domainName.valueAsString}`,
+      recordName: `www.${domainName}`,
       target: appDistributionTarget,
     });
 
     const appApiAliasRecord = new route53.ARecord(this, 'AppApiAliasRecord', {
       zone,
-      recordName: `api.${domainName.valueAsString}`,
+      recordName: `api.${domainName}`,
+      target: loadBalancerTarget,
+    });
+
+    const mediaAliasRecord = new route53.ARecord(this, 'MediaAliasRecord', {
+      zone,
+      recordName: `media.${domainName}`,
       target: loadBalancerTarget,
     });
 
     const publicListener = loadBalancer.addListener('PublicListener', {
-      protocol: elbv2.ApplicationProtocol.HTTP,
+      protocol: elbv2.ApplicationProtocol.HTTPS,
+      certificates: [domainCertificate],
     });
 
     const appTargetGroup = publicListener.addTargets('AppTargetGroup', {
@@ -201,6 +217,8 @@ export class StringsyncStack extends cdk.Stack {
       defaultBehavior: {
         origin: new origins.S3Origin(mediaBucket),
       },
+      domainNames: [`media.${domainName}`],
+      certificate: domainCertificate,
     });
 
     const cluster = new ecs.Cluster(this, 'Cluster', { vpc, containerInsights: true });
@@ -258,7 +276,7 @@ export class StringsyncStack extends cdk.Stack {
       assignPublicIp: true,
       securityGroups: [fargateContainerSecurityGroup],
       taskDefinition: appTaskDefinition,
-      desiredCount: appServiceTaskCount.valueAsNumber,
+      desiredCount: appServiceTaskCount,
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     });
 
@@ -294,7 +312,7 @@ export class StringsyncStack extends cdk.Stack {
       assignPublicIp: true,
       securityGroups: [fargateContainerSecurityGroup],
       taskDefinition: workerTaskDefinition,
-      desiredCount: workerServiceTaskCount.valueAsNumber,
+      desiredCount: workerServiceTaskCount,
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     });
 
