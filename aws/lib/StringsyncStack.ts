@@ -255,9 +255,33 @@ export class StringsyncStack extends cdk.Stack {
 
     const secrets = { SESSION_SECRET: ecs.Secret.fromSecretsManager(appSessionSecret) };
 
+    const executionRole = new iam.Role(this, 'TaskExecutionRole', {
+      assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPowerUser')],
+    });
+
+    const migrateDbLogDriver = new ecs.AwsLogDriver({ streamPrefix: `${this.stackName}/migrateDb` });
+
+    const migrateDbTaskDefinition = new ecs.FargateTaskDefinition(this, 'MigrateDbTaskDefintion', {
+      cpu: 256,
+      memoryLimitMiB: 512,
+      executionRole,
+    });
+
+    migrateDbTaskDefinition.addContainer('MigrateDbContainer', {
+      containerName: 'migrate',
+      command: ['yarn', 'migrate'],
+      logging: migrateDbLogDriver,
+      image: ecs.ContainerImage.fromRegistry(ci.apiRepository.repositoryUri),
+      environment,
+      secrets,
+    });
+
     const appTaskDefinition = new ecs.FargateTaskDefinition(this, 'AppTaskDefinition', {
       cpu: 256,
       memoryLimitMiB: 512,
+      executionRole,
     });
 
     const appLogDriver = new ecs.AwsLogDriver({ streamPrefix: `${this.stackName}/app` });
@@ -290,15 +314,12 @@ export class StringsyncStack extends cdk.Stack {
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     });
 
-    appTaskDefinition.executionRole?.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPowerUser')
-    );
-
     appTargetGroup.addTarget(appService);
 
     const workerTaskDefinition = new ecs.FargateTaskDefinition(this, 'WorkerTaskDefinition', {
       cpu: 256,
       memoryLimitMiB: 512,
+      executionRole,
     });
 
     const workerLogDriver = new ecs.AwsLogDriver({ streamPrefix: `${this.stackName}/worker` });
@@ -325,10 +346,6 @@ export class StringsyncStack extends cdk.Stack {
       desiredCount: workerServiceTaskCount,
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     });
-
-    workerTaskDefinition.executionRole?.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPowerUser')
-    );
 
     ci.pipeline.addStage({
       stageName: 'Deploy',
