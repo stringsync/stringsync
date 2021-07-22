@@ -79,6 +79,10 @@ export class StringsyncStack extends cdk.Stack {
         includeSpace: false,
       },
     });
+    const dbSecurityGroup = new ec2.SecurityGroup(this, 'DbSecurityGroup', {
+      vpc,
+      allowAllOutbound: true,
+    });
     const db = new rds.DatabaseInstance(this, 'Database', {
       vpc,
       databaseName: dbName,
@@ -89,6 +93,7 @@ export class StringsyncStack extends cdk.Stack {
         subnetType: ec2.SubnetType.ISOLATED,
       },
       engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_11 }),
+      securityGroups: [dbSecurityGroup],
     });
 
     const cache = new Cache(this, 'Cache', { vpc });
@@ -137,7 +142,10 @@ export class StringsyncStack extends cdk.Stack {
       validation: certificatemanager.CertificateValidation.fromDns(zone),
     });
 
-    const loadBalancerOrigin = new origins.LoadBalancerV2Origin(loadBalancer);
+    const loadBalancerOrigin = new origins.LoadBalancerV2Origin(loadBalancer, {
+      httpPort: 80,
+      protocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY,
+    });
 
     const appDistribution = new cloudfront.Distribution(this, 'AppDistribution', {
       enabled: true,
@@ -152,6 +160,7 @@ export class StringsyncStack extends cdk.Stack {
         origin: loadBalancerOrigin,
         allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
         cachePolicy: appCachePolicy,
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
       domainNames: [domainName, `www.${domainName}`],
       certificate: domainCertificate,
@@ -186,8 +195,7 @@ export class StringsyncStack extends cdk.Stack {
     });
 
     const publicListener = loadBalancer.addListener('PublicListener', {
-      protocol: elbv2.ApplicationProtocol.HTTPS,
-      certificates: [domainCertificate],
+      protocol: elbv2.ApplicationProtocol.HTTP,
     });
 
     const appTargetGroup = publicListener.addTargets('AppTargetGroup', {
@@ -205,6 +213,8 @@ export class StringsyncStack extends cdk.Stack {
     fargateContainerSecurityGroup.connections.allowFrom(loadBalancerSecurityGroup, ec2.Port.allTcp());
 
     cache.securityGroup.connections.allowFrom(fargateContainerSecurityGroup, ec2.Port.allTcp());
+
+    dbSecurityGroup.connections.allowFrom(fargateContainerSecurityGroup, ec2.Port.allTcp());
 
     const mediaBucket = new s3.Bucket(this, 'MediaBucket', {
       autoDeleteObjects: false,
