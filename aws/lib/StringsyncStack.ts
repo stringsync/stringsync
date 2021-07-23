@@ -142,6 +142,21 @@ export class StringsyncStack extends cdk.Stack {
       validation: certificatemanager.CertificateValidation.fromDns(zone),
     });
 
+    const mediaBucket = new s3.Bucket(this, 'MediaBucket', {
+      autoDeleteObjects: false,
+    });
+
+    const mediaDistribution = new cloudfront.Distribution(this, 'MediaDistribution', {
+      enabled: true,
+      comment: 'Serves media saved in the media bucket',
+      priceClass: cloudfront.PriceClass.PRICE_CLASS_ALL,
+      defaultBehavior: {
+        origin: new origins.S3Origin(mediaBucket),
+      },
+      domainNames: [`media.${domainName}`],
+      certificate: domainCertificate,
+    });
+
     const loadBalancerOrigin = new origins.LoadBalancerV2Origin(loadBalancer, {
       httpPort: 80,
       protocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY,
@@ -169,6 +184,9 @@ export class StringsyncStack extends cdk.Stack {
     const loadBalancerTarget = route53.RecordTarget.fromAlias(new route53Targets.LoadBalancerTarget(loadBalancer));
 
     const appDistributionTarget = route53.RecordTarget.fromAlias(new route53Targets.CloudFrontTarget(appDistribution));
+    const mediaDistributionTarget = route53.RecordTarget.fromAlias(
+      new route53Targets.CloudFrontTarget(mediaDistribution)
+    );
 
     const appAliasRecord = new route53.ARecord(this, 'AppAliasRecord', {
       zone,
@@ -191,15 +209,17 @@ export class StringsyncStack extends cdk.Stack {
     const mediaAliasRecord = new route53.ARecord(this, 'MediaAliasRecord', {
       zone,
       recordName: `media.${domainName}`,
-      target: loadBalancerTarget,
+      target: mediaDistributionTarget,
     });
 
     const publicListener = loadBalancer.addListener('PublicListener', {
-      protocol: elbv2.ApplicationProtocol.HTTP,
+      protocol: elbv2.ApplicationProtocol.HTTPS,
+      port: 443,
+      certificates: [domainCertificate],
     });
 
     const appTargetGroup = publicListener.addTargets('AppTargetGroup', {
-      protocol: elbv2.ApplicationProtocol.HTTP,
+      protocol: elbv2.ApplicationProtocol.HTTPS,
       healthCheck: {
         interval: cdk.Duration.seconds(30),
         path: '/health',
@@ -215,21 +235,6 @@ export class StringsyncStack extends cdk.Stack {
     cache.securityGroup.connections.allowFrom(fargateContainerSecurityGroup, ec2.Port.allTcp());
 
     dbSecurityGroup.connections.allowFrom(fargateContainerSecurityGroup, ec2.Port.allTcp());
-
-    const mediaBucket = new s3.Bucket(this, 'MediaBucket', {
-      autoDeleteObjects: false,
-    });
-
-    const mediaDistribution = new cloudfront.Distribution(this, 'MediaDistribution', {
-      enabled: true,
-      comment: 'Serves media saved in the media bucket',
-      priceClass: cloudfront.PriceClass.PRICE_CLASS_ALL,
-      defaultBehavior: {
-        origin: new origins.S3Origin(mediaBucket),
-      },
-      domainNames: [`media.${domainName}`],
-      certificate: domainCertificate,
-    });
 
     const cluster = new ecs.Cluster(this, 'Cluster', { vpc, containerInsights: true });
 
