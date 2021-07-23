@@ -158,8 +158,8 @@ export class StringsyncStack extends cdk.Stack {
     });
 
     const loadBalancerOrigin = new origins.LoadBalancerV2Origin(loadBalancer, {
-      httpPort: 80,
-      protocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY,
+      httpPort: 443,
+      protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
     });
 
     const appDistribution = new cloudfront.Distribution(this, 'AppDistribution', {
@@ -242,6 +242,7 @@ export class StringsyncStack extends cdk.Stack {
       NODE_ENV: 'production',
       LOG_LEVEL: 'debug',
       PORT: '3000',
+      DOMAIN_NAME: domainName,
       WEB_UI_CDN_DOMAIN_NAME: appDistribution.domainName,
       MEDIA_CDN_DOMAIN_NAME: mediaDistribution.domainName,
       MEDIA_S3_BUCKET: mediaBucket.bucketName,

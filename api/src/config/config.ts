@@ -6,6 +6,7 @@ const PORT = Env.number('PORT').get();
 
 // Used for generation session secrets in the express-session library.
 const SESSION_SECRET = Env.string('SESSION_SECRET').get();
+const DOMAIN_NAME = Env.string('DOMAIN_NAME').get();
 
 // The SDK automatically detects AWS credentials set as env variables and uses them for SDK requests
 // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-environment.html
@@ -38,6 +39,7 @@ export const config = {
   NODE_ENV,
   LOG_LEVEL,
   PORT,
+  DOMAIN_NAME,
   SESSION_SECRET,
   WEB_UI_CDN_DOMAIN_NAME,
   MEDIA_CDN_DOMAIN_NAME,
