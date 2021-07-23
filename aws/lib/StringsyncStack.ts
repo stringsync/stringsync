@@ -298,7 +298,7 @@ export class StringsyncStack extends cdk.Stack {
       containerName: 'nginx',
       logging: appLogDriver,
       image: ecs.ContainerImage.fromRegistry(ci.nginxRepository.repositoryUri),
-      portMappings: [{ containerPort: 80 }],
+      portMappings: [{ containerPort: 80 }, { containerPort: 443 }],
     });
 
     appTaskDefinition.addContainer('ApiContainer', {
