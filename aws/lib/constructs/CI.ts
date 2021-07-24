@@ -131,6 +131,7 @@ export class CI extends cdk.Construct {
               'docker tag stringsyncnginx:latest $NGINX_REPO_URI:latest',
               './bin/ss testall',
             ],
+            finally: ['./bin/ss extractreports'],
             'on-failure': 'ABORT',
           },
           post_build: {

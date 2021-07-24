@@ -153,12 +153,6 @@ async function buildweb() {
 }
 
 async function extractReports() {
-  const ci = CI.getOrDefault(false);
-
-  if (!ci) {
-    return;
-  }
-
   log('making root reports dir');
   await cmd('mkdir', ['-p', 'reports']);
 
@@ -207,8 +201,9 @@ exports['buildapp'] = buildapp;
 exports['buildnginx'] = buildnginx;
 exports['buildweb'] = buildweb;
 
-exports['testall'] = series(gensecrets, testapi, testweb, extractReports);
+exports['testall'] = series(gensecrets, testapi, testweb);
 exports['testapi'] = series(gensecrets, testapi);
 exports['testweb'] = series(gensecrets, testweb);
+exports['extractreports'] = extractReports;
 
 exports['cdkdeploy'] = cdkdeploy;
