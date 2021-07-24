@@ -212,18 +212,32 @@ export class StringsyncStack extends cdk.Stack {
       target: mediaDistributionTarget,
     });
 
-    const publicListener = loadBalancer.addListener('PublicListener', {
+    const publicHttpListener = loadBalancer.addListener('PublicHttpListener', {
+      protocol: elbv2.ApplicationProtocol.HTTP,
+      port: 80,
+    });
+    const appHttpTargetGroup = publicHttpListener.addTargets('AppHttpTargetGroup', {
+      protocol: elbv2.ApplicationProtocol.HTTP,
+      healthCheck: {
+        interval: cdk.Duration.seconds(30),
+        path: '/health',
+      },
+    });
+
+    const publicHttpsListener = loadBalancer.addListener('PublicHttpsListener', {
       protocol: elbv2.ApplicationProtocol.HTTPS,
       port: 443,
       certificates: [domainCertificate],
     });
-
-    const appTargetGroup = publicListener.addTargets('AppTargetGroup', {
+    const appHttpsTargetGroup = publicHttpsListener.addTargets('AppHttpsTargetGroup', {
       protocol: elbv2.ApplicationProtocol.HTTPS,
       healthCheck: {
         interval: cdk.Duration.seconds(30),
         path: '/health',
       },
+    });
+    publicHttpListener.addAction('PublicHttpListenerRedirectAction', {
+      action: elbv2.ListenerAction.forward([appHttpsTargetGroup]),
     });
 
     const fargateContainerSecurityGroup = new ec2.SecurityGroup(this, 'FargateContainerSecurityGroup', {
@@ -320,7 +334,8 @@ export class StringsyncStack extends cdk.Stack {
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     });
 
-    appTargetGroup.addTarget(appService);
+    appHttpTargetGroup.addTarget(appService);
+    appHttpsTargetGroup.addTarget(appService);
 
     const workerTaskDefinition = new ecs.FargateTaskDefinition(this, 'WorkerTaskDefinition', {
       cpu: 256,
