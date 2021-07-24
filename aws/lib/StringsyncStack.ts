@@ -158,8 +158,8 @@ export class StringsyncStack extends cdk.Stack {
     });
 
     const loadBalancerOrigin = new origins.LoadBalancerV2Origin(loadBalancer, {
-      httpPort: 443,
-      protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
+      httpPort: 80,
+      protocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY,
     });
 
     const appDistribution = new cloudfront.Distribution(this, 'AppDistribution', {
@@ -218,26 +218,11 @@ export class StringsyncStack extends cdk.Stack {
     });
     const appHttpTargetGroup = publicHttpListener.addTargets('AppHttpTargetGroup', {
       protocol: elbv2.ApplicationProtocol.HTTP,
+      port: 80,
       healthCheck: {
         interval: cdk.Duration.seconds(30),
         path: '/health',
       },
-    });
-
-    const publicHttpsListener = loadBalancer.addListener('PublicHttpsListener', {
-      protocol: elbv2.ApplicationProtocol.HTTPS,
-      port: 443,
-      certificates: [domainCertificate],
-    });
-    const appHttpsTargetGroup = publicHttpsListener.addTargets('AppHttpsTargetGroup', {
-      protocol: elbv2.ApplicationProtocol.HTTPS,
-      healthCheck: {
-        interval: cdk.Duration.seconds(30),
-        path: '/health',
-      },
-    });
-    publicHttpListener.addAction('PublicHttpListenerRedirectAction', {
-      action: elbv2.ListenerAction.forward([appHttpsTargetGroup]),
     });
 
     const fargateContainerSecurityGroup = new ec2.SecurityGroup(this, 'FargateContainerSecurityGroup', {
@@ -313,7 +298,7 @@ export class StringsyncStack extends cdk.Stack {
       containerName: 'nginx',
       logging: appLogDriver,
       image: ecs.ContainerImage.fromRegistry(ci.nginxRepository.repositoryUri),
-      portMappings: [{ containerPort: 80 }, { containerPort: 443 }],
+      portMappings: [{ containerPort: 80 }],
     });
 
     appTaskDefinition.addContainer('ApiContainer', {
@@ -335,7 +320,6 @@ export class StringsyncStack extends cdk.Stack {
     });
 
     appHttpTargetGroup.addTarget(appService);
-    appHttpsTargetGroup.addTarget(appService);
 
     const workerTaskDefinition = new ecs.FargateTaskDefinition(this, 'WorkerTaskDefinition', {
       cpu: 256,
