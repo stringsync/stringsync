@@ -126,6 +126,30 @@ export class StringsyncStack extends cdk.Stack {
       deletionProtection: false,
     });
 
+    const domainCertificate = new certificatemanager.Certificate(this, 'DomainCertificate', {
+      domainName,
+      subjectAlternativeNames: [`www.${domainName}`, `media.${domainName}`],
+      validation: certificatemanager.CertificateValidation.fromDns(zone),
+    });
+
+    const mediaBucket = new s3.Bucket(this, 'MediaBucket', {
+      autoDeleteObjects: false,
+    });
+
+    const loadBalancerOrigin = new origins.LoadBalancerV2Origin(loadBalancer, {
+      httpPort: 80,
+      protocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY,
+    });
+
+    const mediaCachePolicy = new cloudfront.CachePolicy(this, 'MediaCachePolicy', {
+      defaultTtl: cdk.Duration.minutes(30),
+      minTtl: cdk.Duration.minutes(30),
+      maxTtl: cdk.Duration.minutes(60),
+      cookieBehavior: cloudfront.CacheCookieBehavior.none(),
+      headerBehavior: cloudfront.CacheHeaderBehavior.none(),
+      queryStringBehavior: cloudfront.CacheQueryStringBehavior.none(),
+      enableAcceptEncodingGzip: true,
+    });
     const appCachePolicy = new cloudfront.CachePolicy(this, 'AppCachePolicy', {
       defaultTtl: cdk.Duration.minutes(30),
       minTtl: cdk.Duration.minutes(30),
@@ -135,33 +159,14 @@ export class StringsyncStack extends cdk.Stack {
       queryStringBehavior: cloudfront.CacheQueryStringBehavior.none(),
       enableAcceptEncodingGzip: true,
     });
-
-    const domainCertificate = new certificatemanager.Certificate(this, 'DomainCertificate', {
-      domainName,
-      subjectAlternativeNames: [`www.${domainName}`, `api.${domainName}`, `media.${domainName}`],
-      validation: certificatemanager.CertificateValidation.fromDns(zone),
+    const doNotCachePolicy = new cloudfront.CachePolicy(this, 'DoNotCachePolicy', {
+      defaultTtl: cdk.Duration.minutes(0),
+      minTtl: cdk.Duration.minutes(0),
+      maxTtl: cdk.Duration.minutes(0),
+      cookieBehavior: cloudfront.CacheCookieBehavior.none(),
+      headerBehavior: cloudfront.CacheHeaderBehavior.none(),
+      queryStringBehavior: cloudfront.CacheQueryStringBehavior.none(),
     });
-
-    const mediaBucket = new s3.Bucket(this, 'MediaBucket', {
-      autoDeleteObjects: false,
-    });
-
-    const mediaDistribution = new cloudfront.Distribution(this, 'MediaDistribution', {
-      enabled: true,
-      comment: 'Serves media saved in the media bucket',
-      priceClass: cloudfront.PriceClass.PRICE_CLASS_ALL,
-      defaultBehavior: {
-        origin: new origins.S3Origin(mediaBucket),
-      },
-      domainNames: [`media.${domainName}`],
-      certificate: domainCertificate,
-    });
-
-    const loadBalancerOrigin = new origins.LoadBalancerV2Origin(loadBalancer, {
-      httpPort: 80,
-      protocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY,
-    });
-
     const appDistribution = new cloudfront.Distribution(this, 'AppDistribution', {
       enabled: true,
       comment: 'Serves the application frontend',
@@ -180,13 +185,22 @@ export class StringsyncStack extends cdk.Stack {
       domainNames: [domainName, `www.${domainName}`],
       certificate: domainCertificate,
     });
+    appDistribution.addBehavior('/health', loadBalancerOrigin, {
+      allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
+      cachePolicy: doNotCachePolicy,
+    });
+    appDistribution.addBehavior('/graphql', loadBalancerOrigin, {
+      allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
+      cachePolicy: doNotCachePolicy,
+    });
+    appDistribution.addBehavior('/media', new origins.S3Origin(mediaBucket), {
+      allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
+      cachePolicy: mediaCachePolicy,
+    });
 
     const loadBalancerTarget = route53.RecordTarget.fromAlias(new route53Targets.LoadBalancerTarget(loadBalancer));
 
     const appDistributionTarget = route53.RecordTarget.fromAlias(new route53Targets.CloudFrontTarget(appDistribution));
-    const mediaDistributionTarget = route53.RecordTarget.fromAlias(
-      new route53Targets.CloudFrontTarget(mediaDistribution)
-    );
 
     const appAliasRecord = new route53.ARecord(this, 'AppAliasRecord', {
       zone,
@@ -198,18 +212,6 @@ export class StringsyncStack extends cdk.Stack {
       zone,
       recordName: `www.${domainName}`,
       target: appDistributionTarget,
-    });
-
-    const appApiAliasRecord = new route53.ARecord(this, 'AppApiAliasRecord', {
-      zone,
-      recordName: `api.${domainName}`,
-      target: loadBalancerTarget,
-    });
-
-    const mediaAliasRecord = new route53.ARecord(this, 'MediaAliasRecord', {
-      zone,
-      recordName: `media.${domainName}`,
-      target: mediaDistributionTarget,
     });
 
     const publicHttpListener = loadBalancer.addListener('PublicHttpListener', {
@@ -251,7 +253,7 @@ export class StringsyncStack extends cdk.Stack {
       PORT: '3000',
       DOMAIN_NAME: domainName,
       WEB_UI_CDN_DOMAIN_NAME: appDistribution.domainName,
-      MEDIA_CDN_DOMAIN_NAME: mediaDistribution.domainName,
+      MEDIA_CDN_DOMAIN_NAME: `${domainName}/media`,
       MEDIA_S3_BUCKET: mediaBucket.bucketName,
       VIDEO_SRC_S3_BUCKET: videoSourceBucketNameOutput.value,
       VIDEO_QUEUE_SQS_URL: sqsUrlOutput.value,

@@ -99,7 +99,7 @@ export class CI extends cdk.Construct {
           },
           REACT_APP_API_URI: {
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
-            value: `https://api.${props.domainName}`,
+            value: `https://${props.domainName}`,
           },
         },
       },
