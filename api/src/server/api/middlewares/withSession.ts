@@ -11,12 +11,14 @@ export const withSession = (redis: RedisClient, config: Config): Handler => {
   const RedisStore = connectRedis(session);
   const store = new RedisStore({ client: redis });
   const isProduction = config.NODE_ENV === 'production';
+  const secure = isProduction;
+  const sameSite = isProduction ? 'strict' : 'none';
 
   return session({
     secret: config.SESSION_SECRET,
-    cookie: { httpOnly: true, maxAge: MAX_AGE_MS, secure: false },
+    cookie: { httpOnly: true, maxAge: MAX_AGE_MS, secure, sameSite },
     genid: () => uuid.v4(),
-    proxy: true,
+    proxy: undefined,
     resave: false,
     rolling: false,
     saveUninitialized: false,

@@ -38,7 +38,7 @@ export class ApiServer implements GraphqlServer {
   protected configure(schema: GraphQLSchema) {
     const { app, config, redis, authService } = this;
 
-    app.set('trust proxy', 1);
+    app.set('trust proxy', () => true);
     app.use(
       withCors(config),
       withVersion,
