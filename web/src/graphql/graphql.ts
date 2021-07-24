@@ -2,7 +2,7 @@ import { extractFiles } from 'extract-files';
 import { Mutation, Query } from './graphqlTypes';
 import { RequestType, Response } from './types';
 
-const URI = `${process.env.REACT_APP_API_URI}/graphql`;
+const URI = `${window.location.origin}/graphql`;
 
 /**
  * The purpose of this method is to make a request that follows the
