@@ -167,6 +167,12 @@ export class StringsyncStack extends cdk.Stack {
       headerBehavior: cloudfront.CacheHeaderBehavior.none(),
       queryStringBehavior: cloudfront.CacheQueryStringBehavior.none(),
     });
+    const forwardAllOriginRequestPolicy = new cloudfront.OriginRequestPolicy(this, 'FowardAllPolicy', {
+      comment: 'Forwards all headers, cookies, and query string params to the origin',
+      cookieBehavior: cloudfront.OriginRequestCookieBehavior.all(),
+      headerBehavior: cloudfront.OriginRequestHeaderBehavior.all(),
+      queryStringBehavior: cloudfront.OriginRequestQueryStringBehavior.all(),
+    });
     const appDistribution = new cloudfront.Distribution(this, 'AppDistribution', {
       enabled: true,
       comment: 'Serves the application frontend',
@@ -192,6 +198,7 @@ export class StringsyncStack extends cdk.Stack {
     appDistribution.addBehavior('/graphql', loadBalancerOrigin, {
       allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
       cachePolicy: doNotCachePolicy,
+      originRequestPolicy: forwardAllOriginRequestPolicy,
     });
     appDistribution.addBehavior('/media', new origins.S3Origin(mediaBucket), {
       allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
