@@ -13,7 +13,7 @@ export const withSession = (redis: RedisClient, config: Config): Handler => {
 
   return session({
     secret: config.SESSION_SECRET,
-    cookie: { httpOnly: true, maxAge: MAX_AGE_MS, secure: false, sameSite: 'lax' },
+    cookie: { httpOnly: true, maxAge: MAX_AGE_MS, secure: false, sameSite: 'none' },
     genid: () => uuid.v4(),
     proxy: undefined,
     resave: false,
