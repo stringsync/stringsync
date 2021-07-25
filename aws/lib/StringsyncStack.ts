@@ -128,7 +128,7 @@ export class StringsyncStack extends cdk.Stack {
 
     const domainCertificate = new certificatemanager.Certificate(this, 'DomainCertificate', {
       domainName,
-      subjectAlternativeNames: [`www.${domainName}`, `media.${domainName}`, `lb.${domainName}`],
+      subjectAlternativeNames: [`www.${domainName}`, `lb.${domainName}`],
       validation: certificatemanager.CertificateValidation.fromDns(zone),
     });
 
