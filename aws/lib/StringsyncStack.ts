@@ -69,7 +69,7 @@ export class StringsyncStack extends cdk.Stack {
       domainName,
       hostedZoneId,
       hostedZoneName,
-      subdomainNames: ['media', 'lb'],
+      subdomainNames: ['www', 'media', 'lb'],
     });
 
     const zone = route53.HostedZone.fromHostedZoneAttributes(this, 'Zone', {
@@ -216,16 +216,42 @@ export class StringsyncStack extends cdk.Stack {
       originRequestPolicy: forwardAllOriginRequestPolicy,
     });
 
+    const appWWWRedirectBucket = new s3.Bucket(this, 'AppWWWRedirectBucket', {
+      autoDeleteObjects: true,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      websiteRedirect: {
+        hostName: domain.name,
+        protocol: s3.RedirectProtocol.HTTPS,
+      },
+    });
+    const appWWWRedirectOrigin = new origins.S3Origin(appWWWRedirectBucket);
+    const appWWWRedirectDistribution = new cloudfront.Distribution(this, 'AppWWWRedirectDistribution', {
+      enabled: true,
+      comment: 'Redirects www subdomain to the naked one',
+      priceClass: cloudfront.PriceClass.PRICE_CLASS_ALL,
+      defaultBehavior: {
+        origin: appWWWRedirectOrigin,
+        allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
+        cachePolicy: doNotCachePolicy,
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      },
+      domainNames: [domain.sub('www')],
+      certificate: domain.certificate,
+    });
+
     // Create targets and register them with the domain name and their respective subdomains.
     const loadBalancerTarget = route53.RecordTarget.fromAlias(new route53Targets.LoadBalancerTarget(loadBalancer));
     const appDistributionTarget = route53.RecordTarget.fromAlias(new route53Targets.CloudFrontTarget(appDistribution));
+    const appWWWRedirectDistributionTarget = route53.RecordTarget.fromAlias(
+      new route53Targets.CloudFrontTarget(appWWWRedirectDistribution)
+    );
     const mediaDistributionTarget = route53.RecordTarget.fromAlias(
       new route53Targets.CloudFrontTarget(mediaDistribution)
     );
     domain.registerTarget('AliasRecord', domain.name, appDistributionTarget);
-    domain.registerTarget('WWWAliasRecord', domain.sub('www'), appDistributionTarget);
+    domain.registerTarget('WWWAliasRecord', domain.sub('www'), appWWWRedirectDistributionTarget);
     domain.registerTarget('LBAliasRecord', domain.sub('lb'), loadBalancerTarget);
-    domain.registerTarget('MediaAliasRecord', domain.sub('media'), loadBalancerTarget);
+    domain.registerTarget('MediaAliasRecord', domain.sub('media'), mediaDistributionTarget);
 
     const publicHttpListener = loadBalancer.addListener('PublicHttpListener', {
       protocol: elbv2.ApplicationProtocol.HTTP,
