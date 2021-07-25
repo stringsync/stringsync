@@ -1,7 +1,7 @@
 import { Col, Layout, Row } from 'antd';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { Logo } from '../../components/Logo';
 import { Wordmark } from '../../components/Wordmark';
@@ -41,6 +41,7 @@ const Offline = styled.em`
 `;
 
 export const DefaultLayout: React.FC = (props) => {
+  const location = useLocation();
   const isGtMdViewport = useSelector<RootState, boolean>(
     (state) => state.viewport.lg || state.viewport.xl || state.viewport.xxl
   );
@@ -48,6 +49,7 @@ export const DefaultLayout: React.FC = (props) => {
   const isOnline = useOnlineStatus();
   const isWordmarkVisible = isOnline && isGtMdViewport;
   const isOfflineVisible = !isOnline;
+  const logoLinkTo = location.pathname === '/library' ? '/' : '/library';
 
   return (
     <StyledLayout data-testid="default-layout">
@@ -55,7 +57,7 @@ export const DefaultLayout: React.FC = (props) => {
         <Lane>
           <Row align="middle" justify="space-between">
             <Col>
-              <Link to="/library">
+              <Link to={logoLinkTo}>
                 <Row align="middle" gutter={8}>
                   <Col>
                     <Row align="middle">
@@ -86,7 +88,7 @@ export const DefaultLayout: React.FC = (props) => {
       </Layout.Content>
       {isGtMdViewport && (
         <StyledFooter>
-          <Lane>StringSync LLC © 2020</Lane>
+          <Lane>StringSync LLC © 2021</Lane>
         </StyledFooter>
       )}
     </StyledLayout>

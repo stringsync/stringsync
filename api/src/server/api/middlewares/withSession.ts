@@ -12,7 +12,7 @@ export const withSession = (redis: RedisClient, config: Config): Handler => {
   const store = new RedisStore({ client: redis });
   const isProduction = config.NODE_ENV === 'production';
   const secure = isProduction;
-  const sameSite = isProduction ? 'strict' : 'none';
+  const sameSite = isProduction ? 'strict' : undefined;
 
   return session({
     secret: config.SESSION_SECRET,
