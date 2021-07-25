@@ -49,7 +49,7 @@ export const DefaultLayout: React.FC = (props) => {
   const isOnline = useOnlineStatus();
   const isWordmarkVisible = isOnline && isGtMdViewport;
   const isOfflineVisible = !isOnline;
-  const logoLinkTo = location.pathname === '/library' ? '/' : '/library';
+  const logoLinkTo = location.pathname.startsWith('/library') ? '/' : '/library';
 
   return (
     <StyledLayout data-testid="default-layout">
