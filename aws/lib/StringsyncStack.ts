@@ -10,11 +10,11 @@ import * as route53 from '@aws-cdk/aws-route53';
 import * as route53Targets from '@aws-cdk/aws-route53-targets';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import * as cfninc from '@aws-cdk/cloudformation-include';
 import * as cdk from '@aws-cdk/core';
 import { Cache } from './constructs/Cache';
 import { CI } from './constructs/CI';
 import { Domain } from './constructs/Domain';
+import { Vod } from './constructs/Vod';
 
 export class StringsyncStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -107,19 +107,11 @@ export class StringsyncStack extends cdk.Stack {
 
     const cache = new Cache(this, 'Cache', { vpc });
 
-    const vodTemplate = new cfninc.CfnInclude(this, 'VodTemplate', {
-      templateFile: 'templates/vod.yml',
-      preserveLogicalIds: true,
-      parameters: {
-        AdminEmail: 'jared@jaredjohnson.dev',
-        EnableSns: 'No',
-        AcceleratedTranscoding: 'DISABLED',
-      },
+    const vod = new Vod(this, 'Vod', {
+      adminEmail: 'admin@stringsync.dev',
+      enableAcceleratedTranscoding: false,
+      enableSns: false,
     });
-
-    const videoSourceBucketNameOutput = vodTemplate.getOutput('Source');
-
-    const sqsUrlOutput = vodTemplate.getOutput('SqsURL');
 
     const appSessionSecret = new secretsmanager.Secret(this, 'AppSessionSecret');
 
@@ -308,8 +300,8 @@ export class StringsyncStack extends cdk.Stack {
       WEB_UI_CDN_DOMAIN_NAME: appDistribution.domainName,
       MEDIA_CDN_DOMAIN_NAME: mediaDistribution.domainName,
       MEDIA_S3_BUCKET: mediaBucket.bucketName,
-      VIDEO_SRC_S3_BUCKET: videoSourceBucketNameOutput.value,
-      VIDEO_QUEUE_SQS_URL: sqsUrlOutput.value,
+      VIDEO_SRC_S3_BUCKET: vod.sourceBucket.bucketName,
+      VIDEO_QUEUE_SQS_URL: vod.queue.queueUrl,
       DEV_EMAIL: 'dev@stringsync.com',
       INFO_EMAIL: 'info@stringsync.com',
       DB_HOST: db.instanceEndpoint.hostname,
