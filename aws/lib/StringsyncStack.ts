@@ -128,17 +128,8 @@ export class StringsyncStack extends cdk.Stack {
 
     const domainCertificate = new certificatemanager.Certificate(this, 'DomainCertificate', {
       domainName,
-      subjectAlternativeNames: [`www.${domainName}`, `lb.${domainName}`],
+      subjectAlternativeNames: [`media.${domainName}`, `www.${domainName}`, `lb.${domainName}`],
       validation: certificatemanager.CertificateValidation.fromDns(zone),
-    });
-
-    const mediaBucket = new s3.Bucket(this, 'MediaBucket', {
-      autoDeleteObjects: false,
-    });
-
-    const loadBalancerOrigin = new origins.HttpOrigin(`lb.${domainName}`, {
-      httpsPort: 443,
-      protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
     });
 
     const mediaCachePolicy = new cloudfront.CachePolicy(this, 'MediaCachePolicy', {
@@ -149,6 +140,27 @@ export class StringsyncStack extends cdk.Stack {
       headerBehavior: cloudfront.CacheHeaderBehavior.none(),
       queryStringBehavior: cloudfront.CacheQueryStringBehavior.none(),
       enableAcceptEncodingGzip: true,
+    });
+    const mediaBucket = new s3.Bucket(this, 'MediaBucket', {
+      autoDeleteObjects: false,
+    });
+    const mediaDistribution = new cloudfront.Distribution(this, 'MediaDistribution', {
+      enabled: true,
+      comment: 'Serves media',
+      priceClass: cloudfront.PriceClass.PRICE_CLASS_ALL,
+      defaultBehavior: {
+        origin: new origins.S3Origin(mediaBucket),
+        allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
+        cachePolicy: mediaCachePolicy,
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      },
+      domainNames: [`media.${domainName}`],
+      certificate: domainCertificate,
+    });
+
+    const loadBalancerOrigin = new origins.HttpOrigin(`lb.${domainName}`, {
+      httpsPort: 443,
+      protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
     });
     const appCachePolicy = new cloudfront.CachePolicy(this, 'AppCachePolicy', {
       defaultTtl: cdk.Duration.minutes(30),
@@ -199,10 +211,6 @@ export class StringsyncStack extends cdk.Stack {
       allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
       cachePolicy: doNotCachePolicy,
       originRequestPolicy: forwardAllOriginRequestPolicy,
-    });
-    appDistribution.addBehavior('/media', new origins.S3Origin(mediaBucket), {
-      allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
-      cachePolicy: mediaCachePolicy,
     });
 
     const loadBalancerTarget = route53.RecordTarget.fromAlias(new route53Targets.LoadBalancerTarget(loadBalancer));
@@ -268,7 +276,7 @@ export class StringsyncStack extends cdk.Stack {
       PORT: '3000',
       DOMAIN_NAME: domainName,
       WEB_UI_CDN_DOMAIN_NAME: appDistribution.domainName,
-      MEDIA_CDN_DOMAIN_NAME: `${domainName}/media`,
+      MEDIA_CDN_DOMAIN_NAME: mediaDistribution.domainName,
       MEDIA_S3_BUCKET: mediaBucket.bucketName,
       VIDEO_SRC_S3_BUCKET: videoSourceBucketNameOutput.value,
       VIDEO_QUEUE_SQS_URL: sqsUrlOutput.value,
