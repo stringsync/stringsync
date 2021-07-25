@@ -5,8 +5,6 @@ import { createResolverCtx } from './createResolverCtx';
 import { formatError } from './formatError';
 
 export const withGraphQL = (schema: GraphQLSchema): Handler => (req, res) => {
-  console.log(req.headers);
-
   const middleware = graphqlHTTP({
     schema,
     context: createResolverCtx(req),

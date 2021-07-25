@@ -141,9 +141,8 @@ async function buildnginx() {
   const dockerfile = 'Dockerfile.nginx';
   const reactAppApiUri = REACT_APP_API_URI.getOrDefault('http://localhost');
 
-  await docker.build(dockerfile, dockerTag, {
-    REACT_APP_API_URI: reactAppApiUri,
-  });
+  await cmd('yarn', ['build'], { cwd: Project.WEB, env: { REACT_APP_API_URI: reactAppApiUri } });
+  await docker.build(dockerfile, dockerTag);
 }
 
 async function buildweb() {
