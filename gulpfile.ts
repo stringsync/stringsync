@@ -197,7 +197,7 @@ exports['installweb'] = installweb;
 exports['installaws'] = installaws;
 
 exports['buildapp'] = buildapp;
-exports['buildnginx'] = buildnginx;
+exports['buildnginx'] = series(installweb, buildnginx);
 exports['buildweb'] = buildweb;
 
 exports['testall'] = series(gensecrets, testapi, testweb);

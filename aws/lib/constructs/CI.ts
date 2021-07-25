@@ -110,7 +110,7 @@ export class CI extends cdk.Construct {
         },
         phases: {
           install: {
-            commands: ['yarn install'],
+            commands: ['yarn install', 'yarn --cwd web'],
           },
           pre_build: {
             commands: [
