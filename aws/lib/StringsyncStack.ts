@@ -136,7 +136,7 @@ export class StringsyncStack extends cdk.Stack {
       autoDeleteObjects: false,
     });
 
-    const loadBalancerOrigin = new origins.LoadBalancerV2Origin(loadBalancer, {
+    const loadBalancerOrigin = new origins.HttpOrigin(`lb.${domainName}`, {
       httpsPort: 443,
       protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
     });
