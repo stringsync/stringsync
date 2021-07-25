@@ -1,4 +1,3 @@
-import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as origins from '@aws-cdk/aws-cloudfront-origins';
 import * as codepipelineActions from '@aws-cdk/aws-codepipeline-actions';
@@ -15,6 +14,7 @@ import * as cfninc from '@aws-cdk/cloudformation-include';
 import * as cdk from '@aws-cdk/core';
 import { Cache } from './constructs/Cache';
 import { CI } from './constructs/CI';
+import { Domain } from './constructs/Domain';
 
 export class StringsyncStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -37,9 +37,14 @@ export class StringsyncStack extends cdk.Stack {
       description: 'The application naked domain name, e.g. example.com (not www.example.com).',
     }).valueAsString;
 
+    const hostedZoneName = new cdk.CfnParameter(this, 'HostedZoneName', {
+      type: 'String',
+      description: 'The hosted zone name that the domain name is in',
+    }).valueAsString;
+
     const hostedZoneId = new cdk.CfnParameter(this, 'HostedZoneId', {
       type: 'String',
-      description: 'The hosted zone that the domain name is in.',
+      description: 'The hosted zone ID that the domain name is in',
     }).valueAsString;
 
     const vpc = new ec2.Vpc(this, 'VPC', {
@@ -59,16 +64,20 @@ export class StringsyncStack extends cdk.Stack {
       maxAzs: 2,
     });
 
+    const domain = new Domain(this, 'Domain', {
+      vpc,
+      domainName,
+      hostedZoneId,
+      hostedZoneName,
+      subdomainNames: ['media', 'lb'],
+    });
+
     const zone = route53.HostedZone.fromHostedZoneAttributes(this, 'Zone', {
       zoneName: domainName,
       hostedZoneId: hostedZoneId,
     });
 
-    const ci = new CI(this, 'CI', {
-      repoName: 'stringsync',
-      accountId: this.account,
-      domainName,
-    });
+    const ci = new CI(this, 'CI', { repoName: 'stringsync', accountId: this.account, domainName });
 
     const dbName = this.stackName;
     const dbCredsSecret = new secretsmanager.Secret(this, 'DbCreds', {
@@ -126,12 +135,6 @@ export class StringsyncStack extends cdk.Stack {
       deletionProtection: false,
     });
 
-    const domainCertificate = new certificatemanager.Certificate(this, 'DomainCertificate', {
-      domainName,
-      subjectAlternativeNames: [`media.${domainName}`, `www.${domainName}`, `lb.${domainName}`],
-      validation: certificatemanager.CertificateValidation.fromDns(zone),
-    });
-
     const mediaCachePolicy = new cloudfront.CachePolicy(this, 'MediaCachePolicy', {
       defaultTtl: cdk.Duration.minutes(30),
       minTtl: cdk.Duration.minutes(30),
@@ -155,7 +158,7 @@ export class StringsyncStack extends cdk.Stack {
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
       domainNames: [`media.${domainName}`],
-      certificate: domainCertificate,
+      certificate: domain.certificate,
     });
 
     const loadBalancerOrigin = new origins.HttpOrigin(`lb.${domainName}`, {
@@ -200,8 +203,8 @@ export class StringsyncStack extends cdk.Stack {
         cachePolicy: appCachePolicy,
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
-      domainNames: [domainName, `www.${domainName}`],
-      certificate: domainCertificate,
+      domainNames: [domain.name],
+      certificate: domain.certificate,
     });
     appDistribution.addBehavior('/health', loadBalancerOrigin, {
       allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
@@ -213,27 +216,16 @@ export class StringsyncStack extends cdk.Stack {
       originRequestPolicy: forwardAllOriginRequestPolicy,
     });
 
+    // Create targets and register them with the domain name and their respective subdomains.
     const loadBalancerTarget = route53.RecordTarget.fromAlias(new route53Targets.LoadBalancerTarget(loadBalancer));
-
     const appDistributionTarget = route53.RecordTarget.fromAlias(new route53Targets.CloudFrontTarget(appDistribution));
-
-    const appAliasRecord = new route53.ARecord(this, 'AppAliasRecord', {
-      zone,
-      recordName: domainName,
-      target: appDistributionTarget,
-    });
-
-    const appWWWAliasRecord = new route53.ARecord(this, 'AppWWWAliasRecord', {
-      zone,
-      recordName: `www.${domainName}`,
-      target: appDistributionTarget,
-    });
-
-    const loadBalancerRecord = new route53.ARecord(this, 'LoadBalancerRecord', {
-      zone,
-      recordName: `lb.${domainName}`,
-      target: loadBalancerTarget,
-    });
+    const mediaDistributionTarget = route53.RecordTarget.fromAlias(
+      new route53Targets.CloudFrontTarget(mediaDistribution)
+    );
+    domain.registerTarget('AliasRecord', domain.name, appDistributionTarget);
+    domain.registerTarget('WWWAliasRecord', domain.sub('www'), appDistributionTarget);
+    domain.registerTarget('LBAliasRecord', domain.sub('lb'), loadBalancerTarget);
+    domain.registerTarget('MediaAliasRecord', domain.sub('media'), loadBalancerTarget);
 
     const publicHttpListener = loadBalancer.addListener('PublicHttpListener', {
       protocol: elbv2.ApplicationProtocol.HTTP,
@@ -247,7 +239,7 @@ export class StringsyncStack extends cdk.Stack {
     const publicHttpsListener = loadBalancer.addListener('PublicHttpsListener', {
       protocol: elbv2.ApplicationProtocol.HTTPS,
       port: 443,
-      certificates: [domainCertificate],
+      certificates: [domain.certificate],
     });
     const appTargetGroup = publicHttpsListener.addTargets('AppTargetGroup', {
       protocol: elbv2.ApplicationProtocol.HTTP,
