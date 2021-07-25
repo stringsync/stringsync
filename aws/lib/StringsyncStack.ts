@@ -249,19 +249,19 @@ export class StringsyncStack extends cdk.Stack {
       new route53Targets.CloudFrontTarget(mediaDistribution)
     );
     domain.registerTarget(this, 'AliasRecord', {
-      recordName: domain.domainName,
+      subdomain: '',
       target: appDistributionTarget,
     });
     domain.registerTarget(this, 'WWWAliasRecord', {
-      recordName: domain.sub('www'),
+      subdomain: 'www',
       target: appWWWRedirectDistributionTarget,
     });
     domain.registerTarget(this, 'LBAliasRecord', {
-      recordName: domain.sub('lb'),
+      subdomain: 'lb',
       target: loadBalancerTarget,
     });
     domain.registerTarget(this, 'MediaAliasRecord', {
-      recordName: domain.sub('media'),
+      subdomain: 'media',
       target: mediaDistributionTarget,
     });
 

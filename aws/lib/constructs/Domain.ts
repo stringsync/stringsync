@@ -4,7 +4,7 @@ import * as route53 from '@aws-cdk/aws-route53';
 import * as cdk from '@aws-cdk/core';
 
 type RegisterTargetProps = {
-  recordName: string;
+  subdomain: string;
   target: route53.RecordTarget;
 };
 
@@ -26,7 +26,7 @@ export class Domain extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: DomainProps) {
     super(scope, id);
 
-    this.hostedZone = route53.HostedZone.fromHostedZoneAttributes(this, 'HostedZone', {
+    this.hostedZone = route53.HostedZone.fromHostedZoneAttributes(scope, 'HostedZone', {
       zoneName: props.hostedZoneName,
       hostedZoneId: props.hostedZoneId,
     });
@@ -34,7 +34,7 @@ export class Domain extends cdk.Construct {
     this.domainName = props.domainName;
     this.subdomainNames = props.subdomainNames;
 
-    this.certificate = new certificatemanager.Certificate(this, 'Certificate', {
+    this.certificate = new certificatemanager.Certificate(scope, 'Certificate', {
       domainName: this.domainName,
       subjectAlternativeNames: this.subdomainNames.map((subdomainName) => this.sub(subdomainName)),
       validation: certificatemanager.CertificateValidation.fromDns(this.hostedZone),
@@ -48,7 +48,7 @@ export class Domain extends cdk.Construct {
   registerTarget(scope: cdk.Construct, recordId: string, props: RegisterTargetProps): route53.RecordSet {
     const record = new route53.ARecord(scope, recordId, {
       zone: this.hostedZone,
-      recordName: props.recordName,
+      recordName: props.subdomain,
       target: props.target,
     });
     this.records.push(record);
