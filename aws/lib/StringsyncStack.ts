@@ -128,7 +128,7 @@ export class StringsyncStack extends cdk.Stack {
 
     const domainCertificate = new certificatemanager.Certificate(this, 'DomainCertificate', {
       domainName,
-      subjectAlternativeNames: [`www.${domainName}`, `media.${domainName}`],
+      subjectAlternativeNames: [`www.${domainName}`, `media.${domainName}`, `lb.${domainName}`],
       validation: certificatemanager.CertificateValidation.fromDns(zone),
     });
 
@@ -137,8 +137,8 @@ export class StringsyncStack extends cdk.Stack {
     });
 
     const loadBalancerOrigin = new origins.LoadBalancerV2Origin(loadBalancer, {
-      httpPort: 80,
-      protocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY,
+      httpsPort: 443,
+      protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
     });
 
     const mediaCachePolicy = new cloudfront.CachePolicy(this, 'MediaCachePolicy', {
@@ -221,25 +221,33 @@ export class StringsyncStack extends cdk.Stack {
       target: appDistributionTarget,
     });
 
+    const loadBalancerRecord = new route53.ARecord(this, 'LoadBalancerRecord', {
+      zone,
+      recordName: `lb.${domainName}`,
+      target: loadBalancerTarget,
+    });
+
     const publicHttpListener = loadBalancer.addListener('PublicHttpListener', {
       protocol: elbv2.ApplicationProtocol.HTTP,
       port: 80,
+      defaultAction: elbv2.ListenerAction.redirect({
+        protocol: elbv2.ApplicationProtocol.HTTPS,
+        port: '443',
+        permanent: true,
+      }),
     });
     const publicHttpsListener = loadBalancer.addListener('PublicHttpsListener', {
       protocol: elbv2.ApplicationProtocol.HTTPS,
       port: 443,
       certificates: [domainCertificate],
     });
-    const appHttpsTargetGroup = publicHttpsListener.addTargets('AppHttpsTargetGroup', {
+    const appTargetGroup = publicHttpsListener.addTargets('AppTargetGroup', {
       protocol: elbv2.ApplicationProtocol.HTTP,
       port: 80,
       healthCheck: {
         interval: cdk.Duration.seconds(30),
         path: '/health',
       },
-    });
-    publicHttpListener.addAction('RedirectToHttpsAction', {
-      action: elbv2.ListenerAction.forward([appHttpsTargetGroup]),
     });
 
     const fargateContainerSecurityGroup = new ec2.SecurityGroup(this, 'FargateContainerSecurityGroup', {
@@ -336,7 +344,7 @@ export class StringsyncStack extends cdk.Stack {
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     });
 
-    appHttpsTargetGroup.addTarget(appService);
+    appTargetGroup.addTarget(appService);
 
     const workerTaskDefinition = new ecs.FargateTaskDefinition(this, 'WorkerTaskDefinition', {
       cpu: 256,
