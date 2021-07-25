@@ -98,10 +98,6 @@ export class CI extends cdk.Construct {
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
             value: this.workerRepository.repositoryUri,
           },
-          REACT_APP_API_URI: {
-            type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
-            value: `https://${props.domainName}`,
-          },
         },
       },
       buildSpec: codebuild.BuildSpec.fromObject({

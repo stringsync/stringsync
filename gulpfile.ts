@@ -19,7 +19,7 @@ const DOCKER_TAG = Env.string('DOCKER_TAG');
 const DOCKERFILE = Env.string('DOCKERFILE');
 const GRAPHQL_HOSTNAME = Env.string('GRAPHQL_HOSTNAME');
 const GRAPHQL_PORT = Env.number('GRAPHQL_PORT');
-const REACT_APP_API_URI = Env.string('REACT_APP_API_URI');
+
 const MAX_WAIT_MS = Env.number('MAX_WAIT_MS');
 const REMOTE = Env.string('REMOTE');
 const WATCH = Env.boolean('WATCH');
@@ -139,16 +139,9 @@ async function buildapp() {
 async function buildnginx() {
   const dockerTag = 'stringsyncnginx:latest';
   const dockerfile = 'Dockerfile.nginx';
-  const reactAppApiUri = REACT_APP_API_URI.getOrDefault('http://localhost');
 
-  await cmd('yarn', ['build'], { cwd: Project.WEB, env: { REACT_APP_API_URI: reactAppApiUri } });
+  await cmd('yarn', ['build'], { cwd: Project.WEB });
   await docker.build(dockerfile, dockerTag);
-}
-
-async function buildweb() {
-  const reactAppApiUri = REACT_APP_API_URI.get();
-
-  await cmd('yarn', ['build'], { cwd: Project.WEB, env: { REACT_APP_API_URI: reactAppApiUri } });
 }
 
 async function extractReports() {
@@ -198,7 +191,6 @@ exports['installaws'] = installaws;
 
 exports['buildapp'] = buildapp;
 exports['buildnginx'] = series(installweb, buildnginx);
-exports['buildweb'] = buildweb;
 
 exports['testall'] = series(gensecrets, testapi, testweb);
 exports['testapi'] = series(gensecrets, testapi);
