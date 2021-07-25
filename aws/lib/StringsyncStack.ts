@@ -203,7 +203,7 @@ export class StringsyncStack extends cdk.Stack {
         cachePolicy: appCachePolicy,
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
-      domainNames: [domain.name],
+      domainNames: [domain.domainName],
       certificate: domain.certificate,
     });
     appDistribution.addBehavior('/health', loadBalancerOrigin, {
@@ -220,7 +220,7 @@ export class StringsyncStack extends cdk.Stack {
       autoDeleteObjects: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       websiteRedirect: {
-        hostName: domain.name,
+        hostName: domain.domainName,
         protocol: s3.RedirectProtocol.HTTPS,
       },
     });
@@ -248,10 +248,22 @@ export class StringsyncStack extends cdk.Stack {
     const mediaDistributionTarget = route53.RecordTarget.fromAlias(
       new route53Targets.CloudFrontTarget(mediaDistribution)
     );
-    domain.registerTarget('AliasRecord', domain.name, appDistributionTarget);
-    domain.registerTarget('WWWAliasRecord', domain.sub('www'), appWWWRedirectDistributionTarget);
-    domain.registerTarget('LBAliasRecord', domain.sub('lb'), loadBalancerTarget);
-    domain.registerTarget('MediaAliasRecord', domain.sub('media'), mediaDistributionTarget);
+    domain.registerTarget(this, 'AliasRecord', {
+      recordName: domain.domainName,
+      target: appDistributionTarget,
+    });
+    domain.registerTarget(this, 'WWWAliasRecord', {
+      recordName: domain.sub('www'),
+      target: appWWWRedirectDistributionTarget,
+    });
+    domain.registerTarget(this, 'LBAliasRecord', {
+      recordName: domain.sub('lb'),
+      target: loadBalancerTarget,
+    });
+    domain.registerTarget(this, 'MediaAliasRecord', {
+      recordName: domain.sub('media'),
+      target: mediaDistributionTarget,
+    });
 
     const publicHttpListener = loadBalancer.addListener('PublicHttpListener', {
       protocol: elbv2.ApplicationProtocol.HTTP,
