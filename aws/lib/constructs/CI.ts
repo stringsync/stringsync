@@ -63,7 +63,7 @@ export class CI extends cdk.Construct {
       cache: codebuild.Cache.local(codebuild.LocalCacheMode.DOCKER_LAYER, codebuild.LocalCacheMode.CUSTOM),
       environment: {
         buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
-        computeType: codebuild.ComputeType.LARGE,
+        computeType: codebuild.ComputeType.MEDIUM,
         privileged: true,
         environmentVariables: {
           AWS_ACCOUNT_ID: {
