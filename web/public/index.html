@@ -13,7 +13,14 @@
 
     <link rel="apple-touch-icon" href="logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <link href="https://vjs.zencdn.net/7.8.4/video-js.css" rel="stylesheet" type="text/css" />
+    <!-- Defer loading css for video-js -->
+    <link
+      href="https://vjs.zencdn.net/7.8.4/video-js.css"
+      rel="preload"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
+      type="text/css"
+    />
     <title>StringSync</title>
   </head>
   <body>
