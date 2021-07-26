@@ -84,10 +84,10 @@ async function deploy() {
   }
 
   log('bumping api version');
-  await cmd('yarn', [], { cwd: Project.API });
+  await cmd('yarn', ['version', bump, '--no-git-tag-version'], { cwd: Project.API });
 
   log('bumping web version');
-  await cmd('yarn', [], { cwd: Project.WEB });
+  await cmd('yarn', ['version', bump, '--no-git-tag-version'], { cwd: Project.WEB });
 
   log('committing version changes');
   await cmd('git', ['add', 'api/package.json', 'web/package.json']);
