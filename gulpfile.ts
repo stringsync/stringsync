@@ -92,7 +92,7 @@ async function deploy() {
 
   log('committing version changes');
   await cmd('git', ['add', 'api/package.json', 'web/package.json']);
-  await cmd('git', ['commit', '-m', 'Bump app versions.']);
+  await cmd('git', ['commit', '-m', 'Bump app versions']);
 
   log('pushing to aws remote');
   await cmd('git', ['push', 'origin']);
