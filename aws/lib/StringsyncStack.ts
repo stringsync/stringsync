@@ -340,25 +340,6 @@ export class StringsyncStack extends cdk.Stack {
     });
 
     /**
-     * MIGRATE DB TASK DEFINITION
-     */
-
-    const migrateDbLogDriver = new ecs.AwsLogDriver({ streamPrefix: `${this.stackName}/migrateDb` });
-    const migrateDbTaskDefinition = new ecs.FargateTaskDefinition(this, 'MigrateDbTaskDefintion', {
-      cpu: 256,
-      memoryLimitMiB: 512,
-      executionRole: taskExecutionRole,
-    });
-    migrateDbTaskDefinition.addContainer('MigrateDbContainer', {
-      containerName: 'migrate',
-      command: ['yarn', 'migrate'],
-      logging: migrateDbLogDriver,
-      image: ecs.ContainerImage.fromRegistry(ci.apiRepository.repositoryUri),
-      environment,
-      secrets,
-    });
-
-    /**
      * APP TASK DEFINITION
      */
 
