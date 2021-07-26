@@ -274,8 +274,8 @@ export class StringsyncStack extends cdk.Stack {
       DB_NAME: db.databaseName,
       DB_USERNAME: db.username,
       DB_PASSWORD: db.password,
-      REDIS_HOST: cache.cluster.attrRedisEndpointAddress,
-      REDIS_PORT: cache.cluster.attrRedisEndpointPort,
+      REDIS_HOST: cache.host,
+      REDIS_PORT: cache.port.toString(),
     };
 
     const secrets = {

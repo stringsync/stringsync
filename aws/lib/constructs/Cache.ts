@@ -40,4 +40,8 @@ export class Cache extends cdk.Construct {
       cacheSubnetGroupName: this.subnetGroup.ref,
     });
   }
+
+  get host(): string {
+    return this.cluster.attrRedisEndpointAddress;
+  }
 }
