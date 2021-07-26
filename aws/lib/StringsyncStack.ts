@@ -270,7 +270,7 @@ export class StringsyncStack extends cdk.Stack {
       DEV_EMAIL: 'dev@stringsync.com',
       INFO_EMAIL: 'info@stringsync.com',
       DB_HOST: db.hostname,
-      DB_PORT: db.port,
+      DB_PORT: db.port.toString(),
       DB_NAME: db.databaseName,
       DB_USERNAME: db.username,
       DB_PASSWORD: db.password,

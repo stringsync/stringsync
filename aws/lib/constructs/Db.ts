@@ -14,6 +14,7 @@ export class Db extends cdk.Construct {
   readonly credsSecret: secretsmanager.Secret;
   readonly securityGroup: ec2.SecurityGroup;
   readonly databaseName: string;
+  readonly port: number;
 
   constructor(scope: cdk.Construct, id: string, props: DbProps) {
     super(scope, id);
@@ -34,10 +35,12 @@ export class Db extends cdk.Construct {
       allowAllOutbound: true,
     });
 
+    this.port = 5432;
+
     this.instance = new rds.DatabaseInstance(scope, 'Database', {
       vpc: props.vpc,
       databaseName: this.databaseName,
-      port: 5432,
+      port: this.port,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
       credentials: rds.Credentials.fromSecret(this.credsSecret),
       vpcSubnets: props.vpcSubnets,
@@ -48,10 +51,6 @@ export class Db extends cdk.Construct {
 
   get hostname(): string {
     return this.instance.instanceEndpoint.hostname;
-  }
-
-  get port(): string {
-    return '5432';
   }
 
   get username(): string {
