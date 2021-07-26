@@ -82,12 +82,13 @@ async function deploy() {
   if (!(bump in BUMP_FLAGS)) {
     throw new TypeError(`BUMP must be one of: ${Object.keys(BUMP_FLAGS).join(', ')}, got: ${bump}`);
   }
+  const bumpFlag = BUMP_FLAGS[bump as keyof typeof BUMP_FLAGS];
 
   log('bumping api version');
-  await cmd('yarn', ['version', bump, '--no-git-tag-version'], { cwd: Project.API });
+  await cmd('yarn', ['version', bumpFlag, '--no-git-tag-version'], { cwd: Project.API });
 
   log('bumping web version');
-  await cmd('yarn', ['version', bump, '--no-git-tag-version'], { cwd: Project.WEB });
+  await cmd('yarn', ['version', bumpFlag, '--no-git-tag-version'], { cwd: Project.WEB });
 
   log('committing version changes');
   await cmd('git', ['add', 'api/package.json', 'web/package.json']);
