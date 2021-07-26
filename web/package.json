@@ -49,6 +49,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "react-scroll": "^1.8.1",
+    "react-snap": "^1.23.0",
     "react-transition-group": "^4.4.1",
     "redux": "^4.0.5",
     "styled-components": "^5.2.1",
@@ -71,6 +72,7 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
+    "postbuild": "react-snap",
     "test": "craco test --env=jest-environment-jsdom-sixteen",
     "eject": "craco eject",
     "typegen": "graphql-codegen"
@@ -103,6 +105,12 @@
   "jest": {
     "transformIgnorePatterns": [
       "/node_modules/(?!antd|@ant-design|rc-.+?|@babel/runtime).+(js|jsx)$"
+    ]
+  },
+  "reactSnap": {
+    "puppeteerArgs": [
+      "--no-sandbox",
+      "--disable-setuid-sandbox"
     ]
   }
 }

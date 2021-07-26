@@ -1,7 +1,7 @@
 import { Container } from 'inversify';
 import { createClient, RedisClient } from 'redis';
 import 'reflect-metadata';
-import { Config, getConfig } from './config';
+import { Config, config } from './config';
 import { Db, DevSequelizeDb, SequelizeDb } from './db';
 import { TYPES } from './inversify.constants';
 import {
@@ -21,7 +21,8 @@ import {
   UserRepo,
 } from './repos';
 import { AuthResolver, ExperimentResolver, NotationResolver, TagResolver, UserResolver } from './resolvers';
-import { DevExpressServer, ExpressServer, Server } from './server';
+import { ApiServer, DevApiServer, GraphqlServer, JobServer } from './server';
+import { WorkerServer } from './server/worker';
 import {
   AuthService,
   HealthCheckerService,
@@ -51,7 +52,6 @@ import {
 
 export const container = new Container();
 
-const config = getConfig();
 container.bind<Config>(TYPES.Config).toConstantValue(config);
 
 if (config.NODE_ENV === 'production') {
@@ -117,10 +117,11 @@ if (config.NODE_ENV === 'test') {
 }
 
 if (config.NODE_ENV === 'development') {
-  container.bind<Server>(TYPES.Server).to(DevExpressServer);
+  container.bind<GraphqlServer>(TYPES.ApiServer).to(DevApiServer);
 } else {
-  container.bind<Server>(TYPES.Server).to(ExpressServer);
+  container.bind<GraphqlServer>(TYPES.ApiServer).to(ApiServer);
 }
+container.bind<JobServer>(TYPES.WorkerServer).to(WorkerServer);
 
 container
   .bind<ExperimentResolver>(ExperimentResolver)

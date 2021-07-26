@@ -47,8 +47,8 @@ To run the api, start Docker engine and run:
 ./bin/ss dev
 ```
 
-- http://localhost:8080 frontend UI
-- http://localhost:3000/altair backend GraphQL query playground
+- http://localhost frontend UI
+- http://localhost/altair backend GraphQL query playground
 
 Press Ctrl + C to exit. The command should teardown the environment.
 
@@ -68,24 +68,4 @@ To run web tests in watch mode, run:
 
 ```
 ./bin/ss test:web WATCH=true
-```
-
-## VSCode Setup
-
-StringSync was developed using VSCode. Project settings are stored in a `.vscode` directory, which is ignored by git. The recommended settings are:
-
-`settings.json`
-
-```json
-{
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "eslint.packageManager": "yarn",
-  "typescript.preferences.importModuleSpecifier": "relative",
-  "javascript.preferences.importModuleSpecifier": "relative",
-  "editor.formatOnSave": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true,
-    "source.organizeImports": true
-  }
-}
 ```

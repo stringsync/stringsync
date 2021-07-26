@@ -16,10 +16,9 @@ services:
 
   nginx:
     container_name: nginx
-    image: nginx:1.21
+    image: stringsyncnginx:latest
     volumes:
-      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf
-      - static-content:/app/web/build
+      - ./nginx/nginx.fakeprod.conf:/etc/nginx/nginx.conf
     links:
       - api
     ports:
@@ -41,8 +40,6 @@ services:
   api:
     container_name: api
     image: stringsync:latest
-    volumes:
-      - static-content:/app/web/build
     env_file:
       - env/fakeprod.env
       - env/secrets.env
@@ -65,6 +62,3 @@ services:
       - db
       - redis
     command: ['node', '/app/api/build/entrypoints/worker.js']
-
-volumes:
-  static-content:

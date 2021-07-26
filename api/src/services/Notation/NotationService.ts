@@ -49,8 +49,8 @@ export class NotationService {
     const taggings = tagIds.map((tagId) => ({ notationId: notation.id, tagId }));
 
     const [thubmanailKey] = await Promise.all([
-      this.blobStorage.put(thumbnailFilepath, this.config.S3_BUCKET, thumbnail.createReadStream()),
-      this.blobStorage.put(videoFilepath, this.config.S3_VIDEO_SRC_BUCKET, video.createReadStream()),
+      this.blobStorage.put(thumbnailFilepath, this.config.MEDIA_S3_BUCKET, thumbnail.createReadStream()),
+      this.blobStorage.put(videoFilepath, this.config.VIDEO_SRC_S3_BUCKET, video.createReadStream()),
       this.taggingService.bulkCreate(taggings),
     ]);
 
@@ -75,6 +75,6 @@ export class NotationService {
   }
 
   private getThumbnailUrl(thumbnailKey: string): string {
-    return `https://${this.config.CDN_DOMAIN_NAME}/${thumbnailKey}`;
+    return `https://${this.config.MEDIA_CDN_DOMAIN_NAME}/${thumbnailKey}`;
   }
 }

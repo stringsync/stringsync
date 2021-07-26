@@ -7,29 +7,24 @@ COPY package.json .
 COPY yarn.lock .
 RUN yarn
 COPY bin bin
-COPY Jakefile .
+COPY scripts scripts
+COPY gulpfile.ts .
 ENV PATH="/app/bin:${PATH}"
 
 # install api dependencies
 COPY api/package.json api/
 COPY api/yarn.lock api/
-RUN ss install:api
+RUN ss installapi
 
 # install web dependencies
 COPY web/package.json web/
 COPY web/yarn.lock web/
-RUN ss install:web
+RUN ss installweb
 
 # copy the web files over
 COPY web/tsconfig.json web/
 COPY web/craco.config.js web/
 COPY web/.env web/
-COPY web/public web/public/
-COPY web/src web/src/
-
-# The web project is built before the api project
-# because the api project builds much faster.
-RUN ss build:web
 
 # copy the api files over
 COPY api/tsconfig.json api/

@@ -8,5 +8,5 @@ export type PulseCheckPayload = {};
 export const pulseCheck: Processor<PulseCheckPayload> = async () => {
   const now = new Date();
   const logger = container.get<Logger>(TYPES.Logger);
-  logger.info(`jobs are still running: ${now.toISOString()}`);
+  logger.info(`job pulse check: ${now.toISOString()}`);
 };

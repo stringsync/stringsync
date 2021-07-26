@@ -15,7 +15,7 @@ export class VideoUrlService {
   ) {}
 
   async processNextMessage(): Promise<void> {
-    const queueUrl = this.config.SQS_VIDEO_QUEUE_URL;
+    const queueUrl = this.config.VIDEO_QUEUE_SQS_URL;
 
     const message = await this.messageQueue.get(queueUrl);
     if (!message) {

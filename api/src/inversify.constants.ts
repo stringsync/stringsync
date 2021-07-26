@@ -1,4 +1,5 @@
 export const TYPES = {
+  ApiServer: Symbol('ApiServer'),
   AuthService: Symbol('AuthService'),
   BlobStorage: Symbol('BlobStorage'),
   Cache: Symbol('Cache'),
@@ -7,12 +8,12 @@ export const TYPES = {
   HealthCheckerService: Symbol('HealthCheckerService'),
   Logger: Symbol('Logger'),
   Mailer: Symbol('Mailer'),
+  MessageQueue: Symbol('MessageQueue'),
   NotationLoader: Symbol('NotationLoader'),
   NotationRepo: Symbol('NotationRepo'),
   NotationService: Symbol('NotationService'),
   NotificationService: Symbol('NotificationService'),
   Redis: Symbol('Redis'),
-  Server: Symbol('Server'),
   TaggingRepo: Symbol('TaggingRepo'),
   TaggingService: Symbol('TaggingService'),
   TagLoader: Symbol('TagLoader'),
@@ -22,5 +23,5 @@ export const TYPES = {
   UserRepo: Symbol('UserRepo'),
   UserService: Symbol('UserService'),
   VideoUrlService: Symbol('VideoUrlService'),
-  MessageQueue: Symbol('MessageQueue'),
+  WorkerServer: Symbol('WorkerServer'),
 };

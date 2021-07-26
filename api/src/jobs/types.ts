@@ -9,8 +9,10 @@ export type JobOpts = {
 };
 
 export interface Job<P extends Payload> {
+  name: string;
   start(): Promise<void>;
   stop(): Promise<void>;
   enqueue(payload: P, waitForCompletion?: boolean): Promise<void>;
   count(): Promise<number>;
+  isHealthy(): Promise<boolean>;
 }

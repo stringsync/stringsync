@@ -1,5 +1,0 @@
-#!/bin/bash
-
-echo "Ensuring .docker.key is removed..."
-rm .docker.key
-exit 0

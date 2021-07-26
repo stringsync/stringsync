@@ -64,6 +64,13 @@ export class BullMqJob<P extends Payload> implements Job<P> {
     return await this.ensureQueue().count();
   }
 
+  async isHealthy(): Promise<boolean> {
+    if (!this.scheduler || !this.worker) {
+      return false;
+    }
+    return this.scheduler.isRunning() && this.worker.isRunning();
+  }
+
   private getConnection(): RedisOptions {
     return {
       host: this.config.REDIS_HOST,

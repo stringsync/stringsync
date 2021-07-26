@@ -59,6 +59,91 @@ describe('withAuthRequirement', () => {
 
       expect(getByTestId('dummy')).toBeInTheDocument();
     });
+
+    it('renders when pending', () => {
+      const store = createStore({
+        auth: {
+          ...getNullAuthState(),
+          isPending: true,
+        },
+      });
+
+      const { getByTestId } = render(
+        <Test store={store}>
+          <Component />
+        </Test>
+      );
+
+      expect(getByTestId('dummy')).toBeInTheDocument();
+    });
+  });
+
+  describe('with AuthRequirement.LOGGED_OUT', () => {
+    let Component: React.FC;
+
+    beforeEach(() => {
+      Component = withAuthRequirement(AuthRequirement.LOGGED_OUT)(Dummy);
+    });
+
+    it('does not render when logged in', () => {
+      const store = createStore({
+        auth: {
+          isPending: false,
+          user: {
+            id: '23h23h2h',
+            confirmedAt: new Date().toJSON(),
+            email: 'email@domain.tld',
+            role: UserRole.STUDENT,
+            username: 'username',
+          },
+        },
+      });
+      const history = createMemoryHistory();
+
+      const { getByTestId } = render(
+        <Provider store={store}>
+          <Router history={history}>
+            <Component />
+          </Router>
+        </Provider>
+      );
+
+      expect(() => getByTestId('dummy')).toThrow();
+    });
+
+    it('renders when logged out', () => {
+      const store = createStore({
+        auth: { isPending: false, user: getNullAuthUser() },
+      });
+      const history = createMemoryHistory();
+
+      const { getByTestId } = render(
+        <Provider store={store}>
+          <Router history={history}>
+            <Component />
+          </Router>
+        </Provider>
+      );
+
+      expect(getByTestId('dummy')).toBeInTheDocument();
+    });
+
+    it('does not render when pending', () => {
+      const store = createStore({
+        auth: {
+          ...getNullAuthState(),
+          isPending: true,
+        },
+      });
+
+      const { getByTestId } = render(
+        <Test store={store}>
+          <Component />
+        </Test>
+      );
+
+      expect(() => getByTestId('dummy')).toThrow();
+    });
   });
 
   describe('with AuthRequirement.LOGGED_IN', () => {
@@ -106,6 +191,23 @@ describe('withAuthRequirement', () => {
             <Component />
           </Router>
         </Provider>
+      );
+
+      expect(() => getByTestId('dummy')).toThrow();
+    });
+
+    it('does not render when pending', () => {
+      const store = createStore({
+        auth: {
+          ...getNullAuthState(),
+          isPending: true,
+        },
+      });
+
+      const { getByTestId } = render(
+        <Test store={store}>
+          <Component />
+        </Test>
       );
 
       expect(() => getByTestId('dummy')).toThrow();
@@ -160,6 +262,23 @@ describe('withAuthRequirement', () => {
             <Component />
           </Router>
         </Provider>
+      );
+
+      expect(() => getByTestId('dummy')).toThrow();
+    });
+
+    it('does not render when pending', () => {
+      const store = createStore({
+        auth: {
+          ...getNullAuthState(),
+          isPending: true,
+        },
+      });
+
+      const { getByTestId } = render(
+        <Test store={store}>
+          <Component />
+        </Test>
       );
 
       expect(() => getByTestId('dummy')).toThrow();
@@ -241,6 +360,23 @@ describe('withAuthRequirement', () => {
 
       expect(() => getByTestId('dummy')).toThrow();
     });
+
+    it('does not render when pending', () => {
+      const store = createStore({
+        auth: {
+          ...getNullAuthState(),
+          isPending: true,
+        },
+      });
+
+      const { getByTestId } = render(
+        <Test store={store}>
+          <Component />
+        </Test>
+      );
+
+      expect(() => getByTestId('dummy')).toThrow();
+    });
   });
 
   describe('with AuthRequirement.LOGGED_IN_AS_ADMIN', () => {
@@ -314,6 +450,23 @@ describe('withAuthRequirement', () => {
             <Component />
           </Router>
         </Provider>
+      );
+
+      expect(() => getByTestId('dummy')).toThrow();
+    });
+
+    it('does not render when pending', () => {
+      const store = createStore({
+        auth: {
+          ...getNullAuthState(),
+          isPending: true,
+        },
+      });
+
+      const { getByTestId } = render(
+        <Test store={store}>
+          <Component />
+        </Test>
       );
 
       expect(() => getByTestId('dummy')).toThrow();

@@ -2,24 +2,30 @@ import { message } from 'antd';
 import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
+import { Fallback } from '../components/Fallback';
 import { gtEqAdmin, gtEqStudent, gtEqTeacher, UserRole } from '../domain';
 import { isLoggedInSelector, RootState } from '../store';
 import { AuthRequirement } from '../util/types';
 
-const isMeetingAuthReqs = (authReqs: AuthRequirement, isLoggedIn: boolean, userRole: UserRole) => {
+const isMeetingAuthReqs = (
+  authReqs: AuthRequirement,
+  isAuthPending: boolean,
+  isLoggedIn: boolean,
+  userRole: UserRole
+) => {
   switch (authReqs) {
     case AuthRequirement.NONE:
       return true;
     case AuthRequirement.LOGGED_IN:
-      return isLoggedIn;
+      return !isAuthPending && isLoggedIn;
     case AuthRequirement.LOGGED_OUT:
-      return !isLoggedIn;
+      return !isAuthPending && !isLoggedIn;
     case AuthRequirement.LOGGED_IN_AS_STUDENT:
-      return isLoggedIn && gtEqStudent(userRole);
+      return !isAuthPending && isLoggedIn && gtEqStudent(userRole);
     case AuthRequirement.LOGGED_IN_AS_TEACHER:
-      return isLoggedIn && gtEqTeacher(userRole);
+      return !isAuthPending && isLoggedIn && gtEqTeacher(userRole);
     case AuthRequirement.LOGGED_IN_AS_ADMIN:
-      return isLoggedIn && gtEqAdmin(userRole);
+      return !isAuthPending && isLoggedIn && gtEqAdmin(userRole);
     default:
       // fail open for unhandled authReqs
       return true;
@@ -41,9 +47,7 @@ export const withAuthRequirement = (authReqs: AuthRequirement) =>
         return historyRoute === returnToRoute ? '/library' : returnToRoute;
       });
 
-      if (!isAuthPending) {
-        meetsAuthReqs.current = isMeetingAuthReqs(authReqs, isLoggedIn, userRole);
-      }
+      meetsAuthReqs.current = isMeetingAuthReqs(authReqs, isAuthPending, isLoggedIn, userRole);
 
       useEffect(() => {
         if (isAuthPending || meetsAuthReqs.current) {
@@ -76,6 +80,6 @@ export const withAuthRequirement = (authReqs: AuthRequirement) =>
         }
       }, [history, isAuthPending, isLoggedIn, meetsAuthReqs, returnToRoute]);
 
-      return meetsAuthReqs.current ? <Component {...props} /> : null;
+      return meetsAuthReqs.current ? <Component {...props} /> : <Fallback />;
     };
   };

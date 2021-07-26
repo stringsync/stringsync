@@ -4,7 +4,7 @@ parent_path=$(cd "$(dirname "$0")" ; pwd -P)
 
 if [ $# -eq 0 ]
 then
-  (cd $parent_path && yarn jake -t)
+  (cd $parent_path && yarn gulp --gulpfile gulpfile.ts --tasks)
 else
-  (cd $parent_path && yarn jake "$@")
+  (cd $parent_path && yarn gulp --gulpfile gulpfile.ts "$@")
 fi
