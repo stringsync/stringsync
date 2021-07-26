@@ -5,7 +5,6 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
-import * as rds from '@aws-cdk/aws-rds';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as route53Targets from '@aws-cdk/aws-route53-targets';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -13,6 +12,7 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import { Cache } from './constructs/Cache';
 import { CI } from './constructs/CI';
+import { Db } from './constructs/Db';
 import { Domain } from './constructs/Domain';
 import { Vod } from './constructs/Vod';
 
@@ -49,16 +49,8 @@ export class StringsyncStack extends cdk.Stack {
 
     const vpc = new ec2.Vpc(this, 'VPC', {
       subnetConfiguration: [
-        {
-          name: 'Public',
-          cidrMask: 24,
-          subnetType: ec2.SubnetType.PUBLIC,
-        },
-        {
-          name: 'Isolated',
-          cidrMask: 28,
-          subnetType: ec2.SubnetType.ISOLATED,
-        },
+        { name: 'Public', cidrMask: 24, subnetType: ec2.SubnetType.PUBLIC },
+        { name: 'Isolated', cidrMask: 28, subnetType: ec2.SubnetType.ISOLATED },
       ],
       natGateways: 0,
       maxAzs: 2,
@@ -72,37 +64,12 @@ export class StringsyncStack extends cdk.Stack {
       subdomainNames: ['www', 'media', 'lb'],
     });
 
-    const zone = route53.HostedZone.fromHostedZoneAttributes(this, 'Zone', {
-      zoneName: domainName,
-      hostedZoneId: hostedZoneId,
-    });
-
     const ci = new CI(this, 'CI', { repoName: 'stringsync', accountId: this.account, domainName });
 
-    const dbName = this.stackName;
-    const dbCredsSecret = new secretsmanager.Secret(this, 'DbCreds', {
-      generateSecretString: {
-        secretStringTemplate: JSON.stringify({ username: 'stringsync' }),
-        generateStringKey: 'password',
-        excludePunctuation: true,
-        includeSpace: false,
-      },
-    });
-    const dbSecurityGroup = new ec2.SecurityGroup(this, 'DbSecurityGroup', {
+    const db = new Db(this, 'Db', {
       vpc,
-      allowAllOutbound: true,
-    });
-    const db = new rds.DatabaseInstance(this, 'Database', {
-      vpc,
-      databaseName: dbName,
-      port: 5432,
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
-      credentials: rds.Credentials.fromSecret(dbCredsSecret),
-      vpcSubnets: {
-        subnetType: ec2.SubnetType.ISOLATED,
-      },
-      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_11 }),
-      securityGroups: [dbSecurityGroup],
+      vpcSubnets: { subnetType: ec2.SubnetType.ISOLATED },
+      databaseName: this.stackName,
     });
 
     const cache = new Cache(this, 'Cache', { vpc });
@@ -285,10 +252,8 @@ export class StringsyncStack extends cdk.Stack {
       vpc,
     });
     fargateContainerSecurityGroup.connections.allowFrom(loadBalancerSecurityGroup, ec2.Port.allTcp());
-
     cache.securityGroup.connections.allowFrom(fargateContainerSecurityGroup, ec2.Port.allTcp());
-
-    dbSecurityGroup.connections.allowFrom(fargateContainerSecurityGroup, ec2.Port.allTcp());
+    db.securityGroup.connections.allowFrom(fargateContainerSecurityGroup, ec2.Port.allTcp());
 
     const cluster = new ecs.Cluster(this, 'Cluster', { vpc, containerInsights: true });
 
@@ -304,16 +269,18 @@ export class StringsyncStack extends cdk.Stack {
       VIDEO_QUEUE_SQS_URL: vod.queue.queueUrl,
       DEV_EMAIL: 'dev@stringsync.com',
       INFO_EMAIL: 'info@stringsync.com',
-      DB_HOST: db.instanceEndpoint.hostname,
-      DB_PORT: '5432',
-      DB_NAME: dbName,
-      DB_USERNAME: dbCredsSecret.secretValueFromJson('username').toString(),
-      DB_PASSWORD: dbCredsSecret.secretValueFromJson('password').toString(),
+      DB_HOST: db.hostname,
+      DB_PORT: db.port,
+      DB_NAME: db.databaseName,
+      DB_USERNAME: db.username,
+      DB_PASSWORD: db.password,
       REDIS_HOST: cache.cluster.attrRedisEndpointAddress,
       REDIS_PORT: cache.cluster.attrRedisEndpointPort,
     };
 
-    const secrets = { SESSION_SECRET: ecs.Secret.fromSecretsManager(appSessionSecret) };
+    const secrets = {
+      SESSION_SECRET: ecs.Secret.fromSecretsManager(appSessionSecret),
+    };
 
     const executionRole = new iam.Role(this, 'TaskExecutionRole', {
       assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
