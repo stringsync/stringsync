@@ -1,5 +1,6 @@
 # secrets
 secrets.env
+*.pem
 
 # general
 .DS_Store
