@@ -20,6 +20,10 @@ export class StringsyncStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    /**
+     * PARAMETERS
+     */
+
     const appServiceTaskCount = new cdk.CfnParameter(this, 'AppServiceTaskCount', {
       type: 'Number',
       default: 0,
@@ -47,6 +51,10 @@ export class StringsyncStack extends cdk.Stack {
       description: 'The hosted zone ID that the domain name is in',
     }).valueAsString;
 
+    /**
+     * NETWORK
+     */
+
     const vpc = new ec2.Vpc(this, 'VPC', {
       subnetConfiguration: [
         { name: 'Public', cidrMask: 24, subnetType: ec2.SubnetType.PUBLIC },
@@ -55,6 +63,10 @@ export class StringsyncStack extends cdk.Stack {
       natGateways: 0,
       maxAzs: 2,
     });
+
+    /**
+     * CONSTRUCTS
+     */
 
     const domain = new Domain(this, 'Domain', {
       vpc,
@@ -80,19 +92,26 @@ export class StringsyncStack extends cdk.Stack {
       enableSns: false,
     });
 
-    const appSessionSecret = new secretsmanager.Secret(this, 'AppSessionSecret');
+    /**
+     * SECURITY GROUPS
+     */
 
-    const loadBalancerSecurityGroup = new ec2.SecurityGroup(this, 'LoadBalancerSecurityGroup', {
+    const appLoadBalancerSecurityGroup = new ec2.SecurityGroup(this, 'AppLoadBalancerSecurityGroup', {
+      description: 'Access to the app load balancer',
       vpc,
       allowAllOutbound: true,
     });
-
-    const loadBalancer = new elbv2.ApplicationLoadBalancer(this, 'AppLoadBalancer', {
+    const appContainerSecurityGroup = new ec2.SecurityGroup(this, 'AppContainerSecurityGroup', {
+      description: 'Access to the app docker containers',
       vpc,
-      securityGroup: loadBalancerSecurityGroup,
-      internetFacing: true,
-      deletionProtection: false,
     });
+    appContainerSecurityGroup.connections.allowFrom(appLoadBalancerSecurityGroup, ec2.Port.allTcp());
+    cache.securityGroup.connections.allowFrom(appContainerSecurityGroup, ec2.Port.allTcp());
+    db.securityGroup.connections.allowFrom(appContainerSecurityGroup, ec2.Port.allTcp());
+
+    /**
+     * CLOUDFRONT CACHE POLICIES
+     */
 
     const mediaCachePolicy = new cloudfront.CachePolicy(this, 'MediaCachePolicy', {
       defaultTtl: cdk.Duration.minutes(30),
@@ -103,9 +122,45 @@ export class StringsyncStack extends cdk.Stack {
       queryStringBehavior: cloudfront.CacheQueryStringBehavior.none(),
       enableAcceptEncodingGzip: true,
     });
+
+    const appCachePolicy = new cloudfront.CachePolicy(this, 'AppCachePolicy', {
+      defaultTtl: cdk.Duration.minutes(30),
+      minTtl: cdk.Duration.minutes(30),
+      maxTtl: cdk.Duration.minutes(60),
+      cookieBehavior: cloudfront.CacheCookieBehavior.none(),
+      headerBehavior: cloudfront.CacheHeaderBehavior.none(),
+      queryStringBehavior: cloudfront.CacheQueryStringBehavior.none(),
+      enableAcceptEncodingGzip: true,
+    });
+
+    const doNotCachePolicy = new cloudfront.CachePolicy(this, 'DoNotCachePolicy', {
+      defaultTtl: cdk.Duration.minutes(0),
+      minTtl: cdk.Duration.minutes(0),
+      maxTtl: cdk.Duration.minutes(0),
+      cookieBehavior: cloudfront.CacheCookieBehavior.none(),
+      headerBehavior: cloudfront.CacheHeaderBehavior.none(),
+      queryStringBehavior: cloudfront.CacheQueryStringBehavior.none(),
+    });
+
+    /**
+     * ORIGIN REQUEST POLICIES
+     */
+
+    const forwardAllOriginRequestPolicy = new cloudfront.OriginRequestPolicy(this, 'FowardAllPolicy', {
+      comment: 'Forwards all headers, cookies, and query string params to the origin',
+      cookieBehavior: cloudfront.OriginRequestCookieBehavior.all(),
+      headerBehavior: cloudfront.OriginRequestHeaderBehavior.all(),
+      queryStringBehavior: cloudfront.OriginRequestQueryStringBehavior.all(),
+    });
+
+    /**
+     * MEDIA RESOURCES
+     */
+
     const mediaBucket = new s3.Bucket(this, 'MediaBucket', {
       autoDeleteObjects: false,
     });
+
     const mediaDistribution = new cloudfront.Distribution(this, 'MediaDistribution', {
       enabled: true,
       comment: 'Serves media',
@@ -116,36 +171,23 @@ export class StringsyncStack extends cdk.Stack {
         cachePolicy: mediaCachePolicy,
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
-      domainNames: [`media.${domainName}`],
+      domainNames: [domain.sub('media')],
       certificate: domain.certificate,
     });
 
-    const loadBalancerOrigin = new origins.HttpOrigin(`lb.${domainName}`, {
+    /**
+     * APP RESOURCES
+     */
+
+    const appLoadBalancer = new elbv2.ApplicationLoadBalancer(this, 'AppLoadBalancer', {
+      vpc,
+      securityGroup: appLoadBalancerSecurityGroup,
+      internetFacing: true,
+      deletionProtection: false,
+    });
+    const appLoadBalancerOrigin = new origins.HttpOrigin(domain.sub('lb'), {
       httpsPort: 443,
       protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
-    });
-    const appCachePolicy = new cloudfront.CachePolicy(this, 'AppCachePolicy', {
-      defaultTtl: cdk.Duration.minutes(30),
-      minTtl: cdk.Duration.minutes(30),
-      maxTtl: cdk.Duration.minutes(60),
-      cookieBehavior: cloudfront.CacheCookieBehavior.none(),
-      headerBehavior: cloudfront.CacheHeaderBehavior.none(),
-      queryStringBehavior: cloudfront.CacheQueryStringBehavior.none(),
-      enableAcceptEncodingGzip: true,
-    });
-    const doNotCachePolicy = new cloudfront.CachePolicy(this, 'DoNotCachePolicy', {
-      defaultTtl: cdk.Duration.minutes(0),
-      minTtl: cdk.Duration.minutes(0),
-      maxTtl: cdk.Duration.minutes(0),
-      cookieBehavior: cloudfront.CacheCookieBehavior.none(),
-      headerBehavior: cloudfront.CacheHeaderBehavior.none(),
-      queryStringBehavior: cloudfront.CacheQueryStringBehavior.none(),
-    });
-    const forwardAllOriginRequestPolicy = new cloudfront.OriginRequestPolicy(this, 'FowardAllPolicy', {
-      comment: 'Forwards all headers, cookies, and query string params to the origin',
-      cookieBehavior: cloudfront.OriginRequestCookieBehavior.all(),
-      headerBehavior: cloudfront.OriginRequestHeaderBehavior.all(),
-      queryStringBehavior: cloudfront.OriginRequestQueryStringBehavior.all(),
     });
     const appDistribution = new cloudfront.Distribution(this, 'AppDistribution', {
       enabled: true,
@@ -157,7 +199,7 @@ export class StringsyncStack extends cdk.Stack {
       priceClass: cloudfront.PriceClass.PRICE_CLASS_ALL,
       defaultRootObject: 'index.html',
       defaultBehavior: {
-        origin: loadBalancerOrigin,
+        origin: appLoadBalancerOrigin,
         allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
         cachePolicy: appCachePolicy,
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -165,15 +207,41 @@ export class StringsyncStack extends cdk.Stack {
       domainNames: [domain.domainName],
       certificate: domain.certificate,
     });
-    appDistribution.addBehavior('/health', loadBalancerOrigin, {
+    appDistribution.addBehavior('/health', appLoadBalancerOrigin, {
       allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
       cachePolicy: doNotCachePolicy,
     });
-    appDistribution.addBehavior('/graphql', loadBalancerOrigin, {
+    appDistribution.addBehavior('/graphql', appLoadBalancerOrigin, {
       allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
       cachePolicy: doNotCachePolicy,
       originRequestPolicy: forwardAllOriginRequestPolicy,
     });
+    const appHttpListener = appLoadBalancer.addListener('AppHttpListener', {
+      protocol: elbv2.ApplicationProtocol.HTTP,
+      port: 80,
+      defaultAction: elbv2.ListenerAction.redirect({
+        protocol: elbv2.ApplicationProtocol.HTTPS,
+        port: '443',
+        permanent: true,
+      }),
+    });
+    const appHttpsListener = appLoadBalancer.addListener('AppHttpsListener', {
+      protocol: elbv2.ApplicationProtocol.HTTPS,
+      port: 443,
+      certificates: [domain.certificate],
+    });
+    const appTargetGroup = appHttpsListener.addTargets('AppTargetGroup', {
+      protocol: elbv2.ApplicationProtocol.HTTP,
+      port: 80,
+      healthCheck: {
+        interval: cdk.Duration.seconds(30),
+        path: '/health',
+      },
+    });
+
+    /**
+     * APP WWW REDIRECT RESOURCES
+     */
 
     const appWWWRedirectBucket = new s3.Bucket(this, 'AppWWWRedirectBucket', {
       autoDeleteObjects: true,
@@ -198,8 +266,11 @@ export class StringsyncStack extends cdk.Stack {
       certificate: domain.certificate,
     });
 
-    // Create targets and register them with the domain name and their respective subdomains.
-    const loadBalancerTarget = route53.RecordTarget.fromAlias(new route53Targets.LoadBalancerTarget(loadBalancer));
+    /**
+     * RECORD REGISTRATION
+     */
+
+    const loadBalancerTarget = route53.RecordTarget.fromAlias(new route53Targets.LoadBalancerTarget(appLoadBalancer));
     const appDistributionTarget = route53.RecordTarget.fromAlias(new route53Targets.CloudFrontTarget(appDistribution));
     const appWWWRedirectDistributionTarget = route53.RecordTarget.fromAlias(
       new route53Targets.CloudFrontTarget(appWWWRedirectDistribution)
@@ -224,36 +295,9 @@ export class StringsyncStack extends cdk.Stack {
       target: mediaDistributionTarget,
     });
 
-    const publicHttpListener = loadBalancer.addListener('PublicHttpListener', {
-      protocol: elbv2.ApplicationProtocol.HTTP,
-      port: 80,
-      defaultAction: elbv2.ListenerAction.redirect({
-        protocol: elbv2.ApplicationProtocol.HTTPS,
-        port: '443',
-        permanent: true,
-      }),
-    });
-    const publicHttpsListener = loadBalancer.addListener('PublicHttpsListener', {
-      protocol: elbv2.ApplicationProtocol.HTTPS,
-      port: 443,
-      certificates: [domain.certificate],
-    });
-    const appTargetGroup = publicHttpsListener.addTargets('AppTargetGroup', {
-      protocol: elbv2.ApplicationProtocol.HTTP,
-      port: 80,
-      healthCheck: {
-        interval: cdk.Duration.seconds(30),
-        path: '/health',
-      },
-    });
-
-    const fargateContainerSecurityGroup = new ec2.SecurityGroup(this, 'FargateContainerSecurityGroup', {
-      description: 'Access to the Fargate containers',
-      vpc,
-    });
-    fargateContainerSecurityGroup.connections.allowFrom(loadBalancerSecurityGroup, ec2.Port.allTcp());
-    cache.securityGroup.connections.allowFrom(fargateContainerSecurityGroup, ec2.Port.allTcp());
-    db.securityGroup.connections.allowFrom(fargateContainerSecurityGroup, ec2.Port.allTcp());
+    /**
+     * ECS ENVIRONMENT
+     */
 
     const cluster = new ecs.Cluster(this, 'Cluster', { vpc, containerInsights: true });
 
@@ -278,24 +322,28 @@ export class StringsyncStack extends cdk.Stack {
       REDIS_PORT: cache.port.toString(),
     };
 
+    const appSessionSecret = new secretsmanager.Secret(this, 'AppSessionSecret');
+
     const secrets = {
       SESSION_SECRET: ecs.Secret.fromSecretsManager(appSessionSecret),
     };
 
-    const executionRole = new iam.Role(this, 'TaskExecutionRole', {
+    const taskExecutionRole = new iam.Role(this, 'TaskExecutionRole', {
       assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
       roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPowerUser')],
     });
 
-    const migrateDbLogDriver = new ecs.AwsLogDriver({ streamPrefix: `${this.stackName}/migrateDb` });
+    /**
+     * MIGRATE DB TASK DEFINITION
+     */
 
+    const migrateDbLogDriver = new ecs.AwsLogDriver({ streamPrefix: `${this.stackName}/migrateDb` });
     const migrateDbTaskDefinition = new ecs.FargateTaskDefinition(this, 'MigrateDbTaskDefintion', {
       cpu: 256,
       memoryLimitMiB: 512,
-      executionRole,
+      executionRole: taskExecutionRole,
     });
-
     migrateDbTaskDefinition.addContainer('MigrateDbContainer', {
       containerName: 'migrate',
       command: ['yarn', 'migrate'],
@@ -305,13 +353,16 @@ export class StringsyncStack extends cdk.Stack {
       secrets,
     });
 
+    /**
+     * APP TASK DEFINITION
+     */
+
+    const appLogDriver = new ecs.AwsLogDriver({ streamPrefix: `${this.stackName}/app` });
     const appTaskDefinition = new ecs.FargateTaskDefinition(this, 'AppTaskDefinition', {
       cpu: 256,
       memoryLimitMiB: 512,
-      executionRole,
+      executionRole: taskExecutionRole,
     });
-
-    const appLogDriver = new ecs.AwsLogDriver({ streamPrefix: `${this.stackName}/app` });
 
     // Container health checks are not supported for tasks that are part of a service that
     // is configured to use a Classic Load Balancer.
@@ -322,7 +373,6 @@ export class StringsyncStack extends cdk.Stack {
       image: ecs.ContainerImage.fromRegistry(ci.nginxRepository.repositoryUri),
       portMappings: [{ containerPort: 80 }],
     });
-
     appTaskDefinition.addContainer('ApiContainer', {
       containerName: 'api',
       logging: appLogDriver,
@@ -332,25 +382,16 @@ export class StringsyncStack extends cdk.Stack {
       secrets,
     });
 
-    const appService = new ecs.FargateService(this, 'AppService', {
-      cluster,
-      assignPublicIp: true,
-      securityGroups: [fargateContainerSecurityGroup],
-      taskDefinition: appTaskDefinition,
-      desiredCount: appServiceTaskCount,
-      platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-    });
+    /**
+     * WORKER TASK DEFINITION
+     */
 
-    appTargetGroup.addTarget(appService);
-
+    const workerLogDriver = new ecs.AwsLogDriver({ streamPrefix: `${this.stackName}/worker` });
     const workerTaskDefinition = new ecs.FargateTaskDefinition(this, 'WorkerTaskDefinition', {
       cpu: 256,
       memoryLimitMiB: 512,
-      executionRole,
+      executionRole: taskExecutionRole,
     });
-
-    const workerLogDriver = new ecs.AwsLogDriver({ streamPrefix: `${this.stackName}/worker` });
-
     workerTaskDefinition.addContainer('WorkerContainer', {
       containerName: 'worker',
       command: ['yarn', 'prod:worker'],
@@ -365,14 +406,32 @@ export class StringsyncStack extends cdk.Stack {
       secrets,
     });
 
+    /**
+     * SERVICES
+     */
+
+    const appService = new ecs.FargateService(this, 'AppService', {
+      cluster,
+      assignPublicIp: true,
+      securityGroups: [appContainerSecurityGroup],
+      taskDefinition: appTaskDefinition,
+      desiredCount: appServiceTaskCount,
+      platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    });
+    appTargetGroup.addTarget(appService);
+
     const workerService = new ecs.FargateService(this, 'WorkerService', {
       cluster,
       assignPublicIp: true,
-      securityGroups: [fargateContainerSecurityGroup],
+      securityGroups: [appContainerSecurityGroup],
       taskDefinition: workerTaskDefinition,
       desiredCount: workerServiceTaskCount,
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     });
+
+    /**
+     * CI DEPLOYMENT STAGE SPEC
+     */
 
     ci.pipeline.addStage({
       stageName: 'Deploy',
