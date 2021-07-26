@@ -18,6 +18,7 @@ const DOCKER_CREDS_SECRET_NAME = 'DockerCreds';
 const DOCKER_USERNAME = 'stringsync';
 
 export class CI extends cdk.Construct {
+  readonly codeRepository: codecommit.Repository;
   readonly apiRepository: ecr.Repository;
   readonly nginxRepository: ecr.Repository;
   readonly workerRepository: ecr.Repository;
@@ -30,7 +31,7 @@ export class CI extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: CIProps) {
     super(scope, id);
 
-    const codeRepository = new codecommit.Repository(this, 'CodeRepository', {
+    this.codeRepository = new codecommit.Repository(this, 'CodeRepository', {
       repositoryName: props.repoName,
     });
 
@@ -190,7 +191,7 @@ export class CI extends cdk.Construct {
             new codepipelineActions.CodeCommitSourceAction({
               actionName: 'GetSourceCode',
               branch: 'master',
-              repository: codeRepository,
+              repository: this.codeRepository,
               output: sourceOutput,
             }),
           ],

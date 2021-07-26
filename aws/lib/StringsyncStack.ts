@@ -10,6 +10,7 @@ import * as route53Targets from '@aws-cdk/aws-route53-targets';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
+import { AdminInstance } from './constructs/AdminInstance';
 import { Cache } from './constructs/Cache';
 import { CI } from './constructs/CI';
 import { Db } from './constructs/Db';
@@ -92,6 +93,9 @@ export class StringsyncStack extends cdk.Stack {
       enableSns: false,
     });
 
+    const adminInstance = new AdminInstance(this, 'AdminInstance', { vpc });
+    ci.codeRepository.grantPull(adminInstance.role);
+
     /**
      * SECURITY GROUPS
      */
@@ -108,6 +112,7 @@ export class StringsyncStack extends cdk.Stack {
     appContainerSecurityGroup.connections.allowFrom(appLoadBalancerSecurityGroup, ec2.Port.allTcp());
     cache.securityGroup.connections.allowFrom(appContainerSecurityGroup, ec2.Port.allTcp());
     db.securityGroup.connections.allowFrom(appContainerSecurityGroup, ec2.Port.allTcp());
+    db.securityGroup.connections.allowFrom(adminInstance.securityGroup, ec2.Port.allTcp());
 
     /**
      * CLOUDFRONT CACHE POLICIES
