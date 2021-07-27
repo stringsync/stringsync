@@ -159,7 +159,7 @@ export class CI extends cdk.Construct {
           },
         },
         artifacts: {
-          files: [APP_IMAGE_DEFINITION_FILE, WORKER_IMAGE_DEFINITION_FILE],
+          files: [APP_IMAGE_DEFINITION_FILE, DISPATCHER_IMAGE_DEFINITION_FILE, WORKER_IMAGE_DEFINITION_FILE],
         },
       }),
     });
