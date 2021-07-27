@@ -69,10 +69,14 @@ export class AdminInstance extends cdk.Construct {
     // Create outputs for connecting
     new cdk.CfnOutput(this, 'IP Address', { value: this.ec2Instance.instancePublicIp });
     new cdk.CfnOutput(this, 'Key Name', { value: key.keyPairName });
-    new cdk.CfnOutput(this, 'Download Key Command', {
+
+    // NB: The export names are tied to the root gulpfile and will break the `admin` script if changed.
+    const downloadKeyCommand = new cdk.CfnOutput(this, 'Download Key Command', {
+      exportName: 'AdminInstanceDownloadKeyCommand',
       value: `aws secretsmanager get-secret-value --secret-id ec2-ssh-key/${key.keyPairName}/private --query SecretString --output text > ${key.keyPairName}.pem && chmod 400 ${key.keyPairName}.pem`,
     });
-    new cdk.CfnOutput(this, 'ssh command', {
+    const sshCommand = new cdk.CfnOutput(this, 'ssh command', {
+      exportName: 'AdminInstanceSshCommand',
       value: `ssh -i ${key.keyPairName}.pem -o IdentitiesOnly=yes ec2-user@${this.ec2Instance.instancePublicIp}`,
     });
   }

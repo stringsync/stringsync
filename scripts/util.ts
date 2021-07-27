@@ -15,6 +15,7 @@ type CmdOpts = {
   reject?: boolean;
   cwd?: Project;
   env?: NodeJS.ProcessEnv;
+  stdio?: 'inherit' | 'pipe' | 'ignore';
 };
 
 export const cmd = async (command: string, args: string[], opts?: CmdOpts) => {

@@ -1,4 +1,5 @@
 import path from 'path';
+import * as aws from './scripts/aws';
 import { cleanup } from './scripts/cleanup';
 import * as constants from './scripts/constants';
 import * as docker from './scripts/docker';
@@ -173,6 +174,17 @@ async function cdkdeploy() {
   await cmd('yarn', ['cdk', 'deploy'], { reject: false, cwd: Project.AWS });
 }
 
+async function admin() {
+  // download credentials
+  const downloadKeyCommand = await aws.getStackOutputValue('stringsync', 'AdminInstanceDownloadKeyCommand');
+  await cmd('aws', downloadKeyCommand.split(' ').slice(1), { shell: true, reject: false });
+
+  // ssh into instance
+  const sshCommand = await aws.getStackOutputValue('stringsync', 'AdminInstanceSshCommand');
+  const [sshCmd, ...sshArgs] = sshCommand.split(' ');
+  await cmd(sshCmd, sshArgs);
+}
+
 exports['dev'] = series(buildapp, dev);
 exports['fakeprod'] = series(buildnginx, buildapp, fakeprod);
 exports['down'] = down;
@@ -199,3 +211,5 @@ exports['testweb'] = series(gensecrets, testweb);
 exports['extractreports'] = extractReports;
 
 exports['cdkdeploy'] = cdkdeploy;
+
+exports['admin'] = admin;
