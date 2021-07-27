@@ -73,6 +73,9 @@ export class BullMqJob<P extends Payload> implements Job<P> {
   }
 
   async isHealthy(): Promise<boolean> {
+    if (!this.scheduler && !this.worker) {
+      return false;
+    }
     if (this.scheduler && !this.scheduler.isRunning()) {
       return false;
     }
