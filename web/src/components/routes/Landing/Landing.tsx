@@ -9,7 +9,7 @@ import { Box } from '../../Box';
 import { Logo } from '../../Logo';
 import { Wordmark } from '../../Wordmark';
 
-const LANDING_SRC = 'images/landing.jpg';
+const LANDING_SRC = 'static/landing.jpg';
 
 const Outer = styled.div`
   background-color: white;
