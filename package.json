@@ -9,10 +9,12 @@
     "dev:web": "cd web && yarn start",
     "dev:api": "cd api && yarn dev:api",
     "dev:worker": "cd api && yarn dev:worker",
+    "dev:dispatcher": "cd api && yarn dev:dispatcher",
     "migrate": "cd api && yarn migrate",
     "seed": "cd api && yarn seed",
     "prod:api": "cd api && yarn prod:api",
-    "prod:worker": "cd api && yarn prod:worker"
+    "prod:worker": "cd api && yarn prod:worker",
+    "prod:dispatcher": "cd api && yarn prod:dispatcher"
   },
   "devDependencies": {
     "@types/node": "^14.14.30",

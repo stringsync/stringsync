@@ -15,12 +15,20 @@ export class BullMqJob<P extends Payload> implements Job<P> {
 
   constructor(public name: string, public process: Processor<P>, public opts: JobOpts) {}
 
-  async start(): Promise<void> {
+  async startWorking(): Promise<void> {
     const queue = this.ensureQueue() as Queue<any>;
     await queue.waitUntilReady();
 
     const worker = this.ensureWorker();
     await worker.waitUntilReady();
+
+    const scheduler = this.ensureScheduler();
+    await scheduler.waitUntilReady();
+  }
+
+  async startDispatching(): Promise<void> {
+    const queue = this.ensureQueue() as Queue<any>;
+    await queue.waitUntilReady();
 
     const scheduler = this.ensureScheduler();
     await scheduler.waitUntilReady();

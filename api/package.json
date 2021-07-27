@@ -9,8 +9,10 @@
     "seed": "yarn sequelize db:seed:all",
     "dev:api": "yarn ts-node-dev src/entrypoints/api.ts",
     "dev:worker": "yarn ts-node-dev src/entrypoints/worker.ts",
+    "dev:dispatcher": "yarn ts-node-dev src/entrypoints/dispatcher.ts",
     "prod:api": "node build/entrypoints/api.js",
     "prod:worker": "node build/entrypoints/worker.js",
+    "prod:dispatcher": "node build/entrypoints/dispatcher.js",
     "pretest": "yarn migrate",
     "test": "yarn jest --maxWorkers=$JEST_NUM_WORKERS",
     "typegen": "graphql-codegen"

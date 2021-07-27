@@ -10,9 +10,9 @@ import { Logger } from '../util';
   await db.init();
 
   const logger = container.get<Logger>(TYPES.Logger);
-  await Promise.all(JOBS.map((job) => job.startWorking()));
+  await Promise.all(JOBS.map((job) => job.startDispatching()));
 
-  logger.info('job worker started');
+  logger.info('job dispatcher started');
 
   const server = container.get<JobServer>(TYPES.WorkerServer);
   server.start(JOBS);

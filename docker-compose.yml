@@ -58,7 +58,28 @@ services:
       - env/secrets.env
     environment:
       NODE_ENV: production
+      PORT: 3000
     links:
       - db
       - redis
+    ports:
+      - 3000:3000
     command: ['node', '/app/api/build/entrypoints/worker.js']
+
+  dispatcher:
+    container_name: dispatcher
+    image: stringsync:latest
+    build:
+      context: .
+    env_file:
+      - env/fakeprod.env
+      - env/secrets.env
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+    links:
+      - db
+      - redis
+    ports:
+      - 3001:3001
+    command: ['node', '/app/api/build/entrypoints/dispatcher.js']
