@@ -21,7 +21,7 @@ export const NotFound: React.FC<Props> = () => {
   return (
     <Outer>
       <h1>404</h1>
-      <h2>page not found</h2>
+      <h2>not found</h2>
       <Link to="/library">library</Link>
     </Outer>
   );
