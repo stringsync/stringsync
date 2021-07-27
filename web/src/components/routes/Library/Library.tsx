@@ -7,14 +7,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Tag } from '../../../domain';
+import { $queries, NotationEdgeObject, QueryNotationsArgs, toUserRole } from '../../../graphql';
 import { Layout, withLayout } from '../../../hocs';
 import { useDebounce, useEffectOnce, useIntersection, usePrevious } from '../../../hooks';
 import { AppDispatch, getTags, RootState } from '../../../store';
 import { compose } from '../../../util/compose';
+import { getInitialPageInfo } from '../../../util/pager';
 import { scrollToTop } from '../../../util/scrollToTop';
 import { NotationCard } from './NotationCard';
-import { LibraryStatus } from './types';
-import { useLibraryState } from './useLibraryState';
+import { LibraryStatus, NotationPreview } from './types';
 
 const QUERY_DEBOUNCE_DELAY_MS = 500;
 const TAG_IDS_DEBOUNCE_DELAY_MS = 1000;
@@ -81,6 +82,12 @@ const BackTopButton = styled.div`
 
 const normalizeTagIds = (tagIds: string[]) => uniq(tagIds).sort();
 
+const toNotationPreview = (edge: NotationEdgeObject): NotationPreview => {
+  const role = toUserRole(edge.node.transcriber.role);
+  const transcriber = { ...edge.node.transcriber, role };
+  return { ...edge.node, transcriber } as NotationPreview;
+};
+
 const enhance = compose(withLayout(Layout.DEFAULT));
 
 type Props = {};
@@ -91,17 +98,66 @@ export const Library: React.FC<Props> = enhance(() => {
   const sm = useSelector<RootState, boolean>((state) => state.viewport.sm);
   const tags = useSelector<RootState, Tag[]>((state) => state.tag.tags);
 
-  const {
-    errors,
-    status,
-    notations,
-    pageInfo,
-    isInitialized,
-    loadMoreNotations,
-    clearErrors,
-    resetLibrary,
-    ready,
-  } = useLibraryState();
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [status, setStatus] = useState(LibraryStatus.READY);
+  const [notations, setNotations] = useState(new Array<NotationPreview>());
+  const [pageInfo, setPageInfo] = useState(getInitialPageInfo());
+  const [errors, setErrors] = useState(new Array<Error>());
+
+  const ready = useCallback(() => {
+    setStatus(LibraryStatus.READY);
+  }, []);
+
+  const loading = () => {
+    setStatus(LibraryStatus.LOADING);
+  };
+
+  const loaded = () => {
+    setStatus(LibraryStatus.LOADED);
+  };
+
+  const resetLibrary = () => {
+    setNotations([]);
+    setErrors([]);
+    setPageInfo(getInitialPageInfo());
+    setIsInitialized(false);
+    ready();
+  };
+
+  const clearErrors = () => {
+    setErrors([]);
+    ready();
+  };
+
+  const loadMoreNotations = useCallback(async (args: QueryNotationsArgs) => {
+    setErrors([]);
+    loading();
+
+    try {
+      const { data, errors } = await $queries.notations(args);
+      if (errors) {
+        throw errors;
+      }
+      const connection = data.notations;
+      // the server sorts by ascending cursor, but we're pagingating backwards
+      // this is correct according to spec:
+      // https://relay.dev/graphql/connections.htm#sec-Backward-pagination-arguments
+      const nextNotations = connection.edges.map(toNotationPreview).reverse();
+      setNotations((prevNotations) => prevNotations.concat(nextNotations));
+      setPageInfo({
+        startCursor: connection.pageInfo.startCursor || null,
+        endCursor: connection.pageInfo.endCursor || null,
+        hasNextPage: connection.pageInfo.hasNextPage,
+        hasPreviousPage: connection.pageInfo.hasPreviousPage,
+      });
+    } catch (e) {
+      setErrors(Array.isArray(e) ? e : [e]);
+    } finally {
+      loaded();
+      setIsInitialized(true);
+    }
+  }, []);
+
   const [query, setQuery] = useState('');
   const [tagIds, setTagIds] = useState(new Array<string>());
   const debouncedQuery = useDebounce(query, QUERY_DEBOUNCE_DELAY_MS);
