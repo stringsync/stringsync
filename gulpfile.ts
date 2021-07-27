@@ -20,9 +20,9 @@ const DOCKER_TAG = Env.string('DOCKER_TAG');
 const DOCKERFILE = Env.string('DOCKERFILE');
 const GRAPHQL_HOSTNAME = Env.string('GRAPHQL_HOSTNAME');
 const GRAPHQL_PORT = Env.number('GRAPHQL_PORT');
-
 const MAX_WAIT_MS = Env.number('MAX_WAIT_MS');
 const REMOTE = Env.string('REMOTE');
+const STACK_NAME = Env.string('STACK_NAME');
 const WATCH = Env.boolean('WATCH');
 
 async function dev() {
@@ -175,12 +175,14 @@ async function cdkdeploy() {
 }
 
 async function admin() {
+  const stackName = STACK_NAME.getOrDefault('stringsync');
+
   // download credentials
-  const downloadKeyCommand = await aws.getStackOutputValue('stringsync', 'AdminInstanceDownloadKeyCommand');
+  const downloadKeyCommand = await aws.getStackOutputValue(stackName, 'AdminInstanceDownloadKeyCommand');
   await cmd('aws', downloadKeyCommand.split(' ').slice(1), { shell: true, reject: false });
 
   // ssh into instance
-  const sshCommand = await aws.getStackOutputValue('stringsync', 'AdminInstanceSshCommand');
+  const sshCommand = await aws.getStackOutputValue(stackName, 'AdminInstanceSshCommand');
   const [sshCmd, ...sshArgs] = sshCommand.split(' ');
   await cmd(sshCmd, sshArgs);
 }
