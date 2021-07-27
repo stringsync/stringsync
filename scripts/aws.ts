@@ -18,3 +18,23 @@ export async function getStackOutputValue(stackName: string, exportName: string)
   );
   return result.stdout;
 }
+
+export async function getSecretValue(secretId: string, awsRegion: string) {
+  const result = await cmd(
+    'aws',
+    [
+      'secretsmanager',
+      'get-secret-value',
+      '--secret-id',
+      secretId,
+      '--region',
+      awsRegion,
+      '--query',
+      'SecretString',
+      '--output',
+      'text',
+    ],
+    { stdio: 'pipe' }
+  );
+  return result.stdout;
+}

@@ -47,6 +47,12 @@ export class Db extends cdk.Construct {
       engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_11 }),
       securityGroups: [this.securityGroup],
     });
+
+    // NB: The export names are tied to the root gulpfile and will break the `adminmigrate` script if changed.
+    new cdk.CfnOutput(this, 'DbCredsSecret', {
+      value: this.credsSecret.secretName,
+      exportName: 'DbCredsSecret',
+    });
   }
 
   get hostname(): string {

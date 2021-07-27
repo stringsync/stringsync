@@ -2,6 +2,7 @@ import path from 'path';
 import * as aws from './scripts/aws';
 import { cleanup } from './scripts/cleanup';
 import * as constants from './scripts/constants';
+import { getDbEnv } from './scripts/db';
 import * as docker from './scripts/docker';
 import { Env } from './scripts/Env';
 import * as graphql from './scripts/graphql';
@@ -24,6 +25,8 @@ const MAX_WAIT_MS = Env.number('MAX_WAIT_MS');
 const REMOTE = Env.string('REMOTE');
 const STACK_NAME = Env.string('STACK_NAME');
 const WATCH = Env.boolean('WATCH');
+const AWS_REGION = Env.string('AWS_REGION');
+const NODE_ENV = Env.string('NODE_ENV');
 
 async function dev() {
   const composeFile = constants.DOCKER_COMPOSE_DEV_FILE;
@@ -187,6 +190,35 @@ async function admin() {
   await cmd(sshCmd, sshArgs);
 }
 
+async function admindb() {
+  const stackName = STACK_NAME.getOrDefault('stringsync');
+  const awsRegion = AWS_REGION.getOrDefault('us-east-1');
+  const nodeEnv = NODE_ENV.getOrDefault('production');
+
+  const dbEnv = await getDbEnv(stackName, awsRegion);
+  await cmd(
+    'psql',
+    [
+      `--host=${dbEnv.DB_HOST}`,
+      `--port=${dbEnv.DB_PORT}`,
+      `--username=${dbEnv.DB_USERNAME}`,
+      `--dbname=${dbEnv.DB_NAME}`,
+    ],
+    {
+      env: { NODE_ENV: nodeEnv, PGPASSWORD: dbEnv.DB_PASSWORD },
+    }
+  );
+}
+
+async function adminmigrate() {
+  const stackName = STACK_NAME.getOrDefault('stringsync');
+  const awsRegion = AWS_REGION.getOrDefault('us-east-1');
+  const nodeEnv = NODE_ENV.getOrDefault('production');
+
+  const dbEnv = await getDbEnv(stackName, awsRegion);
+  await cmd('yarn', ['migrate'], { env: { NODE_ENV: nodeEnv, ...dbEnv } });
+}
+
 exports['dev'] = series(buildapp, dev);
 exports['fakeprod'] = series(buildnginx, buildapp, fakeprod);
 exports['down'] = down;
@@ -215,3 +247,5 @@ exports['extractreports'] = extractReports;
 exports['cdkdeploy'] = cdkdeploy;
 
 exports['admin'] = admin;
+exports['admindb'] = admindb;
+exports['adminmigrate'] = adminmigrate;

@@ -95,6 +95,7 @@ export class StringsyncStack extends cdk.Stack {
 
     const adminInstance = new AdminInstance(this, 'AdminInstance', { vpc });
     ci.codeRepository.grantPull(adminInstance.role);
+    db.credsSecret.grantRead(adminInstance.role);
 
     /**
      * SECURITY GROUPS
