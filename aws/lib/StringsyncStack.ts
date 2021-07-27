@@ -472,8 +472,8 @@ export class StringsyncStack extends cdk.Stack {
         new codepipelineActions.EcsDeployAction({
           actionName: 'DeployDispatcher',
           runOrder: 1,
-          service: workerService,
-          imageFile: ci.workerArtifactPath,
+          service: dispatcherService,
+          imageFile: ci.dispatcherArtifactPath,
         }),
         new codepipelineActions.EcsDeployAction({
           actionName: 'DeployWorker',

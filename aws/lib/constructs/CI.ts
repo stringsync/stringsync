@@ -14,6 +14,7 @@ type CIProps = {
 
 const APP_IMAGE_DEFINITION_FILE = 'imagedefinitions.app.json';
 const WORKER_IMAGE_DEFINITION_FILE = 'imagedefinitions.worker.json';
+const DISPATCHER_IMAGE_DEFINITION_FILE = 'imagedefinitions.dispatcher.json';
 const DOCKER_CREDS_SECRET_NAME = 'DockerCreds';
 const DOCKER_USERNAME = 'stringsync';
 
@@ -25,6 +26,7 @@ export class CI extends cdk.Construct {
   readonly pipeline: codepipeline.Pipeline;
   readonly appArtifactPath: codepipeline.ArtifactPath;
   readonly workerArtifactPath: codepipeline.ArtifactPath;
+  readonly dispatcherArtifactPath: codepipeline.ArtifactPath;
 
   private buildOutput: codepipeline.Artifact;
 
@@ -145,6 +147,7 @@ export class CI extends cdk.Construct {
               'docker push $WORKER_REPO_URI:latest',
               `printf '[{"name":"nginx","imageUri":"'$NGINX_REPO_URI'"}, {"name":"api","imageUri":"'$API_REPO_URI'"}]' > ${APP_IMAGE_DEFINITION_FILE}`,
               `printf '[{"name":"worker","imageUri":"'$WORKER_REPO_URI'"}]' > ${WORKER_IMAGE_DEFINITION_FILE}`,
+              `printf '[{"name":"dispatcher","imageUri":"'$WORKER_REPO_URI'"}]' > ${DISPATCHER_IMAGE_DEFINITION_FILE}`,
             ],
           },
         },
@@ -212,5 +215,6 @@ export class CI extends cdk.Construct {
 
     this.appArtifactPath = this.buildOutput.atPath(APP_IMAGE_DEFINITION_FILE);
     this.workerArtifactPath = this.buildOutput.atPath(WORKER_IMAGE_DEFINITION_FILE);
+    this.dispatcherArtifactPath = this.buildOutput.atPath(DISPATCHER_IMAGE_DEFINITION_FILE);
   }
 }
