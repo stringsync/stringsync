@@ -73,10 +73,13 @@ export class BullMqJob<P extends Payload> implements Job<P> {
   }
 
   async isHealthy(): Promise<boolean> {
-    if (!this.scheduler || !this.worker) {
+    if (this.scheduler && !this.scheduler.isRunning()) {
       return false;
     }
-    return this.scheduler.isRunning() && this.worker.isRunning();
+    if (this.worker && !this.worker.isRunning()) {
+      return false;
+    }
+    return true;
   }
 
   private getConnection(): RedisOptions {
