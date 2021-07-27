@@ -88,7 +88,7 @@ export class StringsyncStack extends cdk.Stack {
     const cache = new Cache(this, 'Cache', { vpc });
 
     const vod = new Vod(this, 'Vod', {
-      adminEmail: 'admin@stringsync.dev',
+      adminEmail: 'admin@stringsync.com',
       enableAcceleratedTranscoding: false,
       enableSns: false,
     });
@@ -96,6 +96,13 @@ export class StringsyncStack extends cdk.Stack {
     const adminInstance = new AdminInstance(this, 'AdminInstance', { vpc });
     ci.codeRepository.grantPull(adminInstance.role);
     db.credsSecret.grantRead(adminInstance.role);
+    adminInstance.role.addToPolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        resources: [this.stackId],
+        actions: ['cloudformation:DescribeStacks'],
+      })
+    );
 
     /**
      * SECURITY GROUPS

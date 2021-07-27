@@ -17,3 +17,9 @@ npm install --global yarn
 # Install git
 sudo yum update -y
 sudo yum install git -y
+
+# Uninstall AWS CLI v1
+pip3 uninstall --yes awscli
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install

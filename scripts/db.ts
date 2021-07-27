@@ -39,9 +39,6 @@ export async function getDbEnv(stackName: string, awsRegion: string): Promise<Db
   const dbCredsJson = await aws.getSecretValue(secretId, awsRegion);
   const dbCreds = JSON.parse(dbCredsJson);
 
-  console.log(typeof dbCreds);
-  console.log(typeof {});
-
   if (!isDbCreds(dbCreds)) {
     throw new Error(`unexpected secret, check that secret '${secretId}' has keys needed for Db creds`);
   }
