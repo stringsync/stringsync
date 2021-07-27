@@ -377,6 +377,30 @@ export class StringsyncStack extends cdk.Stack {
     });
 
     /**
+     * DISPATCHER TASK DEFINITION
+     */
+
+    const dispatcherLogDriver = new ecs.AwsLogDriver({ streamPrefix: `${this.stackName}/dispatcher` });
+    const dispatcherTaskDefinition = new ecs.FargateTaskDefinition(this, 'DispatcherTaskDefinition', {
+      cpu: 256,
+      memoryLimitMiB: 512,
+      executionRole: taskExecutionRole,
+    });
+    dispatcherTaskDefinition.addContainer('DispatcherContainer', {
+      containerName: 'dispatcher',
+      command: ['yarn', 'prod:dispatcher'],
+      logging: dispatcherLogDriver,
+      image: ecs.ContainerImage.fromRegistry(ci.workerRepository.repositoryUri),
+      portMappings: [{ containerPort: 3000 }],
+      healthCheck: {
+        command: ['CMD-SHELL', 'curl --fail http://localhost:3000/health || exit 1'],
+        interval: cdk.Duration.seconds(30),
+      },
+      environment,
+      secrets,
+    });
+
+    /**
      * WORKER TASK DEFINITION
      */
 
@@ -414,6 +438,15 @@ export class StringsyncStack extends cdk.Stack {
     });
     appTargetGroup.addTarget(appService);
 
+    const dispatcherService = new ecs.FargateService(this, 'DispatcherService', {
+      cluster,
+      assignPublicIp: true,
+      securityGroups: [appContainerSecurityGroup],
+      taskDefinition: dispatcherTaskDefinition,
+      desiredCount: 1,
+      platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    });
+
     const workerService = new ecs.FargateService(this, 'WorkerService', {
       cluster,
       assignPublicIp: true,
@@ -435,6 +468,12 @@ export class StringsyncStack extends cdk.Stack {
           runOrder: 1,
           service: appService,
           imageFile: ci.appArtifactPath,
+        }),
+        new codepipelineActions.EcsDeployAction({
+          actionName: 'DeployDispatcher',
+          runOrder: 1,
+          service: workerService,
+          imageFile: ci.workerArtifactPath,
         }),
         new codepipelineActions.EcsDeployAction({
           actionName: 'DeployWorker',
