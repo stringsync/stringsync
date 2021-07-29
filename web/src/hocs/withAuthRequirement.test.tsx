@@ -128,7 +128,7 @@ describe('withAuthRequirement', () => {
       expect(getByTestId('dummy')).toBeInTheDocument();
     });
 
-    it('does not render when pending', () => {
+    it('does render when pending', () => {
       const store = createStore({
         auth: {
           ...getNullAuthState(),
@@ -142,7 +142,7 @@ describe('withAuthRequirement', () => {
         </Test>
       );
 
-      expect(() => getByTestId('dummy')).toThrow();
+      expect(getByTestId('dummy')).toBeInTheDocument();
     });
   });
 
