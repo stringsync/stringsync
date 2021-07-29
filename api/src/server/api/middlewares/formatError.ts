@@ -3,10 +3,9 @@ import { get } from 'lodash';
 import { UNKNOWN_ERROR_MSG } from '../../../errors';
 
 const getMessage = (error: GraphQLError): string => {
-  if (get(error.originalError, 'name') === 'SequelizeUniqueConstraintError') {
-    return get(error.originalError, 'errors[0].message', UNKNOWN_ERROR_MSG);
-  }
-  return error.message || UNKNOWN_ERROR_MSG;
+  const isUserFacing = !!get(error, 'isUserFacing', false);
+  const message = isUserFacing ? error.message : undefined;
+  return message || UNKNOWN_ERROR_MSG;
 };
 
 export const formatError = (error: GraphQLError): GraphQLFormattedError => {

@@ -48,14 +48,18 @@ export const graphql = async <
     formData.append(ndx.toString(), file, `@${file.name}`);
   }
 
-  const res = await fetch(uri, {
-    method: 'POST',
-    headers: { Accept: 'application/json' },
-    body: formData,
-    credentials: 'include',
-    mode: 'cors',
-  });
-  return await res.json();
+  try {
+    const res = await fetch(uri, {
+      method: 'POST',
+      headers: { Accept: 'application/json' },
+      body: formData,
+      credentials: 'include',
+      mode: 'cors',
+    });
+    return await res.json();
+  } catch (error) {
+    return { data: null, errors: [error] } as any;
+  }
 };
 
 export const query = async <N extends Exclude<keyof Query, '__typename'>, V extends Record<string, any> | void = void>(

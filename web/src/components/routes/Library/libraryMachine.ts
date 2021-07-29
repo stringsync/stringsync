@@ -72,8 +72,7 @@ const toNotationPreview = (edge: NotationEdgeObject): NotationPreview => {
 const fetchNotationPage: InvokeCreator<LibraryContext, LibraryEvent> = async (context): Promise<NotationPage> => {
   const { data, errors } = await $queries.notations(context.queryArgs);
   if (errors) {
-    console.log(errors);
-    throw new Error('something went wrong');
+    throw errors;
   }
   const connection = data.notations;
   // the server sorts by ascending cursor, but we're pagingating backwards

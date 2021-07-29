@@ -3,6 +3,7 @@ import { ErrorCode } from './types';
 
 export class StringSyncError extends Error {
   code: ErrorCode;
+  isUserFacing = true;
 
   constructor(message: string, code: ErrorCode) {
     super(message);
@@ -45,12 +46,16 @@ export class NotFoundError extends StringSyncError {
 }
 
 export class InternalError extends StringSyncError {
+  isUserFacing = false;
+
   constructor(message: string) {
     super(message, ErrorCode.INTERNAL);
   }
 }
 
 export class NotImplementedError extends StringSyncError {
+  isUserFacing = false;
+
   constructor(message: string = NOT_IMPLEMENTED_MSG) {
     super(message, ErrorCode.NOT_IMPLEMENTED);
   }
