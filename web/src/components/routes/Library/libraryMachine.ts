@@ -1,6 +1,7 @@
 import { cloneDeep } from 'lodash';
 import { assign, Condition, ContextFrom, DoneInvokeEvent, EventFrom, InvokeCreator } from 'xstate';
 import { createModel } from 'xstate/lib/model';
+import { UnknownError } from '../../../errors';
 import { $queries, NotationEdgeObject, toUserRole } from '../../../graphql';
 import { NotationPreview } from './types';
 
@@ -73,6 +74,9 @@ const fetchNotationPage: InvokeCreator<LibraryContext, LibraryEvent> = async (co
   const { data, errors } = await $queries.notations(context.queryArgs);
   if (errors) {
     throw errors;
+  }
+  if (!data) {
+    throw new UnknownError();
   }
   const connection = data.notations;
   // the server sorts by ascending cursor, but we're pagingating backwards

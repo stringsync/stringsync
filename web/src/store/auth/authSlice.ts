@@ -15,7 +15,7 @@ export const authenticate = createAsyncThunk<AuthenticateReturned, AuthenticateT
   async (args, thunk) => {
     const { data, errors } = await $queries.whoami();
 
-    const hasError = errors || !data.whoami;
+    const hasError = !!errors || !data || !data.whoami;
 
     if (hasError && args.shouldClearAuthOnError) {
       thunk.dispatch(clearAuth());
@@ -25,7 +25,7 @@ export const authenticate = createAsyncThunk<AuthenticateReturned, AuthenticateT
     if (errors) {
       return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
     }
-    if (!data.whoami) {
+    if (!data || !data.whoami) {
       return thunk.rejectWithValue({ errors: ['not logged in'] });
     }
     return { user: toAuthUser(data.whoami) };
@@ -42,7 +42,7 @@ export const login = createAsyncThunk<LoginReturned, LoginThunkArg, LoginThunkCo
     if (errors) {
       return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
     }
-    if (!data.login) {
+    if (!data || !data.login) {
       return thunk.rejectWithValue({ errors: [UNKNOWN_ERROR_MSG] });
     }
     return { user: toAuthUser(data.login) };
@@ -58,6 +58,9 @@ export const signup = createAsyncThunk<SignupReturned, SignupThunkArg, SignupThu
     const { data, errors } = await $queries.signup(args.input);
     if (errors) {
       return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
+    }
+    if (!data) {
+      return thunk.rejectWithValue({ errors: [UNKNOWN_ERROR_MSG] });
     }
     if (!data.signup) {
       return thunk.rejectWithValue({ errors: [UNKNOWN_ERROR_MSG] });
@@ -75,6 +78,9 @@ export const logout = createAsyncThunk<LogoutReturned, LogoutThunkArg, LogoutThu
     const { data, errors } = await $queries.logout();
     if (errors) {
       return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
+    }
+    if (!data) {
+      return thunk.rejectWithValue({ errors: [UNKNOWN_ERROR_MSG] });
     }
     if (!data.logout) {
       return thunk.rejectWithValue({ errors: [UNKNOWN_ERROR_MSG] });
@@ -94,6 +100,9 @@ export const sendResetPasswordEmail = createAsyncThunk<
   const { data, errors } = await $queries.sendResetPasswordEmail(args.input);
   if (errors) {
     return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
+  }
+  if (!data) {
+    return thunk.rejectWithValue({ errors: [UNKNOWN_ERROR_MSG] });
   }
   if (!data.sendResetPasswordEmail) {
     return thunk.rejectWithValue({ errors: [UNKNOWN_ERROR_MSG] });

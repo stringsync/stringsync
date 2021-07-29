@@ -66,7 +66,7 @@ describe('AuthSync', () => {
 
   it('swallows errors silently', async () => {
     const whoamiSpy = jest.spyOn($queries, 'whoami');
-    whoamiSpy.mockResolvedValue({ data: { whoami: null }, errors: [new GraphQLError('error message 1')] });
+    whoamiSpy.mockResolvedValue({ data: null, errors: [new GraphQLError('error message 1')] });
 
     render(
       <Test store={store}>
@@ -83,7 +83,7 @@ describe('AuthSync', () => {
 
   it('authenticates once', async () => {
     const whoamiSpy = jest.spyOn($queries, 'whoami');
-    whoamiSpy.mockResolvedValue({ data: { whoami: null }, errors: [new GraphQLError('error message 1')] });
+    whoamiSpy.mockResolvedValue({ data: null, errors: [new GraphQLError('error message 1')] });
 
     const { rerender } = render(
       <Test store={store}>

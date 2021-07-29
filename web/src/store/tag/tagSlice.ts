@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { Tag } from '../../domain';
+import { UNKNOWN_ERROR_MSG } from '../../errors';
 import { $queries } from '../../graphql';
 import { TagReducers, TagState } from './types';
 
@@ -12,6 +13,9 @@ export const getTags = createAsyncThunk<GetTagsReturned, GetTagsThunkArg, GetTag
     const { data, errors } = await $queries.tags();
     if (errors) {
       return thunk.rejectWithValue({ errors: errors.map((error) => error.message) });
+    }
+    if (!data) {
+      return thunk.rejectWithValue({ errors: [UNKNOWN_ERROR_MSG] });
     }
     return {
       tags: data.tags.map((tag) => ({

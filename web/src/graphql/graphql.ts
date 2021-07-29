@@ -58,7 +58,9 @@ export const graphql = async <
     });
     return await res.json();
   } catch (error) {
-    return { data: null, errors: [error] } as any;
+    // Allow callers to treat misc errors as graphql errors,
+    // since they should already be expecting them.
+    return { data: null, errors: [error] };
   }
 };
 

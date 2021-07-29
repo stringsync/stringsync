@@ -192,7 +192,7 @@ describe('authSlice', () => {
       });
       const whoamiSpy = jest.spyOn($queries, 'whoami');
       whoamiSpy.mockResolvedValue({
-        data: { whoami: null },
+        data: null,
         errors: [new GraphQLError('error1'), new GraphQLError('error2')],
       });
 

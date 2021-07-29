@@ -49,27 +49,12 @@ services:
     links:
       - db
       - redis
+    ports:
+      - 3000:3000
     command: ['yarn', 'dev:api']
 
   worker:
     container_name: worker
-    image: stringsync:latest
-    env_file:
-      - env/dev.env
-      - env/secrets.env
-    environment:
-      PORT: 3000
-    volumes:
-      - ./api/src:/app/api/src
-    links:
-      - db
-      - redis
-    ports:
-      - 3000:3000
-    command: ['yarn', 'dev:worker']
-
-  dispatch:
-    container_name: dispatcher
     image: stringsync:latest
     env_file:
       - env/dev.env
@@ -83,6 +68,23 @@ services:
       - redis
     ports:
       - 3001:3001
+    command: ['yarn', 'dev:worker']
+
+  dispatch:
+    container_name: dispatcher
+    image: stringsync:latest
+    env_file:
+      - env/dev.env
+      - env/secrets.env
+    environment:
+      PORT: 3002
+    volumes:
+      - ./api/src:/app/api/src
+    links:
+      - db
+      - redis
+    ports:
+      - 3002:3002
     command: ['yarn', 'dev:dispatcher']
 
   web:

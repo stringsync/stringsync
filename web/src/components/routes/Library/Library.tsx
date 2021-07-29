@@ -199,6 +199,19 @@ export const Library: React.FC<Props> = enhance(() => {
           )}
         </Row>
       </>
+
+      {hasErrors && (
+        <AlertOuter xs={xs}>
+          <Alert
+            showIcon
+            type="error"
+            message={state.context.errors.map((error) => error.message).join('; ')}
+            closeText="try again"
+            onClose={onAlertClose}
+          />
+        </AlertOuter>
+      )}
+
       {hasLoadedFirstPage && (
         <>
           <br />
@@ -221,17 +234,6 @@ export const Library: React.FC<Props> = enhance(() => {
       )}
       {/* When this is visible, trigger loading  */}
       {!hasLoadedLastPage && <div id={LOADER_TRIGGER_ID}></div>}
-      {hasErrors && (
-        <AlertOuter xs={xs}>
-          <Alert
-            showIcon
-            type="error"
-            message={state.context.errors.map((error) => error.message).join('; ')}
-            closeText="try again"
-            onClose={onAlertClose}
-          />
-        </AlertOuter>
-      )}
       <br />
       <br />
 
