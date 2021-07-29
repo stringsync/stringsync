@@ -10,6 +10,10 @@ type NotationPage = {
   hasNextPage: boolean;
 };
 
+export type LibraryContext = ContextFrom<typeof libraryModel>;
+
+export type LibraryEvent = EventFrom<typeof libraryModel>;
+
 const PAGE_SIZE = 9;
 
 export const libraryModel = createModel(
@@ -21,21 +25,17 @@ export const libraryModel = createModel(
       tagIds: null as string[] | null,
     },
     notations: new Array<NotationPreview>(),
-    error: null as string | null,
+    errors: new Array<Error>(),
     hasLoadedFirstPage: false,
   },
   {
     events: {
       loadPage: () => ({}),
-      setQueryArgs: (query: string, tagIds: string[]) => ({ query, tagIds }),
       retryLoadPage: () => ({}),
+      setQueryArgs: (query: string, tagIds: string[]) => ({ query, tagIds }),
     },
   }
 );
-
-export type LibraryContext = ContextFrom<typeof libraryModel>;
-
-export type LibraryEvent = EventFrom<typeof libraryModel>;
 
 const setQueryArgs = assign<LibraryContext, { type: 'setQueryArgs'; query: string; tagIds: string[] }>(
   (context, event) => {
@@ -46,8 +46,8 @@ const setQueryArgs = assign<LibraryContext, { type: 'setQueryArgs'; query: strin
   }
 );
 
-const clearError = assign<LibraryContext, { type: 'loadPage' }>((context, event) => ({
-  error: null,
+const clearErrors = assign<LibraryContext, { type: 'retryLoadPage' }>((context, event) => ({
+  errors: [],
 }));
 
 const applyNotationPage = assign<LibraryContext, DoneInvokeEvent<NotationPage>>((context, event) => ({
@@ -59,8 +59,8 @@ const applyNotationPage = assign<LibraryContext, DoneInvokeEvent<NotationPage>>(
   hasLoadedFirstPage: true,
 }));
 
-const applyErrors = assign<LibraryContext, DoneInvokeEvent<string>>((context, event) => ({
-  error: event.data,
+const applyErrors = assign<LibraryContext, DoneInvokeEvent<Error[]>>((context, event) => ({
+  errors: event.data,
 }));
 
 const toNotationPreview = (edge: NotationEdgeObject): NotationPreview => {
@@ -70,11 +70,9 @@ const toNotationPreview = (edge: NotationEdgeObject): NotationPreview => {
 };
 
 const fetchNotationPage: InvokeCreator<LibraryContext, LibraryEvent> = async (context): Promise<NotationPage> => {
-  const queryArgs = context.queryArgs;
-  queryArgs.query = queryArgs.query || null;
   const { data, errors } = await $queries.notations(context.queryArgs);
   if (errors) {
-    // TODO(jared) show specific errors
+    console.log(errors);
     throw new Error('something went wrong');
   }
   const connection = data.notations;
@@ -92,6 +90,7 @@ const hasNextPage: Condition<LibraryContext, DoneInvokeEvent<NotationPage>> = (c
   event.data.hasNextPage;
 
 export const libraryMachine = libraryModel.createMachine({
+  id: 'library',
   initial: 'idle',
   strict: true,
   states: {
@@ -115,7 +114,7 @@ export const libraryMachine = libraryModel.createMachine({
             src: fetchNotationPage,
             onDone: [
               { target: 'success', cond: hasNextPage, actions: [applyNotationPage] },
-              { target: 'success', actions: [applyNotationPage] },
+              { target: '#library.done', actions: [applyNotationPage] },
             ],
             onError: { target: 'failure', actions: [applyErrors] },
           },
@@ -124,10 +123,12 @@ export const libraryMachine = libraryModel.createMachine({
           on: { loadPage: { target: 'loading' } },
         },
         failure: {
-          on: { loadPage: { target: 'loading', actions: [clearError] } },
+          on: { retryLoadPage: { target: 'loading', actions: [clearErrors] } },
         },
       },
     },
-    done: { type: 'final' },
+    done: {
+      on: { setQueryArgs: { target: 'idle', actions: [setQueryArgs] } },
+    },
   },
 });

@@ -88,9 +88,9 @@ export const Library: React.FC<Props> = enhance(() => {
   const [state, send] = useMachine(libraryMachine);
   const isIdle = state.value === 'idle';
   const isLoading = state.matches('streaming.loading');
-  const hasErrors = !!state.context.error;
-  const isDone = state.done;
-  const hasLoaded = state.context.hasLoadedFirstPage;
+  const hasErrors = state.context.errors.length > 0;
+  const hasLoadedLastPage = state.value === 'done';
+  const hasLoadedFirstPage = state.context.hasLoadedFirstPage;
 
   const dispatch = useDispatch<AppDispatch>();
   const xs = useSelector<RootState, boolean>((state) => state.viewport.xs);
@@ -110,7 +110,6 @@ export const Library: React.FC<Props> = enhance(() => {
   const hasSearchTerm = query.length > 0 || tagIds.length > 0;
   const tagIdsSet = useMemo(() => new Set(tagIds), [tagIds]);
   const isTagChecked = useCallback((tagId: string) => tagIdsSet.has(tagId), [tagIdsSet]);
-
   const isLoaderTriggerVisible = useIntersection(LOADER_TRIGGER_ID);
 
   const onQueryChange: ChangeEventHandler<HTMLInputElement> = (event) => {
@@ -142,7 +141,7 @@ export const Library: React.FC<Props> = enhance(() => {
 
   const onAlertClose = () => {
     setTimeout(() => {
-      send(libraryModel.events.loadPage());
+      send(libraryModel.events.retryLoadPage());
     }, CLEAR_ERRORS_ANIMATION_DELAY_MS);
   };
 
@@ -200,7 +199,7 @@ export const Library: React.FC<Props> = enhance(() => {
           )}
         </Row>
       </>
-      {hasLoaded && (
+      {hasLoadedFirstPage && (
         <>
           <br />
           <br />
@@ -221,16 +220,24 @@ export const Library: React.FC<Props> = enhance(() => {
         </>
       )}
       {/* When this is visible, trigger loading  */}
-      <div id={LOADER_TRIGGER_ID}></div>
+      {!hasLoadedLastPage && <div id={LOADER_TRIGGER_ID}></div>}
       {hasErrors && (
         <AlertOuter xs={xs}>
-          <Alert showIcon type="error" message={state.context.error} closeText="try again" onClose={onAlertClose} />
+          <Alert
+            showIcon
+            type="error"
+            message={state.context.errors.map((error) => error.message).join('; ')}
+            closeText="try again"
+            onClose={onAlertClose}
+          />
         </AlertOuter>
       )}
       <br />
       <br />
+
       <Row justify="center">{isIdle || isLoading ? <LoadingIcon /> : <InvisibleLoadingIcon />}</Row>
-      {isDone && (
+
+      {hasLoadedLastPage && (
         <>
           {state.context.notations.length > 0 && (
             <Row justify="center">
