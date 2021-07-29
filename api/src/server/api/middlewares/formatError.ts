@@ -3,9 +3,17 @@ import { get } from 'lodash';
 import { UNKNOWN_ERROR_MSG } from '../../../errors';
 
 const getMessage = (error: GraphQLError): string => {
-  const isUserFacing = !!get(error, 'isUserFacing', false);
-  const message = isUserFacing ? error.message : undefined;
-  return message || UNKNOWN_ERROR_MSG;
+  const originalError = error.originalError;
+  if (!originalError) {
+    return UNKNOWN_ERROR_MSG;
+  }
+
+  const isUserFacing = !!get(originalError, 'isUserFacing', false);
+  if (isUserFacing) {
+    return originalError.message;
+  }
+
+  return UNKNOWN_ERROR_MSG;
 };
 
 export const formatError = (error: GraphQLError): GraphQLFormattedError => {

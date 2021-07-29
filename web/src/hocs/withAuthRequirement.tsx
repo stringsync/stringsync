@@ -1,5 +1,5 @@
 import { message } from 'antd';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import { Fallback } from '../components/Fallback';
@@ -7,25 +7,20 @@ import { gtEqAdmin, gtEqStudent, gtEqTeacher, UserRole } from '../domain';
 import { isLoggedInSelector, RootState } from '../store';
 import { AuthRequirement } from '../util/types';
 
-const isMeetingAuthReqs = (
-  authReqs: AuthRequirement,
-  isAuthPending: boolean,
-  isLoggedIn: boolean,
-  userRole: UserRole
-) => {
+const isMeetingAuthReqs = (authReqs: AuthRequirement, isLoggedIn: boolean, userRole: UserRole) => {
   switch (authReqs) {
     case AuthRequirement.NONE:
       return true;
     case AuthRequirement.LOGGED_IN:
-      return !isAuthPending && isLoggedIn;
+      return isLoggedIn;
     case AuthRequirement.LOGGED_OUT:
-      return !isAuthPending && !isLoggedIn;
+      return !isLoggedIn;
     case AuthRequirement.LOGGED_IN_AS_STUDENT:
-      return !isAuthPending && isLoggedIn && gtEqStudent(userRole);
+      return isLoggedIn && gtEqStudent(userRole);
     case AuthRequirement.LOGGED_IN_AS_TEACHER:
-      return !isAuthPending && isLoggedIn && gtEqTeacher(userRole);
+      return isLoggedIn && gtEqTeacher(userRole);
     case AuthRequirement.LOGGED_IN_AS_ADMIN:
-      return !isAuthPending && isLoggedIn && gtEqAdmin(userRole);
+      return isLoggedIn && gtEqAdmin(userRole);
     default:
       // fail open for unhandled authReqs
       return true;
@@ -39,7 +34,6 @@ export const withAuthRequirement = (authReqs: AuthRequirement) =>
       const isLoggedIn = useSelector<RootState, boolean>(isLoggedInSelector);
       const userRole = useSelector<RootState, UserRole>((state) => state.auth.user.role);
       const history = useHistory();
-      const meetsAuthReqs = useRef(false);
 
       const returnToRoute = useSelector<RootState, string>((state) => {
         const returnToRoute = state.history.returnToRoute;
@@ -47,10 +41,10 @@ export const withAuthRequirement = (authReqs: AuthRequirement) =>
         return historyRoute === returnToRoute ? '/library' : returnToRoute;
       });
 
-      meetsAuthReqs.current = isMeetingAuthReqs(authReqs, isAuthPending, isLoggedIn, userRole);
+      const meetsAuthReqs = isMeetingAuthReqs(authReqs, isLoggedIn, userRole);
 
       useEffect(() => {
-        if (isAuthPending || meetsAuthReqs.current) {
+        if (isAuthPending || meetsAuthReqs) {
           return;
         }
         // when the current session fails to meet auth
@@ -80,6 +74,6 @@ export const withAuthRequirement = (authReqs: AuthRequirement) =>
         }
       }, [history, isAuthPending, isLoggedIn, meetsAuthReqs, returnToRoute]);
 
-      return meetsAuthReqs.current ? <Component {...props} /> : <Fallback />;
+      return meetsAuthReqs ? <Component {...props} /> : <Fallback />;
     };
   };
