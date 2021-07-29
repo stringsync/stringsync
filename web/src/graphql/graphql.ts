@@ -1,4 +1,5 @@
 import { extractFiles } from 'extract-files';
+import { UnknownError } from '../errors';
 import { Mutation, Query } from './graphqlTypes';
 import { RequestType, Response } from './types';
 
@@ -56,6 +57,12 @@ export const graphql = async <
       credentials: 'include',
       mode: 'cors',
     });
+
+    const contentType = res.headers.get('content-type');
+    if (!contentType?.toLowerCase().includes('application/json')) {
+      throw new UnknownError();
+    }
+
     return await res.json();
   } catch (error) {
     // Allow callers to treat misc errors as graphql errors,
