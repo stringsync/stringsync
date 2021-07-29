@@ -9,6 +9,10 @@ import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 import { RootState } from '../../store';
 import { Menu } from './Menu';
 
+const metas = document.getElementsByTagName('meta');
+const version = metas.namedItem('version')?.content || '';
+export const VERSION = version ? `v${version}` : 'v?.?,?';
+
 const StyledLayout = styled(Layout)`
   && {
     min-height: 100vh;
@@ -27,6 +31,8 @@ const StyledHeader = styled(Layout.Header)`
 
 const StyledFooter = styled(Layout.Footer)`
   text-align: center;
+  font-size: 10px;
+  color: ${(props) => props.theme['@muted-color']};
 `;
 
 const Lane = styled.div`
@@ -88,7 +94,7 @@ export const DefaultLayout: React.FC = (props) => {
       </Layout.Content>
       {isGtMdViewport && (
         <StyledFooter>
-          <Lane>StringSync LLC © 2021</Lane>
+          <Lane>{VERSION}</Lane>
         </StyledFooter>
       )}
     </StyledLayout>
