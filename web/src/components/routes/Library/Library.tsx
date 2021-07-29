@@ -1,4 +1,5 @@
 import { CaretUpOutlined, CloseCircleOutlined, LoadingOutlined, SearchOutlined } from '@ant-design/icons';
+import { useMachine } from '@xstate/react';
 import { Affix, Alert, BackTop, Button, Input, List, Row } from 'antd';
 import CheckableTag from 'antd/lib/tag/CheckableTag';
 import { isEqual, uniq, without } from 'lodash';
@@ -7,20 +8,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Tag } from '../../../domain';
-import { $queries, NotationEdgeObject, QueryNotationsArgs, toUserRole } from '../../../graphql';
 import { Layout, withLayout } from '../../../hocs';
-import { useDebounce, useEffectOnce, useIntersection, usePrevious } from '../../../hooks';
+import { useDebounce, useEffectOnce, useIntersection } from '../../../hooks';
 import { AppDispatch, getTags, RootState } from '../../../store';
 import { compose } from '../../../util/compose';
-import { getInitialPageInfo } from '../../../util/pager';
 import { scrollToTop } from '../../../util/scrollToTop';
+import { libraryMachine, libraryModel } from './libraryMachine';
 import { NotationCard } from './NotationCard';
-import { LibraryStatus, NotationPreview } from './types';
 
 const QUERY_DEBOUNCE_DELAY_MS = 500;
 const TAG_IDS_DEBOUNCE_DELAY_MS = 1000;
 const CLEAR_ERRORS_ANIMATION_DELAY_MS = 500;
-const PAGE_SIZE = 9;
 const LOADER_TRIGGER_ID = 'loader-trigger';
 
 const Outer = styled.div<{ xs: boolean }>`
@@ -82,110 +80,42 @@ const BackTopButton = styled.div`
 
 const normalizeTagIds = (tagIds: string[]) => uniq(tagIds).sort();
 
-const toNotationPreview = (edge: NotationEdgeObject): NotationPreview => {
-  const role = toUserRole(edge.node.transcriber.role);
-  const transcriber = { ...edge.node.transcriber, role };
-  return { ...edge.node, transcriber } as NotationPreview;
-};
-
 const enhance = compose(withLayout(Layout.DEFAULT));
 
 type Props = {};
 
 export const Library: React.FC<Props> = enhance(() => {
+  const [state, send] = useMachine(libraryMachine);
+  const isIdle = state.value === 'idle';
+  const isLoading = state.matches('streaming.loading');
+  const hasErrors = !!state.context.error;
+  const isDone = state.done;
+  const hasLoaded = state.context.hasLoadedFirstPage;
+
   const dispatch = useDispatch<AppDispatch>();
   const xs = useSelector<RootState, boolean>((state) => state.viewport.xs);
   const sm = useSelector<RootState, boolean>((state) => state.viewport.sm);
   const tags = useSelector<RootState, Tag[]>((state) => state.tag.tags);
 
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [status, setStatus] = useState(LibraryStatus.READY);
-  const [notations, setNotations] = useState(new Array<NotationPreview>());
-  const [pageInfo, setPageInfo] = useState(getInitialPageInfo());
-  const [errors, setErrors] = useState(new Array<Error>());
-
-  const ready = useCallback(() => {
-    setStatus(LibraryStatus.READY);
-  }, []);
-
-  const loading = () => {
-    setStatus(LibraryStatus.LOADING);
-  };
-
-  const loaded = () => {
-    setStatus(LibraryStatus.LOADED);
-  };
-
-  const resetLibrary = () => {
-    setNotations([]);
-    setErrors([]);
-    setPageInfo(getInitialPageInfo());
-    setIsInitialized(false);
-    ready();
-  };
-
-  const clearErrors = () => {
-    setErrors([]);
-    ready();
-  };
-
-  const loadMoreNotations = useCallback(async (args: QueryNotationsArgs) => {
-    setErrors([]);
-    loading();
-
-    try {
-      const { data, errors } = await $queries.notations(args);
-      if (errors) {
-        throw errors;
-      }
-      const connection = data.notations;
-      // the server sorts by ascending cursor, but we're pagingating backwards
-      // this is correct according to spec:
-      // https://relay.dev/graphql/connections.htm#sec-Backward-pagination-arguments
-      const nextNotations = connection.edges.map(toNotationPreview).reverse();
-      setNotations((prevNotations) => prevNotations.concat(nextNotations));
-      setPageInfo({
-        startCursor: connection.pageInfo.startCursor || null,
-        endCursor: connection.pageInfo.endCursor || null,
-        hasNextPage: connection.pageInfo.hasNextPage,
-        hasPreviousPage: connection.pageInfo.hasPreviousPage,
-      });
-    } catch (e) {
-      setErrors(Array.isArray(e) ? e : [e]);
-    } finally {
-      loaded();
-      setIsInitialized(true);
-    }
-  }, []);
-
   const [query, setQuery] = useState('');
   const [tagIds, setTagIds] = useState(new Array<string>());
+  const [affixed, setAffixed] = useState(false);
+
   const debouncedQuery = useDebounce(query, QUERY_DEBOUNCE_DELAY_MS);
   const debouncedTagIds = useDebounce(tagIds, TAG_IDS_DEBOUNCE_DELAY_MS);
   const isQueryDebouncing = !isEqual(query, debouncedQuery);
   const isTagIdsDebouncing = !isEqual(tagIds, debouncedTagIds);
-  const [affixed, setAffixed] = useState(false);
-  const isLoaderTriggerVisible = useIntersection(LOADER_TRIGGER_ID);
-  const prevIsLoaderTriggerVisible = usePrevious(isLoaderTriggerVisible);
-  const errorMessage = errors.map((error) => error.message).join('; ');
-  const hasErrors = errors.length > 0;
-  const isLoading = status === LibraryStatus.LOADING;
-  const isReady = status === LibraryStatus.READY;
-  const hasSearchTerm = query.length > 0 || tagIds.length > 0;
+  const isSearchTermDebouncing = isQueryDebouncing || isTagIdsDebouncing;
 
+  const hasSearchTerm = query.length > 0 || tagIds.length > 0;
   const tagIdsSet = useMemo(() => new Set(tagIds), [tagIds]);
   const isTagChecked = useCallback((tagId: string) => tagIdsSet.has(tagId), [tagIdsSet]);
 
-  const onAffixChange = (affixed?: boolean) => {
-    setAffixed(!!affixed);
-  };
+  const isLoaderTriggerVisible = useIntersection(LOADER_TRIGGER_ID);
 
   const onQueryChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     setQuery(event.target.value);
     scrollToTop({ duration: 0 });
-    if (isInitialized) {
-      resetLibrary();
-    }
   };
 
   const onTagIdsChange = (tagId: string) => (isChecked: boolean) => {
@@ -199,21 +129,21 @@ export const Library: React.FC<Props> = enhance(() => {
       scrollToTop({ duration: 0 });
       setTagIds(nextTagIds);
     }
-    if (isInitialized) {
-      resetLibrary();
-    }
   };
 
   const onSearchTermClear: MouseEventHandler<HTMLSpanElement> = (event) => {
     setQuery('');
     setTagIds([]);
-    if (isInitialized) {
-      resetLibrary();
-    }
+  };
+
+  const onAffixChange = (affixed?: boolean) => {
+    setAffixed(!!affixed);
   };
 
   const onAlertClose = () => {
-    setTimeout(clearErrors, CLEAR_ERRORS_ANIMATION_DELAY_MS);
+    setTimeout(() => {
+      send(libraryModel.events.loadPage());
+    }, CLEAR_ERRORS_ANIMATION_DELAY_MS);
   };
 
   useEffectOnce(() => {
@@ -221,39 +151,20 @@ export const Library: React.FC<Props> = enhance(() => {
   });
 
   useEffect(() => {
-    if (
-      isLoaderTriggerVisible &&
-      isReady &&
-      !hasErrors &&
-      !isQueryDebouncing &&
-      !isTagIdsDebouncing &&
-      pageInfo.hasNextPage
-    ) {
-      loadMoreNotations({
-        last: PAGE_SIZE,
-        before: pageInfo.startCursor,
-        query: debouncedQuery.length ? debouncedQuery : null,
-        tagIds: debouncedTagIds.length ? debouncedTagIds : null,
-      });
+    if (isIdle && !isSearchTermDebouncing) {
+      send(libraryModel.events.loadPage());
     }
-  }, [
-    debouncedQuery,
-    debouncedTagIds,
-    hasErrors,
-    isLoaderTriggerVisible,
-    isReady,
-    isQueryDebouncing,
-    isTagIdsDebouncing,
-    loadMoreNotations,
-    pageInfo.hasNextPage,
-    pageInfo.startCursor,
-  ]);
+  }, [send, isIdle, isSearchTermDebouncing]);
 
   useEffect(() => {
-    if (prevIsLoaderTriggerVisible && !isLoaderTriggerVisible) {
-      ready();
+    if (isLoaderTriggerVisible) {
+      send(libraryModel.events.loadPage());
     }
-  }, [prevIsLoaderTriggerVisible, isLoaderTriggerVisible, ready]);
+  }, [send, isLoaderTriggerVisible]);
+
+  useEffect(() => {
+    send(libraryModel.events.setQueryArgs(query, tagIds));
+  }, [send, query, tagIds]);
 
   return (
     <Outer data-testid="library" xs={xs}>
@@ -289,8 +200,7 @@ export const Library: React.FC<Props> = enhance(() => {
           )}
         </Row>
       </>
-
-      {isInitialized && (
+      {hasLoaded && (
         <>
           <br />
           <br />
@@ -298,7 +208,7 @@ export const Library: React.FC<Props> = enhance(() => {
           <List
             grid={{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 3 }}
             style={{ padding: xs || sm ? '16px' : 0, border: '1px solid rgba(255,255,255,0)' }}
-            dataSource={notations}
+            dataSource={state.context.notations}
             rowKey={(notation) => notation.id}
             renderItem={(notation) => (
               <List.Item>
@@ -310,32 +220,25 @@ export const Library: React.FC<Props> = enhance(() => {
           />
         </>
       )}
-
       {/* When this is visible, trigger loading  */}
       <div id={LOADER_TRIGGER_ID}></div>
       {hasErrors && (
         <AlertOuter xs={xs}>
-          <Alert showIcon type="error" message={errorMessage} closeText="try again" onClose={onAlertClose} />
+          <Alert showIcon type="error" message={state.context.error} closeText="try again" onClose={onAlertClose} />
         </AlertOuter>
       )}
-
       <br />
       <br />
-
-      {pageInfo.hasNextPage && (
-        <Row justify="center">{isLoading || !isInitialized ? <LoadingIcon /> : <InvisibleLoadingIcon />}</Row>
-      )}
-
-      {!pageInfo.hasNextPage && (
+      <Row justify="center">{isIdle || isLoading ? <LoadingIcon /> : <InvisibleLoadingIcon />}</Row>
+      {isDone && (
         <>
-          {notations.length > 0 && (
+          {state.context.notations.length > 0 && (
             <Row justify="center">
               <NoMore>no more content</NoMore>
             </Row>
           )}
         </>
       )}
-
       <BackTop>
         <BackTopButton>
           <CaretUpOutlined />
