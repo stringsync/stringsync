@@ -174,7 +174,7 @@ async function testweb() {
 }
 
 async function cdkdeploy() {
-  await cmd('yarn', ['cdk', 'deploy'], { reject: false, cwd: Project.AWS });
+  await cmd('yarn', ['cdk', 'deploy', '--all'], { reject: false, cwd: Project.AWS });
 }
 
 async function admin() {
