@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import videojs from 'video.js';
+import React from 'react';
+import videojs, { VideoJsPlayer } from 'video.js';
 
 const DEFAULT_PLAYER_OPTIONS: videojs.PlayerOptions = {
   controls: true,
@@ -13,34 +13,31 @@ type Props = {
 };
 
 export const Video: React.FC<Props> = (props) => {
-  const videoEl = useRef<HTMLVideoElement>(null);
+  const videoRef = React.useRef(null);
+  const { playerOptions } = props;
 
-  const video = videoEl.current;
-  const { playerOptions, onPlayerReady, beforePlayerDestroy } = props;
+  // This seperate functional component fixes the removal of the videoelement
+  // from the DOM when calling the dispose() method on a player
+  const VideoHtml: React.FC = () => (
+    <div data-vjs-player>
+      <video ref={videoRef} className="video-js vjs-big-play-centered" />
+    </div>
+  );
 
-  useEffect(() => {
-    const video = videoEl.current;
-    if (!video) {
-      return;
+  React.useEffect(() => {
+    const videoElement = videoRef.current;
+    let player: VideoJsPlayer;
+    if (videoElement) {
+      player = videojs(videoElement, { ...DEFAULT_PLAYER_OPTIONS, ...playerOptions }, () => {
+        console.log('player is ready');
+      });
     }
-
-    const player = videojs(video, {
-      ...DEFAULT_PLAYER_OPTIONS,
-      ...playerOptions,
-    });
-
-    player.ready(() => {
-      if (onPlayerReady) {
-        onPlayerReady(player);
-      }
-    });
-
     return () => {
-      if (beforePlayerDestroy) {
-        beforePlayerDestroy(player);
+      if (player) {
+        player.dispose();
       }
     };
-  }, [video, playerOptions, onPlayerReady, beforePlayerDestroy]);
+  }, [playerOptions]);
 
-  return <video className="video-js" ref={videoEl}></video>;
+  return <VideoHtml />;
 };

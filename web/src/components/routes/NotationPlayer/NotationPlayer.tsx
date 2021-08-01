@@ -13,9 +13,16 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
   return (
     <div>
+      {params.id}
+      <hr />
       <Video
         playerOptions={{
-          src: 'https://d2w1rk200g2ur4.cloudfront.net/79b928a4-fcf6-412e-a96f-f251e7e14c4f/hls/z3HrPy8P.m3u8',
+          sources: [
+            {
+              src: 'https://d2w1rk200g2ur4.cloudfront.net/79b928a4-fcf6-412e-a96f-f251e7e14c4f/hls/z3HrPy8P.m3u8',
+              type: 'application/x-mpegURL',
+            },
+          ],
         }}
       />
     </div>
