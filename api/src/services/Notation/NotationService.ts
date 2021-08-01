@@ -65,16 +65,20 @@ export class NotationService {
   }
 
   private getThumbnailFilepath(originalFilename: string, notation: Notation): string {
-    const ext = path.extname(originalFilename);
+    const ext = this.getExtName(originalFilename);
     return `notations/thumbnail/${notation.id}${ext}`;
   }
 
   private getVideoFilepath(originalFilename: string, notation: Notation): string {
-    const ext = path.extname(originalFilename);
+    const ext = this.getExtName(originalFilename);
     return `${notation.id}${ext}`;
   }
 
   private getThumbnailUrl(thumbnailKey: string): string {
     return `https://${this.config.MEDIA_CDN_DOMAIN_NAME}/${thumbnailKey}`;
+  }
+
+  private getExtName(originalFilename: string): string {
+    return path.extname(originalFilename).toLowerCase();
   }
 }

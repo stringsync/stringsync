@@ -19,7 +19,6 @@ export class Vod extends cdk.Construct {
 
     this.template = new cfninc.CfnInclude(scope, 'VodTemplate', {
       templateFile: 'templates/vod.yml',
-      preserveLogicalIds: true,
       parameters: {
         AdminEmail: props.adminEmail,
         EnableSns: props.enableSns ? 'Yes' : 'No',

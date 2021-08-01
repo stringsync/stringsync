@@ -116,6 +116,9 @@ Mappings:
 Conditions:
   Metrics: !Equals [!FindInMap [AnonymousData, SendAnonymousData, Data], Yes]
   IsMediaPackageEnabled: !Equals [!Ref EnableMediaPackage, Yes]
+  IsFrameCaptureEnabled: !Equals [!Ref FrameCapture, Yes]
+  IsSnsEnabled: !Equals [!Ref EnableSns, Yes]
+  IsSqsEnabled: !Equals [!Ref EnableSqs, Yes]
 
 Resources:
   CustomResourceRole:
@@ -729,7 +732,10 @@ Resources:
           WorkflowName: !Ref AWS::StackName
           Source: !Ref Source
           Destination: !Ref Destination
-          FrameCapture: !Ref FrameCapture
+          FrameCapture: !If
+            - IsFrameCaptureEnabled
+            - 'true'
+            - 'false'
           ArchiveSource: !Ref Glacier
           MediaConvert_Template_2160p: !If
             - IsMediaPackageEnabled
@@ -744,10 +750,19 @@ Resources:
             - !Sub '${AWS::StackName}_Ott_720p_Avc_Aac_16x9_mvod_no_preset'
             - !Sub '${AWS::StackName}_Ott_720p_Avc_Aac_16x9_qvbr_no_preset'
           CloudFront: !GetAtt CloudFront.DomainName
-          EnableMediaPackage: !Ref EnableMediaPackage
+          EnableMediaPackage: !If
+            - IsMediaPackageEnabled
+            - 'true'
+            - 'false'
           InputRotate: DEGREE_0
-          EnableSns: !Ref EnableSns
-          EnableSqs: !Ref EnableSqs
+          EnableSns: !If
+            - IsSnsEnabled
+            - 'true'
+            - 'false'
+          EnableSqs: !If
+            - IsSqsEnabled
+            - 'true'
+            - 'false'
           AcceleratedTranscoding: !Ref AcceleratedTranscoding
 
   MediainfoRole:
