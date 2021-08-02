@@ -1,5 +1,5 @@
 import { LoadingOutlined } from '@ant-design/icons';
-import { Alert, Row } from 'antd';
+import { Alert, Col, Row } from 'antd';
 import React, { useState } from 'react';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -76,18 +76,24 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
       )}
 
       {!isLoading && !hasErrors && notation && (
-        <>
-          <Video
-            playerOptions={{
-              sources: [
-                {
-                  src: notation?.videoUrl || '',
-                  type: 'application/x-mpegURL',
-                },
-              ],
-            }}
-          />
-        </>
+        <Row>
+          <Col>
+            <Video
+              playerOptions={{
+                sources: [
+                  {
+                    src: notation?.videoUrl || '',
+                    type: 'application/x-mpegURL',
+                  },
+                ],
+              }}
+            />
+            <div>comments</div>
+          </Col>
+          <Col>
+            <div>notation</div>
+          </Col>
+        </Row>
       )}
     </div>
   );
