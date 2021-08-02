@@ -1,4 +1,5 @@
 export enum Layout {
   DEFAULT = 'DEFAULT',
+  DEFAULT_LANELESS = 'DEFAULT_LANELESS',
   NONE = 'NONE',
 }

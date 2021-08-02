@@ -46,7 +46,11 @@ const Offline = styled.em`
   color: ${(props) => props.theme['@muted']};
 `;
 
-export const DefaultLayout: React.FC = (props) => {
+type Props = {
+  withContentLane: boolean;
+};
+
+export const DefaultLayout: React.FC<Props> = (props) => {
   const location = useLocation();
   const isGtMdViewport = useSelector<RootState, boolean>(
     (state) => state.viewport.lg || state.viewport.xl || state.viewport.xxl
@@ -89,9 +93,7 @@ export const DefaultLayout: React.FC = (props) => {
           </Row>
         </Lane>
       </StyledHeader>
-      <Layout.Content>
-        <Lane>{props.children}</Lane>
-      </Layout.Content>
+      <Layout.Content>{props.withContentLane ? <Lane>{props.children}</Lane> : props.children}</Layout.Content>
       {isGtMdViewport && (
         <StyledFooter>
           <Lane>{VERSION}</Lane>

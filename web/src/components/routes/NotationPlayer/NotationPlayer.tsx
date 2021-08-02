@@ -15,7 +15,7 @@ const LoadingIcon = styled(LoadingOutlined)`
   color: ${(props) => props.theme['@border-color']};
 `;
 
-const enhance = compose(withLayout(Layout.DEFAULT));
+const enhance = compose(withLayout(Layout.DEFAULT_LANELESS));
 
 interface Props {}
 
@@ -57,19 +57,21 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
         <>
           <br />
           <br />
-          <Alert
-            showIcon
-            type="error"
-            message="error"
-            description={
-              <>
-                {errors.map((error, ndx) => (
-                  <div key={ndx}>{error}</div>
-                ))}
-                <Link to="/library">go to library</Link>
-              </>
-            }
-          />
+          <Row justify="center">
+            <Alert
+              showIcon
+              type="error"
+              message="error"
+              description={
+                <>
+                  {errors.map((error, ndx) => (
+                    <div key={ndx}>{error}</div>
+                  ))}
+                  <Link to="/library">go to library</Link>
+                </>
+              }
+            />
+          </Row>
         </>
       )}
 

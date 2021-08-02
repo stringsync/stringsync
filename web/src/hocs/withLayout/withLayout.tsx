@@ -3,10 +3,12 @@ import { DefaultLayout } from './DefaultLayout';
 import { NoneLayout } from './NoneLayout';
 import { Layout } from './types';
 
-const getLayout = (layout: Layout) => {
+const getLayout = (layout: Layout): React.FC => {
   switch (layout) {
     case Layout.DEFAULT:
-      return DefaultLayout;
+      return (props) => <DefaultLayout withContentLane>{props.children}</DefaultLayout>;
+    case Layout.DEFAULT_LANELESS:
+      return (props) => <DefaultLayout withContentLane={false}>{props.children}</DefaultLayout>;
     case Layout.NONE:
       return NoneLayout;
     default:
