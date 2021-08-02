@@ -14,7 +14,7 @@ type Props = {
 
 export const Video: React.FC<Props> = (props) => {
   const videoRef = React.useRef(null);
-  const { playerOptions } = props;
+  const { playerOptions, onPlayerReady, beforePlayerDestroy } = props;
 
   // This seperate functional component fixes the removal of the videoelement
   // from the DOM when calling the dispose() method on a player
@@ -25,19 +25,27 @@ export const Video: React.FC<Props> = (props) => {
   );
 
   React.useEffect(() => {
-    const videoElement = videoRef.current;
+    const video = videoRef.current;
     let player: VideoJsPlayer;
-    if (videoElement) {
-      player = videojs(videoElement, { ...DEFAULT_PLAYER_OPTIONS, ...playerOptions }, () => {
-        console.log('player is ready');
+    if (video) {
+      player = videojs(video, { ...DEFAULT_PLAYER_OPTIONS, ...playerOptions });
+
+      player.ready(() => {
+        if (onPlayerReady) {
+          onPlayerReady(player);
+        }
       });
     }
     return () => {
-      if (player) {
-        player.dispose();
+      if (!player) {
+        return;
       }
+      if (beforePlayerDestroy) {
+        beforePlayerDestroy(player);
+      }
+      player.dispose();
     };
-  }, [playerOptions]);
+  }, [playerOptions, onPlayerReady, beforePlayerDestroy]);
 
   return <VideoHtml />;
 };
