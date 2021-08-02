@@ -52,7 +52,7 @@ export class ApiServer implements GraphqlServer {
       res.send('ok');
     });
 
-    app.use('/graphql', graphqlUploadExpress(), withGraphQL(schema));
+    app.use('/graphql', graphqlUploadExpress(), withGraphQL(this.logger, schema));
 
     app.use(withErrorHandler);
   }

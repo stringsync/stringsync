@@ -1,8 +1,6 @@
 import { GraphQLError, GraphQLFormattedError } from 'graphql';
 import { get } from 'lodash';
 import { UNKNOWN_ERROR_MSG } from '../../../errors';
-import { container } from '../../../inversify.config';
-import { TYPES } from '../../../inversify.constants';
 import { Logger } from '../../../util';
 
 const getMessage = (error: GraphQLError): string => {
@@ -19,8 +17,7 @@ const getMessage = (error: GraphQLError): string => {
   return UNKNOWN_ERROR_MSG;
 };
 
-export const formatError = (error: GraphQLError): GraphQLFormattedError => {
-  const logger = container.get<Logger>(TYPES.Logger);
+export const formatError = (logger: Logger) => (error: GraphQLError): GraphQLFormattedError => {
   logger.debug(error.message);
   const message = getMessage(error);
   const locations = error.locations;
