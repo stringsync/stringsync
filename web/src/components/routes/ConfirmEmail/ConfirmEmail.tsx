@@ -91,7 +91,7 @@ export const ConfirmEmail: React.FC = enhance(() => {
   });
 
   useEffect(() => {
-    const confirmationToken = queryParams.get('confirmation-token');
+    const confirmationToken = queryParams.get('confirmationToken');
     if (confirmationToken) {
       form.setFieldsValue({ confirmationToken });
     }

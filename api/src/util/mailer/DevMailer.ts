@@ -29,7 +29,7 @@ export class DevMailer implements Mailer {
     const newMail = { ...mail, to };
 
     this.logger.info(`redirecting email from '${oldMail.to}', to: '${newMail.to}'`);
-
-    await this.transporter.sendMail(newMail);
+    this.logger.info(`sending mail: ${JSON.stringify(newMail, null, 2)}`);
+    // await this.transporter.sendMail(newMail);
   }
 }
