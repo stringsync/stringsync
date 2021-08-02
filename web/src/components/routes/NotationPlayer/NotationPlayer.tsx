@@ -1,8 +1,19 @@
-import React from 'react';
+import { LoadingOutlined } from '@ant-design/icons';
+import { Alert, Row } from 'antd';
+import React, { useState } from 'react';
 import { useParams } from 'react-router';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+import { $queries, NotationObject } from '../../../graphql';
 import { Layout, withLayout } from '../../../hocs';
+import { useEffectOnce } from '../../../hooks';
 import { compose } from '../../../util/compose';
 import { Video } from '../../Video';
+
+const LoadingIcon = styled(LoadingOutlined)`
+  font-size: 5em;
+  color: ${(props) => props.theme['@border-color']};
+`;
 
 const enhance = compose(withLayout(Layout.DEFAULT));
 
@@ -10,21 +21,72 @@ interface Props {}
 
 const NotationPlayer: React.FC<Props> = enhance(() => {
   const params = useParams<{ id: string }>();
+  const [notation, setNotation] = useState<NotationObject | null>(null);
+  const [errors, setErrors] = useState(new Array<string>());
+  const [isLoading, setIsLoading] = useState(true);
+
+  const hasErrors = errors.length > 0;
+
+  useEffectOnce(() => {
+    (async () => {
+      const { data, errors } = await $queries.notation({ id: params.id });
+      if (errors) {
+        setErrors(errors.map((error) => error.message));
+      } else if (!data?.notation) {
+        setErrors([`no notation found with id '${params.id}'`]);
+      } else {
+        setNotation(data.notation);
+      }
+      setIsLoading(false);
+    })();
+  });
 
   return (
-    <div>
-      {params.id}
-      <hr />
-      <Video
-        playerOptions={{
-          sources: [
-            {
-              src: 'https://d2w1rk200g2ur4.cloudfront.net/79b928a4-fcf6-412e-a96f-f251e7e14c4f/hls/z3HrPy8P.m3u8',
-              type: 'application/x-mpegURL',
-            },
-          ],
-        }}
-      />
+    <div data-testid="notation-player">
+      {isLoading && (
+        <>
+          <br />
+          <br />
+          <Row justify="center">
+            <LoadingIcon />
+          </Row>
+        </>
+      )}
+
+      {!isLoading && hasErrors && (
+        <>
+          <br />
+          <br />
+          <Alert
+            showIcon
+            type="error"
+            message="error"
+            description={
+              <>
+                {errors.map((error, ndx) => (
+                  <div key={ndx}>{error}</div>
+                ))}
+                <Link to="/library">go to library</Link>
+              </>
+            }
+          />
+        </>
+      )}
+
+      {!isLoading && !hasErrors && notation && (
+        <>
+          <Video
+            playerOptions={{
+              sources: [
+                {
+                  src: notation?.videoUrl || '',
+                  type: 'application/x-mpegURL',
+                },
+              ],
+            }}
+          />
+        </>
+      )}
     </div>
   );
 });

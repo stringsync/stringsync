@@ -43,7 +43,7 @@ export const Routes: React.FC = () => {
           <Redirect to="/" />
         </Route>
         <Route path="/" exact component={Landing} />
-        <ReturnToRoute path="/library" component={Library} />
+        <ReturnToRoute exact path="/library" component={Library} />
         <ReturnToRoute exact path="/n/:id" component={NotationPlayer} />
         <ReturnToRoute exact path="/n/:id/edit" component={NotationEditor} />
         <Route path="/signup" component={Signup} />
