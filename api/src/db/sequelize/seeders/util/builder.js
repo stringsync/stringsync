@@ -8,6 +8,7 @@ const {
   NOUNS,
   ARTIST_NAMES,
   NOTATION_THUMBNAIL_URLS,
+  VIDEO_URL,
 } = require('./constants');
 
 const buildUser = (attrs) => ({
@@ -26,6 +27,7 @@ const buildNotation = (attrs) => ({
   artist_name: sample(ARTIST_NAMES),
   transcriber_id: randId(),
   thumbnail_url: sample(NOTATION_THUMBNAIL_URLS),
+  video_url: VIDEO_URL,
   private: false,
   ...attrs,
 });

@@ -2,6 +2,8 @@ const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
 const ENCRYPTED_PASSWORD = '$2b$10$SuOsN1G4fCftbp3yejwS.u2EARRSU5cVOCpWOARVuGAbTat5YOhC6'; // password = 'password'
 
+const VIDEO_URL = 'https://d2w1rk200g2ur4.cloudfront.net/79b928a4-fcf6-412e-a96f-f251e7e14c4f/hls/z3HrPy8P.m3u8';
+
 const USER_AVATAR_URLS = [
   'https://images.unsplash.com/photo-1543610892-0b1f7e6d8ac1',
   'https://images.unsplash.com/photo-1524593689594-aae2f26b75ab',
