@@ -1,6 +1,7 @@
-import { Cascade, Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { Cascade, Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { Matches, MaxLength, MinLength } from 'class-validator';
 import { Notation } from '../../../domain';
+import { TaggingEntity } from './TaggingEntity';
 import { UserEntity } from './UserEntity';
 
 @Entity({ tableName: 'notations' })
@@ -49,4 +50,10 @@ export class NotationEntity implements Notation {
 
   @ManyToOne(() => UserEntity, { cascade: [Cascade.ALL] })
   transcriber!: UserEntity;
+
+  @OneToMany(
+    () => TaggingEntity,
+    (tagging) => tagging.notation
+  )
+  taggings = new Collection<TaggingEntity>(this);
 }

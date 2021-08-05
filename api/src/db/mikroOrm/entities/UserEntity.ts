@@ -1,4 +1,4 @@
-import { Entity, Enum, OneToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+import { Collection, Entity, Enum, OneToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { IsEmail } from 'class-validator';
 import { User, UserRole, USER_ROLES } from '../../../domain';
 import { NotationEntity } from './NotationEntity';
@@ -65,5 +65,5 @@ export class UserEntity implements User {
     () => NotationEntity,
     (notation) => notation.transcriber
   )
-  notations!: NotationEntity[];
+  notations = new Collection<NotationEntity>(this);
 }
