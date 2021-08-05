@@ -4,9 +4,7 @@ export type Payload = JSONObject;
 
 export type Processor<P extends Payload> = (payload: P) => Promise<void>;
 
-export type JobOpts = {
-  intervalMs?: number;
-};
+export type JobOpts = { intervalMs?: number; attempts?: number };
 
 export interface Job<P extends Payload> {
   name: string;

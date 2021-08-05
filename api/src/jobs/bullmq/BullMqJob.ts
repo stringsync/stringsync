@@ -94,8 +94,9 @@ export class BullMqJob<P extends Payload> implements Job<P> {
   }
 
   private ensureQueue(): Queue<P> {
+    const opts = isNumber(this.opts.attempts) ? { attempts: this.opts.attempts } : {};
     if (!this.queue) {
-      this.queue = new Queue<P>(this.name, { connection: this.getConnection() });
+      this.queue = new Queue<P>(this.name, { connection: this.getConnection(), ...opts });
     }
     return this.queue;
   }
