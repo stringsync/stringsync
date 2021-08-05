@@ -64,7 +64,8 @@ export class MikroOrmDb implements Db {
   }
 
   async cleanup() {
-    await this.orm.em.nativeDelete(Tag, {});
+    await this.orm.em.nativeDelete(TagEntity, {});
+    await this.orm.em.nativeDelete(UserEntity, {});
     this.orm.em.clear();
   }
 }
