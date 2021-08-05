@@ -2,13 +2,13 @@ import { User } from '../../domain';
 import { container } from '../../inversify.config';
 import { TYPES } from '../../inversify.constants';
 import { createRandUser } from '../../testing';
-import { NotificationService } from './NotificationService';
+import { MailWriterService } from './MailWriterService';
 
 describe('NotificationService', () => {
-  let notificationService: NotificationService;
+  let mailWriterService: MailWriterService;
 
   beforeEach(() => {
-    notificationService = container.get<NotificationService>(TYPES.NotificationService);
+    mailWriterService = container.get<MailWriterService>(TYPES.MailWriterService);
   });
 
   describe('sendConfirmationEmail', () => {
@@ -19,7 +19,7 @@ describe('NotificationService', () => {
     });
 
     it('runs without crashing', async () => {
-      expect(() => notificationService.sendConfirmationEmail(user)).not.toThrow();
+      expect(() => mailWriterService.writeConfirmationEmail(user)).not.toThrow();
     });
   });
 });

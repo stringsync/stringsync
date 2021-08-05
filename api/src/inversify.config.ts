@@ -26,8 +26,8 @@ import { WorkerServer } from './server/worker';
 import {
   AuthService,
   HealthCheckerService,
+  MailWriterService,
   NotationService,
-  NotificationService,
   TaggingService,
   TagService,
   UserService,
@@ -78,7 +78,7 @@ container.bind<Logger>(TYPES.Logger).to(WinstonLogger);
 
 container.bind<AuthService>(TYPES.AuthService).to(AuthService);
 container.bind<HealthCheckerService>(TYPES.HealthCheckerService).to(HealthCheckerService);
-container.bind<NotificationService>(TYPES.NotificationService).to(NotificationService);
+container.bind<MailWriterService>(TYPES.MailWriterService).to(MailWriterService);
 container.bind<NotationService>(TYPES.NotationService).to(NotationService);
 container.bind<TagService>(TYPES.TagService).to(TagService);
 container.bind<TaggingService>(TYPES.TaggingService).to(TaggingService);

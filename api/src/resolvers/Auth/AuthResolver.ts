@@ -3,7 +3,8 @@ import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql
 import { User } from '../../domain';
 import { ForbiddenError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
-import { AuthRequirement, AuthService, NotificationService } from '../../services';
+import { JOBS } from '../../jobs';
+import { AuthRequirement, AuthService, MailWriterService } from '../../services';
 import { Logger } from '../../util';
 import { WithAuthRequirement } from '../middlewares';
 import { ResolverCtx } from '../types';
@@ -20,7 +21,7 @@ export class AuthResolver {
   constructor(
     @inject(TYPES.Logger) public logger: Logger,
     @inject(TYPES.AuthService) public authService: AuthService,
-    @inject(TYPES.NotificationService) public notificationService: NotificationService
+    @inject(TYPES.MailWriterService) public mailWriterService: MailWriterService
   ) {}
 
   @Query((returns) => UserObject, { nullable: true })
@@ -54,7 +55,10 @@ export class AuthResolver {
   @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_OUT))
   async signup(@Arg('input') input: SignupInput, @Ctx() ctx: ResolverCtx): Promise<User> {
     const user = await this.authService.signup(input.username, input.email, input.password);
-    await this.notificationService.sendConfirmationEmail(user);
+
+    const mail = this.mailWriterService.writeConfirmationEmail(user);
+    JOBS.SEND_MAIL.enqueue({ mail });
+
     this.persistLogin(ctx, user);
     return user;
   }
@@ -74,7 +78,8 @@ export class AuthResolver {
     try {
       const user = await this.authService.resetConfirmationToken(id);
       if (user) {
-        await this.notificationService.sendConfirmationEmail(user);
+        const mail = this.mailWriterService.writeConfirmationEmail(user);
+        JOBS.SEND_MAIL.enqueue({ mail });
       }
     } catch (e) {
       this.logger.error(`resendConfirmationEmail attempted for userId: ${id}, got error ${e}`);
@@ -91,13 +96,9 @@ export class AuthResolver {
   ): Promise<true> {
     const email = input.email;
 
-    try {
-      const user = await this.authService.refreshResetPasswordToken(email, ctx.getReqAt());
-      await this.notificationService.sendResetPasswordEmail(user);
-    } catch (e) {
-      this.logger.error(`could not send reset password email for '${email}', skipping:\n${e.message}`);
-      // TODO send an email saying that an attempt was made
-    }
+    const user = await this.authService.refreshResetPasswordToken(email, ctx.getReqAt());
+    const mail = this.mailWriterService.writeResetPasswordEmail(user);
+    JOBS.SEND_MAIL.enqueue({ mail });
 
     return true;
   }

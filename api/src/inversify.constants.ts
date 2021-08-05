@@ -12,7 +12,7 @@ export const TYPES = {
   NotationLoader: Symbol('NotationLoader'),
   NotationRepo: Symbol('NotationRepo'),
   NotationService: Symbol('NotationService'),
-  NotificationService: Symbol('NotificationService'),
+  MailWriterService: Symbol('MailWriterService'),
   Redis: Symbol('Redis'),
   TaggingRepo: Symbol('TaggingRepo'),
   TaggingService: Symbol('TaggingService'),

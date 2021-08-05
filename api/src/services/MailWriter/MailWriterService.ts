@@ -3,24 +3,24 @@ import url from 'url';
 import { Config } from '../../config';
 import { User } from '../../domain';
 import { TYPES } from '../../inversify.constants';
-import { Mailer } from '../../util';
+import { Mail } from '../../util';
 
 @injectable()
-export class NotificationService {
-  constructor(@inject(TYPES.Mailer) private mailer: Mailer, @inject(TYPES.Config) private config: Config) {}
+export class MailWriterService {
+  constructor(@inject(TYPES.Config) private config: Config) {}
 
-  async sendConfirmationEmail(user: User): Promise<void> {
+  writeConfirmationEmail(user: User): Mail {
     const confirmHref = this.getHref('/confirm-email', { confirmationToken: user.confirmationToken });
 
-    await this.mailer.send({
+    return {
       subject: 'Confirm your email for StringSync',
       from: this.config.INFO_EMAIL,
       to: user.email,
       html: `<p>Please confirm your email for <a href="${confirmHref}">StringSync</a>.</p>`,
-    });
+    };
   }
 
-  async sendResetPasswordEmail(user: User): Promise<void> {
+  writeResetPasswordEmail(user: User): Mail {
     if (!user.resetPasswordToken) {
       throw new Error('user must have a reset password token');
     }
@@ -30,12 +30,12 @@ export class NotificationService {
       'reset-password-token': user.resetPasswordToken,
     });
 
-    await this.mailer.send({
+    return {
       subject: 'Reset your password for StringSync',
       from: this.config.INFO_EMAIL,
       to: user.email,
       html: `<p>Reset your password at <a href="${resetPasswordHref}">StringSync</a>.</p>`,
-    });
+    };
   }
 
   private getHref<T extends NodeJS.Dict<string | number | boolean | string[] | number[] | boolean[] | null>>(
