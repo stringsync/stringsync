@@ -7,7 +7,7 @@ export class UserEntity implements User {
   @PrimaryKey()
   id!: string;
 
-  @Property({ nullable: true })
+  @Property({ nullable: true, defaultRaw: 'DEFAULT' })
   cursor!: number;
 
   @Property({ type: 'TIMESTAMP' })
