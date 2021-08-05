@@ -2,18 +2,14 @@ import { Queue, QueueScheduler, RedisOptions, Worker } from 'bullmq';
 import { isNumber } from 'lodash';
 import * as uuid from 'uuid';
 import { Config } from '../../config';
-import { container } from '../../inversify.config';
-import { TYPES } from '../../inversify.constants';
 import { Job, JobOpts, Payload, Processor } from '../types';
 
 export class BullMqJob<P extends Payload> implements Job<P> {
-  config: Config = container.get<Config>(TYPES.Config);
-
   private worker?: Worker<P>;
   private queue?: Queue<P>;
   private scheduler?: QueueScheduler;
 
-  constructor(public name: string, public process: Processor<P>, public opts: JobOpts) {}
+  constructor(public name: string, public process: Processor<P>, public config: Config, public opts: JobOpts) {}
 
   async startWorking(): Promise<void> {
     const queue = this.ensureQueue() as Queue<any>;

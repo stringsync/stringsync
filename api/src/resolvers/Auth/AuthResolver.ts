@@ -3,7 +3,7 @@ import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql
 import { User } from '../../domain';
 import { ForbiddenError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
-import { JOBS } from '../../jobs';
+import { SendMail } from '../../jobs';
 import { AuthRequirement, AuthService, MailWriterService } from '../../services';
 import { Logger } from '../../util';
 import { WithAuthRequirement } from '../middlewares';
@@ -21,7 +21,8 @@ export class AuthResolver {
   constructor(
     @inject(TYPES.Logger) public logger: Logger,
     @inject(TYPES.AuthService) public authService: AuthService,
-    @inject(TYPES.MailWriterService) public mailWriterService: MailWriterService
+    @inject(TYPES.MailWriterService) public mailWriterService: MailWriterService,
+    @inject(TYPES.SendMail) public sendMail: SendMail
   ) {}
 
   @Query((returns) => UserObject, { nullable: true })
@@ -57,7 +58,7 @@ export class AuthResolver {
     const user = await this.authService.signup(input.username, input.email, input.password);
 
     const mail = this.mailWriterService.writeConfirmationEmail(user);
-    JOBS.SEND_MAIL.enqueue({ mail });
+    await this.sendMail.job.enqueue({ mail });
 
     this.persistLogin(ctx, user);
     return user;
@@ -79,7 +80,7 @@ export class AuthResolver {
       const user = await this.authService.resetConfirmationToken(id);
       if (user) {
         const mail = this.mailWriterService.writeConfirmationEmail(user);
-        JOBS.SEND_MAIL.enqueue({ mail });
+        await this.sendMail.job.enqueue({ mail });
       }
     } catch (e) {
       this.logger.error(`resendConfirmationEmail attempted for userId: ${id}, got error ${e}`);
@@ -98,7 +99,7 @@ export class AuthResolver {
 
     const user = await this.authService.refreshResetPasswordToken(email, ctx.getReqAt());
     const mail = this.mailWriterService.writeResetPasswordEmail(user);
-    JOBS.SEND_MAIL.enqueue({ mail });
+    await this.sendMail.job.enqueue({ mail });
 
     return true;
   }

@@ -1,7 +1,7 @@
 import { Db } from '../db';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
-import { JOBS } from '../jobs';
+import { getAllJobs } from '../jobs';
 import { JobServer } from '../server';
 import { Logger } from '../util';
 
@@ -10,7 +10,7 @@ import { Logger } from '../util';
   await db.init();
 
   const logger = container.get<Logger>(TYPES.Logger);
-  const jobs = Object.values(JOBS);
+  const jobs = getAllJobs(container);
   await Promise.all(jobs.map((job) => job.startDispatching()));
 
   logger.info('job dispatcher started');

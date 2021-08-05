@@ -1,4 +1,4 @@
 export * from './bullmq';
-export * from './JOBS';
+export * from './getAllJobs';
 export * from './processors';
 export * from './types';

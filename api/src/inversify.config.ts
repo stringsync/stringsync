@@ -4,6 +4,7 @@ import 'reflect-metadata';
 import { Config, config } from './config';
 import { Db, DevSequelizeDb, SequelizeDb } from './db';
 import { TYPES } from './inversify.constants';
+import { AssociateVideoUrl, PulseCheck, SendMail } from './jobs';
 import {
   NotationLoader,
   NotationRepo,
@@ -142,4 +143,17 @@ container
 container
   .bind<TagResolver>(TagResolver)
   .toSelf()
+  .inSingletonScope();
+
+container
+  .bind<AssociateVideoUrl>(TYPES.AssociateVideoUrl)
+  .to(AssociateVideoUrl)
+  .inSingletonScope();
+container
+  .bind<PulseCheck>(TYPES.PulseCheck)
+  .to(PulseCheck)
+  .inSingletonScope();
+container
+  .bind<SendMail>(TYPES.SendMail)
+  .to(SendMail)
   .inSingletonScope();
