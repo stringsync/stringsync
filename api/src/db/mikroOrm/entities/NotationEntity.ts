@@ -3,7 +3,7 @@ import { Matches, MaxLength, MinLength } from 'class-validator';
 import { Notation } from '../../../domain';
 import { UserEntity } from './UserEntity';
 
-@Entity()
+@Entity({ tableName: 'notations' })
 export class NotationEntity implements Notation {
   @PrimaryKey()
   id!: string;
