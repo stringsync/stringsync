@@ -1,6 +1,7 @@
-import { Entity, Enum, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+import { Entity, Enum, OneToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { IsEmail } from 'class-validator';
 import { User, UserRole, USER_ROLES } from '../../../domain';
+import { NotationEntity } from './NotationEntity';
 
 @Entity({ tableName: 'users' })
 export class UserEntity implements User {
@@ -59,4 +60,10 @@ export class UserEntity implements User {
 
   @Property({ nullable: true })
   avatarUrl!: string | null;
+
+  @OneToMany(
+    () => NotationEntity,
+    (notation) => notation.transcriber
+  )
+  notations!: NotationEntity[];
 }
