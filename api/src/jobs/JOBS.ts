@@ -7,10 +7,11 @@ import {
   sendMail,
   SendMailPayload,
 } from './processors';
-import { Job } from './types';
 
-export const JOBS: Array<Job<any>> = [
-  new BullMqJob<AssociateVideoUrlPayload>('ASSOCIATE_VIDEO_URL', associateVideoUrl, { intervalMs: 60000 }),
-  new BullMqJob<PulseCheckPayload>('PULSE_CHECK', pulseCheck, { intervalMs: 60000 }),
-  new BullMqJob<SendMailPayload>('SEND_MAIL', sendMail, { attempts: 5 }),
-];
+export const JOBS = {
+  ASSOCIATE_VIDEO_URL: new BullMqJob<AssociateVideoUrlPayload>('ASSOCIATE_VIDEO_URL', associateVideoUrl, {
+    intervalMs: 60000,
+  }),
+  PULSE_CHECK: new BullMqJob<PulseCheckPayload>('PULSE_CHECK', pulseCheck, { intervalMs: 60000 }),
+  SEND_MAIL: new BullMqJob<SendMailPayload>('SEND_MAIL', sendMail, { attempts: 5 }),
+};
