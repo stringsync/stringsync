@@ -18,6 +18,8 @@
     "typegen": "graphql-codegen"
   },
   "dependencies": {
+    "@mikro-orm/core": "^4.5.7",
+    "@mikro-orm/postgresql": "^4.5.7",
     "altair-express-middleware": "^3.2.1",
     "aws-sdk": "^2.844.0",
     "bcrypt": "^5.0.0",

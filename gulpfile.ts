@@ -239,9 +239,9 @@ exports['installaws'] = installaws;
 exports['buildapp'] = buildapp;
 exports['buildnginx'] = series(installweb, buildnginx);
 
-exports['testall'] = series(gensecrets, testapi, testweb);
-exports['testapi'] = series(gensecrets, testapi);
-exports['testweb'] = series(gensecrets, testweb);
+exports['testall'] = series(gensecrets, buildapp, testapi, testweb);
+exports['testapi'] = series(gensecrets, buildapp, testapi);
+exports['testweb'] = series(gensecrets, buildapp, testweb);
 exports['extractreports'] = extractReports;
 
 exports['cdkdeploy'] = cdkdeploy;

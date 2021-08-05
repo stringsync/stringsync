@@ -6,7 +6,7 @@ import { NotImplementedError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { camelCaseKeys } from '../../repos/queries';
 import { Logger } from '../../util';
-import { Db, Task } from './../types';
+import { Db, Orm, Task } from './../types';
 import { NotationModel, TaggingModel, TagModel, UserModel } from './models';
 
 const namespace = createNamespace('transaction');
@@ -43,7 +43,9 @@ export class SequelizeDb implements Db {
   }
 
   async transaction(task: Task) {
-    await this.sequelize.transaction(task);
+    await this.sequelize.transaction(async () => {
+      await task({ type: Orm.Sequelize });
+    });
   }
 
   async closeConnection() {

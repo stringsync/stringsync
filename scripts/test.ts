@@ -20,13 +20,16 @@ const getTestCmd = (project: Project, ci: boolean, watch: boolean) => {
 
 const doTest = async (composeFile: string, project: Project, ci: boolean, watch: boolean) => {
   try {
-    await cmd(
+    const result = await cmd(
       'docker-compose',
       ['-f', composeFile, 'run', '--rm', 'test', bashC(...getTestCmd(project, ci, watch))].filter(identity),
       {
         shell: true,
       }
     );
+    if (result.failed || result.isCanceled) {
+      throw new Error(result.stderr);
+    }
     log(chalk.green(`${project} tests succeeded`));
   } catch (err) {
     log(chalk.red(`${project} tests failed`));
