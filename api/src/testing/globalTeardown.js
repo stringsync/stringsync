@@ -1,24 +1,28 @@
-const { Sequelize } = require('sequelize');
+const { MikroORM } = require('@mikro-orm/core');
 const { getWorkerDbNames } = require('./workers');
 
-// teardown worker dbs
+// create worker dbs
 module.exports = async () => {
-  const sequelize = new Sequelize({
-    dialect: 'postgres',
+  const orm = await MikroORM.init({
+    type: 'postgresql',
     host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    database: process.env.DB_NAME,
-    username: process.env.DB_USERNAME,
+    port: parseInt(process.env.DB_PORT),
+    dbName: process.env.DB_NAME,
+    user: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
-    logging: false,
+    discovery: {
+      requireEntitiesArray: false,
+      warnWhenNoEntities: false,
+    },
   });
 
+  const connection = orm.em.getConnection();
   const numWorkers = parseInt(process.env.JEST_NUM_WORKERS || '1');
   const workerDbNames = getWorkerDbNames(numWorkers);
   // only 1 user allowed to access main db at a time
   for (const workerDbName of workerDbNames) {
-    await sequelize.query(`DROP DATABASE IF EXISTS ${workerDbName}`);
+    await connection.execute(`DROP DATABASE IF EXISTS ${workerDbName}`);
   }
 
-  await sequelize.close();
+  await orm.close(true);
 };
