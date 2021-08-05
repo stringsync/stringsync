@@ -1,4 +1,4 @@
-import { MikroORM } from '@mikro-orm/core';
+import { MikroORM, UnderscoreNamingStrategy } from '@mikro-orm/core';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { inject, injectable } from 'inversify';
 import { Config } from '../../config';
@@ -7,7 +7,8 @@ import { TYPES } from '../../inversify.constants';
 import { camelCaseKeys } from '../../repos/queries';
 import { Logger } from '../../util';
 import { Db, Orm, Task } from '../types';
-import { Tag } from './entities';
+import { TagEntity } from './entities';
+import { UserEntity } from './entities/UserEntity';
 
 @injectable()
 export class MikroOrmDb implements Db {
@@ -27,7 +28,10 @@ export class MikroOrmDb implements Db {
       dbName: this.config.DB_NAME,
       user: this.config.DB_USERNAME,
       password: this.config.DB_PASSWORD,
-      entities: [Tag],
+      validate: true,
+      strict: true,
+      namingStrategy: UnderscoreNamingStrategy,
+      entities: [UserEntity, TagEntity],
     });
     this.didInit = true;
   }
