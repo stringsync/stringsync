@@ -1,5 +1,5 @@
 import { Collection, Entity, Enum, OneToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
-import { IsEmail } from 'class-validator';
+import { IsEmail, MaxLength, MinLength } from 'class-validator';
 import { User as DomainUser, UserRole } from '../../../domain';
 import { Notation } from './Notation';
 
@@ -19,6 +19,8 @@ export class User implements DomainUser {
 
   @Property()
   @Unique()
+  @MinLength(3)
+  @MaxLength(24)
   username!: string;
 
   @Property()

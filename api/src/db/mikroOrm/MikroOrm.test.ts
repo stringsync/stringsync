@@ -1,3 +1,4 @@
+import { validate } from 'class-validator';
 import { container } from '../../inversify.config';
 import { buildRandNotation, buildRandTag, buildRandUser } from '../../testing';
 import { randStr } from '../../util';
@@ -180,6 +181,12 @@ describe('mikro-orm', () => {
       expect(actualNotations).toHaveLength(2);
       expect(actualNotations[0].transcriberId).toBe(user.id);
       expect(actualNotations[1].transcriberId).toBe(user.id);
+    });
+
+    it('disallows empty names', async () => {
+      const user = new User(buildRandUser({ username: '' }));
+      const errors = await validate(user);
+      expect(errors).toHaveLength(1);
     });
   });
 });
