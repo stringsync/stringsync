@@ -1,10 +1,10 @@
 import { Collection, Entity, Enum, OneToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { IsEmail } from 'class-validator';
-import { User, UserRole, USER_ROLES } from '../../../domain';
-import { NotationEntity } from './NotationEntity';
+import { User as UserDomain, UserRole, USER_ROLES } from '../../../domain';
+import { Notation } from './Notation';
 
 @Entity({ tableName: 'users' })
-export class UserEntity implements User {
+export class User implements UserDomain {
   @PrimaryKey()
   id!: string;
 
@@ -62,8 +62,8 @@ export class UserEntity implements User {
   avatarUrl!: string | null;
 
   @OneToMany(
-    () => NotationEntity,
+    () => Notation,
     (notation) => notation.transcriber
   )
-  notations = new Collection<NotationEntity>(this);
+  notations = new Collection<Notation>(this);
 }

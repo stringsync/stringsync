@@ -7,7 +7,7 @@ import { TYPES } from '../../inversify.constants';
 import { camelCaseKeys } from '../../repos/queries';
 import { Logger } from '../../util';
 import { Db, Orm, Task } from '../types';
-import { NotationEntity, TagEntity, TaggingEntity, UserEntity } from './entities';
+import { Tag, Tagging } from './entities';
 
 @injectable()
 export class MikroOrmDb implements Db {
@@ -30,13 +30,13 @@ export class MikroOrmDb implements Db {
       validate: true,
       strict: true,
       namingStrategy: UnderscoreNamingStrategy,
-      entities: [UserEntity, TagEntity, NotationEntity, TaggingEntity],
+      entities: [Tag, Tagging],
       cache: { enabled: false },
     });
     this.didInit = true;
   }
 
-  private get orm(): MikroORM<PostgreSqlDriver> {
+  get orm(): MikroORM<PostgreSqlDriver> {
     if (typeof this._orm === 'undefined') {
       throw new InternalError('must call init before accessing the orm member');
     }
@@ -64,10 +64,8 @@ export class MikroOrmDb implements Db {
   }
 
   async cleanup() {
-    await this.orm.em.nativeDelete(TaggingEntity, {});
-    await this.orm.em.nativeDelete(UserEntity, {});
-    await this.orm.em.nativeDelete(NotationEntity, {});
-    await this.orm.em.nativeDelete(TagEntity, {});
+    await this.orm.em.nativeDelete(Tagging, {});
+    await this.orm.em.nativeDelete(Tag, {});
     this.orm.em.clear();
   }
 }

@@ -1,11 +1,10 @@
-import { Cascade, Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
+import { Cascade, Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { Matches, MaxLength, MinLength } from 'class-validator';
-import { Notation } from '../../../domain';
-import { TaggingEntity } from './TaggingEntity';
-import { UserEntity } from './UserEntity';
+import { Notation as NotationDomain } from '../../../domain';
+import { User } from './User';
 
 @Entity({ tableName: 'notations' })
-export class NotationEntity implements Notation {
+export class Notation implements NotationDomain {
   @PrimaryKey()
   id!: string;
 
@@ -48,12 +47,12 @@ export class NotationEntity implements Notation {
   @Property({ nullable: true })
   videoUrl!: string | null;
 
-  @ManyToOne(() => UserEntity, { cascade: [Cascade.ALL] })
-  transcriber!: UserEntity;
+  @ManyToOne(() => User, { cascade: [Cascade.ALL] })
+  transcriber!: User;
 
-  @OneToMany(
-    () => TaggingEntity,
-    (tagging) => tagging.notation
-  )
-  taggings = new Collection<TaggingEntity>(this);
+  // @OneToMany(
+  //   () => Tagging,
+  //   (tagging) => tagging.notation
+  // )
+  // taggings = new Collection<Tagging>(this);
 }
