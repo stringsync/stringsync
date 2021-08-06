@@ -47,6 +47,10 @@ export class MikroOrmDb implements Db {
     return this._orm;
   }
 
+  get em() {
+    return this.orm.em;
+  }
+
   async transaction(task: Task) {
     this.orm.em.transactional(async (em) => {
       await task({ type: Orm.MikroORM, em });

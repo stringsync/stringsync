@@ -1,4 +1,3 @@
-import { EntityManager } from '@mikro-orm/postgresql';
 import { container } from '../../inversify.config';
 import { buildRandNotation, buildRandTag, buildRandUser } from '../../testing';
 import { Tag, Tagging } from './entities';
@@ -13,7 +12,6 @@ import { MikroOrmDb } from './MikroOrmDb';
 describe('mikro-orm', () => {
   const id = Symbol('MikroOrmDb');
   let db: MikroOrmDb;
-  let em: EntityManager;
 
   beforeEach(async () => {
     container
@@ -22,7 +20,6 @@ describe('mikro-orm', () => {
       .inSingletonScope();
     db = container.get(id);
     await db.init();
-    em = db.orm.em;
   });
 
   afterEach(async () => {
@@ -35,10 +32,10 @@ describe('mikro-orm', () => {
     it('can create tag', async () => {
       const tag = new Tag({ name: 'foo' });
 
-      em.persist(tag);
-      await em.flush();
+      db.em.persist(tag);
+      await db.em.flush();
 
-      const actualTag = await em.findOne(Tag, { name: 'foo' });
+      const actualTag = await db.em.findOne(Tag, { name: 'foo' });
       expect(actualTag).not.toBeNull();
       expect(actualTag!.id).toBe(tag.id);
       expect(actualTag!.name).toBe(tag.name);
@@ -47,13 +44,13 @@ describe('mikro-orm', () => {
     it('can delete tag', async () => {
       const tag = new Tag({ name: 'foo' });
 
-      em.persist(tag);
-      await em.flush();
+      db.em.persist(tag);
+      await db.em.flush();
 
-      em.remove(tag);
-      await em.flush();
+      db.em.remove(tag);
+      await db.em.flush();
 
-      const actualTag = await em.findOne(Tag, { name: 'foo' });
+      const actualTag = await db.em.findOne(Tag, { name: 'foo' });
       expect(actualTag).toBeNull();
     });
 
@@ -62,10 +59,10 @@ describe('mikro-orm', () => {
       const tagging = new Tagging();
       tag.taggings.add(tagging);
 
-      em.persist(tag);
-      await em.flush();
+      db.em.persist(tag);
+      await db.em.flush();
 
-      const actualTagging = await em.findOne(Tagging, { tag });
+      const actualTagging = await db.em.findOne(Tagging, { tag });
       expect(actualTagging).not.toBeNull();
       expect(actualTagging!.id).toBe(tagging.id);
       expect(actualTagging!.tag.id).toBe(tag.id);
@@ -76,10 +73,10 @@ describe('mikro-orm', () => {
       const tagging = new Tagging();
       tag.taggings.add(tagging);
 
-      em.persist(tag);
-      await em.flush();
+      db.em.persist(tag);
+      await db.em.flush();
 
-      const actualTagging = await em.findOne(Tagging, { tagId: tag.id });
+      const actualTagging = await db.em.findOne(Tagging, { tagId: tag.id });
       expect(actualTagging).not.toBeNull();
       expect(actualTagging!.tagId).toBe(tag.id);
     });
@@ -91,16 +88,16 @@ describe('mikro-orm', () => {
       const transcriber = new User(buildRandUser());
       notation.transcriber.set(transcriber);
 
-      em.persist(notation);
-      await em.flush();
+      db.em.persist(notation);
+      await db.em.flush();
 
-      const actualNotation = await em.findOne(Notation, { id: notation.id });
+      const actualNotation = await db.em.findOne(Notation, { id: notation.id });
       expect(actualNotation).not.toBeNull();
       expect(actualNotation!.id).toBe(notation.id);
       expect(actualNotation!.transcriber.id).toBe(transcriber.id);
       expect(actualNotation!.transcriberId).toBe(transcriber.id);
 
-      const actualTranscriber = await em.findOne(User, { id: transcriber.id });
+      const actualTranscriber = await db.em.findOne(User, { id: transcriber.id });
       expect(actualTranscriber).not.toBeNull();
       expect(actualTranscriber!.id).toBe(transcriber.id);
     });
@@ -108,8 +105,8 @@ describe('mikro-orm', () => {
     it('will not create notations without a transcriber', async () => {
       const notation = new Notation(buildRandNotation());
 
-      em.persist(notation);
-      await expect(em.flush()).rejects.toThrowError();
+      db.em.persist(notation);
+      await expect(db.em.flush()).rejects.toThrowError();
     });
   });
 
@@ -117,12 +114,32 @@ describe('mikro-orm', () => {
     it('can create users', async () => {
       const user = new User(buildRandUser());
 
-      em.persist(user);
-      await em.flush();
+      db.em.persist(user);
+      await db.em.flush();
 
-      const actualUser = await em.findOne(User, { id: user.id });
+      const actualUser = await db.em.findOne(User, { id: user.id });
       expect(actualUser).not.toBeNull();
       expect(actualUser!.id).toBe(user.id);
+    });
+
+    it('can create a user with notations', async () => {
+      const user = new User(buildRandUser());
+      const notation1 = new Notation(buildRandNotation());
+      const notation2 = new Notation(buildRandNotation());
+      user.notations.add(notation1, notation2);
+
+      db.em.persist(user);
+      await db.em.flush();
+
+      const actualUser = await db.em.findOne(User, { id: user.id }, ['notations']);
+      expect(actualUser).not.toBeNull();
+      expect(actualUser!.notations.isInitialized()).toBeTrue();
+      expect(actualUser!.notations.contains(notation1)).toBeTrue();
+
+      const actualNotations = await db.em.find(Notation, { transcriberId: user.id });
+      expect(actualNotations).toHaveLength(2);
+      expect(actualNotations[0].transcriberId).toBe(user.id);
+      expect(actualNotations[1].transcriberId).toBe(user.id);
     });
   });
 });
