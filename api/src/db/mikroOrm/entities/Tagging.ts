@@ -17,7 +17,8 @@ export class Tagging implements DomainTagging {
   }
 
   set tagId(tagId: string) {
-    this.tag = Reference.create(new Tag({ id: tagId }));
+    const tag = new Tag({ id: tagId });
+    this.tag = Reference.create(tag);
   }
 
   @ManyToOne(() => Tag, { wrappedReference: true })

@@ -7,9 +7,7 @@ import { TYPES } from '../../inversify.constants';
 import { camelCaseKeys } from '../../repos/queries';
 import { Logger } from '../../util';
 import { Db, Orm, Task } from '../types';
-import { Tag, Tagging } from './entities';
-import { Notation } from './entities/Notation';
-import { User } from './entities/User';
+import { Notation, Tag, Tagging, User } from './entities';
 
 @injectable()
 export class MikroOrmDb implements Db {

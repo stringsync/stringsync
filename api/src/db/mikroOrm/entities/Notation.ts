@@ -2,6 +2,7 @@ import {
   Collection,
   Entity,
   IdentifiedReference,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryKey,
@@ -10,6 +11,7 @@ import {
 } from '@mikro-orm/core';
 import { IsNotEmpty, Matches, MaxLength, MinLength } from 'class-validator';
 import { Notation as DomainNotation } from '../../../domain';
+import { Tag } from './Tag';
 import { Tagging } from './Tagging';
 import { User } from './User';
 
@@ -72,6 +74,9 @@ export class Notation implements DomainNotation {
     (tagging) => tagging.notation
   )
   taggings = new Collection<Tagging>(this);
+
+  @ManyToMany({ entity: () => Tag, inversedBy: 'notations' })
+  tags = new Collection<Tag>(this);
 
   constructor(props: Partial<Notation> = {}) {
     Object.assign(this, props);

@@ -1,5 +1,6 @@
 import { container } from '../../inversify.config';
 import { buildRandNotation, buildRandTag, buildRandUser } from '../../testing';
+import { randStr } from '../../util';
 import { Tag, Tagging } from './entities';
 import { Notation } from './entities/Notation';
 import { User } from './entities/User';
@@ -107,6 +108,45 @@ describe('mikro-orm', () => {
 
       db.em.persist(notation);
       await expect(db.em.flush()).rejects.toThrowError();
+    });
+
+    it('adds timestamps', async () => {
+      const notation = new Notation(buildRandNotation());
+      const transcriber = new User(buildRandUser());
+      notation.transcriber.set(transcriber);
+
+      db.em.persist(notation);
+      await db.em.flush();
+
+      const actualNotation = await db.em.findOne(Notation, { id: notation.id });
+      expect(actualNotation).not.toBeNull();
+      expect(actualNotation!.createdAt).toBe(notation.createdAt);
+      expect(notation.createdAt).not.toBeNull();
+      expect(notation.updatedAt).not.toBeNull();
+      expect(notation.createdAt).toBe(notation.updatedAt);
+      expect(actualNotation!.createdAt).not.toBeNull();
+      expect(actualNotation!.updatedAt).not.toBeNull();
+      expect(actualNotation!.createdAt).toBe(actualNotation!.updatedAt);
+    });
+
+    it('can update a notation', async () => {
+      const notation = new Notation(buildRandNotation());
+      const transcriber = new User(buildRandUser());
+      notation.transcriber.set(transcriber);
+
+      db.em.persist(notation);
+      await db.em.flush();
+
+      const thumbnailUrl = `https://example.com/${randStr(8)}.jpg`;
+      notation.thumbnailUrl = thumbnailUrl;
+
+      db.em.persist(notation);
+      await db.em.flush();
+
+      const actualNotation = await db.em.findOne(Notation, { id: notation.id });
+      expect(actualNotation).not.toBeNull();
+      expect(actualNotation!.thumbnailUrl).toBe(thumbnailUrl);
+      expect(actualNotation!.updatedAt).toBeAfter(actualNotation!.createdAt);
     });
   });
 
