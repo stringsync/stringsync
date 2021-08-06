@@ -8,9 +8,13 @@ import { camelCaseKeys } from '../../repos/queries';
 import { Logger } from '../../util';
 import { Db, Orm, Task } from '../types';
 import { Tag, Tagging } from './entities';
+import { Notation } from './entities/Notation';
+import { User } from './entities/User';
 
 @injectable()
 export class MikroOrmDb implements Db {
+  ormType = Orm.MikroORM;
+
   private _orm: MikroORM<PostgreSqlDriver> | undefined = undefined;
   private didInit = false;
 
@@ -30,7 +34,7 @@ export class MikroOrmDb implements Db {
       validate: true,
       strict: true,
       namingStrategy: UnderscoreNamingStrategy,
-      entities: [Tag, Tagging],
+      entities: [Tag, Tagging, Notation, User],
       cache: { enabled: false },
     });
     this.didInit = true;
@@ -64,8 +68,10 @@ export class MikroOrmDb implements Db {
   }
 
   async cleanup() {
-    await this.orm.em.nativeDelete(Tagging, {});
     await this.orm.em.nativeDelete(Tag, {});
+    await this.orm.em.nativeDelete(Tagging, {});
+    await this.orm.em.nativeDelete(Notation, {});
+    await this.orm.em.nativeDelete(User, {});
     this.orm.em.clear();
   }
 }

@@ -14,6 +14,8 @@ Sequelize.useCLS(namespace);
 
 @injectable()
 export class SequelizeDb implements Db {
+  ormType = Orm.Sequelize;
+
   sequelize: Sequelize;
 
   constructor(@inject(TYPES.Logger) private logger: Logger, @inject(TYPES.Config) private config: Config) {

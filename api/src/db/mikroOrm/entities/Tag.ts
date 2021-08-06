@@ -1,14 +1,10 @@
 import { Collection, Entity, OneToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { MaxLength, MinLength } from 'class-validator';
-import { Tag as TagDomain } from '../../../domain';
+import { Tag as DomainTag } from '../../../domain';
 import { Tagging } from './Tagging';
 
-type TagProps = {
-  name: string;
-};
-
 @Entity({ tableName: 'tags' })
-export class Tag implements TagDomain {
+export class Tag implements DomainTag {
   @PrimaryKey()
   id!: string;
 
@@ -32,7 +28,7 @@ export class Tag implements TagDomain {
   // )
   // notations = new Collection<Notation>(this);
 
-  constructor(props: TagProps) {
-    this.name = props.name;
+  constructor(props: Partial<Tag> = {}) {
+    Object.assign(this, props);
   }
 }

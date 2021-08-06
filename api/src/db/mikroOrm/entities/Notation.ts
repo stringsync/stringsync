@@ -1,10 +1,20 @@
-import { Cascade, Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { Matches, MaxLength, MinLength } from 'class-validator';
-import { Notation as NotationDomain } from '../../../domain';
+import {
+  Collection,
+  Entity,
+  IdentifiedReference,
+  ManyToOne,
+  OneToMany,
+  PrimaryKey,
+  Property,
+  Reference,
+} from '@mikro-orm/core';
+import { IsNotEmpty, Matches, MaxLength, MinLength } from 'class-validator';
+import { Notation as DomainNotation } from '../../../domain';
+import { Tagging } from './Tagging';
 import { User } from './User';
 
 @Entity({ tableName: 'notations' })
-export class Notation implements NotationDomain {
+export class Notation implements DomainNotation {
   @PrimaryKey()
   id!: string;
 
@@ -38,8 +48,15 @@ export class Notation implements NotationDomain {
   @Property()
   private = true;
 
-  @Property()
-  transcriberId!: string;
+  @Property({ persist: false })
+  @IsNotEmpty()
+  get transcriberId(): string {
+    return this.transcriber.id;
+  }
+
+  set transcriberId(transcriberId: string) {
+    this.transcriber = Reference.create(new User({ id: transcriberId }));
+  }
 
   @Property({ nullable: true })
   thumbnailUrl!: string | null;
@@ -47,12 +64,16 @@ export class Notation implements NotationDomain {
   @Property({ nullable: true })
   videoUrl!: string | null;
 
-  @ManyToOne(() => User, { cascade: [Cascade.ALL] })
-  transcriber!: User;
+  @ManyToOne(() => User, { wrappedReference: true })
+  transcriber!: IdentifiedReference<User, 'id'>;
 
-  // @OneToMany(
-  //   () => Tagging,
-  //   (tagging) => tagging.notation
-  // )
-  // taggings = new Collection<Tagging>(this);
+  @OneToMany(
+    () => Tagging,
+    (tagging) => tagging.notation
+  )
+  taggings = new Collection<Tagging>(this);
+
+  constructor(props: Partial<Notation> = {}) {
+    Object.assign(this, props);
+  }
 }

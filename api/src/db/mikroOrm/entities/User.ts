@@ -1,10 +1,10 @@
 import { Collection, Entity, Enum, OneToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { IsEmail } from 'class-validator';
-import { User as UserDomain, UserRole, USER_ROLES } from '../../../domain';
+import { User as DomainUser, UserRole } from '../../../domain';
 import { Notation } from './Notation';
 
 @Entity({ tableName: 'users' })
-export class User implements UserDomain {
+export class User implements DomainUser {
   @PrimaryKey()
   id!: string;
 
@@ -24,14 +24,35 @@ export class User implements UserDomain {
   @Property()
   encryptedPassword!: string;
 
-  @Enum(() => USER_ROLES)
-  role!: UserRole;
+  @Enum(() => UserRole)
+  role = UserRole.STUDENT;
 
-  @Property({ name: 'email' })
+  @Property({ type: 'TIMESTAMP', nullable: true })
+  confirmedAt: Date | null = null;
+
+  @Property({ nullable: true })
+  confirmationToken: string | null = null;
+
+  @Property({ type: 'TIMESTAMP', nullable: true })
+  resetPasswordTokenSentAt: Date | null = null;
+
+  @Property({ nullable: true })
+  resetPasswordToken: string | null = null;
+
+  @Property({ nullable: true })
+  avatarUrl: string | null = null;
+
+  @OneToMany(
+    () => Notation,
+    (notation) => notation.transcriber
+  )
+  notations = new Collection<Notation>(this);
+
+  private _email!: string;
+
+  @Property()
   @Unique()
   @IsEmail()
-  _email!: string;
-
   get email(): string {
     return this._email;
   }
@@ -46,24 +67,7 @@ export class User implements UserDomain {
     this._email = email;
   }
 
-  @Property({ type: 'TIMESTAMP', nullable: true })
-  confirmedAt!: Date | null;
-
-  @Property({ nullable: true })
-  confirmationToken!: string | null;
-
-  @Property({ type: 'TIMESTAMP', nullable: true })
-  resetPasswordTokenSentAt!: Date | null;
-
-  @Property({ nullable: true })
-  resetPasswordToken!: string | null;
-
-  @Property({ nullable: true })
-  avatarUrl!: string | null;
-
-  @OneToMany(
-    () => Notation,
-    (notation) => notation.transcriber
-  )
-  notations = new Collection<Notation>(this);
+  constructor(user: Partial<User> = {}) {
+    Object.assign(this, user);
+  }
 }

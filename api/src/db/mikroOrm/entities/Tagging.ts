@@ -1,9 +1,10 @@
-import { Entity, IdentifiedReference, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { Tagging as TaggingDomain } from '../../../domain';
+import { Entity, IdentifiedReference, ManyToOne, PrimaryKey, Property, Reference } from '@mikro-orm/core';
+import { Tagging as DomainTagging } from '../../../domain';
+import { Notation } from './Notation';
 import { Tag } from './Tag';
 
 @Entity({ tableName: 'taggings' })
-export class Tagging implements TaggingDomain {
+export class Tagging implements DomainTagging {
   @PrimaryKey()
   id!: string;
 
@@ -15,9 +16,17 @@ export class Tagging implements TaggingDomain {
     return this.tag.id;
   }
 
-  @ManyToOne(() => Tag, { wrappedReference: true, persist: false })
-  tag!: IdentifiedReference<Tag>;
+  set tagId(tagId: string) {
+    this.tag = Reference.create(new Tag({ id: tagId }));
+  }
 
-  // @ManyToOne(() => Notation, { wrappedReference: true })
-  // notation!: IdentifiedReference<Notation, 'id'>;
+  @ManyToOne(() => Tag, { wrappedReference: true })
+  tag!: IdentifiedReference<Tag, 'id'>;
+
+  @ManyToOne(() => Notation, { wrappedReference: true })
+  notation!: IdentifiedReference<Notation, 'id'>;
+
+  constructor(tagging: Partial<Tagging> = {}) {
+    Object.assign(this, tagging);
+  }
 }
