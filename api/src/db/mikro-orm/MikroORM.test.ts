@@ -1,3 +1,4 @@
+import { LoadStrategy } from '@mikro-orm/core';
 import { container } from '../../inversify.config';
 import { buildRandNotation, buildRandTag, buildRandUser } from '../../testing';
 import { randStr } from '../../util';
@@ -13,14 +14,30 @@ import { MikroORMDb } from './MikroORMDb';
 describe('mikro-orm', () => {
   const id = Symbol('MikroOrmDb');
   let db: MikroORMDb;
+  let executeQuerySpy: jest.SpyInstance;
+
+  const withNumQueries = async <T>(task: () => Promise<T>): Promise<{ numQueries: number; result: T }> => {
+    const numQueries1 = executeQuerySpy.mock.calls.length;
+    const result = await task();
+    const numQueries2 = executeQuerySpy.mock.calls.length;
+    const numQueries = numQueries2 - numQueries1;
+    return { numQueries, result };
+  };
 
   beforeEach(async () => {
     container
       .bind<MikroORMDb>(id)
       .to(MikroORMDb)
       .inSingletonScope();
+
     db = container.get(id);
+
     await db.init();
+
+    const connection = db.orm.em.getConnection();
+    // executeQuery is protected
+    // https://github.com/mikro-orm/mikro-orm/blob/44998383b21a3aef943a922a3e75426369178f35/packages/core/src/connections/Connection.ts#L95
+    executeQuerySpy = jest.spyOn(connection as any, 'executeQuery');
   });
 
   afterEach(async () => {
@@ -30,7 +47,7 @@ describe('mikro-orm', () => {
   });
 
   describe('TagEntity', () => {
-    it('can create tag', async () => {
+    it('can create a tag', async () => {
       const tag = new TagEntity({ name: 'foo' });
 
       db.em.persist(tag);
@@ -42,7 +59,7 @@ describe('mikro-orm', () => {
       expect(actualTag!.name).toBe(tag.name);
     });
 
-    it('can delete tag', async () => {
+    it('can delete a tag', async () => {
       const tag = new TagEntity({ name: 'foo' });
 
       db.em.persist(tag);
@@ -195,6 +212,167 @@ describe('mikro-orm', () => {
       const user = new UserEntity(buildRandUser({ username: '' }));
       db.em.persist(user);
       await expect(db.em.flush()).rejects.toThrowError();
+    });
+  });
+
+  describe('many to many relationships', () => {
+    let user: UserEntity;
+
+    let rock: TagEntity;
+    let jazz: TagEntity;
+    let tag: TagEntity;
+
+    let rockJazzNotation: NotationEntity;
+    let jazzNotation: NotationEntity;
+    let rockNotation: NotationEntity;
+    let countryNotation: NotationEntity;
+
+    beforeEach(async () => {
+      user = new UserEntity(buildRandUser());
+
+      rock = new TagEntity(buildRandTag({ name: 'rock' }));
+      jazz = new TagEntity(buildRandTag({ name: 'jazz' }));
+      tag = new TagEntity(buildRandTag({ name: 'country' }));
+
+      rockJazzNotation = new NotationEntity(buildRandNotation());
+      jazzNotation = new NotationEntity(buildRandNotation());
+      rockNotation = new NotationEntity(buildRandNotation());
+      countryNotation = new NotationEntity(buildRandNotation());
+
+      rockJazzNotation.transcriber.set(user);
+      jazzNotation.transcriber.set(user);
+      rockNotation.transcriber.set(user);
+      countryNotation.transcriber.set(user);
+
+      rockJazzNotation.tag(rock, jazz);
+      jazzNotation.tag(jazz);
+      rockNotation.tag(rock);
+      countryNotation.tag(tag);
+
+      db.em.persist(user);
+      db.em.persist([rock, jazz]);
+      db.em.persist([rockJazzNotation, jazzNotation, rockNotation, countryNotation]);
+      await db.em.flush();
+      db.em.clear();
+    });
+
+    it('can query all notations by tag id', async () => {
+      const { numQueries, result: notations } = await withNumQueries(() =>
+        db.em.find(NotationEntity, { tags: [rock, jazz] })
+      );
+
+      expect(numQueries).toBe(1);
+
+      const notationIds = notations.map((notation) => notation.id);
+      expect(notationIds).toIncludeAllMembers([rockJazzNotation.id, jazzNotation.id, rockNotation.id]);
+
+      expect(notations[0].taggings.isInitialized(true)).toBeFalse();
+      expect(notations[1].taggings.isInitialized(true)).toBeFalse();
+      expect(notations[2].taggings.isInitialized(true)).toBeFalse();
+
+      expect(notations[0].tags.isInitialized(true)).toBeFalse();
+      expect(notations[1].tags.isInitialized(true)).toBeFalse();
+      expect(notations[2].tags.isInitialized(true)).toBeFalse();
+    });
+
+    it('can query all notations by tag id and load distant relations', async () => {
+      const { numQueries, result: notations } = await withNumQueries(() =>
+        db.em.find(NotationEntity, { tags: [rock, jazz] }, { populate: { tags: LoadStrategy.JOINED } })
+      );
+
+      expect(numQueries).toBe(1);
+
+      const notationIds = notations.map((notation) => notation.id);
+      expect(notationIds).toIncludeAllMembers([rockJazzNotation.id, jazzNotation.id, rockNotation.id]);
+
+      expect(notations[0].taggings.isInitialized(true)).toBeFalse();
+      expect(notations[1].taggings.isInitialized(true)).toBeFalse();
+      expect(notations[2].taggings.isInitialized(true)).toBeFalse();
+
+      expect(notations[0].tags.isInitialized(true)).toBeTrue();
+      expect(notations[1].tags.isInitialized(true)).toBeTrue();
+      expect(notations[2].tags.isInitialized(true)).toBeTrue();
+    });
+
+    it('can query all notations by tag id and load distant relations and join table relations', async () => {
+      const { numQueries, result: notations } = await withNumQueries(() =>
+        db.em.find(
+          NotationEntity,
+          { tags: [rock, jazz] },
+          { populate: { tags: LoadStrategy.JOINED, taggings: LoadStrategy.JOINED } }
+        )
+      );
+
+      expect(numQueries).toBe(1);
+
+      const notationIds = notations.map((notation) => notation.id);
+      expect(notationIds).toIncludeAllMembers([rockJazzNotation.id, jazzNotation.id, rockNotation.id]);
+
+      expect(notations[0].taggings.isInitialized(true)).toBeTrue();
+      expect(notations[1].taggings.isInitialized(true)).toBeTrue();
+      expect(notations[2].taggings.isInitialized(true)).toBeTrue();
+
+      expect(notations[0].tags.isInitialized(true)).toBeTrue();
+      expect(notations[1].tags.isInitialized(true)).toBeTrue();
+      expect(notations[2].tags.isInitialized(true)).toBeTrue();
+    });
+
+    it('can query all notations by tag id and load join table relations', async () => {
+      const { numQueries, result: notations } = await withNumQueries(() =>
+        db.em.find(
+          NotationEntity,
+          { tags: [rock, jazz] },
+          {
+            populate: {
+              taggings: LoadStrategy.SELECT_IN,
+            },
+          }
+        )
+      );
+
+      expect(numQueries).toBe(2);
+
+      const notationIds = notations.map((notation) => notation.id);
+      expect(notationIds).toIncludeAllMembers([rockJazzNotation.id, jazzNotation.id, rockNotation.id]);
+
+      expect(notations[0].taggings.isInitialized(true)).toBeTrue();
+      expect(notations[1].taggings.isInitialized(true)).toBeTrue();
+      expect(notations[2].taggings.isInitialized(true)).toBeTrue();
+
+      expect(notations[0].tags.isInitialized(true)).toBeFalse();
+      expect(notations[1].tags.isInitialized(true)).toBeFalse();
+      expect(notations[2].tags.isInitialized(true)).toBeFalse();
+    });
+
+    it('caches SELECT_IN queries', async () => {
+      const getNotations = () => {
+        return db.em.find(
+          NotationEntity,
+          { tags: [rock, jazz] },
+          {
+            populate: {
+              tags: LoadStrategy.SELECT_IN,
+              taggings: LoadStrategy.SELECT_IN,
+            },
+          }
+        );
+      };
+
+      await getNotations();
+      const { numQueries, result: notations } = await withNumQueries(getNotations);
+
+      expect(numQueries).toBe(1);
+
+      const notationIds = notations.map((notation) => notation.id);
+      expect(notationIds).toIncludeAllMembers([rockJazzNotation.id, jazzNotation.id, rockNotation.id]);
+
+      expect(notations[0].taggings.isInitialized(true)).toBeTrue();
+      expect(notations[1].taggings.isInitialized(true)).toBeTrue();
+      expect(notations[2].taggings.isInitialized(true)).toBeTrue();
+
+      expect(notations[0].tags.isInitialized(true)).toBeTrue();
+      expect(notations[1].tags.isInitialized(true)).toBeTrue();
+      expect(notations[2].tags.isInitialized(true)).toBeTrue();
     });
   });
 });

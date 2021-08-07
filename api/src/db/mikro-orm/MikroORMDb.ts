@@ -33,7 +33,6 @@ export class MikroORMDb implements Db {
       strict: true,
       namingStrategy: UnderscoreNamingStrategy,
       entities: [TagEntity, TaggingEntity, NotationEntity, UserEntity],
-      cache: { enabled: false },
     });
     this.didInit = true;
   }

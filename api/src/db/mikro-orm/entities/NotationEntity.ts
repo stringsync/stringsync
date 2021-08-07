@@ -80,11 +80,25 @@ export class NotationEntity extends BaseEntity implements Notation {
   )
   taggings = new Collection<TaggingEntity>(this);
 
-  @ManyToMany({ entity: () => TagEntity, inversedBy: 'notations' })
+  @ManyToMany({
+    entity: () => TagEntity,
+    inversedBy: 'notations',
+    joinColumn: 'notation_id',
+    inverseJoinColumn: 'tag_id',
+    pivotTable: 'taggings',
+  })
   tags = new Collection<TagEntity>(this);
 
   constructor(props: Partial<NotationEntity> = {}) {
     super();
     Object.assign(this, props);
+  }
+
+  tag(...tags: TagEntity[]) {
+    this.tags.add(...tags);
+  }
+
+  untag(...tags: TagEntity[]) {
+    this.tags.remove(...tags);
   }
 }
