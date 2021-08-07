@@ -9,18 +9,20 @@ import {
   Property,
   Reference,
 } from '@mikro-orm/core';
-import { IsNotEmpty, IsUrl, Matches, MaxLength, MinLength } from 'class-validator';
-import { Notation as DomainNotation } from '../../../domain';
-import { Tag } from './Tag';
-import { Tagging } from './Tagging';
-import { User } from './User';
+import { IsNotEmpty, IsOptional, IsUrl, Matches, MaxLength, MinLength } from 'class-validator';
+import { Notation } from '../../../domain';
+import { BaseEntity } from './BaseEntity';
+import { TagEntity } from './TagEntity';
+import { TaggingEntity } from './TaggingEntity';
+import { UserEntity } from './UserEntity';
 
 @Entity({ tableName: 'notations' })
-export class Notation implements DomainNotation {
+export class NotationEntity extends BaseEntity implements Notation {
   @PrimaryKey()
   id!: string;
 
   @Property({ nullable: true, defaultRaw: 'DEFAULT' })
+  @IsOptional()
   cursor!: number;
 
   @Property({ type: 'TIMESTAMP' })
@@ -57,30 +59,33 @@ export class Notation implements DomainNotation {
   }
 
   set transcriberId(transcriberId: string) {
-    this.transcriber = Reference.create(new User({ id: transcriberId }));
+    this.transcriber = Reference.create(new UserEntity({ id: transcriberId }));
   }
 
   @Property({ nullable: true })
+  @IsOptional()
   @IsUrl()
   thumbnailUrl!: string | null;
 
   @Property({ nullable: true })
+  @IsOptional()
   @IsUrl()
   videoUrl!: string | null;
 
-  @ManyToOne(() => User, { wrappedReference: true })
-  transcriber!: IdentifiedReference<User, 'id'>;
+  @ManyToOne(() => UserEntity, { wrappedReference: true })
+  transcriber!: IdentifiedReference<UserEntity, 'id'>;
 
   @OneToMany(
-    () => Tagging,
+    () => TaggingEntity,
     (tagging) => tagging.notation
   )
-  taggings = new Collection<Tagging>(this);
+  taggings = new Collection<TaggingEntity>(this);
 
-  @ManyToMany({ entity: () => Tag, inversedBy: 'notations' })
-  tags = new Collection<Tag>(this);
+  @ManyToMany({ entity: () => TagEntity, inversedBy: 'notations' })
+  tags = new Collection<TagEntity>(this);
 
-  constructor(props: Partial<Notation> = {}) {
+  constructor(props: Partial<NotationEntity> = {}) {
+    super();
     Object.assign(this, props);
   }
 }

@@ -1,5 +1,5 @@
 // organize-imports-ignore
-export * from './Tagging';
-export * from './Tag';
-export * from './Notation';
-export * from './User';
+export * from './TaggingEntity';
+export * from './TagEntity';
+export * from './NotationEntity';
+export * from './UserEntity';

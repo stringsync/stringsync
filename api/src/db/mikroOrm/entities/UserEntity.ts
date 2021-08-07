@@ -1,10 +1,11 @@
 import { Collection, Entity, Enum, OneToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
-import { IsEmail, MaxLength, MinLength } from 'class-validator';
-import { User as DomainUser, UserRole } from '../../../domain';
-import { Notation } from './Notation';
+import { IsEmail, IsOptional, MaxLength, MinLength } from 'class-validator';
+import { User, UserRole } from '../../../domain';
+import { BaseEntity } from './BaseEntity';
+import { NotationEntity } from './NotationEntity';
 
 @Entity({ tableName: 'users' })
-export class User implements DomainUser {
+export class UserEntity extends BaseEntity implements User {
   @PrimaryKey()
   id!: string;
 
@@ -30,25 +31,30 @@ export class User implements DomainUser {
   role = UserRole.STUDENT;
 
   @Property({ type: 'TIMESTAMP', nullable: true })
+  @IsOptional()
   confirmedAt: Date | null = null;
 
   @Property({ nullable: true })
+  @IsOptional()
   confirmationToken: string | null = null;
 
   @Property({ type: 'TIMESTAMP', nullable: true })
+  @IsOptional()
   resetPasswordTokenSentAt: Date | null = null;
 
   @Property({ nullable: true })
+  @IsOptional()
   resetPasswordToken: string | null = null;
 
   @Property({ nullable: true })
+  @IsOptional()
   avatarUrl: string | null = null;
 
   @OneToMany(
-    () => Notation,
+    () => NotationEntity,
     (notation) => notation.transcriber
   )
-  notations = new Collection<Notation>(this);
+  notations = new Collection<NotationEntity>(this);
 
   private _email!: string;
 
@@ -69,7 +75,8 @@ export class User implements DomainUser {
     this._email = email;
   }
 
-  constructor(user: Partial<User> = {}) {
+  constructor(user: Partial<UserEntity> = {}) {
+    super();
     Object.assign(this, user);
   }
 }

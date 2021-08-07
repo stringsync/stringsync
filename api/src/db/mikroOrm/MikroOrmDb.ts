@@ -7,7 +7,7 @@ import { TYPES } from '../../inversify.constants';
 import { camelCaseKeys } from '../../repos/queries';
 import { Logger } from '../../util';
 import { Db, Orm, Task } from '../types';
-import { Notation, Tag, Tagging, User } from './entities';
+import { NotationEntity, TagEntity, TaggingEntity, UserEntity } from './entities';
 
 @injectable()
 export class MikroOrmDb implements Db {
@@ -32,7 +32,7 @@ export class MikroOrmDb implements Db {
       validate: true,
       strict: true,
       namingStrategy: UnderscoreNamingStrategy,
-      entities: [Tag, Tagging, Notation, User],
+      entities: [TagEntity, TaggingEntity, NotationEntity, UserEntity],
       cache: { enabled: false },
     });
     this.didInit = true;
@@ -70,10 +70,10 @@ export class MikroOrmDb implements Db {
   }
 
   async cleanup() {
-    await this.orm.em.nativeDelete(Tag, {});
-    await this.orm.em.nativeDelete(Tagging, {});
-    await this.orm.em.nativeDelete(Notation, {});
-    await this.orm.em.nativeDelete(User, {});
+    await this.orm.em.nativeDelete(TagEntity, {});
+    await this.orm.em.nativeDelete(TaggingEntity, {});
+    await this.orm.em.nativeDelete(NotationEntity, {});
+    await this.orm.em.nativeDelete(UserEntity, {});
     this.orm.em.clear();
   }
 }

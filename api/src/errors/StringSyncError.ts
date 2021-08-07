@@ -60,3 +60,13 @@ export class NotImplementedError extends StringSyncError {
     super(message, ErrorCode.NOT_IMPLEMENTED);
   }
 }
+
+export class ValidationError extends StringSyncError {
+  isUserFacing = true;
+  ctx: any[];
+
+  constructor(ctx: any[]) {
+    super(`validation errors: ${JSON.stringify(ctx, null, 2)}`, ErrorCode.CONFLICT);
+    this.ctx = ctx;
+  }
+}

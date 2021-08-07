@@ -1,11 +1,12 @@
 import { Collection, Entity, ManyToMany, OneToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { MaxLength, MinLength } from 'class-validator';
-import { Tag as DomainTag } from '../../../domain';
-import { Notation } from './Notation';
-import { Tagging } from './Tagging';
+import { Tag } from '../../../domain';
+import { BaseEntity } from './BaseEntity';
+import { NotationEntity } from './NotationEntity';
+import { TaggingEntity } from './TaggingEntity';
 
 @Entity({ tableName: 'tags' })
-export class Tag implements DomainTag {
+export class TagEntity extends BaseEntity implements Tag {
   @PrimaryKey()
   id!: string;
 
@@ -16,19 +17,20 @@ export class Tag implements DomainTag {
   name!: string;
 
   @OneToMany(
-    () => Tagging,
+    () => TaggingEntity,
     (tagging) => tagging.tag,
     { inverseJoinColumn: 'tag_id' }
   )
-  taggings = new Collection<Tagging>(this);
+  taggings = new Collection<TaggingEntity>(this);
 
   @ManyToMany({
-    entity: () => Notation,
+    entity: () => NotationEntity,
     mappedBy: 'tags',
   })
-  notations = new Collection<Notation>(this);
+  notations = new Collection<NotationEntity>(this);
 
-  constructor(props: Partial<Tag> = {}) {
+  constructor(props: Partial<TagEntity> = {}) {
+    super();
     Object.assign(this, props);
   }
 }
