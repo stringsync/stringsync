@@ -4,7 +4,7 @@ import { randStr } from '../../util';
 import { TagEntity, TaggingEntity } from './entities';
 import { NotationEntity } from './entities/NotationEntity';
 import { UserEntity } from './entities/UserEntity';
-import { MikroOrmDb } from './MikroOrmDb';
+import { MikroORMDb } from './MikroORMDb';
 
 /**
  * These test are meant to confirm the understanding of the MikroOrm library.
@@ -12,12 +12,12 @@ import { MikroOrmDb } from './MikroOrmDb';
  */
 describe('mikro-orm', () => {
   const id = Symbol('MikroOrmDb');
-  let db: MikroOrmDb;
+  let db: MikroORMDb;
 
   beforeEach(async () => {
     container
-      .bind<MikroOrmDb>(id)
-      .to(MikroOrmDb)
+      .bind<MikroORMDb>(id)
+      .to(MikroORMDb)
       .inSingletonScope();
     db = container.get(id);
     await db.init();

@@ -10,7 +10,7 @@ import { Db, Orm, Task } from '../types';
 import { NotationEntity, TagEntity, TaggingEntity, UserEntity } from './entities';
 
 @injectable()
-export class MikroOrmDb implements Db {
+export class MikroORMDb implements Db {
   ormType = Orm.MikroORM;
 
   private _orm: MikroORM<PostgreSqlDriver> | undefined = undefined;
