@@ -244,10 +244,10 @@ describe('mikro-orm', () => {
       rockNotation.transcriber.set(user);
       countryNotation.transcriber.set(user);
 
-      rockJazzNotation.tag(rock, jazz);
-      jazzNotation.tag(jazz);
-      rockNotation.tag(rock);
-      countryNotation.tag(tag);
+      rockJazzNotation.tags.add(rock, jazz);
+      jazzNotation.tags.add(jazz);
+      rockNotation.tags.add(rock);
+      countryNotation.tags.add(tag);
 
       db.em.persist(user);
       db.em.persist([rock, jazz]);

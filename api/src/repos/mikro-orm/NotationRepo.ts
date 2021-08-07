@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/core';
+import { EntityManager, QueryOrder } from '@mikro-orm/core';
 import { inject, injectable } from 'inversify';
 import { get } from 'lodash';
 import { Db, NotationEntity } from '../../db';
@@ -41,7 +41,7 @@ export class NotationRepo implements INotationRepo {
   }
 
   async findAll(): Promise<Notation[]> {
-    return await this.em.find(NotationEntity, {});
+    return await this.em.find(NotationEntity, {}, { orderBy: { cursor: QueryOrder.DESC } });
   }
 
   async findAllByTagId(tagId: string): Promise<Notation[]> {

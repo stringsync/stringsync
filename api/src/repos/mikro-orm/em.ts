@@ -1,10 +1,11 @@
 import { EntityManager } from '@mikro-orm/core';
+import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { Db, MikroORMDb, Orm } from '../../db';
 import { InternalError } from '../../errors';
 
 const isMikroORMDb = (db: Db): db is MikroORMDb => db.ormType === Orm.MikroORM;
 
-export const em = (db: Db): EntityManager => {
+export const em = (db: Db): EntityManager<PostgreSqlDriver> => {
   if (isMikroORMDb(db)) {
     return db.em;
   }

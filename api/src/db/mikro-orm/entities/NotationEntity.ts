@@ -93,12 +93,4 @@ export class NotationEntity extends BaseEntity implements Notation {
     super();
     Object.assign(this, props);
   }
-
-  tag(...tags: TagEntity[]) {
-    this.tags.add(...tags);
-  }
-
-  untag(...tags: TagEntity[]) {
-    this.tags.remove(...tags);
-  }
 }
