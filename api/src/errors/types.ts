@@ -7,6 +7,7 @@ export enum ErrorCode {
   UNKNOWN,
   FORBIDDEN,
   CONFLICT,
+  INVALID,
   BAD_REQUEST,
   NOT_FOUND,
   INTERNAL,

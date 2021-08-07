@@ -29,7 +29,7 @@ describe('mikro-orm', () => {
     container.unbind(id);
   });
 
-  describe('Tag', () => {
+  describe('TagEntity', () => {
     it('can create tag', async () => {
       const tag = new TagEntity({ name: 'foo' });
 
@@ -83,7 +83,7 @@ describe('mikro-orm', () => {
     });
   });
 
-  describe('Notation', () => {
+  describe('NotationEntity', () => {
     it('can create notations', async () => {
       const notation = new NotationEntity(buildRandNotation());
       const transcriber = new UserEntity(buildRandUser());
@@ -148,9 +148,18 @@ describe('mikro-orm', () => {
       expect(actualNotation!.thumbnailUrl).toBe(thumbnailUrl);
       expect(actualNotation!.updatedAt).toBeAfter(actualNotation!.createdAt);
     });
+
+    it('disallows creation with invalid transcribers', async () => {
+      const notation = new NotationEntity(buildRandNotation());
+      const transcriber = new UserEntity();
+      notation.transcriber.set(transcriber);
+
+      db.em.persist(notation);
+      await expect(db.em.flush()).rejects.toThrowError();
+    });
   });
 
-  describe('User', () => {
+  describe('UserEntity', () => {
     it('can create users', async () => {
       const user = new UserEntity(buildRandUser());
 

@@ -6,9 +6,16 @@ export abstract class BaseEntity {
   @BeforeCreate()
   @BeforeUpdate()
   async validate() {
-    const errors = await validate(this);
+    const errors = await validate(this, {
+      validationError: {
+        target: false,
+        value: false,
+      },
+    });
+
     if (errors.length > 0) {
-      throw new ValidationError(errors);
+      const details = errors.flatMap((error) => Object.values(error.constraints || []));
+      throw new ValidationError(details);
     }
   }
 }

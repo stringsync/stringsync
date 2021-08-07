@@ -63,10 +63,10 @@ export class NotImplementedError extends StringSyncError {
 
 export class ValidationError extends StringSyncError {
   isUserFacing = true;
-  ctx: any[];
+  details: string[];
 
-  constructor(ctx: any[]) {
-    super(`validation errors: ${JSON.stringify(ctx, null, 2)}`, ErrorCode.CONFLICT);
-    this.ctx = ctx;
+  constructor(details: string[]) {
+    super(`failed to validate: ${details.join(', ')}`, ErrorCode.INVALID);
+    this.details = details;
   }
 }

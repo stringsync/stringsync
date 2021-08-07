@@ -22,7 +22,6 @@ export class NotationEntity extends BaseEntity implements Notation {
   id!: string;
 
   @Property({ nullable: true, defaultRaw: 'DEFAULT' })
-  @IsOptional()
   cursor!: number;
 
   @Property({ type: 'TIMESTAMP' })

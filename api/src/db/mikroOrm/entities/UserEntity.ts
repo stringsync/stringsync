@@ -1,5 +1,5 @@
 import { Collection, Entity, Enum, OneToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
-import { IsEmail, IsOptional, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsOptional, IsUrl, MaxLength, MinLength } from 'class-validator';
 import { User, UserRole } from '../../../domain';
 import { BaseEntity } from './BaseEntity';
 import { NotationEntity } from './NotationEntity';
@@ -48,6 +48,7 @@ export class UserEntity extends BaseEntity implements User {
 
   @Property({ nullable: true })
   @IsOptional()
+  @IsUrl()
   avatarUrl: string | null = null;
 
   @OneToMany(
