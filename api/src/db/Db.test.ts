@@ -1,10 +1,10 @@
 import { container } from '../inversify.config';
-import { MikroOrmDb } from './mikroOrm';
+import { MikroORMDb } from './mikro-orm';
 import { DevSequelizeDb, SequelizeDb } from './sequelize';
 import { Db } from './types';
 
 describe.each([
-  ['MikroOrmDb', MikroOrmDb],
+  ['MikroOrmDb', MikroORMDb],
   ['SequelizeDb', SequelizeDb],
   ['DevSequelizeDb', DevSequelizeDb],
 ])('%s', (name, Ctor) => {
