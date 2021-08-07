@@ -49,10 +49,7 @@ export class NotationRepo implements INotationRepo {
   }
 
   async create(attrs: Partial<Notation>) {
-    const notation = new NotationEntity(attrs);
-    this.em.persist(notation);
-    await this.em.flush();
-    return notation;
+    return this.em.create(NotationEntity, attrs);
   }
 
   async bulkCreate(bulkAttrs: Partial<Notation>[]): Promise<Notation[]> {
@@ -67,7 +64,7 @@ export class NotationRepo implements INotationRepo {
     if (!notation) {
       throw new NotFoundError('notation not found');
     }
-    Object.assign(notation, attrs);
+    this.em.assign(notation, attrs);
     this.em.persist(notation);
     await this.em.flush();
     return notation;
