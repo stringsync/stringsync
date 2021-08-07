@@ -1,8 +1,8 @@
-import { EntityManager } from '@mikro-orm/core';
+import { EntityManager, LoadStrategy } from '@mikro-orm/core';
 import Dataloader from 'dataloader';
 import { inject, injectable } from 'inversify';
 import { groupBy, mapValues } from 'lodash';
-import { Db, NotationEntity, TagEntity } from '../../db';
+import { Db, NotationEntity, TaggingEntity } from '../../db';
 import { Notation } from '../../domain';
 import { TYPES } from '../../inversify.constants';
 import { alignManyToMany, alignOneToMany, alignOneToOne, ensureNoErrors } from '../../util';
@@ -70,8 +70,11 @@ export class NotationLoader implements INotationLoader {
   private loadByTagId = async (tagIds: readonly string[]): Promise<Notation[][]> => {
     const _tagIds = [...tagIds];
 
-    const tags = await this.em.find(TagEntity, { id: { $in: _tagIds } }, ['taggings.notation']);
-    const taggings = (await Promise.all(tags.flatMap((tag) => tag.taggings.loadItems()))).flat();
+    const taggings = await this.em.find(
+      TaggingEntity,
+      { tagId: _tagIds },
+      { populate: { notation: LoadStrategy.JOINED } }
+    );
     const notations = await Promise.all(taggings.map((tagging) => tagging.notation.load()));
 
     const taggingsByNotationId = groupBy(taggings, 'notationId');
