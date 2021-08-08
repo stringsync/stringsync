@@ -4,16 +4,17 @@ import { User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
 import { buildRandUser } from '../testing';
-import { ctor, randStr } from '../util';
-import { SequelizeUserRepo } from './sequelize';
+import { Ctor, ctor, randStr } from '../util';
+import { UserRepo as MikroORMUserRepo } from './mikro-orm';
 import { UserRepo } from './types';
 
-const ORIGINAL_USER_REPO = ctor(container.get<UserRepo>(TYPES.UserRepo));
+describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
+  let ORIGINAL_USER_REPO: Ctor<UserRepo>;
 
-describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
   let userRepo: UserRepo;
 
   beforeAll(() => {
+    ORIGINAL_USER_REPO = ctor(container.get<UserRepo>(TYPES.UserRepo));
     container.rebind<UserRepo>(TYPES.UserRepo).to(Ctor);
   });
 
@@ -66,7 +67,7 @@ describe.each([['SequelizeUserRepo', SequelizeUserRepo]])('%s', (_, Ctor) => {
       '(invalidusername)',
       '; ATTEMPTED SQL INJECTION',
       '<script>ATTEMPTED XSS</script>',
-    ])('disallows invalid usernames', async (username) => {
+    ])('disallows invalid usernames: %s', async (username) => {
       const user = buildRandUser({ username });
       await expect(userRepo.validate(user)).rejects.toThrow();
     });

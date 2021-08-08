@@ -1,5 +1,5 @@
 import { Collection, Entity, Enum, OneToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
-import { IsEmail, IsOptional, IsUrl, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsOptional, IsUrl, Matches, MaxLength, MinLength } from 'class-validator';
 import { User, UserRole } from '../../../domain';
 import { BaseEntity } from './BaseEntity';
 import { NotationEntity } from './NotationEntity';
@@ -22,6 +22,7 @@ export class UserEntity extends BaseEntity implements User {
   @Unique()
   @MinLength(3)
   @MaxLength(24)
+  @Matches(/^[A-Za-z0-9-_.]*$/)
   username!: string;
 
   @Property()

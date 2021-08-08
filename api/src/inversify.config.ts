@@ -2,7 +2,7 @@ import { Container } from 'inversify';
 import { createClient, RedisClient } from 'redis';
 import 'reflect-metadata';
 import { Config, config } from './config';
-import { Db, DevSequelizeDb, SequelizeDb } from './db';
+import { Db, MikroORMDb } from './db';
 import { TYPES } from './inversify.constants';
 import { AssociateVideoUrl, PulseCheck, SendMail } from './jobs';
 import {
@@ -58,12 +58,12 @@ container.bind<Config>(TYPES.Config).toConstantValue(config);
 if (config.NODE_ENV === 'production') {
   container
     .bind<Db>(TYPES.Db)
-    .to(SequelizeDb)
+    .to(MikroORMDb)
     .inSingletonScope();
 } else {
   container
     .bind<Db>(TYPES.Db)
-    .to(DevSequelizeDb)
+    .to(MikroORMDb)
     .inSingletonScope();
 }
 
