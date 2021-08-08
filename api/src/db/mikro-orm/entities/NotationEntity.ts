@@ -7,10 +7,10 @@ import {
   OneToMany,
   PrimaryKey,
   Property,
-  Reference,
 } from '@mikro-orm/core';
 import { IsNotEmpty, IsOptional, IsUrl, Matches, MaxLength, MinLength } from 'class-validator';
 import { Notation } from '../../../domain';
+import { HACK_2099_createReference } from '../hacks';
 import { BaseEntity } from './BaseEntity';
 import { TagEntity } from './TagEntity';
 import { TaggingEntity } from './TaggingEntity';
@@ -58,7 +58,9 @@ export class NotationEntity extends BaseEntity implements Notation {
   }
 
   set transcriberId(transcriberId: string) {
-    this.transcriber = Reference.create(new UserEntity({ id: transcriberId }));
+    const transcriber = new UserEntity({ id: transcriberId });
+    this.transcriber =
+      this.transcriber?.id === transcriberId ? this.transcriber : HACK_2099_createReference(transcriber);
   }
 
   @Property({ nullable: true })
