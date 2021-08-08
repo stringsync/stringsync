@@ -1,13 +1,4 @@
-import {
-  Collection,
-  Entity,
-  IdentifiedReference,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-  PrimaryKey,
-  Property,
-} from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { IsNotEmpty, IsOptional, IsUrl, Matches, MaxLength, MinLength } from 'class-validator';
 import { Notation } from '../../../domain';
 import { HACK_2099_createReference } from '../hacks';
@@ -51,6 +42,9 @@ export class NotationEntity extends BaseEntity implements Notation {
   @Property()
   private = true;
 
+  @ManyToOne(() => UserEntity, { wrappedReference: true })
+  transcriber = HACK_2099_createReference(new UserEntity());
+
   @Property({ persist: false })
   @IsNotEmpty()
   get transcriberId(): string {
@@ -58,9 +52,11 @@ export class NotationEntity extends BaseEntity implements Notation {
   }
 
   set transcriberId(transcriberId: string) {
+    if (this.transcriber.id === transcriberId) {
+      return;
+    }
     const transcriber = new UserEntity({ id: transcriberId });
-    this.transcriber =
-      this.transcriber?.id === transcriberId ? this.transcriber : HACK_2099_createReference(transcriber);
+    this.transcriber.set(HACK_2099_createReference(transcriber));
   }
 
   @Property({ nullable: true })
@@ -72,9 +68,6 @@ export class NotationEntity extends BaseEntity implements Notation {
   @IsOptional()
   @IsUrl()
   videoUrl!: string | null;
-
-  @ManyToOne(() => UserEntity, { wrappedReference: true })
-  transcriber!: IdentifiedReference<UserEntity, 'id'>;
 
   @OneToMany(
     () => TaggingEntity,

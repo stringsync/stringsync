@@ -1,4 +1,4 @@
-import { LoadStrategy } from '@mikro-orm/core';
+import { LoadStrategy, Reference } from '@mikro-orm/core';
 import { container } from '../../inversify.config';
 import { buildRandNotation, buildRandTag, buildRandUser } from '../../testing';
 import { randStr } from '../../util';
@@ -74,10 +74,15 @@ describe('mikro-orm', () => {
 
     it('can create taggings', async () => {
       const tag = new TagEntity(buildRandTag());
+      const user = new UserEntity(buildRandUser());
+      const notation = new NotationEntity(buildRandNotation());
       const tagging = new TaggingEntity();
-      tag.taggings.add(tagging);
 
-      db.em.persist(tag);
+      notation.transcriber.set(user);
+      tag.taggings.add(tagging);
+      tagging.notation = Reference.create(notation);
+
+      db.em.persist([notation, tag]);
       await db.em.flush();
 
       const actualTagging = await db.em.findOne(TaggingEntity, { tag });
@@ -88,8 +93,13 @@ describe('mikro-orm', () => {
 
     it('finds taggings by tagId', async () => {
       const tag = new TagEntity(buildRandTag());
+      const user = new UserEntity(buildRandUser());
+      const notation = new NotationEntity(buildRandNotation());
       const tagging = new TaggingEntity();
+
+      notation.transcriber.set(user);
       tag.taggings.add(tagging);
+      tagging.notation = Reference.create(notation);
 
       db.em.persist(tag);
       await db.em.flush();

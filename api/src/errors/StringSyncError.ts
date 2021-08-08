@@ -66,7 +66,7 @@ export class ValidationError extends StringSyncError {
   details: string[];
 
   constructor(details: string[]) {
-    super(`failed to validate: ${details.join(', ')}`, ErrorCode.INVALID);
+    super(`validation errors:\n${details.map((detail) => `\t${detail}`).join('\n')}`, ErrorCode.INVALID);
     this.details = details;
   }
 }

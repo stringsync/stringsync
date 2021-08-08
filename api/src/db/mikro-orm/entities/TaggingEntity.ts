@@ -1,4 +1,4 @@
-import { Entity, IdentifiedReference, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { IsNotEmpty } from 'class-validator';
 import { Tagging } from '../../../domain';
 import { HACK_2099_createReference } from '../hacks';
@@ -12,7 +12,7 @@ export class TaggingEntity extends BaseEntity implements Tagging {
   id!: string;
 
   @ManyToOne(() => NotationEntity, { wrappedReference: true })
-  notation?: IdentifiedReference<NotationEntity, 'id'>;
+  notation = HACK_2099_createReference(new NotationEntity());
 
   @Property({ persist: false })
   @IsNotEmpty()
@@ -21,12 +21,15 @@ export class TaggingEntity extends BaseEntity implements Tagging {
   }
 
   set notationId(notationId: string) {
+    if (this.notation.id === notationId) {
+      return;
+    }
     const notation = new NotationEntity({ id: notationId });
-    this.notation = this.notation?.id === notationId ? this.notation : HACK_2099_createReference(notation);
+    this.notation.set(HACK_2099_createReference(notation));
   }
 
   @ManyToOne(() => TagEntity, { wrappedReference: true })
-  tag!: IdentifiedReference<TagEntity, 'id'>;
+  tag = HACK_2099_createReference(new TagEntity());
 
   @Property({ persist: false })
   @IsNotEmpty()
@@ -35,8 +38,11 @@ export class TaggingEntity extends BaseEntity implements Tagging {
   }
 
   set tagId(tagId: string) {
+    if (this.tag.id === tagId) {
+      return;
+    }
     const tag = new TagEntity({ id: tagId });
-    this.tag = this.tag?.id === tagId ? this.tag : HACK_2099_createReference(tag);
+    this.tag.set(HACK_2099_createReference(tag));
   }
 
   constructor(tagging: Partial<TaggingEntity> = {}) {
