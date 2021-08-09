@@ -1,13 +1,8 @@
 import { container } from '../inversify.config';
 import { MikroORMDb } from './mikro-orm';
-import { DevSequelizeDb, SequelizeDb } from './sequelize';
 import { Db } from './types';
 
-describe.each([
-  ['MikroOrmDb', MikroORMDb],
-  ['SequelizeDb', SequelizeDb],
-  ['DevSequelizeDb', DevSequelizeDb],
-])('%s', (name, Ctor) => {
+describe.each([['MikroOrmDb', MikroORMDb]])('%s', (name, Ctor) => {
   const id = Symbol(name);
   let db: Db;
 
