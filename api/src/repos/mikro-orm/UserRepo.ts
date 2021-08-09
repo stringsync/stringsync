@@ -1,7 +1,8 @@
 import { EntityManager, QueryOrder } from '@mikro-orm/core';
 import { inject, injectable } from 'inversify';
 import { get } from 'lodash';
-import { Db, UserEntity } from '../../db';
+import { Db } from '../../db';
+import { UserEntity } from '../../db/mikro-orm';
 import { User } from '../../domain';
 import { NotFoundError } from '../../errors';
 import { TYPES } from '../../inversify.constants';

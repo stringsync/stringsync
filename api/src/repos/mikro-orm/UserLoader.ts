@@ -1,7 +1,8 @@
 import { EntityManager } from '@mikro-orm/core';
 import Dataloader from 'dataloader';
 import { inject, injectable } from 'inversify';
-import { Db, UserEntity } from '../../db';
+import { Db } from '../../db';
+import { UserEntity } from '../../db/mikro-orm';
 import { User } from '../../domain';
 import { TYPES } from '../../inversify.constants';
 import { alignOneToOne, ensureNoErrors } from '../../util';

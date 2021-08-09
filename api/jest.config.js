@@ -2,6 +2,10 @@ module.exports = {
   globals: {
     'ts-jest': {
       tsconfig: 'tsconfig.json',
+      // Make test suites faster https://github.com/kulshekhar/ts-jest/issues/259
+      // In the CI pipeline, typechecking is implicitly done when building the container
+      // so we don't need this option ever.
+      isolatedModules: true,
     },
   },
   transform: {

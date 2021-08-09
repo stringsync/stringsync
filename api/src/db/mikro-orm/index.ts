@@ -1,2 +1,2 @@
+export * from './Db';
 export * from './entities';
-export * from './MikroORMDb';

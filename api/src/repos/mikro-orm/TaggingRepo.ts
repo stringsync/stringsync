@@ -1,6 +1,7 @@
 import { EntityManager } from '@mikro-orm/core';
 import { inject, injectable } from 'inversify';
-import { Db, TaggingEntity } from '../../db';
+import { Db } from '../../db';
+import { TaggingEntity } from '../../db/mikro-orm';
 import { Tagging } from '../../domain';
 import { NotFoundError } from '../../errors';
 import { TYPES } from '../../inversify.constants';

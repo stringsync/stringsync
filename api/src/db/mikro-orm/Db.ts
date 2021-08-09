@@ -1,4 +1,4 @@
-import { MikroORM, UnderscoreNamingStrategy } from '@mikro-orm/core';
+import { MikroORM } from '@mikro-orm/core';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { inject, injectable } from 'inversify';
 import { Config } from '../../config';
@@ -6,11 +6,12 @@ import { InternalError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { camelCaseKeys } from '../../repos/queries';
 import { Logger } from '../../util';
-import { Db, Orm, Task } from '../types';
-import { NotationEntity, TagEntity, TaggingEntity, UserEntity } from './entities';
+import { Db as IDb, Orm, Task } from '../types';
+import { ENTITIES_BY_TABLE_NAME } from './entities';
+import options from './mikro-orm.config';
 
 @injectable()
-export class MikroORMDb implements Db {
+export class Db implements IDb {
   ormType = Orm.MikroORM;
 
   private _orm: MikroORM<PostgreSqlDriver> | undefined = undefined;
@@ -22,18 +23,7 @@ export class MikroORMDb implements Db {
     if (this.didInit) {
       return;
     }
-    this._orm = await MikroORM.init({
-      type: 'postgresql',
-      host: this.config.DB_HOST,
-      port: this.config.DB_PORT,
-      dbName: this.config.DB_NAME,
-      user: this.config.DB_USERNAME,
-      password: this.config.DB_PASSWORD,
-      validate: true,
-      strict: true,
-      namingStrategy: UnderscoreNamingStrategy,
-      entities: [TagEntity, TaggingEntity, NotationEntity, UserEntity],
-    });
+    this._orm = await MikroORM.init(options);
     this.didInit = true;
   }
 
@@ -69,10 +59,11 @@ export class MikroORMDb implements Db {
   }
 
   async cleanup() {
-    await this.orm.em.nativeDelete(TagEntity, {});
-    await this.orm.em.nativeDelete(TaggingEntity, {});
-    await this.orm.em.nativeDelete(NotationEntity, {});
-    await this.orm.em.nativeDelete(UserEntity, {});
+    const connection = this.orm.em.getConnection();
+    const tableNames = Object.values(ENTITIES_BY_TABLE_NAME);
+
+    await connection.execute(`TRUNCATE TABLE ${tableNames.join(', ')} RESTART IDENTITY`);
+
     this.orm.em.clear();
   }
 }

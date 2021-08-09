@@ -14,6 +14,7 @@ let cache: Cache;
 beforeAll(async () => {
   db = container.get<Db>(TYPES.Db);
   cache = container.get<Cache>(TYPES.Cache);
+  const start = new Date();
   await db.init();
 });
 

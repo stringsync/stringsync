@@ -1,5 +1,5 @@
 import { container } from '../inversify.config';
-import { MikroORMDb } from './mikro-orm';
+import { Db as MikroORMDb } from './mikro-orm';
 import { Db } from './types';
 
 describe.each([['MikroOrmDb', MikroORMDb]])('%s', (name, Ctor) => {
