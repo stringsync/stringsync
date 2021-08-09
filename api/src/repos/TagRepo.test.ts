@@ -2,16 +2,16 @@ import { isPlainObject, sortBy } from 'lodash';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
 import { buildRandTag } from '../testing';
-import { ctor, randStr } from '../util';
-import { SequelizeTagRepo } from './sequelize';
+import { Ctor, ctor, randStr } from '../util';
+import { TagRepo as MikroORMTagRepo } from './mikro-orm';
 import { TagRepo } from './types';
 
-const ORIGINAL_TAG_REPO = ctor(container.get<TagRepo>(TYPES.TagRepo));
-
-describe.each([['SequelizeTagRepo', SequelizeTagRepo]])('%s', (name, Ctor) => {
+describe.each([['MikroORMTagRepo', MikroORMTagRepo]])('%s', (name, Ctor) => {
+  let ORIGINAL_TAG_REPO: Ctor<TagRepo>;
   let tagRepo: TagRepo;
 
   beforeAll(() => {
+    ORIGINAL_TAG_REPO = ctor(container.get<TagRepo>(TYPES.TagRepo));
     container.rebind<TagRepo>(TYPES.TagRepo).to(Ctor);
   });
 

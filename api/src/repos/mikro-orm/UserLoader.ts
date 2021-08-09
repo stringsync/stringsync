@@ -7,6 +7,7 @@ import { TYPES } from '../../inversify.constants';
 import { alignOneToOne, ensureNoErrors } from '../../util';
 import { UserLoader as IUserLoader } from '../types';
 import { em } from './em';
+import { pojo } from './pojo';
 
 @injectable()
 export class UserLoader implements IUserLoader {
@@ -31,7 +32,7 @@ export class UserLoader implements IUserLoader {
 
     const users = await this.em.find(UserEntity, { id: { $in: _ids } });
 
-    return alignOneToOne(_ids, users, {
+    return alignOneToOne(_ids, pojo(users), {
       getKey: (user) => user.id,
       getUniqueIdentifier: (user) => user.id,
       getMissingValue: () => null,

@@ -8,6 +8,7 @@ import { TYPES } from '../../inversify.constants';
 import { alignManyToMany, alignOneToOne, ensureNoErrors } from '../../util';
 import { TagLoader as ITagLoader } from '../types';
 import { em } from './em';
+import { pojo } from './pojo';
 
 @injectable()
 export class TagLoader implements ITagLoader {
@@ -40,7 +41,7 @@ export class TagLoader implements ITagLoader {
 
     const tags = await this.em.find(TagEntity, { id: { $in: _ids } });
 
-    return alignOneToOne(_ids, tags, {
+    return alignOneToOne(_ids, pojo(tags), {
       getKey: (tag) => tag.id,
       getUniqueIdentifier: (tag) => tag.id,
       getMissingValue: () => null,
@@ -60,7 +61,7 @@ export class TagLoader implements ITagLoader {
     const taggingsByTagId = groupBy(taggings, 'tagId');
     const notationIdsByTagId = mapValues(taggingsByTagId, (taggings) => taggings.map((tagging) => tagging.notationId));
 
-    return alignManyToMany(_notationIds, tags, {
+    return alignManyToMany(_notationIds, pojo(tags), {
       getKeys: (tag) => notationIdsByTagId[tag.id] || [],
       getUniqueIdentifier: (tag) => tag.id,
       getMissingValue: () => [],

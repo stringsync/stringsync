@@ -9,6 +9,7 @@ import { Connection, Pager, PagingCtx, PagingType, UserConnectionArgs } from '..
 import { findUserPageMaxQuery, findUserPageMinQuery } from '../queries';
 import { UserLoader, UserRepo as IUserRepo } from '../types';
 import { em } from './em';
+import { pojo } from './pojo';
 
 @injectable()
 export class UserRepo implements IUserRepo {
@@ -23,15 +24,18 @@ export class UserRepo implements IUserRepo {
   async findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null> {
     const username = usernameOrEmail;
     const email = usernameOrEmail;
-    return await this.em.findOne(UserEntity, { $or: [{ username }, { email }] });
+    const user = await this.em.findOne(UserEntity, { $or: [{ username }, { email }] });
+    return pojo(user);
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return await this.em.findOne(UserEntity, { email });
+    const user = await this.em.findOne(UserEntity, { email });
+    return pojo(user);
   }
 
   async findByResetPasswordToken(resetPasswordToken: string): Promise<User | null> {
-    return await this.em.findOne(UserEntity, { resetPasswordToken });
+    const user = await this.em.findOne(UserEntity, { resetPasswordToken });
+    return pojo(user);
   }
 
   async count(): Promise<number> {
@@ -47,18 +51,22 @@ export class UserRepo implements IUserRepo {
   }
 
   async findAll(): Promise<User[]> {
-    return await this.em.find(UserEntity, {}, { orderBy: { cursor: QueryOrder.DESC } });
+    const users = await this.em.find(UserEntity, {}, { orderBy: { cursor: QueryOrder.DESC } });
+    return pojo(users);
   }
 
   async create(attrs: Partial<User>): Promise<User> {
-    return this.em.create(UserEntity, attrs);
+    const user = this.em.create(UserEntity, attrs);
+    this.em.persist(user);
+    await this.em.flush();
+    return pojo(user);
   }
 
   async bulkCreate(bulkAttrs: Partial<User>[]): Promise<User[]> {
     const users = bulkAttrs.map((attrs) => new UserEntity(attrs));
     this.em.persist(users);
     await this.em.flush();
-    return users;
+    return pojo(users);
   }
 
   async update(id: string, attrs: Partial<User>): Promise<User> {
@@ -69,7 +77,7 @@ export class UserRepo implements IUserRepo {
     this.em.assign(user, attrs);
     this.em.persist(user);
     await this.em.flush();
-    return user;
+    return pojo(user);
   }
 
   async findPage(args: UserConnectionArgs): Promise<Connection<User>> {
@@ -93,7 +101,7 @@ export class UserRepo implements IUserRepo {
       const min = get(minRows, '[0].min') || -Infinity;
       const max = get(maxRows, '[0].max') || +Infinity;
 
-      return { entities, min, max };
+      return { entities: pojo(entities), min, max };
     });
   }
 }

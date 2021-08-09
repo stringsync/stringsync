@@ -8,6 +8,7 @@ import { TYPES } from '../../inversify.constants';
 import { alignManyToMany, alignOneToMany, alignOneToOne, ensureNoErrors } from '../../util';
 import { NotationLoader as INotationLoader } from '../types';
 import { em } from './em';
+import { pojo } from './pojo';
 
 @injectable()
 export class NotationLoader implements INotationLoader {
@@ -48,7 +49,7 @@ export class NotationLoader implements INotationLoader {
 
     const notations = await this.em.find(NotationEntity, { id: { $in: _ids } });
 
-    return alignOneToOne(_ids, notations, {
+    return alignOneToOne(_ids, pojo(notations), {
       getKey: (notation) => notation.id,
       getUniqueIdentifier: (notation) => notation.id,
       getMissingValue: () => null,
@@ -80,7 +81,7 @@ export class NotationLoader implements INotationLoader {
     const taggingsByNotationId = groupBy(taggings, 'notationId');
     const tagIdsByNotationId = mapValues(taggingsByNotationId, (taggings) => taggings.map((tagging) => tagging.tagId));
 
-    return alignManyToMany([...tagIds], notations, {
+    return alignManyToMany([...tagIds], pojo(notations), {
       getKeys: (notation) => tagIdsByNotationId[notation.id] || [],
       getUniqueIdentifier: (notation) => notation.id,
       getMissingValue: () => [],

@@ -6,6 +6,7 @@ import { NotFoundError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { TaggingRepo as ITaggingRepo } from '../types';
 import { em } from './em';
+import { pojo } from './pojo';
 
 @injectable()
 export class TaggingRepo implements ITaggingRepo {
@@ -24,18 +25,22 @@ export class TaggingRepo implements ITaggingRepo {
   }
 
   async create(attrs: Partial<Tagging>): Promise<Tagging> {
-    return this.em.create(TaggingEntity, attrs);
+    const tagging = this.em.create(TaggingEntity, attrs);
+    this.em.persist(tagging);
+    await this.em.flush();
+    return pojo(tagging);
   }
 
   async find(id: string): Promise<Tagging | null> {
-    return this.em.findOne(TaggingEntity, { id });
+    const tagging = this.em.findOne(TaggingEntity, { id });
+    return pojo(tagging);
   }
 
   async bulkCreate(bulkAttrs: Partial<Tagging>[]): Promise<Tagging[]> {
     const taggings = bulkAttrs.map((attrs) => new TaggingEntity(attrs));
     this.em.persist(taggings);
     await this.em.flush();
-    return taggings;
+    return pojo(taggings);
   }
 
   async update(id: string, attrs: Partial<Tagging>): Promise<Tagging> {
@@ -46,6 +51,6 @@ export class TaggingRepo implements ITaggingRepo {
     this.em.assign(tagging, attrs);
     this.em.persist(tagging);
     await this.em.flush();
-    return tagging;
+    return pojo(tagging);
   }
 }

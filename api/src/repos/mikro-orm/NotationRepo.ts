@@ -9,6 +9,7 @@ import { Connection, NotationConnectionArgs, Pager, PagingCtx, PagingType } from
 import { findNotationPageMaxQuery, findNotationPageMinQuery, findNotationPageQuery } from '../queries';
 import { NotationLoader, NotationRepo as INotationRepo } from '../types';
 import { em } from './em';
+import { pojo } from './pojo';
 
 @injectable()
 export class NotationRepo implements INotationRepo {
@@ -41,7 +42,8 @@ export class NotationRepo implements INotationRepo {
   }
 
   async findAll(): Promise<Notation[]> {
-    return await this.em.find(NotationEntity, {}, { orderBy: { cursor: QueryOrder.DESC } });
+    const notations = await this.em.find(NotationEntity, {}, { orderBy: { cursor: QueryOrder.DESC } });
+    return pojo(notations);
   }
 
   async findAllByTagId(tagId: string): Promise<Notation[]> {
@@ -49,14 +51,17 @@ export class NotationRepo implements INotationRepo {
   }
 
   async create(attrs: Partial<Notation>) {
-    return this.em.create(NotationEntity, attrs);
+    const notation = this.em.create(NotationEntity, attrs);
+    this.em.persist(notation);
+    await this.em.flush();
+    return pojo(notation);
   }
 
   async bulkCreate(bulkAttrs: Partial<Notation>[]): Promise<Notation[]> {
     const notations = bulkAttrs.map((attrs) => new NotationEntity(attrs));
     this.em.persist(notations);
     await this.em.flush();
-    return notations;
+    return pojo(notations);
   }
 
   async update(id: string, attrs: Partial<Notation>): Promise<Notation> {
@@ -67,7 +72,7 @@ export class NotationRepo implements INotationRepo {
     this.em.assign(notation, attrs);
     this.em.persist(notation);
     await this.em.flush();
-    return notation;
+    return pojo(notation);
   }
 
   async findPage(args: NotationConnectionArgs): Promise<Connection<Notation>> {
@@ -78,13 +83,12 @@ export class NotationRepo implements INotationRepo {
       const { cursor, limit, pagingType } = pagingCtx;
       const queryArgs = { cursor, pagingType, limit, query, tagIds };
 
-      const [entityRows, minRows, maxRows] = await Promise.all([
+      const [entities, minRows, maxRows] = await Promise.all([
         this.db.query<Notation>(findNotationPageQuery(queryArgs)),
         this.db.query<number>(findNotationPageMinQuery(queryArgs)),
         this.db.query<number>(findNotationPageMaxQuery(queryArgs)),
       ]);
 
-      const entities = entityRows;
       if (pagingType === PagingType.BACKWARD) {
         entities.reverse();
       }
@@ -92,7 +96,7 @@ export class NotationRepo implements INotationRepo {
       const min = get(minRows, '[0].min') || -Infinity;
       const max = get(maxRows, '[0].max') || +Infinity;
 
-      return { entities, min, max };
+      return { entities: pojo(entities), min, max };
     });
   }
 }

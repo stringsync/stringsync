@@ -1,15 +1,16 @@
-import { isPlainObject, sortBy } from 'lodash';
+import { isPlainObject } from 'lodash';
+import { Db } from '../db';
 import { Notation, Tag, Tagging, User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
 import { buildRandNotation, buildRandTag, buildRandTagging, buildRandUser } from '../testing';
-import { ctor, randStr } from '../util';
-import { SequelizeTagLoader } from './sequelize';
+import { Ctor, ctor, randStr } from '../util';
+import { TagLoader as MikroORMTagLoader } from './mikro-orm';
+import { em } from './mikro-orm/em';
 import { NotationRepo, TaggingRepo, TagLoader, TagRepo, UserRepo } from './types';
 
-const ORIGINAL_TAG_LOADER = ctor(container.get<TagLoader>(TYPES.TagLoader));
-
-describe.each([['SequelizeTagLoader', SequelizeTagLoader]])('%s', (name, Ctor) => {
+describe.each([['MikroORMTagLoader', MikroORMTagLoader]])('%s', (name, Ctor) => {
+  let ORIGINAL_TAG_LOADER: Ctor<TagLoader>;
   let tagLoader: TagLoader;
   let tagRepo: TagRepo;
 
@@ -17,6 +18,7 @@ describe.each([['SequelizeTagLoader', SequelizeTagLoader]])('%s', (name, Ctor) =
   let tag2: Tag;
 
   beforeAll(() => {
+    ORIGINAL_TAG_LOADER = ctor(container.get<TagLoader>(TYPES.TagLoader));
     container.rebind<TagLoader>(TYPES.TagLoader).to(Ctor);
   });
 
@@ -24,6 +26,9 @@ describe.each([['SequelizeTagLoader', SequelizeTagLoader]])('%s', (name, Ctor) =
     tagLoader = container.get<TagLoader>(TYPES.TagLoader);
     tagRepo = container.get<TagRepo>(TYPES.TagRepo);
     [tag1, tag2] = await tagRepo.bulkCreate([buildRandTag(), buildRandTag()]);
+
+    const db = container.get<Db>(TYPES.Db);
+    em(db).clear();
   });
 
   afterAll(() => {
@@ -77,11 +82,14 @@ describe.each([['SequelizeTagLoader', SequelizeTagLoader]])('%s', (name, Ctor) =
         buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
         buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
       ]);
+
+      const db = container.get<Db>(TYPES.Db);
+      em(db).clear();
     });
 
     it('finds a tag by notation id', async () => {
       const tags = await tagLoader.findAllByNotationId(notation1.id);
-      expect(sortBy(tags, 'id')).toStrictEqual(sortBy([tag1, tag2], 'id'));
+      expect(tags).toIncludeAllMembers([tag1, tag2]);
     });
   });
 });

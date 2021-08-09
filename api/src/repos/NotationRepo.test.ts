@@ -3,13 +3,12 @@ import { Notation, Tag, User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
 import { buildRandNotation, buildRandTag, buildRandTagging, buildRandUser } from '../testing';
-import { ctor, randStr } from '../util';
-import { SequelizeNotationRepo } from './sequelize';
+import { Ctor, ctor, randStr } from '../util';
+import { NotationRepo as MikroORMNotationRepo } from './mikro-orm';
 import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from './types';
 
-const ORIGINAL_NOTATION_REPO = ctor(container.get<NotationRepo>(TYPES.NotationRepo));
-
-describe.each([['SequelizeNotationRepo', SequelizeNotationRepo]])('%s', (name, Ctor) => {
+describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Ctor) => {
+  let ORIGINAL_NOTATION_REPO: Ctor<NotationRepo>;
   let notationRepo: NotationRepo;
   let userRepo: UserRepo;
 
@@ -17,6 +16,7 @@ describe.each([['SequelizeNotationRepo', SequelizeNotationRepo]])('%s', (name, C
   let transcriberId: string;
 
   beforeAll(() => {
+    ORIGINAL_NOTATION_REPO = ctor(container.get<NotationRepo>(TYPES.NotationRepo));
     container.rebind<NotationRepo>(TYPES.NotationRepo).to(Ctor);
   });
 

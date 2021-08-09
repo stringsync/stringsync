@@ -3,19 +3,19 @@ import { User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
 import { createRandUsers } from '../testing';
-import { ctor, randStr } from '../util';
-import { SequelizeUserLoader } from './sequelize';
+import { Ctor, ctor, randStr } from '../util';
+import { UserLoader as MikroORMUserLoader } from './mikro-orm';
 import { UserLoader } from './types';
 
-const ORIGINAL_USER_LOADER = ctor(container.get<UserLoader>(TYPES.UserLoader));
-
-describe.each([['SequelizeUserLoader', SequelizeUserLoader]])('%s', (name, Ctor) => {
+describe.each([['MikroORMUserLoader', MikroORMUserLoader]])('%s', (name, Ctor) => {
+  let ORIGINAL_USER_LOADER: Ctor<UserLoader>;
   let userLoader: UserLoader;
 
   let user1: User;
   let user2: User;
 
   beforeAll(() => {
+    ORIGINAL_USER_LOADER = ctor(container.get<UserLoader>(TYPES.UserLoader));
     container.rebind<UserLoader>(TYPES.UserLoader).to(Ctor);
   });
 

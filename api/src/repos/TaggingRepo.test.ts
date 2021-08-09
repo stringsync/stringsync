@@ -3,13 +3,12 @@ import { Notation, Tag, Tagging, User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
 import { buildRandNotation, buildRandTag, buildRandTagging, buildRandUser } from '../testing';
-import { ctor, randStr } from '../util';
-import { SequelizeTaggingRepo } from './sequelize';
+import { Ctor, ctor, randStr } from '../util';
+import { TaggingRepo as MikroORMTaggingRepo } from './mikro-orm';
 import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from './types';
 
-const ORIGINAL_TAGGING_REPO = ctor(container.get<TaggingRepo>(TYPES.TaggingRepo));
-
-describe.each([['SequelizeTaggingRepo', SequelizeTaggingRepo]])('%s', (name, Ctor) => {
+describe.each([['MikroORMTaggingRepo', MikroORMTaggingRepo]])('%s', (name, Ctor) => {
+  let ORIGINAL_TAGGING_REPO: Ctor<TaggingRepo>;
   let taggingRepo: TaggingRepo;
 
   let user1: User;
@@ -25,6 +24,7 @@ describe.each([['SequelizeTaggingRepo', SequelizeTaggingRepo]])('%s', (name, Cto
   let tagging2: Tagging;
 
   beforeAll(() => {
+    ORIGINAL_TAGGING_REPO = ctor(container.get<TaggingRepo>(TYPES.TaggingRepo));
     container.rebind<TaggingRepo>(TYPES.TaggingRepo).to(Ctor);
   });
 

@@ -9,6 +9,8 @@ import { UserEntity } from './UserEntity';
 
 @Entity({ tableName: 'notations' })
 export class NotationEntity extends BaseEntity implements Notation {
+  associations = ['transcriber', 'tags', 'taggings'];
+
   @PrimaryKey()
   id!: string;
 

@@ -3,3 +3,4 @@ export * from './TaggingEntity';
 export * from './TagEntity';
 export * from './NotationEntity';
 export * from './UserEntity';
+export * from './BaseEntity';

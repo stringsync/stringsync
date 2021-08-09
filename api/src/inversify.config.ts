@@ -5,22 +5,16 @@ import { Config, config } from './config';
 import { Db, MikroORMDb } from './db';
 import { TYPES } from './inversify.constants';
 import { AssociateVideoUrl, PulseCheck, SendMail } from './jobs';
+import { NotationLoader, NotationRepo, TaggingRepo, TagLoader, TagRepo, UserLoader, UserRepo } from './repos';
 import {
-  NotationLoader,
-  NotationRepo,
-  SequelizeNotationLoader,
-  SequelizeNotationRepo,
-  SequelizeTaggingRepo,
-  SequelizeTagLoader,
-  SequelizeTagRepo,
-  SequelizeUserLoader,
-  SequelizeUserRepo,
-  TaggingRepo,
-  TagLoader,
-  TagRepo,
-  UserLoader,
-  UserRepo,
-} from './repos';
+  NotationLoader as MikroORMNotationLoader,
+  NotationRepo as MikroORMNotationRepo,
+  TaggingRepo as MikroORMTaggingRepo,
+  TagLoader as MikroORMTagLoader,
+  TagRepo as MikroORMTagRepo,
+  UserLoader as MikroORMUserLoader,
+  UserRepo as MikroORMUserRepo,
+} from './repos/mikro-orm';
 import { AuthResolver, ExperimentResolver, NotationResolver, TagResolver, UserResolver } from './resolvers';
 import { ApiServer, DevApiServer, GraphqlServer, JobServer } from './server';
 import { WorkerServer } from './server/worker';
@@ -86,13 +80,13 @@ container.bind<TaggingService>(TYPES.TaggingService).to(TaggingService);
 container.bind<UserService>(TYPES.UserService).to(UserService);
 container.bind<VideoUrlService>(TYPES.VideoUrlService).to(VideoUrlService);
 
-container.bind<TagLoader>(TYPES.TagLoader).to(SequelizeTagLoader);
-container.bind<TagRepo>(TYPES.TagRepo).to(SequelizeTagRepo);
-container.bind<UserRepo>(TYPES.UserRepo).to(SequelizeUserRepo);
-container.bind<UserLoader>(TYPES.UserLoader).to(SequelizeUserLoader);
-container.bind<NotationRepo>(TYPES.NotationRepo).to(SequelizeNotationRepo);
-container.bind<NotationLoader>(TYPES.NotationLoader).to(SequelizeNotationLoader);
-container.bind<TaggingRepo>(TYPES.TaggingRepo).to(SequelizeTaggingRepo);
+container.bind<TagLoader>(TYPES.TagLoader).to(MikroORMTagLoader);
+container.bind<TagRepo>(TYPES.TagRepo).to(MikroORMTagRepo);
+container.bind<UserRepo>(TYPES.UserRepo).to(MikroORMUserRepo);
+container.bind<UserLoader>(TYPES.UserLoader).to(MikroORMUserLoader);
+container.bind<NotationRepo>(TYPES.NotationRepo).to(MikroORMNotationRepo);
+container.bind<NotationLoader>(TYPES.NotationLoader).to(MikroORMNotationLoader);
+container.bind<TaggingRepo>(TYPES.TaggingRepo).to(MikroORMTaggingRepo);
 
 if (config.NODE_ENV === 'test') {
   container.bind<MessageQueue>(TYPES.MessageQueue).to(NoopMessageQueue);

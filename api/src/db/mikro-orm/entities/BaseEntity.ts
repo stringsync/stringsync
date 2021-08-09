@@ -3,6 +3,8 @@ import { validate } from 'class-validator';
 import { ValidationError } from '../../../errors';
 
 export abstract class BaseEntity {
+  abstract associations: string[];
+
   async isValid(): Promise<boolean> {
     const errors = await this.errors();
     return errors.length === 0;

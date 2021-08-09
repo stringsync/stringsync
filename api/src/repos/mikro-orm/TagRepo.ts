@@ -6,6 +6,7 @@ import { NotFoundError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { TagLoader, TagRepo as ITagRepo } from '../types';
 import { em } from './em';
+import { pojo } from './pojo';
 
 @injectable()
 export class TagRepo implements ITagRepo {
@@ -24,7 +25,16 @@ export class TagRepo implements ITagRepo {
   }
 
   async create(attrs: Partial<Tag>): Promise<Tag> {
-    return this.em.create(TagEntity, attrs);
+    const tag = this.em.create(TagEntity, attrs);
+    this.em.persist(tag);
+    await this.em.flush();
+
+    this.em
+      .getUnitOfWork()
+      .getIdentityMap()
+      .delete(tag);
+
+    return pojo(tag);
   }
 
   async find(id: string): Promise<Tag | null> {
@@ -32,7 +42,8 @@ export class TagRepo implements ITagRepo {
   }
 
   async findAll(): Promise<Tag[]> {
-    return await this.em.find(TagEntity, {});
+    const tags = await this.em.find(TagEntity, {});
+    return pojo(tags);
   }
 
   async findAllByNotationId(notationId: string): Promise<Tag[]> {
@@ -43,17 +54,17 @@ export class TagRepo implements ITagRepo {
     const tags = bulkAttrs.map((attrs) => new TagEntity(attrs));
     this.em.persist(tags);
     await this.em.flush();
-    return tags;
+    return pojo(tags);
   }
 
   async update(id: string, attrs: Partial<Tag>): Promise<Tag> {
-    const tag = await this.find(id);
+    const tag = await this.em.findOne(TagEntity, { id });
     if (!tag) {
       throw new NotFoundError('tag not found');
     }
     this.em.assign(tag, attrs);
     this.em.persist(tag);
     await this.em.flush();
-    return tag;
+    return pojo(tag);
   }
 }

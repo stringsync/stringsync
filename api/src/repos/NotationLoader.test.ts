@@ -1,15 +1,17 @@
 import { isPlainObject, sortBy } from 'lodash';
+import { Db } from '../db';
 import { Notation, User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
 import { buildRandNotation, buildRandUser } from '../testing';
-import { ctor, randStr } from '../util';
-import { SequelizeNotationLoader } from './sequelize';
+import { Ctor, ctor, randStr } from '../util';
+import { NotationLoader as MikroORMNotationLoader } from './mikro-orm';
+import { em } from './mikro-orm/em';
 import { NotationLoader, NotationRepo, UserRepo } from './types';
 
-const ORIGINAL_NOTATION_LOADER = ctor(container.get<NotationLoader>(TYPES.NotationLoader));
+describe.each([['MikroORMNotationLoader', MikroORMNotationLoader]])('%s', (name, Ctor) => {
+  let ORIGINAL_NOTATION_LOADER: Ctor<NotationLoader>;
 
-describe.each([['SequelizeNotationLoader', SequelizeNotationLoader]])('%s', (name, Ctor) => {
   let notationLoader: NotationLoader;
 
   let transcriber1: User;
@@ -19,6 +21,7 @@ describe.each([['SequelizeNotationLoader', SequelizeNotationLoader]])('%s', (nam
   let notation3: Notation;
 
   beforeAll(() => {
+    ORIGINAL_NOTATION_LOADER = ctor(container.get<NotationLoader>(TYPES.NotationLoader));
     container.rebind<NotationLoader>(TYPES.NotationLoader).to(Ctor);
   });
 
@@ -34,6 +37,9 @@ describe.each([['SequelizeNotationLoader', SequelizeNotationLoader]])('%s', (nam
       buildRandNotation({ transcriberId: transcriber1.id }),
       buildRandNotation({ transcriberId: transcriber2.id }),
     ]);
+
+    const db = container.get<Db>(TYPES.Db);
+    em(db).clear();
   });
 
   afterAll(() => {

@@ -6,6 +6,8 @@ import { NotationEntity } from './NotationEntity';
 
 @Entity({ tableName: 'users' })
 export class UserEntity extends BaseEntity implements User {
+  associations = ['notations'];
+
   @PrimaryKey()
   id!: string;
 
