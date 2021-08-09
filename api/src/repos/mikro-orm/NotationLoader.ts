@@ -7,7 +7,7 @@ import { Notation } from '../../domain';
 import { TYPES } from '../../inversify.constants';
 import { alignManyToMany, alignOneToMany, alignOneToOne, ensureNoErrors } from '../../util';
 import { NotationLoader as INotationLoader } from '../types';
-import { em } from './em';
+import { getEntityManager } from './getEntityManager';
 import { pojo } from './pojo';
 
 @injectable()
@@ -19,7 +19,7 @@ export class NotationLoader implements INotationLoader {
   byTagIdLoader: Dataloader<string, Notation[]>;
 
   constructor(@inject(TYPES.Db) public db: Db) {
-    this.em = em(db);
+    this.em = getEntityManager(db);
 
     this.byIdLoader = new Dataloader(this.loadById);
     this.byTranscriberIdLoader = new Dataloader(this.loadAllByTranscriberId);
@@ -61,7 +61,7 @@ export class NotationLoader implements INotationLoader {
 
     const notations = await this.em.find(NotationEntity, { transcriberId: { $in: _transcriberIds } });
 
-    return alignOneToMany(_transcriberIds, notations, {
+    return alignOneToMany(_transcriberIds, pojo(notations), {
       getKey: (notation) => notation.transcriberId,
       getUniqueIdentifier: (notation) => notation.id,
       getMissingValue: () => [],
@@ -74,7 +74,7 @@ export class NotationLoader implements INotationLoader {
     const taggings = await this.em.find(
       TaggingEntity,
       { tagId: _tagIds },
-      { populate: { notation: LoadStrategy.JOINED } }
+      { populate: { notation: LoadStrategy.JOINED }, refresh: true }
     );
     const notations = await Promise.all(taggings.map((tagging) => tagging.notation.load()));
 

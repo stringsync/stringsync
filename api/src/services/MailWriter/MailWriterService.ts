@@ -42,7 +42,7 @@ export class MailWriterService {
     pathname: string,
     query: T
   ): string {
-    const origin = new URL(this.config.WEB_UI_CDN_DOMAIN_NAME);
+    const origin = new URL(`https://${this.config.WEB_UI_CDN_DOMAIN_NAME}`);
     return url.format({
       protocol: origin.protocol,
       hostname: origin.hostname,

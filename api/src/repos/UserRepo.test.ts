@@ -117,7 +117,7 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
     });
 
     it('disallows duplicate ids', async () => {
-      const user = buildRandUser({ id: 'id' });
+      const user = buildRandUser({ id: undefined });
 
       await expect(userRepo.create(user)).resolves.not.toThrow();
       await expect(userRepo.create(user)).rejects.toThrow();

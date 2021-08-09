@@ -5,7 +5,7 @@ import { Tagging } from '../../domain';
 import { NotFoundError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { TaggingRepo as ITaggingRepo } from '../types';
-import { em } from './em';
+import { getEntityManager } from './getEntityManager';
 import { pojo } from './pojo';
 
 @injectable()
@@ -13,7 +13,7 @@ export class TaggingRepo implements ITaggingRepo {
   em: EntityManager;
 
   constructor(@inject(TYPES.Db) private db: Db) {
-    this.em = em(this.db);
+    this.em = getEntityManager(this.db);
   }
 
   async count(): Promise<number> {
@@ -32,8 +32,8 @@ export class TaggingRepo implements ITaggingRepo {
   }
 
   async find(id: string): Promise<Tagging | null> {
-    const tagging = this.em.findOne(TaggingEntity, { id });
-    return pojo(tagging);
+    const tagging = await this.em.findOne(TaggingEntity, { id });
+    return tagging ? pojo(tagging) : null;
   }
 
   async bulkCreate(bulkAttrs: Partial<Tagging>[]): Promise<Tagging[]> {
@@ -44,7 +44,7 @@ export class TaggingRepo implements ITaggingRepo {
   }
 
   async update(id: string, attrs: Partial<Tagging>): Promise<Tagging> {
-    const tagging = await this.find(id);
+    const tagging = await this.em.findOne(TaggingEntity, { id });
     if (!tagging) {
       throw new NotFoundError('tagging not found');
     }

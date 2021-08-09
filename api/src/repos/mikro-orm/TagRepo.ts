@@ -5,7 +5,7 @@ import { Tag } from '../../domain';
 import { NotFoundError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { TagLoader, TagRepo as ITagRepo } from '../types';
-import { em } from './em';
+import { getEntityManager } from './getEntityManager';
 import { pojo } from './pojo';
 
 @injectable()
@@ -13,7 +13,7 @@ export class TagRepo implements ITagRepo {
   em: EntityManager;
 
   constructor(@inject(TYPES.TagLoader) private tagLoader: TagLoader, @inject(TYPES.Db) private db: Db) {
-    this.em = em(this.db);
+    this.em = getEntityManager(this.db);
   }
 
   async count(): Promise<number> {
@@ -26,13 +26,9 @@ export class TagRepo implements ITagRepo {
 
   async create(attrs: Partial<Tag>): Promise<Tag> {
     const tag = this.em.create(TagEntity, attrs);
+
     this.em.persist(tag);
     await this.em.flush();
-
-    this.em
-      .getUnitOfWork()
-      .getIdentityMap()
-      .delete(tag);
 
     return pojo(tag);
   }

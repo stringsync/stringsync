@@ -1,14 +1,18 @@
+import { EntityManager } from '@mikro-orm/core';
 import { isPlainObject, sortBy } from 'lodash';
+import { Db } from '../db';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
 import { buildRandTag } from '../testing';
 import { Ctor, ctor, randStr } from '../util';
 import { TagRepo as MikroORMTagRepo } from './mikro-orm';
+import { getEntityManager } from './mikro-orm/getEntityManager';
 import { TagRepo } from './types';
 
 describe.each([['MikroORMTagRepo', MikroORMTagRepo]])('%s', (name, Ctor) => {
   let ORIGINAL_TAG_REPO: Ctor<TagRepo>;
   let tagRepo: TagRepo;
+  let em: EntityManager;
 
   beforeAll(() => {
     ORIGINAL_TAG_REPO = ctor(container.get<TagRepo>(TYPES.TagRepo));
@@ -17,6 +21,8 @@ describe.each([['MikroORMTagRepo', MikroORMTagRepo]])('%s', (name, Ctor) => {
 
   beforeEach(() => {
     tagRepo = container.get<TagRepo>(TYPES.TagRepo);
+    const db = container.get<Db>(TYPES.Db);
+    em = getEntityManager(db);
   });
 
   afterAll(() => {
@@ -60,10 +66,8 @@ describe.each([['MikroORMTagRepo', MikroORMTagRepo]])('%s', (name, Ctor) => {
       expect(isPlainObject(tag)).toBe(true);
     });
 
-    it('disallows duplicate ids', async () => {
-      const id = randStr(8);
-      const tag = buildRandTag({ id });
-
+    it('disallows duplicate tags', async () => {
+      const tag = buildRandTag({ id: undefined });
       await expect(tagRepo.create(tag)).resolves.not.toThrow();
       await expect(tagRepo.create(tag)).rejects.toThrow();
     });

@@ -92,8 +92,8 @@ describe.each([['MikroORMTaggingRepo', MikroORMTaggingRepo]])('%s', (name, Ctor)
       expect(isPlainObject(tagging)).toBe(true);
     });
 
-    it('disallows duplicate ids', async () => {
-      const tagging = buildRandTagging({ id: randStr(8), notationId: notation2.id, tagId: tag2.id });
+    it('disallows duplicate taggings', async () => {
+      const tagging = buildRandTagging({ id: undefined, notationId: notation2.id, tagId: tag2.id });
 
       await expect(taggingRepo.create(tagging)).resolves.not.toThrow();
       await expect(taggingRepo.create(tagging)).rejects.toThrow();

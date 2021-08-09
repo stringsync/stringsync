@@ -6,7 +6,7 @@ import { TYPES } from '../inversify.constants';
 import { buildRandNotation, buildRandTag, buildRandTagging, buildRandUser } from '../testing';
 import { Ctor, ctor, randStr } from '../util';
 import { TagLoader as MikroORMTagLoader } from './mikro-orm';
-import { em } from './mikro-orm/em';
+import { getEntityManager } from './mikro-orm/getEntityManager';
 import { NotationRepo, TaggingRepo, TagLoader, TagRepo, UserRepo } from './types';
 
 describe.each([['MikroORMTagLoader', MikroORMTagLoader]])('%s', (name, Ctor) => {
@@ -28,7 +28,7 @@ describe.each([['MikroORMTagLoader', MikroORMTagLoader]])('%s', (name, Ctor) => 
     [tag1, tag2] = await tagRepo.bulkCreate([buildRandTag(), buildRandTag()]);
 
     const db = container.get<Db>(TYPES.Db);
-    em(db).clear();
+    getEntityManager(db).clear();
   });
 
   afterAll(() => {
@@ -84,7 +84,7 @@ describe.each([['MikroORMTagLoader', MikroORMTagLoader]])('%s', (name, Ctor) => 
       ]);
 
       const db = container.get<Db>(TYPES.Db);
-      em(db).clear();
+      getEntityManager(db).clear();
     });
 
     it('finds a tag by notation id', async () => {

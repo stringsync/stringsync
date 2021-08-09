@@ -4,7 +4,8 @@ module.exports = {
       CREATE TABLE taggings (
           id TEXT PRIMARY KEY,
           notation_id TEXT REFERENCES notations (id) ON DELETE CASCADE,
-          tag_id TEXT REFERENCES tags (id) ON DELETE CASCADE
+          tag_id TEXT REFERENCES tags (id) ON DELETE CASCADE,
+          UNIQUE (notation_id, tag_id)
       );
 
       CREATE TRIGGER trigger_generate_tagging_id BEFORE INSERT ON taggings FOR EACH ROW EXECUTE PROCEDURE unique_short_id();

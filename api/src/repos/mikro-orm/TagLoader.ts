@@ -7,7 +7,7 @@ import { Tag } from '../../domain';
 import { TYPES } from '../../inversify.constants';
 import { alignManyToMany, alignOneToOne, ensureNoErrors } from '../../util';
 import { TagLoader as ITagLoader } from '../types';
-import { em } from './em';
+import { getEntityManager } from './getEntityManager';
 import { pojo } from './pojo';
 
 @injectable()
@@ -18,7 +18,7 @@ export class TagLoader implements ITagLoader {
   byNotationIdLoader: Dataloader<string, Tag[]>;
 
   constructor(@inject(TYPES.Db) private db: Db) {
-    this.em = em(db);
+    this.em = getEntityManager(db);
 
     this.byIdLoader = new Dataloader(this.loadByIds);
     this.byNotationIdLoader = new Dataloader(this.loadAllByNotationIds);
@@ -54,7 +54,7 @@ export class TagLoader implements ITagLoader {
     const taggings = await this.em.find(
       TaggingEntity,
       { notationId: { $in: _notationIds } },
-      { populate: { tag: LoadStrategy.JOINED } }
+      { populate: { tag: LoadStrategy.JOINED }, refresh: true }
     );
     const tags = await Promise.all(taggings.map((tagging) => tagging.tag.load()));
 

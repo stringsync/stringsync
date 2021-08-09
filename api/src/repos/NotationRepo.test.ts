@@ -148,8 +148,8 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
       expect(isPlainObject(foundNotation)).toBe(true);
     });
 
-    it('disallows duplicate ids', async () => {
-      const notation = buildRandNotation({ transcriberId });
+    it('disallows duplicate notations', async () => {
+      const notation = buildRandNotation({ id: undefined, transcriberId });
 
       await expect(notationRepo.create(notation)).resolves.not.toThrow();
       await expect(notationRepo.create(notation)).rejects.toThrow();

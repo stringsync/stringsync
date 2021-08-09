@@ -6,7 +6,7 @@ import { User } from '../../domain';
 import { TYPES } from '../../inversify.constants';
 import { alignOneToOne, ensureNoErrors } from '../../util';
 import { UserLoader as IUserLoader } from '../types';
-import { em } from './em';
+import { getEntityManager } from './getEntityManager';
 import { pojo } from './pojo';
 
 @injectable()
@@ -16,7 +16,7 @@ export class UserLoader implements IUserLoader {
   byIdLoader: Dataloader<string, User | null>;
 
   constructor(@inject(TYPES.Db) public db: Db) {
-    this.em = em(db);
+    this.em = getEntityManager(db);
 
     this.byIdLoader = new Dataloader(this.loadAllById);
   }

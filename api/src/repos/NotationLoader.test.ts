@@ -1,4 +1,5 @@
-import { isPlainObject, sortBy } from 'lodash';
+import { EntityManager } from '@mikro-orm/core';
+import { isPlainObject } from 'lodash';
 import { Db } from '../db';
 import { Notation, User } from '../domain';
 import { container } from '../inversify.config';
@@ -6,12 +7,13 @@ import { TYPES } from '../inversify.constants';
 import { buildRandNotation, buildRandUser } from '../testing';
 import { Ctor, ctor, randStr } from '../util';
 import { NotationLoader as MikroORMNotationLoader } from './mikro-orm';
-import { em } from './mikro-orm/em';
+import { getEntityManager } from './mikro-orm/getEntityManager';
 import { NotationLoader, NotationRepo, UserRepo } from './types';
 
 describe.each([['MikroORMNotationLoader', MikroORMNotationLoader]])('%s', (name, Ctor) => {
   let ORIGINAL_NOTATION_LOADER: Ctor<NotationLoader>;
 
+  let em: EntityManager;
   let notationLoader: NotationLoader;
 
   let transcriber1: User;
@@ -26,6 +28,9 @@ describe.each([['MikroORMNotationLoader', MikroORMNotationLoader]])('%s', (name,
   });
 
   beforeEach(async () => {
+    const db = container.get<Db>(TYPES.Db);
+    em = getEntityManager(db);
+
     notationLoader = container.get<NotationLoader>(TYPES.NotationLoader);
 
     const userRepo = container.get<UserRepo>(TYPES.UserRepo);
@@ -37,9 +42,6 @@ describe.each([['MikroORMNotationLoader', MikroORMNotationLoader]])('%s', (name,
       buildRandNotation({ transcriberId: transcriber1.id }),
       buildRandNotation({ transcriberId: transcriber2.id }),
     ]);
-
-    const db = container.get<Db>(TYPES.Db);
-    em(db).clear();
   });
 
   afterAll(() => {
@@ -68,7 +70,7 @@ describe.each([['MikroORMNotationLoader', MikroORMNotationLoader]])('%s', (name,
     it('finds a notation by transcriberId', async () => {
       const notations = await notationLoader.findAllByTranscriberId(transcriber1.id);
       expect(notations).toHaveLength(2);
-      expect(sortBy(notations, 'id')).toStrictEqual(sortBy([notation1, notation2], 'id'));
+      expect(notations).toIncludeAllMembers([notation1, notation2]);
     });
 
     it('returns an empty array for a missing transcriber', async () => {

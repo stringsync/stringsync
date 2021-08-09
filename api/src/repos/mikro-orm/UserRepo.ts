@@ -8,7 +8,7 @@ import { TYPES } from '../../inversify.constants';
 import { Connection, Pager, PagingCtx, PagingType, UserConnectionArgs } from '../../util';
 import { findUserPageMaxQuery, findUserPageMinQuery } from '../queries';
 import { UserLoader, UserRepo as IUserRepo } from '../types';
-import { em } from './em';
+import { getEntityManager } from './getEntityManager';
 import { pojo } from './pojo';
 
 @injectable()
@@ -18,24 +18,24 @@ export class UserRepo implements IUserRepo {
   em: EntityManager;
 
   constructor(@inject(TYPES.UserLoader) public userLoader: UserLoader, @inject(TYPES.Db) public db: Db) {
-    this.em = em(db);
+    this.em = getEntityManager(db);
   }
 
   async findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null> {
     const username = usernameOrEmail;
     const email = usernameOrEmail;
     const user = await this.em.findOne(UserEntity, { $or: [{ username }, { email }] });
-    return pojo(user);
+    return user ? pojo(user) : null;
   }
 
   async findByEmail(email: string): Promise<User | null> {
     const user = await this.em.findOne(UserEntity, { email });
-    return pojo(user);
+    return user ? pojo(user) : null;
   }
 
   async findByResetPasswordToken(resetPasswordToken: string): Promise<User | null> {
     const user = await this.em.findOne(UserEntity, { resetPasswordToken });
-    return pojo(user);
+    return user ? pojo(user) : null;
   }
 
   async count(): Promise<number> {
@@ -70,7 +70,7 @@ export class UserRepo implements IUserRepo {
   }
 
   async update(id: string, attrs: Partial<User>): Promise<User> {
-    const user = await this.find(id);
+    const user = await this.em.findOne(UserEntity, { id });
     if (!user) {
       throw new NotFoundError('user not found');
     }

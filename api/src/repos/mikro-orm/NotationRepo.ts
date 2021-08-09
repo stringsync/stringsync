@@ -8,7 +8,7 @@ import { TYPES } from '../../inversify.constants';
 import { Connection, NotationConnectionArgs, Pager, PagingCtx, PagingType } from '../../util';
 import { findNotationPageMaxQuery, findNotationPageMinQuery, findNotationPageQuery } from '../queries';
 import { NotationLoader, NotationRepo as INotationRepo } from '../types';
-import { em } from './em';
+import { getEntityManager } from './getEntityManager';
 import { pojo } from './pojo';
 
 @injectable()
@@ -18,7 +18,7 @@ export class NotationRepo implements INotationRepo {
   em: EntityManager;
 
   constructor(@inject(TYPES.NotationLoader) private notationLoader: NotationLoader, @inject(TYPES.Db) private db: Db) {
-    this.em = em(this.db);
+    this.em = getEntityManager(this.db);
   }
 
   async findAllByTranscriberId(transcriberId: string): Promise<Notation[]> {
@@ -65,7 +65,7 @@ export class NotationRepo implements INotationRepo {
   }
 
   async update(id: string, attrs: Partial<Notation>): Promise<Notation> {
-    const notation = await this.find(id);
+    const notation = await this.em.findOne(NotationEntity, { id });
     if (!notation) {
       throw new NotFoundError('notation not found');
     }
@@ -96,7 +96,7 @@ export class NotationRepo implements INotationRepo {
       const min = get(minRows, '[0].min') || -Infinity;
       const max = get(maxRows, '[0].max') || +Infinity;
 
-      return { entities: pojo(entities), min, max };
+      return { entities, min, max };
     });
   }
 }
