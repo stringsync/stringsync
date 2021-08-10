@@ -16,7 +16,7 @@ import { scrollToTop } from '../../../util/scrollToTop';
 import { libraryMachine, libraryModel } from './libraryMachine';
 import { NotationCard } from './NotationCard';
 
-const QUERY_DEBOUNCE_DELAY_MS = 500;
+const QUERY_DEBOUNCE_DELAY_MS = 1000;
 const TAG_IDS_DEBOUNCE_DELAY_MS = 1000;
 const CLEAR_ERRORS_ANIMATION_DELAY_MS = 500;
 const LOADER_TRIGGER_ID = 'loader-trigger';
@@ -221,7 +221,7 @@ export const Library: React.FC<Props> = enhance(() => {
       )}
 
       {/* When this is visible, trigger loading  */}
-      {!hasLoadedLastPage && <div id={LOADER_TRIGGER_ID}></div>}
+      <div id={LOADER_TRIGGER_ID}></div>
       {hasErrors && (
         <AlertOuter xs={xs}>
           <Alert
