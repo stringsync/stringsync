@@ -60,9 +60,9 @@ describe('UserResolver', () => {
       const userRepo = container.get<UserRepo>(TYPES.UserRepo);
 
       users = await userRepo.bulkCreate([
-        buildRandUser({ role: UserRole.STUDENT }),
-        buildRandUser({ role: UserRole.TEACHER }),
-        buildRandUser({ role: UserRole.ADMIN }),
+        buildRandUser({ role: UserRole.STUDENT, cursor: undefined }),
+        buildRandUser({ role: UserRole.TEACHER, cursor: undefined }),
+        buildRandUser({ role: UserRole.ADMIN, cursor: undefined }),
       ]);
 
       [student, teacher, admin] = users;

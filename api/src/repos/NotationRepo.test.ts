@@ -134,6 +134,14 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
       expect(afterCount).toBe(beforeCount + 1);
     });
 
+    it('creates a notation without a cursor', async () => {
+      const beforeCount = await notationRepo.count();
+      await notationRepo.create(buildRandNotation({ transcriberId, cursor: undefined }));
+      const afterCount = await notationRepo.count();
+
+      expect(afterCount).toBe(beforeCount + 1);
+    });
+
     it('creates a queryable notation', async () => {
       const notation = await notationRepo.create(buildRandNotation({ transcriberId }));
       const foundNotation = await notationRepo.find(notation.id);
@@ -148,11 +156,13 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
       expect(isPlainObject(foundNotation)).toBe(true);
     });
 
-    it('disallows duplicate notations', async () => {
-      const notation = buildRandNotation({ id: undefined, transcriberId });
+    it('allows duplicate notations', async () => {
+      const notation = buildRandNotation({ id: undefined, cursor: undefined, transcriberId });
 
-      await expect(notationRepo.create(notation)).resolves.not.toThrow();
-      await expect(notationRepo.create(notation)).rejects.toThrow();
+      const notation1 = await notationRepo.create(notation);
+      const notation2 = await notationRepo.create(notation);
+
+      expect(notation1.id).not.toBe(notation2.id);
     });
   });
 

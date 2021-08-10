@@ -23,8 +23,8 @@ describe('NotationService', () => {
 
     user = await createRandUser();
     [notation1, notation2] = await notationRepo.bulkCreate([
-      buildRandNotation({ transcriberId: user.id }),
-      buildRandNotation({ transcriberId: user.id }),
+      buildRandNotation({ transcriberId: user.id, cursor: 1 }),
+      buildRandNotation({ transcriberId: user.id, cursor: 2 }),
     ]);
 
     notationService = container.get<NotationService>(TYPES.NotationService);
@@ -72,7 +72,6 @@ describe('NotationService', () => {
 
     it('finds all notations by tag id', async () => {
       const notations = await notationService.findAllByTagId(tag1.id);
-      expect(notations).toHaveLength(2);
       expect(notations).toIncludeAllMembers([notation1, notation2]);
     });
   });

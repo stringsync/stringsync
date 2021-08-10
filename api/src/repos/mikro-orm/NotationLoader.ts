@@ -29,6 +29,13 @@ export class NotationLoader implements INotationLoader {
 
   async findById(id: string) {
     const notation = await this.byIdLoader.load(id);
+    // console.log(notation);
+    // console.log(
+    //   this.em
+    //     .getUnitOfWork()
+    //     .getIdentityMap()
+    //     .values()
+    // );
     this.byIdLoader.clearAll();
     return ensureNoErrors(notation);
   }

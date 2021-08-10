@@ -37,7 +37,7 @@ const isMikroORMDb = (db: Db): db is MikroORMDb => db.ormType === Orm.MikroORM;
     const user = new UserEntity(
       buildRandUser({
         id: undefined,
-        username: `${sample(USERNAMES)}_${randStr(4)}${random(100, 999)}`,
+        username: `${sample(USERNAMES)}_${random(100, 999)}`,
         email: `${randStr(5)}@${randStr(5)}.com`,
         encryptedPassword: ENCRYPTED_PASSWORD,
         avatarUrl: sample(USER_AVATAR_URLS),
@@ -47,12 +47,11 @@ const isMikroORMDb = (db: Db): db is MikroORMDb => db.ormType === Orm.MikroORM;
     db.em.persist(user);
     return user;
   };
-  let notationCursor = 1;
   const buildNotation = (props: Partial<Notation> = {}) => {
     const notation = new NotationEntity(
       buildRandNotation({
         id: undefined,
-        cursor: notationCursor++,
+        cursor: 0,
         songName: `${sample(ADJECTIVES)} ${sample(NOUNS)}`,
         artistName: sample(ARTIST_NAMES),
         transcriberId: undefined,

@@ -7,13 +7,13 @@ import { buildRandNotation, buildRandTag, buildRandTagging, buildRandUser } from
 
 export const createRandUser = async (attrs: Partial<User> = {}): Promise<User> => {
   const userRepo = container.get<UserRepo>(TYPES.UserRepo);
-  return await userRepo.create(buildRandUser({ ...attrs }));
+  return await userRepo.create(buildRandUser({ ...attrs, cursor: undefined }));
 };
 
 export const createRandNotation = async (attrs: Partial<Notation> = {}): Promise<Notation> => {
   const transcriberId = attrs.transcriberId || (await createRandUser()).id;
   const notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
-  return await notationRepo.create(buildRandNotation({ ...attrs, transcriberId }));
+  return await notationRepo.create(buildRandNotation({ ...attrs, transcriberId, cursor: undefined }));
 };
 
 export const createRandTag = async (attrs: Partial<Tag> = {}): Promise<Tag> => {
@@ -35,7 +35,7 @@ export const createRandUsers = async (num: number): Promise<User[]> => {
 
 export const createRandNotations = async (num: number): Promise<Notation[]> => {
   const transcribers = await createRandUsers(num);
-  const notations = times(num, (ndx) => buildRandNotation({ transcriberId: transcribers[ndx].id }));
+  const notations = times(num, (ndx) => buildRandNotation({ transcriberId: transcribers[ndx].id, cursor: undefined }));
   const notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
   return await notationRepo.bulkCreate(notations);
 };

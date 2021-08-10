@@ -14,14 +14,14 @@ export class NotationEntity extends BaseEntity implements Notation {
   @PrimaryKey()
   id!: string;
 
-  @Property({ nullable: true, defaultRaw: 'DEFAULT' })
+  @Property({ persist: false })
   cursor!: number;
 
-  @Property({ type: 'TIMESTAMP' })
+  @Property({ defaultRaw: 'NOW()' })
   createdAt = new Date();
 
-  @Property({ type: 'TIMESTAMP', onUpdate: () => new Date() })
-  updatedAt!: Date;
+  @Property({ defaultRaw: 'NOW()', onUpdate: () => new Date() })
+  updatedAt = new Date();
 
   @Property()
   @Matches(/^[-A-Za-z0-9!?\s.()@&/']*$/)

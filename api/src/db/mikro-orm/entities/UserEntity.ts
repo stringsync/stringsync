@@ -11,7 +11,7 @@ export class UserEntity extends BaseEntity implements User {
   @PrimaryKey()
   id!: string;
 
-  @Property({ nullable: true, defaultRaw: 'DEFAULT' })
+  @Property({ persist: false })
   cursor!: number;
 
   @Property({ type: 'TIMESTAMP' })
