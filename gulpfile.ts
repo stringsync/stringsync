@@ -110,6 +110,11 @@ async function db() {
   await docker.db(composeFile, dbUsername);
 }
 
+async function migrator() {
+  const composeFile = DOCKER_COMPOSE_FILE.getOrDefault(constants.DOCKER_COMPOSE_DEV_FILE);
+  await docker.migrator(composeFile);
+}
+
 async function tscapi() {
   const watch = WATCH.getOrDefault(true);
 
@@ -227,6 +232,7 @@ exports['gensecrets'] = gensecrets;
 exports['logs'] = logs;
 exports['deploy'] = deploy;
 exports['db'] = db;
+exports['migrator'] = series(buildapp, migrator);
 
 exports['tscapi'] = tscapi;
 exports['tscweb'] = tscweb;

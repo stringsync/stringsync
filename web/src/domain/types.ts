@@ -32,4 +32,5 @@ export type Notation = {
   transcriberId: string;
   thumbnailUrl: string | null;
   videoUrl: string | null;
+  musicXmlUrl: string | null;
 };

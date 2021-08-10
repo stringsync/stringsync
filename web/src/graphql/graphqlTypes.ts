@@ -88,6 +88,7 @@ export type NotationObject = {
   transcriberId: Scalars['String'];
   thumbnailUrl?: Maybe<Scalars['String']>;
   videoUrl?: Maybe<Scalars['String']>;
+  musicXmlUrl?: Maybe<Scalars['String']>;
   transcriber: UserObject;
   tags: Array<TagObject>;
 };

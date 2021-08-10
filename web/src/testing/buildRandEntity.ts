@@ -32,6 +32,7 @@ export const buildRandNotation = (attrs: Partial<Notation> = {}): Notation => {
     transcriberId: randStr(8),
     thumbnailUrl: null,
     videoUrl: null,
+    musicXmlUrl: null,
     ...attrs,
   };
 };

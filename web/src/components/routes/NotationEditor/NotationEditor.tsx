@@ -21,6 +21,7 @@ const toNotation = (notationObj: NotationObject): Notation => ({
   transcriberId: notationObj.transcriberId,
   updatedAt: notationObj.updatedAt,
   videoUrl: notationObj.videoUrl || '',
+  musicXmlUrl: notationObj.musicXmlUrl || '',
 });
 
 interface Props {}

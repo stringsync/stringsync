@@ -34,7 +34,6 @@ services:
       - env/secrets.env
     links:
       - db
-    entrypoint: ['./api/bin/wait-for-it.sh', 'db:5432', '--']
     command: 'bash -c "cd api && yarn migrate && yarn seed"'
 
   api:

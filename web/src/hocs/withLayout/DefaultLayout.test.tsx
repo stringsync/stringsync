@@ -7,7 +7,7 @@ describe('DefaultLayout', () => {
   it('renders without crashing', () => {
     const { container } = render(
       <Test>
-        <DefaultLayout />
+        <DefaultLayout withContentLane />
       </Test>
     );
     expect(container).toBeInTheDocument();

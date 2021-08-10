@@ -38,6 +38,7 @@ export const buildRandNotation = (attrs: Partial<Notation> = {}): Notation => {
     cursor: randInt(0, 100000),
     thumbnailUrl: null,
     videoUrl: null,
+    musicXmlUrl: null,
     ...attrs,
   };
 };

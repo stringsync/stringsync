@@ -35,7 +35,6 @@ services:
       - ./api/src:/app/api/src
     links:
       - db
-    entrypoint: ['/app/api/bin/wait-for-it.sh', 'db:5432', '--']
     command: 'bash -c "yarn migrate && yarn seed"'
 
   api:

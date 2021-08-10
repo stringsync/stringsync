@@ -71,6 +71,11 @@ export class NotationEntity extends BaseEntity implements Notation {
   @IsUrl()
   videoUrl!: string | null;
 
+  @Property({ nullable: true })
+  @IsOptional()
+  @IsUrl()
+  musicXmlUrl!: string | null;
+
   @OneToMany(
     () => TaggingEntity,
     (tagging) => tagging.notation

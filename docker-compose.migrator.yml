@@ -10,28 +10,12 @@ services:
       POSTGRES_USER: stringsync
       POSTGRES_PASSWORD: stringsync
 
-  redis1:
-    container_name: redis1
-    image: redis:5.0
-
-  redis2:
-    container_name: redis2
-    image: redis:5.0
-
-  redis3:
-    container_name: redis3
-    image: redis:5.0
-
-  test:
-    container_name: test
+  api:
+    container_name: api
     image: stringsync:latest
     env_file:
-      - env/api.test.env
+      - env/dev.env
     volumes:
       - ./api/src:/app/api/src
-      - ./api/reports:/app/api/reports
     links:
       - db
-      - redis1
-      - redis2
-      - redis3
