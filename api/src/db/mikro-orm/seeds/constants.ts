@@ -2,7 +2,7 @@ export const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz012345
 
 export const ENCRYPTED_PASSWORD = '$2b$10$SuOsN1G4fCftbp3yejwS.u2EARRSU5cVOCpWOARVuGAbTat5YOhC6'; // password = 'password'
 
-export const VIDEO_URL = 'https://d2w1rk200g2ur4.cloudfront.net/79b928a4-fcf6-412e-a96f-f251e7e14c4f/hls/z3HrPy8P.m3u8';
+export const VIDEO_URL = 'https://d3d8u7w6klnryh.cloudfront.net/5693f37c-6a7f-4c2a-a534-86e7151170ee/hls/8P7zz8s0.m3u8';
 
 export const USER_AVATAR_URLS = [
   'https://images.unsplash.com/photo-1543610892-0b1f7e6d8ac1',

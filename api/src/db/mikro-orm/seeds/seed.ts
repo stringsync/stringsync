@@ -47,10 +47,12 @@ const isMikroORMDb = (db: Db): db is MikroORMDb => db.ormType === Orm.MikroORM;
     db.em.persist(user);
     return user;
   };
+  let notationCursor = 1;
   const buildNotation = (props: Partial<Notation> = {}) => {
     const notation = new NotationEntity(
       buildRandNotation({
         id: undefined,
+        cursor: notationCursor++,
         songName: `${sample(ADJECTIVES)} ${sample(NOUNS)}`,
         artistName: sample(ARTIST_NAMES),
         transcriberId: undefined,

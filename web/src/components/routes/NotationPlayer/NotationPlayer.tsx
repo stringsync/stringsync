@@ -35,6 +35,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
       } else if (!data?.notation) {
         setErrors([`no notation found with id '${params.id}'`]);
       } else {
+        console.log(data.notation);
         setNotation(data.notation);
       }
       setIsLoading(false);

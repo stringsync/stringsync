@@ -1,6 +1,7 @@
 import { Container } from 'inversify';
 import { RedisClient } from 'redis';
 import { Db } from '../../../db';
+import { Db as MikroORMDb } from '../../../db/mikro-orm';
 import { TYPES } from '../../../inversify.constants';
 
 /**
@@ -16,7 +17,7 @@ export const createReqContainerHack = (container: Container): Container => {
   const reqContainer = Container.merge(container, new Container()) as Container;
 
   // rebind singletons into constants
-  const db = container.get<Db>(TYPES.Db);
+  const db = container.get<MikroORMDb>(TYPES.Db);
   reqContainer.rebind<Db>(TYPES.Db).toConstantValue(db);
 
   const redis = container.get<RedisClient>(TYPES.Redis);
