@@ -157,7 +157,7 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
 
       const foundUsers = await userRepo.findAll();
 
-      expect(sortBy(foundUsers, 'id')).toStrictEqual(sortBy(users, 'id'));
+      expect(foundUsers).toIncludeAllMembers(users);
     });
 
     it('returns plain objects', async () => {

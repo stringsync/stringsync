@@ -1,4 +1,4 @@
-import { isPlainObject, sortBy } from 'lodash';
+import { isPlainObject } from 'lodash';
 import { Notation, Tag, Tagging, User } from '../../domain';
 import { container } from '../../inversify.config';
 import { TYPES } from '../../inversify.constants';
@@ -33,7 +33,7 @@ describe('NotationService', () => {
   describe('findAllByTranscriberId', () => {
     it('returns notations belonging to the user', async () => {
       const notations = await notationService.findAllByTranscriberId(user.id);
-      expect(sortBy(notations, 'id')).toStrictEqual(sortBy([notation1, notation2], 'id'));
+      expect(notations).toIncludeAllMembers([notation1, notation2]);
     });
 
     it('returns an array of plain objects', async () => {
@@ -73,7 +73,7 @@ describe('NotationService', () => {
     it('finds all notations by tag id', async () => {
       const notations = await notationService.findAllByTagId(tag1.id);
       expect(notations).toHaveLength(2);
-      expect(sortBy(notations, 'id')).toStrictEqual(sortBy([notation1, notation2], 'id'));
+      expect(notations).toIncludeAllMembers([notation1, notation2]);
     });
   });
 });

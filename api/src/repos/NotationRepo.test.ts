@@ -109,7 +109,7 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
 
       const foundNotations = await notationRepo.findAll();
 
-      expect(sortBy(foundNotations, 'id')).toStrictEqual(sortBy(notations, 'id'));
+      expect(foundNotations).toIncludeAllMembers(notations);
     });
 
     it('returns plain objects', async () => {
@@ -166,7 +166,7 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
 
       const foundNotations = await notationRepo.findAll();
 
-      expect(sortBy(foundNotations, 'id')).toStrictEqual(sortBy(notations, 'id'));
+      expect(foundNotations).toIncludeAllMembers(notations);
     });
 
     it('returns plain objects', async () => {
@@ -232,7 +232,7 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
       );
 
       expect(actualNotations).toHaveLength(10);
-      expect(actualNotations).toStrictEqual(sortBy(expectedNotations, (notation) => notation.cursor));
+      expect(actualNotations).toIncludeAllMembers(expectedNotations);
     });
 
     it('returns the first N records', async () => {

@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/core';
-import { isPlainObject, sortBy } from 'lodash';
+import { isPlainObject } from 'lodash';
 import { Db } from '../db';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
@@ -106,7 +106,7 @@ describe.each([['MikroORMTagRepo', MikroORMTagRepo]])('%s', (name, Ctor) => {
 
       const foundTags = await tagRepo.findAll();
 
-      expect(sortBy(foundTags, 'id')).toStrictEqual(sortBy(tags, 'id'));
+      expect(foundTags).toIncludeAllMembers(tags);
     });
 
     it('returns plain objects', async () => {

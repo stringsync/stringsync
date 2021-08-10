@@ -1,4 +1,3 @@
-import { sortBy } from 'lodash';
 import { container } from '../../inversify.config';
 import { TYPES } from '../../inversify.constants';
 import { UserRepo } from '../../repos';
@@ -30,7 +29,7 @@ describe('UserService', () => {
       const foundUsers = await userService.findAll();
 
       expect(users).toHaveLength(2);
-      expect(sortBy(foundUsers, 'id')).toStrictEqual(sortBy(users, 'id'));
+      expect(foundUsers).toIncludeAllMembers(users);
     });
   });
 });
