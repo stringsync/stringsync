@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "migrate": "yarn mikro-orm migration:up",
-    "seed": "yarn sequelize db:seed:all",
+    "seed": "yarn ts-node src/db/mikro-orm/seed.ts",
     "dev:api": "yarn ts-node-dev src/entrypoints/api.ts",
     "dev:worker": "yarn ts-node-dev src/entrypoints/worker.ts",
     "dev:dispatcher": "yarn ts-node-dev src/entrypoints/dispatcher.ts",

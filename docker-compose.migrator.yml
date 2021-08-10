@@ -15,6 +15,7 @@ services:
     image: stringsync:latest
     env_file:
       - env/dev.env
+      - env/secrets.env
     volumes:
       - ./api/src:/app/api/src
     links:

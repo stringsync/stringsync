@@ -17,7 +17,7 @@ export const options: Options<PostgreSqlDriver> = {
   migrations: {
     tableName: 'migrations',
     path: './src/db/mikro-orm/migrations',
-    pattern: /^Migration\d+-.*\.ts$/,
+    pattern: /^Migration\d+-?.*\.ts$/,
   },
 };
 

@@ -32,7 +32,6 @@ COPY api/tsconfig.prod.json api/
 COPY api/jest.config.js api/
 COPY api/.sequelizerc api/
 COPY api/sequelize.config.js api/
-COPY api/bin api/bin/
 COPY api/src api/src/
 
 # build the api project
