@@ -13,7 +13,7 @@ export class TaggingEntity extends BaseEntity implements Tagging {
   @PrimaryKey()
   id!: string;
 
-  @ManyToOne(() => NotationEntity, { wrappedReference: true })
+  @ManyToOne(() => NotationEntity, { wrappedReference: true, hidden: true })
   notation = HACK_2099_createReference(new NotationEntity());
 
   @Property({ persist: false })
@@ -30,7 +30,7 @@ export class TaggingEntity extends BaseEntity implements Tagging {
     this.notation.set(HACK_2099_createReference(notation));
   }
 
-  @ManyToOne(() => TagEntity, { wrappedReference: true })
+  @ManyToOne(() => TagEntity, { wrappedReference: true, hidden: true })
   tag = HACK_2099_createReference(new TagEntity());
 
   @Property({ persist: false })

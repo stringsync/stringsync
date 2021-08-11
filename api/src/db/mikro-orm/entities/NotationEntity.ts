@@ -44,7 +44,7 @@ export class NotationEntity extends BaseEntity implements Notation {
   @Property()
   private = true;
 
-  @ManyToOne(() => UserEntity, { wrappedReference: true })
+  @ManyToOne(() => UserEntity, { wrappedReference: true, hidden: true })
   transcriber = HACK_2099_createReference(new UserEntity());
 
   @Property({ persist: false })
@@ -78,7 +78,8 @@ export class NotationEntity extends BaseEntity implements Notation {
 
   @OneToMany(
     () => TaggingEntity,
-    (tagging) => tagging.notation
+    (tagging) => tagging.notation,
+    { hidden: true }
   )
   taggings = new Collection<TaggingEntity>(this);
 
@@ -88,6 +89,7 @@ export class NotationEntity extends BaseEntity implements Notation {
     joinColumn: 'notation_id',
     inverseJoinColumn: 'tag_id',
     pivotTable: 'taggings',
+    hidden: true,
   })
   tags = new Collection<TagEntity>(this);
 

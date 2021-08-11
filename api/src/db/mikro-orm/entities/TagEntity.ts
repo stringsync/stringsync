@@ -20,13 +20,14 @@ export class TagEntity extends BaseEntity implements Tag {
   @OneToMany(
     () => TaggingEntity,
     (tagging) => tagging.tag,
-    { inverseJoinColumn: 'tag_id' }
+    { inverseJoinColumn: 'tag_id', hidden: true }
   )
   taggings = new Collection<TaggingEntity>(this);
 
   @ManyToMany({
     entity: () => NotationEntity,
     mappedBy: 'tags',
+    hidden: true,
   })
   notations = new Collection<NotationEntity>(this);
 

@@ -56,7 +56,8 @@ export class UserEntity extends BaseEntity implements User {
 
   @OneToMany(
     () => NotationEntity,
-    (notation) => notation.transcriber
+    (notation) => notation.transcriber,
+    { hidden: true }
   )
   notations = new Collection<NotationEntity>(this);
 

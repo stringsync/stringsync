@@ -33,7 +33,7 @@ describe('NotationService', () => {
   describe('findAllByTranscriberId', () => {
     it('returns notations belonging to the user', async () => {
       const notations = await notationService.findAllByTranscriberId(user.id);
-      expect(notations).toIncludeAllMembers([notation1, notation2]);
+      expect(notations).toStrictEqual([notation2, notation1]);
     });
 
     it('returns an array of plain objects', async () => {
