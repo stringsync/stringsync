@@ -1,4 +1,5 @@
 import { EntityManager, QueryOrder } from '@mikro-orm/core';
+import Dataloader from 'dataloader';
 import { inject, injectable } from 'inversify';
 import { get } from 'lodash';
 import { Db } from '../../db';
@@ -6,9 +7,17 @@ import { UserEntity } from '../../db/mikro-orm';
 import { User } from '../../domain';
 import { NotFoundError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
-import { Connection, Pager, PagingCtx, PagingType, UserConnectionArgs } from '../../util';
+import {
+  alignOneToOne,
+  Connection,
+  ensureNoErrors,
+  Pager,
+  PagingCtx,
+  PagingType,
+  UserConnectionArgs,
+} from '../../util';
 import { findUserPageMaxQuery, findUserPageMinQuery } from '../queries';
-import { UserLoader, UserRepo as IUserRepo } from '../types';
+import { UserRepo as IUserRepo } from '../types';
 import { forkEntityManager, pojo } from './helpers';
 
 @injectable()
@@ -17,8 +26,12 @@ export class UserRepo implements IUserRepo {
 
   em: EntityManager;
 
-  constructor(@inject(TYPES.UserLoader) public userLoader: UserLoader, @inject(TYPES.Db) public db: Db) {
+  byIdLoader: Dataloader<string, User | null>;
+
+  constructor(@inject(TYPES.Db) public db: Db) {
     this.em = forkEntityManager(db);
+
+    this.byIdLoader = new Dataloader(this.loadAllById);
   }
 
   async findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null> {
@@ -47,7 +60,9 @@ export class UserRepo implements IUserRepo {
   }
 
   async find(id: string): Promise<User | null> {
-    return await this.userLoader.findById(id);
+    const user = await this.byIdLoader.load(id);
+    this.byIdLoader.clearAll();
+    return ensureNoErrors(user);
   }
 
   async findAll(): Promise<User[]> {
@@ -104,4 +119,16 @@ export class UserRepo implements IUserRepo {
       return { entities: pojo(entities), min, max };
     });
   }
+
+  private loadAllById = async (ids: readonly string[]): Promise<Array<User | null>> => {
+    const _ids = [...ids];
+
+    const users = await this.em.find(UserEntity, { id: { $in: _ids } });
+
+    return alignOneToOne(_ids, pojo(users), {
+      getKey: (user) => user.id,
+      getUniqueIdentifier: (user) => user.id,
+      getMissingValue: () => null,
+    });
+  };
 }

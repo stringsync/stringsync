@@ -11,7 +11,6 @@ export interface Repo<T extends object> {
 }
 
 export interface UserRepo extends Repo<User> {
-  userLoader: UserLoader;
   findAll(): Promise<User[]>;
   findPage(connectionArgs: ConnectionArgs): Promise<Connection<User>>;
   findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null>;
@@ -32,7 +31,3 @@ export interface TagRepo extends Repo<Tag> {
 }
 
 export interface TaggingRepo extends Repo<Tagging> {}
-
-export interface UserLoader {
-  findById(id: string): Promise<User | null>;
-}

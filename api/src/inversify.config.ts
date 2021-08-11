@@ -6,12 +6,11 @@ import { Db } from './db';
 import { Db as MikroORMDb } from './db/mikro-orm';
 import { TYPES } from './inversify.constants';
 import { AssociateVideoUrl, PulseCheck, SendMail } from './jobs';
-import { NotationRepo, TaggingRepo, TagRepo, UserLoader, UserRepo } from './repos';
+import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from './repos';
 import {
   NotationRepo as MikroORMNotationRepo,
   TaggingRepo as MikroORMTaggingRepo,
   TagRepo as MikroORMTagRepo,
-  UserLoader as MikroORMUserLoader,
   UserRepo as MikroORMUserRepo,
 } from './repos/mikro-orm';
 import { AuthResolver, ExperimentResolver, NotationResolver, TagResolver, UserResolver } from './resolvers';
@@ -81,7 +80,6 @@ container.bind<VideoUrlService>(TYPES.VideoUrlService).to(VideoUrlService);
 
 container.bind<TagRepo>(TYPES.TagRepo).to(MikroORMTagRepo);
 container.bind<UserRepo>(TYPES.UserRepo).to(MikroORMUserRepo);
-container.bind<UserLoader>(TYPES.UserLoader).to(MikroORMUserLoader);
 container.bind<NotationRepo>(TYPES.NotationRepo).to(MikroORMNotationRepo);
 container.bind<TaggingRepo>(TYPES.TaggingRepo).to(MikroORMTaggingRepo);
 
