@@ -29,13 +29,6 @@ export class NotationLoader implements INotationLoader {
 
   async findById(id: string) {
     const notation = await this.byIdLoader.load(id);
-    // console.log(notation);
-    // console.log(
-    //   this.em
-    //     .getUnitOfWork()
-    //     .getIdentityMap()
-    //     .values()
-    // );
     this.byIdLoader.clearAll();
     return ensureNoErrors(notation);
   }
@@ -55,7 +48,7 @@ export class NotationLoader implements INotationLoader {
   private loadById = async (ids: readonly string[]): Promise<Array<Notation | null>> => {
     const _ids = [...ids];
 
-    const notations = await this.em.find(NotationEntity, { id: { $in: _ids } });
+    const notations = await this.em.find(NotationEntity, { id: { $in: _ids } }, { refresh: true });
 
     return alignOneToOne(_ids, pojo(notations), {
       getKey: (notation) => notation.id,
@@ -67,7 +60,11 @@ export class NotationLoader implements INotationLoader {
   private loadAllByTranscriberId = async (transcriberIds: readonly string[]): Promise<Notation[][]> => {
     const _transcriberIds = [...transcriberIds];
 
-    const notations = await this.em.find(NotationEntity, { transcriberId: { $in: _transcriberIds } });
+    const notations = await this.em.find(
+      NotationEntity,
+      { transcriberId: { $in: _transcriberIds } },
+      { refresh: true }
+    );
 
     return alignOneToMany(_transcriberIds, pojo(notations), {
       getKey: (notation) => notation.transcriberId,

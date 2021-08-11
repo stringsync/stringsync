@@ -1,12 +1,12 @@
 import { MikroORM } from '@mikro-orm/core';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { inject, injectable } from 'inversify';
-import { Config } from '../../config';
 import { InternalError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { camelCaseKeys } from '../../repos/queries';
-import { Logger } from '../../util';
+import { Cache } from '../../util';
 import { Db as IDb, Orm, Task } from '../types';
+import { CacheAdapter } from './CacheAdapter';
 import { ENTITIES_BY_TABLE_NAME } from './entities';
 import options from './mikro-orm.config';
 
@@ -17,13 +17,22 @@ export class Db implements IDb {
   private _orm: MikroORM<PostgreSqlDriver> | undefined = undefined;
   private didInit = false;
 
-  constructor(@inject(TYPES.Logger) private logger: Logger, @inject(TYPES.Config) private config: Config) {}
+  constructor(@inject(TYPES.Cache) public cache: Cache) {}
 
   async init() {
     if (this.didInit) {
       return;
     }
-    this._orm = await MikroORM.init(options);
+    this._orm = await MikroORM.init({
+      ...options,
+      resultCache: {
+        adapter: CacheAdapter,
+        expiration: 10000,
+        options: {
+          cache: this.cache,
+        },
+      },
+    });
     this.didInit = true;
   }
 

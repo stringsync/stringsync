@@ -43,7 +43,7 @@ export class NotationRepo implements INotationRepo {
   }
 
   async findAll(): Promise<Notation[]> {
-    const notations = await this.em.find(NotationEntity, {}, { orderBy: { cursor: QueryOrder.DESC } });
+    const notations = await this.em.find(NotationEntity, {}, { orderBy: { cursor: QueryOrder.DESC }, refresh: true });
     return pojo(notations);
   }
 
@@ -66,7 +66,7 @@ export class NotationRepo implements INotationRepo {
   }
 
   async update(id: string, attrs: Partial<Notation>): Promise<Notation> {
-    const notation = await this.em.findOne(NotationEntity, { id });
+    const notation = await this.em.findOne(NotationEntity, { id }, { refresh: true });
     if (!notation) {
       throw new NotFoundError('notation not found');
     }

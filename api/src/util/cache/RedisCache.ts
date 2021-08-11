@@ -47,15 +47,21 @@ export class RedisCache implements Cache {
     });
   }
 
-  async set(key: string, value: string) {
+  async set(key: string, value: string, expiration?: number) {
     await new Promise((resolve, reject) => {
-      this.redis.set(key, value, (err) => {
+      const callback = (err: Error | null, reply: 'OK' | undefined) => {
         if (err) {
           reject(err);
           return;
         }
         resolve(undefined);
-      });
+      };
+
+      if (typeof expiration === 'number') {
+        this.redis.set(key, value, 'PX', expiration, callback);
+      } else {
+        this.redis.set(key, value, callback);
+      }
     });
   }
 }
