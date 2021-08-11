@@ -1,8 +1,6 @@
 import { Notation, Tag, Tagging, User } from '../domain';
 import { Connection, ConnectionArgs, NotationConnectionArgs } from '../util';
 
-// Repo
-
 export interface Repo<T extends object> {
   count(): Promise<number>;
   find(id: string): Promise<T | null>;
@@ -35,19 +33,6 @@ export interface TagRepo extends Repo<Tag> {
 
 export interface TaggingRepo extends Repo<Tagging> {}
 
-// Loader
-
 export interface UserLoader {
   findById(id: string): Promise<User | null>;
-}
-
-export interface NotationLoader {
-  findById(id: string): Promise<Notation | null>;
-  findAllByTranscriberId(transcriberId: string): Promise<Notation[]>;
-  findAllByTagId(tagId: string): Promise<Notation[]>;
-}
-
-export interface TagLoader {
-  findById(id: string): Promise<Tag | null>;
-  findAllByNotationId(notationId: string): Promise<Tag[]>;
 }

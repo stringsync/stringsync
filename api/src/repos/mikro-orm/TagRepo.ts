@@ -1,19 +1,28 @@
-import { EntityManager } from '@mikro-orm/core';
+import { EntityManager, LoadStrategy } from '@mikro-orm/core';
+import Dataloader from 'dataloader';
 import { inject, injectable } from 'inversify';
+import { groupBy, mapValues } from 'lodash';
 import { Db } from '../../db';
-import { TagEntity } from '../../db/mikro-orm';
+import { TagEntity, TaggingEntity } from '../../db/mikro-orm';
 import { Tag } from '../../domain';
 import { NotFoundError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
-import { TagLoader, TagRepo as ITagRepo } from '../types';
+import { alignManyToMany, alignOneToOne, ensureNoErrors } from '../../util';
+import { TagRepo as ITagRepo } from '../types';
 import { getEntityManager, pojo } from './helpers';
 
 @injectable()
 export class TagRepo implements ITagRepo {
   em: EntityManager;
 
-  constructor(@inject(TYPES.TagLoader) private tagLoader: TagLoader, @inject(TYPES.Db) private db: Db) {
+  byIdLoader: Dataloader<string, Tag | null>;
+  byNotationIdLoader: Dataloader<string, Tag[]>;
+
+  constructor(@inject(TYPES.Db) private db: Db) {
     this.em = getEntityManager(this.db);
+
+    this.byIdLoader = new Dataloader(this.loadByIds);
+    this.byNotationIdLoader = new Dataloader(this.loadAllByNotationIds);
   }
 
   async count(): Promise<number> {
@@ -34,7 +43,9 @@ export class TagRepo implements ITagRepo {
   }
 
   async find(id: string): Promise<Tag | null> {
-    return await this.tagLoader.findById(id);
+    const tag = await this.byIdLoader.load(id);
+    this.byIdLoader.clearAll();
+    return ensureNoErrors(tag);
   }
 
   async findAll(): Promise<Tag[]> {
@@ -43,7 +54,9 @@ export class TagRepo implements ITagRepo {
   }
 
   async findAllByNotationId(notationId: string): Promise<Tag[]> {
-    return await this.tagLoader.findAllByNotationId(notationId);
+    const tags = await this.byNotationIdLoader.load(notationId);
+    this.byNotationIdLoader.clearAll();
+    return ensureNoErrors(tags);
   }
 
   async bulkCreate(bulkAttrs: Partial<Tag>[]): Promise<Tag[]> {
@@ -63,4 +76,36 @@ export class TagRepo implements ITagRepo {
     await this.em.flush();
     return pojo(tag);
   }
+
+  private loadByIds = async (ids: readonly string[]): Promise<Array<Tag | null>> => {
+    const _ids = [...ids];
+
+    const tags = await this.em.find(TagEntity, { id: { $in: _ids } });
+
+    return alignOneToOne(_ids, pojo(tags), {
+      getKey: (tag) => tag.id,
+      getUniqueIdentifier: (tag) => tag.id,
+      getMissingValue: () => null,
+    });
+  };
+
+  private loadAllByNotationIds = async (notationIds: readonly string[]): Promise<Tag[][]> => {
+    const _notationIds = [...notationIds];
+
+    const taggings = await this.em.find(
+      TaggingEntity,
+      { notationId: { $in: _notationIds } },
+      { populate: { tag: LoadStrategy.JOINED }, refresh: true }
+    );
+    const tags = await Promise.all(taggings.map((tagging) => tagging.tag.load()));
+
+    const taggingsByTagId = groupBy(taggings, 'tagId');
+    const notationIdsByTagId = mapValues(taggingsByTagId, (taggings) => taggings.map((tagging) => tagging.notationId));
+
+    return alignManyToMany(_notationIds, pojo(tags), {
+      getKeys: (tag) => notationIdsByTagId[tag.id] || [],
+      getUniqueIdentifier: (tag) => tag.id,
+      getMissingValue: () => [],
+    });
+  };
 }
