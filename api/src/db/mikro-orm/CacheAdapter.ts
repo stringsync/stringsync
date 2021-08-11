@@ -18,6 +18,7 @@ export class CacheAdapter implements ICacheAdapter {
   }
 
   async set(name: string, data: any, origin: string, expiration?: number) {
+    console.log(name);
     const json = JSON.stringify(data);
     await this.cache.set(name, json, expiration);
   }

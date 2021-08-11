@@ -1,9 +1,9 @@
-import { first, isPlainObject, last, sortBy, take, times } from 'lodash';
+import { first, isPlainObject, last, omit, sortBy, take, times } from 'lodash';
 import { Notation, Tag, User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
 import { buildRandNotation, buildRandTag, buildRandTagging, buildRandUser } from '../testing';
-import { Ctor, ctor, randStr } from '../util';
+import { Ctor, ctor, randStr, util } from '../util';
 import { NotationRepo as MikroORMNotationRepo } from './mikro-orm';
 import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from './types';
 
@@ -109,7 +109,7 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
 
       const foundNotations = await notationRepo.findAll();
 
-      expect(foundNotations).toIncludeAllMembers(notations);
+      expect(foundNotations.map(util.id)).toIncludeAllMembers(notations.map(util.id));
     });
 
     it('returns plain objects', async () => {
@@ -146,7 +146,7 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
       const notation = await notationRepo.create(buildRandNotation({ transcriberId }));
       const foundNotation = await notationRepo.find(notation.id);
 
-      expect(foundNotation).toStrictEqual(notation);
+      expect(omit(foundNotation, 'cursor')).toStrictEqual(omit(notation, 'cursor'));
     });
 
     it('returns a plain object', async () => {
@@ -176,7 +176,7 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
 
       const foundNotations = await notationRepo.findAll();
 
-      expect(foundNotations).toIncludeAllMembers(notations);
+      expect(foundNotations.map(util.id)).toIncludeAllMembers(notations.map(util.id));
     });
 
     it('returns plain objects', async () => {

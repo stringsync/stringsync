@@ -36,6 +36,7 @@ export class Db implements IDb {
         },
       },
     });
+    this._orm.getMetadata();
     this.didInit = true;
   }
 

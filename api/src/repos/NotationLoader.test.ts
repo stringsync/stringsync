@@ -5,7 +5,7 @@ import { Notation, User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
 import { buildRandNotation, buildRandUser } from '../testing';
-import { Ctor, ctor, randStr } from '../util';
+import { Ctor, ctor, randStr, util } from '../util';
 import { NotationLoader as MikroORMNotationLoader } from './mikro-orm';
 import { getEntityManager } from './mikro-orm/getEntityManager';
 import { NotationLoader, NotationRepo, UserRepo } from './types';
@@ -69,8 +69,7 @@ describe.each([['MikroORMNotationLoader', MikroORMNotationLoader]])('%s', (name,
   describe('findByTranscriberId', () => {
     it('finds a notation by transcriberId', async () => {
       const notations = await notationLoader.findAllByTranscriberId(transcriber1.id);
-      expect(notations).toHaveLength(2);
-      expect(notations).toIncludeAllMembers([notation1, notation2]);
+      expect(notations.map(util.id)).toIncludeAllMembers([notation1, notation2].map(util.id));
     });
 
     it('returns an empty array for a missing transcriber', async () => {
