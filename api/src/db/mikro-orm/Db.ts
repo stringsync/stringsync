@@ -25,6 +25,9 @@ export class Db implements IDb {
     }
     this._orm = await MikroORM.init({
       ...options,
+      cache: {
+        enabled: true,
+      },
       resultCache: {
         adapter: CacheAdapter,
         expiration: 10000,
