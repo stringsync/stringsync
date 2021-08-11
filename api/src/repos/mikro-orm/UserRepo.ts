@@ -9,7 +9,7 @@ import { TYPES } from '../../inversify.constants';
 import { Connection, Pager, PagingCtx, PagingType, UserConnectionArgs } from '../../util';
 import { findUserPageMaxQuery, findUserPageMinQuery } from '../queries';
 import { UserLoader, UserRepo as IUserRepo } from '../types';
-import { getEntityManager, pojo } from './helpers';
+import { forkEntityManager, pojo } from './helpers';
 
 @injectable()
 export class UserRepo implements IUserRepo {
@@ -18,7 +18,7 @@ export class UserRepo implements IUserRepo {
   em: EntityManager;
 
   constructor(@inject(TYPES.UserLoader) public userLoader: UserLoader, @inject(TYPES.Db) public db: Db) {
-    this.em = getEntityManager(db);
+    this.em = forkEntityManager(db);
   }
 
   async findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null> {

@@ -20,7 +20,7 @@ import {
 } from '../../util';
 import { findNotationPageMaxQuery, findNotationPageMinQuery, findNotationPageQuery } from '../queries';
 import { NotationRepo as INotationRepo } from '../types';
-import { getEntityManager, pojo } from './helpers';
+import { forkEntityManager, pojo } from './helpers';
 
 @injectable()
 export class NotationRepo implements INotationRepo {
@@ -33,7 +33,7 @@ export class NotationRepo implements INotationRepo {
   byTagIdLoader: Dataloader<string, Notation[]>;
 
   constructor(@inject(TYPES.Db) private db: Db) {
-    this.em = getEntityManager(this.db);
+    this.em = forkEntityManager(this.db);
 
     this.byIdLoader = new Dataloader(this.loadById);
     this.byTranscriberIdLoader = new Dataloader(this.loadAllByTranscriberId);
