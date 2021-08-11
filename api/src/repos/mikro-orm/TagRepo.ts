@@ -6,8 +6,7 @@ import { Tag } from '../../domain';
 import { NotFoundError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { TagLoader, TagRepo as ITagRepo } from '../types';
-import { getEntityManager } from './getEntityManager';
-import { pojo } from './pojo';
+import { getEntityManager, pojo } from './helpers';
 
 @injectable()
 export class TagRepo implements ITagRepo {

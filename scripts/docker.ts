@@ -25,6 +25,10 @@ export async function db(composeFile: string, dbUsername: string) {
   await cmd('docker-compose', ['-f', composeFile, 'exec', 'db', 'psql', '-U', dbUsername]);
 }
 
+export async function redis(composeFile: string) {
+  await cmd('docker-compose', ['-f', composeFile, 'exec', 'redis', 'redis-cli']);
+}
+
 export async function migrator(composeFile: string) {
   await cmd('docker-compose', ['-f', composeFile, 'run', 'api', 'bash']);
 }

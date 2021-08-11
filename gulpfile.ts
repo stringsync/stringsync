@@ -110,6 +110,11 @@ async function db() {
   await docker.db(composeFile, dbUsername);
 }
 
+async function redis() {
+  const composeFile = DOCKER_COMPOSE_FILE.getOrDefault(constants.DOCKER_COMPOSE_DEV_FILE);
+  await docker.redis(composeFile);
+}
+
 async function migrator() {
   const composeFile = DOCKER_COMPOSE_FILE.getOrDefault(constants.DOCKER_COMPOSE_DEV_FILE);
   await docker.migrator(composeFile);
@@ -232,6 +237,7 @@ exports['gensecrets'] = gensecrets;
 exports['logs'] = logs;
 exports['deploy'] = deploy;
 exports['db'] = db;
+exports['redis'] = redis;
 exports['migrator'] = series(buildapp, migrator);
 
 exports['tscapi'] = tscapi;

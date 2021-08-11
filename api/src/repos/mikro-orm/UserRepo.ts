@@ -9,8 +9,7 @@ import { TYPES } from '../../inversify.constants';
 import { Connection, Pager, PagingCtx, PagingType, UserConnectionArgs } from '../../util';
 import { findUserPageMaxQuery, findUserPageMinQuery } from '../queries';
 import { UserLoader, UserRepo as IUserRepo } from '../types';
-import { getEntityManager } from './getEntityManager';
-import { pojo } from './pojo';
+import { getEntityManager, pojo } from './helpers';
 
 @injectable()
 export class UserRepo implements IUserRepo {

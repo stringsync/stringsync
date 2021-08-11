@@ -6,9 +6,8 @@ import { Db } from './db';
 import { Db as MikroORMDb } from './db/mikro-orm';
 import { TYPES } from './inversify.constants';
 import { AssociateVideoUrl, PulseCheck, SendMail } from './jobs';
-import { NotationLoader, NotationRepo, TaggingRepo, TagLoader, TagRepo, UserLoader, UserRepo } from './repos';
+import { NotationRepo, TaggingRepo, TagLoader, TagRepo, UserLoader, UserRepo } from './repos';
 import {
-  NotationLoader as MikroORMNotationLoader,
   NotationRepo as MikroORMNotationRepo,
   TaggingRepo as MikroORMTaggingRepo,
   TagLoader as MikroORMTagLoader,
@@ -86,7 +85,6 @@ container.bind<TagRepo>(TYPES.TagRepo).to(MikroORMTagRepo);
 container.bind<UserRepo>(TYPES.UserRepo).to(MikroORMUserRepo);
 container.bind<UserLoader>(TYPES.UserLoader).to(MikroORMUserLoader);
 container.bind<NotationRepo>(TYPES.NotationRepo).to(MikroORMNotationRepo);
-container.bind<NotationLoader>(TYPES.NotationLoader).to(MikroORMNotationLoader);
 container.bind<TaggingRepo>(TYPES.TaggingRepo).to(MikroORMTaggingRepo);
 
 if (config.NODE_ENV === 'test') {

@@ -7,8 +7,7 @@ import { User } from '../../domain';
 import { TYPES } from '../../inversify.constants';
 import { alignOneToOne, ensureNoErrors } from '../../util';
 import { UserLoader as IUserLoader } from '../types';
-import { getEntityManager } from './getEntityManager';
-import { pojo } from './pojo';
+import { getEntityManager, pojo } from './helpers';
 
 @injectable()
 export class UserLoader implements IUserLoader {

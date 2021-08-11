@@ -6,8 +6,7 @@ import { Tagging } from '../../domain';
 import { NotFoundError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { TaggingRepo as ITaggingRepo } from '../types';
-import { getEntityManager } from './getEntityManager';
-import { pojo } from './pojo';
+import { getEntityManager, pojo } from './helpers';
 
 @injectable()
 export class TaggingRepo implements ITaggingRepo {

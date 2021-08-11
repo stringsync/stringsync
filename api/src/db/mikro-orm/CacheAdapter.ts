@@ -14,11 +14,10 @@ export class CacheAdapter implements ICacheAdapter {
 
   async get<T = any>(name: string): Promise<T | undefined> {
     const data = await this.cache.get(name);
-    return typeof data === 'string' ? JSON.parse(data) : undefined;
+    return typeof data === 'string' && data.length > 0 ? JSON.parse(data) : undefined;
   }
 
   async set(name: string, data: any, origin: string, expiration?: number) {
-    console.log(name);
     const json = JSON.stringify(data);
     await this.cache.set(name, json, expiration);
   }

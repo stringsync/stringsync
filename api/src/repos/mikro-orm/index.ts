@@ -1,4 +1,3 @@
-export * from './NotationLoader';
 export * from './NotationRepo';
 export * from './TaggingRepo';
 export * from './TagLoader';
