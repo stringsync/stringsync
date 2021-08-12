@@ -30,7 +30,7 @@ export const createRandTagging = async (attrs: Partial<Tagging> = {}): Promise<T
 
 export const createRandUsers = async (num: number): Promise<User[]> => {
   const userRepo = container.get<UserRepo>(TYPES.UserRepo);
-  return await userRepo.bulkCreate(times(num, () => buildRandUser()));
+  return await userRepo.bulkCreate(times(num, () => buildRandUser({ cursor: undefined })));
 };
 
 export const createRandNotations = async (num: number): Promise<Notation[]> => {
