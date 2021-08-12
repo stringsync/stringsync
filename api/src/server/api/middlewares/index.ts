@@ -3,6 +3,7 @@ export * from './withCtx';
 export * from './withErrorHandler';
 export * from './withGraphQL';
 export * from './withLogging';
+export * from './withMikroORMRequestCtx';
 export * from './withSession';
 export * from './withSessionUser';
 export * from './withVersion';

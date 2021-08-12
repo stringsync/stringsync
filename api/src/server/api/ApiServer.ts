@@ -4,6 +4,7 @@ import { graphqlUploadExpress } from 'graphql-upload';
 import { inject, injectable } from 'inversify';
 import { RedisClient } from 'redis';
 import { Config } from '../../config';
+import { Db } from '../../db';
 import { TYPES } from '../../inversify.constants';
 import { AuthService } from '../../services';
 import { Logger } from '../../util';
@@ -14,6 +15,7 @@ import {
   withErrorHandler,
   withGraphQL,
   withLogging,
+  withMikroORMRequestCtx,
   withSession,
   withSessionUser,
   withVersion,
@@ -27,7 +29,8 @@ export class ApiServer implements GraphqlServer {
     @inject(TYPES.Logger) protected logger: Logger,
     @inject(TYPES.Config) protected config: Config,
     @inject(TYPES.Redis) protected redis: RedisClient,
-    @inject(TYPES.AuthService) protected authService: AuthService
+    @inject(TYPES.AuthService) protected authService: AuthService,
+    @inject(TYPES.Db) protected db: Db
   ) {}
 
   start(schema: GraphQLSchema) {
@@ -36,12 +39,13 @@ export class ApiServer implements GraphqlServer {
   }
 
   protected configure(schema: GraphQLSchema) {
-    const { app, config, redis, authService } = this;
+    const { app, config, redis, db, authService } = this;
 
     app.set('trust proxy', () => true);
     app.use(
       withCors(config),
       withVersion,
+      withMikroORMRequestCtx(db),
       withCtx,
       withSession(redis, config),
       withSessionUser(authService),
