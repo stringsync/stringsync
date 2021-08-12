@@ -33,6 +33,18 @@ export class NotationService {
     return await this.notationRepo.findPage(args);
   }
 
+  async findSuggestions(id: string, limit: number): Promise<Notation[]> {
+    const notation = await this.notationRepo.find(id);
+    if (notation) {
+      return await this.notationRepo.findSuggestions(notation, limit);
+    } else {
+      // We always want to suggest something, even if the id corresponds to
+      // a notation that doesn't exist.
+      const connection = await this.findPage({ last: limit });
+      return connection.edges.map((edge) => edge.node);
+    }
+  }
+
   async findByVideoFilename(filename: string): Promise<Notation | null> {
     const ext = path.extname(filename);
     const id = path.basename(filename, ext);

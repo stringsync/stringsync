@@ -6,14 +6,14 @@ import { Tagging } from '../../domain';
 import { NotFoundError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { TaggingRepo as ITaggingRepo } from '../types';
-import { forkEntityManager, pojo } from './helpers';
+import { getEntityManager, pojo } from './helpers';
 
 @injectable()
 export class TaggingRepo implements ITaggingRepo {
   em: EntityManager;
 
   constructor(@inject(TYPES.Db) private db: Db) {
-    this.em = forkEntityManager(this.db);
+    this.em = getEntityManager(this.db);
   }
 
   async count(): Promise<number> {

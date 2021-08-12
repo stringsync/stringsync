@@ -19,6 +19,7 @@ export type Query = {
   __typename?: 'Query';
   notations: NotationConnectionObject;
   notation?: Maybe<NotationObject>;
+  suggestedNotations: Array<NotationObject>;
   tags: Array<TagObject>;
   user?: Maybe<UserObject>;
   users: UserConnectionObject;
@@ -39,6 +40,12 @@ export type QueryNotationsArgs = {
 
 export type QueryNotationArgs = {
   id: Scalars['String'];
+};
+
+
+export type QuerySuggestedNotationsArgs = {
+  id: Scalars['String'];
+  limit: Scalars['Float'];
 };
 
 

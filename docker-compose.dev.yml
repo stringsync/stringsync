@@ -9,6 +9,8 @@ services:
       POSTGRES_DB: stringsync
       POSTGRES_USER: stringsync
       POSTGRES_PASSWORD: stringsync
+    ports:
+      - 5432:5432
 
   redis:
     container_name: redis

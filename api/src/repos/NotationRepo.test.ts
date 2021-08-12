@@ -519,4 +519,8 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
       });
     });
   });
+
+  describe('findSuggestions', () => {
+    // pass
+  });
 });

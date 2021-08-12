@@ -9,7 +9,7 @@ import { NotFoundError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { alignManyToMany, alignOneToOne, ensureNoErrors } from '../../util';
 import { TagRepo as ITagRepo } from '../types';
-import { forkEntityManager, pojo } from './helpers';
+import { getEntityManager, pojo } from './helpers';
 
 @injectable()
 export class TagRepo implements ITagRepo {
@@ -19,7 +19,7 @@ export class TagRepo implements ITagRepo {
   byNotationIdLoader: Dataloader<string, Tag[]>;
 
   constructor(@inject(TYPES.Db) private db: Db) {
-    this.em = forkEntityManager(this.db);
+    this.em = getEntityManager(this.db);
 
     this.byIdLoader = new Dataloader(this.loadByIds);
     this.byNotationIdLoader = new Dataloader(this.loadAllByNotationIds);

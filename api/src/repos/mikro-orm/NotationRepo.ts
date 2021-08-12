@@ -19,8 +19,9 @@ import {
   PagingType,
 } from '../../util';
 import { findNotationPageMaxQuery, findNotationPageMinQuery, findNotationPageQuery } from '../queries';
+import { findSuggestedNotationsQuery } from '../queries/findSuggestedNotationsQuery';
 import { NotationRepo as INotationRepo } from '../types';
-import { forkEntityManager, pojo } from './helpers';
+import { getEntityManager, pojo } from './helpers';
 
 @injectable()
 export class NotationRepo implements INotationRepo {
@@ -33,7 +34,7 @@ export class NotationRepo implements INotationRepo {
   byTagIdLoader: Dataloader<string, Notation[]>;
 
   constructor(@inject(TYPES.Db) private db: Db) {
-    this.em = forkEntityManager(this.db);
+    this.em = getEntityManager(this.db);
 
     this.byIdLoader = new Dataloader(this.loadById);
     this.byTranscriberIdLoader = new Dataloader(this.loadAllByTranscriberId);
@@ -119,6 +120,13 @@ export class NotationRepo implements INotationRepo {
 
       return { entities, min, max };
     });
+  }
+
+  async findSuggestions(notation: Notation, limit: number): Promise<Notation[]> {
+    const taggings = await this.em.find(TaggingEntity, { notationId: notation.id });
+    const tagIds = taggings.map((tagging) => tagging.tagId);
+    console.log(findSuggestedNotationsQuery(tagIds, limit));
+    return await this.db.query<Notation>(findSuggestedNotationsQuery(tagIds, limit));
   }
 
   private loadById = async (ids: readonly string[]): Promise<Array<Notation | null>> => {

@@ -6,7 +6,7 @@ import { InternalError } from '../../errors';
 
 const isMikroORMDb = (db: Db): db is MikroORMDb => db.ormType === Orm.MikroORM;
 
-export const forkEntityManager = (db: Db): EntityManager<PostgreSqlDriver> => {
+export const getEntityManager = (db: Db): EntityManager<PostgreSqlDriver> => {
   if (isMikroORMDb(db)) {
     return db.em;
   }

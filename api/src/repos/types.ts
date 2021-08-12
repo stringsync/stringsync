@@ -23,6 +23,7 @@ export interface NotationRepo extends Repo<Notation> {
   findAll(): Promise<Notation[]>;
   findAllByTranscriberId(transcriberId: string): Promise<Notation[]>;
   findAllByTagId(tagId: string): Promise<Notation[]>;
+  findSuggestions(notation: Notation, limit: number): Promise<Notation[]>;
 }
 
 export interface TagRepo extends Repo<Tag> {

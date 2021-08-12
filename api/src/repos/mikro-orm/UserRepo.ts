@@ -18,7 +18,7 @@ import {
 } from '../../util';
 import { findUserPageMaxQuery, findUserPageMinQuery } from '../queries';
 import { UserRepo as IUserRepo } from '../types';
-import { forkEntityManager, pojo } from './helpers';
+import { getEntityManager, pojo } from './helpers';
 
 @injectable()
 export class UserRepo implements IUserRepo {
@@ -29,7 +29,7 @@ export class UserRepo implements IUserRepo {
   byIdLoader: Dataloader<string, User | null>;
 
   constructor(@inject(TYPES.Db) public db: Db) {
-    this.em = forkEntityManager(db);
+    this.em = getEntityManager(db);
 
     this.byIdLoader = new Dataloader(this.loadAllById);
   }

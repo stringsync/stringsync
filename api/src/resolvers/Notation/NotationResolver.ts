@@ -11,6 +11,7 @@ import { CreateNotationInput } from './CreateNotationInput';
 import { NotationArgs } from './NotationArgs';
 import { NotationConnectionArgs } from './NotationConnectionArgs';
 import { NotationConnectionObject } from './NotationConnectionObject';
+import { SuggestedNotationsArgs } from './SuggestedNotationsArgs';
 
 @Resolver()
 @injectable()
@@ -37,6 +38,11 @@ export class NotationResolver {
   @Query((returns) => NotationObject, { nullable: true })
   async notation(@Args() args: NotationArgs): Promise<Notation | null> {
     return await this.notationService.find(args.id);
+  }
+
+  @Query((returns) => [NotationObject])
+  async suggestedNotations(@Args() args: SuggestedNotationsArgs): Promise<Notation[]> {
+    return await this.notationService.findSuggestions(args.id, args.limit);
   }
 
   @Mutation((returns) => NotationObject, { nullable: true })
