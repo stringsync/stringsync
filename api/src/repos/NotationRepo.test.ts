@@ -521,6 +521,14 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
   });
 
   describe('findSuggestions', () => {
-    // pass
+    it.todo('finds suggestions with matching artist name');
+
+    it.todo('finds suggestions with matching tag ids');
+
+    it.todo('finds suggestions without matching artist name or tag ids');
+
+    it.todo('sorts by num matching tag ids, then matching artists');
+
+    it.todo('finds suggestions in a random order');
   });
 });
