@@ -6,8 +6,6 @@ import { NotationEntity } from './NotationEntity';
 
 @Entity({ tableName: 'users' })
 export class UserEntity extends BaseEntity implements User {
-  associations = ['notations'];
-
   @PrimaryKey()
   id!: string;
 
@@ -34,19 +32,15 @@ export class UserEntity extends BaseEntity implements User {
   role = UserRole.STUDENT;
 
   @Property({ type: 'TIMESTAMP', nullable: true })
-  @IsOptional()
   confirmedAt: Date | null = null;
 
   @Property({ nullable: true })
-  @IsOptional()
   confirmationToken: string | null = null;
 
   @Property({ type: 'TIMESTAMP', nullable: true })
-  @IsOptional()
   resetPasswordTokenSentAt: Date | null = null;
 
   @Property({ nullable: true })
-  @IsOptional()
   resetPasswordToken: string | null = null;
 
   @Property({ nullable: true })

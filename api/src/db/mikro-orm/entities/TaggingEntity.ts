@@ -8,8 +8,6 @@ import { TagEntity } from './TagEntity';
 
 @Entity({ tableName: 'taggings' })
 export class TaggingEntity extends BaseEntity implements Tagging {
-  associations = ['tag', 'notation'];
-
   @PrimaryKey()
   id!: string;
 

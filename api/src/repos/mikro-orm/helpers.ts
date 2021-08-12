@@ -8,7 +8,7 @@ const isMikroORMDb = (db: Db): db is MikroORMDb => db.ormType === Orm.MikroORM;
 
 export const forkEntityManager = (db: Db): EntityManager<PostgreSqlDriver> => {
   if (isMikroORMDb(db)) {
-    return db.em.fork();
+    return db.em;
   }
   throw new InternalError(`Db is not MikroORMDb (${Orm.MikroORM}), got type: ${db.ormType}`);
 };
