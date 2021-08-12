@@ -165,6 +165,7 @@ describe('UserResolver', () => {
 
       const userId = res.data.updateUser!.id;
       expect(userId).toBe(student.id);
+
       const reloadedStudent = await userRepo.find(student.id);
       expect(reloadedStudent).not.toBeNull();
       expect(reloadedStudent!.role).toBe(UserRole.ADMIN);

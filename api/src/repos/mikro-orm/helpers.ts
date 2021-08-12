@@ -17,8 +17,8 @@ export function pojo<T extends BaseEntity>(value: T): T;
 export function pojo<T extends BaseEntity>(value: T[]): T[];
 export function pojo<T extends BaseEntity>(value: T | T[]): T | T[] {
   if (Array.isArray(value)) {
-    return value.map((v) => wrap(v).toObject(v.associations)) as T[];
+    return value.map((v) => wrap(v).toObject()) as T[];
   } else {
-    return wrap(value).toObject(value.associations) as T;
+    return wrap(value).toObject() as T;
   }
 }
