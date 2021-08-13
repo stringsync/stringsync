@@ -1,20 +1,22 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { Alert, Col, Row } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { $queries, NotationObject } from '../../../graphql';
 import { Layout, withLayout } from '../../../hocs';
-import { useEffectOnce } from '../../../hooks';
 import { compose } from '../../../util/compose';
 import { Video } from '../../Video';
-
-const NUM_SUGGESTIONS = 10;
+import { SuggestedNotations } from './SuggestedNotations';
 
 const LoadingIcon = styled(LoadingOutlined)`
   font-size: 5em;
   color: ${(props) => props.theme['@border-color']};
+`;
+
+const LeftCol = styled(Col)`
+  border-right: 1px solid ${(props) => props.theme['@border-color']};
 `;
 
 const enhance = compose(withLayout(Layout.DEFAULT_LANELESS));
@@ -24,13 +26,15 @@ interface Props {}
 const NotationPlayer: React.FC<Props> = enhance(() => {
   const params = useParams<{ id: string }>();
   const [notation, setNotation] = useState<NotationObject | null>(null);
-  const [suggestedNotations, setSuggestedNotations] = useState<NotationObject[]>([]);
   const [errors, setErrors] = useState(new Array<string>());
   const [isLoading, setIsLoading] = useState(true);
 
   const hasErrors = errors.length > 0;
 
-  useEffectOnce(() => {
+  useEffect(() => {
+    setErrors([]);
+    setIsLoading(true);
+    setNotation(null);
     (async () => {
       const { data, errors } = await $queries.notation({ id: params.id });
       if (errors) {
@@ -42,21 +46,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
       }
       setIsLoading(false);
     })();
-  });
-
-  useEffectOnce(() => {
-    (async () => {
-      const { data, errors } = await $queries.suggestedNotations({ id: params.id, limit: NUM_SUGGESTIONS });
-      console.log(data);
-      if (errors) {
-        setErrors(errors.map((error) => error.message));
-      } else if (!data?.suggestedNotations) {
-        setErrors([`no notation suggestions found with id '${params.id}'`]);
-      } else {
-        setSuggestedNotations(data.suggestedNotations);
-      }
-    })();
-  });
+  }, [params.id]);
 
   return (
     <div data-testid="notation-player">
@@ -94,7 +84,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
       {!isLoading && !hasErrors && notation && (
         <Row>
-          <Col>
+          <LeftCol span={6}>
             <Video
               playerOptions={{
                 sources: [
@@ -105,9 +95,9 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
                 ],
               }}
             />
-            <div>{JSON.stringify(suggestedNotations, null, 2)}</div>
-          </Col>
-          <Col>
+            <SuggestedNotations srcNotationId={notation.id} />
+          </LeftCol>
+          <Col span={18}>
             <div>notation</div>
           </Col>
         </Row>

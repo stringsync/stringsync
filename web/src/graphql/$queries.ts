@@ -118,6 +118,7 @@ export const notation = async (args: QueryNotationArgs) => {
     gql`
       query notation($id: String!) {
         notation(id: $id) {
+          id
           createdAt
           updatedAt
           songName
