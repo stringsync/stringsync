@@ -5,6 +5,7 @@ import { TYPES } from '../../inversify.constants';
 import { NotationRepo, UserRepo } from '../../repos';
 import { SessionUser } from '../../server';
 import {
+  buildRandNotation,
   buildRandUser,
   createRandNotations,
   createRandUpload,
@@ -13,6 +14,7 @@ import {
   Query,
   QueryNotationArgs,
   QueryNotationsArgs,
+  QuerySuggestedNotationsArgs,
   resolve,
 } from '../../testing';
 import { randStr, Replace } from '../../util';
@@ -209,5 +211,54 @@ describe('NotationResolver', () => {
         expect(res.errors).toBeDefined();
       }
     );
+  });
+
+  describe('suggestedNotations', () => {
+    let userRepo: UserRepo;
+    let notationRepo: NotationRepo;
+
+    let transcriber: User;
+
+    let notation1: Notation;
+    let notation2: Notation;
+    let notation3: Notation;
+
+    const suggestedNotations = (args: QuerySuggestedNotationsArgs) => {
+      return resolve<Query, 'suggestedNotations', QuerySuggestedNotationsArgs>(
+        gql`
+          query suggestedNotations($id: String!, $limit: Int!) {
+            suggestedNotations(id: $id, limit: $limit) {
+              id
+            }
+          }
+        `,
+        args,
+        {}
+      );
+    };
+
+    beforeEach(async () => {
+      userRepo = container.get<UserRepo>(TYPES.UserRepo);
+      notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
+
+      transcriber = await userRepo.create(buildRandUser());
+
+      [notation1, notation2, notation3] = await notationRepo.bulkCreate([
+        buildRandNotation({ cursor: 1, transcriberId: transcriber.id }),
+        buildRandNotation({ cursor: 2, transcriberId: transcriber.id }),
+        buildRandNotation({ cursor: 3, transcriberId: transcriber.id }),
+      ]);
+    });
+
+    it('finds suggestions for notations', async () => {
+      const { res } = await suggestedNotations({ id: notation1.id, limit: 2 });
+
+      expect(res.errors).toBeUndefined();
+      expect(res.data.suggestedNotations).toBeDefined();
+
+      const ids = res.data.suggestedNotations.map((notation) => notation.id);
+
+      expect(ids).toIncludeAllMembers([notation2.id, notation3.id]);
+    });
   });
 });
