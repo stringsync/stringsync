@@ -125,6 +125,7 @@ export class NotationRepo implements INotationRepo {
   async findSuggestions(notation: Notation, limit: number): Promise<Notation[]> {
     const taggings = await this.em.find(TaggingEntity, { notationId: notation.id });
     const tagIds = taggings.map((tagging) => tagging.tagId);
+    console.log(findSuggestedNotationsQuery(notation, tagIds, limit));
     return await this.db.query<Notation>(findSuggestedNotationsQuery(notation, tagIds, limit));
   }
 

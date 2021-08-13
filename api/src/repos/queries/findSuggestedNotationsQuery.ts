@@ -3,20 +3,26 @@ import { times } from 'lodash';
 import { Notation } from '../../domain';
 import { sql } from './sql';
 
-const applyTagIds = (b: QueryBuilder, tagIds: string[]) => {
-  if (tagIds.length === 0) {
-    return;
+const applyOrderBys = (b: QueryBuilder, artistName: string, tagIds: string[]) => {
+  const bindings = [];
+  const orderBys = [];
+
+  if (tagIds.length > 0) {
+    // tagBinds will always just be question marks, we don't have to worry about SQL
+    // injection errors.
+    const tagBinds = times(tagIds.length, () => '?').join(',');
+    orderBys.push(`sum(case when taggings.tag_id in (${tagBinds}) then 1 else 0 end)`);
+    for (const tagId in tagIds) {
+      bindings.push(tagId);
+    }
   }
-  const bindings = times(tagIds.length, () => '?').join(',');
-  b.orderByRaw(`sum(case when taggings.tag_id in (${bindings}) then 1 else 0 end) desc`, tagIds);
-};
 
-const applyArtistName = (b: QueryBuilder, artistName: string) => {
-  b.orderByRaw(`case when notations.artist_name = ? then 1 else 0 end desc`, artistName);
-};
+  orderBys.push(`case when notations.artist_name = ? then 1 else 0 end`);
+  bindings.push(artistName);
 
-const applyRandomOrder = (b: QueryBuilder) => {
-  b.orderByRaw('random()');
+  orderBys.push('random()');
+
+  b.orderByRaw(`(${orderBys.join(', ')}) desc`, bindings);
 };
 
 export const findSuggestedNotationsQuery = (notation: Notation, tagIds: string[], limit: number): string => {
@@ -29,9 +35,7 @@ export const findSuggestedNotationsQuery = (notation: Notation, tagIds: string[]
     .groupBy('notations.id')
     .limit(limit);
 
-  applyTagIds(b, tagIds);
-  applyArtistName(b, notation.artistName);
-  applyRandomOrder(b);
+  applyOrderBys(b, notation.artistName, tagIds);
 
   return b.toString();
 };
