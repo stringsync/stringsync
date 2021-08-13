@@ -1,17 +1,20 @@
 import { first, isPlainObject, last, omit, sortBy, take, times } from 'lodash';
+import { Db } from '../db';
 import { Notation, Tag, User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
 import { buildRandNotation, buildRandTag, buildRandTagging, buildRandUser } from '../testing';
 import { Ctor, ctor, randStr, util } from '../util';
-import { NotationRepo as MikroORMNotationRepo } from './mikro-orm';
-import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from './types';
+import { NotationRepo as MikroORMNotationRepo, TaggingRepo } from './mikro-orm';
+import { NotationRepo, TagRepo, UserRepo } from './types';
 
 describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Ctor) => {
   let ORIGINAL_NOTATION_REPO: Ctor<NotationRepo>;
 
   let notationRepo: NotationRepo;
   let userRepo: UserRepo;
+  let tagRepo: TagRepo;
+  let taggingRepo: TaggingRepo;
 
   let user: User;
   let transcriberId: string;
@@ -24,6 +27,8 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
   beforeEach(async () => {
     notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
     userRepo = container.get<UserRepo>(TYPES.UserRepo);
+    tagRepo = container.get<TagRepo>(TYPES.TagRepo);
+    taggingRepo = container.get<TaggingRepo>(TYPES.TaggingRepo);
 
     user = await userRepo.create(buildRandUser());
     transcriberId = user.id;
@@ -521,14 +526,86 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
   });
 
   describe('findSuggestions', () => {
-    it.todo('finds suggestions with matching artist name');
+    let db: Db;
 
-    it.todo('finds suggestions with matching tag ids');
+    let transcriber: User;
 
-    it.todo('finds suggestions without matching artist name or tag ids');
+    let artistName1: string;
+    let artistName2: string;
 
-    it.todo('sorts by num matching tag ids, then matching artists');
+    let notation1: Notation;
+    let notation2: Notation;
+    let notation3: Notation;
+    let notation4: Notation;
 
-    it.todo('finds suggestions in a random order');
+    let tag1: Tag;
+    let tag2: Tag;
+    let tag3: Tag;
+
+    beforeEach(async () => {
+      db = container.get<Db>(TYPES.Db);
+
+      artistName1 = randStr(10);
+      artistName2 = randStr(10);
+
+      transcriber = await userRepo.create(buildRandUser());
+
+      [notation1, notation2, notation3, notation4] = await notationRepo.bulkCreate([
+        buildRandNotation({ cursor: 1, transcriberId: transcriber.id, artistName: artistName1 }),
+        buildRandNotation({ cursor: 2, transcriberId: transcriber.id, artistName: artistName1 }),
+        buildRandNotation({ cursor: 3, transcriberId: transcriber.id, artistName: artistName1 }),
+        buildRandNotation({ cursor: 4, transcriberId: transcriber.id, artistName: artistName2 }),
+      ]);
+
+      [tag1, tag2, tag3] = await tagRepo.bulkCreate([buildRandTag(), buildRandTag(), buildRandTag()]);
+    });
+
+    it('finds suggestions with matching tag ids', async () => {
+      await taggingRepo.bulkCreate([
+        buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
+        buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
+        buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
+        buildRandTagging({ notationId: notation2.id, tagId: tag2.id }),
+        buildRandTagging({ notationId: notation3.id, tagId: tag1.id }),
+      ]);
+
+      const suggestedNotations = await notationRepo.findSuggestions(notation1, 2);
+      expect(suggestedNotations).toIncludeAllMembers([notation2, notation3]);
+    });
+
+    it('finds suggestions with matching artist name', async () => {
+      const suggestedNotations = await notationRepo.findSuggestions(notation1, 2);
+      expect(suggestedNotations).toIncludeAllMembers([notation2, notation3]);
+    });
+
+    it('finds suggestions without matching artist name or tag ids', async () => {
+      const suggestedNotations = await notationRepo.findSuggestions(notation4, 3);
+      expect(suggestedNotations).toIncludeAllMembers([notation1, notation2, notation3]);
+    });
+
+    it('sorts by num matching tag ids, then matching artists', async () => {
+      await taggingRepo.bulkCreate([
+        buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
+        buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
+        buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
+        buildRandTagging({ notationId: notation2.id, tagId: tag2.id }),
+        buildRandTagging({ notationId: notation3.id, tagId: tag1.id }),
+      ]);
+
+      const suggestedNotations = await notationRepo.findSuggestions(notation1, 2);
+      expect(suggestedNotations).toIncludeAllMembers([notation2, notation3]);
+    });
+
+    it('finds suggestions in a random order', async () => {
+      await db.query(`select setseed(0)`);
+      const suggestedNotations1 = await notationRepo.findSuggestions(notation1, 4);
+      expect(suggestedNotations1).toIncludeAllMembers([notation2, notation3, notation4]);
+
+      await db.query(`select setseed(0.5)`);
+      const suggestedNotations2 = await notationRepo.findSuggestions(notation1, 4);
+      expect(suggestedNotations2).toIncludeAllMembers([notation2, notation3, notation4]);
+
+      expect(suggestedNotations1).not.toStrictEqual(suggestedNotations2);
+    });
   });
 });
