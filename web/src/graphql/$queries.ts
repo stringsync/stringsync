@@ -203,3 +203,5 @@ export const tags = async () => {
     }
   `);
 };
+
+export const suggestedNotations = async () => {};
