@@ -10,6 +10,8 @@ import { useEffectOnce } from '../../../hooks';
 import { compose } from '../../../util/compose';
 import { Video } from '../../Video';
 
+const NUM_SUGGESTIONS = 10;
+
 const LoadingIcon = styled(LoadingOutlined)`
   font-size: 5em;
   color: ${(props) => props.theme['@border-color']};
@@ -22,6 +24,7 @@ interface Props {}
 const NotationPlayer: React.FC<Props> = enhance(() => {
   const params = useParams<{ id: string }>();
   const [notation, setNotation] = useState<NotationObject | null>(null);
+  const [suggestedNotations, setSuggestedNotations] = useState<NotationObject[]>([]);
   const [errors, setErrors] = useState(new Array<string>());
   const [isLoading, setIsLoading] = useState(true);
 
@@ -35,10 +38,23 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
       } else if (!data?.notation) {
         setErrors([`no notation found with id '${params.id}'`]);
       } else {
-        console.log(data.notation);
         setNotation(data.notation);
       }
       setIsLoading(false);
+    })();
+  });
+
+  useEffectOnce(() => {
+    (async () => {
+      const { data, errors } = await $queries.suggestedNotations({ id: params.id, limit: NUM_SUGGESTIONS });
+      console.log(data);
+      if (errors) {
+        setErrors(errors.map((error) => error.message));
+      } else if (!data?.suggestedNotations) {
+        setErrors([`no notation suggestions found with id '${params.id}'`]);
+      } else {
+        setSuggestedNotations(data.suggestedNotations);
+      }
     })();
   });
 
@@ -89,7 +105,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
                 ],
               }}
             />
-            <div>comments</div>
+            <div>{JSON.stringify(suggestedNotations, null, 2)}</div>
           </Col>
           <Col>
             <div>notation</div>

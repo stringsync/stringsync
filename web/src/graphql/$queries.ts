@@ -6,6 +6,7 @@ import {
   LoginInput,
   QueryNotationArgs,
   QueryNotationsArgs,
+  QuerySuggestedNotationsArgs,
   ResetPasswordInput,
   SendResetPasswordEmailInput,
   SignupInput,
@@ -180,6 +181,34 @@ export const notations = async (args: QueryNotationsArgs) => {
   );
 };
 
+export const suggestedNotations = async (args: QuerySuggestedNotationsArgs) => {
+  return await query<'suggestedNotations', QuerySuggestedNotationsArgs>(
+    gql`
+      query suggestedNotations($id: String!, $limit: Int!) {
+        suggestedNotations(id: $id, limit: $limit) {
+          id
+          createdAt
+          updatedAt
+          songName
+          artistName
+          thumbnailUrl
+          transcriber {
+            id
+            username
+            role
+            avatarUrl
+          }
+          tags {
+            id
+            name
+          }
+        }
+      }
+    `,
+    args
+  );
+};
+
 export const createNotation = async (input: CreateNotationInput) => {
   return await mutation<'createNotation', { input: CreateNotationInput }>(
     gql`
@@ -203,5 +232,3 @@ export const tags = async () => {
     }
   `);
 };
-
-export const suggestedNotations = async () => {};

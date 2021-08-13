@@ -18,7 +18,7 @@ const getMessage = (error: GraphQLError): string => {
 };
 
 export const formatError = (logger: Logger) => (error: GraphQLError): GraphQLFormattedError => {
-  console.error(error.originalError);
+  console.error(error);
   const message = getMessage(error);
   const locations = error.locations;
   const path = error.path;
