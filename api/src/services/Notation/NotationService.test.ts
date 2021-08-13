@@ -75,4 +75,21 @@ describe('NotationService', () => {
       expect(notations).toIncludeAllMembers([notation1, notation2]);
     });
   });
+
+  describe('findSuggestions', () => {
+    it('returns suggestions for non-existent notations', async () => {
+      const suggestedNotations = await notationService.findSuggestions('not-an-id-i-promise', 2);
+      expect(suggestedNotations).toIncludeAllMembers([notation1, notation2]);
+    });
+
+    it('returns suggestions for existent notations', async () => {
+      const suggestedNotations = await notationService.findSuggestions(notation1.id, 1);
+      expect(suggestedNotations).toIncludeAllMembers([notation2]);
+    });
+
+    it('returns all suggestions with a high limit', async () => {
+      const suggestedNotations = await notationService.findSuggestions('random-id-i-promise', 5);
+      expect(suggestedNotations).toIncludeAllMembers([notation1, notation2]);
+    });
+  });
 });
