@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { sortBy } from 'lodash';
 import { Tag } from '../../domain';
 import { UNKNOWN_ERROR_MSG } from '../../errors';
 import { $queries } from '../../graphql';
@@ -17,11 +18,13 @@ export const getTags = createAsyncThunk<GetTagsReturned, GetTagsThunkArg, GetTag
     if (!data) {
       return thunk.rejectWithValue({ errors: [UNKNOWN_ERROR_MSG] });
     }
+    const tags = data.tags.map((tag) => ({
+      id: tag.id,
+      name: tag.name,
+    }));
+    const sortedTags = sortBy(tags, (tag) => tag.name);
     return {
-      tags: data.tags.map((tag) => ({
-        id: tag.id,
-        name: tag.name,
-      })),
+      tags: sortedTags,
     };
   }
 );
