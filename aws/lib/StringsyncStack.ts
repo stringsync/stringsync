@@ -172,6 +172,14 @@ export class StringsyncStack extends cdk.Stack {
 
     const mediaBucket = new s3.Bucket(this, 'MediaBucket', {
       autoDeleteObjects: false,
+      cors: [
+        {
+          allowedMethods: [s3.HttpMethods.GET],
+          allowedOrigins: ['*'],
+          allowedHeaders: ['*'],
+          maxAge: 3000,
+        },
+      ],
     });
 
     const mediaDistribution = new cloudfront.Distribution(this, 'MediaDistribution', {

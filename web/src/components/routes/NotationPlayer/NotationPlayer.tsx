@@ -9,6 +9,7 @@ import { $queries, NotationObject } from '../../../graphql';
 import { Layout, withLayout } from '../../../hocs';
 import { RootState } from '../../../store';
 import { compose } from '../../../util/compose';
+import { Notation } from '../../Notation';
 import { Video } from '../../Video';
 import { SuggestedNotations } from './SuggestedNotations';
 
@@ -107,7 +108,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
                   {errors.map((error, ndx) => (
                     <div key={ndx}>{error}</div>
                   ))}
-                  <Link to="/library">go to library</Link>
+                  <Link to="/library">library</Link>
                 </>
               }
             />
@@ -136,6 +137,8 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
             <SongName>{notation.songName}</SongName>
             <ArtistName>by {notation.artistName}</ArtistName>
             <TranscriberName>{notation.transcriber.username}</TranscriberName>
+
+            {notation.musicXmlUrl && <Notation musicXmlUrl={notation.musicXmlUrl} />}
           </RightOrBottomCol>
         </Row>
       )}

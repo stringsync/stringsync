@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import videojs, { VideoJsPlayer } from 'video.js';
 
@@ -17,7 +17,7 @@ type Props = {
 };
 
 export const Video: React.FC<Props> = (props) => {
-  const videoRef = React.useRef(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const { playerOptions, onPlayerReady, beforePlayerDestroy } = props;
 
   // This seperate functional component fixes the removal of the videoelement
@@ -28,7 +28,7 @@ export const Video: React.FC<Props> = (props) => {
     </Outer>
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     const video = videoRef.current;
     let player: VideoJsPlayer;
     if (video) {
