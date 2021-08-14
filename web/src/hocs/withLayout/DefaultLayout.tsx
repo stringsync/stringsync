@@ -13,6 +13,8 @@ const metas = document.getElementsByTagName('meta');
 const version = metas.namedItem('version')?.content || '';
 export const VERSION = version ? `v${version}` : 'v?.?,?';
 
+export const HEADER_HEIGHT_PX = 64;
+
 const StyledLayout = styled(Layout)`
   && {
     min-height: 100vh;
@@ -26,6 +28,7 @@ const StyledHeader = styled(Layout.Header)`
     padding: 0 16px;
     display: flex;
     align-items: center;
+    height: ${HEADER_HEIGHT_PX}px;
   }
 `;
 
@@ -47,7 +50,8 @@ const Offline = styled.em`
 `;
 
 type Props = {
-  withContentLane: boolean;
+  lanes: boolean;
+  footer: boolean;
 };
 
 export const DefaultLayout: React.FC<Props> = (props) => {
@@ -93,8 +97,8 @@ export const DefaultLayout: React.FC<Props> = (props) => {
           </Row>
         </Lane>
       </StyledHeader>
-      <Layout.Content>{props.withContentLane ? <Lane>{props.children}</Lane> : props.children}</Layout.Content>
-      {isGtMdViewport && (
+      <Layout.Content>{props.lanes ? <Lane>{props.children}</Lane> : props.children}</Layout.Content>
+      {props.footer && isGtMdViewport && (
         <StyledFooter>
           <Lane>{VERSION}</Lane>
         </StyledFooter>

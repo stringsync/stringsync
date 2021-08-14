@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { $queries, NotationObject } from '../../../graphql';
 import { Layout, withLayout } from '../../../hocs';
+import { HEADER_HEIGHT_PX as DEFAULT_LAYOUT_HEADER_HEIGHT_PX } from '../../../hocs/withLayout/DefaultLayout';
 import { RootState } from '../../../store';
 import { compose } from '../../../util/compose';
 import { Notation } from '../../Notation';
@@ -23,14 +24,19 @@ const RightBorder = styled.div<{ border: boolean }>`
   border-right: ${(props) => (props.border ? '1px' : '0')} solid ${(props) => props.theme['@border-color']};
 `;
 
-const LeftOrTopCol = styled(Col)``;
+const LeftOrTopCol = styled(Col)<{ overflow: boolean }>`
+  max-height: calc(100vh - ${DEFAULT_LAYOUT_HEADER_HEIGHT_PX}px);
+  overflow: ${(props) => (props.overflow ? 'auto' : 'hidden')};
+`;
 
 const RightOrBottomCol = styled(Col)`
   padding-top: 24px;
-  padding-left: 8px;
-  padding-right: 8px;
+  padding-left: 16px;
+  padding-right: 16px;
   padding-bottom: 36px;
   background: white;
+  max-height: calc(100vh - ${DEFAULT_LAYOUT_HEADER_HEIGHT_PX}px);
+  overflow: auto;
 `;
 
 const SongName = styled.h1`
@@ -52,7 +58,7 @@ const TranscriberName = styled.h3`
   color: ${(props) => props.theme['@muted']};
 `;
 
-const enhance = compose(withLayout(Layout.DEFAULT_LANELESS));
+const enhance = compose(withLayout(Layout.DEFAULT, { lanes: false, footer: false }));
 
 interface Props {}
 
@@ -68,6 +74,19 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const [isLoading, setIsLoading] = useState(true);
 
   const hasErrors = errors.length > 0;
+
+  // Prevent the outer container from scrolling. The reason why we need this is
+  // needed is because when the viewport is ltEqMd, the body will almost certainly
+  // overflow, causing a scroll bar on the outer page (and the inner page from the
+  // right/bottom column overflow). This is a reasonable hack that will undo itself
+  // when the user navigates away from the page.
+  useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, []);
 
   useEffect(() => {
     setErrors([]);
@@ -124,7 +143,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
       {!isLoading && !hasErrors && notation && (
         <Row>
-          <LeftOrTopCol xs={24} sm={24} md={24} lg={6} xl={6} xxl={8}>
+          <LeftOrTopCol overflow={gtMd} xs={24} sm={24} md={24} lg={6} xl={6} xxl={8}>
             <Video
               playerOptions={{
                 sources: [

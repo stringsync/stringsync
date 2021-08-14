@@ -7,7 +7,7 @@ describe('DefaultLayout', () => {
   it('renders without crashing', () => {
     const { container } = render(
       <Test>
-        <DefaultLayout withContentLane />
+        <DefaultLayout footer lanes />
       </Test>
     );
     expect(container).toBeInTheDocument();

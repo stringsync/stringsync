@@ -173,9 +173,12 @@ export const SuggestedNotations: React.FC<SuggestedNotationsProps> = (props) => 
 
           <br />
 
-          <Row justify="center">
+          <Centered>
             <Link to="/library">library</Link>
-          </Row>
+          </Centered>
+
+          <br />
+          <br />
         </>
       )}
 
