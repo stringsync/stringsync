@@ -150,20 +150,20 @@ export const Library: React.FC<Props> = enhance(() => {
   });
 
   useEffect(() => {
-    if (isIdle && !isSearchTermDebouncing) {
-      send(libraryModel.events.loadPage());
+    if (!isIdle && isSearchTermDebouncing) {
+      send(libraryModel.events.clear());
     }
   }, [send, isIdle, isSearchTermDebouncing]);
 
   useEffect(() => {
-    if (isLoaderTriggerVisible) {
-      send(libraryModel.events.loadPage());
-    }
-  }, [send, isLoaderTriggerVisible]);
+    send(libraryModel.events.setQueryArgs(debouncedQuery, debouncedTagIds));
+  }, [send, debouncedQuery, debouncedTagIds]);
 
   useEffect(() => {
-    send(libraryModel.events.setQueryArgs(query, tagIds));
-  }, [send, query, tagIds]);
+    if (!isSearchTermDebouncing && isLoaderTriggerVisible) {
+      send(libraryModel.events.loadPage());
+    }
+  }, [send, isLoaderTriggerVisible, isSearchTermDebouncing]);
 
   return (
     <Outer data-testid="library" xs={xs}>

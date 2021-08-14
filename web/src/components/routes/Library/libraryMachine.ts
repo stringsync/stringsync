@@ -34,6 +34,7 @@ export const libraryModel = createModel(
       loadPage: () => ({}),
       retryLoadPage: () => ({}),
       setQueryArgs: (query: string, tagIds: string[]) => ({ query, tagIds }),
+      clear: () => ({}),
     },
   }
 );
@@ -64,6 +65,10 @@ const applyErrors = assign<LibraryContext, DoneInvokeEvent<Error[]>>((context, e
   errors: event.data,
 }));
 
+const clear = assign<LibraryContext, { type: 'clear' }>((context, event) => {
+  return cloneDeep(libraryModel.initialContext);
+});
+
 const toNotationPreview = (edge: NotationEdgeObject): NotationPreview => {
   const role = toUserRole(edge.node.transcriber.role);
   const transcriber = { ...edge.node.transcriber, role };
@@ -89,8 +94,9 @@ const fetchNotationPage: InvokeCreator<LibraryContext, LibraryEvent> = async (co
   return { notations, startCursor, hasNextPage };
 };
 
-const hasNextPage: Condition<LibraryContext, DoneInvokeEvent<NotationPage>> = (context, event) =>
-  event.data.hasNextPage;
+const hasNextPage: Condition<LibraryContext, DoneInvokeEvent<NotationPage>> = (context, event) => {
+  return event.data.hasNextPage;
+};
 
 export const libraryMachine = libraryModel.createMachine({
   id: 'library',
@@ -105,10 +111,7 @@ export const libraryMachine = libraryModel.createMachine({
     },
     streaming: {
       on: {
-        setQueryArgs: {
-          target: 'idle',
-          actions: [setQueryArgs],
-        },
+        clear: { target: 'idle', actions: [clear] },
       },
       initial: 'loading',
       states: {
@@ -131,7 +134,7 @@ export const libraryMachine = libraryModel.createMachine({
       },
     },
     done: {
-      on: { setQueryArgs: { target: 'idle', actions: [setQueryArgs] } },
+      on: { clear: { target: 'idle', actions: [clear] } },
     },
   },
 });
