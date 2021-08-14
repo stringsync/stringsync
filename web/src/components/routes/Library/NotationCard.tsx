@@ -4,6 +4,7 @@ import { Transition } from 'react-transition-group';
 import { TransitionStatus } from 'react-transition-group/Transition';
 import styled from 'styled-components';
 import { theme } from '../../../theme';
+import { ago } from '../../../util/ago';
 import { getQueryMatches } from './getQueryMatches';
 import { NotationPreview } from './types';
 
@@ -48,6 +49,8 @@ interface Props {
 }
 
 export const NotationCard: React.FC<Props> = (props) => {
+  const now = new Date();
+
   const { thumbnailUrl, songName, transcriber, artistName, tags } = props.notation;
   const url = thumbnailUrl || THUMBNAIL_PLACEHOLDER;
 
@@ -103,6 +106,7 @@ export const NotationCard: React.FC<Props> = (props) => {
                   )}
                 </small>
               </div>
+              <small>{ago(new Date(props.notation.createdAt), now)}</small>
               <Tags>
                 {tags.map((tag) => {
                   const isTagChecked = props.isTagChecked(tag.id);
