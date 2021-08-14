@@ -24,6 +24,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
       backend: 'svg',
       drawTitle: false,
       pageBackgroundColor: 'white',
+      drawingParameters: 'compacttight',
     });
 
     (async () => {
