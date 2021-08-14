@@ -1,25 +1,24 @@
 import { random, sample, shuffle, times } from 'lodash';
+import { isMikroORMDb } from '../..';
 import { Notation, Tag, User, UserRole } from '../../../domain';
 import { InternalError } from '../../../errors';
 import { container } from '../../../inversify.config';
 import { TYPES } from '../../../inversify.constants';
 import { buildRandNotation, buildRandTag, buildRandUser } from '../../../testing';
 import { Logger, randStr } from '../../../util';
-import { Db, Orm } from '../../types';
-import { Db as MikroORMDb } from '../Db';
+import { Db } from '../../types';
 import { NotationEntity, TagEntity, UserEntity } from '../entities';
 import {
   ADJECTIVES,
   ARTIST_NAMES,
   ENCRYPTED_PASSWORD,
+  MUSIC_XML_URLS,
   NOTATION_THUMBNAIL_URLS,
   NOUNS,
   USERNAMES,
   USER_AVATAR_URLS,
   VIDEO_URL,
 } from './constants';
-
-const isMikroORMDb = (db: Db): db is MikroORMDb => db.ormType === Orm.MikroORM;
 
 (async () => {
   const db = container.get<Db>(TYPES.Db);
@@ -56,6 +55,7 @@ const isMikroORMDb = (db: Db): db is MikroORMDb => db.ormType === Orm.MikroORM;
         artistName: sample(ARTIST_NAMES),
         transcriberId: undefined,
         thumbnailUrl: sample(NOTATION_THUMBNAIL_URLS),
+        musicXmlUrl: sample(MUSIC_XML_URLS),
         videoUrl: VIDEO_URL,
         private: false,
         ...props,

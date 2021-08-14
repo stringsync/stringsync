@@ -24,7 +24,7 @@ export const Video: React.FC<Props> = (props) => {
   // from the DOM when calling the dispose() method on a player
   const VideoHtml: React.FC = () => (
     <Outer data-vjs-player>
-      <video ref={videoRef} className="video-js vjs-big-play-centered vjs-default-skin" data-setup={{ fluid: true }} />
+      <video ref={videoRef} className="video-js vjs-big-play-centered vjs-default-skin" />
     </Outer>
   );
 

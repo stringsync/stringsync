@@ -129,6 +129,7 @@ export const notation = async (args: QueryNotationArgs) => {
           transcriberId
           thumbnailUrl
           videoUrl
+          musicXmlUrl
           transcriber {
             username
           }
