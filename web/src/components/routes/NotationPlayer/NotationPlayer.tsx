@@ -26,7 +26,11 @@ const RightBorder = styled.div<{ border: boolean }>`
 const LeftOrTopCol = styled(Col)``;
 
 const RightOrBottomCol = styled(Col)`
-  margin-top: 24px;
+  padding-top: 24px;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-bottom: 36px;
+  background: white;
 `;
 
 const SongName = styled.h1`
