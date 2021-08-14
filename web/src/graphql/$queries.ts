@@ -129,6 +129,9 @@ export const notation = async (args: QueryNotationArgs) => {
           transcriberId
           thumbnailUrl
           videoUrl
+          transcriber {
+            username
+          }
         }
       }
     `,

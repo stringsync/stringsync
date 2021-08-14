@@ -17,8 +17,31 @@ const LoadingIcon = styled(LoadingOutlined)`
   color: ${(props) => props.theme['@border-color']};
 `;
 
-const LeftOrTopCol = styled(Col)<{ border: boolean }>`
-  border-right: ${(props) => (props.border ? '1px' : '0')} solid ${(props) => props.theme['@border-color']};
+const LeftOrTopCol = styled(Col)<{ showBorder: boolean }>`
+  border-right: ${(props) => (props.showBorder ? '1px' : '0')} solid ${(props) => props.theme['@border-color']};
+`;
+
+const RightOrBottomCol = styled(Col)`
+  margin-top: 24px;
+`;
+
+const SongName = styled.h1`
+  text-align: center;
+  font-size: 2em;
+  margin-bottom: 0;
+`;
+
+const ArtistName = styled.h2`
+  text-align: center;
+  font-size: 1.25em;
+  margin-bottom: 4px;
+`;
+
+const TranscriberName = styled.h3`
+  text-align: center;
+  font-size: 1em;
+  font-weight: normal;
+  color: ${(props) => props.theme['@muted']};
 `;
 
 const enhance = compose(withLayout(Layout.DEFAULT_LANELESS));
@@ -93,7 +116,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
       {!isLoading && !hasErrors && notation && (
         <Row>
-          <LeftOrTopCol border={gtMd} xs={24} sm={24} md={24} lg={6} xl={6} xxl={8}>
+          <LeftOrTopCol showBorder={gtMd} xs={24} sm={24} md={24} lg={6} xl={6} xxl={8}>
             <Video
               playerOptions={{
                 sources: [
@@ -106,9 +129,11 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
             />
             {gtMd && <SuggestedNotations srcNotationId={notation.id} />}
           </LeftOrTopCol>
-          <Col xs={24} sm={24} md={24} lg={18} xl={18} xxl={16}>
-            <div>notation</div>
-          </Col>
+          <RightOrBottomCol xs={24} sm={24} md={24} lg={18} xl={18} xxl={16}>
+            <SongName>{notation.songName}</SongName>
+            <ArtistName>by {notation.artistName}</ArtistName>
+            <TranscriberName>{notation.transcriber.username}</TranscriberName>
+          </RightOrBottomCol>
         </Row>
       )}
     </div>
