@@ -154,7 +154,9 @@ export const SuggestedNotations: React.FC<SuggestedNotationsProps> = (props) => 
                             <b>{truncate(notation.songName, { length: 30 })}</b>
                           </BlackText>
                           <BlackText>by {truncate(notation.artistName, { length: 30 })}</BlackText>
-                          <MutedText> {truncate(notation.transcriber.username, { length: 30 })}</MutedText>
+                          <MutedText>
+                            <small>{truncate(notation.transcriber.username, { length: 30 })}</small>
+                          </MutedText>
                         </TextOuter>
                         <TagsOuter>
                           {notation.tags.map((tag) => (

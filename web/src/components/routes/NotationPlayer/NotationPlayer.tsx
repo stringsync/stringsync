@@ -93,7 +93,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
       {!isLoading && !hasErrors && notation && (
         <Row>
-          <LeftOrTopCol border={gtMd} xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
+          <LeftOrTopCol border={gtMd} xs={24} sm={24} md={24} lg={6} xl={6} xxl={8}>
             <Video
               playerOptions={{
                 sources: [
@@ -106,7 +106,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
             />
             {gtMd && <SuggestedNotations srcNotationId={notation.id} />}
           </LeftOrTopCol>
-          <Col xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
+          <Col xs={24} sm={24} md={24} lg={18} xl={18} xxl={16}>
             <div>notation</div>
           </Col>
         </Row>
