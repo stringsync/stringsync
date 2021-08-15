@@ -34,7 +34,10 @@ export const NOTATION_THUMBNAIL_URLS = [
   'https://i.picsum.photos/id/477/640/640.jpg?hmac=PbmMRK_FS_zhXcEz2rgWGJ99V9kEGz6LUoIXhlAjV0Y',
 ];
 
-export const MUSIC_XML_URLS = ['https://d11z5bu8xy08xt.cloudfront.net/notations/music_xml/sample.xml'];
+export const MUSIC_XML_URLS = [
+  'https://d11z5bu8xy08xt.cloudfront.net/notations/music_xml/sample1.xml',
+  'https://d11z5bu8xy08xt.cloudfront.net/notations/music_xml/sample2.xml',
+];
 
 export const ADJECTIVES = [
   'swift',
