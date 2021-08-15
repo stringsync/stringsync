@@ -21,6 +21,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
 
     const osmd = new OpenSheetMusicDisplay(div, {
       autoResize: true,
+      disableCursor: false,
       backend: 'svg',
       drawTitle: false,
       pageBackgroundColor: 'white',

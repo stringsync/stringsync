@@ -24,7 +24,11 @@ const RightBorder = styled.div<{ border: boolean }>`
   border-right: ${(props) => (props.border ? '1px' : '0')} solid ${(props) => props.theme['@border-color']};
 `;
 
-const LeftOrTopCol = styled(Col)<{ overflow: boolean }>`
+const LeftOrTopCol = styled(Col)``;
+
+// We have to use this because ant design will push any unknown
+// props to the underlying HTML structure, causing an error.
+const LeftOrTopColInner = styled.div<{ overflow: boolean }>`
   max-height: calc(100vh - ${DEFAULT_LAYOUT_HEADER_HEIGHT_PX}px);
   overflow: ${(props) => (props.overflow ? 'auto' : 'hidden')};
 `;
@@ -143,18 +147,20 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
       {!isLoading && !hasErrors && notation && (
         <Row>
-          <LeftOrTopCol overflow={gtMd} xs={24} sm={24} md={24} lg={6} xl={6} xxl={8}>
-            <Video
-              playerOptions={{
-                sources: [
-                  {
-                    src: notation?.videoUrl || '',
-                    type: 'application/x-mpegURL',
-                  },
-                ],
-              }}
-            />
-            <RightBorder border={gtMd}>{gtMd && <SuggestedNotations srcNotationId={notation.id} />}</RightBorder>
+          <LeftOrTopCol xs={24} sm={24} md={24} lg={6} xl={6} xxl={8}>
+            <LeftOrTopColInner overflow={gtMd}>
+              <Video
+                playerOptions={{
+                  sources: [
+                    {
+                      src: notation?.videoUrl || '',
+                      type: 'application/x-mpegURL',
+                    },
+                  ],
+                }}
+              />
+              <RightBorder border={gtMd}>{gtMd && <SuggestedNotations srcNotationId={notation.id} />}</RightBorder>
+            </LeftOrTopColInner>
           </LeftOrTopCol>
           <RightOrBottomCol xs={24} sm={24} md={24} lg={18} xl={18} xxl={16}>
             <SongName>{notation.songName}</SongName>
