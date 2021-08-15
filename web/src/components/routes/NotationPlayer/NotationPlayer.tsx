@@ -35,10 +35,9 @@ const LeftOrTopColInner = styled.div<{ overflow: boolean }>`
 
 const RightOrBottomCol = styled(Col)`
   padding-top: 24px;
-  padding-left: 16px;
-  padding-right: 16px;
   padding-bottom: 36px;
   background: white;
+  min-height: calc(100vh - ${DEFAULT_LAYOUT_HEADER_HEIGHT_PX}px);
   max-height: calc(100vh - ${DEFAULT_LAYOUT_HEADER_HEIGHT_PX}px);
   overflow: auto;
 `;
