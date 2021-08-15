@@ -1,13 +1,13 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { Alert, Col, Row } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { $queries, NotationObject } from '../../../graphql';
 import { Layout, withLayout } from '../../../hocs';
-import { HEADER_HEIGHT_PX as DEFAULT_LAYOUT_HEADER_HEIGHT_PX } from '../../../hocs/withLayout/DefaultLayout';
+import { HEADER_HEIGHT_PX } from '../../../hocs/withLayout/DefaultLayout';
 import { RootState } from '../../../store';
 import { compose } from '../../../util/compose';
 import { Notation } from '../../Notation';
@@ -24,21 +24,19 @@ const RightBorder = styled.div<{ border: boolean }>`
   border-right: ${(props) => (props.border ? '1px' : '0')} solid ${(props) => props.theme['@border-color']};
 `;
 
-const LeftOrTopCol = styled(Col)``;
-
-// We have to use this because ant design will push any unknown
-// props to the underlying HTML structure, causing an error.
-const LeftOrTopColInner = styled.div<{ overflow: boolean }>`
-  max-height: calc(100vh - ${DEFAULT_LAYOUT_HEADER_HEIGHT_PX}px);
+// We have to use this instead of styling the col directly because
+// ant design will push any unknown props to the underlying HTML
+// structure, causing an unknown attribute/property error.
+const LeftOrTopCol = styled.div<{ overflow: boolean }>`
+  max-height: calc(100vh - ${HEADER_HEIGHT_PX}px);
   overflow: ${(props) => (props.overflow ? 'auto' : 'hidden')};
 `;
 
-const RightOrBottomCol = styled(Col)`
+const RightOrBottomCol = styled.div<{ heightOffsetPx: number }>`
   padding-top: 24px;
   padding-bottom: 36px;
   background: white;
-  min-height: calc(100vh - ${DEFAULT_LAYOUT_HEADER_HEIGHT_PX}px);
-  max-height: calc(100vh - ${DEFAULT_LAYOUT_HEADER_HEIGHT_PX}px);
+  height: calc(100vh - ${(props) => props.heightOffsetPx}px);
   overflow: auto;
 `;
 
@@ -75,6 +73,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const [notation, setNotation] = useState<NotationObject | null>(null);
   const [errors, setErrors] = useState(new Array<string>());
   const [isLoading, setIsLoading] = useState(true);
+  const [videoHeightPx, setVideoHeightPx] = useState(0);
 
   const hasErrors = errors.length > 0;
 
@@ -107,6 +106,12 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
       setIsLoading(false);
     })();
   }, [params.id]);
+
+  const onVideoResize = useCallback((widthPx: number, heightPx: number) => {
+    setVideoHeightPx(heightPx);
+  }, []);
+
+  const rightOrBottomColHeightOffsetPx = gtMd ? HEADER_HEIGHT_PX : HEADER_HEIGHT_PX + videoHeightPx;
 
   return (
     <div data-testid="notation-player">
@@ -146,9 +151,10 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
       {!isLoading && !hasErrors && notation && (
         <Row>
-          <LeftOrTopCol xs={24} sm={24} md={24} lg={6} xl={6} xxl={8}>
-            <LeftOrTopColInner overflow={gtMd}>
+          <Col xs={24} sm={24} md={24} lg={6} xl={6} xxl={8}>
+            <LeftOrTopCol overflow={gtMd}>
               <Video
+                onVideoResize={onVideoResize}
                 playerOptions={{
                   sources: [
                     {
@@ -159,15 +165,17 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
                 }}
               />
               <RightBorder border={gtMd}>{gtMd && <SuggestedNotations srcNotationId={notation.id} />}</RightBorder>
-            </LeftOrTopColInner>
-          </LeftOrTopCol>
-          <RightOrBottomCol xs={24} sm={24} md={24} lg={18} xl={18} xxl={16}>
-            <SongName>{notation.songName}</SongName>
-            <ArtistName>by {notation.artistName}</ArtistName>
-            <TranscriberName>{notation.transcriber.username}</TranscriberName>
+            </LeftOrTopCol>
+          </Col>
+          <Col xs={24} sm={24} md={24} lg={18} xl={18} xxl={16}>
+            <RightOrBottomCol heightOffsetPx={rightOrBottomColHeightOffsetPx}>
+              <SongName>{notation.songName}</SongName>
+              <ArtistName>by {notation.artistName}</ArtistName>
+              <TranscriberName>{notation.transcriber.username}</TranscriberName>
 
-            {notation.musicXmlUrl && <Notation musicXmlUrl={notation.musicXmlUrl} />}
-          </RightOrBottomCol>
+              {notation.musicXmlUrl && <Notation musicXmlUrl={notation.musicXmlUrl} />}
+            </RightOrBottomCol>
+          </Col>
         </Row>
       )}
     </div>

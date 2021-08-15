@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import videojs, { VideoJsPlayer } from 'video.js';
+import videojs from 'video.js';
 
 const DEFAULT_PLAYER_OPTIONS: videojs.PlayerOptions = {
   controls: true,
@@ -14,11 +14,12 @@ type Props = {
   playerOptions: videojs.PlayerOptions;
   onPlayerReady?: (player: videojs.Player) => void;
   beforePlayerDestroy?: (player: videojs.Player) => void;
+  onVideoResize?: (widthPx: number, heightPx: number) => void;
 };
 
 export const Video: React.FC<Props> = (props) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const { playerOptions, onPlayerReady, beforePlayerDestroy } = props;
+  const { playerOptions, onPlayerReady, beforePlayerDestroy, onVideoResize } = props;
 
   // This seperate functional component fixes the removal of the videoelement
   // from the DOM when calling the dispose() method on a player
@@ -30,26 +31,33 @@ export const Video: React.FC<Props> = (props) => {
 
   useEffect(() => {
     const video = videoRef.current;
-    let player: VideoJsPlayer;
-    if (video) {
-      player = videojs(video, { ...DEFAULT_PLAYER_OPTIONS, ...playerOptions });
-
-      player.ready(() => {
-        if (onPlayerReady) {
-          onPlayerReady(player);
-        }
-      });
+    if (!video) {
+      return;
     }
-    return () => {
-      if (!player) {
-        return;
+
+    const player = videojs(video, { ...DEFAULT_PLAYER_OPTIONS, ...playerOptions });
+    player.ready(() => {
+      if (onPlayerReady) {
+        onPlayerReady(player);
       }
+    });
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (onVideoResize) {
+        onVideoResize(player.currentWidth(), player.currentHeight());
+      }
+    });
+    resizeObserver.observe(video);
+
+    return () => {
+      resizeObserver.disconnect();
+
       if (beforePlayerDestroy) {
         beforePlayerDestroy(player);
       }
       player.dispose();
     };
-  }, [playerOptions, onPlayerReady, beforePlayerDestroy]);
+  }, [playerOptions, onPlayerReady, beforePlayerDestroy, onVideoResize]);
 
   return <VideoHtml />;
 };
