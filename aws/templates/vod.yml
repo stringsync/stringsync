@@ -523,6 +523,7 @@ Resources:
     Type: AWS::CloudFront::Distribution
     Properties:
       DistributionConfig:
+        Comment: !Sub 'Serves processed videos for ${AWS::StackName}'
         Origins:
           - DomainName: !Sub '${Destination}.s3.${AWS::Region}.amazonaws.com'
             Id: vodS3Origin

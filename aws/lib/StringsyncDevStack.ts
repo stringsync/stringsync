@@ -39,7 +39,7 @@ export class StringsyncDevStack extends cdk.Stack {
 
     const mediaDistribution = new cloudfront.Distribution(this, 'MediaDistribution', {
       enabled: true,
-      comment: 'Serves media',
+      comment: 'Serves media from the dev media bucket',
       priceClass: cloudfront.PriceClass.PRICE_CLASS_ALL,
       defaultBehavior: {
         origin: new origins.S3Origin(mediaBucket),

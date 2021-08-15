@@ -184,7 +184,7 @@ export class StringsyncStack extends cdk.Stack {
 
     const mediaDistribution = new cloudfront.Distribution(this, 'MediaDistribution', {
       enabled: true,
-      comment: 'Serves media',
+      comment: 'Serves media from the prod media bucket',
       priceClass: cloudfront.PriceClass.PRICE_CLASS_ALL,
       defaultBehavior: {
         origin: new origins.S3Origin(mediaBucket),
@@ -212,7 +212,7 @@ export class StringsyncStack extends cdk.Stack {
     });
     const appDistribution = new cloudfront.Distribution(this, 'AppDistribution', {
       enabled: true,
-      comment: 'Serves the application frontend',
+      comment: 'Serves the prod application frontend',
       errorResponses: [
         { httpStatus: 403, responseHttpStatus: 200, responsePagePath: '/' },
         { httpStatus: 404, responseHttpStatus: 200, responsePagePath: '/' },
