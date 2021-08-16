@@ -15,11 +15,12 @@ type Props = {
   onPlayerReady?: (player: videojs.Player) => void;
   beforePlayerDestroy?: (player: videojs.Player) => void;
   onVideoResize?: (widthPx: number, heightPx: number) => void;
+  onTimeUpdate?: (timeMs: number) => void;
 };
 
 export const Video: React.FC<Props> = (props) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const { playerOptions, onPlayerReady, beforePlayerDestroy, onVideoResize } = props;
+  const { playerOptions, onPlayerReady, beforePlayerDestroy, onVideoResize, onTimeUpdate } = props;
 
   // This seperate functional component fixes the removal of the videoelement
   // from the DOM when calling the dispose() method on a player
@@ -49,7 +50,14 @@ export const Video: React.FC<Props> = (props) => {
     });
     resizeObserver.observe(video);
 
+    player.on('timeupdate', () => {
+      if (onTimeUpdate) {
+        onTimeUpdate(player.currentTime());
+      }
+    });
     return () => {
+      player.off('timeupdate');
+
       resizeObserver.disconnect();
 
       if (beforePlayerDestroy) {
@@ -57,7 +65,7 @@ export const Video: React.FC<Props> = (props) => {
       }
       player.dispose();
     };
-  }, [playerOptions, onPlayerReady, beforePlayerDestroy, onVideoResize]);
+  }, [playerOptions, onPlayerReady, beforePlayerDestroy, onVideoResize, onTimeUpdate]);
 
   return <VideoHtml />;
 };

@@ -108,6 +108,8 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
     setVideoHeightPx(heightPx);
   }, []);
 
+  const onTimeUpdate = useCallback((timeMs: number) => {}, []);
+
   const rightOrBottomColHeightOffsetPx = gtMd ? HEADER_HEIGHT_PX : HEADER_HEIGHT_PX + videoHeightPx;
 
   return (
@@ -151,6 +153,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
           <LeftOrTopCol $overflow={gtMd} xs={24} sm={24} md={24} lg={6} xl={6} xxl={8}>
             <Video
               onVideoResize={onVideoResize}
+              onTimeUpdate={onTimeUpdate}
               playerOptions={{
                 sources: [
                   {
