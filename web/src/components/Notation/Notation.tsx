@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { StringsyncOpenSheetMusicDisplay } from './StringsyncOpenSheetMusicDisplay';
+import { MusicDisplay } from './MusicDisplay';
 
 const Outer = styled.div`
   margin-top: 24px;
@@ -15,7 +15,7 @@ const LoadingOverlay = styled.div`
   top: 0;
   left: 0;
   background-color: white;
-  z-index: 10;
+  z-index: 2;
   text-align: center;
 `;
 
@@ -28,8 +28,18 @@ type NotationProps = {
 };
 
 export const Notation: React.FC<NotationProps> = (props) => {
+  const { musicXmlUrl } = props;
+
   const divRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const startLoading = useCallback(() => {
+    setIsLoading(true);
+  }, []);
+
+  const stopLoading = useCallback(() => {
+    setIsLoading(false);
+  }, []);
 
   useEffect(() => {
     const div = divRef.current;
@@ -37,32 +47,20 @@ export const Notation: React.FC<NotationProps> = (props) => {
       return;
     }
 
-    const startLoading = () => setIsLoading(true);
-    const stopLoading = () => setIsLoading(false);
-
-    const osmd = new StringsyncOpenSheetMusicDisplay(div, {
-      autoResize: true,
-      disableCursor: false,
-      backend: 'svg',
-      drawTitle: false,
-      pageBackgroundColor: 'white',
-      drawingParameters: 'compacttight',
+    const osmd = new MusicDisplay(div, {
+      onLoadStart: startLoading,
+      onLoadEnd: stopLoading,
       onResizeStart: startLoading,
       onResizeEnd: stopLoading,
     });
 
     (async () => {
-      try {
-        startLoading();
-        await osmd.load(props.musicXmlUrl);
-        osmd.render();
-      } finally {
-        stopLoading();
-      }
+      await osmd.load(musicXmlUrl);
+      osmd.render();
     })();
 
     return () => {};
-  }, [props.musicXmlUrl]);
+  }, [musicXmlUrl, startLoading, stopLoading]);
 
   return (
     <Outer>

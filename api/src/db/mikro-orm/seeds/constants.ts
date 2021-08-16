@@ -35,8 +35,10 @@ export const NOTATION_THUMBNAIL_URLS = [
 ];
 
 export const MUSIC_XML_URLS = [
-  'https://d11z5bu8xy08xt.cloudfront.net/notations/music_xml/sample1.xml',
-  'https://d11z5bu8xy08xt.cloudfront.net/notations/music_xml/sample2.xml',
+  // 'https://d11z5bu8xy08xt.cloudfront.net/notations/music_xml/sample1.xml',
+  // 'https://d11z5bu8xy08xt.cloudfront.net/notations/music_xml/sample2.xml',
+  // 'https://d11z5bu8xy08xt.cloudfront.net/notations/music_xml/sample3.xml',
+  'https://d11z5bu8xy08xt.cloudfront.net/notations/music_xml/sample4.xml',
 ];
 
 export const ADJECTIVES = [
