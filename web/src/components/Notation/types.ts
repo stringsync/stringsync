@@ -5,5 +5,6 @@ export enum CursorWrapperType {
 
 export interface CursorWrapper {
   readonly type: CursorWrapperType;
+  init(): void;
   update(timeMs: number): void;
 }

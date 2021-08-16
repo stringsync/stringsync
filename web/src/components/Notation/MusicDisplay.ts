@@ -1,6 +1,8 @@
 import { merge, noop } from 'lodash';
 import { CursorType, DrawingParametersEnum, IOSMDOptions, OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
+import { theme } from '../../theme';
 import { NullCursor } from './NullCursor';
+import { TrueCursor } from './TrueCursor';
 import { CursorWrapper } from './types';
 
 type Callback = () => void;
@@ -26,13 +28,19 @@ const DEFAULT_OPTS: MusicDisplayOptions = {
       type: CursorType.Standard,
       color: 'blue',
       follow: false,
-      alpha: 0.25,
+      alpha: 0.3,
     },
     {
       type: CursorType.Standard,
       color: 'lime',
       follow: false,
-      alpha: 0.25,
+      alpha: 0.3,
+    },
+    {
+      type: CursorType.Standard,
+      color: theme['@primary-color'],
+      follow: true,
+      alpha: 0.5,
     },
   ],
 };
@@ -70,14 +78,26 @@ class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
   render() {
     super.render();
+    this.initCursors();
+  }
 
-    // Cursors are only created after render is called. We
-    // ensure that they will be visible when they are ready
-    // to be shown.
-    for (const cursor of this.cursors) {
-      cursor.cursorElement.style.zIndex = '2';
-      cursor.show();
+  updateCursor(timeMs: number) {
+    this.cursorWrapper.update(timeMs);
+  }
+
+  private initCursors() {
+    const [lagger, leader, lerped] = this.cursors;
+    if (!lagger) {
+      console.warn('missing lagger cursor');
     }
+    if (!leader) {
+      console.warn('missing leader cursor');
+    }
+    if (!lerped) {
+      console.warn('missing leader cursor');
+    }
+    this.cursorWrapper = lagger && leader && lerped ? new TrueCursor(lagger, leader, lerped) : new NullCursor();
+    this.cursorWrapper.init();
   }
 }
 
@@ -93,18 +113,14 @@ export class MusicDisplay {
 
   async load(xmlUrl: string) {
     await this.imd.load(xmlUrl);
+    this.imd.render();
   }
 
   clear() {
     this.imd.clear();
   }
 
-  render() {
-    this.imd.render();
-  }
-
   updateCursor(timeMs: number) {
-    console.log('from music display', timeMs);
-    // this.imd.renderCursor();
+    this.imd.updateCursor(timeMs);
   }
 }

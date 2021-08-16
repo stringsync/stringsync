@@ -57,10 +57,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
     });
     setMusicDisplay(musicDisplay);
 
-    (async () => {
-      await musicDisplay.load(musicXmlUrl);
-      musicDisplay.render();
-    })();
+    musicDisplay.load(musicXmlUrl);
 
     return () => {
       musicDisplay.clear();
