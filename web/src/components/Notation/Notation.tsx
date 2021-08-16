@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { MusicDisplay } from './MusicDisplay';
 
@@ -25,20 +25,20 @@ const Loading = styled.small`
 
 type NotationProps = {
   musicXmlUrl: string;
+  onMusicDisplayChange?: (musicDisplay: MusicDisplay | null) => void;
 };
 
 export const Notation: React.FC<NotationProps> = (props) => {
   const divRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { musicXmlUrl } = props;
+  const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
+  const { musicXmlUrl, onMusicDisplayChange } = props;
 
-  const startLoading = useCallback(() => {
-    setIsLoading(true);
-  }, []);
-
-  const stopLoading = useCallback(() => {
-    setIsLoading(false);
-  }, []);
+  useEffect(() => {
+    if (onMusicDisplayChange) {
+      onMusicDisplayChange(musicDisplay);
+    }
+  }, [musicDisplay, onMusicDisplayChange]);
 
   useEffect(() => {
     const div = divRef.current;
@@ -46,26 +46,27 @@ export const Notation: React.FC<NotationProps> = (props) => {
       return;
     }
 
-    const display = new MusicDisplay(div, {
+    const startLoading = () => setIsLoading(true);
+    const stopLoading = () => setIsLoading(false);
+
+    const musicDisplay = new MusicDisplay(div, {
       onLoadStart: startLoading,
       onLoadEnd: stopLoading,
       onResizeStart: startLoading,
-      onResizeEnd: () => {
-        stopLoading();
-        display.renderCursor();
-      },
+      onResizeEnd: stopLoading,
     });
+    setMusicDisplay(musicDisplay);
 
     (async () => {
-      await display.load(musicXmlUrl);
-      display.renderNotation();
-      display.renderCursor();
+      await musicDisplay.load(musicXmlUrl);
+      musicDisplay.render();
     })();
 
     return () => {
-      display.clear();
+      musicDisplay.clear();
+      setMusicDisplay(null);
     };
-  }, [musicXmlUrl, startLoading, stopLoading]);
+  }, [musicXmlUrl]);
 
   return (
     <Outer>

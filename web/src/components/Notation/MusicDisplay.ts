@@ -68,7 +68,9 @@ class InternalMusicDisplay extends OpenSheetMusicDisplay {
     }
   }
 
-  renderCursor() {
+  render() {
+    super.render();
+
     // Cursors are only created after render is called. We
     // ensure that they will be visible when they are ready
     // to be shown.
@@ -97,11 +99,12 @@ export class MusicDisplay {
     this.imd.clear();
   }
 
-  renderNotation() {
+  render() {
     this.imd.render();
   }
 
-  renderCursor() {
-    this.imd.renderCursor();
+  updateCursor(timeMs: number) {
+    console.log('from music display', timeMs);
+    // this.imd.renderCursor();
   }
 }

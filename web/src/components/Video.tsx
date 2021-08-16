@@ -1,6 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import videojs from 'video.js';
+
+export type Dimensions = {
+  heightPx: number;
+  widthPx: number;
+};
 
 const DEFAULT_PLAYER_OPTIONS: videojs.PlayerOptions = {
   controls: true,
@@ -12,23 +17,41 @@ const Outer = styled.div``;
 
 type Props = {
   playerOptions: videojs.PlayerOptions;
-  onPlayerReady?: (player: videojs.Player) => void;
-  beforePlayerDestroy?: (player: videojs.Player) => void;
   onVideoResize?: (widthPx: number, heightPx: number) => void;
   onTimeUpdate?: (timeMs: number) => void;
 };
 
 export const Video: React.FC<Props> = (props) => {
+  const { playerOptions, onVideoResize, onTimeUpdate } = props;
+
   const videoRef = useRef<HTMLVideoElement>(null);
-  const { playerOptions, onPlayerReady, beforePlayerDestroy, onVideoResize, onTimeUpdate } = props;
+  // We want width and height updated atomically since we know both at the same time.
+  const [dimensions, setDimensions] = useState<Dimensions>({ heightPx: 0, widthPx: 0 });
+  const [timeMs, setTimeMs] = useState(0);
 
   // This seperate functional component fixes the removal of the videoelement
   // from the DOM when calling the dispose() method on a player
-  const VideoHtml: React.FC = () => (
-    <Outer data-vjs-player>
-      <video ref={videoRef} className="video-js vjs-big-play-centered vjs-default-skin" />
-    </Outer>
+  const VideoHtml = useMemo<React.FC>(
+    () => () => (
+      <Outer data-vjs-player>
+        <video ref={videoRef} className="video-js vjs-big-play-centered vjs-default-skin vjs-fill" />
+      </Outer>
+    ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [playerOptions]
   );
+
+  useEffect(() => {
+    if (onTimeUpdate) {
+      onTimeUpdate(timeMs);
+    }
+  }, [timeMs, onTimeUpdate]);
+
+  useEffect(() => {
+    if (onVideoResize) {
+      onVideoResize(dimensions.widthPx, dimensions.heightPx);
+    }
+  }, [dimensions, onVideoResize]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -37,35 +60,24 @@ export const Video: React.FC<Props> = (props) => {
     }
 
     const player = videojs(video, { ...DEFAULT_PLAYER_OPTIONS, ...playerOptions });
-    player.ready(() => {
-      if (onPlayerReady) {
-        onPlayerReady(player);
-      }
+
+    player.on('timeupdate', () => {
+      setTimeMs(player.currentTime() * 1000);
     });
 
     const resizeObserver = new ResizeObserver(() => {
-      if (onVideoResize) {
-        onVideoResize(player.currentWidth(), player.currentHeight());
-      }
+      setDimensions({ widthPx: player.currentWidth(), heightPx: player.currentHeight() });
     });
     resizeObserver.observe(video);
 
-    player.on('timeupdate', () => {
-      if (onTimeUpdate) {
-        onTimeUpdate(player.currentTime());
-      }
-    });
     return () => {
-      player.off('timeupdate');
-
       resizeObserver.disconnect();
 
-      if (beforePlayerDestroy) {
-        beforePlayerDestroy(player);
-      }
+      player.off('timeupdate');
+
       player.dispose();
     };
-  }, [playerOptions, onPlayerReady, beforePlayerDestroy, onVideoResize, onTimeUpdate]);
+  }, [playerOptions]);
 
   return <VideoHtml />;
 };

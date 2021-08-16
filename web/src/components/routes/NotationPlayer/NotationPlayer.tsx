@@ -1,6 +1,6 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { Alert, Col, Row } from 'antd';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -11,6 +11,7 @@ import { HEADER_HEIGHT_PX } from '../../../hocs/withLayout/DefaultLayout';
 import { RootState } from '../../../store';
 import { compose } from '../../../util/compose';
 import { Notation } from '../../Notation';
+import { MusicDisplay } from '../../Notation/MusicDisplay';
 import { Video } from '../../Video';
 import { SuggestedNotations } from './SuggestedNotations';
 
@@ -71,8 +72,33 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const [errors, setErrors] = useState(new Array<string>());
   const [isLoading, setIsLoading] = useState(true);
   const [videoHeightPx, setVideoHeightPx] = useState(0);
+  const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
 
-  const hasErrors = errors.length > 0;
+  const playerOptions = useMemo(() => {
+    return {
+      sources: [
+        {
+          src: notation?.videoUrl || '',
+          type: 'application/x-mpegURL',
+        },
+      ],
+    };
+  }, [notation?.videoUrl]);
+
+  const onVideoResize = useCallback((widthPx: number, heightPx: number) => {
+    setVideoHeightPx(heightPx);
+  }, []);
+
+  const onTimeUpdate = useCallback(
+    (timeMs: number) => {
+      if (musicDisplay) {
+        musicDisplay.updateCursor(timeMs);
+      }
+    },
+    [musicDisplay]
+  );
+
+  const onMusicDisplayChange = useCallback(setMusicDisplay, [setMusicDisplay]);
 
   // Prevent the outer container from scrolling. The reason why we need this is
   // needed is because when the viewport is ltEqMd, the body will almost certainly
@@ -104,12 +130,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
     })();
   }, [params.id]);
 
-  const onVideoResize = useCallback((widthPx: number, heightPx: number) => {
-    setVideoHeightPx(heightPx);
-  }, []);
-
-  const onTimeUpdate = useCallback((timeMs: number) => {}, []);
-
+  const hasErrors = errors.length > 0;
   const rightOrBottomColHeightOffsetPx = gtMd ? HEADER_HEIGHT_PX : HEADER_HEIGHT_PX + videoHeightPx;
 
   return (
@@ -151,18 +172,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
       {!isLoading && !hasErrors && notation && (
         <Row>
           <LeftOrTopCol $overflow={gtMd} xs={24} sm={24} md={24} lg={6} xl={6} xxl={8}>
-            <Video
-              onVideoResize={onVideoResize}
-              onTimeUpdate={onTimeUpdate}
-              playerOptions={{
-                sources: [
-                  {
-                    src: notation?.videoUrl || '',
-                    type: 'application/x-mpegURL',
-                  },
-                ],
-              }}
-            />
+            <Video onVideoResize={onVideoResize} onTimeUpdate={onTimeUpdate} playerOptions={playerOptions} />
             <RightBorder border={gtMd}>{gtMd && <SuggestedNotations srcNotationId={notation.id} />}</RightBorder>
           </LeftOrTopCol>
           <RightOrBottomCol
@@ -178,7 +188,9 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
             <ArtistName>by {notation.artistName}</ArtistName>
             <TranscriberName>{notation.transcriber.username}</TranscriberName>
 
-            {notation.musicXmlUrl && <Notation musicXmlUrl={notation.musicXmlUrl} />}
+            {notation.musicXmlUrl && (
+              <Notation musicXmlUrl={notation.musicXmlUrl} onMusicDisplayChange={onMusicDisplayChange} />
+            )}
           </RightOrBottomCol>
         </Row>
       )}
