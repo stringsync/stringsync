@@ -52,6 +52,9 @@ export class NotationEntity extends BaseEntity implements Notation {
   }
 
   set transcriberId(transcriberId: string) {
+    if (transcriberId === this.transcriberId) {
+      return;
+    }
     this.transcriber.set(HACK_2099_createReference(new UserEntity({ id: transcriberId })));
   }
 

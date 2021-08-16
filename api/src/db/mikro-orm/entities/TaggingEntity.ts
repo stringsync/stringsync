@@ -17,15 +17,14 @@ export class TaggingEntity extends BaseEntity implements Tagging {
   @Property({ persist: false })
   @IsNotEmpty()
   get notationId(): string {
-    return this.notation?.id ?? '';
+    return this.notation.id;
   }
 
   set notationId(notationId: string) {
-    if (this.notation.id === notationId) {
+    if (notationId === this.notationId) {
       return;
     }
-    const notation = new NotationEntity({ id: notationId });
-    this.notation.set(HACK_2099_createReference(notation));
+    this.notation.set(HACK_2099_createReference(new NotationEntity({ id: notationId })));
   }
 
   @ManyToOne(() => TagEntity, { wrappedReference: true, hidden: true })
@@ -34,15 +33,14 @@ export class TaggingEntity extends BaseEntity implements Tagging {
   @Property({ persist: false })
   @IsNotEmpty()
   get tagId(): string {
-    return this.tag?.id ?? '';
+    return this.tag.id;
   }
 
   set tagId(tagId: string) {
-    if (this.tag.id === tagId) {
+    if (tagId === this.tagId) {
       return;
     }
-    const tag = new TagEntity({ id: tagId });
-    this.tag.set(HACK_2099_createReference(tag));
+    this.tag.set(HACK_2099_createReference(new TagEntity({ id: tagId })));
   }
 
   constructor(tagging: Partial<TaggingEntity> = {}) {
