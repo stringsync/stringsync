@@ -1,7 +1,7 @@
 import { Cursor } from 'opensheetmusicdisplay';
-import { CursorWrapper, CursorWrapperType } from './types';
+import { CursorWrapper, CursorWrapperType } from './CursorWrapper';
 
-export class TrueCursor implements CursorWrapper {
+export class LerpCursorWrapper implements CursorWrapper {
   readonly type = CursorWrapperType.True;
 
   readonly lagger: Cursor;
@@ -22,16 +22,21 @@ export class TrueCursor implements CursorWrapper {
     this.lagger.resetIterator();
     this.leader.resetIterator();
     this.lerped.resetIterator();
-
     this.leader.next();
 
-    // TODO(jared) Remove when done developing.
+    // TODO(jared) Remove when done developing, only the lerped should show.
     this.lagger.show();
     this.leader.show();
     this.lerped.show();
   }
 
   update(timeMs: number) {
-    this.lerped.cursorElement.style.left = `${Number(this.lerped.cursorElement.style.left.replace('px', '')) + 5}px`;
+    this.lerped.cursorElement.style.left = `${Number(this.lerped.cursorElement.style.left.replace('px', '')) + 1}px`;
+  }
+
+  clear() {
+    this.lagger.hide();
+    this.leader.hide();
+    this.lerped.hide();
   }
 }

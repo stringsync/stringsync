@@ -1,9 +1,9 @@
 import { merge, noop } from 'lodash';
 import { CursorType, DrawingParametersEnum, IOSMDOptions, OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
 import { theme } from '../../theme';
-import { NullCursor } from './NullCursor';
-import { TrueCursor } from './TrueCursor';
-import { CursorWrapper } from './types';
+import { CursorWrapper } from './CursorWrapper';
+import { LerpCursorWrapper } from './LerpCursorWrapper';
+import { NullCursorWrapper } from './NullCursorWrapper';
 
 type Callback = () => void;
 
@@ -57,7 +57,7 @@ const DEFAULT_OPTS: MusicDisplayOptions = {
 class InternalMusicDisplay extends OpenSheetMusicDisplay {
   onLoadStart: Callback;
   onLoadEnd: Callback;
-  cursorWrapper: CursorWrapper = new NullCursor();
+  cursorWrapper: CursorWrapper = new NullCursorWrapper();
 
   constructor(container: string | HTMLElement, opts: MusicDisplayOptions) {
     super(container, merge({}, DEFAULT_OPTS, opts));
@@ -78,25 +78,39 @@ class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
   render() {
     super.render();
-    this.initCursors();
+    this.initCursorWrapper();
+  }
+
+  clear() {
+    super.clear();
+    this.cursorWrapper.clear();
   }
 
   updateCursor(timeMs: number) {
     this.cursorWrapper.update(timeMs);
   }
 
-  private initCursors() {
+  private initCursorWrapper() {
     const [lagger, leader, lerped] = this.cursors;
     if (!lagger) {
-      console.warn('missing lagger cursor');
+      console.debug('missing lagger cursor');
     }
     if (!leader) {
-      console.warn('missing leader cursor');
+      console.debug('missing leader cursor');
     }
     if (!lerped) {
-      console.warn('missing leader cursor');
+      console.debug('missing leader cursor');
     }
-    this.cursorWrapper = lagger && leader && lerped ? new TrueCursor(lagger, leader, lerped) : new NullCursor();
+
+    this.cursorWrapper.clear();
+
+    const lerpable = lagger && leader && lerped;
+    if (lerpable) {
+      this.cursorWrapper = new LerpCursorWrapper(lagger, leader, lerped);
+    } else {
+      this.cursorWrapper = new NullCursorWrapper();
+    }
+
     this.cursorWrapper.init();
   }
 }
