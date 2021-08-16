@@ -28,10 +28,9 @@ type NotationProps = {
 };
 
 export const Notation: React.FC<NotationProps> = (props) => {
-  const { musicXmlUrl } = props;
-
   const divRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { musicXmlUrl } = props;
 
   const startLoading = useCallback(() => {
     setIsLoading(true);
@@ -47,19 +46,25 @@ export const Notation: React.FC<NotationProps> = (props) => {
       return;
     }
 
-    const osmd = new MusicDisplay(div, {
+    const display = new MusicDisplay(div, {
       onLoadStart: startLoading,
       onLoadEnd: stopLoading,
       onResizeStart: startLoading,
-      onResizeEnd: stopLoading,
+      onResizeEnd: () => {
+        stopLoading();
+        display.renderCursor();
+      },
     });
 
     (async () => {
-      await osmd.load(musicXmlUrl);
-      osmd.render();
+      await display.load(musicXmlUrl);
+      display.renderNotation();
+      display.renderCursor();
     })();
 
-    return () => {};
+    return () => {
+      display.clear();
+    };
   }, [musicXmlUrl, startLoading, stopLoading]);
 
   return (
