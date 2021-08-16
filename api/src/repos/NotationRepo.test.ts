@@ -6,7 +6,6 @@ import { TYPES } from '../inversify.constants';
 import { buildRandNotation, buildRandTag, buildRandTagging, buildRandUser } from '../testing';
 import { Ctor, ctor, randStr, util } from '../util';
 import { NotationRepo as MikroORMNotationRepo, TaggingRepo } from './mikro-orm';
-import { getEntityManager } from './mikro-orm/helpers';
 import { NotationRepo, TagRepo, UserRepo } from './types';
 
 describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Ctor) => {
@@ -595,20 +594,6 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
 
       const suggestedNotations = await notationRepo.findSuggestions(notation1, 2);
       expect(suggestedNotations).toIncludeAllMembers([notation2, notation3]);
-    });
-
-    it('finds suggestions in a random order', async () => {
-      await db.query(`select setseed(0)`);
-      const suggestedNotations1 = await notationRepo.findSuggestions(notation1, 4);
-      expect(suggestedNotations1).toIncludeAllMembers([notation2, notation3, notation4]);
-
-      getEntityManager(db).clear();
-
-      await db.query(`select setseed(0.5)`);
-      const suggestedNotations2 = await notationRepo.findSuggestions(notation1, 4);
-      expect(suggestedNotations2).toIncludeAllMembers([notation2, notation3, notation4]);
-
-      expect(suggestedNotations1).not.toStrictEqual(suggestedNotations2);
     });
   });
 });
