@@ -24,19 +24,16 @@ const RightBorder = styled.div<{ border: boolean }>`
   border-right: ${(props) => (props.border ? '1px' : '0')} solid ${(props) => props.theme['@border-color']};
 `;
 
-// We have to use this instead of styling the col directly because
-// ant design will push any unknown props to the underlying HTML
-// structure, causing an unknown attribute/property error.
-const LeftOrTopCol = styled.div<{ overflow: boolean }>`
+const LeftOrTopCol = styled(Col)<{ $overflow: boolean }>`
   max-height: calc(100vh - ${HEADER_HEIGHT_PX}px);
-  overflow: ${(props) => (props.overflow ? 'auto' : 'hidden')};
+  overflow: ${(props) => (props.$overflow ? 'auto' : 'hidden')};
 `;
 
-const RightOrBottomCol = styled.div<{ heightOffsetPx: number }>`
+const RightOrBottomCol = styled(Col)<{ $heightOffsetPx: number }>`
   padding-top: 24px;
   padding-bottom: 36px;
   background: white;
-  height: calc(100vh - ${(props) => props.heightOffsetPx}px);
+  height: calc(100vh - ${(props) => props.$heightOffsetPx}px);
   overflow: auto;
 `;
 
@@ -151,31 +148,35 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
       {!isLoading && !hasErrors && notation && (
         <Row>
-          <Col xs={24} sm={24} md={24} lg={6} xl={6} xxl={8}>
-            <LeftOrTopCol overflow={gtMd}>
-              <Video
-                onVideoResize={onVideoResize}
-                playerOptions={{
-                  sources: [
-                    {
-                      src: notation?.videoUrl || '',
-                      type: 'application/x-mpegURL',
-                    },
-                  ],
-                }}
-              />
-              <RightBorder border={gtMd}>{gtMd && <SuggestedNotations srcNotationId={notation.id} />}</RightBorder>
-            </LeftOrTopCol>
-          </Col>
-          <Col xs={24} sm={24} md={24} lg={18} xl={18} xxl={16}>
-            <RightOrBottomCol heightOffsetPx={rightOrBottomColHeightOffsetPx}>
-              <SongName>{notation.songName}</SongName>
-              <ArtistName>by {notation.artistName}</ArtistName>
-              <TranscriberName>{notation.transcriber.username}</TranscriberName>
+          <LeftOrTopCol $overflow={gtMd} xs={24} sm={24} md={24} lg={6} xl={6} xxl={8}>
+            <Video
+              onVideoResize={onVideoResize}
+              playerOptions={{
+                sources: [
+                  {
+                    src: notation?.videoUrl || '',
+                    type: 'application/x-mpegURL',
+                  },
+                ],
+              }}
+            />
+            <RightBorder border={gtMd}>{gtMd && <SuggestedNotations srcNotationId={notation.id} />}</RightBorder>
+          </LeftOrTopCol>
+          <RightOrBottomCol
+            $heightOffsetPx={rightOrBottomColHeightOffsetPx}
+            xs={24}
+            sm={24}
+            md={24}
+            lg={18}
+            xl={18}
+            xxl={16}
+          >
+            <SongName>{notation.songName}</SongName>
+            <ArtistName>by {notation.artistName}</ArtistName>
+            <TranscriberName>{notation.transcriber.username}</TranscriberName>
 
-              {notation.musicXmlUrl && <Notation musicXmlUrl={notation.musicXmlUrl} />}
-            </RightOrBottomCol>
-          </Col>
+            {notation.musicXmlUrl && <Notation musicXmlUrl={notation.musicXmlUrl} />}
+          </RightOrBottomCol>
         </Row>
       )}
     </div>
