@@ -1,5 +1,8 @@
 FROM node:16.0.0
 
+# Includes ffprobe
+RUN apt-get update && apt-get -y install ffmpeg
+
 WORKDIR /app
 
 # make ss commands work

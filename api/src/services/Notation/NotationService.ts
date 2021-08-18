@@ -1,10 +1,12 @@
+import execa from 'execa';
+import { FileUpload } from 'graphql-upload';
 import { inject, injectable } from 'inversify';
 import path from 'path';
 import { Config } from '../../config';
 import { Notation } from '../../domain';
 import { TYPES } from '../../inversify.constants';
 import { NotationRepo } from '../../repos';
-import { BlobStorage, Connection, NotationConnectionArgs } from '../../util';
+import { BlobStorage, Connection, Logger, NotationConnectionArgs } from '../../util';
 import { TaggingService } from '../Tagging';
 import { CreateArgs } from './types';
 
@@ -14,7 +16,8 @@ export class NotationService {
     @inject(TYPES.TaggingService) public taggingService: TaggingService,
     @inject(TYPES.Config) public config: Config,
     @inject(TYPES.NotationRepo) public notationRepo: NotationRepo,
-    @inject(TYPES.BlobStorage) public blobStorage: BlobStorage
+    @inject(TYPES.BlobStorage) public blobStorage: BlobStorage,
+    @inject(TYPES.Logger) public logger: Logger
   ) {}
 
   async find(id: string): Promise<Notation | null> {
@@ -60,6 +63,11 @@ export class NotationService {
     const videoFilepath = this.getVideoFilepath(video.filename, notation);
     const taggings = tagIds.map((tagId) => ({ notationId: notation.id, tagId }));
 
+    // There seems to be an issue when creating multiple read streams, so we do this separate
+    // from the blob upload.
+    const durationMs = await this.getDurationMs(video);
+    notation.durationMs = durationMs;
+
     const [thubmanailKey] = await Promise.all([
       this.blobStorage.put(thumbnailFilepath, this.config.MEDIA_S3_BUCKET, thumbnail.createReadStream()),
       this.blobStorage.put(videoFilepath, this.config.VIDEO_SRC_S3_BUCKET, video.createReadStream()),
@@ -92,5 +100,27 @@ export class NotationService {
 
   private getExtName(originalFilename: string): string {
     return path.extname(originalFilename).toLowerCase();
+  }
+
+  // Adapted from https://github.com/caffco/get-video-duration/blob/main/src/index.ts
+  private async getDurationMs(video: FileUpload): Promise<number> {
+    const { stdout } = await execa('ffprobe', ['-v', 'error', '-show_format', '-show_streams', '-i', 'pipe:0'], {
+      reject: false,
+      input: video.createReadStream(),
+    });
+
+    const durationSecMatches = stdout.match(/duration="?(\d*\.\d*)"?/);
+
+    if (durationSecMatches && durationSecMatches.length > 0) {
+      const durationSec = parseFloat(durationSecMatches[1]);
+      if (isNaN(durationSec)) {
+        this.logger.error(`could not parse video duration`);
+        return 0;
+      }
+      return durationSec * 1000;
+    } else {
+      this.logger.error(`could not get duration from video`);
+      return 0;
+    }
   }
 }
