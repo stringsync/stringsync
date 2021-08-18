@@ -1,9 +1,9 @@
 import { merge, noop } from 'lodash';
 import { CursorType, DrawingParametersEnum, IOSMDOptions, OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
 import { theme } from '../../theme';
-import { CursorWrapper } from './CursorWrapper';
 import { LerpCursorWrapper } from './LerpCursorWrapper';
 import { NullCursorWrapper } from './NullCursorWrapper';
+import { CursorWrapper } from './types';
 
 type Callback = () => void;
 
@@ -111,12 +111,18 @@ class InternalMusicDisplay extends OpenSheetMusicDisplay {
       this.cursorWrapper = new NullCursorWrapper();
     }
 
-    this.cursorWrapper.init();
+    // TODO(jared) Handle multiple parts per sheet.
+    const voiceEntries = this.Sheet.Parts[0].Voices.flatMap((voice) => voice.VoiceEntries);
+    this.cursorWrapper.init(voiceEntries);
   }
 }
 
 /**
- * MusicDisplay limits the public interface from InternalMusicDisplay.
+ * MusicDisplay limits the public interface from InternalMusicDisplay since it
+ * must inherit from OpenSheetMusicDisplay.
+ *
+ * All the heavy lifting is done by the InternalMusicDisplay instance. Do not
+ * add complex logic to this class.
  */
 export class MusicDisplay {
   imd: InternalMusicDisplay;

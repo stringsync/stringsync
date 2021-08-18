@@ -1,3 +1,5 @@
+import { VoiceEntry } from 'opensheetmusicdisplay';
+
 export enum CursorWrapperType {
   Null,
   True,
@@ -5,7 +7,7 @@ export enum CursorWrapperType {
 
 export interface CursorWrapper {
   readonly type: CursorWrapperType;
-  init(): void;
+  init(voiceEntries: VoiceEntry[]): void;
   update(timeMs: number): void;
   clear(): void;
 }

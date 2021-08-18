@@ -1,5 +1,5 @@
-import { Cursor } from 'opensheetmusicdisplay';
-import { CursorWrapper, CursorWrapperType } from './CursorWrapper';
+import { Cursor, VoiceEntry } from 'opensheetmusicdisplay';
+import { CursorWrapper, CursorWrapperType } from './types';
 
 export class LerpCursorWrapper implements CursorWrapper {
   readonly type = CursorWrapperType.True;
@@ -14,7 +14,7 @@ export class LerpCursorWrapper implements CursorWrapper {
     this.lerped = lerped;
   }
 
-  init() {
+  init(voiceEntries: VoiceEntry[]) {
     this.lagger.cursorElement.style.zIndex = '2';
     this.leader.cursorElement.style.zIndex = '2';
     this.lerped.cursorElement.style.zIndex = '2';
