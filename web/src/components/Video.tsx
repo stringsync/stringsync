@@ -61,25 +61,26 @@ export const Video: React.FC<Props> = (props) => {
 
     const player = videojs(video, { ...DEFAULT_PLAYER_OPTIONS, ...playerOptions });
 
-    // The timeupdate event fires too slowly for animating smoothly.
-    let rafHandle = 0;
-    const updateCurrentTime = () => {
-      if (player) {
-        setTimeMs(player.currentTime());
-      }
-      rafHandle = window.requestAnimationFrame(updateCurrentTime);
-    };
-    updateCurrentTime();
-
     const resizeObserver = new ResizeObserver(() => {
       setDimensions({ widthPx: player.currentWidth(), heightPx: player.currentHeight() });
     });
     resizeObserver.observe(video);
 
-    return () => {
-      resizeObserver.disconnect();
+    // The timeupdate event fires too slowly for animating smoothly.
+    let rafHandle = 0;
+    const updateCurrentTime = () => {
+      setTimeMs(player.currentTime());
+      rafHandle = window.requestAnimationFrame(updateCurrentTime);
+    };
 
+    player.ready(() => {
+      updateCurrentTime();
+    });
+
+    return () => {
       window.cancelAnimationFrame(rafHandle);
+
+      resizeObserver.disconnect();
 
       player.dispose();
     };
