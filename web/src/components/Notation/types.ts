@@ -1,5 +1,9 @@
 import { VoiceEntry } from 'opensheetmusicdisplay';
 
+export type SyncOptions = {
+  deadTimeMs: number;
+};
+
 export enum CursorWrapperType {
   Null,
   True,

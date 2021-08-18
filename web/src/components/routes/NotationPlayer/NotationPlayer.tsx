@@ -189,7 +189,11 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
             <TranscriberName>{notation.transcriber.username}</TranscriberName>
 
             {notation.musicXmlUrl && (
-              <Notation musicXmlUrl={notation.musicXmlUrl} onMusicDisplayChange={onMusicDisplayChange} />
+              <Notation
+                deadTimeMs={notation.deadTimeMs}
+                musicXmlUrl={notation.musicXmlUrl}
+                onMusicDisplayChange={onMusicDisplayChange}
+              />
             )}
           </RightOrBottomCol>
         </Row>

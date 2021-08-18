@@ -3,11 +3,12 @@ import { CursorType, DrawingParametersEnum, IOSMDOptions, OpenSheetMusicDisplay 
 import { theme } from '../../theme';
 import { LerpCursorWrapper } from './LerpCursorWrapper';
 import { NullCursorWrapper } from './NullCursorWrapper';
-import { CursorWrapper } from './types';
+import { CursorWrapper, SyncOptions } from './types';
 
 type Callback = () => void;
 
 type MusicDisplayOptions = IOSMDOptions & {
+  syncOptions: SyncOptions;
   onLoadStart?: Callback;
   onLoadEnd?: Callback;
   onResizeStart?: Callback;
@@ -15,6 +16,9 @@ type MusicDisplayOptions = IOSMDOptions & {
 };
 
 const DEFAULT_OPTS: MusicDisplayOptions = {
+  syncOptions: {
+    deadTimeMs: 0,
+  },
   autoResize: true,
   backend: 'svg',
   drawTitle: false,
