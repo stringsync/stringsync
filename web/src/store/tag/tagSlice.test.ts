@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { sortBy } from 'lodash';
 import { $queries } from '../../graphql';
 import { buildRandTag } from '../../testing';
 import { getTags, tagSlice } from './tagSlice';
@@ -59,7 +60,7 @@ describe('tagSlice', () => {
       const { tag } = store.getState();
       expect(tag.isPending).toBe(false);
       expect(tag.errors).toHaveLength(0);
-      expect(tag.tags).toStrictEqual([tag1, tag2]);
+      expect(tag.tags).toStrictEqual(sortBy([tag1, tag2], (tag) => tag.name));
     });
   });
 });
