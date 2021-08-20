@@ -5,4 +5,10 @@ type Converter = (value: number) => number;
 export const ms: Converter = (v) => v;
 export const sec: Converter = (v) => ms(v) * 1000;
 export const min: Converter = (v) => sec(v) * 60;
-export const bpm = (bpm: number): Converter => (v) => min(v / bpm);
+
+/**
+ * @param {number} numQuarterNotesPerMin aka bpm
+ */
+export const bpm = (numQuarterNotesPerMin: number): Converter => (numWholeNotes) => {
+  return min((numWholeNotes * 4) / numQuarterNotesPerMin);
+};

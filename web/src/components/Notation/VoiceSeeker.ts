@@ -8,7 +8,7 @@ import { SyncSettings } from './types';
 type Voice = {
   beatRange: NumberRange;
   timeMsRange: NumberRange;
-  src: VoiceEntry;
+  entry: VoiceEntry;
 };
 
 /**
@@ -29,10 +29,19 @@ type Pointer<T> = {
 
 type VoicePointer = Pointer<Voice>;
 
+enum Cost {
+  Unknown,
+  Cheap,
+  Expensive,
+}
+
 type SeekResult = Readonly<{
   timeMs: number;
+  cost: Cost;
   voicePointer: VoicePointer | null;
 }>;
+
+const NUM_BEATS_PER_BPM_BEAT = 4;
 
 /**
  * This purpose of this class is to precompute an association of
@@ -74,21 +83,13 @@ export class VoiceSeeker {
   seek(timeMs: number): SeekResult {
     const cheapSeekResult = this.cheapSeek(timeMs);
     if (cheapSeekResult) {
-      console.log('cheap!');
       this.cachedSeekResult = cheapSeekResult;
       return cheapSeekResult;
     }
 
     const expensiveSeekResult = this.expensiveSeek(timeMs);
-    if (expensiveSeekResult) {
-      console.log('expensive!');
-      this.cachedSeekResult = expensiveSeekResult;
-      return expensiveSeekResult;
-    }
-
-    const seekResult: SeekResult = { timeMs, voicePointer: null };
-    this.cachedSeekResult = seekResult;
-    return seekResult;
+    this.cachedSeekResult = expensiveSeekResult;
+    return expensiveSeekResult;
   }
 
   /**
@@ -97,20 +98,29 @@ export class VoiceSeeker {
    *
    * This method runs in constant time and should always be
    * tried before performing a more expensive scan.
+   *
+   * Returning null means that it could not find a seek result
+   * using a shortcut. Returning a seek result with a null
+   * voicePointer means that we can definitively say that there
+   * is no voicePointer for a given timeMs.
    */
   private cheapSeek(timeMs: number): SeekResult | null {
     if (this.voicePointers.length === 0) {
-      return null;
+      return { timeMs, cost: Cost.Cheap, voicePointer: null };
     }
 
     const firstVoicePointer = first(this.voicePointers)!;
     if (timeMs < firstVoicePointer.value.timeMsRange.start) {
-      return null;
+      return { timeMs, cost: Cost.Cheap, voicePointer: null };
+    }
+
+    if (firstVoicePointer.value.timeMsRange.contains(timeMs)) {
+      return { timeMs, cost: Cost.Cheap, voicePointer: firstVoicePointer };
     }
 
     const lastVoicePointer = last(this.voicePointers)!;
     if (timeMs > lastVoicePointer.value.timeMsRange.end) {
-      return null;
+      return { timeMs, cost: Cost.Cheap, voicePointer: null };
     }
 
     const cachedSeekResult = this.cachedSeekResult;
@@ -124,17 +134,17 @@ export class VoiceSeeker {
     }
 
     if (voicePointer.value.timeMsRange.contains(timeMs)) {
-      return { timeMs, voicePointer };
+      return { timeMs, cost: Cost.Cheap, voicePointer };
     }
 
     const nextVoicePointer = voicePointer.next;
     if (nextVoicePointer && nextVoicePointer.value.timeMsRange.contains(timeMs)) {
-      return { timeMs, voicePointer: nextVoicePointer };
+      return { timeMs, cost: Cost.Cheap, voicePointer: nextVoicePointer };
     }
 
     const prevVoicePointer = voicePointer.prev;
     if (prevVoicePointer && prevVoicePointer.value.timeMsRange.contains(timeMs)) {
-      return { timeMs, voicePointer: prevVoicePointer };
+      return { timeMs, cost: Cost.Cheap, voicePointer: prevVoicePointer };
     }
 
     return null;
@@ -143,7 +153,7 @@ export class VoiceSeeker {
   /**
    * Seeks a voice pointer containing the timeMs using the binary search algorithm.
    */
-  private expensiveSeek(timeMs: number): SeekResult | null {
+  private expensiveSeek(timeMs: number): SeekResult {
     const voicePointer = bsearch(this.voicePointers, (voicePointer) => {
       const { start, end } = voicePointer.value.timeMsRange;
       if (start > timeMs) {
@@ -155,7 +165,7 @@ export class VoiceSeeker {
       }
     });
 
-    return { timeMs, voicePointer: voicePointer || null };
+    return { timeMs, cost: Cost.Expensive, voicePointer: voicePointer || null };
   }
 
   private calculateVoicePointers(): void {
@@ -166,12 +176,11 @@ export class VoiceSeeker {
     let currNumBeats = 0;
     let currTimeMs = this.syncSettings.deadTimeMs;
     for (let ndx = 0; ndx < voiceEntries.length; ndx++) {
-      const voiceEntry = voiceEntries[0];
+      const voiceEntry = voiceEntries[ndx];
       const note = voiceEntry.Notes[0];
       const sourceMeasure = note.SourceMeasure;
 
-      const bpm = sourceMeasure.TempoInBPM;
-      const beatsToMs = conversions.bpm(bpm);
+      const beatsToMs = conversions.bpm(sourceMeasure.TempoInBPM);
       const numBeats = note.Length.RealValue;
       const timeMs = beatsToMs(numBeats);
 
@@ -187,7 +196,7 @@ export class VoiceSeeker {
         value: {
           beatRange: NumberRange.from(startNumBeats).to(endNumBeats),
           timeMsRange: NumberRange.from(startTimeMs).to(endTimeMs),
-          src: voiceEntry,
+          entry: voiceEntry,
         },
       };
       if (ndx > 0) {
