@@ -1,10 +1,10 @@
-import { VoiceEntry } from 'opensheetmusicdisplay/build/dist/src';
-import { CursorWrapper, CursorWrapperType } from './types';
+import { MusicSheet } from 'opensheetmusicdisplay';
+import { CursorWrapper, CursorWrapperType, SyncSettings } from './types';
 
 export class NullCursorWrapper implements CursorWrapper {
   readonly type = CursorWrapperType.Null;
 
-  init(voiceEntries: VoiceEntry[]) {}
+  init(musicSheet: MusicSheet, syncSettings: SyncSettings) {}
 
   update(timeMs: number) {}
 

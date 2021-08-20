@@ -26,6 +26,7 @@ const Loading = styled.small`
 type NotationProps = {
   musicXmlUrl: string;
   deadTimeMs: number;
+  durationMs: number;
   onMusicDisplayChange?: (musicDisplay: MusicDisplay | null) => void;
 };
 
@@ -33,7 +34,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
   const divRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
-  const { musicXmlUrl, deadTimeMs, onMusicDisplayChange } = props;
+  const { musicXmlUrl, deadTimeMs, durationMs, onMusicDisplayChange } = props;
 
   useEffect(() => {
     if (onMusicDisplayChange) {
@@ -51,7 +52,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
     const stopLoading = () => setIsLoading(false);
 
     const musicDisplay = new MusicDisplay(div, {
-      syncOptions: { deadTimeMs },
+      syncSettings: { deadTimeMs, durationMs },
       onLoadStart: startLoading,
       onLoadEnd: stopLoading,
       onResizeStart: startLoading,
@@ -65,7 +66,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
       musicDisplay.clear();
       setMusicDisplay(null);
     };
-  }, [musicXmlUrl, deadTimeMs]);
+  }, [musicXmlUrl, deadTimeMs, durationMs]);
 
   return (
     <Outer>

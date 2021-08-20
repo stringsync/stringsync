@@ -190,8 +190,9 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
             {notation.musicXmlUrl && (
               <Notation
-                deadTimeMs={notation.deadTimeMs}
                 musicXmlUrl={notation.musicXmlUrl}
+                deadTimeMs={notation.deadTimeMs}
+                durationMs={notation.durationMs}
                 onMusicDisplayChange={onMusicDisplayChange}
               />
             )}

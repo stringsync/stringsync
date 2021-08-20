@@ -1,7 +1,8 @@
-import { VoiceEntry } from 'opensheetmusicdisplay';
+import { MusicSheet } from 'opensheetmusicdisplay';
 
-export type SyncOptions = {
+export type SyncSettings = {
   deadTimeMs: number;
+  durationMs: number;
 };
 
 export enum CursorWrapperType {
@@ -11,7 +12,7 @@ export enum CursorWrapperType {
 
 export interface CursorWrapper {
   readonly type: CursorWrapperType;
-  init(voiceEntries: VoiceEntry[]): void;
+  init(musicSheet: MusicSheet, syncSettings: SyncSettings): void;
   update(timeMs: number): void;
   clear(): void;
 }

@@ -1,4 +1,34 @@
-export class NumberRange {
+interface Range<T> {
+  start: T;
+  end: T;
+  contains(value: T): boolean;
+}
+
+class PartialNumberRange implements Range<number> {
+  public readonly start;
+
+  constructor(start: number) {
+    this.start = start;
+  }
+
+  to(end: number) {
+    return new NumberRange(this.start, end);
+  }
+
+  get end() {
+    return Number.POSITIVE_INFINITY;
+  }
+
+  contains(value: number) {
+    return this.start <= value && value <= this.end;
+  }
+}
+
+export class NumberRange implements Range<number> {
+  static from(start: number) {
+    return new PartialNumberRange(start);
+  }
+
   public readonly start: number;
   public readonly end: number;
 
@@ -12,6 +42,6 @@ export class NumberRange {
   }
 
   contains(value: number) {
-    return this.start >= value && value <= this.end;
+    return this.start <= value && value <= this.end;
   }
 }

@@ -69,7 +69,7 @@ export const Video: React.FC<Props> = (props) => {
     // The timeupdate event fires too slowly for animating smoothly.
     let rafHandle = 0;
     const updateCurrentTime = () => {
-      setTimeMs(player.currentTime());
+      setTimeMs(player.currentTime() * 1000);
       rafHandle = window.requestAnimationFrame(updateCurrentTime);
     };
 

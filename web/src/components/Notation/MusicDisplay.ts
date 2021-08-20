@@ -3,12 +3,12 @@ import { CursorType, DrawingParametersEnum, IOSMDOptions, OpenSheetMusicDisplay 
 import { theme } from '../../theme';
 import { LerpCursorWrapper } from './LerpCursorWrapper';
 import { NullCursorWrapper } from './NullCursorWrapper';
-import { CursorWrapper, SyncOptions } from './types';
+import { CursorWrapper, SyncSettings } from './types';
 
 type Callback = () => void;
 
 type MusicDisplayOptions = IOSMDOptions & {
-  syncOptions: SyncOptions;
+  syncSettings: SyncSettings;
   onLoadStart?: Callback;
   onLoadEnd?: Callback;
   onResizeStart?: Callback;
@@ -16,8 +16,9 @@ type MusicDisplayOptions = IOSMDOptions & {
 };
 
 const DEFAULT_OPTS: MusicDisplayOptions = {
-  syncOptions: {
+  syncSettings: {
     deadTimeMs: 0,
+    durationMs: 0,
   },
   autoResize: true,
   backend: 'svg',
@@ -61,11 +62,14 @@ const DEFAULT_OPTS: MusicDisplayOptions = {
 class InternalMusicDisplay extends OpenSheetMusicDisplay {
   onLoadStart: Callback;
   onLoadEnd: Callback;
+
   cursorWrapper: CursorWrapper = new NullCursorWrapper();
+  syncSettings: SyncSettings;
 
   constructor(container: string | HTMLElement, opts: MusicDisplayOptions) {
     super(container, merge({}, DEFAULT_OPTS, opts));
 
+    this.syncSettings = opts.syncSettings;
     this.onLoadStart = opts.onLoadStart || noop;
     this.onLoadEnd = opts.onLoadEnd || noop;
     this.handleResize(opts.onResizeStart || noop, opts.onResizeEnd || noop);
@@ -115,9 +119,7 @@ class InternalMusicDisplay extends OpenSheetMusicDisplay {
       this.cursorWrapper = new NullCursorWrapper();
     }
 
-    // TODO(jared) Handle multiple parts per sheet.
-    const voiceEntries = this.Sheet.Parts[0].Voices.flatMap((voice) => voice.VoiceEntries);
-    this.cursorWrapper.init(voiceEntries);
+    this.cursorWrapper.init(this.Sheet, this.syncSettings);
   }
 }
 
@@ -133,6 +135,8 @@ export class MusicDisplay {
 
   constructor(container: HTMLDivElement, opts: MusicDisplayOptions) {
     this.imd = new InternalMusicDisplay(container, opts);
+
+    (window as any).osmd = this.imd;
   }
 
   async load(xmlUrl: string) {
