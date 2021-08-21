@@ -3,7 +3,6 @@ import { MusicSheet, SourceMeasure, VoiceEntry } from 'opensheetmusicdisplay';
 import { bsearch } from '../../../util/bsearch';
 import { NumberRange } from '../../../util/NumberRange';
 import { SyncSettings } from '../types';
-import * as conversions from './conversions';
 
 type Voice = {
   beatRange: NumberRange;
@@ -181,9 +180,9 @@ export class VoiceSeeker {
       const note = voiceEntry.Notes[0];
       const sourceMeasure = note.SourceMeasure;
 
-      const beatsToMs = conversions.bpm(sourceMeasure.TempoInBPM);
+      const bpm = sourceMeasure.TempoInBPM;
       const numBeats = note.Length.RealValue;
-      const timeMs = beatsToMs(numBeats);
+      const timeMs = ((bpm * 4) / numBeats) * 60000;
 
       const startNumBeats = currNumBeats;
       const endNumBeats = currNumBeats + numBeats;
