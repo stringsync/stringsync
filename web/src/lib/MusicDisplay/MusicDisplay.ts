@@ -53,8 +53,8 @@ export class MusicDisplay {
     this.imd = new InternalMusicDisplay(container, opts);
   }
 
-  async load(content: string | Document) {
-    await this.imd.load(content);
+  async load(xmlUrl: string) {
+    await this.imd.load(xmlUrl);
     this.imd.render();
   }
 

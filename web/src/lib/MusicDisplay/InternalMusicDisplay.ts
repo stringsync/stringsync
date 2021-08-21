@@ -29,10 +29,10 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.handleResize(opts.onResizeStart || noop, opts.onResizeEnd || noop);
   }
 
-  async load(content: string | Document) {
+  async load(xmlUrl: string) {
     this.onLoadStart();
     try {
-      return await super.load(content);
+      return await super.load(xmlUrl);
     } finally {
       this.onLoadEnd();
     }
