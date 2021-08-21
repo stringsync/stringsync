@@ -1,9 +1,9 @@
 import { difference, first, last, sumBy } from 'lodash';
 import { MusicSheet, SourceMeasure, VoiceEntry } from 'opensheetmusicdisplay';
-import { bsearch } from './bsearch';
+import { bsearch } from '../../../util/bsearch';
+import { NumberRange } from '../../../util/NumberRange';
+import { SyncSettings } from '../types';
 import * as conversions from './conversions';
-import { NumberRange } from './NumberRange';
-import { SyncSettings } from './types';
 
 type Voice = {
   beatRange: NumberRange;

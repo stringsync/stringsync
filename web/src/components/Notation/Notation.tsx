@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { MusicDisplay } from './MusicDisplay';
+import { MusicDisplay } from '../../lib/MusicDisplay';
 
 const Outer = styled.div`
   margin-top: 24px;

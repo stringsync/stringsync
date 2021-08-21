@@ -1,4 +1,4 @@
-import { MusicSheet } from 'opensheetmusicdisplay';
+import { IOSMDOptions, MusicSheet } from 'opensheetmusicdisplay';
 
 export type SyncSettings = {
   deadTimeMs: number;
@@ -16,3 +16,13 @@ export interface CursorWrapper {
   update(timeMs: number): void;
   clear(): void;
 }
+
+export type Callback = () => void;
+
+export type MusicDisplayOptions = IOSMDOptions & {
+  syncSettings: SyncSettings;
+  onLoadStart?: Callback;
+  onLoadEnd?: Callback;
+  onResizeStart?: Callback;
+  onResizeEnd?: Callback;
+};

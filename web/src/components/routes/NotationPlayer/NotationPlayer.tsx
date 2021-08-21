@@ -8,10 +8,10 @@ import styled from 'styled-components';
 import { $queries, NotationObject } from '../../../graphql';
 import { Layout, withLayout } from '../../../hocs';
 import { HEADER_HEIGHT_PX } from '../../../hocs/withLayout/DefaultLayout';
+import { MusicDisplay } from '../../../lib/MusicDisplay';
 import { RootState } from '../../../store';
 import { compose } from '../../../util/compose';
 import { Notation } from '../../Notation';
-import { MusicDisplay } from '../../Notation/MusicDisplay';
 import { Video } from '../../Video';
 import { SuggestedNotations } from './SuggestedNotations';
 

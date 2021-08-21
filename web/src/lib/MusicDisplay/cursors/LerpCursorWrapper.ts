@@ -1,6 +1,6 @@
 import { has, set } from 'lodash';
 import { Cursor, MusicSheet } from 'opensheetmusicdisplay';
-import { CursorWrapper, CursorWrapperType, SyncSettings } from './types';
+import { CursorWrapper, CursorWrapperType, SyncSettings } from '../types';
 import { VoicePointer, VoiceSeeker } from './VoiceSeeker';
 
 export class LerpCursorWrapper implements CursorWrapper {

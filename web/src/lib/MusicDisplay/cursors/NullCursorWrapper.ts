@@ -1,5 +1,5 @@
 import { MusicSheet } from 'opensheetmusicdisplay';
-import { CursorWrapper, CursorWrapperType, SyncSettings } from './types';
+import { CursorWrapper, CursorWrapperType, SyncSettings } from '../types';
 
 export class NullCursorWrapper implements CursorWrapper {
   readonly type = CursorWrapperType.Null;

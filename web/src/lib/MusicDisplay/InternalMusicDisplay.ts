@@ -1,19 +1,9 @@
 import { merge, noop } from 'lodash';
-import { CursorType, DrawingParametersEnum, IOSMDOptions, OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
+import { CursorType, DrawingParametersEnum, OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
 import { theme } from '../../theme';
-import { LerpCursorWrapper } from './LerpCursorWrapper';
-import { NullCursorWrapper } from './NullCursorWrapper';
-import { CursorWrapper, SyncSettings } from './types';
-
-type Callback = () => void;
-
-type MusicDisplayOptions = IOSMDOptions & {
-  syncSettings: SyncSettings;
-  onLoadStart?: Callback;
-  onLoadEnd?: Callback;
-  onResizeStart?: Callback;
-  onResizeEnd?: Callback;
-};
+import { NullCursorWrapper } from './cursors';
+import { LerpCursorWrapper } from './cursors/LerpCursorWrapper';
+import { Callback, CursorWrapper, MusicDisplayOptions, SyncSettings } from './types';
 
 const DEFAULT_OPTS: MusicDisplayOptions = {
   syncSettings: {
@@ -59,7 +49,7 @@ const DEFAULT_OPTS: MusicDisplayOptions = {
  * has some unwanted side effects like callers being able to call whatever
  * they want.
  */
-class InternalMusicDisplay extends OpenSheetMusicDisplay {
+export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   onLoadStart: Callback;
   onLoadEnd: Callback;
 
@@ -120,35 +110,5 @@ class InternalMusicDisplay extends OpenSheetMusicDisplay {
     }
 
     this.cursorWrapper.init(this.Sheet, this.syncSettings);
-  }
-}
-
-/**
- * MusicDisplay limits the public interface from InternalMusicDisplay since it
- * must inherit from OpenSheetMusicDisplay.
- *
- * All the heavy lifting is done by the InternalMusicDisplay instance. Do not
- * add complex logic to this class.
- */
-export class MusicDisplay {
-  imd: InternalMusicDisplay;
-
-  constructor(container: HTMLDivElement, opts: MusicDisplayOptions) {
-    this.imd = new InternalMusicDisplay(container, opts);
-
-    (window as any).osmd = this.imd;
-  }
-
-  async load(xmlUrl: string) {
-    await this.imd.load(xmlUrl);
-    this.imd.render();
-  }
-
-  clear() {
-    this.imd.clear();
-  }
-
-  updateCursor(timeMs: number) {
-    this.imd.updateCursor(timeMs);
   }
 }

@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/extend-expect';
+import 'jest-extended';
 
 beforeEach(() => {
   Object.defineProperty(window, 'matchMedia', {
