@@ -1,5 +1,42 @@
+import { merge } from 'lodash';
+import { CursorType, DrawingParametersEnum } from 'opensheetmusicdisplay';
+import { theme } from '../../theme';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { MusicDisplayOptions } from './types';
+
+const DEFAULT_OPTS: MusicDisplayOptions = {
+  syncSettings: {
+    deadTimeMs: 0,
+    durationMs: 0,
+  },
+  autoResize: true,
+  drawTitle: false,
+  drawSubtitle: false,
+  drawingParameters: DrawingParametersEnum.default,
+  drawPartNames: false,
+  followCursor: true,
+  pageBackgroundColor: 'white',
+  cursorsOptions: [
+    {
+      type: CursorType.Standard,
+      color: 'blue',
+      follow: false,
+      alpha: 0.3,
+    },
+    {
+      type: CursorType.Standard,
+      color: 'lime',
+      follow: false,
+      alpha: 0.3,
+    },
+    {
+      type: CursorType.Standard,
+      color: theme['@primary-color'],
+      follow: true,
+      alpha: 0.5,
+    },
+  ],
+};
 
 /**
  * MusicDisplay limits the public interface from InternalMusicDisplay since it
@@ -11,14 +48,13 @@ import { MusicDisplayOptions } from './types';
 export class MusicDisplay {
   imd: InternalMusicDisplay;
 
-  constructor(container: HTMLDivElement, opts: MusicDisplayOptions) {
+  constructor(container: HTMLDivElement, partialOpts: Partial<MusicDisplayOptions> = {}) {
+    const opts = merge({}, DEFAULT_OPTS, partialOpts);
     this.imd = new InternalMusicDisplay(container, opts);
-
-    (window as any).osmd = this.imd;
   }
 
-  async load(xmlUrl: string) {
-    await this.imd.load(xmlUrl);
+  async load(content: string | Document) {
+    await this.imd.load(content);
     this.imd.render();
   }
 

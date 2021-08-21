@@ -77,7 +77,7 @@
     "start": "craco start",
     "build": "craco build",
     "postbuild": "react-snap",
-    "test": "craco test --env=jest-environment-jsdom-sixteen",
+    "test": "craco test",
     "eject": "craco eject",
     "typegen": "graphql-codegen"
   },

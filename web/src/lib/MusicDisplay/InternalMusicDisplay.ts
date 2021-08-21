@@ -1,44 +1,8 @@
-import { merge, noop } from 'lodash';
-import { CursorType, DrawingParametersEnum, OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
-import { theme } from '../../theme';
+import { noop } from 'lodash';
+import { OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
 import { NullCursorWrapper } from './cursors';
 import { LerpCursorWrapper } from './cursors/LerpCursorWrapper';
 import { Callback, CursorWrapper, MusicDisplayOptions, SyncSettings } from './types';
-
-const DEFAULT_OPTS: MusicDisplayOptions = {
-  syncSettings: {
-    deadTimeMs: 0,
-    durationMs: 0,
-  },
-  autoResize: true,
-  backend: 'svg',
-  drawTitle: false,
-  drawSubtitle: false,
-  drawingParameters: DrawingParametersEnum.default,
-  drawPartNames: false,
-  followCursor: true,
-  pageBackgroundColor: 'white',
-  cursorsOptions: [
-    {
-      type: CursorType.Standard,
-      color: 'blue',
-      follow: false,
-      alpha: 0.3,
-    },
-    {
-      type: CursorType.Standard,
-      color: 'lime',
-      follow: false,
-      alpha: 0.3,
-    },
-    {
-      type: CursorType.Standard,
-      color: theme['@primary-color'],
-      follow: true,
-      alpha: 0.5,
-    },
-  ],
-};
 
 /**
  * InternalMusicDisplay handles the logic involving rendering notations and cursors.
@@ -57,7 +21,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   syncSettings: SyncSettings;
 
   constructor(container: string | HTMLElement, opts: MusicDisplayOptions) {
-    super(container, merge({}, DEFAULT_OPTS, opts));
+    super(container, opts);
 
     this.syncSettings = opts.syncSettings;
     this.onLoadStart = opts.onLoadStart || noop;
@@ -65,10 +29,10 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.handleResize(opts.onResizeStart || noop, opts.onResizeEnd || noop);
   }
 
-  async load(xmlUrl: string) {
+  async load(content: string | Document) {
     this.onLoadStart();
     try {
-      return await super.load(xmlUrl);
+      return await super.load(content);
     } finally {
       this.onLoadEnd();
     }
