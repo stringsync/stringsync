@@ -1,5 +1,5 @@
 import { difference, first, last, sumBy } from 'lodash';
-import { MusicSheet, VoiceEntry } from 'opensheetmusicdisplay';
+import { MusicSheet, SourceMeasure, VoiceEntry } from 'opensheetmusicdisplay';
 import { bsearch } from './bsearch';
 import * as conversions from './conversions';
 import { NumberRange } from './NumberRange';
@@ -8,7 +8,10 @@ import { SyncSettings } from './types';
 type Voice = {
   beatRange: NumberRange;
   timeMsRange: NumberRange;
-  entry: VoiceEntry;
+  voiceEntry: VoiceEntry;
+  voiceEntryIndex: number;
+  measureIndex: number;
+  sourceMeasure: SourceMeasure;
 };
 
 /**
@@ -27,7 +30,7 @@ type Pointer<T> = {
   value: T;
 };
 
-type VoicePointer = Pointer<Voice>;
+export type VoicePointer = Pointer<Voice>;
 
 enum Cost {
   Unknown,
@@ -40,8 +43,6 @@ type SeekResult = Readonly<{
   cost: Cost;
   voicePointer: VoicePointer | null;
 }>;
-
-const NUM_BEATS_PER_BPM_BEAT = 4;
 
 /**
  * This purpose of this class is to precompute an association of
@@ -196,7 +197,10 @@ export class VoiceSeeker {
         value: {
           beatRange: NumberRange.from(startNumBeats).to(endNumBeats),
           timeMsRange: NumberRange.from(startTimeMs).to(endTimeMs),
-          entry: voiceEntry,
+          voiceEntry,
+          sourceMeasure,
+          voiceEntryIndex: ndx,
+          measureIndex: sourceMeasure.MeasureNumber - 1,
         },
       };
       if (ndx > 0) {
