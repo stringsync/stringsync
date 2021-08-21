@@ -1,17 +1,8 @@
-import { difference, first, last, sumBy } from 'lodash';
-import { MusicSheet, SourceMeasure, VoiceEntry } from 'opensheetmusicdisplay';
+import { first, last } from 'lodash';
+import { Cursor, MusicPartManagerIterator, MusicSheet, VoiceEntry } from 'opensheetmusicdisplay';
 import { bsearch } from '../../../util/bsearch';
 import { NumberRange } from '../../../util/NumberRange';
 import { SyncSettings } from '../types';
-
-type Voice = {
-  beatRange: NumberRange;
-  timeMsRange: NumberRange;
-  voiceEntry: VoiceEntry;
-  voiceEntryIndex: number;
-  measureIndex: number;
-  sourceMeasure: SourceMeasure;
-};
 
 /**
  * The purpose of this type is to keep track of a value and its
@@ -22,25 +13,26 @@ type Voice = {
  * what distiguishes this data structure from a classic doubly
  * linked list.
  */
-type Pointer<T> = {
+export type VoicePointer = {
   index: number;
-  next: Pointer<T> | null;
-  prev: Pointer<T> | null;
-  value: T;
+  next: VoicePointer | null;
+  prev: VoicePointer | null;
+  cursor: MusicPartManagerIterator;
+  beatRange: NumberRange;
+  timeMsRange: NumberRange;
+  entries: VoiceEntry[];
 };
 
-export type VoicePointer = Pointer<Voice>;
-
-enum Cost {
+export enum SeekCost {
   Unknown,
   Cheap,
   Expensive,
 }
 
-type SeekResult = Readonly<{
+export type SeekResult = Readonly<{
   timeMs: number;
-  cost: Cost;
-  voicePointer: VoicePointer | null;
+  cost: SeekCost;
+  voicePointer: Readonly<VoicePointer> | null;
 }>;
 
 /**
@@ -54,19 +46,29 @@ type SeekResult = Readonly<{
  * on each animation frame, so many optimization techniques are used.
  */
 export class VoiceSeeker {
-  static create(musicSheet: MusicSheet, syncSettings: SyncSettings): VoiceSeeker {
-    const voiceSeeker = new VoiceSeeker(musicSheet, syncSettings);
+  static create(probe: Cursor, musicSheet: MusicSheet, syncSettings: SyncSettings): VoiceSeeker {
+    const voiceSeeker = new VoiceSeeker(probe, musicSheet, syncSettings);
     voiceSeeker.init();
     return voiceSeeker;
   }
 
-  musicSheet: MusicSheet;
-  syncSettings: SyncSettings;
+  static createNullSeekResult(): SeekResult {
+    return {
+      timeMs: -1,
+      cost: SeekCost.Cheap,
+      voicePointer: null,
+    };
+  }
+
+  readonly probe: Cursor;
+  readonly musicSheet: MusicSheet;
+  readonly syncSettings: SyncSettings;
 
   private voicePointers = new Array<VoicePointer>();
-  private cachedSeekResult: SeekResult | null = null;
+  private cachedSeekResult = VoiceSeeker.createNullSeekResult();
 
-  private constructor(musicSheet: MusicSheet, syncSettings: SyncSettings) {
+  private constructor(probe: Cursor, musicSheet: MusicSheet, syncSettings: SyncSettings) {
+    this.probe = probe;
     this.musicSheet = musicSheet;
     this.syncSettings = syncSettings;
   }
@@ -76,7 +78,6 @@ export class VoiceSeeker {
       console.warn('skipping pointer calculations');
       return;
     }
-    this.validate();
     this.calculateVoicePointers();
   }
 
@@ -106,45 +107,47 @@ export class VoiceSeeker {
    */
   private cheapSeek(timeMs: number): SeekResult | null {
     if (this.voicePointers.length === 0) {
-      return { timeMs, cost: Cost.Cheap, voicePointer: null };
+      return { timeMs, cost: SeekCost.Cheap, voicePointer: null };
     }
 
     const firstVoicePointer = first(this.voicePointers)!;
-    if (timeMs < firstVoicePointer.value.timeMsRange.start) {
-      return { timeMs, cost: Cost.Cheap, voicePointer: null };
+    if (timeMs < firstVoicePointer.timeMsRange.start) {
+      return { timeMs, cost: SeekCost.Cheap, voicePointer: null };
     }
 
-    if (firstVoicePointer.value.timeMsRange.contains(timeMs)) {
-      return { timeMs, cost: Cost.Cheap, voicePointer: firstVoicePointer };
+    if (firstVoicePointer.timeMsRange.contains(timeMs)) {
+      return { timeMs, cost: SeekCost.Cheap, voicePointer: firstVoicePointer };
+    }
+
+    // The first voice pointer may have a time range of [0, 0], so we always check
+    // the second one just in case.
+    const secondVoicePointer = firstVoicePointer.next;
+    if (secondVoicePointer && secondVoicePointer.timeMsRange.contains(timeMs)) {
+      return { timeMs, cost: SeekCost.Cheap, voicePointer: secondVoicePointer };
     }
 
     const lastVoicePointer = last(this.voicePointers)!;
-    if (timeMs > lastVoicePointer.value.timeMsRange.end) {
-      return { timeMs, cost: Cost.Cheap, voicePointer: null };
+    if (timeMs > lastVoicePointer.timeMsRange.end) {
+      return { timeMs, cost: SeekCost.Cheap, voicePointer: null };
     }
 
-    const cachedSeekResult = this.cachedSeekResult;
-    if (!cachedSeekResult) {
-      return null;
-    }
-
-    const voicePointer = cachedSeekResult.voicePointer;
+    const voicePointer = this.cachedSeekResult.voicePointer;
     if (!voicePointer) {
       return null;
     }
 
-    if (voicePointer.value.timeMsRange.contains(timeMs)) {
-      return { timeMs, cost: Cost.Cheap, voicePointer };
+    if (voicePointer.timeMsRange.contains(timeMs)) {
+      return { timeMs, cost: SeekCost.Cheap, voicePointer };
     }
 
     const nextVoicePointer = voicePointer.next;
-    if (nextVoicePointer && nextVoicePointer.value.timeMsRange.contains(timeMs)) {
-      return { timeMs, cost: Cost.Cheap, voicePointer: nextVoicePointer };
+    if (nextVoicePointer && nextVoicePointer.timeMsRange.contains(timeMs)) {
+      return { timeMs, cost: SeekCost.Cheap, voicePointer: nextVoicePointer };
     }
 
     const prevVoicePointer = voicePointer.prev;
-    if (prevVoicePointer && prevVoicePointer.value.timeMsRange.contains(timeMs)) {
-      return { timeMs, cost: Cost.Cheap, voicePointer: prevVoicePointer };
+    if (prevVoicePointer && prevVoicePointer.timeMsRange.contains(timeMs)) {
+      return { timeMs, cost: SeekCost.Cheap, voicePointer: prevVoicePointer };
     }
 
     return null;
@@ -155,7 +158,7 @@ export class VoiceSeeker {
    */
   private expensiveSeek(timeMs: number): SeekResult {
     const voicePointer = bsearch(this.voicePointers, (voicePointer) => {
-      const { start, end } = voicePointer.value.timeMsRange;
+      const { start, end } = voicePointer.timeMsRange;
       if (start > timeMs) {
         return -1;
       } else if (end < timeMs) {
@@ -165,55 +168,74 @@ export class VoiceSeeker {
       }
     });
 
-    return { timeMs, cost: Cost.Expensive, voicePointer: voicePointer || null };
+    return { timeMs, cost: SeekCost.Expensive, voicePointer: voicePointer || null };
   }
 
+  /**
+   * Scans through all the voice entries using the probe cursor, then creates
+   * snapshots of each iteration. Consumers may use the snapshots to move a
+   * cursor to a given point.
+   */
   private calculateVoicePointers(): void {
-    // TODO(jared) Handle multiple parts.
-    const voiceEntries = this.musicSheet.Parts[0].Voices[0].VoiceEntries;
-    const voicePointers = new Array<VoicePointer>(voiceEntries.length);
+    const voicePointers = new Array<VoicePointer>();
 
-    let currNumBeats = 0;
+    // Initialize accounting variables
+    let prevVoicePointer: VoicePointer | null = null;
+    let currBeat = 0;
     let currTimeMs = this.syncSettings.deadTimeMs;
-    for (let ndx = 0; ndx < voiceEntries.length; ndx++) {
-      const voiceEntry = voiceEntries[ndx];
-      const note = voiceEntry.Notes[0];
-      const sourceMeasure = note.SourceMeasure;
+    let index = 0;
 
-      const bpm = sourceMeasure.TempoInBPM;
-      const numBeats = note.Length.RealValue;
-      const timeMs = ((bpm * 4) / numBeats) * 60000;
+    this.probe.reset();
 
-      const startNumBeats = currNumBeats;
-      const endNumBeats = currNumBeats + numBeats;
+    while (!this.probe.iterator.EndReached) {
+      // Get OSMD-specific references
+      const cursor = this.probe.iterator.clone();
+      const entries = this.probe.VoicesUnderCursor();
+
+      const bpm = this.probe.iterator.CurrentMeasure.TempoInBPM;
+      const numBeats = cursor.CurrentSourceTimestamp.RealValue;
+
+      // Calculate beat range
+      const startBeat = currBeat;
+      const endBeat = startBeat + numBeats;
+      const beatRange = NumberRange.from(startBeat).to(endBeat);
+
+      // Calculate time range
       const startTimeMs = currTimeMs;
-      const endTimeMs = currTimeMs + timeMs;
+      const endTimeMs = startTimeMs + this.convertBpmToMs(bpm, numBeats);
+      const timeMsRange = NumberRange.from(startTimeMs).to(endTimeMs);
 
+      // Caluclate voice pointer
       const voicePointer: VoicePointer = {
-        index: ndx,
+        index,
         next: null,
         prev: null,
-        value: {
-          beatRange: NumberRange.from(startNumBeats).to(endNumBeats),
-          timeMsRange: NumberRange.from(startTimeMs).to(endTimeMs),
-          voiceEntry,
-          sourceMeasure,
-          voiceEntryIndex: ndx,
-          measureIndex: sourceMeasure.MeasureNumber - 1,
-        },
+        beatRange,
+        timeMsRange,
+        cursor,
+        entries,
       };
-      if (ndx > 0) {
-        const prev = voicePointers[ndx - 1];
-        prev.next = voicePointer;
-        voicePointer.prev = prev;
+      voicePointers.push(voicePointer);
+
+      // Perform linking if necessary
+      if (prevVoicePointer) {
+        voicePointer.prev = prevVoicePointer;
+        prevVoicePointer.next = voicePointer;
       }
-      voicePointers[ndx] = voicePointer;
 
-      currNumBeats = endNumBeats;
+      // Update accounting variables
+      prevVoicePointer = voicePointer;
+      currBeat = endBeat;
       currTimeMs = endTimeMs;
-    }
+      index++;
 
-    this.voicePointers = voicePointers;
+      this.probe.next();
+    }
+    this.probe.reset();
+
+    console.log(voicePointers);
+
+    this.voicePointers = voicePointers.map((voicePointer) => Object.freeze(voicePointer));
   }
 
   private shouldSkipPointerCalculations(): boolean {
@@ -244,27 +266,12 @@ export class VoiceSeeker {
     return false;
   }
 
-  private validate() {
-    const voiceEntries = this.musicSheet.Parts[0].Voices[0].VoiceEntries;
-    const numVoiceEntriesWithoutNotes = sumBy(voiceEntries, (voiceEntry) => (voiceEntry.Notes.length === 0 ? 1 : 0));
-    if (numVoiceEntriesWithoutNotes > 0) {
-      throw new Error(`found ${numVoiceEntriesWithoutNotes} voice entries without notes`);
-    }
-
-    const sourceMeasuresFromMusicSheet = this.musicSheet.SourceMeasures;
-    const sourceMeasuresFromVoiceEntries = voiceEntries.map((voiceEntry) => voiceEntry.Notes[0].SourceMeasure);
-
-    const extraSourceMeasuresFromVoiceEntries = difference(
-      sourceMeasuresFromVoiceEntries,
-      sourceMeasuresFromMusicSheet
-    );
-    if (extraSourceMeasuresFromVoiceEntries.length > 0) {
-      throw new Error(`voice entries have ${extraSourceMeasuresFromVoiceEntries.length} extra source measures`);
-    }
-
-    const extraSourceMeasuresFromMusicSheet = difference(sourceMeasuresFromMusicSheet, sourceMeasuresFromVoiceEntries);
-    if (extraSourceMeasuresFromMusicSheet.length > 0) {
-      throw new Error(`music sheet has ${extraSourceMeasuresFromMusicSheet.length} extra source measures`);
-    }
+  private convertBpmToMs(bpm: number, numBeats: number) {
+    // bpm is how many quarter notes per minute
+    const trueBpm = bpm * 4;
+    const mins = numBeats / trueBpm;
+    const secs = mins * 60;
+    const ms = secs * 1000;
+    return ms;
   }
 }

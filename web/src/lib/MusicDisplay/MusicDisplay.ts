@@ -35,6 +35,12 @@ const DEFAULT_OPTS: MusicDisplayOptions = {
       follow: true,
       alpha: 0.5,
     },
+    {
+      type: CursorType.Standard,
+      color: 'black',
+      follow: false,
+      alpha: 0.3,
+    },
   ],
 };
 

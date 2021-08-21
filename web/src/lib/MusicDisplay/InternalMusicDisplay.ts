@@ -53,22 +53,25 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   }
 
   private initCursorWrapper() {
-    const [lagger, leader, lerped] = this.cursors;
+    const [lagger, leader, lerper, probe] = this.cursors;
     if (!lagger) {
       console.debug('missing lagger cursor');
     }
     if (!leader) {
       console.debug('missing leader cursor');
     }
-    if (!lerped) {
-      console.debug('missing leader cursor');
+    if (!lerper) {
+      console.debug('missing lerper cursor');
+    }
+    if (!probe) {
+      console.debug('missing probe cursor');
     }
 
     this.cursorWrapper.clear();
 
-    const lerpable = lagger && leader && lerped;
+    const lerpable = lagger && leader && lerper && probe;
     if (lerpable) {
-      this.cursorWrapper = new LerpCursorWrapper(lagger, leader, lerped);
+      this.cursorWrapper = new LerpCursorWrapper(lagger, leader, lerper, probe);
     } else {
       this.cursorWrapper = new NullCursorWrapper();
     }
