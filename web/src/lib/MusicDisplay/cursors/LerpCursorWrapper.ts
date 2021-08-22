@@ -87,24 +87,34 @@ export class LerpCursorWrapper implements CursorWrapper {
 
     const seekResult = this.voiceSeeker.seek(timeMs);
 
-    const voicePointer = seekResult.voicePointer;
+    const nextVoicePointer = seekResult.voicePointer;
     const prevVoicePointer = this.prevVoicePointer;
-    this.prevVoicePointer = voicePointer;
 
-    if (voicePointer === prevVoicePointer) {
-      this.updateLerper(timeMs, voicePointer);
+    if (nextVoicePointer === prevVoicePointer) {
+      this.updateLerper(timeMs, nextVoicePointer);
       return;
     }
 
-    if (!voicePointer) {
+    this.onVoicePointerChange(nextVoicePointer);
+    this.updateLerper(timeMs, nextVoicePointer);
+  }
+
+  clear() {
+    this.leader.hide();
+    this.lagger.hide();
+    this.lerper.hide();
+  }
+
+  private onVoicePointerChange(nextVoicePointer: VoicePointer | null) {
+    if (!nextVoicePointer) {
       this.clear();
     } else {
       // Since we know this voicePointer is new, we don't need to update
       // the lerper.
-      this.lagger.iterator = voicePointer.iteratorSnapshot.get();
-      this.leader.iterator = voicePointer.iteratorSnapshot.get();
+      this.lagger.iterator = nextVoicePointer.iteratorSnapshot.get();
+      this.leader.iterator = nextVoicePointer.iteratorSnapshot.get();
       this.leader.next();
-      this.lerper.iterator = voicePointer.iteratorSnapshot.get();
+      this.lerper.iterator = nextVoicePointer.iteratorSnapshot.get();
 
       this.lagger.update();
       this.leader.update();
@@ -126,13 +136,7 @@ export class LerpCursorWrapper implements CursorWrapper {
       this.scrollLaggerIntoView();
     }
 
-    this.updateLerper(timeMs, voicePointer);
-  }
-
-  clear() {
-    this.leader.hide();
-    this.lagger.hide();
-    this.lerper.hide();
+    this.prevVoicePointer = nextVoicePointer;
   }
 
   private scrollLaggerIntoView = throttle(
