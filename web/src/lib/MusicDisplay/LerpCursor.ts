@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import { throttle } from 'lodash';
 import { Cursor, MusicSheet } from 'opensheetmusicdisplay';
+import { ColoringOperation } from './ColoringOperation';
 import { Callback, SyncSettings } from './types';
 import { VoicePointer, VoiceSeeker } from './VoiceSeeker';
 
@@ -35,6 +36,7 @@ export class LerpCursor {
   private isAutoScrollEnabled = true;
   private voiceSeeker: VoiceSeeker | null = null;
   private prevVoicePointer: VoicePointer | null = null;
+  private prevColoringOperation: ColoringOperation | null = null;
 
   private $scrollContainer: JQuery<HTMLElement> | null = null;
   private $laggerCursorElement: JQuery<HTMLElement> | null = null;
@@ -100,6 +102,8 @@ export class LerpCursor {
   }
 
   clear() {
+    this.prevColoringOperation?.restore();
+
     this.leader.hide();
     this.lagger.hide();
     this.lerper.hide();
@@ -137,6 +141,16 @@ export class LerpCursor {
     }
 
     this.prevVoicePointer = nextVoicePointer;
+
+    this.prevColoringOperation?.restore();
+
+    if (nextVoicePointer) {
+      const coloringOperation = ColoringOperation.init(this.lagger);
+      coloringOperation.perform();
+      this.prevColoringOperation = coloringOperation;
+    } else {
+      this.prevColoringOperation = null;
+    }
   }
 
   private scrollLaggerIntoView = throttle(
