@@ -17,6 +17,7 @@ export class LerpCursorWrapper implements CursorWrapper {
   readonly leader: Cursor;
   readonly lerper: Cursor;
   readonly probe: Cursor;
+  readonly onAutoScroll: Callback;
 
   private voiceSeeker: VoiceSeeker | null = null;
   private prevVoicePointer: VoicePointer | null = null;
@@ -26,6 +27,7 @@ export class LerpCursorWrapper implements CursorWrapper {
     this.leader = opts.leader;
     this.lerper = opts.lerper;
     this.probe = opts.probe;
+    this.onAutoScroll = opts.onAutoScroll;
   }
 
   init(musicSheet: MusicSheet, syncSettings: SyncSettings) {
@@ -39,6 +41,7 @@ export class LerpCursorWrapper implements CursorWrapper {
     this.lagger.show();
     this.leader.show();
     this.lerper.show();
+    this.probe.show();
 
     this.voiceSeeker = VoiceSeeker.create(this.probe, musicSheet, syncSettings);
   }
@@ -62,35 +65,66 @@ export class LerpCursorWrapper implements CursorWrapper {
 
     if (!voicePointer) {
       this.clear();
-      return;
+    } else {
+      // Since we know this voicePointer is new, we don't need to update
+      // the lerper.
+      this.lagger.iterator = voicePointer.iteratorSnapshot.get();
+      this.leader.iterator = voicePointer.iteratorSnapshot.get();
+      this.leader.next();
+      this.lerper.iterator = voicePointer.iteratorSnapshot.get();
+
+      this.lagger.update();
+      this.leader.update();
+      this.lerper.update();
+
+      if (this.lagger.hidden) {
+        this.lagger.show();
+      }
+      if (this.leader.hidden) {
+        this.leader.show();
+      }
+      if (this.lerper.hidden) {
+        this.lerper.show();
+      }
     }
 
-    // Since we know this voicePointer is new, we don't need to update
-    // the lerper.
-    this.lagger.iterator = voicePointer.iteratorSnapshot.get();
-    this.leader.iterator = voicePointer.iteratorSnapshot.get();
-    this.leader.next();
-    this.lerper.iterator = voicePointer.iteratorSnapshot.get();
+    if (this.willAutoScroll(prevVoicePointer, voicePointer)) {
+      this.onAutoScroll();
+    }
 
-    this.lagger.update();
-    this.leader.update();
-    this.lerper.update();
-
-    if (this.lagger.hidden) {
-      this.lagger.show();
-    }
-    if (this.leader.hidden) {
-      this.leader.show();
-    }
-    if (this.lerper.hidden) {
-      this.lerper.show();
-    }
+    this.scrollLaggerIntoView();
   }
 
   clear() {
     this.leader.hide();
     this.lagger.hide();
     this.lerper.hide();
+  }
+
+  private willAutoScroll(prevVoicePointer: VoicePointer | null, nextVoicePointer: VoicePointer | null): boolean {
+    if (!nextVoicePointer) {
+      return false;
+    }
+    if (!prevVoicePointer && nextVoicePointer) {
+      return true;
+    }
+    if (!prevVoicePointer) {
+      return false;
+    }
+
+    this.probe.iterator = prevVoicePointer.iteratorSnapshot.get();
+    this.probe.update();
+    const prevTop = this.probe.cursorElement.style.top;
+
+    this.probe.iterator = nextVoicePointer.iteratorSnapshot.get();
+    this.probe.update();
+    const nextTop = this.probe.cursorElement.style.top;
+
+    return prevTop !== nextTop;
+  }
+
+  private scrollLaggerIntoView() {
+    this.lagger.cursorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   private updateLerper(timeMs: number, voicePointer: VoicePointer | null) {

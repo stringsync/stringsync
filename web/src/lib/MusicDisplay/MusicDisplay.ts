@@ -19,7 +19,7 @@ const DEFAULT_OPTS: MusicDisplayOptions = {
   drawSubtitle: false,
   drawingParameters: DrawingParametersEnum.default,
   drawPartNames: false,
-  followCursor: true,
+  followCursor: false,
   pageBackgroundColor: 'white',
   cursorsOptions: [
     {
