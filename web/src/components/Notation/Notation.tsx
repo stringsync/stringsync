@@ -75,6 +75,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
       onResizeStart: startLoading,
       onResizeEnd: stopLoading,
       onAutoScrollStart: () => setIsAutoScrolling(true),
+      onAutoScrollEnd: () => setIsAutoScrolling(false),
     });
     setMusicDisplay(musicDisplay);
 
