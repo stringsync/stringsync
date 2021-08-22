@@ -4,11 +4,15 @@ import { theme } from '../../theme';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { MusicDisplayOptions } from './types';
 
+const DUMMY_DIV = document.createElement('div');
+DUMMY_DIV.setAttribute('id', 'dummy-scroll-container');
+
 const DEFAULT_OPTS: MusicDisplayOptions = {
   syncSettings: {
     deadTimeMs: 0,
     durationMs: 0,
   },
+  scrollContainer: DUMMY_DIV,
   onLoadStart: noop,
   onLoadEnd: noop,
   onResizeStart: noop,

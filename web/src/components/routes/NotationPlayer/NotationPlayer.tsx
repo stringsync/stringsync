@@ -1,6 +1,6 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { Alert, Col, Row } from 'antd';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -25,18 +25,26 @@ const RightBorder = styled.div<{ border: boolean }>`
   border-right: ${(props) => (props.border ? '1px' : '0')} solid ${(props) => props.theme['@border-color']};
 `;
 
-const LeftOrTopCol = styled(Col)<{ $overflow: boolean }>`
-  max-height: calc(100vh - ${HEADER_HEIGHT_PX}px);
+const LeftOrTopScrollContainer = styled.div<{ $overflow: boolean }>`
   overflow: ${(props) => (props.$overflow ? 'auto' : 'hidden')};
 `;
 
-const RightOrBottomCol = styled(Col)<{ $heightOffsetPx: number }>`
+const LeftOrTopCol = styled(Col)`
+  max-height: calc(100vh - ${HEADER_HEIGHT_PX}px);
+  overflow: hidden;
+`;
+
+const RightOrBottomScrollContainer = styled.div<{ $heightOffsetPx: number }>`
   padding-top: 24px;
   padding-bottom: 36px;
   background: white;
   height: calc(100vh - ${(props) => props.$heightOffsetPx}px);
-  overflow: auto;
   overflow-x: hidden;
+  overflow-y: auto;
+`;
+
+const RightOrBottomCol = styled(Col)`
+  overflow: hidden;
 `;
 
 const SongName = styled.h1`
@@ -67,6 +75,8 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
     const { lg, xl, xxl } = state.viewport;
     return lg || xl || xxl;
   });
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const params = useParams<{ id: string }>();
   const [notation, setNotation] = useState<NotationObject | null>(null);
@@ -100,6 +110,11 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   );
 
   const onMusicDisplayChange = useCallback(setMusicDisplay, [setMusicDisplay]);
+
+  const onUserScroll = useCallback(() => {
+    // TODO(jared) Disable autoscroll, but give user a way to reenable it.
+    console.log('user scrolled!');
+  }, []);
 
   // Prevent the outer container from scrolling. The reason why we need this is
   // needed is because when the viewport is ltEqMd, the body will almost certainly
@@ -172,31 +187,29 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
       {!isLoading && !hasErrors && notation && (
         <Row>
-          <LeftOrTopCol $overflow={gtMd} xs={24} sm={24} md={24} lg={6} xl={6} xxl={8}>
-            <Video onVideoResize={onVideoResize} onTimeUpdate={onTimeUpdate} playerOptions={playerOptions} />
-            <RightBorder border={gtMd}>{gtMd && <SuggestedNotations srcNotationId={notation.id} />}</RightBorder>
+          <LeftOrTopCol xs={24} sm={24} md={24} lg={6} xl={6} xxl={8}>
+            <LeftOrTopScrollContainer $overflow={gtMd}>
+              <Video onVideoResize={onVideoResize} onTimeUpdate={onTimeUpdate} playerOptions={playerOptions} />
+              <RightBorder border={gtMd}>{gtMd && <SuggestedNotations srcNotationId={notation.id} />}</RightBorder>
+            </LeftOrTopScrollContainer>
           </LeftOrTopCol>
-          <RightOrBottomCol
-            $heightOffsetPx={rightOrBottomColHeightOffsetPx}
-            xs={24}
-            sm={24}
-            md={24}
-            lg={18}
-            xl={18}
-            xxl={16}
-          >
-            <SongName>{notation.songName}</SongName>
-            <ArtistName>by {notation.artistName}</ArtistName>
-            <TranscriberName>{notation.transcriber.username}</TranscriberName>
+          <RightOrBottomCol xs={24} sm={24} md={24} lg={18} xl={18} xxl={16}>
+            <RightOrBottomScrollContainer $heightOffsetPx={rightOrBottomColHeightOffsetPx} ref={scrollContainerRef}>
+              <SongName>{notation.songName}</SongName>
+              <ArtistName>by {notation.artistName}</ArtistName>
+              <TranscriberName>{notation.transcriber.username}</TranscriberName>
 
-            {notation.musicXmlUrl && (
-              <Notation
-                musicXmlUrl={notation.musicXmlUrl}
-                deadTimeMs={notation.deadTimeMs}
-                durationMs={notation.durationMs}
-                onMusicDisplayChange={onMusicDisplayChange}
-              />
-            )}
+              {notation.musicXmlUrl && (
+                <Notation
+                  musicXmlUrl={notation.musicXmlUrl}
+                  deadTimeMs={notation.deadTimeMs}
+                  durationMs={notation.durationMs}
+                  scrollContainerRef={scrollContainerRef}
+                  onUserScroll={onUserScroll}
+                  onMusicDisplayChange={onMusicDisplayChange}
+                />
+              )}
+            </RightOrBottomScrollContainer>
           </RightOrBottomCol>
         </Row>
       )}

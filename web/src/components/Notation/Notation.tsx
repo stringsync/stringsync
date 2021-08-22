@@ -1,10 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { RefObject, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { MusicDisplay } from '../../lib/MusicDisplay';
-
-// It's generous to prevent autoscrolling from deactivating
-// itself.
-const AUTO_SCROLL_TIMEOUT_MS = 500;
 
 const Outer = styled.div`
   margin-top: 24px;
@@ -31,17 +27,22 @@ type NotationProps = {
   musicXmlUrl: string;
   deadTimeMs: number;
   durationMs: number;
+  scrollContainerRef: RefObject<HTMLDivElement>;
   onMusicDisplayChange?: (musicDisplay: MusicDisplay | null) => void;
+  onUserScroll?: () => void;
 };
 
 export const Notation: React.FC<NotationProps> = (props) => {
   const divRef = useRef<HTMLDivElement>(null);
-  const autoScrollingTimeoutRef = useRef(0);
+
+  // A ref is used instead of state because we don't want to wait for
+  // React to flush the values - the scroll handler will still be active
+  // regardless of hooked state.
+  const isAutoScrollingRef = useRef(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
-  const [isAutoScrolling, setIsAutoScrolling] = useState(false);
-  const { musicXmlUrl, deadTimeMs, durationMs, onMusicDisplayChange } = props;
+  const { musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef, onMusicDisplayChange, onUserScroll } = props;
 
   useEffect(() => {
     if (onMusicDisplayChange) {
@@ -50,16 +51,34 @@ export const Notation: React.FC<NotationProps> = (props) => {
   }, [musicDisplay, onMusicDisplayChange]);
 
   useEffect(() => {
-    if (!isAutoScrolling) {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) {
       return;
     }
-    clearTimeout(autoScrollingTimeoutRef.current);
-    autoScrollingTimeoutRef.current = window.setTimeout(() => {
-      setIsAutoScrolling(false);
-    }, AUTO_SCROLL_TIMEOUT_MS);
-  }, [isAutoScrolling]);
+    if (!onUserScroll) {
+      return;
+    }
+
+    // If we're not auto scrolling, assume any scroll event was
+    // triggered by the user.
+    const listener = () => {
+      if (!isAutoScrollingRef.current) {
+        onUserScroll();
+      }
+    };
+    scrollContainer.addEventListener('scroll', listener);
+
+    return () => {
+      scrollContainer.removeEventListener('scroll', listener);
+    };
+  }, [scrollContainerRef, onUserScroll]);
 
   useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) {
+      return;
+    }
+
     const div = divRef.current;
     if (!div) {
       return;
@@ -70,12 +89,17 @@ export const Notation: React.FC<NotationProps> = (props) => {
 
     const musicDisplay = new MusicDisplay(div, {
       syncSettings: { deadTimeMs, durationMs },
+      scrollContainer,
       onLoadStart: startLoading,
       onLoadEnd: stopLoading,
       onResizeStart: startLoading,
       onResizeEnd: stopLoading,
-      onAutoScrollStart: () => setIsAutoScrolling(true),
-      onAutoScrollEnd: () => setIsAutoScrolling(false),
+      onAutoScrollStart: () => {
+        isAutoScrollingRef.current = true;
+      },
+      onAutoScrollEnd: () => {
+        isAutoScrollingRef.current = false;
+      },
     });
     setMusicDisplay(musicDisplay);
 
@@ -85,10 +109,10 @@ export const Notation: React.FC<NotationProps> = (props) => {
       musicDisplay.clear();
       setMusicDisplay(null);
     };
-  }, [musicXmlUrl, deadTimeMs, durationMs]);
+  }, [musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef]);
 
   return (
-    <Outer>
+    <Outer data-notation>
       {isLoading && (
         <LoadingOverlay>
           <Loading>loading</Loading>

@@ -18,13 +18,15 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   onAutoScrollStart: Callback;
   onAutoScrollEnd: Callback;
 
-  cursorWrapper: CursorWrapper = new NullCursorWrapper();
+  scrollContainer: HTMLDivElement;
   syncSettings: SyncSettings;
+  cursorWrapper: CursorWrapper = new NullCursorWrapper();
 
   constructor(container: string | HTMLElement, opts: MusicDisplayOptions) {
     super(container, opts);
 
     this.syncSettings = opts.syncSettings;
+    this.scrollContainer = opts.scrollContainer;
     this.onLoadStart = opts.onLoadStart;
     this.onLoadEnd = opts.onLoadEnd;
     this.handleResize(opts.onResizeStart, opts.onResizeEnd);
@@ -81,10 +83,16 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.cursorWrapper.clear();
 
     const lerpable = lagger && leader && lerper && probe;
-    const onAutoScrollStart = this.onAutoScrollStart;
-    const onAutoScrollEnd = this.onAutoScrollEnd;
     if (lerpable) {
-      this.cursorWrapper = new LerpCursorWrapper({ lagger, leader, lerper, probe, onAutoScrollStart, onAutoScrollEnd });
+      this.cursorWrapper = new LerpCursorWrapper({
+        scrollContainer: this.scrollContainer,
+        lagger,
+        leader,
+        lerper,
+        probe,
+        onAutoScrollStart: this.onAutoScrollStart,
+        onAutoScrollEnd: this.onAutoScrollEnd,
+      });
     } else {
       this.cursorWrapper = new NullCursorWrapper();
     }
