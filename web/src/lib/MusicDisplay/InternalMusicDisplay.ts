@@ -1,4 +1,3 @@
-import { noop } from 'lodash';
 import { OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
 import { NullCursorWrapper } from './cursors';
 import { LerpCursorWrapper } from './cursors/LerpCursorWrapper';
@@ -16,6 +15,7 @@ import { Callback, CursorWrapper, MusicDisplayOptions, SyncSettings } from './ty
 export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   onLoadStart: Callback;
   onLoadEnd: Callback;
+  onAutoScroll: Callback;
 
   cursorWrapper: CursorWrapper = new NullCursorWrapper();
   syncSettings: SyncSettings;
@@ -24,9 +24,10 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     super(container, opts);
 
     this.syncSettings = opts.syncSettings;
-    this.onLoadStart = opts.onLoadStart || noop;
-    this.onLoadEnd = opts.onLoadEnd || noop;
-    this.handleResize(opts.onResizeStart || noop, opts.onResizeEnd || noop);
+    this.onLoadStart = opts.onLoadStart;
+    this.onLoadEnd = opts.onLoadEnd;
+    this.handleResize(opts.onResizeStart, opts.onResizeEnd);
+    this.onAutoScroll = opts.onAutoScroll;
   }
 
   async load(xmlUrl: string) {

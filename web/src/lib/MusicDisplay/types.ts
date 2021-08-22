@@ -15,8 +15,9 @@ export type Callback = () => void;
 
 export type MusicDisplayOptions = IOSMDOptions & {
   syncSettings: SyncSettings;
-  onLoadStart?: Callback;
-  onLoadEnd?: Callback;
-  onResizeStart?: Callback;
-  onResizeEnd?: Callback;
+  onLoadStart: Callback;
+  onLoadEnd: Callback;
+  onResizeStart: Callback;
+  onResizeEnd: Callback;
+  onAutoScroll: Callback;
 };

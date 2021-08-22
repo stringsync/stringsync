@@ -1,4 +1,4 @@
-import { merge } from 'lodash';
+import { merge, noop } from 'lodash';
 import { CursorType, DrawingParametersEnum } from 'opensheetmusicdisplay';
 import { theme } from '../../theme';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
@@ -9,6 +9,11 @@ const DEFAULT_OPTS: MusicDisplayOptions = {
     deadTimeMs: 0,
     durationMs: 0,
   },
+  onLoadStart: noop,
+  onLoadEnd: noop,
+  onResizeStart: noop,
+  onResizeEnd: noop,
+  onAutoScroll: noop,
   autoResize: true,
   drawTitle: false,
   drawSubtitle: false,
