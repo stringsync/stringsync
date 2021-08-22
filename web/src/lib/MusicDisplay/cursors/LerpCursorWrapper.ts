@@ -23,8 +23,6 @@ export class LerpCursorWrapper implements CursorWrapper {
   }
 
   init(musicSheet: MusicSheet, syncSettings: SyncSettings) {
-    this.lagger.cursorElement.style.zIndex = '2';
-    this.leader.cursorElement.style.zIndex = '2';
     this.lerper.cursorElement.style.zIndex = '2';
 
     this.lagger.resetIterator();
