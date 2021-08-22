@@ -53,6 +53,14 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.cursorWrapper.update(timeMs);
   }
 
+  disableAutoScroll() {
+    this.cursorWrapper.disableAutoScroll();
+  }
+
+  enableAutoScroll() {
+    this.cursorWrapper.enableAutoScroll();
+  }
+
   private initCursorWrapper() {
     const [lagger, leader, lerper, probe] = this.cursors;
     if (!lagger) {
