@@ -1,12 +1,10 @@
 import { Cursor, MusicSheet } from 'opensheetmusicdisplay';
-import { CursorWrapper, CursorWrapperType, SyncSettings } from '../types';
+import { CursorWrapper, SyncSettings } from '../types';
 import { VoicePointer, VoiceSeeker } from './VoiceSeeker';
 
 const END_OF_LINE_LERP_PX = 20;
 
 export class LerpCursorWrapper implements CursorWrapper {
-  readonly type = CursorWrapperType.True;
-
   readonly lagger: Cursor;
   readonly leader: Cursor;
   readonly lerper: Cursor;
