@@ -187,13 +187,13 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
       {!isLoading && !hasErrors && notation && (
         <Row>
-          <LeftOrTopCol xs={24} sm={24} md={24} lg={6} xl={6} xxl={8}>
+          <LeftOrTopCol xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
             <LeftOrTopScrollContainer $overflow={gtMd}>
               <Video onVideoResize={onVideoResize} onTimeUpdate={onTimeUpdate} playerOptions={playerOptions} />
               <RightBorder border={gtMd}>{gtMd && <SuggestedNotations srcNotationId={notation.id} />}</RightBorder>
             </LeftOrTopScrollContainer>
           </LeftOrTopCol>
-          <RightOrBottomCol xs={24} sm={24} md={24} lg={18} xl={18} xxl={16}>
+          <RightOrBottomCol xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
             <RightOrBottomScrollContainer $heightOffsetPx={rightOrBottomColHeightOffsetPx} ref={scrollContainerRef}>
               <SongName>{notation.songName}</SongName>
               <ArtistName>by {notation.artistName}</ArtistName>
