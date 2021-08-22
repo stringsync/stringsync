@@ -75,8 +75,6 @@ export const Video: React.FC<Props> = (props) => {
     };
 
     player.ready(() => {
-      // TODO(jared) Remove when done developing.
-      player.volume(0);
       updateCurrentTime();
     });
 
