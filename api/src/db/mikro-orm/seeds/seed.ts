@@ -51,6 +51,7 @@ import {
       buildRandNotation({
         id: undefined,
         cursor: 0,
+        durationMs: 34933,
         songName: `${sample(ADJECTIVES)} ${sample(NOUNS)}`,
         artistName: sample(ARTIST_NAMES),
         transcriberId: undefined,

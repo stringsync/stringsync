@@ -1,5 +1,6 @@
-import { PauseCircleOutlined, PlayCircleOutlined, SettingOutlined } from '@ant-design/icons';
-import { Col, Row, Slider } from 'antd';
+import { FileImageOutlined, PauseCircleOutlined, PlayCircleOutlined, SettingOutlined } from '@ant-design/icons';
+import { Col, Row, Slider, Tooltip } from 'antd';
+import { useMemo } from 'react';
 import styled from 'styled-components';
 
 const Outer = styled.div`
@@ -28,7 +29,44 @@ const SettingsIcon = styled(SettingOutlined)`
   color: ${(props) => props.theme['@muted']};
 `;
 
-export const NotationControls = () => {
+const DetailImg = styled.img`
+  width: 36px;
+  height: 36px;
+`;
+
+const MissingImgIcon = styled(FileImageOutlined)`
+  font-size: 2em;
+  color: ${(props) => props.theme['@muted']};
+`;
+
+export type Props = {
+  currentTimeMs: number;
+  durationMs: number;
+  songName: string;
+  artistName: string;
+  thumbnailUrl: string;
+};
+
+export const NotationControls: React.FC<Props> = (props) => {
+  const value = props.durationMs === 0 ? 0 : (props.currentTimeMs / props.durationMs) * 100;
+
+  const Detail = useMemo(
+    () => () => {
+      return props.thumbnailUrl ? (
+        <Tooltip title={`${props.songName} by ${props.artistName}`}>
+          <DetailImg src={props.thumbnailUrl} alt="notation detail image" />
+        </Tooltip>
+      ) : (
+        <Row align="middle">
+          <Tooltip title={`${props.songName} by ${props.artistName}`}>
+            <MissingImgIcon />
+          </Tooltip>
+        </Row>
+      );
+    },
+    [props.songName, props.artistName, props.thumbnailUrl]
+  );
+
   return (
     <Outer>
       <Row justify="center" align="middle" gutter={8}>
@@ -36,13 +74,13 @@ export const NotationControls = () => {
           <PlayIcon />
         </Col>
         <Col xxl={18} xl={18} lg={22} md={22} sm={22} xs={22}>
-          <Slider />
+          <Slider step={0.01} value={value} />
         </Col>
         <Col span={1}>
           <SettingsIcon />
         </Col>
         <Col xxl={4} xl={4} lg={0} md={0} sm={0} xs={0}>
-          detail
+          <Detail />
         </Col>
       </Row>
     </Outer>
