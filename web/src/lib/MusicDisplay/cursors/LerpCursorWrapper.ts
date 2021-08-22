@@ -7,7 +7,8 @@ export type LerpCursorWrapperOpts = {
   leader: Cursor;
   lerper: Cursor;
   probe: Cursor;
-  onAutoScroll: Callback;
+  onAutoScrollStart: Callback;
+  onAutoScrollEnd: Callback;
 };
 
 const END_OF_LINE_LERP_PX = 20;
@@ -17,7 +18,8 @@ export class LerpCursorWrapper implements CursorWrapper {
   readonly leader: Cursor;
   readonly lerper: Cursor;
   readonly probe: Cursor;
-  readonly onAutoScroll: Callback;
+  readonly onAutoScrollStart: Callback;
+  readonly onAutoScrollEnd: Callback;
 
   private isAutoScrollEnabled = true;
   private voiceSeeker: VoiceSeeker | null = null;
@@ -28,7 +30,8 @@ export class LerpCursorWrapper implements CursorWrapper {
     this.leader = opts.leader;
     this.lerper = opts.lerper;
     this.probe = opts.probe;
-    this.onAutoScroll = opts.onAutoScroll;
+    this.onAutoScrollStart = opts.onAutoScrollStart;
+    this.onAutoScrollEnd = opts.onAutoScrollEnd;
   }
 
   init(musicSheet: MusicSheet, syncSettings: SyncSettings) {
@@ -53,7 +56,7 @@ export class LerpCursorWrapper implements CursorWrapper {
 
   enableAutoScroll() {
     this.isAutoScrollEnabled = true;
-    this.onAutoScroll();
+    this.onAutoScrollStart();
     this.scrollLaggerIntoView();
   }
 
@@ -102,7 +105,7 @@ export class LerpCursorWrapper implements CursorWrapper {
     // These are separate because we want the lagger to be scrolled every
     // time its position changes. This mimics the OSMD library behavior.
     if (this.willAutoScroll(prevVoicePointer, voicePointer)) {
-      this.onAutoScroll();
+      this.onAutoScrollStart();
     }
     if (this.isAutoScrollEnabled) {
       this.scrollLaggerIntoView();

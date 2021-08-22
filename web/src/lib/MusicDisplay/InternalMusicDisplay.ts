@@ -15,7 +15,8 @@ import { Callback, CursorWrapper, MusicDisplayOptions, SyncSettings } from './ty
 export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   onLoadStart: Callback;
   onLoadEnd: Callback;
-  onAutoScroll: Callback;
+  onAutoScrollStart: Callback;
+  onAutoScrollEnd: Callback;
 
   cursorWrapper: CursorWrapper = new NullCursorWrapper();
   syncSettings: SyncSettings;
@@ -27,7 +28,8 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.onLoadStart = opts.onLoadStart;
     this.onLoadEnd = opts.onLoadEnd;
     this.handleResize(opts.onResizeStart, opts.onResizeEnd);
-    this.onAutoScroll = opts.onAutoScroll;
+    this.onAutoScrollStart = opts.onAutoScrollStart;
+    this.onAutoScrollEnd = opts.onAutoScrollEnd;
   }
 
   async load(xmlUrl: string) {
@@ -79,9 +81,10 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.cursorWrapper.clear();
 
     const lerpable = lagger && leader && lerper && probe;
-    const onAutoScroll = this.onAutoScroll;
+    const onAutoScrollStart = this.onAutoScrollStart;
+    const onAutoScrollEnd = this.onAutoScrollEnd;
     if (lerpable) {
-      this.cursorWrapper = new LerpCursorWrapper({ lagger, leader, lerper, probe, onAutoScroll });
+      this.cursorWrapper = new LerpCursorWrapper({ lagger, leader, lerper, probe, onAutoScrollStart, onAutoScrollEnd });
     } else {
       this.cursorWrapper = new NullCursorWrapper();
     }

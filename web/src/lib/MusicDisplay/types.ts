@@ -21,5 +21,6 @@ export type MusicDisplayOptions = IOSMDOptions & {
   onLoadEnd: Callback;
   onResizeStart: Callback;
   onResizeEnd: Callback;
-  onAutoScroll: Callback;
+  onAutoScrollStart: Callback;
+  onAutoScrollEnd: Callback;
 };

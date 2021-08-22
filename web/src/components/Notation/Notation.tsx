@@ -2,6 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 
+// It's generous to prevent autoscrolling from deactivating
+// itself.
+const AUTO_SCROLL_TIMEOUT_MS = 500;
+
 const Outer = styled.div`
   margin-top: 24px;
   position: relative;
@@ -32,8 +36,11 @@ type NotationProps = {
 
 export const Notation: React.FC<NotationProps> = (props) => {
   const divRef = useRef<HTMLDivElement>(null);
+  const autoScrollingTimeoutRef = useRef(0);
+
   const [isLoading, setIsLoading] = useState(false);
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
+  const [isAutoScrolling, setIsAutoScrolling] = useState(false);
   const { musicXmlUrl, deadTimeMs, durationMs, onMusicDisplayChange } = props;
 
   useEffect(() => {
@@ -41,6 +48,16 @@ export const Notation: React.FC<NotationProps> = (props) => {
       onMusicDisplayChange(musicDisplay);
     }
   }, [musicDisplay, onMusicDisplayChange]);
+
+  useEffect(() => {
+    if (!isAutoScrolling) {
+      return;
+    }
+    clearTimeout(autoScrollingTimeoutRef.current);
+    autoScrollingTimeoutRef.current = window.setTimeout(() => {
+      setIsAutoScrolling(false);
+    }, AUTO_SCROLL_TIMEOUT_MS);
+  }, [isAutoScrolling]);
 
   useEffect(() => {
     const div = divRef.current;
@@ -57,6 +74,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
       onLoadEnd: stopLoading,
       onResizeStart: startLoading,
       onResizeEnd: stopLoading,
+      onAutoScrollStart: () => setIsAutoScrolling(true),
     });
     setMusicDisplay(musicDisplay);
 
