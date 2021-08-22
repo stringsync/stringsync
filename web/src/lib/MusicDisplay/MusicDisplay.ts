@@ -40,7 +40,7 @@ const DEFAULT_OPTS: MusicDisplayOptions = {
       alpha: 0,
     },
     {
-      type: CursorType.Standard,
+      type: CursorType.ThinLeft,
       color: theme['@primary-color'],
       follow: true,
       alpha: 0.5,
