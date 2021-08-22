@@ -1,6 +1,5 @@
 import { merge, noop } from 'lodash';
 import { CursorType, DrawingParametersEnum } from 'opensheetmusicdisplay';
-import { theme } from '../../theme';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { MusicDisplayOptions } from './types';
 
@@ -41,7 +40,7 @@ const DEFAULT_OPTS: MusicDisplayOptions = {
     },
     {
       type: CursorType.ThinLeft,
-      color: theme['@primary-color'],
+      color: '#00ffd9',
       follow: true,
       alpha: 0.5,
     },
