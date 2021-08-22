@@ -61,13 +61,23 @@ export class LerpCursorWrapper implements CursorWrapper {
       return;
     }
 
-    this.lagger.iterator = voicePointer.cursor.clone();
-    this.leader.iterator = voicePointer.cursor.clone();
-    this.lerper.iterator = voicePointer.cursor.clone();
+    this.lagger.iterator = voicePointer.iteratorSnapshot.get();
+    this.leader.iterator = voicePointer.iteratorSnapshot.get();
+    this.lerper.iterator = voicePointer.iteratorSnapshot.get();
 
     this.lagger.update();
     this.leader.update();
     this.lerper.update();
+
+    if (this.lagger.hidden) {
+      this.lagger.show();
+    }
+    if (this.leader.hidden) {
+      this.leader.show();
+    }
+    if (this.lerper.hidden) {
+      this.lerper.show();
+    }
   }
 
   clear() {

@@ -1,8 +1,9 @@
 import { first, last } from 'lodash';
-import { Cursor, MusicPartManagerIterator, MusicSheet, VoiceEntry } from 'opensheetmusicdisplay';
+import { Cursor, MusicSheet, VoiceEntry } from 'opensheetmusicdisplay';
 import { bsearch } from '../../../util/bsearch';
 import { NumberRange } from '../../../util/NumberRange';
 import { SyncSettings } from '../types';
+import { IteratorSnapshot } from './IteratorSnapshot';
 
 /**
  * The purpose of this type is to keep track of a value and its
@@ -17,7 +18,7 @@ export type VoicePointer = {
   index: number;
   next: VoicePointer | null;
   prev: VoicePointer | null;
-  cursor: MusicPartManagerIterator;
+  iteratorSnapshot: IteratorSnapshot;
   beatRange: NumberRange;
   timeMsRange: NumberRange;
   entries: VoiceEntry[];
@@ -188,12 +189,14 @@ export class VoiceSeeker {
     this.probe.reset();
 
     while (!this.probe.iterator.EndReached) {
+      const iteratorSnapshot = IteratorSnapshot.create(this.probe.iterator);
+
       // Get OSMD-specific references
-      const cursor = this.probe.iterator.clone();
       const entries = this.probe.VoicesUnderCursor();
+      const note = entries[0].Notes[0];
 
       const bpm = this.probe.iterator.CurrentMeasure.TempoInBPM;
-      const numBeats = cursor.CurrentSourceTimestamp.RealValue;
+      const numBeats = note.Length.RealValue;
 
       // Calculate beat range
       const startBeat = currBeat;
@@ -202,7 +205,7 @@ export class VoiceSeeker {
 
       // Calculate time range
       const startTimeMs = currTimeMs;
-      const endTimeMs = startTimeMs + this.convertBpmToMs(bpm, numBeats);
+      const endTimeMs = startTimeMs + this.convertNumBeatsToMs(bpm, numBeats);
       const timeMsRange = NumberRange.from(startTimeMs).to(endTimeMs);
 
       // Caluclate voice pointer
@@ -212,7 +215,7 @@ export class VoiceSeeker {
         prev: null,
         beatRange,
         timeMsRange,
-        cursor,
+        iteratorSnapshot,
         entries,
       };
       voicePointers.push(voicePointer);
@@ -232,8 +235,6 @@ export class VoiceSeeker {
       this.probe.next();
     }
     this.probe.reset();
-
-    console.log(voicePointers);
 
     this.voicePointers = voicePointers.map((voicePointer) => Object.freeze(voicePointer));
   }
@@ -266,9 +267,9 @@ export class VoiceSeeker {
     return false;
   }
 
-  private convertBpmToMs(bpm: number, numBeats: number) {
+  private convertNumBeatsToMs(bpm: number, numBeats: number) {
     // bpm is how many quarter notes per minute
-    const trueBpm = bpm * 4;
+    const trueBpm = bpm / 4;
     const mins = numBeats / trueBpm;
     const secs = mins * 60;
     const ms = secs * 1000;
