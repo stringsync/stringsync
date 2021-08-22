@@ -26,11 +26,11 @@ const RightBorder = styled.div<{ border: boolean }>`
 `;
 
 const LeftOrTopScrollContainer = styled.div<{ $overflow: boolean }>`
-  overflow: ${(props) => (props.$overflow ? 'auto' : 'hidden')};
+  max-height: calc(100vh - ${HEADER_HEIGHT_PX}px);
+  overflow: auto;
 `;
 
 const LeftOrTopCol = styled(Col)`
-  max-height: calc(100vh - ${HEADER_HEIGHT_PX}px);
   overflow: hidden;
 `;
 
