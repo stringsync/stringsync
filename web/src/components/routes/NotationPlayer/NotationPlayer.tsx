@@ -13,6 +13,7 @@ import { RootState } from '../../../store';
 import { compose } from '../../../util/compose';
 import { Notation } from '../../Notation';
 import { Video } from '../../Video';
+import { NotationControls } from './NotationControls';
 import { SuggestedNotations } from './SuggestedNotations';
 
 const LoadingIcon = styled(LoadingOutlined)`
@@ -41,6 +42,7 @@ const RightOrBottomScrollContainer = styled.div<{ $heightOffsetPx: number }>`
   height: calc(100vh - ${(props) => props.$heightOffsetPx}px);
   overflow-x: hidden;
   overflow-y: auto;
+  position: relative;
 `;
 
 const RightOrBottomCol = styled(Col)`
@@ -210,6 +212,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
                 />
               )}
             </RightOrBottomScrollContainer>
+            <NotationControls />
           </RightOrBottomCol>
         </Row>
       )}
