@@ -20,19 +20,19 @@ const DEFAULT_OPTS: MusicDisplayOptions = {
     {
       type: CursorType.Standard,
       color: 'blue',
-      follow: false,
-      alpha: 0.3,
+      follow: true,
+      alpha: 0,
     },
     {
       type: CursorType.Standard,
       color: 'lime',
       follow: false,
-      alpha: 0.3,
+      alpha: 0,
     },
     {
       type: CursorType.Standard,
       color: theme['@primary-color'],
-      follow: true,
+      follow: false,
       alpha: 0.5,
     },
     {

@@ -1,6 +1,8 @@
 import { Cursor, MusicSheet } from 'opensheetmusicdisplay';
 import { CursorWrapper, CursorWrapperType, SyncSettings } from '../types';
-import { VoiceSeeker } from './VoiceSeeker';
+import { VoicePointer, VoiceSeeker } from './VoiceSeeker';
+
+const END_OF_LINE_LERP_PX = 20;
 
 export class LerpCursorWrapper implements CursorWrapper {
   readonly type = CursorWrapperType.True;
@@ -11,7 +13,7 @@ export class LerpCursorWrapper implements CursorWrapper {
   readonly probe: Cursor;
 
   private voiceSeeker: VoiceSeeker | null = null;
-  private lastSeekResult = VoiceSeeker.createNullSeekResult();
+  private prevVoicePointer: VoicePointer | null = null;
 
   constructor(lagger: Cursor, leader: Cursor, lerper: Cursor, probe: Cursor) {
     this.lagger = lagger;
@@ -27,10 +29,9 @@ export class LerpCursorWrapper implements CursorWrapper {
 
     this.lagger.resetIterator();
     this.leader.resetIterator();
-    this.lerper.resetIterator();
     this.leader.next();
+    this.lerper.resetIterator();
 
-    // TODO(jared) Remove when done developing, only the lerped should show.
     this.lagger.show();
     this.leader.show();
     this.lerper.show();
@@ -44,25 +45,27 @@ export class LerpCursorWrapper implements CursorWrapper {
       return;
     }
 
-    const lastSeekResult = this.lastSeekResult;
-    const nextSeekResult = this.voiceSeeker.seek(timeMs);
+    const seekResult = this.voiceSeeker.seek(timeMs);
 
-    // Calculations will use the lastSeekResult locally scoped variable
-    this.lastSeekResult = nextSeekResult;
+    const voicePointer = seekResult.voicePointer;
+    const prevVoicePointer = this.prevVoicePointer;
+    this.prevVoicePointer = voicePointer;
 
-    if (lastSeekResult === nextSeekResult) {
-      // TODO(jared) Update the lerped cursor
+    if (voicePointer === prevVoicePointer) {
+      this.updateLerper(timeMs, voicePointer);
       return;
     }
 
-    const voicePointer = nextSeekResult.voicePointer;
     if (!voicePointer) {
       this.clear();
       return;
     }
 
+    // Since we know this voicePointer is new, we don't need to update
+    // the lerper.
     this.lagger.iterator = voicePointer.iteratorSnapshot.get();
     this.leader.iterator = voicePointer.iteratorSnapshot.get();
+    this.leader.next();
     this.lerper.iterator = voicePointer.iteratorSnapshot.get();
 
     this.lagger.update();
@@ -81,12 +84,43 @@ export class LerpCursorWrapper implements CursorWrapper {
   }
 
   clear() {
-    this.lagger.reset();
-    this.leader.reset();
-    this.lerper.reset();
-
-    this.lagger.hide();
     this.leader.hide();
+    this.lagger.hide();
     this.lerper.hide();
+  }
+
+  private updateLerper(timeMs: number, voicePointer: VoicePointer | null) {
+    if (!voicePointer) {
+      return;
+    }
+    if (!voicePointer.timeMsRange.contains(timeMs)) {
+      return;
+    }
+
+    const t1 = voicePointer.timeMsRange.start;
+    const t2 = voicePointer.timeMsRange.end;
+
+    const x1 = this.parseFloatIgnoringPx(this.lagger.cursorElement.style.left);
+    const x2 = this.isLerpingOnSameLine()
+      ? this.parseFloatIgnoringPx(this.leader.cursorElement.style.left)
+      : x1 + END_OF_LINE_LERP_PX;
+
+    const m = (x2 - x1) / (t2 - t1);
+    const b = x1 - m * t1;
+    const t = timeMs;
+
+    // y = mx + b
+    const x = m * t + b;
+
+    this.lerper.cursorElement.style.left = `${x}px`;
+  }
+
+  private parseFloatIgnoringPx(str: string): number {
+    const numeric = str.replace('px', '');
+    return parseFloat(numeric);
+  }
+
+  private isLerpingOnSameLine(): boolean {
+    return this.lagger.cursorElement.style.top === this.leader.cursorElement.style.top;
   }
 }

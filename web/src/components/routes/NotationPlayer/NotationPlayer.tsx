@@ -36,6 +36,7 @@ const RightOrBottomCol = styled(Col)<{ $heightOffsetPx: number }>`
   background: white;
   height: calc(100vh - ${(props) => props.$heightOffsetPx}px);
   overflow: auto;
+  overflow-x: hidden;
 `;
 
 const SongName = styled.h1`
