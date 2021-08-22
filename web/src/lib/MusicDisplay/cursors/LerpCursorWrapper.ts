@@ -1,6 +1,14 @@
 import { Cursor, MusicSheet } from 'opensheetmusicdisplay';
-import { CursorWrapper, SyncSettings } from '../types';
+import { Callback, CursorWrapper, SyncSettings } from '../types';
 import { VoicePointer, VoiceSeeker } from './VoiceSeeker';
+
+export type LerpCursorWrapperOpts = {
+  lagger: Cursor;
+  leader: Cursor;
+  lerper: Cursor;
+  probe: Cursor;
+  onAutoScroll: Callback;
+};
 
 const END_OF_LINE_LERP_PX = 20;
 
@@ -13,11 +21,11 @@ export class LerpCursorWrapper implements CursorWrapper {
   private voiceSeeker: VoiceSeeker | null = null;
   private prevVoicePointer: VoicePointer | null = null;
 
-  constructor(lagger: Cursor, leader: Cursor, lerper: Cursor, probe: Cursor) {
-    this.lagger = lagger;
-    this.leader = leader;
-    this.lerper = lerper;
-    this.probe = probe;
+  constructor(opts: LerpCursorWrapperOpts) {
+    this.lagger = opts.lagger;
+    this.leader = opts.leader;
+    this.lerper = opts.lerper;
+    this.probe = opts.probe;
   }
 
   init(musicSheet: MusicSheet, syncSettings: SyncSettings) {

@@ -71,8 +71,9 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.cursorWrapper.clear();
 
     const lerpable = lagger && leader && lerper && probe;
+    const onAutoScroll = this.onAutoScroll;
     if (lerpable) {
-      this.cursorWrapper = new LerpCursorWrapper(lagger, leader, lerper, probe);
+      this.cursorWrapper = new LerpCursorWrapper({ lagger, leader, lerper, probe, onAutoScroll });
     } else {
       this.cursorWrapper = new NullCursorWrapper();
     }
