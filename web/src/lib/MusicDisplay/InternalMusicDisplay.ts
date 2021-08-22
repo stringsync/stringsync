@@ -1,6 +1,6 @@
 import { OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
-import { NullCursorWrapper } from './cursors';
-import { LerpCursorWrapper } from './cursors/LerpCursorWrapper';
+import { LerpCursor } from './LerpCursor';
+import { NullCursor } from './NullCursor';
 import { Callback, CursorWrapper, MusicDisplayOptions, SyncSettings } from './types';
 
 /**
@@ -20,7 +20,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
   scrollContainer: HTMLDivElement;
   syncSettings: SyncSettings;
-  cursorWrapper: CursorWrapper = new NullCursorWrapper();
+  cursorWrapper: CursorWrapper = new NullCursor();
 
   constructor(container: string | HTMLElement, opts: MusicDisplayOptions) {
     super(container, opts);
@@ -45,7 +45,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
   render() {
     super.render();
-    this.initCursorWrapper();
+    this.initCursor();
   }
 
   clear() {
@@ -65,7 +65,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.cursorWrapper.enableAutoScroll();
   }
 
-  private initCursorWrapper() {
+  private initCursor() {
     const [lagger, leader, lerper, probe] = this.cursors;
     if (!lagger) {
       console.debug('missing lagger cursor');
@@ -80,22 +80,20 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
       console.debug('missing probe cursor');
     }
 
-    this.cursorWrapper.clear();
-
     const lerpable = lagger && leader && lerper && probe;
-    if (lerpable) {
-      this.cursorWrapper = new LerpCursorWrapper({
-        scrollContainer: this.scrollContainer,
-        lagger,
-        leader,
-        lerper,
-        probe,
-        onAutoScrollStart: this.onAutoScrollStart,
-        onAutoScrollEnd: this.onAutoScrollEnd,
-      });
-    } else {
-      this.cursorWrapper = new NullCursorWrapper();
+    if (!lerpable) {
+      throw new Error('could not init cursor');
     }
+
+    this.cursorWrapper = new LerpCursor({
+      scrollContainer: this.scrollContainer,
+      lagger,
+      leader,
+      lerper,
+      probe,
+      onAutoScrollStart: this.onAutoScrollStart,
+      onAutoScrollEnd: this.onAutoScrollEnd,
+    });
 
     this.cursorWrapper.init(this.Sheet, this.syncSettings);
   }

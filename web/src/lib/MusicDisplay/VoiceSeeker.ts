@@ -1,9 +1,9 @@
 import { first, last } from 'lodash';
 import { Cursor, MusicSheet, VoiceEntry } from 'opensheetmusicdisplay';
-import { bsearch } from '../../../util/bsearch';
-import { NumberRange } from '../../../util/NumberRange';
-import { SyncSettings } from '../types';
+import { bsearch } from '../../util/bsearch';
+import { NumberRange } from '../../util/NumberRange';
 import { IteratorSnapshot } from './IteratorSnapshot';
+import { SyncSettings } from './types';
 
 /**
  * The purpose of this type is to keep track of a value and its

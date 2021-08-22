@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import { throttle } from 'lodash';
 import { Cursor, MusicSheet } from 'opensheetmusicdisplay';
-import { Callback, CursorWrapper, SyncSettings } from '../types';
+import { Callback, SyncSettings } from './types';
 import { VoicePointer, VoiceSeeker } from './VoiceSeeker';
 
 const SCROLL_DURATION_MS = 100;
@@ -13,7 +13,7 @@ const SCROLL_JUMP_THRESHOLD_PX = 350;
 
 const END_OF_LINE_LERP_PX = 20;
 
-export type LerpCursorWrapperOpts = {
+export type LerpCursorOpts = {
   lagger: Cursor;
   leader: Cursor;
   lerper: Cursor;
@@ -23,7 +23,7 @@ export type LerpCursorWrapperOpts = {
   onAutoScrollEnd: Callback;
 };
 
-export class LerpCursorWrapper implements CursorWrapper {
+export class LerpCursor {
   readonly lagger: Cursor;
   readonly leader: Cursor;
   readonly lerper: Cursor;
@@ -40,7 +40,7 @@ export class LerpCursorWrapper implements CursorWrapper {
   private $laggerCursorElement: JQuery<HTMLElement> | null = null;
   private lastScrollId = Symbol();
 
-  constructor(opts: LerpCursorWrapperOpts) {
+  constructor(opts: LerpCursorOpts) {
     this.lagger = opts.lagger;
     this.leader = opts.leader;
     this.lerper = opts.lerper;
