@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 import styled from 'styled-components';
-import videojs from 'video.js';
+import videojs, { VideoJsPlayer } from 'video.js';
 
 export type Dimensions = {
   heightPx: number;
@@ -20,10 +20,11 @@ type Props = {
   playerOptions: videojs.PlayerOptions;
   onVideoResize?: (widthPx: number, heightPx: number) => void;
   onTimeUpdate?: (timeMs: number) => void;
+  onVideoPlayerChange?: (videoPlayer: VideoJsPlayer) => void;
 };
 
 export const Video: React.FC<Props> = (props) => {
-  const { playerOptions, onVideoResize, onTimeUpdate } = props;
+  const { playerOptions, onVideoResize, onTimeUpdate, onVideoPlayerChange } = props;
 
   const videoRef = useRef<HTMLVideoElement>(null);
   // We want width and height updated atomically since we know both at the same time.
@@ -76,6 +77,9 @@ export const Video: React.FC<Props> = (props) => {
 
     player.ready(() => {
       updateCurrentTime();
+      if (onVideoPlayerChange) {
+        onVideoPlayerChange(player);
+      }
     });
 
     return () => {
@@ -85,7 +89,7 @@ export const Video: React.FC<Props> = (props) => {
 
       player.dispose();
     };
-  }, [playerOptions]);
+  }, [playerOptions, onVideoPlayerChange]);
 
   return <VideoHtml />;
 };

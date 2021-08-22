@@ -1,6 +1,6 @@
 import { FileImageOutlined, PauseCircleOutlined, PlayCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import { Col, Row, Slider, Tooltip } from 'antd';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 
 const Outer = styled.div`
@@ -45,6 +45,7 @@ export type Props = {
   songName: string;
   artistName: string;
   thumbnailUrl: string;
+  onCurrentTimeMsChange: (currentTimeMs: number) => void;
 };
 
 export const NotationControls: React.FC<Props> = (props) => {
@@ -67,6 +68,15 @@ export const NotationControls: React.FC<Props> = (props) => {
     [props.songName, props.artistName, props.thumbnailUrl]
   );
 
+  const { durationMs, onCurrentTimeMsChange } = props;
+  const onChange = useCallback(
+    (value: number) => {
+      const currentTimeMs = (value / 100) * durationMs;
+      onCurrentTimeMsChange(currentTimeMs);
+    },
+    [durationMs, onCurrentTimeMsChange]
+  );
+
   return (
     <Outer>
       <Row justify="center" align="middle" gutter={8}>
@@ -74,7 +84,7 @@ export const NotationControls: React.FC<Props> = (props) => {
           <PlayIcon />
         </Col>
         <Col xxl={18} xl={18} lg={22} md={22} sm={22} xs={22}>
-          <Slider step={0.01} value={value} />
+          <Slider step={0.01} value={value} onChange={onChange} />
         </Col>
         <Col span={1}>
           <SettingsIcon />

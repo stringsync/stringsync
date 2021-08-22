@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { VideoJsPlayer } from 'video.js';
 import { $queries, NotationObject } from '../../../graphql';
 import { Layout, withLayout } from '../../../hocs';
 import { HEADER_HEIGHT_PX } from '../../../hocs/withLayout/DefaultLayout';
@@ -87,6 +88,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const [videoHeightPx, setVideoHeightPx] = useState(0);
   const [currentTimeMs, setCurrentTimeMs] = useState(0);
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
+  const [videoPlayer, setVideoPlayer] = useState<VideoJsPlayer | null>(null);
 
   const playerOptions = useMemo(() => {
     return {
@@ -113,7 +115,19 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
     [musicDisplay]
   );
 
+  // This is triggered the controls.
+  const onCurrentTimeMsChange = useCallback(
+    (currentTimeMs: number) => {
+      if (videoPlayer) {
+        videoPlayer.currentTime(currentTimeMs / 1000);
+      }
+    },
+    [videoPlayer]
+  );
+
   const onMusicDisplayChange = useCallback(setMusicDisplay, [setMusicDisplay]);
+
+  const onVideoPlayerChange = useCallback(setVideoPlayer, [setVideoPlayer]);
 
   const onUserScroll = useCallback(() => {
     // TODO(jared) Disable autoscroll, but give user a way to reenable it.
@@ -193,7 +207,12 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
         <Row>
           <LeftOrTopCol xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
             <LeftOrTopScrollContainer $overflow={gtMd}>
-              <Video onVideoResize={onVideoResize} onTimeUpdate={onTimeUpdate} playerOptions={playerOptions} />
+              <Video
+                onVideoPlayerChange={onVideoPlayerChange}
+                onVideoResize={onVideoResize}
+                onTimeUpdate={onTimeUpdate}
+                playerOptions={playerOptions}
+              />
               <RightBorder border={gtMd}>{gtMd && <SuggestedNotations srcNotationId={notation.id} />}</RightBorder>
             </LeftOrTopScrollContainer>
           </LeftOrTopCol>
@@ -221,6 +240,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
               artistName={notation.artistName || ''}
               durationMs={notation.durationMs}
               thumbnailUrl={notation.thumbnailUrl || ''}
+              onCurrentTimeMsChange={onCurrentTimeMsChange}
             />
           </RightOrBottomCol>
         </Row>
