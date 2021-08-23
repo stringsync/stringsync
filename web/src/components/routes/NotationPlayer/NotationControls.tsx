@@ -1,10 +1,4 @@
-import {
-  CaretRightOutlined,
-  FileImageOutlined,
-  PauseCircleOutlined,
-  PlayCircleOutlined,
-  SettingOutlined,
-} from '@ant-design/icons';
+import { FileImageOutlined, PauseOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
 import { Button, Col, Row, Slider, Tooltip } from 'antd';
 import { isNumber } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -21,24 +15,6 @@ const Outer = styled.div`
   padding: 24px 16px;
   position: absolute;
   width: 100%;
-`;
-
-const PlayIcon = styled(PlayCircleOutlined)`
-  font-size: 2em;
-  cursor: pointer;
-  color: ${(props) => props.theme['@muted']};
-`;
-
-const PauseIcon = styled(PauseCircleOutlined)`
-  font-size: 2em;
-  cursor: pointer;
-  color: ${(props) => props.theme['@muted']};
-`;
-
-const SettingsIcon = styled(SettingOutlined)`
-  font-size: 2em;
-  cursor: pointer;
-  color: ${(props) => props.theme['@muted']};
 `;
 
 const DetailOuter = styled.div`
@@ -96,10 +72,23 @@ const timestamp = (ms: number): string => {
 export const NotationControls: React.FC<Props> = (props) => {
   const [videoPlayerState, setVideoPlayerState] = useState(VideoPlayerState.Paused);
   const [currentTimeMs, setCurrentTimeMs] = useState(0);
+  const { videoPlayer } = props;
 
   const value = props.durationMs === 0 ? 0 : (currentTimeMs / props.durationMs) * 100;
 
-  const { videoPlayer } = props;
+  const onPlayPauseClick = useCallback(() => {
+    switch (videoPlayerState) {
+      case VideoPlayerState.Paused:
+        videoPlayer.play();
+        break;
+      case VideoPlayerState.Playing:
+        videoPlayer.pause();
+        break;
+      default:
+        console.warn(`unknown player state '${videoPlayerState}', ignoring'`);
+    }
+  }, [videoPlayer, videoPlayerState]);
+
   useEffect(() => {
     const onPlay = () => {
       setVideoPlayerState(VideoPlayerState.Playing);
@@ -195,7 +184,8 @@ export const NotationControls: React.FC<Props> = (props) => {
             <StyledButton
               size="large"
               shape="circle"
-              icon={isPaused ? <CaretRightOutlined /> : <PauseCircleOutlined />}
+              icon={isPaused ? <RightOutlined /> : <PauseOutlined />}
+              onClick={onPlayPauseClick}
             />
           </Row>
         </Col>
