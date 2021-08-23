@@ -38,7 +38,7 @@ const SliderOuter = styled.div`
 
 const StyledButton = styled(Button)`
   color: ${(props) => props.theme['@muted']};
-  border-color: ${(props) => props.theme['@muted']};
+  border: none;
 `;
 
 enum VideoPlayerState {

@@ -20,7 +20,7 @@ type Props = {
   playerOptions: videojs.PlayerOptions;
   onVideoResize?: (widthPx: number, heightPx: number) => void;
   onTimeUpdate?: (timeMs: number) => void;
-  onVideoPlayerChange?: (videoPlayer: VideoJsPlayer) => void;
+  onVideoPlayerChange?: (videoPlayer: VideoJsPlayer | null) => void;
 };
 
 export const Video: React.FC<Props> = (props) => {
@@ -84,6 +84,10 @@ export const Video: React.FC<Props> = (props) => {
 
     return () => {
       window.cancelAnimationFrame(rafHandle);
+
+      if (onVideoPlayerChange) {
+        onVideoPlayerChange(null);
+      }
 
       resizeObserver.disconnect();
 
