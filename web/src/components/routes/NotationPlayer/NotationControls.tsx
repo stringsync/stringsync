@@ -1,5 +1,11 @@
-import { FileImageOutlined, PauseCircleOutlined, PlayCircleOutlined, SettingOutlined } from '@ant-design/icons';
-import { Col, Row, Slider, Tooltip } from 'antd';
+import {
+  CaretRightOutlined,
+  FileImageOutlined,
+  PauseCircleOutlined,
+  PlayCircleOutlined,
+  SettingOutlined,
+} from '@ant-design/icons';
+import { Button, Col, Row, Slider, Tooltip } from 'antd';
 import { isNumber } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -52,6 +58,11 @@ const MissingImgIcon = styled(FileImageOutlined)`
 const SliderOuter = styled.div`
   width: 100%;
   padding: 0 16px 0 16px;
+`;
+
+const StyledButton = styled(Button)`
+  color: ${(props) => props.theme['@muted']};
+  border-color: ${(props) => props.theme['@muted']};
 `;
 
 enum VideoPlayerState {
@@ -175,15 +186,17 @@ export const NotationControls: React.FC<Props> = (props) => {
   );
 
   const isPaused = videoPlayerState === VideoPlayerState.Paused;
-  const isPlaying = videoPlayerState === VideoPlayerState.Playing;
 
   return (
     <Outer>
       <Row justify="center" align="middle">
         <Col xs={2} sm={2} md={2} lg={1} xl={1} xxl={1}>
           <Row justify="center" align="middle">
-            {isPaused && <PlayIcon />}
-            {isPlaying && <PauseIcon />}
+            <StyledButton
+              size="large"
+              shape="circle"
+              icon={isPaused ? <CaretRightOutlined /> : <PauseCircleOutlined />}
+            />
           </Row>
         </Col>
         <Col xs={20} sm={20} md={20} lg={20} xl={20} xxl={20}>
@@ -201,7 +214,7 @@ export const NotationControls: React.FC<Props> = (props) => {
         </Col>
         <Col xs={2} sm={2} md={2} lg={1} xl={1} xxl={1}>
           <Row justify="center" align="middle">
-            <SettingsIcon />
+            <StyledButton size="large" shape="circle" icon={<SettingOutlined />} />
           </Row>
         </Col>
         <Col xs={0} sm={0} md={0} lg={0} xl={2} xxl={2}>
