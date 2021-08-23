@@ -54,7 +54,8 @@ export type Props = {
   songName: string;
   artistName: string;
   thumbnailUrl: string;
-  onCurrentTimeMsChange: (currentTimeMs: number) => void;
+  onSeek: (currentTimeMs: number) => void;
+  onSeekEnd: () => void;
 };
 
 export const NotationControls: React.FC<Props> = (props) => {
@@ -79,7 +80,7 @@ export const NotationControls: React.FC<Props> = (props) => {
     [props.songName, props.artistName, props.thumbnailUrl]
   );
 
-  const { durationMs, onCurrentTimeMsChange } = props;
+  const { durationMs, onSeek: onCurrentTimeMsChange } = props;
   const onChange = useCallback(
     (value: number) => {
       const currentTimeMs = (value / 100) * durationMs;
@@ -99,7 +100,7 @@ export const NotationControls: React.FC<Props> = (props) => {
         <Col xs={20} sm={20} md={20} lg={20} xl={20} xxl={20}>
           <Row justify="center" align="middle">
             <SliderOuter>
-              <Slider step={0.01} value={value} onChange={onChange} />
+              <Slider step={0.01} value={value} onChange={onChange} onAfterChange={props.onSeekEnd} />
             </SliderOuter>
           </Row>
         </Col>

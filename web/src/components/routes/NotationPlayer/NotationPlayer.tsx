@@ -89,6 +89,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const [currentTimeMs, setCurrentTimeMs] = useState(0);
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
   const [videoPlayer, setVideoPlayer] = useState<VideoJsPlayer | null>(null);
+  const [wasPlaying, setWasPlaying] = useState(false);
 
   const playerOptions = useMemo(() => {
     return {
@@ -115,15 +116,29 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
     [musicDisplay]
   );
 
-  // This is triggered the controls.
-  const onCurrentTimeMsChange = useCallback(
+  const onSeek = useCallback(
     (currentTimeMs: number) => {
-      if (videoPlayer) {
-        videoPlayer.currentTime(currentTimeMs / 1000);
+      if (!videoPlayer) {
+        return;
       }
+      if (!videoPlayer.paused()) {
+        setWasPlaying(true);
+        videoPlayer.pause();
+      }
+      videoPlayer.currentTime(currentTimeMs / 1000);
     },
     [videoPlayer]
   );
+
+  const onSeekEnd = useCallback(() => {
+    if (!videoPlayer) {
+      return;
+    }
+    if (wasPlaying) {
+      videoPlayer.play();
+    }
+    setWasPlaying(false);
+  }, [videoPlayer, wasPlaying]);
 
   const onMusicDisplayChange = useCallback(setMusicDisplay, [setMusicDisplay]);
 
@@ -240,7 +255,8 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
               artistName={notation.artistName || ''}
               durationMs={notation.durationMs}
               thumbnailUrl={notation.thumbnailUrl || ''}
-              onCurrentTimeMsChange={onCurrentTimeMsChange}
+              onSeek={onSeek}
+              onSeekEnd={onSeekEnd}
             />
           </RightOrBottomCol>
         </Row>
