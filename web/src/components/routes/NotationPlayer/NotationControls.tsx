@@ -29,6 +29,10 @@ const SettingsIcon = styled(SettingOutlined)`
   color: ${(props) => props.theme['@muted']};
 `;
 
+const DetailOuter = styled.div`
+  margin-left: 8px;
+`;
+
 const DetailImg = styled.img`
   width: 36px;
   height: 36px;
@@ -37,6 +41,11 @@ const DetailImg = styled.img`
 const MissingImgIcon = styled(FileImageOutlined)`
   font-size: 2em;
   color: ${(props) => props.theme['@muted']};
+`;
+
+const SliderOuter = styled.div`
+  width: 100%;
+  padding: 0 16px 0 16px;
 `;
 
 export type Props = {
@@ -53,16 +62,18 @@ export const NotationControls: React.FC<Props> = (props) => {
 
   const Detail = useMemo(
     () => () => {
-      return props.thumbnailUrl ? (
-        <Tooltip title={`${props.songName} by ${props.artistName}`}>
-          <DetailImg src={props.thumbnailUrl} alt="notation detail image" />
-        </Tooltip>
-      ) : (
-        <Row align="middle">
-          <Tooltip title={`${props.songName} by ${props.artistName}`}>
-            <MissingImgIcon />
-          </Tooltip>
-        </Row>
+      return (
+        <DetailOuter>
+          {props.thumbnailUrl ? (
+            <Tooltip title={`${props.songName} by ${props.artistName}`}>
+              <DetailImg src={props.thumbnailUrl} alt="notation detail image" />
+            </Tooltip>
+          ) : (
+            <Tooltip title={`${props.songName} by ${props.artistName}`}>
+              <MissingImgIcon />
+            </Tooltip>
+          )}
+        </DetailOuter>
       );
     },
     [props.songName, props.artistName, props.thumbnailUrl]
@@ -79,17 +90,25 @@ export const NotationControls: React.FC<Props> = (props) => {
 
   return (
     <Outer>
-      <Row justify="center" align="middle" gutter={8}>
-        <Col span={1}>
-          <PlayIcon />
+      <Row justify="center" align="middle">
+        <Col xs={2} sm={2} md={2} lg={1} xl={1} xxl={1}>
+          <Row justify="center" align="middle">
+            <PlayIcon />
+          </Row>
         </Col>
-        <Col xxl={18} xl={18} lg={22} md={22} sm={22} xs={22}>
-          <Slider step={0.01} value={value} onChange={onChange} />
+        <Col xs={20} sm={20} md={20} lg={20} xl={20} xxl={20}>
+          <Row justify="center" align="middle">
+            <SliderOuter>
+              <Slider step={0.01} value={value} onChange={onChange} />
+            </SliderOuter>
+          </Row>
         </Col>
-        <Col span={1}>
-          <SettingsIcon />
+        <Col xs={2} sm={2} md={2} lg={1} xl={1} xxl={1}>
+          <Row justify="center" align="middle">
+            <SettingsIcon />
+          </Row>
         </Col>
-        <Col xxl={4} xl={4} lg={0} md={0} sm={0} xs={0}>
+        <Col xs={0} sm={0} md={0} lg={0} xl={2} xxl={2}>
           <Detail />
         </Col>
       </Row>
