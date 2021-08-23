@@ -1,7 +1,8 @@
 import { FileImageOutlined, PauseCircleOutlined, PlayCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import { Col, Row, Slider, Tooltip } from 'antd';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { VideoJsPlayer } from 'video.js';
 
 const Outer = styled.div`
   bottom: 0;
@@ -21,6 +22,8 @@ const PlayIcon = styled(PlayCircleOutlined)`
 
 const PauseIcon = styled(PauseCircleOutlined)`
   font-size: 2em;
+  cursor: pointer;
+  color: ${(props) => props.theme['@muted']};
 `;
 
 const SettingsIcon = styled(SettingOutlined)`
@@ -48,18 +51,57 @@ const SliderOuter = styled.div`
   padding: 0 16px 0 16px;
 `;
 
+enum VideoPlayerState {
+  Paused,
+  Playing,
+}
+
 export type Props = {
-  currentTimeMs: number;
   durationMs: number;
   songName: string;
   artistName: string;
   thumbnailUrl: string;
+  videoPlayer: VideoJsPlayer;
   onSeek: (currentTimeMs: number) => void;
   onSeekEnd: () => void;
 };
 
 export const NotationControls: React.FC<Props> = (props) => {
-  const value = props.durationMs === 0 ? 0 : (props.currentTimeMs / props.durationMs) * 100;
+  const [videoPlayerState, setVideoPlayerState] = useState(VideoPlayerState.Paused);
+  const [currentTimeMs, setCurrentTimeMs] = useState(0);
+
+  const value = props.durationMs === 0 ? 0 : (currentTimeMs / props.durationMs) * 100;
+
+  const { videoPlayer } = props;
+  useEffect(() => {
+    const onPlay = () => {
+      setVideoPlayerState(VideoPlayerState.Playing);
+    };
+    videoPlayer.on('play', onPlay);
+
+    const onPause = () => {
+      setVideoPlayerState(VideoPlayerState.Paused);
+    };
+    videoPlayer.on('pause', onPause);
+
+    // We don't want to store the currentTimeMs state on the parent NotationPlayer component,
+    // since it houses a lot of other components and could potentially trigger a lot of other
+    // unwanted updates. We only want components that need the currentTimeMs to update.
+    let rafHandle = 0;
+    const updateCurrentTimeMs = () => {
+      setCurrentTimeMs(videoPlayer.currentTime() * 1000);
+      rafHandle = window.requestAnimationFrame(updateCurrentTimeMs);
+    };
+    updateCurrentTimeMs();
+
+    return () => {
+      cancelAnimationFrame(rafHandle);
+
+      videoPlayer.off('pause', onPause);
+
+      videoPlayer.off('play', onPlay);
+    };
+  }, [videoPlayer]);
 
   const Detail = useMemo(
     () => () => {
@@ -89,12 +131,16 @@ export const NotationControls: React.FC<Props> = (props) => {
     [durationMs, onCurrentTimeMsChange]
   );
 
+  const isPaused = videoPlayerState === VideoPlayerState.Paused;
+  const isPlaying = videoPlayerState === VideoPlayerState.Playing;
+
   return (
     <Outer>
       <Row justify="center" align="middle">
         <Col xs={2} sm={2} md={2} lg={1} xl={1} xxl={1}>
           <Row justify="center" align="middle">
-            <PlayIcon />
+            {isPaused && <PlayIcon />}
+            {isPlaying && <PauseIcon />}
           </Row>
         </Col>
         <Col xs={20} sm={20} md={20} lg={20} xl={20} xxl={20}>

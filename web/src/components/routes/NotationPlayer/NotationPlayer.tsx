@@ -86,7 +86,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const [errors, setErrors] = useState(new Array<string>());
   const [isLoading, setIsLoading] = useState(true);
   const [videoHeightPx, setVideoHeightPx] = useState(0);
-  const [currentTimeMs, setCurrentTimeMs] = useState(0);
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
   const [videoPlayer, setVideoPlayer] = useState<VideoJsPlayer | null>(null);
   const [wasPlaying, setWasPlaying] = useState(false);
@@ -111,7 +110,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
       if (musicDisplay) {
         musicDisplay.updateCursor(timeMs);
       }
-      setCurrentTimeMs(timeMs);
     },
     [musicDisplay]
   );
@@ -249,15 +247,17 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
               )}
             </RightOrBottomScrollContainer>
 
-            <NotationControls
-              currentTimeMs={currentTimeMs}
-              songName={notation.songName || ''}
-              artistName={notation.artistName || ''}
-              durationMs={notation.durationMs}
-              thumbnailUrl={notation.thumbnailUrl || ''}
-              onSeek={onSeek}
-              onSeekEnd={onSeekEnd}
-            />
+            {videoPlayer && (
+              <NotationControls
+                songName={notation.songName || ''}
+                artistName={notation.artistName || ''}
+                durationMs={notation.durationMs}
+                thumbnailUrl={notation.thumbnailUrl || ''}
+                videoPlayer={videoPlayer}
+                onSeek={onSeek}
+                onSeekEnd={onSeekEnd}
+              />
+            )}
           </RightOrBottomCol>
         </Row>
       )}
