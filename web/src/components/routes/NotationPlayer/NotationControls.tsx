@@ -1,8 +1,11 @@
 import { FileImageOutlined, PauseCircleOutlined, PlayCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import { Col, Row, Slider, Tooltip } from 'antd';
+import { isNumber } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { VideoJsPlayer } from 'video.js';
+import { CursorInfo } from '../../../lib/MusicDisplay';
+import { SliderTooltip } from './SliderTooltip';
 
 const Outer = styled.div`
   bottom: 0;
@@ -62,8 +65,21 @@ export type Props = {
   artistName: string;
   thumbnailUrl: string;
   videoPlayer: VideoJsPlayer;
+  cursorInfo: CursorInfo;
   onSeek: (currentTimeMs: number) => void;
   onSeekEnd: () => void;
+};
+
+const timestamp = (ms: number): string => {
+  const mins = Math.floor(ms / 60000);
+
+  const leftoverMs = ms % 60000;
+  const secs = Math.floor(leftoverMs / 1000);
+
+  const minsStr = mins.toString().padStart(2, '0');
+  const secsStr = secs.toString().padStart(2, '0');
+
+  return `${minsStr}:${secsStr}`;
 };
 
 export const NotationControls: React.FC<Props> = (props) => {
@@ -131,6 +147,33 @@ export const NotationControls: React.FC<Props> = (props) => {
     [durationMs, onCurrentTimeMsChange]
   );
 
+  const { cursorInfo } = props;
+  const tipFormatter = useCallback(
+    (value?: number | undefined) => {
+      let currentTimestamp: string;
+      let durationTimestamp: string;
+      if (isNumber(value)) {
+        const currentTimeMs = (value / 100) * durationMs;
+        currentTimestamp = timestamp(currentTimeMs);
+        durationTimestamp = timestamp(durationMs);
+      } else {
+        currentTimestamp = '?';
+        durationTimestamp = '?';
+      }
+
+      const currentMeasureNumber = cursorInfo.currentMeasureNumber.toString();
+
+      return (
+        <SliderTooltip
+          currentMeasureNumber={currentMeasureNumber}
+          currentTimestamp={currentTimestamp}
+          durationTimestamp={durationTimestamp}
+        />
+      );
+    },
+    [cursorInfo, durationMs]
+  );
+
   const isPaused = videoPlayerState === VideoPlayerState.Paused;
   const isPlaying = videoPlayerState === VideoPlayerState.Playing;
 
@@ -146,7 +189,13 @@ export const NotationControls: React.FC<Props> = (props) => {
         <Col xs={20} sm={20} md={20} lg={20} xl={20} xxl={20}>
           <Row justify="center" align="middle">
             <SliderOuter>
-              <Slider step={0.01} value={value} onChange={onChange} onAfterChange={props.onSeekEnd} />
+              <Slider
+                step={0.01}
+                value={value}
+                tipFormatter={tipFormatter}
+                onChange={onChange}
+                onAfterChange={props.onSeekEnd}
+              />
             </SliderOuter>
           </Row>
         </Col>

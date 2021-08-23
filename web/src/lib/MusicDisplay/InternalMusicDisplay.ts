@@ -1,7 +1,7 @@
 import { OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
 import { LerpCursor } from './LerpCursor';
 import { NullCursor } from './NullCursor';
-import { Callback, CursorWrapper, MusicDisplayOptions, SyncSettings } from './types';
+import { Callback, CursorInfoCallback, CursorWrapper, MusicDisplayOptions, SyncSettings } from './types';
 
 /**
  * InternalMusicDisplay handles the logic involving rendering notations and cursors.
@@ -17,6 +17,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   onLoadEnd: Callback;
   onAutoScrollStart: Callback;
   onAutoScrollEnd: Callback;
+  onCursorInfoChange: CursorInfoCallback;
 
   scrollContainer: HTMLDivElement;
   syncSettings: SyncSettings;
@@ -32,6 +33,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.handleResize(opts.onResizeStart, opts.onResizeEnd);
     this.onAutoScrollStart = opts.onAutoScrollStart;
     this.onAutoScrollEnd = opts.onAutoScrollEnd;
+    this.onCursorInfoChange = opts.onCursorInfoChange;
   }
 
   async load(xmlUrl: string) {
@@ -86,13 +88,15 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     }
 
     this.cursorWrapper = new LerpCursor({
-      scrollContainer: this.scrollContainer,
       lagger,
       leader,
       lerper,
       probe,
+      numMeasures: this.Sheet.SourceMeasures.length,
+      scrollContainer: this.scrollContainer,
       onAutoScrollStart: this.onAutoScrollStart,
       onAutoScrollEnd: this.onAutoScrollEnd,
+      onCursorInfoChange: this.onCursorInfoChange,
     });
 
     this.cursorWrapper.init(this.Sheet, this.syncSettings);

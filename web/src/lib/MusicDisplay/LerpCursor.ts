@@ -2,8 +2,8 @@ import $ from 'jquery';
 import { throttle } from 'lodash';
 import { Cursor, MusicSheet } from 'opensheetmusicdisplay';
 import { ColoringOperation } from './ColoringOperation';
-import { Callback, SyncSettings } from './types';
-import { VoicePointer, VoiceSeeker } from './VoiceSeeker';
+import { Callback, CursorInfoCallback, SyncSettings, VoicePointer } from './types';
+import { VoiceSeeker } from './VoiceSeeker';
 
 const SCROLL_DURATION_MS = 100;
 const SCROLL_BACK_TOP_DURATION_MS = 300;
@@ -20,18 +20,22 @@ export type LerpCursorOpts = {
   lerper: Cursor;
   probe: Cursor;
   scrollContainer: HTMLElement;
+  numMeasures: number;
   onAutoScrollStart: Callback;
   onAutoScrollEnd: Callback;
+  onCursorInfoChange: CursorInfoCallback;
 };
 
 export class LerpCursor {
-  readonly lagger: Cursor;
-  readonly leader: Cursor;
-  readonly lerper: Cursor;
-  readonly probe: Cursor;
-  readonly scrollContainer: HTMLElement;
-  readonly onAutoScrollStart: Callback;
-  readonly onAutoScrollEnd: Callback;
+  lagger: Cursor;
+  leader: Cursor;
+  lerper: Cursor;
+  probe: Cursor;
+  scrollContainer: HTMLElement;
+  numMeasures: number;
+  onAutoScrollStart: Callback;
+  onAutoScrollEnd: Callback;
+  onCursorInfoChange: CursorInfoCallback;
 
   private isAutoScrollEnabled = true;
   private voiceSeeker: VoiceSeeker | null = null;
@@ -47,9 +51,11 @@ export class LerpCursor {
     this.leader = opts.leader;
     this.lerper = opts.lerper;
     this.probe = opts.probe;
+    this.numMeasures = opts.numMeasures;
     this.scrollContainer = opts.scrollContainer;
     this.onAutoScrollStart = opts.onAutoScrollStart;
     this.onAutoScrollEnd = opts.onAutoScrollEnd;
+    this.onCursorInfoChange = opts.onCursorInfoChange;
   }
 
   init(musicSheet: MusicSheet, syncSettings: SyncSettings) {
@@ -97,7 +103,7 @@ export class LerpCursor {
       return;
     }
 
-    this.onVoicePointerChange(nextVoicePointer);
+    this.updateVoicePointer(nextVoicePointer);
     this.updateLerper(timeMs, nextVoicePointer);
   }
 
@@ -109,7 +115,7 @@ export class LerpCursor {
     this.lerper.hide();
   }
 
-  private onVoicePointerChange(nextVoicePointer: VoicePointer | null) {
+  private updateVoicePointer(nextVoicePointer: VoicePointer | null) {
     if (!nextVoicePointer) {
       this.clear();
     } else {
@@ -151,6 +157,12 @@ export class LerpCursor {
     } else {
       this.prevColoringOperation = null;
     }
+
+    this.onCursorInfoChange({
+      currentMeasureIndex: this.lagger.iterator.CurrentMeasureIndex,
+      currentMeasureNumber: this.lagger.iterator.CurrentMeasure.MeasureNumber,
+      numMeasures: this.numMeasures,
+    });
   }
 
   private scrollLaggerIntoView = throttle(

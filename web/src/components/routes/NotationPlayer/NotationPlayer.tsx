@@ -5,11 +5,11 @@ import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { VideoJsPlayer } from 'video.js';
+import { VideoJsPlayer, VideoJsPlayerOptions } from 'video.js';
 import { $queries, NotationObject } from '../../../graphql';
 import { Layout, withLayout } from '../../../hocs';
 import { HEADER_HEIGHT_PX } from '../../../hocs/withLayout/DefaultLayout';
-import { MusicDisplay } from '../../../lib/MusicDisplay';
+import { CursorInfo, MusicDisplay } from '../../../lib/MusicDisplay';
 import { RootState } from '../../../store';
 import { compose } from '../../../util/compose';
 import { Notation } from '../../Notation';
@@ -89,17 +89,25 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
   const [videoPlayer, setVideoPlayer] = useState<VideoJsPlayer | null>(null);
   const [wasPlaying, setWasPlaying] = useState(false);
+  const [cursorInfo, setCursorInfo] = useState<CursorInfo>({
+    currentMeasureIndex: 0,
+    currentMeasureNumber: 1,
+    numMeasures: 0,
+  });
 
-  const playerOptions = useMemo(() => {
-    return {
-      sources: [
-        {
-          src: notation?.videoUrl || '',
-          type: 'application/x-mpegURL',
-        },
-      ],
-    };
-  }, [notation?.videoUrl]);
+  const videoUrl = notation?.videoUrl;
+  const playerOptions = useMemo<VideoJsPlayerOptions>(() => {
+    return videoUrl
+      ? {
+          sources: [
+            {
+              src: videoUrl || '',
+              type: 'application/x-mpegURL',
+            },
+          ],
+        }
+      : {};
+  }, [videoUrl]);
 
   const onVideoResize = useCallback((widthPx: number, heightPx: number) => {
     setVideoHeightPx(heightPx);
@@ -141,6 +149,8 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const onMusicDisplayChange = useCallback(setMusicDisplay, [setMusicDisplay]);
 
   const onVideoPlayerChange = useCallback(setVideoPlayer, [setVideoPlayer]);
+
+  const onCursorInfoChange = useCallback(setCursorInfo, [setCursorInfo]);
 
   const onUserScroll = useCallback(() => {
     // TODO(jared) Disable autoscroll, but give user a way to reenable it.
@@ -241,6 +251,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
                   deadTimeMs={notation.deadTimeMs}
                   durationMs={notation.durationMs}
                   scrollContainerRef={scrollContainerRef}
+                  onCursorInfoChange={onCursorInfoChange}
                   onUserScroll={onUserScroll}
                   onMusicDisplayChange={onMusicDisplayChange}
                 />
@@ -253,6 +264,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
                 artistName={notation.artistName || ''}
                 durationMs={notation.durationMs}
                 thumbnailUrl={notation.thumbnailUrl || ''}
+                cursorInfo={cursorInfo}
                 videoPlayer={videoPlayer}
                 onSeek={onSeek}
                 onSeekEnd={onSeekEnd}

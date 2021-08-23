@@ -1,6 +1,6 @@
 import React, { RefObject, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { MusicDisplay } from '../../lib/MusicDisplay';
+import { CursorInfoCallback, MusicDisplay } from '../../lib/MusicDisplay';
 
 const Outer = styled.div`
   margin-top: 24px;
@@ -28,6 +28,7 @@ type NotationProps = {
   deadTimeMs: number;
   durationMs: number;
   scrollContainerRef: RefObject<HTMLDivElement>;
+  onCursorInfoChange?: CursorInfoCallback;
   onMusicDisplayChange?: (musicDisplay: MusicDisplay | null) => void;
   onUserScroll?: () => void;
 };
@@ -42,7 +43,15 @@ export const Notation: React.FC<NotationProps> = (props) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
-  const { musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef, onMusicDisplayChange, onUserScroll } = props;
+  const {
+    musicXmlUrl,
+    deadTimeMs,
+    durationMs,
+    scrollContainerRef,
+    onMusicDisplayChange,
+    onUserScroll,
+    onCursorInfoChange,
+  } = props;
 
   useEffect(() => {
     if (onMusicDisplayChange) {
@@ -90,6 +99,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
     const musicDisplay = new MusicDisplay(div, {
       syncSettings: { deadTimeMs, durationMs },
       scrollContainer,
+      onCursorInfoChange,
       onLoadStart: startLoading,
       onLoadEnd: stopLoading,
       onResizeStart: startLoading,
@@ -109,7 +119,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
       musicDisplay.clear();
       setMusicDisplay(null);
     };
-  }, [musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef]);
+  }, [musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef, onCursorInfoChange]);
 
   return (
     <Outer data-notation>

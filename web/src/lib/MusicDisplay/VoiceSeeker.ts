@@ -1,40 +1,9 @@
 import { first, last } from 'lodash';
-import { Cursor, MusicSheet, VoiceEntry } from 'opensheetmusicdisplay';
+import { Cursor, MusicSheet } from 'opensheetmusicdisplay';
 import { bsearch } from '../../util/bsearch';
 import { NumberRange } from '../../util/NumberRange';
 import { IteratorSnapshot } from './IteratorSnapshot';
-import { SyncSettings } from './types';
-
-/**
- * The purpose of this type is to keep track of a value and its
- * position in an array.
- *
- * Index must be tracked because it is the mechanism by which the
- * cursor iterator is set. We store these in an array, which is
- * what distiguishes this data structure from a classic doubly
- * linked list.
- */
-export type VoicePointer = {
-  index: number;
-  next: VoicePointer | null;
-  prev: VoicePointer | null;
-  iteratorSnapshot: IteratorSnapshot;
-  beatRange: NumberRange;
-  timeMsRange: NumberRange;
-  entries: VoiceEntry[];
-};
-
-export enum SeekCost {
-  Unknown,
-  Cheap,
-  Expensive,
-}
-
-export type SeekResult = Readonly<{
-  timeMs: number;
-  cost: SeekCost;
-  voicePointer: Readonly<VoicePointer> | null;
-}>;
+import { SeekCost, SeekResult, SyncSettings, VoicePointer } from './types';
 
 /**
  * This purpose of this class is to precompute an association of
