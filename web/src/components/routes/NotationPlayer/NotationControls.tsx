@@ -17,10 +17,6 @@ const Outer = styled.div`
   width: 100%;
 `;
 
-const DetailOuter = styled.div`
-  margin-left: 8px;
-`;
-
 const DetailImg = styled.img`
   width: 36px;
   height: 36px;
@@ -121,18 +117,14 @@ export const NotationControls: React.FC<Props> = (props) => {
 
   const Detail = useMemo(
     () => () => {
-      return (
-        <DetailOuter>
-          {props.thumbnailUrl ? (
-            <Tooltip title={`${props.songName} by ${props.artistName}`}>
-              <DetailImg src={props.thumbnailUrl} alt="notation detail image" />
-            </Tooltip>
-          ) : (
-            <Tooltip title={`${props.songName} by ${props.artistName}`}>
-              <MissingImgIcon />
-            </Tooltip>
-          )}
-        </DetailOuter>
+      return props.thumbnailUrl ? (
+        <Tooltip title={`${props.songName} by ${props.artistName}`}>
+          <DetailImg src={props.thumbnailUrl} alt="notation detail image" />
+        </Tooltip>
+      ) : (
+        <Tooltip title={`${props.songName} by ${props.artistName}`}>
+          <MissingImgIcon />
+        </Tooltip>
       );
     },
     [props.songName, props.artistName, props.thumbnailUrl]
@@ -208,7 +200,9 @@ export const NotationControls: React.FC<Props> = (props) => {
           </Row>
         </Col>
         <Col xs={0} sm={0} md={0} lg={0} xl={2} xxl={2}>
-          <Detail />
+          <Row justify="center" align="middle">
+            <Detail />
+          </Row>
         </Col>
       </Row>
     </Outer>
