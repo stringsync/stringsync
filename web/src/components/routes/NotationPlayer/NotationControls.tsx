@@ -1,5 +1,5 @@
 import { FileImageOutlined, PauseOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
-import { Button, Col, Row, Slider, Tooltip } from 'antd';
+import { Button, Col, Drawer, Row, Slider, Tooltip } from 'antd';
 import { isNumber } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -37,6 +37,12 @@ const StyledButton = styled(Button)`
   border: none;
 `;
 
+const SettingsInner = styled.div`
+  overflow-y: auto;
+  /* offset the control bar so the */
+  height: calc(100vh - 190px);
+`;
+
 enum VideoPlayerState {
   Paused,
   Playing,
@@ -68,6 +74,7 @@ const timestamp = (ms: number): string => {
 export const NotationControls: React.FC<Props> = (props) => {
   const [videoPlayerState, setVideoPlayerState] = useState(VideoPlayerState.Paused);
   const [currentTimeMs, setCurrentTimeMs] = useState(0);
+  const [isSettingsVisible, setIsSettingsVisible] = useState(false);
   const { videoPlayer } = props;
 
   const value = props.durationMs === 0 ? 0 : (currentTimeMs / props.durationMs) * 100;
@@ -84,6 +91,14 @@ export const NotationControls: React.FC<Props> = (props) => {
         console.warn(`unknown player state '${videoPlayerState}', ignoring'`);
     }
   }, [videoPlayer, videoPlayerState]);
+
+  const onSettingsClick = useCallback(() => {
+    setIsSettingsVisible((isSettingsVisible) => !isSettingsVisible);
+  }, []);
+
+  const onSettingsClose = useCallback(() => {
+    setIsSettingsVisible(false);
+  }, []);
 
   useEffect(() => {
     const onPlay = () => {
@@ -166,6 +181,8 @@ export const NotationControls: React.FC<Props> = (props) => {
     [cursorInfo, durationMs]
   );
 
+  const handleStyle = useMemo(() => ({ width: 21, height: 21, marginTop: -8 }), []);
+
   const isPaused = videoPlayerState === VideoPlayerState.Paused;
 
   return (
@@ -186,6 +203,7 @@ export const NotationControls: React.FC<Props> = (props) => {
             <SliderOuter>
               <Slider
                 step={0.01}
+                handleStyle={handleStyle}
                 value={value}
                 tipFormatter={tipFormatter}
                 onChange={onChange}
@@ -196,7 +214,7 @@ export const NotationControls: React.FC<Props> = (props) => {
         </Col>
         <Col xs={2} sm={2} md={2} lg={1} xl={1} xxl={1}>
           <Row justify="center" align="middle">
-            <StyledButton size="large" shape="circle" icon={<SettingOutlined />} />
+            <StyledButton size="large" shape="circle" icon={<SettingOutlined />} onClick={onSettingsClick} />
           </Row>
         </Col>
         <Col xs={0} sm={0} md={0} lg={0} xl={2} xxl={2}>
@@ -205,6 +223,17 @@ export const NotationControls: React.FC<Props> = (props) => {
           </Row>
         </Col>
       </Row>
+      <Drawer
+        title="settings"
+        placement="right"
+        keyboard
+        closable={false}
+        visible={isSettingsVisible}
+        onClose={onSettingsClose}
+        zIndex={2}
+      >
+        <SettingsInner></SettingsInner>
+      </Drawer>
     </Outer>
   );
 };
