@@ -10,7 +10,10 @@ const isType = <T extends FlatSerializable>(target: T, obj: any): obj is T => {
   }
 
   for (const [k, v] of Object.entries(obj)) {
-    if (typeof obj[k] !== typeof v) {
+    if (!(k in target)) {
+      return false;
+    }
+    if (typeof target[k] !== typeof v) {
       return false;
     }
   }
