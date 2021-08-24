@@ -16,6 +16,7 @@ import { Notation } from '../../Notation';
 import { Video } from '../../Video';
 import { NotationControls } from './NotationControls';
 import { SuggestedNotations } from './SuggestedNotations';
+import { useNotationPlayerSettings } from './useNotationSettings';
 
 const LoadingIcon = styled(LoadingOutlined)`
   font-size: 5em;
@@ -94,6 +95,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
     currentMeasureNumber: 1,
     numMeasures: 0,
   });
+  const [settings, updateSettings] = useNotationPlayerSettings();
 
   const videoUrl = notation?.videoUrl;
   const playerOptions = useMemo<VideoJsPlayerOptions>(() => {
@@ -151,6 +153,8 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const onVideoPlayerChange = useCallback(setVideoPlayer, [setVideoPlayer]);
 
   const onCursorInfoChange = useCallback(setCursorInfo, [setCursorInfo]);
+
+  const onSettingsChange = useCallback(updateSettings, [updateSettings]);
 
   // Prevent the outer container from scrolling. The reason why we need this is
   // needed is because when the viewport is ltEqMd, the body will almost certainly
@@ -260,6 +264,8 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
                 thumbnailUrl={notation.thumbnailUrl || ''}
                 cursorInfo={cursorInfo}
                 videoPlayer={videoPlayer}
+                settings={settings}
+                onSettingsChange={onSettingsChange}
                 onSeek={onSeek}
                 onSeekEnd={onSeekEnd}
               />

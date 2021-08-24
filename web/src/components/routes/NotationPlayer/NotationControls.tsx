@@ -1,11 +1,13 @@
 import { FileImageOutlined, PauseOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
-import { Button, Col, Drawer, Row, Slider, Tooltip } from 'antd';
+import { Button, Checkbox, Col, Drawer, Row, Slider, Tooltip } from 'antd';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { isNumber } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { VideoJsPlayer } from 'video.js';
 import { CursorInfo } from '../../../lib/MusicDisplay';
 import { SliderTooltip } from './SliderTooltip';
+import { NotationPlayerSettings } from './types';
 
 const Outer = styled.div`
   bottom: 0;
@@ -55,6 +57,8 @@ export type Props = {
   thumbnailUrl: string;
   videoPlayer: VideoJsPlayer;
   cursorInfo: CursorInfo;
+  settings: NotationPlayerSettings;
+  onSettingsChange: (notationPlayerSettings: NotationPlayerSettings) => void;
   onSeek: (currentTimeMs: number) => void;
   onSeekEnd: () => void;
 };
@@ -75,7 +79,7 @@ export const NotationControls: React.FC<Props> = (props) => {
   const [videoPlayerState, setVideoPlayerState] = useState(VideoPlayerState.Paused);
   const [currentTimeMs, setCurrentTimeMs] = useState(0);
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
-  const { videoPlayer } = props;
+  const { videoPlayer, settings, onSettingsChange } = props;
 
   const value = props.durationMs === 0 ? 0 : (currentTimeMs / props.durationMs) * 100;
 
@@ -99,6 +103,13 @@ export const NotationControls: React.FC<Props> = (props) => {
   const onSettingsClose = useCallback(() => {
     setIsSettingsVisible(false);
   }, []);
+
+  const onFretboardVisibilityChange = useCallback(
+    (event: CheckboxChangeEvent) => {
+      onSettingsChange({ ...settings, isFretboardVisible: event.target.checked });
+    },
+    [settings, onSettingsChange]
+  );
 
   useEffect(() => {
     const onPlay = () => {
@@ -232,7 +243,11 @@ export const NotationControls: React.FC<Props> = (props) => {
         onClose={onSettingsClose}
         zIndex={2}
       >
-        <SettingsInner></SettingsInner>
+        <SettingsInner>
+          <Checkbox checked={props.settings.isFretboardVisible} onChange={onFretboardVisibilityChange}>
+            fretboard
+          </Checkbox>
+        </SettingsInner>
       </Drawer>
     </Outer>
   );

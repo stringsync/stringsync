@@ -1,7 +1,7 @@
 import { useLocalStorage } from '../../../hooks/useLocalStorage';
 import { NotationPlayerSettings } from './types';
 
-const NOTATION_SETTINGS_KEY = 'stringsyncNotationSettings';
+const NOTATION_SETTINGS_KEY = 'stringsyncNotationPlayerSettings';
 
 const DEFAULT_SETTINGS: NotationPlayerSettings = Object.freeze({
   isFretboardVisible: false,
@@ -22,11 +22,5 @@ const isNotationSettings = (value: any): value is NotationPlayerSettings => {
 };
 
 export const useNotationPlayerSettings = () => {
-  const [notationPlayerSettings, setNotationPlayerSettings] = useLocalStorage<NotationPlayerSettings>(
-    NOTATION_SETTINGS_KEY,
-    DEFAULT_SETTINGS,
-    isNotationSettings
-  );
-
-  return [notationPlayerSettings, setNotationPlayerSettings];
+  return useLocalStorage(NOTATION_SETTINGS_KEY, DEFAULT_SETTINGS, isNotationSettings);
 };
