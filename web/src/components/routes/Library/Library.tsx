@@ -79,6 +79,7 @@ const BackTopButton = styled.div`
 `;
 
 const ListOuter = styled.div`
+  /* This has to be done since antd will put a fixed width on the list items */
   overflow-x: hidden;
 `;
 
