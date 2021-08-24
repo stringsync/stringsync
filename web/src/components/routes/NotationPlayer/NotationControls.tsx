@@ -12,7 +12,7 @@ const Outer = styled.div`
   z-index: 3;
   background: white;
   border-top: 1px solid ${(props) => props.theme['@border-color']};
-  padding: 24px 16px;
+  padding: 16px 16px;
   position: absolute;
   width: 100%;
 `;
