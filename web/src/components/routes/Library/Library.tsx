@@ -78,6 +78,10 @@ const BackTopButton = styled.div`
   font-size: 14px;
 `;
 
+const ListOuter = styled.div`
+  overflow-x: hidden;
+`;
+
 const normalizeTagIds = (tagIds: string[]) => uniq(tagIds).sort();
 
 const enhance = compose(withLayout(Layout.DEFAULT));
@@ -204,19 +208,21 @@ export const Library: React.FC<Props> = enhance(() => {
           <br />
           <br />
 
-          <List
-            grid={{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 3 }}
-            style={{ padding: xs || sm ? '16px' : 0, border: '1px solid rgba(255,255,255,0)' }}
-            dataSource={state.context.notations}
-            rowKey={(notation) => notation.id}
-            renderItem={(notation) => (
-              <List.Item>
-                <Link to={`/n/${notation.id}`}>
-                  <NotationCard notation={notation} query={query} isTagChecked={isTagChecked} />
-                </Link>
-              </List.Item>
-            )}
-          />
+          <ListOuter>
+            <List
+              grid={{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 3 }}
+              style={{ padding: xs || sm ? '16px' : 0, border: '1px solid rgba(255,255,255,0)' }}
+              dataSource={state.context.notations}
+              rowKey={(notation) => notation.id}
+              renderItem={(notation) => (
+                <List.Item>
+                  <Link to={`/n/${notation.id}`}>
+                    <NotationCard notation={notation} query={query} isTagChecked={isTagChecked} />
+                  </Link>
+                </List.Item>
+              )}
+            />
+          </ListOuter>
         </>
       )}
 
