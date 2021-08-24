@@ -4,7 +4,19 @@ type FlatSerializable = {
   [key: string]: string | number | boolean | null;
 };
 
-type TypeChecker<T> = (value: any) => value is T;
+const isType = <T extends FlatSerializable>(target: T, obj: any): obj is T => {
+  if (typeof obj !== 'object') {
+    return false;
+  }
+
+  for (const [k, v] of Object.entries(obj)) {
+    if (typeof obj[k] !== typeof v) {
+      return false;
+    }
+  }
+
+  return true;
+};
 
 /**
  * Merges only the keys that exist in the dst object iff the corresponding value types match. This
@@ -12,39 +24,38 @@ type TypeChecker<T> = (value: any) => value is T;
  * src object schema's change, and you want to make a best effort to keep the compatible key-values
  * that already exist.
  */
-const sanitize = <T extends FlatSerializable>(dst: T, src: any) => {
-  const nextObj = { ...dst };
+const sanitize = <T extends FlatSerializable>(target: T, obj: any) => {
+  const sanitized = { ...target };
 
-  if (typeof src !== 'object') {
-    return nextObj;
+  if (typeof obj !== 'object') {
+    return sanitized;
   }
 
-  for (const [k, v] of Object.entries(dst)) {
-    if (!(k in src)) {
+  for (const [k, v] of Object.entries(target)) {
+    if (!(k in obj)) {
       continue;
     }
-    if (typeof src[k] === typeof v) {
-      (nextObj as FlatSerializable)[k] = src[k];
+    if (typeof obj[k] === typeof v) {
+      (sanitized as FlatSerializable)[k] = obj[k];
     }
   }
 
-  return nextObj;
+  return sanitized;
 };
 
 // Adapted from https://usehooks.com/useLocalStorage/
 export const useLocalStorage = <T extends FlatSerializable>(
   key: string,
-  initialValue: T,
-  isType: TypeChecker<T>
+  initialValue: Readonly<T>
 ): [T, (value: T) => void] => {
   const [storedValue, setStoredValue] = useState(() => {
     try {
       const item = window.localStorage.getItem(key);
       const parsedValue = item ? JSON.parse(item) : initialValue;
-      return isType(parsedValue) ? parsedValue : sanitize(initialValue, parsedValue);
+      return isType(initialValue, parsedValue) ? parsedValue : sanitize(initialValue, parsedValue);
     } catch (error) {
       console.error(error);
-      return initialValue;
+      return { ...initialValue };
     }
   });
 
