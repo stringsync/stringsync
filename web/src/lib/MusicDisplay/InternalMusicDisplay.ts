@@ -15,8 +15,6 @@ import { Callback, CursorInfoCallback, CursorWrapper, MusicDisplayOptions, SyncS
 export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   onLoadStart: Callback;
   onLoadEnd: Callback;
-  onAutoScrollStart: Callback;
-  onAutoScrollEnd: Callback;
   onCursorInfoChange: CursorInfoCallback;
 
   scrollContainer: HTMLDivElement;
@@ -31,8 +29,6 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.onLoadStart = opts.onLoadStart;
     this.onLoadEnd = opts.onLoadEnd;
     this.handleResize(opts.onResizeStart, opts.onResizeEnd);
-    this.onAutoScrollStart = opts.onAutoScrollStart;
-    this.onAutoScrollEnd = opts.onAutoScrollEnd;
     this.onCursorInfoChange = opts.onCursorInfoChange;
   }
 
@@ -57,14 +53,6 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
   updateCursor(timeMs: number) {
     this.cursorWrapper.update(timeMs);
-  }
-
-  disableAutoScroll() {
-    this.cursorWrapper.disableAutoScroll();
-  }
-
-  enableAutoScroll() {
-    this.cursorWrapper.enableAutoScroll();
   }
 
   private initCursor() {
@@ -94,8 +82,6 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
       probe,
       numMeasures: this.Sheet.SourceMeasures.length,
       scrollContainer: this.scrollContainer,
-      onAutoScrollStart: this.onAutoScrollStart,
-      onAutoScrollEnd: this.onAutoScrollEnd,
       onCursorInfoChange: this.onCursorInfoChange,
     });
 

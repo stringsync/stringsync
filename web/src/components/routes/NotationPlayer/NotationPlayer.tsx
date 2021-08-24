@@ -152,11 +152,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
   const onCursorInfoChange = useCallback(setCursorInfo, [setCursorInfo]);
 
-  const onUserScroll = useCallback(() => {
-    // TODO(jared) Disable autoscroll, but give user a way to reenable it.
-    console.log('user scrolled!');
-  }, []);
-
   // Prevent the outer container from scrolling. The reason why we need this is
   // needed is because when the viewport is ltEqMd, the body will almost certainly
   // overflow, causing a scroll bar on the outer page (and the inner page from the
@@ -252,7 +247,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
                   durationMs={notation.durationMs}
                   scrollContainerRef={scrollContainerRef}
                   onCursorInfoChange={onCursorInfoChange}
-                  onUserScroll={onUserScroll}
                   onMusicDisplayChange={onMusicDisplayChange}
                 />
               )}

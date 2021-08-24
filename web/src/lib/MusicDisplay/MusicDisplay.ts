@@ -16,8 +16,6 @@ const DEFAULT_OPTS: MusicDisplayOptions = {
   onLoadEnd: noop,
   onResizeStart: noop,
   onResizeEnd: noop,
-  onAutoScrollStart: noop,
-  onAutoScrollEnd: noop,
   onCursorInfoChange: noop,
   autoResize: true,
   drawTitle: false,

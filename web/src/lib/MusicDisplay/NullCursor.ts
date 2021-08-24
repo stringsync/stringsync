@@ -5,6 +5,4 @@ export class NullCursor implements CursorWrapper {
   init(musicSheet: MusicSheet, syncSettings: SyncSettings) {}
   update(timeMs: number) {}
   clear() {}
-  disableAutoScroll() {}
-  enableAutoScroll() {}
 }

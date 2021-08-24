@@ -2,14 +2,13 @@ import $ from 'jquery';
 import { throttle } from 'lodash';
 import { Cursor, MusicSheet } from 'opensheetmusicdisplay';
 import { ColoringOperation } from './ColoringOperation';
-import { Callback, CursorInfoCallback, SyncSettings, VoicePointer } from './types';
+import { CursorInfoCallback, SyncSettings, VoicePointer } from './types';
 import { VoiceSeeker } from './VoiceSeeker';
 
 const SCROLL_DURATION_MS = 100;
 const SCROLL_BACK_TOP_DURATION_MS = 300;
 const SCROLL_THROTTLE_MS = SCROLL_DURATION_MS + 10;
 const SCROLL_DELTA_TOLERANCE_PX = 2;
-const SCROLL_GRACE_PERIOD_MS = 500;
 const SCROLL_JUMP_THRESHOLD_PX = 350;
 
 const END_OF_LINE_LERP_PX = 20;
@@ -21,8 +20,6 @@ export type LerpCursorOpts = {
   probe: Cursor;
   scrollContainer: HTMLElement;
   numMeasures: number;
-  onAutoScrollStart: Callback;
-  onAutoScrollEnd: Callback;
   onCursorInfoChange: CursorInfoCallback;
 };
 
@@ -33,11 +30,8 @@ export class LerpCursor {
   probe: Cursor;
   scrollContainer: HTMLElement;
   numMeasures: number;
-  onAutoScrollStart: Callback;
-  onAutoScrollEnd: Callback;
   onCursorInfoChange: CursorInfoCallback;
 
-  private isAutoScrollEnabled = true;
   private voiceSeeker: VoiceSeeker | null = null;
   private prevVoicePointer: VoicePointer | null = null;
   private prevColoringOperation: ColoringOperation | null = null;
@@ -53,8 +47,6 @@ export class LerpCursor {
     this.probe = opts.probe;
     this.numMeasures = opts.numMeasures;
     this.scrollContainer = opts.scrollContainer;
-    this.onAutoScrollStart = opts.onAutoScrollStart;
-    this.onAutoScrollEnd = opts.onAutoScrollEnd;
     this.onCursorInfoChange = opts.onCursorInfoChange;
   }
 
@@ -75,16 +67,6 @@ export class LerpCursor {
 
     this.$scrollContainer = $(this.scrollContainer);
     this.$laggerCursorElement = $(this.lagger.cursorElement);
-  }
-
-  disableAutoScroll() {
-    this.isAutoScrollEnabled = false;
-  }
-
-  enableAutoScroll() {
-    this.isAutoScrollEnabled = true;
-    this.onAutoScrollStart();
-    this.scrollLaggerIntoView();
   }
 
   update(timeMs: number) {
@@ -141,10 +123,8 @@ export class LerpCursor {
       }
     }
 
-    if (this.isAutoScrollEnabled) {
-      // It is a performance optimization to only do this when the voice pointers change.
-      this.scrollLaggerIntoView();
-    }
+    // It is a performance optimization to only do this when the voice pointers change.
+    this.scrollLaggerIntoView();
 
     this.prevVoicePointer = nextVoicePointer;
 
@@ -206,32 +186,9 @@ export class LerpCursor {
       }
 
       // jQuery is the only library that can reasonably track when an scroll animation ends
-      // which is why it's being used here.
-      const lastScrollId = Symbol();
-      const didNewScrollInvoke = () => this.lastScrollId !== lastScrollId;
-      $container.animate(
-        { scrollTop: targetScrollTop },
-        {
-          queue: false,
-          duration: durationMs,
-          start: () => {
-            this.lastScrollId = lastScrollId;
-            this.onAutoScrollStart();
-          },
-          always: () => {
-            if (didNewScrollInvoke()) {
-              // Don't bother even enqueuing autoScrollEnd. Assume that another invocation will trigger it.
-              return;
-            }
-            window.setTimeout(() => {
-              if (didNewScrollInvoke()) {
-                return;
-              }
-              this.onAutoScrollEnd();
-            }, SCROLL_GRACE_PERIOD_MS);
-          },
-        }
-      );
+      // which is why it's being used here. At one point, we were using it to infer when the
+      // user scrolls, but it wasn't worth the effort.
+      $container.animate({ scrollTop: targetScrollTop }, { queue: false, duration: durationMs });
     },
     SCROLL_THROTTLE_MS,
     { leading: true, trailing: true }

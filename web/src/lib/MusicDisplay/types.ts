@@ -11,8 +11,6 @@ export interface CursorWrapper {
   init(musicSheet: MusicSheet, syncSettings: SyncSettings): void;
   update(timeMs: number): void;
   clear(): void;
-  disableAutoScroll(): void;
-  enableAutoScroll(): void;
 }
 
 export type Callback = () => void;
@@ -32,8 +30,6 @@ export type MusicDisplayOptions = IOSMDOptions & {
   onLoadEnd: Callback;
   onResizeStart: Callback;
   onResizeEnd: Callback;
-  onAutoScrollStart: Callback;
-  onAutoScrollEnd: Callback;
   onCursorInfoChange: CursorInfoCallback;
 };
 
