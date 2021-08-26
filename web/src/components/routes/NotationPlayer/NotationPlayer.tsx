@@ -143,6 +143,10 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
     setWasPlaying(false);
   }, [videoPlayer, wasPlaying]);
 
+  const onUserScroll = useCallback(() => {
+    console.log('user scrolled!');
+  }, []);
+
   const onMusicDisplayChange = useCallback(setMusicDisplay, [setMusicDisplay]);
 
   const onVideoPlayerChange = useCallback(setVideoPlayer, [setVideoPlayer]);
@@ -244,6 +248,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
                   durationMs={notation.durationMs}
                   scrollContainerRef={scrollContainerRef}
                   onMusicDisplayChange={onMusicDisplayChange}
+                  onUserScroll={onUserScroll}
                 />
               )}
             </RightOrBottomScrollContainer>

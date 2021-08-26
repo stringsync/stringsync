@@ -28,21 +28,68 @@ type NotationProps = {
   deadTimeMs: number;
   durationMs: number;
   scrollContainerRef: RefObject<HTMLDivElement>;
+  onUserScroll?: () => void;
   onMusicDisplayChange?: (musicDisplay: MusicDisplay | null) => void;
 };
 
 export const Notation: React.FC<NotationProps> = (props) => {
+  const { musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef, onMusicDisplayChange, onUserScroll } = props;
+
   const divRef = useRef<HTMLDivElement>(null);
+
+  // A ref is used instead of state because we don't want to wait for
+  // React to flush the values - the scroll handler will still be active
+  // regardless of hooked state.
+  const isAutoScrollingRef = useRef(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
-  const { musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef, onMusicDisplayChange } = props;
+
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) {
+      return;
+    }
+    if (!onUserScroll) {
+      return;
+    }
+
+    // If we're not auto scrolling, assume any scroll event was
+    // triggered by the user.
+    const listener = () => {
+      if (!isAutoScrollingRef.current) {
+        onUserScroll();
+      }
+    };
+    scrollContainer.addEventListener('scroll', listener);
+
+    return () => {
+      scrollContainer.removeEventListener('scroll', listener);
+    };
+  }, [scrollContainerRef, onUserScroll]);
 
   useEffect(() => {
     if (onMusicDisplayChange) {
       onMusicDisplayChange(musicDisplay);
     }
   }, [musicDisplay, onMusicDisplayChange]);
+
+  useEffect(() => {
+    if (!musicDisplay) {
+      return;
+    }
+    const autoScrollStartedHandle = musicDisplay.eventBus.subscribe('autoScrollStarted', () => {
+      isAutoScrollingRef.current = true;
+    });
+    const autoScrollEndedHandle = musicDisplay.eventBus.subscribe('autoScrollEnded', () => {
+      isAutoScrollingRef.current = false;
+    });
+
+    return () => {
+      musicDisplay.eventBus.unsubscribe(autoScrollEndedHandle);
+      musicDisplay.eventBus.unsubscribe(autoScrollStartedHandle);
+    };
+  }, [musicDisplay]);
 
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
