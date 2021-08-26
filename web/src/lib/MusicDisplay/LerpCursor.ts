@@ -9,6 +9,7 @@ import { VoiceSeeker } from './VoiceSeeker';
 const SCROLL_DURATION_MS = 100;
 const SCROLL_BACK_TOP_DURATION_MS = 300;
 const SCROLL_THROTTLE_MS = SCROLL_DURATION_MS + 10;
+const SCROLL_GRACE_PERIOD_MS = 500;
 const SCROLL_DELTA_TOLERANCE_PX = 2;
 const SCROLL_JUMP_THRESHOLD_PX = 350;
 
@@ -39,7 +40,9 @@ export class LerpCursor {
 
   private $scrollContainer: JQuery<HTMLElement> | null = null;
   private $laggerCursorElement: JQuery<HTMLElement> | null = null;
+
   private lastScrollId = Symbol();
+  private isAutoScrollEnabled = true;
 
   constructor(eventBus: MusicDisplayEventBus, opts: LerpCursorOpts) {
     this.eventBus = eventBus;
@@ -98,6 +101,15 @@ export class LerpCursor {
     this.lerper.hide();
   }
 
+  disableAutoScroll() {
+    this.isAutoScrollEnabled = false;
+  }
+
+  enableAutoScroll() {
+    this.isAutoScrollEnabled = true;
+    this.scrollLaggerIntoView();
+  }
+
   private updateVoicePointer(nextVoicePointer: VoicePointer | null) {
     if (!nextVoicePointer) {
       this.clear();
@@ -125,7 +137,9 @@ export class LerpCursor {
     }
 
     // It is a performance optimization to only do this when the voice pointers change.
-    this.scrollLaggerIntoView();
+    if (this.isAutoScrollEnabled) {
+      this.scrollLaggerIntoView();
+    }
 
     this.prevVoicePointer = nextVoicePointer;
 
@@ -189,7 +203,31 @@ export class LerpCursor {
       // jQuery is the only library that can reasonably track when an scroll animation ends
       // which is why it's being used here. At one point, we were using it to infer when the
       // user scrolls, but it wasn't worth the effort.
-      $container.animate({ scrollTop: targetScrollTop }, { queue: false, duration: durationMs });
+      const lastScrollId = Symbol();
+      const didNewScrollInvoke = () => this.lastScrollId !== lastScrollId;
+      $container.animate(
+        { scrollTop: targetScrollTop },
+        {
+          queue: false,
+          duration: durationMs,
+          start: () => {
+            this.lastScrollId = lastScrollId;
+            this.eventBus.dispatch('autoScrollStarted', {});
+          },
+          always: () => {
+            if (didNewScrollInvoke()) {
+              // Don't bother even enqueuing autoScrollEnd. Assume that another invocation will trigger it.
+              return;
+            }
+            window.setTimeout(() => {
+              if (didNewScrollInvoke()) {
+                return;
+              }
+              this.eventBus.dispatch('autoScrollEnded', {});
+            }, SCROLL_GRACE_PERIOD_MS);
+          },
+        }
+      );
     },
     SCROLL_THROTTLE_MS,
     { leading: true, trailing: true }
