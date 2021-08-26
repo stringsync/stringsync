@@ -2,26 +2,28 @@ type EventCallback<P> = (payload: P) => void;
 
 type Subscriber<P> = { id: symbol; callback: EventCallback<P> };
 
-type SubscriberMap<S> = Partial<{ [E in EventName<S>]: Array<Subscriber<Payload<S, E>>> }>;
+type Subscribers<S, E extends EventNames<S>> = Array<Subscriber<Payload<S, E>>>;
 
-type EventName<S> = keyof S;
+type SubscribersByEvent<S> = Partial<{ [E in EventNames<S>]: Subscribers<S, E> }>;
 
-type Payload<S, E extends EventName<S>> = S[E];
+type EventNames<S> = keyof S;
 
-type Subscribers<S, E extends EventName<S>> = Array<Subscriber<Payload<S, E>>>;
+type Payload<S, E extends EventNames<S>> = S[E];
+
+type EventById<S> = { [key: symbol]: EventNames<S> };
 
 export class EventBus<S = {}> {
-  private subscribersByEvent: SubscriberMap<S> = {};
-  private eventById: { [key: symbol]: EventName<S> } = {};
+  private subscribersByEvent: SubscribersByEvent<S> = {};
+  private eventById: EventById<S> = {};
 
-  dispatch<E extends EventName<S>>(event: E, payload: Payload<S, E>) {
+  dispatch<E extends EventNames<S>>(event: E, payload: Payload<S, E>) {
     const subscribers = this.getSubscribers(event);
     for (const subscriber of subscribers) {
       subscriber.callback(payload);
     }
   }
 
-  subscribe<E extends EventName<S>>(event: E, callback: EventCallback<Payload<S, E>>): symbol {
+  subscribe<E extends EventNames<S>>(event: E, callback: EventCallback<Payload<S, E>>): symbol {
     const id = Symbol(event.toString());
     const subscribers = this.getSubscribers(event);
     const subscriber = { id, callback };
@@ -50,11 +52,11 @@ export class EventBus<S = {}> {
     }
   }
 
-  private isSubscribedEvent(value: any): value is EventName<S> {
+  private isSubscribedEvent(value: any): value is EventNames<S> {
     return value in this.subscribersByEvent;
   }
 
-  private getSubscribers<E extends EventName<S>>(event: E): Subscribers<S, E> {
+  private getSubscribers<E extends EventNames<S>>(event: E): Subscribers<S, E> {
     const subscribers = this.subscribersByEvent[event];
     return subscribers ? subscribers : [];
   }
