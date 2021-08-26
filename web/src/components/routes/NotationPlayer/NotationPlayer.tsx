@@ -1,6 +1,5 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { Alert, Col, Row } from 'antd';
-import { noop } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
@@ -10,7 +9,7 @@ import { VideoJsPlayer, VideoJsPlayerOptions } from 'video.js';
 import { $queries, NotationObject } from '../../../graphql';
 import { Layout, withLayout } from '../../../hocs';
 import { HEADER_HEIGHT_PX } from '../../../hocs/withLayout/DefaultLayout';
-import { CursorInfo, MusicDisplay } from '../../../lib/MusicDisplay';
+import { MusicDisplay } from '../../../lib/MusicDisplay';
 import { RootState } from '../../../store';
 import { compose } from '../../../util/compose';
 import { Notation } from '../../Notation';
@@ -91,11 +90,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
   const [videoPlayer, setVideoPlayer] = useState<VideoJsPlayer | null>(null);
   const [wasPlaying, setWasPlaying] = useState(false);
-  const [cursorInfo, setCursorInfo] = useState<CursorInfo>({
-    currentMeasureIndex: 0,
-    currentMeasureNumber: 1,
-    numMeasures: 0,
-  });
   const [settings, updateSettings] = useNotationPlayerSettings();
 
   const videoUrl = notation?.videoUrl;
@@ -153,8 +147,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
   const onVideoPlayerChange = useCallback(setVideoPlayer, [setVideoPlayer]);
 
-  const onCursorInfoChange = useCallback(noop, [setCursorInfo]);
-
   const onSettingsChange = useCallback(updateSettings, [updateSettings]);
 
   // Prevent the outer container from scrolling. The reason why we need this is
@@ -186,17 +178,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
       setIsLoading(false);
     })();
   }, [params.id]);
-
-  useEffect(() => {
-    if (!musicDisplay) {
-      return;
-    }
-    const onCursorInfoChangedId = musicDisplay.eventBus.subscribe('cursorInfoChanged', setCursorInfo);
-
-    return () => {
-      musicDisplay.eventBus.unsubscribe(onCursorInfoChangedId);
-    };
-  }, [musicDisplay]);
 
   const hasErrors = errors.length > 0;
   const rightOrBottomColHeightOffsetPx = gtMd ? HEADER_HEIGHT_PX : HEADER_HEIGHT_PX + videoHeightPx;
@@ -273,8 +254,8 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
                 artistName={notation.artistName || ''}
                 durationMs={notation.durationMs}
                 thumbnailUrl={notation.thumbnailUrl || ''}
-                cursorInfo={cursorInfo}
                 videoPlayer={videoPlayer}
+                musicDisplay={musicDisplay}
                 settings={settings}
                 onSettingsChange={onSettingsChange}
                 onSeek={onSeek}

@@ -5,7 +5,7 @@ import { isNumber } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { VideoJsPlayer } from 'video.js';
-import { CursorInfo } from '../../../lib/MusicDisplay';
+import { CursorInfo, MusicDisplay } from '../../../lib/MusicDisplay';
 import { SliderTooltip } from './SliderTooltip';
 import { NotationPlayerSettings } from './types';
 
@@ -56,7 +56,7 @@ export type Props = {
   artistName: string;
   thumbnailUrl: string;
   videoPlayer: VideoJsPlayer;
-  cursorInfo: CursorInfo;
+  musicDisplay: MusicDisplay | null;
   settings: NotationPlayerSettings;
   onSettingsChange: (notationPlayerSettings: NotationPlayerSettings) => void;
   onSeek: (currentTimeMs: number) => void;
@@ -76,10 +76,16 @@ const timestamp = (ms: number): string => {
 };
 
 export const NotationControls: React.FC<Props> = (props) => {
+  const { videoPlayer, settings, musicDisplay, onSettingsChange } = props;
+
   const [videoPlayerState, setVideoPlayerState] = useState(VideoPlayerState.Paused);
   const [currentTimeMs, setCurrentTimeMs] = useState(0);
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
-  const { videoPlayer, settings, onSettingsChange } = props;
+  const [cursorInfo, setCursorInfo] = useState<CursorInfo>({
+    currentMeasureIndex: 0,
+    currentMeasureNumber: 1,
+    numMeasures: 0,
+  });
 
   const value = props.durationMs === 0 ? 0 : (currentTimeMs / props.durationMs) * 100;
 
@@ -165,7 +171,6 @@ export const NotationControls: React.FC<Props> = (props) => {
     [durationMs, onCurrentTimeMsChange]
   );
 
-  const { cursorInfo } = props;
   const tipFormatter = useCallback(
     (value?: number | undefined) => {
       let currentTimestamp: string;
@@ -193,6 +198,18 @@ export const NotationControls: React.FC<Props> = (props) => {
   );
 
   const handleStyle = useMemo(() => ({ width: 21, height: 21, marginTop: -8 }), []);
+
+  useEffect(() => {
+    if (!musicDisplay) {
+      return;
+    }
+
+    const cursorInfoChangedHandle = musicDisplay.eventBus.subscribe('cursorInfoChanged', setCursorInfo);
+
+    return () => {
+      musicDisplay.eventBus.unsubscribe(cursorInfoChangedHandle);
+    };
+  }, [musicDisplay]);
 
   const isPaused = videoPlayerState === VideoPlayerState.Paused;
 
