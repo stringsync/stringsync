@@ -113,7 +113,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const onTimeUpdate = useCallback(
     (timeMs: number) => {
       if (musicDisplay) {
-        musicDisplay.updateCursor(timeMs);
+        musicDisplay.cursor.update(timeMs);
       }
     },
     [musicDisplay]

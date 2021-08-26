@@ -57,6 +57,7 @@ const DEFAULT_OPTS: MusicDisplayOptions = {
  */
 export class MusicDisplay {
   private imd: InternalMusicDisplay;
+
   eventBus: MusicDisplayEventBus = new EventBus();
 
   constructor(container: HTMLDivElement, partialOpts: Partial<MusicDisplayOptions> = {}) {
@@ -73,7 +74,7 @@ export class MusicDisplay {
     this.imd.clear();
   }
 
-  updateCursor(timeMs: number) {
-    this.imd.updateCursor(timeMs);
+  get cursor() {
+    return this.imd.cursorWrapper;
   }
 }

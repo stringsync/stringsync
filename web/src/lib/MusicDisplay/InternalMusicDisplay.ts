@@ -47,10 +47,6 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.cursorWrapper.clear();
   }
 
-  updateCursor(timeMs: number) {
-    this.cursorWrapper.update(timeMs);
-  }
-
   private initCursor() {
     const [lagger, leader, lerper, probe] = this.cursors;
     if (!lagger) {
