@@ -1,7 +1,8 @@
 import { OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
+import { MusicDisplayEventBus } from '.';
 import { LerpCursor } from './LerpCursor';
 import { NullCursor } from './NullCursor';
-import { Callback, CursorInfoCallback, CursorWrapper, MusicDisplayOptions, SyncSettings } from './types';
+import { Callback, CursorWrapper, MusicDisplayOptions, SyncSettings } from './types';
 
 /**
  * InternalMusicDisplay handles the logic involving rendering notations and cursors.
@@ -15,28 +16,30 @@ import { Callback, CursorInfoCallback, CursorWrapper, MusicDisplayOptions, SyncS
 export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   onLoadStart: Callback;
   onLoadEnd: Callback;
-  onCursorInfoChange: CursorInfoCallback;
 
   scrollContainer: HTMLDivElement;
   syncSettings: SyncSettings;
   cursorWrapper: CursorWrapper = new NullCursor();
+  eventBus: MusicDisplayEventBus;
 
-  constructor(container: string | HTMLElement, opts: MusicDisplayOptions) {
+  constructor(container: string | HTMLElement, eventBus: MusicDisplayEventBus, opts: MusicDisplayOptions) {
     super(container, opts);
 
+    this.eventBus = eventBus;
     this.syncSettings = opts.syncSettings;
     this.scrollContainer = opts.scrollContainer;
     this.onLoadStart = opts.onLoadStart;
     this.onLoadEnd = opts.onLoadEnd;
     this.handleResize(opts.onResizeStart, opts.onResizeEnd);
-    this.onCursorInfoChange = opts.onCursorInfoChange;
   }
 
   async load(xmlUrl: string) {
+    this.eventBus.dispatch('loadStarted', {});
     this.onLoadStart();
     try {
       return await super.load(xmlUrl);
     } finally {
+      this.eventBus.dispatch('loadEnded', {});
       this.onLoadEnd();
     }
   }
@@ -75,14 +78,13 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
       throw new Error('could not init cursor');
     }
 
-    this.cursorWrapper = new LerpCursor({
+    this.cursorWrapper = new LerpCursor(this.eventBus, {
       lagger,
       leader,
       lerper,
       probe,
       numMeasures: this.Sheet.SourceMeasures.length,
       scrollContainer: this.scrollContainer,
-      onCursorInfoChange: this.onCursorInfoChange,
     });
 
     this.cursorWrapper.init(this.Sheet, this.syncSettings);

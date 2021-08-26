@@ -1,6 +1,17 @@
 import { IOSMDOptions, MusicSheet, VoiceEntry } from 'opensheetmusicdisplay';
 import { NumberRange } from '../../util/NumberRange';
+import { EventBus } from '../EventBus';
 import { IteratorSnapshot } from './IteratorSnapshot';
+
+export type MusicDisplayEventBus = EventBus<{
+  loadStarted: {};
+  loadEnded: {};
+  resizeStarted: {};
+  resizeEnded: {};
+  cursorInfoChanged: CursorInfo;
+  autoScrollStarted: {};
+  autoScrollEnded: {};
+}>;
 
 export type SyncSettings = {
   deadTimeMs: number;
@@ -15,8 +26,6 @@ export interface CursorWrapper {
 
 export type Callback = () => void;
 
-export type CursorInfoCallback = (cursorInfo: CursorInfo) => void;
-
 export type CursorInfo = {
   currentMeasureIndex: number;
   currentMeasureNumber: number;
@@ -30,7 +39,6 @@ export type MusicDisplayOptions = IOSMDOptions & {
   onLoadEnd: Callback;
   onResizeStart: Callback;
   onResizeEnd: Callback;
-  onCursorInfoChange: CursorInfoCallback;
 };
 
 /**

@@ -1,5 +1,6 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { Alert, Col, Row } from 'antd';
+import { noop } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
@@ -152,7 +153,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
   const onVideoPlayerChange = useCallback(setVideoPlayer, [setVideoPlayer]);
 
-  const onCursorInfoChange = useCallback(setCursorInfo, [setCursorInfo]);
+  const onCursorInfoChange = useCallback(noop, [setCursorInfo]);
 
   const onSettingsChange = useCallback(updateSettings, [updateSettings]);
 
@@ -185,6 +186,17 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
       setIsLoading(false);
     })();
   }, [params.id]);
+
+  useEffect(() => {
+    if (!musicDisplay) {
+      return;
+    }
+    const onCursorInfoChangedId = musicDisplay.eventBus.subscribe('cursorInfoChanged', setCursorInfo);
+
+    return () => {
+      musicDisplay.eventBus.unsubscribe(onCursorInfoChangedId);
+    };
+  }, [musicDisplay]);
 
   const hasErrors = errors.length > 0;
   const rightOrBottomColHeightOffsetPx = gtMd ? HEADER_HEIGHT_PX : HEADER_HEIGHT_PX + videoHeightPx;
@@ -250,7 +262,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
                   deadTimeMs={notation.deadTimeMs}
                   durationMs={notation.durationMs}
                   scrollContainerRef={scrollContainerRef}
-                  onCursorInfoChange={onCursorInfoChange}
                   onMusicDisplayChange={onMusicDisplayChange}
                 />
               )}

@@ -1,8 +1,9 @@
 import $ from 'jquery';
 import { throttle } from 'lodash';
 import { Cursor, MusicSheet } from 'opensheetmusicdisplay';
+import { MusicDisplayEventBus } from '.';
 import { ColoringOperation } from './ColoringOperation';
-import { CursorInfoCallback, SyncSettings, VoicePointer } from './types';
+import { SyncSettings, VoicePointer } from './types';
 import { VoiceSeeker } from './VoiceSeeker';
 
 const SCROLL_DURATION_MS = 100;
@@ -20,17 +21,17 @@ export type LerpCursorOpts = {
   probe: Cursor;
   scrollContainer: HTMLElement;
   numMeasures: number;
-  onCursorInfoChange: CursorInfoCallback;
 };
 
 export class LerpCursor {
+  eventBus: MusicDisplayEventBus;
+
   lagger: Cursor;
   leader: Cursor;
   lerper: Cursor;
   probe: Cursor;
   scrollContainer: HTMLElement;
   numMeasures: number;
-  onCursorInfoChange: CursorInfoCallback;
 
   private voiceSeeker: VoiceSeeker | null = null;
   private prevVoicePointer: VoicePointer | null = null;
@@ -40,14 +41,14 @@ export class LerpCursor {
   private $laggerCursorElement: JQuery<HTMLElement> | null = null;
   private lastScrollId = Symbol();
 
-  constructor(opts: LerpCursorOpts) {
+  constructor(eventBus: MusicDisplayEventBus, opts: LerpCursorOpts) {
+    this.eventBus = eventBus;
     this.lagger = opts.lagger;
     this.leader = opts.leader;
     this.lerper = opts.lerper;
     this.probe = opts.probe;
     this.numMeasures = opts.numMeasures;
     this.scrollContainer = opts.scrollContainer;
-    this.onCursorInfoChange = opts.onCursorInfoChange;
   }
 
   init(musicSheet: MusicSheet, syncSettings: SyncSettings) {
@@ -138,7 +139,7 @@ export class LerpCursor {
       this.prevColoringOperation = null;
     }
 
-    this.onCursorInfoChange({
+    this.eventBus.dispatch('cursorInfoChanged', {
       currentMeasureIndex: this.lagger.iterator.CurrentMeasureIndex,
       currentMeasureNumber: this.lagger.iterator.CurrentMeasure.MeasureNumber,
       numMeasures: this.numMeasures,

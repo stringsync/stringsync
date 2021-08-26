@@ -1,7 +1,8 @@
 import { merge, noop } from 'lodash';
 import { CursorType, DrawingParametersEnum } from 'opensheetmusicdisplay';
+import { EventBus } from '../EventBus';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
-import { MusicDisplayOptions } from './types';
+import { MusicDisplayEventBus, MusicDisplayOptions } from './types';
 
 const DUMMY_DIV = document.createElement('div');
 DUMMY_DIV.setAttribute('id', 'dummy-scroll-container');
@@ -16,7 +17,6 @@ const DEFAULT_OPTS: MusicDisplayOptions = {
   onLoadEnd: noop,
   onResizeStart: noop,
   onResizeEnd: noop,
-  onCursorInfoChange: noop,
   autoResize: true,
   drawTitle: false,
   drawSubtitle: false,
@@ -60,11 +60,12 @@ const DEFAULT_OPTS: MusicDisplayOptions = {
  * add complex logic to this class.
  */
 export class MusicDisplay {
-  imd: InternalMusicDisplay;
+  private imd: InternalMusicDisplay;
+  eventBus: MusicDisplayEventBus = new EventBus();
 
   constructor(container: HTMLDivElement, partialOpts: Partial<MusicDisplayOptions> = {}) {
     const opts = merge({}, DEFAULT_OPTS, partialOpts);
-    this.imd = new InternalMusicDisplay(container, opts);
+    this.imd = new InternalMusicDisplay(container, this.eventBus, opts);
   }
 
   async load(xmlUrl: string) {
