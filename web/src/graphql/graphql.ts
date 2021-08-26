@@ -1,4 +1,5 @@
 import { extractFiles } from 'extract-files';
+import { GraphQLError } from 'graphql';
 import { UnknownError } from '../errors';
 import { Mutation, Query } from './graphqlTypes';
 import { RequestType, Response } from './types';
@@ -67,7 +68,7 @@ export const graphql = async <
   } catch (error) {
     // Allow callers to treat misc errors as graphql errors,
     // since they should already be expecting them.
-    return { data: null, errors: [error] };
+    return { data: null, errors: [error as GraphQLError] };
   }
 };
 
