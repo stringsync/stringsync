@@ -2,7 +2,7 @@ import { OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
 import { MusicDisplayEventBus } from '.';
 import { LerpCursor } from './LerpCursor';
 import { NullCursor } from './NullCursor';
-import { Callback, CursorWrapper, MusicDisplayOptions, SyncSettings } from './types';
+import { CursorWrapper, MusicDisplayOptions, SyncSettings } from './types';
 
 /**
  * InternalMusicDisplay handles the logic involving rendering notations and cursors.
@@ -14,9 +14,6 @@ import { Callback, CursorWrapper, MusicDisplayOptions, SyncSettings } from './ty
  * they want.
  */
 export class InternalMusicDisplay extends OpenSheetMusicDisplay {
-  onLoadStart: Callback;
-  onLoadEnd: Callback;
-
   scrollContainer: HTMLDivElement;
   syncSettings: SyncSettings;
   cursorWrapper: CursorWrapper = new NullCursor();
@@ -28,19 +25,15 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.eventBus = eventBus;
     this.syncSettings = opts.syncSettings;
     this.scrollContainer = opts.scrollContainer;
-    this.onLoadStart = opts.onLoadStart;
-    this.onLoadEnd = opts.onLoadEnd;
-    this.handleResize(opts.onResizeStart, opts.onResizeEnd);
+    this.handleResize(this.onResizeStart.bind(this), this.onResizeEnd.bind(this));
   }
 
   async load(xmlUrl: string) {
     this.eventBus.dispatch('loadStarted', {});
-    this.onLoadStart();
     try {
       return await super.load(xmlUrl);
     } finally {
       this.eventBus.dispatch('loadEnded', {});
-      this.onLoadEnd();
     }
   }
 
@@ -88,5 +81,13 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     });
 
     this.cursorWrapper.init(this.Sheet, this.syncSettings);
+  }
+
+  private onResizeStart() {
+    this.eventBus.dispatch('resizeStarted', {});
+  }
+
+  private onResizeEnd() {
+    this.eventBus.dispatch('resizeEnded', {});
   }
 }

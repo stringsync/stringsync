@@ -102,23 +102,30 @@ export const Notation: React.FC<NotationProps> = (props) => {
       return;
     }
 
-    const startLoading = () => setIsLoading(true);
-    const stopLoading = () => setIsLoading(false);
-
     const musicDisplay = new MusicDisplay(div, {
       syncSettings: { deadTimeMs, durationMs },
       scrollContainer,
-      onLoadStart: startLoading,
-      onLoadEnd: stopLoading,
-      onResizeStart: startLoading,
-      onResizeEnd: stopLoading,
     });
-    setMusicDisplay(musicDisplay);
 
+    const startLoading = () => setIsLoading(true);
+    const stopLoading = () => setIsLoading(false);
+
+    const loadStartedId = musicDisplay.eventBus.subscribe('loadStarted', startLoading);
+    const loadEndedId = musicDisplay.eventBus.subscribe('loadEnded', stopLoading);
+    const resizeStartedId = musicDisplay.eventBus.subscribe('resizeStarted', startLoading);
+    const resizeEndedId = musicDisplay.eventBus.subscribe('resizeEnded', stopLoading);
+
+    setMusicDisplay(musicDisplay);
     musicDisplay.load(musicXmlUrl);
 
     return () => {
+      musicDisplay.eventBus.unsubscribe(resizeEndedId);
+      musicDisplay.eventBus.unsubscribe(resizeStartedId);
+      musicDisplay.eventBus.unsubscribe(loadEndedId);
+      musicDisplay.eventBus.unsubscribe(loadStartedId);
+
       musicDisplay.clear();
+
       setMusicDisplay(null);
     };
   }, [musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef]);

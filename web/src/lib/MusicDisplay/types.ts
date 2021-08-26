@@ -35,10 +35,6 @@ export type CursorInfo = {
 export type MusicDisplayOptions = IOSMDOptions & {
   syncSettings: SyncSettings;
   scrollContainer: HTMLDivElement;
-  onLoadStart: Callback;
-  onLoadEnd: Callback;
-  onResizeStart: Callback;
-  onResizeEnd: Callback;
 };
 
 /**
