@@ -9,13 +9,14 @@ import { VideoJsPlayer, VideoJsPlayerOptions } from 'video.js';
 import { $queries, NotationObject } from '../../../graphql';
 import { Layout, withLayout } from '../../../hocs';
 import { HEADER_HEIGHT_PX } from '../../../hocs/withLayout/DefaultLayout';
-import { CursorInfo, MusicDisplay } from '../../../lib/MusicDisplay';
+import { MusicDisplay } from '../../../lib/MusicDisplay';
 import { RootState } from '../../../store';
 import { compose } from '../../../util/compose';
 import { Notation } from '../../Notation';
 import { Video } from '../../Video';
 import { NotationControls } from './NotationControls';
 import { SuggestedNotations } from './SuggestedNotations';
+import { useNotationPlayerSettings } from './useNotationSettings';
 
 const LoadingIcon = styled(LoadingOutlined)`
   font-size: 5em;
@@ -89,11 +90,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
   const [videoPlayer, setVideoPlayer] = useState<VideoJsPlayer | null>(null);
   const [wasPlaying, setWasPlaying] = useState(false);
-  const [cursorInfo, setCursorInfo] = useState<CursorInfo>({
-    currentMeasureIndex: 0,
-    currentMeasureNumber: 1,
-    numMeasures: 0,
-  });
+  const [settings, updateSettings] = useNotationPlayerSettings();
 
   const videoUrl = notation?.videoUrl;
   const playerOptions = useMemo<VideoJsPlayerOptions>(() => {
@@ -116,7 +113,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const onTimeUpdate = useCallback(
     (timeMs: number) => {
       if (musicDisplay) {
-        musicDisplay.updateCursor(timeMs);
+        musicDisplay.cursor.update(timeMs);
       }
     },
     [musicDisplay]
@@ -146,16 +143,15 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
     setWasPlaying(false);
   }, [videoPlayer, wasPlaying]);
 
+  const onUserScroll = useCallback(() => {
+    console.log('user scrolled!');
+  }, []);
+
   const onMusicDisplayChange = useCallback(setMusicDisplay, [setMusicDisplay]);
 
   const onVideoPlayerChange = useCallback(setVideoPlayer, [setVideoPlayer]);
 
-  const onCursorInfoChange = useCallback(setCursorInfo, [setCursorInfo]);
-
-  const onUserScroll = useCallback(() => {
-    // TODO(jared) Disable autoscroll, but give user a way to reenable it.
-    console.log('user scrolled!');
-  }, []);
+  const onSettingsChange = useCallback(updateSettings, [updateSettings]);
 
   // Prevent the outer container from scrolling. The reason why we need this is
   // needed is because when the viewport is ltEqMd, the body will almost certainly
@@ -251,9 +247,8 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
                   deadTimeMs={notation.deadTimeMs}
                   durationMs={notation.durationMs}
                   scrollContainerRef={scrollContainerRef}
-                  onCursorInfoChange={onCursorInfoChange}
-                  onUserScroll={onUserScroll}
                   onMusicDisplayChange={onMusicDisplayChange}
+                  onUserScroll={onUserScroll}
                 />
               )}
             </RightOrBottomScrollContainer>
@@ -264,8 +259,10 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
                 artistName={notation.artistName || ''}
                 durationMs={notation.durationMs}
                 thumbnailUrl={notation.thumbnailUrl || ''}
-                cursorInfo={cursorInfo}
                 videoPlayer={videoPlayer}
+                musicDisplay={musicDisplay}
+                settings={settings}
+                onSettingsChange={onSettingsChange}
                 onSeek={onSeek}
                 onSeekEnd={onSeekEnd}
               />

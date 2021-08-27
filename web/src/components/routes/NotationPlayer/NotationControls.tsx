@@ -1,24 +1,22 @@
 import { FileImageOutlined, PauseOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
-import { Button, Col, Row, Slider, Tooltip } from 'antd';
+import { Button, Checkbox, Col, Drawer, Row, Slider, Tooltip } from 'antd';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { isNumber } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { VideoJsPlayer } from 'video.js';
-import { CursorInfo } from '../../../lib/MusicDisplay';
+import { CursorInfo, MusicDisplay } from '../../../lib/MusicDisplay';
 import { SliderTooltip } from './SliderTooltip';
+import { NotationPlayerSettings } from './types';
 
 const Outer = styled.div`
   bottom: 0;
   z-index: 3;
   background: white;
   border-top: 1px solid ${(props) => props.theme['@border-color']};
-  padding: 24px 16px;
+  padding: 16px 16px;
   position: absolute;
   width: 100%;
-`;
-
-const DetailOuter = styled.div`
-  margin-left: 8px;
 `;
 
 const DetailImg = styled.img`
@@ -41,6 +39,12 @@ const StyledButton = styled(Button)`
   border: none;
 `;
 
+const SettingsInner = styled.div`
+  overflow-y: auto;
+  /* offset the control bar so the */
+  height: calc(100vh - 190px);
+`;
+
 enum VideoPlayerState {
   Paused,
   Playing,
@@ -52,7 +56,9 @@ export type Props = {
   artistName: string;
   thumbnailUrl: string;
   videoPlayer: VideoJsPlayer;
-  cursorInfo: CursorInfo;
+  musicDisplay: MusicDisplay | null;
+  settings: NotationPlayerSettings;
+  onSettingsChange: (notationPlayerSettings: NotationPlayerSettings) => void;
   onSeek: (currentTimeMs: number) => void;
   onSeekEnd: () => void;
 };
@@ -70,9 +76,16 @@ const timestamp = (ms: number): string => {
 };
 
 export const NotationControls: React.FC<Props> = (props) => {
+  const { videoPlayer, settings, musicDisplay, onSettingsChange } = props;
+
   const [videoPlayerState, setVideoPlayerState] = useState(VideoPlayerState.Paused);
   const [currentTimeMs, setCurrentTimeMs] = useState(0);
-  const { videoPlayer } = props;
+  const [isSettingsVisible, setIsSettingsVisible] = useState(false);
+  const [cursorInfo, setCursorInfo] = useState<CursorInfo>({
+    currentMeasureIndex: 0,
+    currentMeasureNumber: 1,
+    numMeasures: 0,
+  });
 
   const value = props.durationMs === 0 ? 0 : (currentTimeMs / props.durationMs) * 100;
 
@@ -88,6 +101,21 @@ export const NotationControls: React.FC<Props> = (props) => {
         console.warn(`unknown player state '${videoPlayerState}', ignoring'`);
     }
   }, [videoPlayer, videoPlayerState]);
+
+  const onSettingsClick = useCallback(() => {
+    setIsSettingsVisible((isSettingsVisible) => !isSettingsVisible);
+  }, []);
+
+  const onSettingsClose = useCallback(() => {
+    setIsSettingsVisible(false);
+  }, []);
+
+  const onFretboardVisibilityChange = useCallback(
+    (event: CheckboxChangeEvent) => {
+      onSettingsChange({ ...settings, isFretboardVisible: event.target.checked });
+    },
+    [settings, onSettingsChange]
+  );
 
   useEffect(() => {
     const onPlay = () => {
@@ -121,18 +149,14 @@ export const NotationControls: React.FC<Props> = (props) => {
 
   const Detail = useMemo(
     () => () => {
-      return (
-        <DetailOuter>
-          {props.thumbnailUrl ? (
-            <Tooltip title={`${props.songName} by ${props.artistName}`}>
-              <DetailImg src={props.thumbnailUrl} alt="notation detail image" />
-            </Tooltip>
-          ) : (
-            <Tooltip title={`${props.songName} by ${props.artistName}`}>
-              <MissingImgIcon />
-            </Tooltip>
-          )}
-        </DetailOuter>
+      return props.thumbnailUrl ? (
+        <Tooltip title={`${props.songName} by ${props.artistName}`}>
+          <DetailImg src={props.thumbnailUrl} alt="notation detail image" />
+        </Tooltip>
+      ) : (
+        <Tooltip title={`${props.songName} by ${props.artistName}`}>
+          <MissingImgIcon />
+        </Tooltip>
       );
     },
     [props.songName, props.artistName, props.thumbnailUrl]
@@ -147,7 +171,6 @@ export const NotationControls: React.FC<Props> = (props) => {
     [durationMs, onCurrentTimeMsChange]
   );
 
-  const { cursorInfo } = props;
   const tipFormatter = useCallback(
     (value?: number | undefined) => {
       let currentTimestamp: string;
@@ -174,6 +197,20 @@ export const NotationControls: React.FC<Props> = (props) => {
     [cursorInfo, durationMs]
   );
 
+  const handleStyle = useMemo(() => ({ width: 21, height: 21, marginTop: -8 }), []);
+
+  useEffect(() => {
+    if (!musicDisplay) {
+      return;
+    }
+
+    const cursorInfoChangedHandle = musicDisplay.eventBus.subscribe('cursorInfoChanged', setCursorInfo);
+
+    return () => {
+      musicDisplay.eventBus.unsubscribe(cursorInfoChangedHandle);
+    };
+  }, [musicDisplay]);
+
   const isPaused = videoPlayerState === VideoPlayerState.Paused;
 
   return (
@@ -194,6 +231,7 @@ export const NotationControls: React.FC<Props> = (props) => {
             <SliderOuter>
               <Slider
                 step={0.01}
+                handleStyle={handleStyle}
                 value={value}
                 tipFormatter={tipFormatter}
                 onChange={onChange}
@@ -204,13 +242,30 @@ export const NotationControls: React.FC<Props> = (props) => {
         </Col>
         <Col xs={2} sm={2} md={2} lg={1} xl={1} xxl={1}>
           <Row justify="center" align="middle">
-            <StyledButton size="large" shape="circle" icon={<SettingOutlined />} />
+            <StyledButton size="large" shape="circle" icon={<SettingOutlined />} onClick={onSettingsClick} />
           </Row>
         </Col>
         <Col xs={0} sm={0} md={0} lg={0} xl={2} xxl={2}>
-          <Detail />
+          <Row justify="center" align="middle">
+            <Detail />
+          </Row>
         </Col>
       </Row>
+      <Drawer
+        title="settings"
+        placement="right"
+        keyboard
+        closable={false}
+        visible={isSettingsVisible}
+        onClose={onSettingsClose}
+        zIndex={2}
+      >
+        <SettingsInner>
+          <Checkbox checked={props.settings.isFretboardVisible} onChange={onFretboardVisibilityChange}>
+            fretboard
+          </Checkbox>
+        </SettingsInner>
+      </Drawer>
     </Outer>
   );
 };

@@ -5,11 +5,18 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Layout, withLayout } from '../../../hocs';
 import { compose } from '../../../util/compose';
+import { NumberRange } from '../../../util/NumberRange';
 import { Box } from '../../Box';
 import { Logo } from '../../Logo';
 import { Wordmark } from '../../Wordmark';
+import { useRedirectToLibraryEffect } from './useRedirectToLibraryEffect';
 
 const LANDING_SRC = 'static/landing.jpg';
+
+// Redirect the user if they last visited between 1 minute and 14 days.
+// This gives people a 1 minute grace period to try to visit the landing using a link
+// again.
+const REDIRECT_TIME_MS_RANGE = NumberRange.from(60 * 1000).to(14 * 24 * 60 * 60 * 1000);
 
 const Outer = styled.div`
   background-color: white;
@@ -77,6 +84,8 @@ const Footer = styled.div`
 const enhance = compose(withLayout(Layout.DEFAULT));
 
 export const Landing: React.FC = enhance(() => {
+  useRedirectToLibraryEffect(REDIRECT_TIME_MS_RANGE);
+
   return (
     <Outer data-testid="landing">
       <Jumbotron>

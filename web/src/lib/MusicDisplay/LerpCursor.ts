@@ -1,65 +1,100 @@
 import $ from 'jquery';
 import { throttle } from 'lodash';
-import { Cursor, MusicSheet } from 'opensheetmusicdisplay';
+import { Cursor, CursorType, MusicSheet } from 'opensheetmusicdisplay';
+import { MusicDisplayEventBus } from '.';
 import { ColoringOperation } from './ColoringOperation';
-import { Callback, CursorInfoCallback, SyncSettings, VoicePointer } from './types';
+import { InternalMusicDisplay } from './InternalMusicDisplay';
+import { SyncSettings, VoicePointer } from './types';
 import { VoiceSeeker } from './VoiceSeeker';
 
 const SCROLL_DURATION_MS = 100;
 const SCROLL_BACK_TOP_DURATION_MS = 300;
 const SCROLL_THROTTLE_MS = SCROLL_DURATION_MS + 10;
-const SCROLL_DELTA_TOLERANCE_PX = 2;
 const SCROLL_GRACE_PERIOD_MS = 500;
+const SCROLL_DELTA_TOLERANCE_PX = 2;
 const SCROLL_JUMP_THRESHOLD_PX = 350;
 
 const END_OF_LINE_LERP_PX = 20;
 
-export type LerpCursorOpts = {
+type Cursors = {
   lagger: Cursor;
   leader: Cursor;
   lerper: Cursor;
   probe: Cursor;
+};
+
+export type LerpCursorOpts = {
   scrollContainer: HTMLElement;
   numMeasures: number;
-  onAutoScrollStart: Callback;
-  onAutoScrollEnd: Callback;
-  onCursorInfoChange: CursorInfoCallback;
 };
 
 export class LerpCursor {
+  static create(imd: InternalMusicDisplay, opts: LerpCursorOpts) {
+    const cursors = imd.addCursors([
+      {
+        type: CursorType.Standard,
+        color: 'blue',
+        follow: false,
+        alpha: 0,
+      },
+      {
+        type: CursorType.Standard,
+        color: 'lime',
+        follow: false,
+        alpha: 0,
+      },
+      {
+        type: CursorType.ThinLeft,
+        color: '#00ffd9',
+        follow: true,
+        alpha: 0.5,
+      },
+      {
+        type: CursorType.Standard,
+        color: 'black',
+        follow: false,
+        alpha: 0,
+      },
+    ]);
+    if (cursors.length !== 4) {
+      throw new Error(`something went wrong, expected 4 cursors, got: ${cursors.length}`);
+    }
+    const [lagger, leader, lerper, probe] = cursors;
+    return new LerpCursor(imd.eventBus, { lagger, leader, lerper, probe }, opts);
+  }
+
+  eventBus: MusicDisplayEventBus;
+
   lagger: Cursor;
   leader: Cursor;
   lerper: Cursor;
   probe: Cursor;
   scrollContainer: HTMLElement;
   numMeasures: number;
-  onAutoScrollStart: Callback;
-  onAutoScrollEnd: Callback;
-  onCursorInfoChange: CursorInfoCallback;
 
-  private isAutoScrollEnabled = true;
   private voiceSeeker: VoiceSeeker | null = null;
   private prevVoicePointer: VoicePointer | null = null;
   private prevColoringOperation: ColoringOperation | null = null;
 
   private $scrollContainer: JQuery<HTMLElement> | null = null;
   private $laggerCursorElement: JQuery<HTMLElement> | null = null;
-  private lastScrollId = Symbol();
 
-  constructor(opts: LerpCursorOpts) {
-    this.lagger = opts.lagger;
-    this.leader = opts.leader;
-    this.lerper = opts.lerper;
-    this.probe = opts.probe;
+  private lastScrollId = Symbol();
+  private isAutoScrollEnabled = true;
+
+  private constructor(eventBus: MusicDisplayEventBus, cursors: Cursors, opts: LerpCursorOpts) {
+    this.eventBus = eventBus;
+    this.lagger = cursors.lagger;
+    this.leader = cursors.leader;
+    this.lerper = cursors.lerper;
+    this.probe = cursors.probe;
     this.numMeasures = opts.numMeasures;
     this.scrollContainer = opts.scrollContainer;
-    this.onAutoScrollStart = opts.onAutoScrollStart;
-    this.onAutoScrollEnd = opts.onAutoScrollEnd;
-    this.onCursorInfoChange = opts.onCursorInfoChange;
   }
 
   init(musicSheet: MusicSheet, syncSettings: SyncSettings) {
     this.lerper.cursorElement.style.zIndex = '2';
+    this.lerper.cursorElement.setAttribute('draggable', 'false');
 
     this.lagger.resetIterator();
     this.leader.resetIterator();
@@ -75,16 +110,6 @@ export class LerpCursor {
 
     this.$scrollContainer = $(this.scrollContainer);
     this.$laggerCursorElement = $(this.lagger.cursorElement);
-  }
-
-  disableAutoScroll() {
-    this.isAutoScrollEnabled = false;
-  }
-
-  enableAutoScroll() {
-    this.isAutoScrollEnabled = true;
-    this.onAutoScrollStart();
-    this.scrollLaggerIntoView();
   }
 
   update(timeMs: number) {
@@ -115,6 +140,15 @@ export class LerpCursor {
     this.lerper.hide();
   }
 
+  disableAutoScroll() {
+    this.isAutoScrollEnabled = false;
+  }
+
+  enableAutoScroll() {
+    this.isAutoScrollEnabled = true;
+    this.scrollLaggerIntoView();
+  }
+
   private updateVoicePointer(nextVoicePointer: VoicePointer | null) {
     if (!nextVoicePointer) {
       this.clear();
@@ -141,8 +175,8 @@ export class LerpCursor {
       }
     }
 
+    // It is a performance optimization to only do this when the voice pointers change.
     if (this.isAutoScrollEnabled) {
-      // It is a performance optimization to only do this when the voice pointers change.
       this.scrollLaggerIntoView();
     }
 
@@ -158,7 +192,7 @@ export class LerpCursor {
       this.prevColoringOperation = null;
     }
 
-    this.onCursorInfoChange({
+    this.eventBus.dispatch('cursorInfoChanged', {
       currentMeasureIndex: this.lagger.iterator.CurrentMeasureIndex,
       currentMeasureNumber: this.lagger.iterator.CurrentMeasure.MeasureNumber,
       numMeasures: this.numMeasures,
@@ -206,7 +240,8 @@ export class LerpCursor {
       }
 
       // jQuery is the only library that can reasonably track when an scroll animation ends
-      // which is why it's being used here.
+      // which is why it's being used here. At one point, we were using it to infer when the
+      // user scrolls, but it wasn't worth the effort.
       const lastScrollId = Symbol();
       const didNewScrollInvoke = () => this.lastScrollId !== lastScrollId;
       $container.animate(
@@ -216,7 +251,7 @@ export class LerpCursor {
           duration: durationMs,
           start: () => {
             this.lastScrollId = lastScrollId;
-            this.onAutoScrollStart();
+            this.eventBus.dispatch('autoScrollStarted', {});
           },
           always: () => {
             if (didNewScrollInvoke()) {
@@ -227,7 +262,7 @@ export class LerpCursor {
               if (didNewScrollInvoke()) {
                 return;
               }
-              this.onAutoScrollEnd();
+              this.eventBus.dispatch('autoScrollEnded', {});
             }, SCROLL_GRACE_PERIOD_MS);
           },
         }

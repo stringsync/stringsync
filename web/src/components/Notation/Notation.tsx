@@ -1,6 +1,6 @@
 import React, { RefObject, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { CursorInfoCallback, MusicDisplay } from '../../lib/MusicDisplay';
+import { MusicDisplay } from '../../lib/MusicDisplay';
 
 const Outer = styled.div`
   margin-top: 24px;
@@ -28,12 +28,13 @@ type NotationProps = {
   deadTimeMs: number;
   durationMs: number;
   scrollContainerRef: RefObject<HTMLDivElement>;
-  onCursorInfoChange?: CursorInfoCallback;
-  onMusicDisplayChange?: (musicDisplay: MusicDisplay | null) => void;
   onUserScroll?: () => void;
+  onMusicDisplayChange?: (musicDisplay: MusicDisplay | null) => void;
 };
 
 export const Notation: React.FC<NotationProps> = (props) => {
+  const { musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef, onMusicDisplayChange, onUserScroll } = props;
+
   const divRef = useRef<HTMLDivElement>(null);
 
   // A ref is used instead of state because we don't want to wait for
@@ -43,21 +44,6 @@ export const Notation: React.FC<NotationProps> = (props) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
-  const {
-    musicXmlUrl,
-    deadTimeMs,
-    durationMs,
-    scrollContainerRef,
-    onMusicDisplayChange,
-    onUserScroll,
-    onCursorInfoChange,
-  } = props;
-
-  useEffect(() => {
-    if (onMusicDisplayChange) {
-      onMusicDisplayChange(musicDisplay);
-    }
-  }, [musicDisplay, onMusicDisplayChange]);
 
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
@@ -83,6 +69,29 @@ export const Notation: React.FC<NotationProps> = (props) => {
   }, [scrollContainerRef, onUserScroll]);
 
   useEffect(() => {
+    if (onMusicDisplayChange) {
+      onMusicDisplayChange(musicDisplay);
+    }
+  }, [musicDisplay, onMusicDisplayChange]);
+
+  useEffect(() => {
+    if (!musicDisplay) {
+      return;
+    }
+    const autoScrollStartedHandle = musicDisplay.eventBus.subscribe('autoScrollStarted', () => {
+      isAutoScrollingRef.current = true;
+    });
+    const autoScrollEndedHandle = musicDisplay.eventBus.subscribe('autoScrollEnded', () => {
+      isAutoScrollingRef.current = false;
+    });
+
+    return () => {
+      musicDisplay.eventBus.unsubscribe(autoScrollEndedHandle);
+      musicDisplay.eventBus.unsubscribe(autoScrollStartedHandle);
+    };
+  }, [musicDisplay]);
+
+  useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
     if (!scrollContainer) {
       return;
@@ -93,33 +102,33 @@ export const Notation: React.FC<NotationProps> = (props) => {
       return;
     }
 
-    const startLoading = () => setIsLoading(true);
-    const stopLoading = () => setIsLoading(false);
-
     const musicDisplay = new MusicDisplay(div, {
       syncSettings: { deadTimeMs, durationMs },
       scrollContainer,
-      onCursorInfoChange,
-      onLoadStart: startLoading,
-      onLoadEnd: stopLoading,
-      onResizeStart: startLoading,
-      onResizeEnd: stopLoading,
-      onAutoScrollStart: () => {
-        isAutoScrollingRef.current = true;
-      },
-      onAutoScrollEnd: () => {
-        isAutoScrollingRef.current = false;
-      },
     });
-    setMusicDisplay(musicDisplay);
 
+    const startLoading = () => setIsLoading(true);
+    const stopLoading = () => setIsLoading(false);
+
+    const loadStartedId = musicDisplay.eventBus.subscribe('loadStarted', startLoading);
+    const loadEndedId = musicDisplay.eventBus.subscribe('loadEnded', stopLoading);
+    const resizeStartedId = musicDisplay.eventBus.subscribe('resizeStarted', startLoading);
+    const resizeEndedId = musicDisplay.eventBus.subscribe('resizeEnded', stopLoading);
+
+    setMusicDisplay(musicDisplay);
     musicDisplay.load(musicXmlUrl);
 
     return () => {
+      musicDisplay.eventBus.unsubscribe(resizeEndedId);
+      musicDisplay.eventBus.unsubscribe(resizeStartedId);
+      musicDisplay.eventBus.unsubscribe(loadEndedId);
+      musicDisplay.eventBus.unsubscribe(loadStartedId);
+
       musicDisplay.clear();
+
       setMusicDisplay(null);
     };
-  }, [musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef, onCursorInfoChange]);
+  }, [musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef]);
 
   return (
     <Outer data-notation>

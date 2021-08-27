@@ -123,13 +123,13 @@ async function migrator() {
 async function tscapi() {
   const watch = WATCH.getOrDefault(true);
 
-  await cmd('tsc', ['--noEmit', watch ? '--watch' : ''].filter(identity), { cwd: Project.API });
+  await cmd('yarn', ['tsc', '--noEmit', watch ? '--watch' : ''].filter(identity), { cwd: Project.API });
 }
 
 async function tscweb() {
   const watch = WATCH.getOrDefault(true);
 
-  await cmd('tsc', ['--noEmit', watch ? '--watch' : ''].filter(identity), { cwd: Project.WEB });
+  await cmd('yarn', ['tsc', '--noEmit', watch ? '--watch' : ''].filter(identity), { cwd: Project.WEB });
 }
 
 async function installapi() {

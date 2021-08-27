@@ -1,6 +1,8 @@
-import React from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import { withAuthRequirement } from '../../hocs';
+import { AppDispatch, historySlice } from '../../store';
 import { compose } from '../../util/compose';
 import { AuthRequirement } from '../../util/types';
 import { Fallback } from '../Fallback';
@@ -36,6 +38,16 @@ const ResetPassword = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(
 const Upload = compose(withAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER))(React.lazy(() => import('./Upload')));
 
 export const Routes: React.FC = () => {
+  const location = useLocation();
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(
+    () => () => {
+      dispatch(historySlice.actions.setPrevRoute(location.pathname));
+    },
+    [dispatch, location]
+  );
+
   return (
     <React.Suspense fallback={<Fallback />}>
       <Switch>

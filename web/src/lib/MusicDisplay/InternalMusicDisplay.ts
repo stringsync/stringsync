@@ -1,7 +1,9 @@
-import { OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
+import { get, set, takeRight } from 'lodash';
+import { Cursor, CursorOptions, OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
+import { MusicDisplayEventBus } from '.';
 import { LerpCursor } from './LerpCursor';
 import { NullCursor } from './NullCursor';
-import { Callback, CursorInfoCallback, CursorWrapper, MusicDisplayOptions, SyncSettings } from './types';
+import { CursorWrapper, MusicDisplayOptions, SyncSettings } from './types';
 
 /**
  * InternalMusicDisplay handles the logic involving rendering notations and cursors.
@@ -13,35 +15,26 @@ import { Callback, CursorInfoCallback, CursorWrapper, MusicDisplayOptions, SyncS
  * they want.
  */
 export class InternalMusicDisplay extends OpenSheetMusicDisplay {
-  onLoadStart: Callback;
-  onLoadEnd: Callback;
-  onAutoScrollStart: Callback;
-  onAutoScrollEnd: Callback;
-  onCursorInfoChange: CursorInfoCallback;
-
   scrollContainer: HTMLDivElement;
   syncSettings: SyncSettings;
   cursorWrapper: CursorWrapper = new NullCursor();
+  eventBus: MusicDisplayEventBus;
 
-  constructor(container: string | HTMLElement, opts: MusicDisplayOptions) {
+  constructor(container: string | HTMLElement, eventBus: MusicDisplayEventBus, opts: MusicDisplayOptions) {
     super(container, opts);
 
+    this.eventBus = eventBus;
     this.syncSettings = opts.syncSettings;
     this.scrollContainer = opts.scrollContainer;
-    this.onLoadStart = opts.onLoadStart;
-    this.onLoadEnd = opts.onLoadEnd;
-    this.handleResize(opts.onResizeStart, opts.onResizeEnd);
-    this.onAutoScrollStart = opts.onAutoScrollStart;
-    this.onAutoScrollEnd = opts.onAutoScrollEnd;
-    this.onCursorInfoChange = opts.onCursorInfoChange;
+    this.handleResize(this.onResizeStart.bind(this), this.onResizeEnd.bind(this));
   }
 
   async load(xmlUrl: string) {
-    this.onLoadStart();
+    this.eventBus.dispatch('loadStarted', {});
     try {
       return await super.load(xmlUrl);
     } finally {
-      this.onLoadEnd();
+      this.eventBus.dispatch('loadEnded', {});
     }
   }
 
@@ -55,50 +48,43 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.cursorWrapper.clear();
   }
 
-  updateCursor(timeMs: number) {
-    this.cursorWrapper.update(timeMs);
+  addCursors(opts: CursorOptions[]): Cursor[] {
+    const wasEnabled = this.drawingParameters.drawCursors;
+
+    const cursorsOptions = get(this, 'cursorsOptions', []);
+    set(this, 'cursorsOptions', [...cursorsOptions, ...opts]);
+
+    this.enableCursors(); // Transforms cursor options to cursors
+    const cursors = takeRight(this.cursors, opts.length);
+
+    if (!wasEnabled) {
+      this.disableCursors();
+    }
+
+    return cursors;
   }
 
-  disableAutoScroll() {
-    this.cursorWrapper.disableAutoScroll();
+  private enableCursors() {
+    this.enableOrDisableCursors(true);
   }
 
-  enableAutoScroll() {
-    this.cursorWrapper.enableAutoScroll();
+  private disableCursors() {
+    this.enableOrDisableCursors(false);
   }
 
   private initCursor() {
-    const [lagger, leader, lerper, probe] = this.cursors;
-    if (!lagger) {
-      console.debug('missing lagger cursor');
-    }
-    if (!leader) {
-      console.debug('missing leader cursor');
-    }
-    if (!lerper) {
-      console.debug('missing lerper cursor');
-    }
-    if (!probe) {
-      console.debug('missing probe cursor');
-    }
-
-    const lerpable = lagger && leader && lerper && probe;
-    if (!lerpable) {
-      throw new Error('could not init cursor');
-    }
-
-    this.cursorWrapper = new LerpCursor({
-      lagger,
-      leader,
-      lerper,
-      probe,
+    this.cursorWrapper = LerpCursor.create(this, {
       numMeasures: this.Sheet.SourceMeasures.length,
       scrollContainer: this.scrollContainer,
-      onAutoScrollStart: this.onAutoScrollStart,
-      onAutoScrollEnd: this.onAutoScrollEnd,
-      onCursorInfoChange: this.onCursorInfoChange,
     });
-
     this.cursorWrapper.init(this.Sheet, this.syncSettings);
+  }
+
+  private onResizeStart() {
+    this.eventBus.dispatch('resizeStarted', {});
+  }
+
+  private onResizeEnd() {
+    this.eventBus.dispatch('resizeEnded', {});
   }
 }
