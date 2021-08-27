@@ -1,8 +1,9 @@
 import $ from 'jquery';
 import { throttle } from 'lodash';
-import { Cursor, MusicSheet } from 'opensheetmusicdisplay';
+import { Cursor, CursorType, MusicSheet } from 'opensheetmusicdisplay';
 import { MusicDisplayEventBus } from '.';
 import { ColoringOperation } from './ColoringOperation';
+import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { SyncSettings, VoicePointer } from './types';
 import { VoiceSeeker } from './VoiceSeeker';
 
@@ -15,16 +16,53 @@ const SCROLL_JUMP_THRESHOLD_PX = 350;
 
 const END_OF_LINE_LERP_PX = 20;
 
-export type LerpCursorOpts = {
+type Cursors = {
   lagger: Cursor;
   leader: Cursor;
   lerper: Cursor;
   probe: Cursor;
+};
+
+export type LerpCursorOpts = {
   scrollContainer: HTMLElement;
   numMeasures: number;
 };
 
 export class LerpCursor {
+  static create(imd: InternalMusicDisplay, opts: LerpCursorOpts) {
+    const cursors = imd.addCursors([
+      {
+        type: CursorType.Standard,
+        color: 'blue',
+        follow: false,
+        alpha: 0,
+      },
+      {
+        type: CursorType.Standard,
+        color: 'lime',
+        follow: false,
+        alpha: 0,
+      },
+      {
+        type: CursorType.ThinLeft,
+        color: '#00ffd9',
+        follow: true,
+        alpha: 0.5,
+      },
+      {
+        type: CursorType.Standard,
+        color: 'black',
+        follow: false,
+        alpha: 0,
+      },
+    ]);
+    if (cursors.length !== 4) {
+      throw new Error(`something went wrong, expected 4 cursors, got: ${cursors.length}`);
+    }
+    const [lagger, leader, lerper, probe] = cursors;
+    return new LerpCursor(imd.eventBus, { lagger, leader, lerper, probe }, opts);
+  }
+
   eventBus: MusicDisplayEventBus;
 
   lagger: Cursor;
@@ -44,12 +82,12 @@ export class LerpCursor {
   private lastScrollId = Symbol();
   private isAutoScrollEnabled = true;
 
-  constructor(eventBus: MusicDisplayEventBus, opts: LerpCursorOpts) {
+  private constructor(eventBus: MusicDisplayEventBus, cursors: Cursors, opts: LerpCursorOpts) {
     this.eventBus = eventBus;
-    this.lagger = opts.lagger;
-    this.leader = opts.leader;
-    this.lerper = opts.lerper;
-    this.probe = opts.probe;
+    this.lagger = cursors.lagger;
+    this.leader = cursors.leader;
+    this.lerper = cursors.lerper;
+    this.probe = cursors.probe;
     this.numMeasures = opts.numMeasures;
     this.scrollContainer = opts.scrollContainer;
   }

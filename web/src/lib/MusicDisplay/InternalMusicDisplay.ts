@@ -1,4 +1,5 @@
-import { OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
+import { get, set, takeRight } from 'lodash';
+import { Cursor, CursorOptions, OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
 import { MusicDisplayEventBus } from '.';
 import { LerpCursor } from './LerpCursor';
 import { NullCursor } from './NullCursor';
@@ -47,35 +48,35 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.cursorWrapper.clear();
   }
 
+  addCursors(opts: CursorOptions[]): Cursor[] {
+    const wasEnabled = this.drawingParameters.drawCursors;
+
+    const cursorsOptions = get(this, 'cursorsOptions', []);
+    set(this, 'cursorsOptions', [...cursorsOptions, ...opts]);
+
+    this.enableCursors(); // Transforms cursor options to cursors
+    const cursors = takeRight(this.cursors, opts.length);
+
+    if (!wasEnabled) {
+      this.disableCursors();
+    }
+
+    return cursors;
+  }
+
+  private enableCursors() {
+    this.enableOrDisableCursors(true);
+  }
+
+  private disableCursors() {
+    this.enableOrDisableCursors(false);
+  }
+
   private initCursor() {
-    const [lagger, leader, lerper, probe] = this.cursors;
-    if (!lagger) {
-      console.debug('missing lagger cursor');
-    }
-    if (!leader) {
-      console.debug('missing leader cursor');
-    }
-    if (!lerper) {
-      console.debug('missing lerper cursor');
-    }
-    if (!probe) {
-      console.debug('missing probe cursor');
-    }
-
-    const lerpable = lagger && leader && lerper && probe;
-    if (!lerpable) {
-      throw new Error('could not init cursor');
-    }
-
-    this.cursorWrapper = new LerpCursor(this.eventBus, {
-      lagger,
-      leader,
-      lerper,
-      probe,
+    this.cursorWrapper = LerpCursor.create(this, {
       numMeasures: this.Sheet.SourceMeasures.length,
       scrollContainer: this.scrollContainer,
     });
-
     this.cursorWrapper.init(this.Sheet, this.syncSettings);
   }
 
