@@ -94,6 +94,7 @@ export class LerpCursor {
 
   init(musicSheet: MusicSheet, syncSettings: SyncSettings) {
     this.lerper.cursorElement.style.zIndex = '2';
+    this.lerper.cursorElement.setAttribute('draggable', 'false');
 
     this.lagger.resetIterator();
     this.leader.resetIterator();
