@@ -1,5 +1,5 @@
 import { merge } from 'lodash';
-import { CursorType, DrawingParametersEnum } from 'opensheetmusicdisplay';
+import { DrawingParametersEnum } from 'opensheetmusicdisplay';
 import { EventBus } from '../EventBus';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { MusicDisplayEventBus, MusicDisplayOptions } from './types';
@@ -20,32 +20,7 @@ const DEFAULT_OPTS: MusicDisplayOptions = {
   drawPartNames: false,
   followCursor: false,
   pageBackgroundColor: 'white',
-  cursorsOptions: [
-    {
-      type: CursorType.Standard,
-      color: 'blue',
-      follow: false,
-      alpha: 0,
-    },
-    {
-      type: CursorType.Standard,
-      color: 'lime',
-      follow: false,
-      alpha: 0,
-    },
-    {
-      type: CursorType.ThinLeft,
-      color: '#00ffd9',
-      follow: true,
-      alpha: 0.5,
-    },
-    {
-      type: CursorType.Standard,
-      color: 'black',
-      follow: false,
-      alpha: 0,
-    },
-  ],
+  cursorsOptions: [],
 };
 
 /**
