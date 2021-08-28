@@ -9,11 +9,11 @@ import { CursorWrapper, MusicDisplayOptions, SyncSettings } from './types';
 /**
  * InternalMusicDisplay handles the logic involving rendering notations and cursors.
  *
- * The reason why this extends OpenSheetMusicDisplay (inheritance) instead of
- * simply having an OpenSheetMusicDisplay instance (composition) is because
- * OpenSheetMusicDisplay has protected methods that we need access to. This
- * has some unwanted side effects like callers being able to call whatever
- * they want.
+ * The reason why this extends OpenSheetMusicDisplay (inheritance) instead of simply having an OpenSheetMusicDisplay
+ * instance (composition) is because OpenSheetMusicDisplay has protected methods that we need access to. This
+ * has some undesired side effects like callers being able to call whatever they want.
+ *
+ * Callers should instantiate a MusicDisplay object instead.
  */
 export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   scrollContainer: HTMLDivElement;

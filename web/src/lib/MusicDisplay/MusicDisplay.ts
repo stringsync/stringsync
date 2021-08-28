@@ -24,11 +24,9 @@ const DEFAULT_OPTS: MusicDisplayOptions = {
 };
 
 /**
- * MusicDisplay limits the public interface from InternalMusicDisplay since it
- * must inherit from OpenSheetMusicDisplay.
+ * MusicDisplay limits the public interface from InternalMusicDisplay.
  *
- * All the heavy lifting is done by the InternalMusicDisplay instance. Do not
- * add complex logic to this class.
+ * All the heavy lifting is done by the InternalMusicDisplay instance. Do not add complex logic to this class.
  */
 export class MusicDisplay {
   private imd: InternalMusicDisplay;
