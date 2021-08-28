@@ -1,20 +1,21 @@
+type EventSpec = Record<string, any>;
+
 type EventCallback<P> = (payload: P) => void;
 
 type Subscriber<P> = { id: symbol; callback: EventCallback<P> };
 
-type Subscribers<S, E extends EventNames<S>> = Array<Subscriber<Payload<S, E>>>;
+type Subscribers<S extends EventSpec, E extends EventNames<S>> = Array<Subscriber<Payload<S, E>>>;
 
-type SubscribersByEvent<S> = Partial<{ [E in EventNames<S>]: Subscribers<S, E> }>;
+type SubscribersByEventName<S extends EventSpec> = Partial<{ [E in EventNames<S>]: Subscribers<S, E> }>;
 
-type EventNames<S> = keyof S;
+type EventNames<S extends EventSpec> = keyof S;
 
-type Payload<S, E extends EventNames<S>> = S[E];
+type Payload<S extends EventSpec, E extends EventNames<S>> = S[E];
 
-type EventNameById<S> = { [key: symbol]: EventNames<S> };
+type EventNameById<S extends EventSpec> = { [key: symbol]: EventNames<S> };
 
-// S is a mapping of events to their respective payload
-export class EventBus<S = {}> {
-  private subscribersByEvent: SubscribersByEvent<S> = {};
+export class EventBus<S extends EventSpec = {}> {
+  private subscribersByEvent: SubscribersByEventName<S> = {};
   private eventNameById: EventNameById<S> = {};
 
   dispatch<E extends EventNames<S>>(eventName: E, payload: Payload<S, E>) {
