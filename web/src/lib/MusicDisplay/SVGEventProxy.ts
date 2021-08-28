@@ -74,7 +74,7 @@ export class SVGEventProxy {
     // TODO(jared) Consider fetching the OSMD object that corresponds to this element.
     const g = target.closest('.vf-notehead');
     if (g instanceof SVGGElement) {
-      this.eventBus.dispatch('noteClicked', {
+      this.eventBus.dispatch('noteclicked', {
         element: g,
         srcEvent: event,
       });

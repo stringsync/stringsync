@@ -192,7 +192,7 @@ export class LerpCursor {
       this.prevColoringOperation = null;
     }
 
-    this.eventBus.dispatch('cursorInfoChanged', {
+    this.eventBus.dispatch('cursorinfochanged', {
       currentMeasureIndex: this.lagger.iterator.CurrentMeasureIndex,
       currentMeasureNumber: this.lagger.iterator.CurrentMeasure.MeasureNumber,
       numMeasures: this.numMeasures,
@@ -251,7 +251,7 @@ export class LerpCursor {
           duration: durationMs,
           start: () => {
             this.lastScrollId = lastScrollId;
-            this.eventBus.dispatch('autoScrollStarted', {});
+            this.eventBus.dispatch('autoscrollstarted', {});
           },
           always: () => {
             if (didNewScrollInvoke()) {
@@ -262,7 +262,7 @@ export class LerpCursor {
               if (didNewScrollInvoke()) {
                 return;
               }
-              this.eventBus.dispatch('autoScrollEnded', {});
+              this.eventBus.dispatch('autoscrollended', {});
             }, SCROLL_GRACE_PERIOD_MS);
           },
         }

@@ -32,11 +32,11 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   }
 
   async load(xmlUrl: string) {
-    this.eventBus.dispatch('loadStarted', {});
+    this.eventBus.dispatch('loadstarted', {});
     try {
       return await super.load(xmlUrl);
     } finally {
-      this.eventBus.dispatch('loadEnded', {});
+      this.eventBus.dispatch('loadended', {});
     }
   }
 
@@ -82,10 +82,10 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   }
 
   private onResizeStart() {
-    this.eventBus.dispatch('resizeStarted', {});
+    this.eventBus.dispatch('resizestarted', {});
   }
 
   private onResizeEnd() {
-    this.eventBus.dispatch('resizeEnded', {});
+    this.eventBus.dispatch('resizeended', {});
   }
 }

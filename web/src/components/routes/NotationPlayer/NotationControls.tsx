@@ -204,7 +204,7 @@ export const NotationControls: React.FC<Props> = (props) => {
       return;
     }
 
-    const cursorInfoChangedHandle = musicDisplay.eventBus.subscribe('cursorInfoChanged', setCursorInfo);
+    const cursorInfoChangedHandle = musicDisplay.eventBus.subscribe('cursorinfochanged', setCursorInfo);
 
     return () => {
       musicDisplay.eventBus.unsubscribe(cursorInfoChangedHandle);

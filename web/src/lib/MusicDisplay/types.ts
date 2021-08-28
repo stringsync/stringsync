@@ -4,14 +4,14 @@ import { EventBus } from '../EventBus';
 import { IteratorSnapshot } from './IteratorSnapshot';
 
 export type MusicDisplayEventBus = EventBus<{
-  loadStarted: {};
-  loadEnded: {};
-  resizeStarted: {};
-  resizeEnded: {};
-  cursorInfoChanged: CursorInfo;
-  autoScrollStarted: {};
-  autoScrollEnded: {};
-  noteClicked: { srcEvent: SVGElementEventMap['click']; element: SVGGElement };
+  loadstarted: {};
+  loadended: {};
+  resizestarted: {};
+  resizeended: {};
+  cursorinfochanged: CursorInfo;
+  autoscrollstarted: {};
+  autoscrollended: {};
+  noteclicked: { srcEvent: SVGElementEventMap['click']; element: SVGGElement };
 }>;
 
 export type SyncSettings = {

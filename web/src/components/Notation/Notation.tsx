@@ -78,10 +78,10 @@ export const Notation: React.FC<NotationProps> = (props) => {
     if (!musicDisplay) {
       return;
     }
-    const autoScrollStartedHandle = musicDisplay.eventBus.subscribe('autoScrollStarted', () => {
+    const autoScrollStartedHandle = musicDisplay.eventBus.subscribe('autoscrollstarted', () => {
       isAutoScrollingRef.current = true;
     });
-    const autoScrollEndedHandle = musicDisplay.eventBus.subscribe('autoScrollEnded', () => {
+    const autoScrollEndedHandle = musicDisplay.eventBus.subscribe('autoscrollended', () => {
       isAutoScrollingRef.current = false;
     });
 
@@ -110,10 +110,10 @@ export const Notation: React.FC<NotationProps> = (props) => {
     const startLoading = () => setIsLoading(true);
     const stopLoading = () => setIsLoading(false);
 
-    const loadStartedId = musicDisplay.eventBus.subscribe('loadStarted', startLoading);
-    const loadEndedId = musicDisplay.eventBus.subscribe('loadEnded', stopLoading);
-    const resizeStartedId = musicDisplay.eventBus.subscribe('resizeStarted', startLoading);
-    const resizeEndedId = musicDisplay.eventBus.subscribe('resizeEnded', stopLoading);
+    const loadStartedId = musicDisplay.eventBus.subscribe('loadstarted', startLoading);
+    const loadEndedId = musicDisplay.eventBus.subscribe('loadended', stopLoading);
+    const resizeStartedId = musicDisplay.eventBus.subscribe('resizestarted', startLoading);
+    const resizeEndedId = musicDisplay.eventBus.subscribe('resizeended', stopLoading);
 
     setMusicDisplay(musicDisplay);
     musicDisplay.load(musicXmlUrl);
