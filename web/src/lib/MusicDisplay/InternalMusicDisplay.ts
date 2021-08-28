@@ -3,6 +3,7 @@ import { Cursor, CursorOptions, OpenSheetMusicDisplay } from 'opensheetmusicdisp
 import { MusicDisplayEventBus } from '.';
 import { LerpCursor } from './LerpCursor';
 import { NullCursor } from './NullCursor';
+import { SVGEventProxy } from './SVGEventProxy';
 import { CursorWrapper, MusicDisplayOptions, SyncSettings } from './types';
 
 /**
@@ -19,6 +20,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   syncSettings: SyncSettings;
   cursorWrapper: CursorWrapper = new NullCursor();
   eventBus: MusicDisplayEventBus;
+  svgEventProxy: SVGEventProxy | null = null;
 
   constructor(container: string | HTMLElement, eventBus: MusicDisplayEventBus, opts: MusicDisplayOptions) {
     super(container, opts);
@@ -40,7 +42,14 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
   render() {
     super.render();
-    this.initCursor();
+
+    this.cursorWrapper = LerpCursor.create(this, {
+      numMeasures: this.Sheet.SourceMeasures.length,
+      scrollContainer: this.scrollContainer,
+    });
+    this.cursorWrapper.init(this.Sheet, this.syncSettings);
+
+    this.svgEventProxy = SVGEventProxy.install(this, ['click']);
   }
 
   clear() {
@@ -70,14 +79,6 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
   private disableCursors() {
     this.enableOrDisableCursors(false);
-  }
-
-  private initCursor() {
-    this.cursorWrapper = LerpCursor.create(this, {
-      numMeasures: this.Sheet.SourceMeasures.length,
-      scrollContainer: this.scrollContainer,
-    });
-    this.cursorWrapper.init(this.Sheet, this.syncSettings);
   }
 
   private onResizeStart() {
