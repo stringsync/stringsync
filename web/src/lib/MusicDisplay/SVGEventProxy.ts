@@ -7,7 +7,7 @@ type SVGEventNames = keyof Pick<SVGElementEventMap, 'click' | 'mouseover' | 'dra
 
 type SVGElementEvent<N extends SVGEventNames> = SVGElementEventMap[N];
 
-type SVGEventHandler<N extends SVGEventNames = SVGEventNames> = (event: SVGElementEventMap[N]) => void;
+type SVGEventHandler<N extends SVGEventNames = SVGEventNames> = (event: SVGElementEvent<N>) => void;
 
 const isSvgBackend = (backend: VexFlowBackend | undefined): backend is SvgVexFlowBackend => {
   return !!backend && backend.getOSMDBackendType() === BackendType.SVG;
