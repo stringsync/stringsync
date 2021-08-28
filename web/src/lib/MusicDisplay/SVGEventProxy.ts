@@ -44,8 +44,6 @@ export class SVGEventProxy {
     this.eventListeners = [];
   }
 
-  // This is private to prevent callers from installing more than once. It's
-  // simpler than tracking installation state.
   private install(eventNames: SVGEventNames[]) {
     for (const eventName of eventNames) {
       const eventHandler = this.getEventHandler(eventName).bind(this);
