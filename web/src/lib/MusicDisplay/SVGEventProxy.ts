@@ -23,35 +23,33 @@ export class SVGEventProxy {
     const svg = backend.getSvgElement();
     const eventBus = imd.eventBus;
 
-    const svgEventProxy = new SVGEventProxy(svg, eventBus, eventNames);
-    svgEventProxy.install();
+    const svgEventProxy = new SVGEventProxy(svg, eventBus);
+    svgEventProxy.install(eventNames);
     return svgEventProxy;
   }
 
   private svg: SVGElement;
   private eventBus: MusicDisplayEventBus;
-  private eventNames: SVGEventNames[];
-  private eventRegistrations: Array<[SVGEventNames, SVGEventHandler]> = [];
+  private eventListeners: Array<[SVGEventNames, SVGEventHandler]> = [];
 
-  private constructor(svg: SVGElement, eventBus: MusicDisplayEventBus, eventNames: SVGEventNames[]) {
+  private constructor(svg: SVGElement, eventBus: MusicDisplayEventBus) {
     this.svg = svg;
     this.eventBus = eventBus;
-    this.eventNames = eventNames;
   }
 
   uninstall() {
-    for (const eventRegistration of this.eventRegistrations) {
-      this.svg.removeEventListener(...eventRegistration);
+    for (const eventListener of this.eventListeners) {
+      this.svg.removeEventListener(...eventListener);
     }
-    this.eventRegistrations = [];
+    this.eventListeners = [];
   }
 
   // This is private to prevent callers from installing more than once. It's
   // simpler than tracking installation state.
-  private install() {
-    for (const eventName of this.eventNames) {
+  private install(eventNames: SVGEventNames[]) {
+    for (const eventName of eventNames) {
       const eventHandler = this.getEventHandler(eventName).bind(this);
-      this.eventRegistrations.push([eventName, eventHandler]);
+      this.eventListeners.push([eventName, eventHandler]);
       this.svg.addEventListener(eventName, eventHandler);
     }
   }
