@@ -7,6 +7,10 @@ import { NullCursor } from './NullCursor';
 import { SVGEventProxy } from './SVGEventProxy';
 import { CursorWrapper, MusicDisplayOptions, SyncSettings } from './types';
 
+type IdentifiableCursorOptions = CursorOptions & {
+  id: symbol;
+};
+
 /**
  * InternalMusicDisplay handles the logic involving rendering notations and cursors.
  *
@@ -54,6 +58,8 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     });
 
     this.svgEventProxy = SVGEventProxy.install(this, ['click']);
+
+    console.log(this.cursors);
   }
 
   clear() {
@@ -66,11 +72,18 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.refreshCursors();
   }
 
-  pushCursors(opts: CursorOptions[]): Cursor[] {
+  pushCursors(additionalCursorOptions: IdentifiableCursorOptions[]): Cursor[] {
     const cursorsOptions = get(this, 'cursorsOptions', []);
-    set(this, 'cursorsOptions', [...cursorsOptions, ...opts]);
+    set(this, 'cursorsOptions', [...cursorsOptions, ...additionalCursorOptions]);
     this.refreshCursors();
-    return takeRight(this.cursors, opts.length);
+    return takeRight(this.cursors, additionalCursorOptions.length);
+  }
+
+  removeCursor(id: symbol) {
+    const cursorsOptions = get(this, 'cursorsOptions', []);
+    const nextCursorOptions = cursorsOptions.filter((opt: IdentifiableCursorOptions) => opt.id !== id);
+    set(this, 'cursorsOptions', nextCursorOptions);
+    this.refreshCursors();
   }
 
   enableCursors() {

@@ -19,19 +19,33 @@ export class MusicDisplayProber {
   }
 
   private probe(): MusicDisplayProbeResult {
-    const [probeCursor] = this.imd.pushCursors([
-      {
-        type: CursorType.Standard,
-        color: 'black',
-        follow: false,
-        alpha: 0,
-      },
-    ]);
-
     const associationStore = new AssociationStore();
-    const voiceSeeker = this.makeVoiceSeeker(probeCursor);
+    const voiceSeeker = this.makeVoiceSeeker();
 
     return { voiceSeeker, associationStore };
+  }
+
+  private forEachCursorPosition(callback: (index: number, probeCursor: Cursor) => void) {
+    const cursorOption = {
+      id: Symbol(),
+      type: CursorType.Standard,
+      color: 'black',
+      follow: false,
+      alpha: 0,
+    };
+    const [probeCursor] = this.imd.pushCursors([cursorOption]);
+
+    let index = 0;
+    probeCursor.reset();
+    try {
+      while (!probeCursor.iterator.EndReached) {
+        callback(index, probeCursor);
+        probeCursor.next();
+        index++;
+      }
+    } finally {
+      this.imd.removeCursor(cursorOption.id);
+    }
   }
 
   /**
@@ -39,7 +53,7 @@ export class MusicDisplayProber {
    * snapshots of each iteration. Consumers may use the snapshots to move a
    * cursor to a given point.
    */
-  private makeVoiceSeeker(probeCursor: Cursor): VoiceSeeker {
+  private makeVoiceSeeker(): VoiceSeeker {
     if (this.shouldSkipPointerCalculations()) {
       console.warn('skipping pointer calculations');
       return VoiceSeeker.create([]);
@@ -51,11 +65,8 @@ export class MusicDisplayProber {
     let prevVoicePointer: VoicePointer | null = null;
     let currBeat = 0;
     let currTimeMs = this.imd.syncSettings.deadTimeMs;
-    let index = 0;
 
-    probeCursor.reset();
-
-    while (!probeCursor.iterator.EndReached) {
+    this.forEachCursorPosition((index, probeCursor) => {
       const iteratorSnapshot = IteratorSnapshot.create(probeCursor.iterator);
 
       // Get OSMD-specific references
@@ -98,10 +109,7 @@ export class MusicDisplayProber {
       currBeat = endBeat;
       currTimeMs = endTimeMs;
       index++;
-
-      probeCursor.next();
-    }
-    probeCursor.reset();
+    });
 
     const frozenVoicePointers = voicePointers.map((voicePointer) => Object.freeze(voicePointer));
     return VoiceSeeker.create(frozenVoicePointers);

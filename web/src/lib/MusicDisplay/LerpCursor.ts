@@ -50,7 +50,7 @@ export type LerpCursorOpts = {
 
 export class LerpCursor {
   static create(imd: InternalMusicDisplay, voiceSeeker: VoiceSeeker, opts: LerpCursorOpts) {
-    const cursors = imd.pushCursors(DEFAULT_CURSOR_OPTS);
+    const cursors = imd.pushCursors(DEFAULT_CURSOR_OPTS.map((cursorsOption) => ({ id: Symbol(), ...cursorsOption })));
     if (cursors.length !== 3) {
       throw new Error(`expected 3 cursors, got: ${cursors.length}`);
     }
