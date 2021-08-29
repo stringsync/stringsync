@@ -1,6 +1,7 @@
 import { get, set, takeRight } from 'lodash';
 import { Cursor, CursorOptions, OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
 import { MusicDisplayEventBus } from '.';
+import { AssociationStore } from './AssociationStore';
 import { LerpCursor } from './LerpCursor';
 import { NullCursor } from './NullCursor';
 import { SVGEventProxy } from './SVGEventProxy';
@@ -21,6 +22,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   cursorWrapper: CursorWrapper = new NullCursor();
   eventBus: MusicDisplayEventBus;
   svgEventProxy: SVGEventProxy | null = null;
+  associationStore = new AssociationStore();
 
   constructor(container: string | HTMLElement, eventBus: MusicDisplayEventBus, opts: MusicDisplayOptions) {
     super(container, opts);
