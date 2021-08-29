@@ -42,23 +42,27 @@ export class AssociationStore {
   }
 
   private put<T>(map: Record<string, T>, key: string, value: T) {
-    if (this.strict && key in map) {
+    if (this.strict && this.hasKey(map, key)) {
       throw new Error(`strict mode, cannot put duplicate key: ${key}`);
     }
     map[key] = value;
   }
 
   private get<T>(map: Record<string, T>, key: string) {
-    if (this.strict && !(key in map)) {
+    if (this.strict && !this.hasKey(map, key)) {
       throw new Error(`strict mode, cannot get missing key: ${key}`);
     }
     return map[key] ?? null;
   }
 
   private delete<T>(map: Record<string, T>, key: string) {
-    if (this.strict && !(key in map)) {
+    if (this.strict && !this.hasKey(map, key)) {
       throw new Error(`strict mode, cannot delete missing key: ${key}`);
     }
     delete map[key];
+  }
+
+  hasKey<T>(map: Record<string, T>, key: string) {
+    return key in map;
   }
 }
