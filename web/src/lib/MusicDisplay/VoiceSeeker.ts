@@ -1,25 +1,13 @@
 import { first, last } from 'lodash';
-import { Cursor, MusicSheet } from 'opensheetmusicdisplay';
 import { bsearch } from '../../util/bsearch';
-import { NumberRange } from '../../util/NumberRange';
-import { IteratorSnapshot } from './IteratorSnapshot';
-import { SeekCost, SeekResult, SyncSettings, VoicePointer } from './types';
+import { SeekCost, SeekResult, VoicePointer } from './types';
 
-/**
- * This purpose of this class is to precompute an association of
- * of time ranges to voices so that they can be looked up quickly.
- *
- * A music sheet has many measures, and a measure has many voices. The
- * voice is ultimately used to determin where a cursor should be.
- *
- * This class is performance sensitive. VoiceSeeker.seek can be called
- * on each animation frame, so many optimization techniques are used.
- */
 export class VoiceSeeker {
-  static create(probe: Cursor, musicSheet: MusicSheet, syncSettings: SyncSettings): VoiceSeeker {
-    const voiceSeeker = new VoiceSeeker(probe, musicSheet, syncSettings);
-    voiceSeeker.init();
-    return voiceSeeker;
+  static create(voicePointers: VoicePointer[]) {
+    if (!VoiceSeeker.areVoicePointersValid(voicePointers)) {
+      throw new Error('voice pointers are invalid');
+    }
+    return new VoiceSeeker(voicePointers);
   }
 
   static createNullSeekResult(): SeekResult {
@@ -30,25 +18,42 @@ export class VoiceSeeker {
     };
   }
 
-  readonly probe: Cursor;
-  readonly musicSheet: MusicSheet;
-  readonly syncSettings: SyncSettings;
+  private static areVoicePointersValid(voicePointers: VoicePointer[]): boolean {
+    if (voicePointers.length === 0) {
+      return true;
+    }
 
-  private voicePointers = new Array<VoicePointer>();
-  private cachedSeekResult = VoiceSeeker.createNullSeekResult();
+    const firstVoicePointer = first(voicePointers)!;
 
-  private constructor(probe: Cursor, musicSheet: MusicSheet, syncSettings: SyncSettings) {
-    this.probe = probe;
-    this.musicSheet = musicSheet;
-    this.syncSettings = syncSettings;
+    if (firstVoicePointer.prev) {
+      console.warn(`starting voice pointer has a previous value`);
+      return false;
+    }
+
+    let numLinkedVoicePointers = 0;
+    let currentVoicePointer: VoicePointer | null = firstVoicePointer;
+
+    while (currentVoicePointer) {
+      if (numLinkedVoicePointers > voicePointers.length) {
+        console.warn('voice pointers may not be linked correctly');
+        return false;
+      }
+      currentVoicePointer = currentVoicePointer.next;
+      numLinkedVoicePointers++;
+    }
+    if (numLinkedVoicePointers !== voicePointers.length) {
+      console.warn(`num linked voice pointers does not match voice pointer length`);
+      return false;
+    }
+
+    return true;
   }
 
-  private init() {
-    if (this.shouldSkipPointerCalculations()) {
-      console.warn('skipping pointer calculations');
-      return;
-    }
-    this.calculateVoicePointers();
+  private voicePointers: VoicePointer[];
+  private cachedSeekResult = VoiceSeeker.createNullSeekResult();
+
+  private constructor(voicePointers: VoicePointer[]) {
+    this.voicePointers = voicePointers;
   }
 
   seek(timeMs: number): SeekResult {
@@ -139,109 +144,5 @@ export class VoiceSeeker {
     });
 
     return { timeMs, cost: SeekCost.Expensive, voicePointer: voicePointer || null };
-  }
-
-  /**
-   * Scans through all the voice entries using the probe cursor, then creates
-   * snapshots of each iteration. Consumers may use the snapshots to move a
-   * cursor to a given point.
-   */
-  private calculateVoicePointers(): void {
-    const voicePointers = new Array<VoicePointer>();
-
-    // Initialize accounting variables
-    let prevVoicePointer: VoicePointer | null = null;
-    let currBeat = 0;
-    let currTimeMs = this.syncSettings.deadTimeMs;
-    let index = 0;
-
-    this.probe.reset();
-
-    while (!this.probe.iterator.EndReached) {
-      const iteratorSnapshot = IteratorSnapshot.create(this.probe.iterator);
-
-      // Get OSMD-specific references
-      const entries = this.probe.VoicesUnderCursor();
-      const note = entries[0].Notes[0];
-
-      const bpm = this.probe.iterator.CurrentMeasure.TempoInBPM;
-      const numBeats = note.Length.RealValue;
-
-      // Calculate beat range
-      const startBeat = currBeat;
-      const endBeat = startBeat + numBeats;
-      const beatRange = NumberRange.from(startBeat).to(endBeat);
-
-      // Calculate time range
-      const startTimeMs = currTimeMs;
-      const endTimeMs = startTimeMs + this.convertNumBeatsToMs(bpm, numBeats);
-      const timeMsRange = NumberRange.from(startTimeMs).to(endTimeMs);
-
-      // Caluclate voice pointer
-      const voicePointer: VoicePointer = {
-        index,
-        next: null,
-        prev: null,
-        beatRange,
-        timeMsRange,
-        iteratorSnapshot,
-        entries,
-      };
-      voicePointers.push(voicePointer);
-
-      // Perform linking if necessary
-      if (prevVoicePointer) {
-        voicePointer.prev = prevVoicePointer;
-        prevVoicePointer.next = voicePointer;
-      }
-
-      // Update accounting variables
-      prevVoicePointer = voicePointer;
-      currBeat = endBeat;
-      currTimeMs = endTimeMs;
-      index++;
-
-      this.probe.next();
-    }
-    this.probe.reset();
-
-    this.voicePointers = voicePointers.map((voicePointer) => Object.freeze(voicePointer));
-  }
-
-  private shouldSkipPointerCalculations(): boolean {
-    const parts = this.musicSheet.Parts;
-    if (parts.length === 0) {
-      console.warn('music sheet has no parts');
-      return true;
-    }
-
-    const voices = parts[0].Voices;
-    if (voices.length === 0) {
-      console.warn('music sheet has no voices');
-      return true;
-    }
-
-    const voiceEntries = voices[0].VoiceEntries;
-    if (voiceEntries.length === 0) {
-      console.warn('music sheet has no voice entries');
-      return true;
-    }
-
-    const sourceMeasures = this.musicSheet.SourceMeasures;
-    if (sourceMeasures.length === 0) {
-      console.warn('music sheet has no source measures');
-      return true;
-    }
-
-    return false;
-  }
-
-  private convertNumBeatsToMs(bpm: number, numBeats: number) {
-    // bpm is how many quarter notes per minute
-    const trueBpm = bpm / 4;
-    const mins = numBeats / trueBpm;
-    const secs = mins * 60;
-    const ms = secs * 1000;
-    return ms;
   }
 }

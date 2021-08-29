@@ -1,4 +1,4 @@
-import { IOSMDOptions, MusicSheet, VoiceEntry } from 'opensheetmusicdisplay';
+import { IOSMDOptions, VoiceEntry } from 'opensheetmusicdisplay';
 import { NumberRange } from '../../util/NumberRange';
 import { EventBus } from '../EventBus';
 import { AssociationStore } from './AssociationStore';
@@ -21,7 +21,6 @@ export type SyncSettings = {
 };
 
 export interface CursorWrapper {
-  init(musicSheet: MusicSheet, syncSettings: SyncSettings): void;
   update(timeMs: number): void;
   clear(): void;
   disableAutoScroll(): void;

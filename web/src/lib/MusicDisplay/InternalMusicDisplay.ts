@@ -44,14 +44,14 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   render() {
     super.render();
 
-    const musicDisplayProber = new MusicDisplayProber(this);
-    const probeResult = musicDisplayProber.probe();
+    this.clearCursors();
 
-    this.cursorWrapper = LerpCursor.create(this, {
+    const { voicePointers, associationStore } = MusicDisplayProber.probe(this);
+
+    this.cursorWrapper = LerpCursor.create(this, voicePointers, {
       numMeasures: this.Sheet.SourceMeasures.length,
       scrollContainer: this.scrollContainer,
     });
-    this.cursorWrapper.init(this.Sheet, this.syncSettings);
 
     this.svgEventProxy = SVGEventProxy.install(this, ['click']);
   }
@@ -61,18 +61,23 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.cursorWrapper.clear();
   }
 
-  addCursors(opts: CursorOptions[]): Cursor[] {
+  clearCursors() {
+    set(this, 'cursorsOptions', []);
+    this.refreshCursors();
+  }
+
+  pushCursors(opts: CursorOptions[]): Cursor[] {
     const cursorsOptions = get(this, 'cursorsOptions', []);
     set(this, 'cursorsOptions', [...cursorsOptions, ...opts]);
     this.refreshCursors();
     return takeRight(this.cursors, opts.length);
   }
 
-  private enableCursors() {
+  enableCursors() {
     this.enableOrDisableCursors(true);
   }
 
-  private disableCursors() {
+  disableCursors() {
     this.enableOrDisableCursors(false);
   }
 
@@ -86,6 +91,12 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
   private refreshCursors() {
     const wasEnabled = this.drawingParameters.drawCursors;
+
+    if (this.cursorWrapper) {
+      this.cursorWrapper.clear();
+    }
+
+    this.cursors = [];
     this.enableCursors(); // Transforms cursor options to cursors
     if (!wasEnabled) {
       this.disableCursors();

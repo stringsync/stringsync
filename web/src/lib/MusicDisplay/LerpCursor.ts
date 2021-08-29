@@ -1,10 +1,10 @@
 import $ from 'jquery';
 import { throttle } from 'lodash';
-import { Cursor, CursorType, MusicSheet } from 'opensheetmusicdisplay';
+import { Cursor, CursorType } from 'opensheetmusicdisplay';
 import { MusicDisplayEventBus } from '.';
 import { ColoringOperation } from './ColoringOperation';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
-import { SyncSettings, VoicePointer } from './types';
+import { VoicePointer } from './types';
 import { VoiceSeeker } from './VoiceSeeker';
 
 const SCROLL_DURATION_MS = 100;
@@ -16,11 +16,31 @@ const SCROLL_JUMP_THRESHOLD_PX = 350;
 
 const END_OF_LINE_LERP_PX = 20;
 
+const DEFAULT_CURSOR_OPTS = [
+  {
+    type: CursorType.Standard,
+    color: 'blue',
+    follow: false,
+    alpha: 0,
+  },
+  {
+    type: CursorType.Standard,
+    color: 'lime',
+    follow: false,
+    alpha: 0,
+  },
+  {
+    type: CursorType.ThinLeft,
+    color: '#00ffd9',
+    follow: true,
+    alpha: 0.5,
+  },
+];
+
 type Cursors = {
   lagger: Cursor;
   leader: Cursor;
   lerper: Cursor;
-  probe: Cursor;
 };
 
 export type LerpCursorOpts = {
@@ -29,38 +49,17 @@ export type LerpCursorOpts = {
 };
 
 export class LerpCursor {
-  static create(imd: InternalMusicDisplay, opts: LerpCursorOpts) {
-    const cursors = imd.addCursors([
-      {
-        type: CursorType.Standard,
-        color: 'blue',
-        follow: false,
-        alpha: 0,
-      },
-      {
-        type: CursorType.Standard,
-        color: 'lime',
-        follow: false,
-        alpha: 0,
-      },
-      {
-        type: CursorType.ThinLeft,
-        color: '#00ffd9',
-        follow: true,
-        alpha: 0.5,
-      },
-      {
-        type: CursorType.Standard,
-        color: 'black',
-        follow: false,
-        alpha: 0,
-      },
-    ]);
-    if (cursors.length !== 4) {
-      throw new Error(`something went wrong, expected 4 cursors, got: ${cursors.length}`);
+  static create(imd: InternalMusicDisplay, voicePointers: VoicePointer[], opts: LerpCursorOpts) {
+    const cursors = imd.pushCursors(DEFAULT_CURSOR_OPTS);
+    if (cursors.length !== 3) {
+      throw new Error(`expected 3 cursors, got: ${cursors.length}`);
     }
-    const [lagger, leader, lerper, probe] = cursors;
-    return new LerpCursor(imd.eventBus, { lagger, leader, lerper, probe }, opts);
+
+    const [lagger, leader, lerper] = cursors;
+
+    const lerpCursor = new LerpCursor(imd.eventBus, { lagger, leader, lerper }, opts);
+    lerpCursor.init(voicePointers);
+    return lerpCursor;
   }
 
   eventBus: MusicDisplayEventBus;
@@ -68,7 +67,6 @@ export class LerpCursor {
   lagger: Cursor;
   leader: Cursor;
   lerper: Cursor;
-  probe: Cursor;
   scrollContainer: HTMLElement;
   numMeasures: number;
 
@@ -87,12 +85,11 @@ export class LerpCursor {
     this.lagger = cursors.lagger;
     this.leader = cursors.leader;
     this.lerper = cursors.lerper;
-    this.probe = cursors.probe;
     this.numMeasures = opts.numMeasures;
     this.scrollContainer = opts.scrollContainer;
   }
 
-  init(musicSheet: MusicSheet, syncSettings: SyncSettings) {
+  private init(voicePointers: VoicePointer[]) {
     this.lerper.cursorElement.style.zIndex = '2';
     this.lerper.cursorElement.setAttribute('draggable', 'false');
 
@@ -104,9 +101,8 @@ export class LerpCursor {
     this.lagger.show();
     this.leader.show();
     this.lerper.show();
-    this.probe.show();
 
-    this.voiceSeeker = VoiceSeeker.create(this.probe, musicSheet, syncSettings);
+    this.voiceSeeker = VoiceSeeker.create(voicePointers);
 
     this.$scrollContainer = $(this.scrollContainer);
     this.$laggerCursorElement = $(this.lagger.cursorElement);
