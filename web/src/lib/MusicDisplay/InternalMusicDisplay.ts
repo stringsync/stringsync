@@ -1,8 +1,8 @@
 import { get, set, takeRight } from 'lodash';
 import { Cursor, CursorOptions, OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
 import { MusicDisplayEventBus } from '.';
-import { AssociationStore } from './AssociationStore';
 import { LerpCursor } from './LerpCursor';
+import { MusicDisplayProber } from './MusicDisplayProber';
 import { NullCursor } from './NullCursor';
 import { SVGEventProxy } from './SVGEventProxy';
 import { CursorWrapper, MusicDisplayOptions, SyncSettings } from './types';
@@ -22,7 +22,6 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   cursorWrapper: CursorWrapper = new NullCursor();
   eventBus: MusicDisplayEventBus;
   svgEventProxy: SVGEventProxy | null = null;
-  associationStore = new AssociationStore();
 
   constructor(container: string | HTMLElement, eventBus: MusicDisplayEventBus, opts: MusicDisplayOptions) {
     super(container, opts);
@@ -45,6 +44,9 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   render() {
     super.render();
 
+    const musicDisplayProber = new MusicDisplayProber(this);
+    const probeResult = musicDisplayProber.probe();
+
     this.cursorWrapper = LerpCursor.create(this, {
       numMeasures: this.Sheet.SourceMeasures.length,
       scrollContainer: this.scrollContainer,
@@ -60,19 +62,10 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   }
 
   addCursors(opts: CursorOptions[]): Cursor[] {
-    const wasEnabled = this.drawingParameters.drawCursors;
-
     const cursorsOptions = get(this, 'cursorsOptions', []);
     set(this, 'cursorsOptions', [...cursorsOptions, ...opts]);
-
-    this.enableCursors(); // Transforms cursor options to cursors
-    const cursors = takeRight(this.cursors, opts.length);
-
-    if (!wasEnabled) {
-      this.disableCursors();
-    }
-
-    return cursors;
+    this.refreshCursors();
+    return takeRight(this.cursors, opts.length);
   }
 
   private enableCursors() {
@@ -89,5 +82,13 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
   private onResizeEnd() {
     this.eventBus.dispatch('resizeended', {});
+  }
+
+  private refreshCursors() {
+    const wasEnabled = this.drawingParameters.drawCursors;
+    this.enableCursors(); // Transforms cursor options to cursors
+    if (!wasEnabled) {
+      this.disableCursors();
+    }
   }
 }
