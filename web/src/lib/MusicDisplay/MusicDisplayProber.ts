@@ -4,6 +4,7 @@ import { NumberRange } from '../../util/NumberRange';
 import { AssociationStore } from './AssociationStore';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { IteratorSnapshot } from './IteratorSnapshot';
+import { VoiceSeeker } from './VoiceSeeker';
 
 export class MusicDisplayProber {
   static probe(imd: InternalMusicDisplay) {
@@ -28,9 +29,9 @@ export class MusicDisplayProber {
     ]);
 
     const associationStore = new AssociationStore();
-    const voicePointers = this.calculateVoicePointers(probeCursor, associationStore);
+    const voiceSeeker = this.makeVoiceSeeker(probeCursor);
 
-    return { voicePointers, associationStore };
+    return { voiceSeeker, associationStore };
   }
 
   /**
@@ -38,10 +39,10 @@ export class MusicDisplayProber {
    * snapshots of each iteration. Consumers may use the snapshots to move a
    * cursor to a given point.
    */
-  private calculateVoicePointers(probeCursor: Cursor, associationStore: AssociationStore): VoicePointer[] {
+  private makeVoiceSeeker(probeCursor: Cursor): VoiceSeeker {
     if (this.shouldSkipPointerCalculations()) {
       console.warn('skipping pointer calculations');
-      return [];
+      return VoiceSeeker.create([]);
     }
 
     const voicePointers = new Array<VoicePointer>();
@@ -102,7 +103,8 @@ export class MusicDisplayProber {
     }
     probeCursor.reset();
 
-    return voicePointers.map((voicePointer) => Object.freeze(voicePointer));
+    const frozenVoicePointers = voicePointers.map((voicePointer) => Object.freeze(voicePointer));
+    return VoiceSeeker.create(frozenVoicePointers);
   }
 
   private shouldSkipPointerCalculations(): boolean {

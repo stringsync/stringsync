@@ -43,7 +43,7 @@ export class VoiceSeeker {
       }
 
       if (prevVoicePointer.timeMsRange.end > currentVoicePointer.timeMsRange.start) {
-        console.warn('detected voice pointer overlap');
+        console.warn('detected voice pointer timeMs overlap');
         return false;
       }
 
@@ -58,7 +58,7 @@ export class VoiceSeeker {
     return true;
   }
 
-  private voicePointers: VoicePointer[];
+  readonly voicePointers: VoicePointer[];
   private cachedSeekResult = VoiceSeeker.createNullSeekResult();
 
   private constructor(voicePointers: VoicePointer[]) {

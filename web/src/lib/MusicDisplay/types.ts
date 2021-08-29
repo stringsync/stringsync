@@ -3,6 +3,7 @@ import { NumberRange } from '../../util/NumberRange';
 import { EventBus } from '../EventBus';
 import { AssociationStore } from './AssociationStore';
 import { IteratorSnapshot } from './IteratorSnapshot';
+import { VoiceSeeker } from './VoiceSeeker';
 
 export type MusicDisplayEventBus = EventBus<{
   loadstarted: {};
@@ -72,6 +73,6 @@ export type SeekResult = Readonly<{
 }>;
 
 export type MusicDisplayProbeResult = Readonly<{
-  voicePointers: VoicePointer[];
+  voiceSeeker: VoiceSeeker;
   associationStore: AssociationStore;
 }>;

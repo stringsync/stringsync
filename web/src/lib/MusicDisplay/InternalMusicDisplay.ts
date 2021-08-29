@@ -46,9 +46,9 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
     this.clearCursors();
 
-    const { voicePointers, associationStore } = MusicDisplayProber.probe(this);
+    const { voiceSeeker, associationStore } = MusicDisplayProber.probe(this);
 
-    this.cursorWrapper = LerpCursor.create(this, voicePointers, {
+    this.cursorWrapper = LerpCursor.create(this, voiceSeeker, {
       numMeasures: this.Sheet.SourceMeasures.length,
       scrollContainer: this.scrollContainer,
     });

@@ -49,7 +49,7 @@ export type LerpCursorOpts = {
 };
 
 export class LerpCursor {
-  static create(imd: InternalMusicDisplay, voicePointers: VoicePointer[], opts: LerpCursorOpts) {
+  static create(imd: InternalMusicDisplay, voiceSeeker: VoiceSeeker, opts: LerpCursorOpts) {
     const cursors = imd.pushCursors(DEFAULT_CURSOR_OPTS);
     if (cursors.length !== 3) {
       throw new Error(`expected 3 cursors, got: ${cursors.length}`);
@@ -58,7 +58,7 @@ export class LerpCursor {
     const [lagger, leader, lerper] = cursors;
 
     const lerpCursor = new LerpCursor(imd.eventBus, { lagger, leader, lerper }, opts);
-    lerpCursor.init(voicePointers);
+    lerpCursor.init(voiceSeeker);
     return lerpCursor;
   }
 
@@ -89,7 +89,7 @@ export class LerpCursor {
     this.scrollContainer = opts.scrollContainer;
   }
 
-  private init(voicePointers: VoicePointer[]) {
+  private init(voiceSeeker: VoiceSeeker) {
     this.lerper.cursorElement.style.zIndex = '2';
     this.lerper.cursorElement.setAttribute('draggable', 'false');
 
@@ -102,7 +102,7 @@ export class LerpCursor {
     this.leader.show();
     this.lerper.show();
 
-    this.voiceSeeker = VoiceSeeker.create(voicePointers);
+    this.voiceSeeker = voiceSeeker;
 
     this.$scrollContainer = $(this.scrollContainer);
     this.$laggerCursorElement = $(this.lagger.cursorElement);
