@@ -1,5 +1,5 @@
 import { Cursor, CursorType } from 'opensheetmusicdisplay';
-import { MusicDisplayProbeResult, VoicePointer } from '.';
+import { VoicePointer } from '.';
 import { NumberRange } from '../../util/NumberRange';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { IteratorSnapshot } from './IteratorSnapshot';
@@ -17,7 +17,7 @@ export class MusicDisplayProber {
     this.imd = imd;
   }
 
-  private probe(): MusicDisplayProbeResult {
+  private probe() {
     const voiceSeeker = this.makeVoiceSeeker();
     return { voiceSeeker };
   }

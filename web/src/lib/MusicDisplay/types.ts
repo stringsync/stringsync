@@ -2,7 +2,6 @@ import { IOSMDOptions, VoiceEntry } from 'opensheetmusicdisplay';
 import { NumberRange } from '../../util/NumberRange';
 import { EventBus } from '../EventBus';
 import { IteratorSnapshot } from './IteratorSnapshot';
-import { VoiceSeeker } from './VoiceSeeker';
 
 export type MusicDisplayEventBus = EventBus<{
   loadstarted: {};
@@ -69,8 +68,4 @@ export type SeekResult = Readonly<{
   timeMs: number;
   cost: SeekCost;
   voicePointer: Readonly<VoicePointer> | null;
-}>;
-
-export type MusicDisplayProbeResult = Readonly<{
-  voiceSeeker: VoiceSeeker;
 }>;
