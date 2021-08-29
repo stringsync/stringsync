@@ -1,7 +1,6 @@
 import { Cursor, CursorType } from 'opensheetmusicdisplay';
 import { MusicDisplayProbeResult, VoicePointer } from '.';
 import { NumberRange } from '../../util/NumberRange';
-import { AssociationStore } from './AssociationStore';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { IteratorSnapshot } from './IteratorSnapshot';
 import { VoiceSeeker } from './VoiceSeeker';
@@ -19,13 +18,11 @@ export class MusicDisplayProber {
   }
 
   private probe(): MusicDisplayProbeResult {
-    const associationStore = new AssociationStore();
     const voiceSeeker = this.makeVoiceSeeker();
-
-    return { voiceSeeker, associationStore };
+    return { voiceSeeker };
   }
 
-  private forEachCursorPosition(callback: (index: number, probeCursor: Cursor) => void) {
+  private withProbeCursor(callback: (probeCursor: Cursor) => void) {
     const cursorOption = {
       id: Symbol(),
       type: CursorType.Standard,
@@ -34,18 +31,22 @@ export class MusicDisplayProber {
       alpha: 0,
     };
     const [probeCursor] = this.imd.pushCursors([cursorOption]);
-
-    let index = 0;
-    probeCursor.reset();
     try {
+      callback(probeCursor);
+    } finally {
+      this.imd.removeCursor(cursorOption.id);
+    }
+  }
+
+  private forEachCursorPosition(callback: (index: number, probeCursor: Cursor) => void) {
+    let index = 0;
+    this.withProbeCursor((probeCursor: Cursor) => {
       while (!probeCursor.iterator.EndReached) {
         callback(index, probeCursor);
         probeCursor.next();
         index++;
       }
-    } finally {
-      this.imd.removeCursor(cursorOption.id);
-    }
+    });
   }
 
   /**

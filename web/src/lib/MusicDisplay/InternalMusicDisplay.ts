@@ -50,7 +50,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
     this.clearCursors();
 
-    const { voiceSeeker, associationStore } = MusicDisplayProber.probe(this);
+    const { voiceSeeker } = MusicDisplayProber.probe(this);
 
     this.cursorWrapper = LerpCursor.create(this, voiceSeeker, {
       numMeasures: this.Sheet.SourceMeasures.length,
@@ -58,8 +58,6 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     });
 
     this.svgEventProxy = SVGEventProxy.install(this, ['click']);
-
-    console.log(this.cursors);
   }
 
   clear() {
