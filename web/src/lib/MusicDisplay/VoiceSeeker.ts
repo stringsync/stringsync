@@ -24,20 +24,29 @@ export class VoiceSeeker {
     }
 
     const firstVoicePointer = first(voicePointers)!;
-
     if (firstVoicePointer.prev) {
       console.warn(`starting voice pointer has a previous value`);
       return false;
     }
 
-    let numLinkedVoicePointers = 0;
-    let currentVoicePointer: VoicePointer | null = firstVoicePointer;
-
+    let numLinkedVoicePointers = 1;
+    let currentVoicePointer: VoicePointer | null = firstVoicePointer.next;
     while (currentVoicePointer) {
       if (numLinkedVoicePointers > voicePointers.length) {
-        console.warn('voice pointers may not be linked correctly');
+        console.warn('detected too many voice pointers, they may not be linked correctly');
         return false;
       }
+      const prevVoicePointer = currentVoicePointer.prev;
+      if (!prevVoicePointer) {
+        console.warn('voice pointers prev may not be linked correctly');
+        return false;
+      }
+
+      if (prevVoicePointer.timeMsRange.end > currentVoicePointer.timeMsRange.start) {
+        console.warn('detected voice pointer overlap');
+        return false;
+      }
+
       currentVoicePointer = currentVoicePointer.next;
       numLinkedVoicePointers++;
     }
