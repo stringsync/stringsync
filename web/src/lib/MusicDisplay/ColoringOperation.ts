@@ -13,7 +13,7 @@ export class ColoringOperation {
   private notes: Note[];
   private rules: EngravingRules;
 
-  private constructor(notes: Note[], rules: EngravingRules) {
+  constructor(notes: Note[], rules: EngravingRules) {
     this.notes = notes;
     this.rules = rules;
   }

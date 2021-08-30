@@ -36,7 +36,6 @@ export class MusicDisplay {
   constructor(container: HTMLDivElement, partialOpts: Partial<MusicDisplayOptions> = {}) {
     const opts = merge({}, DEFAULT_OPTS, partialOpts);
     this.imd = new InternalMusicDisplay(container, this.eventBus, opts);
-    console.log(this.imd);
   }
 
   async load(xmlUrl: string) {

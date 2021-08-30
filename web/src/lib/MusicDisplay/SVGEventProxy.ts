@@ -1,4 +1,4 @@
-import { BackendType, SvgVexFlowBackend, VexFlowBackend } from 'opensheetmusicdisplay';
+import { BackendType, PointF2D, SvgVexFlowBackend, VexFlowBackend } from 'opensheetmusicdisplay';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { VoiceSeeker } from './VoiceSeeker';
 
@@ -71,12 +71,14 @@ export class SVGEventProxy {
       return;
     }
 
-    // TODO(jared) Consider fetching the OSMD object that corresponds to this element.
-    const g = target.closest('.vf-notehead');
-    if (g instanceof SVGGElement) {
-      this.imd.eventBus.dispatch('noteclicked', {
-        element: g,
+    const domPoint = new PointF2D(event.clientX, event.clientY);
+    const svgPoint = this.imd.GraphicSheet.domToSvg(domPoint);
+    const seekResult = this.voiceSeeker.seekByPosition(svgPoint.x, svgPoint.y);
+
+    if (seekResult.voicePointer) {
+      this.imd.eventBus.dispatch('voicepointerclicked', {
         srcEvent: event,
+        voicePointer: seekResult.voicePointer,
       });
     }
   }

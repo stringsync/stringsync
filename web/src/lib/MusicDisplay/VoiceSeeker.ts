@@ -103,7 +103,7 @@ export class VoiceSeeker {
   private init() {
     const toStr = (range: NumberRange) => `${range.start}-${range.end}`;
     const toRange = (str: string) => {
-      const [start, end] = str.split('-').map(parseInt);
+      const [start, end] = str.split('-').map(parseFloat);
       return NumberRange.from(start).to(end);
     };
 

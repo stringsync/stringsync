@@ -11,7 +11,7 @@ export type MusicDisplayEventBus = EventBus<{
   cursorinfochanged: CursorInfo;
   autoscrollstarted: {};
   autoscrollended: {};
-  noteclicked: { srcEvent: SVGElementEventMap['click']; element: SVGGElement };
+  voicepointerclicked: { srcEvent: SVGElementEventMap['click']; voicePointer: VoicePointer };
 }>;
 
 export type SyncSettings = {
