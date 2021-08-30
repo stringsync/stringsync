@@ -67,7 +67,6 @@ export enum SeekCost {
 }
 
 export type SeekResult = Readonly<{
-  timeMs: number;
   cost: SeekCost;
   voicePointer: Readonly<VoicePointer> | null;
 }>;

@@ -114,7 +114,7 @@ export class LerpCursor {
       return;
     }
 
-    const seekResult = this.voiceSeeker.seek(timeMs);
+    const seekResult = this.voiceSeeker.seekByTimeMs(timeMs);
 
     const nextVoicePointer = seekResult.voicePointer;
     const prevVoicePointer = this.prevVoicePointer;
