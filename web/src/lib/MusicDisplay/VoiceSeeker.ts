@@ -65,32 +65,15 @@ export class VoiceSeeker {
   readonly voicePointers: VoicePointer[];
   private cachedByTimeMsSeekResult = VoiceSeeker.createNullSeekResult();
   private cachedByPositionSeekResult = VoiceSeeker.createNullSeekResult();
-  private voicePointerLineGroups = new Array<VoicePointerLineGroup>();
+  private voicePointerLineGroups: VoicePointerLineGroup[];
 
-  private constructor(voicePointers: VoicePointer[]) {
+  private constructor(voicePointers: VoicePointer[], voicePointerLineGroups: VoicePointerLineGroup[] = []) {
     this.voicePointers = voicePointers;
+    this.voicePointerLineGroups = voicePointerLineGroups;
   }
 
-  private init() {
-    const toStr = (range: NumberRange) => `${range.start}-${range.end}`;
-    const toRange = (str: string) => {
-      const [start, end] = str.split('-').map(parseInt);
-      return NumberRange.from(start).to(end);
-    };
-
-    const voicePointersByYRangeStr = groupBy(this.voicePointers, (voicePointer) => toStr(voicePointer.yRange));
-    const yRangeStrs = sortBy(
-      Object.keys(voicePointersByYRangeStr),
-      (str) => toRange(str).start,
-      (str) => toRange(str).end
-    );
-
-    this.voicePointerLineGroups = yRangeStrs.map((yRangeStr) => {
-      return {
-        yRange: toRange(yRangeStr),
-        voicePointers: voicePointersByYRangeStr[yRangeStr],
-      };
-    });
+  clone() {
+    return new VoiceSeeker(this.voicePointers, this.voicePointerLineGroups);
   }
 
   seekByTimeMs(timeMs: number): SeekResult {
@@ -115,6 +98,28 @@ export class VoiceSeeker {
     const expensiveSeekResult = this.expensiveSeekByPosition(x, y);
     this.cachedByPositionSeekResult = expensiveSeekResult;
     return expensiveSeekResult;
+  }
+
+  private init() {
+    const toStr = (range: NumberRange) => `${range.start}-${range.end}`;
+    const toRange = (str: string) => {
+      const [start, end] = str.split('-').map(parseInt);
+      return NumberRange.from(start).to(end);
+    };
+
+    const voicePointersByYRangeStr = groupBy(this.voicePointers, (voicePointer) => toStr(voicePointer.yRange));
+    const yRangeStrs = sortBy(
+      Object.keys(voicePointersByYRangeStr),
+      (str) => toRange(str).start,
+      (str) => toRange(str).end
+    );
+
+    this.voicePointerLineGroups = yRangeStrs.map((yRangeStr) => {
+      return {
+        yRange: toRange(yRangeStr),
+        voicePointers: voicePointersByYRangeStr[yRangeStr],
+      };
+    });
   }
 
   private cheapSeekByTimeMs(timeMs: number): SeekResult | null {
