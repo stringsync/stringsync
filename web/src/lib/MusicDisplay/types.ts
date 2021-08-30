@@ -53,6 +53,8 @@ export type VoicePointer = {
   next: VoicePointer | null;
   prev: VoicePointer | null;
   iteratorSnapshot: IteratorSnapshot;
+  xRange: NumberRange;
+  yRange: NumberRange;
   beatRange: NumberRange;
   timeMsRange: NumberRange;
   entries: VoiceEntry[];

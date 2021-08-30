@@ -4,7 +4,7 @@ interface Range<T> {
   contains(value: T): boolean;
 }
 
-class PartialNumberRange implements Range<number> {
+class LeftBoundedRange implements Range<number> {
   public readonly start;
 
   constructor(start: number) {
@@ -24,9 +24,33 @@ class PartialNumberRange implements Range<number> {
   }
 }
 
+class RightBoundedRange implements Range<number> {
+  public readonly end;
+
+  constructor(end: number) {
+    this.end = end;
+  }
+
+  from(start: number) {
+    return new NumberRange(start, this.end);
+  }
+
+  get start() {
+    return Number.NEGATIVE_INFINITY;
+  }
+
+  contains(value: number) {
+    return this.start <= value && value <= this.end;
+  }
+}
+
 export class NumberRange implements Range<number> {
   static from(start: number) {
-    return new PartialNumberRange(start);
+    return new LeftBoundedRange(start);
+  }
+
+  static to(end: number) {
+    return new RightBoundedRange(end);
   }
 
   public readonly start: number;

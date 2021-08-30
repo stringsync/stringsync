@@ -1,9 +1,12 @@
+import $ from 'jquery';
 import { Cursor, CursorType } from 'opensheetmusicdisplay';
 import { VoicePointer } from '.';
 import { NumberRange } from '../../util/NumberRange';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { IteratorSnapshot } from './IteratorSnapshot';
 import { VoiceSeeker } from './VoiceSeeker';
+
+const END_OF_LINE_PADDING_PX = 100;
 
 export class MusicDisplayProber {
   static probe(imd: InternalMusicDisplay) {
@@ -32,6 +35,7 @@ export class MusicDisplayProber {
     };
     const [probeCursor] = this.imd.pushCursors([cursorOption]);
     try {
+      probeCursor.show();
       callback(probeCursor);
     } finally {
       this.imd.removeCursor(cursorOption.id);
@@ -87,11 +91,21 @@ export class MusicDisplayProber {
       const endTimeMs = startTimeMs + this.convertNumBeatsToMs(bpm, numBeats);
       const timeMsRange = NumberRange.from(startTimeMs).to(endTimeMs);
 
+      // Calculate position ranges
+      const $element = $(probeCursor.cursorElement);
+      const position = $element.position();
+      const startX = position.left;
+      const tmpEndX = startX + END_OF_LINE_PADDING_PX;
+      const startY = position.top;
+      const endY = startY + ($element.height() ?? 0);
+
       // Caluclate voice pointer
       const voicePointer: VoicePointer = {
         index,
         next: null,
         prev: null,
+        xRange: NumberRange.from(startX).to(tmpEndX),
+        yRange: NumberRange.from(startY).to(endY),
         beatRange,
         timeMsRange,
         iteratorSnapshot,
@@ -99,10 +113,15 @@ export class MusicDisplayProber {
       };
       voicePointers.push(voicePointer);
 
-      // Perform linking if necessary
+      // Perform linking and fix the xRange of the previous voice pointer if necessary
       if (prevVoicePointer) {
         voicePointer.prev = prevVoicePointer;
         prevVoicePointer.next = voicePointer;
+
+        const isPrevVoicePointerOnSameLine = prevVoicePointer.yRange.start === startY;
+        const prevStartX = prevVoicePointer.xRange.start;
+        const endStartX = isPrevVoicePointerOnSameLine ? startX : prevVoicePointer.xRange.end;
+        prevVoicePointer.xRange = NumberRange.from(prevStartX).to(endStartX);
       }
 
       // Update accounting variables

@@ -1,13 +1,21 @@
-import { first, last } from 'lodash';
+import { first, groupBy, last, sortBy } from 'lodash';
 import { bsearch } from '../../util/bsearch';
+import { NumberRange } from '../../util/NumberRange';
 import { SeekCost, SeekResult, VoicePointer } from './types';
+
+type VoicePointerLineGroup = {
+  yRange: NumberRange;
+  voicePointers: VoicePointer[];
+};
 
 export class VoiceSeeker {
   static create(voicePointers: VoicePointer[]) {
     if (!VoiceSeeker.areVoicePointersValid(voicePointers)) {
       throw new Error('voice pointers are invalid');
     }
-    return new VoiceSeeker(voicePointers);
+    const voiceSeeker = new VoiceSeeker(voicePointers);
+    voiceSeeker.init();
+    return voiceSeeker;
   }
 
   static createNullSeekResult(): SeekResult {
@@ -60,9 +68,32 @@ export class VoiceSeeker {
 
   readonly voicePointers: VoicePointer[];
   private cachedSeekResult = VoiceSeeker.createNullSeekResult();
+  private voicePointerLineGroups = new Array<VoicePointerLineGroup>();
 
   private constructor(voicePointers: VoicePointer[]) {
     this.voicePointers = voicePointers;
+  }
+
+  private init() {
+    const toStr = (range: NumberRange) => `${range.start}-${range.end}`;
+    const toRange = (str: string) => {
+      const [start, end] = str.split('-').map(parseInt);
+      return NumberRange.from(start).to(end);
+    };
+
+    const voicePointersByYRangeStr = groupBy(this.voicePointers, (voicePointer) => toStr(voicePointer.yRange));
+    const yRangeStrs = sortBy(
+      Object.keys(voicePointersByYRangeStr),
+      (str) => toRange(str).start,
+      (str) => toRange(str).end
+    );
+
+    this.voicePointerLineGroups = yRangeStrs.map((yRangeStr) => {
+      return {
+        yRange: toRange(yRangeStr),
+        voicePointers: voicePointersByYRangeStr[yRangeStr],
+      };
+    });
   }
 
   seek(timeMs: number): SeekResult {
