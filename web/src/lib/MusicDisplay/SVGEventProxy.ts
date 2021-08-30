@@ -1,6 +1,6 @@
 import { BackendType, SvgVexFlowBackend, VexFlowBackend } from 'opensheetmusicdisplay';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
-import { MusicDisplayEventBus } from './types';
+import { VoiceSeeker } from './VoiceSeeker';
 
 // Narrow down supported events.
 type SVGEventNames = keyof Pick<SVGElementEventMap, 'click' | 'mouseover' | 'drag'>;
@@ -14,27 +14,27 @@ const isSvgBackend = (backend: VexFlowBackend | undefined): backend is SvgVexFlo
 };
 
 export class SVGEventProxy {
-  static install(imd: InternalMusicDisplay, eventNames: SVGEventNames[]) {
+  static install(imd: InternalMusicDisplay, voiceSeeker: VoiceSeeker, eventNames: SVGEventNames[]) {
     const backend = imd.Drawer.Backends[0];
     if (!isSvgBackend(backend)) {
       throw new Error('expected the first backend to be an svg backend');
     }
-
     const svg = backend.getSvgElement();
-    const eventBus = imd.eventBus;
-
-    const svgEventProxy = new SVGEventProxy(svg, eventBus);
+    const svgEventProxy = new SVGEventProxy(svg, imd, voiceSeeker);
     svgEventProxy.install(eventNames);
     return svgEventProxy;
   }
 
   private svg: SVGElement;
-  private eventBus: MusicDisplayEventBus;
+  private imd: InternalMusicDisplay;
+  private voiceSeeker: VoiceSeeker;
+
   private eventListeners: Array<[SVGEventNames, SVGEventHandler]> = [];
 
-  private constructor(svg: SVGElement, eventBus: MusicDisplayEventBus) {
+  private constructor(svg: SVGElement, imd: InternalMusicDisplay, voiceSeeker: VoiceSeeker) {
     this.svg = svg;
-    this.eventBus = eventBus;
+    this.imd = imd;
+    this.voiceSeeker = voiceSeeker;
   }
 
   uninstall() {
@@ -74,7 +74,7 @@ export class SVGEventProxy {
     // TODO(jared) Consider fetching the OSMD object that corresponds to this element.
     const g = target.closest('.vf-notehead');
     if (g instanceof SVGGElement) {
-      this.eventBus.dispatch('noteclicked', {
+      this.imd.eventBus.dispatch('noteclicked', {
         element: g,
         srcEvent: event,
       });
