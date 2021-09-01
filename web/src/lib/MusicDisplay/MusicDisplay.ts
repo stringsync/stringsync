@@ -43,7 +43,7 @@ export class MusicDisplay {
     this.imd.render();
   }
 
-  clear() {
+  dispose() {
     this.imd.clear();
   }
 
