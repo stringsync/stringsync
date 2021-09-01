@@ -22,7 +22,7 @@ export type MusicDisplayEventBus = EventBus<{
   mouseup: SVGElementEventMap['mouseup'];
   selectionstarted: { selection: AnchoredTimeSelection };
   selectionupdated: { selection: AnchoredTimeSelection };
-  selectionended: { selection: AnchoredTimeSelection };
+  selectionended: {};
   voicepointerclicked: { voicePointer: VoicePointer; timeMs: number };
   voicepointerhovered: { voicePointer: VoicePointer; timeMs: number };
 }>;

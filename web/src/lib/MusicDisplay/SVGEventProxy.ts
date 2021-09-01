@@ -17,7 +17,7 @@ type SVGEventHandler<N extends SVGEventNames = SVGEventNames> = (event: SVGEleme
 
 type Positional = { clientX: number; clientY: number };
 
-const POINTER_MOVE_THROTTLE_DURATION = Duration.ms(50);
+const POINTER_MOVE_THROTTLE_DURATION = Duration.ms(30);
 
 const isSvgBackend = (backend: VexFlowBackend | undefined): backend is SvgVexFlowBackend => {
   return !!backend && backend.getOSMDBackendType() === BackendType.SVG;
@@ -144,10 +144,7 @@ export class SVGEventProxy {
       return;
     }
 
-    const seekResult = this.getSeekResult(touch);
-    if (seekResult.voicePointer) {
-      this.onSelectionEnd(seekResult.timeMs);
-    }
+    this.onSelectionEnd();
   }
 
   private onMouseDown(event: SVGElementEvent<'mousedown'>) {
@@ -182,14 +179,12 @@ export class SVGEventProxy {
   private onMouseUp(event: SVGElementEvent<'mouseup'>) {
     this.imd.eventBus.dispatch('mouseup', event);
 
-    const seekResult = this.getSeekResult(event);
-    if (seekResult.voicePointer) {
-      this.onSelectionEnd(seekResult.timeMs);
-    }
+    this.onSelectionEnd();
   }
 
   private onSelectionStart(timeMs: number) {
     this.currentSelection = AnchoredTimeSelection.init(timeMs);
+    console.log('start');
     this.imd.eventBus.dispatch('selectionstarted', { selection: this.currentSelection.clone() });
   }
 
@@ -201,12 +196,9 @@ export class SVGEventProxy {
     this.imd.eventBus.dispatch('selectionupdated', { selection: this.currentSelection.clone() });
   }
 
-  private onSelectionEnd(timeMs: number) {
-    if (!this.currentSelection) {
-      return;
-    }
-    this.currentSelection.update(timeMs);
-    this.imd.eventBus.dispatch('selectionended', { selection: this.currentSelection.clone() });
+  private onSelectionEnd() {
+    this.imd.eventBus.dispatch('selectionended', {});
+    console.log('end');
     this.currentSelection = null;
   }
 

@@ -259,10 +259,7 @@ export class VoiceSeeker {
     const x0 = voicePointer.xRange.start;
     const x1 = voicePointer.xRange.end;
 
-    const m = (x1 - x0) / (t1 - t0);
-    const b = t1 - m * x1;
-
-    const t = m * x + b;
+    const t = t1 + ((x - x1) * (t1 - t0)) / (x1 - x0);
 
     return t;
   }

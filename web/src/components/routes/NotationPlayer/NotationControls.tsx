@@ -220,14 +220,14 @@ export const NotationControls: React.FC<Props> = (props) => {
     const voicePointerClickedHandle = musicDisplay.eventBus.subscribe('voicepointerclicked', (payload) => {
       onSeek(payload.timeMs);
     });
-    const selectionStartedHandle = musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
+    const selectionStartedHandle = musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
       onSeek(payload.selection.anchorTimeMs);
     });
     const selectionUpdatedHandle = musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
       onSeek(payload.selection.seekerTimeMs);
     });
     const selectionEndedHandle = musicDisplay.eventBus.subscribe('selectionended', (payload) => {
-      onSeek(payload.selection.seekerTimeMs);
+      // onSeek(payload.selection.seekerTimeMs);
       // TODO(jared) Figure out how to call seek end properly
     });
 
