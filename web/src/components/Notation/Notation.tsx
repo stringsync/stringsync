@@ -124,7 +124,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
       musicDisplay.eventBus.unsubscribe(loadEndedId);
       musicDisplay.eventBus.unsubscribe(loadStartedId);
 
-      musicDisplay.clear();
+      musicDisplay.dispose();
 
       setMusicDisplay(null);
     };
