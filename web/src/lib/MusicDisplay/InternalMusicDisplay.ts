@@ -63,6 +63,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   clear() {
     super.clear();
     this.cursorWrapper.clear();
+    this.svgEventProxy?.uninstall();
   }
 
   clearCursors() {
