@@ -211,6 +211,7 @@ export const NotationControls: React.FC<Props> = (props) => {
     };
   }, [musicDisplay]);
 
+  const { onSeekEnd } = props;
   useEffect(() => {
     if (!musicDisplay) {
       return;
@@ -219,11 +220,24 @@ export const NotationControls: React.FC<Props> = (props) => {
     const voicePointerClickedHandle = musicDisplay.eventBus.subscribe('voicepointerclicked', (payload) => {
       onSeek(payload.timeMs);
     });
+    const selectionStartedHandle = musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
+      onSeek(payload.selection.anchorTimeMs);
+    });
+    const selectionUpdatedHandle = musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
+      onSeek(payload.selection.seekerTimeMs);
+    });
+    const selectionEndedHandle = musicDisplay.eventBus.subscribe('selectionended', (payload) => {
+      onSeek(payload.selection.seekerTimeMs);
+      // TODO(jared) Figure out how to call seek end properly
+    });
 
     return () => {
+      musicDisplay.eventBus.unsubscribe(selectionEndedHandle);
+      musicDisplay.eventBus.unsubscribe(selectionUpdatedHandle);
+      musicDisplay.eventBus.unsubscribe(selectionStartedHandle);
       musicDisplay.eventBus.unsubscribe(voicePointerClickedHandle);
     };
-  }, [musicDisplay, onSeek]);
+  }, [musicDisplay, onSeek, onSeekEnd]);
 
   const isPaused = videoPlayerState === VideoPlayerState.Paused;
 

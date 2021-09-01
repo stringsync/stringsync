@@ -137,7 +137,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
           <Loading>loading</Loading>
         </LoadingOverlay>
       )}
-      <div ref={divRef} />
+      <div ref={divRef} style={{ userSelect: 'none' }} />
     </Outer>
   );
 };

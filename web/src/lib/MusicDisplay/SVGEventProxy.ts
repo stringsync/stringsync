@@ -1,6 +1,7 @@
 import { throttle } from 'lodash';
 import { BackendType, PointF2D, SvgVexFlowBackend, VexFlowBackend } from 'opensheetmusicdisplay';
 import { Duration } from '../../util/Duration';
+import { AnchoredTimeSelection } from './AnchoredTimeSelection';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { VoiceSeeker } from './VoiceSeeker';
 
@@ -37,6 +38,8 @@ export class SVGEventProxy {
   private svg: SVGElement;
   private imd: InternalMusicDisplay;
   private voiceSeeker: VoiceSeeker;
+
+  private currentSelection: AnchoredTimeSelection | null = null;
 
   private eventListeners: Array<[string, (...args: any[]) => void]> = [];
 
@@ -103,6 +106,16 @@ export class SVGEventProxy {
 
   private onTouchStart(event: SVGElementEvent<'touchstart'>) {
     this.imd.eventBus.dispatch('touchstart', event);
+
+    const touch = event.touches.item(0);
+    if (!touch) {
+      return;
+    }
+
+    const seekResult = this.getSeekResult(touch);
+    if (seekResult.voicePointer) {
+      this.onSelectionStart(seekResult.timeMs);
+    }
   }
 
   private onTouchMove = throttle(
@@ -114,7 +127,10 @@ export class SVGEventProxy {
         return;
       }
 
-      console.log(this.getSvgPos(touch));
+      const seekResult = this.getSeekResult(touch);
+      if (seekResult.voicePointer) {
+        this.onSelectionUpdate(seekResult.timeMs);
+      }
     },
     POINTER_MOVE_THROTTLE_DURATION.ms,
     { leading: true, trailing: true }
@@ -122,10 +138,27 @@ export class SVGEventProxy {
 
   private onTouchEnd(event: SVGElementEvent<'touchend'>) {
     this.imd.eventBus.dispatch('touchend', event);
+
+    const touch = event.touches.item(0);
+    if (!touch) {
+      return;
+    }
+
+    const seekResult = this.getSeekResult(touch);
+    if (seekResult.voicePointer) {
+      this.onSelectionEnd(seekResult.timeMs);
+    }
   }
 
   private onMouseDown(event: SVGElementEvent<'mousedown'>) {
     this.imd.eventBus.dispatch('mousedown', event);
+
+    const seekResult = this.getSeekResult(event);
+    if (seekResult.voicePointer) {
+      this.onSelectionStart(seekResult.timeMs);
+    }
+
+    return false;
   }
 
   private onMouseMove = throttle(
@@ -133,12 +166,13 @@ export class SVGEventProxy {
       this.imd.eventBus.dispatch('mousemove', event);
 
       const seekResult = this.getSeekResult(event);
-
       if (seekResult.voicePointer) {
         this.imd.eventBus.dispatch('voicepointerhovered', {
           voicePointer: seekResult.voicePointer,
           timeMs: seekResult.timeMs,
         });
+
+        this.onSelectionUpdate(seekResult.timeMs);
       }
     },
     POINTER_MOVE_THROTTLE_DURATION.ms,
@@ -147,6 +181,33 @@ export class SVGEventProxy {
 
   private onMouseUp(event: SVGElementEvent<'mouseup'>) {
     this.imd.eventBus.dispatch('mouseup', event);
+
+    const seekResult = this.getSeekResult(event);
+    if (seekResult.voicePointer) {
+      this.onSelectionEnd(seekResult.timeMs);
+    }
+  }
+
+  private onSelectionStart(timeMs: number) {
+    this.currentSelection = AnchoredTimeSelection.init(timeMs);
+    this.imd.eventBus.dispatch('selectionstarted', { selection: this.currentSelection.clone() });
+  }
+
+  private onSelectionUpdate(timeMs: number) {
+    if (!this.currentSelection) {
+      return;
+    }
+    this.currentSelection.update(timeMs);
+    this.imd.eventBus.dispatch('selectionupdated', { selection: this.currentSelection.clone() });
+  }
+
+  private onSelectionEnd(timeMs: number) {
+    if (!this.currentSelection) {
+      return;
+    }
+    this.currentSelection.update(timeMs);
+    this.imd.eventBus.dispatch('selectionended', { selection: this.currentSelection.clone() });
+    this.currentSelection = null;
   }
 
   private getSeekResult(positional: Positional) {

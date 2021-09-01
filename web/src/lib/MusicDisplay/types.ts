@@ -1,6 +1,7 @@
 import { IOSMDOptions, VoiceEntry } from 'opensheetmusicdisplay';
 import { NumberRange } from '../../util/NumberRange';
 import { EventBus } from '../EventBus';
+import { AnchoredTimeSelection } from './AnchoredTimeSelection';
 import { IteratorSnapshot } from './IteratorSnapshot';
 
 export type MusicDisplayEventBus = EventBus<{
@@ -19,6 +20,9 @@ export type MusicDisplayEventBus = EventBus<{
   mousedown: SVGElementEventMap['mousedown'];
   mousemove: SVGElementEventMap['mousemove'];
   mouseup: SVGElementEventMap['mouseup'];
+  selectionstarted: { selection: AnchoredTimeSelection };
+  selectionupdated: { selection: AnchoredTimeSelection };
+  selectionended: { selection: AnchoredTimeSelection };
   voicepointerclicked: { voicePointer: VoicePointer; timeMs: number };
   voicepointerhovered: { voicePointer: VoicePointer; timeMs: number };
 }>;
