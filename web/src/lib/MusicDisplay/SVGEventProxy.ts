@@ -1,3 +1,4 @@
+import { throttle } from 'lodash';
 import { BackendType, PointF2D, SvgVexFlowBackend, VexFlowBackend } from 'opensheetmusicdisplay';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { VoiceSeeker } from './VoiceSeeker';
@@ -8,6 +9,8 @@ type SVGEventNames = keyof Pick<SVGElementEventMap, 'click' | 'mouseover' | 'dra
 type SVGElementEvent<N extends SVGEventNames> = SVGElementEventMap[N];
 
 type SVGEventHandler<N extends SVGEventNames = SVGEventNames> = (event: SVGElementEvent<N>) => void;
+
+type Positional = { clientX: number; clientY: number };
 
 const isSvgBackend = (backend: VexFlowBackend | undefined): backend is SvgVexFlowBackend => {
   return !!backend && backend.getOSMDBackendType() === BackendType.SVG;
@@ -66,14 +69,8 @@ export class SVGEventProxy {
   }
 
   private onClick(event: SVGElementEvent<'click'>) {
-    const { target } = event;
-    if (!(target instanceof Element)) {
-      return;
-    }
-
-    const domPoint = new PointF2D(event.clientX, event.clientY);
-    const svgPoint = this.imd.GraphicSheet.domToSvg(domPoint);
-    const seekResult = this.voiceSeeker.seekByPosition(svgPoint.x, svgPoint.y);
+    const { x, y } = this.extractSvgPos(event);
+    const seekResult = this.voiceSeeker.seekByPosition(x, y);
 
     if (seekResult.voicePointer) {
       this.imd.eventBus.dispatch('voicepointerclicked', {
@@ -84,12 +81,30 @@ export class SVGEventProxy {
     }
   }
 
-  private onMouseOver(event: SVGElementEvent<'mouseover'>) {
-    // TODO(jared) Dispatch a noteHovered event
-    // TODO(jared) Dispatch a measureHovered event
-  }
+  private onMouseOver = throttle(
+    (event: SVGElementEvent<'mouseover'>) => {
+      const { x, y } = this.extractSvgPos(event);
+      const seekResult = this.voiceSeeker.seekByPosition(x, y);
+
+      if (seekResult.voicePointer) {
+        this.imd.eventBus.dispatch('voicepointerhovered', {
+          srcEvent: event,
+          voicePointer: seekResult.voicePointer,
+          timeMs: seekResult.timeMs,
+        });
+      }
+    },
+    50,
+    { leading: true, trailing: true }
+  );
 
   private onDrag(event: SVGElementEvent<'drag'>) {
     // TODO(jared) Dispatch a noteDragged event
+  }
+
+  private extractSvgPos(positional: Positional) {
+    const pos = new PointF2D(positional.clientX, positional.clientY);
+    const { x, y } = this.imd.GraphicSheet.domToSvg(pos);
+    return { x, y };
   }
 }
