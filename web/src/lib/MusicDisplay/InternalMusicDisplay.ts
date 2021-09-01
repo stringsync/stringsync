@@ -57,7 +57,15 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
       scrollContainer: this.scrollContainer,
     });
 
-    this.svgEventProxy = SVGEventProxy.install(this, voiceSeeker.clone(), ['click']);
+    this.svgEventProxy = SVGEventProxy.install(this, voiceSeeker.clone(), [
+      'click',
+      'touchstart',
+      'touchmove',
+      'touchend',
+      'mouseup',
+      'mousemove',
+      'mousedown',
+    ]);
   }
 
   clear() {

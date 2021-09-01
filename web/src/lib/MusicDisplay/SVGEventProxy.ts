@@ -4,7 +4,10 @@ import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { VoiceSeeker } from './VoiceSeeker';
 
 // Narrow down supported events.
-type SVGEventNames = keyof Pick<SVGElementEventMap, 'click' | 'mouseover' | 'drag'>;
+type SVGEventNames = keyof Pick<
+  SVGElementEventMap,
+  'click' | 'touchstart' | 'touchmove' | 'touchend' | 'mousedown' | 'mousemove' | 'mouseup'
+>;
 
 type SVGElementEvent<N extends SVGEventNames> = SVGElementEventMap[N];
 
@@ -32,7 +35,7 @@ export class SVGEventProxy {
   private imd: InternalMusicDisplay;
   private voiceSeeker: VoiceSeeker;
 
-  private eventListeners: Array<[SVGEventNames, SVGEventHandler]> = [];
+  private eventListeners: Array<[string, (...args: any[]) => void]> = [];
 
   private constructor(svg: SVGElement, imd: InternalMusicDisplay, voiceSeeker: VoiceSeeker) {
     this.svg = svg;
@@ -49,46 +52,70 @@ export class SVGEventProxy {
 
   private install(eventNames: SVGEventNames[]) {
     for (const eventName of eventNames) {
-      const eventHandler = this.getEventHandler(eventName).bind(this);
-      this.eventListeners.push([eventName, eventHandler]);
-      this.svg.addEventListener(eventName, eventHandler);
+      this.addEventListener(eventName);
     }
   }
 
-  private getEventHandler(eventName: SVGEventNames) {
+  private addEventListener(eventName: SVGEventNames) {
+    const listen = <T extends SVGEventNames>(eventName: T, eventHandler: SVGEventHandler<T>) => {
+      this.eventListeners.push([eventName, eventHandler]);
+      this.svg.addEventListener(eventName, eventHandler);
+    };
+
     switch (eventName) {
       case 'click':
-        return this.onClick;
-      case 'drag':
-        return this.onDrag;
-      case 'mouseover':
-        return this.onMouseOver;
+        return listen(eventName, this.onClick.bind(this));
+      case 'touchstart':
+        return listen(eventName, this.onTouchStart.bind(this));
+      case 'touchmove':
+        return listen(eventName, this.onTouchMove.bind(this));
+      case 'touchend':
+        return listen(eventName, this.onTouchEnd.bind(this));
+      case 'mousedown':
+        return listen(eventName, this.onMouseDown.bind(this));
+      case 'mousemove':
+        return listen(eventName, this.onMouseMove.bind(this));
+      case 'mouseup':
+        return listen(eventName, this.onMouseUp.bind(this));
       default:
         throw new Error(`no event handler for event: ${eventName}`);
     }
   }
 
   private onClick(event: SVGElementEvent<'click'>) {
-    const { x, y } = this.extractSvgPos(event);
-    const seekResult = this.voiceSeeker.seekByPosition(x, y);
+    const seekResult = this.getSeekResult(event);
 
     if (seekResult.voicePointer) {
       this.imd.eventBus.dispatch('voicepointerclicked', {
-        srcEvent: event,
+        src: event,
         voicePointer: seekResult.voicePointer,
         timeMs: seekResult.timeMs,
       });
     }
   }
 
-  private onMouseOver = throttle(
-    (event: SVGElementEvent<'mouseover'>) => {
-      const { x, y } = this.extractSvgPos(event);
-      const seekResult = this.voiceSeeker.seekByPosition(x, y);
+  private onTouchStart(event: SVGElementEvent<'touchstart'>) {}
+
+  private onTouchMove(event: SVGElementEvent<'touchmove'>) {
+    const touch = event.touches.item(0);
+    if (!touch) {
+      return;
+    }
+
+    console.log(this.getSvgPos(touch));
+  }
+
+  private onTouchEnd(event: SVGElementEvent<'touchend'>) {}
+
+  private onMouseDown(event: SVGElementEvent<'mousedown'>) {}
+
+  private onMouseMove = throttle(
+    (event: SVGElementEvent<'mousemove'>) => {
+      const seekResult = this.getSeekResult(event);
 
       if (seekResult.voicePointer) {
         this.imd.eventBus.dispatch('voicepointerhovered', {
-          srcEvent: event,
+          src: event,
           voicePointer: seekResult.voicePointer,
           timeMs: seekResult.timeMs,
         });
@@ -98,11 +125,14 @@ export class SVGEventProxy {
     { leading: true, trailing: true }
   );
 
-  private onDrag(event: SVGElementEvent<'drag'>) {
-    // TODO(jared) Dispatch a noteDragged event
+  private onMouseUp(event: SVGElementEvent<'mouseup'>) {}
+
+  private getSeekResult(positional: Positional) {
+    const { x, y } = this.getSvgPos(positional);
+    return this.voiceSeeker.seekByPosition(x, y);
   }
 
-  private extractSvgPos(positional: Positional) {
+  private getSvgPos(positional: Positional) {
     const pos = new PointF2D(positional.clientX, positional.clientY);
     const { x, y } = this.imd.GraphicSheet.domToSvg(pos);
     return { x, y };
