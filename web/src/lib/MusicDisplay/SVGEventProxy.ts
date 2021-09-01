@@ -1,5 +1,6 @@
 import { throttle } from 'lodash';
 import { BackendType, PointF2D, SvgVexFlowBackend, VexFlowBackend } from 'opensheetmusicdisplay';
+import { Duration } from '../../util/Duration';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { VoiceSeeker } from './VoiceSeeker';
 
@@ -14,6 +15,8 @@ type SVGElementEvent<N extends SVGEventNames> = SVGElementEventMap[N];
 type SVGEventHandler<N extends SVGEventNames = SVGEventNames> = (event: SVGElementEvent<N>) => void;
 
 type Positional = { clientX: number; clientY: number };
+
+const POINTER_MOVE_THROTTLE_DURATION = Duration.ms(50);
 
 const isSvgBackend = (backend: VexFlowBackend | undefined): backend is SvgVexFlowBackend => {
   return !!backend && backend.getOSMDBackendType() === BackendType.SVG;
@@ -57,20 +60,24 @@ export class SVGEventProxy {
   }
 
   private addEventListener(eventName: SVGEventNames) {
-    const listen = <T extends SVGEventNames>(eventName: T, eventHandler: SVGEventHandler<T>) => {
+    const listen = <T extends SVGEventNames>(
+      eventName: T,
+      eventHandler: SVGEventHandler<T>,
+      options?: AddEventListenerOptions
+    ) => {
       this.eventListeners.push([eventName, eventHandler]);
-      this.svg.addEventListener(eventName, eventHandler);
+      this.svg.addEventListener(eventName, eventHandler, options);
     };
 
     switch (eventName) {
       case 'click':
         return listen(eventName, this.onClick.bind(this));
       case 'touchstart':
-        return listen(eventName, this.onTouchStart.bind(this));
+        return listen(eventName, this.onTouchStart.bind(this), { passive: true });
       case 'touchmove':
-        return listen(eventName, this.onTouchMove.bind(this));
+        return listen(eventName, this.onTouchMove.bind(this), { passive: true });
       case 'touchend':
-        return listen(eventName, this.onTouchEnd.bind(this));
+        return listen(eventName, this.onTouchEnd.bind(this), { passive: true });
       case 'mousedown':
         return listen(eventName, this.onMouseDown.bind(this));
       case 'mousemove':
@@ -83,49 +90,64 @@ export class SVGEventProxy {
   }
 
   private onClick(event: SVGElementEvent<'click'>) {
-    const seekResult = this.getSeekResult(event);
+    this.imd.eventBus.dispatch('click', event);
 
+    const seekResult = this.getSeekResult(event);
     if (seekResult.voicePointer) {
       this.imd.eventBus.dispatch('voicepointerclicked', {
-        src: event,
         voicePointer: seekResult.voicePointer,
         timeMs: seekResult.timeMs,
       });
     }
   }
 
-  private onTouchStart(event: SVGElementEvent<'touchstart'>) {}
-
-  private onTouchMove(event: SVGElementEvent<'touchmove'>) {
-    const touch = event.touches.item(0);
-    if (!touch) {
-      return;
-    }
-
-    console.log(this.getSvgPos(touch));
+  private onTouchStart(event: SVGElementEvent<'touchstart'>) {
+    this.imd.eventBus.dispatch('touchstart', event);
   }
 
-  private onTouchEnd(event: SVGElementEvent<'touchend'>) {}
+  private onTouchMove = throttle(
+    (event: SVGElementEvent<'touchmove'>) => {
+      this.imd.eventBus.dispatch('touchmove', event);
 
-  private onMouseDown(event: SVGElementEvent<'mousedown'>) {}
+      const touch = event.touches.item(0);
+      if (!touch) {
+        return;
+      }
+
+      console.log(this.getSvgPos(touch));
+    },
+    POINTER_MOVE_THROTTLE_DURATION.ms,
+    { leading: true, trailing: true }
+  );
+
+  private onTouchEnd(event: SVGElementEvent<'touchend'>) {
+    this.imd.eventBus.dispatch('touchend', event);
+  }
+
+  private onMouseDown(event: SVGElementEvent<'mousedown'>) {
+    this.imd.eventBus.dispatch('mousedown', event);
+  }
 
   private onMouseMove = throttle(
     (event: SVGElementEvent<'mousemove'>) => {
+      this.imd.eventBus.dispatch('mousemove', event);
+
       const seekResult = this.getSeekResult(event);
 
       if (seekResult.voicePointer) {
         this.imd.eventBus.dispatch('voicepointerhovered', {
-          src: event,
           voicePointer: seekResult.voicePointer,
           timeMs: seekResult.timeMs,
         });
       }
     },
-    50,
+    POINTER_MOVE_THROTTLE_DURATION.ms,
     { leading: true, trailing: true }
   );
 
-  private onMouseUp(event: SVGElementEvent<'mouseup'>) {}
+  private onMouseUp(event: SVGElementEvent<'mouseup'>) {
+    this.imd.eventBus.dispatch('mouseup', event);
+  }
 
   private getSeekResult(positional: Positional) {
     const { x, y } = this.getSvgPos(positional);
