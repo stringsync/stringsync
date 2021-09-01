@@ -33,6 +33,7 @@ export type SyncSettings = {
 };
 
 export interface CursorWrapper {
+  element: HTMLElement;
   update(timeMs: number): void;
   clear(): void;
   disableAutoScroll(): void;

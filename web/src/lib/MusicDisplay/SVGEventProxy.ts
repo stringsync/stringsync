@@ -35,7 +35,7 @@ export class SVGEventProxy {
     return svgEventProxy;
   }
 
-  private svg: SVGElement;
+  svg: SVGElement;
   private imd: InternalMusicDisplay;
   private voiceSeeker: VoiceSeeker;
 
@@ -151,6 +151,8 @@ export class SVGEventProxy {
   private onMouseDown(event: SVGElementEvent<'mousedown'>) {
     this.imd.eventBus.dispatch('mousedown', event);
 
+    console.log('svg mousedown');
+
     const seekResult = this.getSeekResult(event);
     if (seekResult.voicePointer) {
       this.onSelectionStart(seekResult.timeMs);
@@ -207,6 +209,9 @@ export class SVGEventProxy {
   }
 
   private getSvgPos(positional: Positional) {
+    if (!this.imd.GraphicSheet) {
+      return { x: 0, y: 0 };
+    }
     const pos = new PointF2D(positional.clientX, positional.clientY);
     const { x, y } = this.imd.GraphicSheet.domToSvg(pos);
     return { x, y };

@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import { get, set, takeRight } from 'lodash';
 import { Cursor, CursorOptions, OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
 import { MusicDisplayEventBus } from '.';
@@ -6,6 +7,8 @@ import { MusicDisplayProber } from './MusicDisplayProber';
 import { NullCursor } from './NullCursor';
 import { SVGEventProxy } from './SVGEventProxy';
 import { CursorWrapper, MusicDisplayOptions, SyncSettings } from './types';
+
+const CURSOR_PADDING_PX = 50;
 
 type IdentifiableCursorOptions = CursorOptions & {
   id: symbol;
@@ -26,6 +29,9 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   cursorWrapper: CursorWrapper = new NullCursor();
   eventBus: MusicDisplayEventBus;
   svgEventProxy: SVGEventProxy | null = null;
+
+  private onSelectionUpdatedHandle = Symbol();
+  private onSelectionEndedHandle = Symbol();
 
   constructor(container: string | HTMLElement, eventBus: MusicDisplayEventBus, opts: MusicDisplayOptions) {
     super(container, opts);
@@ -57,7 +63,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
       scrollContainer: this.scrollContainer,
     });
 
-    this.svgEventProxy = SVGEventProxy.install(this, voiceSeeker.clone(), [
+    const svgEventProxy = SVGEventProxy.install(this, voiceSeeker.clone(), [
       'click',
       'touchstart',
       'touchmove',
@@ -66,6 +72,23 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
       'mousemove',
       'mousedown',
     ]);
+    this.svgEventProxy = svgEventProxy;
+    const $svg = $(svgEventProxy.svg);
+
+    this.onSelectionUpdatedHandle = this.eventBus.subscribe('selectionupdated', (payload) => {
+      const { anchorTimeMs, seekerTimeMs } = payload.selection;
+      if (Math.abs(anchorTimeMs - seekerTimeMs) <= CURSOR_PADDING_PX) {
+        $svg.css('cursor', 'ew-resize');
+      } else if (anchorTimeMs > seekerTimeMs) {
+        $svg.css('cursor', 'w-resize');
+      } else {
+        $svg.css('cursor', 'e-resize');
+      }
+    });
+
+    this.onSelectionEndedHandle = this.eventBus.subscribe('selectionended', () => {
+      $svg.css('cursor', 'default');
+    });
   }
 
   clear() {
@@ -76,6 +99,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     if (svg) {
       this.container.removeChild(svg);
     }
+    this.eventBus.unsubscribe(this.onSelectionUpdatedHandle);
   }
 
   clearCursors() {

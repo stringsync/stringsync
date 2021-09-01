@@ -89,9 +89,15 @@ export class LerpCursor {
     this.scrollContainer = opts.scrollContainer;
   }
 
+  get element() {
+    return this.lerper.cursorElement;
+  }
+
   private init(voiceSeeker: VoiceSeeker) {
-    this.lerper.cursorElement.style.zIndex = '2';
-    this.lerper.cursorElement.setAttribute('draggable', 'false');
+    const $element = $(this.element);
+    $element.css('z-index', 2);
+    $element.css('pointer-events', 'none');
+    $element.attr('draggable', 'false');
 
     this.lagger.resetIterator();
     this.leader.resetIterator();
