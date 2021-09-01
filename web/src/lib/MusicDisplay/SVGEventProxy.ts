@@ -79,6 +79,7 @@ export class SVGEventProxy {
       this.imd.eventBus.dispatch('voicepointerclicked', {
         srcEvent: event,
         voicePointer: seekResult.voicePointer,
+        timeMs: seekResult.timeMs,
       });
     }
   }

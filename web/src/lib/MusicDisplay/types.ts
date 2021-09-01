@@ -11,7 +11,7 @@ export type MusicDisplayEventBus = EventBus<{
   cursorinfochanged: CursorInfo;
   autoscrollstarted: {};
   autoscrollended: {};
-  voicepointerclicked: { srcEvent: SVGElementEventMap['click']; voicePointer: VoicePointer };
+  voicepointerclicked: { srcEvent: SVGElementEventMap['click']; voicePointer: VoicePointer; timeMs: number };
 }>;
 
 export type SyncSettings = {
@@ -67,6 +67,7 @@ export enum SeekCost {
 }
 
 export type SeekResult = Readonly<{
+  timeMs: number;
   cost: SeekCost;
   voicePointer: Readonly<VoicePointer> | null;
 }>;

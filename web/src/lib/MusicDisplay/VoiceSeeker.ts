@@ -19,7 +19,7 @@ export class VoiceSeeker {
   }
 
   static createNullSeekResult(): SeekResult {
-    return { cost: SeekCost.Cheap, voicePointer: null };
+    return { timeMs: -1, cost: SeekCost.Cheap, voicePointer: null };
   }
 
   private static areVoicePointersValid(voicePointers: VoicePointer[]): boolean {
@@ -124,28 +124,28 @@ export class VoiceSeeker {
 
   private cheapSeekByTimeMs(timeMs: number): SeekResult | null {
     if (this.voicePointers.length === 0) {
-      return { cost: SeekCost.Cheap, voicePointer: null };
+      return { timeMs, cost: SeekCost.Cheap, voicePointer: null };
     }
 
     const firstVoicePointer = first(this.voicePointers)!;
     if (timeMs < firstVoicePointer.timeMsRange.start) {
-      return { cost: SeekCost.Cheap, voicePointer: null };
+      return { timeMs, cost: SeekCost.Cheap, voicePointer: null };
     }
 
     if (firstVoicePointer.timeMsRange.contains(timeMs)) {
-      return { cost: SeekCost.Cheap, voicePointer: firstVoicePointer };
+      return { timeMs, cost: SeekCost.Cheap, voicePointer: firstVoicePointer };
     }
 
     // The first voice pointer may have a time range of [0, 0], so we always check
     // the second one just in case.
     const secondVoicePointer = firstVoicePointer.next;
     if (secondVoicePointer && secondVoicePointer.timeMsRange.contains(timeMs)) {
-      return { cost: SeekCost.Cheap, voicePointer: secondVoicePointer };
+      return { timeMs, cost: SeekCost.Cheap, voicePointer: secondVoicePointer };
     }
 
     const lastVoicePointer = last(this.voicePointers)!;
     if (timeMs > lastVoicePointer.timeMsRange.end) {
-      return { cost: SeekCost.Cheap, voicePointer: null };
+      return { timeMs, cost: SeekCost.Cheap, voicePointer: null };
     }
 
     const voicePointer = this.cachedByTimeMsSeekResult.voicePointer;
@@ -154,17 +154,17 @@ export class VoiceSeeker {
     }
 
     if (voicePointer.timeMsRange.contains(timeMs)) {
-      return { cost: SeekCost.Cheap, voicePointer };
+      return { timeMs, cost: SeekCost.Cheap, voicePointer };
     }
 
     const nextVoicePointer = voicePointer.next;
     if (nextVoicePointer && nextVoicePointer.timeMsRange.contains(timeMs)) {
-      return { cost: SeekCost.Cheap, voicePointer: nextVoicePointer };
+      return { timeMs, cost: SeekCost.Cheap, voicePointer: nextVoicePointer };
     }
 
     const prevVoicePointer = voicePointer.prev;
     if (prevVoicePointer && prevVoicePointer.timeMsRange.contains(timeMs)) {
-      return { cost: SeekCost.Cheap, voicePointer: prevVoicePointer };
+      return { timeMs, cost: SeekCost.Cheap, voicePointer: prevVoicePointer };
     }
 
     return null;
@@ -185,12 +185,12 @@ export class VoiceSeeker {
       }
     });
 
-    return { cost: SeekCost.Expensive, voicePointer: voicePointer || null };
+    return { timeMs, cost: SeekCost.Expensive, voicePointer: voicePointer || null };
   }
 
   private cheapSeekByPosition(x: number, y: number): SeekResult | null {
     if (this.voicePointers.length === 0) {
-      return { cost: SeekCost.Cheap, voicePointer: null };
+      return { timeMs: 0, cost: SeekCost.Cheap, voicePointer: null };
     }
 
     const voicePointer = this.cachedByPositionSeekResult.voicePointer;
@@ -199,17 +199,20 @@ export class VoiceSeeker {
     }
 
     if (voicePointer.xRange.contains(x) && voicePointer.yRange.contains(y)) {
-      return { cost: SeekCost.Cheap, voicePointer };
+      const timeMs = this.lerpTimeMs(x, voicePointer);
+      return { timeMs, cost: SeekCost.Cheap, voicePointer };
     }
 
     const nextVoicePointer = voicePointer.next;
     if (nextVoicePointer && nextVoicePointer.xRange.contains(x) && nextVoicePointer.yRange.contains(y)) {
-      return { cost: SeekCost.Cheap, voicePointer: nextVoicePointer };
+      const timeMs = this.lerpTimeMs(x, nextVoicePointer);
+      return { timeMs, cost: SeekCost.Cheap, voicePointer: nextVoicePointer };
     }
 
     const prevVoicePointer = voicePointer.prev;
     if (prevVoicePointer && prevVoicePointer.xRange.contains(x) && prevVoicePointer.yRange.contains(y)) {
-      return { cost: SeekCost.Cheap, voicePointer: prevVoicePointer };
+      const timeMs = this.lerpTimeMs(x, prevVoicePointer);
+      return { timeMs, cost: SeekCost.Cheap, voicePointer: prevVoicePointer };
     }
 
     return null;
@@ -228,7 +231,7 @@ export class VoiceSeeker {
     });
 
     if (!voicePointerLineGroup) {
-      return { cost: SeekCost.Expensive, voicePointer: null };
+      return { timeMs: -1, cost: SeekCost.Expensive, voicePointer: null };
     }
 
     const voicePointer = bsearch(voicePointerLineGroup.voicePointers, (voicePointer) => {
@@ -243,9 +246,24 @@ export class VoiceSeeker {
     });
 
     if (!voicePointer) {
-      return { cost: SeekCost.Expensive, voicePointer: null };
+      return { timeMs: -1, cost: SeekCost.Expensive, voicePointer: null };
     }
 
-    return { cost: SeekCost.Expensive, voicePointer };
+    const timeMs = this.lerpTimeMs(x, voicePointer);
+    return { timeMs, cost: SeekCost.Expensive, voicePointer };
+  }
+
+  private lerpTimeMs(x: number, voicePointer: VoicePointer) {
+    const t0 = voicePointer.timeMsRange.start;
+    const t1 = voicePointer.timeMsRange.end;
+    const x0 = voicePointer.xRange.start;
+    const x1 = voicePointer.xRange.end;
+
+    const m = (x1 - x0) / (t1 - t0);
+    const b = t1 - m * x1;
+
+    const t = m * x + b;
+
+    return t;
   }
 }

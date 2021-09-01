@@ -211,6 +211,20 @@ export const NotationControls: React.FC<Props> = (props) => {
     };
   }, [musicDisplay]);
 
+  useEffect(() => {
+    if (!musicDisplay) {
+      return;
+    }
+
+    const voicePointerClickedHandle = musicDisplay.eventBus.subscribe('voicepointerclicked', (payload) => {
+      onCurrentTimeMsChange(payload.timeMs);
+    });
+
+    return () => {
+      musicDisplay.eventBus.unsubscribe(voicePointerClickedHandle);
+    };
+  }, [musicDisplay, onCurrentTimeMsChange]);
+
   const isPaused = videoPlayerState === VideoPlayerState.Paused;
 
   return (
