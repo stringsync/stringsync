@@ -41,7 +41,7 @@ export class SVGEventProxy {
 
   private currentSelection: AnchoredTimeSelection | null = null;
 
-  private eventListeners: Array<[string, (...args: any[]) => void]> = [];
+  private eventListeners: Array<[Element | Document, string, (...args: any[]) => void]> = [];
 
   private constructor(svg: SVGElement, imd: InternalMusicDisplay, voiceSeeker: VoiceSeeker) {
     this.svg = svg;
@@ -50,8 +50,8 @@ export class SVGEventProxy {
   }
 
   uninstall() {
-    for (const eventListener of this.eventListeners) {
-      this.svg.removeEventListener(...eventListener);
+    for (const [el, eventName, eventHandler] of this.eventListeners) {
+      el.removeEventListener(eventName, eventHandler);
     }
     this.eventListeners = [];
   }
@@ -63,30 +63,31 @@ export class SVGEventProxy {
   }
 
   private addEventListener(eventName: SVGEventNames) {
-    const listen = <T extends SVGEventNames>(
-      eventName: T,
-      eventHandler: SVGEventHandler<T>,
+    const listen = (
+      el: Element | Document,
+      eventName: string,
+      eventHandler: (...args: any[]) => void,
       options?: AddEventListenerOptions
     ) => {
-      this.eventListeners.push([eventName, eventHandler]);
-      this.svg.addEventListener(eventName, eventHandler, options);
+      this.eventListeners.push([el, eventName, eventHandler]);
+      el.addEventListener(eventName, eventHandler, options);
     };
 
     switch (eventName) {
       case 'click':
-        return listen(eventName, this.onClick.bind(this));
+        return listen(this.svg, eventName, this.onClick.bind(this));
       case 'touchstart':
-        return listen(eventName, this.onTouchStart.bind(this), { passive: true });
+        return listen(this.svg, eventName, this.onTouchStart.bind(this), { passive: true });
       case 'touchmove':
-        return listen(eventName, this.onTouchMove.bind(this), { passive: true });
+        return listen(this.svg, eventName, this.onTouchMove.bind(this), { passive: true });
       case 'touchend':
-        return listen(eventName, this.onTouchEnd.bind(this), { passive: true });
+        return listen(this.svg, eventName, this.onTouchEnd.bind(this), { passive: true });
       case 'mousedown':
-        return listen(eventName, this.onMouseDown.bind(this));
+        return listen(this.svg, eventName, this.onMouseDown.bind(this));
       case 'mousemove':
-        return listen(eventName, this.onMouseMove.bind(this));
+        return listen(this.svg, eventName, this.onMouseMove.bind(this));
       case 'mouseup':
-        return listen(eventName, this.onMouseUp.bind(this));
+        return listen(window.document, eventName, this.onMouseUp.bind(this));
       default:
         throw new Error(`no event handler for event: ${eventName}`);
     }
@@ -184,7 +185,6 @@ export class SVGEventProxy {
 
   private onSelectionStart(timeMs: number) {
     this.currentSelection = AnchoredTimeSelection.init(timeMs);
-    console.log('start');
     this.imd.eventBus.dispatch('selectionstarted', { selection: this.currentSelection.clone() });
   }
 
@@ -198,7 +198,6 @@ export class SVGEventProxy {
 
   private onSelectionEnd() {
     this.imd.eventBus.dispatch('selectionended', {});
-    console.log('end');
     this.currentSelection = null;
   }
 
