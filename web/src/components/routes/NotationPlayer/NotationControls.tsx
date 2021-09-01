@@ -162,13 +162,13 @@ export const NotationControls: React.FC<Props> = (props) => {
     [props.songName, props.artistName, props.thumbnailUrl]
   );
 
-  const { durationMs, onSeek: onCurrentTimeMsChange } = props;
+  const { durationMs, onSeek } = props;
   const onChange = useCallback(
     (value: number) => {
       const currentTimeMs = (value / 100) * durationMs;
-      onCurrentTimeMsChange(currentTimeMs);
+      onSeek(currentTimeMs);
     },
-    [durationMs, onCurrentTimeMsChange]
+    [durationMs, onSeek]
   );
 
   const tipFormatter = useCallback(
@@ -217,13 +217,13 @@ export const NotationControls: React.FC<Props> = (props) => {
     }
 
     const voicePointerClickedHandle = musicDisplay.eventBus.subscribe('voicepointerclicked', (payload) => {
-      onCurrentTimeMsChange(payload.timeMs);
+      onSeek(payload.timeMs);
     });
 
     return () => {
       musicDisplay.eventBus.unsubscribe(voicePointerClickedHandle);
     };
-  }, [musicDisplay, onCurrentTimeMsChange]);
+  }, [musicDisplay, onSeek]);
 
   const isPaused = videoPlayerState === VideoPlayerState.Paused;
 
