@@ -12,7 +12,6 @@ export type MusicDisplayEventBus = EventBus<{
   cursorinfochanged: CursorInfo;
   autoscrollstarted: {};
   autoscrollended: {};
-  cursordragged: {};
   click: SVGElementEventMap['click'];
   touchstart: SVGElementEventMap['touchstart'];
   touchmove: SVGElementEventMap['touchmove'];
@@ -20,6 +19,11 @@ export type MusicDisplayEventBus = EventBus<{
   mousedown: SVGElementEventMap['mousedown'];
   mousemove: SVGElementEventMap['mousemove'];
   mouseup: SVGElementEventMap['mouseup'];
+  cursorentered: { cursor: CursorWrapper };
+  cursorexited: { cursor: CursorWrapper };
+  cursordragstarted: { cursor: CursorWrapper };
+  cursordragupdated: { cursor: CursorWrapper };
+  cursordragended: { cursor: CursorWrapper };
   selectionstarted: { selection: AnchoredTimeSelection };
   selectionupdated: { selection: AnchoredTimeSelection };
   selectionended: {};

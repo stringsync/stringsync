@@ -1,8 +1,10 @@
 import { throttle } from 'lodash';
 import { BackendType, PointF2D, SvgVexFlowBackend, VexFlowBackend } from 'opensheetmusicdisplay';
 import { Duration } from '../../util/Duration';
+import { NumberRange } from '../../util/NumberRange';
 import { AnchoredTimeSelection } from './AnchoredTimeSelection';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
+import { CursorWrapper } from './types';
 import { VoiceSeeker } from './VoiceSeeker';
 
 // Narrow down supported events.
@@ -18,6 +20,7 @@ type SVGEventHandler<N extends SVGEventNames = SVGEventNames> = (event: SVGEleme
 type Positional = { clientX: number; clientY: number };
 
 const POINTER_MOVE_THROTTLE_DURATION = Duration.ms(30);
+const CURSOR_PADDING_PX = 10;
 
 const isSvgBackend = (backend: VexFlowBackend | undefined): backend is SvgVexFlowBackend => {
   return !!backend && backend.getOSMDBackendType() === BackendType.SVG;
@@ -40,6 +43,8 @@ export class SVGEventProxy {
   private voiceSeeker: VoiceSeeker;
 
   private currentSelection: AnchoredTimeSelection | null = null;
+  private enteredCursor: CursorWrapper | null = null;
+  private draggedCursor: CursorWrapper | null = null;
 
   private eventListeners: Array<[Element | Document, string, (...args: any[]) => void]> = [];
 
@@ -151,7 +156,13 @@ export class SVGEventProxy {
   private onMouseDown(event: SVGElementEvent<'mousedown'>) {
     this.imd.eventBus.dispatch('mousedown', event);
 
-    console.log('svg mousedown');
+    const { x, y } = this.getSvgPos(event);
+    const cursor = this.getCursorHit(x, y);
+
+    if (cursor && this.enteredCursor && !this.draggedCursor) {
+      this.draggedCursor = cursor;
+      this.imd.eventBus.dispatch('cursordragstarted', { cursor });
+    }
 
     const seekResult = this.getSeekResult(event);
     if (seekResult.voicePointer) {
@@ -164,6 +175,22 @@ export class SVGEventProxy {
   private onMouseMove = throttle(
     (event: SVGElementEvent<'mousemove'>) => {
       this.imd.eventBus.dispatch('mousemove', event);
+
+      const { x, y } = this.getSvgPos(event);
+      const cursor = this.getCursorHit(x, y);
+
+      if (cursor && !this.currentSelection) {
+        this.enteredCursor = cursor;
+        this.imd.eventBus.dispatch('cursorentered', { cursor });
+      } else if (!cursor && this.enteredCursor) {
+        const exitedCursor = this.enteredCursor;
+        this.enteredCursor = null;
+        this.imd.eventBus.dispatch('cursorexited', { cursor: exitedCursor });
+      }
+
+      if (this.draggedCursor) {
+        this.imd.eventBus.dispatch('cursordragupdated', { cursor: this.draggedCursor });
+      }
 
       const seekResult = this.getSeekResult(event);
       if (seekResult.voicePointer) {
@@ -181,6 +208,12 @@ export class SVGEventProxy {
 
   private onMouseUp(event: SVGElementEvent<'mouseup'>) {
     this.imd.eventBus.dispatch('mouseup', event);
+
+    if (this.draggedCursor) {
+      const cursor = this.draggedCursor;
+      this.draggedCursor = null;
+      this.imd.eventBus.dispatch('cursordragended', { cursor });
+    }
 
     this.onSelectionEnd();
   }
@@ -201,6 +234,26 @@ export class SVGEventProxy {
   private onSelectionEnd() {
     this.imd.eventBus.dispatch('selectionended', {});
     this.currentSelection = null;
+  }
+
+  private getCursorHit(x: number, y: number): CursorWrapper | null {
+    const svgRect = this.svg.getBoundingClientRect();
+    const cursorRect = this.imd.cursorWrapper.element.getBoundingClientRect();
+
+    const relativeLeft = cursorRect.left - svgRect.left;
+    const relativeTop = cursorRect.top - svgRect.top;
+    const xRange = NumberRange.from(relativeLeft - CURSOR_PADDING_PX).to(
+      relativeLeft + cursorRect.width + CURSOR_PADDING_PX
+    );
+    const yRange = NumberRange.from(relativeTop - CURSOR_PADDING_PX).to(
+      relativeTop + cursorRect.height + CURSOR_PADDING_PX
+    );
+
+    if (xRange.contains(x) && yRange.contains(y)) {
+      return this.imd.cursorWrapper;
+    }
+
+    return null;
   }
 
   private getSeekResult(positional: Positional) {

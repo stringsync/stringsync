@@ -32,6 +32,10 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
   private onSelectionUpdatedHandle = Symbol();
   private onSelectionEndedHandle = Symbol();
+  private onCursorEnteredHandle = Symbol();
+  private onCursorExitedHandle = Symbol();
+  private onCursorDragStartedHandle = Symbol();
+  private onCursorDragEndedHandle = Symbol();
 
   constructor(container: string | HTMLElement, eventBus: MusicDisplayEventBus, opts: MusicDisplayOptions) {
     super(container, opts);
@@ -75,7 +79,11 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.svgEventProxy = svgEventProxy;
     const $svg = $(svgEventProxy.svg);
 
+    let isDragging = false;
     this.onSelectionUpdatedHandle = this.eventBus.subscribe('selectionupdated', (payload) => {
+      if (isDragging) {
+        return;
+      }
       const { anchorTimeMs, seekerTimeMs } = payload.selection;
       if (Math.abs(anchorTimeMs - seekerTimeMs) <= CURSOR_PADDING_PX) {
         $svg.css('cursor', 'ew-resize');
@@ -87,6 +95,30 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     });
 
     this.onSelectionEndedHandle = this.eventBus.subscribe('selectionended', () => {
+      if (isDragging) {
+        return;
+      }
+      $svg.css('cursor', 'default');
+    });
+
+    this.onCursorEnteredHandle = this.eventBus.subscribe('cursorentered', () => {
+      $svg.css('cursor', 'grab');
+    });
+
+    this.onCursorExitedHandle = this.eventBus.subscribe('cursorexited', () => {
+      if (isDragging) {
+        return;
+      }
+      $svg.css('cursor', 'default');
+    });
+
+    this.onCursorDragStartedHandle = this.eventBus.subscribe('cursordragstarted', () => {
+      isDragging = true;
+      $svg.css('cursor', 'grabbing');
+    });
+
+    this.onCursorDragEndedHandle = this.eventBus.subscribe('cursordragended', () => {
+      isDragging = false;
       $svg.css('cursor', 'default');
     });
   }
@@ -99,6 +131,12 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     if (svg) {
       this.container.removeChild(svg);
     }
+
+    this.eventBus.unsubscribe(this.onCursorDragEndedHandle);
+    this.eventBus.unsubscribe(this.onCursorDragStartedHandle);
+    this.eventBus.unsubscribe(this.onCursorExitedHandle);
+    this.eventBus.unsubscribe(this.onCursorEnteredHandle);
+    this.eventBus.unsubscribe(this.onSelectionEndedHandle);
     this.eventBus.unsubscribe(this.onSelectionUpdatedHandle);
   }
 
