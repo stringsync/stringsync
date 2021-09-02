@@ -1,6 +1,6 @@
-import { assign, merge } from 'lodash';
-import { ContextFrom, EventFrom } from 'xstate';
-import { log } from 'xstate/lib/actions';
+import { merge } from 'lodash';
+import { ContextFrom, EventFrom, interpret } from 'xstate';
+import { assign, choose, log } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 import { Duration } from '../../util/Duration';
 import { AnchoredTimeSelection } from './AnchoredTimeSelection';
@@ -21,48 +21,74 @@ export type PointerContext = ContextFrom<typeof pointerModel>;
 
 export type PointerEvent = EventFrom<typeof pointerModel>;
 
+export type PointerService = ReturnType<typeof createPointerService>;
+
 const LONG_HOLD_DURATION = Duration.ms(1000);
 const DRAGGABLE_TARGET_TYPES: PointerTargetType[] = [PointerTargetType.Cursor];
 
-const initialContext: { target: PointerTarget } = { target: { type: PointerTargetType.None } };
+const initialContext: {
+  downTarget: PointerTarget;
+  prevDownTarget: PointerTarget;
+  hoverTarget: PointerTarget;
+  prevHoverTarget: PointerTarget;
+} = {
+  downTarget: { type: PointerTargetType.None },
+  prevDownTarget: { type: PointerTargetType.None },
+  hoverTarget: { type: PointerTargetType.None },
+  prevHoverTarget: { type: PointerTargetType.None },
+};
 
 export const pointerModel = createModel(initialContext, {
   events: {
     up: () => ({}),
     down: (target: PointerTarget) => ({ target }),
-    move: () => ({}),
+    move: (target: PointerTarget) => ({ target }),
   },
 });
 
-export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
-  return pointerModel.createMachine(
+export const createPointerService = (eventBus: MusicDisplayEventBus) => {
+  const pointerMachine = pointerModel.createMachine(
     {
       id: 'pointer',
-      initial: 'off',
+      initial: 'up',
+      preserveActionOrder: true,
       strict: true,
       states: {
         up: {
-          entry: 'reset',
-          on: { down: { target: 'down.hold', actions: ['assignTarget'] } },
+          entry: ['reset'],
+          on: {
+            down: { target: 'down.hold', actions: ['assignDownTarget'] },
+            move: {
+              actions: [
+                'assignHoverTarget',
+                choose([
+                  { cond: 'didCursorEnter', actions: ['dispatchCursorEntered'] },
+                  { cond: 'didCursorExit', actions: ['dispatchCursorExited'] },
+                ]),
+              ],
+            },
+          },
         },
         down: {
           on: { up: { target: '#pointer.up' } },
           states: {
             hold: {
+              entry: [],
               invoke: {
                 src: 'waitForLongHold',
                 onDone: { target: 'longHold' },
               },
-              on: { move: [{ target: 'drag', cond: 'hasDraggableTarget' }, { target: 'select' }] },
+              on: { move: [{ cond: 'hasDraggableDownTarget', target: 'drag' }, { target: 'select' }] },
+              exit: [],
             },
             longHold: {
               entry: [log('long hold entered')],
               exit: [log('long hold exited')],
             },
             drag: {
-              entry: ['dispatchDragStarted', log('drag entered')],
-              on: { move: { actions: ['dispatchDragUpdated', log('drag updated')] } },
-              exit: ['dispatchDragEnded', log('drag exited')],
+              entry: ['dispatchDragStarted'],
+              on: { move: { actions: ['dispatchDragUpdated'] } },
+              exit: ['dispatchDragEnded'],
             },
             select: {
               entry: ['dispatchSelectStarted'],
@@ -75,47 +101,85 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
     },
     {
       actions: {
-        reset: assign(() => merge({}, initialContext)),
-        assignTarget: assign((context, event) => {
-          if (event.type === 'down') {
-            return event.target;
-          }
-          return {};
+        reset: assign((context) => merge({}, initialContext)),
+        assignDownTarget: assign<PointerContext, PointerEvent>({
+          downTarget: (context, event) => {
+            switch (event.type) {
+              case 'down':
+                return event.target;
+              default:
+                return { type: PointerTargetType.None };
+            }
+          },
+          prevDownTarget: (context) => context.downTarget,
+        }),
+        assignHoverTarget: assign<PointerContext, PointerEvent>({
+          hoverTarget: (context, event) => {
+            switch (event.type) {
+              case 'move':
+                return event.target;
+              default:
+                return { type: PointerTargetType.None };
+            }
+          },
+          prevHoverTarget: (context) => context.hoverTarget,
         }),
         dispatchDragStarted: (context) => {
-          if (context.target.type === PointerTargetType.Cursor) {
-            eventBus.dispatch('cursordragstarted', { cursor: context.target.cursor });
+          if (context.downTarget.type === PointerTargetType.Cursor) {
+            eventBus.dispatch('cursordragstarted', { cursor: context.downTarget.cursor });
           }
         },
         dispatchDragUpdated: (context) => {
-          if (context.target.type === PointerTargetType.Cursor) {
-            eventBus.dispatch('cursordragupdated', { cursor: context.target.cursor });
+          if (context.downTarget.type === PointerTargetType.Cursor) {
+            eventBus.dispatch('cursordragupdated', { cursor: context.downTarget.cursor });
           }
         },
         dispatchDragEnded: (context) => {
-          if (context.target.type === PointerTargetType.Cursor) {
-            eventBus.dispatch('cursordragended', { cursor: context.target.cursor });
+          if (context.downTarget.type === PointerTargetType.Cursor) {
+            eventBus.dispatch('cursordragended', { cursor: context.downTarget.cursor });
           }
         },
         dispatchSelectStarted: (context) => {
-          if (context.target.type === PointerTargetType.Selection) {
-            eventBus.dispatch('selectionstarted', { selection: context.target.selection });
+          if (context.downTarget.type === PointerTargetType.Selection) {
+            eventBus.dispatch('selectionstarted', { selection: context.downTarget.selection });
           }
         },
         dispatchSelectUpdated: (context) => {
-          if (context.target.type === PointerTargetType.Selection) {
-            eventBus.dispatch('selectionupdated', { selection: context.target.selection });
+          if (context.downTarget.type === PointerTargetType.Selection) {
+            eventBus.dispatch('selectionupdated', { selection: context.downTarget.selection });
           }
         },
         dispatchSelectEnded: (context) => {
-          if (context.target.type === PointerTargetType.Selection) {
-            eventBus.dispatch('selectionended', { selection: context.target.selection });
+          if (context.downTarget.type === PointerTargetType.Selection) {
+            eventBus.dispatch('selectionended', { selection: context.downTarget.selection });
+          }
+        },
+        dispatchCursorEntered: (context, event) => {
+          if (context.hoverTarget.type === PointerTargetType.Cursor) {
+            eventBus.dispatch('cursorentered', { cursor: context.hoverTarget.cursor });
+          }
+        },
+        dispatchCursorExited: (context, event) => {
+          if (context.prevHoverTarget.type === PointerTargetType.Cursor) {
+            eventBus.dispatch('cursorexited', { cursor: context.prevHoverTarget.cursor });
           }
         },
       },
       guards: {
-        hasDraggableTarget: (context) => {
-          return DRAGGABLE_TARGET_TYPES.includes(context.target.type);
+        hasDraggableDownTarget: (context) => {
+          return DRAGGABLE_TARGET_TYPES.includes(context.downTarget.type);
+        },
+        didCursorEnter: (context) => {
+          return (
+            context.prevHoverTarget.type !== PointerTargetType.Cursor &&
+            context.hoverTarget.type === PointerTargetType.Cursor
+          );
+        },
+        didCursorExit: (context) => {
+          return (
+            context.prevHoverTarget.type === PointerTargetType.Cursor &&
+            context.hoverTarget.type !== PointerTargetType.Cursor
+          );
         },
       },
       services: {
@@ -125,4 +189,8 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
       },
     }
   );
+
+  const pointerService = interpret(pointerMachine);
+  pointerService.start();
+  return pointerService;
 };

@@ -2,8 +2,8 @@ import { throttle } from 'lodash';
 import { BackendType, PointF2D, SvgVexFlowBackend, VexFlowBackend } from 'opensheetmusicdisplay';
 import { Duration } from '../../util/Duration';
 import { NumberRange } from '../../util/NumberRange';
-import { AnchoredTimeSelection } from './AnchoredTimeSelection';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
+import { createPointerService, pointerModel, PointerService, PointerTargetType } from './pointerMachine';
 import { CursorWrapper } from './types';
 import { VoiceSeeker } from './VoiceSeeker';
 
@@ -33,7 +33,8 @@ export class SVGEventProxy {
       throw new Error('expected the first backend to be an svg backend');
     }
     const svg = backend.getSvgElement();
-    const svgEventProxy = new SVGEventProxy(svg, imd, voiceSeeker);
+    const pointerService = createPointerService(imd.eventBus);
+    const svgEventProxy = new SVGEventProxy(svg, imd, voiceSeeker, pointerService);
     svgEventProxy.install(eventNames);
     return svgEventProxy;
   }
@@ -41,17 +42,20 @@ export class SVGEventProxy {
   svg: SVGElement;
   private imd: InternalMusicDisplay;
   private voiceSeeker: VoiceSeeker;
-
-  private currentSelection: AnchoredTimeSelection | null = null;
-  private enteredCursor: CursorWrapper | null = null;
-  private draggedCursor: CursorWrapper | null = null;
+  private pointerService: PointerService;
 
   private eventListeners: Array<[Element | Document, string, (...args: any[]) => void]> = [];
 
-  private constructor(svg: SVGElement, imd: InternalMusicDisplay, voiceSeeker: VoiceSeeker) {
+  private constructor(
+    svg: SVGElement,
+    imd: InternalMusicDisplay,
+    voiceSeeker: VoiceSeeker,
+    pointerService: PointerService
+  ) {
     this.svg = svg;
     this.imd = imd;
     this.voiceSeeker = voiceSeeker;
+    this.pointerService = pointerService;
   }
 
   uninstall() {
@@ -68,7 +72,7 @@ export class SVGEventProxy {
   }
 
   private addEventListener(eventName: SVGEventNames) {
-    const listen = (
+    const register = (
       el: Element | Document,
       eventName: string,
       eventHandler: (...args: any[]) => void,
@@ -80,163 +84,67 @@ export class SVGEventProxy {
 
     switch (eventName) {
       case 'click':
-        return listen(this.svg, eventName, this.onClick.bind(this));
+        return register(this.svg, eventName, this.onClick.bind(this));
       case 'touchstart':
-        return listen(this.svg, eventName, this.onTouchStart.bind(this), { passive: true });
+        return register(this.svg, eventName, this.onTouchStart.bind(this), { passive: true });
       case 'touchmove':
-        return listen(this.svg, eventName, this.onTouchMove.bind(this), { passive: true });
+        return register(this.svg, eventName, this.onTouchMove.bind(this), { passive: true });
       case 'touchend':
-        return listen(this.svg, eventName, this.onTouchEnd.bind(this), { passive: true });
+        return register(this.svg, eventName, this.onTouchEnd.bind(this), { passive: true });
       case 'mousedown':
-        return listen(this.svg, eventName, this.onMouseDown.bind(this));
+        return register(this.svg, eventName, this.onMouseDown.bind(this));
       case 'mousemove':
-        return listen(this.svg, eventName, this.onMouseMove.bind(this));
+        return register(this.svg, eventName, this.onMouseMove.bind(this));
       case 'mouseup':
-        return listen(window.document, eventName, this.onMouseUp.bind(this));
+        return register(window.document, eventName, this.onMouseUp.bind(this));
       default:
         throw new Error(`no event handler for event: ${eventName}`);
     }
   }
 
-  private onClick(event: SVGElementEvent<'click'>) {
-    this.imd.eventBus.dispatch('click', event);
+  private onClick(event: SVGElementEvent<'click'>) {}
 
-    const seekResult = this.getSeekResult(event);
-    if (seekResult.voicePointer) {
-      this.imd.eventBus.dispatch('voicepointerclicked', {
-        voicePointer: seekResult.voicePointer,
-        timeMs: seekResult.timeMs,
-      });
-    }
-  }
+  private onTouchStart(event: SVGElementEvent<'touchstart'>) {}
 
-  private onTouchStart(event: SVGElementEvent<'touchstart'>) {
-    this.imd.eventBus.dispatch('touchstart', event);
+  private onTouchMove = throttle((event: SVGElementEvent<'touchmove'>) => {}, POINTER_MOVE_THROTTLE_DURATION.ms, {
+    leading: true,
+    trailing: true,
+  });
 
-    const touch = event.touches.item(0);
-    if (!touch) {
-      return;
-    }
-
-    const seekResult = this.getSeekResult(touch);
-    if (seekResult.voicePointer) {
-      this.onSelectionStart(seekResult.timeMs);
-    }
-  }
-
-  private onTouchMove = throttle(
-    (event: SVGElementEvent<'touchmove'>) => {
-      this.imd.eventBus.dispatch('touchmove', event);
-
-      const touch = event.touches.item(0);
-      if (!touch) {
-        return;
-      }
-
-      const seekResult = this.getSeekResult(touch);
-      if (seekResult.voicePointer) {
-        this.onSelectionUpdate(seekResult.timeMs);
-      }
-    },
-    POINTER_MOVE_THROTTLE_DURATION.ms,
-    { leading: true, trailing: true }
-  );
-
-  private onTouchEnd(event: SVGElementEvent<'touchend'>) {
-    this.imd.eventBus.dispatch('touchend', event);
-
-    const touch = event.touches.item(0);
-    if (!touch) {
-      return;
-    }
-
-    this.onSelectionEnd();
-  }
+  private onTouchEnd(event: SVGElementEvent<'touchend'>) {}
 
   private onMouseDown(event: SVGElementEvent<'mousedown'>) {
-    this.imd.eventBus.dispatch('mousedown', event);
+    const cursor = this.getHitCursor(event);
 
-    const { x, y } = this.getSvgPos(event);
-    const cursor = this.getCursorHit(x, y);
-
-    if (cursor && this.enteredCursor && !this.draggedCursor) {
-      this.draggedCursor = cursor;
-      this.imd.eventBus.dispatch('cursordragstarted', { cursor });
+    if (cursor) {
+      this.pointerService.send(pointerModel.events.down({ type: PointerTargetType.Cursor, cursor }));
+    } else {
+      this.pointerService.send(pointerModel.events.down({ type: PointerTargetType.None }));
     }
-
-    const seekResult = this.getSeekResult(event);
-    if (seekResult.voicePointer) {
-      this.onSelectionStart(seekResult.timeMs);
-    }
-
-    return false;
   }
 
   private onMouseMove = throttle(
     (event: SVGElementEvent<'mousemove'>) => {
-      this.imd.eventBus.dispatch('mousemove', event);
-
-      const { x, y } = this.getSvgPos(event);
-      const cursor = this.getCursorHit(x, y);
-
-      if (cursor && !this.currentSelection) {
-        this.enteredCursor = cursor;
-        this.imd.eventBus.dispatch('cursorentered', { cursor });
-      } else if (!cursor && this.enteredCursor) {
-        const exitedCursor = this.enteredCursor;
-        this.enteredCursor = null;
-        this.imd.eventBus.dispatch('cursorexited', { cursor: exitedCursor });
-      }
-
-      if (this.draggedCursor) {
-        this.imd.eventBus.dispatch('cursordragupdated', { cursor: this.draggedCursor });
-      }
-
-      const seekResult = this.getSeekResult(event);
-      if (seekResult.voicePointer) {
-        this.imd.eventBus.dispatch('voicepointerhovered', {
-          voicePointer: seekResult.voicePointer,
-          timeMs: seekResult.timeMs,
-        });
-
-        this.onSelectionUpdate(seekResult.timeMs);
+      const cursor = this.getHitCursor(event);
+      if (cursor) {
+        this.pointerService.send(pointerModel.events.move({ type: PointerTargetType.Cursor, cursor }));
+      } else {
+        this.pointerService.send(pointerModel.events.move({ type: PointerTargetType.None }));
       }
     },
     POINTER_MOVE_THROTTLE_DURATION.ms,
-    { leading: true, trailing: true }
+    {
+      leading: true,
+      trailing: true,
+    }
   );
 
   private onMouseUp(event: SVGElementEvent<'mouseup'>) {
-    this.imd.eventBus.dispatch('mouseup', event);
-
-    if (this.draggedCursor) {
-      const cursor = this.draggedCursor;
-      this.draggedCursor = null;
-      this.imd.eventBus.dispatch('cursordragended', { cursor });
-    }
-
-    this.onSelectionEnd();
+    this.pointerService.send(pointerModel.events.up());
   }
 
-  private onSelectionStart(timeMs: number) {
-    this.currentSelection = AnchoredTimeSelection.init(timeMs);
-    this.imd.eventBus.dispatch('selectionstarted', { selection: this.currentSelection.clone() });
-  }
-
-  private onSelectionUpdate(timeMs: number) {
-    if (!this.currentSelection) {
-      return;
-    }
-    this.currentSelection.update(timeMs);
-    this.imd.eventBus.dispatch('selectionupdated', { selection: this.currentSelection.clone() });
-  }
-
-  private onSelectionEnd() {
-    this.imd.eventBus.dispatch('selectionended', {});
-    this.currentSelection = null;
-  }
-
-  private getCursorHit(x: number, y: number): CursorWrapper | null {
+  private getHitCursor(positional: Positional): CursorWrapper | null {
+    const { x, y } = this.getSvgPos(positional);
     const svgRect = this.svg.getBoundingClientRect();
     const cursorRect = this.imd.cursorWrapper.element.getBoundingClientRect();
 
