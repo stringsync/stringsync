@@ -59,10 +59,8 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
             move: {
               actions: [
                 'assignHoverTarget',
-                choose([
-                  { cond: 'didCursorEnter', actions: ['dispatchCursorEntered'] },
-                  { cond: 'didCursorExit', actions: ['dispatchCursorExited'] },
-                ]),
+                choose([{ cond: 'didCursorEnter', actions: ['dispatchCursorEntered'] }]),
+                choose([{ cond: 'didCursorExit', actions: ['dispatchCursorExited'] }]),
               ],
             },
           },
@@ -166,16 +164,22 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
           return DRAGGABLE_TARGET_TYPES.includes(context.downTarget.type);
         },
         didCursorEnter: (context) => {
-          return (
-            context.prevHoverTarget.type !== PointerTargetType.Cursor &&
-            context.hoverTarget.type === PointerTargetType.Cursor
-          );
+          if (context.hoverTarget.type !== PointerTargetType.Cursor) {
+            return false;
+          }
+          if (context.prevHoverTarget.type !== PointerTargetType.Cursor) {
+            return true;
+          }
+          return context.hoverTarget.cursor !== context.prevHoverTarget.cursor;
         },
         didCursorExit: (context) => {
-          return (
-            context.prevHoverTarget.type === PointerTargetType.Cursor &&
-            context.hoverTarget.type !== PointerTargetType.Cursor
-          );
+          if (context.prevHoverTarget.type !== PointerTargetType.Cursor) {
+            return false;
+          }
+          if (context.hoverTarget.type !== PointerTargetType.Cursor) {
+            return true;
+          }
+          return context.prevHoverTarget.cursor !== context.hoverTarget.cursor;
         },
       },
       services: {
