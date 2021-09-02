@@ -24,7 +24,7 @@ export type PointerService = ReturnType<typeof createPointerService>;
 
 const LONG_HOLD_DURATION = Duration.ms(1000);
 const DRAGGABLE_TARGET_TYPES: PointerTargetType[] = [PointerTargetType.Cursor];
-export const INITIAL_POINTER_CONTEXT: {
+const INITIAL_POINTER_CONTEXT: {
   downTarget: PointerTarget;
   prevDownTarget: PointerTarget;
   hoverTarget: PointerTarget;

@@ -1,6 +1,9 @@
-import { MusicDisplayEventBus } from '.';
+import { CursorWrapper, MusicDisplayEventBus } from '.';
 import { EventBus } from '../EventBus';
-import { createPointerService, INITIAL_POINTER_CONTEXT, PointerService } from './pointerMachine';
+import { createPointerService, pointerModel, PointerService, PointerTargetType } from './pointerMachine';
+
+const NULL_TARGET = { type: PointerTargetType.None } as const;
+const CURSOR_TARGET = { type: PointerTargetType.Cursor, cursor: {} as CursorWrapper } as const;
 
 describe('pointerMachine', () => {
   let eventBus: MusicDisplayEventBus;
@@ -17,22 +20,63 @@ describe('pointerMachine', () => {
     });
 
     it('initializes with the initial context', () => {
-      expect(pointerService.state.context).toStrictEqual(INITIAL_POINTER_CONTEXT);
+      expect(pointerService.state.context).toStrictEqual(pointerModel.initialContext);
     });
   });
 
   describe('up', () => {
-    it.todo('responds to move events');
+    it('updates hover state on move', () => {
+      const nextState = pointerService.send(pointerModel.events.move(CURSOR_TARGET));
+      expect(nextState.context.hoverTarget).toStrictEqual(CURSOR_TARGET);
+    });
 
-    it.todo('updates hover state on move');
+    it('dispatches cursorentered events', () => {
+      const onCursorEntered = jest.fn();
+      eventBus.subscribe('cursorentered', onCursorEntered);
 
-    it.todo('dispatches cursor entered events');
+      pointerService.send(pointerModel.events.move(CURSOR_TARGET));
 
-    it.todo('dispatches cursor exit events');
+      expect(onCursorEntered).toHaveBeenCalledTimes(1);
+      expect(onCursorEntered).toHaveBeenCalledWith({ cursor: CURSOR_TARGET.cursor });
+    });
 
-    it.todo('responds to down events');
+    it('dispatches cursorexited events', () => {
+      const onCursorExited = jest.fn();
+      eventBus.subscribe('cursorexited', onCursorExited);
 
-    it.todo('updates down state on down');
+      pointerService.send(pointerModel.events.move(CURSOR_TARGET)); // enter
+      pointerService.send(pointerModel.events.move(NULL_TARGET));
+
+      expect(onCursorExited).toHaveBeenCalledTimes(1);
+      expect(onCursorExited).toHaveBeenCalledWith({ cursor: CURSOR_TARGET.cursor });
+    });
+
+    it('updates down state on down', () => {
+      const nextState = pointerService.send(pointerModel.events.down(CURSOR_TARGET));
+      expect(nextState.context.downTarget).toStrictEqual(CURSOR_TARGET);
+    });
+
+    it('ignores up events', () => {
+      const state = pointerService.state;
+      const nextState = pointerService.send(pointerModel.events.up());
+
+      expect(nextState.value).toStrictEqual(state.value);
+      expect(nextState.context).toStrictEqual(state.context);
+    });
+
+    it('tracks down target history', () => {
+      const downTarget = pointerService.state.context.downTarget;
+      const nextState = pointerService.send(pointerModel.events.down(CURSOR_TARGET));
+      const prevDownTarget = nextState.context.prevDownTarget;
+      expect(prevDownTarget).toStrictEqual(downTarget);
+    });
+
+    it('tracks hover target history', () => {
+      const hoverTarget = pointerService.state.context.hoverTarget;
+      const nextState = pointerService.send(pointerModel.events.move(CURSOR_TARGET));
+      const prevHoverTarget = nextState.context.prevHoverTarget;
+      expect(prevHoverTarget).toStrictEqual(hoverTarget);
+    });
   });
 
   describe('down', () => {
