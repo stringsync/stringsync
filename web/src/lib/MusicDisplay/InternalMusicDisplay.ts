@@ -68,7 +68,6 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     });
 
     const svgEventProxy = SVGEventProxy.install(this, voiceSeeker.clone(), [
-      'tap',
       'touchstart',
       'touchmove',
       'touchend',

@@ -10,7 +10,7 @@ import { VoiceSeeker } from './VoiceSeeker';
 // Narrow down supported events.
 type SVGEventNames = keyof Pick<
   SVGElementEventMap,
-  'tap' | 'touchstart' | 'touchmove' | 'touchend' | 'mousedown' | 'mousemove' | 'mouseup'
+  'touchstart' | 'touchmove' | 'touchend' | 'mousedown' | 'mousemove' | 'mouseup'
 >;
 
 type SVGElementEvent<N extends SVGEventNames> = SVGElementEventMap[N];
@@ -81,8 +81,6 @@ export class SVGEventProxy {
     };
 
     switch (eventName) {
-      case 'tap':
-        return add(this.svg, eventName, this.onTap.bind(this));
       case 'touchstart':
         return add(this.svg, eventName, this.onTouchStart.bind(this), { passive: true });
       case 'touchmove':
@@ -100,16 +98,44 @@ export class SVGEventProxy {
     }
   }
 
-  private onTap(event: SVGElementEvent<'tap'>) {}
+  private onTouchStart(event: SVGElementEvent<'touchstart'>) {
+    const touch = event.touches.item(0);
+    if (!touch) {
+      return;
+    }
 
-  private onTouchStart(event: SVGElementEvent<'touchstart'>) {}
+    const cursor = this.getHitCursor(touch);
+    if (cursor) {
+      this.pointerService.send(pointerModel.events.down({ type: PointerTargetType.Cursor, cursor }));
+    } else {
+      this.pointerService.send(pointerModel.events.down({ type: PointerTargetType.None }));
+    }
+  }
 
-  private onTouchMove = throttle((event: SVGElementEvent<'touchmove'>) => {}, POINTER_MOVE_THROTTLE_DURATION.ms, {
-    leading: true,
-    trailing: true,
-  });
+  private onTouchMove = throttle(
+    (event: SVGElementEvent<'touchmove'>) => {
+      const touch = event.touches.item(0);
+      if (!touch) {
+        return;
+      }
 
-  private onTouchEnd(event: SVGElementEvent<'touchend'>) {}
+      const cursor = this.getHitCursor(touch);
+      if (cursor) {
+        this.pointerService.send(pointerModel.events.move({ type: PointerTargetType.Cursor, cursor }));
+      } else {
+        this.pointerService.send(pointerModel.events.move({ type: PointerTargetType.None }));
+      }
+    },
+    POINTER_MOVE_THROTTLE_DURATION.ms,
+    {
+      leading: true,
+      trailing: true,
+    }
+  );
+
+  private onTouchEnd(event: SVGElementEvent<'touchend'>) {
+    this.pointerService.send(pointerModel.events.up());
+  }
 
   private onMouseDown(event: SVGElementEvent<'mousedown'>) {
     const cursor = this.getHitCursor(event);
