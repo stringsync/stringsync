@@ -1,5 +1,6 @@
 import { assign, merge } from 'lodash';
 import { ContextFrom, EventFrom } from 'xstate';
+import { log } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 import { Duration } from '../../util/Duration';
 import { AnchoredTimeSelection } from './AnchoredTimeSelection';
@@ -28,7 +29,7 @@ const initialContext: { target: PointerTarget } = { target: { type: PointerTarge
 export const pointerModel = createModel(initialContext, {
   events: {
     up: () => ({}),
-    down: () => ({}),
+    down: (target: PointerTarget) => ({ target }),
     move: () => ({}),
   },
 });
@@ -42,21 +43,11 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
       states: {
         up: {
           entry: 'reset',
-          on: { down: { target: 'down.hold' } },
+          on: { down: { target: 'down.hold', actions: ['assignTarget'] } },
         },
         down: {
           on: { up: { target: '#pointer.up' } },
           states: {
-            drag: {
-              entry: ['dispatchDragStarted'],
-              on: { move: { actions: ['dispatchDragUpdated'] } },
-              exit: ['dispatchDragEnded'],
-            },
-            select: {
-              entry: ['dispatchSelectStarted'],
-              on: { move: { actions: ['dispatchSelectUpdated'] } },
-              exit: ['dispatchSelectEnded'],
-            },
             hold: {
               invoke: {
                 src: 'waitForLongHold',
@@ -65,7 +56,18 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
               on: { move: [{ target: 'drag', cond: 'hasDraggableTarget' }, { target: 'select' }] },
             },
             longHold: {
-              exit: [],
+              entry: [log('long hold entered')],
+              exit: [log('long hold exited')],
+            },
+            drag: {
+              entry: ['dispatchDragStarted', log('drag entered')],
+              on: { move: { actions: ['dispatchDragUpdated', log('drag updated')] } },
+              exit: ['dispatchDragEnded', log('drag exited')],
+            },
+            select: {
+              entry: ['dispatchSelectStarted'],
+              on: { move: { actions: ['dispatchSelectUpdated'] } },
+              exit: ['dispatchSelectEnded'],
             },
           },
         },
@@ -74,6 +76,12 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
     {
       actions: {
         reset: assign(() => merge({}, initialContext)),
+        assignTarget: assign((context, event) => {
+          if (event.type === 'down') {
+            return event.target;
+          }
+          return {};
+        }),
         dispatchDragStarted: (context) => {
           if (context.target.type === PointerTargetType.Cursor) {
             eventBus.dispatch('cursordragstarted', { cursor: context.target.cursor });
