@@ -18,15 +18,13 @@ export type PointerTarget =
   | { type: PointerTargetType.Selection; selection: AnchoredTimeSelection };
 
 export type PointerContext = ContextFrom<typeof pointerModel>;
-
 export type PointerEvent = EventFrom<typeof pointerModel>;
-
+export type PointerMachine = ReturnType<typeof createPointerMachine>;
 export type PointerService = ReturnType<typeof createPointerService>;
 
 const LONG_HOLD_DURATION = Duration.ms(1000);
 const DRAGGABLE_TARGET_TYPES: PointerTargetType[] = [PointerTargetType.Cursor];
-
-const initialContext: {
+const INITIAL_CONTEXT: {
   downTarget: PointerTarget;
   prevDownTarget: PointerTarget;
   hoverTarget: PointerTarget;
@@ -38,7 +36,7 @@ const initialContext: {
   prevHoverTarget: { type: PointerTargetType.None },
 };
 
-export const pointerModel = createModel(initialContext, {
+export const pointerModel = createModel(INITIAL_CONTEXT, {
   events: {
     up: () => ({}),
     down: (target: PointerTarget) => ({ target }),
@@ -46,8 +44,8 @@ export const pointerModel = createModel(initialContext, {
   },
 });
 
-export const createPointerService = (eventBus: MusicDisplayEventBus) => {
-  const pointerMachine = pointerModel.createMachine(
+export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
+  return pointerModel.createMachine(
     {
       id: 'pointer',
       initial: 'up',
@@ -101,7 +99,7 @@ export const createPointerService = (eventBus: MusicDisplayEventBus) => {
     },
     {
       actions: {
-        reset: assign((context) => merge({}, initialContext)),
+        reset: assign((context) => merge({}, INITIAL_CONTEXT)),
         assignDownTarget: assign<PointerContext, PointerEvent>({
           downTarget: (context, event) => {
             switch (event.type) {
@@ -189,7 +187,10 @@ export const createPointerService = (eventBus: MusicDisplayEventBus) => {
       },
     }
   );
+};
 
+export const createPointerService = (eventBus: MusicDisplayEventBus) => {
+  const pointerMachine = createPointerMachine(eventBus);
   const pointerService = interpret(pointerMachine);
   pointerService.start();
   return pointerService;
