@@ -10,12 +10,10 @@ import { VoiceSeeker } from './VoiceSeeker';
 // Narrow down supported events.
 type SVGEventNames = keyof Pick<
   SVGElementEventMap,
-  'click' | 'touchstart' | 'touchmove' | 'touchend' | 'mousedown' | 'mousemove' | 'mouseup'
+  'tap' | 'touchstart' | 'touchmove' | 'touchend' | 'mousedown' | 'mousemove' | 'mouseup'
 >;
 
 type SVGElementEvent<N extends SVGEventNames> = SVGElementEventMap[N];
-
-type SVGEventHandler<N extends SVGEventNames = SVGEventNames> = (event: SVGElementEvent<N>) => void;
 
 type Positional = { clientX: number; clientY: number };
 
@@ -72,7 +70,7 @@ export class SVGEventProxy {
   }
 
   private addEventListener(eventName: SVGEventNames) {
-    const register = (
+    const add = (
       el: Element | Document,
       eventName: string,
       eventHandler: (...args: any[]) => void,
@@ -83,26 +81,26 @@ export class SVGEventProxy {
     };
 
     switch (eventName) {
-      case 'click':
-        return register(this.svg, eventName, this.onClick.bind(this));
+      case 'tap':
+        return add(this.svg, eventName, this.onTap.bind(this));
       case 'touchstart':
-        return register(this.svg, eventName, this.onTouchStart.bind(this), { passive: true });
+        return add(this.svg, eventName, this.onTouchStart.bind(this), { passive: true });
       case 'touchmove':
-        return register(this.svg, eventName, this.onTouchMove.bind(this), { passive: true });
+        return add(this.svg, eventName, this.onTouchMove.bind(this), { passive: true });
       case 'touchend':
-        return register(this.svg, eventName, this.onTouchEnd.bind(this), { passive: true });
+        return add(this.svg, eventName, this.onTouchEnd.bind(this), { passive: true });
       case 'mousedown':
-        return register(this.svg, eventName, this.onMouseDown.bind(this));
+        return add(this.svg, eventName, this.onMouseDown.bind(this));
       case 'mousemove':
-        return register(this.svg, eventName, this.onMouseMove.bind(this));
+        return add(this.svg, eventName, this.onMouseMove.bind(this));
       case 'mouseup':
-        return register(window.document, eventName, this.onMouseUp.bind(this));
+        return add(window.document, eventName, this.onMouseUp.bind(this));
       default:
         throw new Error(`no event handler for event: ${eventName}`);
     }
   }
 
-  private onClick(event: SVGElementEvent<'click'>) {}
+  private onTap(event: SVGElementEvent<'tap'>) {}
 
   private onTouchStart(event: SVGElementEvent<'touchstart'>) {}
 
@@ -115,7 +113,6 @@ export class SVGEventProxy {
 
   private onMouseDown(event: SVGElementEvent<'mousedown'>) {
     const cursor = this.getHitCursor(event);
-
     if (cursor) {
       this.pointerService.send(pointerModel.events.down({ type: PointerTargetType.Cursor, cursor }));
     } else {
