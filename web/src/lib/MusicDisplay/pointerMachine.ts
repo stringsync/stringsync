@@ -24,7 +24,7 @@ export type PointerService = ReturnType<typeof createPointerService>;
 
 const LONG_HOLD_DURATION = Duration.ms(1000);
 const DRAGGABLE_TARGET_TYPES: PointerTargetType[] = [PointerTargetType.Cursor];
-const INITIAL_CONTEXT: {
+export const INITIAL_CONTEXT: {
   downTarget: PointerTarget;
   prevDownTarget: PointerTarget;
   hoverTarget: PointerTarget;
@@ -71,13 +71,11 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
           on: { up: { target: '#pointer.up' } },
           states: {
             hold: {
-              entry: [],
               invoke: {
                 src: 'waitForLongHold',
                 onDone: { target: 'longHold' },
               },
               on: { move: [{ cond: 'hasDraggableDownTarget', target: 'drag' }, { target: 'select' }] },
-              exit: [],
             },
             longHold: {
               entry: [log('long hold entered')],
