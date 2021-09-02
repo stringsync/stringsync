@@ -1,20 +1,24 @@
 import { MusicDisplayEventBus } from '.';
 import { EventBus } from '../EventBus';
-import { createPointerMachine, PointerMachine } from './pointerMachine';
+import { createPointerService, INITIAL_POINTER_CONTEXT, PointerService } from './pointerMachine';
 
 describe('pointerMachine', () => {
   let eventBus: MusicDisplayEventBus;
-  let pointerMachine: PointerMachine;
+  let pointerService: PointerService;
 
   beforeEach(() => {
     eventBus = new EventBus();
-    pointerMachine = createPointerMachine(eventBus);
+    pointerService = createPointerService(eventBus);
   });
 
   describe('initial', () => {
-    it.todo('intializes in the up state');
+    it('intializes in the up state', () => {
+      expect(pointerService.state.matches('up')).toBeTrue();
+    });
 
-    it.todo('initializes with the initial context');
+    it('initializes with the initial context', () => {
+      expect(pointerService.state.context).toStrictEqual(INITIAL_POINTER_CONTEXT);
+    });
   });
 
   describe('up', () => {

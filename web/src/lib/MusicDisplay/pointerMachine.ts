@@ -24,7 +24,7 @@ export type PointerService = ReturnType<typeof createPointerService>;
 
 const LONG_HOLD_DURATION = Duration.ms(1000);
 const DRAGGABLE_TARGET_TYPES: PointerTargetType[] = [PointerTargetType.Cursor];
-export const INITIAL_CONTEXT: {
+export const INITIAL_POINTER_CONTEXT: {
   downTarget: PointerTarget;
   prevDownTarget: PointerTarget;
   hoverTarget: PointerTarget;
@@ -36,7 +36,7 @@ export const INITIAL_CONTEXT: {
   prevHoverTarget: { type: PointerTargetType.None },
 };
 
-export const pointerModel = createModel(INITIAL_CONTEXT, {
+export const pointerModel = createModel(INITIAL_POINTER_CONTEXT, {
   events: {
     up: () => ({}),
     down: (target: PointerTarget) => ({ target }),
@@ -97,7 +97,7 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
     },
     {
       actions: {
-        reset: assign((context) => merge({}, INITIAL_CONTEXT)),
+        reset: assign((context) => merge({}, INITIAL_POINTER_CONTEXT)),
         assignDownTarget: assign<PointerContext, PointerEvent>({
           downTarget: (context, event) => {
             switch (event.type) {
