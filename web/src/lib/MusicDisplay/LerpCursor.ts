@@ -242,9 +242,6 @@ export class LerpCursor {
         durationMs = 0;
       }
 
-      // jQuery is the only library that can reasonably track when an scroll animation ends
-      // which is why it's being used here. At one point, we were using it to infer when the
-      // user scrolls, but it wasn't worth the effort.
       const lastScrollId = Symbol();
       const didNewScrollInvoke = () => this.lastScrollId !== lastScrollId;
       $container.animate(
