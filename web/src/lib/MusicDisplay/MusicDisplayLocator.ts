@@ -2,8 +2,8 @@ import { first, groupBy, last, sortBy } from 'lodash';
 import { LocateResultTargets } from '.';
 import { bsearch } from '../../util/bsearch';
 import { NumberRange } from '../../util/NumberRange';
-import { CursorSnapshotter } from './CursorSnapshotter';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
+import { IteratorSnapshot } from './IteratorSnapshot';
 import { CursorSnapshot, LocateCost, LocateResult } from './types';
 
 type CursorSnapshotLineGroup = {
@@ -11,9 +11,20 @@ type CursorSnapshotLineGroup = {
   cursorSnapshots: CursorSnapshot[];
 };
 
+const END_OF_LINE_PADDING_PX = 100;
+
+const convertNumBeatsToMs = (bpm: number, numBeats: number) => {
+  // bpm is how many quarter notes per minute
+  const trueBpm = bpm / 4;
+  const mins = numBeats / trueBpm;
+  const secs = mins * 60;
+  const ms = secs * 1000;
+  return ms;
+};
+
 export class MusicDisplayLocator {
   static create(imd: InternalMusicDisplay) {
-    const cursorSnapshots = CursorSnapshotter.snapshot(imd);
+    const cursorSnapshots = MusicDisplayLocator.takeCursorSnapshots(imd);
     const locator = new MusicDisplayLocator(cursorSnapshots);
     locator.init();
     return locator;
@@ -37,6 +48,77 @@ export class MusicDisplayLocator {
         future: [],
       },
     };
+  }
+
+  private static takeCursorSnapshots(imd: InternalMusicDisplay) {
+    const cursorSnapshots = new Array<CursorSnapshot>();
+
+    // Initialize accounting variables
+    let prevCursorSnapshot: CursorSnapshot | null = null;
+    let currBeat = 0;
+    let currTimeMs = imd.syncSettings.deadTimeMs;
+
+    imd.forEachCursorPosition((index, probeCursor) => {
+      const iteratorSnapshot = IteratorSnapshot.create(probeCursor.iterator);
+
+      // Get OSMD-specific references
+      const entries = probeCursor.VoicesUnderCursor();
+      const note = entries[0].Notes[0];
+
+      const bpm = probeCursor.iterator.CurrentMeasure.TempoInBPM;
+      const numBeats = note.Length.RealValue;
+
+      // Calculate beat range
+      const startBeat = currBeat;
+      const endBeat = startBeat + numBeats;
+      const beatRange = NumberRange.from(startBeat).to(endBeat);
+
+      // Calculate time range
+      const startTimeMs = currTimeMs;
+      const endTimeMs = startTimeMs + convertNumBeatsToMs(bpm, numBeats);
+      const timeMsRange = NumberRange.from(startTimeMs).to(endTimeMs);
+
+      // Calculate position ranges
+      const $element = $(probeCursor.cursorElement);
+      const position = $element.position();
+      const startX = position.left;
+      const tmpEndX = startX + END_OF_LINE_PADDING_PX;
+      const startY = position.top;
+      const endY = startY + ($element.height() ?? 0);
+
+      // Caluclate voice pointer
+      const cursorSnapshot: CursorSnapshot = {
+        next: null,
+        prev: null,
+        bpm,
+        xRange: NumberRange.from(startX).to(tmpEndX),
+        yRange: NumberRange.from(startY).to(endY),
+        beatRange,
+        timeMsRange,
+        iteratorSnapshot,
+        entries,
+      };
+      cursorSnapshots.push(cursorSnapshot);
+
+      // Perform linking and fix the xRange of the previous voice pointer if necessary
+      if (prevCursorSnapshot) {
+        cursorSnapshot.prev = prevCursorSnapshot;
+        prevCursorSnapshot.next = cursorSnapshot;
+
+        const isPrevCursorSnapshotOnSameLine = prevCursorSnapshot.yRange.start === startY;
+        const prevStartX = prevCursorSnapshot.xRange.start;
+        const endStartX = isPrevCursorSnapshotOnSameLine ? startX : prevCursorSnapshot.xRange.end;
+        prevCursorSnapshot.xRange = NumberRange.from(prevStartX).to(endStartX);
+      }
+
+      // Update accounting variables
+      prevCursorSnapshot = cursorSnapshot;
+      currBeat = endBeat;
+      currTimeMs = endTimeMs;
+      index++;
+    });
+
+    return cursorSnapshots.map((voicePointer) => Object.freeze(voicePointer));
   }
 
   readonly cursorSnapshots: CursorSnapshot[];

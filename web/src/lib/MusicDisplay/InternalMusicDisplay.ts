@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import { get, set, takeRight } from 'lodash';
-import { Cursor, CursorOptions, OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
+import { Cursor, CursorOptions, CursorType, OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
 import { MusicDisplayEventBus } from '.';
 import { LerpCursor } from './LerpCursor';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
@@ -13,6 +13,8 @@ const CURSOR_PADDING_PX = 50;
 type IdentifiableCursorOptions = CursorOptions & {
   id: symbol;
 };
+
+type ForEachCursorPositionCallback = (index: number, probeCursor: Cursor) => void;
 
 /**
  * InternalMusicDisplay handles the logic involving rendering notations and cursors.
@@ -152,6 +154,30 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
   disableCursors() {
     this.enableOrDisableCursors(false);
+  }
+
+  forEachCursorPosition(callback: ForEachCursorPositionCallback) {
+    const cursorOption = {
+      id: Symbol(),
+      type: CursorType.Standard,
+      color: 'black',
+      follow: false,
+      alpha: 0,
+    };
+
+    const [probeCursor] = this.pushCursors([cursorOption]);
+
+    let index = 0;
+    try {
+      probeCursor.show();
+      while (!probeCursor.iterator.EndReached) {
+        callback(index, probeCursor);
+        probeCursor.next();
+        index++;
+      }
+    } finally {
+      this.removeCursor(cursorOption.id);
+    }
   }
 
   private onResizeStart() {
