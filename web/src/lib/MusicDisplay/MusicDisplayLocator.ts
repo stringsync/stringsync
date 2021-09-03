@@ -19,7 +19,7 @@ export class MusicDisplayLocator {
   }
 
   static createNullSeekResult(): LocateResult {
-    return { timeMs: -1, cost: LocateCost.Cheap, cursorSnapshot: null };
+    return { timeMs: -1, x: -1, cost: LocateCost.Unknown, cursorSnapshot: null };
   }
 
   readonly cursorSnapshots: CursorSnapshot[];
@@ -84,28 +84,30 @@ export class MusicDisplayLocator {
 
   private cheapLocateByTimeMs(timeMs: number): LocateResult | null {
     if (this.cursorSnapshots.length === 0) {
-      return { timeMs, cost: LocateCost.Cheap, cursorSnapshot: null };
+      return { timeMs, x: -1, cost: LocateCost.Cheap, cursorSnapshot: null };
     }
 
     const firstCursorSnapshot = first(this.cursorSnapshots)!;
     if (timeMs < firstCursorSnapshot.timeMsRange.start) {
-      return { timeMs, cost: LocateCost.Cheap, cursorSnapshot: null };
+      return { timeMs, x: -1, cost: LocateCost.Cheap, cursorSnapshot: null };
     }
 
     if (firstCursorSnapshot.timeMsRange.contains(timeMs)) {
-      return { timeMs, cost: LocateCost.Cheap, cursorSnapshot: firstCursorSnapshot };
+      const x = this.lerpX(timeMs, firstCursorSnapshot);
+      return { timeMs, x, cost: LocateCost.Cheap, cursorSnapshot: firstCursorSnapshot };
     }
 
-    // The first voice pointer may have a time range of [0, 0], so we always check
+    // The first cursor snapshot may have a time range of [0, 0], so we always check
     // the second one just in case.
     const secondCursorSnapshot = firstCursorSnapshot.next;
     if (secondCursorSnapshot && secondCursorSnapshot.timeMsRange.contains(timeMs)) {
-      return { timeMs, cost: LocateCost.Cheap, cursorSnapshot: secondCursorSnapshot };
+      const x = this.lerpX(timeMs, secondCursorSnapshot);
+      return { timeMs, x, cost: LocateCost.Cheap, cursorSnapshot: secondCursorSnapshot };
     }
 
     const lastCursorSnapshot = last(this.cursorSnapshots)!;
     if (timeMs > lastCursorSnapshot.timeMsRange.end) {
-      return { timeMs, cost: LocateCost.Cheap, cursorSnapshot: null };
+      return { timeMs, x: -1, cost: LocateCost.Cheap, cursorSnapshot: null };
     }
 
     const cursorSnapshot = this.cachedLocateByTimeMsResult.cursorSnapshot;
@@ -114,17 +116,20 @@ export class MusicDisplayLocator {
     }
 
     if (cursorSnapshot.timeMsRange.contains(timeMs)) {
-      return { timeMs, cost: LocateCost.Cheap, cursorSnapshot: cursorSnapshot };
+      const x = this.lerpX(timeMs, cursorSnapshot);
+      return { timeMs, x, cost: LocateCost.Cheap, cursorSnapshot: cursorSnapshot };
     }
 
     const nextCursorSnapshot = cursorSnapshot.next;
     if (nextCursorSnapshot && nextCursorSnapshot.timeMsRange.contains(timeMs)) {
-      return { timeMs, cost: LocateCost.Cheap, cursorSnapshot: nextCursorSnapshot };
+      const x = this.lerpX(timeMs, nextCursorSnapshot);
+      return { timeMs, x, cost: LocateCost.Cheap, cursorSnapshot: nextCursorSnapshot };
     }
 
     const prevCursorSnapshot = cursorSnapshot.prev;
     if (prevCursorSnapshot && prevCursorSnapshot.timeMsRange.contains(timeMs)) {
-      return { timeMs, cost: LocateCost.Cheap, cursorSnapshot: prevCursorSnapshot };
+      const x = this.lerpX(timeMs, prevCursorSnapshot);
+      return { timeMs, x, cost: LocateCost.Cheap, cursorSnapshot: prevCursorSnapshot };
     }
 
     return null;
@@ -145,12 +150,17 @@ export class MusicDisplayLocator {
       }
     });
 
-    return { timeMs, cost: LocateCost.Expensive, cursorSnapshot: cursorSnapshot || null };
+    if (cursorSnapshot) {
+      const x = this.lerpX(timeMs, cursorSnapshot);
+      return { timeMs, x, cost: LocateCost.Expensive, cursorSnapshot: cursorSnapshot || null };
+    }
+
+    return { timeMs, x: -1, cost: LocateCost.Expensive, cursorSnapshot: null };
   }
 
   private cheapSeekByPosition(x: number, y: number): LocateResult | null {
     if (this.cursorSnapshots.length === 0) {
-      return { timeMs: 0, cost: LocateCost.Cheap, cursorSnapshot: null };
+      return { timeMs: 0, x, cost: LocateCost.Cheap, cursorSnapshot: null };
     }
 
     const cursorSnapshot = this.cachedLocateByPositionResult.cursorSnapshot;
@@ -160,19 +170,19 @@ export class MusicDisplayLocator {
 
     if (cursorSnapshot.xRange.contains(x) && cursorSnapshot.yRange.contains(y)) {
       const timeMs = this.lerpTimeMs(x, cursorSnapshot);
-      return { timeMs, cost: LocateCost.Cheap, cursorSnapshot: cursorSnapshot };
+      return { timeMs, x, cost: LocateCost.Cheap, cursorSnapshot: cursorSnapshot };
     }
 
     const nextCursorSnapshot = cursorSnapshot.next;
     if (nextCursorSnapshot && nextCursorSnapshot.xRange.contains(x) && nextCursorSnapshot.yRange.contains(y)) {
       const timeMs = this.lerpTimeMs(x, nextCursorSnapshot);
-      return { timeMs, cost: LocateCost.Cheap, cursorSnapshot: nextCursorSnapshot };
+      return { timeMs, x, cost: LocateCost.Cheap, cursorSnapshot: nextCursorSnapshot };
     }
 
     const prevCursorSnapshot = cursorSnapshot.prev;
     if (prevCursorSnapshot && prevCursorSnapshot.xRange.contains(x) && prevCursorSnapshot.yRange.contains(y)) {
       const timeMs = this.lerpTimeMs(x, prevCursorSnapshot);
-      return { timeMs, cost: LocateCost.Cheap, cursorSnapshot: prevCursorSnapshot };
+      return { timeMs, x, cost: LocateCost.Cheap, cursorSnapshot: prevCursorSnapshot };
     }
 
     return null;
@@ -191,7 +201,7 @@ export class MusicDisplayLocator {
     });
 
     if (!cursorSnapshotLineGroup) {
-      return { timeMs: -1, cost: LocateCost.Expensive, cursorSnapshot: null };
+      return { timeMs: -1, x, cost: LocateCost.Expensive, cursorSnapshot: null };
     }
 
     const cursorSnapshot = bsearch(cursorSnapshotLineGroup.cursorSnapshots, (cursorSnapshot) => {
@@ -206,11 +216,22 @@ export class MusicDisplayLocator {
     });
 
     if (!cursorSnapshot) {
-      return { timeMs: -1, cost: LocateCost.Expensive, cursorSnapshot: null };
+      return { timeMs: -1, x, cost: LocateCost.Expensive, cursorSnapshot: null };
     }
 
     const timeMs = this.lerpTimeMs(x, cursorSnapshot);
-    return { timeMs, cost: LocateCost.Expensive, cursorSnapshot: cursorSnapshot };
+    return { timeMs, x, cost: LocateCost.Expensive, cursorSnapshot: cursorSnapshot };
+  }
+
+  private lerpX(timeMs: number, cursorSnapshot: CursorSnapshot) {
+    const t0 = cursorSnapshot.timeMsRange.start;
+    const t1 = cursorSnapshot.timeMsRange.end;
+    const x0 = cursorSnapshot.xRange.start;
+    const x1 = cursorSnapshot.xRange.end;
+
+    const x = x1 + ((timeMs - t1) * (x1 - x0)) / (t1 - t0);
+
+    return x;
   }
 
   private lerpTimeMs(x: number, cursorSnapshot: CursorSnapshot) {
