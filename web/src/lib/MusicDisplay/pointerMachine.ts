@@ -74,7 +74,6 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
             },
             longpress: {
               entry: ['dispatchLongPress'],
-              exit: [],
             },
             drag: {
               entry: ['dispatchDragStarted'],
