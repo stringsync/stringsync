@@ -4,25 +4,19 @@ import { VoicePointer } from '.';
 import { NumberRange } from '../../util/NumberRange';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { IteratorSnapshot } from './IteratorSnapshot';
-import { VoiceSeeker } from './VoiceSeeker';
 
 const END_OF_LINE_PADDING_PX = 100;
 
-export class MusicDisplayProber {
-  static probe(imd: InternalMusicDisplay) {
-    const musicDisplayProber = new MusicDisplayProber(imd);
-    return musicDisplayProber.probe();
+export class VoicePointerCalculator {
+  static calcuateVoicePointers(imd: InternalMusicDisplay) {
+    const voicePointerCalculator = new VoicePointerCalculator(imd);
+    return voicePointerCalculator.calculateVoicePointers();
   }
 
   private imd: InternalMusicDisplay;
 
   private constructor(imd: InternalMusicDisplay) {
     this.imd = imd;
-  }
-
-  private probe() {
-    const voiceSeeker = this.makeVoiceSeeker();
-    return { voiceSeeker };
   }
 
   private withProbeCursor(callback: (probeCursor: Cursor) => void) {
@@ -58,10 +52,10 @@ export class MusicDisplayProber {
    * snapshots of each iteration. Consumers may use the snapshots to move a
    * cursor to a given point.
    */
-  private makeVoiceSeeker(): VoiceSeeker {
+  private calculateVoicePointers(): VoicePointer[] {
     if (this.shouldSkipPointerCalculations()) {
       console.warn('skipping pointer calculations');
-      return VoiceSeeker.create([]);
+      return [];
     }
 
     const voicePointers = new Array<VoicePointer>();
@@ -131,8 +125,7 @@ export class MusicDisplayProber {
       index++;
     });
 
-    const frozenVoicePointers = voicePointers.map((voicePointer) => Object.freeze(voicePointer));
-    return VoiceSeeker.create(frozenVoicePointers);
+    return voicePointers.map((voicePointer) => Object.freeze(voicePointer));
   }
 
   private shouldSkipPointerCalculations(): boolean {

@@ -3,9 +3,9 @@ import { BackendType, PointF2D, SvgVexFlowBackend, VexFlowBackend } from 'opensh
 import { Duration } from '../../util/Duration';
 import { NumberRange } from '../../util/NumberRange';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
+import { MusicDisplayLocator } from './MusicDisplayLocator';
 import { createPointerService, pointerModel, PointerService, PointerTargetType } from './pointerMachine';
 import { CursorWrapper } from './types';
-import { VoiceSeeker } from './VoiceSeeker';
 
 // Narrow down supported events.
 type SVGEventNames = keyof Pick<
@@ -25,21 +25,21 @@ const isSvgBackend = (backend: VexFlowBackend | undefined): backend is SvgVexFlo
 };
 
 export class SVGEventProxy {
-  static install(imd: InternalMusicDisplay, voiceSeeker: VoiceSeeker, eventNames: SVGEventNames[]) {
+  static install(imd: InternalMusicDisplay, locator: MusicDisplayLocator, eventNames: SVGEventNames[]) {
     const backend = imd.Drawer.Backends[0];
     if (!isSvgBackend(backend)) {
       throw new Error('expected the first backend to be an svg backend');
     }
     const svg = backend.getSvgElement();
     const pointerService = createPointerService(imd.eventBus);
-    const svgEventProxy = new SVGEventProxy(svg, imd, voiceSeeker, pointerService);
+    const svgEventProxy = new SVGEventProxy(svg, imd, locator, pointerService);
     svgEventProxy.install(eventNames);
     return svgEventProxy;
   }
 
   svg: SVGElement;
   private imd: InternalMusicDisplay;
-  private voiceSeeker: VoiceSeeker;
+  private locator: MusicDisplayLocator;
   private pointerService: PointerService;
 
   private eventListeners: Array<[Element | Document, string, (...args: any[]) => void]> = [];
@@ -47,12 +47,12 @@ export class SVGEventProxy {
   private constructor(
     svg: SVGElement,
     imd: InternalMusicDisplay,
-    voiceSeeker: VoiceSeeker,
+    locator: MusicDisplayLocator,
     pointerService: PointerService
   ) {
     this.svg = svg;
     this.imd = imd;
-    this.voiceSeeker = voiceSeeker;
+    this.locator = locator;
     this.pointerService = pointerService;
   }
 
@@ -189,7 +189,7 @@ export class SVGEventProxy {
 
   private getSeekResult(positional: Positional) {
     const { x, y } = this.getSvgPos(positional);
-    return this.voiceSeeker.seekByPosition(x, y);
+    return this.locator.locateByPosition(x, y);
   }
 
   private getSvgPos(positional: Positional) {

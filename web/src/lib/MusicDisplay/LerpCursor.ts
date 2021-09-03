@@ -4,8 +4,8 @@ import { Cursor, CursorType } from 'opensheetmusicdisplay';
 import { MusicDisplayEventBus } from '.';
 import { ColoringOperation } from './ColoringOperation';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
+import { MusicDisplayLocator } from './MusicDisplayLocator';
 import { VoicePointer } from './types';
-import { VoiceSeeker } from './VoiceSeeker';
 
 const SCROLL_DURATION_MS = 100;
 const SCROLL_BACK_TOP_DURATION_MS = 300;
@@ -49,7 +49,7 @@ export type LerpCursorOpts = {
 };
 
 export class LerpCursor {
-  static create(imd: InternalMusicDisplay, voiceSeeker: VoiceSeeker, opts: LerpCursorOpts) {
+  static create(imd: InternalMusicDisplay, locator: MusicDisplayLocator, opts: LerpCursorOpts) {
     const cursors = imd.pushCursors(DEFAULT_CURSOR_OPTS.map((cursorsOption) => ({ id: Symbol(), ...cursorsOption })));
     if (cursors.length !== 3) {
       throw new Error(`expected 3 cursors, got: ${cursors.length}`);
@@ -58,7 +58,7 @@ export class LerpCursor {
     const [lagger, leader, lerper] = cursors;
 
     const lerpCursor = new LerpCursor(imd.eventBus, { lagger, leader, lerper }, opts);
-    lerpCursor.init(voiceSeeker);
+    lerpCursor.init(locator);
     return lerpCursor;
   }
 
@@ -70,7 +70,7 @@ export class LerpCursor {
   scrollContainer: HTMLElement;
   numMeasures: number;
 
-  private voiceSeeker: VoiceSeeker | null = null;
+  private locator: MusicDisplayLocator | null = null;
   private prevVoicePointer: VoicePointer | null = null;
   private prevColoringOperation: ColoringOperation | null = null;
 
@@ -93,7 +93,7 @@ export class LerpCursor {
     return this.lerper.cursorElement;
   }
 
-  private init(voiceSeeker: VoiceSeeker) {
+  private init(locator: MusicDisplayLocator) {
     const $element = $(this.element);
     $element.css('z-index', 2);
     $element.css('pointer-events', 'none');
@@ -108,19 +108,19 @@ export class LerpCursor {
     this.leader.show();
     this.lerper.show();
 
-    this.voiceSeeker = voiceSeeker;
+    this.locator = locator;
 
     this.$scrollContainer = $(this.scrollContainer);
     this.$laggerCursorElement = $(this.lagger.cursorElement);
   }
 
   update(timeMs: number) {
-    if (!this.voiceSeeker) {
+    if (!this.locator) {
       console.warn('cannot update cursors, must call init first');
       return;
     }
 
-    const seekResult = this.voiceSeeker.seekByTimeMs(timeMs);
+    const seekResult = this.locator.locateByTimeMs(timeMs);
 
     const nextVoicePointer = seekResult.voicePointer;
     const prevVoicePointer = this.prevVoicePointer;

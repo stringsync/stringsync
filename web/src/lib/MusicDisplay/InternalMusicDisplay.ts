@@ -3,7 +3,7 @@ import { get, set, takeRight } from 'lodash';
 import { Cursor, CursorOptions, OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
 import { MusicDisplayEventBus } from '.';
 import { LerpCursor } from './LerpCursor';
-import { MusicDisplayProber } from './MusicDisplayProber';
+import { MusicDisplayLocator } from './MusicDisplayLocator';
 import { NullCursor } from './NullCursor';
 import { SVGEventProxy } from './SVGEventProxy';
 import { CursorWrapper, MusicDisplayOptions, SyncSettings } from './types';
@@ -60,14 +60,14 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
     this.clearCursors();
 
-    const { voiceSeeker } = MusicDisplayProber.probe(this);
+    const locator = MusicDisplayLocator.create(this);
 
-    this.cursorWrapper = LerpCursor.create(this, voiceSeeker.clone(), {
+    this.cursorWrapper = LerpCursor.create(this, locator.clone(), {
       numMeasures: this.Sheet.SourceMeasures.length,
       scrollContainer: this.scrollContainer,
     });
 
-    const svgEventProxy = SVGEventProxy.install(this, voiceSeeker.clone(), [
+    const svgEventProxy = SVGEventProxy.install(this, locator.clone(), [
       'touchstart',
       'touchmove',
       'touchend',

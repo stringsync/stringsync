@@ -79,14 +79,14 @@ export type VoicePointer = {
   entries: VoiceEntry[];
 };
 
-export enum SeekCost {
+export enum LocateCost {
   Unknown,
   Cheap,
   Expensive,
 }
 
-export type SeekResult = Readonly<{
+export type LocateResult = {
   timeMs: number;
-  cost: SeekCost;
+  cost: LocateCost;
   voicePointer: Readonly<VoicePointer> | null;
-}>;
+};
