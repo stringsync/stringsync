@@ -1,6 +1,6 @@
 import { merge } from 'lodash';
 import { ContextFrom, EventFrom, interpret } from 'xstate';
-import { assign, choose, log } from 'xstate/lib/actions';
+import { assign, choose } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 import { Duration } from '../../util/Duration';
 import { AnchoredTimeSelection } from './AnchoredTimeSelection';
@@ -55,7 +55,7 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
         up: {
           entry: ['reset'],
           on: {
-            down: { target: 'down.hold', actions: ['assignDownTarget'] },
+            down: { target: 'down.press', actions: ['assignDownTarget'] },
             move: {
               actions: [
                 'assignHoverTarget',
@@ -68,16 +68,13 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
         down: {
           on: { up: { target: '#pointer.up' } },
           states: {
-            hold: {
-              invoke: {
-                src: 'waitForLongHold',
-                onDone: { target: 'longHold' },
-              },
+            press: {
+              after: { [LONG_HOLD_DURATION.ms]: { target: 'longpress' } },
               on: { move: [{ cond: 'hasDraggableDownTarget', target: 'drag' }, { target: 'select' }] },
             },
-            longHold: {
-              entry: [log('long hold entered')],
-              exit: [log('long hold exited')],
+            longpress: {
+              entry: ['dispatchLongPress'],
+              exit: [],
             },
             drag: {
               entry: ['dispatchDragStarted'],
@@ -158,6 +155,9 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
             eventBus.dispatch('cursorexited', { cursor: context.prevHoverTarget.cursor });
           }
         },
+        dispatchLongPress: (context, event) => {
+          eventBus.dispatch('longpress', {});
+        },
       },
       guards: {
         hasDraggableDownTarget: (context) => {
@@ -180,11 +180,6 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
             return true;
           }
           return context.prevHoverTarget.cursor !== context.hoverTarget.cursor;
-        },
-      },
-      services: {
-        waitForLongHold: async () => {
-          await new Promise((resolve) => setTimeout(resolve, LONG_HOLD_DURATION.ms));
         },
       },
     }

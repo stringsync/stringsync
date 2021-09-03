@@ -1,18 +1,25 @@
 import { MusicDisplayEventBus } from '.';
 import { EventBus } from '../EventBus';
+import { AnchoredTimeSelection } from './AnchoredTimeSelection';
 import { NullCursor } from './NullCursor';
 import { createPointerService, pointerModel, PointerService, PointerTargetType } from './pointerMachine';
 
 const NULL_TARGET = { type: PointerTargetType.None } as const;
 const CURSOR_TARGET = { type: PointerTargetType.Cursor, cursor: new NullCursor() } as const;
+const SELECTION_TARGET = { type: PointerTargetType.Selection, selection: AnchoredTimeSelection.init(0) } as const;
 
 describe('pointerMachine', () => {
   let eventBus: MusicDisplayEventBus;
   let pointerService: PointerService;
 
   beforeEach(() => {
+    jest.useFakeTimers();
     eventBus = new EventBus();
     pointerService = createPointerService(eventBus);
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   describe('initial', () => {
@@ -38,7 +45,6 @@ describe('pointerMachine', () => {
       pointerService.send(pointerModel.events.move(CURSOR_TARGET));
 
       expect(onCursorEntered).toHaveBeenCalledTimes(1);
-      expect(onCursorEntered).toHaveBeenCalledWith({ cursor: CURSOR_TARGET.cursor });
     });
 
     it('does not dispatch cursorentered events when moving inside same cursor target', () => {
@@ -79,7 +85,6 @@ describe('pointerMachine', () => {
       pointerService.send(pointerModel.events.move(NULL_TARGET));
 
       expect(onCursorExited).toHaveBeenCalledTimes(1);
-      expect(onCursorExited).toHaveBeenCalledWith({ cursor: CURSOR_TARGET.cursor });
     });
 
     it('does not dispatch cursorexited events on move event when inside same cursor target', () => {
@@ -117,9 +122,9 @@ describe('pointerMachine', () => {
       expect(nextState.context.downTarget).toStrictEqual(CURSOR_TARGET);
     });
 
-    it('transitions to down.hold state on down', () => {
+    it('transitions to down.press state on down', () => {
       const nextState = pointerService.send(pointerModel.events.down(NULL_TARGET));
-      expect(nextState.matches('down.hold')).toBeTrue();
+      expect(nextState.matches('down.press')).toBeTrue();
     });
 
     it('ignores up events', () => {
@@ -146,34 +151,182 @@ describe('pointerMachine', () => {
   });
 
   describe('down', () => {
-    it.todo('transitions to up state on up event');
+    it('transitions to up state on up event', () => {
+      pointerService.send(pointerModel.events.down(NULL_TARGET));
+      expect(pointerService.state.matches('down')).toBeTrue();
 
-    describe('hold', () => {
-      it.todo('transitions into long hold automatically');
-
-      it.todo('responds to move events');
+      pointerService.send(pointerModel.events.up());
+      expect(pointerService.state.matches('up')).toBeTrue();
     });
 
-    describe('longHold', () => {
-      it.todo('dispatches longholdstarted events on entry');
+    describe('press', () => {
+      it('transitions to longpress after 1 second', () => {
+        pointerService.send(pointerModel.events.down(NULL_TARGET));
+        jest.advanceTimersByTime(1000);
+        expect(pointerService.state.matches('down.longpress')).toBeTrue();
+      });
 
-      it.todo('dispatches longholdended events on exit');
+      it('does not transition to longpress before 1 second', () => {
+        pointerService.send(pointerModel.events.down(NULL_TARGET));
+        jest.advanceTimersByTime(999);
+        expect(pointerService.state.matches('down.press')).toBeTrue();
+      });
+
+      it('transitions to select state on move event when null target', () => {
+        pointerService.send(pointerModel.events.down(NULL_TARGET));
+        pointerService.send(pointerModel.events.move(NULL_TARGET));
+        expect(pointerService.state.matches('down.select')).toBeTrue();
+      });
+
+      it('transitions to drag state on move event when cursor target', () => {
+        pointerService.send(pointerModel.events.down(CURSOR_TARGET));
+        pointerService.send(pointerModel.events.move(CURSOR_TARGET));
+        expect(pointerService.state.matches('down.drag')).toBeTrue();
+      });
+    });
+
+    describe('longpress', () => {
+      it('dispatches longpress event on entry', () => {
+        const onLongPress = jest.fn();
+        eventBus.subscribe('longpress', onLongPress);
+
+        pointerService.send(pointerModel.events.down(NULL_TARGET));
+        jest.advanceTimersByTime(1000);
+
+        expect(onLongPress).toHaveBeenCalledTimes(1);
+      });
     });
 
     describe('drag', () => {
-      it.todo('dispatches cursordragstarted on entry');
+      it('dispatches cursordragstarted on entry', () => {
+        const onCursorDragStarted = jest.fn();
+        eventBus.subscribe('cursordragstarted', onCursorDragStarted);
 
-      it.todo('dispatches cursordragupdated on move');
+        pointerService.send(pointerModel.events.down(CURSOR_TARGET));
+        pointerService.send(pointerModel.events.move(CURSOR_TARGET));
 
-      it.todo('dispatches cursordragended on exit');
+        expect(onCursorDragStarted).toHaveBeenCalledTimes(1);
+      });
+
+      it('dispatches cursordragupdated on move event', () => {
+        const onCursorDragUpdated = jest.fn();
+        eventBus.subscribe('cursordragupdated', onCursorDragUpdated);
+
+        pointerService.send(pointerModel.events.down(CURSOR_TARGET));
+        pointerService.send(pointerModel.events.move(CURSOR_TARGET));
+        pointerService.send(pointerModel.events.move(CURSOR_TARGET));
+
+        expect(onCursorDragUpdated).toHaveBeenCalledTimes(1);
+      });
+
+      it('dispatches cursordragended on exit', () => {
+        const onCursorDragEnded = jest.fn();
+        eventBus.subscribe('cursordragended', onCursorDragEnded);
+
+        pointerService.send(pointerModel.events.down(CURSOR_TARGET));
+        pointerService.send(pointerModel.events.move(CURSOR_TARGET));
+        pointerService.send(pointerModel.events.up());
+
+        expect(onCursorDragEnded).toHaveBeenCalledTimes(1);
+      });
+
+      it('does not dispatch selectionstarted on entry', () => {
+        const onSelectionStarted = jest.fn();
+        eventBus.subscribe('selectionstarted', onSelectionStarted);
+
+        pointerService.send(pointerModel.events.down(CURSOR_TARGET));
+        pointerService.send(pointerModel.events.move(CURSOR_TARGET));
+
+        expect(onSelectionStarted).not.toHaveBeenCalled();
+      });
+
+      it('does not dispatch selectionupdated on move event', () => {
+        const onSelectionUpdated = jest.fn();
+        eventBus.subscribe('selectionupdated', onSelectionUpdated);
+
+        pointerService.send(pointerModel.events.down(CURSOR_TARGET));
+        pointerService.send(pointerModel.events.move(CURSOR_TARGET));
+        pointerService.send(pointerModel.events.move(CURSOR_TARGET));
+
+        expect(onSelectionUpdated).not.toHaveBeenCalled();
+      });
+
+      it('does not dispatch selectionexited on exit', () => {
+        const onSelectionUpdated = jest.fn();
+        eventBus.subscribe('selectionupdated', onSelectionUpdated);
+
+        pointerService.send(pointerModel.events.down(CURSOR_TARGET));
+        pointerService.send(pointerModel.events.move(CURSOR_TARGET));
+        pointerService.send(pointerModel.events.up());
+
+        expect(onSelectionUpdated).not.toHaveBeenCalled();
+      });
     });
 
     describe('select', () => {
-      it.todo('dispatches selectionstarted on entry');
+      it('dispatches selectionstarted on entry', () => {
+        const onSelectionStarted = jest.fn();
+        eventBus.subscribe('selectionstarted', onSelectionStarted);
 
-      it.todo('dispatches selectionupdated on move');
+        pointerService.send(pointerModel.events.down(SELECTION_TARGET));
+        pointerService.send(pointerModel.events.move(NULL_TARGET));
 
-      it.todo('dispatches selectionended on exit');
+        expect(onSelectionStarted).toHaveBeenCalledTimes(1);
+      });
+
+      it('dispatches selectionupdated on move event', () => {
+        const onSelectionUpdated = jest.fn();
+        eventBus.subscribe('selectionupdated', onSelectionUpdated);
+
+        pointerService.send(pointerModel.events.down(SELECTION_TARGET));
+        pointerService.send(pointerModel.events.move(NULL_TARGET));
+        pointerService.send(pointerModel.events.move(NULL_TARGET));
+
+        expect(onSelectionUpdated).toHaveBeenCalledTimes(1);
+      });
+
+      it('dispatches selectionended on exit', () => {
+        const onSelectionEnded = jest.fn();
+        eventBus.subscribe('selectionended', onSelectionEnded);
+
+        pointerService.send(pointerModel.events.down(SELECTION_TARGET));
+        pointerService.send(pointerModel.events.move(NULL_TARGET));
+        pointerService.send(pointerModel.events.up());
+
+        expect(onSelectionEnded).toHaveBeenCalledTimes(1);
+      });
+
+      it('does not dispatch cursordragstarted on entry', () => {
+        const onCursorDragStarted = jest.fn();
+        eventBus.subscribe('cursordragstarted', onCursorDragStarted);
+
+        pointerService.send(pointerModel.events.down(SELECTION_TARGET));
+        pointerService.send(pointerModel.events.move(NULL_TARGET));
+
+        expect(onCursorDragStarted).not.toHaveBeenCalled();
+      });
+
+      it('does not dispatch cursordragupdated on move event', () => {
+        const onCursorDragUpdated = jest.fn();
+        eventBus.subscribe('cursordragupdated', onCursorDragUpdated);
+
+        pointerService.send(pointerModel.events.down(SELECTION_TARGET));
+        pointerService.send(pointerModel.events.move(NULL_TARGET));
+        pointerService.send(pointerModel.events.move(NULL_TARGET));
+
+        expect(onCursorDragUpdated).not.toHaveBeenCalled();
+      });
+
+      it('does not dispatch cursordragended on exit', () => {
+        const onCursorDragEnded = jest.fn();
+        eventBus.subscribe('cursordragended', onCursorDragEnded);
+
+        pointerService.send(pointerModel.events.down(SELECTION_TARGET));
+        pointerService.send(pointerModel.events.move(NULL_TARGET));
+        pointerService.send(pointerModel.events.up());
+
+        expect(onCursorDragEnded).not.toHaveBeenCalled();
+      });
     });
   });
 });

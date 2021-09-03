@@ -12,6 +12,7 @@ export type MusicDisplayEventBus = EventBus<{
   cursorinfochanged: CursorInfo;
   autoscrollstarted: {};
   autoscrollended: {};
+  longpress: {};
   click: SVGElementEventMap['click'];
   touchstart: SVGElementEventMap['touchstart'];
   touchmove: SVGElementEventMap['touchmove'];
