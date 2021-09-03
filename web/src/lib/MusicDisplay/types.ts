@@ -70,7 +70,18 @@ export type CursorSnapshot = {
   entries: VoiceEntry[];
 };
 
-export type Target = {};
+export enum LocatorTargetType {
+  None,
+  Cursor,
+  Notehead,
+  Stem,
+}
+
+export type LocatorTarget =
+  | { type: LocatorTargetType.None }
+  | { type: LocatorTargetType.Cursor; cursor: CursorWrapper }
+  | { type: LocatorTargetType.Notehead }
+  | { type: LocatorTargetType.Stem };
 
 export enum LocateCost {
   Unknown,
@@ -80,14 +91,14 @@ export enum LocateCost {
 
 export type LocateResultTargets = {
   positional: {
-    behind: Target[];
-    colocated: Target[];
-    ahead: Target[];
+    behind: LocatorTarget[];
+    colocated: LocatorTarget[];
+    ahead: LocatorTarget[];
   };
   temporal: {
-    past: Target[];
-    present: Target[];
-    future: Target[];
+    past: LocatorTarget[];
+    present: LocatorTarget[];
+    future: LocatorTarget[];
   };
 };
 
