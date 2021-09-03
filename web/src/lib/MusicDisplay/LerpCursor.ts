@@ -126,12 +126,11 @@ export class LerpCursor {
     const prevCursorSnapshot = this.prevCursorSnapshot;
 
     if (nextCursorSnapshot === prevCursorSnapshot) {
-      this.updateLerper(timeMs, nextCursorSnapshot);
-      return;
+      this.updateLerperPosition(seekResult.x);
+    } else {
+      this.updateCursors(nextCursorSnapshot);
+      this.updateLerperPosition(seekResult.x);
     }
-
-    this.updateCursors(nextCursorSnapshot);
-    this.updateLerper(timeMs, nextCursorSnapshot);
   }
 
   clear() {
@@ -197,6 +196,10 @@ export class LerpCursor {
       currentMeasureNumber: this.lagger.iterator.CurrentMeasure.MeasureNumber,
       numMeasures: this.numMeasures,
     });
+  }
+
+  private updateLerperPosition(x: number) {
+    this.lerper.cursorElement.style.left = `${x}px`;
   }
 
   private scrollLaggerIntoView = throttle(
@@ -271,39 +274,4 @@ export class LerpCursor {
     SCROLL_THROTTLE_MS,
     { leading: true, trailing: true }
   );
-
-  private updateLerper(timeMs: number, cursorSnapshot: CursorSnapshot | null) {
-    if (!cursorSnapshot) {
-      return;
-    }
-    if (!cursorSnapshot.timeMsRange.contains(timeMs)) {
-      return;
-    }
-
-    const t1 = cursorSnapshot.timeMsRange.start;
-    const t2 = cursorSnapshot.timeMsRange.end;
-
-    const x1 = this.parseFloatIgnoringPx(this.lagger.cursorElement.style.left);
-    const x2 = this.isLerpingOnSameLine()
-      ? this.parseFloatIgnoringPx(this.leader.cursorElement.style.left)
-      : x1 + END_OF_LINE_LERP_PX;
-
-    const m = (x2 - x1) / (t2 - t1);
-    const b = x1 - m * t1;
-    const t = timeMs;
-
-    // y = mx + b
-    const x = m * t + b;
-
-    this.lerper.cursorElement.style.left = `${x}px`;
-  }
-
-  private parseFloatIgnoringPx(str: string): number {
-    const numeric = str.replace('px', '');
-    return parseFloat(numeric);
-  }
-
-  private isLerpingOnSameLine(): boolean {
-    return this.lagger.cursorElement.style.top === this.leader.cursorElement.style.top;
-  }
 }
