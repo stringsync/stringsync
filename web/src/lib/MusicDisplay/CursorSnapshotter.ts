@@ -97,6 +97,7 @@ export class CursorSnapshotter {
       const cursorSnapshot: CursorSnapshot = {
         next: null,
         prev: null,
+        bpm,
         xRange: NumberRange.from(startX).to(tmpEndX),
         yRange: NumberRange.from(startY).to(endY),
         beatRange,

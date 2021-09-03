@@ -64,6 +64,7 @@ export type CursorSnapshot = {
   iteratorSnapshot: IteratorSnapshot;
   xRange: NumberRange;
   yRange: NumberRange;
+  bpm: number;
   beatRange: NumberRange;
   timeMsRange: NumberRange;
   entries: VoiceEntry[];
