@@ -70,15 +70,31 @@ export type CursorSnapshot = {
   entries: VoiceEntry[];
 };
 
+export type Target = {};
+
 export enum LocateCost {
   Unknown,
   Cheap,
   Expensive,
 }
 
+export type LocateResultTargets = {
+  positional: {
+    behind: Target[];
+    colocated: Target[];
+    ahead: Target[];
+  };
+  temporal: {
+    past: Target[];
+    present: Target[];
+    future: Target[];
+  };
+};
+
 export type LocateResult = {
   timeMs: number;
   x: number;
   cost: LocateCost;
   cursorSnapshot: Readonly<CursorSnapshot> | null;
+  targets: LocateResultTargets;
 };
