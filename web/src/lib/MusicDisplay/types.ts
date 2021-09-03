@@ -28,8 +28,8 @@ export type MusicDisplayEventBus = EventBus<{
   selectionstarted: { selection: AnchoredTimeSelection };
   selectionupdated: { selection: AnchoredTimeSelection };
   selectionended: {};
-  voicepointerclicked: { voicePointer: VoicePointer; timeMs: number };
-  voicepointerhovered: { voicePointer: VoicePointer; timeMs: number };
+  cursorsnapshotclicked: { cursorSnapshot: CursorSnapshot; timeMs: number };
+  cursorsnapshothovered: { cursorSnapshot: CursorSnapshot; timeMs: number };
 }>;
 
 export type SyncSettings = {
@@ -58,19 +58,9 @@ export type MusicDisplayOptions = IOSMDOptions & {
   scrollContainer: HTMLDivElement;
 };
 
-/**
- * The purpose of this type is to keep track of a value and its
- * position in an array.
- *
- * Index must be tracked because it is the mechanism by which the
- * cursor iterator is set. We store these in an array, which is
- * what distiguishes this data structure from a classic doubly
- * linked list.
- */
-export type VoicePointer = {
-  index: number;
-  next: VoicePointer | null;
-  prev: VoicePointer | null;
+export type CursorSnapshot = {
+  next: CursorSnapshot | null;
+  prev: CursorSnapshot | null;
   iteratorSnapshot: IteratorSnapshot;
   xRange: NumberRange;
   yRange: NumberRange;
@@ -88,5 +78,5 @@ export enum LocateCost {
 export type LocateResult = {
   timeMs: number;
   cost: LocateCost;
-  voicePointer: Readonly<VoicePointer> | null;
+  cursorSnapshot: Readonly<CursorSnapshot> | null;
 };

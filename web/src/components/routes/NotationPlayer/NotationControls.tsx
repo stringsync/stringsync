@@ -217,7 +217,7 @@ export const NotationControls: React.FC<Props> = (props) => {
       return;
     }
 
-    const voicePointerClickedHandle = musicDisplay.eventBus.subscribe('voicepointerclicked', (payload) => {
+    const cursorSnapshotClickedHandle = musicDisplay.eventBus.subscribe('cursorsnapshotclicked', (payload) => {
       onSeek(payload.timeMs);
     });
     const selectionStartedHandle = musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
@@ -235,7 +235,7 @@ export const NotationControls: React.FC<Props> = (props) => {
       musicDisplay.eventBus.unsubscribe(selectionEndedHandle);
       musicDisplay.eventBus.unsubscribe(selectionUpdatedHandle);
       musicDisplay.eventBus.unsubscribe(selectionStartedHandle);
-      musicDisplay.eventBus.unsubscribe(voicePointerClickedHandle);
+      musicDisplay.eventBus.unsubscribe(cursorSnapshotClickedHandle);
     };
   }, [musicDisplay, onSeek, onSeekEnd]);
 

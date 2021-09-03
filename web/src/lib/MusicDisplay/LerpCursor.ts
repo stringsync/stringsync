@@ -5,7 +5,7 @@ import { MusicDisplayEventBus } from '.';
 import { ColoringOperation } from './ColoringOperation';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
-import { VoicePointer } from './types';
+import { CursorSnapshot } from './types';
 
 const SCROLL_DURATION_MS = 100;
 const SCROLL_BACK_TOP_DURATION_MS = 300;
@@ -71,7 +71,7 @@ export class LerpCursor {
   numMeasures: number;
 
   private locator: MusicDisplayLocator | null = null;
-  private prevVoicePointer: VoicePointer | null = null;
+  private prevCursorSnapshot: CursorSnapshot | null = null;
   private prevColoringOperation: ColoringOperation | null = null;
 
   private $scrollContainer: JQuery<HTMLElement> | null = null;
@@ -122,16 +122,16 @@ export class LerpCursor {
 
     const seekResult = this.locator.locateByTimeMs(timeMs);
 
-    const nextVoicePointer = seekResult.voicePointer;
-    const prevVoicePointer = this.prevVoicePointer;
+    const nextCursorSnapshot = seekResult.cursorSnapshot;
+    const prevCursorSnapshot = this.prevCursorSnapshot;
 
-    if (nextVoicePointer === prevVoicePointer) {
-      this.updateLerper(timeMs, nextVoicePointer);
+    if (nextCursorSnapshot === prevCursorSnapshot) {
+      this.updateLerper(timeMs, nextCursorSnapshot);
       return;
     }
 
-    this.updateVoicePointer(nextVoicePointer);
-    this.updateLerper(timeMs, nextVoicePointer);
+    this.updateCursors(nextCursorSnapshot);
+    this.updateLerper(timeMs, nextCursorSnapshot);
   }
 
   clear() {
@@ -151,16 +151,14 @@ export class LerpCursor {
     this.scrollLaggerIntoView();
   }
 
-  private updateVoicePointer(nextVoicePointer: VoicePointer | null) {
-    if (!nextVoicePointer) {
+  private updateCursors(nextCursorSnapshot: CursorSnapshot | null) {
+    if (!nextCursorSnapshot) {
       this.clear();
     } else {
-      // Since we know this voicePointer is new, we don't need to update
-      // the lerper.
-      this.lagger.iterator = nextVoicePointer.iteratorSnapshot.get();
-      this.leader.iterator = nextVoicePointer.iteratorSnapshot.get();
+      this.lagger.iterator = nextCursorSnapshot.iteratorSnapshot.get();
+      this.leader.iterator = nextCursorSnapshot.iteratorSnapshot.get();
       this.leader.next();
-      this.lerper.iterator = nextVoicePointer.iteratorSnapshot.get();
+      this.lerper.iterator = nextCursorSnapshot.iteratorSnapshot.get();
 
       this.lagger.update();
       this.leader.update();
@@ -182,11 +180,11 @@ export class LerpCursor {
       this.scrollLaggerIntoView();
     }
 
-    this.prevVoicePointer = nextVoicePointer;
+    this.prevCursorSnapshot = nextCursorSnapshot;
 
     this.prevColoringOperation?.restore();
 
-    if (nextVoicePointer) {
+    if (nextCursorSnapshot) {
       const coloringOperation = ColoringOperation.init(this.lagger);
       coloringOperation.perform();
       this.prevColoringOperation = coloringOperation;
@@ -274,16 +272,16 @@ export class LerpCursor {
     { leading: true, trailing: true }
   );
 
-  private updateLerper(timeMs: number, voicePointer: VoicePointer | null) {
-    if (!voicePointer) {
+  private updateLerper(timeMs: number, cursorSnapshot: CursorSnapshot | null) {
+    if (!cursorSnapshot) {
       return;
     }
-    if (!voicePointer.timeMsRange.contains(timeMs)) {
+    if (!cursorSnapshot.timeMsRange.contains(timeMs)) {
       return;
     }
 
-    const t1 = voicePointer.timeMsRange.start;
-    const t2 = voicePointer.timeMsRange.end;
+    const t1 = cursorSnapshot.timeMsRange.start;
+    const t2 = cursorSnapshot.timeMsRange.end;
 
     const x1 = this.parseFloatIgnoringPx(this.lagger.cursorElement.style.left);
     const x2 = this.isLerpingOnSameLine()

@@ -1,16 +1,16 @@
 import $ from 'jquery';
 import { Cursor, CursorType } from 'opensheetmusicdisplay';
-import { VoicePointer } from '.';
+import { CursorSnapshot } from '.';
 import { NumberRange } from '../../util/NumberRange';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { IteratorSnapshot } from './IteratorSnapshot';
 
 const END_OF_LINE_PADDING_PX = 100;
 
-export class VoicePointerCalculator {
-  static calcuateVoicePointers(imd: InternalMusicDisplay) {
-    const voicePointerCalculator = new VoicePointerCalculator(imd);
-    return voicePointerCalculator.calculateVoicePointers();
+export class CursorSnapshotter {
+  static snapshot(imd: InternalMusicDisplay) {
+    const voicePointerCalculator = new CursorSnapshotter(imd);
+    return voicePointerCalculator.snapshot();
   }
 
   private imd: InternalMusicDisplay;
@@ -52,16 +52,16 @@ export class VoicePointerCalculator {
    * snapshots of each iteration. Consumers may use the snapshots to move a
    * cursor to a given point.
    */
-  private calculateVoicePointers(): VoicePointer[] {
+  private snapshot(): CursorSnapshot[] {
     if (this.shouldSkipPointerCalculations()) {
       console.warn('skipping pointer calculations');
       return [];
     }
 
-    const voicePointers = new Array<VoicePointer>();
+    const cursorSnapshots = new Array<CursorSnapshot>();
 
     // Initialize accounting variables
-    let prevVoicePointer: VoicePointer | null = null;
+    let prevCursorSnapshot: CursorSnapshot | null = null;
     let currBeat = 0;
     let currTimeMs = this.imd.syncSettings.deadTimeMs;
 
@@ -94,8 +94,7 @@ export class VoicePointerCalculator {
       const endY = startY + ($element.height() ?? 0);
 
       // Caluclate voice pointer
-      const voicePointer: VoicePointer = {
-        index,
+      const cursorSnapshot: CursorSnapshot = {
         next: null,
         prev: null,
         xRange: NumberRange.from(startX).to(tmpEndX),
@@ -105,27 +104,27 @@ export class VoicePointerCalculator {
         iteratorSnapshot,
         entries,
       };
-      voicePointers.push(voicePointer);
+      cursorSnapshots.push(cursorSnapshot);
 
       // Perform linking and fix the xRange of the previous voice pointer if necessary
-      if (prevVoicePointer) {
-        voicePointer.prev = prevVoicePointer;
-        prevVoicePointer.next = voicePointer;
+      if (prevCursorSnapshot) {
+        cursorSnapshot.prev = prevCursorSnapshot;
+        prevCursorSnapshot.next = cursorSnapshot;
 
-        const isPrevVoicePointerOnSameLine = prevVoicePointer.yRange.start === startY;
-        const prevStartX = prevVoicePointer.xRange.start;
-        const endStartX = isPrevVoicePointerOnSameLine ? startX : prevVoicePointer.xRange.end;
-        prevVoicePointer.xRange = NumberRange.from(prevStartX).to(endStartX);
+        const isPrevCursorSnapshotOnSameLine = prevCursorSnapshot.yRange.start === startY;
+        const prevStartX = prevCursorSnapshot.xRange.start;
+        const endStartX = isPrevCursorSnapshotOnSameLine ? startX : prevCursorSnapshot.xRange.end;
+        prevCursorSnapshot.xRange = NumberRange.from(prevStartX).to(endStartX);
       }
 
       // Update accounting variables
-      prevVoicePointer = voicePointer;
+      prevCursorSnapshot = cursorSnapshot;
       currBeat = endBeat;
       currTimeMs = endTimeMs;
       index++;
     });
 
-    return voicePointers.map((voicePointer) => Object.freeze(voicePointer));
+    return cursorSnapshots.map((voicePointer) => Object.freeze(voicePointer));
   }
 
   private shouldSkipPointerCalculations(): boolean {

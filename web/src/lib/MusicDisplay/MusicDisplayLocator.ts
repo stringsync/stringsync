@@ -1,39 +1,39 @@
 import { first, groupBy, last, sortBy } from 'lodash';
 import { bsearch } from '../../util/bsearch';
 import { NumberRange } from '../../util/NumberRange';
+import { CursorSnapshotter } from './CursorSnapshotter';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
-import { LocateCost, LocateResult, VoicePointer } from './types';
-import { VoicePointerCalculator } from './VoicePointerCalculator';
+import { CursorSnapshot, LocateCost, LocateResult } from './types';
 
-type VoicePointerLineGroup = {
+type CursorSnapshotLineGroup = {
   yRange: NumberRange;
-  voicePointers: VoicePointer[];
+  cursorSnapshots: CursorSnapshot[];
 };
 
 export class MusicDisplayLocator {
   static create(imd: InternalMusicDisplay) {
-    const voicePointers = VoicePointerCalculator.calcuateVoicePointers(imd);
-    const locator = new MusicDisplayLocator(voicePointers);
+    const cursorSnapshots = CursorSnapshotter.snapshot(imd);
+    const locator = new MusicDisplayLocator(cursorSnapshots);
     locator.init();
     return locator;
   }
 
   static createNullSeekResult(): LocateResult {
-    return { timeMs: -1, cost: LocateCost.Cheap, voicePointer: null };
+    return { timeMs: -1, cost: LocateCost.Cheap, cursorSnapshot: null };
   }
 
-  readonly voicePointers: VoicePointer[];
+  readonly cursorSnapshots: CursorSnapshot[];
   private cachedLocateByTimeMsResult = MusicDisplayLocator.createNullSeekResult();
   private cachedLocateByPositionResult = MusicDisplayLocator.createNullSeekResult();
-  private voicePointerLineGroups: VoicePointerLineGroup[];
+  private cursorSnapshotLineGroups: CursorSnapshotLineGroup[];
 
-  private constructor(voicePointers: VoicePointer[], voicePointerLineGroups: VoicePointerLineGroup[] = []) {
-    this.voicePointers = voicePointers;
-    this.voicePointerLineGroups = voicePointerLineGroups;
+  private constructor(cursorSnapshots: CursorSnapshot[], cursorSnapshotLineGroups: CursorSnapshotLineGroup[] = []) {
+    this.cursorSnapshots = cursorSnapshots;
+    this.cursorSnapshotLineGroups = cursorSnapshotLineGroups;
   }
 
   clone() {
-    return new MusicDisplayLocator(this.voicePointers, this.voicePointerLineGroups);
+    return new MusicDisplayLocator(this.cursorSnapshots, this.cursorSnapshotLineGroups);
   }
 
   locateByTimeMs(timeMs: number): LocateResult {
@@ -67,64 +67,64 @@ export class MusicDisplayLocator {
       return NumberRange.from(start).to(end);
     };
 
-    const voicePointersByYRangeStr = groupBy(this.voicePointers, (voicePointer) => toStr(voicePointer.yRange));
+    const cursorSnapshotsByYRangeStr = groupBy(this.cursorSnapshots, (cursorSnapshot) => toStr(cursorSnapshot.yRange));
     const yRangeStrs = sortBy(
-      Object.keys(voicePointersByYRangeStr),
+      Object.keys(cursorSnapshotsByYRangeStr),
       (str) => toRange(str).start,
       (str) => toRange(str).end
     );
 
-    this.voicePointerLineGroups = yRangeStrs.map((yRangeStr) => {
+    this.cursorSnapshotLineGroups = yRangeStrs.map((yRangeStr) => {
       return {
         yRange: toRange(yRangeStr),
-        voicePointers: voicePointersByYRangeStr[yRangeStr],
+        cursorSnapshots: cursorSnapshotsByYRangeStr[yRangeStr],
       };
     });
   }
 
   private cheapLocateByTimeMs(timeMs: number): LocateResult | null {
-    if (this.voicePointers.length === 0) {
-      return { timeMs, cost: LocateCost.Cheap, voicePointer: null };
+    if (this.cursorSnapshots.length === 0) {
+      return { timeMs, cost: LocateCost.Cheap, cursorSnapshot: null };
     }
 
-    const firstVoicePointer = first(this.voicePointers)!;
-    if (timeMs < firstVoicePointer.timeMsRange.start) {
-      return { timeMs, cost: LocateCost.Cheap, voicePointer: null };
+    const firstCursorSnapshot = first(this.cursorSnapshots)!;
+    if (timeMs < firstCursorSnapshot.timeMsRange.start) {
+      return { timeMs, cost: LocateCost.Cheap, cursorSnapshot: null };
     }
 
-    if (firstVoicePointer.timeMsRange.contains(timeMs)) {
-      return { timeMs, cost: LocateCost.Cheap, voicePointer: firstVoicePointer };
+    if (firstCursorSnapshot.timeMsRange.contains(timeMs)) {
+      return { timeMs, cost: LocateCost.Cheap, cursorSnapshot: firstCursorSnapshot };
     }
 
     // The first voice pointer may have a time range of [0, 0], so we always check
     // the second one just in case.
-    const secondVoicePointer = firstVoicePointer.next;
-    if (secondVoicePointer && secondVoicePointer.timeMsRange.contains(timeMs)) {
-      return { timeMs, cost: LocateCost.Cheap, voicePointer: secondVoicePointer };
+    const secondCursorSnapshot = firstCursorSnapshot.next;
+    if (secondCursorSnapshot && secondCursorSnapshot.timeMsRange.contains(timeMs)) {
+      return { timeMs, cost: LocateCost.Cheap, cursorSnapshot: secondCursorSnapshot };
     }
 
-    const lastVoicePointer = last(this.voicePointers)!;
-    if (timeMs > lastVoicePointer.timeMsRange.end) {
-      return { timeMs, cost: LocateCost.Cheap, voicePointer: null };
+    const lastCursorSnapshot = last(this.cursorSnapshots)!;
+    if (timeMs > lastCursorSnapshot.timeMsRange.end) {
+      return { timeMs, cost: LocateCost.Cheap, cursorSnapshot: null };
     }
 
-    const voicePointer = this.cachedLocateByTimeMsResult.voicePointer;
-    if (!voicePointer) {
+    const cursorSnapshot = this.cachedLocateByTimeMsResult.cursorSnapshot;
+    if (!cursorSnapshot) {
       return null;
     }
 
-    if (voicePointer.timeMsRange.contains(timeMs)) {
-      return { timeMs, cost: LocateCost.Cheap, voicePointer };
+    if (cursorSnapshot.timeMsRange.contains(timeMs)) {
+      return { timeMs, cost: LocateCost.Cheap, cursorSnapshot: cursorSnapshot };
     }
 
-    const nextVoicePointer = voicePointer.next;
-    if (nextVoicePointer && nextVoicePointer.timeMsRange.contains(timeMs)) {
-      return { timeMs, cost: LocateCost.Cheap, voicePointer: nextVoicePointer };
+    const nextCursorSnapshot = cursorSnapshot.next;
+    if (nextCursorSnapshot && nextCursorSnapshot.timeMsRange.contains(timeMs)) {
+      return { timeMs, cost: LocateCost.Cheap, cursorSnapshot: nextCursorSnapshot };
     }
 
-    const prevVoicePointer = voicePointer.prev;
-    if (prevVoicePointer && prevVoicePointer.timeMsRange.contains(timeMs)) {
-      return { timeMs, cost: LocateCost.Cheap, voicePointer: prevVoicePointer };
+    const prevCursorSnapshot = cursorSnapshot.prev;
+    if (prevCursorSnapshot && prevCursorSnapshot.timeMsRange.contains(timeMs)) {
+      return { timeMs, cost: LocateCost.Cheap, cursorSnapshot: prevCursorSnapshot };
     }
 
     return null;
@@ -134,8 +134,8 @@ export class MusicDisplayLocator {
    * Seeks a voice pointer containing the timeMs using the binary search algorithm.
    */
   private expensiveLocateByTimeMs(timeMs: number): LocateResult {
-    const voicePointer = bsearch(this.voicePointers, (voicePointer) => {
-      const { start, end } = voicePointer.timeMsRange;
+    const cursorSnapshot = bsearch(this.cursorSnapshots, (cursorSnapshot) => {
+      const { start, end } = cursorSnapshot.timeMsRange;
       if (start > timeMs) {
         return -1;
       } else if (end < timeMs) {
@@ -145,42 +145,42 @@ export class MusicDisplayLocator {
       }
     });
 
-    return { timeMs, cost: LocateCost.Expensive, voicePointer: voicePointer || null };
+    return { timeMs, cost: LocateCost.Expensive, cursorSnapshot: cursorSnapshot || null };
   }
 
   private cheapSeekByPosition(x: number, y: number): LocateResult | null {
-    if (this.voicePointers.length === 0) {
-      return { timeMs: 0, cost: LocateCost.Cheap, voicePointer: null };
+    if (this.cursorSnapshots.length === 0) {
+      return { timeMs: 0, cost: LocateCost.Cheap, cursorSnapshot: null };
     }
 
-    const voicePointer = this.cachedLocateByPositionResult.voicePointer;
-    if (!voicePointer) {
+    const cursorSnapshot = this.cachedLocateByPositionResult.cursorSnapshot;
+    if (!cursorSnapshot) {
       return null;
     }
 
-    if (voicePointer.xRange.contains(x) && voicePointer.yRange.contains(y)) {
-      const timeMs = this.lerpTimeMs(x, voicePointer);
-      return { timeMs, cost: LocateCost.Cheap, voicePointer };
+    if (cursorSnapshot.xRange.contains(x) && cursorSnapshot.yRange.contains(y)) {
+      const timeMs = this.lerpTimeMs(x, cursorSnapshot);
+      return { timeMs, cost: LocateCost.Cheap, cursorSnapshot: cursorSnapshot };
     }
 
-    const nextVoicePointer = voicePointer.next;
-    if (nextVoicePointer && nextVoicePointer.xRange.contains(x) && nextVoicePointer.yRange.contains(y)) {
-      const timeMs = this.lerpTimeMs(x, nextVoicePointer);
-      return { timeMs, cost: LocateCost.Cheap, voicePointer: nextVoicePointer };
+    const nextCursorSnapshot = cursorSnapshot.next;
+    if (nextCursorSnapshot && nextCursorSnapshot.xRange.contains(x) && nextCursorSnapshot.yRange.contains(y)) {
+      const timeMs = this.lerpTimeMs(x, nextCursorSnapshot);
+      return { timeMs, cost: LocateCost.Cheap, cursorSnapshot: nextCursorSnapshot };
     }
 
-    const prevVoicePointer = voicePointer.prev;
-    if (prevVoicePointer && prevVoicePointer.xRange.contains(x) && prevVoicePointer.yRange.contains(y)) {
-      const timeMs = this.lerpTimeMs(x, prevVoicePointer);
-      return { timeMs, cost: LocateCost.Cheap, voicePointer: prevVoicePointer };
+    const prevCursorSnapshot = cursorSnapshot.prev;
+    if (prevCursorSnapshot && prevCursorSnapshot.xRange.contains(x) && prevCursorSnapshot.yRange.contains(y)) {
+      const timeMs = this.lerpTimeMs(x, prevCursorSnapshot);
+      return { timeMs, cost: LocateCost.Cheap, cursorSnapshot: prevCursorSnapshot };
     }
 
     return null;
   }
 
   private expensiveLocateByPosition(x: number, y: number): LocateResult {
-    const voicePointerLineGroup = bsearch(this.voicePointerLineGroups, (voicePointerLineGroup) => {
-      const { start, end } = voicePointerLineGroup.yRange;
+    const cursorSnapshotLineGroup = bsearch(this.cursorSnapshotLineGroups, (cursorSnapshotLineGroup) => {
+      const { start, end } = cursorSnapshotLineGroup.yRange;
       if (start > y) {
         return -1;
       } else if (end < y) {
@@ -190,12 +190,12 @@ export class MusicDisplayLocator {
       }
     });
 
-    if (!voicePointerLineGroup) {
-      return { timeMs: -1, cost: LocateCost.Expensive, voicePointer: null };
+    if (!cursorSnapshotLineGroup) {
+      return { timeMs: -1, cost: LocateCost.Expensive, cursorSnapshot: null };
     }
 
-    const voicePointer = bsearch(voicePointerLineGroup.voicePointers, (voicePointer) => {
-      const { start, end } = voicePointer.xRange;
+    const cursorSnapshot = bsearch(cursorSnapshotLineGroup.cursorSnapshots, (cursorSnapshot) => {
+      const { start, end } = cursorSnapshot.xRange;
       if (start > x) {
         return -1;
       } else if (end < x) {
@@ -205,19 +205,19 @@ export class MusicDisplayLocator {
       }
     });
 
-    if (!voicePointer) {
-      return { timeMs: -1, cost: LocateCost.Expensive, voicePointer: null };
+    if (!cursorSnapshot) {
+      return { timeMs: -1, cost: LocateCost.Expensive, cursorSnapshot: null };
     }
 
-    const timeMs = this.lerpTimeMs(x, voicePointer);
-    return { timeMs, cost: LocateCost.Expensive, voicePointer };
+    const timeMs = this.lerpTimeMs(x, cursorSnapshot);
+    return { timeMs, cost: LocateCost.Expensive, cursorSnapshot: cursorSnapshot };
   }
 
-  private lerpTimeMs(x: number, voicePointer: VoicePointer) {
-    const t0 = voicePointer.timeMsRange.start;
-    const t1 = voicePointer.timeMsRange.end;
-    const x0 = voicePointer.xRange.start;
-    const x1 = voicePointer.xRange.end;
+  private lerpTimeMs(x: number, cursorSnapshot: CursorSnapshot) {
+    const t0 = cursorSnapshot.timeMsRange.start;
+    const t1 = cursorSnapshot.timeMsRange.end;
+    const x0 = cursorSnapshot.xRange.start;
+    const x1 = cursorSnapshot.xRange.end;
 
     const t = t1 + ((x - x1) * (t1 - t0)) / (x1 - x0);
 
