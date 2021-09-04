@@ -81,6 +81,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   });
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const wasPlayingRef = useRef(false);
 
   const params = useParams<{ id: string }>();
   const [notation, setNotation] = useState<NotationObject | null>(null);
@@ -89,7 +90,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const [videoHeightPx, setVideoHeightPx] = useState(0);
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
   const [videoPlayer, setVideoPlayer] = useState<VideoJsPlayer | null>(null);
-  const [wasPlaying, setWasPlaying] = useState(false);
   const [settings, updateSettings] = useNotationPlayerSettings();
 
   const videoUrl = notation?.videoUrl;
@@ -125,7 +125,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
         return;
       }
       if (!videoPlayer.paused()) {
-        setWasPlaying(true);
+        wasPlayingRef.current = true;
         videoPlayer.pause();
       }
       videoPlayer.currentTime(currentTimeMs / 1000);
@@ -137,11 +137,11 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
     if (!videoPlayer) {
       return;
     }
-    if (wasPlaying) {
+    if (wasPlayingRef.current) {
       videoPlayer.play();
     }
-    setWasPlaying(false);
-  }, [videoPlayer, wasPlaying]);
+    wasPlayingRef.current = false;
+  }, [videoPlayer]);
 
   const onUserScroll = useCallback(() => {
     console.log('user scrolled!');

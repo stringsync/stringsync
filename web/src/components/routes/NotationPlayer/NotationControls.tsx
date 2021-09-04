@@ -220,6 +220,7 @@ export const NotationControls: React.FC<Props> = (props) => {
     const handles = [
       musicDisplay.eventBus.subscribe('cursorsnapshotclicked', (payload) => {
         onSeek(payload.timeMs);
+        onSeekEnd();
       }),
       musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {
         onSeek(payload.timeMs);
