@@ -14,7 +14,7 @@ type CursorSnapshotLineGroup = {
   cursorSnapshots: CursorSnapshot[];
 };
 
-const END_OF_LINE_PADDING_PX = 100;
+const END_OF_LINE_PADDING_PX = 20;
 
 export class MusicDisplayLocator {
   static create(imd: InternalMusicDisplay) {

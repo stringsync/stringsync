@@ -1,10 +1,10 @@
-import { throttle } from 'lodash';
+import { first, sortBy, throttle } from 'lodash';
 import { BackendType, PointF2D, SvgVexFlowBackend, VexFlowBackend } from 'opensheetmusicdisplay';
-import { CursorWrapper, LocateResult, LocatorTargetType } from '.';
 import { Duration } from '../../util/Duration';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
-import { createPointerService, pointerModel, PointerService, PointerTargetType } from './pointerMachine';
+import { createPointerService, pointerModel, PointerService, PointerTarget, PointerTargetType } from './pointerMachine';
+import { LocatorTargetType } from './types';
 
 // Narrow down supported events.
 type SVGEventNames = keyof Pick<
@@ -17,6 +17,12 @@ type SVGElementEvent<N extends SVGEventNames> = SVGElementEventMap[N];
 type Positional = { clientX: number; clientY: number };
 
 const POINTER_MOVE_THROTTLE_DURATION = Duration.ms(30);
+
+const LOCATOR_TARGET_SORT_WEIGHTS = {
+  [LocatorTargetType.Cursor]: 0,
+  [LocatorTargetType.Note]: 1,
+  [LocatorTargetType.None]: 2,
+};
 
 const isSvgBackend = (backend: VexFlowBackend | undefined): backend is SvgVexFlowBackend => {
   return !!backend && backend.getOSMDBackendType() === BackendType.SVG;
@@ -101,22 +107,8 @@ export class SVGEventProxy {
     if (!touch) {
       return;
     }
-
-    const locateResult = this.getLocateResult(touch);
-    const cursor = this.getCursor(locateResult);
-    if (cursor) {
-      this.pointerService.send(pointerModel.events.down({ type: PointerTargetType.Cursor, cursor }));
-    } else if (locateResult.cursorSnapshot) {
-      this.pointerService.send(
-        pointerModel.events.down({
-          type: PointerTargetType.CursorSnapshot,
-          cursorSnapshot: locateResult.cursorSnapshot,
-          timeMs: locateResult.timeMs,
-        })
-      );
-    } else {
-      this.pointerService.send(pointerModel.events.down({ type: PointerTargetType.None }));
-    }
+    const pointerTarget = this.getPointerTarget(touch);
+    this.pointerService.send(pointerModel.events.down(pointerTarget));
   }
 
   private onTouchMove = throttle(
@@ -125,14 +117,8 @@ export class SVGEventProxy {
       if (!touch) {
         return;
       }
-
-      const locateResult = this.getLocateResult(touch);
-      const cursor = this.getCursor(locateResult);
-      if (cursor) {
-        this.pointerService.send(pointerModel.events.move({ type: PointerTargetType.Cursor, cursor }));
-      } else {
-        this.pointerService.send(pointerModel.events.move({ type: PointerTargetType.None }));
-      }
+      const pointerTarget = this.getPointerTarget(touch);
+      this.pointerService.send(pointerModel.events.move(pointerTarget));
     },
     POINTER_MOVE_THROTTLE_DURATION.ms,
     {
@@ -146,32 +132,14 @@ export class SVGEventProxy {
   }
 
   private onMouseDown(event: SVGElementEvent<'mousedown'>) {
-    const locateResult = this.getLocateResult(event);
-    const cursor = this.getCursor(locateResult);
-    if (cursor) {
-      this.pointerService.send(pointerModel.events.down({ type: PointerTargetType.Cursor, cursor }));
-    } else if (locateResult.cursorSnapshot) {
-      this.pointerService.send(
-        pointerModel.events.down({
-          type: PointerTargetType.CursorSnapshot,
-          cursorSnapshot: locateResult.cursorSnapshot,
-          timeMs: locateResult.timeMs,
-        })
-      );
-    } else {
-      this.pointerService.send(pointerModel.events.down({ type: PointerTargetType.None }));
-    }
+    const pointerTarget = this.getPointerTarget(event);
+    this.pointerService.send(pointerModel.events.down(pointerTarget));
   }
 
   private onMouseMove = throttle(
     (event: SVGElementEvent<'mousemove'>) => {
-      const locateResult = this.getLocateResult(event);
-      const cursor = this.getCursor(locateResult);
-      if (cursor) {
-        this.pointerService.send(pointerModel.events.move({ type: PointerTargetType.Cursor, cursor }));
-      } else {
-        this.pointerService.send(pointerModel.events.move({ type: PointerTargetType.None }));
-      }
+      const pointerTarget = this.getPointerTarget(event);
+      this.pointerService.send(pointerModel.events.move(pointerTarget));
     },
     POINTER_MOVE_THROTTLE_DURATION.ms,
     {
@@ -184,13 +152,24 @@ export class SVGEventProxy {
     this.pointerService.send(pointerModel.events.up());
   }
 
-  private getCursor(locateResult: LocateResult): CursorWrapper | null {
-    for (const target of locateResult.targets) {
-      if (target.type === LocatorTargetType.Cursor) {
-        return target.cursor;
-      }
+  private getPointerTarget(positional: Positional): PointerTarget {
+    const locateResult = this.getLocateResult(positional);
+
+    const mostImportantLocateResultTarget = first(
+      sortBy(locateResult.targets, (target) => LOCATOR_TARGET_SORT_WEIGHTS[target.type] ?? Number.MAX_SAFE_INTEGER)
+    )!;
+
+    if (mostImportantLocateResultTarget && mostImportantLocateResultTarget.type === LocatorTargetType.Cursor) {
+      return { type: PointerTargetType.Cursor, cursor: mostImportantLocateResultTarget.cursor };
     }
-    return null;
+    if (locateResult.cursorSnapshot) {
+      return {
+        type: PointerTargetType.CursorSnapshot,
+        cursorSnapshot: locateResult.cursorSnapshot,
+        timeMs: locateResult.timeMs,
+      };
+    }
+    return { type: PointerTargetType.None };
   }
 
   private getLocateResult(positional: Positional) {

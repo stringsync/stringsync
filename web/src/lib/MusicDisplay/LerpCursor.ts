@@ -176,7 +176,7 @@ export class LerpCursor {
     const x0 = Math.max(0, leftSidePx - CURSOR_PADDING_PX);
     const x1 = Math.max(0, rightSidePx + CURSOR_PADDING_PX);
     const y0 = Math.max(0, topSidePx - CURSOR_PADDING_PX);
-    const y1 = Math.max(0, topSidePx + bottomSidePx + CURSOR_PADDING_PX);
+    const y1 = Math.max(0, bottomSidePx + CURSOR_PADDING_PX);
 
     return Box.from(x0, y0).to(x1, y1);
   }
