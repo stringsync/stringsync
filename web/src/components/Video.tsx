@@ -36,7 +36,7 @@ export const Video: React.FC<Props> = (props) => {
   const VideoHtml = useMemo<React.FC>(
     () => () => (
       <Outer data-vjs-player>
-        <video ref={videoRef} className="video-js vjs-big-play-centered vjs-default-skin vjs-fill" />
+        <video playsInline ref={videoRef} className="video-js vjs-big-play-centered vjs-default-skin vjs-fill" />
       </Outer>
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps

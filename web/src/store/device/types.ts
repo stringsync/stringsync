@@ -1,6 +1,8 @@
 import { CaseReducer, PayloadAction } from '@reduxjs/toolkit';
 
 export type DeviceState = {
+  primaryInput: 'mouse' | 'touch';
+  inputType: 'mouseOnly' | 'touchOnly' | 'hybrid';
   apple: {
     phone: boolean;
     ipod: boolean;

@@ -1,6 +1,8 @@
 import React, { RefObject, useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { MusicDisplay } from '../../lib/MusicDisplay';
+import { MusicDisplay, SupportedSVGEventNames } from '../../lib/MusicDisplay';
+import { RootState } from '../../store';
 
 const SELECTION_INDETERMINATE_ZONE = 100;
 
@@ -26,6 +28,10 @@ const Loading = styled.small`
   margin-top: 36px;
 `;
 
+const COMMON_SVG_EVENT_NAMES: SupportedSVGEventNames[] = [];
+const MOUSE_SVG_EVENT_NAMES: SupportedSVGEventNames[] = ['mousedown', 'mousemove', 'mouseup'];
+const TOUCH_SVG_EVENT_NAMES: SupportedSVGEventNames[] = ['touchstart', 'touchmove', 'touchend'];
+
 type NotationProps = {
   musicXmlUrl: string;
   deadTimeMs: number;
@@ -46,6 +52,10 @@ enum Cursor {
 }
 
 export const Notation: React.FC<NotationProps> = (props) => {
+  const deviceInputType = useSelector<RootState, 'mouseOnly' | 'touchOnly' | 'hybrid'>(
+    (state) => state.device.inputType
+  );
+
   const { musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef, onMusicDisplayChange, onUserScroll } = props;
 
   const divRef = useRef<HTMLDivElement>(null);
@@ -153,8 +163,28 @@ export const Notation: React.FC<NotationProps> = (props) => {
       return;
     }
 
+    const svgSettings = {
+      eventNames: [...COMMON_SVG_EVENT_NAMES],
+      isIdlePingerEnabled: false,
+    };
+    switch (deviceInputType) {
+      case 'mouseOnly':
+        svgSettings.eventNames = [...svgSettings.eventNames, ...MOUSE_SVG_EVENT_NAMES];
+        svgSettings.isIdlePingerEnabled = true;
+        break;
+      case 'touchOnly':
+        svgSettings.eventNames = [...svgSettings.eventNames, ...TOUCH_SVG_EVENT_NAMES];
+        svgSettings.isIdlePingerEnabled = false;
+        break;
+      case 'hybrid':
+        svgSettings.eventNames = [...svgSettings.eventNames, ...MOUSE_SVG_EVENT_NAMES, ...TOUCH_SVG_EVENT_NAMES];
+        svgSettings.isIdlePingerEnabled = true;
+        break;
+    }
+
     const musicDisplay = new MusicDisplay(div, {
       syncSettings: { deadTimeMs, durationMs },
+      svgSettings,
       scrollContainer,
     });
 
@@ -179,7 +209,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
 
       setMusicDisplay(null);
     };
-  }, [musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef]);
+  }, [musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef, deviceInputType]);
 
   return (
     <Outer data-notation cursor={cursor}>

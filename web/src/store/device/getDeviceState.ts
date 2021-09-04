@@ -1,3 +1,4 @@
+import { deviceType, primaryInput } from 'detect-it';
 import { DeviceState } from './types';
 
 // src and tests at https://github.com/kaimallea/isMobile
@@ -38,6 +39,8 @@ export const getDeviceState = (userAgent: string): DeviceState => {
   }
 
   const device: DeviceState = {
+    primaryInput: primaryInput,
+    inputType: deviceType,
     apple: {
       phone: match(appleIphone, userAgent) && !match(windowsPhone, userAgent),
       ipod: match(appleIpod, userAgent),

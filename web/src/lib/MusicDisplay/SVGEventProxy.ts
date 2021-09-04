@@ -49,7 +49,7 @@ export class SVGEventProxy {
 
   private onPointerActiveHandle = Symbol();
   private onPointerIdleHandle = Symbol();
-  private pingHandle = 0;
+  private pingHandle = -1;
 
   private eventListeners: Array<[Element | Document, string, (...args: any[]) => void]> = [];
 
@@ -79,30 +79,32 @@ export class SVGEventProxy {
   }
 
   private install() {
-    // When the user is not interacting with the SVG, send a ping signal to refresh the hover target in case
-    // something that is not user-controlled moves under the pointer.
-    this.onPointerIdleHandle = this.imd.eventBus.subscribe('pointeridle', () => {
-      window.clearInterval(this.pingHandle);
-
-      let prevPointerTarget: PointerTarget = { type: PointerTargetType.None };
-      this.pingHandle = window.setInterval(() => {
-        const pointerTarget = this.getPointerTarget({ clientX: this.clientX, clientY: this.clientY });
-
-        // Avoid slamming the pointer service if the pointer target did not change
-        if (!isEqual(pointerTarget, prevPointerTarget)) {
-          this.pointerService.send(pointerModel.events.ping(pointerTarget));
-        }
-
-        prevPointerTarget = pointerTarget;
-      }, PING_INTERVAL_DURATION.ms);
-    });
-
-    this.onPointerActiveHandle = this.imd.eventBus.subscribe('pointeractive', () => {
-      window.clearInterval(this.pingHandle);
-    });
-
     for (const eventName of this.svgSettings.eventNames) {
       this.addEventListener(eventName);
+    }
+
+    // When the user is not interacting with the SVG, send a ping signal to refresh the hover target in case
+    // something that is not user-controlled moves under the pointer.
+    if (this.svgSettings.isIdlePingerEnabled) {
+      this.onPointerIdleHandle = this.imd.eventBus.subscribe('pointeridle', () => {
+        window.clearInterval(this.pingHandle);
+
+        let prevPointerTarget: PointerTarget = { type: PointerTargetType.None };
+        this.pingHandle = window.setInterval(() => {
+          const pointerTarget = this.getPointerTarget({ clientX: this.clientX, clientY: this.clientY });
+
+          // Avoid slamming the pointer service if the pointer target did not change
+          if (!isEqual(pointerTarget, prevPointerTarget)) {
+            this.pointerService.send(pointerModel.events.ping(pointerTarget));
+          }
+
+          prevPointerTarget = pointerTarget;
+        }, PING_INTERVAL_DURATION.ms);
+      });
+
+      this.onPointerActiveHandle = this.imd.eventBus.subscribe('pointeractive', () => {
+        window.clearInterval(this.pingHandle);
+      });
     }
   }
 
