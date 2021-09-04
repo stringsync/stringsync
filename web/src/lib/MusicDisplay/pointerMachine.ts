@@ -134,18 +134,18 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
         },
         down: {
           on: {
-            up: { target: '#pointer.up', actions: ['resetDownTarget'] },
+            up: { target: '#pointer.up.active', actions: ['resetDownTarget'] },
             move: { actions: ['assignHoverTarget'] },
           },
           states: {
             tap: {
               after: { [TAP_GRACE_PERIOD.ms]: { target: 'press' } },
-              on: { up: { target: '#pointer.up', actions: ['dispatchClick', 'resetDownTarget'] } },
+              on: { up: { target: '#pointer.up.active', actions: ['dispatchClick', 'resetDownTarget'] } },
             },
             press: {
               after: { [LONG_HOLD_DURATION.ms - TAP_GRACE_PERIOD.ms]: { target: 'longpress' } },
               on: {
-                up: { target: '#pointer.up', actions: ['dispatchClick'] },
+                up: { target: '#pointer.up.active', actions: ['dispatchClick'] },
                 move: { target: 'select', actions: ['assignHoverTarget'] },
               },
             },

@@ -92,8 +92,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const [videoPlayer, setVideoPlayer] = useState<VideoJsPlayer | null>(null);
   const [settings, updateSettings] = useNotationPlayerSettings();
 
-  console.log(videoPlayer);
-
   const videoUrl = notation?.videoUrl;
   const playerOptions = useMemo<VideoJsPlayerOptions>(() => {
     return videoUrl
