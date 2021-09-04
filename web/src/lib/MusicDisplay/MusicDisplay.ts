@@ -50,4 +50,8 @@ export class MusicDisplay {
   get cursor() {
     return this.imd.cursorWrapper;
   }
+
+  get svg() {
+    return this.imd.svg;
+  }
 }

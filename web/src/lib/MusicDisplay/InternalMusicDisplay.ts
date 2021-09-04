@@ -112,6 +112,10 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     });
   }
 
+  get svg() {
+    return this.svgEventProxy?.svg;
+  }
+
   clear() {
     super.clear();
     this.cursorWrapper.clear();
