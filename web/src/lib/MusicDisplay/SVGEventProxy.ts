@@ -1,10 +1,10 @@
 import { throttle } from 'lodash';
 import { BackendType, PointF2D, SvgVexFlowBackend, VexFlowBackend } from 'opensheetmusicdisplay';
+import { CursorWrapper, LocateResult, LocatorTargetType } from '.';
 import { Duration } from '../../util/Duration';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
 import { createPointerService, pointerModel, PointerService, PointerTargetType } from './pointerMachine';
-import { CursorWrapper } from './types';
 
 // Narrow down supported events.
 type SVGEventNames = keyof Pick<
@@ -102,7 +102,8 @@ export class SVGEventProxy {
       return;
     }
 
-    const cursor = this.getHitCursor(touch);
+    const locateResult = this.getLocateResult(touch);
+    const cursor = this.getCursor(locateResult);
     if (cursor) {
       this.pointerService.send(pointerModel.events.down({ type: PointerTargetType.Cursor, cursor }));
     } else {
@@ -117,7 +118,8 @@ export class SVGEventProxy {
         return;
       }
 
-      const cursor = this.getHitCursor(touch);
+      const locateResult = this.getLocateResult(touch);
+      const cursor = this.getCursor(locateResult);
       if (cursor) {
         this.pointerService.send(pointerModel.events.move({ type: PointerTargetType.Cursor, cursor }));
       } else {
@@ -136,7 +138,8 @@ export class SVGEventProxy {
   }
 
   private onMouseDown(event: SVGElementEvent<'mousedown'>) {
-    const cursor = this.getHitCursor(event);
+    const locateResult = this.getLocateResult(event);
+    const cursor = this.getCursor(locateResult);
     if (cursor) {
       this.pointerService.send(pointerModel.events.down({ type: PointerTargetType.Cursor, cursor }));
     } else {
@@ -146,7 +149,8 @@ export class SVGEventProxy {
 
   private onMouseMove = throttle(
     (event: SVGElementEvent<'mousemove'>) => {
-      const cursor = this.getHitCursor(event);
+      const locateResult = this.getLocateResult(event);
+      const cursor = this.getCursor(locateResult);
       if (cursor) {
         this.pointerService.send(pointerModel.events.move({ type: PointerTargetType.Cursor, cursor }));
       } else {
@@ -164,14 +168,12 @@ export class SVGEventProxy {
     this.pointerService.send(pointerModel.events.up());
   }
 
-  private getHitCursor(positional: Positional): CursorWrapper | null {
-    const { x, y } = this.getSvgPos(positional);
-
-    const cursor = this.imd.cursorWrapper;
-    if (cursor.getBox().contains(x, y)) {
-      return cursor;
+  private getCursor(locateResult: LocateResult): CursorWrapper | null {
+    for (const target of locateResult.targets) {
+      if (target.type === LocatorTargetType.Cursor) {
+        return target.cursor;
+      }
     }
-
     return null;
   }
 

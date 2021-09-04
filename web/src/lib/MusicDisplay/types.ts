@@ -86,6 +86,7 @@ export type VfNotehead = {
 
 export type LocatorTarget =
   | { type: LocatorTargetType.None }
+  | { type: LocatorTargetType.Cursor; cursor: CursorWrapper; box: Box }
   | { type: LocatorTargetType.Note; graphicalNote: GraphicalNote; vfNoteheadEl: SVGGElement; box: Box };
 
 export enum LocateCost {

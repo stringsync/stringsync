@@ -7,7 +7,7 @@ import { bsearch } from '../../util/bsearch';
 import { NumberRange } from '../../util/NumberRange';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { IteratorSnapshot } from './IteratorSnapshot';
-import { CursorSnapshot, LocateCost, LocateResult, LocatorTargetType } from './types';
+import { CursorSnapshot, CursorWrapper, LocateCost, LocateResult, LocatorTargetType } from './types';
 
 type CursorSnapshotLineGroup = {
   yRange: NumberRange;
@@ -19,7 +19,7 @@ const END_OF_LINE_PADDING_PX = 100;
 export class MusicDisplayLocator {
   static create(imd: InternalMusicDisplay) {
     const cursorSnapshots = MusicDisplayLocator.takeCursorSnapshots(imd);
-    const locator = new MusicDisplayLocator(cursorSnapshots);
+    const locator = new MusicDisplayLocator(imd, cursorSnapshots);
     locator.init();
     return locator;
   }
@@ -115,8 +115,6 @@ export class MusicDisplayLocator {
       currTimeMs = endTimeMs;
     });
 
-    console.log(cursorSnapshots);
-
     return cursorSnapshots.map((cursorSnapshot) => Object.freeze(cursorSnapshot));
   }
 
@@ -167,17 +165,23 @@ export class MusicDisplayLocator {
   }
 
   readonly cursorSnapshots: CursorSnapshot[];
+  private imd: InternalMusicDisplay;
   private cachedLocateByTimeMsResult = MusicDisplayLocator.createNullSeekResult();
   private cachedLocateByPositionResult = MusicDisplayLocator.createNullSeekResult();
   private cursorSnapshotLineGroups: CursorSnapshotLineGroup[];
 
-  private constructor(cursorSnapshots: CursorSnapshot[], cursorSnapshotLineGroups: CursorSnapshotLineGroup[] = []) {
+  private constructor(
+    imd: InternalMusicDisplay,
+    cursorSnapshots: CursorSnapshot[],
+    cursorSnapshotLineGroups: CursorSnapshotLineGroup[] = []
+  ) {
+    this.imd = imd;
     this.cursorSnapshots = cursorSnapshots;
     this.cursorSnapshotLineGroups = cursorSnapshotLineGroups;
   }
 
   clone() {
-    return new MusicDisplayLocator(this.cursorSnapshots, this.cursorSnapshotLineGroups);
+    return new MusicDisplayLocator(this.imd, this.cursorSnapshots, this.cursorSnapshotLineGroups);
   }
 
   locateByTimeMs(timeMs: number): LocateResult {
@@ -397,7 +401,7 @@ export class MusicDisplayLocator {
         y,
         cost: LocateCost.Cheap,
         cursorSnapshot: cursorSnapshot,
-        targets: [],
+        targets: this.selectTargetsContainingXY(x, y, cursorSnapshot),
       };
     }
 
@@ -423,7 +427,7 @@ export class MusicDisplayLocator {
         y,
         cost: LocateCost.Cheap,
         cursorSnapshot: prevCursorSnapshot,
-        targets: [],
+        targets: this.selectTargetsContainingXY(x, y, prevCursorSnapshot),
       };
     }
 
@@ -482,8 +486,39 @@ export class MusicDisplayLocator {
       y,
       cost: LocateCost.Expensive,
       cursorSnapshot: cursorSnapshot,
-      targets: [],
+      targets: this.selectTargetsContainingXY(x, y, cursorSnapshot),
     };
+  }
+
+  private selectTargetsContainingXY(x: number, y: number, cursorSnapshot: CursorSnapshot): LocatorTarget[] {
+    const targets = new Array<LocatorTarget>();
+
+    const cursorHit = this.getCursorHit(x, y);
+    if (cursorHit) {
+      targets.push({ type: LocatorTargetType.Cursor, ...cursorHit });
+    }
+
+    targets.push(
+      ...cursorSnapshot.targets.filter((target) => {
+        switch (target.type) {
+          case LocatorTargetType.Note:
+            return target.box.contains(x, y);
+          default:
+            return false;
+        }
+      })
+    );
+
+    return targets;
+  }
+
+  private getCursorHit(x: number, y: number): { cursor: CursorWrapper; box: Box } | null {
+    const cursor = this.imd.cursorWrapper;
+    const box = cursor.getBox();
+    if (box.contains(x, y)) {
+      return { cursor, box };
+    }
+    return null;
   }
 
   private lerpX(timeMs: number, cursorSnapshot: CursorSnapshot) {
