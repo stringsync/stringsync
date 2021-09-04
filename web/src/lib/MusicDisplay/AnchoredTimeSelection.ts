@@ -6,7 +6,7 @@ export class AnchoredTimeSelection {
   readonly id = Symbol();
 
   readonly anchorTimeMs: number;
-  seekerTimeMs: number;
+  readonly seekerTimeMs: number;
 
   constructor(anchorTimeMs: number, seekerTimeMs: number) {
     this.anchorTimeMs = anchorTimeMs;
@@ -14,7 +14,7 @@ export class AnchoredTimeSelection {
   }
 
   update(timeMs: number) {
-    this.seekerTimeMs = timeMs;
+    return new AnchoredTimeSelection(this.anchorTimeMs, timeMs);
   }
 
   clone() {
