@@ -2,19 +2,22 @@ import { merge } from 'lodash';
 import { ContextFrom, EventFrom, interpret } from 'xstate';
 import { assign, choose } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
+import { CursorSnapshot, CursorWrapper } from '.';
 import { Duration } from '../../util/Duration';
 import { AnchoredTimeSelection } from './AnchoredTimeSelection';
-import { CursorWrapper, MusicDisplayEventBus } from './types';
+import { MusicDisplayEventBus } from './types';
 
 export enum PointerTargetType {
   None,
   Cursor,
+  CursorSnapshot,
   Selection,
 }
 
 export type PointerTarget =
   | { type: PointerTargetType.None }
   | { type: PointerTargetType.Cursor; cursor: CursorWrapper }
+  | { type: PointerTargetType.CursorSnapshot; cursorSnapshot: CursorSnapshot; timeMs: number }
   | { type: PointerTargetType.Selection; selection: AnchoredTimeSelection };
 
 export type PointerContext = ContextFrom<typeof pointerModel>;
@@ -23,6 +26,8 @@ export type PointerMachine = ReturnType<typeof createPointerMachine>;
 export type PointerService = ReturnType<typeof createPointerService>;
 
 const LONG_HOLD_DURATION = Duration.ms(1000);
+const CLICK_GRACE_PERIOD = Duration.ms(100);
+
 const DRAGGABLE_TARGET_TYPES: PointerTargetType[] = [PointerTargetType.Cursor];
 const INITIAL_POINTER_CONTEXT: {
   downTarget: PointerTarget;
@@ -55,7 +60,7 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
         up: {
           entry: ['reset'],
           on: {
-            down: { target: 'down.press', actions: ['assignDownTarget'] },
+            down: { target: 'down.tap', actions: ['assignDownTarget'] },
             move: {
               actions: [
                 'assignHoverTarget',
@@ -68,9 +73,16 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
         down: {
           on: { up: { target: '#pointer.up' } },
           states: {
+            tap: {
+              after: { [CLICK_GRACE_PERIOD.ms]: { target: 'press' } },
+              on: { up: { target: '#pointer.up', actions: ['dispatchClick'] } },
+            },
             press: {
-              after: { [LONG_HOLD_DURATION.ms]: { target: 'longpress' } },
-              on: { move: [{ cond: 'hasDraggableDownTarget', target: 'drag' }, { target: 'select' }] },
+              after: { [LONG_HOLD_DURATION.ms - CLICK_GRACE_PERIOD.ms]: { target: 'longpress' } },
+              on: {
+                up: { target: '#pointer.up', actions: ['dispatchClick'] },
+                move: [{ cond: 'hasDraggableDownTarget', target: 'drag' }, { target: 'select' }],
+              },
             },
             longpress: {
               entry: ['dispatchLongPress'],
@@ -114,6 +126,14 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
           },
           prevHoverTarget: (context) => context.hoverTarget,
         }),
+        dispatchClick: (context) => {
+          if (context.downTarget.type === PointerTargetType.CursorSnapshot) {
+            eventBus.dispatch('cursorsnapshotclicked', {
+              cursorSnapshot: context.downTarget.cursorSnapshot,
+              timeMs: context.downTarget.timeMs,
+            });
+          }
+        },
         dispatchDragStarted: (context) => {
           if (context.downTarget.type === PointerTargetType.Cursor) {
             eventBus.dispatch('cursordragstarted', { cursor: context.downTarget.cursor });

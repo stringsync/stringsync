@@ -106,6 +106,14 @@ export class SVGEventProxy {
     const cursor = this.getCursor(locateResult);
     if (cursor) {
       this.pointerService.send(pointerModel.events.down({ type: PointerTargetType.Cursor, cursor }));
+    } else if (locateResult.cursorSnapshot) {
+      this.pointerService.send(
+        pointerModel.events.down({
+          type: PointerTargetType.CursorSnapshot,
+          cursorSnapshot: locateResult.cursorSnapshot,
+          timeMs: locateResult.timeMs,
+        })
+      );
     } else {
       this.pointerService.send(pointerModel.events.down({ type: PointerTargetType.None }));
     }
@@ -142,6 +150,14 @@ export class SVGEventProxy {
     const cursor = this.getCursor(locateResult);
     if (cursor) {
       this.pointerService.send(pointerModel.events.down({ type: PointerTargetType.Cursor, cursor }));
+    } else if (locateResult.cursorSnapshot) {
+      this.pointerService.send(
+        pointerModel.events.down({
+          type: PointerTargetType.CursorSnapshot,
+          cursorSnapshot: locateResult.cursorSnapshot,
+          timeMs: locateResult.timeMs,
+        })
+      );
     } else {
       this.pointerService.send(pointerModel.events.down({ type: PointerTargetType.None }));
     }
