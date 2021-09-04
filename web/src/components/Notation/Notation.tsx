@@ -37,6 +37,7 @@ type NotationProps = {
 
 enum Cursor {
   Default = 'default',
+  Pointer = 'pointer',
   EWResize = 'ew-resize',
   EResize = 'e-resize',
   WResize = 'w-resize',
@@ -48,7 +49,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
   const { musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef, onMusicDisplayChange, onUserScroll } = props;
 
   const divRef = useRef<HTMLDivElement>(null);
-  const [cursor, setCursor] = useState(Cursor.Default);
+  const [cursor, setCursor] = useState(Cursor.Pointer);
 
   // A ref is used instead of state because we don't want to wait for
   // React to flush the values - the scroll handler will still be active
@@ -110,25 +111,25 @@ export const Notation: React.FC<NotationProps> = (props) => {
         }
       }),
       musicDisplay.eventBus.subscribe('selectionended', () => {
-        setCursor(Cursor.Default);
+        setCursor(Cursor.Pointer);
       }),
       musicDisplay.eventBus.subscribe('cursorentered', (payload) => {
         setCursor(Cursor.Grab);
       }),
       musicDisplay.eventBus.subscribe('cursorexited', () => {
-        setCursor(Cursor.Default);
+        setCursor(Cursor.Pointer);
       }),
       musicDisplay.eventBus.subscribe('cursordragstarted', () => {
         setCursor(Cursor.Grabbing);
       }),
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
-        setCursor(payload.hoveredCursor ? Cursor.Grab : Cursor.Default);
+        setCursor(payload.hoveredCursor ? Cursor.Grab : Cursor.Pointer);
       }),
     ];
 
     return () => {
       handles.forEach(musicDisplay.eventBus.unsubscribe.bind(musicDisplay.eventBus));
-      setCursor(Cursor.Default);
+      setCursor(Cursor.Pointer);
     };
   }, [musicDisplay]);
 
