@@ -36,7 +36,7 @@ export class MusicDisplayLocator {
     let currBeat = 0;
     let currTimeMs = imd.syncSettings.deadTimeMs;
 
-    imd.forEachCursorPosition((index, probeCursor) => {
+    imd.forEachCursorPosition((ndx, probeCursor) => {
       const iteratorSnapshot = IteratorSnapshot.create(probeCursor.iterator);
 
       // Get OSMD-specific references
@@ -113,7 +113,6 @@ export class MusicDisplayLocator {
       prevCursorSnapshot = cursorSnapshot;
       currBeat = endBeat;
       currTimeMs = endTimeMs;
-      index++;
     });
 
     console.log(cursorSnapshots);
@@ -256,7 +255,7 @@ export class MusicDisplayLocator {
         x,
         cost: LocateCost.Cheap,
         cursorSnapshot: firstCursorSnapshot,
-        targets: [],
+        targets: firstCursorSnapshot.targets,
       };
     }
 
@@ -270,7 +269,7 @@ export class MusicDisplayLocator {
         x,
         cost: LocateCost.Cheap,
         cursorSnapshot: secondCursorSnapshot,
-        targets: [],
+        targets: secondCursorSnapshot.targets,
       };
     }
 
@@ -281,7 +280,7 @@ export class MusicDisplayLocator {
         x: -1,
         cost: LocateCost.Cheap,
         cursorSnapshot: null,
-        targets: [],
+        targets: lastCursorSnapshot.targets,
       };
     }
 
@@ -297,7 +296,7 @@ export class MusicDisplayLocator {
         x,
         cost: LocateCost.Cheap,
         cursorSnapshot: cursorSnapshot,
-        targets: [],
+        targets: cursorSnapshot.targets,
       };
     }
 
@@ -309,7 +308,7 @@ export class MusicDisplayLocator {
         x,
         cost: LocateCost.Cheap,
         cursorSnapshot: nextCursorSnapshot,
-        targets: [],
+        targets: nextCursorSnapshot.targets,
       };
     }
 
@@ -321,7 +320,7 @@ export class MusicDisplayLocator {
         x,
         cost: LocateCost.Cheap,
         cursorSnapshot: prevCursorSnapshot,
-        targets: [],
+        targets: prevCursorSnapshot.targets,
       };
     }
 
@@ -350,7 +349,7 @@ export class MusicDisplayLocator {
         x,
         cost: LocateCost.Expensive,
         cursorSnapshot: cursorSnapshot,
-        targets: [],
+        targets: cursorSnapshot.targets,
       };
     }
 
