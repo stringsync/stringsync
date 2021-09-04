@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import { get, set, takeRight } from 'lodash';
 import { Cursor, CursorOptions, CursorType, OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
 import { MusicDisplayEventBus } from '.';
@@ -32,13 +31,6 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   eventBus: MusicDisplayEventBus;
   svgEventProxy: SVGEventProxy | null = null;
 
-  private onSelectionUpdatedHandle = Symbol();
-  private onSelectionEndedHandle = Symbol();
-  private onCursorEnteredHandle = Symbol();
-  private onCursorExitedHandle = Symbol();
-  private onCursorDragStartedHandle = Symbol();
-  private onCursorDragEndedHandle = Symbol();
-
   constructor(container: string | HTMLElement, eventBus: MusicDisplayEventBus, opts: MusicDisplayOptions) {
     super(container, opts);
 
@@ -69,7 +61,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
       scrollContainer: this.scrollContainer,
     });
 
-    const svgEventProxy = SVGEventProxy.install(this, locator.clone(), [
+    this.svgEventProxy = SVGEventProxy.install(this, locator.clone(), [
       'touchstart',
       'touchmove',
       'touchend',
@@ -77,43 +69,6 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
       'mousemove',
       'mousedown',
     ]);
-    this.svgEventProxy = svgEventProxy;
-    const $svg = $(svgEventProxy.svg);
-
-    this.onSelectionUpdatedHandle = this.eventBus.subscribe('selectionupdated', (payload) => {
-      const { anchorTimeMs, seekerTimeMs } = payload.selection;
-      if (Math.abs(anchorTimeMs - seekerTimeMs) <= CURSOR_PADDING_PX) {
-        $svg.css('cursor', 'ew-resize');
-      } else if (anchorTimeMs > seekerTimeMs) {
-        $svg.css('cursor', 'e-resize');
-      } else {
-        $svg.css('cursor', 'w-resize');
-      }
-    });
-
-    this.onSelectionEndedHandle = this.eventBus.subscribe('selectionended', () => {
-      $svg.css('cursor', 'default');
-    });
-
-    this.onCursorEnteredHandle = this.eventBus.subscribe('cursorentered', () => {
-      $svg.css('cursor', 'grab');
-    });
-
-    this.onCursorExitedHandle = this.eventBus.subscribe('cursorexited', () => {
-      $svg.css('cursor', 'default');
-    });
-
-    this.onCursorDragStartedHandle = this.eventBus.subscribe('cursordragstarted', () => {
-      $svg.css('cursor', 'grabbing');
-    });
-
-    this.onCursorDragEndedHandle = this.eventBus.subscribe('cursordragended', () => {
-      $svg.css('cursor', 'default');
-    });
-  }
-
-  get svg() {
-    return this.svgEventProxy?.svg;
   }
 
   clear() {
@@ -124,13 +79,6 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     if (svg) {
       this.container.removeChild(svg);
     }
-
-    this.eventBus.unsubscribe(this.onCursorDragEndedHandle);
-    this.eventBus.unsubscribe(this.onCursorDragStartedHandle);
-    this.eventBus.unsubscribe(this.onCursorExitedHandle);
-    this.eventBus.unsubscribe(this.onCursorEnteredHandle);
-    this.eventBus.unsubscribe(this.onSelectionEndedHandle);
-    this.eventBus.unsubscribe(this.onSelectionUpdatedHandle);
   }
 
   clearCursors() {

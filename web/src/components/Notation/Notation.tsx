@@ -2,9 +2,12 @@ import React, { RefObject, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 
-const Outer = styled.div`
+const CURSOR_PADDING_PX = 50;
+
+const Outer = styled.div<{ cursor: Cursor }>`
   margin-top: 24px;
   position: relative;
+  cursor: ${(props) => props.cursor};
 `;
 
 const LoadingOverlay = styled.div`
@@ -32,10 +35,20 @@ type NotationProps = {
   onMusicDisplayChange?: (musicDisplay: MusicDisplay | null) => void;
 };
 
+enum Cursor {
+  Default = 'default',
+  EWResize = 'ew-resize',
+  EResize = 'e-resize',
+  WResize = 'w-resize',
+  Grab = 'grab',
+  Grabbing = 'grabbing',
+}
+
 export const Notation: React.FC<NotationProps> = (props) => {
   const { musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef, onMusicDisplayChange, onUserScroll } = props;
 
   const divRef = useRef<HTMLDivElement>(null);
+  const [cursor, setCursor] = useState(Cursor.Default);
 
   // A ref is used instead of state because we don't want to wait for
   // React to flush the values - the scroll handler will still be active
@@ -78,16 +91,41 @@ export const Notation: React.FC<NotationProps> = (props) => {
     if (!musicDisplay) {
       return;
     }
-    const autoScrollStartedHandle = musicDisplay.eventBus.subscribe('autoscrollstarted', () => {
-      isAutoScrollingRef.current = true;
-    });
-    const autoScrollEndedHandle = musicDisplay.eventBus.subscribe('autoscrollended', () => {
-      isAutoScrollingRef.current = false;
-    });
+
+    const handles = [
+      musicDisplay.eventBus.subscribe('autoscrollstarted', () => {
+        isAutoScrollingRef.current = true;
+      }),
+      musicDisplay.eventBus.subscribe('autoscrollended', () => {
+        isAutoScrollingRef.current = false;
+      }),
+      musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
+        const { anchorTimeMs, seekerTimeMs } = payload.selection;
+        if (Math.abs(anchorTimeMs - seekerTimeMs) <= CURSOR_PADDING_PX) {
+          setCursor(Cursor.EWResize);
+        } else if (anchorTimeMs > seekerTimeMs) {
+          setCursor(Cursor.EResize);
+        } else {
+          setCursor(Cursor.WResize);
+        }
+      }),
+      musicDisplay.eventBus.subscribe('cursorentered', () => {
+        setCursor(Cursor.Grab);
+      }),
+      musicDisplay.eventBus.subscribe('cursorexited', () => {
+        setCursor(Cursor.Default);
+      }),
+      musicDisplay.eventBus.subscribe('cursordragstarted', () => {
+        setCursor(Cursor.Grabbing);
+      }),
+      musicDisplay.eventBus.subscribe('cursordragended', () => {
+        setCursor(Cursor.Default);
+      }),
+    ];
 
     return () => {
-      musicDisplay.eventBus.unsubscribe(autoScrollEndedHandle);
-      musicDisplay.eventBus.unsubscribe(autoScrollStartedHandle);
+      handles.forEach(musicDisplay.eventBus.unsubscribe);
+      setCursor(Cursor.Default);
     };
   }, [musicDisplay]);
 
@@ -131,7 +169,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
   }, [musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef]);
 
   return (
-    <Outer data-notation>
+    <Outer data-notation cursor={cursor}>
       {isLoading && (
         <LoadingOverlay>
           <Loading>loading</Loading>
