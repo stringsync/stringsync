@@ -97,6 +97,7 @@ export enum LocateCost {
 export type LocateResult = {
   timeMs: number;
   x: number;
+  y: number | undefined;
   cost: LocateCost;
   cursorSnapshot: Readonly<CursorSnapshot> | null;
   targets: LocatorTarget[];
