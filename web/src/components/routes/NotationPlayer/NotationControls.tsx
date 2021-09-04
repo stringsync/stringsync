@@ -224,6 +224,9 @@ export const NotationControls: React.FC<Props> = (props) => {
       musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {
         onSeek(payload.timeMs);
       }),
+      musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
+        onSeekEnd();
+      }),
     ];
 
     return () => {
