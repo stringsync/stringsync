@@ -1,6 +1,6 @@
 import { get, set, takeRight } from 'lodash';
 import { Cursor, CursorOptions, CursorType, OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
-import { MusicDisplayEventBus } from '.';
+import { MusicDisplayEventBus, SVGSettings } from '.';
 import { LerpCursor } from './LerpCursor';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
 import { NullCursor } from './NullCursor';
@@ -25,6 +25,7 @@ type ForEachCursorPositionCallback = (index: number, probeCursor: Cursor) => voi
 export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   scrollContainer: HTMLDivElement;
   syncSettings: SyncSettings;
+  svgSettings: SVGSettings;
   cursorWrapper: CursorWrapper = new NullCursor();
   eventBus: MusicDisplayEventBus;
   svgEventProxy: SVGEventProxy | null = null;
@@ -34,6 +35,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
     this.eventBus = eventBus;
     this.syncSettings = opts.syncSettings;
+    this.svgSettings = opts.svgSettings;
     this.scrollContainer = opts.scrollContainer;
     this.handleResize(this.onResizeStart.bind(this), this.onResizeEnd.bind(this));
   }
@@ -59,14 +61,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
       scrollContainer: this.scrollContainer,
     });
 
-    this.svgEventProxy = SVGEventProxy.install(this, locator.clone(), [
-      'touchstart',
-      'touchmove',
-      'touchend',
-      'mouseup',
-      'mousemove',
-      'mousedown',
-    ]);
+    this.svgEventProxy = SVGEventProxy.install(this, locator.clone(), this.svgSettings);
   }
 
   clear() {

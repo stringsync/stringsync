@@ -60,9 +60,20 @@ export type CursorInfo = {
   numMeasures: number;
 };
 
+export type SupportedSVGEventNames = keyof Pick<
+  SVGElementEventMap,
+  'touchstart' | 'touchmove' | 'touchend' | 'mousedown' | 'mousemove' | 'mouseup'
+>;
+
+export type SVGSettings = {
+  eventNames: SupportedSVGEventNames[];
+  isIdlePingerEnabled: boolean;
+};
+
 export type MusicDisplayOptions = IOSMDOptions & {
   syncSettings: SyncSettings;
   scrollContainer: HTMLDivElement;
+  svgSettings: SVGSettings;
 };
 
 export type CursorSnapshot = {

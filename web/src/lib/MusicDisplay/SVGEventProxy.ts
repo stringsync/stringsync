@@ -1,18 +1,13 @@
 import { first, isEqual, sortBy, throttle } from 'lodash';
 import { BackendType, PointF2D, SvgVexFlowBackend, VexFlowBackend } from 'opensheetmusicdisplay';
+import { SupportedSVGEventNames } from '.';
 import { Duration } from '../../util/Duration';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
 import { createPointerService, pointerModel, PointerService, PointerTarget, PointerTargetType } from './pointerMachine';
-import { LocatorTargetType } from './types';
+import { LocatorTargetType, SVGSettings } from './types';
 
-// Narrow down supported events.
-type SVGEventNames = keyof Pick<
-  SVGElementEventMap,
-  'touchstart' | 'touchmove' | 'touchend' | 'mousedown' | 'mousemove' | 'mouseup'
->;
-
-type SVGElementEvent<N extends SVGEventNames> = SVGElementEventMap[N];
+type SVGElementEvent<N extends SupportedSVGEventNames> = SVGElementEventMap[N];
 
 type Positional = { clientX: number; clientY: number };
 
@@ -31,21 +26,22 @@ const isSvgBackend = (backend: VexFlowBackend | undefined): backend is SvgVexFlo
 };
 
 export class SVGEventProxy {
-  static install(imd: InternalMusicDisplay, locator: MusicDisplayLocator, eventNames: SVGEventNames[]) {
+  static install(imd: InternalMusicDisplay, locator: MusicDisplayLocator, svgSettings: SVGSettings) {
     const backend = imd.Drawer.Backends[0];
     if (!isSvgBackend(backend)) {
       throw new Error('expected the first backend to be an svg backend');
     }
     const svg = backend.getSvgElement();
     const pointerService = createPointerService(imd.eventBus);
-    const svgEventProxy = new SVGEventProxy(svg, imd, locator, pointerService);
-    svgEventProxy.install(eventNames);
+    const svgEventProxy = new SVGEventProxy(svg, imd, locator, pointerService, svgSettings);
+    svgEventProxy.install();
     return svgEventProxy;
   }
 
   svg: SVGElement;
   private imd: InternalMusicDisplay;
   private locator: MusicDisplayLocator;
+  private svgSettings: SVGSettings;
   private pointerService: PointerService;
 
   private clientX = 0;
@@ -61,12 +57,14 @@ export class SVGEventProxy {
     svg: SVGElement,
     imd: InternalMusicDisplay,
     locator: MusicDisplayLocator,
-    pointerService: PointerService
+    pointerService: PointerService,
+    svgSettings: SVGSettings
   ) {
     this.svg = svg;
     this.imd = imd;
     this.locator = locator;
     this.pointerService = pointerService;
+    this.svgSettings = svgSettings;
   }
 
   uninstall() {
@@ -80,7 +78,7 @@ export class SVGEventProxy {
     this.eventListeners = [];
   }
 
-  private install(eventNames: SVGEventNames[]) {
+  private install() {
     // When the user is not interacting with the SVG, send a ping signal to refresh the hover target in case
     // something that is not user-controlled moves under the pointer.
     this.onPointerIdleHandle = this.imd.eventBus.subscribe('pointeridle', () => {
@@ -103,12 +101,12 @@ export class SVGEventProxy {
       window.clearInterval(this.pingHandle);
     });
 
-    for (const eventName of eventNames) {
+    for (const eventName of this.svgSettings.eventNames) {
       this.addEventListener(eventName);
     }
   }
 
-  private addEventListener(eventName: SVGEventNames) {
+  private addEventListener(eventName: SupportedSVGEventNames) {
     const add = (
       el: Element | Document,
       eventName: string,
