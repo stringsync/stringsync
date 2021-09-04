@@ -85,9 +85,9 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
       if (Math.abs(anchorTimeMs - seekerTimeMs) <= CURSOR_PADDING_PX) {
         $svg.css('cursor', 'ew-resize');
       } else if (anchorTimeMs > seekerTimeMs) {
-        $svg.css('cursor', 'w-resize');
-      } else {
         $svg.css('cursor', 'e-resize');
+      } else {
+        $svg.css('cursor', 'w-resize');
       }
     });
 
