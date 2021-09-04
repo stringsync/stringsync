@@ -30,7 +30,10 @@ export type MusicDisplayEventBus = EventBus<{
   selectionupdated: { selection: AnchoredTimeSelection };
   selectionended: {};
   cursorsnapshotclicked: { cursorSnapshot: CursorSnapshot; timeMs: number };
-  cursorsnapshothovered: { cursorSnapshot: CursorSnapshot; timeMs: number };
+  cursorsnapshotentered: { cursorSnapshot: CursorSnapshot; timeMs: number };
+  cursorsnapshotexited: { cursorSnapshot: CursorSnapshot; timeMs: number };
+  notargetentered: {};
+  notargetexited: {};
 }>;
 
 export type SyncSettings = {

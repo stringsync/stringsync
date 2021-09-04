@@ -34,11 +34,14 @@ type UnknownTarget = {
   type: PointerTargetType;
 };
 
-const isCursorPointerTarget = (value: UnknownTarget): value is CursorPointerTarget => {
-  return value.type === PointerTargetType.Cursor;
+const isNonePointerTarget = (target: UnknownTarget): target is CursorPointerTarget => {
+  return target.type === PointerTargetType.None;
 };
-const isCursorSnapshotPointerTarget = (value: UnknownTarget): value is CursorSnapshotPointerTarget => {
-  return value.type === PointerTargetType.CursorSnapshot;
+const isCursorPointerTarget = (target: UnknownTarget): target is CursorPointerTarget => {
+  return target.type === PointerTargetType.Cursor;
+};
+const isCursorSnapshotPointerTarget = (target: UnknownTarget): target is CursorSnapshotPointerTarget => {
+  return target.type === PointerTargetType.CursorSnapshot;
 };
 
 const LONG_HOLD_DURATION = Duration.ms(1000);
@@ -83,8 +86,18 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
             move: {
               actions: [
                 'assignHoverTarget',
-                choose([{ cond: 'didCursorEnter', actions: ['dispatchCursorEntered'] }]),
-                choose([{ cond: 'didCursorExit', actions: ['dispatchCursorExited'] }]),
+                choose([
+                  { cond: 'hasNoTarget', actions: ['dispatchNoTargetEntered'] },
+                  { actions: 'dispatchNoTargetExited' },
+                ]),
+                choose([
+                  { cond: 'didEnterCursor', actions: ['dispatchCursorEntered'] },
+                  { cond: 'didEnterCursorSnapshot', actions: ['dispatchCursorSnapshotEntered'] },
+                ]),
+                choose([
+                  { cond: 'didExitCursor', actions: ['dispatchCursorExited'] },
+                  { cond: 'didExitCursorSnapshot', actions: ['dispatchCursorSnapshotExited'] },
+                ]),
               ],
             },
           },
@@ -208,25 +221,51 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
         dispatchSelectEnded: () => {
           eventBus.dispatch('selectionended', {});
         },
-        dispatchCursorEntered: (context, event) => {
+        dispatchCursorEntered: (context) => {
           if (isCursorPointerTarget(context.hoverTarget)) {
             eventBus.dispatch('cursorentered', { cursor: context.hoverTarget.cursor });
           }
         },
-        dispatchCursorExited: (context, event) => {
+        dispatchCursorExited: (context) => {
           if (isCursorPointerTarget(context.prevHoverTarget)) {
             eventBus.dispatch('cursorexited', { cursor: context.prevHoverTarget.cursor });
           }
         },
+        dispatchCursorSnapshotEntered: (context) => {
+          if (isCursorSnapshotPointerTarget(context.hoverTarget)) {
+            eventBus.dispatch('cursorsnapshotentered', {
+              cursorSnapshot: context.hoverTarget.cursorSnapshot,
+              timeMs: context.hoverTarget.timeMs,
+            });
+          }
+        },
+        dispatchCursorSnapshotExited: (context) => {
+          if (isCursorSnapshotPointerTarget(context.prevHoverTarget)) {
+            eventBus.dispatch('cursorsnapshotexited', {
+              cursorSnapshot: context.prevHoverTarget.cursorSnapshot,
+              timeMs: context.prevHoverTarget.timeMs,
+            });
+          }
+        },
         dispatchLongPress: () => {
           eventBus.dispatch('longpress', {});
+        },
+        dispatchNoTargetEntered: () => {
+          eventBus.dispatch('notargetentered', {});
+        },
+        dispatchNoTargetExited: () => {
+          eventBus.dispatch('notargetexited', {});
         },
       },
       guards: {
         hasDraggableTarget: (context, event) => {
           return isCursorPointerTarget(event.target);
         },
-        didCursorEnter: (context) => {
+        hasNoTarget: (context, event) => {
+          'dispatchTarget';
+          return isNonePointerTarget(event.target);
+        },
+        didEnterCursor: (context) => {
           if (!isCursorPointerTarget(context.hoverTarget)) {
             return false;
           }
@@ -235,7 +274,7 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
           }
           return context.hoverTarget.cursor !== context.prevHoverTarget.cursor;
         },
-        didCursorExit: (context) => {
+        didExitCursor: (context) => {
           if (!isCursorPointerTarget(context.prevHoverTarget)) {
             return false;
           }
@@ -243,6 +282,24 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
             return true;
           }
           return context.prevHoverTarget.cursor !== context.hoverTarget.cursor;
+        },
+        didEnterCursorSnapshot: (context) => {
+          if (!isCursorSnapshotPointerTarget(context.hoverTarget)) {
+            return false;
+          }
+          if (!isCursorSnapshotPointerTarget(context.prevHoverTarget)) {
+            return true;
+          }
+          return context.hoverTarget.cursorSnapshot !== context.prevHoverTarget.cursorSnapshot;
+        },
+        didExitCursorSnapshot: (context) => {
+          if (!isCursorSnapshotPointerTarget(context.prevHoverTarget)) {
+            return false;
+          }
+          if (!isCursorSnapshotPointerTarget(context.hoverTarget)) {
+            return true;
+          }
+          return context.prevHoverTarget.cursorSnapshot !== context.hoverTarget.cursorSnapshot;
         },
       },
     }
