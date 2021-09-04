@@ -74,10 +74,10 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
       strict: true,
       states: {
         up: {
-          entry: ['reset'],
+          entry: ['resetDownTarget'],
           on: {
             down: [
-              { cond: 'hasDraggableDownTarget', target: 'down.drag', actions: ['assignDownTarget'] },
+              { cond: 'hasDraggableTarget', target: 'down.drag', actions: ['assignDownTarget'] },
               { target: 'down.tap', actions: ['assignDownTarget'] },
             ],
             move: {
@@ -90,7 +90,10 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
           },
         },
         down: {
-          on: { up: { target: '#pointer.up' } },
+          on: {
+            up: { target: '#pointer.up' },
+            move: { actions: ['assignHoverTarget'] },
+          },
           states: {
             tap: {
               after: { [TAP_GRACE_PERIOD.ms]: { target: 'press' } },
@@ -100,7 +103,7 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
               after: { [LONG_HOLD_DURATION.ms - TAP_GRACE_PERIOD.ms]: { target: 'longpress' } },
               on: {
                 up: { target: '#pointer.up', actions: ['dispatchClick'] },
-                move: { target: 'select' },
+                move: { target: 'select', actions: ['assignHoverTarget'] },
               },
             },
             longpress: {
@@ -108,12 +111,12 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
             },
             drag: {
               entry: ['dispatchDragStarted'],
-              on: { move: { actions: ['dispatchDragUpdated'] } },
+              on: { move: { actions: ['assignHoverTarget', 'dispatchDragUpdated'] } },
               exit: ['dispatchDragEnded'],
             },
             select: {
               entry: ['initSelection', 'dispatchSelectStarted'],
-              on: { move: { actions: ['updateSelection', 'dispatchSelectUpdated'] } },
+              on: { move: { actions: ['assignHoverTarget', 'updateSelection', 'dispatchSelectUpdated'] } },
               exit: ['clearSelection', 'dispatchSelectEnded'],
             },
           },
@@ -122,7 +125,9 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
     },
     {
       actions: {
-        reset: assign((context) => merge({}, INITIAL_POINTER_CONTEXT)),
+        resetDownTarget: assign<PointerContext, PointerEvent>({
+          downTarget: (context, event) => merge({}, INITIAL_POINTER_CONTEXT.downTarget),
+        }),
         assignDownTarget: assign<PointerContext, PointerEvent>({
           downTarget: (context, event) => {
             switch (event.type) {
@@ -183,8 +188,11 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
           }
         },
         dispatchDragEnded: (context, event) => {
-          if (isCursorPointerTarget(context.downTarget) && isCursorSnapshotPointerTarget(event.target)) {
-            eventBus.dispatch('cursordragended', { cursor: context.downTarget.cursor, timeMs: event.target.timeMs });
+          if (isCursorPointerTarget(context.downTarget)) {
+            eventBus.dispatch('cursordragended', {
+              cursor: context.downTarget.cursor,
+              hoveredCursor: isCursorPointerTarget(context.hoverTarget) ? context.hoverTarget.cursor : null,
+            });
           }
         },
         dispatchSelectStarted: (context) => {
@@ -197,10 +205,8 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
             eventBus.dispatch('selectionupdated', { selection: context.selection });
           }
         },
-        dispatchSelectEnded: (context) => {
-          if (context.selection) {
-            eventBus.dispatch('selectionended', { selection: context.selection });
-          }
+        dispatchSelectEnded: () => {
+          eventBus.dispatch('selectionended', {});
         },
         dispatchCursorEntered: (context, event) => {
           if (isCursorPointerTarget(context.hoverTarget)) {
@@ -217,8 +223,8 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
         },
       },
       guards: {
-        hasDraggableDownTarget: (context, event) => {
-          return event.type === 'down' && isCursorPointerTarget(event.target);
+        hasDraggableTarget: (context, event) => {
+          return isCursorPointerTarget(event.target);
         },
         didCursorEnter: (context) => {
           if (!isCursorPointerTarget(context.hoverTarget)) {

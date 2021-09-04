@@ -221,20 +221,7 @@ export const NotationControls: React.FC<Props> = (props) => {
       musicDisplay.eventBus.subscribe('cursorsnapshotclicked', (payload) => {
         onSeek(payload.timeMs);
       }),
-      musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
-        onSeek(payload.selection.anchorTimeMs);
-      }),
-      musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
-        onSeek(payload.selection.seekerTimeMs);
-      }),
-      musicDisplay.eventBus.subscribe('selectionended', (payload) => {
-        // onSeek(payload.selection.seekerTimeMs);
-        // TODO(jared) Figure out how to call seek end properly
-      }),
       musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {
-        onSeek(payload.timeMs);
-      }),
-      musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
         onSeek(payload.timeMs);
       }),
     ];

@@ -25,7 +25,7 @@ export type MusicDisplayEventBus = EventBus<{
   cursorexited: { cursor: CursorWrapper };
   cursordragstarted: { cursor: CursorWrapper };
   cursordragupdated: { cursor: CursorWrapper; timeMs: number };
-  cursordragended: { cursor: CursorWrapper; timeMs: number };
+  cursordragended: { cursor: CursorWrapper; hoveredCursor: CursorWrapper | null };
   selectionstarted: { selection: AnchoredTimeSelection };
   selectionupdated: { selection: AnchoredTimeSelection };
   selectionended: {};

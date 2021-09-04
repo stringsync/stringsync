@@ -109,7 +109,10 @@ export const Notation: React.FC<NotationProps> = (props) => {
           setCursor(Cursor.WResize);
         }
       }),
-      musicDisplay.eventBus.subscribe('cursorentered', () => {
+      musicDisplay.eventBus.subscribe('selectionended', () => {
+        setCursor(Cursor.Default);
+      }),
+      musicDisplay.eventBus.subscribe('cursorentered', (payload) => {
         setCursor(Cursor.Grab);
       }),
       musicDisplay.eventBus.subscribe('cursorexited', () => {
@@ -118,8 +121,8 @@ export const Notation: React.FC<NotationProps> = (props) => {
       musicDisplay.eventBus.subscribe('cursordragstarted', () => {
         setCursor(Cursor.Grabbing);
       }),
-      musicDisplay.eventBus.subscribe('cursordragended', () => {
-        setCursor(Cursor.Default);
+      musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
+        setCursor(payload.hoveredCursor ? Cursor.Grab : Cursor.Default);
       }),
     ];
 
