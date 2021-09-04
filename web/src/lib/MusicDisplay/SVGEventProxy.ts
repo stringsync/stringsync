@@ -1,7 +1,6 @@
 import { throttle } from 'lodash';
 import { BackendType, PointF2D, SvgVexFlowBackend, VexFlowBackend } from 'opensheetmusicdisplay';
 import { Duration } from '../../util/Duration';
-import { NumberRange } from '../../util/NumberRange';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
 import { createPointerService, pointerModel, PointerService, PointerTargetType } from './pointerMachine';
@@ -18,7 +17,6 @@ type SVGElementEvent<N extends SVGEventNames> = SVGElementEventMap[N];
 type Positional = { clientX: number; clientY: number };
 
 const POINTER_MOVE_THROTTLE_DURATION = Duration.ms(30);
-const CURSOR_PADDING_PX = 10;
 
 const isSvgBackend = (backend: VexFlowBackend | undefined): backend is SvgVexFlowBackend => {
   return !!backend && backend.getOSMDBackendType() === BackendType.SVG;
@@ -168,26 +166,16 @@ export class SVGEventProxy {
 
   private getHitCursor(positional: Positional): CursorWrapper | null {
     const { x, y } = this.getSvgPos(positional);
-    const svgRect = this.svg.getBoundingClientRect();
-    const cursorRect = this.imd.cursorWrapper.element.getBoundingClientRect();
 
-    const relativeLeft = cursorRect.left - svgRect.left;
-    const relativeTop = cursorRect.top - svgRect.top;
-    const xRange = NumberRange.from(relativeLeft - CURSOR_PADDING_PX).to(
-      relativeLeft + cursorRect.width + CURSOR_PADDING_PX
-    );
-    const yRange = NumberRange.from(relativeTop - CURSOR_PADDING_PX).to(
-      relativeTop + cursorRect.height + CURSOR_PADDING_PX
-    );
-
-    if (xRange.contains(x) && yRange.contains(y)) {
-      return this.imd.cursorWrapper;
+    const cursor = this.imd.cursorWrapper;
+    if (cursor.getBox().contains(x, y)) {
+      return cursor;
     }
 
     return null;
   }
 
-  private getSeekResult(positional: Positional) {
+  private getLocateResult(positional: Positional) {
     const { x, y } = this.getSvgPos(positional);
     return this.locator.locateByPosition(x, y);
   }

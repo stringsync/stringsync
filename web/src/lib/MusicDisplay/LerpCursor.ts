@@ -2,6 +2,7 @@ import $ from 'jquery';
 import { throttle } from 'lodash';
 import { Cursor, CursorType } from 'opensheetmusicdisplay';
 import { MusicDisplayEventBus } from '.';
+import { Box } from '../../util/Box';
 import { ColoringOperation } from './ColoringOperation';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
@@ -14,7 +15,7 @@ const SCROLL_GRACE_PERIOD_MS = 500;
 const SCROLL_DELTA_TOLERANCE_PX = 2;
 const SCROLL_JUMP_THRESHOLD_PX = 350;
 
-const END_OF_LINE_LERP_PX = 20;
+const CURSOR_PADDING_PX = 10;
 
 const DEFAULT_CURSOR_OPTS = [
   {
@@ -120,16 +121,16 @@ export class LerpCursor {
       return;
     }
 
-    const seekResult = this.locator.locateByTimeMs(timeMs);
+    const locateResult = this.locator.locateByTimeMs(timeMs);
 
-    const nextCursorSnapshot = seekResult.cursorSnapshot;
+    const nextCursorSnapshot = locateResult.cursorSnapshot;
     const prevCursorSnapshot = this.prevCursorSnapshot;
 
     if (nextCursorSnapshot === prevCursorSnapshot) {
-      this.updateLerperPosition(seekResult.x);
+      this.updateLerperPosition(locateResult.x);
     } else {
       this.updateCursors(nextCursorSnapshot);
-      this.updateLerperPosition(seekResult.x);
+      this.updateLerperPosition(locateResult.x);
     }
   }
 
@@ -148,6 +149,36 @@ export class LerpCursor {
   enableAutoScroll() {
     this.isAutoScrollEnabled = true;
     this.scrollLaggerIntoView();
+  }
+
+  getBox(): Box {
+    if (this.lerper.hidden) {
+      return Box.from(-1, -1).to(-1, -1);
+    }
+
+    const leftSidePxStr = this.lerper.cursorElement.style.left;
+    const leftSidePx = parseFloat(leftSidePxStr.replace('px', ''));
+    if (isNaN(leftSidePx)) {
+      return Box.from(-1, -1).to(-1, -1);
+    }
+
+    const topSidePxStr = this.lerper.cursorElement.style.top;
+    const topSidePx = parseFloat(topSidePxStr.replace('px', ''));
+    if (isNaN(leftSidePx)) {
+      return Box.from(-1, -1).to(-1, -1);
+    }
+
+    const widthPx = this.lerper.cursorElement.width;
+    const heightPx = this.lerper.cursorElement.height;
+    const rightSidePx = leftSidePx + widthPx;
+    const bottomSidePx = topSidePx + heightPx;
+
+    const x0 = Math.max(0, leftSidePx - CURSOR_PADDING_PX);
+    const x1 = Math.max(0, rightSidePx + CURSOR_PADDING_PX);
+    const y0 = Math.max(0, topSidePx - CURSOR_PADDING_PX);
+    const y1 = Math.max(0, topSidePx + bottomSidePx + CURSOR_PADDING_PX);
+
+    return Box.from(x0, y0).to(x1, y1);
   }
 
   private updateCursors(nextCursorSnapshot: CursorSnapshot | null) {

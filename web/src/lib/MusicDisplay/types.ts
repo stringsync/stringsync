@@ -1,4 +1,5 @@
-import { IOSMDOptions, VoiceEntry } from 'opensheetmusicdisplay';
+import { GraphicalNote, IOSMDOptions, VoiceEntry } from 'opensheetmusicdisplay';
+import { Box } from '../../util/Box';
 import { NumberRange } from '../../util/NumberRange';
 import { EventBus } from '../EventBus';
 import { AnchoredTimeSelection } from './AnchoredTimeSelection';
@@ -43,6 +44,7 @@ export interface CursorWrapper {
   clear(): void;
   disableAutoScroll(): void;
   enableAutoScroll(): void;
+  getBox(): Box;
 }
 
 export type Callback = () => void;
@@ -68,20 +70,23 @@ export type CursorSnapshot = {
   beatRange: NumberRange;
   timeMsRange: NumberRange;
   entries: VoiceEntry[];
+  targets: LocatorTarget[];
 };
 
 export enum LocatorTargetType {
   None,
   Cursor,
-  Notehead,
-  Stem,
+  Note,
 }
+
+export type VfNotehead = {
+  el: SVGGElement;
+  box: Box;
+};
 
 export type LocatorTarget =
   | { type: LocatorTargetType.None }
-  | { type: LocatorTargetType.Cursor; cursor: CursorWrapper }
-  | { type: LocatorTargetType.Notehead }
-  | { type: LocatorTargetType.Stem };
+  | { type: LocatorTargetType.Note; graphicalNote: GraphicalNote; vfNoteheadEl: SVGGElement; box: Box };
 
 export enum LocateCost {
   Unknown,
@@ -89,23 +94,10 @@ export enum LocateCost {
   Expensive,
 }
 
-export type LocateResultTargets = {
-  positional: {
-    behind: LocatorTarget[];
-    colocated: LocatorTarget[];
-    ahead: LocatorTarget[];
-  };
-  temporal: {
-    past: LocatorTarget[];
-    present: LocatorTarget[];
-    future: LocatorTarget[];
-  };
-};
-
 export type LocateResult = {
   timeMs: number;
   x: number;
   cost: LocateCost;
   cursorSnapshot: Readonly<CursorSnapshot> | null;
-  targets: LocateResultTargets;
+  targets: LocatorTarget[];
 };

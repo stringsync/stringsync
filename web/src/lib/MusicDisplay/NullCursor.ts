@@ -1,3 +1,4 @@
+import { Box } from '../../util/Box';
 import { CursorWrapper } from './types';
 
 const DUMMY_ELEMENT = document.createElement('div');
@@ -8,4 +9,7 @@ export class NullCursor implements CursorWrapper {
   clear() {}
   disableAutoScroll() {}
   enableAutoScroll() {}
+  getBox(): Box {
+    return Box.from(-1, -1).to(-1, -1);
+  }
 }
