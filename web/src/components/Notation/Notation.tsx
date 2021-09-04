@@ -131,6 +131,9 @@ export const Notation: React.FC<NotationProps> = (props) => {
       musicDisplay.eventBus.subscribe('cursorsnapshotentered', () => {
         setCursor(Cursor.Pointer);
       }),
+      musicDisplay.eventBus.subscribe('cursorsnapshotclicked', () => {
+        setCursor(Cursor.Grab);
+      }),
     ];
 
     return () => {

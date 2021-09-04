@@ -7,8 +7,6 @@ import { NullCursor } from './NullCursor';
 import { SVGEventProxy } from './SVGEventProxy';
 import { CursorWrapper, MusicDisplayOptions, SyncSettings } from './types';
 
-const CURSOR_PADDING_PX = 50;
-
 type IdentifiableCursorOptions = CursorOptions & {
   id: symbol;
 };

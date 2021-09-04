@@ -46,13 +46,17 @@ const isCursorSnapshotPointerTarget = (target: UnknownTarget): target is CursorS
 
 const LONG_HOLD_DURATION = Duration.ms(1000);
 const TAP_GRACE_PERIOD = Duration.ms(50);
+const IDLE_DURATION = Duration.ms(500);
+
 const INITIAL_POINTER_CONTEXT: {
+  isActive: boolean;
   downTarget: PointerTarget;
   prevDownTarget: PointerTarget;
   hoverTarget: PointerTarget;
   prevHoverTarget: PointerTarget;
   selection: AnchoredTimeSelection | null;
 } = {
+  isActive: true,
   downTarget: { type: PointerTargetType.None },
   prevDownTarget: { type: PointerTargetType.None },
   hoverTarget: { type: PointerTargetType.None },
@@ -65,6 +69,7 @@ export const pointerModel = createModel(INITIAL_POINTER_CONTEXT, {
     up: (target: PointerTarget) => ({ target }),
     down: (target: PointerTarget) => ({ target }),
     move: (target: PointerTarget) => ({ target }),
+    ping: (target: PointerTarget) => ({ target }),
   },
 });
 
@@ -77,13 +82,14 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
       strict: true,
       states: {
         up: {
-          entry: ['resetDownTarget'],
+          initial: 'idle',
           on: {
             down: [
               { cond: 'hasDraggableTarget', target: 'down.drag', actions: ['assignDownTarget'] },
               { target: 'down.tap', actions: ['assignDownTarget'] },
             ],
             move: {
+              target: 'up.active',
               actions: [
                 'assignHoverTarget',
                 choose([
@@ -101,10 +107,34 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
               ],
             },
           },
+          states: {
+            active: {
+              after: { [IDLE_DURATION.ms]: { target: 'idle' } },
+              entry: ['dispatchPointerActive', 'markAsActive'],
+            },
+            idle: {
+              entry: ['dispatchPointerIdle', 'markAsIdle'],
+              on: {
+                ping: {
+                  actions: [
+                    'assignHoverTarget',
+                    choose([
+                      { cond: 'didEnterCursor', actions: ['dispatchCursorEntered'] },
+                      { cond: 'didEnterCursorSnapshot', actions: ['dispatchCursorSnapshotEntered'] },
+                    ]),
+                    choose([
+                      { cond: 'didExitCursor', actions: ['dispatchCursorExited'] },
+                      { cond: 'didExitCursorSnapshot', actions: ['dispatchCursorSnapshotExited'] },
+                    ]),
+                  ],
+                },
+              },
+            },
+          },
         },
         down: {
           on: {
-            up: { target: '#pointer.up' },
+            up: { target: '#pointer.up.active', actions: ['resetDownTarget'] },
             move: { actions: ['assignHoverTarget'] },
           },
           states: {
@@ -141,6 +171,12 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
         resetDownTarget: assign<PointerContext, PointerEvent>({
           downTarget: (context, event) => merge({}, INITIAL_POINTER_CONTEXT.downTarget),
         }),
+        markAsActive: assign<PointerContext, PointerEvent>({
+          isActive: true,
+        }),
+        markAsIdle: assign<PointerContext, PointerEvent>({
+          isActive: false,
+        }),
         assignDownTarget: assign<PointerContext, PointerEvent>({
           downTarget: (context, event) => {
             switch (event.type) {
@@ -156,6 +192,8 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
           hoverTarget: (context, event) => {
             switch (event.type) {
               case 'move':
+                return event.target;
+              case 'ping':
                 return event.target;
               default:
                 return { type: PointerTargetType.None };
@@ -256,13 +294,22 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
         dispatchNoTargetExited: () => {
           eventBus.dispatch('notargetexited', {});
         },
+        dispatchPointerIdle: (context) => {
+          if (context.isActive) {
+            eventBus.dispatch('pointeridle', {});
+          }
+        },
+        dispatchPointerActive: (context) => {
+          if (!context.isActive) {
+            eventBus.dispatch('pointeractive', {});
+          }
+        },
       },
       guards: {
         hasDraggableTarget: (context, event) => {
           return isCursorPointerTarget(event.target);
         },
         hasNoTarget: (context, event) => {
-          'dispatchTarget';
           return isNonePointerTarget(event.target);
         },
         didEnterCursor: (context) => {

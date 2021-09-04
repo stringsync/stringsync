@@ -34,6 +34,8 @@ export type MusicDisplayEventBus = EventBus<{
   cursorsnapshotexited: { cursorSnapshot: CursorSnapshot; timeMs: number };
   notargetentered: {};
   notargetexited: {};
+  pointeridle: {};
+  pointeractive: {};
 }>;
 
 export type SyncSettings = {

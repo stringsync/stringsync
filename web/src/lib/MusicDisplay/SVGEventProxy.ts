@@ -1,4 +1,4 @@
-import { first, sortBy, throttle } from 'lodash';
+import { first, isEqual, sortBy, throttle } from 'lodash';
 import { BackendType, PointF2D, SvgVexFlowBackend, VexFlowBackend } from 'opensheetmusicdisplay';
 import { Duration } from '../../util/Duration';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
@@ -17,6 +17,8 @@ type SVGElementEvent<N extends SVGEventNames> = SVGElementEventMap[N];
 type Positional = { clientX: number; clientY: number };
 
 const POINTER_MOVE_THROTTLE_DURATION = Duration.ms(30);
+
+const PING_INTERVAL_DURATION = Duration.ms(100);
 
 const LOCATOR_TARGET_SORT_WEIGHTS = {
   [LocatorTargetType.Cursor]: 0,
@@ -46,6 +48,13 @@ export class SVGEventProxy {
   private locator: MusicDisplayLocator;
   private pointerService: PointerService;
 
+  private clientX = 0;
+  private clientY = 0;
+
+  private onPointerActiveHandle = Symbol();
+  private onPointerIdleHandle = Symbol();
+  private pingHandle = 0;
+
   private eventListeners: Array<[Element | Document, string, (...args: any[]) => void]> = [];
 
   private constructor(
@@ -61,6 +70,10 @@ export class SVGEventProxy {
   }
 
   uninstall() {
+    clearInterval(this.pingHandle);
+    this.imd.eventBus.unsubscribe(this.onPointerIdleHandle);
+    this.imd.eventBus.unsubscribe(this.onPointerActiveHandle);
+
     for (const [el, eventName, eventHandler] of this.eventListeners) {
       el.removeEventListener(eventName, eventHandler);
     }
@@ -68,6 +81,28 @@ export class SVGEventProxy {
   }
 
   private install(eventNames: SVGEventNames[]) {
+    // When the user is not interacting with the SVG, send a ping signal to refresh the hover target in case
+    // something that is not user-controlled moves under the pointer.
+    this.onPointerIdleHandle = this.imd.eventBus.subscribe('pointeridle', () => {
+      window.clearInterval(this.pingHandle);
+
+      let prevPointerTarget: PointerTarget = { type: PointerTargetType.None };
+      this.pingHandle = window.setInterval(() => {
+        const pointerTarget = this.getPointerTarget({ clientX: this.clientX, clientY: this.clientY });
+
+        // Avoid slamming the pointer service if the pointer target did not change
+        if (!isEqual(pointerTarget, prevPointerTarget)) {
+          this.pointerService.send(pointerModel.events.ping(pointerTarget));
+        }
+
+        prevPointerTarget = pointerTarget;
+      }, PING_INTERVAL_DURATION.ms);
+    });
+
+    this.onPointerActiveHandle = this.imd.eventBus.subscribe('pointeractive', () => {
+      window.clearInterval(this.pingHandle);
+    });
+
     for (const eventName of eventNames) {
       this.addEventListener(eventName);
     }
@@ -117,6 +152,7 @@ export class SVGEventProxy {
       if (!touch) {
         return;
       }
+      this.updatePos(touch);
       const pointerTarget = this.getPointerTarget(touch);
       this.pointerService.send(pointerModel.events.move(pointerTarget));
     },
@@ -143,6 +179,7 @@ export class SVGEventProxy {
 
   private onMouseMove = throttle(
     (event: SVGElementEvent<'mousemove'>) => {
+      this.updatePos(event);
       const pointerTarget = this.getPointerTarget(event);
       this.pointerService.send(pointerModel.events.move(pointerTarget));
     },
@@ -180,6 +217,11 @@ export class SVGEventProxy {
       };
     }
     return { type: PointerTargetType.None };
+  }
+
+  private updatePos(positional: Positional) {
+    this.clientX = positional.clientX;
+    this.clientY = positional.clientY;
   }
 
   private getLocateResult(positional: Positional) {
