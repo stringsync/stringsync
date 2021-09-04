@@ -217,25 +217,30 @@ export const NotationControls: React.FC<Props> = (props) => {
       return;
     }
 
-    const cursorSnapshotClickedHandle = musicDisplay.eventBus.subscribe('cursorsnapshotclicked', (payload) => {
-      onSeek(payload.timeMs);
-    });
-    const selectionStartedHandle = musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
-      onSeek(payload.selection.anchorTimeMs);
-    });
-    const selectionUpdatedHandle = musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
-      onSeek(payload.selection.seekerTimeMs);
-    });
-    const selectionEndedHandle = musicDisplay.eventBus.subscribe('selectionended', (payload) => {
-      // onSeek(payload.selection.seekerTimeMs);
-      // TODO(jared) Figure out how to call seek end properly
-    });
+    const handles = [
+      musicDisplay.eventBus.subscribe('cursorsnapshotclicked', (payload) => {
+        onSeek(payload.timeMs);
+      }),
+      musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
+        onSeek(payload.selection.anchorTimeMs);
+      }),
+      musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
+        onSeek(payload.selection.seekerTimeMs);
+      }),
+      musicDisplay.eventBus.subscribe('selectionended', (payload) => {
+        // onSeek(payload.selection.seekerTimeMs);
+        // TODO(jared) Figure out how to call seek end properly
+      }),
+      musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {
+        onSeek(payload.timeMs);
+      }),
+      musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
+        onSeek(payload.timeMs);
+      }),
+    ];
 
     return () => {
-      musicDisplay.eventBus.unsubscribe(selectionEndedHandle);
-      musicDisplay.eventBus.unsubscribe(selectionUpdatedHandle);
-      musicDisplay.eventBus.unsubscribe(selectionStartedHandle);
-      musicDisplay.eventBus.unsubscribe(cursorSnapshotClickedHandle);
+      handles.forEach(musicDisplay.eventBus.unsubscribe.bind(musicDisplay.eventBus));
     };
   }, [musicDisplay, onSeek, onSeekEnd]);
 

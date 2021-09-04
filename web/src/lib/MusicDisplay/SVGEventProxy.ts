@@ -128,7 +128,12 @@ export class SVGEventProxy {
   );
 
   private onTouchEnd(event: SVGElementEvent<'touchend'>) {
-    this.pointerService.send(pointerModel.events.up());
+    const touch = event.touches.item(0);
+    if (!touch) {
+      return;
+    }
+    const pointerTarget = this.getPointerTarget(touch);
+    this.pointerService.send(pointerModel.events.up(pointerTarget));
   }
 
   private onMouseDown(event: SVGElementEvent<'mousedown'>) {
@@ -149,7 +154,8 @@ export class SVGEventProxy {
   );
 
   private onMouseUp(event: SVGElementEvent<'mouseup'>) {
-    this.pointerService.send(pointerModel.events.up());
+    const pointerTarget = this.getPointerTarget(event);
+    this.pointerService.send(pointerModel.events.up(pointerTarget));
   }
 
   private getPointerTarget(positional: Positional): PointerTarget {
@@ -160,7 +166,11 @@ export class SVGEventProxy {
     )!;
 
     if (mostImportantLocateResultTarget && mostImportantLocateResultTarget.type === LocatorTargetType.Cursor) {
-      return { type: PointerTargetType.Cursor, cursor: mostImportantLocateResultTarget.cursor };
+      return {
+        type: PointerTargetType.Cursor,
+        cursor: mostImportantLocateResultTarget.cursor,
+        timeMs: locateResult.timeMs,
+      };
     }
     if (locateResult.cursorSnapshot) {
       return {

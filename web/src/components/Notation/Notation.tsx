@@ -2,7 +2,7 @@ import React, { RefObject, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 
-const CURSOR_PADDING_PX = 50;
+const SELECTION_INDETERMINATE_ZONE = 100;
 
 const Outer = styled.div<{ cursor: Cursor }>`
   margin-top: 24px;
@@ -99,9 +99,9 @@ export const Notation: React.FC<NotationProps> = (props) => {
       musicDisplay.eventBus.subscribe('autoscrollended', () => {
         isAutoScrollingRef.current = false;
       }),
-      musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
+      musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
         const { anchorTimeMs, seekerTimeMs } = payload.selection;
-        if (Math.abs(anchorTimeMs - seekerTimeMs) <= CURSOR_PADDING_PX) {
+        if (Math.abs(anchorTimeMs - seekerTimeMs) <= SELECTION_INDETERMINATE_ZONE) {
           setCursor(Cursor.EWResize);
         } else if (anchorTimeMs > seekerTimeMs) {
           setCursor(Cursor.EResize);
@@ -124,7 +124,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
     ];
 
     return () => {
-      handles.forEach(musicDisplay.eventBus.unsubscribe);
+      handles.forEach(musicDisplay.eventBus.unsubscribe.bind(musicDisplay.eventBus));
       setCursor(Cursor.Default);
     };
   }, [musicDisplay]);

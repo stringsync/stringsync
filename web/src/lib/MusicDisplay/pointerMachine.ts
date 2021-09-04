@@ -13,20 +13,36 @@ export enum PointerTargetType {
   CursorSnapshot,
 }
 
-export type PointerTarget =
-  | { type: PointerTargetType.None }
-  | { type: PointerTargetType.Cursor; cursor: CursorWrapper }
-  | { type: PointerTargetType.CursorSnapshot; cursorSnapshot: CursorSnapshot; timeMs: number };
+type NonePointerTarget = { type: PointerTargetType.None };
+
+type CursorPointerTarget = { type: PointerTargetType.Cursor; cursor: CursorWrapper; timeMs: number };
+
+type CursorSnapshotPointerTarget = {
+  type: PointerTargetType.CursorSnapshot;
+  cursorSnapshot: CursorSnapshot;
+  timeMs: number;
+};
+
+export type PointerTarget = NonePointerTarget | CursorPointerTarget | CursorSnapshotPointerTarget;
 
 export type PointerContext = ContextFrom<typeof pointerModel>;
 export type PointerEvent = EventFrom<typeof pointerModel>;
 export type PointerMachine = ReturnType<typeof createPointerMachine>;
 export type PointerService = ReturnType<typeof createPointerService>;
 
+type UnknownTarget = {
+  type: PointerTargetType;
+};
+
+const isCursorPointerTarget = (value: UnknownTarget): value is CursorPointerTarget => {
+  return value.type === PointerTargetType.Cursor;
+};
+const isCursorSnapshotPointerTarget = (value: UnknownTarget): value is CursorSnapshotPointerTarget => {
+  return value.type === PointerTargetType.CursorSnapshot;
+};
+
 const LONG_HOLD_DURATION = Duration.ms(1000);
 const TAP_GRACE_PERIOD = Duration.ms(50);
-
-const DRAGGABLE_TARGET_TYPES: PointerTargetType[] = [PointerTargetType.Cursor];
 const INITIAL_POINTER_CONTEXT: {
   downTarget: PointerTarget;
   prevDownTarget: PointerTarget;
@@ -43,7 +59,7 @@ const INITIAL_POINTER_CONTEXT: {
 
 export const pointerModel = createModel(INITIAL_POINTER_CONTEXT, {
   events: {
-    up: () => ({}),
+    up: (target: PointerTarget) => ({ target }),
     down: (target: PointerTarget) => ({ target }),
     move: (target: PointerTarget) => ({ target }),
   },
@@ -131,7 +147,7 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
         }),
         initSelection: assign<PointerContext, PointerEvent>({
           selection: (context, event) => {
-            if (event.type === 'move' && event.target.type === PointerTargetType.CursorSnapshot) {
+            if (event.type === 'move' && isCursorSnapshotPointerTarget(event.target)) {
               return AnchoredTimeSelection.init(event.target.timeMs);
             }
             return context.selection;
@@ -139,7 +155,7 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
         }),
         updateSelection: assign<PointerContext, PointerEvent>({
           selection: (context, event) => {
-            if (event.type === 'move' && event.target.type === PointerTargetType.CursorSnapshot && context.selection) {
+            if (event.type === 'move' && isCursorSnapshotPointerTarget(event.target) && context.selection) {
               return context.selection.update(event.target.timeMs);
             }
             return context.selection;
@@ -149,26 +165,26 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
           selection: null,
         }),
         dispatchClick: (context) => {
-          if (context.downTarget.type === PointerTargetType.CursorSnapshot) {
+          if (isCursorSnapshotPointerTarget(context.downTarget)) {
             eventBus.dispatch('cursorsnapshotclicked', {
               cursorSnapshot: context.downTarget.cursorSnapshot,
               timeMs: context.downTarget.timeMs,
             });
           }
         },
-        dispatchDragStarted: (context) => {
-          if (context.downTarget.type === PointerTargetType.Cursor) {
+        dispatchDragStarted: (context, event) => {
+          if (event.type === 'down' && isCursorPointerTarget(context.downTarget)) {
             eventBus.dispatch('cursordragstarted', { cursor: context.downTarget.cursor });
           }
         },
-        dispatchDragUpdated: (context) => {
-          if (context.downTarget.type === PointerTargetType.Cursor) {
-            eventBus.dispatch('cursordragupdated', { cursor: context.downTarget.cursor });
+        dispatchDragUpdated: (context, event) => {
+          if (isCursorPointerTarget(context.downTarget) && isCursorSnapshotPointerTarget(event.target)) {
+            eventBus.dispatch('cursordragupdated', { cursor: context.downTarget.cursor, timeMs: event.target.timeMs });
           }
         },
-        dispatchDragEnded: (context) => {
-          if (context.downTarget.type === PointerTargetType.Cursor) {
-            eventBus.dispatch('cursordragended', { cursor: context.downTarget.cursor });
+        dispatchDragEnded: (context, event) => {
+          if (isCursorPointerTarget(context.downTarget) && isCursorSnapshotPointerTarget(event.target)) {
+            eventBus.dispatch('cursordragended', { cursor: context.downTarget.cursor, timeMs: event.target.timeMs });
           }
         },
         dispatchSelectStarted: (context) => {
@@ -178,9 +194,7 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
         },
         dispatchSelectUpdated: (context) => {
           if (context.selection) {
-            eventBus.dispatch('selectionupdated', {
-              selection: context.selection,
-            });
+            eventBus.dispatch('selectionupdated', { selection: context.selection });
           }
         },
         dispatchSelectEnded: (context) => {
@@ -189,37 +203,37 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
           }
         },
         dispatchCursorEntered: (context, event) => {
-          if (context.hoverTarget.type === PointerTargetType.Cursor) {
+          if (isCursorPointerTarget(context.hoverTarget)) {
             eventBus.dispatch('cursorentered', { cursor: context.hoverTarget.cursor });
           }
         },
         dispatchCursorExited: (context, event) => {
-          if (context.prevHoverTarget.type === PointerTargetType.Cursor) {
+          if (isCursorPointerTarget(context.prevHoverTarget)) {
             eventBus.dispatch('cursorexited', { cursor: context.prevHoverTarget.cursor });
           }
         },
-        dispatchLongPress: (context, event) => {
+        dispatchLongPress: () => {
           eventBus.dispatch('longpress', {});
         },
       },
       guards: {
         hasDraggableDownTarget: (context, event) => {
-          return event.type === 'down' && DRAGGABLE_TARGET_TYPES.includes(event.target.type);
+          return event.type === 'down' && isCursorPointerTarget(event.target);
         },
         didCursorEnter: (context) => {
-          if (context.hoverTarget.type !== PointerTargetType.Cursor) {
+          if (!isCursorPointerTarget(context.hoverTarget)) {
             return false;
           }
-          if (context.prevHoverTarget.type !== PointerTargetType.Cursor) {
+          if (!isCursorPointerTarget(context.prevHoverTarget)) {
             return true;
           }
           return context.hoverTarget.cursor !== context.prevHoverTarget.cursor;
         },
         didCursorExit: (context) => {
-          if (context.prevHoverTarget.type !== PointerTargetType.Cursor) {
+          if (!isCursorPointerTarget(context.prevHoverTarget)) {
             return false;
           }
-          if (context.hoverTarget.type !== PointerTargetType.Cursor) {
+          if (!isCursorPointerTarget(context.hoverTarget)) {
             return true;
           }
           return context.prevHoverTarget.cursor !== context.hoverTarget.cursor;
