@@ -79,7 +79,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.refreshCursors();
   }
 
-  pushCursors(additionalCursorOptions: IdentifiableCursorOptions[]): Cursor[] {
+  createCursors(additionalCursorOptions: IdentifiableCursorOptions[]): Cursor[] {
     const cursorsOptions = get(this, 'cursorsOptions', []);
     set(this, 'cursorsOptions', [...cursorsOptions, ...additionalCursorOptions]);
     this.refreshCursors();
@@ -110,7 +110,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
       alpha: 0,
     };
 
-    const [probeCursor] = this.pushCursors([cursorOption]);
+    const [probeCursor] = this.createCursors([cursorOption]);
 
     let index = 0;
     try {
