@@ -158,10 +158,7 @@ export class SVGEventProxy {
       this.pointerService.send(pointer.events.move(pointerTarget));
     },
     POINTER_MOVE_THROTTLE_DURATION.ms,
-    {
-      leading: true,
-      trailing: true,
-    }
+    { leading: true, trailing: true }
   );
 
   private onTouchEnd(event: SVGElementEvent<'touchend'>) {
@@ -185,10 +182,7 @@ export class SVGEventProxy {
       this.pointerService.send(pointer.events.move(pointerTarget));
     },
     POINTER_MOVE_THROTTLE_DURATION.ms,
-    {
-      leading: true,
-      trailing: true,
-    }
+    { leading: true, trailing: true }
   );
 
   private onMouseUp(event: SVGElementEvent<'mouseup'>) {
