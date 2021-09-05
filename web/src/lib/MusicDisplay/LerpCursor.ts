@@ -1,7 +1,6 @@
 import $ from 'jquery';
 import { throttle } from 'lodash';
 import { Cursor, CursorType } from 'opensheetmusicdisplay';
-import { MusicDisplayEventBus } from '.';
 import { Box } from '../../util/Box';
 import { ColoringOperation } from './ColoringOperation';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
@@ -51,19 +50,20 @@ export type LerpCursorOpts = {
 
 export class LerpCursor {
   static create(imd: InternalMusicDisplay, locator: MusicDisplayLocator, opts: LerpCursorOpts) {
-    const cursors = imd.createCursors(DEFAULT_CURSOR_OPTS.map((cursorsOption) => ({ id: Symbol(), ...cursorsOption })));
+    const cursorsOptions = DEFAULT_CURSOR_OPTS.map((cursorsOption) => ({ id: Symbol(), ...cursorsOption }));
+    const cursors = imd.createCursors(cursorsOptions);
     if (cursors.length !== 3) {
       throw new Error(`expected 3 cursors, got: ${cursors.length}`);
     }
 
     const [lagger, leader, lerper] = cursors;
 
-    const lerpCursor = new LerpCursor(imd.eventBus, { lagger, leader, lerper }, opts);
+    const lerpCursor = new LerpCursor(imd, { lagger, leader, lerper }, opts);
     lerpCursor.init(locator);
     return lerpCursor;
   }
 
-  eventBus: MusicDisplayEventBus;
+  imd: InternalMusicDisplay;
 
   lagger: Cursor;
   leader: Cursor;
@@ -81,8 +81,8 @@ export class LerpCursor {
   private lastScrollId = Symbol();
   private isAutoScrollEnabled = true;
 
-  private constructor(eventBus: MusicDisplayEventBus, cursors: Cursors, opts: LerpCursorOpts) {
-    this.eventBus = eventBus;
+  private constructor(imd: InternalMusicDisplay, cursors: Cursors, opts: LerpCursorOpts) {
+    this.imd = imd;
     this.lagger = cursors.lagger;
     this.leader = cursors.leader;
     this.lerper = cursors.lerper;
@@ -222,7 +222,7 @@ export class LerpCursor {
       this.prevColoringOperation = null;
     }
 
-    this.eventBus.dispatch('cursorinfochanged', {
+    this.imd.eventBus.dispatch('cursorinfochanged', {
       currentMeasureIndex: this.lagger.iterator.CurrentMeasureIndex,
       currentMeasureNumber: this.lagger.iterator.CurrentMeasure.MeasureNumber,
       numMeasures: this.numMeasures,
@@ -282,7 +282,7 @@ export class LerpCursor {
           duration: durationMs,
           start: () => {
             this.lastScrollId = lastScrollId;
-            this.eventBus.dispatch('autoscrollstarted', {});
+            this.imd.eventBus.dispatch('autoscrollstarted', {});
           },
           always: () => {
             if (didNewScrollInvoke()) {
@@ -293,7 +293,7 @@ export class LerpCursor {
               if (didNewScrollInvoke()) {
                 return;
               }
-              this.eventBus.dispatch('autoscrollended', {});
+              this.imd.eventBus.dispatch('autoscrollended', {});
             }, SCROLL_GRACE_PERIOD_MS);
           },
         }

@@ -2,6 +2,7 @@ import { get, set, takeRight } from 'lodash';
 import { Cursor, CursorOptions, CursorType, OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
 import { MusicDisplayEventBus, SVGSettings } from '.';
 import { LerpCursor } from './LerpCursor';
+import { Loop } from './Loop';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
 import { NullCursor } from './NullCursor';
 import { SVGEventProxy } from './SVGEventProxy';
@@ -29,6 +30,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   cursorWrapper: CursorWrapper = new NullCursor();
   eventBus: MusicDisplayEventBus;
   svgEventProxy: SVGEventProxy | null = null;
+  loop: Loop | null = null;
 
   constructor(container: string | HTMLElement, eventBus: MusicDisplayEventBus, opts: MusicDisplayOptions) {
     super(container, opts);
@@ -62,6 +64,8 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     });
 
     this.svgEventProxy = SVGEventProxy.install(this, locator.clone(), this.svgSettings);
+
+    this.loop = Loop.create(this, locator.clone());
   }
 
   clear() {
@@ -75,22 +79,22 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   }
 
   clearCursors() {
-    set(this, 'cursorsOptions', []);
-    this.refreshCursors();
+    const cursorOptions = new Array<IdentifiableCursorOptions>();
+    set(this, 'cursorsOptions', cursorOptions);
+    this.applyCursorOptions(cursorOptions);
   }
 
   createCursors(additionalCursorOptions: IdentifiableCursorOptions[]): Cursor[] {
     const cursorsOptions = get(this, 'cursorsOptions', []);
-    set(this, 'cursorsOptions', [...cursorsOptions, ...additionalCursorOptions]);
-    this.refreshCursors();
+    const nextCursorOptions = [...cursorsOptions, ...additionalCursorOptions];
+    this.applyCursorOptions(nextCursorOptions);
     return takeRight(this.cursors, additionalCursorOptions.length);
   }
 
   removeCursor(id: symbol) {
     const cursorsOptions = get(this, 'cursorsOptions', []);
     const nextCursorOptions = cursorsOptions.filter((opt: IdentifiableCursorOptions) => opt.id !== id);
-    set(this, 'cursorsOptions', nextCursorOptions);
-    this.refreshCursors();
+    this.applyCursorOptions(nextCursorOptions);
   }
 
   enableCursors() {
@@ -133,15 +137,14 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.eventBus.dispatch('resizeended', {});
   }
 
-  private refreshCursors() {
+  private applyCursorOptions(nextCursorOptions: IdentifiableCursorOptions[]) {
     const wasEnabled = this.drawingParameters.drawCursors;
 
-    if (this.cursorWrapper) {
-      this.cursorWrapper.clear();
-    }
-
+    // Transforms cursor options to cursors.
+    set(this, 'cursorsOptions', nextCursorOptions);
     this.cursors = [];
-    this.enableCursors(); // Transforms cursor options to cursors
+    this.enableCursors();
+
     if (!wasEnabled) {
       this.disableCursors();
     }
