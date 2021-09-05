@@ -219,21 +219,29 @@ export const NotationControls: React.FC<Props> = (props) => {
 
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('cursorsnapshotclicked', (payload) => {
+        if (!musicDisplay.loop.timeMsRange.contains(payload.timeMs)) {
+          musicDisplay.loop.deactivate();
+        }
         onSeek(payload.timeMs);
         onSeekEnd();
       }),
       musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {
+        if (!musicDisplay.loop.timeMsRange.contains(payload.timeMs)) {
+          musicDisplay.loop.deactivate();
+        }
         onSeek(payload.timeMs);
       }),
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
         onSeekEnd();
       }),
       musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
-        musicDisplay.loop.update(payload.selection.toRange());
+        const timeMsRange = payload.selection.toRange();
+        musicDisplay.loop.update(timeMsRange);
         musicDisplay.loop.activate();
       }),
       musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
-        musicDisplay.loop.update(payload.selection.toRange());
+        const timeMsRange = payload.selection.toRange();
+        musicDisplay.loop.update(timeMsRange);
       }),
     ];
 
@@ -241,6 +249,21 @@ export const NotationControls: React.FC<Props> = (props) => {
       musicDisplay.eventBus.unsubscribe(...eventBusIds);
     };
   }, [musicDisplay, onSeek, onSeekEnd]);
+
+  useEffect(() => {
+    if (!musicDisplay) {
+      return;
+    }
+    if (!musicDisplay.loop.isActive) {
+      return;
+    }
+    const { timeMsRange } = musicDisplay.loop;
+    if (timeMsRange.contains(currentTimeMs)) {
+      return;
+    }
+    onSeek(timeMsRange.start);
+    onSeekEnd();
+  }, [currentTimeMs, musicDisplay, onSeek, onSeekEnd]);
 
   const isPaused = videoPlayerState === VideoPlayerState.Paused;
 
