@@ -6,6 +6,8 @@ import { DeviceState } from './types';
 describe('getDeviceState', () => {
   const assertDevice = (actualDevice: DeviceState, partialDeviceExpectation: DeepPartial<DeviceState>) => {
     const falseDevice: DeviceState = {
+      inputType: 'mouseOnly',
+      primaryInput: 'mouse',
       amazon: {
         device: false,
         phone: false,
