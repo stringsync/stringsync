@@ -1,11 +1,12 @@
-import { FileImageOutlined, PauseOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Col, Drawer, Row, Slider, Tooltip } from 'antd';
+import { PauseOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Col, Drawer, Row, Slider } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { isNumber } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { VideoJsPlayer } from 'video.js';
 import { CursorInfo, MusicDisplay } from '../../../lib/MusicDisplay';
+import { NotationDetail } from './NotationDetail';
 import { SliderTooltip } from './SliderTooltip';
 import { NotationPlayerSettings } from './types';
 import { useVideoPlayerControls, VideoPlayerState } from './useVideoPlayerControls';
@@ -18,16 +19,6 @@ const Outer = styled.div`
   padding: 16px 16px;
   position: absolute;
   width: 100%;
-`;
-
-const DetailImg = styled.img`
-  width: 36px;
-  height: 36px;
-`;
-
-const MissingImgIcon = styled(FileImageOutlined)`
-  font-size: 2em;
-  color: ${(props) => props.theme['@muted']};
 `;
 
 const SliderOuter = styled.div`
@@ -111,21 +102,6 @@ export const NotationControls: React.FC<Props> = (props) => {
       onSettingsChange({ ...settings, isFretboardVisible: event.target.checked });
     },
     [settings, onSettingsChange]
-  );
-
-  const Detail = useMemo(
-    () => () => {
-      return props.thumbnailUrl ? (
-        <Tooltip title={`${props.songName} by ${props.artistName}`}>
-          <DetailImg src={props.thumbnailUrl} alt="notation detail image" />
-        </Tooltip>
-      ) : (
-        <Tooltip title={`${props.songName} by ${props.artistName}`}>
-          <MissingImgIcon />
-        </Tooltip>
-      );
-    },
-    [props.songName, props.artistName, props.thumbnailUrl]
   );
 
   const onChange = useCallback(
@@ -278,7 +254,7 @@ export const NotationControls: React.FC<Props> = (props) => {
         </Col>
         <Col xs={0} sm={0} md={0} lg={0} xl={2} xxl={2}>
           <Row justify="center" align="middle">
-            <Detail />
+            <NotationDetail thumbnailUrl={props.thumbnailUrl} artistName={props.artistName} songName={props.songName} />
           </Row>
         </Col>
       </Row>
