@@ -13,11 +13,11 @@ export enum PointerTargetType {
   CursorSnapshot,
 }
 
-type NonePointerTarget = { type: PointerTargetType.None };
+export type NonePointerTarget = { type: PointerTargetType.None };
 
-type CursorPointerTarget = { type: PointerTargetType.Cursor; cursor: CursorWrapper; timeMs: number };
+export type CursorPointerTarget = { type: PointerTargetType.Cursor; cursor: CursorWrapper; timeMs: number };
 
-type CursorSnapshotPointerTarget = {
+export type CursorSnapshotPointerTarget = {
   type: PointerTargetType.CursorSnapshot;
   cursorSnapshot: CursorSnapshot;
   timeMs: number;
