@@ -81,7 +81,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   });
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const wasPlayingRef = useRef(false);
 
   const params = useParams<{ id: string }>();
   const [notation, setNotation] = useState<NotationObject | null>(null);
@@ -119,32 +118,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
     },
     [musicDisplay]
   );
-
-  const onSeek = useCallback(
-    (currentTimeMs: number) => {
-      if (!videoPlayer) {
-        return;
-      }
-      if (!videoPlayer.paused()) {
-        wasPlayingRef.current = true;
-        // TODO(jared) Fix pausing and playing causing a bunch of requests.
-        // videoPlayer.pause();
-      }
-      videoPlayer.currentTime(currentTimeMs / 1000);
-    },
-    [videoPlayer]
-  );
-
-  const onSeekEnd = useCallback(() => {
-    if (!videoPlayer) {
-      return;
-    }
-    if (wasPlayingRef.current) {
-      // TODO(jared) Fix pausing and playing causing a bunch of requests.
-      // videoPlayer.play();
-    }
-    wasPlayingRef.current = false;
-  }, [videoPlayer]);
 
   const onUserScroll = useCallback(() => {
     console.log('user scrolled!');
@@ -266,8 +239,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
                 musicDisplay={musicDisplay}
                 settings={settings}
                 onSettingsChange={onSettingsChange}
-                onSeek={onSeek}
-                onSeekEnd={onSeekEnd}
               />
             )}
           </RightOrBottomCol>

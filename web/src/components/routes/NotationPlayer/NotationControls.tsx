@@ -8,6 +8,7 @@ import { VideoJsPlayer } from 'video.js';
 import { CursorInfo, MusicDisplay } from '../../../lib/MusicDisplay';
 import { SliderTooltip } from './SliderTooltip';
 import { NotationPlayerSettings } from './types';
+import { useVideoPlayerControls, VideoPlayerState } from './useVideoPlayerControls';
 
 const Outer = styled.div`
   bottom: 0;
@@ -45,11 +46,6 @@ const SettingsInner = styled.div`
   height: calc(100vh - 190px);
 `;
 
-enum VideoPlayerState {
-  Paused,
-  Playing,
-}
-
 export type Props = {
   durationMs: number;
   songName: string;
@@ -59,8 +55,6 @@ export type Props = {
   musicDisplay: MusicDisplay | null;
   settings: NotationPlayerSettings;
   onSettingsChange: (notationPlayerSettings: NotationPlayerSettings) => void;
-  onSeek: (currentTimeMs: number) => void;
-  onSeekEnd: () => void;
 };
 
 const timestamp = (ms: number): string => {
@@ -76,10 +70,12 @@ const timestamp = (ms: number): string => {
 };
 
 export const NotationControls: React.FC<Props> = (props) => {
-  const { videoPlayer, settings, musicDisplay, onSettingsChange } = props;
+  const { videoPlayer, settings, musicDisplay, durationMs, onSettingsChange } = props;
 
-  const [videoPlayerState, setVideoPlayerState] = useState(VideoPlayerState.Paused);
-  const [currentTimeMs, setCurrentTimeMs] = useState(0);
+  const { videoPlayerState, currentTimeMs, play, pause, suspend, unsuspend, seek } = useVideoPlayerControls(
+    videoPlayer
+  );
+
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
   const [cursorInfo, setCursorInfo] = useState<CursorInfo>({
     currentMeasureIndex: 0,
@@ -92,15 +88,15 @@ export const NotationControls: React.FC<Props> = (props) => {
   const onPlayPauseClick = useCallback(() => {
     switch (videoPlayerState) {
       case VideoPlayerState.Paused:
-        videoPlayer.play();
+        play();
         break;
       case VideoPlayerState.Playing:
-        videoPlayer.pause();
+        pause();
         break;
       default:
         console.warn(`unknown player state '${videoPlayerState}', ignoring'`);
     }
-  }, [videoPlayer, videoPlayerState]);
+  }, [videoPlayerState, play, pause]);
 
   const onSettingsClick = useCallback(() => {
     setIsSettingsVisible((isSettingsVisible) => !isSettingsVisible);
@@ -117,36 +113,6 @@ export const NotationControls: React.FC<Props> = (props) => {
     [settings, onSettingsChange]
   );
 
-  useEffect(() => {
-    const onPlay = () => {
-      setVideoPlayerState(VideoPlayerState.Playing);
-    };
-    videoPlayer.on('play', onPlay);
-
-    const onPause = () => {
-      setVideoPlayerState(VideoPlayerState.Paused);
-    };
-    videoPlayer.on('pause', onPause);
-
-    // We don't want to store the currentTimeMs state on the parent NotationPlayer component,
-    // since it houses a lot of other components and could potentially trigger a lot of other
-    // unwanted updates. We only want components that need the currentTimeMs to update.
-    let rafHandle = 0;
-    const updateCurrentTimeMs = () => {
-      setCurrentTimeMs(videoPlayer.currentTime() * 1000);
-      rafHandle = window.requestAnimationFrame(updateCurrentTimeMs);
-    };
-    updateCurrentTimeMs();
-
-    return () => {
-      cancelAnimationFrame(rafHandle);
-
-      videoPlayer.off('pause', onPause);
-
-      videoPlayer.off('play', onPlay);
-    };
-  }, [videoPlayer]);
-
   const Detail = useMemo(
     () => () => {
       return props.thumbnailUrl ? (
@@ -162,17 +128,21 @@ export const NotationControls: React.FC<Props> = (props) => {
     [props.songName, props.artistName, props.thumbnailUrl]
   );
 
-  const { durationMs, onSeek } = props;
   const onChange = useCallback(
     (value: number) => {
-      const currentTimeMs = (value / 100) * durationMs;
-      if (musicDisplay && !musicDisplay.loop.timeMsRange.contains(currentTimeMs)) {
+      suspend();
+      const timeMs = (value / 100) * durationMs;
+      if (musicDisplay && !musicDisplay.loop.timeMsRange.contains(timeMs)) {
         musicDisplay.loop.deactivate();
       }
-      onSeek(currentTimeMs);
+      seek(timeMs);
     },
-    [durationMs, onSeek, musicDisplay]
+    [durationMs, musicDisplay, suspend, seek]
   );
+
+  const onAfterChange = useCallback(() => {
+    unsuspend();
+  }, [unsuspend]);
 
   const tipFormatter = useCallback(
     (value?: number | undefined) => {
@@ -214,7 +184,6 @@ export const NotationControls: React.FC<Props> = (props) => {
     };
   }, [musicDisplay]);
 
-  const { onSeekEnd } = props;
   useEffect(() => {
     if (!musicDisplay) {
       return;
@@ -225,33 +194,39 @@ export const NotationControls: React.FC<Props> = (props) => {
         if (!musicDisplay.loop.timeMsRange.contains(payload.timeMs)) {
           musicDisplay.loop.deactivate();
         }
-        onSeek(payload.timeMs);
-        onSeekEnd();
+        seek(payload.timeMs);
+      }),
+      musicDisplay.eventBus.subscribe('cursordragstarted', () => {
+        suspend();
       }),
       musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {
         if (!musicDisplay.loop.timeMsRange.contains(payload.timeMs)) {
           musicDisplay.loop.deactivate();
         }
-        onSeek(payload.timeMs);
+        seek(payload.timeMs);
       }),
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
-        onSeekEnd();
+        unsuspend();
       }),
       musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
         const timeMsRange = payload.selection.toRange();
         musicDisplay.loop.update(timeMsRange);
         musicDisplay.loop.activate();
+        suspend();
       }),
       musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
         const timeMsRange = payload.selection.toRange();
         musicDisplay.loop.update(timeMsRange);
+      }),
+      musicDisplay.eventBus.subscribe('selectionended', () => {
+        unsuspend();
       }),
     ];
 
     return () => {
       musicDisplay.eventBus.unsubscribe(...eventBusIds);
     };
-  }, [musicDisplay, onSeek, onSeekEnd]);
+  }, [musicDisplay, seek, suspend, unsuspend]);
 
   useEffect(() => {
     if (!musicDisplay) {
@@ -264,9 +239,8 @@ export const NotationControls: React.FC<Props> = (props) => {
     if (timeMsRange.contains(currentTimeMs)) {
       return;
     }
-    onSeek(timeMsRange.start);
-    onSeekEnd();
-  }, [currentTimeMs, musicDisplay, onSeek, onSeekEnd]);
+    seek(timeMsRange.start);
+  }, [currentTimeMs, musicDisplay, seek]);
 
   const isPaused = videoPlayerState === VideoPlayerState.Paused;
 
@@ -292,7 +266,7 @@ export const NotationControls: React.FC<Props> = (props) => {
                 value={value}
                 tipFormatter={tipFormatter}
                 onChange={onChange}
-                onAfterChange={props.onSeekEnd}
+                onAfterChange={onAfterChange}
               />
             </SliderOuter>
           </Row>
