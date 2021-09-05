@@ -166,9 +166,12 @@ export const NotationControls: React.FC<Props> = (props) => {
   const onChange = useCallback(
     (value: number) => {
       const currentTimeMs = (value / 100) * durationMs;
+      if (musicDisplay && !musicDisplay.loop.timeMsRange.contains(currentTimeMs)) {
+        musicDisplay.loop.deactivate();
+      }
       onSeek(currentTimeMs);
     },
-    [durationMs, onSeek]
+    [durationMs, onSeek, musicDisplay]
   );
 
   const tipFormatter = useCallback(
