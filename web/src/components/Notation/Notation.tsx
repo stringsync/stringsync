@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { MusicDisplay, SupportedSVGEventNames } from '../../lib/MusicDisplay';
 import { RootState } from '../../store';
 
-const SELECTION_INDETERMINATE_ZONE = 100;
+const SELECTION_INDETERMINATE_ZONE_PX = 100;
 
 const Outer = styled.div<{ cursor: Cursor }>`
   margin-top: 24px;
@@ -112,7 +112,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
       }),
       musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
         const { anchorTimeMs, seekerTimeMs } = payload.selection;
-        if (Math.abs(anchorTimeMs - seekerTimeMs) <= SELECTION_INDETERMINATE_ZONE) {
+        if (Math.abs(anchorTimeMs - seekerTimeMs) <= SELECTION_INDETERMINATE_ZONE_PX) {
           setCursor(Cursor.EWResize);
         } else if (anchorTimeMs > seekerTimeMs) {
           setCursor(Cursor.EResize);
