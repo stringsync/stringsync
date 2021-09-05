@@ -9,6 +9,8 @@ import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { IteratorSnapshot } from './IteratorSnapshot';
 import { CursorSnapshot, CursorWrapper, LocateCost, LocateResult, LocatorTargetType } from './types';
 
+// Groups cursor snapshots by the y-range spans they cover. This is a natural division that makes searching
+// by position easier.
 type CursorSnapshotLineGroup = {
   yRange: NumberRange;
   cursorSnapshots: CursorSnapshot[];
@@ -19,9 +21,8 @@ const END_OF_LINE_PADDING_PX = 20;
 export class MusicDisplayLocator {
   static create(imd: InternalMusicDisplay) {
     const cursorSnapshots = MusicDisplayLocator.takeCursorSnapshots(imd);
-    const locator = new MusicDisplayLocator(imd, cursorSnapshots);
-    locator.init();
-    return locator;
+    const cursorSnapshotLineGroups = MusicDisplayLocator.calculateCursorSnapshotLineGroups(cursorSnapshots);
+    return new MusicDisplayLocator(imd, cursorSnapshots, cursorSnapshotLineGroups);
   }
 
   static createNullSeekResult(): LocateResult {
@@ -118,6 +119,28 @@ export class MusicDisplayLocator {
     return cursorSnapshots.map((cursorSnapshot) => Object.freeze(cursorSnapshot));
   }
 
+  private static calculateCursorSnapshotLineGroups(cursorSnapshots: CursorSnapshot[]): CursorSnapshotLineGroup[] {
+    const toStr = (range: NumberRange) => `${range.start}-${range.end}`;
+    const toRange = (str: string) => {
+      const [start, end] = str.split('-').map(parseFloat);
+      return NumberRange.from(start).to(end);
+    };
+
+    const cursorSnapshotsByYRangeStr = groupBy(cursorSnapshots, (cursorSnapshot) => toStr(cursorSnapshot.yRange));
+    const yRangeStrs = sortBy(
+      Object.keys(cursorSnapshotsByYRangeStr),
+      (str) => toRange(str).start,
+      (str) => toRange(str).end
+    );
+
+    return yRangeStrs.map((yRangeStr) => {
+      return {
+        yRange: toRange(yRangeStr),
+        cursorSnapshots: cursorSnapshotsByYRangeStr[yRangeStr],
+      };
+    });
+  }
+
   private static convertNumBeatsToMs = (bpm: number, numBeats: number) => {
     // bpm is how many quarter notes per minute
     const trueBpm = bpm / 4;
@@ -173,7 +196,7 @@ export class MusicDisplayLocator {
   private constructor(
     imd: InternalMusicDisplay,
     cursorSnapshots: CursorSnapshot[],
-    cursorSnapshotLineGroups: CursorSnapshotLineGroup[] = []
+    cursorSnapshotLineGroups: CursorSnapshotLineGroup[]
   ) {
     this.imd = imd;
     this.cursorSnapshots = cursorSnapshots;
@@ -206,28 +229,6 @@ export class MusicDisplayLocator {
     const expensiveLocateResult = this.expensiveLocateByPosition(x, y);
     this.cachedLocateByPositionResult = expensiveLocateResult;
     return expensiveLocateResult;
-  }
-
-  private init() {
-    const toStr = (range: NumberRange) => `${range.start}-${range.end}`;
-    const toRange = (str: string) => {
-      const [start, end] = str.split('-').map(parseFloat);
-      return NumberRange.from(start).to(end);
-    };
-
-    const cursorSnapshotsByYRangeStr = groupBy(this.cursorSnapshots, (cursorSnapshot) => toStr(cursorSnapshot.yRange));
-    const yRangeStrs = sortBy(
-      Object.keys(cursorSnapshotsByYRangeStr),
-      (str) => toRange(str).start,
-      (str) => toRange(str).end
-    );
-
-    this.cursorSnapshotLineGroups = yRangeStrs.map((yRangeStr) => {
-      return {
-        yRange: toRange(yRangeStr),
-        cursorSnapshots: cursorSnapshotsByYRangeStr[yRangeStr],
-      };
-    });
   }
 
   private cheapLocateByTimeMs(timeMs: number): LocateResult | null {
