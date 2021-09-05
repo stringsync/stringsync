@@ -9,7 +9,7 @@ DUMMY_DIV.setAttribute('id', 'dummy-scroll-container');
 
 const DEFAULT_OPTS: MusicDisplayOptions = {
   syncSettings: { deadTimeMs: 0, durationMs: 0 },
-  svgSettings: { eventNames: ['mouseup', 'mousedown', 'mousemove'], isIdlePingerEnabled: true },
+  svgSettings: { eventNames: ['mouseup', 'mousedown', 'mousemove'] },
   scrollContainer: DUMMY_DIV,
   autoResize: true,
   drawTitle: false,

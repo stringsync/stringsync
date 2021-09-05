@@ -14,8 +14,6 @@ type Positional = { clientX: number; clientY: number };
 
 const POINTER_MOVE_THROTTLE_DURATION = Duration.ms(30);
 
-const PING_INTERVAL_DURATION = Duration.ms(100);
-
 const LOCATOR_TARGET_SORT_WEIGHTS = {
   [LocatorTargetType.Cursor]: 0,
   [LocatorTargetType.Note]: 1,
@@ -50,7 +48,7 @@ export class SVGEventProxy {
 
   private onPointerActiveHandle = Symbol();
   private onPointerIdleHandle = Symbol();
-  private pingHandle = -1;
+  private onInteractableMovedHandle = Symbol();
 
   private eventListeners: Array<[Element | Document, string, (...args: any[]) => void]> = [];
 
@@ -69,9 +67,7 @@ export class SVGEventProxy {
   }
 
   uninstall() {
-    clearInterval(this.pingHandle);
-    this.imd.eventBus.unsubscribe(this.onPointerIdleHandle);
-    this.imd.eventBus.unsubscribe(this.onPointerActiveHandle);
+    this.imd.eventBus.unsubscribe(this.onInteractableMovedHandle, this.onPointerIdleHandle, this.onPointerActiveHandle);
 
     for (const [el, eventName, eventHandler] of this.eventListeners) {
       el.removeEventListener(eventName, eventHandler);
@@ -86,27 +82,26 @@ export class SVGEventProxy {
 
     // When the user is not interacting with the SVG, send a ping signal to refresh the hover target in case
     // something that is not user-controlled moves under the pointer.
-    if (this.svgSettings.isIdlePingerEnabled) {
-      this.onPointerIdleHandle = this.imd.eventBus.subscribe('pointeridle', () => {
-        window.clearInterval(this.pingHandle);
+    this.onPointerIdleHandle = this.imd.eventBus.subscribe('pointeridle', () => {
+      // Avoid over-subscribing to the event
+      this.imd.eventBus.unsubscribe(this.onInteractableMovedHandle);
 
-        let prevPointerTarget: PointerTarget = { type: PointerTargetType.None };
-        this.pingHandle = window.setInterval(() => {
-          const pointerTarget = this.getPointerTarget({ clientX: this.clientX, clientY: this.clientY });
+      let prevPointerTarget: PointerTarget = { type: PointerTargetType.None };
+      this.onInteractableMovedHandle = this.imd.eventBus.subscribe('interactablemoved', () => {
+        const pointerTarget = this.getPointerTarget({ clientX: this.clientX, clientY: this.clientY });
 
-          // Avoid slamming the pointer service if the pointer target did not change
-          if (!isEqual(pointerTarget, prevPointerTarget)) {
-            this.pointerService.send(pointer.events.ping(pointerTarget));
-          }
+        // Avoid slamming the pointer service if the pointer target did not change
+        if (!isEqual(pointerTarget, prevPointerTarget)) {
+          this.pointerService.send(pointer.events.ping(pointerTarget));
+        }
 
-          prevPointerTarget = pointerTarget;
-        }, PING_INTERVAL_DURATION.ms);
+        prevPointerTarget = pointerTarget;
       });
+    });
 
-      this.onPointerActiveHandle = this.imd.eventBus.subscribe('pointeractive', () => {
-        window.clearInterval(this.pingHandle);
-      });
-    }
+    this.onPointerActiveHandle = this.imd.eventBus.subscribe('pointeractive', () => {
+      this.imd.eventBus.unsubscribe(this.onInteractableMovedHandle);
+    });
   }
 
   private addEventListener(eventName: SupportedSVGEventNames) {

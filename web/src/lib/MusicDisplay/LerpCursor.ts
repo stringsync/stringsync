@@ -134,6 +134,8 @@ export class LerpCursor {
       this.updateCursors(nextCursorSnapshot);
       this.updateLerperPosition(locateResult.x);
     }
+
+    this.imd.eventBus.dispatch('interactablemoved', {});
   }
 
   clear() {

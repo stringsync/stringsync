@@ -36,6 +36,7 @@ export type MusicDisplayEventBus = EventBus<{
   notargetexited: {};
   pointeridle: {};
   pointeractive: {};
+  interactablemoved: {};
 }>;
 
 export type SyncSettings = {
@@ -75,7 +76,6 @@ export type SupportedSVGEventNames = keyof Pick<
 
 export type SVGSettings = {
   eventNames: SupportedSVGEventNames[];
-  isIdlePingerEnabled: boolean;
 };
 
 export type MusicDisplayOptions = IOSMDOptions & {
