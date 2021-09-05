@@ -9,16 +9,16 @@ export class LerpLoop implements Loop {
     const startCursor = LerpCursor.create(imd, locator.clone(), {
       numMeasures: imd.Sheet.SourceMeasures.length,
       scrollContainer: imd.scrollContainer,
+      color: 'lime',
     });
     startCursor.clear();
-    startCursor.disableAutoScroll();
 
     const endCursor = LerpCursor.create(imd, locator.clone(), {
       numMeasures: imd.Sheet.SourceMeasures.length,
       scrollContainer: imd.scrollContainer,
+      color: 'red',
     });
     endCursor.clear();
-    endCursor.disableAutoScroll();
 
     const loop = new LerpLoop(imd, startCursor, endCursor);
     loop.deactivate();

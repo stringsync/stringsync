@@ -228,6 +228,13 @@ export const NotationControls: React.FC<Props> = (props) => {
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
         onSeekEnd();
       }),
+      musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
+        musicDisplay.loop.update(payload.selection.toRange());
+        musicDisplay.loop.activate();
+      }),
+      musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
+        musicDisplay.loop.update(payload.selection.toRange());
+      }),
     ];
 
     return () => {

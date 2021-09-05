@@ -32,7 +32,7 @@ const DEFAULT_CURSOR_OPTS = [
   {
     type: CursorType.ThinLeft,
     color: '#00ffd9',
-    follow: true,
+    follow: false,
     alpha: 0.5,
   },
 ];
@@ -46,11 +46,13 @@ type Cursors = {
 export type LerpCursorOpts = {
   scrollContainer: HTMLElement;
   numMeasures: number;
+  color: string;
 };
 
 export class LerpCursor {
   static create(imd: InternalMusicDisplay, locator: MusicDisplayLocator, opts: LerpCursorOpts) {
     const cursorsOptions = DEFAULT_CURSOR_OPTS.map((cursorsOption) => ({ id: Symbol(), ...cursorsOption }));
+    cursorsOptions[2].color = opts.color;
     const cursors = imd.createCursors(cursorsOptions);
     if (cursors.length !== 3) {
       throw new Error(`expected 3 cursors, got: ${cursors.length}`);
