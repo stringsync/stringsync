@@ -4,7 +4,8 @@ import { SupportedSVGEventNames } from '.';
 import { Duration } from '../../util/Duration';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
-import { createPointerService, pointerModel, PointerService, PointerTarget, PointerTargetType } from './pointerMachine';
+import { pointer, PointerTarget, PointerTargetType } from './pointer';
+import { PointerService } from './pointer/pointer';
 import { LocatorTargetType, SVGSettings } from './types';
 
 type SVGElementEvent<N extends SupportedSVGEventNames> = SVGElementEventMap[N];
@@ -32,7 +33,7 @@ export class SVGEventProxy {
       throw new Error('expected the first backend to be an svg backend');
     }
     const svg = backend.getSvgElement();
-    const pointerService = createPointerService(imd.eventBus);
+    const pointerService = pointer.createService(imd.eventBus);
     const svgEventProxy = new SVGEventProxy(svg, imd, locator, pointerService, svgSettings);
     svgEventProxy.install();
     return svgEventProxy;
@@ -95,7 +96,7 @@ export class SVGEventProxy {
 
           // Avoid slamming the pointer service if the pointer target did not change
           if (!isEqual(pointerTarget, prevPointerTarget)) {
-            this.pointerService.send(pointerModel.events.ping(pointerTarget));
+            this.pointerService.send(pointer.events.ping(pointerTarget));
           }
 
           prevPointerTarget = pointerTarget;
@@ -143,7 +144,7 @@ export class SVGEventProxy {
       return;
     }
     const pointerTarget = this.getPointerTarget(touch);
-    this.pointerService.send(pointerModel.events.down(pointerTarget));
+    this.pointerService.send(pointer.events.down(pointerTarget));
   }
 
   private onTouchMove = throttle(
@@ -154,7 +155,7 @@ export class SVGEventProxy {
       }
       this.updatePos(touch);
       const pointerTarget = this.getPointerTarget(touch);
-      this.pointerService.send(pointerModel.events.move(pointerTarget));
+      this.pointerService.send(pointer.events.move(pointerTarget));
     },
     POINTER_MOVE_THROTTLE_DURATION.ms,
     {
@@ -169,19 +170,19 @@ export class SVGEventProxy {
       return;
     }
     const pointerTarget = this.getPointerTarget(touch);
-    this.pointerService.send(pointerModel.events.up(pointerTarget));
+    this.pointerService.send(pointer.events.up(pointerTarget));
   }
 
   private onMouseDown(event: SVGElementEvent<'mousedown'>) {
     const pointerTarget = this.getPointerTarget(event);
-    this.pointerService.send(pointerModel.events.down(pointerTarget));
+    this.pointerService.send(pointer.events.down(pointerTarget));
   }
 
   private onMouseMove = throttle(
     (event: SVGElementEvent<'mousemove'>) => {
       this.updatePos(event);
       const pointerTarget = this.getPointerTarget(event);
-      this.pointerService.send(pointerModel.events.move(pointerTarget));
+      this.pointerService.send(pointer.events.move(pointerTarget));
     },
     POINTER_MOVE_THROTTLE_DURATION.ms,
     {
@@ -192,7 +193,7 @@ export class SVGEventProxy {
 
   private onMouseUp(event: SVGElementEvent<'mouseup'>) {
     const pointerTarget = this.getPointerTarget(event);
-    this.pointerService.send(pointerModel.events.up(pointerTarget));
+    this.pointerService.send(pointer.events.up(pointerTarget));
   }
 
   private getPointerTarget(positional: Positional): PointerTarget {

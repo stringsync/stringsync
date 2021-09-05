@@ -1,61 +1,22 @@
 import { merge } from 'lodash';
-import { ContextFrom, EventFrom, interpret } from 'xstate';
+import { EventFrom, interpret } from 'xstate';
 import { assign, choose } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
-import { CursorSnapshot, CursorWrapper } from '.';
-import { Duration } from '../../util/Duration';
-import { AnchoredTimeSelection } from './AnchoredTimeSelection';
-import { MusicDisplayEventBus } from './types';
+import { MusicDisplayEventBus } from '..';
+import { Duration } from '../../../util/Duration';
+import { AnchoredTimeSelection } from '../AnchoredTimeSelection';
+import { isCursorPointerTarget, isCursorSnapshotPointerTarget, isNonePointerTarget } from './pointerTypeAssert';
+import { PointerContext, PointerTarget, PointerTargetType } from './types';
 
-export enum PointerTargetType {
-  None,
-  Cursor,
-  CursorSnapshot,
-}
-
-export type NonePointerTarget = { type: PointerTargetType.None };
-
-export type CursorPointerTarget = { type: PointerTargetType.Cursor; cursor: CursorWrapper; timeMs: number };
-
-export type CursorSnapshotPointerTarget = {
-  type: PointerTargetType.CursorSnapshot;
-  cursorSnapshot: CursorSnapshot;
-  timeMs: number;
-};
-
-export type PointerTarget = NonePointerTarget | CursorPointerTarget | CursorSnapshotPointerTarget;
-
-export type PointerContext = ContextFrom<typeof pointerModel>;
-export type PointerEvent = EventFrom<typeof pointerModel>;
-export type PointerMachine = ReturnType<typeof createPointerMachine>;
-export type PointerService = ReturnType<typeof createPointerService>;
-
-type UnknownTarget = {
-  type: PointerTargetType;
-};
-
-const isNonePointerTarget = (target: UnknownTarget): target is CursorPointerTarget => {
-  return target.type === PointerTargetType.None;
-};
-const isCursorPointerTarget = (target: UnknownTarget): target is CursorPointerTarget => {
-  return target.type === PointerTargetType.Cursor;
-};
-const isCursorSnapshotPointerTarget = (target: UnknownTarget): target is CursorSnapshotPointerTarget => {
-  return target.type === PointerTargetType.CursorSnapshot;
-};
+export type PointerEvent = EventFrom<typeof model>;
+export type PointerMachine = ReturnType<typeof createMachine>;
+export type PointerService = ReturnType<typeof createService>;
 
 const LONG_HOLD_DURATION = Duration.ms(1000);
 const TAP_GRACE_PERIOD = Duration.ms(50);
 const IDLE_DURATION = Duration.ms(500);
 
-const INITIAL_POINTER_CONTEXT: {
-  isActive: boolean;
-  downTarget: PointerTarget;
-  prevDownTarget: PointerTarget;
-  hoverTarget: PointerTarget;
-  prevHoverTarget: PointerTarget;
-  selection: AnchoredTimeSelection | null;
-} = {
+const INITIAL_POINTER_CONTEXT: PointerContext = {
   isActive: true,
   downTarget: { type: PointerTargetType.None },
   prevDownTarget: { type: PointerTargetType.None },
@@ -64,7 +25,7 @@ const INITIAL_POINTER_CONTEXT: {
   selection: null,
 };
 
-export const pointerModel = createModel(INITIAL_POINTER_CONTEXT, {
+export const model = createModel(INITIAL_POINTER_CONTEXT, {
   events: {
     up: (target: PointerTarget) => ({ target }),
     down: (target: PointerTarget) => ({ target }),
@@ -73,8 +34,10 @@ export const pointerModel = createModel(INITIAL_POINTER_CONTEXT, {
   },
 });
 
-export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
-  return pointerModel.createMachine(
+export const events = model.events;
+
+export const createMachine = (eventBus: MusicDisplayEventBus) => {
+  return model.createMachine(
     {
       id: 'pointer',
       initial: 'up',
@@ -353,8 +316,8 @@ export const createPointerMachine = (eventBus: MusicDisplayEventBus) => {
   );
 };
 
-export const createPointerService = (eventBus: MusicDisplayEventBus) => {
-  const pointerMachine = createPointerMachine(eventBus);
+export const createService = (eventBus: MusicDisplayEventBus) => {
+  const pointerMachine = createMachine(eventBus);
   const pointerService = interpret(pointerMachine);
   pointerService.start();
   return pointerService;
