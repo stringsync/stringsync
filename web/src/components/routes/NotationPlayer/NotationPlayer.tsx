@@ -127,7 +127,8 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
       }
       if (!videoPlayer.paused()) {
         wasPlayingRef.current = true;
-        videoPlayer.pause();
+        // TODO(jared) Fix pausing and playing causing a bunch of requests.
+        // videoPlayer.pause();
       }
       videoPlayer.currentTime(currentTimeMs / 1000);
     },
@@ -139,7 +140,8 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
       return;
     }
     if (wasPlayingRef.current) {
-      videoPlayer.play();
+      // TODO(jared) Fix pausing and playing causing a bunch of requests.
+      // videoPlayer.play();
     }
     wasPlayingRef.current = false;
   }, [videoPlayer]);
