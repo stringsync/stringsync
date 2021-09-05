@@ -34,13 +34,15 @@ export class EventBus<T extends PayloadByEventName = {}> {
     return id;
   }
 
-  unsubscribe(id: symbol) {
-    const eventName = this.eventNameById[id];
-    delete this.eventNameById[id];
-    if (!this.hasSubscribers(eventName)) {
-      return;
+  unsubscribe(...ids: symbol[]) {
+    for (const id of ids) {
+      const eventName = this.eventNameById[id];
+      delete this.eventNameById[id];
+      if (!this.hasSubscribers(eventName)) {
+        return;
+      }
+      this.removeSubscriber(eventName, id);
     }
-    this.removeSubscriber(eventName, id);
   }
 
   private hasSubscribers(eventName: EventNames<T>): boolean {

@@ -217,7 +217,7 @@ export const NotationControls: React.FC<Props> = (props) => {
       return;
     }
 
-    const handles = [
+    const eventBusIds = [
       musicDisplay.eventBus.subscribe('cursorsnapshotclicked', (payload) => {
         onSeek(payload.timeMs);
         onSeekEnd();
@@ -238,7 +238,7 @@ export const NotationControls: React.FC<Props> = (props) => {
     ];
 
     return () => {
-      handles.forEach(musicDisplay.eventBus.unsubscribe.bind(musicDisplay.eventBus));
+      musicDisplay.eventBus.unsubscribe(...eventBusIds);
     };
   }, [musicDisplay, onSeek, onSeekEnd]);
 

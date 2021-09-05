@@ -103,7 +103,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
       return;
     }
 
-    const handles = [
+    const eventBusIds = [
       musicDisplay.eventBus.subscribe('autoscrollstarted', () => {
         isAutoScrollingRef.current = true;
       }),
@@ -147,7 +147,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
     ];
 
     return () => {
-      handles.forEach(musicDisplay.eventBus.unsubscribe.bind(musicDisplay.eventBus));
+      musicDisplay.eventBus.unsubscribe(...eventBusIds);
       setCursor(Cursor.Pointer);
     };
   }, [musicDisplay]);

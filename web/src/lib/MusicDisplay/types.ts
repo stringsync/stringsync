@@ -53,6 +53,7 @@ export interface CursorWrapper {
 }
 
 export interface Loop {
+  readonly isActive: boolean;
   activate(): void;
   deactivate(): void;
   update(timeMsRange: NumberRange): void;
