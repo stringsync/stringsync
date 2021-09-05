@@ -48,4 +48,8 @@ export class MusicDisplay {
   get cursor() {
     return this.imd.cursorWrapper;
   }
+
+  get loop() {
+    return this.imd.loop;
+  }
 }

@@ -1,5 +1,5 @@
 import { EventBus } from '../../EventBus';
-import { NullCursor } from '../NullCursor';
+import { NoopCursor } from '../NoopCursor';
 import { CursorSnapshot, MusicDisplayEventBus } from '../types';
 import * as pointer from './pointer';
 import { PointerService } from './pointer';
@@ -8,7 +8,7 @@ import { CursorPointerTarget, CursorSnapshotPointerTarget, NonePointerTarget, Po
 const NONE_POINTER_TARGET: NonePointerTarget = { type: PointerTargetType.None };
 const CURSOR_POINTER_TARGET: CursorPointerTarget = {
   type: PointerTargetType.Cursor,
-  cursor: new NullCursor(),
+  cursor: new NoopCursor(),
   timeMs: 0,
 };
 const CURSOR_SNAPSHOT_POINTER_TARGET: CursorSnapshotPointerTarget = {
@@ -72,7 +72,7 @@ describe('pointerMachine', () => {
       const cursorTarget1 = CURSOR_POINTER_TARGET;
       const cursorTarget2: CursorPointerTarget = {
         type: PointerTargetType.Cursor,
-        cursor: new NullCursor(),
+        cursor: new NoopCursor(),
         timeMs: 1,
       };
 
@@ -116,7 +116,7 @@ describe('pointerMachine', () => {
       const cursorTarget1 = CURSOR_POINTER_TARGET;
       const cursorTarget2: CursorPointerTarget = {
         type: PointerTargetType.Cursor,
-        cursor: new NullCursor(),
+        cursor: new NoopCursor(),
         timeMs: 1,
       };
 

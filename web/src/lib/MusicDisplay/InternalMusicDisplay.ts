@@ -1,12 +1,12 @@
 import { get, set, takeRight } from 'lodash';
 import { Cursor, CursorOptions, CursorType, OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
-import { MusicDisplayEventBus, SVGSettings } from '.';
 import { LerpCursor } from './LerpCursor';
-import { Loop } from './Loop';
+import { LerpLoop } from './LerpLoop';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
-import { NullCursor } from './NullCursor';
+import { NoopCursor } from './NoopCursor';
+import { NoopLoop } from './NoopLoop';
 import { SVGEventProxy } from './SVGEventProxy';
-import { CursorWrapper, MusicDisplayOptions, SyncSettings } from './types';
+import { CursorWrapper, Loop, MusicDisplayEventBus, MusicDisplayOptions, SVGSettings, SyncSettings } from './types';
 
 type IdentifiableCursorOptions = CursorOptions & {
   id: symbol;
@@ -27,10 +27,10 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   scrollContainer: HTMLDivElement;
   syncSettings: SyncSettings;
   svgSettings: SVGSettings;
-  cursorWrapper: CursorWrapper = new NullCursor();
+  cursorWrapper: CursorWrapper = new NoopCursor();
+  loop: Loop = new NoopLoop();
   eventBus: MusicDisplayEventBus;
   svgEventProxy: SVGEventProxy | null = null;
-  loop: Loop | null = null;
 
   constructor(container: string | HTMLElement, eventBus: MusicDisplayEventBus, opts: MusicDisplayOptions) {
     super(container, opts);
@@ -65,7 +65,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
     this.svgEventProxy = SVGEventProxy.install(this, locator.clone(), this.svgSettings);
 
-    this.loop = Loop.create(this, locator.clone());
+    this.loop = LerpLoop.create(this, locator.clone());
   }
 
   clear() {

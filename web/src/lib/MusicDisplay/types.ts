@@ -52,6 +52,12 @@ export interface CursorWrapper {
   getBox(): Box;
 }
 
+export interface Loop {
+  activate(): void;
+  deactivate(): void;
+  update(timeMsRange: NumberRange): void;
+}
+
 export type Callback = () => void;
 
 export type CursorInfo = {

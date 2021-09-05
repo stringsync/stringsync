@@ -2,9 +2,9 @@ import { NumberRange } from '../../util/NumberRange';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { LerpCursor } from './LerpCursor';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
-import { CursorWrapper } from './types';
+import { CursorWrapper, Loop } from './types';
 
-export class Loop {
+export class LerpLoop implements Loop {
   static create(imd: InternalMusicDisplay, locator: MusicDisplayLocator) {
     const startCursor = LerpCursor.create(imd, locator.clone(), {
       numMeasures: imd.Sheet.SourceMeasures.length,
@@ -20,7 +20,7 @@ export class Loop {
     endCursor.clear();
     endCursor.disableAutoScroll();
 
-    const loop = new Loop(imd, startCursor, endCursor);
+    const loop = new LerpLoop(imd, startCursor, endCursor);
     loop.deactivate();
 
     return loop;
