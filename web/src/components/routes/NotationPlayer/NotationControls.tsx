@@ -1,23 +1,22 @@
 import { RightOutlined, SettingOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Col, Drawer, Row, Slider } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { VideoJsPlayer } from 'video.js';
-import { CursorInfo, MusicDisplay } from '../../../lib/MusicDisplay';
+import { CursorInfo, MusicDisplay, ScrollAlignment, ScrollStyle } from '../../../lib/MusicDisplay';
 import { isTemporal } from '../../../lib/MusicDisplay/pointer/pointerTypeAssert';
+import * as helpers from './helpers';
 import { NotationDetail } from './NotationDetail';
 import { NotationPlayerSettings } from './types';
 import { useTipFormatter } from './useTipFormatter';
 import { useVideoPlayerControls, VideoPlayerState } from './useVideoPlayerControls';
 
 const Outer = styled.div`
-  bottom: 0;
   z-index: 3;
   background: white;
   border-top: 1px solid ${(props) => props.theme['@border-color']};
   padding: 16px 16px;
-  position: absolute;
   width: 100%;
 `;
 
@@ -46,10 +45,13 @@ export type Props = {
   musicDisplay: MusicDisplay | null;
   settings: NotationPlayerSettings;
   onSettingsChange: (notationPlayerSettings: NotationPlayerSettings) => void;
+  onDivMount: (div: HTMLDivElement) => void;
 };
 
 export const NotationControls: React.FC<Props> = (props) => {
-  const { videoPlayer, settings, musicDisplay, durationMs, onSettingsChange } = props;
+  const { videoPlayer, settings, musicDisplay, durationMs, onSettingsChange, onDivMount } = props;
+
+  const controlsDivRef = useRef<HTMLDivElement>(null);
 
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
   const [cursorInfo, setCursorInfo] = useState<CursorInfo>({
@@ -125,6 +127,7 @@ export const NotationControls: React.FC<Props> = (props) => {
         seek(payload.src.timeMs);
       }),
       musicDisplay.eventBus.subscribe('cursordragstarted', (payload) => {
+        payload.src.cursor.setScrollStyle(ScrollStyle.Seek);
         suspend();
       }),
       musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {
@@ -134,9 +137,15 @@ export const NotationControls: React.FC<Props> = (props) => {
         if (!musicDisplay.loop.timeMsRange.contains(payload.dst.timeMs)) {
           musicDisplay.loop.deactivate();
         }
+
+        const scrollAlignment = helpers.calculateScrollAlignment(payload.dst.position, musicDisplay.scrollContainer);
+        payload.src.cursor.updateScrollAlignment(scrollAlignment);
+
         seek(payload.dst.timeMs);
       }),
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
+        payload.src.cursor.setScrollStyle(ScrollStyle.Default);
+        payload.src.cursor.updateScrollAlignment(ScrollAlignment.Top);
         unsuspend();
       }),
       musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
@@ -159,8 +168,15 @@ export const NotationControls: React.FC<Props> = (props) => {
     };
   }, [musicDisplay, seek, suspend, unsuspend]);
 
+  useEffect(() => {
+    if (!controlsDivRef.current) {
+      return;
+    }
+    onDivMount(controlsDivRef.current);
+  }, [onDivMount]);
+
   return (
-    <Outer>
+    <Outer ref={controlsDivRef}>
       <Row justify="center" align="middle">
         <Col xs={2} sm={2} md={2} lg={1} xl={1} xxl={1}>
           <Row justify="center" align="middle">

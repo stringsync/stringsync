@@ -30,19 +30,6 @@ const Loading = styled.small`
   margin-top: 36px;
 `;
 
-const Halo = styled.div<{ x: number; y: number }>`
-  position: absolute;
-  top: calc(${(props) => props.y}px - 32px);
-  left: calc(${(props) => props.x}px - 32px);
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  border: 6px solid ${(props) => props.theme['@primary-color']};
-  z-index: 2;
-  opacity: 0.5;
-  transition: opacity 200ms;
-`;
-
 const COMMON_SVG_EVENT_NAMES: SupportedSVGEventNames[] = [];
 const MOUSE_SVG_EVENT_NAMES: SupportedSVGEventNames[] = ['mousedown', 'mousemove', 'mouseup'];
 const TOUCH_SVG_EVENT_NAMES: SupportedSVGEventNames[] = ['touchstart', 'touchmove', 'touchend'];

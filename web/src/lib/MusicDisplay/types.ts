@@ -46,6 +46,7 @@ export interface CursorWrapper {
   getBox(): Box;
   disableAutoScroll(): void;
   enableAutoScroll(): void;
+  setScrollStyle(scrollStyle: ScrollStyle): void;
   updateScrollAlignment(scrollAlignment: ScrollAlignment): void;
 }
 
@@ -128,4 +129,9 @@ export enum ScrollAlignment {
   Top,
   Center,
   Bottom,
+}
+
+export enum ScrollStyle {
+  Default,
+  Seek,
 }

@@ -6,13 +6,7 @@ import { NonePointerTarget } from '.';
 import { MusicDisplayEventBus } from '..';
 import { Duration } from '../../../util/Duration';
 import { AnchoredTimeSelection } from '../AnchoredTimeSelection';
-import {
-  isCursorPointerTarget,
-  isCursorSnapshotPointerTarget,
-  isNonePointerTarget,
-  isPositional,
-  isSeekable,
-} from './pointerTypeAssert';
+import { isCursorPointerTarget, isCursorSnapshotPointerTarget, isNonePointerTarget } from './pointerTypeAssert';
 import { PointerContext, PointerPosition, PointerTarget, PointerTargetType } from './types';
 
 export type PointerEvent = EventFrom<typeof model>;
@@ -183,13 +177,6 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
         },
         dispatchDragUpdated: (context, event) => {
           if (isCursorPointerTarget(context.downTarget)) {
-            const target = { ...context.downTarget };
-            if (isSeekable(event.target)) {
-              target.timeMs = event.target.timeMs;
-            }
-            if (isPositional(event.target)) {
-              target.position = event.target.position;
-            }
             eventBus.dispatch('cursordragupdated', { src: context.downTarget, dst: event.target });
           }
         },

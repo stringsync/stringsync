@@ -39,7 +39,6 @@ const LeftOrTopCol = styled(Col)`
 
 const RightOrBottomScrollContainer = styled.div<{ $heightOffsetPx: number }>`
   padding-top: 24px;
-  padding-bottom: 36px;
   background: white;
   height: calc(100vh - ${(props) => props.$heightOffsetPx}px);
   overflow-x: hidden;
@@ -90,6 +89,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
   const [videoPlayer, setVideoPlayer] = useState<VideoJsPlayer | null>(null);
   const [settings, updateSettings] = useNotationPlayerSettings();
+  const [controlsHeightPx, setControlsHeightPx] = useState(0);
 
   const videoUrl = notation?.videoUrl;
   const playerOptions = useMemo<VideoJsPlayerOptions>(() => {
@@ -129,6 +129,10 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
   const onSettingsChange = useCallback(updateSettings, [updateSettings]);
 
+  const onControlsDivMount = useCallback((div: HTMLDivElement) => {
+    setControlsHeightPx(div.offsetHeight);
+  }, []);
+
   // Prevent the outer container from scrolling. The reason why we need this is
   // needed is because when the viewport is ltEqMd, the body will almost certainly
   // overflow, causing a scroll bar on the outer page (and the inner page from the
@@ -160,7 +164,8 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   }, [params.id]);
 
   const hasErrors = errors.length > 0;
-  const rightOrBottomColHeightOffsetPx = gtMd ? HEADER_HEIGHT_PX : HEADER_HEIGHT_PX + videoHeightPx;
+  const rightOrBottomScrollContainerOffsetHeightPx =
+    (gtMd ? HEADER_HEIGHT_PX : HEADER_HEIGHT_PX + videoHeightPx) + controlsHeightPx;
 
   return (
     <div data-testid="notation-player">
@@ -212,7 +217,10 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
             </LeftOrTopScrollContainer>
           </LeftOrTopCol>
           <RightOrBottomCol xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
-            <RightOrBottomScrollContainer $heightOffsetPx={rightOrBottomColHeightOffsetPx} ref={scrollContainerRef}>
+            <RightOrBottomScrollContainer
+              $heightOffsetPx={rightOrBottomScrollContainerOffsetHeightPx}
+              ref={scrollContainerRef}
+            >
               <SongName>{notation.songName}</SongName>
               <ArtistName>by {notation.artistName}</ArtistName>
               <TranscriberName>{notation.transcriber.username}</TranscriberName>
@@ -239,6 +247,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
                 musicDisplay={musicDisplay}
                 settings={settings}
                 onSettingsChange={onSettingsChange}
+                onDivMount={onControlsDivMount}
               />
             )}
           </RightOrBottomCol>

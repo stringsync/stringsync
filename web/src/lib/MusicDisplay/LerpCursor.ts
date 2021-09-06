@@ -5,11 +5,12 @@ import { Box } from '../../util/Box';
 import { ColoringOperation } from './ColoringOperation';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
-import { CursorSnapshot, ScrollAlignment } from './types';
+import { CursorSnapshot, ScrollAlignment, ScrollStyle } from './types';
 
-const SCROLL_DURATION_MS = 100;
+const SCROLL_DEFAULT_DURATION_MS = 100;
+const SCROLL_SLOW_DURATION_MS = 300;
 const SCROLL_BACK_TOP_DURATION_MS = 300;
-const SCROLL_THROTTLE_MS = SCROLL_DURATION_MS + 10;
+const SCROLL_THROTTLE_MS = SCROLL_DEFAULT_DURATION_MS + 10;
 const SCROLL_GRACE_PERIOD_MS = 500;
 const SCROLL_DELTA_TOLERANCE_PX = 2;
 const SCROLL_JUMP_THRESHOLD_PX = 350;
@@ -82,6 +83,7 @@ export class LerpCursor {
   private lastScrollId = Symbol();
   private isAutoScrollEnabled = true;
   private scrollAlignment = ScrollAlignment.Top;
+  private scrollStyle = ScrollStyle.Default;
 
   private constructor(imd: InternalMusicDisplay, cursors: Cursors, opts: LerpCursorOpts) {
     this.imd = imd;
@@ -164,6 +166,10 @@ export class LerpCursor {
     if (didScrollAlignmentChange) {
       this.scrollCursorSnapshotIntoView(this.prevCursorSnapshot);
     }
+  }
+
+  setScrollStyle(scrollStyle: ScrollStyle) {
+    this.scrollStyle = scrollStyle;
   }
 
   getBox(): Box {
@@ -287,8 +293,13 @@ export class LerpCursor {
         });
       }
 
-      if (this.scrollAlignment === ScrollAlignment.Bottom) {
-        targetTop -= targetHeight / 2;
+      switch (this.scrollAlignment) {
+        case ScrollAlignment.Bottom:
+          targetTop -= targetHeight;
+          break;
+        case ScrollAlignment.Center:
+          targetTop -= targetHeight / 2;
+          break;
       }
 
       const deltaScrollTop = Math.abs(currentScrollTop - targetTop);
@@ -296,11 +307,19 @@ export class LerpCursor {
         return;
       }
 
-      let durationMs = SCROLL_DURATION_MS;
-      if (targetTop === 0) {
-        durationMs = SCROLL_BACK_TOP_DURATION_MS;
-      } else if (deltaScrollTop > SCROLL_JUMP_THRESHOLD_PX) {
-        durationMs = 0;
+      let durationMs = SCROLL_DEFAULT_DURATION_MS;
+      switch (this.scrollStyle) {
+        case ScrollStyle.Default:
+          if (targetTop === 0) {
+            durationMs = SCROLL_BACK_TOP_DURATION_MS;
+          } else if (deltaScrollTop > SCROLL_JUMP_THRESHOLD_PX) {
+            durationMs = 0;
+          }
+          break;
+        case ScrollStyle.Seek:
+          durationMs = SCROLL_SLOW_DURATION_MS;
+          this.scrollContainer.scrollBy({ top: 10 });
+          return;
       }
 
       const lastScrollId = Symbol();
