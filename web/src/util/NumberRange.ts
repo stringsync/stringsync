@@ -4,6 +4,7 @@ interface Range<T> {
   readonly size: number;
   readonly midpoint: number;
   contains(value: T): boolean;
+  eq(range: Range<T>): boolean;
 }
 
 class LeftBoundedRange implements Range<number> {
@@ -23,6 +24,10 @@ class LeftBoundedRange implements Range<number> {
   contains(value: number) {
     return this.start <= value && value <= this.end;
   }
+
+  eq(range: NumberRange) {
+    return this.start === range.start && this.end === range.end;
+  }
 }
 
 class RightBoundedRange implements Range<number> {
@@ -41,6 +46,10 @@ class RightBoundedRange implements Range<number> {
 
   contains(value: number) {
     return this.start <= value && value <= this.end;
+  }
+
+  eq(range: NumberRange) {
+    return this.start === range.start && this.end === range.end;
   }
 }
 
@@ -65,15 +74,19 @@ export class NumberRange implements Range<number> {
     this.end = end;
   }
 
-  contains(value: number) {
-    return this.start <= value && value <= this.end;
-  }
-
   get size() {
     return this.end - this.start;
   }
 
   get midpoint() {
-    return this.size / 2;
+    return this.start + this.size / 2;
+  }
+
+  contains(value: number) {
+    return this.start <= value && value <= this.end;
+  }
+
+  eq(range: NumberRange) {
+    return this.start === range.start && this.end === range.end;
   }
 }

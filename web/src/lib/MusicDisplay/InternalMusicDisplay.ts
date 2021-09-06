@@ -12,6 +12,8 @@ type IdentifiableCursorOptions = CursorOptions & {
   id: symbol;
 };
 
+type WithProbeCursorCallback = (probeCursor: Cursor) => void;
+
 type ForEachCursorPositionCallback = (index: number, probeCursor: Cursor) => void;
 
 /**
@@ -106,7 +108,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.enableOrDisableCursors(false);
   }
 
-  forEachCursorPosition(callback: ForEachCursorPositionCallback) {
+  withProbeCursor(callback: WithProbeCursorCallback) {
     const cursorOption = {
       id: Symbol(),
       type: CursorType.Standard,
@@ -117,17 +119,23 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
     const [probeCursor] = this.createCursors([cursorOption]);
 
-    let index = 0;
     try {
       probeCursor.show();
+      callback(probeCursor);
+    } finally {
+      this.removeCursor(cursorOption.id);
+    }
+  }
+
+  forEachCursorPosition(callback: ForEachCursorPositionCallback) {
+    this.withProbeCursor((probeCursor) => {
+      let index = 0;
       while (!probeCursor.iterator.EndReached) {
         callback(index, probeCursor);
         probeCursor.next();
         index++;
       }
-    } finally {
-      this.removeCursor(cursorOption.id);
-    }
+    });
   }
 
   private onResizeStart() {

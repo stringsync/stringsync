@@ -4,7 +4,8 @@ import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { VideoJsPlayer } from 'video.js';
-import { CursorInfo, MusicDisplay } from '../../../lib/MusicDisplay';
+import { CursorInfo, MusicDisplay, ScrollAlignment } from '../../../lib/MusicDisplay';
+import { NumberRange } from '../../../util/NumberRange';
 import { NotationDetail } from './NotationDetail';
 import { NotationPlayerSettings } from './types';
 import { useTipFormatter } from './useTipFormatter';
@@ -115,6 +116,10 @@ export const NotationControls: React.FC<Props> = (props) => {
       return;
     }
 
+    const getTransientScrollAlignment = (y: number, yRange: NumberRange) => {
+      return y < yRange.midpoint ? ScrollAlignment.Bottom : ScrollAlignment.Top;
+    };
+
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('cursorinfochanged', setCursorInfo),
       musicDisplay.eventBus.subscribe('cursorsnapshotclicked', (payload) => {
@@ -123,16 +128,25 @@ export const NotationControls: React.FC<Props> = (props) => {
         }
         seek(payload.target.timeMs);
       }),
-      musicDisplay.eventBus.subscribe('cursordragstarted', () => {
+      musicDisplay.eventBus.subscribe('cursordragstarted', (payload) => {
         suspend();
+        payload.target.cursor.disableAutoScroll();
       }),
       musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {
         if (!musicDisplay.loop.timeMsRange.contains(payload.target.timeMs)) {
           musicDisplay.loop.deactivate();
         }
+        const { y, cursor } = payload.target;
+        const yRange = cursor.getBox().yRange;
+
+        const scrollAlignment = getTransientScrollAlignment(y, yRange);
+        cursor.updateScrollAlignment(scrollAlignment);
+
         seek(payload.target.timeMs);
       }),
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
+        payload.target.cursor.updateScrollAlignment(ScrollAlignment.Top);
+        payload.target.cursor.enableAutoScroll();
         unsuspend();
       }),
       musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {

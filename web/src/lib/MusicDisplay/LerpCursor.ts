@@ -5,7 +5,7 @@ import { Box } from '../../util/Box';
 import { ColoringOperation } from './ColoringOperation';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
-import { CursorSnapshot } from './types';
+import { CursorSnapshot, ScrollAlignment } from './types';
 
 const SCROLL_DURATION_MS = 100;
 const SCROLL_BACK_TOP_DURATION_MS = 300;
@@ -78,10 +78,10 @@ export class LerpCursor {
   private prevColoringOperation: ColoringOperation | null = null;
 
   private $scrollContainer: JQuery<HTMLElement> | null = null;
-  private $laggerCursorElement: JQuery<HTMLElement> | null = null;
 
   private lastScrollId = Symbol();
   private isAutoScrollEnabled = true;
+  private scrollAlignment = ScrollAlignment.Top;
 
   private constructor(imd: InternalMusicDisplay, cursors: Cursors, opts: LerpCursorOpts) {
     this.imd = imd;
@@ -114,7 +114,6 @@ export class LerpCursor {
     this.locator = locator;
 
     this.$scrollContainer = $(this.scrollContainer);
-    this.$laggerCursorElement = $(this.lagger.cursorElement);
   }
 
   update(timeMs: number) {
@@ -152,7 +151,19 @@ export class LerpCursor {
 
   enableAutoScroll() {
     this.isAutoScrollEnabled = true;
-    this.scrollLaggerIntoView();
+    this.scrollCursorSnapshotIntoView(this.prevCursorSnapshot);
+  }
+
+  updateScrollAlignment(scrollAlignment: ScrollAlignment) {
+    const didScrollAlignmentChange = this.scrollAlignment !== scrollAlignment;
+    this.scrollAlignment = scrollAlignment;
+
+    // isAutoScrollEnabled is not honored here because this is an explicit call to update the
+    // scrolling. Callers should just not call this method if they don't want a scroll to be
+    // issued.
+    if (didScrollAlignmentChange) {
+      this.scrollCursorSnapshotIntoView(this.prevCursorSnapshot);
+    }
   }
 
   getBox(): Box {
@@ -211,7 +222,7 @@ export class LerpCursor {
 
     // It is a performance optimization to only do this when the voice pointers change.
     if (this.isAutoScrollEnabled) {
-      this.scrollLaggerIntoView();
+      this.scrollCursorSnapshotIntoView(nextCursorSnapshot);
     }
 
     this.prevCursorSnapshot = nextCursorSnapshot;
@@ -237,41 +248,58 @@ export class LerpCursor {
     this.lerper.cursorElement.style.left = `${x}px`;
   }
 
-  private scrollLaggerIntoView = throttle(
-    () => {
+  private scrollCursorSnapshotIntoView = throttle(
+    (cursorSnapshot: CursorSnapshot | null) => {
+      if (!cursorSnapshot) {
+        return;
+      }
+
       const hasNoOverflow = this.scrollContainer.scrollHeight <= this.scrollContainer.clientHeight;
       if (hasNoOverflow) {
         return;
       }
 
+      let targetTop = 0;
+      let targetHeight = 0;
+
+      this.imd.withProbeCursor((probeCursor) => {
+        cursorSnapshot.iteratorSnapshot.apply(probeCursor);
+        const $target = $(probeCursor.cursorElement);
+        targetTop = $target.position().top;
+        targetHeight = $target.height() ?? 0;
+      });
+
       const $container = this.$scrollContainer;
-      const $target = this.$laggerCursorElement;
-      if (!$container || !$target) {
+      if (!$container) {
         return;
       }
 
       const currentScrollTop = $container.scrollTop() ?? 0;
 
-      let targetScrollTop = $target.position().top; // Will scroll to top if not rendered
-      if (targetScrollTop > 0) {
+      if (targetTop > 0) {
         // Get all the sibling elements that are not notations and scroll past them
         $container.children().each((_, child) => {
           const $child = $(child);
           if ($child.data('notation')) {
             return;
           }
-          targetScrollTop += $child.height() ?? 0;
+          targetTop += $child.outerHeight() ?? 0;
         });
       }
 
-      const deltaScrollTop = Math.abs(currentScrollTop - targetScrollTop);
+      if (this.scrollAlignment === ScrollAlignment.Bottom) {
+        targetTop -= targetHeight / 2;
+      }
 
+      console.log(cursorSnapshot?.timeMsRange);
+
+      const deltaScrollTop = Math.abs(currentScrollTop - targetTop);
       if (deltaScrollTop < SCROLL_DELTA_TOLERANCE_PX) {
         return;
       }
 
       let durationMs = SCROLL_DURATION_MS;
-      if (targetScrollTop === 0) {
+      if (targetTop === 0) {
         durationMs = SCROLL_BACK_TOP_DURATION_MS;
       } else if (deltaScrollTop > SCROLL_JUMP_THRESHOLD_PX) {
         durationMs = 0;
@@ -280,7 +308,7 @@ export class LerpCursor {
       const lastScrollId = Symbol();
       const didNewScrollInvoke = () => this.lastScrollId !== lastScrollId;
       $container.animate(
-        { scrollTop: targetScrollTop },
+        { scrollTop: targetTop },
         {
           queue: false,
           duration: durationMs,

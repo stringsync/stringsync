@@ -9,6 +9,11 @@ type Seekable = UnknownTarget & {
   timeMs: number;
 };
 
+type Positional = UnknownTarget & {
+  x: number;
+  y: number;
+};
+
 export const isNonePointerTarget = (target: UnknownTarget): target is NonePointerTarget => {
   return target.type === PointerTargetType.None;
 };
@@ -23,4 +28,8 @@ export const isCursorSnapshotPointerTarget = (target: UnknownTarget): target is 
 
 export const isSeekable = (target: UnknownTarget): target is Seekable => {
   return isNumber(get(target, 'timeMs'));
+};
+
+export const isPositional = (target: UnknownTarget): target is Positional => {
+  return isNumber(get(target, 'x')) && isNumber(get(target, 'y'));
 };

@@ -10,6 +10,7 @@ import {
   isCursorPointerTarget,
   isCursorSnapshotPointerTarget,
   isNonePointerTarget,
+  isPositional,
   isSeekable,
 } from './pointerTypeAssert';
 import { PointerContext, PointerTarget, PointerTargetType } from './types';
@@ -171,8 +172,16 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
           }
         },
         dispatchDragUpdated: (context, event) => {
-          if (isCursorPointerTarget(context.downTarget) && isSeekable(event.target)) {
-            eventBus.dispatch('cursordragupdated', { target: { ...context.downTarget, timeMs: event.target.timeMs } });
+          if (isCursorPointerTarget(context.downTarget)) {
+            const target = { ...context.downTarget };
+            if (isSeekable(event.target)) {
+              target.timeMs = event.target.timeMs;
+            }
+            if (isPositional(event.target)) {
+              target.x = event.target.x;
+              target.y = event.target.y;
+            }
+            eventBus.dispatch('cursordragupdated', { target });
           }
         },
         dispatchDragEnded: (context, event) => {

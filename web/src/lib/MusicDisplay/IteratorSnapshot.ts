@@ -1,4 +1,4 @@
-import { MusicPartManagerIterator } from 'opensheetmusicdisplay';
+import { Cursor, MusicPartManagerIterator } from 'opensheetmusicdisplay';
 
 export class IteratorSnapshot {
   static create(iterator: MusicPartManagerIterator) {
@@ -13,5 +13,10 @@ export class IteratorSnapshot {
 
   get() {
     return this.iterator.clone();
+  }
+
+  apply(cursor: Cursor) {
+    cursor.iterator = this.get();
+    cursor.update();
   }
 }

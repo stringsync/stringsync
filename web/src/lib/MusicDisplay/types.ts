@@ -43,9 +43,10 @@ export interface CursorWrapper {
   element: HTMLElement;
   update(timeMs: number): void;
   clear(): void;
+  getBox(): Box;
   disableAutoScroll(): void;
   enableAutoScroll(): void;
-  getBox(): Box;
+  updateScrollAlignment(scrollAlignment: ScrollAlignment): void;
 }
 
 export interface Loop {
@@ -122,3 +123,9 @@ export type LocateResult = {
   cursorSnapshot: Readonly<CursorSnapshot> | null;
   targets: LocatorTarget[];
 };
+
+export enum ScrollAlignment {
+  Top,
+  Center,
+  Bottom,
+}
