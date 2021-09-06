@@ -186,7 +186,6 @@ export class SVGEventProxy {
   }
 
   private getPointerTarget(positional: Positional): PointerTarget {
-    const { x, y } = this.getSvgPos(positional);
     const locateResult = this.getLocateResult(positional);
 
     const mostImportantLocateResultTarget = first(
@@ -198,8 +197,8 @@ export class SVGEventProxy {
         type: PointerTargetType.Cursor,
         cursor: mostImportantLocateResultTarget.cursor,
         timeMs: locateResult.timeMs,
-        x,
-        y,
+        x: locateResult.x,
+        y: locateResult.y,
       };
     }
     if (locateResult.cursorSnapshot) {
@@ -207,11 +206,11 @@ export class SVGEventProxy {
         type: PointerTargetType.CursorSnapshot,
         cursorSnapshot: locateResult.cursorSnapshot,
         timeMs: locateResult.timeMs,
-        x,
-        y,
+        x: locateResult.x,
+        y: locateResult.y,
       };
     }
-    return { type: PointerTargetType.None, x, y };
+    return { type: PointerTargetType.None, x: locateResult.x, y: locateResult.y };
   }
 
   private updatePos(positional: Positional) {

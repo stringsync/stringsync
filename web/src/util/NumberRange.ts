@@ -1,11 +1,16 @@
 interface Range<T> {
-  start: T;
-  end: T;
+  readonly start: T;
+  readonly end: T;
+  readonly size: number;
+  readonly midpoint: number;
   contains(value: T): boolean;
 }
 
 class LeftBoundedRange implements Range<number> {
-  public readonly start;
+  start;
+  end = Number.POSITIVE_INFINITY;
+  size = Number.POSITIVE_INFINITY;
+  midpoint = Number.POSITIVE_INFINITY;
 
   constructor(start: number) {
     this.start = start;
@@ -15,17 +20,16 @@ class LeftBoundedRange implements Range<number> {
     return new NumberRange(this.start, end);
   }
 
-  get end() {
-    return Number.POSITIVE_INFINITY;
-  }
-
   contains(value: number) {
     return this.start <= value && value <= this.end;
   }
 }
 
 class RightBoundedRange implements Range<number> {
-  public readonly end;
+  start = Number.NEGATIVE_INFINITY;
+  end;
+  size = Number.POSITIVE_INFINITY;
+  midpoint = Number.NEGATIVE_INFINITY;
 
   constructor(end: number) {
     this.end = end;
@@ -33,10 +37,6 @@ class RightBoundedRange implements Range<number> {
 
   from(start: number) {
     return new NumberRange(start, this.end);
-  }
-
-  get start() {
-    return Number.NEGATIVE_INFINITY;
   }
 
   contains(value: number) {
@@ -53,8 +53,8 @@ export class NumberRange implements Range<number> {
     return new RightBoundedRange(end);
   }
 
-  public readonly start: number;
-  public readonly end: number;
+  start: number;
+  end: number;
 
   constructor(start: number, end: number) {
     if (start > end) {
@@ -67,5 +67,13 @@ export class NumberRange implements Range<number> {
 
   contains(value: number) {
     return this.start <= value && value <= this.end;
+  }
+
+  get size() {
+    return this.end - this.start;
+  }
+
+  get midpoint() {
+    return this.size / 2;
   }
 }

@@ -26,7 +26,7 @@ export class MusicDisplayLocator {
   }
 
   static createNullLocateResult(): LocateResult {
-    return { timeMs: -1, x: -1, y: undefined, cost: LocateCost.Unknown, cursorSnapshot: null, targets: [] };
+    return { timeMs: -1, x: -1, y: -1, cost: LocateCost.Unknown, cursorSnapshot: null, targets: [] };
   }
 
   private static takeCursorSnapshots(imd: InternalMusicDisplay) {
@@ -236,7 +236,7 @@ export class MusicDisplayLocator {
       return {
         timeMs,
         x: -1,
-        y: undefined,
+        y: -1,
         cost: LocateCost.Cheap,
         cursorSnapshot: null,
         targets: [],
@@ -248,7 +248,7 @@ export class MusicDisplayLocator {
       return {
         timeMs,
         x: -1,
-        y: undefined,
+        y: -1,
         cost: LocateCost.Cheap,
         cursorSnapshot: null,
         targets: [],
@@ -260,7 +260,7 @@ export class MusicDisplayLocator {
       return {
         timeMs,
         x,
-        y: undefined,
+        y: firstCursorSnapshot.yRange.midpoint,
         cost: LocateCost.Cheap,
         cursorSnapshot: firstCursorSnapshot,
         targets: firstCursorSnapshot.targets,
@@ -275,7 +275,7 @@ export class MusicDisplayLocator {
       return {
         timeMs,
         x,
-        y: undefined,
+        y: secondCursorSnapshot.timeMsRange.midpoint,
         cost: LocateCost.Cheap,
         cursorSnapshot: secondCursorSnapshot,
         targets: secondCursorSnapshot.targets,
@@ -287,7 +287,7 @@ export class MusicDisplayLocator {
       return {
         timeMs,
         x: -1,
-        y: undefined,
+        y: -1,
         cost: LocateCost.Cheap,
         cursorSnapshot: null,
         targets: lastCursorSnapshot.targets,
@@ -304,7 +304,7 @@ export class MusicDisplayLocator {
       return {
         timeMs,
         x,
-        y: undefined,
+        y: cursorSnapshot.yRange.midpoint,
         cost: LocateCost.Cheap,
         cursorSnapshot: cursorSnapshot,
         targets: cursorSnapshot.targets,
@@ -317,7 +317,7 @@ export class MusicDisplayLocator {
       return {
         timeMs,
         x,
-        y: undefined,
+        y: nextCursorSnapshot.yRange.midpoint,
         cost: LocateCost.Cheap,
         cursorSnapshot: nextCursorSnapshot,
         targets: nextCursorSnapshot.targets,
@@ -330,7 +330,7 @@ export class MusicDisplayLocator {
       return {
         timeMs,
         x,
-        y: undefined,
+        y: prevCursorSnapshot.yRange.midpoint,
         cost: LocateCost.Cheap,
         cursorSnapshot: prevCursorSnapshot,
         targets: prevCursorSnapshot.targets,
@@ -360,7 +360,7 @@ export class MusicDisplayLocator {
       return {
         timeMs,
         x,
-        y: undefined,
+        y: cursorSnapshot.yRange.midpoint,
         cost: LocateCost.Expensive,
         cursorSnapshot: cursorSnapshot,
         targets: cursorSnapshot.targets,
@@ -370,7 +370,7 @@ export class MusicDisplayLocator {
     return {
       timeMs,
       x: -1,
-      y: undefined,
+      y: -1,
       cost: LocateCost.Expensive,
       cursorSnapshot: null,
       targets: [],
