@@ -119,22 +119,22 @@ export const NotationControls: React.FC<Props> = (props) => {
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('cursorinfochanged', setCursorInfo),
       musicDisplay.eventBus.subscribe('cursorsnapshotclicked', (payload) => {
-        if (!musicDisplay.loop.timeMsRange.contains(payload.target.timeMs)) {
+        if (!musicDisplay.loop.timeMsRange.contains(payload.src.timeMs)) {
           musicDisplay.loop.deactivate();
         }
-        seek(payload.target.timeMs);
+        seek(payload.src.timeMs);
       }),
       musicDisplay.eventBus.subscribe('cursordragstarted', (payload) => {
         suspend();
       }),
       musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {
-        if (!isTemporal(payload.eventTarget)) {
+        if (!isTemporal(payload.dst)) {
           return;
         }
-        if (!musicDisplay.loop.timeMsRange.contains(payload.eventTarget.timeMs)) {
+        if (!musicDisplay.loop.timeMsRange.contains(payload.dst.timeMs)) {
           musicDisplay.loop.deactivate();
         }
-        seek(payload.eventTarget.timeMs);
+        seek(payload.dst.timeMs);
       }),
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
         unsuspend();

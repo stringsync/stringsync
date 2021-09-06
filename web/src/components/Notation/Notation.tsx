@@ -148,7 +148,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
         setCursor(Cursor.Grabbing);
       }),
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
-        setCursor(payload.eventTarget.type === PointerTargetType.Cursor ? Cursor.Grab : Cursor.Pointer);
+        setCursor(payload.dst.type === PointerTargetType.Cursor ? Cursor.Grab : Cursor.Pointer);
       }),
       musicDisplay.eventBus.subscribe('notargetentered', () => {
         setCursor(Cursor.Default);

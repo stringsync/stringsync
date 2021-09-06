@@ -173,12 +173,12 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
         }),
         dispatchClick: (context, event) => {
           if (isCursorSnapshotPointerTarget(context.downTarget)) {
-            eventBus.dispatch('cursorsnapshotclicked', { target: context.downTarget });
+            eventBus.dispatch('cursorsnapshotclicked', { src: context.downTarget });
           }
         },
         dispatchDragStarted: (context, event) => {
           if (isCursorPointerTarget(context.downTarget)) {
-            eventBus.dispatch('cursordragstarted', { downTarget: context.downTarget });
+            eventBus.dispatch('cursordragstarted', { src: context.downTarget });
           }
         },
         dispatchDragUpdated: (context, event) => {
@@ -190,45 +190,49 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
             if (isPositional(event.target)) {
               target.position = event.target.position;
             }
-            eventBus.dispatch('cursordragupdated', { downTarget: context.downTarget, eventTarget: event.target });
+            eventBus.dispatch('cursordragupdated', { src: context.downTarget, dst: event.target });
           }
         },
         dispatchDragEnded: (context, event) => {
           if (isCursorPointerTarget(context.downTarget)) {
-            eventBus.dispatch('cursordragended', { downTarget: context.downTarget, eventTarget: context.hoverTarget });
+            eventBus.dispatch('cursordragended', { src: context.downTarget, dst: context.hoverTarget });
           }
         },
         dispatchSelectStarted: (context) => {
           if (context.selection) {
-            eventBus.dispatch('selectionstarted', { selection: context.selection });
+            eventBus.dispatch('selectionstarted', { src: context.downTarget, selection: context.selection });
           }
         },
-        dispatchSelectUpdated: (context) => {
+        dispatchSelectUpdated: (context, event) => {
           if (context.selection) {
-            eventBus.dispatch('selectionupdated', { selection: context.selection });
+            eventBus.dispatch('selectionupdated', {
+              src: context.downTarget,
+              dst: event.target,
+              selection: context.selection,
+            });
           }
         },
-        dispatchSelectEnded: () => {
-          eventBus.dispatch('selectionended', {});
+        dispatchSelectEnded: (context, event) => {
+          eventBus.dispatch('selectionended', { src: context.downTarget, dst: event.target });
         },
         dispatchCursorEntered: (context) => {
           if (isCursorPointerTarget(context.hoverTarget)) {
-            eventBus.dispatch('cursorentered', { target: context.hoverTarget });
+            eventBus.dispatch('cursorentered', { src: context.hoverTarget });
           }
         },
         dispatchCursorExited: (context) => {
           if (isCursorPointerTarget(context.prevHoverTarget)) {
-            eventBus.dispatch('cursorexited', { target: context.prevHoverTarget });
+            eventBus.dispatch('cursorexited', { src: context.prevHoverTarget });
           }
         },
         dispatchCursorSnapshotEntered: (context) => {
           if (isCursorSnapshotPointerTarget(context.hoverTarget)) {
-            eventBus.dispatch('cursorsnapshotentered', { target: context.hoverTarget });
+            eventBus.dispatch('cursorsnapshotentered', { src: context.hoverTarget });
           }
         },
         dispatchCursorSnapshotExited: (context) => {
           if (isCursorSnapshotPointerTarget(context.prevHoverTarget)) {
-            eventBus.dispatch('cursorsnapshotexited', { target: context.prevHoverTarget });
+            eventBus.dispatch('cursorsnapshotexited', { src: context.prevHoverTarget });
           }
         },
         dispatchLongPress: () => {
@@ -236,12 +240,12 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
         },
         dispatchNoTargetEntered: (context, event) => {
           if (isNonePointerTarget(event.target)) {
-            eventBus.dispatch('notargetentered', { target: event.target });
+            eventBus.dispatch('notargetentered', { src: event.target });
           }
         },
         dispatchNoTargetExited: (context, event) => {
           if (isNonePointerTarget(event.target)) {
-            eventBus.dispatch('notargetexited', { target: event.target });
+            eventBus.dispatch('notargetexited', { src: event.target });
           }
         },
         dispatchPointerIdle: (context) => {

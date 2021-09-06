@@ -9,29 +9,29 @@ import { CursorPointerTarget, CursorSnapshotPointerTarget, NonePointerTarget, Po
 export type MusicDisplayEventBus = EventBus<{
   autoscrollended: {};
   autoscrollstarted: {};
-  cursordragstarted: { downTarget: CursorPointerTarget };
-  cursordragupdated: { downTarget: CursorPointerTarget; eventTarget: PointerTarget };
-  cursordragended: { downTarget: CursorPointerTarget; eventTarget: PointerTarget };
-  cursorentered: { target: CursorPointerTarget };
-  cursorexited: { target: CursorPointerTarget };
+  cursordragstarted: { src: CursorPointerTarget };
+  cursordragupdated: { src: CursorPointerTarget; dst: PointerTarget };
+  cursordragended: { src: CursorPointerTarget; dst: PointerTarget };
+  cursorentered: { src: CursorPointerTarget };
+  cursorexited: { src: CursorPointerTarget };
   cursorinfochanged: CursorInfo;
-  cursorsnapshotclicked: { target: CursorSnapshotPointerTarget };
-  cursorsnapshotentered: { target: CursorSnapshotPointerTarget };
-  cursorsnapshotexited: { target: CursorSnapshotPointerTarget };
+  cursorsnapshotclicked: { src: CursorSnapshotPointerTarget };
+  cursorsnapshotentered: { src: CursorSnapshotPointerTarget };
+  cursorsnapshotexited: { src: CursorSnapshotPointerTarget };
   interactablemoved: {};
   loadended: {};
   loadstarted: {};
   longpress: {};
-  notargetentered: { target: NonePointerTarget };
-  notargetexited: { target: NonePointerTarget };
+  notargetentered: { src: NonePointerTarget };
+  notargetexited: { src: NonePointerTarget };
   pointeractive: {};
   pointerdown: { x: number; y: number };
   pointeridle: {};
   resizeended: {};
   resizestarted: {};
-  selectionended: {};
-  selectionstarted: { selection: AnchoredTimeSelection };
-  selectionupdated: { selection: AnchoredTimeSelection };
+  selectionstarted: { src: PointerTarget; selection: AnchoredTimeSelection };
+  selectionupdated: { src: PointerTarget; dst: PointerTarget; selection: AnchoredTimeSelection };
+  selectionended: { src: PointerTarget; dst: PointerTarget };
 }>;
 
 export type SyncSettings = {
