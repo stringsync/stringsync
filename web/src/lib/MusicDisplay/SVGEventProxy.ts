@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import { first, isEqual, sortBy, throttle } from 'lodash';
 import { BackendType, PointF2D, SvgVexFlowBackend, VexFlowBackend } from 'opensheetmusicdisplay';
 import { SupportedSVGEventNames } from '.';
@@ -10,7 +11,9 @@ import { LocatorTargetType, SVGSettings } from './types';
 
 type SVGElementEvent<N extends SupportedSVGEventNames> = SVGElementEventMap[N];
 
-type Positional = { clientX: number; clientY: number };
+type ClientPositional = { clientX: number; clientY: number };
+
+type PagePositional = { pageX: number; pageY: number };
 
 const POINTER_MOVE_THROTTLE_DURATION = Duration.ms(30);
 
@@ -45,6 +48,8 @@ export class SVGEventProxy {
 
   private clientX = 0;
   private clientY = 0;
+  private pageX = 0;
+  private pageY = 0;
 
   private onPointerActiveHandle = Symbol();
   private onPointerIdleHandle = Symbol();
@@ -172,6 +177,8 @@ export class SVGEventProxy {
 
   private onMouseMove = throttle(
     (event: SVGElementEvent<'mousemove'>) => {
+      this.getRelPos(event);
+
       this.updatePos(event);
       const pointerTarget = this.getPointerTarget(event);
       this.pointerService.send(pointer.events.move(pointerTarget));
@@ -185,7 +192,7 @@ export class SVGEventProxy {
     this.pointerService.send(pointer.events.up(pointerTarget));
   }
 
-  private getPointerTarget(positional: Positional): PointerTarget {
+  private getPointerTarget(positional: ClientPositional): PointerTarget {
     const locateResult = this.getLocateResult(positional);
 
     const mostImportantLocateResultTarget = first(
@@ -213,17 +220,42 @@ export class SVGEventProxy {
     return { type: PointerTargetType.None, x: locateResult.x, y: locateResult.y };
   }
 
-  private updatePos(positional: Positional) {
-    this.clientX = positional.clientX;
-    this.clientY = positional.clientY;
+  private getRelPos(positional: PagePositional) {
+    const parent = this.imd.scrollContainer;
+    const child = this.svg;
+
+    const parentOffset = $(parent).offset();
+    if (!parentOffset) {
+      throw new Error(`could not get offset for parent: ${parent}`);
+    }
+
+    const childOffset = $(child).offset();
+    if (!childOffset) {
+      throw new Error(`could not get offset for child: ${child}`);
+    }
+
+    const underlapOffsetLeft = Math.min(0, parentOffset.left - childOffset.left);
+    const underlapOffsetTop = Math.min(0, parentOffset.top - childOffset.top);
+
+    const relX = Math.max(0, positional.pageX - parentOffset.left + underlapOffsetLeft);
+    const relY = Math.max(0, positional.pageY - parentOffset.top + underlapOffsetTop);
+
+    return { relX, relY };
   }
 
-  private getLocateResult(positional: Positional) {
+  private updatePos(positional: ClientPositional & PagePositional) {
+    this.clientX = positional.clientX;
+    this.clientY = positional.clientY;
+    this.pageX = positional.pageX;
+    this.pageY = positional.pageY;
+  }
+
+  private getLocateResult(positional: ClientPositional) {
     const { x, y } = this.getSvgPos(positional);
     return this.locator.locateByPosition(x, y);
   }
 
-  private getSvgPos(positional: Positional) {
+  private getSvgPos(positional: ClientPositional) {
     if (!this.imd.GraphicSheet) {
       return { x: 0, y: 0 };
     }

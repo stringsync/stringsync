@@ -291,8 +291,6 @@ export class LerpCursor {
         targetTop -= targetHeight / 2;
       }
 
-      console.log(cursorSnapshot?.timeMsRange);
-
       const deltaScrollTop = Math.abs(currentScrollTop - targetTop);
       if (deltaScrollTop < SCROLL_DELTA_TOLERANCE_PX) {
         return;

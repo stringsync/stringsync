@@ -1,6 +1,5 @@
 import { merge } from 'lodash';
 import { DrawingParametersEnum } from 'opensheetmusicdisplay';
-import { ScrollAlignment } from '.';
 import { EventBus } from '../EventBus';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { MusicDisplayEventBus, MusicDisplayOptions } from './types';
@@ -46,7 +45,9 @@ export class MusicDisplay {
     this.imd.clear();
   }
 
-  setScrollAlignment(scrollAlignment: ScrollAlignment) {}
+  get scrollContainer() {
+    return this.imd.scrollContainer;
+  }
 
   get cursor() {
     return this.imd.cursorWrapper;
