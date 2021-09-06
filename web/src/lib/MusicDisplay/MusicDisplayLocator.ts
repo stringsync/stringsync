@@ -25,7 +25,7 @@ export class MusicDisplayLocator {
     return new MusicDisplayLocator(imd, cursorSnapshots, cursorSnapshotLineGroups);
   }
 
-  static createNullSeekResult(): LocateResult {
+  static createNullLocateResult(): LocateResult {
     return { timeMs: -1, x: -1, y: undefined, cost: LocateCost.Unknown, cursorSnapshot: null, targets: [] };
   }
 
@@ -189,8 +189,8 @@ export class MusicDisplayLocator {
 
   readonly cursorSnapshots: CursorSnapshot[];
   private imd: InternalMusicDisplay;
-  private cachedLocateByTimeMsResult = MusicDisplayLocator.createNullSeekResult();
-  private cachedLocateByPositionResult = MusicDisplayLocator.createNullSeekResult();
+  private cachedLocateByTimeMsResult = MusicDisplayLocator.createNullLocateResult();
+  private cachedLocateByPositionResult = MusicDisplayLocator.createNullLocateResult();
   private cursorSnapshotLineGroups: CursorSnapshotLineGroup[];
 
   private constructor(
