@@ -18,10 +18,10 @@ const IDLE_DURATION = Duration.ms(500);
 
 const INITIAL_POINTER_CONTEXT: PointerContext = {
   isActive: true,
-  downTarget: { type: PointerTargetType.None },
-  prevDownTarget: { type: PointerTargetType.None },
-  hoverTarget: { type: PointerTargetType.None },
-  prevHoverTarget: { type: PointerTargetType.None },
+  downTarget: { type: PointerTargetType.None, x: 0, y: 0 },
+  prevDownTarget: { type: PointerTargetType.None, x: 0, y: 0 },
+  hoverTarget: { type: PointerTargetType.None, x: 0, y: 0 },
+  prevHoverTarget: { type: PointerTargetType.None, x: 0, y: 0 },
   selection: null,
 };
 
@@ -146,7 +146,7 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
               case 'down':
                 return event.target;
               default:
-                return { type: PointerTargetType.None };
+                return { type: PointerTargetType.None, x: 0, y: 0 };
             }
           },
           prevDownTarget: (context) => context.downTarget,
@@ -159,7 +159,7 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
               case 'ping':
                 return event.target;
               default:
-                return { type: PointerTargetType.None };
+                return { type: PointerTargetType.None, x: 0, y: 0 };
             }
           },
           prevHoverTarget: (context) => context.hoverTarget,
@@ -183,13 +183,14 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
         clearSelection: assign<PointerContext, PointerEvent>({
           selection: null,
         }),
-        dispatchClick: (context) => {
+        dispatchClick: (context, event) => {
           if (isCursorSnapshotPointerTarget(context.downTarget)) {
             eventBus.dispatch('cursorsnapshotclicked', {
               cursorSnapshot: context.downTarget.cursorSnapshot,
               timeMs: context.downTarget.timeMs,
             });
           }
+          eventBus.dispatch('svgclicked', { x: event.target.x, y: event.target.y });
         },
         dispatchDragStarted: (context, event) => {
           if (event.type === 'down' && isCursorPointerTarget(context.downTarget)) {

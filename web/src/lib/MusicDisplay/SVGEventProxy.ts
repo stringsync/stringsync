@@ -86,7 +86,7 @@ export class SVGEventProxy {
       // Avoid over-subscribing to the event
       this.imd.eventBus.unsubscribe(this.onInteractableMovedHandle);
 
-      let prevPointerTarget: PointerTarget = { type: PointerTargetType.None };
+      let prevPointerTarget: PointerTarget = { type: PointerTargetType.None, x: 0, y: 0 };
       this.onInteractableMovedHandle = this.imd.eventBus.subscribe('interactablemoved', () => {
         const pointerTarget = this.getPointerTarget({ clientX: this.clientX, clientY: this.clientY });
 
@@ -186,6 +186,7 @@ export class SVGEventProxy {
   }
 
   private getPointerTarget(positional: Positional): PointerTarget {
+    const { x, y } = this.getSvgPos(positional);
     const locateResult = this.getLocateResult(positional);
 
     const mostImportantLocateResultTarget = first(
@@ -197,6 +198,8 @@ export class SVGEventProxy {
         type: PointerTargetType.Cursor,
         cursor: mostImportantLocateResultTarget.cursor,
         timeMs: locateResult.timeMs,
+        x,
+        y,
       };
     }
     if (locateResult.cursorSnapshot) {
@@ -204,9 +207,11 @@ export class SVGEventProxy {
         type: PointerTargetType.CursorSnapshot,
         cursorSnapshot: locateResult.cursorSnapshot,
         timeMs: locateResult.timeMs,
+        x,
+        y,
       };
     }
-    return { type: PointerTargetType.None };
+    return { type: PointerTargetType.None, x, y };
   }
 
   private updatePos(positional: Positional) {

@@ -37,6 +37,7 @@ export type MusicDisplayEventBus = EventBus<{
   pointeridle: {};
   pointeractive: {};
   interactablemoved: {};
+  svgclicked: { x: number; y: number };
 }>;
 
 export type SyncSettings = {

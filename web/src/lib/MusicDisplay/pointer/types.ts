@@ -7,14 +7,22 @@ export enum PointerTargetType {
   CursorSnapshot,
 }
 
-export type NonePointerTarget = { type: PointerTargetType.None };
+export type NonePointerTarget = { type: PointerTargetType.None; x: number; y: number };
 
-export type CursorPointerTarget = { type: PointerTargetType.Cursor; cursor: CursorWrapper; timeMs: number };
+export type CursorPointerTarget = {
+  type: PointerTargetType.Cursor;
+  cursor: CursorWrapper;
+  timeMs: number;
+  x: number;
+  y: number;
+};
 
 export type CursorSnapshotPointerTarget = {
   type: PointerTargetType.CursorSnapshot;
   cursorSnapshot: CursorSnapshot;
   timeMs: number;
+  x: number;
+  y: number;
 };
 
 export type PointerTarget = NonePointerTarget | CursorPointerTarget | CursorSnapshotPointerTarget;

@@ -22,10 +22,24 @@ const LoadingOverlay = styled.div`
   background-color: white;
   z-index: 2;
   text-align: center;
+  pointer-events: none;
 `;
 
 const Loading = styled.small`
   margin-top: 36px;
+`;
+
+const Halo = styled.div<{ x: number; y: number }>`
+  position: absolute;
+  top: calc(${(props) => props.y}px - 32px);
+  left: calc(${(props) => props.x}px - 32px);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 6px solid ${(props) => props.theme['@primary-color']};
+  z-index: 2;
+  opacity: 0.5;
+  transition: opacity 200ms;
 `;
 
 const COMMON_SVG_EVENT_NAMES: SupportedSVGEventNames[] = [];
@@ -68,6 +82,8 @@ export const Notation: React.FC<NotationProps> = (props) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
+  const [x, setX] = useState(0);
+  const [y, setY] = useState(0);
 
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
@@ -144,6 +160,10 @@ export const Notation: React.FC<NotationProps> = (props) => {
       musicDisplay.eventBus.subscribe('cursorsnapshotclicked', () => {
         setCursor(Cursor.Grab);
       }),
+      musicDisplay.eventBus.subscribe('svgclicked', (payload) => {
+        setX(payload.x);
+        setY(payload.y);
+      }),
     ];
 
     return () => {
@@ -218,7 +238,8 @@ export const Notation: React.FC<NotationProps> = (props) => {
           <Loading>loading</Loading>
         </LoadingOverlay>
       )}
-      <div ref={divRef} style={{ userSelect: 'none' }} />
+      <Halo draggable={false} x={x} y={y} />
+      <div draggable={false} ref={divRef} style={{ userSelect: 'none' }} />
     </Outer>
   );
 };
