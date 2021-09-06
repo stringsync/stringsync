@@ -12,6 +12,12 @@ type Seekable = UnknownTarget & {
 type Positional = UnknownTarget & {
   x: number;
   y: number;
+  relX: number;
+  relY: number;
+};
+
+type Temporal = UnknownTarget & {
+  timeMs: number;
 };
 
 export const isNonePointerTarget = (target: UnknownTarget): target is NonePointerTarget => {
@@ -31,5 +37,14 @@ export const isSeekable = (target: UnknownTarget): target is Seekable => {
 };
 
 export const isPositional = (target: UnknownTarget): target is Positional => {
-  return isNumber(get(target, 'x')) && isNumber(get(target, 'y'));
+  return (
+    isNumber(get(target, 'x')) &&
+    isNumber(get(target, 'y')) &&
+    isNumber(get(target, 'relX')) &&
+    isNumber(get(target, 'relY'))
+  );
+};
+
+export const isTemporal = (target: UnknownTarget): target is Temporal => {
+  return isNumber(get(target, 'timeMs'));
 };

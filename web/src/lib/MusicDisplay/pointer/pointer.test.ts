@@ -5,13 +5,15 @@ import * as pointer from './pointer';
 import { PointerService } from './pointer';
 import { CursorPointerTarget, CursorSnapshotPointerTarget, NonePointerTarget, PointerTargetType } from './types';
 
-const NONE_POINTER_TARGET: NonePointerTarget = { type: PointerTargetType.None, x: 0, y: 0 };
+const NONE_POINTER_TARGET: NonePointerTarget = { type: PointerTargetType.None, x: 0, y: 0, relX: 0, relY: 0 };
 const CURSOR_POINTER_TARGET: CursorPointerTarget = {
   type: PointerTargetType.Cursor,
   cursor: new NoopCursor(),
   timeMs: 0,
   x: 0,
   y: 0,
+  relX: 0,
+  relY: 0,
 };
 const CURSOR_SNAPSHOT_POINTER_TARGET: CursorSnapshotPointerTarget = {
   type: PointerTargetType.CursorSnapshot,
@@ -19,6 +21,8 @@ const CURSOR_SNAPSHOT_POINTER_TARGET: CursorSnapshotPointerTarget = {
   timeMs: 0,
   x: 0,
   y: 0,
+  relX: 0,
+  relY: 0,
 };
 
 describe('pointerMachine', () => {
@@ -80,6 +84,8 @@ describe('pointerMachine', () => {
         timeMs: 1,
         x: 0,
         y: 0,
+        relX: 0,
+        relY: 0,
       };
 
       pointerService.send(pointer.events.move(cursorTarget1));
@@ -126,6 +132,8 @@ describe('pointerMachine', () => {
         timeMs: 1,
         x: 0,
         y: 0,
+        relX: 0,
+        relY: 0,
       };
 
       pointerService.send(pointer.events.move(cursorTarget1));

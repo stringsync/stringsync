@@ -13,7 +13,7 @@ import {
   isPositional,
   isSeekable,
 } from './pointerTypeAssert';
-import { PointerContext, PointerTarget, PointerTargetType } from './types';
+import { PointerContext, PointerPosition, PointerTarget, PointerTargetType } from './types';
 
 export type PointerEvent = EventFrom<typeof model>;
 export type PointerMachine = ReturnType<typeof createMachine>;
@@ -23,7 +23,17 @@ const LONG_HOLD_DURATION = Duration.ms(1000);
 const TAP_GRACE_PERIOD = Duration.ms(50);
 const IDLE_DURATION = Duration.ms(500);
 
-const NONE_POINTER_TARGET: NonePointerTarget = Object.freeze({ type: PointerTargetType.None, x: 0, y: 0 });
+const NULL_POINTER_POSITION: PointerPosition = Object.freeze({
+  x: 0,
+  y: 0,
+  relX: 0,
+  relY: 0,
+});
+
+const NONE_POINTER_TARGET: NonePointerTarget = Object.freeze({
+  type: PointerTargetType.None,
+  position: NULL_POINTER_POSITION,
+});
 
 const INITIAL_POINTER_CONTEXT: PointerContext = {
   downTarget: NONE_POINTER_TARGET,
@@ -168,7 +178,7 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
         },
         dispatchDragStarted: (context, event) => {
           if (isCursorPointerTarget(context.downTarget)) {
-            eventBus.dispatch('cursordragstarted', { target: context.downTarget });
+            eventBus.dispatch('cursordragstarted', { downTarget: context.downTarget });
           }
         },
         dispatchDragUpdated: (context, event) => {
@@ -178,15 +188,14 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
               target.timeMs = event.target.timeMs;
             }
             if (isPositional(event.target)) {
-              target.x = event.target.x;
-              target.y = event.target.y;
+              target.position = event.target.position;
             }
-            eventBus.dispatch('cursordragupdated', { target });
+            eventBus.dispatch('cursordragupdated', { downTarget: context.downTarget, eventTarget: event.target });
           }
         },
         dispatchDragEnded: (context, event) => {
           if (isCursorPointerTarget(context.downTarget)) {
-            eventBus.dispatch('cursordragended', { target: context.downTarget, hoverTarget: context.hoverTarget });
+            eventBus.dispatch('cursordragended', { downTarget: context.downTarget, eventTarget: context.hoverTarget });
           }
         },
         dispatchSelectStarted: (context) => {

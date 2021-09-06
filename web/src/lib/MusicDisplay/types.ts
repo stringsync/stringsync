@@ -9,9 +9,9 @@ import { CursorPointerTarget, CursorSnapshotPointerTarget, NonePointerTarget, Po
 export type MusicDisplayEventBus = EventBus<{
   autoscrollended: {};
   autoscrollstarted: {};
-  cursordragended: { target: CursorPointerTarget; hoverTarget: PointerTarget };
-  cursordragstarted: { target: CursorPointerTarget };
-  cursordragupdated: { target: CursorPointerTarget };
+  cursordragstarted: { downTarget: CursorPointerTarget };
+  cursordragupdated: { downTarget: CursorPointerTarget; eventTarget: PointerTarget };
+  cursordragended: { downTarget: CursorPointerTarget; eventTarget: PointerTarget };
   cursorentered: { target: CursorPointerTarget };
   cursorexited: { target: CursorPointerTarget };
   cursorinfochanged: CursorInfo;

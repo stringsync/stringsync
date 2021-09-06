@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { VideoJsPlayer } from 'video.js';
 import { CursorInfo, MusicDisplay } from '../../../lib/MusicDisplay';
+import { isTemporal } from '../../../lib/MusicDisplay/pointer/pointerTypeAssert';
 import { NotationDetail } from './NotationDetail';
 import { NotationPlayerSettings } from './types';
 import { useTipFormatter } from './useTipFormatter';
@@ -127,11 +128,13 @@ export const NotationControls: React.FC<Props> = (props) => {
         suspend();
       }),
       musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {
-        if (!musicDisplay.loop.timeMsRange.contains(payload.target.timeMs)) {
+        if (!isTemporal(payload.eventTarget)) {
+          return;
+        }
+        if (!musicDisplay.loop.timeMsRange.contains(payload.eventTarget.timeMs)) {
           musicDisplay.loop.deactivate();
         }
-
-        seek(payload.target.timeMs);
+        seek(payload.eventTarget.timeMs);
       }),
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
         unsuspend();

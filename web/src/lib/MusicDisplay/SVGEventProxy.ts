@@ -11,9 +11,7 @@ import { LocatorTargetType, SVGSettings } from './types';
 
 type SVGElementEvent<N extends SupportedSVGEventNames> = SVGElementEventMap[N];
 
-type ClientPositional = { clientX: number; clientY: number };
-
-type PagePositional = { pageX: number; pageY: number };
+type Positional = { clientX: number; clientY: number; pageX: number; pageY: number };
 
 const POINTER_MOVE_THROTTLE_DURATION = Duration.ms(30);
 
@@ -91,9 +89,17 @@ export class SVGEventProxy {
       // Avoid over-subscribing to the event
       this.imd.eventBus.unsubscribe(this.onInteractableMovedHandle);
 
-      let prevPointerTarget: PointerTarget = { type: PointerTargetType.None, x: 0, y: 0 };
+      let prevPointerTarget: PointerTarget = {
+        type: PointerTargetType.None,
+        position: { x: 0, y: 0, relX: 0, relY: 0 },
+      };
       this.onInteractableMovedHandle = this.imd.eventBus.subscribe('interactablemoved', () => {
-        const pointerTarget = this.getPointerTarget({ clientX: this.clientX, clientY: this.clientY });
+        const pointerTarget = this.getPointerTarget({
+          clientX: this.clientX,
+          clientY: this.clientY,
+          pageX: this.pageX,
+          pageY: this.pageY,
+        });
 
         // Avoid slamming the pointer service if the pointer target did not change
         if (!isEqual(pointerTarget, prevPointerTarget)) {
@@ -192,8 +198,9 @@ export class SVGEventProxy {
     this.pointerService.send(pointer.events.up(pointerTarget));
   }
 
-  private getPointerTarget(positional: ClientPositional): PointerTarget {
+  private getPointerTarget(positional: Positional): PointerTarget {
     const locateResult = this.getLocateResult(positional);
+    const { relX, relY } = this.getRelPos(positional);
 
     const mostImportantLocateResultTarget = first(
       sortBy(locateResult.targets, (target) => LOCATOR_TARGET_SORT_WEIGHTS[target.type] ?? Number.MAX_SAFE_INTEGER)
@@ -204,8 +211,7 @@ export class SVGEventProxy {
         type: PointerTargetType.Cursor,
         cursor: mostImportantLocateResultTarget.cursor,
         timeMs: locateResult.timeMs,
-        x: locateResult.x,
-        y: locateResult.y,
+        position: { x: locateResult.x, y: locateResult.y, relX, relY },
       };
     }
     if (locateResult.cursorSnapshot) {
@@ -213,14 +219,13 @@ export class SVGEventProxy {
         type: PointerTargetType.CursorSnapshot,
         cursorSnapshot: locateResult.cursorSnapshot,
         timeMs: locateResult.timeMs,
-        x: locateResult.x,
-        y: locateResult.y,
+        position: { x: locateResult.x, y: locateResult.y, relX, relY },
       };
     }
-    return { type: PointerTargetType.None, x: locateResult.x, y: locateResult.y };
+    return { type: PointerTargetType.None, position: { x: locateResult.x, y: locateResult.y, relX, relY } };
   }
 
-  private getRelPos(positional: PagePositional) {
+  private getRelPos(positional: Positional) {
     const parent = this.imd.scrollContainer;
     const child = this.svg;
 
@@ -243,19 +248,19 @@ export class SVGEventProxy {
     return { relX, relY };
   }
 
-  private updatePos(positional: ClientPositional & PagePositional) {
+  private updatePos(positional: Positional) {
     this.clientX = positional.clientX;
     this.clientY = positional.clientY;
     this.pageX = positional.pageX;
     this.pageY = positional.pageY;
   }
 
-  private getLocateResult(positional: ClientPositional) {
+  private getLocateResult(positional: Positional) {
     const { x, y } = this.getSvgPos(positional);
     return this.locator.locateByPosition(x, y);
   }
 
-  private getSvgPos(positional: ClientPositional) {
+  private getSvgPos(positional: Positional) {
     if (!this.imd.GraphicSheet) {
       return { x: 0, y: 0 };
     }
