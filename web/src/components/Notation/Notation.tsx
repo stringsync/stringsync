@@ -2,6 +2,7 @@ import React, { RefObject, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { MusicDisplay, SupportedSVGEventNames } from '../../lib/MusicDisplay';
+import { PointerTargetType } from '../../lib/MusicDisplay/pointer';
 import { RootState } from '../../store';
 
 const SELECTION_INDETERMINATE_ZONE_PX = 100;
@@ -82,8 +83,6 @@ export const Notation: React.FC<NotationProps> = (props) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
-  const [x, setX] = useState(0);
-  const [y, setY] = useState(0);
 
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
@@ -149,7 +148,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
         setCursor(Cursor.Grabbing);
       }),
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
-        setCursor(payload.hoveredCursor ? Cursor.Grab : Cursor.Pointer);
+        setCursor(payload.hoverTarget.type === PointerTargetType.Cursor ? Cursor.Grab : Cursor.Pointer);
       }),
       musicDisplay.eventBus.subscribe('notargetentered', () => {
         setCursor(Cursor.Default);
@@ -159,10 +158,6 @@ export const Notation: React.FC<NotationProps> = (props) => {
       }),
       musicDisplay.eventBus.subscribe('cursorsnapshotclicked', () => {
         setCursor(Cursor.Grab);
-      }),
-      musicDisplay.eventBus.subscribe('svgclicked', (payload) => {
-        setX(payload.x);
-        setY(payload.y);
       }),
     ];
 
@@ -238,7 +233,6 @@ export const Notation: React.FC<NotationProps> = (props) => {
           <Loading>loading</Loading>
         </LoadingOverlay>
       )}
-      <Halo draggable={false} x={x} y={y} />
       <div draggable={false} ref={divRef} style={{ userSelect: 'none' }} />
     </Outer>
   );

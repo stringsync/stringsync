@@ -28,7 +28,6 @@ export type CursorSnapshotPointerTarget = {
 export type PointerTarget = NonePointerTarget | CursorPointerTarget | CursorSnapshotPointerTarget;
 
 export type PointerContext = {
-  isActive: boolean;
   downTarget: PointerTarget;
   prevDownTarget: PointerTarget;
   hoverTarget: PointerTarget;

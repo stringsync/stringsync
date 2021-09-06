@@ -2,10 +2,16 @@ import { merge } from 'lodash';
 import { EventFrom, interpret } from 'xstate';
 import { assign, choose } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
+import { NonePointerTarget } from '.';
 import { MusicDisplayEventBus } from '..';
 import { Duration } from '../../../util/Duration';
 import { AnchoredTimeSelection } from '../AnchoredTimeSelection';
-import { isCursorPointerTarget, isCursorSnapshotPointerTarget, isNonePointerTarget } from './pointerTypeAssert';
+import {
+  isCursorPointerTarget,
+  isCursorSnapshotPointerTarget,
+  isNonePointerTarget,
+  isSeekable,
+} from './pointerTypeAssert';
 import { PointerContext, PointerTarget, PointerTargetType } from './types';
 
 export type PointerEvent = EventFrom<typeof model>;
@@ -16,12 +22,13 @@ const LONG_HOLD_DURATION = Duration.ms(1000);
 const TAP_GRACE_PERIOD = Duration.ms(50);
 const IDLE_DURATION = Duration.ms(500);
 
+const NONE_POINTER_TARGET: NonePointerTarget = Object.freeze({ type: PointerTargetType.None, x: 0, y: 0 });
+
 const INITIAL_POINTER_CONTEXT: PointerContext = {
-  isActive: true,
-  downTarget: { type: PointerTargetType.None, x: 0, y: 0 },
-  prevDownTarget: { type: PointerTargetType.None, x: 0, y: 0 },
-  hoverTarget: { type: PointerTargetType.None, x: 0, y: 0 },
-  prevHoverTarget: { type: PointerTargetType.None, x: 0, y: 0 },
+  downTarget: NONE_POINTER_TARGET,
+  prevDownTarget: NONE_POINTER_TARGET,
+  hoverTarget: NONE_POINTER_TARGET,
+  prevHoverTarget: NONE_POINTER_TARGET,
   selection: null,
 };
 
@@ -73,22 +80,16 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
           states: {
             active: {
               after: { [IDLE_DURATION.ms]: { target: 'idle' } },
-              entry: ['dispatchPointerActive', 'markAsActive'],
+              entry: ['dispatchPointerActive'],
             },
             idle: {
-              entry: ['dispatchPointerIdle', 'markAsIdle'],
+              entry: ['dispatchPointerIdle'],
               on: {
                 ping: {
                   actions: [
                     'assignHoverTarget',
-                    choose([
-                      { cond: 'didEnterCursor', actions: ['dispatchCursorEntered'] },
-                      { cond: 'didEnterCursorSnapshot', actions: ['dispatchCursorSnapshotEntered'] },
-                    ]),
-                    choose([
-                      { cond: 'didExitCursor', actions: ['dispatchCursorExited'] },
-                      { cond: 'didExitCursorSnapshot', actions: ['dispatchCursorSnapshotExited'] },
-                    ]),
+                    choose([{ cond: 'didEnterCursor', actions: ['dispatchCursorEntered'] }]),
+                    choose([{ cond: 'didExitCursor', actions: ['dispatchCursorExited'] }]),
                   ],
                 },
               },
@@ -121,9 +122,9 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
               exit: ['dispatchDragEnded'],
             },
             select: {
-              entry: ['initSelection', 'dispatchSelectStarted'],
+              entry: ['startSelection', 'dispatchSelectStarted'],
               on: { move: { actions: ['assignHoverTarget', 'updateSelection', 'dispatchSelectUpdated'] } },
-              exit: ['clearSelection', 'dispatchSelectEnded'],
+              exit: ['endSelection', 'dispatchSelectEnded'],
             },
           },
         },
@@ -132,82 +133,51 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
     {
       actions: {
         resetDownTarget: assign<PointerContext, PointerEvent>({
-          downTarget: (context, event) => merge({}, INITIAL_POINTER_CONTEXT.downTarget),
-        }),
-        markAsActive: assign<PointerContext, PointerEvent>({
-          isActive: true,
-        }),
-        markAsIdle: assign<PointerContext, PointerEvent>({
-          isActive: false,
+          downTarget: () => merge({}, INITIAL_POINTER_CONTEXT.downTarget),
         }),
         assignDownTarget: assign<PointerContext, PointerEvent>({
-          downTarget: (context, event) => {
-            switch (event.type) {
-              case 'down':
-                return event.target;
-              default:
-                return { type: PointerTargetType.None, x: 0, y: 0 };
-            }
-          },
+          downTarget: (context, event) => event.target,
           prevDownTarget: (context) => context.downTarget,
         }),
         assignHoverTarget: assign<PointerContext, PointerEvent>({
-          hoverTarget: (context, event) => {
-            switch (event.type) {
-              case 'move':
-                return event.target;
-              case 'ping':
-                return event.target;
-              default:
-                return { type: PointerTargetType.None, x: 0, y: 0 };
-            }
-          },
+          hoverTarget: (context, event) => event.target,
           prevHoverTarget: (context) => context.hoverTarget,
         }),
-        initSelection: assign<PointerContext, PointerEvent>({
+        startSelection: assign<PointerContext, PointerEvent>({
           selection: (context, event) => {
-            if (event.type === 'move' && isCursorSnapshotPointerTarget(event.target)) {
-              return AnchoredTimeSelection.init(event.target.timeMs);
-            }
-            return context.selection;
+            return isCursorSnapshotPointerTarget(event.target)
+              ? AnchoredTimeSelection.init(event.target.timeMs)
+              : context.selection;
           },
         }),
         updateSelection: assign<PointerContext, PointerEvent>({
           selection: (context, event) => {
-            if (event.type === 'move' && isCursorSnapshotPointerTarget(event.target) && context.selection) {
-              return context.selection.update(event.target.timeMs);
-            }
-            return context.selection;
+            return isCursorSnapshotPointerTarget(event.target) && context.selection
+              ? context.selection.update(event.target.timeMs)
+              : context.selection;
           },
         }),
-        clearSelection: assign<PointerContext, PointerEvent>({
+        endSelection: assign<PointerContext, PointerEvent>({
           selection: null,
         }),
         dispatchClick: (context, event) => {
           if (isCursorSnapshotPointerTarget(context.downTarget)) {
-            eventBus.dispatch('cursorsnapshotclicked', {
-              cursorSnapshot: context.downTarget.cursorSnapshot,
-              timeMs: context.downTarget.timeMs,
-            });
+            eventBus.dispatch('cursorsnapshotclicked', { target: context.downTarget });
           }
-          eventBus.dispatch('svgclicked', { x: event.target.x, y: event.target.y });
         },
         dispatchDragStarted: (context, event) => {
-          if (event.type === 'down' && isCursorPointerTarget(context.downTarget)) {
-            eventBus.dispatch('cursordragstarted', { cursor: context.downTarget.cursor });
+          if (isCursorPointerTarget(context.downTarget)) {
+            eventBus.dispatch('cursordragstarted', { target: context.downTarget });
           }
         },
         dispatchDragUpdated: (context, event) => {
-          if (isCursorPointerTarget(context.downTarget) && isCursorSnapshotPointerTarget(event.target)) {
-            eventBus.dispatch('cursordragupdated', { cursor: context.downTarget.cursor, timeMs: event.target.timeMs });
+          if (isCursorPointerTarget(context.downTarget) && isSeekable(event.target)) {
+            eventBus.dispatch('cursordragupdated', { target: { ...context.downTarget, timeMs: event.target.timeMs } });
           }
         },
         dispatchDragEnded: (context, event) => {
           if (isCursorPointerTarget(context.downTarget)) {
-            eventBus.dispatch('cursordragended', {
-              cursor: context.downTarget.cursor,
-              hoveredCursor: isCursorPointerTarget(context.hoverTarget) ? context.hoverTarget.cursor : null,
-            });
+            eventBus.dispatch('cursordragended', { target: context.downTarget, hoverTarget: context.hoverTarget });
           }
         },
         dispatchSelectStarted: (context) => {
@@ -225,48 +195,42 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
         },
         dispatchCursorEntered: (context) => {
           if (isCursorPointerTarget(context.hoverTarget)) {
-            eventBus.dispatch('cursorentered', { cursor: context.hoverTarget.cursor });
+            eventBus.dispatch('cursorentered', { target: context.hoverTarget });
           }
         },
         dispatchCursorExited: (context) => {
           if (isCursorPointerTarget(context.prevHoverTarget)) {
-            eventBus.dispatch('cursorexited', { cursor: context.prevHoverTarget.cursor });
+            eventBus.dispatch('cursorexited', { target: context.prevHoverTarget });
           }
         },
         dispatchCursorSnapshotEntered: (context) => {
           if (isCursorSnapshotPointerTarget(context.hoverTarget)) {
-            eventBus.dispatch('cursorsnapshotentered', {
-              cursorSnapshot: context.hoverTarget.cursorSnapshot,
-              timeMs: context.hoverTarget.timeMs,
-            });
+            eventBus.dispatch('cursorsnapshotentered', { target: context.hoverTarget });
           }
         },
         dispatchCursorSnapshotExited: (context) => {
           if (isCursorSnapshotPointerTarget(context.prevHoverTarget)) {
-            eventBus.dispatch('cursorsnapshotexited', {
-              cursorSnapshot: context.prevHoverTarget.cursorSnapshot,
-              timeMs: context.prevHoverTarget.timeMs,
-            });
+            eventBus.dispatch('cursorsnapshotexited', { target: context.prevHoverTarget });
           }
         },
         dispatchLongPress: () => {
           eventBus.dispatch('longpress', {});
         },
-        dispatchNoTargetEntered: () => {
-          eventBus.dispatch('notargetentered', {});
+        dispatchNoTargetEntered: (context, event) => {
+          if (isNonePointerTarget(event.target)) {
+            eventBus.dispatch('notargetentered', { target: event.target });
+          }
         },
-        dispatchNoTargetExited: () => {
-          eventBus.dispatch('notargetexited', {});
+        dispatchNoTargetExited: (context, event) => {
+          if (isNonePointerTarget(event.target)) {
+            eventBus.dispatch('notargetexited', { target: event.target });
+          }
         },
         dispatchPointerIdle: (context) => {
-          if (context.isActive) {
-            eventBus.dispatch('pointeridle', {});
-          }
+          eventBus.dispatch('pointeridle', {});
         },
         dispatchPointerActive: (context) => {
-          if (!context.isActive) {
-            eventBus.dispatch('pointeractive', {});
-          }
+          eventBus.dispatch('pointeractive', {});
         },
       },
       guards: {
