@@ -127,7 +127,7 @@ export const NotationControls: React.FC<Props> = (props) => {
       }),
       musicDisplay.eventBus.subscribe('cursordragstarted', (payload) => {
         payload.src.cursor.disableAutoScroll();
-        musicDisplay.scroller.start();
+        musicDisplay.scroller.startScrollingBasedOnIntent();
         suspend();
       }),
       musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {
@@ -141,7 +141,7 @@ export const NotationControls: React.FC<Props> = (props) => {
         }
       }),
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
-        musicDisplay.scroller.stop();
+        musicDisplay.scroller.stopScrollingBasedOnIntent();
         payload.src.cursor.enableAutoScroll();
         unsuspend();
       }),
@@ -149,7 +149,7 @@ export const NotationControls: React.FC<Props> = (props) => {
         musicDisplay.loop.startCursor.disableAutoScroll();
         musicDisplay.loop.endCursor.disableAutoScroll();
         musicDisplay.cursor.disableAutoScroll();
-        musicDisplay.scroller.start();
+        musicDisplay.scroller.startScrollingBasedOnIntent();
 
         const timeMsRange = payload.selection.toRange();
         musicDisplay.loop.update(timeMsRange);
@@ -164,7 +164,7 @@ export const NotationControls: React.FC<Props> = (props) => {
         seek(payload.selection.seekerTimeMs);
       }),
       musicDisplay.eventBus.subscribe('selectionended', () => {
-        musicDisplay.scroller.stop();
+        musicDisplay.scroller.stopScrollingBasedOnIntent();
         seek(musicDisplay.loop.timeMsRange.start);
         musicDisplay.cursor.enableAutoScroll();
         unsuspend();

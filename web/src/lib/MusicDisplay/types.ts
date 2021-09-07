@@ -1,5 +1,6 @@
 import { GraphicalNote, IOSMDOptions, VoiceEntry } from 'opensheetmusicdisplay';
 import { Box } from '../../util/Box';
+import { Duration } from '../../util/Duration';
 import { NumberRange } from '../../util/NumberRange';
 import { EventBus } from '../EventBus';
 import { AnchoredTimeSelection } from './AnchoredTimeSelection';
@@ -130,6 +131,8 @@ export enum ScrollSpeed {
   Crawl,
   Walk,
   Run,
+  Sprint,
+  Teleport,
 }
 
 export enum ScrollDirection {
@@ -145,4 +148,9 @@ export type ScrollIntent = {
 
 export type RangedScrollIntent = ScrollIntent & {
   range: NumberRange;
+};
+
+export type ScrollTarget = {
+  scrollTop: number;
+  duration: Duration;
 };

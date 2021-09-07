@@ -43,7 +43,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.syncSettings = opts.syncSettings;
     this.svgSettings = opts.svgSettings;
     this.scrollContainer = opts.scrollContainer;
-    this.scroller = new Scroller(opts.scrollContainer);
+    this.scroller = new Scroller(opts.scrollContainer, this);
     this.handleResize(this.onResizeStart.bind(this), this.onResizeEnd.bind(this));
   }
 
@@ -77,7 +77,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   clear() {
     super.clear();
     this.cursorWrapper.clear();
-    this.scroller.stop();
+    this.scroller.stopScrollingBasedOnIntent();
     this.svgEventProxy?.uninstall();
     const svg = this.container.firstElementChild;
     if (svg) {
