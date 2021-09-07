@@ -128,6 +128,7 @@ export const NotationControls: React.FC<Props> = (props) => {
       }),
       musicDisplay.eventBus.subscribe('cursordragstarted', (payload) => {
         musicDisplay.scroller.startScrollingBasedOnIntent();
+
         suspend();
       }),
       musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {

@@ -1,8 +1,9 @@
-import { NumberRange } from '../../util/NumberRange';
-import { InternalMusicDisplay } from './InternalMusicDisplay';
-import { LerpCursor } from './LerpCursor';
-import { MusicDisplayLocator } from './MusicDisplayLocator';
-import { CursorWrapper, Loop } from './types';
+import { NumberRange } from '../../../util/NumberRange';
+import { InternalMusicDisplay } from '../InternalMusicDisplay';
+import { LerpCursor } from '../LerpCursor';
+import { MusicDisplayLocator } from '../MusicDisplayLocator';
+import { CursorWrapper } from '../types';
+import { Loop } from './types';
 
 export class LerpLoop implements Loop {
   static create(imd: InternalMusicDisplay, locator: MusicDisplayLocator) {
@@ -63,5 +64,13 @@ export class LerpLoop implements Loop {
     }
     this.startCursor.update(timeMsRange.start);
     this.endCursor.update(timeMsRange.end);
+  }
+
+  isStartCursor(cursor: CursorWrapper) {
+    return this.startCursor === cursor;
+  }
+
+  isEndCursor(cursor: CursorWrapper) {
+    return this.endCursor === cursor;
   }
 }

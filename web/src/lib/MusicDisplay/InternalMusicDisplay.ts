@@ -1,13 +1,12 @@
 import { get, set, takeRight } from 'lodash';
 import { Cursor, CursorOptions, CursorType, OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
 import { LerpCursor } from './LerpCursor';
-import { LerpLoop } from './LerpLoop';
+import { LerpLoop, Loop, NoopLoop } from './Loop';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
 import { NoopCursor } from './NoopCursor';
-import { NoopLoop } from './NoopLoop';
 import { Scroller } from './Scroller';
 import { SVGEventProxy } from './SVGEventProxy';
-import { CursorWrapper, Loop, MusicDisplayEventBus, MusicDisplayOptions, SVGSettings, SyncSettings } from './types';
+import { CursorWrapper, MusicDisplayEventBus, MusicDisplayOptions, SVGSettings, SyncSettings } from './types';
 
 type IdentifiableCursorOptions = CursorOptions & {
   id: symbol;

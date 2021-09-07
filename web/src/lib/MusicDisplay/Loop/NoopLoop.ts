@@ -1,5 +1,5 @@
-import { NumberRange } from '../../util/NumberRange';
-import { NoopCursor } from './NoopCursor';
+import { NumberRange } from '../../../util/NumberRange';
+import { NoopCursor } from '../NoopCursor';
 import { Loop } from './types';
 
 export class NoopLoop implements Loop {
@@ -11,8 +11,10 @@ export class NoopLoop implements Loop {
   activate() {
     this.isActive = true;
   }
+
   deactivate() {
     this.isActive = false;
   }
+
   update(timeMsRange: NumberRange) {}
 }

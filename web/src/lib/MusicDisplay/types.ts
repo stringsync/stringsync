@@ -50,16 +50,6 @@ export interface CursorWrapper {
   scrollIntoView(): void;
 }
 
-export interface Loop {
-  readonly isActive: boolean;
-  readonly timeMsRange: NumberRange;
-  readonly startCursor: CursorWrapper;
-  readonly endCursor: CursorWrapper;
-  activate(): void;
-  deactivate(): void;
-  update(timeMsRange: NumberRange): void;
-}
-
 export type Callback = () => void;
 
 export type CursorInfo = {

@@ -3,26 +3,28 @@ import { NoopCursor } from '../NoopCursor';
 import { CursorSnapshot, MusicDisplayEventBus } from '../types';
 import * as pointer from './pointer';
 import { PointerService } from './pointer';
-import { CursorPointerTarget, CursorSnapshotPointerTarget, NonePointerTarget, PointerTargetType } from './types';
+import {
+  CursorPointerTarget,
+  CursorSnapshotPointerTarget,
+  NonePointerTarget,
+  PointerPosition,
+  PointerTargetType,
+} from './types';
 
-const NONE_POINTER_TARGET: NonePointerTarget = { type: PointerTargetType.None, x: 0, y: 0, relX: 0, relY: 0 };
+const POINTER_POSITION: PointerPosition = { x: 0, y: 0, relX: 0, relY: 0 };
+
+const NONE_POINTER_TARGET: NonePointerTarget = { type: PointerTargetType.None, position: POINTER_POSITION };
 const CURSOR_POINTER_TARGET: CursorPointerTarget = {
   type: PointerTargetType.Cursor,
   cursor: new NoopCursor(),
   timeMs: 0,
-  x: 0,
-  y: 0,
-  relX: 0,
-  relY: 0,
+  position: POINTER_POSITION,
 };
 const CURSOR_SNAPSHOT_POINTER_TARGET: CursorSnapshotPointerTarget = {
   type: PointerTargetType.CursorSnapshot,
   cursorSnapshot: {} as CursorSnapshot,
   timeMs: 0,
-  x: 0,
-  y: 0,
-  relX: 0,
-  relY: 0,
+  position: POINTER_POSITION,
 };
 
 describe('pointerMachine', () => {
@@ -82,10 +84,7 @@ describe('pointerMachine', () => {
         type: PointerTargetType.Cursor,
         cursor: new NoopCursor(),
         timeMs: 1,
-        x: 0,
-        y: 0,
-        relX: 0,
-        relY: 0,
+        position: POINTER_POSITION,
       };
 
       pointerService.send(pointer.events.move(cursorTarget1));
@@ -130,10 +129,7 @@ describe('pointerMachine', () => {
         type: PointerTargetType.Cursor,
         cursor: new NoopCursor(),
         timeMs: 1,
-        x: 0,
-        y: 0,
-        relX: 0,
-        relY: 0,
+        position: POINTER_POSITION,
       };
 
       pointerService.send(pointer.events.move(cursorTarget1));

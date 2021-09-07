@@ -518,7 +518,7 @@ export class MusicDisplayLocator {
   private getCursorHits(x: number, y: number): CursorHit[] {
     const hits = new Array<CursorHit>();
 
-    const cursors = [this.imd.cursorWrapper, this.imd.loop.startCursor, this.imd.loop.endCursor];
+    const cursors = [this.imd.loop.startCursor, this.imd.loop.endCursor, this.imd.cursorWrapper];
 
     for (const cursor of cursors) {
       const box = cursor.getBox();
