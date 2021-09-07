@@ -54,6 +54,10 @@ class RightBoundedRange implements Range<number> {
 }
 
 export class NumberRange implements Range<number> {
+  static unsorted(n1: number, n2: number) {
+    return n1 < n2 ? NumberRange.from(n1).to(n2) : NumberRange.from(n2).to(n1);
+  }
+
   static from(start: number) {
     return new LeftBoundedRange(start);
   }

@@ -11,14 +11,12 @@ export class LerpLoop implements Loop {
       scrollContainer: imd.scrollContainer,
       color: 'lime',
     });
-    startCursor.clear();
 
     const endCursor = LerpCursor.create(imd, locator.clone(), {
       numMeasures: imd.Sheet.SourceMeasures.length,
       scrollContainer: imd.scrollContainer,
       color: 'red',
     });
-    endCursor.clear();
 
     const loop = new LerpLoop(imd, startCursor, endCursor);
     loop.deactivate();
@@ -45,6 +43,8 @@ export class LerpLoop implements Loop {
     }
     this.isActive = true;
     this.update(this.timeMsRange);
+    this.startCursor.show();
+    this.endCursor.show();
   }
 
   deactivate() {

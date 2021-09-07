@@ -16,6 +16,8 @@ type CursorSnapshotLineGroup = {
   cursorSnapshots: CursorSnapshot[];
 };
 
+type CursorHit = { cursor: CursorWrapper; box: Box };
+
 const END_OF_LINE_PADDING_PX = 20;
 
 export class MusicDisplayLocator {
@@ -494,8 +496,8 @@ export class MusicDisplayLocator {
   private selectTargetsContainingXY(x: number, y: number, cursorSnapshot: CursorSnapshot): LocatorTarget[] {
     const targets = new Array<LocatorTarget>();
 
-    const cursorHit = this.getCursorHit(x, y);
-    if (cursorHit) {
+    const cursorHits = this.getCursorHits(x, y);
+    for (const cursorHit of cursorHits) {
       targets.push({ type: LocatorTargetType.Cursor, ...cursorHit });
     }
 
@@ -513,13 +515,19 @@ export class MusicDisplayLocator {
     return targets;
   }
 
-  private getCursorHit(x: number, y: number): { cursor: CursorWrapper; box: Box } | null {
-    const cursor = this.imd.cursorWrapper;
-    const box = cursor.getBox();
-    if (box.contains(x, y)) {
-      return { cursor, box };
+  private getCursorHits(x: number, y: number): CursorHit[] {
+    const hits = new Array<CursorHit>();
+
+    const cursors = [this.imd.cursorWrapper, this.imd.loop.startCursor, this.imd.loop.endCursor];
+
+    for (const cursor of cursors) {
+      const box = cursor.getBox();
+      if (box.contains(x, y)) {
+        hits.push({ cursor, box });
+      }
     }
-    return null;
+
+    return hits;
   }
 
   private lerpX(timeMs: number, cursorSnapshot: CursorSnapshot) {

@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { VideoJsPlayer } from 'video.js';
 import { CursorInfo, MusicDisplay } from '../../../lib/MusicDisplay';
 import { isTemporal } from '../../../lib/MusicDisplay/pointer/pointerTypeAssert';
+import { NumberRange } from '../../../util/NumberRange';
 import { NotationDetail } from './NotationDetail';
 import { NotationPlayerSettings } from './types';
 import { useTipFormatter } from './useTipFormatter';
@@ -131,12 +132,25 @@ export const NotationControls: React.FC<Props> = (props) => {
       }),
       musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {
         musicDisplay.scroller.updateScrollIntent(payload.dst.position);
+        if (!isTemporal(payload.dst)) {
+          return;
+        }
 
-        if (isTemporal(payload.dst)) {
-          if (!musicDisplay.loop.timeMsRange.contains(payload.dst.timeMs)) {
+        const { timeMs } = payload.dst;
+        const { cursor } = payload.src;
+
+        if (cursor === musicDisplay.cursor) {
+          if (!musicDisplay.loop.timeMsRange.contains(timeMs)) {
             musicDisplay.loop.deactivate();
           }
-          seek(payload.dst.timeMs);
+          cursor.update(timeMs);
+          seek(timeMs);
+        }
+        if (cursor === musicDisplay.loop.startCursor) {
+          musicDisplay.loop.update(NumberRange.unsorted(timeMs, musicDisplay.loop.timeMsRange.end));
+        }
+        if (cursor === musicDisplay.loop.endCursor) {
+          musicDisplay.loop.update(NumberRange.unsorted(timeMs, musicDisplay.loop.timeMsRange.start));
         }
       }),
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {

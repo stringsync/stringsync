@@ -6,7 +6,7 @@ import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
 import { CursorSnapshot } from './types';
 
-const CURSOR_BOX_PADDING_PX = 30;
+const CURSOR_BOX_PADDING_PX = 20;
 
 const DEFAULT_CURSOR_OPTS = [
   {
@@ -64,6 +64,7 @@ export class LerpCursor {
   lerper: Cursor;
   scrollContainer: HTMLElement;
   numMeasures: number;
+  timeMs = 0;
 
   private locator: MusicDisplayLocator | null = null;
   private prevCursorSnapshot: CursorSnapshot | null = null;
@@ -105,6 +106,10 @@ export class LerpCursor {
       console.warn('cannot update cursors, must call init first');
       return;
     }
+    if (timeMs === this.timeMs) {
+      return;
+    }
+    this.timeMs = timeMs;
 
     const locateResult = this.locator.locateByTimeMs(timeMs);
 
@@ -119,6 +124,18 @@ export class LerpCursor {
     }
 
     this.imd.eventBus.dispatch('interactablemoved', {});
+  }
+
+  show() {
+    if (this.leader.hidden) {
+      this.leader.show();
+    }
+    if (this.lagger.hidden) {
+      this.lagger.show();
+    }
+    if (this.lerper.hidden) {
+      this.lerper.show();
+    }
   }
 
   clear() {
@@ -175,15 +192,7 @@ export class LerpCursor {
       this.leader.next();
       nextCursorSnapshot.iteratorSnapshot.apply(this.lerper);
 
-      if (this.lagger.hidden) {
-        this.lagger.show();
-      }
-      if (this.leader.hidden) {
-        this.leader.show();
-      }
-      if (this.lerper.hidden) {
-        this.lerper.show();
-      }
+      this.show();
     }
 
     this.scrollIntoView();

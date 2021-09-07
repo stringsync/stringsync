@@ -42,7 +42,9 @@ export type SyncSettings = {
 
 export interface CursorWrapper {
   element: HTMLElement;
+  timeMs: number;
   update(timeMs: number): void;
+  show(): void;
   clear(): void;
   getBox(): Box;
   scrollIntoView(): void;

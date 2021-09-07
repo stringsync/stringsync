@@ -45,6 +45,8 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.scrollContainer = opts.scrollContainer;
     this.scroller = new Scroller(opts.scrollContainer, this);
     this.handleResize(this.onResizeStart.bind(this), this.onResizeEnd.bind(this));
+
+    (window as any).imd = this;
   }
 
   async load(xmlUrl: string) {
@@ -77,6 +79,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   clear() {
     super.clear();
     this.cursorWrapper.clear();
+    this.loop.deactivate();
     this.scroller.stopScrollingBasedOnIntent();
     this.svgEventProxy?.uninstall();
     const svg = this.container.firstElementChild;
@@ -100,6 +103,15 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
   removeCursor(id: symbol) {
     const cursorsOptions = get(this, 'cursorsOptions', []);
+    const cursorIndex = cursorsOptions.findIndex((opt: IdentifiableCursorOptions) => opt.id === id);
+
+    if (cursorIndex > -1) {
+      const cursor = this.cursors[cursorIndex];
+      if (cursor) {
+        cursor.cursorElement.remove();
+      }
+    }
+
     const nextCursorOptions = cursorsOptions.filter((opt: IdentifiableCursorOptions) => opt.id !== id);
     this.applyCursorOptions(nextCursorOptions);
   }

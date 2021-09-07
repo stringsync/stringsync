@@ -24,8 +24,6 @@ export class AnchoredTimeSelection {
   }
 
   toRange() {
-    return this.anchorTimeMs <= this.seekerTimeMs
-      ? NumberRange.from(this.anchorTimeMs).to(this.seekerTimeMs)
-      : NumberRange.from(this.seekerTimeMs).to(this.anchorTimeMs);
+    return NumberRange.unsorted(this.anchorTimeMs, this.seekerTimeMs);
   }
 }
