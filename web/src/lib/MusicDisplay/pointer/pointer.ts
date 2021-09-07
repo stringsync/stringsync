@@ -6,7 +6,12 @@ import { NonePointerTarget } from '.';
 import { MusicDisplayEventBus } from '..';
 import { Duration } from '../../../util/Duration';
 import { AnchoredTimeSelection } from '../AnchoredTimeSelection';
-import { isCursorPointerTarget, isCursorSnapshotPointerTarget, isNonePointerTarget } from './pointerTypeAssert';
+import {
+  isCursorPointerTarget,
+  isCursorSnapshotPointerTarget,
+  isNonePointerTarget,
+  isTemporal,
+} from './pointerTypeAssert';
 import { PointerContext, PointerPosition, PointerTarget, PointerTargetType } from './types';
 
 export type PointerEvent = EventFrom<typeof model>;
@@ -157,7 +162,7 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
         }),
         updateSelection: assign<PointerContext, PointerEvent>({
           selection: (context, event) => {
-            return isCursorSnapshotPointerTarget(event.target) && context.selection
+            return isTemporal(event.target) && context.selection
               ? context.selection.update(event.target.timeMs)
               : context.selection;
           },
