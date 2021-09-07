@@ -72,6 +72,7 @@ export class Scroller {
     cancelAnimationFrame(this.scrollRafHandle);
   }
 
+  // TODO(jared) Make scrolling less abrasive by scrolling as little as possible.
   scrollToCursor(cursor: Cursor) {
     let scrollTop = $(cursor.cursorElement).position().top;
     const currentScrollTop = this.$scrollContainer.scrollTop() ?? 0;
