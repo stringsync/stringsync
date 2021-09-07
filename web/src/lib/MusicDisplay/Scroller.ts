@@ -39,7 +39,6 @@ export class Scroller {
   imd: InternalMusicDisplay;
 
   lastScrollToId = Symbol();
-
   intentIndex = 0;
   intent: RangedScrollIntent = RANGED_SCROLL_INTENTS[0];
   scrollRafHandle = -1;
@@ -109,6 +108,10 @@ export class Scroller {
 
   scrollTo = throttle(
     (scrollTarget: ScrollTarget) => {
+      if (this.isScrollingBasedOnIntent) {
+        return;
+      }
+
       const hasNoOverflow = this.scrollContainer.scrollHeight <= this.scrollContainer.clientHeight;
       if (hasNoOverflow) {
         return;

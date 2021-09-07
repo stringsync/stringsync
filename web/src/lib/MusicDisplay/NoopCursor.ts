@@ -12,4 +12,5 @@ export class NoopCursor implements CursorWrapper {
   getBox(): Box {
     return Box.from(-1, -1).to(-1, -1);
   }
+  scrollIntoView() {}
 }

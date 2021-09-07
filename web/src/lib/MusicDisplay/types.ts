@@ -45,8 +45,7 @@ export interface CursorWrapper {
   update(timeMs: number): void;
   clear(): void;
   getBox(): Box;
-  disableAutoScroll(): void;
-  enableAutoScroll(): void;
+  scrollIntoView(): void;
 }
 
 export interface Loop {
