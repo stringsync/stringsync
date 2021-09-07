@@ -5,10 +5,6 @@ type UnknownTarget = {
   type: PointerTargetType;
 };
 
-type Seekable = UnknownTarget & {
-  timeMs: number;
-};
-
 type Positional = UnknownTarget & {
   x: number;
   y: number;
@@ -30,10 +26,6 @@ export const isCursorPointerTarget = (target: UnknownTarget): target is CursorPo
 
 export const isCursorSnapshotPointerTarget = (target: UnknownTarget): target is CursorSnapshotPointerTarget => {
   return target.type === PointerTargetType.CursorSnapshot;
-};
-
-export const isSeekable = (target: UnknownTarget): target is Seekable => {
-  return isNumber(get(target, 'timeMs'));
 };
 
 export const isPositional = (target: UnknownTarget): target is Positional => {
