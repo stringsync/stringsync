@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import { VideoJsPlayer } from 'video.js';
 import { CursorInfo, MusicDisplay } from '../../../lib/MusicDisplay';
 import { isTemporal } from '../../../lib/MusicDisplay/pointer/pointerTypeAssert';
-import { NumberRange } from '../../../util/NumberRange';
 import { NotationDetail } from './NotationDetail';
 import { NotationPlayerSettings } from './types';
 import { useTipFormatter } from './useTipFormatter';
@@ -129,6 +128,13 @@ export const NotationControls: React.FC<Props> = (props) => {
       musicDisplay.eventBus.subscribe('cursordragstarted', (payload) => {
         musicDisplay.scroller.startScrollingBasedOnIntent();
 
+        if (payload.src.cursor === musicDisplay.loop.startCursor) {
+          musicDisplay.loop.anchor(musicDisplay.loop.timeMsRange.end);
+        }
+        if (payload.src.cursor === musicDisplay.loop.endCursor) {
+          musicDisplay.loop.anchor(musicDisplay.loop.timeMsRange.start);
+        }
+
         suspend();
       }),
       musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {
@@ -137,8 +143,8 @@ export const NotationControls: React.FC<Props> = (props) => {
           return;
         }
 
-        const { timeMs } = payload.dst;
         const { cursor } = payload.src;
+        const { timeMs } = payload.dst;
 
         if (cursor === musicDisplay.cursor) {
           if (!musicDisplay.loop.timeMsRange.contains(timeMs)) {
@@ -148,10 +154,10 @@ export const NotationControls: React.FC<Props> = (props) => {
           seek(timeMs);
         }
         if (cursor === musicDisplay.loop.startCursor) {
-          musicDisplay.loop.update(NumberRange.unsorted(timeMs, musicDisplay.loop.timeMsRange.end));
+          musicDisplay.loop.update(timeMs);
         }
         if (cursor === musicDisplay.loop.endCursor) {
-          musicDisplay.loop.update(NumberRange.unsorted(timeMs, musicDisplay.loop.timeMsRange.start));
+          musicDisplay.loop.update(timeMs);
         }
       }),
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
@@ -161,13 +167,13 @@ export const NotationControls: React.FC<Props> = (props) => {
       }),
       musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
         musicDisplay.scroller.startScrollingBasedOnIntent();
-        musicDisplay.loop.update(payload.selection.toRange());
+        musicDisplay.loop.anchor(payload.selection.anchorTimeMs);
         musicDisplay.loop.activate();
         suspend();
       }),
       musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
         musicDisplay.scroller.updateScrollIntent(payload.dst.position);
-        musicDisplay.loop.update(payload.selection.toRange());
+        musicDisplay.loop.update(payload.selection.seekerTimeMs);
         seek(payload.selection.seekerTimeMs);
       }),
       musicDisplay.eventBus.subscribe('selectionended', () => {

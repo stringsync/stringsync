@@ -1,4 +1,4 @@
-import { NumberRange } from '../../../util/NumberRange';
+import { AnchoredTimeSelection } from '../AnchoredTimeSelection';
 import { InternalMusicDisplay } from '../InternalMusicDisplay';
 import { LerpCursor } from '../LerpCursor';
 import { MusicDisplayLocator } from '../MusicDisplayLocator';
@@ -28,9 +28,9 @@ export class LerpLoop implements Loop {
   imd: InternalMusicDisplay;
   startCursor: CursorWrapper;
   endCursor: CursorWrapper;
-  timeMsRange = NumberRange.from(0).to(0);
-
   isActive = true;
+
+  private selection = AnchoredTimeSelection.init(0);
 
   private constructor(imd: InternalMusicDisplay, startCursor: CursorWrapper, endCursor: CursorWrapper) {
     this.imd = imd;
@@ -43,7 +43,7 @@ export class LerpLoop implements Loop {
       return;
     }
     this.isActive = true;
-    this.update(this.timeMsRange);
+    this.update(this.selection.seekerTimeMs);
     this.startCursor.show();
     this.endCursor.show();
   }
@@ -57,11 +57,20 @@ export class LerpLoop implements Loop {
     this.endCursor.clear();
   }
 
-  update(timeMsRange: NumberRange) {
-    this.timeMsRange = timeMsRange;
+  get timeMsRange() {
+    return this.selection.toRange();
+  }
+
+  anchor(timeMs: number) {
+    this.selection = AnchoredTimeSelection.init(timeMs);
+  }
+
+  update(timeMs: number) {
+    this.selection = this.selection.update(timeMs);
     if (!this.isActive) {
       return;
     }
+    const timeMsRange = this.timeMsRange;
     this.startCursor.update(timeMsRange.start);
     this.endCursor.update(timeMsRange.end);
   }

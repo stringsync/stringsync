@@ -16,5 +16,7 @@ export class NoopLoop implements Loop {
     this.isActive = false;
   }
 
-  update(timeMsRange: NumberRange) {}
+  anchor(timeMs: number) {}
+
+  update(timeMs: number) {}
 }

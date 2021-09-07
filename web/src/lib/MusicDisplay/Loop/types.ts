@@ -8,5 +8,6 @@ export interface Loop {
   readonly endCursor: CursorWrapper;
   activate(): void;
   deactivate(): void;
-  update(timeMsRange: NumberRange): void;
+  anchor(timeMs: number): void;
+  update(timeMs: number): void;
 }
