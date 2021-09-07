@@ -1,5 +1,5 @@
 import { Box } from '../../util/Box';
-import { CursorWrapper, ScrollAlignment, ScrollStyle } from './types';
+import { CursorWrapper } from './types';
 
 const DUMMY_ELEMENT = document.createElement('div');
 
@@ -12,6 +12,4 @@ export class NoopCursor implements CursorWrapper {
   getBox(): Box {
     return Box.from(-1, -1).to(-1, -1);
   }
-  updateScrollAlignment(scrollAlignment: ScrollAlignment) {}
-  setScrollStyle(scrollStyle: ScrollStyle) {}
 }

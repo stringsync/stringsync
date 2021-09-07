@@ -46,13 +46,13 @@ export interface CursorWrapper {
   getBox(): Box;
   disableAutoScroll(): void;
   enableAutoScroll(): void;
-  setScrollStyle(scrollStyle: ScrollStyle): void;
-  updateScrollAlignment(scrollAlignment: ScrollAlignment): void;
 }
 
 export interface Loop {
   readonly isActive: boolean;
   readonly timeMsRange: NumberRange;
+  readonly startCursor: CursorWrapper;
+  readonly endCursor: CursorWrapper;
   activate(): void;
   deactivate(): void;
   update(timeMsRange: NumberRange): void;
@@ -125,13 +125,24 @@ export type LocateResult = {
   targets: LocatorTarget[];
 };
 
-export enum ScrollAlignment {
-  Top,
-  Center,
-  Bottom,
+export enum ScrollSpeed {
+  None,
+  Crawl,
+  Walk,
+  Run,
 }
 
-export enum ScrollStyle {
-  Default,
-  Seek,
+export enum ScrollDirection {
+  None,
+  Up,
+  Down,
 }
+
+export type ScrollIntent = {
+  speed: ScrollSpeed;
+  direction: ScrollDirection;
+};
+
+export type RangedScrollIntent = ScrollIntent & {
+  range: NumberRange;
+};

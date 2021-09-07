@@ -45,8 +45,8 @@ export class MusicDisplay {
     this.imd.clear();
   }
 
-  get scrollContainer() {
-    return this.imd.scrollContainer;
+  get scroller() {
+    return this.imd.scroller;
   }
 
   get cursor() {

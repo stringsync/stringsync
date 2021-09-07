@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import { first, isEqual, sortBy, throttle } from 'lodash';
+import { isEqual, maxBy, throttle } from 'lodash';
 import { BackendType, PointF2D, SvgVexFlowBackend, VexFlowBackend } from 'opensheetmusicdisplay';
 import { SupportedSVGEventNames } from '.';
 import { Duration } from '../../util/Duration';
@@ -15,10 +15,10 @@ type Positional = { clientX: number; clientY: number; pageX: number; pageY: numb
 
 const POINTER_MOVE_THROTTLE_DURATION = Duration.ms(30);
 
-const LOCATOR_TARGET_SORT_WEIGHTS = {
-  [LocatorTargetType.Cursor]: 0,
+const LOCATOR_TARGET_IMPORTANCE_WEIGHTS = {
+  [LocatorTargetType.Cursor]: 2,
   [LocatorTargetType.Note]: 1,
-  [LocatorTargetType.None]: 2,
+  [LocatorTargetType.None]: 0,
 };
 
 const isSvgBackend = (backend: VexFlowBackend | undefined): backend is SvgVexFlowBackend => {
@@ -202,9 +202,10 @@ export class SVGEventProxy {
     const locateResult = this.getLocateResult(positional);
     const { relX, relY } = this.getRelPos(positional);
 
-    const mostImportantLocateResultTarget = first(
-      sortBy(locateResult.targets, (target) => LOCATOR_TARGET_SORT_WEIGHTS[target.type] ?? Number.MAX_SAFE_INTEGER)
-    )!;
+    const mostImportantLocateResultTarget = maxBy(
+      locateResult.targets,
+      (target) => LOCATOR_TARGET_IMPORTANCE_WEIGHTS[target.type] ?? Number.NEGATIVE_INFINITY
+    );
 
     if (mostImportantLocateResultTarget && mostImportantLocateResultTarget.type === LocatorTargetType.Cursor) {
       return {
@@ -227,23 +228,14 @@ export class SVGEventProxy {
 
   private getRelPos(positional: Positional) {
     const parent = this.imd.scrollContainer;
-    const child = this.svg;
 
     const parentOffset = $(parent).offset();
     if (!parentOffset) {
       throw new Error(`could not get offset for parent: ${parent}`);
     }
 
-    const childOffset = $(child).offset();
-    if (!childOffset) {
-      throw new Error(`could not get offset for child: ${child}`);
-    }
-
-    const underlapOffsetLeft = Math.min(0, parentOffset.left - childOffset.left);
-    const underlapOffsetTop = Math.min(0, parentOffset.top - childOffset.top);
-
-    const relX = Math.max(0, positional.pageX - parentOffset.left + underlapOffsetLeft);
-    const relY = Math.max(0, positional.pageY - parentOffset.top + underlapOffsetTop);
+    const relX = Math.max(0, positional.pageX - parentOffset.left);
+    const relY = Math.max(0, positional.pageY - parentOffset.top);
 
     return { relX, relY };
   }

@@ -4,9 +4,8 @@ import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { VideoJsPlayer } from 'video.js';
-import { CursorInfo, MusicDisplay, ScrollAlignment, ScrollStyle } from '../../../lib/MusicDisplay';
+import { CursorInfo, MusicDisplay } from '../../../lib/MusicDisplay';
 import { isTemporal } from '../../../lib/MusicDisplay/pointer/pointerTypeAssert';
-import * as helpers from './helpers';
 import { NotationDetail } from './NotationDetail';
 import { NotationPlayerSettings } from './types';
 import { useTipFormatter } from './useTipFormatter';
@@ -127,38 +126,47 @@ export const NotationControls: React.FC<Props> = (props) => {
         seek(payload.src.timeMs);
       }),
       musicDisplay.eventBus.subscribe('cursordragstarted', (payload) => {
-        payload.src.cursor.setScrollStyle(ScrollStyle.Seek);
+        payload.src.cursor.disableAutoScroll();
+        musicDisplay.scroller.start();
         suspend();
       }),
       musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {
-        if (!isTemporal(payload.dst)) {
-          return;
-        }
-        if (!musicDisplay.loop.timeMsRange.contains(payload.dst.timeMs)) {
-          musicDisplay.loop.deactivate();
-        }
+        musicDisplay.scroller.updateScrollIntent(payload.dst.position);
 
-        const scrollAlignment = helpers.calculateScrollAlignment(payload.dst.position, musicDisplay.scrollContainer);
-        payload.src.cursor.updateScrollAlignment(scrollAlignment);
-
-        seek(payload.dst.timeMs);
+        if (isTemporal(payload.dst)) {
+          if (!musicDisplay.loop.timeMsRange.contains(payload.dst.timeMs)) {
+            musicDisplay.loop.deactivate();
+          }
+          seek(payload.dst.timeMs);
+        }
       }),
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
-        payload.src.cursor.setScrollStyle(ScrollStyle.Default);
-        payload.src.cursor.updateScrollAlignment(ScrollAlignment.Top);
+        musicDisplay.scroller.stop();
+        payload.src.cursor.enableAutoScroll();
         unsuspend();
       }),
       musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
+        musicDisplay.loop.startCursor.disableAutoScroll();
+        musicDisplay.loop.endCursor.disableAutoScroll();
+        musicDisplay.cursor.disableAutoScroll();
+        musicDisplay.scroller.start();
+
         const timeMsRange = payload.selection.toRange();
         musicDisplay.loop.update(timeMsRange);
         musicDisplay.loop.activate();
         suspend();
       }),
       musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
+        musicDisplay.scroller.updateScrollIntent(payload.dst.position);
+
         const timeMsRange = payload.selection.toRange();
         musicDisplay.loop.update(timeMsRange);
+        seek(payload.selection.seekerTimeMs);
       }),
       musicDisplay.eventBus.subscribe('selectionended', () => {
+        musicDisplay.scroller.stop();
+        seek(musicDisplay.loop.timeMsRange.start);
+        musicDisplay.cursor.enableAutoScroll();
         unsuspend();
       }),
     ];

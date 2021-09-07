@@ -5,10 +5,9 @@ import { Box } from '../../util/Box';
 import { ColoringOperation } from './ColoringOperation';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
-import { CursorSnapshot, ScrollAlignment, ScrollStyle } from './types';
+import { CursorSnapshot } from './types';
 
 const SCROLL_DEFAULT_DURATION_MS = 100;
-const SCROLL_SLOW_DURATION_MS = 300;
 const SCROLL_BACK_TOP_DURATION_MS = 300;
 const SCROLL_THROTTLE_MS = SCROLL_DEFAULT_DURATION_MS + 10;
 const SCROLL_GRACE_PERIOD_MS = 500;
@@ -82,8 +81,6 @@ export class LerpCursor {
 
   private lastScrollId = Symbol();
   private isAutoScrollEnabled = true;
-  private scrollAlignment = ScrollAlignment.Top;
-  private scrollStyle = ScrollStyle.Default;
 
   private constructor(imd: InternalMusicDisplay, cursors: Cursors, opts: LerpCursorOpts) {
     this.imd = imd;
@@ -154,22 +151,6 @@ export class LerpCursor {
   enableAutoScroll() {
     this.isAutoScrollEnabled = true;
     this.scrollCursorSnapshotIntoView(this.prevCursorSnapshot);
-  }
-
-  updateScrollAlignment(scrollAlignment: ScrollAlignment) {
-    const didScrollAlignmentChange = this.scrollAlignment !== scrollAlignment;
-    this.scrollAlignment = scrollAlignment;
-
-    // isAutoScrollEnabled is not honored here because this is an explicit call to update the
-    // scrolling. Callers should just not call this method if they don't want a scroll to be
-    // issued.
-    if (didScrollAlignmentChange) {
-      this.scrollCursorSnapshotIntoView(this.prevCursorSnapshot);
-    }
-  }
-
-  setScrollStyle(scrollStyle: ScrollStyle) {
-    this.scrollStyle = scrollStyle;
   }
 
   getBox(): Box {
@@ -266,13 +247,11 @@ export class LerpCursor {
       }
 
       let targetTop = 0;
-      let targetHeight = 0;
 
       this.imd.withProbeCursor((probeCursor) => {
         cursorSnapshot.iteratorSnapshot.apply(probeCursor);
         const $target = $(probeCursor.cursorElement);
         targetTop = $target.position().top;
-        targetHeight = $target.height() ?? 0;
       });
 
       const $container = this.$scrollContainer;
@@ -293,33 +272,16 @@ export class LerpCursor {
         });
       }
 
-      switch (this.scrollAlignment) {
-        case ScrollAlignment.Bottom:
-          targetTop -= targetHeight;
-          break;
-        case ScrollAlignment.Center:
-          targetTop -= targetHeight / 2;
-          break;
-      }
-
       const deltaScrollTop = Math.abs(currentScrollTop - targetTop);
       if (deltaScrollTop < SCROLL_DELTA_TOLERANCE_PX) {
         return;
       }
 
       let durationMs = SCROLL_DEFAULT_DURATION_MS;
-      switch (this.scrollStyle) {
-        case ScrollStyle.Default:
-          if (targetTop === 0) {
-            durationMs = SCROLL_BACK_TOP_DURATION_MS;
-          } else if (deltaScrollTop > SCROLL_JUMP_THRESHOLD_PX) {
-            durationMs = 0;
-          }
-          break;
-        case ScrollStyle.Seek:
-          durationMs = SCROLL_SLOW_DURATION_MS;
-          this.scrollContainer.scrollBy({ top: 10 });
-          return;
+      if (targetTop === 0) {
+        durationMs = SCROLL_BACK_TOP_DURATION_MS;
+      } else if (deltaScrollTop > SCROLL_JUMP_THRESHOLD_PX) {
+        durationMs = 0;
       }
 
       const lastScrollId = Symbol();
