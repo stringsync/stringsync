@@ -10,12 +10,15 @@ import { RangedScrollIntent, ScrollDirection, ScrollIntent, ScrollSpeed } from '
 
 const inf = Number.POSITIVE_INFINITY;
 
+// These are purposely not symmetrical around 0.5 because the automatic scroll aims to keep the
+// notation at the top. Therefore, the neutral position (corresponding to speed: None, direction: None)
+// is actually <0.5.
 const RANGED_SCROLL_INTENTS: RangedScrollIntent[] = [
   { range: NumberRange.from(-inf).to(0), speed: ScrollSpeed.None, direction: ScrollDirection.None },
-  { range: NumberRange.from(0).to(0.2), speed: ScrollSpeed.Run, direction: ScrollDirection.Up },
-  { range: NumberRange.from(0.2).to(0.3), speed: ScrollSpeed.Walk, direction: ScrollDirection.Up },
-  { range: NumberRange.from(0.3).to(0.4), speed: ScrollSpeed.Crawl, direction: ScrollDirection.Up },
-  { range: NumberRange.from(0.4).to(0.6), speed: ScrollSpeed.None, direction: ScrollDirection.None },
+  { range: NumberRange.from(0).to(0.075), speed: ScrollSpeed.Run, direction: ScrollDirection.Up },
+  { range: NumberRange.from(0.075).to(0.1), speed: ScrollSpeed.Walk, direction: ScrollDirection.Up },
+  { range: NumberRange.from(0.1).to(0.2), speed: ScrollSpeed.Crawl, direction: ScrollDirection.Up },
+  { range: NumberRange.from(0.2).to(0.6), speed: ScrollSpeed.None, direction: ScrollDirection.None },
   { range: NumberRange.from(0.6).to(0.7), speed: ScrollSpeed.Crawl, direction: ScrollDirection.Down },
   { range: NumberRange.from(0.7).to(0.8), speed: ScrollSpeed.Walk, direction: ScrollDirection.Down },
   { range: NumberRange.from(0.8).to(1), speed: ScrollSpeed.Run, direction: ScrollDirection.Down },
