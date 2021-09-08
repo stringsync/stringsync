@@ -4,7 +4,7 @@ import { LerpCursor } from './LerpCursor';
 import { LerpLoop, Loop, NoopLoop } from './Loop';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
 import { NoopCursor } from './NoopCursor';
-import { Scroller } from './Scroller/Scroller';
+import { Scroller } from './Scroller';
 import { SVGEventProxy } from './SVGEventProxy';
 import { CursorWrapper, MusicDisplayEventBus, MusicDisplayOptions, SVGSettings, SyncSettings } from './types';
 
@@ -79,7 +79,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     super.clear();
     this.cursorWrapper.clear();
     this.loop.deactivate();
-    this.scroller.stop();
+    this.scroller.cleanup();
     this.svgEventProxy?.uninstall();
     const svg = this.container.firstElementChild;
     if (svg) {

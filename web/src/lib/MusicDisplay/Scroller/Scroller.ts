@@ -1,4 +1,5 @@
-import { ScrollBehaviorType, ScrollRequest } from '.';
+import { Cursor } from 'opensheetmusicdisplay';
+import { ScrollBehaviorType, ScrollRequest, ScrollRequestType } from '.';
 import { InternalMusicDisplay } from '../InternalMusicDisplay';
 import { AutoScrollBehavior } from './AutoScrollBehavior';
 import { ManualScrollBehavior } from './ManualScrollBehavior';
@@ -16,15 +17,31 @@ export class Scroller {
     this.behavior = new AutoScrollBehavior(scrollContainer, imd);
   }
 
-  stop() {
-    this.behavior.stop();
+  scrollToCursor(cursor: Cursor) {
+    this.send({ type: ScrollRequestType.Cursor, cursor });
   }
 
-  send(request: ScrollRequest) {
+  updateScrollIntent(relY: number) {
+    this.send({ type: ScrollRequestType.Intent, relY });
+  }
+
+  startAutoScrolling() {
+    this.changeBehavior(ScrollBehaviorType.Auto);
+  }
+
+  startManualScrolling() {
+    this.changeBehavior(ScrollBehaviorType.Manual);
+  }
+
+  cleanup() {
+    this.changeBehavior(ScrollBehaviorType.Noop);
+  }
+
+  private send(request: ScrollRequest) {
     this.behavior.handle(request);
   }
 
-  changeBehaviorTo(type: ScrollBehaviorType) {
+  private changeBehavior(type: ScrollBehaviorType) {
     this.behavior.stop();
     const behavior = this.makeBehavior(type);
     this.behavior = behavior;

@@ -4,7 +4,6 @@ import { Box } from '../../util/Box';
 import { ColoringOperation } from './ColoringOperation';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
-import { ScrollRequestType } from './Scroller';
 import { CursorSnapshot } from './types';
 
 const CURSOR_BOX_PADDING_PX = 20;
@@ -178,8 +177,7 @@ export class LerpCursor {
   }
 
   scrollIntoView() {
-    const scroller = this.imd.scroller;
-    scroller.send({ type: ScrollRequestType.Cursor, cursor: this.lagger });
+    this.imd.scroller.scrollToCursor(this.lagger);
   }
 
   private updateCursors(nextCursorSnapshot: CursorSnapshot | null) {
