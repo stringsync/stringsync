@@ -1,12 +1,12 @@
 import $ from 'jquery';
 import { throttle } from 'lodash';
 import { Cursor } from 'opensheetmusicdisplay/build/dist/src';
-import { CursorSnapshot, ScrollTarget } from '.';
-import { Duration } from '../../util/Duration';
-import { NumberRange } from '../../util/NumberRange';
-import { InternalMusicDisplay } from './InternalMusicDisplay';
-import { PointerPosition } from './pointer';
-import { RangedScrollIntent, ScrollDirection, ScrollIntent, ScrollSpeed } from './types';
+import { CursorSnapshot, ScrollTarget } from '..';
+import { Duration } from '../../../util/Duration';
+import { NumberRange } from '../../../util/NumberRange';
+import { InternalMusicDisplay } from '../InternalMusicDisplay';
+import { PointerPosition } from '../pointer';
+import { RangedScrollIntent, ScrollDirection, ScrollIntent, ScrollSpeed } from '../types';
 
 const inf = Number.POSITIVE_INFINITY;
 

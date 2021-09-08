@@ -4,7 +4,7 @@ import { LerpCursor } from './LerpCursor';
 import { LerpLoop, Loop, NoopLoop } from './Loop';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
 import { NoopCursor } from './NoopCursor';
-import { Scroller } from './Scroller';
+import { Scroller } from './Scroller/Scroller';
 import { SVGEventProxy } from './SVGEventProxy';
 import { CursorWrapper, MusicDisplayEventBus, MusicDisplayOptions, SVGSettings, SyncSettings } from './types';
 
