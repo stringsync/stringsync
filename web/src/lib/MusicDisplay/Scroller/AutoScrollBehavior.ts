@@ -4,6 +4,7 @@ import { Cursor } from 'opensheetmusicdisplay';
 import { ScrollRequestType } from '.';
 import { Duration } from '../../../util/Duration';
 import { InternalMusicDisplay } from '../InternalMusicDisplay';
+import { ScrollerViewport } from './ScrollerViewport';
 import { AutoScrollTarget, ScrollBehavior, ScrollRequest } from './types';
 
 const SCROLL_DEFAULT_DURATION = Duration.ms(100);
@@ -17,6 +18,7 @@ export class AutoScrollBehavior implements ScrollBehavior {
   private scrollContainer: HTMLElement;
   private $scrollContainer: JQuery<HTMLElement>;
   private imd: InternalMusicDisplay;
+  private viewport: ScrollerViewport;
 
   private lastScrollToId = Symbol();
 
@@ -24,6 +26,7 @@ export class AutoScrollBehavior implements ScrollBehavior {
     this.scrollContainer = scrollContainer;
     this.$scrollContainer = $(scrollContainer);
     this.imd = imd;
+    this.viewport = new ScrollerViewport(scrollContainer);
   }
 
   start() {}

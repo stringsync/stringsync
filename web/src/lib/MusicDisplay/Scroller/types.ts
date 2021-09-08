@@ -29,19 +29,20 @@ export enum ScrollAlignment {
   Bottom,
 }
 
-export enum ObjectRelativeSize {
+export enum RelativeSize {
   Unknown,
   Underflow,
   Overflow,
 }
 
-export enum ObjectVisibility {
+export enum Visibility {
+  Unknown,
   None,
   Full,
   Partial,
 }
 
-export enum ObjectRelativePosition {
+export enum RelativePosition {
   Unknown,
   Inside,
   Above,
