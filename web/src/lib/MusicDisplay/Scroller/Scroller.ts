@@ -37,6 +37,10 @@ export class Scroller {
     this.changeBehavior(ScrollBehaviorType.Noop);
   }
 
+  disable() {
+    this.changeBehavior(ScrollBehaviorType.Noop);
+  }
+
   private send(request: ScrollRequest) {
     this.behavior.handle(request);
   }
@@ -46,6 +50,7 @@ export class Scroller {
     const behavior = this.makeBehavior(type);
     this.behavior = behavior;
     this.behavior.start();
+    this.imd.eventBus.dispatch('scrollbehaviorchanged', { type });
   }
 
   private makeBehavior(type: ScrollBehaviorType): ScrollBehavior {

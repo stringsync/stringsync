@@ -5,6 +5,7 @@ import { EventBus } from '../EventBus';
 import { AnchoredTimeSelection } from './AnchoredTimeSelection';
 import { IteratorSnapshot } from './IteratorSnapshot';
 import { CursorPointerTarget, CursorSnapshotPointerTarget, NonePointerTarget, PointerTarget } from './pointer';
+import { ScrollBehaviorType } from './Scroller';
 
 export type MusicDisplayEventBus = EventBus<{
   autoscrollended: {};
@@ -29,6 +30,7 @@ export type MusicDisplayEventBus = EventBus<{
   pointeridle: {};
   resizeended: {};
   resizestarted: {};
+  scrollbehaviorchanged: { type: ScrollBehaviorType };
   selectionstarted: { src: PointerTarget; selection: AnchoredTimeSelection };
   selectionupdated: { src: PointerTarget; dst: PointerTarget; selection: AnchoredTimeSelection };
   selectionended: { src: PointerTarget; dst: PointerTarget };
