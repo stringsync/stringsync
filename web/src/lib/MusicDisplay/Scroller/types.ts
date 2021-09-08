@@ -1,4 +1,5 @@
 import { Cursor } from 'opensheetmusicdisplay';
+import { Duration } from '../../../util/Duration';
 
 export enum ScrollDirection {
   None,
@@ -62,6 +63,11 @@ export type IntentScrollRequest = {
 };
 
 export type ScrollRequest = CursorScrollRequest | IntentScrollRequest;
+
+export type AutoScrollTarget = {
+  scrollTop: number;
+  duration: Duration;
+};
 
 export interface ScrollBehavior {
   start(): void;
