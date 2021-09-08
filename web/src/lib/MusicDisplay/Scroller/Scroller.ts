@@ -33,10 +33,6 @@ export class Scroller {
     this.changeBehavior(ScrollBehaviorType.Manual);
   }
 
-  cleanup() {
-    this.changeBehavior(ScrollBehaviorType.Noop);
-  }
-
   disable() {
     this.changeBehavior(ScrollBehaviorType.Noop);
   }

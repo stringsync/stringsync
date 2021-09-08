@@ -79,7 +79,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     super.clear();
     this.cursorWrapper.clear();
     this.loop.deactivate();
-    this.scroller.cleanup();
+    this.scroller.disable();
     this.svgEventProxy?.uninstall();
     const svg = this.container.firstElementChild;
     if (svg) {
