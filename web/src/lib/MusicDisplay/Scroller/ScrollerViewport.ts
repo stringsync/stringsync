@@ -8,15 +8,15 @@ export class ScrollerViewport {
     this.scrollContainer = scrollContainer;
   }
 
-  getRelativeSize(yRange: NumberRange): RelativeSize {
-    return this.scrollContainer.offsetHeight > yRange.size ? RelativeSize.Overflow : RelativeSize.Underflow;
+  getRelativeSize(absYRange: NumberRange): RelativeSize {
+    return this.scrollContainer.offsetHeight > absYRange.size ? RelativeSize.Overflow : RelativeSize.Underflow;
   }
 
-  getVisibility(yRange: NumberRange): Visibility {
+  getVisibility(absYRange: NumberRange): Visibility {
     return Visibility.None;
   }
 
-  getRelativePosition(yRange: NumberRange): RelativePosition {
+  getRelativePosition(absYRange: NumberRange): RelativePosition {
     return RelativePosition.Unknown;
   }
 }
