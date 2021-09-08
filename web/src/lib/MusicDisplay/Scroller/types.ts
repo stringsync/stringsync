@@ -58,7 +58,7 @@ export type CursorScrollRequest = {
 
 export type IntentScrollRequest = {
   type: ScrollRequestType.Intent;
-  intent: ScrollIntent;
+  relY: number;
 };
 
 export type ScrollRequest = CursorScrollRequest | IntentScrollRequest;
