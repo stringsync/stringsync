@@ -74,8 +74,10 @@ export type MusicDisplayOptions = IOSMDOptions & {
 };
 
 export type CursorSnapshot = {
+  index: number;
   next: CursorSnapshot | null;
   prev: CursorSnapshot | null;
+  measureLine: number;
   iteratorSnapshot: IteratorSnapshot;
   xRange: NumberRange;
   yRange: NumberRange;

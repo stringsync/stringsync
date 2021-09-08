@@ -18,7 +18,7 @@ type CursorSnapshotLineGroup = {
 
 type CursorHit = { cursor: CursorWrapper; box: Box };
 
-const END_OF_LINE_PADDING_PX = 20;
+const END_OF_MEASURE_LINE_PADDING_PX = 20;
 
 export class MusicDisplayLocator {
   static create(imd: InternalMusicDisplay) {
@@ -38,8 +38,9 @@ export class MusicDisplayLocator {
     let prevCursorSnapshot: CursorSnapshot | null = null;
     let currBeat = 0;
     let currTimeMs = imd.syncSettings.deadTimeMs;
+    let measureLine = 0;
 
-    imd.forEachCursorPosition((ndx, probeCursor) => {
+    imd.forEachCursorPosition((index, probeCursor) => {
       const iteratorSnapshot = IteratorSnapshot.create(probeCursor.iterator);
 
       // Get OSMD-specific references
@@ -66,9 +67,11 @@ export class MusicDisplayLocator {
       const $element = $(probeCursor.cursorElement);
       const position = $element.position();
       const startX = position.left;
-      const tmpEndX = startX + END_OF_LINE_PADDING_PX;
+      const tmpEndX = startX + END_OF_MEASURE_LINE_PADDING_PX;
       const startY = position.top;
       const endY = startY + ($element.height() ?? 0);
+      const xRange = NumberRange.from(startX).to(tmpEndX);
+      const yRange = NumberRange.from(startY).to(endY);
 
       // Calculate locate target groups
       const targets = new Array<LocatorTarget>();
@@ -86,13 +89,20 @@ export class MusicDisplayLocator {
         });
       }
 
+      // Calculate the measure line
+      if (prevCursorSnapshot && !prevCursorSnapshot.yRange.eq(yRange)) {
+        measureLine++;
+      }
+
       // Caluclate cursor snapshot
       const cursorSnapshot: CursorSnapshot = {
+        index,
         next: null,
         prev: null,
         bpm,
-        xRange: NumberRange.from(startX).to(tmpEndX),
-        yRange: NumberRange.from(startY).to(endY),
+        measureLine,
+        xRange,
+        yRange,
         beatRange,
         timeMsRange,
         iteratorSnapshot,
@@ -122,24 +132,20 @@ export class MusicDisplayLocator {
   }
 
   private static calculateCursorSnapshotLineGroups(cursorSnapshots: CursorSnapshot[]): CursorSnapshotLineGroup[] {
-    const toStr = (range: NumberRange) => `${range.start}-${range.end}`;
-    const toRange = (str: string) => {
-      const [start, end] = str.split('-').map(parseFloat);
-      return NumberRange.from(start).to(end);
-    };
+    const byMeasureLine = (cursorSnapshot: CursorSnapshot) => cursorSnapshot.measureLine;
+    const byIndex = (cursorSnapshot: CursorSnapshot) => cursorSnapshot.index;
 
-    const cursorSnapshotsByYRangeStr = groupBy(cursorSnapshots, (cursorSnapshot) => toStr(cursorSnapshot.yRange));
-    const yRangeStrs = sortBy(
-      Object.keys(cursorSnapshotsByYRangeStr),
-      (str) => toRange(str).start,
-      (str) => toRange(str).end
-    );
+    const cursorSnapshotsByMeasureLine = groupBy(cursorSnapshots, byMeasureLine);
+    const measureLines = Object.keys(cursorSnapshotsByMeasureLine);
 
-    return yRangeStrs.map((yRangeStr) => {
-      return {
-        yRange: toRange(yRangeStr),
-        cursorSnapshots: cursorSnapshotsByYRangeStr[yRangeStr],
-      };
+    return measureLines.map((measureLine) => {
+      const cursorSnapshots = sortBy(cursorSnapshotsByMeasureLine[measureLine], byIndex);
+      if (cursorSnapshots.length === 0) {
+        throw new Error('could not calculate line groups, empty measure line');
+      }
+      const yRange = first(cursorSnapshots)!.yRange;
+
+      return { yRange, cursorSnapshots };
     });
   }
 
