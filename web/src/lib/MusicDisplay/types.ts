@@ -1,6 +1,5 @@
 import { GraphicalNote, IOSMDOptions, VoiceEntry } from 'opensheetmusicdisplay';
 import { Box } from '../../util/Box';
-import { Duration } from '../../util/Duration';
 import { NumberRange } from '../../util/NumberRange';
 import { EventBus } from '../EventBus';
 import { AnchoredTimeSelection } from './AnchoredTimeSelection';
@@ -117,33 +116,4 @@ export type LocateResult = {
   cost: LocateCost;
   cursorSnapshot: Readonly<CursorSnapshot> | null;
   targets: LocatorTarget[];
-};
-
-export enum ScrollSpeed {
-  None,
-  Crawl,
-  Walk,
-  Run,
-  Sprint,
-  Teleport,
-}
-
-export enum ScrollDirection {
-  None,
-  Up,
-  Down,
-}
-
-export type ScrollIntent = {
-  speed: ScrollSpeed;
-  direction: ScrollDirection;
-};
-
-export type RangedScrollIntent = ScrollIntent & {
-  range: NumberRange;
-};
-
-export type ScrollTarget = {
-  scrollTop: number;
-  duration: Duration;
 };

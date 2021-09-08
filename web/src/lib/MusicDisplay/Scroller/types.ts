@@ -1,6 +1,12 @@
 import { Cursor } from 'opensheetmusicdisplay';
 import { Duration } from '../../../util/Duration';
 
+export enum ScrollBehaviorType {
+  Noop,
+  Auto,
+  Manual,
+}
+
 export enum ScrollDirection {
   None,
   Up,
@@ -72,5 +78,5 @@ export type AutoScrollTarget = {
 export interface ScrollBehavior {
   start(): void;
   stop(): void;
-  call(request: ScrollRequest): void;
+  handle(request: ScrollRequest): void;
 }

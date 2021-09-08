@@ -1,10 +1,10 @@
 import $ from 'jquery';
 import { throttle } from 'lodash';
 import { Cursor } from 'opensheetmusicdisplay';
-import { CursorScrollRequest } from '.';
+import { ScrollRequestType } from '.';
 import { Duration } from '../../../util/Duration';
 import { InternalMusicDisplay } from '../InternalMusicDisplay';
-import { AutoScrollTarget, ScrollBehavior } from './types';
+import { AutoScrollTarget, ScrollBehavior, ScrollRequest } from './types';
 
 const SCROLL_DEFAULT_DURATION = Duration.ms(100);
 const SCROLL_BACK_TOP_DURATION = Duration.ms(300);
@@ -30,9 +30,15 @@ export class AutoScrollBehavior implements ScrollBehavior {
 
   stop() {}
 
-  call(request: CursorScrollRequest) {}
+  handle(request: ScrollRequest) {
+    if (request.type !== ScrollRequestType.Cursor) {
+      return;
+    }
 
-  scrollToCursor(cursor: Cursor) {
+    this.scrollToCursor(request.cursor);
+  }
+
+  private scrollToCursor(cursor: Cursor) {
     let scrollTop = $(cursor.cursorElement).position().top;
     const currentScrollTop = this.$scrollContainer.scrollTop() ?? 0;
 

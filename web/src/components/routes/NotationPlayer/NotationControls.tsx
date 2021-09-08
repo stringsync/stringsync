@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { VideoJsPlayer } from 'video.js';
 import { CursorInfo, MusicDisplay } from '../../../lib/MusicDisplay';
 import { isTemporal } from '../../../lib/MusicDisplay/pointer/pointerTypeAssert';
+import { ScrollBehaviorType, ScrollRequestType } from '../../../lib/MusicDisplay/Scroller';
 import { NotationDetail } from './NotationDetail';
 import { NotationPlayerSettings } from './types';
 import { useTipFormatter } from './useTipFormatter';
@@ -126,7 +127,7 @@ export const NotationControls: React.FC<Props> = (props) => {
         seek(payload.src.timeMs);
       }),
       musicDisplay.eventBus.subscribe('cursordragstarted', (payload) => {
-        musicDisplay.scroller.startScrollingBasedOnIntent();
+        musicDisplay.scroller.changeBehaviorTo(ScrollBehaviorType.Manual);
 
         if (payload.src.cursor === musicDisplay.loop.startCursor) {
           musicDisplay.loop.anchor(musicDisplay.loop.timeMsRange.end);
@@ -138,7 +139,7 @@ export const NotationControls: React.FC<Props> = (props) => {
         suspend();
       }),
       musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {
-        musicDisplay.scroller.updateScrollIntent(payload.dst.position);
+        musicDisplay.scroller.send({ type: ScrollRequestType.Intent, relY: payload.dst.position.relY });
         if (!isTemporal(payload.dst)) {
           return;
         }
@@ -161,23 +162,23 @@ export const NotationControls: React.FC<Props> = (props) => {
         }
       }),
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
-        musicDisplay.scroller.stopScrollingBasedOnIntent();
+        musicDisplay.scroller.changeBehaviorTo(ScrollBehaviorType.Auto);
         musicDisplay.cursor.scrollIntoView();
         unsuspend();
       }),
       musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
-        musicDisplay.scroller.startScrollingBasedOnIntent();
+        musicDisplay.scroller.changeBehaviorTo(ScrollBehaviorType.Manual);
         musicDisplay.loop.anchor(payload.selection.anchorTimeMs);
         musicDisplay.loop.activate();
         suspend();
       }),
       musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
-        musicDisplay.scroller.updateScrollIntent(payload.dst.position);
+        musicDisplay.scroller.send({ type: ScrollRequestType.Intent, relY: payload.dst.position.relY });
         musicDisplay.loop.update(payload.selection.seekerTimeMs);
         seek(payload.selection.seekerTimeMs);
       }),
       musicDisplay.eventBus.subscribe('selectionended', () => {
-        musicDisplay.scroller.stopScrollingBasedOnIntent();
+        musicDisplay.scroller.changeBehaviorTo(ScrollBehaviorType.Auto);
         seek(musicDisplay.loop.timeMsRange.start);
         musicDisplay.cursor.scrollIntoView();
         unsuspend();

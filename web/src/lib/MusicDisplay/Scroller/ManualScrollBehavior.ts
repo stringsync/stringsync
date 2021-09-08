@@ -1,6 +1,6 @@
-import { IntentScrollRequest } from '.';
+import { ScrollRequestType } from '.';
 import { NumberRange } from '../../../util/NumberRange';
-import { ScrollBehavior, ScrollDirection, ScrollIntent, ScrollSpeed } from './types';
+import { ScrollBehavior, ScrollDirection, ScrollIntent, ScrollRequest, ScrollSpeed } from './types';
 
 type RangedScrollIntent = ScrollIntent & {
   range: NumberRange;
@@ -46,7 +46,11 @@ export class ManualScrollBehavior implements ScrollBehavior {
     cancelAnimationFrame(this.scrollRafHandle);
   }
 
-  call(request: IntentScrollRequest) {
+  handle(request: ScrollRequest) {
+    if (request.type !== ScrollRequestType.Intent) {
+      return;
+    }
+
     const height = this.scrollContainer.offsetHeight;
     const relYFrac = request.relY / height;
     this.currentIntentIndex = this.findRangedScrollIntentIndex(relYFrac);
