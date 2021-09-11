@@ -90,6 +90,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const [videoPlayer, setVideoPlayer] = useState<VideoJsPlayer | null>(null);
   const [settings, updateSettings] = useNotationPlayerSettings();
   const [controlsHeightPx, setControlsHeightPx] = useState(0);
+  const [lastUserScrollAt, setLastUserScrollAt] = useState<Date | null>(null);
 
   const videoUrl = notation?.videoUrl;
   const playerOptions = useMemo<VideoJsPlayerOptions>(() => {
@@ -121,6 +122,8 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
   const onUserScroll = useCallback(() => {
     // TODO(jared) Maybe change the behavior when the user scrolls in a certain context.
+    console.log('user scrolled');
+    setLastUserScrollAt(new Date());
   }, []);
 
   const onMusicDisplayChange = useCallback(setMusicDisplay, [setMusicDisplay]);

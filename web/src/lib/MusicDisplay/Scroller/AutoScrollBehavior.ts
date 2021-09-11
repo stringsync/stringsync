@@ -37,6 +37,7 @@ export class AutoScrollBehavior implements ScrollBehavior {
   private autoScrollHandle = -1;
   private deferHandle = -1;
   private lastEntries: IntersectionObserverEntry[] = [];
+  private lastScrollId = Symbol();
 
   constructor(scrollContainer: HTMLElement, imd: InternalMusicDisplay) {
     this.scrollContainer = scrollContainer;
@@ -146,6 +147,8 @@ export class AutoScrollBehavior implements ScrollBehavior {
     if (hasNoOverflow) {
       return;
     }
+    const lastScrollId = Symbol();
+    const didNewScrollInvoke = () => this.lastScrollId !== lastScrollId;
     this.$scrollContainer.animate(
       { scrollTop: scrollTarget.scrollTop },
       {
@@ -153,10 +156,18 @@ export class AutoScrollBehavior implements ScrollBehavior {
         queue: false,
         duration: scrollTarget.duration.ms,
         start: () => {
+          this.lastScrollId = lastScrollId;
           this.imd.eventBus.dispatch('autoscrollstarted', {});
         },
         always: () => {
+          if (didNewScrollInvoke()) {
+            // Don't bother even enqueuing autoScrollEnd. Assume that another invocation will trigger it.
+            return;
+          }
           this.autoScrollHandle = window.setTimeout(() => {
+            if (didNewScrollInvoke()) {
+              return;
+            }
             this.imd.eventBus.dispatch('autoscrollended', {});
           }, SCROLL_GRACE_DURATION.ms);
         },
