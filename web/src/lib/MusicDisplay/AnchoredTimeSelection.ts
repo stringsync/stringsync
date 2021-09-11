@@ -23,6 +23,16 @@ export class AnchoredTimeSelection {
     return new AnchoredTimeSelection(this.anchorTimeMs, this.seekerTimeMs);
   }
 
+  anchorStart() {
+    const range = this.toRange();
+    return new AnchoredTimeSelection(range.start, range.end);
+  }
+
+  anchorEnd() {
+    const range = this.toRange();
+    return new AnchoredTimeSelection(range.end, range.start);
+  }
+
   toRange() {
     return NumberRange.unsorted(this.anchorTimeMs, this.seekerTimeMs);
   }

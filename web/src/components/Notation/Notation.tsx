@@ -1,7 +1,7 @@
 import React, { RefObject, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { MusicDisplay, SupportedSVGEventNames } from '../../lib/MusicDisplay';
+import { MusicDisplay, SelectionEdge, SupportedSVGEventNames } from '../../lib/MusicDisplay';
 import { PointerTargetType } from '../../lib/MusicDisplay/pointer';
 import { RootState } from '../../store';
 
@@ -95,6 +95,12 @@ export const Notation: React.FC<NotationProps> = (props) => {
         setCursor(Cursor.Grab);
       }),
       musicDisplay.eventBus.subscribe('cursorexited', () => {
+        setCursor(Cursor.Pointer);
+      }),
+      musicDisplay.eventBus.subscribe('selectionentered', (payload) => {
+        setCursor(payload.src.edge === SelectionEdge.Start ? Cursor.EResize : Cursor.WResize);
+      }),
+      musicDisplay.eventBus.subscribe('selectionexited', () => {
         setCursor(Cursor.Pointer);
       }),
       musicDisplay.eventBus.subscribe('cursordragstarted', () => {

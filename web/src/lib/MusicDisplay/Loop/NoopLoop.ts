@@ -1,12 +1,16 @@
-import { NumberRange } from '../../../util/NumberRange';
+import { AnchoredTimeSelection } from '../AnchoredTimeSelection';
 import { NoopCursor } from '../NoopCursor';
 import { Loop } from './types';
 
 export class NoopLoop implements Loop {
   isActive = false;
-  timeMsRange = NumberRange.from(0).to(0);
+  selection = AnchoredTimeSelection.init(0);
   startCursor = new NoopCursor();
   endCursor = new NoopCursor();
+
+  get timeMsRange() {
+    return this.selection.toRange();
+  }
 
   activate() {
     this.isActive = true;

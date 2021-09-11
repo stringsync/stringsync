@@ -2,17 +2,17 @@ import { merge } from 'lodash';
 import { EventFrom, interpret } from 'xstate';
 import { assign, choose } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
-import { NonePointerTarget } from '.';
-import { MusicDisplayEventBus } from '..';
 import { Duration } from '../../../util/Duration';
 import { AnchoredTimeSelection } from '../AnchoredTimeSelection';
+import { MusicDisplayEventBus, SelectionEdge } from '../types';
 import {
   isCursorPointerTarget,
   isCursorSnapshotPointerTarget,
   isNonePointerTarget,
+  isSelectionPointerTarget,
   isTemporal,
 } from './pointerTypeAssert';
-import { PointerContext, PointerPosition, PointerTarget, PointerTargetType } from './types';
+import { NonePointerTarget, PointerContext, PointerPosition, PointerTarget, PointerTargetType } from './types';
 
 export type PointerEvent = EventFrom<typeof model>;
 export type PointerMachine = ReturnType<typeof createMachine>;
@@ -77,10 +77,12 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
                   { actions: 'dispatchNoTargetExited' },
                 ]),
                 choose([
+                  { cond: 'didEnterSelection', actions: ['dispatchSelectEntered'] },
                   { cond: 'didEnterCursor', actions: ['dispatchCursorEntered'] },
                   { cond: 'didEnterCursorSnapshot', actions: ['dispatchCursorSnapshotEntered'] },
                 ]),
                 choose([
+                  { cond: 'didExitSelection', actions: ['dispatchSelectExited'] },
                   { cond: 'didExitCursor', actions: ['dispatchCursorExited'] },
                   { cond: 'didExitCursorSnapshot', actions: ['dispatchCursorSnapshotExited'] },
                 ]),
@@ -98,8 +100,14 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
                 ping: {
                   actions: [
                     'assignHoverTarget',
-                    choose([{ cond: 'didEnterCursor', actions: ['dispatchCursorEntered'] }]),
-                    choose([{ cond: 'didExitCursor', actions: ['dispatchCursorExited'] }]),
+                    choose([
+                      { cond: 'didEnterSelection', actions: ['dispatchSelectEntered'] },
+                      { cond: 'didEnterCursor', actions: ['dispatchCursorEntered'] },
+                    ]),
+                    choose([
+                      { cond: 'didExitSelection', actions: ['dispatchSelectExited'] },
+                      { cond: 'didExitCursor', actions: ['dispatchCursorExited'] },
+                    ]),
                   ],
                 },
               },
@@ -155,9 +163,15 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
         }),
         startSelection: assign<PointerContext, PointerEvent>({
           selection: (context, event) => {
-            return isCursorSnapshotPointerTarget(event.target)
-              ? AnchoredTimeSelection.init(event.target.timeMs)
-              : context.selection;
+            if (isCursorSnapshotPointerTarget(event.target)) {
+              return AnchoredTimeSelection.init(event.target.timeMs);
+            }
+            if (isSelectionPointerTarget(event.target)) {
+              return event.target.edge === SelectionEdge.Start
+                ? event.target.selection.anchorEnd()
+                : event.target.selection.anchorStart();
+            }
+            return context.selection;
           },
         }),
         updateSelection: assign<PointerContext, PointerEvent>({
@@ -188,6 +202,16 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
         dispatchDragEnded: (context, event) => {
           if (isCursorPointerTarget(context.downTarget)) {
             eventBus.dispatch('cursordragended', { src: context.downTarget, dst: context.hoverTarget });
+          }
+        },
+        dispatchSelectEntered: (context) => {
+          if (isSelectionPointerTarget(context.hoverTarget)) {
+            eventBus.dispatch('selectionentered', { src: context.hoverTarget });
+          }
+        },
+        dispatchSelectExited: (context) => {
+          if (isSelectionPointerTarget(context.hoverTarget)) {
+            eventBus.dispatch('selectionexited', { src: context.hoverTarget });
           }
         },
         dispatchSelectStarted: (context) => {
@@ -253,6 +277,24 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
         },
         hasNoTarget: (context, event) => {
           return isNonePointerTarget(event.target);
+        },
+        didEnterSelection: (context) => {
+          if (!isSelectionPointerTarget(context.hoverTarget)) {
+            return false;
+          }
+          if (!isSelectionPointerTarget(context.prevHoverTarget)) {
+            return true;
+          }
+          return context.hoverTarget.edge !== context.prevHoverTarget.edge;
+        },
+        didExitSelection: (context) => {
+          if (!isSelectionPointerTarget(context.prevHoverTarget)) {
+            return false;
+          }
+          if (!isSelectionPointerTarget(context.hoverTarget)) {
+            return true;
+          }
+          return context.hoverTarget.edge !== context.prevHoverTarget.edge;
         },
         didEnterCursor: (context) => {
           if (!isCursorPointerTarget(context.hoverTarget)) {

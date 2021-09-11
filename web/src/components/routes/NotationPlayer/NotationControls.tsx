@@ -221,14 +221,6 @@ export const NotationControls: React.FC<Props> = (props) => {
       }),
       musicDisplay.eventBus.subscribe('cursordragstarted', (payload) => {
         musicDisplay.scroller.startManualScrolling();
-
-        if (payload.src.cursor === musicDisplay.loop.startCursor) {
-          musicDisplay.loop.anchor(musicDisplay.loop.timeMsRange.end);
-        }
-        if (payload.src.cursor === musicDisplay.loop.endCursor) {
-          musicDisplay.loop.anchor(musicDisplay.loop.timeMsRange.start);
-        }
-
         suspend();
       }),
       musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {
@@ -236,23 +228,13 @@ export const NotationControls: React.FC<Props> = (props) => {
         if (!isTemporal(payload.dst)) {
           return;
         }
-
         const { cursor } = payload.src;
         const { timeMs } = payload.dst;
-
-        if (cursor === musicDisplay.cursor) {
-          if (!musicDisplay.loop.timeMsRange.contains(timeMs)) {
-            musicDisplay.loop.deactivate();
-          }
-          cursor.update(timeMs);
-          seek(timeMs);
+        if (!musicDisplay.loop.timeMsRange.contains(timeMs)) {
+          musicDisplay.loop.deactivate();
         }
-        if (cursor === musicDisplay.loop.startCursor) {
-          musicDisplay.loop.update(timeMs);
-        }
-        if (cursor === musicDisplay.loop.endCursor) {
-          musicDisplay.loop.update(timeMs);
-        }
+        cursor.update(timeMs);
+        seek(timeMs);
       }),
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
         musicDisplay.scroller.startAutoScrolling();
@@ -268,11 +250,12 @@ export const NotationControls: React.FC<Props> = (props) => {
       musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
         musicDisplay.scroller.updateScrollIntent(payload.dst.position.relY);
         musicDisplay.loop.update(payload.selection.seekerTimeMs);
-        seek(payload.selection.seekerTimeMs);
       }),
       musicDisplay.eventBus.subscribe('selectionended', () => {
         musicDisplay.scroller.startAutoScrolling();
-        seek(musicDisplay.loop.timeMsRange.start);
+        if (!musicDisplay.loop.timeMsRange.contains(musicDisplay.cursor.timeMs)) {
+          seek(musicDisplay.loop.timeMsRange.start);
+        }
         musicDisplay.cursor.scrollIntoView();
         unsuspend();
       }),

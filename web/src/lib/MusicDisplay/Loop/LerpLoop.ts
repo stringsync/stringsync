@@ -10,13 +10,13 @@ export class LerpLoop implements Loop {
     const startCursor = LerpCursor.create(imd, locator.clone(), {
       numMeasures: imd.Sheet.SourceMeasures.length,
       scrollContainer: imd.scrollContainer,
-      cursorOptions: { color: 'lime' },
+      cursorOptions: { color: 'lime', alpha: 0 },
     });
 
     const endCursor = LerpCursor.create(imd, locator.clone(), {
       numMeasures: imd.Sheet.SourceMeasures.length,
       scrollContainer: imd.scrollContainer,
-      cursorOptions: { color: 'red' },
+      cursorOptions: { color: 'red', alpha: 0 },
     });
 
     const loop = new LerpLoop(imd, startCursor, endCursor);
@@ -30,7 +30,7 @@ export class LerpLoop implements Loop {
   endCursor: CursorWrapper;
   isActive = true;
 
-  private selection = AnchoredTimeSelection.init(0);
+  selection = AnchoredTimeSelection.init(0);
 
   private constructor(imd: InternalMusicDisplay, startCursor: CursorWrapper, endCursor: CursorWrapper) {
     this.imd = imd;
@@ -55,6 +55,7 @@ export class LerpLoop implements Loop {
     this.isActive = false;
     this.startCursor.clear();
     this.endCursor.clear();
+    this.imd.selectionRenderer?.clear();
   }
 
   get timeMsRange() {

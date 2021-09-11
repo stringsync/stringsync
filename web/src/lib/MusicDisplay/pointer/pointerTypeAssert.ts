@@ -1,4 +1,5 @@
 import { get, isNumber } from 'lodash';
+import { SelectionPointerTarget } from '.';
 import { CursorPointerTarget, CursorSnapshotPointerTarget, NonePointerTarget, PointerTargetType } from './types';
 
 type UnknownTarget = {
@@ -26,6 +27,10 @@ export const isCursorPointerTarget = (target: UnknownTarget): target is CursorPo
 
 export const isCursorSnapshotPointerTarget = (target: UnknownTarget): target is CursorSnapshotPointerTarget => {
   return target.type === PointerTargetType.CursorSnapshot;
+};
+
+export const isSelectionPointerTarget = (target: UnknownTarget): target is SelectionPointerTarget => {
+  return target.type === PointerTargetType.Selection;
 };
 
 export const isPositional = (target: UnknownTarget): target is Positional => {

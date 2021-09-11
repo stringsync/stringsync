@@ -75,7 +75,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
     this.loop = LerpLoop.create(this, locator.clone());
 
-    this.selectionRenderer = SelectionRenderer.create(this.scrollContainer, locator.clone());
+    this.selectionRenderer = SelectionRenderer.create(this.svgEventProxy.svg, locator.clone());
   }
 
   clear() {
@@ -84,6 +84,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.loop.deactivate();
     this.scroller.disable();
     this.svgEventProxy?.uninstall();
+    this.selectionRenderer?.clear();
     const svg = this.container.firstElementChild;
     if (svg) {
       this.container.removeChild(svg);

@@ -16,6 +16,7 @@ type Positional = { clientX: number; clientY: number; pageX: number; pageY: numb
 const POINTER_MOVE_THROTTLE_DURATION = Duration.ms(30);
 
 const LOCATOR_TARGET_IMPORTANCE_WEIGHTS = {
+  [LocatorTargetType.Selection]: 3,
   [LocatorTargetType.Cursor]: 2,
   [LocatorTargetType.Note]: 1,
   [LocatorTargetType.None]: 0,
@@ -207,6 +208,15 @@ export class SVGEventProxy {
       (target) => LOCATOR_TARGET_IMPORTANCE_WEIGHTS[target.type] ?? Number.NEGATIVE_INFINITY
     );
 
+    if (mostImportantLocateResultTarget && mostImportantLocateResultTarget.type === LocatorTargetType.Selection) {
+      return {
+        type: PointerTargetType.Selection,
+        selection: mostImportantLocateResultTarget.selection,
+        edge: mostImportantLocateResultTarget.edge,
+        timeMs: locateResult.timeMs,
+        position: { x: locateResult.x, y: locateResult.y, relX, relY },
+      };
+    }
     if (mostImportantLocateResultTarget && mostImportantLocateResultTarget.type === LocatorTargetType.Cursor) {
       return {
         type: PointerTargetType.Cursor,

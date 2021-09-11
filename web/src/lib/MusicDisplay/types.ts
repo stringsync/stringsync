@@ -4,7 +4,13 @@ import { NumberRange } from '../../util/NumberRange';
 import { EventBus } from '../EventBus';
 import { AnchoredTimeSelection } from './AnchoredTimeSelection';
 import { IteratorSnapshot } from './IteratorSnapshot';
-import { CursorPointerTarget, CursorSnapshotPointerTarget, NonePointerTarget, PointerTarget } from './pointer';
+import {
+  CursorPointerTarget,
+  CursorSnapshotPointerTarget,
+  NonePointerTarget,
+  PointerTarget,
+  SelectionPointerTarget,
+} from './pointer';
 import { ScrollBehaviorType } from './Scroller';
 
 export type MusicDisplayEventBus = EventBus<{
@@ -31,6 +37,8 @@ export type MusicDisplayEventBus = EventBus<{
   resizeended: {};
   resizestarted: {};
   scrollbehaviorchanged: { type: ScrollBehaviorType };
+  selectionentered: { src: SelectionPointerTarget };
+  selectionexited: { src: SelectionPointerTarget };
   selectionstarted: { src: PointerTarget; selection: AnchoredTimeSelection };
   selectionupdated: { src: PointerTarget; dst: PointerTarget; selection: AnchoredTimeSelection };
   selectionended: { src: PointerTarget; dst: PointerTarget };
@@ -93,6 +101,7 @@ export enum LocatorTargetType {
   None,
   Cursor,
   Note,
+  Selection,
 }
 
 export type VfNotehead = {
@@ -100,10 +109,16 @@ export type VfNotehead = {
   box: Box;
 };
 
+export enum SelectionEdge {
+  Start,
+  End,
+}
+
 export type LocatorTarget =
   | { type: LocatorTargetType.None }
   | { type: LocatorTargetType.Cursor; cursor: CursorWrapper; box: Box }
-  | { type: LocatorTargetType.Note; graphicalNote: GraphicalNote; vfNoteheadEl: SVGGElement; box: Box };
+  | { type: LocatorTargetType.Note; graphicalNote: GraphicalNote; vfNoteheadEl: SVGGElement; box: Box }
+  | { type: LocatorTargetType.Selection; selection: AnchoredTimeSelection; box: Box; edge: SelectionEdge };
 
 export enum LocateCost {
   Unknown,

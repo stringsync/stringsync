@@ -1,10 +1,11 @@
-import { CursorSnapshot, CursorWrapper } from '..';
+import { CursorSnapshot, CursorWrapper, SelectionEdge } from '..';
 import { AnchoredTimeSelection } from '../AnchoredTimeSelection';
 
 export enum PointerTargetType {
   None,
   Cursor,
   CursorSnapshot,
+  Selection,
 }
 
 export type PointerPosition = {
@@ -30,7 +31,19 @@ export type CursorSnapshotPointerTarget = {
   position: PointerPosition;
 };
 
-export type PointerTarget = NonePointerTarget | CursorPointerTarget | CursorSnapshotPointerTarget;
+export type SelectionPointerTarget = {
+  type: PointerTargetType.Selection;
+  selection: AnchoredTimeSelection;
+  edge: SelectionEdge;
+  timeMs: number;
+  position: PointerPosition;
+};
+
+export type PointerTarget =
+  | NonePointerTarget
+  | CursorPointerTarget
+  | CursorSnapshotPointerTarget
+  | SelectionPointerTarget;
 
 export type PointerContext = {
   downTarget: PointerTarget;

@@ -12,19 +12,19 @@ type MeasureLineBox = {
 };
 
 export class SelectionRenderer {
-  static create(scrollContainer: HTMLElement, locator: MusicDisplayLocator) {
-    return new SelectionRenderer(scrollContainer, locator.clone(), locator.clone());
+  static create(svg: SVGElement, locator: MusicDisplayLocator) {
+    return new SelectionRenderer(svg, locator.clone(), locator.clone());
   }
 
-  private scrollContainer: HTMLElement;
+  private svg: SVGElement;
   private startLocator: MusicDisplayLocator;
   private endLocator: MusicDisplayLocator;
   private startLocateResult = MusicDisplayLocator.createNullLocateResult();
   private endLocateResult = MusicDisplayLocator.createNullLocateResult();
-  private divs: Record<number, HTMLDivElement> = {};
+  private rects: Record<number, SVGRectElement> = {};
 
-  constructor(scrollContainer: HTMLElement, startLocator: MusicDisplayLocator, endLocator: MusicDisplayLocator) {
-    this.scrollContainer = scrollContainer;
+  constructor(scrollContainer: SVGElement, startLocator: MusicDisplayLocator, endLocator: MusicDisplayLocator) {
+    this.svg = scrollContainer;
     this.startLocator = startLocator;
     this.endLocator = endLocator;
   }
@@ -39,16 +39,16 @@ export class SelectionRenderer {
   show() {
     const measureLineBoxes = this.calculateMeasureLineBoxes();
     for (const { measureLine, box } of measureLineBoxes) {
-      const div = this.findOrCreateDiv(measureLine);
+      const div = this.findOrCreateRect(measureLine);
       this.renderBox(box, div);
     }
   }
 
   clear() {
-    for (const div of Object.values(this.divs)) {
+    for (const div of Object.values(this.rects)) {
       div.remove();
     }
-    this.divs = {};
+    this.rects = {};
   }
 
   private calculateMeasureLineBoxes(): MeasureLineBox[] {
@@ -98,24 +98,21 @@ export class SelectionRenderer {
     return measureLineBoxes;
   }
 
-  private findOrCreateDiv(measureLine: number) {
-    if (!(measureLine in this.divs)) {
-      const div = document.createElement('div');
-      this.scrollContainer.appendChild(div);
-      this.divs[measureLine] = div;
+  private findOrCreateRect(measureLine: number) {
+    if (!(measureLine in this.rects)) {
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('fill', DEFAULT_SELECTION_COLOR);
+      this.svg.appendChild(rect);
+      this.rects[measureLine] = rect;
     }
-    return this.divs[measureLine];
+    return this.rects[measureLine];
   }
 
-  private renderBox(box: Box, div: HTMLDivElement): HTMLDivElement {
-    div.style.position = 'absolute';
-    div.style.zIndex = '2';
-    div.style.pointerEvents = 'none';
-    div.style.backgroundColor = DEFAULT_SELECTION_COLOR;
-    div.style.height = `${box.height()}px`;
-    div.style.width = `${box.width()}px`;
-    div.style.top = `${box.yRange.start + 146}px`;
-    div.style.left = `${box.xRange.start}px`;
-    return div;
+  private renderBox(box: Box, rect: SVGRectElement): SVGRectElement {
+    rect.setAttribute('x', box.xRange.start.toString());
+    rect.setAttribute('y', box.yRange.start.toString());
+    rect.setAttribute('width', box.width().toString());
+    rect.setAttribute('height', box.height().toString());
+    return rect;
   }
 }
