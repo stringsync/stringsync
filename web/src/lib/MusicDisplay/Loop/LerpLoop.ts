@@ -11,12 +11,14 @@ export class LerpLoop implements Loop {
       numMeasures: imd.Sheet.SourceMeasures.length,
       scrollContainer: imd.scrollContainer,
       cursorOptions: { color: 'lime', alpha: 0 },
+      isNoteheadColoringEnabled: false,
     });
 
     const endCursor = LerpCursor.create(imd, locator.clone(), {
       numMeasures: imd.Sheet.SourceMeasures.length,
       scrollContainer: imd.scrollContainer,
       cursorOptions: { color: 'red', alpha: 0 },
+      isNoteheadColoringEnabled: false,
     });
 
     const loop = new LerpLoop(imd, startCursor, endCursor);

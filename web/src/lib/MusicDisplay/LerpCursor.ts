@@ -39,6 +39,7 @@ export type LerpCursorOpts = {
   scrollContainer: HTMLElement;
   numMeasures: number;
   cursorOptions?: Partial<CursorOptions>;
+  isNoteheadColoringEnabled: boolean;
 };
 
 export class LerpCursor {
@@ -65,6 +66,7 @@ export class LerpCursor {
   scrollContainer: HTMLElement;
   numMeasures: number;
   timeMs = 0;
+  isNoteheadColoringEnabled: boolean;
 
   private locator: MusicDisplayLocator | null = null;
   private prevCursorSnapshot: CursorSnapshot | null = null;
@@ -77,6 +79,7 @@ export class LerpCursor {
     this.lerper = cursors.lerper;
     this.numMeasures = opts.numMeasures;
     this.scrollContainer = opts.scrollContainer;
+    this.isNoteheadColoringEnabled = opts.isNoteheadColoringEnabled;
   }
 
   get element() {
@@ -201,7 +204,7 @@ export class LerpCursor {
 
     this.prevColoringOperation?.restore();
 
-    if (nextCursorSnapshot) {
+    if (nextCursorSnapshot && this.isNoteheadColoringEnabled) {
       const coloringOperation = ColoringOperation.init(this.lagger);
       coloringOperation.perform();
       this.prevColoringOperation = coloringOperation;
