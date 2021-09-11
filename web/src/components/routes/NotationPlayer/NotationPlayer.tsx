@@ -122,7 +122,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
   const onUserScroll = useCallback(() => {
     // TODO(jared) Maybe change the behavior when the user scrolls in a certain context.
-    console.log('user scrolled');
     setLastUserScrollAt(new Date());
   }, []);
 
@@ -249,6 +248,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
                 videoPlayer={videoPlayer}
                 musicDisplay={musicDisplay}
                 settings={settings}
+                lastUserScrollAt={lastUserScrollAt}
                 onSettingsChange={onSettingsChange}
                 onDivMount={onControlsDivMount}
               />

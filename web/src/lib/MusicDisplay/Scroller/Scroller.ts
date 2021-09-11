@@ -7,6 +7,8 @@ import { NoopScrollBehavior } from './NoopScrollBehavior';
 import { ScrollBehavior } from './types';
 
 export class Scroller {
+  type = ScrollBehaviorType.Auto;
+
   private scrollContainer: HTMLElement;
   private imd: InternalMusicDisplay;
   private behavior: ScrollBehavior;
@@ -14,7 +16,8 @@ export class Scroller {
   constructor(scrollContainer: HTMLElement, imd: InternalMusicDisplay) {
     this.scrollContainer = scrollContainer;
     this.imd = imd;
-    this.behavior = new AutoScrollBehavior(scrollContainer, imd);
+    this.behavior = this.makeBehavior(this.type);
+    this.behavior.start();
   }
 
   scrollToCursor(cursor: Cursor) {
@@ -43,6 +46,7 @@ export class Scroller {
 
   private changeBehavior(type: ScrollBehaviorType) {
     this.behavior.stop();
+    this.type = type;
     const behavior = this.makeBehavior(type);
     this.behavior = behavior;
     this.behavior.start();

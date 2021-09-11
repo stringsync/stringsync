@@ -1,11 +1,12 @@
 import { PauseOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Col, Drawer, Row, Slider } from 'antd';
+import { Alert, Button, Checkbox, Col, Drawer, Row, Slider } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { VideoJsPlayer } from 'video.js';
 import { CursorInfo, MusicDisplay } from '../../../lib/MusicDisplay';
 import { isTemporal } from '../../../lib/MusicDisplay/pointer/pointerTypeAssert';
+import { ScrollBehaviorType } from '../../../lib/MusicDisplay/Scroller';
 import { NotationDetail } from './NotationDetail';
 import { NotationPlayerSettings } from './types';
 import { useTipFormatter } from './useTipFormatter';
@@ -35,6 +36,12 @@ const SettingsInner = styled.div`
   height: calc(100vh - 190px);
 `;
 
+const FloatingAlert = styled(Alert)`
+  position: fixed;
+  bottom: 80px;
+  right: 24px;
+`;
+
 export type Props = {
   durationMs: number;
   songName: string;
@@ -43,6 +50,7 @@ export type Props = {
   videoPlayer: VideoJsPlayer;
   musicDisplay: MusicDisplay | null;
   settings: NotationPlayerSettings;
+  lastUserScrollAt: Date | null;
   onSettingsChange: (notationPlayerSettings: NotationPlayerSettings) => void;
   onDivMount: (div: HTMLDivElement) => void;
 };
@@ -51,7 +59,12 @@ export const NotationControls: React.FC<Props> = (props) => {
   const { videoPlayer, settings, musicDisplay, durationMs, onSettingsChange, onDivMount } = props;
 
   const controlsDivRef = useRef<HTMLDivElement>(null);
+  const isMusicDisplayResizingRef = useRef(false);
+  const isMusicDisplayLoadingRef = useRef(false);
 
+  const [isNoopScrolling, setIsNoopScrolling] = useState(() => {
+    return musicDisplay?.scroller.type === ScrollBehaviorType.Noop;
+  });
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
   const [cursorInfo, setCursorInfo] = useState<CursorInfo>({
     currentMeasureIndex: 0,
@@ -66,6 +79,7 @@ export const NotationControls: React.FC<Props> = (props) => {
   const value = props.durationMs === 0 ? 0 : (currentTimeMs / props.durationMs) * 100;
   const handleStyle = useMemo(() => ({ width: 21, height: 21, marginTop: -8 }), []);
   const isPaused = videoPlayerState === VideoPlayerState.Paused;
+  const isPlaying = videoPlayerState === VideoPlayerState.Playing;
 
   const onSettingsClick = useCallback(() => {
     setIsSettingsVisible((isSettingsVisible) => !isSettingsVisible);
@@ -78,6 +92,13 @@ export const NotationControls: React.FC<Props> = (props) => {
   const onFretboardVisibilityChange = useCallback(
     (event: CheckboxChangeEvent) => {
       onSettingsChange({ ...settings, isFretboardVisible: event.target.checked });
+    },
+    [settings, onSettingsChange]
+  );
+
+  const onAutoscrollPreferenceChange = useCallback(
+    (event: CheckboxChangeEvent) => {
+      onSettingsChange({ ...settings, isAutoscrollPreferred: event.target.checked });
     },
     [settings, onSettingsChange]
   );
@@ -98,6 +119,24 @@ export const NotationControls: React.FC<Props> = (props) => {
     unsuspend();
   }, [unsuspend]);
 
+  const onAutoscrollDisabledClose = useCallback(() => {
+    if (!musicDisplay) {
+      return;
+    }
+    musicDisplay.scroller.startAutoScrolling();
+    musicDisplay.cursor.scrollIntoView();
+  }, [musicDisplay]);
+
+  useEffect(() => {
+    if (!musicDisplay) {
+      return;
+    }
+    if (!settings.isAutoscrollPreferred) {
+      return;
+    }
+    musicDisplay.scroller.startAutoScrolling();
+  }, [musicDisplay, settings.isAutoscrollPreferred]);
+
   useEffect(() => {
     if (!musicDisplay) {
       return;
@@ -116,6 +155,58 @@ export const NotationControls: React.FC<Props> = (props) => {
     if (!musicDisplay) {
       return;
     }
+    if (!isPlaying) {
+      return;
+    }
+    const eventBusIds = [
+      musicDisplay.eventBus.subscribe('externalscrolldetected', () => {
+        if (isMusicDisplayResizingRef.current) {
+          return;
+        }
+        if (isMusicDisplayLoadingRef.current) {
+          return;
+        }
+        musicDisplay.scroller.disable();
+      }),
+      musicDisplay.eventBus.subscribe('resizestarted', () => {
+        isMusicDisplayResizingRef.current = true;
+      }),
+      musicDisplay.eventBus.subscribe('resizeended', () => {
+        isMusicDisplayResizingRef.current = false;
+      }),
+      musicDisplay.eventBus.subscribe('loadstarted', () => {
+        isMusicDisplayLoadingRef.current = true;
+      }),
+      musicDisplay.eventBus.subscribe('loadended', () => {
+        isMusicDisplayLoadingRef.current = false;
+      }),
+    ];
+
+    return () => {
+      musicDisplay.eventBus.unsubscribe(...eventBusIds);
+    };
+  }, [isPlaying, musicDisplay]);
+
+  useEffect(() => {
+    if (!musicDisplay) {
+      return;
+    }
+
+    const eventBusIds = [
+      musicDisplay.eventBus.subscribe('scrollbehaviorchanged', (payload) => {
+        setIsNoopScrolling(payload.type === ScrollBehaviorType.Noop);
+      }),
+    ];
+
+    return () => {
+      musicDisplay.eventBus.unsubscribe(...eventBusIds);
+    };
+  }, [musicDisplay]);
+
+  useEffect(() => {
+    if (!musicDisplay) {
+      return;
+    }
 
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('cursorinfochanged', setCursorInfo),
@@ -124,6 +215,8 @@ export const NotationControls: React.FC<Props> = (props) => {
           musicDisplay.loop.deactivate();
         }
         seek(payload.src.timeMs);
+        musicDisplay.scroller.startAutoScrolling();
+        musicDisplay.cursor.scrollIntoView();
       }),
       musicDisplay.eventBus.subscribe('cursordragstarted', (payload) => {
         musicDisplay.scroller.startManualScrolling();
@@ -201,6 +294,16 @@ export const NotationControls: React.FC<Props> = (props) => {
 
   return (
     <Outer ref={controlsDivRef}>
+      {isNoopScrolling && settings.isAutoscrollPreferred && (
+        <FloatingAlert
+          showIcon
+          closable
+          closeText="enable"
+          onClose={onAutoscrollDisabledClose}
+          type="warning"
+          message="autoscroll disabled"
+        />
+      )}
       <Row justify="center" align="middle">
         <Col xs={2} sm={2} md={2} lg={1} xl={1} xxl={1}>
           <Row justify="center" align="middle">
@@ -248,6 +351,9 @@ export const NotationControls: React.FC<Props> = (props) => {
         <SettingsInner>
           <Checkbox checked={props.settings.isFretboardVisible} onChange={onFretboardVisibilityChange}>
             fretboard
+          </Checkbox>
+          <Checkbox checked={props.settings.isAutoscrollPreferred} onChange={onAutoscrollPreferenceChange}>
+            autoscroll
           </Checkbox>
         </SettingsInner>
       </Drawer>

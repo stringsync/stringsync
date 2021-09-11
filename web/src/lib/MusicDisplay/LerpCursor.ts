@@ -120,7 +120,9 @@ export class LerpCursor {
       this.updateLerperPosition(locateResult.x);
     } else {
       this.updateCursors(nextCursorSnapshot);
-      this.updateLerperPosition(locateResult.x);
+      if (nextCursorSnapshot) {
+        this.updateLerperPosition(locateResult.x);
+      }
     }
 
     if (prevCursorSnapshot?.measureLine !== nextCursorSnapshot?.measureLine) {

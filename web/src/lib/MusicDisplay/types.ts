@@ -8,8 +8,6 @@ import { CursorPointerTarget, CursorSnapshotPointerTarget, NonePointerTarget, Po
 import { ScrollBehaviorType } from './Scroller';
 
 export type MusicDisplayEventBus = EventBus<{
-  autoscrollended: {};
-  autoscrollstarted: {};
   cursordragstarted: { src: CursorPointerTarget };
   cursordragupdated: { src: CursorPointerTarget; dst: PointerTarget };
   cursordragended: { src: CursorPointerTarget; dst: PointerTarget };
@@ -19,6 +17,7 @@ export type MusicDisplayEventBus = EventBus<{
   cursorsnapshotclicked: { src: CursorSnapshotPointerTarget };
   cursorsnapshotentered: { src: CursorSnapshotPointerTarget };
   cursorsnapshotexited: { src: CursorSnapshotPointerTarget };
+  externalscrolldetected: {};
   interactablemoved: {};
   loadended: {};
   loadstarted: {};

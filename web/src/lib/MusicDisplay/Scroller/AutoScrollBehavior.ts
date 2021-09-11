@@ -38,6 +38,7 @@ export class AutoScrollBehavior implements ScrollBehavior {
   private deferHandle = -1;
   private lastEntries: IntersectionObserverEntry[] = [];
   private lastScrollId = Symbol();
+  private isAutoScrolling = false;
 
   constructor(scrollContainer: HTMLElement, imd: InternalMusicDisplay) {
     this.scrollContainer = scrollContainer;
@@ -45,15 +46,20 @@ export class AutoScrollBehavior implements ScrollBehavior {
     this.imd = imd;
     this.observer = new IntersectionObserver(this.onObservation, {
       root: scrollContainer,
-      threshold: range(0, 1, 0.1),
+      threshold: range(0, 1, 0.01),
     });
   }
 
-  start() {}
+  start() {
+    this.scrollContainer.addEventListener('scroll', this.detectExternalScroll, { passive: true });
+  }
 
   stop() {
+    this.scrollContainer.removeEventListener('scroll', this.detectExternalScroll);
     window.cancelIdleCallback(this.deferHandle);
     window.clearTimeout(this.autoScrollHandle);
+    this.lastEntries = [];
+    this.isAutoScrolling = false;
     this.observer.disconnect();
     this.cursor = null;
   }
@@ -73,9 +79,14 @@ export class AutoScrollBehavior implements ScrollBehavior {
     this.defer(this.scrollToCursor);
   }
 
+  private detectExternalScroll = () => {
+    if (!this.isAutoScrolling) {
+      this.imd.eventBus.dispatch('externalscrolldetected', {});
+    }
+  };
+
   private onObservation: IntersectionObserverCallback = (entries) => {
     this.lastEntries = entries;
-    this.defer(this.scrollToCursor);
   };
 
   private defer(callback: () => void) {
@@ -84,8 +95,6 @@ export class AutoScrollBehavior implements ScrollBehavior {
   }
 
   private scrollToCursor = () => {
-    // Sometimes there are more than one entry, so instead of trying to figure
-    // out which one to pick, we default to a null entry analysis.
     const entry = this.lastEntries.length === 1 ? first(this.lastEntries)! : null;
     const analysis = EntryAnalysis.compute(entry);
 
@@ -106,11 +115,7 @@ export class AutoScrollBehavior implements ScrollBehavior {
       duration = Duration.ms(0);
     }
 
-    this.scrollTo({
-      scrollTop: targetScrollTop,
-      duration,
-      easing,
-    });
+    this.scrollTo({ scrollTop: targetScrollTop, duration, easing });
   };
 
   private calculateBestScrollTop(analysis: IntersectionObserverAnalysis, currentScrollTop: number): number {
@@ -142,11 +147,12 @@ export class AutoScrollBehavior implements ScrollBehavior {
     return cursorTop;
   }
 
-  scrollTo = (scrollTarget: AutoScrollTarget) => {
+  private scrollTo = (scrollTarget: AutoScrollTarget) => {
     const hasNoOverflow = this.scrollContainer.scrollHeight <= this.scrollContainer.clientHeight;
     if (hasNoOverflow) {
       return;
     }
+
     const lastScrollId = Symbol();
     const didNewScrollInvoke = () => this.lastScrollId !== lastScrollId;
     this.$scrollContainer.animate(
@@ -157,7 +163,7 @@ export class AutoScrollBehavior implements ScrollBehavior {
         duration: scrollTarget.duration.ms,
         start: () => {
           this.lastScrollId = lastScrollId;
-          this.imd.eventBus.dispatch('autoscrollstarted', {});
+          this.isAutoScrolling = true;
         },
         always: () => {
           if (didNewScrollInvoke()) {
@@ -168,7 +174,7 @@ export class AutoScrollBehavior implements ScrollBehavior {
             if (didNewScrollInvoke()) {
               return;
             }
-            this.imd.eventBus.dispatch('autoscrollended', {});
+            this.isAutoScrolling = false;
           }, SCROLL_GRACE_DURATION.ms);
         },
       }

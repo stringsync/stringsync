@@ -58,41 +58,13 @@ export const Notation: React.FC<NotationProps> = (props) => {
     (state) => state.device.inputType
   );
 
-  const { musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef, onMusicDisplayChange, onUserScroll } = props;
+  const { musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef, onMusicDisplayChange } = props;
 
   const divRef = useRef<HTMLDivElement>(null);
   const [cursor, setCursor] = useState(Cursor.Pointer);
 
-  // A ref is used instead of state because we don't want to wait for
-  // React to flush the values - the scroll handler will still be active
-  // regardless of hooked state.
-  const isAutoScrollingRef = useRef(false);
-
   const [isLoading, setIsLoading] = useState(false);
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
-
-  useEffect(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (!scrollContainer) {
-      return;
-    }
-    if (!onUserScroll) {
-      return;
-    }
-
-    // If we're not auto scrolling, assume any scroll event was
-    // triggered by the user.
-    const listener = () => {
-      if (!isAutoScrollingRef.current) {
-        onUserScroll();
-      }
-    };
-    scrollContainer.addEventListener('scroll', listener);
-
-    return () => {
-      scrollContainer.removeEventListener('scroll', listener);
-    };
-  }, [scrollContainerRef, onUserScroll]);
 
   useEffect(() => {
     if (onMusicDisplayChange) {
@@ -106,12 +78,6 @@ export const Notation: React.FC<NotationProps> = (props) => {
     }
 
     const eventBusIds = [
-      musicDisplay.eventBus.subscribe('autoscrollstarted', () => {
-        isAutoScrollingRef.current = true;
-      }),
-      musicDisplay.eventBus.subscribe('autoscrollended', () => {
-        isAutoScrollingRef.current = false;
-      }),
       musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
         const { anchorTimeMs, seekerTimeMs } = payload.selection;
         if (Math.abs(anchorTimeMs - seekerTimeMs) <= SELECTION_INDETERMINATE_ZONE_PX) {

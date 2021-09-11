@@ -5,6 +5,7 @@ const NOTATION_SETTINGS_KEY = 'stringsyncNotationPlayerSettings';
 
 const DEFAULT_SETTINGS: NotationPlayerSettings = Object.freeze({
   isFretboardVisible: false,
+  isAutoscrollPreferred: true,
 });
 
 export const useNotationPlayerSettings = () => useLocalStorage(NOTATION_SETTINGS_KEY, DEFAULT_SETTINGS);
