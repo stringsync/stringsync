@@ -90,6 +90,8 @@ export class SelectionRenderer {
       cursorSnapshot = nextCursorSnapshot;
     }
 
+    // TODO(jared) Fix trying to seek before the first note on the next line
+
     measureLineBoxes.push({
       measureLine,
       box: box.to(this.endLocateResult.x, this.endLocateResult.cursorSnapshot.yRange.end),
