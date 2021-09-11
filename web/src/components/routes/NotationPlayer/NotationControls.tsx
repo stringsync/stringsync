@@ -301,7 +301,7 @@ export const NotationControls: React.FC<Props> = (props) => {
           closeText="enable"
           onClose={onAutoscrollDisabledClose}
           type="warning"
-          message="autoscroll disabled"
+          message="autoscroll temporarily disabled"
         />
       )}
       <Row justify="center" align="middle">
