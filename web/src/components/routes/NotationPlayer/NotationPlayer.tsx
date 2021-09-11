@@ -38,7 +38,6 @@ const LeftOrTopCol = styled(Col)`
 `;
 
 const RightOrBottomScrollContainer = styled.div<{ $heightOffsetPx: number }>`
-  padding-top: 24px;
   background: white;
   height: calc(100vh - ${(props) => props.$heightOffsetPx}px);
   overflow-x: hidden;
@@ -51,6 +50,7 @@ const RightOrBottomCol = styled(Col)`
 `;
 
 const SongName = styled.h1`
+  margin-top: 24px;
   text-align: center;
   font-size: 2em;
   margin-bottom: 0;
@@ -120,7 +120,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   );
 
   const onUserScroll = useCallback(() => {
-    console.log('user scrolled!');
+    // TODO(jared) Maybe change the behavior when the user scrolls in a certain context.
   }, []);
 
   const onMusicDisplayChange = useCallback(setMusicDisplay, [setMusicDisplay]);

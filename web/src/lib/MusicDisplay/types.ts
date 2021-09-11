@@ -23,6 +23,7 @@ export type MusicDisplayEventBus = EventBus<{
   loadended: {};
   loadstarted: {};
   longpress: {};
+  measurelinechanged: {};
   notargetentered: { src: NonePointerTarget };
   notargetexited: { src: NonePointerTarget };
   pointeractive: {};

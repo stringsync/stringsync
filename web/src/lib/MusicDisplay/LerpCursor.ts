@@ -123,7 +123,14 @@ export class LerpCursor {
       this.updateLerperPosition(locateResult.x);
     }
 
+    if (prevCursorSnapshot?.measureLine !== nextCursorSnapshot?.measureLine) {
+      this.imd.eventBus.dispatch('measurelinechanged', {});
+    }
     this.imd.eventBus.dispatch('interactablemoved', {});
+  }
+
+  scrollIntoView() {
+    this.imd.scroller.updateAutoScrollTarget(this.lerper);
   }
 
   show() {
@@ -176,10 +183,6 @@ export class LerpCursor {
     return Box.from(x0, y0).to(x1, y1);
   }
 
-  scrollIntoView() {
-    this.imd.scroller.scrollToCursor(this.lagger);
-  }
-
   private updateCursors(nextCursorSnapshot: CursorSnapshot | null) {
     if (!nextCursorSnapshot) {
       this.clear();
@@ -191,8 +194,6 @@ export class LerpCursor {
 
       this.show();
     }
-
-    this.scrollIntoView();
 
     this.prevCursorSnapshot = nextCursorSnapshot;
 

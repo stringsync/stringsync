@@ -17,7 +17,7 @@ export class Scroller {
     this.behavior = new AutoScrollBehavior(scrollContainer, imd);
   }
 
-  scrollToCursor(cursor: Cursor) {
+  updateAutoScrollTarget(cursor: Cursor) {
     this.send({ type: ScrollRequestType.Cursor, cursor });
   }
 

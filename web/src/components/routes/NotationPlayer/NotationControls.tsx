@@ -182,6 +182,9 @@ export const NotationControls: React.FC<Props> = (props) => {
         musicDisplay.cursor.scrollIntoView();
         unsuspend();
       }),
+      musicDisplay.eventBus.subscribe('measurelinechanged', () => {
+        musicDisplay.cursor.scrollIntoView();
+      }),
     ];
 
     return () => {

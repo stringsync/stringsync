@@ -25,28 +25,7 @@ export enum ScrollSpeed {
 export enum ScrollAlignment {
   None,
   Top,
-  Center,
   Bottom,
-}
-
-export enum RelativeSize {
-  Unknown,
-  Underflow,
-  Overflow,
-}
-
-export enum Visibility {
-  Unknown,
-  None,
-  Full,
-  Partial,
-}
-
-export enum RelativePosition {
-  Unknown,
-  Inside,
-  Above,
-  Below,
 }
 
 export enum ScrollRequestType {
@@ -71,13 +50,44 @@ export type IntentScrollRequest = {
 
 export type ScrollRequest = CursorScrollRequest | IntentScrollRequest;
 
-export type AutoScrollTarget = {
-  scrollTop: number;
-  duration: Duration;
-};
+export type Easing = 'linear' | 'swing';
 
 export interface ScrollBehavior {
   start(): void;
   stop(): void;
   handle(request: ScrollRequest): void;
 }
+
+export enum SizeComparison {
+  Indeterminate = 'Indeterminate',
+  Smaller = 'Smaller',
+  Equal = 'Equal',
+  Bigger = 'Bigger',
+}
+
+export enum HorizontalEdgeIntersection {
+  None = 'None',
+  Top = 'Top',
+  Bottom = 'Bottom',
+  Both = 'Bottom',
+}
+
+export enum PositionalRelationship {
+  Indeterminate = 'None',
+  Above = 'Above',
+  Below = 'Below',
+}
+
+export type AutoScrollTarget = {
+  scrollTop: number;
+  duration: Duration;
+  easing: Easing;
+  onAfterScroll: () => void;
+};
+
+export type IntersectionObserverAnalysis = {
+  visibility: number;
+  sizeComparison: SizeComparison;
+  horizontalEdgeIntersection: HorizontalEdgeIntersection;
+  positionalRelationship: PositionalRelationship;
+};
