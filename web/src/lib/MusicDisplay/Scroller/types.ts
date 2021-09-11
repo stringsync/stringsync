@@ -66,6 +66,7 @@ export enum SizeComparison {
 }
 
 export enum HorizontalEdgeIntersection {
+  Indeterminate = 'Indeterminate',
   None = 'None',
   Top = 'Top',
   Bottom = 'Bottom',
@@ -78,16 +79,19 @@ export enum PositionalRelationship {
   Below = 'Below',
 }
 
-export type AutoScrollTarget = {
+export type AutoScrollTarreadonly = {
   scrollTop: number;
   duration: Duration;
   easing: Easing;
   onAfterScroll: () => void;
 };
 
-export type IntersectionObserverAnalysis = {
-  visibility: number;
-  sizeComparison: SizeComparison;
-  horizontalEdgeIntersection: HorizontalEdgeIntersection;
-  positionalRelationship: PositionalRelationship;
-};
+export interface IntersectionObserverAnalysis {
+  readonly visibility: number;
+  readonly invisibility: number;
+  readonly visibleHeightPx: number;
+  readonly invisibleHeightPx: number;
+  readonly sizeComparison: SizeComparison;
+  readonly horizontalEdgeIntersection: HorizontalEdgeIntersection;
+  readonly positionalRelationship: PositionalRelationship;
+}

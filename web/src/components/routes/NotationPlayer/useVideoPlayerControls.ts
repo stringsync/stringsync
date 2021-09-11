@@ -1,6 +1,7 @@
 import { noop } from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { VideoJsPlayer } from 'video.js';
+import { Duration } from '../../../util/Duration';
 
 export enum VideoPlayerState {
   Paused,
@@ -74,9 +75,8 @@ export const useVideoPlayerControls = (videoPlayer: VideoJsPlayer) => {
     let rafHandle = 0;
     const updateCurrentTimeMs = () => {
       try {
-        const timeSec = videoPlayer.currentTime();
-        const timeMs = timeSec * 1000;
-        setCurrentTimeMs(timeMs);
+        const time = Duration.sec(videoPlayer.currentTime());
+        setCurrentTimeMs(time.ms);
       } finally {
         rafHandle = window.requestAnimationFrame(updateCurrentTimeMs);
       }

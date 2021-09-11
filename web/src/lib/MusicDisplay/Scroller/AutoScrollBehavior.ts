@@ -4,10 +4,11 @@ import { Cursor } from 'opensheetmusicdisplay';
 import { ScrollRequestType } from '.';
 import { Duration } from '../../../util/Duration';
 import { InternalMusicDisplay } from '../InternalMusicDisplay';
+import { EntryAnalysis } from './EntryAnalysis';
 import {
   Easing,
   HorizontalEdgeIntersection,
-  PositionalRelationship,
+  IntersectionObserverAnalysis,
   ScrollBehavior,
   ScrollRequest,
   SizeComparison,
@@ -17,30 +18,14 @@ type AutoScrollTarget = {
   scrollTop: number;
   duration: Duration;
   easing: Easing;
-  onAfterScroll: () => void;
-};
-
-type IntersectionObserverAnalysis = {
-  visibility: number;
-  sizeComparison: SizeComparison;
-  horizontalEdgeIntersection: HorizontalEdgeIntersection;
-  positionalRelationship: PositionalRelationship;
-};
-
-const NULL_ANALYSIS: IntersectionObserverAnalysis = {
-  visibility: 0,
-  sizeComparison: SizeComparison.Indeterminate,
-  horizontalEdgeIntersection: HorizontalEdgeIntersection.None,
-  positionalRelationship: PositionalRelationship.Indeterminate,
 };
 
 const SCROLL_DEFAULT_DURATION = Duration.ms(150);
-const SCROLL_THROTTLE_DURATION = Duration.ms(SCROLL_DEFAULT_DURATION.ms + 10);
 const SCROLL_BACK_TOP_DURATION = Duration.ms(500);
 const SCROLL_BOTTOM_PADDING_PX = 20;
 const SCROLL_GRACE_DURATION = Duration.ms(200);
 const SCROLL_DELTA_TOLERANCE_PX = 2;
-const SCROLL_JUMP_THRESHOLD_PX = 1000;
+const SCROLL_JUMP_THRESHOLD_PX = 800;
 
 export class AutoScrollBehavior implements ScrollBehavior {
   private scrollContainer: HTMLElement;
@@ -50,8 +35,8 @@ export class AutoScrollBehavior implements ScrollBehavior {
   private observer: IntersectionObserver;
   private cursor: Cursor | null = null;
   private autoScrollHandle = -1;
-  private isScrolling = false;
-  private lastAnalysis = NULL_ANALYSIS;
+  private deferHandle = -1;
+  private lastEntries: IntersectionObserverEntry[] = [];
 
   constructor(scrollContainer: HTMLElement, imd: InternalMusicDisplay) {
     this.scrollContainer = scrollContainer;
@@ -66,6 +51,7 @@ export class AutoScrollBehavior implements ScrollBehavior {
   start() {}
 
   stop() {
+    window.cancelIdleCallback(this.deferHandle);
     window.clearTimeout(this.autoScrollHandle);
     this.observer.disconnect();
     this.cursor = null;
@@ -79,22 +65,29 @@ export class AutoScrollBehavior implements ScrollBehavior {
       if (this.cursor) {
         this.observer.unobserve(this.cursor.cursorElement);
       }
+      this.lastEntries = [];
       this.cursor = request.cursor;
       this.observer.observe(request.cursor.cursorElement);
     }
-    this.scrollToCursor(NULL_ANALYSIS);
+    this.defer(this.scrollToCursor);
   }
 
   private onObservation: IntersectionObserverCallback = (entries) => {
-    const entry = first(entries);
-    const analysis = entry ? this.analyzeEntry(entry) : NULL_ANALYSIS;
-    this.lastAnalysis = analysis;
-    if (!this.isScrolling) {
-      this.scrollToCursor(analysis);
-    }
+    this.lastEntries = entries;
+    this.defer(this.scrollToCursor);
   };
 
-  private scrollToCursor = (analysis: IntersectionObserverAnalysis) => {
+  private defer(callback: () => void) {
+    window.cancelIdleCallback(this.deferHandle);
+    this.deferHandle = window.requestIdleCallback(callback);
+  }
+
+  private scrollToCursor = () => {
+    // Sometimes there are more than one entry, so instead of trying to figure
+    // out which one to pick, we default to a null entry analysis.
+    const entry = this.lastEntries.length === 1 ? first(this.lastEntries)! : null;
+    const analysis = EntryAnalysis.compute(entry);
+
     const currentScrollTop = this.$scrollContainer.scrollTop() ?? 0;
     const targetScrollTop = this.calculateBestScrollTop(analysis, currentScrollTop);
 
@@ -116,9 +109,6 @@ export class AutoScrollBehavior implements ScrollBehavior {
       scrollTop: targetScrollTop,
       duration,
       easing,
-      onAfterScroll: () => {
-        this.scrollToCursor(this.lastAnalysis);
-      },
     });
   };
 
@@ -134,30 +124,19 @@ export class AutoScrollBehavior implements ScrollBehavior {
       nonNotationHeightPx += $child.data('notation') ? 0 : outerHeight;
     });
 
-    const $cursor = $(this.cursor.cursorElement);
-    const cursorTop = nonNotationHeightPx + $cursor.position().top;
-    const cursorHeight = $cursor.height() ?? 0;
-    const { horizontalEdgeIntersection, visibility, positionalRelationship, sizeComparison } = analysis;
+    const cursorTop = nonNotationHeightPx + $(this.cursor.cursorElement).position().top;
 
-    if (sizeComparison === SizeComparison.Bigger) {
+    if (analysis.sizeComparison === SizeComparison.Bigger) {
       return cursorTop;
     }
-    if (visibility === 1) {
+    if (analysis.visibility === 1) {
       return currentScrollTop;
     }
-    if (horizontalEdgeIntersection === HorizontalEdgeIntersection.Top) {
+    if (analysis.horizontalEdgeIntersection === HorizontalEdgeIntersection.Top) {
       return cursorTop;
     }
-    if (horizontalEdgeIntersection === HorizontalEdgeIntersection.Bottom) {
-      const invisibility = 1 - visibility;
-      const invisibleCursorHeight = invisibility * cursorHeight;
-      return currentScrollTop + invisibleCursorHeight + SCROLL_BOTTOM_PADDING_PX;
-    }
-    if (positionalRelationship === PositionalRelationship.Above) {
-      return cursorTop;
-    }
-    if (positionalRelationship === PositionalRelationship.Below) {
-      return cursorTop;
+    if (analysis.horizontalEdgeIntersection === HorizontalEdgeIntersection.Bottom) {
+      return currentScrollTop + analysis.invisibleHeightPx + SCROLL_BOTTOM_PADDING_PX;
     }
     return cursorTop;
   }
@@ -174,79 +153,14 @@ export class AutoScrollBehavior implements ScrollBehavior {
         queue: false,
         duration: scrollTarget.duration.ms,
         start: () => {
-          this.isScrolling = true;
           this.imd.eventBus.dispatch('autoscrollstarted', {});
         },
         always: () => {
           this.autoScrollHandle = window.setTimeout(() => {
-            this.isScrolling = false;
             this.imd.eventBus.dispatch('autoscrollended', {});
-            scrollTarget.onAfterScroll();
           }, SCROLL_GRACE_DURATION.ms);
         },
       }
     );
   };
-
-  private analyzeEntry(entry: IntersectionObserverEntry): IntersectionObserverAnalysis {
-    return {
-      visibility: entry.intersectionRatio,
-      sizeComparison: this.getSizeComparison(entry),
-      horizontalEdgeIntersection: this.getHorizontalEdgeIntersection(entry),
-      positionalRelationship: this.getPositionalRelationship(entry),
-    };
-  }
-
-  private getSizeComparison(entry: IntersectionObserverEntry): SizeComparison {
-    const entryHeightPx = entry.boundingClientRect.height;
-    const containerHeightPx = this.getContainerHeightPx(entry);
-
-    if (entryHeightPx < containerHeightPx) {
-      return SizeComparison.Smaller;
-    } else if (entryHeightPx === containerHeightPx) {
-      return SizeComparison.Equal;
-    } else {
-      return SizeComparison.Bigger;
-    }
-  }
-
-  private getHorizontalEdgeIntersection(entry: IntersectionObserverEntry): HorizontalEdgeIntersection {
-    const isFullyInvisible = entry.intersectionRect.height === 0;
-    if (isFullyInvisible) {
-      return HorizontalEdgeIntersection.None;
-    }
-    const isFullyVisible = entry.intersectionRatio === 1;
-    if (isFullyVisible) {
-      return HorizontalEdgeIntersection.None;
-    }
-    const isTopVisible = entry.boundingClientRect.top === entry.intersectionRect.top;
-    if (isTopVisible) {
-      return HorizontalEdgeIntersection.Bottom;
-    }
-    const isBottomVisible = entry.boundingClientRect.bottom === entry.intersectionRect.bottom;
-    if (isBottomVisible) {
-      return HorizontalEdgeIntersection.Top;
-    }
-    return HorizontalEdgeIntersection.Both;
-  }
-
-  private getPositionalRelationship(entry: IntersectionObserverEntry): PositionalRelationship {
-    const containerHeightPx = this.getContainerHeightPx(entry);
-    const containerTopPx = this.getContainerTopPx(entry);
-    const containerMidpointPx = containerTopPx + containerHeightPx / 2;
-
-    const entryHeightPx = entry.boundingClientRect.height;
-    const entryTopPx = entry.boundingClientRect.top;
-    const entryMidpointPx = entryTopPx + entryHeightPx / 2;
-
-    return entryMidpointPx < containerMidpointPx ? PositionalRelationship.Above : PositionalRelationship.Below;
-  }
-
-  private getContainerHeightPx(entry: IntersectionObserverEntry): number {
-    return entry.rootBounds?.height ?? this.scrollContainer.offsetHeight;
-  }
-
-  private getContainerTopPx(entry: IntersectionObserverEntry): number {
-    return entry.rootBounds?.top ?? this.scrollContainer.offsetTop;
-  }
 }

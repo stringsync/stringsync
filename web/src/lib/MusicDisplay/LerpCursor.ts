@@ -130,7 +130,7 @@ export class LerpCursor {
   }
 
   scrollIntoView() {
-    this.imd.scroller.updateAutoScrollTarget(this.lerper);
+    this.imd.scroller.scrollToCursor(this.lerper);
   }
 
   show() {
