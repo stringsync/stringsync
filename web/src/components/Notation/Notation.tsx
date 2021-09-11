@@ -88,9 +88,6 @@ export const Notation: React.FC<NotationProps> = (props) => {
           setCursor(Cursor.WResize);
         }
       }),
-      musicDisplay.eventBus.subscribe('selectionended', () => {
-        setCursor(Cursor.Pointer);
-      }),
       musicDisplay.eventBus.subscribe('cursorentered', (payload) => {
         setCursor(Cursor.Grab);
       }),
