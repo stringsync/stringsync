@@ -10,13 +10,13 @@ export class LerpLoop implements Loop {
     const startCursor = LerpCursor.create(imd, locator.clone(), {
       numMeasures: imd.Sheet.SourceMeasures.length,
       scrollContainer: imd.scrollContainer,
-      color: 'lime',
+      cursorOptions: { color: 'lime' },
     });
 
     const endCursor = LerpCursor.create(imd, locator.clone(), {
       numMeasures: imd.Sheet.SourceMeasures.length,
       scrollContainer: imd.scrollContainer,
-      color: 'red',
+      cursorOptions: { color: 'red' },
     });
 
     const loop = new LerpLoop(imd, startCursor, endCursor);

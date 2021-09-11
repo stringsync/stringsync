@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import { Cursor, CursorType } from 'opensheetmusicdisplay';
+import { Cursor, CursorOptions, CursorType } from 'opensheetmusicdisplay';
 import { Box } from '../../util/Box';
 import { ColoringOperation } from './ColoringOperation';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
@@ -38,13 +38,13 @@ type Cursors = {
 export type LerpCursorOpts = {
   scrollContainer: HTMLElement;
   numMeasures: number;
-  color: string;
+  cursorOptions?: Partial<CursorOptions>;
 };
 
 export class LerpCursor {
   static create(imd: InternalMusicDisplay, locator: MusicDisplayLocator, opts: LerpCursorOpts) {
     const cursorsOptions = DEFAULT_CURSOR_OPTS.map((cursorsOption) => ({ id: Symbol(), ...cursorsOption }));
-    cursorsOptions[2].color = opts.color;
+    Object.assign(cursorsOptions[2], opts.cursorOptions);
     const cursors = imd.createCursors(cursorsOptions);
     if (cursors.length !== 3) {
       throw new Error(`expected 3 cursors, got: ${cursors.length}`);
