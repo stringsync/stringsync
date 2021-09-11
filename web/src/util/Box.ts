@@ -29,6 +29,14 @@ export class Box {
     this.yRange = yRange;
   }
 
+  width() {
+    return this.xRange.size;
+  }
+
+  height() {
+    return this.yRange.size;
+  }
+
   contains(x: number, y: number) {
     return this.xRange.contains(x) && this.yRange.contains(y);
   }

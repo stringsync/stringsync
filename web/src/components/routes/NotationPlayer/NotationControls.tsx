@@ -38,6 +38,7 @@ const SettingsInner = styled.div`
 
 const FloatingAlert = styled(Alert)`
   position: fixed;
+  z-index: 5;
   bottom: 80px;
   right: 24px;
 `;

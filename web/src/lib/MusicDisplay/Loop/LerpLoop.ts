@@ -73,6 +73,9 @@ export class LerpLoop implements Loop {
     const timeMsRange = this.timeMsRange;
     this.startCursor.update(timeMsRange.start);
     this.endCursor.update(timeMsRange.end);
+    if (this.imd.selectionRenderer) {
+      this.imd.selectionRenderer.update(this.timeMsRange);
+    }
   }
 
   isStartCursor(cursor: CursorWrapper) {
