@@ -16,10 +16,10 @@ const RANGED_SCROLL_INTENTS: RangedScrollIntent[] = [
   { range: NumberRange.from(0).to(0.05), speed: ScrollSpeed.Run, direction: ScrollDirection.Up },
   { range: NumberRange.from(0.05).to(0.1), speed: ScrollSpeed.Walk, direction: ScrollDirection.Up },
   { range: NumberRange.from(0.1).to(0.15), speed: ScrollSpeed.Crawl, direction: ScrollDirection.Up },
-  { range: NumberRange.from(0.15).to(0.6), speed: ScrollSpeed.None, direction: ScrollDirection.None },
-  { range: NumberRange.from(0.6).to(0.7), speed: ScrollSpeed.Crawl, direction: ScrollDirection.Down },
-  { range: NumberRange.from(0.7).to(0.8), speed: ScrollSpeed.Walk, direction: ScrollDirection.Down },
-  { range: NumberRange.from(0.8).to(1), speed: ScrollSpeed.Run, direction: ScrollDirection.Down },
+  { range: NumberRange.from(0.15).to(0.7), speed: ScrollSpeed.None, direction: ScrollDirection.None },
+  { range: NumberRange.from(0.7).to(0.8), speed: ScrollSpeed.Crawl, direction: ScrollDirection.Down },
+  { range: NumberRange.from(0.8).to(0.9), speed: ScrollSpeed.Walk, direction: ScrollDirection.Down },
+  { range: NumberRange.from(0.9).to(1), speed: ScrollSpeed.Run, direction: ScrollDirection.Down },
   { range: NumberRange.from(1).to(inf), speed: ScrollSpeed.None, direction: ScrollDirection.None },
 ];
 
