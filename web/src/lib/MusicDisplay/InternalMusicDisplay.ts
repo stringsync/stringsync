@@ -58,9 +58,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.svgSettings = opts.svgSettings;
     this.scrollContainer = opts.scrollContainer;
     this.scroller = new Scroller(opts.scrollContainer, this);
-    this.handleResize(this.onResizeStart.bind(this), this.onResizeEnd.bind(this));
-
-    (window as any).imd = this;
+    this.handleResize(this.onResizeStart, this.onResizeEnd);
   }
 
   async load(xmlUrl: string) {
@@ -170,13 +168,13 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     });
   }
 
-  private onResizeStart() {
+  private onResizeStart = () => {
     this.eventBus.dispatch('resizestarted', {});
-  }
+  };
 
-  private onResizeEnd() {
+  private onResizeEnd = () => {
     this.eventBus.dispatch('resizeended', {});
-  }
+  };
 
   private applyCursorOptions(nextCursorOptions: IdentifiableCursorOptions[]) {
     const wasEnabled = this.drawingParameters.drawCursors;
