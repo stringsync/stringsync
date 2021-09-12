@@ -1,7 +1,7 @@
 import React, { RefObject, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { MusicDisplay, SupportedSVGEventNames } from '../../lib/MusicDisplay';
+import { MusicDisplay, StyleType, SupportedSVGEventNames } from '../../lib/MusicDisplay';
 import { PointerTargetType } from '../../lib/MusicDisplay/pointer';
 import { isNonePointerTarget, isPositional } from '../../lib/MusicDisplay/pointer/pointerTypeAssert';
 import { RootState } from '../../store';
@@ -61,8 +61,8 @@ export const Notation: React.FC<NotationProps> = (props) => {
   const { musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef, onMusicDisplayChange } = props;
 
   const divRef = useRef<HTMLDivElement>(null);
-  const [cursor, setCursor] = useState(Cursor.Crosshair);
 
+  const [cursor, setCursor] = useState(Cursor.Crosshair);
   const [isLoading, setIsLoading] = useState(false);
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
 
@@ -78,17 +78,29 @@ export const Notation: React.FC<NotationProps> = (props) => {
     }
 
     const eventBusIds = [
+      musicDisplay.eventBus.subscribe('cursorentered', (payload) => {
+        setCursor(Cursor.Grab);
+        payload.src.cursor.updateStyle(StyleType.Interacting);
+      }),
+      musicDisplay.eventBus.subscribe('cursorexited', (payload) => {
+        setCursor(Cursor.Crosshair);
+        payload.src.cursor.updateStyle(StyleType.Default);
+      }),
+      musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
+        setCursor(Cursor.ColResize);
+      }),
       musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
         setCursor(Cursor.ColResize);
       }),
-      musicDisplay.eventBus.subscribe('cursorentered', (payload) => {
-        setCursor(Cursor.Grab);
-      }),
-      musicDisplay.eventBus.subscribe('cursorexited', () => {
-        setCursor(Cursor.Crosshair);
+      musicDisplay.eventBus.subscribe('selectionended', () => {
+        musicDisplay.loop.resetStyles();
       }),
       musicDisplay.eventBus.subscribe('selectionentered', (payload) => {
         setCursor(Cursor.ColResize);
+        payload.src.cursor.updateStyle(StyleType.Interacting);
+      }),
+      musicDisplay.eventBus.subscribe('selectionexited', (payload) => {
+        payload.src.cursor.updateStyle(StyleType.Default);
       }),
       musicDisplay.eventBus.subscribe('cursordragstarted', () => {
         setCursor(Cursor.Grabbing);

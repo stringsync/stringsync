@@ -1,6 +1,6 @@
-import { CursorWrapper, UpdateCause } from '..';
 import { NumberRange } from '../../../util/NumberRange';
 import { AnchoredTimeSelection } from '../AnchoredTimeSelection';
+import { CursorWrapper } from '../types';
 
 export interface Loop {
   readonly isActive: boolean;
@@ -11,5 +11,6 @@ export interface Loop {
   activate(): void;
   deactivate(): void;
   anchor(timeMs: number): void;
-  update(timeMs: number, cause?: UpdateCause): void;
+  update(timeMs: number): void;
+  resetStyles(): void;
 }

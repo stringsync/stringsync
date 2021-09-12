@@ -206,6 +206,7 @@ export class SVGEventProxy {
         selection: mostImportantLocateResultTarget.selection,
         edge: mostImportantLocateResultTarget.edge,
         timeMs: locateResult.timeMs,
+        cursor: mostImportantLocateResultTarget.cursor,
         position: { x: locateResult.x, y: locateResult.y, relX, relY },
       };
     }

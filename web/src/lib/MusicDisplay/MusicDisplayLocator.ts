@@ -19,7 +19,7 @@ type CursorSnapshotLineGroup = {
 
 type CursorHit = { cursor: CursorWrapper; box: Box };
 
-type SelectionHit = { edge: SelectionEdge; selection: AnchoredTimeSelection; box: Box };
+type SelectionHit = { edge: SelectionEdge; selection: AnchoredTimeSelection; box: Box; cursor: CursorWrapper };
 
 const END_OF_MEASURE_LINE_PADDING_PX = 20;
 
@@ -555,14 +555,26 @@ export class MusicDisplayLocator {
 
     const hits = new Array<SelectionHit>();
 
-    const startBox = this.imd.loop.startCursor.getBox();
+    const startCursor = this.imd.loop.startCursor;
+    const startBox = startCursor.getBox();
     if (startBox.contains(x, y)) {
-      hits.push({ edge: SelectionEdge.Start, selection: this.imd.loop.selection, box: startBox });
+      hits.push({
+        edge: SelectionEdge.Start,
+        selection: this.imd.loop.selection,
+        box: startBox,
+        cursor: startCursor,
+      });
     }
 
-    const endBox = this.imd.loop.endCursor.getBox();
+    const endCursor = this.imd.loop.endCursor;
+    const endBox = endCursor.getBox();
     if (endBox.contains(x, y)) {
-      hits.push({ edge: SelectionEdge.End, selection: this.imd.loop.selection, box: endBox });
+      hits.push({
+        edge: SelectionEdge.End,
+        selection: this.imd.loop.selection,
+        box: endBox,
+        cursor: endCursor,
+      });
     }
 
     return hits;

@@ -1,4 +1,4 @@
-import { UpdateCause } from '..';
+import { StyleType } from '..';
 import { AnchoredTimeSelection } from '../AnchoredTimeSelection';
 import { InternalMusicDisplay } from '../InternalMusicDisplay';
 import { LerpCursor } from '../LerpCursor';
@@ -10,18 +10,18 @@ export class LerpLoop implements Loop {
   static create(imd: InternalMusicDisplay, locator: MusicDisplayLocator) {
     const startCursor = LerpCursor.create(imd, locator.clone(), {
       numMeasures: imd.Sheet.SourceMeasures.length,
-      cursorOptions: { color: 'rgba(0, 0, 0, 0)', alpha: 0 },
+      cursorOptions: { color: '#e3e362', alpha: 1 },
       isNoteheadColoringEnabled: false,
-      defaultStyle: { 'box-shadow': '0 0 0 #e3e362' },
-      interactingStyle: { 'box-shadow': '10px 0px 16px 0px #e3e376' },
+      defaultStyle: { opacity: '0' },
+      interactingStyle: { opacity: '0.75' },
     });
 
     const endCursor = LerpCursor.create(imd, locator.clone(), {
       numMeasures: imd.Sheet.SourceMeasures.length,
-      cursorOptions: { color: 'rgba(0, 0, 0, 0)', alpha: 0 },
+      cursorOptions: { color: '#e3e362', alpha: 1 },
       isNoteheadColoringEnabled: false,
-      defaultStyle: { 'box-shadow': '0 0 0 #e3e362' },
-      interactingStyle: { 'box-shadow': '-12px 0px 16px 0px #e3e376' },
+      defaultStyle: { opacity: '0' },
+      interactingStyle: { opacity: '0.75' },
     });
 
     const loop = new LerpLoop(imd, startCursor, endCursor);
@@ -71,7 +71,7 @@ export class LerpLoop implements Loop {
     this.selection = AnchoredTimeSelection.init(timeMs);
   }
 
-  update(timeMs: number, cause = UpdateCause.Unknown) {
+  update(timeMs: number) {
     this.selection = this.selection.update(timeMs);
 
     if (!this.isActive) {
@@ -79,16 +79,27 @@ export class LerpLoop implements Loop {
     }
 
     const timeMsRange = this.timeMsRange;
-    if (timeMsRange.start !== this.startCursor.timeMs) {
-      this.startCursor.update(timeMsRange.start, cause);
-    }
-    if (timeMsRange.end !== this.endCursor.timeMs) {
-      this.endCursor.update(timeMsRange.end, cause);
-    }
 
     if (this.imd.selectionRenderer) {
-      this.imd.selectionRenderer.update(this.timeMsRange);
+      this.imd.selectionRenderer.update(timeMsRange);
     }
+
+    if (timeMsRange.start !== this.startCursor.timeMs) {
+      this.startCursor.update(timeMsRange.start);
+      this.startCursor.updateStyle(StyleType.Interacting);
+      this.endCursor.updateStyle(StyleType.Default);
+    }
+
+    if (timeMsRange.end !== this.endCursor.timeMs) {
+      this.endCursor.update(timeMsRange.end);
+      this.endCursor.updateStyle(StyleType.Interacting);
+      this.startCursor.updateStyle(StyleType.Default);
+    }
+  }
+
+  resetStyles() {
+    this.startCursor.updateStyle(StyleType.Default);
+    this.endCursor.updateStyle(StyleType.Default);
   }
 
   isStartCursor(cursor: CursorWrapper) {

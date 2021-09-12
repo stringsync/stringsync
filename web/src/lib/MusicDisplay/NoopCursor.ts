@@ -7,6 +7,7 @@ export class NoopCursor implements CursorWrapper {
   element = DUMMY_ELEMENT;
   timeMs = -1;
   update() {}
+  updateStyle() {}
   clear() {}
   show() {}
   disableAutoScroll() {}

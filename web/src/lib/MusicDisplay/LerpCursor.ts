@@ -1,16 +1,15 @@
 import $ from 'jquery';
 import { difference, intersection, isString, uniq } from 'lodash';
 import { Cursor, CursorOptions, CursorType } from 'opensheetmusicdisplay';
-import { UpdateCause } from '.';
 import { Box } from '../../util/Box';
 import { Duration } from '../../util/Duration';
 import { ColoringOperation } from './ColoringOperation';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
-import { CursorSnapshot } from './types';
+import { CursorSnapshot, StyleType } from './types';
 
 const CURSOR_BOX_PADDING_PX = 20;
-const CURSOR_STYLE_TRANSITION_DURATION = Duration.ms(250);
+const CURSOR_STYLE_TRANSITION_DURATION = Duration.ms(100);
 
 const DEFAULT_CURSOR_OPTS = [
   {
@@ -72,7 +71,7 @@ export class LerpCursor {
   lerper: Cursor;
   scrollContainer: HTMLElement;
   timeMs = 0;
-  cause = UpdateCause.Unknown;
+  styleType = StyleType.Default;
   opts: LerpCursorOpts;
 
   private locator: MusicDisplayLocator | null = null;
@@ -121,14 +120,10 @@ export class LerpCursor {
     this.locator = locator;
   }
 
-  update(timeMs: number, cause = UpdateCause.Unknown) {
+  update(timeMs: number) {
     if (!this.locator) {
       console.warn('cannot update cursors, must call init first');
       return;
-    }
-    if (cause !== this.cause) {
-      this.onCauseChange(this.cause, cause);
-      this.cause = cause;
     }
     if (timeMs === this.timeMs) {
       return;
@@ -153,6 +148,13 @@ export class LerpCursor {
       this.imd.eventBus.dispatch('measurelinechanged', {});
     }
     this.imd.eventBus.dispatch('interactablemoved', {});
+  }
+
+  updateStyle(styleType: StyleType) {
+    if (styleType === this.styleType) {
+      return;
+    }
+    this.changeStyle(styleType);
   }
 
   scrollIntoView() {
@@ -209,9 +211,9 @@ export class LerpCursor {
     return Box.from(x0, y0).to(x1, y1);
   }
 
-  private onCauseChange(currentCause: UpdateCause, nextCause: UpdateCause) {
-    const currentStyle = this.getStyleForCause(currentCause);
-    const nextStyle = this.getStyleForCause(nextCause);
+  private changeStyle(nextStyleType: StyleType) {
+    const currentStyle = this.getStyle(this.styleType);
+    const nextStyle = this.getStyle(nextStyleType);
 
     const currentProps = Object.keys(currentStyle);
     const nextProps = Object.keys(nextStyle);
@@ -230,11 +232,12 @@ export class LerpCursor {
         $element.css(prop, value);
       }
     }
+    this.styleType = nextStyleType;
   }
 
-  private getStyleForCause(cause: UpdateCause): LerpCursorStyle {
-    switch (cause) {
-      case UpdateCause.Interaction:
+  private getStyle(styleType: StyleType): LerpCursorStyle {
+    switch (styleType) {
+      case StyleType.Interacting:
         return this.opts.interactingStyle || {};
       default:
         return this.opts.defaultStyle || {};

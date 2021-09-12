@@ -7,20 +7,16 @@ export class NoopLoop implements Loop {
   selection = AnchoredTimeSelection.init(0);
   startCursor = new NoopCursor();
   endCursor = new NoopCursor();
-
   get timeMsRange() {
     return this.selection.toRange();
   }
-
+  anchor() {}
+  update() {}
+  resetStyles() {}
   activate() {
     this.isActive = true;
   }
-
   deactivate() {
     this.isActive = false;
   }
-
-  anchor(timeMs: number) {}
-
-  update(timeMs: number) {}
 }

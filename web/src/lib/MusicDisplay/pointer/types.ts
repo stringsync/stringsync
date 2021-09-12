@@ -37,6 +37,7 @@ export type SelectionPointerTarget = {
   edge: SelectionEdge;
   timeMs: number;
   position: PointerPosition;
+  cursor: CursorWrapper;
 };
 
 export type PointerTarget =
@@ -50,5 +51,5 @@ export type PointerContext = {
   prevDownTarget: PointerTarget;
   hoverTarget: PointerTarget;
   prevHoverTarget: PointerTarget;
-  selection: AnchoredTimeSelection | null;
+  selection: AnchoredTimeSelection;
 };

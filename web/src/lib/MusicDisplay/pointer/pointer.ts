@@ -39,7 +39,7 @@ const INITIAL_POINTER_CONTEXT: PointerContext = {
   prevDownTarget: NONE_POINTER_TARGET,
   hoverTarget: NONE_POINTER_TARGET,
   prevHoverTarget: NONE_POINTER_TARGET,
-  selection: null,
+  selection: AnchoredTimeSelection.init(0),
 };
 
 export const model = createModel(INITIAL_POINTER_CONTEXT, {
@@ -141,7 +141,17 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
             },
             select: {
               entry: ['startSelection', 'dispatchSelectStarted'],
-              on: { move: { actions: ['assignHoverTarget', 'updateSelection', 'dispatchSelectUpdated'] } },
+              on: {
+                move: {
+                  actions: [
+                    'assignHoverTarget',
+                    'updateSelection',
+                    'dispatchSelectUpdated',
+                    choose([{ cond: 'didEnterSelection', actions: ['dispatchSelectEntered'] }]),
+                    choose([{ cond: 'didExitSelection', actions: ['dispatchSelectExited'] }]),
+                  ],
+                },
+              },
               exit: ['endSelection', 'dispatchSelectEnded'],
             },
           },
@@ -182,7 +192,7 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
           },
         }),
         endSelection: assign<PointerContext, PointerEvent>({
-          selection: null,
+          selection: AnchoredTimeSelection.init(0),
         }),
         dispatchClick: (context, event) => {
           eventBus.dispatch('click', { src: context.downTarget });
@@ -208,23 +218,19 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
           }
         },
         dispatchSelectExited: (context) => {
-          if (isSelectionPointerTarget(context.hoverTarget)) {
-            eventBus.dispatch('selectionexited', { src: context.hoverTarget });
+          if (isSelectionPointerTarget(context.prevHoverTarget)) {
+            eventBus.dispatch('selectionexited', { src: context.prevHoverTarget });
           }
         },
         dispatchSelectStarted: (context) => {
-          if (context.selection) {
-            eventBus.dispatch('selectionstarted', { src: context.downTarget, selection: context.selection });
-          }
+          eventBus.dispatch('selectionstarted', { src: context.downTarget, selection: context.selection });
         },
         dispatchSelectUpdated: (context, event) => {
-          if (context.selection) {
-            eventBus.dispatch('selectionupdated', {
-              src: context.downTarget,
-              dst: event.target,
-              selection: context.selection,
-            });
-          }
+          eventBus.dispatch('selectionupdated', {
+            src: context.downTarget,
+            dst: event.target,
+            selection: context.selection,
+          });
         },
         dispatchSelectEnded: (context, event) => {
           eventBus.dispatch('selectionended', { src: context.downTarget, dst: event.target });

@@ -50,16 +50,16 @@ export type SyncSettings = {
   durationMs: number;
 };
 
-export enum UpdateCause {
-  Unknown,
-  Auto,
-  Interaction,
+export enum StyleType {
+  Default,
+  Interacting,
 }
 
 export interface CursorWrapper {
   element: HTMLElement;
   timeMs: number;
-  update(timeMs: number, cause?: UpdateCause): void;
+  update(timeMs: number): void;
+  updateStyle(styleType: StyleType): void;
   show(): void;
   clear(): void;
   getBox(): Box;
@@ -125,7 +125,13 @@ export type LocatorTarget =
   | { type: LocatorTargetType.None }
   | { type: LocatorTargetType.Cursor; cursor: CursorWrapper; box: Box }
   | { type: LocatorTargetType.Note; graphicalNote: GraphicalNote; vfNoteheadEl: SVGGElement; box: Box }
-  | { type: LocatorTargetType.Selection; selection: AnchoredTimeSelection; box: Box; edge: SelectionEdge };
+  | {
+      type: LocatorTargetType.Selection;
+      selection: AnchoredTimeSelection;
+      box: Box;
+      edge: SelectionEdge;
+      cursor: CursorWrapper;
+    };
 
 export enum LocateCost {
   Unknown,
