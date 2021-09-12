@@ -21,7 +21,7 @@ type CursorHit = { cursor: CursorWrapper; box: Box };
 
 type SelectionHit = { edge: SelectionEdge; selection: AnchoredTimeSelection; box: Box; cursor: CursorWrapper };
 
-const END_OF_MEASURE_LINE_PADDING_PX = 20;
+export const END_OF_MEASURE_LINE_PADDING_PX = 20;
 
 export class MusicDisplayLocator {
   static create(imd: InternalMusicDisplay) {

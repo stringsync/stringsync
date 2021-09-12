@@ -129,7 +129,8 @@ export const NotationControls: React.FC<Props> = (props) => {
 
   const onAfterChange = useCallback(() => {
     unsuspend();
-  }, [unsuspend]);
+    startAutoscrollingBasedOnPreferences();
+  }, [unsuspend, startAutoscrollingBasedOnPreferences]);
 
   const onAutoscrollDisabledClose = useCallback(() => {
     if (!musicDisplay) {

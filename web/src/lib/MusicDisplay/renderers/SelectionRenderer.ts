@@ -3,7 +3,7 @@ import { CursorSnapshot } from '..';
 import { Box } from '../../../util/Box';
 import { NumberRange } from '../../../util/NumberRange';
 import { InternalMusicDisplay } from '../InternalMusicDisplay';
-import { MusicDisplayLocator } from '../MusicDisplayLocator';
+import { END_OF_MEASURE_LINE_PADDING_PX, MusicDisplayLocator } from '../MusicDisplayLocator';
 
 const DEFAULT_SELECTION_COLOR = 'rgba(244, 244, 188, 0.45)';
 
@@ -164,7 +164,11 @@ export class SelectionRenderer {
         : Math.min(...measureLineCursorSnapshots.map((cursorSnapshot) => cursorSnapshot.xRange.start));
       const x1 = isLastNdx
         ? this.endLocateResult.x
-        : Math.max(...measureLineCursorSnapshots.map((cursorSnapshot) => cursorSnapshot.xRange.end));
+        : Math.max(
+            ...measureLineCursorSnapshots.map(
+              (cursorSnapshot) => cursorSnapshot.xRange.end + END_OF_MEASURE_LINE_PADDING_PX
+            )
+          );
       const y0 = first(measureLineCursorSnapshots)!.yRange.start;
       const y1 = last(measureLineCursorSnapshots)!.yRange.end;
 
