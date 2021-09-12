@@ -115,11 +115,11 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
   clearCursors() {
     const cursorOptions = new Array<IdentifiableCursorOptions>();
-    set(this, 'cursorsOptions', cursorOptions);
     this.applyCursorOptions(cursorOptions);
   }
 
   createCursors(additionalCursorOptions: IdentifiableCursorOptions[]): Cursor[] {
+    console.log('creating cursors');
     const cursorsOptions = get(this, 'cursorsOptions', []);
     const nextCursorOptions = [...cursorsOptions, ...additionalCursorOptions];
     this.applyCursorOptions(nextCursorOptions);
@@ -127,17 +127,8 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   }
 
   removeCursor(id: symbol) {
-    const cursorsOptions = get(this, 'cursorsOptions', []);
-    const cursorIndex = cursorsOptions.findIndex((opt: IdentifiableCursorOptions) => opt.id === id);
-
-    if (cursorIndex > -1) {
-      const cursor = this.cursors[cursorIndex];
-      if (cursor) {
-        cursor.cursorElement.remove();
-      }
-    }
-
-    const nextCursorOptions = cursorsOptions.filter((opt: IdentifiableCursorOptions) => opt.id !== id);
+    const cursorsOptions = get(this, 'cursorsOptions', []) as IdentifiableCursorOptions[];
+    const nextCursorOptions = cursorsOptions.filter((opt) => opt.id !== id);
     this.applyCursorOptions(nextCursorOptions);
   }
 
@@ -189,6 +180,19 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
   private applyCursorOptions(nextCursorOptions: IdentifiableCursorOptions[]) {
     const wasEnabled = this.drawingParameters.drawCursors;
+
+    // Remove cursors that aren't in the next cursor options
+    const nextCursorOptionIds = new Set(nextCursorOptions.map((cursorOption) => cursorOption.id));
+    const currentCursorOptions = get(this, 'cursorsOptions', []) as IdentifiableCursorOptions[];
+    const currentIdAndIndex = currentCursorOptions.map((cursorOption, index) => ({ id: cursorOption.id, index }));
+    const deleteIdAndIndex = currentIdAndIndex.filter(({ id }) => !nextCursorOptionIds.has(id));
+
+    for (const { index } of deleteIdAndIndex) {
+      const cursor = this.cursors[index];
+      if (cursor) {
+        cursor.cursorElement.remove();
+      }
+    }
 
     // Transforms cursor options to cursors.
     set(this, 'cursorsOptions', nextCursorOptions);
