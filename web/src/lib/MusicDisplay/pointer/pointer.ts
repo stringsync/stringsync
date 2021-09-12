@@ -65,7 +65,11 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
           initial: 'idle',
           on: {
             down: [
-              { cond: 'hasSelectableTarget', target: 'down.select' },
+              {
+                cond: 'hasSelectableTarget',
+                target: 'down.select',
+                actions: ['assignDownTarget', 'dispatchPointerDown'],
+              },
               { cond: 'hasDraggableTarget', target: 'down.drag', actions: ['assignDownTarget', 'dispatchPointerDown'] },
               { target: 'down.tap', actions: ['assignDownTarget', 'dispatchPointerDown'] },
             ],
