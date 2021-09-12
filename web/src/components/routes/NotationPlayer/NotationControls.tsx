@@ -123,7 +123,6 @@ export const NotationControls: React.FC<Props> = (props) => {
         musicDisplay.loop.deactivate();
       }
       seek(timeMs);
-      musicDisplay?.cursor.update(timeMs);
     },
     [durationMs, musicDisplay, suspend, seek]
   );
@@ -166,7 +165,6 @@ export const NotationControls: React.FC<Props> = (props) => {
       return;
     }
     seek(timeMsRange.start);
-    musicDisplay.cursor.update(timeMsRange.start);
   }, [currentTimeMs, isPlaying, musicDisplay, seek]);
 
   useEffect(() => {
@@ -234,7 +232,6 @@ export const NotationControls: React.FC<Props> = (props) => {
       musicDisplay.eventBus.subscribe('click', (payload) => {
         if (isCursorSnapshotPointerTarget(payload.src)) {
           seek(payload.src.timeMs);
-          musicDisplay.cursor.update(payload.src.timeMs);
           startAutoscrollingBasedOnPreferences();
 
           if (!musicDisplay.loop.timeMsRange.contains(payload.src.timeMs)) {
@@ -246,7 +243,6 @@ export const NotationControls: React.FC<Props> = (props) => {
       }),
       musicDisplay.eventBus.subscribe('cursordragstarted', (payload) => {
         musicDisplay.scroller.startManualScrolling();
-        payload.src.cursor.update(payload.src.cursor.timeMs);
         suspend();
       }),
       musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {
@@ -254,17 +250,13 @@ export const NotationControls: React.FC<Props> = (props) => {
         if (!isTemporal(payload.dst)) {
           return;
         }
-        const { cursor } = payload.src;
-        const { timeMs } = payload.dst;
-        if (!musicDisplay.loop.timeMsRange.contains(timeMs)) {
+        if (!musicDisplay.loop.timeMsRange.contains(payload.dst.timeMs)) {
           musicDisplay.loop.deactivate();
         }
-        seek(timeMs);
-        cursor.update(timeMs);
+        seek(payload.dst.timeMs);
       }),
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
         startAutoscrollingBasedOnPreferences();
-        payload.src.cursor.update(payload.src.cursor.timeMs);
         unsuspend();
       }),
       musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
@@ -280,7 +272,6 @@ export const NotationControls: React.FC<Props> = (props) => {
       musicDisplay.eventBus.subscribe('selectionended', () => {
         if (!musicDisplay.loop.timeMsRange.contains(musicDisplay.cursor.timeMs)) {
           seek(musicDisplay.loop.timeMsRange.start);
-          musicDisplay.cursor.update(musicDisplay.loop.timeMsRange.start);
         }
         startAutoscrollingBasedOnPreferences();
         unsuspend();
