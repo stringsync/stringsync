@@ -45,10 +45,6 @@ export class MusicDisplay {
     this.imd.clear();
   }
 
-  get svg() {
-    return this.imd.getSvg();
-  }
-
   get scroller() {
     return this.imd.scroller;
   }
