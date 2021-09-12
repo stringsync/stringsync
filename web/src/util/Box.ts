@@ -40,4 +40,8 @@ export class Box {
   contains(x: number, y: number) {
     return this.xRange.contains(x) && this.yRange.contains(y);
   }
+
+  eq(box: Box) {
+    return this.xRange.eq(box.xRange) && this.yRange.eq(box.yRange);
+  }
 }

@@ -218,6 +218,10 @@ export class MusicDisplayLocator {
     return new MusicDisplayLocator(this.imd, this.cursorSnapshots, this.cursorSnapshotLineGroups);
   }
 
+  slice(startIndex: number, endIndex: number) {
+    return this.cursorSnapshots.slice(startIndex, endIndex);
+  }
+
   locateByTimeMs(timeMs: number): LocateResult {
     const cheapLocateResult = this.cheapLocateByTimeMs(timeMs);
     if (cheapLocateResult) {
