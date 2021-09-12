@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import { isEqual, maxBy, throttle } from 'lodash';
-import { BackendType, PointF2D, SvgVexFlowBackend, VexFlowBackend } from 'opensheetmusicdisplay';
+import { PointF2D } from 'opensheetmusicdisplay';
 import { SupportedSVGEventNames } from '.';
 import { Duration } from '../../util/Duration';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
@@ -22,17 +22,9 @@ const LOCATOR_TARGET_IMPORTANCE_WEIGHTS = {
   [LocatorTargetType.None]: 0,
 };
 
-const isSvgBackend = (backend: VexFlowBackend | undefined): backend is SvgVexFlowBackend => {
-  return !!backend && backend.getOSMDBackendType() === BackendType.SVG;
-};
-
 export class SVGEventProxy {
   static install(imd: InternalMusicDisplay, locator: MusicDisplayLocator, svgSettings: SVGSettings) {
-    const backend = imd.Drawer.Backends[0];
-    if (!isSvgBackend(backend)) {
-      throw new Error('expected the first backend to be an svg backend');
-    }
-    const svg = backend.getSvgElement();
+    const svg = imd.getSvg();
     const pointerService = pointer.createService(imd.eventBus);
     const svgEventProxy = new SVGEventProxy(svg, imd, locator, pointerService, svgSettings);
     svgEventProxy.install();

@@ -2,6 +2,7 @@ import { first, groupBy, identity, isNull, last, sortBy, uniq } from 'lodash';
 import { CursorSnapshot } from '.';
 import { Box } from '../../util/Box';
 import { NumberRange } from '../../util/NumberRange';
+import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
 
 const DEFAULT_SELECTION_COLOR = 'rgba(244, 244, 188, 0.45)';
@@ -24,8 +25,8 @@ type MeasureLineBoxDiff = {
 };
 
 export class SelectionRenderer {
-  static create(svg: SVGElement, locator: MusicDisplayLocator) {
-    return new SelectionRenderer(svg, locator.clone(), locator.clone());
+  static create(imd: InternalMusicDisplay, locator: MusicDisplayLocator) {
+    return new SelectionRenderer(imd.getSvg(), locator.clone(), locator.clone());
   }
 
   private svg: SVGElement;

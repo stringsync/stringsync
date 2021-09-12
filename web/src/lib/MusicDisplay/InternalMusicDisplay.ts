@@ -1,5 +1,13 @@
 import { get, set, takeRight } from 'lodash';
-import { Cursor, CursorOptions, CursorType, OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
+import {
+  BackendType,
+  Cursor,
+  CursorOptions,
+  CursorType,
+  OpenSheetMusicDisplay,
+  SvgVexFlowBackend,
+  VexFlowBackend,
+} from 'opensheetmusicdisplay';
 import { LerpCursor } from './LerpCursor';
 import { LerpLoop, Loop, NoopLoop } from './Loop';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
@@ -16,6 +24,10 @@ type IdentifiableCursorOptions = CursorOptions & {
 type WithProbeCursorCallback = (probeCursor: Cursor) => void;
 
 type ForEachCursorPositionCallback = (index: number, probeCursor: Cursor) => void;
+
+const isSvgBackend = (backend: VexFlowBackend | undefined): backend is SvgVexFlowBackend => {
+  return !!backend && backend.getOSMDBackendType() === BackendType.SVG;
+};
 
 /**
  * InternalMusicDisplay handles the logic involving rendering notations and cursors.
@@ -76,7 +88,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
     this.loop = LerpLoop.create(this, locator.clone());
 
-    this.selectionRenderer = SelectionRenderer.create(this.svgEventProxy.svg, locator.clone());
+    this.selectionRenderer = SelectionRenderer.create(this, locator.clone());
   }
 
   clear() {
@@ -86,10 +98,15 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.scroller.disable();
     this.svgEventProxy?.uninstall();
     this.selectionRenderer?.clear();
-    const svg = this.container.firstElementChild;
-    if (svg) {
-      this.container.removeChild(svg);
+    this.getSvg().remove();
+  }
+
+  getSvg() {
+    const backend = this.Drawer.Backends[0];
+    if (!isSvgBackend(backend)) {
+      throw new Error('expected the first backend to be an svg backend');
     }
+    return backend.getSvgElement();
   }
 
   clearCursors() {
