@@ -4,7 +4,7 @@ import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { VideoJsPlayer } from 'video.js';
-import { CursorInfo, MusicDisplay } from '../../../lib/MusicDisplay';
+import { CursorInfo, MusicDisplay, UpdateCause } from '../../../lib/MusicDisplay';
 import { isCursorSnapshotPointerTarget, isTemporal } from '../../../lib/MusicDisplay/pointer/pointerTypeAssert';
 import { ScrollBehaviorType } from '../../../lib/MusicDisplay/Scroller';
 import { NotationDetail } from './NotationDetail';
@@ -226,6 +226,7 @@ export const NotationControls: React.FC<Props> = (props) => {
       }),
       musicDisplay.eventBus.subscribe('cursordragstarted', (payload) => {
         musicDisplay.scroller.startManualScrolling();
+        payload.src.cursor.update(payload.src.cursor.timeMs, UpdateCause.Interaction);
         suspend();
       }),
       musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {
@@ -238,12 +239,13 @@ export const NotationControls: React.FC<Props> = (props) => {
         if (!musicDisplay.loop.timeMsRange.contains(timeMs)) {
           musicDisplay.loop.deactivate();
         }
-        cursor.update(timeMs);
+        cursor.update(timeMs, UpdateCause.Interaction);
         seek(timeMs);
       }),
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
         musicDisplay.scroller.startAutoScrolling();
         musicDisplay.cursor.scrollIntoView();
+        payload.src.cursor.update(payload.src.cursor.timeMs, UpdateCause.Auto);
         unsuspend();
       }),
       musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
@@ -254,7 +256,7 @@ export const NotationControls: React.FC<Props> = (props) => {
       }),
       musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
         musicDisplay.scroller.updateScrollIntent(payload.dst.position.relY);
-        musicDisplay.loop.update(payload.selection.seekerTimeMs);
+        musicDisplay.loop.update(payload.selection.seekerTimeMs, UpdateCause.Interaction);
       }),
       musicDisplay.eventBus.subscribe('selectionended', () => {
         musicDisplay.scroller.startAutoScrolling();

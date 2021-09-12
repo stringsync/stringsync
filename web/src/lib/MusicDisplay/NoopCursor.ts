@@ -6,12 +6,12 @@ const DUMMY_ELEMENT = document.createElement('div');
 export class NoopCursor implements CursorWrapper {
   element = DUMMY_ELEMENT;
   timeMs = -1;
-  update(timeMs: number) {}
+  update() {}
   clear() {}
   show() {}
   disableAutoScroll() {}
   enableAutoScroll() {}
-  getBox(): Box {
+  getBox() {
     return Box.from(-1, -1).to(-1, -1);
   }
   scrollIntoView() {}

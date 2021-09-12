@@ -1,12 +1,16 @@
 import $ from 'jquery';
+import { difference, intersection, isString, uniq } from 'lodash';
 import { Cursor, CursorOptions, CursorType } from 'opensheetmusicdisplay';
+import { UpdateCause } from '.';
 import { Box } from '../../util/Box';
+import { Duration } from '../../util/Duration';
 import { ColoringOperation } from './ColoringOperation';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
 import { CursorSnapshot } from './types';
 
 const CURSOR_BOX_PADDING_PX = 20;
+const CURSOR_STYLE_TRANSITION_DURATION = Duration.ms(250);
 
 const DEFAULT_CURSOR_OPTS = [
   {
@@ -25,7 +29,7 @@ const DEFAULT_CURSOR_OPTS = [
     type: CursorType.ThinLeft,
     color: '#00ffd9',
     follow: false,
-    alpha: 0.5,
+    alpha: 1,
   },
 ];
 
@@ -35,11 +39,14 @@ type Cursors = {
   lerper: Cursor;
 };
 
+type LerpCursorStyle = Omit<Record<string, string>, 'top' | 'left' | 'x' | 'y'>;
+
 export type LerpCursorOpts = {
-  scrollContainer: HTMLElement;
   numMeasures: number;
-  cursorOptions?: Partial<CursorOptions>;
+  cursorOptions?: Partial<Pick<CursorOptions, 'type' | 'color' | 'alpha'>>;
   isNoteheadColoringEnabled: boolean;
+  defaultStyle?: LerpCursorStyle;
+  interactingStyle?: LerpCursorStyle;
 };
 
 export class LerpCursor {
@@ -64,9 +71,9 @@ export class LerpCursor {
   leader: Cursor;
   lerper: Cursor;
   scrollContainer: HTMLElement;
-  numMeasures: number;
   timeMs = 0;
-  isNoteheadColoringEnabled: boolean;
+  cause = UpdateCause.Unknown;
+  opts: LerpCursorOpts;
 
   private locator: MusicDisplayLocator | null = null;
   private prevCursorSnapshot: CursorSnapshot | null = null;
@@ -74,12 +81,11 @@ export class LerpCursor {
 
   private constructor(imd: InternalMusicDisplay, cursors: Cursors, opts: LerpCursorOpts) {
     this.imd = imd;
+    this.scrollContainer = imd.scrollContainer;
     this.lagger = cursors.lagger;
     this.leader = cursors.leader;
     this.lerper = cursors.lerper;
-    this.numMeasures = opts.numMeasures;
-    this.scrollContainer = opts.scrollContainer;
-    this.isNoteheadColoringEnabled = opts.isNoteheadColoringEnabled;
+    this.opts = opts;
   }
 
   get element() {
@@ -91,6 +97,17 @@ export class LerpCursor {
     $element.css('z-index', 2);
     $element.css('pointer-events', 'none');
     $element.attr('draggable', 'false');
+
+    const defaultStyle = this.opts.defaultStyle || {};
+    for (const [prop, value] of Object.entries(defaultStyle)) {
+      $element.css(prop, value);
+    }
+
+    // get only CSS styles that will transition
+    const defaultStyleProps = Object.keys(defaultStyle);
+    const interactingStyleProps = Object.keys(this.opts.interactingStyle || {});
+    const props = uniq([...defaultStyleProps, ...interactingStyleProps]).join(', ');
+    $element.css('transition', `${props} ${CURSOR_STYLE_TRANSITION_DURATION.ms}ms`);
 
     this.lagger.resetIterator();
     this.leader.resetIterator();
@@ -104,10 +121,14 @@ export class LerpCursor {
     this.locator = locator;
   }
 
-  update(timeMs: number) {
+  update(timeMs: number, cause = UpdateCause.Unknown) {
     if (!this.locator) {
       console.warn('cannot update cursors, must call init first');
       return;
+    }
+    if (cause !== this.cause) {
+      this.onCauseChange(this.cause, cause);
+      this.cause = cause;
     }
     if (timeMs === this.timeMs) {
       return;
@@ -188,6 +209,38 @@ export class LerpCursor {
     return Box.from(x0, y0).to(x1, y1);
   }
 
+  private onCauseChange(currentCause: UpdateCause, nextCause: UpdateCause) {
+    const currentStyle = this.getStyleForCause(currentCause);
+    const nextStyle = this.getStyleForCause(nextCause);
+
+    const currentProps = Object.keys(currentStyle);
+    const nextProps = Object.keys(nextStyle);
+
+    const removedProps = difference(currentProps, nextProps);
+    const changedProps = intersection(currentProps, nextProps);
+    const addedProps = difference(nextProps, currentProps);
+
+    const $element = $(this.element);
+    for (const prop of removedProps) {
+      $element.css(prop, '');
+    }
+    for (const prop of [...changedProps, ...addedProps]) {
+      const value = nextStyle[prop];
+      if (isString(value)) {
+        $element.css(prop, value);
+      }
+    }
+  }
+
+  private getStyleForCause(cause: UpdateCause): LerpCursorStyle {
+    switch (cause) {
+      case UpdateCause.Interaction:
+        return this.opts.interactingStyle || {};
+      default:
+        return this.opts.defaultStyle || {};
+    }
+  }
+
   private updateCursors(nextCursorSnapshot: CursorSnapshot | null) {
     if (!nextCursorSnapshot) {
       this.clear();
@@ -204,7 +257,7 @@ export class LerpCursor {
 
     this.prevColoringOperation?.restore();
 
-    if (nextCursorSnapshot && this.isNoteheadColoringEnabled) {
+    if (nextCursorSnapshot && this.opts.isNoteheadColoringEnabled) {
       const coloringOperation = ColoringOperation.init(this.lagger);
       coloringOperation.perform();
       this.prevColoringOperation = coloringOperation;
@@ -215,11 +268,11 @@ export class LerpCursor {
     this.imd.eventBus.dispatch('cursorinfochanged', {
       currentMeasureIndex: this.lagger.iterator.CurrentMeasureIndex,
       currentMeasureNumber: this.lagger.iterator.CurrentMeasure.MeasureNumber,
-      numMeasures: this.numMeasures,
+      numMeasures: this.opts.numMeasures,
     });
   }
 
   private updateLerperPosition(x: number) {
-    this.lerper.cursorElement.style.left = `${x}px`;
+    this.element.style.left = `${x}px`;
   }
 }

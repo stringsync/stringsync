@@ -1,3 +1,4 @@
+import { UpdateCause } from '..';
 import { AnchoredTimeSelection } from '../AnchoredTimeSelection';
 import { InternalMusicDisplay } from '../InternalMusicDisplay';
 import { LerpCursor } from '../LerpCursor';
@@ -9,16 +10,18 @@ export class LerpLoop implements Loop {
   static create(imd: InternalMusicDisplay, locator: MusicDisplayLocator) {
     const startCursor = LerpCursor.create(imd, locator.clone(), {
       numMeasures: imd.Sheet.SourceMeasures.length,
-      scrollContainer: imd.scrollContainer,
-      cursorOptions: { color: 'lime', alpha: 0 },
+      cursorOptions: { color: 'rgba(0, 0, 0, 0)', alpha: 0 },
       isNoteheadColoringEnabled: false,
+      defaultStyle: { 'box-shadow': '0 0 0 #e3e362' },
+      interactingStyle: { 'box-shadow': '10px 0px 16px 0px #e3e376' },
     });
 
     const endCursor = LerpCursor.create(imd, locator.clone(), {
       numMeasures: imd.Sheet.SourceMeasures.length,
-      scrollContainer: imd.scrollContainer,
-      cursorOptions: { color: 'red', alpha: 0 },
+      cursorOptions: { color: 'rgba(0, 0, 0, 0)', alpha: 0 },
       isNoteheadColoringEnabled: false,
+      defaultStyle: { 'box-shadow': '0 0 0 #e3e362' },
+      interactingStyle: { 'box-shadow': '-12px 0px 16px 0px #e3e376' },
     });
 
     const loop = new LerpLoop(imd, startCursor, endCursor);
@@ -68,14 +71,21 @@ export class LerpLoop implements Loop {
     this.selection = AnchoredTimeSelection.init(timeMs);
   }
 
-  update(timeMs: number) {
+  update(timeMs: number, cause = UpdateCause.Unknown) {
     this.selection = this.selection.update(timeMs);
+
     if (!this.isActive) {
       return;
     }
+
     const timeMsRange = this.timeMsRange;
-    this.startCursor.update(timeMsRange.start);
-    this.endCursor.update(timeMsRange.end);
+    if (timeMsRange.start !== this.startCursor.timeMs) {
+      this.startCursor.update(timeMsRange.start, cause);
+    }
+    if (timeMsRange.end !== this.endCursor.timeMs) {
+      this.endCursor.update(timeMsRange.end, cause);
+    }
+
     if (this.imd.selectionRenderer) {
       this.imd.selectionRenderer.update(this.timeMsRange);
     }

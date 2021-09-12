@@ -115,9 +115,14 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
       if (!musicDisplay) {
         return;
       }
-      musicDisplay.cursor.update(timeMs);
+      if (!videoPlayer) {
+        return;
+      }
+      if (!videoPlayer.paused()) {
+        musicDisplay.cursor.update(timeMs);
+      }
     },
-    [musicDisplay]
+    [musicDisplay, videoPlayer]
   );
 
   const onUserScroll = useCallback(() => {

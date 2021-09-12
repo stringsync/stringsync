@@ -81,8 +81,9 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
     this.cursorWrapper = LerpCursor.create(this, locator.clone(), {
       numMeasures: this.Sheet.SourceMeasures.length,
-      scrollContainer: this.scrollContainer,
       isNoteheadColoringEnabled: true,
+      defaultStyle: { opacity: '0.5', 'box-shadow': '0 0 0' },
+      interactingStyle: { opacity: '1', 'box-shadow': '0 0 10px #00ffd9' },
     });
 
     this.svgEventProxy = SVGEventProxy.install(this, locator.clone(), this.svgSettings);

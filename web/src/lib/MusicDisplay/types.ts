@@ -50,10 +50,16 @@ export type SyncSettings = {
   durationMs: number;
 };
 
+export enum UpdateCause {
+  Unknown,
+  Auto,
+  Interaction,
+}
+
 export interface CursorWrapper {
   element: HTMLElement;
   timeMs: number;
-  update(timeMs: number): void;
+  update(timeMs: number, cause?: UpdateCause): void;
   show(): void;
   clear(): void;
   getBox(): Box;
