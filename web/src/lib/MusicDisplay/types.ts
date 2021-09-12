@@ -11,7 +11,7 @@ import {
   PointerTarget,
   SelectionPointerTarget,
 } from './pointer';
-import { ScrollBehaviorType } from './Scroller';
+import { ScrollBehaviorType } from './scroller1';
 
 export type MusicDisplayEventBus = EventBus<{
   click: { src: PointerTarget };

@@ -9,11 +9,11 @@ import {
   VexFlowBackend,
 } from 'opensheetmusicdisplay';
 import { LerpCursor } from './LerpCursor';
-import { LerpLoop, Loop, NoopLoop } from './Loop';
+import { LerpLoop, Loop, NoopLoop } from './loop1';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
 import { NoopCursor } from './NoopCursor';
 import { RippleRenderer, SelectionRenderer } from './renderers';
-import { Scroller } from './Scroller';
+import { Scroller } from './scroller1';
 import { SVGEventProxy } from './SVGEventProxy';
 import { CursorWrapper, MusicDisplayEventBus, MusicDisplayOptions, SVGSettings, SyncSettings } from './types';
 
