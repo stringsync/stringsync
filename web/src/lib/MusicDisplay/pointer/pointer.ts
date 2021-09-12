@@ -19,7 +19,7 @@ export type PointerMachine = ReturnType<typeof createMachine>;
 export type PointerService = ReturnType<typeof createService>;
 
 const LONG_HOLD_DURATION = Duration.ms(1000);
-const TAP_GRACE_PERIOD = Duration.ms(50);
+const TAP_GRACE_PERIOD = Duration.ms(100);
 const IDLE_DURATION = Duration.ms(500);
 
 const NULL_POINTER_POSITION: PointerPosition = Object.freeze({
@@ -39,7 +39,7 @@ const INITIAL_POINTER_CONTEXT: PointerContext = {
   prevDownTarget: NONE_POINTER_TARGET,
   hoverTarget: NONE_POINTER_TARGET,
   prevHoverTarget: NONE_POINTER_TARGET,
-  selection: AnchoredTimeSelection.init(0),
+  selection: null,
 };
 
 export const model = createModel(INITIAL_POINTER_CONTEXT, {
@@ -65,6 +65,7 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
           initial: 'idle',
           on: {
             down: [
+              { cond: 'hasSelectableTarget', target: 'down.select' },
               { cond: 'hasDraggableTarget', target: 'down.drag', actions: ['assignDownTarget', 'dispatchPointerDown'] },
               { target: 'down.tap', actions: ['assignDownTarget', 'dispatchPointerDown'] },
             ],
@@ -192,7 +193,7 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
           },
         }),
         endSelection: assign<PointerContext, PointerEvent>({
-          selection: AnchoredTimeSelection.init(0),
+          selection: null,
         }),
         dispatchClick: (context, event) => {
           eventBus.dispatch('click', { src: context.downTarget });
@@ -223,14 +224,18 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
           }
         },
         dispatchSelectStarted: (context) => {
-          eventBus.dispatch('selectionstarted', { src: context.downTarget, selection: context.selection });
+          if (context.selection) {
+            eventBus.dispatch('selectionstarted', { src: context.downTarget, selection: context.selection });
+          }
         },
         dispatchSelectUpdated: (context, event) => {
-          eventBus.dispatch('selectionupdated', {
-            src: context.downTarget,
-            dst: event.target,
-            selection: context.selection,
-          });
+          if (context.selection) {
+            eventBus.dispatch('selectionupdated', {
+              src: context.downTarget,
+              dst: event.target,
+              selection: context.selection,
+            });
+          }
         },
         dispatchSelectEnded: (context, event) => {
           eventBus.dispatch('selectionended', { src: context.downTarget, dst: event.target });
@@ -281,6 +286,9 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
       guards: {
         hasDraggableTarget: (context, event) => {
           return isCursorPointerTarget(event.target);
+        },
+        hasSelectableTarget: (context, event) => {
+          return isSelectionPointerTarget(event.target);
         },
         hasNoTarget: (context, event) => {
           return isNonePointerTarget(event.target);

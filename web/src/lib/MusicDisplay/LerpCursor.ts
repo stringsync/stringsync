@@ -9,7 +9,7 @@ import { MusicDisplayLocator } from './MusicDisplayLocator';
 import { CursorSnapshot, StyleType } from './types';
 
 const CURSOR_BOX_PADDING_PX = 20;
-const CURSOR_STYLE_TRANSITION_DURATION = Duration.ms(100);
+const CURSOR_STYLE_TRANSITION_DURATION = Duration.ms(200);
 
 const DEFAULT_CURSOR_OPTS = [
   {
