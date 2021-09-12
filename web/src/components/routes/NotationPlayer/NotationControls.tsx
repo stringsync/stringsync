@@ -82,6 +82,17 @@ export const NotationControls: React.FC<Props> = (props) => {
   const isPaused = videoPlayerState === VideoPlayerState.Paused;
   const isPlaying = videoPlayerState === VideoPlayerState.Playing;
 
+  const startAutoscrollingBasedOnPreferences = useCallback(() => {
+    if (!musicDisplay) {
+      return;
+    }
+    if (!settings.isAutoscrollPreferred) {
+      return;
+    }
+    musicDisplay.scroller.startAutoScrolling();
+    musicDisplay.cursor.scrollIntoView();
+  }, [musicDisplay, settings.isAutoscrollPreferred]);
+
   const onSettingsClick = useCallback(() => {
     setIsSettingsVisible((isSettingsVisible) => !isSettingsVisible);
   }, []);
@@ -133,12 +144,8 @@ export const NotationControls: React.FC<Props> = (props) => {
     if (!musicDisplay) {
       return;
     }
-    if (!settings.isAutoscrollPreferred) {
-      return;
-    }
-    musicDisplay.scroller.startAutoScrolling();
-    musicDisplay.cursor.scrollIntoView();
-  }, [musicDisplay, settings.isAutoscrollPreferred]);
+    startAutoscrollingBasedOnPreferences();
+  }, [musicDisplay, settings.isAutoscrollPreferred, startAutoscrollingBasedOnPreferences]);
 
   useEffect(() => {
     if (!musicDisplay) {
@@ -192,11 +199,10 @@ export const NotationControls: React.FC<Props> = (props) => {
   }, [musicDisplay]);
 
   useEffect(() => {
-    if (musicDisplay && isPlaying && settings.isAutoscrollPreferred) {
-      musicDisplay.scroller.startAutoScrolling();
-      musicDisplay.cursor.scrollIntoView();
+    if (musicDisplay && isPlaying) {
+      startAutoscrollingBasedOnPreferences();
     }
-  }, [isPlaying, musicDisplay, settings.isAutoscrollPreferred]);
+  }, [isPlaying, musicDisplay, startAutoscrollingBasedOnPreferences]);
 
   useEffect(() => {
     if (!musicDisplay) {
@@ -225,8 +231,7 @@ export const NotationControls: React.FC<Props> = (props) => {
         if (isCursorSnapshotPointerTarget(payload.src)) {
           seek(payload.src.timeMs);
           musicDisplay.cursor.update(payload.src.timeMs);
-          musicDisplay.scroller.startAutoScrolling();
-          musicDisplay.cursor.scrollIntoView();
+          startAutoscrollingBasedOnPreferences();
 
           if (!musicDisplay.loop.timeMsRange.contains(payload.src.timeMs)) {
             musicDisplay.loop.deactivate();
@@ -254,8 +259,7 @@ export const NotationControls: React.FC<Props> = (props) => {
         cursor.update(timeMs);
       }),
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
-        musicDisplay.scroller.startAutoScrolling();
-        musicDisplay.cursor.scrollIntoView();
+        startAutoscrollingBasedOnPreferences();
         payload.src.cursor.update(payload.src.cursor.timeMs);
         unsuspend();
       }),
@@ -274,8 +278,7 @@ export const NotationControls: React.FC<Props> = (props) => {
           seek(musicDisplay.loop.timeMsRange.start);
           musicDisplay.cursor.update(musicDisplay.loop.timeMsRange.start);
         }
-        musicDisplay.scroller.startAutoScrolling();
-        musicDisplay.cursor.scrollIntoView();
+        startAutoscrollingBasedOnPreferences();
         unsuspend();
       }),
       musicDisplay.eventBus.subscribe('measurelinechanged', () => {
@@ -286,7 +289,7 @@ export const NotationControls: React.FC<Props> = (props) => {
     return () => {
       musicDisplay.eventBus.unsubscribe(...eventBusIds);
     };
-  }, [musicDisplay, seek, suspend, unsuspend]);
+  }, [musicDisplay, seek, suspend, unsuspend, startAutoscrollingBasedOnPreferences]);
 
   useEffect(() => {
     if (!controlsDivRef.current) {
