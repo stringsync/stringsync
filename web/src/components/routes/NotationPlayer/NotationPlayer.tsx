@@ -110,21 +110,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
     setVideoHeightPx(heightPx);
   }, []);
 
-  const onTimeUpdate = useCallback(
-    (timeMs: number) => {
-      if (!musicDisplay) {
-        return;
-      }
-      if (!videoPlayer) {
-        return;
-      }
-      if (!videoPlayer.paused()) {
-        musicDisplay.cursor.update(timeMs);
-      }
-    },
-    [musicDisplay, videoPlayer]
-  );
-
   const onUserScroll = useCallback(() => {
     // TODO(jared) Maybe change the behavior when the user scrolls in a certain context.
     setLastUserScrollAt(new Date());
@@ -217,7 +202,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
               <Video
                 onVideoPlayerChange={onVideoPlayerChange}
                 onVideoResize={onVideoResize}
-                onTimeUpdate={onTimeUpdate}
                 playerOptions={playerOptions}
               />
               <RightBorder border={gtMd}>{gtMd && <SuggestedNotations srcNotationId={notation.id} />}</RightBorder>

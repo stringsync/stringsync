@@ -1,6 +1,7 @@
 import { noop } from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { VideoJsPlayer } from 'video.js';
+import { AsyncLoop } from '../../../util/AsyncLoop';
 import { Duration } from '../../../util/Duration';
 
 export enum VideoPlayerState {
@@ -72,19 +73,16 @@ export const useVideoPlayerControls = (videoPlayer: VideoJsPlayer) => {
     // We don't want to store the currentTimeMs state on the parent NotationPlayer component,
     // since it houses a lot of other components and could potentially trigger a lot of other
     // unwanted updates. We only want components that need the currentTimeMs to update.
-    let rafHandle = 0;
-    const updateCurrentTimeMs = () => {
-      try {
-        const time = Duration.sec(videoPlayer.currentTime());
-        setCurrentTimeMs(time.ms);
-      } finally {
-        rafHandle = window.requestAnimationFrame(updateCurrentTimeMs);
-      }
-    };
-    updateCurrentTimeMs();
+    const loop = new AsyncLoop(() => {
+      const time = Duration.sec(videoPlayer.currentTime());
+      setCurrentTimeMs(time.ms);
+    });
+    videoPlayer.ready(() => {
+      loop.start();
+    });
 
     return () => {
-      cancelAnimationFrame(rafHandle);
+      loop.stop();
     };
   }, [videoPlayer]);
 

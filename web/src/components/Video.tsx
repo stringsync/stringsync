@@ -19,17 +19,15 @@ const Outer = styled.div``;
 type Props = {
   playerOptions: videojs.PlayerOptions;
   onVideoResize?: (widthPx: number, heightPx: number) => void;
-  onTimeUpdate?: (timeMs: number) => void;
   onVideoPlayerChange?: (videoPlayer: VideoJsPlayer | null) => void;
 };
 
 export const Video: React.FC<Props> = (props) => {
-  const { playerOptions, onVideoResize, onTimeUpdate, onVideoPlayerChange } = props;
+  const { playerOptions, onVideoResize, onVideoPlayerChange } = props;
 
   const videoRef = useRef<HTMLVideoElement>(null);
   // We want width and height updated atomically since we know both at the same time.
   const [dimensions, setDimensions] = useState<Dimensions>({ heightPx: 0, widthPx: 0 });
-  const [timeMs, setTimeMs] = useState(0);
 
   // This seperate functional component fixes the removal of the videoelement
   // from the DOM when calling the dispose() method on a player
@@ -42,12 +40,6 @@ export const Video: React.FC<Props> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [playerOptions]
   );
-
-  useEffect(() => {
-    if (onTimeUpdate) {
-      onTimeUpdate(timeMs);
-    }
-  }, [timeMs, onTimeUpdate]);
 
   useEffect(() => {
     if (onVideoResize) {
@@ -68,23 +60,13 @@ export const Video: React.FC<Props> = (props) => {
     });
     resizeObserver.observe(video);
 
-    // The timeupdate event fires too slowly for animating smoothly.
-    let rafHandle = 0;
-    const updateCurrentTime = () => {
-      setTimeMs(player.currentTime() * 1000);
-      rafHandle = window.requestAnimationFrame(updateCurrentTime);
-    };
-
     player.ready(() => {
-      updateCurrentTime();
       if (onVideoPlayerChange) {
         onVideoPlayerChange(player);
       }
     });
 
     return () => {
-      window.cancelAnimationFrame(rafHandle);
-
       if (onVideoPlayerChange) {
         onVideoPlayerChange(null);
       }

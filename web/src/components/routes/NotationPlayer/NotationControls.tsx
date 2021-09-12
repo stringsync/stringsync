@@ -141,6 +141,10 @@ export const NotationControls: React.FC<Props> = (props) => {
   }, [musicDisplay]);
 
   useEffect(() => {
+    musicDisplay?.cursor.update(currentTimeMs);
+  }, [musicDisplay, currentTimeMs]);
+
+  useEffect(() => {
     if (!musicDisplay) {
       return;
     }
