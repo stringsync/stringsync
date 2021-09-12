@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { VideoJsPlayer } from 'video.js';
 import { CursorInfo, MusicDisplay } from '../../../lib/MusicDisplay';
 import { isCursorSnapshotPointerTarget, isTemporal } from '../../../lib/MusicDisplay/pointer/pointerTypeAssert';
-import { ScrollBehaviorType } from '../../../lib/MusicDisplay/scroller1';
+import { ScrollBehaviorType } from '../../../lib/MusicDisplay/scroller';
 import { NotationDetail } from './NotationDetail';
 import { NotationPlayerSettings } from './types';
 import { useTipFormatter } from './useTipFormatter';

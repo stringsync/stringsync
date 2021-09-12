@@ -1,5 +1,5 @@
+import { AnchoredSelection } from '../../../util/AnchoredSelection';
 import { NumberRange } from '../../../util/NumberRange';
-import { AnchoredTimeSelection } from '../AnchoredTimeSelection';
 import { CursorWrapper } from '../types';
 
 export interface Loop {
@@ -7,7 +7,7 @@ export interface Loop {
   readonly timeMsRange: NumberRange;
   readonly startCursor: CursorWrapper;
   readonly endCursor: CursorWrapper;
-  readonly selection: AnchoredTimeSelection;
+  readonly selection: AnchoredSelection;
   activate(): void;
   deactivate(): void;
   anchor(timeMs: number): void;

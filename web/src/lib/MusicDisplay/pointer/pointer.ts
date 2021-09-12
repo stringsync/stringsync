@@ -2,9 +2,9 @@ import { merge } from 'lodash';
 import { EventFrom, interpret } from 'xstate';
 import { assign, choose } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
+import { AnchoredSelection } from '../../../util/AnchoredSelection';
 import { Duration } from '../../../util/Duration';
-import { AnchoredTimeSelection } from '../AnchoredTimeSelection';
-import { MusicDisplayEventBus, SelectionEdge } from '../types';
+import { MusicDisplayEventBus } from '../types';
 import {
   isCursorPointerTarget,
   isCursorSnapshotPointerTarget,
@@ -179,12 +179,10 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
         startSelection: assign<PointerContext, PointerEvent>({
           selection: (context, event) => {
             if (isCursorSnapshotPointerTarget(event.target)) {
-              return AnchoredTimeSelection.init(event.target.timeMs);
+              return AnchoredSelection.init(event.target.timeMs);
             }
             if (isSelectionPointerTarget(event.target)) {
-              return event.target.edge === SelectionEdge.Start
-                ? event.target.selection.anchorEnd()
-                : event.target.selection.anchorStart();
+              return event.target.selection;
             }
             return context.selection;
           },

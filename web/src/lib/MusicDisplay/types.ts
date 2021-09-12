@@ -1,8 +1,8 @@
 import { GraphicalNote, IOSMDOptions, VoiceEntry } from 'opensheetmusicdisplay';
+import { AnchoredSelection } from '../../util/AnchoredSelection';
 import { Box } from '../../util/Box';
 import { NumberRange } from '../../util/NumberRange';
 import { EventBus } from '../EventBus';
-import { AnchoredTimeSelection } from './AnchoredTimeSelection';
 import { IteratorSnapshot } from './IteratorSnapshot';
 import {
   CursorPointerTarget,
@@ -11,7 +11,7 @@ import {
   PointerTarget,
   SelectionPointerTarget,
 } from './pointer';
-import { ScrollBehaviorType } from './scroller1';
+import { ScrollBehaviorType } from './scroller';
 
 export type MusicDisplayEventBus = EventBus<{
   click: { src: PointerTarget };
@@ -40,8 +40,8 @@ export type MusicDisplayEventBus = EventBus<{
   scrollbehaviorchanged: { type: ScrollBehaviorType };
   selectionentered: { src: SelectionPointerTarget };
   selectionexited: { src: SelectionPointerTarget };
-  selectionstarted: { src: PointerTarget; selection: AnchoredTimeSelection };
-  selectionupdated: { src: PointerTarget; dst: PointerTarget; selection: AnchoredTimeSelection };
+  selectionstarted: { src: PointerTarget; selection: AnchoredSelection };
+  selectionupdated: { src: PointerTarget; dst: PointerTarget; selection: AnchoredSelection };
   selectionended: { src: PointerTarget; dst: PointerTarget };
 }>;
 
@@ -121,17 +121,26 @@ export enum SelectionEdge {
   End,
 }
 
-export type LocatorTarget =
-  | { type: LocatorTargetType.None }
-  | { type: LocatorTargetType.Cursor; cursor: CursorWrapper; box: Box }
-  | { type: LocatorTargetType.Note; graphicalNote: GraphicalNote; vfNoteheadEl: SVGGElement; box: Box }
-  | {
-      type: LocatorTargetType.Selection;
-      selection: AnchoredTimeSelection;
-      box: Box;
-      edge: SelectionEdge;
-      cursor: CursorWrapper;
-    };
+export type NoneLocatorTarget = { type: LocatorTargetType.None };
+
+export type CursorLocatorTarget = { type: LocatorTargetType.Cursor; cursor: CursorWrapper; box: Box };
+
+export type NoteLocatorTarget = {
+  type: LocatorTargetType.Note;
+  graphicalNote: GraphicalNote;
+  vfNoteheadEl: SVGGElement;
+  box: Box;
+};
+
+export type SelectionLocatorTarget = {
+  type: LocatorTargetType.Selection;
+  selection: AnchoredSelection;
+  box: Box;
+  edge: SelectionEdge;
+  cursor: CursorWrapper;
+};
+
+export type LocatorTarget = NoneLocatorTarget | CursorLocatorTarget | NoteLocatorTarget | SelectionLocatorTarget;
 
 export enum LocateCost {
   Unknown,

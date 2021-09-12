@@ -1,10 +1,10 @@
-import { AnchoredTimeSelection } from '../AnchoredTimeSelection';
+import { AnchoredSelection } from '../../../util/AnchoredSelection';
 import { NoopCursor } from '../NoopCursor';
 import { Loop } from './types';
 
 export class NoopLoop implements Loop {
   isActive = false;
-  selection = AnchoredTimeSelection.init(0);
+  selection = AnchoredSelection.init(0);
   startCursor = new NoopCursor();
   endCursor = new NoopCursor();
   get timeMsRange() {

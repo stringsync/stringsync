@@ -5,10 +5,17 @@ import { LocatorTarget } from '.';
 import { Box } from '../../util/Box';
 import { bsearch } from '../../util/bsearch';
 import { NumberRange } from '../../util/NumberRange';
-import { AnchoredTimeSelection } from './AnchoredTimeSelection';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { IteratorSnapshot } from './IteratorSnapshot';
-import { CursorSnapshot, CursorWrapper, LocateCost, LocateResult, LocatorTargetType, SelectionEdge } from './types';
+import {
+  CursorLocatorTarget,
+  CursorSnapshot,
+  LocateCost,
+  LocateResult,
+  LocatorTargetType,
+  SelectionEdge,
+  SelectionLocatorTarget,
+} from './types';
 
 // Groups cursor snapshots by the y-range spans they cover. This is a natural division that makes searching
 // by position easier.
@@ -16,10 +23,6 @@ type CursorSnapshotLineGroup = {
   yRange: NumberRange;
   cursorSnapshots: CursorSnapshot[];
 };
-
-type CursorHit = { cursor: CursorWrapper; box: Box };
-
-type SelectionHit = { edge: SelectionEdge; selection: AnchoredTimeSelection; box: Box; cursor: CursorWrapper };
 
 export const END_OF_MEASURE_LINE_PADDING_PX = 20;
 
@@ -510,14 +513,10 @@ export class MusicDisplayLocator {
     const targets = new Array<LocatorTarget>();
 
     const selectionHits = this.getSelectionHits(x, y);
-    for (const selectionHit of selectionHits) {
-      targets.push({ type: LocatorTargetType.Selection, ...selectionHit });
-    }
+    targets.push(...selectionHits);
 
     const cursorHits = this.getCursorHits(x, y);
-    for (const cursorHit of cursorHits) {
-      targets.push({ type: LocatorTargetType.Cursor, ...cursorHit });
-    }
+    targets.push(...cursorHits);
 
     targets.push(
       ...cursorSnapshot.targets.filter((target) => {
@@ -533,32 +532,33 @@ export class MusicDisplayLocator {
     return targets;
   }
 
-  private getCursorHits(x: number, y: number): CursorHit[] {
-    const hits = new Array<CursorHit>();
+  private getCursorHits(x: number, y: number): CursorLocatorTarget[] {
+    const hits = new Array<CursorLocatorTarget>();
 
     const cursors = [this.imd.cursorWrapper];
 
     for (const cursor of cursors) {
       const box = cursor.getBox();
       if (box.contains(x, y)) {
-        hits.push({ cursor, box });
+        hits.push({ type: LocatorTargetType.Cursor, cursor, box });
       }
     }
 
     return hits;
   }
 
-  private getSelectionHits(x: number, y: number): SelectionHit[] {
+  private getSelectionHits(x: number, y: number): SelectionLocatorTarget[] {
     if (!this.imd.loop.isActive) {
       return [];
     }
 
-    const hits = new Array<SelectionHit>();
+    const hits = new Array<SelectionLocatorTarget>();
 
     const startCursor = this.imd.loop.startCursor;
     const startBox = startCursor.getBox();
     if (startBox.contains(x, y)) {
       hits.push({
+        type: LocatorTargetType.Selection,
         edge: SelectionEdge.Start,
         selection: this.imd.loop.selection,
         box: startBox,
@@ -570,6 +570,7 @@ export class MusicDisplayLocator {
     const endBox = endCursor.getBox();
     if (endBox.contains(x, y)) {
       hits.push({
+        type: LocatorTargetType.Selection,
         edge: SelectionEdge.End,
         selection: this.imd.loop.selection,
         box: endBox,

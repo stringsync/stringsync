@@ -1,5 +1,5 @@
 import { StyleType } from '..';
-import { AnchoredTimeSelection } from '../AnchoredTimeSelection';
+import { AnchoredSelection } from '../../../util/AnchoredSelection';
 import { InternalMusicDisplay } from '../InternalMusicDisplay';
 import { LerpCursor } from '../LerpCursor';
 import { MusicDisplayLocator } from '../MusicDisplayLocator';
@@ -35,7 +35,7 @@ export class LerpLoop implements Loop {
   endCursor: CursorWrapper;
   isActive = true;
 
-  selection = AnchoredTimeSelection.init(0);
+  selection = AnchoredSelection.init(0);
 
   private constructor(imd: InternalMusicDisplay, startCursor: CursorWrapper, endCursor: CursorWrapper) {
     this.imd = imd;
@@ -48,7 +48,7 @@ export class LerpLoop implements Loop {
       return;
     }
     this.isActive = true;
-    this.update(this.selection.seekerTimeMs);
+    this.update(this.selection.anchorTimeMs);
     this.startCursor.show();
     this.endCursor.show();
   }
@@ -68,7 +68,7 @@ export class LerpLoop implements Loop {
   }
 
   anchor(timeMs: number) {
-    this.selection = AnchoredTimeSelection.init(timeMs);
+    this.selection = AnchoredSelection.init(timeMs);
   }
 
   update(timeMs: number) {

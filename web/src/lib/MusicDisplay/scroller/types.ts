@@ -1,5 +1,4 @@
 import { Cursor } from 'opensheetmusicdisplay';
-import { Duration } from '../../../util/Duration';
 
 export enum ScrollBehaviorType {
   Noop,
@@ -78,13 +77,6 @@ export enum PositionalRelationship {
   Above = 'Above',
   Below = 'Below',
 }
-
-export type AutoScrollTarreadonly = {
-  scrollTop: number;
-  duration: Duration;
-  easing: Easing;
-  onAfterScroll: () => void;
-};
 
 export interface IntersectionObserverAnalysis {
   readonly visibility: number;
