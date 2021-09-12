@@ -1,13 +1,10 @@
 import React, { RefObject, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { MusicDisplay, SelectionEdge, SupportedSVGEventNames } from '../../lib/MusicDisplay';
+import { MusicDisplay, SupportedSVGEventNames } from '../../lib/MusicDisplay';
 import { PointerTargetType } from '../../lib/MusicDisplay/pointer';
 import { isNonePointerTarget, isPositional } from '../../lib/MusicDisplay/pointer/pointerTypeAssert';
 import { RootState } from '../../store';
-import { Duration } from '../../util/Duration';
-
-const SELECTION_INDETERMINATE_ZONE_DURATION = Duration.ms(500);
 
 const Outer = styled.div<{ cursor: Cursor }>`
   margin-top: 24px;
@@ -47,7 +44,8 @@ type NotationProps = {
 
 enum Cursor {
   Default = 'default',
-  Pointer = 'pointer',
+  Crosshair = 'crosshair',
+  ColResize = 'col-resize',
   EWResize = 'ew-resize',
   EResize = 'e-resize',
   WResize = 'w-resize',
@@ -63,7 +61,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
   const { musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef, onMusicDisplayChange } = props;
 
   const divRef = useRef<HTMLDivElement>(null);
-  const [cursor, setCursor] = useState(Cursor.Pointer);
+  const [cursor, setCursor] = useState(Cursor.Crosshair);
 
   const [isLoading, setIsLoading] = useState(false);
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
@@ -81,38 +79,28 @@ export const Notation: React.FC<NotationProps> = (props) => {
 
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
-        const { anchorTimeMs, seekerTimeMs } = payload.selection;
-        if (Math.abs(anchorTimeMs - seekerTimeMs) <= SELECTION_INDETERMINATE_ZONE_DURATION.ms) {
-          setCursor(Cursor.EWResize);
-        } else if (anchorTimeMs > seekerTimeMs) {
-          setCursor(Cursor.EResize);
-        } else {
-          setCursor(Cursor.WResize);
-        }
+        setCursor(Cursor.ColResize);
       }),
       musicDisplay.eventBus.subscribe('cursorentered', (payload) => {
         setCursor(Cursor.Grab);
       }),
       musicDisplay.eventBus.subscribe('cursorexited', () => {
-        setCursor(Cursor.Pointer);
+        setCursor(Cursor.Crosshair);
       }),
       musicDisplay.eventBus.subscribe('selectionentered', (payload) => {
-        setCursor(payload.src.edge === SelectionEdge.Start ? Cursor.EResize : Cursor.WResize);
+        setCursor(Cursor.ColResize);
       }),
       musicDisplay.eventBus.subscribe('cursordragstarted', () => {
         setCursor(Cursor.Grabbing);
       }),
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
-        setCursor(payload.dst.type === PointerTargetType.Cursor ? Cursor.Grab : Cursor.Pointer);
+        setCursor(payload.dst.type === PointerTargetType.Cursor ? Cursor.Grab : Cursor.Crosshair);
       }),
       musicDisplay.eventBus.subscribe('notargetentered', () => {
         setCursor(Cursor.Default);
       }),
       musicDisplay.eventBus.subscribe('cursorsnapshotentered', () => {
-        setCursor(Cursor.Pointer);
-      }),
-      musicDisplay.eventBus.subscribe('cursorsnapshotclicked', () => {
-        setCursor(Cursor.Grab);
+        setCursor(Cursor.Crosshair);
       }),
       musicDisplay.eventBus.subscribe('pointerdown', (payload) => {
         if (isNonePointerTarget(payload.src)) {
@@ -128,7 +116,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
 
     return () => {
       musicDisplay.eventBus.unsubscribe(...eventBusIds);
-      setCursor(Cursor.Pointer);
+      setCursor(Cursor.Crosshair);
     };
   }, [musicDisplay]);
 

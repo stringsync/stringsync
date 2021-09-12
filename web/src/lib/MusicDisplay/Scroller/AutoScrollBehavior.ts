@@ -23,6 +23,7 @@ type AutoScrollTarget = {
 const SCROLL_DEFAULT_DURATION = Duration.ms(150);
 const SCROLL_BACK_TOP_DURATION = Duration.ms(500);
 const SCROLL_BOTTOM_PADDING_PX = 20;
+const SCROLL_INITIAL_GRACE_DURATION = Duration.sec(1);
 const SCROLL_GRACE_DURATION = Duration.ms(200);
 const SCROLL_DELTA_TOLERANCE_PX = 2;
 const SCROLL_JUMP_THRESHOLD_PX = 800;
@@ -54,7 +55,7 @@ export class AutoScrollBehavior implements ScrollBehavior {
   start() {
     this.installScrollListenerHandle = window.setTimeout(() => {
       this.scrollContainer.addEventListener('scroll', this.detectExternalScroll, { passive: true });
-    }, SCROLL_GRACE_DURATION.ms);
+    }, SCROLL_INITIAL_GRACE_DURATION.ms);
   }
 
   stop() {

@@ -185,9 +185,7 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
           selection: null,
         }),
         dispatchClick: (context, event) => {
-          if (isCursorSnapshotPointerTarget(context.downTarget)) {
-            eventBus.dispatch('cursorsnapshotclicked', { src: context.downTarget });
-          }
+          eventBus.dispatch('click', { src: context.downTarget });
         },
         dispatchDragStarted: (context, event) => {
           if (isCursorPointerTarget(context.downTarget)) {

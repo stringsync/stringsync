@@ -14,19 +14,20 @@ import {
 import { ScrollBehaviorType } from './Scroller';
 
 export type MusicDisplayEventBus = EventBus<{
+  click: { src: PointerTarget };
   cursordragstarted: { src: CursorPointerTarget };
   cursordragupdated: { src: CursorPointerTarget; dst: PointerTarget };
   cursordragended: { src: CursorPointerTarget; dst: PointerTarget };
   cursorentered: { src: CursorPointerTarget };
   cursorexited: { src: CursorPointerTarget };
   cursorinfochanged: CursorInfo;
-  cursorsnapshotclicked: { src: CursorSnapshotPointerTarget };
   cursorsnapshotentered: { src: CursorSnapshotPointerTarget };
   cursorsnapshotexited: { src: CursorSnapshotPointerTarget };
   externalscrolldetected: {};
   interactablemoved: {};
   loadended: {};
   loadstarted: {};
+  press: {};
   longpress: {};
   measurelinechanged: {};
   notargetentered: { src: NonePointerTarget };

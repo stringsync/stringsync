@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { VideoJsPlayer } from 'video.js';
 import { CursorInfo, MusicDisplay } from '../../../lib/MusicDisplay';
-import { isTemporal } from '../../../lib/MusicDisplay/pointer/pointerTypeAssert';
+import { isCursorSnapshotPointerTarget, isTemporal } from '../../../lib/MusicDisplay/pointer/pointerTypeAssert';
 import { ScrollBehaviorType } from '../../../lib/MusicDisplay/Scroller';
 import { NotationDetail } from './NotationDetail';
 import { NotationPlayerSettings } from './types';
@@ -211,13 +211,18 @@ export const NotationControls: React.FC<Props> = (props) => {
 
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('cursorinfochanged', setCursorInfo),
-      musicDisplay.eventBus.subscribe('cursorsnapshotclicked', (payload) => {
-        if (!musicDisplay.loop.timeMsRange.contains(payload.src.timeMs)) {
+      musicDisplay.eventBus.subscribe('click', (payload) => {
+        if (isCursorSnapshotPointerTarget(payload.src)) {
+          seek(payload.src.timeMs);
+          musicDisplay.scroller.startAutoScrolling();
+          musicDisplay.cursor.scrollIntoView();
+
+          if (!musicDisplay.loop.timeMsRange.contains(payload.src.timeMs)) {
+            musicDisplay.loop.deactivate();
+          }
+        } else {
           musicDisplay.loop.deactivate();
         }
-        seek(payload.src.timeMs);
-        musicDisplay.scroller.startAutoScrolling();
-        musicDisplay.cursor.scrollIntoView();
       }),
       musicDisplay.eventBus.subscribe('cursordragstarted', (payload) => {
         musicDisplay.scroller.startManualScrolling();
