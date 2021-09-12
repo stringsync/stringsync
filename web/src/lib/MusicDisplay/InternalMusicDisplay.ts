@@ -12,7 +12,7 @@ import { LerpCursor } from './LerpCursor';
 import { LerpLoop, Loop, NoopLoop } from './Loop';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
 import { NoopCursor } from './NoopCursor';
-import { EphemeralRenderer, SelectionRenderer } from './renderers';
+import { RippleRenderer, SelectionRenderer } from './renderers';
 import { Scroller } from './Scroller';
 import { SVGEventProxy } from './SVGEventProxy';
 import { CursorWrapper, MusicDisplayEventBus, MusicDisplayOptions, SVGSettings, SyncSettings } from './types';
@@ -48,7 +48,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   svgEventProxy: SVGEventProxy | null = null;
   scroller: Scroller;
   selectionRenderer: SelectionRenderer | null = null;
-  ephemeralRenderer: EphemeralRenderer | null = null;
+  rippleRenderer: RippleRenderer | null = null;
 
   constructor(container: string | HTMLElement, eventBus: MusicDisplayEventBus, opts: MusicDisplayOptions) {
     super(container, opts);
@@ -91,7 +91,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
     this.selectionRenderer = SelectionRenderer.create(this, locator.clone());
 
-    this.ephemeralRenderer = EphemeralRenderer.create(this);
+    this.rippleRenderer = RippleRenderer.create(this);
   }
 
   clear() {

@@ -1,16 +1,19 @@
 import { get, isNumber } from 'lodash';
 import { SelectionPointerTarget } from '.';
-import { CursorPointerTarget, CursorSnapshotPointerTarget, NonePointerTarget, PointerTargetType } from './types';
+import {
+  CursorPointerTarget,
+  CursorSnapshotPointerTarget,
+  NonePointerTarget,
+  PointerPosition,
+  PointerTargetType,
+} from './types';
 
 type UnknownTarget = {
   type: PointerTargetType;
 };
 
 type Positional = UnknownTarget & {
-  x: number;
-  y: number;
-  relX: number;
-  relY: number;
+  position: PointerPosition;
 };
 
 type Temporal = UnknownTarget & {
@@ -34,11 +37,13 @@ export const isSelectionPointerTarget = (target: UnknownTarget): target is Selec
 };
 
 export const isPositional = (target: UnknownTarget): target is Positional => {
+  const position = get(target, 'position');
   return (
-    isNumber(get(target, 'x')) &&
-    isNumber(get(target, 'y')) &&
-    isNumber(get(target, 'relX')) &&
-    isNumber(get(target, 'relY'))
+    position &&
+    isNumber(get(position, 'x')) &&
+    isNumber(get(position, 'y')) &&
+    isNumber(get(position, 'relX')) &&
+    isNumber(get(position, 'relY'))
   );
 };
 

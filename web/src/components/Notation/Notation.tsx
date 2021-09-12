@@ -3,9 +3,11 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { MusicDisplay, SelectionEdge, SupportedSVGEventNames } from '../../lib/MusicDisplay';
 import { PointerTargetType } from '../../lib/MusicDisplay/pointer';
+import { isNonePointerTarget, isPositional } from '../../lib/MusicDisplay/pointer/pointerTypeAssert';
 import { RootState } from '../../store';
+import { Duration } from '../../util/Duration';
 
-const SELECTION_INDETERMINATE_ZONE_PX = 100;
+const SELECTION_INDETERMINATE_ZONE_DURATION = Duration.ms(500);
 
 const Outer = styled.div<{ cursor: Cursor }>`
   margin-top: 24px;
@@ -80,7 +82,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
         const { anchorTimeMs, seekerTimeMs } = payload.selection;
-        if (Math.abs(anchorTimeMs - seekerTimeMs) <= SELECTION_INDETERMINATE_ZONE_PX) {
+        if (Math.abs(anchorTimeMs - seekerTimeMs) <= SELECTION_INDETERMINATE_ZONE_DURATION.ms) {
           setCursor(Cursor.EWResize);
         } else if (anchorTimeMs > seekerTimeMs) {
           setCursor(Cursor.EResize);
@@ -97,9 +99,6 @@ export const Notation: React.FC<NotationProps> = (props) => {
       musicDisplay.eventBus.subscribe('selectionentered', (payload) => {
         setCursor(payload.src.edge === SelectionEdge.Start ? Cursor.EResize : Cursor.WResize);
       }),
-      musicDisplay.eventBus.subscribe('selectionexited', () => {
-        setCursor(Cursor.Pointer);
-      }),
       musicDisplay.eventBus.subscribe('cursordragstarted', () => {
         setCursor(Cursor.Grabbing);
       }),
@@ -114,6 +113,16 @@ export const Notation: React.FC<NotationProps> = (props) => {
       }),
       musicDisplay.eventBus.subscribe('cursorsnapshotclicked', () => {
         setCursor(Cursor.Grab);
+      }),
+      musicDisplay.eventBus.subscribe('pointerdown', (payload) => {
+        if (isNonePointerTarget(payload.src)) {
+          return;
+        }
+        if (!isPositional(payload.src)) {
+          return;
+        }
+        const { x, y } = payload.src.position;
+        musicDisplay.renderRipple(x, y);
       }),
     ];
 

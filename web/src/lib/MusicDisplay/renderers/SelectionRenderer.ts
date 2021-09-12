@@ -187,6 +187,7 @@ export class SelectionRenderer {
     rect.setAttribute('y', box.yRange.start.toString());
     rect.setAttribute('width', box.width().toString());
     rect.setAttribute('height', box.height().toString());
+    rect.setAttribute('pointer-events', 'none');
     return rect;
   }
 }

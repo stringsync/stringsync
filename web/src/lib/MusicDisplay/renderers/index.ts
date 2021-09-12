@@ -1,2 +1,2 @@
-export * from './EphemeralRenderer';
+export * from './RippleRenderer';
 export * from './SelectionRenderer';

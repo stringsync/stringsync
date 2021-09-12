@@ -45,6 +45,10 @@ export class MusicDisplay {
     this.imd.clear();
   }
 
+  renderRipple(x: number, y: number) {
+    this.imd.rippleRenderer?.render(x, y);
+  }
+
   get scroller() {
     return this.imd.scroller;
   }

@@ -39,6 +39,7 @@ export class AutoScrollBehavior implements ScrollBehavior {
   private lastEntries: IntersectionObserverEntry[] = [];
   private lastScrollId = Symbol();
   private isAutoScrolling = false;
+  private installScrollListenerHandle = -1;
 
   constructor(scrollContainer: HTMLElement, imd: InternalMusicDisplay) {
     this.scrollContainer = scrollContainer;
@@ -51,10 +52,13 @@ export class AutoScrollBehavior implements ScrollBehavior {
   }
 
   start() {
-    this.scrollContainer.addEventListener('scroll', this.detectExternalScroll, { passive: true });
+    this.installScrollListenerHandle = window.setTimeout(() => {
+      this.scrollContainer.addEventListener('scroll', this.detectExternalScroll, { passive: true });
+    }, SCROLL_GRACE_DURATION.ms);
   }
 
   stop() {
+    window.clearTimeout(this.installScrollListenerHandle);
     this.scrollContainer.removeEventListener('scroll', this.detectExternalScroll);
     window.cancelIdleCallback(this.deferHandle);
     window.clearTimeout(this.autoScrollHandle);

@@ -32,7 +32,7 @@ export type MusicDisplayEventBus = EventBus<{
   notargetentered: { src: NonePointerTarget };
   notargetexited: { src: NonePointerTarget };
   pointeractive: {};
-  pointerdown: { x: number; y: number };
+  pointerdown: { src: PointerTarget };
   pointeridle: {};
   resizeended: {};
   resizestarted: {};

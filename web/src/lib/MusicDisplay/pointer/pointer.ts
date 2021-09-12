@@ -65,8 +65,8 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
           initial: 'idle',
           on: {
             down: [
-              { cond: 'hasDraggableTarget', target: 'down.drag', actions: ['assignDownTarget'] },
-              { target: 'down.tap', actions: ['assignDownTarget'] },
+              { cond: 'hasDraggableTarget', target: 'down.drag', actions: ['assignDownTarget', 'dispatchPointerDown'] },
+              { target: 'down.tap', actions: ['assignDownTarget', 'dispatchPointerDown'] },
             ],
             move: {
               target: 'up.active',
@@ -263,6 +263,9 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
           if (isNonePointerTarget(event.target)) {
             eventBus.dispatch('notargetexited', { src: event.target });
           }
+        },
+        dispatchPointerDown: (context) => {
+          eventBus.dispatch('pointerdown', { src: context.downTarget });
         },
         dispatchPointerIdle: (context) => {
           eventBus.dispatch('pointeridle', {});
