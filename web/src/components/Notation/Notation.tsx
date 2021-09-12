@@ -171,19 +171,25 @@ export const Notation: React.FC<NotationProps> = (props) => {
     const startLoading = () => setIsLoading(true);
     const stopLoading = () => setIsLoading(false);
 
-    const loadStartedId = musicDisplay.eventBus.subscribe('loadstarted', startLoading);
-    const loadEndedId = musicDisplay.eventBus.subscribe('loadended', stopLoading);
-    const resizeStartedId = musicDisplay.eventBus.subscribe('resizestarted', startLoading);
-    const resizeEndedId = musicDisplay.eventBus.subscribe('resizeended', stopLoading);
+    const eventBusIds = [
+      musicDisplay.eventBus.subscribe('loadstarted', startLoading),
+      musicDisplay.eventBus.subscribe('loadended', stopLoading),
+      musicDisplay.eventBus.subscribe('resizestarted', startLoading),
+      musicDisplay.eventBus.subscribe('resizeended', stopLoading),
+    ];
+
+    const dispatchResizeStarted = () => {
+      musicDisplay.eventBus.dispatch('resizestarted', {});
+    };
+    window.addEventListener('resize', dispatchResizeStarted);
 
     setMusicDisplay(musicDisplay);
     musicDisplay.load(musicXmlUrl);
 
     return () => {
-      musicDisplay.eventBus.unsubscribe(resizeEndedId);
-      musicDisplay.eventBus.unsubscribe(resizeStartedId);
-      musicDisplay.eventBus.unsubscribe(loadEndedId);
-      musicDisplay.eventBus.unsubscribe(loadStartedId);
+      window.removeEventListener('resize', dispatchResizeStarted);
+
+      musicDisplay.eventBus.unsubscribe(...eventBusIds);
 
       musicDisplay.dispose();
 
