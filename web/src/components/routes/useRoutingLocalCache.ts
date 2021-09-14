@@ -1,6 +1,6 @@
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 
-const ROUTING_CACHE_KEY = 'stringsyncRoutingCache';
+const ROUTING_CACHE_KEY = 'stringsync_routing_cache';
 
 type RoutingCache = {
   lastVisitedLandingAtMsSinceEpoch: number;
