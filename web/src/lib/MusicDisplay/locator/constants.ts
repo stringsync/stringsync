@@ -1,0 +1,1 @@
+export const END_OF_MEASURE_LINE_PADDING_PX = 20;

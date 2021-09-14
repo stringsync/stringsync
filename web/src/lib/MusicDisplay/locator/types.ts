@@ -25,6 +25,13 @@ export type CursorSnapshot = {
   targets: LocatorTarget[];
 };
 
+// Groups cursor snapshots by the y-range spans they cover. This is a natural division that makes searching
+// by position easier.
+export type CursorSnapshotLineGroup = {
+  yRange: NumberRange;
+  cursorSnapshots: CursorSnapshot[];
+};
+
 export enum LocatorTargetType {
   None,
   Cursor,
