@@ -8,6 +8,7 @@ import {
   SvgVexFlowBackend,
   VexFlowBackend,
 } from 'opensheetmusicdisplay';
+import { Colorer } from './colorer';
 import { LerpCursor } from './LerpCursor';
 import { LerpLoop, Loop, NoopLoop } from './loop';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
@@ -47,6 +48,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   eventBus: MusicDisplayEventBus;
   svgEventProxy: SVGEventProxy | null = null;
   scroller: Scroller;
+  colorer: Colorer;
   selectionRenderer: SelectionRenderer | null = null;
   rippleRenderer: RippleRenderer | null = null;
 
@@ -58,6 +60,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.svgSettings = opts.svgSettings;
     this.scrollContainer = opts.scrollContainer;
     this.scroller = new Scroller(opts.scrollContainer, this);
+    this.colorer = new Colorer();
   }
 
   async load(xmlUrl: string) {

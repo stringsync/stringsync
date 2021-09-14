@@ -1,9 +1,9 @@
 import $ from 'jquery';
 import { difference, intersection, isString, uniq } from 'lodash';
 import { Cursor, CursorOptions, CursorType } from 'opensheetmusicdisplay';
+import { theme } from '../../theme';
 import { Box } from '../../util/Box';
 import { Duration } from '../../util/Duration';
-import { ColoringOperation } from './ColoringOperation';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { MusicDisplayLocator } from './MusicDisplayLocator';
 import { CursorSnapshot, StyleType } from './types';
@@ -76,7 +76,7 @@ export class LerpCursor {
 
   private locator: MusicDisplayLocator | null = null;
   private prevCursorSnapshot: CursorSnapshot | null = null;
-  private prevColoringOperation: ColoringOperation | null = null;
+  private noteColorOpId = Symbol();
 
   private constructor(imd: InternalMusicDisplay, cursors: Cursors, opts: LerpCursorOpts) {
     this.imd = imd;
@@ -174,7 +174,7 @@ export class LerpCursor {
   }
 
   clear() {
-    this.prevColoringOperation?.restore();
+    this.imd.colorer.undo(this.noteColorOpId);
 
     this.leader.hide();
     this.lagger.hide();
@@ -258,14 +258,12 @@ export class LerpCursor {
 
     this.prevCursorSnapshot = nextCursorSnapshot;
 
-    this.prevColoringOperation?.restore();
+    if (this.opts.isNoteheadColoringEnabled) {
+      this.imd.colorer.undo(this.noteColorOpId);
 
-    if (nextCursorSnapshot && this.opts.isNoteheadColoringEnabled) {
-      const coloringOperation = ColoringOperation.init(this.lagger);
-      coloringOperation.perform();
-      this.prevColoringOperation = coloringOperation;
-    } else {
-      this.prevColoringOperation = null;
+      if (nextCursorSnapshot) {
+        this.noteColorOpId = this.imd.colorer.colorNotesUnderCursor(this.lagger, theme['@primary-color']);
+      }
     }
 
     this.imd.eventBus.dispatch('cursorinfochanged', {
