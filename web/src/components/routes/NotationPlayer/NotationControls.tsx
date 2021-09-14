@@ -4,7 +4,8 @@ import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { VideoJsPlayer } from 'video.js';
-import { CursorInfo, MusicDisplay } from '../../../lib/MusicDisplay';
+import { MusicDisplay } from '../../../lib/MusicDisplay';
+import { CursorInfo } from '../../../lib/MusicDisplay/cursors';
 import { isCursorSnapshotPointerTarget, isTemporal } from '../../../lib/MusicDisplay/pointer/pointerTypeAssert';
 import { ScrollBehaviorType } from '../../../lib/MusicDisplay/scroller';
 import { NotationDetail } from './NotationDetail';
@@ -229,7 +230,9 @@ export const NotationControls: React.FC<Props> = (props) => {
     }
 
     const eventBusIds = [
-      musicDisplay.eventBus.subscribe('cursorinfochanged', setCursorInfo),
+      musicDisplay.eventBus.subscribe('cursorinfochanged', (payload) => {
+        setCursorInfo(payload.info);
+      }),
       musicDisplay.eventBus.subscribe('click', (payload) => {
         if (isCursorSnapshotPointerTarget(payload.src)) {
           seek(payload.src.timeMs);

@@ -268,9 +268,11 @@ export class LerpCursor implements CursorWrapper {
     }
 
     this.imd.eventBus.dispatch('cursorinfochanged', {
-      currentMeasureIndex: this.lagger.iterator.CurrentMeasureIndex,
-      currentMeasureNumber: this.lagger.iterator.CurrentMeasure.MeasureNumber,
-      numMeasures: this.opts.numMeasures,
+      info: {
+        currentMeasureIndex: this.lagger.iterator.CurrentMeasureIndex,
+        currentMeasureNumber: this.lagger.iterator.CurrentMeasure.MeasureNumber,
+        numMeasures: this.opts.numMeasures,
+      },
     });
   }
 

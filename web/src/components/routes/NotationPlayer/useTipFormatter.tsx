@@ -1,6 +1,6 @@
 import { isNumber } from 'lodash';
 import { useCallback } from 'react';
-import { CursorInfo } from '../../../lib/MusicDisplay';
+import { CursorInfo } from '../../../lib/MusicDisplay/cursors';
 import { SliderTooltip } from './SliderTooltip';
 
 const timestamp = (ms: number): string => {

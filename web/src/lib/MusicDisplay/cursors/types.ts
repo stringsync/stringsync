@@ -5,6 +5,12 @@ export enum CursorStyleType {
   Interacting,
 }
 
+export type CursorInfo = {
+  currentMeasureIndex: number;
+  currentMeasureNumber: number;
+  numMeasures: number;
+};
+
 export interface CursorWrapper {
   element: HTMLElement;
   timeMs: number;
