@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import { first, get, groupBy, isNumber, sortBy } from 'lodash';
 import { GraphicalNote } from 'opensheetmusicdisplay';
 import { Box } from '../../../util/Box';

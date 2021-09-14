@@ -7,19 +7,19 @@ export class AnchoredSelection {
 
   readonly id = Symbol();
 
-  readonly anchorTimeMs: number;
-  readonly seekerTimeMs: number;
+  readonly anchorValue: number;
+  readonly movingValue: number;
 
   constructor(anchorTimeMs: number, seekerTimeMs: number) {
-    this.anchorTimeMs = anchorTimeMs;
-    this.seekerTimeMs = seekerTimeMs;
+    this.anchorValue = anchorTimeMs;
+    this.movingValue = seekerTimeMs;
   }
 
   update(timeMs: number) {
-    return new AnchoredSelection(this.anchorTimeMs, timeMs);
+    return new AnchoredSelection(this.anchorValue, timeMs);
   }
 
   toRange() {
-    return NumberRange.unsorted(this.anchorTimeMs, this.seekerTimeMs);
+    return NumberRange.unsorted(this.anchorValue, this.movingValue);
   }
 }

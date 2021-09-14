@@ -266,12 +266,12 @@ export const NotationControls: React.FC<Props> = (props) => {
       musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
         suspend();
         musicDisplay.scroller.startManualScrolling();
-        musicDisplay.loop.anchor(payload.selection.anchorTimeMs);
+        musicDisplay.loop.anchor(payload.selection.anchorValue);
         musicDisplay.loop.activate();
       }),
       musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
         musicDisplay.scroller.updateScrollIntent(payload.dst.position.relY);
-        musicDisplay.loop.update(payload.selection.seekerTimeMs);
+        musicDisplay.loop.update(payload.selection.movingValue);
       }),
       musicDisplay.eventBus.subscribe('selectionended', () => {
         if (!musicDisplay.loop.timeMsRange.contains(musicDisplay.cursor.timeMs)) {

@@ -47,7 +47,7 @@ export class LerpLoop implements Loop {
       return;
     }
     this.isActive = true;
-    this.update(this.selection.anchorTimeMs);
+    this.update(this.selection.anchorValue);
     this.startCursor.show();
     this.endCursor.show();
   }
