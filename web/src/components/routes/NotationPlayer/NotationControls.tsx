@@ -6,7 +6,12 @@ import styled from 'styled-components';
 import { VideoJsPlayer } from 'video.js';
 import { MusicDisplay } from '../../../lib/MusicDisplay';
 import { CursorInfo } from '../../../lib/MusicDisplay/cursors';
-import { isCursorSnapshotPointerTarget, isTemporal } from '../../../lib/MusicDisplay/pointer/pointerTypeAssert';
+import { SelectionEdge } from '../../../lib/MusicDisplay/locator';
+import {
+  isCursorSnapshotPointerTarget,
+  isSelectionPointerTarget,
+  isTemporal,
+} from '../../../lib/MusicDisplay/pointer/pointerTypeAssert';
 import { ScrollBehaviorType } from '../../../lib/MusicDisplay/scroller';
 import { NotationDetail } from './NotationDetail';
 import { NotationPlayerSettings } from './types';
@@ -266,7 +271,14 @@ export const NotationControls: React.FC<Props> = (props) => {
       musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
         suspend();
         musicDisplay.scroller.startManualScrolling();
-        musicDisplay.loop.anchor(payload.selection.anchorValue);
+        if (isSelectionPointerTarget(payload.src)) {
+          const timeMsRange = musicDisplay.loop.timeMsRange;
+          const newAnchorValue = payload.src.edge === SelectionEdge.Start ? timeMsRange.end : timeMsRange.start;
+          musicDisplay.loop.anchor(newAnchorValue);
+        } else {
+          musicDisplay.loop.anchor(payload.selection.anchorValue);
+          musicDisplay.loop.update(payload.selection.movingValue);
+        }
         musicDisplay.loop.activate();
       }),
       musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
