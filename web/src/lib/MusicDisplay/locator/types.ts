@@ -5,6 +5,11 @@ import { NumberRange } from '../../../util/NumberRange';
 import { CursorWrapper } from '../cursors';
 import { IteratorSnapshot } from './IteratorSnapshot';
 
+export type SyncSettings = {
+  deadTimeMs: number;
+  durationMs: number;
+};
+
 export type CursorSnapshot = {
   index: number;
   next: CursorSnapshot | null;

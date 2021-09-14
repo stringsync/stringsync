@@ -2,6 +2,7 @@ import { IOSMDOptions } from 'opensheetmusicdisplay';
 import { AnchoredSelection } from '../../util/AnchoredSelection';
 import { EventBus } from '../EventBus';
 import { CursorInfo } from './cursors';
+import { SyncSettings } from './locator';
 import {
   CursorPointerTarget,
   CursorSnapshotPointerTarget,
@@ -11,6 +12,12 @@ import {
 } from './pointer';
 import { ScrollBehaviorType } from './scroller';
 import { SVGSettings } from './svg';
+
+export type MusicDisplayOptions = IOSMDOptions & {
+  syncSettings: SyncSettings;
+  scrollContainer: HTMLDivElement;
+  svgSettings: SVGSettings;
+};
 
 export type MusicDisplayEventBus = EventBus<{
   click: { src: PointerTarget };
@@ -43,14 +50,3 @@ export type MusicDisplayEventBus = EventBus<{
   selectionupdated: { src: PointerTarget; dst: PointerTarget; selection: AnchoredSelection };
   selectionended: { src: PointerTarget; dst: PointerTarget };
 }>;
-
-export type SyncSettings = {
-  deadTimeMs: number;
-  durationMs: number;
-};
-
-export type MusicDisplayOptions = IOSMDOptions & {
-  syncSettings: SyncSettings;
-  scrollContainer: HTMLDivElement;
-  svgSettings: SVGSettings;
-};

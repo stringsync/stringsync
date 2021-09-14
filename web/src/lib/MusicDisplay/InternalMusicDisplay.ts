@@ -10,12 +10,13 @@ import {
 } from 'opensheetmusicdisplay';
 import { Colorer } from './colorer';
 import { CursorWrapper, LerpCursor, NoopCursor } from './cursors';
+import { SyncSettings } from './locator';
 import { MusicDisplayLocator } from './locator/MusicDisplayLocator';
 import { LerpLoop, Loop, NoopLoop } from './loop';
 import { RippleRenderer, SelectionRenderer } from './renderers';
 import { Scroller } from './scroller';
 import { SVGEventProxy, SVGSettings } from './svg';
-import { MusicDisplayEventBus, MusicDisplayOptions, SyncSettings } from './types';
+import { MusicDisplayEventBus, MusicDisplayOptions } from './types';
 
 type IdentifiableCursorOptions = CursorOptions & {
   id: symbol;
