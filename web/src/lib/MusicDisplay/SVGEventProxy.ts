@@ -194,6 +194,7 @@ export class SVGEventProxy {
   private getPointerTarget(positional: Positional): PointerTarget {
     const locateResult = this.getLocateResult(positional);
     const { relX, relY } = this.getRelPos(positional);
+    const position = { x: locateResult.x, y: locateResult.y, relX, relY };
 
     const mostImportantLocateResultTarget = maxBy(
       locateResult.targets,
@@ -207,7 +208,7 @@ export class SVGEventProxy {
         edge: mostImportantLocateResultTarget.edge,
         timeMs: locateResult.timeMs,
         cursor: mostImportantLocateResultTarget.cursor,
-        position: { x: locateResult.x, y: locateResult.y, relX, relY },
+        position,
       };
     }
     if (mostImportantLocateResultTarget && mostImportantLocateResultTarget.type === LocatorTargetType.Cursor) {
@@ -215,7 +216,7 @@ export class SVGEventProxy {
         type: PointerTargetType.Cursor,
         cursor: mostImportantLocateResultTarget.cursor,
         timeMs: locateResult.timeMs,
-        position: { x: locateResult.x, y: locateResult.y, relX, relY },
+        position,
       };
     }
     if (locateResult.cursorSnapshot) {
@@ -223,10 +224,10 @@ export class SVGEventProxy {
         type: PointerTargetType.CursorSnapshot,
         cursorSnapshot: locateResult.cursorSnapshot,
         timeMs: locateResult.timeMs,
-        position: { x: locateResult.x, y: locateResult.y, relX, relY },
+        position,
       };
     }
-    return { type: PointerTargetType.None, position: { x: locateResult.x, y: locateResult.y, relX, relY } };
+    return { type: PointerTargetType.None, position };
   }
 
   private getRelPos(positional: Positional) {
