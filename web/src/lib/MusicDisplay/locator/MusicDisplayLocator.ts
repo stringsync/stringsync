@@ -1,10 +1,10 @@
 import { first, last } from 'lodash';
 import { bsearch } from '../../../util/bsearch';
 import { InternalMusicDisplay } from '../InternalMusicDisplay';
+import { CursorSnapshot } from './CursorSnapshot';
 import { CursorSnapshotCalculator } from './CursorSnapshotCalculator';
 import {
   CursorLocatorTarget,
-  CursorSnapshot,
   CursorSnapshotLineGroup,
   LocateCost,
   LocateResult,
@@ -97,10 +97,9 @@ export class MusicDisplayLocator {
     }
 
     if (firstCursorSnapshot.timeMsRange.contains(timeMs)) {
-      const x = this.lerpX(timeMs, firstCursorSnapshot);
       return {
         timeMs,
-        x,
+        x: firstCursorSnapshot.lerpX(timeMs),
         y: firstCursorSnapshot.yRange.midpoint,
         cost: LocateCost.Cheap,
         cursorSnapshot: firstCursorSnapshot,
@@ -112,10 +111,9 @@ export class MusicDisplayLocator {
     // the second one just in case.
     const secondCursorSnapshot = firstCursorSnapshot.next;
     if (secondCursorSnapshot && secondCursorSnapshot.timeMsRange.contains(timeMs)) {
-      const x = this.lerpX(timeMs, secondCursorSnapshot);
       return {
         timeMs,
-        x,
+        x: secondCursorSnapshot.lerpX(timeMs),
         y: secondCursorSnapshot.timeMsRange.midpoint,
         cost: LocateCost.Cheap,
         cursorSnapshot: secondCursorSnapshot,
@@ -141,10 +139,9 @@ export class MusicDisplayLocator {
     }
 
     if (cursorSnapshot.timeMsRange.contains(timeMs)) {
-      const x = this.lerpX(timeMs, cursorSnapshot);
       return {
         timeMs,
-        x,
+        x: cursorSnapshot.lerpX(timeMs),
         y: cursorSnapshot.yRange.midpoint,
         cost: LocateCost.Cheap,
         cursorSnapshot: cursorSnapshot,
@@ -154,10 +151,9 @@ export class MusicDisplayLocator {
 
     const nextCursorSnapshot = cursorSnapshot.next;
     if (nextCursorSnapshot && nextCursorSnapshot.timeMsRange.contains(timeMs)) {
-      const x = this.lerpX(timeMs, nextCursorSnapshot);
       return {
         timeMs,
-        x,
+        x: nextCursorSnapshot.lerpX(timeMs),
         y: nextCursorSnapshot.yRange.midpoint,
         cost: LocateCost.Cheap,
         cursorSnapshot: nextCursorSnapshot,
@@ -167,10 +163,9 @@ export class MusicDisplayLocator {
 
     const prevCursorSnapshot = cursorSnapshot.prev;
     if (prevCursorSnapshot && prevCursorSnapshot.timeMsRange.contains(timeMs)) {
-      const x = this.lerpX(timeMs, prevCursorSnapshot);
       return {
         timeMs,
-        x,
+        x: prevCursorSnapshot.lerpX(timeMs),
         y: prevCursorSnapshot.yRange.midpoint,
         cost: LocateCost.Cheap,
         cursorSnapshot: prevCursorSnapshot,
@@ -197,10 +192,9 @@ export class MusicDisplayLocator {
     });
 
     if (cursorSnapshot) {
-      const x = this.lerpX(timeMs, cursorSnapshot);
       return {
         timeMs,
-        x,
+        x: cursorSnapshot.lerpX(timeMs),
         y: cursorSnapshot.yRange.midpoint,
         cost: LocateCost.Expensive,
         cursorSnapshot: cursorSnapshot,
@@ -236,9 +230,8 @@ export class MusicDisplayLocator {
     }
 
     if (cursorSnapshot.xRange.contains(x) && cursorSnapshot.yRange.contains(y)) {
-      const timeMs = this.lerpTimeMs(x, cursorSnapshot);
       return {
-        timeMs,
+        timeMs: cursorSnapshot.lerpTimeMs(x),
         x,
         y,
         cost: LocateCost.Cheap,
@@ -249,9 +242,8 @@ export class MusicDisplayLocator {
 
     const nextCursorSnapshot = cursorSnapshot.next;
     if (nextCursorSnapshot && nextCursorSnapshot.xRange.contains(x) && nextCursorSnapshot.yRange.contains(y)) {
-      const timeMs = this.lerpTimeMs(x, nextCursorSnapshot);
       return {
-        timeMs,
+        timeMs: nextCursorSnapshot.lerpTimeMs(x),
         x,
         y,
         cost: LocateCost.Cheap,
@@ -262,9 +254,8 @@ export class MusicDisplayLocator {
 
     const prevCursorSnapshot = cursorSnapshot.prev;
     if (prevCursorSnapshot && prevCursorSnapshot.xRange.contains(x) && prevCursorSnapshot.yRange.contains(y)) {
-      const timeMs = this.lerpTimeMs(x, prevCursorSnapshot);
       return {
-        timeMs,
+        timeMs: prevCursorSnapshot.lerpTimeMs(x),
         x,
         y,
         cost: LocateCost.Cheap,
@@ -321,9 +312,8 @@ export class MusicDisplayLocator {
       };
     }
 
-    const timeMs = this.lerpTimeMs(x, cursorSnapshot);
     return {
-      timeMs,
+      timeMs: cursorSnapshot.lerpTimeMs(x),
       x,
       y,
       cost: LocateCost.Expensive,
@@ -402,27 +392,5 @@ export class MusicDisplayLocator {
     }
 
     return hits;
-  }
-
-  private lerpX(timeMs: number, cursorSnapshot: CursorSnapshot) {
-    const t0 = cursorSnapshot.timeMsRange.start;
-    const t1 = cursorSnapshot.timeMsRange.end;
-    const x0 = cursorSnapshot.xRange.start;
-    const x1 = cursorSnapshot.xRange.end;
-
-    const x = x1 + ((timeMs - t1) * (x1 - x0)) / (t1 - t0);
-
-    return x;
-  }
-
-  private lerpTimeMs(x: number, cursorSnapshot: CursorSnapshot) {
-    const t0 = cursorSnapshot.timeMsRange.start;
-    const t1 = cursorSnapshot.timeMsRange.end;
-    const x0 = cursorSnapshot.xRange.start;
-    const x1 = cursorSnapshot.xRange.end;
-
-    const t = t1 + ((x - x1) * (t1 - t0)) / (x1 - x0);
-
-    return t;
   }
 }

@@ -1,8 +1,9 @@
 import { VoiceEntry } from 'opensheetmusicdisplay';
-import { END_OF_MEASURE_LINE_PADDING_PX, LocatorTarget } from '.';
 import { Box } from '../../../util/Box';
 import { NumberRange } from '../../../util/NumberRange';
+import { END_OF_MEASURE_LINE_PADDING_PX } from './constants';
 import { IteratorSnapshot } from './IteratorSnapshot';
+import { LocatorTarget } from './types';
 
 type CursorSnapshotAttrs = {
   measureLine: number;
@@ -17,31 +18,6 @@ type CursorSnapshotAttrs = {
 };
 
 export class CursorSnapshot {
-  /**
-   * Validates that the startCursorSnapshot is connected to the endCursorSnapshot via the next and prev properties.
-   * It also implicity checks for infinite loops by independently tracking the index.
-   */
-  static validateContinuity(startCursorSnapshot: CursorSnapshot, endCursorSnapshot: CursorSnapshot) {
-    let prevCursorSnapshot: CursorSnapshot | null = startCursorSnapshot.prev;
-    let currentCursorSnapshot = startCursorSnapshot;
-    let index = currentCursorSnapshot.index;
-    while (currentCursorSnapshot !== endCursorSnapshot) {
-      if (currentCursorSnapshot.index !== index) {
-        throw new Error(`index skipped at: ${index}`);
-      }
-      if (prevCursorSnapshot !== currentCursorSnapshot.prev) {
-        throw new Error(`previous cursor snapshot incorrect at index: ${index}`);
-      }
-      const nextCursorSnapshot = currentCursorSnapshot.next;
-      if (!nextCursorSnapshot) {
-        throw new Error(`did not reach end cursor snapshot, stopped at index: ${index}`);
-      }
-      prevCursorSnapshot = currentCursorSnapshot;
-      currentCursorSnapshot = nextCursorSnapshot;
-      index++;
-    }
-  }
-
   readonly index: number;
   next: CursorSnapshot | null = null;
   prev: CursorSnapshot | null = null;
@@ -56,6 +32,9 @@ export class CursorSnapshot {
   readonly entries: VoiceEntry[];
   readonly targets: LocatorTarget[];
 
+  private xRangeCache: NumberRange | null = null;
+  private boxCache: Box | null = null;
+
   constructor(index: number, attrs: CursorSnapshotAttrs) {
     this.index = index;
     this.measureLine = attrs.measureLine;
@@ -69,22 +48,58 @@ export class CursorSnapshot {
     this.targets = attrs.targets;
   }
 
+  get xRange() {
+    if (!this.xRangeCache) {
+      this.xRangeCache = this.calculateXRange();
+    }
+    return this.xRangeCache;
+  }
+
+  get box() {
+    if (!this.boxCache) {
+      this.boxCache = this.calculateBox();
+    }
+    return this.boxCache;
+  }
+
   linkPrev(cursorSnapshot: CursorSnapshot): void {
     cursorSnapshot.next = this;
     this.prev = cursorSnapshot;
   }
 
-  get xRange() {
+  isOnSameMeasureLine(cursorSnapshot: CursorSnapshot) {
+    return this.measureLine === cursorSnapshot.measureLine;
+  }
+
+  lerpX(timeMs: number) {
+    const t0 = this.timeMsRange.start;
+    const t1 = this.timeMsRange.end;
+    const x0 = this.xRange.start;
+    const x1 = this.xRange.end;
+
+    const x = x1 + ((timeMs - t1) * (x1 - x0)) / (t1 - t0);
+
+    return x;
+  }
+
+  lerpTimeMs(x: number) {
+    const t0 = this.timeMsRange.start;
+    const t1 = this.timeMsRange.end;
+    const x0 = this.xRange.start;
+    const x1 = this.xRange.end;
+
+    const t = t1 + ((x - x1) * (t1 - t0)) / (x1 - x0);
+
+    return t;
+  }
+
+  private calculateXRange() {
     const x0 = this.x;
-    const x1 = this.next ? this.next.x : this.x + END_OF_MEASURE_LINE_PADDING_PX;
+    const x1 = this.next && this.isOnSameMeasureLine(this.next) ? this.next.x : this.x + END_OF_MEASURE_LINE_PADDING_PX;
     return NumberRange.from(x0).to(x1);
   }
 
-  get box() {
+  private calculateBox() {
     return new Box(this.xRange, this.yRange);
-  }
-
-  isOnSameMeasureLine(cursorSnapshot: CursorSnapshot) {
-    return this.measureLine === cursorSnapshot.measureLine;
   }
 }

@@ -1,28 +1,13 @@
-import { GraphicalNote, VoiceEntry } from 'opensheetmusicdisplay';
+import { GraphicalNote } from 'opensheetmusicdisplay';
 import { AnchoredSelection } from '../../../util/AnchoredSelection';
 import { Box } from '../../../util/Box';
 import { NumberRange } from '../../../util/NumberRange';
 import { CursorWrapper } from '../cursors';
-import { IteratorSnapshot } from './IteratorSnapshot';
+import { CursorSnapshot } from './CursorSnapshot';
 
 export type SyncSettings = {
   deadTimeMs: number;
   durationMs: number;
-};
-
-export type CursorSnapshot = {
-  index: number;
-  next: CursorSnapshot | null;
-  prev: CursorSnapshot | null;
-  measureLine: number;
-  iteratorSnapshot: IteratorSnapshot;
-  xRange: NumberRange;
-  yRange: NumberRange;
-  bpm: number;
-  beatRange: NumberRange;
-  timeMsRange: NumberRange;
-  entries: VoiceEntry[];
-  targets: LocatorTarget[];
 };
 
 // Groups cursor snapshots by the y-range spans they cover. This is a natural division that makes searching
@@ -81,6 +66,6 @@ export type LocateResult = {
   x: number;
   y: number;
   cost: LocateCost;
-  cursorSnapshot: Readonly<CursorSnapshot> | null;
+  cursorSnapshot: CursorSnapshot | null;
   targets: LocatorTarget[];
 };

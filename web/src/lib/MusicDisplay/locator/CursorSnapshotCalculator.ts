@@ -1,12 +1,12 @@
 import $ from 'jquery';
-import { first, get, groupBy, isNumber, sortBy } from 'lodash';
+import { first, get, groupBy, isNumber, last, sortBy } from 'lodash';
 import { GraphicalNote } from 'opensheetmusicdisplay';
 import { Box } from '../../../util/Box';
 import { NumberRange } from '../../../util/NumberRange';
 import { InternalMusicDisplay } from '../InternalMusicDisplay';
-import { END_OF_MEASURE_LINE_PADDING_PX } from './constants';
+import { CursorSnapshot } from './CursorSnapshot';
 import { IteratorSnapshot } from './IteratorSnapshot';
-import { CursorSnapshot, CursorSnapshotLineGroup, LocatorTarget, LocatorTargetType } from './types';
+import { CursorSnapshotLineGroup, LocatorTarget, LocatorTargetType } from './types';
 
 export class CursorSnapshotCalculator {
   static calculateMusicDisplayLocatorArgs(imd: InternalMusicDisplay) {
@@ -15,7 +15,7 @@ export class CursorSnapshotCalculator {
     return [imd, cursorSnapshots, cursorSnapshotLineGroups] as const;
   }
 
-  static calculateCursorSnapshots(imd: InternalMusicDisplay) {
+  static calculateCursorSnapshots(imd: InternalMusicDisplay): CursorSnapshot[] {
     const cursorSnapshots = new Array<CursorSnapshot>();
 
     // Initialize accounting variables
@@ -51,10 +51,9 @@ export class CursorSnapshotCalculator {
       const $element = $(probeCursor.cursorElement);
       const position = $element.position();
       const startX = position.left;
-      const tmpEndX = startX + END_OF_MEASURE_LINE_PADDING_PX;
       const startY = position.top;
       const endY = startY + ($element.height() ?? 0);
-      const xRange = NumberRange.from(startX).to(tmpEndX);
+      const x = startX;
       const yRange = NumberRange.from(startY).to(endY);
 
       // Calculate locate target groups
@@ -79,31 +78,22 @@ export class CursorSnapshotCalculator {
       }
 
       // Caluclate cursor snapshot
-      const cursorSnapshot: CursorSnapshot = {
-        index,
-        next: null,
-        prev: null,
+      const cursorSnapshot = new CursorSnapshot(index, {
         bpm,
         measureLine,
-        xRange,
+        x,
         yRange,
         beatRange,
         timeMsRange,
         iteratorSnapshot,
         entries,
         targets,
-      };
+      });
       cursorSnapshots.push(cursorSnapshot);
 
-      // Perform linking and fix the xRange of the previous voice pointer if necessary
+      // Perform linking
       if (prevCursorSnapshot) {
-        cursorSnapshot.prev = prevCursorSnapshot;
-        prevCursorSnapshot.next = cursorSnapshot;
-
-        const isPrevCursorSnapshotOnSameLine = prevCursorSnapshot.yRange.start === startY;
-        const prevStartX = prevCursorSnapshot.xRange.start;
-        const endStartX = isPrevCursorSnapshotOnSameLine ? startX : prevCursorSnapshot.xRange.end;
-        prevCursorSnapshot.xRange = NumberRange.from(prevStartX).to(endStartX);
+        cursorSnapshot.linkPrev(prevCursorSnapshot);
       }
 
       // Update accounting variables
@@ -112,7 +102,13 @@ export class CursorSnapshotCalculator {
       currTimeMs = endTimeMs;
     });
 
-    return cursorSnapshots.map((cursorSnapshot) => Object.freeze(cursorSnapshot));
+    const firstCursorSnapshot = first(cursorSnapshots);
+    const lastCursorSnapshot = last(cursorSnapshots);
+    if (firstCursorSnapshot && lastCursorSnapshot) {
+      this.validateContinuity(firstCursorSnapshot, lastCursorSnapshot);
+    }
+
+    return cursorSnapshots;
   }
 
   static calculateCursorSnapshotLineGroups(cursorSnapshots: CursorSnapshot[]): CursorSnapshotLineGroup[] {
@@ -131,6 +127,31 @@ export class CursorSnapshotCalculator {
 
       return { yRange, cursorSnapshots };
     });
+  }
+
+  /**
+   * Validates that the startCursorSnapshot is connected to the endCursorSnapshot via the next and prev properties.
+   * It also implicity checks for infinite loops by independently tracking the index.
+   */
+  static validateContinuity(startCursorSnapshot: CursorSnapshot, endCursorSnapshot: CursorSnapshot) {
+    let prevCursorSnapshot: CursorSnapshot | null = startCursorSnapshot.prev;
+    let currentCursorSnapshot = startCursorSnapshot;
+    let index = currentCursorSnapshot.index;
+    while (currentCursorSnapshot !== endCursorSnapshot) {
+      if (currentCursorSnapshot.index !== index) {
+        throw new Error(`index skipped at: ${index}`);
+      }
+      if (prevCursorSnapshot !== currentCursorSnapshot.prev) {
+        throw new Error(`previous cursor snapshot incorrect at index: ${index}`);
+      }
+      const nextCursorSnapshot = currentCursorSnapshot.next;
+      if (!nextCursorSnapshot) {
+        throw new Error(`did not reach end cursor snapshot, stopped at index: ${index}`);
+      }
+      prevCursorSnapshot = currentCursorSnapshot;
+      currentCursorSnapshot = nextCursorSnapshot;
+      index++;
+    }
   }
 
   private static convertNumBeatsToMs = (bpm: number, numBeats: number) => {
