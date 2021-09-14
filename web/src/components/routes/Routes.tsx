@@ -10,6 +10,7 @@ import { Nothing } from '../Nothing';
 import { ReturnToRoute } from '../ReturnToRoute';
 import { Landing } from './Landing';
 import { NotFound } from './NotFound';
+import { useRoutingBehavior } from './useRoutingBehavior';
 
 const Library = compose(withAuthRequirement(AuthRequirement.NONE))(React.lazy(() => import('./Library')));
 
@@ -41,6 +42,8 @@ export const Routes: React.FC = () => {
   const location = useLocation();
   const dispatch = useDispatch<AppDispatch>();
 
+  const { shouldRedirectFromLandingToLibrary, recordLandingVisit } = useRoutingBehavior();
+
   useEffect(
     () => () => {
       dispatch(historySlice.actions.setPrevRoute(location.pathname));
@@ -54,7 +57,13 @@ export const Routes: React.FC = () => {
         <Route path="/index.html" exact>
           <Redirect to="/" />
         </Route>
-        <Route path="/" exact component={Landing} />
+        <Route path="/" exact>
+          {shouldRedirectFromLandingToLibrary ? (
+            <Redirect to="/library" />
+          ) : (
+            <Landing recordLandingVisit={recordLandingVisit} />
+          )}
+        </Route>
         <ReturnToRoute exact path="/library" component={Library} />
         <ReturnToRoute exact path="/n/:id" component={NotationPlayer} />
         <ReturnToRoute exact path="/n/:id/edit" component={NotationEditor} />

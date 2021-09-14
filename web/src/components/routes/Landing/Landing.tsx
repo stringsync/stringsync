@@ -4,12 +4,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Layout, withLayout } from '../../../hocs';
+import { useEffectOnce } from '../../../hooks';
 import { compose } from '../../../util/compose';
 import { NumberRange } from '../../../util/NumberRange';
 import { Box } from '../../Box';
 import { Logo } from '../../Logo';
 import { Wordmark } from '../../Wordmark';
-import { useRedirectToLibraryEffect } from './useRedirectToLibraryEffect';
 
 const LANDING_SRC = 'static/landing.jpg';
 
@@ -81,10 +81,16 @@ const Footer = styled.div`
   }
 `;
 
+type Props = {
+  recordLandingVisit: () => void;
+};
+
 const enhance = compose(withLayout(Layout.DEFAULT));
 
-export const Landing: React.FC = enhance(() => {
-  useRedirectToLibraryEffect(REDIRECT_TIME_MS_RANGE);
+export const Landing: React.FC<Props> = enhance((props: Props) => {
+  useEffectOnce(() => {
+    props.recordLandingVisit();
+  });
 
   return (
     <Outer data-testid="landing">
