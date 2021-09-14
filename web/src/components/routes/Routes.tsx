@@ -1,8 +1,6 @@
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
+import React from 'react';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import { withAuthRequirement } from '../../hocs';
-import { AppDispatch, historySlice } from '../../store';
 import { compose } from '../../util/compose';
 import { AuthRequirement } from '../../util/types';
 import { Fallback } from '../Fallback';
@@ -11,6 +9,7 @@ import { ReturnToRoute } from '../ReturnToRoute';
 import { Landing } from './Landing';
 import { NotFound } from './NotFound';
 import { useRoutingBehavior } from './useRoutingBehavior';
+import { useTrackPrevRouteEffect } from './useTrackPrevRouteEffect';
 
 const Library = compose(withAuthRequirement(AuthRequirement.NONE))(React.lazy(() => import('./Library')));
 
@@ -39,17 +38,9 @@ const ResetPassword = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(
 const Upload = compose(withAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER))(React.lazy(() => import('./Upload')));
 
 export const Routes: React.FC = () => {
-  const location = useLocation();
-  const dispatch = useDispatch<AppDispatch>();
-
   const { shouldRedirectFromLandingToLibrary, recordLandingVisit } = useRoutingBehavior();
 
-  useEffect(
-    () => () => {
-      dispatch(historySlice.actions.setPrevRoute(location.pathname));
-    },
-    [dispatch, location]
-  );
+  useTrackPrevRouteEffect();
 
   return (
     <React.Suspense fallback={<Fallback />}>
