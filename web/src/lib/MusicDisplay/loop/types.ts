@@ -1,6 +1,6 @@
 import { AnchoredSelection } from '../../../util/AnchoredSelection';
 import { NumberRange } from '../../../util/NumberRange';
-import { CursorWrapper } from '../types';
+import { CursorWrapper } from '../cursors';
 
 export interface Loop {
   readonly isActive: boolean;

@@ -1,13 +1,13 @@
 import $ from 'jquery';
 import { isEqual, maxBy, throttle } from 'lodash';
 import { PointF2D } from 'opensheetmusicdisplay';
-import { SupportedSVGEventNames } from '.';
-import { Duration } from '../../util/Duration';
-import { InternalMusicDisplay } from './InternalMusicDisplay';
-import { MusicDisplayLocator } from './MusicDisplayLocator';
-import { pointer, PointerTarget, PointerTargetType } from './pointer';
-import { PointerService } from './pointer/pointer';
-import { LocatorTargetType, SVGSettings } from './types';
+import { Duration } from '../../../util/Duration';
+import { InternalMusicDisplay } from '../InternalMusicDisplay';
+import { LocatorTargetType } from '../locator';
+import { MusicDisplayLocator } from '../locator/MusicDisplayLocator';
+import { pointer, PointerTarget, PointerTargetType } from '../pointer';
+import { PointerService } from '../pointer/pointer';
+import { SupportedSVGEventNames, SVGSettings } from './types';
 
 type SVGElementEvent<N extends SupportedSVGEventNames> = SVGElementEventMap[N];
 

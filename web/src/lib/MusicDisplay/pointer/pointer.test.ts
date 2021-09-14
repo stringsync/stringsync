@@ -1,6 +1,7 @@
 import { EventBus } from '../../EventBus';
-import { NoopCursor } from '../NoopCursor';
-import { CursorSnapshot, MusicDisplayEventBus } from '../types';
+import { NoopCursor } from '../cursors/NoopCursor';
+import { CursorSnapshot } from '../locator';
+import { MusicDisplayEventBus } from '../types';
 import * as pointer from './pointer';
 import { PointerService } from './pointer';
 import {

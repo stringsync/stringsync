@@ -1,4 +1,4 @@
-import { Box } from '../../util/Box';
+import { Box } from '../../../util/Box';
 import { CursorWrapper } from './types';
 
 const DUMMY_ELEMENT = document.createElement('div');

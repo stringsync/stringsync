@@ -1,9 +1,8 @@
-import { StyleType } from '..';
 import { AnchoredSelection } from '../../../util/AnchoredSelection';
+import { CursorStyleType, CursorWrapper } from '../cursors';
+import { LerpCursor } from '../cursors/LerpCursor';
 import { InternalMusicDisplay } from '../InternalMusicDisplay';
-import { LerpCursor } from '../LerpCursor';
-import { MusicDisplayLocator } from '../MusicDisplayLocator';
-import { CursorWrapper } from '../types';
+import { MusicDisplayLocator } from '../locator/MusicDisplayLocator';
 import { Loop } from './types';
 
 export class LerpLoop implements Loop {
@@ -86,20 +85,20 @@ export class LerpLoop implements Loop {
 
     if (timeMsRange.start !== this.startCursor.timeMs) {
       this.startCursor.update(timeMsRange.start);
-      this.startCursor.updateStyle(StyleType.Interacting);
-      this.endCursor.updateStyle(StyleType.Default);
+      this.startCursor.updateStyle(CursorStyleType.Interacting);
+      this.endCursor.updateStyle(CursorStyleType.Default);
     }
 
     if (timeMsRange.end !== this.endCursor.timeMs) {
       this.endCursor.update(timeMsRange.end);
-      this.endCursor.updateStyle(StyleType.Interacting);
-      this.startCursor.updateStyle(StyleType.Default);
+      this.endCursor.updateStyle(CursorStyleType.Interacting);
+      this.startCursor.updateStyle(CursorStyleType.Default);
     }
   }
 
   resetStyles() {
-    this.startCursor.updateStyle(StyleType.Default);
-    this.endCursor.updateStyle(StyleType.Default);
+    this.startCursor.updateStyle(CursorStyleType.Default);
+    this.endCursor.updateStyle(CursorStyleType.Default);
   }
 
   isStartCursor(cursor: CursorWrapper) {

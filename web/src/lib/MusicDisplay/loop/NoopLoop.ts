@@ -1,5 +1,5 @@
 import { AnchoredSelection } from '../../../util/AnchoredSelection';
-import { NoopCursor } from '../NoopCursor';
+import { NoopCursor } from '../cursors/NoopCursor';
 import { Loop } from './types';
 
 export class NoopLoop implements Loop {

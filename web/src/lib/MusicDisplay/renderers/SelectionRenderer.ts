@@ -1,9 +1,9 @@
 import { first, groupBy, identity, isNull, last, sortBy, uniq } from 'lodash';
-import { CursorSnapshot } from '..';
 import { Box } from '../../../util/Box';
 import { NumberRange } from '../../../util/NumberRange';
 import { InternalMusicDisplay } from '../InternalMusicDisplay';
-import { END_OF_MEASURE_LINE_PADDING_PX, MusicDisplayLocator } from '../MusicDisplayLocator';
+import { CursorSnapshot } from '../locator';
+import { END_OF_MEASURE_LINE_PADDING_PX, MusicDisplayLocator } from '../locator/MusicDisplayLocator';
 
 const DEFAULT_SELECTION_COLOR = 'rgba(244, 244, 188, 0.45)';
 

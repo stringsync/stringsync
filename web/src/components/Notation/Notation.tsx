@@ -1,9 +1,11 @@
 import React, { RefObject, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { MusicDisplay, StyleType, SupportedSVGEventNames } from '../../lib/MusicDisplay';
+import { MusicDisplay } from '../../lib/MusicDisplay';
+import { CursorStyleType } from '../../lib/MusicDisplay/cursors';
 import { PointerTargetType } from '../../lib/MusicDisplay/pointer';
 import { isNonePointerTarget, isPositional } from '../../lib/MusicDisplay/pointer/pointerTypeAssert';
+import { SupportedSVGEventNames } from '../../lib/MusicDisplay/svg';
 import { RootState } from '../../store';
 
 const Outer = styled.div<{ cursor: Cursor }>`
@@ -80,11 +82,11 @@ export const Notation: React.FC<NotationProps> = (props) => {
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('cursorentered', (payload) => {
         setCursor(Cursor.Grab);
-        payload.src.cursor.updateStyle(StyleType.Interacting);
+        payload.src.cursor.updateStyle(CursorStyleType.Interacting);
       }),
       musicDisplay.eventBus.subscribe('cursorexited', (payload) => {
         setCursor(Cursor.Crosshair);
-        payload.src.cursor.updateStyle(StyleType.Default);
+        payload.src.cursor.updateStyle(CursorStyleType.Default);
       }),
       musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
         setCursor(Cursor.ColResize);
@@ -97,10 +99,10 @@ export const Notation: React.FC<NotationProps> = (props) => {
       }),
       musicDisplay.eventBus.subscribe('selectionentered', (payload) => {
         setCursor(Cursor.ColResize);
-        payload.src.cursor.updateStyle(StyleType.Interacting);
+        payload.src.cursor.updateStyle(CursorStyleType.Interacting);
       }),
       musicDisplay.eventBus.subscribe('selectionexited', (payload) => {
-        payload.src.cursor.updateStyle(StyleType.Default);
+        payload.src.cursor.updateStyle(CursorStyleType.Default);
       }),
       musicDisplay.eventBus.subscribe('cursordragstarted', () => {
         setCursor(Cursor.Grabbing);

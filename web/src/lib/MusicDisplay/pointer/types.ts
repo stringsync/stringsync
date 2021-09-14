@@ -1,5 +1,6 @@
-import { CursorSnapshot, CursorWrapper, SelectionEdge } from '..';
 import { AnchoredSelection } from '../../../util/AnchoredSelection';
+import { CursorWrapper } from '../cursors';
+import { CursorSnapshot, SelectionEdge } from '../locator';
 
 export enum PointerTargetType {
   None,

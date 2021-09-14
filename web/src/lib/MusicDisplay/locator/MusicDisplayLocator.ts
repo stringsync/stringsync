@@ -1,17 +1,17 @@
 import $ from 'jquery';
 import { first, get, groupBy, isNumber, last, sortBy } from 'lodash';
 import { GraphicalNote } from 'opensheetmusicdisplay';
-import { LocatorTarget } from '.';
-import { Box } from '../../util/Box';
-import { bsearch } from '../../util/bsearch';
-import { NumberRange } from '../../util/NumberRange';
-import { InternalMusicDisplay } from './InternalMusicDisplay';
+import { Box } from '../../../util/Box';
+import { bsearch } from '../../../util/bsearch';
+import { NumberRange } from '../../../util/NumberRange';
+import { InternalMusicDisplay } from '../InternalMusicDisplay';
 import { IteratorSnapshot } from './IteratorSnapshot';
 import {
   CursorLocatorTarget,
   CursorSnapshot,
   LocateCost,
   LocateResult,
+  LocatorTarget,
   LocatorTargetType,
   SelectionEdge,
   SelectionLocatorTarget,

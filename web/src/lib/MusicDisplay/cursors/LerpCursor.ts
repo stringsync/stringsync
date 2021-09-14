@@ -1,12 +1,13 @@
 import $ from 'jquery';
 import { difference, intersection, isString, uniq } from 'lodash';
 import { Cursor, CursorOptions, CursorType } from 'opensheetmusicdisplay';
-import { theme } from '../../theme';
-import { Box } from '../../util/Box';
-import { Duration } from '../../util/Duration';
-import { InternalMusicDisplay } from './InternalMusicDisplay';
-import { MusicDisplayLocator } from './MusicDisplayLocator';
-import { CursorSnapshot, StyleType } from './types';
+import { theme } from '../../../theme';
+import { Box } from '../../../util/Box';
+import { Duration } from '../../../util/Duration';
+import { InternalMusicDisplay } from '../InternalMusicDisplay';
+import { CursorSnapshot } from '../locator';
+import { MusicDisplayLocator } from '../locator/MusicDisplayLocator';
+import { CursorStyleType, CursorWrapper } from './types';
 
 const CURSOR_BOX_PADDING_PX = 20;
 const CURSOR_STYLE_TRANSITION_DURATION = Duration.ms(200);
@@ -48,7 +49,7 @@ export type LerpCursorOpts = {
   interactingStyle?: LerpCursorStyle;
 };
 
-export class LerpCursor {
+export class LerpCursor implements CursorWrapper {
   static create(imd: InternalMusicDisplay, locator: MusicDisplayLocator, opts: LerpCursorOpts) {
     const cursorsOptions = DEFAULT_CURSOR_OPTS.map((cursorsOption) => ({ id: Symbol(), ...cursorsOption }));
     Object.assign(cursorsOptions[2], opts.cursorOptions);
@@ -71,7 +72,7 @@ export class LerpCursor {
   lerper: Cursor;
   scrollContainer: HTMLElement;
   timeMs = 0;
-  styleType = StyleType.Default;
+  styleType = CursorStyleType.Default;
   opts: LerpCursorOpts;
 
   private locator: MusicDisplayLocator | null = null;
@@ -150,7 +151,7 @@ export class LerpCursor {
     this.imd.eventBus.dispatch('interactablemoved', {});
   }
 
-  updateStyle(styleType: StyleType) {
+  updateStyle(styleType: CursorStyleType) {
     if (styleType === this.styleType) {
       return;
     }
@@ -211,7 +212,7 @@ export class LerpCursor {
     return Box.from(x0, y0).to(x1, y1);
   }
 
-  private changeStyle(nextStyleType: StyleType) {
+  private changeStyle(nextStyleType: CursorStyleType) {
     const currentStyle = this.getStyle(this.styleType);
     const nextStyle = this.getStyle(nextStyleType);
 
@@ -235,9 +236,9 @@ export class LerpCursor {
     this.styleType = nextStyleType;
   }
 
-  private getStyle(styleType: StyleType): LerpCursorStyle {
+  private getStyle(styleType: CursorStyleType): LerpCursorStyle {
     switch (styleType) {
-      case StyleType.Interacting:
+      case CursorStyleType.Interacting:
         return this.opts.interactingStyle || {};
       default:
         return this.opts.defaultStyle || {};
