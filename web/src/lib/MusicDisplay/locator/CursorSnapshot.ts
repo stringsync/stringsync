@@ -18,6 +18,10 @@ type CursorSnapshotAttrs = {
 };
 
 export class CursorSnapshot {
+  static isOnSameMeasureLine(cursorSnapshot1: CursorSnapshot | null, cursorSnapshot2: CursorSnapshot | null) {
+    return cursorSnapshot1?.measureLine === cursorSnapshot2?.measureLine;
+  }
+
   readonly index: number;
   next: CursorSnapshot | null = null;
   prev: CursorSnapshot | null = null;
@@ -67,10 +71,6 @@ export class CursorSnapshot {
     this.prev = cursorSnapshot;
   }
 
-  isOnSameMeasureLine(cursorSnapshot: CursorSnapshot) {
-    return this.measureLine === cursorSnapshot.measureLine;
-  }
-
   lerpX(timeMs: number) {
     const t0 = this.timeMsRange.start;
     const t1 = this.timeMsRange.end;
@@ -95,7 +95,10 @@ export class CursorSnapshot {
 
   private calculateXRange() {
     const x0 = this.x;
-    const x1 = this.next && this.isOnSameMeasureLine(this.next) ? this.next.x : this.x + END_OF_MEASURE_LINE_PADDING_PX;
+    const x1 =
+      this.next && CursorSnapshot.isOnSameMeasureLine(this, this.next)
+        ? this.next.x
+        : this.x + END_OF_MEASURE_LINE_PADDING_PX;
     return NumberRange.from(x0).to(x1);
   }
 

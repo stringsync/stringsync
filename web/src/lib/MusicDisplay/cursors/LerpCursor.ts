@@ -145,7 +145,7 @@ export class LerpCursor implements CursorWrapper {
       }
     }
 
-    if (prevCursorSnapshot?.measureLine !== nextCursorSnapshot?.measureLine) {
+    if (!CursorSnapshot.isOnSameMeasureLine(prevCursorSnapshot, nextCursorSnapshot)) {
       this.imd.eventBus.dispatch('measurelinechanged', {});
     }
     this.imd.eventBus.dispatch('interactablemoved', {});
