@@ -121,7 +121,6 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   }
 
   createCursors(additionalCursorOptions: IdentifiableCursorOptions[]): Cursor[] {
-    console.log('creating cursors');
     const cursorsOptions = get(this, 'cursorsOptions', []);
     const nextCursorOptions = [...cursorsOptions, ...additionalCursorOptions];
     this.applyCursorOptions(nextCursorOptions);
