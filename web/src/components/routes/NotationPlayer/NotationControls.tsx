@@ -15,6 +15,7 @@ import {
 import { ScrollBehaviorType } from '../../../lib/MusicDisplay/scroller';
 import { NotationDetail } from './NotationDetail';
 import { NotationPlayerSettings } from './types';
+import { useScrollBehavior } from './useScrollBehavior';
 import { useTipFormatter } from './useTipFormatter';
 import { useVideoPlayerControls, VideoPlayerState } from './useVideoPlayerControls';
 
@@ -66,8 +67,6 @@ export const NotationControls: React.FC<Props> = (props) => {
   const { videoPlayer, settings, musicDisplay, durationMs, onSettingsChange, onDivMount } = props;
 
   const controlsDivRef = useRef<HTMLDivElement>(null);
-  const isMusicDisplayResizingRef = useRef(false);
-  const isMusicDisplayLoadingRef = useRef(false);
 
   const [isNoopScrolling, setIsNoopScrolling] = useState(() => {
     return musicDisplay?.scroller.type === ScrollBehaviorType.Noop;
@@ -174,38 +173,7 @@ export const NotationControls: React.FC<Props> = (props) => {
     seek(timeMsRange.start);
   }, [currentTimeMs, isPlaying, musicDisplay, seek]);
 
-  useEffect(() => {
-    if (!musicDisplay) {
-      return;
-    }
-    const eventBusIds = [
-      musicDisplay.eventBus.subscribe('externalscrolldetected', () => {
-        if (isMusicDisplayResizingRef.current) {
-          return;
-        }
-        if (isMusicDisplayLoadingRef.current) {
-          return;
-        }
-        musicDisplay.scroller.disable();
-      }),
-      musicDisplay.eventBus.subscribe('resizestarted', () => {
-        isMusicDisplayResizingRef.current = true;
-      }),
-      musicDisplay.eventBus.subscribe('resizeended', () => {
-        isMusicDisplayResizingRef.current = false;
-      }),
-      musicDisplay.eventBus.subscribe('loadstarted', () => {
-        isMusicDisplayLoadingRef.current = true;
-      }),
-      musicDisplay.eventBus.subscribe('loadended', () => {
-        isMusicDisplayLoadingRef.current = false;
-      }),
-    ];
-
-    return () => {
-      musicDisplay.eventBus.unsubscribe(...eventBusIds);
-    };
-  }, [musicDisplay]);
+  useScrollBehavior(musicDisplay);
 
   useEffect(() => {
     if (musicDisplay && isPlaying) {
