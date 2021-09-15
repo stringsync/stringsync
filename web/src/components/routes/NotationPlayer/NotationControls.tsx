@@ -16,6 +16,7 @@ import { ScrollBehaviorType } from '../../../lib/MusicDisplay/scroller';
 import { NotationDetail } from './NotationDetail';
 import { NotationPlayerSettings } from './types';
 import { useScrollBehavior } from './useScrollBehavior';
+import { useSelectionLoopingEffect } from './useSelectionLoopingEffect';
 import { useTipFormatter } from './useTipFormatter';
 import { useVideoPlayerControls, VideoPlayerState } from './useVideoPlayerControls';
 
@@ -156,22 +157,7 @@ export const NotationControls: React.FC<Props> = (props) => {
     startAutoscrollingBasedOnPreferences();
   }, [musicDisplay, settings.isAutoscrollPreferred, startAutoscrollingBasedOnPreferences]);
 
-  useEffect(() => {
-    if (!musicDisplay) {
-      return;
-    }
-    if (!musicDisplay.loop.isActive) {
-      return;
-    }
-    if (!isPlaying) {
-      return;
-    }
-    const { timeMsRange } = musicDisplay.loop;
-    if (timeMsRange.contains(currentTimeMs)) {
-      return;
-    }
-    seek(timeMsRange.start);
-  }, [currentTimeMs, isPlaying, musicDisplay, seek]);
+  useSelectionLoopingEffect(musicDisplay, currentTimeMs, isPlaying, seek);
 
   useScrollBehavior(musicDisplay);
 
