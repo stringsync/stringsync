@@ -5,20 +5,21 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { VideoJsPlayer } from 'video.js';
 import { MusicDisplay } from '../../../lib/MusicDisplay';
-import { CursorInfo } from '../../../lib/MusicDisplay/cursors';
-import { SelectionEdge } from '../../../lib/MusicDisplay/locator';
-import {
-  isCursorSnapshotPointerTarget,
-  isSelectionPointerTarget,
-  isTemporal,
-} from '../../../lib/MusicDisplay/pointer/pointerTypeAssert';
 import { ScrollBehaviorType } from '../../../lib/MusicDisplay/scroller';
 import { NotationDetail } from './NotationDetail';
 import { NotationPlayerSettings } from './types';
-import { useScrollBehavior } from './useScrollBehavior';
+import { useMusicDisplayClickEffect } from './useMusicDisplayClickEffect';
+import { useMusicDisplayCursorInfo } from './useMusicDisplayCursorInfo';
+import { useMusicDisplayCursorInteractionEffects } from './useMusicDisplayCursorInteractionEffects';
+import { useMusicDisplayScrollBehaviorEffect } from './useMusicDisplayScrollBehaviorEffect';
+import { useMusicDisplayScrollBehaviorType } from './useMusicDisplayScrollBehaviorType';
+import { useMusicDisplayScrollControls } from './useMusicDisplayScrollControls';
+import { useMusicDisplaySelectionInteractionEffects } from './useMusicDisplaySelectionInteractionEffects';
 import { useSelectionLoopingEffect } from './useSelectionLoopingEffect';
 import { useTipFormatter } from './useTipFormatter';
 import { useVideoPlayerControls, VideoPlayerState } from './useVideoPlayerControls';
+import { useVideoPlayerCurrentTimeMs } from './useVideoPlayerCurrentTimeMs';
+import { useVideoPlayerState } from './useVideoPlayerState';
 
 const Outer = styled.div`
   z-index: 3;
@@ -67,77 +68,58 @@ export type Props = {
 export const NotationControls: React.FC<Props> = (props) => {
   const { videoPlayer, settings, musicDisplay, durationMs, onSettingsChange, onDivMount } = props;
 
+  // state
+
   const controlsDivRef = useRef<HTMLDivElement>(null);
-
-  const [isNoopScrolling, setIsNoopScrolling] = useState(() => {
-    return musicDisplay?.scroller.type === ScrollBehaviorType.Noop;
-  });
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
-  const [cursorInfo, setCursorInfo] = useState<CursorInfo>({
-    currentMeasureIndex: 0,
-    currentMeasureNumber: 1,
-    numMeasures: 0,
-  });
-
-  const { videoPlayerState, currentTimeMs, play, pause, suspend, unsuspend, seek } = useVideoPlayerControls(
-    videoPlayer
-  );
+  const videoPlayerControls = useVideoPlayerControls(videoPlayer);
+  const currentTimeMs = useVideoPlayerCurrentTimeMs(videoPlayer);
+  const videoPlayerState = useVideoPlayerState(videoPlayer);
+  const isPaused = videoPlayerState === VideoPlayerState.Paused;
+  const isPlaying = videoPlayerState === VideoPlayerState.Playing;
+  const scrollBehaviorType = useMusicDisplayScrollBehaviorType(musicDisplay);
+  const isNoopScrolling = scrollBehaviorType === ScrollBehaviorType.Noop;
+  const cursorInfo = useMusicDisplayCursorInfo(musicDisplay);
   const tipFormatter = useTipFormatter(cursorInfo, durationMs);
   const value = props.durationMs === 0 ? 0 : (currentTimeMs / props.durationMs) * 100;
   const handleStyle = useMemo(() => ({ width: 21, height: 21, marginTop: -8 }), []);
-  const isPaused = videoPlayerState === VideoPlayerState.Paused;
-  const isPlaying = videoPlayerState === VideoPlayerState.Playing;
+  const musicDisplayScrollControls = useMusicDisplayScrollControls(musicDisplay, settings.isAutoscrollPreferred);
 
-  const startAutoscrollingBasedOnPreferences = useCallback(() => {
-    if (!musicDisplay) {
-      return;
-    }
-    if (!settings.isAutoscrollPreferred) {
-      return;
-    }
-    musicDisplay.scroller.startAutoScrolling();
-    musicDisplay.cursor.scrollIntoView();
-  }, [musicDisplay, settings.isAutoscrollPreferred]);
+  // callbacks
 
   const onSettingsClick = useCallback(() => {
     setIsSettingsVisible((isSettingsVisible) => !isSettingsVisible);
   }, []);
-
   const onSettingsClose = useCallback(() => {
     setIsSettingsVisible(false);
   }, []);
-
   const onFretboardVisibilityChange = useCallback(
     (event: CheckboxChangeEvent) => {
       onSettingsChange({ ...settings, isFretboardVisible: event.target.checked });
     },
     [settings, onSettingsChange]
   );
-
   const onAutoscrollPreferenceChange = useCallback(
     (event: CheckboxChangeEvent) => {
       onSettingsChange({ ...settings, isAutoscrollPreferred: event.target.checked });
     },
     [settings, onSettingsChange]
   );
-
   const onChange = useCallback(
     (value: number) => {
-      suspend();
+      videoPlayerControls.suspend();
       const timeMs = (value / 100) * durationMs;
       if (musicDisplay && !musicDisplay.loop.timeMsRange.contains(timeMs)) {
         musicDisplay.loop.deactivate();
       }
-      seek(timeMs);
+      videoPlayerControls.seek(timeMs);
     },
-    [durationMs, musicDisplay, suspend, seek]
+    [durationMs, musicDisplay, videoPlayerControls]
   );
-
   const onAfterChange = useCallback(() => {
-    unsuspend();
-    startAutoscrollingBasedOnPreferences();
-  }, [unsuspend, startAutoscrollingBasedOnPreferences]);
-
+    videoPlayerControls.unsuspend();
+    musicDisplayScrollControls.startPreferentialScrolling();
+  }, [videoPlayerControls, musicDisplayScrollControls]);
   const onAutoscrollDisabledClose = useCallback(() => {
     if (!musicDisplay) {
       return;
@@ -146,116 +128,27 @@ export const NotationControls: React.FC<Props> = (props) => {
     musicDisplay.cursor.scrollIntoView();
   }, [musicDisplay]);
 
+  // effects
+
+  useSelectionLoopingEffect(musicDisplay, currentTimeMs, isPlaying, videoPlayerControls);
+  useMusicDisplayScrollBehaviorEffect(musicDisplay);
+  useMusicDisplayCursorInteractionEffects(musicDisplay, videoPlayerControls, musicDisplayScrollControls);
+  useMusicDisplaySelectionInteractionEffects(musicDisplay, videoPlayerControls, musicDisplayScrollControls);
+  useMusicDisplayClickEffect(musicDisplay, videoPlayerControls, musicDisplayScrollControls);
   useEffect(() => {
     musicDisplay?.cursor.update(currentTimeMs);
   }, [musicDisplay, currentTimeMs]);
-
   useEffect(() => {
     if (!musicDisplay) {
       return;
     }
-    startAutoscrollingBasedOnPreferences();
-  }, [musicDisplay, settings.isAutoscrollPreferred, startAutoscrollingBasedOnPreferences]);
-
-  useSelectionLoopingEffect(musicDisplay, currentTimeMs, isPlaying, seek);
-
-  useScrollBehavior(musicDisplay);
-
+    musicDisplayScrollControls.startPreferentialScrolling();
+  }, [musicDisplay, settings.isAutoscrollPreferred, musicDisplayScrollControls]);
   useEffect(() => {
     if (musicDisplay && isPlaying) {
-      startAutoscrollingBasedOnPreferences();
+      musicDisplayScrollControls.startPreferentialScrolling();
     }
-  }, [isPlaying, musicDisplay, startAutoscrollingBasedOnPreferences]);
-
-  useEffect(() => {
-    if (!musicDisplay) {
-      return;
-    }
-
-    const eventBusIds = [
-      musicDisplay.eventBus.subscribe('scrollbehaviorchanged', (payload) => {
-        setIsNoopScrolling(payload.type === ScrollBehaviorType.Noop);
-      }),
-    ];
-
-    return () => {
-      musicDisplay.eventBus.unsubscribe(...eventBusIds);
-    };
-  }, [musicDisplay]);
-
-  useEffect(() => {
-    if (!musicDisplay) {
-      return;
-    }
-
-    const eventBusIds = [
-      musicDisplay.eventBus.subscribe('cursorinfochanged', (payload) => {
-        setCursorInfo(payload.info);
-      }),
-      musicDisplay.eventBus.subscribe('click', (payload) => {
-        if (isCursorSnapshotPointerTarget(payload.src)) {
-          seek(payload.src.timeMs);
-          startAutoscrollingBasedOnPreferences();
-
-          if (!musicDisplay.loop.timeMsRange.contains(payload.src.timeMs)) {
-            musicDisplay.loop.deactivate();
-          }
-        } else {
-          musicDisplay.loop.deactivate();
-        }
-      }),
-      musicDisplay.eventBus.subscribe('cursordragstarted', (payload) => {
-        musicDisplay.scroller.startManualScrolling();
-        suspend();
-      }),
-      musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {
-        musicDisplay.scroller.updateScrollIntent(payload.dst.position.relY);
-        if (!isTemporal(payload.dst)) {
-          return;
-        }
-        if (!musicDisplay.loop.timeMsRange.contains(payload.dst.timeMs)) {
-          musicDisplay.loop.deactivate();
-        }
-        seek(payload.dst.timeMs);
-      }),
-      musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
-        startAutoscrollingBasedOnPreferences();
-        unsuspend();
-      }),
-      musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
-        suspend();
-        musicDisplay.scroller.startManualScrolling();
-        if (isSelectionPointerTarget(payload.src)) {
-          const timeMsRange = musicDisplay.loop.timeMsRange;
-          const newAnchorValue = payload.src.edge === SelectionEdge.Start ? timeMsRange.end : timeMsRange.start;
-          musicDisplay.loop.anchor(newAnchorValue);
-        } else {
-          musicDisplay.loop.anchor(payload.selection.anchorValue);
-          musicDisplay.loop.update(payload.selection.movingValue);
-        }
-        musicDisplay.loop.activate();
-      }),
-      musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
-        musicDisplay.scroller.updateScrollIntent(payload.dst.position.relY);
-        musicDisplay.loop.update(payload.selection.movingValue);
-      }),
-      musicDisplay.eventBus.subscribe('selectionended', () => {
-        if (!musicDisplay.loop.timeMsRange.contains(musicDisplay.cursor.timeMs)) {
-          seek(musicDisplay.loop.timeMsRange.start);
-        }
-        startAutoscrollingBasedOnPreferences();
-        unsuspend();
-      }),
-      musicDisplay.eventBus.subscribe('measurelinechanged', () => {
-        musicDisplay.cursor.scrollIntoView();
-      }),
-    ];
-
-    return () => {
-      musicDisplay.eventBus.unsubscribe(...eventBusIds);
-    };
-  }, [musicDisplay, seek, suspend, unsuspend, startAutoscrollingBasedOnPreferences]);
-
+  }, [isPlaying, musicDisplay, musicDisplayScrollControls]);
   useEffect(() => {
     if (!controlsDivRef.current) {
       return;
@@ -279,9 +172,9 @@ export const NotationControls: React.FC<Props> = (props) => {
         <Col xs={2} sm={2} md={2} lg={1} xl={1} xxl={1}>
           <Row justify="center" align="middle">
             {isPaused ? (
-              <StyledButton size="large" shape="circle" icon={<RightOutlined />} onClick={play} />
+              <StyledButton size="large" shape="circle" icon={<RightOutlined />} onClick={videoPlayerControls.play} />
             ) : (
-              <StyledButton size="large" shape="circle" icon={<PauseOutlined />} onClick={pause} />
+              <StyledButton size="large" shape="circle" icon={<PauseOutlined />} onClick={videoPlayerControls.pause} />
             )}
           </Row>
         </Col>

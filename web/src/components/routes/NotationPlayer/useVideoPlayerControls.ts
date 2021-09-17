@@ -1,13 +1,19 @@
 import { noop } from 'lodash';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { VideoJsPlayer } from 'video.js';
-import { AsyncLoop } from '../../../util/AsyncLoop';
-import { Duration } from '../../../util/Duration';
 
 export enum VideoPlayerState {
   Paused,
   Playing,
 }
+
+export type VideoPlayerControls = {
+  play: () => void;
+  pause: () => void;
+  seek: (timeMs: number) => void;
+  suspend: () => void;
+  unsuspend: () => void;
+};
 
 const getVideoPlayerState = (videoPlayer: VideoJsPlayer) => (): VideoPlayerState => {
   return !videoPlayer.paused() ? VideoPlayerState.Playing : VideoPlayerState.Paused;
@@ -20,7 +26,6 @@ export const useVideoPlayerControls = (videoPlayer: VideoJsPlayer) => {
 
   const [videoPlayerState, setVideoPlayerState] = useState(getVideoPlayerState(videoPlayer));
   const [isSuspended, setIsSuspended] = useState(false);
-  const [currentTimeMs, setCurrentTimeMs] = useState(0);
 
   const play = useCallback(() => {
     videoPlayer.play();
@@ -69,30 +74,5 @@ export const useVideoPlayerControls = (videoPlayer: VideoJsPlayer) => {
     };
   }, [videoPlayer]);
 
-  useEffect(() => {
-    // We don't want to store the currentTimeMs state on the parent NotationPlayer component,
-    // since it houses a lot of other components and could potentially trigger a lot of other
-    // unwanted updates. We only want components that need the currentTimeMs to update.
-    const loop = new AsyncLoop(() => {
-      const time = Duration.sec(videoPlayer.currentTime());
-      setCurrentTimeMs(time.ms);
-    });
-    videoPlayer.ready(() => {
-      loop.start();
-    });
-
-    return () => {
-      loop.stop();
-    };
-  }, [videoPlayer]);
-
-  return {
-    videoPlayerState,
-    currentTimeMs,
-    play,
-    pause,
-    seek,
-    suspend,
-    unsuspend,
-  };
+  return useMemo(() => ({ play, pause, seek, suspend, unsuspend }), [play, pause, seek, suspend, unsuspend]);
 };

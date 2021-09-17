@@ -1,13 +1,12 @@
 import { useEffect } from 'react';
 import { MusicDisplay } from '../../../lib/MusicDisplay';
-
-type SeekCallback = (currentTimeMs: number) => void;
+import { VideoPlayerControls } from './useVideoPlayerControls';
 
 export const useSelectionLoopingEffect = (
   musicDisplay: MusicDisplay | null,
   currentTimeMs: number,
   isPlaying: boolean,
-  seek: SeekCallback
+  videoPlayerControls: VideoPlayerControls
 ) => {
   useEffect(() => {
     if (!musicDisplay) {
@@ -23,6 +22,6 @@ export const useSelectionLoopingEffect = (
     if (timeMsRange.contains(currentTimeMs)) {
       return;
     }
-    seek(timeMsRange.start);
-  }, [currentTimeMs, isPlaying, musicDisplay, seek]);
+    videoPlayerControls.seek(timeMsRange.start);
+  }, [currentTimeMs, isPlaying, musicDisplay, videoPlayerControls]);
 };

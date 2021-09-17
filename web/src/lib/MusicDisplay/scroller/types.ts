@@ -1,6 +1,7 @@
 import { Cursor } from 'opensheetmusicdisplay';
 
 export enum ScrollBehaviorType {
+  Unknown,
   Noop,
   Auto,
   Manual,

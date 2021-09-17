@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { MusicDisplay } from '../../../lib/MusicDisplay';
 
-export const useScrollBehavior = (musicDisplay: MusicDisplay | null) => {
+export const useMusicDisplayScrollBehaviorEffect = (musicDisplay: MusicDisplay | null) => {
   const isMusicDisplayResizingRef = useRef(false);
   const isMusicDisplayLoadingRef = useRef(false);
 
@@ -30,6 +30,9 @@ export const useScrollBehavior = (musicDisplay: MusicDisplay | null) => {
       }),
       musicDisplay.eventBus.subscribe('loadended', () => {
         isMusicDisplayLoadingRef.current = false;
+      }),
+      musicDisplay.eventBus.subscribe('measurelinechanged', () => {
+        musicDisplay.cursor.scrollIntoView();
       }),
     ];
 

@@ -32,6 +32,10 @@ export class Duration {
     this._ms = ms;
   }
 
+  eq(duration: Duration) {
+    return this.ms === duration.ms;
+  }
+
   get ms() {
     return this._ms;
   }
