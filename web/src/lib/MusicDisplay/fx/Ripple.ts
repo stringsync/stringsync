@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import { theme } from '../../../theme';
 import { Duration } from '../../../util/Duration';
-import { InternalMusicDisplay } from '../InternalMusicDisplay';
+import { VisualFx } from './types';
 
 const CIRCLE_INITIAL_RADIUS_PX = 36;
 const CIRCLE_FINAL_RADIUS_PX = 48;
@@ -12,19 +12,19 @@ const CIRCLE_INITIAL_BORDER_OPACITY = 0.7;
 const CIRCLE_FINAL_BORDER_OPACITY = 0;
 const FADE_DURATION = Duration.ms(500);
 
-export class RippleRenderer {
-  static create(imd: InternalMusicDisplay) {
-    return new RippleRenderer(imd.getSvg());
-  }
-
+export class Ripple implements VisualFx {
+  private x: number;
+  private y: number;
   private svg: SVGElement;
 
-  private constructor(svg: SVGElement) {
+  constructor(x: number, y: number, svg: SVGElement) {
+    this.x = x;
+    this.y = y;
     this.svg = svg;
   }
 
-  render(x: number, y: number) {
-    const circle = this.createCircle(x, y);
+  render() {
+    const circle = this.createCircle();
     this.svg.appendChild(circle);
     $(circle).animate(
       {
@@ -40,10 +40,12 @@ export class RippleRenderer {
     );
   }
 
-  private createCircle(x: number, y: number): SVGCircleElement {
+  clear() {}
+
+  private createCircle(): SVGCircleElement {
     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('cx', x.toString());
-    circle.setAttribute('cy', y.toString());
+    circle.setAttribute('cx', this.x.toString());
+    circle.setAttribute('cy', this.y.toString());
     circle.setAttribute('r', CIRCLE_INITIAL_RADIUS_PX.toString());
     circle.setAttribute('stroke', CIRCLE_BORDER_COLOR);
     circle.setAttribute('stroke-width', CIRCLE_BORDER_THICKNESS_PX.toString());

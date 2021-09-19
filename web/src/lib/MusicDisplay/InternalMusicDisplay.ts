@@ -10,10 +10,10 @@ import {
 } from 'opensheetmusicdisplay';
 import { Colorer } from './colorer';
 import { CursorWrapper, LerpCursor, NoopCursor } from './cursors';
+import { Fx } from './fx';
 import { SyncSettings } from './locator';
 import { MusicDisplayLocator } from './locator/MusicDisplayLocator';
 import { LerpLoop, Loop, NoopLoop } from './loop';
-import { RippleRenderer, SelectionRenderer } from './renderers';
 import { Scroller } from './scroller';
 import { SVGEventProxy, SVGSettings } from './svg';
 import { MusicDisplayEventBus, MusicDisplayOptions } from './types';
@@ -25,6 +25,8 @@ type IdentifiableCursorOptions = CursorOptions & {
 type WithProbeCursorCallback = (probeCursor: Cursor) => void;
 
 type ForEachCursorPositionCallback = (index: number, probeCursor: Cursor) => void;
+
+const DUMMY_SVG = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 
 const isSvgBackend = (backend: VexFlowBackend | undefined): backend is SvgVexFlowBackend => {
   return !!backend && backend.getOSMDBackendType() === BackendType.SVG;
@@ -49,8 +51,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   svgEventProxy: SVGEventProxy | null = null;
   scroller: Scroller;
   colorer: Colorer;
-  selectionRenderer: SelectionRenderer | null = null;
-  rippleRenderer: RippleRenderer | null = null;
+  fx = new Fx(DUMMY_SVG);
 
   constructor(container: string | HTMLElement, eventBus: MusicDisplayEventBus, opts: MusicDisplayOptions) {
     super(container, opts);
@@ -90,9 +91,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
     this.loop = LerpLoop.create(this, locator.clone());
 
-    this.selectionRenderer = SelectionRenderer.create(this, locator.clone());
-
-    this.rippleRenderer = RippleRenderer.create(this);
+    this.fx = new Fx(this.getSvg());
 
     this.eventBus.dispatch('resizeended', {});
   }
@@ -103,7 +102,6 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.loop.deactivate();
     this.scroller.disable();
     this.svgEventProxy?.uninstall();
-    this.selectionRenderer?.clear();
     this.getSvg().remove();
   }
 

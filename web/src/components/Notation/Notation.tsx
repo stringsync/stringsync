@@ -124,7 +124,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
           return;
         }
         const { x, y } = payload.src.position;
-        musicDisplay.renderRipple(x, y);
+        musicDisplay.fx.ripple(x, y);
       }),
     ];
 

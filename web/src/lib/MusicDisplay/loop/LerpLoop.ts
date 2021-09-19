@@ -3,6 +3,7 @@ import { CursorStyleType, CursorWrapper } from '../cursors';
 import { LerpCursor } from '../cursors/LerpCursor';
 import { InternalMusicDisplay } from '../InternalMusicDisplay';
 import { MusicDisplayLocator } from '../locator/MusicDisplayLocator';
+import { SelectionRenderer } from './SelectionRenderer';
 import { Loop } from './types';
 
 export class LerpLoop implements Loop {
@@ -23,7 +24,9 @@ export class LerpLoop implements Loop {
       interactingStyle: { opacity: '0.75' },
     });
 
-    const loop = new LerpLoop(imd, startCursor, endCursor);
+    const selectionRenderer = SelectionRenderer.create(imd, locator.clone());
+
+    const loop = new LerpLoop(imd, startCursor, endCursor, selectionRenderer);
     loop.deactivate();
 
     return loop;
@@ -32,14 +35,22 @@ export class LerpLoop implements Loop {
   imd: InternalMusicDisplay;
   startCursor: CursorWrapper;
   endCursor: CursorWrapper;
+  selectionRenderer: SelectionRenderer;
+
   isActive = true;
 
   selection = AnchoredSelection.init(0);
 
-  private constructor(imd: InternalMusicDisplay, startCursor: CursorWrapper, endCursor: CursorWrapper) {
+  private constructor(
+    imd: InternalMusicDisplay,
+    startCursor: CursorWrapper,
+    endCursor: CursorWrapper,
+    selectionRenderer: SelectionRenderer
+  ) {
     this.imd = imd;
     this.startCursor = startCursor;
     this.endCursor = endCursor;
+    this.selectionRenderer = selectionRenderer;
   }
 
   activate() {
@@ -59,7 +70,7 @@ export class LerpLoop implements Loop {
     this.isActive = false;
     this.startCursor.clear();
     this.endCursor.clear();
-    this.imd.selectionRenderer?.clear();
+    this.selectionRenderer.clear();
   }
 
   get timeMsRange() {
@@ -79,9 +90,7 @@ export class LerpLoop implements Loop {
 
     const timeMsRange = this.timeMsRange;
 
-    if (this.imd.selectionRenderer) {
-      this.imd.selectionRenderer.update(timeMsRange);
-    }
+    this.selectionRenderer.update(timeMsRange);
 
     if (timeMsRange.start !== this.startCursor.timeMs) {
       this.startCursor.update(timeMsRange.start);
