@@ -1,6 +1,6 @@
 import { isNumber } from 'lodash';
 import { useCallback } from 'react';
-import { CursorInfo } from '../../../lib/MusicDisplay/cursors';
+import { CursorSnapshot } from '../../../lib/MusicDisplay/locator';
 import { SliderTooltip } from './SliderTooltip';
 
 const timestamp = (ms: number): string => {
@@ -15,7 +15,7 @@ const timestamp = (ms: number): string => {
   return `${minsStr}:${secsStr}`;
 };
 
-export const useTipFormatter = (cursorInfo: CursorInfo, durationMs: number) => {
+export const useTipFormatter = (cursorSnapshot: CursorSnapshot | null, durationMs: number) => {
   return useCallback(
     (value?: number | undefined) => {
       let currentTimestamp: string;
@@ -29,7 +29,7 @@ export const useTipFormatter = (cursorInfo: CursorInfo, durationMs: number) => {
         durationTimestamp = '?';
       }
 
-      const currentMeasureNumber = cursorInfo.currentMeasureNumber.toString();
+      const currentMeasureNumber = cursorSnapshot ? cursorSnapshot.measureNumber.toString() : '0';
 
       return (
         <SliderTooltip
@@ -39,6 +39,6 @@ export const useTipFormatter = (cursorInfo: CursorInfo, durationMs: number) => {
         />
       );
     },
-    [cursorInfo, durationMs]
+    [cursorSnapshot, durationMs]
   );
 };

@@ -1,8 +1,7 @@
 import { IOSMDOptions } from 'opensheetmusicdisplay';
 import { AnchoredSelection } from '../../util/AnchoredSelection';
 import { EventBus } from '../EventBus';
-import { CursorInfo } from './cursors';
-import { SyncSettings } from './locator';
+import { CursorSnapshot, SyncSettings } from './locator';
 import {
   CursorPointerTarget,
   CursorSnapshotPointerTarget,
@@ -26,7 +25,7 @@ export type MusicDisplayEventBus = EventBus<{
   cursordragended: { src: CursorPointerTarget; dst: PointerTarget };
   cursorentered: { src: CursorPointerTarget };
   cursorexited: { src: CursorPointerTarget };
-  cursorinfochanged: { info: CursorInfo };
+  cursorsnapshotchanged: { cursorSnapshot: CursorSnapshot | null };
   cursorsnapshotentered: { src: CursorSnapshotPointerTarget };
   cursorsnapshotexited: { src: CursorSnapshotPointerTarget };
   externalscrolldetected: {};
@@ -36,6 +35,7 @@ export type MusicDisplayEventBus = EventBus<{
   press: {};
   longpress: {};
   measurelinechanged: {};
+  nummeasureschanged: { numMeasures: number };
   notargetentered: { src: NonePointerTarget };
   notargetexited: { src: NonePointerTarget };
   pointeractive: {};

@@ -6,6 +6,7 @@ const DUMMY_ELEMENT = document.createElement('div');
 export class NoopCursor implements CursorWrapper {
   element = DUMMY_ELEMENT;
   timeMs = -1;
+  cursorSnapshot = null;
   update() {}
   updateStyle() {}
   clear() {}

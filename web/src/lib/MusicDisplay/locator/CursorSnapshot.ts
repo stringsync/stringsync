@@ -1,3 +1,4 @@
+import { isNull } from 'lodash';
 import { VoiceEntry } from 'opensheetmusicdisplay';
 import { Box } from '../../../util/Box';
 import { NumberRange } from '../../../util/NumberRange';
@@ -38,6 +39,8 @@ export class CursorSnapshot {
 
   private xRangeCache: NumberRange | null = null;
   private boxCache: Box | null = null;
+  private measureIndexCache: number | null = null;
+  private measureNumberCache: number | null = null;
 
   constructor(index: number, attrs: CursorSnapshotAttrs) {
     this.index = index;
@@ -64,6 +67,20 @@ export class CursorSnapshot {
       this.boxCache = this.calculateBox();
     }
     return this.boxCache;
+  }
+
+  get measureIndex() {
+    if (isNull(this.measureIndexCache)) {
+      this.measureIndexCache = this.iteratorSnapshot.get().CurrentMeasureIndex;
+    }
+    return this.measureIndexCache;
+  }
+
+  get measureNumber() {
+    if (isNull(this.measureNumberCache)) {
+      this.measureNumberCache = this.iteratorSnapshot.get().CurrentMeasure.MeasureNumber;
+    }
+    return this.measureNumberCache;
   }
 
   linkPrev(cursorSnapshot: CursorSnapshot): void {

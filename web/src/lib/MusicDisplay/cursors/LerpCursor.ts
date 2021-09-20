@@ -42,7 +42,6 @@ type Cursors = {
 type LerpCursorStyle = Omit<Record<string, string>, 'top' | 'left' | 'x' | 'y'>;
 
 export type LerpCursorOpts = {
-  numMeasures: number;
   cursorOptions?: Partial<Pick<CursorOptions, 'type' | 'color' | 'alpha'>>;
   isNoteheadColoringEnabled: boolean;
   defaultStyle?: LerpCursorStyle;
@@ -70,13 +69,13 @@ export class LerpCursor implements CursorWrapper {
   lagger: Cursor;
   leader: Cursor;
   lerper: Cursor;
+  cursorSnapshot: CursorSnapshot | null = null;
   scrollContainer: HTMLElement;
   timeMs = 0;
   styleType = CursorStyleType.Default;
   opts: LerpCursorOpts;
 
   private locator: MusicDisplayLocator | null = null;
-  private prevCursorSnapshot: CursorSnapshot | null = null;
   private noteColorOpId = Symbol();
 
   private constructor(imd: InternalMusicDisplay, cursors: Cursors, opts: LerpCursorOpts) {
@@ -134,7 +133,7 @@ export class LerpCursor implements CursorWrapper {
     const locateResult = this.locator.locateByTimeMs(timeMs);
 
     const nextCursorSnapshot = locateResult.cursorSnapshot;
-    const prevCursorSnapshot = this.prevCursorSnapshot;
+    const prevCursorSnapshot = this.cursorSnapshot;
 
     if (nextCursorSnapshot === prevCursorSnapshot) {
       this.updateLerperPosition(locateResult.x);
@@ -257,7 +256,7 @@ export class LerpCursor implements CursorWrapper {
       this.show();
     }
 
-    this.prevCursorSnapshot = nextCursorSnapshot;
+    this.cursorSnapshot = nextCursorSnapshot;
 
     if (this.opts.isNoteheadColoringEnabled) {
       this.imd.colorer.undo(this.noteColorOpId);
@@ -267,12 +266,8 @@ export class LerpCursor implements CursorWrapper {
       }
     }
 
-    this.imd.eventBus.dispatch('cursorinfochanged', {
-      info: {
-        currentMeasureIndex: this.lagger.iterator.CurrentMeasureIndex,
-        currentMeasureNumber: this.lagger.iterator.CurrentMeasure.MeasureNumber,
-        numMeasures: this.opts.numMeasures,
-      },
+    this.imd.eventBus.dispatch('cursorsnapshotchanged', {
+      cursorSnapshot: nextCursorSnapshot,
     });
   }
 

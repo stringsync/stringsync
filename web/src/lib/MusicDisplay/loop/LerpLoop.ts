@@ -9,7 +9,6 @@ import { Loop } from './types';
 export class LerpLoop implements Loop {
   static create(imd: InternalMusicDisplay, locator: MusicDisplayLocator) {
     const startCursor = LerpCursor.create(imd, locator.clone(), {
-      numMeasures: imd.Sheet.SourceMeasures.length,
       cursorOptions: { color: '#e3e362', alpha: 1 },
       isNoteheadColoringEnabled: false,
       defaultStyle: { opacity: '0' },
@@ -17,7 +16,6 @@ export class LerpLoop implements Loop {
     });
 
     const endCursor = LerpCursor.create(imd, locator.clone(), {
-      numMeasures: imd.Sheet.SourceMeasures.length,
       cursorOptions: { color: '#e3e362', alpha: 1 },
       isNoteheadColoringEnabled: false,
       defaultStyle: { opacity: '0' },
