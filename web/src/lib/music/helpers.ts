@@ -1,24 +1,5 @@
 import { PitchAccidental, PitchName } from './types';
 
-// first match: note name
-// second match: one of '', 'bb', '##', 'b', or '#'
-// third match: octave
-const NOTE_STRING_REGEX = /^([A-G])(bb|##|b(?!#)|#(?!b))*(\d+)$/;
-
-export const parsePitchString = (str: string): [string, string, string] => {
-  const matches = str.match(NOTE_STRING_REGEX);
-  if (!matches) {
-    throw Error(`invalid note string: ${str}`);
-  }
-
-  if (matches.length !== 4) {
-    console.warn('NOTE_STRING_REGEX may be incorrect');
-    throw Error(`invalid note string: ${str}`);
-  }
-
-  return [matches[1], matches[2] || '', matches[3]];
-};
-
 export const accidentalAsString = (accidental: PitchAccidental) => {
   switch (accidental) {
     case PitchAccidental.Natural:

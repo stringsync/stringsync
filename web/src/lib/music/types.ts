@@ -1,4 +1,6 @@
 export enum PitchName {
+  Unknown,
+  None,
   A,
   B,
   C,
@@ -9,6 +11,8 @@ export enum PitchName {
 }
 
 export enum PitchAccidental {
+  Unknown,
+  None,
   Natural,
   Flat,
   Sharp,
@@ -16,12 +20,14 @@ export enum PitchAccidental {
   DoubleSharp,
 }
 
-export enum NoteAudibility {
+export enum Audibility {
   Audible,
   Inaudible,
 }
 
 export enum DurationValue {
+  Unknown,
+  None,
   Grace,
   Sixteenth,
   Eight,
