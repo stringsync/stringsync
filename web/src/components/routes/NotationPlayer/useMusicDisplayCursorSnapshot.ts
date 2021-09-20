@@ -11,9 +11,12 @@ export const useMusicDisplayCursorSnapshot = (musicDisplay: MusicDisplay | null)
     if (!musicDisplay) {
       return;
     }
-    musicDisplay.eventBus.subscribe('cursorsnapshotchanged', (payload) => {
+    const eventBusId = musicDisplay.eventBus.subscribe('cursorsnapshotchanged', (payload) => {
       setCursorSnapshot(payload.cursorSnapshot);
     });
+    return () => {
+      musicDisplay.eventBus.unsubscribe(eventBusId);
+    };
   }, [musicDisplay]);
 
   return cursorSnapshot;
