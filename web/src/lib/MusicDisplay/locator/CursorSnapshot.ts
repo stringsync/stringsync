@@ -1,7 +1,8 @@
-import { isNull } from 'lodash';
+import { get, isNull, isNumber } from 'lodash';
 import { VoiceEntry } from 'opensheetmusicdisplay';
 import { Box } from '../../../util/Box';
 import { NumberRange } from '../../../util/NumberRange';
+import { Position } from '../../guitar/Position';
 import { END_OF_MEASURE_LINE_PADDING_PX } from './constants';
 import { IteratorSnapshot } from './IteratorSnapshot';
 import { LocatorTarget } from './types';
@@ -41,6 +42,7 @@ export class CursorSnapshot {
   private boxCache: Box | null = null;
   private measureIndexCache: number | null = null;
   private measureNumberCache: number | null = null;
+  private guitarPositionsCache: Position[] | null = null;
 
   constructor(index: number, attrs: CursorSnapshotAttrs) {
     this.index = index;
@@ -83,6 +85,13 @@ export class CursorSnapshot {
     return this.measureNumberCache;
   }
 
+  get guitarPositions(): Position[] {
+    if (!this.guitarPositionsCache) {
+      this.guitarPositionsCache = this.calculateGuitarPositions();
+    }
+    return this.guitarPositionsCache;
+  }
+
   linkPrev(cursorSnapshot: CursorSnapshot): void {
     cursorSnapshot.next = this;
     this.prev = cursorSnapshot;
@@ -121,5 +130,17 @@ export class CursorSnapshot {
 
   private calculateBox() {
     return new Box(this.xRange, this.yRange);
+  }
+
+  private calculateGuitarPositions() {
+    return this.entries
+      .flatMap((entry) => entry.Notes)
+      .filter((note) => note.ParentStaff.isTab)
+      .map<{ fret: number | null; str: number | null }>((tabNote) => ({
+        str: get(tabNote, 'stringNumberTab', null),
+        fret: get(tabNote, 'fretNumber', null),
+      }))
+      .filter((pos): pos is { fret: number; str: number } => isNumber(pos.str) && isNumber(pos.fret))
+      .map((pos) => new Position(pos.fret, pos.str));
   }
 }
