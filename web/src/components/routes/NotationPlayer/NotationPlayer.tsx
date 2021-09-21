@@ -8,10 +8,11 @@ import styled from 'styled-components';
 import { VideoJsPlayer, VideoJsPlayerOptions } from 'video.js';
 import { $queries, NotationObject } from '../../../graphql';
 import { Layout, withLayout } from '../../../hocs';
-import { HEADER_HEIGHT_PX } from '../../../hocs/withLayout/DefaultLayout';
 import { MusicDisplay } from '../../../lib/MusicDisplay';
 import { RootState } from '../../../store';
 import { compose } from '../../../util/compose';
+import { FretboardJs } from '../../FretboardJs';
+import { FretboardOptions } from '../../FretboardJs/useFretboardJs';
 import { Notation } from '../../Notation';
 import { Video } from '../../Video';
 import { NotationControls } from './NotationControls';
@@ -29,7 +30,6 @@ const RightBorder = styled.div<{ border: boolean }>`
 `;
 
 const LeftOrTopScrollContainer = styled.div<{ $overflow: boolean }>`
-  max-height: calc(100vh - ${HEADER_HEIGHT_PX}px);
   overflow: auto;
 `;
 
@@ -37,9 +37,8 @@ const LeftOrTopCol = styled(Col)`
   overflow: hidden;
 `;
 
-const RightOrBottomScrollContainer = styled.div<{ $heightOffsetPx: number }>`
+const RightOrBottomScrollContainer = styled.div`
   background: white;
-  height: calc(100vh - ${(props) => props.$heightOffsetPx}px);
   overflow-x: hidden;
   overflow-y: auto;
   position: relative;
@@ -85,11 +84,9 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const [notation, setNotation] = useState<NotationObject | null>(null);
   const [errors, setErrors] = useState(new Array<string>());
   const [isLoading, setIsLoading] = useState(true);
-  const [videoHeightPx, setVideoHeightPx] = useState(0);
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
   const [videoPlayer, setVideoPlayer] = useState<VideoJsPlayer | null>(null);
   const [settings, updateSettings] = useNotationPlayerSettings();
-  const [controlsHeightPx, setControlsHeightPx] = useState(0);
   const [lastUserScrollAt, setLastUserScrollAt] = useState<Date | null>(null);
 
   const videoUrl = notation?.videoUrl;
@@ -106,9 +103,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
       : {};
   }, [videoUrl]);
 
-  const onVideoResize = useCallback((widthPx: number, heightPx: number) => {
-    setVideoHeightPx(heightPx);
-  }, []);
+  const fretboardOptions = useMemo<FretboardOptions>(() => ({}), []);
 
   const onUserScroll = useCallback(() => {
     // TODO(jared) Maybe change the behavior when the user scrolls in a certain context.
@@ -120,10 +115,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const onVideoPlayerChange = useCallback(setVideoPlayer, [setVideoPlayer]);
 
   const onSettingsChange = useCallback(updateSettings, [updateSettings]);
-
-  const onControlsDivMount = useCallback((div: HTMLDivElement) => {
-    setControlsHeightPx(div.offsetHeight);
-  }, []);
 
   // Prevent the outer container from scrolling. The reason why we need this is
   // needed is because when the viewport is ltEqMd, the body will almost certainly
@@ -156,8 +147,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   }, [params.id]);
 
   const hasErrors = errors.length > 0;
-  const rightOrBottomScrollContainerOffsetHeightPx =
-    (gtMd ? HEADER_HEIGHT_PX : HEADER_HEIGHT_PX + videoHeightPx) + controlsHeightPx;
 
   return (
     <div data-testid="notation-player">
@@ -199,19 +188,12 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
         <Row>
           <LeftOrTopCol xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
             <LeftOrTopScrollContainer $overflow={gtMd}>
-              <Video
-                onVideoPlayerChange={onVideoPlayerChange}
-                onVideoResize={onVideoResize}
-                playerOptions={playerOptions}
-              />
+              <Video onVideoPlayerChange={onVideoPlayerChange} playerOptions={playerOptions} />
               <RightBorder border={gtMd}>{gtMd && <SuggestedNotations srcNotationId={notation.id} />}</RightBorder>
             </LeftOrTopScrollContainer>
           </LeftOrTopCol>
           <RightOrBottomCol xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
-            <RightOrBottomScrollContainer
-              $heightOffsetPx={rightOrBottomScrollContainerOffsetHeightPx}
-              ref={scrollContainerRef}
-            >
+            <RightOrBottomScrollContainer ref={scrollContainerRef}>
               <SongName>{notation.songName}</SongName>
               <ArtistName>by {notation.artistName}</ArtistName>
               <TranscriberName>{notation.transcriber.username}</TranscriberName>
@@ -228,6 +210,8 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
               )}
             </RightOrBottomScrollContainer>
 
+            {settings.isFretboardVisible && <FretboardJs opts={fretboardOptions} styledPositions={[]} />}
+
             {videoPlayer && (
               <NotationControls
                 songName={notation.songName || ''}
@@ -239,7 +223,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
                 settings={settings}
                 lastUserScrollAt={lastUserScrollAt}
                 onSettingsChange={onSettingsChange}
-                onDivMount={onControlsDivMount}
               />
             )}
           </RightOrBottomCol>

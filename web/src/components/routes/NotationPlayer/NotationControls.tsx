@@ -62,12 +62,18 @@ export type Props = {
   settings: NotationPlayerSettings;
   lastUserScrollAt: Date | null;
   onSettingsChange: (notationPlayerSettings: NotationPlayerSettings) => void;
-  onDivMount: (div: HTMLDivElement) => void;
 };
 
-export const NotationControls: React.FC<Props> = (props) => {
-  const { videoPlayer, settings, musicDisplay, durationMs, onSettingsChange, onDivMount } = props;
-
+export const NotationControls: React.FC<Props> = ({
+  videoPlayer,
+  musicDisplay,
+  durationMs,
+  thumbnailUrl,
+  songName,
+  artistName,
+  settings,
+  onSettingsChange,
+}) => {
   // state
 
   const controlsDivRef = useRef<HTMLDivElement>(null);
@@ -81,7 +87,7 @@ export const NotationControls: React.FC<Props> = (props) => {
   const isNoopScrolling = scrollBehaviorType === ScrollBehaviorType.Noop;
   const cursorSnapshot = useMusicDisplayCursorSnapshot(musicDisplay);
   const tipFormatter = useTipFormatter(cursorSnapshot, durationMs);
-  const value = props.durationMs === 0 ? 0 : (currentTimeMs / props.durationMs) * 100;
+  const value = durationMs === 0 ? 0 : (currentTimeMs / durationMs) * 100;
   const handleStyle = useMemo(() => ({ width: 21, height: 21, marginTop: -8 }), []);
   const musicDisplayScrollControls = useMusicDisplayScrollControls(musicDisplay, settings.isAutoscrollPreferred);
 
@@ -149,12 +155,6 @@ export const NotationControls: React.FC<Props> = (props) => {
       musicDisplayScrollControls.startPreferentialScrolling();
     }
   }, [isPlaying, musicDisplay, musicDisplayScrollControls]);
-  useEffect(() => {
-    if (!controlsDivRef.current) {
-      return;
-    }
-    onDivMount(controlsDivRef.current);
-  }, [onDivMount]);
 
   return (
     <Outer ref={controlsDivRef}>
@@ -199,7 +199,7 @@ export const NotationControls: React.FC<Props> = (props) => {
         </Col>
         <Col xs={0} sm={0} md={0} lg={0} xl={2} xxl={2}>
           <Row justify="center" align="middle">
-            <NotationDetail thumbnailUrl={props.thumbnailUrl} artistName={props.artistName} songName={props.songName} />
+            <NotationDetail thumbnailUrl={thumbnailUrl} artistName={artistName} songName={songName} />
           </Row>
         </Col>
       </Row>
@@ -213,10 +213,10 @@ export const NotationControls: React.FC<Props> = (props) => {
         zIndex={2}
       >
         <SettingsInner>
-          <Checkbox checked={props.settings.isFretboardVisible} onChange={onFretboardVisibilityChange}>
+          <Checkbox checked={settings.isFretboardVisible} onChange={onFretboardVisibilityChange}>
             fretboard
           </Checkbox>
-          <Checkbox checked={props.settings.isAutoscrollPreferred} onChange={onAutoscrollPreferenceChange}>
+          <Checkbox checked={settings.isAutoscrollPreferred} onChange={onAutoscrollPreferenceChange}>
             autoscroll
           </Checkbox>
         </SettingsInner>
