@@ -124,7 +124,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
     const positions = measureCursorSnapshots.flatMap((measureCursorSnapshot) => measureCursorSnapshot.guitarPositions);
     return uniqBy(positions, (position) => position.toString());
   }, [cursorSnapshot]);
-  const styleFilters = useMemo<DotStyleFilter[]>(() => {
+  const dotStyleFilters = useMemo<DotStyleFilter[]>(() => {
     if (!cursorSnapshot) {
       return [];
     }
@@ -243,7 +243,12 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
             </RightOrBottomScrollContainer>
 
             {settings.isFretboardVisible && (
-              <FretboardJs opts={fretboardOpts} tuning={tuning} positions={positions} dotStyleFilters={styleFilters} />
+              <FretboardJs
+                opts={fretboardOpts}
+                tuning={tuning}
+                positions={positions}
+                dotStyleFilters={dotStyleFilters}
+              />
             )}
 
             {videoPlayer && (

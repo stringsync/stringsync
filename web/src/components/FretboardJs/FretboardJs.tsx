@@ -19,7 +19,7 @@ type Props = {
   dotStyleFilters: DotStyleFilter[];
 };
 
-export const FretboardJs: React.FC<Props> = ({ opts, positions, tuning, dotStyleFilters: styleFilters }) => {
+export const FretboardJs: React.FC<Props> = ({ opts, positions, tuning, dotStyleFilters }) => {
   const uuid = useUuid();
   const id = `fretboard-${uuid}`; // ids must start with a letter
   const fretboard = useFretboard(id, tuning, opts);
@@ -36,14 +36,14 @@ export const FretboardJs: React.FC<Props> = ({ opts, positions, tuning, dotStyle
 
     fretboard.render();
 
-    styleFilters.forEach((styleFilter) => {
+    dotStyleFilters.forEach((dotStyleFilter) => {
       fretboard.style({
-        filter: styleFilter.predicate,
+        filter: dotStyleFilter.predicate,
         ...DEFAULT_DOT_STYLE,
-        ...styleFilter.dotStyle,
+        ...dotStyleFilter.dotStyle,
       });
     });
-  }, [fretboard, guitar, positions, styleFilters]);
+  }, [fretboard, guitar, positions, dotStyleFilters]);
 
   return <figure id={id} />;
 };
