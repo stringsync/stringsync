@@ -1,39 +1,25 @@
 import React, { useEffect } from 'react';
+import { DotStyleFilter } from '.';
 import { useUuid } from '../../hooks/useUuid';
 import { Position } from '../../lib/guitar/Position';
 import { Tuning } from '../../lib/guitar/Tuning';
-import { FretboardOptions, useFretboard } from './useFretboard';
+import { DotFilterParams, DotStyle, FretboardOptions } from './types';
+import { useFretboard } from './useFretboard';
 import { useGuitar } from './useGuitar';
 
-const DEFAULT_STYLE: Readonly<Style> = {
+const DEFAULT_DOT_STYLE: Readonly<DotStyle> = {
   stroke: 'black',
   fill: 'white',
-};
-
-export type Style = {
-  stroke: string;
-  fill: string;
-};
-
-export type FilterParams = {
-  fret: number;
-  string: number;
-  note: string;
-};
-
-export type StyleFilter = {
-  style: Partial<Style>;
-  predicate: (params: FilterParams) => boolean;
 };
 
 type Props = {
   opts: FretboardOptions;
   tuning: Tuning;
   positions: Position[];
-  styleFilters: StyleFilter[];
+  dotStyleFilters: DotStyleFilter[];
 };
 
-export const FretboardJs: React.FC<Props> = ({ opts, positions, tuning, styleFilters }) => {
+export const FretboardJs: React.FC<Props> = ({ opts, positions, tuning, dotStyleFilters: styleFilters }) => {
   const uuid = useUuid();
   const id = `fretboard-${uuid}`; // ids must start with a letter
   const fretboard = useFretboard(id, tuning, opts);
@@ -41,7 +27,7 @@ export const FretboardJs: React.FC<Props> = ({ opts, positions, tuning, styleFil
 
   useEffect(() => {
     fretboard.setDots(
-      positions.map<FilterParams>((position) => ({
+      positions.map<DotFilterParams>((position) => ({
         fret: position.fret,
         string: position.string,
         note: guitar.getPitchAt(position).toString(),
@@ -53,8 +39,8 @@ export const FretboardJs: React.FC<Props> = ({ opts, positions, tuning, styleFil
     styleFilters.forEach((styleFilter) => {
       fretboard.style({
         filter: styleFilter.predicate,
-        ...DEFAULT_STYLE,
-        ...styleFilter.style,
+        ...DEFAULT_DOT_STYLE,
+        ...styleFilter.dotStyle,
       });
     });
   }, [fretboard, guitar, positions, styleFilters]);

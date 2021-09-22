@@ -15,8 +15,7 @@ import { MusicDisplay } from '../../../lib/MusicDisplay';
 import { RootState } from '../../../store';
 import { theme } from '../../../theme';
 import { compose } from '../../../util/compose';
-import { FilterParams, FretboardJs, StyleFilter } from '../../FretboardJs';
-import { FretboardOptions } from '../../FretboardJs/useFretboard';
+import { DotFilterParams, DotStyleFilter, FretboardJs, FretboardOptions } from '../../FretboardJs';
 import { Notation } from '../../Notation';
 import { Video } from '../../Video';
 import { NotationControls } from './NotationControls';
@@ -110,7 +109,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
   const fretboardOpts = useMemo<FretboardOptions>(
     () => ({
-      dotText: (params: FilterParams) => params.note,
+      dotText: (params: DotFilterParams) => params.note,
       dotStrokeColor: theme['@border-color'],
     }),
     []
@@ -125,17 +124,17 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
     const positions = measureCursorSnapshots.flatMap((measureCursorSnapshot) => measureCursorSnapshot.guitarPositions);
     return uniqBy(positions, (position) => position.toString());
   }, [cursorSnapshot]);
-  const styleFilters = useMemo<StyleFilter[]>(() => {
+  const styleFilters = useMemo<DotStyleFilter[]>(() => {
     if (!cursorSnapshot) {
       return [];
     }
     const positions = cursorSnapshot.guitarPositions;
     const encodedPositions = new Set(positions.map((position) => position.toString()));
-    const isPressed = (params: FilterParams) => {
+    const isPressed = (params: DotFilterParams) => {
       const position = new Position(params.fret, params.string);
       return encodedPositions.has(position.toString());
     };
-    return [{ predicate: isPressed, style: { fill: theme['@primary-color'] } }];
+    return [{ predicate: isPressed, dotStyle: { fill: theme['@primary-color'] } }];
   }, [cursorSnapshot]);
 
   const onUserScroll = useCallback(() => {
@@ -244,7 +243,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
             </RightOrBottomScrollContainer>
 
             {settings.isFretboardVisible && (
-              <FretboardJs opts={fretboardOpts} tuning={tuning} positions={positions} styleFilters={styleFilters} />
+              <FretboardJs opts={fretboardOpts} tuning={tuning} positions={positions} dotStyleFilters={styleFilters} />
             )}
 
             {videoPlayer && (

@@ -1,9 +1,7 @@
 import { Fretboard } from '@moonwave99/fretboard.js';
-import { Options } from '@moonwave99/fretboard.js/dist/fretboard/Fretboard';
 import { useEffect, useState } from 'react';
 import { Tuning } from '../../lib/guitar/Tuning';
-
-export type FretboardOptions = Partial<Omit<Options, 'el' | 'tuning'>>;
+import { FretboardOptions } from './types';
 
 export const useFretboard = (id: string, tuning: Tuning, opts: Partial<FretboardOptions>) => {
   const [fretboard, setFretboard] = useState(() => new Fretboard());
