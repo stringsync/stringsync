@@ -5,6 +5,7 @@ interface Range<T> {
   readonly midpoint: number;
   contains(value: T): boolean;
   eq(range: Range<T>): boolean;
+  toString(): string;
 }
 
 class LeftBoundedRange implements Range<number> {
@@ -28,6 +29,10 @@ class LeftBoundedRange implements Range<number> {
   eq(range: NumberRange) {
     return this.start === range.start && this.end === range.end;
   }
+
+  toString() {
+    return `[${this.start}, +∞)`;
+  }
 }
 
 class RightBoundedRange implements Range<number> {
@@ -50,6 +55,10 @@ class RightBoundedRange implements Range<number> {
 
   eq(range: NumberRange) {
     return this.start === range.start && this.end === range.end;
+  }
+
+  toString() {
+    return `(-∞, ${this.end}]`;
   }
 }
 
@@ -92,5 +101,11 @@ export class NumberRange implements Range<number> {
 
   eq(range: NumberRange) {
     return this.start === range.start && this.end === range.end;
+  }
+
+  toString() {
+    const start = this.start === Number.NEGATIVE_INFINITY ? '(-∞' : `[${this.start.toString()}`;
+    const end = this.end === Number.POSITIVE_INFINITY ? '+∞)' : `${this.end.toString()}]`;
+    return `${start}, ${end}`;
   }
 }

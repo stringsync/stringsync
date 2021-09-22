@@ -1,44 +1,63 @@
 import React, { useEffect } from 'react';
 import { useUuid } from '../../hooks/useUuid';
 import { Position } from '../../lib/guitar/Position';
-import { FretboardOptions, useFretboard } from './useFretboardJs';
+import { Tuning } from '../../lib/guitar/Tuning';
+import { FretboardOptions, useFretboard } from './useFretboard';
+import { useGuitar } from './useGuitar';
+
+const DEFAULT_STYLE: Readonly<Style> = {
+  stroke: 'black',
+  fill: 'white',
+};
 
 export type Style = {
   stroke: string;
   fill: string;
 };
 
-export type StyledPosition = {
+export type FilterParams = {
+  fret: number;
+  string: number;
+  note: string;
+};
+
+export type StyleFilter = {
   style: Partial<Style>;
-  position: Position;
+  predicate: (params: FilterParams) => boolean;
 };
 
 type Props = {
   opts: FretboardOptions;
-  styledPositions: Position[];
+  tuning: Tuning;
+  positions: Position[];
+  styleFilters: StyleFilter[];
 };
 
-export const FretboardJs: React.FC<Props> = ({ opts, styledPositions }) => {
-  const id = useUuid();
-
-  const fretboard = useFretboard(id, opts);
+export const FretboardJs: React.FC<Props> = ({ opts, positions, tuning, styleFilters }) => {
+  const uuid = useUuid();
+  const id = `fretboard-${uuid}`; // ids must start with a letter
+  const fretboard = useFretboard(id, tuning, opts);
+  const guitar = useGuitar(tuning);
 
   useEffect(() => {
-    fretboard
-      .setDots([
-        { fret: 5, string: 2 },
-        { fret: 2, string: 5 },
-      ])
-      .render()
-      .style({
-        filter: () => Math.random() > 0.5,
-        text: (unk: any) => {
-          console.log(unk);
-          return 'A';
-        },
-        fontFill: 'red',
+    fretboard.setDots(
+      positions.map<FilterParams>((position) => ({
+        fret: position.fret,
+        string: position.string,
+        note: guitar.getPitchAt(position).toString(),
+      }))
+    );
+
+    fretboard.render();
+
+    styleFilters.forEach((styleFilter) => {
+      fretboard.style({
+        filter: styleFilter.predicate,
+        ...DEFAULT_STYLE,
+        ...styleFilter.style,
       });
-  }, [fretboard, styledPositions]);
+    });
+  }, [fretboard, guitar, positions, styleFilters]);
 
   return <figure id={id} />;
 };

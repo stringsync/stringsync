@@ -34,4 +34,29 @@ export class Pitch {
     this.accidental = accidental;
     this.octave = octave;
   }
+
+  isNullPitch(): boolean {
+    return this.name === PitchName.None;
+  }
+
+  toString() {
+    if (this.isNullPitch()) {
+      return 'X';
+    }
+
+    const name = helpers.nameAsString(this.name);
+    const accidental = helpers.accidentalAsString(this.accidental);
+    return this.accidental === PitchAccidental.Natural ? name : `${name}${accidental}`;
+  }
+
+  toFullyQualifiedString() {
+    if (this.isNullPitch()) {
+      return 'X';
+    }
+
+    const name = helpers.nameAsString(this.name);
+    const accidental = helpers.accidentalAsString(this.accidental);
+    const octave = this.octave.toString();
+    return `${name}${accidental}${octave}`;
+  }
 }

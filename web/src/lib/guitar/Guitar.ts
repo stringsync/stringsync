@@ -1,3 +1,5 @@
+import { Interval, Note } from '@tonaljs/tonal';
+import { Pitch } from '../music/Pitch';
 import { Position } from './Position';
 import { Tuning } from './Tuning';
 
@@ -8,5 +10,11 @@ export class Guitar {
     this.tuning = tuning;
   }
 
-  getPitchAt(position: Position) {}
+  getPitchAt(position: Position) {
+    const openStringPitch = this.tuning.getPitchAt(position.string);
+    const interval = Interval.fromSemitones(position.fret);
+    const pitchStr = Note.transpose(openStringPitch.toFullyQualifiedString(), interval.toString());
+    console.log(position, openStringPitch.toFullyQualifiedString(), pitchStr, interval.toString());
+    return Pitch.fromString(pitchStr);
+  }
 }

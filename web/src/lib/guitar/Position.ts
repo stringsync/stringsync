@@ -6,4 +6,8 @@ export class Position {
     this.fret = fret;
     this.string = string;
   }
+
+  toString() {
+    return JSON.stringify({ fret: this.fret, string: this.string });
+  }
 }

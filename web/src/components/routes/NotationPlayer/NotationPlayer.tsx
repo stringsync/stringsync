@@ -1,5 +1,6 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { Alert, Col, Row } from 'antd';
+import { uniqBy } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
@@ -8,15 +9,19 @@ import styled from 'styled-components';
 import { VideoJsPlayer, VideoJsPlayerOptions } from 'video.js';
 import { $queries, NotationObject } from '../../../graphql';
 import { Layout, withLayout } from '../../../hocs';
+import { Position } from '../../../lib/guitar/Position';
+import { Tuning } from '../../../lib/guitar/Tuning';
 import { MusicDisplay } from '../../../lib/MusicDisplay';
 import { RootState } from '../../../store';
+import { theme } from '../../../theme';
 import { compose } from '../../../util/compose';
-import { FretboardJs } from '../../FretboardJs';
-import { FretboardOptions } from '../../FretboardJs/useFretboardJs';
+import { FilterParams, FretboardJs, StyleFilter } from '../../FretboardJs';
+import { FretboardOptions } from '../../FretboardJs/useFretboard';
 import { Notation } from '../../Notation';
 import { Video } from '../../Video';
 import { NotationControls } from './NotationControls';
 import { SuggestedNotations } from './SuggestedNotations';
+import { useMusicDisplayCursorSnapshot } from './useMusicDisplayCursorSnapshot';
 import { useNotationPlayerSettings } from './useNotationSettings';
 
 const LoadingIcon = styled(LoadingOutlined)`
@@ -103,7 +108,34 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
       : {};
   }, [videoUrl]);
 
-  const fretboardOptions = useMemo<FretboardOptions>(() => ({}), []);
+  const fretboardOpts = useMemo<FretboardOptions>(
+    () => ({
+      dotText: (params: FilterParams) => params.note,
+    }),
+    []
+  );
+  const tuning = useMemo<Tuning>(() => Tuning.standard(), []);
+  const cursorSnapshot = useMusicDisplayCursorSnapshot(musicDisplay);
+  const positions = useMemo<Position[]>(() => {
+    if (!cursorSnapshot) {
+      return [];
+    }
+    const measureCursorSnapshots = cursorSnapshot.getMeasureCursorSnapshots();
+    const positions = measureCursorSnapshots.flatMap((measureCursorSnapshot) => measureCursorSnapshot.guitarPositions);
+    return uniqBy(positions, (position) => position.toString());
+  }, [cursorSnapshot]);
+  const styleFilters = useMemo<StyleFilter[]>(() => {
+    if (!cursorSnapshot) {
+      return [];
+    }
+    const positions = cursorSnapshot.guitarPositions;
+    const encodedPositions = new Set(positions.map((position) => position.toString()));
+    const isPressed = (params: FilterParams) => {
+      const position = new Position(params.fret, params.string);
+      return encodedPositions.has(position.toString());
+    };
+    return [{ predicate: isPressed, style: { fill: theme['@primary-color'] } }];
+  }, [cursorSnapshot]);
 
   const onUserScroll = useCallback(() => {
     // TODO(jared) Maybe change the behavior when the user scrolls in a certain context.
@@ -210,7 +242,9 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
               )}
             </RightOrBottomScrollContainer>
 
-            {settings.isFretboardVisible && <FretboardJs opts={fretboardOptions} styledPositions={[]} />}
+            {settings.isFretboardVisible && (
+              <FretboardJs opts={fretboardOpts} tuning={tuning} positions={positions} styleFilters={styleFilters} />
+            )}
 
             {videoPlayer && (
               <NotationControls

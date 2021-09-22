@@ -43,6 +43,7 @@ export class CursorSnapshot {
   private measureIndexCache: number | null = null;
   private measureNumberCache: number | null = null;
   private guitarPositionsCache: Position[] | null = null;
+  private measureCursorSnapshotsCache: CursorSnapshot[] | null = null;
 
   constructor(index: number, attrs: CursorSnapshotAttrs) {
     this.index = index;
@@ -90,6 +91,13 @@ export class CursorSnapshot {
       this.guitarPositionsCache = this.calculateGuitarPositions();
     }
     return this.guitarPositionsCache;
+  }
+
+  getMeasureCursorSnapshots(): CursorSnapshot[] {
+    if (isNull(this.measureCursorSnapshotsCache)) {
+      this.measureCursorSnapshotsCache = this.calculateMeasureCursorSnapshots();
+    }
+    return this.measureCursorSnapshotsCache;
   }
 
   linkPrev(cursorSnapshot: CursorSnapshot): void {
@@ -142,5 +150,25 @@ export class CursorSnapshot {
       }))
       .filter((pos): pos is { fret: number; str: number } => isNumber(pos.str) && isNumber(pos.fret))
       .map((pos) => new Position(pos.fret, pos.str));
+  }
+
+  private calculateMeasureCursorSnapshots() {
+    const before = new Array<CursorSnapshot>();
+    const middle = this;
+    const after = new Array<CursorSnapshot>();
+
+    let prev = this.prev;
+    while (prev && prev.measureIndex === this.measureIndex) {
+      before.push(prev);
+      prev = prev.prev;
+    }
+
+    let next = this.next;
+    while (next && next.measureIndex === this.measureIndex) {
+      after.push(next);
+      next = next.next;
+    }
+
+    return [...before.reverse(), middle, ...after];
   }
 }
