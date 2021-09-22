@@ -5,10 +5,8 @@ import { Tuning } from '../../lib/guitar/Tuning';
 
 export type FretboardOptions = Partial<Omit<Options, 'el' | 'tuning'>>;
 
-const NULL_FRETBOARD = new Fretboard();
-
 export const useFretboard = (id: string, tuning: Tuning, opts: Partial<FretboardOptions>) => {
-  const [fretboard, setFretboard] = useState(NULL_FRETBOARD);
+  const [fretboard, setFretboard] = useState(() => new Fretboard());
 
   useEffect(() => {
     const fretboard = new Fretboard({ el: `#${id}`, tuning: tuning.toFullyQualifiedStrings(), ...opts });

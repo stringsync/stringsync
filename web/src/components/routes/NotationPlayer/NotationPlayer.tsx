@@ -111,6 +111,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const fretboardOpts = useMemo<FretboardOptions>(
     () => ({
       dotText: (params: FilterParams) => params.note,
+      dotStrokeColor: theme['@border-color'],
     }),
     []
   );
