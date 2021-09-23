@@ -227,11 +227,11 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
             {settings.isFretboardVisible && (
               <Fretboard opts={fretboardOpts} tuning={tuning}>
-                {measurePositions.map((position) => (
-                  <Fretboard.Position string={position.string} fret={position.fret} />
+                {measurePositions.map(({ string, fret }) => (
+                  <Fretboard.Position string={string} fret={fret} />
                 ))}
-                {pressedPositions.map((position) => (
-                  <Fretboard.Position string={position.string} fret={position.fret} style={pressedStyle} />
+                {pressedPositions.map(({ string, fret }) => (
+                  <Fretboard.Position string={string} fret={fret} style={pressedStyle} />
                 ))}
               </Fretboard>
             )}
