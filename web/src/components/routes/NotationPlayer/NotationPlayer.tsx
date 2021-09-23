@@ -15,7 +15,7 @@ import { MusicDisplay } from '../../../lib/MusicDisplay';
 import { RootState } from '../../../store';
 import { theme } from '../../../theme';
 import { compose } from '../../../util/compose';
-import { DotFilterParams, DotStyleFilter, FretboardJs, FretboardOptions } from '../../FretboardJs';
+import { DotFilterParams, DotStyleFilter, Fretboard, FretboardOptions } from '../../Fretboard';
 import { Notation } from '../../Notation';
 import { Video } from '../../Video';
 import { NotationControls } from './NotationControls';
@@ -243,12 +243,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
             </RightOrBottomScrollContainer>
 
             {settings.isFretboardVisible && (
-              <FretboardJs
-                opts={fretboardOpts}
-                tuning={tuning}
-                positions={positions}
-                dotStyleFilters={dotStyleFilters}
-              />
+              <Fretboard opts={fretboardOpts} tuning={tuning} positions={positions} dotStyleFilters={dotStyleFilters} />
             )}
 
             {videoPlayer && (

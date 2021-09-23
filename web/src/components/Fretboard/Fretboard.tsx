@@ -19,7 +19,7 @@ type Props = {
   dotStyleFilters: DotStyleFilter[];
 };
 
-export const FretboardJs: React.FC<Props> = ({ opts, positions, tuning, dotStyleFilters }) => {
+export const Fretboard: React.FC<Props> = ({ opts, positions, tuning, dotStyleFilters }) => {
   const uuid = useUuid();
   const id = `fretboard-${uuid}`; // ids must start with a letter
   const fretboard = useFretboard(id, tuning, opts);
