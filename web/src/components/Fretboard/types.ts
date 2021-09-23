@@ -19,7 +19,7 @@ export type PositionFilterParams = {
   note: string;
 };
 
-export type PositionStyleFilter = {
+export type StyleFilter = {
   style: PositionStyle;
   predicate: (params: PositionFilterParams) => boolean;
 };
