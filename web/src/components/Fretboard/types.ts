@@ -1,19 +1,25 @@
 import { Options } from '@moonwave99/fretboard.js/dist/fretboard/Fretboard';
+import { Position as GuitarPosition } from '../../lib/guitar/Position';
 
 export type FretboardOptions = Partial<Omit<Options, 'el' | 'tuning'>>;
 
-export type DotStyle = {
+export type PositionStyle = {
   stroke: string;
   fill: string;
 };
 
-export type DotFilterParams = {
+export type StyleTarget = {
+  style: PositionStyle;
+  position: GuitarPosition;
+};
+
+export type PositionFilterParams = {
   fret: number;
   string: number;
   note: string;
 };
 
-export type DotStyleFilter = {
-  dotStyle: Partial<DotStyle>;
-  predicate: (params: DotFilterParams) => boolean;
+export type PositionStyleFilter = {
+  style: PositionStyle;
+  predicate: (params: PositionFilterParams) => boolean;
 };

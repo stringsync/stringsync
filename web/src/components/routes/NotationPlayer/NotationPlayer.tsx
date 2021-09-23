@@ -15,7 +15,7 @@ import { MusicDisplay } from '../../../lib/MusicDisplay';
 import { RootState } from '../../../store';
 import { theme } from '../../../theme';
 import { compose } from '../../../util/compose';
-import { DotFilterParams, DotStyleFilter, Fretboard, FretboardOptions } from '../../Fretboard';
+import { Fretboard, FretboardOptions, PositionFilterParams, PositionStyle } from '../../Fretboard';
 import { Notation } from '../../Notation';
 import { Video } from '../../Video';
 import { NotationControls } from './NotationControls';
@@ -109,14 +109,14 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
   const fretboardOpts = useMemo<FretboardOptions>(
     () => ({
-      dotText: (params: DotFilterParams) => params.note,
+      dotText: (params: PositionFilterParams) => params.note,
       dotStrokeColor: theme['@border-color'],
     }),
     []
   );
   const tuning = useMemo<Tuning>(() => Tuning.standard(), []);
   const cursorSnapshot = useMusicDisplayCursorSnapshot(musicDisplay);
-  const positions = useMemo<Position[]>(() => {
+  const measurePositions = useMemo<Position[]>(() => {
     if (!cursorSnapshot) {
       return [];
     }
@@ -124,18 +124,15 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
     const positions = measureCursorSnapshots.flatMap((measureCursorSnapshot) => measureCursorSnapshot.guitarPositions);
     return uniqBy(positions, (position) => position.toString());
   }, [cursorSnapshot]);
-  const dotStyleFilters = useMemo<DotStyleFilter[]>(() => {
-    if (!cursorSnapshot) {
-      return [];
-    }
-    const positions = cursorSnapshot.guitarPositions;
-    const encodedPositions = new Set(positions.map((position) => position.toString()));
-    const isPressed = (params: DotFilterParams) => {
-      const position = new Position(params.fret, params.string);
-      return encodedPositions.has(position.toString());
-    };
-    return [{ predicate: isPressed, dotStyle: { fill: theme['@primary-color'] } }];
+  const pressedPositions = useMemo<Position[]>(() => {
+    return cursorSnapshot ? cursorSnapshot.guitarPositions : [];
   }, [cursorSnapshot]);
+  const pressedStyle = useMemo<Partial<PositionStyle>>(
+    () => ({
+      fill: theme['@primary-color'],
+    }),
+    []
+  );
 
   const onUserScroll = useCallback(() => {
     // TODO(jared) Maybe change the behavior when the user scrolls in a certain context.
@@ -243,7 +240,23 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
             </RightOrBottomScrollContainer>
 
             {settings.isFretboardVisible && (
-              <Fretboard opts={fretboardOpts} tuning={tuning} positions={positions} dotStyleFilters={dotStyleFilters} />
+              <Fretboard opts={fretboardOpts} tuning={tuning}>
+                {measurePositions.map((position) => (
+                  <Fretboard.Position
+                    key={`measure-s-${position.string}-f-${position.fret}`}
+                    string={position.string}
+                    fret={position.fret}
+                  />
+                ))}
+                {pressedPositions.map((position) => (
+                  <Fretboard.Position
+                    key={`pressed-s-${position.string}-f-${position.fret}`}
+                    string={position.string}
+                    fret={position.fret}
+                    style={pressedStyle}
+                  />
+                ))}
+              </Fretboard>
             )}
 
             {videoPlayer && (

@@ -14,7 +14,6 @@ export class Guitar {
     const openStringPitch = this.tuning.getPitchAt(position.string);
     const interval = Interval.fromSemitones(position.fret);
     const pitchStr = Note.transpose(openStringPitch.toFullyQualifiedString(), interval.toString());
-    console.log(position, openStringPitch.toFullyQualifiedString(), pitchStr, interval.toString());
     return Pitch.fromString(pitchStr);
   }
 }
