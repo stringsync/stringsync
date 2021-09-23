@@ -1,6 +1,5 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { Alert, Col, Row } from 'antd';
-import { uniqBy } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
@@ -9,7 +8,6 @@ import styled from 'styled-components';
 import { VideoJsPlayer, VideoJsPlayerOptions } from 'video.js';
 import { $queries, NotationObject } from '../../../graphql';
 import { Layout, withLayout } from '../../../hocs';
-import { Position } from '../../../lib/guitar/Position';
 import { Tuning } from '../../../lib/guitar/Tuning';
 import { MusicDisplay } from '../../../lib/MusicDisplay';
 import { RootState } from '../../../store';
@@ -20,8 +18,10 @@ import { Notation } from '../../Notation';
 import { Video } from '../../Video';
 import { NotationControls } from './NotationControls';
 import { SuggestedNotations } from './SuggestedNotations';
+import { useMeasurePositions } from './useMeasurePositions';
 import { useMusicDisplayCursorSnapshot } from './useMusicDisplayCursorSnapshot';
 import { useNotationPlayerSettings } from './useNotationSettings';
+import { usePressedPositions } from './usePressedPositions';
 
 const LoadingIcon = styled(LoadingOutlined)`
   font-size: 5em;
@@ -116,23 +116,9 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   );
   const tuning = useMemo<Tuning>(() => Tuning.standard(), []);
   const cursorSnapshot = useMusicDisplayCursorSnapshot(musicDisplay);
-  const measurePositions = useMemo<Position[]>(() => {
-    if (!cursorSnapshot) {
-      return [];
-    }
-    const measureCursorSnapshots = cursorSnapshot.getMeasureCursorSnapshots();
-    const positions = measureCursorSnapshots.flatMap((measureCursorSnapshot) => measureCursorSnapshot.guitarPositions);
-    return uniqBy(positions, (position) => position.toString());
-  }, [cursorSnapshot]);
-  const pressedPositions = useMemo<Position[]>(() => {
-    return cursorSnapshot ? cursorSnapshot.guitarPositions : [];
-  }, [cursorSnapshot]);
-  const pressedStyle = useMemo<Partial<PositionStyle>>(
-    () => ({
-      fill: theme['@primary-color'],
-    }),
-    []
-  );
+  const measurePositions = useMeasurePositions(cursorSnapshot);
+  const pressedPositions = usePressedPositions(cursorSnapshot);
+  const pressedStyle = useMemo<Partial<PositionStyle>>(() => ({ fill: theme['@primary-color'] }), []);
 
   const onUserScroll = useCallback(() => {
     // TODO(jared) Maybe change the behavior when the user scrolls in a certain context.
@@ -242,19 +228,10 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
             {settings.isFretboardVisible && (
               <Fretboard opts={fretboardOpts} tuning={tuning}>
                 {measurePositions.map((position) => (
-                  <Fretboard.Position
-                    key={`measure-s-${position.string}-f-${position.fret}`}
-                    string={position.string}
-                    fret={position.fret}
-                  />
+                  <Fretboard.Position string={position.string} fret={position.fret} />
                 ))}
                 {pressedPositions.map((position) => (
-                  <Fretboard.Position
-                    key={`pressed-s-${position.string}-f-${position.fret}`}
-                    string={position.string}
-                    fret={position.fret}
-                    style={pressedStyle}
-                  />
+                  <Fretboard.Position string={position.string} fret={position.fret} style={pressedStyle} />
                 ))}
               </Fretboard>
             )}
