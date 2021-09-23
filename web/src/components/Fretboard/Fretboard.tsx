@@ -19,7 +19,7 @@ type ChildComponents = {
 
 export const Fretboard: React.FC<Props> & ChildComponents = ({ opts, tuning, children }) => {
   const uuid = useUuid();
-  const id = `fretboard-${uuid}`; // ids must start with a letter
+  const id = `fretboard-${uuid}`; // element ids must start with a letter
   const fretboard = useFretboard(id, tuning, opts);
   const guitar = useGuitar(tuning);
   const styleTargets = useStyleTargets(children);
