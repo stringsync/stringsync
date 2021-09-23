@@ -3,10 +3,10 @@ import { Position as GuitarPosition } from '../../lib/guitar/Position';
 
 export type FretboardOptions = Partial<Omit<Options, 'el' | 'tuning'>>;
 
-export type PositionStyle = {
+export type PositionStyle = Partial<{
   stroke: string;
   fill: string;
-};
+}>;
 
 export type StyleTarget = {
   style: PositionStyle;
@@ -23,3 +23,9 @@ export type StyleFilter = {
   style: PositionStyle;
   predicate: (params: PositionFilterParams) => boolean;
 };
+
+export enum MergeStrategy {
+  Union,
+  First,
+  Last,
+}

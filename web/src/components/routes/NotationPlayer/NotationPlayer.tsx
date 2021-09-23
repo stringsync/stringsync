@@ -11,7 +11,6 @@ import { Layout, withLayout } from '../../../hocs';
 import { Tuning } from '../../../lib/guitar/Tuning';
 import { MusicDisplay } from '../../../lib/MusicDisplay';
 import { RootState } from '../../../store';
-import { theme } from '../../../theme';
 import { compose } from '../../../util/compose';
 import { Fretboard, FretboardOptions, PositionFilterParams, PositionStyle } from '../../Fretboard';
 import { Notation } from '../../Notation';
@@ -110,7 +109,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const fretboardOpts = useMemo<FretboardOptions>(
     () => ({
       dotText: (params: PositionFilterParams) => params.note,
-      dotStrokeColor: theme['@border-color'],
+      dotFill: 'white',
     }),
     []
   );
@@ -118,7 +117,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const cursorSnapshot = useMusicDisplayCursorSnapshot(musicDisplay);
   const measurePositions = useMeasurePositions(cursorSnapshot);
   const pressedPositions = usePressedPositions(cursorSnapshot);
-  const pressedStyle = useMemo<Partial<PositionStyle>>(() => ({ fill: theme['@primary-color'] }), []);
+  const pressedStyle = useMemo<Partial<PositionStyle>>(() => ({ fill: '#ff636c' }), []);
 
   const onUserScroll = useCallback(() => {
     // TODO(jared) Maybe change the behavior when the user scrolls in a certain context.

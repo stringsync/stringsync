@@ -1,13 +1,9 @@
 import { isEqual } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { Position as GuitarPosition } from '../../lib/guitar/Position';
+import * as helpers from './helpers';
 import { Position } from './Position';
-import { PositionStyle, StyleTarget } from './types';
-
-const DEFAULT_POSITION_STYLE: Readonly<PositionStyle> = {
-  stroke: 'black',
-  fill: 'white',
-};
+import { StyleTarget } from './types';
 
 const isPositionComponent = (child: any): child is React.ReactElement<React.ComponentProps<typeof Position>> => {
   return React.isValidElement(child) && child.type === Position;
@@ -17,16 +13,18 @@ export const useStyleTargets = (children: React.ReactNode) => {
   const [styleTargets, setStyleTargets] = useState<StyleTarget[]>([]);
 
   useEffect(() => {
-    const nextStyleTargets =
+    const rawStyleTargets =
       React.Children.map<StyleTarget, React.ReactNode>(children, (child) => {
         if (isPositionComponent(child)) {
           return {
-            style: { ...DEFAULT_POSITION_STYLE, ...child.props.style },
+            style: { ...child.props.style },
             position: new GuitarPosition(child.props.fret, child.props.string),
           };
         }
         throw new Error(`Fretboard children must be one of: ${Position.displayName}, got ${child}`);
       }) || [];
+
+    const nextStyleTargets = helpers.mergeStyleTargets(rawStyleTargets);
 
     setStyleTargets((currentStyleTargets) => {
       // Prevent unecessary renders by maintaining the same styleTargets object in memory if it hasn't changed.
