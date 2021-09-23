@@ -1,19 +1,14 @@
 import { uniqBy } from 'lodash';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { PositionStyleFilter } from '.';
 import { useUuid } from '../../hooks/useUuid';
 import { Position as GuitarPosition } from '../../lib/guitar/Position';
 import { Tuning } from '../../lib/guitar/Tuning';
-import * as assertions from './assertions';
 import { Position } from './Position';
-import { FretboardOptions, PositionFilterParams, PositionStyle, StyleTarget } from './types';
+import { FretboardOptions, PositionFilterParams, PositionStyle } from './types';
 import { useFretboard } from './useFretboard';
 import { useGuitar } from './useGuitar';
-
-const DEFAULT_POSITION_STYLE: Readonly<PositionStyle> = {
-  stroke: 'black',
-  fill: 'white',
-};
+import { useStyleTargets } from './useStyleTargets';
 
 type Props = {
   opts: FretboardOptions;
@@ -32,20 +27,7 @@ export const Fretboard: React.FC<Props> & ChildComponents = ({ opts, tuning, chi
   const id = `fretboard-${uuid}`; // ids must start with a letter
   const fretboard = useFretboard(id, tuning, opts);
   const guitar = useGuitar(tuning);
-
-  const styleTargets = useMemo(() => {
-    return (
-      React.Children.map<StyleTarget, React.ReactNode>(children, (child) => {
-        if (assertions.isPositionComponent(child)) {
-          return {
-            style: { ...DEFAULT_POSITION_STYLE, ...child.props.style },
-            position: new GuitarPosition(child.props.fret, child.props.string),
-          };
-        }
-        throw new Error(`Fretboard children must be one of: ${Position.displayName}, got ${child}`);
-      }) || []
-    );
-  }, [children]);
+  const styleTargets = useStyleTargets(children);
 
   useEffect(() => {
     fretboard.setDots(
