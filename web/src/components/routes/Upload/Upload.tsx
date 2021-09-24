@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import { Tag } from '../../../domain';
 import { $queries } from '../../../graphql';
 import { Layout, withLayout } from '../../../hocs';
-import { useEffectOnce } from '../../../hooks';
+import { useEffectOnce } from '../../../hooks/useEffectOnce';
 import { getTags, RootState } from '../../../store';
 import { compose } from '../../../util/compose';
 import { Box } from '../../Box';

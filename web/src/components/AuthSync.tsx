@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { useEffectOnce } from '../hooks';
+import { useEffectOnce } from '../hooks/useEffectOnce';
 import { AppDispatch, authenticate } from '../store';
 
 export const AuthSync: React.FC = () => {

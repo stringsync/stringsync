@@ -4,7 +4,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Layout, withLayout } from '../../../hocs';
-import { useEffectOnce } from '../../../hooks';
+import { useEffectOnce } from '../../../hooks/useEffectOnce';
 import { compose } from '../../../util/compose';
 import { Box } from '../../Box';
 import { Logo } from '../../Logo';

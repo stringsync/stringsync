@@ -4,7 +4,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { useEffectOnce } from '../../../hooks';
+import { useEffectOnce } from '../../../hooks/useEffectOnce';
 import { AppDispatch, clearAuthErrors, RootState, signup } from '../../../store';
 import { FormPage } from '../../FormPage';
 

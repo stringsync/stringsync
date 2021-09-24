@@ -3,7 +3,7 @@ import { useParams } from 'react-router';
 import { Notation } from '../../../domain';
 import { $queries, NotationObject } from '../../../graphql';
 import { Layout, withLayout } from '../../../hocs';
-import { useEffectOnce } from '../../../hooks';
+import { useEffectOnce } from '../../../hooks/useEffectOnce';
 import { compose } from '../../../util/compose';
 import { Video } from '../../Video';
 

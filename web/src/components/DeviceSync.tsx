@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { useEffectOnce } from '../hooks/useEffectOnce';
 import { AppDispatch, setUserAgent } from '../store';
-import { useEffectOnce } from '../hooks';
 
 export const DeviceSync: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
