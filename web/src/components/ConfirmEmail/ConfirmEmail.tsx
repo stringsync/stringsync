@@ -3,14 +3,14 @@ import { Rule } from 'antd/lib/form';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
-import { UnknownError, UNKNOWN_ERROR_MSG } from '../../../errors';
-import { $queries } from '../../../graphql';
-import { Layout, withLayout } from '../../../hocs';
-import { useEffectOnce } from '../../../hooks/useEffectOnce';
-import { useQueryParams } from '../../../hooks/useQueryParams';
-import { RootState } from '../../../store';
-import { compose } from '../../../util/compose';
-import { FormPage } from '../../FormPage';
+import { UnknownError, UNKNOWN_ERROR_MSG } from '../../errors';
+import { $queries } from '../../graphql';
+import { Layout, withLayout } from '../../hocs';
+import { useEffectOnce } from '../../hooks/useEffectOnce';
+import { useQueryParams } from '../../hooks/useQueryParams';
+import { RootState } from '../../store';
+import { compose } from '../../util/compose';
+import { FormPage } from '../FormPage';
 
 const CONFIRMATION_TOKEN_RULES: Rule[] = [{ required: true, message: 'confirmation token is required' }];
 

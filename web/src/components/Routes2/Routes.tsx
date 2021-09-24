@@ -4,38 +4,42 @@ import { withAuthRequirement } from '../../hocs';
 import { compose } from '../../util/compose';
 import { AuthRequirement } from '../../util/types';
 import { Fallback } from '../Fallback';
+import { Landing } from '../Landing';
+import { NotFound } from '../NotFound';
 import { Nothing } from '../Nothing';
 import { ReturnToRoute } from '../ReturnToRoute';
-import { Landing } from './Landing';
-import { NotFound } from './NotFound';
 import { useRoutingBehavior } from './useRoutingBehavior';
 import { useTrackPrevRouteEffect } from './useTrackPrevRouteEffect';
 
-const Library = compose(withAuthRequirement(AuthRequirement.NONE))(React.lazy(() => import('./Library')));
+const Library = compose(withAuthRequirement(AuthRequirement.NONE))(React.lazy(() => import('../Library')));
 
-const NotationPlayer = compose(withAuthRequirement(AuthRequirement.NONE))(React.lazy(() => import('./NotationPlayer')));
-
-const NotationEditor = compose(withAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER))(
-  React.lazy(() => import('./NotationEditor'))
+const NotationPlayer = compose(withAuthRequirement(AuthRequirement.NONE))(
+  React.lazy(() => import('../NotationPlayer'))
 );
 
-const Signup = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(React.lazy(() => import('./Signup')));
+const NotationEditor = compose(withAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER))(
+  React.lazy(() => import('../NotationEditor'))
+);
 
-const Login = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(React.lazy(() => import('./Login')));
+const Signup = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(React.lazy(() => import('../Signup')));
+
+const Login = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(React.lazy(() => import('../Login')));
 
 const ConfirmEmail = compose(withAuthRequirement(AuthRequirement.LOGGED_IN))(
-  React.lazy(() => import('./ConfirmEmail'))
+  React.lazy(() => import('../ConfirmEmail'))
 );
 
 const ForgotPassword = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(
-  React.lazy(() => import('./ForgotPassword'))
+  React.lazy(() => import('../ForgotPassword'))
 );
 
 const ResetPassword = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(
-  React.lazy(() => import('./ResetPassword'))
+  React.lazy(() => import('../ResetPassword'))
 );
 
-const Upload = compose(withAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER))(React.lazy(() => import('./Upload')));
+const Upload = compose(withAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER))(
+  React.lazy(() => import('../Upload'))
+);
 
 export const Routes: React.FC = () => {
   const { shouldRedirectFromLandingToLibrary, recordLandingVisit } = useRoutingBehavior();
