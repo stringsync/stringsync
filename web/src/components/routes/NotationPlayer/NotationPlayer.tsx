@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import { VideoJsPlayer, VideoJsPlayerOptions } from 'video.js';
 import { $queries, NotationObject } from '../../../graphql';
 import { Layout, withLayout } from '../../../hocs';
+import { useNoOverflow } from '../../../hooks/useNoOverflow';
 import { MusicDisplay } from '../../../lib/MusicDisplay';
 import { RootState } from '../../../store';
 import { compose } from '../../../util/compose';
@@ -128,18 +129,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
   const onSettingsChange = useCallback(updateSettings, [updateSettings]);
 
-  // Prevent the outer container from scrolling. The reason why we need this is
-  // needed is because when the viewport is ltEqMd, the body will almost certainly
-  // overflow, causing a scroll bar on the outer page (and the inner page from the
-  // right/bottom column overflow). This is a reasonable hack that will undo itself
-  // when the user navigates away from the page.
-  useEffect(() => {
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = prevOverflow;
-    };
-  }, []);
+  useNoOverflow(document.body);
 
   useEffect(() => {
     setErrors([]);
