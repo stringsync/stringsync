@@ -8,7 +8,6 @@ import styled from 'styled-components';
 import { VideoJsPlayer, VideoJsPlayerOptions } from 'video.js';
 import { $queries, NotationObject } from '../../../graphql';
 import { Layout, withLayout } from '../../../hocs';
-import { Tuning } from '../../../lib/guitar/Tuning';
 import { MusicDisplay } from '../../../lib/MusicDisplay';
 import { RootState } from '../../../store';
 import { compose } from '../../../util/compose';
@@ -113,7 +112,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
     }),
     []
   );
-  const tuning = useMemo<Tuning>(() => Tuning.standard(), []);
   const cursorSnapshot = useMusicDisplayCursorSnapshot(musicDisplay);
   const measurePositions = useMeasurePositions(cursorSnapshot);
   const pressedPositions = usePressedPositions(cursorSnapshot);
@@ -225,7 +223,7 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
             </RightOrBottomScrollContainer>
 
             {settings.isFretboardVisible && (
-              <Fretboard opts={fretboardOpts} tuning={tuning}>
+              <Fretboard options={fretboardOpts}>
                 {measurePositions.map(({ string, fret }) => (
                   <Fretboard.Position
                     key={`measure-${string}-${fret}`}

@@ -3,15 +3,20 @@ import { useUuid } from '../../hooks/useUuid';
 import { Tuning } from '../../lib/guitar/Tuning';
 import { Position } from './Position';
 import { Scale } from './Scale';
-import { FretboardOptions, PositionFilterParams } from './types';
+import { FretboardOptions, MergeStrategy, PositionFilterParams } from './types';
 import { useFretboard } from './useFretboard';
 import { useGuitar } from './useGuitar';
 import { useStyleFilters } from './useStyleFilters';
 import { useStyleTargets } from './useStyleTargets';
 
+const DEFAULT_TUNING = Tuning.standard();
+
+const DEFAULT_OPTIONS: FretboardOptions = {};
+
 type Props = {
-  opts: FretboardOptions;
-  tuning: Tuning;
+  options?: FretboardOptions;
+  tuning?: Tuning;
+  styleMergeStrategy?: MergeStrategy;
 };
 
 type ChildComponents = {
@@ -19,12 +24,16 @@ type ChildComponents = {
   Scale: typeof Scale;
 };
 
-export const Fretboard: React.FC<Props> & ChildComponents = ({ opts, tuning, children }) => {
+export const Fretboard: React.FC<Props> & ChildComponents = (props) => {
+  const options = props.options || DEFAULT_OPTIONS;
+  const tuning = props.tuning || DEFAULT_TUNING;
+  const styleMergeStrategy = props.styleMergeStrategy || MergeStrategy.Merge;
+
   const uuid = useUuid();
   const id = `fretboard-${uuid}`; // element ids must start with a letter
-  const fretboard = useFretboard(id, tuning, opts);
+  const fretboard = useFretboard(id, tuning, options);
   const guitar = useGuitar(tuning);
-  const styleTargets = useStyleTargets(fretboard, children);
+  const styleTargets = useStyleTargets(fretboard, props.children, styleMergeStrategy);
   const styleFilters = useStyleFilters(styleTargets);
 
   useEffect(() => {

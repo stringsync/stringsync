@@ -25,7 +25,7 @@ export type StyleFilter = {
 };
 
 export enum MergeStrategy {
-  Union,
+  Merge,
   First,
   Last,
 }

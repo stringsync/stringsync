@@ -1,5 +1,5 @@
 import { Fretboard, FretboardSystem } from '@moonwave99/fretboard.js';
-import { get, identity, merge, uniq } from 'lodash';
+import { get, identity, isNull, merge, uniq } from 'lodash';
 import React from 'react';
 import { StyleTarget } from '.';
 import { Position as GuitarPosition } from '../../lib/guitar/Position';
@@ -18,7 +18,7 @@ export const encodeStyle = (style: PositionStyle) => JSON.stringify(style);
 export const getStyleTargets = (
   fretboard: Fretboard,
   children: React.ReactNode,
-  mergeStrategy = MergeStrategy.Union
+  mergeStrategy = MergeStrategy.Merge
 ): StyleTarget[] => {
   const styleTargets = new Array<StyleTarget>();
   React.Children.forEach(children, (child) => {
@@ -27,7 +27,7 @@ export const getStyleTargets = (
   return mergeStyleTargets(styleTargets, mergeStrategy);
 };
 
-const unionizeStyles = (styleTargets: StyleTarget[]): StyleTarget[] => {
+const mergeStyles = (styleTargets: StyleTarget[]): StyleTarget[] => {
   const unioned: Record<string, StyleTarget> = {};
   for (const styleTarget of styleTargets) {
     const position = encodePosition(styleTarget.position);
@@ -72,8 +72,8 @@ const pickLastStyles = (styleTargets: StyleTarget[]): StyleTarget[] => {
 
 const mergeStyleTargets = (styleTargets: StyleTarget[], mergeStrategy: MergeStrategy): StyleTarget[] => {
   switch (mergeStrategy) {
-    case MergeStrategy.Union:
-      return unionizeStyles(styleTargets);
+    case MergeStrategy.Merge:
+      return mergeStyles(styleTargets);
     case MergeStrategy.First:
       return pickFirstStyles(styleTargets);
     case MergeStrategy.Last:
@@ -88,6 +88,9 @@ const isComponentType = <C extends React.ComponentType<any>>(child: any, Compone
 };
 
 const getStyleTargetsForChildType = (fretboard: Fretboard, child: React.ReactNode): StyleTarget[] => {
+  if (isNull(child)) {
+    return [];
+  }
   if (isComponentType(child, Position)) {
     return getStyleTargetsFromPositionComponent(child);
   }
