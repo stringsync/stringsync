@@ -6,14 +6,20 @@ export enum VideoPlayerState {
   Playing,
 }
 
-const getVideoPlayerState = (videoPlayer: VideoJsPlayer): VideoPlayerState => {
-  return !videoPlayer.paused() ? VideoPlayerState.Playing : VideoPlayerState.Paused;
+const getVideoPlayerState = (videoPlayer: VideoJsPlayer | null): VideoPlayerState => {
+  if (videoPlayer) {
+    return !videoPlayer.paused() ? VideoPlayerState.Playing : VideoPlayerState.Paused;
+  }
+  return VideoPlayerState.Paused;
 };
 
-export const useVideoPlayerState = (videoPlayer: VideoJsPlayer) => {
+export const useVideoPlayerState = (videoPlayer: VideoJsPlayer | null) => {
   const [videoPlayerState, setVideoPlayerState] = useState(() => getVideoPlayerState(videoPlayer));
 
   useEffect(() => {
+    if (!videoPlayer) {
+      return;
+    }
     const onPlay = () => setVideoPlayerState(VideoPlayerState.Playing);
     videoPlayer.on('play', onPlay);
 
