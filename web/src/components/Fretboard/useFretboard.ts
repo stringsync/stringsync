@@ -12,6 +12,7 @@ export const useFretboard = (id: string, tuning: Tuning, opts: Partial<Fretboard
     fretboard.render();
     return () => {
       fretboard.removeEventListeners();
+      fretboard.clear();
     };
   }, [id, opts, tuning]);
 

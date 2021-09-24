@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useUuid } from '../../hooks/useUuid';
 import { Tuning } from '../../lib/guitar/Tuning';
 import { Position } from './Position';
+import { Scale } from './Scale';
 import { FretboardOptions, PositionFilterParams } from './types';
 import { useFretboard } from './useFretboard';
 import { useGuitar } from './useGuitar';
@@ -15,6 +16,7 @@ type Props = {
 
 type ChildComponents = {
   Position: typeof Position;
+  Scale: typeof Scale;
 };
 
 export const Fretboard: React.FC<Props> & ChildComponents = ({ opts, tuning, children }) => {
@@ -22,7 +24,7 @@ export const Fretboard: React.FC<Props> & ChildComponents = ({ opts, tuning, chi
   const id = `fretboard-${uuid}`; // element ids must start with a letter
   const fretboard = useFretboard(id, tuning, opts);
   const guitar = useGuitar(tuning);
-  const styleTargets = useStyleTargets(children);
+  const styleTargets = useStyleTargets(fretboard, children);
   const styleFilters = useStyleFilters(styleTargets);
 
   useEffect(() => {
@@ -45,3 +47,4 @@ export const Fretboard: React.FC<Props> & ChildComponents = ({ opts, tuning, chi
 };
 
 Fretboard.Position = Position;
+Fretboard.Scale = Scale;

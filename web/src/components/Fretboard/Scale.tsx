@@ -2,11 +2,11 @@ import React from 'react';
 import { PositionStyle } from './types';
 
 type Props = {
-  string: number;
-  fret: number;
+  root: string;
+  type: string;
   style?: Partial<PositionStyle>;
 };
 
-export const Position: React.FC<Props> = () => null;
+export const Scale: React.FC<Props> = () => null;
 
-Position.displayName = 'Position';
+Scale.displayName = 'Scale';

@@ -1,11 +1,31 @@
-import { merge, uniq } from 'lodash';
+import { Fretboard, FretboardSystem } from '@moonwave99/fretboard.js';
+import { get, identity, merge, uniq } from 'lodash';
+import React from 'react';
 import { StyleTarget } from '.';
 import { Position as GuitarPosition } from '../../lib/guitar/Position';
+import { Position } from './Position';
+import { Scale } from './Scale';
 import { MergeStrategy, PositionStyle } from './types';
+
+const CHILDREN_DISPLAY_NAMES = [Position.displayName, Scale.displayName].filter(identity);
+
+type Component<C extends React.ComponentType<any>> = React.ReactElement<React.ComponentProps<C>>;
 
 export const encodePosition = (position: GuitarPosition) => position.toString();
 
 export const encodeStyle = (style: PositionStyle) => JSON.stringify(style);
+
+export const getStyleTargets = (
+  fretboard: Fretboard,
+  children: React.ReactNode,
+  mergeStrategy = MergeStrategy.Union
+): StyleTarget[] => {
+  const styleTargets = new Array<StyleTarget>();
+  React.Children.forEach(children, (child) => {
+    styleTargets.push(...getStyleTargetsForChildType(fretboard, child));
+  });
+  return mergeStyleTargets(styleTargets, mergeStrategy);
+};
 
 const unionizeStyles = (styleTargets: StyleTarget[]): StyleTarget[] => {
   const unioned: Record<string, StyleTarget> = {};
@@ -50,7 +70,7 @@ const pickLastStyles = (styleTargets: StyleTarget[]): StyleTarget[] => {
   return uniqPositions.map((position) => latest[position]);
 };
 
-export const mergeStyleTargets = (styleTargets: StyleTarget[], mergeStrategy = MergeStrategy.Union): StyleTarget[] => {
+const mergeStyleTargets = (styleTargets: StyleTarget[], mergeStrategy: MergeStrategy): StyleTarget[] => {
   switch (mergeStrategy) {
     case MergeStrategy.Union:
       return unionizeStyles(styleTargets);
@@ -61,4 +81,42 @@ export const mergeStyleTargets = (styleTargets: StyleTarget[], mergeStrategy = M
     default:
       throw new Error(`unknown merge strategy: ${mergeStrategy}`);
   }
+};
+
+const isComponentType = <C extends React.ComponentType<any>>(child: any, Component: C): child is Component<C> => {
+  return React.isValidElement(child) && child.type === Component;
+};
+
+const getStyleTargetsForChildType = (fretboard: Fretboard, child: React.ReactNode): StyleTarget[] => {
+  if (isComponentType(child, Position)) {
+    return getStyleTargetsFromPositionComponent(child);
+  }
+  if (isComponentType(child, Scale)) {
+    return getStyleTargetsFromScaleComponent(fretboard, child);
+  }
+  throw new Error(`Fretboard children must be one of: ${CHILDREN_DISPLAY_NAMES}, got ${child}`);
+};
+
+const getStyleTargetsFromPositionComponent = (child: Component<typeof Position>): StyleTarget[] => {
+  const { fret, string, style } = child.props;
+  return [
+    {
+      position: new GuitarPosition(fret, string),
+      style: { ...style },
+    },
+  ];
+};
+
+const getStyleTargetsFromScaleComponent = (fretboard: Fretboard, child: Component<typeof Scale>): StyleTarget[] => {
+  const { root, type, style } = child.props;
+  const system: FretboardSystem | null = get(fretboard, 'system', null);
+  if (!(system instanceof FretboardSystem)) {
+    console.warn('fretboard system hack is broken, manually create a system instead');
+    return [];
+  }
+  const positions = system.getScale({ type, root });
+  return positions.map((position) => ({
+    position: new GuitarPosition(position.fret, position.string),
+    style: { ...style },
+  }));
 };
