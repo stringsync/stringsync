@@ -168,6 +168,7 @@ describe('Fretboard', () => {
 
     expect(container).toBeInTheDocument();
     const style = testing.getStyleAtPosition(container, { fret: 1, string: 2 });
+    expect(style).not.toBeNull();
     expect(style!.stroke).toBe('green');
     expect(style!.fill).not.toBe('red');
   });
@@ -182,6 +183,7 @@ describe('Fretboard', () => {
 
     expect(container).toBeInTheDocument();
     const style = testing.getStyleAtPosition(container, { fret: 1, string: 2 });
+    expect(style).not.toBeNull();
     expect(style!.stroke).not.toBe('green');
     expect(style!.fill).toBe('red');
   });
