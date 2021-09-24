@@ -4,7 +4,7 @@ import { AsyncLoop } from '../../../util/AsyncLoop';
 import { Duration } from '../../../util/Duration';
 
 const getCurrentTimeMs = (videoPlayer: VideoJsPlayer) => {
-  return videoPlayer ? Duration.sec(videoPlayer.currentTime()).ms : 0;
+  return Duration.sec(videoPlayer.currentTime()).ms;
 };
 
 export const useVideoPlayerCurrentTimeMs = (videoPlayer: VideoJsPlayer) => {
