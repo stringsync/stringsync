@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { MusicDisplay } from '../../../lib/MusicDisplay';
+import { MusicDisplay } from '../../lib/MusicDisplay';
 
 export const useMusicDisplayScrollBehaviorEffect = (musicDisplay: MusicDisplay | null) => {
   const isMusicDisplayResizingRef = useRef(false);

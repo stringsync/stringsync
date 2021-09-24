@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { MusicDisplay } from '../../../lib/MusicDisplay';
-import { ScrollBehaviorType } from '../../../lib/MusicDisplay/scroller';
+import { MusicDisplay } from '../../lib/MusicDisplay';
+import { ScrollBehaviorType } from '../../lib/MusicDisplay/scroller';
 
 export const useMusicDisplayScrollBehaviorType = (musicDisplay: MusicDisplay | null) => {
   const [scrollBehaviorType, setScrollBehaviorType] = useState(() => {

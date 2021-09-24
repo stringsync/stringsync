@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import React from 'react';
-import { buildRandNotation, buildRandUser } from '../../../testing';
+import { buildRandNotation, buildRandUser } from '../../testing';
 import { NotationCard } from './NotationCard';
 import { NotationPreview } from './types';
 

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import { MusicDisplay } from '../../../lib/MusicDisplay';
-import { SelectionEdge } from '../../../lib/MusicDisplay/locator';
-import { isSelectionPointerTarget } from '../../../lib/MusicDisplay/pointer/pointerTypeAssert';
+import { MusicDisplay } from '../../lib/MusicDisplay';
+import { SelectionEdge } from '../../lib/MusicDisplay/locator';
+import { isSelectionPointerTarget } from '../../lib/MusicDisplay/pointer/pointerTypeAssert';
 import { MusicDisplayScrollControls } from './useMusicDisplayScrollControls';
 import { VideoPlayerControls } from './useVideoPlayerControls';
 

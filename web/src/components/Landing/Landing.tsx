@@ -3,12 +3,12 @@ import { Col, Divider, Row } from 'antd';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { Layout, withLayout } from '../../../hocs';
-import { useEffectOnce } from '../../../hooks/useEffectOnce';
-import { compose } from '../../../util/compose';
-import { Box } from '../../Box';
-import { Logo } from '../../Logo';
-import { Wordmark } from '../../Wordmark';
+import { Layout, withLayout } from '../../hocs';
+import { useEffectOnce } from '../../hooks/useEffectOnce';
+import { compose } from '../../util/compose';
+import { Box } from '../Box';
+import { Logo } from '../Logo';
+import { Wordmark } from '../Wordmark';
 
 const LANDING_SRC = 'static/landing.jpg';
 

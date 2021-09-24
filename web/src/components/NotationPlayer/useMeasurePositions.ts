@@ -1,7 +1,7 @@
 import { uniqBy } from 'lodash';
 import { useMemo } from 'react';
-import { Position } from '../../../lib/guitar/Position';
-import { CursorSnapshot } from '../../../lib/MusicDisplay/locator';
+import { Position } from '../../lib/guitar/Position';
+import { CursorSnapshot } from '../../lib/MusicDisplay/locator';
 
 export const useMeasurePositions = (cursorSnapshot: CursorSnapshot | null) => {
   return useMemo<Position[]>(() => {

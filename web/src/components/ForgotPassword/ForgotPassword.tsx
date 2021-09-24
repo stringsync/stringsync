@@ -4,8 +4,8 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import { AppDispatch, clearAuthErrors, RootState, sendResetPasswordEmail } from '../../../store';
-import { FormPage } from '../../FormPage';
+import { AppDispatch, clearAuthErrors, RootState, sendResetPasswordEmail } from '../../store';
+import { FormPage } from '../FormPage';
 
 const EMAIL_RULES: Rule[] = [
   { required: true, message: 'email is required' },

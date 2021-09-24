@@ -8,9 +8,9 @@ import { ThemeProvider } from 'styled-components';
 import './App.less';
 import { AuthSync } from './components/AuthSync';
 import { DeviceSync } from './components/DeviceSync';
-import { Routes } from './components/Routes2';
-import { ScrollToTop } from './components/ScrollToTop';
-import { ServiceWorkerSync } from './components/ServiceWorkerSync';
+import { Routes } from './components/Routes';
+import { ScrollToTop } from './components/ScrollToTop/ScrollToTop';
+import { ServiceWorkerSync } from './components/ServiceWorkerSync/ServiceWorkerSync';
 import { ViewportSync } from './components/ViewportSync';
 import { theme } from './theme';
 

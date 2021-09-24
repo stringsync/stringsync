@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, RouteProps, useLocation } from 'react-router';
-import { AppDispatch, RootState, setReturnToRoute } from '../store';
+import { AppDispatch, RootState, setReturnToRoute } from '../../store';
 
 const asReturnToRoute = function<P>(Component: React.ComponentType<any>): React.FC<P> {
   return (props) => {

@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { Transition } from 'react-transition-group';
 import { TransitionStatus } from 'react-transition-group/Transition';
 import styled from 'styled-components';
-import { theme } from '../../../theme';
-import { ago } from '../../../util/ago';
+import { theme } from '../../theme';
+import { ago } from '../../util/ago';
 import { getQueryMatches } from './getQueryMatches';
 import { NotationPreview } from './types';
 

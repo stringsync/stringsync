@@ -1,6 +1,6 @@
-import { Notation, Tag, User } from '../../../domain';
-import { QueryNotationsArgs } from '../../../graphql';
-import { PageInfo } from '../../../util/pager';
+import { Notation, Tag, User } from '../../domain';
+import { QueryNotationsArgs } from '../../graphql';
+import { PageInfo } from '../../util/pager';
 
 export enum LibraryStatus {
   READY,

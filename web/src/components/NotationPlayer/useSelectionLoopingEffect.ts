@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { MusicDisplay } from '../../../lib/MusicDisplay';
+import { MusicDisplay } from '../../lib/MusicDisplay';
 import { VideoPlayerControls } from './useVideoPlayerControls';
 
 export const useSelectionLoopingEffect = (

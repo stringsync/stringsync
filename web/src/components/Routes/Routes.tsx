@@ -6,7 +6,7 @@ import { AuthRequirement } from '../../util/types';
 import { Fallback } from '../Fallback';
 import { Landing } from '../Landing';
 import { NotFound } from '../NotFound';
-import { Nothing } from '../Nothing';
+import { Nothing } from '../Nothing/Nothing';
 import { ReturnToRoute } from '../ReturnToRoute';
 import { useRoutingBehavior } from './useRoutingBehavior';
 import { useTrackPrevRouteEffect } from './useTrackPrevRouteEffect';

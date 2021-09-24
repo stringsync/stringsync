@@ -1,7 +1,11 @@
 import React from 'react';
 import { DefaultLayout } from './DefaultLayout';
 import { NoneLayout } from './NoneLayout';
-import { Layout } from './types';
+
+export enum Layout {
+  DEFAULT = 'DEFAULT',
+  NONE = 'NONE',
+}
 
 export type LayoutOptions = {
   lanes: boolean;

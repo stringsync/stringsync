@@ -3,7 +3,7 @@ import { merge, truncate } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { $queries, NotationObject } from '../../../graphql';
+import { $queries, NotationObject } from '../../graphql';
 
 const NUM_SUGGESTIONS = 10;
 

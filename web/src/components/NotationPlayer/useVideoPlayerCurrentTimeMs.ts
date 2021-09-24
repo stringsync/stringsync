@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { VideoJsPlayer } from 'video.js';
-import { AsyncLoop } from '../../../util/AsyncLoop';
-import { Duration } from '../../../util/Duration';
+import { AsyncLoop } from '../../util/AsyncLoop';
+import { Duration } from '../../util/Duration';
 
 const getCurrentTimeMs = (videoPlayer: VideoJsPlayer) => {
   return Duration.sec(videoPlayer.currentTime()).ms;

@@ -1,8 +1,7 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 import { Test } from '../../testing';
-import { Layout } from './types';
-import { withLayout } from './withLayout';
+import { Layout, withLayout } from './withLayout';
 
 describe('withLayout', () => {
   const Foo: React.FC = () => <div>Foo</div>;

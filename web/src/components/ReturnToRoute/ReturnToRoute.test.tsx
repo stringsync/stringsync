@@ -3,7 +3,7 @@ import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router';
-import { AppStore, createStore } from '../store';
+import { AppStore, createStore } from '../../store';
 import { ReturnToRoute } from './ReturnToRoute';
 
 describe('ReturnToRoute', () => {

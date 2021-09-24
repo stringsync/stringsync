@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import React from 'react';
-import { AppStore, Breakpoint, createStore } from '../store';
-import { Test } from '../testing';
+import { AppStore, Breakpoint, createStore } from '../../store';
+import { Test } from '../../testing';
 import { ViewportSync } from './ViewportSync';
 
 describe('ViewportSync', () => {

@@ -4,9 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { UnknownError, UNKNOWN_ERROR_MSG } from '../../../errors';
-import { $queries } from '../../../graphql';
-import { FormPage } from '../../FormPage';
+import { UnknownError, UNKNOWN_ERROR_MSG } from '../../errors';
+import { $queries } from '../../graphql';
+import { FormPage } from '../FormPage';
 
 const EMAIL_RULES: Rule[] = [
   { required: true, message: 'email is required' },

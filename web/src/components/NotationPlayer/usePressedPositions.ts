@@ -1,11 +1,11 @@
 import { isEqual } from 'lodash';
 import { useEffect, useState } from 'react';
 import { VideoJsPlayer } from 'video.js';
-import { Position } from '../../../lib/guitar/Position';
-import { CursorSnapshot } from '../../../lib/MusicDisplay/locator';
-import { AsyncLoop } from '../../../util/AsyncLoop';
-import { Duration } from '../../../util/Duration';
-import { NumberRange } from '../../../util/NumberRange';
+import { Position } from '../../lib/guitar/Position';
+import { CursorSnapshot } from '../../lib/MusicDisplay/locator';
+import { AsyncLoop } from '../../util/AsyncLoop';
+import { Duration } from '../../util/Duration';
+import { NumberRange } from '../../util/NumberRange';
 import { useVideoPlayerState, VideoPlayerState } from './useVideoPlayerState';
 
 const FLASH_REGION_FRACTION = 0.125;

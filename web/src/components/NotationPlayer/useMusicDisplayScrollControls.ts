@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { MusicDisplay } from '../../../lib/MusicDisplay';
+import { MusicDisplay } from '../../lib/MusicDisplay';
 
 export type MusicDisplayScrollControls = {
   startPreferentialScrolling: () => void;

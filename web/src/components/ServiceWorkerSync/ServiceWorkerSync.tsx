@@ -1,9 +1,9 @@
 import { notification } from 'antd';
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { RootState } from '../store';
-import { Nothing } from './Nothing';
-import { TimeoutButton } from './TimeoutButton';
+import { RootState } from '../../store';
+import { Nothing } from '../Nothing/Nothing';
+import { TimeoutButton } from '../TimeoutButton/TimeoutButton';
 
 export const ServiceWorkerSync: React.FC = () => {
   const isUpdated = useSelector<RootState, boolean>((state) => state.sw.isUpdated);

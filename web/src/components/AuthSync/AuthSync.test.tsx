@@ -1,11 +1,11 @@
 import { render, waitFor } from '@testing-library/react';
 import { GraphQLError } from 'graphql';
 import React from 'react';
-import { UserRole as DomainUserRole } from '../domain';
-import { $queries, UserRoles as TypegenUserRole } from '../graphql';
-import { AppStore, createStore } from '../store';
-import { getNullAuthUser } from '../store/auth/getNullAuthUser';
-import { Test } from '../testing';
+import { UserRole as DomainUserRole } from '../../domain';
+import { $queries, UserRoles as TypegenUserRole } from '../../graphql';
+import { AppStore, createStore } from '../../store';
+import { getNullAuthUser } from '../../store/auth/getNullAuthUser';
+import { Test } from '../../testing';
 import { AuthSync } from './AuthSync';
 
 describe('AuthSync', () => {

@@ -7,14 +7,14 @@ import React, { ChangeEventHandler, MouseEventHandler, useCallback, useEffect, u
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { Tag } from '../../../domain';
-import { Layout, withLayout } from '../../../hocs';
-import { useDebounce } from '../../../hooks/useDebounce';
-import { useEffectOnce } from '../../../hooks/useEffectOnce';
-import { useIntersection } from '../../../hooks/useIntersection';
-import { AppDispatch, getTags, RootState } from '../../../store';
-import { compose } from '../../../util/compose';
-import { scrollToTop } from '../../../util/scrollToTop';
+import { Tag } from '../../domain';
+import { Layout, withLayout } from '../../hocs';
+import { useDebounce } from '../../hooks/useDebounce';
+import { useEffectOnce } from '../../hooks/useEffectOnce';
+import { useIntersection } from '../../hooks/useIntersection';
+import { AppDispatch, getTags, RootState } from '../../store';
+import { compose } from '../../util/compose';
+import { scrollToTop } from '../../util/scrollToTop';
 import { libraryMachine, libraryModel } from './libraryMachine';
 import { NotationCard } from './NotationCard';
 
