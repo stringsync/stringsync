@@ -226,13 +226,12 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
             {settings.isFretboardVisible && (
               <Fretboard opts={fretboardOpts} tuning={tuning}>
-                <Fretboard.Scale root="D" type="major" style={{ stroke: 'lime' }} />
                 {measurePositions.map(({ string, fret }) => (
                   <Fretboard.Position
                     key={`measure-${string}-${fret}`}
                     string={string}
                     fret={fret}
-                    style={{ fill: '#aaa' }}
+                    style={{ fill: '#bbb' }}
                   />
                 ))}
                 {pressedPositions.map(({ string, fret }) => (
