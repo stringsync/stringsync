@@ -118,8 +118,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const pressedPositions = usePressedPositions(cursorSnapshot, videoPlayer);
   const pressedStyle = useMemo<Partial<PositionStyle>>(() => ({ fill: '#ff636c' }), []);
 
-  console.log('rendered');
-
   const onUserScroll = useCallback(() => {
     // TODO(jared) Maybe change the behavior when the user scrolls in a certain context.
     setLastUserScrollAt(new Date());

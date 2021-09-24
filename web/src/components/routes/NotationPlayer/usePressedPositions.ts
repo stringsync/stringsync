@@ -3,13 +3,13 @@ import { useEffect, useState } from 'react';
 import { VideoJsPlayer } from 'video.js';
 import { Position } from '../../../lib/guitar/Position';
 import { CursorSnapshot } from '../../../lib/MusicDisplay/locator';
+import { AsyncLoop } from '../../../util/AsyncLoop';
 import { Duration } from '../../../util/Duration';
 import { NumberRange } from '../../../util/NumberRange';
-import { useVideoPlayerCurrentTimeMs } from './useVideoPlayerCurrentTimeMs';
 import { useVideoPlayerState, VideoPlayerState } from './useVideoPlayerState';
 
 const FLASH_REGION_FRACTION = 0.125;
-const MAX_FLASH_DURATION = Duration.ms(75);
+const MAX_FLASH_DURATION = Duration.ms(50);
 
 const computeIsInFlashRegion = (currentTimeMs: number, cursorSnapshot: CursorSnapshot | null): boolean => {
   if (!cursorSnapshot) {
@@ -37,14 +37,28 @@ export const usePressedPositions = (cursorSnapshot: CursorSnapshot | null, video
   const [pressedPositions, setPressedPositions] = useState(() =>
     cursorSnapshot ? cursorSnapshot.guitarPositions : []
   );
-  const currentTimeMs = useVideoPlayerCurrentTimeMs(videoPlayer);
-  const [isInFlashRegion, setIsInFlashRegion] = useState(() => computeIsInFlashRegion(currentTimeMs, cursorSnapshot));
+  const [isInFlashRegion, setIsInFlashRegion] = useState(false);
   const videoPlayerState = useVideoPlayerState(videoPlayer);
   const isPlaying = videoPlayerState === VideoPlayerState.Playing;
 
   useEffect(() => {
-    setIsInFlashRegion(computeIsInFlashRegion(currentTimeMs, cursorSnapshot));
-  }, [currentTimeMs, cursorSnapshot]);
+    if (!videoPlayer) {
+      return;
+    }
+
+    const loop = new AsyncLoop(() => {
+      const currentTimeMs = Duration.sec(videoPlayer.currentTime()).ms;
+      setIsInFlashRegion(computeIsInFlashRegion(currentTimeMs, cursorSnapshot));
+    });
+
+    videoPlayer.ready(() => {
+      loop.start();
+    });
+
+    return () => {
+      loop.stop();
+    };
+  }, [videoPlayer, cursorSnapshot]);
 
   useEffect(() => {
     let nextPressedPositions = cursorSnapshot ? cursorSnapshot.guitarPositions : [];
@@ -60,10 +74,7 @@ export const usePressedPositions = (cursorSnapshot: CursorSnapshot | null, video
       );
 
       const wasPreviouslyPressed = (position: Position): boolean => {
-        if (!prevPositionLookup[position.fret]) {
-          return false;
-        }
-        return !!prevPositionLookup[position.fret][position.string];
+        return !!(prevPositionLookup[position.fret] && prevPositionLookup[position.fret][position.string]);
       };
 
       nextPressedPositions = nextPressedPositions.filter((position) => !wasPreviouslyPressed(position));
