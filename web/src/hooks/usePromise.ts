@@ -1,5 +1,5 @@
 import { noop } from 'lodash';
-import { Reducer, useEffect, useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 
 export type AsyncCallback<A extends any[], T> = (...args: A) => Promise<T>;
 
@@ -29,42 +29,28 @@ type Action<T> =
   | { type: ActionType.Rejected; error: Error };
 
 const INITIAL_STATE: PromiseState<any> = Object.freeze({
+  status: PromiseStatus.Pending,
   result: undefined,
   error: undefined,
-  status: PromiseStatus.Pending,
 });
-
-const promiseReducer = <T>(state: PromiseState<T>, action: Action<T>): PromiseState<T> => {
-  switch (action.type) {
-    case ActionType.Pending:
-      return {
-        result: undefined,
-        error: undefined,
-        status: PromiseStatus.Pending,
-      };
-    case ActionType.Resolved:
-      return {
-        result: action.result,
-        error: undefined,
-        status: PromiseStatus.Resolved,
-      };
-    case ActionType.Rejected:
-      return {
-        result: undefined,
-        error: action.error,
-        status: PromiseStatus.Rejected,
-      };
-    default:
-      return state;
-  }
-};
 
 export const usePromise = <A extends any[], T>(
   callback: AsyncCallback<A, T>,
   args: A,
   onCleanup: CleanupCallback = noop
 ) => {
-  const [state, dispatch] = useReducer<Reducer<PromiseState<T>, Action<T>>>(promiseReducer, INITIAL_STATE);
+  const [state, dispatch] = useReducer((state: PromiseState<T>, action: Action<T>): PromiseState<T> => {
+    switch (action.type) {
+      case ActionType.Pending:
+        return { status: PromiseStatus.Pending, result: undefined, error: undefined };
+      case ActionType.Resolved:
+        return { status: PromiseStatus.Resolved, result: action.result, error: undefined };
+      case ActionType.Rejected:
+        return { status: PromiseStatus.Rejected, result: undefined, error: action.error };
+      default:
+        return state;
+    }
+  }, INITIAL_STATE);
 
   useEffect(() => {
     let cancelled = false;
@@ -73,19 +59,13 @@ export const usePromise = <A extends any[], T>(
     const resolve = (result: T) => {
       done = true;
       if (!cancelled) {
-        dispatch({
-          type: ActionType.Resolved,
-          result,
-        });
+        dispatch({ type: ActionType.Resolved, result });
       }
     };
     const reject = (error: Error) => {
       done = true;
       if (!cancelled) {
-        dispatch({
-          type: ActionType.Rejected,
-          error,
-        });
+        dispatch({ type: ActionType.Rejected, error });
       }
     };
 
