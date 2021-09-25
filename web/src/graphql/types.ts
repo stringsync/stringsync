@@ -10,12 +10,16 @@ export type RequestBody<V extends Record<string, any> | void = void> = {
   variables: V;
 };
 
+export type SuccessfulResponse<T extends RequestType, N extends Exclude<keyof T, '__typename'>> = {
+  data: OnlyKey<N, T[N]>;
+  errors: never;
+};
+
+export type FailedResponse = {
+  data: null;
+  errors: GraphQLError[];
+};
+
 export type Response<T extends RequestType, N extends Exclude<keyof T, '__typename'>> =
-  | {
-      data: OnlyKey<N, T[N]>;
-      errors?: never;
-    }
-  | {
-      data: null;
-      errors: GraphQLError[];
-    };
+  | SuccessfulResponse<T, N>
+  | FailedResponse;

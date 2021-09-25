@@ -4,7 +4,7 @@ import { UnknownError } from '../errors';
 import { Mutation, Query } from './graphqlTypes';
 import { RequestType, Response } from './types';
 
-const URI = `${window.location.origin}/graphql`;
+export const URI = `${window.location.origin}/graphql`;
 
 /**
  * The purpose of this method is to make a request that follows the
@@ -21,7 +21,7 @@ export const graphql = async <
   query: string,
   variables?: V
 ): Promise<Response<T, N>> => {
-  const formData = makeGraphqlFormData(query, variables);
+  const formData = makeFormData(query, variables);
 
   try {
     const res = await fetch(uri, {
@@ -45,10 +45,7 @@ export const graphql = async <
   }
 };
 
-export const makeGraphqlFormData = <V extends Record<string, any> | void = void>(
-  query: string,
-  variables?: V
-): FormData => {
+export const makeFormData = <V extends Record<string, any> | void = void>(query: string, variables?: V): FormData => {
   // extract files
   const extraction = extractFiles<File>(
     { query, variables },
