@@ -22,6 +22,10 @@ const toFetchStatus = (promiseStatus: PromiseStatus) => {
   }
 };
 
+/**
+ * Makes a request using the fetch parameters. The main benefit of using this hook is
+ * that it will abort in-flight requests if the parameters change.
+ */
 export const useFetch = (input: RequestInfo, init?: RequestInit) => {
   const [abortController] = useState(() => new AbortController());
   const fetchArgs = useMemo<[RequestInfo, RequestInit]>(() => [input, { ...init, signal: abortController.signal }], [
