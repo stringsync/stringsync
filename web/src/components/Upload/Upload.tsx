@@ -117,7 +117,7 @@ const Upload: React.FC<Props> = enhance(() => {
       return;
     }
 
-    const notationId = get(res.data.createNotation, 'id');
+    const notationId = get(res.data?.createNotation, 'id');
     if (!notationId) {
       // TODO(jared) handle missing notation ids as error
       console.error('no notation id found');

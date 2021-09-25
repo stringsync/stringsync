@@ -40,5 +40,10 @@ export const useFetch = (input: RequestInfo, init?: RequestInit) => {
 
   const { result, status, error } = usePromise(fetch, fetchArgs, abort);
 
-  return { response: result, status: toFetchStatus(status), error, abort };
+  return useMemo(() => ({ response: result, status: toFetchStatus(status), error, abort }), [
+    result,
+    status,
+    error,
+    abort,
+  ]);
 };

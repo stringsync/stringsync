@@ -79,6 +79,7 @@ export const useGraphql = <
   const extractState = usePromise(extract, extractArgs);
 
   useEffect(() => {
+    console.log(extractState);
     if (extractState.status === PromiseStatus.Pending) {
       dispatch({ type: ActionType.Pending });
     }

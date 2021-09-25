@@ -39,7 +39,7 @@ const NotationEditor: React.FC<Props> = enhance(() => {
       return;
     }
 
-    const notationObj = res.data.notation;
+    const notationObj = res.data?.notation;
     if (!notationObj) {
       // TODO(jared) handle missing notation as error
       console.error('missing notation');
