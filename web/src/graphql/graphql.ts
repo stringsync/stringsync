@@ -2,7 +2,7 @@ import { extractFiles } from 'extract-files';
 import { GraphQLError } from 'graphql';
 import { UnknownError } from '../errors';
 import { Mutation, Query } from './graphqlTypes';
-import { RequestType, Response } from './types';
+import { GraphqlResponse, RequestType } from './types';
 
 export const URI = `${window.location.origin}/graphql`;
 
@@ -20,7 +20,7 @@ export const graphql = async <
   uri: string,
   query: string,
   variables?: V
-): Promise<Response<T, N>> => {
+): Promise<GraphqlResponse<T, N>> => {
   const formData = makeFormData(query, variables);
 
   try {

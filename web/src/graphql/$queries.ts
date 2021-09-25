@@ -1,3 +1,4 @@
+import $$queries from './$$queries';
 import { gql } from './gql';
 import { mutation, query } from './graphql';
 import {
@@ -13,34 +14,11 @@ import {
 } from './graphqlTypes';
 
 export const whoami = async () => {
-  return await query<'whoami'>(gql`
-    query {
-      whoami {
-        id
-        email
-        username
-        role
-        confirmedAt
-      }
-    }
-  `);
+  return await query<'whoami'>($$queries.whoami.query);
 };
 
 export const login = async (input: LoginInput) => {
-  return await mutation<'login', { input: LoginInput }>(
-    gql`
-      mutation login($input: LoginInput!) {
-        login(input: $input) {
-          id
-          email
-          username
-          role
-          confirmedAt
-        }
-      }
-    `,
-    { input }
-  );
+  return await mutation<'login', { input: LoginInput }>($$queries.login.query, { input });
 };
 
 export const logout = async () => {

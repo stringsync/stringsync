@@ -2,7 +2,7 @@ import { GraphQLError } from 'graphql';
 import { Reducer, useCallback, useEffect, useMemo, useReducer } from 'react';
 import { UNKNOWN_ERROR_MSG } from '../errors';
 import * as graphql from '../graphql/graphql';
-import { RequestType, Response as GraphqlResponse } from '../graphql/types';
+import { GraphqlResponse, RequestType } from '../graphql/types';
 import { useFetch } from './useFetch';
 import { useMemoCmp } from './useMemoCmp';
 import { PromiseStatus, usePromise } from './usePromise';
