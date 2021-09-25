@@ -21,6 +21,34 @@ export const graphql = async <
   query: string,
   variables?: V
 ): Promise<Response<T, N>> => {
+  const formData = makeGraphqlFormData(query, variables);
+
+  try {
+    const res = await fetch(uri, {
+      method: 'POST',
+      headers: { Accept: 'application/json' },
+      body: formData,
+      credentials: 'include',
+      mode: 'cors',
+    });
+
+    const contentType = res.headers.get('content-type');
+    if (!contentType?.toLowerCase().includes('application/json')) {
+      throw new UnknownError();
+    }
+
+    return await res.json();
+  } catch (error) {
+    // Allow callers to treat misc errors as graphql errors,
+    // since they should already be expecting them.
+    return { data: null, errors: [error as GraphQLError] };
+  }
+};
+
+export const makeGraphqlFormData = <V extends Record<string, any> | void = void>(
+  query: string,
+  variables?: V
+): FormData => {
   // extract files
   const extraction = extractFiles<File>(
     { query, variables },
@@ -50,26 +78,7 @@ export const graphql = async <
     formData.append(ndx.toString(), file, `@${file.name}`);
   }
 
-  try {
-    const res = await fetch(uri, {
-      method: 'POST',
-      headers: { Accept: 'application/json' },
-      body: formData,
-      credentials: 'include',
-      mode: 'cors',
-    });
-
-    const contentType = res.headers.get('content-type');
-    if (!contentType?.toLowerCase().includes('application/json')) {
-      throw new UnknownError();
-    }
-
-    return await res.json();
-  } catch (error) {
-    // Allow callers to treat misc errors as graphql errors,
-    // since they should already be expecting them.
-    return { data: null, errors: [error as GraphQLError] };
-  }
+  return formData;
 };
 
 export const query = async <N extends Exclude<keyof Query, '__typename'>, V extends Record<string, any> | void = void>(
