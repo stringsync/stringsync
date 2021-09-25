@@ -1,8 +1,6 @@
-import { AnchoredSelection } from '../../../util/AnchoredSelection';
 import { EventBus } from '../../EventBus';
-import { CursorWrapper } from '../cursors';
 import { NoopCursor } from '../cursors/NoopCursor';
-import { CursorSnapshot, SelectionEdge } from '../locator';
+import { CursorSnapshot } from '../locator';
 import { MusicDisplayEventBus } from '../types';
 import * as pointer from './pointer';
 import { PointerService } from './pointer';
@@ -12,7 +10,6 @@ import {
   NonePointerTarget,
   PointerPosition,
   PointerTargetType,
-  SelectionPointerTarget,
 } from './types';
 
 const POINTER_POSITION: PointerPosition = { x: 0, y: 0, relX: 0, relY: 0 };
@@ -28,14 +25,6 @@ const CURSOR_SNAPSHOT_POINTER_TARGET: CursorSnapshotPointerTarget = {
   type: PointerTargetType.CursorSnapshot,
   cursorSnapshot: {} as CursorSnapshot,
   timeMs: 0,
-  position: POINTER_POSITION,
-};
-const SELECTION_POINTER_TARGET: SelectionPointerTarget = {
-  type: PointerTargetType.Selection,
-  selection: AnchoredSelection.init(0),
-  edge: SelectionEdge.Start,
-  timeMs: 0,
-  cursor: {} as CursorWrapper,
   position: POINTER_POSITION,
 };
 
