@@ -37,7 +37,6 @@ export class NotationResolver {
 
   @Query((returns) => NotationObject, { nullable: true })
   async notation(@Args() args: NotationArgs): Promise<Notation | null> {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
     return await this.notationService.find(args.id);
   }
 
