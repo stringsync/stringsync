@@ -4,6 +4,7 @@ import { UNKNOWN_ERROR_MSG } from '../errors';
 import * as graphql from '../graphql/graphql';
 import { RequestType, Response as GraphqlResponse } from '../graphql/types';
 import { useFetch } from './useFetch';
+import { useMemoCmp } from './useMemoCmp';
 import { PromiseStatus, usePromise } from './usePromise';
 
 export enum GraphqlStatus {
@@ -75,21 +76,17 @@ export const useGraphql = <
     }
     return await response.json();
   }, []);
-  const extractArgs = useMemo<[Response | undefined]>(() => [fetchState.response], [fetchState.response]);
+  const extractArgs = useMemoCmp<[Response | undefined]>([fetchState.response]);
   const extractState = usePromise(extract, extractArgs);
 
   useEffect(() => {
-    console.log(extractState);
     if (extractState.status === PromiseStatus.Pending) {
       dispatch({ type: ActionType.Pending });
-    }
-    if (!extractState.result) {
+    } else if (!extractState.result) {
       return;
-    }
-    if (extractState.status === PromiseStatus.Rejected) {
+    } else if (extractState.status === PromiseStatus.Rejected) {
       dispatch({ type: ActionType.Settled, response: extractState.result });
-    }
-    if (extractState.status === PromiseStatus.Resolved) {
+    } else if (extractState.status === PromiseStatus.Resolved) {
       dispatch({ type: ActionType.Settled, response: extractState.result });
     }
   }, [extractState]);
