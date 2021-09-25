@@ -78,7 +78,7 @@ export const usePromise = <A extends any[], T>(callback: AsyncCallback<A, T>, ar
     dispatch({ type: ActionType.Pending });
 
     callback
-      .apply(args)
+      .apply(null, args)
       .then(resolve)
       .catch(reject);
 
