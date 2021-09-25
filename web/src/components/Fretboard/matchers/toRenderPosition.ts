@@ -1,5 +1,5 @@
 import { matcherHint, printExpected, printReceived } from 'jest-matcher-utils';
-import * as fretboard from '../../components/Fretboard/testing';
+import * as fretboard from '../testing';
 
 type Position = {
   fret: number;

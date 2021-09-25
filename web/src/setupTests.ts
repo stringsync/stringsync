@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/extend-expect';
 import 'jest-extended';
-import * as matchers from './testing/matchers';
+import * as matchers from './components/Fretboard/matchers';
 
 expect.extend({
   toRenderNumPositions: matchers.toRenderNumPositions,
