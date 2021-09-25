@@ -1,5 +1,5 @@
 import { matcherHint, printExpected, printReceived } from 'jest-matcher-utils';
-import * as fretboard from '../testing';
+import * as testing from '../testing';
 
 type Position = {
   fret: number;
@@ -8,8 +8,8 @@ type Position = {
 
 const message = (pass: boolean, expected: Position, received: Element | null) => () => {
   const msg = pass
-    ? matcherHint('.not.toRenderNumPositions', 'received', 'position')
-    : matcherHint('.toRenderNumPositions', 'received', 'position');
+    ? matcherHint('.not.toRenderPosition', 'received', 'position')
+    : matcherHint('.toRenderPosition', 'received', 'position');
 
   return `${msg}\n\nExpected to render position at:\n\t${printExpected(expected)}\nReceived:\n\t${printReceived(
     received
@@ -17,7 +17,7 @@ const message = (pass: boolean, expected: Position, received: Element | null) =>
 };
 
 export const toRenderPosition: jest.CustomMatcher = function(container: HTMLElement, expected: Position) {
-  const received = fretboard.getPositionEl(container, expected);
+  const received = testing.getPositionEl(container, expected);
   const pass = !!received;
   return { pass, message: message(pass, expected, received) };
 };

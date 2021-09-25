@@ -39,12 +39,12 @@ describe('Fretboard', () => {
     );
 
     expect(container).toBeInTheDocument();
-    expect(testing.getAllPositionEls(container)).toHaveLength(6);
-    expect(testing.getPositionElsByNote(container, 'E')).toHaveLength(2);
-    expect(testing.getPositionElsByNote(container, 'B')).toHaveLength(1);
-    expect(testing.getPositionElsByNote(container, 'G')).toHaveLength(1);
-    expect(testing.getPositionElsByNote(container, 'D')).toHaveLength(1);
-    expect(testing.getPositionElsByNote(container, 'A')).toHaveLength(1);
+    expect(container).toRenderNumPositions(6);
+    expect(container).toRenderNoteTimes('E', 2);
+    expect(container).toRenderNoteTimes('B', 1);
+    expect(container).toRenderNoteTimes('G', 1);
+    expect(container).toRenderNoteTimes('D', 1);
+    expect(container).toRenderNoteTimes('A', 1);
   });
 
   it('renders with multiple distinct positions', () => {
