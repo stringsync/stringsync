@@ -7,7 +7,7 @@ const getOnlineStatus = () => {
 };
 
 export const useOnlineStatus = () => {
-  const [onlineStatus, setOnlineStatus] = useState(getOnlineStatus());
+  const [onlineStatus, setOnlineStatus] = useState(getOnlineStatus);
 
   useEffect(() => {
     const goOnline = () => setOnlineStatus(true);
