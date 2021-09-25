@@ -56,16 +56,16 @@ describe('Fretboard', () => {
     );
 
     expect(container).toBeInTheDocument();
-    expect(testing.getAllPositionEls(container)).toHaveLength(2);
-    expect(testing.getPositionEl(container, { fret: 1, string: 2 })).not.toBeNull();
-    expect(testing.getPositionEl(container, { fret: 3, string: 4 })).not.toBeNull();
+    expect(container).toRenderNumPositions(2);
+    expect(container).toRenderPosition({ fret: 1, string: 2 });
+    expect(container).toRenderPosition({ fret: 3, string: 4 });
   });
 
   it('ignores a sole null child', () => {
     const { container } = render(<Fretboard>{null}</Fretboard>);
 
     expect(container).toBeInTheDocument();
-    expect(testing.getAllPositionEls(container)).toHaveLength(0);
+    expect(container).toRenderNumPositions(0);
   });
 
   it('ignores a null child rendered with a position', () => {
@@ -89,8 +89,8 @@ describe('Fretboard', () => {
     );
 
     expect(container).toBeInTheDocument();
-    expect(testing.getAllPositionEls(container)).toHaveLength(1);
-    expect(testing.getPositionEl(container, { fret: 1, string: 2 })).not.toBeNull();
+    expect(container).toRenderNumPositions(1);
+    expect(container).toRenderPosition({ fret: 1, string: 2 });
   });
 
   it.each(Scale.get('C major').notes)('renders C major scale with note: %s', (note) => {
@@ -125,7 +125,7 @@ describe('Fretboard', () => {
     );
 
     expect(container).toBeInTheDocument();
-    expect(testing.getPositionEl(container, { fret: 8, string: 6 })).not.toBeNull();
+    expect(container).toRenderPosition({ fret: 8, string: 6 });
   });
 
   it('merges partial styles by default', () => {
