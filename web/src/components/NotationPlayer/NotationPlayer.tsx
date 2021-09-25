@@ -1,17 +1,14 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { Alert, Col, Row } from 'antd';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { VideoJsPlayer, VideoJsPlayerOptions } from 'video.js';
-import { NotationObject } from '../../graphql';
-import * as $$queries from '../../graphql/$$queries';
 import { Layout, withLayout } from '../../hocs';
-import { GraphqlRequestStatus, useGraphqlRequest } from '../../hooks/useGraphqlRequest';
-import { useMemoCmp } from '../../hooks/useMemoCmp';
 import { useNoOverflow } from '../../hooks/useNoOverflow';
+import { useNotation } from '../../hooks/useNotation';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { RootState } from '../../store';
 import { compose } from '../../util/compose';
@@ -76,9 +73,7 @@ const TranscriberName = styled.h3`
 
 const enhance = compose(withLayout(Layout.DEFAULT, { lanes: false, footer: false }));
 
-interface Props {}
-
-const NotationPlayer: React.FC<Props> = enhance(() => {
+const NotationPlayer: React.FC = enhance(() => {
   const gtMd = useSelector<RootState, boolean>((state) => {
     const { lg, xl, xxl } = state.viewport;
     return lg || xl || xxl;
@@ -86,14 +81,14 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const params = useParams<{ id: string }>();
-  const [notation, setNotation] = useState<NotationObject | null>(null);
-  const [errors, setErrors] = useState(new Array<string>());
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
   const [videoPlayer, setVideoPlayer] = useState<VideoJsPlayer | null>(null);
   const [settings, updateSettings] = useNotationPlayerSettings();
   const [lastUserScrollAt, setLastUserScrollAt] = useState<Date | null>(null);
 
+  const params = useParams<{ id: string }>();
+  const { notation, errors, isLoading } = useNotation(params.id);
+  const hasErrors = errors.length > 0;
   const videoUrl = notation?.videoUrl;
   const playerOptions = useMemo<VideoJsPlayerOptions>(() => {
     return videoUrl
@@ -132,26 +127,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const onSettingsChange = useCallback(updateSettings, [updateSettings]);
 
   useNoOverflow(document.body);
-
-  const input = useMemoCmp({ id: params.id });
-  const { response, status } = useGraphqlRequest($$queries.notation, input);
-  const isLoading = status === GraphqlRequestStatus.Pending;
-
-  useEffect(() => {
-    if (!response) {
-      return;
-    }
-    const { data, errors } = response;
-    if (errors) {
-      setErrors(errors.map((error) => error.message));
-    } else if (!data?.notation) {
-      setErrors([`no notation found`]);
-    } else {
-      setNotation(data.notation);
-    }
-  }, [response]);
-
-  const hasErrors = errors.length > 0;
 
   return (
     <div data-testid="notation-player">

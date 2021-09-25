@@ -87,8 +87,8 @@ export type NotationObject = {
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
-  songName?: Maybe<Scalars['String']>;
-  artistName?: Maybe<Scalars['String']>;
+  songName: Scalars['String'];
+  artistName: Scalars['String'];
   deadTimeMs: Scalars['Float'];
   durationMs: Scalars['Float'];
   private: Scalars['Boolean'];

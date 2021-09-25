@@ -20,10 +20,10 @@ export class NotationObject implements PublicNotation {
   @Field()
   updatedAt!: Date;
 
-  @Field((type) => String, { nullable: true })
+  @Field((type) => String)
   songName!: string;
 
-  @Field((type) => String, { nullable: true })
+  @Field((type) => String)
   artistName!: string;
 
   @Field()
