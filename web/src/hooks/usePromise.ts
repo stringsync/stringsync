@@ -1,6 +1,9 @@
+import { noop } from 'lodash';
 import { Reducer, useEffect, useReducer } from 'react';
 
 export type AsyncCallback<A extends any[], T> = (...args: A) => Promise<T>;
+
+type CleanupCallback = () => void;
 
 export enum PromiseStatus {
   Pending,
@@ -25,13 +28,13 @@ type Action<T> =
   | { type: ActionType.Resolved; result: T }
   | { type: ActionType.Rejected; error: Error };
 
-const DEFAULT_STATE: PromiseState<any> = Object.freeze({
+const INITIAL_STATE: PromiseState<any> = Object.freeze({
   result: undefined,
   error: undefined,
   status: PromiseStatus.Pending,
 });
 
-const reducer = <T>(state: PromiseState<T>, action: Action<T>): PromiseState<T> => {
+const promiseReducer = <T>(state: PromiseState<T>, action: Action<T>): PromiseState<T> => {
   switch (action.type) {
     case ActionType.Pending:
       return {
@@ -56,8 +59,12 @@ const reducer = <T>(state: PromiseState<T>, action: Action<T>): PromiseState<T> 
   }
 };
 
-export const usePromise = <A extends any[], T>(callback: AsyncCallback<A, T>, args: A) => {
-  const [state, dispatch] = useReducer<Reducer<PromiseState<T>, Action<T>>>(reducer, DEFAULT_STATE);
+export const usePromise = <A extends any[], T>(
+  callback: AsyncCallback<A, T>,
+  args: A,
+  onCleanup: CleanupCallback = noop
+) => {
+  const [state, dispatch] = useReducer<Reducer<PromiseState<T>, Action<T>>>(promiseReducer, INITIAL_STATE);
 
   useEffect(() => {
     let cancelled = false;
@@ -84,8 +91,9 @@ export const usePromise = <A extends any[], T>(callback: AsyncCallback<A, T>, ar
 
     return () => {
       cancelled = true;
+      onCleanup();
     };
-  }, [callback, args]);
+  }, [callback, args, onCleanup]);
 
   return state;
 };
