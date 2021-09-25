@@ -14,7 +14,7 @@ export const useStyleTargets = (fretboard: Fretboard, children: React.ReactNode,
       // Prevent unecessary renders by maintaining the same styleTargets object in memory if it hasn't changed.
       return isEqual(currentStyleTargets, nextStyleTargets) ? currentStyleTargets : nextStyleTargets;
     });
-  }, [fretboard, children]);
+  }, [fretboard, children, styleMergeStrategy]);
 
   return styleTargets;
 };

@@ -15,8 +15,12 @@ export const useVideoPlayerCurrentTimeMs = (videoPlayer: VideoJsPlayer) => {
     // since it houses a lot of other components and could potentially trigger a lot of other
     // unwanted updates. We only want components that need the currentTimeMs to update.
     const loop = new AsyncLoop(() => {
-      const nextCurrentTimeMs = getCurrentTimeMs(videoPlayer);
-      setCurrentTimeMs(nextCurrentTimeMs);
+      try {
+        const nextCurrentTimeMs = getCurrentTimeMs(videoPlayer);
+        setCurrentTimeMs(nextCurrentTimeMs);
+      } catch (e) {
+        console.error(e);
+      }
     });
     videoPlayer.ready(() => {
       loop.start();

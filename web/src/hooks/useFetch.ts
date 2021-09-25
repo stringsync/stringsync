@@ -7,6 +7,8 @@ export enum FetchStatus {
   Resolved,
 }
 
+export type FetchState = ReturnType<typeof useFetch>;
+
 const toFetchStatus = (promiseStatus: PromiseStatus) => {
   switch (promiseStatus) {
     case PromiseStatus.Pending:

@@ -6,8 +6,11 @@ import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { VideoJsPlayer, VideoJsPlayerOptions } from 'video.js';
-import { $queries, NotationObject } from '../../graphql';
+import { NotationObject } from '../../graphql';
+import * as $$queries from '../../graphql/$$queries';
 import { Layout, withLayout } from '../../hocs';
+import { GraphqlRequestStatus, useGraphqlRequest } from '../../hooks/useGraphqlRequest';
+import { useMemoCmp } from '../../hooks/useMemoCmp';
 import { useNoOverflow } from '../../hooks/useNoOverflow';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { RootState } from '../../store';
@@ -86,7 +89,6 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
   const params = useParams<{ id: string }>();
   const [notation, setNotation] = useState<NotationObject | null>(null);
   const [errors, setErrors] = useState(new Array<string>());
-  const [isLoading, setIsLoading] = useState(true);
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
   const [videoPlayer, setVideoPlayer] = useState<VideoJsPlayer | null>(null);
   const [settings, updateSettings] = useNotationPlayerSettings();
@@ -131,22 +133,23 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
 
   useNoOverflow(document.body);
 
+  const input = useMemoCmp({ id: params.id });
+  const { response, status } = useGraphqlRequest($$queries.notation, input);
+  const isLoading = status === GraphqlRequestStatus.Pending;
+
   useEffect(() => {
-    setErrors([]);
-    setIsLoading(true);
-    setNotation(null);
-    (async () => {
-      const { data, errors } = await $queries.notation({ id: params.id });
-      if (errors) {
-        setErrors(errors.map((error) => error.message));
-      } else if (!data?.notation) {
-        setErrors([`no notation found with id '${params.id}'`]);
-      } else {
-        setNotation(data.notation);
-      }
-      setIsLoading(false);
-    })();
-  }, [params.id]);
+    if (!response) {
+      return;
+    }
+    const { data, errors } = response;
+    if (errors) {
+      setErrors(errors.map((error) => error.message));
+    } else if (!data?.notation) {
+      setErrors([`no notation found with id '${params.id}'`]);
+    } else {
+      setNotation(data.notation);
+    }
+  }, [response, params.id]);
 
   const hasErrors = errors.length > 0;
 

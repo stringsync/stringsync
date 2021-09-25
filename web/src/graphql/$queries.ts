@@ -1,4 +1,4 @@
-import $$queries from './$$queries';
+import * as $$queries from './$$queries';
 import { gql } from './gql';
 import { mutation, query } from './graphql';
 import {
