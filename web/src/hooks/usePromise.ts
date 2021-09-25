@@ -3,7 +3,7 @@ import { Reducer, useEffect, useReducer } from 'react';
 
 export type AsyncCallback<A extends any[], T> = (...args: A) => Promise<T>;
 
-type CleanupCallback = () => void;
+type CleanupCallback = (done: boolean) => void;
 
 export enum PromiseStatus {
   Pending,
@@ -68,19 +68,26 @@ export const usePromise = <A extends any[], T>(
 
   useEffect(() => {
     let cancelled = false;
+    let done = false;
 
-    const resolve = (result: T) =>
-      !cancelled &&
-      dispatch({
-        type: ActionType.Resolved,
-        result,
-      });
-    const reject = (error: Error) =>
-      !cancelled &&
-      dispatch({
-        type: ActionType.Rejected,
-        error,
-      });
+    const resolve = (result: T) => {
+      done = true;
+      if (!cancelled) {
+        dispatch({
+          type: ActionType.Resolved,
+          result,
+        });
+      }
+    };
+    const reject = (error: Error) => {
+      done = true;
+      if (!cancelled) {
+        dispatch({
+          type: ActionType.Rejected,
+          error,
+        });
+      }
+    };
 
     dispatch({ type: ActionType.Pending });
 
@@ -91,7 +98,7 @@ export const usePromise = <A extends any[], T>(
 
     return () => {
       cancelled = true;
-      onCleanup();
+      onCleanup(done);
     };
   }, [callback, args, onCleanup]);
 

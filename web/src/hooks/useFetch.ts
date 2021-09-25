@@ -30,9 +30,14 @@ export const useFetch = (input: RequestInfo, init?: RequestInit) => {
     abortController,
   ]);
 
-  const abort = useCallback(() => {
-    abortController.abort();
-  }, [abortController]);
+  const onCleanup = useCallback(
+    (done: boolean) => {
+      if (!done) {
+        abortController.abort();
+      }
+    },
+    [abortController]
+  );
 
   useEffect(() => {
     if (init && init.signal) {
@@ -40,12 +45,12 @@ export const useFetch = (input: RequestInfo, init?: RequestInit) => {
     }
   }, [init]);
 
-  const { result, status, error } = usePromise(fetch, fetchArgs, abort);
+  const { result, status, error } = usePromise(fetch, fetchArgs, onCleanup);
 
-  return useMemo(() => ({ response: result, status: toFetchStatus(status), error, abort }), [
+  return useMemo(() => ({ response: result, status: toFetchStatus(status), error, abort: abortController.abort }), [
     result,
     status,
     error,
-    abort,
+    abortController.abort,
   ]);
 };

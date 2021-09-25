@@ -145,11 +145,11 @@ const NotationPlayer: React.FC<Props> = enhance(() => {
     if (errors) {
       setErrors(errors.map((error) => error.message));
     } else if (!data?.notation) {
-      setErrors([`no notation found with id '${params.id}'`]);
+      setErrors([`no notation found`]);
     } else {
       setNotation(data.notation);
     }
-  }, [response, params.id]);
+  }, [response]);
 
   const hasErrors = errors.length > 0;
 

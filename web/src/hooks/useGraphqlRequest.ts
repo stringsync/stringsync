@@ -6,7 +6,7 @@ import * as graphql from '../graphql';
 import { GraphqlRequest } from '../graphql/GraphqlRequest';
 import { GraphqlResponseOf, RequestVariablesOf } from '../graphql/types';
 import { FetchState, FetchStatus, useFetch } from './useFetch';
-import { PromiseStatus, usePromise } from './usePromise';
+import { usePromise } from './usePromise';
 
 type AnyGraphqlRequest = GraphqlRequest<any, any, any>;
 
@@ -106,11 +106,12 @@ export const useGraphqlRequest = <G extends AnyGraphqlRequest>(
   const extractState = usePromise(extract, extractArgs);
 
   useEffect(() => {
-    if (extractState.status === PromiseStatus.Pending) {
+    if (fetchState.status === FetchStatus.Pending) {
       dispatch({ type: ActionType.Pending });
-      return;
     }
+  }, [fetchState.status]);
 
+  useEffect(() => {
     if (extractState.error) {
       console.error(extractState.error);
       dispatch({

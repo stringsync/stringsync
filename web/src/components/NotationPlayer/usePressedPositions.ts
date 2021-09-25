@@ -46,10 +46,14 @@ export const usePressedPositions = (cursorSnapshot: CursorSnapshot | null, video
       return;
     }
 
-    const loop = new AsyncLoop(() => {
-      const currentTimeMs = Duration.sec(videoPlayer.currentTime()).ms;
-      setIsInFlashRegion(computeIsInFlashRegion(currentTimeMs, cursorSnapshot));
-    });
+    const loop = new AsyncLoop(
+      () => {
+        const currentTimeMs = Duration.sec(videoPlayer.currentTime()).ms;
+        setIsInFlashRegion(computeIsInFlashRegion(currentTimeMs, cursorSnapshot));
+      },
+      videoPlayer.requestAnimationFrame.bind(videoPlayer),
+      videoPlayer.cancelAnimationFrame.bind(videoPlayer)
+    );
 
     videoPlayer.ready(() => {
       loop.start();

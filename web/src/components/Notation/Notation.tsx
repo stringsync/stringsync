@@ -189,13 +189,13 @@ export const Notation: React.FC<NotationProps> = (props) => {
     musicDisplay.load(musicXmlUrl);
 
     return () => {
+      setMusicDisplay(null);
+
       window.removeEventListener('resize', dispatchResizeStarted);
 
       musicDisplay.eventBus.unsubscribe(...eventBusIds);
 
       musicDisplay.dispose();
-
-      setMusicDisplay(null);
     };
   }, [musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef, deviceInputType]);
 
