@@ -6,9 +6,9 @@ const message = (pass: boolean, expected: number, received: number) => () => {
     ? matcherHint('.not.toRenderNumPositions', 'received', expected.toString())
     : matcherHint('.toRenderNumPositions', 'received', expected.toString());
 
-  return `${msg}\n\nExpected:\n\t${printExpected(expected.toString())}\nReceived:\n\t${printReceived(
-    received.toString()
-  )}`;
+  return `${msg}\n\nExpected number of rendered positions:\n\t${printExpected(
+    expected.toString()
+  )}\nReceived number of rendered positions:\n\t${printReceived(received.toString())}`;
 };
 
 export const toRenderNumPositions: jest.CustomMatcher = function(container: HTMLElement, times: number) {

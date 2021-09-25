@@ -152,10 +152,8 @@ describe('Fretboard', () => {
     );
 
     expect(container).toBeInTheDocument();
-    const style = testing.getStyleAtPosition(container, { fret: 1, string: 2 });
-    expect(style).not.toBeNull();
-    expect(style!.stroke).toBe('green');
-    expect(style!.fill).toBe('red');
+    expect(container).toHavePositionStyle({ fret: 1, string: 2 }, 'fill', 'red');
+    expect(container).toHavePositionStyle({ fret: 1, string: 2 }, 'stroke', 'green');
   });
 
   it('picks styles on a first seen basis', () => {
@@ -167,10 +165,8 @@ describe('Fretboard', () => {
     );
 
     expect(container).toBeInTheDocument();
-    const style = testing.getStyleAtPosition(container, { fret: 1, string: 2 });
-    expect(style).not.toBeNull();
-    expect(style!.stroke).toBe('green');
-    expect(style!.fill).not.toBe('red');
+    expect(container).not.toHavePositionStyle({ fret: 1, string: 2 }, 'fill', 'red');
+    expect(container).toHavePositionStyle({ fret: 1, string: 2 }, 'stroke', 'green');
   });
 
   it('picks styles on a last seen basis', () => {
@@ -182,9 +178,7 @@ describe('Fretboard', () => {
     );
 
     expect(container).toBeInTheDocument();
-    const style = testing.getStyleAtPosition(container, { fret: 1, string: 2 });
-    expect(style).not.toBeNull();
-    expect(style!.stroke).not.toBe('green');
-    expect(style!.fill).toBe('red');
+    expect(container).toHavePositionStyle({ fret: 1, string: 2 }, 'fill', 'red');
+    expect(container).not.toHavePositionStyle({ fret: 1, string: 2 }, 'stroke', 'green');
   });
 });

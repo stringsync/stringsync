@@ -6,6 +6,7 @@ expect.extend({
   toRenderNoteTimes: fretboardMatchers.toRenderNoteTimes,
   toRenderPosition: fretboardMatchers.toRenderPosition,
   toRenderNumPositions: fretboardMatchers.toRenderNumPositions,
+  toHavePositionStyle: fretboardMatchers.toHavePositionStyle,
 });
 
 beforeEach(() => {
