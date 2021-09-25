@@ -18,9 +18,9 @@ export type PointerEvent = EventFrom<typeof model>;
 export type PointerMachine = ReturnType<typeof createMachine>;
 export type PointerService = ReturnType<typeof createService>;
 
-const LONG_HOLD_DURATION = Duration.ms(1000);
-const TAP_GRACE_PERIOD = Duration.ms(100);
-const IDLE_DURATION = Duration.ms(500);
+export const LONG_PRESS_DURATION = Duration.ms(1000);
+export const TAP_GRACE_DURATION = Duration.ms(100);
+export const IDLE_DURATION = Duration.ms(500);
 
 const NULL_POINTER_POSITION: PointerPosition = Object.freeze({
   x: 0,
@@ -126,11 +126,11 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
           },
           states: {
             tap: {
-              after: { [TAP_GRACE_PERIOD.ms]: { target: 'press' } },
+              after: { [TAP_GRACE_DURATION.ms]: { target: 'press' } },
               on: { up: { target: '#pointer.up.active', actions: ['dispatchClick', 'resetDownTarget'] } },
             },
             press: {
-              after: { [LONG_HOLD_DURATION.ms - TAP_GRACE_PERIOD.ms]: { target: 'longpress' } },
+              after: { [LONG_PRESS_DURATION.ms - TAP_GRACE_DURATION.ms]: { target: 'longpress' } },
               on: {
                 up: { target: '#pointer.up.active', actions: ['dispatchClick'] },
                 move: { target: 'select', actions: ['assignHoverTarget'] },

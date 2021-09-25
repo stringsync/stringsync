@@ -1,6 +1,8 @@
+import { AnchoredSelection } from '../../../util/AnchoredSelection';
 import { EventBus } from '../../EventBus';
+import { CursorWrapper } from '../cursors';
 import { NoopCursor } from '../cursors/NoopCursor';
-import { CursorSnapshot } from '../locator';
+import { CursorSnapshot, SelectionEdge } from '../locator';
 import { MusicDisplayEventBus } from '../types';
 import * as pointer from './pointer';
 import { PointerService } from './pointer';
@@ -10,6 +12,7 @@ import {
   NonePointerTarget,
   PointerPosition,
   PointerTargetType,
+  SelectionPointerTarget,
 } from './types';
 
 const POINTER_POSITION: PointerPosition = { x: 0, y: 0, relX: 0, relY: 0 };
@@ -25,6 +28,14 @@ const CURSOR_SNAPSHOT_POINTER_TARGET: CursorSnapshotPointerTarget = {
   type: PointerTargetType.CursorSnapshot,
   cursorSnapshot: {} as CursorSnapshot,
   timeMs: 0,
+  position: POINTER_POSITION,
+};
+const SELECTION_POINTER_TARGET: SelectionPointerTarget = {
+  type: PointerTargetType.Selection,
+  selection: AnchoredSelection.init(0),
+  edge: SelectionEdge.Start,
+  timeMs: 0,
+  cursor: {} as CursorWrapper,
   position: POINTER_POSITION,
 };
 
@@ -48,7 +59,7 @@ describe('pointerMachine', () => {
     });
 
     it('initializes with the initial context', () => {
-      expect(pointerService.state.context).toStrictEqual({ ...pointer.model.initialContext, isActive: false });
+      expect(pointerService.state.context).toStrictEqual({ ...pointer.model.initialContext });
     });
   });
 
@@ -96,10 +107,7 @@ describe('pointerMachine', () => {
       pointerService.send(pointer.events.move(cursorTarget2));
 
       expect(onCursorEntered).toHaveBeenCalledTimes(1);
-      expect(onCursorEntered).toHaveBeenCalledWith({ cursor: cursorTarget2.cursor });
-      const callArgs = onCursorEntered.mock.calls[0][0];
-      expect(callArgs.cursor).not.toBe(cursorTarget1.cursor);
-      expect(callArgs.cursor).toBe(cursorTarget2.cursor);
+      expect(onCursorEntered).toHaveBeenCalledWith({ src: cursorTarget2 });
     });
 
     it('dispatches cursorexited events on move event when exiting cursor target', () => {
@@ -141,10 +149,7 @@ describe('pointerMachine', () => {
       pointerService.send(pointer.events.move(cursorTarget2));
 
       expect(onCursorExited).toHaveBeenCalledTimes(1);
-      expect(onCursorExited).toHaveBeenCalledWith({ cursor: cursorTarget1.cursor });
-      const callArgs = onCursorExited.mock.calls[0][0];
-      expect(callArgs.cursor).not.toBe(cursorTarget2.cursor);
-      expect(callArgs.cursor).toBe(cursorTarget1.cursor);
+      expect(onCursorExited).toHaveBeenCalledWith({ src: cursorTarget1 });
     });
 
     it('updates down state on down event', () => {
@@ -190,21 +195,21 @@ describe('pointerMachine', () => {
     });
 
     describe('press', () => {
-      it('transitions to longpress after 1 second', () => {
+      it('transitions to longpress after LONG_PRESS_DURATION', () => {
         pointerService.send(pointer.events.down(NONE_POINTER_TARGET));
-        jest.advanceTimersByTime(1000);
+        jest.advanceTimersByTime(pointer.LONG_PRESS_DURATION.ms);
         expect(pointerService.state.matches('down.longpress')).toBeTrue();
       });
 
-      it('does not transition to longpress before 1 second', () => {
+      it('does not transition to longpress before LONG_PRESS_DURATION', () => {
         pointerService.send(pointer.events.down(NONE_POINTER_TARGET));
-        jest.advanceTimersByTime(999);
+        jest.advanceTimersByTime(pointer.LONG_PRESS_DURATION.ms - 1);
         expect(pointerService.state.matches('down.press')).toBeTrue();
       });
 
       it('transitions to select state on move event when null target', () => {
         pointerService.send(pointer.events.down(NONE_POINTER_TARGET));
-        jest.advanceTimersByTime(50);
+        jest.advanceTimersByTime(pointer.TAP_GRACE_DURATION.ms);
         pointerService.send(pointer.events.move(NONE_POINTER_TARGET));
         expect(pointerService.state.matches('down.select')).toBeTrue();
       });
@@ -222,7 +227,7 @@ describe('pointerMachine', () => {
         eventBus.subscribe('longpress', onLongPress);
 
         pointerService.send(pointer.events.down(NONE_POINTER_TARGET));
-        jest.advanceTimersByTime(1000);
+        jest.advanceTimersByTime(pointer.LONG_PRESS_DURATION.ms);
 
         expect(onLongPress).toHaveBeenCalledTimes(1);
       });
@@ -303,7 +308,7 @@ describe('pointerMachine', () => {
         eventBus.subscribe('selectionstarted', onSelectionStarted);
 
         pointerService.send(pointer.events.down(NONE_POINTER_TARGET));
-        jest.advanceTimersByTime(50);
+        jest.advanceTimersByTime(pointer.TAP_GRACE_DURATION.ms);
         pointerService.send(pointer.events.move(CURSOR_SNAPSHOT_POINTER_TARGET));
 
         expect(onSelectionStarted).toHaveBeenCalledTimes(1);
@@ -314,7 +319,7 @@ describe('pointerMachine', () => {
         eventBus.subscribe('selectionupdated', onSelectionUpdated);
 
         pointerService.send(pointer.events.down(NONE_POINTER_TARGET));
-        jest.advanceTimersByTime(50);
+        jest.advanceTimersByTime(pointer.TAP_GRACE_DURATION.ms);
         pointerService.send(pointer.events.move(CURSOR_SNAPSHOT_POINTER_TARGET));
         pointerService.send(pointer.events.move(CURSOR_SNAPSHOT_POINTER_TARGET));
 
@@ -326,7 +331,7 @@ describe('pointerMachine', () => {
         eventBus.subscribe('selectionended', onSelectionEnded);
 
         pointerService.send(pointer.events.down(NONE_POINTER_TARGET));
-        jest.advanceTimersByTime(50);
+        jest.advanceTimersByTime(pointer.TAP_GRACE_DURATION.ms);
         pointerService.send(pointer.events.move(CURSOR_SNAPSHOT_POINTER_TARGET));
         pointerService.send(pointer.events.up(NONE_POINTER_TARGET));
 
