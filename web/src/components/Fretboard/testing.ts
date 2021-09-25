@@ -6,7 +6,7 @@ type Position = {
 };
 
 export const getFretboardEl = (container: HTMLElement): Element | null => {
-  return container.getElementsByClassName('fretbard-html-wrapper')[0];
+  return container.getElementsByClassName('fretbard-html-wrapper')[0] || null;
 };
 
 export const getPositionEl = (container: HTMLElement, position: Position): Element | null => {

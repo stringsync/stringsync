@@ -1,5 +1,11 @@
 import '@testing-library/jest-dom/extend-expect';
 import 'jest-extended';
+import * as matchers from './testing/matchers';
+
+expect.extend({
+  toRenderNumPositions: matchers.toRenderNumPositions,
+  toRenderPosition: matchers.toRenderPosition,
+});
 
 beforeEach(() => {
   Object.defineProperty(window, 'matchMedia', {

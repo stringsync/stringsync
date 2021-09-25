@@ -11,7 +11,7 @@ describe('Fretboard', () => {
 
     expect(container).toBeInTheDocument();
     expect(testing.getFretboardEl(container)).not.toBeNull();
-    expect(testing.getAllPositionEls(container)).toHaveLength(0);
+    expect(container).toRenderNumPositions(0);
   });
 
   it('renders with a single position', () => {
@@ -22,8 +22,8 @@ describe('Fretboard', () => {
     );
 
     expect(container).toBeInTheDocument();
-    expect(testing.getAllPositionEls(container)).toHaveLength(1);
-    expect(testing.getPositionEl(container, { fret: 1, string: 2 })).not.toBeNull();
+    expect(container).toRenderNumPositions(1);
+    expect(container).toRenderPosition({ fret: 1, string: 2 });
   });
 
   it('uses standard tuning by default', () => {
