@@ -15,11 +15,7 @@ type Variables = {
 
 type Prim = string | boolean | number | null;
 
-type Data<T extends CompiledResult<any, any> | void> = T extends CompiledResult<any, any>
-  ? T['data']
-  : T extends void
-  ? undefined
-  : never;
+type Data<T extends CompiledResult<any, any> | void> = T extends CompiledResult<any, any> ? T['data'] : T;
 
 export class Gql<R extends CompiledResult<any, any>, V extends CompiledResult<any, any> | void> {
   static make<QR, QV>(
