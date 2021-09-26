@@ -2,7 +2,7 @@ import { createAction, createReducer } from '@reduxjs/toolkit';
 import { useEffect, useReducer } from 'react';
 import { TagObject } from '../graphql';
 import * as $$queries from '../graphql/$$queries';
-import { GraphqlRequestStatus, useGraphqlRequest } from './useGraphqlRequest';
+import { useGraphqlRequest } from './useGraphqlRequest';
 
 export type TagsState = {
   tags: TagObject[];
@@ -16,12 +16,12 @@ const getInitialState = (): TagsState => ({
   isLoading: true,
 });
 
-const pending = createAction('pending');
+const loading = createAction('loading');
 const resolve = createAction<{ tags: TagObject[] }>('resolve');
 const reject = createAction<{ errors: string[] }>('reject');
 
 const tagsReducer = createReducer(getInitialState(), (builder) => {
-  builder.addCase(pending, (state) => {
+  builder.addCase(loading, (state) => {
     state.isLoading = true;
     state.errors = [];
     state.tags = [];
@@ -39,13 +39,13 @@ const tagsReducer = createReducer(getInitialState(), (builder) => {
 export const useTags = (): [TagObject[], string[], boolean] => {
   const [state, dispatch] = useReducer(tagsReducer, getInitialState());
 
-  const { response, status } = useGraphqlRequest($$queries.tags);
+  const [response, isLoading] = useGraphqlRequest($$queries.tags);
 
   useEffect(() => {
-    if (status === GraphqlRequestStatus.Pending) {
-      dispatch(pending());
+    if (isLoading) {
+      dispatch(loading());
     }
-  }, [status]);
+  }, [isLoading]);
 
   useEffect(() => {
     if (!response) {

@@ -7,8 +7,6 @@ export enum FetchStatus {
   Resolved,
 }
 
-export type FetchState = ReturnType<typeof useFetch>;
-
 const toFetchStatus = (promiseStatus: PromiseStatus) => {
   switch (promiseStatus) {
     case PromiseStatus.Pending:
@@ -26,7 +24,10 @@ const toFetchStatus = (promiseStatus: PromiseStatus) => {
  * Makes a request using the fetch parameters. The main benefit of using this hook is
  * that it will abort in-flight requests if the parameters change.
  */
-export const useFetch = (input: RequestInfo, init?: RequestInit) => {
+export const useFetch = (
+  input: RequestInfo,
+  init?: RequestInit
+): [Response | null, Error | null, FetchStatus, AbortController] => {
   const [abortController] = useState(() => new AbortController());
   const fetchArgs = useMemo<[RequestInfo, RequestInit]>(() => [input, { ...init, signal: abortController.signal }], [
     input,
@@ -45,16 +46,11 @@ export const useFetch = (input: RequestInfo, init?: RequestInit) => {
 
   useEffect(() => {
     if (init && init.signal) {
-      throw new Error(`cannot specify init.signal, use the abort callback instead`);
+      throw new Error(`cannot specify init.signal, use the abort controller instead`);
     }
   }, [init]);
 
-  const [result, error, status] = usePromise(fetch, fetchArgs, onCleanup);
+  const [result, error, promiseStatus] = usePromise(fetch, fetchArgs, onCleanup);
 
-  return useMemo(() => ({ response: result, status: toFetchStatus(status), error, abort: abortController.abort }), [
-    result,
-    status,
-    error,
-    abortController.abort,
-  ]);
+  return [result ?? null, error ?? null, toFetchStatus(promiseStatus), abortController];
 };

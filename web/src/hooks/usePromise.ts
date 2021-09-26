@@ -2,16 +2,17 @@ import { createReducer } from '@reduxjs/toolkit';
 import { castDraft } from 'immer';
 import { noop } from 'lodash';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
+import { Await } from '../util/types';
 import { useAction } from './useAction';
 
-export type AsyncCallback<A extends any[], T> = (...args: A) => Promise<T>;
+export type AsyncCallback<T, A extends any[]> = (...args: A) => Promise<T>;
 
 export type CleanupCallback = (done: boolean) => void;
 
 export enum PromiseStatus {
   Pending,
-  Rejected,
   Resolved,
+  Rejected,
 }
 
 type State<T> = {
@@ -20,17 +21,20 @@ type State<T> = {
   status: PromiseStatus;
 };
 
-export const usePromise = <A extends any[], T>(
-  callback: AsyncCallback<A, T>,
-  args: A,
+export const usePromise = <T extends AsyncCallback<any, any>>(
+  callback: T,
+  args: Parameters<T>,
   onCleanup: CleanupCallback = noop
-): [T | undefined, Error | undefined, PromiseStatus] => {
+): [Await<ReturnType<T>> | undefined, Error | undefined, PromiseStatus] => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  args = useMemo(() => args, args);
+
   const pending = useAction('pending');
-  const resolve = useAction<{ result: T }>('resolve');
+  const resolve = useAction<{ result: Await<ReturnType<T>> }>('resolve');
   const reject = useAction<{ error: Error }>('reject');
 
   const getInitialState = useCallback(
-    (): State<T> => ({
+    (): State<Await<ReturnType<T>>> => ({
       status: PromiseStatus.Pending,
       result: undefined,
       error: undefined,

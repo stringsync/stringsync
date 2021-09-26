@@ -15,6 +15,12 @@ export type RequestBody<V extends Record<string, any> | void = void> = {
   variables: V;
 };
 
+export enum ResponseType {
+  Unknown,
+  Success,
+  Failure,
+}
+
 export type SuccessfulResponse<T extends RequestType, N extends RequestNamesOf<T>> = {
   data: OnlyKey<N, T[N]>;
   errors?: never;
@@ -26,8 +32,8 @@ export type FailedResponse = {
 };
 
 export type GraphqlResponse<T extends RequestType, N extends RequestNamesOf<T>> =
-  | FailedResponse
-  | SuccessfulResponse<T, N>;
+  | SuccessfulResponse<T, N>
+  | FailedResponse;
 
 export type GraphqlResponseOf<G> = G extends GraphqlRequest<Query, infer N, any>
   ? GraphqlResponse<Query, N>

@@ -2,8 +2,7 @@ import { createAction, createReducer } from '@reduxjs/toolkit';
 import { useEffect, useReducer } from 'react';
 import { NotationObject } from '../graphql';
 import * as $$queries from '../graphql/$$queries';
-import { GraphqlRequestStatus, useGraphqlRequest } from './useGraphqlRequest';
-import { useMemoCmp } from './useMemoCmp';
+import { useGraphqlRequest } from './useGraphqlRequest';
 
 type State = {
   notation: NotationObject | null;
@@ -41,14 +40,13 @@ const notationReducer = createReducer(getInitialState(), (builder) => {
 export const useNotation = (id: string): [NotationObject | null, string[], boolean] => {
   const [state, dispatch] = useReducer(notationReducer, getInitialState());
 
-  const input = useMemoCmp({ id });
-  const { response, status } = useGraphqlRequest($$queries.notation, input);
+  const [response, isLoading] = useGraphqlRequest($$queries.notation, { id });
 
   useEffect(() => {
-    if (status === GraphqlRequestStatus.Pending) {
+    if (isLoading) {
       dispatch(pending());
     }
-  }, [status]);
+  }, [isLoading]);
 
   useEffect(() => {
     if (!response) {
@@ -68,7 +66,7 @@ export const useNotation = (id: string): [NotationObject | null, string[], boole
     }
 
     dispatch(resolve({ notation }));
-  }, [response, status]);
+  }, [response]);
 
   return [state.notation, state.errors, state.isLoading];
 };

@@ -23,3 +23,5 @@ export enum AuthRequirement {
   LOGGED_IN_AS_TEACHER,
   LOGGED_IN_AS_ADMIN,
 }
+
+export type Await<T> = T extends PromiseLike<infer U> ? U : T;

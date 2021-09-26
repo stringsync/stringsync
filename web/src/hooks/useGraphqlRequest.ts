@@ -1,96 +1,96 @@
+import { createReducer } from '@reduxjs/toolkit';
 import { GraphQLError } from 'graphql';
+import { castDraft } from 'immer';
 import { isObject } from 'lodash';
-import { useEffect, useMemo, useReducer } from 'react';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { UNKNOWN_ERROR_MSG } from '../errors';
 import * as graphql from '../graphql';
 import { GraphqlRequest } from '../graphql/GraphqlRequest';
 import { GraphqlResponseOf, RequestVariablesOf } from '../graphql/types';
-import { FetchState, FetchStatus, useFetch } from './useFetch';
-import { usePromise } from './usePromise';
+import { useAction } from './useAction';
+import { FetchStatus, useFetch } from './useFetch';
+import { useMemoCmp } from './useMemoCmp';
+import { PromiseStatus, usePromise } from './usePromise';
 
-type AnyGraphqlRequest = GraphqlRequest<any, any, any>;
-
-export enum GraphqlRequestStatus {
-  Pending,
-  Settled,
-}
-
-enum ActionType {
-  Pending,
-  Settled,
-}
-
-export type GraphqlRequestState<G extends AnyGraphqlRequest> = {
-  status: GraphqlRequestStatus;
-  response: GraphqlResponseOf<G> | undefined;
+type State<G extends GraphqlRequest<any, any, any>> = {
+  response: GraphqlResponseOf<G> | null;
+  isLoading: boolean;
 };
 
-type Action<G extends AnyGraphqlRequest> =
-  | { type: ActionType.Pending }
-  | { type: ActionType.Settled; response: GraphqlResponseOf<G> };
-
-const INITIAL_STATE: GraphqlRequestState<AnyGraphqlRequest> = {
-  status: GraphqlRequestStatus.Pending,
-  response: undefined,
-};
-
-const graphqlRequestReducer = <G extends AnyGraphqlRequest>(
-  state: GraphqlRequestState<G>,
-  action: Action<G>
-): GraphqlRequestState<G> => {
-  switch (action.type) {
-    case ActionType.Pending:
-      return { status: GraphqlRequestStatus.Pending, response: undefined };
-    case ActionType.Settled:
-      return { status: GraphqlRequestStatus.Settled, response: action.response };
-    default:
-      return state;
-  }
-};
-
-const isGraphqlResponse = <G extends AnyGraphqlRequest>(value: any): value is GraphqlResponseOf<G> => {
-  return isObject(value) && 'data' in value;
-};
-
-const extract = async <G extends AnyGraphqlRequest>(fetchState: FetchState) => {
-  if (fetchState.error) {
-    return { data: null, errors: [new GraphQLError(UNKNOWN_ERROR_MSG)] };
-  }
-
-  if (fetchState.status === FetchStatus.Pending) {
-    return null;
-  }
-
-  const res = fetchState.response;
-  if (!res) {
-    return null;
-  }
-
-  const contentType = res.headers.get('content-type');
-  if (!contentType?.toLowerCase().includes('application/json')) {
-    console.warn(`unexpected content-type for graphql query: ${contentType}`);
-    return { data: null, errors: [new GraphQLError(UNKNOWN_ERROR_MSG)] };
-  }
-
-  const json = await res.json();
-  if (!isGraphqlResponse<G>(json)) {
-    console.warn(`unexpected graphql response from server`);
-    return { data: null, errors: [new GraphQLError(UNKNOWN_ERROR_MSG)] };
-  }
-
-  return json;
-};
-
-export const useGraphqlRequest = <G extends AnyGraphqlRequest>(
+export const useGraphqlRequest = <G extends GraphqlRequest<any, any, any>>(
   req: G,
   variables?: RequestVariablesOf<G>
-): GraphqlRequestState<G> => {
-  const [state, dispatch] = useReducer(
-    (state: GraphqlRequestState<G>, action: Action<G>) => graphqlRequestReducer<G>(state, action),
-    INITIAL_STATE
+): [GraphqlResponseOf<G> | null, boolean] => {
+  variables = useMemoCmp(variables);
+
+  const loading = useAction('loading');
+  const settled = useAction<{ response: GraphqlResponseOf<G> }>('settled');
+
+  const getInitialState = useCallback((): State<G> => ({ response: null, isLoading: true }), []);
+
+  const graphqlRequestReducer = useMemo(() => {
+    return createReducer(getInitialState(), (builder) => {
+      builder.addCase(loading, (state) => {
+        state.isLoading = true;
+        state.response = null;
+      });
+      builder.addCase(settled, (state, action) => {
+        state.isLoading = false;
+        state.response = castDraft(action.payload.response);
+      });
+    });
+  }, [getInitialState, loading, settled]);
+
+  const [state, dispatch] = useReducer(graphqlRequestReducer, getInitialState());
+
+  const isGraphqlResponse = useCallback((value: any): value is GraphqlResponseOf<G> => {
+    return isObject(value) && 'data' in value;
+  }, []);
+
+  const createUnknownErrorResponse = useCallback((): GraphqlResponseOf<G> => {
+    const res = { data: null, errors: [new GraphQLError(UNKNOWN_ERROR_MSG)] };
+    if (!isGraphqlResponse(res)) {
+      throw Error('response is not conformant');
+    }
+    return res;
+  }, [isGraphqlResponse]);
+
+  const extract = useCallback(
+    async (
+      res: Response | null,
+      fetchError: Error | null,
+      status: FetchStatus
+    ): Promise<GraphqlResponseOf<G> | null> => {
+      if (fetchError) {
+        return null;
+      }
+
+      if (status === FetchStatus.Pending) {
+        return null;
+      }
+
+      if (!res) {
+        return null;
+      }
+
+      const contentType = res.headers.get('content-type');
+      if (!contentType?.toLowerCase().includes('application/json')) {
+        console.warn(`unexpected content-type for graphql query: ${contentType}`);
+        return createUnknownErrorResponse();
+      }
+
+      const json = await res.json();
+      if (!isGraphqlResponse(json)) {
+        console.warn('unexpected graphql response from server');
+        return createUnknownErrorResponse();
+      }
+
+      return json;
+    },
+    [isGraphqlResponse, createUnknownErrorResponse]
   );
 
-  const requestInit = useMemo<RequestInit>(
+  const reqInit = useMemo<RequestInit>(
     () => ({
       method: 'POST',
       headers: { Accept: 'application/json' },
@@ -101,23 +101,23 @@ export const useGraphqlRequest = <G extends AnyGraphqlRequest>(
     [req, variables]
   );
 
-  const fetchState = useFetch(graphql.URI, requestInit);
-  const extractArgs = useMemo<[FetchState]>(() => [fetchState], [fetchState]);
-  const [extractResult, extractError] = usePromise(extract, extractArgs);
+  const [fetchRes, fetchError, fetchStatus] = useFetch(graphql.URI, reqInit);
+  const [extractResult, extractError, extractStatus] = usePromise(extract, [fetchRes, fetchError, fetchStatus]);
 
   useEffect(() => {
-    if (fetchState.status === FetchStatus.Pending) {
-      dispatch({ type: ActionType.Pending });
+    if (fetchStatus === FetchStatus.Pending) {
+      dispatch(loading());
     }
-  }, [fetchState.status]);
+  }, [fetchStatus, loading]);
 
   useEffect(() => {
+    if (extractStatus === PromiseStatus.Pending) {
+      return;
+    }
+
     if (extractError) {
       console.error(extractError);
-      dispatch({
-        type: ActionType.Settled,
-        response: { data: null, errors: [new GraphQLError(UNKNOWN_ERROR_MSG)] } as GraphqlResponseOf<G>,
-      });
+      dispatch(settled({ response: createUnknownErrorResponse() }));
       return;
     }
 
@@ -125,8 +125,9 @@ export const useGraphqlRequest = <G extends AnyGraphqlRequest>(
       return;
     }
 
-    dispatch({ type: ActionType.Settled, response: extractResult as GraphqlResponseOf<G> });
-  }, [extractResult, extractError]);
+    // This could still have errors in it, but we let the caller decide if they want to do anything with them.
+    dispatch(settled({ response: extractResult }));
+  }, [extractStatus, extractError, extractResult, settled, createUnknownErrorResponse]);
 
-  return state;
+  return [state.response, state.isLoading];
 };

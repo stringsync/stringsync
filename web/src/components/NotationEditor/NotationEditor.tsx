@@ -10,6 +10,7 @@ const enhance = compose(withLayout(Layout.DEFAULT));
 const NotationEditor: React.FC = enhance(() => {
   const params = useParams<{ id: string }>();
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [notation, errors, isLoading] = useNotation(params.id);
 
   return (
