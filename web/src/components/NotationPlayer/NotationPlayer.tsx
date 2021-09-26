@@ -87,7 +87,7 @@ const NotationPlayer: React.FC = enhance(() => {
   const [lastUserScrollAt, setLastUserScrollAt] = useState<Date | null>(null);
 
   const params = useParams<{ id: string }>();
-  const { notation, errors, isLoading } = useNotation(params.id);
+  const [notation, errors, isLoading] = useNotation(params.id);
   const hasErrors = errors.length > 0;
   const videoUrl = notation?.videoUrl;
   const playerOptions = useMemo<VideoJsPlayerOptions>(() => {

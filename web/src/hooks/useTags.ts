@@ -21,7 +21,7 @@ const resolve = createAction<{ tags: TagObject[] }>('resolve');
 const reject = createAction<{ errors: string[] }>('reject');
 
 const tagsReducer = createReducer(getInitialState(), (builder) => {
-  builder.addCase(pending, (state, action) => {
+  builder.addCase(pending, (state) => {
     state.isLoading = true;
     state.errors = [];
     state.tags = [];

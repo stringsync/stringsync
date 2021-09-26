@@ -10,7 +10,7 @@ const enhance = compose(withLayout(Layout.DEFAULT));
 const NotationEditor: React.FC = enhance(() => {
   const params = useParams<{ id: string }>();
 
-  const { notation, isLoading } = useNotation(params.id);
+  const [notation, errors, isLoading] = useNotation(params.id);
 
   return (
     <div>
