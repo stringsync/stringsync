@@ -32,7 +32,7 @@ export class Gql<R extends CompiledResult<any, any>, V extends CompiledResult<an
 
   private constructor(
     public readonly compiler: Compiler,
-    public readonly operation: Field,
+    public readonly field: Field,
     public readonly queryObject: QueryObject,
     public readonly enumPaths: Path[],
     public readonly queryResult: R,
@@ -42,7 +42,7 @@ export class Gql<R extends CompiledResult<any, any>, V extends CompiledResult<an
   toString(variables: Data<V>): string {
     const result = isUndefined(variables)
       ? this.queryResult
-      : this.compiler({ [this.operation]: params(this.graphqlify(variables), this.queryObject) });
+      : this.compiler({ [this.field]: params(this.graphqlify(variables), this.queryObject) });
     return result.toString();
   }
 
