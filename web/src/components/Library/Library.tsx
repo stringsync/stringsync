@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Tag } from '../../domain';
-import { Layout, withLayout } from '../../hocs';
+import { Layout, withLayout } from '../../hocs/withLayout';
 import { useDebounce } from '../../hooks/useDebounce';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useIntersection } from '../../hooks/useIntersection';

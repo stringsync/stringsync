@@ -1,6 +1,6 @@
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { withAuthRequirement } from '../../hocs';
+import { withAuthRequirement } from '../../hocs/withAuthRequirement';
 import { compose } from '../../util/compose';
 import { AuthRequirement } from '../../util/types';
 import { Fallback } from '../Fallback';

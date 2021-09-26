@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router';
-import { Layout, withLayout } from '../../hocs';
+import { Layout, withLayout } from '../../hocs/withLayout';
 import { useNotation } from '../../hooks/useNotation';
 import { compose } from '../../util/compose';
 import { Video } from '../Video';

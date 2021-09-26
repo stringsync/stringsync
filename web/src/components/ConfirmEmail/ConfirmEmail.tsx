@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import { UnknownError, UNKNOWN_ERROR_MSG } from '../../errors';
 import { $queries } from '../../graphql';
-import { Layout, withLayout } from '../../hocs';
+import { Layout, withLayout } from '../../hocs/withLayout';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useQueryParams } from '../../hooks/useQueryParams';
 import { RootState } from '../../store';

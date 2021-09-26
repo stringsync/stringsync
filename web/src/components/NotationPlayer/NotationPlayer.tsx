@@ -6,7 +6,7 @@ import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { VideoJsPlayer, VideoJsPlayerOptions } from 'video.js';
-import { Layout, withLayout } from '../../hocs';
+import { Layout, withLayout } from '../../hocs/withLayout';
 import { useNoOverflow } from '../../hooks/useNoOverflow';
 import { useNotation } from '../../hooks/useNotation';
 import { MusicDisplay } from '../../lib/MusicDisplay';
