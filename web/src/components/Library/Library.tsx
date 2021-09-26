@@ -4,15 +4,14 @@ import { Affix, Alert, BackTop, Button, Input, List, Row } from 'antd';
 import CheckableTag from 'antd/lib/tag/CheckableTag';
 import { isEqual, uniq, without } from 'lodash';
 import React, { ChangeEventHandler, MouseEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { Tag } from '../../domain';
 import { Layout, withLayout } from '../../hocs/withLayout';
 import { useDebounce } from '../../hooks/useDebounce';
-import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useIntersection } from '../../hooks/useIntersection';
-import { AppDispatch, getTags, RootState } from '../../store';
+import { useTags } from '../../hooks/useTags';
+import { RootState } from '../../store';
 import { compose } from '../../util/compose';
 import { scrollToTop } from '../../util/scrollToTop';
 import { libraryMachine, libraryModel } from './libraryMachine';
@@ -98,11 +97,10 @@ export const Library: React.FC<Props> = enhance(() => {
   const hasErrors = state.context.errors.length > 0;
   const hasLoadedLastPage = state.value === 'done';
   const hasLoadedFirstPage = state.context.hasLoadedFirstPage;
+  const [tags] = useTags();
 
-  const dispatch = useDispatch<AppDispatch>();
   const xs = useSelector<RootState, boolean>((state) => state.viewport.xs);
   const sm = useSelector<RootState, boolean>((state) => state.viewport.sm);
-  const tags = useSelector<RootState, Tag[]>((state) => state.tag.tags);
 
   const [query, setQuery] = useState('');
   const [tagIds, setTagIds] = useState(new Array<string>());
@@ -151,10 +149,6 @@ export const Library: React.FC<Props> = enhance(() => {
       send(libraryModel.events.retryLoadPage());
     }, CLEAR_ERRORS_ANIMATION_DELAY_MS);
   };
-
-  useEffectOnce(() => {
-    dispatch(getTags());
-  });
 
   useEffect(() => {
     if (!isIdle && isSearchTermDebouncing) {
