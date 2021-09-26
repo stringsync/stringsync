@@ -1,6 +1,7 @@
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { withAuthRequirement } from '../../hocs/withAuthRequirement';
+import { useScrollToTopOnRouteChange } from '../../hooks/useScrollToTopOnRouteChange';
 import { compose } from '../../util/compose';
 import { AuthRequirement } from '../../util/types';
 import { Fallback } from '../Fallback';
@@ -45,6 +46,7 @@ export const Routes: React.FC = () => {
   const { shouldRedirectFromLandingToLibrary, recordLandingVisit } = useRoutingBehavior();
 
   useTrackPrevRouteEffect();
+  useScrollToTopOnRouteChange();
 
   return (
     <React.Suspense fallback={<Fallback />}>
