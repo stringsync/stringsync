@@ -3,7 +3,6 @@ import { AuthState } from './auth/types';
 import { DeviceState } from './device/types';
 import { HistoryState } from './history/types';
 import { SwState } from './sw/types';
-import { TagState } from './tag/types';
 import { ViewportState } from './viewport/types';
 
 export type RootState = {
@@ -11,7 +10,6 @@ export type RootState = {
   viewport: ViewportState;
   auth: AuthState;
   history: HistoryState;
-  tag: TagState;
   sw: SwState;
 };
 
