@@ -3,14 +3,12 @@ import { Button, Form, Input, Modal, Select, Steps, Upload as AntdUpload } from 
 import { RcFile } from 'antd/lib/upload';
 import { get } from 'lodash';
 import React, { useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
-import { Tag } from '../../domain';
 import { $queries } from '../../graphql';
 import { Layout, withLayout } from '../../hocs/withLayout';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
-import { getTags, RootState } from '../../store';
+import { useTags } from '../../hooks/useTags';
 import { compose } from '../../util/compose';
 import { Box } from '../Box';
 
@@ -49,12 +47,11 @@ type FormValues = {
 
 const Upload: React.FC<Props> = enhance(() => {
   const history = useHistory();
-  const dispatch = useDispatch();
-  const tags = useSelector<RootState, Tag[]>((state) => state.tag.tags);
   const [stepNdx, setStepNdx] = useState(0);
   const [isNavigateAwayVisible, setNavigateAwayVisibility] = useState(false);
   const [pathname, setPathname] = useState('');
   const [selectedTagNames, setSelectedTagNames] = useState(new Array<string>());
+  const [tags] = useTags();
 
   const [form] = Form.useForm<FormValues>();
   const { video, thumbnail, songName, artistName } = form.getFieldsValue();
@@ -137,10 +134,6 @@ const Upload: React.FC<Props> = enhance(() => {
       setNavigateAwayVisibility(true);
       return false;
     });
-  });
-
-  useEffectOnce(() => {
-    dispatch(getTags());
   });
 
   return (
