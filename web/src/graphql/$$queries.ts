@@ -1,3 +1,5 @@
+import { types } from 'typed-graphqlify';
+import { Gql } from './$gql';
 import { gql } from './gql';
 import { GraphqlRequest } from './GraphqlRequest';
 import {
@@ -12,6 +14,7 @@ import {
   ResetPasswordInput,
   SendResetPasswordEmailInput,
   SignupInput,
+  UserRoles,
 } from './graphqlTypes';
 import { RequestNamesOf, RequestType, RequestVariables } from './types';
 
@@ -24,6 +27,19 @@ const req = <T extends RequestType, N extends RequestNamesOf<T>, V extends Reque
     query = query;
   })();
 };
+
+const who = Gql.query('whoami')
+  .setQueryObject({
+    id: types.string,
+    email: types.string,
+    username: types.string,
+    role: types.optional.oneOf(UserRoles)!,
+    confirmedAt: types.string,
+  })
+  .setVariablesObject({
+    foo: types.string,
+  })
+  .build();
 
 export const whoami = req<Query, 'whoami'>(
   'whoami',
