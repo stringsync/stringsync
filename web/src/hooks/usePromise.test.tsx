@@ -9,7 +9,7 @@ describe('usePromise', () => {
     const resolveImmediately = (arg: symbol) => Promise.resolve(arg);
 
     const Component: React.FC = () => {
-      const { result, error, status } = usePromise(resolveImmediately, args);
+      const [result, error, status] = usePromise(resolveImmediately, args);
       useEffect(() => {
         onPromiseChange({ result, error, status });
       }, [result, error, status]);
@@ -39,7 +39,7 @@ describe('usePromise', () => {
     const rejectImmediately = (arg: symbol) => Promise.reject(error);
 
     const Component: React.FC = () => {
-      const { result, error, status } = usePromise(rejectImmediately, args);
+      const [result, error, status] = usePromise(rejectImmediately, args);
       useEffect(() => {
         onPromiseChange({ result, error, status });
       }, [result, error, status]);
@@ -69,7 +69,7 @@ describe('usePromise', () => {
     const resolveImmediately = (arg: symbol) => Promise.resolve(arg);
 
     const Component: React.FC<{ args: [symbol] }> = (props) => {
-      const { result, error, status } = usePromise(resolveImmediately, props.args);
+      const [result, error, status] = usePromise(resolveImmediately, props.args);
       useEffect(() => {
         onPromiseChange({ result, error, status });
       }, [result, error, status]);

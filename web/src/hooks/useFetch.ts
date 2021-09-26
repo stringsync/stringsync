@@ -49,7 +49,7 @@ export const useFetch = (input: RequestInfo, init?: RequestInit) => {
     }
   }, [init]);
 
-  const { result, status, error } = usePromise(fetch, fetchArgs, onCleanup);
+  const [result, error, status] = usePromise(fetch, fetchArgs, onCleanup);
 
   return useMemo(() => ({ response: result, status: toFetchStatus(status), error, abort: abortController.abort }), [
     result,

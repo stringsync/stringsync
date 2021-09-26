@@ -1,9 +1,12 @@
+import { createReducer } from '@reduxjs/toolkit';
+import { castDraft } from 'immer';
 import { noop } from 'lodash';
-import { useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
+import { useAction } from './useAction';
 
 export type AsyncCallback<A extends any[], T> = (...args: A) => Promise<T>;
 
-type CleanupCallback = (done: boolean) => void;
+export type CleanupCallback = (done: boolean) => void;
 
 export enum PromiseStatus {
   Pending,
@@ -11,76 +14,67 @@ export enum PromiseStatus {
   Resolved,
 }
 
-export type PromiseState<T> = {
+type State<T> = {
   result: T | undefined;
   error: Error | undefined;
   status: PromiseStatus;
 };
 
-enum ActionType {
-  Pending,
-  Resolved,
-  Rejected,
-}
-
-type Action<T> =
-  | { type: ActionType.Pending }
-  | { type: ActionType.Resolved; result: T }
-  | { type: ActionType.Rejected; error: Error };
-
-const INITIAL_STATE: PromiseState<any> = Object.freeze({
-  status: PromiseStatus.Pending,
-  result: undefined,
-  error: undefined,
-});
-
 export const usePromise = <A extends any[], T>(
   callback: AsyncCallback<A, T>,
   args: A,
   onCleanup: CleanupCallback = noop
-) => {
-  const [state, dispatch] = useReducer((state: PromiseState<T>, action: Action<T>): PromiseState<T> => {
-    switch (action.type) {
-      case ActionType.Pending:
-        return { status: PromiseStatus.Pending, result: undefined, error: undefined };
-      case ActionType.Resolved:
-        return { status: PromiseStatus.Resolved, result: action.result, error: undefined };
-      case ActionType.Rejected:
-        return { status: PromiseStatus.Rejected, result: undefined, error: action.error };
-      default:
-        return state;
-    }
-  }, INITIAL_STATE);
+): [T | undefined, Error | undefined, PromiseStatus] => {
+  const pending = useAction('pending');
+  const resolve = useAction<{ result: T }>('resolve');
+  const reject = useAction<{ error: Error }>('reject');
+
+  const getInitialState = useCallback(
+    (): State<T> => ({
+      status: PromiseStatus.Pending,
+      result: undefined,
+      error: undefined,
+    }),
+    []
+  );
+
+  const promiseReducer = useMemo(() => {
+    return createReducer(getInitialState(), (builder) => {
+      builder.addCase(pending, (state) => {
+        state.status = PromiseStatus.Pending;
+        state.error = undefined;
+        state.result = undefined;
+      });
+      builder.addCase(resolve, (state, action) => {
+        state.status = PromiseStatus.Resolved;
+        state.result = castDraft(action.payload.result);
+      });
+      builder.addCase(reject, (state, action) => {
+        state.status = PromiseStatus.Rejected;
+        state.error = action.payload.error;
+      });
+    });
+  }, [getInitialState, pending, resolve, reject]);
+
+  const [state, dispatch] = useReducer(promiseReducer, getInitialState());
 
   useEffect(() => {
     let cancelled = false;
     let done = false;
 
-    const resolve = (result: T) => {
-      done = true;
-      if (!cancelled) {
-        dispatch({ type: ActionType.Resolved, result });
-      }
-    };
-    const reject = (error: Error) => {
-      done = true;
-      if (!cancelled) {
-        dispatch({ type: ActionType.Rejected, error });
-      }
-    };
-
-    dispatch({ type: ActionType.Pending });
+    dispatch(pending);
 
     callback
       .apply(null, args)
-      .then(resolve)
-      .catch(reject);
+      .then((result) => !cancelled && dispatch(resolve({ result })))
+      .catch((error) => !cancelled && dispatch(reject({ error })))
+      .finally(() => (done = true));
 
     return () => {
       cancelled = true;
       onCleanup(done);
     };
-  }, [callback, args, onCleanup]);
+  }, [callback, args, onCleanup, pending, resolve, reject]);
 
-  return state;
+  return [state.result, state.error, state.status];
 };

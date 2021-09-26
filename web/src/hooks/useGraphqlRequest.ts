@@ -103,7 +103,7 @@ export const useGraphqlRequest = <G extends AnyGraphqlRequest>(
 
   const fetchState = useFetch(graphql.URI, requestInit);
   const extractArgs = useMemo<[FetchState]>(() => [fetchState], [fetchState]);
-  const extractState = usePromise(extract, extractArgs);
+  const [extractResult, extractError] = usePromise(extract, extractArgs);
 
   useEffect(() => {
     if (fetchState.status === FetchStatus.Pending) {
@@ -112,8 +112,8 @@ export const useGraphqlRequest = <G extends AnyGraphqlRequest>(
   }, [fetchState.status]);
 
   useEffect(() => {
-    if (extractState.error) {
-      console.error(extractState.error);
+    if (extractError) {
+      console.error(extractError);
       dispatch({
         type: ActionType.Settled,
         response: { data: null, errors: [new GraphQLError(UNKNOWN_ERROR_MSG)] } as GraphqlResponseOf<G>,
@@ -121,12 +121,12 @@ export const useGraphqlRequest = <G extends AnyGraphqlRequest>(
       return;
     }
 
-    if (!extractState.result) {
+    if (!extractResult) {
       return;
     }
 
-    dispatch({ type: ActionType.Settled, response: extractState.result as GraphqlResponseOf<G> });
-  }, [extractState]);
+    dispatch({ type: ActionType.Settled, response: extractResult as GraphqlResponseOf<G> });
+  }, [extractResult, extractError]);
 
   return state;
 };
