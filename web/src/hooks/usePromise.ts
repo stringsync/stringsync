@@ -62,7 +62,7 @@ export const usePromise = <A extends any[], T>(
     let cancelled = false;
     let done = false;
 
-    dispatch(pending);
+    dispatch(pending());
 
     callback
       .apply(null, args)
