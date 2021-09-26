@@ -25,3 +25,5 @@ export enum AuthRequirement {
 }
 
 export type Await<T> = T extends PromiseLike<infer U> ? U : T;
+
+export type ukeyof<T> = T extends T ? keyof T : never;
