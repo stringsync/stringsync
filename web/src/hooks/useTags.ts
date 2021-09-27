@@ -1,6 +1,5 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { useEffect, useReducer } from 'react';
-import { types } from 'typed-graphqlify';
 import { DataOf, Gql } from '../graphql/$gql';
 import { useGraphqlRequest } from './useGraphqlRequest';
 
@@ -13,7 +12,7 @@ type TagsState = {
 };
 
 export const tagsGql = Gql.query('tags')
-  .setQuery([{ id: types.string, name: types.string }])
+  .setQuery([{ id: Gql.string, name: Gql.string }])
   .build();
 
 const getInitialState = (): TagsState => ({

@@ -1,7 +1,7 @@
 import { extractFiles } from 'extract-files';
 import { GraphQLError } from 'graphql';
 import { isObject, isString } from 'lodash';
-import { CompiledResult, mutation, params, query, rawString } from 'typed-graphqlify';
+import { CompiledResult, mutation, params, query, rawString, types } from 'typed-graphqlify';
 import { Params } from 'typed-graphqlify/dist/render';
 import { DeepPartial, OnlyKey } from '../util/types';
 import { Mutation, Query } from './graphqlTypes';
@@ -44,6 +44,13 @@ export class Gql<T extends Root, F extends Fields<T>, Q, V> {
     const queryResult = compiler(queryObject);
     return new Gql<T, F, Q, V>(compiler, field, queryObject, enumPaths, queryResult);
   };
+
+  static string = types.string;
+  static number = types.number;
+  static boolean = types.boolean;
+  static oneOf = types.oneOf;
+  static optional = types.optional;
+  static custom = types.custom;
 
   constructor(
     private readonly compiler: Compiler,

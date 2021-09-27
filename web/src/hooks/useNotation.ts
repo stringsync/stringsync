@@ -1,6 +1,5 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { useEffect, useReducer } from 'react';
-import { types } from 'typed-graphqlify';
 import { QueryNotationArgs } from '../graphql';
 import { DataOf, Gql } from '../graphql/$gql';
 import { useGraphqlRequest } from './useGraphqlRequest';
@@ -15,21 +14,21 @@ type State = {
 
 const notationGql = Gql.query('notation')
   .setQuery({
-    id: types.string,
-    createdAt: types.string,
-    updatedAt: types.string,
-    songName: types.string,
-    artistName: types.string,
-    deadTimeMs: types.number,
-    durationMs: types.number,
-    private: types.boolean,
-    transcriberId: types.string,
-    thumbnailUrl: types.optional.string,
-    videoUrl: types.optional.string,
-    musicXmlUrl: types.optional.string,
-    transcriber: { username: types.string },
+    id: Gql.string,
+    createdAt: Gql.string,
+    updatedAt: Gql.string,
+    songName: Gql.string,
+    artistName: Gql.string,
+    deadTimeMs: Gql.number,
+    durationMs: Gql.number,
+    private: Gql.boolean,
+    transcriberId: Gql.string,
+    thumbnailUrl: Gql.optional.string,
+    videoUrl: Gql.optional.string,
+    musicXmlUrl: Gql.optional.string,
+    transcriber: { username: Gql.string },
   })
-  .setVariables<QueryNotationArgs>({ id: types.string })
+  .setVariables<QueryNotationArgs>({ id: Gql.string })
   .build();
 
 const getInitialState = (): State => ({ notation: null, errors: [], isLoading: true });
