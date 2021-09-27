@@ -38,9 +38,6 @@ export class Gql<T extends Root, F extends Fields<T>, Q, V> {
     enumPaths = new Array<Path>(),
     variablesObject: V
   ) => {
-    if (!queryObject) {
-      throw new Error('fuck');
-    }
     const queryResult = compiler(queryObject);
     return new Gql<T, F, Q, V>(compiler, field, queryObject, enumPaths, queryResult);
   };
