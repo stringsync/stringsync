@@ -1,6 +1,5 @@
 import { GraphQLError } from 'graphql';
 import { OnlyKey } from '../util/types';
-import { GraphqlRequest } from './GraphqlRequest';
 import { Mutation, Query } from './graphqlTypes';
 
 export type RequestType = Query | Mutation;
@@ -34,11 +33,3 @@ export type FailedResponse = {
 export type GraphqlResponse<T extends RequestType, N extends RequestNamesOf<T>> =
   | SuccessfulResponse<T, N>
   | FailedResponse;
-
-export type GraphqlResponseOf<G> = G extends GraphqlRequest<Query, infer N, any>
-  ? GraphqlResponse<Query, N>
-  : G extends GraphqlRequest<Mutation, infer N, any>
-  ? GraphqlResponse<Mutation, N>
-  : never;
-
-export type RequestVariablesOf<G> = G extends GraphqlRequest<any, any, infer V> ? V : never;

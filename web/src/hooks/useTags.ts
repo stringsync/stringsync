@@ -1,14 +1,20 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { useEffect, useReducer } from 'react';
-import { TagObject } from '../graphql';
-import * as $$queries from '../graphql/$$queries';
+import { types } from 'typed-graphqlify';
+import { DataOf, Gql } from '../graphql/$gql';
 import { useGraphqlRequest } from './useGraphqlRequest';
 
-export type TagsState = {
-  tags: TagObject[];
+type Tags = DataOf<typeof tagsGql>;
+
+type TagsState = {
+  tags: Tags;
   errors: string[];
   isLoading: boolean;
 };
+
+export const tagsGql = Gql.query('tags')
+  .setQuery([{ id: types.string, name: types.string }])
+  .build();
 
 const getInitialState = (): TagsState => ({
   tags: [],
@@ -17,7 +23,7 @@ const getInitialState = (): TagsState => ({
 });
 
 const loading = createAction('loading');
-const resolve = createAction<{ tags: TagObject[] }>('resolve');
+const resolve = createAction<{ tags: Tags }>('resolve');
 const reject = createAction<{ errors: string[] }>('reject');
 
 const tagsReducer = createReducer(getInitialState(), (builder) => {
@@ -36,10 +42,10 @@ const tagsReducer = createReducer(getInitialState(), (builder) => {
   });
 });
 
-export const useTags = (): [TagObject[], string[], boolean] => {
+export const useTags = (): [Tags, string[], boolean] => {
   const [state, dispatch] = useReducer(tagsReducer, getInitialState());
 
-  const [response, isLoading] = useGraphqlRequest($$queries.tags);
+  const [response, isLoading] = useGraphqlRequest(tagsGql, undefined);
 
   useEffect(() => {
     if (isLoading) {

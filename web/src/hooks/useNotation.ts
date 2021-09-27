@@ -1,19 +1,41 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { useEffect, useReducer } from 'react';
-import { NotationObject } from '../graphql';
-import * as $$queries from '../graphql/$$queries';
+import { types } from 'typed-graphqlify';
+import { QueryNotationArgs } from '../graphql';
+import { DataOf, Gql } from '../graphql/$gql';
 import { useGraphqlRequest } from './useGraphqlRequest';
 
+type Notation = DataOf<typeof notationGql>;
+
 type State = {
-  notation: NotationObject | null;
+  notation: Notation | null;
   errors: string[];
   isLoading: boolean;
 };
 
+const notationGql = Gql.query('notation')
+  .setQuery({
+    id: types.string,
+    createdAt: types.string,
+    updatedAt: types.string,
+    songName: types.string,
+    artistName: types.string,
+    deadTimeMs: types.number,
+    durationMs: types.number,
+    private: types.boolean,
+    transcriberId: types.string,
+    thumbnailUrl: types.optional.string,
+    videoUrl: types.optional.string,
+    musicXmlUrl: types.optional.string,
+    transcriber: { username: types.string },
+  })
+  .setVariables<QueryNotationArgs>({ id: types.string })
+  .build();
+
 const getInitialState = (): State => ({ notation: null, errors: [], isLoading: true });
 
 const pending = createAction('pending');
-const resolve = createAction<{ notation: NotationObject }>('resolve');
+const resolve = createAction<{ notation: Notation }>('resolve');
 const reject = createAction<{ errors: string[] }>('reject');
 const notFound = createAction('notFound');
 
@@ -37,10 +59,10 @@ const notationReducer = createReducer(getInitialState(), (builder) => {
   });
 });
 
-export const useNotation = (id: string): [NotationObject | null, string[], boolean] => {
+export const useNotation = (id: string): [Notation | null, string[], boolean] => {
   const [state, dispatch] = useReducer(notationReducer, getInitialState());
 
-  const [response, isLoading] = useGraphqlRequest($$queries.notation, { id });
+  const [response, isLoading] = useGraphqlRequest(notationGql, { id });
 
   useEffect(() => {
     if (isLoading) {

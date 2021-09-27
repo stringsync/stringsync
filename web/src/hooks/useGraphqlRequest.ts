@@ -5,21 +5,20 @@ import { isObject } from 'lodash';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { UNKNOWN_ERROR_MSG } from '../errors';
 import * as graphql from '../graphql';
-import { GraphqlRequest } from '../graphql/GraphqlRequest';
-import { GraphqlResponseOf, RequestVariablesOf } from '../graphql/types';
+import { AnyGql, GraphqlResponseOf, VariablesOf } from '../graphql/$gql';
 import { useAction } from './useAction';
 import { FetchStatus, useFetch } from './useFetch';
 import { useMemoCmp } from './useMemoCmp';
 import { PromiseStatus, usePromise } from './usePromise';
 
-type State<G extends GraphqlRequest<any, any, any>> = {
+type State<G extends AnyGql> = {
   response: GraphqlResponseOf<G> | null;
   isLoading: boolean;
 };
 
-export const useGraphqlRequest = <G extends GraphqlRequest<any, any, any>>(
+export const useGraphqlRequest = <G extends AnyGql>(
   req: G,
-  variables?: RequestVariablesOf<G>
+  variables: VariablesOf<G>
 ): [GraphqlResponseOf<G> | null, boolean] => {
   variables = useMemoCmp(variables);
 

@@ -1,18 +1,28 @@
 import { extractFiles } from 'extract-files';
+import { GraphQLError } from 'graphql';
 import { isObject, isString } from 'lodash';
 import { CompiledResult, mutation, params, query, rawString } from 'typed-graphqlify';
 import { Params } from 'typed-graphqlify/dist/render';
-import { DeepPartial } from '../util/types';
+import { DeepPartial, OnlyKey } from '../util/types';
 import { Mutation, Query } from './graphqlTypes';
 import { Path } from './Path';
 
 type Root = Query | Mutation;
-type Fields<T extends Root> = Exclude<keyof T, '__typename'>;
+type Fields<T extends Root> = keyof T;
 type Compiler = typeof query | typeof mutation;
 type Variables = { [key: string]: Prim | Variables | Variables[] };
 type Prim = string | boolean | number | null;
+export type AnyGql = Gql<any, any, any, any>;
+type FieldOf<T extends AnyGql> = T extends Gql<any, infer F, any, any> ? F : never;
+export type DataOf<T extends AnyGql> = T extends Gql<any, any, infer Q, any> ? Q : never;
+export type VariablesOf<T extends AnyGql> = T extends Gql<any, any, any, infer V> ? V : never;
+type SuccessfulResponse<G extends AnyGql> = { data: OnlyKey<FieldOf<G>, DataOf<G>>; errors?: never };
+type FailedResponse = { data: null; errors: GraphQLError[] };
+type GraphqlResponse<G extends AnyGql> = SuccessfulResponse<G> | FailedResponse;
 
-export class Gql<Q, V> {
+export type GraphqlResponseOf<G extends AnyGql> = GraphqlResponse<G>;
+
+export class Gql<T extends Root, F extends Fields<T>, Q, V> {
   static query<F extends Fields<Query>>(field: F) {
     return new GqlBuilder<Query, F>(query, field, undefined, [], undefined);
   }
@@ -31,8 +41,8 @@ export class Gql<Q, V> {
     if (!queryObject) {
       throw new Error('fuck');
     }
-    const queryResult = compiler(field as any, queryObject);
-    return new Gql<Q, V>(compiler, field, queryObject, enumPaths, queryResult);
+    const queryResult = compiler(queryObject);
+    return new Gql<T, F, Q, V>(compiler, field, queryObject, enumPaths, queryResult);
   };
 
   constructor(
@@ -46,7 +56,7 @@ export class Gql<Q, V> {
   toString(variables: V): string {
     const result = isObject(variables)
       ? this.compiler({ [this.field]: params(this.graphqlify(variables), this.queryObject) })
-      : this.queryResult;
+      : this.compiler({ [this.field]: this.queryObject });
     return result.toString();
   }
 
