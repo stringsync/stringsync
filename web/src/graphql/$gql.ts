@@ -22,6 +22,7 @@ type GraphqlResponse<G extends AnyGql> = SuccessfulResponse<G> | FailedResponse;
 
 export type GraphqlResponseOf<G extends AnyGql> = GraphqlResponse<G>;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Gql<T extends Root, F extends Fields<T>, Q, V> {
   static query<F extends Fields<Query>>(field: F) {
     return new GqlBuilder<Query, F>(query, field, undefined, [], undefined);
