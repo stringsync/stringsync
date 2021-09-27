@@ -1,5 +1,7 @@
+import { get } from 'lodash';
+
 export class Path {
-  static STAR = '*';
+  static STAR = '0';
 
   private static SEPARATOR = '.';
 
@@ -22,6 +24,10 @@ export class Path {
 
   toString() {
     return this.parts.join(Path.SEPARATOR);
+  }
+
+  get<T = unknown>(object: any): T | undefined {
+    return get(object, this.parts);
   }
 
   add = (part: string): Path => {

@@ -1,6 +1,6 @@
 import { extractFiles } from 'extract-files';
 import { GraphQLError } from 'graphql';
-import { isObject, isString } from 'lodash';
+import { isObject, isPlainObject, isString } from 'lodash';
 import { CompiledResult, mutation, params, query, rawString, types } from 'typed-graphqlify';
 import { Params } from 'typed-graphqlify/dist/render';
 import { DeepPartial, OnlyKey } from '../util/types';
@@ -19,43 +19,71 @@ export type VariablesOf<T extends AnyGql> = T extends Gql<any, any, any, infer V
 type SuccessfulResponse<G extends AnyGql> = { data: OnlyKey<FieldOf<G>, DataOf<G>>; errors?: never };
 type FailedResponse = { data: null; errors: GraphQLError[] };
 type GraphqlResponse<G extends AnyGql> = SuccessfulResponse<G> | FailedResponse;
+type ValueOf<T> = T[keyof T];
+type Meta = { isEnum?: boolean };
 
 export type GraphqlResponseOf<G extends AnyGql> = GraphqlResponse<G>;
+
+const META_KEY = Symbol('meta');
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Gql<T extends Root, F extends Fields<T>, Q, V> {
   static query<F extends Fields<Query>>(field: F) {
-    return new GqlBuilder<Query, F>(query, field, undefined, [], undefined);
+    return new GqlBuilder<Query, F>(query, field, undefined, undefined);
   }
 
   static mutation<F extends Fields<Mutation>>(field: F) {
-    return new GqlBuilder<Mutation, F>(mutation, field, undefined, [], undefined);
+    return new GqlBuilder<Mutation, F>(mutation, field, undefined, undefined);
   }
 
   static make = <T extends Root, F extends Fields<T>, Q, V>(
     compiler: Compiler,
     field: F,
     queryObject: Q,
-    enumPaths = new Array<Path>(),
     variablesObject: V
   ) => {
     const queryResult = compiler(queryObject);
-    return new Gql<T, F, Q, V>(compiler, field, queryObject, enumPaths, queryResult);
+    return new Gql<T, F, Q, V>(compiler, field, queryObject, queryResult, variablesObject);
   };
+
+  private static injectMeta(object: any, meta: Meta) {
+    if (!isPlainObject(object)) {
+      throw new Error(`can only inject metadata into plain objects, got: ${object}`);
+    }
+    object[META_KEY] = meta;
+    return object;
+  }
+
+  private static getMeta(object: any): Meta | undefined {
+    if (!isPlainObject(object)) {
+      return undefined;
+    }
+    return object[META_KEY];
+  }
 
   static string = types.string;
   static number = types.number;
   static boolean = types.boolean;
-  static oneOf = types.oneOf;
-  static optional = types.optional;
+  static oneOf = <T extends {}>(enumerable: T): ValueOf<T> | keyof T => {
+    const t = types.oneOf(enumerable);
+    // This only works because t is actually a lie:
+    // https://github.com/acro5piano/typed-graphqlify/blob/4b9d6d2bd1466dc3e503b1220a20abf8f554133c/src/types.ts#L50
+    // If typed-graphqlify changes this, the metadata will have to be attached some other way.
+    Gql.injectMeta(t, { isEnum: true });
+    return t;
+  };
+  static optional = {
+    ...types.optional,
+    oneOf: (): ReturnType<typeof Gql.oneOf> | undefined => Gql.oneOf,
+  };
   static custom = types.custom;
 
   constructor(
     private readonly compiler: Compiler,
     private readonly field: string | symbol | number,
     private readonly queryObject: Q,
-    private readonly enumPaths: Path[],
-    private readonly queryResult: CompiledResult<Q, any>
+    private readonly queryResult: CompiledResult<Q, any>,
+    private readonly variablesObject: V
   ) {}
 
   toString(variables: V): string {
@@ -119,8 +147,10 @@ export class Gql<T extends Root, F extends Fields<T>, Q, V> {
     return params;
   }
 
-  private isEnum(path: Path) {
-    return this.enumPaths.some((enumPath) => enumPath.match(path));
+  private isEnum(path: Path): boolean {
+    const t = path.get(this.variablesObject);
+    const meta = Gql.getMeta(t);
+    return !!meta && !!meta.isEnum;
   }
 }
 
@@ -133,14 +163,12 @@ class GqlBuilder<
   private compiler: Compiler;
   private field: F;
   private queryObject: Q;
-  private enumPaths = new Array<Path>();
   private variablesObject: V;
 
-  constructor(compiler: Compiler, field: F, queryObject: Q, enumPaths: Path[], variablesObject: V) {
+  constructor(compiler: Compiler, field: F, queryObject: Q, variablesObject: V) {
     this.compiler = compiler;
     this.field = field;
     this.queryObject = queryObject;
-    this.enumPaths = enumPaths;
     this.variablesObject = variablesObject;
   }
 
@@ -148,18 +176,14 @@ class GqlBuilder<
     if (!this.queryObject) {
       throw new Error(`cannot build without a queryObject`);
     }
-    return Gql.make<T, F, Q, V>(this.compiler, this.field, this.queryObject, this.enumPaths, this.variablesObject);
+    return Gql.make<T, F, Q, V>(this.compiler, this.field, this.queryObject, this.variablesObject);
   }
 
   setQuery<_Q extends DeepPartial<T[F]>>(queryObject: _Q) {
-    return new GqlBuilder<T, F, _Q, V>(this.compiler, this.field, queryObject, this.enumPaths, this.variablesObject);
-  }
-
-  setEnumPaths(enumPaths: Path[]) {
-    return new GqlBuilder<T, F, Q, V>(this.compiler, this.field, this.queryObject, enumPaths, this.variablesObject);
+    return new GqlBuilder<T, F, _Q, V>(this.compiler, this.field, queryObject, this.variablesObject);
   }
 
   setVariables<_V extends Record<string, any>>(variablesObject: _V) {
-    return new GqlBuilder<T, F, Q, _V>(this.compiler, this.field, this.queryObject, this.enumPaths, variablesObject);
+    return new GqlBuilder<T, F, Q, _V>(this.compiler, this.field, this.queryObject, variablesObject);
   }
 }
