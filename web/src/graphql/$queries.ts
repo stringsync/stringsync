@@ -14,11 +14,11 @@ import {
 } from './graphqlTypes';
 
 export const whoami = async () => {
-  return await query<'whoami'>($$queries.whoami.query);
+  return await query<'whoami'>($$queries.whoami.toString());
 };
 
 export const login = async (input: LoginInput) => {
-  return await mutation<'login', { input: LoginInput }>($$queries.login.query, { input });
+  return await mutation<'login', { input: LoginInput }>($$queries.login.toString({ input }), { input });
 };
 
 export const logout = async () => {

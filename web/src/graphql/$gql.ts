@@ -1,6 +1,8 @@
+import { extractFiles } from 'extract-files';
 import { isObject, isString } from 'lodash';
 import { CompiledResult, mutation, params, query, rawString } from 'typed-graphqlify';
 import { Params } from 'typed-graphqlify/dist/render';
+import { DeepPartial } from '../util/types';
 import { Mutation, Query } from './graphqlTypes';
 import { Path } from './Path';
 
@@ -16,7 +18,7 @@ export class Gql<Q, V> {
   }
 
   static mutation<F extends Fields<Mutation>>(field: F) {
-    return new GqlBuilder<Mutation, F>(query, field, undefined, [], undefined);
+    return new GqlBuilder<Mutation, F>(mutation, field, undefined, [], undefined);
   }
 
   static make = <T extends Root, F extends Fields<T>, Q, V>(
@@ -29,16 +31,16 @@ export class Gql<Q, V> {
     if (!queryObject) {
       throw new Error('fuck');
     }
-    const queryResult = compiler(queryObject);
+    const queryResult = compiler(field as any, queryObject);
     return new Gql<Q, V>(compiler, field, queryObject, enumPaths, queryResult);
   };
 
   constructor(
-    public readonly compiler: Compiler,
-    public readonly field: string | symbol | number,
-    public readonly queryObject: Q,
-    public readonly enumPaths: Path[],
-    public readonly queryResult: CompiledResult<Q, any>
+    private readonly compiler: Compiler,
+    private readonly field: string | symbol | number,
+    private readonly queryObject: Q,
+    private readonly enumPaths: Path[],
+    private readonly queryResult: CompiledResult<Q, any>
   ) {}
 
   toString(variables: V): string {
@@ -46,6 +48,39 @@ export class Gql<Q, V> {
       ? this.compiler({ [this.field]: params(this.graphqlify(variables), this.queryObject) })
       : this.queryResult;
     return result.toString();
+  }
+
+  toFormData(variables: V): FormData {
+    // extract files
+    const extraction = extractFiles<File>(
+      { query: this.toString(variables), variables },
+      undefined,
+      (value: any): value is File => value instanceof File
+    );
+    const clone = extraction.clone;
+    const fileMap = extraction.files;
+
+    // compute map
+    const map: { [key: string]: string | string[] } = {};
+    const pathGroups = Array.from(fileMap.values());
+    for (let ndx = 0; ndx < pathGroups.length; ndx++) {
+      const paths = pathGroups[ndx];
+      map[ndx] = paths;
+    }
+
+    // create form data
+    const formData = new FormData();
+    formData.append('operations', JSON.stringify(clone));
+    formData.append('map', JSON.stringify(map));
+
+    // append files to form data
+    const files = Array.from(fileMap.keys());
+    for (let ndx = 0; ndx < files.length; ndx++) {
+      const file = files[ndx];
+      formData.append(ndx.toString(), file, `@${file.name}`);
+    }
+
+    return formData;
   }
 
   private graphqlify(variables: Record<any, any>, path = Path.create()): Params {
@@ -77,7 +112,7 @@ export class Gql<Q, V> {
 class GqlBuilder<
   T extends Root,
   F extends Fields<T>,
-  Q extends Partial<T[F]> | void = void,
+  Q extends DeepPartial<T[F]> | void = void,
   V extends Record<string, any> | void = void
 > {
   private compiler: Compiler;
@@ -101,7 +136,7 @@ class GqlBuilder<
     return Gql.make<T, F, Q, V>(this.compiler, this.field, this.queryObject, this.enumPaths, this.variablesObject);
   }
 
-  setQueryObject<_Q extends Partial<T[F]>>(queryObject: _Q) {
+  setQuery<_Q extends DeepPartial<T[F]>>(queryObject: _Q) {
     return new GqlBuilder<T, F, _Q, V>(this.compiler, this.field, queryObject, this.enumPaths, this.variablesObject);
   }
 
@@ -109,7 +144,7 @@ class GqlBuilder<
     return new GqlBuilder<T, F, Q, V>(this.compiler, this.field, this.queryObject, enumPaths, this.variablesObject);
   }
 
-  setVariablesObject<_V extends Record<string, any>>(variablesObject: _V) {
+  setVariables<_V extends Record<string, any>>(variablesObject: _V) {
     return new GqlBuilder<T, F, Q, _V>(this.compiler, this.field, this.queryObject, this.enumPaths, variablesObject);
   }
 }
