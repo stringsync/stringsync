@@ -1,5 +1,6 @@
 import { isPlainObject } from 'lodash';
-import { Meta } from './types';
+
+type Meta = { isEnum?: boolean };
 
 const META_KEY = Symbol('meta');
 

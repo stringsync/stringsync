@@ -1,7 +1,6 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { useEffect, useReducer } from 'react';
-import { QueryNotationArgs } from '../graphql';
-import { DataOf, Gql } from '../graphql/$gql';
+import { $gql, DataOf, QueryNotationArgs, t } from '../graphql';
 import { useGraphqlRequest } from './useGraphqlRequest';
 
 type Notation = DataOf<typeof notationGql>;
@@ -12,23 +11,24 @@ type State = {
   isLoading: boolean;
 };
 
-const notationGql = Gql.query('notation')
+const notationGql = $gql
+  .query('notation')
   .setQuery({
-    id: Gql.string,
-    createdAt: Gql.string,
-    updatedAt: Gql.string,
-    songName: Gql.string,
-    artistName: Gql.string,
-    deadTimeMs: Gql.number,
-    durationMs: Gql.number,
-    private: Gql.boolean,
-    transcriberId: Gql.string,
-    thumbnailUrl: Gql.optional.string,
-    videoUrl: Gql.optional.string,
-    musicXmlUrl: Gql.optional.string,
-    transcriber: { username: Gql.string },
+    id: t.string,
+    createdAt: t.string,
+    updatedAt: t.string,
+    songName: t.string,
+    artistName: t.string,
+    deadTimeMs: t.number,
+    durationMs: t.number,
+    private: t.boolean,
+    transcriberId: t.string,
+    thumbnailUrl: t.optional.string,
+    videoUrl: t.optional.string,
+    musicXmlUrl: t.optional.string,
+    transcriber: { username: t.string },
   })
-  .setVariables<QueryNotationArgs>({ id: Gql.string })
+  .setVariables<QueryNotationArgs>({ id: t.string })
   .build();
 
 const getInitialState = (): State => ({ notation: null, errors: [], isLoading: true });

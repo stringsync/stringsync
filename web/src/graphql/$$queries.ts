@@ -1,8 +1,8 @@
-import { LoginInput } from '.';
-import { Gql, t } from './Gql';
+import { $gql } from './$gql';
 import {
   ConfirmEmailInput,
   CreateNotationInput,
+  LoginInput,
   QueryNotationArgs,
   QueryNotationsArgs,
   QuerySuggestedNotationsArgs,
@@ -11,8 +11,10 @@ import {
   SignupInput,
   UserRoles,
 } from './graphqlTypes';
+import { t } from './t';
 
-export const whoami = Gql.query('whoami')
+export const whoami = $gql
+  .query('whoami')
   .setQuery({
     id: t.string,
     email: t.string,
@@ -22,7 +24,8 @@ export const whoami = Gql.query('whoami')
   })
   .build();
 
-export const login = Gql.mutation('login')
+export const login = $gql
+  .mutation('login')
   .setQuery({
     id: t.string,
     email: t.string,
@@ -38,11 +41,13 @@ export const login = Gql.mutation('login')
   })
   .build();
 
-export const logout = Gql.mutation('logout')
+export const logout = $gql
+  .mutation('logout')
   .setQuery(t.boolean)
   .build();
 
-export const signup = Gql.mutation('signup')
+export const signup = $gql
+  .mutation('signup')
   .setQuery({
     id: t.string,
     email: t.string,
@@ -59,7 +64,8 @@ export const signup = Gql.mutation('signup')
   })
   .build();
 
-export const confirmEmail = Gql.mutation('confirmEmail')
+export const confirmEmail = $gql
+  .mutation('confirmEmail')
   .setQuery({
     confirmedAt: t.string,
   })
@@ -68,25 +74,29 @@ export const confirmEmail = Gql.mutation('confirmEmail')
   })
   .build();
 
-export const resendConfirmationEmail = Gql.mutation('resendConfirmationEmail')
+export const resendConfirmationEmail = $gql
+  .mutation('resendConfirmationEmail')
   .setQuery(t.boolean)
   .build();
 
-export const sendResetPasswordEmail = Gql.mutation('sendResetPasswordEmail')
+export const sendResetPasswordEmail = $gql
+  .mutation('sendResetPasswordEmail')
   .setQuery(t.boolean)
   .setVariables<{ input: SendResetPasswordEmailInput }>({
     input: { email: t.string },
   })
   .build();
 
-export const resetPassword = Gql.mutation('resetPassword')
+export const resetPassword = $gql
+  .mutation('resetPassword')
   .setQuery(t.boolean)
   .setVariables<{ input: ResetPasswordInput }>({
     input: { email: t.string, password: t.string, resetPasswordToken: t.string },
   })
   .build();
 
-export const notation = Gql.query('notation')
+export const notation = $gql
+  .query('notation')
   .setQuery({
     id: t.string,
     createdAt: t.string,
@@ -105,7 +115,8 @@ export const notation = Gql.query('notation')
   .setVariables<QueryNotationArgs>({ id: t.string })
   .build();
 
-export const notations = Gql.query('notations')
+export const notations = $gql
+  .query('notations')
   .setQuery({
     edges: [
       {
@@ -144,7 +155,8 @@ export const notations = Gql.query('notations')
   })
   .build();
 
-export const suggestedNotations = Gql.query('suggestedNotations')
+export const suggestedNotations = $gql
+  .query('suggestedNotations')
   .setQuery([
     {
       id: t.string,
@@ -168,7 +180,8 @@ export const suggestedNotations = Gql.query('suggestedNotations')
   })
   .build();
 
-export const createNotation = Gql.mutation('createNotation')
+export const createNotation = $gql
+  .mutation('createNotation')
   .setQuery({ id: t.string })
   .setVariables<{ input: CreateNotationInput }>({
     input: {
@@ -181,6 +194,7 @@ export const createNotation = Gql.mutation('createNotation')
   })
   .build();
 
-export const tags = Gql.query('tags')
+export const tags = $gql
+  .query('tags')
   .setQuery([{ id: t.string, name: t.string }])
   .build();
