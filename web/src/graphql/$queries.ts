@@ -1,4 +1,3 @@
-import * as $$queries from './$$queries';
 import { mutation, query } from './graphql';
 import {
   ConfirmEmailInput,
@@ -11,15 +10,16 @@ import {
   SendResetPasswordEmailInput,
   SignupInput,
 } from './graphqlTypes';
+import * as queries from './queries';
 
 const gql = (strings: TemplateStringsArray) => strings.join('');
 
 export const whoami = async () => {
-  return await query<'whoami'>($$queries.whoami.toString());
+  return await query<'whoami'>(queries.whoami.toString());
 };
 
 export const login = async (input: LoginInput) => {
-  return await mutation<'login', { input: LoginInput }>($$queries.login.toString({ input }), { input });
+  return await mutation<'login', { input: LoginInput }>(queries.login.toString({ input }), { input });
 };
 
 export const logout = async () => {
