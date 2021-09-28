@@ -1,9 +1,9 @@
 import { $gql, DataOf, QueryNotationArgs, t } from '../graphql';
 import { GqlStatus, useGql } from './useGql';
 
-type Notation = DataOf<typeof notationGql>;
+type Notation = DataOf<typeof NOTATION_GQL>;
 
-const notationGql = $gql
+const NOTATION_GQL = $gql
   .query('notation')
   .setQuery({
     id: t.string,
@@ -24,7 +24,7 @@ const notationGql = $gql
   .build();
 
 export const useNotation = (id: string): [Notation | null, string[], boolean] => {
-  const [res, status] = useGql(notationGql, { id });
+  const [res, status] = useGql(NOTATION_GQL, { id });
 
   const notation = res?.data?.notation ?? null;
   const errors = res?.errors?.map((error) => error.message) || [];
