@@ -1,6 +1,5 @@
-import { types } from 'typed-graphqlify';
 import { LoginInput } from '.';
-import { Gql } from './$gql';
+import { Gql, t } from './Gql';
 import {
   ConfirmEmailInput,
   CreateNotationInput,
@@ -15,173 +14,173 @@ import {
 
 export const whoami = Gql.query('whoami')
   .setQuery({
-    id: types.string,
-    email: types.string,
-    username: types.string,
-    role: types.optional.oneOf(UserRoles)!,
-    confirmedAt: types.string,
+    id: t.string,
+    email: t.string,
+    username: t.string,
+    role: t.optional.oneOf(UserRoles)!,
+    confirmedAt: t.string,
   })
   .build();
 
 export const login = Gql.mutation('login')
   .setQuery({
-    id: types.string,
-    email: types.string,
-    username: types.string,
-    role: types.optional.oneOf(UserRoles)!,
-    confirmedAt: types.string,
+    id: t.string,
+    email: t.string,
+    username: t.string,
+    role: t.optional.oneOf(UserRoles)!,
+    confirmedAt: t.string,
   })
   .setVariables<{ input: LoginInput }>({
     input: {
-      usernameOrEmail: types.string,
-      password: types.string,
+      usernameOrEmail: t.string,
+      password: t.string,
     },
   })
   .build();
 
 export const logout = Gql.mutation('logout')
-  .setQuery(types.boolean)
+  .setQuery(t.boolean)
   .build();
 
 export const signup = Gql.mutation('signup')
   .setQuery({
-    id: types.string,
-    email: types.string,
-    username: types.string,
-    role: types.optional.oneOf(UserRoles)!,
-    confirmedAt: types.string,
+    id: t.string,
+    email: t.string,
+    username: t.string,
+    role: t.optional.oneOf(UserRoles)!,
+    confirmedAt: t.string,
   })
   .setVariables<{ input: SignupInput }>({
     input: {
-      email: types.string,
-      password: types.string,
-      username: types.string,
+      email: t.string,
+      password: t.string,
+      username: t.string,
     },
   })
   .build();
 
 export const confirmEmail = Gql.mutation('confirmEmail')
   .setQuery({
-    confirmedAt: types.string,
+    confirmedAt: t.string,
   })
   .setVariables<{ input: ConfirmEmailInput }>({
-    input: { confirmationToken: types.string },
+    input: { confirmationToken: t.string },
   })
   .build();
 
 export const resendConfirmationEmail = Gql.mutation('resendConfirmationEmail')
-  .setQuery(types.boolean)
+  .setQuery(t.boolean)
   .build();
 
 export const sendResetPasswordEmail = Gql.mutation('sendResetPasswordEmail')
-  .setQuery(types.boolean)
+  .setQuery(t.boolean)
   .setVariables<{ input: SendResetPasswordEmailInput }>({
-    input: { email: types.string },
+    input: { email: t.string },
   })
   .build();
 
 export const resetPassword = Gql.mutation('resetPassword')
-  .setQuery(types.boolean)
+  .setQuery(t.boolean)
   .setVariables<{ input: ResetPasswordInput }>({
-    input: { email: types.string, password: types.string, resetPasswordToken: types.string },
+    input: { email: t.string, password: t.string, resetPasswordToken: t.string },
   })
   .build();
 
 export const notation = Gql.query('notation')
   .setQuery({
-    id: types.string,
-    createdAt: types.string,
-    updatedAt: types.string,
-    songName: types.string,
-    artistName: types.string,
-    deadTimeMs: types.number,
-    durationMs: types.number,
-    private: types.boolean,
-    transcriberId: types.string,
-    thumbnailUrl: types.optional.string,
-    videoUrl: types.optional.string,
-    musicXmlUrl: types.optional.string,
-    transcriber: { username: types.string },
+    id: t.string,
+    createdAt: t.string,
+    updatedAt: t.string,
+    songName: t.string,
+    artistName: t.string,
+    deadTimeMs: t.number,
+    durationMs: t.number,
+    private: t.boolean,
+    transcriberId: t.string,
+    thumbnailUrl: t.optional.string,
+    videoUrl: t.optional.string,
+    musicXmlUrl: t.optional.string,
+    transcriber: { username: t.string },
   })
-  .setVariables<QueryNotationArgs>({ id: types.string })
+  .setVariables<QueryNotationArgs>({ id: t.string })
   .build();
 
 export const notations = Gql.query('notations')
   .setQuery({
     edges: [
       {
-        cursor: types.string,
+        cursor: t.string,
         node: {
-          id: types.string,
-          createdAt: types.string,
-          updatedAt: types.string,
-          songName: types.string,
-          artistName: types.string,
-          thumbnailUrl: types.optional.string,
+          id: t.string,
+          createdAt: t.string,
+          updatedAt: t.string,
+          songName: t.string,
+          artistName: t.string,
+          thumbnailUrl: t.optional.string,
           transcriber: {
-            id: types.string,
-            username: types.string,
-            role: types.optional.oneOf(UserRoles)!,
-            avatarUrl: types.optional.string,
+            id: t.string,
+            username: t.string,
+            role: t.optional.oneOf(UserRoles)!,
+            avatarUrl: t.optional.string,
           },
-          tags: [{ id: types.string, name: types.string }],
+          tags: [{ id: t.string, name: t.string }],
         },
       },
     ],
     pageInfo: {
-      hasNextPage: types.boolean,
-      hasPreviousPage: types.boolean,
-      startCursor: types.optional.string,
-      endCursor: types.optional.string,
+      hasNextPage: t.boolean,
+      hasPreviousPage: t.boolean,
+      startCursor: t.optional.string,
+      endCursor: t.optional.string,
     },
   })
   .setVariables<QueryNotationsArgs>({
-    first: types.optional.number,
-    last: types.optional.number,
-    after: types.optional.string,
-    before: types.optional.string,
-    query: types.optional.string,
-    tagIds: [types.string],
+    first: t.optional.number,
+    last: t.optional.number,
+    after: t.optional.string,
+    before: t.optional.string,
+    query: t.optional.string,
+    tagIds: [t.string],
   })
   .build();
 
 export const suggestedNotations = Gql.query('suggestedNotations')
   .setQuery([
     {
-      id: types.string,
-      createdAt: types.string,
-      updatedAt: types.string,
-      songName: types.string,
-      artistName: types.string,
-      thumbnailUrl: types.optional.string,
+      id: t.string,
+      createdAt: t.string,
+      updatedAt: t.string,
+      songName: t.string,
+      artistName: t.string,
+      thumbnailUrl: t.optional.string,
       transcriber: {
-        id: types.string,
-        username: types.string,
-        role: types.optional.oneOf(UserRoles)!,
-        avatarUrl: types.optional.string,
+        id: t.string,
+        username: t.string,
+        role: t.optional.oneOf(UserRoles)!,
+        avatarUrl: t.optional.string,
       },
-      tags: [{ id: types.string, name: types.string }],
+      tags: [{ id: t.string, name: t.string }],
     },
   ])
   .setVariables<QuerySuggestedNotationsArgs>({
-    id: types.string,
-    limit: types.number,
+    id: t.string,
+    limit: t.number,
   })
   .build();
 
 export const createNotation = Gql.mutation('createNotation')
-  .setQuery({ id: types.string })
+  .setQuery({ id: t.string })
   .setVariables<{ input: CreateNotationInput }>({
     input: {
-      artistName: types.string,
-      songName: types.string,
-      tagIds: [types.string],
-      thumbnail: types.custom<File>(),
-      video: types.custom<File>(),
+      artistName: t.string,
+      songName: t.string,
+      tagIds: [t.string],
+      thumbnail: t.custom<File>(),
+      video: t.custom<File>(),
     },
   })
   .build();
 
 export const tags = Gql.query('tags')
-  .setQuery([{ id: types.string, name: types.string }])
+  .setQuery([{ id: t.string, name: t.string }])
   .build();

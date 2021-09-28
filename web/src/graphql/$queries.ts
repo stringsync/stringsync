@@ -1,5 +1,4 @@
 import * as $$queries from './$$queries';
-import { gql } from './gql';
 import { mutation, query } from './graphql';
 import {
   ConfirmEmailInput,
@@ -12,6 +11,8 @@ import {
   SendResetPasswordEmailInput,
   SignupInput,
 } from './graphqlTypes';
+
+const gql = (strings: TemplateStringsArray) => strings.join('');
 
 export const whoami = async () => {
   return await query<'whoami'>($$queries.whoami.toString());
