@@ -1,12 +1,11 @@
 import { Col, Layout, Row } from 'antd';
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { Logo } from '../../components/Logo';
 import { Wordmark } from '../../components/Wordmark';
+import { useViewportState } from '../../ctx/viewport/useViewportState';
 import { useOnlineStatus } from '../../hooks/useOnlineStatus';
-import { RootState } from '../../store';
 import { Menu } from './Menu';
 
 const metas = document.getElementsByTagName('meta');
@@ -56,12 +55,11 @@ type Props = {
 
 export const DefaultLayout: React.FC<Props> = (props) => {
   const location = useLocation();
-  const isGtMdViewport = useSelector<RootState, boolean>(
-    (state) => state.viewport.lg || state.viewport.xl || state.viewport.xxl
-  );
+  const { lg, xl, xxl } = useViewportState();
+  const isGtMd = lg || xl || xxl;
 
   const isOnline = useOnlineStatus();
-  const isWordmarkVisible = isOnline && isGtMdViewport;
+  const isWordmarkVisible = isOnline && isGtMd;
   const isOfflineVisible = !isOnline;
   const logoLinkTo = location.pathname.startsWith('/library') ? '/' : '/library';
 
@@ -98,7 +96,7 @@ export const DefaultLayout: React.FC<Props> = (props) => {
         </Lane>
       </StyledHeader>
       <Layout.Content>{props.lanes ? <Lane>{props.children}</Lane> : props.children}</Layout.Content>
-      {props.footer && isGtMdViewport && (
+      {props.footer && isGtMd && (
         <StyledFooter>
           <Lane>{VERSION}</Lane>
         </StyledFooter>

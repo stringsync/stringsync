@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, NavLink } from 'react-router-dom';
 import styled from 'styled-components';
+import { useViewportState } from '../../ctx/viewport/useViewportState';
 import { gtEqTeacher } from '../../domain';
 import { AppDispatch, AuthUser, isLoggedInSelector, logout, RootState } from '../../store';
 
@@ -45,10 +46,8 @@ export const Menu: React.FC<Props> = (props) => {
   const dispatch = useDispatch<AppDispatch>();
   const isLoggedIn = useSelector<RootState, boolean>(isLoggedInSelector);
   const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
-  const isLtEqMdViewport = useSelector<RootState, boolean>((state) => {
-    const { xs, sm, md } = state.viewport;
-    return xs || sm || md;
-  });
+  const { xs, sm, md } = useViewportState();
+  const isLtEqMd = xs || sm || md;
   const user = useSelector<RootState, AuthUser>((state) => state.auth.user);
 
   const [isModalVisible, setModalVisible] = useState(false);
@@ -64,8 +63,8 @@ export const Menu: React.FC<Props> = (props) => {
   };
 
   const gutterPx = isLoggedIn ? 16 : 8;
-  const isLibraryVisible = !isAuthPending && !isLtEqMdViewport && isLoggedIn;
-  const isUploadVisible = !isAuthPending && !isLtEqMdViewport && isLoggedIn && isGtEqTeacher;
+  const isLibraryVisible = !isAuthPending && !isLtEqMd && isLoggedIn;
+  const isUploadVisible = !isAuthPending && !isLtEqMd && isLoggedIn && isGtEqTeacher;
   const isLoginVisible = !isAuthPending && !isLoggedIn;
   const isSignupVisible = !isAuthPending && !isLoggedIn;
   const isSettingsVisible = !isAuthPending && isLoggedIn;

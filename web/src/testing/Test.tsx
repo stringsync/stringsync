@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import { Provider as StoreProvider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
+import { ViewportProvider } from '../ctx/viewport';
 import { AppStore, createStore } from '../store';
 import { theme } from '../theme';
 
@@ -19,7 +20,9 @@ export const Test: React.FC<Props> = (props) => {
     <StoreProvider data-testid="app" store={store}>
       <ConfigProvider locale={enUS}>
         <ThemeProvider theme={theme}>
-          <BrowserRouter>{props.children}</BrowserRouter>
+          <ViewportProvider>
+            <BrowserRouter>{props.children}</BrowserRouter>
+          </ViewportProvider>
         </ThemeProvider>
       </ConfigProvider>
     </StoreProvider>

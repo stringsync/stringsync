@@ -3,11 +3,9 @@ import { AuthState } from './auth/types';
 import { DeviceState } from './device/types';
 import { HistoryState } from './history/types';
 import { SwState } from './sw/types';
-import { ViewportState } from './viewport/types';
 
 export type RootState = {
   device: DeviceState;
-  viewport: ViewportState;
   auth: AuthState;
   history: HistoryState;
   sw: SwState;

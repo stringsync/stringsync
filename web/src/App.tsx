@@ -10,7 +10,7 @@ import { AuthSync } from './components/AuthSync';
 import { DeviceSync } from './components/DeviceSync';
 import { Routes } from './components/Routes';
 import { ServiceWorkerSync } from './components/ServiceWorkerSync/ServiceWorkerSync';
-import { ViewportSync } from './components/ViewportSync';
+import { ViewportProvider } from './ctx/viewport';
 import { theme } from './theme';
 
 type Props = {
@@ -23,13 +23,14 @@ export const App: React.FC<Props> = (props) => {
       <StoreProvider data-testid="app" store={props.store}>
         <ConfigProvider locale={enUS}>
           <ThemeProvider theme={theme}>
-            <BrowserRouter>
-              <ServiceWorkerSync />
-              <DeviceSync />
-              <ViewportSync />
-              <AuthSync />
-              <Routes />
-            </BrowserRouter>
+            <ViewportProvider>
+              <BrowserRouter>
+                <ServiceWorkerSync />
+                <DeviceSync />
+                <AuthSync />
+                <Routes />
+              </BrowserRouter>
+            </ViewportProvider>
           </ThemeProvider>
         </ConfigProvider>
       </StoreProvider>

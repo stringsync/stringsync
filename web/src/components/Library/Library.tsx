@@ -4,14 +4,13 @@ import { Affix, Alert, BackTop, Button, Input, List, Row } from 'antd';
 import CheckableTag from 'antd/lib/tag/CheckableTag';
 import { isEqual, uniq, without } from 'lodash';
 import React, { ChangeEventHandler, MouseEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { useViewportState } from '../../ctx/viewport/useViewportState';
 import { Layout, withLayout } from '../../hocs/withLayout';
 import { useDebounce } from '../../hooks/useDebounce';
 import { useIntersection } from '../../hooks/useIntersection';
 import { useTags } from '../../hooks/useTags';
-import { RootState } from '../../store';
 import { compose } from '../../util/compose';
 import { scrollToTop } from '../../util/scrollToTop';
 import { libraryMachine, libraryModel } from './libraryMachine';
@@ -99,8 +98,7 @@ export const Library: React.FC<Props> = enhance(() => {
   const hasLoadedFirstPage = state.context.hasLoadedFirstPage;
   const [tags] = useTags();
 
-  const xs = useSelector<RootState, boolean>((state) => state.viewport.xs);
-  const sm = useSelector<RootState, boolean>((state) => state.viewport.sm);
+  const { xs, sm } = useViewportState();
 
   const [query, setQuery] = useState('');
   const [tagIds, setTagIds] = useState(new Array<string>());

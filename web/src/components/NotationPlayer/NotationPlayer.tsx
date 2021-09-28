@@ -1,16 +1,15 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { Alert, Col, Row } from 'antd';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { VideoJsPlayer, VideoJsPlayerOptions } from 'video.js';
+import { useViewportState } from '../../ctx/viewport/useViewportState';
 import { Layout, withLayout } from '../../hocs/withLayout';
 import { useNoOverflow } from '../../hooks/useNoOverflow';
 import { useNotation } from '../../hooks/useNotation';
 import { MusicDisplay } from '../../lib/MusicDisplay';
-import { RootState } from '../../store';
 import { compose } from '../../util/compose';
 import { Fretboard, FretboardOptions, PositionFilterParams, PositionStyle } from '../Fretboard';
 import { Notation } from '../Notation';
@@ -74,10 +73,8 @@ const TranscriberName = styled.h3`
 const enhance = compose(withLayout(Layout.DEFAULT, { lanes: false, footer: false }));
 
 const NotationPlayer: React.FC = enhance(() => {
-  const gtMd = useSelector<RootState, boolean>((state) => {
-    const { lg, xl, xxl } = state.viewport;
-    return lg || xl || xxl;
-  });
+  const { lg, xl, xxl } = useViewportState();
+  const gtMd = lg || xl || xxl;
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
