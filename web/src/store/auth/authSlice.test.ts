@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { GraphQLError } from 'graphql';
 import { UserRole } from '../../domain';
-import { $queries, UserRoles as TypegenUserRole } from '../../graphql';
+import { queries, UserRoles as TypegenUserRole } from '../../graphql';
 import {
   authenticate,
   authSlice,
@@ -122,7 +122,7 @@ describe('authSlice', () => {
           auth: authSlice.reducer,
         },
       });
-      const whoamiSpy = jest.spyOn($queries, 'whoami');
+      const whoamiSpy = jest.spyOn(queries.whoami, 'fetch');
       whoamiSpy.mockResolvedValue({
         data: {
           whoami: {
@@ -156,7 +156,7 @@ describe('authSlice', () => {
           auth: authSlice.reducer,
         },
       });
-      const whoamiSpy = jest.spyOn($queries, 'whoami');
+      const whoamiSpy = jest.spyOn(queries.whoami, 'fetch');
       whoamiSpy.mockResolvedValue({ data: { whoami: null } });
 
       await store.dispatch(authenticate({ shouldClearAuthOnError: true }));
@@ -173,7 +173,7 @@ describe('authSlice', () => {
           auth: authSlice.reducer,
         },
       });
-      const whoamiSpy = jest.spyOn($queries, 'whoami');
+      const whoamiSpy = jest.spyOn(queries.whoami, 'fetch');
       whoamiSpy.mockResolvedValue({ data: { whoami: null } });
 
       await store.dispatch(authenticate({ shouldClearAuthOnError: false }));
@@ -190,7 +190,7 @@ describe('authSlice', () => {
           auth: authSlice.reducer,
         },
       });
-      const whoamiSpy = jest.spyOn($queries, 'whoami');
+      const whoamiSpy = jest.spyOn(queries.whoami, 'fetch');
       whoamiSpy.mockResolvedValue({
         data: null,
         errors: [new GraphQLError('error1'), new GraphQLError('error2')],
@@ -210,7 +210,7 @@ describe('authSlice', () => {
           auth: authSlice.reducer,
         },
       });
-      const whoamiSpy = jest.spyOn($queries, 'whoami');
+      const whoamiSpy = jest.spyOn(queries.whoami, 'fetch');
       whoamiSpy.mockRejectedValue(new Error('error1'));
 
       await store.dispatch(authenticate({ shouldClearAuthOnError: false }));
@@ -248,7 +248,7 @@ describe('authSlice', () => {
           auth: authSlice.reducer,
         },
       });
-      const loginSpy = jest.spyOn($queries, 'login');
+      const loginSpy = jest.spyOn(queries.login, 'fetch');
       loginSpy.mockResolvedValue({
         data: {
           login: {
@@ -282,7 +282,7 @@ describe('authSlice', () => {
           auth: authSlice.reducer,
         },
       });
-      const loginSpy = jest.spyOn($queries, 'login');
+      const loginSpy = jest.spyOn(queries.login, 'fetch');
       loginSpy.mockResolvedValue({ errors: [new GraphQLError('error1')] } as any);
 
       await store.dispatch(login({ input: { usernameOrEmail: 'email@domain.tld', password: 'password' } }));
@@ -299,7 +299,7 @@ describe('authSlice', () => {
           auth: authSlice.reducer,
         },
       });
-      const loginSpy = jest.spyOn($queries, 'login');
+      const loginSpy = jest.spyOn(queries.login, 'fetch');
       loginSpy.mockRejectedValue(new Error('error1'));
 
       await store.dispatch(login({ input: { usernameOrEmail: 'email@domain.tld', password: 'password' } }));
@@ -337,7 +337,7 @@ describe('authSlice', () => {
           auth: authSlice.reducer,
         },
       });
-      const loginSpy = jest.spyOn($queries, 'login');
+      const loginSpy = jest.spyOn(queries.login, 'fetch');
       loginSpy.mockResolvedValue({
         data: {
           login: {
@@ -371,7 +371,7 @@ describe('authSlice', () => {
           auth: authSlice.reducer,
         },
       });
-      const loginSpy = jest.spyOn($queries, 'login');
+      const loginSpy = jest.spyOn(queries.login, 'fetch');
       loginSpy.mockResolvedValue({ errors: [new GraphQLError('error1')] } as any);
 
       await store.dispatch(login({ input: { usernameOrEmail: 'email@domain.tld', password: 'password' } }));
@@ -388,7 +388,7 @@ describe('authSlice', () => {
           auth: authSlice.reducer,
         },
       });
-      const loginSpy = jest.spyOn($queries, 'login');
+      const loginSpy = jest.spyOn(queries.login, 'fetch');
       loginSpy.mockRejectedValue(new Error('error1'));
 
       await store.dispatch(login({ input: { usernameOrEmail: 'email@domain.tld', password: 'password' } }));
@@ -421,7 +421,7 @@ describe('authSlice', () => {
           auth: authSlice.reducer,
         },
       });
-      const logoutSpy = jest.spyOn($queries, 'logout');
+      const logoutSpy = jest.spyOn(queries.logout, 'fetch');
       logoutSpy.mockResolvedValue({ data: { logout: true } });
 
       await store.dispatch(logout());
@@ -438,7 +438,7 @@ describe('authSlice', () => {
           auth: authSlice.reducer,
         },
       });
-      const logoutSpy = jest.spyOn($queries, 'logout');
+      const logoutSpy = jest.spyOn(queries.logout, 'fetch');
       logoutSpy.mockRejectedValue(new Error('error1'));
 
       await store.dispatch(logout());
@@ -474,7 +474,7 @@ describe('authSlice', () => {
           auth: authSlice.reducer,
         },
       });
-      const logoutSpy = jest.spyOn($queries, 'sendResetPasswordEmail');
+      const logoutSpy = jest.spyOn(queries.sendResetPasswordEmail, 'fetch');
       logoutSpy.mockResolvedValue({ data: { sendResetPasswordEmail: true } });
 
       await store.dispatch(sendResetPasswordEmail({ input: { email: 'email@domain.tld' } }));
@@ -491,7 +491,7 @@ describe('authSlice', () => {
         },
       });
 
-      const sendResetPasswordEmailSpy = jest.spyOn($queries, 'sendResetPasswordEmail');
+      const sendResetPasswordEmailSpy = jest.spyOn(queries.sendResetPasswordEmail, 'fetch');
       sendResetPasswordEmailSpy.mockRejectedValue(new Error('error1'));
 
       await store.dispatch(sendResetPasswordEmail({ input: { email: 'email@domain.tld' } }));

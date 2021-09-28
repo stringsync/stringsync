@@ -3,7 +3,7 @@ import { merge, truncate } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { $queries, NotationObject } from '../../graphql';
+import { NotationObject, queries } from '../../graphql';
 
 const NUM_SUGGESTIONS = 10;
 
@@ -100,7 +100,10 @@ export const SuggestedNotations: React.FC<SuggestedNotationsProps> = (props) => 
     setIsLoading(true);
     setSuggestedNotations([]);
     (async () => {
-      const { data, errors } = await $queries.suggestedNotations({ id: props.srcNotationId, limit: NUM_SUGGESTIONS });
+      const { data, errors } = await queries.suggestedNotations.fetch({
+        id: props.srcNotationId,
+        limit: NUM_SUGGESTIONS,
+      });
       if (errors) {
         setErrors(errors.map((error) => error.message));
       } else if (!data?.suggestedNotations) {

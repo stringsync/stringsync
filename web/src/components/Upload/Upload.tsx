@@ -5,7 +5,7 @@ import { get } from 'lodash';
 import React, { useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
-import { $queries } from '../../graphql';
+import { queries } from '../../graphql';
 import { Layout, withLayout } from '../../hocs/withLayout';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useTags } from '../../hooks/useTags';
@@ -101,12 +101,14 @@ const Upload: React.FC<Props> = enhance(() => {
       return;
     }
 
-    const res = await $queries.createNotation({
-      songName,
-      artistName,
-      tagIds,
-      thumbnail: thumbnailFile,
-      video: videoFile,
+    const res = await queries.createNotation.fetch({
+      input: {
+        songName,
+        artistName,
+        tagIds,
+        thumbnail: thumbnailFile,
+        video: videoFile,
+      },
     });
     if (res.errors) {
       // TODO(jared) add error handling

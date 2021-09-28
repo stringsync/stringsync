@@ -2,7 +2,7 @@ import { cloneDeep } from 'lodash';
 import { assign, Condition, ContextFrom, DoneInvokeEvent, EventFrom, InvokeCreator } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 import { UnknownError } from '../../errors';
-import { $queries, NotationEdgeObject, toUserRole } from '../../graphql';
+import { NotationEdgeObject, queries, toUserRole } from '../../graphql';
 import { NotationPreview } from './types';
 
 type NotationPage = {
@@ -76,7 +76,7 @@ const toNotationPreview = (edge: NotationEdgeObject): NotationPreview => {
 };
 
 const fetchNotationPage: InvokeCreator<LibraryContext, LibraryEvent> = async (context): Promise<NotationPage> => {
-  const { data, errors } = await $queries.notations(context.queryArgs);
+  const { data, errors } = await queries.notations.fetch(context.queryArgs);
   if (errors) {
     throw errors;
   }

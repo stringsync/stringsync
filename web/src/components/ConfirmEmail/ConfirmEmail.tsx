@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import { UnknownError, UNKNOWN_ERROR_MSG } from '../../errors';
-import { $queries } from '../../graphql';
+import { queries } from '../../graphql';
 import { Layout, withLayout } from '../../hocs/withLayout';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useQueryParams } from '../../hooks/useQueryParams';
@@ -42,7 +42,7 @@ export const ConfirmEmail: React.FC = enhance(() => {
 
     try {
       const { confirmationToken } = form.getFieldsValue();
-      const { data, errors } = await $queries.confirmEmail({ confirmationToken });
+      const { data, errors } = await queries.confirmEmail.fetch({ input: { confirmationToken } });
       if (errors) {
         setErrors(errors.map((error) => error.message));
         return;
@@ -67,7 +67,7 @@ export const ConfirmEmail: React.FC = enhance(() => {
     setErrors([]);
 
     try {
-      const { data, errors } = await $queries.resendConfirmationEmail();
+      const { data, errors } = await queries.resendConfirmationEmail.fetch();
       if (errors) {
         setErrors(errors.map((error) => error.message));
         return;
