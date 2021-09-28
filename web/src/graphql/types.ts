@@ -2,25 +2,11 @@ import { GraphQLError } from 'graphql';
 import { OnlyKey } from '../util/types';
 import { Mutation, Query } from './graphqlTypes';
 
-export type RequestType = Query | Mutation;
+export type Root = Query | Mutation;
 
-export type RequestVariables = Record<string, any> | void;
+export type Fields<T extends Root> = keyof T;
 
-export type RequestNamesOf<T extends RequestType> = Exclude<keyof T, '__typename'>;
-
-export type RequestBody<V extends Record<string, any> | void = void> = {
-  query?: string;
-  mutation?: string;
-  variables: V;
-};
-
-export enum ResponseType {
-  Unknown,
-  Success,
-  Failure,
-}
-
-export type SuccessfulResponse<T extends RequestType, N extends RequestNamesOf<T>> = {
+export type SuccessfulResponse<T extends Root, N extends Fields<T>> = {
   data: OnlyKey<N, T[N]>;
   errors?: never;
 };
@@ -30,6 +16,4 @@ export type FailedResponse = {
   errors: GraphQLError[];
 };
 
-export type GraphqlResponse<T extends RequestType, N extends RequestNamesOf<T>> =
-  | SuccessfulResponse<T, N>
-  | FailedResponse;
+export type GraphqlResponse<T extends Root, N extends Fields<T>> = SuccessfulResponse<T, N> | FailedResponse;

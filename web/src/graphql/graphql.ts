@@ -2,7 +2,7 @@ import { extractFiles } from 'extract-files';
 import { GraphQLError } from 'graphql';
 import { UnknownError } from '../errors';
 import { Mutation, Query } from './graphqlTypes';
-import { GraphqlResponse, RequestType } from './types';
+import { GraphqlResponse, Root } from './types';
 
 export const URI = `${window.location.origin}/graphql`;
 
@@ -13,7 +13,7 @@ export const URI = `${window.location.origin}/graphql`;
  * https://github.com/jaydenseric/graphql-multipart-request-spec
  */
 export const graphql = async <
-  T extends RequestType,
+  T extends Root,
   N extends Exclude<keyof T, '__typename'>,
   V extends Record<string, any> | void = void
 >(
