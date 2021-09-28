@@ -38,12 +38,17 @@ export class $gql<T extends Root, F extends Fields<T>, Q, V> {
     return new GqlBuilder<Mutation, F>(mutation, field, undefined, undefined);
   }
 
-  constructor(
-    private readonly compiler: Compiler,
-    private readonly field: string | symbol | number,
-    private readonly query: Q,
-    private readonly variables: V
-  ) {}
+  public readonly compiler: Compiler;
+  public readonly field: F;
+  public readonly query: Q;
+  public readonly variables: V;
+
+  constructor(compiler: Compiler, field: F, query: Q, variables: V) {
+    this.compiler = compiler;
+    this.field = field;
+    this.query = query;
+    this.variables = variables;
+  }
 
   toString(variables: V): string {
     const result = isObject(variables)
