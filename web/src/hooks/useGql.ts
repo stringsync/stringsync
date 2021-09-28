@@ -1,10 +1,10 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { GraphQLError } from 'graphql';
-import { isNull, isObject } from 'lodash';
+import { isNull } from 'lodash';
 import { useEffect, useMemo, useReducer } from 'react';
 import { UNKNOWN_ERROR_MSG } from '../errors';
 import { GRAPHQL_URI } from '../graphql';
-import { Any$gql, FailedResponse, GraphqlResponseOf, SuccessfulResponse, VariablesOf } from '../graphql/$gql';
+import { $gql, Any$gql, FailedResponse, GqlResponseOf, SuccessfulResponse, VariablesOf } from '../graphql/$gql';
 import { useAction } from './useAction';
 import { FetchStatus, useFetch } from './useFetch';
 import { useMemoCmp } from './useMemoCmp';
@@ -42,15 +42,11 @@ const createNotFoundErrorResponse = (field: string): FailedResponse => ({
   errors: [new GraphQLError(`${field} not found`)],
 });
 
-const isGraphqlResponse = <G extends Any$gql>(value: any): value is GraphqlResponseOf<G> => {
-  return isObject(value) && 'data' in value;
-};
-
 const toGqlRes = async <G extends Any$gql>(
   res: Response | null,
   fetchError: Error | null,
   status: FetchStatus
-): Promise<GraphqlResponseOf<G> | null> => {
+): Promise<GqlResponseOf<G> | null> => {
   if (fetchError) {
     return null;
   }
@@ -60,26 +56,10 @@ const toGqlRes = async <G extends Any$gql>(
   if (!res) {
     return null;
   }
-
-  const contentType = res.headers.get('content-type');
-  if (!contentType?.toLowerCase().includes('application/json')) {
-    console.warn(`unexpected content-type for graphql query: ${contentType}`);
-    throw new Error('server returned unexpected content-type');
-  }
-
-  const json = await res.json();
-  if (!isGraphqlResponse<G>(json)) {
-    console.warn('unexpected graphql response from server');
-    throw new Error('server returned unexpected response');
-  }
-
-  return json;
+  return await $gql.toGqlResponse(res);
 };
 
-export const useGql = <G extends Any$gql>(
-  req: G,
-  variables: VariablesOf<G>
-): [GraphqlResponseOf<G> | null, GqlStatus] => {
+export const useGql = <G extends Any$gql>(req: G, variables: VariablesOf<G>): [GqlResponseOf<G> | null, GqlStatus] => {
   // Prevent the need for callers to have to memoize variables.
   variables = useMemoCmp(variables);
 

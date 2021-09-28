@@ -3,6 +3,8 @@ import { GraphQLError } from 'graphql';
 import { isObject, isString } from 'lodash';
 import { mutation, params, query, rawString } from 'typed-graphqlify';
 import { Params } from 'typed-graphqlify/dist/render';
+import { GRAPHQL_URI } from '.';
+import { UnknownError } from '../errors';
 import { DeepPartial, OnlyKey } from '../util/types';
 import { Mutation, Query } from './graphqlTypes';
 import * as helpers from './helpers';
@@ -21,7 +23,7 @@ export type VariablesOf<G extends Any$gql> = G extends $gql<any, any, any, infer
 
 export type SuccessfulResponse<G extends Any$gql> = { data: OnlyKey<FieldOf<G>, DataOf<G>>; errors?: never };
 export type FailedResponse = { data: null; errors: GraphQLError[] };
-export type GraphqlResponseOf<G extends Any$gql> = SuccessfulResponse<G> | FailedResponse;
+export type GqlResponseOf<G extends Any$gql> = SuccessfulResponse<G> | FailedResponse;
 
 type Prim = string | boolean | number | null;
 type Variables = { [key: string]: Prim | Variables | Variables[] };
@@ -38,6 +40,26 @@ export class $gql<T extends Root, F extends Fields<T>, Q, V> {
     return new GqlBuilder<Mutation, F>(mutation, field, undefined, undefined);
   }
 
+  static async toGqlResponse<G extends Any$gql>(res: Response): Promise<GqlResponseOf<G>> {
+    const contentType = res.headers.get('content-type');
+    if (!contentType?.toLowerCase().includes('application/json')) {
+      console.warn(`unexpected content-type, got: ${contentType}`);
+      throw new UnknownError();
+    }
+
+    const json = await res.json();
+    if (!$gql.isGqlResponse<G>(json)) {
+      console.warn('unexpected graphql response from server');
+      throw new UnknownError();
+    }
+
+    return json;
+  }
+
+  private static isGqlResponse = <G extends Any$gql>(value: any): value is GqlResponseOf<G> => {
+    return isObject(value) && 'data' in value;
+  };
+
   public readonly compiler: Compiler;
   public readonly field: F;
   public readonly query: Q;
@@ -48,6 +70,17 @@ export class $gql<T extends Root, F extends Fields<T>, Q, V> {
     this.field = field;
     this.query = query;
     this.variables = variables;
+  }
+
+  async fetch(variables: V) {
+    const res = await fetch(GRAPHQL_URI, {
+      method: 'POST',
+      headers: { Accept: 'application/json' },
+      body: this.toFormData(variables),
+      credentials: 'include',
+      mode: 'cors',
+    });
+    return await $gql.toGqlResponse(res);
   }
 
   toString(variables: V): string {
