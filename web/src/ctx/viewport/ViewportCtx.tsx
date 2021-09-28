@@ -1,7 +1,6 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
-import { noop } from 'lodash';
-import React, { useReducer } from 'react';
-import { Dispatch } from '../types';
+import React, { useEffect, useReducer } from 'react';
+import { useMedia } from '../../hooks/useMedia';
 import { getViewportState } from './getViewportState';
 import { Breakpoint } from './types';
 
@@ -15,13 +14,21 @@ export type ViewportState = {
   breakpoint: Breakpoint;
 };
 
-export type ViewportDispatch = Dispatch<typeof VIEWPORT_ACTIONS>;
-
-const getInitialState = (): ViewportState => getViewportState('xs');
-
-export const VIEWPORT_ACTIONS = {
+const VIEWPORT_ACTIONS = {
   update: createAction<{ breakpoint: Breakpoint }>('update'),
 };
+
+const BREAKPOINT_QUERIES = [
+  '(max-width: 575px)',
+  '(max-width: 767px)',
+  '(max-width: 991px)',
+  '(max-width: 1199px)',
+  '(max-width: 1599px)',
+];
+
+const BREAKPOINTS: Breakpoint[] = ['xs', 'sm', 'md', 'lg', 'xl'];
+
+const getInitialState = (): ViewportState => getViewportState('xs');
 
 const viewportReducer = createReducer(getInitialState(), (builder) => {
   builder.addCase(VIEWPORT_ACTIONS.update, (state, action) => {
@@ -29,15 +36,16 @@ const viewportReducer = createReducer(getInitialState(), (builder) => {
   });
 });
 
-export const ViewportStateCtx = React.createContext<ViewportState>(getInitialState());
-export const ViewportDispatchCtx = React.createContext(noop);
+export const ViewportCtx = React.createContext<ViewportState>(getInitialState());
 
 export const ViewportProvider: React.FC = (props) => {
   const [state, dispatch] = useReducer(viewportReducer, getInitialState());
 
-  return (
-    <ViewportStateCtx.Provider value={state}>
-      <ViewportDispatchCtx.Provider value={dispatch}>{props.children}</ViewportDispatchCtx.Provider>
-    </ViewportStateCtx.Provider>
-  );
+  const breakpoint = useMedia(BREAKPOINT_QUERIES, BREAKPOINTS, 'xxl');
+
+  useEffect(() => {
+    dispatch(VIEWPORT_ACTIONS.update({ breakpoint }));
+  }, [breakpoint]);
+
+  return <ViewportCtx.Provider value={state}>{props.children}</ViewportCtx.Provider>;
 };
