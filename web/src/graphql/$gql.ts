@@ -1,7 +1,7 @@
 import { extractFiles } from 'extract-files';
 import { GraphQLError } from 'graphql';
 import { isObject, isPlainObject, isString } from 'lodash';
-import { CompiledResult, mutation, params, query, rawString, types } from 'typed-graphqlify';
+import { mutation, params, query, rawString, types } from 'typed-graphqlify';
 import { Params } from 'typed-graphqlify/dist/render';
 import { DeepPartial, OnlyKey } from '../util/types';
 import { Mutation, Query } from './graphqlTypes';
@@ -36,16 +36,6 @@ export class Gql<T extends Root, F extends Fields<T>, Q, V> {
     return new GqlBuilder<Mutation, F>(mutation, field, undefined, undefined);
   }
 
-  static make = <T extends Root, F extends Fields<T>, Q, V>(
-    compiler: Compiler,
-    field: F,
-    queryObject: Q,
-    variablesObject: V
-  ) => {
-    const queryResult = compiler(queryObject);
-    return new Gql<T, F, Q, V>(compiler, field, queryObject, queryResult, variablesObject);
-  };
-
   private static injectMeta(object: any, meta: Meta) {
     if (!isPlainObject(object)) {
       throw new Error(`can only inject metadata into plain objects, got: ${object}`);
@@ -72,17 +62,19 @@ export class Gql<T extends Root, F extends Fields<T>, Q, V> {
     Gql.injectMeta(t, { isEnum: true });
     return t;
   };
-  static optional = {
-    ...types.optional,
-    oneOf: (): ReturnType<typeof Gql.oneOf> | undefined => Gql.oneOf,
-  };
   static custom = types.custom;
+  static optional: {
+    number?: number;
+    string?: string;
+    boolean?: boolean;
+    oneOf: <T extends {}>(_e: T) => ValueOf<T> | undefined;
+    custom: <T>() => T | undefined;
+  } = Gql as any;
 
   constructor(
     private readonly compiler: Compiler,
     private readonly field: string | symbol | number,
     private readonly queryObject: Q,
-    private readonly queryResult: CompiledResult<Q, any>,
     private readonly variablesObject: V
   ) {}
 
@@ -176,7 +168,7 @@ class GqlBuilder<
     if (!this.queryObject) {
       throw new Error(`cannot build without a queryObject`);
     }
-    return Gql.make<T, F, Q, V>(this.compiler, this.field, this.queryObject, this.variablesObject);
+    return new Gql<T, F, Q, V>(this.compiler, this.field, this.queryObject, this.variablesObject);
   }
 
   setQuery<_Q extends DeepPartial<T[F]>>(queryObject: _Q) {
