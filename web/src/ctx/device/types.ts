@@ -1,4 +1,4 @@
-export type DeviceState = {
+export type Device = {
   primaryInput: 'mouse' | 'touch';
   inputType: 'mouseOnly' | 'touchOnly' | 'hybrid';
   apple: {

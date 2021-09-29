@@ -1,5 +1,5 @@
 import { deviceType, primaryInput } from 'detect-it';
-import { DeviceState } from './types';
+import { Device } from './types';
 
 // src and tests at https://github.com/kaimallea/isMobile
 
@@ -22,7 +22,7 @@ const match = (regex: RegExp, userAgent: string): boolean => {
   return regex.test(userAgent);
 };
 
-export const getDeviceState = (userAgent: string): DeviceState => {
+export const getDevice = (userAgent: string): Device => {
   // Facebook mobile app's integrated browser adds a bunch of strings that
   // match everything. Strip it out if it exists.
   let tmp = userAgent.split('[FBAN');
@@ -38,7 +38,7 @@ export const getDeviceState = (userAgent: string): DeviceState => {
     userAgent = tmp[0];
   }
 
-  const device: DeviceState = {
+  const device: Device = {
     primaryInput: primaryInput,
     inputType: deviceType,
     apple: {

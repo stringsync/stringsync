@@ -1,30 +1,31 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import React, { useReducer } from 'react';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
-import { getDeviceState } from './getDeviceState';
-import { DeviceState } from './types';
+import { getDevice } from './getDevice';
+import { Device } from './types';
 
 const DEVICE_ACTIONS = {
-  setUserAgent: createAction<{ userAgent: string }>('setUserAgent'),
+  setDevice: createAction<{ device: Device }>('setDevice'),
 };
 
 const INITIAL_USER_AGENT = navigator.userAgent || '';
 
-const getInitialState = (): DeviceState => getDeviceState(INITIAL_USER_AGENT);
+const getInitialState = (): Device => getDevice(INITIAL_USER_AGENT);
 
 const deviceReducer = createReducer(getInitialState(), (builder) => {
-  builder.addCase(DEVICE_ACTIONS.setUserAgent, (state, action) => {
-    return getDeviceState(action.payload.userAgent);
+  builder.addCase(DEVICE_ACTIONS.setDevice, (state, action) => {
+    return action.payload.device;
   });
 });
 
-export const DeviceCtx = React.createContext<DeviceState>(getInitialState());
+export const DeviceCtx = React.createContext<Device>(getInitialState());
 
 export const DeviceProvider: React.FC = (props) => {
   const [state, dispatch] = useReducer(deviceReducer, getInitialState());
 
   useEffectOnce(() => {
-    dispatch(DEVICE_ACTIONS.setUserAgent({ userAgent: navigator.userAgent || '' }));
+    const device = getDevice(navigator.userAgent || '');
+    dispatch(DEVICE_ACTIONS.setDevice({ device }));
   });
 
   return <DeviceCtx.Provider value={state}>{props.children}</DeviceCtx.Provider>;

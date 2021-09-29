@@ -1,11 +1,11 @@
 import { merge } from 'lodash';
 import { DeepPartial } from '../../util/types';
-import { getDeviceState } from './getDeviceState';
-import { DeviceState } from './types';
+import { getDevice } from './getDevice';
+import { Device } from './types';
 
-describe('getDeviceState', () => {
-  const assertDevice = (actualDevice: DeviceState, partialDeviceExpectation: DeepPartial<DeviceState>) => {
-    const falseDevice: DeviceState = {
+describe('getDevice', () => {
+  const assertDevice = (actualDevice: Device, partialDeviceExpectation: DeepPartial<Device>) => {
+    const falseDevice: Device = {
       inputType: 'mouseOnly',
       primaryInput: 'mouse',
       amazon: {
@@ -50,7 +50,7 @@ describe('getDeviceState', () => {
     const userAgent =
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.151 Safari/535.19';
 
-    const device = getDeviceState(userAgent);
+    const device = getDevice(userAgent);
 
     assertDevice(device, { mobile: false });
   });
@@ -59,7 +59,7 @@ describe('getDeviceState', () => {
     const userAgent =
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/534.53.11 (KHTML, like Gecko) Version/5.1.3 Safari/534.53.10';
 
-    const device = getDeviceState(userAgent);
+    const device = getDevice(userAgent);
 
     assertDevice(device, { mobile: false });
   });
@@ -68,7 +68,7 @@ describe('getDeviceState', () => {
     const userAgent =
       'Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/1A543 Safari/419.3';
 
-    const device = getDeviceState(userAgent);
+    const device = getDevice(userAgent);
 
     assertDevice(device, {
       apple: {
@@ -86,7 +86,7 @@ describe('getDeviceState', () => {
     const userAgent =
       'Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10';
 
-    const device = getDeviceState(userAgent);
+    const device = getDevice(userAgent);
 
     assertDevice(device, {
       apple: {
@@ -104,7 +104,7 @@ describe('getDeviceState', () => {
     const userAgent =
       'Mozilla/5.0 (iPhone; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12B410 [FBAN/FBIOS;FBAV/20.1.0.15.10;FBBV/5758778;FBDV/iPad5,4;FBMD/iPad;FBSN/iPhone OS;FBSV/8.1;FBSS/2; FBCR/;FBID/tablet;FBLC/fi_FI;FBOP/1]';
 
-    const device = getDeviceState(userAgent);
+    const device = getDevice(userAgent);
 
     assertDevice(device, {
       apple: {
@@ -121,7 +121,7 @@ describe('getDeviceState', () => {
     const userAgent =
       'Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12B410 [FBAN/FBIOS;FBAV/20.1.0.15.10;FBBV/5758778;FBDV/iPad5,4;FBMD/iPad;FBSN/iPhone OS;FBSV/8.1;FBSS/2; FBCR/;FBID/tablet;FBLC/fi_FI;FBOP/1]';
 
-    const device = getDeviceState(userAgent);
+    const device = getDevice(userAgent);
 
     assertDevice(device, {
       apple: {
@@ -138,7 +138,7 @@ describe('getDeviceState', () => {
     const userAgent =
       'Mozilla/5.0 (iPhone; CPU iPhone OS 9_2_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13D15 Twitter for iPhone';
 
-    const device = getDeviceState(userAgent);
+    const device = getDevice(userAgent);
 
     assertDevice(device, {
       apple: {
@@ -156,7 +156,7 @@ describe('getDeviceState', () => {
     const userAgent =
       'Mozilla/5.0 (iPad; CPU OS 9_2_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13D15 Twitter for iPhone';
 
-    const device = getDeviceState(userAgent);
+    const device = getDevice(userAgent);
 
     assertDevice(device, {
       apple: {
@@ -173,7 +173,7 @@ describe('getDeviceState', () => {
     const userAgent =
       'Mozilla/5.0 (Linux; <Android Version>; <Build Tag etc.>) AppleWebKit/<WebKit Rev> (KHTML, like Gecko) Chrome/<Chrome Rev> Mobile Safari/<WebKit Rev>';
 
-    const device = getDeviceState(userAgent);
+    const device = getDevice(userAgent);
 
     assertDevice(device, {
       android: {
@@ -194,7 +194,7 @@ describe('getDeviceState', () => {
     const userAgent =
       'Mozilla/5.0 (Linux; <Android Version>; <Build Tag etc.>) AppleWebKit/<WebKit Rev>(KHTML, like Gecko) Chrome/<Chrome Rev> Safari/<WebKit Rev>';
 
-    const device = getDeviceState(userAgent);
+    const device = getDevice(userAgent);
 
     assertDevice(device, {
       android: {
@@ -214,7 +214,7 @@ describe('getDeviceState', () => {
   it('detects OkHttp', () => {
     const userAgent = 'okhttp/3.9.1';
 
-    const device = getDeviceState(userAgent);
+    const device = getDevice(userAgent);
 
     assertDevice(device, {
       android: {
@@ -231,7 +231,7 @@ describe('getDeviceState', () => {
     const userAgent =
       'Mozilla/5.0 (Linux; U; Android android-version; locale; KFOT Build/product-build) AppleWebKit/webkit-version (KHTML, like Gecko) Silk/browser-version like Chrome/chrome-version Safari/webkit-version';
 
-    const device = getDeviceState(userAgent);
+    const device = getDevice(userAgent);
 
     assertDevice(device, {
       amazon: {
@@ -253,7 +253,7 @@ describe('getDeviceState', () => {
     const userAgent =
       'Mozilla/5.0 (Linux; U; Android android-version; locale; KFTT Build/product-build) AppleWebKit/webkit-version (KHTML, like Gecko) Silk/browser-version like Chrome/chrome-version Safari/webkit-version';
 
-    const device = getDeviceState(userAgent);
+    const device = getDevice(userAgent);
 
     assertDevice(device, {
       amazon: {
