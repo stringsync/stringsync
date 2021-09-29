@@ -10,6 +10,7 @@ import { AuthSync } from './components/AuthSync';
 import { NewVersionNotifier } from './components/NewVerisionNotifier/NewVersionNotifier';
 import { Routes } from './components/Routes';
 import { DeviceProvider } from './ctx/device/DeviceCtx';
+import { ServiceWorkerProvider } from './ctx/service-worker/ServiceWorkerCtx';
 import { ViewportProvider } from './ctx/viewport';
 import { theme } from './theme';
 
@@ -25,11 +26,13 @@ export const App: React.FC<Props> = (props) => {
           <ThemeProvider theme={theme}>
             <ViewportProvider>
               <DeviceProvider>
-                <BrowserRouter>
-                  <NewVersionNotifier />
-                  <AuthSync />
-                  <Routes />
-                </BrowserRouter>
+                <ServiceWorkerProvider>
+                  <BrowserRouter>
+                    <NewVersionNotifier />
+                    <AuthSync />
+                    <Routes />
+                  </BrowserRouter>
+                </ServiceWorkerProvider>
               </DeviceProvider>
             </ViewportProvider>
           </ThemeProvider>
