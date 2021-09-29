@@ -1,6 +1,6 @@
 import React, { RefObject, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { useDevice } from '../../ctx/device/useDevice';
+import { useDevice } from '../../ctx/device';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { CursorStyleType } from '../../lib/MusicDisplay/cursors';
 import { PointerTargetType } from '../../lib/MusicDisplay/pointer';

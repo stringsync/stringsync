@@ -27,5 +27,5 @@ export const DeviceProvider: React.FC = (props) => {
     dispatch(DEVICE_ACTIONS.setUserAgent({ userAgent: navigator.userAgent || '' }));
   });
 
-  return <DeviceCtx.Provider value={state}></DeviceCtx.Provider>;
+  return <DeviceCtx.Provider value={state}>{props.children}</DeviceCtx.Provider>;
 };

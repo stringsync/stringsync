@@ -1,13 +1,11 @@
 import { notification } from 'antd';
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
+import { useServiceWorker } from '../../ctx/service-worker';
 import { Nothing } from '../Nothing/Nothing';
 import { TimeoutButton } from '../TimeoutButton/TimeoutButton';
 
-export const ServiceWorkerSync: React.FC = () => {
-  const isUpdated = useSelector<RootState, boolean>((state) => state.sw.isUpdated);
-  const registration = useSelector<RootState, ServiceWorkerRegistration | null>((state) => state.sw.registration);
+export const NewVersionNotifier: React.FC = () => {
+  const { isUpdated, registration } = useServiceWorker();
 
   useEffect(() => {
     if (!isUpdated || !registration || !registration.waiting) {

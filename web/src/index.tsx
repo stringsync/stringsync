@@ -2,19 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { App } from './App';
 import reportWebVitals from './reportWebVitals';
-import * as serviceWorker from './serviceWorkerRegistration';
-import { createStore, swSlice } from './store';
+import { createStore } from './store';
 
 const store = createStore();
-
-serviceWorker.register({
-  onSuccess: () => {
-    store.dispatch(swSlice.actions.success());
-  },
-  onUpdate: (registration) => {
-    store.dispatch(swSlice.actions.update(registration));
-  },
-});
 
 const rootElement = document.getElementById('root');
 if (rootElement?.hasChildNodes()) {

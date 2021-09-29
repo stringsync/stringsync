@@ -7,8 +7,8 @@ import { Store } from 'redux';
 import { ThemeProvider } from 'styled-components';
 import './App.less';
 import { AuthSync } from './components/AuthSync';
+import { NewVersionNotifier } from './components/NewVerisionNotifier/NewVersionNotifier';
 import { Routes } from './components/Routes';
-import { ServiceWorkerSync } from './components/ServiceWorkerSync/ServiceWorkerSync';
 import { DeviceProvider } from './ctx/device/DeviceCtx';
 import { ViewportProvider } from './ctx/viewport';
 import { theme } from './theme';
@@ -26,7 +26,7 @@ export const App: React.FC<Props> = (props) => {
             <ViewportProvider>
               <DeviceProvider>
                 <BrowserRouter>
-                  <ServiceWorkerSync />
+                  <NewVersionNotifier />
                   <AuthSync />
                   <Routes />
                 </BrowserRouter>
