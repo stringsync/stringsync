@@ -117,23 +117,6 @@ describe('getDevice', () => {
     });
   });
 
-  it('detects Facebook iPhone app', () => {
-    const userAgent =
-      'Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12B410 [FBAN/FBIOS;FBAV/20.1.0.15.10;FBBV/5758778;FBDV/iPad5,4;FBMD/iPad;FBSN/iPhone OS;FBSV/8.1;FBSS/2; FBCR/;FBID/tablet;FBLC/fi_FI;FBOP/1]';
-
-    const device = getDevice(userAgent);
-
-    assertDevice(device, {
-      apple: {
-        phone: false,
-        tablet: true,
-        device: true,
-      },
-      mobile: true,
-      tablet: true,
-    });
-  });
-
   it('detects Twitter iPhone app', () => {
     const userAgent =
       'Mozilla/5.0 (iPhone; CPU iPhone OS 9_2_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13D15 Twitter for iPhone';
