@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import { Fallback } from '../components/Fallback';
+import { useRouteInfo } from '../ctx/route-info';
 import { gtEqAdmin, gtEqStudent, gtEqTeacher, UserRole } from '../domain';
 import { isLoggedInSelector, RootState } from '../store';
 import { AuthRequirement } from '../util/types';
@@ -35,11 +36,8 @@ export const withAuthRequirement = (authReqs: AuthRequirement) =>
       const userRole = useSelector<RootState, UserRole>((state) => state.auth.user.role);
       const history = useHistory();
 
-      const returnToRoute = useSelector<RootState, string>((state) => {
-        const returnToRoute = state.history.returnToRoute;
-        const historyRoute = history.location.pathname;
-        return historyRoute === returnToRoute ? '/library' : returnToRoute;
-      });
+      let { returnToRoute } = useRouteInfo();
+      returnToRoute = history.location.pathname === returnToRoute ? '/library' : returnToRoute;
 
       const meetsAuthReqs = isMeetingAuthReqs(authReqs, isLoggedIn, userRole);
 

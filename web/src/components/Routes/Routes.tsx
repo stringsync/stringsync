@@ -8,9 +8,7 @@ import { Fallback } from '../Fallback';
 import { Landing } from '../Landing';
 import { NotFound } from '../NotFound';
 import { Nothing } from '../Nothing/Nothing';
-import { ReturnToRoute } from '../ReturnToRoute';
 import { useRoutingBehavior } from './useRoutingBehavior';
-import { useTrackPrevRouteEffect } from './useTrackPrevRouteEffect';
 
 const Library = compose(withAuthRequirement(AuthRequirement.NONE))(React.lazy(() => import('../Library')));
 
@@ -45,7 +43,6 @@ const Upload = compose(withAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER)
 export const Routes: React.FC = () => {
   const { shouldRedirectFromLandingToLibrary, recordLandingVisit } = useRoutingBehavior();
 
-  useTrackPrevRouteEffect();
   useScrollToTopOnRouteChange();
 
   return (
@@ -61,15 +58,15 @@ export const Routes: React.FC = () => {
             <Landing recordLandingVisit={recordLandingVisit} />
           )}
         </Route>
-        <ReturnToRoute exact path="/library" component={Library} />
-        <ReturnToRoute exact path="/n/:id" component={NotationPlayer} />
-        <ReturnToRoute exact path="/n/:id/edit" component={NotationEditor} />
+        <Route exact path="/library" component={Library} />
+        <Route exact path="/n/:id" component={NotationPlayer} />
+        <Route exact path="/n/:id/edit" component={NotationEditor} />
         <Route path="/signup" component={Signup} />
         <Route path="/login" component={Login} />
         <Route path="/confirm-email" component={ConfirmEmail} />
         <Route path="/forgot-password" component={ForgotPassword} />
         <Route path="/reset-password" component={ResetPassword} />
-        <ReturnToRoute path="/upload" component={Upload} />
+        <Route path="/upload" component={Upload} />
         <Route path="/200.html" component={Nothing} />
         <Route path="*" component={NotFound} />
       </Switch>

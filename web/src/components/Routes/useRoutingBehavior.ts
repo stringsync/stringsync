@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
+import { useRouteInfo } from '../../ctx/route-info';
 import { Duration } from '../../util/Duration';
 import { NumberRange } from '../../util/NumberRange';
 import { useRoutingLocalCache } from './useRoutingLocalCache';
@@ -15,7 +14,8 @@ const REDIRECT_LANDING_TO_LIBRARY_TIME_MS_RANGE = NumberRange.from(ONE_MINUTE.ms
 const getMsSinceEpoch = () => new Date().getTime();
 
 export const useRoutingBehavior = () => {
-  const isInitialPage = useSelector<RootState, boolean>((state) => state.history.prevRoute === '');
+  const { prevRoute } = useRouteInfo();
+  const isInitialPage = prevRoute === '';
   const [cache, updateCache] = useRoutingLocalCache();
   const [shouldRedirectFromLandingToLibrary, setShouldRedirectFromLandingToLibrary] = useState(() => {
     const msSinceLandingLastVisited = getMsSinceEpoch() - cache.lastVisitedLandingAtMsSinceEpoch;
