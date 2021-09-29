@@ -2,17 +2,7 @@ import { createAction, createReducer } from '@reduxjs/toolkit';
 import React, { useEffect, useReducer } from 'react';
 import { useMedia } from '../../hooks/useMedia';
 import { getViewportState } from './getViewportState';
-import { Breakpoint } from './types';
-
-export type ViewportState = {
-  xs: boolean;
-  sm: boolean;
-  md: boolean;
-  lg: boolean;
-  xl: boolean;
-  xxl: boolean;
-  breakpoint: Breakpoint;
-};
+import { Breakpoint, ViewportState } from './types';
 
 const VIEWPORT_ACTIONS = {
   setBreakpoint: createAction<{ breakpoint: Breakpoint }>('setBreakpoint'),

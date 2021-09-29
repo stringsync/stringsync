@@ -1,5 +1,4 @@
-import { Breakpoint } from './types';
-import { ViewportState } from './ViewportCtx';
+import { Breakpoint, ViewportState } from './types';
 
 export const getViewportState = (breakpoint: Breakpoint): ViewportState => {
   const viewport = {
