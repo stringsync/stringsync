@@ -1,12 +1,11 @@
 import React, { RefObject, useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { useDevice } from '../../ctx/device/useDevice';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { CursorStyleType } from '../../lib/MusicDisplay/cursors';
 import { PointerTargetType } from '../../lib/MusicDisplay/pointer';
 import { isNonePointerTarget, isPositional } from '../../lib/MusicDisplay/pointer/pointerTypeAssert';
 import { SupportedSVGEventNames } from '../../lib/MusicDisplay/svg';
-import { RootState } from '../../store';
 
 const Outer = styled.div<{ cursor: Cursor }>`
   margin-top: 24px;
@@ -56,9 +55,7 @@ enum Cursor {
 }
 
 export const Notation: React.FC<NotationProps> = (props) => {
-  const deviceInputType = useSelector<RootState, 'mouseOnly' | 'touchOnly' | 'hybrid'>(
-    (state) => state.device.inputType
-  );
+  const device = useDevice();
 
   const { musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef, onMusicDisplayChange } = props;
 
@@ -149,7 +146,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
       eventNames: [...COMMON_SVG_EVENT_NAMES],
       isIdlePingerEnabled: false,
     };
-    switch (deviceInputType) {
+    switch (device.inputType) {
       case 'mouseOnly':
         svgSettings.eventNames = [...svgSettings.eventNames, ...MOUSE_SVG_EVENT_NAMES];
         svgSettings.isIdlePingerEnabled = true;
@@ -197,7 +194,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
 
       musicDisplay.dispose();
     };
-  }, [musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef, deviceInputType]);
+  }, [musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef, device]);
 
   return (
     <Outer data-notation cursor={cursor}>
