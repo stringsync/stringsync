@@ -15,7 +15,7 @@ export type ViewportState = {
 };
 
 const VIEWPORT_ACTIONS = {
-  update: createAction<{ breakpoint: Breakpoint }>('update'),
+  setBreakpoint: createAction<{ breakpoint: Breakpoint }>('setBreakpoint'),
 };
 
 const BREAKPOINT_QUERIES = [
@@ -31,7 +31,7 @@ const BREAKPOINTS: Breakpoint[] = ['xs', 'sm', 'md', 'lg', 'xl'];
 const getInitialState = (): ViewportState => getViewportState('xs');
 
 const viewportReducer = createReducer(getInitialState(), (builder) => {
-  builder.addCase(VIEWPORT_ACTIONS.update, (state, action) => {
+  builder.addCase(VIEWPORT_ACTIONS.setBreakpoint, (state, action) => {
     return getViewportState(action.payload.breakpoint);
   });
 });
@@ -44,7 +44,7 @@ export const ViewportProvider: React.FC = (props) => {
   const breakpoint = useMedia(BREAKPOINT_QUERIES, BREAKPOINTS, 'xxl');
 
   useEffect(() => {
-    dispatch(VIEWPORT_ACTIONS.update({ breakpoint }));
+    dispatch(VIEWPORT_ACTIONS.setBreakpoint({ breakpoint }));
   }, [breakpoint]);
 
   return <ViewportCtx.Provider value={state}>{props.children}</ViewportCtx.Provider>;
