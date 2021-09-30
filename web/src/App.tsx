@@ -1,43 +1,36 @@
 import { ConfigProvider } from 'antd';
 import enUS from 'antd/lib/locale-provider/en_US';
 import React from 'react';
-import { Provider as StoreProvider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
-import { Store } from 'redux';
 import { ThemeProvider } from 'styled-components';
 import './App.less';
-import { AuthSync } from './components/AuthSync';
 import { NewVersionNotifier } from './components/NewVerisionNotifier/NewVersionNotifier';
 import { Routes } from './components/Routes';
-import { DeviceProvider } from './ctx/device/DeviceCtx';
-import { ServiceWorkerProvider } from './ctx/service-worker/ServiceWorkerCtx';
+import { DeviceProvider } from './ctx/device';
+import { RouteInfoProvider } from './ctx/route-info';
+import { ServiceWorkerProvider } from './ctx/service-worker';
 import { ViewportProvider } from './ctx/viewport';
 import { theme } from './theme';
 
-type Props = {
-  store: Store;
-};
-
-export const App: React.FC<Props> = (props) => {
+export const App: React.FC = (props) => {
   return (
     <React.StrictMode>
-      <StoreProvider data-testid="app" store={props.store}>
-        <ConfigProvider locale={enUS}>
-          <ThemeProvider theme={theme}>
-            <ViewportProvider>
-              <DeviceProvider>
-                <ServiceWorkerProvider>
-                  <BrowserRouter>
+      <ConfigProvider locale={enUS}>
+        <ThemeProvider theme={theme}>
+          <ViewportProvider>
+            <DeviceProvider>
+              <ServiceWorkerProvider>
+                <BrowserRouter>
+                  <RouteInfoProvider>
                     <NewVersionNotifier />
-                    <AuthSync />
                     <Routes />
-                  </BrowserRouter>
-                </ServiceWorkerProvider>
-              </DeviceProvider>
-            </ViewportProvider>
-          </ThemeProvider>
-        </ConfigProvider>
-      </StoreProvider>
+                  </RouteInfoProvider>
+                </BrowserRouter>
+              </ServiceWorkerProvider>
+            </DeviceProvider>
+          </ViewportProvider>
+        </ThemeProvider>
+      </ConfigProvider>
     </React.StrictMode>
   );
 };

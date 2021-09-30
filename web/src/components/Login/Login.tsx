@@ -1,10 +1,9 @@
 import { Button, Form, Input, message } from 'antd';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { useAuth } from '../../ctx/auth';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
-import { AppDispatch, clearAuthErrors, login, RootState } from '../../store';
 import { FormPage } from '../FormPage';
 
 const Center = styled.div`
@@ -17,9 +16,9 @@ type FormValues = {
 };
 
 export const Login: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const errors = useSelector<RootState, string[]>((state) => state.auth.errors);
-  const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
+  const [authState, dispatch] = useAuth();
+  const errors = authState.errors;
+  const isAuthPending = authState.isPending;
 
   const [form] = Form.useForm<FormValues>();
 

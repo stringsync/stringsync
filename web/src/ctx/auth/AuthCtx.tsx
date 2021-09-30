@@ -1,9 +1,8 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { noop } from 'lodash';
 import React, { useReducer } from 'react';
-import { AuthUser } from '../../store';
 import { getNullAuthUser } from './getNullAuthUser';
-import { AuthState } from './types';
+import { AuthState, AuthUser } from './types';
 
 const getInitialState = (): AuthState => ({
   isPending: true,
@@ -15,6 +14,8 @@ export const AUTH_ACTIONS = {
   pending: createAction('pending'),
   setUser: createAction<{ user: AuthUser }>('setUser'),
   setErrors: createAction<{ errors: string[] }>('setErrors'),
+  reset: createAction('reset'),
+  clearErrors: createAction('clearErrors'),
 };
 
 const authReducer = createReducer(getInitialState(), (builder) => {
@@ -29,6 +30,14 @@ const authReducer = createReducer(getInitialState(), (builder) => {
   builder.addCase(AUTH_ACTIONS.setErrors, (state, action) => {
     state.isPending = false;
     state.errors = action.payload.errors;
+  });
+  builder.addCase(AUTH_ACTIONS.clearErrors, (state) => {
+    state.errors = [];
+  });
+  builder.addCase(AUTH_ACTIONS.reset, (state) => {
+    state.user = getNullAuthUser();
+    state.isPending = false;
+    state.errors = [];
   });
 });
 

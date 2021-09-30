@@ -1,11 +1,10 @@
 import { Button, Form, Input, message } from 'antd';
 import { Rule } from 'antd/lib/form';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { AUTH_ACTIONS, useAuth } from '../../ctx/auth';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
-import { AppDispatch, clearAuthErrors, RootState, signup } from '../../store';
 import { FormPage } from '../FormPage';
 
 const USERNAME_RULES: Rule[] = [
@@ -38,22 +37,22 @@ type FormValues = {
 };
 
 const Signup: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const errors = useSelector<RootState, string[]>((state) => state.auth.errors);
-  const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
+  const [authState, authDispatch] = useAuth();
+  const authErrors = authState.errors;
+  const isAuthPending = authState.isPending;
 
   const [form] = Form.useForm<FormValues>();
 
   useEffectOnce(() => {
-    dispatch(clearAuthErrors());
+    authDispatch(AUTH_ACTIONS.clearErrors());
   });
 
   const onErrorsClose: React.MouseEventHandler<HTMLButtonElement> = (event) => {
-    dispatch(clearAuthErrors());
+    authDispatch(AUTH_ACTIONS.clearErrors());
   };
   const onFinish = async () => {
     const { username, password, email } = form.getFieldsValue();
-    const action = await dispatch(signup({ input: { username, password, email } }));
+    const action = await authDispatch({ input: { username, password, email } });
     if (action.payload && 'user' in action.payload) {
       message.success(`logged in as ${action.payload.user.username}`);
     }
@@ -63,7 +62,7 @@ const Signup: React.FC = () => {
     <div data-testid="signup">
       <FormPage
         wordmarked
-        errors={errors}
+        errors={authErrors}
         onErrorsClose={onErrorsClose}
         main={
           <>

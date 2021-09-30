@@ -1,14 +1,15 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { GraphQLError } from 'graphql';
 import { isNull } from 'lodash';
-import { useEffect, useMemo, useReducer } from 'react';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { UNKNOWN_ERROR_MSG } from '../errors';
 import { GRAPHQL_URI } from '../graphql';
 import { $gql, Any$gql, FailedResponse, GqlResponseOf, SuccessfulResponse, VariablesOf } from '../graphql/$gql';
+import { PromiseStatus } from '../util/types';
 import { useAction } from './useAction';
-import { FetchStatus, useFetch } from './useFetch';
+import { FetchStatus, useImmediateFetch } from './useImmediateFetch';
+import { useImmediatePromise } from './useImmediatePromise';
 import { useMemoCmp } from './useMemoCmp';
-import { PromiseStatus, usePromise } from './usePromise';
 
 export enum GqlStatus {
   Pending,
@@ -59,7 +60,11 @@ const toGqlRes = async <G extends Any$gql>(
   return await $gql.toGqlResponse(res);
 };
 
-export const useGql = <G extends Any$gql>(req: G, variables: VariablesOf<G>): [GqlResponseOf<G> | null, GqlStatus] => {
+export const useImmediateGql = <G extends Any$gql>(
+  req: G,
+  variables: VariablesOf<G>,
+  immediate = true
+): [GqlResponseOf<G> | null, GqlStatus] => {
   // Prevent the need for callers to have to memoize variables.
   variables = useMemoCmp(variables);
 
@@ -95,8 +100,12 @@ export const useGql = <G extends Any$gql>(req: G, variables: VariablesOf<G>): [G
       mode: 'cors',
     };
   }, [req, variables]);
-  const [fetchRes, fetchError, fetchStatus] = useFetch(GRAPHQL_URI, reqInit);
-  const [gqlRes, gqlResError, gqlResStatus] = usePromise(toGqlRes, [fetchRes, fetchError, fetchStatus]);
+  const [fetchRes, fetchError, fetchStatus] = useImmediateFetch(GRAPHQL_URI, reqInit);
+
+  const execToGqlRes = useCallback(() => {
+    return toGqlRes(fetchRes, fetchError, fetchStatus);
+  }, [fetchRes, fetchError, fetchStatus]);
+  const toGqlResPromise = useImmediatePromise(execToGqlRes);
 
   useEffect(() => {
     if (fetchStatus === FetchStatus.Pending) {
@@ -110,27 +119,27 @@ export const useGql = <G extends Any$gql>(req: G, variables: VariablesOf<G>): [G
     if (status !== GqlStatus.Pending) {
       return;
     }
-    if (gqlResStatus === PromiseStatus.Pending) {
+    if (toGqlResPromise.status === PromiseStatus.Pending) {
       return;
     }
-    if (gqlResError) {
-      console.error(gqlResError);
+    if (toGqlResPromise.error) {
+      console.error(toGqlResPromise.error);
       dispatch(failure({ response: createUnknownErrorResponse() }));
       return;
     }
-    if (!gqlRes) {
+    if (!toGqlResPromise.result) {
       return;
     }
-    if (!gqlRes.data) {
+    if (!toGqlResPromise.result.data) {
       dispatch(failure({ response: createUnknownErrorResponse() }));
       return;
     }
-    if (isNull(gqlRes.data[field])) {
+    if (isNull(toGqlResPromise.result.data[field])) {
       dispatch(failure({ response: createNotFoundErrorResponse(field) }));
       return;
     }
-    dispatch(success({ response: gqlRes }));
-  }, [gqlResStatus, gqlResError, gqlRes, success, failure, field, status]);
+    dispatch(success({ response: toGqlResPromise.result }));
+  }, [toGqlResPromise, success, failure, field, status]);
 
   return [state.response, state.status];
 };

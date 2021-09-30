@@ -29,3 +29,16 @@ export type Await<T> = T extends PromiseLike<infer U> ? U : T;
 export type ukeyof<T> = T extends T ? keyof T : never;
 
 export type ValuesOf<T> = T[keyof T];
+
+export enum PromiseStatus {
+  Idle,
+  Pending,
+  Resolved,
+  Rejected,
+}
+
+export type PromiseState<T> = {
+  result: T | undefined;
+  error: Error | undefined;
+  status: PromiseStatus;
+};

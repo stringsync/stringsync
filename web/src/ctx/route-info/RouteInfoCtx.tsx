@@ -23,7 +23,7 @@ const routeInfoReducer = createReducer(getInitialState(), (builder) => {
 
 export const RouteInfoCtx = React.createContext<RouteInfoState>(getInitialState());
 
-export const RouteProvider: React.FC = (props) => {
+export const RouteInfoProvider: React.FC = (props) => {
   const [state, dispatch] = useReducer(routeInfoReducer, getInitialState());
   const location = useLocation();
 

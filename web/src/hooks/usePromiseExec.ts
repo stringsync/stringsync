@@ -1,41 +1,27 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { castDraft } from 'immer';
 import { noop } from 'lodash';
-import { useCallback, useEffect, useMemo, useReducer } from 'react';
-import { Await } from '../util/types';
+import { useCallback, useMemo, useReducer } from 'react';
+import { PromiseState, PromiseStatus } from '../util/types';
 import { useAction } from './useAction';
 
-export type AsyncCallback<T, A extends any[]> = (...args: A) => Promise<T>;
+export type AsyncCallback<T> = () => Promise<T>;
 
 export type CleanupCallback = (done: boolean) => void;
 
-export enum PromiseStatus {
-  Pending,
-  Resolved,
-  Rejected,
-}
+type SyncCallback = () => void;
 
-type State<T> = {
-  result: T | undefined;
-  error: Error | undefined;
-  status: PromiseStatus;
-};
-
-export const usePromise = <T extends AsyncCallback<any, any>>(
-  callback: T,
-  args: Parameters<T>,
+export const usePromiseExec = <T>(
+  callback: AsyncCallback<T>,
   onCleanup: CleanupCallback = noop
-): [Await<ReturnType<T>> | undefined, Error | undefined, PromiseStatus] => {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  args = useMemo(() => args, args);
-
+): [SyncCallback, PromiseState<T>] => {
   const pending = useAction('pending');
-  const resolve = useAction<{ result: Await<ReturnType<T>> }>('resolve');
+  const resolve = useAction<{ result: T }>('resolve');
   const reject = useAction<{ error: Error }>('reject');
 
   const getInitialState = useCallback(
-    (): State<Await<ReturnType<T>>> => ({
-      status: PromiseStatus.Pending,
+    (): PromiseState<T> => ({
+      status: PromiseStatus.Idle,
       result: undefined,
       error: undefined,
     }),
@@ -62,23 +48,22 @@ export const usePromise = <T extends AsyncCallback<any, any>>(
 
   const [state, dispatch] = useReducer(promiseReducer, getInitialState());
 
-  useEffect(() => {
+  const exec = useCallback(() => {
     let cancelled = false;
     let done = false;
 
     dispatch(pending());
 
-    callback
-      .apply(null, args)
+    callback()
       .then((result) => !cancelled && dispatch(resolve({ result })))
       .catch((error) => !cancelled && dispatch(reject({ error })))
       .finally(() => (done = true));
 
     return () => {
-      cancelled = true;
+      cancelled = !done;
       onCleanup(done);
     };
-  }, [callback, args, onCleanup, pending, resolve, reject]);
+  }, [callback, pending, resolve, reject, onCleanup]);
 
-  return [state.result, state.error, state.status];
+  return [exec, state];
 };

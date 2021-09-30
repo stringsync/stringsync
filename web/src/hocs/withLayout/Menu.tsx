@@ -1,12 +1,13 @@
 import { CompassOutlined, SettingOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Button, Col, message, Modal, Row } from 'antd';
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useCallback, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import styled from 'styled-components';
-import { useViewportState } from '../../ctx/viewport/useViewportState';
+import { AUTH_ACTIONS, isLoggedInSelector, useAuth } from '../../ctx/auth';
+import { useViewport } from '../../ctx/viewport/useViewport';
 import { gtEqTeacher } from '../../domain';
-import { AppDispatch, AuthUser, isLoggedInSelector, logout, RootState } from '../../store';
+import { queries } from '../../graphql';
+import { usePromiseExec } from '../../hooks/usePromiseExec';
 
 const StyledRow = styled(Row)`
   svg {
@@ -43,21 +44,27 @@ const Role = styled.div`
 interface Props {}
 
 export const Menu: React.FC<Props> = (props) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const isLoggedIn = useSelector<RootState, boolean>(isLoggedInSelector);
-  const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
-  const { xs, sm, md } = useViewportState();
+  const [authState, authDispatch] = useAuth();
+  const isLoggedIn = isLoggedInSelector(authState);
+  const isAuthPending = authState.isPending;
+  const user = authState.user;
+  const { xs, sm, md } = useViewport();
   const isLtEqMd = xs || sm || md;
-  const user = useSelector<RootState, AuthUser>((state) => state.auth.user);
 
   const [isModalVisible, setModalVisible] = useState(false);
   const isGtEqTeacher = gtEqTeacher(user.role);
   const settingsButtonClassName = isModalVisible ? 'active-link' : '';
 
+  const logout = useCallback(async () => {
+    authDispatch(AUTH_ACTIONS.reset());
+    await queries.logout.fetch();
+  }, [authDispatch]);
+  const [execLogout] = usePromiseExec(logout);
+
   const showModal = () => setModalVisible(true);
   const hideModal = () => setModalVisible(false);
   const onLogoutClick = () => {
-    dispatch(logout());
+    execLogout();
     hideModal();
     message.success('logged out');
   };

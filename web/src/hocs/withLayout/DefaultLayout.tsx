@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { Logo } from '../../components/Logo';
 import { Wordmark } from '../../components/Wordmark';
-import { useViewportState } from '../../ctx/viewport/useViewportState';
+import { useViewport } from '../../ctx/viewport/useViewport';
 import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 import { Menu } from './Menu';
 
@@ -55,7 +55,7 @@ type Props = {
 
 export const DefaultLayout: React.FC<Props> = (props) => {
   const location = useLocation();
-  const { lg, xl, xxl } = useViewportState();
+  const { lg, xl, xxl } = useViewport();
   const isGtMd = lg || xl || xxl;
 
   const isOnline = useOnlineStatus();

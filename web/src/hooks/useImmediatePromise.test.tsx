@@ -1,15 +1,21 @@
 import { render } from '@testing-library/react';
 import React, { useEffect } from 'react';
-import { PromiseStatus, usePromise } from './usePromise';
+import { PromiseStatus } from '../util/types';
+import { useImmediatePromise } from './useImmediatePromise';
 
 describe('usePromise', () => {
+  const args1 = Symbol();
+  const args2 = Symbol();
+  const callback1 = async () => args1;
+  const callback2 = async () => args2;
+
+  beforeEach(() => {});
+
   it('resolves values', async () => {
     const onPromiseChange = jest.fn();
-    const args: [symbol] = [Symbol()];
-    const resolveImmediately = (arg: symbol) => Promise.resolve(arg);
 
     const Component: React.FC = () => {
-      const [result, error, status] = usePromise(resolveImmediately, args);
+      const { result, error, status } = useImmediatePromise(callback1);
       useEffect(() => {
         onPromiseChange({ result, error, status });
       }, [result, error, status]);
@@ -26,7 +32,7 @@ describe('usePromise', () => {
       status: PromiseStatus.Pending,
     });
     expect(onPromiseChange).toHaveBeenCalledWith({
-      result: args[0],
+      result: args1,
       error: undefined,
       status: PromiseStatus.Resolved,
     });
@@ -34,12 +40,11 @@ describe('usePromise', () => {
 
   it('rejects values', async () => {
     const onPromiseChange = jest.fn();
-    const args: [symbol] = [Symbol()];
     const error = new Error();
-    const rejectImmediately = (arg: symbol) => Promise.reject(error);
+    const rejectImmediately = () => Promise.reject(error);
 
     const Component: React.FC = () => {
-      const [result, error, status] = usePromise(rejectImmediately, args);
+      const { result, error, status } = useImmediatePromise(rejectImmediately);
       useEffect(() => {
         onPromiseChange({ result, error, status });
       }, [result, error, status]);
@@ -64,12 +69,9 @@ describe('usePromise', () => {
 
   it('ignores cancelled promises', async () => {
     const onPromiseChange = jest.fn();
-    const args1: [symbol] = [Symbol()];
-    const args2: [symbol] = [Symbol()];
-    const resolveImmediately = (arg: symbol) => Promise.resolve(arg);
 
-    const Component: React.FC<{ args: [symbol] }> = (props) => {
-      const [result, error, status] = usePromise(resolveImmediately, props.args);
+    const Component: React.FC<{ callback: () => Promise<symbol> }> = (props) => {
+      const { result, error, status } = useImmediatePromise(props.callback);
       useEffect(() => {
         onPromiseChange({ result, error, status });
       }, [result, error, status]);
@@ -77,8 +79,8 @@ describe('usePromise', () => {
     };
 
     // Cancel the args1 call by re-rendering immediately
-    const { rerender, findByText } = render(<Component args={args1} />);
-    rerender(<Component args={args2} />);
+    const { rerender, findByText } = render(<Component callback={callback1} />);
+    rerender(<Component callback={callback2} />);
     await findByText('done');
 
     expect(onPromiseChange).toHaveBeenCalledTimes(2);
@@ -88,12 +90,12 @@ describe('usePromise', () => {
       status: PromiseStatus.Pending,
     });
     expect(onPromiseChange).not.toHaveBeenCalledWith({
-      result: args1[0],
+      result: args1,
       error: undefined,
       status: PromiseStatus.Resolved,
     });
     expect(onPromiseChange).toHaveBeenCalledWith({
-      result: args2[0],
+      result: args2,
       error: undefined,
       status: PromiseStatus.Resolved,
     });

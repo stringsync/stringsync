@@ -6,7 +6,7 @@ import { isEqual, uniq, without } from 'lodash';
 import React, { ChangeEventHandler, MouseEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { useViewportState } from '../../ctx/viewport/useViewportState';
+import { useViewport } from '../../ctx/viewport/useViewport';
 import { Layout, withLayout } from '../../hocs/withLayout';
 import { useDebounce } from '../../hooks/useDebounce';
 import { useIntersection } from '../../hooks/useIntersection';
@@ -98,7 +98,7 @@ export const Library: React.FC<Props> = enhance(() => {
   const hasLoadedFirstPage = state.context.hasLoadedFirstPage;
   const [tags] = useTags();
 
-  const { xs, sm } = useViewportState();
+  const { xs, sm } = useViewport();
 
   const [query, setQuery] = useState('');
   const [tagIds, setTagIds] = useState(new Array<string>());

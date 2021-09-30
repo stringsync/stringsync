@@ -1,14 +1,13 @@
 import { Button, Divider, Form, Input, message } from 'antd';
 import { Rule } from 'antd/lib/form';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
+import { useAuth } from '../../ctx/auth';
 import { UnknownError, UNKNOWN_ERROR_MSG } from '../../errors';
 import { queries } from '../../graphql';
 import { Layout, withLayout } from '../../hocs/withLayout';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useQueryParams } from '../../hooks/useQueryParams';
-import { RootState } from '../../store';
 import { compose } from '../../util/compose';
 import { FormPage } from '../FormPage';
 
@@ -21,9 +20,10 @@ type FormValues = {
 };
 
 export const ConfirmEmail: React.FC = enhance(() => {
-  const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
-  const email = useSelector<RootState, string>((state) => state.auth.user.email);
-  const confirmedAt = useSelector<RootState, string | null>((state) => state.auth.user.confirmedAt);
+  const [authState, dispatch] = useAuth();
+  const isAuthPending = authState.isPending;
+  const email = authState.user.email;
+  const confirmedAt = authState.user.confirmedAt;
 
   const [errors, setErrors] = useState(new Array<string>());
   const [isPending, setIsPending] = useState(false);

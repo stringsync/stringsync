@@ -1,11 +1,10 @@
 import { message } from 'antd';
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import { Fallback } from '../components/Fallback';
+import { isLoggedInSelector, useAuth } from '../ctx/auth';
 import { useRouteInfo } from '../ctx/route-info';
 import { gtEqAdmin, gtEqStudent, gtEqTeacher, UserRole } from '../domain';
-import { isLoggedInSelector, RootState } from '../store';
 import { AuthRequirement } from '../util/types';
 
 const isMeetingAuthReqs = (authReqs: AuthRequirement, isLoggedIn: boolean, userRole: UserRole) => {
@@ -31,9 +30,10 @@ const isMeetingAuthReqs = (authReqs: AuthRequirement, isLoggedIn: boolean, userR
 export const withAuthRequirement = (authReqs: AuthRequirement) =>
   function<P>(Component: React.ComponentType<P>): React.FC<P> {
     return (props) => {
-      const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
-      const isLoggedIn = useSelector<RootState, boolean>(isLoggedInSelector);
-      const userRole = useSelector<RootState, UserRole>((state) => state.auth.user.role);
+      const [authState] = useAuth();
+      const isLoggedIn = isLoggedInSelector(authState);
+      const isAuthPending = authState.isPending;
+      const userRole = authState.user.role;
       const history = useHistory();
 
       let { returnToRoute } = useRouteInfo();

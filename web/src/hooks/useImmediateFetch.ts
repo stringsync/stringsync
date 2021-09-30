@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { PromiseStatus, usePromise } from './usePromise';
+import { useCallback, useEffect, useState } from 'react';
+import { PromiseStatus } from '../util/types';
+import { useImmediatePromise } from './useImmediatePromise';
 
 export enum FetchStatus {
   Pending,
@@ -24,16 +25,15 @@ const toFetchStatus = (promiseStatus: PromiseStatus) => {
  * Makes a request using the fetch parameters. The main benefit of using this hook is
  * that it will abort in-flight requests if the parameters change.
  */
-export const useFetch = (
+export const useImmediateFetch = (
   input: RequestInfo,
   init?: RequestInit
 ): [Response | null, Error | null, FetchStatus, AbortController] => {
   const [abortController] = useState(() => new AbortController());
-  const fetchArgs = useMemo<[RequestInfo, RequestInit]>(() => [input, { ...init, signal: abortController.signal }], [
-    input,
-    init,
-    abortController,
-  ]);
+
+  const execFetch = useCallback(() => {
+    return fetch(input, { ...init, signal: abortController.signal });
+  }, [input, init, abortController]);
 
   const onCleanup = useCallback(
     (done: boolean) => {
@@ -50,7 +50,7 @@ export const useFetch = (
     }
   }, [init]);
 
-  const [result, error, promiseStatus] = usePromise(fetch, fetchArgs, onCleanup);
+  const promise = useImmediatePromise(execFetch, onCleanup);
 
-  return [result ?? null, error ?? null, toFetchStatus(promiseStatus), abortController];
+  return [promise.result ?? null, promise.error ?? null, toFetchStatus(promise.status), abortController];
 };

@@ -5,7 +5,7 @@ import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { VideoJsPlayer, VideoJsPlayerOptions } from 'video.js';
-import { useViewportState } from '../../ctx/viewport/useViewportState';
+import { useViewport } from '../../ctx/viewport/useViewport';
 import { Layout, withLayout } from '../../hocs/withLayout';
 import { useNoOverflow } from '../../hooks/useNoOverflow';
 import { useNotation } from '../../hooks/useNotation';
@@ -73,7 +73,7 @@ const TranscriberName = styled.h3`
 const enhance = compose(withLayout(Layout.DEFAULT, { lanes: false, footer: false }));
 
 const NotationPlayer: React.FC = enhance(() => {
-  const { lg, xl, xxl } = useViewportState();
+  const { lg, xl, xxl } = useViewport();
   const gtMd = lg || xl || xxl;
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);

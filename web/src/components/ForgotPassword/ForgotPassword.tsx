@@ -1,10 +1,9 @@
 import { Button, Form, Input, message } from 'antd';
 import { Rule } from 'antd/lib/form';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import { AppDispatch, clearAuthErrors, RootState, sendResetPasswordEmail } from '../../store';
+import { useAuth } from '../../ctx/auth';
 import { FormPage } from '../FormPage';
 
 const EMAIL_RULES: Rule[] = [
@@ -21,9 +20,9 @@ type FormValues = {
 };
 
 export const ForgotPassword: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const errors = useSelector<RootState, string[]>((state) => state.auth.errors);
-  const isAuthPending = useSelector<RootState, boolean>((state) => state.auth.isPending);
+  const [authState, dispatch] = useAuth();
+  const isAuthPending = authState.isPending;
+  const errors = authState.errors;
   const history = useHistory();
 
   const [form] = Form.useForm<FormValues>();

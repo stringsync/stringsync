@@ -1,5 +1,5 @@
 import { $gql, DataOf, t } from '../graphql';
-import { GqlStatus, useGql } from './useGql';
+import { GqlStatus, useImmediateGql } from './useImmediateGql';
 
 type Tags = DataOf<typeof TAGS_GQL>;
 
@@ -9,7 +9,7 @@ export const TAGS_GQL = $gql
   .build();
 
 export const useTags = (): [Tags, string[], boolean] => {
-  const [res, status] = useGql(TAGS_GQL, undefined);
+  const [res, status] = useImmediateGql(TAGS_GQL, undefined);
 
   const tags = res?.data?.tags ?? [];
   const errors = res?.errors?.map((error) => error.message) || [];
