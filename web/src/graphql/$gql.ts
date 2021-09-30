@@ -72,8 +72,8 @@ export class $gql<T extends Root, F extends Fields<T>, Q, V> {
     this.variables = variables;
   }
 
-  async fetch(variables: V) {
-    const res = await fetch(GRAPHQL_URI, {
+  async fetch(variables: V, fetchFn = fetch) {
+    const res = await fetchFn(GRAPHQL_URI, {
       method: 'POST',
       headers: { Accept: 'application/json' },
       body: this.toFormData(variables),

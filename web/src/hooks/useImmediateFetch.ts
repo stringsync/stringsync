@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
 import { PromiseStatus } from '../util/types';
-import { useImmediatePromise } from './useImmediatePromise';
+import { useFetch } from './useFetch';
 
 export enum FetchStatus {
   Pending,
@@ -29,28 +28,9 @@ export const useImmediateFetch = (
   input: RequestInfo,
   init?: RequestInit
 ): [Response | null, Error | null, FetchStatus, AbortController] => {
-  const [abortController] = useState(() => new AbortController());
+  const [fetch, fetchPromise, abortController] = useFetch(input, init);
 
-  const execFetch = useCallback(() => {
-    return fetch(input, { ...init, signal: abortController.signal });
-  }, [input, init, abortController]);
+  const { result, error, status } = fetchPromise;
 
-  const onCleanup = useCallback(
-    (done: boolean) => {
-      if (!done) {
-        abortController.abort();
-      }
-    },
-    [abortController]
-  );
-
-  useEffect(() => {
-    if (init && init.signal) {
-      throw new Error(`cannot specify init.signal, use the abort controller instead`);
-    }
-  }, [init]);
-
-  const promise = useImmediatePromise(execFetch, onCleanup);
-
-  return [promise.result ?? null, promise.error ?? null, toFetchStatus(promise.status), abortController];
+  return [result ?? null, error ?? null, toFetchStatus(status), abortController];
 };

@@ -1,20 +1,37 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { castDraft } from 'immer';
-import { noop } from 'lodash';
-import { useCallback, useMemo, useReducer } from 'react';
+import { isNull, noop } from 'lodash';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { PromiseState, PromiseStatus } from '../util/types';
 import { useAction } from './useAction';
+import { useStateRef } from './useStateRef';
 
-export type AsyncCallback<T> = () => Promise<T>;
+export type AsyncCallback<T, A extends any[]> = (...args: A) => Promise<T>;
 
 export type CleanupCallback = (done: boolean) => void;
 
-type SyncCallback = () => void;
+export type AsyncCallbackInvoker<A extends any[]> = (...args: A) => void;
 
-export const usePromiseExec = <T>(
-  callback: AsyncCallback<T>,
+type Invocation<A extends any[]> = {
+  id: symbol;
+  args: A;
+  invoked: boolean;
+};
+
+/**
+ * This hook wraps an ansynchronous callback and tracks the state of the resulting promise. It prevents the need of
+ * doing this manually.
+ *
+ * @param asyncCallback
+ * @param onCleanup
+ * @returns
+ */
+export const useAsyncCallback = <T, A extends any[]>(
+  asyncCallback: AsyncCallback<T, A>,
   onCleanup: CleanupCallback = noop
-): [SyncCallback, PromiseState<T>] => {
+): [AsyncCallbackInvoker<A>, PromiseState<T>] => {
+  const [invocation, invocationRef, setInvocation] = useStateRef<Invocation<A> | null>(null);
+
   const pending = useAction('pending');
   const resolve = useAction<{ result: T }>('resolve');
   const reject = useAction<{ error: Error }>('reject');
@@ -48,22 +65,35 @@ export const usePromiseExec = <T>(
 
   const [state, dispatch] = useReducer(promiseReducer, getInitialState());
 
-  const exec = useCallback(() => {
+  const invoke = useCallback(
+    (...args: A) => {
+      setInvocation({ id: Symbol(), args, invoked: false });
+    },
+    [setInvocation]
+  );
+
+  useEffect(() => {
+    if (isNull(invocation)) {
+      return;
+    }
+
+    const didInvokeAgain = () => !!(invocationRef.current && invocationRef.current.id !== invocation.id);
+
     let cancelled = false;
     let done = false;
 
     dispatch(pending());
 
-    callback()
+    asyncCallback(...invocation.args)
       .then((result) => !cancelled && dispatch(resolve({ result })))
       .catch((error) => !cancelled && dispatch(reject({ error })))
       .finally(() => (done = true));
 
     return () => {
-      cancelled = !done;
+      cancelled = !done || didInvokeAgain();
       onCleanup(done);
     };
-  }, [callback, pending, resolve, reject, onCleanup]);
+  }, [invocation, invocationRef, setInvocation, asyncCallback, pending, resolve, reject, onCleanup]);
 
-  return [exec, state];
+  return [invoke, state];
 };

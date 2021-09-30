@@ -7,7 +7,7 @@ import { AUTH_ACTIONS, isLoggedInSelector, useAuth } from '../../ctx/auth';
 import { useViewport } from '../../ctx/viewport/useViewport';
 import { gtEqTeacher } from '../../domain';
 import { queries } from '../../graphql';
-import { usePromiseExec } from '../../hooks/usePromiseExec';
+import { useAsyncCallback } from '../../hooks/useAsyncCallback';
 
 const StyledRow = styled(Row)`
   svg {
@@ -59,7 +59,7 @@ export const Menu: React.FC<Props> = (props) => {
     authDispatch(AUTH_ACTIONS.reset());
     await queries.logout.fetch();
   }, [authDispatch]);
-  const [execLogout] = usePromiseExec(logout);
+  const [execLogout] = useAsyncCallback(logout);
 
   const showModal = () => setModalVisible(true);
   const hideModal = () => setModalVisible(false);

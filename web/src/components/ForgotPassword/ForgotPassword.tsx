@@ -1,9 +1,9 @@
 import { Button, Form, Input, message } from 'antd';
 import { Rule } from 'antd/lib/form';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import { useAuth } from '../../ctx/auth';
+import { AUTH_ACTIONS, useAuth } from '../../ctx/auth';
 import { FormPage } from '../FormPage';
 
 const EMAIL_RULES: Rule[] = [
@@ -28,8 +28,11 @@ export const ForgotPassword: React.FC = () => {
   const [form] = Form.useForm<FormValues>();
 
   const onErrorsClose: React.MouseEventHandler<HTMLButtonElement> = () => {
-    dispatch(clearAuthErrors());
+    dispatch(AUTH_ACTIONS.clearErrors());
   };
+
+  const email = form.getFieldsValue();
+  const sendResetPasswordEmail = useCallback(async () => {}, [email]);
 
   const onFinish = async () => {
     const { email } = form.getFieldsValue();
