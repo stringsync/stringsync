@@ -1,16 +1,23 @@
-import { useCallback, useState } from 'react';
-import { useAsyncCallback } from './useAsyncCallback';
+import { useCallback, useMemo, useState } from 'react';
+import { PromiseResolver } from '../util/types';
+import { useAsync } from './useAsync';
+import { useMemoCmp } from './useMemoCmp';
 
-export const useFetch = () => {
+export const useFetch = <R = Response>(resolver: PromiseResolver<Response, R>) => {
+  resolver = useMemoCmp(resolver);
   const [abortController] = useState(() => new AbortController());
 
-  const onCleanup = useCallback(
-    (done: boolean) => {
-      if (!done) {
+  const fetchResolver = useMemo(
+    () => ({
+      ...resolver,
+      cancel: () => {
+        if (resolver.cancel) {
+          resolver.cancel();
+        }
         abortController.abort();
-      }
-    },
-    [abortController]
+      },
+    }),
+    [resolver, abortController]
   );
 
   // Creates a fetch that always has an abort controller tied to it.
@@ -24,7 +31,7 @@ export const useFetch = () => {
     [abortController]
   );
 
-  const [managedFetch, fetchPromise] = useAsyncCallback(wrappedFetch, onCleanup);
+  const [invokeFetch, promise] = useAsync(wrappedFetch, fetchResolver);
 
-  return [managedFetch, fetchPromise, abortController];
+  return [invokeFetch, promise, abortController] as const;
 };

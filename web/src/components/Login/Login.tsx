@@ -1,10 +1,14 @@
 import { Button, Form, Input, message } from 'antd';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { useAuth } from '../../ctx/auth';
+import { AUTH_ACTIONS, useAuth } from '../../ctx/auth';
+import { UNKNOWN_ERROR_MSG } from '../../errors';
+import { toUserRole } from '../../graphql';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
+import { PromiseStatus } from '../../util/types';
 import { FormPage } from '../FormPage';
+import { useLogin } from './useLogin';
 
 const Center = styled.div`
   text-align: center;
@@ -22,21 +26,53 @@ export const Login: React.FC = () => {
 
   const [form] = Form.useForm<FormValues>();
 
+  const [login, promise] = useLogin();
+
   useEffectOnce(() => {
-    dispatch(clearAuthErrors());
+    dispatch(AUTH_ACTIONS.clearErrors());
   });
 
   const onErrorsClose: React.MouseEventHandler<HTMLButtonElement> = (event) => {
-    dispatch(clearAuthErrors());
+    dispatch(AUTH_ACTIONS.clearErrors());
   };
 
   const onFinish = async () => {
     const { usernameOrEmail, password } = form.getFieldsValue();
-    const action = await dispatch(login({ input: { usernameOrEmail, password } }));
-    if (action.payload && 'user' in action.payload) {
-      message.success(`logged in as ${action.payload.user.username}`);
-    }
+    login({ input: { usernameOrEmail, password } });
   };
+
+  useEffect(() => {
+    if (promise.status === PromiseStatus.Idle) {
+      return;
+    }
+
+    if (promise.status === PromiseStatus.Pending) {
+      dispatch(AUTH_ACTIONS.pending());
+      return;
+    }
+
+    const user = promise.result?.data?.login;
+    if (promise.status === PromiseStatus.Resolved && user) {
+      dispatch(
+        AUTH_ACTIONS.setUser({
+          user: {
+            id: user.id,
+            confirmedAt: user.confirmedAt,
+            email: user.email,
+            username: user.username,
+            role: toUserRole(user.role),
+          },
+        })
+      );
+      message.success(`logged in as ${user.username}`);
+      return;
+    }
+
+    const errors = promise.result?.errors?.map((error) => error.message) || [
+      promise.error?.message || UNKNOWN_ERROR_MSG,
+    ];
+    dispatch(AUTH_ACTIONS.setErrors({ errors }));
+  }, [promise, dispatch]);
 
   return (
     <div data-testid="login">

@@ -1,15 +1,17 @@
 import { noop } from 'lodash';
 import { useEffect } from 'react';
-import { AsyncCallback, useAsyncCallback } from './useAsyncCallback';
+import { AsyncCallback, CancelCallback, useAsync } from './useAsync';
+import { useMemoCmp } from './useMemoCmp';
 
-export type CleanupCallback = (done: boolean) => void;
-
-export const useImmediatePromise = <T>(callback: AsyncCallback<T>, onCleanup: CleanupCallback = noop) => {
-  const [exec, promise] = useAsyncCallback(callback, onCleanup);
-
+export const useImmediatePromise = <T, A extends any[]>(
+  callback: AsyncCallback<T, A>,
+  args: A,
+  onCancel: CancelCallback = noop
+) => {
+  args = useMemoCmp(args);
+  const [invokeCallback, promise] = useAsync(callback, onCancel);
   useEffect(() => {
-    exec();
-  }, [exec]);
-
+    invokeCallback(...args);
+  }, [invokeCallback, args]);
   return promise;
 };

@@ -1,7 +1,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { GraphQLError } from 'graphql';
 import { isNull } from 'lodash';
-import { useCallback, useEffect, useMemo, useReducer } from 'react';
+import { useEffect, useMemo, useReducer } from 'react';
 import { UNKNOWN_ERROR_MSG } from '../errors';
 import { GRAPHQL_URI } from '../graphql';
 import { $gql, Any$gql, FailedResponse, GqlResponseOf, SuccessfulResponse, VariablesOf } from '../graphql/$gql';
@@ -101,11 +101,7 @@ export const useImmediateGql = <G extends Any$gql>(
     };
   }, [req, variables]);
   const [fetchRes, fetchError, fetchStatus] = useImmediateFetch(GRAPHQL_URI, reqInit);
-
-  const execToGqlRes = useCallback(() => {
-    return toGqlRes(fetchRes, fetchError, fetchStatus);
-  }, [fetchRes, fetchError, fetchStatus]);
-  const toGqlResPromise = useImmediatePromise(execToGqlRes);
+  const toGqlResPromise = useImmediatePromise(toGqlRes, [fetchRes, fetchError, fetchStatus]);
 
   useEffect(() => {
     if (fetchStatus === FetchStatus.Pending) {

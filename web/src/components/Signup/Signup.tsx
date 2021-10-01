@@ -1,11 +1,13 @@
-import { Button, Form, Input, message } from 'antd';
+import { Button, Form, Input } from 'antd';
 import { Rule } from 'antd/lib/form';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { AUTH_ACTIONS, useAuth } from '../../ctx/auth';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
+import { PromiseStatus } from '../../util/types';
 import { FormPage } from '../FormPage';
+import { useSignup } from './useSignup';
 
 const USERNAME_RULES: Rule[] = [
   { required: true, message: 'username is required' },
@@ -37,26 +39,36 @@ type FormValues = {
 };
 
 const Signup: React.FC = () => {
-  const [authState, authDispatch] = useAuth();
+  const [authState, dispatch] = useAuth();
   const authErrors = authState.errors;
   const isAuthPending = authState.isPending;
 
   const [form] = Form.useForm<FormValues>();
 
+  const [signup, promise] = useSignup();
+
   useEffectOnce(() => {
-    authDispatch(AUTH_ACTIONS.clearErrors());
+    dispatch(AUTH_ACTIONS.clearErrors());
   });
 
   const onErrorsClose: React.MouseEventHandler<HTMLButtonElement> = (event) => {
-    authDispatch(AUTH_ACTIONS.clearErrors());
+    dispatch(AUTH_ACTIONS.clearErrors());
   };
   const onFinish = async () => {
     const { username, password, email } = form.getFieldsValue();
-    const action = await authDispatch({ input: { username, password, email } });
-    if (action.payload && 'user' in action.payload) {
-      message.success(`logged in as ${action.payload.user.username}`);
-    }
+    signup({ input: { username, password, email } });
   };
+
+  useEffect(() => {
+    if (promise.status === PromiseStatus.Idle) {
+      return;
+    }
+
+    if (promise.status === PromiseStatus.Pending) {
+      dispatch(AUTH_ACTIONS.pending());
+      return;
+    }
+  }, [promise]);
 
   return (
     <div data-testid="signup">

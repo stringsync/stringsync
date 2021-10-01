@@ -3,7 +3,7 @@ import { merge, truncate } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { NotationObject, queries } from '../../graphql';
+import { queries } from '../../graphql';
 
 const NUM_SUGGESTIONS = 10;
 
@@ -78,18 +78,6 @@ const NULL_SUGGESTED_NOTATION: SuggestedNotation = {
   },
 };
 
-const toSuggestedNotation = (notation: NotationObject): SuggestedNotation =>
-  merge({}, NULL_SUGGESTED_NOTATION, {
-    id: notation.id,
-    artistName: notation.artistName,
-    songName: notation.songName,
-    thumbnailUrl: notation.thumbnailUrl,
-    tags: notation.tags,
-    transcriber: {
-      username: notation.transcriber.username,
-    },
-  });
-
 export const SuggestedNotations: React.FC<SuggestedNotationsProps> = (props) => {
   const [suggestedNotations, setSuggestedNotations] = useState<SuggestedNotation[]>([]);
   const [errors, setErrors] = useState(new Array<string>());
@@ -109,7 +97,20 @@ export const SuggestedNotations: React.FC<SuggestedNotationsProps> = (props) => 
       } else if (!data?.suggestedNotations) {
         setErrors([`no notation suggestions found with id '${props.srcNotationId}'`]);
       } else {
-        setSuggestedNotations(data.suggestedNotations.map(toSuggestedNotation));
+        setSuggestedNotations(
+          data.suggestedNotations.map((notation) =>
+            merge({}, NULL_SUGGESTED_NOTATION, {
+              id: notation.id,
+              artistName: notation.artistName,
+              songName: notation.songName,
+              thumbnailUrl: notation.thumbnailUrl,
+              tags: notation.tags,
+              transcriber: {
+                username: notation.transcriber.username,
+              },
+            })
+          )
+        );
       }
       setIsLoading(false);
     })();

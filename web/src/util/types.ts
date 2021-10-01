@@ -42,3 +42,12 @@ export type PromiseState<T> = {
   error: Error | undefined;
   status: PromiseStatus;
 };
+
+export type UnwrapPromise<T> = T extends Promise<infer R> ? R : T;
+
+export interface PromiseResolver<T, R = T> {
+  then?: (result: T) => R | PromiseLike<R>;
+  catch?: (error: Error) => void;
+  cancel?: () => void;
+  done?: () => void;
+}

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { PromiseStatus } from '../util/types';
 import { useFetch } from './useFetch';
 
@@ -28,7 +29,11 @@ export const useImmediateFetch = (
   input: RequestInfo,
   init?: RequestInit
 ): [Response | null, Error | null, FetchStatus, AbortController] => {
-  const [fetch, fetchPromise, abortController] = useFetch(input, init);
+  const [fetch, fetchPromise, abortController] = useFetch();
+
+  useEffect(() => {
+    fetch(input, init);
+  }, [fetch, input, init]);
 
   const { result, error, status } = fetchPromise;
 

@@ -1,10 +1,12 @@
 import { Button, Form, Input, message } from 'antd';
 import { Rule } from 'antd/lib/form';
-import React, { useCallback } from 'react';
+import React, { useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { AUTH_ACTIONS, useAuth } from '../../ctx/auth';
+import { PromiseStatus } from '../../util/types';
 import { FormPage } from '../FormPage';
+import { useSendResetPasswordEmail } from './useSendResetPasswordEmail';
 
 const EMAIL_RULES: Rule[] = [
   { required: true, message: 'email is required' },
@@ -31,18 +33,30 @@ export const ForgotPassword: React.FC = () => {
     dispatch(AUTH_ACTIONS.clearErrors());
   };
 
-  const email = form.getFieldsValue();
-  const sendResetPasswordEmail = useCallback(async () => {}, [email]);
+  const [sendResetPasswordEmail, promise] = useSendResetPasswordEmail();
 
-  const onFinish = async () => {
-    const { email } = form.getFieldsValue();
-    const action = await dispatch(sendResetPasswordEmail({ input: { email } }));
-    const maybeSendResetPasswordEmailRes = action.payload; // boolean | { errors: string [] }
-    if (maybeSendResetPasswordEmailRes === true) {
+  const { email } = form.getFieldsValue();
+
+  const onFinish = () => {
+    sendResetPasswordEmail({ input: { email } });
+  };
+
+  useEffect(() => {
+    if (promise.status === PromiseStatus.Idle) {
+      return;
+    }
+    if (promise.status === PromiseStatus.Pending) {
+      return;
+    }
+    if (promise.status === PromiseStatus.Resolved && promise.result?.data) {
       message.success(`sent reset password email to ${email}`);
       history.push(`/reset-password?email=${email}`);
+      return;
     }
-  };
+
+    console.error(`something went wrong sending reset password: ${promise.error}`);
+    message.error('something went wrong');
+  }, [promise, email, history]);
 
   return (
     <div data-testid="forgot-password">

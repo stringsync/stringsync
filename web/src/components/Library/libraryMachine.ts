@@ -2,7 +2,8 @@ import { cloneDeep } from 'lodash';
 import { assign, Condition, ContextFrom, DoneInvokeEvent, EventFrom, InvokeCreator } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 import { UnknownError } from '../../errors';
-import { NotationEdgeObject, queries, toUserRole } from '../../graphql';
+import { DataOf, toUserRole } from '../../graphql';
+import { NOTATIONS_GQL } from './queries';
 import { NotationPreview } from './types';
 
 type NotationPage = {
@@ -69,14 +70,16 @@ const clear = assign<LibraryContext, { type: 'clear' }>((context, event) => {
   return cloneDeep(libraryModel.initialContext);
 });
 
-const toNotationPreview = (edge: NotationEdgeObject): NotationPreview => {
-  const role = toUserRole(edge.node.transcriber.role);
-  const transcriber = { ...edge.node.transcriber, role };
-  return { ...edge.node, transcriber } as NotationPreview;
+const toNotationPreviews = (edges: DataOf<typeof NOTATIONS_GQL>['edges']): NotationPreview[] => {
+  return edges.map((edge) => {
+    const role = toUserRole(edge.node.transcriber.role);
+    const transcriber = { ...edge.node.transcriber, role };
+    return { ...edge.node, transcriber } as NotationPreview;
+  });
 };
 
 const fetchNotationPage: InvokeCreator<LibraryContext, LibraryEvent> = async (context): Promise<NotationPage> => {
-  const { data, errors } = await queries.notations.fetch(context.queryArgs);
+  const { data, errors } = await NOTATIONS_GQL.fetch(context.queryArgs);
   if (errors) {
     throw errors;
   }
@@ -87,7 +90,7 @@ const fetchNotationPage: InvokeCreator<LibraryContext, LibraryEvent> = async (co
   // the server sorts by ascending cursor, but we're pagingating backwards
   // this is correct according to spec:
   // https://relay.dev/graphql/connections.htm#sec-Backward-pagination-arguments
-  const notations = connection.edges.map(toNotationPreview).reverse();
+  const notations = toNotationPreviews(connection.edges).reverse();
   const startCursor = connection.pageInfo.startCursor || null;
   const hasNextPage = connection.pageInfo.hasNextPage;
 

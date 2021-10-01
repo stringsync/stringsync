@@ -1,9 +1,9 @@
-import { Dispatch, useContext } from 'react';
-import { AuthDispatchCtx, AuthStateCtx } from './AuthCtx';
+import { useContext } from 'react';
+import { AuthApi, AuthApiCtx, AuthStateCtx } from './AuthCtx';
 import { AuthState } from './types';
 
-export const useAuth = (): [AuthState, Dispatch<any>] => {
+export const useAuth = (): [AuthState, AuthApi] => {
   const state = useContext(AuthStateCtx);
-  const dispatch = useContext(AuthDispatchCtx);
-  return [state, dispatch];
+  const api = useContext(AuthApiCtx);
+  return [state, api];
 };
