@@ -1,5 +1,7 @@
+import { useState } from 'react';
+import { UnknownError } from '../errors';
 import { $gql, DataOf, t } from '../graphql';
-import { GqlStatus, useImmediateGql } from './useImmediateGql';
+import { useGql } from './useGql';
 
 type Tags = DataOf<typeof TAGS_GQL>;
 
@@ -8,12 +10,24 @@ export const TAGS_GQL = $gql
   .setQuery([{ id: t.string, name: t.string }])
   .build();
 
-export const useTags = (): [Tags, string[], boolean] => {
-  const [res, status] = useImmediateGql(TAGS_GQL, undefined);
+export const useTags = () => {
+  const [tags, setTags] = useState<Tags>([]);
+  const [errors, setErrors] = useState(new Array<string>());
 
-  const tags = res?.data?.tags ?? [];
-  const errors = res?.errors?.map((error) => error.message) || [];
-  const isLoading = status === GqlStatus.Pending;
+  const { loading } = useGql(TAGS_GQL, {
+    onSuccess: (res) => {
+      const tags = res.data?.tags;
+      if (Array.isArray(tags)) {
+        setTags(tags);
+      } else {
+        const errors = (res.errors || [new UnknownError()]).map((error) => error.message);
+        setErrors(errors);
+      }
+    },
+    onError: (error) => {
+      setErrors([error.message]);
+    },
+  });
 
-  return [tags, errors, isLoading];
+  return [tags, errors, loading] as const;
 };

@@ -1,4 +1,4 @@
-import { $gql, LoginInput, t, UserRoles } from '../../graphql';
+import { $gql, LoginInput, SignupInput, t, UserRoles } from '../../graphql';
 
 export const whoami = $gql
   .query('whoami')
@@ -31,4 +31,22 @@ export const login = $gql
 export const logout = $gql
   .mutation('logout')
   .setQuery(t.boolean)
+  .build();
+
+export const signup = $gql
+  .mutation('signup')
+  .setQuery({
+    id: t.string,
+    email: t.string,
+    username: t.string,
+    role: t.optional.oneOf(UserRoles)!,
+    confirmedAt: t.string,
+  })
+  .setVariables<{ input: SignupInput }>({
+    input: {
+      email: t.string,
+      password: t.string,
+      username: t.string,
+    },
+  })
   .build();

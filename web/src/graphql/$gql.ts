@@ -72,8 +72,8 @@ export class $gql<T extends Root, F extends Fields<T>, Q, V> {
     this.variables = variables;
   }
 
-  async fetch(variables: V): Promise<GqlResponseOf<this>> {
-    const res = await fetch(GRAPHQL_URI, this.toRequestInit(variables));
+  async fetch(variables: V, abortSignal?: AbortSignal): Promise<GqlResponseOf<this>> {
+    const res = await fetch(GRAPHQL_URI, this.toRequestInit(variables, abortSignal));
     return await $gql.toGqlResponse(res);
   }
 
@@ -84,13 +84,14 @@ export class $gql<T extends Root, F extends Fields<T>, Q, V> {
     return result.toString();
   }
 
-  toRequestInit(variables: V): RequestInit {
+  toRequestInit(variables: V, abortSignal?: AbortSignal): RequestInit {
     return {
       method: 'POST',
       headers: { Accept: 'application/json' },
       body: this.toFormData(variables),
       credentials: 'include',
       mode: 'cors',
+      signal: abortSignal,
     };
   }
 

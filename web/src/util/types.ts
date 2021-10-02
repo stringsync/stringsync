@@ -31,10 +31,10 @@ export type ukeyof<T> = T extends T ? keyof T : never;
 export type ValuesOf<T> = T[keyof T];
 
 export enum PromiseStatus {
-  Idle,
-  Pending,
-  Resolved,
-  Rejected,
+  Idle = 'Idle',
+  Pending = 'Pending',
+  Resolved = 'Resolved',
+  Rejected = 'Rejected',
 }
 
 export type PromiseState<T> = {
@@ -45,9 +45,8 @@ export type PromiseState<T> = {
 
 export type UnwrapPromise<T> = T extends Promise<infer R> ? R : T;
 
-export interface PromiseResolver<T, R = T> {
-  then?: (result: T) => R | PromiseLike<R>;
-  catch?: (error: Error) => void;
-  cancel?: () => void;
-  done?: () => void;
+export interface PromiseResolver<T> {
+  resolve: (result: T) => void | PromiseLike<void>;
+  reject: (error: Error) => void;
+  cancel: () => void;
 }

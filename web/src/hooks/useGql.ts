@@ -1,31 +1,22 @@
-import { useCallback, useMemo } from 'react';
-import { $gql, Any$gql, GqlResponseOf, GRAPHQL_URI, VariablesOf } from '../graphql';
-import { PromiseResolver } from '../util/types';
-import { useFetch } from './useFetch';
-import { useMemoCmp } from './useMemoCmp';
+import { useState } from 'react';
+import { useAsyncCallback, UseAsyncCallbackOptions } from 'react-async-hook';
+import { Any$gql, GqlResponseOf, VariablesOf } from '../graphql';
 
-export const useGql = <G extends Any$gql>(gql: G, resolver: PromiseResolver<GqlResponseOf<G>, void>) => {
-  resolver = useMemoCmp(resolver);
+export type UseGqlOptions<G extends Any$gql> = Partial<
+  UseAsyncCallbackOptions<GqlResponseOf<G>> & {
+    beforeLoading: () => void;
+  }
+>;
 
-  const fetchResolver = useMemo(() => {
-    return {
-      ...resolver,
-      then: async (result: Response) => {
-        const res = await $gql.toGqlResponse<G>(result);
-        resolver.then && (await resolver.then(res));
-        return res;
-      },
-    };
-  }, [resolver]);
+export const useGql = <G extends Any$gql>(gql: G, opts?: UseGqlOptions<G>) => {
+  const [abortController] = useState(() => new AbortController());
 
-  const [fetch, fetchPromise] = useFetch(fetchResolver);
-
-  const fetchGql = useCallback(
-    (variables: VariablesOf<G>) => {
-      fetch(GRAPHQL_URI, gql.toRequestInit(variables));
-    },
-    [gql, fetch]
-  );
-
-  return [fetchGql, fetchPromise] as const;
+  return useAsyncCallback(async (variables: VariablesOf<G>) => {
+    abortController.abort();
+    if (opts?.beforeLoading) {
+      opts.beforeLoading();
+    }
+    const res = await gql.fetch(variables, abortController.signal);
+    return res;
+  }, opts);
 };

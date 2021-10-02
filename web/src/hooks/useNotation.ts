@@ -1,5 +1,6 @@
+import { useAsyncAbortable } from 'react-async-hook';
+import { UNKNOWN_ERROR_MSG } from '../errors';
 import { $gql, DataOf, QueryNotationArgs, t } from '../graphql';
-import { GqlStatus, useImmediateGql } from './useImmediateGql';
 
 type Notation = DataOf<typeof NOTATION_GQL>;
 
@@ -24,11 +25,10 @@ const NOTATION_GQL = $gql
   .build();
 
 export const useNotation = (id: string): [Notation | null, string[], boolean] => {
-  const [res, status] = useImmediateGql(NOTATION_GQL, { id });
+  const { result, error, loading } = useAsyncAbortable(async (signal) => NOTATION_GQL.fetch({ id }, signal), [id]);
 
-  const notation = res?.data?.notation ?? null;
-  const errors = res?.errors?.map((error) => error.message) || [];
-  const isLoading = status === GqlStatus.Pending;
+  const notation = result?.data?.notation || null;
+  const errors = result?.errors?.map((error) => error.message) || error ? [error!.message] : [UNKNOWN_ERROR_MSG];
 
-  return [notation, errors, isLoading];
+  return [notation, errors, loading];
 };

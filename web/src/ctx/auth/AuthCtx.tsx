@@ -1,8 +1,7 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { noop } from 'lodash';
-import React, { useCallback, useReducer } from 'react';
-import { $gql, GRAPHQL_URI, LoginInput, SendResetPasswordEmailInput, SignupInput } from '../../graphql';
-import { useFetch } from '../../hooks/useFetch';
+import React, { useCallback, useMemo, useReducer } from 'react';
+import { LoginInput, SignupInput } from '../../graphql';
 import { useGql } from '../../hooks/useGql';
 import { getNullAuthUser } from './getNullAuthUser';
 import * as helpers from './helpers';
@@ -11,10 +10,11 @@ import { AuthState, AuthUser } from './types';
 
 export type AuthApi = {
   authenticate(): void;
-  login(input: LoginInput): void;
+  login(variables: { input: LoginInput }): void;
   logout(): void;
-  signup(input: SignupInput): void;
-  sendResetPasswordEmail(input: SendResetPasswordEmailInput): void;
+  signup(variables: { input: SignupInput }): void;
+  clearErrors(): void;
+  reset(): void;
 };
 
 const getInitialState = (): AuthState => ({
@@ -43,6 +43,7 @@ const authReducer = createReducer(getInitialState(), (builder) => {
   builder.addCase(AUTH_ACTIONS.setErrors, (state, action) => {
     state.isPending = false;
     state.errors = action.payload.errors;
+    state.user = getNullAuthUser();
   });
   builder.addCase(AUTH_ACTIONS.clearErrors, (state) => {
     state.errors = [];
@@ -59,45 +60,100 @@ export const AuthApiCtx = React.createContext<AuthApi>({
   authenticate: noop,
   login: noop,
   logout: noop,
-  sendResetPasswordEmail: noop,
   signup: noop,
+  clearErrors: noop,
+  reset: noop,
 });
 
 export const AuthProvider: React.FC = (props) => {
   const [state, dispatch] = useReducer(authReducer, getInitialState());
 
-  const [authenticate] = useGql(queries.whoami, {
-    then: async (res) => {
+  const { execute: authenticate } = useGql(queries.whoami, {
+    beforeLoading: () => {
+      dispatch(AUTH_ACTIONS.pending());
+    },
+    onSuccess: (res) => {
       const whoami = res.data?.whoami;
-      const user = whoami ? helpers.toAuthUser(whoami) : getNullAuthUser();
-      dispatch(AUTH_ACTIONS.setUser({ user }));
+      if (whoami) {
+        dispatch(AUTH_ACTIONS.setUser({ user: helpers.toAuthUser(whoami) }));
+      } else {
+        dispatch(AUTH_ACTIONS.setErrors({ errors: helpers.toErrorStrings(res.errors) }));
+      }
+    },
+    onError: (error) => {
+      dispatch(AUTH_ACTIONS.setErrors({ errors: [error.message] }));
     },
   });
 
-  const [loginFetch] = useFetch({
-    then: async (res) => {
-      const gql = await $gql.toGqlResponse<typeof queries.login>(res);
-      const login = gql.data?.login;
-      const user = login ? helpers.toAuthUser(login) : getNullAuthUser();
-      dispatch(AUTH_ACTIONS.setUser({ user }));
+  const { execute: login } = useGql(queries.login, {
+    beforeLoading: () => {
+      dispatch(AUTH_ACTIONS.pending());
+    },
+    onSuccess: (res) => {
+      const login = res.data?.login;
+      if (login) {
+        dispatch(AUTH_ACTIONS.setUser({ user: helpers.toAuthUser(login) }));
+      } else {
+        dispatch(AUTH_ACTIONS.setErrors({ errors: helpers.toErrorStrings(res.errors) }));
+      }
+    },
+    onError: (error) => {
+      dispatch(AUTH_ACTIONS.setErrors({ errors: [error.message] }));
     },
   });
-  const login = useCallback(
-    (input: LoginInput) => {
-      loginFetch(GRAPHQL_URI, queries.login.toRequestInit({ input }));
+
+  const { execute: logout } = useGql(queries.logout, {
+    beforeLoading: () => {
+      dispatch(AUTH_ACTIONS.pending());
     },
-    [loginFetch]
+    onSuccess: () => {
+      dispatch(AUTH_ACTIONS.setUser({ user: getNullAuthUser() }));
+    },
+    onError: (error) => {
+      dispatch(AUTH_ACTIONS.setErrors({ errors: [error.message] }));
+    },
+  });
+
+  const { execute: signup } = useGql(queries.signup, {
+    beforeLoading: () => {
+      dispatch(AUTH_ACTIONS.pending());
+    },
+    onSuccess: (res) => {
+      const signup = res.data?.signup;
+      if (signup) {
+        dispatch(AUTH_ACTIONS.setUser({ user: helpers.toAuthUser(signup) }));
+      } else {
+        dispatch(AUTH_ACTIONS.setErrors({ errors: helpers.toErrorStrings(res.errors) }));
+      }
+    },
+    onError: (error) => {
+      dispatch(AUTH_ACTIONS.setErrors({ errors: [error.message] }));
+    },
+  });
+
+  const clearErrors = useCallback(() => {
+    dispatch(AUTH_ACTIONS.clearErrors());
+  }, []);
+
+  const reset = useCallback(() => {
+    dispatch(AUTH_ACTIONS.reset());
+  }, []);
+
+  const api = useMemo<AuthApi>(
+    () => ({
+      authenticate,
+      login,
+      logout,
+      signup,
+      clearErrors,
+      reset,
+    }),
+    [authenticate, login, logout, signup, clearErrors, reset]
   );
 
-  const [logoutFetch] = useFetch({
-    then: async (res) => {
-      const user = getNullAuthUser();
-      dispatch(AUTH_ACTIONS.setUser({ user }));
-    },
-  });
-  const logout = useCallback(() => {
-    logoutFetch(GRAPHQL_URI, queries.logout.toRequestInit());
-  }, [logoutFetch]);
-
-  return <AuthStateCtx.Provider value={state}>{props.children}</AuthStateCtx.Provider>;
+  return (
+    <AuthStateCtx.Provider value={state}>
+      <AuthApiCtx.Provider value={api}>{props.children}</AuthApiCtx.Provider>
+    </AuthStateCtx.Provider>
+  );
 };
