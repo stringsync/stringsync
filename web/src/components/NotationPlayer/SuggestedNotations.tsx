@@ -1,9 +1,9 @@
 import { Col, Row, Tag } from 'antd';
-import { merge, truncate } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import { truncate } from 'lodash';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { queries } from '../../graphql';
+import { useSuggestedNotations } from './useSuggestedNotations';
 
 const NUM_SUGGESTIONS = 10;
 
@@ -54,67 +54,12 @@ const TagsOuter = styled.div`
   margin-left: 8px;
 `;
 
-type SuggestedNotation = {
-  id: string;
-  artistName: string;
-  songName: string;
-  thumbnailUrl: string;
-  tags: Array<{ id: string; name: string }>;
-  transcriber: { username: string };
-};
-
 type SuggestedNotationsProps = {
   srcNotationId: string;
 };
 
-const NULL_SUGGESTED_NOTATION: SuggestedNotation = {
-  id: '',
-  artistName: '',
-  songName: '',
-  thumbnailUrl: '',
-  tags: [],
-  transcriber: {
-    username: '',
-  },
-};
-
 export const SuggestedNotations: React.FC<SuggestedNotationsProps> = (props) => {
-  const [suggestedNotations, setSuggestedNotations] = useState<SuggestedNotation[]>([]);
-  const [errors, setErrors] = useState(new Array<string>());
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    setErrors([]);
-    setIsLoading(true);
-    setSuggestedNotations([]);
-    (async () => {
-      const { data, errors } = await queries.suggestedNotations.fetch({
-        id: props.srcNotationId,
-        limit: NUM_SUGGESTIONS,
-      });
-      if (errors) {
-        setErrors(errors.map((error) => error.message));
-      } else if (!data?.suggestedNotations) {
-        setErrors([`no notation suggestions found with id '${props.srcNotationId}'`]);
-      } else {
-        setSuggestedNotations(
-          data.suggestedNotations.map((notation) =>
-            merge({}, NULL_SUGGESTED_NOTATION, {
-              id: notation.id,
-              artistName: notation.artistName,
-              songName: notation.songName,
-              thumbnailUrl: notation.thumbnailUrl,
-              tags: notation.tags,
-              transcriber: {
-                username: notation.transcriber.username,
-              },
-            })
-          )
-        );
-      }
-      setIsLoading(false);
-    })();
-  }, [props.srcNotationId]);
+  const [suggestedNotations, errors, isLoading] = useSuggestedNotations(props.srcNotationId, NUM_SUGGESTIONS);
 
   const hasErrors = errors.length > 0;
   const hasSuggestedNotations = suggestedNotations.length > 0;
