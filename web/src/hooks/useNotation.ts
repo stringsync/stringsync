@@ -1,4 +1,5 @@
 import { useAsyncAbortable } from 'react-async-hook';
+import { UNKNOWN_ERROR_MSG } from '../errors';
 import { $gql, DataOf, QueryNotationArgs, t } from '../graphql';
 
 type Notation = DataOf<typeof NOTATION_GQL>;
@@ -24,10 +25,25 @@ const NOTATION_GQL = $gql
   .build();
 
 export const useNotation = (id: string): [Notation | null, string[], boolean] => {
-  const { result, error, loading } = useAsyncAbortable(async (signal) => NOTATION_GQL.fetch({ id }, signal), [id]);
+  const { result, error, loading, status } = useAsyncAbortable(async (signal) => NOTATION_GQL.fetch({ id }, signal), [
+    id,
+  ]);
 
   const notation = result?.data?.notation || null;
-  const errors = result?.errors?.map((error) => error.message) || error ? [error!.message] : [];
+  let errors = new Array<string>();
+  switch (status) {
+    case 'success':
+      // request was successful, but found nothing
+      if (!notation) {
+        errors = ['notation not found'];
+      }
+      break;
+    case 'error':
+      errors = [error?.message || UNKNOWN_ERROR_MSG];
+      break;
+    default:
+      errors = [UNKNOWN_ERROR_MSG];
+  }
 
   return [notation, errors, loading];
 };

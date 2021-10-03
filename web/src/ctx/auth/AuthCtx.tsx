@@ -75,11 +75,8 @@ export const AuthProvider: React.FC = (props) => {
     },
     onSuccess: (res) => {
       const whoami = res.data?.whoami;
-      if (whoami) {
-        dispatch(AUTH_ACTIONS.setUser({ user: helpers.toAuthUser(whoami) }));
-      } else {
-        dispatch(AUTH_ACTIONS.setErrors({ errors: helpers.toErrorStrings(res.errors) }));
-      }
+      const user = whoami ? helpers.toAuthUser(whoami) : getNullAuthUser();
+      dispatch(AUTH_ACTIONS.setUser({ user }));
     },
     onError: (error) => {
       dispatch(AUTH_ACTIONS.setErrors({ errors: [error.message] }));
