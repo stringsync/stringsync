@@ -171,7 +171,7 @@ export class $gql<T extends Root, F extends Fields<T>, Q, V> {
         if (isString(value) && !this.isEnum(innerPath)) {
           return rawString(value);
         } else if (value instanceof File) {
-          return `$${key}`;
+          return `$${key}`; // these are moved as a top-level dollar sign variable
         } else if (Array.isArray(value)) {
           return value.map((el) => inner(el, innerPath.add(ObjectPath.STAR)));
         } else if (isObject(value)) {
