@@ -1,6 +1,7 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { noop } from 'lodash';
 import React, { useCallback, useMemo, useReducer } from 'react';
+import { UNKNOWN_ERROR_MSG } from '../../errors';
 import { LoginInput, SignupInput } from '../../graphql';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useGql } from '../../hooks/useGql';
@@ -105,8 +106,14 @@ export const AuthProvider: React.FC = (props) => {
     beforeLoading: () => {
       dispatch(AUTH_ACTIONS.pending());
     },
-    onSuccess: () => {
-      dispatch(AUTH_ACTIONS.setUser({ user: getNullAuthUser() }));
+    onSuccess: ({ data, errors }) => {
+      if (errors) {
+        dispatch(AUTH_ACTIONS.setErrors({ errors: errors.map((error) => error.message) }));
+      } else if (data?.logout) {
+        dispatch(AUTH_ACTIONS.setUser({ user: getNullAuthUser() }));
+      } else {
+        dispatch(AUTH_ACTIONS.setErrors({ errors: [UNKNOWN_ERROR_MSG] }));
+      }
     },
     onError: (error) => {
       dispatch(AUTH_ACTIONS.setErrors({ errors: [error.message] }));
