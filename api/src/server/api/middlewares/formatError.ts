@@ -1,12 +1,16 @@
 import { GraphQLError, GraphQLFormattedError } from 'graphql';
 import { get } from 'lodash';
-import { UNKNOWN_ERROR_MSG } from '../../../errors';
+import { UNKNOWN_ERROR_MSG, ValidationError } from '../../../errors';
 import { Logger } from '../../../util';
 
 const getMessage = (error: GraphQLError): string => {
   const originalError = error.originalError;
   if (!originalError) {
     return UNKNOWN_ERROR_MSG;
+  }
+
+  if (originalError instanceof ValidationError) {
+    return originalError.details.join('; ');
   }
 
   const isUserFacing = !!get(originalError, 'isUserFacing', false);

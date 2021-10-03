@@ -33,16 +33,17 @@ import {
   logger.info('seeding database...');
 
   const buildUser = (props: Partial<User> = {}) => {
-    const user = new UserEntity(
-      buildRandUser({
+    const user = new UserEntity({
+      ...buildRandUser({
         id: undefined,
         username: `${sample(USERNAMES)}_${random(100, 999)}`,
         email: `${randStr(5)}@${randStr(5)}.com`,
         encryptedPassword: ENCRYPTED_PASSWORD,
         avatarUrl: sample(USER_AVATAR_URLS),
         ...props,
-      })
-    );
+      }),
+      em: db.em,
+    });
     db.em.persist(user);
     return user;
   };

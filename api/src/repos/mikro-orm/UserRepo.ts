@@ -71,7 +71,7 @@ export class UserRepo implements IUserRepo {
   }
 
   async create(attrs: Partial<User>): Promise<User> {
-    const user = this.em.create(UserEntity, attrs);
+    const user = this.em.create(UserEntity, { ...attrs, em: this.em });
     this.em.persist(user);
     await this.em.flush();
     return pojo(user);

@@ -35,6 +35,7 @@ export const AUTH_ACTIONS = {
 const authReducer = createReducer(getInitialState(), (builder) => {
   builder.addCase(AUTH_ACTIONS.pending, (state) => {
     state.isPending = true;
+    state.errors = [];
   });
   builder.addCase(AUTH_ACTIONS.setUser, (state, action) => {
     state.isPending = false;

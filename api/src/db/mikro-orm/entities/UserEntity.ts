@@ -1,4 +1,4 @@
-import { Collection, Entity, Enum, OneToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+import { Collection, Entity, Enum, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { IsEmail, IsOptional, IsUrl, Matches, MaxLength, MinLength } from 'class-validator';
 import { User, UserRole } from '../../../domain';
 import { BaseEntity } from './BaseEntity';
@@ -19,7 +19,6 @@ export class UserEntity extends BaseEntity implements User {
   updatedAt!: Date;
 
   @Property()
-  @Unique()
   @MinLength(3)
   @MaxLength(24)
   @Matches(/^[A-Za-z0-9-_.]*$/)
@@ -58,7 +57,6 @@ export class UserEntity extends BaseEntity implements User {
   private _email!: string;
 
   @Property()
-  @Unique()
   @IsEmail()
   get email(): string {
     return this._email;
@@ -77,5 +75,36 @@ export class UserEntity extends BaseEntity implements User {
   constructor(user: Partial<UserEntity> = {}) {
     super();
     Object.assign(this, user);
+  }
+
+  async errors(): Promise<string[]> {
+    const errors = await Promise.all([
+      super.errors(),
+      this.getUsernameUniquenessErrors(),
+      this.getEmailUniquenessErrors(),
+    ]);
+    return errors.flat();
+  }
+
+  private async getUsernameUniquenessErrors(): Promise<string[]> {
+    if (!this.em) {
+      return ['cannot validate username without an entity manager'];
+    }
+    const user = await this.em.findOne(UserEntity, { username: this.username });
+    if (user && user.id !== this.id) {
+      return ['username is already taken'];
+    }
+    return [];
+  }
+
+  private async getEmailUniquenessErrors(): Promise<string[]> {
+    if (!this.em) {
+      return ['cannot validate email without an entity manager'];
+    }
+    const user = await this.em.findOne(UserEntity, { email: this.email });
+    if (user && user.id !== this.id) {
+      return ['email is already taken'];
+    }
+    return [];
   }
 }

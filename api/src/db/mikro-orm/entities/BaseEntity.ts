@@ -1,8 +1,10 @@
-import { BeforeCreate, BeforeUpdate } from '@mikro-orm/core';
+import { BeforeCreate, BeforeUpdate, EntityManager } from '@mikro-orm/core';
 import { validate } from 'class-validator';
 import { ValidationError } from '../../../errors';
 
 export abstract class BaseEntity {
+  em?: EntityManager;
+
   async isValid(): Promise<boolean> {
     const errors = await this.errors();
     return errors.length === 0;
