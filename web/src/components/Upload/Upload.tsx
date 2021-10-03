@@ -1,16 +1,16 @@
 import { FormOutlined, PictureOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Modal, Select, Steps, Upload as AntdUpload } from 'antd';
 import { RcFile } from 'antd/lib/upload';
-import { get } from 'lodash';
 import React, { useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
-import { queries } from '../../graphql';
+import { UNKNOWN_ERROR_MSG } from '../../errors';
 import { Layout, withLayout } from '../../hocs/withLayout';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useTags } from '../../hooks/useTags';
 import { compose } from '../../util/compose';
 import { Box } from '../Box';
+import { useCreateNotation } from './useCreateNotation';
 
 const { Step } = Steps;
 const { Dragger } = AntdUpload;
@@ -64,6 +64,25 @@ const Upload: React.FC<Props> = enhance(() => {
     return obj;
   }, {});
 
+  const { execute: createNotation, loading } = useCreateNotation({
+    onSuccess: ({ data, errors }) => {
+      const notationId = data?.createNotation.id;
+      if (errors) {
+        // TODO(jared) handle errors
+        console.error(errors);
+      } else if (notationId) {
+        shouldBlockNavigation.current = false;
+        history.push(`/n/${notationId}/edit`);
+      } else {
+        console.error(UNKNOWN_ERROR_MSG);
+      }
+    },
+    onError: (error) => {
+      // TOOD(jared) handle errors
+      console.error(error);
+    },
+  });
+
   const onStepChange = (stepNdx: number) => {
     setStepNdx(stepNdx);
   };
@@ -88,6 +107,7 @@ const Upload: React.FC<Props> = enhance(() => {
   };
 
   const onFinish = async () => {
+    const { video, thumbnail, songName, artistName } = form.getFieldsValue();
     const tagIds = selectedTagNames.map((tagName) => tagIdByTagName[tagName]);
     const thumbnailFile = thumbnail && thumbnail.file.originFileObj;
     const videoFile = video && video.file.originFileObj;
@@ -101,30 +121,7 @@ const Upload: React.FC<Props> = enhance(() => {
       return;
     }
 
-    const res = await queries.createNotation.fetch({
-      input: {
-        songName,
-        artistName,
-        tagIds,
-        thumbnail: thumbnailFile,
-        video: videoFile,
-      },
-    });
-    if (res.errors) {
-      // TODO(jared) add error handling
-      console.error(res.errors);
-      return;
-    }
-
-    const notationId = get(res.data?.createNotation, 'id');
-    if (!notationId) {
-      // TODO(jared) handle missing notation ids as error
-      console.error('no notation id found');
-      return;
-    }
-
-    shouldBlockNavigation.current = false;
-    history.push(`/n/${notationId}/edit`);
+    createNotation({ input: { tagIds, thumbnail: thumbnailFile, video: videoFile, songName, artistName } });
   };
 
   useEffectOnce(() => {
@@ -197,7 +194,7 @@ const Upload: React.FC<Props> = enhance(() => {
               hidden={stepNdx !== 2}
               rules={[{ required: true, message: 'song name required' }]}
             >
-              <Input placeholder="song name" />
+              <Input placeholder="song name" disabled={loading} />
             </HideableFormItem>
 
             <HideableFormItem
@@ -206,11 +203,17 @@ const Upload: React.FC<Props> = enhance(() => {
               hidden={stepNdx !== 2}
               rules={[{ required: true, message: 'artist name required' }]}
             >
-              <Input placeholder="artist name" />
+              <Input placeholder="artist name" disabled={loading} />
             </HideableFormItem>
 
             <HideableFormItem hidden={stepNdx !== 2}>
-              <Select mode="multiple" placeholder="tags" onSelect={onTagSelect} onDeselect={onTagDeselect}>
+              <Select
+                mode="multiple"
+                placeholder="tags"
+                onSelect={onTagSelect}
+                onDeselect={onTagDeselect}
+                disabled={loading}
+              >
                 {tags.map((tag) => (
                   <Select.Option key={tag.id} value={tag.name}>
                     {tag.name}
@@ -220,7 +223,7 @@ const Upload: React.FC<Props> = enhance(() => {
             </HideableFormItem>
 
             <HideableFormItem hidden={stepNdx !== 2}>
-              <Button block type="primary" htmlType="submit">
+              <Button block type="primary" htmlType="submit" disabled={loading}>
                 submit
               </Button>
             </HideableFormItem>

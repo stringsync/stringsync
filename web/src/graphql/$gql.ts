@@ -1,6 +1,6 @@
 import { extractFiles } from 'extract-files';
 import { GraphQLError } from 'graphql';
-import { isObject, isString } from 'lodash';
+import { cloneDeep, first, isObject, isString, last } from 'lodash';
 import { mutation, params, query, rawString } from 'typed-graphqlify';
 import { Params } from 'typed-graphqlify/dist/render';
 import { GRAPHQL_URI } from '.';
@@ -78,9 +78,15 @@ export class $gql<T extends Root, F extends Fields<T>, Q, V> {
   }
 
   toString(variables: V): string {
+    // TODO(jared) Fix jankyness with upload variables
+    const uploadVariables = Object.values(this.getUploadVariables(variables));
+    const name = uploadVariables.length
+      ? `${this.field}(${uploadVariables.map((uploadVariable) => `$${uploadVariable}: Upload!`).join(', ')})`
+      : this.field.toString();
+
     const result = isObject(variables)
-      ? this.compiler({ [this.field]: params(this.graphqlify(variables), this.query) })
-      : this.compiler({ [this.field]: this.query });
+      ? this.compiler(name, { [this.field]: params(this.graphqlify(variables), this.query) })
+      : this.compiler(name, { [this.field]: this.query });
     return result.toString();
   }
 
@@ -110,7 +116,13 @@ export class $gql<T extends Root, F extends Fields<T>, Q, V> {
     const pathGroups = Array.from(fileMap.values());
     for (let ndx = 0; ndx < pathGroups.length; ndx++) {
       const paths = pathGroups[ndx];
-      map[ndx] = paths;
+      map[ndx] = paths.map((path) => {
+        const parts = path.split('.');
+        // Uploads are moved to the top level, so we remove the intermediate paths
+        // e.g. instead of variables.input.thumbnail, we want variables.thumbnail
+        // see https://github.com/jaydenseric/graphql-multipart-request-spec
+        return [first(parts), last(parts)].join('.');
+      });
     }
 
     // create form data
@@ -128,6 +140,24 @@ export class $gql<T extends Root, F extends Fields<T>, Q, V> {
     return formData;
   }
 
+  private getUploadVariables(variables: V) {
+    const uploadVariables: Record<string, string> = {};
+
+    const dfs = (key: string, value: any) => {
+      if (value instanceof File) {
+        uploadVariables[key] = key;
+      } else if (isObject(value)) {
+        Object.entries(value).forEach(([k, v]) => dfs(k, v));
+      }
+    };
+
+    for (const [key, value] of Object.entries(variables || {})) {
+      dfs(key, value);
+    }
+
+    return uploadVariables;
+  }
+
   private graphqlify(variables: Record<any, any>, path = ObjectPath.create()): Params {
     const params: Params = {};
 
@@ -135,6 +165,8 @@ export class $gql<T extends Root, F extends Fields<T>, Q, V> {
       const inner = (value: Prim | Variables | Variables[], innerPath: ObjectPath): any => {
         if (isString(value) && !this.isEnum(innerPath)) {
           return rawString(value);
+        } else if (value instanceof File) {
+          return `$${key}`;
         } else if (Array.isArray(value)) {
           return value.map((el) => inner(el, innerPath.add(ObjectPath.STAR)));
         } else if (isObject(value)) {
@@ -196,6 +228,6 @@ class GqlBuilder<
 
     // For some reason, if we don't create new objects, some queries will be inexplicably "linked" to
     // each other causing unwanted mutations to the query object.
-    return new $gql<T, F, Q, V>(this.compiler, this.field, { ...this.query }, { ...this.variables });
+    return new $gql<T, F, Q, V>(this.compiler, this.field, cloneDeep(this.query), cloneDeep(this.variables));
   }
 }
