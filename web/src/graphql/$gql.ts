@@ -194,6 +194,8 @@ class GqlBuilder<
       this.compiler(this.variables);
     }
 
-    return new $gql<T, F, Q, V>(this.compiler, this.field, this.query, this.variables);
+    // For some reason, if we don't create new objects, some queries will be inexplicably "linked" to
+    // each other causing unwanted mutations to the query object.
+    return new $gql<T, F, Q, V>(this.compiler, this.field, { ...this.query }, { ...this.variables });
   }
 }
