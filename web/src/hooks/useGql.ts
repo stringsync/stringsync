@@ -12,7 +12,7 @@ export const useGql = <G extends Any$gql>(gql: G, opts?: UseGqlOptions<G>) => {
   const [abortController] = useState(() => new AbortController());
 
   return useAsyncCallback(async (variables: VariablesOf<G>) => {
-    abortController.abort();
+    // abortController.abort();
     if (opts?.beforeLoading) {
       opts.beforeLoading();
     }

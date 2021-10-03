@@ -20,7 +20,7 @@ type FormValues = {
 };
 
 export const ConfirmEmail: React.FC = enhance(() => {
-  const [authState, dispatch] = useAuth();
+  const [authState] = useAuth();
   const isAuthPending = authState.isPending;
   const email = authState.user.email;
   const confirmedAt = authState.user.confirmedAt;

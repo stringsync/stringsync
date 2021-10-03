@@ -34,6 +34,7 @@ export const ForgotPassword: React.FC = () => {
 
   const sendResetPasswordEmail = useSendResetPasswordEmail({
     onSuccess: (res) => {
+      const { email } = form.getFieldsValue();
       if (res.data?.sendResetPasswordEmail) {
         message.success(`sent reset password email to ${email}`);
         history.push(`/reset-password?email=${email}`);
@@ -46,9 +47,8 @@ export const ForgotPassword: React.FC = () => {
     },
   });
 
-  const { email } = form.getFieldsValue();
-
   const onFinish = () => {
+    const { email } = form.getFieldsValue();
     sendResetPasswordEmail({ input: { email } });
   };
 

@@ -2,6 +2,7 @@ import { createAction, createReducer } from '@reduxjs/toolkit';
 import { noop } from 'lodash';
 import React, { useCallback, useMemo, useReducer } from 'react';
 import { LoginInput, SignupInput } from '../../graphql';
+import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useGql } from '../../hooks/useGql';
 import { getNullAuthUser } from './getNullAuthUser';
 import * as helpers from './helpers';
@@ -138,6 +139,10 @@ export const AuthProvider: React.FC = (props) => {
   const reset = useCallback(() => {
     dispatch(AUTH_ACTIONS.reset());
   }, []);
+
+  useEffectOnce(() => {
+    authenticate();
+  });
 
   const api = useMemo<AuthApi>(
     () => ({

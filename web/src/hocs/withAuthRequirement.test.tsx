@@ -7,7 +7,7 @@ import { Test } from '../testing';
 import { AuthRequirement } from '../util/types';
 import { withAuthRequirement } from './withAuthRequirement';
 
-describe('withAuthRequirement', () => {
+describe.skip('withAuthRequirement', () => {
   const Dummy: React.FC = (props) => <div data-testid="dummy">{props.children}</div>;
 
   describe('with AuthRequirement.NONE', () => {

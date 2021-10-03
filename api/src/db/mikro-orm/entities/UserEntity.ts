@@ -40,7 +40,7 @@ export class UserEntity extends BaseEntity implements User {
   @Property({ type: 'TIMESTAMP', nullable: true })
   resetPasswordTokenSentAt: Date | null = null;
 
-  @Property({ nullable: true })
+  @Property({ nullable: true, fieldName: 'reset_password_token' })
   resetPasswordToken: string | null = null;
 
   @Property({ nullable: true })
@@ -65,7 +65,7 @@ export class UserEntity extends BaseEntity implements User {
   }
 
   set email(email: string) {
-    if (email !== this._email) {
+    if (this._email && email !== this._email) {
       this.resetPasswordToken = null;
       this.resetPasswordTokenSentAt = null;
       this.confirmedAt = null;

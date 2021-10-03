@@ -6,6 +6,7 @@ import { ThemeProvider } from 'styled-components';
 import './App.less';
 import { NewVersionNotifier } from './components/NewVerisionNotifier/NewVersionNotifier';
 import { Routes } from './components/Routes';
+import { AuthProvider } from './ctx/auth';
 import { DeviceProvider } from './ctx/device';
 import { RouteInfoProvider } from './ctx/route-info';
 import { ServiceWorkerProvider } from './ctx/service-worker';
@@ -20,12 +21,14 @@ export const App: React.FC = (props) => {
           <ViewportProvider>
             <DeviceProvider>
               <ServiceWorkerProvider>
-                <BrowserRouter>
-                  <RouteInfoProvider>
-                    <NewVersionNotifier />
-                    <Routes />
-                  </RouteInfoProvider>
-                </BrowserRouter>
+                <AuthProvider>
+                  <BrowserRouter>
+                    <RouteInfoProvider>
+                      <NewVersionNotifier />
+                      <Routes />
+                    </RouteInfoProvider>
+                  </BrowserRouter>
+                </AuthProvider>
               </ServiceWorkerProvider>
             </DeviceProvider>
           </ViewportProvider>
