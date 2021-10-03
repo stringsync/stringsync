@@ -78,7 +78,7 @@ export class UserRepo implements IUserRepo {
   }
 
   async bulkCreate(bulkAttrs: Partial<User>[]): Promise<User[]> {
-    const users = bulkAttrs.map((attrs) => new UserEntity(attrs));
+    const users = bulkAttrs.map((attrs) => new UserEntity({ ...attrs, em: this.em }));
     this.em.persist(users);
     await this.em.flush();
     return pojo(users);
@@ -89,7 +89,7 @@ export class UserRepo implements IUserRepo {
     if (!user) {
       throw new NotFoundError('user not found');
     }
-    this.em.assign(user, attrs);
+    this.em.assign(user, { ...attrs, em: this.em });
     this.em.persist(user);
     await this.em.flush();
     return pojo(user);
