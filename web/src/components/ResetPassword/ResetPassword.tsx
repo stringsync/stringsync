@@ -42,18 +42,16 @@ export const ResetPassword: React.FC = (props) => {
     beforeLoading: () => {
       setErrors([]);
     },
-    onSuccess: ({ data, errors }) => {
-      if (errors) {
-        setErrors(errors.map((error) => error.message));
-      } else if (data?.resetPassword) {
+    onData: (data) => {
+      if (data.resetPassword) {
         message.success('password successfully reset');
         history.push('/login');
       } else {
         setErrors([UNKNOWN_ERROR_MSG]);
       }
     },
-    onError: (error) => {
-      setErrors([error.message]);
+    onErrors: (errors) => {
+      setErrors(errors);
     },
   });
 

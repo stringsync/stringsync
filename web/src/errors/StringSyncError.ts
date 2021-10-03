@@ -1,5 +1,6 @@
-import { ErrorCode } from './types';
+import { MISSING_DATA_MSG } from '.';
 import { NOT_IMPLEMENTED_MSG, UNKNOWN_ERROR_MSG } from './constants';
+import { ErrorCode } from './types';
 
 export class StringSyncError extends Error {
   code: ErrorCode;
@@ -53,5 +54,11 @@ export class InternalError extends StringSyncError {
 export class NotImplementedError extends StringSyncError {
   constructor(message: string = NOT_IMPLEMENTED_MSG) {
     super(message, ErrorCode.NOT_IMPLEMENTED);
+  }
+}
+
+export class MissingDataError extends StringSyncError {
+  constructor(message: string = MISSING_DATA_MSG) {
+    super(message, ErrorCode.INTERNAL);
   }
 }

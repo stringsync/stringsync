@@ -14,11 +14,12 @@ import { t } from './t';
 export type Root = Query | Mutation;
 export type Fields<T extends Root> = keyof T;
 export type Compiler = typeof query | typeof mutation;
+type MaybeNullable<T> = T extends any[] ? T : T | null;
 
 export type Any$gql = $gql<any, any, any, any>;
 export type RootOf<G extends Any$gql> = G extends $gql<infer T, any, any, any> ? T : never;
 export type FieldOf<G extends Any$gql> = G extends $gql<any, infer F, any, any> ? F : never;
-export type DataOf<G extends Any$gql> = G extends $gql<any, any, infer Q, any> ? Q : never;
+export type DataOf<G extends Any$gql> = G extends $gql<any, any, infer Q, any> ? MaybeNullable<Q> : never;
 export type VariablesOf<G extends Any$gql> = G extends $gql<any, any, any, infer V> ? V : never;
 
 export type SuccessfulResponse<G extends Any$gql> = { data: OnlyKey<FieldOf<G>, DataOf<G>>; errors?: never };
@@ -78,7 +79,9 @@ export class $gql<T extends Root, F extends Fields<T>, Q, V> {
   }
 
   toString(variables: V): string {
-    // TODO(jared) Fix jankyness with upload variables
+    // TODO(jared) Fix jankyness with upload variables. I think we need proper support for named
+    // operations. Consider making everything a named operation and then removing this complexity.
+    // The crux of the problem then becomes naming the input correctly.
     const uploadVariables = Object.values(this.getUploadVariables(variables));
     const name = uploadVariables.length
       ? `${this.field}(${uploadVariables.map((uploadVariable) => `$${uploadVariable}: Upload!`).join(', ')})`
@@ -118,8 +121,10 @@ export class $gql<T extends Root, F extends Fields<T>, Q, V> {
       const paths = pathGroups[ndx];
       map[ndx] = paths.map((path) => {
         const parts = path.split('.');
-        // Uploads are moved to the top level, so we remove the intermediate paths
-        // e.g. instead of variables.input.thumbnail, we want variables.thumbnail
+        // Uploads are already moved to the top level using a dollar sign variable.
+        // To account for that, we remove the intermediate object paths.
+        // e.g. instead of 'variables.input.thumbnail', we want 'variables.thumbnail'
+        // since the upload is not specified inline with the request like primitives
         // see https://github.com/jaydenseric/graphql-multipart-request-spec
         return [first(parts), last(parts)].join('.');
       });

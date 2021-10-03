@@ -70,8 +70,8 @@ const clear = assign<LibraryContext, { type: 'clear' }>((context, event) => {
   return cloneDeep(libraryModel.initialContext);
 });
 
-const toNotationPreviews = (edges: DataOf<typeof NOTATIONS_GQL>['edges']): NotationPreview[] => {
-  return edges.map((edge) => {
+const toNotationPreviews = (connection: DataOf<typeof NOTATIONS_GQL>): NotationPreview[] => {
+  return (connection?.edges || []).map((edge) => {
     const role = toUserRole(edge.node.transcriber.role);
     const transcriber = { ...edge.node.transcriber, role };
     return { ...edge.node, transcriber } as NotationPreview;
@@ -87,10 +87,13 @@ const fetchNotationPage: InvokeCreator<LibraryContext, LibraryEvent> = async (co
     throw new UnknownError();
   }
   const connection = data.notations;
+  if (!connection) {
+    throw new UnknownError();
+  }
   // the server sorts by ascending cursor, but we're pagingating backwards
   // this is correct according to spec:
   // https://relay.dev/graphql/connections.htm#sec-Backward-pagination-arguments
-  const notations = toNotationPreviews(connection.edges).reverse();
+  const notations = toNotationPreviews(connection).reverse();
   const startCursor = connection.pageInfo.startCursor || null;
   const hasNextPage = connection.pageInfo.hasNextPage;
 

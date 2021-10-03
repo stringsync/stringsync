@@ -4,7 +4,6 @@ import { RcFile } from 'antd/lib/upload';
 import React, { useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
-import { UNKNOWN_ERROR_MSG } from '../../errors';
 import { Layout, withLayout } from '../../hocs/withLayout';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useTags } from '../../hooks/useTags';
@@ -65,21 +64,19 @@ const Upload: React.FC<Props> = enhance(() => {
   }, {});
 
   const { execute: createNotation, loading } = useCreateNotation({
-    onSuccess: ({ data, errors }) => {
-      const notationId = data?.createNotation.id;
-      if (errors) {
-        // TODO(jared) handle errors
-        console.error(errors);
-      } else if (notationId) {
+    onData: (data) => {
+      const notationId = data.createNotation?.id;
+      if (notationId) {
         shouldBlockNavigation.current = false;
         history.push(`/n/${notationId}/edit`);
       } else {
-        console.error(UNKNOWN_ERROR_MSG);
+        // TOOD(jared) handle errors
+        console.error('something went wrong');
       }
     },
-    onError: (error) => {
+    onErrors: (errors) => {
       // TOOD(jared) handle errors
-      console.error(error);
+      console.error(errors);
     },
   });
 

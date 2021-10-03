@@ -1,7 +1,6 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { noop } from 'lodash';
 import React, { useCallback, useMemo, useReducer } from 'react';
-import { UNKNOWN_ERROR_MSG } from '../../errors';
 import { LoginInput, SignupInput } from '../../graphql';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useGql } from '../../hooks/useGql';
@@ -75,13 +74,11 @@ export const AuthProvider: React.FC = (props) => {
     beforeLoading: () => {
       dispatch(AUTH_ACTIONS.pending());
     },
-    onSuccess: (res) => {
-      const whoami = res.data?.whoami;
-      const user = whoami ? helpers.toAuthUser(whoami) : getNullAuthUser();
-      dispatch(AUTH_ACTIONS.setUser({ user }));
+    onData: (data) => {
+      dispatch(AUTH_ACTIONS.setUser({ user: helpers.toAuthUser(data.whoami) }));
     },
-    onError: (error) => {
-      dispatch(AUTH_ACTIONS.setErrors({ errors: [error.message] }));
+    onErrors: (errors) => {
+      dispatch(AUTH_ACTIONS.setErrors({ errors }));
     },
   });
 
@@ -89,16 +86,15 @@ export const AuthProvider: React.FC = (props) => {
     beforeLoading: () => {
       dispatch(AUTH_ACTIONS.pending());
     },
-    onSuccess: (res) => {
-      const login = res.data?.login;
-      if (login) {
-        dispatch(AUTH_ACTIONS.setUser({ user: helpers.toAuthUser(login) }));
+    onData: (data) => {
+      if (data.login) {
+        dispatch(AUTH_ACTIONS.setUser({ user: helpers.toAuthUser(data.login) }));
       } else {
-        dispatch(AUTH_ACTIONS.setErrors({ errors: helpers.toErrorStrings(res.errors) }));
+        dispatch(AUTH_ACTIONS.setErrors({ errors: ['could not login'] }));
       }
     },
-    onError: (error) => {
-      dispatch(AUTH_ACTIONS.setErrors({ errors: [error.message] }));
+    onErrors: (errors) => {
+      dispatch(AUTH_ACTIONS.setErrors({ errors }));
     },
   });
 
@@ -106,17 +102,11 @@ export const AuthProvider: React.FC = (props) => {
     beforeLoading: () => {
       dispatch(AUTH_ACTIONS.pending());
     },
-    onSuccess: ({ data, errors }) => {
-      if (errors) {
-        dispatch(AUTH_ACTIONS.setErrors({ errors: errors.map((error) => error.message) }));
-      } else if (data?.logout) {
-        dispatch(AUTH_ACTIONS.setUser({ user: getNullAuthUser() }));
-      } else {
-        dispatch(AUTH_ACTIONS.setErrors({ errors: [UNKNOWN_ERROR_MSG] }));
-      }
+    onData: () => {
+      dispatch(AUTH_ACTIONS.setUser({ user: getNullAuthUser() }));
     },
-    onError: (error) => {
-      dispatch(AUTH_ACTIONS.setErrors({ errors: [error.message] }));
+    onErrors: (errors) => {
+      dispatch(AUTH_ACTIONS.setErrors({ errors }));
     },
   });
 
@@ -124,16 +114,15 @@ export const AuthProvider: React.FC = (props) => {
     beforeLoading: () => {
       dispatch(AUTH_ACTIONS.pending());
     },
-    onSuccess: (res) => {
-      const signup = res.data?.signup;
-      if (signup) {
-        dispatch(AUTH_ACTIONS.setUser({ user: helpers.toAuthUser(signup) }));
+    onData: (data) => {
+      if (data.signup) {
+        dispatch(AUTH_ACTIONS.setUser({ user: helpers.toAuthUser(data.signup) }));
       } else {
-        dispatch(AUTH_ACTIONS.setErrors({ errors: helpers.toErrorStrings(res.errors) }));
+        dispatch(AUTH_ACTIONS.setErrors({ errors: ['could not signup'] }));
       }
     },
-    onError: (error) => {
-      dispatch(AUTH_ACTIONS.setErrors({ errors: [error.message] }));
+    onErrors: (errors) => {
+      dispatch(AUTH_ACTIONS.setErrors({ errors }));
     },
   });
 

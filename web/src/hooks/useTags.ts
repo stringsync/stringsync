@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { UnknownError } from '../errors';
 import { $gql, DataOf, t } from '../graphql';
 import { useEffectOnce } from './useEffectOnce';
 import { useGql } from './useGql';
@@ -16,17 +15,11 @@ export const useTags = () => {
   const [errors, setErrors] = useState(new Array<string>());
 
   const { execute, loading } = useGql(TAGS_GQL, {
-    onSuccess: (res) => {
-      const tags = res.data?.tags;
-      if (Array.isArray(tags)) {
-        setTags(tags);
-      } else {
-        const errors = (res.errors || [new UnknownError()]).map((error) => error.message);
-        setErrors(errors);
-      }
+    onData: (data) => {
+      setTags(data.tags);
     },
-    onError: (error) => {
-      setErrors([error.message]);
+    onErrors: (errors) => {
+      setErrors(errors);
     },
   });
 

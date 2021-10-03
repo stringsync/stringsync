@@ -34,18 +34,16 @@ export const ConfirmEmail: React.FC = enhance(() => {
     beforeLoading: () => {
       setErrors([]);
     },
-    onSuccess: ({ data, errors }) => {
-      if (errors) {
-        setErrors(errors.map((error) => error.message));
-      } else if (data?.confirmEmail.confirmedAt) {
+    onData: (data) => {
+      if (data.confirmEmail?.confirmedAt) {
         message.success(`${email} confirmed`);
         history.push('/library');
       } else {
         setErrors([UNKNOWN_ERROR_MSG]);
       }
     },
-    onError: (error) => {
-      setErrors([error.message]);
+    onErrors: (errors) => {
+      setErrors(errors);
     },
   });
 
@@ -53,14 +51,15 @@ export const ConfirmEmail: React.FC = enhance(() => {
     beforeLoading: () => {
       setErrors([]);
     },
-    onSuccess: ({ data, errors }) => {
-      if (errors) {
-        setErrors(errors.map((error) => error.message));
-      } else if (data?.resendConfirmationEmail) {
+    onData: (data) => {
+      if (data?.resendConfirmationEmail) {
         message.success(`sent confirmation token to ${email}`);
       } else {
         setErrors([UNKNOWN_ERROR_MSG]);
       }
+    },
+    onErrors: (errors) => {
+      setErrors(errors);
     },
   });
 
