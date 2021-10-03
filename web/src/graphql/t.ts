@@ -7,6 +7,7 @@ type OptionalT = {
   number?: number;
   string?: string;
   boolean?: boolean;
+  file?: File;
   oneOf: <T extends {}>(_e: T) => ValueOf<T> | undefined;
   custom: <T>() => T | undefined;
 };
@@ -27,11 +28,17 @@ export class t {
     return type;
   };
   static custom = types.custom;
+  static get file(): File {
+    const type = types.custom<File>();
+    helpers.injectMeta(type, { isFile: true });
+    return type;
+  }
   static optional: OptionalT = {
     number: t.number,
     string: t.string,
     boolean: t.boolean,
     oneOf: t.oneOf,
     custom: t.custom,
+    file: t.file,
   } as any;
 }

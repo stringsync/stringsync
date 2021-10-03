@@ -9,8 +9,8 @@ const CREATE_NOTATION_GQL = $gql
       artistName: t.string,
       songName: t.string,
       tagIds: [t.string],
-      thumbnail: t.custom<File>(),
-      video: t.custom<File>(),
+      thumbnail: t.file,
+      video: t.file,
     },
   })
   .build();
