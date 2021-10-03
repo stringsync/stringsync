@@ -4,9 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { UnknownError, UNKNOWN_ERROR_MSG } from '../../errors';
-import { queries } from '../../graphql';
+import { UNKNOWN_ERROR_MSG } from '../../errors';
 import { FormPage } from '../FormPage';
+import { useResetPassword } from './useResetPassword';
 
 const EMAIL_RULES: Rule[] = [
   { required: true, message: 'email is required' },
@@ -37,42 +37,33 @@ export const ResetPassword: React.FC = (props) => {
 
   const [errors, setErrors] = useState(new Array<string>());
   const [form] = Form.useForm<FormValues>();
-  const [isPending, setIsPending] = useState(false);
+
+  const { execute: resetPassword, loading } = useResetPassword({
+    beforeLoading: () => {
+      setErrors([]);
+    },
+    onSuccess: ({ data, errors }) => {
+      if (errors) {
+        setErrors(errors.map((error) => error.message));
+      } else if (data?.resetPassword) {
+        message.success('password successfully reset');
+        history.push('/login');
+      } else {
+        setErrors([UNKNOWN_ERROR_MSG]);
+      }
+    },
+    onError: (error) => {
+      setErrors([error.message]);
+    },
+  });
 
   const onErrorsClose = () => {
     setErrors([]);
   };
 
   const onFinish = async () => {
-    setIsPending(true);
-    setErrors([]);
-
-    try {
-      const { email, password, resetPasswordToken } = form.getFieldsValue();
-      const { data, errors } = await queries.resetPassword.fetch({
-        input: {
-          email,
-          password,
-          resetPasswordToken,
-        },
-      });
-      if (errors) {
-        setErrors(errors.map((error) => error.message));
-        return;
-      }
-      if (!data) {
-        throw new UnknownError();
-      }
-      if (data.resetPassword === true) {
-        message.success('password successfully reset');
-        history.push('/login');
-      }
-    } catch (e) {
-      console.error(e);
-      setErrors([UNKNOWN_ERROR_MSG]);
-    } finally {
-      setIsPending(false);
-    }
+    const { email, password, resetPasswordToken } = form.getFieldsValue();
+    resetPassword({ input: { email, password, resetPasswordToken } });
   };
 
   useEffect(() => {
@@ -108,7 +99,7 @@ export const ResetPassword: React.FC = (props) => {
                 <Input.Password placeholder="new password" />
               </Form.Item>
               <Form.Item>
-                <Button block type="primary" htmlType="submit" disabled={isPending}>
+                <Button block type="primary" htmlType="submit" disabled={loading}>
                   reset password
                 </Button>
               </Form.Item>
