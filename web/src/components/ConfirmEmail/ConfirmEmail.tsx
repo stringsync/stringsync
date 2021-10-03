@@ -3,13 +3,14 @@ import { Rule } from 'antd/lib/form';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { useAuth } from '../../ctx/auth';
-import { UnknownError, UNKNOWN_ERROR_MSG } from '../../errors';
-import { queries } from '../../graphql';
+import { UNKNOWN_ERROR_MSG } from '../../errors';
 import { Layout, withLayout } from '../../hocs/withLayout';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useQueryParams } from '../../hooks/useQueryParams';
 import { compose } from '../../util/compose';
 import { FormPage } from '../FormPage';
+import { useConfirmEmail } from './useConfirmEmail';
+import { useResendConfirmationToken } from './useResendConfirmationToken';
 
 const CONFIRMATION_TOKEN_RULES: Rule[] = [{ required: true, message: 'confirmation token is required' }];
 
@@ -21,67 +22,61 @@ type FormValues = {
 
 export const ConfirmEmail: React.FC = enhance(() => {
   const [authState] = useAuth();
-  const isAuthPending = authState.isPending;
   const email = authState.user.email;
   const confirmedAt = authState.user.confirmedAt;
 
   const [errors, setErrors] = useState(new Array<string>());
-  const [isPending, setIsPending] = useState(false);
   const [form] = Form.useForm<FormValues>();
   const history = useHistory();
   const queryParams = useQueryParams();
-  const disabled = isPending || isAuthPending;
+
+  const { execute: confirmEmail, loading: confirmEmailLoading } = useConfirmEmail({
+    beforeLoading: () => {
+      setErrors([]);
+    },
+    onSuccess: ({ data, errors }) => {
+      if (errors) {
+        setErrors(errors.map((error) => error.message));
+      } else if (data?.confirmEmail.confirmedAt) {
+        message.success(`${email} confirmed`);
+        history.push('/library');
+      } else {
+        setErrors([UNKNOWN_ERROR_MSG]);
+      }
+    },
+    onError: (error) => {
+      setErrors([error.message]);
+    },
+  });
+
+  const { execute: resendConfirmationToken, loading: resendConfirmationTokenLoading } = useResendConfirmationToken({
+    beforeLoading: () => {
+      setErrors([]);
+    },
+    onSuccess: ({ data, errors }) => {
+      if (errors) {
+        setErrors(errors.map((error) => error.message));
+      } else if (data?.resendConfirmationEmail) {
+        message.success(`sent confirmation token to ${email}`);
+      } else {
+        setErrors([UNKNOWN_ERROR_MSG]);
+      }
+    },
+  });
+
+  const loading = confirmEmailLoading || resendConfirmationTokenLoading;
 
   const onErrorsClose = () => {
     setErrors([]);
   };
 
   const onFinish = async () => {
-    setIsPending(true);
-    setErrors([]);
-
-    try {
-      const { confirmationToken } = form.getFieldsValue();
-      const { data, errors } = await queries.confirmEmail.fetch({ input: { confirmationToken } });
-      if (errors) {
-        setErrors(errors.map((error) => error.message));
-        return;
-      }
-      if (!data) {
-        throw new UnknownError();
-      }
-      if (data.confirmEmail && data.confirmEmail.confirmedAt) {
-        message.success(`${email} confirmed`);
-        history.push('/library');
-      }
-    } catch (e) {
-      console.error(e);
-      setErrors([UNKNOWN_ERROR_MSG]);
-    } finally {
-      setIsPending(false);
-    }
+    const { confirmationToken } = form.getFieldsValue();
+    confirmEmail({ input: { confirmationToken } });
   };
 
   const onResendConfirmationTokenClick = async () => {
-    setIsPending(true);
-    setErrors([]);
-
-    try {
-      const { data, errors } = await queries.resendConfirmationEmail.fetch();
-      if (errors) {
-        setErrors(errors.map((error) => error.message));
-        return;
-      }
-      if (!data) {
-        throw new UnknownError();
-      }
-      message.success(`sent confirmation token to ${email}`);
-    } catch (e) {
-      console.error(e);
-      setErrors([UNKNOWN_ERROR_MSG]);
-    } finally {
-      setIsPending(false);
-    }
+    resendConfirmationToken();
   };
 
   useEffectOnce(() => {
@@ -114,14 +109,14 @@ export const ConfirmEmail: React.FC = enhance(() => {
                 <Input placeholder="confirmation token" />
               </Form.Item>
               <Form.Item>
-                <Button block type="primary" htmlType="submit" disabled={disabled}>
+                <Button block type="primary" htmlType="submit" disabled={loading}>
                   confirm email
                 </Button>
               </Form.Item>
 
               <Divider>or</Divider>
 
-              <Button block type="link" onClick={onResendConfirmationTokenClick} disabled={disabled}>
+              <Button block type="link" onClick={onResendConfirmationTokenClick} disabled={loading}>
                 resend confirmation token
               </Button>
             </Form>
