@@ -15,8 +15,8 @@ const computeIsInFlashRegion = (currentTimeMs: number, cursorSnapshot: CursorSna
   if (!cursorSnapshot) {
     return false;
   }
-  const size = Math.min(MAX_FLASH_DURATION.ms, cursorSnapshot.timeMsRange.size * FLASH_REGION_FRACTION);
-  const start = cursorSnapshot.timeMsRange.start;
+  const size = Math.min(MAX_FLASH_DURATION.ms, cursorSnapshot.getTimeMsRange().size * FLASH_REGION_FRACTION);
+  const start = cursorSnapshot.getTimeMsRange().start;
   const end = start + size;
   const range = NumberRange.from(start).to(end);
   return range.contains(currentTimeMs);
@@ -35,7 +35,7 @@ const computeIsInFlashRegion = (currentTimeMs: number, cursorSnapshot: CursorSna
  */
 export const usePressedPositions = (cursorSnapshot: CursorSnapshot | null, videoPlayer: VideoJsPlayer | null) => {
   const [pressedPositions, setPressedPositions] = useState(() =>
-    cursorSnapshot ? cursorSnapshot.guitarPositions : []
+    cursorSnapshot ? cursorSnapshot.getGuitarPositions() : []
   );
   const [isInFlashRegion, setIsInFlashRegion] = useState(false);
   const videoPlayerState = useVideoPlayerState(videoPlayer);
@@ -65,17 +65,16 @@ export const usePressedPositions = (cursorSnapshot: CursorSnapshot | null, video
   }, [videoPlayer, cursorSnapshot]);
 
   useEffect(() => {
-    let nextPressedPositions = cursorSnapshot ? cursorSnapshot.guitarPositions : [];
+    let nextPressedPositions = cursorSnapshot ? cursorSnapshot.getGuitarPositions() : [];
 
     if (isPlaying && isInFlashRegion && cursorSnapshot && cursorSnapshot.prev) {
-      const prevPositionLookup = cursorSnapshot.prev.guitarPositions.reduce<Record<number, Record<number, true>>>(
-        (memo, position) => {
+      const prevPositionLookup = cursorSnapshot.prev
+        .getGuitarPositions()
+        .reduce<Record<number, Record<number, true>>>((memo, position) => {
           memo[position.fret] = memo[position.fret] || {};
           memo[position.fret][position.string] = true;
           return memo;
-        },
-        {}
-      );
+        }, {});
 
       const wasPreviouslyPressed = (position: Position): boolean => {
         return !!(prevPositionLookup[position.fret] && prevPositionLookup[position.fret][position.string]);

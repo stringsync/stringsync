@@ -1,4 +1,4 @@
-import { get, isNull, isNumber } from 'lodash';
+import { get, isNumber } from 'lodash';
 import { KeyInstruction, VoiceEntry } from 'opensheetmusicdisplay';
 import { Box } from '../../../util/Box';
 import { memoize } from '../../../util/memoize';
@@ -29,21 +29,15 @@ export class CursorSnapshot {
   next: CursorSnapshot | null = null;
   prev: CursorSnapshot | null = null;
 
-  readonly measureLine: number;
-  readonly iteratorSnapshot: IteratorSnapshot;
-  readonly x: number;
-  readonly yRange: NumberRange;
-  readonly bpm: number;
-  readonly beatRange: NumberRange;
-  readonly timeMsRange: NumberRange;
-  readonly entries: VoiceEntry[];
-  readonly targets: LocatorTarget[];
-
-  private boxCache: Box | null = null;
-  private measureIndexCache: number | null = null;
-  private measureNumberCache: number | null = null;
-  private guitarPositionsCache: Position[] | null = null;
-  private measureCursorSnapshotsCache: CursorSnapshot[] | null = null;
+  private measureLine: number;
+  private iteratorSnapshot: IteratorSnapshot;
+  private x: number;
+  private yRange: NumberRange;
+  private bpm: number;
+  private beatRange: NumberRange;
+  private timeMsRange: NumberRange;
+  private entries: VoiceEntry[];
+  private targets: LocatorTarget[];
 
   constructor(index: number, attrs: CursorSnapshotAttrs) {
     this.index = index;
@@ -58,6 +52,30 @@ export class CursorSnapshot {
     this.targets = attrs.targets;
   }
 
+  getIteratorSnapshot() {
+    return this.iteratorSnapshot;
+  }
+
+  getBpm() {
+    return this.bpm;
+  }
+
+  getBeatRange() {
+    return this.beatRange;
+  }
+
+  getTimeMsRange() {
+    return this.timeMsRange;
+  }
+
+  getTargets() {
+    return this.targets;
+  }
+
+  getEntries() {
+    return this.entries;
+  }
+
   @memoize()
   getXRange() {
     const x0 = this.x;
@@ -68,44 +86,73 @@ export class CursorSnapshot {
     return NumberRange.from(x0).to(x1);
   }
 
-  get box() {
-    if (!this.boxCache) {
-      this.boxCache = this.calculateBox();
-    }
-    return this.boxCache;
+  getYRange() {
+    return this.yRange;
   }
 
-  get measureIndex() {
-    if (isNull(this.measureIndexCache)) {
-      this.measureIndexCache = this.iteratorSnapshot.get().CurrentMeasureIndex;
-    }
-    return this.measureIndexCache;
+  @memoize()
+  getBox() {
+    return new Box(this.getXRange(), this.getYRange());
   }
 
-  get measureNumber() {
-    if (isNull(this.measureNumberCache)) {
-      this.measureNumberCache = this.iteratorSnapshot.get().CurrentMeasure.MeasureNumber;
-    }
-    return this.measureNumberCache;
+  @memoize()
+  getMeasureIndex() {
+    return this.iteratorSnapshot.clone().CurrentMeasure.MeasureNumber;
   }
 
-  get guitarPositions(): Position[] {
-    if (!this.guitarPositionsCache) {
-      this.guitarPositionsCache = this.calculateGuitarPositions();
-    }
-    return this.guitarPositionsCache;
+  @memoize()
+  getMeasureNumber() {
+    return this.iteratorSnapshot.clone().CurrentMeasure.MeasureNumber;
   }
 
+  getMeasureLine() {
+    return this.measureLine;
+  }
+
+  @memoize()
+  getGuitarPositions(): Position[] {
+    return this.entries
+      .flatMap((entry) => entry.Notes)
+      .filter((note) => note.ParentStaff.isTab)
+      .map<{ fret: number | null; str: number | null }>((tabNote) => ({
+        str: get(tabNote, 'stringNumberTab', null),
+        fret: get(tabNote, 'fretNumber', null),
+      }))
+      .filter((pos): pos is { fret: number; str: number } => isNumber(pos.str) && isNumber(pos.fret))
+      .map((pos) => new Position(pos.fret, pos.str));
+  }
+
+  @memoize()
   getKey() {
     // TODO(jared) Finish implementing
-    const keyInstruction: KeyInstruction | undefined = this.iteratorSnapshot.get().CurrentMeasure.getKeyInstruction(0);
+    const keyInstruction: KeyInstruction | undefined = this.iteratorSnapshot
+      .clone()
+      .CurrentMeasure.getKeyInstruction(0);
   }
 
+  @memoize()
   getMeasureCursorSnapshots(): CursorSnapshot[] {
-    if (isNull(this.measureCursorSnapshotsCache)) {
-      this.measureCursorSnapshotsCache = this.calculateMeasureCursorSnapshots();
+    return [...this.getPrevMeasureCursorSnapshots(), this, ...this.getNextMeasureCursorSnapshots()];
+  }
+
+  @memoize()
+  getPrevMeasureCursorSnapshots(): CursorSnapshot[] {
+    const prevMeasureCursorSnapshots = new Array<CursorSnapshot>();
+    let prev = this.prev;
+    while (prev && prev.getMeasureIndex() === this.getMeasureIndex()) {
+      prevMeasureCursorSnapshots.push(...prev.getPrevMeasureCursorSnapshots());
     }
-    return this.measureCursorSnapshotsCache;
+    return prevMeasureCursorSnapshots.reverse();
+  }
+
+  @memoize()
+  getNextMeasureCursorSnapshots(): CursorSnapshot[] {
+    const nextMeasureCursorSnapshots = new Array<CursorSnapshot>();
+    let next = this.next;
+    while (next && next.getMeasureIndex() === this.getMeasureIndex()) {
+      nextMeasureCursorSnapshots.push(...next.getNextMeasureCursorSnapshots());
+    }
+    return nextMeasureCursorSnapshots;
   }
 
   linkPrev(cursorSnapshot: CursorSnapshot): void {
@@ -137,42 +184,5 @@ export class CursorSnapshot {
     const t = t1 + ((x - x1) * (t1 - t0)) / (x1 - x0);
 
     return t;
-  }
-
-  private calculateBox() {
-    const xRange = this.getXRange();
-    return new Box(xRange, this.yRange);
-  }
-
-  private calculateGuitarPositions() {
-    return this.entries
-      .flatMap((entry) => entry.Notes)
-      .filter((note) => note.ParentStaff.isTab)
-      .map<{ fret: number | null; str: number | null }>((tabNote) => ({
-        str: get(tabNote, 'stringNumberTab', null),
-        fret: get(tabNote, 'fretNumber', null),
-      }))
-      .filter((pos): pos is { fret: number; str: number } => isNumber(pos.str) && isNumber(pos.fret))
-      .map((pos) => new Position(pos.fret, pos.str));
-  }
-
-  private calculateMeasureCursorSnapshots() {
-    const before = new Array<CursorSnapshot>();
-    const middle = this;
-    const after = new Array<CursorSnapshot>();
-
-    let prev = this.prev;
-    while (prev && prev.measureIndex === this.measureIndex) {
-      before.push(prev);
-      prev = prev.prev;
-    }
-
-    let next = this.next;
-    while (next && next.measureIndex === this.measureIndex) {
-      after.push(next);
-      next = next.next;
-    }
-
-    return [...before.reverse(), middle, ...after];
   }
 }

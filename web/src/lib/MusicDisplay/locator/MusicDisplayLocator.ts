@@ -85,7 +85,7 @@ export class MusicDisplayLocator {
     }
 
     const firstCursorSnapshot = first(this.cursorSnapshots)!;
-    if (timeMs < firstCursorSnapshot.timeMsRange.start) {
+    if (timeMs < firstCursorSnapshot.getTimeMsRange().start) {
       return {
         timeMs,
         x: -1,
@@ -96,40 +96,40 @@ export class MusicDisplayLocator {
       };
     }
 
-    if (firstCursorSnapshot.timeMsRange.contains(timeMs)) {
+    if (firstCursorSnapshot.getTimeMsRange().contains(timeMs)) {
       return {
         timeMs,
         x: firstCursorSnapshot.lerpX(timeMs),
-        y: firstCursorSnapshot.yRange.midpoint,
+        y: firstCursorSnapshot.getYRange().midpoint,
         cost: LocateCost.Cheap,
         cursorSnapshot: firstCursorSnapshot,
-        targets: firstCursorSnapshot.targets,
+        targets: firstCursorSnapshot.getTargets(),
       };
     }
 
     // The first cursor snapshot may have a time range of [0, 0], so we always check
     // the second one just in case.
     const secondCursorSnapshot = firstCursorSnapshot.next;
-    if (secondCursorSnapshot && secondCursorSnapshot.timeMsRange.contains(timeMs)) {
+    if (secondCursorSnapshot && secondCursorSnapshot.getTimeMsRange().contains(timeMs)) {
       return {
         timeMs,
         x: secondCursorSnapshot.lerpX(timeMs),
-        y: secondCursorSnapshot.timeMsRange.midpoint,
+        y: secondCursorSnapshot.getTimeMsRange().midpoint,
         cost: LocateCost.Cheap,
         cursorSnapshot: secondCursorSnapshot,
-        targets: secondCursorSnapshot.targets,
+        targets: secondCursorSnapshot.getTargets(),
       };
     }
 
     const lastCursorSnapshot = last(this.cursorSnapshots)!;
-    if (timeMs > lastCursorSnapshot.timeMsRange.end) {
+    if (timeMs > lastCursorSnapshot.getTimeMsRange().end) {
       return {
         timeMs,
         x: -1,
         y: -1,
         cost: LocateCost.Cheap,
         cursorSnapshot: null,
-        targets: lastCursorSnapshot.targets,
+        targets: lastCursorSnapshot.getTargets(),
       };
     }
 
@@ -138,38 +138,38 @@ export class MusicDisplayLocator {
       return null;
     }
 
-    if (cursorSnapshot.timeMsRange.contains(timeMs)) {
+    if (cursorSnapshot.getTimeMsRange().contains(timeMs)) {
       return {
         timeMs,
         x: cursorSnapshot.lerpX(timeMs),
-        y: cursorSnapshot.yRange.midpoint,
+        y: cursorSnapshot.getYRange().midpoint,
         cost: LocateCost.Cheap,
         cursorSnapshot: cursorSnapshot,
-        targets: cursorSnapshot.targets,
+        targets: cursorSnapshot.getTargets(),
       };
     }
 
     const nextCursorSnapshot = cursorSnapshot.next;
-    if (nextCursorSnapshot && nextCursorSnapshot.timeMsRange.contains(timeMs)) {
+    if (nextCursorSnapshot && nextCursorSnapshot.getTimeMsRange().contains(timeMs)) {
       return {
         timeMs,
         x: nextCursorSnapshot.lerpX(timeMs),
-        y: nextCursorSnapshot.yRange.midpoint,
+        y: nextCursorSnapshot.getYRange().midpoint,
         cost: LocateCost.Cheap,
         cursorSnapshot: nextCursorSnapshot,
-        targets: nextCursorSnapshot.targets,
+        targets: nextCursorSnapshot.getTargets(),
       };
     }
 
     const prevCursorSnapshot = cursorSnapshot.prev;
-    if (prevCursorSnapshot && prevCursorSnapshot.timeMsRange.contains(timeMs)) {
+    if (prevCursorSnapshot && prevCursorSnapshot.getTimeMsRange().contains(timeMs)) {
       return {
         timeMs,
         x: prevCursorSnapshot.lerpX(timeMs),
-        y: prevCursorSnapshot.yRange.midpoint,
+        y: prevCursorSnapshot.getYRange().midpoint,
         cost: LocateCost.Cheap,
         cursorSnapshot: prevCursorSnapshot,
-        targets: prevCursorSnapshot.targets,
+        targets: prevCursorSnapshot.getTargets(),
       };
     }
 
@@ -181,7 +181,7 @@ export class MusicDisplayLocator {
    */
   private expensiveLocateByTimeMs(timeMs: number): LocateResult {
     const cursorSnapshot = bsearch(this.cursorSnapshots, (cursorSnapshot) => {
-      const { start, end } = cursorSnapshot.timeMsRange;
+      const { start, end } = cursorSnapshot.getTimeMsRange();
       if (start > timeMs) {
         return -1;
       } else if (end < timeMs) {
@@ -195,10 +195,10 @@ export class MusicDisplayLocator {
       return {
         timeMs,
         x: cursorSnapshot.lerpX(timeMs),
-        y: cursorSnapshot.yRange.midpoint,
+        y: cursorSnapshot.getYRange().midpoint,
         cost: LocateCost.Expensive,
         cursorSnapshot: cursorSnapshot,
-        targets: cursorSnapshot.targets,
+        targets: cursorSnapshot.getTargets(),
       };
     }
 
@@ -229,7 +229,7 @@ export class MusicDisplayLocator {
       return null;
     }
 
-    if (cursorSnapshot.getXRange().contains(x) && cursorSnapshot.yRange.contains(y)) {
+    if (cursorSnapshot.getXRange().contains(x) && cursorSnapshot.getYRange().contains(y)) {
       return {
         timeMs: cursorSnapshot.lerpTimeMs(x),
         x,
@@ -241,7 +241,11 @@ export class MusicDisplayLocator {
     }
 
     const nextCursorSnapshot = cursorSnapshot.next;
-    if (nextCursorSnapshot && nextCursorSnapshot.getXRange().contains(x) && nextCursorSnapshot.yRange.contains(y)) {
+    if (
+      nextCursorSnapshot &&
+      nextCursorSnapshot.getXRange().contains(x) &&
+      nextCursorSnapshot.getYRange().contains(y)
+    ) {
       return {
         timeMs: nextCursorSnapshot.lerpTimeMs(x),
         x,
@@ -253,7 +257,11 @@ export class MusicDisplayLocator {
     }
 
     const prevCursorSnapshot = cursorSnapshot.prev;
-    if (prevCursorSnapshot && prevCursorSnapshot.getXRange().contains(x) && prevCursorSnapshot.yRange.contains(y)) {
+    if (
+      prevCursorSnapshot &&
+      prevCursorSnapshot.getXRange().contains(x) &&
+      prevCursorSnapshot.getYRange().contains(y)
+    ) {
       return {
         timeMs: prevCursorSnapshot.lerpTimeMs(x),
         x,
@@ -332,7 +340,7 @@ export class MusicDisplayLocator {
     targets.push(...cursorHits);
 
     targets.push(
-      ...cursorSnapshot.targets.filter((target) => {
+      ...cursorSnapshot.getTargets().filter((target) => {
         switch (target.type) {
           case LocatorTargetType.Note:
             return target.box.contains(x, y);

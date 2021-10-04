@@ -248,10 +248,10 @@ export class LerpCursor implements CursorWrapper {
     if (!nextCursorSnapshot) {
       this.clear();
     } else {
-      nextCursorSnapshot.iteratorSnapshot.apply(this.lagger);
-      nextCursorSnapshot.iteratorSnapshot.apply(this.leader);
+      nextCursorSnapshot.getIteratorSnapshot().apply(this.lagger);
+      nextCursorSnapshot.getIteratorSnapshot().apply(this.leader);
       this.leader.next();
-      nextCursorSnapshot.iteratorSnapshot.apply(this.lerper);
+      nextCursorSnapshot.getIteratorSnapshot().apply(this.lerper);
 
       this.show();
     }

@@ -29,7 +29,7 @@ export const useTipFormatter = (cursorSnapshot: CursorSnapshot | null, durationM
         durationTimestamp = '?';
       }
 
-      const currentMeasureNumber = cursorSnapshot ? cursorSnapshot.measureNumber.toString() : '0';
+      const currentMeasureNumber = cursorSnapshot ? cursorSnapshot.getMeasureNumber().toString() : '0';
 
       return (
         <SliderTooltip

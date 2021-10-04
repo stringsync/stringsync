@@ -9,7 +9,9 @@ export const useMeasurePositions = (cursorSnapshot: CursorSnapshot | null) => {
       return [];
     }
     const measureCursorSnapshots = cursorSnapshot.getMeasureCursorSnapshots();
-    const positions = measureCursorSnapshots.flatMap((measureCursorSnapshot) => measureCursorSnapshot.guitarPositions);
+    const positions = measureCursorSnapshots.flatMap((measureCursorSnapshot) => {
+      return measureCursorSnapshot.getGuitarPositions();
+    });
     return uniqBy(positions, (position) => position.toString());
   }, [cursorSnapshot]);
 };

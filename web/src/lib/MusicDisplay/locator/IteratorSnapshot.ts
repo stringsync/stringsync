@@ -11,12 +11,12 @@ export class IteratorSnapshot {
     this.iterator = iterator;
   }
 
-  get() {
+  clone() {
     return this.iterator.clone();
   }
 
   apply(cursor: Cursor) {
-    cursor.iterator = this.get();
+    cursor.iterator = this.clone();
     cursor.update();
   }
 }

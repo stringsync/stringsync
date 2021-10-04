@@ -73,7 +73,7 @@ export class CursorSnapshotCalculator {
       }
 
       // Calculate the measure line
-      if (prevCursorSnapshot && !prevCursorSnapshot.yRange.eq(yRange)) {
+      if (prevCursorSnapshot && !prevCursorSnapshot.getYRange().eq(yRange)) {
         measureLine++;
       }
 
@@ -112,7 +112,7 @@ export class CursorSnapshotCalculator {
   }
 
   static calculateCursorSnapshotLineGroups(cursorSnapshots: CursorSnapshot[]): CursorSnapshotLineGroup[] {
-    const byMeasureLine = (cursorSnapshot: CursorSnapshot) => cursorSnapshot.measureLine;
+    const byMeasureLine = (cursorSnapshot: CursorSnapshot) => cursorSnapshot.getMeasureLine();
     const byIndex = (cursorSnapshot: CursorSnapshot) => cursorSnapshot.index;
 
     const cursorSnapshotsByMeasureLine = groupBy(cursorSnapshots, byMeasureLine);
@@ -123,7 +123,7 @@ export class CursorSnapshotCalculator {
       if (cursorSnapshots.length === 0) {
         throw new Error('could not calculate line groups, empty measure line');
       }
-      const yRange = first(cursorSnapshots)!.yRange;
+      const yRange = first(cursorSnapshots)!.getYRange();
 
       return { yRange, cursorSnapshots };
     });

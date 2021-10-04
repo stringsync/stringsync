@@ -148,7 +148,7 @@ export class SelectionRenderer {
     const endIndex = endCursorSnapshot.index;
     const cursorSnapshots = this.startLocator.slice(startIndex, endIndex + 1);
 
-    const byMeasureLine = (cursorSnapshot: CursorSnapshot) => cursorSnapshot.measureLine;
+    const byMeasureLine = (cursorSnapshot: CursorSnapshot) => cursorSnapshot.getMeasureLine();
     const cursorSnapshotsByMeasureLine = groupBy(cursorSnapshots, byMeasureLine);
     const measureLines = uniq(sortBy(cursorSnapshots.map(byMeasureLine), identity));
 
@@ -168,8 +168,8 @@ export class SelectionRenderer {
               (cursorSnapshot) => cursorSnapshot.getXRange().end + END_OF_MEASURE_LINE_PADDING_PX
             )
           );
-      const y0 = first(measureLineCursorSnapshots)!.yRange.start;
-      const y1 = last(measureLineCursorSnapshots)!.yRange.end;
+      const y0 = first(measureLineCursorSnapshots)!.getYRange().start;
+      const y1 = last(measureLineCursorSnapshots)!.getYRange().end;
 
       return { measureLine, box: Box.from(x0, y0).to(x1, y1) };
     });
