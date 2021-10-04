@@ -1,6 +1,7 @@
 import { get, isNull, isNumber } from 'lodash';
 import { KeyInstruction, VoiceEntry } from 'opensheetmusicdisplay';
 import { Box } from '../../../util/Box';
+import { memoize } from '../../../util/memoize';
 import { NumberRange } from '../../../util/NumberRange';
 import { Position } from '../../guitar/Position';
 import { END_OF_MEASURE_LINE_PADDING_PX } from './constants';
@@ -38,7 +39,6 @@ export class CursorSnapshot {
   readonly entries: VoiceEntry[];
   readonly targets: LocatorTarget[];
 
-  private xRangeCache: NumberRange | null = null;
   private boxCache: Box | null = null;
   private measureIndexCache: number | null = null;
   private measureNumberCache: number | null = null;
@@ -58,11 +58,14 @@ export class CursorSnapshot {
     this.targets = attrs.targets;
   }
 
-  get xRange() {
-    if (!this.xRangeCache) {
-      this.xRangeCache = this.calculateXRange();
-    }
-    return this.xRangeCache;
+  @memoize()
+  getXRange() {
+    const x0 = this.x;
+    const x1 =
+      this.next && CursorSnapshot.isOnSameMeasureLine(this, this.next)
+        ? this.next.x
+        : this.x + END_OF_MEASURE_LINE_PADDING_PX;
+    return NumberRange.from(x0).to(x1);
   }
 
   get box() {
@@ -113,8 +116,10 @@ export class CursorSnapshot {
   lerpX(timeMs: number) {
     const t0 = this.timeMsRange.start;
     const t1 = this.timeMsRange.end;
-    const x0 = this.xRange.start;
-    const x1 = this.xRange.end;
+
+    const xRange = this.getXRange();
+    const x0 = xRange.start;
+    const x1 = xRange.end;
 
     const x = x1 + ((timeMs - t1) * (x1 - x0)) / (t1 - t0);
 
@@ -124,25 +129,19 @@ export class CursorSnapshot {
   lerpTimeMs(x: number) {
     const t0 = this.timeMsRange.start;
     const t1 = this.timeMsRange.end;
-    const x0 = this.xRange.start;
-    const x1 = this.xRange.end;
+
+    const xRange = this.getXRange();
+    const x0 = xRange.start;
+    const x1 = xRange.end;
 
     const t = t1 + ((x - x1) * (t1 - t0)) / (x1 - x0);
 
     return t;
   }
 
-  private calculateXRange() {
-    const x0 = this.x;
-    const x1 =
-      this.next && CursorSnapshot.isOnSameMeasureLine(this, this.next)
-        ? this.next.x
-        : this.x + END_OF_MEASURE_LINE_PADDING_PX;
-    return NumberRange.from(x0).to(x1);
-  }
-
   private calculateBox() {
-    return new Box(this.xRange, this.yRange);
+    const xRange = this.getXRange();
+    return new Box(xRange, this.yRange);
   }
 
   private calculateGuitarPositions() {

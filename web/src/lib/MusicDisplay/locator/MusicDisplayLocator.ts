@@ -229,7 +229,7 @@ export class MusicDisplayLocator {
       return null;
     }
 
-    if (cursorSnapshot.xRange.contains(x) && cursorSnapshot.yRange.contains(y)) {
+    if (cursorSnapshot.getXRange().contains(x) && cursorSnapshot.yRange.contains(y)) {
       return {
         timeMs: cursorSnapshot.lerpTimeMs(x),
         x,
@@ -241,7 +241,7 @@ export class MusicDisplayLocator {
     }
 
     const nextCursorSnapshot = cursorSnapshot.next;
-    if (nextCursorSnapshot && nextCursorSnapshot.xRange.contains(x) && nextCursorSnapshot.yRange.contains(y)) {
+    if (nextCursorSnapshot && nextCursorSnapshot.getXRange().contains(x) && nextCursorSnapshot.yRange.contains(y)) {
       return {
         timeMs: nextCursorSnapshot.lerpTimeMs(x),
         x,
@@ -253,7 +253,7 @@ export class MusicDisplayLocator {
     }
 
     const prevCursorSnapshot = cursorSnapshot.prev;
-    if (prevCursorSnapshot && prevCursorSnapshot.xRange.contains(x) && prevCursorSnapshot.yRange.contains(y)) {
+    if (prevCursorSnapshot && prevCursorSnapshot.getXRange().contains(x) && prevCursorSnapshot.yRange.contains(y)) {
       return {
         timeMs: prevCursorSnapshot.lerpTimeMs(x),
         x,
@@ -291,7 +291,7 @@ export class MusicDisplayLocator {
     }
 
     const cursorSnapshot = bsearch(cursorSnapshotLineGroup.cursorSnapshots, (cursorSnapshot) => {
-      const { start, end } = cursorSnapshot.xRange;
+      const { start, end } = cursorSnapshot.getXRange();
       if (start > x) {
         return -1;
       } else if (end < x) {

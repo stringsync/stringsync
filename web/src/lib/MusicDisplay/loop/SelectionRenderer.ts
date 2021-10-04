@@ -160,12 +160,12 @@ export class SelectionRenderer {
       // There's no guarantee about the sort order of lodash's groupBy, so we make sure that we get the min and max.
       const x0 = isFirstNdx
         ? this.startLocateResult.x
-        : Math.min(...measureLineCursorSnapshots.map((cursorSnapshot) => cursorSnapshot.xRange.start));
+        : Math.min(...measureLineCursorSnapshots.map((cursorSnapshot) => cursorSnapshot.getXRange().start));
       const x1 = isLastNdx
         ? this.endLocateResult.x
         : Math.max(
             ...measureLineCursorSnapshots.map(
-              (cursorSnapshot) => cursorSnapshot.xRange.end + END_OF_MEASURE_LINE_PADDING_PX
+              (cursorSnapshot) => cursorSnapshot.getXRange().end + END_OF_MEASURE_LINE_PADDING_PX
             )
           );
       const y0 = first(measureLineCursorSnapshots)!.yRange.start;
