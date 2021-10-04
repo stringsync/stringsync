@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import { VideoJsPlayer, VideoJsPlayerOptions } from 'video.js';
 import { useViewport } from '../../ctx/viewport/useViewport';
 import { Layout, withLayout } from '../../hocs/withLayout';
+import { HEADER_HEIGHT_PX } from '../../hocs/withLayout/DefaultLayout';
 import { useNoOverflow } from '../../hooks/useNoOverflow';
 import { useNotation } from '../../hooks/useNotation';
 import { MusicDisplay } from '../../lib/MusicDisplay';
@@ -44,10 +45,26 @@ const RightOrBottomScrollContainer = styled.div`
   overflow-x: hidden;
   overflow-y: auto;
   position: relative;
+  flex: 2;
+  align-items: stretch;
 `;
+
+const FretboardContainer = styled.div`
+  background-color: white;
+  border-top: 1px solid ${(props) => props.theme['@border-color']};
+
+  figure {
+    margin: 0;
+  }
+`;
+
+const NotationControlsContainer = styled.div``;
 
 const RightOrBottomCol = styled(Col)`
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - ${HEADER_HEIGHT_PX}px);
 `;
 
 const SongName = styled.h1`
@@ -169,6 +186,7 @@ const NotationPlayer: React.FC = enhance(() => {
               <RightBorder border={gtMd}>{gtMd && <SuggestedNotations srcNotationId={notation.id} />}</RightBorder>
             </LeftOrTopScrollContainer>
           </LeftOrTopCol>
+
           <RightOrBottomCol xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
             <RightOrBottomScrollContainer ref={scrollContainerRef}>
               <SongName>{notation.songName}</SongName>
@@ -188,38 +206,42 @@ const NotationPlayer: React.FC = enhance(() => {
             </RightOrBottomScrollContainer>
 
             {settings.isFretboardVisible && (
-              <Fretboard options={fretboardOpts}>
-                {measurePositions.map(({ string, fret }) => (
-                  <Fretboard.Position
-                    key={`measure-${string}-${fret}`}
-                    string={string}
-                    fret={fret}
-                    style={{ fill: '#bbb' }}
-                  />
-                ))}
-                {pressedPositions.map(({ string, fret }) => (
-                  <Fretboard.Position
-                    key={`pressed-${string}-${fret}`}
-                    string={string}
-                    fret={fret}
-                    style={pressedStyle}
-                  />
-                ))}
-              </Fretboard>
+              <FretboardContainer>
+                <Fretboard options={fretboardOpts}>
+                  {measurePositions.map(({ string, fret }) => (
+                    <Fretboard.Position
+                      key={`measure-${string}-${fret}`}
+                      string={string}
+                      fret={fret}
+                      style={{ fill: '#bbb' }}
+                    />
+                  ))}
+                  {pressedPositions.map(({ string, fret }) => (
+                    <Fretboard.Position
+                      key={`pressed-${string}-${fret}`}
+                      string={string}
+                      fret={fret}
+                      style={pressedStyle}
+                    />
+                  ))}
+                </Fretboard>
+              </FretboardContainer>
             )}
 
             {videoPlayer && (
-              <NotationControls
-                songName={notation.songName || ''}
-                artistName={notation.artistName || ''}
-                durationMs={notation.durationMs}
-                thumbnailUrl={notation.thumbnailUrl || ''}
-                videoPlayer={videoPlayer}
-                musicDisplay={musicDisplay}
-                settings={settings}
-                lastUserScrollAt={lastUserScrollAt}
-                onSettingsChange={onSettingsChange}
-              />
+              <NotationControlsContainer>
+                <NotationControls
+                  songName={notation.songName || ''}
+                  artistName={notation.artistName || ''}
+                  durationMs={notation.durationMs}
+                  thumbnailUrl={notation.thumbnailUrl || ''}
+                  videoPlayer={videoPlayer}
+                  musicDisplay={musicDisplay}
+                  settings={settings}
+                  lastUserScrollAt={lastUserScrollAt}
+                  onSettingsChange={onSettingsChange}
+                />
+              </NotationControlsContainer>
             )}
           </RightOrBottomCol>
         </Row>
