@@ -16,8 +16,10 @@ export const useVideoPlayerCurrentTimeMs = (videoPlayer: VideoJsPlayer) => {
     // unwanted updates. We only want components that need the currentTimeMs to update.
     const loop = new AsyncLoop(
       () => {
-        const nextCurrentTimeMs = getCurrentTimeMs(videoPlayer);
-        setCurrentTimeMs(nextCurrentTimeMs);
+        try {
+          const nextCurrentTimeMs = getCurrentTimeMs(videoPlayer);
+          setCurrentTimeMs(nextCurrentTimeMs);
+        } catch (e) {}
       },
       videoPlayer.requestAnimationFrame.bind(videoPlayer),
       videoPlayer.cancelAnimationFrame.bind(videoPlayer)
