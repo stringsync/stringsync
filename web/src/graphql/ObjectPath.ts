@@ -11,19 +11,12 @@ export class ObjectPath {
   private static SEPARATOR = '.';
 
   static create(...parts: string[]) {
-    parts.forEach(ObjectPath.validate);
     return new ObjectPath(...parts);
   }
 
   static fromString(partStr: string) {
     return ObjectPath.create(...toPath(partStr));
   }
-
-  private static validate = (part: string) => {
-    if (part.includes(ObjectPath.SEPARATOR)) {
-      throw new Error(`part cannot include: '${ObjectPath.SEPARATOR}'`);
-    }
-  };
 
   readonly parts: string[];
 
@@ -44,7 +37,6 @@ export class ObjectPath {
   }
 
   add(part: string): ObjectPath {
-    ObjectPath.validate(part);
     return new ObjectPath(...this.parts, part);
   }
 
