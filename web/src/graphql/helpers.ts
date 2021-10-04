@@ -52,6 +52,8 @@ export const forEachEntry = (
       forEachEntry(val, callback, truePath.add(key), schemaPath.add(key));
     });
   } else {
-    throw new Error(`unhandled root: ${root}`);
+    const msg = `unhandled root: ${root}`;
+    console.error(msg);
+    throw new Error(msg);
   }
 };
