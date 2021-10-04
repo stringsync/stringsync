@@ -1,6 +1,6 @@
 import { extractFiles } from 'extract-files';
 import { GraphQLError } from 'graphql';
-import { cloneDeep, first, isObject, isString, last } from 'lodash';
+import { cloneDeep, isObject, isString, isUndefined, toPath } from 'lodash';
 import { mutation, params, query, rawString } from 'typed-graphqlify';
 import { Params } from 'typed-graphqlify/dist/render';
 import { GRAPHQL_URI } from '.';
@@ -26,8 +26,7 @@ export type SuccessfulResponse<G extends Any$gql> = { data: OnlyKey<FieldOf<G>, 
 export type FailedResponse = { data: null; errors: GraphQLError[] };
 export type GqlResponseOf<G extends Any$gql> = SuccessfulResponse<G> | FailedResponse;
 
-type Prim = string | boolean | number | null;
-type Variables = { [key: string]: Prim | Variables | Variables[] };
+type VariableNameLookup = Record<string, string>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class $gql<T extends Root, F extends Fields<T>, Q, V> {
@@ -79,18 +78,19 @@ export class $gql<T extends Root, F extends Fields<T>, Q, V> {
   }
 
   toString(variables: V): string {
-    // TODO(jared) Fix jankyness with upload variables. I think we need proper support for named
-    // operations. Consider making everything a named operation and then removing this complexity.
-    // The crux of the problem then becomes naming the input correctly.
-    const uploadVariables = Object.values(this.getUploadVariables(variables));
-    const name = uploadVariables.length
-      ? `${this.field}(${uploadVariables.map((uploadVariable) => `$${uploadVariable}: Upload!`).join(', ')})`
-      : this.field.toString();
+    const lookup = this.createVariableNameLookup(variables);
 
-    const result = isObject(variables)
-      ? this.compiler(name, { [this.field]: params(this.graphqlify(variables), this.query) })
-      : this.compiler(name, { [this.field]: this.query });
-    return result.toString();
+    const uploadVariableNames = Object.values(lookup);
+    const name =
+      uploadVariableNames.length > 0
+        ? `${this.field}(${uploadVariableNames.map((variableName) => `$${variableName}: Upload!`).join(', ')})`
+        : this.field.toString();
+
+    if (isObject(variables)) {
+      return this.compiler(name, { [this.field]: params(this.graphqlify(variables, lookup), this.query) }).toString();
+    } else {
+      return this.compiler(name, { [this.field]: this.query }).toString();
+    }
   }
 
   toRequestInit(variables: V, abortSignal?: AbortSignal): RequestInit {
@@ -105,6 +105,8 @@ export class $gql<T extends Root, F extends Fields<T>, Q, V> {
   }
 
   toFormData(variables: V): FormData {
+    const lookup = this.createVariableNameLookup(variables);
+
     // extract files
     const extraction = extractFiles<File>(
       { query: this.toString(variables), variables },
@@ -120,13 +122,9 @@ export class $gql<T extends Root, F extends Fields<T>, Q, V> {
     for (let ndx = 0; ndx < pathGroups.length; ndx++) {
       const paths = pathGroups[ndx];
       map[ndx] = paths.map((path) => {
-        const parts = path.split('.');
-        // Uploads are already moved to the top level using a dollar sign variable.
-        // To account for that, we remove the intermediate object paths.
-        // e.g. instead of 'variables.input.thumbnail', we want 'variables.thumbnail'
-        // since the upload is not specified inline with the request like primitives
-        // see https://github.com/jaydenseric/graphql-multipart-request-spec
-        return [first(parts), last(parts)].join('.');
+        const [first, ...rest] = toPath(path);
+        const key = ObjectPath.create(...rest).toString();
+        return key in lookup ? `${first}.${lookup[key]}` : path;
       });
     }
 
@@ -145,43 +143,41 @@ export class $gql<T extends Root, F extends Fields<T>, Q, V> {
     return formData;
   }
 
-  private getUploadVariables(variables: V) {
-    const uploadVariables: Record<string, string> = {};
+  private createVariableNameLookup(variables: V) {
+    const lookup: Record<string, string> = {};
 
-    const dfs = (key: string, value: any) => {
-      if (value instanceof File) {
-        uploadVariables[key] = key;
-      } else if (isObject(value)) {
-        Object.entries(value).forEach(([k, v]) => dfs(k, v));
-      }
-    };
-
-    for (const [key, value] of Object.entries(variables || {})) {
-      dfs(key, value);
+    if (isUndefined(variables)) {
+      return lookup;
     }
 
-    return uploadVariables;
+    let id = 0;
+
+    helpers.forEachEntry(variables, (entry, truePath) => {
+      if (entry instanceof File) {
+        lookup[truePath.toString()] = `upload${id++}`;
+      }
+    });
+
+    return lookup;
   }
 
-  private graphqlify(variables: Record<any, any>, path = ObjectPath.create()): Params {
+  private graphqlify(variables: V, lookup: VariableNameLookup) {
     const params: Params = {};
 
-    for (const [key, value] of Object.entries(variables)) {
-      const inner = (value: Prim | Variables | Variables[], innerPath: ObjectPath): any => {
-        if (isString(value) && !this.isEnum(innerPath)) {
-          return rawString(value);
-        } else if (value instanceof File) {
-          return `$${key}`; // these are moved as a top-level dollar sign variable
-        } else if (Array.isArray(value)) {
-          return value.map((el) => inner(el, innerPath.add(ObjectPath.STAR)));
-        } else if (isObject(value)) {
-          return this.graphqlify(value, innerPath);
-        } else {
-          return value;
-        }
-      };
-      params[key] = inner(value, path.add(key));
-    }
+    helpers.forEachEntry(variables, (entry, truePath, schemaPath) => {
+      if (isString(entry) && !this.isEnum(schemaPath)) {
+        truePath.set(params, rawString(entry));
+      } else if (entry instanceof File) {
+        const variableName = lookup[truePath.toString()];
+        truePath.set(params, variableName ? `$${variableName}` : null);
+      } else if (Array.isArray(entry)) {
+        truePath.set(params, []);
+      } else if (isObject(entry)) {
+        truePath.set(params, {});
+      } else {
+        truePath.set(params, entry);
+      }
+    });
 
     return params;
   }

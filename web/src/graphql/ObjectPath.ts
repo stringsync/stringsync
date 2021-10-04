@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, set, toPath } from 'lodash';
 
 /**
  * An object path represents the property keys needed to get to a specific value.
@@ -13,6 +13,10 @@ export class ObjectPath {
   static create(...parts: string[]) {
     parts.forEach(ObjectPath.validate);
     return new ObjectPath(...parts);
+  }
+
+  static fromString(partStr: string) {
+    return ObjectPath.create(...toPath(partStr));
   }
 
   private static validate = (part: string) => {
@@ -35,10 +39,14 @@ export class ObjectPath {
     return get(object, this.parts);
   }
 
-  add = (part: string): ObjectPath => {
+  set(object: any, value: any) {
+    set(object, this.parts, value);
+  }
+
+  add(part: string): ObjectPath {
     ObjectPath.validate(part);
     return new ObjectPath(...this.parts, part);
-  };
+  }
 
   match(path: ObjectPath): boolean {
     return this.toString() === path.toString();
