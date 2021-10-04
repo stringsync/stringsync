@@ -115,8 +115,8 @@ export const NotationControls: React.FC<Props> = ({
     (value: number) => {
       videoPlayerControls.suspend();
       const timeMs = (value / 100) * durationMs;
-      if (musicDisplay && !musicDisplay.loop.timeMsRange.contains(timeMs)) {
-        musicDisplay.loop.deactivate();
+      if (musicDisplay && !musicDisplay.getLoop().timeMsRange.contains(timeMs)) {
+        musicDisplay.getLoop().deactivate();
       }
       videoPlayerControls.seek(timeMs);
     },
@@ -130,8 +130,8 @@ export const NotationControls: React.FC<Props> = ({
     if (!musicDisplay) {
       return;
     }
-    musicDisplay.scroller.startAutoScrolling();
-    musicDisplay.cursor.scrollIntoView();
+    musicDisplay.getScroller().startAutoScrolling();
+    musicDisplay.getCursor().scrollIntoView();
   }, [musicDisplay]);
 
   // effects
@@ -142,7 +142,7 @@ export const NotationControls: React.FC<Props> = ({
   useMusicDisplaySelectionInteractionEffects(musicDisplay, videoPlayerControls, musicDisplayScrollControls);
   useMusicDisplayClickEffect(musicDisplay, videoPlayerControls, musicDisplayScrollControls);
   useEffect(() => {
-    musicDisplay?.cursor.update(currentTimeMs);
+    musicDisplay?.getCursor().update(currentTimeMs);
   }, [musicDisplay, currentTimeMs]);
   useEffect(() => {
     if (!musicDisplay) {

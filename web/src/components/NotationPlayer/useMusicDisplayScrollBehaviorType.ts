@@ -4,7 +4,7 @@ import { ScrollBehaviorType } from '../../lib/MusicDisplay/scroller';
 
 export const useMusicDisplayScrollBehaviorType = (musicDisplay: MusicDisplay | null) => {
   const [scrollBehaviorType, setScrollBehaviorType] = useState(() => {
-    return musicDisplay ? musicDisplay.scroller.type : ScrollBehaviorType.Unknown;
+    return musicDisplay ? musicDisplay.getScroller().type : ScrollBehaviorType.Unknown;
   });
 
   useEffect(() => {

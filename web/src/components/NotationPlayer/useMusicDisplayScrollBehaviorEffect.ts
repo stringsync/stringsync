@@ -17,7 +17,7 @@ export const useMusicDisplayScrollBehaviorEffect = (musicDisplay: MusicDisplay |
         if (isMusicDisplayLoadingRef.current) {
           return;
         }
-        musicDisplay.scroller.disable();
+        musicDisplay.getScroller().disable();
       }),
       musicDisplay.eventBus.subscribe('resizestarted', () => {
         isMusicDisplayResizingRef.current = true;
@@ -32,7 +32,7 @@ export const useMusicDisplayScrollBehaviorEffect = (musicDisplay: MusicDisplay |
         isMusicDisplayLoadingRef.current = false;
       }),
       musicDisplay.eventBus.subscribe('measurelinechanged', () => {
-        musicDisplay.cursor.scrollIntoView();
+        musicDisplay.getCursor().scrollIntoView();
       }),
     ];
 

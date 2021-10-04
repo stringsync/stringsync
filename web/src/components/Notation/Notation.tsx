@@ -92,7 +92,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
         setCursor(Cursor.ColResize);
       }),
       musicDisplay.eventBus.subscribe('selectionended', () => {
-        musicDisplay.loop.resetStyles();
+        musicDisplay.getLoop().resetStyles();
       }),
       musicDisplay.eventBus.subscribe('selectionentered', (payload) => {
         setCursor(Cursor.ColResize);
@@ -121,7 +121,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
           return;
         }
         const { x, y } = payload.src.position;
-        musicDisplay.fx.ripple(x, y);
+        musicDisplay.getFx().ripple(x, y);
       }),
     ];
 

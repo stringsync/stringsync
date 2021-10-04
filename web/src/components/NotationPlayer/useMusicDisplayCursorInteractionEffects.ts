@@ -16,16 +16,16 @@ export const useMusicDisplayCursorInteractionEffects = (
 
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('cursordragstarted', (payload) => {
-        musicDisplay.scroller.startManualScrolling();
+        musicDisplay.getScroller().startManualScrolling();
         videoPlayerControls.suspend();
       }),
       musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {
-        musicDisplay.scroller.updateScrollIntent(payload.dst.position.relY);
+        musicDisplay.getScroller().updateScrollIntent(payload.dst.position.relY);
         if (!isTemporal(payload.dst)) {
           return;
         }
-        if (!musicDisplay.loop.timeMsRange.contains(payload.dst.timeMs)) {
-          musicDisplay.loop.deactivate();
+        if (!musicDisplay.getLoop().timeMsRange.contains(payload.dst.timeMs)) {
+          musicDisplay.getLoop().deactivate();
         }
         videoPlayerControls.seek(payload.dst.timeMs);
       }),

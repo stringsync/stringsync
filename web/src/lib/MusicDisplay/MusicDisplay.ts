@@ -45,19 +45,19 @@ export class MusicDisplay {
     this.imd.clear();
   }
 
-  get fx() {
+  getFx() {
     return this.imd.fx;
   }
 
-  get scroller() {
+  getScroller() {
     return this.imd.scroller;
   }
 
-  get cursor() {
+  getCursor() {
     return this.imd.cursorWrapper;
   }
 
-  get loop() {
+  getLoop() {
     return this.imd.loop;
   }
 }

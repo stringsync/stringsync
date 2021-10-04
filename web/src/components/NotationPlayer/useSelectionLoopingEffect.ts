@@ -12,13 +12,13 @@ export const useSelectionLoopingEffect = (
     if (!musicDisplay) {
       return;
     }
-    if (!musicDisplay.loop.isActive) {
+    if (!musicDisplay.getLoop().isActive) {
       return;
     }
     if (!isPlaying) {
       return;
     }
-    const { timeMsRange } = musicDisplay.loop;
+    const { timeMsRange } = musicDisplay.getLoop();
     if (timeMsRange.contains(currentTimeMs)) {
       return;
     }

@@ -18,26 +18,26 @@ export const useMusicDisplaySelectionInteractionEffects = (
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
         videoPlayerControls.suspend();
-        musicDisplay.scroller.startManualScrolling();
+        musicDisplay.getScroller().startManualScrolling();
         if (isSelectionPointerTarget(payload.src)) {
-          const timeMsRange = musicDisplay.loop.timeMsRange;
+          const timeMsRange = musicDisplay.getLoop().timeMsRange;
           const newAnchorValue = payload.src.edge === SelectionEdge.Start ? timeMsRange.end : timeMsRange.start;
-          musicDisplay.loop.anchor(newAnchorValue);
+          musicDisplay.getLoop().anchor(newAnchorValue);
         } else {
-          musicDisplay.loop.anchor(payload.selection.anchorValue);
-          musicDisplay.loop.update(payload.selection.movingValue);
+          musicDisplay.getLoop().anchor(payload.selection.anchorValue);
+          musicDisplay.getLoop().update(payload.selection.movingValue);
         }
-        musicDisplay.loop.activate();
+        musicDisplay.getLoop().activate();
       }),
 
       musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
-        musicDisplay.scroller.updateScrollIntent(payload.dst.position.relY);
-        musicDisplay.loop.update(payload.selection.movingValue);
+        musicDisplay.getScroller().updateScrollIntent(payload.dst.position.relY);
+        musicDisplay.getLoop().update(payload.selection.movingValue);
       }),
 
       musicDisplay.eventBus.subscribe('selectionended', () => {
-        if (!musicDisplay.loop.timeMsRange.contains(musicDisplay.cursor.timeMs)) {
-          videoPlayerControls.seek(musicDisplay.loop.timeMsRange.start);
+        if (!musicDisplay.getLoop().timeMsRange.contains(musicDisplay.getCursor().timeMs)) {
+          videoPlayerControls.seek(musicDisplay.getLoop().timeMsRange.start);
         }
         scrollControls.startPreferentialScrolling();
         videoPlayerControls.unsuspend();

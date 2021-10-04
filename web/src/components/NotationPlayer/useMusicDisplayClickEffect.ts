@@ -20,11 +20,11 @@ export const useMusicDisplayClickEffect = (
           videoPlayerControls.seek(payload.src.timeMs);
           musicDisplayScrollControls.startPreferentialScrolling();
 
-          if (!musicDisplay.loop.timeMsRange.contains(payload.src.timeMs)) {
-            musicDisplay.loop.deactivate();
+          if (!musicDisplay.getLoop().timeMsRange.contains(payload.src.timeMs)) {
+            musicDisplay.getLoop().deactivate();
           }
         } else {
-          musicDisplay.loop.deactivate();
+          musicDisplay.getLoop().deactivate();
         }
       }),
     ];

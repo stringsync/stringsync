@@ -4,7 +4,7 @@ import { CursorSnapshot } from '../../lib/MusicDisplay/locator';
 
 export const useMusicDisplayCursorSnapshot = (musicDisplay: MusicDisplay | null) => {
   const [cursorSnapshot, setCursorSnapshot] = useState<CursorSnapshot | null>(() => {
-    return musicDisplay ? musicDisplay.cursor.cursorSnapshot : null;
+    return musicDisplay ? musicDisplay.getCursor().cursorSnapshot : null;
   });
 
   useEffect(() => {

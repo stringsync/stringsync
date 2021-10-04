@@ -13,8 +13,8 @@ export const useMusicDisplayScrollControls = (musicDisplay: MusicDisplay | null,
     if (!isAutoscrollPreferred) {
       return;
     }
-    musicDisplay.scroller.startAutoScrolling();
-    musicDisplay.cursor.scrollIntoView();
+    musicDisplay.getScroller().startAutoScrolling();
+    musicDisplay.getCursor().scrollIntoView();
   }, [musicDisplay, isAutoscrollPreferred]);
 
   return useMemo(() => ({ startPreferentialScrolling }), [startPreferentialScrolling]);
