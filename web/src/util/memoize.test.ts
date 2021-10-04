@@ -22,6 +22,27 @@ describe('memoize', () => {
     expect(value2).toBe(symbol);
   });
 
+  it('memoizes per instance', () => {
+    const symbol = Symbol();
+    const fn = jest.fn().mockReturnValue(symbol);
+
+    class MyClass {
+      @memoize()
+      fn() {
+        return fn();
+      }
+    }
+
+    const instance1 = new MyClass();
+    const instance2 = new MyClass();
+    const value1 = instance1.fn();
+    const value2 = instance2.fn();
+
+    expect(fn).toHaveBeenCalledTimes(2);
+    expect(value1).toBe(symbol);
+    expect(value2).toBe(symbol);
+  });
+
   it(`calls with the 'this' arg`, () => {
     class MyClass {
       @memoize()
@@ -36,7 +57,7 @@ describe('memoize', () => {
     expect(value).toBe(instance);
   });
 
-  it(`calls with undefined when method is disassociated`, () => {
+  it(`does not permit when unbound`, () => {
     class MyClass {
       @memoize()
       fn() {
@@ -45,12 +66,8 @@ describe('memoize', () => {
     }
 
     const instance = new MyClass();
-    const fn = instance.fn;
-    const value1 = fn();
-    const value2 = instance.fn();
-
-    expect(value1).toBeUndefined();
-    expect(value2).toBeUndefined();
+    const fn = instance.fn.bind(undefined);
+    expect(fn).toThrow(InternalError);
   });
 
   // This is an edge case because variadic args do not account for arity (function.length)

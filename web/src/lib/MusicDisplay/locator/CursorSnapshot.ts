@@ -97,7 +97,7 @@ export class CursorSnapshot {
 
   @memoize()
   getMeasureIndex() {
-    return this.iteratorSnapshot.clone().CurrentMeasure.MeasureNumber;
+    return this.iteratorSnapshot.clone().CurrentMeasureIndex;
   }
 
   @memoize()
@@ -132,25 +132,28 @@ export class CursorSnapshot {
 
   @memoize()
   getMeasureCursorSnapshots(): CursorSnapshot[] {
-    return [...this.getPrevMeasureCursorSnapshots(), this, ...this.getNextMeasureCursorSnapshots()];
+    const before = [...this.getPrevMeasureCursorSnapshots()];
+    const middle = [this];
+    const after = [...this.getNextMeasureCursorSnapshots()];
+    return [...before, ...middle, ...after];
   }
 
   @memoize()
   getPrevMeasureCursorSnapshots(): CursorSnapshot[] {
     const prevMeasureCursorSnapshots = new Array<CursorSnapshot>();
-    let prev = this.prev;
-    while (prev && prev.getMeasureIndex() === this.getMeasureIndex()) {
-      prevMeasureCursorSnapshots.push(...prev.getPrevMeasureCursorSnapshots());
+    const prev = this.prev;
+    if (prev && prev.getMeasureIndex() === this.getMeasureIndex()) {
+      prevMeasureCursorSnapshots.push(...prev.getPrevMeasureCursorSnapshots(), prev);
     }
-    return prevMeasureCursorSnapshots.reverse();
+    return prevMeasureCursorSnapshots;
   }
 
   @memoize()
   getNextMeasureCursorSnapshots(): CursorSnapshot[] {
     const nextMeasureCursorSnapshots = new Array<CursorSnapshot>();
     let next = this.next;
-    while (next && next.getMeasureIndex() === this.getMeasureIndex()) {
-      nextMeasureCursorSnapshots.push(...next.getNextMeasureCursorSnapshots());
+    if (next && next.getMeasureIndex() === this.getMeasureIndex()) {
+      nextMeasureCursorSnapshots.push(next, ...next.getNextMeasureCursorSnapshots());
     }
     return nextMeasureCursorSnapshots;
   }

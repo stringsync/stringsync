@@ -1,4 +1,4 @@
-import { isFunction } from 'lodash';
+import { get, isFunction, isUndefined } from 'lodash';
 import { InternalError } from '../errors';
 
 export const memoize = () => (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
@@ -10,17 +10,25 @@ export const memoize = () => (target: any, propertyKey: string, descriptor: Prop
     throw new InternalError('cannot memoize methods with arguments');
   }
 
-  let value: any;
-  let isCached = false;
+  const key = `__memoize_${propertyKey}`;
 
   descriptor.value = function(...args: any[]) {
     if (args.length) {
       throw new InternalError('cannot memoize methods with arguments');
     }
-    if (!isCached) {
-      value = fn.call(this);
-      isCached = true;
+    if (isUndefined(this)) {
+      throw new InternalError('cannot memoize unbound methods');
     }
-    return value;
+    if (!this.hasOwnProperty(key)) {
+      Object.defineProperty(this, key, {
+        configurable: false,
+        enumerable: false,
+        writable: false,
+        value: fn.call(this),
+      });
+    }
+    return get(this, key);
   };
+
+  return descriptor;
 };
