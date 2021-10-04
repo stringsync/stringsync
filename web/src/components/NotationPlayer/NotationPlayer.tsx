@@ -41,7 +41,7 @@ const LeftOrTopCol = styled(Col)`
   overflow: hidden;
 `;
 
-const RightOrBottomScrollContainer = styled.div`
+const NotationScrollContainer = styled.div`
   background: white;
   overflow-x: hidden;
   overflow-y: auto;
@@ -62,10 +62,11 @@ const FretboardContainer = styled.div`
 const NotationControlsContainer = styled.div``;
 
 const RightOrBottomCol = styled(Col)`
+  background: white;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - ${HEADER_HEIGHT_PX}px);
+  height: calc(100vh - ${HEADER_HEIGHT_PX}px);
 `;
 
 const SongName = styled.h1`
@@ -189,7 +190,7 @@ const NotationPlayer: React.FC = enhance(() => {
           </LeftOrTopCol>
 
           <RightOrBottomCol xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
-            <RightOrBottomScrollContainer ref={scrollContainerRef}>
+            <NotationScrollContainer ref={scrollContainerRef}>
               <SongName>{notation.songName}</SongName>
               <ArtistName>by {notation.artistName}</ArtistName>
               <TranscriberName>{notation.transcriber.username}</TranscriberName>
@@ -204,9 +205,9 @@ const NotationPlayer: React.FC = enhance(() => {
                   onUserScroll={onUserScroll}
                 />
               )}
-            </RightOrBottomScrollContainer>
+            </NotationScrollContainer>
 
-            {settings.isFretboardVisible && (
+            {settings.isFretboardVisible && videoPlayer && (
               <FretboardContainer>
                 <Fretboard options={fretboardOpts}>
                   {measurePositions.map(({ string, fret }) => (
@@ -214,7 +215,7 @@ const NotationPlayer: React.FC = enhance(() => {
                       key={`measure-${string}-${fret}`}
                       string={string}
                       fret={fret}
-                      style={{ fill: '#bbb' }}
+                      style={{ fill: '#ddd' }}
                     />
                   ))}
                   {pressedPositions.map(({ string, fret }) => (

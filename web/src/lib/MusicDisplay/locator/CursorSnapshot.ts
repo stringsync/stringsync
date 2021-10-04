@@ -1,5 +1,5 @@
 import { get, isNull, isNumber } from 'lodash';
-import { VoiceEntry } from 'opensheetmusicdisplay';
+import { KeyInstruction, VoiceEntry } from 'opensheetmusicdisplay';
 import { Box } from '../../../util/Box';
 import { NumberRange } from '../../../util/NumberRange';
 import { Position } from '../../guitar/Position';
@@ -91,6 +91,12 @@ export class CursorSnapshot {
       this.guitarPositionsCache = this.calculateGuitarPositions();
     }
     return this.guitarPositionsCache;
+  }
+
+  getKey() {
+    const keyInstruction: KeyInstruction | undefined = this.iteratorSnapshot.get().CurrentMeasure.getKeyInstruction(0);
+    if (keyInstruction) {
+    }
   }
 
   getMeasureCursorSnapshots(): CursorSnapshot[] {
