@@ -94,9 +94,8 @@ export class CursorSnapshot {
   }
 
   getKey() {
+    // TODO(jared) Finish implementing
     const keyInstruction: KeyInstruction | undefined = this.iteratorSnapshot.get().CurrentMeasure.getKeyInstruction(0);
-    if (keyInstruction) {
-    }
   }
 
   getMeasureCursorSnapshots(): CursorSnapshot[] {
