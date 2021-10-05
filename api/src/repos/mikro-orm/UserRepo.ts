@@ -56,7 +56,7 @@ export class UserRepo implements IUserRepo {
   }
 
   async validate(user: User): Promise<void> {
-    await new UserEntity(user).validate();
+    await new UserEntity(user, { em: this.em }).validate();
   }
 
   async find(id: string): Promise<User | null> {

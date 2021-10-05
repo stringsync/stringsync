@@ -1,7 +1,7 @@
 import { Collection, Entity, Enum, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { IsEmail, IsOptional, IsUrl, Matches, MaxLength, MinLength } from 'class-validator';
 import { User, UserRole } from '../../../domain';
-import { BaseEntity } from './BaseEntity';
+import { BaseEntity, BaseEntityOpts } from './BaseEntity';
 import { NotationEntity } from './NotationEntity';
 
 @Entity({ tableName: 'users' })
@@ -72,9 +72,9 @@ export class UserEntity extends BaseEntity implements User {
     this._email = email;
   }
 
-  constructor(user: Partial<UserEntity> = {}) {
-    super();
-    Object.assign(this, user);
+  constructor(props: Partial<UserEntity> = {}, opts: BaseEntityOpts = {}) {
+    super(opts);
+    Object.assign(this, props);
   }
 
   async errors(): Promise<string[]> {

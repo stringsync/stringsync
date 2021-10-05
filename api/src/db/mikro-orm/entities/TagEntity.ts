@@ -1,7 +1,7 @@
 import { Collection, Entity, ManyToMany, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { MaxLength, MinLength } from 'class-validator';
 import { Tag } from '../../../domain';
-import { BaseEntity } from './BaseEntity';
+import { BaseEntity, BaseEntityOpts } from './BaseEntity';
 import { NotationEntity } from './NotationEntity';
 import { TaggingEntity } from './TaggingEntity';
 
@@ -29,8 +29,8 @@ export class TagEntity extends BaseEntity implements Tag {
   })
   notations = new Collection<NotationEntity>(this);
 
-  constructor(props: Partial<TagEntity> = {}) {
-    super();
+  constructor(props: Partial<TagEntity> = {}, opts: BaseEntityOpts = {}) {
+    super(opts);
     Object.assign(this, props);
   }
 }
