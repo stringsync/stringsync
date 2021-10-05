@@ -5,4 +5,5 @@ export * from './Notation';
 export * from './Tag';
 export * from './Tagging';
 export * from './User';
+export * from './VideoInfo';
 export * from './VideoUrl';

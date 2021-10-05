@@ -23,5 +23,6 @@ export const TYPES = {
   UserRepo: Symbol('UserRepo'),
   UserService: Symbol('UserService'),
   VideoUrlService: Symbol('VideoUrlService'),
+  VideoInfoService: Symbol('VideoInfoService'),
   WorkerServer: Symbol('WorkerServer'),
 };

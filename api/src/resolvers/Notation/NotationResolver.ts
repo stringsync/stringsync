@@ -49,7 +49,6 @@ export class NotationResolver {
   @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER))
   async createNotation(@Arg('input') input: CreateNotationInput, @Ctx() ctx: ResolverCtx): Promise<Notation> {
     const { artistName, songName, tagIds } = input;
-    console.log(input);
     const [thumbnail, video] = await Promise.all([input.thumbnail!, input.video!]);
     return await this.notationService.create({
       artistName,

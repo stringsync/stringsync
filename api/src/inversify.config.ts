@@ -18,14 +18,17 @@ import { ApiServer, DevApiServer, GraphqlServer, JobServer } from './server';
 import { WorkerServer } from './server/worker';
 import {
   AuthService,
+  FFProbeVideoInfoService,
   HealthCheckerService,
   MailWriterService,
   NotationService,
+  StaticVideoInfoService,
   TaggingService,
   TagService,
   UserService,
   VideoUrlService,
 } from './services';
+import { VideoInfoService } from './services/VideoInfo/types';
 import {
   BlobStorage,
   Cache,
@@ -93,6 +96,12 @@ if (config.NODE_ENV === 'test') {
   container.bind<BlobStorage>(TYPES.BlobStorage).to(NoopStorage);
 } else {
   container.bind<BlobStorage>(TYPES.BlobStorage).to(S3Storage);
+}
+
+if (config.NODE_ENV === 'test') {
+  container.bind<VideoInfoService>(TYPES.VideoInfoService).to(StaticVideoInfoService);
+} else {
+  container.bind<VideoInfoService>(TYPES.VideoInfoService).to(FFProbeVideoInfoService);
 }
 
 if (config.NODE_ENV === 'test') {
