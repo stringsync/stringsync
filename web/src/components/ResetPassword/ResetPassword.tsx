@@ -88,7 +88,7 @@ export const ResetPassword: React.FC = (props) => {
           <>
             <Form form={form} onFinish={onFinish}>
               <Form.Item hasFeedback name="email" rules={EMAIL_RULES}>
-                <Input placeholder="email" />
+                <Input autoFocus placeholder="email" />
               </Form.Item>
               <Form.Item hasFeedback name="resetPasswordToken" rules={RESET_PASSWORD_TOKEN_RULES}>
                 <Input placeholder="reset password token" />

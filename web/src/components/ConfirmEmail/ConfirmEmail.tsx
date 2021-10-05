@@ -102,7 +102,7 @@ export const ConfirmEmail: React.FC = enhance(() => {
           <>
             <Form form={form} onFinish={onFinish}>
               <Form.Item>
-                <Input placeholder="email" disabled value={email} />
+                <Input autoFocus placeholder="email" disabled value={email} />
               </Form.Item>
               <Form.Item hasFeedback name="confirmationToken" rules={CONFIRMATION_TOKEN_RULES}>
                 <Input placeholder="confirmation token" />

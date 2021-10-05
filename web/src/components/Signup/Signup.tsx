@@ -65,13 +65,13 @@ const Signup: React.FC = () => {
           <>
             <Form form={form} onFinish={onFinish}>
               <Form.Item hasFeedback name="username" rules={USERNAME_RULES}>
-                <Input placeholder="username" disabled={isAuthPending} />
+                <Input autoFocus placeholder="username" disabled={isAuthPending} />
               </Form.Item>
               <Form.Item hasFeedback name="email" rules={EMAIL_RULES}>
                 <Input placeholder="email" disabled={isAuthPending} />
               </Form.Item>
               <Form.Item hasFeedback name="password" rules={PASSWORD_RULES}>
-                <Input.Password placeholder="password" disabled={isAuthPending} />
+                <Input.Password autoComplete="on" placeholder="password" disabled={isAuthPending} />
               </Form.Item>
               <Form.Item>
                 <Button block type="primary" htmlType="submit" disabled={isAuthPending} loading={isAuthPending}>

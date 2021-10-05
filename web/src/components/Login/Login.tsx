@@ -45,10 +45,10 @@ export const Login: React.FC = () => {
           <>
             <Form form={form} onFinish={onFinish}>
               <Form.Item name="usernameOrEmail" rules={[{ required: true, message: 'username or email required' }]}>
-                <Input placeholder="username or email" disabled={isAuthPending} />
+                <Input autoFocus placeholder="username or email" disabled={isAuthPending} />
               </Form.Item>
               <Form.Item name="password" rules={[{ required: true, message: 'password is required' }]}>
-                <Input.Password placeholder="password" disabled={isAuthPending} />
+                <Input.Password autoComplete="on" placeholder="password" disabled={isAuthPending} />
               </Form.Item>
               <Form.Item>
                 <Button block type="primary" htmlType="submit" disabled={isAuthPending} loading={isAuthPending}>

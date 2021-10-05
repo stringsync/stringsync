@@ -54,7 +54,7 @@ export const ForgotPassword: React.FC = () => {
           <>
             <Form form={form} onFinish={onFinish}>
               <Form.Item name="email" rules={EMAIL_RULES}>
-                <Input placeholder="email" />
+                <Input autoFocus placeholder="email" />
               </Form.Item>
               <Form.Item>
                 <Button block type="primary" htmlType="submit">
