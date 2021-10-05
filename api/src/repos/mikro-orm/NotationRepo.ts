@@ -46,7 +46,7 @@ export class NotationRepo implements INotationRepo {
   }
 
   async validate(notation: Notation): Promise<void> {
-    await new NotationEntity(notation).validate();
+    await new NotationEntity(notation, { em: this.em }).validate();
   }
 
   async find(id: string): Promise<Notation | null> {
@@ -74,13 +74,14 @@ export class NotationRepo implements INotationRepo {
 
   async create(attrs: Partial<Notation>) {
     const notation = this.em.create(NotationEntity, attrs);
+    notation.em = this.em;
     this.em.persist(notation);
     await this.em.flush();
     return pojo(notation);
   }
 
   async bulkCreate(bulkAttrs: Partial<Notation>[]): Promise<Notation[]> {
-    const notations = bulkAttrs.map((attrs) => new NotationEntity(attrs));
+    const notations = bulkAttrs.map((attrs) => new NotationEntity(attrs, { em: this.em }));
     this.em.persist(notations);
     await this.em.flush();
     return pojo(notations);
@@ -91,6 +92,7 @@ export class NotationRepo implements INotationRepo {
     if (!notation) {
       throw new NotFoundError('notation not found');
     }
+    notation.em = this.em;
     this.em.assign(notation, attrs);
     this.em.persist(notation);
     await this.em.flush();

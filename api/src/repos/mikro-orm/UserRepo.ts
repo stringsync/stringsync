@@ -30,7 +30,6 @@ export class UserRepo implements IUserRepo {
 
   constructor(@inject(TYPES.Db) public db: Db) {
     this.em = getEntityManager(db);
-
     this.byIdLoader = new Dataloader(this.loadAllById);
   }
 

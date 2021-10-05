@@ -29,8 +29,8 @@ export class TagEntity extends BaseEntity implements Tag {
   })
   notations = new Collection<NotationEntity>(this);
 
-  constructor(props: Partial<TagEntity> = {}, opts: BaseEntityOpts = {}) {
+  constructor(attrs: Partial<TagEntity> = {}, opts: BaseEntityOpts = {}) {
     super(opts);
-    Object.assign(this, props);
+    Object.assign(this, attrs);
   }
 }

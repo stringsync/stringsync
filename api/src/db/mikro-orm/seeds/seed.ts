@@ -33,17 +33,19 @@ import {
   logger.info('seeding database...');
 
   const buildUser = (props: Partial<User> = {}) => {
-    const user = new UserEntity({
-      ...buildRandUser({
-        id: undefined,
-        username: `${sample(USERNAMES)}_${random(100, 999)}`,
-        email: `${randStr(5)}@${randStr(5)}.com`,
-        encryptedPassword: ENCRYPTED_PASSWORD,
-        avatarUrl: sample(USER_AVATAR_URLS),
-        ...props,
-      }),
-      em: db.em,
-    });
+    const user = new UserEntity(
+      {
+        ...buildRandUser({
+          id: undefined,
+          username: `${sample(USERNAMES)}_${random(100, 999)}`,
+          email: `${randStr(5)}@${randStr(5)}.com`,
+          encryptedPassword: ENCRYPTED_PASSWORD,
+          avatarUrl: sample(USER_AVATAR_URLS),
+          ...props,
+        }),
+      },
+      { em: db.em }
+    );
     db.em.persist(user);
     return user;
   };
@@ -61,13 +63,14 @@ import {
         videoUrl: VIDEO_URL,
         private: false,
         ...props,
-      })
+      }),
+      { em: db.em }
     );
     db.em.persist(notation);
     return notation;
   };
   const buildTag = (props: Partial<Tag> = {}) => {
-    const tag = new TagEntity(buildRandTag({ id: undefined, ...props }));
+    const tag = new TagEntity(buildRandTag({ id: undefined, ...props }), { em: db.em });
     db.em.persist(tag);
     return tag;
   };

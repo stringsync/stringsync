@@ -19,8 +19,16 @@ export abstract class BaseEntity {
   }
 
   async errors(): Promise<string[]> {
-    const errors = await validate(this);
-    return errors.flatMap((error) => (error.constraints ? Object.values(error.constraints) : []));
+    const errors = new Array<string>();
+
+    if (!this.em) {
+      errors.push('cannot validate without an entity manager');
+    }
+
+    const validationErrors = await validate(this);
+    errors.push(...validationErrors.flatMap((error) => (error.constraints ? Object.values(error.constraints) : [])));
+
+    return errors;
   }
 
   @BeforeCreate()

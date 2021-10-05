@@ -20,7 +20,6 @@ export class TagRepo implements ITagRepo {
 
   constructor(@inject(TYPES.Db) private db: Db) {
     this.em = getEntityManager(this.db);
-
     this.byIdLoader = new Dataloader(this.loadByIds);
     this.byNotationIdLoader = new Dataloader(this.loadAllByNotationIds);
   }
@@ -30,15 +29,14 @@ export class TagRepo implements ITagRepo {
   }
 
   async validate(tag: Tag): Promise<void> {
-    await new TagEntity(tag).validate();
+    await new TagEntity(tag, { em: this.em }).validate();
   }
 
   async create(attrs: Partial<Tag>): Promise<Tag> {
     const tag = this.em.create(TagEntity, attrs);
-
+    tag.em = this.em;
     this.em.persist(tag);
     await this.em.flush();
-
     return pojo(tag);
   }
 
@@ -60,7 +58,7 @@ export class TagRepo implements ITagRepo {
   }
 
   async bulkCreate(bulkAttrs: Partial<Tag>[]): Promise<Tag[]> {
-    const tags = bulkAttrs.map((attrs) => new TagEntity(attrs));
+    const tags = bulkAttrs.map((attrs) => new TagEntity(attrs, { em: this.em }));
     this.em.persist(tags);
     await this.em.flush();
     return pojo(tags);
@@ -71,6 +69,7 @@ export class TagRepo implements ITagRepo {
     if (!tag) {
       throw new NotFoundError('tag not found');
     }
+    tag.em = this.em;
     this.em.assign(tag, attrs);
     this.em.persist(tag);
     await this.em.flush();

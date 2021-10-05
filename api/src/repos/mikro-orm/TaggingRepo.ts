@@ -21,11 +21,12 @@ export class TaggingRepo implements ITaggingRepo {
   }
 
   async validate(tagging: Tagging): Promise<void> {
-    await new TaggingEntity(tagging).validate();
+    await new TaggingEntity(tagging, { em: this.em }).validate();
   }
 
   async create(attrs: Partial<Tagging>): Promise<Tagging> {
     const tagging = this.em.create(TaggingEntity, attrs);
+    tagging.em = this.em;
     this.em.persist(tagging);
     await this.em.flush();
     return pojo(tagging);
@@ -37,7 +38,7 @@ export class TaggingRepo implements ITaggingRepo {
   }
 
   async bulkCreate(bulkAttrs: Partial<Tagging>[]): Promise<Tagging[]> {
-    const taggings = bulkAttrs.map((attrs) => new TaggingEntity(attrs));
+    const taggings = bulkAttrs.map((attrs) => new TaggingEntity(attrs, { em: this.em }));
     this.em.persist(taggings);
     await this.em.flush();
     return pojo(taggings);
@@ -48,6 +49,7 @@ export class TaggingRepo implements ITaggingRepo {
     if (!tagging) {
       throw new NotFoundError('tagging not found');
     }
+    tagging.em = this.em;
     this.em.assign(tagging, attrs);
     this.em.persist(tagging);
     await this.em.flush();

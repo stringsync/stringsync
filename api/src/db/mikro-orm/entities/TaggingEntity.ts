@@ -43,8 +43,8 @@ export class TaggingEntity extends BaseEntity implements Tagging {
     this.tag.set(HACK_2099_createReference(new TagEntity({ id: tagId })));
   }
 
-  constructor(props: Partial<TaggingEntity> = {}, opts: BaseEntityOpts = {}) {
+  constructor(attrs: Partial<TaggingEntity> = {}, opts: BaseEntityOpts = {}) {
     super(opts);
-    Object.assign(this, props);
+    Object.assign(this, attrs);
   }
 }

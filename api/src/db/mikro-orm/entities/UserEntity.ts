@@ -72,9 +72,9 @@ export class UserEntity extends BaseEntity implements User {
     this._email = email;
   }
 
-  constructor(props: Partial<UserEntity> = {}, opts: BaseEntityOpts = {}) {
+  constructor(attrs: Partial<UserEntity> = {}, opts: BaseEntityOpts = {}) {
     super(opts);
-    Object.assign(this, props);
+    Object.assign(this, attrs);
   }
 
   async errors(): Promise<string[]> {
@@ -87,24 +87,12 @@ export class UserEntity extends BaseEntity implements User {
   }
 
   private async getUsernameUniquenessErrors(): Promise<string[]> {
-    if (!this.em) {
-      return ['cannot validate username without an entity manager'];
-    }
-    const user = await this.em.findOne(UserEntity, { username: this.username });
-    if (user && user.id !== this.id) {
-      return ['username is already taken'];
-    }
-    return [];
+    const user = await this.em!.findOne(UserEntity, { username: this.username });
+    return user && user.id !== this.id ? ['username is already taken'] : [];
   }
 
   private async getEmailUniquenessErrors(): Promise<string[]> {
-    if (!this.em) {
-      return ['cannot validate email without an entity manager'];
-    }
-    const user = await this.em.findOne(UserEntity, { email: this.email });
-    if (user && user.id !== this.id) {
-      return ['email is already taken'];
-    }
-    return [];
+    const user = await this.em!.findOne(UserEntity, { email: this.email });
+    return user && user.id !== this.id ? ['email is already taken'] : [];
   }
 }
