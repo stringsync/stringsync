@@ -79,6 +79,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.clearCursors();
 
     const locator = MusicDisplayLocator.create(this);
+    (window as any).locator = locator;
 
     this.cursorWrapper = LerpCursor.create(this, locator.clone(), {
       isNoteheadColoringEnabled: true,

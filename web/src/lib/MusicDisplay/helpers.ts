@@ -1,0 +1,73 @@
+import { Key } from '@tonaljs/tonal';
+import { KeyEnum, KeyInstruction } from 'opensheetmusicdisplay';
+import { ConflictError, InternalError } from '../../errors';
+
+export type KeyInfo = {
+  mainScale: string;
+  majorKey: ReturnType<typeof Key.majorKey>;
+  minorKey: ReturnType<typeof Key.minorKey>;
+};
+
+export type KeyEnumString = ReturnType<typeof keyEnumToString>;
+
+// https://github.com/opensheetmusicdisplay/opensheetmusicdisplay/blob/69ff4a62f4a2c487cfb91aed46eec5b617b5749e/src/MusicalScore/VoiceData/Instructions/KeyInstruction.ts#L128
+export const keyEnumToString = (keyEnum: KeyEnum) => {
+  switch (keyEnum) {
+    case KeyEnum.major:
+      return 'major';
+    case KeyEnum.minor:
+      return 'minor';
+    case KeyEnum.none:
+      return 'none';
+    case KeyEnum.dorian:
+      return 'dorian';
+    case KeyEnum.phrygian:
+      return 'phrygian';
+    case KeyEnum.lydian:
+      return 'lydian';
+    case KeyEnum.mixolydian:
+      return 'mixolydian';
+    // tonaljs seems to use minor and major
+    // https://github.com/tonaljs/tonal/tree/main/packages/key
+    case KeyEnum.aeolian:
+      return 'minor';
+    case KeyEnum.ionian:
+      return 'major';
+    case KeyEnum.locrian:
+      return 'locrian';
+    default:
+      throw new ConflictError(`unhandled key enum: ${keyEnum}`);
+  }
+};
+
+export const getMajorTonicNote = (keyInstruction: KeyInstruction) => {
+  if (keyInstruction.Key === 0) {
+    return 'C'; // can't pass an empty string to Key.majorTonicFromKeySignature
+  }
+
+  let alterations = '';
+  if (keyInstruction.Key < 0) {
+    alterations = 'b'.repeat(-keyInstruction.Key);
+  }
+  if (keyInstruction.Key > 0) {
+    alterations = '#'.repeat(keyInstruction.Key);
+  }
+
+  const tonic = Key.majorTonicFromKeySignature(alterations);
+  if (!tonic) {
+    throw new InternalError('could not calculate major tonic from key instruction');
+  }
+
+  return tonic;
+};
+
+export const getKeyInfo = (keyInstruction: KeyInstruction): KeyInfo => {
+  const tonic = getMajorTonicNote(keyInstruction);
+  const mode = keyEnumToString(keyInstruction.Mode);
+  const mainScale = `${tonic} ${mode}`;
+
+  const majorKey = Key.majorKey(tonic);
+  const minorKey = Key.minorKey(majorKey.minorRelative);
+
+  return { mainScale, majorKey, minorKey };
+};

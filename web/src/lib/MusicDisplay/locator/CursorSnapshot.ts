@@ -1,9 +1,11 @@
-import { get, isNumber } from 'lodash';
-import { KeyInstruction, VoiceEntry } from 'opensheetmusicdisplay';
+import { get, isNumber, isUndefined } from 'lodash';
+import { VoiceEntry } from 'opensheetmusicdisplay';
+import { InternalError } from '../../../errors';
 import { Box } from '../../../util/Box';
 import { memoize } from '../../../util/memoize';
 import { NumberRange } from '../../../util/NumberRange';
 import { Position } from '../../guitar/Position';
+import * as helpers from '../helpers';
 import { END_OF_MEASURE_LINE_PADDING_PX } from './constants';
 import { IteratorSnapshot } from './IteratorSnapshot';
 import { LocatorTarget } from './types';
@@ -83,7 +85,7 @@ export class CursorSnapshot {
       this.next && CursorSnapshot.isOnSameMeasureLine(this, this.next)
         ? this.next.x
         : this.x + END_OF_MEASURE_LINE_PADDING_PX;
-    return NumberRange.from(x0).to(x1);
+    return NumberRange.unsorted(x0, x1);
   }
 
   getYRange() {
@@ -123,12 +125,17 @@ export class CursorSnapshot {
   }
 
   @memoize()
-  getKey() {
-    // TODO(jared) Finish implementing
-    const keyInstruction: KeyInstruction | undefined = this.iteratorSnapshot
-      .clone()
-      .CurrentMeasure.getKeyInstruction(0);
+  getKeyInfo() {
+    // TODO(jared) make this work for multiple parts
+    const keyInstruction = this.iteratorSnapshot.clone().CurrentMeasure.getKeyInstruction(0);
+    if (isUndefined(keyInstruction)) {
+      throw new InternalError('could not get key instruction from snapshot');
+    }
+    return helpers.getKeyInfo(keyInstruction);
   }
+
+  @memoize()
+  getMainScale() {}
 
   @memoize()
   getMeasureCursorSnapshots(): CursorSnapshot[] {
