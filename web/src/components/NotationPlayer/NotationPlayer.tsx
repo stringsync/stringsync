@@ -100,7 +100,6 @@ const NotationPlayer: React.FC = enhance(() => {
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
   const [videoPlayer, setVideoPlayer] = useState<VideoJsPlayer | null>(null);
   const [settings, updateSettings] = useNotationPlayerSettings();
-  const [lastUserScrollAt, setLastUserScrollAt] = useState<Date | null>(null);
 
   const params = useParams<{ id: string }>();
   const [notation, errors, isLoading] = useNotation(params.id);
@@ -130,11 +129,6 @@ const NotationPlayer: React.FC = enhance(() => {
   const measurePositions = useMeasurePositions(cursorSnapshot);
   const pressedPositions = usePressedPositions(cursorSnapshot, videoPlayer);
   const pressedStyle = useMemo<Partial<PositionStyle>>(() => ({ fill: '#ff636c' }), []);
-
-  const onUserScroll = useCallback(() => {
-    // TODO(jared) Maybe change the behavior when the user scrolls in a certain context.
-    setLastUserScrollAt(new Date());
-  }, []);
 
   const onMusicDisplayChange = useCallback(setMusicDisplay, [setMusicDisplay]);
 
@@ -202,7 +196,6 @@ const NotationPlayer: React.FC = enhance(() => {
                   durationMs={notation.durationMs}
                   scrollContainerRef={scrollContainerRef}
                   onMusicDisplayChange={onMusicDisplayChange}
-                  onUserScroll={onUserScroll}
                 />
               )}
             </NotationScrollContainer>
@@ -240,7 +233,6 @@ const NotationPlayer: React.FC = enhance(() => {
                   videoPlayer={videoPlayer}
                   musicDisplay={musicDisplay}
                   settings={settings}
-                  lastUserScrollAt={lastUserScrollAt}
                   onSettingsChange={onSettingsChange}
                 />
               </NotationControlsContainer>

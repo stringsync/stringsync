@@ -60,7 +60,6 @@ export type Props = {
   videoPlayer: VideoJsPlayer;
   musicDisplay: MusicDisplay | null;
   settings: NotationPlayerSettings;
-  lastUserScrollAt: Date | null;
   onSettingsChange: (notationPlayerSettings: NotationPlayerSettings) => void;
 };
 
