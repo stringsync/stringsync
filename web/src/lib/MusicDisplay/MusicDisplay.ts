@@ -60,4 +60,8 @@ export class MusicDisplay {
   getLoop() {
     return this.imd.loop;
   }
+
+  getMeta() {
+    return this.imd.meta;
+  }
 }
