@@ -1,5 +1,5 @@
 import { PauseOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
-import { Alert, Button, Checkbox, Col, Drawer, Row, Slider } from 'antd';
+import { Alert, Button, Checkbox, Col, Divider, Drawer, Row, Slider } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -14,7 +14,8 @@ import { useMusicDisplayScrollBehaviorEffect } from './useMusicDisplayScrollBeha
 import { useMusicDisplayScrollBehaviorType } from './useMusicDisplayScrollBehaviorType';
 import { useMusicDisplayScrollControls } from './useMusicDisplayScrollControls';
 import { useMusicDisplaySelectionInteractionEffects } from './useMusicDisplaySelectionInteractionEffects';
-import { NotationPlayerSettings, NotationPlayerSettingsApi } from './useNotationPlayerSettings';
+import { NotationPlayerSettings, NotationPlayerSettingsApi, ScaleSelectionType } from './useNotationPlayerSettings';
+import { useScales } from './useScales';
 import { useSelectionLoopingEffect } from './useSelectionLoopingEffect';
 import { useTipFormatter } from './useTipFormatter';
 import { useVideoPlayerControls, VideoPlayerState } from './useVideoPlayerControls';
@@ -89,6 +90,7 @@ export const NotationControls: React.FC<Props> = ({
   const value = durationMs === 0 ? 0 : (currentTimeMs / durationMs) * 100;
   const handleStyle = useMemo(() => ({ width: 21, height: 21, marginTop: -8 }), []);
   const musicDisplayScrollControls = useMusicDisplayScrollControls(musicDisplay, settings.isAutoscrollPreferred);
+  const scales = useScales(musicDisplay);
 
   // callbacks
 
@@ -107,6 +109,16 @@ export const NotationControls: React.FC<Props> = ({
   const onAutoscrollPreferenceChange = useCallback(
     (event: CheckboxChangeEvent) => {
       settingsApi.setAutoscrollPreference(event.target.checked);
+    },
+    [settingsApi]
+  );
+  const onShowMainScaleChange = useCallback(
+    (event: CheckboxChangeEvent) => {
+      if (event.target.checked) {
+        settingsApi.setScaleSelectionType(ScaleSelectionType.Main);
+      } else {
+        settingsApi.setScaleSelectionType(ScaleSelectionType.None);
+      }
     },
     [settingsApi]
   );
@@ -217,6 +229,12 @@ export const NotationControls: React.FC<Props> = ({
           </Checkbox>
           <Checkbox checked={settings.isAutoscrollPreferred} onChange={onAutoscrollPreferenceChange}>
             autoscroll
+          </Checkbox>
+
+          <Divider />
+
+          <Checkbox checked={settings.scaleSelectionType === ScaleSelectionType.Main} onChange={onShowMainScaleChange}>
+            show main scale
           </Checkbox>
         </SettingsInner>
       </Drawer>
