@@ -14,7 +14,7 @@ import { useMusicDisplayScrollBehaviorEffect } from './useMusicDisplayScrollBeha
 import { useMusicDisplayScrollBehaviorType } from './useMusicDisplayScrollBehaviorType';
 import { useMusicDisplayScrollControls } from './useMusicDisplayScrollControls';
 import { useMusicDisplaySelectionInteractionEffects } from './useMusicDisplaySelectionInteractionEffects';
-import { NotationPlayerSettings } from './useNotationPlayerSettings';
+import { NotationPlayerSettings, NotationPlayerSettingsApi } from './useNotationPlayerSettings';
 import { useSelectionLoopingEffect } from './useSelectionLoopingEffect';
 import { useTipFormatter } from './useTipFormatter';
 import { useVideoPlayerControls, VideoPlayerState } from './useVideoPlayerControls';
@@ -60,7 +60,7 @@ export type Props = {
   videoPlayer: VideoJsPlayer;
   musicDisplay: MusicDisplay | null;
   settings: NotationPlayerSettings;
-  onSettingsChange: (notationPlayerSettings: NotationPlayerSettings) => void;
+  settingsApi: NotationPlayerSettingsApi;
 };
 
 export const NotationControls: React.FC<Props> = ({
@@ -71,7 +71,7 @@ export const NotationControls: React.FC<Props> = ({
   songName,
   artistName,
   settings,
-  onSettingsChange,
+  settingsApi,
 }) => {
   // state
 
@@ -100,15 +100,15 @@ export const NotationControls: React.FC<Props> = ({
   }, []);
   const onFretboardVisibilityChange = useCallback(
     (event: CheckboxChangeEvent) => {
-      onSettingsChange({ ...settings, isFretboardVisible: event.target.checked });
+      settingsApi.setFretboardVisibility(event.target.checked);
     },
-    [settings, onSettingsChange]
+    [settingsApi]
   );
   const onAutoscrollPreferenceChange = useCallback(
     (event: CheckboxChangeEvent) => {
-      onSettingsChange({ ...settings, isAutoscrollPreferred: event.target.checked });
+      settingsApi.setAutoscrollPreference(event.target.checked);
     },
-    [settings, onSettingsChange]
+    [settingsApi]
   );
   const onChange = useCallback(
     (value: number) => {

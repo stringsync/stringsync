@@ -99,7 +99,7 @@ const NotationPlayer: React.FC = enhance(() => {
 
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
   const [videoPlayer, setVideoPlayer] = useState<VideoJsPlayer | null>(null);
-  const [settings, updateSettings] = useNotationPlayerSettings();
+  const [settings, settingsApi] = useNotationPlayerSettings();
 
   const params = useParams<{ id: string }>();
   const [notation, errors, isLoading] = useNotation(params.id);
@@ -133,8 +133,6 @@ const NotationPlayer: React.FC = enhance(() => {
   const onMusicDisplayChange = useCallback(setMusicDisplay, [setMusicDisplay]);
 
   const onVideoPlayerChange = useCallback(setVideoPlayer, [setVideoPlayer]);
-
-  const onSettingsChange = useCallback(updateSettings, [updateSettings]);
 
   useNoOverflow(document.body);
 
@@ -233,7 +231,7 @@ const NotationPlayer: React.FC = enhance(() => {
                   videoPlayer={videoPlayer}
                   musicDisplay={musicDisplay}
                   settings={settings}
-                  onSettingsChange={onSettingsChange}
+                  settingsApi={settingsApi}
                 />
               </NotationControlsContainer>
             )}
