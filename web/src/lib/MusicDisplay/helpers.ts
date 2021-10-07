@@ -1,11 +1,16 @@
 import { Key } from '@tonaljs/tonal';
+import { sortBy } from 'lodash';
 import { KeyEnum, KeyInstruction } from 'opensheetmusicdisplay';
 import { ConflictError, InternalError } from '../../errors';
 
+export type MajorKey = ReturnType<typeof Key.majorKey>;
+
+export type MinorKey = ReturnType<typeof Key.minorKey>;
+
 export type KeyInfo = {
   mainScale: string;
-  majorKey: ReturnType<typeof Key.majorKey>;
-  minorKey: ReturnType<typeof Key.minorKey>;
+  majorKey: MajorKey;
+  minorKey: MinorKey;
 };
 
 export type KeyEnumString = ReturnType<typeof keyEnumToString>;
@@ -70,4 +75,16 @@ export const getKeyInfo = (keyInstruction: KeyInstruction): KeyInfo => {
   const minorKey = Key.minorKey(majorKey.minorRelative);
 
   return { mainScale, majorKey, minorKey };
+};
+
+export const getDistinctElementsSortedByFrequencyDesc = (arr: string[]): string[] => {
+  const freqs: Record<string, number> = {};
+  for (const el of arr) {
+    if (!(el in freqs)) {
+      freqs[el] = 0;
+    }
+    freqs[el]++;
+  }
+
+  return sortBy(Object.entries(freqs), ([el, freq]) => -freq).map(([el]) => el);
 };

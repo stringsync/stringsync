@@ -1,11 +1,11 @@
 import { get, isNumber, isUndefined } from 'lodash';
 import { VoiceEntry } from 'opensheetmusicdisplay';
-import { InternalError } from '../../../errors';
 import { Box } from '../../../util/Box';
 import { memoize } from '../../../util/memoize';
 import { NumberRange } from '../../../util/NumberRange';
 import { Position } from '../../guitar/Position';
 import * as helpers from '../helpers';
+import { KeyInfo } from '../helpers';
 import { END_OF_MEASURE_LINE_PADDING_PX } from './constants';
 import { IteratorSnapshot } from './IteratorSnapshot';
 import { LocatorTarget } from './types';
@@ -125,17 +125,11 @@ export class CursorSnapshot {
   }
 
   @memoize()
-  getKeyInfo() {
+  getKeyInfo(): KeyInfo {
     // TODO(jared) make this work for multiple parts
     const keyInstruction = this.iteratorSnapshot.clone().CurrentMeasure.getKeyInstruction(0);
-    if (isUndefined(keyInstruction)) {
-      throw new InternalError('could not get key instruction from snapshot');
-    }
-    return helpers.getKeyInfo(keyInstruction);
+    return isUndefined(keyInstruction) ? this.getFallbackKeyInstruction() : helpers.getKeyInfo(keyInstruction);
   }
-
-  @memoize()
-  getMainScale() {}
 
   @memoize()
   getMeasureCursorSnapshots(): CursorSnapshot[] {
@@ -194,5 +188,12 @@ export class CursorSnapshot {
     const t = t1 + ((x - x1) * (t1 - t0)) / (x1 - x0);
 
     return t;
+  }
+
+  private getFallbackKeyInstruction() {
+    if (!this.prev) {
+      throw new Error('could not get key instruction for the first cursor snapshot');
+    }
+    return this.prev.getKeyInfo();
   }
 }

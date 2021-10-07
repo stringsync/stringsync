@@ -14,6 +14,7 @@ import { Fx } from './fx';
 import { SyncSettings } from './locator';
 import { MusicDisplayLocator } from './locator/MusicDisplayLocator';
 import { LerpLoop, Loop, NoopLoop } from './loop';
+import { MusicDisplayMeta } from './meta';
 import { Scroller } from './scroller';
 import { SVGEventProxy, SVGSettings } from './svg';
 import { MusicDisplayEventBus, MusicDisplayOptions } from './types';
@@ -51,6 +52,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   svgEventProxy: SVGEventProxy | null = null;
   scroller: Scroller;
   colorer: Colorer;
+  meta: MusicDisplayMeta = MusicDisplayMeta.createNull();
   fx = new Fx(DUMMY_SVG);
 
   constructor(container: string | HTMLElement, eventBus: MusicDisplayEventBus, opts: MusicDisplayOptions) {
@@ -85,12 +87,10 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
       defaultStyle: { opacity: '0.5', 'box-shadow': '0 0 0' },
       interactingStyle: { opacity: '1', 'box-shadow': '0 0 10px #00ffd9' },
     });
-
     this.svgEventProxy = SVGEventProxy.install(this, locator.clone(), this.svgSettings);
-
     this.loop = LerpLoop.create(this, locator.clone());
-
     this.fx = new Fx(this.getSvg());
+    this.meta = MusicDisplayMeta.create(locator.clone());
 
     this.eventBus.dispatch('resizeended', {});
   }
