@@ -1,7 +1,8 @@
 import { getDistinctElementsSortedByFrequencyDesc } from '../helpers';
-import { MusicDisplayLocator } from '../locator';
+import { CursorSnapshot, MusicDisplayLocator } from '../locator';
 
 export type Meta = {
+  cursorSnapshots: CursorSnapshot[];
   mainScales: string[];
   naturalScales: string[];
   minorScales: string[];
@@ -17,22 +18,25 @@ export class MusicDisplayMeta {
     const minorScales = getDistinctElementsSortedByFrequencyDesc(
       keyInfos.flatMap((keyInfo) => [...keyInfo.minorKey.harmonic.chordScales, ...keyInfo.minorKey.melodic.chordScales])
     );
-    return new MusicDisplayMeta({ mainScales, naturalScales, minorScales });
+    return new MusicDisplayMeta({ cursorSnapshots: locator.cursorSnapshots, mainScales, naturalScales, minorScales });
   }
 
   static createNull() {
     return new MusicDisplayMeta({
+      cursorSnapshots: [],
       mainScales: [],
       naturalScales: [],
       minorScales: [],
     });
   }
 
+  public readonly cursorSnapshots: CursorSnapshot[];
   public readonly mainScales: string[];
   public readonly naturalScales: string[];
   public readonly minorScales: string[];
 
   private constructor(meta: Meta) {
+    this.cursorSnapshots = meta.cursorSnapshots;
     this.mainScales = meta.mainScales;
     this.naturalScales = meta.naturalScales;
     this.minorScales = meta.minorScales;

@@ -96,7 +96,7 @@ describe('Fretboard', () => {
   it.each(Scale.get('C major').notes)('renders C major scale with note: %s', (note) => {
     const { container } = render(
       <Fretboard>
-        <Fretboard.Scale root="C" type="major" />
+        <Fretboard.Scale name="C major" />
       </Fretboard>
     );
 
@@ -107,7 +107,7 @@ describe('Fretboard', () => {
   it('renders non-overlapping positions and scales', () => {
     const { container } = render(
       <Fretboard>
-        <Fretboard.Scale root="C" type="major" />
+        <Fretboard.Scale name="C major" />
         <Fretboard.Position fret={9} string={6} />
       </Fretboard>
     );
@@ -119,7 +119,7 @@ describe('Fretboard', () => {
   it('renders overlapping positions and scales', () => {
     const { container } = render(
       <Fretboard>
-        <Fretboard.Scale root="C" type="major" />
+        <Fretboard.Scale name="C major" />
         <Fretboard.Position fret={8} string={6} />
       </Fretboard>
     );

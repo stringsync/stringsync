@@ -2,8 +2,7 @@ import React from 'react';
 import { PositionStyle } from './types';
 
 type Props = {
-  root: string;
-  type: string;
+  name: string;
   style?: Partial<PositionStyle>;
 };
 

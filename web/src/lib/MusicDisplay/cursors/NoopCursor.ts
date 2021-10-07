@@ -7,7 +7,9 @@ export class NoopCursor implements CursorWrapper {
   element = DUMMY_ELEMENT;
   timeMs = -1;
   cursorSnapshot = null;
-  update() {}
+  update(timeMs: number) {
+    this.timeMs = timeMs;
+  }
   updateStyle() {}
   clear() {}
   show() {}

@@ -166,6 +166,12 @@ export const NotationControls: React.FC<Props> = ({
       musicDisplayScrollControls.startPreferentialScrolling();
     }
   }, [isPlaying, musicDisplay, musicDisplayScrollControls]);
+  useEffect(() => {
+    if (settings.scaleSelectionType !== ScaleSelectionType.Main) {
+      return;
+    }
+    settingsApi.setSelectedScale(scales.currentMainScale);
+  }, [settings, settingsApi, scales]);
 
   return (
     <Outer ref={controlsDivRef}>
@@ -234,7 +240,7 @@ export const NotationControls: React.FC<Props> = ({
           <Divider />
 
           <Checkbox checked={settings.scaleSelectionType === ScaleSelectionType.Main} onChange={onShowMainScaleChange}>
-            show main scale
+            main scale
           </Checkbox>
         </SettingsInner>
       </Drawer>

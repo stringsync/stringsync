@@ -12,14 +12,14 @@ import { useNoOverflow } from '../../hooks/useNoOverflow';
 import { useNotation } from '../../hooks/useNotation';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { compose } from '../../util/compose';
-import { Fretboard, FretboardOptions, PositionFilterParams, PositionStyle } from '../Fretboard';
+import { Fretboard, FretboardOptions, MergeStrategy, PositionFilterParams, PositionStyle } from '../Fretboard';
 import { Notation } from '../Notation';
 import { Video } from '../Video';
 import { NotationControls } from './NotationControls';
 import { SuggestedNotations } from './SuggestedNotations';
 import { useMeasurePositions } from './useMeasurePositions';
 import { useMusicDisplayCursorSnapshot } from './useMusicDisplayCursorSnapshot';
-import { useNotationPlayerSettings } from './useNotationPlayerSettings';
+import { ScaleSelectionType, useNotationPlayerSettings } from './useNotationPlayerSettings';
 import { usePressedPositions } from './usePressedPositions';
 
 const LoadingIcon = styled(LoadingOutlined)`
@@ -128,7 +128,7 @@ const NotationPlayer: React.FC = enhance(() => {
   const cursorSnapshot = useMusicDisplayCursorSnapshot(musicDisplay);
   const measurePositions = useMeasurePositions(cursorSnapshot);
   const pressedPositions = usePressedPositions(cursorSnapshot, videoPlayer);
-  const pressedStyle = useMemo<Partial<PositionStyle>>(() => ({ fill: '#ff636c' }), []);
+  const pressedStyle = useMemo<Partial<PositionStyle>>(() => ({ fill: '#f5c2c5', stroke: '#f03e47' }), []);
 
   const onMusicDisplayChange = useCallback(setMusicDisplay, [setMusicDisplay]);
 
@@ -200,13 +200,13 @@ const NotationPlayer: React.FC = enhance(() => {
 
             {settings.isFretboardVisible && videoPlayer && (
               <FretboardContainer>
-                <Fretboard options={fretboardOpts}>
+                <Fretboard options={fretboardOpts} styleMergeStrategy={MergeStrategy.Merge}>
                   {measurePositions.map(({ string, fret }) => (
                     <Fretboard.Position
                       key={`measure-${string}-${fret}`}
                       string={string}
                       fret={fret}
-                      style={{ fill: '#ddd' }}
+                      style={{ fill: '#f9f9f9', stroke: '#a0a0a0' }}
                     />
                   ))}
                   {pressedPositions.map(({ string, fret }) => (
@@ -217,6 +217,9 @@ const NotationPlayer: React.FC = enhance(() => {
                       style={pressedStyle}
                     />
                   ))}
+                  {settings.scaleSelectionType !== ScaleSelectionType.None && settings.selectedScale && (
+                    <Fretboard.Scale name={settings.selectedScale} style={{ stroke: '#85f4fc' }} />
+                  )}
                 </Fretboard>
               </FretboardContainer>
             )}

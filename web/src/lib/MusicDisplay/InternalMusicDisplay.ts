@@ -82,11 +82,14 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
     const locator = MusicDisplayLocator.create(this);
 
+    const timeMs = this.cursorWrapper.timeMs;
     this.cursorWrapper = LerpCursor.create(this, locator.clone(), {
       isNoteheadColoringEnabled: true,
       defaultStyle: { opacity: '0.5', 'box-shadow': '0 0 0' },
       interactingStyle: { opacity: '1', 'box-shadow': '0 0 10px #00ffd9' },
     });
+    this.cursorWrapper.update(timeMs);
+
     this.svgEventProxy = SVGEventProxy.install(this, locator.clone(), this.svgSettings);
     this.loop = LerpLoop.create(this, locator.clone());
     this.fx = new Fx(this.getSvg());

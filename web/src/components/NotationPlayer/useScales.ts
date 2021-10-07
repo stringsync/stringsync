@@ -1,3 +1,4 @@
+import { first } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { KeyInfo } from '../../lib/MusicDisplay/helpers';
@@ -29,6 +30,11 @@ export const useScales = (musicDisplay: MusicDisplay | null): Scales => {
     if (!musicDisplay) {
       return;
     }
+    setKeyInfo(
+      musicDisplay.getCursor().cursorSnapshot?.getKeyInfo() ||
+        first(musicDisplay.getMeta().cursorSnapshots)?.getKeyInfo() ||
+        null
+    );
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('cursorsnapshotchanged', (payload) => {
         setKeyInfo(payload.cursorSnapshot?.getKeyInfo() || null);

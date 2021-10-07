@@ -71,7 +71,7 @@ export class LerpCursor implements CursorWrapper {
   lerper: Cursor;
   cursorSnapshot: CursorSnapshot | null = null;
   scrollContainer: HTMLElement;
-  timeMs = 0;
+  timeMs = -1;
   styleType = CursorStyleType.Default;
   opts: LerpCursorOpts;
 
