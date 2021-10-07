@@ -1,5 +1,9 @@
 import { useLocalStorage } from '../../hooks/useLocalStorage';
-import { NotationPlayerSettings } from './types';
+
+export type NotationPlayerSettings = {
+  isFretboardVisible: boolean;
+  isAutoscrollPreferred: boolean;
+};
 
 const NOTATION_SETTINGS_KEY = 'stringsync_notation_settings';
 

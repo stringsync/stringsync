@@ -19,7 +19,7 @@ import { NotationControls } from './NotationControls';
 import { SuggestedNotations } from './SuggestedNotations';
 import { useMeasurePositions } from './useMeasurePositions';
 import { useMusicDisplayCursorSnapshot } from './useMusicDisplayCursorSnapshot';
-import { useNotationPlayerSettings } from './useNotationSettings';
+import { useNotationPlayerSettings } from './useNotationPlayerSettings';
 import { usePressedPositions } from './usePressedPositions';
 
 const LoadingIcon = styled(LoadingOutlined)`

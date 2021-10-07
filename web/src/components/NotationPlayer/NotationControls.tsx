@@ -7,7 +7,6 @@ import { VideoJsPlayer } from 'video.js';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { ScrollBehaviorType } from '../../lib/MusicDisplay/scroller';
 import { NotationDetail } from './NotationDetail';
-import { NotationPlayerSettings } from './types';
 import { useMusicDisplayClickEffect } from './useMusicDisplayClickEffect';
 import { useMusicDisplayCursorInteractionEffects } from './useMusicDisplayCursorInteractionEffects';
 import { useMusicDisplayCursorSnapshot } from './useMusicDisplayCursorSnapshot';
@@ -15,6 +14,7 @@ import { useMusicDisplayScrollBehaviorEffect } from './useMusicDisplayScrollBeha
 import { useMusicDisplayScrollBehaviorType } from './useMusicDisplayScrollBehaviorType';
 import { useMusicDisplayScrollControls } from './useMusicDisplayScrollControls';
 import { useMusicDisplaySelectionInteractionEffects } from './useMusicDisplaySelectionInteractionEffects';
+import { NotationPlayerSettings } from './useNotationPlayerSettings';
 import { useSelectionLoopingEffect } from './useSelectionLoopingEffect';
 import { useTipFormatter } from './useTipFormatter';
 import { useVideoPlayerControls, VideoPlayerState } from './useVideoPlayerControls';
