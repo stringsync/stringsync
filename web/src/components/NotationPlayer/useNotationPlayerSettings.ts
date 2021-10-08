@@ -5,6 +5,7 @@ import { useLocalStorage } from '../../hooks/useLocalStorage';
 export type NotationPlayerSettingsApi = {
   setFretboardVisibility: (isFretboardVisible: boolean) => void;
   setAutoscrollPreference: (isAutoscrollPreferred: boolean) => void;
+  setFretMarkerDisplay: (fretMarkerDisplay: FretMarkerDisplay) => void;
   setScaleSelectionType: (scaleSelectionType: ScaleSelectionType) => void;
   setSelectedScale: (selectedScale: string | null) => void;
 };
@@ -16,9 +17,16 @@ export enum ScaleSelectionType {
   Random,
 }
 
+export enum FretMarkerDisplay {
+  None,
+  Degree,
+  Note,
+}
+
 type PersistedSettings = {
   isFretboardVisible: boolean;
   isAutoscrollPreferred: boolean;
+  fretMarkerDisplay: FretMarkerDisplay;
 };
 
 type EphemeralSettings = {
@@ -33,6 +41,7 @@ const PERSISTED_SETTINGS_KEY = 'stringsync_notation_settings';
 const DEFAULT_PERSISTED_SETTINGS: PersistedSettings = {
   isFretboardVisible: false,
   isAutoscrollPreferred: true,
+  fretMarkerDisplay: FretMarkerDisplay.None,
 };
 
 const DEFAULT_EPHEMERAL_SETTINGS: EphemeralSettings = {
@@ -73,6 +82,9 @@ export const useNotationPlayerSettings = (): [NotationPlayerSettings, NotationPl
       },
       setAutoscrollPreference: (isAutoscrollPreferred: boolean) => {
         setPersistedSettings({ ...persistedSettings, isAutoscrollPreferred });
+      },
+      setFretMarkerDisplay: (fretMarkerDisplay: FretMarkerDisplay) => {
+        setPersistedSettings({ ...persistedSettings, fretMarkerDisplay });
       },
       setScaleSelectionType: (scaleSelectionType: ScaleSelectionType) => {
         dispatch(EPHEMERAL_SETTINGS_ACTIONS.setScaleSelectionType({ scaleSelectionType }));
