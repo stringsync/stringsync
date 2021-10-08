@@ -47,14 +47,14 @@ export class MusicDisplayMeta {
   public readonly cursorSnapshots: CursorSnapshot[];
   public readonly mainScales: string[];
   public readonly pentatonicScales: string[];
-  public readonly naturalScales: string[];
+  public readonly majorScales: string[];
   public readonly minorScales: string[];
 
   private constructor(meta: Meta) {
     this.cursorSnapshots = meta.cursorSnapshots;
     this.mainScales = meta.mainScales;
     this.pentatonicScales = meta.pentatonicScales;
-    this.naturalScales = meta.majorScales;
+    this.majorScales = meta.majorScales;
     this.minorScales = meta.minorScales;
   }
 }

@@ -41,7 +41,7 @@ export const useScales = (musicDisplay: MusicDisplay | null): Scales => {
   return useMemo(() => {
     // Don't let scales show up multiple times
     const mainScales = new Set(meta.mainScales);
-    const majorScales = meta.naturalScales.filter((scale) => !mainScales.has(scale));
+    const majorScales = meta.majorScales.filter((scale) => !mainScales.has(scale));
     const minorScales = meta.minorScales.filter((scale) => !mainScales.has(scale));
 
     return {
