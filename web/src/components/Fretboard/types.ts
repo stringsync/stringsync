@@ -17,6 +17,10 @@ export type PositionFilterParams = {
   fret: number;
   string: number;
   note: string;
+  degree: number;
+  grade: string;
+  octave: number;
+  interval: string;
 };
 
 export type StyleFilter = {

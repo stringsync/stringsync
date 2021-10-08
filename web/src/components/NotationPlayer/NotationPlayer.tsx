@@ -19,7 +19,7 @@ import { NotationControls } from './NotationControls';
 import { SuggestedNotations } from './SuggestedNotations';
 import { useMeasurePositions } from './useMeasurePositions';
 import { useMusicDisplayCursorSnapshot } from './useMusicDisplayCursorSnapshot';
-import { ScaleSelectionType, useNotationPlayerSettings } from './useNotationPlayerSettings';
+import { FretMarkerDisplay, ScaleSelectionType, useNotationPlayerSettings } from './useNotationPlayerSettings';
 import { usePressedPositions } from './usePressedPositions';
 
 const LoadingIcon = styled(LoadingOutlined)`
@@ -118,13 +118,19 @@ const NotationPlayer: React.FC = enhance(() => {
       : {};
   }, [videoUrl]);
 
-  const fretboardOpts = useMemo<FretboardOptions>(
-    () => ({
-      dotText: (params: PositionFilterParams) => params.note,
-      dotFill: 'white',
-    }),
-    []
-  );
+  const fretboardOpts = useMemo<FretboardOptions>(() => {
+    switch (settings.fretMarkerDisplay) {
+      case FretMarkerDisplay.None:
+        return { dotFill: 'white' };
+      case FretMarkerDisplay.Degree:
+        return { dotText: (params: PositionFilterParams) => params.degree, dotFill: 'white' };
+      case FretMarkerDisplay.Note:
+        return { dotText: (params: PositionFilterParams) => params.note };
+      default:
+        return { dotFill: 'white' };
+    }
+  }, [settings.fretMarkerDisplay]);
+
   const cursorSnapshot = useMusicDisplayCursorSnapshot(musicDisplay);
   const measurePositions = useMeasurePositions(cursorSnapshot);
   const pressedPositions = usePressedPositions(cursorSnapshot, videoPlayer);

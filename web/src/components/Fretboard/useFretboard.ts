@@ -1,20 +1,25 @@
 import { Fretboard } from '@moonwave99/fretboard.js';
-import { useEffect, useState } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 import { Tuning } from '../../lib/guitar/Tuning';
 import { FretboardOptions } from './types';
 
-export const useFretboard = (id: string, tuning: Tuning, opts: Partial<FretboardOptions>) => {
+export const useFretboard = (figureRef: RefObject<HTMLElement>, tuning: Tuning, opts: Partial<FretboardOptions>) => {
   const [fretboard, setFretboard] = useState(() => new Fretboard());
 
   useEffect(() => {
-    const fretboard = new Fretboard({ el: `#${id}`, tuning: tuning.toFullyQualifiedStrings(), ...opts });
+    const figure = figureRef.current;
+    if (!figure) {
+      return;
+    }
+    const fretboard = new Fretboard({ el: figure, tuning: tuning.toFullyQualifiedStrings(), ...opts });
     setFretboard(fretboard);
     fretboard.render();
     return () => {
       fretboard.removeEventListeners();
       fretboard.clear();
+      figure && figure.children[0]?.remove();
     };
-  }, [id, opts, tuning]);
+  }, [figureRef, opts, tuning]);
 
   return fretboard;
 };

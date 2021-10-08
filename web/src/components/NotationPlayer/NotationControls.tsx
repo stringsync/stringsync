@@ -1,5 +1,18 @@
 import { PauseOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
-import { Alert, Button, Checkbox, Col, Divider, Drawer, Row, Select, Slider, Tooltip } from 'antd';
+import {
+  Alert,
+  Button,
+  Checkbox,
+  Col,
+  Divider,
+  Drawer,
+  Radio,
+  RadioChangeEvent,
+  Row,
+  Select,
+  Slider,
+  Tooltip,
+} from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -14,7 +27,12 @@ import { useMusicDisplayScrollBehaviorEffect } from './useMusicDisplayScrollBeha
 import { useMusicDisplayScrollBehaviorType } from './useMusicDisplayScrollBehaviorType';
 import { useMusicDisplayScrollControls } from './useMusicDisplayScrollControls';
 import { useMusicDisplaySelectionInteractionEffects } from './useMusicDisplaySelectionInteractionEffects';
-import { NotationPlayerSettings, NotationPlayerSettingsApi, ScaleSelectionType } from './useNotationPlayerSettings';
+import {
+  FretMarkerDisplay,
+  NotationPlayerSettings,
+  NotationPlayerSettingsApi,
+  ScaleSelectionType,
+} from './useNotationPlayerSettings';
 import { useScales } from './useScales';
 import { useSelectionLoopingEffect } from './useSelectionLoopingEffect';
 import { useTipFormatter } from './useTipFormatter';
@@ -129,6 +147,12 @@ export const NotationControls: React.FC<Props> = ({
     },
     [settingsApi]
   );
+  const onFretMarkerDisplayChange = useCallback(
+    (event: RadioChangeEvent) => {
+      settingsApi.setFretMarkerDisplay(event.target.value);
+    },
+    [settingsApi]
+  );
   const onChange = useCallback(
     (value: number) => {
       videoPlayerControls.suspend();
@@ -237,15 +261,24 @@ export const NotationControls: React.FC<Props> = ({
         zIndex={2}
       >
         <SettingsInner>
+          <h3>fretboard</h3>
           <Checkbox checked={settings.isFretboardVisible} onChange={onFretboardVisibilityChange}>
-            fretboard
+            show
           </Checkbox>
-          <Checkbox checked={settings.isAutoscrollPreferred} onChange={onAutoscrollPreferenceChange}>
-            autoscroll
-          </Checkbox>
+
+          <br />
+          <br />
+
+          <h4>labels</h4>
+          <Radio.Group optionType="button" value={settings.fretMarkerDisplay} onChange={onFretMarkerDisplayChange}>
+            <Radio.Button value={FretMarkerDisplay.None}>none</Radio.Button>
+            <Radio.Button value={FretMarkerDisplay.Degree}>degree</Radio.Button>
+            <Radio.Button value={FretMarkerDisplay.Note}>note</Radio.Button>
+          </Radio.Group>
 
           <Divider />
 
+          <h3>scales</h3>
           <Select defaultValue="none" style={{ width: '100%' }} onChange={onSelectedScaleChange}>
             <Select.OptGroup label="default">
               <Select.Option value="none">none</Select.Option>
@@ -288,6 +321,13 @@ export const NotationControls: React.FC<Props> = ({
               </Select.OptGroup>
             )}
           </Select>
+
+          <Divider />
+
+          <h3>scrolling</h3>
+          <Checkbox checked={settings.isAutoscrollPreferred} onChange={onAutoscrollPreferenceChange}>
+            autoscroll
+          </Checkbox>
         </SettingsInner>
       </Drawer>
     </Outer>
