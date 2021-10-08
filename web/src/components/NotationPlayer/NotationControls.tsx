@@ -261,7 +261,7 @@ export const NotationControls: React.FC<Props> = ({
         zIndex={2}
       >
         <SettingsInner>
-          <h3>fretboard</h3>
+          <h4>fretboard</h4>
           <Checkbox checked={settings.isFretboardVisible} onChange={onFretboardVisibilityChange}>
             show
           </Checkbox>
@@ -269,7 +269,7 @@ export const NotationControls: React.FC<Props> = ({
           <br />
           <br />
 
-          <h4>labels</h4>
+          <h5>labels</h5>
           <Radio.Group optionType="button" value={settings.fretMarkerDisplay} onChange={onFretMarkerDisplayChange}>
             <Radio.Button value={FretMarkerDisplay.None}>none</Radio.Button>
             <Radio.Button value={FretMarkerDisplay.Degree}>degree</Radio.Button>
@@ -278,7 +278,7 @@ export const NotationControls: React.FC<Props> = ({
 
           <Divider />
 
-          <h3>scales</h3>
+          <h4>scales</h4>
           <Select defaultValue="none" style={{ width: '100%' }} onChange={onSelectedScaleChange}>
             <Select.OptGroup label="default">
               <Select.Option value="none">none</Select.Option>
@@ -324,7 +324,7 @@ export const NotationControls: React.FC<Props> = ({
 
           <Divider />
 
-          <h3>scrolling</h3>
+          <h4>scrolling</h4>
           <Checkbox checked={settings.isAutoscrollPreferred} onChange={onAutoscrollPreferenceChange}>
             autoscroll
           </Checkbox>

@@ -17,7 +17,7 @@ export const useFretboard = (figureRef: RefObject<HTMLElement>, tuning: Tuning, 
     return () => {
       fretboard.removeEventListeners();
       fretboard.clear();
-      figure && figure.children[0]?.remove();
+      figure && Array.from(figure.children).forEach((child) => child.remove());
     };
   }, [figureRef, opts, tuning]);
 
