@@ -96,6 +96,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.meta = MusicDisplayMeta.create(locator.clone());
 
     this.eventBus.dispatch('resizeended', {});
+    this.eventBus.dispatch('rendered', {});
   }
 
   clear() {

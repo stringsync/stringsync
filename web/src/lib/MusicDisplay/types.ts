@@ -35,6 +35,7 @@ export type MusicDisplayEventBus = EventBus<{
   press: {};
   longpress: {};
   measurelinechanged: {};
+  rendered: {};
   nummeasureschanged: { numMeasures: number };
   notargetentered: { src: NonePointerTarget };
   notargetexited: { src: NonePointerTarget };

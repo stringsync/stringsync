@@ -1,5 +1,5 @@
 import { PauseOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
-import { Alert, Button, Checkbox, Col, Divider, Drawer, Row, Slider } from 'antd';
+import { Alert, Button, Checkbox, Col, Divider, Drawer, Row, Select, Slider, Tooltip } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -112,12 +112,19 @@ export const NotationControls: React.FC<Props> = ({
     },
     [settingsApi]
   );
-  const onShowMainScaleChange = useCallback(
-    (event: CheckboxChangeEvent) => {
-      if (event.target.checked) {
-        settingsApi.setScaleSelectionType(ScaleSelectionType.Main);
-      } else {
-        settingsApi.setScaleSelectionType(ScaleSelectionType.None);
+  const onSelectedScaleChange = useCallback(
+    (value: string) => {
+      switch (value) {
+        case 'none':
+          settingsApi.setScaleSelectionType(ScaleSelectionType.None);
+          settingsApi.setSelectedScale(null);
+          break;
+        case 'dynamic':
+          settingsApi.setScaleSelectionType(ScaleSelectionType.Dynamic);
+          break;
+        default:
+          settingsApi.setScaleSelectionType(ScaleSelectionType.User);
+          settingsApi.setSelectedScale(value);
       }
     },
     [settingsApi]
@@ -167,10 +174,10 @@ export const NotationControls: React.FC<Props> = ({
     }
   }, [isPlaying, musicDisplay, musicDisplayScrollControls]);
   useEffect(() => {
-    if (settings.scaleSelectionType !== ScaleSelectionType.Main) {
+    if (settings.scaleSelectionType !== ScaleSelectionType.Dynamic) {
       return;
     }
-    settingsApi.setSelectedScale(scales.currentMainScale);
+    settingsApi.setSelectedScale(scales.currentMain);
   }, [settings, settingsApi, scales]);
 
   return (
@@ -239,9 +246,48 @@ export const NotationControls: React.FC<Props> = ({
 
           <Divider />
 
-          <Checkbox checked={settings.scaleSelectionType === ScaleSelectionType.Main} onChange={onShowMainScaleChange}>
-            main scale
-          </Checkbox>
+          <Select defaultValue="none" style={{ width: '100%' }} onChange={onSelectedScaleChange}>
+            <Select.OptGroup label="default">
+              <Select.Option value="none">none</Select.Option>
+            </Select.OptGroup>
+            <Select.OptGroup label="recommended">
+              <Select.Option value="dynamic">
+                <Tooltip title="based on the current key signature">dynamic</Tooltip>
+              </Select.Option>
+              {scales.main.map((scale) => (
+                <Select.Option key={`main-${scale}`} value={scale}>
+                  {scale}
+                </Select.Option>
+              ))}
+            </Select.OptGroup>
+            {scales.pentatonic.length > 0 && (
+              <Select.OptGroup label="pentatonic">
+                {scales.pentatonic.map((scale) => (
+                  <Select.Option key={`pentatonic-${scale}`} value={scale}>
+                    {scale}
+                  </Select.Option>
+                ))}
+              </Select.OptGroup>
+            )}
+            {scales.major.length > 0 && (
+              <Select.OptGroup label="major">
+                {scales.major.map((scale) => (
+                  <Select.Option key={`major-${scale}`} value={scale}>
+                    {scale}
+                  </Select.Option>
+                ))}
+              </Select.OptGroup>
+            )}
+            {scales.minor.length > 0 && (
+              <Select.OptGroup label="minor">
+                {scales.minor.map((scale) => (
+                  <Select.Option key={`minor-${scale}`} value={scale}>
+                    {scale}
+                  </Select.Option>
+                ))}
+              </Select.OptGroup>
+            )}
+          </Select>
         </SettingsInner>
       </Drawer>
     </Outer>

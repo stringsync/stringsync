@@ -113,11 +113,8 @@ const getStyleTargetsFromPositionComponent = (child: Component<typeof Position>)
 const getStyleTargetsFromScaleComponent = (fretboard: Fretboard, child: Component<typeof Scale>): StyleTarget[] => {
   const { name, style } = child.props;
   const nameParts = name.split(' ');
-  if (nameParts.length !== 2) {
-    console.warn(`got more than 2 name parts, not rendering scale: ${nameParts}`);
-    return [];
-  }
-  const [root, type] = nameParts;
+  const [root, ...rest] = nameParts;
+  const type = rest.join(' ');
 
   const system: FretboardSystem | null = get(fretboard, 'system', null);
   if (!(system instanceof FretboardSystem)) {

@@ -11,7 +11,7 @@ export type NotationPlayerSettingsApi = {
 
 export enum ScaleSelectionType {
   None,
-  Main,
+  Dynamic,
   User,
   Random,
 }

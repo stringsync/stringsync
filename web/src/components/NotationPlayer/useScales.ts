@@ -5,26 +5,16 @@ import { KeyInfo } from '../../lib/MusicDisplay/helpers';
 import { MusicDisplayMeta } from '../../lib/MusicDisplay/meta';
 
 type Scales = {
-  currentMainScale: string | null;
-  mainScales: string[];
-  naturalScales: string[];
-  minorScales: string[];
+  currentMain: string | null;
+  main: string[];
+  pentatonic: string[];
+  major: string[];
+  minor: string[];
 };
 
 export const useScales = (musicDisplay: MusicDisplay | null): Scales => {
   const [keyInfo, setKeyInfo] = useState<KeyInfo | null>(null);
   const [meta, setMeta] = useState<MusicDisplayMeta>(MusicDisplayMeta.createNull());
-
-  useEffect(() => {
-    if (!musicDisplay) {
-      return;
-    }
-    setMeta(musicDisplay.getMeta());
-
-    return () => {
-      setMeta(MusicDisplayMeta.createNull());
-    };
-  }, [musicDisplay]);
 
   useEffect(() => {
     if (!musicDisplay) {
@@ -36,6 +26,9 @@ export const useScales = (musicDisplay: MusicDisplay | null): Scales => {
         null
     );
     const eventBusIds = [
+      musicDisplay.eventBus.subscribe('rendered', (payload) => {
+        setMeta(musicDisplay.getMeta());
+      }),
       musicDisplay.eventBus.subscribe('cursorsnapshotchanged', (payload) => {
         setKeyInfo(payload.cursorSnapshot?.getKeyInfo() || null);
       }),
@@ -45,13 +38,18 @@ export const useScales = (musicDisplay: MusicDisplay | null): Scales => {
     };
   }, [musicDisplay]);
 
-  return useMemo(
-    () => ({
-      currentMainScale: keyInfo?.mainScale || null,
-      mainScales: meta.mainScales,
-      naturalScales: meta.naturalScales,
-      minorScales: meta.minorScales,
-    }),
-    [keyInfo, meta]
-  );
+  return useMemo(() => {
+    // Don't let scales show up multiple times
+    const mainScales = new Set(meta.mainScales);
+    const majorScales = meta.naturalScales.filter((scale) => !mainScales.has(scale));
+    const minorScales = meta.minorScales.filter((scale) => !mainScales.has(scale));
+
+    return {
+      currentMain: keyInfo?.mainScale || null,
+      main: meta.mainScales, // Using the set would mess up the order
+      pentatonic: meta.pentatonicScales,
+      major: majorScales,
+      minor: minorScales,
+    };
+  }, [keyInfo, meta]);
 };
