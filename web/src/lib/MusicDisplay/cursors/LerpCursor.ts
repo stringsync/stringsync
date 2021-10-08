@@ -1,7 +1,6 @@
 import $ from 'jquery';
 import { difference, intersection, isString, uniq } from 'lodash';
 import { Cursor, CursorOptions, CursorType } from 'opensheetmusicdisplay';
-import { theme } from '../../../theme';
 import { Box } from '../../../util/Box';
 import { Duration } from '../../../util/Duration';
 import { InternalMusicDisplay } from '../InternalMusicDisplay';
@@ -262,7 +261,7 @@ export class LerpCursor implements CursorWrapper {
       this.imd.colorer.undo(this.noteColorOpId);
 
       if (nextCursorSnapshot) {
-        this.noteColorOpId = this.imd.colorer.colorNotesUnderCursor(this.lagger, theme['@primary-color']);
+        this.noteColorOpId = this.imd.colorer.colorNotesUnderCursor(this.lagger, '#ff6677');
       }
     }
 

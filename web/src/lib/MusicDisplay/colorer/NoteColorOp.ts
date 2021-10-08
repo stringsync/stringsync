@@ -39,18 +39,18 @@ export class NoteColorOp implements ColorOp {
   }
 
   private renderColor(color: string, graphicalNote: GraphicalNote) {
-    const $el = this.getNoteHeadElement(graphicalNote);
+    const $el = this.getTargetElements(graphicalNote);
     if ($el) {
       $el.attr({ fill: color, stroke: color });
     }
   }
 
-  private getNoteHeadElement(graphicalNote: GraphicalNote): JQuery<HTMLElement> | null {
+  private getTargetElements(graphicalNote: GraphicalNote): JQuery<SVGPathElement> | null {
     const el = get(graphicalNote, 'vfnote[0].attrs.el', null);
     if (!el) {
       return null;
     }
 
-    return $(el).find('.vf-notehead > path');
+    return $(el).find('path');
   }
 }
