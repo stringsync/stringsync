@@ -15,11 +15,18 @@ export type VideoPlayerControls = {
   unsuspend: () => void;
 };
 
-const getVideoPlayerState = (videoPlayer: VideoJsPlayer) => (): VideoPlayerState => {
-  return !videoPlayer.paused() ? VideoPlayerState.Playing : VideoPlayerState.Paused;
+const getVideoPlayerState = (videoPlayer: VideoJsPlayer | null) => (): VideoPlayerState => {
+  if (!videoPlayer) {
+    return VideoPlayerState.Paused;
+    // This awkward if condition is intentional. It assumes not being paused means you are playing.
+  } else if (!videoPlayer.paused()) {
+    return VideoPlayerState.Playing;
+  } else {
+    return VideoPlayerState.Paused;
+  }
 };
 
-export const useVideoPlayerControls = (videoPlayer: VideoJsPlayer) => {
+export const useVideoPlayerControls = (videoPlayer: VideoJsPlayer | null) => {
   // Unsuspend can be called in the same "render" as a suspend, so we need to store it in a ref so that callers can
   // call unsuspend right after suspend.
   const unsuspendRef = useRef(noop);
@@ -28,11 +35,11 @@ export const useVideoPlayerControls = (videoPlayer: VideoJsPlayer) => {
   const [isSuspended, setIsSuspended] = useState(false);
 
   const play = useCallback(() => {
-    videoPlayer.play();
+    videoPlayer && videoPlayer.play();
   }, [videoPlayer]);
 
   const pause = useCallback(() => {
-    videoPlayer.pause();
+    videoPlayer && videoPlayer.pause();
   }, [videoPlayer]);
 
   const suspend = useCallback(() => {
@@ -56,12 +63,16 @@ export const useVideoPlayerControls = (videoPlayer: VideoJsPlayer) => {
 
   const seek = useCallback(
     (timeMs: number) => {
-      videoPlayer.currentTime(timeMs / 1000);
+      videoPlayer && videoPlayer.currentTime(timeMs / 1000);
     },
     [videoPlayer]
   );
 
   useEffect(() => {
+    if (!videoPlayer) {
+      return;
+    }
+
     const onPlay = () => setVideoPlayerState(VideoPlayerState.Playing);
     videoPlayer.on('play', onPlay);
 

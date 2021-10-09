@@ -17,6 +17,7 @@ export const useVideoPlayerState = (videoPlayer: VideoJsPlayer | null) => {
   const [videoPlayerState, setVideoPlayerState] = useState(() => getVideoPlayerState(videoPlayer));
 
   useEffect(() => {
+    setVideoPlayerState(getVideoPlayerState(videoPlayer));
     if (!videoPlayer) {
       return;
     }

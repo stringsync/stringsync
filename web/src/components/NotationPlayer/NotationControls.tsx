@@ -76,7 +76,7 @@ export type Props = {
   songName: string;
   artistName: string;
   thumbnailUrl: string;
-  videoPlayer: VideoJsPlayer;
+  videoPlayer: VideoJsPlayer | null;
   musicDisplay: MusicDisplay | null;
   settings: NotationPlayerSettings;
   settingsApi: NotationPlayerSettingsApi;

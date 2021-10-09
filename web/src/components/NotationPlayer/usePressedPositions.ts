@@ -48,8 +48,10 @@ export const usePressedPositions = (cursorSnapshot: CursorSnapshot | null, video
 
     const loop = new AsyncLoop(
       () => {
-        const currentTimeMs = Duration.sec(videoPlayer.currentTime()).ms;
-        setIsInFlashRegion(computeIsInFlashRegion(currentTimeMs, cursorSnapshot));
+        try {
+          const currentTimeMs = Duration.sec(videoPlayer.currentTime()).ms;
+          setIsInFlashRegion(computeIsInFlashRegion(currentTimeMs, cursorSnapshot));
+        } catch (e) {}
       },
       videoPlayer.requestAnimationFrame.bind(videoPlayer),
       videoPlayer.cancelAnimationFrame.bind(videoPlayer)

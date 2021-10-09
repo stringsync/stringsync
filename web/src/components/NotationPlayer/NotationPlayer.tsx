@@ -46,6 +46,9 @@ const NotationScrollContainer = styled.div`
   background: white;
   overflow-x: hidden;
   overflow-y: auto;
+  position: relative;
+  flex: 2;
+  align-items: stretch;
 `;
 
 const FretboardContainer = styled.div`
@@ -190,6 +193,7 @@ const NotationPlayer: React.FC = enhance(() => {
             <LeftOrTopScrollContainer $overflow={gtMd}>
               <Video
                 onVideoPlayerChange={onVideoPlayerChange}
+                mode={settings.isVideoVisible ? 'video' : 'audio'}
                 onVideoResize={onVideoResize}
                 playerOptions={playerOptions}
               />
@@ -214,7 +218,7 @@ const NotationPlayer: React.FC = enhance(() => {
               )}
             </NotationScrollContainer>
 
-            {settings.isFretboardVisible && videoPlayer && (
+            {settings.isFretboardVisible && (
               <FretboardContainer>
                 <Fretboard tonic={tonic || undefined} options={fretboardOpts} styleMergeStrategy={MergeStrategy.Merge}>
                   {measurePositions.map(({ string, fret }) => (
@@ -240,20 +244,18 @@ const NotationPlayer: React.FC = enhance(() => {
               </FretboardContainer>
             )}
 
-            {videoPlayer && (
-              <NotationControlsContainer>
-                <NotationControls
-                  songName={notation.songName || ''}
-                  artistName={notation.artistName || ''}
-                  durationMs={notation.durationMs}
-                  thumbnailUrl={notation.thumbnailUrl || ''}
-                  videoPlayer={videoPlayer}
-                  musicDisplay={musicDisplay}
-                  settings={settings}
-                  settingsApi={settingsApi}
-                />
-              </NotationControlsContainer>
-            )}
+            <NotationControlsContainer>
+              <NotationControls
+                songName={notation.songName || ''}
+                artistName={notation.artistName || ''}
+                durationMs={notation.durationMs}
+                thumbnailUrl={notation.thumbnailUrl || ''}
+                videoPlayer={videoPlayer}
+                musicDisplay={musicDisplay}
+                settings={settings}
+                settingsApi={settingsApi}
+              />
+            </NotationControlsContainer>
           </RightOrBottomCol>
         </Row>
       )}
