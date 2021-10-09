@@ -3,7 +3,6 @@ import { first, range } from 'lodash';
 import { Cursor } from 'opensheetmusicdisplay';
 import { ScrollRequestType } from '.';
 import { Duration } from '../../../util/Duration';
-import { cancelIdleCallback, requestIdleCallback } from '../../../util/idleCallback';
 import { InternalMusicDisplay } from '../InternalMusicDisplay';
 import { EntryAnalysis } from './EntryAnalysis';
 import {
@@ -62,7 +61,7 @@ export class AutoScrollBehavior implements ScrollBehavior {
   stop() {
     window.clearTimeout(this.installScrollListenerHandle);
     this.scrollContainer.removeEventListener('scroll', this.detectExternalScroll);
-    cancelIdleCallback(this.deferHandle);
+    window.cancelAnimationFrame(this.deferHandle);
     window.clearTimeout(this.autoScrollHandle);
     this.lastEntries = [];
     this.isAutoScrolling = false;
@@ -97,8 +96,8 @@ export class AutoScrollBehavior implements ScrollBehavior {
   };
 
   private defer(callback: () => void) {
-    cancelIdleCallback(this.deferHandle);
-    this.deferHandle = requestIdleCallback(callback);
+    window.cancelAnimationFrame(this.deferHandle);
+    this.deferHandle = window.requestAnimationFrame(callback);
   }
 
   private scrollToCursor = () => {
