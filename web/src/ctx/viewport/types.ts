@@ -8,4 +8,5 @@ export type ViewportState = {
   xl: boolean;
   xxl: boolean;
   breakpoint: Breakpoint;
+  innerHeight: number;
 };

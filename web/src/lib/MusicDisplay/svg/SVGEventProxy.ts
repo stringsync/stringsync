@@ -138,6 +138,7 @@ export class SVGEventProxy {
   }
 
   private onTouchStart(event: SVGElementEvent<'touchstart'>) {
+    event.preventDefault();
     const touch = event.touches.item(0);
     if (!touch) {
       return;
@@ -148,6 +149,7 @@ export class SVGEventProxy {
 
   private onTouchMove = throttle(
     (event: SVGElementEvent<'touchmove'>) => {
+      event.preventDefault();
       const touch = event.touches.item(0);
       if (!touch) {
         return;
@@ -161,6 +163,7 @@ export class SVGEventProxy {
   );
 
   private onTouchEnd(event: SVGElementEvent<'touchend'>) {
+    event.preventDefault();
     const touch = event.changedTouches.item(0);
     if (!touch) {
       return;

@@ -5,7 +5,6 @@ import { MusicDisplay } from '../../lib/MusicDisplay';
 import { CursorStyleType } from '../../lib/MusicDisplay/cursors';
 import { PointerTargetType } from '../../lib/MusicDisplay/pointer';
 import { isNonePointerTarget, isPositional } from '../../lib/MusicDisplay/pointer/pointerTypeAssert';
-import { ScrollBehaviorType } from '../../lib/MusicDisplay/scroller';
 import { SupportedSVGEventNames } from '../../lib/MusicDisplay/svg';
 
 const Outer = styled.div<{ cursor: Cursor }>`
@@ -30,8 +29,6 @@ const LoadingOverlay = styled.div`
 const Loading = styled.small`
   margin-top: 36px;
 `;
-
-const NotationContainer = styled.div<{ $isTouchScrollingEnabled: boolean }>``;
 
 const COMMON_SVG_EVENT_NAMES: SupportedSVGEventNames[] = [];
 const MOUSE_SVG_EVENT_NAMES: SupportedSVGEventNames[] = ['mousedown', 'mousemove', 'mouseup'];
@@ -67,28 +64,12 @@ export const Notation: React.FC<NotationProps> = (props) => {
   const [cursor, setCursor] = useState(Cursor.Crosshair);
   const [isLoading, setIsLoading] = useState(false);
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
-  const [isTouchScrollingEnabled, setIsTouchScrollingEnabled] = useState(true);
 
   useEffect(() => {
     if (onMusicDisplayChange) {
       onMusicDisplayChange(musicDisplay);
     }
   }, [musicDisplay, onMusicDisplayChange]);
-
-  useEffect(() => {
-    if (!musicDisplay) {
-      return;
-    }
-    const eventBusIds = [
-      musicDisplay.eventBus.subscribe('scrollbehaviorchanged', (payload) => {
-        const shouldAllowTouchScroll = payload.type !== ScrollBehaviorType.Manual;
-        setIsTouchScrollingEnabled(shouldAllowTouchScroll);
-      }),
-    ];
-    return () => {
-      musicDisplay.eventBus.unsubscribe(...eventBusIds);
-    };
-  }, [musicDisplay]);
 
   useEffect(() => {
     if (!musicDisplay) {
@@ -232,7 +213,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
           <Loading>loading</Loading>
         </LoadingOverlay>
       )}
-      <NotationContainer draggable={false} ref={divRef} $isTouchScrollingEnabled={isTouchScrollingEnabled} />
+      <div draggable={false} ref={divRef} />
     </Outer>
   );
 };

@@ -9,6 +9,7 @@ export const getViewportState = (breakpoint: Breakpoint): ViewportState => {
     xl: false,
     xxl: false,
     breakpoint,
+    innerHeight: window.innerHeight,
   };
   viewport[breakpoint] = true;
   return viewport;

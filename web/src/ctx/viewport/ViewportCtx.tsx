@@ -5,7 +5,8 @@ import { getViewportState } from './getViewportState';
 import { Breakpoint, ViewportState } from './types';
 
 const VIEWPORT_ACTIONS = {
-  setBreakpoint: createAction<{ breakpoint: Breakpoint }>('setBreakpoint'),
+  setViewportState: createAction<{ state: ViewportState }>('setBreakpoint'),
+  updateInnerHeight: createAction<{ innerHeight: number }>('updateInnerHeight'),
 };
 
 const BREAKPOINT_QUERIES = [
@@ -21,8 +22,11 @@ const BREAKPOINTS: Breakpoint[] = ['xs', 'sm', 'md', 'lg', 'xl'];
 const getInitialState = (): ViewportState => getViewportState('xs');
 
 const viewportReducer = createReducer(getInitialState(), (builder) => {
-  builder.addCase(VIEWPORT_ACTIONS.setBreakpoint, (state, action) => {
-    return getViewportState(action.payload.breakpoint);
+  builder.addCase(VIEWPORT_ACTIONS.setViewportState, (state, action) => {
+    return action.payload.state;
+  });
+  builder.addCase(VIEWPORT_ACTIONS.updateInnerHeight, (state, action) => {
+    state.innerHeight = action.payload.innerHeight;
   });
 });
 
@@ -34,8 +38,18 @@ export const ViewportProvider: React.FC = (props) => {
   const breakpoint = useMedia(BREAKPOINT_QUERIES, BREAKPOINTS, 'xxl');
 
   useEffect(() => {
-    dispatch(VIEWPORT_ACTIONS.setBreakpoint({ breakpoint }));
+    dispatch(VIEWPORT_ACTIONS.setViewportState({ state: getViewportState(breakpoint) }));
   }, [breakpoint]);
+
+  useEffect(() => {
+    const onResize = () => {
+      dispatch(VIEWPORT_ACTIONS.updateInnerHeight({ innerHeight: window.innerHeight }));
+    };
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+    };
+  }, []);
 
   return <ViewportCtx.Provider value={state}>{props.children}</ViewportCtx.Provider>;
 };
