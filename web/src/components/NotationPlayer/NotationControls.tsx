@@ -40,10 +40,11 @@ import { useVideoPlayerControls, VideoPlayerState } from './useVideoPlayerContro
 import { useVideoPlayerCurrentTimeMs } from './useVideoPlayerCurrentTimeMs';
 import { useVideoPlayerState } from './useVideoPlayerState';
 
+export const NOTATION_CONTROLS_HEIGHT_PX = 75;
+
 const Outer = styled.div`
-  z-index: 3;
+  z-index: 10;
   background: white;
-  border-top: 1px solid ${(props) => props.theme['@border-color']};
   padding: 16px 16px;
   width: 100%;
 `;

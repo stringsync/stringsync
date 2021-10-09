@@ -5,6 +5,7 @@ import { MusicDisplay } from '../../lib/MusicDisplay';
 import { CursorStyleType } from '../../lib/MusicDisplay/cursors';
 import { PointerTargetType } from '../../lib/MusicDisplay/pointer';
 import { isNonePointerTarget, isPositional } from '../../lib/MusicDisplay/pointer/pointerTypeAssert';
+import { ScrollBehaviorType } from '../../lib/MusicDisplay/scroller';
 import { SupportedSVGEventNames } from '../../lib/MusicDisplay/svg';
 
 const Outer = styled.div<{ cursor: Cursor }>`
@@ -29,6 +30,8 @@ const LoadingOverlay = styled.div`
 const Loading = styled.small`
   margin-top: 36px;
 `;
+
+const NotationContainer = styled.div<{ $isTouchScrollingEnabled: boolean }>``;
 
 const COMMON_SVG_EVENT_NAMES: SupportedSVGEventNames[] = [];
 const MOUSE_SVG_EVENT_NAMES: SupportedSVGEventNames[] = ['mousedown', 'mousemove', 'mouseup'];
@@ -64,6 +67,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
   const [cursor, setCursor] = useState(Cursor.Crosshair);
   const [isLoading, setIsLoading] = useState(false);
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
+  const [isTouchScrollingEnabled, setIsTouchScrollingEnabled] = useState(true);
 
   useEffect(() => {
     if (onMusicDisplayChange) {
@@ -75,6 +79,22 @@ export const Notation: React.FC<NotationProps> = (props) => {
     if (!musicDisplay) {
       return;
     }
+    const eventBusIds = [
+      musicDisplay.eventBus.subscribe('scrollbehaviorchanged', (payload) => {
+        const shouldAllowTouchScroll = payload.type !== ScrollBehaviorType.Manual;
+        setIsTouchScrollingEnabled(shouldAllowTouchScroll);
+      }),
+    ];
+    return () => {
+      musicDisplay.eventBus.unsubscribe(...eventBusIds);
+    };
+  }, [musicDisplay]);
+
+  useEffect(() => {
+    if (!musicDisplay) {
+      return;
+    }
+    const isDeviceTouchable = device.inputType === 'touchOnly' || device.inputType === 'hybrid';
 
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('cursorentered', (payload) => {
@@ -101,11 +121,17 @@ export const Notation: React.FC<NotationProps> = (props) => {
       musicDisplay.eventBus.subscribe('selectionexited', (payload) => {
         payload.src.cursor.updateStyle(CursorStyleType.Default);
       }),
-      musicDisplay.eventBus.subscribe('cursordragstarted', () => {
+      musicDisplay.eventBus.subscribe('cursordragstarted', (payload) => {
         setCursor(Cursor.Grabbing);
+        if (isDeviceTouchable) {
+          payload.src.cursor.updateStyle(CursorStyleType.Interacting);
+        }
       }),
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
         setCursor(payload.dst.type === PointerTargetType.Cursor ? Cursor.Grab : Cursor.Crosshair);
+        if (isDeviceTouchable) {
+          payload.src.cursor.updateStyle(CursorStyleType.Default);
+        }
       }),
       musicDisplay.eventBus.subscribe('notargetentered', () => {
         setCursor(Cursor.Default);
@@ -129,7 +155,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
       musicDisplay.eventBus.unsubscribe(...eventBusIds);
       setCursor(Cursor.Crosshair);
     };
-  }, [musicDisplay]);
+  }, [device, musicDisplay]);
 
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
@@ -144,20 +170,16 @@ export const Notation: React.FC<NotationProps> = (props) => {
 
     const svgSettings = {
       eventNames: [...COMMON_SVG_EVENT_NAMES],
-      isIdlePingerEnabled: false,
     };
     switch (device.inputType) {
       case 'mouseOnly':
         svgSettings.eventNames = [...svgSettings.eventNames, ...MOUSE_SVG_EVENT_NAMES];
-        svgSettings.isIdlePingerEnabled = true;
         break;
       case 'touchOnly':
         svgSettings.eventNames = [...svgSettings.eventNames, ...TOUCH_SVG_EVENT_NAMES];
-        svgSettings.isIdlePingerEnabled = false;
         break;
       case 'hybrid':
         svgSettings.eventNames = [...svgSettings.eventNames, ...MOUSE_SVG_EVENT_NAMES, ...TOUCH_SVG_EVENT_NAMES];
-        svgSettings.isIdlePingerEnabled = true;
         break;
     }
 
@@ -177,8 +199,15 @@ export const Notation: React.FC<NotationProps> = (props) => {
       musicDisplay.eventBus.subscribe('resizeended', stopLoading),
     ];
 
+    // On mobile, resize will fire when scrolling.
+    let width = window.outerWidth;
+    let height = window.outerHeight;
     const dispatchResizeStarted = () => {
-      musicDisplay.eventBus.dispatch('resizestarted', {});
+      if (width !== window.outerWidth || height !== window.outerHeight) {
+        width = window.outerWidth;
+        height = window.outerHeight;
+        musicDisplay.eventBus.dispatch('resizestarted', {});
+      }
     };
     window.addEventListener('resize', dispatchResizeStarted);
 
@@ -203,7 +232,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
           <Loading>loading</Loading>
         </LoadingOverlay>
       )}
-      <div draggable={false} ref={divRef} style={{ userSelect: 'none' }} />
+      <NotationContainer draggable={false} ref={divRef} $isTouchScrollingEnabled={isTouchScrollingEnabled} />
     </Outer>
   );
 };

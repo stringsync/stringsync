@@ -8,7 +8,12 @@ export enum VideoPlayerState {
 
 const getVideoPlayerState = (videoPlayer: VideoJsPlayer | null): VideoPlayerState => {
   if (videoPlayer) {
-    return !videoPlayer.paused() ? VideoPlayerState.Playing : VideoPlayerState.Paused;
+    try {
+      return !videoPlayer.paused() ? VideoPlayerState.Playing : VideoPlayerState.Paused;
+    } catch (e) {
+      console.error(e);
+      return VideoPlayerState.Paused;
+    }
   }
   return VideoPlayerState.Paused;
 };
@@ -18,6 +23,7 @@ export const useVideoPlayerState = (videoPlayer: VideoJsPlayer | null) => {
 
   useEffect(() => {
     setVideoPlayerState(getVideoPlayerState(videoPlayer));
+
     if (!videoPlayer) {
       return;
     }

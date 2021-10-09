@@ -10,6 +10,8 @@ import { Layout, withLayout } from '../../hocs/withLayout';
 import { HEADER_HEIGHT_PX } from '../../hocs/withLayout/DefaultLayout';
 import { useNoOverflow } from '../../hooks/useNoOverflow';
 import { useNotation } from '../../hooks/useNotation';
+import { useNoTouchAction } from '../../hooks/useNoTouchAction';
+import { useNoUserSelect } from '../../hooks/useNoUserSelect';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { compose } from '../../util/compose';
 import { Fretboard, FretboardOptions, MergeStrategy, PositionFilterParams, PositionStyle } from '../Fretboard';
@@ -53,14 +55,16 @@ const NotationScrollContainer = styled.div`
 
 const FretboardContainer = styled.div`
   background-color: white;
-  border-top: 1px solid ${(props) => props.theme['@border-color']};
+  border-bottom: 1px solid ${(props) => props.theme['@border-color']};
 
   figure {
     margin: 0;
   }
 `;
 
-const NotationControlsContainer = styled.div``;
+const NotationControlsContainer = styled.div`
+  border-bottom: 1px solid ${(props) => props.theme['@border-color']};
+`;
 
 const RightOrBottomCol = styled(Col)<{ $offsetHeightPx: number }>`
   background: white;
@@ -148,8 +152,14 @@ const NotationPlayer: React.FC = enhance(() => {
   }, []);
 
   useNoOverflow(document.body);
+  useNoUserSelect(document.body);
+  useNoTouchAction(document.body);
 
   const offsetHeightPx = gtMd ? HEADER_HEIGHT_PX : HEADER_HEIGHT_PX + videoHeightPx;
+  const hasFretboardBottomBorder = settings.isFretboardVisible && !gtMd;
+  const hasFretboardTopBorder = settings.isFretboardVisible && gtMd;
+  const hasControlsTopBorder = !hasFretboardBottomBorder;
+  const hasControlsBottomBorder = !hasFretboardTopBorder && !gtMd;
 
   return (
     <div data-testid="notation-player">
@@ -185,8 +195,6 @@ const NotationPlayer: React.FC = enhance(() => {
         </>
       )}
 
-      {gtMd}
-
       {!isLoading && !hasErrors && notation && (
         <Row>
           <LeftOrTopCol xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
@@ -202,22 +210,20 @@ const NotationPlayer: React.FC = enhance(() => {
           </LeftOrTopCol>
 
           <RightOrBottomCol $offsetHeightPx={offsetHeightPx} xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
-            <NotationScrollContainer ref={scrollContainerRef}>
-              <SongName>{notation.songName}</SongName>
-              <ArtistName>by {notation.artistName}</ArtistName>
-              <TranscriberName>{notation.transcriber.username}</TranscriberName>
-
-              {notation.musicXmlUrl && (
-                <Notation
-                  musicXmlUrl={notation.musicXmlUrl}
-                  deadTimeMs={notation.deadTimeMs}
+            {notation && (
+              <NotationControlsContainer>
+                <NotationControls
+                  songName={notation.songName || ''}
+                  artistName={notation.artistName || ''}
                   durationMs={notation.durationMs}
-                  scrollContainerRef={scrollContainerRef}
-                  onMusicDisplayChange={onMusicDisplayChange}
+                  thumbnailUrl={notation.thumbnailUrl || ''}
+                  videoPlayer={videoPlayer}
+                  musicDisplay={musicDisplay}
+                  settings={settings}
+                  settingsApi={settingsApi}
                 />
-              )}
-            </NotationScrollContainer>
-
+              </NotationControlsContainer>
+            )}{' '}
             {settings.isFretboardVisible && (
               <FretboardContainer>
                 <Fretboard tonic={tonic || undefined} options={fretboardOpts} styleMergeStrategy={MergeStrategy.Merge}>
@@ -243,19 +249,23 @@ const NotationPlayer: React.FC = enhance(() => {
                 </Fretboard>
               </FretboardContainer>
             )}
+            {notation && (
+              <NotationScrollContainer ref={scrollContainerRef}>
+                <SongName>{notation.songName}</SongName>
+                <ArtistName>by {notation.artistName}</ArtistName>
+                <TranscriberName>{notation.transcriber.username}</TranscriberName>
 
-            <NotationControlsContainer>
-              <NotationControls
-                songName={notation.songName || ''}
-                artistName={notation.artistName || ''}
-                durationMs={notation.durationMs}
-                thumbnailUrl={notation.thumbnailUrl || ''}
-                videoPlayer={videoPlayer}
-                musicDisplay={musicDisplay}
-                settings={settings}
-                settingsApi={settingsApi}
-              />
-            </NotationControlsContainer>
+                {notation.musicXmlUrl && (
+                  <Notation
+                    musicXmlUrl={notation.musicXmlUrl}
+                    deadTimeMs={notation.deadTimeMs}
+                    durationMs={notation.durationMs}
+                    scrollContainerRef={scrollContainerRef}
+                    onMusicDisplayChange={onMusicDisplayChange}
+                  />
+                )}
+              </NotationScrollContainer>
+            )}
           </RightOrBottomCol>
         </Row>
       )}

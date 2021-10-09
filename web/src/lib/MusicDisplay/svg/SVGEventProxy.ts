@@ -121,11 +121,11 @@ export class SVGEventProxy {
 
     switch (eventName) {
       case 'touchstart':
-        return add(this.svg, eventName, this.onTouchStart.bind(this), { passive: true });
+        return add(this.svg, eventName, this.onTouchStart.bind(this), { passive: false });
       case 'touchmove':
-        return add(this.svg, eventName, this.onTouchMove.bind(this), { passive: true });
+        return add(this.svg, eventName, this.onTouchMove.bind(this), { passive: false });
       case 'touchend':
-        return add(this.svg, eventName, this.onTouchEnd.bind(this), { passive: true });
+        return add(this.svg, eventName, this.onTouchEnd.bind(this), { passive: false });
       case 'mousedown':
         return add(this.svg, eventName, this.onMouseDown.bind(this));
       case 'mousemove':
@@ -161,7 +161,7 @@ export class SVGEventProxy {
   );
 
   private onTouchEnd(event: SVGElementEvent<'touchend'>) {
-    const touch = event.touches.item(0);
+    const touch = event.changedTouches.item(0);
     if (!touch) {
       return;
     }
