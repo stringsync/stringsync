@@ -46,9 +46,6 @@ const NotationScrollContainer = styled.div`
   background: white;
   overflow-x: hidden;
   overflow-y: auto;
-  position: relative;
-  flex: 2;
-  align-items: stretch;
 `;
 
 const FretboardContainer = styled.div`
@@ -62,12 +59,12 @@ const FretboardContainer = styled.div`
 
 const NotationControlsContainer = styled.div``;
 
-const RightOrBottomCol = styled(Col)`
+const RightOrBottomCol = styled(Col)<{ $offsetHeightPx: number }>`
   background: white;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - ${HEADER_HEIGHT_PX}px);
+  height: calc(100vh - ${(props) => props.$offsetHeightPx}px);
 `;
 
 const SongName = styled.h1`
@@ -100,6 +97,7 @@ const NotationPlayer: React.FC = enhance(() => {
 
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
   const [videoPlayer, setVideoPlayer] = useState<VideoJsPlayer | null>(null);
+  const [videoHeightPx, setVideoHeightPx] = useState(0);
   const [settings, settingsApi] = useNotationPlayerSettings();
 
   const params = useParams<{ id: string }>();
@@ -142,7 +140,13 @@ const NotationPlayer: React.FC = enhance(() => {
 
   const onVideoPlayerChange = useCallback(setVideoPlayer, [setVideoPlayer]);
 
+  const onVideoResize = useCallback((widthPx: number, heightPx: number) => {
+    setVideoHeightPx(heightPx);
+  }, []);
+
   useNoOverflow(document.body);
+
+  const offsetHeightPx = gtMd ? HEADER_HEIGHT_PX : HEADER_HEIGHT_PX + videoHeightPx;
 
   return (
     <div data-testid="notation-player">
@@ -184,12 +188,16 @@ const NotationPlayer: React.FC = enhance(() => {
         <Row>
           <LeftOrTopCol xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
             <LeftOrTopScrollContainer $overflow={gtMd}>
-              <Video onVideoPlayerChange={onVideoPlayerChange} playerOptions={playerOptions} />
+              <Video
+                onVideoPlayerChange={onVideoPlayerChange}
+                onVideoResize={onVideoResize}
+                playerOptions={playerOptions}
+              />
               <RightBorder border={gtMd}>{gtMd && <SuggestedNotations srcNotationId={notation.id} />}</RightBorder>
             </LeftOrTopScrollContainer>
           </LeftOrTopCol>
 
-          <RightOrBottomCol xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
+          <RightOrBottomCol $offsetHeightPx={offsetHeightPx} xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
             <NotationScrollContainer ref={scrollContainerRef}>
               <SongName>{notation.songName}</SongName>
               <ArtistName>by {notation.artistName}</ArtistName>
