@@ -1,4 +1,5 @@
 import { Fretboard, FretboardSystem } from '@moonwave99/fretboard.js';
+import { Interval, Note } from '@tonaljs/tonal';
 import { get, identity, isNull, merge, uniq } from 'lodash';
 import React from 'react';
 import { StyleTarget } from '.';
@@ -126,4 +127,29 @@ const getStyleTargetsFromScaleComponent = (fretboard: Fretboard, child: Componen
     position: new GuitarPosition(position.fret, position.string),
     style: { ...style },
   }));
+};
+
+export const getEnharmonic = (note: string) => Note.simplify(Note.enharmonic(note));
+
+const GRADES = ['1', 'b2', '2', 'b3', '3', '4', 'b5', '5', '#5', '6', 'b7', '7'];
+
+export const getGradesByNote = (tonic: string): Record<string, string> => {
+  const gradesByNote: Record<string, string> = {};
+
+  const isTonic = (note: string) => note === tonic || getEnharmonic(note) === tonic;
+  const enharmonicsOf = (note: string) => uniq([note, getEnharmonic(note)].filter(identity));
+  const next = (note: string) => Note.simplify(Note.transpose(note, Interval.fromSemitones(1)));
+
+  let ndx = 0;
+  let note = tonic;
+  do {
+    const grade = GRADES[ndx % GRADES.length];
+    enharmonicsOf(note).forEach((enharmonic) => {
+      gradesByNote[enharmonic] = grade;
+    });
+    note = next(note);
+    ndx++;
+  } while (!isTonic(note));
+
+  return gradesByNote;
 };

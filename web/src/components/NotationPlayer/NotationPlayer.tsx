@@ -21,6 +21,7 @@ import { useMeasurePositions } from './useMeasurePositions';
 import { useMusicDisplayCursorSnapshot } from './useMusicDisplayCursorSnapshot';
 import { FretMarkerDisplay, ScaleSelectionType, useNotationPlayerSettings } from './useNotationPlayerSettings';
 import { usePressedPositions } from './usePressedPositions';
+import { useTonic } from './useTonic';
 
 const LoadingIcon = styled(LoadingOutlined)`
   font-size: 5em;
@@ -123,7 +124,7 @@ const NotationPlayer: React.FC = enhance(() => {
       case FretMarkerDisplay.None:
         return { dotFill: 'white' };
       case FretMarkerDisplay.Degree:
-        return { dotText: (params: PositionFilterParams) => params.degree, dotFill: 'white' };
+        return { dotText: (params: PositionFilterParams) => params.grade, dotFill: 'white' };
       case FretMarkerDisplay.Note:
         return { dotText: (params: PositionFilterParams) => params.note };
       default:
@@ -131,6 +132,7 @@ const NotationPlayer: React.FC = enhance(() => {
     }
   }, [settings.fretMarkerDisplay]);
 
+  const tonic = useTonic(settings.selectedScale, musicDisplay);
   const cursorSnapshot = useMusicDisplayCursorSnapshot(musicDisplay);
   const measurePositions = useMeasurePositions(cursorSnapshot);
   const pressedPositions = usePressedPositions(cursorSnapshot, videoPlayer);
@@ -206,7 +208,7 @@ const NotationPlayer: React.FC = enhance(() => {
 
             {settings.isFretboardVisible && videoPlayer && (
               <FretboardContainer>
-                <Fretboard options={fretboardOpts} styleMergeStrategy={MergeStrategy.Merge}>
+                <Fretboard tonic={tonic || undefined} options={fretboardOpts} styleMergeStrategy={MergeStrategy.Merge}>
                   {measurePositions.map(({ string, fret }) => (
                     <Fretboard.Position
                       key={`measure-${string}-${fret}`}

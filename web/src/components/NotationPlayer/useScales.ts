@@ -1,8 +1,8 @@
-import { first } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { KeyInfo } from '../../lib/MusicDisplay/helpers';
 import { MusicDisplayMeta } from '../../lib/MusicDisplay/meta';
+import * as helpers from './helpers';
 
 type Scales = {
   currentMain: string | null;
@@ -13,18 +13,16 @@ type Scales = {
 };
 
 export const useScales = (musicDisplay: MusicDisplay | null): Scales => {
-  const [keyInfo, setKeyInfo] = useState<KeyInfo | null>(null);
+  const [keyInfo, setKeyInfo] = useState<KeyInfo | null>(() => helpers.getKeyInfo(musicDisplay));
   const [meta, setMeta] = useState<MusicDisplayMeta>(MusicDisplayMeta.createNull());
 
   useEffect(() => {
+    setKeyInfo(helpers.getKeyInfo(musicDisplay));
+
     if (!musicDisplay) {
       return;
     }
-    setKeyInfo(
-      musicDisplay.getCursor().cursorSnapshot?.getKeyInfo() ||
-        first(musicDisplay.getMeta().cursorSnapshots)?.getKeyInfo() ||
-        null
-    );
+
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('rendered', (payload) => {
         setMeta(musicDisplay.getMeta());
