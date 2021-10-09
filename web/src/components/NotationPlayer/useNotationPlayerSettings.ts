@@ -5,6 +5,7 @@ import { useLocalStorage } from '../../hooks/useLocalStorage';
 export type NotationPlayerSettingsApi = {
   setFretboardVisibility: (isFretboardVisible: boolean) => void;
   setAutoscrollPreference: (isAutoscrollPreferred: boolean) => void;
+  setVideoVisibility: (isVideoVisible: boolean) => void;
   setFretMarkerDisplay: (fretMarkerDisplay: FretMarkerDisplay) => void;
   setScaleSelectionType: (scaleSelectionType: ScaleSelectionType) => void;
   setSelectedScale: (selectedScale: string | null) => void;
@@ -27,6 +28,7 @@ type PersistedSettings = {
   isFretboardVisible: boolean;
   isAutoscrollPreferred: boolean;
   fretMarkerDisplay: FretMarkerDisplay;
+  isVideoVisible: boolean;
 };
 
 type EphemeralSettings = {
@@ -42,6 +44,7 @@ const DEFAULT_PERSISTED_SETTINGS: PersistedSettings = {
   isFretboardVisible: false,
   isAutoscrollPreferred: true,
   fretMarkerDisplay: FretMarkerDisplay.None,
+  isVideoVisible: true,
 };
 
 const DEFAULT_EPHEMERAL_SETTINGS: EphemeralSettings = {
@@ -82,6 +85,9 @@ export const useNotationPlayerSettings = (): [NotationPlayerSettings, NotationPl
       },
       setAutoscrollPreference: (isAutoscrollPreferred: boolean) => {
         setPersistedSettings({ ...persistedSettings, isAutoscrollPreferred });
+      },
+      setVideoVisibility: (isVideoVisible: boolean) => {
+        setPersistedSettings({ ...persistedSettings, isVideoVisible });
       },
       setFretMarkerDisplay: (fretMarkerDisplay: FretMarkerDisplay) => {
         setPersistedSettings({ ...persistedSettings, fretMarkerDisplay });

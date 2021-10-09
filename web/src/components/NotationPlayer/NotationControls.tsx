@@ -124,6 +124,12 @@ export const NotationControls: React.FC<Props> = ({
     },
     [settingsApi]
   );
+  const onVideoVisibilityChange = useCallback(
+    (event: CheckboxChangeEvent) => {
+      settingsApi.setVideoVisibility(event.target.checked);
+    },
+    [settingsApi]
+  );
   const onAutoscrollPreferenceChange = useCallback(
     (event: CheckboxChangeEvent) => {
       settingsApi.setAutoscrollPreference(event.target.checked);
@@ -261,6 +267,13 @@ export const NotationControls: React.FC<Props> = ({
         zIndex={2}
       >
         <SettingsInner>
+          <h4>video</h4>
+          <Checkbox checked={settings.isVideoVisible} onChange={onVideoVisibilityChange}>
+            show
+          </Checkbox>
+
+          <Divider />
+
           <h4>fretboard</h4>
           <Checkbox checked={settings.isFretboardVisible} onChange={onFretboardVisibilityChange}>
             show
