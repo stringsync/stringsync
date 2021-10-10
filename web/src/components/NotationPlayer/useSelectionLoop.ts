@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { VideoPlayerControls } from './useVideoPlayerControls';
 
-export const useSelectionLoopingEffect = (
+export const useSelectionLoop = (
   musicDisplay: MusicDisplay | null,
   currentTimeMs: number,
   isPlaying: boolean,

@@ -34,7 +34,7 @@ import {
   ScaleSelectionType,
 } from './useNotationPlayerSettings';
 import { useScales } from './useScales';
-import { useSelectionLoopingEffect } from './useSelectionLoopingEffect';
+import { useSelectionLoop } from './useSelectionLoop';
 import { useTipFormatter } from './useTipFormatter';
 import { useVideoPlayerControls, VideoPlayerState } from './useVideoPlayerControls';
 import { useVideoPlayerCurrentTimeMs } from './useVideoPlayerCurrentTimeMs';
@@ -184,7 +184,7 @@ export const NotationControls: React.FC<Props> = ({
 
   // effects
 
-  useSelectionLoopingEffect(musicDisplay, currentTimeMs, isPlaying, videoPlayerControls);
+  useSelectionLoop(musicDisplay, currentTimeMs, isPlaying, videoPlayerControls);
   useMusicDisplayScrollBehaviorEffect(musicDisplay);
   useMusicDisplayCursorInteractionEffects(musicDisplay, videoPlayerControls, musicDisplayScrollControls);
   useMusicDisplaySelectionInteractionEffects(musicDisplay, videoPlayerControls, musicDisplayScrollControls);
