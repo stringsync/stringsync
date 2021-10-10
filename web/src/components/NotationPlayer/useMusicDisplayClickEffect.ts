@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { MusicDisplay } from '../../lib/MusicDisplay';
-import { isCursorSnapshotPointerTarget } from '../../lib/MusicDisplay/pointer/pointerTypeAssert';
+import { isTemporal } from '../../lib/MusicDisplay/pointer/pointerTypeAssert';
 import { MusicDisplayScrollControls } from './useMusicDisplayScrollControls';
 import { VideoPlayerControls } from './useVideoPlayerControls';
 
@@ -16,14 +16,13 @@ export const useMusicDisplayClickEffect = (
 
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('click', (payload) => {
-        if (isCursorSnapshotPointerTarget(payload.src)) {
-          videoPlayerControls.seek(payload.src.timeMs);
-          musicDisplayScrollControls.startPreferentialScrolling();
+        if (!isTemporal(payload.src)) {
+          return;
+        }
+        videoPlayerControls.seek(payload.src.timeMs);
 
-          if (!musicDisplay.getLoop().timeMsRange.contains(payload.src.timeMs)) {
-            musicDisplay.getLoop().deactivate();
-          }
-        } else {
+        const loop = musicDisplay.getLoop();
+        if (loop.isActive && !loop.timeMsRange.contains(payload.src.timeMs)) {
           musicDisplay.getLoop().deactivate();
         }
       }),

@@ -3,12 +3,14 @@ import { EventFrom, interpret } from 'xstate';
 import { assign, choose } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 import { AnchoredSelection } from '../../../util/AnchoredSelection';
+import { Box } from '../../../util/Box';
 import { Duration } from '../../../util/Duration';
 import { MusicDisplayEventBus } from '../types';
 import {
   isCursorPointerTarget,
   isCursorSnapshotPointerTarget,
   isNonePointerTarget,
+  isPositional,
   isSelectionPointerTarget,
   isTemporal,
 } from './pointerTypeAssert';
@@ -19,7 +21,7 @@ export type PointerMachine = ReturnType<typeof createMachine>;
 export type PointerService = ReturnType<typeof createService>;
 
 export const LONG_PRESS_DURATION = Duration.ms(1000);
-export const DOWN_START_DURATION = Duration.ms(30);
+export const DOWN_GRACE_DURATION = Duration.ms(75);
 export const IDLE_DURATION = Duration.ms(500);
 
 const NULL_POINTER_POSITION: PointerPosition = Object.freeze({
@@ -40,6 +42,15 @@ const INITIAL_POINTER_CONTEXT: PointerContext = {
   hoverTarget: NONE_POINTER_TARGET,
   prevHoverTarget: NONE_POINTER_TARGET,
   selection: null,
+};
+
+// Moving this many pixels past the origin signals the intention to select.
+const SELECTION_THRESHOLD_PX = 20;
+const getSelectionThresholdBox = (position: PointerPosition): Box => {
+  const { x, y } = position;
+  const dx = SELECTION_THRESHOLD_PX;
+  const dy = SELECTION_THRESHOLD_PX;
+  return Box.from(x - dx, y - dy).to(x + dx, y + dy);
 };
 
 export const model = createModel(INITIAL_POINTER_CONTEXT, {
@@ -67,22 +78,7 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
         up: {
           initial: 'idle',
           on: {
-            mousedown: [
-              {
-                cond: 'hasSelectableTarget',
-                target: 'down.select',
-                actions: ['assignDownTarget', 'dispatchPointerDown'],
-              },
-              {
-                cond: 'hasDraggableTarget',
-                target: 'down.drag',
-                actions: ['assignDownTarget', 'dispatchPointerDown'],
-              },
-              {
-                target: 'down.start',
-                actions: ['assignDownTarget', 'dispatchPointerDown'],
-              },
-            ],
+            mousedown: [{ target: 'down.press', actions: ['assignDownTarget'] }],
             mousemove: {
               target: 'up.active',
               actions: [
@@ -104,7 +100,7 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
               ],
             },
             touchstart: {
-              target: 'down.start',
+              target: 'down.grace',
               actions: ['assignDownTarget'],
             },
             touchmove: {
@@ -138,13 +134,11 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
         },
         down: {
           states: {
-            start: {
-              after: { [DOWN_START_DURATION.ms]: { target: 'press' } },
+            grace: {
+              after: { [DOWN_GRACE_DURATION.ms]: { target: 'press' } },
               on: {
-                mouseup: { target: '#pointer.up.active', actions: ['resetDownTarget'] },
-                mousemove: { actions: ['assignHoverTarget'] },
                 // Assume that the user is scrolling if they touchmove immediately
-                // (as determined by DOWN_START_DURATION) after entering the down.start state. The user will need to
+                // (as determined by DOWN_GRACE_DURATION) after entering the down.start state. The user will need to
                 // emit another touchstart event to get the machine to do anything in the down.* states.
                 touchmove: { target: '#pointer.up.active', actions: ['resetDownTarget'] },
                 touchend: { target: '#pointer.up.active', actions: ['resetDownTarget'] },
@@ -152,10 +146,14 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
             },
             press: {
               entry: ['dispatchPointerDown'],
-              after: { [LONG_PRESS_DURATION.ms - DOWN_START_DURATION.ms]: { target: 'longpress' } },
+              after: { [LONG_PRESS_DURATION.ms - DOWN_GRACE_DURATION.ms]: { target: 'longpress' } },
               on: {
                 mouseup: { target: '#pointer.up.active', actions: ['dispatchClick', 'resetDownTarget'] },
-                mousemove: { target: 'select', actions: ['assignHoverTarget'] },
+                mousemove: [
+                  { cond: 'hasSelectableTarget', target: 'select', actions: ['assignHoverTarget'] },
+                  { cond: 'hasDraggableTarget', target: 'drag', actions: ['assignHoverTarget'] },
+                  { cond: 'isStartingSelection', target: 'select', actions: ['assignHoverTarget'] },
+                ],
                 touchend: { target: '#pointer.up.active', actions: ['dispatchClick', 'resetDownTarget'] },
               },
             },
@@ -163,6 +161,7 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
               entry: ['dispatchLongPress'],
               on: {
                 mouseup: { target: '#pointer.up.active', actions: ['resetDownTarget'] },
+                touchend: { target: '#pointer.up.active', actions: ['resetDownTarget'] },
               },
             },
             drag: {
@@ -320,10 +319,20 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
       },
       guards: {
         hasDraggableTarget: (context, event) => {
-          return isCursorPointerTarget(event.target) || isCursorPointerTarget(context.downTarget);
+          return isCursorPointerTarget(event.target);
         },
         hasSelectableTarget: (context, event) => {
-          return isSelectionPointerTarget(event.target) || isSelectionPointerTarget(context.downTarget);
+          return isSelectionPointerTarget(event.target);
+        },
+        isStartingSelection: (context, event) => {
+          if (!isPositional(context.downTarget)) {
+            return false;
+          }
+          if (!isPositional(event.target)) {
+            return false;
+          }
+          const box = getSelectionThresholdBox(context.downTarget.position);
+          return !box.contains(event.target.position.x, event.target.position.y);
         },
         hasNoTarget: (context, event) => {
           return isNonePointerTarget(event.target);
