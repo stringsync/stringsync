@@ -14,9 +14,17 @@ export type Dimensions = {
 const getPlayerOptions = (mode: Mode): videojs.PlayerOptions => {
   switch (mode) {
     case 'audio':
-      return { controls: false, preload: 'auto', fluid: false };
+      return {
+        controls: false,
+        preload: 'auto',
+        fluid: false,
+      };
     case 'video':
-      return { controls: true, preload: 'auto', fluid: true };
+      return {
+        controls: true,
+        preload: 'auto',
+        fluid: true,
+      };
     default:
       return {};
   }

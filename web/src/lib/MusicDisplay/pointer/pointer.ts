@@ -127,7 +127,9 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
           states: {
             tap: {
               after: { [TAP_GRACE_DURATION.ms]: { target: 'press' } },
-              on: { up: { target: '#pointer.up.active', actions: ['dispatchClick', 'resetDownTarget'] } },
+              on: {
+                up: { target: '#pointer.up.active', actions: ['dispatchClick', 'resetDownTarget'] },
+              },
             },
             press: {
               after: { [LONG_PRESS_DURATION.ms - TAP_GRACE_DURATION.ms]: { target: 'longpress' } },
