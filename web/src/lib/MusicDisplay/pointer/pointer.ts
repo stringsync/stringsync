@@ -19,7 +19,7 @@ export type PointerMachine = ReturnType<typeof createMachine>;
 export type PointerService = ReturnType<typeof createService>;
 
 export const LONG_PRESS_DURATION = Duration.ms(1000);
-export const TAP_GRACE_DURATION = Duration.ms(100);
+export const DOWN_START_DURATION = Duration.ms(30);
 export const IDLE_DURATION = Duration.ms(500);
 
 const NULL_POINTER_POSITION: PointerPosition = Object.freeze({
@@ -44,9 +44,12 @@ const INITIAL_POINTER_CONTEXT: PointerContext = {
 
 export const model = createModel(INITIAL_POINTER_CONTEXT, {
   events: {
-    up: (target: PointerTarget) => ({ target }),
-    down: (target: PointerTarget) => ({ target }),
-    move: (target: PointerTarget) => ({ target }),
+    mousedown: (target: PointerTarget) => ({ target }),
+    mousemove: (target: PointerTarget) => ({ target }),
+    mouseup: (target: PointerTarget) => ({ target }),
+    touchstart: (target: PointerTarget) => ({ target }),
+    touchmove: (target: PointerTarget) => ({ target }),
+    touchend: (target: PointerTarget) => ({ target }),
     ping: (target: PointerTarget) => ({ target }),
   },
 });
@@ -64,16 +67,23 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
         up: {
           initial: 'idle',
           on: {
-            down: [
+            mousedown: [
               {
                 cond: 'hasSelectableTarget',
                 target: 'down.select',
                 actions: ['assignDownTarget', 'dispatchPointerDown'],
               },
-              { cond: 'hasDraggableTarget', target: 'down.drag', actions: ['assignDownTarget', 'dispatchPointerDown'] },
-              { target: 'down.tap', actions: ['assignDownTarget', 'dispatchPointerDown'] },
+              {
+                cond: 'hasDraggableTarget',
+                target: 'down.drag',
+                actions: ['assignDownTarget', 'dispatchPointerDown'],
+              },
+              {
+                target: 'down.start',
+                actions: ['assignDownTarget', 'dispatchPointerDown'],
+              },
             ],
-            move: {
+            mousemove: {
               target: 'up.active',
               actions: [
                 'assignHoverTarget',
@@ -92,6 +102,13 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
                   { cond: 'didExitCursorSnapshot', actions: ['dispatchCursorSnapshotExited'] },
                 ]),
               ],
+            },
+            touchstart: {
+              target: 'down.start',
+              actions: ['assignDownTarget'],
+            },
+            touchmove: {
+              target: 'up.active',
             },
           },
           states: {
@@ -121,21 +138,29 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
         },
         down: {
           on: {
-            up: { target: '#pointer.up.active', actions: ['resetDownTarget'] },
-            move: { actions: ['assignHoverTarget'] },
+            mouseup: { target: '#pointer.up.active', actions: ['resetDownTarget'] },
+            mousemove: { actions: ['assignHoverTarget'] },
+            touchend: { target: '#pointer.up.active', actions: ['resetDownTarget', 'resetHoverTarget'] },
+            touchmove: { actions: ['assignHoverTarget'] },
           },
           states: {
-            tap: {
-              after: { [TAP_GRACE_DURATION.ms]: { target: 'press' } },
+            start: {
+              after: { [DOWN_START_DURATION.ms]: { target: 'press' } },
               on: {
-                up: { target: '#pointer.up.active', actions: ['dispatchClick', 'resetDownTarget'] },
+                // Assume that the user is scrolling if they touchmove immediately
+                // (as determined by DOWN_START_DURATION) after entering the down.start state. The user will need to
+                // emit another touchstart event to get the machine to do anything in the down.* states.
+                touchmove: { target: '#pointer.up.active', actions: ['resetDownTarget'] },
               },
             },
             press: {
-              after: { [LONG_PRESS_DURATION.ms - TAP_GRACE_DURATION.ms]: { target: 'longpress' } },
+              entry: ['dispatchPointerDown'],
+              after: { [LONG_PRESS_DURATION.ms - DOWN_START_DURATION.ms]: { target: 'longpress' } },
               on: {
-                up: { target: '#pointer.up.active', actions: ['dispatchClick'] },
-                move: { target: 'select', actions: ['assignHoverTarget'] },
+                mouseup: { target: '#pointer.up.active', actions: ['dispatchClick', 'resetDownTarget'] },
+                mousemove: { target: 'select', actions: ['assignHoverTarget'] },
+                touchend: { target: '#pointer.up.active', actions: ['dispatchClick', 'resetDownTarget'] },
+                touchmove: { target: 'select', actions: ['assignHoverTarget'] },
               },
             },
             longpress: {
@@ -143,13 +168,25 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
             },
             drag: {
               entry: ['dispatchDragStarted'],
-              on: { move: { actions: ['assignHoverTarget', 'dispatchDragUpdated'] } },
+              on: {
+                mousemove: { actions: ['assignHoverTarget', 'dispatchDragUpdated'] },
+                touchmove: { actions: ['assignHoverTarget', 'dispatchDragUpdated'] },
+              },
               exit: ['dispatchDragEnded'],
             },
             select: {
               entry: ['startSelection', 'dispatchSelectStarted'],
               on: {
-                move: {
+                mousemove: {
+                  actions: [
+                    'assignHoverTarget',
+                    'updateSelection',
+                    'dispatchSelectUpdated',
+                    choose([{ cond: 'didEnterSelection', actions: ['dispatchSelectEntered'] }]),
+                    choose([{ cond: 'didExitSelection', actions: ['dispatchSelectExited'] }]),
+                  ],
+                },
+                touchmove: {
                   actions: [
                     'assignHoverTarget',
                     'updateSelection',
@@ -177,6 +214,9 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
         assignHoverTarget: assign<PointerContext, PointerEvent>({
           hoverTarget: (context, event) => event.target,
           prevHoverTarget: (context) => context.hoverTarget,
+        }),
+        resetHoverTarget: assign<PointerContext, PointerEvent>({
+          hoverTarget: () => merge({}, INITIAL_POINTER_CONTEXT.hoverTarget),
         }),
         startSelection: assign<PointerContext, PointerEvent>({
           selection: (context, event) => {

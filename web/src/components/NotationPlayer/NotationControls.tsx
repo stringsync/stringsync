@@ -40,7 +40,7 @@ import { useVideoPlayerControls, VideoPlayerState } from './useVideoPlayerContro
 import { useVideoPlayerCurrentTimeMs } from './useVideoPlayerCurrentTimeMs';
 import { useVideoPlayerState } from './useVideoPlayerState';
 
-export const NOTATION_CONTROLS_HEIGHT_PX = 80;
+export const NOTATION_CONTROLS_HEIGHT_PX = 75;
 
 const Outer = styled.div`
   background: white;

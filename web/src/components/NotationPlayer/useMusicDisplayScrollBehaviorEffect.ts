@@ -11,7 +11,6 @@ export const useMusicDisplayScrollBehaviorEffect = (musicDisplay: MusicDisplay |
     }
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('externalscrolldetected', () => {
-        console.log('hello');
         if (isMusicDisplayResizingRef.current) {
           return;
         }

@@ -1,6 +1,7 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { Alert, Col, Row } from 'antd';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { debounce } from 'lodash';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -14,16 +15,19 @@ import { useNoTouchAction } from '../../hooks/useNoTouchAction';
 import { useNoUserSelect } from '../../hooks/useNoUserSelect';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { compose } from '../../util/compose';
+import { Duration } from '../../util/Duration';
 import { Fretboard, FretboardOptions, MergeStrategy, PositionFilterParams, PositionStyle } from '../Fretboard';
 import { Notation } from '../Notation';
 import { Video } from '../Video';
-import { NotationControls } from './NotationControls';
+import { NotationControls, NOTATION_CONTROLS_HEIGHT_PX } from './NotationControls';
 import { SuggestedNotations } from './SuggestedNotations';
 import { useMeasurePositions } from './useMeasurePositions';
 import { useMusicDisplayCursorSnapshot } from './useMusicDisplayCursorSnapshot';
 import { FretMarkerDisplay, ScaleSelectionType, useNotationPlayerSettings } from './useNotationPlayerSettings';
 import { usePressedPositions } from './usePressedPositions';
 import { useTonic } from './useTonic';
+
+const RESIZE_DEBOUNCE_DURATION = Duration.ms(500);
 
 const LoadingIcon = styled(LoadingOutlined)`
   font-size: 5em;
@@ -44,12 +48,12 @@ const LeftOrTopCol = styled(Col)`
   overflow: hidden;
 `;
 
-const NotationScrollContainer = styled.div`
+const NotationScrollContainer = styled.div<{ $height: number }>`
   background: white;
   overflow-x: hidden;
   overflow-y: auto;
-  flex: 2;
-  align-items: stretch;
+  height: ${(props) => props.$height}px;
+  transition: height 500ms;
 `;
 
 const FretboardContainer = styled.div`
@@ -65,12 +69,9 @@ const NotationControlsContainer = styled.div`
   border-top: 1px solid ${(props) => props.theme['@border-color']};
 `;
 
-const RightOrBottomCol = styled(Col)<{ $height: number }>`
+const RightOrBottomCol = styled(Col)`
   background: white;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  height: ${(props) => props.$height}px;
 `;
 
 const SongName = styled.h1`
@@ -104,6 +105,8 @@ const NotationPlayer: React.FC = enhance(() => {
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
   const [videoPlayer, setVideoPlayer] = useState<VideoJsPlayer | null>(null);
   const [videoHeightPx, setVideoHeightPx] = useState(0);
+  const [fretboardHeightPx, setFretboardHeightPx] = useState(0);
+  const [scrollContainerHeightPx, setScrollContainerHeightPx] = useState(() => innerHeight - HEADER_HEIGHT_PX);
   const [settings, settingsApi] = useNotationPlayerSettings();
 
   const params = useParams<{ id: string }>();
@@ -146,17 +149,48 @@ const NotationPlayer: React.FC = enhance(() => {
 
   const onVideoPlayerChange = useCallback(setVideoPlayer, [setVideoPlayer]);
 
-  const onVideoResize = useCallback((widthPx: number, heightPx: number) => {
-    setVideoHeightPx(heightPx);
+  const debouncedSetVideoHeightPx = useMemo(() => {
+    return debounce(setVideoHeightPx, RESIZE_DEBOUNCE_DURATION.ms, { leading: true, trailing: true });
   }, []);
+  const onVideoResize = useCallback(
+    (widthPx: number, heightPx: number) => {
+      debouncedSetVideoHeightPx(heightPx);
+    },
+    [debouncedSetVideoHeightPx]
+  );
+
+  const debouncedSetFretboardHeightPx = useMemo(() => {
+    return debounce(setFretboardHeightPx, RESIZE_DEBOUNCE_DURATION.ms, { leading: true, trailing: true });
+  }, []);
+  const onFretboardResize = useCallback(
+    ({ width, height }) => {
+      debouncedSetFretboardHeightPx(height);
+    },
+    [debouncedSetFretboardHeightPx]
+  );
 
   useNoOverflow(document.body);
   useNoUserSelect(document.body);
   useNoTouchAction(document.body);
 
-  const scrollContainerHeightPx = gtMd
-    ? innerHeight - HEADER_HEIGHT_PX
-    : innerHeight - HEADER_HEIGHT_PX - videoHeightPx;
+  const debouncedSetScrollContainerHeightPx = useMemo(() => {
+    return debounce(setScrollContainerHeightPx, RESIZE_DEBOUNCE_DURATION.ms, { leading: true, trailing: true });
+  }, []);
+  useEffect(() => {
+    const header = HEADER_HEIGHT_PX;
+    const controls = NOTATION_CONTROLS_HEIGHT_PX;
+    const fretboard = settings.isFretboardVisible ? fretboardHeightPx : 0;
+    const video = gtMd ? 0 : videoHeightPx;
+    const nextScrollContainerHeightPx = innerHeight - header - controls - fretboard - video;
+    debouncedSetScrollContainerHeightPx(nextScrollContainerHeightPx);
+  }, [
+    gtMd,
+    innerHeight,
+    fretboardHeightPx,
+    videoHeightPx,
+    settings.isFretboardVisible,
+    debouncedSetScrollContainerHeightPx,
+  ]);
 
   return (
     <div data-testid="notation-player">
@@ -206,9 +240,9 @@ const NotationPlayer: React.FC = enhance(() => {
             </LeftOrTopScrollContainer>
           </LeftOrTopCol>
 
-          <RightOrBottomCol $height={scrollContainerHeightPx} xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
+          <RightOrBottomCol xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
             {notation && (
-              <NotationScrollContainer ref={scrollContainerRef}>
+              <NotationScrollContainer $height={scrollContainerHeightPx} ref={scrollContainerRef}>
                 <SongName>{notation.songName}</SongName>
                 <ArtistName>by {notation.artistName}</ArtistName>
                 <TranscriberName>{notation.transcriber.username}</TranscriberName>
@@ -227,7 +261,12 @@ const NotationPlayer: React.FC = enhance(() => {
 
             {settings.isFretboardVisible && (
               <FretboardContainer>
-                <Fretboard tonic={tonic || undefined} options={fretboardOpts} styleMergeStrategy={MergeStrategy.Merge}>
+                <Fretboard
+                  tonic={tonic || undefined}
+                  options={fretboardOpts}
+                  styleMergeStrategy={MergeStrategy.Merge}
+                  onResize={onFretboardResize}
+                >
                   {measurePositions.map(({ string, fret }) => (
                     <Fretboard.Position
                       key={`measure-${string}-${fret}`}

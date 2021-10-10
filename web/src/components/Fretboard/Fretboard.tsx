@@ -19,6 +19,7 @@ type Props = {
   tonic?: string;
   tuning?: Tuning;
   styleMergeStrategy?: MergeStrategy;
+  onResize?: (dimmensions: { width: number; height: number }) => void;
 };
 
 type ChildComponents = {
@@ -32,11 +33,30 @@ export const Fretboard: React.FC<Props> & ChildComponents = (props) => {
   const tuning = props.tuning || DEFAULT_TUNING;
   const styleMergeStrategy = props.styleMergeStrategy || MergeStrategy.Merge;
   const figureRef = useRef<HTMLElement>(null);
+  const onResize = props.onResize;
 
   const fretboard = useFretboard(figureRef, tuning, options);
   const guitar = useGuitar(tuning);
   const styleTargets = useStyleTargets(fretboard, props.children, styleMergeStrategy);
   const styleFilters = useStyleFilters(styleTargets);
+
+  useEffect(() => {
+    const figure = figureRef.current;
+    if (!figure) {
+      return;
+    }
+    if (!onResize) {
+      return;
+    }
+    const reseizeObserver = new ResizeObserver((entries) => {
+      const { width, height } = entries[0].contentRect;
+      onResize({ width, height });
+    });
+    reseizeObserver.observe(figure);
+    return () => {
+      reseizeObserver.disconnect();
+    };
+  }, [figureRef, onResize]);
 
   useEffect(() => {
     const gradesByNote = helpers.getGradesByNote(tonic);
