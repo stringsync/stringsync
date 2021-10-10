@@ -2,6 +2,7 @@ import { IOSMDOptions } from 'opensheetmusicdisplay';
 import { AnchoredSelection } from '../../util/AnchoredSelection';
 import { EventBus } from '../EventBus';
 import { CursorSnapshot, SyncSettings } from './locator';
+import { Loop } from './loop';
 import {
   CursorPointerTarget,
   CursorSnapshotPointerTarget,
@@ -32,8 +33,10 @@ export type MusicDisplayEventBus = EventBus<{
   interactablemoved: {};
   loadended: {};
   loadstarted: {};
-  press: {};
   longpress: {};
+  loopactivated: { loop: Loop };
+  loopdeactivated: { loop: Loop };
+  press: {};
   measurelinechanged: {};
   rendered: {};
   nummeasureschanged: { numMeasures: number };

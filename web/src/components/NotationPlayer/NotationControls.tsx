@@ -35,6 +35,7 @@ import {
 } from './useNotationPlayerSettings';
 import { useScales } from './useScales';
 import { useSelectionLoop } from './useSelectionLoop';
+import { useSliderMarks } from './useSliderMarks';
 import { useTipFormatter } from './useTipFormatter';
 import { useVideoPlayerControls, VideoPlayerState } from './useVideoPlayerControls';
 import { useVideoPlayerCurrentTimeMs } from './useVideoPlayerCurrentTimeMs';
@@ -45,12 +46,16 @@ export const NOTATION_CONTROLS_HEIGHT_PX = 75;
 const Outer = styled.div`
   background: white;
   padding: 16px 16px;
-  width: 100%;
+  height: ${NOTATION_CONTROLS_HEIGHT_PX};
 `;
 
 const SliderOuter = styled.div`
   width: 100%;
   padding: 0 16px 0 16px;
+
+  .ant-slider-with-marks {
+    margin: inherit;
+  }
 `;
 
 const StyledButton = styled(Button)`
@@ -109,6 +114,7 @@ export const NotationControls: React.FC<Props> = ({
   const handleStyle = useMemo(() => ({ width: 21, height: 21, marginTop: -8 }), []);
   const musicDisplayScrollControls = useMusicDisplayScrollControls(musicDisplay, settings.isAutoscrollPreferred);
   const scales = useScales(musicDisplay);
+  const marks = useSliderMarks(musicDisplay, durationMs);
 
   // callbacks
 
@@ -237,6 +243,7 @@ export const NotationControls: React.FC<Props> = ({
             <SliderOuter>
               <Slider
                 step={0.01}
+                marks={marks}
                 handleStyle={handleStyle}
                 value={value}
                 tipFormatter={tipFormatter}

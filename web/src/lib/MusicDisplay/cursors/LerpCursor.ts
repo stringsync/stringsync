@@ -8,7 +8,7 @@ import { CursorSnapshot } from '../locator';
 import { MusicDisplayLocator } from '../locator/MusicDisplayLocator';
 import { CursorStyleType, CursorWrapper } from './types';
 
-const CURSOR_BOX_PADDING_PX = 50;
+const CURSOR_BOX_PADDING_PX = 30;
 const CURSOR_STYLE_TRANSITION_DURATION = Duration.ms(200);
 
 const DEFAULT_CURSOR_OPTS = [

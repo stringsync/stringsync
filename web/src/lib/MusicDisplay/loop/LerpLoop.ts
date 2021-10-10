@@ -59,6 +59,7 @@ export class LerpLoop implements Loop {
     this.update(this.selection.anchorValue);
     this.startCursor.show();
     this.endCursor.show();
+    this.imd.eventBus.dispatch('loopactivated', { loop: this });
   }
 
   deactivate() {
@@ -69,6 +70,7 @@ export class LerpLoop implements Loop {
     this.startCursor.clear();
     this.endCursor.clear();
     this.selectionRenderer.clear();
+    this.imd.eventBus.dispatch('loopdeactivated', { loop: this });
   }
 
   get timeMsRange() {
