@@ -1,13 +1,11 @@
 import { useEffect } from 'react';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { isTemporal } from '../../lib/MusicDisplay/pointer/pointerTypeAssert';
-import { MusicDisplayScrollControls } from './useMusicDisplayScrollControls';
 import { VideoPlayerControls } from './useVideoPlayerControls';
 
 export const useMusicDisplayClickEffect = (
   musicDisplay: MusicDisplay | null,
-  videoPlayerControls: VideoPlayerControls,
-  musicDisplayScrollControls: MusicDisplayScrollControls
+  videoPlayerControls: VideoPlayerControls
 ) => {
   useEffect(() => {
     if (!musicDisplay) {
@@ -31,5 +29,5 @@ export const useMusicDisplayClickEffect = (
     return () => {
       musicDisplay.eventBus.unsubscribe(...eventBusIds);
     };
-  }, [musicDisplay, videoPlayerControls, musicDisplayScrollControls]);
+  }, [musicDisplay, videoPlayerControls]);
 };

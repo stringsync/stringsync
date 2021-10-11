@@ -1,22 +1,21 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { MusicDisplay } from '../../lib/MusicDisplay';
+import { NotationPlayerSettings } from './useNotationPlayerSettings';
 
-export type MusicDisplayScrollControls = {
-  startPreferentialScrolling: () => void;
-};
-
-export const useMusicDisplayScrollControls = (musicDisplay: MusicDisplay | null, isAutoscrollPreferred: boolean) => {
-  const startPreferentialScrolling = useCallback(() => {
-    if (!musicDisplay) {
-      return;
-    }
-    if (isAutoscrollPreferred) {
-      musicDisplay.getScroller().startAutoScrolling();
-      musicDisplay.getCursor().scrollIntoView();
-    } else {
-      musicDisplay.getScroller().disable();
-    }
-  }, [musicDisplay, isAutoscrollPreferred]);
-
-  return useMemo(() => ({ startPreferentialScrolling }), [startPreferentialScrolling]);
+export const useMusicDisplayScrollControls = (musicDisplay: MusicDisplay | null, settings: NotationPlayerSettings) => {
+  return useMemo(() => {
+    return {
+      startPreferredScrolling: () => {
+        if (!musicDisplay) {
+          return;
+        }
+        if (settings.isAutoscrollPreferred) {
+          musicDisplay.getScroller().startAutoScrolling();
+          musicDisplay.getCursor().scrollIntoView();
+        } else {
+          musicDisplay.getScroller().disable();
+        }
+      },
+    };
+  }, [musicDisplay, settings.isAutoscrollPreferred]);
 };

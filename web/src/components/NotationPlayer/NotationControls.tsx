@@ -23,9 +23,8 @@ import { NotationDetail } from './NotationDetail';
 import { useMusicDisplayClickEffect } from './useMusicDisplayClickEffect';
 import { useMusicDisplayCursorInteractionEffects } from './useMusicDisplayCursorInteractionEffects';
 import { useMusicDisplayCursorSnapshot } from './useMusicDisplayCursorSnapshot';
-import { useMusicDisplayScrollBehaviorEffect } from './useMusicDisplayScrollBehaviorEffect';
-import { useMusicDisplayScrollBehaviorType } from './useMusicDisplayScrollBehaviorType';
 import { useMusicDisplayScrollControls } from './useMusicDisplayScrollControls';
+import { useMusicDisplayScrolling } from './useMusicDisplayScrolling';
 import { useMusicDisplaySelectionInteractionEffects } from './useMusicDisplaySelectionInteractionEffects';
 import {
   FretMarkerDisplay,
@@ -34,6 +33,7 @@ import {
   ScaleSelectionType,
 } from './useNotationPlayerSettings';
 import { useScales } from './useScales';
+import { useScrollBehaviorType } from './useScrollBehaviorType';
 import { useSelectionLoop } from './useSelectionLoop';
 import { useSliderMarks } from './useSliderMarks';
 import { useTipFormatter } from './useTipFormatter';
@@ -106,15 +106,15 @@ export const NotationControls: React.FC<Props> = ({
   const videoPlayerState = useVideoPlayerState(videoPlayer);
   const isPaused = videoPlayerState === VideoPlayerState.Paused;
   const isPlaying = videoPlayerState === VideoPlayerState.Playing;
-  const scrollBehaviorType = useMusicDisplayScrollBehaviorType(musicDisplay);
+  const scrollBehaviorType = useScrollBehaviorType(musicDisplay);
   const isNoopScrolling = scrollBehaviorType === ScrollBehaviorType.Noop;
   const cursorSnapshot = useMusicDisplayCursorSnapshot(musicDisplay);
   const tipFormatter = useTipFormatter(cursorSnapshot, durationMs);
   const value = durationMs === 0 ? 0 : (currentTimeMs / durationMs) * 100;
   const handleStyle = useMemo(() => ({ width: 21, height: 21, marginTop: -8 }), []);
-  const musicDisplayScrollControls = useMusicDisplayScrollControls(musicDisplay, settings.isAutoscrollPreferred);
   const scales = useScales(musicDisplay);
   const marks = useSliderMarks(musicDisplay, durationMs);
+  const scrollControls = useMusicDisplayScrollControls(musicDisplay, settings);
 
   // callbacks
 
@@ -178,8 +178,8 @@ export const NotationControls: React.FC<Props> = ({
   );
   const onAfterChange = useCallback(() => {
     videoPlayerControls.unsuspend();
-    musicDisplayScrollControls.startPreferentialScrolling();
-  }, [videoPlayerControls, musicDisplayScrollControls]);
+    scrollControls.startPreferredScrolling();
+  }, [videoPlayerControls, scrollControls]);
   const onAutoscrollDisabledClose = useCallback(() => {
     if (!musicDisplay) {
       return;
@@ -190,25 +190,14 @@ export const NotationControls: React.FC<Props> = ({
 
   // effects
 
+  useMusicDisplayScrolling(musicDisplay, scrollControls, videoPlayerState);
   useSelectionLoop(musicDisplay, currentTimeMs, isPlaying, videoPlayerControls);
-  useMusicDisplayScrollBehaviorEffect(musicDisplay);
-  useMusicDisplayCursorInteractionEffects(musicDisplay, videoPlayerControls, musicDisplayScrollControls);
-  useMusicDisplaySelectionInteractionEffects(musicDisplay, videoPlayerControls, musicDisplayScrollControls);
-  useMusicDisplayClickEffect(musicDisplay, videoPlayerControls, musicDisplayScrollControls);
+  useMusicDisplayCursorInteractionEffects(musicDisplay, videoPlayerControls);
+  useMusicDisplaySelectionInteractionEffects(musicDisplay, videoPlayerControls);
+  useMusicDisplayClickEffect(musicDisplay, videoPlayerControls);
   useEffect(() => {
     musicDisplay?.getCursor().update(currentTimeMs);
   }, [musicDisplay, currentTimeMs]);
-  useEffect(() => {
-    if (!musicDisplay) {
-      return;
-    }
-    musicDisplayScrollControls.startPreferentialScrolling();
-  }, [musicDisplay, settings.isAutoscrollPreferred, musicDisplayScrollControls]);
-  useEffect(() => {
-    if (musicDisplay && isPlaying) {
-      musicDisplayScrollControls.startPreferentialScrolling();
-    }
-  }, [isPlaying, musicDisplay, musicDisplayScrollControls]);
   useEffect(() => {
     if (settings.scaleSelectionType !== ScaleSelectionType.Dynamic) {
       return;

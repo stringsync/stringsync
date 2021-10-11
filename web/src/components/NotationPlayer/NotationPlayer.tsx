@@ -24,9 +24,9 @@ import { NotationControls, NOTATION_CONTROLS_HEIGHT_PX } from './NotationControl
 import { SuggestedNotations } from './SuggestedNotations';
 import { useMeasurePositions } from './useMeasurePositions';
 import { useMusicDisplayCursorSnapshot } from './useMusicDisplayCursorSnapshot';
-import { useMusicDisplayScrollBehaviorType } from './useMusicDisplayScrollBehaviorType';
 import { FretMarkerDisplay, ScaleSelectionType, useNotationPlayerSettings } from './useNotationPlayerSettings';
 import { usePressedPositions } from './usePressedPositions';
+import { useScrollBehaviorType } from './useScrollBehaviorType';
 import { useTonic } from './useTonic';
 
 const RESIZE_DEBOUNCE_DURATION = Duration.ms(500);
@@ -110,7 +110,7 @@ const NotationPlayer: React.FC = enhance(() => {
   const [fretboardHeightPx, setFretboardHeightPx] = useState(0);
   const [scrollContainerHeightPx, setScrollContainerHeightPx] = useState(() => innerHeight - HEADER_HEIGHT_PX);
   const [settings, settingsApi] = useNotationPlayerSettings();
-  const scrollBehaviorType = useMusicDisplayScrollBehaviorType(musicDisplay);
+  const scrollBehaviorType = useScrollBehaviorType(musicDisplay);
   const isTouchScrollingEnabled = scrollBehaviorType !== ScrollBehaviorType.Manual;
 
   const params = useParams<{ id: string }>();

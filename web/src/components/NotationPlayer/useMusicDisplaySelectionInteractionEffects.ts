@@ -2,13 +2,11 @@ import { useEffect } from 'react';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { SelectionEdge } from '../../lib/MusicDisplay/locator';
 import { isSelectionPointerTarget } from '../../lib/MusicDisplay/pointer/pointerTypeAssert';
-import { MusicDisplayScrollControls } from './useMusicDisplayScrollControls';
 import { VideoPlayerControls } from './useVideoPlayerControls';
 
 export const useMusicDisplaySelectionInteractionEffects = (
   musicDisplay: MusicDisplay | null,
-  videoPlayerControls: VideoPlayerControls,
-  scrollControls: MusicDisplayScrollControls
+  videoPlayerControls: VideoPlayerControls
 ) => {
   useEffect(() => {
     if (!musicDisplay) {
@@ -18,7 +16,6 @@ export const useMusicDisplaySelectionInteractionEffects = (
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
         videoPlayerControls.suspend();
-        musicDisplay.getScroller().startManualScrolling();
         if (isSelectionPointerTarget(payload.src)) {
           const timeMsRange = musicDisplay.getLoop().timeMsRange;
           const newAnchorValue = payload.src.edge === SelectionEdge.Start ? timeMsRange.end : timeMsRange.start;
@@ -31,7 +28,6 @@ export const useMusicDisplaySelectionInteractionEffects = (
       }),
 
       musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
-        musicDisplay.getScroller().updateScrollIntent(payload.dst.position.relY);
         musicDisplay.getLoop().update(payload.selection.movingValue);
       }),
 
@@ -39,7 +35,6 @@ export const useMusicDisplaySelectionInteractionEffects = (
         if (!musicDisplay.getLoop().timeMsRange.contains(musicDisplay.getCursor().timeMs)) {
           videoPlayerControls.seek(musicDisplay.getLoop().timeMsRange.start);
         }
-        scrollControls.startPreferentialScrolling();
         videoPlayerControls.unsuspend();
       }),
     ];
@@ -47,5 +42,5 @@ export const useMusicDisplaySelectionInteractionEffects = (
     return () => {
       musicDisplay.eventBus.unsubscribe(...eventBusIds);
     };
-  }, [musicDisplay, videoPlayerControls, scrollControls]);
+  }, [musicDisplay, videoPlayerControls]);
 };

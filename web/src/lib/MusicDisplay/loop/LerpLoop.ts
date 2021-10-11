@@ -9,12 +9,12 @@ import { Loop } from './types';
 export class LerpLoop implements Loop {
   static create(imd: InternalMusicDisplay, locator: MusicDisplayLocator) {
     const startCursor = LerpCursor.create(imd, locator.clone(), {
-      cursorOptions: { color: '#e3e362', alpha: 1 },
+      cursorOptions: { color: '#e3e362', alpha: 0.7 },
       isNoteheadColoringEnabled: false,
     });
 
     const endCursor = LerpCursor.create(imd, locator.clone(), {
-      cursorOptions: { color: '#e3e362', alpha: 1 },
+      cursorOptions: { color: '#e3e362', alpha: 0.7 },
       isNoteheadColoringEnabled: false,
     });
 
