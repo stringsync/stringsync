@@ -14,15 +14,11 @@ export const useMusicDisplayClickEffect = (
 
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('click', (payload) => {
+        musicDisplay.getLoop().deactivate();
         if (!isTemporal(payload.src)) {
           return;
         }
         videoPlayerControls.seek(payload.src.timeMs);
-
-        const loop = musicDisplay.getLoop();
-        if (loop.isActive && !loop.timeMsRange.contains(payload.src.timeMs)) {
-          musicDisplay.getLoop().deactivate();
-        }
       }),
     ];
 

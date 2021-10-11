@@ -18,11 +18,10 @@ export const useMusicDisplaySelectionInteractionEffects = (
         videoPlayerControls.suspend();
         if (isSelectionPointerTarget(payload.src)) {
           const timeMsRange = musicDisplay.getLoop().timeMsRange;
-          const newAnchorValue = payload.src.edge === SelectionEdge.Start ? timeMsRange.end : timeMsRange.start;
-          musicDisplay.getLoop().anchor(newAnchorValue);
+          const nextAnchorValue = payload.src.edge === SelectionEdge.Start ? timeMsRange.end : timeMsRange.start;
+          musicDisplay.getLoop().anchor(nextAnchorValue);
         } else {
           musicDisplay.getLoop().anchor(payload.selection.anchorValue);
-          musicDisplay.getLoop().update(payload.selection.movingValue);
         }
         musicDisplay.getLoop().activate();
       }),
