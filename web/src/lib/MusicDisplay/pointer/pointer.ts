@@ -2,7 +2,6 @@ import { merge } from 'lodash';
 import { EventFrom, interpret } from 'xstate';
 import { assign, choose } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
-import { AnchoredSelection } from '../../../util/AnchoredSelection';
 import { Box } from '../../../util/Box';
 import { Duration } from '../../../util/Duration';
 import { MusicDisplayEventBus } from '../types';
@@ -12,7 +11,6 @@ import {
   isNonePointerTarget,
   isPositional,
   isSelectionPointerTarget,
-  isTemporal,
 } from './pointerTypeAssert';
 import { NonePointerTarget, PointerContext, PointerPosition, PointerTarget, PointerTargetType } from './types';
 
@@ -41,7 +39,6 @@ const INITIAL_POINTER_CONTEXT: PointerContext = {
   prevDownTarget: NONE_POINTER_TARGET,
   hoverTarget: NONE_POINTER_TARGET,
   prevHoverTarget: NONE_POINTER_TARGET,
-  selection: null,
 };
 
 // Moving this many pixels past the origin signals the intention to select.
@@ -208,27 +205,6 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
         resetHoverTarget: assign<PointerContext, PointerEvent>({
           hoverTarget: () => merge({}, INITIAL_POINTER_CONTEXT.hoverTarget),
         }),
-        startSelection: assign<PointerContext, PointerEvent>({
-          selection: (context, event) => {
-            if (isCursorSnapshotPointerTarget(event.target)) {
-              return AnchoredSelection.init(event.target.timeMs);
-            }
-            if (isSelectionPointerTarget(event.target)) {
-              return event.target.selection;
-            }
-            return context.selection;
-          },
-        }),
-        updateSelection: assign<PointerContext, PointerEvent>({
-          selection: (context, event) => {
-            return isTemporal(event.target) && context.selection
-              ? context.selection.update(event.target.timeMs)
-              : context.selection;
-          },
-        }),
-        endSelection: assign<PointerContext, PointerEvent>({
-          selection: null,
-        }),
         dispatchClick: (context, event) => {
           eventBus.dispatch('click', { src: context.downTarget });
         },
@@ -258,18 +234,13 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
           }
         },
         dispatchSelectStarted: (context) => {
-          if (context.selection) {
-            eventBus.dispatch('selectionstarted', { src: context.downTarget, selection: context.selection });
-          }
+          eventBus.dispatch('selectionstarted', { src: context.downTarget });
         },
         dispatchSelectUpdated: (context, event) => {
-          if (context.selection) {
-            eventBus.dispatch('selectionupdated', {
-              src: context.downTarget,
-              dst: event.target,
-              selection: context.selection,
-            });
-          }
+          eventBus.dispatch('selectionupdated', {
+            src: context.downTarget,
+            dst: event.target,
+          });
         },
         dispatchSelectEnded: (context, event) => {
           eventBus.dispatch('selectionended', { src: context.downTarget, dst: event.target });

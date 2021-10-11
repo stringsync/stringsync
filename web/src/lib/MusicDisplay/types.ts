@@ -1,5 +1,4 @@
 import { IOSMDOptions } from 'opensheetmusicdisplay';
-import { AnchoredSelection } from '../../util/AnchoredSelection';
 import { EventBus } from '../EventBus';
 import { CursorSnapshot, SyncSettings } from './locator';
 import { Loop } from './loop';
@@ -50,7 +49,7 @@ export type MusicDisplayEventBus = EventBus<{
   scrollbehaviorchanged: { type: ScrollBehaviorType };
   selectionentered: { src: SelectionPointerTarget };
   selectionexited: { src: SelectionPointerTarget };
-  selectionstarted: { src: PointerTarget; selection: AnchoredSelection };
-  selectionupdated: { src: PointerTarget; dst: PointerTarget; selection: AnchoredSelection };
+  selectionstarted: { src: PointerTarget };
+  selectionupdated: { src: PointerTarget; dst: PointerTarget };
   selectionended: { src: PointerTarget; dst: PointerTarget };
 }>;

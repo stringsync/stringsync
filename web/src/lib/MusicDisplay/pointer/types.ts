@@ -52,5 +52,4 @@ export type PointerContext = {
   prevDownTarget: PointerTarget;
   hoverTarget: PointerTarget;
   prevHoverTarget: PointerTarget;
-  selection: AnchoredSelection | null;
 };

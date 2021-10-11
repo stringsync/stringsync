@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { SelectionEdge } from '../../lib/MusicDisplay/locator';
-import { isSelectionPointerTarget } from '../../lib/MusicDisplay/pointer/pointerTypeAssert';
+import { isSelectionPointerTarget, isTemporal } from '../../lib/MusicDisplay/pointer/pointerTypeAssert';
 import { VideoPlayerControls } from './useVideoPlayerControls';
 
 export const useMusicDisplaySelectionInteractionEffects = (
@@ -16,18 +16,23 @@ export const useMusicDisplaySelectionInteractionEffects = (
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
         videoPlayerControls.suspend();
-        if (isSelectionPointerTarget(payload.src)) {
-          const timeMsRange = musicDisplay.getLoop().timeMsRange;
-          const nextAnchorValue = payload.src.edge === SelectionEdge.Start ? timeMsRange.end : timeMsRange.start;
-          musicDisplay.getLoop().anchor(nextAnchorValue);
-        } else {
-          musicDisplay.getLoop().anchor(payload.selection.anchorValue);
+
+        const loop = musicDisplay.getLoop();
+        if (isSelectionPointerTarget(payload.src) && loop.isActive) {
+          const nextAnchorValue =
+            payload.src.edge === SelectionEdge.Start ? loop.timeMsRange.end : loop.timeMsRange.start;
+          loop.anchor(nextAnchorValue);
+        } else if (isTemporal(payload.src)) {
+          loop.anchor(payload.src.timeMs);
         }
-        musicDisplay.getLoop().activate();
+
+        loop.activate();
       }),
 
       musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
-        musicDisplay.getLoop().update(payload.selection.movingValue);
+        if (isTemporal(payload.dst)) {
+          musicDisplay.getLoop().update(payload.dst.timeMs);
+        }
       }),
 
       musicDisplay.eventBus.subscribe('selectionended', () => {
