@@ -2,9 +2,13 @@ import { useMemo } from 'react';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { NotationPlayerSettings } from './useNotationPlayerSettings';
 
+export type ScrollControls = {
+  startPreferredScrolling: () => void;
+};
+
 export const useMusicDisplayScrollControls = (musicDisplay: MusicDisplay | null, settings: NotationPlayerSettings) => {
-  return useMemo(() => {
-    return {
+  return useMemo(
+    () => ({
       startPreferredScrolling: () => {
         if (!musicDisplay) {
           return;
@@ -16,6 +20,7 @@ export const useMusicDisplayScrollControls = (musicDisplay: MusicDisplay | null,
           musicDisplay.getScroller().disable();
         }
       },
-    };
-  }, [musicDisplay, settings.isAutoscrollPreferred]);
+    }),
+    [musicDisplay, settings.isAutoscrollPreferred]
+  );
 };

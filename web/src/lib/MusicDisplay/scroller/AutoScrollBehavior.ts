@@ -101,10 +101,6 @@ export class AutoScrollBehavior implements ScrollBehavior {
   }
 
   private scrollToCursor = () => {
-    if (this.isAutoScrolling) {
-      return;
-    }
-
     const entry = this.lastEntries.length === 1 ? first(this.lastEntries)! : null;
     const analysis = EntryAnalysis.compute(entry);
 

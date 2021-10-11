@@ -1,4 +1,3 @@
-import { VerticalLeftOutlined, VerticalRightOutlined } from '@ant-design/icons';
 import { SliderMarks } from 'antd/lib/slider';
 import { useEffect, useState } from 'react';
 import { MusicDisplay } from '../../lib/MusicDisplay';
@@ -16,8 +15,8 @@ export const useSliderMarks = (musicDisplay: MusicDisplay | null, durationMs: nu
       const start = (timeMsRange.start / durationMs) * 100;
       const end = (timeMsRange.end / durationMs) * 100;
       return {
-        [start]: { label: <VerticalLeftOutlined />, style: { fontSize: '0.75em' } },
-        [end]: { label: <VerticalRightOutlined />, style: { fontSize: '0.75em' } },
+        [start]: { label: '||:', style: { fontSize: '0.75em' } },
+        [end]: { label: ':||', style: { fontSize: '0.75em' } },
       };
     };
 

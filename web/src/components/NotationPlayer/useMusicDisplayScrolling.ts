@@ -1,10 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { MusicDisplay } from '../../lib/MusicDisplay';
+import { isTemporal } from '../../lib/MusicDisplay/pointer/pointerTypeAssert';
+import { ScrollControls } from './useMusicDisplayScrollControls';
 import { VideoPlayerState } from './useVideoPlayerState';
-
-export type ScrollControls = {
-  startPreferredScrolling: () => void;
-};
 
 export const useMusicDisplayScrolling = (
   musicDisplay: MusicDisplay | null,
@@ -72,12 +70,21 @@ export const useMusicDisplayScrolling = (
       musicDisplay.eventBus.subscribe('measurelinechanged', () => {
         musicDisplay.getCursor().scrollIntoView();
       }),
+      musicDisplay.eventBus.subscribe('click', (payload) => {
+        if (videoPlayerState !== VideoPlayerState.Playing) {
+          return;
+        }
+        if (!isTemporal(payload.src)) {
+          return;
+        }
+        scrollControls.startPreferredScrolling();
+      }),
     ];
 
     return () => {
       musicDisplay.eventBus.unsubscribe(...eventBusIds);
     };
-  }, [musicDisplay, scrollControls]);
+  }, [musicDisplay, scrollControls, videoPlayerState]);
 
   return scrollControls;
 };
