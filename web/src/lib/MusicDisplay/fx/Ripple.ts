@@ -3,24 +3,41 @@ import { theme } from '../../../theme';
 import { Duration } from '../../../util/Duration';
 import { VisualFx } from './types';
 
-const CIRCLE_INITIAL_RADIUS_PX = 36;
-const CIRCLE_FINAL_RADIUS_PX = 48;
-const CIRCLE_FILL_OPACITY = 0;
-const CIRCLE_BORDER_THICKNESS_PX = 4;
-const CIRCLE_BORDER_COLOR = theme['@primary-color'];
-const CIRCLE_INITIAL_BORDER_OPACITY = 0.7;
-const CIRCLE_FINAL_BORDER_OPACITY = 0;
-const FADE_DURATION = Duration.ms(500);
+export type RippleOpts = {
+  initialRadius: number;
+  finalRadius: number;
+  fillOpacity: number;
+  borderThicknessPx: number;
+  borderColor: string;
+  initialBorderOpacity: number;
+  finalBorderOpacity: number;
+  fadeDuration: Duration;
+};
 
 export class Ripple implements VisualFx {
+  static getDefaultOpts() {
+    return {
+      initialRadius: 36,
+      finalRadius: 48,
+      fillOpacity: 0,
+      borderThicknessPx: 4,
+      borderColor: theme['@primary-color'],
+      initialBorderOpacity: 0.7,
+      finalBorderOpacity: 0,
+      fadeDuration: Duration.ms(500),
+    };
+  }
+
   private x: number;
   private y: number;
   private svg: SVGElement;
+  private opts: RippleOpts;
 
-  constructor(x: number, y: number, svg: SVGElement) {
+  constructor(x: number, y: number, svg: SVGElement, opts?: Partial<RippleOpts>) {
     this.x = x;
     this.y = y;
     this.svg = svg;
+    this.opts = { ...Ripple.getDefaultOpts(), ...opts };
   }
 
   render() {
@@ -28,11 +45,11 @@ export class Ripple implements VisualFx {
     this.svg.appendChild(circle);
     $(circle).animate(
       {
-        opacity: CIRCLE_FINAL_BORDER_OPACITY,
-        r: `${CIRCLE_FINAL_RADIUS_PX}px`,
+        opacity: this.opts.finalBorderOpacity,
+        r: `${this.opts.finalRadius}px`,
       },
       {
-        duration: FADE_DURATION.ms,
+        duration: this.opts.fadeDuration.ms,
         always: () => {
           circle.remove();
         },
@@ -46,11 +63,11 @@ export class Ripple implements VisualFx {
     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     circle.setAttribute('cx', this.x.toString());
     circle.setAttribute('cy', this.y.toString());
-    circle.setAttribute('r', CIRCLE_INITIAL_RADIUS_PX.toString());
-    circle.setAttribute('stroke', CIRCLE_BORDER_COLOR);
-    circle.setAttribute('stroke-width', CIRCLE_BORDER_THICKNESS_PX.toString());
-    circle.setAttribute('stroke-opacity', CIRCLE_INITIAL_BORDER_OPACITY.toString());
-    circle.setAttribute('fill-opacity', CIRCLE_FILL_OPACITY.toString());
+    circle.setAttribute('r', this.opts.initialRadius.toString());
+    circle.setAttribute('stroke', this.opts.borderColor);
+    circle.setAttribute('stroke-width', this.opts.borderThicknessPx.toString());
+    circle.setAttribute('stroke-opacity', this.opts.initialBorderOpacity.toString());
+    circle.setAttribute('fill-opacity', this.opts.fillOpacity.toString());
     circle.setAttribute('pointer-events', 'none');
     return circle;
   }

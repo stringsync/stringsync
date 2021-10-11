@@ -20,8 +20,8 @@ export type PointerEvent = EventFrom<typeof model>;
 export type PointerMachine = ReturnType<typeof createMachine>;
 export type PointerService = ReturnType<typeof createService>;
 
-export const LONG_PRESS_DURATION = Duration.ms(1000);
-export const DOWN_GRACE_DURATION = Duration.ms(75);
+export const LONG_PRESS_DURATION = Duration.ms(750);
+export const DOWN_GRACE_DURATION = Duration.ms(30);
 export const IDLE_DURATION = Duration.ms(500);
 
 const NULL_POINTER_POSITION: PointerPosition = Object.freeze({
@@ -150,14 +150,9 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
               on: {
                 mouseup: { target: '#pointer.up.active', actions: ['dispatchClick', 'resetDownTarget'] },
                 mousemove: [
-                  { cond: 'hasSelectableTarget', target: 'select', actions: ['assignHoverTarget'] },
+                  { cond: 'hasSelectableTarget', target: 'dragselect', actions: ['assignHoverTarget'] },
                   { cond: 'hasDraggableTarget', target: 'drag', actions: ['assignHoverTarget'] },
-                  { cond: 'isStartingSelection', target: 'select', actions: ['assignHoverTarget'] },
-                ],
-                touchmove: [
-                  { cond: 'hasSelectableTarget', target: 'select', actions: ['assignHoverTarget'] },
-                  { cond: 'hasDraggableTarget', target: 'drag', actions: ['assignHoverTarget'] },
-                  { cond: 'isStartingSelection', target: 'select', actions: ['assignHoverTarget'] },
+                  { cond: 'isStartingSelection', target: 'dragselect', actions: ['assignHoverTarget'] },
                 ],
                 touchend: { target: '#pointer.up.active', actions: ['dispatchClick', 'resetDownTarget'] },
               },
@@ -174,26 +169,14 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
               on: {
                 mouseup: { target: '#pointer.up.active', actions: ['resetDownTarget'] },
                 mousemove: { actions: ['assignHoverTarget', 'dispatchDragUpdated'] },
-                touchend: { target: '#pointer.up.active', actions: ['resetDownTarget'] },
-                touchmove: { actions: ['assignHoverTarget', 'dispatchDragUpdated'] },
               },
               exit: ['dispatchDragEnded'],
             },
-            select: {
+            dragselect: {
               entry: ['startSelection', 'dispatchSelectStarted'],
               on: {
                 mouseup: { target: '#pointer.up.active', actions: ['resetDownTarget'] },
                 mousemove: {
-                  actions: [
-                    'assignHoverTarget',
-                    'updateSelection',
-                    'dispatchSelectUpdated',
-                    choose([{ cond: 'didEnterSelection', actions: ['dispatchSelectEntered'] }]),
-                    choose([{ cond: 'didExitSelection', actions: ['dispatchSelectExited'] }]),
-                  ],
-                },
-                touchend: { target: '#pointer.up.active', actions: ['resetDownTarget'] },
-                touchmove: {
                   actions: [
                     'assignHoverTarget',
                     'updateSelection',
@@ -311,8 +294,8 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
             eventBus.dispatch('cursorsnapshotexited', { src: context.prevHoverTarget });
           }
         },
-        dispatchLongPress: () => {
-          eventBus.dispatch('longpress', {});
+        dispatchLongPress: (context) => {
+          eventBus.dispatch('longpress', { src: context.downTarget });
         },
         dispatchNoTargetEntered: (context, event) => {
           if (isNonePointerTarget(event.target)) {

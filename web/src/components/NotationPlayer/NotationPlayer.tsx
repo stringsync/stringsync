@@ -12,6 +12,7 @@ import { HEADER_HEIGHT_PX } from '../../hocs/withLayout/DefaultLayout';
 import { useNoOverflow } from '../../hooks/useNoOverflow';
 import { useNotation } from '../../hooks/useNotation';
 import { useNoTouchAction } from '../../hooks/useNoTouchAction';
+import { useNoTouchCallout } from '../../hooks/useNoTouchCallout';
 import { useNoUserSelect } from '../../hooks/useNoUserSelect';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { ScrollBehaviorType } from '../../lib/MusicDisplay/scroller';
@@ -54,7 +55,8 @@ const NotationScrollContainer = styled.div<{ $height: number; $isScrollingEnable
   background: white;
   overflow-x: hidden;
   overflow-y: ${(props) => (props.$isScrollingEnabled ? 'auto' : 'hidden')};
-  height: ${(props) => props.$height}px;
+  height: 100%;
+  max-height: ${(props) => props.$height}px;
   transition: height 500ms;
 `;
 
@@ -176,6 +178,7 @@ const NotationPlayer: React.FC = enhance(() => {
   useNoOverflow(document.body);
   useNoUserSelect(document.body);
   useNoTouchAction(document.body);
+  useNoTouchCallout(document.body);
 
   const debouncedSetScrollContainerHeightPx = useMemo(() => {
     return debounce(setScrollContainerHeightPx, RESIZE_DEBOUNCE_DURATION.ms, { leading: true, trailing: true });

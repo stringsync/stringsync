@@ -33,10 +33,10 @@ export type MusicDisplayEventBus = EventBus<{
   interactablemoved: {};
   loadended: {};
   loadstarted: {};
-  longpress: {};
+  longpress: { src: PointerTarget };
   loopactivated: { loop: Loop };
   loopdeactivated: { loop: Loop };
-  press: {};
+  press: { src: PointerTarget };
   measurelinechanged: {};
   rendered: {};
   nummeasureschanged: { numMeasures: number };
