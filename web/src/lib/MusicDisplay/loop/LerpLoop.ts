@@ -11,15 +11,11 @@ export class LerpLoop implements Loop {
     const startCursor = LerpCursor.create(imd, locator.clone(), {
       cursorOptions: { color: '#e3e362', alpha: 1 },
       isNoteheadColoringEnabled: false,
-      defaultStyle: { opacity: '0' },
-      interactingStyle: { opacity: '0.75' },
     });
 
     const endCursor = LerpCursor.create(imd, locator.clone(), {
       cursorOptions: { color: '#e3e362', alpha: 1 },
       isNoteheadColoringEnabled: false,
-      defaultStyle: { opacity: '0' },
-      interactingStyle: { opacity: '0.75' },
     });
 
     const selectionRenderer = SelectionRenderer.create(imd, locator.clone());

@@ -105,7 +105,9 @@ export class LerpCursor implements CursorWrapper {
     const defaultStyleProps = Object.keys(defaultStyle);
     const interactingStyleProps = Object.keys(this.opts.interactingStyle || {});
     const props = uniq([...defaultStyleProps, ...interactingStyleProps]).join(', ');
-    $element.css('transition', `${props} ${CURSOR_STYLE_TRANSITION_DURATION.ms}ms`);
+    if (props) {
+      $element.css('transition', `${props} ${CURSOR_STYLE_TRANSITION_DURATION.ms}ms`);
+    }
 
     this.lagger.resetIterator();
     this.leader.resetIterator();
