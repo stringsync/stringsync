@@ -14,6 +14,7 @@ import { useNotation } from '../../hooks/useNotation';
 import { useNoTouchAction } from '../../hooks/useNoTouchAction';
 import { useNoUserSelect } from '../../hooks/useNoUserSelect';
 import { MusicDisplay } from '../../lib/MusicDisplay';
+import { ScrollBehaviorType } from '../../lib/MusicDisplay/scroller';
 import { compose } from '../../util/compose';
 import { Duration } from '../../util/Duration';
 import { Fretboard, FretboardOptions, MergeStrategy, PositionFilterParams, PositionStyle } from '../Fretboard';
@@ -23,6 +24,7 @@ import { NotationControls, NOTATION_CONTROLS_HEIGHT_PX } from './NotationControl
 import { SuggestedNotations } from './SuggestedNotations';
 import { useMeasurePositions } from './useMeasurePositions';
 import { useMusicDisplayCursorSnapshot } from './useMusicDisplayCursorSnapshot';
+import { useMusicDisplayScrollBehaviorType } from './useMusicDisplayScrollBehaviorType';
 import { FretMarkerDisplay, ScaleSelectionType, useNotationPlayerSettings } from './useNotationPlayerSettings';
 import { usePressedPositions } from './usePressedPositions';
 import { useTonic } from './useTonic';
@@ -48,10 +50,10 @@ const LeftOrTopCol = styled(Col)`
   overflow: hidden;
 `;
 
-const NotationScrollContainer = styled.div<{ $height: number }>`
+const NotationScrollContainer = styled.div<{ $height: number; $isScrollingEnabled: boolean }>`
   background: white;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: ${(props) => (props.$isScrollingEnabled ? 'auto' : 'hidden')};
   height: ${(props) => props.$height}px;
   transition: height 500ms;
 `;
@@ -108,6 +110,8 @@ const NotationPlayer: React.FC = enhance(() => {
   const [fretboardHeightPx, setFretboardHeightPx] = useState(0);
   const [scrollContainerHeightPx, setScrollContainerHeightPx] = useState(() => innerHeight - HEADER_HEIGHT_PX);
   const [settings, settingsApi] = useNotationPlayerSettings();
+  const scrollBehaviorType = useMusicDisplayScrollBehaviorType(musicDisplay);
+  const isTouchScrollingEnabled = scrollBehaviorType !== ScrollBehaviorType.Manual;
 
   const params = useParams<{ id: string }>();
   const [notation, errors, isLoading] = useNotation(params.id);
@@ -242,7 +246,11 @@ const NotationPlayer: React.FC = enhance(() => {
 
           <RightOrBottomCol xs={24} sm={24} md={24} lg={16} xl={16} xxl={16}>
             {notation && (
-              <NotationScrollContainer $height={scrollContainerHeightPx} ref={scrollContainerRef}>
+              <NotationScrollContainer
+                ref={scrollContainerRef}
+                $height={scrollContainerHeightPx}
+                $isScrollingEnabled={isTouchScrollingEnabled}
+              >
                 <SongName>{notation.songName}</SongName>
                 <ArtistName>by {notation.artistName}</ArtistName>
                 <TranscriberName>{notation.transcriber.username}</TranscriberName>

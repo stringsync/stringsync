@@ -154,6 +154,11 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
                   { cond: 'hasDraggableTarget', target: 'drag', actions: ['assignHoverTarget'] },
                   { cond: 'isStartingSelection', target: 'select', actions: ['assignHoverTarget'] },
                 ],
+                touchmove: [
+                  { cond: 'hasSelectableTarget', target: 'select', actions: ['assignHoverTarget'] },
+                  { cond: 'hasDraggableTarget', target: 'drag', actions: ['assignHoverTarget'] },
+                  { cond: 'isStartingSelection', target: 'select', actions: ['assignHoverTarget'] },
+                ],
                 touchend: { target: '#pointer.up.active', actions: ['dispatchClick', 'resetDownTarget'] },
               },
             },
@@ -169,6 +174,8 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
               on: {
                 mouseup: { target: '#pointer.up.active', actions: ['resetDownTarget'] },
                 mousemove: { actions: ['assignHoverTarget', 'dispatchDragUpdated'] },
+                touchend: { target: '#pointer.up.active', actions: ['resetDownTarget'] },
+                touchmove: { actions: ['assignHoverTarget', 'dispatchDragUpdated'] },
               },
               exit: ['dispatchDragEnded'],
             },
@@ -177,6 +184,16 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
               on: {
                 mouseup: { target: '#pointer.up.active', actions: ['resetDownTarget'] },
                 mousemove: {
+                  actions: [
+                    'assignHoverTarget',
+                    'updateSelection',
+                    'dispatchSelectUpdated',
+                    choose([{ cond: 'didEnterSelection', actions: ['dispatchSelectEntered'] }]),
+                    choose([{ cond: 'didExitSelection', actions: ['dispatchSelectExited'] }]),
+                  ],
+                },
+                touchend: { target: '#pointer.up.active', actions: ['resetDownTarget'] },
+                touchmove: {
                   actions: [
                     'assignHoverTarget',
                     'updateSelection',
