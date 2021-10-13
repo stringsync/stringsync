@@ -7,7 +7,7 @@ import {
   isTemporal,
 } from '../../lib/MusicDisplay/pointer/pointerTypeAssert';
 import { AnchoredSelection } from '../../util/AnchoredSelection';
-import { NumberRange } from '../../util/NumberRange';
+import * as helpers from './helpers';
 import { VideoPlayerControls } from './useVideoPlayerControls';
 
 export const useMusicDisplaySelection = (
@@ -23,25 +23,24 @@ export const useMusicDisplaySelection = (
 
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('longpress', (payload) => {
-        const loop = musicDisplay.getLoop();
-
-        // TODO(jared) Just make this highlight/unlight measures.
-        if (isTemporal(payload.src) && loop.isActive) {
-          // Change the selection based on the distance from the midpoint
-
-          const timeMs = payload.src.timeMs;
-          const timeMsRange = loop.timeMsRange;
-          const nextTimeMsRange =
-            timeMs < timeMsRange.midpoint
-              ? NumberRange.from(timeMs).to(timeMsRange.end)
-              : NumberRange.from(timeMsRange.start).to(timeMs);
-
-          loop.update(nextTimeMsRange);
-        } else if (isCursorSnapshotPointerTarget(payload.src)) {
-          loop.update(payload.src.cursorSnapshot.getMeasureTimeMsRange());
+        if (!isCursorSnapshotPointerTarget(payload.src)) {
+          return;
         }
 
-        loop.activate();
+        const loop = musicDisplay.getLoop();
+        const timeMs = payload.src.timeMs;
+        const currentTimeMsRange = loop.timeMsRange;
+        const longPressedTimeMsRange = payload.src.cursorSnapshot.getMeasureTimeMsRange();
+
+        if (loop.isActive) {
+          const nextTimeMsRange = currentTimeMsRange.contains(timeMs)
+            ? longPressedTimeMsRange
+            : helpers.extendRanges(currentTimeMsRange, longPressedTimeMsRange);
+          loop.update(nextTimeMsRange);
+        } else {
+          loop.update(longPressedTimeMsRange);
+          loop.activate();
+        }
       }),
       musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
         videoPlayerControls.suspend();
