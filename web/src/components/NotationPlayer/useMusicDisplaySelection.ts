@@ -25,6 +25,7 @@ export const useMusicDisplaySelection = (
       musicDisplay.eventBus.subscribe('longpress', (payload) => {
         const loop = musicDisplay.getLoop();
 
+        // TODO(jared) Just make this highlight/unlight measures.
         if (isTemporal(payload.src) && loop.isActive) {
           // Change the selection based on the distance from the midpoint
 

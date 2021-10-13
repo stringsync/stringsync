@@ -26,8 +26,10 @@ export const useSliderMarks = (musicDisplay: MusicDisplay | null, durationMs: nu
         setSliderMarks(nextSliderMarks);
       }),
       musicDisplay.eventBus.subscribe('loopupdated', (payload) => {
-        const nextSliderMarks = getSliderMarks(payload.loop.timeMsRange);
-        setSliderMarks(nextSliderMarks);
+        if (payload.loop.isActive) {
+          const nextSliderMarks = getSliderMarks(payload.loop.timeMsRange);
+          setSliderMarks(nextSliderMarks);
+        }
       }),
       musicDisplay.eventBus.subscribe('loopdeactivated', (payload) => {
         setSliderMarks(undefined);
