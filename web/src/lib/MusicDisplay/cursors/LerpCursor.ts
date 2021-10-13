@@ -76,6 +76,7 @@ export class LerpCursor implements CursorWrapper {
 
   private locator: MusicDisplayLocator | null = null;
   private noteColorOpId = Symbol();
+  private prevLerpX: number = 0;
 
   private constructor(imd: InternalMusicDisplay, cursors: Cursors, opts: LerpCursorOpts) {
     this.imd = imd;
@@ -172,6 +173,7 @@ export class LerpCursor implements CursorWrapper {
     if (this.lerper.hidden) {
       this.lerper.show();
     }
+    this.updateLerperPosition(this.prevLerpX);
   }
 
   clear() {
@@ -273,6 +275,7 @@ export class LerpCursor implements CursorWrapper {
   }
 
   private updateLerperPosition(x: number) {
+    this.prevLerpX = x;
     this.element.style.left = `${x}px`;
   }
 }
