@@ -1,5 +1,4 @@
 import { GraphicalNote } from 'opensheetmusicdisplay';
-import { AnchoredSelection } from '../../../util/AnchoredSelection';
 import { Box } from '../../../util/Box';
 import { NumberRange } from '../../../util/NumberRange';
 import { CursorWrapper } from '../cursors';
@@ -47,7 +46,6 @@ export type NoteLocatorTarget = {
 
 export type SelectionLocatorTarget = {
   type: LocatorTargetType.Selection;
-  selection: AnchoredSelection;
   box: Box;
   edge: SelectionEdge;
   cursor: CursorWrapper;

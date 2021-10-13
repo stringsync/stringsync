@@ -25,8 +25,8 @@ export const useSliderMarks = (musicDisplay: MusicDisplay | null, durationMs: nu
         const nextSliderMarks = getSliderMarks(payload.loop.timeMsRange);
         setSliderMarks(nextSliderMarks);
       }),
-      musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
-        const nextSliderMarks = getSliderMarks(musicDisplay.getLoop().selection.toRange());
+      musicDisplay.eventBus.subscribe('loopupdated', (payload) => {
+        const nextSliderMarks = getSliderMarks(payload.loop.timeMsRange);
         setSliderMarks(nextSliderMarks);
       }),
       musicDisplay.eventBus.subscribe('loopdeactivated', (payload) => {

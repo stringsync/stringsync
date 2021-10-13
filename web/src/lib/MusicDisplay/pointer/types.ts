@@ -1,4 +1,3 @@
-import { AnchoredSelection } from '../../../util/AnchoredSelection';
 import { CursorWrapper } from '../cursors';
 import { CursorSnapshot, SelectionEdge } from '../locator';
 
@@ -34,7 +33,6 @@ export type CursorSnapshotPointerTarget = {
 
 export type SelectionPointerTarget = {
   type: PointerTargetType.Selection;
-  selection: AnchoredSelection;
   edge: SelectionEdge;
   timeMs: number;
   position: PointerPosition;

@@ -1,8 +1,8 @@
 import { NumberRange } from './NumberRange';
 
 export class AnchoredSelection {
-  static init(initialTimeMs: number) {
-    return new AnchoredSelection(initialTimeMs, initialTimeMs);
+  static init(initialValue: number) {
+    return new AnchoredSelection(initialValue, initialValue);
   }
 
   readonly id = Symbol();
@@ -10,13 +10,13 @@ export class AnchoredSelection {
   readonly anchorValue: number;
   readonly movingValue: number;
 
-  constructor(anchorTimeMs: number, seekerTimeMs: number) {
-    this.anchorValue = anchorTimeMs;
-    this.movingValue = seekerTimeMs;
+  constructor(anchorValue: number, movingValue: number) {
+    this.anchorValue = anchorValue;
+    this.movingValue = movingValue;
   }
 
-  update(timeMs: number) {
-    return new AnchoredSelection(this.anchorValue, timeMs);
+  update(movingValue: number) {
+    return new AnchoredSelection(this.anchorValue, movingValue);
   }
 
   toRange() {

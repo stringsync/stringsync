@@ -1,4 +1,4 @@
-import { AnchoredSelection } from '../../../util/AnchoredSelection';
+import { NumberRange } from '../../../util/NumberRange';
 import { CursorStyleType, CursorWrapper } from '../cursors';
 import { LerpCursor } from '../cursors/LerpCursor';
 import { InternalMusicDisplay } from '../InternalMusicDisplay';
@@ -36,8 +36,7 @@ export class LerpLoop implements Loop {
   selectionRenderer: SelectionRenderer;
 
   isActive = true;
-
-  selection = AnchoredSelection.init(0);
+  timeMsRange = NumberRange.from(0).to(0);
 
   private constructor(
     imd: InternalMusicDisplay,
@@ -56,9 +55,9 @@ export class LerpLoop implements Loop {
       return;
     }
     this.isActive = true;
-    this.update(this.selection.anchorValue);
     this.startCursor.show();
     this.endCursor.show();
+    this.render();
     this.imd.eventBus.dispatch('loopactivated', { loop: this });
   }
 
@@ -73,36 +72,10 @@ export class LerpLoop implements Loop {
     this.imd.eventBus.dispatch('loopdeactivated', { loop: this });
   }
 
-  get timeMsRange() {
-    return this.selection.toRange();
-  }
-
-  anchor(timeMs: number) {
-    this.selection = AnchoredSelection.init(timeMs);
-  }
-
-  update(timeMs: number) {
-    this.selection = this.selection.update(timeMs);
-
-    if (!this.isActive) {
-      return;
-    }
-
-    const timeMsRange = this.timeMsRange;
-
-    this.selectionRenderer.update(timeMsRange);
-
-    if (timeMsRange.start !== this.startCursor.timeMs) {
-      this.startCursor.update(timeMsRange.start);
-      this.startCursor.updateStyle(CursorStyleType.Interacting);
-      this.endCursor.updateStyle(CursorStyleType.Default);
-    }
-
-    if (timeMsRange.end !== this.endCursor.timeMs) {
-      this.endCursor.update(timeMsRange.end);
-      this.endCursor.updateStyle(CursorStyleType.Interacting);
-      this.startCursor.updateStyle(CursorStyleType.Default);
-    }
+  update(timeMsRange: NumberRange) {
+    this.timeMsRange = timeMsRange;
+    this.render();
+    this.imd.eventBus.dispatch('loopupdated', { loop: this });
   }
 
   resetStyles() {
@@ -110,11 +83,23 @@ export class LerpLoop implements Loop {
     this.endCursor.updateStyle(CursorStyleType.Default);
   }
 
-  isStartCursor(cursor: CursorWrapper) {
-    return this.startCursor === cursor;
-  }
+  private render() {
+    if (!this.isActive) {
+      return;
+    }
 
-  isEndCursor(cursor: CursorWrapper) {
-    return this.endCursor === cursor;
+    this.selectionRenderer.update(this.timeMsRange);
+
+    if (this.timeMsRange.start !== this.startCursor.timeMs) {
+      this.startCursor.update(this.timeMsRange.start);
+      this.startCursor.updateStyle(CursorStyleType.Interacting);
+      this.endCursor.updateStyle(CursorStyleType.Default);
+    }
+
+    if (this.timeMsRange.end !== this.endCursor.timeMs) {
+      this.endCursor.update(this.timeMsRange.end);
+      this.endCursor.updateStyle(CursorStyleType.Interacting);
+      this.startCursor.updateStyle(CursorStyleType.Default);
+    }
   }
 }

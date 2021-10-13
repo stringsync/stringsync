@@ -151,6 +151,7 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
                   { cond: 'hasDraggableTarget', target: 'drag', actions: ['assignHoverTarget'] },
                   { cond: 'isStartingSelection', target: 'dragselect', actions: ['assignHoverTarget'] },
                 ],
+                touchmove: { target: '#pointer.up.active', actions: ['resetDownTarget'] },
                 touchend: { target: '#pointer.up.active', actions: ['dispatchClick', 'resetDownTarget'] },
               },
             },
@@ -170,20 +171,19 @@ export const createMachine = (eventBus: MusicDisplayEventBus) => {
               exit: ['dispatchDragEnded'],
             },
             dragselect: {
-              entry: ['startSelection', 'dispatchSelectStarted'],
+              entry: ['dispatchSelectStarted'],
               on: {
                 mouseup: { target: '#pointer.up.active', actions: ['resetDownTarget'] },
                 mousemove: {
                   actions: [
                     'assignHoverTarget',
-                    'updateSelection',
                     'dispatchSelectUpdated',
                     choose([{ cond: 'didEnterSelection', actions: ['dispatchSelectEntered'] }]),
                     choose([{ cond: 'didExitSelection', actions: ['dispatchSelectExited'] }]),
                   ],
                 },
               },
-              exit: ['endSelection', 'dispatchSelectEnded'],
+              exit: ['dispatchSelectEnded'],
             },
           },
         },

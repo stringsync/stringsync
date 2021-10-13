@@ -381,7 +381,6 @@ export class MusicDisplayLocator {
       hits.push({
         type: LocatorTargetType.Selection,
         edge: SelectionEdge.Start,
-        selection: this.imd.loop.selection,
         box: startBox,
         cursor: startCursor,
       });
@@ -393,7 +392,6 @@ export class MusicDisplayLocator {
       hits.push({
         type: LocatorTargetType.Selection,
         edge: SelectionEdge.End,
-        selection: this.imd.loop.selection,
         box: endBox,
         cursor: endCursor,
       });

@@ -34,6 +34,7 @@ export type MusicDisplayEventBus = EventBus<{
   loadstarted: {};
   longpress: { src: PointerTarget };
   loopactivated: { loop: Loop };
+  loopupdated: { loop: Loop };
   loopdeactivated: { loop: Loop };
   press: { src: PointerTarget };
   measurelinechanged: {};

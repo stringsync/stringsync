@@ -25,7 +25,7 @@ import { useMusicDisplayCursorInteractionEffects } from './useMusicDisplayCursor
 import { useMusicDisplayCursorSnapshot } from './useMusicDisplayCursorSnapshot';
 import { useMusicDisplayScrollControls } from './useMusicDisplayScrollControls';
 import { useMusicDisplayScrolling } from './useMusicDisplayScrolling';
-import { useMusicDisplaySelectionInteractionEffects } from './useMusicDisplaySelectionInteractionEffects';
+import { useMusicDisplaySelection } from './useMusicDisplaySelection';
 import {
   FretMarkerDisplay,
   NotationPlayerSettings,
@@ -193,7 +193,7 @@ export const NotationControls: React.FC<Props> = ({
   useMusicDisplayScrolling(musicDisplay, scrollControls, videoPlayerState);
   useSelectionLoop(musicDisplay, currentTimeMs, isPlaying, videoPlayerControls);
   useMusicDisplayCursorInteractionEffects(musicDisplay, videoPlayerControls);
-  useMusicDisplaySelectionInteractionEffects(musicDisplay, videoPlayerControls);
+  useMusicDisplaySelection(musicDisplay, videoPlayerControls);
   useMusicDisplayClickEffect(musicDisplay, videoPlayerControls);
   useEffect(() => {
     musicDisplay?.getCursor().update(currentTimeMs);
@@ -263,16 +263,14 @@ export const NotationControls: React.FC<Props> = ({
         zIndex={2}
       >
         <SettingsInner>
-          <h4>video</h4>
           <Checkbox checked={settings.isVideoVisible} onChange={onVideoVisibilityChange}>
-            show
+            video
           </Checkbox>
 
           <Divider />
 
-          <h4>fretboard</h4>
           <Checkbox checked={settings.isFretboardVisible} onChange={onFretboardVisibilityChange}>
-            show
+            fretboard
           </Checkbox>
 
           <br />
@@ -285,9 +283,10 @@ export const NotationControls: React.FC<Props> = ({
             <Radio.Button value={FretMarkerDisplay.Note}>note</Radio.Button>
           </Radio.Group>
 
-          <Divider />
+          <br />
+          <br />
 
-          <h4>scales</h4>
+          <h5>scale</h5>
           <Select defaultValue="none" style={{ width: '100%' }} onChange={onSelectedScaleChange}>
             <Select.OptGroup label="default">
               <Select.Option value="none">none</Select.Option>
@@ -333,7 +332,6 @@ export const NotationControls: React.FC<Props> = ({
 
           <Divider />
 
-          <h4>scrolling</h4>
           <Checkbox checked={settings.isAutoscrollPreferred} onChange={onAutoscrollPreferenceChange}>
             autoscroll
           </Checkbox>

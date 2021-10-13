@@ -204,7 +204,6 @@ export class SVGEventProxy {
     if (mostImportantLocateResultTarget && mostImportantLocateResultTarget.type === LocatorTargetType.Selection) {
       return {
         type: PointerTargetType.Selection,
-        selection: mostImportantLocateResultTarget.selection,
         edge: mostImportantLocateResultTarget.edge,
         timeMs: locateResult.timeMs,
         cursor: mostImportantLocateResultTarget.cursor,
