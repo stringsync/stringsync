@@ -25,6 +25,7 @@ import { NotationControls, NOTATION_CONTROLS_HEIGHT_PX } from './NotationControl
 import { SuggestedNotations } from './SuggestedNotations';
 import { useMeasurePositions } from './useMeasurePositions';
 import { useMusicDisplayCursorSnapshot } from './useMusicDisplayCursorSnapshot';
+import { useMusicDisplayLoopSettingSync } from './useMusicDisplayLoopSettingSync';
 import { FretMarkerDisplay, ScaleSelectionType, useNotationPlayerSettings } from './useNotationPlayerSettings';
 import { usePressedPositions } from './usePressedPositions';
 import { useScrollBehaviorType } from './useScrollBehaviorType';
@@ -57,7 +58,7 @@ const NotationScrollContainer = styled.div<{ $height: number; $isScrollingEnable
   overflow-y: ${(props) => (props.$isScrollingEnabled ? 'auto' : 'hidden')};
   height: 100%;
   max-height: ${(props) => props.$height}px;
-  transition: height 500ms;
+  transition: max-height 500ms;
 `;
 
 const FretboardContainer = styled.div`
@@ -175,11 +176,6 @@ const NotationPlayer: React.FC = enhance(() => {
     [debouncedSetFretboardHeightPx]
   );
 
-  useNoOverflow(document.body);
-  useNoUserSelect(document.body);
-  useNoTouchAction(document.body);
-  useNoTouchCallout(document.body);
-
   const debouncedSetScrollContainerHeightPx = useMemo(() => {
     return debounce(setScrollContainerHeightPx, RESIZE_DEBOUNCE_DURATION.ms, { leading: true, trailing: true });
   }, []);
@@ -198,6 +194,13 @@ const NotationPlayer: React.FC = enhance(() => {
     settings.isFretboardVisible,
     debouncedSetScrollContainerHeightPx,
   ]);
+
+  useNoOverflow(document.body);
+  useNoUserSelect(document.body);
+  useNoTouchAction(document.body);
+  useNoTouchCallout(document.body);
+
+  useMusicDisplayLoopSettingSync(musicDisplay, settings, settingsApi);
 
   return (
     <div data-testid="notation-player">

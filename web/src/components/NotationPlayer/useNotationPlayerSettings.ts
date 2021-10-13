@@ -9,6 +9,7 @@ export type NotationPlayerSettingsApi = {
   setFretMarkerDisplay: (fretMarkerDisplay: FretMarkerDisplay) => void;
   setScaleSelectionType: (scaleSelectionType: ScaleSelectionType) => void;
   setSelectedScale: (selectedScale: string | null) => void;
+  setIsLoopActive: (isLoopActive: boolean) => void;
 };
 
 export enum ScaleSelectionType {
@@ -34,6 +35,7 @@ type PersistedSettings = {
 type EphemeralSettings = {
   scaleSelectionType: ScaleSelectionType;
   selectedScale: string | null;
+  isLoopActive: boolean;
 };
 
 export type NotationPlayerSettings = PersistedSettings & EphemeralSettings;
@@ -50,11 +52,13 @@ const DEFAULT_PERSISTED_SETTINGS: PersistedSettings = {
 const DEFAULT_EPHEMERAL_SETTINGS: EphemeralSettings = {
   scaleSelectionType: ScaleSelectionType.None,
   selectedScale: null,
+  isLoopActive: false,
 };
 
 const EPHEMERAL_SETTINGS_ACTIONS = {
   setSelectedScale: createAction<{ selectedScale: string | null }>('setSelectedScale'),
   setScaleSelectionType: createAction<{ scaleSelectionType: ScaleSelectionType }>('setScaleSelectionType'),
+  setIsLoopActive: createAction<{ isLoopActive: boolean }>('setIsLoopActive'),
 };
 
 const ephemeralSettingsReducer = createReducer(DEFAULT_EPHEMERAL_SETTINGS, (builder) => {
@@ -63,6 +67,9 @@ const ephemeralSettingsReducer = createReducer(DEFAULT_EPHEMERAL_SETTINGS, (buil
   });
   builder.addCase(EPHEMERAL_SETTINGS_ACTIONS.setSelectedScale, (state, action) => {
     state.selectedScale = action.payload.selectedScale;
+  });
+  builder.addCase(EPHEMERAL_SETTINGS_ACTIONS.setIsLoopActive, (state, action) => {
+    state.isLoopActive = action.payload.isLoopActive;
   });
 });
 
@@ -97,6 +104,9 @@ export const useNotationPlayerSettings = (): [NotationPlayerSettings, NotationPl
       },
       setSelectedScale: (selectedScale: string | null) => {
         dispatch(EPHEMERAL_SETTINGS_ACTIONS.setSelectedScale({ selectedScale }));
+      },
+      setIsLoopActive: (isLoopActive: boolean) => {
+        dispatch(EPHEMERAL_SETTINGS_ACTIONS.setIsLoopActive({ isLoopActive }));
       },
     }),
     [persistedSettings, setPersistedSettings]

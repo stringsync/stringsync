@@ -1,4 +1,3 @@
-import { first, last } from 'lodash';
 import { useEffect, useRef } from 'react';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { SelectionEdge } from '../../lib/MusicDisplay/locator';
@@ -38,19 +37,7 @@ export const useMusicDisplaySelection = (
 
           loop.update(nextTimeMsRange);
         } else if (isCursorSnapshotPointerTarget(payload.src)) {
-          // select the whole measure
-
-          const cursorSnapshot = payload.src.cursorSnapshot;
-
-          const measureCursorSnapshots = cursorSnapshot.getMeasureCursorSnapshots();
-          const firstCursorSnapshot = first(measureCursorSnapshots);
-          const lastCursorSnapshot = last(measureCursorSnapshots);
-
-          const start = firstCursorSnapshot?.getTimeMsRange().start || 0;
-          const end = lastCursorSnapshot?.getTimeMsRange().end || 0;
-
-          const measureTimeMsRange = NumberRange.from(start).to(end);
-          loop.update(measureTimeMsRange);
+          loop.update(payload.src.cursorSnapshot.getMeasureTimeMsRange());
         }
 
         loop.activate();

@@ -1,4 +1,4 @@
-import { PauseOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
+import { PauseOutlined, QuestionCircleOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
 import {
   Alert,
   Button,
@@ -17,6 +17,7 @@ import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { VideoJsPlayer } from 'video.js';
+import { useDevice } from '../../ctx/device';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { ScrollBehaviorType } from '../../lib/MusicDisplay/scroller';
 import { NotationDetail } from './NotationDetail';
@@ -115,6 +116,7 @@ export const NotationControls: React.FC<Props> = ({
   const scales = useScales(musicDisplay);
   const marks = useSliderMarks(musicDisplay, durationMs);
   const scrollControls = useMusicDisplayScrollControls(musicDisplay, settings);
+  const device = useDevice();
 
   // callbacks
 
@@ -139,6 +141,12 @@ export const NotationControls: React.FC<Props> = ({
   const onAutoscrollPreferenceChange = useCallback(
     (event: CheckboxChangeEvent) => {
       settingsApi.setAutoscrollPreference(event.target.checked);
+    },
+    [settingsApi]
+  );
+  const onIsLoopActiveChange = useCallback(
+    (event: CheckboxChangeEvent) => {
+      settingsApi.setIsLoopActive(event.target.checked);
     },
     [settingsApi]
   );
@@ -335,6 +343,21 @@ export const NotationControls: React.FC<Props> = ({
           <Checkbox checked={settings.isAutoscrollPreferred} onChange={onAutoscrollPreferenceChange}>
             autoscroll
           </Checkbox>
+
+          <br />
+          <br />
+
+          <Tooltip
+            title={
+              device.inputType === 'touchOnly'
+                ? 'you can also longpress the notation'
+                : 'you can also click and drag on the notation'
+            }
+          >
+            <Checkbox checked={settings.isLoopActive} onChange={onIsLoopActiveChange}>
+              loop <QuestionCircleOutlined />
+            </Checkbox>
+          </Tooltip>
         </SettingsInner>
       </Drawer>
     </Outer>

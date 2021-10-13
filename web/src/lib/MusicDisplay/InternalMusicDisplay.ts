@@ -1,4 +1,4 @@
-import { get, set, takeRight } from 'lodash';
+import { first, get, set, takeRight } from 'lodash';
 import {
   BackendType,
   Cursor,
@@ -91,7 +91,13 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.cursorWrapper.update(timeMs);
 
     this.svgEventProxy = SVGEventProxy.install(this, locator.clone(), this.svgSettings);
+
     this.loop = LerpLoop.create(this, locator.clone());
+    const firstCursorSnapshot = first(locator.cursorSnapshots);
+    if (firstCursorSnapshot) {
+      this.loop.update(firstCursorSnapshot.getMeasureTimeMsRange());
+    }
+
     this.fx = new Fx(this.getSvg());
     this.meta = MusicDisplayMeta.create(locator.clone());
 

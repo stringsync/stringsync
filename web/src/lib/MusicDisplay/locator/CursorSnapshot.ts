@@ -1,4 +1,4 @@
-import { get, isNumber, isUndefined } from 'lodash';
+import { first, get, isNumber, isUndefined, last } from 'lodash';
 import { VoiceEntry } from 'opensheetmusicdisplay';
 import { Box } from '../../../util/Box';
 import { memoize } from '../../../util/memoize';
@@ -109,6 +109,18 @@ export class CursorSnapshot {
 
   getMeasureLine() {
     return this.measureLine;
+  }
+
+  @memoize()
+  getMeasureTimeMsRange() {
+    const measureCursorSnapshots = this.getMeasureCursorSnapshots();
+    const firstCursorSnapshot = first(measureCursorSnapshots);
+    const lastCursorSnapshot = last(measureCursorSnapshots);
+
+    const start = firstCursorSnapshot?.getTimeMsRange().start || 0;
+    const end = lastCursorSnapshot?.getTimeMsRange().end || start;
+
+    return NumberRange.from(start).to(end);
   }
 
   @memoize()
