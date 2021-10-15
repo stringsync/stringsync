@@ -101,7 +101,7 @@ const TranscriberName = styled.h3`
 
 const enhance = compose(withLayout(Layout.DEFAULT, { lanes: false, footer: false }));
 
-const NotationPlayer: React.FC = enhance(() => {
+export const NotationPlayer: React.FC = enhance(() => {
   const { lg, xl, xxl, innerHeight } = useViewport();
   const gtMd = lg || xl || xxl;
 
@@ -324,5 +324,3 @@ const NotationPlayer: React.FC = enhance(() => {
     </div>
   );
 });
-
-export default NotationPlayer;

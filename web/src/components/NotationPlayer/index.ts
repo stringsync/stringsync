@@ -1,1 +1,1 @@
-export { default } from './NotationPlayer';
+export * from './NotationPlayer';

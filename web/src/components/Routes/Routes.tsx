@@ -12,12 +12,10 @@ import { useRoutingBehavior } from './useRoutingBehavior';
 
 const Library = compose(withAuthRequirement(AuthRequirement.NONE))(React.lazy(() => import('../Library')));
 
-const NotationPlayer = compose(withAuthRequirement(AuthRequirement.NONE))(
-  React.lazy(() => import('../NotationPlayer'))
-);
+const NotationShow = compose(withAuthRequirement(AuthRequirement.NONE))(React.lazy(() => import('../NotationShow')));
 
-const NotationEditor = compose(withAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER))(
-  React.lazy(() => import('../NotationEditor'))
+const NotationEdit = compose(withAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER))(
+  React.lazy(() => import('../NotationEdit'))
 );
 
 const Signup = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(React.lazy(() => import('../Signup')));
@@ -59,8 +57,8 @@ export const Routes: React.FC = () => {
           )}
         </Route>
         <Route exact path="/library" component={Library} />
-        <Route exact path="/n/:id" component={NotationPlayer} />
-        <Route exact path="/n/:id/edit" component={NotationEditor} />
+        <Route exact path="/n/:id" component={NotationShow} />
+        <Route exact path="/n/:id/edit" component={NotationEdit} />
         <Route path="/signup" component={Signup} />
         <Route path="/login" component={Login} />
         <Route path="/confirm-email" component={ConfirmEmail} />

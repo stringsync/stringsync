@@ -7,7 +7,7 @@ import { Video } from '../Video';
 
 const enhance = compose(withLayout(Layout.DEFAULT));
 
-const NotationEditor: React.FC = enhance(() => {
+const NotationEdit: React.FC = enhance(() => {
   const params = useParams<{ id: string }>();
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -35,4 +35,4 @@ const NotationEditor: React.FC = enhance(() => {
   );
 });
 
-export default NotationEditor;
+export default NotationEdit;
