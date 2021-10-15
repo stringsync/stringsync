@@ -39,7 +39,6 @@ type NotationProps = {
   deadTimeMs: number;
   durationMs: number;
   scrollContainerRef: RefObject<HTMLDivElement>;
-  onUserScroll?: () => void;
   onMusicDisplayChange?: (musicDisplay: MusicDisplay | null) => void;
 };
 
