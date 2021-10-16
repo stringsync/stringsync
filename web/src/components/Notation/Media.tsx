@@ -1,5 +1,6 @@
 import { Skeleton } from 'antd';
 import styled from 'styled-components';
+import { Player } from '../Player';
 
 const Outer = styled.div`
   display: flex;
@@ -17,9 +18,14 @@ const SkeletonOuter = styled.div`
 
 type Props = {
   loading: boolean;
+  video: boolean;
+  fluid?: boolean;
+  src: string | null;
 };
 
 export const Media: React.FC<Props> = (props) => {
+  const fluid = props.fluid ?? true;
+
   return (
     <Outer data-testid="media">
       {props.loading && (
@@ -28,7 +34,13 @@ export const Media: React.FC<Props> = (props) => {
         </SkeletonOuter>
       )}
 
-      {!props.loading && <div>media</div>}
+      {!props.loading && props.video && props.src && (
+        <Player.Video playerOptions={{ fluid, sources: [{ src: props.src, type: 'application/x-mpegURL' }] }} />
+      )}
+
+      {!props.loading && !props.video && props.src && (
+        <Player.Audio playerOptions={{ fluid, sources: [{ src: props.src, type: 'application/x-mpegURL' }] }} />
+      )}
     </Outer>
   );
 };

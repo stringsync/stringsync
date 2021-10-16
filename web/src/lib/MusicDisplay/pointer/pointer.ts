@@ -11,7 +11,7 @@ import {
   isNonePointerTarget,
   isPositional,
   isSelectionPointerTarget,
-} from './pointerTypeAssert';
+} from './assertions';
 import { NonePointerTarget, PointerContext, PointerPosition, PointerTarget, PointerTargetType } from './types';
 
 export type PointerEvent = EventFrom<typeof model>;

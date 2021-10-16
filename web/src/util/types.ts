@@ -52,3 +52,8 @@ export interface PromiseResolver<T> {
   reject: (error: Error) => void;
   cancel: () => void;
 }
+
+export type Dimensions = {
+  width: number;
+  height: number;
+};

@@ -1,10 +1,10 @@
 import { DoubleRightOutlined, HomeOutlined } from '@ant-design/icons';
 import { Button, Drawer } from 'antd';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import { useViewport } from '../../ctx/viewport/useViewport';
-import { Nullable } from '../../util/types';
+import { Dimensions, Nullable } from '../../util/types';
 import * as helpers from './helpers';
 import { Media } from './Media';
 import { MusicDisplay } from './MusicDisplay';
@@ -15,7 +15,7 @@ import { NotationLayoutOptions, RenderableNotation } from './types';
 const FloatingButton = styled(Button)<{ $top: number }>`
   position: fixed;
   top: ${(props) => props.$top}px;
-  right: 0;
+  right: -1px;
   z-index: 3;
 `;
 
@@ -32,10 +32,21 @@ export const Notation: React.FC<Props> = (props) => {
   const layout = helpers.getLayout(props.layout);
   const loading = props.loading || false;
   const video = props.video;
+  const notation = props.notation;
+  const sidecar = props.sidecar;
+  const src = notation?.videoUrl || null;
 
   // split pane sizing
   const viewport = useViewport();
   const layoutSizeBoundsPx = helpers.getLayoutSizeBoundsPx(viewport);
+  const [pane1Dimensions, setPane1Dimensions] = useState({ width: 0, height: 0 });
+  const onPane1Resize = useCallback((dimensions: Dimensions) => setPane1Dimensions(dimensions), []);
+  useEffect(() => {
+    if (!video) {
+      setPane1Dimensions({ width: 0, height: 0 });
+    }
+  }, [video]);
+  useEffect(() => {}, [pane1Dimensions]);
 
   // sidecar drawer button
   const [isSidecarDrawerVisible, setSidecarDrawerVisibility] = useState(false);
@@ -50,11 +61,17 @@ export const Notation: React.FC<Props> = (props) => {
     <div data-testid="notation">
       {layout === 'sidecar' && (
         <>
-          <SplitPane split="vertical" minSize={layoutSizeBoundsPx.sidecar.min} maxSize={layoutSizeBoundsPx.sidecar.max}>
+          <SplitPane
+            split="vertical"
+            minSize={layoutSizeBoundsPx.sidecar.min}
+            maxSize={layoutSizeBoundsPx.sidecar.max}
+            onPane1Resize={onPane1Resize}
+          >
             <Sidecar videoSkeleton loading={loading}>
-              <Media loading={loading} />
+              <Media video loading={loading} src={src} />
+              {sidecar}
             </Sidecar>
-            <MusicDisplay loading={loading} />
+            <MusicDisplay loading={loading} notation={notation} />
           </SplitPane>
         </>
       )}
@@ -81,9 +98,10 @@ export const Notation: React.FC<Props> = (props) => {
               style={{ position: 'static' }}
               minSize={layoutSizeBoundsPx.theater.min}
               maxSize={layoutSizeBoundsPx.theater.max}
+              onPane1Resize={onPane1Resize}
             >
-              <Media loading={loading} />
-              <MusicDisplay loading={loading} />
+              <Media video fluid={false} loading={loading} src={src} />
+              <MusicDisplay loading={loading} notation={notation} />
             </SplitPane>
           )}
 

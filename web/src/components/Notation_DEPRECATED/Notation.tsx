@@ -3,8 +3,7 @@ import styled from 'styled-components';
 import { useDevice } from '../../ctx/device';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { CursorStyleType } from '../../lib/MusicDisplay/cursors';
-import { PointerTargetType } from '../../lib/MusicDisplay/pointer';
-import { isNonePointerTarget, isPositional } from '../../lib/MusicDisplay/pointer/pointerTypeAssert';
+import { isNonePointerTarget, isPositional, PointerTargetType } from '../../lib/MusicDisplay/pointer';
 import { SupportedSVGEventNames } from '../../lib/MusicDisplay/svg';
 
 const Outer = styled.div<{ cursor: Cursor }>`

@@ -5,6 +5,9 @@ import { useViewport } from '../../ctx/viewport/useViewport';
 import { Layout, withLayout } from '../../hocs/withLayout';
 import { useNoOverflow } from '../../hooks/useNoOverflow';
 import { useNotation } from '../../hooks/useNotation';
+import { useNoTouchAction } from '../../hooks/useNoTouchAction';
+import { useNoTouchCallout } from '../../hooks/useNoTouchCallout';
+import { useNoUserSelect } from '../../hooks/useNoUserSelect';
 import { compose } from '../../util/compose';
 import { Notation, NotationLayoutOptions } from '../Notation';
 
@@ -32,10 +35,13 @@ const NotationShow: React.FC = enhance(() => {
   const [notation, errors, loading] = useNotation(params.id);
 
   useNoOverflow(document.body);
+  useNoUserSelect(document.body);
+  useNoTouchAction(document.body);
+  useNoTouchCallout(document.body);
 
   return (
     <div data-testid="notation-show">
-      <Notation loading video notation={notation} layout={layout} />
+      <Notation loading={loading} video notation={notation} layout={layout} />
     </div>
   );
 });

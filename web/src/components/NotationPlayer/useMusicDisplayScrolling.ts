@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { MusicDisplay } from '../../lib/MusicDisplay';
-import { isTemporal } from '../../lib/MusicDisplay/pointer/pointerTypeAssert';
+import { isTemporal } from '../../lib/MusicDisplay/pointer';
 import { ScrollControls } from './useMusicDisplayScrollControls';
 import { VideoPlayerState } from './useVideoPlayerState';
 

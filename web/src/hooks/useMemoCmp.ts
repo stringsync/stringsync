@@ -7,7 +7,9 @@ export const useMemoCmp = <T>(proposedValue: T, isEqual: Comparator = equal): T 
   const [value, setValue] = useState(proposedValue);
 
   useEffect(() => {
-    setValue((currentValue) => (isEqual(currentValue, proposedValue) ? currentValue : proposedValue));
+    setValue((currentValue) => {
+      return isEqual(currentValue, proposedValue) ? currentValue : proposedValue;
+    });
   }, [isEqual, proposedValue]);
 
   return value;

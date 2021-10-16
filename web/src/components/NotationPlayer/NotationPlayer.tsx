@@ -18,9 +18,10 @@ import { MusicDisplay } from '../../lib/MusicDisplay';
 import { ScrollBehaviorType } from '../../lib/MusicDisplay/scroller';
 import { compose } from '../../util/compose';
 import { Duration } from '../../util/Duration';
+import { Dimensions } from '../../util/types';
 import { Fretboard, FretboardOptions, MergeStrategy, PositionFilterParams, PositionStyle } from '../Fretboard';
 import { Notation } from '../Notation_DEPRECATED';
-import { Dimensions, Player } from '../Player';
+import { Player } from '../Player';
 import { NotationControls, NOTATION_CONTROLS_HEIGHT_PX } from './NotationControls';
 import { SuggestedNotations } from './SuggestedNotations';
 import { useMeasurePositions } from './useMeasurePositions';
@@ -240,11 +241,7 @@ export const NotationPlayer: React.FC = enhance(() => {
         <Row>
           <LeftOrTopCol xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
             <LeftOrTopScrollContainer $overflow={gtMd}>
-              <Player.Video
-                onPlayerChange={onVideoPlayerChange}
-                onResize={onVideoResize}
-                playerOptions={playerOptions}
-              />
+              <Player.Video onPlayerChange={onVideoPlayerChange} playerOptions={playerOptions} />
               <RightBorder border={gtMd}>{gtMd && <SuggestedNotations srcNotationId={notation.id} />}</RightBorder>
             </LeftOrTopScrollContainer>
           </LeftOrTopCol>

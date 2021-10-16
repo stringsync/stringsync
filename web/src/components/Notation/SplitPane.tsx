@@ -5,6 +5,8 @@ import React, { useEffect, useRef } from 'react';
 import ReactSplitPane, { SplitPaneProps } from 'react-split-pane';
 import styled from 'styled-components';
 import { InternalError } from '../../errors';
+import { useDimensions } from '../../hooks/useDimensions';
+import { Dimensions } from '../../util/types';
 
 const HorizontalOuter = styled.div`
   position: absolute;
@@ -32,7 +34,12 @@ const VerticalMenuOutlined = styled(MenuOutlined)`
   transform: rotate(90deg);
 `;
 
-export const SplitPane: React.FC<SplitPaneProps & { split: 'vertical' | 'horizontal' }> = (props) => {
+type Props = SplitPaneProps & {
+  split: 'vertical' | 'horizontal';
+  onPane1Resize?: (dimensions: Dimensions) => void;
+};
+
+export const SplitPane: React.FC<Props> = (props) => {
   // children management
   const children = React.Children.toArray(props.children);
 
@@ -48,13 +55,41 @@ export const SplitPane: React.FC<SplitPaneProps & { split: 'vertical' | 'horizon
   const onMouseDown = splitPane?.onMouseDown || noop;
   const onTouchStart = splitPane?.onTouchStart || noop;
   const onMouseUp = splitPane?.onMouseUp || noop;
+  const onPane1Resize = props.onPane1Resize || noop;
+
+  // dimensions management
+  const outerRef = useRef<HTMLDivElement>(null);
+  const outerDimensions = useDimensions(outerRef.current);
+  useEffect(() => onPane1Resize(outerDimensions), [onPane1Resize, outerDimensions]);
 
   return (
-    <ReactSplitPane {...props} ref={splitPaneRef}>
+    <ReactSplitPane
+      allowResize={props.allowResize}
+      className={props.className}
+      primary={props.primary}
+      minSize={props.minSize}
+      maxSize={props.maxSize}
+      defaultSize={props.defaultSize}
+      size={props.size}
+      split={props.split}
+      onDragStarted={props.onDragStarted}
+      onDragFinished={props.onDragFinished}
+      onChange={props.onChange}
+      onResizerClick={props.onResizerClick}
+      onResizerDoubleClick={props.onResizerDoubleClick}
+      style={props.style}
+      resizerStyle={props.resizerStyle}
+      paneStyle={props.paneStyle}
+      pane1Style={props.pane1Style}
+      pane2Style={props.pane2Style}
+      resizerClassName={props.resizerClassName}
+      step={props.step}
+      ref={splitPaneRef}
+    >
       {children[0]}
       {props.split === 'horizontal' && (
         <>
-          <HorizontalOuter>
+          <HorizontalOuter ref={outerRef}>
             <Button
               icon={<MenuOutlined />}
               onMouseDown={onMouseDown}
@@ -69,7 +104,7 @@ export const SplitPane: React.FC<SplitPaneProps & { split: 'vertical' | 'horizon
       )}
       {props.split === 'vertical' && (
         <>
-          <VerticalOuter>
+          <VerticalOuter ref={outerRef}>
             <Button
               icon={<VerticalMenuOutlined />}
               onMouseDown={onMouseDown}

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { MusicDisplay } from '../../lib/MusicDisplay';
-import { isTemporal } from '../../lib/MusicDisplay/pointer/pointerTypeAssert';
+import { isTemporal } from '../../lib/MusicDisplay/pointer';
 import { VideoPlayerControls } from './useVideoPlayerControls';
 
 export const useMusicDisplayCursorInteractionEffects = (

@@ -1,11 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { SelectionEdge } from '../../lib/MusicDisplay/locator';
-import {
-  isCursorSnapshotPointerTarget,
-  isSelectionPointerTarget,
-  isTemporal,
-} from '../../lib/MusicDisplay/pointer/pointerTypeAssert';
+import { isCursorSnapshotPointerTarget, isSelectionPointerTarget, isTemporal } from '../../lib/MusicDisplay/pointer';
 import { AnchoredSelection } from '../../util/AnchoredSelection';
 import * as helpers from './helpers';
 import { VideoPlayerControls } from './useVideoPlayerControls';
