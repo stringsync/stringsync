@@ -1,3 +1,4 @@
+import { noop } from '@babel/types';
 import React, { useEffect, useRef, useState } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 import styled from 'styled-components';
@@ -7,8 +8,8 @@ import { Duration } from '../../util/Duration';
 type Mode = 'video' | 'audio';
 
 export type Dimensions = {
-  heightPx: number;
-  widthPx: number;
+  height: number;
+  width: number;
 };
 
 const getPlayerOptions = (mode: Mode): videojs.PlayerOptions => {
@@ -32,27 +33,45 @@ const getPlayerOptions = (mode: Mode): videojs.PlayerOptions => {
 
 const Outer = styled.div``;
 
-type Props = {
+type BaseProps = {
   playerOptions: videojs.PlayerOptions;
-  mode?: Mode;
-  onVideoResize?: (widthPx: number, heightPx: number) => void;
-  onVideoPlayerChange?: (videoPlayer: VideoJsPlayer | null) => void;
+  onPlayerChange?: (player: VideoJsPlayer | null) => void;
+  onResize?: (dimensions: Dimensions) => void;
 };
 
-export const Video: React.FC<Props> = (props) => {
-  const mode = props.mode || 'video';
-  const { playerOptions, onVideoResize, onVideoPlayerChange } = props;
+type VideoProps = BaseProps & {
+  mode: 'video';
+};
 
-  const divRef = useRef<HTMLDivElement>(null);
-  const lastTimeDurationRef = useRef(Duration.ms(0));
-  // We want width and height updated atomically since we know both at the same time.
-  const [dimensions, setDimensions] = useState<Dimensions>({ heightPx: 0, widthPx: 0 });
+type AudioProps = BaseProps & {
+  mode: 'audio';
+};
+
+type Props = VideoProps | AudioProps;
+
+const VideoJs: React.FC<Props> = (props) => {
+  // props
+  const mode = props.mode || 'video';
+  const playerOptions = props.playerOptions;
+  const onPlayerChange = props.onPlayerChange || noop;
+  const onResize = props.onResize || noop;
+
+  // dimensions management
+  const [dimensions, setDimensions] = useState<Dimensions>({ height: 0, width: 0 });
 
   useEffect(() => {
-    if (onVideoResize) {
-      onVideoResize(dimensions.widthPx, dimensions.heightPx);
+    onResize(dimensions);
+  }, [dimensions, onResize]);
+
+  useEffect(() => {
+    if (mode === 'audio') {
+      setDimensions({ height: 0, width: 0 });
     }
-  }, [dimensions, onVideoResize]);
+  }, [mode]);
+
+  // creating the videojs player
+  const divRef = useRef<HTMLDivElement>(null);
+  const lastTimeDurationRef = useRef(Duration.ms(0));
 
   useEffect(() => {
     const div = divRef.current;
@@ -61,7 +80,7 @@ export const Video: React.FC<Props> = (props) => {
     }
 
     // React shouldn't know about these elements because player.dispose will remove them from the dom.
-    // https://github.com/videojs/video.js/blob/master/src/js/player.js#L563
+    // https://github.com/videojs/video.js/blob/85343d1cec98b59891a650e9d050989424ecf866/src/js/player.js#L563
     const container = document.createElement('div');
     const media = document.createElement(mode);
     media.setAttribute('playsinline', 'true');
@@ -76,27 +95,27 @@ export const Video: React.FC<Props> = (props) => {
     const player = videojs(media, { ...getPlayerOptions(mode), ...playerOptions });
 
     const resizeObserver = new ResizeObserver(() => {
-      setDimensions({ widthPx: player.currentWidth(), heightPx: player.currentHeight() });
+      setDimensions({ width: player.currentWidth(), height: player.currentHeight() });
     });
     resizeObserver.observe(media);
 
     player.ready(() => {
-      if (onVideoPlayerChange) {
-        onVideoPlayerChange(player);
-      }
+      onPlayerChange(player);
       player.currentTime(lastTimeDurationRef.current.sec);
-      setDimensions({ widthPx: player.currentWidth(), heightPx: player.currentHeight() });
+      setDimensions({ width: player.currentWidth(), height: player.currentHeight() });
     });
 
     return () => {
       lastTimeDurationRef.current = Duration.sec(player.currentTime());
-      if (onVideoPlayerChange) {
-        onVideoPlayerChange(null);
-      }
+      onPlayerChange(null);
       resizeObserver.disconnect();
       player.dispose();
     };
-  }, [playerOptions, mode, onVideoPlayerChange]);
+  }, [playerOptions, mode, onPlayerChange]);
 
   return <Outer data-vjs-player ref={divRef} />;
 };
+
+const Video: React.FC<Omit<VideoProps, 'mode'>> = (props) => <VideoJs mode="video" {...props} />;
+const Audio: React.FC<Omit<AudioProps, 'mode'>> = (props) => <VideoJs mode="audio" {...props} />;
+export const Player = { Video, Audio };

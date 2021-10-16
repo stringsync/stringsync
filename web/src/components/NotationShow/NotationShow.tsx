@@ -20,7 +20,7 @@ const DEFAULT_NOTATION_LAYOUT: NotationLayoutOptions = {
   permitted: ['theater', 'sidecar'],
 };
 
-const enhance = compose(withLayout(Layout.NONE));
+const enhance = compose(withLayout(Layout.NONE, { lanes: false, footer: false }));
 
 const NotationShow: React.FC = enhance(() => {
   const device = useDevice();

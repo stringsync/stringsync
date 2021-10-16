@@ -3,7 +3,7 @@ import { useParams } from 'react-router';
 import { Layout, withLayout } from '../../hocs/withLayout';
 import { useNotation } from '../../hooks/useNotation';
 import { compose } from '../../util/compose';
-import { Video } from '../Video';
+import { Player } from '../Player';
 
 const enhance = compose(withLayout(Layout.DEFAULT));
 
@@ -20,7 +20,7 @@ const NotationEdit: React.FC = enhance(() => {
       <div>edit {params.id}</div>
       <hr />
       {!isLoading && notation && notation.videoUrl && (
-        <Video
+        <Player.Video
           playerOptions={{
             sources: [
               {

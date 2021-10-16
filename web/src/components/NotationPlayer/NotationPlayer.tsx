@@ -20,7 +20,7 @@ import { compose } from '../../util/compose';
 import { Duration } from '../../util/Duration';
 import { Fretboard, FretboardOptions, MergeStrategy, PositionFilterParams, PositionStyle } from '../Fretboard';
 import { Notation } from '../Notation_DEPRECATED';
-import { Video } from '../Video';
+import { Dimensions, Player } from '../Player';
 import { NotationControls, NOTATION_CONTROLS_HEIGHT_PX } from './NotationControls';
 import { SuggestedNotations } from './SuggestedNotations';
 import { useMeasurePositions } from './useMeasurePositions';
@@ -160,8 +160,8 @@ export const NotationPlayer: React.FC = enhance(() => {
     return debounce(setVideoHeightPx, RESIZE_DEBOUNCE_DURATION.ms, { leading: true, trailing: true });
   }, []);
   const onVideoResize = useCallback(
-    (widthPx: number, heightPx: number) => {
-      debouncedSetVideoHeightPx(heightPx);
+    (dimensions: Dimensions) => {
+      debouncedSetVideoHeightPx(dimensions.height);
     },
     [debouncedSetVideoHeightPx]
   );
@@ -240,10 +240,9 @@ export const NotationPlayer: React.FC = enhance(() => {
         <Row>
           <LeftOrTopCol xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
             <LeftOrTopScrollContainer $overflow={gtMd}>
-              <Video
-                onVideoPlayerChange={onVideoPlayerChange}
-                mode={settings.isVideoVisible ? 'video' : 'audio'}
-                onVideoResize={onVideoResize}
+              <Player.Video
+                onPlayerChange={onVideoPlayerChange}
+                onResize={onVideoResize}
                 playerOptions={playerOptions}
               />
               <RightBorder border={gtMd}>{gtMd && <SuggestedNotations srcNotationId={notation.id} />}</RightBorder>
