@@ -2,7 +2,6 @@ import { DoubleRightOutlined, HomeOutlined } from '@ant-design/icons';
 import { Button, Drawer } from 'antd';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
-import SplitPane from 'react-split-pane';
 import styled from 'styled-components';
 import { useViewport } from '../../ctx/viewport/useViewport';
 import { Nullable } from '../../util/types';
@@ -10,6 +9,7 @@ import * as helpers from './helpers';
 import { Media } from './Media';
 import { MusicDisplay } from './MusicDisplay';
 import { Sidecar } from './Sidecar';
+import { SplitPane } from './SplitPane';
 import { NotationLayoutOptions, RenderableNotation } from './types';
 
 const FloatingButton = styled(Button)<{ $top: number }>`
@@ -33,7 +33,7 @@ export const Notation: React.FC<Props> = (props) => {
   const loading = props.loading || false;
   const video = props.video;
 
-  // viewport
+  // split pane sizing
   const viewport = useViewport();
   const layoutSizeBoundsPx = helpers.getLayoutSizeBoundsPx(viewport);
 
@@ -50,11 +50,7 @@ export const Notation: React.FC<Props> = (props) => {
     <div data-testid="notation">
       {layout === 'sidecar' && (
         <>
-          <SplitPane
-            resizerStyle={{ width: 4, background: 'red' }}
-            minSize={layoutSizeBoundsPx.sidecar.min}
-            maxSize={layoutSizeBoundsPx.sidecar.max}
-          >
+          <SplitPane split="vertical" minSize={layoutSizeBoundsPx.sidecar.min} maxSize={layoutSizeBoundsPx.sidecar.max}>
             <Sidecar videoSkeleton loading={loading}>
               <Media loading={loading} />
             </Sidecar>
@@ -83,7 +79,6 @@ export const Notation: React.FC<Props> = (props) => {
             <SplitPane
               split="horizontal"
               style={{ position: 'static' }}
-              resizerStyle={{ height: 4, background: 'red' }}
               minSize={layoutSizeBoundsPx.theater.min}
               maxSize={layoutSizeBoundsPx.theater.max}
             >

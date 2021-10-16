@@ -1,7 +1,6 @@
 import { first } from 'lodash';
 import { ViewportState } from '../../ctx/viewport';
 import { InternalError } from '../../errors';
-import { HEADER_HEIGHT_PX } from '../../hocs/withLayout/DefaultLayout';
 import * as constants from './constants';
 import { NotationLayout, NotationLayoutOptions } from './types';
 
@@ -38,7 +37,7 @@ export const getLayoutSizeBoundsPx = (viewport: ViewportState) => {
   const minTheaterHeightPx = constants.MIN_THEATER_HEIGHT_PX;
   const maxTheaterHeightPx = Math.min(
     constants.MAX_THEATER_HEIGHT_PX,
-    viewport.innerHeight - HEADER_HEIGHT_PX - constants.MIN_NOTATION_HEIGHT_PX
+    viewport.innerHeight - constants.MIN_NOTATION_HEIGHT_PX
   );
 
   return {
