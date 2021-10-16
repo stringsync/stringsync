@@ -19,7 +19,7 @@ import { ScrollBehaviorType } from '../../lib/MusicDisplay/scroller';
 import { compose } from '../../util/compose';
 import { Duration } from '../../util/Duration';
 import { Fretboard, FretboardOptions, MergeStrategy, PositionFilterParams, PositionStyle } from '../Fretboard';
-import { Notation } from '../Notation';
+import { Notation } from '../Notation_DEPRECATED';
 import { Video } from '../Video';
 import { NotationControls, NOTATION_CONTROLS_HEIGHT_PX } from './NotationControls';
 import { SuggestedNotations } from './SuggestedNotations';

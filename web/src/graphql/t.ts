@@ -1,15 +1,16 @@
 import { types } from 'typed-graphqlify';
+import { Nullable } from '../util/types';
 import * as helpers from './helpers';
 
 type ValueOf<T> = T[keyof T];
 
 type OptionalT = {
-  number?: number;
-  string?: string;
-  boolean?: boolean;
-  file?: File;
-  oneOf: <T extends {}>(_e: T) => ValueOf<T> | undefined;
-  custom: <T>() => T | undefined;
+  number: Nullable<number>;
+  string: Nullable<string>;
+  boolean: Nullable<boolean>;
+  file: Nullable<File>;
+  oneOf: <T extends {}>(_e: T) => Nullable<ValueOf<T>>;
+  custom: <T>() => Nullable<T>;
 };
 
 /**

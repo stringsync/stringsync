@@ -1,228 +1,100 @@
-import React, { RefObject, useEffect, useRef, useState } from 'react';
+import { DoubleRightOutlined, HomeOutlined } from '@ant-design/icons';
+import { Button, Drawer } from 'antd';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router';
+import SplitPane from 'react-split-pane';
 import styled from 'styled-components';
-import { useDevice } from '../../ctx/device';
-import { MusicDisplay } from '../../lib/MusicDisplay';
-import { CursorStyleType } from '../../lib/MusicDisplay/cursors';
-import { PointerTargetType } from '../../lib/MusicDisplay/pointer';
-import { isNonePointerTarget, isPositional } from '../../lib/MusicDisplay/pointer/pointerTypeAssert';
-import { SupportedSVGEventNames } from '../../lib/MusicDisplay/svg';
+import { useViewport } from '../../ctx/viewport/useViewport';
+import { Nullable } from '../../util/types';
+import * as helpers from './helpers';
+import { Media } from './Media';
+import { MusicDisplay } from './MusicDisplay';
+import { Sidecar } from './Sidecar';
+import { NotationLayoutOptions, RenderableNotation } from './types';
 
-const Outer = styled.div<{ cursor: Cursor }>`
-  margin-top: 24px;
-  position: relative;
-  cursor: ${(props) => props.cursor};
+const FloatingButton = styled(Button)<{ $top: number }>`
+  position: fixed;
+  top: ${(props) => props.$top}px;
+  right: 0;
+  z-index: 3;
 `;
 
-const LoadingOverlay = styled.div`
-  position: absolute;
-  opacity: 0.9;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background-color: white;
-  z-index: 2;
-  text-align: center;
-  pointer-events: none;
-`;
-
-const Loading = styled.small`
-  margin-top: 36px;
-`;
-
-const COMMON_SVG_EVENT_NAMES: SupportedSVGEventNames[] = [];
-const MOUSE_SVG_EVENT_NAMES: SupportedSVGEventNames[] = ['mousedown', 'mousemove', 'mouseup'];
-const TOUCH_SVG_EVENT_NAMES: SupportedSVGEventNames[] = ['touchstart', 'touchmove', 'touchend'];
-
-type NotationProps = {
-  musicXmlUrl: string;
-  deadTimeMs: number;
-  durationMs: number;
-  scrollContainerRef: RefObject<HTMLDivElement>;
-  onMusicDisplayChange?: (musicDisplay: MusicDisplay | null) => void;
+type Props = {
+  loading?: boolean;
+  layout?: NotationLayoutOptions;
+  video: boolean;
+  sidecar?: React.ReactNode;
+  notation: Nullable<RenderableNotation>;
 };
 
-enum Cursor {
-  Default = 'default',
-  Crosshair = 'crosshair',
-  ColResize = 'col-resize',
-  EWResize = 'ew-resize',
-  EResize = 'e-resize',
-  WResize = 'w-resize',
-  Grab = 'grab',
-  Grabbing = 'grabbing',
-}
+export const Notation: React.FC<Props> = (props) => {
+  // props
+  const layout = helpers.getLayout(props.layout);
+  const loading = props.loading || false;
+  const video = props.video;
 
-export const Notation: React.FC<NotationProps> = (props) => {
-  const device = useDevice();
+  // viewport
+  const viewport = useViewport();
+  const layoutSizeBoundsPx = helpers.getLayoutSizeBoundsPx(viewport);
 
-  const { musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef, onMusicDisplayChange } = props;
+  // sidecar drawer button
+  const [isSidecarDrawerVisible, setSidecarDrawerVisibility] = useState(false);
+  const onOpenSidecarDrawerButtonClick = () => setSidecarDrawerVisibility(true);
+  const onSidecarDrawerCloseClick = () => setSidecarDrawerVisibility(false);
 
-  const divRef = useRef<HTMLDivElement>(null);
-
-  const [cursor, setCursor] = useState(Cursor.Crosshair);
-  const [isLoading, setIsLoading] = useState(false);
-  const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
-
-  useEffect(() => {
-    if (onMusicDisplayChange) {
-      onMusicDisplayChange(musicDisplay);
-    }
-  }, [musicDisplay, onMusicDisplayChange]);
-
-  useEffect(() => {
-    if (!musicDisplay) {
-      return;
-    }
-    const isDeviceTouchable = device.inputType === 'touchOnly' || device.inputType === 'hybrid';
-
-    const eventBusIds = [
-      musicDisplay.eventBus.subscribe('cursorentered', (payload) => {
-        setCursor(Cursor.Grab);
-        payload.src.cursor.updateStyle(CursorStyleType.Interacting);
-      }),
-      musicDisplay.eventBus.subscribe('cursorexited', (payload) => {
-        setCursor(Cursor.Crosshair);
-        payload.src.cursor.updateStyle(CursorStyleType.Default);
-      }),
-      musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
-        setCursor(Cursor.ColResize);
-      }),
-      musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
-        setCursor(Cursor.ColResize);
-      }),
-      musicDisplay.eventBus.subscribe('selectionended', () => {
-        musicDisplay.getLoop().resetStyles();
-      }),
-      musicDisplay.eventBus.subscribe('selectionentered', (payload) => {
-        setCursor(Cursor.ColResize);
-        payload.src.cursor.updateStyle(CursorStyleType.Interacting);
-      }),
-      musicDisplay.eventBus.subscribe('selectionexited', (payload) => {
-        payload.src.cursor.updateStyle(CursorStyleType.Default);
-      }),
-      musicDisplay.eventBus.subscribe('cursordragstarted', (payload) => {
-        setCursor(Cursor.Grabbing);
-        if (isDeviceTouchable) {
-          payload.src.cursor.updateStyle(CursorStyleType.Interacting);
-        }
-      }),
-      musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
-        setCursor(payload.dst.type === PointerTargetType.Cursor ? Cursor.Grab : Cursor.Crosshair);
-        if (isDeviceTouchable) {
-          payload.src.cursor.updateStyle(CursorStyleType.Default);
-        }
-      }),
-      musicDisplay.eventBus.subscribe('notargetentered', () => {
-        setCursor(Cursor.Default);
-      }),
-      musicDisplay.eventBus.subscribe('cursorsnapshotentered', () => {
-        setCursor(Cursor.Crosshair);
-      }),
-      musicDisplay.eventBus.subscribe('pointerdown', (payload) => {
-        if (isNonePointerTarget(payload.src)) {
-          return;
-        }
-        if (!isPositional(payload.src)) {
-          return;
-        }
-        const { x, y } = payload.src.position;
-        musicDisplay.getFx().ripple(x, y);
-      }),
-      musicDisplay.eventBus.subscribe('longpress', (payload) => {
-        if (isNonePointerTarget(payload.src)) {
-          return;
-        }
-        if (!isPositional(payload.src)) {
-          return;
-        }
-        const { x, y } = payload.src.position;
-        musicDisplay.getFx().bigRipple(x, y);
-      }),
-    ];
-
-    return () => {
-      musicDisplay.eventBus.unsubscribe(...eventBusIds);
-      setCursor(Cursor.Crosshair);
-    };
-  }, [device, musicDisplay]);
-
-  useEffect(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (!scrollContainer) {
-      return;
-    }
-
-    const div = divRef.current;
-    if (!div) {
-      return;
-    }
-
-    const svgSettings = {
-      eventNames: [...COMMON_SVG_EVENT_NAMES],
-    };
-    switch (device.inputType) {
-      case 'mouseOnly':
-        svgSettings.eventNames = [...svgSettings.eventNames, ...MOUSE_SVG_EVENT_NAMES];
-        break;
-      case 'touchOnly':
-        svgSettings.eventNames = [...svgSettings.eventNames, ...TOUCH_SVG_EVENT_NAMES];
-        break;
-      case 'hybrid':
-        svgSettings.eventNames = [...svgSettings.eventNames, ...MOUSE_SVG_EVENT_NAMES, ...TOUCH_SVG_EVENT_NAMES];
-        break;
-    }
-
-    const musicDisplay = new MusicDisplay(div, {
-      syncSettings: { deadTimeMs, durationMs },
-      svgSettings,
-      scrollContainer,
-    });
-
-    const startLoading = () => setIsLoading(true);
-    const stopLoading = () => setIsLoading(false);
-
-    const eventBusIds = [
-      musicDisplay.eventBus.subscribe('loadstarted', startLoading),
-      musicDisplay.eventBus.subscribe('loadended', stopLoading),
-      musicDisplay.eventBus.subscribe('resizestarted', startLoading),
-      musicDisplay.eventBus.subscribe('resizeended', stopLoading),
-    ];
-
-    // On mobile, resize will fire when scrolling.
-    let width = window.outerWidth;
-    let height = window.outerHeight;
-    const dispatchResizeStarted = () => {
-      if (width !== window.outerWidth || height !== window.outerHeight) {
-        width = window.outerWidth;
-        height = window.outerHeight;
-        musicDisplay.eventBus.dispatch('resizestarted', {});
-      }
-    };
-    window.addEventListener('resize', dispatchResizeStarted);
-
-    setMusicDisplay(musicDisplay);
-    musicDisplay.load(musicXmlUrl);
-
-    return () => {
-      setMusicDisplay(null);
-
-      window.removeEventListener('resize', dispatchResizeStarted);
-
-      musicDisplay.eventBus.unsubscribe(...eventBusIds);
-
-      musicDisplay.dispose();
-    };
-  }, [musicXmlUrl, deadTimeMs, durationMs, scrollContainerRef, device]);
+  // home button
+  const history = useHistory();
+  const onHomeClick = () => history.push('/library');
 
   return (
-    <Outer data-notation cursor={cursor}>
-      {isLoading && (
-        <LoadingOverlay>
-          <Loading>loading</Loading>
-        </LoadingOverlay>
+    <div data-testid="notation">
+      {layout === 'sidecar' && (
+        <>
+          <SplitPane
+            resizerStyle={{ width: 4, background: 'red' }}
+            minSize={layoutSizeBoundsPx.sidecar.min}
+            maxSize={layoutSizeBoundsPx.sidecar.max}
+          >
+            <Sidecar videoSkeleton loading={loading}>
+              <Media loading={loading} />
+            </Sidecar>
+            <MusicDisplay loading={loading} />
+          </SplitPane>
+        </>
       )}
-      <div draggable={false} ref={divRef} />
-    </Outer>
+
+      {layout === 'theater' && (
+        <>
+          <FloatingButton $top={16} size="large" type="primary" icon={<HomeOutlined />} onClick={onHomeClick} />
+          <FloatingButton
+            $top={72}
+            size="large"
+            type="primary"
+            icon={<DoubleRightOutlined />}
+            onClick={onOpenSidecarDrawerButtonClick}
+          />
+          <Drawer closable visible={isSidecarDrawerVisible} width="100%" onClose={onSidecarDrawerCloseClick}>
+            <Sidecar loading={loading}>
+              <div>video</div>
+            </Sidecar>
+          </Drawer>
+
+          {video && (
+            <SplitPane
+              split="horizontal"
+              style={{ position: 'static' }}
+              resizerStyle={{ height: 4, background: 'red' }}
+              minSize={layoutSizeBoundsPx.theater.min}
+              maxSize={layoutSizeBoundsPx.theater.max}
+            >
+              <Media loading={loading} />
+              <MusicDisplay loading={loading} />
+            </SplitPane>
+          )}
+
+          {!video && <div>TODO</div>}
+        </>
+      )}
+    </div>
   );
 };

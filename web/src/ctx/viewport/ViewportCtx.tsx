@@ -6,7 +6,7 @@ import { Breakpoint, ViewportState } from './types';
 
 const VIEWPORT_ACTIONS = {
   setViewportState: createAction<{ state: ViewportState }>('setBreakpoint'),
-  updateInnerHeight: createAction<{ innerHeight: number }>('updateInnerHeight'),
+  updateDimensions: createAction<{ innerHeight: number; innerWidth: number }>('updateDimensions'),
 };
 
 const BREAKPOINT_QUERIES = [
@@ -25,8 +25,9 @@ const viewportReducer = createReducer(getInitialState(), (builder) => {
   builder.addCase(VIEWPORT_ACTIONS.setViewportState, (state, action) => {
     return action.payload.state;
   });
-  builder.addCase(VIEWPORT_ACTIONS.updateInnerHeight, (state, action) => {
+  builder.addCase(VIEWPORT_ACTIONS.updateDimensions, (state, action) => {
     state.innerHeight = action.payload.innerHeight;
+    state.innerWidth = action.payload.innerWidth;
   });
 });
 
@@ -43,7 +44,7 @@ export const ViewportProvider: React.FC = (props) => {
 
   useEffect(() => {
     const onResize = () => {
-      dispatch(VIEWPORT_ACTIONS.updateInnerHeight({ innerHeight: window.innerHeight }));
+      dispatch(VIEWPORT_ACTIONS.updateDimensions({ innerHeight: window.innerHeight, innerWidth: window.innerWidth }));
     };
     window.addEventListener('resize', onResize);
     return () => {
