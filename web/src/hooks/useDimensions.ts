@@ -29,6 +29,7 @@ export const useDimensions = (element: Nullable<Element>, defaultDimensions = DE
 
     return () => {
       observer.disconnect();
+      setDimensions({ width: 0, height: 0 });
     };
   }, [element]);
 

@@ -1,10 +1,11 @@
 import { DoubleRightOutlined, HomeOutlined } from '@ant-design/icons';
 import { Button, Drawer } from 'antd';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import { useViewport } from '../../ctx/viewport/useViewport';
-import { Dimensions, Nullable } from '../../util/types';
+import { Nullable } from '../../util/types';
+import { Controls } from './Controls';
 import * as helpers from './helpers';
 import { Media } from './Media';
 import { MusicDisplay } from './MusicDisplay';
@@ -17,6 +18,19 @@ const FloatingButton = styled(Button)<{ $top: number }>`
   top: ${(props) => props.$top}px;
   right: -1px;
   z-index: 3;
+`;
+
+const Flex1 = styled.div`
+  overflow-x: hidden;
+  overflow-y: auto;
+  flex: 1;
+`;
+
+const FlexColumn = styled.div<{ $height: number }>`
+  display: flex;
+  flex-direction: column;
+  transition: height 200ms;
+  height: ${(props) => props.$height}px;
 `;
 
 type Props = {
@@ -40,13 +54,7 @@ export const Notation: React.FC<Props> = (props) => {
   const viewport = useViewport();
   const layoutSizeBoundsPx = helpers.getLayoutSizeBoundsPx(viewport);
   const [pane1Dimensions, setPane1Dimensions] = useState({ width: 0, height: 0 });
-  const onPane1Resize = useCallback((dimensions: Dimensions) => setPane1Dimensions(dimensions), []);
-  useEffect(() => {
-    if (!video) {
-      setPane1Dimensions({ width: 0, height: 0 });
-    }
-  }, [video]);
-  useEffect(() => {}, [pane1Dimensions]);
+  const pane2Height = viewport.innerHeight - pane1Dimensions.height;
 
   // sidecar drawer button
   const [isSidecarDrawerVisible, setSidecarDrawerVisibility] = useState(false);
@@ -65,7 +73,7 @@ export const Notation: React.FC<Props> = (props) => {
             split="vertical"
             minSize={layoutSizeBoundsPx.sidecar.min}
             maxSize={layoutSizeBoundsPx.sidecar.max}
-            onPane1Resize={onPane1Resize}
+            onPane1Resize={setPane1Dimensions}
           >
             <Sidecar videoSkeleton loading={loading}>
               <Media video loading={loading} src={src} />
@@ -98,10 +106,15 @@ export const Notation: React.FC<Props> = (props) => {
               style={{ position: 'static' }}
               minSize={layoutSizeBoundsPx.theater.min}
               maxSize={layoutSizeBoundsPx.theater.max}
-              onPane1Resize={onPane1Resize}
+              onPane1Resize={setPane1Dimensions}
             >
               <Media video fluid={false} loading={loading} src={src} />
-              <MusicDisplay loading={loading} notation={notation} />
+              <FlexColumn $height={pane2Height}>
+                <Flex1>
+                  <MusicDisplay loading={loading} notation={notation} />
+                </Flex1>
+                <Controls />
+              </FlexColumn>
             </SplitPane>
           )}
 

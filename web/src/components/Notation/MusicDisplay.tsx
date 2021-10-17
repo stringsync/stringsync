@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { RenderableNotation } from '.';
 import { Device, useDevice } from '../../ctx/device';
+import { useDimensions } from '../../hooks/useDimensions';
 import { MusicDisplay as MusicDisplayBackend } from '../../lib/MusicDisplay';
 import { CursorStyleType } from '../../lib/MusicDisplay/cursors';
 import { isNonePointerTarget, isPositional, PointerTargetType } from '../../lib/MusicDisplay/pointer';
@@ -36,8 +37,6 @@ enum Cursor {
 }
 
 const Outer = styled.div<{ cursor: Cursor }>`
-  margin-top: 24px;
-  position: relative;
   cursor: ${(props) => props.cursor};
 `;
 
@@ -56,6 +55,7 @@ const LoadingOverlay = styled.div`
   z-index: 2;
   text-align: center;
   pointer-events: none;
+  padding-top: 24px;
 `;
 
 const Loading = styled.small`
@@ -81,6 +81,11 @@ export const MusicDisplay: React.FC<Props> = (props) => {
   const [cursor, setCursor] = useState(Cursor.Crosshair);
   const [musicDisplayLoading, setMusicDisplayLoading] = useState(false);
   const onMusicDisplayChange = props.onMusicDisplayChange || noop;
+  const { width } = useDimensions(scrollContainerRef.current);
+
+  useEffect(() => {
+    console.log('asdf', width);
+  }, [width]);
 
   useEffect(() => {
     if (!notation) {
@@ -116,25 +121,12 @@ export const MusicDisplay: React.FC<Props> = (props) => {
       musicDisplay.eventBus.subscribe('resizeended', stopLoading),
     ];
 
-    // On mobile, resize will fire when scrolling. Prevent it by checking the window dimensions.
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    const dispatchResizeStarted = () => {
-      if (width !== window.innerWidth || height !== window.innerHeight) {
-        width = window.innerWidth;
-        height = window.innerHeight;
-        musicDisplay.eventBus.dispatch('resizestarted', {});
-      }
-    };
-    window.addEventListener('resize', dispatchResizeStarted);
-
     setMusicDisplay(musicDisplay);
     musicDisplay.load(notation.musicXmlUrl);
 
     return () => {
       setMusicDisplay(null);
       onMusicDisplayChange(null);
-      window.removeEventListener('resize', dispatchResizeStarted);
       musicDisplay.eventBus.unsubscribe(...eventBusIds);
       musicDisplay.dispose();
     };

@@ -1,6 +1,6 @@
 import { MenuOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import { noop } from 'lodash';
+import { get, noop } from 'lodash';
 import React, { useEffect, useRef } from 'react';
 import ReactSplitPane, { SplitPaneProps } from 'react-split-pane';
 import styled from 'styled-components';
@@ -17,6 +17,7 @@ const HorizontalOuter = styled.div`
   height: 0;
   width: 100%;
   border-bottom: 1px solid ${(props) => props.theme['@border-color']};
+  z-index: 3;
 `;
 
 const VerticalOuter = styled.div`
@@ -28,6 +29,7 @@ const VerticalOuter = styled.div`
   height: 100%;
   width: 0;
   border-right: 1px solid ${(props) => props.theme['@border-color']};
+  z-index: 3;
 `;
 
 const VerticalMenuOutlined = styled(MenuOutlined)`
@@ -58,9 +60,11 @@ export const SplitPane: React.FC<Props> = (props) => {
   const onPane1Resize = props.onPane1Resize || noop;
 
   // dimensions management
-  const outerRef = useRef<HTMLDivElement>(null);
-  const outerDimensions = useDimensions(outerRef.current);
-  useEffect(() => onPane1Resize(outerDimensions), [onPane1Resize, outerDimensions]);
+  const pane1 = get(splitPane, 'pane1', null);
+  const pane1Dimensions = useDimensions(pane1);
+  useEffect(() => {
+    onPane1Resize(pane1Dimensions);
+  }, [onPane1Resize, pane1Dimensions]);
 
   return (
     <ReactSplitPane
@@ -89,7 +93,7 @@ export const SplitPane: React.FC<Props> = (props) => {
       {children[0]}
       {props.split === 'horizontal' && (
         <>
-          <HorizontalOuter ref={outerRef}>
+          <HorizontalOuter>
             <Button
               icon={<MenuOutlined />}
               onMouseDown={onMouseDown}
@@ -104,7 +108,7 @@ export const SplitPane: React.FC<Props> = (props) => {
       )}
       {props.split === 'vertical' && (
         <>
-          <VerticalOuter ref={outerRef}>
+          <VerticalOuter>
             <Button
               icon={<VerticalMenuOutlined />}
               onMouseDown={onMouseDown}

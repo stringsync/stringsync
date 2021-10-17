@@ -1,5 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router';
+import styled from 'styled-components';
 import { useDevice } from '../../ctx/device';
 import { useViewport } from '../../ctx/viewport/useViewport';
 import { Layout, withLayout } from '../../hocs/withLayout';
@@ -23,6 +24,13 @@ const DEFAULT_NOTATION_LAYOUT: NotationLayoutOptions = {
   permitted: ['theater', 'sidecar'],
 };
 
+// On Safari, the address bar only hides when it's possible to scroll on the Y-axs and the user is scrolling towards the
+// bottom. Therefore, we purposely add overflow-y, but the user should never see this in theory. Safari is important to
+// support because it's the in-browser choice for a lot of apps.
+const Outer = styled.div`
+  height: 101vh;
+`;
+
 const enhance = compose(withLayout(Layout.NONE, { lanes: false, footer: false }));
 
 const NotationShow: React.FC = enhance(() => {
@@ -40,9 +48,9 @@ const NotationShow: React.FC = enhance(() => {
   useNoTouchCallout(document.body);
 
   return (
-    <div data-testid="notation-show">
+    <Outer data-testid="notation-show">
       <Notation loading={loading} video notation={notation} layout={layout} />
-    </div>
+    </Outer>
   );
 });
 
