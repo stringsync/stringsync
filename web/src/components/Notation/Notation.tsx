@@ -1,9 +1,12 @@
 import { DoubleRightOutlined, HomeOutlined } from '@ant-design/icons';
 import { Button, Drawer } from 'antd';
+import { noop } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
+import { useDevice } from '../../ctx/device';
 import { useViewport } from '../../ctx/viewport/useViewport';
+import { useMemoCmp } from '../../hooks/useMemoCmp';
 import { MusicDisplay as MusicDisplayBackend } from '../../lib/MusicDisplay';
 import { Nullable } from '../../util/types';
 import { Controls } from './Controls';
@@ -12,7 +15,7 @@ import { Media } from './Media';
 import { MusicDisplay } from './MusicDisplay';
 import { Sidecar } from './Sidecar';
 import { SplitPane } from './SplitPane';
-import { NotationLayoutOptions, RenderableNotation } from './types';
+import { NotationLayoutOptions, NotationSettings, RenderableNotation } from './types';
 
 const FloatingButton = styled(Button)<{ $top: number }>`
   position: fixed;
@@ -36,20 +39,36 @@ const FlexColumn = styled.div<{ $height: number }>`
 
 type Props = {
   loading?: boolean;
-  layout?: NotationLayoutOptions;
-  video: boolean;
   sidecar?: React.ReactNode;
+  layoutOptions?: NotationLayoutOptions;
   notation: Nullable<RenderableNotation>;
+  defaultSettings?: Partial<NotationSettings>;
+  onSettingsChange?: (settings: NotationSettings) => void;
 };
 
 export const Notation: React.FC<Props> = (props) => {
   // props
-  const layout = helpers.getLayout(props.layout);
   const loading = props.loading || false;
-  const video = props.video;
   const notation = props.notation;
+  const layoutOptions = props.layoutOptions;
   const sidecar = props.sidecar;
   const src = notation?.videoUrl || null;
+  const defaultSettings = useMemoCmp(props.defaultSettings);
+  const onSettingsChange = props.onSettingsChange || noop;
+
+  // settings
+  const device = useDevice();
+  const [settings, setSettings] = useState<NotationSettings>(() => ({
+    ...helpers.getDefaultSettings(device),
+    ...defaultSettings,
+  }));
+  useEffect(() => {
+    onSettingsChange(settings);
+  }, [onSettingsChange, settings]);
+
+  // layout
+  const isPreferredLayoutPermitted = layoutOptions?.permitted.includes(settings.preferredLayout) || false;
+  const layout = isPreferredLayoutPermitted ? settings.preferredLayout : helpers.getLayout(layoutOptions);
 
   // split pane sizing
   const viewport = useViewport();
@@ -113,7 +132,7 @@ export const Notation: React.FC<Props> = (props) => {
             </Sidecar>
           </Drawer>
 
-          {video && (
+          {settings.isVideoVisible && (
             <SplitPane
               split="horizontal"
               style={{ position: 'static' }}
@@ -131,7 +150,7 @@ export const Notation: React.FC<Props> = (props) => {
             </SplitPane>
           )}
 
-          {!video && <div>TODO</div>}
+          {!settings.isVideoVisible && <div>TODO</div>}
         </>
       )}
     </div>

@@ -1,31 +1,29 @@
 import { first } from 'lodash';
+import { NotationLayoutOptions } from '.';
+import { Device } from '../../ctx/device';
 import { ViewportState } from '../../ctx/viewport';
 import { InternalError } from '../../errors';
 import * as constants from './constants';
 import { CONTROLS_HEIGHT_PX } from './Controls';
-import { NotationLayout, NotationLayoutOptions } from './types';
+import { FretMarkerDisplay, NotationLayout, NotationSettings, ScaleSelectionType } from './types';
 
 const ALL_LAYOUTS: NotationLayout[] = ['sidecar', 'theater'];
 
-export const getLayout = (opts: NotationLayoutOptions = {}): NotationLayout => {
-  const preferredLayout = opts.preferred || null;
-  const permittedLayouts = opts.permitted || ALL_LAYOUTS;
-  const defaultLayout = opts.default || first(permittedLayouts);
+export const getLayout = (opts: Partial<NotationLayoutOptions> = {}): NotationLayout => {
+  const permitted = opts.permitted || ALL_LAYOUTS;
+  const target = opts.target || first(permitted) || null;
 
-  if (permittedLayouts.length === 0) {
+  if (!target) {
+    throw new InternalError('could not get layout');
+  }
+  if (permitted.length === 0) {
     throw new InternalError('must permit at least 1 layout');
   }
-  if (!defaultLayout) {
-    throw new InternalError('must have a default layout');
-  }
-  if (!permittedLayouts.includes(defaultLayout)) {
-    throw new InternalError(`permitted layouts must be unspecified or explicitly include: ${defaultLayout}`);
+  if (!permitted.includes(target)) {
+    throw new InternalError(`permitted layouts must be unspecified or explicitly include: ${target}`);
   }
 
-  if (preferredLayout && permittedLayouts.includes(preferredLayout)) {
-    return preferredLayout;
-  }
-  return defaultLayout;
+  return target;
 };
 
 export const getLayoutSizeBoundsPx = (viewport: ViewportState) => {
@@ -52,3 +50,14 @@ export const getLayoutSizeBoundsPx = (viewport: ViewportState) => {
     },
   };
 };
+
+export const getDefaultSettings = (device: Device): NotationSettings => ({
+  preferredLayout: 'sidecar',
+  isFretboardVisible: !device.mobile,
+  fretMarkerDisplay: FretMarkerDisplay.None,
+  isAutoScrollPreferred: true,
+  isVideoVisible: true,
+  scaleSelectionType: ScaleSelectionType.None,
+  selectedScale: null,
+  isLoopActive: false,
+});

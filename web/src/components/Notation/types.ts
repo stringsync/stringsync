@@ -1,12 +1,10 @@
 import { Notation } from '../../domain';
-import { Nullable } from '../../util/types';
 
 export type NotationLayout = 'theater' | 'sidecar';
 
 export type NotationLayoutOptions = {
-  default?: NotationLayout;
-  preferred?: Nullable<NotationLayout>;
-  permitted?: NotationLayout[];
+  target: NotationLayout;
+  permitted: NotationLayout[];
 };
 
 export type RenderableNotation = Pick<
@@ -26,3 +24,14 @@ export enum ScaleSelectionType {
   User,
   Random,
 }
+
+export type NotationSettings = {
+  preferredLayout: NotationLayout;
+  isFretboardVisible: boolean;
+  fretMarkerDisplay: FretMarkerDisplay;
+  isAutoScrollPreferred: boolean;
+  isVideoVisible: boolean;
+  scaleSelectionType: ScaleSelectionType;
+  selectedScale: string | null;
+  isLoopActive: boolean;
+};
