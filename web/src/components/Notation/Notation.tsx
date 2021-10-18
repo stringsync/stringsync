@@ -1,6 +1,6 @@
 import { DoubleRightOutlined, HomeOutlined } from '@ant-design/icons';
 import { Button, Drawer } from 'antd';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import { useViewport } from '../../ctx/viewport/useViewport';
@@ -56,6 +56,7 @@ export const Notation: React.FC<Props> = (props) => {
   const layoutSizeBoundsPx = helpers.getLayoutSizeBoundsPx(viewport);
   const [pane1Dimensions, setPane1Dimensions] = useState({ width: 0, height: 0 });
   const pane2Height = viewport.innerHeight - pane1Dimensions.height;
+  const pane2Width = viewport.innerWidth - pane1Dimensions.width;
 
   // sidecar drawer button
   const [isSidecarDrawerVisible, setSidecarDrawerVisibility] = useState(false);
@@ -68,30 +69,9 @@ export const Notation: React.FC<Props> = (props) => {
 
   // music display
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplayBackend | null>(null);
-  const resizeMusicDisplay = useCallback(() => {
-    // sidecar is the layout where a musicDisplay resize is based on width
-    if (layout === 'sidecar') {
-      musicDisplay?.resize();
-    }
-  }, [layout, musicDisplay]);
   useEffect(() => {
-    if (!musicDisplay) {
-      return;
-    }
-
-    let width = window.innerWidth;
-    const resize = () => {
-      if (width === window.innerWidth) {
-        return;
-      }
-      width = window.innerWidth;
-      musicDisplay.resize();
-    };
-    window.addEventListener('resize', resize);
-    return () => {
-      window.removeEventListener('resize', resize);
-    };
-  }, [musicDisplay]);
+    musicDisplay?.resize();
+  }, [musicDisplay, pane2Width]);
 
   return (
     <div data-testid="notation">
@@ -102,7 +82,6 @@ export const Notation: React.FC<Props> = (props) => {
             minSize={layoutSizeBoundsPx.sidecar.min}
             maxSize={layoutSizeBoundsPx.sidecar.max}
             onPane1Resize={setPane1Dimensions}
-            onDragFinished={resizeMusicDisplay}
           >
             <Sidecar videoSkeleton loading={loading}>
               <Media video loading={loading} src={src} />
@@ -141,7 +120,6 @@ export const Notation: React.FC<Props> = (props) => {
               minSize={layoutSizeBoundsPx.theater.min}
               maxSize={layoutSizeBoundsPx.theater.max}
               onPane1Resize={setPane1Dimensions}
-              onDragFinished={resizeMusicDisplay}
             >
               <Media video fluid={false} loading={loading} src={src} />
               <FlexColumn $height={pane2Height}>
