@@ -1,9 +1,10 @@
 import { DoubleRightOutlined, HomeOutlined } from '@ant-design/icons';
 import { Button, Drawer } from 'antd';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import { useViewport } from '../../ctx/viewport/useViewport';
+import { MusicDisplay as MusicDisplayBackend } from '../../lib/MusicDisplay';
 import { Nullable } from '../../util/types';
 import { Controls } from './Controls';
 import * as helpers from './helpers';
@@ -65,6 +66,33 @@ export const Notation: React.FC<Props> = (props) => {
   const history = useHistory();
   const onHomeClick = () => history.push('/library');
 
+  // music display
+  const [musicDisplay, setMusicDisplay] = useState<MusicDisplayBackend | null>(null);
+  const resizeMusicDisplay = useCallback(() => {
+    // sidecar is the layout where a musicDisplay resize is based on width
+    if (layout === 'sidecar') {
+      musicDisplay?.resize();
+    }
+  }, [layout, musicDisplay]);
+  useEffect(() => {
+    if (!musicDisplay) {
+      return;
+    }
+
+    let width = window.innerWidth;
+    const resize = () => {
+      if (width === window.innerWidth) {
+        return;
+      }
+      width = window.innerWidth;
+      musicDisplay.resize();
+    };
+    window.addEventListener('resize', resize);
+    return () => {
+      window.removeEventListener('resize', resize);
+    };
+  }, [musicDisplay]);
+
   return (
     <div data-testid="notation">
       {layout === 'sidecar' && (
@@ -74,12 +102,18 @@ export const Notation: React.FC<Props> = (props) => {
             minSize={layoutSizeBoundsPx.sidecar.min}
             maxSize={layoutSizeBoundsPx.sidecar.max}
             onPane1Resize={setPane1Dimensions}
+            onDragFinished={resizeMusicDisplay}
           >
             <Sidecar videoSkeleton loading={loading}>
               <Media video loading={loading} src={src} />
               {sidecar}
             </Sidecar>
-            <MusicDisplay loading={loading} notation={notation} />
+            <FlexColumn $height={viewport.innerHeight}>
+              <Flex1>
+                <MusicDisplay loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
+              </Flex1>
+              <Controls />
+            </FlexColumn>
           </SplitPane>
         </>
       )}
@@ -107,11 +141,12 @@ export const Notation: React.FC<Props> = (props) => {
               minSize={layoutSizeBoundsPx.theater.min}
               maxSize={layoutSizeBoundsPx.theater.max}
               onPane1Resize={setPane1Dimensions}
+              onDragFinished={resizeMusicDisplay}
             >
               <Media video fluid={false} loading={loading} src={src} />
               <FlexColumn $height={pane2Height}>
                 <Flex1>
-                  <MusicDisplay loading={loading} notation={notation} />
+                  <MusicDisplay loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
                 </Flex1>
                 <Controls />
               </FlexColumn>

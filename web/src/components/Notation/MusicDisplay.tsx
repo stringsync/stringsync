@@ -1,10 +1,10 @@
 import { Skeleton } from 'antd';
 import { noop } from 'lodash';
+import { DrawingParametersEnum } from 'opensheetmusicdisplay';
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { RenderableNotation } from '.';
 import { Device, useDevice } from '../../ctx/device';
-import { useDimensions } from '../../hooks/useDimensions';
 import { MusicDisplay as MusicDisplayBackend } from '../../lib/MusicDisplay';
 import { CursorStyleType } from '../../lib/MusicDisplay/cursors';
 import { isNonePointerTarget, isPositional, PointerTargetType } from '../../lib/MusicDisplay/pointer';
@@ -38,6 +38,7 @@ enum Cursor {
 
 const Outer = styled.div<{ cursor: Cursor }>`
   cursor: ${(props) => props.cursor};
+  padding-top: 24px;
 `;
 
 const SkeletonContainer = styled.div`
@@ -81,11 +82,10 @@ export const MusicDisplay: React.FC<Props> = (props) => {
   const [cursor, setCursor] = useState(Cursor.Crosshair);
   const [musicDisplayLoading, setMusicDisplayLoading] = useState(false);
   const onMusicDisplayChange = props.onMusicDisplayChange || noop;
-  const { width } = useDimensions(scrollContainerRef.current);
 
   useEffect(() => {
-    console.log('asdf', width);
-  }, [width]);
+    onMusicDisplayChange(musicDisplay);
+  }, [musicDisplay, onMusicDisplayChange]);
 
   useEffect(() => {
     if (!notation) {
@@ -109,6 +109,7 @@ export const MusicDisplay: React.FC<Props> = (props) => {
       syncSettings: { deadTimeMs: notation.deadTimeMs, durationMs: notation.durationMs },
       svgSettings: { eventNames: getSvgEventNames(device) },
       scrollContainer,
+      drawingParameters: device.mobile ? DrawingParametersEnum.compacttight : DrawingParametersEnum.default,
     });
 
     const startLoading = () => setMusicDisplayLoading(true);
@@ -126,7 +127,6 @@ export const MusicDisplay: React.FC<Props> = (props) => {
 
     return () => {
       setMusicDisplay(null);
-      onMusicDisplayChange(null);
       musicDisplay.eventBus.unsubscribe(...eventBusIds);
       musicDisplay.dispose();
     };

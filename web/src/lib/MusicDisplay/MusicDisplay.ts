@@ -11,7 +11,7 @@ const DEFAULT_OPTS: MusicDisplayOptions = {
   syncSettings: { deadTimeMs: 0, durationMs: 0 },
   svgSettings: { eventNames: ['mouseup', 'mousedown', 'mousemove'] },
   scrollContainer: DUMMY_DIV,
-  autoResize: true,
+  autoResize: false,
   drawTitle: false,
   drawSubtitle: false,
   drawingParameters: DrawingParametersEnum.default,
@@ -40,6 +40,10 @@ export class MusicDisplay {
   async load(xmlUrl: string) {
     await this.imd.load(xmlUrl);
     this.imd.render();
+  }
+
+  resize() {
+    this.imd.resize();
   }
 
   dispose() {

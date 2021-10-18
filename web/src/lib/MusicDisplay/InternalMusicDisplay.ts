@@ -1,4 +1,4 @@
-import { first, get, set, takeRight } from 'lodash';
+import { debounce, first, get, set, takeRight } from 'lodash';
 import {
   BackendType,
   Cursor,
@@ -55,6 +55,8 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   meta: MusicDisplayMeta = MusicDisplayMeta.createNull();
   fx = new Fx(DUMMY_SVG);
 
+  isResizing = false;
+
   constructor(container: string | HTMLElement, eventBus: MusicDisplayEventBus, opts: MusicDisplayOptions) {
     super(container, opts);
 
@@ -74,6 +76,31 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
       this.eventBus.dispatch('loadended', {});
     }
   }
+
+  resize() {
+    if (!this.isResizing) {
+      this.eventBus.dispatch('resizestarted', {});
+      this.isResizing = true;
+    }
+    this.doResize();
+  }
+
+  private doResize = debounce(
+    () => {
+      // HACK, manually resize based on:
+      // https://github.com/opensheetmusicdisplay/opensheetmusicdisplay/blob/a2309f768080a1b14f292fbf83c246f1bea00318/src/OpenSheetMusicDisplay/OpenSheetMusicDisplay.ts#L700-L705
+      if (this.IsReadyToRender()) {
+        this.Drawer.Backends[0].removeAllChildrenFromContainer(this.container);
+        this.Drawer.Backends.clear();
+        this.render();
+      }
+
+      this.isResizing = false;
+      this.eventBus.dispatch('resizeended', {});
+    },
+    500,
+    { leading: false, trailing: true }
+  );
 
   render() {
     super.render();

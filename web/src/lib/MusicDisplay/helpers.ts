@@ -1,6 +1,6 @@
 import { Key } from '@tonaljs/tonal';
 import { sortBy } from 'lodash';
-import { KeyEnum, KeyInstruction } from 'opensheetmusicdisplay';
+import { KeyEnum, KeyInstruction, VexFlowMusicSheetCalculator } from 'opensheetmusicdisplay';
 import { ConflictError, InternalError } from '../../errors';
 
 export type MajorKey = ReturnType<typeof Key.majorKey>;
@@ -87,4 +87,8 @@ export const getDistinctElementsSortedByFrequencyDesc = (arr: string[]): string[
   }
 
   return sortBy(Object.entries(freqs), ([el, freq]) => -freq).map(([el]) => el);
+};
+
+export const isVexFlowMusicSheetCalculator = (value: any): value is VexFlowMusicSheetCalculator => {
+  return value instanceof VexFlowMusicSheetCalculator;
 };
