@@ -17,6 +17,8 @@ import { Sidecar } from './Sidecar';
 import { SplitPane } from './SplitPane';
 import { NotationLayoutOptions, NotationSettings, RenderableNotation } from './types';
 
+const NOTATION_DETAIL_THRESHOLD_PX = 767;
+
 const FloatingButton = styled(Button)<{ $top: number }>`
   position: fixed;
   top: ${(props) => props.$top}px;
@@ -92,6 +94,9 @@ export const Notation: React.FC<Props> = (props) => {
     musicDisplay?.resize();
   }, [musicDisplay, pane2Width]);
 
+  // controls detail
+  const showDetail = pane2Width > NOTATION_DETAIL_THRESHOLD_PX;
+
   return (
     <div data-testid="notation">
       {layout === 'sidecar' && (
@@ -100,6 +105,7 @@ export const Notation: React.FC<Props> = (props) => {
             split="vertical"
             minSize={layoutSizeBoundsPx.sidecar.min}
             maxSize={layoutSizeBoundsPx.sidecar.max}
+            pane2Style={{ width: '100%' }}
             onPane1Resize={setPane1Dimensions}
           >
             <Sidecar videoSkeleton loading={loading}>
@@ -110,7 +116,7 @@ export const Notation: React.FC<Props> = (props) => {
               <Flex1>
                 <MusicDisplay loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
               </Flex1>
-              <Controls />
+              <Controls showDetail={showDetail} notation={notation} settings={settings} setSettings={setSettings} />
             </FlexColumn>
           </SplitPane>
         </>
@@ -145,7 +151,7 @@ export const Notation: React.FC<Props> = (props) => {
                 <Flex1>
                   <MusicDisplay loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
                 </Flex1>
-                <Controls />
+                <Controls showDetail={showDetail} notation={notation} settings={settings} setSettings={setSettings} />
               </FlexColumn>
             </SplitPane>
           )}

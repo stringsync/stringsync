@@ -8,9 +8,6 @@ import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { useMemoCmp } from '../../hooks/useMemoCmp';
 import { useNoOverflow } from '../../hooks/useNoOverflow';
 import { useNotation } from '../../hooks/useNotation';
-import { useNoTouchAction } from '../../hooks/useNoTouchAction';
-import { useNoTouchCallout } from '../../hooks/useNoTouchCallout';
-import { useNoUserSelect } from '../../hooks/useNoUserSelect';
 import { compose } from '../../util/compose';
 import { FretMarkerDisplay, Notation, NotationLayoutOptions, NotationSettings } from '../Notation';
 import { PersistentSettings } from './types';
@@ -49,16 +46,13 @@ const NotationShow: React.FC = enhance(() => {
 
   // css effects
   useNoOverflow(document.body);
-  useNoUserSelect(document.body);
-  useNoTouchAction(document.body);
-  useNoTouchCallout(document.body);
 
   // settings
   const initialDefaultSettings = useMemoCmp<PersistentSettings>({
     preferredLayout: 'sidecar',
     isVideoVisible: true,
     isFretboardVisible: !device.mobile,
-    isAutoScrollPreferred: true,
+    isAutoscrollPreferred: true,
     fretMarkerDisplay: FretMarkerDisplay.None,
   });
   const [defaultSettings, setDefaultSettings] = useLocalStorage<PersistentSettings>(
@@ -71,7 +65,7 @@ const NotationShow: React.FC = enhance(() => {
         preferredLayout: settings.preferredLayout,
         isVideoVisible: settings.isVideoVisible,
         isFretboardVisible: settings.isFretboardVisible,
-        isAutoScrollPreferred: settings.isAutoScrollPreferred,
+        isAutoscrollPreferred: settings.isAutoscrollPreferred,
         fretMarkerDisplay: settings.fretMarkerDisplay,
       });
     },

@@ -55,7 +55,7 @@ export const getDefaultSettings = (device: Device): NotationSettings => ({
   preferredLayout: 'sidecar',
   isFretboardVisible: !device.mobile,
   fretMarkerDisplay: FretMarkerDisplay.None,
-  isAutoScrollPreferred: true,
+  isAutoscrollPreferred: true,
   isVideoVisible: true,
   scaleSelectionType: ScaleSelectionType.None,
   selectedScale: null,

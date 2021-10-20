@@ -5,11 +5,16 @@ import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { RenderableNotation } from '.';
 import { Device, useDevice } from '../../ctx/device';
+import { useNoTouchAction } from '../../hooks/useNoTouchAction';
+import { useNoTouchCallout } from '../../hooks/useNoTouchCallout';
+import { useNoUserSelect } from '../../hooks/useNoUserSelect';
 import { MusicDisplay as MusicDisplayBackend } from '../../lib/MusicDisplay';
 import { CursorStyleType } from '../../lib/MusicDisplay/cursors';
 import { isNonePointerTarget, isPositional, PointerTargetType } from '../../lib/MusicDisplay/pointer';
 import { SupportedSVGEventNames } from '../../lib/MusicDisplay/svg';
 import { Nullable } from '../../util/types';
+
+const DUMMY_DIV = document.createElement('div');
 
 const MOUSE_SVG_EVENT_NAMES: SupportedSVGEventNames[] = ['mousedown', 'mousemove', 'mouseup'];
 const TOUCH_SVG_EVENT_NAMES: SupportedSVGEventNames[] = ['touchstart', 'touchmove', 'touchend'];
@@ -36,9 +41,16 @@ enum Cursor {
   Grabbing = 'grabbing',
 }
 
-const Outer = styled.div<{ cursor: Cursor }>`
-  cursor: ${(props) => props.cursor};
+const Outer = styled.div<{ $cursor: Cursor }>`
+  cursor: ${(props) => props.$cursor};
   padding-top: 24px;
+  height: 100%;
+  position: relative;
+`;
+
+const MusicDisplayOuter = styled.div`
+  position: absolute;
+  width: 100%;
 `;
 
 const SkeletonContainer = styled.div`
@@ -209,8 +221,13 @@ export const MusicDisplay: React.FC<Props> = (props) => {
     };
   }, [device, musicDisplay]);
 
+  // css effects
+  useNoUserSelect(musicDisplayDivRef.current || DUMMY_DIV);
+  useNoTouchAction(document.body);
+  useNoTouchCallout(document.body);
+
   return (
-    <div data-testid="music-display">
+    <Outer data-testid="music-display" $cursor={cursor}>
       {loading && (
         <SkeletonContainer>
           <Skeleton loading title={false} paragraph={{ rows: 3 }} />
@@ -233,15 +250,15 @@ export const MusicDisplay: React.FC<Props> = (props) => {
       )}
 
       {!loading && (
-        <Outer data-notation cursor={cursor} ref={scrollContainerRef}>
+        <div data-notation ref={scrollContainerRef}>
           {musicDisplayLoading && (
             <LoadingOverlay>
               <Loading>loading</Loading>
             </LoadingOverlay>
           )}
-          <div draggable={false} ref={musicDisplayDivRef} />
-        </Outer>
+          <MusicDisplayOuter draggable={false} ref={musicDisplayDivRef} />
+        </div>
       )}
-    </div>
+    </Outer>
   );
 };

@@ -82,10 +82,10 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
       this.eventBus.dispatch('resizestarted', {});
       this.isResizing = true;
     }
-    this.doResize();
+    this.debouncedResize();
   }
 
-  private doResize = debounce(
+  private debouncedResize = debounce(
     () => {
       // HACK, manually resize based on:
       // https://github.com/opensheetmusicdisplay/opensheetmusicdisplay/blob/a2309f768080a1b14f292fbf83c246f1bea00318/src/OpenSheetMusicDisplay/OpenSheetMusicDisplay.ts#L700-L705

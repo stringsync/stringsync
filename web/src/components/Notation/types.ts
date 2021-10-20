@@ -9,7 +9,7 @@ export type NotationLayoutOptions = {
 
 export type RenderableNotation = Pick<
   Notation,
-  'musicXmlUrl' | 'thumbnailUrl' | 'videoUrl' | 'deadTimeMs' | 'durationMs'
+  'musicXmlUrl' | 'thumbnailUrl' | 'videoUrl' | 'deadTimeMs' | 'durationMs' | 'artistName' | 'songName'
 >;
 
 export enum FretMarkerDisplay {
@@ -29,7 +29,7 @@ export type NotationSettings = {
   preferredLayout: NotationLayout;
   isFretboardVisible: boolean;
   fretMarkerDisplay: FretMarkerDisplay;
-  isAutoScrollPreferred: boolean;
+  isAutoscrollPreferred: boolean;
   isVideoVisible: boolean;
   scaleSelectionType: ScaleSelectionType;
   selectedScale: string | null;
