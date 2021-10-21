@@ -1,5 +1,5 @@
 import { Alert, Row } from 'antd';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -11,6 +11,7 @@ import { useMemoCmp } from '../../hooks/useMemoCmp';
 import { useNoOverflow } from '../../hooks/useNoOverflow';
 import { useNotation } from '../../hooks/useNotation';
 import { compose } from '../../util/compose';
+import { scrollToTop } from '../../util/scrollToTop';
 import { FretMarkerDisplay, Notation, NotationLayoutOptions, NotationSettings } from '../Notation';
 import { SuggestedNotations } from './SuggestedNotations';
 import { PersistentSettings } from './types';
@@ -29,9 +30,20 @@ const MOBILE_NOTATION_LAYOUT_OPTIONS: NotationLayoutOptions = {
 
 // On Safari, the address bar only hides when it's possible to scroll on the Y-axs and the user is scrolling towards the
 // bottom. Therefore, we purposely add overflow-y, but the user should never see this in theory. Safari is important to
-// support because it's the in-browser choice for a lot of apps.
+// support because it's the web viewer in iPhone apps, assumed to be a large portion of the user base.
 const Outer = styled.div`
   height: 101vh;
+`;
+
+const ErrorsOuter = styled.div`
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px;
+`;
+
+const ErroredSuggestedNotationsOuter = styled.div`
+  margin: 0 auto;
+  max-width: 500px;
 `;
 
 const enhance = compose(withLayout(Layout.NONE, { lanes: false, footer: false }));
@@ -47,9 +59,12 @@ const NotationShow: React.FC = enhance(() => {
   const params = useParams<{ id: string }>();
   const [notation, errors, loading] = useNotation(params.id);
   const hasErrors = errors.length > 0;
+  useEffect(() => {
+    scrollToTop();
+  }, [params.id]);
 
   // css effects
-  useNoOverflow(document.body);
+  useNoOverflow(hasErrors ? null : document.body);
 
   // settings
   const initialDefaultSettings = useMemoCmp<PersistentSettings>({
@@ -90,9 +105,7 @@ const NotationShow: React.FC = enhance(() => {
       )}
 
       {!loading && hasErrors && (
-        <>
-          <br />
-          <br />
+        <ErrorsOuter>
           <Row justify="center">
             <Alert
               showIcon
@@ -108,7 +121,13 @@ const NotationShow: React.FC = enhance(() => {
               }
             />
           </Row>
-        </>
+
+          <br />
+
+          <ErroredSuggestedNotationsOuter>
+            <SuggestedNotations srcNotationId={params.id} />
+          </ErroredSuggestedNotationsOuter>
+        </ErrorsOuter>
       )}
     </Outer>
   );

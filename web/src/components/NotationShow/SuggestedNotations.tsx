@@ -94,10 +94,10 @@ export const SuggestedNotations: React.FC<SuggestedNotationsProps> = (props) => 
                 <ListItem key={notation.id}>
                   <Link to={`/n/${notation.id}`}>
                     <Row>
-                      <Col xs={0} sm={0} md={0} lg={6} xl={4} xxl={4}>
+                      <Col xs={6} sm={6} md={6} lg={6} xl={4} xxl={4}>
                         <Thumbnail src={notation.thumbnailUrl || ''} alt={notation.songName} />
                       </Col>
-                      <Col xs={24} sm={24} md={24} lg={18} xl={20} xxl={20}>
+                      <Col xs={18} sm={18} md={18} lg={18} xl={20} xxl={20}>
                         <TextOuter>
                           <BlackText>
                             <b>{truncate(notation.songName, { length: 30 })}</b>
