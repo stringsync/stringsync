@@ -1,5 +1,7 @@
+import { Alert, Row } from 'antd';
 import React, { useCallback } from 'react';
 import { useParams } from 'react-router';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { useDevice } from '../../ctx/device';
 import { useViewport } from '../../ctx/viewport/useViewport';
@@ -10,6 +12,7 @@ import { useNoOverflow } from '../../hooks/useNoOverflow';
 import { useNotation } from '../../hooks/useNotation';
 import { compose } from '../../util/compose';
 import { FretMarkerDisplay, Notation, NotationLayoutOptions, NotationSettings } from '../Notation';
+import { SuggestedNotations } from './SuggestedNotations';
 import { PersistentSettings } from './types';
 
 const NOTATION_SHOW_SETTINGS_KEY = 'stringsync_notation_settings';
@@ -43,6 +46,7 @@ const NotationShow: React.FC = enhance(() => {
   // notation
   const params = useParams<{ id: string }>();
   const [notation, errors, loading] = useNotation(params.id);
+  const hasErrors = errors.length > 0;
 
   // css effects
   useNoOverflow(document.body);
@@ -74,13 +78,38 @@ const NotationShow: React.FC = enhance(() => {
 
   return (
     <Outer data-testid="notation-show">
-      <Notation
-        loading={loading}
-        notation={notation}
-        layoutOptions={layoutOptions}
-        defaultSettings={defaultSettings}
-        onSettingsChange={onSettingsChange}
-      />
+      {!hasErrors && (
+        <Notation
+          loading={loading}
+          notation={notation}
+          sidecar={<SuggestedNotations srcNotationId={params.id} />}
+          layoutOptions={layoutOptions}
+          defaultSettings={defaultSettings}
+          onSettingsChange={onSettingsChange}
+        />
+      )}
+
+      {!loading && hasErrors && (
+        <>
+          <br />
+          <br />
+          <Row justify="center">
+            <Alert
+              showIcon
+              type="error"
+              message="error"
+              description={
+                <>
+                  {errors.map((error, ndx) => (
+                    <div key={ndx}>{error}</div>
+                  ))}
+                  <Link to="/library">library</Link>
+                </>
+              }
+            />
+          </Row>
+        </>
+      )}
     </Outer>
   );
 });
