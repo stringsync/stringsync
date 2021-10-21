@@ -19,6 +19,21 @@ import { NotationLayoutOptions, NotationSettings, RenderableNotation } from './t
 
 const NOTATION_DETAIL_THRESHOLD_PX = 767;
 
+const Title = styled.h1`
+  text-align: center;
+  margin-bottom: 0;
+`;
+
+const Subtitle = styled.h2`
+  text-align: center;
+  margin-bottom: 0;
+`;
+
+const Muted = styled.h3`
+  text-align: center;
+  color: ${(props) => props.theme['@muted']};
+`;
+
 const FloatingButton = styled(Button)<{ $top: number }>`
   position: fixed;
   top: ${(props) => props.$top}px;
@@ -57,6 +72,11 @@ export const Notation: React.FC<Props> = (props) => {
   const src = notation?.videoUrl || null;
   const defaultSettings = useMemoCmp(props.defaultSettings);
   const onSettingsChange = props.onSettingsChange || noop;
+
+  // notation
+  const songName = notation?.songName || '???';
+  const artistName = notation?.artistName || '???';
+  const transcriberUsername = notation?.transcriber.username || '???';
 
   // settings
   const device = useDevice();
@@ -110,6 +130,15 @@ export const Notation: React.FC<Props> = (props) => {
           >
             <Sidecar videoSkeleton loading={loading}>
               <Media video loading={loading} src={src} />
+
+              <br />
+
+              <Title>{songName}</Title>
+              <Subtitle>by {artistName}</Subtitle>
+              <Muted>{transcriberUsername}</Muted>
+
+              <br />
+
               {sidecar}
             </Sidecar>
             <FlexColumn $height={viewport.innerHeight}>
@@ -134,7 +163,13 @@ export const Notation: React.FC<Props> = (props) => {
           />
           <Drawer closable visible={isSidecarDrawerVisible} width="100%" onClose={onSidecarDrawerCloseClick}>
             <Sidecar loading={loading}>
-              <div>video</div>
+              <Title>{songName}</Title>
+              <Subtitle>by {artistName}</Subtitle>
+              <Muted>{transcriberUsername}</Muted>
+
+              <br />
+
+              {sidecar}
             </Sidecar>
           </Drawer>
 

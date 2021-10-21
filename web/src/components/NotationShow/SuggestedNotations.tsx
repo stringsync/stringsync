@@ -1,4 +1,5 @@
-import { Col, Row, Tag } from 'antd';
+import { Button, Col, Row, Tag } from 'antd';
+import { ButtonType } from 'antd/lib/button';
 import { truncate } from 'lodash';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -54,6 +55,19 @@ const TagsOuter = styled.div`
   margin-left: 8px;
 `;
 
+const LibraryLink: React.FC<{ block?: boolean; type?: ButtonType }> = (props) => {
+  const type = props.type || 'primary';
+  const block = props.block || true;
+
+  return (
+    <Link to="/library">
+      <Button block={block} type={type} size="large">
+        library
+      </Button>
+    </Link>
+  );
+};
+
 type SuggestedNotationsProps = {
   srcNotationId: string;
 };
@@ -75,19 +89,24 @@ export const SuggestedNotations: React.FC<SuggestedNotationsProps> = (props) => 
       {shouldShowNoSuggestionsFound && (
         <Centered>
           <h3>no suggestions found</h3>
-          <Link to="/library">library</Link>
+          <LibraryLink />
         </Centered>
       )}
 
       {shouldShowErrors && (
         <Centered>
           <h3>could not load suggestions</h3>
-          <Link to="/library">library</Link>
+          <LibraryLink />
         </Centered>
       )}
 
       {shouldShowSuggestedNotations && (
         <>
+          <LibraryLink type="link" />
+
+          <br />
+          <br />
+
           <List>
             {suggestedNotations.map((notation) => {
               return (
@@ -122,9 +141,7 @@ export const SuggestedNotations: React.FC<SuggestedNotationsProps> = (props) => 
 
           <br />
 
-          <Centered>
-            <Link to="/library">library</Link>
-          </Centered>
+          <LibraryLink />
 
           <br />
           <br />
@@ -134,7 +151,7 @@ export const SuggestedNotations: React.FC<SuggestedNotationsProps> = (props) => 
       {shouldShowFallback && (
         <Centered>
           <h3>something went wrong</h3>
-          <Link to="/library">library</Link>
+          <LibraryLink />
         </Centered>
       )}
     </Outer>
