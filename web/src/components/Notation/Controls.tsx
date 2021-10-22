@@ -1,18 +1,24 @@
-import { PauseOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
-import { Alert, Button, Col, Row, Slider } from 'antd';
+import { PauseOutlined, QuestionCircleOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
+import { Alert, Button, Checkbox, Col, Divider, Drawer, Radio, Row, Select, Slider, Tooltip } from 'antd';
 import { identity, noop } from 'lodash';
 import { useState } from 'react';
 import styled from 'styled-components';
+import { useDevice } from '../../ctx/device';
+import { MusicDisplay } from '../../lib/MusicDisplay';
 import { Nullable } from '../../util/types';
 import { Detail } from './Detail';
-import { NotationSettings, RenderableNotation } from './types';
+import { FretMarkerDisplay, NotationSettings, RenderableNotation } from './types';
+import { useScales } from './useScales';
 
-export const CONTROLS_HEIGHT_PX = 72;
+export const CONTROLS_HEIGHT_PX = 75;
 
 const Outer = styled.div`
-  border-top: 1px solid ${(props) => props.theme['@border-color']};
+  border: 1px solid ${(props) => props.theme['@border-color']};
   height: ${CONTROLS_HEIGHT_PX}px;
   padding: 0 16px;
+  z-index: 4;
+  background-color: white;
+  box-sizing: border-box;
 `;
 
 const SliderOuter = styled.div`
@@ -33,6 +39,14 @@ const StyledButton = styled(Button)`
   border: none;
 `;
 
+const RotationButton = styled(StyledButton)<{ $rotateDeg: number }>`
+  .anticon svg {
+    transition: transform 200ms;
+    transform: rotate(${(props) => props.$rotateDeg}deg);
+    transform-origin: center;
+  }
+`;
+
 const SettingsInner = styled.div`
   overflow-y: auto;
   /* offset the control bar so the */
@@ -49,6 +63,7 @@ const FloatingAlert = styled(Alert)`
 type Props = {
   showDetail: boolean;
   notation: Nullable<RenderableNotation>;
+  musicDisplay: Nullable<MusicDisplay>;
   settings: NotationSettings;
   setSettings(settings: NotationSettings): void;
 };
@@ -58,20 +73,29 @@ export const Controls: React.FC<Props> = (props) => {
   const showDetail = props.showDetail;
   const settings = props.settings;
   const notation = props.notation;
+  const musicDisplay = props.musicDisplay;
 
   // state
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
+
+  // device
+  const device = useDevice();
 
   // callbacks
   const onSettingsClick = () => {
     setIsSettingsVisible((currentIsSettingsVisible) => !currentIsSettingsVisible);
   };
+  const onSettingsClose = () => {
+    setIsSettingsVisible(false);
+  };
+
+  // scales
+  const scales = useScales(musicDisplay);
 
   // tmp
   const isNoopScrolling = false;
   const isPlaying = false;
   const isPaused = true;
-  const onAutoscrollDisabledClose = noop;
   const marks = undefined;
   const videoPlayerControls = { play: noop, pause: noop };
   const handleStyle = {};
@@ -79,6 +103,13 @@ export const Controls: React.FC<Props> = (props) => {
   const tipFormatter = identity;
   const onChange = noop;
   const onAfterChange = noop;
+  const onVideoVisibilityChange = noop;
+  const onAutoscrollDisabledClose = noop;
+  const onFretboardVisibilityChange = noop;
+  const onFretMarkerDisplayChange = noop;
+  const onSelectedScaleChange = noop;
+  const onAutoscrollPreferenceChange = noop;
+  const onIsLoopActiveChange = noop;
 
   return (
     <Outer data-testid="controls">
@@ -92,6 +123,7 @@ export const Controls: React.FC<Props> = (props) => {
           message="autoscroll temporarily disabled"
         />
       )}
+
       <FullHeightRow justify="center" align="middle">
         <Col span={showDetail ? 1 : 2}>
           <FullHeightRow justify="center" align="middle">
@@ -102,6 +134,7 @@ export const Controls: React.FC<Props> = (props) => {
             )}
           </FullHeightRow>
         </Col>
+
         <Col span={20}>
           <FullHeightRow justify="center" align="middle">
             <SliderOuter>
@@ -117,11 +150,19 @@ export const Controls: React.FC<Props> = (props) => {
             </SliderOuter>
           </FullHeightRow>
         </Col>
+
         <Col span={showDetail ? 1 : 2}>
           <FullHeightRow justify="center" align="middle">
-            <StyledButton size="large" shape="circle" icon={<SettingOutlined />} onClick={onSettingsClick} />
+            <RotationButton
+              size="large"
+              shape="circle"
+              icon={<SettingOutlined />}
+              onClick={onSettingsClick}
+              $rotateDeg={isSettingsVisible ? 90 : 0}
+            />
           </FullHeightRow>
         </Col>
+
         <Col span={showDetail ? 2 : 0}>
           <FullHeightRow justify="center" align="middle">
             <Detail
@@ -132,6 +173,106 @@ export const Controls: React.FC<Props> = (props) => {
           </FullHeightRow>
         </Col>
       </FullHeightRow>
+
+      <Drawer
+        title="settings"
+        placement="right"
+        keyboard
+        closable={false}
+        visible={isSettingsVisible}
+        onClose={onSettingsClose}
+        zIndex={3}
+      >
+        <SettingsInner>
+          <Checkbox checked={settings.isVideoVisible} onChange={onVideoVisibilityChange}>
+            video
+          </Checkbox>
+
+          <Divider />
+
+          <Checkbox checked={settings.isFretboardVisible} onChange={onFretboardVisibilityChange}>
+            fretboard
+          </Checkbox>
+
+          <br />
+          <br />
+
+          <h5>labels</h5>
+          <Radio.Group optionType="button" value={settings.fretMarkerDisplay} onChange={onFretMarkerDisplayChange}>
+            <Radio.Button value={FretMarkerDisplay.None}>none</Radio.Button>
+            <Radio.Button value={FretMarkerDisplay.Degree}>degree</Radio.Button>
+            <Radio.Button value={FretMarkerDisplay.Note}>note</Radio.Button>
+          </Radio.Group>
+
+          <br />
+          <br />
+
+          <h5>scale</h5>
+          <Select defaultValue="none" style={{ width: '100%' }} onChange={onSelectedScaleChange}>
+            <Select.OptGroup label="default">
+              <Select.Option value="none">none</Select.Option>
+            </Select.OptGroup>
+            <Select.OptGroup label="recommended">
+              <Select.Option value="dynamic">
+                <Tooltip title="based on the current key signature">dynamic</Tooltip>
+              </Select.Option>
+              {scales.main.map((scale) => (
+                <Select.Option key={`main-${scale}`} value={scale}>
+                  {scale}
+                </Select.Option>
+              ))}
+            </Select.OptGroup>
+            {scales.pentatonic.length > 0 && (
+              <Select.OptGroup label="pentatonic">
+                {scales.pentatonic.map((scale) => (
+                  <Select.Option key={`pentatonic-${scale}`} value={scale}>
+                    {scale}
+                  </Select.Option>
+                ))}
+              </Select.OptGroup>
+            )}
+            {scales.major.length > 0 && (
+              <Select.OptGroup label="major">
+                {scales.major.map((scale) => (
+                  <Select.Option key={`major-${scale}`} value={scale}>
+                    {scale}
+                  </Select.Option>
+                ))}
+              </Select.OptGroup>
+            )}
+            {scales.minor.length > 0 && (
+              <Select.OptGroup label="minor">
+                {scales.minor.map((scale) => (
+                  <Select.Option key={`minor-${scale}`} value={scale}>
+                    {scale}
+                  </Select.Option>
+                ))}
+              </Select.OptGroup>
+            )}
+          </Select>
+
+          <Divider />
+
+          <Checkbox checked={settings.isAutoscrollPreferred} onChange={onAutoscrollPreferenceChange}>
+            autoscroll
+          </Checkbox>
+
+          <br />
+          <br />
+
+          <Tooltip
+            title={
+              device.inputType === 'touchOnly'
+                ? 'you can also longpress the notation'
+                : 'you can also click and drag on the notation'
+            }
+          >
+            <Checkbox checked={settings.isLoopActive} onChange={onIsLoopActiveChange}>
+              loop <QuestionCircleOutlined />
+            </Checkbox>
+          </Tooltip>
+        </SettingsInner>
+      </Drawer>
     </Outer>
   );
 };

@@ -3,6 +3,8 @@ import { NotationLayoutOptions } from '.';
 import { Device } from '../../ctx/device';
 import { ViewportState } from '../../ctx/viewport';
 import { InternalError } from '../../errors';
+import { MusicDisplay } from '../../lib/MusicDisplay';
+import { KeyInfo } from '../../lib/MusicDisplay/helpers';
 import * as constants from './constants';
 import { CONTROLS_HEIGHT_PX } from './Controls';
 import { FretMarkerDisplay, NotationLayout, NotationSettings, ScaleSelectionType } from './types';
@@ -63,3 +65,14 @@ export const getDefaultSettings = (device: Device): NotationSettings => ({
   defaultTheaterHeightPx: constants.MIN_THEATER_HEIGHT_PX,
   defaultSidecarWidthPx: 480,
 });
+
+export const getKeyInfo = (musicDisplay: MusicDisplay | null): KeyInfo | null => {
+  if (!musicDisplay) {
+    return null;
+  }
+  return (
+    musicDisplay.getCursor().cursorSnapshot?.getKeyInfo() ||
+    first(musicDisplay.getMeta().cursorSnapshots)?.getKeyInfo() ||
+    null
+  );
+};

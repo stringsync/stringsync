@@ -159,7 +159,13 @@ export const Notation: React.FC<Props> = (props) => {
               <Flex1>
                 <MusicDisplay loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
               </Flex1>
-              <Controls showDetail={showDetail} notation={notation} settings={settings} setSettings={setSettings} />
+              <Controls
+                showDetail={showDetail}
+                notation={notation}
+                musicDisplay={musicDisplay}
+                settings={settings}
+                setSettings={setSettings}
+              />
             </FlexColumn>
           </SplitPane>
         </>
@@ -202,7 +208,13 @@ export const Notation: React.FC<Props> = (props) => {
                 <Flex1>
                   <MusicDisplay loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
                 </Flex1>
-                <Controls showDetail={showDetail} notation={notation} settings={settings} setSettings={setSettings} />
+                <Controls
+                  showDetail={showDetail}
+                  notation={notation}
+                  musicDisplay={musicDisplay}
+                  settings={settings}
+                  setSettings={setSettings}
+                />
               </FlexColumn>
             </SplitPane>
           )}
