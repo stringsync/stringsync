@@ -38,6 +38,10 @@ const Outer = styled.div`
   overflow: hidden;
 `;
 
+const StyledDrawer = styled.div`
+  ::-webkit-scrollbar ;
+`;
+
 const SliderOuter = styled.div`
   padding: 0 16px 0 16px;
   width: 100%;
@@ -67,8 +71,11 @@ const RotationButton = styled(StyledButton)<{ $rotateDeg: number }>`
 
 const SettingsInner = styled.div`
   overflow-y: auto;
-  /* offset the control bar so the */
-  height: calc(100vh - 190px);
+  height: calc(100% - ${CONTROLS_HEIGHT_PX}px);
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const FloatingAlert = styled(Alert)`
