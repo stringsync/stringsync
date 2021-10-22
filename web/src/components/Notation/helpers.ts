@@ -60,4 +60,6 @@ export const getDefaultSettings = (device: Device): NotationSettings => ({
   scaleSelectionType: ScaleSelectionType.None,
   selectedScale: null,
   isLoopActive: false,
+  defaultTheaterHeightPx: constants.MIN_THEATER_HEIGHT_PX,
+  defaultSidecarWidthPx: 480,
 });

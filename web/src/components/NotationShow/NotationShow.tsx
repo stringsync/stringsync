@@ -72,6 +72,8 @@ const NotationShow: React.FC = enhance(() => {
     isFretboardVisible: !device.mobile,
     isAutoscrollPreferred: true,
     fretMarkerDisplay: FretMarkerDisplay.None,
+    defaultSidecarWidthPx: 500,
+    defaultTheaterHeightPx: 200,
   });
   const [defaultSettings, setDefaultSettings] = useLocalStorage<PersistentSettings>(
     NOTATION_SHOW_SETTINGS_KEY,
@@ -85,6 +87,8 @@ const NotationShow: React.FC = enhance(() => {
         isFretboardVisible: settings.isFretboardVisible,
         isAutoscrollPreferred: settings.isAutoscrollPreferred,
         fretMarkerDisplay: settings.fretMarkerDisplay,
+        defaultSidecarWidthPx: settings.defaultSidecarWidthPx,
+        defaultTheaterHeightPx: settings.defaultTheaterHeightPx,
       });
     },
     [setDefaultSettings]

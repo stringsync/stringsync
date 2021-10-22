@@ -1,7 +1,7 @@
 import { DoubleRightOutlined, HomeOutlined } from '@ant-design/icons';
 import { Button, Drawer } from 'antd';
 import { noop } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import { useDevice } from '../../ctx/device';
@@ -87,6 +87,18 @@ export const Notation: React.FC<Props> = (props) => {
   useEffect(() => {
     onSettingsChange(settings);
   }, [onSettingsChange, settings]);
+  const updateDefaultSidecarWidthPx = useCallback(
+    (defaultSidecarWidthPx: number) => {
+      setSettings({ ...settings, defaultSidecarWidthPx });
+    },
+    [settings, setSettings]
+  );
+  const updateDefaultTheaterHeightPx = useCallback(
+    (defaultTheaterHeightPx: number) => {
+      setSettings({ ...settings, defaultTheaterHeightPx });
+    },
+    [settings, setSettings]
+  );
 
   // layout
   const isPreferredLayoutPermitted = layoutOptions?.permitted.includes(settings.preferredLayout) || false;
@@ -123,10 +135,12 @@ export const Notation: React.FC<Props> = (props) => {
         <>
           <SplitPane
             split="vertical"
+            defaultSize={settings.defaultSidecarWidthPx}
             minSize={layoutSizeBoundsPx.sidecar.min}
             maxSize={layoutSizeBoundsPx.sidecar.max}
             pane2Style={{ width: '100%' }}
             onPane1Resize={setPane1Dimensions}
+            onDragFinished={updateDefaultSidecarWidthPx}
           >
             <Sidecar videoSkeleton loading={loading}>
               <Media video loading={loading} src={src} />
@@ -177,9 +191,11 @@ export const Notation: React.FC<Props> = (props) => {
             <SplitPane
               split="horizontal"
               style={{ position: 'static' }}
+              defaultSize={settings.defaultTheaterHeightPx}
               minSize={layoutSizeBoundsPx.theater.min}
               maxSize={layoutSizeBoundsPx.theater.max}
               onPane1Resize={setPane1Dimensions}
+              onDragFinished={updateDefaultTheaterHeightPx}
             >
               <Media video fluid={false} loading={loading} src={src} />
               <FlexColumn $height={pane2Height}>

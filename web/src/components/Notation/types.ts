@@ -36,4 +36,6 @@ export type NotationSettings = {
   scaleSelectionType: ScaleSelectionType;
   selectedScale: string | null;
   isLoopActive: boolean;
+  defaultTheaterHeightPx: number;
+  defaultSidecarWidthPx: number;
 };
