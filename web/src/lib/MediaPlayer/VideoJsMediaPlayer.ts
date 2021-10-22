@@ -1,0 +1,98 @@
+import { noop } from 'lodash';
+import { VideoJsPlayer } from 'video.js';
+import { AsyncLoop } from '../../util/AsyncLoop';
+import { Duration } from '../../util/Duration';
+import { EventBus } from '../EventBus';
+import { MediaPlayer, MediaPlayerEventBus, PlayState } from './types';
+
+export class VideoJsMediaPlayer implements MediaPlayer {
+  eventBus: MediaPlayerEventBus = new EventBus();
+
+  private loop: AsyncLoop;
+  private player: VideoJsPlayer;
+  private currentTime = Duration.zero();
+
+  private isSuspended = false;
+  private onUnsuspend = noop;
+
+  constructor(player: VideoJsPlayer) {
+    this.player = player;
+    this.player.on('play', this.onPlay);
+    this.player.on('pause', this.onPause);
+
+    this.loop = new AsyncLoop(this.onLoop);
+  }
+
+  dispose() {
+    this.loop.stop();
+    this.player.dispose();
+  }
+
+  play = () => {
+    this.player.play();
+  };
+
+  pause = () => {
+    this.player.pause();
+  };
+
+  seek(time: Duration) {
+    this.player.currentTime(time.sec);
+    this.updateTime(time);
+  }
+
+  suspend() {
+    if (this.isSuspended) {
+      return;
+    }
+
+    const playState = this.getPlayState();
+    if (playState === PlayState.Playing) {
+      this.onUnsuspend = this.play;
+    } else {
+      this.onUnsuspend = noop;
+    }
+
+    this.pause();
+    this.isSuspended = true;
+  }
+
+  unsuspend() {
+    if (!this.isSuspended) {
+      return;
+    }
+
+    this.isSuspended = false;
+    this.onUnsuspend();
+    this.onUnsuspend = noop;
+  }
+
+  getPlayState() {
+    return this.player.paused() ? PlayState.Paused : PlayState.Playing;
+  }
+
+  getCurrentTime() {
+    return Duration.sec(this.player.currentTime());
+  }
+
+  private updateTime(time: Duration) {
+    if (this.currentTime.eq(time)) {
+      return;
+    }
+    this.currentTime = time;
+    this.eventBus.dispatch('timechange', { time });
+  }
+
+  private onLoop = () => {
+    const time = this.getCurrentTime();
+    this.updateTime(time);
+  };
+
+  private onPlay = () => {
+    this.loop.start();
+  };
+
+  private onPause = () => {
+    this.loop.stop();
+  };
+}

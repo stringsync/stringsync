@@ -1,15 +1,16 @@
 import { noop } from 'lodash';
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import videojs, { VideoJsPlayer } from 'video.js';
+import videojs from 'video.js';
 import { useMemoCmp } from '../../hooks/useMemoCmp';
+import { MediaPlayer } from '../../lib/MediaPlayer';
 import { Duration } from '../../util/Duration';
 
 const Outer = styled.div``;
 
 type BaseProps = {
   playerOptions: videojs.PlayerOptions;
-  onPlayerChange?: (player: VideoJsPlayer | null) => void;
+  onPlayerChange?: (player: MediaPlayer) => void;
 };
 
 type VideoProps = BaseProps & {

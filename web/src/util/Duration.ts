@@ -6,6 +6,10 @@ const hr = (v: number) => min(v * 60);
 const day = (v: number) => hr(v * 24);
 
 export class Duration {
+  static zero() {
+    return new Duration(0);
+  }
+
   static ms(v: number) {
     return new Duration(ms(v));
   }
