@@ -38,10 +38,14 @@ const VerticalMenuOutlined = styled(MenuOutlined)`
 
 type Props = SplitPaneProps & {
   split: 'vertical' | 'horizontal';
+  handle: boolean;
   onPane1Resize?: (dimensions: Dimensions) => void;
 };
 
 export const SplitPane: React.FC<Props> = (props) => {
+  // props
+  const handle = props.handle;
+
   // children management
   const children = React.Children.toArray(props.children);
 
@@ -93,31 +97,35 @@ export const SplitPane: React.FC<Props> = (props) => {
       {children[0]}
       {props.split === 'horizontal' && (
         <>
-          <HorizontalOuter>
-            <Button
-              icon={<MenuOutlined />}
-              onMouseDown={onMouseDown}
-              onTouchStart={onTouchStart}
-              onTouchEnd={onMouseUp}
-              size="small"
-              style={{ cursor: 'row-resize' }}
-            />
-          </HorizontalOuter>
+          {handle && (
+            <HorizontalOuter>
+              <Button
+                icon={<MenuOutlined />}
+                onMouseDown={onMouseDown}
+                onTouchStart={onTouchStart}
+                onTouchEnd={onMouseUp}
+                size="small"
+                style={{ cursor: 'row-resize' }}
+              />
+            </HorizontalOuter>
+          )}
           {children[1]}
         </>
       )}
       {props.split === 'vertical' && (
         <>
-          <VerticalOuter>
-            <Button
-              icon={<VerticalMenuOutlined />}
-              onMouseDown={onMouseDown}
-              onTouchStart={onTouchStart}
-              onTouchEnd={onMouseUp}
-              size="small"
-              style={{ cursor: 'col-resize' }}
-            />
-          </VerticalOuter>
+          {handle && (
+            <VerticalOuter>
+              <Button
+                icon={<VerticalMenuOutlined />}
+                onMouseDown={onMouseDown}
+                onTouchStart={onTouchStart}
+                onTouchEnd={onMouseUp}
+                size="small"
+                style={{ cursor: 'col-resize' }}
+              />
+            </VerticalOuter>
+          )}
           {children[1]}
         </>
       )}

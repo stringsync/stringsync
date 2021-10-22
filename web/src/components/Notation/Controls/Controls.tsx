@@ -1,5 +1,6 @@
 import { PauseOutlined, QuestionCircleOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
 import { Alert, Button, Checkbox, Col, Divider, Drawer, Radio, Row, Select, Slider, Tooltip } from 'antd';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { identity, noop } from 'lodash';
 import React, { RefObject, useState } from 'react';
 import styled from 'styled-components';
@@ -79,6 +80,7 @@ export const Controls: React.FC<Props> = (props) => {
   const notation = props.notation;
   const musicDisplay = props.musicDisplay;
   const settingsContainer = props.settingsContainerRef.current;
+  const setSettings = props.setSettings;
 
   // state
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
@@ -98,6 +100,18 @@ export const Controls: React.FC<Props> = (props) => {
   // scales
   const scales = useScales(musicDisplay);
 
+  // settings
+  const onVideoVisibilityChange = (event: CheckboxChangeEvent) => {
+    setSettings({ ...settings, isVideoVisible: event.target.checked });
+  };
+  // TODO need to enable
+  const onAutoscrollDisabledClose = noop;
+  const onFretboardVisibilityChange = noop;
+  const onFretMarkerDisplayChange = noop;
+  const onSelectedScaleChange = noop;
+  const onAutoscrollPreferenceChange = noop;
+  const onIsLoopActiveChange = noop;
+
   // tmp
   const isNoopScrolling = false;
   const isPlaying = false;
@@ -109,13 +123,6 @@ export const Controls: React.FC<Props> = (props) => {
   const tipFormatter = identity;
   const onChange = noop;
   const onAfterChange = noop;
-  const onVideoVisibilityChange = noop;
-  const onAutoscrollDisabledClose = noop;
-  const onFretboardVisibilityChange = noop;
-  const onFretMarkerDisplayChange = noop;
-  const onSelectedScaleChange = noop;
-  const onAutoscrollPreferenceChange = noop;
-  const onIsLoopActiveChange = noop;
 
   return (
     <Outer data-testid="controls">

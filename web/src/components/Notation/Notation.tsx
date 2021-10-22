@@ -137,9 +137,21 @@ export const Notation: React.FC<Props> = (props) => {
 
   // music display
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplayBackend | null>(null);
+  const [lastResizeWidthPx, setLastResizeWidthPx] = useState(pane2WidthPx);
   useEffect(() => {
-    musicDisplay?.resize();
-  }, [musicDisplay, pane2WidthPx]);
+    if (!musicDisplay) {
+      return;
+    }
+    if (pane2WidthPx === 0) {
+      // if there's no width, don't bother resizing
+      return;
+    }
+    if (lastResizeWidthPx === pane2WidthPx) {
+      return;
+    }
+    setLastResizeWidthPx(pane2WidthPx);
+    musicDisplay.resize();
+  }, [lastResizeWidthPx, musicDisplay, pane2WidthPx]);
 
   // controls detail
   const showDetail = pane2WidthPx > NOTATION_DETAIL_THRESHOLD_PX;
@@ -149,6 +161,7 @@ export const Notation: React.FC<Props> = (props) => {
       {layout === 'sidecar' && (
         <>
           <SplitPane
+            handle
             split="vertical"
             defaultSize={settings.defaultSidecarWidthPx}
             minSize={layoutSizeBoundsPx.sidecar.min}
@@ -219,34 +232,32 @@ export const Notation: React.FC<Props> = (props) => {
             </Sidecar>
           </Drawer>
 
-          {settings.isVideoVisible && (
-            <SplitPane
-              split="horizontal"
-              style={{ position: 'static' }}
-              defaultSize={settings.defaultTheaterHeightPx}
-              minSize={layoutSizeBoundsPx.theater.min}
-              maxSize={layoutSizeBoundsPx.theater.max}
-              onPane1Resize={setPane1Dimensions}
-              onDragFinished={updateDefaultTheaterHeightPx}
-            >
-              <Media video fluid={false} loading={loading} src={src} />
-              <FlexColumn>
-                <Flex1>
-                  <MusicDisplay loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
-                </Flex1>
-                <Controls
-                  settingsContainerRef={settingsContainerRef}
-                  showDetail={showDetail}
-                  notation={notation}
-                  musicDisplay={musicDisplay}
-                  settings={settings}
-                  setSettings={setSettings}
-                />
-              </FlexColumn>
-            </SplitPane>
-          )}
-
-          {!settings.isVideoVisible && <div>TODO</div>}
+          <SplitPane
+            handle={settings.isVideoVisible}
+            split="horizontal"
+            style={{ position: 'static' }}
+            pane1Style={settings.isVideoVisible ? undefined : { display: 'none' }}
+            defaultSize={settings.defaultTheaterHeightPx}
+            minSize={layoutSizeBoundsPx.theater.min}
+            maxSize={layoutSizeBoundsPx.theater.max}
+            onPane1Resize={setPane1Dimensions}
+            onDragFinished={settings.isVideoVisible ? updateDefaultTheaterHeightPx : noop}
+          >
+            <Media video={settings.isVideoVisible} fluid={false} loading={loading} src={src} />
+            <FlexColumn>
+              <Flex1>
+                <MusicDisplay loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
+              </Flex1>
+              <Controls
+                settingsContainerRef={settingsContainerRef}
+                showDetail={showDetail}
+                notation={notation}
+                musicDisplay={musicDisplay}
+                settings={settings}
+                setSettings={setSettings}
+              />
+            </FlexColumn>
+          </SplitPane>
         </>
       )}
     </Outer>

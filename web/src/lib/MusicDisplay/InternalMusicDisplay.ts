@@ -56,6 +56,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   fx = new Fx(DUMMY_SVG);
 
   isResizing = false;
+  isRendered = false;
 
   constructor(container: string | HTMLElement, eventBus: MusicDisplayEventBus, opts: MusicDisplayOptions) {
     super(container, opts);
@@ -78,6 +79,10 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   }
 
   resize() {
+    if (!this.isRendered) {
+      // Callers should call render() first
+      return;
+    }
     if (!this.isResizing) {
       this.eventBus.dispatch('resizestarted', {});
       this.isResizing = true;
@@ -130,6 +135,8 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
 
     this.eventBus.dispatch('resizeended', {});
     this.eventBus.dispatch('rendered', {});
+
+    this.isRendered = true;
   }
 
   clear() {
