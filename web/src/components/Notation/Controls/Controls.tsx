@@ -39,6 +39,7 @@ const FullHeightRow = styled(Row)`
 const StyledButton = styled(Button)`
   color: ${(props) => props.theme['@muted']};
   border: none;
+  box-shadow: none;
 `;
 
 const RotationButton = styled(StyledButton)<{ $rotateDeg: number }>`
