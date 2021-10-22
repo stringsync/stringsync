@@ -6,7 +6,7 @@ import { InternalError } from '../../errors';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { KeyInfo } from '../../lib/MusicDisplay/helpers';
 import * as constants from './constants';
-import { CONTROLS_HEIGHT_PX } from './Controls';
+import { CONTROLS_HEIGHT_PX } from './Controls/Controls';
 import { FretMarkerDisplay, NotationLayout, NotationSettings, ScaleSelectionType } from './types';
 
 const ALL_LAYOUTS: NotationLayout[] = ['sidecar', 'theater'];

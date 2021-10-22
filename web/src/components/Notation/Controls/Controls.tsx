@@ -3,12 +3,12 @@ import { Alert, Button, Checkbox, Col, Divider, Drawer, Radio, Row, Select, Slid
 import { identity, noop } from 'lodash';
 import React, { RefObject, useState } from 'react';
 import styled from 'styled-components';
-import { useDevice } from '../../ctx/device';
-import { MusicDisplay } from '../../lib/MusicDisplay';
-import { Nullable } from '../../util/types';
-import { Detail } from './Detail';
-import { FretMarkerDisplay, NotationSettings, RenderableNotation } from './types';
-import { useScales } from './useScales';
+import { useDevice } from '../../../ctx/device';
+import { MusicDisplay } from '../../../lib/MusicDisplay';
+import { Nullable } from '../../../util/types';
+import { Detail } from '../Detail';
+import { FretMarkerDisplay, NotationSettings, RenderableNotation } from '../types';
+import { useScales } from '../useScales';
 
 export const CONTROLS_HEIGHT_PX = 75;
 

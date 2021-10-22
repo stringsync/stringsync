@@ -9,7 +9,7 @@ import { useViewport } from '../../ctx/viewport/useViewport';
 import { useMemoCmp } from '../../hooks/useMemoCmp';
 import { MusicDisplay as MusicDisplayBackend } from '../../lib/MusicDisplay';
 import { Nullable } from '../../util/types';
-import { Controls } from './Controls';
+import { Controls } from './Controls/Controls';
 import * as helpers from './helpers';
 import { Media } from './Media';
 import { MusicDisplay } from './MusicDisplay';
