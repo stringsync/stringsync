@@ -41,7 +41,7 @@ const StyledButton = styled(Button)`
 
 const RotationButton = styled(StyledButton)<{ $rotateDeg: number }>`
   .anticon svg {
-    transition: transform 200ms;
+    transition: transform 0.3s;
     transform: rotate(${(props) => props.$rotateDeg}deg);
     transform-origin: center;
   }
@@ -181,6 +181,7 @@ export const Controls: React.FC<Props> = (props) => {
         closable={false}
         visible={isSettingsVisible}
         onClose={onSettingsClose}
+        maskStyle={{ width: '100%' }}
         zIndex={3}
       >
         <SettingsInner>
