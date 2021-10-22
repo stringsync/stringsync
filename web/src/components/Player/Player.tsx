@@ -43,7 +43,12 @@ const VideoJs: React.FC<Props> = (props) => {
     media.setAttribute('class', 'video-js vjs-default-skin vjs-fill');
     outer.appendChild(media);
 
-    const player = videojs(media, { controls: false, preload: 'auto', fluid: true, ...playerOptions });
+    const player = videojs(media, {
+      controls: false,
+      preload: 'auto',
+      fluid: true,
+      ...playerOptions,
+    });
 
     player.ready(() => {
       onPlayerChange(player);

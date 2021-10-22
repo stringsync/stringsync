@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 const Outer = styled.div`
   background: white;
+  height: 100%;
 `;
 
 const SkeletonOuter = styled.div`

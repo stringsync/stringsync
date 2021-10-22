@@ -19,6 +19,10 @@ import { NotationLayoutOptions, NotationSettings, RenderableNotation } from './t
 
 const NOTATION_DETAIL_THRESHOLD_PX = 767;
 
+const Outer = styled.div<{ $height: number }>`
+  height: ${(props) => props.$height}px;
+`;
+
 const Title = styled.h1`
   text-align: center;
   margin-bottom: 0;
@@ -41,17 +45,25 @@ const FloatingButton = styled(Button)<{ $top: number }>`
   z-index: 3;
 `;
 
+const FlexColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  transition: height 200ms;
+  height: 100%;
+`;
+
 const Flex1 = styled.div`
   overflow-x: hidden;
   overflow-y: auto;
   flex: 1;
 `;
 
-const FlexColumn = styled.div<{ $height: number }>`
-  display: flex;
-  flex-direction: column;
-  transition: height 200ms;
-  height: ${(props) => props.$height}px;
+const Flex1InvisibleScrollbar = styled(Flex1)`
+  margin: 16px;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 type Props = {
@@ -112,8 +124,7 @@ export const Notation: React.FC<Props> = (props) => {
   const viewport = useViewport();
   const layoutSizeBoundsPx = helpers.getLayoutSizeBoundsPx(viewport);
   const [pane1Dimensions, setPane1Dimensions] = useState({ width: 0, height: 0 });
-  const pane2Height = viewport.innerHeight - pane1Dimensions.height;
-  const pane2Width = viewport.innerWidth - pane1Dimensions.width;
+  const pane2WidthPx = viewport.innerWidth - pane1Dimensions.width;
 
   // sidecar drawer button
   const [isSidecarDrawerVisible, setSidecarDrawerVisibility] = useState(false);
@@ -128,13 +139,13 @@ export const Notation: React.FC<Props> = (props) => {
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplayBackend | null>(null);
   useEffect(() => {
     musicDisplay?.resize();
-  }, [musicDisplay, pane2Width]);
+  }, [musicDisplay, pane2WidthPx]);
 
   // controls detail
-  const showDetail = pane2Width > NOTATION_DETAIL_THRESHOLD_PX;
+  const showDetail = pane2WidthPx > NOTATION_DETAIL_THRESHOLD_PX;
 
   return (
-    <div data-testid="notation" ref={settingsContainerRef}>
+    <Outer data-testid="notation" ref={settingsContainerRef} $height={viewport.innerHeight}>
       {layout === 'sidecar' && (
         <>
           <SplitPane
@@ -143,23 +154,27 @@ export const Notation: React.FC<Props> = (props) => {
             minSize={layoutSizeBoundsPx.sidecar.min}
             maxSize={layoutSizeBoundsPx.sidecar.max}
             onPane1Resize={setPane1Dimensions}
-            pane1Style={{ zIndex: 4 }}
+            pane1Style={{ zIndex: 4, height: '100%' }}
             onDragFinished={updateDefaultSidecarWidthPx}
           >
             <Sidecar videoSkeleton loading={loading}>
-              <Media video loading={loading} src={src} />
+              <FlexColumn>
+                <Media video loading={loading} src={src} />
 
-              <br />
+                <Flex1InvisibleScrollbar>
+                  <br />
 
-              <Title>{songName}</Title>
-              <Subtitle>by {artistName}</Subtitle>
-              <Muted>{transcriberUsername}</Muted>
+                  <Title>{songName}</Title>
+                  <Subtitle>by {artistName}</Subtitle>
+                  <Muted>{transcriberUsername}</Muted>
 
-              <br />
+                  <br />
 
-              {sidecar}
+                  {sidecar}
+                </Flex1InvisibleScrollbar>
+              </FlexColumn>
             </Sidecar>
-            <FlexColumn data-testid="settings-container" $height={viewport.innerHeight}>
+            <FlexColumn>
               <Flex1>
                 <MusicDisplay loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
               </Flex1>
@@ -215,7 +230,7 @@ export const Notation: React.FC<Props> = (props) => {
               onDragFinished={updateDefaultTheaterHeightPx}
             >
               <Media video fluid={false} loading={loading} src={src} />
-              <FlexColumn $height={pane2Height}>
+              <FlexColumn>
                 <Flex1>
                   <MusicDisplay loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
                 </Flex1>
@@ -234,6 +249,6 @@ export const Notation: React.FC<Props> = (props) => {
           {!settings.isVideoVisible && <div>TODO</div>}
         </>
       )}
-    </div>
+    </Outer>
   );
 };

@@ -18,15 +18,13 @@ const Centered = styled.div`
 
 const List = styled.ul`
   list-style: none;
-  padding-left: 8px;
-  padding-right: 8px;
+  padding: 0;
 `;
 
 const ListItem = styled.li`
   padding-top: 8px;
   padding-bottom: 8px;
-  margin-left: 8px;
-  margin-right: 8px;
+  margin: 0;
   border-bottom: 1px solid ${(props) => props.theme['@border-color']};
 
   :hover {

@@ -17,8 +17,7 @@ const Centered = styled.div`
 
 const List = styled.ul`
   list-style: none;
-  padding-left: 8px;
-  padding-right: 8px;
+  padding: 0;
 `;
 
 const ListItem = styled.li`
