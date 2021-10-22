@@ -41,6 +41,7 @@ const VideoJs: React.FC<Props> = (props) => {
     const media = document.createElement(mode);
     media.setAttribute('playsinline', 'true');
     media.setAttribute('class', 'video-js vjs-default-skin vjs-fill');
+
     outer.appendChild(media);
 
     const player = videojs(media, {

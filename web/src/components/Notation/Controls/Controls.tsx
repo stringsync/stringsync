@@ -66,6 +66,7 @@ const FloatingAlert = styled(Alert)`
 
 type Props = {
   showDetail: boolean;
+  videoControls: boolean;
   notation: Nullable<RenderableNotation>;
   settingsContainerRef: RefObject<HTMLDivElement>;
   musicDisplay: Nullable<MusicDisplay>;
@@ -81,6 +82,7 @@ export const Controls: React.FC<Props> = (props) => {
   const musicDisplay = props.musicDisplay;
   const settingsContainer = props.settingsContainerRef.current;
   const setSettings = props.setSettings;
+  const videoControls = props.videoControls;
 
   // state
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
@@ -198,11 +200,15 @@ export const Controls: React.FC<Props> = (props) => {
         zIndex={3}
       >
         <SettingsInner>
-          <Checkbox checked={settings.isVideoVisible} onChange={onVideoVisibilityChange}>
-            video
-          </Checkbox>
+          {videoControls && (
+            <>
+              <Checkbox checked={settings.isVideoVisible} onChange={onVideoVisibilityChange}>
+                video
+              </Checkbox>
 
-          <Divider />
+              <Divider />
+            </>
+          )}
 
           <Checkbox checked={settings.isFretboardVisible} onChange={onFretboardVisibilityChange}>
             fretboard

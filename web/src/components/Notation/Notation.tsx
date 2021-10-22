@@ -192,6 +192,7 @@ export const Notation: React.FC<Props> = (props) => {
                 <MusicDisplay loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
               </Flex1>
               <Controls
+                videoControls={false}
                 settingsContainerRef={settingsContainerRef}
                 showDetail={showDetail}
                 notation={notation}
@@ -249,6 +250,7 @@ export const Notation: React.FC<Props> = (props) => {
                 <MusicDisplay loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
               </Flex1>
               <Controls
+                videoControls
                 settingsContainerRef={settingsContainerRef}
                 showDetail={showDetail}
                 notation={notation}

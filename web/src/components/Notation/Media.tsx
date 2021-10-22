@@ -2,9 +2,10 @@ import { Skeleton } from 'antd';
 import styled from 'styled-components';
 import { Player } from '../Player';
 
-const Outer = styled.div`
+const Outer = styled.div<{ $video: boolean }>`
   display: flex;
   width: 100%;
+  display: ${(props) => (props.$video ? 'inherit' : 'none')};
 `;
 
 const SkeletonOuter = styled.div`
@@ -27,7 +28,7 @@ export const Media: React.FC<Props> = (props) => {
   const fluid = props.fluid ?? true;
 
   return (
-    <Outer data-testid="media">
+    <Outer data-testid="media" $video={props.video}>
       {props.loading && (
         <SkeletonOuter>
           <Skeleton.Image style={{ width: '100%', height: '100%' }} />
