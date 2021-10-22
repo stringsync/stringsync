@@ -44,7 +44,7 @@ const FloatingButton = styled(Button)<{ $top: number }>`
   position: fixed;
   top: ${(props) => props.$top}px;
   right: -1px;
-  z-index: 4;
+  z-index: 5;
 `;
 
 const FlexColumn = styled.div`

@@ -241,7 +241,7 @@ export const NotationPlayer: React.FC = enhance(() => {
         <Row>
           <LeftOrTopCol xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
             <LeftOrTopScrollContainer $overflow={gtMd}>
-              <Player.Video onPlayerChange={onVideoPlayerChange} playerOptions={playerOptions} />
+              <Player.Video playerOptions={playerOptions} />
               <RightBorder border={gtMd}>{gtMd && <SuggestedNotations srcNotationId={notation.id} />}</RightBorder>
             </LeftOrTopScrollContainer>
           </LeftOrTopCol>

@@ -17,7 +17,7 @@ const HorizontalOuter = styled.div`
   height: 0;
   width: 100%;
   border-bottom: 1px solid ${(props) => props.theme['@border-color']};
-  z-index: 5;
+  z-index: 4;
 `;
 
 const VerticalOuter = styled.div`
