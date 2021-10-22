@@ -22,6 +22,7 @@ const Outer = styled.div`
   z-index: 4;
   background-color: white;
   box-sizing: border-box;
+  overflow: hidden;
 `;
 
 const SliderOuter = styled.div`
@@ -108,7 +109,9 @@ export const Controls: React.FC<Props> = (props) => {
   };
   // TODO need to enable
   const onAutoscrollDisabledClose = noop;
-  const onFretboardVisibilityChange = noop;
+  const onFretboardVisibilityChange = (event: CheckboxChangeEvent) => {
+    setSettings({ ...settings, isFretboardVisible: event.target.checked });
+  };
   const onFretMarkerDisplayChange = noop;
   const onSelectedScaleChange = noop;
   const onAutoscrollPreferenceChange = noop;

@@ -9,7 +9,8 @@ import { useViewport } from '../../ctx/viewport/useViewport';
 import { useMemoCmp } from '../../hooks/useMemoCmp';
 import { MusicDisplay as MusicDisplayBackend } from '../../lib/MusicDisplay';
 import { Nullable } from '../../util/types';
-import { Controls } from './Controls/Controls';
+import { Fretboard } from '../Fretboard';
+import { Controls, CONTROLS_HEIGHT_PX } from './Controls/Controls';
 import * as helpers from './helpers';
 import { Media } from './Media';
 import { MusicDisplay } from './MusicDisplay';
@@ -123,8 +124,11 @@ export const Notation: React.FC<Props> = (props) => {
 
   // split pane sizing
   const viewport = useViewport();
-  const layoutSizeBoundsPx = helpers.getLayoutSizeBoundsPx(viewport);
   const [pane1Dimensions, setPane1Dimensions] = useState({ width: 0, height: 0 });
+  const [fretboardDimensions, setFretboardDimensions] = useState({ width: 0, height: 0 });
+  const apparentFretboardHeightPx = settings.isFretboardVisible ? fretboardDimensions.height : 0;
+  const offsetHeightPx = CONTROLS_HEIGHT_PX + apparentFretboardHeightPx;
+  const layoutSizeBoundsPx = helpers.getLayoutSizeBoundsPx(viewport, offsetHeightPx);
   const pane2WidthPx = viewport.innerWidth - pane1Dimensions.width;
 
   // sidecar drawer button
@@ -193,6 +197,7 @@ export const Notation: React.FC<Props> = (props) => {
               <Flex1>
                 <MusicDisplay loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
               </Flex1>
+              {settings.isFretboardVisible && <Fretboard onResize={setFretboardDimensions} />}
               <Controls
                 videoControls={false}
                 settingsContainerRef={settingsContainerRef}
@@ -252,6 +257,7 @@ export const Notation: React.FC<Props> = (props) => {
               <Flex1>
                 <MusicDisplay loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
               </Flex1>
+              {settings.isFretboardVisible && <Fretboard onResize={setFretboardDimensions} />}
               <Controls
                 videoControls
                 settingsContainerRef={settingsContainerRef}

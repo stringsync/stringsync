@@ -6,7 +6,6 @@ import { InternalError } from '../../errors';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { KeyInfo } from '../../lib/MusicDisplay/helpers';
 import * as constants from './constants';
-import { CONTROLS_HEIGHT_PX } from './Controls/Controls';
 import { FretMarkerDisplay, NotationLayout, NotationSettings, ScaleSelectionType } from './types';
 
 const ALL_LAYOUTS: NotationLayout[] = ['sidecar', 'theater'];
@@ -28,7 +27,7 @@ export const getLayout = (opts: Partial<NotationLayoutOptions> = {}): NotationLa
   return target;
 };
 
-export const getLayoutSizeBoundsPx = (viewport: ViewportState) => {
+export const getLayoutSizeBoundsPx = (viewport: ViewportState, offsetHeightPx: number) => {
   const minSidecarWidthPx = constants.MIN_SIDECAR_WIDTH_PX;
   const maxSidecarWidthPx = Math.min(
     constants.MAX_SIDECAR_WIDTH_PX,
@@ -38,7 +37,7 @@ export const getLayoutSizeBoundsPx = (viewport: ViewportState) => {
   const minTheaterHeightPx = constants.MIN_THEATER_HEIGHT_PX;
   const maxTheaterHeightPx = Math.min(
     constants.MAX_THEATER_HEIGHT_PX,
-    viewport.innerHeight - constants.MIN_NOTATION_HEIGHT_PX - CONTROLS_HEIGHT_PX
+    viewport.innerHeight - constants.MIN_NOTATION_HEIGHT_PX - offsetHeightPx
   );
 
   return {
