@@ -172,7 +172,7 @@ export const Notation: React.FC<Props> = (props) => {
             minSize={layoutSizeBoundsPx.sidecar.min}
             maxSize={layoutSizeBoundsPx.sidecar.max}
             onPane1Resize={setPane1Dimensions}
-            pane1Style={{ zIndex: 4, height: '100%' }}
+            pane1Style={{ zIndex: 5, height: '100%' }}
             onDragFinished={updateDefaultSidecarWidthPx}
           >
             <Sidecar videoSkeleton loading={loading}>
