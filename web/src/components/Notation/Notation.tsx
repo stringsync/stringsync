@@ -75,6 +75,7 @@ export const Notation: React.FC<Props> = (props) => {
 
   // refs
   const settingsContainerRef = useRef<HTMLDivElement>(null);
+  const getContainer = () => settingsContainerRef.current || document.body;
 
   // notation
   const songName = notation?.songName || '???';
@@ -185,7 +186,13 @@ export const Notation: React.FC<Props> = (props) => {
             icon={<DoubleRightOutlined />}
             onClick={onOpenSidecarDrawerButtonClick}
           />
-          <Drawer closable visible={isSidecarDrawerVisible} width="100%" onClose={onSidecarDrawerCloseClick}>
+          <Drawer
+            closable
+            visible={isSidecarDrawerVisible}
+            width="100%"
+            onClose={onSidecarDrawerCloseClick}
+            getContainer={getContainer}
+          >
             <Sidecar loading={loading}>
               <Title>{songName}</Title>
               <Subtitle>by {artistName}</Subtitle>
