@@ -38,10 +38,6 @@ const Outer = styled.div`
   overflow: hidden;
 `;
 
-const StyledDrawer = styled.div`
-  ::-webkit-scrollbar ;
-`;
-
 const SliderOuter = styled.div`
   padding: 0 16px 0 16px;
   width: 100%;
