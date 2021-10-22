@@ -1,7 +1,7 @@
 import { PauseOutlined, QuestionCircleOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
 import { Alert, Button, Checkbox, Col, Divider, Drawer, Radio, Row, Select, Slider, Tooltip } from 'antd';
 import { identity, noop } from 'lodash';
-import { useState } from 'react';
+import React, { RefObject, useState } from 'react';
 import styled from 'styled-components';
 import { useDevice } from '../../ctx/device';
 import { MusicDisplay } from '../../lib/MusicDisplay';
@@ -11,6 +11,8 @@ import { FretMarkerDisplay, NotationSettings, RenderableNotation } from './types
 import { useScales } from './useScales';
 
 export const CONTROLS_HEIGHT_PX = 75;
+
+const DUMMY_DIV = document.createElement('div');
 
 const Outer = styled.div`
   border: 1px solid ${(props) => props.theme['@border-color']};
@@ -63,6 +65,7 @@ const FloatingAlert = styled(Alert)`
 type Props = {
   showDetail: boolean;
   notation: Nullable<RenderableNotation>;
+  settingsContainerRef: RefObject<HTMLDivElement>;
   musicDisplay: Nullable<MusicDisplay>;
   settings: NotationSettings;
   setSettings(settings: NotationSettings): void;
@@ -74,6 +77,7 @@ export const Controls: React.FC<Props> = (props) => {
   const settings = props.settings;
   const notation = props.notation;
   const musicDisplay = props.musicDisplay;
+  const settingsContainer = props.settingsContainerRef.current;
 
   // state
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
@@ -88,6 +92,7 @@ export const Controls: React.FC<Props> = (props) => {
   const onSettingsClose = () => {
     setIsSettingsVisible(false);
   };
+  const getDrawerContainer = () => settingsContainer || DUMMY_DIV;
 
   // scales
   const scales = useScales(musicDisplay);
@@ -181,7 +186,7 @@ export const Controls: React.FC<Props> = (props) => {
         closable={false}
         visible={isSettingsVisible}
         onClose={onSettingsClose}
-        maskStyle={{ width: '100%' }}
+        getContainer={getDrawerContainer}
         zIndex={3}
       >
         <SettingsInner>

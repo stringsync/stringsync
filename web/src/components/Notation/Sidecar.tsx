@@ -2,6 +2,10 @@ import { Skeleton } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
 
+const Outer = styled.div`
+  background: white;
+`;
+
 const SkeletonOuter = styled.div`
   .ant-skeleton {
     width: 100%;
@@ -26,7 +30,7 @@ export const Sidecar: React.FC<Props> = (props) => {
   const videoSkeleton = props.videoSkeleton || false;
 
   return (
-    <div data-testid="sidecar">
+    <Outer data-testid="sidecar">
       {props.loading && (
         <SkeletonOuter>
           {videoSkeleton && (
@@ -45,6 +49,6 @@ export const Sidecar: React.FC<Props> = (props) => {
       )}
 
       {!props.loading && props.children}
-    </div>
+    </Outer>
   );
 };

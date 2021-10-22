@@ -1,7 +1,7 @@
 import { DoubleRightOutlined, HomeOutlined } from '@ant-design/icons';
 import { Button, Drawer } from 'antd';
 import { noop } from 'lodash';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import { useDevice } from '../../ctx/device';
@@ -73,6 +73,9 @@ export const Notation: React.FC<Props> = (props) => {
   const defaultSettings = useMemoCmp(props.defaultSettings);
   const onSettingsChange = props.onSettingsChange || noop;
 
+  // refs
+  const settingsContainerRef = useRef<HTMLDivElement>(null);
+
   // notation
   const songName = notation?.songName || '???';
   const artistName = notation?.artistName || '???';
@@ -130,7 +133,7 @@ export const Notation: React.FC<Props> = (props) => {
   const showDetail = pane2Width > NOTATION_DETAIL_THRESHOLD_PX;
 
   return (
-    <div data-testid="notation">
+    <div data-testid="notation" ref={settingsContainerRef}>
       {layout === 'sidecar' && (
         <>
           <SplitPane
@@ -138,8 +141,8 @@ export const Notation: React.FC<Props> = (props) => {
             defaultSize={settings.defaultSidecarWidthPx}
             minSize={layoutSizeBoundsPx.sidecar.min}
             maxSize={layoutSizeBoundsPx.sidecar.max}
-            pane2Style={{ width: '100%' }}
             onPane1Resize={setPane1Dimensions}
+            pane1Style={{ zIndex: 4 }}
             onDragFinished={updateDefaultSidecarWidthPx}
           >
             <Sidecar videoSkeleton loading={loading}>
@@ -155,11 +158,12 @@ export const Notation: React.FC<Props> = (props) => {
 
               {sidecar}
             </Sidecar>
-            <FlexColumn $height={viewport.innerHeight}>
+            <FlexColumn data-testid="settings-container" $height={viewport.innerHeight}>
               <Flex1>
                 <MusicDisplay loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
               </Flex1>
               <Controls
+                settingsContainerRef={settingsContainerRef}
                 showDetail={showDetail}
                 notation={notation}
                 musicDisplay={musicDisplay}
@@ -209,6 +213,7 @@ export const Notation: React.FC<Props> = (props) => {
                   <MusicDisplay loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
                 </Flex1>
                 <Controls
+                  settingsContainerRef={settingsContainerRef}
                   showDetail={showDetail}
                   notation={notation}
                   musicDisplay={musicDisplay}
