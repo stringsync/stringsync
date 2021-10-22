@@ -1,7 +1,6 @@
 import { Alert, Row } from 'antd';
 import React, { useCallback, useEffect } from 'react';
 import { useParams } from 'react-router';
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { useDevice } from '../../ctx/device';
 import { useViewport } from '../../ctx/viewport/useViewport';
@@ -116,7 +115,6 @@ const NotationShow: React.FC = enhance(() => {
                   {errors.map((error, ndx) => (
                     <div key={ndx}>{error}</div>
                   ))}
-                  <Link to="/library">library</Link>
                 </>
               }
             />
