@@ -15,6 +15,7 @@ import { Media } from './Media';
 import { MusicDisplay } from './MusicDisplay';
 import { Sidecar } from './Sidecar';
 import { SplitPane } from './SplitPane';
+import { Tags } from './Tags';
 import { NotationLayoutOptions, NotationSettings, RenderableNotation } from './types';
 
 const NOTATION_DETAIL_THRESHOLD_PX = 767;
@@ -180,6 +181,7 @@ export const Notation: React.FC<Props> = (props) => {
                   <Title>{songName}</Title>
                   <Subtitle>by {artistName}</Subtitle>
                   <Muted>{transcriberUsername}</Muted>
+                  <Tags tags={notation?.tags || []} />
 
                   <br />
 
@@ -226,6 +228,7 @@ export const Notation: React.FC<Props> = (props) => {
               <Title>{songName}</Title>
               <Subtitle>by {artistName}</Subtitle>
               <Muted>{transcriberUsername}</Muted>
+              <Tags tags={notation?.tags || []} />
 
               <br />
 

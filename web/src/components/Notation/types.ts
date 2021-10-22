@@ -1,4 +1,4 @@
-import { Notation, User } from '../../domain';
+import { Notation, Tag, User } from '../../domain';
 
 export type NotationLayout = 'theater' | 'sidecar';
 
@@ -12,6 +12,7 @@ export type RenderableNotation = Pick<
   'musicXmlUrl' | 'thumbnailUrl' | 'videoUrl' | 'deadTimeMs' | 'durationMs' | 'artistName' | 'songName'
 > & {
   transcriber: Pick<User, 'username'>;
+  tags: Tag[];
 };
 
 export enum FretMarkerDisplay {
