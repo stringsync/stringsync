@@ -44,7 +44,7 @@ const FloatingButton = styled(Button)<{ $top: number }>`
   position: fixed;
   top: ${(props) => props.$top}px;
   right: -1px;
-  z-index: 3;
+  z-index: 4;
 `;
 
 const FlexColumn = styled.div`
@@ -224,6 +224,7 @@ export const Notation: React.FC<Props> = (props) => {
           />
           <Drawer
             closable
+            mask={false}
             visible={isSidecarDrawerVisible}
             width="100%"
             onClose={onSidecarDrawerCloseClick}

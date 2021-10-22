@@ -1,5 +1,18 @@
-import { PauseOutlined, QuestionCircleOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
-import { Alert, Button, Checkbox, Col, Divider, Drawer, Radio, Row, Select, Slider, Tooltip } from 'antd';
+import { InfoCircleOutlined, PauseOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
+import {
+  Alert,
+  Button,
+  Checkbox,
+  Col,
+  Divider,
+  Drawer,
+  Radio,
+  RadioChangeEvent,
+  Row,
+  Select,
+  Slider,
+  Tooltip,
+} from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { identity, noop } from 'lodash';
 import React, { RefObject, useState } from 'react';
@@ -19,7 +32,7 @@ const Outer = styled.div`
   border: 1px solid ${(props) => props.theme['@border-color']};
   height: ${CONTROLS_HEIGHT_PX}px;
   padding: 0 16px;
-  z-index: 4;
+  z-index: 5;
   background-color: white;
   box-sizing: border-box;
   overflow: hidden;
@@ -112,10 +125,18 @@ export const Controls: React.FC<Props> = (props) => {
   const onFretboardVisibilityChange = (event: CheckboxChangeEvent) => {
     setSettings({ ...settings, isFretboardVisible: event.target.checked });
   };
-  const onFretMarkerDisplayChange = noop;
-  const onSelectedScaleChange = noop;
-  const onAutoscrollPreferenceChange = noop;
-  const onIsLoopActiveChange = noop;
+  const onFretMarkerDisplayChange = (event: RadioChangeEvent) => {
+    setSettings({ ...settings, fretMarkerDisplay: event.target.value });
+  };
+  const onSelectedScaleChange = (value: string) => {
+    setSettings({ ...settings, selectedScale: value });
+  };
+  const onAutoscrollPreferenceChange = (event: CheckboxChangeEvent) => {
+    setSettings({ ...settings, isAutoscrollPreferred: event.target.checked });
+  };
+  const onIsLoopActiveChange = (event: CheckboxChangeEvent) => {
+    setSettings({ ...settings, isLoopActive: event.target.checked });
+  };
 
   // tmp
   const isNoopScrolling = false;
@@ -200,7 +221,7 @@ export const Controls: React.FC<Props> = (props) => {
         visible={isSettingsVisible}
         onClose={onSettingsClose}
         getContainer={getDrawerContainer}
-        zIndex={3}
+        zIndex={4}
       >
         <SettingsInner>
           {videoControls && (
@@ -291,7 +312,7 @@ export const Controls: React.FC<Props> = (props) => {
             }
           >
             <Checkbox checked={settings.isLoopActive} onChange={onIsLoopActiveChange}>
-              loop <QuestionCircleOutlined />
+              loop <InfoCircleOutlined />
             </Checkbox>
           </Tooltip>
         </SettingsInner>
