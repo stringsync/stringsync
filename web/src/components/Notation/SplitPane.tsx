@@ -17,7 +17,7 @@ const HorizontalOuter = styled.div`
   height: 0;
   width: 100%;
   border-bottom: 1px solid ${(props) => props.theme['@border-color']};
-  z-index: 3;
+  z-index: 5;
 `;
 
 const VerticalOuter = styled.div`
@@ -29,7 +29,7 @@ const VerticalOuter = styled.div`
   height: 100%;
   width: 0;
   border-right: 1px solid ${(props) => props.theme['@border-color']};
-  z-index: 4;
+  z-index: 5;
 `;
 
 const VerticalMenuOutlined = styled(MenuOutlined)`
