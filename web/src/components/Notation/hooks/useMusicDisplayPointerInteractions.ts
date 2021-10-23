@@ -13,6 +13,8 @@ export const useMusicDisplayPointerInteractions = (musicDisplay: MusicDisplay, m
           return;
         }
         mediaPlayer.seek(Duration.ms(payload.src.timeMs));
+        musicDisplay.getScroller().startAutoScrolling();
+        musicDisplay.getCursor().scrollIntoView();
       }),
       musicDisplay.eventBus.subscribe('cursordragstarted', () => {
         mediaPlayer.suspend();
