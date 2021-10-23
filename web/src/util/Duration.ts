@@ -40,6 +40,10 @@ export class Duration {
     return this.ms === duration.ms;
   }
 
+  plus(duration: Duration) {
+    return Duration.ms(duration.ms + this.ms);
+  }
+
   get ms() {
     return this._ms;
   }

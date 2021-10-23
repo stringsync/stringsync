@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { MediaPlayer } from '../../lib/MediaPlayer';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { Duration } from '../../util/Duration';
+import { NumberRange } from '../../util/NumberRange';
 import { Nullable } from '../../util/types';
 import { useMusicDisplayCursorSnapshot } from './hooks/useMusicDisplayCursorSnapshot';
 import { useSliderMarks } from './hooks/useSliderMarks';
@@ -55,9 +56,16 @@ export const Seekbar: React.FC<Props> = (props) => {
   const tipFormatter = useTipFormatter(cursorSnapshot, durationMs);
   const onChange = useCallback(
     (value: number) => {
-      musicDisplay.getLoop().deactivate();
       mediaPlayer.suspend();
+
       const time = Duration.ms((value / 100) * durationMs);
+      const loop = musicDisplay.getLoop();
+      if (loop.isActive) {
+        const start = time.ms;
+        const end = time.plus(loop.timeRange.size).ms;
+        loop.update(NumberRange.from(start).to(end));
+      }
+
       mediaPlayer.seek(time);
     },
     [durationMs, musicDisplay, mediaPlayer]
