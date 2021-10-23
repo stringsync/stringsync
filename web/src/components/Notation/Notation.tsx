@@ -64,6 +64,7 @@ const Flex1 = styled.div`
 
 const Flex1InvisibleScrollbar = styled(Flex1)`
   margin: 16px;
+  overflow-y: auto;
 
   ::-webkit-scrollbar {
     display: none;

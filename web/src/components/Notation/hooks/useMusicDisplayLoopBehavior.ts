@@ -43,8 +43,12 @@ export const useMusicDisplayLoopBehavior = (
         const loop = musicDisplay.getLoop();
 
         if (isSelectionPointerTarget(payload.src) && loop.isActive) {
-          const timeMs = payload.src.edge === SelectionEdge.Start ? loop.timeMsRange.end : loop.timeMsRange.start;
-          selectionRef.current = AnchoredSelection.init(timeMs);
+          const [anchoredTimeMs, movingTimeMs] =
+            payload.src.edge === SelectionEdge.Start
+              ? [loop.timeMsRange.end, loop.timeMsRange.start]
+              : [loop.timeMsRange.start, loop.timeMsRange.end];
+          const selection = AnchoredSelection.init(anchoredTimeMs);
+          selectionRef.current = selection.update(movingTimeMs);
           loop.update(selectionRef.current.toRange());
         } else if (isTemporal(payload.src)) {
           selectionRef.current = AnchoredSelection.init(payload.src.timeMs);
