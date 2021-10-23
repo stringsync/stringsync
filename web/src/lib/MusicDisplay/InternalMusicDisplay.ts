@@ -145,13 +145,18 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   }
 
   clear() {
-    super.clear();
-    this.cursorWrapper.clear();
-    this.loop.deactivate();
-    this.scroller.disable();
-    this.svgEventProxy?.uninstall();
-    this.getSvg().remove();
-    this.isRendered = false;
+    try {
+      super.clear();
+      this.cursorWrapper.clear();
+      this.loop.deactivate();
+      this.scroller.disable();
+      this.svgEventProxy?.uninstall();
+      this.getSvg().remove();
+    } catch (e) {
+      console.error(`something went wrong with clearing: ${e}`);
+    } finally {
+      this.isRendered = false;
+    }
   }
 
   getSvg() {

@@ -36,6 +36,8 @@ export const useMusicDisplayLoopBehavior = (
           loop.update(longPressedTimeMsRange);
           loop.activate();
         }
+
+        mediaPlayer.seek(loop.timeRange.start);
       }),
       musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
         mediaPlayer.suspend();

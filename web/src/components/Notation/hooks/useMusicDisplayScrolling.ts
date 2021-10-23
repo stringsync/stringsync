@@ -93,7 +93,6 @@ export const useMusicDisplayScrolling = (
       musicDisplay.eventBus.subscribe('selectionupdated', (payload) => {
         musicDisplay.getScroller().updateScrollIntent(payload.dst.position.relY);
       }),
-      musicDisplay.eventBus.subscribe('selectionended', () => {}),
       musicDisplay.eventBus.subscribe('cursordragstarted', () => {
         musicDisplay.getScroller().startManualScrolling();
       }),
@@ -117,6 +116,7 @@ export const useMusicDisplayScrolling = (
       }),
       musicDisplay.eventBus.subscribe('resizeended', () => {
         isMusicDisplayResizingRef.current = false;
+        startPreferredScrolling(musicDisplay, isAutoscrollPreferred);
       }),
       musicDisplay.eventBus.subscribe('loadstarted', () => {
         isMusicDisplayLoadingRef.current = true;
