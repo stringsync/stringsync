@@ -5,10 +5,13 @@ import { ViewportState } from '../../ctx/viewport';
 import { InternalError } from '../../errors';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { KeyInfo } from '../../lib/MusicDisplay/helpers';
+import { SupportedSVGEventNames } from '../../lib/MusicDisplay/svg';
 import * as constants from './constants';
 import { FretMarkerDisplay, NotationLayout, NotationSettings, ScaleSelectionType } from './types';
 
 const ALL_LAYOUTS: NotationLayout[] = ['sidecar', 'theater'];
+const MOUSE_SVG_EVENT_NAMES: SupportedSVGEventNames[] = ['mousedown', 'mousemove', 'mouseup'];
+const TOUCH_SVG_EVENT_NAMES: SupportedSVGEventNames[] = ['touchstart', 'touchmove', 'touchend'];
 
 export const getLayout = (opts: Partial<NotationLayoutOptions> = {}): NotationLayout => {
   const permitted = opts.permitted || ALL_LAYOUTS;
@@ -74,4 +77,15 @@ export const getKeyInfo = (musicDisplay: MusicDisplay): KeyInfo | null => {
     first(musicDisplay.getMeta().cursorSnapshots)?.getKeyInfo() ||
     null
   );
+};
+
+export const getSvgEventNames = (device: Device): SupportedSVGEventNames[] => {
+  switch (device.inputType) {
+    case 'mouseOnly':
+      return [...MOUSE_SVG_EVENT_NAMES];
+    case 'touchOnly':
+      return [...TOUCH_SVG_EVENT_NAMES];
+    case 'hybrid':
+      return [...MOUSE_SVG_EVENT_NAMES, ...TOUCH_SVG_EVENT_NAMES];
+  }
 };

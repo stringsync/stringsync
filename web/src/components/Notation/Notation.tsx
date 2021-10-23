@@ -1,4 +1,4 @@
-import { DoubleRightOutlined, HomeOutlined } from '@ant-design/icons';
+import { HomeOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { Button, Drawer } from 'antd';
 import { noop } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -12,7 +12,7 @@ import { MusicDisplay } from '../../lib/MusicDisplay';
 import { NoopMusicDisplay } from '../../lib/MusicDisplay/NoopMusicDisplay';
 import { Nullable } from '../../util/types';
 import { Fretboard } from '../Fretboard';
-import { Controls, CONTROLS_HEIGHT_PX } from './Controls/Controls';
+import { Controls, CONTROLS_HEIGHT_PX } from './Controls';
 import * as helpers from './helpers';
 import { Media } from './Media';
 import { MusicSheet } from './MusicSheet';
@@ -225,7 +225,7 @@ export const Notation: React.FC<Props> = (props) => {
             $top={72}
             size="large"
             type="primary"
-            icon={<DoubleRightOutlined />}
+            icon={<InfoCircleOutlined />}
             onClick={onSidecarDrawerOpen}
           />
           <Drawer

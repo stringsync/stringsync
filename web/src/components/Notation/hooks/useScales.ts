@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { MusicDisplay } from '../../lib/MusicDisplay';
-import { KeyInfo } from '../../lib/MusicDisplay/helpers';
-import { MusicDisplayMeta } from '../../lib/MusicDisplay/meta';
-import * as helpers from './helpers';
+import { MusicDisplay } from '../../../lib/MusicDisplay';
+import { KeyInfo } from '../../../lib/MusicDisplay/helpers';
+import { MusicDisplayMeta } from '../../../lib/MusicDisplay/meta';
+import * as helpers from '../helpers';
 
 type Scales = {
   currentMain: string | null;

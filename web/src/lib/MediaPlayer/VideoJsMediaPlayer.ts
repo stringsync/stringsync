@@ -29,10 +29,16 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   }
 
   play = () => {
+    if (this.isSuspended) {
+      return;
+    }
     this.player.play();
   };
 
   pause = () => {
+    if (this.isSuspended) {
+      return;
+    }
     this.player.pause();
   };
 
