@@ -90,7 +90,6 @@ export const SplitPane: React.FC<Props> = (props) => {
       style={{
         MozUserSelect: 'inherit',
         WebkitUserSelect: 'inherit',
-        msUserSelect: 'inherit',
         userSelect: 'inherit',
         ...props.style,
       }}

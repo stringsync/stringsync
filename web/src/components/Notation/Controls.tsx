@@ -1,7 +1,6 @@
 import { InfoCircleOutlined, PauseOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Col, Divider, Drawer, Radio, RadioChangeEvent, Row, Select, Slider, Tooltip } from 'antd';
+import { Button, Checkbox, Col, Divider, Drawer, Radio, RadioChangeEvent, Row, Select, Tooltip } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
-import { identity, noop } from 'lodash';
 import React, { RefObject, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDevice } from '../../ctx/device';
@@ -10,6 +9,7 @@ import { MusicDisplay } from '../../lib/MusicDisplay';
 import { Nullable } from '../../util/types';
 import { Detail } from './Detail';
 import { useScales } from './hooks/useScales';
+import { Seekbar } from './Seekbar';
 import { FretMarkerDisplay, NotationSettings, RenderableNotation } from './types';
 
 export const CONTROLS_HEIGHT_PX = 75;
@@ -24,15 +24,6 @@ const Outer = styled.div`
   background-color: white;
   box-sizing: border-box;
   overflow: hidden;
-`;
-
-const SliderOuter = styled.div`
-  padding: 0 16px 0 16px;
-  width: 100%;
-
-  .ant-slider-with-marks {
-    margin: inherit;
-  }
 `;
 
 const FullHeightRow = styled(Row)`
@@ -142,14 +133,6 @@ export const Controls: React.FC<Props> = (props) => {
     };
   }, [mediaPlayer]);
 
-  // tmp
-  const marks = undefined;
-  const handleStyle = {};
-  const value = 0;
-  const tipFormatter = identity;
-  const onChange = noop;
-  const onAfterChange = noop;
-
   return (
     <Outer data-testid="controls">
       <FullHeightRow justify="center" align="middle">
@@ -165,17 +148,7 @@ export const Controls: React.FC<Props> = (props) => {
 
         <Col span={20}>
           <FullHeightRow justify="center" align="middle">
-            <SliderOuter>
-              <Slider
-                step={0.01}
-                marks={marks}
-                handleStyle={handleStyle}
-                value={value}
-                tipFormatter={tipFormatter}
-                onChange={onChange}
-                onAfterChange={onAfterChange}
-              />
-            </SliderOuter>
+            <Seekbar notation={notation} musicDisplay={musicDisplay} mediaPlayer={mediaPlayer} />
           </FullHeightRow>
         </Col>
 
