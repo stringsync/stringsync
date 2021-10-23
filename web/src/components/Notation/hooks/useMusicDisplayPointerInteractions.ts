@@ -14,7 +14,7 @@ export const useMusicDisplayPointerInteractions = (musicDisplay: MusicDisplay, m
         }
         mediaPlayer.seek(Duration.ms(payload.src.timeMs));
       }),
-      musicDisplay.eventBus.subscribe('cursordragstarted', (payload) => {
+      musicDisplay.eventBus.subscribe('cursordragstarted', () => {
         mediaPlayer.suspend();
       }),
       musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {
@@ -26,7 +26,7 @@ export const useMusicDisplayPointerInteractions = (musicDisplay: MusicDisplay, m
         }
         mediaPlayer.seek(Duration.ms(payload.dst.timeMs));
       }),
-      musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
+      musicDisplay.eventBus.subscribe('cursordragended', () => {
         mediaPlayer.unsuspend();
       }),
     ];
