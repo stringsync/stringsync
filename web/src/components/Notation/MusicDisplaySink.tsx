@@ -1,6 +1,7 @@
 import React from 'react';
 import { MediaPlayer } from '../../lib/MediaPlayer';
 import { MusicDisplay } from '../../lib/MusicDisplay';
+import { useMusicDisplayCursorInteractions } from './hooks/useMusicDisplayCursorInteractions';
 import { useMusicDisplayLoopBehavior } from './hooks/useMusicDisplayLoopBehavior';
 import { useMusicDisplayPointerInteractions } from './hooks/useMusicDisplayPointerInteractions';
 import { useMusicDisplayRipples } from './hooks/useMusicDisplayRipples';
@@ -17,7 +18,7 @@ type Props = {
 /**
  * A component that runs MusicDisplay and MediaPlayer events.
  *
- * This is an optimization that prevents React from re-rendering and diffing the vdom too much.
+ * This is an optimization that prevents React from re-rendering and diffing a vdom too much.
  *
  * @param props
  * @returns
@@ -33,6 +34,7 @@ export const MusicDisplaySink: React.FC<Props> = (props) => {
   useMusicDisplayRipples(musicDisplay);
   useMusicDisplayScrolling(settings, musicDisplay, mediaPlayer);
   useMusicDisplayLoopBehavior(settings, setSettings, musicDisplay, mediaPlayer);
+  useMusicDisplayCursorInteractions(musicDisplay, mediaPlayer);
 
   return null;
 };
