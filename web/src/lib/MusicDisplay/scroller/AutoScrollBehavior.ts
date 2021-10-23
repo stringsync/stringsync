@@ -92,7 +92,9 @@ export class AutoScrollBehavior implements ScrollBehavior {
 
   private onObservation: IntersectionObserverCallback = (entries) => {
     this.lastEntries = entries;
-    this.defer(this.scrollToCursor);
+    if (!this.isAutoScrolling) {
+      this.defer(this.scrollToCursor);
+    }
   };
 
   private defer(callback: () => void) {

@@ -1,11 +1,8 @@
-import React, { useEffect, useRef } from 'react';
-import styled from 'styled-components';
+import React, { useEffect, useRef, useState } from 'react';
 import videojs from 'video.js';
 import { useMemoCmp } from '../../hooks/useMemoCmp';
-import { MediaPlayer, NoopMediaPlayer, VideoJsMediaPlayer } from '../../lib/MediaPlayer';
+import { MediaPlayer, NoopMediaPlayer, PlayState, VideoJsMediaPlayer } from '../../lib/MediaPlayer';
 import { Duration } from '../../util/Duration';
-
-const Outer = styled.div``;
 
 const NOOP_MEDIA_PLAYER = new NoopMediaPlayer();
 
@@ -32,6 +29,25 @@ const VideoJs: React.FC<Props> = (props) => {
   const playerOptions = useMemoCmp(props.playerOptions);
   const onPlayerChange = props.onPlayerChange || noop;
 
+  // media player management
+  const [mediaPlayer, setMediaPlayer] = useState(() => new NoopMediaPlayer());
+  useEffect(() => {
+    onPlayerChange(mediaPlayer);
+  }, [onPlayerChange, mediaPlayer]);
+  const onClick = () => {
+    const playState = mediaPlayer.getPlayState();
+    switch (playState) {
+      case PlayState.Paused:
+        mediaPlayer.play();
+        break;
+      case PlayState.Playing:
+        mediaPlayer.pause();
+        break;
+      default:
+        console.warn(`unhandled play state: ${playState}`);
+    }
+  };
+
   // creating the videojs player
   const outerRef = useRef<HTMLDivElement>(null);
   const lastTimeRef = useRef(Duration.zero());
@@ -39,7 +55,6 @@ const VideoJs: React.FC<Props> = (props) => {
   useEffect(() => {
     const outer = outerRef.current;
     if (!outer) {
-      onPlayerChange(NOOP_MEDIA_PLAYER);
       return;
     }
 
@@ -56,7 +71,7 @@ const VideoJs: React.FC<Props> = (props) => {
     });
 
     const mediaPlayer = new VideoJsMediaPlayer(player);
-    onPlayerChange(mediaPlayer);
+    setMediaPlayer(mediaPlayer);
 
     player.ready(() => {
       mediaPlayer.seek(lastTimeRef.current);
@@ -67,11 +82,12 @@ const VideoJs: React.FC<Props> = (props) => {
       lastTimeRef.current = mediaPlayer.getCurrentTime();
       mediaPlayer.dispose();
 
-      onPlayerChange(NOOP_MEDIA_PLAYER);
+      setMediaPlayer(NOOP_MEDIA_PLAYER);
     };
   }, [playerOptions, mode, onPlayerChange]);
 
-  return <Outer data-vjs-player ref={outerRef} />;
+  // vjs dynamically overwrites classnames, so we have to use inline styles instead of styled-components
+  return <div data-vjs-player ref={outerRef} style={{ cursor: 'pointer' }} onClick={onClick} />;
 };
 
 const Video: React.FC<Omit<VideoProps, 'mode'>> = (props) => <VideoJs mode="video" {...props} />;

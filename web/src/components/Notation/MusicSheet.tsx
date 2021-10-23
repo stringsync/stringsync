@@ -23,17 +23,21 @@ const Outer = styled.div<{ $cursor: string }>`
 
 const MusicSheetContainer = styled.div`
   height: 100%;
+  display: flex;
+  flex-direction: column;
 `;
 
-const MusicDisplayOuter = styled.div`
+const MusicDisplayDiv = styled.div<{ $loading: boolean }>`
   position: absolute;
+  height: 100%;
   width: 100%;
+  background-color: white;
+  opacity: 0.9;
 `;
 
 const SkeletonContainer = styled.div`
   padding: 64px;
 `;
-
 const LoadingOverlay = styled.div`
   position: absolute;
   opacity: 0.9;
@@ -83,38 +87,40 @@ export const MusicSheet: React.FC<Props> = (props) => {
   useNoTouchCallout(document.body);
 
   return (
-    <Outer data-testid="music-display" $cursor={cursor} ref={scrollContainerRef}>
-      {loading && (
-        <SkeletonContainer>
-          <Skeleton loading title={false} paragraph={{ rows: 3 }} />
-          <br />
-          <br />
-          <Skeleton loading title={false} paragraph={{ rows: 3 }} />
-          <br />
-          <br />
-          <Skeleton loading title={false} paragraph={{ rows: 3 }} />
-          <br />
-          <br />
-          <Skeleton loading title={false} paragraph={{ rows: 3 }} />
-          <br />
-          <br />
-          <Skeleton loading title={false} paragraph={{ rows: 3 }} />
-          <br />
-          <br />
-          <Skeleton loading title={false} paragraph={{ rows: 3 }} />
-        </SkeletonContainer>
+    <>
+      {!loading && musicDisplayLoading && (
+        <LoadingOverlay>
+          <Loading>loading</Loading>
+        </LoadingOverlay>
       )}
+      <Outer data-testid="music-display" $cursor={cursor} ref={scrollContainerRef}>
+        {loading && (
+          <SkeletonContainer>
+            <Skeleton loading title={false} paragraph={{ rows: 3 }} />
+            <br />
+            <br />
+            <Skeleton loading title={false} paragraph={{ rows: 3 }} />
+            <br />
+            <br />
+            <Skeleton loading title={false} paragraph={{ rows: 3 }} />
+            <br />
+            <br />
+            <Skeleton loading title={false} paragraph={{ rows: 3 }} />
+            <br />
+            <br />
+            <Skeleton loading title={false} paragraph={{ rows: 3 }} />
+            <br />
+            <br />
+            <Skeleton loading title={false} paragraph={{ rows: 3 }} />
+          </SkeletonContainer>
+        )}
 
-      {!loading && (
-        <MusicSheetContainer data-notation>
-          {musicDisplayLoading && (
-            <LoadingOverlay>
-              <Loading>loading</Loading>
-            </LoadingOverlay>
-          )}
-          <MusicDisplayOuter draggable={false} ref={musicDisplayContainerRef} />
-        </MusicSheetContainer>
-      )}
-    </Outer>
+        {!loading && (
+          <MusicSheetContainer data-notation>
+            <MusicDisplayDiv draggable={false} ref={musicDisplayContainerRef} $loading />
+          </MusicSheetContainer>
+        )}
+      </Outer>
+    </>
   );
 };
