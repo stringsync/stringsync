@@ -1,3 +1,5 @@
+import { Duration } from '../../../util/Duration';
+import { DurationRange } from '../../../util/DurationRange';
 import { NumberRange } from '../../../util/NumberRange';
 import { CursorStyleType, CursorWrapper } from '../cursors';
 import { LerpCursor } from '../cursors/LerpCursor';
@@ -48,6 +50,13 @@ export class LerpLoop implements Loop {
     this.startCursor = startCursor;
     this.endCursor = endCursor;
     this.selectionRenderer = selectionRenderer;
+  }
+
+  get timeRange() {
+    const timeMsRange = this.timeMsRange;
+    const startTime = Duration.ms(timeMsRange.start);
+    const endTime = Duration.ms(timeMsRange.end);
+    return DurationRange.from(startTime).to(endTime);
   }
 
   activate() {

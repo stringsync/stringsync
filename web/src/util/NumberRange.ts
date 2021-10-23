@@ -1,14 +1,14 @@
-interface Range<T> {
+export interface Range<T> {
   readonly start: T;
   readonly end: T;
-  readonly size: number;
-  readonly midpoint: number;
+  readonly size: T;
+  readonly midpoint: T;
   contains(value: T): boolean;
   eq(range: Range<T>): boolean;
   toString(): string;
 }
 
-class LeftBoundedRange implements Range<number> {
+class LeftBoundedNumberRange implements Range<number> {
   start;
   end = Number.POSITIVE_INFINITY;
   size = Number.POSITIVE_INFINITY;
@@ -35,7 +35,7 @@ class LeftBoundedRange implements Range<number> {
   }
 }
 
-class RightBoundedRange implements Range<number> {
+class RightBoundedNumberRange implements Range<number> {
   start = Number.NEGATIVE_INFINITY;
   end;
   size = Number.POSITIVE_INFINITY;
@@ -68,11 +68,11 @@ export class NumberRange implements Range<number> {
   }
 
   static from(start: number) {
-    return new LeftBoundedRange(start);
+    return new LeftBoundedNumberRange(start);
   }
 
   static to(end: number) {
-    return new RightBoundedRange(end);
+    return new RightBoundedNumberRange(end);
   }
 
   start: number;
