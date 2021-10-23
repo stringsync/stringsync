@@ -7,13 +7,15 @@ import styled from 'styled-components';
 import { useDevice } from '../../ctx/device';
 import { useViewport } from '../../ctx/viewport/useViewport';
 import { useMemoCmp } from '../../hooks/useMemoCmp';
-import { MusicDisplay as MusicDisplayBackend } from '../../lib/MusicDisplay';
+import { MediaPlayer, NoopMediaPlayer } from '../../lib/MediaPlayer';
+import { MusicDisplay } from '../../lib/MusicDisplay';
+import { NoopMusicDisplay } from '../../lib/MusicDisplay/NoopMusicDisplay';
 import { Nullable } from '../../util/types';
 import { Fretboard } from '../Fretboard';
 import { Controls, CONTROLS_HEIGHT_PX } from './Controls/Controls';
 import * as helpers from './helpers';
 import { Media } from './Media';
-import { MusicDisplay } from './MusicDisplay';
+import { MusicSheet } from './MusicSheet';
 import { Sidecar } from './Sidecar';
 import { SplitPane } from './SplitPane';
 import { Tags } from './Tags';
@@ -133,15 +135,15 @@ export const Notation: React.FC<Props> = (props) => {
 
   // sidecar drawer button
   const [isSidecarDrawerVisible, setSidecarDrawerVisibility] = useState(false);
-  const onOpenSidecarDrawerButtonClick = () => setSidecarDrawerVisibility(true);
-  const onSidecarDrawerCloseClick = () => setSidecarDrawerVisibility(false);
+  const onSidecarDrawerOpen = () => setSidecarDrawerVisibility(true);
+  const onSidecarDrawerClose = () => setSidecarDrawerVisibility(false);
 
   // home button
   const history = useHistory();
   const onHomeClick = () => history.push('/library');
 
   // music display
-  const [musicDisplay, setMusicDisplay] = useState<MusicDisplayBackend | null>(null);
+  const [musicDisplay, setMusicDisplay] = useState<MusicDisplay>(() => new NoopMusicDisplay());
   const [lastResizeWidthPx, setLastResizeWidthPx] = useState(pane2WidthPx);
   useEffect(() => {
     if (!musicDisplay) {
@@ -157,6 +159,9 @@ export const Notation: React.FC<Props> = (props) => {
     setLastResizeWidthPx(pane2WidthPx);
     musicDisplay.resize();
   }, [lastResizeWidthPx, musicDisplay, pane2WidthPx]);
+
+  // media player
+  const [mediaPlayer, setMediaPlayer] = useState<MediaPlayer>(() => new NoopMediaPlayer());
 
   // controls detail
   const showDetail = pane2WidthPx > NOTATION_DETAIL_THRESHOLD_PX;
@@ -177,7 +182,7 @@ export const Notation: React.FC<Props> = (props) => {
           >
             <Sidecar videoSkeleton loading={loading}>
               <FlexColumn>
-                <Media video loading={loading} src={src} />
+                <Media video loading={loading} src={src} onPlayerChange={setMediaPlayer} />
 
                 <Flex1InvisibleScrollbar>
                   <br />
@@ -195,7 +200,7 @@ export const Notation: React.FC<Props> = (props) => {
             </Sidecar>
             <FlexColumn>
               <Flex1>
-                <MusicDisplay loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
+                <MusicSheet loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
               </Flex1>
               {settings.isFretboardVisible && <Fretboard onResize={setFretboardDimensions} />}
               <Controls
@@ -204,6 +209,7 @@ export const Notation: React.FC<Props> = (props) => {
                 showDetail={showDetail}
                 notation={notation}
                 musicDisplay={musicDisplay}
+                mediaPlayer={mediaPlayer}
                 settings={settings}
                 setSettings={setSettings}
               />
@@ -220,14 +226,14 @@ export const Notation: React.FC<Props> = (props) => {
             size="large"
             type="primary"
             icon={<DoubleRightOutlined />}
-            onClick={onOpenSidecarDrawerButtonClick}
+            onClick={onSidecarDrawerOpen}
           />
           <Drawer
             closable
             mask={false}
             visible={isSidecarDrawerVisible}
             width="100%"
-            onClose={onSidecarDrawerCloseClick}
+            onClose={onSidecarDrawerClose}
             getContainer={getContainer}
           >
             <Sidecar loading={loading}>
@@ -253,10 +259,16 @@ export const Notation: React.FC<Props> = (props) => {
             onPane1Resize={setPane1Dimensions}
             onDragFinished={settings.isVideoVisible ? updateDefaultTheaterHeightPx : noop}
           >
-            <Media video={settings.isVideoVisible} fluid={false} loading={loading} src={src} />
+            <Media
+              video={settings.isVideoVisible}
+              fluid={false}
+              loading={loading}
+              src={src}
+              onPlayerChange={setMediaPlayer}
+            />
             <FlexColumn>
               <Flex1>
-                <MusicDisplay loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
+                <MusicSheet loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
               </Flex1>
               {settings.isFretboardVisible && <Fretboard onResize={setFretboardDimensions} />}
               <Controls
@@ -265,6 +277,7 @@ export const Notation: React.FC<Props> = (props) => {
                 showDetail={showDetail}
                 notation={notation}
                 musicDisplay={musicDisplay}
+                mediaPlayer={mediaPlayer}
                 settings={settings}
                 setSettings={setSettings}
               />

@@ -1,2 +1,2 @@
-export * from './MusicDisplay';
+export * from './OpenSheetMusicDisplay';
 export * from './types';

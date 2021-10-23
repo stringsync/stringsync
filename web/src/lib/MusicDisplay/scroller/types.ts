@@ -1,5 +1,14 @@
 import { Cursor } from 'opensheetmusicdisplay';
 
+export interface Scroller {
+  type: ScrollBehaviorType;
+  scrollToCursor(cursor: Cursor): void;
+  updateScrollIntent(relY: number): void;
+  startAutoScrolling(): void;
+  startManualScrolling(): void;
+  disable(): void;
+}
+
 export enum ScrollBehaviorType {
   Unknown,
   Noop,

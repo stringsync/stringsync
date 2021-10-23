@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { MusicDisplay } from '../../lib/MusicDisplay';
+import { OpenSheetMusicDisplay } from '../../lib/MusicDisplay';
 import { KeyInfo } from '../../lib/MusicDisplay/helpers';
 import { MusicDisplayMeta } from '../../lib/MusicDisplay/meta';
 import * as helpers from './helpers';
@@ -12,7 +12,7 @@ type Scales = {
   minor: string[];
 };
 
-export const useScales = (musicDisplay: MusicDisplay | null): Scales => {
+export const useScales = (musicDisplay: OpenSheetMusicDisplay | null): Scales => {
   const [keyInfo, setKeyInfo] = useState<KeyInfo | null>(() => helpers.getKeyInfo(musicDisplay));
   const [meta, setMeta] = useState<MusicDisplayMeta>(MusicDisplayMeta.createNull());
 

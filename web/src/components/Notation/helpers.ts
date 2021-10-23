@@ -65,7 +65,7 @@ export const getDefaultSettings = (device: Device): NotationSettings => ({
   defaultSidecarWidthPx: 480,
 });
 
-export const getKeyInfo = (musicDisplay: MusicDisplay | null): KeyInfo | null => {
+export const getKeyInfo = (musicDisplay: MusicDisplay): KeyInfo | null => {
   if (!musicDisplay) {
     return null;
   }

@@ -1,7 +1,7 @@
 import React, { RefObject, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useDevice } from '../../ctx/device';
-import { MusicDisplay } from '../../lib/MusicDisplay';
+import { OpenSheetMusicDisplay } from '../../lib/MusicDisplay';
 import { CursorStyleType } from '../../lib/MusicDisplay/cursors';
 import { isNonePointerTarget, isPositional, PointerTargetType } from '../../lib/MusicDisplay/pointer';
 import { SupportedSVGEventNames } from '../../lib/MusicDisplay/svg';
@@ -38,7 +38,7 @@ type NotationProps = {
   deadTimeMs: number;
   durationMs: number;
   scrollContainerRef: RefObject<HTMLDivElement>;
-  onMusicDisplayChange?: (musicDisplay: MusicDisplay | null) => void;
+  onMusicDisplayChange?: (musicDisplay: OpenSheetMusicDisplay | null) => void;
 };
 
 enum Cursor {
@@ -61,7 +61,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
 
   const [cursor, setCursor] = useState(Cursor.Crosshair);
   const [isLoading, setIsLoading] = useState(false);
-  const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
+  const [musicDisplay, setMusicDisplay] = useState<OpenSheetMusicDisplay | null>(null);
 
   useEffect(() => {
     if (onMusicDisplayChange) {
@@ -172,7 +172,7 @@ export const Notation: React.FC<NotationProps> = (props) => {
         break;
     }
 
-    const musicDisplay = new MusicDisplay(div, {
+    const musicDisplay = new OpenSheetMusicDisplay(div, {
       syncSettings: { deadTimeMs, durationMs },
       svgSettings,
       scrollContainer,

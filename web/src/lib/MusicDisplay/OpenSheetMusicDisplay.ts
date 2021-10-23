@@ -2,7 +2,7 @@ import { merge } from 'lodash';
 import { DrawingParametersEnum } from 'opensheetmusicdisplay';
 import { EventBus } from '../EventBus';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
-import { MusicDisplayEventBus, MusicDisplayOptions } from './types';
+import { MusicDisplay, MusicDisplayEventBus, MusicDisplayOptions } from './types';
 
 const DUMMY_DIV = document.createElement('div');
 DUMMY_DIV.setAttribute('id', 'dummy-scroll-container');
@@ -22,11 +22,10 @@ const DEFAULT_OPTS: MusicDisplayOptions = {
 };
 
 /**
- * MusicDisplay limits the public interface from InternalMusicDisplay.
- *
- * All the heavy lifting is done by the InternalMusicDisplay instance. Do not add complex logic to this class.
+ * This class limits the public interface from InternalMusicDisplay. All the heavy lifting is done by the
+ * InternalMusicDisplay instance. Do not add complex logic to this class.
  */
-export class MusicDisplay {
+export class OpenSheetMusicDisplay implements MusicDisplay {
   private imd: InternalMusicDisplay;
 
   eventBus: MusicDisplayEventBus = new EventBus();
@@ -34,7 +33,6 @@ export class MusicDisplay {
   constructor(container: HTMLDivElement, partialOpts: Partial<MusicDisplayOptions> = {}) {
     const opts = merge({}, DEFAULT_OPTS, partialOpts);
     this.imd = new InternalMusicDisplay(container, this.eventBus, opts);
-    (window as any).md = this;
   }
 
   async load(xmlUrl: string) {

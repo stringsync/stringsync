@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
-import { MusicDisplay } from '../../lib/MusicDisplay';
+import { OpenSheetMusicDisplay } from '../../lib/MusicDisplay';
 import { VideoPlayerControls } from './useVideoPlayerControls';
 
 export const useSelectionLoop = (
-  musicDisplay: MusicDisplay | null,
+  musicDisplay: OpenSheetMusicDisplay | null,
   currentTimeMs: number,
   isPlaying: boolean,
   videoPlayerControls: VideoPlayerControls

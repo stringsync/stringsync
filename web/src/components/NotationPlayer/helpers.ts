@@ -1,9 +1,9 @@
 import { first } from 'lodash';
-import { MusicDisplay } from '../../lib/MusicDisplay';
+import { OpenSheetMusicDisplay } from '../../lib/MusicDisplay';
 import { KeyInfo } from '../../lib/MusicDisplay/helpers';
 import { NumberRange } from '../../util/NumberRange';
 
-export const getKeyInfo = (musicDisplay: MusicDisplay | null): KeyInfo | null => {
+export const getKeyInfo = (musicDisplay: OpenSheetMusicDisplay | null): KeyInfo | null => {
   if (!musicDisplay) {
     return null;
   }

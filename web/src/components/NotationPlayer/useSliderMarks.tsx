@@ -1,9 +1,12 @@
 import { SliderMarks } from 'antd/lib/slider';
 import { useEffect, useState } from 'react';
-import { MusicDisplay } from '../../lib/MusicDisplay';
+import { OpenSheetMusicDisplay } from '../../lib/MusicDisplay';
 import { NumberRange } from '../../util/NumberRange';
 
-export const useSliderMarks = (musicDisplay: MusicDisplay | null, durationMs: number): SliderMarks | undefined => {
+export const useSliderMarks = (
+  musicDisplay: OpenSheetMusicDisplay | null,
+  durationMs: number
+): SliderMarks | undefined => {
   const [sliderMarks, setSliderMarks] = useState<SliderMarks | undefined>(undefined);
 
   useEffect(() => {

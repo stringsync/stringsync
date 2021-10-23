@@ -14,7 +14,7 @@ import { useNotation } from '../../hooks/useNotation';
 import { useNoTouchAction } from '../../hooks/useNoTouchAction';
 import { useNoTouchCallout } from '../../hooks/useNoTouchCallout';
 import { useNoUserSelect } from '../../hooks/useNoUserSelect';
-import { MusicDisplay } from '../../lib/MusicDisplay';
+import { OpenSheetMusicDisplay } from '../../lib/MusicDisplay';
 import { ScrollBehaviorType } from '../../lib/MusicDisplay/scroller';
 import { compose } from '../../util/compose';
 import { Duration } from '../../util/Duration';
@@ -108,7 +108,7 @@ export const NotationPlayer: React.FC = enhance(() => {
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const [musicDisplay, setMusicDisplay] = useState<MusicDisplay | null>(null);
+  const [musicDisplay, setMusicDisplay] = useState<OpenSheetMusicDisplay | null>(null);
   const [videoPlayer, setVideoPlayer] = useState<VideoJsPlayer | null>(null);
   const [videoHeightPx, setVideoHeightPx] = useState(0);
   const [fretboardHeightPx, setFretboardHeightPx] = useState(0);

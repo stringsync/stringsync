@@ -6,7 +6,7 @@ import { ManualScrollBehavior } from './ManualScrollBehavior';
 import { NoopScrollBehavior } from './NoopScrollBehavior';
 import { ScrollBehavior } from './types';
 
-export class Scroller {
+export class HTMLScroller {
   type = ScrollBehaviorType.Auto;
 
   private scrollContainer: HTMLElement;
@@ -50,7 +50,7 @@ export class Scroller {
     const behavior = this.makeBehavior(type);
     this.behavior = behavior;
     this.behavior.start();
-    this.imd.eventBus.dispatch('scrollbehaviorchanged', { type });
+    this.imd?.eventBus.dispatch('scrollbehaviorchanged', { type });
   }
 
   private makeBehavior(type: ScrollBehaviorType): ScrollBehavior {

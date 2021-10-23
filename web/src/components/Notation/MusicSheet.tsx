@@ -8,8 +8,9 @@ import { Device, useDevice } from '../../ctx/device';
 import { useNoTouchAction } from '../../hooks/useNoTouchAction';
 import { useNoTouchCallout } from '../../hooks/useNoTouchCallout';
 import { useNoUserSelect } from '../../hooks/useNoUserSelect';
-import { MusicDisplay as MusicDisplayBackend } from '../../lib/MusicDisplay';
+import { MusicDisplay, OpenSheetMusicDisplay } from '../../lib/MusicDisplay';
 import { CursorStyleType } from '../../lib/MusicDisplay/cursors';
+import { NoopMusicDisplay } from '../../lib/MusicDisplay/NoopMusicDisplay';
 import { isNonePointerTarget, isPositional, PointerTargetType } from '../../lib/MusicDisplay/pointer';
 import { SupportedSVGEventNames } from '../../lib/MusicDisplay/svg';
 import { Nullable } from '../../util/types';
@@ -78,16 +79,16 @@ const Loading = styled.small`
 type Props = {
   loading: boolean;
   notation: Nullable<RenderableNotation>;
-  onMusicDisplayChange?: (musicDisplay: MusicDisplayBackend | null) => void;
+  onMusicDisplayChange?: (musicDisplay: MusicDisplay) => void;
 };
 
-export const MusicDisplay: React.FC<Props> = (props) => {
+export const MusicSheet: React.FC<Props> = (props) => {
   // props
   const loading = props.loading;
   const notation = props.notation;
 
   // music display
-  const [musicDisplay, setMusicDisplay] = useState<Nullable<MusicDisplayBackend>>(null);
+  const [musicDisplay, setMusicDisplay] = useState<MusicDisplay>(() => new NoopMusicDisplay());
   const device = useDevice();
   const musicDisplayDivRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -117,7 +118,7 @@ export const MusicDisplay: React.FC<Props> = (props) => {
       return;
     }
 
-    const musicDisplay = new MusicDisplayBackend(musicDisplayDiv, {
+    const musicDisplay = new OpenSheetMusicDisplay(musicDisplayDiv, {
       syncSettings: { deadTimeMs: notation.deadTimeMs, durationMs: notation.durationMs },
       svgSettings: { eventNames: getSvgEventNames(device) },
       scrollContainer,
@@ -138,7 +139,7 @@ export const MusicDisplay: React.FC<Props> = (props) => {
     musicDisplay.load(notation.musicXmlUrl);
 
     return () => {
-      setMusicDisplay(null);
+      setMusicDisplay(new NoopMusicDisplay());
       musicDisplay.eventBus.unsubscribe(...eventBusIds);
       musicDisplay.dispose();
     };

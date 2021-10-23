@@ -1,5 +1,6 @@
 import { Skeleton } from 'antd';
 import styled from 'styled-components';
+import { MediaPlayer } from '../../lib/MediaPlayer';
 import { Player } from '../Player';
 
 const Outer = styled.div<{ $video: boolean }>`
@@ -22,6 +23,7 @@ type Props = {
   video: boolean;
   fluid?: boolean;
   src: string | null;
+  onPlayerChange: (mediaPlayer: MediaPlayer) => void;
 };
 
 export const Media: React.FC<Props> = (props) => {
@@ -36,11 +38,17 @@ export const Media: React.FC<Props> = (props) => {
       )}
 
       {!props.loading && props.video && props.src && (
-        <Player.Video playerOptions={{ fluid, sources: [{ src: props.src, type: 'application/x-mpegURL' }] }} />
+        <Player.Video
+          playerOptions={{ fluid, sources: [{ src: props.src, type: 'application/x-mpegURL' }] }}
+          onPlayerChange={props.onPlayerChange}
+        />
       )}
 
       {!props.loading && !props.video && props.src && (
-        <Player.Audio playerOptions={{ fluid, sources: [{ src: props.src, type: 'application/x-mpegURL' }] }} />
+        <Player.Audio
+          playerOptions={{ fluid, sources: [{ src: props.src, type: 'application/x-mpegURL' }] }}
+          onPlayerChange={props.onPlayerChange}
+        />
       )}
     </Outer>
   );

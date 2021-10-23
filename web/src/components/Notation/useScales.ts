@@ -12,16 +12,12 @@ type Scales = {
   minor: string[];
 };
 
-export const useScales = (musicDisplay: MusicDisplay | null): Scales => {
+export const useScales = (musicDisplay: MusicDisplay): Scales => {
   const [keyInfo, setKeyInfo] = useState<KeyInfo | null>(() => helpers.getKeyInfo(musicDisplay));
   const [meta, setMeta] = useState<MusicDisplayMeta>(MusicDisplayMeta.createNull());
 
   useEffect(() => {
     setKeyInfo(helpers.getKeyInfo(musicDisplay));
-
-    if (!musicDisplay) {
-      return;
-    }
 
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('rendered', (payload) => {

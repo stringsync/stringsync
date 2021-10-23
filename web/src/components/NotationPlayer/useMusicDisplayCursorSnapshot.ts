@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { MusicDisplay } from '../../lib/MusicDisplay';
+import { OpenSheetMusicDisplay } from '../../lib/MusicDisplay';
 import { CursorSnapshot } from '../../lib/MusicDisplay/locator';
 
-export const useMusicDisplayCursorSnapshot = (musicDisplay: MusicDisplay | null) => {
+export const useMusicDisplayCursorSnapshot = (musicDisplay: OpenSheetMusicDisplay | null) => {
   const [cursorSnapshot, setCursorSnapshot] = useState<CursorSnapshot | null>(() => {
     return musicDisplay ? musicDisplay.getCursor().cursorSnapshot : null;
   });

@@ -1,7 +1,10 @@
 import { IOSMDOptions } from 'opensheetmusicdisplay';
 import { EventBus } from '../EventBus';
+import { CursorWrapper } from './cursors';
+import { Fx } from './fx';
 import { CursorSnapshot, SyncSettings } from './locator';
 import { Loop } from './loop';
+import { Meta } from './meta';
 import {
   CursorPointerTarget,
   CursorSnapshotPointerTarget,
@@ -9,7 +12,7 @@ import {
   PointerTarget,
   SelectionPointerTarget,
 } from './pointer';
-import { ScrollBehaviorType } from './scroller';
+import { ScrollBehaviorType, Scroller } from './scroller';
 import { SVGSettings } from './svg';
 
 export type MusicDisplayOptions = IOSMDOptions & {
@@ -17,6 +20,18 @@ export type MusicDisplayOptions = IOSMDOptions & {
   scrollContainer: HTMLDivElement;
   svgSettings: SVGSettings;
 };
+
+export interface MusicDisplay {
+  eventBus: MusicDisplayEventBus;
+  load(xmlUrl: string): Promise<void>;
+  resize(): void;
+  dispose(): void;
+  getFx(): Fx;
+  getScroller(): Scroller;
+  getCursor(): CursorWrapper;
+  getLoop(): Loop;
+  getMeta(): Meta;
+}
 
 export type MusicDisplayEventBus = EventBus<{
   click: { src: PointerTarget };

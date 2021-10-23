@@ -18,7 +18,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { VideoJsPlayer } from 'video.js';
 import { useDevice } from '../../ctx/device';
-import { MusicDisplay } from '../../lib/MusicDisplay';
+import { OpenSheetMusicDisplay } from '../../lib/MusicDisplay';
 import { ScrollBehaviorType } from '../../lib/MusicDisplay/scroller';
 import { NotationDetail } from './NotationDetail';
 import { useMusicDisplayClickEffect } from './useMusicDisplayClickEffect';
@@ -83,7 +83,7 @@ export type Props = {
   artistName: string;
   thumbnailUrl: string;
   videoPlayer: VideoJsPlayer | null;
-  musicDisplay: MusicDisplay | null;
+  musicDisplay: OpenSheetMusicDisplay | null;
   settings: NotationPlayerSettings;
   settingsApi: NotationPlayerSettingsApi;
 };

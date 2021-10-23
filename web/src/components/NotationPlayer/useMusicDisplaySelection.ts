@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { MusicDisplay } from '../../lib/MusicDisplay';
+import { OpenSheetMusicDisplay } from '../../lib/MusicDisplay';
 import { SelectionEdge } from '../../lib/MusicDisplay/locator';
 import { isCursorSnapshotPointerTarget, isSelectionPointerTarget, isTemporal } from '../../lib/MusicDisplay/pointer';
 import { AnchoredSelection } from '../../util/AnchoredSelection';
@@ -7,7 +7,7 @@ import * as helpers from './helpers';
 import { VideoPlayerControls } from './useVideoPlayerControls';
 
 export const useMusicDisplaySelection = (
-  musicDisplay: MusicDisplay | null,
+  musicDisplay: OpenSheetMusicDisplay | null,
   videoPlayerControls: VideoPlayerControls
 ) => {
   const selectionRef = useRef<AnchoredSelection | null>(null);

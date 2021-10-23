@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
-import { MusicDisplay } from '../../lib/MusicDisplay';
+import { OpenSheetMusicDisplay } from '../../lib/MusicDisplay';
 import { NotationPlayerSettings, NotationPlayerSettingsApi } from './useNotationPlayerSettings';
 
 export const useMusicDisplayLoopSettingSync = (
-  musicDisplay: MusicDisplay | null,
+  musicDisplay: OpenSheetMusicDisplay | null,
   settings: NotationPlayerSettings,
   settingsApi: NotationPlayerSettingsApi
 ) => {

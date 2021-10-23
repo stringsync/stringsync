@@ -1,12 +1,15 @@
-import { noop } from 'lodash';
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import videojs from 'video.js';
 import { useMemoCmp } from '../../hooks/useMemoCmp';
-import { MediaPlayer } from '../../lib/MediaPlayer';
+import { MediaPlayer, NoopMediaPlayer, VideoJsMediaPlayer } from '../../lib/MediaPlayer';
 import { Duration } from '../../util/Duration';
 
 const Outer = styled.div``;
+
+const NOOP_MEDIA_PLAYER = new NoopMediaPlayer();
+
+const noop = (player: MediaPlayer) => {};
 
 type BaseProps = {
   playerOptions: videojs.PlayerOptions;
@@ -31,18 +34,18 @@ const VideoJs: React.FC<Props> = (props) => {
 
   // creating the videojs player
   const outerRef = useRef<HTMLDivElement>(null);
-  const lastTimeDurationRef = useRef(Duration.ms(0));
+  const lastTimeRef = useRef(Duration.zero());
 
   useEffect(() => {
     const outer = outerRef.current;
     if (!outer) {
+      onPlayerChange(NOOP_MEDIA_PLAYER);
       return;
     }
 
     const media = document.createElement(mode);
     media.setAttribute('playsinline', 'true');
     media.setAttribute('class', 'video-js vjs-default-skin vjs-fill');
-
     outer.appendChild(media);
 
     const player = videojs(media, {
@@ -52,14 +55,17 @@ const VideoJs: React.FC<Props> = (props) => {
       ...playerOptions,
     });
 
+    const mediaPlayer = new VideoJsMediaPlayer(player);
+
     player.ready(() => {
-      onPlayerChange(player);
-      player.currentTime(lastTimeDurationRef.current.sec);
+      onPlayerChange(mediaPlayer);
+      player.currentTime(lastTimeRef.current.sec);
     });
 
     return () => {
-      lastTimeDurationRef.current = Duration.sec(player.currentTime());
-      onPlayerChange(null);
+      lastTimeRef.current = mediaPlayer.getCurrentTime();
+      mediaPlayer.dispose();
+      onPlayerChange(NOOP_MEDIA_PLAYER);
 
       // HACK: prevent the root element from being deleted when disposing the player
       // https://github.com/videojs/video.js/blob/85343d1cec98b59891a650e9d050989424ecf866/src/js/component.js#L167

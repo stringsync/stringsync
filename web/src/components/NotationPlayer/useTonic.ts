@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { MusicDisplay } from '../../lib/MusicDisplay';
+import { OpenSheetMusicDisplay } from '../../lib/MusicDisplay';
 import { KeyInfo } from '../../lib/MusicDisplay/helpers';
 import * as helpers from './helpers';
 
-export const useTonic = (selectedScale: string | null, musicDisplay: MusicDisplay | null): string | null => {
+export const useTonic = (selectedScale: string | null, musicDisplay: OpenSheetMusicDisplay | null): string | null => {
   const [keyInfo, setKeyInfo] = useState<KeyInfo | null>(() => helpers.getKeyInfo(musicDisplay));
 
   useEffect(() => {

@@ -1,12 +1,15 @@
 import { useMemo } from 'react';
-import { MusicDisplay } from '../../lib/MusicDisplay';
+import { OpenSheetMusicDisplay } from '../../lib/MusicDisplay';
 import { NotationPlayerSettings } from './useNotationPlayerSettings';
 
 export type ScrollControls = {
   startPreferredScrolling: () => void;
 };
 
-export const useMusicDisplayScrollControls = (musicDisplay: MusicDisplay | null, settings: NotationPlayerSettings) => {
+export const useMusicDisplayScrollControls = (
+  musicDisplay: OpenSheetMusicDisplay | null,
+  settings: NotationPlayerSettings
+) => {
   return useMemo(
     () => ({
       startPreferredScrolling: () => {

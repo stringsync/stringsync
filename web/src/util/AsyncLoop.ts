@@ -26,6 +26,9 @@ export class AsyncLoop {
   }
 
   stop() {
+    if (!this.isRunning) {
+      return;
+    }
     this.caf(this.handle);
     this.isRunning = false;
   }

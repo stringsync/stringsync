@@ -18,6 +18,7 @@ import { identity, noop } from 'lodash';
 import React, { RefObject, useState } from 'react';
 import styled from 'styled-components';
 import { useDevice } from '../../../ctx/device';
+import { MediaPlayer } from '../../../lib/MediaPlayer';
 import { MusicDisplay } from '../../../lib/MusicDisplay';
 import { Nullable } from '../../../util/types';
 import { Detail } from '../Detail';
@@ -86,7 +87,8 @@ type Props = {
   videoControls: boolean;
   notation: Nullable<RenderableNotation>;
   settingsContainerRef: RefObject<HTMLDivElement>;
-  musicDisplay: Nullable<MusicDisplay>;
+  musicDisplay: MusicDisplay;
+  mediaPlayer: MediaPlayer;
   settings: NotationSettings;
   setSettings(settings: NotationSettings): void;
 };

@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react';
-import { MusicDisplay } from '../../lib/MusicDisplay';
+import { OpenSheetMusicDisplay } from '../../lib/MusicDisplay';
 import { isTemporal } from '../../lib/MusicDisplay/pointer';
 import { ScrollControls } from './useMusicDisplayScrollControls';
 import { VideoPlayerState } from './useVideoPlayerState';
 
 export const useMusicDisplayScrolling = (
-  musicDisplay: MusicDisplay | null,
+  musicDisplay: OpenSheetMusicDisplay | null,
   scrollControls: ScrollControls,
   videoPlayerState: VideoPlayerState
 ) => {
