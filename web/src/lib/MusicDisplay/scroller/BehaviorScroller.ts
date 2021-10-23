@@ -6,7 +6,7 @@ import { ManualScrollBehavior } from './ManualScrollBehavior';
 import { NoopScrollBehavior } from './NoopScrollBehavior';
 import { ScrollBehavior } from './types';
 
-export class HTMLScroller {
+export class BehaviorScroller {
   type = ScrollBehaviorType.Auto;
 
   private scrollContainer: HTMLElement;

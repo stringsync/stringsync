@@ -15,7 +15,7 @@ import { SyncSettings } from './locator';
 import { MusicDisplayLocator } from './locator/MusicDisplayLocator';
 import { LerpLoop, Loop, NoopLoop } from './loop';
 import { MusicDisplayMeta } from './meta';
-import { HTMLScroller, Scroller } from './scroller';
+import { BehaviorScroller, Scroller } from './scroller';
 import { SVGEventProxy, SVGSettings } from './svg';
 import { MusicDisplayEventBus, MusicDisplayOptions } from './types';
 
@@ -65,7 +65,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.syncSettings = opts.syncSettings;
     this.svgSettings = opts.svgSettings;
     this.scrollContainer = opts.scrollContainer;
-    this.scroller = new HTMLScroller(opts.scrollContainer, this);
+    this.scroller = new BehaviorScroller(opts.scrollContainer, this);
     this.colorer = new Colorer();
   }
 

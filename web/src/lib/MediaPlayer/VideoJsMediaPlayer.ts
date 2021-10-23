@@ -25,6 +25,8 @@ export class VideoJsMediaPlayer implements MediaPlayer {
 
   dispose() {
     this.loop.stop();
+    this.player.off('play', this.onPlay);
+    this.player.off('pause', this.onPause);
     this.player.dispose();
   }
 

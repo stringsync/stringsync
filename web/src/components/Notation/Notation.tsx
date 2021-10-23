@@ -156,7 +156,7 @@ export const Notation: React.FC<Props> = (props) => {
 
   return (
     <Outer data-testid="notation" ref={settingsContainerRef} $height={viewport.innerHeight}>
-      <MusicDisplaySink musicDisplay={musicDisplay} mediaPlayer={mediaPlayer} />
+      <MusicDisplaySink settings={settings} musicDisplay={musicDisplay} mediaPlayer={mediaPlayer} />
 
       {layout === 'sidecar' && (
         <>
