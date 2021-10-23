@@ -155,7 +155,6 @@ export const Controls: React.FC<Props> = (props) => {
   useEffect(() => {
     const eventBusIds = [
       mediaPlayer.eventBus.subscribe('init', () => {
-        console.log(mediaPlayer.getPlayState());
         setPlayState(mediaPlayer.getPlayState());
       }),
       mediaPlayer.eventBus.subscribe('pause', () => {
