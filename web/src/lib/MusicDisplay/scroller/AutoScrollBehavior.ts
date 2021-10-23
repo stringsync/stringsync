@@ -74,12 +74,10 @@ export class AutoScrollBehavior implements ScrollBehavior {
       return;
     }
     if (this.cursor !== request.cursor) {
-      if (this.cursor) {
-        this.observer.unobserve(this.cursor.cursorElement);
-      }
+      this.unobserveCursor();
       this.lastEntries = [];
       this.cursor = request.cursor;
-      this.observer.observe(request.cursor.cursorElement);
+      this.observeCursor();
     }
     this.defer(this.scrollToCursor);
   }
@@ -92,9 +90,7 @@ export class AutoScrollBehavior implements ScrollBehavior {
 
   private onObservation: IntersectionObserverCallback = (entries) => {
     this.lastEntries = entries;
-    if (!this.isAutoScrolling) {
-      this.defer(this.scrollToCursor);
-    }
+    this.defer(this.scrollToCursor);
   };
 
   private defer(callback: () => void) {
@@ -155,11 +151,28 @@ export class AutoScrollBehavior implements ScrollBehavior {
     return cursorTop;
   }
 
+  private observeCursor() {
+    if (!this.cursor) {
+      return;
+    }
+    this.observer.observe(this.cursor.cursorElement);
+  }
+
+  private unobserveCursor() {
+    if (!this.cursor) {
+      return;
+    }
+    this.observer.unobserve(this.cursor.cursorElement);
+  }
+
   private scrollTo = (scrollTarget: AutoScrollTarget) => {
     const hasNoOverflow = this.scrollContainer.scrollHeight <= this.scrollContainer.clientHeight;
     if (hasNoOverflow) {
       return;
     }
+
+    // Prevent the intersection observer from interfering with autoscroll.
+    this.unobserveCursor();
 
     const lastScrollId = Symbol();
     const didNewScrollInvoke = () => this.lastScrollId !== lastScrollId;
@@ -182,6 +195,7 @@ export class AutoScrollBehavior implements ScrollBehavior {
             if (didNewScrollInvoke()) {
               return;
             }
+            this.observeCursor();
             this.isAutoScrolling = false;
           }, SCROLL_GRACE_DURATION.ms);
         },

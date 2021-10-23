@@ -21,10 +21,13 @@ const Outer = styled.div<{ $cursor: string }>`
   overflow-y: auto;
 `;
 
+const SkeletonContainer = styled.div`
+  padding: 64px;
+  max-height: 0;
+`;
+
 const MusicSheetContainer = styled.div`
   height: 100%;
-  display: flex;
-  flex-direction: column;
 `;
 
 const MusicDisplayDiv = styled.div<{ $loading: boolean }>`
@@ -35,9 +38,6 @@ const MusicDisplayDiv = styled.div<{ $loading: boolean }>`
   opacity: 0.9;
 `;
 
-const SkeletonContainer = styled.div`
-  padding: 64px;
-`;
 const LoadingOverlay = styled.div`
   position: absolute;
   opacity: 0.9;
@@ -93,7 +93,7 @@ export const MusicSheet: React.FC<Props> = (props) => {
           <Loading>loading</Loading>
         </LoadingOverlay>
       )}
-      <Outer data-testid="music-display" $cursor={cursor} ref={scrollContainerRef}>
+      <Outer data-testid="music-sheet" $cursor={cursor} ref={scrollContainerRef}>
         {loading && (
           <SkeletonContainer>
             <Skeleton loading title={false} paragraph={{ rows: 3 }} />

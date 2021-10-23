@@ -142,16 +142,9 @@ export const Controls: React.FC<Props> = (props) => {
     setSettings({ ...settings, isLoopActive: event.target.checked });
   };
 
-  // callbacks
-  const onAutoscrollDisabledClose = () => {
-    musicDisplay.getScroller().startAutoScrolling();
-    musicDisplay.getCursor().scrollIntoView();
-  };
-
   // video player state
   const [playState, setPlayState] = useState(() => mediaPlayer.getPlayState());
   const isPaused = playState === PlayState.Paused;
-  const isPlaying = playState === PlayState.Playing;
   useEffect(() => {
     const eventBusIds = [
       mediaPlayer.eventBus.subscribe('init', () => {
@@ -170,7 +163,6 @@ export const Controls: React.FC<Props> = (props) => {
   }, [mediaPlayer]);
 
   // tmp
-  const isNoopScrolling = false;
   const marks = undefined;
   const handleStyle = {};
   const value = 0;
@@ -180,17 +172,6 @@ export const Controls: React.FC<Props> = (props) => {
 
   return (
     <Outer data-testid="controls">
-      {isNoopScrolling && settings.isAutoscrollPreferred && isPlaying && (
-        <FloatingAlert
-          showIcon
-          closable
-          closeText="enable"
-          onClose={onAutoscrollDisabledClose}
-          type="warning"
-          message="autoscroll temporarily disabled"
-        />
-      )}
-
       <FullHeightRow justify="center" align="middle">
         <Col span={showDetail ? 1 : 2}>
           <FullHeightRow justify="center" align="middle">

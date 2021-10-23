@@ -1,8 +1,12 @@
+import { message } from 'antd';
 import { useEffect, useRef } from 'react';
 import { MediaPlayer, PlayState } from '../../../lib/MediaPlayer';
 import { MusicDisplay } from '../../../lib/MusicDisplay';
 import { isTemporal } from '../../../lib/MusicDisplay/pointer';
+import { ScrollBehaviorType } from '../../../lib/MusicDisplay/scroller';
 import { NotationSettings } from '../types';
+
+const SCROLL_DIVERGENCE_KEY = 'SCROLL_DIVERGENCE_KEY';
 
 const startPreferredScrolling = (musicDisplay: MusicDisplay, isAutoscrollPreferred: boolean) => {
   if (isAutoscrollPreferred) {
@@ -21,6 +25,50 @@ export const useMusicDisplayScrolling = (
   const isMusicDisplayResizingRef = useRef(false);
   const isMusicDisplayLoadingRef = useRef(false);
   const isAutoscrollPreferred = settings.isAutoscrollPreferred;
+
+  useEffect(() => {
+    startPreferredScrolling(musicDisplay, isAutoscrollPreferred);
+  }, [musicDisplay, isAutoscrollPreferred]);
+
+  useEffect(() => {
+    const onScrollBehaviorChange = (scrollBehaviorType: ScrollBehaviorType) => {
+      message.destroy(SCROLL_DIVERGENCE_KEY);
+      if (scrollBehaviorType !== ScrollBehaviorType.Noop) {
+        return;
+      }
+      if (mediaPlayer.getPlayState() !== PlayState.Playing) {
+        return;
+      }
+      if (!isAutoscrollPreferred) {
+        return;
+      }
+      message.warn({
+        key: SCROLL_DIVERGENCE_KEY,
+        duration: null,
+        content: 'tap to autoscroll',
+        onClick: () => {
+          startPreferredScrolling(musicDisplay, isAutoscrollPreferred);
+        },
+      });
+    };
+
+    onScrollBehaviorChange(musicDisplay.getScroller().type);
+
+    const musicDisplayEventBusIds = [
+      musicDisplay.eventBus.subscribe('scrollbehaviorchanged', (payload) => {
+        onScrollBehaviorChange(payload.type);
+      }),
+    ];
+    const mediaPlayerEventBusIds = [
+      mediaPlayer.eventBus.subscribe('pause', () => {
+        message.destroy(SCROLL_DIVERGENCE_KEY);
+      }),
+    ];
+    return () => {
+      musicDisplay.eventBus.unsubscribe(...musicDisplayEventBusIds);
+      mediaPlayer.eventBus.unsubscribe(...mediaPlayerEventBusIds);
+    };
+  }, [isAutoscrollPreferred, musicDisplay, mediaPlayer]);
 
   useEffect(() => {
     const eventBusIds = [

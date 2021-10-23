@@ -71,6 +71,10 @@ const Flex1InvisibleScrollbar = styled(Flex1)`
   }
 `;
 
+const FretboardOuter = styled.div`
+  z-index: 3;
+`;
+
 type Props = {
   loading?: boolean;
   sidecar?: React.ReactNode;
@@ -196,7 +200,11 @@ export const Notation: React.FC<Props> = (props) => {
               <Flex1>
                 <MusicSheet loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
               </Flex1>
-              {settings.isFretboardVisible && <Fretboard onResize={setFretboardDimensions} />}
+              {settings.isFretboardVisible && (
+                <FretboardOuter>
+                  <Fretboard onResize={setFretboardDimensions} />
+                </FretboardOuter>
+              )}
               <Controls
                 videoControls={false}
                 settingsContainerRef={settingsContainerRef}
@@ -264,7 +272,11 @@ export const Notation: React.FC<Props> = (props) => {
               <Flex1>
                 <MusicSheet loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
               </Flex1>
-              {settings.isFretboardVisible && <Fretboard onResize={setFretboardDimensions} />}
+              {settings.isFretboardVisible && (
+                <FretboardOuter>
+                  <Fretboard onResize={setFretboardDimensions} />
+                </FretboardOuter>
+              )}
               <Controls
                 videoControls
                 settingsContainerRef={settingsContainerRef}
