@@ -14,7 +14,9 @@ import { Nullable } from '../../util/types';
 import { Fretboard } from '../Fretboard';
 import { Controls, CONTROLS_HEIGHT_PX } from './Controls';
 import * as helpers from './helpers';
+import { useMusicDisplayResize } from './hooks/useMusicDisplayResize';
 import { Media } from './Media';
+import { MusicDisplaySink } from './MusicDisplaySink';
 import { MusicSheet } from './MusicSheet';
 import { Sidecar } from './Sidecar';
 import { SplitPane } from './SplitPane';
@@ -144,21 +146,7 @@ export const Notation: React.FC<Props> = (props) => {
 
   // music display
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay>(() => new NoopMusicDisplay());
-  const [lastResizeWidthPx, setLastResizeWidthPx] = useState(pane2WidthPx);
-  useEffect(() => {
-    if (!musicDisplay) {
-      return;
-    }
-    if (pane2WidthPx === 0) {
-      // if there's no width, don't bother resizing
-      return;
-    }
-    if (lastResizeWidthPx === pane2WidthPx) {
-      return;
-    }
-    setLastResizeWidthPx(pane2WidthPx);
-    musicDisplay.resize();
-  }, [lastResizeWidthPx, musicDisplay, pane2WidthPx]);
+  useMusicDisplayResize(musicDisplay, pane2WidthPx);
 
   // media player
   const [mediaPlayer, setMediaPlayer] = useState<MediaPlayer>(() => new NoopMediaPlayer());
@@ -168,6 +156,8 @@ export const Notation: React.FC<Props> = (props) => {
 
   return (
     <Outer data-testid="notation" ref={settingsContainerRef} $height={viewport.innerHeight}>
+      <MusicDisplaySink musicDisplay={musicDisplay} mediaPlayer={mediaPlayer} />
+
       {layout === 'sidecar' && (
         <>
           <SplitPane

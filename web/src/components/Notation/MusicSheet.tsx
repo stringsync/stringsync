@@ -9,7 +9,6 @@ import { MusicDisplay } from '../../lib/MusicDisplay';
 import { Nullable } from '../../util/types';
 import { useMusicDisplay } from './hooks/useMusicDisplay';
 import { useCSSCursor } from './hooks/useMusicDisplayCSSCursor';
-import { useMusicDisplayRipples } from './hooks/useMusicDisplayRipples';
 
 const DUMMY_DIV = document.createElement('div');
 
@@ -73,7 +72,6 @@ export const MusicSheet: React.FC<Props> = (props) => {
 
   // css effects
   const cursor = useCSSCursor(musicDisplay);
-  useMusicDisplayRipples(musicDisplay);
   useNoUserSelect(musicDisplayContainerRef.current || DUMMY_DIV);
   useNoTouchAction(document.body);
   useNoTouchCallout(document.body);
