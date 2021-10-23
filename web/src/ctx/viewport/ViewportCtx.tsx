@@ -47,8 +47,10 @@ export const ViewportProvider: React.FC = (props) => {
       dispatch(VIEWPORT_ACTIONS.updateDimensions({ innerHeight: window.innerHeight, innerWidth: window.innerWidth }));
     };
     window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
     return () => {
       window.removeEventListener('resize', onResize);
+      window.addEventListener('orientationchange', onResize);
     };
   }, []);
 

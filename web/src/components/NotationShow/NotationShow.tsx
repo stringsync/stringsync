@@ -37,6 +37,20 @@ const Outer = styled.div`
   height: 101vh;
 `;
 
+const LandscapeOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+`;
+
 const ErrorsOuter = styled.div`
   width: 100%;
   margin: 0 auto;
@@ -53,9 +67,10 @@ const enhance = compose(withLayout(Layout.NONE, { lanes: false, footer: false })
 const NotationShow: React.FC = enhance(() => {
   // layout
   const device = useDevice();
-  const { xs, sm, md } = useViewport();
+  const { xs, sm, md, innerWidth, innerHeight } = useViewport();
   const ltLg = xs || sm || md;
   const layoutOptions = device.mobile || ltLg ? MOBILE_NOTATION_LAYOUT_OPTIONS : DEFAULT_NOTATION_LAYOUT_OPTIONS;
+  const isMobileLandscape = device.mobile && innerHeight < innerWidth;
 
   // notation
   const params = useParams<{ id: string }>();
@@ -102,6 +117,14 @@ const NotationShow: React.FC = enhance(() => {
 
   return (
     <Outer data-testid="notation-show">
+      {isMobileLandscape && (
+        <LandscapeOverlay>
+          <h2>
+            Mobile landscape mode is not supported <em>yet</em>.
+          </h2>
+        </LandscapeOverlay>
+      )}
+
       {!hasErrors && (
         <Notation
           loading={loading}

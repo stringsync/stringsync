@@ -54,7 +54,6 @@ const FloatingButton = styled(Button)<{ $top: number }>`
 const FlexColumn = styled.div`
   display: flex;
   flex-direction: column;
-  transition: height 200ms;
   height: 100%;
 `;
 
