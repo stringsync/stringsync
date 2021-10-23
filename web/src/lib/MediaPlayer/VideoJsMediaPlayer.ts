@@ -23,7 +23,7 @@ export class VideoJsMediaPlayer implements MediaPlayer {
     this.player.on('pause', this.onPause);
 
     this.timeChangeLoop = new AsyncLoop(
-      this.onTimeChangeLoop,
+      this.syncTime,
       player.requestAnimationFrame.bind(player),
       player.cancelAnimationFrame.bind(player)
     );
@@ -106,7 +106,7 @@ export class VideoJsMediaPlayer implements MediaPlayer {
     this.eventBus.dispatch('timechange', { time });
   }
 
-  private onTimeChangeLoop = () => {
+  private syncTime = () => {
     const time = this.getCurrentTime();
     this.updateTime(time);
   };

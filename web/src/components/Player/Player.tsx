@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import videojs from 'video.js';
 import { useMemoCmp } from '../../hooks/useMemoCmp';
-import { MediaPlayer, NoopMediaPlayer, PlayState, VideoJsMediaPlayer } from '../../lib/MediaPlayer';
+import { MediaPlayer, NoopMediaPlayer, VideoJsMediaPlayer } from '../../lib/MediaPlayer';
 import { Duration } from '../../util/Duration';
 
 const NOOP_MEDIA_PLAYER = new NoopMediaPlayer();
@@ -34,19 +34,6 @@ const VideoJs: React.FC<Props> = (props) => {
   useEffect(() => {
     onPlayerChange(mediaPlayer);
   }, [onPlayerChange, mediaPlayer]);
-  const onClick = () => {
-    const playState = mediaPlayer.getPlayState();
-    switch (playState) {
-      case PlayState.Paused:
-        mediaPlayer.play();
-        break;
-      case PlayState.Playing:
-        mediaPlayer.pause();
-        break;
-      default:
-        console.warn(`unhandled play state: ${playState}`);
-    }
-  };
 
   // creating the videojs player
   const outerRef = useRef<HTMLDivElement>(null);
@@ -60,11 +47,11 @@ const VideoJs: React.FC<Props> = (props) => {
 
     const media = document.createElement(mode);
     media.setAttribute('playsinline', 'true');
-    media.setAttribute('class', 'video-js vjs-default-skin vjs-fill');
+    media.setAttribute('class', 'video-js vjs-default-skin vjs-fill vjs-big-play-centered');
     outer.appendChild(media);
 
     const player = videojs(media, {
-      controls: false,
+      controls: true,
       preload: 'auto',
       fluid: true,
       ...playerOptions,
@@ -84,10 +71,10 @@ const VideoJs: React.FC<Props> = (props) => {
 
       setMediaPlayer(NOOP_MEDIA_PLAYER);
     };
-  }, [playerOptions, mode, onPlayerChange]);
+  }, [playerOptions, mode]);
 
   // vjs dynamically overwrites classnames, so we have to use inline styles instead of styled-components
-  return <div data-vjs-player ref={outerRef} style={{ cursor: 'pointer' }} onClick={onClick} />;
+  return <div data-vjs-player ref={outerRef} style={{ cursor: 'pointer' }} />;
 };
 
 const Video: React.FC<Omit<VideoProps, 'mode'>> = (props) => <VideoJs mode="video" {...props} />;

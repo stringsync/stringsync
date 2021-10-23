@@ -11,6 +11,7 @@ import { Detail } from './Detail';
 import { useScales } from './hooks/useScales';
 import { Seekbar } from './Seekbar';
 import { FretMarkerDisplay, NotationSettings, RenderableNotation, ScaleSelectionType } from './types';
+import { VolumeSlider } from './VolumeSlider';
 
 export const CONTROLS_HEIGHT_PX = 75;
 
@@ -140,7 +141,7 @@ export const Controls: React.FC<Props> = (props) => {
   return (
     <Outer data-testid="controls">
       <FullHeightRow justify="center" align="middle">
-        <Col span={showDetail ? 1 : 2}>
+        <Col span={2}>
           <FullHeightRow justify="center" align="middle">
             {isPaused ? (
               <StyledButton size="large" shape="circle" icon={<RightOutlined />} onClick={mediaPlayer.play} />
@@ -150,13 +151,13 @@ export const Controls: React.FC<Props> = (props) => {
           </FullHeightRow>
         </Col>
 
-        <Col span={20}>
+        <Col span={showDetail ? 18 : 20}>
           <FullHeightRow justify="center" align="middle">
             <Seekbar notation={notation} musicDisplay={musicDisplay} mediaPlayer={mediaPlayer} />
           </FullHeightRow>
         </Col>
 
-        <Col span={showDetail ? 1 : 2}>
+        <Col span={2}>
           <FullHeightRow justify="center" align="middle">
             <RotationButton
               size="large"
@@ -281,6 +282,11 @@ export const Controls: React.FC<Props> = (props) => {
               loop <InfoCircleOutlined />
             </Checkbox>
           </Tooltip>
+
+          <Divider />
+
+          <h5>volume</h5>
+          <VolumeSlider />
         </SettingsInner>
       </Drawer>
     </Outer>
