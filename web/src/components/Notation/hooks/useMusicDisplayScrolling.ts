@@ -60,8 +60,10 @@ export const useMusicDisplayScrolling = (
       }),
     ];
     const mediaPlayerEventBusIds = [
-      mediaPlayer.eventBus.subscribe('pause', () => {
-        message.destroy(SCROLL_DIVERGENCE_KEY);
+      mediaPlayer.eventBus.subscribe('playstatechange', (payload) => {
+        if (payload.playState === PlayState.Paused) {
+          message.destroy(SCROLL_DIVERGENCE_KEY);
+        }
       }),
     ];
     return () => {
@@ -72,8 +74,10 @@ export const useMusicDisplayScrolling = (
 
   useEffect(() => {
     const eventBusIds = [
-      mediaPlayer.eventBus.subscribe('play', () => {
-        startPreferredScrolling(musicDisplay, isAutoscrollPreferred);
+      mediaPlayer.eventBus.subscribe('playstatechange', (payload) => {
+        if (payload.playState === PlayState.Playing) {
+          startPreferredScrolling(musicDisplay, isAutoscrollPreferred);
+        }
       }),
     ];
     return () => {

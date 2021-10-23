@@ -44,7 +44,6 @@ export class VideoJsMediaPlayer implements MediaPlayer {
       return;
     }
     this.player.play();
-    this.eventBus.dispatch('play', {});
   };
 
   pause = () => {
@@ -52,7 +51,6 @@ export class VideoJsMediaPlayer implements MediaPlayer {
       return;
     }
     this.player.pause();
-    this.eventBus.dispatch('pause', {});
   };
 
   seek(time: Duration) {
@@ -120,11 +118,11 @@ export class VideoJsMediaPlayer implements MediaPlayer {
 
   private onPlay = () => {
     this.timeChangeLoop.start();
-    this.eventBus.dispatch('play', {});
+    this.eventBus.dispatch('playstatechange', { playState: PlayState.Playing });
   };
 
   private onPause = () => {
     this.timeChangeLoop.stop();
-    this.eventBus.dispatch('pause', {});
+    this.eventBus.dispatch('playstatechange', { playState: PlayState.Paused });
   };
 }

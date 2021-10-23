@@ -1,6 +1,7 @@
 import React from 'react';
 import { MediaPlayer } from '../../lib/MediaPlayer';
 import { MusicDisplay } from '../../lib/MusicDisplay';
+import { useDynamicScaleSync } from './hooks/useDynamicScaleSync';
 import { useMusicDisplayCursorInteractions } from './hooks/useMusicDisplayCursorInteractions';
 import { useMusicDisplayCursorTimeSync } from './hooks/useMusicDisplayCursorTimeSync';
 import { useMusicDisplayLoopBehavior } from './hooks/useMusicDisplayLoopBehavior';
@@ -24,7 +25,7 @@ type Props = {
  * @param props
  * @returns
  */
-export const MusicDisplaySink: React.FC<Props> = (props) => {
+export const NotationSink: React.FC<Props> = (props) => {
   // props
   const settings = props.settings;
   const setSettings = props.setSettings;
@@ -37,6 +38,7 @@ export const MusicDisplaySink: React.FC<Props> = (props) => {
   useMusicDisplayLoopBehavior(settings, setSettings, musicDisplay, mediaPlayer);
   useMusicDisplayCursorInteractions(musicDisplay, mediaPlayer);
   useMusicDisplayCursorTimeSync(musicDisplay, mediaPlayer);
+  useDynamicScaleSync(settings, setSettings, musicDisplay);
 
   return null;
 };

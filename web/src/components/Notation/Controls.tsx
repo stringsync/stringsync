@@ -10,7 +10,7 @@ import { Nullable } from '../../util/types';
 import { Detail } from './Detail';
 import { useScales } from './hooks/useScales';
 import { Seekbar } from './Seekbar';
-import { FretMarkerDisplay, NotationSettings, RenderableNotation } from './types';
+import { FretMarkerDisplay, NotationSettings, RenderableNotation, ScaleSelectionType } from './types';
 
 export const CONTROLS_HEIGHT_PX = 75;
 
@@ -77,8 +77,6 @@ export const Controls: React.FC<Props> = (props) => {
 
   // state
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
-
-  // device
   const device = useDevice();
 
   // callbacks
@@ -104,7 +102,16 @@ export const Controls: React.FC<Props> = (props) => {
     setSettings({ ...settings, fretMarkerDisplay: event.target.value });
   };
   const onSelectedScaleChange = (value: string) => {
-    setSettings({ ...settings, selectedScale: value });
+    switch (value) {
+      case 'none':
+        setSettings({ ...settings, scaleSelectionType: ScaleSelectionType.None, selectedScale: null });
+        break;
+      case 'dynamic':
+        setSettings({ ...settings, scaleSelectionType: ScaleSelectionType.Dynamic });
+        break;
+      default:
+        setSettings({ ...settings, scaleSelectionType: ScaleSelectionType.User, selectedScale: value });
+    }
   };
   const onAutoscrollPreferenceChange = (event: CheckboxChangeEvent) => {
     setSettings({ ...settings, isAutoscrollPreferred: event.target.checked });
@@ -121,11 +128,8 @@ export const Controls: React.FC<Props> = (props) => {
       mediaPlayer.eventBus.subscribe('init', () => {
         setPlayState(mediaPlayer.getPlayState());
       }),
-      mediaPlayer.eventBus.subscribe('pause', () => {
-        setPlayState(PlayState.Paused);
-      }),
-      mediaPlayer.eventBus.subscribe('play', () => {
-        setPlayState(PlayState.Playing);
+      mediaPlayer.eventBus.subscribe('playstatechange', (payload) => {
+        setPlayState(payload.playState);
       }),
     ];
     return () => {

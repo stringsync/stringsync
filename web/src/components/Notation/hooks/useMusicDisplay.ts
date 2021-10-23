@@ -36,6 +36,8 @@ export const useMusicDisplay = (
       scrollContainer,
       drawingParameters: device.mobile ? DrawingParametersEnum.compacttight : DrawingParametersEnum.default,
     });
+    setMusicDisplay(musicDisplay);
+    (window as any).md = musicDisplay;
 
     const startLoading = () => setLoading(true);
     const stopLoading = () => setLoading(false);
@@ -47,7 +49,6 @@ export const useMusicDisplay = (
       musicDisplay.eventBus.subscribe('resizeended', stopLoading),
     ];
 
-    setMusicDisplay(musicDisplay);
     musicDisplay.load(notation.musicXmlUrl);
 
     return () => {

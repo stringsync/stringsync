@@ -70,9 +70,6 @@ export const getDefaultSettings = (device: Device): NotationSettings => ({
 });
 
 export const getKeyInfo = (musicDisplay: MusicDisplay): KeyInfo | null => {
-  if (!musicDisplay) {
-    return null;
-  }
   return (
     musicDisplay.getCursor().cursorSnapshot?.getKeyInfo() ||
     first(musicDisplay.getMeta().cursorSnapshots)?.getKeyInfo() ||

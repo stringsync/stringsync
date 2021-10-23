@@ -16,8 +16,8 @@ import { Fretboard } from './Fretboard';
 import * as helpers from './helpers';
 import { useMusicDisplayResize } from './hooks/useMusicDisplayResize';
 import { Media } from './Media';
-import { MusicDisplaySink } from './MusicDisplaySink';
 import { MusicSheet } from './MusicSheet';
+import { NotationSink } from './NotationSink';
 import { Sidecar } from './Sidecar';
 import { SplitPane } from './SplitPane';
 import { Tags } from './Tags';
@@ -154,7 +154,7 @@ export const Notation: React.FC<Props> = (props) => {
 
   return (
     <Outer data-testid="notation" ref={settingsContainerRef} $height={viewport.innerHeight}>
-      <MusicDisplaySink
+      <NotationSink
         settings={settings}
         setSettings={setSettings}
         musicDisplay={musicDisplay}
@@ -195,7 +195,14 @@ export const Notation: React.FC<Props> = (props) => {
               <Flex1>
                 <MusicSheet loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
               </Flex1>
-              {settings.isFretboardVisible && <Fretboard onResize={setFretboardDimensions} />}
+              {settings.isFretboardVisible && (
+                <Fretboard
+                  settings={settings}
+                  musicDisplay={musicDisplay}
+                  mediaPlayer={mediaPlayer}
+                  onResize={setFretboardDimensions}
+                />
+              )}
               <Controls
                 videoControls={false}
                 settingsContainerRef={settingsContainerRef}
@@ -263,7 +270,14 @@ export const Notation: React.FC<Props> = (props) => {
               <Flex1>
                 <MusicSheet loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
               </Flex1>
-              {settings.isFretboardVisible && <Fretboard onResize={setFretboardDimensions} />}
+              {settings.isFretboardVisible && (
+                <Fretboard
+                  settings={settings}
+                  musicDisplay={musicDisplay}
+                  mediaPlayer={mediaPlayer}
+                  onResize={setFretboardDimensions}
+                />
+              )}
               <Controls
                 videoControls
                 settingsContainerRef={settingsContainerRef}
