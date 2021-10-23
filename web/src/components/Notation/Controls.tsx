@@ -1,18 +1,5 @@
 import { InfoCircleOutlined, PauseOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
-import {
-  Alert,
-  Button,
-  Checkbox,
-  Col,
-  Divider,
-  Drawer,
-  Radio,
-  RadioChangeEvent,
-  Row,
-  Select,
-  Slider,
-  Tooltip,
-} from 'antd';
+import { Button, Checkbox, Col, Divider, Drawer, Radio, RadioChangeEvent, Row, Select, Slider, Tooltip } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { identity, noop } from 'lodash';
 import React, { RefObject, useEffect, useState } from 'react';
@@ -73,13 +60,6 @@ const SettingsInner = styled.div`
   ::-webkit-scrollbar {
     display: none;
   }
-`;
-
-const FloatingAlert = styled(Alert)`
-  position: fixed;
-  z-index: 5;
-  bottom: 80px;
-  right: 24px;
 `;
 
 type Props = {
