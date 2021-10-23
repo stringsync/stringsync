@@ -8,6 +8,10 @@ export enum PlayState {
 
 export type MediaPlayerEventBus = EventBus<{
   timechange: { time: Duration };
+  play: {};
+  pause: {};
+  suspend: {};
+  unsuspend: {};
 }>;
 
 export interface MediaPlayer {

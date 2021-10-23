@@ -99,6 +99,7 @@ export const Controls: React.FC<Props> = (props) => {
   const settings = props.settings;
   const notation = props.notation;
   const musicDisplay = props.musicDisplay;
+  const mediaPlayer = props.mediaPlayer;
   const settingsContainer = props.settingsContainerRef.current;
   const setSettings = props.setSettings;
   const videoControls = props.videoControls;
@@ -148,7 +149,6 @@ export const Controls: React.FC<Props> = (props) => {
   const isPlaying = false;
   const isPaused = true;
   const marks = undefined;
-  const videoPlayerControls = { play: noop, pause: noop };
   const handleStyle = {};
   const value = 0;
   const tipFormatter = identity;
@@ -172,9 +172,9 @@ export const Controls: React.FC<Props> = (props) => {
         <Col span={showDetail ? 1 : 2}>
           <FullHeightRow justify="center" align="middle">
             {isPaused ? (
-              <StyledButton size="large" shape="circle" icon={<RightOutlined />} onClick={videoPlayerControls.play} />
+              <StyledButton size="large" shape="circle" icon={<RightOutlined />} onClick={mediaPlayer.play} />
             ) : (
-              <StyledButton size="large" shape="circle" icon={<PauseOutlined />} onClick={videoPlayerControls.pause} />
+              <StyledButton size="large" shape="circle" icon={<PauseOutlined />} onClick={mediaPlayer.pause} />
             )}
           </FullHeightRow>
         </Col>

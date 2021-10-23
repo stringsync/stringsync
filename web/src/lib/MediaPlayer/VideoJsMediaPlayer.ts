@@ -35,6 +35,7 @@ export class VideoJsMediaPlayer implements MediaPlayer {
       return;
     }
     this.player.play();
+    this.eventBus.dispatch('play', {});
   };
 
   pause = () => {
@@ -42,6 +43,7 @@ export class VideoJsMediaPlayer implements MediaPlayer {
       return;
     }
     this.player.pause();
+    this.eventBus.dispatch('pause', {});
   };
 
   seek(time: Duration) {
@@ -63,6 +65,7 @@ export class VideoJsMediaPlayer implements MediaPlayer {
 
     this.pause();
     this.isSuspended = true;
+    this.eventBus.dispatch('suspend', {});
   }
 
   unsuspend() {
@@ -73,6 +76,7 @@ export class VideoJsMediaPlayer implements MediaPlayer {
     this.isSuspended = false;
     this.onUnsuspend();
     this.onUnsuspend = noop;
+    this.eventBus.dispatch('unsuspend', {});
   }
 
   getPlayState() {

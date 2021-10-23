@@ -23,7 +23,7 @@ export const useMusicDisplayScrolling = (
       }
     };
 
-    const eventBusIds = [
+    const musicDisplayEventBusIds = [
       musicDisplay.eventBus.subscribe('selectionstarted', () => {
         musicDisplay.getScroller().startManualScrolling();
       }),
@@ -75,8 +75,15 @@ export const useMusicDisplayScrolling = (
       }),
     ];
 
+    const mediaPlayerEventBusIds = [
+      mediaPlayer.eventBus.subscribe('unsuspend', () => {
+        startPreferredScrolling();
+      }),
+    ];
+
     return () => {
-      musicDisplay.eventBus.unsubscribe(...eventBusIds);
+      musicDisplay.eventBus.unsubscribe(...musicDisplayEventBusIds);
+      mediaPlayer.eventBus.unsubscribe(...mediaPlayerEventBusIds);
     };
   }, [musicDisplay, mediaPlayer, isAutoscrollPreferred]);
 };
