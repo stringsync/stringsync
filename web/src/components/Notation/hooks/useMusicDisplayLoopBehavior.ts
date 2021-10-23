@@ -63,6 +63,8 @@ export const useMusicDisplayLoopBehavior = (
 
       musicDisplay.eventBus.subscribe('selectionended', () => {
         selectionRef.current = null;
+        const loop = musicDisplay.getLoop();
+        mediaPlayer.seek(loop.timeRange.start);
         mediaPlayer.unsuspend();
       }),
     ];
@@ -96,11 +98,12 @@ export const useMusicDisplayLoopBehavior = (
   useEffect(() => {
     const loop = musicDisplay.getLoop();
     if (settings.isLoopActive && !loop.isActive) {
+      mediaPlayer.seek(loop.timeRange.start);
       loop.activate();
     } else if (!settings.isLoopActive && loop.isActive) {
       loop.deactivate();
     }
-  }, [musicDisplay, settings.isLoopActive]);
+  }, [musicDisplay, settings.isLoopActive, mediaPlayer]);
 
   // sync settings when loop state changes
   useEffect(() => {

@@ -2,15 +2,10 @@ import { Skeleton } from 'antd';
 import { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { RenderableNotation } from '.';
-import { useNoTouchAction } from '../../hooks/useNoTouchAction';
-import { useNoTouchCallout } from '../../hooks/useNoTouchCallout';
-import { useNoUserSelect } from '../../hooks/useNoUserSelect';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { Nullable } from '../../util/types';
 import { useMusicDisplay } from './hooks/useMusicDisplay';
 import { useCSSCursor } from './hooks/useMusicDisplayCSSCursor';
-
-const DUMMY_DIV = document.createElement('div');
 
 const Outer = styled.div<{ $cursor: string }>`
   cursor: ${(props) => props.$cursor};
@@ -30,12 +25,11 @@ const MusicSheetContainer = styled.div`
   height: 100%;
 `;
 
-const MusicDisplayDiv = styled.div<{ $loading: boolean }>`
+const MusicDisplayDiv = styled.div`
   position: absolute;
   height: 100%;
   width: 100%;
   background-color: white;
-  opacity: 0.9;
 `;
 
 const LoadingOverlay = styled.div`
@@ -69,11 +63,11 @@ export const MusicSheet: React.FC<Props> = (props) => {
   const onMusicDisplayChange = props.onMusicDisplayChange;
 
   // music display
-  const musicDisplayContainerRef = useRef<HTMLDivElement>(null);
+  const musicDisplayDivRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [musicDisplay, musicDisplayLoading] = useMusicDisplay(
     notation,
-    musicDisplayContainerRef.current,
+    musicDisplayDivRef.current,
     scrollContainerRef.current
   );
   useEffect(() => {
@@ -82,9 +76,6 @@ export const MusicSheet: React.FC<Props> = (props) => {
 
   // css effects
   const cursor = useCSSCursor(musicDisplay);
-  useNoUserSelect(musicDisplayContainerRef.current || DUMMY_DIV);
-  useNoTouchAction(document.body);
-  useNoTouchCallout(document.body);
 
   return (
     <>
@@ -117,7 +108,7 @@ export const MusicSheet: React.FC<Props> = (props) => {
 
         {!loading && (
           <MusicSheetContainer data-notation>
-            <MusicDisplayDiv draggable={false} ref={musicDisplayContainerRef} $loading />
+            <MusicDisplayDiv draggable={false} ref={musicDisplayDivRef} />
           </MusicSheetContainer>
         )}
       </Outer>

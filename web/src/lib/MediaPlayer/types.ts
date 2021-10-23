@@ -2,6 +2,7 @@ import { Duration } from '../../util/Duration';
 import { EventBus } from '../EventBus';
 
 export enum PlayState {
+  Unknown,
   Paused,
   Playing,
 }

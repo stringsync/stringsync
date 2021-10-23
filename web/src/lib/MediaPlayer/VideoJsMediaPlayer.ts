@@ -89,7 +89,11 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   }
 
   getPlayState() {
-    return this.player.paused() ? PlayState.Paused : PlayState.Playing;
+    try {
+      return this.player.paused() ? PlayState.Paused : PlayState.Playing;
+    } catch (e) {
+      return PlayState.Unknown;
+    }
   }
 
   getCurrentTime() {

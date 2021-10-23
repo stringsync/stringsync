@@ -138,10 +138,10 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.fx = new Fx(this.getSvg());
     this.meta = MusicDisplayMeta.create(locator.clone());
 
+    this.isRendered = true;
+
     this.eventBus.dispatch('resizeended', {});
     this.eventBus.dispatch('rendered', {});
-
-    this.isRendered = true;
   }
 
   clear() {

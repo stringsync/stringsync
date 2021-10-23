@@ -18,6 +18,7 @@ const HorizontalOuter = styled.div`
   width: 100%;
   border-bottom: 1px solid ${(props) => props.theme['@border-color']};
   z-index: 4;
+  user-select: inherit !important;
 `;
 
 const VerticalOuter = styled.div`
@@ -30,6 +31,7 @@ const VerticalOuter = styled.div`
   width: 0;
   border-right: 1px solid ${(props) => props.theme['@border-color']};
   z-index: 5;
+  user-select: inherit !important;
 `;
 
 const VerticalMenuOutlined = styled(MenuOutlined)`
@@ -85,7 +87,13 @@ export const SplitPane: React.FC<Props> = (props) => {
       onChange={props.onChange}
       onResizerClick={props.onResizerClick}
       onResizerDoubleClick={props.onResizerDoubleClick}
-      style={props.style}
+      style={{
+        MozUserSelect: 'inherit',
+        WebkitUserSelect: 'inherit',
+        msUserSelect: 'inherit',
+        userSelect: 'inherit',
+        ...props.style,
+      }}
       resizerStyle={props.resizerStyle}
       paneStyle={props.paneStyle}
       pane1Style={props.pane1Style}

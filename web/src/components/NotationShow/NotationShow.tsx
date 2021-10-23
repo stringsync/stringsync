@@ -9,6 +9,9 @@ import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { useMemoCmp } from '../../hooks/useMemoCmp';
 import { useNoOverflow } from '../../hooks/useNoOverflow';
 import { useNotation } from '../../hooks/useNotation';
+import { useNoTouchAction } from '../../hooks/useNoTouchAction';
+import { useNoTouchCallout } from '../../hooks/useNoTouchCallout';
+import { useNoUserSelect } from '../../hooks/useNoUserSelect';
 import { compose } from '../../util/compose';
 import { scrollToTop } from '../../util/scrollToTop';
 import { FretMarkerDisplay, Notation, NotationLayoutOptions, NotationSettings } from '../Notation';
@@ -64,6 +67,9 @@ const NotationShow: React.FC = enhance(() => {
 
   // css effects
   useNoOverflow(hasErrors ? null : document.body);
+  useNoUserSelect(document.body);
+  useNoTouchAction(document.body);
+  useNoTouchCallout(document.body);
 
   // settings
   const initialDefaultSettings = useMemoCmp<PersistentSettings>({
