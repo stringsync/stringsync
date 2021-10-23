@@ -59,8 +59,7 @@ const FlexColumn = styled.div`
 `;
 
 const Flex1 = styled.div`
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden;
   flex: 1;
 `;
 

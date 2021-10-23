@@ -4,6 +4,15 @@ import { MusicDisplay } from '../../../lib/MusicDisplay';
 import { isTemporal } from '../../../lib/MusicDisplay/pointer';
 import { NotationSettings } from '../types';
 
+const startPreferredScrolling = (musicDisplay: MusicDisplay, isAutoscrollPreferred: boolean) => {
+  if (isAutoscrollPreferred) {
+    musicDisplay.getScroller().startAutoScrolling();
+    musicDisplay.getCursor().scrollIntoView();
+  } else {
+    musicDisplay.getScroller().disable();
+  }
+};
+
 export const useMusicDisplayScrolling = (
   settings: NotationSettings,
   musicDisplay: MusicDisplay,
@@ -14,15 +23,17 @@ export const useMusicDisplayScrolling = (
   const isAutoscrollPreferred = settings.isAutoscrollPreferred;
 
   useEffect(() => {
-    const startPreferredScrolling = () => {
-      if (isAutoscrollPreferred) {
-        musicDisplay.getScroller().startAutoScrolling();
-        musicDisplay.getCursor().scrollIntoView();
-      } else {
-        musicDisplay.getScroller().disable();
-      }
+    const eventBusIds = [
+      mediaPlayer.eventBus.subscribe('play', () => {
+        startPreferredScrolling(musicDisplay, isAutoscrollPreferred);
+      }),
+    ];
+    return () => {
+      mediaPlayer.eventBus.unsubscribe(...eventBusIds);
     };
+  }, [isAutoscrollPreferred, musicDisplay, mediaPlayer]);
 
+  useEffect(() => {
     const musicDisplayEventBusIds = [
       musicDisplay.eventBus.subscribe('selectionstarted', () => {
         musicDisplay.getScroller().startManualScrolling();
@@ -38,7 +49,7 @@ export const useMusicDisplayScrolling = (
         musicDisplay.getScroller().updateScrollIntent(payload.dst.position.relY);
       }),
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
-        startPreferredScrolling();
+        startPreferredScrolling(musicDisplay, isAutoscrollPreferred);
       }),
       musicDisplay.eventBus.subscribe('externalscrolldetected', () => {
         if (isMusicDisplayResizingRef.current) {
@@ -71,13 +82,13 @@ export const useMusicDisplayScrolling = (
         if (!isTemporal(payload.src)) {
           return;
         }
-        startPreferredScrolling();
+        startPreferredScrolling(musicDisplay, isAutoscrollPreferred);
       }),
     ];
 
     const mediaPlayerEventBusIds = [
       mediaPlayer.eventBus.subscribe('unsuspend', () => {
-        startPreferredScrolling();
+        startPreferredScrolling(musicDisplay, isAutoscrollPreferred);
       }),
     ];
 

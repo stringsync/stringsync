@@ -17,6 +17,10 @@ export const useMusicDisplay = (
   const device = useDevice();
 
   useEffect(() => {
+    (window as any).md = musicDisplay;
+  }, [musicDisplay]);
+
+  useEffect(() => {
     if (!notation) {
       return;
     }

@@ -15,10 +15,10 @@ import {
 } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { identity, noop } from 'lodash';
-import React, { RefObject, useState } from 'react';
+import React, { RefObject, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDevice } from '../../ctx/device';
-import { MediaPlayer } from '../../lib/MediaPlayer';
+import { MediaPlayer, PlayState } from '../../lib/MediaPlayer';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { Nullable } from '../../util/types';
 import { Detail } from './Detail';
@@ -126,8 +126,6 @@ export const Controls: React.FC<Props> = (props) => {
   const onVideoVisibilityChange = (event: CheckboxChangeEvent) => {
     setSettings({ ...settings, isVideoVisible: event.target.checked });
   };
-  // TODO need to enable
-  const onAutoscrollDisabledClose = noop;
   const onFretboardVisibilityChange = (event: CheckboxChangeEvent) => {
     setSettings({ ...settings, isFretboardVisible: event.target.checked });
   };
@@ -144,10 +142,36 @@ export const Controls: React.FC<Props> = (props) => {
     setSettings({ ...settings, isLoopActive: event.target.checked });
   };
 
+  // callbacks
+  const onAutoscrollDisabledClose = () => {
+    musicDisplay.getScroller().startAutoScrolling();
+    musicDisplay.getCursor().scrollIntoView();
+  };
+
+  // video player state
+  const [playState, setPlayState] = useState(() => mediaPlayer.getPlayState());
+  const isPaused = playState === PlayState.Paused;
+  const isPlaying = playState === PlayState.Playing;
+  useEffect(() => {
+    const eventBusIds = [
+      mediaPlayer.eventBus.subscribe('init', () => {
+        console.log(mediaPlayer.getPlayState());
+        setPlayState(mediaPlayer.getPlayState());
+      }),
+      mediaPlayer.eventBus.subscribe('pause', () => {
+        setPlayState(PlayState.Paused);
+      }),
+      mediaPlayer.eventBus.subscribe('play', () => {
+        setPlayState(PlayState.Playing);
+      }),
+    ];
+    return () => {
+      mediaPlayer.eventBus.unsubscribe(...eventBusIds);
+    };
+  }, [mediaPlayer]);
+
   // tmp
   const isNoopScrolling = false;
-  const isPlaying = false;
-  const isPaused = true;
   const marks = undefined;
   const handleStyle = {};
   const value = 0;

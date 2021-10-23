@@ -2,6 +2,7 @@ import React from 'react';
 import { MediaPlayer } from '../../lib/MediaPlayer';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { useMusicDisplayCursorInteractions } from './hooks/useMusicDisplayCursorInteractions';
+import { useMusicDisplayCursorTimeSync } from './hooks/useMusicDisplayCursorTimeSync';
 import { useMusicDisplayLoopBehavior } from './hooks/useMusicDisplayLoopBehavior';
 import { useMusicDisplayPointerInteractions } from './hooks/useMusicDisplayPointerInteractions';
 import { useMusicDisplayRipples } from './hooks/useMusicDisplayRipples';
@@ -35,6 +36,7 @@ export const MusicDisplaySink: React.FC<Props> = (props) => {
   useMusicDisplayScrolling(settings, musicDisplay, mediaPlayer);
   useMusicDisplayLoopBehavior(settings, setSettings, musicDisplay, mediaPlayer);
   useMusicDisplayCursorInteractions(musicDisplay, mediaPlayer);
+  useMusicDisplayCursorTimeSync(musicDisplay, mediaPlayer);
 
   return null;
 };

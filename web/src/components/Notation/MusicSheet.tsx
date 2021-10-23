@@ -17,6 +17,12 @@ const Outer = styled.div<{ $cursor: string }>`
   padding-top: 24px;
   height: 100%;
   position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+`;
+
+const MusicSheetContainer = styled.div`
+  height: 100%;
 `;
 
 const MusicDisplayOuter = styled.div`
@@ -77,7 +83,7 @@ export const MusicSheet: React.FC<Props> = (props) => {
   useNoTouchCallout(document.body);
 
   return (
-    <Outer data-testid="music-display" $cursor={cursor}>
+    <Outer data-testid="music-display" $cursor={cursor} ref={scrollContainerRef}>
       {loading && (
         <SkeletonContainer>
           <Skeleton loading title={false} paragraph={{ rows: 3 }} />
@@ -100,14 +106,14 @@ export const MusicSheet: React.FC<Props> = (props) => {
       )}
 
       {!loading && (
-        <div data-notation ref={scrollContainerRef}>
+        <MusicSheetContainer data-notation>
           {musicDisplayLoading && (
             <LoadingOverlay>
               <Loading>loading</Loading>
             </LoadingOverlay>
           )}
           <MusicDisplayOuter draggable={false} ref={musicDisplayContainerRef} />
-        </div>
+        </MusicSheetContainer>
       )}
     </Outer>
   );

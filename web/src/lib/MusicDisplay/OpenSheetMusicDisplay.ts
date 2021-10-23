@@ -45,7 +45,7 @@ export class OpenSheetMusicDisplay implements MusicDisplay {
   }
 
   dispose() {
-    this.imd.clear();
+    this.imd.dispose();
   }
 
   getFx() {

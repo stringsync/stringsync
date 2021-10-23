@@ -6,6 +6,7 @@ import { InternalError } from '../../errors';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { KeyInfo } from '../../lib/MusicDisplay/helpers';
 import { SupportedSVGEventNames } from '../../lib/MusicDisplay/svg';
+import { NumberRange } from '../../util/NumberRange';
 import * as constants from './constants';
 import { FretMarkerDisplay, NotationLayout, NotationSettings, ScaleSelectionType } from './types';
 
@@ -88,4 +89,10 @@ export const getSvgEventNames = (device: Device): SupportedSVGEventNames[] => {
     case 'hybrid':
       return [...MOUSE_SVG_EVENT_NAMES, ...TOUCH_SVG_EVENT_NAMES];
   }
+};
+
+export const extendRanges = (src: NumberRange, dst: NumberRange): NumberRange => {
+  const start = src.start < dst.start ? src.start : dst.start;
+  const end = src.end > dst.end ? src.end : dst.end;
+  return NumberRange.from(start).to(end);
 };

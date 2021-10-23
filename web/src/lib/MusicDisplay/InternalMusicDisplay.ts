@@ -78,10 +78,15 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     }
   }
 
+  dispose() {
+    this.clear();
+    this.container.firstElementChild?.remove();
+  }
+
   resize() {
     if (!this.isRendered) {
       // Callers should call render() first
-      console.warn('cannot resize before rendering');
+      console.debug('cannot resize before rendering');
       return;
     }
     if (!this.isResizing) {

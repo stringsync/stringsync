@@ -56,21 +56,18 @@ const VideoJs: React.FC<Props> = (props) => {
     });
 
     const mediaPlayer = new VideoJsMediaPlayer(player);
+    onPlayerChange(mediaPlayer);
 
     player.ready(() => {
-      onPlayerChange(mediaPlayer);
-      player.currentTime(lastTimeRef.current.sec);
+      mediaPlayer.seek(lastTimeRef.current);
     });
 
     return () => {
+      mediaPlayer.pause();
       lastTimeRef.current = mediaPlayer.getCurrentTime();
       mediaPlayer.dispose();
-      onPlayerChange(NOOP_MEDIA_PLAYER);
 
-      // HACK: prevent the root element from being deleted when disposing the player
-      // https://github.com/videojs/video.js/blob/85343d1cec98b59891a650e9d050989424ecf866/src/js/component.js#L167
-      (player as any).el_ = null;
-      player.dispose();
+      onPlayerChange(NOOP_MEDIA_PLAYER);
     };
   }, [playerOptions, mode, onPlayerChange]);
 
