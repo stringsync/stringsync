@@ -19,7 +19,7 @@ import { ScrollBehaviorType } from '../../lib/MusicDisplay/scroller';
 import { compose } from '../../util/compose';
 import { Duration } from '../../util/Duration';
 import { Dimensions } from '../../util/types';
-import { Fretboard, FretboardOptions, MergeStrategy, PositionFilterParams, PositionStyle } from '../Fretboard';
+import { FretboardJs, FretboardJsOptions, MergeStrategy, PositionFilterParams, PositionStyle } from '../FretboardJs';
 import { Notation } from '../Notation_DEPRECATED';
 import { Player } from '../Player';
 import { NotationControls, NOTATION_CONTROLS_HEIGHT_PX } from './NotationControls';
@@ -134,7 +134,7 @@ export const NotationPlayer: React.FC = enhance(() => {
       : {};
   }, [videoUrl]);
 
-  const fretboardOpts = useMemo<FretboardOptions>(() => {
+  const fretboardOpts = useMemo<FretboardJsOptions>(() => {
     switch (settings.fretMarkerDisplay) {
       case FretMarkerDisplay.None:
         return { dotFill: 'white' };
@@ -271,14 +271,14 @@ export const NotationPlayer: React.FC = enhance(() => {
 
             {settings.isFretboardVisible && (
               <FretboardContainer>
-                <Fretboard
+                <FretboardJs
                   tonic={tonic || undefined}
                   options={fretboardOpts}
                   styleMergeStrategy={MergeStrategy.Merge}
                   onResize={onFretboardResize}
                 >
                   {measurePositions.map(({ string, fret }) => (
-                    <Fretboard.Position
+                    <FretboardJs.Position
                       key={`measure-${string}-${fret}`}
                       string={string}
                       fret={fret}
@@ -286,7 +286,7 @@ export const NotationPlayer: React.FC = enhance(() => {
                     />
                   ))}
                   {pressedPositions.map(({ string, fret }) => (
-                    <Fretboard.Position
+                    <FretboardJs.Position
                       key={`pressed-${string}-${fret}`}
                       string={string}
                       fret={fret}
@@ -294,9 +294,9 @@ export const NotationPlayer: React.FC = enhance(() => {
                     />
                   ))}
                   {settings.scaleSelectionType !== ScaleSelectionType.None && settings.selectedScale && (
-                    <Fretboard.Scale name={settings.selectedScale} style={{ stroke: '#85f4fc' }} />
+                    <FretboardJs.Scale name={settings.selectedScale} style={{ stroke: '#85f4fc' }} />
                   )}
-                </Fretboard>
+                </FretboardJs>
               </FretboardContainer>
             )}
 

@@ -4,7 +4,7 @@ import { Tuning } from '../../lib/guitar/Tuning';
 import * as helpers from './helpers';
 import { Position } from './Position';
 import { Scale } from './Scale';
-import { FretboardOptions, MergeStrategy, PositionFilterParams } from './types';
+import { FretboardJsOptions, MergeStrategy, PositionFilterParams } from './types';
 import { useFretboard } from './useFretboard';
 import { useGuitar } from './useGuitar';
 import { useStyleFilters } from './useStyleFilters';
@@ -12,22 +12,22 @@ import { useStyleTargets } from './useStyleTargets';
 
 const DEFAULT_TONIC = 'C';
 const DEFAULT_TUNING = Tuning.standard();
-const DEFAULT_OPTIONS: FretboardOptions = {};
+const DEFAULT_OPTIONS: FretboardJsOptions = {};
 
-type Props = {
-  options?: FretboardOptions;
+export type FretboardJsProps = {
+  options?: FretboardJsOptions;
   tonic?: string;
   tuning?: Tuning;
   styleMergeStrategy?: MergeStrategy;
   onResize?: (dimmensions: { width: number; height: number }) => void;
 };
 
-type ChildComponents = {
+export type FretboardJsChildComponents = {
   Position: typeof Position;
   Scale: typeof Scale;
 };
 
-export const Fretboard: React.FC<Props> & ChildComponents = (props) => {
+export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponents = (props) => {
   const tonic = props.tonic || DEFAULT_TONIC;
   const options = props.options || DEFAULT_OPTIONS;
   const tuning = props.tuning || DEFAULT_TUNING;
@@ -110,5 +110,5 @@ export const Fretboard: React.FC<Props> & ChildComponents = (props) => {
   return <figure ref={figureRef} />;
 };
 
-Fretboard.Position = Position;
-Fretboard.Scale = Scale;
+FretboardJs.Position = Position;
+FretboardJs.Scale = Scale;

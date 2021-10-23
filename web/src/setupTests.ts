@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/extend-expect';
 import 'jest-extended';
-import * as fretboardMatchers from './components/Fretboard/matchers';
+import * as fretboardMatchers from './components/FretboardJs/matchers';
 
 expect.extend({
   toRenderNoteTimes: fretboardMatchers.toRenderNoteTimes,

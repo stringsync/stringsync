@@ -11,8 +11,8 @@ import { MediaPlayer, NoopMediaPlayer } from '../../lib/MediaPlayer';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { NoopMusicDisplay } from '../../lib/MusicDisplay/NoopMusicDisplay';
 import { Nullable } from '../../util/types';
-import { Fretboard } from '../Fretboard';
 import { Controls, CONTROLS_HEIGHT_PX } from './Controls';
+import { Fretboard } from './Fretboard';
 import * as helpers from './helpers';
 import { useMusicDisplayResize } from './hooks/useMusicDisplayResize';
 import { Media } from './Media';
@@ -68,10 +68,6 @@ const Flex1InvisibleScrollbar = styled(Flex1)`
   ::-webkit-scrollbar {
     display: none;
   }
-`;
-
-const FretboardOuter = styled.div`
-  z-index: 3;
 `;
 
 type Props = {
@@ -199,11 +195,7 @@ export const Notation: React.FC<Props> = (props) => {
               <Flex1>
                 <MusicSheet loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
               </Flex1>
-              {settings.isFretboardVisible && (
-                <FretboardOuter>
-                  <Fretboard onResize={setFretboardDimensions} />
-                </FretboardOuter>
-              )}
+              {settings.isFretboardVisible && <Fretboard onResize={setFretboardDimensions} />}
               <Controls
                 videoControls={false}
                 settingsContainerRef={settingsContainerRef}
@@ -271,11 +263,7 @@ export const Notation: React.FC<Props> = (props) => {
               <Flex1>
                 <MusicSheet loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
               </Flex1>
-              {settings.isFretboardVisible && (
-                <FretboardOuter>
-                  <Fretboard onResize={setFretboardDimensions} />
-                </FretboardOuter>
-              )}
+              {settings.isFretboardVisible && <Fretboard onResize={setFretboardDimensions} />}
               <Controls
                 videoControls
                 settingsContainerRef={settingsContainerRef}

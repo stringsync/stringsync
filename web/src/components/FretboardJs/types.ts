@@ -1,7 +1,7 @@
 import { Options } from '@moonwave99/fretboard.js/dist/fretboard/Fretboard';
 import { Position as GuitarPosition } from '../../lib/guitar/Position';
 
-export type FretboardOptions = Partial<Omit<Options, 'el' | 'tuning'>>;
+export type FretboardJsOptions = Partial<Omit<Options, 'el' | 'tuning'>>;
 
 export type PositionStyle = Partial<{
   stroke: string;
