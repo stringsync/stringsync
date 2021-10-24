@@ -1,6 +1,6 @@
 import { useAsyncAbortable } from 'react-async-hook';
 import { UNKNOWN_ERROR_MSG } from '../errors';
-import { $gql, DataOf, QueryNotationArgs, t } from '../graphql';
+import { $gql, DataOf, QueryNotationArgs, t, TagCategory } from '../graphql';
 
 type Notation = DataOf<typeof NOTATION_GQL>;
 
@@ -20,7 +20,7 @@ const NOTATION_GQL = $gql
     videoUrl: t.optional.string,
     musicXmlUrl: t.optional.string,
     transcriber: { username: t.string },
-    tags: [{ id: t.string, name: t.string }],
+    tags: [{ id: t.string, category: t.optional.oneOf(TagCategory)!, name: t.string }],
   })
   .setVariables<QueryNotationArgs>({ id: t.string })
   .build();

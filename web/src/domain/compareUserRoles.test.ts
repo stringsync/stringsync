@@ -1,6 +1,6 @@
+import { UserRole } from '../graphql';
 import * as cmp from './compareUserRoles';
 import { compareUserRoles } from './compareUserRoles';
-import { UserRole } from './types';
 
 describe('compareUserRoles', () => {
   it('compares student roles', () => {
@@ -15,7 +15,7 @@ describe('compareUserRoles', () => {
     expect(compareUserRoles(UserRole.TEACHER, UserRole.ADMIN)).toBe(-1);
   });
 
-  it('compares teacher roles', () => {
+  it('compares admin roles', () => {
     expect(compareUserRoles(UserRole.ADMIN, UserRole.STUDENT)).toBe(1);
     expect(compareUserRoles(UserRole.ADMIN, UserRole.TEACHER)).toBe(1);
     expect(compareUserRoles(UserRole.ADMIN, UserRole.ADMIN)).toBe(0);

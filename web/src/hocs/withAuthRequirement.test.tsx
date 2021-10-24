@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Router } from 'react-router';
-import { UserRole } from '../domain';
+import { UserRole } from '../graphql';
 import { Test } from '../testing';
 import { AuthRequirement } from '../util/types';
 import { withAuthRequirement } from './withAuthRequirement';

@@ -1,4 +1,4 @@
-import { UserRole } from './types';
+import { UserRole } from '../graphql';
 import { USER_ROLES } from './constants';
 
 export const compareUserRoles = (role1: UserRole, role2: UserRole) => {

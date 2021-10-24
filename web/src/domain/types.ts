@@ -1,13 +1,4 @@
-export enum UserRole {
-  STUDENT = 'STUDENT',
-  TEACHER = 'TEACHER',
-  ADMIN = 'ADMIN',
-}
-
-export enum TagCategory {
-  Genre = 'genre',
-  Difficulty = 'difficulty',
-}
+import { TagCategory, UserRole } from '../graphql/graphqlTypes';
 
 export interface User {
   id: string;
@@ -22,6 +13,7 @@ export interface User {
 
 export type Tag = {
   id: string;
+  category: TagCategory;
   name: string;
 };
 

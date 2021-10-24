@@ -1,4 +1,4 @@
-import { UserRole } from '../../domain';
+import { UserRole } from '../../graphql';
 import { AuthUser } from './types';
 
 export const getNullAuthUser = (): AuthUser => ({

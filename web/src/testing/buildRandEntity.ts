@@ -1,4 +1,5 @@
-import { Notation, Tag, User, UserRole } from '../domain';
+import { Notation, Tag, User } from '../domain';
+import { TagCategory, UserRole } from '../graphql';
 import { randStr } from '../util/randStr';
 
 export const buildRandUser = (attrs: Partial<User> = {}): User => {
@@ -40,6 +41,7 @@ export const buildRandNotation = (attrs: Partial<Notation> = {}): Notation => {
 export const buildRandTag = (attrs: Partial<Tag> = {}): Tag => {
   return {
     id: randStr(8),
+    category: TagCategory.GENRE,
     name: randStr(8),
     ...attrs,
   };
