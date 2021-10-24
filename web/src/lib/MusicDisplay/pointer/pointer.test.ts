@@ -1,6 +1,6 @@
 import { EventBus } from '../../EventBus';
 import { NoopCursor } from '../cursors/NoopCursor';
-import { CursorSnapshot } from '../locator';
+import { CursorSnapshot, SelectionEdge } from '../locator';
 import { MusicDisplayEventBus } from '../types';
 import * as pointer from './pointer';
 import { PointerService } from './pointer';
@@ -10,6 +10,7 @@ import {
   NonePointerTarget,
   PointerPosition,
   PointerTargetType,
+  SelectionPointerTarget,
 } from './types';
 
 const POINTER_POSITION: PointerPosition = { x: 0, y: 0, relX: 0, relY: 0 };
@@ -26,6 +27,20 @@ const CURSOR_SNAPSHOT_POINTER_TARGET: CursorSnapshotPointerTarget = {
   cursorSnapshot: {} as CursorSnapshot,
   timeMs: 0,
   position: POINTER_POSITION,
+};
+const START_SELECTION_POINTER_TARGET: SelectionPointerTarget = {
+  type: PointerTargetType.Selection,
+  cursor: new NoopCursor(),
+  edge: SelectionEdge.Start,
+  position: POINTER_POSITION,
+  timeMs: 0,
+};
+const ENDSELECTION_POINTER_TARGET: SelectionPointerTarget = {
+  type: PointerTargetType.Selection,
+  cursor: new NoopCursor(),
+  edge: SelectionEdge.End,
+  position: POINTER_POSITION,
+  timeMs: 0,
 };
 
 describe('pointerMachine', () => {
@@ -148,7 +163,7 @@ describe('pointerMachine', () => {
 
     it('transitions to down.tap state on down', () => {
       const nextState = pointerService.send(pointer.events.mousedown(NONE_POINTER_TARGET));
-      expect(nextState.matches('down.tap')).toBeTrue();
+      expect(nextState.matches('down.press')).toBeTrue();
     });
 
     it('ignores up events', () => {
@@ -192,15 +207,8 @@ describe('pointerMachine', () => {
 
       it('does not transition to longpress before LONG_PRESS_DURATION', () => {
         pointerService.send(pointer.events.mousedown(NONE_POINTER_TARGET));
-        jest.advanceTimersByTime(pointer.LONG_PRESS_DURATION.ms - 1);
-        expect(pointerService.state.matches('down.press')).toBeTrue();
-      });
-
-      it('transitions to select state on move event when null target', () => {
-        pointerService.send(pointer.events.mousedown(NONE_POINTER_TARGET));
-        jest.advanceTimersByTime(pointer.DOWN_GRACE_DURATION.ms);
-        pointerService.send(pointer.events.mousemove(NONE_POINTER_TARGET));
-        expect(pointerService.state.matches('down.select')).toBeTrue();
+        jest.advanceTimersByTime(pointer.LONG_PRESS_DURATION.ms - pointer.DOWN_GRACE_DURATION.ms - 1);
+        expect(pointerService.state.matches('down.longpress')).toBeFalse();
       });
 
       it('transitions to drag state on move event when cursor target', () => {
@@ -223,16 +231,13 @@ describe('pointerMachine', () => {
     });
 
     describe('drag', () => {
-      it('transitions to drag state on down event with a draggable', () => {
-        pointerService.send(pointer.events.mousedown(CURSOR_POINTER_TARGET));
-        expect(pointerService.state.matches('down.drag')).toBeTrue();
-      });
-
       it('dispatches cursordragstarted on entry', () => {
         const onCursorDragStarted = jest.fn();
         eventBus.subscribe('cursordragstarted', onCursorDragStarted);
 
         pointerService.send(pointer.events.mousedown(CURSOR_POINTER_TARGET));
+        jest.advanceTimersByTime(pointer.DOWN_GRACE_DURATION.ms);
+        pointerService.send(pointer.events.mousemove(CURSOR_POINTER_TARGET));
 
         expect(onCursorDragStarted).toHaveBeenCalledTimes(1);
       });
@@ -242,7 +247,9 @@ describe('pointerMachine', () => {
         eventBus.subscribe('cursordragupdated', onCursorDragUpdated);
 
         pointerService.send(pointer.events.mousedown(CURSOR_POINTER_TARGET));
-        pointerService.send(pointer.events.mousemove(CURSOR_SNAPSHOT_POINTER_TARGET));
+        jest.advanceTimersByTime(pointer.DOWN_GRACE_DURATION.ms);
+        pointerService.send(pointer.events.mousemove(CURSOR_POINTER_TARGET));
+        pointerService.send(pointer.events.mousemove(CURSOR_POINTER_TARGET));
 
         expect(onCursorDragUpdated).toHaveBeenCalledTimes(1);
       });
@@ -298,7 +305,7 @@ describe('pointerMachine', () => {
 
         pointerService.send(pointer.events.mousedown(NONE_POINTER_TARGET));
         jest.advanceTimersByTime(pointer.DOWN_GRACE_DURATION.ms);
-        pointerService.send(pointer.events.mousemove(CURSOR_SNAPSHOT_POINTER_TARGET));
+        pointerService.send(pointer.events.mousemove(START_SELECTION_POINTER_TARGET));
 
         expect(onSelectionStarted).toHaveBeenCalledTimes(1);
       });
@@ -307,9 +314,9 @@ describe('pointerMachine', () => {
         const onSelectionUpdated = jest.fn();
         eventBus.subscribe('selectionupdated', onSelectionUpdated);
 
-        pointerService.send(pointer.events.mousedown(NONE_POINTER_TARGET));
+        pointerService.send(pointer.events.mousedown(CURSOR_SNAPSHOT_POINTER_TARGET));
         jest.advanceTimersByTime(pointer.DOWN_GRACE_DURATION.ms);
-        pointerService.send(pointer.events.mousemove(CURSOR_SNAPSHOT_POINTER_TARGET));
+        pointerService.send(pointer.events.mousemove(START_SELECTION_POINTER_TARGET));
         pointerService.send(pointer.events.mousemove(CURSOR_SNAPSHOT_POINTER_TARGET));
 
         expect(onSelectionUpdated).toHaveBeenCalledTimes(1);
@@ -321,7 +328,7 @@ describe('pointerMachine', () => {
 
         pointerService.send(pointer.events.mousedown(NONE_POINTER_TARGET));
         jest.advanceTimersByTime(pointer.DOWN_GRACE_DURATION.ms);
-        pointerService.send(pointer.events.mousemove(CURSOR_SNAPSHOT_POINTER_TARGET));
+        pointerService.send(pointer.events.mousemove(START_SELECTION_POINTER_TARGET));
         pointerService.send(pointer.events.mouseup(NONE_POINTER_TARGET));
 
         expect(onSelectionEnded).toHaveBeenCalledTimes(1);

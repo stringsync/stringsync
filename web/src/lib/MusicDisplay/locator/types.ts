@@ -29,6 +29,7 @@ export type VfNotehead = {
 };
 
 export enum SelectionEdge {
+  Unknown,
   Start,
   End,
 }

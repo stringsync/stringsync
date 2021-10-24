@@ -1,3 +1,4 @@
+import { omit } from 'lodash';
 import { getViewportState } from './getViewportState';
 import { Breakpoint } from './types';
 
@@ -7,7 +8,7 @@ describe('getViewportState', () => {
 
     expect(viewport.breakpoint).toBe(breakpoint);
 
-    for (const [key, val] of Object.entries(viewport)) {
+    for (const [key, val] of Object.entries(omit(viewport, ['innerWidth', 'innerHeight']))) {
       if (key === 'breakpoint') {
         continue;
       }
