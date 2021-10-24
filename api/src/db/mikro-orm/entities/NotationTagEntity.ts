@@ -1,13 +1,13 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { IsNotEmpty } from 'class-validator';
-import { Tagging } from '../../../domain';
+import { NotationTag } from '../../../domain';
 import { HACK_2099_createReference } from '../hacks';
 import { BaseEntity, BaseEntityOpts } from './BaseEntity';
 import { NotationEntity } from './NotationEntity';
 import { TagEntity } from './TagEntity';
 
-@Entity({ tableName: 'taggings' })
-export class TaggingEntity extends BaseEntity implements Tagging {
+@Entity({ tableName: 'notation_tags' })
+export class NotationTagEntity extends BaseEntity implements NotationTag {
   @PrimaryKey()
   id!: string;
 
@@ -43,7 +43,7 @@ export class TaggingEntity extends BaseEntity implements Tagging {
     this.tag.set(HACK_2099_createReference(new TagEntity({ id: tagId })));
   }
 
-  constructor(attrs: Partial<TaggingEntity> = {}, opts: BaseEntityOpts = {}) {
+  constructor(attrs: Partial<NotationTagEntity> = {}, opts: BaseEntityOpts = {}) {
     super(opts);
     Object.assign(this, attrs);
   }

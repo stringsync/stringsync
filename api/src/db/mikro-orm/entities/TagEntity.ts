@@ -3,7 +3,7 @@ import { MaxLength, MinLength } from 'class-validator';
 import { Tag } from '../../../domain';
 import { BaseEntity, BaseEntityOpts } from './BaseEntity';
 import { NotationEntity } from './NotationEntity';
-import { TaggingEntity } from './TaggingEntity';
+import { NotationTagEntity } from './NotationTagEntity';
 
 @Entity({ tableName: 'tags' })
 export class TagEntity extends BaseEntity implements Tag {
@@ -16,11 +16,11 @@ export class TagEntity extends BaseEntity implements Tag {
   name!: string;
 
   @OneToMany(
-    () => TaggingEntity,
-    (tagging) => tagging.tag,
+    () => NotationTagEntity,
+    (notationTag) => notationTag.tag,
     { inverseJoinColumn: 'tag_id', hidden: true }
   )
-  taggings = new Collection<TaggingEntity>(this);
+  notationTags = new Collection<NotationTagEntity>(this);
 
   @ManyToMany({
     entity: () => NotationEntity,

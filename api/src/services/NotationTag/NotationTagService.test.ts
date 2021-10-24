@@ -1,16 +1,16 @@
 import { container } from '../../inversify.config';
 import { TYPES } from '../../inversify.constants';
-import { TaggingRepo } from '../../repos';
+import { NotationTagRepo } from '../../repos';
 import { createRandNotation, createRandTags, createRandUser } from '../../testing';
-import { TaggingService } from './TaggingService';
+import { NotationTagService } from './NotationTagService';
 
 describe('TaggingService', () => {
-  let taggingRepo: TaggingRepo;
-  let taggingService: TaggingService;
+  let taggingRepo: NotationTagRepo;
+  let taggingService: NotationTagService;
 
   beforeEach(() => {
-    taggingRepo = container.get<TaggingRepo>(TYPES.TaggingRepo);
-    taggingService = container.get<TaggingService>(TYPES.TaggingService);
+    taggingRepo = container.get<NotationTagRepo>(TYPES.NotationTagRepo);
+    taggingService = container.get<NotationTagService>(TYPES.NotationTagService);
   });
 
   describe('bulkCreate', () => {

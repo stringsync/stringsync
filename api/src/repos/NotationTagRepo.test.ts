@@ -1,15 +1,15 @@
 import { isPlainObject } from 'lodash';
-import { Notation, Tag, Tagging, User } from '../domain';
+import { Notation, NotationTag, Tag, User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
-import { buildRandNotation, buildRandTag, buildRandTagging, buildRandUser } from '../testing';
-import { Ctor, ctor, randStr } from '../util';
-import { TaggingRepo as MikroORMTaggingRepo } from './mikro-orm';
-import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from './types';
+import { buildRandNotation, buildRandNotationTag, buildRandTag, buildRandUser } from '../testing';
+import { Ctor, ctor } from '../util';
+import { NotationTagRepo as MikroORMTaggingRepo } from './mikro-orm';
+import { NotationRepo, NotationTagRepo, TagRepo, UserRepo } from './types';
 
 describe.each([['MikroORMTaggingRepo', MikroORMTaggingRepo]])('%s', (name, Ctor) => {
-  let ORIGINAL_TAGGING_REPO: Ctor<TaggingRepo>;
-  let taggingRepo: TaggingRepo;
+  let ORIGINAL_TAGGING_REPO: Ctor<NotationTagRepo>;
+  let taggingRepo: NotationTagRepo;
 
   let user1: User;
   let user2: User;
@@ -20,20 +20,20 @@ describe.each([['MikroORMTaggingRepo', MikroORMTaggingRepo]])('%s', (name, Ctor)
   let tag1: Tag;
   let tag2: Tag;
 
-  let tagging1: Tagging;
-  let tagging2: Tagging;
+  let tagging1: NotationTag;
+  let tagging2: NotationTag;
 
   beforeAll(() => {
-    ORIGINAL_TAGGING_REPO = ctor(container.get<TaggingRepo>(TYPES.TaggingRepo));
-    container.rebind<TaggingRepo>(TYPES.TaggingRepo).to(Ctor);
+    ORIGINAL_TAGGING_REPO = ctor(container.get<NotationTagRepo>(TYPES.NotationTagRepo));
+    container.rebind<NotationTagRepo>(TYPES.NotationTagRepo).to(Ctor);
   });
 
   beforeEach(() => {
-    taggingRepo = container.get<TaggingRepo>(TYPES.TaggingRepo);
+    taggingRepo = container.get<NotationTagRepo>(TYPES.NotationTagRepo);
   });
 
   afterAll(() => {
-    container.rebind<TaggingRepo>(TYPES.TaggingRepo).to(ORIGINAL_TAGGING_REPO);
+    container.rebind<NotationTagRepo>(TYPES.NotationTagRepo).to(ORIGINAL_TAGGING_REPO);
   });
 
   beforeEach(async () => {
@@ -50,9 +50,9 @@ describe.each([['MikroORMTaggingRepo', MikroORMTaggingRepo]])('%s', (name, Ctor)
     [tag1, tag2] = await tagRepo.bulkCreate([buildRandTag(), buildRandTag()]);
 
     [tagging1, tagging2] = await taggingRepo.bulkCreate([
-      buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
-      buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
-      buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
+      buildRandNotationTag({ notationId: notation1.id, tagId: tag1.id }),
+      buildRandNotationTag({ notationId: notation1.id, tagId: tag2.id }),
+      buildRandNotationTag({ notationId: notation2.id, tagId: tag1.id }),
     ]);
   });
 
@@ -65,21 +65,21 @@ describe.each([['MikroORMTaggingRepo', MikroORMTaggingRepo]])('%s', (name, Ctor)
 
   describe('validate', () => {
     it('permits valid taggings', async () => {
-      await expect(taggingRepo.validate(buildRandTagging())).resolves.not.toThrow();
+      await expect(taggingRepo.validate(buildRandNotationTag())).resolves.not.toThrow();
     });
   });
 
   describe('create', () => {
     it('creates a tagging record', async () => {
       const countBefore = await taggingRepo.count();
-      await taggingRepo.create(buildRandTagging({ notationId: notation2.id, tagId: tag2.id }));
+      await taggingRepo.create(buildRandNotationTag({ notationId: notation2.id, tagId: tag2.id }));
       const countAfter = await taggingRepo.count();
 
       expect(countAfter).toBe(countBefore + 1);
     });
 
     it('creates a findable tagging record', async () => {
-      const { id } = await taggingRepo.create(buildRandTagging({ notationId: notation2.id, tagId: tag2.id }));
+      const { id } = await taggingRepo.create(buildRandNotationTag({ notationId: notation2.id, tagId: tag2.id }));
       const tagging = await taggingRepo.find(id);
 
       expect(tagging).not.toBeNull();
@@ -87,13 +87,13 @@ describe.each([['MikroORMTaggingRepo', MikroORMTaggingRepo]])('%s', (name, Ctor)
     });
 
     it('returns a plain object', async () => {
-      const tagging = await taggingRepo.create(buildRandTagging({ notationId: notation2.id, tagId: tag2.id }));
+      const tagging = await taggingRepo.create(buildRandNotationTag({ notationId: notation2.id, tagId: tag2.id }));
 
       expect(isPlainObject(tagging)).toBe(true);
     });
 
     it('disallows duplicate taggings', async () => {
-      const tagging = buildRandTagging({ id: undefined, notationId: notation2.id, tagId: tag2.id });
+      const tagging = buildRandNotationTag({ id: undefined, notationId: notation2.id, tagId: tag2.id });
 
       await expect(taggingRepo.create(tagging)).resolves.not.toThrow();
       await expect(taggingRepo.create(tagging)).rejects.toThrow();

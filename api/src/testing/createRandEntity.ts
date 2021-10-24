@@ -1,9 +1,9 @@
 import { times } from 'lodash';
-import { Notation, Tag, Tagging, User } from '../domain';
+import { Notation, NotationTag, Tag, User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
-import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from '../repos';
-import { buildRandNotation, buildRandTag, buildRandTagging, buildRandUser } from './buildRandEntity';
+import { NotationRepo, NotationTagRepo, TagRepo, UserRepo } from '../repos';
+import { buildRandNotation, buildRandNotationTag, buildRandTag, buildRandUser } from './buildRandEntity';
 
 export const createRandUser = async (attrs: Partial<User> = {}): Promise<User> => {
   const userRepo = container.get<UserRepo>(TYPES.UserRepo);
@@ -21,11 +21,11 @@ export const createRandTag = async (attrs: Partial<Tag> = {}): Promise<Tag> => {
   return await tagRepo.create(buildRandTag({ ...attrs }));
 };
 
-export const createRandTagging = async (attrs: Partial<Tagging> = {}): Promise<Tagging> => {
+export const createRandNotationTag = async (attrs: Partial<NotationTag> = {}): Promise<NotationTag> => {
   const tagId = attrs.tagId || (await createRandTag()).id;
   const notationId = attrs.notationId || (await createRandNotation()).id;
-  const taggingRepo = container.get<TaggingRepo>(TYPES.TaggingRepo);
-  return await taggingRepo.create(buildRandTagging({ ...attrs, tagId, notationId }));
+  const notationTagRepo = container.get<NotationTagRepo>(TYPES.NotationTagRepo);
+  return await notationTagRepo.create(buildRandNotationTag({ ...attrs, tagId, notationId }));
 };
 
 export const createRandUsers = async (num: number): Promise<User[]> => {
@@ -40,11 +40,11 @@ export const createRandNotations = async (num: number): Promise<Notation[]> => {
   return await notationRepo.bulkCreate(notations);
 };
 
-export const createRandTaggings = async (num: number): Promise<Tagging[]> => {
+export const createRandNotationTags = async (num: number): Promise<NotationTag[]> => {
   const [tags, notations] = await Promise.all([createRandTags(num), createRandNotations(num)]);
-  const taggingRepo = container.get<TaggingRepo>(TYPES.TaggingRepo);
-  return await taggingRepo.bulkCreate(
-    times(num, (ndx) => buildRandTagging({ tagId: tags[ndx].id, notationId: notations[ndx].id }))
+  const notationTagRepo = container.get<NotationTagRepo>(TYPES.NotationTagRepo);
+  return await notationTagRepo.bulkCreate(
+    times(num, (ndx) => buildRandNotationTag({ tagId: tags[ndx].id, notationId: notations[ndx].id }))
   );
 };
 

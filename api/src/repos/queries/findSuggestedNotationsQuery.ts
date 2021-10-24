@@ -11,7 +11,7 @@ const applyOrderBys = (b: QueryBuilder, artistName: string, tagIds: string[]) =>
     // tagBinds will always just be question marks, we don't have to worry about SQL
     // injection errors.
     const tagBinds = times(tagIds.length, () => '?').join(',');
-    orderBys.push(`sum(case when taggings.tag_id in (${tagBinds}) then 1 else 0 end)`);
+    orderBys.push(`sum(case when notation_tags.tag_id in (${tagBinds}) then 1 else 0 end)`);
     for (const tagId in tagIds) {
       bindings.push(tagId);
     }
@@ -29,7 +29,7 @@ export const findSuggestedNotationsQuery = (notation: Notation, tagIds: string[]
   const b = sql
     .select('notations.*')
     .from('notations')
-    .leftJoin('taggings', 'taggings.notation_id', 'notations.id')
+    .leftJoin('notation_tags', 'notation_tags.notation_id', 'notations.id')
     .where('notations.id', '!=', notation.id)
     .where('notations.private', '=', false)
     .groupBy('notations.id')

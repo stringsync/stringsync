@@ -3,9 +3,9 @@ import { Db } from '../db';
 import { Notation, Tag, User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
-import { buildRandNotation, buildRandTag, buildRandTagging, buildRandUser } from '../testing';
+import { buildRandNotation, buildRandNotationTag, buildRandTag, buildRandUser } from '../testing';
 import { Ctor, ctor, randStr, util } from '../util';
-import { NotationRepo as MikroORMNotationRepo, TaggingRepo } from './mikro-orm';
+import { NotationRepo as MikroORMNotationRepo, NotationTagRepo } from './mikro-orm';
 import { NotationRepo, TagRepo, UserRepo } from './types';
 
 describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Ctor) => {
@@ -14,7 +14,7 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
   let notationRepo: NotationRepo;
   let userRepo: UserRepo;
   let tagRepo: TagRepo;
-  let taggingRepo: TaggingRepo;
+  let notationTagRepo: NotationTagRepo;
 
   let user: User;
   let transcriberId: string;
@@ -28,7 +28,7 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
     notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
     userRepo = container.get<UserRepo>(TYPES.UserRepo);
     tagRepo = container.get<TagRepo>(TYPES.TagRepo);
-    taggingRepo = container.get<TaggingRepo>(TYPES.TaggingRepo);
+    notationTagRepo = container.get<NotationTagRepo>(TYPES.NotationTagRepo);
 
     user = await userRepo.create(buildRandUser());
     transcriberId = user.id;
@@ -365,11 +365,11 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
 
   describe('findPage', () => {
     let tagRepo: TagRepo;
-    let taggingRepo: TaggingRepo;
+    let notationTagRepo: NotationTagRepo;
 
     beforeEach(async () => {
       tagRepo = container.get<TagRepo>(TYPES.TagRepo);
-      taggingRepo = container.get<TaggingRepo>(TYPES.TaggingRepo);
+      notationTagRepo = container.get<NotationTagRepo>(TYPES.NotationTagRepo);
     });
 
     it('defaults to paging forward', async () => {
@@ -452,11 +452,11 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
 
         [tag1, tag2, tag3] = await tagRepo.bulkCreate([buildRandTag(), buildRandTag(), buildRandTag()]);
 
-        await taggingRepo.bulkCreate([
-          buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
-          buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
-          buildRandTagging({ notationId: notation2.id, tagId: tag2.id }),
-          buildRandTagging({ notationId: notation2.id, tagId: tag3.id }),
+        await notationTagRepo.bulkCreate([
+          buildRandNotationTag({ notationId: notation1.id, tagId: tag1.id }),
+          buildRandNotationTag({ notationId: notation1.id, tagId: tag2.id }),
+          buildRandNotationTag({ notationId: notation2.id, tagId: tag2.id }),
+          buildRandNotationTag({ notationId: notation2.id, tagId: tag3.id }),
         ]);
       });
 
@@ -561,12 +561,12 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
     });
 
     it('finds suggestions with matching tag ids', async () => {
-      await taggingRepo.bulkCreate([
-        buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
-        buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
-        buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
-        buildRandTagging({ notationId: notation2.id, tagId: tag2.id }),
-        buildRandTagging({ notationId: notation3.id, tagId: tag1.id }),
+      await notationTagRepo.bulkCreate([
+        buildRandNotationTag({ notationId: notation1.id, tagId: tag1.id }),
+        buildRandNotationTag({ notationId: notation1.id, tagId: tag2.id }),
+        buildRandNotationTag({ notationId: notation2.id, tagId: tag1.id }),
+        buildRandNotationTag({ notationId: notation2.id, tagId: tag2.id }),
+        buildRandNotationTag({ notationId: notation3.id, tagId: tag1.id }),
       ]);
 
       const suggestedNotations = await notationRepo.findSuggestions(notation1, 2);
@@ -584,12 +584,12 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
     });
 
     it('sorts by num matching tag ids, then matching artists', async () => {
-      await taggingRepo.bulkCreate([
-        buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
-        buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
-        buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
-        buildRandTagging({ notationId: notation2.id, tagId: tag2.id }),
-        buildRandTagging({ notationId: notation3.id, tagId: tag1.id }),
+      await notationTagRepo.bulkCreate([
+        buildRandNotationTag({ notationId: notation1.id, tagId: tag1.id }),
+        buildRandNotationTag({ notationId: notation1.id, tagId: tag2.id }),
+        buildRandNotationTag({ notationId: notation2.id, tagId: tag1.id }),
+        buildRandNotationTag({ notationId: notation2.id, tagId: tag2.id }),
+        buildRandNotationTag({ notationId: notation3.id, tagId: tag1.id }),
       ]);
 
       const suggestedNotations = await notationRepo.findSuggestions(notation1, 2);

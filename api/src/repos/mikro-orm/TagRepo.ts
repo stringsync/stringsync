@@ -3,7 +3,7 @@ import Dataloader from 'dataloader';
 import { inject, injectable } from 'inversify';
 import { groupBy, mapValues } from 'lodash';
 import { Db } from '../../db';
-import { TagEntity, TaggingEntity } from '../../db/mikro-orm';
+import { NotationTagEntity, TagEntity } from '../../db/mikro-orm';
 import { Tag } from '../../domain';
 import { NotFoundError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
@@ -91,15 +91,17 @@ export class TagRepo implements ITagRepo {
   private loadAllByNotationIds = async (notationIds: readonly string[]): Promise<Tag[][]> => {
     const _notationIds = [...notationIds];
 
-    const taggings = await this.em.find(
-      TaggingEntity,
+    const notationTags = await this.em.find(
+      NotationTagEntity,
       { notationId: { $in: _notationIds } },
       { populate: { tag: LoadStrategy.JOINED }, refresh: true }
     );
-    const tags = await Promise.all(taggings.map((tagging) => tagging.tag.load()));
+    const tags = await Promise.all(notationTags.map((notationTag) => notationTag.tag.load()));
 
-    const taggingsByTagId = groupBy(taggings, 'tagId');
-    const notationIdsByTagId = mapValues(taggingsByTagId, (taggings) => taggings.map((tagging) => tagging.notationId));
+    const notationTagsByTagId = groupBy(notationTags, 'tagId');
+    const notationIdsByTagId = mapValues(notationTagsByTagId, (notationTags) =>
+      notationTags.map((notationTag) => notationTag.notationId)
+    );
 
     return alignManyToMany(_notationIds, pojo(tags), {
       getKeys: (tag) => notationIdsByTagId[tag.id] || [],

@@ -4,19 +4,19 @@
 import { UserEntity } from './UserEntity';
 import { NotationEntity } from './NotationEntity';
 import { TagEntity } from './TagEntity';
-import { TaggingEntity } from './TaggingEntity';
+import { NotationTagEntity } from './NotationTagEntity';
 
 export * from './BaseEntity';
 export * from './UserEntity';
 export * from './NotationEntity';
 export * from './TagEntity';
-export * from './TaggingEntity';
+export * from './NotationTagEntity';
 
-export const ENTITIES = [UserEntity, NotationEntity, TagEntity, TaggingEntity];
+export const ENTITIES = [UserEntity, NotationEntity, TagEntity, NotationTagEntity];
 
 export const ENTITIES_BY_TABLE_NAME = {
   UserEntity: 'users',
   NotationEntity: 'notations',
   TagEntity: 'tags',
-  TaggingEntity: 'taggings',
+  NotationTagEntity: 'notation_tags',
 } as const;

@@ -5,14 +5,14 @@ import { Notation } from '../../domain';
 import { TYPES } from '../../inversify.constants';
 import { NotationRepo } from '../../repos';
 import { BlobStorage, Connection, Logger, NotationConnectionArgs } from '../../util';
-import { TaggingService } from '../Tagging';
+import { NotationTagService } from '../NotationTag';
 import { VideoInfoService } from '../VideoInfo/types';
 import { CreateArgs } from './types';
 
 @injectable()
 export class NotationService {
   constructor(
-    @inject(TYPES.TaggingService) public taggingService: TaggingService,
+    @inject(TYPES.NotationTagService) public notationTagService: NotationTagService,
     @inject(TYPES.Config) public config: Config,
     @inject(TYPES.NotationRepo) public notationRepo: NotationRepo,
     @inject(TYPES.BlobStorage) public blobStorage: BlobStorage,
@@ -61,7 +61,7 @@ export class NotationService {
 
     const thumbnailFilepath = this.getThumbnailFilepath(thumbnail.filename, notation);
     const videoFilepath = this.getVideoFilepath(video.filename, notation);
-    const taggings = tagIds.map((tagId) => ({ notationId: notation.id, tagId }));
+    const notationTags = tagIds.map((tagId) => ({ notationId: notation.id, tagId }));
 
     // There seems to be an issue when creating multiple read streams, so we do this separate
     // from the blob upload.
@@ -71,7 +71,7 @@ export class NotationService {
     const [thubmanailKey] = await Promise.all([
       this.blobStorage.put(thumbnailFilepath, this.config.MEDIA_S3_BUCKET, thumbnail.createReadStream()),
       this.blobStorage.put(videoFilepath, this.config.VIDEO_SRC_S3_BUCKET, video.createReadStream()),
-      this.taggingService.bulkCreate(taggings),
+      this.notationTagService.bulkCreate(notationTags),
     ]);
 
     notation.thumbnailUrl = this.getThumbnailUrl(thubmanailKey);

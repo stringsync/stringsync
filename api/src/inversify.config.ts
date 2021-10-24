@@ -6,10 +6,10 @@ import { Db } from './db';
 import { Db as MikroORMDb } from './db/mikro-orm';
 import { TYPES } from './inversify.constants';
 import { AssociateVideoUrl, PulseCheck, SendMail } from './jobs';
-import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from './repos';
+import { NotationRepo, NotationTagRepo, TagRepo, UserRepo } from './repos';
 import {
   NotationRepo as MikroORMNotationRepo,
-  TaggingRepo as MikroORMTaggingRepo,
+  NotationTagRepo as MikroORMNotationTagRepo,
   TagRepo as MikroORMTagRepo,
   UserRepo as MikroORMUserRepo,
 } from './repos/mikro-orm';
@@ -22,8 +22,8 @@ import {
   HealthCheckerService,
   MailWriterService,
   NotationService,
+  NotationTagService,
   StaticVideoInfoService,
-  TaggingService,
   TagService,
   UserService,
   VideoUrlService,
@@ -77,14 +77,14 @@ container.bind<HealthCheckerService>(TYPES.HealthCheckerService).to(HealthChecke
 container.bind<MailWriterService>(TYPES.MailWriterService).to(MailWriterService);
 container.bind<NotationService>(TYPES.NotationService).to(NotationService);
 container.bind<TagService>(TYPES.TagService).to(TagService);
-container.bind<TaggingService>(TYPES.TaggingService).to(TaggingService);
+container.bind<NotationTagService>(TYPES.NotationTagService).to(NotationTagService);
 container.bind<UserService>(TYPES.UserService).to(UserService);
 container.bind<VideoUrlService>(TYPES.VideoUrlService).to(VideoUrlService);
 
 container.bind<TagRepo>(TYPES.TagRepo).to(MikroORMTagRepo);
 container.bind<UserRepo>(TYPES.UserRepo).to(MikroORMUserRepo);
 container.bind<NotationRepo>(TYPES.NotationRepo).to(MikroORMNotationRepo);
-container.bind<TaggingRepo>(TYPES.TaggingRepo).to(MikroORMTaggingRepo);
+container.bind<NotationTagRepo>(TYPES.NotationTagRepo).to(MikroORMNotationTagRepo);
 
 if (config.NODE_ENV === 'test') {
   container.bind<MessageQueue>(TYPES.MessageQueue).to(NoopMessageQueue);

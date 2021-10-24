@@ -3,7 +3,7 @@ import Dataloader from 'dataloader';
 import { inject, injectable } from 'inversify';
 import { get, groupBy, mapValues } from 'lodash';
 import { Db } from '../../db';
-import { NotationEntity, TaggingEntity } from '../../db/mikro-orm';
+import { NotationEntity, NotationTagEntity } from '../../db/mikro-orm';
 import { Notation } from '../../domain';
 import { NotFoundError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
@@ -125,8 +125,8 @@ export class NotationRepo implements INotationRepo {
   }
 
   async findSuggestions(notation: Notation, limit: number): Promise<Notation[]> {
-    const taggings = await this.em.find(TaggingEntity, { notationId: notation.id });
-    const tagIds = taggings.map((tagging) => tagging.tagId);
+    const notationTags = await this.em.find(NotationTagEntity, { notationId: notation.id });
+    const tagIds = notationTags.map((notationTag) => notationTag.tagId);
     return await this.db.query<Notation>(findSuggestedNotationsQuery(notation, tagIds, limit));
   }
 
@@ -161,15 +161,17 @@ export class NotationRepo implements INotationRepo {
   private loadByTagId = async (tagIds: readonly string[]): Promise<Notation[][]> => {
     const _tagIds = [...tagIds];
 
-    const taggings = await this.em.find(
-      TaggingEntity,
+    const notationTags = await this.em.find(
+      NotationTagEntity,
       { tagId: _tagIds },
       { populate: { notation: LoadStrategy.JOINED }, refresh: true }
     );
-    const notations = await Promise.all(taggings.map((tagging) => tagging.notation.load()));
+    const notations = await Promise.all(notationTags.map((notationTag) => notationTag.notation.load()));
 
-    const taggingsByNotationId = groupBy(taggings, 'notationId');
-    const tagIdsByNotationId = mapValues(taggingsByNotationId, (taggings) => taggings.map((tagging) => tagging.tagId));
+    const notationTagsByNotationId = groupBy(notationTags, 'notationId');
+    const tagIdsByNotationId = mapValues(notationTagsByNotationId, (notationTags) =>
+      notationTags.map((notationTag) => notationTag.tagId)
+    );
 
     return alignManyToMany([...tagIds], pojo(notations), {
       getKeys: (notation) => tagIdsByNotationId[notation.id] || [],

@@ -1,11 +1,11 @@
 import { isPlainObject } from 'lodash';
-import { Notation, Tag, Tagging, User } from '../domain';
+import { Notation, NotationTag, Tag, User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
-import { buildRandNotation, buildRandTag, buildRandTagging, buildRandUser } from '../testing';
+import { buildRandNotation, buildRandNotationTag, buildRandTag, buildRandUser } from '../testing';
 import { Ctor, ctor, randStr } from '../util';
 import { TagRepo as MikroORMTagRepo } from './mikro-orm';
-import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from './types';
+import { NotationRepo, NotationTagRepo, TagRepo, UserRepo } from './types';
 
 describe.each([['MikroORMTagRepo', MikroORMTagRepo]])('%s', (name, Ctor) => {
   let ORIGINAL_TAG_REPO: Ctor<TagRepo>;
@@ -127,9 +127,9 @@ describe.each([['MikroORMTagRepo', MikroORMTagRepo]])('%s', (name, Ctor) => {
     let notation1: Notation;
     let notation2: Notation;
 
-    let taggingRepo: TaggingRepo;
-    let tagging1: Tagging;
-    let tagging2: Tagging;
+    let notationTagRepo: NotationTagRepo;
+    let notationTag1: NotationTag;
+    let notationTag2: NotationTag;
 
     beforeEach(async () => {
       [tag1, tag2, tag3] = await tagRepo.bulkCreate([buildRandTag(), buildRandTag(), buildRandTag()]);
@@ -143,11 +143,11 @@ describe.each([['MikroORMTagRepo', MikroORMTagRepo]])('%s', (name, Ctor) => {
         buildRandNotation({ transcriberId: user2.id }),
       ]);
 
-      taggingRepo = container.get<TaggingRepo>(TYPES.TaggingRepo);
-      [tagging1, tagging2] = await taggingRepo.bulkCreate([
-        buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
-        buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
-        buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
+      notationTagRepo = container.get<NotationTagRepo>(TYPES.NotationTagRepo);
+      [notationTag1, notationTag2] = await notationTagRepo.bulkCreate([
+        buildRandNotationTag({ notationId: notation1.id, tagId: tag1.id }),
+        buildRandNotationTag({ notationId: notation1.id, tagId: tag2.id }),
+        buildRandNotationTag({ notationId: notation2.id, tagId: tag1.id }),
       ]);
     });
 

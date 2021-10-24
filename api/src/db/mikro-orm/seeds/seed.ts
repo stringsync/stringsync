@@ -101,7 +101,7 @@ import {
     buildTag({ name: 'prog' }),
   ];
 
-  // create taggings
+  // create notation tags
   for (const notation of notations) {
     const numTags = random(1, 3);
     const shuffledTags = shuffle(tags);

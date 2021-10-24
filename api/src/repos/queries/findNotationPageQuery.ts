@@ -22,10 +22,10 @@ const applyQuery = (b: QueryBuilder, query: string | null) => {
 
 const applyTagIds = (b: QueryBuilder, tagIds: string[] | null) => {
   if (tagIds) {
-    b.leftJoin('taggings', 'taggings.notation_id', 'notations.id')
-      .whereIn('taggings.tag_id', tagIds)
+    b.leftJoin('notation_tags', 'notation_tags.notation_id', 'notations.id')
+      .whereIn('notation_tags.tag_id', tagIds)
       .groupBy('notations.id')
-      .having(sql.raw('count(distinct(taggings.tag_id)) >= ?', tagIds.length));
+      .having(sql.raw('count(distinct(notation_tags.tag_id)) >= ?', tagIds.length));
   }
 };
 

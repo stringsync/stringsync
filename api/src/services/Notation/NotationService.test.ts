@@ -1,9 +1,9 @@
 import { isPlainObject } from 'lodash';
-import { Notation, Tag, Tagging, User } from '../../domain';
+import { Notation, NotationTag, Tag, User } from '../../domain';
 import { container } from '../../inversify.config';
 import { TYPES } from '../../inversify.constants';
-import { NotationRepo, TaggingRepo, TagRepo, UserRepo } from '../../repos';
-import { buildRandNotation, buildRandTagging, createRandTags, createRandUser } from '../../testing';
+import { NotationRepo, NotationTagRepo, TagRepo, UserRepo } from '../../repos';
+import { buildRandNotation, buildRandNotationTag, createRandTags, createRandUser } from '../../testing';
 import { randStr } from '../../util';
 import { NotationService } from './NotationService';
 
@@ -54,19 +54,19 @@ describe('NotationService', () => {
     let tag1: Tag;
     let tag2: Tag;
 
-    let taggingRepo: TaggingRepo;
-    let tagging1: Tagging;
-    let tagging2: Tagging;
+    let notationTagRepo: NotationTagRepo;
+    let notationTag1: NotationTag;
+    let notationTag2: NotationTag;
 
     beforeEach(async () => {
       tagRepo = container.get<TagRepo>(TYPES.TagRepo);
       [tag1, tag2] = await createRandTags(2);
 
-      taggingRepo = container.get<TaggingRepo>(TYPES.TaggingRepo);
-      [tagging1, tagging2] = await taggingRepo.bulkCreate([
-        buildRandTagging({ notationId: notation1.id, tagId: tag1.id }),
-        buildRandTagging({ notationId: notation2.id, tagId: tag1.id }),
-        buildRandTagging({ notationId: notation1.id, tagId: tag2.id }),
+      notationTagRepo = container.get<NotationTagRepo>(TYPES.NotationTagRepo);
+      [notationTag1, notationTag2] = await notationTagRepo.bulkCreate([
+        buildRandNotationTag({ notationId: notation1.id, tagId: tag1.id }),
+        buildRandNotationTag({ notationId: notation2.id, tagId: tag1.id }),
+        buildRandNotationTag({ notationId: notation1.id, tagId: tag2.id }),
       ]);
     });
 

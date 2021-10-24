@@ -4,8 +4,8 @@ import { BaseEntityOpts } from '.';
 import { Notation } from '../../../domain';
 import { HACK_2099_createReference } from '../hacks';
 import { BaseEntity } from './BaseEntity';
+import { NotationTagEntity } from './NotationTagEntity';
 import { TagEntity } from './TagEntity';
-import { TaggingEntity } from './TaggingEntity';
 import { UserEntity } from './UserEntity';
 
 @Entity({ tableName: 'notations' })
@@ -75,18 +75,18 @@ export class NotationEntity extends BaseEntity implements Notation {
   musicXmlUrl!: string | null;
 
   @OneToMany(
-    () => TaggingEntity,
-    (tagging) => tagging.notation,
+    () => NotationTagEntity,
+    (notationTag) => notationTag.notation,
     { hidden: true }
   )
-  taggings = new Collection<TaggingEntity>(this);
+  notationTags = new Collection<NotationTagEntity>(this);
 
   @ManyToMany({
     entity: () => TagEntity,
     inversedBy: 'notations',
     joinColumn: 'notation_id',
     inverseJoinColumn: 'tag_id',
-    pivotTable: 'taggings',
+    pivotTable: 'notation_tags',
     hidden: true,
   })
   tags = new Collection<TagEntity>(this);

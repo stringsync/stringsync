@@ -1,4 +1,4 @@
-import { Notation, Tag, Tagging, User } from '../domain';
+import { Notation, NotationTag, Tag, User } from '../domain';
 import { Connection, ConnectionArgs, NotationConnectionArgs } from '../util';
 
 export interface Repo<T extends object> {
@@ -31,4 +31,4 @@ export interface TagRepo extends Repo<Tag> {
   findAllByNotationId(notationId: string): Promise<Tag[]>;
 }
 
-export interface TaggingRepo extends Repo<Tagging> {}
+export interface NotationTagRepo extends Repo<NotationTag> {}
