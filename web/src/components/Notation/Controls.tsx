@@ -9,6 +9,7 @@ import { MusicDisplay } from '../../lib/MusicDisplay';
 import { Nullable } from '../../util/types';
 import { Detail } from './Detail';
 import { useScales } from './hooks/useScales';
+import { Playback } from './Playback';
 import { Seekbar } from './Seekbar';
 import { FretMarkerDisplay, NotationSettings, RenderableNotation, ScaleSelectionType } from './types';
 
@@ -284,6 +285,11 @@ export const Controls: React.FC<Props> = (props) => {
               loop <InfoCircleOutlined />
             </Checkbox>
           </Tooltip>
+
+          <Divider />
+
+          <h5>playback</h5>
+          <Playback mediaPlayer={mediaPlayer} />
         </SettingsInner>
       </Drawer>
     </Outer>

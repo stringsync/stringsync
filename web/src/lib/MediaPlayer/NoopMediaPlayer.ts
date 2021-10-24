@@ -25,4 +25,8 @@ export class NoopMediaPlayer implements MediaPlayer {
   }
   mute() {}
   unmute() {}
+  getPlayback() {
+    return 1;
+  }
+  setPlayback() {}
 }

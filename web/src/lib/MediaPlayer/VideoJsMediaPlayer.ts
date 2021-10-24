@@ -121,6 +121,15 @@ export class VideoJsMediaPlayer implements MediaPlayer {
     this.eventBus.dispatch('mutechange', { muted: false });
   }
 
+  getPlayback() {
+    return this.player.playbackRate();
+  }
+
+  setPlayback(playback: number) {
+    this.player.playbackRate(playback);
+    this.eventBus.dispatch('playbackchange', { playback });
+  }
+
   private updateTime(time: Duration) {
     if (this.currentTime.eq(time)) {
       return;
