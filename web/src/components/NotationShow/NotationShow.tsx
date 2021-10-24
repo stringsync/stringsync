@@ -30,7 +30,9 @@ const MOBILE_NOTATION_LAYOUT_OPTIONS: NotationLayoutOptions = {
   permitted: ['theater'],
 };
 
-const Outer = styled.div``;
+const Outer = styled.div<{ $height: number }>`
+  height: ${(props) => props.$height}px;
+`;
 
 const LandscapeOverlay = styled.div`
   position: fixed;
@@ -111,7 +113,7 @@ const NotationShow: React.FC = enhance(() => {
   );
 
   return (
-    <Outer data-testid="notation-show">
+    <Outer data-testid="notation-show" $height={innerHeight}>
       {isMobileLandscape && (
         <LandscapeOverlay>
           <h2>

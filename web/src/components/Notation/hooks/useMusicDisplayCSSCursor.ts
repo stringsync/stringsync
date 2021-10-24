@@ -20,7 +20,9 @@ export const useCSSCursor = (musicDisplay: MusicDisplay) => {
   const device = useDevice();
 
   useEffect(() => {
-    const isDeviceTouchable = device.inputType === 'touchOnly' || device.inputType === 'hybrid';
+    if (device.inputType === 'touchOnly') {
+      return;
+    }
 
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('cursorentered', (payload) => {
@@ -49,15 +51,11 @@ export const useCSSCursor = (musicDisplay: MusicDisplay) => {
       }),
       musicDisplay.eventBus.subscribe('cursordragstarted', (payload) => {
         setCursor(Cursor.Grabbing);
-        if (isDeviceTouchable) {
-          payload.src.cursor.updateStyle(CursorStyleType.Interacting);
-        }
+        payload.src.cursor.updateStyle(CursorStyleType.Interacting);
       }),
       musicDisplay.eventBus.subscribe('cursordragended', (payload) => {
         setCursor(payload.dst.type === PointerTargetType.Cursor ? Cursor.Grab : Cursor.Crosshair);
-        if (isDeviceTouchable) {
-          payload.src.cursor.updateStyle(CursorStyleType.Default);
-        }
+        payload.src.cursor.updateStyle(CursorStyleType.Default);
       }),
       musicDisplay.eventBus.subscribe('notargetentered', () => {
         setCursor(Cursor.Default);

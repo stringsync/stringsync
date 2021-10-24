@@ -25,8 +25,8 @@ import { NotationLayoutOptions, NotationSettings, RenderableNotation } from './t
 
 const NOTATION_DETAIL_THRESHOLD_PX = 767;
 
-const Outer = styled.div<{ $height: number }>`
-  height: ${(props) => props.$height}px;
+const Outer = styled.div`
+  height: 100%;
 `;
 
 const Title = styled.h1`
@@ -172,7 +172,7 @@ export const Notation: React.FC<Props> = (props) => {
   const showDetail = pane2WidthPx > NOTATION_DETAIL_THRESHOLD_PX;
 
   return (
-    <Outer data-testid="notation" ref={settingsContainerRef} $height={viewport.innerHeight}>
+    <Outer data-testid="notation" ref={settingsContainerRef}>
       <NotationSink
         settings={settings}
         setSettings={setSettings}

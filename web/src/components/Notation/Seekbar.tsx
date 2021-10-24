@@ -14,7 +14,7 @@ import { RenderableNotation } from './types';
 const SLIDER_HANDLE_STYLE = { width: 21, height: 21, marginTop: -8 };
 
 const SliderOuter = styled.div<{ $showDots: boolean }>`
-  padding: 0 16px 0 16px;
+  padding: 0 24px;
   margin: 0;
   width: 100%;
 

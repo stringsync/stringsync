@@ -18,7 +18,7 @@ export type PointerEvent = EventFrom<typeof model>;
 export type PointerMachine = ReturnType<typeof createMachine>;
 export type PointerService = ReturnType<typeof createService>;
 
-export const LONG_PRESS_DURATION = Duration.ms(750);
+export const LONG_PRESS_DURATION = Duration.ms(500);
 export const DOWN_GRACE_DURATION = Duration.ms(30);
 export const IDLE_DURATION = Duration.ms(500);
 

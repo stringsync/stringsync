@@ -185,7 +185,6 @@ export const Controls: React.FC<Props> = (props) => {
       <Drawer
         title="settings"
         placement="right"
-        style={{ overflow: 'hidden' }}
         keyboard
         closable={false}
         visible={isSettingsVisible}
