@@ -37,7 +37,6 @@ export const useMusicDisplay = (
       drawingParameters: device.mobile ? DrawingParametersEnum.compacttight : DrawingParametersEnum.default,
     });
     setMusicDisplay(musicDisplay);
-    (window as any).md = musicDisplay;
 
     const startLoading = () => setLoading(true);
     const stopLoading = () => setLoading(false);

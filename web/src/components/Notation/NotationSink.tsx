@@ -2,6 +2,7 @@ import React from 'react';
 import { MediaPlayer } from '../../lib/MediaPlayer';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { useDynamicScaleSync } from './hooks/useDynamicScaleSync';
+import { useMediaPlayerVolumeBehavior } from './hooks/useMediaPlayerVolumeBehavior';
 import { useMusicDisplayCursorInteractions } from './hooks/useMusicDisplayCursorInteractions';
 import { useMusicDisplayCursorTimeSync } from './hooks/useMusicDisplayCursorTimeSync';
 import { useMusicDisplayLoopBehavior } from './hooks/useMusicDisplayLoopBehavior';
@@ -39,6 +40,7 @@ export const NotationSink: React.FC<Props> = (props) => {
   useMusicDisplayCursorInteractions(musicDisplay, mediaPlayer);
   useMusicDisplayCursorTimeSync(musicDisplay, mediaPlayer);
   useDynamicScaleSync(settings, setSettings, musicDisplay);
+  useMediaPlayerVolumeBehavior(mediaPlayer);
 
   return null;
 };

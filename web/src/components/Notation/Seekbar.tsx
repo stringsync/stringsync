@@ -11,6 +11,8 @@ import { useSliderMarks } from './hooks/useSliderMarks';
 import { useTipFormatter } from './hooks/useTipFormatter';
 import { RenderableNotation } from './types';
 
+const SLIDER_HANDLE_STYLE = { width: 21, height: 21, marginTop: -8 };
+
 const SliderOuter = styled.div<{ $showDots: boolean }>`
   padding: 0 16px 0 16px;
   margin: 0;
@@ -63,7 +65,11 @@ export const Seekbar: React.FC<Props> = (props) => {
       if (loop.isActive) {
         const start = time.ms;
         const end = time.plus(loop.timeRange.size).ms;
-        loop.update(NumberRange.from(start).to(end));
+        if (end > durationMs) {
+          loop.deactivate();
+        } else {
+          loop.update(NumberRange.from(start).to(end));
+        }
       }
 
       mediaPlayer.seek(time);
@@ -79,7 +85,7 @@ export const Seekbar: React.FC<Props> = (props) => {
       <Slider
         step={0.01}
         marks={marks}
-        handleStyle={{ width: 21, height: 21, marginTop: -8 }}
+        handleStyle={SLIDER_HANDLE_STYLE}
         value={value}
         tipFormatter={tipFormatter}
         onChange={onChange}

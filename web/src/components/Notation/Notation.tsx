@@ -1,4 +1,4 @@
-import { HomeOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { HomeOutlined, InfoCircleOutlined, SoundFilled, SoundOutlined } from '@ant-design/icons';
 import { Button, Drawer } from 'antd';
 import { noop } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -149,6 +149,24 @@ export const Notation: React.FC<Props> = (props) => {
 
   // media player
   const [mediaPlayer, setMediaPlayer] = useState<MediaPlayer>(() => new NoopMediaPlayer());
+  const [muted, setMuted] = useState(false);
+  useEffect(() => {
+    const eventBusIds = [
+      mediaPlayer.eventBus.subscribe('mutechange', (payload) => {
+        setMuted(payload.muted);
+      }),
+    ];
+    return () => {
+      mediaPlayer.eventBus.unsubscribe(...eventBusIds);
+    };
+  }, [mediaPlayer]);
+  const onMuteClick = () => {
+    if (muted) {
+      mediaPlayer.unmute();
+    } else {
+      mediaPlayer.mute();
+    }
+  };
 
   // controls detail
   const showDetail = pane2WidthPx > NOTATION_DETAIL_THRESHOLD_PX;
@@ -228,6 +246,13 @@ export const Notation: React.FC<Props> = (props) => {
             type="primary"
             icon={<InfoCircleOutlined />}
             onClick={onSidecarDrawerOpen}
+          />
+          <FloatingButton
+            $top={128}
+            size="large"
+            type="primary"
+            icon={muted ? <SoundOutlined /> : <SoundFilled />}
+            onClick={onMuteClick}
           />
           <Drawer
             closable

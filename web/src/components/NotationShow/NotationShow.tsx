@@ -30,12 +30,7 @@ const MOBILE_NOTATION_LAYOUT_OPTIONS: NotationLayoutOptions = {
   permitted: ['theater'],
 };
 
-// On Safari, the address bar only hides when it's possible to scroll on the Y-axs and the user is scrolling towards the
-// bottom. Therefore, we purposely add overflow-y, but the user should never see this in theory. Safari is important to
-// support because it's the web viewer in iPhone apps, assumed to be a large portion of the user base.
-const Outer = styled.div`
-  height: 101vh;
-`;
+const Outer = styled.div``;
 
 const LandscapeOverlay = styled.div`
   position: fixed;

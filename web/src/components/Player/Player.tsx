@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import videojs from 'video.js';
+import { useDevice } from '../../ctx/device';
 import { useMemoCmp } from '../../hooks/useMemoCmp';
-import { MediaPlayer, NoopMediaPlayer, VideoJsMediaPlayer } from '../../lib/MediaPlayer';
-import { Duration } from '../../util/Duration';
+import { MediaPlayer, NoopMediaPlayer, PlayState, VideoJsMediaPlayer } from '../../lib/MediaPlayer';
 
 const NOOP_MEDIA_PLAYER = new NoopMediaPlayer();
 
@@ -28,16 +28,24 @@ const VideoJs: React.FC<Props> = (props) => {
   const mode = props.mode || 'video';
   const playerOptions = useMemoCmp(props.playerOptions);
   const onPlayerChange = props.onPlayerChange || noop;
+  const device = useDevice();
 
   // media player management
-  const [mediaPlayer, setMediaPlayer] = useState(() => new NoopMediaPlayer());
+  const [mediaPlayer, setMediaPlayer] = useState<MediaPlayer>(() => new NoopMediaPlayer());
   useEffect(() => {
     onPlayerChange(mediaPlayer);
+    (window as any).mp = mediaPlayer;
   }, [onPlayerChange, mediaPlayer]);
+  const onClick = () => {
+    if (mediaPlayer.getPlayState() === PlayState.Paused) {
+      mediaPlayer.play();
+    } else {
+      mediaPlayer.pause();
+    }
+  };
 
   // creating the videojs player
   const outerRef = useRef<HTMLDivElement>(null);
-  const lastTimeRef = useRef(Duration.zero());
 
   useEffect(() => {
     const outer = outerRef.current;
@@ -47,11 +55,14 @@ const VideoJs: React.FC<Props> = (props) => {
 
     const media = document.createElement(mode);
     media.setAttribute('playsinline', 'true');
-    media.setAttribute('class', 'video-js vjs-default-skin vjs-fill vjs-big-play-centered');
+    if (device.mobile) {
+      media.setAttribute('autoplay', 'true');
+    }
+    media.setAttribute('class', 'video-js vjs-default-skin vjs-fill');
     outer.appendChild(media);
 
     const player = videojs(media, {
-      controls: true,
+      controls: false,
       preload: 'auto',
       fluid: true,
       ...playerOptions,
@@ -61,20 +72,18 @@ const VideoJs: React.FC<Props> = (props) => {
     setMediaPlayer(mediaPlayer);
 
     player.ready(() => {
-      mediaPlayer.seek(lastTimeRef.current);
+      mediaPlayer.pause();
     });
 
     return () => {
-      mediaPlayer.pause();
-      lastTimeRef.current = mediaPlayer.getCurrentTime();
       mediaPlayer.dispose();
 
       setMediaPlayer(NOOP_MEDIA_PLAYER);
     };
-  }, [playerOptions, mode]);
+  }, [playerOptions, mode, device]);
 
   // vjs dynamically overwrites classnames, so we have to use inline styles instead of styled-components
-  return <div data-vjs-player ref={outerRef} style={{ cursor: 'pointer' }} />;
+  return <div onClick={onClick} onTouchStart={onClick} data-vjs-player ref={outerRef} style={{ cursor: 'pointer' }} />;
 };
 
 const Video: React.FC<Omit<VideoProps, 'mode'>> = (props) => <VideoJs mode="video" {...props} />;

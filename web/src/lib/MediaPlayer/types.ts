@@ -13,6 +13,8 @@ export type MediaPlayerEventBus = EventBus<{
   playstatechange: { playState: PlayState };
   suspend: {};
   unsuspend: {};
+  volumechange: { volume: number };
+  mutechange: { muted: boolean };
 }>;
 
 export interface MediaPlayer {
@@ -25,4 +27,9 @@ export interface MediaPlayer {
   unsuspend(): void;
   getPlayState(): PlayState;
   getCurrentTime(): Duration;
+  getVolume(): number;
+  setVolume(volume: number): void;
+  isMuted(): boolean;
+  mute(): void;
+  unmute(): void;
 }

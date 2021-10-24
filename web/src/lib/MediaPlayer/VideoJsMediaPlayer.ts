@@ -21,6 +21,7 @@ export class VideoJsMediaPlayer implements MediaPlayer {
     this.player.ready(this.onReady);
     this.player.on('play', this.onPlay);
     this.player.on('pause', this.onPause);
+    this.player.on('volumechange', this.onVolumeChange);
 
     this.timeChangeLoop = new AsyncLoop(
       this.syncTime,
@@ -98,6 +99,28 @@ export class VideoJsMediaPlayer implements MediaPlayer {
     return this.isReady ? Duration.sec(this.player.currentTime()) : Duration.zero();
   }
 
+  getVolume() {
+    return this.player.volume();
+  }
+
+  setVolume(volume: number) {
+    this.player.volume(volume);
+  }
+
+  isMuted() {
+    return this.player.muted();
+  }
+
+  mute() {
+    this.player.muted(true);
+    this.eventBus.dispatch('mutechange', { muted: true });
+  }
+
+  unmute() {
+    this.player.muted(false);
+    this.eventBus.dispatch('mutechange', { muted: false });
+  }
+
   private updateTime(time: Duration) {
     if (this.currentTime.eq(time)) {
       return;
@@ -124,5 +147,10 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   private onPause = () => {
     this.timeChangeLoop.stop();
     this.eventBus.dispatch('playstatechange', { playState: PlayState.Paused });
+  };
+
+  private onVolumeChange = () => {
+    const volume = this.getVolume();
+    this.eventBus.dispatch('volumechange', { volume });
   };
 }

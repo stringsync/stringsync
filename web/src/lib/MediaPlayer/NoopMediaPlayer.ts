@@ -16,4 +16,13 @@ export class NoopMediaPlayer implements MediaPlayer {
   seek(time: Duration) {}
   suspend() {}
   unsuspend() {}
+  getVolume() {
+    return 0;
+  }
+  setVolume() {}
+  isMuted() {
+    return false;
+  }
+  mute() {}
+  unmute() {}
 }

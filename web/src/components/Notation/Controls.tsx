@@ -11,7 +11,6 @@ import { Detail } from './Detail';
 import { useScales } from './hooks/useScales';
 import { Seekbar } from './Seekbar';
 import { FretMarkerDisplay, NotationSettings, RenderableNotation, ScaleSelectionType } from './types';
-import { VolumeSlider } from './VolumeSlider';
 
 export const CONTROLS_HEIGHT_PX = 75;
 
@@ -19,6 +18,7 @@ const DUMMY_DIV = document.createElement('div');
 
 const Outer = styled.div`
   border: 1px solid ${(props) => props.theme['@border-color']};
+  border-bottom: 0;
   height: ${CONTROLS_HEIGHT_PX}px;
   padding: 0 16px;
   z-index: 5;
@@ -35,6 +35,7 @@ const StyledButton = styled(Button)`
   color: ${(props) => props.theme['@muted']};
   border: none;
   box-shadow: none;
+  background-color: transparent;
 `;
 
 const RotationButton = styled(StyledButton)<{ $rotateDeg: number }>`
@@ -183,6 +184,7 @@ export const Controls: React.FC<Props> = (props) => {
       <Drawer
         title="settings"
         placement="right"
+        style={{ overflow: 'hidden' }}
         keyboard
         closable={false}
         visible={isSettingsVisible}
@@ -282,11 +284,6 @@ export const Controls: React.FC<Props> = (props) => {
               loop <InfoCircleOutlined />
             </Checkbox>
           </Tooltip>
-
-          <Divider />
-
-          <h5>volume</h5>
-          <VolumeSlider />
         </SettingsInner>
       </Drawer>
     </Outer>

@@ -2,10 +2,16 @@ import { useEffect, useRef } from 'react';
 import { MediaPlayer } from '../../../lib/MediaPlayer';
 import { MusicDisplay } from '../../../lib/MusicDisplay';
 import { SelectionEdge } from '../../../lib/MusicDisplay/locator';
+import { Loop } from '../../../lib/MusicDisplay/loop';
 import { isCursorSnapshotPointerTarget, isSelectionPointerTarget, isTemporal } from '../../../lib/MusicDisplay/pointer';
 import { AnchoredSelection } from '../../../util/AnchoredSelection';
+import { Duration } from '../../../util/Duration';
 import * as helpers from '../helpers';
 import { NotationSettings } from '../types';
+
+const seekToLoopStart = (mediaPlayer: MediaPlayer, loop: Loop) => {
+  mediaPlayer.seek(loop.timeRange.start.plus(Duration.ms(1)));
+};
 
 export const useMusicDisplayLoopBehavior = (
   settings: NotationSettings,
@@ -37,7 +43,7 @@ export const useMusicDisplayLoopBehavior = (
           loop.activate();
         }
 
-        mediaPlayer.seek(loop.timeRange.start);
+        seekToLoopStart(mediaPlayer, loop);
       }),
       musicDisplay.eventBus.subscribe('selectionstarted', (payload) => {
         mediaPlayer.suspend();
@@ -70,7 +76,7 @@ export const useMusicDisplayLoopBehavior = (
       musicDisplay.eventBus.subscribe('selectionended', () => {
         selectionRef.current = null;
         const loop = musicDisplay.getLoop();
-        mediaPlayer.seek(loop.timeRange.start);
+        seekToLoopStart(mediaPlayer, loop);
         mediaPlayer.unsuspend();
       }),
     ];
@@ -92,7 +98,7 @@ export const useMusicDisplayLoopBehavior = (
         if (timeRange.contains(payload.time)) {
           return;
         }
-        mediaPlayer.seek(timeRange.start);
+        mediaPlayer.seek(timeRange.start.plus(Duration.ms(1)));
       }),
     ];
     return () => {
@@ -104,7 +110,7 @@ export const useMusicDisplayLoopBehavior = (
   useEffect(() => {
     const loop = musicDisplay.getLoop();
     if (settings.isLoopActive && !loop.isActive) {
-      mediaPlayer.seek(loop.timeRange.start);
+      seekToLoopStart(mediaPlayer, loop);
       loop.activate();
     } else if (!settings.isLoopActive && loop.isActive) {
       loop.deactivate();
