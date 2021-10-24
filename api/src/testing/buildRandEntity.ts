@@ -1,4 +1,4 @@
-import { Notation, NotationTag, Tag, User, UserRole } from '../domain';
+import { Notation, NotationTag, Tag, TagCategory, User, UserRole } from '../domain';
 import { randInt, randStr } from '../util';
 
 export const buildRandUser = (attrs: Partial<User> = {}): User => {
@@ -46,6 +46,7 @@ export const buildRandNotation = (attrs: Partial<Notation> = {}): Notation => {
 export const buildRandTag = (attrs: Partial<Tag> = {}): Tag => {
   return {
     id: randStr(8),
+    category: TagCategory.Genre,
     name: randStr(8),
     ...attrs,
   };

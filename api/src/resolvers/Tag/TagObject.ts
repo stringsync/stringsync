@@ -1,14 +1,21 @@
-import { Ctx, Field, ID, ObjectType, Root } from 'type-graphql';
-import { Notation, Tag } from '../../domain';
+import { Ctx, Field, ID, ObjectType, registerEnumType, Root } from 'type-graphql';
+import { Notation, Tag, TagCategory } from '../../domain';
 import { TYPES } from '../../inversify.constants';
 import { NotationService } from '../../services';
 import { NotationObject } from '../Notation';
 import { ResolverCtx } from '../types';
 
+registerEnumType(TagCategory, {
+  name: 'TagCategory',
+});
+
 @ObjectType()
 export class TagObject implements Tag {
   @Field((type) => ID)
   id!: string;
+
+  @Field((type) => TagCategory)
+  category!: TagCategory;
 
   @Field()
   name!: string;

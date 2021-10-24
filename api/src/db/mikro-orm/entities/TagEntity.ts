@@ -1,6 +1,6 @@
-import { Collection, Entity, ManyToMany, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
+import { Collection, Entity, Enum, ManyToMany, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { MaxLength, MinLength } from 'class-validator';
-import { Tag } from '../../../domain';
+import { Tag, TagCategory } from '../../../domain';
 import { BaseEntity, BaseEntityOpts } from './BaseEntity';
 import { NotationEntity } from './NotationEntity';
 import { NotationTagEntity } from './NotationTagEntity';
@@ -9,6 +9,9 @@ import { NotationTagEntity } from './NotationTagEntity';
 export class TagEntity extends BaseEntity implements Tag {
   @PrimaryKey()
   id!: string;
+
+  @Enum(() => TagCategory)
+  category!: TagCategory;
 
   @Property()
   @MaxLength(16)

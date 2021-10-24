@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { $gql, DataOf, t } from '../graphql';
+import { $gql, DataOf, t, TagCategory } from '../graphql';
 import { useEffectOnce } from './useEffectOnce';
 import { useGql } from './useGql';
 
@@ -7,7 +7,7 @@ type Tags = DataOf<typeof TAGS_GQL>;
 
 export const TAGS_GQL = $gql
   .query('tags')
-  .setQuery([{ id: t.string, name: t.string }])
+  .setQuery([{ id: t.string, category: t.optional.oneOf(TagCategory)!, name: t.string }])
   .build();
 
 export const useTags = () => {

@@ -4,6 +4,11 @@ export enum UserRole {
   ADMIN = 'ADMIN',
 }
 
+export enum TagCategory {
+  Genre = 'genre',
+  Difficulty = 'difficulty',
+}
+
 export interface User {
   id: string;
   createdAt: Date;

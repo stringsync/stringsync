@@ -124,9 +124,15 @@ export enum UserRoles {
 export type TagObject = {
   __typename?: 'TagObject';
   id: Scalars['ID'];
+  category: TagCategory;
   name: Scalars['String'];
   notations?: Maybe<Array<NotationObject>>;
 };
+
+export enum TagCategory {
+  Genre = 'Genre',
+  Difficulty = 'Difficulty'
+}
 
 export type UserConnectionObject = {
   __typename?: 'UserConnectionObject';
