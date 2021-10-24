@@ -109,13 +109,13 @@ export type UserObject = {
   email: Scalars['String'];
   username: Scalars['String'];
   avatarUrl?: Maybe<Scalars['String']>;
-  role: UserRoles;
+  role: UserRole;
   confirmedAt?: Maybe<Scalars['DateTime']>;
   resetPasswordTokenSentAt?: Maybe<Scalars['DateTime']>;
   notations?: Maybe<NotationObject>;
 };
 
-export enum UserRoles {
+export enum UserRole {
   STUDENT = 'STUDENT',
   TEACHER = 'TEACHER',
   ADMIN = 'ADMIN'
@@ -130,8 +130,8 @@ export type TagObject = {
 };
 
 export enum TagCategory {
-  Genre = 'Genre',
-  Difficulty = 'Difficulty'
+  GENRE = 'GENRE',
+  DIFFICULTY = 'DIFFICULTY'
 }
 
 export type UserConnectionObject = {
@@ -207,7 +207,7 @@ export type UpdateUserInput = {
   id: Scalars['String'];
   username?: Maybe<Scalars['String']>;
   email?: Maybe<Scalars['String']>;
-  role?: Maybe<UserRoles>;
+  role?: Maybe<UserRole>;
 };
 
 export type LoginInput = {

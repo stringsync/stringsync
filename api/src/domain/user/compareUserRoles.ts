@@ -1,5 +1,5 @@
-import { UserRole } from './types';
 import { USER_ROLES } from './constants';
+import { UserRole } from './types';
 
 export const compareUserRoles = (role1: UserRole, role2: UserRole) => {
   const ndx1 = USER_ROLES.indexOf(role1);

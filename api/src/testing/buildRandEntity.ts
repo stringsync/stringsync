@@ -46,7 +46,7 @@ export const buildRandNotation = (attrs: Partial<Notation> = {}): Notation => {
 export const buildRandTag = (attrs: Partial<Tag> = {}): Tag => {
   return {
     id: randStr(8),
-    category: TagCategory.Genre,
+    category: TagCategory.GENRE,
     name: randStr(8),
     ...attrs,
   };

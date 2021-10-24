@@ -2,7 +2,7 @@ import { cloneDeep } from 'lodash';
 import { assign, Condition, ContextFrom, DoneInvokeEvent, EventFrom, InvokeCreator } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 import { UnknownError } from '../../errors';
-import { DataOf, toUserRole } from '../../graphql';
+import { DataOf } from '../../graphql';
 import { NOTATIONS_GQL } from './queries';
 import { NotationPreview } from './types';
 
@@ -72,8 +72,7 @@ const clear = assign<LibraryContext, { type: 'clear' }>((context, event) => {
 
 const toNotationPreviews = (connection: DataOf<typeof NOTATIONS_GQL>): NotationPreview[] => {
   return (connection?.edges || []).map((edge) => {
-    const role = toUserRole(edge.node.transcriber.role);
-    const transcriber = { ...edge.node.transcriber, role };
+    const transcriber = { ...edge.node.transcriber };
     return { ...edge.node, transcriber } as NotationPreview;
   });
 };

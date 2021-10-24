@@ -1,3 +1,10 @@
+// https://typegraphql.com/docs/enums.html#interoperability
+export enum UserRole {
+  STUDENT = 'STUDENT',
+  TEACHER = 'TEACHER',
+  ADMIN = 'ADMIN',
+}
+
 export interface User {
   id: string;
   cursor: number;
@@ -12,10 +19,4 @@ export interface User {
   resetPasswordToken: string | null;
   resetPasswordTokenSentAt: Date | null;
   avatarUrl: string | null;
-}
-
-export enum UserRole {
-  STUDENT = 'STUDENT',
-  TEACHER = 'TEACHER',
-  ADMIN = 'ADMIN',
 }

@@ -12,7 +12,7 @@ type PublicUser = Omit<
   'encryptedPassword' | 'confirmationToken' | 'confirmedAt' | 'resetPasswordToken' | 'cursor'
 >;
 
-registerEnumType(UserRole, { name: 'UserRoles' });
+registerEnumType(UserRole, { name: 'UserRole' });
 
 @ObjectType()
 export class UserObject implements PublicUser {

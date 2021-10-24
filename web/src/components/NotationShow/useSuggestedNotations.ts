@@ -1,5 +1,5 @@
 import { useAsyncAbortable } from 'react-async-hook';
-import { $gql, QuerySuggestedNotationsArgs, t, UserRoles } from '../../graphql';
+import { $gql, QuerySuggestedNotationsArgs, t, UserRole } from '../../graphql';
 
 const SUGGESTED_NOTATIONS_GQL = $gql
   .query('suggestedNotations')
@@ -14,7 +14,7 @@ const SUGGESTED_NOTATIONS_GQL = $gql
       transcriber: {
         id: t.string,
         username: t.string,
-        role: t.optional.oneOf(UserRoles)!,
+        role: t.optional.oneOf(UserRole)!,
         avatarUrl: t.optional.string,
       },
       tags: [{ id: t.string, name: t.string }],

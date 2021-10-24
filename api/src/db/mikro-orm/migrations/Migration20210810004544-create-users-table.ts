@@ -3,7 +3,7 @@ import { Migration } from '@mikro-orm/migrations';
 export class Migration20210810004544 extends Migration {
   async up(): Promise<void> {
     await this.execute(`
-CREATE TYPE user_roles AS ENUM ('STUDENT', 'TEACHER', 'ADMIN');
+CREATE TYPE user_role AS ENUM ('STUDENT', 'TEACHER', 'ADMIN');
 CREATE TABLE users (
     id TEXT PRIMARY KEY,
     cursor SERIAL UNIQUE NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE users (
     reset_password_token TEXT UNIQUE,
     reset_password_token_sent_at TIMESTAMP,
     avatar_url TEXT,
-    role user_roles DEFAULT 'STUDENT'
+    role user_role DEFAULT 'STUDENT'
 );
 CREATE TRIGGER trigger_generate_user_id BEFORE INSERT ON users FOR EACH ROW EXECUTE PROCEDURE unique_short_id();
 CREATE INDEX index_users_on_cursor ON users (cursor);
@@ -28,7 +28,7 @@ CREATE INDEX trgm_index_users_on_username ON users USING GIN (username gin_trgm_
 
   async down(): Promise<void> {
     await this.execute(`
-DROP TYPE user_roles;
+DROP TYPE user_role;
 DROP TABLE users;
 DROP TRIGGER trigger_generate_user_id ON users;
 DROP INDEX index_users_on_cursor;

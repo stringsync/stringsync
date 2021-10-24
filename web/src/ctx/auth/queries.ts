@@ -1,4 +1,4 @@
-import { $gql, LoginInput, SignupInput, t, UserRoles } from '../../graphql';
+import { $gql, LoginInput, SignupInput, t } from '../../graphql';
 
 export const whoami = $gql
   .query('whoami')
@@ -50,3 +50,6 @@ export const signup = $gql
     },
   })
   .build();
+function UserRoles(UserRoles: any): any {
+  throw new Error('Function not implemented.');
+}

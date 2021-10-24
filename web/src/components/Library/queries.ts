@@ -1,4 +1,4 @@
-import { $gql, QueryNotationsArgs, t, UserRoles } from '../../graphql';
+import { $gql, QueryNotationsArgs, t, UserRole } from '../../graphql';
 
 export const NOTATIONS_GQL = $gql
   .query('notations')
@@ -16,7 +16,7 @@ export const NOTATIONS_GQL = $gql
           transcriber: {
             id: t.string,
             username: t.string,
-            role: t.optional.oneOf(UserRoles)!,
+            role: t.optional.oneOf(UserRole)!,
             avatarUrl: t.optional.string,
           },
           tags: [{ id: t.string, name: t.string }],

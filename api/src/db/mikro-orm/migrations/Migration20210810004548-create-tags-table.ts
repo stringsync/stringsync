@@ -3,10 +3,10 @@ import { Migration } from '@mikro-orm/migrations';
 export class Migration20210810004548 extends Migration {
   async up(): Promise<void> {
     await this.execute(`
-CREATE TYPE tag_category AS ENUM ('genre', 'difficulty');
+CREATE TYPE tag_category AS ENUM ('GENRE', 'DIFFICULTY');
 CREATE TABLE tags (
   id TEXT PRIMARY KEY,
-  category tag_category DEFAULT 'genre',
+  category tag_category DEFAULT 'GENRE',
   name TEXT UNIQUE NOT NULL
 );
 CREATE TRIGGER trigger_generate_tag_id BEFORE INSERT ON tags FOR EACH ROW EXECUTE PROCEDURE unique_short_id();`);

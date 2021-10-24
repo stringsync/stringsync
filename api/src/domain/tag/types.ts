@@ -1,6 +1,7 @@
+// https://typegraphql.com/docs/enums.html#interoperability
 export enum TagCategory {
-  Genre = 'genre',
-  Difficulty = 'difficulty',
+  GENRE = 'GENRE',
+  DIFFICULTY = 'DIFFICULTY',
 }
 
 export interface Tag {
