@@ -11,10 +11,14 @@ export class FFProbeVideoInfoService implements VideoInfoService {
 
   // Adapted from https://github.com/caffco/get-video-duration/blob/main/src/index.ts
   async getDurationMs(videoStream: ReadStream) {
-    const { stdout } = await execa('ffprobe', ['-v', 'error', '-show_format', '-show_streams', '-i', 'pipe:0'], {
-      reject: false,
-      input: videoStream,
-    });
+    const { stdout, stderr } = await execa(
+      'ffprobe',
+      ['-v', 'error', '-show_format', '-show_streams', '-i', 'pipe:0'],
+      {
+        reject: false,
+        input: videoStream,
+      }
+    );
 
     const durationSecMatches = stdout.match(/duration="?(\d*\.\d*)"?/);
 
@@ -26,7 +30,7 @@ export class FFProbeVideoInfoService implements VideoInfoService {
       }
       return durationSec * 1000;
     } else {
-      this.logger.error(`could not get duration from video`);
+      this.logger.error(`could not get duration from video: ${stderr}`);
       return 0;
     }
   }
