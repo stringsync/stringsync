@@ -37,6 +37,13 @@ export class StringsyncStack extends cdk.Stack {
       description: 'The number of tasks to run the worker service.',
     }).valueAsNumber;
 
+    const dispatcherServiceCount = new cdk.CfnParameter(this, 'DispatcherServiceTaskCount', {
+      type: 'Number',
+      default: 0,
+      allowedValues: ['0', '1'],
+      description: 'The number of tasks to run the dispatcher service.',
+    }).valueAsNumber;
+
     const domainName = new cdk.CfnParameter(this, 'DomainName', {
       type: 'String',
       description: 'The application naked domain name, e.g. example.com (not www.example.com).',
@@ -451,7 +458,7 @@ export class StringsyncStack extends cdk.Stack {
       assignPublicIp: true,
       securityGroups: [appContainerSecurityGroup],
       taskDefinition: dispatcherTaskDefinition,
-      desiredCount: 1,
+      desiredCount: dispatcherServiceCount,
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     });
 
