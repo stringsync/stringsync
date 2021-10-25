@@ -3,8 +3,8 @@ import { Notation, NotationTag, Tag, User } from '../../domain';
 import { container } from '../../inversify.config';
 import { TYPES } from '../../inversify.constants';
 import { NotationRepo, NotationTagRepo, TagRepo, UserRepo } from '../../repos';
-import { buildRandNotation, buildRandNotationTag, createRandTags, createRandUser } from '../../testing';
-import { randStr } from '../../util';
+import { createRandTags, createRandUser } from '../../testing';
+import { rand } from '../../util';
 import { NotationService } from './NotationService';
 
 describe('NotationService', () => {
@@ -23,8 +23,8 @@ describe('NotationService', () => {
 
     user = await createRandUser();
     [notation1, notation2] = await notationRepo.bulkCreate([
-      buildRandNotation({ transcriberId: user.id, cursor: 1 }),
-      buildRandNotation({ transcriberId: user.id, cursor: 2 }),
+      rand.notation({ transcriberId: user.id, cursor: 1 }),
+      rand.notation({ transcriberId: user.id, cursor: 2 }),
     ]);
 
     notationService = container.get<NotationService>(TYPES.NotationService);
@@ -43,7 +43,7 @@ describe('NotationService', () => {
     });
 
     it('returns an empty array for users that do not exist', async () => {
-      const notations = await notationService.findAllByTranscriberId(randStr(10));
+      const notations = await notationService.findAllByTranscriberId(rand.str(10));
       expect(notations).toBeInstanceOf(Array);
       expect(notations).toHaveLength(0);
     });
@@ -64,9 +64,9 @@ describe('NotationService', () => {
 
       notationTagRepo = container.get<NotationTagRepo>(TYPES.NotationTagRepo);
       [notationTag1, notationTag2] = await notationTagRepo.bulkCreate([
-        buildRandNotationTag({ notationId: notation1.id, tagId: tag1.id }),
-        buildRandNotationTag({ notationId: notation2.id, tagId: tag1.id }),
-        buildRandNotationTag({ notationId: notation1.id, tagId: tag2.id }),
+        rand.notationTag({ notationId: notation1.id, tagId: tag1.id }),
+        rand.notationTag({ notationId: notation2.id, tagId: tag1.id }),
+        rand.notationTag({ notationId: notation1.id, tagId: tag2.id }),
       ]);
     });
 

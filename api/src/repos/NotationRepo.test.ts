@@ -3,8 +3,7 @@ import { Db } from '../db';
 import { Notation, Tag, User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
-import { buildRandNotation, buildRandNotationTag, buildRandTag, buildRandUser } from '../testing';
-import { Ctor, ctor, randStr, util } from '../util';
+import { Ctor, ctor, rand, util } from '../util';
 import { NotationRepo as MikroORMNotationRepo, NotationTagRepo } from './mikro-orm';
 import { NotationRepo, TagRepo, UserRepo } from './types';
 
@@ -30,7 +29,7 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
     tagRepo = container.get<TagRepo>(TYPES.TagRepo);
     notationTagRepo = container.get<NotationTagRepo>(TYPES.NotationTagRepo);
 
-    user = await userRepo.create(buildRandUser());
+    user = await userRepo.create(rand.user());
     transcriberId = user.id;
   });
 
@@ -41,9 +40,9 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
   describe('count', () => {
     it('counts the number of notations', async () => {
       await notationRepo.bulkCreate([
-        buildRandNotation({ transcriberId }),
-        buildRandNotation({ transcriberId }),
-        buildRandNotation({ transcriberId }),
+        rand.notation({ transcriberId }),
+        rand.notation({ transcriberId }),
+        rand.notation({ transcriberId }),
       ]);
 
       const count = await notationRepo.count();
@@ -54,51 +53,51 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
 
   describe('validate', () => {
     it('permits valid notations', async () => {
-      await expect(notationRepo.validate(buildRandNotation())).resolves.not.toThrow();
+      await expect(notationRepo.validate(rand.notation())).resolves.not.toThrow();
     });
 
     it.each(['Above And Beyond (The Call Of Love)', `no i don't shave my thighs`, `You Can't Come with Me`])(
       'permits valid song names',
       async (songName) => {
-        await expect(notationRepo.validate(buildRandNotation({ songName }))).resolves.not.toThrow();
+        await expect(notationRepo.validate(rand.notation({ songName }))).resolves.not.toThrow();
       }
     );
 
     it.each(['; ATTEMPTED SQL INJECTION', '<script>ATTEMPTED XSS</script>'])(
       'disallows invalid song names',
       async (songName) => {
-        await expect(notationRepo.validate(buildRandNotation({ songName }))).rejects.toThrow();
+        await expect(notationRepo.validate(rand.notation({ songName }))).rejects.toThrow();
       }
     );
 
     it.each(['@jaredplaysguitar', 'tekashi69'])('permits valid artist names', async (artistName) => {
-      await expect(notationRepo.validate(buildRandNotation({ artistName }))).resolves.not.toThrow();
+      await expect(notationRepo.validate(rand.notation({ artistName }))).resolves.not.toThrow();
     });
 
     it.each(['; ATTEMPTED SQL INJECTION', '<script>ATTEMPTED XSS</script>'])(
       'disallows invalid artist names',
       async (artistName) => {
-        await expect(notationRepo.validate(buildRandNotation({ artistName }))).rejects.toThrow();
+        await expect(notationRepo.validate(rand.notation({ artistName }))).rejects.toThrow();
       }
     );
   });
 
   describe('find', () => {
     it('finds notations', async () => {
-      const { id } = await notationRepo.create(buildRandNotation({ transcriberId }));
+      const { id } = await notationRepo.create(rand.notation({ transcriberId }));
       const notation = await notationRepo.find(id);
 
       expect(notation).not.toBeNull();
     });
 
     it('returns null if notation is missing', async () => {
-      const notation = await notationRepo.find(randStr(8));
+      const notation = await notationRepo.find(rand.str(8));
 
       expect(notation).toBeNull();
     });
 
     it('returns a plain object', async () => {
-      const { id } = await notationRepo.create(buildRandNotation({ transcriberId }));
+      const { id } = await notationRepo.create(rand.notation({ transcriberId }));
       const notation = await notationRepo.find(id);
 
       expect(isPlainObject(notation)).toBe(true);
@@ -108,9 +107,9 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
   describe('findAll', () => {
     it('finds all notations', async () => {
       const notations = await notationRepo.bulkCreate([
-        buildRandNotation({ transcriberId }),
-        buildRandNotation({ transcriberId }),
-        buildRandNotation({ transcriberId }),
+        rand.notation({ transcriberId }),
+        rand.notation({ transcriberId }),
+        rand.notation({ transcriberId }),
       ]);
 
       const foundNotations = await notationRepo.findAll();
@@ -120,9 +119,9 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
 
     it('returns plain objects', async () => {
       await notationRepo.bulkCreate([
-        buildRandNotation({ transcriberId }),
-        buildRandNotation({ transcriberId }),
-        buildRandNotation({ transcriberId }),
+        rand.notation({ transcriberId }),
+        rand.notation({ transcriberId }),
+        rand.notation({ transcriberId }),
       ]);
 
       const foundNotations = await notationRepo.findAll();
@@ -137,14 +136,14 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
 
     beforeEach(async () => {
       transcriber1 = user;
-      transcriber2 = await userRepo.create(buildRandUser());
+      transcriber2 = await userRepo.create(rand.user());
     });
 
     it('finds notations by transcriberId', async () => {
       const [notation1, notation2, notation3] = await notationRepo.bulkCreate([
-        buildRandNotation({ transcriberId: transcriber1.id, cursor: 1 }),
-        buildRandNotation({ transcriberId: transcriber1.id, cursor: 2 }),
-        buildRandNotation({ transcriberId: transcriber2.id, cursor: 3 }),
+        rand.notation({ transcriberId: transcriber1.id, cursor: 1 }),
+        rand.notation({ transcriberId: transcriber1.id, cursor: 2 }),
+        rand.notation({ transcriberId: transcriber2.id, cursor: 3 }),
       ]);
 
       const foundNotations = await notationRepo.findAllByTranscriberId(transcriber1.id);
@@ -154,14 +153,14 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
     });
 
     it('returns an empty array for a missing transcriber', async () => {
-      const notations = await notationRepo.findAllByTranscriberId(randStr(10));
+      const notations = await notationRepo.findAllByTranscriberId(rand.str(10));
       expect(notations).toStrictEqual([]);
     });
 
     it('returns plain objects', async () => {
       await notationRepo.bulkCreate([
-        buildRandNotation({ transcriberId: transcriber1.id }),
-        buildRandNotation({ transcriberId: transcriber1.id }),
+        rand.notation({ transcriberId: transcriber1.id }),
+        rand.notation({ transcriberId: transcriber1.id }),
       ]);
 
       const foundNotations = await notationRepo.findAllByTranscriberId(transcriber1.id);
@@ -174,7 +173,7 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
   describe('create', () => {
     it('creates a notation', async () => {
       const beforeCount = await notationRepo.count();
-      await notationRepo.create(buildRandNotation({ transcriberId }));
+      await notationRepo.create(rand.notation({ transcriberId }));
       const afterCount = await notationRepo.count();
 
       expect(afterCount).toBe(beforeCount + 1);
@@ -182,28 +181,28 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
 
     it('creates a notation without a cursor', async () => {
       const beforeCount = await notationRepo.count();
-      await notationRepo.create(buildRandNotation({ transcriberId, cursor: undefined }));
+      await notationRepo.create(rand.notation({ transcriberId, cursor: undefined }));
       const afterCount = await notationRepo.count();
 
       expect(afterCount).toBe(beforeCount + 1);
     });
 
     it('creates a queryable notation', async () => {
-      const notation = await notationRepo.create(buildRandNotation({ transcriberId }));
+      const notation = await notationRepo.create(rand.notation({ transcriberId }));
       const foundNotation = await notationRepo.find(notation.id);
 
       expect(omit(foundNotation, 'cursor')).toStrictEqual(omit(notation, 'cursor'));
     });
 
     it('returns a plain object', async () => {
-      const notation = await notationRepo.create(buildRandNotation({ transcriberId }));
+      const notation = await notationRepo.create(rand.notation({ transcriberId }));
       const foundNotation = await notationRepo.find(notation.id);
 
       expect(isPlainObject(foundNotation)).toBe(true);
     });
 
     it('allows duplicate notations', async () => {
-      const notation = buildRandNotation({ id: undefined, cursor: undefined, transcriberId });
+      const notation = rand.notation({ id: undefined, cursor: undefined, transcriberId });
 
       const notation1 = await notationRepo.create(notation);
       const notation2 = await notationRepo.create(notation);
@@ -215,9 +214,9 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
   describe('bulkCreate', () => {
     it('creates many notations', async () => {
       const notations = await notationRepo.bulkCreate([
-        buildRandNotation({ transcriberId, cursor: 1 }),
-        buildRandNotation({ transcriberId, cursor: 2 }),
-        buildRandNotation({ transcriberId, cursor: 3 }),
+        rand.notation({ transcriberId, cursor: 1 }),
+        rand.notation({ transcriberId, cursor: 2 }),
+        rand.notation({ transcriberId, cursor: 3 }),
       ]);
 
       const foundNotations = await notationRepo.findAll();
@@ -227,9 +226,9 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
 
     it('returns plain objects', async () => {
       const notations = await notationRepo.bulkCreate([
-        buildRandNotation({ transcriberId }),
-        buildRandNotation({ transcriberId }),
-        buildRandNotation({ transcriberId }),
+        rand.notation({ transcriberId }),
+        rand.notation({ transcriberId }),
+        rand.notation({ transcriberId }),
       ]);
 
       expect(notations.every(isPlainObject)).toBe(true);
@@ -238,8 +237,8 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
 
   describe('update', () => {
     it('updates a notation', async () => {
-      const notation = await notationRepo.create(buildRandNotation({ transcriberId }));
-      const songName = randStr(8);
+      const notation = await notationRepo.create(rand.notation({ transcriberId }));
+      const songName = rand.str(8);
 
       const updatedNotation = await notationRepo.update(notation.id, { songName });
       const foundNotation = await notationRepo.find(notation.id);
@@ -249,8 +248,8 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
     });
 
     it('returns plain objects', async () => {
-      const notation = await notationRepo.create(buildRandNotation({ transcriberId }));
-      const songName = randStr(8);
+      const notation = await notationRepo.create(rand.notation({ transcriberId }));
+      const songName = rand.str(8);
 
       const updatedNotation = await notationRepo.update(notation.id, { songName });
 
@@ -268,14 +267,14 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
     beforeEach(async () => {
       users = new Array(NUM_USERS);
       for (let ndx = 0; ndx < NUM_USERS; ndx++) {
-        users[ndx] = buildRandUser({ cursor: ndx + 1 });
+        users[ndx] = rand.user({ cursor: ndx + 1 });
       }
       users = await userRepo.bulkCreate(users);
 
       notations = new Array(NUM_NOTATIONS);
       for (let ndx = 0; ndx < NUM_NOTATIONS; ndx++) {
         const transcriber = ndx % 2 === 0 ? users[0] : users[1];
-        notations[ndx] = buildRandNotation({ cursor: ndx + 1, transcriberId: transcriber.id });
+        notations[ndx] = rand.notation({ cursor: ndx + 1, transcriberId: transcriber.id });
       }
       notations = await notationRepo.bulkCreate(notations);
     });
@@ -374,7 +373,7 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
 
     it('defaults to paging forward', async () => {
       const notations = await notationRepo.bulkCreate(
-        times(11, (ndx) => buildRandNotation({ transcriberId, cursor: ndx + 1 }))
+        times(11, (ndx) => rand.notation({ transcriberId, cursor: ndx + 1 }))
       );
 
       const { edges, pageInfo } = await notationRepo.findPage({});
@@ -389,8 +388,8 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
 
     it('returns the first N notations', async () => {
       const notations = await notationRepo.bulkCreate([
-        buildRandNotation({ transcriberId, cursor: 1 }),
-        buildRandNotation({ transcriberId, cursor: 2 }),
+        rand.notation({ transcriberId, cursor: 1 }),
+        rand.notation({ transcriberId, cursor: 2 }),
       ]);
 
       const { edges } = await notationRepo.findPage({ first: 1 });
@@ -400,8 +399,8 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
 
     it('returns the last N notations', async () => {
       const notations = await notationRepo.bulkCreate([
-        buildRandNotation({ transcriberId, cursor: 1 }),
-        buildRandNotation({ transcriberId, cursor: 2 }),
+        rand.notation({ transcriberId, cursor: 1 }),
+        rand.notation({ transcriberId, cursor: 2 }),
       ]);
 
       const { edges } = await notationRepo.findPage({ last: 1 });
@@ -424,25 +423,25 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
 
       beforeEach(async () => {
         [user1, user2, user3] = await userRepo.bulkCreate([
-          buildRandUser({ username: 'foo' }),
-          buildRandUser({ username: 'bar' }),
-          buildRandUser({ username: 'foobar' }),
+          rand.user({ username: 'foo' }),
+          rand.user({ username: 'bar' }),
+          rand.user({ username: 'foobar' }),
         ]);
 
         [notation1, notation2, notation3] = await notationRepo.bulkCreate([
-          buildRandNotation({
+          rand.notation({
             songName: 'yikes',
             artistName: 'bach',
             transcriberId: user1.id,
             cursor: 1,
           }),
-          buildRandNotation({
+          rand.notation({
             songName: 'overnight',
             artistName: 'loony',
             transcriberId: user2.id,
             cursor: 2,
           }),
-          buildRandNotation({
+          rand.notation({
             songName: 'bull fighter',
             artistName: 'jean dawson',
             transcriberId: user3.id,
@@ -450,13 +449,13 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
           }),
         ]);
 
-        [tag1, tag2, tag3] = await tagRepo.bulkCreate([buildRandTag(), buildRandTag(), buildRandTag()]);
+        [tag1, tag2, tag3] = await tagRepo.bulkCreate([rand.tag(), rand.tag(), rand.tag()]);
 
         await notationTagRepo.bulkCreate([
-          buildRandNotationTag({ notationId: notation1.id, tagId: tag1.id }),
-          buildRandNotationTag({ notationId: notation1.id, tagId: tag2.id }),
-          buildRandNotationTag({ notationId: notation2.id, tagId: tag2.id }),
-          buildRandNotationTag({ notationId: notation2.id, tagId: tag3.id }),
+          rand.notationTag({ notationId: notation1.id, tagId: tag1.id }),
+          rand.notationTag({ notationId: notation1.id, tagId: tag2.id }),
+          rand.notationTag({ notationId: notation2.id, tagId: tag2.id }),
+          rand.notationTag({ notationId: notation2.id, tagId: tag3.id }),
         ]);
       });
 
@@ -545,28 +544,28 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
     beforeEach(async () => {
       db = container.get<Db>(TYPES.Db);
 
-      artistName1 = randStr(10);
-      artistName2 = randStr(10);
+      artistName1 = rand.str(10);
+      artistName2 = rand.str(10);
 
-      transcriber = await userRepo.create(buildRandUser());
+      transcriber = await userRepo.create(rand.user());
 
       [notation1, notation2, notation3, notation4] = await notationRepo.bulkCreate([
-        buildRandNotation({ cursor: 1, transcriberId: transcriber.id, artistName: artistName1 }),
-        buildRandNotation({ cursor: 2, transcriberId: transcriber.id, artistName: artistName1 }),
-        buildRandNotation({ cursor: 3, transcriberId: transcriber.id, artistName: artistName1 }),
-        buildRandNotation({ cursor: 4, transcriberId: transcriber.id, artistName: artistName2 }),
+        rand.notation({ cursor: 1, transcriberId: transcriber.id, artistName: artistName1 }),
+        rand.notation({ cursor: 2, transcriberId: transcriber.id, artistName: artistName1 }),
+        rand.notation({ cursor: 3, transcriberId: transcriber.id, artistName: artistName1 }),
+        rand.notation({ cursor: 4, transcriberId: transcriber.id, artistName: artistName2 }),
       ]);
 
-      [tag1, tag2, tag3] = await tagRepo.bulkCreate([buildRandTag(), buildRandTag(), buildRandTag()]);
+      [tag1, tag2, tag3] = await tagRepo.bulkCreate([rand.tag(), rand.tag(), rand.tag()]);
     });
 
     it('finds suggestions with matching tag ids', async () => {
       await notationTagRepo.bulkCreate([
-        buildRandNotationTag({ notationId: notation1.id, tagId: tag1.id }),
-        buildRandNotationTag({ notationId: notation1.id, tagId: tag2.id }),
-        buildRandNotationTag({ notationId: notation2.id, tagId: tag1.id }),
-        buildRandNotationTag({ notationId: notation2.id, tagId: tag2.id }),
-        buildRandNotationTag({ notationId: notation3.id, tagId: tag1.id }),
+        rand.notationTag({ notationId: notation1.id, tagId: tag1.id }),
+        rand.notationTag({ notationId: notation1.id, tagId: tag2.id }),
+        rand.notationTag({ notationId: notation2.id, tagId: tag1.id }),
+        rand.notationTag({ notationId: notation2.id, tagId: tag2.id }),
+        rand.notationTag({ notationId: notation3.id, tagId: tag1.id }),
       ]);
 
       const suggestedNotations = await notationRepo.findSuggestions(notation1, 2);
@@ -585,11 +584,11 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
 
     it('sorts by num matching tag ids, then matching artists', async () => {
       await notationTagRepo.bulkCreate([
-        buildRandNotationTag({ notationId: notation1.id, tagId: tag1.id }),
-        buildRandNotationTag({ notationId: notation1.id, tagId: tag2.id }),
-        buildRandNotationTag({ notationId: notation2.id, tagId: tag1.id }),
-        buildRandNotationTag({ notationId: notation2.id, tagId: tag2.id }),
-        buildRandNotationTag({ notationId: notation3.id, tagId: tag1.id }),
+        rand.notationTag({ notationId: notation1.id, tagId: tag1.id }),
+        rand.notationTag({ notationId: notation1.id, tagId: tag2.id }),
+        rand.notationTag({ notationId: notation2.id, tagId: tag1.id }),
+        rand.notationTag({ notationId: notation2.id, tagId: tag2.id }),
+        rand.notationTag({ notationId: notation3.id, tagId: tag1.id }),
       ]);
 
       const suggestedNotations = await notationRepo.findSuggestions(notation1, 2);

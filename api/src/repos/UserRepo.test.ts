@@ -3,8 +3,7 @@ import * as uuid from 'uuid';
 import { User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
-import { buildRandUser } from '../testing';
-import { Ctor, ctor, randStr } from '../util';
+import { Ctor, ctor, rand } from '../util';
 import { UserRepo as MikroORMUserRepo } from './mikro-orm';
 import { UserRepo } from './types';
 
@@ -28,7 +27,7 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
 
   describe('count', () => {
     it('counts the number of users', async () => {
-      await userRepo.bulkCreate([buildRandUser(), buildRandUser(), buildRandUser()]);
+      await userRepo.bulkCreate([rand.user(), rand.user(), rand.user()]);
 
       const count = await userRepo.count();
 
@@ -38,24 +37,24 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
 
   describe('validate', () => {
     it('permits valid users', async () => {
-      const user = buildRandUser();
+      const user = rand.user();
       await expect(userRepo.validate(user)).resolves.not.toThrow();
     });
 
     it.each(['valid@email.com', 'validemail@123.com'])('permits valid emails', async (email) => {
-      const user = buildRandUser({ email });
+      const user = rand.user({ email });
       await expect(userRepo.validate(user)).resolves.not.toThrow();
     });
 
     it.each(['invalid_email', 'email@domain'])('disallows invalid emails', async (email) => {
-      const user = buildRandUser({ email });
+      const user = rand.user({ email });
       await expect(userRepo.validate(user)).rejects.toThrow();
     });
 
     it.each(['username123', '_username_', '-_-Username-_-', 'valid.username', '---', '-___-'])(
       'permits valid usernames',
       async (username) => {
-        const user = buildRandUser({ username });
+        const user = rand.user({ username });
         await expect(userRepo.validate(user)).resolves.not.toThrow();
       }
     );
@@ -68,27 +67,27 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
       '; ATTEMPTED SQL INJECTION',
       '<script>ATTEMPTED XSS</script>',
     ])('disallows invalid usernames: %s', async (username) => {
-      const user = buildRandUser({ username });
+      const user = rand.user({ username });
       await expect(userRepo.validate(user)).rejects.toThrow();
     });
 
     it('permits valid confirmation tokens', async () => {
-      const user = buildRandUser({ confirmationToken: randStr(10) });
+      const user = rand.user({ confirmationToken: rand.str(10) });
       await expect(userRepo.validate(user)).resolves.not.toThrow();
     });
 
     it('permits valid reset password tokens', async () => {
-      const user = buildRandUser({ resetPasswordToken: uuid.v4() });
+      const user = rand.user({ resetPasswordToken: uuid.v4() });
       await expect(userRepo.validate(user)).resolves.not.toThrow();
     });
 
     it('permits valid avatar urls', async () => {
-      const user = buildRandUser({ avatarUrl: 'http://avatars.com/rasdfsdfdf' });
+      const user = rand.user({ avatarUrl: 'http://avatars.com/rasdfsdfdf' });
       await expect(userRepo.validate(user)).resolves.not.toThrow();
     });
 
     it('disallows invalid avatar urls', async () => {
-      const user = buildRandUser({ avatarUrl: 'notagoodurl/asdfasd' });
+      const user = rand.user({ avatarUrl: 'notagoodurl/asdfasd' });
       await expect(userRepo.validate(user)).rejects.toThrow();
     });
   });
@@ -96,14 +95,14 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
   describe('create', () => {
     it('creates a user record', async () => {
       const countBefore = await userRepo.count();
-      await userRepo.create(buildRandUser());
+      await userRepo.create(rand.user());
       const countAfter = await userRepo.count();
 
       expect(countAfter).toBe(countBefore + 1);
     });
 
     it('creates a findable user record', async () => {
-      const { id } = await userRepo.create(buildRandUser());
+      const { id } = await userRepo.create(rand.user());
       const user = await userRepo.find(id);
 
       expect(user).not.toBeNull();
@@ -111,13 +110,13 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
     });
 
     it('returns a plain object', async () => {
-      const user = await userRepo.create(buildRandUser());
+      const user = await userRepo.create(rand.user());
 
       expect(isPlainObject(user)).toBe(true);
     });
 
     it('disallows duplicate ids', async () => {
-      const user = buildRandUser({ id: undefined });
+      const user = rand.user({ id: undefined });
 
       await expect(userRepo.create(user)).resolves.not.toThrow();
       await expect(userRepo.create(user)).rejects.toThrow();
@@ -126,8 +125,8 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
 
   describe('find', () => {
     it('returns the user matching the id', async () => {
-      const id = randStr(8);
-      await userRepo.create(buildRandUser({ id }));
+      const id = rand.str(8);
+      await userRepo.create(rand.user({ id }));
 
       const user = await userRepo.find(id);
 
@@ -136,7 +135,7 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
     });
 
     it('returns a plain object', async () => {
-      const { id } = await userRepo.create(buildRandUser());
+      const { id } = await userRepo.create(rand.user());
 
       const user = await userRepo.find(id);
 
@@ -152,7 +151,7 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
 
   describe('findAll', () => {
     it('returns all user records', async () => {
-      const users = [buildRandUser(), buildRandUser(), buildRandUser()];
+      const users = [rand.user(), rand.user(), rand.user()];
       await userRepo.bulkCreate(users);
 
       const foundUsers = await userRepo.findAll();
@@ -161,7 +160,7 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
     });
 
     it('returns plain objects', async () => {
-      const users = [buildRandUser(), buildRandUser(), buildRandUser()];
+      const users = [rand.user(), rand.user(), rand.user()];
       await userRepo.bulkCreate(users);
 
       const foundUsers = await userRepo.findAll();
@@ -172,7 +171,7 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
 
   describe('findByUsernameOrEmail', () => {
     it('finds by username', async () => {
-      const user = buildRandUser();
+      const user = rand.user();
       await userRepo.create(user);
 
       const foundUser = await userRepo.findByUsernameOrEmail(user.username);
@@ -182,7 +181,7 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
     });
 
     it('finds by email', async () => {
-      const user = buildRandUser();
+      const user = rand.user();
       await userRepo.create(user);
 
       const foundUser = await userRepo.findByUsernameOrEmail(user.email);
@@ -192,7 +191,7 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
     });
 
     it('returns a plain object', async () => {
-      const user = buildRandUser();
+      const user = rand.user();
       await userRepo.create(user);
 
       const foundUser = await userRepo.findByUsernameOrEmail(user.username);
@@ -203,7 +202,7 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
 
   describe('findByEmail', () => {
     it('finds by email', async () => {
-      const user = buildRandUser();
+      const user = rand.user();
       await userRepo.create(user);
 
       const foundUser = await userRepo.findByEmail(user.email);
@@ -213,7 +212,7 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
     });
 
     it('returns a plain object', async () => {
-      const user = buildRandUser();
+      const user = rand.user();
       await userRepo.create(user);
 
       const foundUser = await userRepo.findByEmail(user.email);
@@ -225,7 +224,7 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
   describe('findByResetPasswordToken', () => {
     it('finds by resetPasswordToken', async () => {
       const resetPasswordToken = uuid.v4();
-      const user = buildRandUser({ resetPasswordToken });
+      const user = rand.user({ resetPasswordToken });
       await userRepo.create(user);
 
       const foundUser = await userRepo.findByResetPasswordToken(resetPasswordToken);
@@ -236,7 +235,7 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
 
     it('returns a plain object', async () => {
       const resetPasswordToken = uuid.v4();
-      const user = buildRandUser({ resetPasswordToken });
+      const user = rand.user({ resetPasswordToken });
       await userRepo.create(user);
 
       const foundUser = await userRepo.findByResetPasswordToken(resetPasswordToken);
@@ -247,8 +246,8 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
 
   describe('update', () => {
     it('updates a user', async () => {
-      const user = await userRepo.create(buildRandUser());
-      const username = randStr(8);
+      const user = await userRepo.create(rand.user());
+      const username = rand.str(8);
 
       const updatedUser = await userRepo.update(user.id, { username });
 
@@ -256,8 +255,8 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
     });
 
     it('returns plain objects', async () => {
-      const user = await userRepo.create(buildRandUser());
-      const username = randStr(8);
+      const user = await userRepo.create(rand.user());
+      const username = rand.str(8);
 
       const updatedUser = await userRepo.update(user.id, { username });
 
@@ -266,9 +265,9 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
 
     it('unsets confirmationToken when updating email', async () => {
       const confirmationToken = uuid.v4();
-      const user = await userRepo.create(buildRandUser({ confirmationToken }));
+      const user = await userRepo.create(rand.user({ confirmationToken }));
 
-      const email = `${randStr(8)}@example.com`;
+      const email = `${rand.str(8)}@example.com`;
       const updatedUser = await userRepo.update(user.id, { email });
 
       expect(updatedUser.email).toBe(email);
@@ -278,9 +277,9 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
 
     it('unsets confirmedAt when updating email', async () => {
       const confirmedAt = new Date();
-      const user = await userRepo.create(buildRandUser({ confirmedAt }));
+      const user = await userRepo.create(rand.user({ confirmedAt }));
 
-      const email = `${randStr(8)}@example.com`;
+      const email = `${rand.str(8)}@example.com`;
       const updatedUser = await userRepo.update(user.id, { email });
 
       expect(updatedUser.email).toBe(email);
@@ -297,7 +296,7 @@ describe.each([['MikroORMUserRepo', MikroORMUserRepo]])('%s', (_, Ctor) => {
     beforeEach(async () => {
       users = new Array(NUM_USERS);
       for (let ndx = 0; ndx < NUM_USERS; ndx++) {
-        users[ndx] = buildRandUser({ cursor: ndx + 1 });
+        users[ndx] = rand.user({ cursor: ndx + 1 });
       }
       users = await userRepo.bulkCreate(users);
     });

@@ -3,8 +3,8 @@ import { Notation, NotationTag, Tag, User } from '../../domain';
 import { container } from '../../inversify.config';
 import { TYPES } from '../../inversify.constants';
 import { NotationRepo, NotationTagRepo, TagRepo, UserRepo } from '../../repos';
-import { buildRandNotation, buildRandNotationTag, createRandTags, createRandUsers } from '../../testing';
-import { randStr } from '../../util';
+import { createRandTags, createRandUsers } from '../../testing';
+import { rand } from '../../util';
 import { TagService } from './TagService';
 
 describe('TagService', () => {
@@ -29,7 +29,7 @@ describe('TagService', () => {
     });
 
     it('returns not if tag does not exist', async () => {
-      const tag = await tagService.find(randStr(10));
+      const tag = await tagService.find(rand.str(10));
       expect(tag).toBeNull();
     });
 
@@ -71,15 +71,15 @@ describe('TagService', () => {
 
       notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
       [notation1, notation2] = await notationRepo.bulkCreate([
-        buildRandNotation({ transcriberId: user1.id }),
-        buildRandNotation({ transcriberId: user1.id }),
+        rand.notation({ transcriberId: user1.id }),
+        rand.notation({ transcriberId: user1.id }),
       ]);
 
       notationTagRepo = container.get<NotationTagRepo>(TYPES.NotationTagRepo);
       [notationTag1, notationTag2] = await notationTagRepo.bulkCreate([
-        buildRandNotationTag({ notationId: notation1.id, tagId: tag1.id }),
-        buildRandNotationTag({ notationId: notation1.id, tagId: tag2.id }),
-        buildRandNotationTag({ notationId: notation2.id, tagId: tag1.id }),
+        rand.notationTag({ notationId: notation1.id, tagId: tag1.id }),
+        rand.notationTag({ notationId: notation1.id, tagId: tag2.id }),
+        rand.notationTag({ notationId: notation2.id, tagId: tag1.id }),
       ]);
     });
 

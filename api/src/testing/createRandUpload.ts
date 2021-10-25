@@ -1,5 +1,5 @@
 import * as graphqlUpload from 'graphql-upload';
-import { randStr } from '../util';
+import { rand } from '../util';
 
 class PurposelyBrokenReadStreamDontCallAnythingOnThis {}
 
@@ -9,9 +9,9 @@ export const createRandUpload = (): unknown => {
     throw new Error('Upload is not defined in the graphql-upload package');
   }
   const fileUpload: graphqlUpload.FileUpload = {
-    filename: randStr(12),
-    mimetype: randStr(12),
-    encoding: randStr(12),
+    filename: rand.str(12),
+    mimetype: rand.str(12),
+    encoding: rand.str(12),
     createReadStream: jest.fn().mockReturnValue(new PurposelyBrokenReadStreamDontCallAnythingOnThis()),
   };
   const upload = new Upload();

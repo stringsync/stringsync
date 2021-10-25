@@ -12,8 +12,6 @@ export * from './mailer';
 export * from './message-queue';
 export * from './noop';
 export * from './pager';
-export * from './randInt';
-export * from './randStr';
 export * from './types';
 export * as util from './util';
 export * as rand from './rand';

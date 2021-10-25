@@ -6,8 +6,7 @@ import { BadRequestError, NotFoundError } from '../../errors';
 import { container } from '../../inversify.config';
 import { TYPES } from '../../inversify.constants';
 import { UserRepo } from '../../repos';
-import { buildRandUser } from '../../testing';
-import { randStr } from '../../util';
+import { rand } from '../../util';
 import { AuthService } from './AuthService';
 
 describe('AuthService', () => {
@@ -41,7 +40,7 @@ describe('AuthService', () => {
     });
 
     it('returns a session user when the id exists', async () => {
-      const user = await authService.userRepo.create(buildRandUser());
+      const user = await authService.userRepo.create(rand.user());
       const sessionUser = await authService.getSessionUser(user.id);
       expect(sessionUser).toStrictEqual({
         id: user.id,
@@ -53,7 +52,7 @@ describe('AuthService', () => {
 
   describe('toSessionUser', () => {
     it('converts a user to a session user', () => {
-      const user = buildRandUser();
+      const user = rand.user();
       const sessionUser = authService.toSessionUser(user);
       expect(sessionUser).toStrictEqual({
         id: user.id,
@@ -79,13 +78,13 @@ describe('AuthService', () => {
     });
 
     it('returns the user matching the id', async () => {
-      const user = await userRepo.create(buildRandUser());
+      const user = await userRepo.create(rand.user());
       const whoami = await authService.whoami(user.id);
       expect(whoami).toStrictEqual(user);
     });
 
     it('returns null if a user does not match the id', async () => {
-      const whoami = await authService.whoami(randStr(10));
+      const whoami = await authService.whoami(rand.str(10));
       expect(whoami).toBeNull();
     });
   });
@@ -95,9 +94,9 @@ describe('AuthService', () => {
     let user: User;
 
     beforeEach(async () => {
-      const username = randStr(10);
-      const email = `${randStr(8)}@${randStr(8)}.com`;
-      password = randStr(10);
+      const username = rand.str(10);
+      const email = `${rand.str(8)}@${rand.str(8)}.com`;
+      password = rand.str(10);
       user = await authService.signup(username, email, password);
     });
 
@@ -112,17 +111,17 @@ describe('AuthService', () => {
     });
 
     it('returns null if the username and password combo is wrong', async () => {
-      const authenticatedUser = await authService.getAuthenticatedUser(user.username, randStr(11));
+      const authenticatedUser = await authService.getAuthenticatedUser(user.username, rand.str(11));
       expect(authenticatedUser).toBeNull();
     });
 
     it('returns null if the email and password combo is wrong', async () => {
-      const authenticatedUser = await authService.getAuthenticatedUser(user.email, randStr(11));
+      const authenticatedUser = await authService.getAuthenticatedUser(user.email, rand.str(11));
       expect(authenticatedUser).toBeNull();
     });
 
     it('returns null if the username or email does not exist', async () => {
-      const authenticatedUser = await authService.getAuthenticatedUser(randStr(10), password);
+      const authenticatedUser = await authService.getAuthenticatedUser(rand.str(10), password);
       expect(authenticatedUser).toBeNull();
     });
   });
@@ -133,9 +132,9 @@ describe('AuthService', () => {
     let password: string;
 
     beforeEach(() => {
-      username = randStr(10);
-      email = `${randStr(8)}@${randStr(8)}.com`;
-      password = randStr(10);
+      username = rand.str(10);
+      email = `${rand.str(8)}@${rand.str(8)}.com`;
+      password = rand.str(10);
     });
 
     it('returns a user', async () => {
@@ -158,9 +157,9 @@ describe('AuthService', () => {
     let confirmedAt: Date;
 
     beforeEach(async () => {
-      const username = randStr(10);
-      const email = `${randStr(8)}@${randStr(8)}.com`;
-      const password = randStr(10);
+      const username = rand.str(10);
+      const email = `${rand.str(8)}@${rand.str(8)}.com`;
+      const password = rand.str(10);
       user = await authService.signup(username, email, password);
       confirmedAt = new Date();
     });
@@ -182,7 +181,7 @@ describe('AuthService', () => {
     });
 
     it('throws an error if user is not found', async () => {
-      await expect(authService.confirmEmail(randStr(10), user.confirmationToken!, confirmedAt)).rejects.toThrowError(
+      await expect(authService.confirmEmail(rand.str(10), user.confirmationToken!, confirmedAt)).rejects.toThrowError(
         NotFoundError
       );
     });
@@ -209,9 +208,9 @@ describe('AuthService', () => {
     let user: User;
 
     beforeEach(async () => {
-      const username = randStr(10);
-      const email = `${randStr(8)}@${randStr(8)}.com`;
-      const password = randStr(10);
+      const username = rand.str(10);
+      const email = `${rand.str(8)}@${rand.str(8)}.com`;
+      const password = rand.str(10);
       user = await authService.signup(username, email, password);
     });
 
@@ -229,12 +228,12 @@ describe('AuthService', () => {
     });
 
     it('throws when user does not exist', async () => {
-      await expect(authService.resetConfirmationToken(randStr(10))).rejects.toThrow();
+      await expect(authService.resetConfirmationToken(rand.str(10))).rejects.toThrow();
     });
 
     it('throws when user is already confirmed', async () => {
       await authService.confirmEmail(user.id, user.confirmationToken!, new Date());
-      await expect(authService.resetConfirmationToken(randStr(10))).rejects.toThrow();
+      await expect(authService.resetConfirmationToken(rand.str(10))).rejects.toThrow();
     });
   });
 
@@ -243,9 +242,9 @@ describe('AuthService', () => {
     const reqAt = new Date();
 
     beforeEach(async () => {
-      const username = randStr(10);
-      const email = `${randStr(8)}@${randStr(8)}.com`;
-      const password = randStr(10);
+      const username = rand.str(10);
+      const email = `${rand.str(8)}@${rand.str(8)}.com`;
+      const password = rand.str(10);
       user = await authService.signup(username, email, password);
     });
 
@@ -268,7 +267,7 @@ describe('AuthService', () => {
     });
 
     it('throws for an invalid email', async () => {
-      await expect(authService.refreshResetPasswordToken(randStr(10), reqAt)).rejects.toThrow();
+      await expect(authService.refreshResetPasswordToken(rand.str(10), reqAt)).rejects.toThrow();
     });
 
     it('returns a plain object', async () => {
@@ -286,10 +285,10 @@ describe('AuthService', () => {
     const reqAt = new Date();
 
     beforeEach(async () => {
-      const username = randStr(10);
-      email = `${randStr(8)}@${randStr(8)}.com`;
-      oldPassword = randStr(10);
-      newPassword = randStr(11);
+      const username = rand.str(10);
+      email = `${rand.str(8)}@${rand.str(8)}.com`;
+      oldPassword = rand.str(10);
+      newPassword = rand.str(11);
       user = await authService.signup(username, email, oldPassword);
     });
 

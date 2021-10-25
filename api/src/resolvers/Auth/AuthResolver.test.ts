@@ -5,7 +5,7 @@ import { SendMail } from '../../jobs';
 import { SessionUser } from '../../server';
 import { AuthService, UserService } from '../../services';
 import { ConfirmEmailInput, createRandUser, gql, LoginInput, Mutation, Query, resolve } from '../../testing';
-import { randStr } from '../../util';
+import { rand } from '../../util';
 import { ResetPasswordInput } from './ResetPasswordInput';
 import { SendResetPasswordEmailInput } from './SendResetPasswordEmailInput';
 
@@ -72,9 +72,9 @@ describe('AuthResolver', () => {
     let password: string;
 
     beforeEach(async () => {
-      const username = randStr(10);
+      const username = rand.str(10);
       const email = `${username}@domain.tld`;
-      password = randStr(10);
+      password = rand.str(10);
 
       const authService = container.get<AuthService>(TYPES.AuthService);
       user = await authService.signup(username, email, password);
@@ -121,7 +121,7 @@ describe('AuthResolver', () => {
     });
 
     it('does not log the user in when wrong password', async () => {
-      const wrongPassword = randStr(password.length + 1);
+      const wrongPassword = rand.str(password.length + 1);
       const { res, ctx } = await login(
         { usernameOrEmail: user.username, password: wrongPassword },
         LoginStatus.LOGGED_OUT
@@ -152,9 +152,9 @@ describe('AuthResolver', () => {
     let password: string;
 
     beforeEach(async () => {
-      const username = randStr(10);
+      const username = rand.str(10);
       const email = `${username}@domain.tld`;
-      password = randStr(10);
+      password = rand.str(10);
 
       const authService = container.get<AuthService>(TYPES.AuthService);
       user = await authService.signup(username, email, password);
@@ -199,9 +199,9 @@ describe('AuthResolver', () => {
     let user: User;
 
     beforeEach(async () => {
-      const username = randStr(10);
+      const username = rand.str(10);
       const email = `${username}@domain.tld`;
-      const password = randStr(10);
+      const password = rand.str(10);
 
       const authService = container.get<AuthService>(TYPES.AuthService);
       user = await authService.signup(username, email, password);
@@ -237,7 +237,7 @@ describe('AuthResolver', () => {
     });
 
     it('returns errors for the wrong confirmation token', async () => {
-      const { res } = await confirmEmail({ confirmationToken: randStr(5) }, LoginStatus.LOGGED_IN);
+      const { res } = await confirmEmail({ confirmationToken: rand.str(5) }, LoginStatus.LOGGED_IN);
 
       expect(res.errors).toBeDefined();
     });
@@ -265,9 +265,9 @@ describe('AuthResolver', () => {
     });
 
     beforeEach(async () => {
-      const username = randStr(10);
+      const username = rand.str(10);
       const email = `${username}@domain.tld`;
-      const password = randStr(10);
+      const password = rand.str(10);
 
       const authService = container.get<AuthService>(TYPES.AuthService);
       user = await authService.signup(username, email, password);
@@ -409,9 +409,9 @@ describe('AuthResolver', () => {
     beforeEach(async () => {
       userService = container.get<UserService>(TYPES.UserService);
 
-      const username = randStr(10);
+      const username = rand.str(10);
       const email = `${username}@domain.tld`;
-      password = randStr(10);
+      password = rand.str(10);
 
       authService = container.get<AuthService>(TYPES.AuthService);
 
@@ -432,7 +432,7 @@ describe('AuthResolver', () => {
 
     it('updates the password', async () => {
       const oldPassword = password;
-      const newPassword = randStr(oldPassword.length + 1);
+      const newPassword = rand.str(oldPassword.length + 1);
 
       const { resetPasswordToken } = await authService.refreshResetPasswordToken(user.email, new Date());
       expect(resetPasswordToken).not.toBeNull();

@@ -4,8 +4,7 @@ import { Notation, Tag, User, UserRole } from '../../../domain';
 import { InternalError } from '../../../errors';
 import { container } from '../../../inversify.config';
 import { TYPES } from '../../../inversify.constants';
-import { buildRandNotation, buildRandTag, buildRandUser } from '../../../testing';
-import { Logger, randStr } from '../../../util';
+import { Logger, rand } from '../../../util';
 import { Db } from '../../types';
 import { NotationEntity, TagEntity, UserEntity } from '../entities';
 import {
@@ -35,10 +34,10 @@ import {
   const buildUser = (props: Partial<User> = {}) => {
     const user = new UserEntity(
       {
-        ...buildRandUser({
+        ...rand.notation({
           id: undefined,
           username: `${sample(USERNAMES)}_${random(100, 999)}`,
-          email: `${randStr(5)}@${randStr(5)}.com`,
+          email: `${rand.str(5)}@${rand.str(5)}.com`,
           encryptedPassword: ENCRYPTED_PASSWORD,
           avatarUrl: sample(USER_AVATAR_URLS),
           ...props,
@@ -51,7 +50,7 @@ import {
   };
   const buildNotation = (props: Partial<Notation> = {}) => {
     const notation = new NotationEntity(
-      buildRandNotation({
+      rand.notation({
         id: undefined,
         cursor: 0,
         durationMs: 34933,
@@ -70,7 +69,7 @@ import {
     return notation;
   };
   const buildTag = (props: Partial<Tag> = {}) => {
-    const tag = new TagEntity(buildRandTag({ id: undefined, ...props }), { em: db.em });
+    const tag = new TagEntity(rand.tag({ id: undefined, ...props }), { em: db.em });
     db.em.persist(tag);
     return tag;
   };

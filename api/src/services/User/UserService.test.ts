@@ -1,7 +1,7 @@
 import { container } from '../../inversify.config';
 import { TYPES } from '../../inversify.constants';
 import { UserRepo } from '../../repos';
-import { buildRandUser } from '../../testing';
+import { rand } from '../../util';
 import { UserService } from './UserService';
 
 describe('UserService', () => {
@@ -15,7 +15,7 @@ describe('UserService', () => {
 
   describe('find', () => {
     it('finds an entity', async () => {
-      const user = await userRepo.create(buildRandUser({ cursor: 1 }));
+      const user = await userRepo.create(rand.user({ cursor: 1 }));
       const foundUser = await userService.find(user.id);
       expect(foundUser).toStrictEqual(user);
     });
@@ -23,7 +23,7 @@ describe('UserService', () => {
 
   describe('findAll', () => {
     it('finds all entities', async () => {
-      const users = await userRepo.bulkCreate([buildRandUser({ cursor: 1 }), buildRandUser({ cursor: 2 })]);
+      const users = await userRepo.bulkCreate([rand.user({ cursor: 1 }), rand.user({ cursor: 2 })]);
       const foundUsers = await userService.findAll();
       expect(foundUsers).toIncludeAllMembers(users);
     });

@@ -6,7 +6,7 @@ import { BadRequestError, NotFoundError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { UserRepo } from '../../repos';
 import { SessionUser } from '../../server';
-import { Logger, randInt, randStr } from '../../util';
+import { Logger, rand } from '../../util';
 
 @injectable()
 export class AuthService {
@@ -92,7 +92,7 @@ export class AuthService {
     if (user.confirmedAt) {
       throw new BadRequestError('user already confirmed');
     }
-    return await this.userRepo.update(id, { confirmationToken: randStr(AuthService.EMAIL_CONFIRMATION_TOKEN_LENGTH) });
+    return await this.userRepo.update(id, { confirmationToken: rand.str(AuthService.EMAIL_CONFIRMATION_TOKEN_LENGTH) });
   }
 
   async refreshResetPasswordToken(email: string, reqAt: Date): Promise<User> {
@@ -159,7 +159,7 @@ export class AuthService {
   }
 
   private generateResetPasswordToken(): string {
-    return this.normalizeResetPasswordToken(randStr(AuthService.RESET_PASSWORD_TOKEN_LENGTH));
+    return this.normalizeResetPasswordToken(rand.str(AuthService.RESET_PASSWORD_TOKEN_LENGTH));
   }
 
   private async tokensMatch(token1: string, token2: string): Promise<boolean> {
@@ -167,7 +167,7 @@ export class AuthService {
     return await new Promise((resolve) => {
       setTimeout(() => {
         resolve(token1 === token2);
-      }, randInt(100, 200));
+      }, rand.int(100, 200));
     });
   }
 }

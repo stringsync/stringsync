@@ -2,8 +2,7 @@ import { isPlainObject } from 'lodash';
 import { Notation, NotationTag, Tag, User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
-import { buildRandNotation, buildRandNotationTag, buildRandTag, buildRandUser } from '../testing';
-import { Ctor, ctor, randStr } from '../util';
+import { Ctor, ctor, rand } from '../util';
 import { TagRepo as MikroORMTagRepo } from './mikro-orm';
 import { NotationRepo, NotationTagRepo, TagRepo, UserRepo } from './types';
 
@@ -26,7 +25,7 @@ describe.each([['MikroORMTagRepo', MikroORMTagRepo]])('%s', (name, Ctor) => {
 
   describe('count', () => {
     it('returns the number of tags', async () => {
-      await tagRepo.bulkCreate([buildRandTag(), buildRandTag(), buildRandTag()]);
+      await tagRepo.bulkCreate([rand.tag(), rand.tag(), rand.tag()]);
       const count = await tagRepo.count();
 
       expect(count).toBe(3);
@@ -35,20 +34,20 @@ describe.each([['MikroORMTagRepo', MikroORMTagRepo]])('%s', (name, Ctor) => {
 
   describe('validate', () => {
     it('permits valid tags', async () => {
-      await expect(tagRepo.validate(buildRandTag())).resolves.not.toThrow();
+      await expect(tagRepo.validate(rand.tag())).resolves.not.toThrow();
     });
   });
 
   describe('create', () => {
     it('creates a tag record', async () => {
       const countBefore = await tagRepo.count();
-      await tagRepo.create(buildRandTag());
+      await tagRepo.create(rand.tag());
       const countAfter = await tagRepo.count();
       expect(countAfter).toBe(countBefore + 1);
     });
 
     it('creates a findable user record', async () => {
-      const { id } = await tagRepo.create(buildRandTag());
+      const { id } = await tagRepo.create(rand.tag());
       const tag = await tagRepo.find(id);
 
       expect(tag).not.toBeNull();
@@ -56,13 +55,13 @@ describe.each([['MikroORMTagRepo', MikroORMTagRepo]])('%s', (name, Ctor) => {
     });
 
     it('returns a plain object', async () => {
-      const tag = await tagRepo.create(buildRandTag());
+      const tag = await tagRepo.create(rand.tag());
 
       expect(isPlainObject(tag)).toBe(true);
     });
 
     it('disallows duplicate tags', async () => {
-      const tag = buildRandTag({ id: undefined });
+      const tag = rand.tag({ id: undefined });
       await expect(tagRepo.create(tag)).resolves.not.toThrow();
       await expect(tagRepo.create(tag)).rejects.toThrow();
     });
@@ -70,8 +69,8 @@ describe.each([['MikroORMTagRepo', MikroORMTagRepo]])('%s', (name, Ctor) => {
 
   describe('find', () => {
     it('returns the tag matching the id', async () => {
-      const id = randStr(8);
-      await tagRepo.create(buildRandTag({ id }));
+      const id = rand.str(8);
+      await tagRepo.create(rand.tag({ id }));
 
       const tag = await tagRepo.find(id);
 
@@ -80,7 +79,7 @@ describe.each([['MikroORMTagRepo', MikroORMTagRepo]])('%s', (name, Ctor) => {
     });
 
     it('returns a plain object', async () => {
-      const { id } = await tagRepo.create(buildRandTag());
+      const { id } = await tagRepo.create(rand.tag());
 
       const tag = await tagRepo.find(id);
 
@@ -96,7 +95,7 @@ describe.each([['MikroORMTagRepo', MikroORMTagRepo]])('%s', (name, Ctor) => {
 
   describe('findAll', () => {
     it('returns all tag records', async () => {
-      const tags = [buildRandTag(), buildRandTag(), buildRandTag()];
+      const tags = [rand.tag(), rand.tag(), rand.tag()];
       await tagRepo.bulkCreate(tags);
 
       const foundTags = await tagRepo.findAll();
@@ -105,7 +104,7 @@ describe.each([['MikroORMTagRepo', MikroORMTagRepo]])('%s', (name, Ctor) => {
     });
 
     it('returns plain objects', async () => {
-      const tags = [buildRandTag(), buildRandTag(), buildRandTag()];
+      const tags = [rand.tag(), rand.tag(), rand.tag()];
       await tagRepo.bulkCreate(tags);
 
       const foundTags = await tagRepo.findAll();
@@ -132,22 +131,22 @@ describe.each([['MikroORMTagRepo', MikroORMTagRepo]])('%s', (name, Ctor) => {
     let notationTag2: NotationTag;
 
     beforeEach(async () => {
-      [tag1, tag2, tag3] = await tagRepo.bulkCreate([buildRandTag(), buildRandTag(), buildRandTag()]);
+      [tag1, tag2, tag3] = await tagRepo.bulkCreate([rand.tag(), rand.tag(), rand.tag()]);
 
       userRepo = container.get<UserRepo>(TYPES.UserRepo);
-      [user1, user2] = await userRepo.bulkCreate([buildRandUser(), buildRandUser()]);
+      [user1, user2] = await userRepo.bulkCreate([rand.user(), rand.user()]);
 
       notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
       [notation1, notation2] = await notationRepo.bulkCreate([
-        buildRandNotation({ transcriberId: user1.id }),
-        buildRandNotation({ transcriberId: user2.id }),
+        rand.notation({ transcriberId: user1.id }),
+        rand.notation({ transcriberId: user2.id }),
       ]);
 
       notationTagRepo = container.get<NotationTagRepo>(TYPES.NotationTagRepo);
       [notationTag1, notationTag2] = await notationTagRepo.bulkCreate([
-        buildRandNotationTag({ notationId: notation1.id, tagId: tag1.id }),
-        buildRandNotationTag({ notationId: notation1.id, tagId: tag2.id }),
-        buildRandNotationTag({ notationId: notation2.id, tagId: tag1.id }),
+        rand.notationTag({ notationId: notation1.id, tagId: tag1.id }),
+        rand.notationTag({ notationId: notation1.id, tagId: tag2.id }),
+        rand.notationTag({ notationId: notation2.id, tagId: tag1.id }),
       ]);
     });
 
@@ -159,9 +158,9 @@ describe.each([['MikroORMTagRepo', MikroORMTagRepo]])('%s', (name, Ctor) => {
 
   describe('update', () => {
     it('updates a tag', async () => {
-      const tag = buildRandTag();
+      const tag = rand.tag();
       await tagRepo.create(tag);
-      const name = randStr(8);
+      const name = rand.str(8);
 
       const updatedTag = await tagRepo.update(tag.id, { ...tag, name });
 
@@ -169,9 +168,9 @@ describe.each([['MikroORMTagRepo', MikroORMTagRepo]])('%s', (name, Ctor) => {
     });
 
     it('returns plain objects', async () => {
-      const tag = buildRandTag();
+      const tag = rand.tag();
       await tagRepo.create(tag);
-      const name = randStr(8);
+      const name = rand.str(8);
 
       const updatedTag = await tagRepo.update(tag.id, { ...tag, name });
 

@@ -5,8 +5,6 @@ import { TYPES } from '../../inversify.constants';
 import { NotationRepo, UserRepo } from '../../repos';
 import { SessionUser } from '../../server';
 import {
-  buildRandNotation,
-  buildRandUser,
   createRandNotations,
   createRandUpload,
   gql,
@@ -17,7 +15,7 @@ import {
   QuerySuggestedNotationsArgs,
   resolve,
 } from '../../testing';
-import { randStr, Replace } from '../../util';
+import { rand, Replace } from '../../util';
 import { CreateNotationInput } from './CreateNotationInput';
 
 describe('NotationResolver', () => {
@@ -132,9 +130,9 @@ describe('NotationResolver', () => {
       notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
 
       [student, teacher, admin] = await userRepo.bulkCreate([
-        buildRandUser({ role: UserRole.STUDENT }),
-        buildRandUser({ role: UserRole.TEACHER }),
-        buildRandUser({ role: UserRole.ADMIN }),
+        rand.user({ role: UserRole.STUDENT }),
+        rand.user({ role: UserRole.TEACHER }),
+        rand.user({ role: UserRole.ADMIN }),
       ]);
     });
 
@@ -173,8 +171,8 @@ describe('NotationResolver', () => {
       'creates a notation record when %s',
       async (loginStatus) => {
         const input = {
-          songName: randStr(12),
-          artistName: randStr(12),
+          songName: rand.str(12),
+          artistName: rand.str(12),
           thumbnail: createRandUpload(),
           video: createRandUpload(),
           tagIds: [],
@@ -199,8 +197,8 @@ describe('NotationResolver', () => {
       'forbids notation creation when %s',
       async (loginStatus) => {
         const input = {
-          songName: randStr(12),
-          artistName: randStr(12),
+          songName: rand.str(12),
+          artistName: rand.str(12),
           thumbnail: createRandUpload(),
           video: createRandUpload(),
           tagIds: [],
@@ -241,12 +239,12 @@ describe('NotationResolver', () => {
       userRepo = container.get<UserRepo>(TYPES.UserRepo);
       notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
 
-      transcriber = await userRepo.create(buildRandUser());
+      transcriber = await userRepo.create(rand.user());
 
       [notation1, notation2, notation3] = await notationRepo.bulkCreate([
-        buildRandNotation({ cursor: 1, transcriberId: transcriber.id }),
-        buildRandNotation({ cursor: 2, transcriberId: transcriber.id }),
-        buildRandNotation({ cursor: 3, transcriberId: transcriber.id }),
+        rand.notation({ cursor: 1, transcriberId: transcriber.id }),
+        rand.notation({ cursor: 2, transcriberId: transcriber.id }),
+        rand.notation({ cursor: 3, transcriberId: transcriber.id }),
       ]);
     });
 

@@ -2,17 +2,8 @@ import { User, UserRole } from '../../domain';
 import { container } from '../../inversify.config';
 import { TYPES } from '../../inversify.constants';
 import { UserRepo } from '../../repos';
-import {
-  buildRandUser,
-  createRandUser,
-  getSessionUser,
-  gql,
-  LoginStatus,
-  Mutation,
-  Query,
-  resolve,
-} from '../../testing';
-import { randStr, UserConnectionArgs } from '../../util';
+import { createRandUser, getSessionUser, gql, LoginStatus, Mutation, Query, resolve } from '../../testing';
+import { rand, UserConnectionArgs } from '../../util';
 import { UpdateUserInput } from './UpdateUserInput';
 import { UserArgs } from './UserArgs';
 
@@ -60,9 +51,9 @@ describe('UserResolver', () => {
       const userRepo = container.get<UserRepo>(TYPES.UserRepo);
 
       users = await userRepo.bulkCreate([
-        buildRandUser({ role: UserRole.STUDENT, cursor: undefined }),
-        buildRandUser({ role: UserRole.TEACHER, cursor: undefined }),
-        buildRandUser({ role: UserRole.ADMIN, cursor: undefined }),
+        rand.user({ role: UserRole.STUDENT, cursor: undefined }),
+        rand.user({ role: UserRole.TEACHER, cursor: undefined }),
+        rand.user({ role: UserRole.ADMIN, cursor: undefined }),
       ]);
 
       [student, teacher, admin] = users;
@@ -116,9 +107,9 @@ describe('UserResolver', () => {
       userRepo = container.get<UserRepo>(TYPES.UserRepo);
 
       users = await userRepo.bulkCreate([
-        buildRandUser({ role: UserRole.STUDENT }),
-        buildRandUser({ role: UserRole.TEACHER }),
-        buildRandUser({ role: UserRole.ADMIN }),
+        rand.user({ role: UserRole.STUDENT }),
+        rand.user({ role: UserRole.TEACHER }),
+        rand.user({ role: UserRole.ADMIN }),
       ]);
 
       [student, teacher, admin] = users;
@@ -172,7 +163,7 @@ describe('UserResolver', () => {
     });
 
     it('disallows admins to update usernames', async () => {
-      const username = randStr(student.username.length + 1);
+      const username = rand.str(student.username.length + 1);
       const { res } = await updateUser({ id: student.id, username }, LoginStatus.LOGGED_IN_AS_ADMIN);
 
       expect(res.errors).toBeDefined();
@@ -183,7 +174,7 @@ describe('UserResolver', () => {
     });
 
     it('disallows admins to update emails', async () => {
-      const email = randStr(3) + student.email;
+      const email = rand.str(3) + student.email;
       const { res } = await updateUser({ id: student.id, email }, LoginStatus.LOGGED_IN_AS_ADMIN);
 
       expect(res.errors).toBeDefined();
@@ -194,7 +185,7 @@ describe('UserResolver', () => {
     });
 
     it('permits students to update usernames', async () => {
-      const username = randStr(student.username.length + 1);
+      const username = rand.str(student.username.length + 1);
       const { res } = await updateUser({ id: student.id, username }, LoginStatus.LOGGED_IN_AS_STUDENT);
 
       expect(res.errors).not.toBeDefined();
@@ -207,7 +198,7 @@ describe('UserResolver', () => {
     });
 
     it('permits teachers to update usernames', async () => {
-      const username = randStr(teacher.username.length + 1);
+      const username = rand.str(teacher.username.length + 1);
       const { res } = await updateUser({ id: teacher.id, username }, LoginStatus.LOGGED_IN_AS_TEACHER);
 
       expect(res.errors).not.toBeDefined();
@@ -220,7 +211,7 @@ describe('UserResolver', () => {
     });
 
     it('permits admin to update usernames', async () => {
-      const username = randStr(admin.username.length + 1);
+      const username = rand.str(admin.username.length + 1);
       const { res } = await updateUser({ id: admin.id, username }, LoginStatus.LOGGED_IN_AS_ADMIN);
 
       expect(res.errors).not.toBeDefined();
@@ -233,7 +224,7 @@ describe('UserResolver', () => {
     });
 
     it('permits students to update emails', async () => {
-      const email = randStr(3) + student.email;
+      const email = rand.str(3) + student.email;
       const { res } = await updateUser({ id: student.id, email }, LoginStatus.LOGGED_IN_AS_STUDENT);
 
       expect(res.errors).not.toBeDefined();
@@ -246,7 +237,7 @@ describe('UserResolver', () => {
     });
 
     it('permits teachers to update emails', async () => {
-      const email = randStr(3) + teacher.email;
+      const email = rand.str(3) + teacher.email;
       const { res } = await updateUser({ id: teacher.id, email }, LoginStatus.LOGGED_IN_AS_TEACHER);
 
       expect(res.errors).not.toBeDefined();
@@ -259,7 +250,7 @@ describe('UserResolver', () => {
     });
 
     it('permits admin to update emails', async () => {
-      const email = randStr(3) + admin.email;
+      const email = rand.str(3) + admin.email;
       const { res } = await updateUser({ id: admin.id, email }, LoginStatus.LOGGED_IN_AS_ADMIN);
 
       expect(res.errors).not.toBeDefined();
