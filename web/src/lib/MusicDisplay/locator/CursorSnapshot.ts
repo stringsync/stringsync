@@ -124,16 +124,12 @@ export class CursorSnapshot {
   }
 
   @memoize()
-  getGuitarPositions(): Position[] {
-    // console.log(
-    //   this.entries
-    //     .filter((entry) => entry.Notes.some((note) => note.ParentStaff.isTab))
-    //     .map((entry) => [entry.IsGrace, entry.Notes.map(helpers.toPosition)])
-    // );
-
+  getPositions(): Position[] {
+    const hasGrace = this.hasGrace();
     return this.entries
       .flatMap((entry) => entry.Notes)
       .filter((note) => note.ParentStaff.isTab)
+      .filter((note) => !hasGrace || note.IsGraceNote) // Grace notes are intentionally flipped.
       .map(helpers.toPosition)
       .filter(helpers.isPosition);
   }
@@ -161,11 +157,22 @@ export class CursorSnapshot {
   }
 
   @memoize()
-  getGracePositions(): any {
+  hasGrace() {
+    return this.entries.some((entry) => entry.IsGrace);
+  }
+
+  @memoize()
+  getGracePositions(): Position[] {
+    // For some reason, grace note calculations are flipped:
+    // https://github.com/opensheetmusicdisplay/opensheetmusicdisplay/blob/2394de7368b6d5774778fac4c57b97cc20b4cc1d/src/MusicalScore/ScoreIO/InstrumentReader.ts#L366
+    // For a given voice entry, the actual grace notes are the ones where note.IsGraceNote is false.
+    if (!this.hasGrace()) {
+      return [];
+    }
     return this.entries
-      .filter((entry) => entry.IsGrace)
       .flatMap((entry) => entry.Notes)
       .filter((note) => note.ParentStaff.isTab)
+      .filter((note) => !note.IsGraceNote)
       .map(helpers.toPosition)
       .filter(helpers.isPosition);
   }
