@@ -265,7 +265,7 @@ export class LerpCursor implements CursorWrapper {
       this.imd.colorer.undo(this.noteColorOpId);
 
       if (nextCursorSnapshot) {
-        this.noteColorOpId = this.imd.colorer.colorNotesUnderCursor(this.lagger, '#ff6677');
+        this.noteColorOpId = this.imd.colorer.colorNotesUnderCursorSnapshot('#ff6677', nextCursorSnapshot);
       }
     }
 

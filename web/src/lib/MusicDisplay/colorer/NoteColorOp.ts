@@ -1,15 +1,19 @@
 import $ from 'jquery';
 import { get } from 'lodash';
-import { Cursor, EngravingRules, GraphicalNote, Note } from 'opensheetmusicdisplay';
+import { EngravingRules, GraphicalNote, Note } from 'opensheetmusicdisplay';
+import { CursorSnapshot } from '../locator';
 import { ColorOp } from './types';
 
 const DEFAULT_COLOR = '#000000';
 
 export class NoteColorOp implements ColorOp {
-  static init(cursor: Cursor) {
-    const notes = cursor.NotesUnderCursor();
-    const rules = cursor.iterator.CurrentMeasure.Rules;
-    return new NoteColorOp(notes, rules);
+  static init(cursorSnapshot: CursorSnapshot) {
+    const notes = cursorSnapshot.getNotes();
+    const tabNotes = cursorSnapshot.getTabNotes();
+    const targetNotes = [...notes, ...tabNotes];
+    console.log(targetNotes);
+    const rules = cursorSnapshot.getIteratorSnapshot().clone().CurrentMeasure.Rules;
+    return new NoteColorOp(targetNotes, rules);
   }
 
   private notes: Note[];

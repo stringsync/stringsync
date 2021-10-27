@@ -1,5 +1,5 @@
 import { first, isUndefined, last } from 'lodash';
-import { TieTypes, VoiceEntry } from 'opensheetmusicdisplay';
+import { Note, TieTypes, VoiceEntry } from 'opensheetmusicdisplay';
 import { Box } from '../../../util/Box';
 import { memoize } from '../../../util/memoize';
 import { NumberRange } from '../../../util/NumberRange';
@@ -124,12 +124,29 @@ export class CursorSnapshot {
   }
 
   @memoize()
-  getPositions(): Position[] {
-    const hasGrace = this.hasGrace();
+  getNotes(): Note[] {
+    return this.entries
+      .flatMap((entry) => entry.Notes)
+      .filter((note) => !note.ParentStaff.isTab)
+      .filter((note) => !note.IsGraceNote);
+  }
+
+  @memoize()
+  getTabNotes(): Note[] {
     return this.entries
       .flatMap((entry) => entry.Notes)
       .filter((note) => note.ParentStaff.isTab)
-      .filter((note) => !hasGrace || note.IsGraceNote) // Grace notes are intentionally flipped.
+      .filter((note) => !note.IsGraceNote);
+  }
+
+  @memoize()
+  getGraceNotes(): Note[] {
+    return this.entries.flatMap((entry) => entry.Notes).filter((note) => note.IsGraceNote);
+  }
+
+  @memoize()
+  getPositions(): Position[] {
+    return this.getTabNotes()
       .map(helpers.toPosition)
       .filter(helpers.isPosition);
   }
@@ -157,22 +174,11 @@ export class CursorSnapshot {
   }
 
   @memoize()
-  hasGrace() {
-    return this.entries.some((entry) => entry.IsGrace);
-  }
-
-  @memoize()
   getGracePositions(): Position[] {
-    // For some reason, grace note calculations are flipped:
-    // https://github.com/opensheetmusicdisplay/opensheetmusicdisplay/blob/2394de7368b6d5774778fac4c57b97cc20b4cc1d/src/MusicalScore/ScoreIO/InstrumentReader.ts#L366
-    // For a given voice entry, the actual grace notes are the ones where note.IsGraceNote is false.
-    if (!this.hasGrace()) {
-      return [];
-    }
     return this.entries
       .flatMap((entry) => entry.Notes)
       .filter((note) => note.ParentStaff.isTab)
-      .filter((note) => !note.IsGraceNote)
+      .filter((note) => note.IsGraceNote)
       .map(helpers.toPosition)
       .filter(helpers.isPosition);
   }
