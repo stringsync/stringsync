@@ -7,7 +7,7 @@ export const withRenderDelay = (delay: Duration) => {
     return (props) => {
       const [visible, setVisible] = useState(false);
       useTimeout(() => setVisible(true), delay.ms);
-      return visible ? null : <Component {...props} />;
+      return visible ? <Component {...props} /> : null;
     };
   };
 };
