@@ -1,6 +1,7 @@
 import { GraphicalNote } from 'opensheetmusicdisplay';
 import { Box } from '../../../util/Box';
 import { NumberRange } from '../../../util/NumberRange';
+import { Position } from '../../guitar/Position';
 import { CursorWrapper } from '../cursors';
 import { CursorSnapshot } from './CursorSnapshot';
 
@@ -67,4 +68,9 @@ export type LocateResult = {
   cost: LocateCost;
   cursorSnapshot: CursorSnapshot | null;
   targets: LocatorTarget[];
+};
+
+export type PositionTransition = {
+  from: Position;
+  to: Position;
 };

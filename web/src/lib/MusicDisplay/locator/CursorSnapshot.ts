@@ -1,5 +1,5 @@
 import { first, get, isNumber, isUndefined, last } from 'lodash';
-import { VoiceEntry } from 'opensheetmusicdisplay';
+import { TieTypes, VoiceEntry } from 'opensheetmusicdisplay';
 import { Box } from '../../../util/Box';
 import { memoize } from '../../../util/memoize';
 import { NumberRange } from '../../../util/NumberRange';
@@ -8,7 +8,7 @@ import * as helpers from '../helpers';
 import { KeyInfo } from '../helpers';
 import { END_OF_MEASURE_LINE_PADDING_PX } from './constants';
 import { IteratorSnapshot } from './IteratorSnapshot';
-import { LocatorTarget } from './types';
+import { LocatorTarget, PositionTransition } from './types';
 
 type CursorSnapshotAttrs = {
   measureLine: number;
@@ -20,6 +20,11 @@ type CursorSnapshotAttrs = {
   timeMsRange: NumberRange;
   entries: VoiceEntry[];
   targets: LocatorTarget[];
+};
+
+type PlainPosition = {
+  fret: number;
+  str: number;
 };
 
 export class CursorSnapshot {
@@ -128,12 +133,36 @@ export class CursorSnapshot {
     return this.entries
       .flatMap((entry) => entry.Notes)
       .filter((note) => note.ParentStaff.isTab)
-      .map<{ fret: number | null; str: number | null }>((tabNote) => ({
-        str: get(tabNote, 'stringNumberTab', null),
-        fret: get(tabNote, 'fretNumber', null),
-      }))
-      .filter((pos): pos is { fret: number; str: number } => isNumber(pos.str) && isNumber(pos.fret))
+      .map((tabNote) => ({ str: get(tabNote, 'stringNumberTab', null), fret: get(tabNote, 'fretNumber', null) }))
+      .filter((pos): pos is PlainPosition => isNumber(pos.str) && isNumber(pos.fret))
       .map((pos) => new Position(pos.fret, pos.str));
+  }
+
+  @memoize()
+  getSlideTransitions(): PositionTransition[] {
+    return this.entries
+      .filter((entry) => entry.hasTie())
+      .flatMap((entry) => entry.Notes)
+      .filter((note) => note.ParentStaff.isTab)
+      .filter((tabNote) => tabNote.NoteTie.Type === TieTypes.SLIDE)
+      .map((tabNote) => tabNote.NoteTie.Notes)
+      .filter((tiedTabNotes) => tiedTabNotes.length >= 2)
+      .map((tiedTabNotes) =>
+        tiedTabNotes
+          .map((tabNote) => ({ str: get(tabNote, 'stringNumberTab', null), fret: get(tabNote, 'fretNumber', null) }))
+          .filter((pos): pos is PlainPosition => isNumber(pos.str) && isNumber(pos.fret))
+          .map((pos) => new Position(pos.fret, pos.str))
+      )
+      .flatMap((tiedPositions) => {
+        const slideTransitions = new Array<PositionTransition>();
+        // The last element is skipped.
+        for (let ndx = 0; ndx < tiedPositions.length - 1; ndx++) {
+          const from = tiedPositions[ndx];
+          const to = tiedPositions[ndx + 1];
+          slideTransitions.push({ from, to });
+        }
+        return slideTransitions;
+      });
   }
 
   @memoize()
