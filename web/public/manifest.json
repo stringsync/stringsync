@@ -1,6 +1,6 @@
 {
-  "short_name": "StringSync",
-  "name": "StringSync",
+  "short_name": "stringsync",
+  "name": "stringsync",
   "icons": [
     {
       "src": "favicon.ico",
@@ -44,7 +44,7 @@
       "purpose": "maskable"
     }
   ],
-  "start_url": ".",
+  "start_url": "/library",
   "display": "standalone",
   "theme_color": "#fc354c",
   "background_color": "#ffffff"
