@@ -11,6 +11,7 @@ import {
   PositionStyle,
 } from '../FretboardJs';
 import { useMeasurePositions } from './hooks/useMeasurePositions';
+import { useMeasureSlideTransition } from './hooks/useMeasureSlideTransitions';
 import { useMusicDisplayCursorSnapshot } from './hooks/useMusicDisplayCursorSnapshot';
 import { usePressedPositions } from './hooks/usePressedPositions';
 import { useTonic } from './hooks/useTonic';
@@ -51,6 +52,7 @@ export const Fretboard: React.FC<Props> = (props) => {
   const tonic = useTonic(settings.selectedScale, musicDisplay);
   const pressedPositions = usePressedPositions(cursorSnapshot, mediaPlayer);
   const measurePositions = useMeasurePositions(cursorSnapshot);
+  const slideTransitions = useMeasureSlideTransition(cursorSnapshot);
   const pressedStyle = useMemo<Partial<PositionStyle>>(() => ({ fill: '#f5c2c5', stroke: '#f03e47' }), []);
 
   // dynamic scale management
