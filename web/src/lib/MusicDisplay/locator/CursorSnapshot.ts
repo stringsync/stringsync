@@ -1,4 +1,4 @@
-import { first, get, isNumber, isUndefined, last } from 'lodash';
+import { first, isUndefined, last } from 'lodash';
 import { TieTypes, VoiceEntry } from 'opensheetmusicdisplay';
 import { Box } from '../../../util/Box';
 import { memoize } from '../../../util/memoize';
@@ -20,11 +20,6 @@ type CursorSnapshotAttrs = {
   timeMsRange: NumberRange;
   entries: VoiceEntry[];
   targets: LocatorTarget[];
-};
-
-type PlainPosition = {
-  fret: number;
-  str: number;
 };
 
 export class CursorSnapshot {
@@ -130,12 +125,17 @@ export class CursorSnapshot {
 
   @memoize()
   getGuitarPositions(): Position[] {
+    // console.log(
+    //   this.entries
+    //     .filter((entry) => entry.Notes.some((note) => note.ParentStaff.isTab))
+    //     .map((entry) => [entry.IsGrace, entry.Notes.map(helpers.toPosition)])
+    // );
+
     return this.entries
       .flatMap((entry) => entry.Notes)
       .filter((note) => note.ParentStaff.isTab)
-      .map((tabNote) => ({ str: get(tabNote, 'stringNumberTab', null), fret: get(tabNote, 'fretNumber', null) }))
-      .filter((pos): pos is PlainPosition => isNumber(pos.str) && isNumber(pos.fret))
-      .map((pos) => new Position(pos.fret, pos.str));
+      .map(helpers.toPosition)
+      .filter(helpers.isPosition);
   }
 
   @memoize()
@@ -146,13 +146,8 @@ export class CursorSnapshot {
       .filter((note) => note.ParentStaff.isTab)
       .filter((tabNote) => tabNote.NoteTie.Type === TieTypes.SLIDE)
       .map((tabNote) => tabNote.NoteTie.Notes)
-      .filter((tiedTabNotes) => tiedTabNotes.length >= 2)
-      .map((tiedTabNotes) =>
-        tiedTabNotes
-          .map((tabNote) => ({ str: get(tabNote, 'stringNumberTab', null), fret: get(tabNote, 'fretNumber', null) }))
-          .filter((pos): pos is PlainPosition => isNumber(pos.str) && isNumber(pos.fret))
-          .map((pos) => new Position(pos.fret, pos.str))
-      )
+      .filter((tiedTabNotes) => tiedTabNotes.length >= 2) // disallow sliding to/from nothing
+      .map((tiedTabNotes) => tiedTabNotes.map(helpers.toPosition).filter(helpers.isPosition))
       .flatMap((tiedPositions) => {
         const slideTransitions = new Array<PositionTransition>();
         // The last element is skipped.
@@ -163,6 +158,16 @@ export class CursorSnapshot {
         }
         return slideTransitions;
       });
+  }
+
+  @memoize()
+  getGracePositions(): any {
+    return this.entries
+      .filter((entry) => entry.IsGrace)
+      .flatMap((entry) => entry.Notes)
+      .filter((note) => note.ParentStaff.isTab)
+      .map(helpers.toPosition)
+      .filter(helpers.isPosition);
   }
 
   @memoize()
