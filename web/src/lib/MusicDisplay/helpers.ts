@@ -4,11 +4,6 @@ import { KeyEnum, KeyInstruction, Note, VexFlowMusicSheetCalculator } from 'open
 import { ConflictError, InternalError } from '../../errors';
 import { Position } from '../guitar/Position';
 
-type PlainPosition = {
-  fret: number;
-  str: number;
-};
-
 export type MajorKey = ReturnType<typeof Key.majorKey>;
 
 export type MinorKey = ReturnType<typeof Key.minorKey>;
