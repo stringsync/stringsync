@@ -33,9 +33,7 @@ const computeIsInFlashRegion = (time: Duration, cursorSnapshot: CursorSnapshot |
  */
 export const usePressedPositions = (cursorSnapshot: CursorSnapshot | null, mediaPlayer: MediaPlayer) => {
   const [isInFlashRegion, setIsInFlashRegion] = useState(false);
-  const [pressedPositions, setPressedPositions] = useState(() =>
-    cursorSnapshot ? cursorSnapshot.getGuitarPositions() : []
-  );
+  const [pressedPositions, setPressedPositions] = useState(() => (cursorSnapshot ? cursorSnapshot.getPositions() : []));
   const [playState, setPlayState] = useState(() => mediaPlayer.getPlayState());
 
   useEffect(() => {
@@ -62,11 +60,11 @@ export const usePressedPositions = (cursorSnapshot: CursorSnapshot | null, media
   }, [mediaPlayer, cursorSnapshot]);
 
   useEffect(() => {
-    let nextPressedPositions = cursorSnapshot ? cursorSnapshot.getGuitarPositions() : [];
+    let nextPressedPositions = cursorSnapshot ? cursorSnapshot.getPositions() : [];
 
     if (playState === PlayState.Playing && isInFlashRegion && cursorSnapshot && cursorSnapshot.prev) {
       const prevPositionLookup = cursorSnapshot.prev
-        .getGuitarPositions()
+        .getPositions()
         .reduce<Record<number, Record<number, true>>>((memo, position) => {
           memo[position.fret] = memo[position.fret] || {};
           memo[position.fret][position.string] = true;

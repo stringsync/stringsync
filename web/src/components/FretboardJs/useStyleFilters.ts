@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Position as GuitarPosition } from '../../lib/guitar/Position';
 import * as helpers from './helpers';
-import { PositionFilterParams, StyleFilter, StyleTarget } from './types';
+import { PositionFilterParams, PositionStyleTarget, StyleFilter } from './types';
 
-export const useStyleFilters = (styleTargets: StyleTarget[]) => {
+export const useStyleFilters = (styleTargets: PositionStyleTarget[]) => {
   const [styleFilters, setStyleFilters] = useState<StyleFilter[]>([]);
 
   useEffect(() => {

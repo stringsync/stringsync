@@ -1,4 +1,4 @@
-import { Cursor } from 'opensheetmusicdisplay';
+import { CursorSnapshot } from '../locator';
 import { NoopColorOp } from './NoopColorOp';
 import { NoteColorOp } from './NoteColorOp';
 import { ColorOp } from './types';
@@ -6,8 +6,8 @@ import { ColorOp } from './types';
 export class Colorer {
   private opsById: Record<symbol, ColorOp> = {};
 
-  colorNotesUnderCursor(cursor: Cursor, color: string): symbol {
-    const colorOp = NoteColorOp.init(cursor);
+  colorNotesUnderCursorSnapshot(color: string, cursorSnapshot: CursorSnapshot): symbol {
+    const colorOp = NoteColorOp.init(cursorSnapshot);
     colorOp.perform(color);
     return this.register(colorOp);
   }

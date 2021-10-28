@@ -1,7 +1,13 @@
 import { Key } from '@tonaljs/tonal';
-import { sortBy } from 'lodash';
-import { KeyEnum, KeyInstruction, VexFlowMusicSheetCalculator } from 'opensheetmusicdisplay';
+import { get, isNumber, sortBy } from 'lodash';
+import { KeyEnum, KeyInstruction, Note, VexFlowMusicSheetCalculator } from 'opensheetmusicdisplay';
 import { ConflictError, InternalError } from '../../errors';
+import { Position } from '../guitar/Position';
+
+type PlainPosition = {
+  fret: number;
+  str: number;
+};
 
 export type MajorKey = ReturnType<typeof Key.majorKey>;
 
@@ -92,3 +98,10 @@ export const getDistinctElementsSortedByFrequencyDesc = (arr: string[]): string[
 export const isVexFlowMusicSheetCalculator = (value: any): value is VexFlowMusicSheetCalculator => {
   return value instanceof VexFlowMusicSheetCalculator;
 };
+
+export const toPosition = (tabNote: Note) => {
+  const pos = { str: get(tabNote, 'stringNumberTab', null), fret: get(tabNote, 'fretNumber', null) };
+  return isNumber(pos.str) && isNumber(pos.fret) ? new Position(pos.fret, pos.str) : null;
+};
+
+export const isPosition = (value: any): value is Position => value instanceof Position;

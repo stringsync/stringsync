@@ -1,23 +1,29 @@
 import $ from 'jquery';
 import { get } from 'lodash';
-import { Cursor, EngravingRules, GraphicalNote, Note } from 'opensheetmusicdisplay';
+import { EngravingRules, GraphicalNote, Note } from 'opensheetmusicdisplay';
+import { CursorSnapshot } from '../locator';
 import { ColorOp } from './types';
 
 const DEFAULT_COLOR = '#000000';
 
 export class NoteColorOp implements ColorOp {
-  static init(cursor: Cursor) {
-    const notes = cursor.NotesUnderCursor();
-    const rules = cursor.iterator.CurrentMeasure.Rules;
-    return new NoteColorOp(notes, rules);
+  static init(cursorSnapshot: CursorSnapshot) {
+    const notes = cursorSnapshot.getNotes();
+    const tabNotes = cursorSnapshot.getTabNotes();
+    const targetNotes = [...notes, ...tabNotes];
+    const graceNotes = cursorSnapshot.getGraceNotes();
+    const rules = cursorSnapshot.getIteratorSnapshot().clone().CurrentMeasure.Rules;
+    return new NoteColorOp(targetNotes, graceNotes, rules);
   }
 
   private notes: Note[];
+  private graceNotes: Note[];
   private rules: EngravingRules;
   private prevColorByNote = new Map<Note, string>();
 
-  constructor(notes: Note[], rules: EngravingRules) {
+  constructor(notes: Note[], graceNotes: Note[], rules: EngravingRules) {
     this.notes = notes;
+    this.graceNotes = graceNotes;
     this.rules = rules;
   }
 
@@ -26,6 +32,10 @@ export class NoteColorOp implements ColorOp {
       this.prevColorByNote.set(note, note.NoteheadColorCurrentlyRendered);
       const graphicalNote = GraphicalNote.FromNote(note, this.rules);
       this.renderColor(color, graphicalNote);
+    }
+    for (const note of this.graceNotes) {
+      const graphicalNote = GraphicalNote.FromNote(note, this.rules);
+      this.renderColor(note.NoteheadColorCurrentlyRendered, graphicalNote);
     }
   }
 
