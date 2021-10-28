@@ -8,8 +8,10 @@ const app = new cdk.App();
 
 new StringsyncStack(app, 'stringsync', {
   stackName: 'stringsync',
+  description: 'Production resources for stringsync',
 });
 
 new StringsyncDevStack(app, 'stringsyncdev', {
   stackName: 'stringsyncdev',
+  description: 'Development resources for stringsync',
 });
