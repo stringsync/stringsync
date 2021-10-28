@@ -8,10 +8,30 @@ export type PositionStyle = Partial<{
   fill: string;
 }>;
 
-export type StyleTarget = {
+export type PlainPosition = {
+  fret: number;
+  string: number;
+};
+
+export enum StyleTargetType {
+  Position,
+  Slide,
+}
+
+export type PositionStyleTarget = {
+  type: StyleTargetType.Position;
   style: PositionStyle;
   position: GuitarPosition;
 };
+
+export type SlideStyleTarget = {
+  type: StyleTargetType.Slide;
+  style: PositionStyle;
+  string: number;
+  frets: [number, number];
+};
+
+export type StyleTarget = PositionStyleTarget | SlideStyleTarget;
 
 export type PositionFilterParams = {
   fret: number;

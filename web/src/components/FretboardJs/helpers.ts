@@ -2,11 +2,18 @@ import { Fretboard, FretboardSystem } from '@moonwave99/fretboard.js';
 import { Interval, Note } from '@tonaljs/tonal';
 import { get, identity, isNull, merge, uniq } from 'lodash';
 import React from 'react';
-import { StyleTarget } from '.';
 import { Position as GuitarPosition } from '../../lib/guitar/Position';
 import { Position } from './Position';
 import { Scale } from './Scale';
-import { MergeStrategy, PositionStyle } from './types';
+import { Slide } from './Slide';
+import {
+  MergeStrategy,
+  PositionStyle,
+  PositionStyleTarget,
+  SlideStyleTarget,
+  StyleTarget,
+  StyleTargetType,
+} from './types';
 
 const CHILDREN_DISPLAY_NAMES = [Position.displayName, Scale.displayName].filter(identity);
 
@@ -29,8 +36,11 @@ export const getStyleTargets = (
 };
 
 const mergeStyles = (styleTargets: StyleTarget[]): StyleTarget[] => {
+  const positionStyleTargets = styleTargets.filter(isPositionStyleTarget);
+  const slideStyleTargets = styleTargets.filter(isSlideStyleTarget);
+
   const unioned: Record<string, StyleTarget> = {};
-  for (const styleTarget of styleTargets) {
+  for (const styleTarget of positionStyleTargets) {
     const position = encodePosition(styleTarget.position);
     if (position in unioned) {
       unioned[position] = merge(unioned[position], styleTarget);
@@ -39,16 +49,19 @@ const mergeStyles = (styleTargets: StyleTarget[]): StyleTarget[] => {
     }
   }
 
-  const orderedPositions = styleTargets.map(({ position }) => encodePosition(position));
+  const orderedPositions = positionStyleTargets.map(({ position }) => encodePosition(position));
   const uniqPositions = uniq(orderedPositions);
-  return uniqPositions.map((position) => unioned[position]);
+  return [...uniqPositions.map((position) => unioned[position]), ...slideStyleTargets];
 };
 
 const pickFirstStyles = (styleTargets: StyleTarget[]): StyleTarget[] => {
+  const positionStyleTargets = styleTargets.filter(isPositionStyleTarget);
+  const slideStyleTargets = styleTargets.filter(isSlideStyleTarget);
+
   const nextStyleTargets = new Array<StyleTarget>();
   const seen = new Set<string>();
 
-  for (const styleTarget of styleTargets) {
+  for (const styleTarget of positionStyleTargets) {
     const position = encodePosition(styleTarget.position);
     if (!seen.has(position)) {
       seen.add(position);
@@ -56,19 +69,22 @@ const pickFirstStyles = (styleTargets: StyleTarget[]): StyleTarget[] => {
     }
   }
 
-  return nextStyleTargets;
+  return [...nextStyleTargets, ...slideStyleTargets];
 };
 
 const pickLastStyles = (styleTargets: StyleTarget[]): StyleTarget[] => {
+  const positionStyleTargets = styleTargets.filter(isPositionStyleTarget);
+  const slideStyleTargets = styleTargets.filter(isSlideStyleTarget);
+
   const latest: Record<string, StyleTarget> = {};
-  for (const styleTarget of styleTargets) {
+  for (const styleTarget of positionStyleTargets) {
     const position = encodePosition(styleTarget.position);
     latest[position] = styleTarget;
   }
 
-  const orderedPositions = styleTargets.map(({ position }) => encodePosition(position));
+  const orderedPositions = positionStyleTargets.map(({ position }) => encodePosition(position));
   const uniqPositions = uniq(orderedPositions);
-  return uniqPositions.map((position) => latest[position]);
+  return [...uniqPositions.map((position) => latest[position]), ...slideStyleTargets];
 };
 
 const mergeStyleTargets = (styleTargets: StyleTarget[], mergeStrategy: MergeStrategy): StyleTarget[] => {
@@ -98,6 +114,9 @@ const getStyleTargetsForChildType = (fretboard: Fretboard, child: React.ReactNod
   if (isComponentType(child, Scale)) {
     return getStyleTargetsFromScaleComponent(fretboard, child);
   }
+  if (isComponentType(child, Slide)) {
+    return getStyleTargetsFromSlideComponent(child);
+  }
   throw new Error(`Fretboard children must be one of: ${CHILDREN_DISPLAY_NAMES}, got ${child}`);
 };
 
@@ -105,6 +124,7 @@ const getStyleTargetsFromPositionComponent = (child: Component<typeof Position>)
   const { fret, string, style } = child.props;
   return [
     {
+      type: StyleTargetType.Position,
       position: new GuitarPosition(fret, string),
       style: { ...style },
     },
@@ -124,9 +144,19 @@ const getStyleTargetsFromScaleComponent = (fretboard: Fretboard, child: Componen
   }
   const positions = system.getScale({ type, root });
   return positions.map((position) => ({
+    type: StyleTargetType.Position,
     position: new GuitarPosition(position.fret, position.string),
     style: { ...style },
   }));
+};
+
+const getStyleTargetsFromSlideComponent = (child: Component<typeof Slide>): StyleTarget[] => {
+  const { from, to, style } = child.props;
+  if (from.string !== to.string) {
+    console.warn(`cannot get style targets for a slide that moves strings: from=${from}, to=${to}`);
+    return [];
+  }
+  return [{ type: StyleTargetType.Slide, string: from.string, frets: [from.fret, to.fret], style: { ...style } }];
 };
 
 export const getEnharmonic = (note: string) => Note.simplify(Note.enharmonic(note));
@@ -152,4 +182,12 @@ export const getGradesByNote = (tonic: string): Record<string, string> => {
   } while (!isTonic(note));
 
   return gradesByNote;
+};
+
+export const isPositionStyleTarget = (value: any): value is PositionStyleTarget => {
+  return value.type === StyleTargetType.Position;
+};
+
+export const isSlideStyleTarget = (value: any): value is SlideStyleTarget => {
+  return value.type === StyleTargetType.Slide;
 };
