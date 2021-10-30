@@ -102,6 +102,7 @@ export class StringsyncStack extends cdk.Stack {
 
     const adminInstance = new AdminInstance(this, 'AdminInstance', { vpc });
     ci.codeRepository.grantPull(adminInstance.role);
+    ci.codeRepository.grantRead(adminInstance.role);
     db.credsSecret.grantRead(adminInstance.role);
     adminInstance.role.addToPolicy(
       new iam.PolicyStatement({
@@ -361,7 +362,6 @@ export class StringsyncStack extends cdk.Stack {
       roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPowerUser')],
     });
-    mediaBucket.grantWrite(taskExecutionRole);
 
     /**
      * APP TASK DEFINITION
@@ -373,6 +373,8 @@ export class StringsyncStack extends cdk.Stack {
       memoryLimitMiB: 512,
       executionRole: taskExecutionRole,
     });
+    mediaBucket.grantReadWrite(appTaskDefinition.taskRole);
+    vod.sourceBucket.grantReadWrite(appTaskDefinition.taskRole);
 
     // Container health checks are not supported for tasks that are part of a service that
     // is configured to use a Classic Load Balancer.
@@ -439,6 +441,7 @@ export class StringsyncStack extends cdk.Stack {
       environment,
       secrets,
     });
+    vod.queue.grantConsumeMessages(workerTaskDefinition.taskRole);
 
     /**
      * SERVICES
