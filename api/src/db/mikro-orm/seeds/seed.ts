@@ -1,4 +1,4 @@
-import { random, sample, shuffle, times } from 'lodash';
+import { last, random, sample, shuffle, times } from 'lodash';
 import { isMikroORMDb } from '../..';
 import { Notation, Tag, User, UserRole } from '../../../domain';
 import { InternalError } from '../../../errors';
@@ -89,6 +89,17 @@ import {
     notation.transcriber.set(transcriber);
     return notation;
   });
+
+  // create notations named after the music xml file that backs them
+  notations.push(
+    ...MUSIC_XML_URLS.map((musicXmlUrl) => {
+      const filename = last(musicXmlUrl.split('/'));
+      const notation = buildNotation({ musicXmlUrl, songName: filename });
+      const transcriber = sample(teachers)!;
+      notation.transcriber.set(transcriber);
+      return notation;
+    })
+  );
 
   // create tags
   const tags = [

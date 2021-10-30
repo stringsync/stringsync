@@ -23,13 +23,13 @@ export class NotationEntity extends BaseEntity implements Notation {
   updatedAt = new Date();
 
   @Property()
-  @Matches(/^[-A-Za-z0-9!?\s.()@&/']*$/)
+  @Matches(/^[-_A-Za-z0-9!?\s.()@&/']*$/)
   @MinLength(1)
   @MaxLength(64)
   songName!: string;
 
   @Property()
-  @Matches(/^[-A-Za-z0-9!?\s.()@&/']*$/)
+  @Matches(/^[-_A-Za-z0-9!?\s.()@&/']*$/)
   @MinLength(1)
   @MaxLength(64)
   artistName!: string;

@@ -157,6 +157,7 @@ export class CursorSnapshot {
       .filter((entry) => entry.hasTie())
       .flatMap((entry) => entry.Notes)
       .filter((note) => note.ParentStaff.isTab)
+      .filter((tabNote) => tabNote.NoteTie)
       .filter((tabNote) => tabNote.NoteTie.Type === TieTypes.SLIDE)
       .map((tabNote) => tabNote.NoteTie.Notes)
       .filter((tiedTabNotes) => tiedTabNotes.length >= 2) // disallow sliding to/from nothing

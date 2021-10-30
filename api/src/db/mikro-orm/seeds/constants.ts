@@ -34,7 +34,13 @@ export const NOTATION_THUMBNAIL_URLS = [
   'https://i.picsum.photos/id/477/640/640.jpg?hmac=PbmMRK_FS_zhXcEz2rgWGJ99V9kEGz6LUoIXhlAjV0Y',
 ];
 
-export const MUSIC_XML_URLS = ['https://d11z5bu8xy08xt.cloudfront.net/notations/music_xml/united_moccasins.xml'];
+export const MUSIC_XML_URLS = [
+  'https://d11z5bu8xy08xt.cloudfront.net/notations/music_xml/aloof_nograce.xml',
+  'https://d11z5bu8xy08xt.cloudfront.net/notations/music_xml/aloof.xml',
+  'https://d11z5bu8xy08xt.cloudfront.net/notations/music_xml/anatole.xml',
+  'https://d11z5bu8xy08xt.cloudfront.net/notations/music_xml/united_moccasins.xml',
+  'https://d11z5bu8xy08xt.cloudfront.net/notations/music_xml/amazing_grace.xml',
+];
 
 export const ADJECTIVES = [
   'swift',

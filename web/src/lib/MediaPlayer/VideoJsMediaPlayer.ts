@@ -139,8 +139,10 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   }
 
   private syncTime = () => {
-    const time = this.getCurrentTime();
-    this.updateTime(time);
+    try {
+      const time = this.getCurrentTime();
+      this.updateTime(time);
+    } catch {}
   };
 
   private onReady = () => {

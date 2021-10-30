@@ -115,42 +115,45 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
     const gradesByNote = helpers.getGradesByNote(tonic);
     const key = Key.majorKey(tonic);
     const scale = new Set(key.scale);
+    const maxFret = fretboard.positions[0].length - 1;
 
     fretboard.setDots(
-      positionStyleTargets.map<PositionFilterParams>((styleTarget) => {
-        const pitch = guitar.getPitchAt(styleTarget.position);
-        const enharmonic1 = pitch.toString();
-        const enharmonic2 = helpers.getEnharmonic(enharmonic1);
-        const hasEnharmonic = enharmonic1 !== enharmonic2;
-        const isKeySharp = key.alteration > 0;
-        const isKeyFlat = key.alteration < 0;
-        const isKeyNatural = key.alteration === 0;
+      positionStyleTargets
+        .filter((styleTarget) => styleTarget.position.fret <= maxFret)
+        .map<PositionFilterParams>((styleTarget) => {
+          const pitch = guitar.getPitchAt(styleTarget.position);
+          const enharmonic1 = pitch.toString();
+          const enharmonic2 = helpers.getEnharmonic(enharmonic1);
+          const hasEnharmonic = enharmonic1 !== enharmonic2;
+          const isKeySharp = key.alteration > 0;
+          const isKeyFlat = key.alteration < 0;
+          const isKeyNatural = key.alteration === 0;
 
-        let note: string;
-        if (!hasEnharmonic) {
-          note = enharmonic1;
-        } else if (scale.has(enharmonic1)) {
-          note = enharmonic1;
-        } else if (scale.has(enharmonic2)) {
-          note = enharmonic2;
-        } else if (isKeySharp) {
-          note = [enharmonic1, enharmonic2].find((enharmonic) => enharmonic.includes('#')) || '';
-        } else if (isKeyFlat) {
-          note = [enharmonic1, enharmonic2].find((enharmonic) => enharmonic.includes('b')) || '';
-        } else if (isKeyNatural) {
-          note = [enharmonic1, enharmonic2].find((enharmonic) => enharmonic.length === 1) || '';
-        } else {
-          note = enharmonic1;
-        }
+          let note: string;
+          if (!hasEnharmonic) {
+            note = enharmonic1;
+          } else if (scale.has(enharmonic1)) {
+            note = enharmonic1;
+          } else if (scale.has(enharmonic2)) {
+            note = enharmonic2;
+          } else if (isKeySharp) {
+            note = [enharmonic1, enharmonic2].find((enharmonic) => enharmonic.includes('#')) || '';
+          } else if (isKeyFlat) {
+            note = [enharmonic1, enharmonic2].find((enharmonic) => enharmonic.includes('b')) || '';
+          } else if (isKeyNatural) {
+            note = [enharmonic1, enharmonic2].find((enharmonic) => enharmonic.length === 1) || '';
+          } else {
+            note = enharmonic1;
+          }
 
-        return {
-          fret: styleTarget.position.fret,
-          string: styleTarget.position.string,
-          note,
-          grade: gradesByNote[note],
-          octave: pitch.octave,
-        };
-      })
+          return {
+            fret: styleTarget.position.fret,
+            string: styleTarget.position.string,
+            note,
+            grade: gradesByNote[note],
+            octave: pitch.octave,
+          };
+        })
     );
 
     fretboard.render();
