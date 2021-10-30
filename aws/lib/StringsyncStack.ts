@@ -361,6 +361,7 @@ export class StringsyncStack extends cdk.Stack {
       roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPowerUser')],
     });
+    mediaBucket.grantWrite(taskExecutionRole);
 
     /**
      * APP TASK DEFINITION
