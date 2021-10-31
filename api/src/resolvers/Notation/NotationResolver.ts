@@ -1,7 +1,8 @@
 import { inject, injectable } from 'inversify';
 import { Arg, Args, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { NotationObject } from '.';
-import { Notation } from '../../domain';
+import { Notation, UserRole } from '../../domain';
+import { ForbiddenError, NotFoundError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { AuthRequirement, NotationService } from '../../services';
 import { BlobStorage, Connection, Logger } from '../../util';
@@ -12,6 +13,7 @@ import { NotationArgs } from './NotationArgs';
 import { NotationConnectionArgs } from './NotationConnectionArgs';
 import { NotationConnectionObject } from './NotationConnectionObject';
 import { SuggestedNotationsArgs } from './SuggestedNotationsArgs';
+import { UpdateNotationInput } from './UpdateNotationInput';
 
 @Resolver()
 @injectable()
@@ -58,5 +60,41 @@ export class NotationResolver {
       video,
       transcriberId: ctx.getSessionUser().id,
     });
+  }
+
+  @Mutation((returns) => NotationObject, { nullable: true })
+  @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER))
+  async updateNotation(@Arg('input') input: UpdateNotationInput, @Ctx() ctx: ResolverCtx): Promise<Notation> {
+    const notation = await this.notationService.find(input.id);
+    if (!notation) {
+      throw new NotFoundError(`could not find notation with id: ${input.id}`);
+    }
+
+    const user = ctx.getSessionUser();
+    if (notation.transcriberId !== user.id && user.role !== UserRole.ADMIN) {
+      throw new ForbiddenError('not permitted to edit notation');
+    }
+
+    const [thumbnail, musicXml] = await Promise.all([
+      input.thumbnail || Promise.resolve(undefined),
+      input.musicXml || Promise.resolve(undefined),
+    ]);
+
+    await this.notationService.update(input.id, {
+      songName: input.songName,
+      artistName: input.artistName,
+      deadTimeMs: input.deadTimeMs,
+      durationMs: input.durationMs,
+      private: input.private,
+      thumbnail,
+      musicXml,
+    });
+
+    const updatedNotation = await this.notationService.find(input.id);
+    if (!updatedNotation) {
+      throw new NotFoundError(`could not find notation with id: ${input.id}`);
+    }
+
+    return updatedNotation;
   }
 }
