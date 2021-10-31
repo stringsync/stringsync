@@ -149,6 +149,7 @@ export type UserEdgeObject = {
 export type Mutation = {
   __typename?: 'Mutation';
   createNotation?: Maybe<NotationObject>;
+  updateNotation?: Maybe<NotationObject>;
   updateUser?: Maybe<UserObject>;
   login?: Maybe<UserObject>;
   logout?: Maybe<Scalars['Boolean']>;
@@ -162,6 +163,11 @@ export type Mutation = {
 
 export type MutationCreateNotationArgs = {
   input: CreateNotationInput;
+};
+
+
+export type MutationUpdateNotationArgs = {
+  input: UpdateNotationInput;
 };
 
 
@@ -202,6 +208,17 @@ export type CreateNotationInput = {
   tagIds: Array<Scalars['String']>;
 };
 
+
+export type UpdateNotationInput = {
+  id: Scalars['String'];
+  songName?: Maybe<Scalars['String']>;
+  artistName?: Maybe<Scalars['String']>;
+  deadTimeMs?: Maybe<Scalars['Float']>;
+  durationMs?: Maybe<Scalars['Float']>;
+  private?: Maybe<Scalars['Boolean']>;
+  thumbnail?: Maybe<Scalars['Upload']>;
+  musicXml?: Maybe<Scalars['Upload']>;
+};
 
 export type UpdateUserInput = {
   id: Scalars['String'];
