@@ -1,9 +1,12 @@
-import { Alert, Row } from 'antd';
+import { Alert, Button, Row } from 'antd';
 import React, { useCallback, useEffect } from 'react';
 import { useParams } from 'react-router';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { useAuth } from '../../ctx/auth';
 import { useDevice } from '../../ctx/device';
 import { useViewport } from '../../ctx/viewport/useViewport';
+import { UserRole } from '../../graphql';
 import { Layout, withLayout } from '../../hocs/withLayout';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { useMemoCmp } from '../../hooks/useMemoCmp';
@@ -74,6 +77,12 @@ const NotationShow: React.FC = enhance(() => {
     scrollToTop();
   }, [params.id]);
 
+  // auth
+  const [authState] = useAuth();
+  const isAdmin = !authState.isPending && authState.user.role === UserRole.ADMIN;
+  const isTranscriber = !authState.isPending && authState.user.id === notation?.transcriber.id;
+  const canEdit = isAdmin && isTranscriber;
+
   // css effects
   useNoOverflow(hasErrors ? null : document.body);
   useNoUserSelect(document.body);
@@ -123,7 +132,18 @@ const NotationShow: React.FC = enhance(() => {
         <Notation
           loading={loading}
           notation={notation}
-          sidecar={<SuggestedNotations srcNotationId={params.id} />}
+          sidecar={
+            <div>
+              {canEdit && (
+                <Link to={`/n/${params.id}/edit`}>
+                  <Button block type="default">
+                    edit
+                  </Button>
+                </Link>
+              )}
+              <SuggestedNotations srcNotationId={params.id} />
+            </div>
+          }
           layoutOptions={layoutOptions}
           defaultSettings={defaultSettings}
           onSettingsChange={onSettingsChange}

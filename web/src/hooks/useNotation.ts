@@ -19,7 +19,7 @@ const NOTATION_GQL = $gql
     thumbnailUrl: t.optional.string,
     videoUrl: t.optional.string,
     musicXmlUrl: t.optional.string,
-    transcriber: { username: t.string },
+    transcriber: { id: t.string, username: t.string },
     tags: [{ id: t.string, category: t.optional.oneOf(TagCategory)!, name: t.string }],
   })
   .setVariables<QueryNotationArgs>({ id: t.string })
