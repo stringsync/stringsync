@@ -14,6 +14,7 @@ import { useNoTouchCallout } from '../../hooks/useNoTouchCallout';
 import { useNoUserSelect } from '../../hooks/useNoUserSelect';
 import { compose } from '../../util/compose';
 import { scrollToTop } from '../../util/scrollToTop';
+import { FullHeightDiv } from '../FullHeightDiv';
 import { FretMarkerDisplay, Notation, NotationLayoutOptions, NotationSettings } from '../Notation';
 import { SuggestedNotations } from './SuggestedNotations';
 import { PersistentSettings } from './types';
@@ -30,11 +31,7 @@ const MOBILE_NOTATION_LAYOUT_OPTIONS: NotationLayoutOptions = {
   permitted: ['theater'],
 };
 
-const Outer = styled.div<{ $height: number }>`
-  height: ${(props) => props.$height}px;
-`;
-
-const LandscapeOverlay = styled.div`
+const Overlay = styled.div`
   position: fixed;
   top: 0;
   left: 0;
@@ -113,13 +110,13 @@ const NotationShow: React.FC = enhance(() => {
   );
 
   return (
-    <Outer data-testid="notation-show" $height={innerHeight}>
+    <FullHeightDiv data-testid="notation-show">
       {isMobileLandscape && (
-        <LandscapeOverlay>
+        <Overlay>
           <h2>
             Mobile landscape mode is not supported <em>yet</em>.
           </h2>
-        </LandscapeOverlay>
+        </Overlay>
       )}
 
       {!hasErrors && (
@@ -157,7 +154,7 @@ const NotationShow: React.FC = enhance(() => {
           </ErroredSuggestedNotationsOuter>
         </ErrorsOuter>
       )}
-    </Outer>
+    </FullHeightDiv>
   );
 });
 

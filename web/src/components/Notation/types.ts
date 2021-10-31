@@ -9,7 +9,7 @@ export type NotationLayoutOptions = {
 
 export type RenderableNotation = Pick<
   Notation,
-  'musicXmlUrl' | 'thumbnailUrl' | 'videoUrl' | 'deadTimeMs' | 'durationMs' | 'artistName' | 'songName'
+  'id' | 'musicXmlUrl' | 'thumbnailUrl' | 'videoUrl' | 'deadTimeMs' | 'durationMs' | 'artistName' | 'songName'
 > & {
   transcriber: Pick<User, 'username'>;
   tags: Tag[];
