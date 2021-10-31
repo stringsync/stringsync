@@ -42,7 +42,7 @@ export const EditSettings: React.FC<Props> = (props) => (
 
     <Divider />
 
-    <Form>
+    <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
       <Form.Item label="duration">
         <InputNumber />
       </Form.Item>
@@ -51,11 +51,11 @@ export const EditSettings: React.FC<Props> = (props) => (
         <InputNumber />
       </Form.Item>
 
-      <Form.Item>
+      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
         <Checkbox>private</Checkbox>
       </Form.Item>
 
-      <Form.Item>
+      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
         <Upload>
           <Button block icon={<UploadOutlined />}>
             upload xml
