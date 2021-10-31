@@ -43,6 +43,10 @@ const Lane = styled.div`
   margin: 0 auto;
 `;
 
+const Version = styled.div`
+  font-size: 0.6em;
+`;
+
 const Offline = styled.em`
   font-weight: lighter;
   color: ${(props) => props.theme['@muted']};
@@ -61,6 +65,7 @@ export const DefaultLayout: React.FC<Props> = (props) => {
   const isOnline = useOnlineStatus();
   const isWordmarkVisible = isOnline && isGtMd;
   const isOfflineVisible = !isOnline;
+  const isVersionVisible = !isWordmarkVisible;
   const logoLinkTo = location.pathname.startsWith('/library') ? '/' : '/library';
 
   return (
@@ -79,6 +84,11 @@ export const DefaultLayout: React.FC<Props> = (props) => {
                   {isWordmarkVisible && (
                     <Col>
                       <Wordmark />
+                    </Col>
+                  )}
+                  {isVersionVisible && (
+                    <Col>
+                      <Version>{version}</Version>
                     </Col>
                   )}
                   {isOfflineVisible && (
