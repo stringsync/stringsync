@@ -1,5 +1,5 @@
 import { UploadOutlined } from '@ant-design/icons';
-import { Alert, Button, Checkbox, Divider, Form, InputNumber, Row, Space, Upload } from 'antd';
+import { Alert, Button, Checkbox, Divider, Form, Input, InputNumber, Row, Space, Upload } from 'antd';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { RenderableNotation } from '../Notation';
@@ -43,6 +43,14 @@ export const EditSettings: React.FC<Props> = (props) => (
     <Divider />
 
     <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
+      <Form.Item label="song name">
+        <Input />
+      </Form.Item>
+
+      <Form.Item label="artist">
+        <Input />
+      </Form.Item>
+
       <Form.Item label="duration">
         <InputNumber />
       </Form.Item>
@@ -58,7 +66,15 @@ export const EditSettings: React.FC<Props> = (props) => (
       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
         <Upload>
           <Button block icon={<UploadOutlined />}>
-            upload xml
+            music xml
+          </Button>
+        </Upload>
+      </Form.Item>
+
+      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+        <Upload>
+          <Button block icon={<UploadOutlined />}>
+            thumbnail
           </Button>
         </Upload>
       </Form.Item>
