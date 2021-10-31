@@ -81,7 +81,7 @@ const NotationShow: React.FC = enhance(() => {
   const [authState] = useAuth();
   const isAdmin = !authState.isPending && authState.user.role === UserRole.ADMIN;
   const isTranscriber = !authState.isPending && authState.user.id === notation?.transcriber.id;
-  const canEdit = isAdmin && isTranscriber;
+  const canEdit = !device.mobile && (isAdmin || isTranscriber);
 
   // css effects
   useNoOverflow(hasErrors ? null : document.body);
@@ -136,7 +136,7 @@ const NotationShow: React.FC = enhance(() => {
             <div>
               {canEdit && (
                 <Link to={`/n/${params.id}/edit`}>
-                  <Button block type="default">
+                  <Button block type="default" size="large">
                     edit
                   </Button>
                 </Link>
