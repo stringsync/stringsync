@@ -1,4 +1,5 @@
-import { Alert, Button, Checkbox, Col, Divider, InputNumber, Row, Space } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import { Alert, Button, Checkbox, Divider, Form, InputNumber, Row, Space, Upload } from 'antd';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { RenderableNotation } from '../Notation';
@@ -41,18 +42,26 @@ export const EditSettings: React.FC<Props> = (props) => (
 
     <Divider />
 
-    <Row gutter={8} align="bottom">
-      <Col span={6}>
-        <h5>duration ms</h5>
-        <InputNumber min={1} max={20} />
-      </Col>
-      <Col span={6}>
-        <h5>dead time ms</h5>
-        <InputNumber min={1} max={20} />
-      </Col>
-      <Col span={6}>
+    <Form>
+      <Form.Item label="duration">
+        <InputNumber />
+      </Form.Item>
+
+      <Form.Item label="dead time">
+        <InputNumber />
+      </Form.Item>
+
+      <Form.Item>
         <Checkbox>private</Checkbox>
-      </Col>
-    </Row>
+      </Form.Item>
+
+      <Form.Item>
+        <Upload>
+          <Button block icon={<UploadOutlined />}>
+            upload xml
+          </Button>
+        </Upload>
+      </Form.Item>
+    </Form>
   </div>
 );
