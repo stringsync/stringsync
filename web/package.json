@@ -30,7 +30,7 @@
     "@types/uuid": "8.3.1",
     "@types/video.js": "^7.3.15",
     "@xstate/react": "^1.5.1",
-    "antd": "^4.13.1",
+    "antd": "4.16.13",
     "babel-eslint": "^10.1.0",
     "babel-plugin-import": "^1.13.3",
     "craco": "^0.0.3",
