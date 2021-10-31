@@ -1,5 +1,7 @@
-import { Alert, Button, Row } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { UploadOutlined } from '@ant-design/icons';
+import { Alert, Button, Checkbox, Divider, Form, Input, InputNumber, Row, Space, Upload } from 'antd';
+import { useForm } from 'antd/lib/form/Form';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -11,10 +13,11 @@ import { useNoTouchAction } from '../../hooks/useNoTouchAction';
 import { useNoTouchCallout } from '../../hooks/useNoTouchCallout';
 import { useNoUserSelect } from '../../hooks/useNoUserSelect';
 import { compose } from '../../util/compose';
-import { Nullable } from '../../util/types';
 import { FullHeightDiv } from '../FullHeightDiv';
-import { Notation, NotationLayoutOptions, RenderableNotation } from '../Notation';
-import { EditSettings } from './EditSettings';
+import { Notation, NotationLayoutOptions } from '../Notation';
+import { useUpdatedTimeAgo } from './useUpdatedTimeAgo';
+
+const EPOCH = new Date(1970, 1, 1);
 
 const LAYOUT_OPTIONS: NotationLayoutOptions = {
   permitted: ['sidecar'],
@@ -42,23 +45,51 @@ const ErrorsOuter = styled.div`
   padding: 24px;
 `;
 
+const Center = styled.div`
+  text-align: center;
+`;
+
+const Italic = styled.div`
+  margin-top: 4px;
+  font-style: italic;
+  font-size: 0.75em;
+`;
+
 const enhance = compose(withLayout(Layout.NONE));
 
 const NotationEdit: React.FC = enhance(() => {
   const device = useDevice();
 
   // notation
-  const [notation, setNotation] = useState<Nullable<RenderableNotation>>(null);
   const params = useParams<{ id: string }>();
-  const [fetchedNotation, errors, loading] = useNotation(params.id);
+  const [notation, errors, loading] = useNotation(params.id);
   const hasErrors = errors.length > 0;
+  const updatedAt = notation ? new Date(notation.updatedAt) : EPOCH;
+  const updatedAgo = useUpdatedTimeAgo(updatedAt);
+
+  // form
+  const [form] = useForm();
+  const [dirty, setDirty] = useState(false);
+  const initialValue = {
+    songName: notation?.songName,
+    artistName: notation?.artistName,
+    durationMs: notation?.durationMs,
+    deadTimeMs: notation?.deadTimeMs,
+    private: notation?.private,
+  };
+  const resetForm = useCallback(() => {
+    form.resetFields();
+    setDirty(false);
+  }, [form]);
+
   useEffect(() => {
-    if (!fetchedNotation) {
-      return;
-    }
-    // only overwrite notation if it hasn't been fetched yet
-    setNotation((notation) => (notation ? notation : fetchedNotation));
-  }, [fetchedNotation]);
+    resetForm();
+  }, [form, notation, resetForm]);
+
+  const onValuesChange = (_: any, values: any) => {
+    const nextDirty = Object.entries(initialValue).some(([key, val]) => values[key] !== val);
+    setDirty(nextDirty);
+  };
 
   // css effects
   useNoOverflow(hasErrors ? null : document.body);
@@ -80,8 +111,84 @@ const NotationEdit: React.FC = enhance(() => {
       {!hasErrors && (
         <Notation
           loading={loading}
-          notation={fetchedNotation}
-          sidecar={notation && <EditSettings notation={notation} onNotationUpdate={setNotation} />}
+          notation={notation}
+          sidecar={
+            notation && (
+              <div>
+                <Alert
+                  type={dirty ? 'warning' : 'info'}
+                  message={<Center>edit mode: {dirty ? 'unsaved changes' : 'no unsaved changes'}</Center>}
+                />
+
+                <br />
+
+                <Row justify="space-between">
+                  <Link to={`/n/${notation.id}`}>
+                    <Button type="link">go to player</Button>
+                  </Link>
+
+                  <Space>
+                    <Button type="default" onClick={resetForm} disabled={!dirty}>
+                      discard
+                    </Button>
+                    <Button type="primary" disabled={!dirty}>
+                      save
+                    </Button>
+                  </Space>
+                </Row>
+
+                <Row justify="end">
+                  <Italic>saved {updatedAgo}</Italic>
+                </Row>
+
+                <Divider />
+
+                <Form
+                  form={form}
+                  labelCol={{ span: 6 }}
+                  wrapperCol={{ span: 18 }}
+                  onValuesChange={onValuesChange}
+                  initialValues={initialValue}
+                >
+                  <Form.Item name="songName" label="song name">
+                    <Input />
+                  </Form.Item>
+
+                  <Form.Item name="artistName" label="artist">
+                    <Input />
+                  </Form.Item>
+
+                  <Form.Item name="durationMs" label="duration">
+                    <InputNumber />
+                  </Form.Item>
+
+                  <Form.Item name="deadTimeMs" label="dead time">
+                    <InputNumber />
+                  </Form.Item>
+
+                  <Form.Item name="private" wrapperCol={{ offset: 6, span: 18 }}>
+                    <Checkbox>private</Checkbox>
+                  </Form.Item>
+
+                  <Form.Item name="musicXml" wrapperCol={{ offset: 6, span: 18 }}>
+                    <Upload>
+                      <Button block icon={<UploadOutlined />}>
+                        music xml
+                      </Button>
+                    </Upload>
+                  </Form.Item>
+
+                  <Form.Item name="thumbnail" wrapperCol={{ offset: 6, span: 18 }}>
+                    <Upload>
+                      <Button block icon={<UploadOutlined />}>
+                        thumbnail
+                      </Button>
+                    </Upload>
+                  </Form.Item>
+                </Form>
+              </div>
+            )
+          }
           layoutOptions={LAYOUT_OPTIONS}
         />
       )}

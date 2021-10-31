@@ -1,8 +1,9 @@
+import { useMemo } from 'react';
 import { useAsyncAbortable } from 'react-async-hook';
 import { UNKNOWN_ERROR_MSG } from '../errors';
 import { $gql, DataOf, QueryNotationArgs, t, TagCategory } from '../graphql';
 
-type Notation = DataOf<typeof NOTATION_GQL>;
+export type NotationData = DataOf<typeof NOTATION_GQL>;
 
 const NOTATION_GQL = $gql
   .query('notation')
@@ -25,26 +26,23 @@ const NOTATION_GQL = $gql
   .setVariables<QueryNotationArgs>({ id: t.string })
   .build();
 
-export const useNotation = (id: string): [Notation | null, string[], boolean] => {
+export const useNotation = (id: string): [NotationData | null, string[], boolean] => {
   const { result, error, loading, status } = useAsyncAbortable(async (signal) => NOTATION_GQL.fetch({ id }, signal), [
     id,
   ]);
 
   const notation = result?.data?.notation || null;
-  let errors = new Array<string>();
-  switch (status) {
-    case 'success':
-      // request was successful, but found nothing
-      if (!notation) {
-        errors = ['notation not found'];
-      }
-      break;
-    case 'error':
-      errors = [error?.message || UNKNOWN_ERROR_MSG];
-      break;
-    default:
-      errors = [UNKNOWN_ERROR_MSG];
-  }
+
+  const errors = useMemo(() => {
+    switch (status) {
+      case 'success':
+        return [];
+      case 'error':
+        return [error?.message || UNKNOWN_ERROR_MSG];
+      default:
+        return [UNKNOWN_ERROR_MSG];
+    }
+  }, [status, error]);
 
   return [notation, errors, loading];
 };
