@@ -1,4 +1,4 @@
-import { debounce, first, get, set, takeRight } from 'lodash';
+import { debounce, get, set, takeRight } from 'lodash';
 import {
   BackendType,
   Cursor,
@@ -43,6 +43,7 @@ const isSvgBackend = (backend: VexFlowBackend | undefined): backend is SvgVexFlo
  * Callers should instantiate a MusicDisplay object instead.
  */
 export class InternalMusicDisplay extends OpenSheetMusicDisplay {
+  locator: MusicDisplayLocator | null = null;
   scrollContainer: HTMLDivElement;
   syncSettings: SyncSettings;
   svgSettings: SVGSettings;
@@ -118,6 +119,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.clearCursors();
 
     const locator = MusicDisplayLocator.create(this);
+    this.locator = locator.clone();
 
     const timeMs = this.cursorWrapper.timeMs;
     this.cursorWrapper = LerpCursor.create(this, locator.clone(), {
@@ -130,10 +132,6 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.svgEventProxy = SVGEventProxy.install(this, locator.clone(), this.svgSettings);
 
     this.loop = LerpLoop.create(this, locator.clone());
-    const firstCursorSnapshot = first(locator.cursorSnapshots);
-    if (firstCursorSnapshot) {
-      this.loop.update(firstCursorSnapshot.getMeasureTimeMsRange());
-    }
 
     this.fx = new Fx(this.getSvg());
     this.meta = MusicDisplayMeta.create(locator.clone());

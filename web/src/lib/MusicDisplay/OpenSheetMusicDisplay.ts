@@ -67,4 +67,8 @@ export class OpenSheetMusicDisplay implements MusicDisplay {
   getMeta() {
     return this.imd.meta;
   }
+
+  getLocator() {
+    return this.imd.locator;
+  }
 }

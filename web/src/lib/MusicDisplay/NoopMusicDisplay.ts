@@ -39,6 +39,10 @@ export class NoopMusicDisplay implements MusicDisplay {
     return this.scroller;
   }
 
+  getLocator() {
+    return null;
+  }
+
   load() {
     return Promise.resolve();
   }

@@ -1,3 +1,4 @@
+import { first } from 'lodash';
 import { useEffect, useRef } from 'react';
 import { MediaPlayer } from '../../../lib/MediaPlayer';
 import { MusicDisplay } from '../../../lib/MusicDisplay';
@@ -23,6 +24,18 @@ export const useMusicDisplayLoopBehavior = (
   const selectionRef = useRef<AnchoredSelection | null>(null);
   useEffect(() => {
     const eventBusIds = [
+      musicDisplay.eventBus.subscribe('rendered', () => {
+        const locator = musicDisplay.getLocator();
+        if (!locator) {
+          return;
+        }
+
+        const loop = musicDisplay.getLoop();
+        const firstCursorSnapshot = first(locator.cursorSnapshots);
+        if (firstCursorSnapshot) {
+          loop.update(firstCursorSnapshot.getMeasureTimeMsRange());
+        }
+      }),
       musicDisplay.eventBus.subscribe('longpress', (payload) => {
         if (!isCursorSnapshotPointerTarget(payload.src)) {
           return;

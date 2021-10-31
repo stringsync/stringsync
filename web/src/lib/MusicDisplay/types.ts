@@ -2,7 +2,7 @@ import { IOSMDOptions } from 'opensheetmusicdisplay';
 import { EventBus } from '../EventBus';
 import { CursorWrapper } from './cursors';
 import { Fx } from './fx';
-import { CursorSnapshot, SyncSettings } from './locator';
+import { CursorSnapshot, MusicDisplayLocator, SyncSettings } from './locator';
 import { Loop } from './loop';
 import { Meta } from './meta';
 import {
@@ -31,6 +31,7 @@ export interface MusicDisplay {
   getCursor(): CursorWrapper;
   getLoop(): Loop;
   getMeta(): Meta;
+  getLocator(): MusicDisplayLocator | null;
 }
 
 export type MusicDisplayEventBus = EventBus<{
