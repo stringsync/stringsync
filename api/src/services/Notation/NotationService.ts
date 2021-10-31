@@ -1,4 +1,5 @@
 import { inject, injectable } from 'inversify';
+import { isBoolean, isNumber } from 'lodash';
 import path from 'path';
 import { Config } from '../../config';
 import { Notation } from '../../domain';
@@ -7,7 +8,7 @@ import { NotationRepo } from '../../repos';
 import { BlobStorage, Connection, Logger, NotationConnectionArgs } from '../../util';
 import { NotationTagService } from '../NotationTag';
 import { VideoInfoService } from '../VideoInfo/types';
-import { CreateArgs } from './types';
+import { CreateArgs, UpdateArgs } from './types';
 
 @injectable()
 export class NotationService {
@@ -59,8 +60,8 @@ export class NotationService {
 
     const notation = await this.notationRepo.create({ artistName, songName, transcriberId });
 
-    const thumbnailFilepath = this.getThumbnailFilepath(thumbnail.filename, notation);
-    const videoFilepath = this.getVideoFilepath(video.filename, notation);
+    const thumbnailFilepath = this.getThumbnailFilepath(thumbnail.filename, notation.id);
+    const videoFilepath = this.getVideoFilepath(video.filename, notation.id);
     const notationTags = tagIds.map((tagId) => ({ notationId: notation.id, tagId }));
 
     // There seems to be an issue when creating multiple read streams, so we do this separate
@@ -68,34 +69,84 @@ export class NotationService {
     const durationMs = await this.videoInfoService.getDurationMs(video.createReadStream());
     notation.durationMs = durationMs;
 
-    const [thubmanailKey] = await Promise.all([
+    const [thumbnailKey] = await Promise.all([
       this.blobStorage.put(thumbnailFilepath, this.config.MEDIA_S3_BUCKET, thumbnail.createReadStream()),
       this.blobStorage.put(videoFilepath, this.config.VIDEO_SRC_S3_BUCKET, video.createReadStream()),
       this.notationTagService.bulkCreate(notationTags),
     ]);
 
-    notation.thumbnailUrl = this.getThumbnailUrl(thubmanailKey);
+    notation.thumbnailUrl = this.getMediaUrl(thumbnailKey);
     await this.update(notation.id, notation);
 
     return notation;
   }
 
-  async update(id: string, attrs: Partial<Notation>): Promise<void> {
+  async update(id: string, args: UpdateArgs): Promise<void> {
+    if (Object.keys(args).length === 0) {
+      return;
+    }
+
+    const attrs: Partial<Notation> = {};
+
+    const promises = new Array<Promise<any>>();
+    if (args.thumbnail) {
+      const thumbnailFilepath = this.getThumbnailFilepath(args.thumbnail.filename, id);
+      promises.push(
+        this.blobStorage
+          .put(thumbnailFilepath, this.config.MEDIA_S3_BUCKET, args.thumbnail.createReadStream())
+          .then((thumbnailKey) => {
+            attrs.thumbnailUrl = this.getMediaUrl(thumbnailKey);
+          })
+      );
+    }
+    if (args.musicXml) {
+      const musicXmlFilepath = this.getMusicXmlFilepath(args.musicXml.filename, id);
+      promises.push(
+        this.blobStorage
+          .put(musicXmlFilepath, this.config.MEDIA_S3_BUCKET, args.musicXml.createReadStream())
+          .then((musicXmlKey) => {
+            attrs.musicXmlUrl = this.getMediaUrl(musicXmlKey);
+          })
+      );
+    }
+    await Promise.all(promises);
+
+    if (args.songName) {
+      attrs.songName = args.songName;
+    }
+    if (args.artistName) {
+      attrs.artistName = args.artistName;
+    }
+    if (isNumber(args.deadTimeMs)) {
+      attrs.deadTimeMs = args.deadTimeMs;
+    }
+    if (args.durationMs) {
+      attrs.durationMs = args.durationMs;
+    }
+    if (isBoolean(args.private)) {
+      attrs.private = args.private;
+    }
+
     await this.notationRepo.update(id, attrs);
   }
 
-  private getThumbnailFilepath(originalFilename: string, notation: Notation): string {
+  private getThumbnailFilepath(originalFilename: string, notationId: string): string {
     const ext = this.getExtName(originalFilename);
-    return `notations/thumbnail/${notation.id}${ext}`;
+    return `notations/thumbnail/${notationId}${ext}`;
   }
 
-  private getVideoFilepath(originalFilename: string, notation: Notation): string {
+  private getVideoFilepath(originalFilename: string, notationId: string): string {
     const ext = this.getExtName(originalFilename);
-    return `${notation.id}${ext}`;
+    return `${notationId}${ext}`;
   }
 
-  private getThumbnailUrl(thumbnailKey: string): string {
-    return `https://${this.config.MEDIA_CDN_DOMAIN_NAME}/${thumbnailKey}`;
+  private getMusicXmlFilepath(originalFilename: string, notationId: string): string {
+    const ext = this.getExtName(originalFilename);
+    return `/notations/music_xml/${notationId}${ext}`;
+  }
+
+  private getMediaUrl(key: string): string {
+    return `https://${this.config.MEDIA_CDN_DOMAIN_NAME}/${key}`;
   }
 
   private getExtName(originalFilename: string): string {

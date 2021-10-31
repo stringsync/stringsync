@@ -8,3 +8,13 @@ export type CreateArgs = {
   thumbnail: FileUpload;
   video: FileUpload;
 };
+
+export type UpdateArgs = {
+  songName?: string;
+  artistName?: string;
+  deadTimeMs?: number;
+  durationMs?: number;
+  private?: boolean;
+  thumbnail?: FileUpload;
+  musicXml?: FileUpload;
+};
