@@ -21,7 +21,7 @@ export const NewVersionNotifier: React.FC = () => {
     if (version === lastLoadedVersion) {
       return;
     }
-    message.success(`v${version}`);
+    message.success(`update to ${version}`);
   });
 
   useEffect(() => {
