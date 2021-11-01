@@ -1,6 +1,8 @@
 import { UploadOutlined } from '@ant-design/icons';
 import { Alert, Button, Checkbox, Divider, Form, Input, InputNumber, Row, Space, Upload } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
+import { RcFile } from 'antd/lib/upload';
+import { get } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -8,16 +10,14 @@ import styled from 'styled-components';
 import { useDevice } from '../../ctx/device';
 import { Layout, withLayout } from '../../hocs/withLayout';
 import { useNoOverflow } from '../../hooks/useNoOverflow';
-import { useNotation } from '../../hooks/useNotation';
 import { useNoTouchAction } from '../../hooks/useNoTouchAction';
 import { useNoTouchCallout } from '../../hooks/useNoTouchCallout';
 import { useNoUserSelect } from '../../hooks/useNoUserSelect';
 import { compose } from '../../util/compose';
 import { FullHeightDiv } from '../FullHeightDiv';
 import { Notation, NotationLayoutOptions } from '../Notation';
-import { useUpdatedTimeAgo } from './useUpdatedTimeAgo';
-
-const EPOCH = new Date(1970, 1, 1);
+import { useNotationEditApi } from './useNotationEditApi';
+import { useUpdatedAgo } from './useUpdatedAgo';
 
 const LAYOUT_OPTIONS: NotationLayoutOptions = {
   permitted: ['sidecar'],
@@ -62,10 +62,14 @@ const NotationEdit: React.FC = enhance(() => {
 
   // notation
   const params = useParams<{ id: string }>();
-  const [notation, errors, loading] = useNotation(params.id);
+  const id = params.id;
+  const { notation, errors, getLoading, updateLoading, getNotation, updateNotation } = useNotationEditApi();
+  const loading = getLoading || updateLoading;
   const hasErrors = errors.length > 0;
-  const updatedAt = notation ? new Date(notation.updatedAt) : EPOCH;
-  const updatedAgo = useUpdatedTimeAgo(updatedAt);
+  const updatedAgo = useUpdatedAgo(notation?.updatedAt || null);
+  useEffect(() => {
+    getNotation({ id });
+  }, [getNotation, id]);
 
   // form
   const [form] = useForm();
@@ -81,13 +85,30 @@ const NotationEdit: React.FC = enhance(() => {
     form.resetFields();
     setDirty(false);
   }, [form]);
+  const onSaveClick = useCallback(() => {
+    const values = form.getFieldsValue(true);
+    updateNotation({
+      input: {
+        id,
+        artistName: values.artistName,
+        songName: values.songName,
+        deadTimeMs: values.deadTimeMs,
+        durationMs: values.durationMs,
+        private: values.private,
+        thumbnail: get(values, 'thumbnail.file', null),
+        musicXml: get(values, 'musicXml.file', null),
+      },
+    });
+  }, [form, id, updateNotation]);
+  const dontUpload = (file: RcFile) => false;
 
   useEffect(() => {
     resetForm();
   }, [form, notation, resetForm]);
 
   const onValuesChange = (_: any, values: any) => {
-    const nextDirty = Object.entries(initialValue).some(([key, val]) => values[key] !== val);
+    const nextDirty =
+      Object.entries(initialValue).some(([key, val]) => values[key] !== val) || values.thumbnail || values.musicXml;
     setDirty(nextDirty);
   };
 
@@ -102,22 +123,22 @@ const NotationEdit: React.FC = enhance(() => {
       {device.mobile && (
         <Overlay>
           <h2>Editing is not supported on mobile</h2>
-          <Link to={`/n/${params.id}`}>
+          <Link to={`/n/${id}`}>
             <Button type="link">go to notation player</Button>
           </Link>
         </Overlay>
       )}
 
-      {!hasErrors && (
+      {notation && (
         <Notation
-          loading={loading}
+          loading={getLoading}
           notation={notation}
           sidecar={
             notation && (
               <div>
                 <Alert
-                  type={dirty ? 'warning' : 'info'}
-                  message={<Center>edit mode: {dirty ? 'unsaved changes' : 'no unsaved changes'}</Center>}
+                  type={dirty ? 'warning' : 'success'}
+                  message={<Center>edit mode: {dirty ? 'unsaved changes' : 'up-to-date'}</Center>}
                 />
 
                 <br />
@@ -131,7 +152,7 @@ const NotationEdit: React.FC = enhance(() => {
                     <Button type="default" onClick={resetForm} disabled={!dirty}>
                       discard
                     </Button>
-                    <Button type="primary" disabled={!dirty}>
+                    <Button type="primary" onClick={onSaveClick} disabled={!dirty}>
                       save
                     </Button>
                   </Space>
@@ -143,6 +164,25 @@ const NotationEdit: React.FC = enhance(() => {
 
                 <Divider />
 
+                {hasErrors && (
+                  <ErrorsOuter>
+                    <Row justify="center">
+                      <Alert
+                        showIcon
+                        type="error"
+                        message="error"
+                        description={
+                          <>
+                            {errors.map((error, ndx) => (
+                              <div key={ndx}>{error}</div>
+                            ))}
+                          </>
+                        }
+                      />
+                    </Row>
+                  </ErrorsOuter>
+                )}
+
                 <Form
                   form={form}
                   labelCol={{ span: 6 }}
@@ -151,36 +191,36 @@ const NotationEdit: React.FC = enhance(() => {
                   initialValues={initialValue}
                 >
                   <Form.Item name="songName" label="song name">
-                    <Input />
+                    <Input disabled={loading} />
                   </Form.Item>
 
                   <Form.Item name="artistName" label="artist">
-                    <Input />
+                    <Input disabled={loading} />
                   </Form.Item>
 
                   <Form.Item name="durationMs" label="duration">
-                    <InputNumber />
+                    <InputNumber disabled={loading} />
                   </Form.Item>
 
                   <Form.Item name="deadTimeMs" label="dead time">
-                    <InputNumber />
+                    <InputNumber disabled={loading} />
                   </Form.Item>
 
-                  <Form.Item name="private" wrapperCol={{ offset: 6, span: 18 }}>
-                    <Checkbox>private</Checkbox>
+                  <Form.Item name="private" valuePropName="checked" wrapperCol={{ offset: 6, span: 18 }}>
+                    <Checkbox disabled={loading}>private</Checkbox>
                   </Form.Item>
 
                   <Form.Item name="musicXml" wrapperCol={{ offset: 6, span: 18 }}>
-                    <Upload>
-                      <Button block icon={<UploadOutlined />}>
+                    <Upload beforeUpload={dontUpload}>
+                      <Button block disabled={loading} icon={<UploadOutlined />}>
                         music xml
                       </Button>
                     </Upload>
                   </Form.Item>
 
                   <Form.Item name="thumbnail" wrapperCol={{ offset: 6, span: 18 }}>
-                    <Upload>
-                      <Button block icon={<UploadOutlined />}>
+                    <Upload beforeUpload={dontUpload}>
+                      <Button block disabled={loading} icon={<UploadOutlined />}>
                         thumbnail
                       </Button>
                     </Upload>
@@ -191,25 +231,6 @@ const NotationEdit: React.FC = enhance(() => {
           }
           layoutOptions={LAYOUT_OPTIONS}
         />
-      )}
-
-      {!loading && hasErrors && (
-        <ErrorsOuter>
-          <Row justify="center">
-            <Alert
-              showIcon
-              type="error"
-              message="error"
-              description={
-                <>
-                  {errors.map((error, ndx) => (
-                    <div key={ndx}>{error}</div>
-                  ))}
-                </>
-              }
-            />
-          </Row>
-        </ErrorsOuter>
       )}
     </FullHeightDiv>
   );
