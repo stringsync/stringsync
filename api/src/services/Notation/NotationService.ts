@@ -1,8 +1,10 @@
+import { FileUpload } from 'graphql-upload';
 import { inject, injectable } from 'inversify';
 import { isBoolean, isNumber } from 'lodash';
 import path from 'path';
 import { Config } from '../../config';
 import { Notation } from '../../domain';
+import { BadRequestError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { NotationRepo } from '../../repos';
 import { BlobStorage, Connection, Logger, NotationConnectionArgs } from '../../util';
@@ -58,6 +60,9 @@ export class NotationService {
   async create(args: CreateArgs): Promise<Notation> {
     const { artistName, songName, tagIds, transcriberId, thumbnail, video } = args;
 
+    this.validateMimeType(thumbnail, 'image');
+    this.validateMimeType(video, 'video');
+
     const notation = await this.notationRepo.create({ artistName, songName, transcriberId });
 
     const thumbnailFilepath = this.getThumbnailFilepath(thumbnail.filename, notation.id);
@@ -84,6 +89,12 @@ export class NotationService {
   async update(id: string, args: UpdateArgs): Promise<void> {
     if (Object.keys(args).length === 0) {
       return;
+    }
+    if (args.thumbnail) {
+      this.validateMimeType(args.thumbnail, 'image');
+    }
+    if (args.musicXml) {
+      this.validateMimeType(args.musicXml, 'text/xml', 'application/xml');
     }
 
     const attrs: Partial<Notation> = {};
@@ -155,5 +166,17 @@ export class NotationService {
 
   private getExtName(originalFilename: string): string {
     return path.extname(originalFilename).toLowerCase();
+  }
+
+  private async validateMimeType(file: FileUpload, ...allowedMimeTypes: string[]) {
+    if (allowedMimeTypes.includes(file.mimetype)) {
+      return;
+    }
+    if (allowedMimeTypes.some((mimeType) => file.mimetype.startsWith(mimeType))) {
+      return;
+    }
+    throw new BadRequestError(
+      `${file.filename} is mime type '${file.mimetype}', must be one of: ${allowedMimeTypes.join(', ')}`
+    );
   }
 }

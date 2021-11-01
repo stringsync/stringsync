@@ -18,6 +18,9 @@ import {
 import { rand, Replace } from '../../util';
 import { CreateNotationInput } from './CreateNotationInput';
 
+const createRandUploadJpg = () => createRandUpload('jpg', 'image/jpeg');
+const createRandUploadMp4 = () => createRandUpload('mp4', 'video/mp4');
+
 describe('NotationResolver', () => {
   describe('notations', () => {
     let notations: Notation[];
@@ -173,8 +176,8 @@ describe('NotationResolver', () => {
         const input = {
           songName: rand.str(12),
           artistName: rand.str(12),
-          thumbnail: createRandUpload(),
-          video: createRandUpload(),
+          thumbnail: createRandUploadJpg(),
+          video: createRandUploadMp4(),
           tagIds: [],
         };
 
@@ -199,8 +202,8 @@ describe('NotationResolver', () => {
         const input = {
           songName: rand.str(12),
           artistName: rand.str(12),
-          thumbnail: createRandUpload(),
-          video: createRandUpload(),
+          thumbnail: createRandUploadJpg(),
+          video: createRandUploadMp4(),
           tagIds: [],
         };
 
