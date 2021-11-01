@@ -18,7 +18,8 @@ export const NewVersionNotifier: React.FC = () => {
   useEffectOnce(() => {
     const lastLoadedVersion = lastLoaded.version;
     setLastLoaded({ version });
-    if (version !== lastLoadedVersion) {
+    // Prevent the message element from being baked into the crawled
+    if (lastLoadedVersion !== INITIAL_LAST_LOADED_VERSION.version && version !== lastLoadedVersion) {
       message.success(`updated to ${version}`, 3);
     }
   });
