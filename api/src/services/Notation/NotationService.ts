@@ -76,7 +76,7 @@ export class NotationService {
     ]);
 
     notation.thumbnailUrl = this.getMediaUrl(thumbnailKey);
-    await this.update(notation.id, notation);
+    await this.notationRepo.update(notation.id, notation);
 
     return notation;
   }
@@ -99,6 +99,7 @@ export class NotationService {
           })
       );
     }
+
     if (args.musicXml) {
       const musicXmlFilepath = this.getMusicXmlFilepath(args.musicXml.filename, id);
       promises.push(
@@ -125,6 +126,9 @@ export class NotationService {
     }
     if (isBoolean(args.private)) {
       attrs.private = args.private;
+    }
+    if (args.videoUrl) {
+      attrs.videoUrl = args.videoUrl!;
     }
 
     await this.notationRepo.update(id, attrs);

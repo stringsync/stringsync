@@ -25,7 +25,7 @@ export class VideoUrlService {
     try {
       await this.process(message);
     } catch (e) {
-      this.logger.error(`encountered an error when processing message '${message.id}': ${e.stack}`);
+      this.logger.error(`encountered an error when processing message '${message.id}': ${e}`);
     }
 
     await this.messageQueue.ack(message);

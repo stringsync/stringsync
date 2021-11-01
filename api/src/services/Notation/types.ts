@@ -15,6 +15,7 @@ export type UpdateArgs = {
   deadTimeMs?: number;
   durationMs?: number;
   private?: boolean;
+  videoUrl?: string;
   thumbnail?: FileUpload;
   musicXml?: FileUpload;
 };
