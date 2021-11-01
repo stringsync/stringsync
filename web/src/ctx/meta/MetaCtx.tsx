@@ -12,8 +12,7 @@ const META_ACTIONS = {
 
 const getVersion = (): string => {
   const metas = document.getElementsByTagName('meta');
-  const version = metas.namedItem('version')?.content || '';
-  return version ? `v${version}` : 'v?.?,?';
+  return metas.namedItem('version')?.content || '?.?.?';
 };
 
 const getInitialState = (): MetaState => ({

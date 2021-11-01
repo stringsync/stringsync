@@ -19,6 +19,7 @@ import { FretMarkerDisplay, NotationSettings, ScaleSelectionType } from './types
 
 const Outer = styled.div`
   z-index: 3;
+  background-color: white;
 `;
 
 type Props = FretboardJsProps & {

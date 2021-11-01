@@ -8,13 +8,14 @@ import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { useDevice } from '../../ctx/device';
+import { useViewport } from '../../ctx/viewport/useViewport';
 import { Layout, withLayout } from '../../hocs/withLayout';
+import { HEADER_HEIGHT_PX } from '../../hocs/withLayout/DefaultLayout';
 import { useNoOverflow } from '../../hooks/useNoOverflow';
 import { useNoTouchAction } from '../../hooks/useNoTouchAction';
 import { useNoTouchCallout } from '../../hooks/useNoTouchCallout';
 import { useNoUserSelect } from '../../hooks/useNoUserSelect';
 import { compose } from '../../util/compose';
-import { FullHeightDiv } from '../FullHeightDiv';
 import { Notation, NotationLayoutOptions } from '../Notation';
 import { useNotationEditApi } from './useNotationEditApi';
 import { useUpdatedAgo } from './useUpdatedAgo';
@@ -23,6 +24,10 @@ const LAYOUT_OPTIONS: NotationLayoutOptions = {
   permitted: ['sidecar'],
   target: 'sidecar',
 };
+
+const Outer = styled.div`
+  background-color: white;
+`;
 
 const Overlay = styled.div`
   position: fixed;
@@ -55,10 +60,12 @@ const Italic = styled.div`
   font-size: 0.75em;
 `;
 
-const enhance = compose(withLayout(Layout.NONE));
+const enhance = compose(withLayout(Layout.DEFAULT, { footer: false, lanes: false }));
 
 const NotationEdit: React.FC = enhance(() => {
   const device = useDevice();
+  const viewport = useViewport();
+  const notationMaxHeight = viewport.innerHeight - HEADER_HEIGHT_PX;
 
   // notation
   const params = useParams<{ id: string }>();
@@ -119,7 +126,7 @@ const NotationEdit: React.FC = enhance(() => {
   useNoTouchCallout(document.body);
 
   return (
-    <FullHeightDiv data-testid="notation-edit">
+    <Outer data-testid="notation-edit">
       {device.mobile && (
         <Overlay>
           <h2>Editing is not supported on mobile</h2>
@@ -133,6 +140,7 @@ const NotationEdit: React.FC = enhance(() => {
         <Notation
           loading={getLoading}
           notation={notation}
+          maxHeight={notationMaxHeight}
           sidecar={
             notation && (
               <div>
@@ -149,10 +157,10 @@ const NotationEdit: React.FC = enhance(() => {
                   </Link>
 
                   <Space>
-                    <Button type="default" onClick={resetForm} disabled={!dirty}>
+                    <Button type="default" onClick={resetForm} disabled={!dirty || loading}>
                       discard
                     </Button>
-                    <Button type="primary" onClick={onSaveClick} disabled={!dirty}>
+                    <Button type="primary" onClick={onSaveClick} disabled={!dirty || loading}>
                       save
                     </Button>
                   </Space>
@@ -232,7 +240,7 @@ const NotationEdit: React.FC = enhance(() => {
           layoutOptions={LAYOUT_OPTIONS}
         />
       )}
-    </FullHeightDiv>
+    </Outer>
   );
 });
 

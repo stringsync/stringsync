@@ -77,6 +77,7 @@ type Props = {
   layoutOptions?: NotationLayoutOptions;
   notation: Nullable<RenderableNotation>;
   defaultSettings?: Partial<NotationSettings>;
+  maxHeight?: number | string;
   onSettingsChange?: (settings: NotationSettings) => void;
 };
 
@@ -87,6 +88,7 @@ export const Notation: React.FC<Props> = (props) => {
   const layoutOptions = props.layoutOptions;
   const sidecar = props.sidecar;
   const src = notation?.videoUrl || null;
+  const maxHeight = props.maxHeight;
   const defaultSettings = useMemoCmp(props.defaultSettings);
   const onSettingsChange = props.onSettingsChange || noop;
 
@@ -185,6 +187,7 @@ export const Notation: React.FC<Props> = (props) => {
           <SplitPane
             handle
             split="vertical"
+            style={{ maxHeight }}
             defaultSize={settings.defaultSidecarWidthPx}
             minSize={layoutSizeBoundsPx.sidecar.min}
             maxSize={layoutSizeBoundsPx.sidecar.max}
@@ -277,7 +280,7 @@ export const Notation: React.FC<Props> = (props) => {
           <SplitPane
             handle={settings.isVideoVisible}
             split="horizontal"
-            style={{ position: 'static' }}
+            style={{ position: 'static', maxHeight }}
             pane1Style={settings.isVideoVisible ? undefined : { display: 'none' }}
             defaultSize={settings.defaultTheaterHeightPx}
             minSize={layoutSizeBoundsPx.theater.min}

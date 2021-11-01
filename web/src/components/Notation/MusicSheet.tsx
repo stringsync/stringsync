@@ -14,6 +14,7 @@ const Outer = styled.div<{ $cursor: string }>`
   position: relative;
   overflow-x: hidden;
   overflow-y: auto;
+  background-color: white;
 `;
 
 const SkeletonContainer = styled.div`
