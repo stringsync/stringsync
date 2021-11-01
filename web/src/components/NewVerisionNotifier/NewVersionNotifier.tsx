@@ -18,10 +18,9 @@ export const NewVersionNotifier: React.FC = () => {
   useEffectOnce(() => {
     const lastLoadedVersion = lastLoaded.version;
     setLastLoaded({ version });
-    if (version === lastLoadedVersion) {
-      return;
+    if (version !== lastLoadedVersion) {
+      message.success(`updated to ${version}`, 3);
     }
-    message.success(`update to ${version}`);
   });
 
   useEffect(() => {
