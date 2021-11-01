@@ -8,6 +8,7 @@ import { NewVersionNotifier } from './components/NewVerisionNotifier/NewVersionN
 import { Routes } from './components/Routes';
 import { AuthProvider } from './ctx/auth';
 import { DeviceProvider } from './ctx/device';
+import { MetaProvider } from './ctx/meta';
 import { RouteInfoProvider } from './ctx/route-info';
 import { ServiceWorkerProvider } from './ctx/service-worker';
 import { ViewportProvider } from './ctx/viewport';
@@ -16,24 +17,26 @@ import { theme } from './theme';
 export const App: React.FC = (props) => {
   return (
     <React.StrictMode>
-      <ConfigProvider locale={enUS}>
-        <ThemeProvider theme={theme}>
-          <ViewportProvider>
-            <DeviceProvider>
-              <ServiceWorkerProvider>
-                <AuthProvider>
-                  <BrowserRouter>
-                    <RouteInfoProvider>
-                      <NewVersionNotifier />
-                      <Routes />
-                    </RouteInfoProvider>
-                  </BrowserRouter>
-                </AuthProvider>
-              </ServiceWorkerProvider>
-            </DeviceProvider>
-          </ViewportProvider>
-        </ThemeProvider>
-      </ConfigProvider>
+      <MetaProvider>
+        <ConfigProvider locale={enUS}>
+          <ThemeProvider theme={theme}>
+            <ViewportProvider>
+              <DeviceProvider>
+                <ServiceWorkerProvider>
+                  <AuthProvider>
+                    <BrowserRouter>
+                      <RouteInfoProvider>
+                        <NewVersionNotifier />
+                        <Routes />
+                      </RouteInfoProvider>
+                    </BrowserRouter>
+                  </AuthProvider>
+                </ServiceWorkerProvider>
+              </DeviceProvider>
+            </ViewportProvider>
+          </ThemeProvider>
+        </ConfigProvider>
+      </MetaProvider>
     </React.StrictMode>
   );
 };

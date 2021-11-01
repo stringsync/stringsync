@@ -4,13 +4,10 @@ import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { Logo } from '../../components/Logo';
 import { Wordmark } from '../../components/Wordmark';
+import { useMeta } from '../../ctx/meta/useMeta';
 import { useViewport } from '../../ctx/viewport/useViewport';
 import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 import { Menu } from './Menu';
-
-const metas = document.getElementsByTagName('meta');
-const version = metas.namedItem('version')?.content || '';
-export const VERSION = version ? `v${version}` : 'v?.?,?';
 
 export const HEADER_HEIGHT_PX = 64;
 
@@ -58,6 +55,8 @@ type Props = {
 };
 
 export const DefaultLayout: React.FC<Props> = (props) => {
+  const { version } = useMeta();
+
   const location = useLocation();
   const { lg, xl, xxl } = useViewport();
   const isGtMd = lg || xl || xxl;
@@ -108,7 +107,7 @@ export const DefaultLayout: React.FC<Props> = (props) => {
       <Layout.Content>{props.lanes ? <Lane>{props.children}</Lane> : props.children}</Layout.Content>
       {props.footer && isGtMd && (
         <StyledFooter>
-          <Lane>{VERSION}</Lane>
+          <Lane>{version}</Lane>
         </StyledFooter>
       )}
     </StyledLayout>
