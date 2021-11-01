@@ -11,6 +11,7 @@ export const TYPES = {
   Mailer: Symbol('Mailer'),
   MailWriterService: Symbol('MailWriterService'),
   MessageQueue: Symbol('MessageQueue'),
+  MetaResolver: Symbol('MetaResolver'),
   NotationRepo: Symbol('NotationRepo'),
   NotationService: Symbol('NotationService'),
   PulseCheck: Symbol('PulseCheck'),

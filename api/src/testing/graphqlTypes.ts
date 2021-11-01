@@ -24,7 +24,8 @@ export type Query = {
   user?: Maybe<UserObject>;
   users: UserConnectionObject;
   whoami?: Maybe<UserObject>;
-  health?: Maybe<Scalars['String']>;
+  health: Scalars['String'];
+  version: Scalars['String'];
 };
 
 

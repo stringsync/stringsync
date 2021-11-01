@@ -1,6 +1,6 @@
 export * from './Auth';
-export * from './Experiment';
 export * from './generateSchema';
+export * from './Meta';
 export * from './Notation';
 export * from './Paging';
 export * from './Tag';

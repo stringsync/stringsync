@@ -1,11 +1,28 @@
-import { notification } from 'antd';
+import { message, notification } from 'antd';
 import React, { useEffect } from 'react';
+import { useMeta } from '../../ctx/meta/useMeta';
 import { useServiceWorker } from '../../ctx/service-worker';
+import { useEffectOnce } from '../../hooks/useEffectOnce';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { Nothing } from '../Nothing/Nothing';
 import { TimeoutButton } from '../TimeoutButton/TimeoutButton';
 
+const LAST_LOADED_VERSION_KEY = 'stringsync_last_loaded_version';
+const INITIAL_LAST_LOADED_VERSION = { version: '0.0.0' };
+
 export const NewVersionNotifier: React.FC = () => {
   const { isUpdated, registration } = useServiceWorker();
+  const { version } = useMeta();
+  const [lastLoaded, setLastLoaded] = useLocalStorage(LAST_LOADED_VERSION_KEY, INITIAL_LAST_LOADED_VERSION);
+
+  useEffectOnce(() => {
+    const lastLoadedVersion = lastLoaded.version;
+    setLastLoaded({ version });
+    if (version === lastLoadedVersion) {
+      return;
+    }
+    message.success(`v${version}`);
+  });
 
   useEffect(() => {
     if (!isUpdated || !registration || !registration.waiting) {

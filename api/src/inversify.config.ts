@@ -13,7 +13,7 @@ import {
   TagRepo as MikroORMTagRepo,
   UserRepo as MikroORMUserRepo,
 } from './repos/mikro-orm';
-import { AuthResolver, ExperimentResolver, NotationResolver, TagResolver, UserResolver } from './resolvers';
+import { AuthResolver, MetaResolver, NotationResolver, TagResolver, UserResolver } from './resolvers';
 import { ApiServer, DevApiServer, GraphqlServer, JobServer } from './server';
 import { WorkerServer } from './server/worker';
 import {
@@ -123,7 +123,7 @@ if (config.NODE_ENV === 'development') {
 container.bind<JobServer>(TYPES.WorkerServer).to(WorkerServer);
 
 container
-  .bind<ExperimentResolver>(ExperimentResolver)
+  .bind<MetaResolver>(MetaResolver)
   .toSelf()
   .inSingletonScope();
 container
