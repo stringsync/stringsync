@@ -336,7 +336,7 @@ export class StringsyncStack extends cdk.Stack {
       PORT: '3000',
       DOMAIN_NAME: domainName,
       WEB_UI_CDN_DOMAIN_NAME: appDistribution.domainName,
-      MEDIA_CDN_DOMAIN_NAME: domain.sub('media'),
+      MEDIA_CDN_DOMAIN_NAME: `https://${domain.sub('media')}`,
       MEDIA_S3_BUCKET: mediaBucket.bucketName,
       VIDEO_SRC_S3_BUCKET: vod.sourceBucket.bucketName,
       VIDEO_QUEUE_SQS_URL: vod.queue.queueUrl,
