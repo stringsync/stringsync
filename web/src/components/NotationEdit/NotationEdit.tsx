@@ -15,7 +15,7 @@ import { useNoOverflow } from '../../hooks/useNoOverflow';
 import { useNoTouchAction } from '../../hooks/useNoTouchAction';
 import { useNoTouchCallout } from '../../hooks/useNoTouchCallout';
 import { useNoUserSelect } from '../../hooks/useNoUserSelect';
-import { useTimeAgo } from '../../hooks/useUpdatedAgo';
+import { useTimeAgo } from '../../hooks/useTimeAgo';
 import { compose } from '../../util/compose';
 import { Notation, NotationLayoutOptions } from '../Notation';
 import { useNotationEditApi } from './useNotationEditApi';

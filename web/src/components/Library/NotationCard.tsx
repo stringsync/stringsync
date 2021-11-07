@@ -1,7 +1,7 @@
 import { Avatar, Card, Divider, Skeleton, Tag } from 'antd';
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useTimeAgo } from '../../hooks/useUpdatedAgo';
+import { useTimeAgo } from '../../hooks/useTimeAgo';
 import { theme } from '../../theme';
 import { getQueryMatches } from './getQueryMatches';
 import { NotationPreview } from './types';
