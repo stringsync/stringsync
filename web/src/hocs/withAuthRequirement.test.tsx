@@ -1,14 +1,56 @@
 import { render } from '@testing-library/react';
-import { createMemoryHistory } from 'history';
 import React from 'react';
-import { Router } from 'react-router';
+import { AuthState } from '../ctx/auth';
+import { getNullAuthUser } from '../ctx/auth/getNullAuthUser';
+import { useAuth } from '../ctx/auth/useAuth';
 import { UserRole } from '../graphql';
 import { Test } from '../testing';
+import * as rand from '../util/rand';
 import { AuthRequirement } from '../util/types';
 import { withAuthRequirement } from './withAuthRequirement';
 
-describe.skip('withAuthRequirement', () => {
+jest.mock('../ctx/auth/useAuth', () => {
+  const originalModule = jest.requireActual('../ctx/auth/useAuth');
+  return {
+    __esModule: true,
+    ...originalModule,
+    useAuth: jest.fn(),
+  };
+});
+const getDefaultAuthState = (): AuthState => ({
+  isPending: true,
+  errors: [],
+  user: getNullAuthUser(),
+});
+const setAuthState = (authState: Partial<AuthState>) => {
+  (useAuth as jest.Mock).mockReturnValue([{ ...getDefaultAuthState(), ...authState }, {}]);
+};
+const simulatePending = () => {
+  setAuthState(getDefaultAuthState());
+};
+const simulateLogout = () => {
+  setAuthState({ isPending: false });
+};
+const simulateLoginAs = (role: UserRole) => {
+  setAuthState({
+    isPending: false,
+    errors: [],
+    user: {
+      id: rand.str(8),
+      role,
+      confirmedAt: new Date().toString(),
+      email: 'foo@gmail.com',
+      username: 'foo',
+    },
+  });
+};
+
+describe('withAuthRequirement', () => {
   const Dummy: React.FC = (props) => <div data-testid="dummy">{props.children}</div>;
+
+  beforeEach(() => {
+    setAuthState(getDefaultAuthState());
+  });
 
   describe('with AuthRequirement.NONE', () => {
     let Component: React.FC;
@@ -18,6 +60,7 @@ describe.skip('withAuthRequirement', () => {
     });
 
     it('renders when logged out', () => {
+      simulateLogout();
       const { getByTestId } = render(
         <Test>
           <Component />
@@ -27,7 +70,8 @@ describe.skip('withAuthRequirement', () => {
       expect(getByTestId('dummy')).toBeInTheDocument();
     });
 
-    it('renders when logged in', () => {
+    it.each([UserRole.STUDENT, UserRole.TEACHER, UserRole.ADMIN])('renders when logged in as %s', (role) => {
+      simulateLoginAs(role);
       const { getByTestId } = render(
         <Test>
           <Component />
@@ -37,14 +81,15 @@ describe.skip('withAuthRequirement', () => {
       expect(getByTestId('dummy')).toBeInTheDocument();
     });
 
-    it('renders when pending', () => {
+    it('does not render when pending', () => {
+      simulatePending();
       const { getByTestId } = render(
         <Test>
           <Component />
         </Test>
       );
 
-      expect(getByTestId('dummy')).toBeInTheDocument();
+      expect(() => getByTestId('dummy')).toThrow();
     });
   });
 
@@ -56,30 +101,18 @@ describe.skip('withAuthRequirement', () => {
     });
 
     it('does not render when logged in', () => {
-      const history = createMemoryHistory();
-
+      simulateLoginAs(UserRole.STUDENT);
       const { getByTestId } = render(
-        <Router history={history}>
+        <Test>
           <Component />
-        </Router>
+        </Test>
       );
 
       expect(() => getByTestId('dummy')).toThrow();
     });
 
     it('renders when logged out', () => {
-      const history = createMemoryHistory();
-
-      const { getByTestId } = render(
-        <Router history={history}>
-          <Component />
-        </Router>
-      );
-
-      expect(getByTestId('dummy')).toBeInTheDocument();
-    });
-
-    it('does render when pending', () => {
+      simulateLogout();
       const { getByTestId } = render(
         <Test>
           <Component />
@@ -87,6 +120,17 @@ describe.skip('withAuthRequirement', () => {
       );
 
       expect(getByTestId('dummy')).toBeInTheDocument();
+    });
+
+    it('does not render when pending', () => {
+      simulatePending();
+      const { getByTestId } = render(
+        <Test>
+          <Component />
+        </Test>
+      );
+
+      expect(() => getByTestId('dummy')).toThrow();
     });
   });
 
@@ -97,31 +141,30 @@ describe.skip('withAuthRequirement', () => {
       Component = withAuthRequirement(AuthRequirement.LOGGED_IN)(Dummy);
     });
 
-    it('renders when logged in', () => {
-      const history = createMemoryHistory();
-
+    it.each([UserRole.STUDENT, UserRole.TEACHER, UserRole.ADMIN])('renders when logged in as %s', (role) => {
+      simulateLoginAs(role);
       const { getByTestId } = render(
-        <Router history={history}>
+        <Test>
           <Component />
-        </Router>
+        </Test>
       );
 
       expect(getByTestId('dummy')).toBeInTheDocument();
     });
 
     it('does not render when logged out', () => {
-      const history = createMemoryHistory();
-
+      simulateLogout();
       const { getByTestId } = render(
-        <Router history={history}>
+        <Test>
           <Component />
-        </Router>
+        </Test>
       );
 
       expect(() => getByTestId('dummy')).toThrow();
     });
 
     it('does not render when pending', () => {
+      simulatePending();
       const { getByTestId } = render(
         <Test>
           <Component />
@@ -140,14 +183,13 @@ describe.skip('withAuthRequirement', () => {
     });
 
     it.each([UserRole.STUDENT, UserRole.TEACHER, UserRole.ADMIN])(
-      'renders when logged in as student for greater',
+      'renders when logged in as student or greater',
       (role) => {
-        const history = createMemoryHistory();
-
+        simulateLoginAs(role);
         const { getByTestId } = render(
-          <Router history={history}>
+          <Test>
             <Component />
-          </Router>
+          </Test>
         );
 
         expect(getByTestId('dummy')).toBeInTheDocument();
@@ -155,18 +197,18 @@ describe.skip('withAuthRequirement', () => {
     );
 
     it('does not render when logged out', () => {
-      const history = createMemoryHistory();
-
+      simulateLogout();
       const { getByTestId } = render(
-        <Router history={history}>
+        <Test>
           <Component />
-        </Router>
+        </Test>
       );
 
       expect(() => getByTestId('dummy')).toThrow();
     });
 
     it('does not render when pending', () => {
+      simulatePending();
       const { getByTestId } = render(
         <Test>
           <Component />
@@ -185,42 +227,40 @@ describe.skip('withAuthRequirement', () => {
     });
 
     it.each([UserRole.TEACHER, UserRole.ADMIN])('renders when logged in as teacher or greater', (role) => {
-      const history = createMemoryHistory();
-
+      simulateLoginAs(role);
       const { getByTestId } = render(
-        <Router history={history}>
+        <Test>
           <Component />
-        </Router>
+        </Test>
       );
 
       expect(getByTestId('dummy')).toBeInTheDocument();
     });
 
     it('does not render when logged in as less than teacher', () => {
-      const history = createMemoryHistory();
-
+      simulateLoginAs(UserRole.STUDENT);
       const { getByTestId } = render(
-        <Router history={history}>
+        <Test>
           <Component />
-        </Router>
+        </Test>
       );
 
       expect(() => getByTestId('dummy')).toThrow();
     });
 
     it('does not render when logged out', () => {
-      const history = createMemoryHistory();
-
+      simulateLogout();
       const { getByTestId } = render(
-        <Router history={history}>
+        <Test>
           <Component />
-        </Router>
+        </Test>
       );
 
       expect(() => getByTestId('dummy')).toThrow();
     });
 
     it('does not render when pending', () => {
+      simulatePending();
       const { getByTestId } = render(
         <Test>
           <Component />
@@ -239,42 +279,40 @@ describe.skip('withAuthRequirement', () => {
     });
 
     it('renders when logged in as admin or greater', () => {
-      const history = createMemoryHistory();
-
+      simulateLoginAs(UserRole.ADMIN);
       const { getByTestId } = render(
-        <Router history={history}>
+        <Test>
           <Component />
-        </Router>
+        </Test>
       );
 
       expect(getByTestId('dummy')).toBeInTheDocument();
     });
 
     it.each([UserRole.STUDENT, UserRole.TEACHER])('does not render when logged in as less than admin', (role) => {
-      const history = createMemoryHistory();
-
+      simulateLoginAs(role);
       const { getByTestId } = render(
-        <Router history={history}>
+        <Test>
           <Component />
-        </Router>
+        </Test>
       );
 
       expect(() => getByTestId('dummy')).toThrow();
     });
 
     it('does not render when logged out', () => {
-      const history = createMemoryHistory();
-
+      simulateLogout();
       const { getByTestId } = render(
-        <Router history={history}>
+        <Test>
           <Component />
-        </Router>
+        </Test>
       );
 
       expect(() => getByTestId('dummy')).toThrow();
     });
 
     it('does not render when pending', () => {
+      simulatePending();
       const { getByTestId } = render(
         <Test>
           <Component />

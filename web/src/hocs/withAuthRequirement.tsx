@@ -8,7 +8,7 @@ import { gtEqAdmin, gtEqStudent, gtEqTeacher } from '../domain';
 import { UserRole } from '../graphql';
 import { AuthRequirement } from '../util/types';
 
-const isMeetingAuthReqs = (authReqs: AuthRequirement, isLoggedIn: boolean, userRole: UserRole) => {
+const isMeetingAuthReq = (authReqs: AuthRequirement, isLoggedIn: boolean, userRole: UserRole) => {
   switch (authReqs) {
     case AuthRequirement.NONE:
       return true;
@@ -28,7 +28,7 @@ const isMeetingAuthReqs = (authReqs: AuthRequirement, isLoggedIn: boolean, userR
   }
 };
 
-export const withAuthRequirement = (authReqs: AuthRequirement) =>
+export const withAuthRequirement = (authReq: AuthRequirement) =>
   function<P>(Component: React.ComponentType<P>): React.FC<P> {
     return (props) => {
       const [authState] = useAuth();
@@ -40,7 +40,7 @@ export const withAuthRequirement = (authReqs: AuthRequirement) =>
       let { returnToRoute } = useRouteInfo();
       returnToRoute = history.location.pathname === returnToRoute ? '/library' : returnToRoute;
 
-      const meetsAuthReqs = isMeetingAuthReqs(authReqs, isLoggedIn, userRole);
+      const meetsAuthReqs = isMeetingAuthReq(authReq, isLoggedIn, userRole);
 
       useEffect(() => {
         if (isAuthPending || meetsAuthReqs) {
@@ -48,7 +48,7 @@ export const withAuthRequirement = (authReqs: AuthRequirement) =>
         }
         // when the current session fails to meet auth
         // reqs, redirect the user to somewhere reasonable
-        switch (authReqs) {
+        switch (authReq) {
           case AuthRequirement.NONE:
             break;
           case AuthRequirement.LOGGED_IN:
@@ -71,8 +71,8 @@ export const withAuthRequirement = (authReqs: AuthRequirement) =>
             history.push(isLoggedIn ? returnToRoute : '/login');
             break;
         }
-      }, [history, isAuthPending, isLoggedIn, meetsAuthReqs, returnToRoute]);
+      }, [isAuthPending, meetsAuthReqs, history, isLoggedIn, returnToRoute]);
 
-      return meetsAuthReqs ? <Component {...props} /> : <Fallback />;
+      return !isAuthPending && meetsAuthReqs ? <Component {...props} /> : <Fallback />;
     };
   };
