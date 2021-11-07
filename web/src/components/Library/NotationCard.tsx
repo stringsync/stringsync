@@ -18,6 +18,8 @@ const Cover = styled.div`
   }
 `;
 
+// We can't use display: none or the image won't load. Using the $loading property is the mechanism by
+// which we avoid showing both the skeleton and the image at the same time.
 const Img = styled.img<{ $loading: boolean }>`
   width: ${(props) => (props.$loading ? '0%' : '100%')};
 `;
