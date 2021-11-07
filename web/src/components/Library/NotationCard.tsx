@@ -1,8 +1,8 @@
 import { Avatar, Card, Divider, Skeleton, Tag } from 'antd';
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useTimeAgo } from '../../hooks/useUpdatedAgo';
 import { theme } from '../../theme';
-import { ago } from '../../util/ago';
 import { getQueryMatches } from './getQueryMatches';
 import { NotationPreview } from './types';
 
@@ -43,10 +43,9 @@ interface Props {
 }
 
 export const NotationCard: React.FC<Props> = (props) => {
-  const now = new Date();
-
   const { thumbnailUrl, songName, transcriber, artistName, tags } = props.notation;
   const url = thumbnailUrl || THUMBNAIL_PLACEHOLDER;
+  const createdAgo = useTimeAgo(props.notation.createdAt);
 
   const [thumbnailLoading, setThumbnailLoading] = useState(true);
 
@@ -101,7 +100,7 @@ export const NotationCard: React.FC<Props> = (props) => {
                   )}
                 </small>
               </div>
-              <small>{ago(new Date(props.notation.createdAt), now)}</small>
+              <small>{createdAgo}</small>
               <Tags>
                 {tags.map((tag) => {
                   const isTagChecked = props.isTagChecked(tag.id);

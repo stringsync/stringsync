@@ -15,10 +15,10 @@ import { useNoOverflow } from '../../hooks/useNoOverflow';
 import { useNoTouchAction } from '../../hooks/useNoTouchAction';
 import { useNoTouchCallout } from '../../hooks/useNoTouchCallout';
 import { useNoUserSelect } from '../../hooks/useNoUserSelect';
+import { useTimeAgo } from '../../hooks/useUpdatedAgo';
 import { compose } from '../../util/compose';
 import { Notation, NotationLayoutOptions } from '../Notation';
 import { useNotationEditApi } from './useNotationEditApi';
-import { useUpdatedAgo } from './useUpdatedAgo';
 
 const LAYOUT_OPTIONS: NotationLayoutOptions = {
   permitted: ['sidecar'],
@@ -73,7 +73,7 @@ const NotationEdit: React.FC = enhance(() => {
   const { notation, errors, getLoading, updateLoading, getNotation, updateNotation } = useNotationEditApi();
   const loading = getLoading || updateLoading;
   const hasErrors = errors.length > 0;
-  const updatedAgo = useUpdatedAgo(notation?.updatedAt || null);
+  const updatedAgo = useTimeAgo(notation?.updatedAt || null);
   useEffect(() => {
     getNotation({ id });
   }, [getNotation, id]);
