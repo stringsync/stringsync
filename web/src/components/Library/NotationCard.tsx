@@ -1,29 +1,26 @@
 import { Avatar, Card, Divider, Skeleton, Tag } from 'antd';
 import React, { useState } from 'react';
-import { Transition } from 'react-transition-group';
-import { TransitionStatus } from 'react-transition-group/Transition';
 import styled from 'styled-components';
 import { theme } from '../../theme';
 import { ago } from '../../util/ago';
 import { getQueryMatches } from './getQueryMatches';
 import { NotationPreview } from './types';
 
-const FADE_IN_DURATION_MS = 300;
-
+const SKELETON_HEIGHT_PX = 400;
 const HIGHLIGHT_COLOR = theme['@highlight-color'];
-
 const THUMBNAIL_PLACEHOLDER = 'https://dpwvs3j3j2uwp.cloudfront.net/thumbnail_placeholder.jpg';
 
-const getOpacity = (state: TransitionStatus) => {
-  switch (state) {
-    case 'entering':
-      return 0;
-    case 'entered':
-      return 1;
-    default:
-      return 0;
+const Cover = styled.div`
+  width: 100%;
+
+  .ant-skeleton-element {
+    width: 100%;
   }
-};
+`;
+
+const Img = styled.img<{ $loading: boolean }>`
+  width: ${(props) => (props.$loading ? '0%' : '100%')};
+`;
 
 const ColoredSpan = styled.span`
   color: ${HIGHLIGHT_COLOR};
@@ -31,11 +28,6 @@ const ColoredSpan = styled.span`
 
 const Tags = styled.div`
   margin-top: 8px;
-`;
-
-const StyledImg = styled.img<{ state: TransitionStatus }>`
-  opacity: ${({ state }) => getOpacity(state)};
-  transition: opacity ${FADE_IN_DURATION_MS}ms ease-in-out;
 `;
 
 const StyledCard = styled(Card)`
@@ -64,9 +56,10 @@ export const NotationCard: React.FC<Props> = (props) => {
     <StyledCard
       hoverable
       cover={
-        <Transition appear in={!thumbnailLoading} timeout={FADE_IN_DURATION_MS}>
-          {(state) => <StyledImg onLoad={onThumbnailLoad} state={state} src={url} alt={songName} />}
-        </Transition>
+        <Cover>
+          {thumbnailLoading && <Skeleton.Image style={{ width: '100%', height: SKELETON_HEIGHT_PX }} />}
+          <Img $loading={thumbnailLoading} onLoad={onThumbnailLoad} src={url} alt={songName} />
+        </Cover>
       }
     >
       <Skeleton avatar active loading={thumbnailLoading} paragraph={{ rows: 1 }}>
