@@ -20,7 +20,7 @@ export class DevMailer implements Mailer {
   }
 
   async send(mail: Mail): Promise<void> {
-    const to = this.config.DEV_EMAIL;
+    const to = 'jared@jaredjohnson.dev';
     if (!to) {
       throw new InternalError('missing config: DEV_EMAIL');
     }
@@ -30,6 +30,12 @@ export class DevMailer implements Mailer {
 
     this.logger.info(`redirecting email from '${oldMail.to}', to: '${newMail.to}'`);
     this.logger.info(`sending mail: ${JSON.stringify(newMail, null, 2)}`);
-    // await this.transporter.sendMail(newMail);
+
+    try {
+      const result = await this.transporter.sendMail({ ...newMail, sender: newMail.from });
+      console.log(`result: ${result}`);
+    } catch (err) {
+      console.error(err);
+    }
   }
 }

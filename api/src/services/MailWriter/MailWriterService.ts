@@ -13,10 +13,10 @@ export class MailWriterService {
     const confirmHref = this.getHref('/confirm-email', { confirmationToken: user.confirmationToken });
 
     return {
-      subject: 'Confirm your email for StringSync',
+      subject: 'Confirm your email for stringsync',
       from: this.config.INFO_EMAIL,
       to: user.email,
-      html: `<p>Please confirm your email for <a href="${confirmHref}">StringSync</a>.</p>`,
+      html: `<p>Please confirm your email for <a href="${confirmHref}">stringsync</a>.</p>`,
     };
   }
 
@@ -31,10 +31,10 @@ export class MailWriterService {
     });
 
     return {
-      subject: 'Reset your password for StringSync',
+      subject: 'Reset your password for stringsync',
       from: this.config.INFO_EMAIL,
       to: user.email,
-      html: `<p>Reset your password at <a href="${resetPasswordHref}">StringSync</a>.</p>`,
+      html: `<p>Reset your password at <a href="${resetPasswordHref}">stringsync</a>.</p>`,
     };
   }
 

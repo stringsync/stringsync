@@ -1,19 +1,19 @@
-# StringSync
+# stringsync
 
 [stringsync.com](https://stringsync.com)
 
-StringSync is a web application that teaches people how to play guitar.
+stringsync is a web application that teaches people how to play guitar.
 
 ## Getting Started
 
 ### Prerequisites
 
-StringSync uses Docker and `docker-compose` to run services locally. You will need this if you want to run StringSync locally.
+stringsync uses Docker and `docker-compose` to run services locally. You will need this if you want to run stringsync locally.
 
 - [install Docker](https://docs.docker.com/install/)
 - [install docker-compose](https://docs.docker.com/compose/install/)
 
-StringSync uses `yarn` as a package management solution. You will need this if you want to have TypeScript type definitions when updating the codebase.
+stringsync uses `yarn` as a package management solution. You will need this if you want to have TypeScript type definitions when updating the codebase.
 
 - [install yarn](https://yarnpkg.com/lang/en/docs/install/)
 
@@ -25,7 +25,7 @@ yarn install
 
 ### Commands
 
-StringSync commands are run using the `./bin/ss` command.
+stringsync commands are run using the `./bin/ss` command.
 
 To view all the commands, run:
 
