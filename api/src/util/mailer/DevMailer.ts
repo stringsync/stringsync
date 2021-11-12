@@ -5,6 +5,7 @@ import { Config } from '../../config';
 import { InternalError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { Logger } from '../logger';
+import { SENDING_RATE_HZ } from './constants';
 import { Mail, Mailer } from './types';
 
 @injectable()
@@ -16,6 +17,7 @@ export class DevMailer implements Mailer {
     this.ses = new SES();
     this.transporter = createTransport({
       SES: this.ses,
+      sendingRate: SENDING_RATE_HZ,
     });
   }
 

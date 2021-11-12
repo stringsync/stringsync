@@ -3,6 +3,7 @@ import { inject, injectable } from 'inversify';
 import { createTransport, Transporter } from 'nodemailer';
 import { TYPES } from '../../inversify.constants';
 import { Logger } from '../logger';
+import { SENDING_RATE_HZ } from './constants';
 import { Mail, Mailer } from './types';
 
 @injectable()
@@ -14,6 +15,7 @@ export class Nodemailer implements Mailer {
     this.ses = new SES();
     this.transporter = createTransport({
       SES: this.ses,
+      sendingRate: SENDING_RATE_HZ,
     });
   }
 
