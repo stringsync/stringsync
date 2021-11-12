@@ -441,6 +441,13 @@ export class StringsyncStack extends cdk.Stack {
       environment,
       secrets,
     });
+    workerTaskDefinition.taskRole.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['ses:SendRawEmail'],
+        resources: ['*'],
+      })
+    );
     vod.queue.grantConsumeMessages(workerTaskDefinition.taskRole);
 
     /**
