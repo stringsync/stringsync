@@ -1,11 +1,10 @@
 import { EntityManager } from '@mikro-orm/core';
 
 export enum Orm {
-  Sequelize,
   MikroORM,
 }
 
-export type TaskCtx = { type: Orm.Sequelize } | { type: Orm.MikroORM; em: EntityManager };
+export type TaskCtx = { type: Orm.MikroORM; em: EntityManager };
 
 export type Task = (ctx: TaskCtx) => Promise<void>;
 
