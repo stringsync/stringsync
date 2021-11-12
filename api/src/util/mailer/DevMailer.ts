@@ -20,7 +20,7 @@ export class DevMailer implements Mailer {
   }
 
   async send(mail: Mail): Promise<void> {
-    const to = 'jared@jaredjohnson.dev';
+    const to = this.config.DEV_EMAIL;
     if (!to) {
       throw new InternalError('missing config: DEV_EMAIL');
     }
@@ -33,9 +33,10 @@ export class DevMailer implements Mailer {
 
     try {
       const result = await this.transporter.sendMail({ ...newMail, sender: newMail.from });
-      console.log(`result: ${result}`);
+      this.logger.info(`sent mail successfully: ${result}`);
     } catch (err) {
-      console.error(err);
+      // Errors sending emails are swallowed so we don't indefinitely slam the SES service.
+      this.logger.error(`error sending mail: ${err}`);
     }
   }
 }
