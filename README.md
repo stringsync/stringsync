@@ -61,11 +61,11 @@ To teardown manually, run:
 To run api tests in watch mode, run:
 
 ```
-./bin/ss test:api WATCH=true
+WATCH=true ./bin/ss testapi
 ```
 
 To run web tests in watch mode, run:
 
 ```
-./bin/ss test:web WATCH=true
+WATCH=true ./bin/ss testweb
 ```
