@@ -44,7 +44,7 @@ export class NotationResolver {
 
   @Query((returns) => [NotationObject])
   async suggestedNotations(@Args() args: SuggestedNotationsArgs): Promise<Notation[]> {
-    return await this.notationService.findSuggestions(args.id, args.limit);
+    return await this.notationService.findSuggestions(args.id || null, args.limit);
   }
 
   @Mutation((returns) => NotationObject, { nullable: true })

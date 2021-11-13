@@ -39,8 +39,8 @@ export class NotationService {
     return await this.notationRepo.findPage(args);
   }
 
-  async findSuggestions(id: string, limit: number): Promise<Notation[]> {
-    const notation = await this.notationRepo.find(id);
+  async findSuggestions(id: string | null, limit: number): Promise<Notation[]> {
+    const notation = id ? await this.notationRepo.find(id) : null;
     if (notation) {
       return await this.notationRepo.findSuggestions(notation, limit);
     } else {
