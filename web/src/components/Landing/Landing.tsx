@@ -1,5 +1,5 @@
 import { CustomerServiceOutlined, SearchOutlined, ThunderboltOutlined } from '@ant-design/icons';
-import { Col, Divider, Row } from 'antd';
+import { Col, Divider, Row, Space } from 'antd';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -7,6 +7,7 @@ import { Layout, withLayout } from '../../hocs/withLayout';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { compose } from '../../util/compose';
 import { Box } from '../Box';
+import { ImFeelingLucky } from '../ImFeelingLucky';
 import { Logo } from '../Logo';
 import { Wordmark } from '../Wordmark';
 
@@ -96,9 +97,13 @@ export const Landing: React.FC<Props> = enhance((props: Props) => {
             <Wordmark />
           </Header>
           <SubHeader>learn how to play guitar for free</SubHeader>
-          <Link to="/library" className="ant-btn ant-btn-primary">
-            start learning
-          </Link>
+
+          <Space>
+            <Link to="/library" className="ant-btn ant-btn-primary">
+              start learning
+            </Link>
+            <ImFeelingLucky />
+          </Space>
         </WhiteBox>
       </Jumbotron>
 
