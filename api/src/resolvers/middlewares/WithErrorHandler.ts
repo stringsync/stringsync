@@ -6,6 +6,6 @@ export const WithErrorHandler = (errorHandler: ErrorHandler): MiddlewareFn => as
   try {
     await next();
   } catch (err) {
-    return await errorHandler(err);
+    return await errorHandler(err as Error);
   }
 };
