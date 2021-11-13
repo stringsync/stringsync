@@ -45,7 +45,7 @@ export type QueryNotationArgs = {
 
 
 export type QuerySuggestedNotationsArgs = {
-  id: Scalars['String'];
+  id?: Maybe<Scalars['String']>;
   limit: Scalars['Int'];
 };
 
