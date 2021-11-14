@@ -1,5 +1,6 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
+import { useDimensions } from '../../hooks/useDimensions';
 import { MediaPlayer } from '../../lib/MediaPlayer';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import {
@@ -10,6 +11,7 @@ import {
   PositionFilterParams,
   PositionStyle,
 } from '../FretboardJs';
+import * as helpers from './helpers';
 import { useMeasurePositions } from './hooks/useMeasurePositions';
 import { useMeasureSlideTransition as useMeasureSlideTransitions } from './hooks/useMeasureSlideTransitions';
 import { useMusicDisplayCursorSnapshot } from './hooks/useMusicDisplayCursorSnapshot';
@@ -35,19 +37,27 @@ export const Fretboard: React.FC<Props> = (props) => {
   const mediaPlayer = props.mediaPlayer;
   const onResize = props.onResize;
 
+  // num frets
+  const [fretCount, setFretCount] = useState(() => helpers.getFretCount(0));
+  const outerRef = useRef<HTMLDivElement>(null);
+  const { width } = useDimensions(outerRef.current);
+  useEffect(() => {
+    setFretCount(helpers.getFretCount(width));
+  }, [width]);
+
   // fretboard positions
   const fretboardOpts = useMemo<FretboardJsOptions>(() => {
     switch (settings.fretMarkerDisplay) {
       case FretMarkerDisplay.None:
-        return { dotFill: 'white' };
+        return { fretCount, dotFill: 'white' };
       case FretMarkerDisplay.Degree:
-        return { dotText: (params: PositionFilterParams) => params.grade, dotFill: 'white' };
+        return { fretCount, dotText: (params: PositionFilterParams) => params.grade, dotFill: 'white' };
       case FretMarkerDisplay.Note:
-        return { dotText: (params: PositionFilterParams) => params.note };
+        return { fretCount, dotText: (params: PositionFilterParams) => params.note };
       default:
-        return { dotFill: 'white' };
+        return { fretCount, dotFill: 'white' };
     }
-  }, [settings.fretMarkerDisplay]);
+  }, [settings.fretMarkerDisplay, fretCount]);
 
   const cursorSnapshot = useMusicDisplayCursorSnapshot(musicDisplay);
   const tonic = useTonic(settings.selectedScale, musicDisplay);
@@ -60,7 +70,7 @@ export const Fretboard: React.FC<Props> = (props) => {
   useEffect(() => {}, [settings.scaleSelectionType]);
 
   return (
-    <Outer data-testid="fretboard">
+    <Outer data-testid="fretboard" ref={outerRef}>
       <FretboardJs
         tonic={tonic || undefined}
         options={fretboardOpts}
