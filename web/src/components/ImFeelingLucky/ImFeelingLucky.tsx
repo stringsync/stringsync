@@ -1,29 +1,26 @@
 import { Button, message } from 'antd';
-import React, { useEffect } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useHistory } from 'react-router';
 import { useRandomNotationIdGetter } from './useRandomNotationIdGetter';
 
 export const ImFeelingLucky = () => {
   const history = useHistory();
-  const [notationId, loading, errors, getRandomNotationId] = useRandomNotationIdGetter();
-
-  // The notation ID can only be populated after the "i'm feeling lucky" button is clicked. Once it's populated,
-  // navigate to it immediately.
-  useEffect(() => {
-    if (notationId && !loading) {
+  const [hasError, setHasError] = useState(false);
+  const onSuccess = useCallback(
+    (notationId: string) => {
       message.success('lucky!');
       history.push(`/n/${notationId}`);
-    }
-  }, [notationId, loading, history]);
-
-  useEffect(() => {
-    if (errors.length > 0) {
-      message.error('something went wrong');
-    }
-  }, [errors]);
+    },
+    [history]
+  );
+  const onErrors = useCallback(() => {
+    message.error('something went wrong');
+    setHasError(true);
+  }, []);
+  const [loading, getRandomNotationId] = useRandomNotationIdGetter(onSuccess, onErrors);
 
   return (
-    <Button type="default" loading={loading} disabled={errors.length > 0} onClick={getRandomNotationId}>
+    <Button type="default" loading={loading} disabled={hasError} onClick={getRandomNotationId}>
       i'm feeling lucky
     </Button>
   );
