@@ -46,4 +46,10 @@ export class UserResolver {
     const attrs = pick(input, ['username', 'email', 'role']);
     return await this.userService.update(id, attrs);
   }
+
+  @Query((returns) => Number)
+  @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN_AS_ADMIN))
+  async count(): Promise<number> {
+    return await this.userService.count();
+  }
 }

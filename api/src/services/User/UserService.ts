@@ -8,6 +8,10 @@ import { Connection, ConnectionArgs } from '../../util';
 export class UserService {
   constructor(@inject(TYPES.UserRepo) public userRepo: UserRepo) {}
 
+  async count(): Promise<number> {
+    return await this.userRepo.count();
+  }
+
   async findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null> {
     return await this.userRepo.findByUsernameOrEmail(usernameOrEmail);
   }
