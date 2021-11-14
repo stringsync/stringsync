@@ -1,4 +1,4 @@
-import { CompassOutlined, SettingOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons';
+import { CompassOutlined, MenuOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Button, Col, message, Modal, Row } from 'antd';
 import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
@@ -25,7 +25,7 @@ const StyledCompassOutlined = styled(CompassOutlined)`
   font-size: 22px;
 `;
 
-const StyledSettingOutlined = styled(SettingOutlined)`
+const StyledMenuOutlined = styled(MenuOutlined)`
   font-size: 22px;
 `;
 
@@ -94,7 +94,7 @@ export const Menu: React.FC<Props> = (props) => {
         {isSettingsVisible ? (
           <Col>
             <Button type="link" size="large" shape="circle" onClick={showModal} className={settingsButtonClassName}>
-              <StyledSettingOutlined />
+              <StyledMenuOutlined />
             </Button>
           </Col>
         ) : null}
