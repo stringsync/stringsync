@@ -1,11 +1,11 @@
 import { CompassOutlined, MenuOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons';
-import { Avatar, Button, Col, message, Modal, Row } from 'antd';
+import { Avatar, Button, Col, message, Modal, Row, Space } from 'antd';
 import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import { isLoggedInSelector, useAuth } from '../../ctx/auth';
 import { useViewport } from '../../ctx/viewport/useViewport';
-import { gtEqTeacher } from '../../domain';
+import { eqAdmin, gtEqTeacher } from '../../domain';
 
 const StyledRow = styled(Row)`
   svg {
@@ -51,6 +51,7 @@ export const Menu: React.FC<Props> = (props) => {
 
   const [isModalVisible, setModalVisible] = useState(false);
   const isGtEqTeacher = gtEqTeacher(user.role);
+  const isAdmin = eqAdmin(user.role);
   const settingsButtonClassName = isModalVisible ? 'active-link' : '';
 
   const showModal = () => setModalVisible(true);
@@ -67,6 +68,7 @@ export const Menu: React.FC<Props> = (props) => {
   const isLoginVisible = !isAuthPending && !isLoggedIn;
   const isSignupVisible = !isAuthPending && !isLoggedIn;
   const isSettingsVisible = !isAuthPending && isLoggedIn;
+  const isAdminActionsVisible = !isAuthPending && isAdmin;
 
   return (
     <>
@@ -141,9 +143,21 @@ export const Menu: React.FC<Props> = (props) => {
           onCancel={hideModal}
           footer={null}
         >
-          <Button block onClick={onLogoutClick} disabled={!isLoggedIn}>
-            logout
-          </Button>
+          <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+            {isAdminActionsVisible && (
+              <>
+                <Link to={'/users'}>
+                  <Button block size="large">
+                    manage users
+                  </Button>
+                </Link>
+              </>
+            )}
+
+            <Button block size="large" onClick={onLogoutClick} disabled={!isLoggedIn}>
+              logout
+            </Button>
+          </Space>
         </Modal>
       ) : null}
     </>
