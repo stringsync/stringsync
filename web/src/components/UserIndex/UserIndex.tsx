@@ -1,8 +1,10 @@
-import { Alert, Avatar, Button, List, Row, Typography } from 'antd';
+import { Alert, Avatar, Button, Divider, List, Row, Typography } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
 import { Layout, withLayout } from '../../hocs/withLayout';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
+import { useNow } from '../../hooks/useNow';
+import { ago } from '../../util/ago';
 import { compose } from '../../util/compose';
 import { Box } from '../Box';
 import { UserForm } from './UserForm';
@@ -33,6 +35,8 @@ export const UserIndex: React.FC = enhance(() => {
   useEffectOnce(() => {
     loadUsers(PAGE_SIZE);
   });
+
+  const now = useNow();
 
   return (
     <Outer data-testid="user-index">
@@ -73,7 +77,25 @@ export const UserIndex: React.FC = enhance(() => {
           }
           renderItem={(user) => (
             <List.Item key={user.id}>
-              <List.Item.Meta avatar={<Avatar src={user.avatarUrl} />} title={user.username} description={user.email} />
+              <List.Item.Meta
+                avatar={<Avatar src={user.avatarUrl} />}
+                title={
+                  <div>
+                    {user.username}
+                    <Divider type="vertical" />
+                    created {ago(new Date(user.createdAt), now) || '???'}
+                  </div>
+                }
+                description={
+                  <div>
+                    <a href={`mailto:${user.email}`} target="_blank" rel="noreferrer">
+                      {user.email}
+                    </a>
+                    <Divider type="vertical" />
+                    {user.confirmedAt ? `confirmed ${ago(new Date(user.confirmedAt), now)}` || '???' : 'not confirmed'}
+                  </div>
+                }
+              />
 
               <UserForm user={user} />
             </List.Item>

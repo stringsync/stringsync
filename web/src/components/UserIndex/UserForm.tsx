@@ -9,11 +9,14 @@ type Props = {
 };
 
 export const UserForm: React.FC<Props> = (props) => {
+  // props
+  const { user } = props;
+
   // form
   const [form] = useForm();
   const [dirty, setDirty] = useState(false);
   const initialValues = {
-    role: props.user.role,
+    role: user.role,
   };
   const onValuesChange = (_: any, values: any) => {
     const nextDirty = Object.entries(initialValues).some(([key, val]) => values[key] !== val);
@@ -31,7 +34,7 @@ export const UserForm: React.FC<Props> = (props) => {
       </Form.Item>
 
       <Form.Item>
-        <Button disabled={!dirty} type="primary">
+        <Button disabled={!dirty} type="primary" htmlType="submit">
           save
         </Button>
       </Form.Item>
