@@ -134,7 +134,7 @@ export type Query = {
   tags: Array<TagObject>;
   user?: Maybe<UserObject>;
   users: UserConnectionObject;
-  count: Scalars['Float'];
+  userCount: Scalars['Float'];
   whoami?: Maybe<UserObject>;
   health: Scalars['String'];
   version: Scalars['String'];

@@ -49,7 +49,7 @@ export class UserResolver {
 
   @Query((returns) => Number)
   @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN_AS_ADMIN))
-  async count(): Promise<number> {
+  async userCount(): Promise<number> {
     return await this.userService.count();
   }
 }
