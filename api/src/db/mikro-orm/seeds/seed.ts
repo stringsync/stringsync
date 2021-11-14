@@ -79,7 +79,7 @@ import {
   const admin = buildUser({ username: 'admin', email: 'admin@stringsync.com', role: UserRole.ADMIN });
   const teacher = buildUser({ username: 'teacher', email: 'teacher@stringsync.com', role: UserRole.TEACHER });
   const student = buildUser({ username: 'student', email: 'student@stringsync.com', role: UserRole.STUDENT });
-  const students = buildUser({ role: UserRole.STUDENT });
+  const students = times(50, () => buildUser({ role: UserRole.STUDENT }));
   const teachers = [jared, admin, teacher];
 
   // create notations
