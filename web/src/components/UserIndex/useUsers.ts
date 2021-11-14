@@ -3,7 +3,7 @@ import { $gql, QueryUsersArgs, t, UserObject, UserRole } from '../../graphql';
 import { useGql } from '../../hooks/useGql';
 import { Nullable } from '../../util/types';
 
-type User = Pick<UserObject, 'id' | 'username' | 'email' | 'role' | 'avatarUrl' | 'confirmedAt' | 'createdAt'>;
+export type User = Pick<UserObject, 'id' | 'username' | 'email' | 'role' | 'avatarUrl' | 'confirmedAt' | 'createdAt'>;
 type LoadUsers = (limit: number) => void;
 type Loading = boolean;
 type Errors = string[];
