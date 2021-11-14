@@ -75,13 +75,13 @@ export const UserIndex: React.FC = enhance(() => {
               )}
             </LoadMoreRow>
           }
-          renderItem={(user) => (
+          renderItem={(user, ndx) => (
             <List.Item key={user.id}>
               <List.Item.Meta
                 avatar={<Avatar src={user.avatarUrl} />}
                 title={
                   <div>
-                    {user.username}
+                    {ndx + 1}. {user.username}
                     <Divider type="vertical" />
                     created {ago(new Date(user.createdAt), now) || '???'}
                   </div>
