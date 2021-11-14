@@ -1,1 +1,1 @@
-export * from './UserIndex';
+export { default } from './UserIndex';

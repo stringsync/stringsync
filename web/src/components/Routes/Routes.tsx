@@ -38,6 +38,10 @@ const Upload = compose(withAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER)
   React.lazy(() => import('../Upload'))
 );
 
+const UserIndex = compose(withAuthRequirement(AuthRequirement.LOGGED_IN_AS_ADMIN))(
+  React.lazy(() => import('../UserIndex'))
+);
+
 export const Routes: React.FC = () => {
   const { shouldRedirectFromLandingToLibrary, recordLandingVisit } = useRoutingBehavior();
 
@@ -59,6 +63,7 @@ export const Routes: React.FC = () => {
         <Route exact path="/library" component={Library} />
         <Route exact path="/n/:id" component={NotationShow} />
         <Route exact path="/n/:id/edit" component={NotationEdit} />
+        <Route path="/users" component={UserIndex} />
         <Route path="/signup" component={Signup} />
         <Route path="/login" component={Login} />
         <Route path="/confirm-email" component={ConfirmEmail} />
