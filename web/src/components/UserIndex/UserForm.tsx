@@ -1,19 +1,39 @@
-import { Button, Form, Select } from 'antd';
+import { Button, Form, message, Select } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import React, { useState } from 'react';
 import { UserRole } from '../../graphql';
-import { User } from './useUsers';
+import { Nullable } from '../../util/types';
+import { toUserRole } from './helpers';
+import { UserPreview } from './types';
+import { useUserUpdater } from './useUserUpdater';
 
 type Props = {
-  user: User;
+  user: UserPreview;
 };
 
 export const UserForm: React.FC<Props> = (props) => {
-  // props
-  const { user } = props;
+  const [form] = useForm();
+
+  // user
+  const initialUser = props.user;
+  const [updatedUser, setUpdatedUser] = useState<Nullable<UserPreview>>(null);
+  const user = updatedUser || initialUser;
+  const [isUpdating, updateUser] = useUserUpdater(
+    (user) => {
+      message.success(`saved ${user.username}`);
+      setUpdatedUser(user);
+      setDirty(false);
+    },
+    () => {
+      message.error(`something went wrong ${user.username}`);
+    }
+  );
+  const onSave = () => {
+    const role = toUserRole(form.getFieldValue('role'));
+    updateUser({ input: { id: user.id, role } });
+  };
 
   // form
-  const [form] = useForm();
   const [dirty, setDirty] = useState(false);
   const initialValues = {
     role: user.role,
@@ -34,7 +54,7 @@ export const UserForm: React.FC<Props> = (props) => {
       </Form.Item>
 
       <Form.Item>
-        <Button disabled={!dirty} type="primary" htmlType="submit">
+        <Button loading={isUpdating} disabled={!dirty || isUpdating} type="primary" htmlType="submit" onClick={onSave}>
           save
         </Button>
       </Form.Item>

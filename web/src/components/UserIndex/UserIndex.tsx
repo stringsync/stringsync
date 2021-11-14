@@ -11,7 +11,7 @@ import { UserForm } from './UserForm';
 import { useUserCount } from './useUserCount';
 import { useUsers } from './useUsers';
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 25;
 
 const Outer = styled.div`
   margin-top: 24px;

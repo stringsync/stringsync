@@ -1,9 +1,9 @@
 import { useCallback, useState } from 'react';
-import { $gql, QueryUsersArgs, t, UserObject, UserRole } from '../../graphql';
+import { $gql, QueryUsersArgs, t, UserRole } from '../../graphql';
 import { useGql } from '../../hooks/useGql';
 import { Nullable } from '../../util/types';
+import { UserPreview } from './types';
 
-export type User = Pick<UserObject, 'id' | 'username' | 'email' | 'role' | 'avatarUrl' | 'confirmedAt' | 'createdAt'>;
 type LoadUsers = (limit: number) => void;
 type Loading = boolean;
 type Errors = string[];
@@ -37,8 +37,8 @@ const USERS_GQL = $gql
   })
   .build();
 
-export const useUsers = (): [User[], Loading, HasNextPage, Errors, LoadUsers] => {
-  const [users, setUsers] = useState(new Array<User>());
+export const useUsers = (): [UserPreview[], Loading, HasNextPage, Errors, LoadUsers] => {
+  const [users, setUsers] = useState(new Array<UserPreview>());
   const [cursor, setCursor] = useState<Nullable<string>>(null);
   const [errors, setErrors] = useState(new Array<string>());
   const [hasNextPage, setHasNextPage] = useState(true);
