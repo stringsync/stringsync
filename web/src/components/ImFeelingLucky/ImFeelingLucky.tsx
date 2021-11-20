@@ -20,7 +20,7 @@ export const ImFeelingLucky = () => {
   const [loading, getRandomNotationId] = useRandomNotationIdGetter(onSuccess, onErrors);
 
   return (
-    <Button type="default" loading={loading} disabled={hasError} onClick={getRandomNotationId}>
+    <Button type="default" disabled={loading || hasError} onClick={getRandomNotationId}>
       i'm feeling lucky
     </Button>
   );
