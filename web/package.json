@@ -33,7 +33,7 @@
     "antd": "4.16.13",
     "babel-eslint": "^10.1.0",
     "babel-plugin-import": "^1.13.3",
-    "craco": "^0.0.3",
+    "craco": "^6.4.1",
     "craco-less": "^1.17.1",
     "css-loader": "^5.1.1",
     "customize-cra": "^1.0.0",
