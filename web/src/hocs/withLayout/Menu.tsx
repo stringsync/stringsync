@@ -154,6 +154,16 @@ export const Menu: React.FC<Props> = (props) => {
               </>
             )}
 
+            {isAdminActionsVisible && (
+              <>
+                <Link to={'/tags'}>
+                  <Button block size="large">
+                    manage tags
+                  </Button>
+                </Link>
+              </>
+            )}
+
             <Button block size="large" onClick={onLogoutClick} disabled={!isLoggedIn}>
               logout
             </Button>
