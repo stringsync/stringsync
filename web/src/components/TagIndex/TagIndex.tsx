@@ -3,10 +3,11 @@ import React from 'react';
 import styled from 'styled-components';
 import { TagCategory } from '../../graphql';
 import { Layout, withLayout } from '../../hocs/withLayout';
-import { useTags } from '../../hooks/useTags';
+import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { compose } from '../../util/compose';
 import { Box } from '../Box';
 import { TagForm } from './TagForm';
+import { useTags } from './useTags';
 
 const Outer = styled.div`
   margin-top: 24px;
@@ -17,7 +18,11 @@ const NULL_TAGS = [{ id: '', name: '', category: TagCategory.GENRE }];
 const enhance = compose(withLayout(Layout.DEFAULT));
 
 export const TagIndex = enhance(() => {
-  const [tags, errors, loading] = useTags();
+  const [tags, loading, errors, loadTags] = useTags();
+
+  useEffectOnce(() => {
+    loadTags();
+  });
 
   return (
     <Outer data-testid="tag-index">
@@ -44,6 +49,7 @@ export const TagIndex = enhance(() => {
 
       <Box>
         <List
+          loading={loading}
           dataSource={tags}
           renderItem={(tag) => (
             <List.Item key={tag.id}>
