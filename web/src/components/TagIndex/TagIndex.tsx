@@ -7,7 +7,7 @@ import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { compose } from '../../util/compose';
 import { Box } from '../Box';
 import { TagForm } from './TagForm';
-import { useTags } from './useTags';
+import { useTagLoader } from './useTagLoader';
 
 const Outer = styled.div`
   margin-top: 24px;
@@ -18,11 +18,15 @@ const NULL_TAGS = [{ id: '', name: '', category: TagCategory.GENRE }];
 const enhance = compose(withLayout(Layout.DEFAULT));
 
 export const TagIndex = enhance(() => {
-  const [tags, loading, errors, loadTags] = useTags();
+  const [tags, loading, errors, loadTags] = useTagLoader();
 
   useEffectOnce(() => {
     loadTags();
   });
+
+  const onCommit = () => {
+    loadTags();
+  };
 
   return (
     <Outer data-testid="tag-index">
@@ -53,7 +57,7 @@ export const TagIndex = enhance(() => {
           dataSource={tags}
           renderItem={(tag) => (
             <List.Item key={tag.id}>
-              <TagForm tag={tag} />
+              <TagForm tag={tag} onCommit={onCommit} />
             </List.Item>
           )}
         />
@@ -67,7 +71,7 @@ export const TagIndex = enhance(() => {
           dataSource={NULL_TAGS}
           renderItem={(tag) => (
             <List.Item key={tag.id}>
-              <TagForm tag={tag} />
+              <TagForm tag={tag} onCommit={onCommit} />
             </List.Item>
           )}
         />
