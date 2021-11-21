@@ -42,6 +42,10 @@ const UserIndex = compose(withAuthRequirement(AuthRequirement.LOGGED_IN_AS_ADMIN
   React.lazy(() => import('../UserIndex'))
 );
 
+const TagIndex = compose(withAuthRequirement(AuthRequirement.LOGGED_IN_AS_ADMIN))(
+  React.lazy(() => import('../TagIndex'))
+);
+
 export const Routes: React.FC = () => {
   const { shouldRedirectFromLandingToLibrary, recordLandingVisit } = useRoutingBehavior();
 
@@ -64,6 +68,7 @@ export const Routes: React.FC = () => {
         <Route exact path="/n/:id" component={NotationShow} />
         <Route exact path="/n/:id/edit" component={NotationEdit} />
         <Route path="/users" component={UserIndex} />
+        <Route path="/tags" component={TagIndex} />
         <Route path="/signup" component={Signup} />
         <Route path="/login" component={Login} />
         <Route path="/confirm-email" component={ConfirmEmail} />
