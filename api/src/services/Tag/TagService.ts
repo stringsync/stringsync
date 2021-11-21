@@ -19,6 +19,10 @@ export class TagService {
     return await this.tagRepo.findAllByNotationId(notationId);
   }
 
+  async update(id: string, attrs: Partial<Pick<Tag, 'name' | 'category'>>): Promise<Tag> {
+    return await this.tagRepo.update(id, attrs);
+  }
+
   async create(attrs: Pick<Tag, 'name' | 'category'>): Promise<Tag> {
     return await this.tagRepo.create(attrs);
   }

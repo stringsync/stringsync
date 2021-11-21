@@ -27,6 +27,11 @@ export type CreateNotationInput = {
   tagIds: Array<Scalars['String']>;
 };
 
+export type CreateTagInput = {
+  name: Scalars['String'];
+  category: TagCategory;
+};
+
 
 export type LoginInput = {
   usernameOrEmail: Scalars['String'];
@@ -37,6 +42,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   createNotation?: Maybe<NotationObject>;
   updateNotation?: Maybe<NotationObject>;
+  updateTag: TagObject;
+  createTag: TagObject;
   updateUser?: Maybe<UserObject>;
   login?: Maybe<UserObject>;
   logout?: Maybe<Scalars['Boolean']>;
@@ -55,6 +62,16 @@ export type MutationCreateNotationArgs = {
 
 export type MutationUpdateNotationArgs = {
   input: UpdateNotationInput;
+};
+
+
+export type MutationUpdateTagArgs = {
+  input: UpdateTagInput;
+};
+
+
+export type MutationCreateTagArgs = {
+  input: CreateTagInput;
 };
 
 
@@ -212,6 +229,12 @@ export type UpdateNotationInput = {
   private?: Maybe<Scalars['Boolean']>;
   thumbnail?: Maybe<Scalars['Upload']>;
   musicXml?: Maybe<Scalars['Upload']>;
+};
+
+export type UpdateTagInput = {
+  id: Scalars['String'];
+  name?: Maybe<Scalars['String']>;
+  category?: Maybe<TagCategory>;
 };
 
 export type UpdateUserInput = {
