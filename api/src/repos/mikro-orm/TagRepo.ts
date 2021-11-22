@@ -76,6 +76,14 @@ export class TagRepo implements ITagRepo {
     return pojo(tag);
   }
 
+  async delete(id: string): Promise<void> {
+    const tag = await this.em.findOne(TagEntity, { id });
+    if (!tag) {
+      return;
+    }
+    await this.em.removeAndFlush(tag);
+  }
+
   private loadByIds = async (ids: readonly string[]): Promise<Array<Tag | null>> => {
     const _ids = [...ids];
 

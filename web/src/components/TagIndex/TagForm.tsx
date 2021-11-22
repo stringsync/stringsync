@@ -2,6 +2,7 @@ import { Button, Form, Input, message, Popconfirm, Select } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { useEffect, useMemo, useState } from 'react';
 import { TagCategory } from '../../graphql';
+import { useDeleteTag } from './useDeleteTag';
 import { useTagUpserter } from './useTagUpserter';
 
 type Tag = {
@@ -28,13 +29,6 @@ export const TagForm: React.FC<Props> = (props) => {
     }),
     [tag]
   );
-  const onSuccess = () => {
-    message.success('saved tag');
-    onCommit();
-    if (!tag.id) {
-      form.resetFields();
-    }
-  };
   const onErrors = (errors: string[]) => {
     console.error(errors);
     message.error('something went wrong');
@@ -47,7 +41,18 @@ export const TagForm: React.FC<Props> = (props) => {
     const nextDirty = Object.entries(initialValues).some(([key, val]) => tag[key as keyof Tag] !== val);
     setDirty(nextDirty);
   }, [initialValues, tag]);
-  const [upsertTag, loading] = useTagUpserter(onSuccess, onErrors);
+  const [upsertTag, upserting] = useTagUpserter(() => {
+    message.success('tag saved');
+    onCommit();
+    if (!tag.id) {
+      form.resetFields();
+    }
+  }, onErrors);
+  const [deleteTag, deleting] = useDeleteTag(() => {
+    message.success(`tag deleted: '${tag.name}'`);
+    onCommit();
+  }, onErrors);
+  const loading = upserting || deleting;
 
   const onSave = () => {
     const name = form.getFieldValue('name');
@@ -76,7 +81,13 @@ export const TagForm: React.FC<Props> = (props) => {
 
       {tag.id && (
         <Form.Item>
-          <Popconfirm title="are you sure?" okText="ok" cancelText="cancel" disabled={loading}>
+          <Popconfirm
+            title="are you sure?"
+            okText="ok"
+            cancelText="cancel"
+            disabled={loading}
+            onConfirm={() => deleteTag(tag.id!)}
+          >
             <Button>delete</Button>
           </Popconfirm>
         </Form.Item>

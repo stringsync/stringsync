@@ -29,6 +29,7 @@ export interface NotationRepo extends Repo<Notation> {
 export interface TagRepo extends Repo<Tag> {
   findAll(): Promise<Tag[]>;
   findAllByNotationId(notationId: string): Promise<Tag[]>;
+  delete(id: string): Promise<void>;
 }
 
 export interface NotationTagRepo extends Repo<NotationTag> {}

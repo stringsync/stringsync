@@ -28,6 +28,6 @@ export class TagService {
   }
 
   async delete(id: string): Promise<void> {
-    return;
+    await this.tagRepo.delete(id);
   }
 }

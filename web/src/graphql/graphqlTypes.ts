@@ -154,6 +154,7 @@ export type Mutation = {
   updateNotation?: Maybe<NotationObject>;
   updateTag: TagObject;
   createTag: TagObject;
+  deleteTag: Scalars['Boolean'];
   updateUser?: Maybe<UserObject>;
   login?: Maybe<UserObject>;
   logout?: Maybe<Scalars['Boolean']>;
@@ -182,6 +183,11 @@ export type MutationUpdateTagArgs = {
 
 export type MutationCreateTagArgs = {
   input: CreateTagInput;
+};
+
+
+export type MutationDeleteTagArgs = {
+  id: Scalars['String'];
 };
 
 
