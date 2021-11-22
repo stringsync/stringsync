@@ -26,4 +26,8 @@ export class TagService {
   async create(attrs: Pick<Tag, 'name' | 'category'>): Promise<Tag> {
     return await this.tagRepo.create(attrs);
   }
+
+  async delete(id: string): Promise<void> {
+    return;
+  }
 }

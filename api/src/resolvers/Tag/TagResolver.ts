@@ -35,4 +35,10 @@ export class TagResolver {
       category: input.category,
     });
   }
+
+  @Mutation((returns) => Boolean)
+  async deleteTag(@Arg('id') id: string): Promise<boolean> {
+    await this.tagService.delete(id);
+    return true;
+  }
 }
