@@ -33,7 +33,7 @@ export class NotationTagRepo implements INotationTagRepo {
   }
 
   async find(id: string): Promise<NotationTag | null> {
-    const notationTag = await this.em.findOne(NotationTagEntity, { id });
+    const notationTag = await this.em.findOne(NotationTagEntity, { id }, { refresh: true });
     return notationTag ? pojo(notationTag) : null;
   }
 

@@ -2,6 +2,7 @@ import { isPlainObject } from 'lodash';
 import { Notation, NotationTag, Tag, User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
+import { createRandNotation, createRandNotationTag } from '../testing';
 import { Ctor, ctor, rand } from '../util';
 import { TagRepo as MikroORMTagRepo } from './mikro-orm';
 import { NotationRepo, NotationTagRepo, TagRepo, UserRepo } from './types';
@@ -175,6 +176,38 @@ describe.each([['MikroORMTagRepo', MikroORMTagRepo]])('%s', (name, Ctor) => {
       const updatedTag = await tagRepo.update(tag.id, { ...tag, name });
 
       expect(isPlainObject(updatedTag)).toBe(true);
+    });
+  });
+
+  describe('delete', () => {
+    it('deletes a tag', async () => {
+      const tag = rand.tag();
+      await tagRepo.create(tag);
+      await tagRepo.delete(tag.id);
+      await expect(tagRepo.find(tag.id)).resolves.toBeNull();
+    });
+
+    it('silenty skips over non-existent tags', async () => {
+      const beforeCount = await tagRepo.count();
+      await tagRepo.delete('non-existent-id');
+      const afterCount = await tagRepo.count();
+
+      expect(afterCount - beforeCount).toBe(0);
+    });
+
+    it('deletes associated notation tags', async () => {
+      const notationRepo = container.get<NotationRepo>(TYPES.NotationRepo);
+      const notationTagRepo = container.get<NotationTagRepo>(TYPES.NotationTagRepo);
+
+      const tag = rand.tag();
+      await tagRepo.create(tag);
+      const notation = await createRandNotation();
+      const notationTag = await createRandNotationTag({ notationId: notation.id, tagId: tag.id });
+
+      await tagRepo.delete(tag.id);
+
+      await expect(notationRepo.find(notation.id)).resolves.not.toBeNull();
+      await expect(notationTagRepo.find(notationTag.id)).resolves.toBeNull();
     });
   });
 });
