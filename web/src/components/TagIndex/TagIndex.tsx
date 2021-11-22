@@ -13,7 +13,7 @@ const Outer = styled.div`
   margin-top: 24px;
 `;
 
-const NULL_TAGS = [{ id: '', name: '', category: TagCategory.GENRE }];
+const NULL_TAGS = [{ id: undefined, name: '', category: TagCategory.GENRE }];
 
 const enhance = compose(withLayout(Layout.DEFAULT));
 

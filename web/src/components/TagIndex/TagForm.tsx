@@ -1,9 +1,11 @@
-import { Button, Form, Input, Popconfirm, Select } from 'antd';
+import { Button, Form, Input, message, Popconfirm, Select } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
+import { useEffect, useMemo, useState } from 'react';
 import { TagCategory } from '../../graphql';
+import { useTagUpserter } from './useTagUpserter';
 
 type Tag = {
-  id: string;
+  id?: string;
   name: string;
   category: TagCategory;
 };
@@ -14,33 +16,67 @@ type Props = {
 };
 
 export const TagForm: React.FC<Props> = (props) => {
-  const [form] = useForm();
-
-  // tag
   const tag = props.tag;
+  const onCommit = props.onCommit;
+
+  const [form] = useForm();
+  const [dirty, setDirty] = useState(false);
+  const initialValues = useMemo(
+    () => ({
+      name: tag.name,
+      category: tag.category,
+    }),
+    [tag]
+  );
+  const onSuccess = () => {
+    message.success('saved tag');
+    onCommit();
+    if (!tag.id) {
+      form.resetFields();
+    }
+  };
+  const onErrors = (errors: string[]) => {
+    console.error(errors);
+    message.error('something went wrong');
+  };
+  const onValuesChange = (_: any, values: any) => {
+    const nextDirty = Object.entries(initialValues).some(([key, val]) => values[key] !== val);
+    setDirty(nextDirty);
+  };
+  useEffect(() => {
+    const nextDirty = Object.entries(initialValues).some(([key, val]) => tag[key as keyof Tag] !== val);
+    setDirty(nextDirty);
+  }, [initialValues, tag]);
+  const [upsertTag, loading] = useTagUpserter(onSuccess, onErrors);
+
+  const onSave = () => {
+    const name = form.getFieldValue('name');
+    const category = form.getFieldValue('category');
+    upsertTag({ id: tag.id, category, name });
+  };
 
   return (
-    <Form form={form} layout="inline">
+    <Form form={form} layout="inline" initialValues={initialValues} onValuesChange={onValuesChange}>
       <Form.Item name="name">
-        <Input defaultValue={tag.name} value={tag.name} />
+        <Input />
       </Form.Item>
 
       <Form.Item name="category">
-        <Select defaultValue={tag.category} value={tag.category}>
+        <Select>
           <Select.Option value={TagCategory.DIFFICULTY}>difficulty</Select.Option>
           <Select.Option value={TagCategory.GENRE}>genre</Select.Option>
         </Select>
       </Form.Item>
 
       <Form.Item>
-        <Button type="primary" htmlType="submit">
+        <Button type="primary" htmlType="submit" disabled={!dirty || loading} onClick={onSave}>
           save
         </Button>
       </Form.Item>
 
       {tag.id && (
         <Form.Item>
-          <Popconfirm title="are you sure?" okText="ok" cancelText="cancel">
+          <Popconfirm title="are you sure?" okText="ok" cancelText="cancel" disabled={loading}>
             <Button>delete</Button>
           </Popconfirm>
         </Form.Item>
