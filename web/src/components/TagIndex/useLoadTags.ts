@@ -12,7 +12,7 @@ const TAGS_GQL = $gql
   .setQuery([{ id: t.string, name: t.string, category: t.optional.oneOf(TagCategory)! }])
   .build();
 
-export const useTagLoader = (): [Tags, Loading, Errors, LoadTags] => {
+export const useLoadTags = (): [Tags, Loading, Errors, LoadTags] => {
   const [tags, setTags] = useState<Tags>([]);
   const [errors, setErrors] = useState<string[]>([]);
 

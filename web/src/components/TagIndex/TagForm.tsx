@@ -3,7 +3,7 @@ import { useForm } from 'antd/lib/form/Form';
 import { useEffect, useMemo, useState } from 'react';
 import { TagCategory } from '../../graphql';
 import { useDeleteTag } from './useDeleteTag';
-import { useTagUpserter } from './useTagUpserter';
+import { useUpsertTag } from './useUpsertTag';
 
 type Tag = {
   id?: string;
@@ -41,7 +41,7 @@ export const TagForm: React.FC<Props> = (props) => {
     const nextDirty = Object.entries(initialValues).some(([key, val]) => tag[key as keyof Tag] !== val);
     setDirty(nextDirty);
   }, [initialValues, tag]);
-  const [upsertTag, upserting] = useTagUpserter(() => {
+  const [upsertTag, upserting] = useUpsertTag(() => {
     message.success('tag saved');
     onCommit();
     if (!tag.id) {

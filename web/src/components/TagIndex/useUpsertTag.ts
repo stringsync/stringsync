@@ -46,7 +46,7 @@ const CREATE_TAG_INPUT = $gql
   })
   .build();
 
-export const useTagUpserter = (onSuccess: SuccessCallback, onErrors: ErrorsCallback): [UpsertTag, Loading] => {
+export const useUpsertTag = (onSuccess: SuccessCallback, onErrors: ErrorsCallback): [UpsertTag, Loading] => {
   const { execute: createTag, loading: creating } = useGql(CREATE_TAG_INPUT, {
     onData: (data) => {
       if (!data.createTag) {
