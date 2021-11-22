@@ -64,7 +64,7 @@ export const Fretboard: React.FC<Props> = (props) => {
   const pressedPositions = usePressedPositions(cursorSnapshot, mediaPlayer);
   const measurePositions = useMeasurePositions(cursorSnapshot);
   const measureSlideTransitions = useMeasureSlideTransitions(cursorSnapshot);
-  const pressedStyle = useMemo<Partial<PositionStyle>>(() => ({ fill: '#f5c2c5', stroke: '#f03e47' }), []);
+  const pressedStyle = useMemo<Partial<PositionStyle>>(() => ({ fill: '#f17e84', stroke: '#f17e84' }), []);
 
   // dynamic scale management
   useEffect(() => {}, [settings.scaleSelectionType]);
@@ -82,14 +82,14 @@ export const Fretboard: React.FC<Props> = (props) => {
             key={`measure-${string}-${fret}`}
             string={string}
             fret={fret}
-            style={{ fill: '#f9f9f9', stroke: '#a0a0a0' }}
+            style={{ fill: '#fae1e3', stroke: '#fae1e3' }}
           />
         ))}
         {pressedPositions.map(({ string, fret }) => (
           <FretboardJs.Position key={`pressed-${string}-${fret}`} string={string} fret={fret} style={pressedStyle} />
         ))}
         {settings.scaleSelectionType !== ScaleSelectionType.None && settings.selectedScale && (
-          <FretboardJs.Scale name={settings.selectedScale} style={{ stroke: '#85f4fc' }} />
+          <FretboardJs.Scale name={settings.selectedScale} style={{ stroke: '#111' }} />
         )}
         {measureSlideTransitions.map(({ from, to }) => (
           <FretboardJs.Slide from={from} to={to} style={{ fill: '#f5c2c5', stroke: '#f5c2c5' }} />

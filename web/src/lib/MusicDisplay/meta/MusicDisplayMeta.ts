@@ -17,7 +17,10 @@ export class MusicDisplayMeta {
       keyInfos.flatMap((keyInfo) => keyInfo.majorKey.chordScales)
     );
     const minorScales = getDistinctElementsSortedByFrequencyDesc(
-      keyInfos.flatMap((keyInfo) => [...keyInfo.minorKey.harmonic.chordScales, ...keyInfo.minorKey.melodic.chordScales])
+      // TODO(jared) the altered and ultralocrian scales caused issues when calculating what notes belong to them (both)
+      // are 7th degrees of the harmonic and melodic minor scales, respectively. Use all the scale suggestions when
+      // ready.
+      keyInfos.flatMap((keyInfo) => [keyInfo.minorKey.harmonic.chordScales[0], keyInfo.minorKey.melodic.chordScales[0]])
     );
     const pentatonicScales = getDistinctElementsSortedByFrequencyDesc(
       keyInfos.flatMap((keyInfo) => [
