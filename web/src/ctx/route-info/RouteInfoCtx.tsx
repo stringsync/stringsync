@@ -8,7 +8,7 @@ const ROUTE_INFO_ACTIONS = {
   setReturnToRoute: createAction<{ returnToRoute: string }>('setReturnToRoute'),
 };
 
-const RETURN_TO_PATHNAMES = ['/library', '/n', '/upload', '/users'];
+const RETURN_TO_PATHNAMES = ['/library', '/n', '/upload', '/users', '/tags'];
 
 const getInitialState = (): RouteInfoState => ({ prevRoute: '', returnToRoute: '/library' });
 

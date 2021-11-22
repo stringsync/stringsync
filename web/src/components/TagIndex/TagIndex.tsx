@@ -7,7 +7,7 @@ import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { compose } from '../../util/compose';
 import { Box } from '../Box';
 import { TagForm } from './TagForm';
-import { useTagLoader } from './useTagLoader';
+import { useLoadTags } from './useLoadTags';
 
 const Outer = styled.div`
   margin-top: 24px;
@@ -18,7 +18,7 @@ const NULL_TAGS = [{ id: undefined, name: '', category: TagCategory.GENRE }];
 const enhance = compose(withLayout(Layout.DEFAULT));
 
 export const TagIndex = enhance(() => {
-  const [tags, loading, errors, loadTags] = useTagLoader();
+  const [tags, loading, errors, loadTags] = useLoadTags();
 
   useEffectOnce(() => {
     loadTags();
