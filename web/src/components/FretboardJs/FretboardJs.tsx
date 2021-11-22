@@ -65,6 +65,8 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
     // All renderings must be done synchronously within this effect so that they are layered deterministically.
     // SVG elements do not have a z-index property.
 
+    const maxFret = fretboard.positions[0].length - 1;
+
     // ----------------
     // render slides
     // ----------------
@@ -80,7 +82,7 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
 
     const slidesNodes = slideGroup
       .selectAll('g')
-      .data(slideStyleTargets)
+      .data(slideStyleTargets.filter((styleTarget) => styleTarget.frets.every((fret) => fret < maxFret)))
       .enter()
       .append('g')
       .attr('class', ({ string, frets }: SlideStyleTarget) => {
@@ -115,7 +117,6 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
     const gradesByNote = helpers.getGradesByNote(tonic);
     const key = Key.majorKey(tonic);
     const scale = new Set(key.scale);
-    const maxFret = fretboard.positions[0].length - 1;
 
     fretboard.setDots(
       positionStyleTargets
