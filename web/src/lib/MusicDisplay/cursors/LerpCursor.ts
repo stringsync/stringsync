@@ -13,30 +13,12 @@ const CURSOR_STYLE_TRANSITION_DURATION = Duration.ms(200);
 
 const DEFAULT_CURSOR_OPTS = [
   {
-    type: CursorType.Standard,
-    color: 'blue',
-    follow: false,
-    alpha: 0,
-  },
-  {
-    type: CursorType.Standard,
-    color: 'lime',
-    follow: false,
-    alpha: 0,
-  },
-  {
     type: CursorType.ThinLeft,
     color: '#00ffd9',
     follow: false,
     alpha: 1,
   },
 ];
-
-type Cursors = {
-  lagger: Cursor;
-  leader: Cursor;
-  lerper: Cursor;
-};
 
 type LerpCursorStyle = Omit<Record<string, string>, 'top' | 'left' | 'x' | 'y'>;
 
@@ -50,24 +32,21 @@ export type LerpCursorOpts = {
 export class LerpCursor implements CursorWrapper {
   static create(imd: InternalMusicDisplay, locator: MusicDisplayLocator, opts: LerpCursorOpts) {
     const cursorsOptions = DEFAULT_CURSOR_OPTS.map((cursorsOption) => ({ id: Symbol(), ...cursorsOption }));
-    Object.assign(cursorsOptions[2], opts.cursorOptions);
+    Object.assign(cursorsOptions[0], opts.cursorOptions);
     const cursors = imd.createCursors(cursorsOptions);
-    if (cursors.length !== 3) {
-      throw new Error(`expected 3 cursors, got: ${cursors.length}`);
+    if (cursors.length !== 1) {
+      throw new Error(`expected 1 cursor, got: ${cursors.length}`);
     }
 
-    const [lagger, leader, lerper] = cursors;
-
-    const lerpCursor = new LerpCursor(imd, { lagger, leader, lerper }, opts);
+    const cursor = cursors[0];
+    const lerpCursor = new LerpCursor(imd, cursor, opts);
     lerpCursor.init(locator);
     return lerpCursor;
   }
 
   imd: InternalMusicDisplay;
 
-  lagger: Cursor;
-  leader: Cursor;
-  lerper: Cursor;
+  cursor: Cursor;
   cursorSnapshot: CursorSnapshot | null = null;
   scrollContainer: HTMLElement;
   timeMs = -1;
@@ -78,17 +57,15 @@ export class LerpCursor implements CursorWrapper {
   private noteColorOpId = Symbol();
   private prevLerpX: number = 0;
 
-  private constructor(imd: InternalMusicDisplay, cursors: Cursors, opts: LerpCursorOpts) {
+  private constructor(imd: InternalMusicDisplay, cursor: Cursor, opts: LerpCursorOpts) {
     this.imd = imd;
     this.scrollContainer = imd.scrollContainer;
-    this.lagger = cursors.lagger;
-    this.leader = cursors.leader;
-    this.lerper = cursors.lerper;
+    this.cursor = cursor;
     this.opts = opts;
   }
 
   get element() {
-    return this.lerper.cursorElement;
+    return this.cursor.cursorElement;
   }
 
   private init(locator: MusicDisplayLocator) {
@@ -110,15 +87,8 @@ export class LerpCursor implements CursorWrapper {
       $element.css('transition', `${props} ${CURSOR_STYLE_TRANSITION_DURATION.ms}ms`);
     }
 
-    this.lagger.resetIterator();
-    this.leader.resetIterator();
-    this.leader.next();
-    this.lerper.resetIterator();
-
-    this.lagger.show();
-    this.leader.show();
-    this.lerper.show();
-
+    this.cursor.resetIterator();
+    this.cursor.show();
     this.locator = locator;
   }
 
@@ -160,49 +130,40 @@ export class LerpCursor implements CursorWrapper {
   }
 
   scrollIntoView() {
-    this.imd.scroller.scrollToCursor(this.lerper);
+    this.imd.scroller.scrollToCursor(this.cursor);
   }
 
   show() {
-    if (this.leader.hidden) {
-      this.leader.show();
-    }
-    if (this.lagger.hidden) {
-      this.lagger.show();
-    }
-    if (this.lerper.hidden) {
-      this.lerper.show();
+    if (this.cursor.hidden) {
+      this.cursor.show();
     }
     this.updateLerperPosition(this.prevLerpX);
   }
 
   clear() {
     this.imd.colorer.undo(this.noteColorOpId);
-
-    this.leader.hide();
-    this.lagger.hide();
-    this.lerper.hide();
+    this.cursor.hide();
   }
 
   getBox(): Box {
-    if (this.lerper.hidden) {
+    if (this.cursor.hidden) {
       return Box.from(-1, -1).to(-1, -1);
     }
 
-    const leftSidePxStr = this.lerper.cursorElement.style.left;
+    const leftSidePxStr = this.cursor.cursorElement.style.left;
     const leftSidePx = parseFloat(leftSidePxStr.replace('px', ''));
     if (isNaN(leftSidePx)) {
       return Box.from(-1, -1).to(-1, -1);
     }
 
-    const topSidePxStr = this.lerper.cursorElement.style.top;
+    const topSidePxStr = this.cursor.cursorElement.style.top;
     const topSidePx = parseFloat(topSidePxStr.replace('px', ''));
     if (isNaN(leftSidePx)) {
       return Box.from(-1, -1).to(-1, -1);
     }
 
-    const widthPx = this.lerper.cursorElement.width;
-    const heightPx = this.lerper.cursorElement.height;
+    const widthPx = this.cursor.cursorElement.width;
+    const heightPx = this.cursor.cursorElement.height;
     const rightSidePx = leftSidePx + widthPx;
     const bottomSidePx = topSidePx + heightPx;
 
@@ -251,11 +212,7 @@ export class LerpCursor implements CursorWrapper {
     if (!nextCursorSnapshot) {
       this.clear();
     } else {
-      nextCursorSnapshot.getIteratorSnapshot().apply(this.lagger);
-      nextCursorSnapshot.getIteratorSnapshot().apply(this.leader);
-      this.leader.next();
-      nextCursorSnapshot.getIteratorSnapshot().apply(this.lerper);
-
+      nextCursorSnapshot.getIteratorSnapshot().apply(this.cursor);
       this.show();
     }
 
