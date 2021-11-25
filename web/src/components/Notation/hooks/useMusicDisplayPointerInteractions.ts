@@ -16,9 +16,6 @@ export const useMusicDisplayPointerInteractions = (musicDisplay: MusicDisplay, m
         musicDisplay.getScroller().startAutoScrolling();
         musicDisplay.getCursor().scrollIntoView();
       }),
-      musicDisplay.eventBus.subscribe('cursordragstarted', () => {
-        mediaPlayer.suspend();
-      }),
       musicDisplay.eventBus.subscribe('cursordragupdated', (payload) => {
         if (!isTemporal(payload.dst)) {
           return;
@@ -27,9 +24,6 @@ export const useMusicDisplayPointerInteractions = (musicDisplay: MusicDisplay, m
           musicDisplay.getLoop().deactivate();
         }
         mediaPlayer.seek(Duration.ms(payload.dst.timeMs));
-      }),
-      musicDisplay.eventBus.subscribe('cursordragended', () => {
-        mediaPlayer.unsuspend();
       }),
     ];
 
