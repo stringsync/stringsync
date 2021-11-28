@@ -151,7 +151,7 @@ const NotationShow: React.FC = enhance(() => {
           notation={notation}
           sidecar={
             <div>
-              {canEdit && (
+              {canEdit && !skeleton && (
                 <Link to={`/n/${params.id}/edit`}>
                   <Button block type="default" size="large">
                     edit
