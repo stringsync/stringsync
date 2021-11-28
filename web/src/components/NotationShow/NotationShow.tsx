@@ -1,5 +1,5 @@
 import { Alert, Button, Row } from 'antd';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -71,11 +71,20 @@ const NotationShow: React.FC = enhance(() => {
 
   // notation
   const params = useParams<{ id: string }>();
-  const [notation, errors, loading] = useNotation(params.id);
+  const [notation, errors, isNotationLoading] = useNotation(params.id);
   const hasErrors = errors.length > 0;
   useEffect(() => {
     scrollToTop();
   }, [params.id]);
+
+  // suggested notations
+  const [isSuggestedNotationsLoading, setIsSuggestedNotationsLoading] = useState(false);
+  const onSuggestedNotationsLoadStart = () => {
+    setIsSuggestedNotationsLoading(true);
+  };
+  const onSuggestedNotationsLoadEnd = () => {
+    setIsSuggestedNotationsLoading(false);
+  };
 
   // auth
   const [authState] = useAuth();
@@ -118,6 +127,9 @@ const NotationShow: React.FC = enhance(() => {
     [setDefaultSettings]
   );
 
+  // loading
+  const loading = isNotationLoading || isSuggestedNotationsLoading;
+
   return (
     <FullHeightDiv data-testid="notation-show">
       {isMobileLandscape && (
@@ -150,7 +162,7 @@ const NotationShow: React.FC = enhance(() => {
         />
       )}
 
-      {!loading && hasErrors && (
+      {!isNotationLoading && hasErrors && (
         <ErrorsOuter>
           <Row justify="center">
             <Alert
@@ -170,7 +182,11 @@ const NotationShow: React.FC = enhance(() => {
           <br />
 
           <ErroredSuggestedNotationsOuter>
-            <SuggestedNotations srcNotationId={params.id} />
+            <SuggestedNotations
+              srcNotationId={params.id}
+              onLoadStart={onSuggestedNotationsLoadStart}
+              onLoadEnd={onSuggestedNotationsLoadEnd}
+            />
           </ErroredSuggestedNotationsOuter>
         </ErrorsOuter>
       )}

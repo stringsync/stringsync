@@ -1,12 +1,13 @@
 import { Button, Col, Row, Tag } from 'antd';
 import { ButtonType } from 'antd/lib/button';
 import { truncate } from 'lodash';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { useSuggestedNotations } from './useSuggestedNotations';
 
 const NUM_SUGGESTIONS = 10;
+const NOOP = () => {};
 
 const Outer = styled.div`
   margin-top: 8px;
@@ -68,19 +69,31 @@ const LibraryLink: React.FC<{ block?: boolean; type?: ButtonType }> = (props) =>
 
 type SuggestedNotationsProps = {
   srcNotationId: string;
+  onLoadStart?: () => void;
+  onLoadEnd?: () => void;
 };
 
 export const SuggestedNotations: React.FC<SuggestedNotationsProps> = (props) => {
-  const [suggestedNotations, errors, isLoading] = useSuggestedNotations(props.srcNotationId, NUM_SUGGESTIONS);
+  const [suggestedNotations, errors, loading] = useSuggestedNotations(props.srcNotationId, NUM_SUGGESTIONS);
+
+  const onLoadStart = props.onLoadStart || NOOP;
+  const onLoadEnd = props.onLoadEnd || NOOP;
+  useEffect(() => {
+    if (loading) {
+      onLoadStart();
+    } else {
+      onLoadEnd();
+    }
+  }, [loading, onLoadStart, onLoadEnd]);
 
   const hasErrors = errors.length > 0;
   const hasSuggestedNotations = suggestedNotations.length > 0;
 
-  const shouldShowNoSuggestionsFound = !isLoading && !hasErrors && !hasSuggestedNotations;
-  const shouldShowErrors = !isLoading && hasErrors;
-  const shouldShowSuggestedNotations = !isLoading && !hasErrors && hasSuggestedNotations;
+  const shouldShowNoSuggestionsFound = !loading && !hasErrors && !hasSuggestedNotations;
+  const shouldShowErrors = !loading && hasErrors;
+  const shouldShowSuggestedNotations = !loading && !hasErrors && hasSuggestedNotations;
   const shouldShowFallback =
-    !isLoading && !shouldShowNoSuggestionsFound && !shouldShowErrors && !shouldShowSuggestedNotations;
+    !loading && !shouldShowNoSuggestionsFound && !shouldShowErrors && !shouldShowSuggestedNotations;
 
   return (
     <Outer>

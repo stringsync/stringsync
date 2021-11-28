@@ -171,9 +171,33 @@ export const Notation: React.FC<Props> = (props) => {
   };
 
   // loading
-  const [mediaInitialized, setMediaInitialized] = useState(false);
-  const [notationInitialized, setNotationInitialized] = useState(false);
-  const showSkeleton = loading && mediaInitialized && notationInitialized;
+  const [mediaPlayerInitialized, setMediaPlayerInitialized] = useState(false);
+  useEffect(() => {
+    const eventBusIds = [
+      mediaPlayer.eventBus.once('init', () => {
+        setMediaPlayerInitialized(true);
+      }),
+    ];
+    return () => {
+      mediaPlayer.eventBus.unsubscribe(...eventBusIds);
+      setMediaPlayerInitialized(false);
+    };
+  }, [mediaPlayer]);
+
+  const [musicDisplayInitialized, setMusicDisplayInitialized] = useState(false);
+  useEffect(() => {
+    const eventBusIds = [
+      musicDisplay.eventBus.once('loadended', () => {
+        setMusicDisplayInitialized(true);
+      }),
+    ];
+    return () => {
+      musicDisplay.eventBus.unsubscribe(...eventBusIds);
+      setMusicDisplayInitialized(false);
+    };
+  }, [musicDisplay]);
+
+  const showSkeletons = loading && mediaPlayerInitialized && musicDisplayInitialized;
 
   // controls detail
   const showDetail = pane2WidthPx > NOTATION_DETAIL_THRESHOLD_PX;
