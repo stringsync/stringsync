@@ -128,7 +128,11 @@ const NotationShow: React.FC = enhance(() => {
   );
 
   // loading
-  const loading = isNotationLoading || isSuggestedNotationsLoading;
+  const [isNotationInitialized, setIsNotationInitialized] = useState(false);
+  const onNotationInit = useCallback(() => {
+    setIsNotationInitialized(true);
+  }, []);
+  const skeleton = errors.length === 0 && (!isNotationInitialized || isNotationLoading || isSuggestedNotationsLoading);
 
   return (
     <FullHeightDiv data-testid="notation-show">
@@ -142,7 +146,8 @@ const NotationShow: React.FC = enhance(() => {
 
       {!hasErrors && (
         <Notation
-          loading={loading}
+          skeleton={skeleton}
+          onInit={onNotationInit}
           notation={notation}
           sidecar={
             <div>
@@ -153,7 +158,12 @@ const NotationShow: React.FC = enhance(() => {
                   </Button>
                 </Link>
               )}
-              <SuggestedNotations srcNotationId={params.id} />
+              <SuggestedNotations
+                skeleton={skeleton}
+                srcNotationId={params.id}
+                onLoadStart={onSuggestedNotationsLoadStart}
+                onLoadEnd={onSuggestedNotationsLoadEnd}
+              />
             </div>
           }
           layoutOptions={layoutOptions}
@@ -183,6 +193,7 @@ const NotationShow: React.FC = enhance(() => {
 
           <ErroredSuggestedNotationsOuter>
             <SuggestedNotations
+              skeleton={skeleton}
               srcNotationId={params.id}
               onLoadStart={onSuggestedNotationsLoadStart}
               onLoadEnd={onSuggestedNotationsLoadEnd}

@@ -1,4 +1,4 @@
-import { Button, Col, Row, Tag } from 'antd';
+import { Button, Col, Row, Skeleton, Tag } from 'antd';
 import { ButtonType } from 'antd/lib/button';
 import { truncate } from 'lodash';
 import React, { useEffect } from 'react';
@@ -31,6 +31,10 @@ const ListItem = styled.li`
   :hover {
     opacity: 0.5;
   }
+`;
+
+const Padded = styled.div`
+  padding: 24px;
 `;
 
 const Thumbnail = styled.img`
@@ -68,6 +72,7 @@ const LibraryLink: React.FC<{ block?: boolean; type?: ButtonType }> = (props) =>
 };
 
 type SuggestedNotationsProps = {
+  skeleton: boolean;
   srcNotationId: string;
   onLoadStart?: () => void;
   onLoadEnd?: () => void;
@@ -89,14 +94,29 @@ export const SuggestedNotations: React.FC<SuggestedNotationsProps> = (props) => 
   const hasErrors = errors.length > 0;
   const hasSuggestedNotations = suggestedNotations.length > 0;
 
-  const shouldShowNoSuggestionsFound = !loading && !hasErrors && !hasSuggestedNotations;
-  const shouldShowErrors = !loading && hasErrors;
-  const shouldShowSuggestedNotations = !loading && !hasErrors && hasSuggestedNotations;
+  const shouldShowSkeleton = props.skeleton;
+  const shouldShowNoSuggestionsFound = !shouldShowSkeleton && !loading && !hasErrors && !hasSuggestedNotations;
+  const shouldShowErrors = !shouldShowSkeleton && !loading && hasErrors;
+  const shouldShowSuggestedNotations = !shouldShowSkeleton && !loading && !hasErrors && hasSuggestedNotations;
   const shouldShowFallback =
-    !loading && !shouldShowNoSuggestionsFound && !shouldShowErrors && !shouldShowSuggestedNotations;
+    !shouldShowSkeleton &&
+    !loading &&
+    !shouldShowNoSuggestionsFound &&
+    !shouldShowErrors &&
+    !shouldShowSuggestedNotations;
 
   return (
     <Outer>
+      {props.skeleton && (
+        <Padded>
+          <Skeleton loading paragraph={{ rows: 1 }} />
+          <Skeleton avatar loading paragraph={{ rows: 2 }} />
+          <Skeleton avatar loading paragraph={{ rows: 2 }} />
+          <Skeleton avatar loading paragraph={{ rows: 2 }} />
+          <Skeleton avatar loading paragraph={{ rows: 2 }} />
+        </Padded>
+      )}
+
       {shouldShowNoSuggestionsFound && (
         <Centered>
           <h3>no suggestions found</h3>

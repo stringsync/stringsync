@@ -15,12 +15,11 @@ import { Controls, CONTROLS_HEIGHT_PX } from './Controls';
 import { Fretboard } from './Fretboard';
 import * as helpers from './helpers';
 import { useMusicDisplayResize } from './hooks/useMusicDisplayResize';
+import { Info } from './Info';
 import { Media } from './Media';
 import { MusicSheet } from './MusicSheet';
 import { NotationSink } from './NotationSink';
-import { Sidecar } from './Sidecar';
 import { SplitPane } from './SplitPane';
-import { Tags } from './Tags';
 import { NotationLayoutOptions, NotationSettings, RenderableNotation } from './types';
 
 const NOTATION_DETAIL_THRESHOLD_PX = 767;
@@ -29,19 +28,9 @@ const Outer = styled.div`
   height: 100%;
 `;
 
-const Title = styled.h1`
-  text-align: center;
-  margin-bottom: 0;
-`;
-
-const Subtitle = styled.h2`
-  text-align: center;
-  margin-bottom: 0;
-`;
-
-const Muted = styled.h3`
-  text-align: center;
-  color: ${(props) => props.theme['@muted']};
+const Sidecar = styled.div`
+  background: white;
+  height: 100%;
 `;
 
 const FloatingButton = styled(Button)<{ $top: number }>`
@@ -72,18 +61,18 @@ const Flex1InvisibleScrollbar = styled(Flex1)`
 `;
 
 type Props = {
-  loading?: boolean;
+  skeleton?: boolean;
   sidecar?: React.ReactNode;
   layoutOptions?: NotationLayoutOptions;
   notation: Nullable<RenderableNotation>;
   defaultSettings?: Partial<NotationSettings>;
   maxHeight?: number | string;
   onSettingsChange?: (settings: NotationSettings) => void;
+  onInit?: () => void;
 };
 
 export const Notation: React.FC<Props> = (props) => {
   // props
-  const loading = props.loading || false;
   const notation = props.notation;
   const layoutOptions = props.layoutOptions;
   const sidecar = props.sidecar;
@@ -95,11 +84,6 @@ export const Notation: React.FC<Props> = (props) => {
   // refs
   const settingsContainerRef = useRef<HTMLDivElement>(null);
   const getContainer = () => settingsContainerRef.current || document.body;
-
-  // notation
-  const songName = notation?.songName || '???';
-  const artistName = notation?.artistName || '???';
-  const transcriberUsername = notation?.transcriber.username || '???';
 
   // settings
   const device = useDevice();
@@ -170,9 +154,13 @@ export const Notation: React.FC<Props> = (props) => {
     }
   };
 
-  // loading
+  // initialization tracking
   const [mediaPlayerInitialized, setMediaPlayerInitialized] = useState(false);
   useEffect(() => {
+    if (device.mobile) {
+      setMediaPlayerInitialized(true);
+      return;
+    }
     const eventBusIds = [
       mediaPlayer.eventBus.once('init', () => {
         setMediaPlayerInitialized(true);
@@ -182,7 +170,7 @@ export const Notation: React.FC<Props> = (props) => {
       mediaPlayer.eventBus.unsubscribe(...eventBusIds);
       setMediaPlayerInitialized(false);
     };
-  }, [mediaPlayer]);
+  }, [device.mobile, mediaPlayer]);
 
   const [musicDisplayInitialized, setMusicDisplayInitialized] = useState(false);
   useEffect(() => {
@@ -196,10 +184,15 @@ export const Notation: React.FC<Props> = (props) => {
       setMusicDisplayInitialized(false);
     };
   }, [musicDisplay]);
+  const onInit = props.onInit;
+  useEffect(() => {
+    if (onInit && mediaPlayerInitialized && musicDisplayInitialized) {
+      onInit();
+    }
+  }, [onInit, mediaPlayerInitialized, musicDisplayInitialized]);
 
-  const showSkeletons = loading && mediaPlayerInitialized && musicDisplayInitialized;
-
-  // controls detail
+  // conditionally show nodes
+  const skeleton = props.skeleton ?? false;
   const showDetail = pane2WidthPx > NOTATION_DETAIL_THRESHOLD_PX;
 
   return (
@@ -224,27 +217,21 @@ export const Notation: React.FC<Props> = (props) => {
             pane1Style={{ zIndex: 5, height: '100%' }}
             onDragFinished={updateDefaultSidecarWidthPx}
           >
-            <Sidecar videoSkeleton loading={loading}>
+            <Sidecar>
               <FlexColumn>
-                <Media video loading={loading} src={src} onPlayerChange={setMediaPlayer} />
+                <Media video skeleton={skeleton} src={src} onPlayerChange={setMediaPlayer} />
 
                 <Flex1InvisibleScrollbar>
                   <br />
-
-                  <Title>{songName}</Title>
-                  <Subtitle>by {artistName}</Subtitle>
-                  <Muted>{transcriberUsername}</Muted>
-                  <Tags tags={notation?.tags || []} />
-
+                  <Info skeleton={skeleton} notation={notation} />
                   <br />
-
                   {sidecar}
                 </Flex1InvisibleScrollbar>
               </FlexColumn>
             </Sidecar>
             <FlexColumn>
               <Flex1>
-                <MusicSheet loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
+                <MusicSheet skeleton={skeleton} notation={notation} onMusicDisplayChange={setMusicDisplay} />
               </Flex1>
               {settings.isFretboardVisible && (
                 <Fretboard
@@ -294,14 +281,9 @@ export const Notation: React.FC<Props> = (props) => {
             onClose={onSidecarDrawerClose}
             getContainer={getContainer}
           >
-            <Sidecar loading={loading}>
-              <Title>{songName}</Title>
-              <Subtitle>by {artistName}</Subtitle>
-              <Muted>{transcriberUsername}</Muted>
-              <Tags tags={notation?.tags || []} />
-
+            <Sidecar>
+              <Info skeleton={skeleton} notation={notation} />
               <br />
-
               {sidecar}
             </Sidecar>
           </Drawer>
@@ -320,13 +302,13 @@ export const Notation: React.FC<Props> = (props) => {
             <Media
               video={settings.isVideoVisible}
               fluid={false}
-              loading={loading}
+              skeleton={skeleton}
               src={src}
               onPlayerChange={setMediaPlayer}
             />
             <FlexColumn>
               <Flex1>
-                <MusicSheet loading={loading} notation={notation} onMusicDisplayChange={setMusicDisplay} />
+                <MusicSheet skeleton={skeleton} notation={notation} onMusicDisplayChange={setMusicDisplay} />
               </Flex1>
               {settings.isFretboardVisible && (
                 <Fretboard

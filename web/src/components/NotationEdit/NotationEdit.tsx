@@ -138,7 +138,7 @@ const NotationEdit: React.FC = enhance(() => {
 
       {notation && (
         <Notation
-          loading={getLoading}
+          skeleton={getLoading}
           notation={notation}
           maxHeight={notationMaxHeight}
           sidecar={
