@@ -13,6 +13,7 @@ import { useIntersection } from '../../hooks/useIntersection';
 import { useTags } from '../../hooks/useTags';
 import { compose } from '../../util/compose';
 import { scrollToTop } from '../../util/scrollToTop';
+import { SonarSearch } from '../Sonar';
 import { libraryMachine, libraryModel } from './libraryMachine';
 import { NotationCard } from './NotationCard';
 
@@ -198,7 +199,8 @@ export const Library: React.FC<Props> = enhance(() => {
           )}
         </Row>
       </>
-      {hasLoadedFirstPage && (
+
+      {hasLoadedFirstPage && state.context.notations.length > 0 && (
         <>
           <br />
           <br />
@@ -218,6 +220,23 @@ export const Library: React.FC<Props> = enhance(() => {
               )}
             />
           </ListOuter>
+        </>
+      )}
+
+      {hasLoadedFirstPage && state.context.notations.length === 0 && (
+        <>
+          <br />
+          <br />
+
+          <Row justify="center" align="middle">
+            <SonarSearch style={{ width: '50%' }} />
+          </Row>
+
+          <br />
+
+          <Row justify="center">
+            <NoMore>did not find anything</NoMore>
+          </Row>
         </>
       )}
 
