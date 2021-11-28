@@ -28,6 +28,18 @@ export class EventBus<T extends PayloadByEventName = {}> {
     }
   }
 
+  once<E extends EventNames<T>>(eventName: E, callback: EventCallback<Payload<T, E>>): symbol {
+    const id = Symbol();
+    this.addSubscriber(eventName, {
+      id,
+      callback: (payload) => {
+        callback(payload);
+        this.unsubscribe(id);
+      },
+    });
+    return id;
+  }
+
   subscribe<E extends EventNames<T>>(eventName: E, callback: EventCallback<Payload<T, E>>): symbol {
     const id = Symbol();
     this.addSubscriber(eventName, { id, callback });
