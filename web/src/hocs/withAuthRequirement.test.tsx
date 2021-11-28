@@ -81,7 +81,7 @@ describe('withAuthRequirement', () => {
       expect(getByTestId('dummy')).toBeInTheDocument();
     });
 
-    it('does not render when pending', () => {
+    it('renders when pending', () => {
       simulatePending();
       const { getByTestId } = render(
         <Test>
@@ -89,7 +89,7 @@ describe('withAuthRequirement', () => {
         </Test>
       );
 
-      expect(() => getByTestId('dummy')).toThrow();
+      expect(getByTestId('dummy')).toBeInTheDocument();
     });
   });
 
@@ -122,7 +122,7 @@ describe('withAuthRequirement', () => {
       expect(getByTestId('dummy')).toBeInTheDocument();
     });
 
-    it('does not render when pending', () => {
+    it('renders when pending', () => {
       simulatePending();
       const { getByTestId } = render(
         <Test>
@@ -130,7 +130,7 @@ describe('withAuthRequirement', () => {
         </Test>
       );
 
-      expect(() => getByTestId('dummy')).toThrow();
+      expect(getByTestId('dummy')).toBeInTheDocument();
     });
   });
 

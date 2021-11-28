@@ -90,6 +90,7 @@ export const AuthProvider: React.FC = (props) => {
       if (data.login) {
         dispatch(AUTH_ACTIONS.setUser({ user: helpers.toAuthUser(data.login) }));
       } else {
+        debugger;
         dispatch(AUTH_ACTIONS.setErrors({ errors: ['could not login'] }));
       }
     },

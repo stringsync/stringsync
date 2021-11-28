@@ -73,6 +73,6 @@ export const withAuthRequirement = (authReq: AuthRequirement) =>
         }
       }, [isAuthPending, meetsAuthReqs, history, isLoggedIn, returnToRoute]);
 
-      return !isAuthPending && meetsAuthReqs ? <Component {...props} /> : <Fallback />;
+      return meetsAuthReqs ? <Component {...props} /> : <Fallback />;
     };
   };
