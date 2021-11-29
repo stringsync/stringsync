@@ -1,4 +1,4 @@
-import { Col, Layout, Row } from 'antd';
+import { Button, Col, Layout, Row } from 'antd';
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
@@ -30,7 +30,6 @@ const StyledHeader = styled(Layout.Header)`
 
 const StyledFooter = styled(Layout.Footer)`
   text-align: center;
-  font-size: 10px;
   color: ${(props) => props.theme['@muted-color']};
 `;
 
@@ -107,7 +106,27 @@ export const DefaultLayout: React.FC<Props> = (props) => {
       <Layout.Content>{props.lanes ? <Lane>{props.children}</Lane> : props.children}</Layout.Content>
       {props.footer && isGtMd && (
         <StyledFooter>
-          <Lane>{version}</Lane>
+          <Lane>
+            <Row justify="center" gutter={16}>
+              <Col>
+                <a href="https://github.com/stringsync/stringsync" target="_blank" rel="noreferrer">
+                  <Button type="link">github</Button>
+                </a>
+              </Col>
+              <Col>
+                <a href="https://instagram.com/jaredplaysguitar" target="_blank" rel="noreferrer">
+                  <Button type="link">instagram</Button>
+                </a>
+              </Col>
+              <Col>
+                <a href="mailto:admin@stringsync.com" target="_blank" rel="noreferrer">
+                  <Button type="link">contact</Button>
+                </a>
+              </Col>
+            </Row>
+            <br />
+            <Version>{version}</Version>
+          </Lane>
         </StyledFooter>
       )}
     </StyledLayout>
