@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { SonarSleep } from '../Sonar';
 
 interface Props {}
 
@@ -23,6 +24,11 @@ export const NotFound: React.FC<Props> = () => {
       <h1>404</h1>
       <h2>not found</h2>
       <Link to="/library">library</Link>
+
+      <br />
+      <br />
+
+      <SonarSleep style={{ width: '50%' }} />
     </Outer>
   );
 };
