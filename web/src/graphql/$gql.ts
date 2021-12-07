@@ -1,7 +1,7 @@
 import { extractFiles } from 'extract-files';
 import { GraphQLError } from 'graphql';
 import { cloneDeep, isObject, isString, isUndefined, toPath } from 'lodash';
-import { mutation, params, query, rawString } from 'typed-graphqlify';
+import { mutation, onUnion, params, query, rawString } from 'typed-graphqlify';
 import { Params } from 'typed-graphqlify/dist/render';
 import { GRAPHQL_URI } from '.';
 import { UnknownError } from '../errors';
@@ -31,6 +31,7 @@ type VariableNameLookup = Record<string, string>;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class $gql<T extends Root, F extends Fields<T>, Q, V> {
   static t = t;
+  static union = onUnion;
 
   static query<F extends Fields<Query>>(field: F) {
     return new GqlBuilder<Query, F>(query, field, undefined, undefined);

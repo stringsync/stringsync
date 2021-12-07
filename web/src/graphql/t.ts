@@ -29,6 +29,7 @@ export class t {
     return type;
   };
   static custom = types.custom;
+  static constant = types.constant;
   static get file(): File {
     const type = types.custom<File>();
     helpers.injectMeta(type, { isFile: true });
