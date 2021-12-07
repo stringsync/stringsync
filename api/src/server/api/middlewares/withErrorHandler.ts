@@ -13,7 +13,6 @@ export const withErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   const ctx = Ctx.get(req);
   const container = ctx.getContainer();
   const logger = container.get<Logger>(TYPES.Logger);
-
   logger.error(`${id}: ${err.stack}`);
   res.status(HttpStatus.INTERNAL_SERVER_ERROR).send(`${UNKNOWN_ERROR_MSG}: ${id}`);
 };
