@@ -1,5 +1,5 @@
 import { Container } from 'inversify';
-import { SessionUser } from '../../server';
+import { SessionUser } from '../server';
 
 export type ResolverCtx = {
   getReqId(): string;

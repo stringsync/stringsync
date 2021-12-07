@@ -6,8 +6,9 @@ import { TYPES } from '../../inversify.constants';
 import { SendMail } from '../../jobs';
 import { AuthRequirement, AuthService, MailWriterService } from '../../services';
 import { Logger } from '../../util';
+import { BadRequestError, ForbiddenError, NotFoundError, UnknownError } from '../graphqlTypes';
 import { WithAuthRequirement } from '../middlewares';
-import { BadRequestError, ForbiddenError, NotFoundError, ResolverCtx } from '../types';
+import { ResolverCtx } from '../types';
 import { UserObject } from '../User';
 import { ConfirmEmailInput } from './ConfirmEmailInput';
 import { ConfirmEmailOutput, EmailConfirmation } from './ConfirmEmailOutput';
@@ -80,6 +81,7 @@ export class AuthResolver {
       await this.authService.confirmEmail(sessionUser.id, input.confirmationToken, confirmedAt);
       return EmailConfirmation.of(confirmedAt);
     } catch (e) {
+      this.logger.error(`could not confirm email: ${e}`);
       if (e instanceof StringSyncError) {
         switch (e.code) {
           case ErrorCode.BAD_REQUEST:
@@ -88,7 +90,7 @@ export class AuthResolver {
             return NotFoundError.of(e.message);
         }
       }
-      throw e;
+      return UnknownError.of();
     }
   }
 

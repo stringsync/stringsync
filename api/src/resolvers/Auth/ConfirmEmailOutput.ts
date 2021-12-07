@@ -1,5 +1,5 @@
 import { createUnionType, Field, ObjectType } from 'type-graphql';
-import { BadRequestError, ForbiddenError, NotFoundError } from '../types';
+import { BadRequestError, ForbiddenError, NotFoundError, UnknownError } from '../graphqlTypes';
 
 @ObjectType()
 export class EmailConfirmation {
@@ -15,5 +15,5 @@ export class EmailConfirmation {
 
 export const ConfirmEmailOutput = createUnionType({
   name: 'ConfirmEmailOutput',
-  types: () => [EmailConfirmation, NotFoundError, BadRequestError, ForbiddenError] as const,
+  types: () => [EmailConfirmation, NotFoundError, BadRequestError, ForbiddenError, UnknownError] as const,
 });
