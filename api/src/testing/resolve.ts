@@ -18,7 +18,7 @@ class SessionUserStorage {
   }
 }
 
-type Resolved<T extends RequestType, N extends Exclude<keyof T, '__typename'>> = {
+type Resolved<T extends RequestType, N extends keyof T> = {
   res: Body<T, N>;
   ctx: ResolverCtx;
 };
@@ -31,7 +31,7 @@ type ResolveOpts = {
 
 export const resolve = async <
   T extends RequestType,
-  N extends Exclude<keyof T, '__typename'>,
+  N extends keyof T,
   V extends Record<string, any> = Record<string, any>
 >(
   query: string,
