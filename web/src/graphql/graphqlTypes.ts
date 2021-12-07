@@ -25,7 +25,7 @@ export type Query = {
   users: UserConnectionObject;
   userCount: Scalars['Float'];
   whoami?: Maybe<UserObject>;
-  health: Scalars['String'];
+  health: HealthOutput;
   version: Scalars['String'];
 };
 
@@ -146,6 +146,12 @@ export type UserEdgeObject = {
   __typename?: 'UserEdgeObject';
   node: UserObject;
   cursor: Scalars['String'];
+};
+
+export type HealthOutput = {
+  __typename?: 'HealthOutput';
+  isDbHealthy: Scalars['Boolean'];
+  isCacheHealthy: Scalars['Boolean'];
 };
 
 export type Mutation = {

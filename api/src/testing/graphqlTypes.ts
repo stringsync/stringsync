@@ -33,6 +33,12 @@ export type CreateTagInput = {
 };
 
 
+export type HealthOutput = {
+  __typename?: 'HealthOutput';
+  isDbHealthy: Scalars['Boolean'];
+  isCacheHealthy: Scalars['Boolean'];
+};
+
 export type LoginInput = {
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -159,7 +165,7 @@ export type Query = {
   users: UserConnectionObject;
   userCount: Scalars['Float'];
   whoami?: Maybe<UserObject>;
-  health: Scalars['String'];
+  health: HealthOutput;
   version: Scalars['String'];
 };
 

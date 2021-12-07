@@ -1,7 +1,7 @@
 import { Field, ObjectType } from 'type-graphql';
 
 @ObjectType()
-export class HealthResult {
+export class HealthOutput {
   @Field()
   isDbHealthy!: boolean;
 
