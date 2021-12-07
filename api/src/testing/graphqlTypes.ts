@@ -15,9 +15,16 @@ export type Scalars = {
   Upload: any;
 };
 
+export type BadRequestError = {
+  __typename?: 'BadRequestError';
+  message: Scalars['String'];
+};
+
 export type ConfirmEmailInput = {
   confirmationToken: Scalars['String'];
 };
+
+export type ConfirmEmailOutput = EmailConfirmation | NotFoundError | BadRequestError | ForbiddenError | UnknownError;
 
 export type CreateNotationInput = {
   songName: Scalars['String'];
@@ -32,6 +39,16 @@ export type CreateTagInput = {
   category: TagCategory;
 };
 
+
+export type EmailConfirmation = {
+  __typename?: 'EmailConfirmation';
+  confirmedAt: Scalars['DateTime'];
+};
+
+export type ForbiddenError = {
+  __typename?: 'ForbiddenError';
+  message: Scalars['String'];
+};
 
 export type HealthOutput = {
   __typename?: 'HealthOutput';
@@ -55,7 +72,7 @@ export type Mutation = {
   login?: Maybe<UserObject>;
   logout?: Maybe<Scalars['Boolean']>;
   signup?: Maybe<UserObject>;
-  confirmEmail?: Maybe<UserObject>;
+  confirmEmail: ConfirmEmailOutput;
   resendConfirmationEmail?: Maybe<Scalars['Boolean']>;
   sendResetPasswordEmail?: Maybe<Scalars['Boolean']>;
   resetPassword?: Maybe<Scalars['Boolean']>;
@@ -114,6 +131,11 @@ export type MutationSendResetPasswordEmailArgs = {
 
 export type MutationResetPasswordArgs = {
   input: ResetPasswordInput;
+};
+
+export type NotFoundError = {
+  __typename?: 'NotFoundError';
+  message: Scalars['String'];
 };
 
 export type NotationConnectionObject = {
@@ -230,6 +252,11 @@ export type TagObject = {
   category: TagCategory;
   name: Scalars['String'];
   notations?: Maybe<Array<NotationObject>>;
+};
+
+export type UnknownError = {
+  __typename?: 'UnknownError';
+  message: Scalars['String'];
 };
 
 export type UpdateNotationInput = {

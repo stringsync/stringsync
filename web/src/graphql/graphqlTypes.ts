@@ -165,7 +165,7 @@ export type Mutation = {
   login?: Maybe<UserObject>;
   logout?: Maybe<Scalars['Boolean']>;
   signup?: Maybe<UserObject>;
-  confirmEmail?: Maybe<UserObject>;
+  confirmEmail: ConfirmEmailOutput;
   resendConfirmationEmail?: Maybe<Scalars['Boolean']>;
   sendResetPasswordEmail?: Maybe<Scalars['Boolean']>;
   resetPassword?: Maybe<Scalars['Boolean']>;
@@ -273,6 +273,33 @@ export type SignupInput = {
   username: Scalars['String'];
   email: Scalars['String'];
   password: Scalars['String'];
+};
+
+export type ConfirmEmailOutput = EmailConfirmation | NotFoundError | BadRequestError | ForbiddenError | UnknownError;
+
+export type EmailConfirmation = {
+  __typename?: 'EmailConfirmation';
+  confirmedAt: Scalars['DateTime'];
+};
+
+export type NotFoundError = {
+  __typename?: 'NotFoundError';
+  message: Scalars['String'];
+};
+
+export type BadRequestError = {
+  __typename?: 'BadRequestError';
+  message: Scalars['String'];
+};
+
+export type ForbiddenError = {
+  __typename?: 'ForbiddenError';
+  message: Scalars['String'];
+};
+
+export type UnknownError = {
+  __typename?: 'UnknownError';
+  message: Scalars['String'];
 };
 
 export type ConfirmEmailInput = {

@@ -12,5 +12,5 @@ export class UnknownError {
   readonly code = ErrorCode.UNKNOWN;
 
   @Field()
-  message = UNKNOWN_ERROR_MSG;
+  message!: string;
 }
