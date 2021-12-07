@@ -164,13 +164,6 @@ describe('AuthService', () => {
       confirmedAt = new Date();
     });
 
-    it('sets confirmed at', async () => {
-      const confirmedEmailUser = await authService.confirmEmail(user.id, user.confirmationToken!, confirmedAt);
-
-      expect(confirmedEmailUser.confirmedAt).toStrictEqual(confirmedAt);
-      expect(confirmedEmailUser.confirmationToken).toBeNull();
-    });
-
     it('persists confirmed at and unsets confirmation token', async () => {
       await authService.confirmEmail(user.id, user.confirmationToken!, confirmedAt);
 

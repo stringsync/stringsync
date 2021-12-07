@@ -62,7 +62,7 @@ export class AuthService {
     return user;
   }
 
-  async confirmEmail(id: string, confirmationToken: string, confirmedAt: Date): Promise<User> {
+  async confirmEmail(id: string, confirmationToken: string, confirmedAt: Date): Promise<void> {
     const user = await this.userRepo.find(id);
     if (!user) {
       throw new NotFoundError('user not found');
@@ -81,7 +81,7 @@ export class AuthService {
       throw new BadRequestError('invalid confirmation token');
     }
 
-    return await this.userRepo.update(user.id, { confirmationToken: null, confirmedAt });
+    await this.userRepo.update(user.id, { confirmationToken: null, confirmedAt });
   }
 
   async resetConfirmationToken(id: string): Promise<User> {
