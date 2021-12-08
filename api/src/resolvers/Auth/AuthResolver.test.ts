@@ -6,6 +6,7 @@ import { SessionUser } from '../../server';
 import { AuthService, UserService } from '../../services';
 import { ConfirmEmailInput, createRandUser, gql, LoginInput, Mutation, Query, resolve } from '../../testing';
 import { rand } from '../../util';
+import { EmailConfirmation } from './ConfirmEmailOutput';
 import { ResetPasswordInput } from './ResetPasswordInput';
 import { SendResetPasswordEmailInput } from './SendResetPasswordEmailInput';
 
@@ -214,6 +215,7 @@ describe('AuthResolver', () => {
         gql`
           mutation confirmEmail($input: ConfirmEmailInput!) {
             confirmEmail(input: $input) {
+              __typename
               confirmedAt
             }
           }
@@ -233,7 +235,10 @@ describe('AuthResolver', () => {
       const reloadedUser = await userService.find(user.id);
       expect(reloadedUser).not.toBeNull();
       expect(reloadedUser!.confirmedAt).not.toBeNull();
-      expect(res.data.confirmEmail!.confirmedAt).toBe(reloadedUser!.confirmedAt!.toISOString());
+      expect(res.data.confirmEmail).not.toBeNull();
+      expect(res.data.confirmEmail!.__typename).toBe('EmailConfirmation');
+      const emailConfirmation = res.data.confirmEmail as EmailConfirmation;
+      expect(emailConfirmation.confirmedAt).toBe(reloadedUser!.confirmedAt);
     });
 
     it('returns errors for the wrong confirmation token', async () => {

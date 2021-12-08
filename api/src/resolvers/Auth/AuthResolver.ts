@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { User } from '../../domain';
-import { ErrorCode, ForbiddenError as InternalForbiddenError, StringSyncError } from '../../errors';
+import { ErrorCode, ForbiddenError as InternalForbiddenError, StringsyncError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { SendMail } from '../../jobs';
 import { AuthRequirement, AuthService, MailWriterService } from '../../services';
@@ -82,7 +82,7 @@ export class AuthResolver {
       return EmailConfirmation.of(confirmedAt);
     } catch (e) {
       this.logger.error(`could not confirm email: ${e}`);
-      if (e instanceof StringSyncError) {
+      if (e instanceof StringsyncError) {
         switch (e.code) {
           case ErrorCode.BAD_REQUEST:
             return BadRequestError.of(e.message);

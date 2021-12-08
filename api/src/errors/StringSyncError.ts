@@ -1,7 +1,7 @@
 import { NOT_IMPLEMENTED_MSG, UNKNOWN_ERROR_MSG } from './constants';
 import { ErrorCode } from './types';
 
-export class StringSyncError extends Error {
+export class StringsyncError extends Error {
   code: ErrorCode;
   isUserFacing = true;
 
@@ -15,37 +15,37 @@ export class StringSyncError extends Error {
   }
 }
 
-export class UnknownError extends StringSyncError {
+export class UnknownError extends StringsyncError {
   constructor(message: string = UNKNOWN_ERROR_MSG) {
     super(message, ErrorCode.UNKNOWN);
   }
 }
 
-export class ConflictError extends StringSyncError {
+export class ConflictError extends StringsyncError {
   constructor(message: string) {
     super(message, ErrorCode.CONFLICT);
   }
 }
 
-export class ForbiddenError extends StringSyncError {
+export class ForbiddenError extends StringsyncError {
   constructor(message: string) {
     super(message, ErrorCode.FORBIDDEN);
   }
 }
 
-export class BadRequestError extends StringSyncError {
+export class BadRequestError extends StringsyncError {
   constructor(message: string) {
     super(message, ErrorCode.BAD_REQUEST);
   }
 }
 
-export class NotFoundError extends StringSyncError {
+export class NotFoundError extends StringsyncError {
   constructor(message: string) {
     super(message, ErrorCode.NOT_FOUND);
   }
 }
 
-export class InternalError extends StringSyncError {
+export class InternalError extends StringsyncError {
   isUserFacing = false;
 
   constructor(message: string) {
@@ -53,7 +53,7 @@ export class InternalError extends StringSyncError {
   }
 }
 
-export class NotImplementedError extends StringSyncError {
+export class NotImplementedError extends StringsyncError {
   isUserFacing = false;
 
   constructor(message: string = NOT_IMPLEMENTED_MSG) {
@@ -61,7 +61,7 @@ export class NotImplementedError extends StringSyncError {
   }
 }
 
-export class ValidationError extends StringSyncError {
+export class ValidationError extends StringsyncError {
   isUserFacing = true;
   details: string[];
 
