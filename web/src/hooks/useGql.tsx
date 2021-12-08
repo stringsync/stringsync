@@ -1,6 +1,8 @@
+import { Modal } from 'antd';
 import { noop } from 'lodash';
-import { useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { useAsyncCallback, UseAsyncCallbackOptions } from 'react-async-hook';
+import * as uuid from 'uuid';
 import { MissingDataError } from '../errors';
 import { Any$gql, GqlResponseOf, SuccessfulResponse, VariablesOf } from '../graphql';
 
@@ -19,7 +21,22 @@ export type UseGqlOptions<G extends Any$gql> = Partial<
 export const useGql = <G extends Any$gql>(gql: G, opts?: UseGqlOptions<G>) => {
   const abortControllerRef = useRef<AbortController | null>(null);
   const onData: OnDataCallback<G> = opts?.onData || noop;
-  const onErrors: OnErrorsCallback = opts?.onErrors || noop;
+  const onErrorsOverride = opts?.onErrors;
+  const onErrors: OnErrorsCallback = useCallback(
+    (errors) => {
+      if (onErrorsOverride) {
+        onErrorsOverride(errors);
+      } else {
+        const id = uuid.v4();
+        Modal.error({
+          title: 'error',
+          content: errors.map((error, ndx) => <div key={`modal-${id}-${ndx}`}>{error}</div>),
+          maskClosable: true,
+        });
+      }
+    },
+    [onErrorsOverride]
+  );
 
   const { execute, loading } = useAsyncCallback(
     async (variables: VariablesOf<G>) => {
