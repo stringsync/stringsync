@@ -6,6 +6,7 @@ import { SessionUser } from '../../server';
 import { AuthService, UserService } from '../../services';
 import { ConfirmEmailInput, createRandUser, gql, LoginInput, Mutation, Query, resolve } from '../../testing';
 import { rand } from '../../util';
+import { BadRequestError, ForbiddenError } from '../graphqlTypes';
 import { EmailConfirmation } from './ConfirmEmailOutput';
 import { ResetPasswordInput } from './ResetPasswordInput';
 import { SendResetPasswordEmailInput } from './SendResetPasswordEmailInput';
@@ -216,7 +217,18 @@ describe('AuthResolver', () => {
           mutation confirmEmail($input: ConfirmEmailInput!) {
             confirmEmail(input: $input) {
               __typename
-              confirmedAt
+              ... on EmailConfirmation {
+                confirmedAt
+              }
+              ... on ForbiddenError {
+                message
+              }
+              ... on BadRequestError {
+                message
+              }
+              ... on NotFoundError {
+                message
+              }
             }
           }
         `,
@@ -230,7 +242,6 @@ describe('AuthResolver', () => {
 
       expect(res.errors).toBeUndefined();
       expect(res.data.confirmEmail).not.toBeNull();
-
       const userService = container.get<UserService>(TYPES.UserService);
       const reloadedUser = await userService.find(user.id);
       expect(reloadedUser).not.toBeNull();
@@ -238,19 +249,27 @@ describe('AuthResolver', () => {
       expect(res.data.confirmEmail).not.toBeNull();
       expect(res.data.confirmEmail!.__typename).toBe('EmailConfirmation');
       const emailConfirmation = res.data.confirmEmail as EmailConfirmation;
-      expect(emailConfirmation.confirmedAt).toBe(reloadedUser!.confirmedAt);
+      expect(emailConfirmation.confirmedAt).toBe(reloadedUser!.confirmedAt!.toISOString());
     });
 
-    it('returns errors for the wrong confirmation token', async () => {
+    it('returns error for the wrong confirmation token', async () => {
       const { res } = await confirmEmail({ confirmationToken: rand.str(5) }, LoginStatus.LOGGED_IN);
 
-      expect(res.errors).toBeDefined();
+      expect(res.errors).toBeUndefined();
+      expect(res.data.confirmEmail).not.toBeNull();
+      expect(res.data.confirmEmail!.__typename).toBe('BadRequestError');
+      const badRequestError = res.data.confirmEmail! as BadRequestError;
+      expect(badRequestError.message).toBe('invalid confirmation token');
     });
 
-    it('returns errors when not logged in', async () => {
+    it('returns error when not logged in', async () => {
       const { res } = await confirmEmail({ confirmationToken: user.confirmationToken! }, LoginStatus.LOGGED_OUT);
 
-      expect(res.errors).toBeDefined();
+      expect(res.errors).toBeUndefined();
+      expect(res.data.confirmEmail).not.toBeNull();
+      expect(res.data.confirmEmail!.__typename).toBe('ForbiddenError');
+      const badRequestError = res.data.confirmEmail! as ForbiddenError;
+      expect(badRequestError.message).toBe('must be logged in');
     });
   });
 
