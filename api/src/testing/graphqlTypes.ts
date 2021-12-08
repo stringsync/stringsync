@@ -39,7 +39,6 @@ export type CreateTagInput = {
   category: TagCategory;
 };
 
-
 export type EmailConfirmation = {
   __typename?: 'EmailConfirmation';
   confirmedAt: Scalars['DateTime'];
@@ -78,56 +77,45 @@ export type Mutation = {
   resetPassword?: Maybe<Scalars['Boolean']>;
 };
 
-
 export type MutationCreateNotationArgs = {
   input: CreateNotationInput;
 };
-
 
 export type MutationUpdateNotationArgs = {
   input: UpdateNotationInput;
 };
 
-
 export type MutationUpdateTagArgs = {
   input: UpdateTagInput;
 };
-
 
 export type MutationCreateTagArgs = {
   input: CreateTagInput;
 };
 
-
 export type MutationDeleteTagArgs = {
   id: Scalars['String'];
 };
-
 
 export type MutationUpdateUserArgs = {
   input: UpdateUserInput;
 };
 
-
 export type MutationLoginArgs = {
   input: LoginInput;
 };
-
 
 export type MutationSignupArgs = {
   input: SignupInput;
 };
 
-
 export type MutationConfirmEmailArgs = {
   input: ConfirmEmailInput;
 };
 
-
 export type MutationSendResetPasswordEmailArgs = {
   input: SendResetPasswordEmailInput;
 };
-
 
 export type MutationResetPasswordArgs = {
   input: ResetPasswordInput;
@@ -191,7 +179,6 @@ export type Query = {
   version: Scalars['String'];
 };
 
-
 export type QueryNotationsArgs = {
   before?: Maybe<Scalars['String']>;
   after?: Maybe<Scalars['String']>;
@@ -201,22 +188,18 @@ export type QueryNotationsArgs = {
   tagIds?: Maybe<Array<Scalars['String']>>;
 };
 
-
 export type QueryNotationArgs = {
   id: Scalars['String'];
 };
-
 
 export type QuerySuggestedNotationsArgs = {
   id?: Maybe<Scalars['String']>;
   limit: Scalars['Int'];
 };
 
-
 export type QueryUserArgs = {
   id: Scalars['String'];
 };
-
 
 export type QueryUsersArgs = {
   before?: Maybe<Scalars['String']>;
@@ -243,7 +226,7 @@ export type SignupInput = {
 
 export enum TagCategory {
   GENRE = 'GENRE',
-  DIFFICULTY = 'DIFFICULTY'
+  DIFFICULTY = 'DIFFICULTY',
 }
 
 export type TagObject = {
@@ -283,7 +266,6 @@ export type UpdateUserInput = {
   role?: Maybe<UserRole>;
 };
 
-
 export type UserConnectionObject = {
   __typename?: 'UserConnectionObject';
   pageInfo: PageInfoObject;
@@ -313,5 +295,5 @@ export type UserObject = {
 export enum UserRole {
   STUDENT = 'STUDENT',
   TEACHER = 'TEACHER',
-  ADMIN = 'ADMIN'
+  ADMIN = 'ADMIN',
 }

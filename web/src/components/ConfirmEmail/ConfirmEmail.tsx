@@ -35,15 +35,22 @@ export const ConfirmEmail: React.FC = enhance(() => {
       setErrors([]);
     },
     onData: (data) => {
-      if (data.confirmEmail?.confirmedAt) {
-        message.success(`${email} confirmed`);
-        history.push('/library');
-      } else {
-        setErrors([UNKNOWN_ERROR_MSG]);
+      switch (data.confirmEmail?.__typename) {
+        case 'EmailConfirmation':
+          if (data.confirmEmail.confirmedAt) {
+            message.success(`${email} confirmed`);
+            history.push('/library');
+          }
+          break;
+        case 'BadRequestError':
+        case 'ForbiddenError':
+        case 'NotFoundError':
+        case 'UnknownError':
+          setErrors([data.confirmEmail.message]);
+          break;
+        default:
+          setErrors([UNKNOWN_ERROR_MSG]);
       }
-    },
-    onErrors: (errors) => {
-      setErrors(errors);
     },
   });
 

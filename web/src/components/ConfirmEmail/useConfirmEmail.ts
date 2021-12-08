@@ -1,10 +1,26 @@
-import { $gql, ConfirmEmailInput, t } from '../../graphql';
+import { $gql, ConfirmEmailInput, ConfirmEmailOutput, t } from '../../graphql';
 import { useGql, UseGqlOptions } from '../../hooks/useGql';
 
 const CONFIRM_EMAIL_GQL = $gql
   .mutation('confirmEmail')
   .setQuery({
-    confirmedAt: t.string,
+    ...t.union<ConfirmEmailOutput>()({
+      EmailConfirmation: {
+        confirmedAt: t.string,
+      },
+      NotFoundError: {
+        message: t.string,
+      },
+      BadRequestError: {
+        message: t.string,
+      },
+      ForbiddenError: {
+        message: t.string,
+      },
+      UnknownError: {
+        message: t.string,
+      },
+    }),
   })
   .setVariables<{ input: ConfirmEmailInput }>({
     input: { confirmationToken: t.string },

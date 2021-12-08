@@ -29,7 +29,6 @@ export type Query = {
   version: Scalars['String'];
 };
 
-
 export type QueryNotationsArgs = {
   before?: Maybe<Scalars['String']>;
   after?: Maybe<Scalars['String']>;
@@ -39,22 +38,18 @@ export type QueryNotationsArgs = {
   tagIds?: Maybe<Array<Scalars['String']>>;
 };
 
-
 export type QueryNotationArgs = {
   id: Scalars['String'];
 };
-
 
 export type QuerySuggestedNotationsArgs = {
   id?: Maybe<Scalars['String']>;
   limit: Scalars['Int'];
 };
 
-
 export type QueryUserArgs = {
   id: Scalars['String'];
 };
-
 
 export type QueryUsersArgs = {
   before?: Maybe<Scalars['String']>;
@@ -102,7 +97,6 @@ export type NotationObject = {
   tags: Array<TagObject>;
 };
 
-
 export type UserObject = {
   __typename?: 'UserObject';
   id: Scalars['ID'];
@@ -120,7 +114,7 @@ export type UserObject = {
 export enum UserRole {
   STUDENT = 'STUDENT',
   TEACHER = 'TEACHER',
-  ADMIN = 'ADMIN'
+  ADMIN = 'ADMIN',
 }
 
 export type TagObject = {
@@ -133,7 +127,7 @@ export type TagObject = {
 
 export enum TagCategory {
   GENRE = 'GENRE',
-  DIFFICULTY = 'DIFFICULTY'
+  DIFFICULTY = 'DIFFICULTY',
 }
 
 export type UserConnectionObject = {
@@ -171,56 +165,45 @@ export type Mutation = {
   resetPassword?: Maybe<Scalars['Boolean']>;
 };
 
-
 export type MutationCreateNotationArgs = {
   input: CreateNotationInput;
 };
-
 
 export type MutationUpdateNotationArgs = {
   input: UpdateNotationInput;
 };
 
-
 export type MutationUpdateTagArgs = {
   input: UpdateTagInput;
 };
-
 
 export type MutationCreateTagArgs = {
   input: CreateTagInput;
 };
 
-
 export type MutationDeleteTagArgs = {
   id: Scalars['String'];
 };
-
 
 export type MutationUpdateUserArgs = {
   input: UpdateUserInput;
 };
 
-
 export type MutationLoginArgs = {
   input: LoginInput;
 };
-
 
 export type MutationSignupArgs = {
   input: SignupInput;
 };
 
-
 export type MutationConfirmEmailArgs = {
   input: ConfirmEmailInput;
 };
 
-
 export type MutationSendResetPasswordEmailArgs = {
   input: SendResetPasswordEmailInput;
 };
-
 
 export type MutationResetPasswordArgs = {
   input: ResetPasswordInput;
@@ -233,7 +216,6 @@ export type CreateNotationInput = {
   video: Scalars['Upload'];
   tagIds: Array<Scalars['String']>;
 };
-
 
 export type UpdateNotationInput = {
   id: Scalars['String'];
