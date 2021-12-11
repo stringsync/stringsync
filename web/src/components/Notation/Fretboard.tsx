@@ -92,7 +92,12 @@ export const Fretboard: React.FC<Props> = (props) => {
           <FretboardJs.Scale name={settings.selectedScale} style={{ stroke: '#111' }} />
         )}
         {measureSlideTransitions.map(({ from, to }) => (
-          <FretboardJs.Slide from={from} to={to} style={{ fill: '#f5c2c5', stroke: '#f5c2c5' }} />
+          <FretboardJs.Slide
+            key={`slide-${JSON.stringify(from)}-${JSON.stringify(to)}`}
+            from={from}
+            to={to}
+            style={{ fill: '#f5c2c5', stroke: '#f5c2c5' }}
+          />
         ))}
       </FretboardJs>
     </Outer>
