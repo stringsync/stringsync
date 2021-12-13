@@ -30,7 +30,7 @@ export class AuthResolver {
 
   @Query((returns) => UserObject, { nullable: true })
   async whoami(@Ctx() ctx: ResolverCtx): Promise<User | null> {
-    const id = this.getSessionUserId(ctx);
+    const id = ctx.getSessionUser().id;
     return await this.authService.whoami(id);
   }
 
@@ -135,10 +135,6 @@ export class AuthResolver {
   async resetPassword(@Ctx() ctx: ResolverCtx, @Arg('input') input: ResetPasswordInput): Promise<true> {
     await this.authService.resetPassword(input.email, input.resetPasswordToken, input.password, ctx.getReqAt());
     return true;
-  }
-
-  private getSessionUserId(ctx: ResolverCtx) {
-    return ctx.getSessionUser().id;
   }
 
   private persistLogin(ctx: ResolverCtx, user: User) {
