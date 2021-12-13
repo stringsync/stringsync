@@ -1,9 +1,18 @@
-import { $gql, t } from '../../graphql';
+import { $gql, ResendConfirmationEmailOutput, t } from '../../graphql';
 import { useGql, UseGqlOptions } from '../../hooks/useGql';
 
 const RESEND_CONFIRMATION_EMAIL_GQL = $gql
   .mutation('resendConfirmationEmail')
-  .setQuery(t.boolean)
+  .setQuery({
+    ...t.union<ResendConfirmationEmailOutput>()({
+      ResendConfirmationEmailResult: {
+        processed: t.boolean,
+      },
+      ForbiddenError: {
+        message: t.string,
+      },
+    }),
+  })
   .build();
 
 export const useResendConfirmationToken = (opts: UseGqlOptions<typeof RESEND_CONFIRMATION_EMAIL_GQL>) => {

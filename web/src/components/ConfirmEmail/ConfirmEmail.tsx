@@ -59,14 +59,20 @@ export const ConfirmEmail: React.FC = enhance(() => {
       setErrors([]);
     },
     onData: (data) => {
-      if (data?.resendConfirmationEmail) {
-        message.success(`sent confirmation token to ${email}`);
-      } else {
-        setErrors([UNKNOWN_ERROR_MSG]);
+      switch (data.resendConfirmationEmail?.__typename) {
+        case 'ResendConfirmationEmailResult':
+          if (data.resendConfirmationEmail.processed) {
+            message.success(`sent confirmation token to ${email}`);
+          } else {
+            message.error(`could not send confirmation token to ${email}`);
+          }
+          break;
+        case 'ForbiddenError':
+          setErrors([data.resendConfirmationEmail.message]);
+          break;
+        default:
+          setErrors([UNKNOWN_ERROR_MSG]);
       }
-    },
-    onErrors: (errors) => {
-      setErrors(errors);
     },
   });
 

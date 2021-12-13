@@ -13,7 +13,7 @@ import { UserObject } from '../User';
 import { ConfirmEmailInput } from './ConfirmEmailInput';
 import { ConfirmEmailOutput, EmailConfirmation } from './ConfirmEmailOutput';
 import { LoginInput } from './LoginInput';
-import { ResendConfirmationEmailOutput, ResendConfirmationEmailProcessed } from './ResendConfirmationEmailOutput';
+import { ResendConfirmationEmailOutput, ResendConfirmationEmailResult } from './ResendConfirmationEmailOutput';
 import { ResetPasswordInput } from './ResetPasswordInput';
 import { SendResetPasswordEmailInput } from './SendResetPasswordEmailInput';
 import { SignupInput } from './SignupInput';
@@ -93,7 +93,7 @@ export class AuthResolver {
     }
   }
 
-  @Mutation((returns) => Boolean, { nullable: true })
+  @Mutation((returns) => ResendConfirmationEmailOutput)
   async resendConfirmationEmail(@Ctx() ctx: ResolverCtx): Promise<typeof ResendConfirmationEmailOutput> {
     const sessionUser = ctx.getSessionUser();
     const id = sessionUser.id;
@@ -107,13 +107,14 @@ export class AuthResolver {
         const mail = this.mailWriterService.writeConfirmationEmail(user);
         await this.sendMail.job.enqueue({ mail });
       } else {
-        this.logger.warn(`resendConfirmationEmail attempted for userId: ${id}, but didn't find a user`);
+        this.logger.warn(
+          `resendConfirmationEmail attempted for userId: ${id}, but didn't find a user, returning successful result`
+        );
       }
-      return ResendConfirmationEmailProcessed.of();
     } catch (e) {
       this.logger.error(`resendConfirmationEmail attempted for userId: ${id}, got error ${e}`);
-      return UnknownError.of(e);
     }
+    return ResendConfirmationEmailResult.of();
   }
 
   @Mutation((returns) => Boolean, { nullable: true })

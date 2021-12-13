@@ -8,6 +8,7 @@ import { ConfirmEmailInput, createRandUser, gql, LoginInput, Mutation, Query, re
 import { rand } from '../../util';
 import { BadRequestError, ForbiddenError } from '../graphqlTypes';
 import { EmailConfirmation } from './ConfirmEmailOutput';
+import { ResendConfirmationEmailResult } from './ResendConfirmationEmailOutput';
 import { ResetPasswordInput } from './ResetPasswordInput';
 import { SendResetPasswordEmailInput } from './SendResetPasswordEmailInput';
 
@@ -307,7 +308,15 @@ describe('AuthResolver', () => {
       return resolve<Mutation, 'resendConfirmationEmail'>(
         gql`
           mutation resendConfirmationEmail {
-            resendConfirmationEmail
+            resendConfirmationEmail {
+              __typename
+              ... on ResendConfirmationEmailResult {
+                processed
+              }
+              ... on ForbiddenError {
+                message
+              }
+            }
           }
         `,
         {},
@@ -319,7 +328,10 @@ describe('AuthResolver', () => {
       const { res } = await resendConfirmationEmail(LoginStatus.LOGGED_IN);
 
       expect(res.errors).toBeUndefined();
-      expect(res.data.resendConfirmationEmail).toBeTrue();
+      expect(res.data.resendConfirmationEmail).not.toBeNull();
+      expect(res.data.resendConfirmationEmail!.__typename).toBe('ResendConfirmationEmailResult');
+      const resendConfirmationEmailResult = res.data.resendConfirmationEmail as ResendConfirmationEmailResult;
+      expect(resendConfirmationEmailResult.processed).toBeTrue();
 
       const reloadedUser = await userService.find(user.id);
       expect(reloadedUser).not.toBeNull();
@@ -345,7 +357,9 @@ describe('AuthResolver', () => {
       const { res } = await resendConfirmationEmail(LoginStatus.LOGGED_IN);
 
       expect(res.errors).toBeUndefined();
-      expect(res.data.resendConfirmationEmail).toBeTrue();
+      expect(res.data.resendConfirmationEmail!.__typename).toBe('ResendConfirmationEmailResult');
+      const resendConfirmationEmailResult = res.data.resendConfirmationEmail as ResendConfirmationEmailResult;
+      expect(resendConfirmationEmailResult.processed).toBeTrue();
 
       const reloadedUser = await userService.find(user.id);
       expect(reloadedUser).not.toBeNull();

@@ -13,7 +13,7 @@ type OptionalT = {
   custom: <T>() => Nullable<T>;
 };
 
-type Union<T = string> = {
+type Union<T extends string = string> = {
   __typename?: T;
 };
 
