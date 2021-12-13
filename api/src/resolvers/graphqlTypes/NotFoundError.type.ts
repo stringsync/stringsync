@@ -1,15 +1,13 @@
 import { Field, ObjectType } from 'type-graphql';
-import { ErrorCode } from '../../errors';
+import { MessageContainer } from './types';
 
 @ObjectType()
 export class NotFoundError {
-  static of(message: string) {
+  static of(container: MessageContainer) {
     const notFoundError = new NotFoundError();
-    notFoundError.message = message;
+    notFoundError.message = container.message;
     return notFoundError;
   }
-
-  readonly code = ErrorCode.NOT_FOUND;
 
   @Field()
   message!: string;

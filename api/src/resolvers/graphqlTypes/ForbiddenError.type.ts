@@ -1,15 +1,13 @@
 import { Field, ObjectType } from 'type-graphql';
-import { ErrorCode } from '../../errors';
+import { MessageContainer } from './types';
 
 @ObjectType()
 export class ForbiddenError {
-  static of(message: string) {
+  static of(container: MessageContainer) {
     const forbiddenError = new ForbiddenError();
-    forbiddenError.message = message;
+    forbiddenError.message = container.message;
     return forbiddenError;
   }
-
-  readonly code = ErrorCode.FORBIDDEN;
 
   @Field()
   message!: string;

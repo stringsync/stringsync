@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { User } from '../../domain';
-import { ErrorCode, ForbiddenError as InternalForbiddenError, StringsyncError } from '../../errors';
+import * as errors from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { SendMail } from '../../jobs';
 import { AuthRequirement, AuthService, MailWriterService } from '../../services';
@@ -13,6 +13,7 @@ import { UserObject } from '../User';
 import { ConfirmEmailInput } from './ConfirmEmailInput';
 import { ConfirmEmailOutput, EmailConfirmation } from './ConfirmEmailOutput';
 import { LoginInput } from './LoginInput';
+import { ResendConfirmationEmailOutput, ResendConfirmationEmailProcessed } from './ResendConfirmationEmailOutput';
 import { ResetPasswordInput } from './ResetPasswordInput';
 import { SendResetPasswordEmailInput } from './SendResetPasswordEmailInput';
 import { SignupInput } from './SignupInput';
@@ -38,7 +39,7 @@ export class AuthResolver {
   async login(@Arg('input') input: LoginInput, @Ctx() ctx: ResolverCtx): Promise<User> {
     const user = await this.authService.getAuthenticatedUser(input.usernameOrEmail, input.password);
     if (!user) {
-      throw new InternalForbiddenError('wrong username, email, or password');
+      throw new errors.ForbiddenError('wrong username, email, or password');
     }
 
     this.persistLogin(ctx, user);
@@ -75,41 +76,44 @@ export class AuthResolver {
     const confirmedAt = ctx.getReqAt();
 
     if (!sessionUser.isLoggedIn) {
-      return ForbiddenError.of('must be logged in');
+      return ForbiddenError.of({ message: 'must be logged in' });
     }
     try {
       await this.authService.confirmEmail(sessionUser.id, input.confirmationToken, confirmedAt);
       return EmailConfirmation.of(confirmedAt);
     } catch (e) {
       this.logger.error(`could not confirm email: ${e}`);
-      if (e instanceof StringsyncError) {
-        switch (e.code) {
-          case ErrorCode.BAD_REQUEST:
-            return BadRequestError.of(e.message);
-          case ErrorCode.NOT_FOUND:
-            return NotFoundError.of(e.message);
-        }
+      if (e instanceof errors.NotFoundError) {
+        return NotFoundError.of(e);
+      } else if (e instanceof errors.BadRequestError) {
+        return BadRequestError.of(e);
+      } else {
+        return UnknownError.of(e);
       }
-      return UnknownError.of();
     }
   }
 
   @Mutation((returns) => Boolean, { nullable: true })
-  @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN))
-  async resendConfirmationEmail(@Ctx() ctx: ResolverCtx): Promise<true> {
-    const id = this.getSessionUserId(ctx);
+  async resendConfirmationEmail(@Ctx() ctx: ResolverCtx): Promise<typeof ResendConfirmationEmailOutput> {
+    const sessionUser = ctx.getSessionUser();
+    const id = sessionUser.id;
+
+    if (!sessionUser.isLoggedIn) {
+      return ForbiddenError.of({ message: 'must be logged in' });
+    }
     try {
       const user = await this.authService.resetConfirmationToken(id);
       if (user) {
         const mail = this.mailWriterService.writeConfirmationEmail(user);
         await this.sendMail.job.enqueue({ mail });
+      } else {
+        this.logger.warn(`resendConfirmationEmail attempted for userId: ${id}, but didn't find a user`);
       }
+      return ResendConfirmationEmailProcessed.of();
     } catch (e) {
       this.logger.error(`resendConfirmationEmail attempted for userId: ${id}, got error ${e}`);
+      return UnknownError.of(e);
     }
-
-    // Silently fail to prevent attackers from inferring the confirmation state.
-    return true;
   }
 
   @Mutation((returns) => Boolean, { nullable: true })

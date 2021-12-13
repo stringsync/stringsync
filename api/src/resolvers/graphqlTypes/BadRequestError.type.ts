@@ -1,15 +1,13 @@
 import { Field, ObjectType } from 'type-graphql';
-import { ErrorCode } from '../../errors';
+import { MessageContainer } from './types';
 
 @ObjectType()
 export class BadRequestError {
-  static of(message: string) {
+  static of(container: MessageContainer) {
     const badRequestError = new BadRequestError();
-    badRequestError.message = message;
+    badRequestError.message = container.message;
     return badRequestError;
   }
-
-  readonly code = ErrorCode.BAD_REQUEST;
 
   @Field()
   message!: string;
