@@ -6,14 +6,7 @@ import { SessionUser } from '../../server';
 import { AuthService, UserService } from '../../services';
 import { ConfirmEmailInput, createRandUser, gql, LoginInput, Mutation, Query, resolve } from '../../testing';
 import { rand } from '../../util';
-import {
-  BadRequestError,
-  EmailConfirmation,
-  ForbiddenError,
-  ResendConfirmationEmailResult,
-  ResetPasswordInput,
-  SendResetPasswordEmailInput,
-} from '../graphqlTypes';
+import * as types from '../graphqlTypes';
 
 enum LoginStatus {
   LOGGED_OUT = 'LOGGED_OUT',
@@ -252,7 +245,7 @@ describe('AuthResolver', () => {
       expect(reloadedUser!.confirmedAt).not.toBeNull();
       expect(res.data.confirmEmail).not.toBeNull();
       expect(res.data.confirmEmail!.__typename).toBe('EmailConfirmation');
-      const emailConfirmation = res.data.confirmEmail as EmailConfirmation;
+      const emailConfirmation = res.data.confirmEmail as types.EmailConfirmation;
       expect(emailConfirmation.confirmedAt).toBe(reloadedUser!.confirmedAt!.toISOString());
     });
 
@@ -262,7 +255,7 @@ describe('AuthResolver', () => {
       expect(res.errors).toBeUndefined();
       expect(res.data.confirmEmail).not.toBeNull();
       expect(res.data.confirmEmail!.__typename).toBe('BadRequestError');
-      const badRequestError = res.data.confirmEmail! as BadRequestError;
+      const badRequestError = res.data.confirmEmail! as types.BadRequestError;
       expect(badRequestError.message).toBe('invalid confirmation token');
     });
 
@@ -272,7 +265,7 @@ describe('AuthResolver', () => {
       expect(res.errors).toBeUndefined();
       expect(res.data.confirmEmail).not.toBeNull();
       expect(res.data.confirmEmail!.__typename).toBe('ForbiddenError');
-      const badRequestError = res.data.confirmEmail! as ForbiddenError;
+      const badRequestError = res.data.confirmEmail! as types.ForbiddenError;
       expect(badRequestError.message).toBe('must be logged in');
     });
   });
@@ -333,7 +326,7 @@ describe('AuthResolver', () => {
       expect(res.errors).toBeUndefined();
       expect(res.data.resendConfirmationEmail).not.toBeNull();
       expect(res.data.resendConfirmationEmail!.__typename).toBe('ResendConfirmationEmailResult');
-      const resendConfirmationEmailResult = res.data.resendConfirmationEmail as ResendConfirmationEmailResult;
+      const resendConfirmationEmailResult = res.data.resendConfirmationEmail as types.ResendConfirmationEmailResult;
       expect(resendConfirmationEmailResult.processed).toBeTrue();
 
       const reloadedUser = await userService.find(user.id);
@@ -361,7 +354,7 @@ describe('AuthResolver', () => {
 
       expect(res.errors).toBeUndefined();
       expect(res.data.resendConfirmationEmail!.__typename).toBe('ResendConfirmationEmailResult');
-      const resendConfirmationEmailResult = res.data.resendConfirmationEmail as ResendConfirmationEmailResult;
+      const resendConfirmationEmailResult = res.data.resendConfirmationEmail as types.ResendConfirmationEmailResult;
       expect(resendConfirmationEmailResult.processed).toBeTrue();
 
       const reloadedUser = await userService.find(user.id);
@@ -399,8 +392,8 @@ describe('AuthResolver', () => {
       jest.clearAllMocks();
     });
 
-    const sendResetPasswordEmail = (input: SendResetPasswordEmailInput, loginStatus: LoginStatus) => {
-      return resolve<Mutation, 'sendResetPasswordEmail', { input: SendResetPasswordEmailInput }>(
+    const sendResetPasswordEmail = (input: types.SendResetPasswordEmailInput, loginStatus: LoginStatus) => {
+      return resolve<Mutation, 'sendResetPasswordEmail', { input: types.SendResetPasswordEmailInput }>(
         gql`
           mutation sendResetPasswordEmail($input: SendResetPasswordEmailInput!) {
             sendResetPasswordEmail(input: $input)
@@ -459,8 +452,8 @@ describe('AuthResolver', () => {
       user = await authService.signup(username, email, password);
     });
 
-    const resetPassword = (input: ResetPasswordInput) => {
-      return resolve<Mutation, 'resetPassword', { input: ResetPasswordInput }>(
+    const resetPassword = (input: types.ResetPasswordInput) => {
+      return resolve<Mutation, 'resetPassword', { input: types.ResetPasswordInput }>(
         gql`
           mutation resetPassword($input: ResetPasswordInput!) {
             resetPassword(input: $input)

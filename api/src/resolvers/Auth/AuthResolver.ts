@@ -6,21 +6,7 @@ import { TYPES } from '../../inversify.constants';
 import { SendMail } from '../../jobs';
 import { AuthRequirement, AuthService, MailWriterService } from '../../services';
 import { Logger } from '../../util';
-import {
-  BadRequestError,
-  ConfirmEmailInput,
-  ConfirmEmailOutput,
-  EmailConfirmation,
-  ForbiddenError,
-  LoginInput,
-  NotFoundError,
-  ResendConfirmationEmailOutput,
-  ResendConfirmationEmailResult,
-  ResetPasswordInput,
-  SendResetPasswordEmailInput,
-  SignupInput,
-  UnknownError,
-} from '../graphqlTypes';
+import * as types from '../graphqlTypes';
 import { WithAuthRequirement } from '../middlewares';
 import { ResolverCtx } from '../types';
 import { UserObject } from '../User';
@@ -43,7 +29,7 @@ export class AuthResolver {
 
   @Mutation((returns) => UserObject, { nullable: true })
   @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_OUT))
-  async login(@Arg('input') input: LoginInput, @Ctx() ctx: ResolverCtx): Promise<User> {
+  async login(@Arg('input') input: types.LoginInput, @Ctx() ctx: ResolverCtx): Promise<User> {
     const user = await this.authService.getAuthenticatedUser(input.usernameOrEmail, input.password);
     if (!user) {
       throw new errors.ForbiddenError('wrong username, email, or password');
@@ -64,7 +50,7 @@ export class AuthResolver {
 
   @Mutation((returns) => UserObject, { nullable: true })
   @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_OUT))
-  async signup(@Arg('input') input: SignupInput, @Ctx() ctx: ResolverCtx): Promise<User> {
+  async signup(@Arg('input') input: types.SignupInput, @Ctx() ctx: ResolverCtx): Promise<User> {
     const user = await this.authService.signup(input.username, input.email, input.password);
 
     const mail = this.mailWriterService.writeConfirmationEmail(user);
@@ -74,39 +60,39 @@ export class AuthResolver {
     return user;
   }
 
-  @Mutation((returns) => ConfirmEmailOutput)
+  @Mutation((returns) => types.ConfirmEmailOutput)
   async confirmEmail(
-    @Arg('input') input: ConfirmEmailInput,
+    @Arg('input') input: types.ConfirmEmailInput,
     @Ctx() ctx: ResolverCtx
-  ): Promise<typeof ConfirmEmailOutput> {
+  ): Promise<typeof types.ConfirmEmailOutput> {
     const sessionUser = ctx.getSessionUser();
     const confirmedAt = ctx.getReqAt();
 
     if (!sessionUser.isLoggedIn) {
-      return ForbiddenError.of({ message: 'must be logged in' });
+      return types.ForbiddenError.of({ message: 'must be logged in' });
     }
     try {
       await this.authService.confirmEmail(sessionUser.id, input.confirmationToken, confirmedAt);
-      return EmailConfirmation.of(confirmedAt);
+      return types.EmailConfirmation.of(confirmedAt);
     } catch (e) {
       this.logger.error(`could not confirm email: ${e}`);
       if (e instanceof errors.NotFoundError) {
-        return NotFoundError.of(e);
+        return types.NotFoundError.of(e);
       } else if (e instanceof errors.BadRequestError) {
-        return BadRequestError.of(e);
+        return types.BadRequestError.of(e);
       } else {
-        return UnknownError.of(e);
+        return types.UnknownError.of(e);
       }
     }
   }
 
-  @Mutation((returns) => ResendConfirmationEmailOutput)
-  async resendConfirmationEmail(@Ctx() ctx: ResolverCtx): Promise<typeof ResendConfirmationEmailOutput> {
+  @Mutation((returns) => types.ResendConfirmationEmailOutput)
+  async resendConfirmationEmail(@Ctx() ctx: ResolverCtx): Promise<typeof types.ResendConfirmationEmailOutput> {
     const sessionUser = ctx.getSessionUser();
     const id = sessionUser.id;
 
     if (!sessionUser.isLoggedIn) {
-      return ForbiddenError.of({ message: 'must be logged in' });
+      return types.ForbiddenError.of({ message: 'must be logged in' });
     }
     try {
       const user = await this.authService.resetConfirmationToken(id);
@@ -121,13 +107,13 @@ export class AuthResolver {
     } catch (e) {
       this.logger.error(`resendConfirmationEmail attempted for userId: ${id}, got error ${e}`);
     }
-    return ResendConfirmationEmailResult.of();
+    return types.ResendConfirmationEmailResult.of();
   }
 
   @Mutation((returns) => Boolean, { nullable: true })
   async sendResetPasswordEmail(
     @Ctx() ctx: ResolverCtx,
-    @Arg('input') input: SendResetPasswordEmailInput
+    @Arg('input') input: types.SendResetPasswordEmailInput
   ): Promise<true> {
     const email = input.email;
 
@@ -139,7 +125,7 @@ export class AuthResolver {
   }
 
   @Mutation((returns) => Boolean, { nullable: true })
-  async resetPassword(@Ctx() ctx: ResolverCtx, @Arg('input') input: ResetPasswordInput): Promise<true> {
+  async resetPassword(@Ctx() ctx: ResolverCtx, @Arg('input') input: types.ResetPasswordInput): Promise<true> {
     await this.authService.resetPassword(input.email, input.resetPasswordToken, input.password, ctx.getReqAt());
     return true;
   }
