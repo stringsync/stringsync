@@ -174,7 +174,7 @@ describe('AuthResolver', () => {
 
       const sessionUser = ctx.getSessionUser();
       expect(sessionUser.isLoggedIn).toBeTrue();
-      expect(sessionUser.id).toBe(user.id); // this is not the user that was created
+      expect(sessionUser.id).toBe(user.id); // this is not the user that attempted to sign up
 
       const userService = container.get<UserService>(TYPES.UserService);
       expect(userService.findByUsernameOrEmail(username)).resolves.toBeNull();
