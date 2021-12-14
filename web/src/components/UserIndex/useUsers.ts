@@ -5,9 +5,6 @@ import { Nullable } from '../../util/types';
 import { UserPreview } from './types';
 
 type LoadUsers = (limit: number) => void;
-type Loading = boolean;
-type Errors = string[];
-type HasNextPage = boolean;
 
 const USERS_GQL = $gql
   .query('users')
@@ -37,7 +34,7 @@ const USERS_GQL = $gql
   })
   .build();
 
-export const useUsers = (): [UserPreview[], Loading, HasNextPage, Errors, LoadUsers] => {
+export const useUsers = (): [users: UserPreview[], loading: boolean, hasNextPage: boolean, errors: string[], loadUsers: LoadUsers] => {
   const [users, setUsers] = useState(new Array<UserPreview>());
   const [cursor, setCursor] = useState<Nullable<string>>(null);
   const [errors, setErrors] = useState(new Array<string>());

@@ -40,7 +40,7 @@ export const UserIndex: React.FC = enhance(() => {
 
   return (
     <Outer data-testid="user-index">
-      <Typography.Title level={2}>{userCount || '???'} users</Typography.Title>
+      {<Typography.Title level={2}>users {userCount && `(${userCount})`}</Typography.Title>}
 
       {errors.length > 0 && (
         <>
@@ -63,11 +63,12 @@ export const UserIndex: React.FC = enhance(() => {
 
       <Box>
         <List
+          loading={loading}
           dataSource={users}
           loadMore={
             <LoadMoreRow justify="center">
               {hasNextPage ? (
-                <Button disabled={loading} loading={loading} onClick={onClick}>
+                <Button disabled={loading} onClick={onClick}>
                   load more
                 </Button>
               ) : (
