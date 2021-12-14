@@ -1,5 +1,8 @@
 import { Field, ObjectType } from 'type-graphql';
-import { MessageContainer } from './types';
+
+type MessageContainer = {
+  message: string;
+};
 
 @ObjectType()
 export class ForbiddenError {

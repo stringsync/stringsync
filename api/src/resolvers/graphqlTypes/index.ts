@@ -14,6 +14,8 @@ export * from './ResendConfirmationEmailResult.type';
 export * from './ResetPasswordInput.type';
 export * from './SendResetPasswordEmailInput.type';
 export * from './SignupInput.type';
+export * from './SignupOutput.type';
 export * from './Tag.type';
 export * from './UnknownError.type';
 export * from './User.type';
+export * from './ValidationError.type';

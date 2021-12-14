@@ -1,16 +1,14 @@
 import { inject, injectable } from 'inversify';
-import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
+import { Arg, Ctx, Mutation, Query, Resolver } from 'type-graphql';
 import { User } from '../../domain';
 import * as errors from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { SendMail } from '../../jobs';
-import { AuthRequirement, AuthService, MailWriterService } from '../../services';
+import { AuthService, MailWriterService } from '../../services';
 import { Logger } from '../../util';
 import * as types from '../graphqlTypes';
 import { LogoutResult } from '../graphqlTypes';
-import { WithAuthRequirement } from '../middlewares';
 import { ResolverCtx } from '../types';
-import { UserObject } from '../User';
 
 @Resolver()
 @injectable()
@@ -55,16 +53,27 @@ export class AuthResolver {
     return LogoutResult.of(true);
   }
 
-  @Mutation((returns) => UserObject, { nullable: true })
-  @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_OUT))
-  async signup(@Arg('input') input: types.SignupInput, @Ctx() ctx: ResolverCtx): Promise<User> {
-    const user = await this.authService.signup(input.username, input.email, input.password);
+  @Mutation((returns) => types.SignupOutput)
+  async signup(@Arg('input') input: types.SignupInput, @Ctx() ctx: ResolverCtx): Promise<typeof types.SignupOutput> {
+    const sessionUser = ctx.getSessionUser();
+    if (sessionUser.isLoggedIn) {
+      return types.ForbiddenError.of({ message: 'must be logged out' });
+    }
 
-    const mail = this.mailWriterService.writeConfirmationEmail(user);
-    await this.sendMail.job.enqueue({ mail });
-
-    this.persistLogin(ctx, user);
-    return user;
+    try {
+      const user = await this.authService.signup(input.username, input.email, input.password);
+      const mail = this.mailWriterService.writeConfirmationEmail(user);
+      await this.sendMail.job.enqueue({ mail });
+      this.persistLogin(ctx, user);
+      return types.User.of(user);
+    } catch (e) {
+      this.logger.error(`could not signup: error=${e}`);
+      if (e instanceof errors.ValidationError) {
+        return types.ValidationError.of(e);
+      } else {
+        return types.UnknownError.of(e);
+      }
+    }
   }
 
   @Mutation((returns) => types.ConfirmEmailOutput)
@@ -82,7 +91,7 @@ export class AuthResolver {
       await this.authService.confirmEmail(sessionUser.id, input.confirmationToken, confirmedAt);
       return types.EmailConfirmation.of(confirmedAt);
     } catch (e) {
-      this.logger.error(`could not confirm email: ${e}`);
+      this.logger.error(`could not confirm email: error=${e}`);
       if (e instanceof errors.NotFoundError) {
         return types.NotFoundError.of(e);
       } else if (e instanceof errors.BadRequestError) {

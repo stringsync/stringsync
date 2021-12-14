@@ -2,7 +2,7 @@ import * as bcrypt from 'bcrypt';
 import { inject, injectable } from 'inversify';
 import * as uuid from 'uuid';
 import { User, UserRole } from '../../domain';
-import { BadRequestError, NotFoundError } from '../../errors';
+import { BadRequestError, NotFoundError, ValidationError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { UserRepo } from '../../repos';
 import { SessionUser } from '../../server';
@@ -48,7 +48,7 @@ export class AuthService {
   }
 
   async signup(username: string, email: string, password: string): Promise<User> {
-    this.validatePassword(password);
+    await this.validatePassword(password);
     const encryptedPassword = await AuthService.encryptPassword(password);
     const confirmationToken = uuid.v4();
 
@@ -150,7 +150,7 @@ export class AuthService {
 
   private async validatePassword(password: string) {
     if (password.length < AuthService.MIN_PASSWORD_LENGTH) {
-      throw new BadRequestError(`password must be at least ${AuthService.MIN_PASSWORD_LENGTH} characters`);
+      throw new ValidationError([`password must be at least ${AuthService.MIN_PASSWORD_LENGTH} characters`]);
     }
   }
 
