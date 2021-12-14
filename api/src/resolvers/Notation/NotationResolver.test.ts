@@ -150,7 +150,7 @@ describe('NotationResolver', () => {
         case LoginStatus.LOGGED_OUT:
           return { id: '', isLoggedIn: false, role: UserRole.STUDENT };
         default:
-          throw new Error(`unhandled loging status: ${loginStatus}`);
+          throw new Error(`unhandled login status: ${loginStatus}`);
       }
     };
 
@@ -161,7 +161,19 @@ describe('NotationResolver', () => {
         gql`
           mutation createNotation($input: CreateNotationInput!) {
             createNotation(input: $input) {
-              id
+              __typename
+              ... on Notation {
+                id
+              }
+              ... on ForbiddenError {
+                message
+              }
+              ... on ValidationError {
+                details
+              }
+              ... on UnknownError {
+                message
+              }
             }
           }
         `,
@@ -209,7 +221,8 @@ describe('NotationResolver', () => {
 
         const { res } = await createNotation(input, loginStatus);
 
-        expect(res.errors).toBeDefined();
+        expect(res.errors).toBeUndefined();
+        expect(res.data.createNotation.__typename).toBe('ForbiddenError');
       }
     );
   });

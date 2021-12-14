@@ -34,6 +34,8 @@ export type CreateNotationInput = {
   tagIds: Array<Scalars['String']>;
 };
 
+export type CreateNotationOutput = Notation | ForbiddenError | ValidationError | UnknownError;
+
 export type CreateTagInput = {
   name: Scalars['String'];
   category: TagCategory;
@@ -78,8 +80,8 @@ export type Mutation = {
   resendConfirmationEmail: ResendConfirmationEmailOutput;
   sendResetPasswordEmail: Processed;
   resetPassword: ResetPasswordOutput;
-  createNotation: Notation;
-  updateNotation: Notation;
+  createNotation: CreateNotationOutput;
+  updateNotation: UpdateNotationOutput;
   updateTag: UpdateTagOutput;
   createTag: CreateTagOutput;
   deleteTag: DeleteTagOutput;
@@ -293,6 +295,8 @@ export type UpdateNotationInput = {
   thumbnail?: Maybe<Scalars['Upload']>;
   musicXml?: Maybe<Scalars['Upload']>;
 };
+
+export type UpdateNotationOutput = Notation | ForbiddenError | NotFoundError | BadRequestError | ValidationError | UnknownError;
 
 export type UpdateTagInput = {
   id: Scalars['String'];

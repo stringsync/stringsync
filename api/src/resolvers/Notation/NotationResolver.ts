@@ -44,7 +44,7 @@ export class NotationResolver {
     return notations.map(types.Notation.of);
   }
 
-  @Mutation((returns) => types.Notation)
+  @Mutation((returns) => types.CreateNotationOutput)
   async createNotation(
     @Arg('input') input: types.CreateNotationInput,
     @Ctx() ctx: ResolverCtx
@@ -75,7 +75,7 @@ export class NotationResolver {
     }
   }
 
-  @Mutation((returns) => types.Notation)
+  @Mutation((returns) => types.UpdateNotationOutput)
   async updateNotation(
     @Arg('input') input: types.UpdateNotationInput,
     @Ctx() ctx: ResolverCtx

@@ -1,6 +1,6 @@
 import { Field, InputType } from 'type-graphql';
 import { UserRole } from '../../domain';
-import { BadRequestError } from '../../errors';
+import { ForbiddenError } from '../../errors';
 import { ResolverCtx } from '../types';
 
 @InputType()
@@ -18,15 +18,15 @@ export class UpdateUserInput {
     const hasDataOwnerFields = UpdateUserInput.DATA_OWNER_FIELDS.some((field) => fields.has(field));
 
     if (!isAdmin && !isDataOwner) {
-      throw new BadRequestError(`must be admin or data owner to update`);
+      throw new ForbiddenError(`must be admin or data owner to update`);
     }
 
     if (isAdmin && !isDataOwner && hasDataOwnerFields) {
-      throw new BadRequestError(`can only specify: ${UpdateUserInput.ADMIN_FIELDS}`);
+      throw new ForbiddenError(`can only specify as an admin: fields=${UpdateUserInput.ADMIN_FIELDS}`);
     }
 
     if (isDataOwner && !isAdmin && hasAdminFields) {
-      throw new BadRequestError(`can only specify: ${UpdateUserInput.DATA_OWNER_FIELDS}`);
+      throw new ForbiddenError(`can only specify as a data owner: fields=${UpdateUserInput.DATA_OWNER_FIELDS}`);
     }
   }
 

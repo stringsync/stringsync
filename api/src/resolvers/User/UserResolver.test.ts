@@ -119,10 +119,28 @@ describe('UserResolver', () => {
         gql`
           mutation updateUser($input: UpdateUserInput!) {
             updateUser(input: $input) {
-              id
-              username
-              email
-              role
+              __typename
+              ... on User {
+                id
+                username
+                email
+                role
+              }
+              ... on ForbiddenError {
+                message
+              }
+              ... on NotFoundError {
+                message
+              }
+              ... on BadRequestError {
+                message
+              }
+              ... on ValidationError {
+                details
+              }
+              ... on UnknownError {
+                message
+              }
             }
           }
         `,
@@ -138,7 +156,8 @@ describe('UserResolver', () => {
       async (loginStatus) => {
         const { res } = await updateUser({ id: student.id, role: UserRole.ADMIN }, loginStatus);
 
-        expect(res.errors).toBeDefined();
+        expect(res.errors).toBeUndefined();
+        expect(res.data.updateUser.__typename).toBe('ForbiddenError');
 
         const reloadedStudent = await userRepo.find(student.id);
         expect(reloadedStudent).not.toBeNull();
@@ -150,11 +169,9 @@ describe('UserResolver', () => {
       const { res } = await updateUser({ id: student.id, role: UserRole.ADMIN }, LoginStatus.LOGGED_IN_AS_ADMIN);
 
       expect(res.errors).not.toBeDefined();
-      expect(res.data.updateUser).not.toBeNull();
-      expect(res.data.updateUser).toBeDefined();
-
-      const userId = res.data.updateUser!.id;
-      expect(userId).toBe(student.id);
+      expect(res.data.updateUser.__typename).toBe('User');
+      const user = (res.data.updateUser as unknown) as types.User;
+      expect(user.id).toBe(student.id);
 
       const reloadedStudent = await userRepo.find(student.id);
       expect(reloadedStudent).not.toBeNull();
@@ -165,7 +182,8 @@ describe('UserResolver', () => {
       const username = rand.str(student.username.length + 1);
       const { res } = await updateUser({ id: student.id, username }, LoginStatus.LOGGED_IN_AS_ADMIN);
 
-      expect(res.errors).toBeDefined();
+      expect(res.errors).toBeUndefined();
+      expect(res.data.updateUser.__typename).toBe('ForbiddenError');
 
       const reloadedStudent = await userRepo.find(student.id);
       expect(reloadedStudent).not.toBeNull();
@@ -176,7 +194,8 @@ describe('UserResolver', () => {
       const email = rand.str(3) + student.email;
       const { res } = await updateUser({ id: student.id, email }, LoginStatus.LOGGED_IN_AS_ADMIN);
 
-      expect(res.errors).toBeDefined();
+      expect(res.errors).toBeUndefined();
+      expect(res.data.updateUser.__typename).toBe('ForbiddenError');
 
       const reloadedStudent = await userRepo.find(student.id);
       expect(reloadedStudent).not.toBeNull();
@@ -252,8 +271,7 @@ describe('UserResolver', () => {
       const email = rand.str(3) + admin.email;
       const { res } = await updateUser({ id: admin.id, email }, LoginStatus.LOGGED_IN_AS_ADMIN);
 
-      expect(res.errors).not.toBeDefined();
-      expect(res.data.updateUser).not.toBeNull();
+      expect(res.errors).toBeUndefined();
       expect(res.data.updateUser).toBeDefined();
 
       const reloadedUser = await userRepo.findByUsernameOrEmail(email);

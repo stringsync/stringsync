@@ -180,8 +180,8 @@ export type Mutation = {
   resendConfirmationEmail: ResendConfirmationEmailOutput;
   sendResetPasswordEmail: Processed;
   resetPassword: ResetPasswordOutput;
-  createNotation: Notation;
-  updateNotation: Notation;
+  createNotation: CreateNotationOutput;
+  updateNotation: UpdateNotationOutput;
   updateTag: UpdateTagOutput;
   createTag: CreateTagOutput;
   deleteTag: DeleteTagOutput;
@@ -305,6 +305,8 @@ export type ResetPasswordInput = {
   password: Scalars['String'];
 };
 
+export type CreateNotationOutput = Notation | ForbiddenError | ValidationError | UnknownError;
+
 export type CreateNotationInput = {
   songName: Scalars['String'];
   artistName: Scalars['String'];
@@ -313,6 +315,8 @@ export type CreateNotationInput = {
   tagIds: Array<Scalars['String']>;
 };
 
+
+export type UpdateNotationOutput = Notation | ForbiddenError | NotFoundError | BadRequestError | ValidationError | UnknownError;
 
 export type UpdateNotationInput = {
   id: Scalars['String'];

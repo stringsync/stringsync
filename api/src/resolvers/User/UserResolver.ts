@@ -29,7 +29,6 @@ export class UserResolver {
   }
 
   @Mutation((returns) => types.UpdateUserOutput)
-  @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN))
   async updateUser(
     @Arg('input') input: types.UpdateUserInput,
     @Ctx() ctx: ResolverCtx
@@ -42,8 +41,8 @@ export class UserResolver {
     try {
       await types.UpdateUserInput.validate(input, ctx);
     } catch (e) {
-      if (e instanceof errors.BadRequestError) {
-        return types.BadRequestError.of(e);
+      if (e instanceof errors.ForbiddenError) {
+        return types.ForbiddenError.of(e);
       } else {
         return types.UnknownError.of(e);
       }
