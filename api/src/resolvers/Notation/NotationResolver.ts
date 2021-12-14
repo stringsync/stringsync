@@ -1,19 +1,13 @@
 import { inject, injectable } from 'inversify';
-import { Arg, Args, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
-import { NotationObject } from '.';
-import { Notation, UserRole } from '../../domain';
-import { ForbiddenError, NotFoundError } from '../../errors';
+import { Arg, Args, Ctx, Mutation, Query, Resolver } from 'type-graphql';
+import * as domain from '../../domain';
+import { ltTeacher } from '../../domain';
+import * as errors from '../../errors';
 import { TYPES } from '../../inversify.constants';
-import { AuthRequirement, NotationService } from '../../services';
-import { BlobStorage, Connection, Logger } from '../../util';
-import { WithAuthRequirement } from '../middlewares';
+import { NotationService } from '../../services';
+import { BlobStorage, Logger } from '../../util';
+import * as types from '../graphqlTypes';
 import { ResolverCtx } from '../types';
-import { CreateNotationInput } from './CreateNotationInput';
-import { NotationArgs } from './NotationArgs';
-import { NotationConnectionArgs } from './NotationConnectionArgs';
-import { NotationConnectionObject } from './NotationConnectionObject';
-import { SuggestedNotationsArgs } from './SuggestedNotationsArgs';
-import { UpdateNotationInput } from './UpdateNotationInput';
 
 @Resolver()
 @injectable()
@@ -32,47 +26,73 @@ export class NotationResolver {
     this.logger = logger;
   }
 
-  @Query((returns) => NotationConnectionObject)
-  async notations(@Args() args: NotationConnectionArgs): Promise<Connection<Notation>> {
-    return await this.notationService.findPage(args);
+  @Query((returns) => types.NotationConnection)
+  async notations(@Args() args: types.NotationConnectionArgs): Promise<types.NotationConnection> {
+    const connection = await this.notationService.findPage(args);
+    return types.NotationConnection.of(connection);
   }
 
-  @Query((returns) => NotationObject, { nullable: true })
-  async notation(@Args() args: NotationArgs): Promise<Notation | null> {
-    return await this.notationService.find(args.id);
+  @Query((returns) => types.Notation, { nullable: true })
+  async notation(@Args() args: types.NotationArgs): Promise<types.Notation | null> {
+    const notation = await this.notationService.find(args.id);
+    return notation ? types.Notation.of(notation) : null;
   }
 
-  @Query((returns) => [NotationObject])
-  async suggestedNotations(@Args() args: SuggestedNotationsArgs): Promise<Notation[]> {
-    return await this.notationService.findSuggestions(args.id || null, args.limit);
+  @Query((returns) => [types.Notation])
+  async suggestedNotations(@Args() args: types.SuggestedNotationsArgs): Promise<types.Notation[]> {
+    const notations = await this.notationService.findSuggestions(args.id || null, args.limit);
+    return notations.map(types.Notation.of);
   }
 
-  @Mutation((returns) => NotationObject, { nullable: true })
-  @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER))
-  async createNotation(@Arg('input') input: CreateNotationInput, @Ctx() ctx: ResolverCtx): Promise<Notation> {
+  @Mutation((returns) => types.Notation, { nullable: true })
+  async createNotation(
+    @Arg('input') input: types.CreateNotationInput,
+    @Ctx() ctx: ResolverCtx
+  ): Promise<typeof types.CreateNotationOutput> {
+    const sessionUser = ctx.getSessionUser();
+    if (!sessionUser.isLoggedIn || ltTeacher(sessionUser.role)) {
+      return types.ForbiddenError.of({ message: 'must be logged in as teacher' });
+    }
+
     const { artistName, songName, tagIds } = input;
-    const [thumbnail, video] = await Promise.all([input.thumbnail!, input.video!]);
-    return await this.notationService.create({
-      artistName,
-      songName,
-      tagIds,
-      thumbnail,
-      video,
-      transcriberId: ctx.getSessionUser().id,
-    });
+    const [thumbnail, video] = await Promise.all([input.thumbnail, input.video]);
+    try {
+      const notation = await this.notationService.create({
+        artistName,
+        songName,
+        tagIds,
+        thumbnail,
+        video,
+        transcriberId: ctx.getSessionUser().id,
+      });
+      return types.Notation.of(notation);
+    } catch (e) {
+      if (e instanceof errors.ValidationError) {
+        return types.ValidationError.of(e);
+      } else {
+        return types.UnknownError.of(e);
+      }
+    }
   }
 
-  @Mutation((returns) => NotationObject, { nullable: true })
-  @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER))
-  async updateNotation(@Arg('input') input: UpdateNotationInput, @Ctx() ctx: ResolverCtx): Promise<Notation> {
+  @Mutation((returns) => types.Notation, { nullable: true })
+  async updateNotation(
+    @Arg('input') input: types.UpdateNotationInput,
+    @Ctx() ctx: ResolverCtx
+  ): Promise<typeof types.UpdateNotationOutput> {
+    const sessionUser = ctx.getSessionUser();
+    if (!sessionUser.isLoggedIn || ltTeacher(sessionUser.role)) {
+      return types.ForbiddenError.of({ message: 'must be logged in as teacher' });
+    }
+
     const notation = await this.notationService.find(input.id);
     if (!notation) {
-      throw new NotFoundError(`could not find notation with id: ${input.id}`);
+      return types.NotFoundError.of({ message: `could not find notation: id=${input.id}` });
     }
 
     const user = ctx.getSessionUser();
-    if (notation.transcriberId !== user.id && user.role !== UserRole.ADMIN) {
-      throw new ForbiddenError('not permitted to edit notation');
+    if (notation.transcriberId !== user.id && user.role !== domain.UserRole.ADMIN) {
+      return types.ForbiddenError.of({ message: 'must be logged in as transcriber or admin' });
     }
 
     const [thumbnail, musicXml] = await Promise.all([
@@ -80,21 +100,32 @@ export class NotationResolver {
       input.musicXml || Promise.resolve(undefined),
     ]);
 
-    await this.notationService.update(input.id, {
-      songName: input.songName,
-      artistName: input.artistName,
-      deadTimeMs: input.deadTimeMs,
-      durationMs: input.durationMs,
-      private: input.private,
-      thumbnail,
-      musicXml,
-    });
-
-    const updatedNotation = await this.notationService.find(input.id);
-    if (!updatedNotation) {
-      throw new NotFoundError(`could not find notation with id: ${input.id}`);
+    try {
+      await this.notationService.update(input.id, {
+        songName: input.songName,
+        artistName: input.artistName,
+        deadTimeMs: input.deadTimeMs,
+        durationMs: input.durationMs,
+        private: input.private,
+        thumbnail,
+        musicXml,
+      });
+      const updatedNotation = await this.notationService.find(input.id);
+      if (!updatedNotation) {
+        throw new errors.NotFoundError(`could not find notation: id=${input.id}`);
+      }
+      return types.Notation.of(updatedNotation);
+    } catch (e) {
+      this.logger.error(`could not update notation: id=${input.id}, error=${e}`);
+      if (e instanceof errors.NotFoundError) {
+        return types.NotFoundError.of(e);
+      } else if (e instanceof errors.ValidationError) {
+        return types.ValidationError.of(e);
+      } else if (e instanceof errors.BadRequestError) {
+        return types.BadRequestError.of(e);
+      } else {
+        return types.UnknownError.of(e);
+      }
     }
-
-    return updatedNotation;
   }
 }

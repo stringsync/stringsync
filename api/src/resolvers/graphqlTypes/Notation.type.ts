@@ -10,6 +10,23 @@ type PublicNotationFields = Omit<domain.Notation, 'cursor'>;
 
 @ObjectType()
 export class Notation implements PublicNotationFields {
+  static of(attrs: domain.Notation) {
+    const notation = new Notation();
+    notation.id = attrs.id;
+    notation.createdAt = attrs.createdAt;
+    notation.updatedAt = attrs.updatedAt;
+    notation.songName = attrs.songName;
+    notation.artistName = attrs.artistName;
+    notation.deadTimeMs = attrs.deadTimeMs;
+    notation.durationMs = attrs.durationMs;
+    notation.private = attrs.private;
+    notation.transcriberId = attrs.transcriberId;
+    notation.thumbnailUrl = attrs.thumbnailUrl;
+    notation.videoUrl = attrs.videoUrl;
+    notation.musicXmlUrl = attrs.musicXmlUrl;
+    return notation;
+  }
+
   @Field((type) => ID)
   id!: string;
 

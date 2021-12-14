@@ -168,7 +168,7 @@ export class NotationService {
     return path.extname(originalFilename).toLowerCase();
   }
 
-  private async validateMimeType(file: FileUpload, ...allowedMimeTypes: string[]) {
+  private validateMimeType(file: FileUpload, ...allowedMimeTypes: string[]) {
     if (allowedMimeTypes.includes(file.mimetype)) {
       return;
     }

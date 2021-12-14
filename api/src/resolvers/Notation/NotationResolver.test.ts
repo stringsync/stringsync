@@ -16,7 +16,9 @@ import {
   resolve,
 } from '../../testing';
 import { rand, Replace } from '../../util';
-import { CreateNotationInput } from './CreateNotationInput';
+import * as types from '../graphqlTypes';
+
+type TestCreateNotationInput = Replace<types.CreateNotationInput, 'thumbnail' | 'video', Buffer>;
 
 const createRandUploadJpg = () => createRandUpload('jpg', 'image/jpeg');
 const createRandUploadMp4 = () => createRandUpload('mp4', 'video/mp4');
@@ -49,7 +51,7 @@ describe('NotationResolver', () => {
       );
     };
 
-    it('returns  notations', async () => {
+    it('returns notations', async () => {
       const { res } = await queryNotations({});
 
       expect(res.errors).toBeUndefined();
