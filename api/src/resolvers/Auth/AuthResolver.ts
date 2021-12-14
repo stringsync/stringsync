@@ -125,24 +125,42 @@ export class AuthResolver {
     return types.Processed.now();
   }
 
-  @Mutation((returns) => Boolean, { nullable: true })
+  @Mutation((returns) => types.SendResetPasswordEmailOutput)
   async sendResetPasswordEmail(
     @Ctx() ctx: ResolverCtx,
     @Arg('input') input: types.SendResetPasswordEmailInput
-  ): Promise<true> {
+  ): Promise<typeof types.SendResetPasswordEmailOutput> {
     const email = input.email;
 
-    const user = await this.authService.refreshResetPasswordToken(email, ctx.getReqAt());
-    const mail = this.mailWriterService.writeResetPasswordEmail(user);
-    await this.sendMail.job.enqueue({ mail });
-
-    return true;
+    try {
+      const user = await this.authService.refreshResetPasswordToken(email, ctx.getReqAt());
+      const mail = this.mailWriterService.writeResetPasswordEmail(user);
+      await this.sendMail.job.enqueue({ mail });
+      return types.Processed.now();
+    } catch (e) {
+      if (e instanceof errors.NotFoundError) {
+        return types.NotFoundError.of(e);
+      } else {
+        return types.UnknownError.of(e);
+      }
+    }
   }
 
-  @Mutation((returns) => Boolean, { nullable: true })
-  async resetPassword(@Ctx() ctx: ResolverCtx, @Arg('input') input: types.ResetPasswordInput): Promise<true> {
-    await this.authService.resetPassword(input.email, input.resetPasswordToken, input.password, ctx.getReqAt());
-    return true;
+  @Mutation((returns) => types.ResetPasswordOutput, { nullable: true })
+  async resetPassword(
+    @Ctx() ctx: ResolverCtx,
+    @Arg('input') input: types.ResetPasswordInput
+  ): Promise<typeof types.ResetPasswordOutput> {
+    try {
+      await this.authService.resetPassword(input.email, input.resetPasswordToken, input.password, ctx.getReqAt());
+      return types.Processed.now();
+    } catch (e) {
+      if (e instanceof errors.BadRequestError) {
+        return types.BadRequestError.of(e);
+      } else {
+        return types.UnknownError.of(e);
+      }
+    }
   }
 
   private persistLogin(ctx: ResolverCtx, user: User) {
