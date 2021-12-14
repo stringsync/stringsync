@@ -41,8 +41,4 @@ export class UpdateUserInput {
 
   @Field((type) => UserRole, { nullable: true })
   role?: UserRole;
-
-  // TODO: Uncomment when ready for avatar uploads
-  // @Field((type) => GraphQLUpload, { nullable: true })
-  // avatar?: Promise<FileUpload>;
 }
