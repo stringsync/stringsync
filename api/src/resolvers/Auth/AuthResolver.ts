@@ -104,49 +104,44 @@ export class AuthResolver {
   @Mutation((returns) => types.ResendConfirmationEmailOutput)
   async resendConfirmationEmail(@Ctx() ctx: ResolverCtx): Promise<typeof types.ResendConfirmationEmailOutput> {
     const sessionUser = ctx.getSessionUser();
-    const id = sessionUser.id;
-
     if (!sessionUser.isLoggedIn) {
       return types.ForbiddenError.of({ message: 'must be logged in' });
     }
+
+    const id = sessionUser.id;
     try {
       const user = await this.authService.resetConfirmationToken(id);
       if (user) {
         const mail = this.mailWriterService.writeConfirmationEmail(user);
         await this.sendMail.job.enqueue({ mail });
       } else {
-        this.logger.warn(
-          `resendConfirmationEmail attempted for userId: ${id}, but didn't find a user, returning successful result`
-        );
+        throw new errors.NotFoundError(`could not find user: id=${id}`);
       }
     } catch (e) {
-      this.logger.error(`resendConfirmationEmail attempted for userId: ${id}, got error ${e}`);
+      this.logger.error(`could not resend confirmation email: id=${id}, error=${e}`);
     }
+
     return types.Processed.now();
   }
 
-  @Mutation((returns) => types.SendResetPasswordEmailOutput)
+  @Mutation((returns) => types.Processed)
   async sendResetPasswordEmail(
     @Ctx() ctx: ResolverCtx,
     @Arg('input') input: types.SendResetPasswordEmailInput
-  ): Promise<typeof types.SendResetPasswordEmailOutput> {
+  ): Promise<types.Processed> {
     const email = input.email;
-
     try {
       const user = await this.authService.refreshResetPasswordToken(email, ctx.getReqAt());
       const mail = this.mailWriterService.writeResetPasswordEmail(user);
       await this.sendMail.job.enqueue({ mail });
-      return types.Processed.now();
     } catch (e) {
-      if (e instanceof errors.NotFoundError) {
-        return types.NotFoundError.of(e);
-      } else {
-        return types.UnknownError.of(e);
-      }
+      this.logger.error(`could not resend reset password email: email=${email}, error=${e}`);
     }
+
+    return types.Processed.now();
   }
 
-  @Mutation((returns) => types.ResetPasswordOutput, { nullable: true })
+  @Mutation((returns) => types.ResetPasswordOutput)
   async resetPassword(
     @Ctx() ctx: ResolverCtx,
     @Arg('input') input: types.ResetPasswordInput

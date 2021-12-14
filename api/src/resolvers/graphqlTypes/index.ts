@@ -13,7 +13,6 @@ export * from './ResendConfirmationEmailOutput.type';
 export * from './ResetPasswordInput.type';
 export * from './ResetPasswordOutput.type';
 export * from './SendResetPasswordEmailInput.type';
-export * from './SendResetPasswordEmailOutput.type';
 export * from './SignupInput.type';
 export * from './SignupOutput.type';
 export * from './Tag.type';

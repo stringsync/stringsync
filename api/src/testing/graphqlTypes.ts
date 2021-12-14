@@ -78,8 +78,8 @@ export type Mutation = {
   signup: SignupOutput;
   confirmEmail: ConfirmEmailOutput;
   resendConfirmationEmail: ResendConfirmationEmailOutput;
-  sendResetPasswordEmail: SendResetPasswordEmailOutput;
-  resetPassword?: Maybe<ResetPasswordOutput>;
+  sendResetPasswordEmail: Processed;
+  resetPassword: ResetPasswordOutput;
 };
 
 
@@ -265,8 +265,6 @@ export type ResetPasswordOutput = Processed | BadRequestError | UnknownError;
 export type SendResetPasswordEmailInput = {
   email: Scalars['String'];
 };
-
-export type SendResetPasswordEmailOutput = Processed | NotFoundError | UnknownError;
 
 export type SignupInput = {
   username: Scalars['String'];

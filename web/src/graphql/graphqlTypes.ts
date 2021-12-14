@@ -199,8 +199,8 @@ export type Mutation = {
   signup: SignupOutput;
   confirmEmail: ConfirmEmailOutput;
   resendConfirmationEmail: ResendConfirmationEmailOutput;
-  sendResetPasswordEmail: SendResetPasswordEmailOutput;
-  resetPassword?: Maybe<ResetPasswordOutput>;
+  sendResetPasswordEmail: Processed;
+  resetPassword: ResetPasswordOutput;
 };
 
 
@@ -350,8 +350,6 @@ export type ConfirmEmailInput = {
 };
 
 export type ResendConfirmationEmailOutput = Processed | ForbiddenError;
-
-export type SendResetPasswordEmailOutput = Processed | NotFoundError | UnknownError;
 
 export type SendResetPasswordEmailInput = {
   email: Scalars['String'];

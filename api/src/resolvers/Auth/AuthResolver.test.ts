@@ -7,6 +7,7 @@ import { AuthService, UserService } from '../../services';
 import { ConfirmEmailInput, createRandUser, gql, LoginInput, Mutation, Query, resolve } from '../../testing';
 import { rand } from '../../util';
 import * as types from '../graphqlTypes';
+import { SignupInput } from '../graphqlTypes';
 
 enum LoginStatus {
   LOGGED_OUT = 'LOGGED_OUT',
@@ -62,7 +63,134 @@ describe('AuthResolver', () => {
       const sessionUser = ctx.getSessionUser();
       expect(res.data).not.toBeNull();
       expect(res.data.whoami).not.toBeNull();
-      expect(res.data!.whoami!.id).toBe(sessionUser.id);
+      expect(res.data.whoami!.id).toBe(sessionUser.id);
+    });
+  });
+
+  describe('signup', () => {
+    let user: User;
+    let sendMailSpy: jest.SpyInstance;
+
+    beforeEach(async () => {
+      const username = rand.str(10);
+      const email = `${username}@domain.tld`;
+      const password = rand.str(10);
+
+      const authService = container.get<AuthService>(TYPES.AuthService);
+      user = await authService.signup(username, email, password);
+
+      sendMailSpy = jest
+        .spyOn(container.get<SendMail>(TYPES.SendMail).job, 'enqueue')
+        .mockImplementation((payload) => Promise.resolve());
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    const signup = async (input: SignupInput, loginStatus: LoginStatus) => {
+      return resolve<Mutation, 'signup'>(
+        gql`
+          mutation signup($input: SignupInput!) {
+            signup(input: $input) {
+              __typename
+              ... on User {
+                id
+                username
+                email
+              }
+              ... on ValidationError {
+                details
+              }
+            }
+          }
+        `,
+        { input },
+        { sessionUser: getSessionUser(loginStatus, user) }
+      );
+    };
+
+    it('creates a use with the username and email', async () => {
+      const username = rand.str(10);
+      const email = `${username}@domain.tld`;
+      const password = rand.str(10);
+
+      const { res } = await signup({ username, email, password }, LoginStatus.LOGGED_OUT);
+
+      expect(res.errors).toBeUndefined();
+      expect(res.data.signup.__typename).toBe('User');
+      const signedUpUser = (res.data.signup as unknown) as types.User;
+      expect(signedUpUser.username).toBe(username);
+      expect(signedUpUser.email).toBe(email);
+    });
+
+    it('creates a user with the correct password hash', async () => {
+      const userService = container.get<UserService>(TYPES.UserService);
+      const authService = container.get<AuthService>(TYPES.AuthService);
+      const username = rand.str(10);
+      const email = `${username}@domain.tld`;
+      const password = rand.str(10);
+
+      const { res } = await signup({ username, email, password }, LoginStatus.LOGGED_OUT);
+
+      expect(res.errors).toBeUndefined();
+      expect(res.data.signup.__typename).toBe('User');
+      const signedUpUser = (res.data.signup as unknown) as types.User;
+      const fetchedUser = await userService.find(signedUpUser.id);
+      expect(fetchedUser).not.toBeNull();
+      expect(fetchedUser!.encryptedPassword).not.toBe(password);
+      expect(authService.getAuthenticatedUser(username, password)).not.toBeNull();
+    });
+
+    it('logs in the newly created user', async () => {
+      const username = rand.str(10);
+      const email = `${username}@domain.tld`;
+      const password = rand.str(10);
+
+      const { ctx } = await signup({ username, email, password }, LoginStatus.LOGGED_OUT);
+
+      expect(ctx.getSessionUser().isLoggedIn).toBeTrue();
+    });
+
+    it('sends mail to the newly created user', async () => {
+      const username = rand.str(10);
+      const email = `${username}@domain.tld`;
+      const password = rand.str(10);
+
+      await signup({ username, email, password }, LoginStatus.LOGGED_OUT);
+
+      expect(sendMailSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('forbids logged in users from signing up', async () => {
+      const username = rand.str(10);
+      const email = `${username}@domain.tld`;
+      const password = rand.str(10);
+
+      const { res, ctx } = await signup({ username, email, password }, LoginStatus.LOGGED_IN);
+
+      expect(res.errors).toBeUndefined();
+      expect(res.data.signup.__typename).toBe('ForbiddenError');
+
+      const sessionUser = ctx.getSessionUser();
+      expect(sessionUser.isLoggedIn).toBeTrue();
+      expect(sessionUser.id).toBe(user.id); // this is not the user that was created
+
+      const userService = container.get<UserService>(TYPES.UserService);
+      expect(userService.findByUsernameOrEmail(username)).resolves.toBeNull();
+      expect(userService.findByUsernameOrEmail(email)).resolves.toBeNull();
+    });
+
+    it('returns a validation error when input is invalid', async () => {
+      const username = rand.str(10);
+      const email = `invalid-email`;
+      const password = rand.str(10);
+
+      const { res, ctx } = await signup({ username, email, password }, LoginStatus.LOGGED_OUT);
+
+      expect(res.errors).toBeUndefined();
+      expect(res.data.signup.__typename).toBe('ValidationError');
+      expect(ctx.getSessionUser().isLoggedIn).toBeFalse();
     });
   });
 
@@ -104,7 +232,7 @@ describe('AuthResolver', () => {
 
       expect(res.errors).toBeUndefined();
       expect(res.data.login).not.toBeNull();
-      expect(res.data.login!.__typename).toBe('User');
+      expect(res.data.login.__typename).toBe('User');
       const loggedInUser = (res.data.login! as unknown) as types.User;
       expect(loggedInUser.id).toBe(user.id);
 
@@ -119,7 +247,7 @@ describe('AuthResolver', () => {
 
       expect(res.errors).toBeUndefined();
       expect(res.data.login).not.toBeNull();
-      expect(res.data.login!.__typename).toBe('User');
+      expect(res.data.login.__typename).toBe('User');
       const loggedInUser = (res.data.login! as unknown) as types.User;
       expect(loggedInUser.id).toBe(user.id);
 
@@ -138,7 +266,7 @@ describe('AuthResolver', () => {
 
       expect(res.errors).toBeUndefined();
       expect(res.data.login).not.toBeNull();
-      expect(res.data.login!.__typename).toBe('ForbiddenError');
+      expect(res.data.login.__typename).toBe('ForbiddenError');
       const forbiddenError = res.data.login! as types.ForbiddenError;
       expect(forbiddenError.message).toBe('wrong username, email, or password');
 
@@ -153,7 +281,7 @@ describe('AuthResolver', () => {
 
       expect(res.errors).toBeUndefined();
       expect(res.data.login).not.toBeNull();
-      expect(res.data.login!.__typename).toBe('ForbiddenError');
+      expect(res.data.login.__typename).toBe('ForbiddenError');
       const forbiddenError = res.data.login! as types.ForbiddenError;
       expect(forbiddenError.message).toBe('must be logged out');
 
@@ -181,12 +309,14 @@ describe('AuthResolver', () => {
       return resolve<Mutation, 'logout'>(
         gql`
           mutation {
-            logout
-            ... on LogoutResult {
-              isSuccessful
-            }
-            ... on ForbiddenError {
-              message
+            logout {
+              __typename
+              ... on Processed {
+                at
+              }
+              ... on ForbiddenError {
+                message
+              }
             }
           }
         `,
@@ -200,7 +330,7 @@ describe('AuthResolver', () => {
 
       expect(res.errors).toBeUndefined();
       expect(res.data.logout).not.toBeNull();
-      expect(res.data.logout!.__typename).toBe('Processed');
+      expect(res.data.logout.__typename).toBe('Processed');
 
       const sessionUser = ctx.getSessionUser();
       expect(sessionUser.isLoggedIn).toBeFalse();
@@ -213,7 +343,7 @@ describe('AuthResolver', () => {
 
       expect(res.errors).toBeUndefined();
       expect(res.data.logout).not.toBeNull();
-      expect(res.data.logout!.__typename).toBe('ForbiddenError');
+      expect(res.data.logout.__typename).toBe('ForbiddenError');
       const forbiddenError = res.data.logout as types.ForbiddenError;
       expect(forbiddenError.message).toBe('must be logged in');
 
@@ -274,7 +404,7 @@ describe('AuthResolver', () => {
       expect(reloadedUser).not.toBeNull();
       expect(reloadedUser!.confirmedAt).not.toBeNull();
       expect(res.data.confirmEmail).not.toBeNull();
-      expect(res.data.confirmEmail!.__typename).toBe('EmailConfirmation');
+      expect(res.data.confirmEmail.__typename).toBe('EmailConfirmation');
       const emailConfirmation = res.data.confirmEmail as types.EmailConfirmation;
       expect(emailConfirmation.confirmedAt).toBe(reloadedUser!.confirmedAt!.toISOString());
     });
@@ -284,7 +414,7 @@ describe('AuthResolver', () => {
 
       expect(res.errors).toBeUndefined();
       expect(res.data.confirmEmail).not.toBeNull();
-      expect(res.data.confirmEmail!.__typename).toBe('BadRequestError');
+      expect(res.data.confirmEmail.__typename).toBe('BadRequestError');
       const badRequestError = res.data.confirmEmail! as types.BadRequestError;
       expect(badRequestError.message).toBe('invalid confirmation token');
     });
@@ -294,7 +424,7 @@ describe('AuthResolver', () => {
 
       expect(res.errors).toBeUndefined();
       expect(res.data.confirmEmail).not.toBeNull();
-      expect(res.data.confirmEmail!.__typename).toBe('ForbiddenError');
+      expect(res.data.confirmEmail.__typename).toBe('ForbiddenError');
       const forbiddenError = res.data.confirmEmail! as types.ForbiddenError;
       expect(forbiddenError.message).toBe('must be logged in');
     });
@@ -336,8 +466,8 @@ describe('AuthResolver', () => {
           mutation resendConfirmationEmail {
             resendConfirmationEmail {
               __typename
-              ... on ResendConfirmationEmailResult {
-                processed
+              ... on Processed {
+                at
               }
               ... on ForbiddenError {
                 message
@@ -355,7 +485,7 @@ describe('AuthResolver', () => {
 
       expect(res.errors).toBeUndefined();
       expect(res.data.resendConfirmationEmail).not.toBeNull();
-      expect(res.data.resendConfirmationEmail!.__typename).toBe('Processed');
+      expect(res.data.resendConfirmationEmail.__typename).toBe('Processed');
 
       const reloadedUser = await userService.find(user.id);
       expect(reloadedUser).not.toBeNull();
@@ -382,10 +512,11 @@ describe('AuthResolver', () => {
 
       expect(res.errors).toBeUndefined();
       expect(res.data.resendConfirmationEmail).not.toBeNull();
-      expect(res.data.resendConfirmationEmail!.__typename).toBe('Processed');
+      expect(res.data.resendConfirmationEmail.__typename).toBe('Processed');
 
       const reloadedUser = await userService.find(user.id);
       expect(reloadedUser).not.toBeNull();
+      expect(reloadedUser!.confirmedAt).not.toBeNull();
       expect(reloadedUser!.confirmedAt!.getSeconds()).toBe(now.getSeconds());
       expect(reloadedUser!.confirmationToken).toBeNull();
     });
@@ -423,7 +554,10 @@ describe('AuthResolver', () => {
       return resolve<Mutation, 'sendResetPasswordEmail', { input: types.SendResetPasswordEmailInput }>(
         gql`
           mutation sendResetPasswordEmail($input: SendResetPasswordEmailInput!) {
-            sendResetPasswordEmail(input: $input)
+            sendResetPasswordEmail(input: $input) {
+              __typename
+              at
+            }
           }
         `,
         { input },
@@ -435,7 +569,7 @@ describe('AuthResolver', () => {
       const { res } = await sendResetPasswordEmail({ email: user.email }, LoginStatus.LOGGED_OUT);
 
       expect(res.errors).toBeUndefined();
-      expect(res.data.sendResetPasswordEmail).toBeTrue();
+      expect(res.data.sendResetPasswordEmail.__typename).toBe('Processed');
 
       const reloadedUser = await userService.find(user.id);
       expect(reloadedUser).not.toBeNull();
@@ -449,7 +583,7 @@ describe('AuthResolver', () => {
       const { res } = await sendResetPasswordEmail({ email: user.email }, LoginStatus.LOGGED_IN);
 
       expect(res.errors).toBeUndefined();
-      expect(res.data.sendResetPasswordEmail).toBeTrue();
+      expect(res.data.sendResetPasswordEmail.__typename).toBe('Processed');
 
       const reloadedUser = await userService.find(user.id);
       expect(reloadedUser).not.toBeNull();
@@ -483,7 +617,18 @@ describe('AuthResolver', () => {
       return resolve<Mutation, 'resetPassword', { input: types.ResetPasswordInput }>(
         gql`
           mutation resetPassword($input: ResetPasswordInput!) {
-            resetPassword(input: $input)
+            resetPassword(input: $input) {
+              __typename
+              ... on Processed {
+                at
+              }
+              ... on BadRequestError {
+                message
+              }
+              ... on UnknownError {
+                message
+              }
+            }
           }
         `,
         { input },
@@ -505,7 +650,7 @@ describe('AuthResolver', () => {
       });
 
       expect(res.errors).toBeUndefined();
-      expect(res.data.resetPassword).toBeTrue();
+      expect(res.data.resetPassword.__typename).toBe('Processed');
 
       const oldPasswordUser = await authService.getAuthenticatedUser(user.email, oldPassword);
       expect(oldPasswordUser).toBeNull();
