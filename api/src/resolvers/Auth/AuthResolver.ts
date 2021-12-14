@@ -21,10 +21,11 @@ export class AuthResolver {
     @inject(TYPES.SendMail) public sendMail: SendMail
   ) {}
 
-  @Query((returns) => UserObject, { nullable: true })
-  async whoami(@Ctx() ctx: ResolverCtx): Promise<User | null> {
+  @Query((returns) => types.User, { nullable: true })
+  async whoami(@Ctx() ctx: ResolverCtx): Promise<types.User | null> {
     const id = ctx.getSessionUser().id;
-    return await this.authService.whoami(id);
+    const user = await this.authService.whoami(id);
+    return user ? types.User.of(user) : null;
   }
 
   @Mutation((returns) => types.LoginOutput)
