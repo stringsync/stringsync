@@ -200,9 +200,7 @@ describe('AuthResolver', () => {
 
       expect(res.errors).toBeUndefined();
       expect(res.data.logout).not.toBeNull();
-      expect(res.data.logout!.__typename).toBe('LogoutResult');
-      const logoutResult = res.data.logout as types.LogoutResult;
-      expect(logoutResult.isSuccessful).toBeTrue();
+      expect(res.data.logout!.__typename).toBe('Processed');
 
       const sessionUser = ctx.getSessionUser();
       expect(sessionUser.isLoggedIn).toBeFalse();
@@ -357,9 +355,7 @@ describe('AuthResolver', () => {
 
       expect(res.errors).toBeUndefined();
       expect(res.data.resendConfirmationEmail).not.toBeNull();
-      expect(res.data.resendConfirmationEmail!.__typename).toBe('ResendConfirmationEmailResult');
-      const resendConfirmationEmailResult = res.data.resendConfirmationEmail as types.ResendConfirmationEmailResult;
-      expect(resendConfirmationEmailResult.processed).toBeTrue();
+      expect(res.data.resendConfirmationEmail!.__typename).toBe('Processed');
 
       const reloadedUser = await userService.find(user.id);
       expect(reloadedUser).not.toBeNull();
@@ -385,9 +381,8 @@ describe('AuthResolver', () => {
       const { res } = await resendConfirmationEmail(LoginStatus.LOGGED_IN);
 
       expect(res.errors).toBeUndefined();
-      expect(res.data.resendConfirmationEmail!.__typename).toBe('ResendConfirmationEmailResult');
-      const resendConfirmationEmailResult = res.data.resendConfirmationEmail as types.ResendConfirmationEmailResult;
-      expect(resendConfirmationEmailResult.processed).toBeTrue();
+      expect(res.data.resendConfirmationEmail).not.toBeNull();
+      expect(res.data.resendConfirmationEmail!.__typename).toBe('Processed');
 
       const reloadedUser = await userService.find(user.id);
       expect(reloadedUser).not.toBeNull();

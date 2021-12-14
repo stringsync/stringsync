@@ -37,12 +37,12 @@ export const ConfirmEmail: React.FC = enhance(() => {
     onData: (data) => {
       switch (data.confirmEmail?.__typename) {
         case 'EmailConfirmation':
-          if (data.confirmEmail.confirmedAt) {
-            message.success(`${email} confirmed`);
-            history.push('/library');
-          }
+          message.success(`${email} confirmed`);
+          history.push('/library');
           break;
-        case 'BadRequestError':
+        case 'ValidationError':
+          setErrors(data.confirmEmail.details);
+          break;
         case 'ForbiddenError':
         case 'NotFoundError':
         case 'UnknownError':
@@ -60,12 +60,8 @@ export const ConfirmEmail: React.FC = enhance(() => {
     },
     onData: (data) => {
       switch (data.resendConfirmationEmail?.__typename) {
-        case 'ResendConfirmationEmailResult':
-          if (data.resendConfirmationEmail.processed) {
-            message.success(`sent confirmation token to ${email}`);
-          } else {
-            message.error(`could not send confirmation token to ${email}`);
-          }
+        case 'Processed':
+          message.success(`sent confirmation token to ${email}`);
           break;
         case 'ForbiddenError':
           setErrors([data.resendConfirmationEmail.message]);

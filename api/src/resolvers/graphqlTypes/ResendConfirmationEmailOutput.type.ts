@@ -1,8 +1,8 @@
 import { createUnionType } from 'type-graphql';
 import { ForbiddenError } from '../graphqlTypes';
-import { ResendConfirmationEmailResult } from './ResendConfirmationEmailResult.type';
+import { Processed } from './Processed.type';
 
 export const ResendConfirmationEmailOutput = createUnionType({
   name: 'ResendConfirmationEmailOutput',
-  types: () => [ResendConfirmationEmailResult, ForbiddenError] as const,
+  types: () => [Processed, ForbiddenError] as const,
 });

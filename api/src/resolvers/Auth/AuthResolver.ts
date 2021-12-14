@@ -7,7 +7,6 @@ import { SendMail } from '../../jobs';
 import { AuthService, MailWriterService } from '../../services';
 import { Logger } from '../../util';
 import * as types from '../graphqlTypes';
-import { LogoutResult } from '../graphqlTypes';
 import { ResolverCtx } from '../types';
 
 @Resolver()
@@ -50,7 +49,7 @@ export class AuthResolver {
       return types.ForbiddenError.of({ message: 'must be logged in' });
     }
     this.persistLogout(ctx);
-    return LogoutResult.of(true);
+    return types.Processed.now();
   }
 
   @Mutation((returns) => types.SignupOutput)
@@ -123,7 +122,7 @@ export class AuthResolver {
     } catch (e) {
       this.logger.error(`resendConfirmationEmail attempted for userId: ${id}, got error ${e}`);
     }
-    return types.ResendConfirmationEmailResult.of();
+    return types.Processed.now();
   }
 
   @Mutation((returns) => Boolean, { nullable: true })

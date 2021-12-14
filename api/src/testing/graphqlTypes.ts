@@ -15,16 +15,11 @@ export type Scalars = {
   Upload: any;
 };
 
-export type BadRequestError = {
-  __typename?: 'BadRequestError';
-  message: Scalars['String'];
-};
-
 export type ConfirmEmailInput = {
   confirmationToken: Scalars['String'];
 };
 
-export type ConfirmEmailOutput = EmailConfirmation | NotFoundError | BadRequestError | ForbiddenError | UnknownError;
+export type ConfirmEmailOutput = EmailConfirmation | NotFoundError | ValidationError | ForbiddenError | UnknownError;
 
 export type CreateNotationInput = {
   songName: Scalars['String'];
@@ -63,12 +58,7 @@ export type LoginInput = {
 
 export type LoginOutput = User | ForbiddenError;
 
-export type LogoutOutput = LogoutResult | ForbiddenError;
-
-export type LogoutResult = {
-  __typename?: 'LogoutResult';
-  isSuccessful: Scalars['Boolean'];
-};
+export type LogoutOutput = Processed | ForbiddenError;
 
 export type Mutation = {
   __typename?: 'Mutation';
@@ -79,8 +69,8 @@ export type Mutation = {
   createTag: TagObject;
   deleteTag: Scalars['Boolean'];
   login: LoginOutput;
-  logout?: Maybe<LogoutOutput>;
-  signup?: Maybe<UserObject>;
+  logout: LogoutOutput;
+  signup: SignupOutput;
   confirmEmail: ConfirmEmailOutput;
   resendConfirmationEmail: ResendConfirmationEmailOutput;
   sendResetPasswordEmail?: Maybe<Scalars['Boolean']>;
@@ -204,6 +194,11 @@ export type PageInfoObject = {
   endCursor?: Maybe<Scalars['String']>;
 };
 
+export type Processed = {
+  __typename?: 'Processed';
+  at: Scalars['DateTime'];
+};
+
 export type Query = {
   __typename?: 'Query';
   user?: Maybe<UserObject>;
@@ -252,12 +247,7 @@ export type QuerySuggestedNotationsArgs = {
   limit: Scalars['Int'];
 };
 
-export type ResendConfirmationEmailOutput = ResendConfirmationEmailResult | ForbiddenError;
-
-export type ResendConfirmationEmailResult = {
-  __typename?: 'ResendConfirmationEmailResult';
-  processed: Scalars['Boolean'];
-};
+export type ResendConfirmationEmailOutput = Processed | ForbiddenError;
 
 export type ResetPasswordInput = {
   email: Scalars['String'];
@@ -274,6 +264,8 @@ export type SignupInput = {
   email: Scalars['String'];
   password: Scalars['String'];
 };
+
+export type SignupOutput = User | ForbiddenError | ValidationError | UnknownError;
 
 export enum TagCategory {
   GENRE = 'GENRE',
@@ -363,3 +355,8 @@ export enum UserRole {
   TEACHER = 'TEACHER',
   ADMIN = 'ADMIN'
 }
+
+export type ValidationError = {
+  __typename?: 'ValidationError';
+  details: Array<Scalars['String']>;
+};

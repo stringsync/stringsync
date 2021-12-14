@@ -195,8 +195,8 @@ export type Mutation = {
   createTag: TagObject;
   deleteTag: Scalars['Boolean'];
   login: LoginOutput;
-  logout?: Maybe<LogoutOutput>;
-  signup?: Maybe<UserObject>;
+  logout: LogoutOutput;
+  signup: SignupOutput;
   confirmEmail: ConfirmEmailOutput;
   resendConfirmationEmail: ResendConfirmationEmailOutput;
   sendResetPasswordEmail?: Maybe<Scalars['Boolean']>;
@@ -308,11 +308,23 @@ export type LoginInput = {
   password: Scalars['String'];
 };
 
-export type LogoutOutput = LogoutResult | ForbiddenError;
+export type LogoutOutput = Processed | ForbiddenError;
 
-export type LogoutResult = {
-  __typename?: 'LogoutResult';
-  isSuccessful: Scalars['Boolean'];
+export type Processed = {
+  __typename?: 'Processed';
+  at: Scalars['DateTime'];
+};
+
+export type SignupOutput = User | ForbiddenError | ValidationError | UnknownError;
+
+export type ValidationError = {
+  __typename?: 'ValidationError';
+  details: Array<Scalars['String']>;
+};
+
+export type UnknownError = {
+  __typename?: 'UnknownError';
+  message: Scalars['String'];
 };
 
 export type SignupInput = {
@@ -321,7 +333,7 @@ export type SignupInput = {
   password: Scalars['String'];
 };
 
-export type ConfirmEmailOutput = EmailConfirmation | NotFoundError | BadRequestError | ForbiddenError | UnknownError;
+export type ConfirmEmailOutput = EmailConfirmation | NotFoundError | ValidationError | ForbiddenError | UnknownError;
 
 export type EmailConfirmation = {
   __typename?: 'EmailConfirmation';
@@ -333,26 +345,11 @@ export type NotFoundError = {
   message: Scalars['String'];
 };
 
-export type BadRequestError = {
-  __typename?: 'BadRequestError';
-  message: Scalars['String'];
-};
-
-export type UnknownError = {
-  __typename?: 'UnknownError';
-  message: Scalars['String'];
-};
-
 export type ConfirmEmailInput = {
   confirmationToken: Scalars['String'];
 };
 
-export type ResendConfirmationEmailOutput = ResendConfirmationEmailResult | ForbiddenError;
-
-export type ResendConfirmationEmailResult = {
-  __typename?: 'ResendConfirmationEmailResult';
-  processed: Scalars['Boolean'];
-};
+export type ResendConfirmationEmailOutput = Processed | ForbiddenError;
 
 export type SendResetPasswordEmailInput = {
   email: Scalars['String'];

@@ -11,8 +11,8 @@ const CONFIRM_EMAIL_GQL = $gql
       NotFoundError: {
         message: t.string,
       },
-      BadRequestError: {
-        message: t.string,
+      ValidationError: {
+        details: [t.string],
       },
       ForbiddenError: {
         message: t.string,

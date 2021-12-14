@@ -5,8 +5,8 @@ const RESEND_CONFIRMATION_EMAIL_GQL = $gql
   .mutation('resendConfirmationEmail')
   .setQuery({
     ...t.union<ResendConfirmationEmailOutput>()({
-      ResendConfirmationEmailResult: {
-        processed: t.boolean,
+      Processed: {
+        at: t.string,
       },
       ForbiddenError: {
         message: t.string,
