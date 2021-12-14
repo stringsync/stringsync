@@ -2,8 +2,8 @@ import { Ctx, Field, ID, ObjectType, Root } from 'type-graphql';
 import * as domain from '../../domain';
 import { TYPES } from '../../inversify.constants';
 import { TagService, UserService } from '../../services';
-import { TagObject } from '../Tag';
 import { ResolverCtx } from '../types';
+import { Tag } from './Tag.type';
 import { User } from './User.type';
 
 type PublicNotationFields = Omit<domain.Notation, 'cursor'>;
@@ -69,7 +69,7 @@ export class Notation implements PublicNotationFields {
     return await userService.find(notation.transcriberId);
   }
 
-  @Field((type) => [TagObject])
+  @Field((type) => [Tag])
   async tags(@Ctx() ctx: ResolverCtx): Promise<domain.Tag[]> {
     const tagService = ctx.getContainer().get<TagService>(TYPES.TagService);
     return await tagService.findAllByNotationId(this.id);

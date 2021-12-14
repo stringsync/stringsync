@@ -4,8 +4,7 @@ import { TYPES } from '../../inversify.constants';
 import { UserRepo } from '../../repos';
 import { createRandUser, getSessionUser, gql, LoginStatus, Mutation, Query, resolve } from '../../testing';
 import { rand, UserConnectionArgs } from '../../util';
-import { UpdateUserInput } from './UpdateUserInput';
-import { UserArgs } from './UserArgs';
+import * as types from '../graphqlTypes';
 
 describe('UserResolver', () => {
   describe('user', () => {
@@ -16,8 +15,8 @@ describe('UserResolver', () => {
     });
 
     // prevent name clash with user
-    const userQuery = (args: UserArgs) => {
-      return resolve<Query, 'user', UserArgs>(
+    const userQuery = (args: types.UserArgs) => {
+      return resolve<Query, 'user', types.UserArgs>(
         gql`
           query user($id: String!) {
             user(id: $id) {
@@ -115,8 +114,8 @@ describe('UserResolver', () => {
       [student, teacher, admin] = users;
     });
 
-    const updateUser = (input: UpdateUserInput, loginStatus: LoginStatus) => {
-      return resolve<Mutation, 'updateUser', { input: UpdateUserInput }>(
+    const updateUser = (input: types.UpdateUserInput, loginStatus: LoginStatus) => {
+      return resolve<Mutation, 'updateUser', { input: types.UpdateUserInput }>(
         gql`
           mutation updateUser($input: UpdateUserInput!) {
             updateUser(input: $input) {

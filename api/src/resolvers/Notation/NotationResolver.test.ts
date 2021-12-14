@@ -18,8 +18,6 @@ import {
 import { rand, Replace } from '../../util';
 import * as types from '../graphqlTypes';
 
-type TestCreateNotationInput = Replace<types.CreateNotationInput, 'thumbnail' | 'video', Buffer>;
-
 const createRandUploadJpg = () => createRandUpload('jpg', 'image/jpeg');
 const createRandUploadMp4 = () => createRandUpload('mp4', 'video/mp4');
 
@@ -156,7 +154,7 @@ describe('NotationResolver', () => {
       }
     };
 
-    type TestCreateNotationInput = Replace<CreateNotationInput, 'thumbnail' | 'video', unknown>;
+    type TestCreateNotationInput = Replace<types.CreateNotationInput, 'thumbnail' | 'video', unknown>;
 
     const createNotation = (input: TestCreateNotationInput, loginStatus: LoginStatus) => {
       return resolve<Mutation, 'createNotation', { input: TestCreateNotationInput }>(

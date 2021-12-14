@@ -17,29 +17,16 @@ export type Scalars = {
 
 export type Query = {
   __typename?: 'Query';
-  user?: Maybe<UserObject>;
-  users: UserConnectionObject;
-  userCount: Scalars['Float'];
-  notations: NotationConnectionObject;
-  notation?: Maybe<NotationObject>;
-  suggestedNotations: Array<NotationObject>;
-  tags: Array<TagObject>;
   whoami?: Maybe<User>;
-  health: HealthOutput;
+  health: Health;
   version: Scalars['String'];
-};
-
-
-export type QueryUserArgs = {
-  id: Scalars['String'];
-};
-
-
-export type QueryUsersArgs = {
-  before?: Maybe<Scalars['String']>;
-  after?: Maybe<Scalars['String']>;
-  first?: Maybe<Scalars['Float']>;
-  last?: Maybe<Scalars['Float']>;
+  notations: NotationConnection;
+  notation?: Maybe<Notation>;
+  suggestedNotations: Array<Notation>;
+  tags: Array<Tag>;
+  user?: Maybe<User>;
+  users: UserConnection;
+  userCount: UserCountOutput;
 };
 
 
@@ -63,89 +50,17 @@ export type QuerySuggestedNotationsArgs = {
   limit: Scalars['Int'];
 };
 
-export type UserObject = {
-  __typename?: 'UserObject';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  email: Scalars['String'];
-  username: Scalars['String'];
-  avatarUrl?: Maybe<Scalars['String']>;
-  role: UserRole;
-  confirmedAt?: Maybe<Scalars['DateTime']>;
-  resetPasswordTokenSentAt?: Maybe<Scalars['DateTime']>;
-  notations?: Maybe<NotationObject>;
+
+export type QueryUserArgs = {
+  id: Scalars['String'];
 };
 
 
-export enum UserRole {
-  STUDENT = 'STUDENT',
-  TEACHER = 'TEACHER',
-  ADMIN = 'ADMIN'
-}
-
-export type NotationObject = {
-  __typename?: 'NotationObject';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  songName: Scalars['String'];
-  artistName: Scalars['String'];
-  deadTimeMs: Scalars['Float'];
-  durationMs: Scalars['Float'];
-  private: Scalars['Boolean'];
-  transcriberId: Scalars['String'];
-  thumbnailUrl?: Maybe<Scalars['String']>;
-  videoUrl?: Maybe<Scalars['String']>;
-  musicXmlUrl?: Maybe<Scalars['String']>;
-  transcriber: UserObject;
-  tags: Array<TagObject>;
-};
-
-export type TagObject = {
-  __typename?: 'TagObject';
-  id: Scalars['ID'];
-  category: TagCategory;
-  name: Scalars['String'];
-  notations?: Maybe<Array<NotationObject>>;
-};
-
-export enum TagCategory {
-  GENRE = 'GENRE',
-  DIFFICULTY = 'DIFFICULTY'
-}
-
-export type UserConnectionObject = {
-  __typename?: 'UserConnectionObject';
-  pageInfo: PageInfoObject;
-  edges: Array<UserEdgeObject>;
-};
-
-export type PageInfoObject = {
-  __typename?: 'PageInfoObject';
-  hasNextPage: Scalars['Boolean'];
-  hasPreviousPage: Scalars['Boolean'];
-  startCursor?: Maybe<Scalars['String']>;
-  endCursor?: Maybe<Scalars['String']>;
-};
-
-export type UserEdgeObject = {
-  __typename?: 'UserEdgeObject';
-  node: UserObject;
-  cursor: Scalars['String'];
-};
-
-export type NotationConnectionObject = {
-  __typename?: 'NotationConnectionObject';
-  pageInfo: PageInfoObject;
-  edges: Array<NotationEdgeObject>;
-};
-
-export type NotationEdgeObject = {
-  __typename?: 'NotationEdgeObject';
-  node: NotationObject;
-  /** Used in `before` and `after` args */
-  cursor: Scalars['String'];
+export type QueryUsersArgs = {
+  before?: Maybe<Scalars['String']>;
+  after?: Maybe<Scalars['String']>;
+  first?: Maybe<Scalars['Float']>;
+  last?: Maybe<Scalars['Float']>;
 };
 
 export type User = {
@@ -162,6 +77,13 @@ export type User = {
   notations: Array<Notation>;
 };
 
+
+export enum UserRole {
+  STUDENT = 'STUDENT',
+  TEACHER = 'TEACHER',
+  ADMIN = 'ADMIN'
+}
+
 export type Notation = {
   __typename?: 'Notation';
   id: Scalars['ID'];
@@ -177,23 +99,80 @@ export type Notation = {
   videoUrl?: Maybe<Scalars['String']>;
   musicXmlUrl?: Maybe<Scalars['String']>;
   transcriber?: Maybe<User>;
-  tags: Array<TagObject>;
+  tags: Array<Tag>;
 };
 
-export type HealthOutput = {
-  __typename?: 'HealthOutput';
+export type Tag = {
+  __typename?: 'Tag';
+  id: Scalars['ID'];
+  category: TagCategory;
+  name: Scalars['String'];
+  notations?: Maybe<Array<Notation>>;
+};
+
+export enum TagCategory {
+  GENRE = 'GENRE',
+  DIFFICULTY = 'DIFFICULTY'
+}
+
+export type Health = {
+  __typename?: 'Health';
   isDbHealthy: Scalars['Boolean'];
   isCacheHealthy: Scalars['Boolean'];
 };
 
+export type NotationConnection = {
+  __typename?: 'NotationConnection';
+  pageInfo: PageInfo;
+  edges: Array<NotationEdge>;
+};
+
+export type PageInfo = {
+  __typename?: 'PageInfo';
+  hasNextPage?: Maybe<Scalars['Boolean']>;
+  hasPreviousPage?: Maybe<Scalars['Boolean']>;
+  startCursor?: Maybe<Scalars['String']>;
+  endCursor?: Maybe<Scalars['String']>;
+};
+
+export type NotationEdge = {
+  __typename?: 'NotationEdge';
+  node: Notation;
+  /** Used in `before` and `after` args */
+  cursor: Scalars['String'];
+};
+
+export type UserConnection = {
+  __typename?: 'UserConnection';
+  pageInfo: PageInfo;
+  edges: Array<UserEdge>;
+};
+
+export type UserEdge = {
+  __typename?: 'UserEdge';
+  node: User;
+  cursor: Scalars['String'];
+};
+
+export type UserCountOutput = NumberValue | ForbiddenError | UnknownError;
+
+export type NumberValue = {
+  __typename?: 'NumberValue';
+  value: Scalars['Float'];
+};
+
+export type ForbiddenError = {
+  __typename?: 'ForbiddenError';
+  message: Scalars['String'];
+};
+
+export type UnknownError = {
+  __typename?: 'UnknownError';
+  message: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
-  updateUser?: Maybe<UserObject>;
-  createNotation?: Maybe<NotationObject>;
-  updateNotation?: Maybe<NotationObject>;
-  updateTag: TagObject;
-  createTag: TagObject;
-  deleteTag: Scalars['Boolean'];
   login: LoginOutput;
   logout: LogoutOutput;
   signup: SignupOutput;
@@ -201,11 +180,37 @@ export type Mutation = {
   resendConfirmationEmail: ResendConfirmationEmailOutput;
   sendResetPasswordEmail: Processed;
   resetPassword: ResetPasswordOutput;
+  createNotation: Notation;
+  updateNotation: Notation;
+  updateTag: UpdateTagOutput;
+  createTag: CreateTagOutput;
+  deleteTag: DeleteTagOutput;
+  updateUser: UpdateUserOutput;
 };
 
 
-export type MutationUpdateUserArgs = {
-  input: UpdateUserInput;
+export type MutationLoginArgs = {
+  input: LoginInput;
+};
+
+
+export type MutationSignupArgs = {
+  input: SignupInput;
+};
+
+
+export type MutationConfirmEmailArgs = {
+  input: ConfirmEmailInput;
+};
+
+
+export type MutationSendResetPasswordEmailArgs = {
+  input: SendResetPasswordEmailInput;
+};
+
+
+export type MutationResetPasswordArgs = {
+  input: ResetPasswordInput;
 };
 
 
@@ -234,35 +239,70 @@ export type MutationDeleteTagArgs = {
 };
 
 
-export type MutationLoginArgs = {
-  input: LoginInput;
+export type MutationUpdateUserArgs = {
+  input: UpdateUserInput;
 };
 
+export type LoginOutput = User | ForbiddenError;
 
-export type MutationSignupArgs = {
-  input: SignupInput;
+export type LoginInput = {
+  usernameOrEmail: Scalars['String'];
+  password: Scalars['String'];
 };
 
+export type LogoutOutput = Processed | ForbiddenError;
 
-export type MutationConfirmEmailArgs = {
-  input: ConfirmEmailInput;
+export type Processed = {
+  __typename?: 'Processed';
+  at: Scalars['DateTime'];
 };
 
+export type SignupOutput = User | ForbiddenError | ValidationError | UnknownError;
 
-export type MutationSendResetPasswordEmailArgs = {
-  input: SendResetPasswordEmailInput;
+export type ValidationError = {
+  __typename?: 'ValidationError';
+  details: Array<Scalars['String']>;
 };
 
-
-export type MutationResetPasswordArgs = {
-  input: ResetPasswordInput;
+export type SignupInput = {
+  username: Scalars['String'];
+  email: Scalars['String'];
+  password: Scalars['String'];
 };
 
-export type UpdateUserInput = {
-  id: Scalars['String'];
-  username?: Maybe<Scalars['String']>;
-  email?: Maybe<Scalars['String']>;
-  role?: Maybe<UserRole>;
+export type ConfirmEmailOutput = EmailConfirmation | NotFoundError | BadRequestError | ForbiddenError | UnknownError;
+
+export type EmailConfirmation = {
+  __typename?: 'EmailConfirmation';
+  confirmedAt: Scalars['DateTime'];
+};
+
+export type NotFoundError = {
+  __typename?: 'NotFoundError';
+  message: Scalars['String'];
+};
+
+export type BadRequestError = {
+  __typename?: 'BadRequestError';
+  message: Scalars['String'];
+};
+
+export type ConfirmEmailInput = {
+  confirmationToken: Scalars['String'];
+};
+
+export type ResendConfirmationEmailOutput = Processed | ForbiddenError;
+
+export type SendResetPasswordEmailInput = {
+  email: Scalars['String'];
+};
+
+export type ResetPasswordOutput = Processed | BadRequestError | UnknownError;
+
+export type ResetPasswordInput = {
+  email: Scalars['String'];
+  resetPasswordToken: Scalars['String'];
+  password: Scalars['String'];
 };
 
 export type CreateNotationInput = {
@@ -285,85 +325,28 @@ export type UpdateNotationInput = {
   musicXml?: Maybe<Scalars['Upload']>;
 };
 
+export type UpdateTagOutput = Tag | ForbiddenError | NotFoundError | BadRequestError | ValidationError | UnknownError;
+
 export type UpdateTagInput = {
   id: Scalars['String'];
   name?: Maybe<Scalars['String']>;
   category?: Maybe<TagCategory>;
 };
 
+export type CreateTagOutput = Tag | ForbiddenError | BadRequestError | UnknownError;
+
 export type CreateTagInput = {
   name: Scalars['String'];
   category: TagCategory;
 };
 
-export type LoginOutput = User | ForbiddenError;
+export type DeleteTagOutput = Processed | ForbiddenError | UnknownError;
 
-export type ForbiddenError = {
-  __typename?: 'ForbiddenError';
-  message: Scalars['String'];
-};
+export type UpdateUserOutput = User | ForbiddenError | NotFoundError | BadRequestError | ValidationError | UnknownError;
 
-export type LoginInput = {
-  usernameOrEmail: Scalars['String'];
-  password: Scalars['String'];
-};
-
-export type LogoutOutput = Processed | ForbiddenError;
-
-export type Processed = {
-  __typename?: 'Processed';
-  at: Scalars['DateTime'];
-};
-
-export type SignupOutput = User | ForbiddenError | ValidationError | UnknownError;
-
-export type ValidationError = {
-  __typename?: 'ValidationError';
-  details: Array<Scalars['String']>;
-};
-
-export type UnknownError = {
-  __typename?: 'UnknownError';
-  message: Scalars['String'];
-};
-
-export type SignupInput = {
-  username: Scalars['String'];
-  email: Scalars['String'];
-  password: Scalars['String'];
-};
-
-export type ConfirmEmailOutput = EmailConfirmation | NotFoundError | ValidationError | ForbiddenError | UnknownError;
-
-export type EmailConfirmation = {
-  __typename?: 'EmailConfirmation';
-  confirmedAt: Scalars['DateTime'];
-};
-
-export type NotFoundError = {
-  __typename?: 'NotFoundError';
-  message: Scalars['String'];
-};
-
-export type ConfirmEmailInput = {
-  confirmationToken: Scalars['String'];
-};
-
-export type ResendConfirmationEmailOutput = Processed | ForbiddenError;
-
-export type SendResetPasswordEmailInput = {
-  email: Scalars['String'];
-};
-
-export type ResetPasswordOutput = Processed | BadRequestError | UnknownError;
-
-export type BadRequestError = {
-  __typename?: 'BadRequestError';
-  message: Scalars['String'];
-};
-
-export type ResetPasswordInput = {
-  email: Scalars['String'];
-  resetPasswordToken: Scalars['String'];
-  password: Scalars['String'];
+export type UpdateUserInput = {
+  id: Scalars['String'];
+  username?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  role?: Maybe<UserRole>;
 };
