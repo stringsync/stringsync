@@ -182,6 +182,12 @@ describe('AuthResolver', () => {
         gql`
           mutation {
             logout
+            ... on LogoutResult {
+              isSuccessful
+            }
+            ... on ForbiddenError {
+              message
+            }
           }
         `,
         {},
@@ -193,6 +199,10 @@ describe('AuthResolver', () => {
       const { res, ctx } = await logout(LoginStatus.LOGGED_IN);
 
       expect(res.errors).toBeUndefined();
+      expect(res.data.logout).not.toBeNull();
+      expect(res.data.logout!.__typename).toBe('LogoutResult');
+      const logoutResult = res.data.logout as types.LogoutResult;
+      expect(logoutResult.isSuccessful).toBeTrue();
 
       const sessionUser = ctx.getSessionUser();
       expect(sessionUser.isLoggedIn).toBeFalse();
@@ -203,7 +213,11 @@ describe('AuthResolver', () => {
     it('returns errors when already logged out', async () => {
       const { res, ctx } = await logout(LoginStatus.LOGGED_OUT);
 
-      expect(res.errors).toBeDefined();
+      expect(res.errors).toBeUndefined();
+      expect(res.data.logout).not.toBeNull();
+      expect(res.data.logout!.__typename).toBe('ForbiddenError');
+      const forbiddenError = res.data.logout as types.ForbiddenError;
+      expect(forbiddenError.message).toBe('must be logged in');
 
       const sessionUser = ctx.getSessionUser();
       expect(sessionUser.isLoggedIn).toBeFalse();

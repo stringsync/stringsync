@@ -7,6 +7,7 @@ import { SendMail } from '../../jobs';
 import { AuthRequirement, AuthService, MailWriterService } from '../../services';
 import { Logger } from '../../util';
 import * as types from '../graphqlTypes';
+import { LogoutResult } from '../graphqlTypes';
 import { WithAuthRequirement } from '../middlewares';
 import { ResolverCtx } from '../types';
 import { UserObject } from '../User';
@@ -41,16 +42,17 @@ export class AuthResolver {
     }
 
     this.persistLogin(ctx, user);
-
     return types.User.of(user);
   }
 
-  @Mutation((returns) => Boolean, { nullable: true })
-  @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_IN))
-  async logout(@Ctx() ctx: ResolverCtx): Promise<boolean> {
-    const wasLoggedIn = ctx.getSessionUser().isLoggedIn;
+  @Mutation((returns) => types.LogoutOutput)
+  async logout(@Ctx() ctx: ResolverCtx): Promise<typeof types.LogoutOutput> {
+    const sessionUser = ctx.getSessionUser();
+    if (!sessionUser.isLoggedIn) {
+      return types.ForbiddenError.of({ message: 'must be logged in' });
+    }
     this.persistLogout(ctx);
-    return wasLoggedIn;
+    return LogoutResult.of(true);
   }
 
   @Mutation((returns) => UserObject, { nullable: true })

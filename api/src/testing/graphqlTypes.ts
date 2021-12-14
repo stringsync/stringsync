@@ -63,6 +63,13 @@ export type LoginInput = {
 
 export type LoginOutput = User | ForbiddenError;
 
+export type LogoutOutput = LogoutResult | ForbiddenError;
+
+export type LogoutResult = {
+  __typename?: 'LogoutResult';
+  isSuccessful: Scalars['Boolean'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   updateUser?: Maybe<UserObject>;
@@ -72,7 +79,7 @@ export type Mutation = {
   createTag: TagObject;
   deleteTag: Scalars['Boolean'];
   login: LoginOutput;
-  logout?: Maybe<Scalars['Boolean']>;
+  logout?: Maybe<LogoutOutput>;
   signup?: Maybe<UserObject>;
   confirmEmail: ConfirmEmailOutput;
   resendConfirmationEmail: ResendConfirmationEmailOutput;
@@ -206,7 +213,7 @@ export type Query = {
   notation?: Maybe<NotationObject>;
   suggestedNotations: Array<NotationObject>;
   tags: Array<TagObject>;
-  whoami?: Maybe<UserObject>;
+  whoami?: Maybe<User>;
   health: HealthOutput;
   version: Scalars['String'];
 };

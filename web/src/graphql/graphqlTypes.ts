@@ -24,7 +24,7 @@ export type Query = {
   notation?: Maybe<NotationObject>;
   suggestedNotations: Array<NotationObject>;
   tags: Array<TagObject>;
-  whoami?: Maybe<UserObject>;
+  whoami?: Maybe<User>;
   health: HealthOutput;
   version: Scalars['String'];
 };
@@ -148,6 +148,38 @@ export type NotationEdgeObject = {
   cursor: Scalars['String'];
 };
 
+export type User = {
+  __typename?: 'User';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  email: Scalars['String'];
+  username: Scalars['String'];
+  avatarUrl?: Maybe<Scalars['String']>;
+  role: UserRole;
+  confirmedAt?: Maybe<Scalars['DateTime']>;
+  resetPasswordTokenSentAt?: Maybe<Scalars['DateTime']>;
+  notations: Array<Notation>;
+};
+
+export type Notation = {
+  __typename?: 'Notation';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  songName: Scalars['String'];
+  artistName: Scalars['String'];
+  deadTimeMs: Scalars['Float'];
+  durationMs: Scalars['Float'];
+  private: Scalars['Boolean'];
+  transcriberId: Scalars['String'];
+  thumbnailUrl?: Maybe<Scalars['String']>;
+  videoUrl?: Maybe<Scalars['String']>;
+  musicXmlUrl?: Maybe<Scalars['String']>;
+  transcriber?: Maybe<User>;
+  tags: Array<TagObject>;
+};
+
 export type HealthOutput = {
   __typename?: 'HealthOutput';
   isDbHealthy: Scalars['Boolean'];
@@ -163,7 +195,7 @@ export type Mutation = {
   createTag: TagObject;
   deleteTag: Scalars['Boolean'];
   login: LoginOutput;
-  logout?: Maybe<Scalars['Boolean']>;
+  logout?: Maybe<LogoutOutput>;
   signup?: Maybe<UserObject>;
   confirmEmail: ConfirmEmailOutput;
   resendConfirmationEmail: ResendConfirmationEmailOutput;
@@ -266,38 +298,6 @@ export type CreateTagInput = {
 
 export type LoginOutput = User | ForbiddenError;
 
-export type User = {
-  __typename?: 'User';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  email: Scalars['String'];
-  username: Scalars['String'];
-  avatarUrl?: Maybe<Scalars['String']>;
-  role: UserRole;
-  confirmedAt?: Maybe<Scalars['DateTime']>;
-  resetPasswordTokenSentAt?: Maybe<Scalars['DateTime']>;
-  notations: Array<Notation>;
-};
-
-export type Notation = {
-  __typename?: 'Notation';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  songName: Scalars['String'];
-  artistName: Scalars['String'];
-  deadTimeMs: Scalars['Float'];
-  durationMs: Scalars['Float'];
-  private: Scalars['Boolean'];
-  transcriberId: Scalars['String'];
-  thumbnailUrl?: Maybe<Scalars['String']>;
-  videoUrl?: Maybe<Scalars['String']>;
-  musicXmlUrl?: Maybe<Scalars['String']>;
-  transcriber?: Maybe<User>;
-  tags: Array<TagObject>;
-};
-
 export type ForbiddenError = {
   __typename?: 'ForbiddenError';
   message: Scalars['String'];
@@ -306,6 +306,13 @@ export type ForbiddenError = {
 export type LoginInput = {
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
+};
+
+export type LogoutOutput = LogoutResult | ForbiddenError;
+
+export type LogoutResult = {
+  __typename?: 'LogoutResult';
+  isSuccessful: Scalars['Boolean'];
 };
 
 export type SignupInput = {

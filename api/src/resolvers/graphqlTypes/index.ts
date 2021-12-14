@@ -5,6 +5,8 @@ export * from './EmailConfirmation.type';
 export * from './ForbiddenError.type';
 export * from './LoginInput.type';
 export * from './LoginOutput.type';
+export * from './LogoutOutput.type';
+export * from './LogoutResult.type';
 export * from './Notation.type';
 export * from './NotFoundError.type';
 export * from './ResendConfirmationEmailOutput.type';
