@@ -1,4 +1,5 @@
-import { $gql, t, UpdateUserInput, UserRole, VariablesOf } from '../../graphql';
+import { UNKNOWN_ERROR_MSG } from '../../errors';
+import { $gql, t, UpdateUserInput, UpdateUserOutput, UserRole, VariablesOf } from '../../graphql';
 import { useGql } from '../../hooks/useGql';
 import { UserPreview } from './types';
 
@@ -9,14 +10,33 @@ type ErrorsCallback = (errors: string[]) => void;
 
 const UPDATE_USER_GQL = $gql
   .mutation('updateUser')
-  .setQuery<UserPreview>({
-    id: t.string,
-    createdAt: t.string,
-    email: t.string,
-    role: t.optional.oneOf(UserRole)!,
-    username: t.string,
-    avatarUrl: t.optional.string,
-    confirmedAt: t.optional.string,
+  .setQuery({
+    ...t.union<UpdateUserOutput>()({
+      User: {
+        id: t.string,
+        createdAt: t.string,
+        email: t.string,
+        role: t.optional.oneOf(UserRole)!,
+        username: t.string,
+        avatarUrl: t.optional.string,
+        confirmedAt: t.optional.string,
+      },
+      ForbiddenError: {
+        message: t.string,
+      },
+      NotFoundError: {
+        message: t.string,
+      },
+      BadRequestError: {
+        message: t.string,
+      },
+      ValidationError: {
+        details: [t.string],
+      },
+      UnknownError: {
+        message: t.string,
+      },
+    }),
   })
   .setVariables<{ input: Pick<UpdateUserInput, 'id' | 'role'> }>({
     input: { id: t.string, role: t.optional.oneOf(UserRole)! },
@@ -26,13 +46,17 @@ const UPDATE_USER_GQL = $gql
 export const useUserUpdater = (onSuccess: SuccessCallback, onErrors: ErrorsCallback): [Loading, UserUpdater] => {
   const { execute, loading } = useGql(UPDATE_USER_GQL, {
     onData: (data) => {
-      if (!data.updateUser) {
-        onErrors(['something went wrong']);
-        return;
+      switch (data.updateUser?.__typename) {
+        case 'User':
+          onSuccess(data.updateUser);
+          break;
+        case 'ValidationError':
+          onErrors(data.updateUser.details);
+          break;
+        default:
+          onErrors([data.updateUser?.message || UNKNOWN_ERROR_MSG]);
       }
-      onSuccess(data.updateUser);
     },
-    onErrors,
   });
   return [loading, execute];
 };
