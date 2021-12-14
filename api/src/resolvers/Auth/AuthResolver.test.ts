@@ -6,11 +6,14 @@ import { SessionUser } from '../../server';
 import { AuthService, UserService } from '../../services';
 import { ConfirmEmailInput, createRandUser, gql, LoginInput, Mutation, Query, resolve } from '../../testing';
 import { rand } from '../../util';
-import { BadRequestError, ForbiddenError } from '../graphqlTypes';
-import { EmailConfirmation } from './ConfirmEmailOutput';
-import { ResendConfirmationEmailResult } from './ResendConfirmationEmailOutput';
-import { ResetPasswordInput } from './ResetPasswordInput';
-import { SendResetPasswordEmailInput } from './SendResetPasswordEmailInput';
+import {
+  BadRequestError,
+  EmailConfirmation,
+  ForbiddenError,
+  ResendConfirmationEmailResult,
+  ResetPasswordInput,
+  SendResetPasswordEmailInput,
+} from '../graphqlTypes';
 
 enum LoginStatus {
   LOGGED_OUT = 'LOGGED_OUT',

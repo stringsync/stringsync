@@ -1,5 +1,4 @@
-import { createUnionType, Field, ObjectType } from 'type-graphql';
-import { ForbiddenError } from '../graphqlTypes';
+import { Field, ObjectType } from 'type-graphql';
 
 @ObjectType()
 export class ResendConfirmationEmailResult {
@@ -13,8 +12,3 @@ export class ResendConfirmationEmailResult {
   @Field()
   processed!: boolean;
 }
-
-export const ResendConfirmationEmailOutput = createUnionType({
-  name: 'ResendConfirmationEmailOutput',
-  types: () => [ResendConfirmationEmailResult, ForbiddenError] as const,
-});

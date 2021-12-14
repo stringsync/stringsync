@@ -6,17 +6,24 @@ import { TYPES } from '../../inversify.constants';
 import { SendMail } from '../../jobs';
 import { AuthRequirement, AuthService, MailWriterService } from '../../services';
 import { Logger } from '../../util';
-import { BadRequestError, ForbiddenError, NotFoundError, UnknownError } from '../graphqlTypes';
+import {
+  BadRequestError,
+  ConfirmEmailInput,
+  ConfirmEmailOutput,
+  EmailConfirmation,
+  ForbiddenError,
+  LoginInput,
+  NotFoundError,
+  ResendConfirmationEmailOutput,
+  ResendConfirmationEmailResult,
+  ResetPasswordInput,
+  SendResetPasswordEmailInput,
+  SignupInput,
+  UnknownError,
+} from '../graphqlTypes';
 import { WithAuthRequirement } from '../middlewares';
 import { ResolverCtx } from '../types';
 import { UserObject } from '../User';
-import { ConfirmEmailInput } from './ConfirmEmailInput';
-import { ConfirmEmailOutput, EmailConfirmation } from './ConfirmEmailOutput';
-import { LoginInput } from './LoginInput';
-import { ResendConfirmationEmailOutput, ResendConfirmationEmailResult } from './ResendConfirmationEmailOutput';
-import { ResetPasswordInput } from './ResetPasswordInput';
-import { SendResetPasswordEmailInput } from './SendResetPasswordEmailInput';
-import { SignupInput } from './SignupInput';
 
 @Resolver()
 @injectable()
