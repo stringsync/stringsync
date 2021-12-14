@@ -1,4 +1,4 @@
-import { $gql, LoginInput, SignupInput, t } from '../../graphql';
+import { $gql, LoginInput, LogoutOutput, SignupInput, t } from '../../graphql';
 
 export const whoami = $gql
   .query('whoami')
@@ -30,7 +30,16 @@ export const login = $gql
 
 export const logout = $gql
   .mutation('logout')
-  .setQuery(t.boolean)
+  .setQuery({
+    ...t.union<LogoutOutput>()({
+      Processed: {
+        at: t.string,
+      },
+      ForbiddenError: {
+        message: t.string,
+      },
+    }),
+  })
   .build();
 
 export const signup = $gql

@@ -98,7 +98,7 @@ export type Notation = {
   thumbnailUrl?: Maybe<Scalars['String']>;
   videoUrl?: Maybe<Scalars['String']>;
   musicXmlUrl?: Maybe<Scalars['String']>;
-  transcriber?: Maybe<User>;
+  transcriber: User;
   tags: Array<Tag>;
 };
 

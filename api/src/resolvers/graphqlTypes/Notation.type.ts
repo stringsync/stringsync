@@ -1,5 +1,6 @@
-import { Ctx, Field, ID, ObjectType, Root } from 'type-graphql';
+import { Ctx, Field, ID, ObjectType } from 'type-graphql';
 import * as domain from '../../domain';
+import { InternalError } from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { TagService, UserService } from '../../services';
 import { ResolverCtx } from '../types';
@@ -63,10 +64,19 @@ export class Notation implements PublicNotationFields {
   @Field((type) => String, { nullable: true })
   musicXmlUrl!: string | null;
 
-  @Field((type) => User, { nullable: true })
-  async transcriber(@Root() notation: domain.Notation, @Ctx() ctx: ResolverCtx): Promise<domain.User | null> {
+  @Field((type) => User)
+  async transcriber(@Ctx() ctx: ResolverCtx): Promise<domain.User> {
     const userService = ctx.getContainer().get<UserService>(TYPES.UserService);
-    return await userService.find(notation.transcriberId);
+    const user = await userService.find(this.transcriberId);
+    if (!user) {
+      // Technically this should never happen since there's a cascade on delete for
+      // notations.transcriber_id. We do this to keep the compiler happy and to be
+      // a little resilient against database schema changes.
+      throw new InternalError(
+        `unexpected missing foreign key relationship on notations table: transcriberId=${this.transcriberId}`
+      );
+    }
+    return user;
   }
 
   @Field((type) => [Tag])

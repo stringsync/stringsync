@@ -40,9 +40,7 @@ export const ConfirmEmail: React.FC = enhance(() => {
           message.success(`${email} confirmed`);
           history.push('/library');
           break;
-        case 'ValidationError':
-          setErrors(data.confirmEmail.details);
-          break;
+        case 'BadRequestError':
         case 'ForbiddenError':
         case 'NotFoundError':
         case 'UnknownError':

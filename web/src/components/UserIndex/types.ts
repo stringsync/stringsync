@@ -1,6 +1,3 @@
-import { UserObject } from '../../graphql';
+import { User } from '../../graphql';
 
-export type UserPreview = Pick<
-  UserObject,
-  'id' | 'username' | 'email' | 'role' | 'avatarUrl' | 'confirmedAt' | 'createdAt'
->;
+export type UserPreview = Pick<User, 'id' | 'username' | 'email' | 'role' | 'avatarUrl' | 'confirmedAt' | 'createdAt'>;

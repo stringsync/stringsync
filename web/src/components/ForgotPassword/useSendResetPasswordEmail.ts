@@ -3,7 +3,7 @@ import { useGql, UseGqlOptions } from '../../hooks/useGql';
 
 const SEND_RESET_PASSWORD_EMAIL_GQL = $gql
   .mutation('sendResetPasswordEmail')
-  .setQuery(t.boolean)
+  .setQuery({ at: t.string })
   .setVariables<{ input: SendResetPasswordEmailInput }>({
     input: { email: t.string },
   })
