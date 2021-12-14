@@ -1,20 +1,34 @@
 import { Ctx, Field, ID, ObjectType, registerEnumType, Root } from 'type-graphql';
-import { Notation as DomainNotation, User as DomainUser, UserRole } from '../../domain';
+import * as domain from '../../domain';
 import { TYPES } from '../../inversify.constants';
 import { NotationService } from '../../services';
 import { IsDataOwner, RestrictedField } from '../middlewares';
 import { ResolverCtx } from '../types';
-import { NotationObject } from './../Notation/NotationObject';
+import { Notation } from './Notation.type';
 
-registerEnumType(UserRole, { name: 'UserRole' });
+registerEnumType(domain.UserRole, { name: 'UserRole' });
 
 type PublicUserFields = Omit<
-  DomainUser,
+  domain.User,
   'encryptedPassword' | 'confirmationToken' | 'confirmedAt' | 'resetPasswordToken' | 'cursor'
 >;
 
 @ObjectType()
 export class User implements PublicUserFields {
+  static of(attrs: domain.User) {
+    const user = new User();
+    user.id = attrs.id;
+    user.createdAt = attrs.createdAt;
+    user.updatedAt = attrs.updatedAt;
+    user.email = attrs.email;
+    user.username = attrs.username;
+    user.avatarUrl = attrs.avatarUrl;
+    user.role = attrs.role;
+    user.confirmedAt = attrs.confirmedAt;
+    user.resetPasswordTokenSentAt = attrs.resetPasswordTokenSentAt;
+    return user;
+  }
+
   @Field((type) => ID)
   id!: string;
 
@@ -34,8 +48,8 @@ export class User implements PublicUserFields {
   @Field((type) => String, { nullable: true })
   avatarUrl!: string | null;
 
-  @Field((type) => UserRole)
-  role!: UserRole;
+  @Field((type) => domain.UserRole)
+  role!: domain.UserRole;
 
   @Field((type) => Date, { nullable: true })
   @RestrictedField(IsDataOwner)
@@ -45,9 +59,9 @@ export class User implements PublicUserFields {
   @RestrictedField(IsDataOwner)
   resetPasswordTokenSentAt!: Date | null;
 
-  @Field((type) => NotationObject, { nullable: true })
-  async notations(@Root() user: User, @Ctx() ctx: ResolverCtx): Promise<DomainNotation[]> {
+  @Field((type) => [Notation])
+  async notations(@Ctx() ctx: ResolverCtx): Promise<domain.Notation[]> {
     const notationService = ctx.getContainer().get<NotationService>(TYPES.NotationService);
-    return await notationService.findAllByTranscriberId(user.id);
+    return await notationService.findAllByTranscriberId(this.id);
   }
 }

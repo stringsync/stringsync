@@ -27,17 +27,21 @@ export class AuthResolver {
     return await this.authService.whoami(id);
   }
 
-  @Mutation((returns) => UserObject, { nullable: true })
-  @UseMiddleware(WithAuthRequirement(AuthRequirement.LOGGED_OUT))
-  async login(@Arg('input') input: types.LoginInput, @Ctx() ctx: ResolverCtx): Promise<User> {
+  @Mutation((returns) => types.LoginOutput)
+  async login(@Arg('input') input: types.LoginInput, @Ctx() ctx: ResolverCtx): Promise<typeof types.LoginOutput> {
+    const sessionUser = ctx.getSessionUser();
+    if (sessionUser.isLoggedIn) {
+      return types.ForbiddenError.of({ message: 'must be logged out' });
+    }
+
     const user = await this.authService.getAuthenticatedUser(input.usernameOrEmail, input.password);
     if (!user) {
-      throw new errors.ForbiddenError('wrong username, email, or password');
+      return types.ForbiddenError.of({ message: 'wrong username, email, or password' });
     }
 
     this.persistLogin(ctx, user);
 
-    return user;
+    return types.User.of(user);
   }
 
   @Mutation((returns) => Boolean, { nullable: true })

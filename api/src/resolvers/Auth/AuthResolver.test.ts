@@ -84,7 +84,13 @@ describe('AuthResolver', () => {
         gql`
           mutation login($input: LoginInput!) {
             login(input: $input) {
-              id
+              __typename
+              ... on User {
+                id
+              }
+              ... on ForbiddenError {
+                message
+              }
             }
           }
         `,
@@ -98,7 +104,9 @@ describe('AuthResolver', () => {
 
       expect(res.errors).toBeUndefined();
       expect(res.data.login).not.toBeNull();
-      expect(res.data.login!.id).toBe(user.id);
+      expect(res.data.login!.__typename).toBe('User');
+      const loggedInUser = (res.data.login! as unknown) as types.User;
+      expect(loggedInUser.id).toBe(user.id);
 
       const sessionUser = ctx.getSessionUser();
       expect(sessionUser.isLoggedIn).toBeTrue();
@@ -111,7 +119,9 @@ describe('AuthResolver', () => {
 
       expect(res.errors).toBeUndefined();
       expect(res.data.login).not.toBeNull();
-      expect(res.data.login!.id).toBe(user.id);
+      expect(res.data.login!.__typename).toBe('User');
+      const loggedInUser = (res.data.login! as unknown) as types.User;
+      expect(loggedInUser.id).toBe(user.id);
 
       const sessionUser = ctx.getSessionUser();
       expect(sessionUser.isLoggedIn).toBeTrue();
@@ -126,7 +136,11 @@ describe('AuthResolver', () => {
         LoginStatus.LOGGED_OUT
       );
 
-      expect(res.errors).toBeDefined();
+      expect(res.errors).toBeUndefined();
+      expect(res.data.login).not.toBeNull();
+      expect(res.data.login!.__typename).toBe('ForbiddenError');
+      const forbiddenError = res.data.login! as types.ForbiddenError;
+      expect(forbiddenError.message).toBe('wrong username, email, or password');
 
       const sessionUser = ctx.getSessionUser();
       expect(sessionUser.isLoggedIn).toBe(false);
@@ -137,7 +151,11 @@ describe('AuthResolver', () => {
     it('returns errors when already logged in', async () => {
       const { res, ctx } = await login({ usernameOrEmail: user.username, password }, LoginStatus.LOGGED_IN);
 
-      expect(res.errors).toBeDefined();
+      expect(res.errors).toBeUndefined();
+      expect(res.data.login).not.toBeNull();
+      expect(res.data.login!.__typename).toBe('ForbiddenError');
+      const forbiddenError = res.data.login! as types.ForbiddenError;
+      expect(forbiddenError.message).toBe('must be logged out');
 
       const sessionUser = ctx.getSessionUser();
       expect(sessionUser.isLoggedIn).toBeTrue();
@@ -265,8 +283,8 @@ describe('AuthResolver', () => {
       expect(res.errors).toBeUndefined();
       expect(res.data.confirmEmail).not.toBeNull();
       expect(res.data.confirmEmail!.__typename).toBe('ForbiddenError');
-      const badRequestError = res.data.confirmEmail! as types.ForbiddenError;
-      expect(badRequestError.message).toBe('must be logged in');
+      const forbiddenError = res.data.confirmEmail! as types.ForbiddenError;
+      expect(forbiddenError.message).toBe('must be logged in');
     });
   });
 

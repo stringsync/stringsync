@@ -61,21 +61,28 @@ export type LoginInput = {
   password: Scalars['String'];
 };
 
+export type LoginOutput = User | ForbiddenError;
+
 export type Mutation = {
   __typename?: 'Mutation';
+  updateUser?: Maybe<UserObject>;
   createNotation?: Maybe<NotationObject>;
   updateNotation?: Maybe<NotationObject>;
   updateTag: TagObject;
   createTag: TagObject;
   deleteTag: Scalars['Boolean'];
-  updateUser?: Maybe<UserObject>;
-  login?: Maybe<UserObject>;
+  login: LoginOutput;
   logout?: Maybe<Scalars['Boolean']>;
   signup?: Maybe<UserObject>;
   confirmEmail: ConfirmEmailOutput;
   resendConfirmationEmail: ResendConfirmationEmailOutput;
   sendResetPasswordEmail?: Maybe<Scalars['Boolean']>;
   resetPassword?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type MutationUpdateUserArgs = {
+  input: UpdateUserInput;
 };
 
 
@@ -101,11 +108,6 @@ export type MutationCreateTagArgs = {
 
 export type MutationDeleteTagArgs = {
   id: Scalars['String'];
-};
-
-
-export type MutationUpdateUserArgs = {
-  input: UpdateUserInput;
 };
 
 
@@ -136,6 +138,24 @@ export type MutationResetPasswordArgs = {
 export type NotFoundError = {
   __typename?: 'NotFoundError';
   message: Scalars['String'];
+};
+
+export type Notation = {
+  __typename?: 'Notation';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  songName: Scalars['String'];
+  artistName: Scalars['String'];
+  deadTimeMs: Scalars['Float'];
+  durationMs: Scalars['Float'];
+  private: Scalars['Boolean'];
+  transcriberId: Scalars['String'];
+  thumbnailUrl?: Maybe<Scalars['String']>;
+  videoUrl?: Maybe<Scalars['String']>;
+  musicXmlUrl?: Maybe<Scalars['String']>;
+  transcriber?: Maybe<User>;
+  tags: Array<TagObject>;
 };
 
 export type NotationConnectionObject = {
@@ -179,16 +199,29 @@ export type PageInfoObject = {
 
 export type Query = {
   __typename?: 'Query';
+  user?: Maybe<UserObject>;
+  users: UserConnectionObject;
+  userCount: Scalars['Float'];
   notations: NotationConnectionObject;
   notation?: Maybe<NotationObject>;
   suggestedNotations: Array<NotationObject>;
   tags: Array<TagObject>;
-  user?: Maybe<UserObject>;
-  users: UserConnectionObject;
-  userCount: Scalars['Float'];
   whoami?: Maybe<UserObject>;
   health: HealthOutput;
   version: Scalars['String'];
+};
+
+
+export type QueryUserArgs = {
+  id: Scalars['String'];
+};
+
+
+export type QueryUsersArgs = {
+  before?: Maybe<Scalars['String']>;
+  after?: Maybe<Scalars['String']>;
+  first?: Maybe<Scalars['Float']>;
+  last?: Maybe<Scalars['Float']>;
 };
 
 
@@ -210,19 +243,6 @@ export type QueryNotationArgs = {
 export type QuerySuggestedNotationsArgs = {
   id?: Maybe<Scalars['String']>;
   limit: Scalars['Int'];
-};
-
-
-export type QueryUserArgs = {
-  id: Scalars['String'];
-};
-
-
-export type QueryUsersArgs = {
-  before?: Maybe<Scalars['String']>;
-  after?: Maybe<Scalars['String']>;
-  first?: Maybe<Scalars['Float']>;
-  last?: Maybe<Scalars['Float']>;
 };
 
 export type ResendConfirmationEmailOutput = ResendConfirmationEmailResult | ForbiddenError;
@@ -290,6 +310,20 @@ export type UpdateUserInput = {
   role?: Maybe<UserRole>;
 };
 
+
+export type User = {
+  __typename?: 'User';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  email: Scalars['String'];
+  username: Scalars['String'];
+  avatarUrl?: Maybe<Scalars['String']>;
+  role: UserRole;
+  confirmedAt?: Maybe<Scalars['DateTime']>;
+  resetPasswordTokenSentAt?: Maybe<Scalars['DateTime']>;
+  notations: Array<Notation>;
+};
 
 export type UserConnectionObject = {
   __typename?: 'UserConnectionObject';
