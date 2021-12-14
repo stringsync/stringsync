@@ -11,3 +11,4 @@ export * from './ResetPasswordInput.type';
 export * from './SendResetPasswordEmailInput.type';
 export * from './SignupInput.type';
 export * from './UnknownError.type';
+export * from './User.type';
