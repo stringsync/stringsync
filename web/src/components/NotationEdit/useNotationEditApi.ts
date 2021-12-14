@@ -1,5 +1,14 @@
 import { useMemo, useState } from 'react';
-import { $gql, DataOf, QueryNotationArgs, t, TagCategory, UpdateNotationInput } from '../../graphql';
+import { UNKNOWN_ERROR_MSG } from '../../errors';
+import {
+  $gql,
+  DataOf,
+  QueryNotationArgs,
+  t,
+  TagCategory,
+  UpdateNotationInput,
+  UpdateNotationOutput,
+} from '../../graphql';
 import { useGql, UseGqlOptions } from '../../hooks/useGql';
 import { Nullable } from '../../util/types';
 
@@ -31,20 +40,39 @@ const NOTATION_GQL = $gql
 const UPDATE_NOTATION_GQL = $gql
   .mutation('updateNotation')
   .setQuery({
-    id: t.string,
-    createdAt: t.string,
-    updatedAt: t.string,
-    songName: t.string,
-    artistName: t.string,
-    deadTimeMs: t.number,
-    durationMs: t.number,
-    private: t.boolean,
-    transcriberId: t.string,
-    thumbnailUrl: t.optional.string,
-    videoUrl: t.optional.string,
-    musicXmlUrl: t.optional.string,
-    transcriber: { id: t.string, username: t.string },
-    tags: [{ id: t.string, category: t.optional.oneOf(TagCategory)!, name: t.string }],
+    ...t.union<UpdateNotationOutput>()({
+      Notation: {
+        id: t.string,
+        createdAt: t.string,
+        updatedAt: t.string,
+        songName: t.string,
+        artistName: t.string,
+        deadTimeMs: t.number,
+        durationMs: t.number,
+        private: t.boolean,
+        transcriberId: t.string,
+        thumbnailUrl: t.optional.string,
+        videoUrl: t.optional.string,
+        musicXmlUrl: t.optional.string,
+        transcriber: { id: t.string, username: t.string },
+        tags: [{ id: t.string, category: t.optional.oneOf(TagCategory)!, name: t.string }],
+      },
+      ForbiddenError: {
+        message: t.string,
+      },
+      NotFoundError: {
+        message: t.string,
+      },
+      BadRequestError: {
+        message: t.string,
+      },
+      ValidationError: {
+        details: [t.string],
+      },
+      UnknownError: {
+        message: t.string,
+      },
+    }),
   })
   .setVariables<{ input: UpdateNotationInput }>({
     input: {
@@ -80,10 +108,16 @@ export const useNotationEditApi = () => {
   const updateOpts = useMemo<UpdateNotationOpts>(
     () => ({
       onData: (data) => {
-        setNotation(data.updateNotation);
-      },
-      onErrors: (errors) => {
-        setErrors(errors);
+        switch (data.updateNotation?.__typename) {
+          case 'Notation':
+            setNotation(data.updateNotation);
+            break;
+          case 'ValidationError':
+            setErrors(data.updateNotation.details);
+            break;
+          default:
+            setErrors([data.updateNotation?.message || UNKNOWN_ERROR_MSG]);
+        }
       },
     }),
     []

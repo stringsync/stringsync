@@ -1,9 +1,12 @@
 import { FormOutlined, PictureOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Modal, Select, Steps, Upload as AntdUpload } from 'antd';
 import { RcFile } from 'antd/lib/upload';
+import { UploadFile } from 'antd/lib/upload/interface';
 import React, { useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
+import * as uuid from 'uuid';
+import { UNKNOWN_ERROR_MSG } from '../../errors';
 import { Layout, withLayout } from '../../hocs/withLayout';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useTags } from '../../hooks/useTags';
@@ -32,9 +35,7 @@ const enhance = compose(withLayout(Layout.DEFAULT));
 type Props = {};
 
 type Uploadable = {
-  file: {
-    originFileObj: File;
-  };
+  fileList: UploadFile[];
 };
 
 type FormValues = {
@@ -65,18 +66,27 @@ const Upload: React.FC<Props> = enhance(() => {
 
   const { execute: createNotation, loading } = useCreateNotation({
     onData: (data) => {
-      const notationId = data.createNotation?.id;
-      if (notationId) {
-        shouldBlockNavigation.current = false;
-        history.push(`/n/${notationId}/edit`);
-      } else {
-        // TOOD(jared) handle errors
-        console.error('something went wrong');
+      const showErrors = (errors: string[]) => {
+        const modalId = uuid.v4();
+        Modal.error({
+          title: 'error',
+          content: errors.map((error, ndx) => <div key={`modal-${modalId}-${ndx}`}>{error}</div>),
+          maskClosable: true,
+        });
+      };
+
+      switch (data.createNotation?.__typename) {
+        case 'Notation':
+          shouldBlockNavigation.current = false;
+          const notationId = data.createNotation.id;
+          history.push(`/n/${notationId}/edit`);
+          break;
+        case 'ValidationError':
+          showErrors(data.createNotation.details);
+          break;
+        default:
+          showErrors([data.createNotation?.message || UNKNOWN_ERROR_MSG]);
       }
-    },
-    onErrors: (errors) => {
-      // TOOD(jared) handle errors
-      console.error(errors);
     },
   });
 
@@ -103,11 +113,11 @@ const Upload: React.FC<Props> = enhance(() => {
     setSelectedTagNames(selectedTagNames.filter((tagName) => tagName !== value));
   };
 
-  const onFinish = async () => {
+  const onFinish = () => {
     const { video, thumbnail, songName, artistName } = form.getFieldsValue();
     const tagIds = selectedTagNames.map((tagName) => tagIdByTagName[tagName]);
-    const thumbnailFile = thumbnail && thumbnail.file.originFileObj;
-    const videoFile = video && video.file.originFileObj;
+    const thumbnailFile = thumbnail && thumbnail.fileList[0].originFileObj;
+    const videoFile = video && video.fileList[0].originFileObj;
 
     if (!thumbnailFile) {
       // the validator should prevent this from ever running

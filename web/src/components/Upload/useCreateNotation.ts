@@ -1,9 +1,24 @@
-import { $gql, CreateNotationInput, t } from '../../graphql';
+import { $gql, CreateNotationInput, CreateNotationOutput, t } from '../../graphql';
 import { useGql, UseGqlOptions } from '../../hooks/useGql';
 
 const CREATE_NOTATION_GQL = $gql
   .mutation('createNotation')
-  .setQuery({ id: t.string })
+  .setQuery({
+    ...t.union<CreateNotationOutput>()({
+      Notation: {
+        id: t.string,
+      },
+      ForbiddenError: {
+        message: t.string,
+      },
+      ValidationError: {
+        details: [t.string],
+      },
+      UnknownError: {
+        message: t.string,
+      },
+    }),
+  })
   .setVariables<{ input: CreateNotationInput }>({
     input: {
       artistName: t.string,
