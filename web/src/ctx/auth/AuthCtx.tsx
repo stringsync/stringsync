@@ -1,6 +1,7 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { noop } from 'lodash';
 import React, { useCallback, useMemo, useReducer } from 'react';
+import { UNKNOWN_ERROR_MSG } from '../../errors';
 import { LoginInput, SignupInput } from '../../graphql';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useGql } from '../../hooks/useGql';
@@ -77,9 +78,6 @@ export const AuthProvider: React.FC = (props) => {
     onData: (data) => {
       dispatch(AUTH_ACTIONS.setUser({ user: helpers.toAuthUser(data.whoami) }));
     },
-    onErrors: (errors) => {
-      dispatch(AUTH_ACTIONS.setErrors({ errors }));
-    },
   });
 
   const { execute: login } = useGql(queries.login, {
@@ -87,15 +85,13 @@ export const AuthProvider: React.FC = (props) => {
       dispatch(AUTH_ACTIONS.pending());
     },
     onData: (data) => {
-      if (data.login) {
-        dispatch(AUTH_ACTIONS.setUser({ user: helpers.toAuthUser(data.login) }));
-      } else {
-        debugger;
-        dispatch(AUTH_ACTIONS.setErrors({ errors: ['could not login'] }));
+      switch (data.login?.__typename) {
+        case 'User':
+          dispatch(AUTH_ACTIONS.setUser({ user: data.login }));
+          break;
+        default:
+          dispatch(AUTH_ACTIONS.setErrors({ errors: [data.login?.message || UNKNOWN_ERROR_MSG] }));
       }
-    },
-    onErrors: (errors) => {
-      dispatch(AUTH_ACTIONS.setErrors({ errors }));
     },
   });
 
@@ -103,11 +99,14 @@ export const AuthProvider: React.FC = (props) => {
     beforeLoading: () => {
       dispatch(AUTH_ACTIONS.pending());
     },
-    onData: () => {
-      dispatch(AUTH_ACTIONS.setUser({ user: getNullAuthUser() }));
-    },
-    onErrors: (errors) => {
-      dispatch(AUTH_ACTIONS.setErrors({ errors }));
+    onData: (data) => {
+      switch (data.logout?.__typename) {
+        case 'Processed':
+          dispatch(AUTH_ACTIONS.setUser({ user: getNullAuthUser() }));
+          break;
+        default:
+          dispatch(AUTH_ACTIONS.setErrors({ errors: [data.logout?.message || UNKNOWN_ERROR_MSG] }));
+      }
     },
   });
 
@@ -116,14 +115,16 @@ export const AuthProvider: React.FC = (props) => {
       dispatch(AUTH_ACTIONS.pending());
     },
     onData: (data) => {
-      if (data.signup) {
-        dispatch(AUTH_ACTIONS.setUser({ user: helpers.toAuthUser(data.signup) }));
-      } else {
-        dispatch(AUTH_ACTIONS.setErrors({ errors: ['could not signup'] }));
+      switch (data.signup?.__typename) {
+        case 'User':
+          dispatch(AUTH_ACTIONS.setUser({ user: data.signup }));
+          break;
+        case 'ValidationError':
+          dispatch(AUTH_ACTIONS.setErrors({ errors: data.signup.details }));
+          break;
+        default:
+          dispatch(AUTH_ACTIONS.setErrors({ errors: [data.signup?.message || UNKNOWN_ERROR_MSG] }));
       }
-    },
-    onErrors: (errors) => {
-      dispatch(AUTH_ACTIONS.setErrors({ errors }));
     },
   });
 

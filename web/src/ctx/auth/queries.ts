@@ -1,4 +1,4 @@
-import { $gql, LoginInput, LogoutOutput, SignupInput, t } from '../../graphql';
+import { $gql, LoginInput, LoginOutput, LogoutOutput, SignupInput, SignupOutput, t } from '../../graphql';
 
 export const whoami = $gql
   .query('whoami')
@@ -14,11 +14,18 @@ export const whoami = $gql
 export const login = $gql
   .mutation('login')
   .setQuery({
-    id: t.string,
-    email: t.string,
-    username: t.string,
-    role: t.optional.oneOf(UserRoles)!,
-    confirmedAt: t.string,
+    ...t.union<LoginOutput>()({
+      User: {
+        id: t.string,
+        email: t.string,
+        username: t.string,
+        role: t.optional.oneOf(UserRoles)!,
+        confirmedAt: t.string,
+      },
+      ForbiddenError: {
+        message: t.string,
+      },
+    }),
   })
   .setVariables<{ input: LoginInput }>({
     input: {
@@ -45,11 +52,24 @@ export const logout = $gql
 export const signup = $gql
   .mutation('signup')
   .setQuery({
-    id: t.string,
-    email: t.string,
-    username: t.string,
-    role: t.optional.oneOf(UserRoles)!,
-    confirmedAt: t.string,
+    ...t.union<SignupOutput>()({
+      User: {
+        id: t.string,
+        email: t.string,
+        username: t.string,
+        role: t.optional.oneOf(UserRoles)!,
+        confirmedAt: t.string,
+      },
+      ForbiddenError: {
+        message: t.string,
+      },
+      ValidationError: {
+        details: [t.string],
+      },
+      UnknownError: {
+        message: t.string,
+      },
+    }),
   })
   .setVariables<{ input: SignupInput }>({
     input: {
