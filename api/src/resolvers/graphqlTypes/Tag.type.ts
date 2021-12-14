@@ -11,6 +11,14 @@ registerEnumType(domain.TagCategory, {
 
 @ObjectType()
 export class Tag implements domain.Tag {
+  static of(attrs: domain.Tag) {
+    const tag = new Tag();
+    tag.id = attrs.id;
+    tag.category = attrs.category;
+    tag.name = attrs.name;
+    return tag;
+  }
+
   @Field((type) => ID)
   id!: string;
 

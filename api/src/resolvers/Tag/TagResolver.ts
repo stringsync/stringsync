@@ -1,12 +1,12 @@
 import { inject, injectable } from 'inversify';
 import { pick } from 'lodash';
-import { Arg, Mutation, Query, Resolver } from 'type-graphql';
-import { Tag } from '../../domain';
+import { Arg, Ctx, Mutation, Query, Resolver } from 'type-graphql';
+import { ltAdmin } from '../../domain';
+import * as errors from '../../errors';
 import { TYPES } from '../../inversify.constants';
 import { TagService } from '../../services';
-import { CreateTagInput } from './CreateTagInput';
-import { TagObject } from './TagObject';
-import { UpdateTagInput } from './UpdateTagInput';
+import * as types from '../graphqlTypes';
+import { ResolverCtx } from '../types';
 
 @Resolver()
 @injectable()
@@ -17,28 +17,76 @@ export class TagResolver {
     this.tagService = tagService;
   }
 
-  @Query((returns) => [TagObject])
-  async tags(): Promise<Tag[]> {
-    return await this.tagService.findAll();
+  @Query((returns) => [types.Tag])
+  async tags(): Promise<types.Tag[]> {
+    const tags = await this.tagService.findAll();
+    return tags.map(types.Tag.of);
   }
 
-  @Mutation((returns) => TagObject)
-  async updateTag(@Arg('input') input: UpdateTagInput): Promise<Tag> {
+  @Mutation((returns) => types.UpdateTagOutput)
+  async updateTag(
+    @Arg('input') input: types.UpdateTagInput,
+    @Ctx() ctx: ResolverCtx
+  ): Promise<typeof types.UpdateTagOutput> {
+    const sessionUser = ctx.getSessionUser();
+    if (!sessionUser.isLoggedIn || ltAdmin(sessionUser.role)) {
+      return types.ForbiddenError.of({ message: 'must be logged in as admin' });
+    }
+
     const attrs = pick(input, ['name', 'category']);
-    return await this.tagService.update(input.id, attrs);
+    try {
+      const tag = await this.tagService.update(input.id, attrs);
+      return types.Tag.of(tag);
+    } catch (e) {
+      if (e instanceof errors.BadRequestError) {
+        return types.BadRequestError.of(e);
+      } else if (e instanceof errors.ValidationError) {
+        return types.ValidationError.of(e);
+      } else if (e instanceof errors.NotFoundError) {
+        return types.NotFoundError.of(e);
+      } else {
+        return types.UnknownError.of(e);
+      }
+    }
   }
 
-  @Mutation((returns) => TagObject)
-  async createTag(@Arg('input') input: CreateTagInput): Promise<Tag> {
-    return await this.tagService.create({
-      name: input.name,
-      category: input.category,
-    });
+  @Mutation((returns) => types.CreateTagOutput)
+  async createTag(
+    @Arg('input') input: types.CreateTagInput,
+    @Ctx() ctx: ResolverCtx
+  ): Promise<typeof types.CreateTagOutput> {
+    const sessionUser = ctx.getSessionUser();
+    if (!sessionUser.isLoggedIn || ltAdmin(sessionUser.role)) {
+      return types.ForbiddenError.of({ message: 'must be logged in as admin' });
+    }
+
+    try {
+      const tag = await this.tagService.create({
+        name: input.name,
+        category: input.category,
+      });
+      return types.Tag.of(tag);
+    } catch (e) {
+      if (e instanceof errors.BadRequestError) {
+        return types.BadRequestError.of(e);
+      } else {
+        return types.UnknownError.of(e);
+      }
+    }
   }
 
-  @Mutation((returns) => Boolean)
-  async deleteTag(@Arg('id') id: string): Promise<boolean> {
-    await this.tagService.delete(id);
-    return true;
+  @Mutation((returns) => types.DeleteTagOutput)
+  async deleteTag(@Arg('id') id: string, @Ctx() ctx: ResolverCtx): Promise<typeof types.DeleteTagOutput> {
+    const sessionUser = ctx.getSessionUser();
+    if (!sessionUser.isLoggedIn || ltAdmin(sessionUser.role)) {
+      return types.ForbiddenError.of({ message: 'must be logged in as admin' });
+    }
+
+    try {
+      await this.tagService.delete(id);
+      return types.Processed.now();
+    } catch (e) {
+      return types.UnknownError.of(e);
+    }
   }
 }
