@@ -337,7 +337,7 @@ export type UpdateTagInput = {
   category?: Maybe<TagCategory>;
 };
 
-export type CreateTagOutput = Tag | ForbiddenError | BadRequestError | UnknownError;
+export type CreateTagOutput = Tag | ForbiddenError | ValidationError | BadRequestError | UnknownError;
 
 export type CreateTagInput = {
   name: Scalars['String'];

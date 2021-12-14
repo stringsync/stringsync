@@ -69,6 +69,8 @@ export class TagResolver {
     } catch (e) {
       if (e instanceof errors.BadRequestError) {
         return types.BadRequestError.of(e);
+      } else if (e instanceof errors.ValidationError) {
+        return types.ValidationError.of(e);
       } else {
         return types.UnknownError.of(e);
       }

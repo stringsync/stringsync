@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { Tag } from '../../domain';
 import { UNKNOWN_ERROR_MSG } from '../../errors';
-import { $gql, CreateTagInput, t, TagCategory, UpdateTagInput } from '../../graphql';
+import { $gql, CreateTagInput, CreateTagOutput, t, TagCategory, UpdateTagInput, UpdateTagOutput } from '../../graphql';
 import { useGql } from '../../hooks/useGql';
 
 type TagInput = {
@@ -18,9 +18,28 @@ type ErrorsCallback = (errors: string[]) => void;
 const UPDATE_TAG_GQL = $gql
   .mutation('updateTag')
   .setQuery({
-    id: t.string,
-    name: t.string,
-    category: t.optional.oneOf(TagCategory)!,
+    ...t.union<UpdateTagOutput>()({
+      Tag: {
+        id: t.string,
+        name: t.string,
+        category: t.optional.oneOf(TagCategory)!,
+      },
+      ForbiddenError: {
+        message: t.string,
+      },
+      BadRequestError: {
+        message: t.string,
+      },
+      NotFoundError: {
+        message: t.string,
+      },
+      ValidationError: {
+        details: [t.string],
+      },
+      UnknownError: {
+        message: t.string,
+      },
+    }),
   })
   .setVariables<{ input: UpdateTagInput }>({
     input: {
@@ -34,9 +53,25 @@ const UPDATE_TAG_GQL = $gql
 const CREATE_TAG_INPUT = $gql
   .mutation('createTag')
   .setQuery({
-    id: t.string,
-    name: t.string,
-    category: t.optional.oneOf(TagCategory)!,
+    ...t.union<CreateTagOutput>()({
+      Tag: {
+        id: t.string,
+        name: t.string,
+        category: t.optional.oneOf(TagCategory)!,
+      },
+      ForbiddenError: {
+        message: t.string,
+      },
+      BadRequestError: {
+        message: t.string,
+      },
+      ValidationError: {
+        details: [t.string],
+      },
+      UnknownError: {
+        message: t.string,
+      },
+    }),
   })
   .setVariables<{ input: CreateTagInput }>({
     input: {
@@ -49,26 +84,30 @@ const CREATE_TAG_INPUT = $gql
 export const useUpsertTag = (onSuccess: SuccessCallback, onErrors: ErrorsCallback): [UpsertTag, Loading] => {
   const { execute: createTag, loading: creating } = useGql(CREATE_TAG_INPUT, {
     onData: (data) => {
-      if (!data.createTag) {
-        onErrors([UNKNOWN_ERROR_MSG]);
-      } else {
-        onSuccess(data.createTag);
+      switch (data.createTag?.__typename) {
+        case 'Tag':
+          onSuccess(data.createTag);
+          break;
+        case 'ValidationError':
+          onErrors(data.createTag.details);
+          break;
+        default:
+          onErrors([data.createTag?.message || UNKNOWN_ERROR_MSG]);
       }
-    },
-    onErrors: (errors: string[]) => {
-      onErrors(errors);
     },
   });
   const { execute: updateTag, loading: updating } = useGql(UPDATE_TAG_GQL, {
     onData: (data) => {
-      if (!data.updateTag) {
-        onErrors([UNKNOWN_ERROR_MSG]);
-      } else {
-        onSuccess(data.updateTag);
+      switch (data.updateTag?.__typename) {
+        case 'Tag':
+          onSuccess(data.updateTag);
+          break;
+        case 'ValidationError':
+          onErrors(data.updateTag.details);
+          break;
+        default:
+          onErrors([data.updateTag?.message || UNKNOWN_ERROR_MSG]);
       }
-    },
-    onErrors: (errors: string[]) => {
-      onErrors(errors);
     },
   });
   const loading = creating || updating;

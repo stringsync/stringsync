@@ -41,7 +41,7 @@ export type CreateTagInput = {
   category: TagCategory;
 };
 
-export type CreateTagOutput = Tag | ForbiddenError | BadRequestError | UnknownError;
+export type CreateTagOutput = Tag | ForbiddenError | ValidationError | BadRequestError | UnknownError;
 
 
 export type DeleteTagOutput = Processed | ForbiddenError | UnknownError;
