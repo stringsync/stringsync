@@ -3,6 +3,7 @@ export * from './ConfirmEmailInput.type';
 export * from './ConfirmEmailOutput.type';
 export * from './EmailConfirmation.type';
 export * from './ForbiddenError.type';
+export * from './Health.type';
 export * from './LoginInput.type';
 export * from './LoginOutput.type';
 export * from './LogoutOutput.type';

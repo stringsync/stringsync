@@ -3,15 +3,15 @@ import { Query, Resolver } from 'type-graphql';
 import { TYPES } from '../../inversify.constants';
 import { HealthCheckerService } from '../../services';
 import { APP_VERSION } from '../../util';
-import { HealthOutput } from './HealthOutput';
+import * as types from '../graphqlTypes';
 
 @Resolver()
 @injectable()
 export class MetaResolver {
   constructor(@inject(TYPES.HealthCheckerService) private healthCheckerService: HealthCheckerService) {}
 
-  @Query((returns) => HealthOutput)
-  async health(): Promise<HealthOutput> {
+  @Query((returns) => types.Health)
+  async health(): Promise<types.Health> {
     return await this.healthCheckerService.checkHealth();
   }
 
