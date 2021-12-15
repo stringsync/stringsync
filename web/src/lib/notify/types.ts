@@ -5,7 +5,7 @@ export type MessageConfig = {
   content: ReactNode;
   duration?: Duration | null;
   key?: string;
-  onClick?:
+  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
 };
 
 export type NotificationPlacement = 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
