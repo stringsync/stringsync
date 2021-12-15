@@ -5,11 +5,12 @@ import { mutation, onUnion, params, query, rawString } from 'typed-graphqlify';
 import { Params } from 'typed-graphqlify/dist/render';
 import { GRAPHQL_URI } from '.';
 import { UnknownError } from '../errors';
-import { DeepPartial, OnlyKey } from '../util/types';
+import { OnlyKey } from '../util/types';
 import { Mutation, Query } from './graphqlTypes';
 import * as helpers from './helpers';
 import { ObjectPath } from './ObjectPath';
 import { t } from './t';
+import { StrictSelection } from './types';
 
 export type Root = Query | Mutation;
 export type Fields<T extends Root> = keyof T;
@@ -193,7 +194,7 @@ export class $gql<T extends Root, F extends Fields<T>, Q, V> {
 class GqlBuilder<
   T extends Root,
   F extends Fields<T>,
-  Q extends DeepPartial<T[F]> | void = void,
+  Q extends StrictSelection<T[F]> | void = void,
   V extends Record<string, any> | void = void
 > {
   private compiler: Compiler;
@@ -208,7 +209,7 @@ class GqlBuilder<
     this.variables = variables;
   }
 
-  setQuery<_Q extends DeepPartial<T[F]>>(query: _Q) {
+  setQuery<_Q extends StrictSelection<T[F]>>(query: _Q) {
     return new GqlBuilder<T, F, _Q, V>(this.compiler, this.field, query, this.variables);
   }
 

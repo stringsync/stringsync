@@ -1,6 +1,7 @@
 import { onUnion, types } from 'typed-graphqlify';
-import { DeepPartial, Nullable } from '../util/types';
+import { Nullable } from '../util/types';
 import * as helpers from './helpers';
+import { GraphqlType, GraphqlUnionSelection, UnionSelection } from './types';
 
 type ValueOf<T> = T[keyof T];
 
@@ -12,20 +13,6 @@ type OptionalT = {
   oneOf: <T extends {}>(_e: T) => Nullable<ValueOf<T>>;
   custom: <T>() => Nullable<T>;
 };
-
-type Union<T extends string = string> = {
-  __typename?: T;
-};
-
-type UnionSelection<U extends Union> = {
-  [Typename in NonNullable<U['__typename']>]: DeepPartial<Omit<Extract<U, Union<Typename>>, '__typename'>>;
-};
-
-type Selection<S extends UnionSelection<any>, Typename extends keyof S> = S[Typename];
-
-type Flattened<S extends UnionSelection<any>> = {
-  [Typename in keyof S]: { __typename: Typename } & Selection<S, Typename>;
-}[keyof S];
 
 /**
  * Wrapper around typed-graphqlify's types.
@@ -59,7 +46,9 @@ export class t {
   } as any;
   // The reason why we have a returning function is to allow S to be inferred. Otherwise, we get the more genrealized
   // type and we have to specify all parameters.
-  static union = <U extends Union>() => <S extends UnionSelection<U>>(types: S): Flattened<S> => {
+  static union = <T extends GraphqlType<any>>() => <S extends UnionSelection<T>>(
+    types: S
+  ): GraphqlUnionSelection<S> => {
     const frags = {};
     for (const [__typename, fields] of Object.entries(types)) {
       Object.assign(frags, onUnion({ [__typename]: { __typename: t.constant(__typename), ...(fields as any) } }));

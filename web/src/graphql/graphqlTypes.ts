@@ -29,7 +29,6 @@ export type Query = {
   userCount: UserCountOutput;
 };
 
-
 export type QueryNotationsArgs = {
   before?: Maybe<Scalars['String']>;
   after?: Maybe<Scalars['String']>;
@@ -39,22 +38,18 @@ export type QueryNotationsArgs = {
   tagIds?: Maybe<Array<Scalars['String']>>;
 };
 
-
 export type QueryNotationArgs = {
   id: Scalars['String'];
 };
-
 
 export type QuerySuggestedNotationsArgs = {
   id?: Maybe<Scalars['String']>;
   limit: Scalars['Int'];
 };
 
-
 export type QueryUserArgs = {
   id: Scalars['String'];
 };
-
 
 export type QueryUsersArgs = {
   before?: Maybe<Scalars['String']>;
@@ -77,11 +72,10 @@ export type User = {
   notations: Array<Notation>;
 };
 
-
 export enum UserRole {
   STUDENT = 'STUDENT',
   TEACHER = 'TEACHER',
-  ADMIN = 'ADMIN'
+  ADMIN = 'ADMIN',
 }
 
 export type Notation = {
@@ -112,7 +106,7 @@ export type Tag = {
 
 export enum TagCategory {
   GENRE = 'GENRE',
-  DIFFICULTY = 'DIFFICULTY'
+  DIFFICULTY = 'DIFFICULTY',
 }
 
 export type Health = {
@@ -188,56 +182,45 @@ export type Mutation = {
   updateUser: UpdateUserOutput;
 };
 
-
 export type MutationLoginArgs = {
   input: LoginInput;
 };
-
 
 export type MutationSignupArgs = {
   input: SignupInput;
 };
 
-
 export type MutationConfirmEmailArgs = {
   input: ConfirmEmailInput;
 };
-
 
 export type MutationSendResetPasswordEmailArgs = {
   input: SendResetPasswordEmailInput;
 };
 
-
 export type MutationResetPasswordArgs = {
   input: ResetPasswordInput;
 };
-
 
 export type MutationCreateNotationArgs = {
   input: CreateNotationInput;
 };
 
-
 export type MutationUpdateNotationArgs = {
   input: UpdateNotationInput;
 };
-
 
 export type MutationUpdateTagArgs = {
   input: UpdateTagInput;
 };
 
-
 export type MutationCreateTagArgs = {
   input: CreateTagInput;
 };
 
-
 export type MutationDeleteTagArgs = {
   id: Scalars['String'];
 };
-
 
 export type MutationUpdateUserArgs = {
   input: UpdateUserInput;
@@ -315,8 +298,13 @@ export type CreateNotationInput = {
   tagIds: Array<Scalars['String']>;
 };
 
-
-export type UpdateNotationOutput = Notation | ForbiddenError | NotFoundError | BadRequestError | ValidationError | UnknownError;
+export type UpdateNotationOutput =
+  | Notation
+  | ForbiddenError
+  | NotFoundError
+  | BadRequestError
+  | ValidationError
+  | UnknownError;
 
 export type UpdateNotationInput = {
   id: Scalars['String'];

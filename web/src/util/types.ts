@@ -17,6 +17,10 @@ export type Replace<T extends object, K extends string | number | symbol, V exte
     [P in K]: V;
   };
 
+export type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
+
+export type IsUnion<T> = [T] extends [UnionToIntersection<T>] ? false : true;
+
 export enum AuthRequirement {
   NONE,
   LOGGED_IN,
