@@ -17,7 +17,7 @@ import { StaleWhileRevalidate } from 'workbox-strategies';
 declare const self: ServiceWorkerGlobalScope;
 
 const VERSION = process.env.REACT_APP_VERSION;
-console.log(`%cStringsync: ${VERSION}`, 'color:#FC354C');
+console.log(`%stringsync ${VERSION}`, 'color:#FC354C');
 
 clientsClaim();
 

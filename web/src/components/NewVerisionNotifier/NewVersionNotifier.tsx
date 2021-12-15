@@ -50,7 +50,7 @@ export const NewVersionNotifier: React.FC = () => {
           <b>
             <u>not</u>
           </b>{' '}
-          on the latest version of StringSync.
+          on the latest version of stringsync.
         </p>
       ),
       placement: 'bottomLeft',
