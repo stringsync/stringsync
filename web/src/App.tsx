@@ -4,6 +4,7 @@ import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import './App.less';
+import { NewVersionNotifier } from './components/NewVersionNotifier';
 import { Routes } from './components/Routes';
 import { AuthProvider } from './ctx/auth';
 import { DeviceProvider } from './ctx/device';
@@ -23,6 +24,7 @@ export const App: React.FC = (props) => {
                 <AuthProvider>
                   <BrowserRouter>
                     <RouteInfoProvider>
+                      <NewVersionNotifier />
                       <Routes />
                     </RouteInfoProvider>
                   </BrowserRouter>

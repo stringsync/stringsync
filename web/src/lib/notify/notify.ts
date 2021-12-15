@@ -1,7 +1,6 @@
+import { REACT_SNAP_ACTIVE } from '../../util/constants';
 import { AntdNotify } from './AntdNotify';
 import { NoopNotify } from './NoopNotify';
 import { Notify } from './types';
 
-const isReactSnapRunning = navigator.userAgent === 'ReactSnap';
-
-export const notify: Notify = isReactSnapRunning ? new NoopNotify() : new AntdNotify();
+export const notify: Notify = REACT_SNAP_ACTIVE ? new NoopNotify() : new AntdNotify();
