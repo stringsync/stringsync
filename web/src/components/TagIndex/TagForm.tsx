@@ -1,7 +1,8 @@
-import { Button, Form, Input, message, Popconfirm, Select } from 'antd';
+import { Button, Form, Input, Popconfirm, Select } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { useEffect, useMemo, useState } from 'react';
 import { TagCategory } from '../../graphql';
+import { notify } from '../../lib/notify';
 import { useDeleteTag } from './useDeleteTag';
 import { useUpsertTag } from './useUpsertTag';
 
@@ -31,7 +32,7 @@ export const TagForm: React.FC<Props> = (props) => {
   );
   const onErrors = (errors: string[]) => {
     console.error(errors);
-    message.error('something went wrong');
+    notify.message.error({ content: 'something went wrong' });
   };
   const onValuesChange = (_: any, values: any) => {
     const nextDirty = Object.entries(initialValues).some(([key, val]) => values[key] !== val);
@@ -42,14 +43,14 @@ export const TagForm: React.FC<Props> = (props) => {
     setDirty(nextDirty);
   }, [initialValues, tag]);
   const [upsertTag, upserting] = useUpsertTag(() => {
-    message.success('tag saved');
+    notify.message.success({ content: 'tag saved' });
     onCommit();
     if (!tag.id) {
       form.resetFields();
     }
   }, onErrors);
   const [deleteTag, deleting] = useDeleteTag(() => {
-    message.success(`tag deleted: '${tag.name}'`);
+    notify.message.success({ content: `tag deleted: '${tag.name}'` });
     onCommit();
   }, onErrors);
   const loading = upserting || deleting;

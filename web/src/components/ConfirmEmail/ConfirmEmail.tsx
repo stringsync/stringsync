@@ -1,4 +1,4 @@
-import { Button, Divider, Form, Input, message } from 'antd';
+import { Button, Divider, Form, Input } from 'antd';
 import { Rule } from 'antd/lib/form';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
@@ -7,6 +7,7 @@ import { UNKNOWN_ERROR_MSG } from '../../errors';
 import { Layout, withLayout } from '../../hocs/withLayout';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useQueryParams } from '../../hooks/useQueryParams';
+import { notify } from '../../lib/notify';
 import { compose } from '../../util/compose';
 import { FormPage } from '../FormPage';
 import { useConfirmEmail } from './useConfirmEmail';
@@ -37,7 +38,7 @@ export const ConfirmEmail: React.FC = enhance(() => {
     onData: (data) => {
       switch (data.confirmEmail?.__typename) {
         case 'EmailConfirmation':
-          message.success(`${email} confirmed`);
+          notify.message.success({ content: `${email} confirmed` });
           history.push('/library');
           break;
         case 'BadRequestError':
@@ -59,7 +60,7 @@ export const ConfirmEmail: React.FC = enhance(() => {
     onData: (data) => {
       switch (data.resendConfirmationEmail?.__typename) {
         case 'Processed':
-          message.success(`sent confirmation token to ${email}`);
+          notify.message.success({ content: `sent confirmation token to ${email}` });
           break;
         case 'ForbiddenError':
           setErrors([data.resendConfirmationEmail.message]);
@@ -87,7 +88,7 @@ export const ConfirmEmail: React.FC = enhance(() => {
 
   useEffectOnce(() => {
     if (confirmedAt) {
-      message.warn(`${email} is already confirmed`);
+      notify.message.warn({ content: `${email} is already confirmed` });
       history.push('/library');
     }
   });

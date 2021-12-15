@@ -1,10 +1,10 @@
-import { Modal } from 'antd';
 import { noop } from 'lodash';
 import { useCallback, useRef } from 'react';
 import { useAsyncCallback, UseAsyncCallbackOptions } from 'react-async-hook';
 import * as uuid from 'uuid';
 import { MissingDataError } from '../errors';
 import { Any$gql, GqlResponseOf, SuccessfulResponse, VariablesOf } from '../graphql';
+import { notify } from '../lib/notify';
 
 type BeforeLoadingCallback = () => void;
 type OnDataCallback<G extends Any$gql> = (data: SuccessfulResponse<G>['data']) => void;
@@ -34,10 +34,9 @@ export const useGql = <G extends Any$gql>(gql: G, opts?: UseGqlOptions<G>) => {
         onErrorsOverride(errors);
       } else {
         const id = uuid.v4();
-        Modal.error({
+        notify.modal.error({
           title: 'error',
           content: errors.map((error, ndx) => <div key={`modal-${id}-${ndx}`}>{error}</div>),
-          maskClosable: true,
         });
       }
     },

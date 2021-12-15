@@ -1,4 +1,3 @@
-import { message } from 'antd';
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router';
 import { Fallback } from '../components/Fallback';
@@ -6,6 +5,7 @@ import { isLoggedInSelector, useAuth } from '../ctx/auth';
 import { useRouteInfo } from '../ctx/route-info';
 import { gtEqAdmin, gtEqStudent, gtEqTeacher } from '../domain';
 import { UserRole } from '../graphql';
+import { notify } from '../lib/notify';
 import { AuthRequirement } from '../util/types';
 
 const isMeetingAuthReq = (authReqs: AuthRequirement, isLoggedIn: boolean, userRole: UserRole) => {
@@ -52,22 +52,22 @@ export const withAuthRequirement = (authReq: AuthRequirement) =>
           case AuthRequirement.NONE:
             break;
           case AuthRequirement.LOGGED_IN:
-            message.error('must be logged in');
+            notify.message.error({ content: 'must be logged in' });
             history.push('/login');
             break;
           case AuthRequirement.LOGGED_OUT:
             history.push(returnToRoute);
             break;
           case AuthRequirement.LOGGED_IN_AS_STUDENT:
-            message.error('must be logged in as a student');
+            notify.message.error({ content: 'must be logged in as a student' });
             history.push(isLoggedIn ? returnToRoute : '/login');
             break;
           case AuthRequirement.LOGGED_IN_AS_TEACHER:
-            message.error('must be logged in as a teacher');
+            notify.message.error({ content: 'must be logged in as a teacher' });
             history.push(isLoggedIn ? returnToRoute : '/login');
             break;
           case AuthRequirement.LOGGED_IN_AS_ADMIN:
-            message.error('must be logged in as a admin');
+            notify.message.error({ content: 'must be logged in as a admin' });
             history.push(isLoggedIn ? returnToRoute : '/login');
             break;
         }

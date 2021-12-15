@@ -1,7 +1,8 @@
-import { Button, Form, message, Select } from 'antd';
+import { Button, Form, Select } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import React, { useState } from 'react';
 import { UserRole } from '../../graphql';
+import { notify } from '../../lib/notify';
 import { Nullable } from '../../util/types';
 import { toUserRole } from './helpers';
 import { UserPreview } from './types';
@@ -20,12 +21,12 @@ export const UserForm: React.FC<Props> = (props) => {
   const user = updatedUser || initialUser;
   const [isUpdating, updateUser] = useUserUpdater(
     (user) => {
-      message.success(`saved ${user.username}`);
+      notify.message.success({ content: `saved ${user.username}` });
       setUpdatedUser(user);
       setDirty(false);
     },
     () => {
-      message.error(`something went wrong ${user.username}`);
+      notify.message.error({ content: `something went wrong ${user.username}` });
     }
   );
   const onSave = () => {

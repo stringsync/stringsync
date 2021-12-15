@@ -3,7 +3,9 @@ import { Duration } from '../../util/Duration';
 
 export type MessageConfig = {
   content: ReactNode;
-  duration?: Duration;
+  duration?: Duration | null;
+  key?: string;
+  onClick?:
 };
 
 export type NotificationPlacement = 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';

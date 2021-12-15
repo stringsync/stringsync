@@ -1,9 +1,9 @@
-import { Modal } from 'antd';
 import { useState } from 'react';
 import { UNKNOWN_ERROR_MSG } from '../../errors';
 import { $gql, t, UserCountOutput } from '../../graphql';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useGql } from '../../hooks/useGql';
+import { notify } from '../../lib/notify';
 
 const USER_COUNT_GQL = $gql
   .query('userCount')
@@ -32,10 +32,9 @@ export const useUserCount = (): number | null => {
           setUserCount(data.userCount.value);
           break;
         default:
-          Modal.error({
+          notify.modal.error({
             title: 'error',
             content: data.userCount?.message || UNKNOWN_ERROR_MSG,
-            maskClosable: true,
           });
       }
     },

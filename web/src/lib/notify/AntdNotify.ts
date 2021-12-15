@@ -1,17 +1,24 @@
 import { message, Modal, ModalFuncProps, notification } from 'antd';
-import { ArgsProps } from 'antd/lib/notification';
-import { ReactNode } from 'react';
+import { ArgsProps as MessageArgsProps } from 'antd/lib/message';
+import { ArgsProps as NotificationArgsProps } from 'antd/lib/notification';
+import { isNull } from 'lodash';
+import { Duration } from '../../util/Duration';
 import { MessageConfig, ModalConfig, Notify, PopupConfig } from './types';
 
-type AntdSendMessage = (content: ReactNode, duration?: number) => any;
-
-type AntdMakePopup = (args: ArgsProps) => any;
-
+type AntdSendMessage = (props: Omit<MessageArgsProps, 'type'>) => any;
+type AntdMakePopup = (props: NotificationArgsProps) => any;
 type AntdShowModal = (props: ModalFuncProps) => any;
+
+const MESSAGE_DEFAULT_DURATION = Duration.sec(3);
 
 export class AntdNotify implements Notify {
   private static message = (sendMessage: AntdSendMessage) => (config: MessageConfig) => {
-    sendMessage(config.content, config.duration?.sec);
+    sendMessage({
+      key: config.key,
+      content: config.content,
+      duration: isNull(config.duration) ? config.duration : (config.duration || MESSAGE_DEFAULT_DURATION).sec,
+      onClick: config.onClick,
+    });
   };
 
   private static popup = (makePopup: AntdMakePopup) => (config: PopupConfig) => {

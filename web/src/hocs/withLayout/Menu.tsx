@@ -1,11 +1,12 @@
 import { CompassOutlined, MenuOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons';
-import { Avatar, Button, Col, message, Modal, Row, Space } from 'antd';
+import { Avatar, Button, Col, Modal, Row, Space } from 'antd';
 import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import { isLoggedInSelector, useAuth } from '../../ctx/auth';
 import { useViewport } from '../../ctx/viewport/useViewport';
 import { eqAdmin, gtEqTeacher } from '../../domain';
+import { notify } from '../../lib/notify';
 
 const StyledRow = styled(Row)`
   svg {
@@ -59,7 +60,7 @@ export const Menu: React.FC<Props> = (props) => {
   const onLogoutClick = () => {
     authApi.logout();
     hideModal();
-    message.success('logged out');
+    notify.message.success({ content: 'logged out' });
   };
 
   const gutterPx = isLoggedIn ? 16 : 8;

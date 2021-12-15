@@ -1,10 +1,11 @@
-import { Button, Form, Input, message } from 'antd';
+import { Button, Form, Input } from 'antd';
 import { Rule } from 'antd/lib/form';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { UNKNOWN_ERROR_MSG } from '../../errors';
+import { notify } from '../../lib/notify';
 import { FormPage } from '../FormPage';
 import { useResetPassword } from './useResetPassword';
 
@@ -44,7 +45,7 @@ export const ResetPassword: React.FC = (props) => {
     },
     onData: (data) => {
       if (data.resetPassword) {
-        message.success('password successfully reset');
+        notify.message.success({ content: 'password successfully reset' });
         history.push('/login');
       } else {
         setErrors([UNKNOWN_ERROR_MSG]);

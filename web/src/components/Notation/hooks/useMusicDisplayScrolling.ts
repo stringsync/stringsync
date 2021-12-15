@@ -4,6 +4,7 @@ import { MediaPlayer, PlayState } from '../../../lib/MediaPlayer';
 import { MusicDisplay } from '../../../lib/MusicDisplay';
 import { isTemporal } from '../../../lib/MusicDisplay/pointer';
 import { ScrollBehaviorType } from '../../../lib/MusicDisplay/scroller';
+import { notify } from '../../../lib/notify';
 import { NotationSettings } from '../types';
 
 const SCROLL_DIVERGENCE_KEY = 'SCROLL_DIVERGENCE_KEY';
@@ -42,7 +43,7 @@ export const useMusicDisplayScrolling = (
       if (!isAutoscrollPreferred) {
         return;
       }
-      message.warn({
+      notify.message.warn({
         key: SCROLL_DIVERGENCE_KEY,
         duration: null,
         content: 'tap to autoscroll',

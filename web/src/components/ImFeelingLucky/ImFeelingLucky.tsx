@@ -1,6 +1,7 @@
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import React, { useCallback, useState } from 'react';
 import { useHistory } from 'react-router';
+import { notify } from '../../lib/notify';
 import { useRandomNotationIdGetter } from './useRandomNotationIdGetter';
 
 export const ImFeelingLucky = () => {
@@ -8,13 +9,13 @@ export const ImFeelingLucky = () => {
   const [hasError, setHasError] = useState(false);
   const onSuccess = useCallback(
     (notationId: string) => {
-      message.success('lucky!');
+      notify.message.success({ content: 'lucky!' });
       history.push(`/n/${notationId}`);
     },
     [history]
   );
   const onErrors = useCallback(() => {
-    message.error('something went wrong');
+    notify.message.error({ content: 'something went wrong' });
     setHasError(true);
   }, []);
   const [loading, getRandomNotationId] = useRandomNotationIdGetter(onSuccess, onErrors);

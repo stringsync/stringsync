@@ -1,9 +1,9 @@
-import { Button, Form, Input, message } from 'antd';
+import { Button, Form, Input } from 'antd';
 import { Rule } from 'antd/lib/form';
 import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import { UNKNOWN_ERROR_MSG } from '../../errors';
+import { notify } from '../../lib/notify';
 import { FormPage } from '../FormPage';
 import { useSendResetPasswordEmail } from './useSendResetPasswordEmail';
 
@@ -26,18 +26,10 @@ export const ForgotPassword: React.FC = () => {
   const [form] = Form.useForm<FormValues>();
 
   const sendResetPasswordEmail = useSendResetPasswordEmail({
-    onData: (data) => {
+    onData: () => {
       const { email } = form.getFieldsValue();
-      if (data?.sendResetPasswordEmail) {
-        message.success(`sent reset password email to ${email}`);
-        history.push(`/reset-password?email=${email}`);
-      } else {
-        message.error(UNKNOWN_ERROR_MSG);
-      }
-    },
-    onErrors: (errors) => {
-      console.error(errors);
-      message.error(UNKNOWN_ERROR_MSG);
+      notify.message.success({ content: `sent reset password email to ${email}` });
+      history.push(`/reset-password?email=${email}`);
     },
   });
 

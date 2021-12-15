@@ -1,9 +1,10 @@
-import { message, notification } from 'antd';
 import React, { useEffect } from 'react';
 import { useMeta } from '../../ctx/meta/useMeta';
 import { useServiceWorker } from '../../ctx/service-worker';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { notify } from '../../lib/notify';
+import { Duration } from '../../util/Duration';
 import { Nothing } from '../Nothing/Nothing';
 import { TimeoutButton } from '../TimeoutButton/TimeoutButton';
 
@@ -20,7 +21,7 @@ export const NewVersionNotifier: React.FC = () => {
     setLastLoaded({ version });
     // Prevent the message element from being baked into the crawled
     if (lastLoadedVersion !== INITIAL_LAST_LOADED_VERSION.version && version !== lastLoadedVersion) {
-      message.success(`updated to ${version}`, 3);
+      notify.message.success({ content: `updated to ${version}`, duration: Duration.sec(3) });
     }
   });
 
@@ -41,9 +42,9 @@ export const NewVersionNotifier: React.FC = () => {
       });
     };
 
-    notification.info({
-      message: 'Update Available',
-      description: (
+    notify.popup.info({
+      title: 'update available',
+      content: (
         <p>
           You are{' '}
           <b>
@@ -54,12 +55,12 @@ export const NewVersionNotifier: React.FC = () => {
       ),
       placement: 'bottomLeft',
       closeIcon: <Nothing />,
-      btn: (
+      button: (
         <TimeoutButton type="primary" timeoutMs={5000} onClick={updateServiceWorker}>
           refresh
         </TimeoutButton>
       ),
-      duration: 0,
+      duration: Duration.zero(),
     });
   }, [isUpdated, registration]);
 

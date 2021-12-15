@@ -10,6 +10,7 @@ import { UNKNOWN_ERROR_MSG } from '../../errors';
 import { Layout, withLayout } from '../../hocs/withLayout';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useTags } from '../../hooks/useTags';
+import { notify } from '../../lib/notify';
 import { compose } from '../../util/compose';
 import { Box } from '../Box';
 import { useCreateNotation } from './useCreateNotation';
@@ -67,11 +68,10 @@ const Upload: React.FC<Props> = enhance(() => {
   const { execute: createNotation, loading } = useCreateNotation({
     onData: (data) => {
       const showErrors = (errors: string[]) => {
-        const modalId = uuid.v4();
-        Modal.error({
+        const id = uuid.v4();
+        notify.modal.error({
           title: 'error',
-          content: errors.map((error, ndx) => <div key={`modal-${modalId}-${ndx}`}>{error}</div>),
-          maskClosable: true,
+          content: errors.map((error, ndx) => <div key={`modal-${id}-${ndx}`}>{error}</div>),
         });
       };
 
