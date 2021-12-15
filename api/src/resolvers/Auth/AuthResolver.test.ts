@@ -110,7 +110,7 @@ describe('AuthResolver', () => {
       );
     };
 
-    it('creates a use with the username and email', async () => {
+    it('creates a user with the username and email', async () => {
       const username = rand.str(10);
       const email = `${username}@domain.tld`;
       const password = rand.str(10);

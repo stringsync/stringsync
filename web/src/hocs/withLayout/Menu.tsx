@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import { isLoggedInSelector, useAuth } from '../../ctx/auth';
 import { useViewport } from '../../ctx/viewport/useViewport';
 import { eqAdmin, gtEqTeacher } from '../../domain';
-import { notify } from '../../lib/notify';
 
 const StyledRow = styled(Row)`
   svg {
@@ -60,7 +59,6 @@ export const Menu: React.FC<Props> = (props) => {
   const onLogoutClick = () => {
     authApi.logout();
     hideModal();
-    notify.message.success({ content: 'logged out' });
   };
 
   const gutterPx = isLoggedIn ? 16 : 8;

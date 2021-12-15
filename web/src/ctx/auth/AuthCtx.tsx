@@ -5,6 +5,7 @@ import { UNKNOWN_ERROR_MSG } from '../../errors';
 import { LoginInput, SignupInput } from '../../graphql';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useGql } from '../../hooks/useGql';
+import { notify } from '../../lib/notify';
 import { getNullAuthUser } from './getNullAuthUser';
 import * as helpers from './helpers';
 import * as queries from './queries';
@@ -88,6 +89,7 @@ export const AuthProvider: React.FC = (props) => {
       switch (data.login?.__typename) {
         case 'User':
           dispatch(AUTH_ACTIONS.setUser({ user: data.login }));
+          notify.message.success({ content: `logged in as ${data.login.username}` });
           break;
         default:
           dispatch(AUTH_ACTIONS.setErrors({ errors: [data.login?.message || UNKNOWN_ERROR_MSG] }));
@@ -103,6 +105,7 @@ export const AuthProvider: React.FC = (props) => {
       switch (data.logout?.__typename) {
         case 'Processed':
           dispatch(AUTH_ACTIONS.setUser({ user: getNullAuthUser() }));
+          notify.message.success({ content: 'logged out' });
           break;
         default:
           dispatch(AUTH_ACTIONS.setErrors({ errors: [data.logout?.message || UNKNOWN_ERROR_MSG] }));
@@ -118,6 +121,7 @@ export const AuthProvider: React.FC = (props) => {
       switch (data.signup?.__typename) {
         case 'User':
           dispatch(AUTH_ACTIONS.setUser({ user: data.signup }));
+          notify.message.success({ content: `logged in as ${data.signup.username}` });
           break;
         case 'ValidationError':
           dispatch(AUTH_ACTIONS.setErrors({ errors: data.signup.details }));

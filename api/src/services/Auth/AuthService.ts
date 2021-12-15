@@ -11,7 +11,7 @@ import { Logger, rand } from '../../util';
 @injectable()
 export class AuthService {
   static MAX_RESET_PASSWORD_TOKEN_AGE_MS = 86400 * 1000; // 1 day
-  static MIN_PASSWORD_LENGTH = 6;
+  static MIN_PASSWORD_LENGTH = 8;
   static HASH_ROUNDS = 10;
   static RESET_PASSWORD_TOKEN_LENGTH = 10;
   static EMAIL_CONFIRMATION_TOKEN_LENGTH = 10;
