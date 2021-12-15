@@ -83,7 +83,7 @@
   },
   "scripts": {
     "start": "craco start",
-    "build": "craco build",
+    "build": "craco --openssl-legacy-provider build",
     "postbuild": "react-snap",
     "test": "craco test",
     "eject": "craco eject",
