@@ -89,14 +89,22 @@ async function deploy() {
   const bumpFlag = BUMP_FLAGS[bump as keyof typeof BUMP_FLAGS];
 
   log('bumping api version');
-  await cmd('yarn', ['version', bumpFlag, '--no-git-tag-version'], { cwd: Project.API });
+  await cmd('yarn', ['version', bumpFlag, '--no-git-tag-version', '--no-commit-hooks'], { cwd: Project.API });
 
   log('bumping web version');
-  await cmd('yarn', ['version', bumpFlag, '--no-git-tag-version'], { cwd: Project.WEB });
+  await cmd('yarn', ['version', bumpFlag, '--no-git-tag-version', '--no-commit-hooks'], { cwd: Project.WEB });
 
   log('committing version changes');
+  const version = (
+    await cmd('node', ['-e', `"process.stdout.write(require('./package.json').version);"`], {
+      cwd: Project.API,
+      shell: true,
+      stdio: 'pipe',
+    })
+  ).stdout;
   await cmd('git', ['add', 'api/package.json', 'web/package.json']);
-  await cmd('git', ['commit', '-m', 'Bump app versions']);
+  await cmd('git', ['commit', '-m', `Bump app version to v${version}`]);
+  await cmd('git', ['tag', '-a', `v${version}`, '-m', `Bump app version to v${version}`]);
 
   log('pushing to aws remote');
   await cmd('git', ['push', 'origin']);
