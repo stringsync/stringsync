@@ -27,6 +27,7 @@ const STACK_NAME = Env.string('STACK_NAME');
 const WATCH = Env.boolean('WATCH');
 const AWS_REGION = Env.string('AWS_REGION');
 const NODE_ENV = Env.string('NODE_ENV');
+const TAG = Env.string('TAG');
 
 async function dev() {
   const composeFile = constants.DOCKER_COMPOSE_DEV_FILE;
@@ -109,6 +110,34 @@ async function deploy() {
   log('pushing to aws remote');
   await cmd('git', ['push', 'origin']);
   await cmd('git', ['push', remote, `${branch}:master`]);
+}
+
+async function rollback() {
+  const tag = TAG.get();
+
+  // Leverage yarn to bump the version for us, so we don't have to deal with edge cases of all the semantic version
+  // names.
+  log('bumping version by a minor step');
+  await cmd('yarn', ['version', '--minor', '--no-git-tag-version', '--no-commit-hooks'], { cwd: Project.API });
+
+  log('getting next version');
+  const nextVersion = (
+    await cmd('node', ['-e', `"process.stdout.write(require('./package.json').version);"`], {
+      cwd: Project.API,
+      shell: true,
+      stdio: 'pipe',
+    })
+  ).stdout;
+  log(`next version is ${nextVersion}`);
+
+  log('cleaning changes');
+  await cmd('git', ['checkout', './package.json'], { cwd: Project.API });
+
+  log(`getting commit of tag: ${tag}`);
+  const commit = (await cmd('git', ['rev-list', '-n', '1', tag], { shell: true, stdio: 'pipe' })).stdout;
+  log(`got commit: ${commit}`);
+
+  await cmd('git', ['revert', '--no-edit', '--no-commit', commit]);
 }
 
 async function db() {
@@ -244,6 +273,7 @@ exports['typegen'] = typegen;
 exports['gensecrets'] = gensecrets;
 exports['logs'] = logs;
 exports['deploy'] = deploy;
+exports['rollback'] = rollback;
 exports['db'] = db;
 exports['redis'] = redis;
 exports['migrator'] = series(buildapp, migrator);
