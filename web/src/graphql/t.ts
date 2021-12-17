@@ -1,3 +1,4 @@
+import { Union } from 'ts-toolbelt';
 import { onUnion, types } from 'typed-graphqlify';
 import { Nullable } from '../util/types';
 import * as helpers from './helpers';
@@ -46,7 +47,7 @@ export class t {
   } as any;
   // The reason why we have a returning function is to allow S to be inferred. Otherwise, we get the more genrealized
   // type and we have to specify all parameters.
-  static union = <T extends GraphqlType<any>>() => <S extends UnionSelection<T>>(
+  static union = <T extends GraphqlType<any>>() => <S extends UnionSelection<Union.Strict<T>>>(
     types: S
   ): GraphqlUnionSelection<S> => {
     const frags = {};

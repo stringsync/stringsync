@@ -10,9 +10,6 @@ type BeforeLoadingCallback = () => void;
 type OnDataCallback<G extends Any$gql> = (data: SuccessfulResponse<G>['data']) => void;
 type OnErrorsCallback = (errors: string[]) => void;
 
-// TODO(jared): Make a general notification service that forks off of this.
-const isReactSnapRunning = navigator.userAgent !== 'ReactSnap';
-
 export type UseGqlOptions<G extends Any$gql> = Partial<
   Omit<UseAsyncCallbackOptions<GqlResponseOf<G>>, 'onSuccess' | 'onErrors'> & {
     beforeLoading: BeforeLoadingCallback;
@@ -27,9 +24,6 @@ export const useGql = <G extends Any$gql>(gql: G, opts?: UseGqlOptions<G>) => {
   const onErrorsOverride = opts?.onErrors;
   const onErrors: OnErrorsCallback = useCallback(
     (errors) => {
-      if (isReactSnapRunning) {
-        return;
-      }
       if (onErrorsOverride) {
         onErrorsOverride(errors);
       } else {
