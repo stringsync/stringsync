@@ -137,7 +137,7 @@ async function rollback() {
   const commit = (await cmd('git', ['rev-list', '-n', '1', tag], { shell: true, stdio: 'pipe' })).stdout;
   log(`got commit: ${commit}`);
 
-  await cmd('git', ['revert', '--no-edit', '--no-commit', commit]);
+  await cmd('git', ['revert', '--no-edit', '--no-commit', `${commit}..HEAD`]);
 }
 
 async function db() {
