@@ -27,6 +27,7 @@ const STACK_NAME = Env.string('STACK_NAME');
 const WATCH = Env.boolean('WATCH');
 const AWS_REGION = Env.string('AWS_REGION');
 const NODE_ENV = Env.string('NODE_ENV');
+const TAG = Env.string('TAG');
 
 async function dev() {
   const composeFile = constants.DOCKER_COMPOSE_DEV_FILE;
@@ -106,13 +107,15 @@ async function deploy() {
   await cmd('git', ['commit', '-m', `Bump app version to v${version}`]);
   await cmd('git', ['tag', '-a', `v${version}`, '-m', `Bump app version to v${version}`]);
 
-  log('pushing to aws remote');
+  log('pushing to remotes');
   await cmd('git', ['push', 'origin']);
   await cmd('git', ['push', remote, `${branch}:master`]);
 }
 
 async function rollback() {
-  const tag = Env.string('TAG').get();
+  const tag = TAG.get();
+  const branch = BRANCH.getOrDefault('master');
+  const remote = REMOTE.getOrDefault('aws');
 
   log('getting current version');
   const prevVersion = (
@@ -166,6 +169,10 @@ async function rollback() {
     '-m',
     `Rollback app version to v${prevVersion} as v${nextVersion}`,
   ]);
+
+  log('pushing to remotes');
+  // await cmd('git', ['push', 'origin']);
+  // await cmd('git', ['push', remote, `${branch}:master`]);
 }
 
 async function db() {
