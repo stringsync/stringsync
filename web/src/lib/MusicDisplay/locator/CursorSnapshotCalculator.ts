@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import { first, get, groupBy, isNumber, last, sortBy } from 'lodash';
-import { GraphicalNote } from 'opensheetmusicdisplay';
+import { Fraction, GraphicalNote } from 'opensheetmusicdisplay';
 import { Box } from '../../../util/Box';
 import { NumberRange } from '../../../util/NumberRange';
 import { InternalMusicDisplay } from '../InternalMusicDisplay';
@@ -30,6 +30,7 @@ export class CursorSnapshotCalculator {
       // Get OSMD-specific references
       const entries = probeCursor.VoicesUnderCursor();
       const notes = entries.flatMap((entry) => entry.Notes);
+      const timeSignature = probeCursor.iterator.CurrentMeasure.ActiveTimeSignature;
       const engravingRules = probeCursor.iterator.CurrentMeasure.Rules;
       const graphicalNotes = notes.map((note) => GraphicalNote.FromNote(note, engravingRules));
       const probeNote = notes[0];
@@ -44,7 +45,7 @@ export class CursorSnapshotCalculator {
 
       // Calculate time range
       const startTimeMs = currTimeMs;
-      const endTimeMs = startTimeMs + CursorSnapshotCalculator.convertNumBeatsToMs(bpm, numBeats);
+      const endTimeMs = startTimeMs + CursorSnapshotCalculator.convertNumBeatsToMs(bpm, numBeats, timeSignature);
       const timeMsRange = NumberRange.from(startTimeMs).to(endTimeMs);
 
       // Calculate position ranges
@@ -154,9 +155,9 @@ export class CursorSnapshotCalculator {
     }
   }
 
-  private static convertNumBeatsToMs = (bpm: number, numBeats: number) => {
+  private static convertNumBeatsToMs = (bpm: number, numBeats: number, timeSignature: Fraction) => {
     // bpm is how many quarter notes per minute
-    const trueBpm = bpm / 4;
+    const trueBpm = bpm / timeSignature.Denominator;
     const mins = numBeats / trueBpm;
     const secs = mins * 60;
     const ms = secs * 1000;
