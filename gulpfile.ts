@@ -171,8 +171,8 @@ async function rollback() {
   ]);
 
   log('pushing to remotes');
-  // await cmd('git', ['push', 'origin']);
-  // await cmd('git', ['push', remote, `${branch}:master`]);
+  await cmd('git', ['push', 'origin']);
+  await cmd('git', ['push', remote, `${branch}:master`]);
 }
 
 async function db() {
