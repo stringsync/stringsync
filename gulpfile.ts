@@ -27,7 +27,6 @@ const STACK_NAME = Env.string('STACK_NAME');
 const WATCH = Env.boolean('WATCH');
 const AWS_REGION = Env.string('AWS_REGION');
 const NODE_ENV = Env.string('NODE_ENV');
-const TAG = Env.string('TAG');
 
 async function dev() {
   const composeFile = constants.DOCKER_COMPOSE_DEV_FILE;
@@ -113,7 +112,16 @@ async function deploy() {
 }
 
 async function rollback() {
-  const tag = TAG.get();
+  const tag = Env.string('TAG').get();
+
+  log('getting current version');
+  const prevVersion = (
+    await cmd('node', ['-e', `"process.stdout.write(require('./package.json').version);"`], {
+      cwd: Project.API,
+      shell: true,
+      stdio: 'pipe',
+    })
+  ).stdout;
 
   // Leverage yarn to bump the version for us, so we don't have to deal with edge cases of all the semantic version
   // names.
@@ -128,16 +136,36 @@ async function rollback() {
       stdio: 'pipe',
     })
   ).stdout;
-  log(`next version is ${nextVersion}`);
 
   log('cleaning changes');
   await cmd('git', ['checkout', './package.json'], { cwd: Project.API });
 
   log(`getting commit of tag: ${tag}`);
   const commit = (await cmd('git', ['rev-list', '-n', '1', tag], { shell: true, stdio: 'pipe' })).stdout;
-  log(`got commit: ${commit}`);
 
+  log(`reverting all commits back to: ${commit}`);
   await cmd('git', ['revert', '--no-edit', '--no-commit', `${commit}..HEAD`]);
+
+  log(`updating api version to: ${nextVersion}`);
+  await cmd('yarn', ['version', '--no-git-tag-version', '--no-commit-hooks', '--new-version', `v${nextVersion}`], {
+    cwd: Project.API,
+  });
+
+  log(`updating web version to: ${nextVersion}`);
+  await cmd('yarn', ['version', '--no-git-tag-version', '--no-commit-hooks', '--new-version', `v${nextVersion}`], {
+    cwd: Project.WEB,
+  });
+
+  log('committing version changes');
+  await cmd('git', ['add', 'api/package.json', 'web/package.json']);
+  await cmd('git', ['commit', '-m', `Rollback app version to v${prevVersion} as v${nextVersion}`]);
+  await cmd('git', [
+    'tag',
+    '-a',
+    `v${nextVersion}`,
+    '-m',
+    `Rollback app version to v${prevVersion} as v${nextVersion}`,
+  ]);
 }
 
 async function db() {
