@@ -6,9 +6,11 @@ const RESEND_CONFIRMATION_EMAIL_GQL = $gql
   .setQuery({
     ...t.union<ResendConfirmationEmailOutput>()({
       Processed: {
+        __typename: t.constant('Processed'),
         at: t.string,
       },
       ForbiddenError: {
+        __typename: t.constant('ForbiddenError'),
         message: t.string,
       },
     }),

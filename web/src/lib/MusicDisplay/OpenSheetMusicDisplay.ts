@@ -33,6 +33,7 @@ export class OpenSheetMusicDisplay implements MusicDisplay {
   constructor(container: HTMLDivElement, partialOpts: Partial<MusicDisplayOptions> = {}) {
     const opts = merge({}, DEFAULT_OPTS, partialOpts);
     this.imd = new InternalMusicDisplay(container, this.eventBus, opts);
+    (window as any).imd = this.imd;
   }
 
   async load(xmlUrl: string) {

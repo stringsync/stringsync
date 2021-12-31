@@ -13,6 +13,7 @@ const UPDATE_USER_GQL = $gql
   .setQuery({
     ...t.union<UpdateUserOutput>()({
       User: {
+        __typename: t.constant('User'),
         id: t.string,
         createdAt: t.string,
         email: t.string,
@@ -22,18 +23,23 @@ const UPDATE_USER_GQL = $gql
         confirmedAt: t.optional.string,
       },
       ForbiddenError: {
+        __typename: t.constant('ForbiddenError'),
         message: t.string,
       },
       NotFoundError: {
+        __typename: t.constant('NotFoundError'),
         message: t.string,
       },
       BadRequestError: {
+        __typename: t.constant('BadRequestError'),
         message: t.string,
       },
       ValidationError: {
+        __typename: t.constant('ValidationError'),
         details: [t.string],
       },
       UnknownError: {
+        __typename: t.constant('UnknownError'),
         message: t.string,
       },
     }),

@@ -20,23 +20,29 @@ const UPDATE_TAG_GQL = $gql
   .setQuery({
     ...t.union<UpdateTagOutput>()({
       Tag: {
+        __typename: t.constant('Tag'),
         id: t.string,
         name: t.string,
         category: t.optional.oneOf(TagCategory)!,
       },
       ForbiddenError: {
+        __typename: t.constant('ForbiddenError'),
         message: t.string,
       },
       BadRequestError: {
+        __typename: t.constant('BadRequestError'),
         message: t.string,
       },
       NotFoundError: {
+        __typename: t.constant('NotFoundError'),
         message: t.string,
       },
       ValidationError: {
+        __typename: t.constant('ValidationError'),
         details: [t.string],
       },
       UnknownError: {
+        __typename: t.constant('UnknownError'),
         message: t.string,
       },
     }),
@@ -55,20 +61,25 @@ const CREATE_TAG_INPUT = $gql
   .setQuery({
     ...t.union<CreateTagOutput>()({
       Tag: {
+        __typename: t.constant('Tag'),
         id: t.string,
         name: t.string,
         category: t.optional.oneOf(TagCategory)!,
       },
       ForbiddenError: {
+        __typename: t.constant('ForbiddenError'),
         message: t.string,
       },
       BadRequestError: {
+        __typename: t.constant('BadRequestError'),
         message: t.string,
       },
       ValidationError: {
+        __typename: t.constant('ValidationError'),
         details: [t.string],
       },
       UnknownError: {
+        __typename: t.constant('UnknownError'),
         message: t.string,
       },
     }),

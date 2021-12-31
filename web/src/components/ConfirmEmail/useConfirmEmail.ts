@@ -6,18 +6,23 @@ const CONFIRM_EMAIL_GQL = $gql
   .setQuery({
     ...t.union<ConfirmEmailOutput>()({
       EmailConfirmation: {
+        __typename: t.constant('EmailConfirmation'),
         confirmedAt: t.string,
       },
       NotFoundError: {
+        __typename: t.constant('NotFoundError'),
         message: t.string,
       },
       BadRequestError: {
+        __typename: t.constant('BadRequestError'),
         message: t.string,
       },
       ForbiddenError: {
+        __typename: t.constant('ForbiddenError'),
         message: t.string,
       },
       UnknownError: {
+        __typename: t.constant('UnknownError'),
         message: t.string,
       },
     }),

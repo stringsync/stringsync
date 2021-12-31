@@ -6,15 +6,19 @@ const CREATE_NOTATION_GQL = $gql
   .setQuery({
     ...t.union<CreateNotationOutput>()({
       Notation: {
+        __typename: t.constant('Notation'),
         id: t.string,
       },
       ForbiddenError: {
+        __typename: t.constant('ForbiddenError'),
         message: t.string,
       },
       ValidationError: {
+        __typename: t.constant('ValidationError'),
         details: [t.string],
       },
       UnknownError: {
+        __typename: t.constant('UnknownError'),
         message: t.string,
       },
     }),

@@ -32,7 +32,9 @@ export type Typenames<T extends GType<any>> = NonNullable<
 >;
 
 export type UnionSelection<T extends GType<any>> = {
-  [Typename in Typenames<T>]: DeepPartial<Omit<GTypeOf<T, Typename>, '__typename'>>;
+  [Typename in Typenames<T>]: DeepPartial<Omit<GTypeOf<T, Typename>, '__typename'>> & {
+    __typename: NonNullable<GTypeOf<T, Typename>['__typename']>;
+  };
 };
 
 export type GraphqlUnionSelection<T extends UnionSelection<any>> = {

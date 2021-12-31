@@ -42,6 +42,7 @@ const UPDATE_NOTATION_GQL = $gql
   .setQuery({
     ...t.union<UpdateNotationOutput>()({
       Notation: {
+        __typename: t.constant('Notation'),
         id: t.string,
         createdAt: t.string,
         updatedAt: t.string,
@@ -58,18 +59,23 @@ const UPDATE_NOTATION_GQL = $gql
         tags: [{ id: t.string, category: t.optional.oneOf(TagCategory)!, name: t.string }],
       },
       ForbiddenError: {
+        __typename: t.constant('ForbiddenError'),
         message: t.string,
       },
       NotFoundError: {
+        __typename: t.constant('NotFoundError'),
         message: t.string,
       },
       BadRequestError: {
+        __typename: t.constant('BadRequestError'),
         message: t.string,
       },
       ValidationError: {
+        __typename: t.constant('ValidationError'),
         details: [t.string],
       },
       UnknownError: {
+        __typename: t.constant('UnknownError'),
         message: t.string,
       },
     }),

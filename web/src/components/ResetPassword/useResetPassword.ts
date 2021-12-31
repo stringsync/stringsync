@@ -6,12 +6,15 @@ const RESET_PASSWORD_GQL = $gql
   .setQuery({
     ...t.union<ResetPasswordOutput>()({
       Processed: {
+        __typename: t.constant('Processed'),
         at: t.string,
       },
       BadRequestError: {
+        __typename: t.constant('BadRequestError'),
         message: t.string,
       },
       UnknownError: {
+        __typename: t.constant('UnknownError'),
         message: t.string,
       },
     }),

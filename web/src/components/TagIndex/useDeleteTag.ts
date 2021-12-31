@@ -13,12 +13,15 @@ const DELETE_TAG_GQL = $gql
   .setQuery({
     ...t.union<DeleteTagOutput>()({
       Processed: {
+        __typename: t.constant('Processed'),
         at: t.string,
       },
       ForbiddenError: {
+        __typename: t.constant('ForbiddenError'),
         message: t.string,
       },
       UnknownError: {
+        __typename: t.constant('UnknownError'),
         message: t.string,
       },
     }),

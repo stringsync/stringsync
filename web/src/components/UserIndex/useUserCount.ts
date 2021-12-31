@@ -10,12 +10,15 @@ const USER_COUNT_GQL = $gql
   .setQuery({
     ...t.union<UserCountOutput>()({
       NumberValue: {
+        __typename: t.constant('NumberValue'),
         value: t.number,
       },
       ForbiddenError: {
+        __typename: t.constant('ForbiddenError'),
         message: t.string,
       },
       UnknownError: {
+        __typename: t.constant('UnknownError'),
         message: t.string,
       },
     }),
