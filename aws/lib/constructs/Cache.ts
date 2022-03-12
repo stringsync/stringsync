@@ -1,35 +1,34 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as elasticache from '@aws-cdk/aws-elasticache';
-import * as cdk from '@aws-cdk/core';
+import { aws_ec2, aws_elasticache } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 
 type CacheProps = {
-  vpc: ec2.IVpc;
+  vpc: aws_ec2.IVpc;
 };
 
-export class Cache extends cdk.Construct {
-  readonly cluster: elasticache.CfnCacheCluster;
-  readonly subnetGroup: elasticache.CfnSubnetGroup;
-  readonly securityGroup: ec2.SecurityGroup;
+export class Cache extends Construct {
+  readonly cluster: aws_elasticache.CfnCacheCluster;
+  readonly subnetGroup: aws_elasticache.CfnSubnetGroup;
+  readonly securityGroup: aws_ec2.SecurityGroup;
   readonly port: number;
 
-  constructor(scope: cdk.Construct, id: string, props: CacheProps) {
+  constructor(scope: Construct, id: string, props: CacheProps) {
     super(scope, id);
 
     this.port = 6379;
 
-    this.securityGroup = new ec2.SecurityGroup(this, 'CacheSecurityGroup', {
+    this.securityGroup = new aws_ec2.SecurityGroup(this, 'CacheSecurityGroup', {
       description: 'Access to the Elasticcache service',
       vpc: props.vpc,
     });
 
-    this.subnetGroup = new elasticache.CfnSubnetGroup(this, 'CacheSubnet', {
+    this.subnetGroup = new aws_elasticache.CfnSubnetGroup(this, 'CacheSubnet', {
       description: 'Cache Subnet Group',
       subnetIds: props.vpc.selectSubnets({
-        subnetType: ec2.SubnetType.ISOLATED,
+        subnetType: aws_ec2.SubnetType.ISOLATED,
       }).subnetIds,
     });
 
-    this.cluster = new elasticache.CfnCacheCluster(this, 'CacheCluster', {
+    this.cluster = new aws_elasticache.CfnCacheCluster(this, 'CacheCluster', {
       engine: 'redis',
       port: this.port,
       engineVersion: '5.0.0',

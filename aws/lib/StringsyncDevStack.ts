@@ -1,11 +1,18 @@
-import * as cloudfront from '@aws-cdk/aws-cloudfront';
-import * as origins from '@aws-cdk/aws-cloudfront-origins';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as cdk from '@aws-cdk/core';
+import {
+  aws_cloudfront,
+  aws_cloudfront_origins,
+  aws_s3,
+  CfnOutput,
+  Duration,
+  RemovalPolicy,
+  Stack,
+  StackProps,
+} from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { Vod } from './constructs/Vod';
 
-export class StringsyncDevStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+export class StringsyncDevStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const vod = new Vod(this, 'Vod', {
@@ -14,22 +21,22 @@ export class StringsyncDevStack extends cdk.Stack {
       enableSns: false,
     });
 
-    const mediaCachePolicy = new cloudfront.CachePolicy(this, 'MediaCachePolicy', {
-      defaultTtl: cdk.Duration.minutes(30),
-      minTtl: cdk.Duration.minutes(30),
-      maxTtl: cdk.Duration.minutes(60),
-      cookieBehavior: cloudfront.CacheCookieBehavior.none(),
-      headerBehavior: cloudfront.CacheHeaderBehavior.none(),
-      queryStringBehavior: cloudfront.CacheQueryStringBehavior.none(),
+    const mediaCachePolicy = new aws_cloudfront.CachePolicy(this, 'MediaCachePolicy', {
+      defaultTtl: Duration.minutes(30),
+      minTtl: Duration.minutes(30),
+      maxTtl: Duration.minutes(60),
+      cookieBehavior: aws_cloudfront.CacheCookieBehavior.none(),
+      headerBehavior: aws_cloudfront.CacheHeaderBehavior.none(),
+      queryStringBehavior: aws_cloudfront.CacheQueryStringBehavior.none(),
       enableAcceptEncodingGzip: true,
     });
 
-    const mediaBucket = new s3.Bucket(this, 'MediaBucket', {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    const mediaBucket = new aws_s3.Bucket(this, 'MediaBucket', {
+      removalPolicy: RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
       cors: [
         {
-          allowedMethods: [s3.HttpMethods.GET],
+          allowedMethods: [aws_s3.HttpMethods.GET],
           allowedOrigins: ['*'],
           allowedHeaders: ['*'],
           maxAge: 3000,
@@ -37,28 +44,28 @@ export class StringsyncDevStack extends cdk.Stack {
       ],
     });
 
-    const mediaDistribution = new cloudfront.Distribution(this, 'MediaDistribution', {
+    const mediaDistribution = new aws_cloudfront.Distribution(this, 'MediaDistribution', {
       enabled: true,
       comment: 'Serves media from the dev media bucket',
-      priceClass: cloudfront.PriceClass.PRICE_CLASS_ALL,
+      priceClass: aws_cloudfront.PriceClass.PRICE_CLASS_ALL,
       defaultBehavior: {
-        origin: new origins.S3Origin(mediaBucket),
-        allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
+        origin: new aws_cloudfront_origins.S3Origin(mediaBucket),
+        allowedMethods: aws_cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
         cachePolicy: mediaCachePolicy,
       },
     });
 
-    new cdk.CfnOutput(this, 'VideoSrcBucket', {
+    new CfnOutput(this, 'VideoSrcBucket', {
       exportName: 'VideoSrcBucket',
       value: vod.sourceBucket.bucketName,
     });
 
-    new cdk.CfnOutput(this, 'MediaBucketName', {
+    new CfnOutput(this, 'MediaBucketName', {
       exportName: 'MediaBucketName',
       value: mediaBucket.bucketName,
     });
 
-    new cdk.CfnOutput(this, 'MediaCdnDomainName', {
+    new CfnOutput(this, 'MediaCdnDomainName', {
       exportName: 'MediaCdnDomainName',
       value: mediaDistribution.domainName,
     });

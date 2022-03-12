@@ -1,32 +1,30 @@
-import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as route53 from '@aws-cdk/aws-route53';
-import * as cdk from '@aws-cdk/core';
+import { aws_certificatemanager, aws_ec2, aws_route53 } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 
 type RegisterTargetProps = {
   subdomain: string;
-  target: route53.RecordTarget;
+  target: aws_route53.RecordTarget;
 };
 
 type DomainProps = {
-  vpc: ec2.IVpc;
+  vpc: aws_ec2.IVpc;
   domainName: string;
   hostedZoneName: string;
   hostedZoneId: string;
   subdomainNames: string[];
 };
 
-export class Domain extends cdk.Construct {
+export class Domain extends Construct {
   readonly domainName: string;
-  readonly hostedZone: route53.IHostedZone;
-  readonly records: route53.RecordSet[] = [];
-  readonly certificate: certificatemanager.Certificate;
+  readonly hostedZone: aws_route53.IHostedZone;
+  readonly records: aws_route53.RecordSet[] = [];
+  readonly certificate: aws_certificatemanager.Certificate;
   readonly subdomainNames = new Array<string>();
 
-  constructor(scope: cdk.Construct, id: string, props: DomainProps) {
+  constructor(scope: Construct, id: string, props: DomainProps) {
     super(scope, id);
 
-    this.hostedZone = route53.HostedZone.fromHostedZoneAttributes(scope, 'HostedZone', {
+    this.hostedZone = aws_route53.HostedZone.fromHostedZoneAttributes(scope, 'HostedZone', {
       zoneName: props.hostedZoneName,
       hostedZoneId: props.hostedZoneId,
     });
@@ -34,10 +32,10 @@ export class Domain extends cdk.Construct {
     this.domainName = props.domainName;
     this.subdomainNames = props.subdomainNames;
 
-    this.certificate = new certificatemanager.Certificate(scope, 'Certificate', {
+    this.certificate = new aws_certificatemanager.Certificate(scope, 'Certificate', {
       domainName: this.domainName,
       subjectAlternativeNames: this.subdomainNames.map((subdomainName) => this.sub(subdomainName)),
-      validation: certificatemanager.CertificateValidation.fromDns(this.hostedZone),
+      validation: aws_certificatemanager.CertificateValidation.fromDns(this.hostedZone),
     });
   }
 
@@ -45,8 +43,8 @@ export class Domain extends cdk.Construct {
     return `${subdomainName}.${this.domainName}`;
   }
 
-  registerTarget(scope: cdk.Construct, recordId: string, props: RegisterTargetProps): route53.RecordSet {
-    const record = new route53.ARecord(scope, recordId, {
+  registerTarget(scope: Construct, recordId: string, props: RegisterTargetProps): aws_route53.RecordSet {
+    const record = new aws_route53.ARecord(scope, recordId, {
       zone: this.hostedZone,
       recordName: props.subdomain,
       target: props.target,

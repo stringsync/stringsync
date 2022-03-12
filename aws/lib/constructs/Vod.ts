@@ -1,7 +1,5 @@
-import * as s3 from '@aws-cdk/aws-s3';
-import * as sqs from '@aws-cdk/aws-sqs';
-import * as cfninc from '@aws-cdk/cloudformation-include';
-import * as cdk from '@aws-cdk/core';
+import { aws_s3, aws_sqs, cloudformation_include } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 
 type VodProps = {
   adminEmail: string;
@@ -9,15 +7,15 @@ type VodProps = {
   enableAcceleratedTranscoding: boolean;
 };
 
-export class Vod extends cdk.Construct {
-  readonly template: cfninc.CfnInclude;
-  readonly sourceBucket: s3.IBucket;
-  readonly queue: sqs.IQueue;
+export class Vod extends Construct {
+  readonly template: cloudformation_include.CfnInclude;
+  readonly sourceBucket: aws_s3.IBucket;
+  readonly queue: aws_sqs.IQueue;
 
-  constructor(scope: cdk.Construct, id: string, props: VodProps) {
+  constructor(scope: Construct, id: string, props: VodProps) {
     super(scope, id);
 
-    this.template = new cfninc.CfnInclude(scope, 'VodTemplate', {
+    this.template = new cloudformation_include.CfnInclude(scope, 'VodTemplate', {
       templateFile: 'templates/vod.yml',
       parameters: {
         AdminEmail: props.adminEmail,
@@ -27,9 +25,9 @@ export class Vod extends cdk.Construct {
     });
 
     const bucketName = this.template.getOutput('Source').value;
-    this.sourceBucket = s3.Bucket.fromBucketName(scope, 'VodSourceBucket', bucketName);
+    this.sourceBucket = aws_s3.Bucket.fromBucketName(scope, 'VodSourceBucket', bucketName);
 
     const queueArn = this.template.getOutput('SqsARN').value;
-    this.queue = sqs.Queue.fromQueueArn(scope, 'VodSqsQueue', queueArn);
+    this.queue = aws_sqs.Queue.fromQueueArn(scope, 'VodSqsQueue', queueArn);
   }
 }

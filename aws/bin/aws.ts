@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-import * as cdk from '@aws-cdk/core';
+import * as core from 'aws-cdk-lib';
 import 'source-map-support/register';
 import { StringsyncDevStack } from '../lib/StringsyncDevStack';
 import { StringsyncStack } from '../lib/StringsyncStack';
 
-const app = new cdk.App();
+const app = new core.App();
 
 new StringsyncStack(app, 'stringsync', {
   stackName: 'stringsync',
