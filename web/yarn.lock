@@ -2514,6 +2514,13 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
+"@stringsync/musicxml@0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@stringsync/musicxml/-/musicxml-0.2.1.tgz#a12b8ec72359978fcb1c253795a84656645045bf"
+  integrity sha512-lQA9xqTDjjLClzFIgovD+aNOmYydJry2TwOuJmEFwnvo5pPG2f7b1q975uPhGzRt2S9qs9B7xqcX1PpzCYDooQ==
+  dependencies:
+    xml-js "1.6.11"
+
 "@surma/rollup-plugin-off-main-thread@^1.1.1":
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/@surma/rollup-plugin-off-main-thread/-/rollup-plugin-off-main-thread-1.4.2.tgz#e6786b6af5799f82f7ab3a82e53f6182d2b91a58"
@@ -16236,6 +16243,13 @@ ws@^7.4.6:
   version "7.5.5"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.5.tgz#8b4bc4af518cfabd0473ae4f99144287b33eb881"
   integrity sha512-BAkMFcAzl8as1G/hArkxOxq3G7pjUqQ3gzYbLL0/5zNkph70e+lCoxBGnm6AW1+/aiNeV4fnKqZ8m4GZewmH2w==
+
+xml-js@1.6.11:
+  version "1.6.11"
+  resolved "https://registry.yarnpkg.com/xml-js/-/xml-js-1.6.11.tgz#927d2f6947f7f1c19a316dd8eea3614e8b18f8e9"
+  integrity sha512-7rVi2KMfwfWFl+GpPg6m80IVMWXLRjO+PxTq7V2CDhoGak0wzYzFgUY2m4XJ47OGdXd8eLE8EmwfAmdjw7lC1g==
+  dependencies:
+    sax "^1.2.4"
 
 xml-name-validator@^3.0.0:
   version "3.0.0"
