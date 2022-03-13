@@ -1,6 +1,7 @@
 import { InfoCircleOutlined, PauseOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Col, Divider, Drawer, Radio, RadioChangeEvent, Row, Select, Tooltip } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import { CheckboxOptionType, CheckboxValueType } from 'antd/lib/checkbox/Group';
 import React, { RefObject, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDevice } from '../../ctx/device';
@@ -11,7 +12,7 @@ import { Detail } from './Detail';
 import { useScales } from './hooks/useScales';
 import { Playback } from './Playback';
 import { Seekbar } from './Seekbar';
-import { FretMarkerDisplay, NotationSettings, RenderableNotation, ScaleSelectionType } from './types';
+import { DisplayMode, FretMarkerDisplay, NotationSettings, RenderableNotation, ScaleSelectionType } from './types';
 
 export const CONTROLS_HEIGHT_PX = 75;
 
@@ -122,6 +123,44 @@ export const Controls: React.FC<Props> = (props) => {
   const onIsLoopActiveChange = (event: CheckboxChangeEvent) => {
     setSettings({ ...settings, isLoopActive: event.target.checked });
   };
+
+  // display mode settings
+  const onDisplayModeChange = (values: CheckboxValueType[]) => {
+    if (values.contains('notes') && values.contains('tabs')) {
+      setSettings({ ...settings, displayMode: DisplayMode.NotesAndTabs });
+    } else if (values.contains('notes')) {
+      setSettings({ ...settings, displayMode: DisplayMode.NotesOnly });
+    } else if (values.contains('tabs')) {
+      setSettings({ ...settings, displayMode: DisplayMode.TabsOnly });
+    } else {
+      setSettings({ ...settings, displayMode: DisplayMode.TabsOnly });
+    }
+  };
+  let displayModeOptions = new Array<CheckboxOptionType>();
+  let displayModeCheckboxValues = new Array<string>();
+  switch (settings.displayMode) {
+    case DisplayMode.TabsOnly:
+      displayModeOptions = [
+        { label: 'tabs', value: 'tabs', disabled: true },
+        { label: 'notes', value: 'notes', disabled: false },
+      ];
+      displayModeCheckboxValues = ['tabs'];
+      break;
+    case DisplayMode.NotesOnly:
+      displayModeOptions = [
+        { label: 'tabs', value: 'tabs', disabled: false },
+        { label: 'notes', value: 'notes', disabled: true },
+      ];
+      displayModeCheckboxValues = ['notes'];
+      break;
+    case DisplayMode.NotesAndTabs:
+      displayModeOptions = [
+        { label: 'tabs', value: 'tabs', disabled: false },
+        { label: 'notes', value: 'notes', disabled: false },
+      ];
+      displayModeCheckboxValues = ['tabs', 'notes'];
+      break;
+  }
 
   // video player state
   const [playState, setPlayState] = useState(() => mediaPlayer.getPlayState());
@@ -263,6 +302,16 @@ export const Controls: React.FC<Props> = (props) => {
               </Select.OptGroup>
             )}
           </Select>
+
+          <br />
+          <br />
+
+          <h5>display</h5>
+          <Checkbox.Group
+            options={displayModeOptions}
+            onChange={onDisplayModeChange}
+            value={displayModeCheckboxValues}
+          />
 
           <Divider />
 

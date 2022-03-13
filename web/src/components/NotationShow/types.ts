@@ -9,4 +9,5 @@ export type PersistentSettings = Pick<
   | 'preferredLayout'
   | 'defaultSidecarWidthPx'
   | 'defaultTheaterHeightPx'
+  | 'displayMode'
 >;

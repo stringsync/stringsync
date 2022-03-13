@@ -8,7 +8,7 @@ import { KeyInfo } from '../../lib/MusicDisplay/helpers';
 import { SupportedSVGEventNames } from '../../lib/MusicDisplay/svg';
 import { NumberRange } from '../../util/NumberRange';
 import * as constants from './constants';
-import { FretMarkerDisplay, NotationLayout, NotationSettings, ScaleSelectionType } from './types';
+import { DisplayMode, FretMarkerDisplay, NotationLayout, NotationSettings, ScaleSelectionType } from './types';
 
 const ALL_LAYOUTS: NotationLayout[] = ['sidecar', 'theater'];
 const MOUSE_SVG_EVENT_NAMES: SupportedSVGEventNames[] = ['mousedown', 'mousemove', 'mouseup'];
@@ -67,6 +67,7 @@ export const getDefaultSettings = (device: Device): NotationSettings => ({
   isLoopActive: false,
   defaultTheaterHeightPx: constants.MIN_THEATER_HEIGHT_PX,
   defaultSidecarWidthPx: 480,
+  displayMode: DisplayMode.TabsOnly,
 });
 
 export const getKeyInfo = (musicDisplay: MusicDisplay): KeyInfo | null => {

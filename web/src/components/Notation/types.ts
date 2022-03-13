@@ -28,6 +28,12 @@ export enum ScaleSelectionType {
   Random,
 }
 
+export enum DisplayMode {
+  TabsOnly,
+  NotesOnly,
+  NotesAndTabs,
+}
+
 export type NotationSettings = {
   preferredLayout: NotationLayout;
   isFretboardVisible: boolean;
@@ -39,4 +45,5 @@ export type NotationSettings = {
   isLoopActive: boolean;
   defaultTheaterHeightPx: number;
   defaultSidecarWidthPx: number;
+  displayMode: DisplayMode;
 };

@@ -12,9 +12,8 @@ export const useMusicDisplay = (
   notation: Nullable<RenderableNotation>,
   musicDisplayContainer: Nullable<HTMLDivElement>,
   scrollContainer: Nullable<HTMLDivElement>
-): [MusicDisplay, boolean, MusicXML] => {
+): [MusicDisplay, boolean] => {
   const [loading, setLoading] = useState(false);
-  const [musicXml, setMusicXml] = useState<MusicXML>(() => MusicXML.createPartwise());
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay>(() => new NoopMusicDisplay());
   const device = useDevice();
 
@@ -54,9 +53,7 @@ export const useMusicDisplay = (
       .then((res) => res.text())
       .then((xmlStr) => {
         // Parsing the xml string also validates it.
-        const musicXml = MusicXML.parse(xmlStr);
-        setMusicXml(musicXml);
-        return musicDisplay.load(musicXml.serialize());
+        return musicDisplay.load(MusicXML.parse(xmlStr).serialize());
       });
 
     return () => {
@@ -66,5 +63,5 @@ export const useMusicDisplay = (
     };
   }, [notation, device, musicDisplayContainer, scrollContainer]);
 
-  return [musicDisplay, loading, musicXml];
+  return [musicDisplay, loading];
 };

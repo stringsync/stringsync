@@ -19,6 +19,7 @@ import { compose } from '../../util/compose';
 import { scrollToTop } from '../../util/scrollToTop';
 import { FullHeightDiv } from '../FullHeightDiv';
 import { FretMarkerDisplay, Notation, NotationLayoutOptions, NotationSettings } from '../Notation';
+import { DisplayMode } from '../Notation/types';
 import { SuggestedNotations } from './SuggestedNotations';
 import { PersistentSettings } from './types';
 
@@ -107,6 +108,7 @@ const NotationShow: React.FC = enhance(() => {
     fretMarkerDisplay: FretMarkerDisplay.None,
     defaultSidecarWidthPx: 500,
     defaultTheaterHeightPx: 200,
+    displayMode: DisplayMode.TabsOnly,
   });
   const [defaultSettings, setDefaultSettings] = useLocalStorage<PersistentSettings>(
     NOTATION_SHOW_SETTINGS_KEY,
@@ -122,6 +124,7 @@ const NotationShow: React.FC = enhance(() => {
         fretMarkerDisplay: settings.fretMarkerDisplay,
         defaultSidecarWidthPx: settings.defaultSidecarWidthPx,
         defaultTheaterHeightPx: settings.defaultTheaterHeightPx,
+        displayMode: settings.displayMode,
       });
     },
     [setDefaultSettings]
