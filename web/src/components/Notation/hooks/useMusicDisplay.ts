@@ -1,3 +1,4 @@
+import { MusicXML } from '@stringsync/musicxml';
 import { DrawingParametersEnum } from 'opensheetmusicdisplay';
 import { useEffect, useState } from 'react';
 import { useDevice } from '../../../ctx/device';
@@ -11,8 +12,9 @@ export const useMusicDisplay = (
   notation: Nullable<RenderableNotation>,
   musicDisplayContainer: Nullable<HTMLDivElement>,
   scrollContainer: Nullable<HTMLDivElement>
-): [MusicDisplay, boolean] => {
+): [MusicDisplay, boolean, MusicXML] => {
   const [loading, setLoading] = useState(false);
+  const [musicXml, setMusicXml] = useState<MusicXML>(() => MusicXML.createPartwise());
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay>(() => new NoopMusicDisplay());
   const device = useDevice();
 
@@ -48,7 +50,14 @@ export const useMusicDisplay = (
       musicDisplay.eventBus.subscribe('resizeended', stopLoading),
     ];
 
-    musicDisplay.load(notation.musicXmlUrl);
+    fetch(notation.musicXmlUrl)
+      .then((res) => res.text())
+      .then((xmlStr) => {
+        // Parsing the xml string also validates it.
+        const musicXml = MusicXML.parse(xmlStr);
+        setMusicXml(musicXml);
+        return musicDisplay.load(musicXml.serialize());
+      });
 
     return () => {
       setMusicDisplay(new NoopMusicDisplay());
@@ -57,5 +66,5 @@ export const useMusicDisplay = (
     };
   }, [notation, device, musicDisplayContainer, scrollContainer]);
 
-  return [musicDisplay, loading];
+  return [musicDisplay, loading, musicXml];
 };
