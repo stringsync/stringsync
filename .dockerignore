@@ -4,3 +4,4 @@ e2e
 .vscode
 .devcontainer
 .DS_STORE
+tsconfig.tsbuildinfo
