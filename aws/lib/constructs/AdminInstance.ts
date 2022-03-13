@@ -29,7 +29,7 @@ export class AdminInstance extends Construct {
     this.securityGroup.addIngressRule(aws_ec2.Peer.anyIpv4(), aws_ec2.Port.tcp(22), 'Allow SSH Access');
 
     this.role = new aws_iam.Role(this, 'ec2Role', {
-      assumedBy: new aws_iam.ServicePrincipal('aws_ec2.amazonaws.com'),
+      assumedBy: new aws_iam.ServicePrincipal('ec2.amazonaws.com'),
     });
 
     this.role.addManagedPolicy(aws_iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
