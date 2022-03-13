@@ -79,7 +79,6 @@ export const MusicSheet: React.FC<Props> = (props) => {
   );
   useEffect(() => {
     onMusicDisplayChange?.(musicDisplay);
-    (window as any).md = musicDisplay;
   }, [musicDisplay, onMusicDisplayChange]);
 
   // css effects
