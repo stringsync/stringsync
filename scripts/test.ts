@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import * as path from 'path';
 import * as constants from './constants';
 import * as docker from './docker';
 import { Project } from './types';
@@ -22,7 +23,14 @@ const doTest = async (composeFile: string, project: Project, ci: boolean, watch:
   try {
     const result = await cmd(
       'docker-compose',
-      ['-f', composeFile, 'run', '--rm', 'test', bashC(...getTestCmd(project, ci, watch))].filter(identity),
+      [
+        '-f',
+        path.join(docker.DOCKER_DIR, composeFile),
+        'run',
+        '--rm',
+        'test',
+        bashC(...getTestCmd(project, ci, watch)),
+      ].filter(identity),
       {
         shell: true,
       }
