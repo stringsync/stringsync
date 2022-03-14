@@ -49,4 +49,6 @@ export class NoopMusicDisplay implements MusicDisplay {
   }
 
   resize() {}
+
+  setDisplayMode() {}
 }

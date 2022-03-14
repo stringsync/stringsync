@@ -6,13 +6,13 @@ import React, { RefObject, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDevice } from '../../ctx/device';
 import { MediaPlayer, PlayState } from '../../lib/MediaPlayer';
-import { MusicDisplay } from '../../lib/MusicDisplay';
+import { DisplayMode, MusicDisplay } from '../../lib/MusicDisplay';
 import { Nullable } from '../../util/types';
 import { Detail } from './Detail';
 import { useScales } from './hooks/useScales';
 import { Playback } from './Playback';
 import { Seekbar } from './Seekbar';
-import { DisplayMode, FretMarkerDisplay, NotationSettings, RenderableNotation, ScaleSelectionType } from './types';
+import { FretMarkerDisplay, NotationSettings, RenderableNotation, ScaleSelectionType } from './types';
 
 export const CONTROLS_HEIGHT_PX = 75;
 

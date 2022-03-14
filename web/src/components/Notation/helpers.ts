@@ -3,12 +3,12 @@ import { NotationLayoutOptions } from '.';
 import { Device } from '../../ctx/device';
 import { ViewportState } from '../../ctx/viewport';
 import { InternalError } from '../../errors';
-import { MusicDisplay } from '../../lib/MusicDisplay';
+import { DisplayMode, MusicDisplay } from '../../lib/MusicDisplay';
 import { KeyInfo } from '../../lib/MusicDisplay/helpers';
 import { SupportedSVGEventNames } from '../../lib/MusicDisplay/svg';
 import { NumberRange } from '../../util/NumberRange';
 import * as constants from './constants';
-import { DisplayMode, FretMarkerDisplay, NotationLayout, NotationSettings, ScaleSelectionType } from './types';
+import { FretMarkerDisplay, NotationLayout, NotationSettings, ScaleSelectionType } from './types';
 
 const ALL_LAYOUTS: NotationLayout[] = ['sidecar', 'theater'];
 const MOUSE_SVG_EVENT_NAMES: SupportedSVGEventNames[] = ['mousedown', 'mousemove', 'mouseup'];

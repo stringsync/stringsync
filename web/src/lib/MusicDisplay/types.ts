@@ -17,6 +17,12 @@ import {
 import { ScrollBehaviorType, Scroller } from './scroller';
 import { SVGSettings } from './svg';
 
+export enum DisplayMode {
+  TabsOnly,
+  NotesOnly,
+  NotesAndTabs,
+}
+
 export type MusicDisplayOptions = IOSMDOptions & {
   syncSettings: SyncSettings;
   scrollContainer: HTMLDivElement;
@@ -35,6 +41,7 @@ export interface MusicDisplay {
   getLoop(): Loop;
   getMeta(): Meta;
   getLocator(): MusicDisplayLocator | null;
+  setDisplayMode(displayMode: DisplayMode): void;
 }
 
 export type MusicDisplayEventBus = EventBus<{

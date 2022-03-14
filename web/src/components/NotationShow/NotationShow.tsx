@@ -15,11 +15,11 @@ import { useNotation } from '../../hooks/useNotation';
 import { useNoTouchAction } from '../../hooks/useNoTouchAction';
 import { useNoTouchCallout } from '../../hooks/useNoTouchCallout';
 import { useNoUserSelect } from '../../hooks/useNoUserSelect';
+import { DisplayMode } from '../../lib/MusicDisplay';
 import { compose } from '../../util/compose';
 import { scrollToTop } from '../../util/scrollToTop';
 import { FullHeightDiv } from '../FullHeightDiv';
 import { FretMarkerDisplay, Notation, NotationLayoutOptions, NotationSettings } from '../Notation';
-import { DisplayMode } from '../Notation/types';
 import { SuggestedNotations } from './SuggestedNotations';
 import { PersistentSettings } from './types';
 

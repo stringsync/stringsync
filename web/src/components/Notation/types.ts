@@ -1,4 +1,5 @@
 import { Notation, Tag, User } from '../../domain';
+import { DisplayMode } from '../../lib/MusicDisplay';
 
 export type NotationLayout = 'theater' | 'sidecar';
 
@@ -26,12 +27,6 @@ export enum ScaleSelectionType {
   Dynamic,
   User,
   Random,
-}
-
-export enum DisplayMode {
-  TabsOnly,
-  NotesOnly,
-  NotesAndTabs,
 }
 
 export type NotationSettings = {
