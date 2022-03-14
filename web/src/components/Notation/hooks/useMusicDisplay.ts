@@ -53,7 +53,7 @@ export const useMusicDisplay = (
       .then((res) => res.text())
       .then((xmlStr) => {
         // Parsing the xml string also validates it.
-        return musicDisplay.load(MusicXML.parse(xmlStr).serialize());
+        return musicDisplay.load(MusicXML.parse(xmlStr));
       });
 
     return () => {
