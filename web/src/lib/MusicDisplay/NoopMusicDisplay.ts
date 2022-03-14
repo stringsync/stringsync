@@ -10,7 +10,6 @@ const DUMMY_SVG = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 
 export class NoopMusicDisplay implements MusicDisplay {
   eventBus = new EventBus();
-  musicXml = null;
 
   private cursor = new NoopCursor();
   private fx = new Fx(DUMMY_SVG);

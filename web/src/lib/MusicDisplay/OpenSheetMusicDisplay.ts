@@ -1,7 +1,6 @@
 import { MusicXML } from '@stringsync/musicxml';
 import { merge } from 'lodash';
 import { DrawingParametersEnum } from 'opensheetmusicdisplay';
-import { Nullable } from '../../util/types';
 import { EventBus } from '../EventBus';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
 import { MusicDisplay, MusicDisplayEventBus, MusicDisplayOptions } from './types';
@@ -31,7 +30,6 @@ export class OpenSheetMusicDisplay implements MusicDisplay {
   private imd: InternalMusicDisplay;
 
   eventBus: MusicDisplayEventBus = new EventBus();
-  musicXml: Nullable<MusicXML> = null;
 
   constructor(container: HTMLDivElement, partialOpts: Partial<MusicDisplayOptions> = {}) {
     const opts = merge({}, DEFAULT_OPTS, partialOpts);
@@ -39,7 +37,6 @@ export class OpenSheetMusicDisplay implements MusicDisplay {
   }
 
   async load(musicXml: MusicXML) {
-    this.musicXml = musicXml;
     await this.imd.load(musicXml.serialize());
     this.imd.render();
   }

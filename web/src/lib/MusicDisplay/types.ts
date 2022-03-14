@@ -1,6 +1,5 @@
 import { MusicXML } from '@stringsync/musicxml';
 import { IOSMDOptions } from 'opensheetmusicdisplay';
-import { Nullable } from '../../util/types';
 import { EventBus } from '../EventBus';
 import { CursorWrapper } from './cursors';
 import { Fx } from './fx';
@@ -25,7 +24,6 @@ export type MusicDisplayOptions = IOSMDOptions & {
 
 export interface MusicDisplay {
   eventBus: MusicDisplayEventBus;
-  musicXml: Nullable<MusicXML>;
   load(musicXml: MusicXML): Promise<void>;
   resize(): void;
   dispose(): void;
