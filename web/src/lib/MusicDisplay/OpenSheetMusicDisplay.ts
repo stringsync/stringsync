@@ -4,7 +4,7 @@ import { DrawingParametersEnum } from 'opensheetmusicdisplay';
 import { Nullable } from '../../util/types';
 import { EventBus } from '../EventBus';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
-import { DisplayMode, MusicDisplay, MusicDisplayEventBus, MusicDisplayOptions } from './types';
+import { MusicDisplay, MusicDisplayEventBus, MusicDisplayOptions } from './types';
 
 const DUMMY_DIV = document.createElement('div');
 DUMMY_DIV.setAttribute('id', 'dummy-scroll-container');
@@ -75,6 +75,4 @@ export class OpenSheetMusicDisplay implements MusicDisplay {
   getLocator() {
     return this.imd.locator;
   }
-
-  setDisplayMode(displayMode: DisplayMode) {}
 }

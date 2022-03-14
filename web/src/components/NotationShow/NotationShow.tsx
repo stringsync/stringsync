@@ -15,7 +15,7 @@ import { useNotation } from '../../hooks/useNotation';
 import { useNoTouchAction } from '../../hooks/useNoTouchAction';
 import { useNoTouchCallout } from '../../hooks/useNoTouchCallout';
 import { useNoUserSelect } from '../../hooks/useNoUserSelect';
-import { DisplayMode } from '../../lib/MusicDisplay';
+import { DisplayMode } from '../../lib/musicxml';
 import { compose } from '../../util/compose';
 import { scrollToTop } from '../../util/scrollToTop';
 import { FullHeightDiv } from '../FullHeightDiv';

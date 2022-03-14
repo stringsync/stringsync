@@ -1,5 +1,5 @@
 import { Notation, Tag, User } from '../../domain';
-import { DisplayMode } from '../../lib/MusicDisplay';
+import { DisplayMode } from '../../lib/musicxml';
 
 export type NotationLayout = 'theater' | 'sidecar';
 
