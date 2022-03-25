@@ -6,6 +6,7 @@ import { MusicDisplay } from '../../lib/MusicDisplay';
 import { Nullable } from '../../util/types';
 import { useMusicDisplay } from './hooks/useMusicDisplay';
 import { useCSSCursor } from './hooks/useMusicDisplayCSSCursor';
+import { useMusicXml } from './hooks/useMusicXML';
 
 const Outer = styled.div<{ $cursor: string }>`
   cursor: ${(props) => props.$cursor};
@@ -70,13 +71,16 @@ export const MusicSheet: React.FC<Props> = (props) => {
   const onMusicDisplayChange = props.onMusicDisplayChange;
 
   // music display
-  const musicDisplayDivRef = useRef<HTMLDivElement>(null);
+  const musicDisplayContainerRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [musicDisplay, musicDisplayLoading] = useMusicDisplay(
-    notation,
-    musicDisplayDivRef.current,
-    scrollContainerRef.current
-  );
+  const musicXml = useMusicXml(notation);
+  const [musicDisplay, musicDisplayLoading] = useMusicDisplay({
+    musicXml,
+    deadTimeMs: notation?.deadTimeMs || 0,
+    durationMs: notation?.durationMs || 0,
+    musicDisplayContainer: musicDisplayContainerRef.current,
+    scrollContainer: scrollContainerRef.current,
+  });
   useEffect(() => {
     onMusicDisplayChange?.(musicDisplay);
   }, [musicDisplay, onMusicDisplayChange]);
@@ -115,7 +119,7 @@ export const MusicSheet: React.FC<Props> = (props) => {
 
       <Outer data-testid="music-sheet" $cursor={cursor} ref={scrollContainerRef}>
         <MusicSheetContainer data-notation>
-          <MusicDisplayDiv draggable={false} ref={musicDisplayDivRef} />
+          <MusicDisplayDiv draggable={false} ref={musicDisplayContainerRef} />
         </MusicSheetContainer>
       </Outer>
     </>

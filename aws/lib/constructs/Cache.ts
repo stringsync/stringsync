@@ -24,7 +24,7 @@ export class Cache extends Construct {
     this.subnetGroup = new aws_elasticache.CfnSubnetGroup(this, 'CacheSubnet', {
       description: 'Cache Subnet Group',
       subnetIds: props.vpc.selectSubnets({
-        subnetType: aws_ec2.SubnetType.ISOLATED,
+        subnetType: aws_ec2.SubnetType.PRIVATE_ISOLATED,
       }).subnetIds,
     });
 

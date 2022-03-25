@@ -2,39 +2,42 @@ import { MusicXML } from '@stringsync/musicxml';
 import { DrawingParametersEnum } from 'opensheetmusicdisplay';
 import { useEffect, useState } from 'react';
 import { useDevice } from '../../../ctx/device';
+import { useMemoCmp } from '../../../hooks/useMemoCmp';
 import { MusicDisplay, OpenSheetMusicDisplay } from '../../../lib/MusicDisplay';
 import { NoopMusicDisplay } from '../../../lib/MusicDisplay/NoopMusicDisplay';
 import { Nullable } from '../../../util/types';
 import * as helpers from '../helpers';
-import { RenderableNotation } from '../types';
 
-export const useMusicDisplay = (
-  notation: Nullable<RenderableNotation>,
-  musicDisplayContainer: Nullable<HTMLDivElement>,
-  scrollContainer: Nullable<HTMLDivElement>
-): [MusicDisplay, boolean] => {
+export type UseMusicDisplayOpts = {
+  musicXml: Nullable<MusicXML>;
+  deadTimeMs: number;
+  durationMs: number;
+  musicDisplayContainer: Nullable<HTMLDivElement>;
+  scrollContainer: Nullable<HTMLDivElement>;
+};
+
+export const useMusicDisplay = (opts: UseMusicDisplayOpts): [MusicDisplay, boolean] => {
+  opts = useMemoCmp(opts);
+
   const [loading, setLoading] = useState(false);
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay>(() => new NoopMusicDisplay());
   const device = useDevice();
 
   useEffect(() => {
-    if (!notation) {
+    if (!opts.musicXml) {
       return;
     }
-    if (!notation.musicXmlUrl) {
+    if (!opts.musicDisplayContainer) {
       return;
     }
-    if (!musicDisplayContainer) {
-      return;
-    }
-    if (!scrollContainer) {
+    if (!opts.scrollContainer) {
       return;
     }
 
-    const musicDisplay = new OpenSheetMusicDisplay(musicDisplayContainer, {
-      syncSettings: { deadTimeMs: notation.deadTimeMs, durationMs: notation.durationMs },
+    const musicDisplay = new OpenSheetMusicDisplay(opts.musicDisplayContainer, {
+      syncSettings: { deadTimeMs: opts.deadTimeMs, durationMs: opts.durationMs },
       svgSettings: { eventNames: helpers.getSvgEventNames(device) },
-      scrollContainer,
+      scrollContainer: opts.scrollContainer,
       drawingParameters: device.mobile ? DrawingParametersEnum.compacttight : DrawingParametersEnum.default,
     });
     setMusicDisplay(musicDisplay);
@@ -49,19 +52,14 @@ export const useMusicDisplay = (
       musicDisplay.eventBus.subscribe('resizeended', stopLoading),
     ];
 
-    fetch(notation.musicXmlUrl)
-      .then((res) => res.text())
-      .then((xmlStr) => {
-        // Parsing the xml string also validates it.
-        return musicDisplay.load(MusicXML.parse(xmlStr));
-      });
+    musicDisplay.load(opts.musicXml);
 
     return () => {
       setMusicDisplay(new NoopMusicDisplay());
       musicDisplay.eventBus.unsubscribe(...eventBusIds);
       musicDisplay.dispose();
     };
-  }, [notation, device, musicDisplayContainer, scrollContainer]);
+  }, [opts, device]);
 
   return [musicDisplay, loading];
 };
