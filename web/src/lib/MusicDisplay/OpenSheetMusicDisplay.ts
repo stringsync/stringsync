@@ -37,7 +37,7 @@ export class OpenSheetMusicDisplay implements MusicDisplay {
   }
 
   async load(musicXml: MusicXML) {
-    await Promise.resolve();
+    await Promise.resolve(); // workaround that allows the notation to render
     await this.imd.load(musicXml.serialize());
     this.imd.render();
   }
