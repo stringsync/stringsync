@@ -1,9 +1,11 @@
 import { MusicXML } from '@stringsync/musicxml';
 import { useEffect, useRef, useState } from 'react';
+import { DisplayMode } from '../../../lib/musicxml';
+import { withDisplayMode } from '../../../lib/musicxml/withDisplayMode';
 import { Nullable } from '../../../util/types';
 import { RenderableNotation } from '../types';
 
-export const useMusicXml = (notation: Nullable<RenderableNotation>): Nullable<MusicXML> => {
+export const useMusicXml = (notation: Nullable<RenderableNotation>, displayMode: DisplayMode): Nullable<MusicXML> => {
   const [musicXml, setMusicXml] = useState<Nullable<MusicXML>>(null);
   const lastFetchInvocationToken = useRef<Symbol>(Symbol());
 
@@ -26,7 +28,16 @@ export const useMusicXml = (notation: Nullable<RenderableNotation>): Nullable<Mu
         const musicXml = MusicXML.parse(text);
         setMusicXml(musicXml);
       });
-  }, [notation]);
+  }, [notation, displayMode]);
 
-  return musicXml;
+  const [musicXmlWithDisplayMode, setMusicXmlWithDisplayMode] = useState<Nullable<MusicXML>>(null);
+  useEffect(() => {
+    if (!musicXml) {
+      return;
+    }
+    const nextMusicXmlWithDisplayMode = withDisplayMode(musicXml, displayMode);
+    setMusicXmlWithDisplayMode(nextMusicXmlWithDisplayMode);
+  }, [musicXml, displayMode]);
+
+  return musicXmlWithDisplayMode;
 };

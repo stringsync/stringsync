@@ -231,7 +231,12 @@ export const Notation: React.FC<Props> = (props) => {
             </Sidecar>
             <FlexColumn>
               <Flex1>
-                <MusicSheet skeleton={skeleton} notation={notation} onMusicDisplayChange={setMusicDisplay} />
+                <MusicSheet
+                  skeleton={skeleton}
+                  notation={notation}
+                  onMusicDisplayChange={setMusicDisplay}
+                  displayMode={settings.displayMode}
+                />
               </Flex1>
               {settings.isFretboardVisible && (
                 <Fretboard
@@ -308,7 +313,12 @@ export const Notation: React.FC<Props> = (props) => {
             />
             <FlexColumn>
               <Flex1>
-                <MusicSheet skeleton={skeleton} notation={notation} onMusicDisplayChange={setMusicDisplay} />
+                <MusicSheet
+                  skeleton={skeleton}
+                  notation={notation}
+                  onMusicDisplayChange={setMusicDisplay}
+                  displayMode={settings.displayMode}
+                />
               </Flex1>
               {settings.isFretboardVisible && (
                 <Fretboard

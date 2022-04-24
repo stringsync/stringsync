@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { RenderableNotation } from '.';
 import { MusicDisplay } from '../../lib/MusicDisplay';
+import { DisplayMode } from '../../lib/musicxml';
 import { Nullable } from '../../util/types';
 import { useMusicDisplay } from './hooks/useMusicDisplay';
 import { useCSSCursor } from './hooks/useMusicDisplayCSSCursor';
@@ -61,6 +62,7 @@ const Loading = styled.small`
 type Props = {
   skeleton: boolean;
   notation: Nullable<RenderableNotation>;
+  displayMode: DisplayMode;
   onMusicDisplayChange?: (musicDisplay: MusicDisplay) => void;
 };
 
@@ -73,7 +75,7 @@ export const MusicSheet: React.FC<Props> = (props) => {
   // music display
   const musicDisplayContainerRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const musicXml = useMusicXml(notation);
+  const musicXml = useMusicXml(notation, props.displayMode);
   const [musicDisplay, musicDisplayLoading] = useMusicDisplay({
     musicXml,
     deadTimeMs: notation?.deadTimeMs || 0,
