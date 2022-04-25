@@ -75,7 +75,7 @@ export const MusicSheet: React.FC<Props> = (props) => {
   // music display
   const musicDisplayContainerRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const musicXml = useMusicXml(notation, props.displayMode);
+  const musicXml = useMusicXml(notation?.musicXmlUrl || null, props.displayMode);
   const [musicDisplay, musicDisplayLoading] = useMusicDisplay({
     musicXml,
     deadTimeMs: notation?.deadTimeMs || 0,

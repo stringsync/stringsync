@@ -2514,10 +2514,10 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@stringsync/musicxml@0.2.4":
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/@stringsync/musicxml/-/musicxml-0.2.4.tgz#7cd3edbe98b7381778e2a387958c59f843c72693"
-  integrity sha512-7arTdbSJGEgnZAyd2c/iUwIkTMjg4Heb32lKZ2hBLT3H3oi+sFcmJdx7D/4i+R0OOgiV34VQSECitBLsLsqWNg==
+"@stringsync/musicxml@0.2.6":
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/@stringsync/musicxml/-/musicxml-0.2.6.tgz#1dcd45f0da16494f4fa4dd4af6f9240328580f18"
+  integrity sha512-VQfRiULGK/1tOhRsdCzmaTbR/w+Rf9h84dUSfduyoQXW1HmKu/G+EOIgu5R5EhtL6XKgMV92+ocr41t7IrMGAw==
   dependencies:
     xml-js "1.6.11"
 
