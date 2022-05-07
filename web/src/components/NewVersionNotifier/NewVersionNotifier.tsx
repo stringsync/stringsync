@@ -6,7 +6,7 @@ import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { notify } from '../../lib/notify';
 import { Duration } from '../../util/Duration';
 import { Nothing } from '../Nothing';
-import { TimeoutButton } from '../TimeoutButton/TimeoutButton';
+import { TimeoutButton } from '../TimeoutButton';
 
 const LAST_LOADED_VERSION_KEY = 'stringsync_last_loaded_version';
 const INITIAL_LAST_LOADED_VERSION = { version: '0.0.0' };
