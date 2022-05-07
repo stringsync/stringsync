@@ -5,6 +5,8 @@ import { useDevice } from '../../../ctx/device';
 import { useMemoCmp } from '../../../hooks/useMemoCmp';
 import { MusicDisplay, OpenSheetMusicDisplay } from '../../../lib/MusicDisplay';
 import { NoopMusicDisplay } from '../../../lib/MusicDisplay/NoopMusicDisplay';
+import { DisplayMode } from '../../../lib/musicxml';
+import { withDisplayMode } from '../../../lib/musicxml/withDisplayMode';
 import { Nullable } from '../../../util/types';
 import * as helpers from '../helpers';
 
@@ -14,6 +16,7 @@ export type UseMusicDisplayOpts = {
   durationMs: number;
   musicDisplayContainer: Nullable<HTMLDivElement>;
   scrollContainer: Nullable<HTMLDivElement>;
+  displayMode: DisplayMode;
 };
 
 export const useMusicDisplay = (opts: UseMusicDisplayOpts): [MusicDisplay, boolean] => {
@@ -34,11 +37,19 @@ export const useMusicDisplay = (opts: UseMusicDisplayOpts): [MusicDisplay, boole
       return;
     }
 
+    const isTabsOnly = opts.displayMode === DisplayMode.TabsOnly;
+
     const musicDisplay = new OpenSheetMusicDisplay(opts.musicDisplayContainer, {
       syncSettings: { deadTimeMs: opts.deadTimeMs, durationMs: opts.durationMs },
       svgSettings: { eventNames: helpers.getSvgEventNames(device) },
       scrollContainer: opts.scrollContainer,
-      drawingParameters: device.mobile ? DrawingParametersEnum.compacttight : DrawingParametersEnum.default,
+      drawKeySignatures: !isTabsOnly,
+      drawTimeSignatures: !isTabsOnly,
+      drawStartClefs: !isTabsOnly,
+      drawMeasureNumbers: !isTabsOnly,
+      drawMetronomeMarks: !isTabsOnly,
+      drawingParameters:
+        device.mobile || isTabsOnly ? DrawingParametersEnum.compacttight : DrawingParametersEnum.default,
     });
     setMusicDisplay(musicDisplay);
 
@@ -52,7 +63,8 @@ export const useMusicDisplay = (opts: UseMusicDisplayOpts): [MusicDisplay, boole
       musicDisplay.eventBus.subscribe('resizeended', stopLoading),
     ];
 
-    musicDisplay.load(opts.musicXml);
+    const musicXml = withDisplayMode(opts.musicXml, opts.displayMode);
+    musicDisplay.load(musicXml);
 
     return () => {
       setMusicDisplay(new NoopMusicDisplay());

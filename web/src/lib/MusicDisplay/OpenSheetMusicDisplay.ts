@@ -20,6 +20,11 @@ const DEFAULT_OPTS: MusicDisplayOptions = {
   followCursor: false,
   pageBackgroundColor: 'white',
   cursorsOptions: [],
+  drawKeySignatures: true,
+  drawTimeSignatures: true,
+  drawStartClefs: true,
+  drawMeasureNumbers: true,
+  drawMetronomeMarks: true,
 };
 
 /**
@@ -34,6 +39,7 @@ export class OpenSheetMusicDisplay implements MusicDisplay {
   constructor(container: HTMLDivElement, partialOpts: Partial<MusicDisplayOptions> = {}) {
     const opts = merge({}, DEFAULT_OPTS, partialOpts);
     this.imd = new InternalMusicDisplay(container, this.eventBus, opts);
+    (window as any).imd = this.imd;
   }
 
   async load(musicXml: MusicXML) {

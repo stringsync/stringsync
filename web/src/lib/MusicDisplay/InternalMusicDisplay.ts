@@ -62,6 +62,11 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
   constructor(container: string | HTMLElement, eventBus: MusicDisplayEventBus, opts: MusicDisplayOptions) {
     super(container, opts);
 
+    this.EngravingRules.RenderKeySignatures = opts.drawKeySignatures;
+    this.EngravingRules.RenderTimeSignatures = opts.drawTimeSignatures;
+    this.EngravingRules.RenderClefsAtBeginningOfStaffline = opts.drawStartClefs;
+    this.EngravingRules.RenderMeasureNumbers = opts.drawMeasureNumbers;
+
     this.eventBus = eventBus;
     this.syncSettings = opts.syncSettings;
     this.svgSettings = opts.svgSettings;

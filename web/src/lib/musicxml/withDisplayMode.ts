@@ -21,9 +21,6 @@ export const withDisplayMode = <T extends MusicXMLRoot>(
 const showTabsOnly = (musicXml: MusicXML) => {
   const attributesList = getAttributes(musicXml);
   for (const attributes of attributesList) {
-    // remove <key>
-    attributes.setKeys([]);
-
     attributes.setStaves(null);
 
     const tabClef = attributes.getClefs().find((clef) => clef.getSign().getClefSign() === 'TAB');
@@ -60,29 +57,10 @@ const showTabsOnly = (musicXml: MusicXML) => {
 
   const notes = getNotes(musicXml);
   for (const note of notes) {
-    const variation = note.getVariation();
-
-    // decrement octave
-    if (asserts.isTiedNote(variation)) {
-      const tiedNote = variation;
-      if (asserts.isPitch(tiedNote[1])) {
-        const pitch = tiedNote[1];
-        const octave = pitch.getOctave();
-        octave.setOctave(octave.getOctave() - 1);
-      }
-    }
-
-    // remove <notehead>
-    note.setNotehead(null);
-
-    // remove <stem>
-    note.setStem(null);
-
-    // remove <staff>
-    note.setStaff(null);
+    note.setBeams([]);
   }
 
-  // remove <note> elements without a <technical>
+  // remove <note> elements without tabs
   const measures = getMeasures(musicXml);
   for (const measure of measures) {
     const nextMeasureValues = measure.getValues().filter((value) => {

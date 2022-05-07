@@ -75,13 +75,14 @@ export const MusicSheet: React.FC<Props> = (props) => {
   // music display
   const musicDisplayContainerRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const musicXml = useMusicXml(notation?.musicXmlUrl || null, props.displayMode);
+  const musicXml = useMusicXml(notation?.musicXmlUrl || null);
   const [musicDisplay, musicDisplayLoading] = useMusicDisplay({
     musicXml,
     deadTimeMs: notation?.deadTimeMs || 0,
     durationMs: notation?.durationMs || 0,
     musicDisplayContainer: musicDisplayContainerRef.current,
     scrollContainer: scrollContainerRef.current,
+    displayMode: props.displayMode,
   });
   useEffect(() => {
     onMusicDisplayChange?.(musicDisplay);

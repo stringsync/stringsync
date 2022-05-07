@@ -20,6 +20,10 @@ export type MusicDisplayOptions = IOSMDOptions & {
   syncSettings: SyncSettings;
   scrollContainer: HTMLDivElement;
   svgSettings: SVGSettings;
+  drawKeySignatures: boolean;
+  drawTimeSignatures: boolean;
+  drawStartClefs: boolean;
+  drawMeasureNumbers: boolean;
 };
 
 export interface MusicDisplay {
