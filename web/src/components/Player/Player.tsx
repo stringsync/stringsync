@@ -34,7 +34,6 @@ const VideoJs: React.FC<Props> = (props) => {
   const [mediaPlayer, setMediaPlayer] = useState<MediaPlayer>(() => new NoopMediaPlayer());
   useEffect(() => {
     onPlayerChange(mediaPlayer);
-    (window as any).mp = mediaPlayer;
   }, [onPlayerChange, mediaPlayer]);
   const onClick = () => {
     if (mediaPlayer.getPlayState() === PlayState.Paused) {
