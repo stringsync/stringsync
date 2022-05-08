@@ -16,7 +16,7 @@ ENV PATH="/app/bin:${PATH}"
 
 # install api dependencies
 COPY ./api/package.json api/
-COPY ../api/yarn.lock api/
+COPY ./api/yarn.lock api/
 RUN ss installapi
 
 # install web dependencies
