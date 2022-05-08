@@ -39,7 +39,7 @@ const showTabsOnly = (musicXml: MusicXML) => {
     // filter <staff-details>
     const nextStaffDetails = attributes
       .getStaffDetails()
-      .filter((staffDetail) => staffDetail.getNumber() !== tabClefNumber);
+      .filter((staffDetail) => staffDetail.getNumber() === tabClefNumber);
     attributes.setStaffDetails(nextStaffDetails);
 
     // filter <transpose>
