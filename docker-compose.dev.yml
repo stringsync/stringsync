@@ -20,7 +20,7 @@ services:
     container_name: nginx
     image: nginx:1.21
     volumes:
-      - ../nginx/nginx.dev.conf:/etc/nginx/nginx.conf
+      - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf
     links:
       - api
       - web
@@ -31,10 +31,10 @@ services:
     container_name: migrate
     image: stringsync:latest
     env_file:
-      - ../env/dev.env
-      - ../env/secrets.env
+      - ./env/dev.env
+      - ./env/secrets.env
     volumes:
-      - ../api/src:/app/api/src
+      - ./api/src:/app/api/src
     links:
       - db
     command: 'bash -c "yarn migrate && yarn seed"'
@@ -43,10 +43,10 @@ services:
     container_name: api
     image: stringsync:latest
     env_file:
-      - ../env/dev.env
-      - ../env/secrets.env
+      - ./env/dev.env
+      - ./env/secrets.env
     volumes:
-      - ../api/src:/app/api/src
+      - ./api/src:/app/api/src
     links:
       - db
       - redis
@@ -58,12 +58,12 @@ services:
     container_name: worker
     image: stringsync:latest
     env_file:
-      - ../env/dev.env
-      - ../env/secrets.env
+      - ./env/dev.env
+      - ./env/secrets.env
     environment:
       PORT: 3001
     volumes:
-      - ../api/src:/app/api/src
+      - ./api/src:/app/api/src
     links:
       - db
       - redis
@@ -75,12 +75,12 @@ services:
     container_name: dispatcher
     image: stringsync:latest
     env_file:
-      - ../env/dev.env
-      - ../env/secrets.env
+      - ./env/dev.env
+      - ./env/secrets.env
     environment:
       PORT: 3002
     volumes:
-      - ../api/src:/app/api/src
+      - ./api/src:/app/api/src
     links:
       - db
       - redis
@@ -92,6 +92,6 @@ services:
     container_name: web
     image: stringsync:latest
     volumes:
-      - ../web/src:/app/web/src
-      - ../web/public:/app/web/public
+      - ./web/src:/app/web/src
+      - ./web/public:/app/web/public
     command: ['yarn', 'dev:web']

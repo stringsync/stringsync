@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { cmd } from './util';
 
-export const DOCKER_DIR = path.join(__dirname, '..', 'docker');
+export const DOCKER_DIR = path.join(__dirname, '..');
 
 export async function up(composeFile: string) {
   await cmd('docker-compose', ['-f', path.join(DOCKER_DIR, composeFile), 'up', '--detach'], { reject: false });

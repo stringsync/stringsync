@@ -20,7 +20,7 @@ services:
     container_name: nginx
     image: stringsyncnginx:latest
     volumes:
-      - ../nginx/nginx.fakeprod.conf:/etc/nginx/nginx.conf
+      - ./nginx/nginx.fakeprod.conf:/etc/nginx/nginx.conf
     links:
       - api
     ports:
@@ -32,8 +32,8 @@ services:
     build:
       context: .
     env_file:
-      - ../env/fakeprod.env
-      - ../env/secrets.env
+      - ./env/fakeprod.env
+      - ./env/secrets.env
     links:
       - db
     command: 'bash -c "cd api && yarn migrate && yarn seed"'
@@ -42,8 +42,8 @@ services:
     container_name: api
     image: stringsync:latest
     env_file:
-      - ../env/fakeprod.env
-      - ../env/secrets.env
+      - ./env/fakeprod.env
+      - ./env/secrets.env
     links:
       - db
       - redis
@@ -55,8 +55,8 @@ services:
     build:
       context: .
     env_file:
-      - ../env/fakeprod.env
-      - ../env/secrets.env
+      - ./env/fakeprod.env
+      - ./env/secrets.env
     environment:
       NODE_ENV: production
       PORT: 3000
@@ -73,8 +73,8 @@ services:
     build:
       context: .
     env_file:
-      - ../env/fakeprod.env
-      - ../env/secrets.env
+      - ./env/fakeprod.env
+      - ./env/secrets.env
     environment:
       NODE_ENV: production
       PORT: 3001

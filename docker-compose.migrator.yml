@@ -16,9 +16,9 @@ services:
     container_name: api
     image: stringsync:latest
     env_file:
-      - ../env/dev.env
-      - ../env/secrets.env
+      - ./env/dev.env
+      - ./env/secrets.env
     volumes:
-      - ../api/src:/app/api/src
+      - ./api/src:/app/api/src
     links:
       - db

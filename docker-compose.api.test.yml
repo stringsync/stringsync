@@ -26,10 +26,10 @@ services:
     container_name: test
     image: stringsync:latest
     env_file:
-      - ../env/api.test.env
+      - ./env/api.test.env
     volumes:
-      - ../api/src:/app/api/src
-      - ../api/reports:/app/api/reports
+      - ./api/src:/app/api/src
+      - ./api/reports:/app/api/reports
     links:
       - db
       - redis1
