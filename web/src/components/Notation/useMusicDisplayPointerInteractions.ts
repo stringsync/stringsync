@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import { MediaPlayer } from '../../../lib/MediaPlayer';
-import { MusicDisplay } from '../../../lib/MusicDisplay';
-import { isTemporal } from '../../../lib/MusicDisplay/pointer';
-import { Duration } from '../../../util/Duration';
+import { MediaPlayer } from '../../lib/MediaPlayer';
+import { MusicDisplay } from '../../lib/MusicDisplay';
+import { isTemporal } from '../../lib/MusicDisplay/pointer';
+import { Duration } from '../../util/Duration';
 
 export const useMusicDisplayPointerInteractions = (musicDisplay: MusicDisplay, mediaPlayer: MediaPlayer) => {
   useEffect(() => {

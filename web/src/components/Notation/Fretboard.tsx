@@ -12,12 +12,12 @@ import {
   PositionStyle,
 } from '../FretboardJs';
 import * as helpers from './helpers';
-import { useMeasurePositions } from './hooks/useMeasurePositions';
-import { useMeasureSlideTransition as useMeasureSlideTransitions } from './hooks/useMeasureSlideTransitions';
-import { useMusicDisplayCursorSnapshot } from './hooks/useMusicDisplayCursorSnapshot';
-import { usePressedPositions } from './hooks/usePressedPositions';
-import { useTonic } from './hooks/useTonic';
 import { FretMarkerDisplay, NotationSettings, ScaleSelectionType } from './types';
+import { useMeasurePositions } from './useMeasurePositions';
+import { useMeasureSlideTransition as useMeasureSlideTransitions } from './useMeasureSlideTransitions';
+import { useMusicDisplayCursorSnapshot } from './useMusicDisplayCursorSnapshot';
+import { usePressedPositions } from './usePressedPositions';
+import { useTonic } from './useTonic';
 
 const Outer = styled.div`
   z-index: 3;

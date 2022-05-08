@@ -10,10 +10,10 @@ import { MusicDisplay } from '../../lib/MusicDisplay';
 import { DisplayMode } from '../../lib/musicxml';
 import { Nullable } from '../../util/types';
 import { Detail } from './Detail';
-import { useScales } from './hooks/useScales';
 import { Playback } from './Playback';
 import { Seekbar } from './Seekbar';
 import { FretMarkerDisplay, NotationSettings, RenderableNotation, ScaleSelectionType } from './types';
+import { useScales } from './useScales';
 
 export const CONTROLS_HEIGHT_PX = 75;
 

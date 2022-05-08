@@ -1,15 +1,15 @@
 import React from 'react';
 import { MediaPlayer } from '../../lib/MediaPlayer';
 import { MusicDisplay } from '../../lib/MusicDisplay';
-import { useDynamicScaleSync } from './hooks/useDynamicScaleSync';
-import { useMediaPlayerVolumeBehavior } from './hooks/useMediaPlayerVolumeBehavior';
-import { useMusicDisplayCursorInteractions } from './hooks/useMusicDisplayCursorInteractions';
-import { useMusicDisplayCursorTimeSync } from './hooks/useMusicDisplayCursorTimeSync';
-import { useMusicDisplayLoopBehavior } from './hooks/useMusicDisplayLoopBehavior';
-import { useMusicDisplayPointerInteractions } from './hooks/useMusicDisplayPointerInteractions';
-import { useMusicDisplayRipples } from './hooks/useMusicDisplayRipples';
-import { useMusicDisplayScrolling } from './hooks/useMusicDisplayScrolling';
 import { NotationSettings } from './types';
+import { useDynamicScaleSync } from './useDynamicScaleSync';
+import { useMediaPlayerVolumeBehavior } from './useMediaPlayerVolumeBehavior';
+import { useMusicDisplayCursorInteractions } from './useMusicDisplayCursorInteractions';
+import { useMusicDisplayCursorTimeSync } from './useMusicDisplayCursorTimeSync';
+import { useMusicDisplayLoopBehavior } from './useMusicDisplayLoopBehavior';
+import { useMusicDisplayPointerInteractions } from './useMusicDisplayPointerInteractions';
+import { useMusicDisplayRipples } from './useMusicDisplayRipples';
+import { useMusicDisplayScrolling } from './useMusicDisplayScrolling';
 
 type Props = {
   settings: NotationSettings;

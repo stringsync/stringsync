@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useDevice } from '../../../ctx/device';
-import { MusicDisplay } from '../../../lib/MusicDisplay';
-import { CursorStyleType } from '../../../lib/MusicDisplay/cursors';
-import { PointerTargetType } from '../../../lib/MusicDisplay/pointer';
+import { useDevice } from '../../ctx/device';
+import { MusicDisplay } from '../../lib/MusicDisplay';
+import { CursorStyleType } from '../../lib/MusicDisplay/cursors';
+import { PointerTargetType } from '../../lib/MusicDisplay/pointer';
 
 enum Cursor {
   Default = 'default',

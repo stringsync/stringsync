@@ -1,6 +1,6 @@
 import { isNumber } from 'lodash';
 import React, { useCallback } from 'react';
-import { CursorSnapshot } from '../../../lib/MusicDisplay/locator';
+import { CursorSnapshot } from '../../lib/MusicDisplay/locator';
 
 type SliderTooltipProps = {
   currentTimestamp: string;

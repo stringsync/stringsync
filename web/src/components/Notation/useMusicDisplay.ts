@@ -1,14 +1,14 @@
 import { MusicXML } from '@stringsync/musicxml';
 import { DrawingParametersEnum } from 'opensheetmusicdisplay';
 import { useEffect, useState } from 'react';
-import { useDevice } from '../../../ctx/device';
-import { useMemoCmp } from '../../../hooks/useMemoCmp';
-import { MusicDisplay, OpenSheetMusicDisplay } from '../../../lib/MusicDisplay';
-import { NoopMusicDisplay } from '../../../lib/MusicDisplay/NoopMusicDisplay';
-import { DisplayMode } from '../../../lib/musicxml';
-import { withDisplayMode } from '../../../lib/musicxml/withDisplayMode';
-import { Nullable } from '../../../util/types';
-import * as helpers from '../helpers';
+import { useDevice } from '../../ctx/device';
+import { useMemoCmp } from '../../hooks/useMemoCmp';
+import { MusicDisplay, OpenSheetMusicDisplay } from '../../lib/MusicDisplay';
+import { NoopMusicDisplay } from '../../lib/MusicDisplay/NoopMusicDisplay';
+import { DisplayMode } from '../../lib/musicxml';
+import { withDisplayMode } from '../../lib/musicxml/withDisplayMode';
+import { Nullable } from '../../util/types';
+import * as helpers from './helpers';
 
 export type UseMusicDisplayOpts = {
   musicXml: Nullable<MusicXML>;

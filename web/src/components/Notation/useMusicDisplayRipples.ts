@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { MusicDisplay } from '../../../lib/MusicDisplay';
-import { isNonePointerTarget, isPositional } from '../../../lib/MusicDisplay/pointer';
+import { MusicDisplay } from '../../lib/MusicDisplay';
+import { isNonePointerTarget, isPositional } from '../../lib/MusicDisplay/pointer';
 
 export const useMusicDisplayRipples = (musicDisplay: MusicDisplay) => {
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { MusicDisplay } from '../../../lib/MusicDisplay';
+import { MusicDisplay } from '../../lib/MusicDisplay';
 
 export const useMusicDisplayResize = (musicDisplay: MusicDisplay, width: number) => {
   const [lastResizeWidthPx, setLastResizeWidthPx] = useState(width);

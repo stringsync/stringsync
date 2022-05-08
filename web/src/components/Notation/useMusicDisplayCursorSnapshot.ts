@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { MusicDisplay } from '../../../lib/MusicDisplay';
-import { CursorSnapshot } from '../../../lib/MusicDisplay/locator';
+import { MusicDisplay } from '../../lib/MusicDisplay';
+import { CursorSnapshot } from '../../lib/MusicDisplay/locator';
 
 export const useMusicDisplayCursorSnapshot = (musicDisplay: MusicDisplay) => {
   const [cursorSnapshot, setCursorSnapshot] = useState<CursorSnapshot | null>(() => {

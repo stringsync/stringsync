@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
-import { useDevice } from '../../../ctx/device';
-import { MediaPlayer } from '../../../lib/MediaPlayer';
-import { MusicDisplay } from '../../../lib/MusicDisplay';
-import { isTemporal } from '../../../lib/MusicDisplay/pointer';
-import { Duration } from '../../../util/Duration';
+import { useDevice } from '../../ctx/device';
+import { MediaPlayer } from '../../lib/MediaPlayer';
+import { MusicDisplay } from '../../lib/MusicDisplay';
+import { isTemporal } from '../../lib/MusicDisplay/pointer';
+import { Duration } from '../../util/Duration';
 
 export const useMusicDisplayCursorInteractions = (musicDisplay: MusicDisplay, mediaPlayer: MediaPlayer) => {
   const device = useDevice();

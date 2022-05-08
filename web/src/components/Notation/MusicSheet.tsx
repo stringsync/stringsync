@@ -5,9 +5,9 @@ import { RenderableNotation } from '.';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { DisplayMode } from '../../lib/musicxml';
 import { Nullable } from '../../util/types';
-import { useMusicDisplay } from './hooks/useMusicDisplay';
-import { useCSSCursor } from './hooks/useMusicDisplayCSSCursor';
-import { useMusicXml } from './hooks/useMusicXML';
+import { useMusicDisplay } from './useMusicDisplay';
+import { useCSSCursor } from './useMusicDisplayCSSCursor';
+import { useMusicXml } from './useMusicXML';
 
 const Outer = styled.div<{ $cursor: string }>`
   cursor: ${(props) => props.$cursor};

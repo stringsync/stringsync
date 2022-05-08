@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { MediaPlayer } from '../../../lib/MediaPlayer';
+import { MediaPlayer } from '../../lib/MediaPlayer';
 
 export const useMediaPlayerVolumeBehavior = (mediaPlayer: MediaPlayer) => {
   useEffect(() => {

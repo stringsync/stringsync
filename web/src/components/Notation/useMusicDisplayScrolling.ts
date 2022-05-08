@@ -1,11 +1,11 @@
 import { message } from 'antd';
 import { useEffect, useRef } from 'react';
-import { MediaPlayer, PlayState } from '../../../lib/MediaPlayer';
-import { MusicDisplay } from '../../../lib/MusicDisplay';
-import { isTemporal } from '../../../lib/MusicDisplay/pointer';
-import { ScrollBehaviorType } from '../../../lib/MusicDisplay/scroller';
-import { notify } from '../../../lib/notify';
-import { NotationSettings } from '../types';
+import { MediaPlayer, PlayState } from '../../lib/MediaPlayer';
+import { MusicDisplay } from '../../lib/MusicDisplay';
+import { isTemporal } from '../../lib/MusicDisplay/pointer';
+import { ScrollBehaviorType } from '../../lib/MusicDisplay/scroller';
+import { notify } from '../../lib/notify';
+import { NotationSettings } from './types';
 
 const SCROLL_DIVERGENCE_KEY = 'SCROLL_DIVERGENCE_KEY';
 

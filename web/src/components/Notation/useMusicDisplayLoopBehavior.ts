@@ -1,14 +1,14 @@
 import { first } from 'lodash';
 import { useEffect, useRef } from 'react';
-import { MediaPlayer } from '../../../lib/MediaPlayer';
-import { MusicDisplay } from '../../../lib/MusicDisplay';
-import { SelectionEdge } from '../../../lib/MusicDisplay/locator';
-import { Loop } from '../../../lib/MusicDisplay/loop';
-import { isCursorSnapshotPointerTarget, isSelectionPointerTarget, isTemporal } from '../../../lib/MusicDisplay/pointer';
-import { AnchoredSelection } from '../../../util/AnchoredSelection';
-import { Duration } from '../../../util/Duration';
-import * as helpers from '../helpers';
-import { NotationSettings } from '../types';
+import { MediaPlayer } from '../../lib/MediaPlayer';
+import { MusicDisplay } from '../../lib/MusicDisplay';
+import { SelectionEdge } from '../../lib/MusicDisplay/locator';
+import { Loop } from '../../lib/MusicDisplay/loop';
+import { isCursorSnapshotPointerTarget, isSelectionPointerTarget, isTemporal } from '../../lib/MusicDisplay/pointer';
+import { AnchoredSelection } from '../../util/AnchoredSelection';
+import { Duration } from '../../util/Duration';
+import * as helpers from './helpers';
+import { NotationSettings } from './types';
 
 const seekToLoopStart = (mediaPlayer: MediaPlayer, loop: Loop) => {
   mediaPlayer.seek(loop.timeRange.start.plus(Duration.ms(1)));

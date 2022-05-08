@@ -1,10 +1,10 @@
 import { isEqual } from 'lodash';
 import { useEffect, useState } from 'react';
-import { Position } from '../../../lib/guitar/Position';
-import { MediaPlayer, PlayState } from '../../../lib/MediaPlayer';
-import { CursorSnapshot } from '../../../lib/MusicDisplay/locator';
-import { Duration } from '../../../util/Duration';
-import { NumberRange } from '../../../util/NumberRange';
+import { Position } from '../../lib/guitar/Position';
+import { MediaPlayer, PlayState } from '../../lib/MediaPlayer';
+import { CursorSnapshot } from '../../lib/MusicDisplay/locator';
+import { Duration } from '../../util/Duration';
+import { NumberRange } from '../../util/NumberRange';
 
 const FLASH_REGION_FRACTION = 0.125;
 const MAX_FLASH_DURATION = Duration.ms(50);

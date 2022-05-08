@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { MusicDisplay } from '../../../lib/MusicDisplay';
-import { NotationSettings, ScaleSelectionType } from '../types';
+import { MusicDisplay } from '../../lib/MusicDisplay';
+import { NotationSettings, ScaleSelectionType } from './types';
 import { useScales } from './useScales';
 
 export const useDynamicScaleSync = (

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { MediaPlayer } from '../../../lib/MediaPlayer';
-import { MusicDisplay } from '../../../lib/MusicDisplay';
+import { MediaPlayer } from '../../lib/MediaPlayer';
+import { MusicDisplay } from '../../lib/MusicDisplay';
 
 export const useMusicDisplayCursorTimeSync = (musicDisplay: MusicDisplay, mediaPlayer: MediaPlayer) => {
   useEffect(() => {

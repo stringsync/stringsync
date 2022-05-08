@@ -1,7 +1,7 @@
 import { SliderMarks } from 'antd/lib/slider';
 import { useEffect, useState } from 'react';
-import { MusicDisplay } from '../../../lib/MusicDisplay';
-import { NumberRange } from '../../../util/NumberRange';
+import { MusicDisplay } from '../../lib/MusicDisplay';
+import { NumberRange } from '../../util/NumberRange';
 
 const FONT_SIZE = '0.75em';
 

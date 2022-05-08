@@ -14,13 +14,13 @@ import { Nullable } from '../../util/types';
 import { Controls, CONTROLS_HEIGHT_PX } from './Controls';
 import { Fretboard } from './Fretboard';
 import * as helpers from './helpers';
-import { useMusicDisplayResize } from './hooks/useMusicDisplayResize';
 import { Info } from './Info';
 import { Media } from './Media';
 import { MusicSheet } from './MusicSheet';
 import { NotationSink } from './NotationSink';
 import { SplitPane } from './SplitPane';
 import { NotationLayoutOptions, NotationSettings, RenderableNotation } from './types';
+import { useMusicDisplayResize } from './useMusicDisplayResize';
 
 const NOTATION_DETAIL_THRESHOLD_PX = 767;
 

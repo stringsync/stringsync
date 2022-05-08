@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { MusicDisplay } from '../../../lib/MusicDisplay';
-import { KeyInfo } from '../../../lib/MusicDisplay/helpers';
-import * as helpers from '../helpers';
+import { MusicDisplay } from '../../lib/MusicDisplay';
+import { KeyInfo } from '../../lib/MusicDisplay/helpers';
+import * as helpers from './helpers';
 
 export const useTonic = (selectedScale: string | null, musicDisplay: MusicDisplay): string | null => {
   const [keyInfo, setKeyInfo] = useState<KeyInfo | null>(() => helpers.getKeyInfo(musicDisplay));

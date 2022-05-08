@@ -6,10 +6,10 @@ import { MusicDisplay } from '../../lib/MusicDisplay';
 import { Duration } from '../../util/Duration';
 import { NumberRange } from '../../util/NumberRange';
 import { Nullable } from '../../util/types';
-import { useMusicDisplayCursorSnapshot } from './hooks/useMusicDisplayCursorSnapshot';
-import { useSliderMarks } from './hooks/useSliderMarks';
-import { useTipFormatter } from './hooks/useTipFormatter';
 import { RenderableNotation } from './types';
+import { useMusicDisplayCursorSnapshot } from './useMusicDisplayCursorSnapshot';
+import { useSliderMarks } from './useSliderMarks';
+import { useTipFormatter } from './useTipFormatter';
 
 const SLIDER_HANDLE_STYLE = { width: 21, height: 21, marginTop: -8 };
 

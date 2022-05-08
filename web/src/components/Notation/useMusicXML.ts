@@ -1,6 +1,6 @@
 import { MusicXML } from '@stringsync/musicxml';
 import { useEffect, useState } from 'react';
-import { Nullable } from '../../../util/types';
+import { Nullable } from '../../util/types';
 
 export const useMusicXml = (url: Nullable<string>): Nullable<MusicXML> => {
   const [musicXml, setMusicXml] = useState<Nullable<MusicXML>>(null);
