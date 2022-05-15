@@ -1,12 +1,14 @@
 import { MenuOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { get, noop } from 'lodash';
-import React, { useEffect, useRef } from 'react';
+import React, { PropsWithChildren, useEffect, useRef } from 'react';
 import ReactSplitPane, { SplitPaneProps } from 'react-split-pane';
 import styled from 'styled-components';
 import { InternalError } from '../../errors';
 import { useDimensions } from '../../hooks/useDimensions';
 import { Dimensions } from '../../util/types';
+
+const Pane: React.ComponentType<PropsWithChildren<SplitPaneProps>> = ReactSplitPane;
 
 const HorizontalOuter = styled.div`
   position: absolute;
@@ -38,11 +40,13 @@ const VerticalMenuOutlined = styled(MenuOutlined)`
   transform: rotate(90deg);
 `;
 
-type Props = SplitPaneProps & {
-  split: 'vertical' | 'horizontal';
-  handle: boolean;
-  onPane1Resize?: (dimensions: Dimensions) => void;
-};
+type Props = PropsWithChildren<
+  SplitPaneProps & {
+    split: 'vertical' | 'horizontal';
+    handle: boolean;
+    onPane1Resize?: (dimensions: Dimensions) => void;
+  }
+>;
 
 export const SplitPane: React.FC<Props> = (props) => {
   // props
@@ -73,7 +77,7 @@ export const SplitPane: React.FC<Props> = (props) => {
   }, [onPane1Resize, pane1Dimensions]);
 
   return (
-    <ReactSplitPane
+    <Pane
       allowResize={props.allowResize}
       className={props.className}
       primary={props.primary}
@@ -136,6 +140,6 @@ export const SplitPane: React.FC<Props> = (props) => {
           {children[1]}
         </>
       )}
-    </ReactSplitPane>
+    </Pane>
   );
 };

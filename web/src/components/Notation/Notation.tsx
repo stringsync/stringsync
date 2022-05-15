@@ -2,7 +2,7 @@ import { HomeOutlined, InfoCircleOutlined, SoundFilled, SoundOutlined } from '@a
 import { Button, Drawer } from 'antd';
 import { noop } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useDevice } from '../../ctx/device';
 import { useViewport } from '../../ctx/viewport/useViewport';
@@ -126,8 +126,8 @@ export const Notation: React.FC<Props> = (props) => {
   const onSidecarDrawerClose = () => setSidecarDrawerVisibility(false);
 
   // home button
-  const history = useHistory();
-  const onHomeClick = () => history.push('/library');
+  const navigate = useNavigate();
+  const onHomeClick = () => navigate('/library');
 
   // music display
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay>(() => new NoopMusicDisplay());

@@ -1,8 +1,7 @@
 import { Button, Form, Input } from 'antd';
 import { Rule } from 'antd/lib/form';
 import React, { useEffect, useState } from 'react';
-import { useHistory, useLocation } from 'react-router';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { UNKNOWN_ERROR_MSG } from '../../errors';
 import { notify } from '../../lib/notify';
@@ -34,7 +33,7 @@ type FormValues = {
 
 export const ResetPassword: React.FC = (props) => {
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [errors, setErrors] = useState(new Array<string>());
   const [form] = Form.useForm<FormValues>();
@@ -46,7 +45,7 @@ export const ResetPassword: React.FC = (props) => {
     onData: (data) => {
       if (data.resetPassword) {
         notify.message.success({ content: 'password successfully reset' });
-        history.push('/login');
+        navigate('/login');
       } else {
         setErrors([UNKNOWN_ERROR_MSG]);
       }

@@ -1,6 +1,6 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { noop } from 'lodash';
-import React, { useCallback, useMemo, useReducer } from 'react';
+import React, { PropsWithChildren, useCallback, useMemo, useReducer } from 'react';
 import { UNKNOWN_ERROR_MSG } from '../../errors';
 import { LoginInput, SignupInput } from '../../graphql';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
@@ -69,7 +69,7 @@ export const AuthApiCtx = React.createContext<AuthApi>({
   reset: noop,
 });
 
-export const AuthProvider: React.FC = (props) => {
+export const AuthProvider: React.FC<PropsWithChildren<{}>> = (props) => {
   const [state, dispatch] = useReducer(authReducer, getInitialState());
 
   const { execute: authenticate } = useGql(queries.whoami, {

@@ -1,5 +1,5 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
-import React, { useReducer } from 'react';
+import React, { PropsWithChildren, useReducer } from 'react';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 
 export type MetaState = {
@@ -27,7 +27,7 @@ const metaReducer = createReducer(getInitialState(), (builder) => {
 
 export const MetaCtx = React.createContext<MetaState>(getInitialState());
 
-export const MetaProvider: React.FC = (props) => {
+export const MetaProvider: React.FC<PropsWithChildren<{}>> = (props) => {
   const [state, dispatch] = useReducer(metaReducer, getInitialState());
 
   useEffectOnce(() => {

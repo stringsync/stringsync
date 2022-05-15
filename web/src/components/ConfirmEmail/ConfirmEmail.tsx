@@ -1,7 +1,7 @@
 import { Button, Divider, Form, Input } from 'antd';
 import { Rule } from 'antd/lib/form';
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../ctx/auth';
 import { UNKNOWN_ERROR_MSG } from '../../errors';
 import { Layout, withLayout } from '../../hocs/withLayout';
@@ -28,7 +28,7 @@ export const ConfirmEmail: React.FC = enhance(() => {
 
   const [errors, setErrors] = useState(new Array<string>());
   const [form] = Form.useForm<FormValues>();
-  const history = useHistory();
+  const navigate = useNavigate();
   const queryParams = useQueryParams();
 
   const { execute: confirmEmail, loading: confirmEmailLoading } = useConfirmEmail({
@@ -39,7 +39,7 @@ export const ConfirmEmail: React.FC = enhance(() => {
       switch (data.confirmEmail?.__typename) {
         case 'EmailConfirmation':
           notify.message.success({ content: `${email} confirmed` });
-          history.push('/library');
+          navigate('/library');
           break;
         case 'BadRequestError':
         case 'ForbiddenError':
@@ -89,7 +89,7 @@ export const ConfirmEmail: React.FC = enhance(() => {
   useEffectOnce(() => {
     if (confirmedAt) {
       notify.message.warn({ content: `${email} is already confirmed` });
-      history.push('/library');
+      navigate('/library');
     }
   });
 

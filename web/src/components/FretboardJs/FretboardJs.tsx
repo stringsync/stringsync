@@ -1,6 +1,6 @@
 import { Key } from '@tonaljs/tonal';
 import { get } from 'lodash';
-import React, { useEffect, useRef } from 'react';
+import React, { PropsWithChildren, useEffect, useRef } from 'react';
 import { Tuning } from '../../lib/guitar/Tuning';
 import * as helpers from './helpers';
 import { Position } from './Position';
@@ -16,13 +16,13 @@ const DEFAULT_TONIC = 'C';
 const DEFAULT_TUNING = Tuning.standard();
 const DEFAULT_OPTIONS: FretboardJsOptions = {};
 
-export type FretboardJsProps = {
+export type FretboardJsProps = PropsWithChildren<{
   options?: FretboardJsOptions;
   tonic?: string;
   tuning?: Tuning;
   styleMergeStrategy?: MergeStrategy;
   onResize?: (dimmensions: { width: number; height: number }) => void;
-};
+}>;
 
 export type FretboardJsChildComponents = {
   Position: typeof Position;

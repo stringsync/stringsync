@@ -1,5 +1,5 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
-import React, { useEffect, useReducer } from 'react';
+import React, { PropsWithChildren, useEffect, useReducer } from 'react';
 import { useLocation } from 'react-router-dom';
 import { RouteInfoState } from './types';
 
@@ -23,7 +23,7 @@ const routeInfoReducer = createReducer(getInitialState(), (builder) => {
 
 export const RouteInfoCtx = React.createContext<RouteInfoState>(getInitialState());
 
-export const RouteInfoProvider: React.FC = (props) => {
+export const RouteInfoProvider: React.FC<PropsWithChildren<{}>> = (props) => {
   const [state, dispatch] = useReducer(routeInfoReducer, getInitialState());
   const location = useLocation();
 

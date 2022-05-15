@@ -1,7 +1,7 @@
 import { Button, Form, Input } from 'antd';
 import { Rule } from 'antd/lib/form';
 import React from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { notify } from '../../lib/notify';
 import { FormPage } from '../FormPage';
@@ -21,7 +21,7 @@ type FormValues = {
 };
 
 export const ForgotPassword: React.FC = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [form] = Form.useForm<FormValues>();
 
@@ -29,7 +29,7 @@ export const ForgotPassword: React.FC = () => {
     onData: () => {
       const { email } = form.getFieldsValue();
       notify.message.success({ content: `sent reset password email to ${email}` });
-      history.push(`/reset-password?email=${email}`);
+      navigate(`/reset-password?email=${email}`);
     },
   });
 

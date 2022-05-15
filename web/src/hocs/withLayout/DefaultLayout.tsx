@@ -1,5 +1,5 @@
 import { Button, Col, Layout, Row } from 'antd';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { Logo } from '../../components/Logo';
@@ -48,10 +48,10 @@ const Offline = styled.em`
   color: ${(props) => props.theme['@muted']};
 `;
 
-type Props = {
+type Props = PropsWithChildren<{
   lanes: boolean;
   footer: boolean;
-};
+}>;
 
 export const DefaultLayout: React.FC<Props> = (props) => {
   const { version } = useMeta();

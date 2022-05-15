@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { DefaultLayout } from './DefaultLayout';
 import { NoneLayout } from './NoneLayout';
 
@@ -17,7 +17,7 @@ const DEFAULT_OPTIONS: LayoutOptions = {
   footer: true,
 };
 
-const getLayout = (layout: Layout, opts: LayoutOptions): React.FC => {
+const getLayout = (layout: Layout, opts: LayoutOptions): React.FC<PropsWithChildren<{}>> => {
   switch (layout) {
     case Layout.DEFAULT:
       return (props) => (

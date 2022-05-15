@@ -1,18 +1,18 @@
 import { Button } from 'antd';
 import React, { useCallback, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { notify } from '../../lib/notify';
 import { useRandomNotationIdGetter } from './useRandomNotationIdGetter';
 
 export const ImFeelingLucky = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [hasError, setHasError] = useState(false);
   const onSuccess = useCallback(
     (notationId: string) => {
       notify.message.success({ content: 'lucky!' });
-      history.push(`/n/${notationId}`);
+      navigate(`/n/${notationId}`);
     },
-    [history]
+    [navigate]
   );
   const onErrors = useCallback(() => {
     notify.message.error({ content: 'something went wrong' });

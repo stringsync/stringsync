@@ -72,7 +72,7 @@ const NotationShow: React.FC = enhance(() => {
 
   // notation
   const params = useParams<{ id: string }>();
-  const [notation, errors, isNotationLoading] = useNotation(params.id);
+  const [notation, errors, isNotationLoading] = useNotation(params.id!);
   const hasErrors = errors.length > 0;
   useEffect(() => {
     scrollToTop();
@@ -163,10 +163,11 @@ const NotationShow: React.FC = enhance(() => {
               )}
               <SuggestedNotations
                 skeleton={skeleton}
-                srcNotationId={params.id}
+                srcNotationId={params.id!}
                 onLoadStart={onSuggestedNotationsLoadStart}
                 onLoadEnd={onSuggestedNotationsLoadEnd}
               />
+              2
             </div>
           }
           layoutOptions={layoutOptions}
@@ -197,7 +198,7 @@ const NotationShow: React.FC = enhance(() => {
           <ErroredSuggestedNotationsOuter>
             <SuggestedNotations
               skeleton={skeleton}
-              srcNotationId={params.id}
+              srcNotationId={params.id!}
               onLoadStart={onSuggestedNotationsLoadStart}
               onLoadEnd={onSuggestedNotationsLoadEnd}
             />

@@ -75,7 +75,9 @@ const NotationEdit: React.FC = enhance(() => {
   const hasErrors = errors.length > 0;
   const updatedAgo = useTimeAgo(notation?.updatedAt || null);
   useEffect(() => {
-    getNotation({ id });
+    if (typeof id === 'string') {
+      getNotation({ id });
+    }
   }, [getNotation, id]);
 
   // form
@@ -93,6 +95,9 @@ const NotationEdit: React.FC = enhance(() => {
     setDirty(false);
   }, [form]);
   const onSaveClick = useCallback(() => {
+    if (typeof id !== 'string') {
+      return;
+    }
     const values = form.getFieldsValue(true);
     updateNotation({
       input: {

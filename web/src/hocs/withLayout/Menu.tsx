@@ -75,7 +75,7 @@ export const Menu: React.FC<Props> = (props) => {
         {isLibraryVisible ? (
           <Col>
             <Button type="link" size="large" shape="circle">
-              <NavLink to="/library" activeClassName="active-link">
+              <NavLink to="/library" className={({ isActive }) => (isActive ? 'active-link' : undefined)}>
                 <StyledCompassOutlined />
               </NavLink>
             </Button>
@@ -85,7 +85,7 @@ export const Menu: React.FC<Props> = (props) => {
         {isUploadVisible ? (
           <Col>
             <Button type="link" size="large" shape="circle">
-              <NavLink to="/upload" activeClassName="active-link">
+              <NavLink to="/upload" className={({ isActive }) => (isActive ? 'active-link' : undefined)}>
                 <StyledUploadOutlined />
               </NavLink>
             </Button>

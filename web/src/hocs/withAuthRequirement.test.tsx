@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { AuthState } from '../ctx/auth';
 import { getNullAuthUser } from '../ctx/auth/getNullAuthUser';
 import { useAuth } from '../ctx/auth/useAuth';
@@ -46,7 +46,7 @@ const simulateLoginAs = (role: UserRole) => {
 };
 
 describe('withAuthRequirement', () => {
-  const Dummy: React.FC = (props) => <div data-testid="dummy">{props.children}</div>;
+  const Dummy: React.FC<PropsWithChildren<{}>> = (props) => <div data-testid="dummy">{props.children}</div>;
 
   beforeEach(() => {
     setAuthState(getDefaultAuthState());

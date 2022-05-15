@@ -44,6 +44,6 @@ export const useSliderMarks = (musicDisplay: MusicDisplay, durationMs: number): 
     };
   }, [musicDisplay, durationMs]);
 
-  const shouldShowDots = Object.keys(sliderMarks).length === 1;
+  const shouldShowDots = !!sliderMarks && Object.keys(sliderMarks).length === 1;
   return [sliderMarks, shouldShowDots];
 };

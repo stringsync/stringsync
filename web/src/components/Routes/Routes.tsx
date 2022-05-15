@@ -1,5 +1,5 @@
 import React from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Navigate, Route, Routes as Switch } from 'react-router-dom';
 import { withAuthRequirement } from '../../hocs/withAuthRequirement';
 import { useScrollToTopOnRouteChange } from '../../hooks/useScrollToTopOnRouteChange';
 import { compose } from '../../util/compose';
@@ -54,29 +54,30 @@ export const Routes: React.FC = () => {
   return (
     <React.Suspense fallback={<Fallback />}>
       <Switch>
-        <Route path="/index.html" exact>
-          <Redirect to="/" />
-        </Route>
-        <Route path="/" exact>
-          {shouldRedirectFromLandingToLibrary ? (
-            <Redirect to="/library" />
-          ) : (
-            <Landing recordLandingVisit={recordLandingVisit} />
-          )}
-        </Route>
-        <Route exact path="/library" component={Library} />
-        <Route exact path="/n/:id" component={NotationShow} />
-        <Route exact path="/n/:id/edit" component={NotationEdit} />
-        <Route path="/users" component={UserIndex} />
-        <Route path="/tags" component={TagIndex} />
-        <Route path="/signup" component={Signup} />
-        <Route path="/login" component={Login} />
-        <Route path="/confirm-email" component={ConfirmEmail} />
-        <Route path="/forgot-password" component={ForgotPassword} />
-        <Route path="/reset-password" component={ResetPassword} />
-        <Route path="/upload" component={Upload} />
-        <Route path="/200.html" component={Nothing} />
-        <Route path="*" component={NotFound} />
+        <Route path="/index.html" element={<Navigate to="/" replace />} />
+        <Route
+          path="/"
+          element={
+            shouldRedirectFromLandingToLibrary ? (
+              <Navigate to="/library" replace />
+            ) : (
+              <Landing recordLandingVisit={recordLandingVisit} />
+            )
+          }
+        ></Route>
+        <Route path="/library" element={<Library />} />
+        <Route path="/n/:id" element={<NotationShow />} />
+        <Route path="/n/:id/edit" element={<NotationEdit />} />
+        <Route path="/users" element={<UserIndex />} />
+        <Route path="/tags" element={<TagIndex />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/confirm-email" element={<ConfirmEmail />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/upload" element={<Upload />} />
+        <Route path="/200.html" element={<Nothing />} />
+        <Route path="*" element={<NotFound />} />
       </Switch>
     </React.Suspense>
   );

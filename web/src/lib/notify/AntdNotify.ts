@@ -16,7 +16,9 @@ export class AntdNotify implements Notify {
     sendMessage({
       key: config.key,
       content: config.content,
-      duration: isNull(config.duration) ? config.duration : (config.duration || MESSAGE_DEFAULT_DURATION).sec,
+      duration: isNull(config.duration)
+        ? config.duration || undefined
+        : (config.duration || MESSAGE_DEFAULT_DURATION).sec,
       onClick: config.onClick,
     });
   };

@@ -1,5 +1,5 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
-import React, { useEffect, useReducer } from 'react';
+import React, { PropsWithChildren, useEffect, useReducer } from 'react';
 import { useMedia } from '../../hooks/useMedia';
 import { getViewportState } from './getViewportState';
 import { Breakpoint, ViewportState } from './types';
@@ -33,7 +33,7 @@ const viewportReducer = createReducer(getInitialState(), (builder) => {
 
 export const ViewportCtx = React.createContext<ViewportState>(getInitialState());
 
-export const ViewportProvider: React.FC = (props) => {
+export const ViewportProvider: React.FC<PropsWithChildren<{}>> = (props) => {
   const [state, dispatch] = useReducer(viewportReducer, getInitialState());
 
   const breakpoint = useMedia(BREAKPOINT_QUERIES, BREAKPOINTS, 'xxl');

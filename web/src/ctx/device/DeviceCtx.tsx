@@ -1,5 +1,5 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
-import React, { useReducer } from 'react';
+import React, { PropsWithChildren, useReducer } from 'react';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { getDevice } from './getDevice';
 import { Device } from './types';
@@ -20,7 +20,7 @@ const deviceReducer = createReducer(getInitialState(), (builder) => {
 
 export const DeviceCtx = React.createContext<Device>(getInitialState());
 
-export const DeviceProvider: React.FC = (props) => {
+export const DeviceProvider: React.FC<PropsWithChildren<{}>> = (props) => {
   const [state, dispatch] = useReducer(deviceReducer, getInitialState());
 
   useEffectOnce(() => {

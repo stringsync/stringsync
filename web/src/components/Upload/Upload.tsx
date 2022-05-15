@@ -3,12 +3,11 @@ import { Button, Form, Input, Modal, Select, Steps, Upload as AntdUpload } from 
 import { RcFile } from 'antd/lib/upload';
 import { UploadFile } from 'antd/lib/upload/interface';
 import React, { useRef, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import * as uuid from 'uuid';
 import { UNKNOWN_ERROR_MSG } from '../../errors';
 import { Layout, withLayout } from '../../hocs/withLayout';
-import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useTags } from '../../hooks/useTags';
 import { notify } from '../../lib/notify';
 import { compose } from '../../util/compose';
@@ -47,10 +46,10 @@ type FormValues = {
 };
 
 const Upload: React.FC<Props> = enhance(() => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [stepNdx, setStepNdx] = useState(0);
   const [isNavigateAwayVisible, setNavigateAwayVisibility] = useState(false);
-  const [pathname, setPathname] = useState('');
+  const [pathname] = useState('');
   const [selectedTagNames, setSelectedTagNames] = useState(new Array<string>());
   const [tags] = useTags();
 
@@ -79,7 +78,7 @@ const Upload: React.FC<Props> = enhance(() => {
         case 'Notation':
           shouldBlockNavigation.current = false;
           const notationId = data.createNotation.id;
-          history.push(`/n/${notationId}/edit`);
+          navigate(`/n/${notationId}/edit`);
           break;
         case 'ValidationError':
           showErrors(data.createNotation.details);
@@ -98,7 +97,7 @@ const Upload: React.FC<Props> = enhance(() => {
 
   const onConfirmNavigationOk = () => {
     shouldBlockNavigation.current = false;
-    history.push(pathname);
+    navigate(pathname);
   };
 
   const onConfirmNavigationCancel = () => {
@@ -130,17 +129,6 @@ const Upload: React.FC<Props> = enhance(() => {
 
     createNotation({ input: { tagIds, thumbnail: thumbnailFile, video: videoFile, songName, artistName } });
   };
-
-  useEffectOnce(() => {
-    history.block((location) => {
-      if (!shouldBlockNavigation.current) {
-        return;
-      }
-      setPathname(location.pathname);
-      setNavigateAwayVisibility(true);
-      return false;
-    });
-  });
 
   return (
     <Outer data-testid="upload">

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useHistory } from 'react-router';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Fallback } from '../components/Fallback';
 import { isLoggedInSelector, useAuth } from '../ctx/auth';
 import { useRouteInfo } from '../ctx/route-info';
@@ -35,10 +35,11 @@ export const withAuthRequirement = (authReq: AuthRequirement) =>
       const isLoggedIn = isLoggedInSelector(authState);
       const isAuthPending = authState.isPending;
       const userRole = authState.user.role;
-      const history = useHistory();
+      const navigate = useNavigate();
+      const location = useLocation();
 
       let { returnToRoute } = useRouteInfo();
-      returnToRoute = history.location.pathname === returnToRoute ? '/library' : returnToRoute;
+      returnToRoute = location.pathname === returnToRoute ? '/library' : returnToRoute;
 
       const meetsAuthReqs = isMeetingAuthReq(authReq, isLoggedIn, userRole);
 
@@ -53,25 +54,25 @@ export const withAuthRequirement = (authReq: AuthRequirement) =>
             break;
           case AuthRequirement.LOGGED_IN:
             notify.message.error({ content: 'must be logged in' });
-            history.push('/login');
+            navigate('/login');
             break;
           case AuthRequirement.LOGGED_OUT:
-            history.push(returnToRoute);
+            navigate(returnToRoute);
             break;
           case AuthRequirement.LOGGED_IN_AS_STUDENT:
             notify.message.error({ content: 'must be logged in as a student' });
-            history.push(isLoggedIn ? returnToRoute : '/login');
+            navigate(isLoggedIn ? returnToRoute : '/login');
             break;
           case AuthRequirement.LOGGED_IN_AS_TEACHER:
             notify.message.error({ content: 'must be logged in as a teacher' });
-            history.push(isLoggedIn ? returnToRoute : '/login');
+            navigate(isLoggedIn ? returnToRoute : '/login');
             break;
           case AuthRequirement.LOGGED_IN_AS_ADMIN:
             notify.message.error({ content: 'must be logged in as a admin' });
-            history.push(isLoggedIn ? returnToRoute : '/login');
+            navigate(isLoggedIn ? returnToRoute : '/login');
             break;
         }
-      }, [isAuthPending, meetsAuthReqs, history, isLoggedIn, returnToRoute]);
+      }, [isAuthPending, meetsAuthReqs, navigate, isLoggedIn, returnToRoute]);
 
       return meetsAuthReqs ? <Component {...props} /> : <Fallback />;
     };
