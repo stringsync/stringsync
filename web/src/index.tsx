@@ -1,6 +1,5 @@
 import React from 'react';
-import { hydrate } from 'react-dom';
-import { createRoot } from 'react-dom/client';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 import { App } from './App';
 import reportWebVitals from './reportWebVitals';
 import * as serviceWorker from './serviceWorkerRegistration';
@@ -8,7 +7,7 @@ import { REACT_SNAP_ACTIVE } from './util/constants';
 
 const rootElement = document.getElementById('root');
 if (rootElement?.hasChildNodes()) {
-  hydrate(<App />, rootElement);
+  hydrateRoot(rootElement, <App />);
 } else {
   const root = createRoot(rootElement!);
   root.render(<App />);
