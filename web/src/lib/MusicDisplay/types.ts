@@ -16,6 +16,12 @@ import {
 import { ScrollBehaviorType, Scroller } from './scroller';
 import { SVGSettings } from './svg';
 
+export enum LoadingStatus {
+  None,
+  Loading,
+  Done,
+}
+
 export type MusicDisplayOptions = IOSMDOptions & {
   syncSettings: SyncSettings;
   scrollContainer: HTMLDivElement;
@@ -37,6 +43,7 @@ export interface MusicDisplay {
   getLoop(): Loop;
   getMeta(): Meta;
   getLocator(): MusicDisplayLocator | null;
+  getLoadingStatus(): LoadingStatus;
 }
 
 export type MusicDisplayEventBus = EventBus<{

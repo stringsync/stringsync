@@ -4,7 +4,7 @@ import { Fx } from './fx';
 import { NoopLoop } from './loop';
 import { MusicDisplayMeta } from './meta';
 import { NoopScroller } from './scroller';
-import { MusicDisplay } from './types';
+import { LoadingStatus, MusicDisplay } from './types';
 
 const DUMMY_SVG = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 
@@ -18,6 +18,10 @@ export class NoopMusicDisplay implements MusicDisplay {
   private scroller = new NoopScroller();
 
   dispose() {}
+
+  getLoadingStatus(): LoadingStatus {
+    return LoadingStatus.Done;
+  }
 
   getCursor() {
     return this.cursor;

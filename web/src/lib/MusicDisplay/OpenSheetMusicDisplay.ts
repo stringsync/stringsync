@@ -3,7 +3,7 @@ import { merge } from 'lodash';
 import { DrawingParametersEnum } from 'opensheetmusicdisplay';
 import { EventBus } from '../EventBus';
 import { InternalMusicDisplay } from './InternalMusicDisplay';
-import { MusicDisplay, MusicDisplayEventBus, MusicDisplayOptions } from './types';
+import { LoadingStatus, MusicDisplay, MusicDisplayEventBus, MusicDisplayOptions } from './types';
 
 const DUMMY_DIV = document.createElement('div');
 DUMMY_DIV.setAttribute('id', 'dummy-scroll-container');
@@ -33,6 +33,7 @@ const DEFAULT_OPTS: MusicDisplayOptions = {
  */
 export class OpenSheetMusicDisplay implements MusicDisplay {
   private imd: InternalMusicDisplay;
+  private loadingStatus: LoadingStatus = LoadingStatus.None;
 
   eventBus: MusicDisplayEventBus = new EventBus();
 
@@ -42,9 +43,18 @@ export class OpenSheetMusicDisplay implements MusicDisplay {
   }
 
   async load(musicXml: MusicXML) {
+    this.loadingStatus = LoadingStatus.Loading;
     await Promise.resolve(); // workaround that allows the notation to render
-    await this.imd.load(musicXml.serialize());
-    this.imd.render();
+    try {
+      await this.imd.load(musicXml.serialize());
+      this.imd.render();
+    } finally {
+      this.loadingStatus = LoadingStatus.Done;
+    }
+  }
+
+  getLoadingStatus(): LoadingStatus {
+    return this.loadingStatus;
   }
 
   resize() {

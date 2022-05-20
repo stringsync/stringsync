@@ -8,7 +8,7 @@ import { useDevice } from '../../ctx/device';
 import { useViewport } from '../../ctx/viewport/useViewport';
 import { useMemoCmp } from '../../hooks/useMemoCmp';
 import { MediaPlayer, NoopMediaPlayer } from '../../lib/MediaPlayer';
-import { MusicDisplay } from '../../lib/MusicDisplay';
+import { LoadingStatus, MusicDisplay } from '../../lib/MusicDisplay';
 import { NoopMusicDisplay } from '../../lib/MusicDisplay/NoopMusicDisplay';
 import { Nullable } from '../../util/types';
 import { Controls, CONTROLS_HEIGHT_PX } from './Controls';
@@ -174,6 +174,10 @@ export const Notation: React.FC<Props> = (props) => {
 
   const [musicDisplayInitialized, setMusicDisplayInitialized] = useState(false);
   useEffect(() => {
+    if (musicDisplay.getLoadingStatus() === LoadingStatus.Done) {
+      setMusicDisplayInitialized(true);
+      return;
+    }
     const eventBusIds = [
       musicDisplay.eventBus.once('loadended', () => {
         setMusicDisplayInitialized(true);
