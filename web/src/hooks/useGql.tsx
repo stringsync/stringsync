@@ -66,6 +66,9 @@ export const useGql = <G extends Any$gql>(gql: G, opts?: UseGqlOptions<G>) => {
         }
       },
       onError: (error) => {
+        if (error instanceof DOMException && error.code === DOMException.ABORT_ERR) {
+          return;
+        }
         onErrors([error.message]);
       },
     }
