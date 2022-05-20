@@ -11,14 +11,26 @@ export const useMusicXml = (url: Nullable<string>): Nullable<MusicXML> => {
       return;
     }
     const controller = new AbortController();
+    let done = false;
     fetch(url, { signal: controller.signal })
       .then((res) => res.text())
       .then((text) => {
         const musicXml = MusicXML.parse(text);
         setMusicXml(musicXml);
+      })
+      .catch((error) => {
+        if (error instanceof DOMException && error.code === DOMException.ABORT_ERR) {
+          return;
+        }
+        throw error;
+      })
+      .finally(() => {
+        done = true;
       });
     return () => {
-      controller.abort();
+      if (!done) {
+        controller.abort();
+      }
     };
   }, [url]);
 
