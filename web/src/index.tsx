@@ -7,10 +7,19 @@ import { REACT_SNAP_ACTIVE } from './util/constants';
 
 const rootElement = document.getElementById('root');
 if (rootElement?.hasChildNodes()) {
-  hydrateRoot(rootElement, <App />);
+  hydrateRoot(
+    rootElement,
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
 } else {
   const root = createRoot(rootElement!);
-  root.render(<App />);
+  root.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
 }
 
 if (!REACT_SNAP_ACTIVE) {

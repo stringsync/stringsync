@@ -15,27 +15,25 @@ import { theme } from './theme';
 
 const ThemeProvider = ThemeProvider_ as any;
 
-export const App: React.FC = (props) => {
+export const App: React.FC = () => {
   return (
-    <React.StrictMode>
-      <MetaProvider>
-        <ConfigProvider locale={enUS}>
-          <ThemeProvider theme={theme}>
-            <ViewportProvider>
-              <DeviceProvider>
-                <AuthProvider>
-                  <BrowserRouter>
-                    <RouteInfoProvider>
-                      <NewVersionNotifier />
-                      <Routes />
-                    </RouteInfoProvider>
-                  </BrowserRouter>
-                </AuthProvider>
-              </DeviceProvider>
-            </ViewportProvider>
-          </ThemeProvider>
-        </ConfigProvider>
-      </MetaProvider>
-    </React.StrictMode>
+    <MetaProvider>
+      <ConfigProvider locale={enUS}>
+        <ThemeProvider theme={theme}>
+          <ViewportProvider>
+            <DeviceProvider>
+              <AuthProvider>
+                <BrowserRouter>
+                  <RouteInfoProvider>
+                    <NewVersionNotifier />
+                    <Routes />
+                  </RouteInfoProvider>
+                </BrowserRouter>
+              </AuthProvider>
+            </DeviceProvider>
+          </ViewportProvider>
+        </ThemeProvider>
+      </ConfigProvider>
+    </MetaProvider>
   );
 };
