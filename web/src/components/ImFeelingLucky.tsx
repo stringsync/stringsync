@@ -1,8 +1,8 @@
 import { Button } from 'antd';
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { notify } from '../../lib/notify';
-import { useRandomNotationIdGetter } from './useRandomNotationIdGetter';
+import { useRandomNotationIdGetter } from '../hooks/useRandomNotationIdGetter';
+import { notify } from '../lib/notify';
 
 export const ImFeelingLucky = () => {
   const navigate = useNavigate();

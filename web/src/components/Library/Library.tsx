@@ -13,7 +13,7 @@ import { useIntersection } from '../../hooks/useIntersection';
 import { useTags } from '../../hooks/useTags';
 import { compose } from '../../util/compose';
 import { scrollToTop } from '../../util/scrollToTop';
-import { SonarSearch } from '../Sonar';
+import { SonarSearch } from '../SonarSearch';
 import { libraryMachine, libraryModel } from './libraryMachine';
 import { NotationCard } from './NotationCard';
 

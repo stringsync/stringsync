@@ -1,12 +1,13 @@
 import { render } from '@testing-library/react';
-import { Test } from '../../testing';
-import { NotFound } from './NotFound';
+import React from 'react';
+import { Test } from '../testing';
+import { NewVersionNotifier } from './NewVersionNotifier';
 
-describe('NotFound', () => {
+describe('NewVersionNotifier', () => {
   it('renders without crashing', () => {
     const { container } = render(
       <Test>
-        <NotFound />
+        <NewVersionNotifier />
       </Test>
     );
     expect(container).toBeInTheDocument();

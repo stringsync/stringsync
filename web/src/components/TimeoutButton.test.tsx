@@ -1,14 +1,13 @@
 import { render } from '@testing-library/react';
-import { noop } from 'lodash';
 import React from 'react';
-import { Test } from '../../testing';
-import { Landing } from './Landing';
+import { Test } from '../testing';
+import { TimeoutButton } from './TimeoutButton';
 
-describe('Landing', () => {
+describe('TimeoutButton', () => {
   it('renders without crashing', () => {
     const { container } = render(
       <Test>
-        <Landing onMount={noop} />
+        <TimeoutButton timeoutMs={0}>button</TimeoutButton>
       </Test>
     );
     expect(container).toBeInTheDocument();

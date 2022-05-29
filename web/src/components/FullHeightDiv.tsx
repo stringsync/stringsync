@@ -1,6 +1,6 @@
 import { PropsWithChildren } from 'react';
 import styled from 'styled-components';
-import { useViewport } from '../../ctx/viewport/useViewport';
+import { useViewport } from '../ctx/viewport/useViewport';
 
 const Outer = styled.div<{ $height: number }>`
   height: ${(props) => props.$height}px;

@@ -1,8 +1,8 @@
 import { first } from 'lodash';
 import { useCallback } from 'react';
-import { UNKNOWN_ERROR_MSG } from '../../errors';
-import { $gql, QuerySuggestedNotationsArgs, t } from '../../graphql';
-import { useGql } from '../../hooks/useGql';
+import { UNKNOWN_ERROR_MSG } from '../errors';
+import { $gql, QuerySuggestedNotationsArgs, t } from '../graphql';
+import { useGql } from './useGql';
 
 type SuccessCallback = (notationId: string) => void;
 type ErrorsCallback = (errors: string[]) => void;
