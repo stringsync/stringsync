@@ -1,16 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useDimensions } from '../../hooks/useDimensions';
+import * as fretboard from '../../lib/fretboard';
 import { MediaPlayer } from '../../lib/MediaPlayer';
 import { MusicDisplay } from '../../lib/MusicDisplay';
-import {
-  FretboardJs,
-  FretboardJsOptions,
-  FretboardJsProps,
-  MergeStrategy,
-  PositionFilterParams,
-  PositionStyle,
-} from '../FretboardJs';
+import { FretboardJs, FretboardJsProps } from '../FretboardJs';
 import * as helpers from './helpers';
 import { FretMarkerDisplay, NotationSettings, ScaleSelectionType } from './types';
 import { useMeasurePositions } from './useMeasurePositions';
@@ -46,14 +40,14 @@ export const Fretboard: React.FC<Props> = (props) => {
   }, [width]);
 
   // fretboard positions
-  const fretboardOpts = useMemo<FretboardJsOptions>(() => {
+  const fretboardOpts = useMemo<fretboard.FretboardJsOptions>(() => {
     switch (settings.fretMarkerDisplay) {
       case FretMarkerDisplay.None:
         return { fretCount, dotFill: 'white' };
       case FretMarkerDisplay.Degree:
-        return { fretCount, dotText: (params: PositionFilterParams) => params.grade, dotFill: 'white' };
+        return { fretCount, dotText: (params: fretboard.PositionFilterParams) => params.grade, dotFill: 'white' };
       case FretMarkerDisplay.Note:
-        return { fretCount, dotText: (params: PositionFilterParams) => params.note };
+        return { fretCount, dotText: (params: fretboard.PositionFilterParams) => params.note };
       default:
         return { fretCount, dotFill: 'white' };
     }
@@ -64,7 +58,7 @@ export const Fretboard: React.FC<Props> = (props) => {
   const pressedPositions = usePressedPositions(cursorSnapshot, mediaPlayer);
   const measurePositions = useMeasurePositions(cursorSnapshot);
   const measureSlideTransitions = useMeasureSlideTransitions(cursorSnapshot);
-  const pressedStyle = useMemo<Partial<PositionStyle>>(() => ({ fill: '#f17e84', stroke: '#f17e84' }), []);
+  const pressedStyle = useMemo<Partial<fretboard.PositionStyle>>(() => ({ fill: '#f17e84', stroke: '#f17e84' }), []);
 
   // dynamic scale management
   useEffect(() => {}, [settings.scaleSelectionType]);
@@ -74,7 +68,7 @@ export const Fretboard: React.FC<Props> = (props) => {
       <FretboardJs
         tonic={tonic || undefined}
         options={fretboardOpts}
-        styleMergeStrategy={MergeStrategy.Merge}
+        styleMergeStrategy={fretboard.MergeStrategy.Merge}
         onResize={onResize}
       >
         {measurePositions.map(({ string, fret }) => (

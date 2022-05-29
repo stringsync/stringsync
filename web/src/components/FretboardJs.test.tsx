@@ -1,16 +1,15 @@
 import { render } from '@testing-library/react';
 import { Scale } from '@tonaljs/tonal';
 import React from 'react';
-import { MergeStrategy } from '.';
+import * as fretboard from '../lib/fretboard';
 import { FretboardJs } from './FretboardJs';
-import * as testing from './testing';
 
 describe('Fretboard', () => {
   it('renders without crashing', () => {
     const { container } = render(<FretboardJs />);
 
     expect(container).toBeInTheDocument();
-    expect(testing.getFretboardEl(container)).not.toBeNull();
+    expect(fretboard.getFretboardEl(container)).not.toBeNull();
     expect(container).toRenderNumPositions(0);
   });
 
@@ -77,7 +76,7 @@ describe('Fretboard', () => {
     );
 
     expect(container).toBeInTheDocument();
-    expect(testing.getAllPositionEls(container)).toHaveLength(1);
+    expect(fretboard.getAllPositionEls(container)).toHaveLength(1);
   });
 
   it('deduplicates positions', () => {
@@ -101,7 +100,7 @@ describe('Fretboard', () => {
     );
 
     expect(container).toBeInTheDocument();
-    expect(testing.getPositionElsByNote(container, note).length).toBeGreaterThan(0);
+    expect(fretboard.getPositionElsByNote(container, note).length).toBeGreaterThan(0);
   });
 
   it('renders non-overlapping positions and scales', () => {
@@ -113,7 +112,7 @@ describe('Fretboard', () => {
     );
 
     expect(container).toBeInTheDocument();
-    expect(testing.getPositionEl(container, { fret: 9, string: 6 })).not.toBeNull();
+    expect(fretboard.getPositionEl(container, { fret: 9, string: 6 })).not.toBeNull();
   });
 
   it('renders overlapping positions and scales', () => {
@@ -137,7 +136,7 @@ describe('Fretboard', () => {
     );
 
     expect(container).toBeInTheDocument();
-    const style = testing.getStyleAtPosition(container, { fret: 1, string: 2 });
+    const style = fretboard.getStyleAtPosition(container, { fret: 1, string: 2 });
     expect(style).not.toBeNull();
     expect(style!.stroke).toBe('green');
     expect(style!.fill).toBe('red');
@@ -145,7 +144,7 @@ describe('Fretboard', () => {
 
   it('picks the last partial style when merging', () => {
     const { container } = render(
-      <FretboardJs styleMergeStrategy={MergeStrategy.Merge}>
+      <FretboardJs styleMergeStrategy={fretboard.MergeStrategy.Merge}>
         <FretboardJs.Position fret={1} string={2} style={{ stroke: 'green', fill: 'lime' }} />
         <FretboardJs.Position fret={1} string={2} style={{ fill: 'red' }} />
       </FretboardJs>
@@ -158,7 +157,7 @@ describe('Fretboard', () => {
 
   it('picks styles on a first seen basis', () => {
     const { container } = render(
-      <FretboardJs styleMergeStrategy={MergeStrategy.First}>
+      <FretboardJs styleMergeStrategy={fretboard.MergeStrategy.First}>
         <FretboardJs.Position fret={1} string={2} style={{ stroke: 'green' }} />
         <FretboardJs.Position fret={1} string={2} style={{ fill: 'red' }} />
       </FretboardJs>
@@ -171,7 +170,7 @@ describe('Fretboard', () => {
 
   it('picks styles on a last seen basis', () => {
     const { container } = render(
-      <FretboardJs styleMergeStrategy={MergeStrategy.Last}>
+      <FretboardJs styleMergeStrategy={fretboard.MergeStrategy.Last}>
         <FretboardJs.Position fret={1} string={2} style={{ stroke: 'green' }} />
         <FretboardJs.Position fret={1} string={2} style={{ fill: 'red' }} />
       </FretboardJs>

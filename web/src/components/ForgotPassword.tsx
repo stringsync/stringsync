@@ -3,9 +3,9 @@ import { Rule } from 'antd/lib/form';
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { notify } from '../../lib/notify';
-import { FormPage } from '../FormPage';
-import { useSendResetPasswordEmail } from './useSendResetPasswordEmail';
+import { useSendResetPasswordEmail } from '../hooks/useSendResetPasswordEmail';
+import { notify } from '../lib/notify';
+import { FormPage } from './FormPage';
 
 const EMAIL_RULES: Rule[] = [
   { required: true, message: 'email is required' },

@@ -1,7 +1,6 @@
 import { matcherHint, printExpected, printReceived } from 'jest-matcher-utils';
 import { get } from 'lodash';
-import { PositionStyle } from '..';
-import * as testing from '../testing';
+import * as fretboard from '../lib/fretboard';
 
 type Position = {
   fret: number;
@@ -13,7 +12,7 @@ const message = (
   position: Position,
   style: string,
   expected: string,
-  received: PositionStyle | null
+  received: fretboard.PositionStyle | null
 ) => () => {
   const msg = pass
     ? matcherHint('.not.toHavePositionStyle', 'received', 'position, style, value')
@@ -29,10 +28,10 @@ const message = (
 export const toHavePositionStyle: jest.CustomMatcher = function(
   container: HTMLElement,
   position: Position,
-  style: keyof PositionStyle,
+  style: keyof fretboard.PositionStyle,
   expectedValue: string
 ) {
-  const received = testing.getStyleAtPosition(container, position);
+  const received = fretboard.getStyleAtPosition(container, position);
   const pass = get(received, style) === expectedValue;
   return { pass, message: message(pass, position, style, expectedValue, received) };
 };

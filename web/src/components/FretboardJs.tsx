@@ -1,46 +1,42 @@
 import { Key } from '@tonaljs/tonal';
 import { get } from 'lodash';
 import React, { PropsWithChildren, useEffect, useRef } from 'react';
-import { Tuning } from '../../lib/guitar/Tuning';
-import * as helpers from './helpers';
-import { Position } from './Position';
-import { Scale } from './Scale';
-import { Slide } from './Slide';
-import { FretboardJsOptions, MergeStrategy, PositionFilterParams, SlideStyleTarget } from './types';
-import { useFretboard } from './useFretboard';
-import { useGuitar } from './useGuitar';
-import { useStyleFilters } from './useStyleFilters';
-import { useStyleTargets } from './useStyleTargets';
+import { useFretboard } from '../hooks/useFretboard';
+import { useGuitar } from '../hooks/useGuitar';
+import { useStyleFilters } from '../hooks/useStyleFilters';
+import { useStyleTargets } from '../hooks/useStyleTargets';
+import * as fretboard from '../lib/fretboard';
+import { Tuning } from '../lib/guitar/Tuning';
 
 const DEFAULT_TONIC = 'C';
 const DEFAULT_TUNING = Tuning.standard();
-const DEFAULT_OPTIONS: FretboardJsOptions = {};
+const DEFAULT_OPTIONS: fretboard.FretboardJsOptions = {};
 
 export type FretboardJsProps = PropsWithChildren<{
-  options?: FretboardJsOptions;
+  options?: fretboard.FretboardJsOptions;
   tonic?: string;
   tuning?: Tuning;
-  styleMergeStrategy?: MergeStrategy;
+  styleMergeStrategy?: fretboard.MergeStrategy;
   onResize?: (dimmensions: { width: number; height: number }) => void;
 }>;
 
 export type FretboardJsChildComponents = {
-  Position: typeof Position;
-  Scale: typeof Scale;
-  Slide: typeof Slide;
+  Position: typeof fretboard.Position;
+  Scale: typeof fretboard.Scale;
+  Slide: typeof fretboard.Slide;
 };
 
 export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponents = (props) => {
   const tonic = props.tonic || DEFAULT_TONIC;
   const options = props.options || DEFAULT_OPTIONS;
   const tuning = props.tuning || DEFAULT_TUNING;
-  const styleMergeStrategy = props.styleMergeStrategy || MergeStrategy.Merge;
+  const styleMergeStrategy = props.styleMergeStrategy || fretboard.MergeStrategy.Merge;
   const figureRef = useRef<HTMLElement>(null);
   const onResize = props.onResize;
 
-  const fretboard = useFretboard(figureRef, tuning, options);
+  const fb = useFretboard(figureRef, tuning, options);
   const guitar = useGuitar(tuning);
-  const { positionStyleTargets, slideStyleTargets } = useStyleTargets(fretboard, props.children, styleMergeStrategy);
+  const { positionStyleTargets, slideStyleTargets } = useStyleTargets(fb, props.children, styleMergeStrategy);
   const styleFilters = useStyleFilters(positionStyleTargets);
 
   useEffect(() => {
@@ -65,17 +61,17 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
     // All renderings must be done synchronously within this effect so that they are layered deterministically.
     // SVG elements do not have a z-index property.
 
-    const maxFret = fretboard.positions[0].length - 1;
+    const maxFret = fb.positions[0].length - 1;
 
     // ----------------
     // render slides
     // ----------------
-    const { font, dotSize } = get(fretboard, 'options');
-    const { positions } = fretboard;
-    const getDotOffset = get(fretboard, 'getDotOffset', () => 0).bind(fretboard);
+    const { font, dotSize } = get(fb, 'options');
+    const { positions } = fb;
+    const getDotOffset = get(fb, 'getDotOffset', () => 0).bind(fb);
     const dotOffset = getDotOffset();
 
-    const slideGroup = fretboard.wrapper
+    const slideGroup = fb.wrapper
       .append('g')
       .attr('class', 'slides')
       .attr('font-family', font);
@@ -85,20 +81,20 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
       .data(slideStyleTargets.filter((styleTarget) => styleTarget.frets.every((fret) => fret < maxFret)))
       .enter()
       .append('g')
-      .attr('class', ({ string, frets }: SlideStyleTarget) => {
+      .attr('class', ({ string, frets }: fretboard.SlideStyleTarget) => {
         return ['slide', `slide-string-${string}-from-fret-${frets[0]}-to-fret-${frets[1]}`].join(' ');
       });
 
     const p = (string: number, fret: number) => positions[string - 1][fret - dotOffset];
     const opacity = 0.5;
     const height = dotSize;
-    const width = ({ string, frets }: SlideStyleTarget) => {
+    const width = ({ string, frets }: fretboard.SlideStyleTarget) => {
       return `${Math.abs(p(string, frets[0]).x - p(string, frets[1]).x)}%`;
     };
-    const x = ({ string, frets }: SlideStyleTarget) => `${p(string, Math.min(...frets)).x}%`;
-    const y = ({ string, frets }: SlideStyleTarget) => p(string, Math.min(...frets)).y - height * 0.5;
-    const fill = ({ style }: SlideStyleTarget) => style.fill;
-    const stroke = ({ style }: SlideStyleTarget) => style.stroke;
+    const x = ({ string, frets }: fretboard.SlideStyleTarget) => `${p(string, Math.min(...frets)).x}%`;
+    const y = ({ string, frets }: fretboard.SlideStyleTarget) => p(string, Math.min(...frets)).y - height * 0.5;
+    const fill = ({ style }: fretboard.SlideStyleTarget) => style.fill;
+    const stroke = ({ style }: fretboard.SlideStyleTarget) => style.stroke;
 
     slidesNodes
       .append('rect')
@@ -114,17 +110,17 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
     // ----------------
     // render positions
     // ----------------
-    const gradesByNote = helpers.getGradesByNote(tonic);
+    const gradesByNote = fretboard.getGradesByNote(tonic);
     const key = Key.majorKey(tonic);
     const scale = new Set(key.scale);
 
-    fretboard.setDots(
+    fb.setDots(
       positionStyleTargets
         .filter((styleTarget) => styleTarget.position.fret <= maxFret)
-        .map<PositionFilterParams>((styleTarget) => {
+        .map<fretboard.PositionFilterParams>((styleTarget) => {
           const pitch = guitar.getPitchAt(styleTarget.position);
           const enharmonic1 = pitch.toString();
-          const enharmonic2 = helpers.getEnharmonic(enharmonic1);
+          const enharmonic2 = fretboard.getEnharmonic(enharmonic1);
           const hasEnharmonic = enharmonic1 !== enharmonic2;
           const isKeySharp = key.alteration > 0;
           const isKeyFlat = key.alteration < 0;
@@ -157,20 +153,20 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
         })
     );
 
-    fretboard.render();
+    fb.render();
 
     styleFilters.forEach((styleFilter) => {
-      fretboard.style({ filter: styleFilter.predicate, ...styleFilter.style });
+      fb.style({ filter: styleFilter.predicate, ...styleFilter.style });
     });
 
     return () => {
-      fretboard.wrapper.select('.slides').remove();
+      fb.wrapper.select('.slides').remove();
     };
-  }, [fretboard, guitar, styleFilters, positionStyleTargets, slideStyleTargets, tonic]);
+  }, [fb, guitar, styleFilters, positionStyleTargets, slideStyleTargets, tonic]);
 
   return <figure ref={figureRef} />;
 };
 
-FretboardJs.Position = Position;
-FretboardJs.Scale = Scale;
-FretboardJs.Slide = Slide;
+FretboardJs.Position = fretboard.Position;
+FretboardJs.Scale = fretboard.Scale;
+FretboardJs.Slide = fretboard.Slide;

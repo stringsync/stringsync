@@ -1,12 +1,15 @@
 import '@testing-library/jest-dom/extend-expect';
 import 'jest-extended';
-import * as fretboardMatchers from './components/FretboardJs/matchers';
+import { toHavePositionStyle } from './testing/toHavePositionStyle';
+import { toRenderNoteTimes } from './testing/toRenderNoteTimes';
+import { toRenderNumPositions } from './testing/toRenderNumPositions';
+import { toRenderPosition } from './testing/toRenderPosition';
 
 expect.extend({
-  toRenderNoteTimes: fretboardMatchers.toRenderNoteTimes,
-  toRenderPosition: fretboardMatchers.toRenderPosition,
-  toRenderNumPositions: fretboardMatchers.toRenderNumPositions,
-  toHavePositionStyle: fretboardMatchers.toHavePositionStyle,
+  toRenderNoteTimes,
+  toRenderPosition,
+  toRenderNumPositions,
+  toHavePositionStyle,
 });
 
 beforeEach(() => {

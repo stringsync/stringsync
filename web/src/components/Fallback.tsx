@@ -2,9 +2,9 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
-import { withRenderDelay } from '../../hocs/withRenderDelay';
-import { compose } from '../../util/compose';
-import { Duration } from '../../util/Duration';
+import { withRenderDelay } from '../hocs/withRenderDelay';
+import { compose } from '../util/compose';
+import { Duration } from '../util/Duration';
 
 const RENDER_DELAY = Duration.sec(1);
 

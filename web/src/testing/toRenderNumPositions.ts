@@ -1,5 +1,5 @@
 import { matcherHint, printExpected, printReceived } from 'jest-matcher-utils';
-import * as testing from '../testing';
+import * as fretboard from '../lib/fretboard';
 
 const message = (pass: boolean, expected: number, received: number) => () => {
   const msg = pass
@@ -12,7 +12,7 @@ const message = (pass: boolean, expected: number, received: number) => () => {
 };
 
 export const toRenderNumPositions: jest.CustomMatcher = function(container: HTMLElement, times: number) {
-  const received = testing.getAllPositionEls(container).length;
+  const received = fretboard.getAllPositionEls(container).length;
   const pass = received === times;
   return { pass, message: message(pass, times, received) };
 };

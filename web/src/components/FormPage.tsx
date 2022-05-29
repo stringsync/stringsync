@@ -2,8 +2,8 @@ import { Alert, Col, Row } from 'antd';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { Box } from '../Box';
-import { Wordmark } from '../Wordmark';
+import { Box } from './Box';
+import { Wordmark } from './Wordmark';
 
 const SPANS = {
   xs: 18,

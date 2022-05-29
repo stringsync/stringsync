@@ -1,5 +1,5 @@
 import { matcherHint, printExpected, printReceived } from 'jest-matcher-utils';
-import * as testing from '../testing';
+import * as fretboard from '../lib/fretboard';
 
 const message = (pass: boolean, note: string, expectedTimes: number, receivedTimes: number) => () => {
   const msg = pass
@@ -16,7 +16,7 @@ export const toRenderNoteTimes: jest.CustomMatcher = function(
   note: string,
   expectedTimes: number
 ) {
-  const receivedTimes = testing.getPositionElsByNote(container, note).length;
+  const receivedTimes = fretboard.getPositionElsByNote(container, note).length;
   const pass = receivedTimes === expectedTimes;
   return { pass, message: message(pass, note, expectedTimes, receivedTimes) };
 };

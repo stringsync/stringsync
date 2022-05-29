@@ -1,5 +1,5 @@
 import { matcherHint, printExpected, printReceived } from 'jest-matcher-utils';
-import * as testing from '../testing';
+import * as fretboard from '../lib/fretboard';
 
 type Position = {
   fret: number;
@@ -17,7 +17,7 @@ const message = (pass: boolean, expected: Position, received: Element | null) =>
 };
 
 export const toRenderPosition: jest.CustomMatcher = function(container: HTMLElement, expected: Position) {
-  const received = testing.getPositionEl(container, expected);
+  const received = fretboard.getPositionEl(container, expected);
   const pass = !!received;
   return { pass, message: message(pass, expected, received) };
 };

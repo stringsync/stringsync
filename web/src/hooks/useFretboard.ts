@@ -1,7 +1,7 @@
 import { Fretboard } from '@moonwave99/fretboard.js';
 import { RefObject, useEffect, useState } from 'react';
-import { Tuning } from '../../lib/guitar/Tuning';
-import { FretboardJsOptions } from './types';
+import { FretboardJsOptions } from '../lib/fretboard/types';
+import { Tuning } from '../lib/guitar/Tuning';
 
 export const useFretboard = (figureRef: RefObject<HTMLElement>, tuning: Tuning, opts: Partial<FretboardJsOptions>) => {
   const [fretboard, setFretboard] = useState(() => new Fretboard());

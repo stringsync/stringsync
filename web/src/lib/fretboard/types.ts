@@ -1,5 +1,5 @@
 import { Options } from '@moonwave99/fretboard.js/dist/fretboard/Fretboard';
-import { Position as GuitarPosition } from '../../lib/guitar/Position';
+import { Position as GuitarPosition } from '../guitar/Position';
 
 export type FretboardJsOptions = Partial<Omit<Options, 'el' | 'tuning'>>;
 
