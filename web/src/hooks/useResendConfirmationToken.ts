@@ -1,5 +1,5 @@
-import { $gql, ResendConfirmationEmailOutput, t } from '../../graphql';
-import { useGql, UseGqlOptions } from '../../hooks/useGql';
+import { $gql, ResendConfirmationEmailOutput, t } from '../graphql';
+import { useGql, UseGqlOptions } from './useGql';
 
 const RESEND_CONFIRMATION_EMAIL_GQL = $gql
   .mutation('resendConfirmationEmail')

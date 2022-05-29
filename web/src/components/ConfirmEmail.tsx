@@ -2,16 +2,16 @@ import { Button, Divider, Form, Input } from 'antd';
 import { Rule } from 'antd/lib/form';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../ctx/auth';
-import { UNKNOWN_ERROR_MSG } from '../../errors';
-import { Layout, withLayout } from '../../hocs/withLayout';
-import { useEffectOnce } from '../../hooks/useEffectOnce';
-import { useQueryParams } from '../../hooks/useQueryParams';
-import { notify } from '../../lib/notify';
-import { compose } from '../../util/compose';
-import { FormPage } from '../FormPage';
-import { useConfirmEmail } from './useConfirmEmail';
-import { useResendConfirmationToken } from './useResendConfirmationToken';
+import { useAuth } from '../ctx/auth';
+import { UNKNOWN_ERROR_MSG } from '../errors';
+import { Layout, withLayout } from '../hocs/withLayout';
+import { useConfirmEmail } from '../hooks/useConfirmEmail';
+import { useEffectOnce } from '../hooks/useEffectOnce';
+import { useQueryParams } from '../hooks/useQueryParams';
+import { useResendConfirmationToken } from '../hooks/useResendConfirmationToken';
+import { notify } from '../lib/notify';
+import { compose } from '../util/compose';
+import { FormPage } from './FormPage';
 
 const CONFIRMATION_TOKEN_RULES: Rule[] = [{ required: true, message: 'confirmation token is required' }];
 

@@ -1,5 +1,5 @@
-import { $gql, ConfirmEmailInput, ConfirmEmailOutput, t } from '../../graphql';
-import { useGql, UseGqlOptions } from '../../hooks/useGql';
+import { $gql, ConfirmEmailInput, ConfirmEmailOutput, t } from '../graphql';
+import { useGql, UseGqlOptions } from './useGql';
 
 const CONFIRM_EMAIL_GQL = $gql
   .mutation('confirmEmail')
