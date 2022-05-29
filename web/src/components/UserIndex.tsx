@@ -1,15 +1,15 @@
 import { Alert, Avatar, Button, Divider, List, Row, Typography } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
-import { Layout, withLayout } from '../../hocs/withLayout';
-import { useEffectOnce } from '../../hooks/useEffectOnce';
-import { useNow } from '../../hooks/useNow';
-import { ago } from '../../util/ago';
-import { compose } from '../../util/compose';
-import { Box } from '../Box';
+import { Layout, withLayout } from '../hocs/withLayout';
+import { useEffectOnce } from '../hooks/useEffectOnce';
+import { useNow } from '../hooks/useNow';
+import { useUserCount } from '../hooks/useUserCount';
+import { useUsers } from '../hooks/useUsers';
+import { ago } from '../util/ago';
+import { compose } from '../util/compose';
+import { Box } from './Box';
 import { UserForm } from './UserForm';
-import { useUserCount } from './useUserCount';
-import { useUsers } from './useUsers';
 
 const PAGE_SIZE = 25;
 

@@ -1,10 +1,11 @@
 import { useCallback, useState } from 'react';
-import { $gql, QueryUsersArgs, t, UserRole } from '../../graphql';
-import { useGql } from '../../hooks/useGql';
-import { Nullable } from '../../util/types';
-import { UserPreview } from './types';
+import { $gql, QueryUsersArgs, t, User, UserRole } from '../graphql';
+import { useGql } from './useGql';
+import { Nullable } from '../util/types';
 
 type LoadUsers = (limit: number) => void;
+
+type UserPreview = Pick<User, 'id' | 'username' | 'email' | 'role' | 'avatarUrl' | 'confirmedAt' | 'createdAt'>;
 
 const USERS_GQL = $gql
   .query('users')

@@ -1,15 +1,29 @@
 import { Button, Form, Select } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import React, { useState } from 'react';
-import { UserRole } from '../../graphql';
-import { notify } from '../../lib/notify';
-import { Nullable } from '../../util/types';
-import { toUserRole } from './helpers';
-import { UserPreview } from './types';
-import { useUserUpdater } from './useUserUpdater';
+import { InternalError } from '../errors';
+import { User, UserRole } from '../graphql';
+import { useUserUpdater } from '../hooks/useUserUpdater';
+import { notify } from '../lib/notify';
+import { Nullable } from '../util/types';
 
 type Props = {
   user: UserPreview;
+};
+
+type UserPreview = Pick<User, 'id' | 'username' | 'email' | 'role' | 'avatarUrl' | 'confirmedAt' | 'createdAt'>;
+
+const toUserRole = (str: string): UserRole => {
+  switch (str) {
+    case UserRole.STUDENT:
+      return UserRole.STUDENT;
+    case UserRole.TEACHER:
+      return UserRole.TEACHER;
+    case UserRole.ADMIN:
+      return UserRole.ADMIN;
+    default:
+      throw new InternalError(`invalid user role: ${str}`);
+  }
 };
 
 export const UserForm: React.FC<Props> = (props) => {

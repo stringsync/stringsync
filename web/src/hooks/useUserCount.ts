@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { UNKNOWN_ERROR_MSG } from '../../errors';
-import { $gql, t, UserCountOutput } from '../../graphql';
-import { useEffectOnce } from '../../hooks/useEffectOnce';
-import { useGql } from '../../hooks/useGql';
-import { notify } from '../../lib/notify';
+import { UNKNOWN_ERROR_MSG } from '../errors';
+import { $gql, t, UserCountOutput } from '../graphql';
+import { notify } from '../lib/notify';
+import { useEffectOnce } from './useEffectOnce';
+import { useGql } from './useGql';
 
 const USER_COUNT_GQL = $gql
   .query('userCount')

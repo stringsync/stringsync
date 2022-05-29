@@ -1,12 +1,12 @@
-import { UNKNOWN_ERROR_MSG } from '../../errors';
-import { $gql, t, UpdateUserInput, UpdateUserOutput, UserRole, VariablesOf } from '../../graphql';
-import { useGql } from '../../hooks/useGql';
-import { UserPreview } from './types';
+import { UNKNOWN_ERROR_MSG } from '../errors';
+import { $gql, t, UpdateUserInput, UpdateUserOutput, User, UserRole, VariablesOf } from '../graphql';
+import { useGql } from './useGql';
 
 type UserUpdater = (variables: VariablesOf<typeof UPDATE_USER_GQL>) => void;
 type Loading = boolean;
 type SuccessCallback = (user: UserPreview) => void;
 type ErrorsCallback = (errors: string[]) => void;
+type UserPreview = Pick<User, 'id' | 'username' | 'email' | 'role' | 'avatarUrl' | 'confirmedAt' | 'createdAt'>;
 
 const UPDATE_USER_GQL = $gql
   .mutation('updateUser')
