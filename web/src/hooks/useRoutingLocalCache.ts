@@ -1,4 +1,4 @@
-import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { useLocalStorage } from './useLocalStorage';
 
 const ROUTING_CACHE_KEY = 'stringsync_routing_cache';
 
