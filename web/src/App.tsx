@@ -53,56 +53,62 @@ const TagIndex = compose(withAuthRequirement(AuthRequirement.LOGGED_IN_AS_ADMIN)
   React.lazy(() => import('./components/TagIndex'))
 );
 
-export const App: React.FC = () => {
+const Routing: React.FC = () => {
   const { shouldRedirectFromLandingToLibrary, recordLandingVisit } = useRoutingBehavior();
 
   useScrollToTopOnRouteChange();
 
   return (
-    <MetaProvider>
-      <ConfigProvider locale={enUS}>
-        <ThemeProvider theme={theme}>
-          <ViewportProvider>
-            <DeviceProvider>
-              <AuthProvider>
-                <BrowserRouter>
+    <Routes>
+      <Route path="/index.html" element={<Navigate to="/" replace />} />
+      <Route
+        path="/"
+        element={
+          shouldRedirectFromLandingToLibrary ? (
+            <Navigate to="/library" replace />
+          ) : (
+            <Landing onMount={recordLandingVisit} />
+          )
+        }
+      ></Route>
+      <Route path="/library" element={<Library />} />
+      <Route path="/n/:id" element={<NotationShow />} />
+      <Route path="/n/:id/edit" element={<NotationEdit />} />
+      <Route path="/users" element={<UserIndex />} />
+      <Route path="/tags" element={<TagIndex />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/confirm-email" element={<ConfirmEmail />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/upload" element={<Upload />} />
+      <Route path="/200.html" element={<Nothing />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
+
+export const App: React.FC = () => {
+  return (
+    <BrowserRouter>
+      <MetaProvider>
+        <ConfigProvider locale={enUS}>
+          <ThemeProvider theme={theme}>
+            <ViewportProvider>
+              <DeviceProvider>
+                <AuthProvider>
                   <RouteInfoProvider>
                     <NewVersionNotifier />
                     <React.Suspense fallback={<Fallback />}>
-                      <Routes>
-                        <Route path="/index.html" element={<Navigate to="/" replace />} />
-                        <Route
-                          path="/"
-                          element={
-                            shouldRedirectFromLandingToLibrary ? (
-                              <Navigate to="/library" replace />
-                            ) : (
-                              <Landing recordLandingVisit={recordLandingVisit} />
-                            )
-                          }
-                        ></Route>
-                        <Route path="/library" element={<Library />} />
-                        <Route path="/n/:id" element={<NotationShow />} />
-                        <Route path="/n/:id/edit" element={<NotationEdit />} />
-                        <Route path="/users" element={<UserIndex />} />
-                        <Route path="/tags" element={<TagIndex />} />
-                        <Route path="/signup" element={<Signup />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/confirm-email" element={<ConfirmEmail />} />
-                        <Route path="/forgot-password" element={<ForgotPassword />} />
-                        <Route path="/reset-password" element={<ResetPassword />} />
-                        <Route path="/upload" element={<Upload />} />
-                        <Route path="/200.html" element={<Nothing />} />
-                        <Route path="*" element={<NotFound />} />
-                      </Routes>
+                      <Routing />
                     </React.Suspense>
                   </RouteInfoProvider>
-                </BrowserRouter>
-              </AuthProvider>
-            </DeviceProvider>
-          </ViewportProvider>
-        </ThemeProvider>
-      </ConfigProvider>
-    </MetaProvider>
+                </AuthProvider>
+              </DeviceProvider>
+            </ViewportProvider>
+          </ThemeProvider>
+        </ConfigProvider>
+      </MetaProvider>
+    </BrowserRouter>
   );
 };

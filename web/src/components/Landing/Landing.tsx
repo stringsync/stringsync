@@ -77,14 +77,14 @@ const Footer = styled.div`
 `;
 
 type Props = {
-  recordLandingVisit: () => void;
+  onMount: () => void;
 };
 
 const enhance = compose(withLayout(Layout.DEFAULT));
 
 export const Landing: React.FC<Props> = enhance((props: Props) => {
   useEffectOnce(() => {
-    props.recordLandingVisit();
+    props.onMount();
   });
 
   return (

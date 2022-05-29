@@ -8,7 +8,7 @@ describe('Landing', () => {
   it('renders without crashing', () => {
     const { container } = render(
       <Test>
-        <Landing recordLandingVisit={noop} />
+        <Landing onMount={noop} />
       </Test>
     );
     expect(container).toBeInTheDocument();
