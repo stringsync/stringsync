@@ -1,13 +1,13 @@
 import { render } from '@testing-library/react';
 import React from 'react';
-import { Test } from '../../testing';
-import { ResetPassword } from './ResetPassword';
+import { Test } from '../testing';
+import Signup from './Signup';
 
-describe('ResetPassword', () => {
+describe('Signup', () => {
   it('renders without crashing', () => {
     const { container } = render(
       <Test>
-        <ResetPassword />
+        <Signup />
       </Test>
     );
     expect(container).toBeInTheDocument();

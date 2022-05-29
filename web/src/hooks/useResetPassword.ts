@@ -1,5 +1,5 @@
-import { $gql, ResetPasswordInput, ResetPasswordOutput, t } from '../../graphql';
-import { useGql, UseGqlOptions } from '../../hooks/useGql';
+import { $gql, ResetPasswordInput, ResetPasswordOutput, t } from '../graphql';
+import { useGql, UseGqlOptions } from './useGql';
 
 const RESET_PASSWORD_GQL = $gql
   .mutation('resetPassword')

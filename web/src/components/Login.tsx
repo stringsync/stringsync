@@ -2,9 +2,9 @@ import { Button, Form, Input } from 'antd';
 import React, { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { useAuth } from '../../ctx/auth';
-import { useEffectOnce } from '../../hooks/useEffectOnce';
-import { FormPage } from '../FormPage';
+import { useAuth } from '../ctx/auth';
+import { useEffectOnce } from '../hooks/useEffectOnce';
+import { FormPage } from './FormPage';
 
 const Center = styled.div`
   text-align: center;

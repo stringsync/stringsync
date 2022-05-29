@@ -3,9 +3,9 @@ import { Rule } from 'antd/lib/form';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { useAuth } from '../../ctx/auth';
-import { useEffectOnce } from '../../hooks/useEffectOnce';
-import { FormPage } from '../FormPage';
+import { useAuth } from '../ctx/auth';
+import { useEffectOnce } from '../hooks/useEffectOnce';
+import { FormPage } from './FormPage';
 
 const USERNAME_RULES: Rule[] = [
   { required: true, message: 'username is required' },

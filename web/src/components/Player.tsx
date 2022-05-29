@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import videojs from 'video.js';
-import { useDevice } from '../../ctx/device';
-import { useMemoCmp } from '../../hooks/useMemoCmp';
-import { MediaPlayer, NoopMediaPlayer, PlayState, VideoJsMediaPlayer } from '../../lib/MediaPlayer';
+import { useDevice } from '../ctx/device';
+import { useMemoCmp } from '../hooks/useMemoCmp';
+import { MediaPlayer, NoopMediaPlayer, PlayState, VideoJsMediaPlayer } from '../lib/MediaPlayer';
 
 const NOOP_MEDIA_PLAYER = new NoopMediaPlayer();
 
