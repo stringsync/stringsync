@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
-import { UNKNOWN_ERROR_MSG } from '../../errors';
-import { $gql, DeleteTagOutput, t } from '../../graphql';
-import { useGql } from '../../hooks/useGql';
+import { UNKNOWN_ERROR_MSG } from '../errors';
+import { $gql, DeleteTagOutput, t } from '../graphql';
+import { useGql } from './useGql';
 
 type DeleteTag = (id: string) => void;
 type Loading = boolean;

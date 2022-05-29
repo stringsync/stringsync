@@ -1,13 +1,13 @@
 import { Alert, List, Typography } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
-import { TagCategory } from '../../graphql';
-import { Layout, withLayout } from '../../hocs/withLayout';
-import { useEffectOnce } from '../../hooks/useEffectOnce';
-import { compose } from '../../util/compose';
-import { Box } from '../Box';
+import { TagCategory } from '../graphql';
+import { Layout, withLayout } from '../hocs/withLayout';
+import { useEffectOnce } from '../hooks/useEffectOnce';
+import { useLoadTags } from '../hooks/useLoadTags';
+import { compose } from '../util/compose';
+import { Box } from './Box';
 import { TagForm } from './TagForm';
-import { useLoadTags } from './useLoadTags';
 
 const Outer = styled.div`
   margin-top: 24px;

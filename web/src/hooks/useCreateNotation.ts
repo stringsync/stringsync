@@ -1,5 +1,5 @@
-import { $gql, CreateNotationInput, CreateNotationOutput, t } from '../../graphql';
-import { useGql, UseGqlOptions } from '../../hooks/useGql';
+import { $gql, CreateNotationInput, CreateNotationOutput, t } from '../graphql';
+import { useGql, UseGqlOptions } from './useGql';
 
 const CREATE_NOTATION_GQL = $gql
   .mutation('createNotation')

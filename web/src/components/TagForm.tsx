@@ -1,10 +1,10 @@
 import { Button, Form, Input, Popconfirm, Select } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { useEffect, useMemo, useState } from 'react';
-import { TagCategory } from '../../graphql';
-import { notify } from '../../lib/notify';
-import { useDeleteTag } from './useDeleteTag';
-import { useUpsertTag } from './useUpsertTag';
+import { TagCategory } from '../graphql';
+import { useDeleteTag } from '../hooks/useDeleteTag';
+import { useUpsertTag } from '../hooks/useUpsertTag';
+import { notify } from '../lib/notify';
 
 type Tag = {
   id?: string;

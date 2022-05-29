@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { $gql, DataOf, t, TagCategory } from '../../graphql';
-import { useGql } from '../../hooks/useGql';
+import { $gql, DataOf, t, TagCategory } from '../graphql';
+import { useGql } from '../hooks/useGql';
 
 type Tags = DataOf<typeof TAGS_GQL>;
 type Errors = string[];
