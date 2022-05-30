@@ -3,25 +3,36 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { useAuth } from '../../ctx/auth';
-import { useDevice } from '../../ctx/device';
-import { useViewport } from '../../ctx/viewport/useViewport';
-import { UserRole } from '../../graphql';
-import { Layout, withLayout } from '../../hocs/withLayout';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
-import { useMemoCmp } from '../../hooks/useMemoCmp';
-import { useNoOverflow } from '../../hooks/useNoOverflow';
-import { useNotation } from '../../hooks/useNotation';
-import { useNoTouchAction } from '../../hooks/useNoTouchAction';
-import { useNoTouchCallout } from '../../hooks/useNoTouchCallout';
-import { useNoUserSelect } from '../../hooks/useNoUserSelect';
-import { DisplayMode } from '../../lib/musicxml';
-import { compose } from '../../util/compose';
-import { scrollToTop } from '../../util/scrollToTop';
-import { FullHeightDiv } from '../FullHeightDiv';
-import { FretMarkerDisplay, Notation, NotationLayoutOptions, NotationSettings } from '../Notation';
+import { useAuth } from '../ctx/auth';
+import { useDevice } from '../ctx/device';
+import { useViewport } from '../ctx/viewport/useViewport';
+import { UserRole } from '../graphql';
+import { Layout, withLayout } from '../hocs/withLayout';
+import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useMemoCmp } from '../hooks/useMemoCmp';
+import { useNoOverflow } from '../hooks/useNoOverflow';
+import { useNotation } from '../hooks/useNotation';
+import { useNoTouchAction } from '../hooks/useNoTouchAction';
+import { useNoTouchCallout } from '../hooks/useNoTouchCallout';
+import { useNoUserSelect } from '../hooks/useNoUserSelect';
+import { DisplayMode } from '../lib/musicxml';
+import { compose } from '../util/compose';
+import { scrollToTop } from '../util/scrollToTop';
+import { FullHeightDiv } from './FullHeightDiv';
+import { FretMarkerDisplay, Notation, NotationLayoutOptions, NotationSettings } from './Notation';
 import { SuggestedNotations } from './SuggestedNotations';
-import { PersistentSettings } from './types';
+
+type PersistentSettings = Pick<
+  NotationSettings,
+  | 'isFretboardVisible'
+  | 'isAutoscrollPreferred'
+  | 'isVideoVisible'
+  | 'fretMarkerDisplay'
+  | 'preferredLayout'
+  | 'defaultSidecarWidthPx'
+  | 'defaultTheaterHeightPx'
+  | 'displayMode'
+>;
 
 const NOTATION_SHOW_SETTINGS_KEY = 'stringsync_notation_settings';
 

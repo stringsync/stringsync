@@ -4,7 +4,7 @@ import { truncate } from 'lodash';
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { useSuggestedNotations } from './useSuggestedNotations';
+import { useSuggestedNotations } from '../hooks/useSuggestedNotations';
 
 const NUM_SUGGESTIONS = 10;
 const NOOP = () => {};
