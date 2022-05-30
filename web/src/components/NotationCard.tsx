@@ -1,10 +1,19 @@
 import { Avatar, Card, Divider, Skeleton, Tag } from 'antd';
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useTimeAgo } from '../../hooks/useTimeAgo';
-import { theme } from '../../theme';
-import { getQueryMatches } from './getQueryMatches';
-import { NotationPreview } from './types';
+import { Notation, Tag as DomainTag, User } from '../domain';
+import { useTimeAgo } from '../hooks/useTimeAgo';
+import * as library from '../lib/library';
+import { theme } from '../theme';
+
+type Transcriber = Pick<User, 'id' | 'username' | 'role' | 'avatarUrl'>;
+
+type NotationPreview = Omit<Notation, 'createdAt' | 'updatedAt'> & {
+  transcriber: Transcriber;
+  tags: DomainTag[];
+  createdAt: string;
+  updatedAt: string;
+};
 
 const SKELETON_HEIGHT_PX = 400;
 const HIGHLIGHT_COLOR = theme['@highlight-color'];
@@ -68,36 +77,42 @@ export const NotationCard: React.FC<Props> = (props) => {
           avatar={transcriber.avatarUrl ? <Avatar src={transcriber.avatarUrl} /> : <Avatar />}
           title={
             <span>
-              {getQueryMatches(props.query, transcriber.username).map((queryMatch) =>
-                queryMatch.matches ? (
-                  <ColoredSpan key={queryMatch.str}>{queryMatch.str}</ColoredSpan>
-                ) : (
-                  <span key={queryMatch.str}>{queryMatch.str}</span>
-                )
-              )}
+              {library
+                .getQueryMatches(props.query, transcriber.username)
+                .map((queryMatch) =>
+                  queryMatch.matches ? (
+                    <ColoredSpan key={queryMatch.str}>{queryMatch.str}</ColoredSpan>
+                  ) : (
+                    <span key={queryMatch.str}>{queryMatch.str}</span>
+                  )
+                )}
             </span>
           }
           description={
             <>
               <div>
                 <span>
-                  {getQueryMatches(props.query, songName).map((queryMatch) =>
-                    queryMatch.matches ? (
-                      <ColoredSpan key={queryMatch.str}>{queryMatch.str}</ColoredSpan>
-                    ) : (
-                      <span key={queryMatch.str}>{queryMatch.str}</span>
-                    )
-                  )}
+                  {library
+                    .getQueryMatches(props.query, songName)
+                    .map((queryMatch) =>
+                      queryMatch.matches ? (
+                        <ColoredSpan key={queryMatch.str}>{queryMatch.str}</ColoredSpan>
+                      ) : (
+                        <span key={queryMatch.str}>{queryMatch.str}</span>
+                      )
+                    )}
                 </span>
                 <Divider type="vertical" />
                 <small>
-                  {getQueryMatches(props.query, artistName).map((queryMatch) =>
-                    queryMatch.matches ? (
-                      <ColoredSpan key={queryMatch.str}>{queryMatch.str}</ColoredSpan>
-                    ) : (
-                      <span key={queryMatch.str}>{queryMatch.str}</span>
-                    )
-                  )}
+                  {library
+                    .getQueryMatches(props.query, artistName)
+                    .map((queryMatch) =>
+                      queryMatch.matches ? (
+                        <ColoredSpan key={queryMatch.str}>{queryMatch.str}</ColoredSpan>
+                      ) : (
+                        <span key={queryMatch.str}>{queryMatch.str}</span>
+                      )
+                    )}
                 </small>
               </div>
               <small>{createdAgo}</small>

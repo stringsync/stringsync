@@ -2,8 +2,7 @@ import { cloneDeep } from 'lodash';
 import { assign, Condition, ContextFrom, DoneInvokeEvent, EventFrom, InvokeCreator } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 import { UnknownError } from '../../errors';
-import { DataOf } from '../../graphql';
-import { NOTATIONS_GQL } from './queries';
+import { $gql, DataOf, QueryNotationsArgs, t, UserRole } from '../../graphql';
 import { NotationPreview } from './types';
 
 type NotationPage = {
@@ -15,6 +14,46 @@ type NotationPage = {
 export type LibraryContext = ContextFrom<typeof libraryModel>;
 
 export type LibraryEvent = EventFrom<typeof libraryModel>;
+
+const NOTATIONS_GQL = $gql
+  .query('notations')
+  .setQuery({
+    edges: [
+      {
+        cursor: t.string,
+        node: {
+          id: t.string,
+          createdAt: t.string,
+          updatedAt: t.string,
+          songName: t.string,
+          artistName: t.string,
+          thumbnailUrl: t.optional.string,
+          transcriber: {
+            id: t.string,
+            username: t.string,
+            role: t.optional.oneOf(UserRole)!,
+            avatarUrl: t.optional.string,
+          },
+          tags: [{ id: t.string, name: t.string }],
+        },
+      },
+    ],
+    pageInfo: {
+      hasNextPage: t.boolean,
+      hasPreviousPage: t.boolean,
+      startCursor: t.optional.string,
+      endCursor: t.optional.string,
+    },
+  })
+  .setVariables<QueryNotationsArgs>({
+    first: t.optional.number,
+    last: t.optional.number,
+    after: t.optional.string,
+    before: t.optional.string,
+    query: t.optional.string,
+    tagIds: [t.string],
+  })
+  .build();
 
 const PAGE_SIZE = 9;
 

@@ -1,14 +1,14 @@
 import { render } from '@testing-library/react';
 import React from 'react';
-import * as rand from '../../util/rand';
+import * as library from '../lib/library';
+import * as rand from '../util/rand';
 import { NotationCard } from './NotationCard';
-import { NotationPreview } from './types';
 
 describe('NotationCard', () => {
   it('runs without crashing', async () => {
     const transcriber = rand.user();
     const notation = rand.notation();
-    const notationPreview: NotationPreview = {
+    const notationPreview: library.NotationPreview = {
       ...notation,
       transcriber,
       tags: [],
