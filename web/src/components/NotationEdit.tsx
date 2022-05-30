@@ -7,18 +7,18 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { useDevice } from '../../ctx/device';
-import { useViewport } from '../../ctx/viewport/useViewport';
-import { Layout, withLayout } from '../../hocs/withLayout';
-import { HEADER_HEIGHT_PX } from '../../hocs/withLayout/DefaultLayout';
-import { useNoOverflow } from '../../hooks/useNoOverflow';
-import { useNoTouchAction } from '../../hooks/useNoTouchAction';
-import { useNoTouchCallout } from '../../hooks/useNoTouchCallout';
-import { useNoUserSelect } from '../../hooks/useNoUserSelect';
-import { useTimeAgo } from '../../hooks/useTimeAgo';
-import { compose } from '../../util/compose';
-import { Notation, NotationLayoutOptions } from '../Notation';
-import { useNotationEditApi } from './useNotationEditApi';
+import { useDevice } from '../ctx/device';
+import { useViewport } from '../ctx/viewport/useViewport';
+import { Layout, withLayout } from '../hocs/withLayout';
+import { HEADER_HEIGHT_PX } from '../hocs/withLayout/DefaultLayout';
+import { useNoOverflow } from '../hooks/useNoOverflow';
+import { useNotationEditApi } from '../hooks/useNotationEditApi';
+import { useNoTouchAction } from '../hooks/useNoTouchAction';
+import { useNoTouchCallout } from '../hooks/useNoTouchCallout';
+import { useNoUserSelect } from '../hooks/useNoUserSelect';
+import { useTimeAgo } from '../hooks/useTimeAgo';
+import { compose } from '../util/compose';
+import { Notation, NotationLayoutOptions } from './Notation';
 
 const LAYOUT_OPTIONS: NotationLayoutOptions = {
   permitted: ['sidecar'],

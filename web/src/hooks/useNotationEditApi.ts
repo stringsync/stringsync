@@ -1,16 +1,8 @@
 import { useMemo, useState } from 'react';
-import { UNKNOWN_ERROR_MSG } from '../../errors';
-import {
-  $gql,
-  DataOf,
-  QueryNotationArgs,
-  t,
-  TagCategory,
-  UpdateNotationInput,
-  UpdateNotationOutput,
-} from '../../graphql';
-import { useGql, UseGqlOptions } from '../../hooks/useGql';
-import { Nullable } from '../../util/types';
+import { UNKNOWN_ERROR_MSG } from '../errors';
+import { $gql, DataOf, QueryNotationArgs, t, TagCategory, UpdateNotationInput, UpdateNotationOutput } from '../graphql';
+import { Nullable } from '../util/types';
+import { useGql, UseGqlOptions } from './useGql';
 
 export type NotationData = DataOf<typeof NOTATION_GQL>;
 type GetNotationOpts = UseGqlOptions<typeof NOTATION_GQL>;
