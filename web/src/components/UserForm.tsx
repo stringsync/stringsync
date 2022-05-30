@@ -1,9 +1,9 @@
 import { Button, Form, Select } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import React, { useState } from 'react';
-import { InternalError } from '../errors';
 import { User, UserRole } from '../graphql';
 import { useUserUpdater } from '../hooks/useUserUpdater';
+import { InternalError } from '../lib/errors';
 import { notify } from '../lib/notify';
 import { Nullable } from '../util/types';
 

@@ -2,8 +2,8 @@ import { noop } from 'lodash';
 import { useCallback, useRef } from 'react';
 import { useAsyncCallback, UseAsyncCallbackOptions } from 'react-async-hook';
 import * as uuid from 'uuid';
-import { MissingDataError } from '../errors';
 import { Any$gql, GqlResponseOf, SuccessfulResponse, VariablesOf } from '../graphql';
+import { MissingDataError } from '../lib/errors';
 import { notify } from '../lib/notify';
 
 type BeforeLoadingCallback = () => void;

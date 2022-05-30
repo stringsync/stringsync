@@ -1,7 +1,7 @@
 import { Key } from '@tonaljs/tonal';
 import { get, isNumber, sortBy } from 'lodash';
 import { KeyEnum, KeyInstruction, Note, VexFlowMusicSheetCalculator } from 'opensheetmusicdisplay';
-import { ConflictError, InternalError } from '../../errors';
+import { ConflictError, InternalError } from '../errors';
 import { Position } from '../guitar/Position';
 
 export type MajorKey = ReturnType<typeof Key.majorKey>;

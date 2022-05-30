@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql';
-import { UnknownError } from '../../errors';
 import { UserRole } from '../../graphql';
+import { UnknownError } from '../../lib/errors';
 import { getNullAuthUser } from './getNullAuthUser';
 import { AuthUser } from './types';
 

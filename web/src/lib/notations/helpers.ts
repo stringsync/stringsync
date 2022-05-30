@@ -2,12 +2,12 @@ import { first } from 'lodash';
 import { NotationLayoutOptions } from '.';
 import { Device } from '../../ctx/device';
 import { ViewportState } from '../../ctx/viewport';
-import { InternalError } from '../../errors';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { KeyInfo } from '../../lib/MusicDisplay/helpers';
 import { SupportedSVGEventNames } from '../../lib/MusicDisplay/svg';
 import { DisplayMode } from '../../lib/musicxml';
 import { NumberRange } from '../../util/NumberRange';
+import { InternalError } from '../errors';
 import * as constants from './constants';
 import { FretMarkerDisplay, NotationLayout, NotationSettings, ScaleSelectionType } from './types';
 

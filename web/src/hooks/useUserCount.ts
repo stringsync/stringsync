@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { UNKNOWN_ERROR_MSG } from '../errors';
 import { $gql, t, UserCountOutput } from '../graphql';
+import { UNKNOWN_ERROR_MSG } from '../lib/errors';
 import { notify } from '../lib/notify';
 import { useEffectOnce } from './useEffectOnce';
 import { useGql } from './useGql';

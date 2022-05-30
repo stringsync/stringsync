@@ -3,8 +3,8 @@ import { Rule } from 'antd/lib/form';
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { UNKNOWN_ERROR_MSG } from '../errors';
 import { useResetPassword } from '../hooks/useResetPassword';
+import { UNKNOWN_ERROR_MSG } from '../lib/errors';
 import { notify } from '../lib/notify';
 import { FormPage } from './FormPage';
 

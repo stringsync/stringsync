@@ -1,4 +1,4 @@
-import { InternalError } from './errors';
+import { InternalError } from './lib/errors';
 
 export type Config = {
   NODE_ENV: string;

@@ -4,7 +4,7 @@ import { cloneDeep, isObject, isString, isUndefined, toPath } from 'lodash';
 import { mutation, onUnion, params, query, rawString } from 'typed-graphqlify';
 import { Params } from 'typed-graphqlify/dist/render';
 import { GRAPHQL_URI } from '.';
-import { UnknownError } from '../errors';
+import { UnknownError } from '../lib/errors';
 import { OnlyKey } from '../util/types';
 import { Mutation, Query } from './graphqlTypes';
 import * as helpers from './helpers';

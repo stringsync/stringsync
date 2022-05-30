@@ -4,8 +4,8 @@ import { get, noop } from 'lodash';
 import React, { PropsWithChildren, useEffect, useRef } from 'react';
 import ReactSplitPane, { SplitPaneProps } from 'react-split-pane';
 import styled from 'styled-components';
-import { InternalError } from '../errors';
 import { useDimensions } from '../hooks/useDimensions';
+import { InternalError } from '../lib/errors';
 import { Dimensions } from '../util/types';
 
 const Pane: React.ComponentType<PropsWithChildren<SplitPaneProps>> = ReactSplitPane;

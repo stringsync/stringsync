@@ -1,5 +1,5 @@
 import { get, isFunction, isUndefined } from 'lodash';
-import { InternalError } from '../errors';
+import { InternalError } from '../lib/errors';
 
 export const memoize = () => (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
   let fn = descriptor.value;

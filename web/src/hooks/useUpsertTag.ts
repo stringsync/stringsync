@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 import { Tag } from '../domain';
-import { UNKNOWN_ERROR_MSG } from '../errors';
 import { $gql, CreateTagInput, CreateTagOutput, t, TagCategory, UpdateTagInput, UpdateTagOutput } from '../graphql';
 import { useGql } from '../hooks/useGql';
+import { UNKNOWN_ERROR_MSG } from '../lib/errors';
 
 type TagInput = {
   id?: string;

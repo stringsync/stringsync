@@ -1,4 +1,4 @@
-import { InternalError } from '../errors';
+import { InternalError } from '../lib/errors';
 import { memoize } from './memoize';
 
 describe('memoize', () => {
