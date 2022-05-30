@@ -17,10 +17,11 @@ import { useNoTouchAction } from '../hooks/useNoTouchAction';
 import { useNoTouchCallout } from '../hooks/useNoTouchCallout';
 import { useNoUserSelect } from '../hooks/useNoUserSelect';
 import { useTimeAgo } from '../hooks/useTimeAgo';
+import * as notations from '../lib/notations';
 import { compose } from '../util/compose';
-import { Notation, NotationLayoutOptions } from './Notation';
+import { Notation } from './Notation';
 
-const LAYOUT_OPTIONS: NotationLayoutOptions = {
+const LAYOUT_OPTIONS: notations.NotationLayoutOptions = {
   permitted: ['sidecar'],
   target: 'sidecar',
 };

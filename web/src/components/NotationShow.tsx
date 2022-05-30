@@ -16,14 +16,15 @@ import { useNoTouchAction } from '../hooks/useNoTouchAction';
 import { useNoTouchCallout } from '../hooks/useNoTouchCallout';
 import { useNoUserSelect } from '../hooks/useNoUserSelect';
 import { DisplayMode } from '../lib/musicxml';
+import * as notations from '../lib/notations';
 import { compose } from '../util/compose';
 import { scrollToTop } from '../util/scrollToTop';
 import { FullHeightDiv } from './FullHeightDiv';
-import { FretMarkerDisplay, Notation, NotationLayoutOptions, NotationSettings } from './Notation';
+import { Notation } from './Notation';
 import { SuggestedNotations } from './SuggestedNotations';
 
 type PersistentSettings = Pick<
-  NotationSettings,
+  notations.NotationSettings,
   | 'isFretboardVisible'
   | 'isAutoscrollPreferred'
   | 'isVideoVisible'
@@ -36,12 +37,12 @@ type PersistentSettings = Pick<
 
 const NOTATION_SHOW_SETTINGS_KEY = 'stringsync_notation_settings';
 
-const DEFAULT_NOTATION_LAYOUT_OPTIONS: NotationLayoutOptions = {
+const DEFAULT_NOTATION_LAYOUT_OPTIONS: notations.NotationLayoutOptions = {
   target: 'sidecar',
   permitted: ['theater', 'sidecar'],
 };
 
-const MOBILE_NOTATION_LAYOUT_OPTIONS: NotationLayoutOptions = {
+const MOBILE_NOTATION_LAYOUT_OPTIONS: notations.NotationLayoutOptions = {
   target: 'theater',
   permitted: ['theater'],
 };
@@ -116,7 +117,7 @@ const NotationShow: React.FC = enhance(() => {
     isVideoVisible: true,
     isFretboardVisible: !device.mobile,
     isAutoscrollPreferred: true,
-    fretMarkerDisplay: FretMarkerDisplay.None,
+    fretMarkerDisplay: notations.FretMarkerDisplay.None,
     defaultSidecarWidthPx: 500,
     defaultTheaterHeightPx: 200,
     displayMode: DisplayMode.TabsOnly,
@@ -126,7 +127,7 @@ const NotationShow: React.FC = enhance(() => {
     initialDefaultSettings
   );
   const onSettingsChange = useCallback(
-    (settings: NotationSettings) => {
+    (settings: notations.NotationSettings) => {
       setDefaultSettings({
         preferredLayout: settings.preferredLayout,
         isVideoVisible: settings.isVideoVisible,
