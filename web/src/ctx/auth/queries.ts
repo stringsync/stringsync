@@ -1,4 +1,4 @@
-import { $gql, LoginInput, LoginOutput, LogoutOutput, SignupInput, SignupOutput, t, UserRole } from '../../graphql';
+import { $gql, LoginInput, LoginOutput, LogoutOutput, SignupInput, SignupOutput, t, UserRole } from '../../lib/graphql';
 
 export const whoami = $gql
   .query('whoami')

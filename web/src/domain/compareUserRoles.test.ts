@@ -1,4 +1,4 @@
-import { UserRole } from '../graphql';
+import { UserRole } from '../lib/graphql';
 import * as cmp from './compareUserRoles';
 import { compareUserRoles } from './compareUserRoles';
 

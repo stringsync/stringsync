@@ -3,7 +3,7 @@ import React, { PropsWithChildren } from 'react';
 import { AuthState } from '../ctx/auth';
 import { getNullAuthUser } from '../ctx/auth/getNullAuthUser';
 import { useAuth } from '../ctx/auth/useAuth';
-import { UserRole } from '../graphql';
+import { UserRole } from '../lib/graphql';
 import { Test } from '../testing';
 import * as rand from '../util/rand';
 import { AuthRequirement } from '../util/types';

@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql';
 import { Union } from 'ts-toolbelt';
-import { DeepPartial, IsUnion, OnlyKey } from '../util/types';
+import { DeepPartial, IsUnion, OnlyKey } from '../../util/types';
 import { Mutation, Query } from './graphqlTypes';
 
 export type Root = Query | Mutation;

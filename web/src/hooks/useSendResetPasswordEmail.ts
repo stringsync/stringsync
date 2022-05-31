@@ -1,4 +1,4 @@
-import { $gql, SendResetPasswordEmailInput, t } from '../graphql';
+import { $gql, SendResetPasswordEmailInput, t } from '../lib/graphql';
 import { useGql, UseGqlOptions } from './useGql';
 
 const SEND_RESET_PASSWORD_EMAIL_GQL = $gql

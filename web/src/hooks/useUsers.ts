@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { $gql, QueryUsersArgs, t, User, UserRole } from '../graphql';
+import { $gql, QueryUsersArgs, t, User, UserRole } from '../lib/graphql';
 import { useGql } from './useGql';
 import { Nullable } from '../util/types';
 

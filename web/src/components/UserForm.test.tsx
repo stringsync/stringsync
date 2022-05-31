@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import React from 'react';
-import { UserRole } from '../graphql';
+import { UserRole } from '../lib/graphql';
 import { Test } from '../testing';
 import { UserForm } from './UserForm';
 

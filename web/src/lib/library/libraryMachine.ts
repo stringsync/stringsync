@@ -1,8 +1,8 @@
 import { cloneDeep } from 'lodash';
 import { assign, Condition, ContextFrom, DoneInvokeEvent, EventFrom, InvokeCreator } from 'xstate';
 import { createModel } from 'xstate/lib/model';
-import { $gql, DataOf, QueryNotationsArgs, t, UserRole } from '../../graphql';
 import { UnknownError } from '../errors';
+import { $gql, DataOf, QueryNotationsArgs, t, UserRole } from '../graphql';
 import { NotationPreview } from './types';
 
 type NotationPage = {

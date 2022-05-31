@@ -1,9 +1,9 @@
 import { Button, Form, Input, Popconfirm, Select } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { useEffect, useMemo, useState } from 'react';
-import { TagCategory } from '../graphql';
 import { useDeleteTag } from '../hooks/useDeleteTag';
 import { useUpsertTag } from '../hooks/useUpsertTag';
+import { TagCategory } from '../lib/graphql';
 import { notify } from '../lib/notify';
 
 type Tag = {

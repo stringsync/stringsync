@@ -1,5 +1,5 @@
 import { useAsyncAbortable } from 'react-async-hook';
-import { $gql, QuerySuggestedNotationsArgs, t, UserRole } from '../graphql';
+import { $gql, QuerySuggestedNotationsArgs, t, UserRole } from '../lib/graphql';
 
 const SUGGESTED_NOTATIONS_GQL = $gql
   .query('suggestedNotations')

@@ -1,4 +1,4 @@
-import { $gql, ResendConfirmationEmailOutput, t } from '../graphql';
+import { $gql, ResendConfirmationEmailOutput, t } from '../lib/graphql';
 import { useGql, UseGqlOptions } from './useGql';
 
 const RESEND_CONFIRMATION_EMAIL_GQL = $gql

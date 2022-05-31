@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { $gql, DataOf, QueryNotationArgs, t, TagCategory } from '../graphql';
+import { $gql, DataOf, QueryNotationArgs, t, TagCategory } from '../lib/graphql';
 import { Nullable } from '../util/types';
 import { useGql } from './useGql';
 

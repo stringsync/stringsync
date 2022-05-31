@@ -1,4 +1,4 @@
-import { UserRole } from '../../graphql';
+import { UserRole } from '../../lib/graphql';
 import { AuthUser } from './types';
 
 export const getNullAuthUser = (): AuthUser => ({

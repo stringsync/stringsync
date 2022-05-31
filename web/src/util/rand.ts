@@ -1,5 +1,5 @@
 import { Notation, Tag, User } from '../domain';
-import { TagCategory, UserRole } from '../graphql';
+import { TagCategory, UserRole } from '../lib/graphql';
 
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 

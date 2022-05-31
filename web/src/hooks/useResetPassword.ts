@@ -1,4 +1,4 @@
-import { $gql, ResetPasswordInput, ResetPasswordOutput, t } from '../graphql';
+import { $gql, ResetPasswordInput, ResetPasswordOutput, t } from '../lib/graphql';
 import { useGql, UseGqlOptions } from './useGql';
 
 const RESET_PASSWORD_GQL = $gql

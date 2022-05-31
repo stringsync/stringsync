@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import { noop } from 'lodash';
 import React from 'react';
 import { Tag } from '../domain';
-import { TagCategory } from '../graphql';
+import { TagCategory } from '../lib/graphql';
 import { Test } from '../testing';
 import { TagForm } from './TagForm';
 

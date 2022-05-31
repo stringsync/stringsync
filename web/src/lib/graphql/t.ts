@@ -1,5 +1,5 @@
 import { onUnion, types } from 'typed-graphqlify';
-import { Nullable } from '../util/types';
+import { Nullable } from '../../util/types';
 import * as helpers from './helpers';
 import { GraphqlUnionSelection, GType, UnionSelection } from './types';
 

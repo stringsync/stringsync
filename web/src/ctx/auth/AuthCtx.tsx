@@ -1,10 +1,10 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { noop } from 'lodash';
 import React, { PropsWithChildren, useCallback, useMemo, useReducer } from 'react';
-import { LoginInput, SignupInput } from '../../graphql';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useGql } from '../../hooks/useGql';
 import { UNKNOWN_ERROR_MSG } from '../../lib/errors';
+import { LoginInput, SignupInput } from '../../lib/graphql';
 import { notify } from '../../lib/notify';
 import { getNullAuthUser } from './getNullAuthUser';
 import * as helpers from './helpers';

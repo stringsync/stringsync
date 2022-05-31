@@ -1,4 +1,4 @@
-import { $gql, ConfirmEmailInput, ConfirmEmailOutput, t } from '../graphql';
+import { $gql, ConfirmEmailInput, ConfirmEmailOutput, t } from '../lib/graphql';
 import { useGql, UseGqlOptions } from './useGql';
 
 const CONFIRM_EMAIL_GQL = $gql

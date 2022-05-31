@@ -1,5 +1,5 @@
-import { $gql, t, UpdateUserInput, UpdateUserOutput, User, UserRole, VariablesOf } from '../graphql';
 import { UNKNOWN_ERROR_MSG } from '../lib/errors';
+import { $gql, t, UpdateUserInput, UpdateUserOutput, User, UserRole, VariablesOf } from '../lib/graphql';
 import { useGql } from './useGql';
 
 type UserUpdater = (variables: VariablesOf<typeof UPDATE_USER_GQL>) => void;

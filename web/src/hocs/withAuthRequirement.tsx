@@ -4,7 +4,7 @@ import { Fallback } from '../components/Fallback';
 import { isLoggedInSelector, useAuth } from '../ctx/auth';
 import { useRouteInfo } from '../ctx/route-info';
 import { gtEqAdmin, gtEqStudent, gtEqTeacher } from '../domain';
-import { UserRole } from '../graphql';
+import { UserRole } from '../lib/graphql';
 import { notify } from '../lib/notify';
 import { AuthRequirement } from '../util/types';
 

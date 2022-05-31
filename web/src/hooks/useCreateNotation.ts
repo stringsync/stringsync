@@ -1,4 +1,4 @@
-import { $gql, CreateNotationInput, CreateNotationOutput, t } from '../graphql';
+import { $gql, CreateNotationInput, CreateNotationOutput, t } from '../lib/graphql';
 import { useGql, UseGqlOptions } from './useGql';
 
 const CREATE_NOTATION_GQL = $gql

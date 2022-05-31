@@ -1,4 +1,4 @@
-import { TagCategory, UserRole } from '../graphql/graphqlTypes';
+import { TagCategory, UserRole } from '../lib/graphql/graphqlTypes';
 
 export interface User {
   id: string;

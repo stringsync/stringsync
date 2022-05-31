@@ -1,6 +1,14 @@
 import { useMemo, useState } from 'react';
-import { $gql, DataOf, QueryNotationArgs, t, TagCategory, UpdateNotationInput, UpdateNotationOutput } from '../graphql';
 import { UNKNOWN_ERROR_MSG } from '../lib/errors';
+import {
+  $gql,
+  DataOf,
+  QueryNotationArgs,
+  t,
+  TagCategory,
+  UpdateNotationInput,
+  UpdateNotationOutput,
+} from '../lib/graphql';
 import { Nullable } from '../util/types';
 import { useGql, UseGqlOptions } from './useGql';
 
