@@ -6,7 +6,7 @@ import { SelectionEdge } from '../lib/MusicDisplay/locator';
 import { Loop } from '../lib/MusicDisplay/loop';
 import { isCursorSnapshotPointerTarget, isSelectionPointerTarget, isTemporal } from '../lib/MusicDisplay/pointer';
 import * as notations from '../lib/notations';
-import { AnchoredSelection } from '../util/AnchoredSelection';
+import { AnchoredRange } from '../util/AnchoredRange';
 import { Duration } from '../util/Duration';
 
 const seekToLoopStart = (mediaPlayer: MediaPlayer, loop: Loop) => {
@@ -20,7 +20,7 @@ export const useMusicDisplayLoopBehavior = (
   mediaPlayer: MediaPlayer
 ) => {
   // ability to make selections
-  const selectionRef = useRef<AnchoredSelection | null>(null);
+  const selectionRef = useRef<AnchoredRange | null>(null);
   useEffect(() => {
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('rendered', () => {
@@ -67,12 +67,12 @@ export const useMusicDisplayLoopBehavior = (
             payload.src.edge === SelectionEdge.Start
               ? [loop.timeMsRange.end, loop.timeMsRange.start]
               : [loop.timeMsRange.start, loop.timeMsRange.end];
-          const selection = AnchoredSelection.init(anchoredTimeMs);
-          selectionRef.current = selection.update(movingTimeMs);
-          loop.update(selectionRef.current.toRange());
+          const selection = AnchoredRange.init(anchoredTimeMs);
+          selectionRef.current = selection.move(movingTimeMs);
+          loop.update(selectionRef.current.toNumberRange());
         } else if (isTemporal(payload.src)) {
-          selectionRef.current = AnchoredSelection.init(payload.src.timeMs);
-          loop.update(selectionRef.current.toRange());
+          selectionRef.current = AnchoredRange.init(payload.src.timeMs);
+          loop.update(selectionRef.current.toNumberRange());
           loop.activate();
         }
       }),
@@ -80,8 +80,8 @@ export const useMusicDisplayLoopBehavior = (
         const loop = musicDisplay.getLoop();
 
         if (isTemporal(payload.dst) && selectionRef.current) {
-          selectionRef.current = selectionRef.current.update(payload.dst.timeMs);
-          loop.update(selectionRef.current.toRange());
+          selectionRef.current = selectionRef.current.move(payload.dst.timeMs);
+          loop.update(selectionRef.current.toNumberRange());
         }
       }),
 
