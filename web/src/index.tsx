@@ -1,9 +1,9 @@
 import React from 'react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import { App } from './App';
+import { REACT_SNAP_ACTIVE } from './constants';
 import reportWebVitals from './reportWebVitals';
 import * as serviceWorker from './serviceWorkerRegistration';
-import { REACT_SNAP_ACTIVE } from './util/constants';
 
 const rootElement = document.getElementById('root');
 if (rootElement?.hasChildNodes()) {

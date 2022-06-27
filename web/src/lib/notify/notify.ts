@@ -1,4 +1,4 @@
-import { REACT_SNAP_ACTIVE } from '../../util/constants';
+import { REACT_SNAP_ACTIVE } from '../../constants';
 import { AntdNotify } from './AntdNotify';
 import { NoopNotify } from './NoopNotify';
 import { Notify } from './types';
