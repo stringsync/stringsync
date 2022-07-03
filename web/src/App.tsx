@@ -24,6 +24,7 @@ import { AuthRequirement } from './util/types';
 const ThemeProvider = ThemeProvider_ as any;
 
 const Library = compose(withAuthRequirement(AuthRequirement.NONE))(React.lazy(() => import('./components/Library')));
+const Library2 = compose(withAuthRequirement(AuthRequirement.NONE))(React.lazy(() => import('./components/Library2')));
 const NotationShow = compose(withAuthRequirement(AuthRequirement.NONE))(
   React.lazy(() => import('./components/NotationShow'))
 );
@@ -72,6 +73,7 @@ const Routing: React.FC = () => {
         }
       ></Route>
       <Route path="/library" element={<Library />} />
+      <Route path="/library2" element={<Library2 />} />
       <Route path="/n/:id" element={<NotationShow />} />
       <Route path="/n/:id/edit" element={<NotationEdit />} />
       <Route path="/users" element={<UserIndex />} />
