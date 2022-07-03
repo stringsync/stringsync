@@ -1,13 +1,13 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 import { Test } from '../testing';
-import { Landing } from './Landing';
+import { ScrollBehavior } from './ScrollBehavior';
 
-describe('Landing', () => {
+describe('ScrollBehavior', () => {
   it('renders without crashing', () => {
     const { container } = render(
       <Test>
-        <Landing />
+        <ScrollBehavior />
       </Test>
     );
     expect(container).toBeInTheDocument();

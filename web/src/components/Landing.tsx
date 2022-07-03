@@ -1,10 +1,11 @@
 import { CustomerServiceOutlined, SearchOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { Col, Divider, Row, Space } from 'antd';
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Layout, withLayout } from '../hocs/withLayout';
 import { useEffectOnce } from '../hooks/useEffectOnce';
+import { useRoutingBehavior } from '../hooks/useRoutingBehavior';
 import { compose } from '../util/compose';
 import { Box } from './Box';
 import { ImFeelingLucky } from './ImFeelingLucky';
@@ -76,19 +77,21 @@ const Footer = styled.div`
   }
 `;
 
-type Props = {
-  onMount: () => void;
-};
+type Props = {};
 
 const enhance = compose(withLayout(Layout.DEFAULT));
 
 export const Landing: React.FC<Props> = enhance((props: Props) => {
+  const { shouldRedirectFromLandingToLibrary, recordLandingVisit } = useRoutingBehavior();
+
   useEffectOnce(() => {
-    props.onMount();
+    recordLandingVisit();
   });
 
   return (
     <Outer data-testid="landing">
+      {shouldRedirectFromLandingToLibrary && <Navigate to="/library" replace />}
+
       <Jumbotron>
         <Overlay />
         <WhiteBox>
