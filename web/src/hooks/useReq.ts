@@ -1,27 +1,6 @@
 import { noop } from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
-
-export type Parser<T> = (res: Response) => T | Promise<T>;
-
-export type Req = () => void;
-
-export enum ResStatus {
-  Unknown = 'Unknown',
-  Idle = 'Idle',
-  Pending = 'Pending',
-  Success = 'Success',
-  Error = 'Error',
-  Cancelled = 'Cancelled',
-}
-
-export type Res<T> =
-  | { status: ResStatus.Idle }
-  | { status: ResStatus.Pending }
-  | { status: ResStatus.Success; result: T }
-  | { status: ResStatus.Error; error: any }
-  | { status: ResStatus.Cancelled };
-
-export type Canceller = () => void;
+import * as xhr from '../lib/xhr';
 
 enum CancelType {
   None,
@@ -31,14 +10,14 @@ enum CancelType {
 }
 
 export const useReq = <T>(
-  parse: Parser<T>,
+  parse: xhr.Parse<T>,
   input: RequestInfo,
   init?: Omit<RequestInit, 'signal'>
-): [req: Req, res: Res<T>, cancel: Canceller] => {
-  const [res, setRes] = useState<Res<T>>(() => ({ status: ResStatus.Idle }));
-  const externalCancelRef = useRef<Canceller>(noop);
-  const internalCancelRef = useRef<Canceller>(noop);
-  const supplantCancelRef = useRef<Canceller>(noop);
+): [req: xhr.Req, res: xhr.Res<T>, cancel: xhr.Cancel] => {
+  const [res, setRes] = useState<xhr.Res<T>>(() => ({ status: xhr.Status.Idle }));
+  const externalCancelRef = useRef<xhr.Cancel>(noop);
+  const internalCancelRef = useRef<xhr.Cancel>(noop);
+  const supplantCancelRef = useRef<xhr.Cancel>(noop);
 
   // If any of the args change, cancel the res so that any stale in-flight requests don't get erroneously applied.
   useEffect(() => {
@@ -49,7 +28,7 @@ export const useReq = <T>(
     supplantCancelRef.current();
 
     let done = false;
-    setRes({ status: ResStatus.Pending });
+    setRes({ status: xhr.Status.Pending });
 
     // We communicate via memory because the AbortController API does not offer a way to pass messages via
     // AbortController.prototype.abort. In other words, without these variables, we have no way to tell if the
@@ -72,23 +51,23 @@ export const useReq = <T>(
       .then(parse)
       .then((parsed) => {
         if (cancelled) {
-          setRes({ status: ResStatus.Cancelled });
+          setRes({ status: xhr.Status.Cancelled });
         } else {
-          setRes({ status: ResStatus.Success, result: parsed });
+          setRes({ status: xhr.Status.Success, result: parsed });
         }
       })
       .catch((error) => {
         if (done) {
           return;
         } else if (cancelled && cancelType === CancelType.Internal) {
-          setRes({ status: ResStatus.Idle });
+          setRes({ status: xhr.Status.Idle });
         } else if (cancelled && cancelType === CancelType.External) {
-          setRes({ status: ResStatus.Cancelled });
+          setRes({ status: xhr.Status.Cancelled });
         } else if (cancelled && cancelType === CancelType.Supplant) {
           // The supplanted call will handle state changes.
           return;
         } else {
-          setRes({ status: ResStatus.Error, error });
+          setRes({ status: xhr.Status.Error, error });
         }
       })
       .finally(() => {
