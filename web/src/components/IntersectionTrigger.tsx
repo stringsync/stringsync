@@ -17,6 +17,9 @@ export const IntersectionTrigger: React.FC<Props> = (props) => {
     if (!div) {
       return;
     }
+    if (!onIntersectionEnter && !onIntersectionExit) {
+      return;
+    }
 
     const observer = new IntersectionObserver((entries) => {
       const entry = entries[0];

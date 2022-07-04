@@ -1,18 +1,17 @@
 import { noop } from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-export type Parse<T> = (res: Response) => T | Promise<T>;
+export type Parser<T> = (res: Response) => T | Promise<T>;
 
 export type Req = () => void;
 
 export enum ResStatus {
-  Unknown,
-  Idle,
-  Pending,
-  Success,
-  Error,
-  Cancelled,
-  Superseded,
+  Unknown = 'Unknown',
+  Idle = 'Idle',
+  Pending = 'Pending',
+  Success = 'Success',
+  Error = 'Error',
+  Cancelled = 'Cancelled',
 }
 
 export type Res<T> =
@@ -22,32 +21,32 @@ export type Res<T> =
   | { status: ResStatus.Error; error: any }
   | { status: ResStatus.Cancelled };
 
-export type Cancel = () => void;
+export type Canceller = () => void;
 
 enum CancelType {
   None,
   Internal,
   External,
+  Supplant,
 }
 
 export const useReq = <T>(
-  parse: Parse<T>,
+  parse: Parser<T>,
   input: RequestInfo,
   init?: Omit<RequestInit, 'signal'>
-): [req: Req, res: Res<T>, cancel: Cancel] => {
+): [req: Req, res: Res<T>, cancel: Canceller] => {
   const [res, setRes] = useState<Res<T>>(() => ({ status: ResStatus.Idle }));
-  const externalCancelRef = useRef<Cancel>(noop);
-  const internalCancelRef = useRef<Cancel>(noop);
+  const externalCancelRef = useRef<Canceller>(noop);
+  const internalCancelRef = useRef<Canceller>(noop);
+  const supplantCancelRef = useRef<Canceller>(noop);
 
-  // If any of the args change, cancel the res so that any stale in-flight requests don't
-  // come back and try to be applied.
+  // If any of the args change, cancel the res so that any stale in-flight requests don't get erroneously applied.
   useEffect(() => {
     internalCancelRef.current();
   }, [parse, input, init]);
 
   const req = useCallback(() => {
-    // Ensure that if a previous request is in flight, it gets cancelled.
-    internalCancelRef.current();
+    supplantCancelRef.current();
 
     let done = false;
     setRes({ status: ResStatus.Pending });
@@ -65,8 +64,9 @@ export const useReq = <T>(
         abortController.abort();
       }
     };
-    externalCancelRef.current = cancel(CancelType.External);
     internalCancelRef.current = cancel(CancelType.Internal);
+    externalCancelRef.current = cancel(CancelType.External);
+    supplantCancelRef.current = cancel(CancelType.Supplant);
 
     fetch(input, { ...init, signal: abortController.signal })
       .then(parse)
@@ -80,10 +80,13 @@ export const useReq = <T>(
       .catch((error) => {
         if (done) {
           return;
-        } else if (cancelled && cancelType === CancelType.External) {
-          setRes({ status: ResStatus.Cancelled });
         } else if (cancelled && cancelType === CancelType.Internal) {
           setRes({ status: ResStatus.Idle });
+        } else if (cancelled && cancelType === CancelType.External) {
+          setRes({ status: ResStatus.Cancelled });
+        } else if (cancelled && cancelType === CancelType.Supplant) {
+          // The supplanted call will handle state changes.
+          return;
         } else {
           setRes({ status: ResStatus.Error, error });
         }
