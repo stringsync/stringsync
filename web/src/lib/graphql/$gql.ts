@@ -85,7 +85,9 @@ export class $gql<T extends Root, F extends Fields<T>, Q, V> {
     const uploadVariableNames = Object.values(lookup);
     const name =
       uploadVariableNames.length > 0
-        ? `${this.field}(${uploadVariableNames.map((variableName) => `$${variableName}: Upload!`).join(', ')})`
+        ? `${this.field.toString()}(${uploadVariableNames
+            .map((variableName) => `$${variableName}: Upload!`)
+            .join(', ')})`
         : this.field.toString();
 
     if (isObject(variables)) {
