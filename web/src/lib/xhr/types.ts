@@ -1,4 +1,6 @@
-export type Req = () => void;
+export type ReqInit = Omit<RequestInit, 'signal'>;
+
+export type Req = (input: RequestInfo, init?: ReqInit) => void;
 
 export type Cancel = () => void;
 
