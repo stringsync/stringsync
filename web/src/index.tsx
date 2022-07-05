@@ -7,19 +7,10 @@ import * as serviceWorker from './serviceWorkerRegistration';
 
 const rootElement = document.getElementById('root');
 if (rootElement?.hasChildNodes()) {
-  hydrateRoot(
-    rootElement,
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  );
+  hydrateRoot(rootElement, <App />);
 } else {
   const root = createRoot(rootElement!);
-  root.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  );
+  root.render(<App />);
 }
 
 if (!REACT_SNAP_ACTIVE) {

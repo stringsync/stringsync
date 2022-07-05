@@ -7,7 +7,9 @@ export const ScrollBehavior: React.FC = () => {
 
   // Scroll to the top of the page whenever the route changes.
   useEffect(() => {
-    scrollToTop({ duration: 0 });
+    return () => {
+      scrollToTop({ duration: 0 });
+    };
   }, [location.pathname]);
 
   return null;

@@ -16,6 +16,15 @@ type NotationPreview = Omit<Notation, 'createdAt' | 'updatedAt'> & {
 
 type LoadPage = () => void;
 
+type PageInfo = pager.PageInfo & {
+  hasLoadedFirstPage: boolean;
+};
+
+const getInitialPageInfo = () => ({
+  ...pager.getInitialPageInfo(),
+  hasLoadedFirstPage: false,
+});
+
 const toNotationPreviews = (connection: graphql.DataOf<typeof queries.NOTATION_PREVIEWS>): NotationPreview[] => {
   return (connection?.edges || []).map((edge) => {
     const transcriber = { ...edge.node.transcriber };
@@ -24,13 +33,23 @@ const toNotationPreviews = (connection: graphql.DataOf<typeof queries.NOTATION_P
 };
 
 export const useNotationPreviews = (
-  pageSize: number
-): [notations: NotationPreview[], pageInfo: pager.PageInfo, loadPage: LoadPage] => {
+  pageSize: number,
+  query: string,
+  tagIds: string[]
+): [notations: NotationPreview[], pageInfo: PageInfo, loadPage: LoadPage, status: GqlReqStatus] => {
   const [notations, setNotations] = useState(new Array<NotationPreview>());
-  const [pageInfo, setPageInfo] = useState(pager.getInitialPageInfo);
+  const [pageInfo, setPageInfo] = useState(getInitialPageInfo);
 
-  const [exec, res, cancel] = useGql2(queries.NOTATION_PREVIEWS);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [exec, res, cancel, reset] = useGql2(queries.NOTATION_PREVIEWS);
 
+  useEffect(() => {
+    setNotations([]);
+    setPageInfo(getInitialPageInfo);
+    reset();
+  }, [query, tagIds, reset]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadPage = useCallback(() => {
     if (res.status === GqlReqStatus.Pending) {
       return;
@@ -38,17 +57,25 @@ export const useNotationPreviews = (
     if (!pageInfo.hasNextPage) {
       return;
     }
-    exec({ first: pageSize, after: pageInfo.endCursor });
-  }, [exec, res, pageSize, pageInfo]);
+    exec({
+      first: pageSize,
+      after: pageInfo.endCursor,
+      query: query ? query : null,
+      tagIds: tagIds.length ? tagIds : null,
+    });
+  }, [exec, res, pageSize, pageInfo, query, tagIds]);
 
   useEffect(() => {
     switch (res.status) {
       case GqlReqStatus.Success:
         const connection = res.data.notations!;
-        setNotations((notations) => [...notations, ...toNotationPreviews(connection)]);
-        setPageInfo(connection.pageInfo);
+        // the server sorts by ascending cursor, but we're pagingating backwards
+        // this is correct according to spec:
+        // https://relay.dev/graphql/connections.htm#sec-Backward-pagination-arguments
+        setNotations((notations) => [...notations, ...toNotationPreviews(connection).reverse()]);
+        setPageInfo({ ...connection.pageInfo, hasLoadedFirstPage: true });
     }
   }, [res]);
 
-  return [notations, pageInfo, loadPage];
+  return [notations, pageInfo, loadPage, res.status];
 };

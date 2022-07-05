@@ -2,13 +2,13 @@ import { noop } from 'lodash';
 import React, { useEffect, useRef } from 'react';
 
 type Props = {
-  onIntersectionEnter?: () => void;
-  onIntersectionExit?: () => void;
+  onEnter?: () => void;
+  onExit?: () => void;
 };
 
 export const IntersectionTrigger: React.FC<Props> = (props) => {
-  const onIntersectionEnter = props.onIntersectionEnter || noop;
-  const onIntersectionExit = props.onIntersectionExit || noop;
+  const onEnter = props.onEnter || noop;
+  const onExit = props.onExit || noop;
 
   const divRef = useRef<HTMLDivElement>(null);
 
@@ -17,15 +17,15 @@ export const IntersectionTrigger: React.FC<Props> = (props) => {
     if (!div) {
       return;
     }
-    if (!onIntersectionEnter && !onIntersectionExit) {
+    if (!onEnter && !onExit) {
       return;
     }
 
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
-        onIntersectionEnter();
+        onEnter();
       } else {
-        onIntersectionExit();
+        onExit();
       }
     });
 
@@ -33,7 +33,7 @@ export const IntersectionTrigger: React.FC<Props> = (props) => {
     return () => {
       observer.disconnect();
     };
-  }, [divRef, onIntersectionEnter, onIntersectionExit]);
+  }, [divRef, onEnter, onExit]);
 
   return (
     <div data-testid="intersection-trigger" ref={divRef}>

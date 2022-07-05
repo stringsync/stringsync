@@ -39,8 +39,10 @@ export type GqlRes<G extends graphql.Any$gql> =
       status: GqlReqStatus.Cancelled;
     };
 
-export const useGql2 = <G extends graphql.Any$gql>(gql: G): [exec: Exec<G>, res: GqlRes<G>, cancel: xhr.Cancel] => {
-  const [req, res, cancel] = useReq(graphql.$gql.toGqlResponse);
+export const useGql2 = <G extends graphql.Any$gql>(
+  gql: G
+): [exec: Exec<G>, res: GqlRes<G>, cancel: xhr.Cancel, reset: xhr.Reset] => {
+  const [req, res, cancel, reset] = useReq(graphql.$gql.toGqlResponse);
 
   const exec = useCallback(
     (variables: graphql.VariablesOf<G>) => {
@@ -73,5 +75,5 @@ export const useGql2 = <G extends graphql.Any$gql>(gql: G): [exec: Exec<G>, res:
     setGqlRes({ status: GqlReqStatus.Cancelled });
   });
 
-  return [exec, gqlRes, cancel];
+  return [exec, gqlRes, cancel, reset];
 };

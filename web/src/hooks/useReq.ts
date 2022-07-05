@@ -9,7 +9,9 @@ enum CancelType {
   Supplant,
 }
 
-export const useReq = <T>(parse: xhr.Parse<T>): [req: xhr.Req, res: xhr.Res<T>, cancel: xhr.Cancel] => {
+export const useReq = <T>(
+  parse: xhr.Parse<T>
+): [req: xhr.Req, res: xhr.Res<T>, cancel: xhr.Cancel, reset: xhr.Reset] => {
   const [res, setRes] = useState<xhr.Res<T>>(() => ({ status: xhr.Status.Init }));
   const externalCancelRef = useRef<xhr.Cancel>(noop);
   const internalCancelRef = useRef<xhr.Cancel>(noop);
@@ -78,5 +80,10 @@ export const useReq = <T>(parse: xhr.Parse<T>): [req: xhr.Req, res: xhr.Res<T>, 
     externalCancelRef.current();
   }, []);
 
-  return [req, res, cancel];
+  const reset = useCallback(() => {
+    cancel();
+    setRes({ status: xhr.Status.Init });
+  }, [cancel]);
+
+  return [req, res, cancel, reset];
 };

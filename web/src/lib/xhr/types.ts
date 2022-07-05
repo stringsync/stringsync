@@ -4,6 +4,8 @@ export type Req = (input: RequestInfo, init?: ReqInit) => void;
 
 export type Cancel = () => void;
 
+export type Reset = () => void;
+
 export type Parse<T> = (res: Response) => T | Promise<T>;
 
 export enum Status {
