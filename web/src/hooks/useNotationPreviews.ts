@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Notation, Tag, User } from '../domain';
 import * as graphql from '../lib/graphql';
-import { Notation, Tag, User } from '../lib/graphql';
 import * as pager from '../lib/pager';
 import * as queries from '../lib/queries';
 import { GqlReqStatus, useGql2 } from './useGql2';
