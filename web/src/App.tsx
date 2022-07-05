@@ -25,7 +25,6 @@ import { AuthRequirement } from './util/types';
 const ThemeProviderProxy: any = ThemeProvider;
 
 const Library = compose(withAuthRequirement(AuthRequirement.NONE))(React.lazy(() => import('./components/Library')));
-const Library2 = compose(withAuthRequirement(AuthRequirement.NONE))(React.lazy(() => import('./components/Library2')));
 const NotationShow = compose(withAuthRequirement(AuthRequirement.NONE))(
   React.lazy(() => import('./components/NotationShow'))
 );
@@ -72,7 +71,6 @@ export const App: React.FC = () => {
                         <Route path="/index.html" element={<Navigate to="/" replace />} />
                         <Route path="/" element={<Landing />}></Route>
                         <Route path="/library" element={<Library />} />
-                        <Route path="/library2" element={<Library2 />} />
                         <Route path="/n/:id" element={<NotationShow />} />
                         <Route path="/n/:id/edit" element={<NotationEdit />} />
                         <Route path="/users" element={<UserIndex />} />

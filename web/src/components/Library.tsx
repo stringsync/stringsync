@@ -1,6 +1,5 @@
-import { CaretUpOutlined, CloseCircleOutlined, LoadingOutlined, SearchOutlined } from '@ant-design/icons';
-import { useMachine } from '@xstate/react';
-import { Affix, Alert, BackTop, Button, Input, List, Row } from 'antd';
+import { CloseCircleOutlined, LoadingOutlined, SearchOutlined } from '@ant-design/icons';
+import { Affix, Button, Input, List, Row } from 'antd';
 import CheckableTag from 'antd/lib/tag/CheckableTag';
 import { isEqual, uniq, without } from 'lodash';
 import React, { ChangeEventHandler, MouseEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
@@ -8,19 +7,18 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { useViewport } from '../ctx/viewport/useViewport';
 import { Layout, withLayout } from '../hocs/withLayout';
-import { useDebounce } from '../hooks/useDebounce';
-import { useIntersection } from '../hooks/useIntersection';
+import { useDebouncer } from '../hooks/useDebouncer';
+import { GqlReqStatus } from '../hooks/useGql2';
+import { useNotationPreviews } from '../hooks/useNotationPreviews';
 import { useTags } from '../hooks/useTags';
-import { libraryMachine, libraryModel } from '../lib/library/libraryMachine';
 import { compose } from '../util/compose';
-import { scrollToTop } from '../util/scrollToTop';
+import { Duration } from '../util/Duration';
+import { IntersectionTrigger } from './IntersectionTrigger';
 import { NotationCard } from './NotationCard';
 import { SonarSearch } from './SonarSearch';
 
-const QUERY_DEBOUNCE_DELAY_MS = 1000;
-const TAG_IDS_DEBOUNCE_DELAY_MS = 1000;
-const CLEAR_ERRORS_ANIMATION_DELAY_MS = 500;
-const LOADER_TRIGGER_ID = 'loader-trigger';
+const PAGE_SIZE = 9;
+const DEBOUNCE_DELAY = Duration.sec(1);
 
 const Outer = styled.div<{ xs: boolean }>`
   margin: 24px ${(props) => (props.xs ? 0 : 24)}px;
@@ -34,17 +32,21 @@ const AffixInner = styled.div<{ xs: boolean; affixed: boolean }>`
   transition: all 150ms ease-in;
 `;
 
-const Search = styled.div<{ xs: boolean }>`
+const SearchOuter = styled.div<{ xs: boolean }>`
   padding: 16px 0;
   margin: 0 ${(props) => (props.xs ? 16 : 0)}px;
+`;
+
+const SearchIcon = styled(SearchOutlined)`
+  color: rgba(0, 0, 0, 0.25);
 `;
 
 const TagSearch = styled(Row)`
   margin-top: 8px;
 `;
 
-const AlertOuter = styled.div<{ xs: boolean }>`
-  margin: 0 ${(props) => (props.xs ? 24 : 0)}px;
+const StyledCheckableTag = styled(CheckableTag)`
+  margin: 4px;
 `;
 
 const LoadingIcon = styled(LoadingOutlined)`
@@ -52,178 +54,118 @@ const LoadingIcon = styled(LoadingOutlined)`
   color: ${(props) => props.theme['@border-color']};
 `;
 
-const SearchIcon = styled(SearchOutlined)`
-  color: rgba(0, 0, 0, 0.25);
-`;
-
-const InvisibleLoadingIcon = styled(LoadingIcon)`
-  color: transparent;
-`;
-
 const NoMore = styled.h2`
   color: ${(props) => props.theme['@muted']};
 `;
 
-const StyledCheckableTag = styled(CheckableTag)`
-  margin: 4px;
-`;
-
-const BackTopButton = styled.div`
-  height: 40px;
-  width: 40px;
-  line-height: 40px;
-  border-radius: 4px;
-  background-color: ${(props) => props.theme['@primary-color']};
-  color: #fff;
-  text-align: center;
-  font-size: 14px;
-`;
-
-const ListOuter = styled.div`
-  /* This has to be done since antd will put a fixed width on the list items */
-  overflow-x: hidden;
-`;
-
-const normalizeTagIds = (tagIds: string[]) => uniq(tagIds).sort();
-
 const enhance = compose(withLayout(Layout.DEFAULT));
 
-type Props = {};
+export const Library: React.FC = enhance(() => {
+  const { xs, sm } = useViewport();
 
-export const Library: React.FC<Props> = enhance(() => {
-  const [state, send] = useMachine(libraryMachine);
-  const isIdle = state.value === 'idle';
-  const isLoading = state.matches('streaming.loading');
-  const hasErrors = state.context.errors.length > 0;
-  const hasLoadedLastPage = state.value === 'done';
-  const hasLoadedFirstPage = state.context.hasLoadedFirstPage;
   const [tags] = useTags();
 
-  const { xs, sm } = useViewport();
+  const [affixed, setAffixed] = useState(false);
+  const onAffixChange = (nextAffixed?: boolean | undefined) => setAffixed(!!nextAffixed);
 
   const [query, setQuery] = useState('');
   const [tagIds, setTagIds] = useState(new Array<string>());
-  const [affixed, setAffixed] = useState(false);
-
-  const debouncedQuery = useDebounce(query, QUERY_DEBOUNCE_DELAY_MS);
-  const debouncedTagIds = useDebounce(tagIds, TAG_IDS_DEBOUNCE_DELAY_MS);
-  const isQueryDebouncing = !isEqual(query, debouncedQuery);
-  const isTagIdsDebouncing = !isEqual(tagIds, debouncedTagIds);
-  const isSearchTermDebouncing = isQueryDebouncing || isTagIdsDebouncing;
-
-  const hasSearchTerm = query.length > 0 || tagIds.length > 0;
   const tagIdsSet = useMemo(() => new Set(tagIds), [tagIds]);
-  const isTagChecked = useCallback((tagId: string) => tagIdsSet.has(tagId), [tagIdsSet]);
-  const isLoaderTriggerVisible = useIntersection(LOADER_TRIGGER_ID);
-
   const onQueryChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     setQuery(event.target.value);
-    scrollToTop({ duration: 0 });
   };
-
   const onTagIdsChange = (tagId: string) => (isChecked: boolean) => {
+    const normalize = (tagIds: string[]) => uniq(tagIds).sort();
     let nextTagIds: string[];
     if (isChecked) {
-      nextTagIds = normalizeTagIds([...tagIds, tagId]);
+      nextTagIds = normalize([...tagIds, tagId]);
     } else {
-      nextTagIds = normalizeTagIds(without([...tagIds], tagId));
+      nextTagIds = normalize(without([...tagIds], tagId));
     }
     if (!isEqual(tagIds, nextTagIds)) {
-      scrollToTop({ duration: 0 });
       setTagIds(nextTagIds);
     }
   };
-
+  const isTagChecked = useCallback((tagId: string) => tagIdsSet.has(tagId), [tagIdsSet]);
+  const hasSearchTerm = query.length > 0 || tagIds.length > 0;
   const onSearchTermClear: MouseEventHandler<HTMLSpanElement> = (event) => {
     setQuery('');
     setTagIds([]);
   };
 
-  const onAffixChange = (affixed?: boolean) => {
-    setAffixed(!!affixed);
-  };
-
-  const onAlertClose = () => {
-    setTimeout(() => {
-      send(libraryModel.events.retryLoadPage());
-    }, CLEAR_ERRORS_ANIMATION_DELAY_MS);
-  };
-
+  const [notations, pageInfo, loadPage, status] = useNotationPreviews(PAGE_SIZE, query, tagIds);
+  const [hasLoadedFirstPageOnce, setHasLoadedFirstPageOnce] = useState(false);
   useEffect(() => {
-    if (!isIdle && isSearchTermDebouncing) {
-      send(libraryModel.events.clear());
-    }
-  }, [send, isIdle, isSearchTermDebouncing]);
+    setHasLoadedFirstPageOnce((hasLoadedFirstPageOnce) => hasLoadedFirstPageOnce || pageInfo.hasLoadedFirstPage);
+  }, [pageInfo]);
+  const [debouncing, debounce] = useDebouncer(DEBOUNCE_DELAY, { leading: !hasLoadedFirstPageOnce });
+  useEffect(debounce, [debounce, query, tagIds]);
 
-  useEffect(() => {
-    send(libraryModel.events.setQueryArgs(debouncedQuery, debouncedTagIds));
-  }, [send, debouncedQuery, debouncedTagIds]);
+  const onIntersectionEnter = useCallback(() => {
+    !debouncing && loadPage();
+  }, [debouncing, loadPage]);
 
-  useEffect(() => {
-    if (!isSearchTermDebouncing && isLoaderTriggerVisible) {
-      send(libraryModel.events.loadPage());
-    }
-  }, [send, isLoaderTriggerVisible, isSearchTermDebouncing]);
+  const isLoading = debouncing || status === GqlReqStatus.Init || status === GqlReqStatus.Pending;
+  const shouldShowList = !debouncing && pageInfo.hasLoadedFirstPage && notations.length > 0;
+  const shouldShowNothingFound = !debouncing && pageInfo.hasLoadedFirstPage && notations.length === 0;
+  const shouldShowNoMoreContent =
+    !debouncing && pageInfo.hasLoadedFirstPage && !pageInfo.hasNextPage && notations.length > 0;
 
   return (
     <Outer data-testid="library" xs={xs}>
-      <>
-        <Affix onChange={onAffixChange}>
-          <AffixInner xs={xs} affixed={affixed}>
-            <Search xs={xs}>
-              <Input
-                value={query}
-                onChange={onQueryChange}
-                placeholder="song, artist, or transcriber name"
-                prefix={<SearchIcon />}
-                suffix={hasSearchTerm && <CloseCircleOutlined onClick={onSearchTermClear} />}
-              />
-              <TagSearch justify="center" align="middle">
-                {tags.map((tag) => (
-                  <StyledCheckableTag key={tag.id} checked={isTagChecked(tag.id)} onChange={onTagIdsChange(tag.id)}>
-                    {tag.name}
-                  </StyledCheckableTag>
-                ))}
-              </TagSearch>
-            </Search>
-          </AffixInner>
-        </Affix>
+      <Affix onChange={onAffixChange}>
+        <AffixInner xs={xs} affixed={affixed}>
+          <SearchOuter xs={xs}>
+            <Input
+              value={query}
+              onChange={onQueryChange}
+              placeholder="song, artist, or transcriber name"
+              prefix={<SearchIcon />}
+              suffix={hasSearchTerm && <CloseCircleOutlined onClick={onSearchTermClear} />}
+            />
+            <TagSearch justify="center" align="middle">
+              {tags.map((tag) => (
+                <StyledCheckableTag key={tag.id} checked={isTagChecked(tag.id)} onChange={onTagIdsChange(tag.id)}>
+                  {tag.name}
+                </StyledCheckableTag>
+              ))}
+            </TagSearch>
+          </SearchOuter>
+        </AffixInner>
+      </Affix>
 
-        <Row justify="center" align="middle">
-          {hasSearchTerm ? (
-            <Button type="link" size="small" onClick={onSearchTermClear}>
-              remove filters
-            </Button>
-          ) : (
-            <Button size="small">{/* Dummy button for DOM spacing */}</Button>
-          )}
-        </Row>
-      </>
+      <Row justify="center" align="middle">
+        {hasSearchTerm ? (
+          <Button type="link" size="small" onClick={onSearchTermClear}>
+            remove filters
+          </Button>
+        ) : (
+          <Button size="small">{/* Dummy button for DOM spacing */}</Button>
+        )}
+      </Row>
 
-      {hasLoadedFirstPage && state.context.notations.length > 0 && (
+      {shouldShowList && (
         <>
           <br />
           <br />
 
-          <ListOuter>
-            <List
-              grid={{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 3 }}
-              style={{ padding: xs || sm ? '16px' : 0, border: '1px solid rgba(255,255,255,0)' }}
-              dataSource={state.context.notations}
-              rowKey={(notation) => notation.id}
-              renderItem={(notation) => (
-                <List.Item>
-                  <Link to={`/n/${notation.id}`}>
-                    <NotationCard notation={notation} query={query} isTagChecked={isTagChecked} />
-                  </Link>
-                </List.Item>
-              )}
-            />
-          </ListOuter>
+          <List
+            grid={{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 3 }}
+            style={{ padding: xs || sm ? '16px' : 0, border: '1px solid rgba(255,255,255,0)' }}
+            dataSource={notations}
+            rowKey={(notation) => notation.id}
+            renderItem={(notation) => (
+              <List.Item>
+                <Link to={`/n/${notation.id}`}>
+                  <NotationCard notation={notation} query={query} isTagChecked={isTagChecked} />
+                </Link>
+              </List.Item>
+            )}
+          />
         </>
       )}
 
-      {hasLoadedFirstPage && state.context.notations.length === 0 && (
+      {shouldShowNothingFound && (
         <>
           <br />
           <br />
@@ -240,38 +182,21 @@ export const Library: React.FC<Props> = enhance(() => {
         </>
       )}
 
-      {/* When this is visible, trigger loading  */}
-      <div id={LOADER_TRIGGER_ID}></div>
-      {hasErrors && (
-        <AlertOuter xs={xs}>
-          <Alert
-            showIcon
-            type="error"
-            message={state.context.errors.map((error) => error.message).join('; ')}
-            closeText="try again"
-            onClose={onAlertClose}
-          />
-        </AlertOuter>
-      )}
-      <br />
-      <br />
+      <IntersectionTrigger onEnter={onIntersectionEnter} />
 
-      <Row justify="center">{isIdle || isLoading ? <LoadingIcon /> : <InvisibleLoadingIcon />}</Row>
-
-      {hasLoadedLastPage && (
+      {isLoading && (
         <>
-          {state.context.notations.length > 0 && (
-            <Row justify="center">
-              <NoMore>no more content</NoMore>
-            </Row>
-          )}
+          <br />
+          <br />
+          <Row justify="center">{<LoadingIcon />}</Row>
         </>
       )}
-      <BackTop>
-        <BackTopButton>
-          <CaretUpOutlined />
-        </BackTopButton>
-      </BackTop>
+
+      {shouldShowNoMoreContent && (
+        <Row justify="center">
+          <NoMore>no more content</NoMore>
+        </Row>
+      )}
     </Outer>
   );
 });

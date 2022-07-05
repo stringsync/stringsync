@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 import { Test } from '../testing';
-import Library from './Library';
+import { Library } from './Library';
 
-describe('Library', () => {
+describe('Library2', () => {
   it('renders without crashing', () => {
     const { container } = render(
       <Test>
