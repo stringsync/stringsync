@@ -22,13 +22,12 @@ export const IntersectionTrigger: React.FC<Props> = (props) => {
     }
 
     const observer = new IntersectionObserver((entries) => {
-      const entry = entries[0];
-      if (entry.isIntersecting) {
+      if (entries[0].isIntersecting) {
         onIntersectionEnter();
       } else {
         onIntersectionExit();
       }
-    }, {});
+    });
 
     observer.observe(div);
     return () => {
@@ -36,5 +35,9 @@ export const IntersectionTrigger: React.FC<Props> = (props) => {
     };
   }, [divRef, onIntersectionEnter, onIntersectionExit]);
 
-  return <div data-testid="intersection-trigger" ref={divRef}></div>;
+  return (
+    <div data-testid="intersection-trigger" ref={divRef}>
+      <br />
+    </div>
+  );
 };

@@ -10,7 +10,7 @@ enum CancelType {
 }
 
 export const useReq = <T>(parse: xhr.Parse<T>): [req: xhr.Req, res: xhr.Res<T>, cancel: xhr.Cancel] => {
-  const [res, setRes] = useState<xhr.Res<T>>(() => ({ status: xhr.Status.Idle }));
+  const [res, setRes] = useState<xhr.Res<T>>(() => ({ status: xhr.Status.Init }));
   const externalCancelRef = useRef<xhr.Cancel>(noop);
   const internalCancelRef = useRef<xhr.Cancel>(noop);
   const supplantCancelRef = useRef<xhr.Cancel>(noop);
@@ -57,7 +57,7 @@ export const useReq = <T>(parse: xhr.Parse<T>): [req: xhr.Req, res: xhr.Res<T>, 
           if (done) {
             return;
           } else if (cancelled && cancelType === CancelType.Internal) {
-            setRes({ status: xhr.Status.Idle });
+            setRes({ status: xhr.Status.Init });
           } else if (cancelled && cancelType === CancelType.External) {
             setRes({ status: xhr.Status.Cancelled });
           } else if (cancelled && cancelType === CancelType.Supplant) {

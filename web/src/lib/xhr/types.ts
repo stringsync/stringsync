@@ -7,8 +7,7 @@ export type Cancel = () => void;
 export type Parse<T> = (res: Response) => T | Promise<T>;
 
 export enum Status {
-  Unknown,
-  Idle,
+  Init,
   Pending,
   Success,
   Error,
@@ -16,9 +15,8 @@ export enum Status {
 }
 
 export type Res<T> =
-  | { status: Status.Unknown }
-  | { status: Status.Idle }
+  | { status: Status.Init }
   | { status: Status.Pending }
   | { status: Status.Success; result: T }
-  | { status: Status.Error; error: any }
+  | { status: Status.Error; error: Error }
   | { status: Status.Cancelled };
