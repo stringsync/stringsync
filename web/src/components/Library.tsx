@@ -1,5 +1,5 @@
 import { CloseCircleOutlined, LoadingOutlined, SearchOutlined } from '@ant-design/icons';
-import { Affix, Button, Input, List, Row } from 'antd';
+import { Affix, Alert, Button, Input, List, Row } from 'antd';
 import CheckableTag from 'antd/lib/tag/CheckableTag';
 import { isEqual, uniq, without } from 'lodash';
 import React, { ChangeEventHandler, MouseEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
@@ -47,6 +47,10 @@ const TagSearch = styled(Row)`
 
 const StyledCheckableTag = styled(CheckableTag)`
   margin: 4px;
+`;
+
+const AlertOuter = styled.div<{ xs: boolean }>`
+  margin: 0 ${(props) => (props.xs ? 24 : 0)}px;
 `;
 
 const LoadingIcon = styled(LoadingOutlined)`
@@ -106,6 +110,7 @@ export const Library: React.FC = enhance(() => {
   }, [debouncing, loadPage]);
 
   const isLoading = debouncing || status === GqlReqStatus.Init || status === GqlReqStatus.Pending;
+  const shouldShowErrors = status === GqlReqStatus.Error;
   const shouldShowList = !debouncing && pageInfo.hasLoadedFirstPage && notations.length > 0;
   const shouldShowNothingFound = !debouncing && pageInfo.hasLoadedFirstPage && notations.length === 0;
   const shouldShowNoMoreContent =
@@ -183,6 +188,12 @@ export const Library: React.FC = enhance(() => {
       )}
 
       <IntersectionTrigger onEnter={onIntersectionEnter} />
+
+      {shouldShowErrors && (
+        <AlertOuter xs={xs}>
+          <Alert showIcon closable type="error" message="something went wrong" />
+        </AlertOuter>
+      )}
 
       {isLoading && (
         <>
