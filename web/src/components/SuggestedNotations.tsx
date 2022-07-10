@@ -1,13 +1,12 @@
-import { Button, Col, Row, Skeleton, Tag } from 'antd';
+import { Button, Col, Row, Tag } from 'antd';
 import { ButtonType } from 'antd/lib/button';
 import { truncate } from 'lodash';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { useSuggestedNotations } from '../hooks/useSuggestedNotations';
 
 const NUM_SUGGESTIONS = 10;
-const NOOP = () => {};
 
 const Outer = styled.div`
   margin-top: 8px;
@@ -72,51 +71,23 @@ const LibraryLink: React.FC<{ block?: boolean; type?: ButtonType }> = (props) =>
 };
 
 type SuggestedNotationsProps = {
-  skeleton: boolean;
   srcNotationId: string;
-  onLoadStart?: () => void;
-  onLoadEnd?: () => void;
 };
 
 export const SuggestedNotations: React.FC<SuggestedNotationsProps> = (props) => {
   const [suggestedNotations, errors, loading] = useSuggestedNotations(props.srcNotationId, NUM_SUGGESTIONS);
 
-  const onLoadStart = props.onLoadStart || NOOP;
-  const onLoadEnd = props.onLoadEnd || NOOP;
-  useEffect(() => {
-    if (loading) {
-      onLoadStart();
-    } else {
-      onLoadEnd();
-    }
-  }, [loading, onLoadStart, onLoadEnd]);
-
   const hasErrors = errors.length > 0;
   const hasSuggestedNotations = suggestedNotations.length > 0;
 
-  const shouldShowSkeleton = props.skeleton;
-  const shouldShowNoSuggestionsFound = !shouldShowSkeleton && !loading && !hasErrors && !hasSuggestedNotations;
-  const shouldShowErrors = !shouldShowSkeleton && !loading && hasErrors;
-  const shouldShowSuggestedNotations = !shouldShowSkeleton && !loading && !hasErrors && hasSuggestedNotations;
+  const shouldShowNoSuggestionsFound = !loading && !hasErrors && !hasSuggestedNotations;
+  const shouldShowErrors = !loading && hasErrors;
+  const shouldShowSuggestedNotations = !loading && !hasErrors && hasSuggestedNotations;
   const shouldShowFallback =
-    !shouldShowSkeleton &&
-    !loading &&
-    !shouldShowNoSuggestionsFound &&
-    !shouldShowErrors &&
-    !shouldShowSuggestedNotations;
+    !loading && !shouldShowNoSuggestionsFound && !shouldShowErrors && !shouldShowSuggestedNotations;
 
   return (
     <Outer>
-      {props.skeleton && (
-        <Padded>
-          <Skeleton loading paragraph={{ rows: 1 }} />
-          <Skeleton avatar loading paragraph={{ rows: 2 }} />
-          <Skeleton avatar loading paragraph={{ rows: 2 }} />
-          <Skeleton avatar loading paragraph={{ rows: 2 }} />
-          <Skeleton avatar loading paragraph={{ rows: 2 }} />
-        </Padded>
-      )}
-
       {shouldShowNoSuggestionsFound && (
         <Centered>
           <h3>no suggestions found</h3>

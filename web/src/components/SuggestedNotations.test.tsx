@@ -7,7 +7,7 @@ describe('SuggestedNotations', () => {
   it('renders without crashing', () => {
     const { container } = render(
       <Test>
-        <SuggestedNotations skeleton={false} srcNotationId="abc" />
+        <SuggestedNotations srcNotationId="abc" />
       </Test>
     );
     expect(container).toBeInTheDocument();

@@ -92,12 +92,6 @@ const NotationShow: React.FC = enhance(() => {
 
   // suggested notations
   const [isSuggestedNotationsLoading, setIsSuggestedNotationsLoading] = useState(false);
-  const onSuggestedNotationsLoadStart = () => {
-    setIsSuggestedNotationsLoading(true);
-  };
-  const onSuggestedNotationsLoadEnd = () => {
-    setIsSuggestedNotationsLoading(false);
-  };
 
   // auth
   const [authState] = useAuth();
@@ -173,13 +167,7 @@ const NotationShow: React.FC = enhance(() => {
                   </Button>
                 </Link>
               )}
-              <SuggestedNotations
-                skeleton={skeleton}
-                srcNotationId={params.id!}
-                onLoadStart={onSuggestedNotationsLoadStart}
-                onLoadEnd={onSuggestedNotationsLoadEnd}
-              />
-              2
+              <SuggestedNotations srcNotationId={params.id!} />2
             </div>
           }
           layoutOptions={layoutOptions}
@@ -208,12 +196,7 @@ const NotationShow: React.FC = enhance(() => {
           <br />
 
           <ErroredSuggestedNotationsOuter>
-            <SuggestedNotations
-              skeleton={skeleton}
-              srcNotationId={params.id!}
-              onLoadStart={onSuggestedNotationsLoadStart}
-              onLoadEnd={onSuggestedNotationsLoadEnd}
-            />
+            <SuggestedNotations srcNotationId={params.id!} />
           </ErroredSuggestedNotationsOuter>
         </ErrorsOuter>
       )}
