@@ -29,7 +29,7 @@ export enum ScaleSelectionType {
   Random,
 }
 
-export type NotationSettings = {
+export type Settings = {
   preferredLayout: NotationLayout;
   isFretboardVisible: boolean;
   fretMarkerDisplay: FretMarkerDisplay;
@@ -42,3 +42,15 @@ export type NotationSettings = {
   defaultSidecarWidthPx: number;
   displayMode: DisplayMode;
 };
+
+export type DurableSettings = Pick<
+  Settings,
+  | 'isFretboardVisible'
+  | 'isAutoscrollPreferred'
+  | 'isVideoVisible'
+  | 'fretMarkerDisplay'
+  | 'preferredLayout'
+  | 'defaultSidecarWidthPx'
+  | 'defaultTheaterHeightPx'
+  | 'displayMode'
+>;

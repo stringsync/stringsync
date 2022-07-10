@@ -4,8 +4,8 @@ import * as notations from '../lib/notations';
 import { useScales } from './useScales';
 
 export const useDynamicScaleSync = (
-  settings: notations.NotationSettings,
-  setSettings: React.Dispatch<React.SetStateAction<notations.NotationSettings>>,
+  settings: notations.Settings,
+  setSettings: React.Dispatch<React.SetStateAction<notations.Settings>>,
   musicDisplay: MusicDisplay
 ) => {
   const isDynamicScaleSelected = settings.scaleSelectionType === notations.ScaleSelectionType.Dynamic;

@@ -24,7 +24,7 @@ import { Notation } from './Notation';
 import { SuggestedNotations } from './SuggestedNotations';
 
 type PersistentSettings = Pick<
-  notations.NotationSettings,
+  notations.Settings,
   | 'isFretboardVisible'
   | 'isAutoscrollPreferred'
   | 'isVideoVisible'
@@ -90,9 +90,6 @@ const NotationShow: React.FC = enhance(() => {
     scrollToTop();
   }, [params.id]);
 
-  // suggested notations
-  const [isSuggestedNotationsLoading, setIsSuggestedNotationsLoading] = useState(false);
-
   // auth
   const [authState] = useAuth();
   const isAdmin = !authState.isPending && authState.user.role === UserRole.ADMIN;
@@ -121,7 +118,7 @@ const NotationShow: React.FC = enhance(() => {
     initialDefaultSettings
   );
   const onSettingsChange = useCallback(
-    (settings: notations.NotationSettings) => {
+    (settings: notations.Settings) => {
       setDefaultSettings({
         preferredLayout: settings.preferredLayout,
         isVideoVisible: settings.isVideoVisible,
@@ -141,7 +138,7 @@ const NotationShow: React.FC = enhance(() => {
   const onNotationInit = useCallback(() => {
     setIsNotationInitialized(true);
   }, []);
-  const skeleton = errors.length === 0 && (!isNotationInitialized || isNotationLoading || isSuggestedNotationsLoading);
+  const skeleton = errors.length === 0 && (!isNotationInitialized || isNotationLoading);
 
   return (
     <FullHeightDiv data-testid="notation-show">

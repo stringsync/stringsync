@@ -14,8 +14,8 @@ const seekToLoopStart = (mediaPlayer: MediaPlayer, loop: Loop) => {
 };
 
 export const useMusicDisplayLoopBehavior = (
-  settings: notations.NotationSettings,
-  setSettings: React.Dispatch<React.SetStateAction<notations.NotationSettings>>,
+  settings: notations.Settings,
+  setSettings: React.Dispatch<React.SetStateAction<notations.Settings>>,
   musicDisplay: MusicDisplay,
   mediaPlayer: MediaPlayer
 ) => {

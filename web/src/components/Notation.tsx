@@ -64,9 +64,9 @@ type Props = {
   sidecar?: React.ReactNode;
   layoutOptions?: notations.NotationLayoutOptions;
   notation: Nullable<notations.RenderableNotation>;
-  defaultSettings?: Partial<notations.NotationSettings>;
+  defaultSettings?: Partial<notations.Settings>;
   maxHeight?: number | string;
-  onSettingsChange?: (settings: notations.NotationSettings) => void;
+  onSettingsChange?: (settings: notations.Settings) => void;
   onInit?: () => void;
 };
 
@@ -86,7 +86,7 @@ export const Notation: React.FC<Props> = (props) => {
 
   // settings
   const device = useDevice();
-  const [settings, setSettings] = useState<notations.NotationSettings>(() => ({
+  const [settings, setSettings] = useState<notations.Settings>(() => ({
     ...notations.getDefaultSettings(device),
     ...defaultSettings,
   }));

@@ -19,7 +19,7 @@ const startPreferredScrolling = (musicDisplay: MusicDisplay, isAutoscrollPreferr
 };
 
 export const useMusicDisplayScrolling = (
-  settings: notations.NotationSettings,
+  settings: notations.Settings,
   musicDisplay: MusicDisplay,
   mediaPlayer: MediaPlayer
 ) => {

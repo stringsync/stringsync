@@ -9,7 +9,7 @@ import { DisplayMode } from '../../lib/musicxml';
 import { NumberRange } from '../../util/NumberRange';
 import { InternalError } from '../errors';
 import * as constants from './constants';
-import { FretMarkerDisplay, NotationLayout, NotationSettings, ScaleSelectionType } from './types';
+import { FretMarkerDisplay, NotationLayout, ScaleSelectionType, Settings } from './types';
 
 const ALL_LAYOUTS: NotationLayout[] = ['sidecar', 'theater'];
 const MOUSE_SVG_EVENT_NAMES: SupportedSVGEventNames[] = ['mousedown', 'mousemove', 'mouseup'];
@@ -57,7 +57,7 @@ export const getLayoutSizeBoundsPx = (viewport: ViewportState, offsetHeightPx: n
   };
 };
 
-export const getDefaultSettings = (device: Device): NotationSettings => ({
+export const getDefaultSettings = (device: Device): Settings => ({
   preferredLayout: 'sidecar',
   isFretboardVisible: !device.mobile,
   fretMarkerDisplay: FretMarkerDisplay.None,

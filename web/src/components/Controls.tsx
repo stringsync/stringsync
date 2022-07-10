@@ -65,8 +65,8 @@ type Props = {
   settingsContainerRef: RefObject<HTMLDivElement>;
   musicDisplay: MusicDisplay;
   mediaPlayer: MediaPlayer;
-  settings: notations.NotationSettings;
-  setSettings(settings: notations.NotationSettings): void;
+  settings: notations.Settings;
+  setSettings(settings: notations.Settings): void;
 };
 
 export const Controls: React.FC<Props> = (props) => {

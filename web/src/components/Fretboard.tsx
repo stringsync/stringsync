@@ -18,7 +18,7 @@ const Outer = styled.div`
 `;
 
 type Props = FretboardJsProps & {
-  settings: notations.NotationSettings;
+  settings: notations.Settings;
   musicDisplay: MusicDisplay;
   mediaPlayer: MediaPlayer;
 };

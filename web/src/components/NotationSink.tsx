@@ -12,8 +12,8 @@ import { MusicDisplay } from '../lib/MusicDisplay';
 import * as notations from '../lib/notations';
 
 type Props = {
-  settings: notations.NotationSettings;
-  setSettings: React.Dispatch<React.SetStateAction<notations.NotationSettings>>;
+  settings: notations.Settings;
+  setSettings: React.Dispatch<React.SetStateAction<notations.Settings>>;
   musicDisplay: MusicDisplay;
   mediaPlayer: MediaPlayer;
 };
