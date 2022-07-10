@@ -32,10 +32,6 @@ const ListItem = styled.li`
   }
 `;
 
-const Padded = styled.div`
-  padding: 24px;
-`;
-
 const Thumbnail = styled.img`
   width: 100%;
 `;

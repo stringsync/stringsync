@@ -58,7 +58,6 @@ export const N: React.FC = () => {
   const [authState] = useAuth();
   const isAdmin = authState.user.role === UserRole.ADMIN;
   const isTranscriber = authState.user.id === notation?.transcriber.id;
-  const canEdit = !authState.isPending && !device.mobile && (isAdmin || isTranscriber);
 
   // css effects
   useNoOverflow(hasErrors ? null : document.body);
@@ -69,9 +68,10 @@ export const N: React.FC = () => {
   // render branches
   const showErrors = !loading && hasErrors;
   const showNotation = !loading && !hasErrors;
+  const showEditButton = !authState.isPending && !device.mobile && (isAdmin || isTranscriber);
 
   return (
-    <FullHeightDiv>
+    <FullHeightDiv data-testid="n">
       {showErrors && (
         <Errors>
           <Row justify="center">
