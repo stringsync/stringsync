@@ -15,15 +15,9 @@ import { usePlayerSettings } from '../hooks/usePlayerSettings';
 import { useScaleSettings } from '../hooks/useScaleSettings';
 import { UserRole } from '../lib/graphql';
 import * as notations from '../lib/notations';
+import { Frame } from './Frame';
 import { FullHeightDiv } from './FullHeightDiv';
 import { SuggestedNotations } from './SuggestedNotations';
-
-const Errors = styled.div`
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
-  padding: 24px;
-`;
 
 const DEFAULT_NOTATION_LAYOUT_OPTIONS: notations.NotationLayoutOptions = {
   target: 'sidecar',
@@ -35,24 +29,46 @@ const MOBILE_NOTATION_LAYOUT_OPTIONS: notations.NotationLayoutOptions = {
   permitted: ['theater'],
 };
 
-export const N: React.FC = () => {
-  // layout
-  const device = useDevice();
-  const { xs, sm, md, innerWidth, innerHeight } = useViewport();
-  const ltLg = xs || sm || md;
-  const layoutOptions = device.mobile || ltLg ? MOBILE_NOTATION_LAYOUT_OPTIONS : DEFAULT_NOTATION_LAYOUT_OPTIONS;
-  const isMobileLandscape = device.mobile && innerHeight < innerWidth;
+const Errors = styled.div`
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 24px;
+`;
 
+const Sidecar = styled.div`
+  background: white;
+  height: 100%;
+`;
+
+const FlexColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`;
+
+export const N: React.FC = () => {
   // notation
   const params = useParams();
   const notationId = params.id || '';
   const [notation, errors, loading] = useNotation(notationId);
   const hasErrors = errors.length > 0;
+  const videoUrl = notation?.videoUrl || null;
 
   // settings
   const [notationSettings, setNotationSettings] = useNotationSettings();
   const [playerSettings, setPlayerSettings] = usePlayerSettings();
   const [scaleSettings, setScaleSettings] = useScaleSettings();
+
+  // layout
+  const device = useDevice();
+  const viewport = useViewport();
+  const { xs, sm, md, innerWidth, innerHeight } = viewport;
+  const ltLg = xs || sm || md;
+  const layoutOptions = device.mobile || ltLg ? MOBILE_NOTATION_LAYOUT_OPTIONS : DEFAULT_NOTATION_LAYOUT_OPTIONS;
+  const isMobileLandscape = device.mobile && innerHeight < innerWidth;
+  const isPreferredLayoutPermitted = layoutOptions.permitted.includes(notationSettings.preferredLayout);
+  const layout = isPreferredLayoutPermitted ? notationSettings.preferredLayout : notations.getLayout(layoutOptions);
 
   // auth
   const [authState] = useAuth();
@@ -67,11 +83,31 @@ export const N: React.FC = () => {
 
   // render branches
   const showErrors = !loading && hasErrors;
-  const showNotation = !loading && !hasErrors;
   const showEditButton = !authState.isPending && !device.mobile && (isAdmin || isTranscriber);
+  const showNotation = !loading && !hasErrors;
+  const showSidecarLayout = showNotation && layout === 'sidecar';
+  const showTheaterLayout = showNotation && layout === 'theater';
 
   return (
     <FullHeightDiv data-testid="n">
+      {showSidecarLayout && (
+        <>
+          <Frame split="vertical">
+            <div>goodbye</div>
+            <div>hello</div>
+          </Frame>
+        </>
+      )}
+
+      {showTheaterLayout && (
+        <>
+          <Frame split="horizontal">
+            <div>goodbye</div>
+            <div>hello</div>
+          </Frame>
+        </>
+      )}
+
       {showErrors && (
         <Errors>
           <Row justify="center">
@@ -96,8 +132,6 @@ export const N: React.FC = () => {
           </Row>
         </Errors>
       )}
-
-      {showNotation && <div>notation</div>}
     </FullHeightDiv>
   );
 };

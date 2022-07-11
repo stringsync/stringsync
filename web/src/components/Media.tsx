@@ -30,11 +30,11 @@ const SkeletonOuter = styled.div`
 `;
 
 type Props = {
-  skeleton: boolean;
+  skeleton?: boolean;
   video: boolean;
   fluid?: boolean;
   src: string | null;
-  onPlayerChange: (mediaPlayer: MediaPlayer) => void;
+  onPlayerChange?: (mediaPlayer: MediaPlayer) => void;
 };
 
 export const Media: React.FC<Props> = (props) => {

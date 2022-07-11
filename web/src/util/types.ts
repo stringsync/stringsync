@@ -12,10 +12,9 @@ export type OnlyKey<K extends string | number | symbol, V = any> = {
   [P in K]: V;
 };
 
-export type Replace<T extends object, K extends string | number | symbol, V extends any> = Omit<T, K> &
-  {
-    [P in K]: V;
-  };
+export type Replace<T extends object, K extends string | number | symbol, V extends any> = Omit<T, K> & {
+  [P in K]: V;
+};
 
 export type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
 
@@ -60,4 +59,8 @@ export interface PromiseResolver<T> {
 export type Dimensions = {
   width: number;
   height: number;
+};
+
+export type FlatSerializable = {
+  [key: string]: string | number | boolean | null;
 };

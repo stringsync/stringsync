@@ -1,8 +1,5 @@
 import { useCallback, useState } from 'react';
-
-type FlatSerializable = {
-  [key: string]: string | number | boolean | null;
-};
+import { FlatSerializable } from '../util/types';
 
 const isType = <T extends FlatSerializable>(target: T, obj: any): obj is T => {
   if (typeof obj !== 'object') {
