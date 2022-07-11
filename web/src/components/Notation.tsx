@@ -15,9 +15,9 @@ import * as notations from '../lib/notations';
 import { Nullable } from '../util/types';
 import { Controls, CONTROLS_HEIGHT_PX } from './Controls';
 import { Fretboard } from './Fretboard';
-import { Info } from './Info';
 import { Media } from './Media';
 import { MusicSheet } from './MusicSheet';
+import { NotationInfo } from './NotationInfo';
 import { NotationSink } from './NotationSink';
 import { SplitPane } from './SplitPane';
 
@@ -226,7 +226,7 @@ export const Notation: React.FC<Props> = (props) => {
 
                 <Flex1InvisibleScrollbar>
                   <br />
-                  <Info skeleton={skeleton} notation={notation} />
+                  <NotationInfo skeleton={skeleton} notation={notation} />
                   <br />
                   {sidecar}
                 </Flex1InvisibleScrollbar>
@@ -290,7 +290,7 @@ export const Notation: React.FC<Props> = (props) => {
             getContainer={getContainer}
           >
             <Sidecar>
-              <Info skeleton={skeleton} notation={notation} />
+              <NotationInfo skeleton={skeleton} notation={notation} />
               <br />
               {sidecar}
             </Sidecar>

@@ -3,6 +3,7 @@ import { Button } from 'antd';
 import { clamp } from 'lodash';
 import React, { PropsWithChildren, useCallback, useEffect, useId, useRef, useState } from 'react';
 import styled from 'styled-components';
+import { usePrevious } from '../hooks/usePrevious';
 import { InternalError } from '../lib/errors';
 
 // Inspired by https://github.com/tomkp/react-split-pane
@@ -58,6 +59,7 @@ const VerticalOuter = styled.div`
   flex-direction: row;
   left: 0;
   right: 0;
+  width: 100%;
 `;
 
 const VerticalDivider = styled.div`
@@ -84,7 +86,9 @@ const VerticalPane1 = styled.div<{ px: number }>`
   width: ${(props) => props.px}px;
 `;
 
-const VerticalPane2 = styled.div``;
+const VerticalPane2 = styled.div`
+  width: 100%;
+`;
 
 const unfocus = () => {
   try {
@@ -99,19 +103,21 @@ const unfocus = () => {
   }
 };
 
-type FrameProps = PropsWithChildren<{
+export type SlidingWindowProps = PropsWithChildren<{
   split?: Split;
   defaultSize?: number;
   minSize?: number;
   maxSize?: number;
+  onSlideEnd?: (size: number) => void;
 }>;
 
-export const Frame: React.FC<FrameProps> = (props) => {
+export const SlidingWindow: React.FC<SlidingWindowProps> = (props) => {
   const children = props.children;
   const split = props.split || 'horizontal';
   const defaultSize = props.defaultSize ?? 200;
   const minSize = props.minSize ?? 200;
   const maxSize = props.maxSize ?? 500;
+  const onSlideEnd = props.onSlideEnd || null;
 
   // error handling
   useEffect(() => {
@@ -225,6 +231,21 @@ export const Frame: React.FC<FrameProps> = (props) => {
       document.addEventListener('touchend', onEnd);
     };
   }, [active, buttonId, deactivate]);
+
+  // slide end
+  const prevActive = usePrevious(active);
+  useEffect(() => {
+    if (!onSlideEnd) {
+      return;
+    }
+    if (!prevActive) {
+      return;
+    }
+    if (active) {
+      return;
+    }
+    onSlideEnd(size);
+  }, [onSlideEnd, prevActive, active, size]);
 
   const [pane1, pane2] = React.Children.toArray(children);
 

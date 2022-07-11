@@ -1,4 +1,3 @@
-import { Skeleton } from 'antd';
 import styled from 'styled-components';
 import { MediaPlayer } from '../lib/MediaPlayer';
 import { Player } from './Player';
@@ -42,15 +41,11 @@ export const Media: React.FC<Props> = (props) => {
 
   return (
     <Outer data-testid="media" $video={props.video}>
-      {props.video && props.src ? (
+      {props.video && props.src && (
         <Player.Video
           playerOptions={{ fluid, sources: [{ src: props.src, type: 'application/x-mpegURL' }] }}
           onPlayerChange={props.onPlayerChange}
         />
-      ) : (
-        <SkeletonOuter>
-          <Skeleton.Image style={{ width: '100%', height: '100%' }} />
-        </SkeletonOuter>
       )}
 
       {!props.video && props.src && (

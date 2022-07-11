@@ -1,6 +1,6 @@
-import { Alert, Row } from 'antd';
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import { Alert, Button, Row } from 'antd';
+import React, { useCallback, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAuth } from '../ctx/auth';
 import { useDevice } from '../ctx/device';
@@ -14,9 +14,15 @@ import { useNoUserSelect } from '../hooks/useNoUserSelect';
 import { usePlayerSettings } from '../hooks/usePlayerSettings';
 import { useScaleSettings } from '../hooks/useScaleSettings';
 import { UserRole } from '../lib/graphql';
+import { MusicDisplay } from '../lib/MusicDisplay';
+import { NoopMusicDisplay } from '../lib/MusicDisplay/NoopMusicDisplay';
 import * as notations from '../lib/notations';
-import { Frame } from './Frame';
 import { FullHeightDiv } from './FullHeightDiv';
+import { Media } from './Media';
+import { MusicSheet } from './MusicSheet';
+import { NotationInfo } from './NotationInfo';
+import { Rect } from './Rect';
+import { SlidingWindow } from './SlidingWindow';
 import { SuggestedNotations } from './SuggestedNotations';
 
 const DEFAULT_NOTATION_LAYOUT_OPTIONS: notations.NotationLayoutOptions = {
@@ -36,6 +42,20 @@ const Errors = styled.div`
   padding: 24px;
 `;
 
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+`;
+
 const Sidecar = styled.div`
   background: white;
   height: 100%;
@@ -45,6 +65,20 @@ const FlexColumn = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
+`;
+
+const Flex1 = styled.div`
+  overflow: hidden;
+  flex: 1;
+`;
+
+const Flex1InvisibleScrollbar = styled(Flex1)`
+  margin: 16px;
+  overflow-y: auto;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 export const N: React.FC = () => {
@@ -60,6 +94,35 @@ export const N: React.FC = () => {
   const [playerSettings, setPlayerSettings] = usePlayerSettings();
   const [scaleSettings, setScaleSettings] = useScaleSettings();
 
+  // music display
+  const [musicDisplay, setMusicDisplay] = useState<MusicDisplay>(() => new NoopMusicDisplay());
+  const onMusicDisplayChange = useCallback((musicDisplay: MusicDisplay) => {
+    setMusicDisplay(musicDisplay);
+  }, []);
+
+  // sync sliding window sizes with settings
+  const onSidecarSlideEnd = useCallback(
+    (defaultSidecarWidthPx: number) => {
+      setNotationSettings({ ...notationSettings, defaultSidecarWidthPx });
+    },
+    [notationSettings, setNotationSettings]
+  );
+  const onTheaterSlideEnd = useCallback(
+    (defaultTheaterHeightPx: number) => {
+      setNotationSettings({ ...notationSettings, defaultTheaterHeightPx });
+    },
+    [notationSettings, setNotationSettings]
+  );
+
+  // gadgets
+  const [gadgetsHeightPx, setGadgetsHeightPx] = useState(0);
+  const onGadgetsResize = useCallback((entries: ResizeObserverEntry[]) => {
+    if (!entries.length) {
+      return;
+    }
+    setGadgetsHeightPx(entries[0].contentRect.height);
+  }, []);
+
   // layout
   const device = useDevice();
   const viewport = useViewport();
@@ -67,6 +130,7 @@ export const N: React.FC = () => {
   const ltLg = xs || sm || md;
   const layoutOptions = device.mobile || ltLg ? MOBILE_NOTATION_LAYOUT_OPTIONS : DEFAULT_NOTATION_LAYOUT_OPTIONS;
   const isMobileLandscape = device.mobile && innerHeight < innerWidth;
+  const layoutSizeBoundsPx = notations.getLayoutSizeBoundsPx(viewport, gadgetsHeightPx);
   const isPreferredLayoutPermitted = layoutOptions.permitted.includes(notationSettings.preferredLayout);
   const layout = isPreferredLayoutPermitted ? notationSettings.preferredLayout : notations.getLayout(layoutOptions);
 
@@ -84,6 +148,7 @@ export const N: React.FC = () => {
   // render branches
   const showErrors = !loading && hasErrors;
   const showEditButton = !authState.isPending && !device.mobile && (isAdmin || isTranscriber);
+  const showMobileLandscapeWarning = isMobileLandscape;
   const showNotation = !loading && !hasErrors;
   const showSidecarLayout = showNotation && layout === 'sidecar';
   const showTheaterLayout = showNotation && layout === 'theater';
@@ -91,21 +156,69 @@ export const N: React.FC = () => {
   return (
     <FullHeightDiv data-testid="n">
       {showSidecarLayout && (
-        <>
-          <Frame split="vertical">
-            <div>goodbye</div>
-            <div>hello</div>
-          </Frame>
-        </>
+        <SlidingWindow
+          split="vertical"
+          defaultSize={notationSettings.defaultSidecarWidthPx}
+          minSize={layoutSizeBoundsPx.sidecar.min}
+          maxSize={layoutSizeBoundsPx.sidecar.max}
+          onSlideEnd={onSidecarSlideEnd}
+        >
+          <Sidecar>
+            <FlexColumn>
+              <Media video src={videoUrl} />
+              <Flex1InvisibleScrollbar>
+                <br />
+                <NotationInfo notation={notation} />
+                <br />
+                <div>
+                  {showEditButton && (
+                    <Link to={`/n/${params.id}/edit`}>
+                      <Button block type="default" size="large">
+                        edit
+                      </Button>
+                    </Link>
+                  )}
+                  <SuggestedNotations srcNotationId={notationId} />
+                </div>
+              </Flex1InvisibleScrollbar>
+            </FlexColumn>
+          </Sidecar>
+
+          <FlexColumn>
+            <Flex1>
+              <MusicSheet
+                notation={notation}
+                displayMode={notationSettings.displayMode}
+                onMusicDisplayChange={onMusicDisplayChange}
+              />
+            </Flex1>
+            <Rect onResize={onGadgetsResize}>
+              <div>fretboard</div>
+              <div>controls</div>
+            </Rect>
+          </FlexColumn>
+        </SlidingWindow>
       )}
 
       {showTheaterLayout && (
-        <>
-          <Frame split="horizontal">
-            <div>goodbye</div>
-            <div>hello</div>
-          </Frame>
-        </>
+        <SlidingWindow
+          split="horizontal"
+          defaultSize={notationSettings.defaultTheaterHeightPx}
+          minSize={layoutSizeBoundsPx.theater.min}
+          maxSize={layoutSizeBoundsPx.theater.max}
+          onSlideEnd={onTheaterSlideEnd}
+        >
+          <Media video={notationSettings.isVideoVisible} fluid={false} src={videoUrl} />
+          <div>bottom</div>
+        </SlidingWindow>
+      )}
+
+      {showMobileLandscapeWarning && (
+        <Overlay>
+          <h2>
+            Mobile landscape mode is not supported <em>yet</em>.
+          </h2>
+        </Overlay>
       )}
 
       {showErrors && (

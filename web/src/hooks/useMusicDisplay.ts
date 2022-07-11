@@ -22,7 +22,7 @@ export type UseMusicDisplayOpts = {
 export const useMusicDisplay = (opts: UseMusicDisplayOpts): [MusicDisplay, boolean] => {
   opts = useMemoCmp(opts);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay>(() => new NoopMusicDisplay());
   const device = useDevice();
 
