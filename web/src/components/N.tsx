@@ -1,10 +1,12 @@
-import { Alert, Button, Row } from 'antd';
-import React, { useCallback, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { HomeOutlined, InfoCircleOutlined, SoundFilled, SoundOutlined } from '@ant-design/icons';
+import { Alert, Button, Drawer, Row } from 'antd';
+import React, { useCallback, useRef, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAuth } from '../ctx/auth';
 import { useDevice } from '../ctx/device';
 import { useViewport } from '../ctx/viewport';
+import { useMuted } from '../hooks/useMuted';
 import { useNoOverflow } from '../hooks/useNoOverflow';
 import { useNotation } from '../hooks/useNotation';
 import { useNotationSettings } from '../hooks/useNotationSettings';
@@ -14,6 +16,7 @@ import { useNoUserSelect } from '../hooks/useNoUserSelect';
 import { usePlayerSettings } from '../hooks/usePlayerSettings';
 import { useScaleSettings } from '../hooks/useScaleSettings';
 import { UserRole } from '../lib/graphql';
+import { MediaPlayer, NoopMediaPlayer } from '../lib/MediaPlayer';
 import { MusicDisplay } from '../lib/MusicDisplay';
 import { NoopMusicDisplay } from '../lib/MusicDisplay/NoopMusicDisplay';
 import * as notations from '../lib/notations';
@@ -81,6 +84,13 @@ const Flex1InvisibleScrollbar = styled(Flex1)`
   }
 `;
 
+const FloatingButton = styled(Button)<{ $top: number }>`
+  position: fixed;
+  top: ${(props) => props.$top}px;
+  right: -1px;
+  z-index: 5;
+`;
+
 export const N: React.FC = () => {
   // notation
   const params = useParams();
@@ -89,6 +99,10 @@ export const N: React.FC = () => {
   const hasErrors = errors.length > 0;
   const videoUrl = notation?.videoUrl || null;
 
+  // refs
+  const settingsContainerRef = useRef<HTMLDivElement>(null);
+  const getSettingsContainer = () => settingsContainerRef.current || document.body;
+
   // settings
   const [notationSettings, setNotationSettings] = useNotationSettings();
   const [playerSettings, setPlayerSettings] = usePlayerSettings();
@@ -96,9 +110,17 @@ export const N: React.FC = () => {
 
   // music display
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay>(() => new NoopMusicDisplay());
-  const onMusicDisplayChange = useCallback((musicDisplay: MusicDisplay) => {
-    setMusicDisplay(musicDisplay);
-  }, []);
+
+  // media player
+  const [mediaPlayer, setMediaPlayer] = useState<MediaPlayer>(() => new NoopMediaPlayer());
+  const muted = useMuted(mediaPlayer);
+  const onMuteClick = () => {
+    if (muted) {
+      mediaPlayer.unmute();
+    } else {
+      mediaPlayer.mute();
+    }
+  };
 
   // sync sliding window sizes with settings
   const onSidecarSlideEnd = useCallback(
@@ -139,6 +161,15 @@ export const N: React.FC = () => {
   const isAdmin = authState.user.role === UserRole.ADMIN;
   const isTranscriber = authState.user.id === notation?.transcriber.id;
 
+  // sidecar drawer button
+  const [isSidecarDrawerVisible, setSidecarDrawerVisibility] = useState(false);
+  const onSidecarDrawerOpen = () => setSidecarDrawerVisibility(true);
+  const onSidecarDrawerClose = () => setSidecarDrawerVisibility(false);
+
+  // home button
+  const navigate = useNavigate();
+  const onHomeClick = () => navigate('/library');
+
   // css effects
   useNoOverflow(hasErrors ? null : document.body);
   useNoUserSelect(document.body);
@@ -155,19 +186,80 @@ export const N: React.FC = () => {
 
   return (
     <FullHeightDiv data-testid="n">
-      {showSidecarLayout && (
-        <SlidingWindow
-          split="vertical"
-          defaultSize={notationSettings.defaultSidecarWidthPx}
-          minSize={layoutSizeBoundsPx.sidecar.min}
-          maxSize={layoutSizeBoundsPx.sidecar.max}
-          onSlideEnd={onSidecarSlideEnd}
-        >
-          <Sidecar>
-            <FlexColumn>
-              <Media video src={videoUrl} />
-              <Flex1InvisibleScrollbar>
-                <br />
+      <div ref={settingsContainerRef}>
+        {showSidecarLayout && (
+          <>
+            <SlidingWindow
+              split="vertical"
+              defaultSize={notationSettings.defaultSidecarWidthPx}
+              minSize={layoutSizeBoundsPx.sidecar.min}
+              maxSize={layoutSizeBoundsPx.sidecar.max}
+              onSlideEnd={onSidecarSlideEnd}
+            >
+              <Sidecar>
+                <FlexColumn>
+                  <Media video src={videoUrl} onPlayerChange={setMediaPlayer} />
+                  <Flex1InvisibleScrollbar>
+                    <br />
+                    <NotationInfo notation={notation} />
+                    <br />
+                    <div>
+                      {showEditButton && (
+                        <Link to={`/n/${params.id}/edit`}>
+                          <Button block type="default" size="large">
+                            edit
+                          </Button>
+                        </Link>
+                      )}
+                      <SuggestedNotations srcNotationId={notationId} />
+                    </div>
+                  </Flex1InvisibleScrollbar>
+                </FlexColumn>
+              </Sidecar>
+
+              <FlexColumn>
+                <Flex1>
+                  <MusicSheet
+                    notation={notation}
+                    displayMode={notationSettings.displayMode}
+                    onMusicDisplayChange={setMusicDisplay}
+                  />
+                </Flex1>
+                <Rect onResize={onGadgetsResize}>
+                  <div>fretboard</div>
+                  <div>controls</div>
+                </Rect>
+              </FlexColumn>
+            </SlidingWindow>
+          </>
+        )}
+
+        {showTheaterLayout && (
+          <>
+            <FloatingButton $top={16} size="large" type="primary" icon={<HomeOutlined />} onClick={onHomeClick} />
+            <FloatingButton
+              $top={72}
+              size="large"
+              type="primary"
+              icon={<InfoCircleOutlined />}
+              onClick={onSidecarDrawerOpen}
+            />
+            <FloatingButton
+              $top={128}
+              size="large"
+              type="primary"
+              icon={muted ? <SoundOutlined /> : <SoundFilled />}
+              onClick={onMuteClick}
+            />
+            <Drawer
+              closable
+              mask={false}
+              visible={isSidecarDrawerVisible}
+              width="100%"
+              onClose={onSidecarDrawerClose}
+              getContainer={getSettingsContainer}
+            >
+              <Sidecar>
                 <NotationInfo notation={notation} />
                 <br />
                 <div>
@@ -180,71 +272,60 @@ export const N: React.FC = () => {
                   )}
                   <SuggestedNotations srcNotationId={notationId} />
                 </div>
-              </Flex1InvisibleScrollbar>
-            </FlexColumn>
-          </Sidecar>
+              </Sidecar>
+            </Drawer>
 
-          <FlexColumn>
-            <Flex1>
-              <MusicSheet
-                notation={notation}
-                displayMode={notationSettings.displayMode}
-                onMusicDisplayChange={onMusicDisplayChange}
+            <SlidingWindow
+              split="horizontal"
+              defaultSize={notationSettings.defaultTheaterHeightPx}
+              minSize={layoutSizeBoundsPx.theater.min}
+              maxSize={layoutSizeBoundsPx.theater.max}
+              onSlideEnd={onTheaterSlideEnd}
+            >
+              <Media
+                video={notationSettings.isVideoVisible}
+                fluid={false}
+                src={videoUrl}
+                onPlayerChange={setMediaPlayer}
               />
-            </Flex1>
-            <Rect onResize={onGadgetsResize}>
-              <div>fretboard</div>
-              <div>controls</div>
-            </Rect>
-          </FlexColumn>
-        </SlidingWindow>
-      )}
+              <div>bottom</div>
+            </SlidingWindow>
+          </>
+        )}
 
-      {showTheaterLayout && (
-        <SlidingWindow
-          split="horizontal"
-          defaultSize={notationSettings.defaultTheaterHeightPx}
-          minSize={layoutSizeBoundsPx.theater.min}
-          maxSize={layoutSizeBoundsPx.theater.max}
-          onSlideEnd={onTheaterSlideEnd}
-        >
-          <Media video={notationSettings.isVideoVisible} fluid={false} src={videoUrl} />
-          <div>bottom</div>
-        </SlidingWindow>
-      )}
+        {showMobileLandscapeWarning && (
+          <Overlay>
+            <h2>
+              Mobile landscape mode is not supported <em>yet</em>.
+            </h2>
+          </Overlay>
+        )}
 
-      {showMobileLandscapeWarning && (
-        <Overlay>
-          <h2>
-            Mobile landscape mode is not supported <em>yet</em>.
-          </h2>
-        </Overlay>
-      )}
+        {showErrors && (
+          <Errors>
+            <Row justify="center">
+              <Alert
+                showIcon
+                type="error"
+                message="error"
+                description={
+                  <>
+                    {errors.map((error, ndx) => (
+                      <div key={ndx}>{error}</div>
+                    ))}
+                  </>
+                }
+              />
+            </Row>
 
-      {showErrors && (
-        <Errors>
-          <Row justify="center">
-            <Alert
-              showIcon
-              type="error"
-              message="error"
-              description={
-                <>
-                  {errors.map((error, ndx) => (
-                    <div key={ndx}>{error}</div>
-                  ))}
-                </>
-              }
-            />
-          </Row>
+            <br />
 
-          <br />
-
-          <Row justify="center">
-            <SuggestedNotations srcNotationId={notationId} />
-          </Row>
-        </Errors>
-      )}
+            <Row justify="center">
+              <SuggestedNotations srcNotationId={notationId} />
+            </Row>
+          </Errors>
+        )}
+      </div>
     </FullHeightDiv>
   );
 };
