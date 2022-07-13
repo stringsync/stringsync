@@ -180,6 +180,10 @@ export const N: React.FC = () => {
 
   return (
     <FullHeightDiv data-testid="n" ref={settingsContainerRef}>
+      {showMobileLandscapeWarning && <MobileLandscapeWarning />}
+
+      {showErrors && <Errors errors={errors} notationId={notationId} />}
+
       {showSidecarLayout && (
         <SidecarLayout
           getSettingsContainer={getSettingsContainer}
@@ -245,10 +249,6 @@ export const N: React.FC = () => {
           videoUrl={videoUrl}
         />
       )}
-
-      {showMobileLandscapeWarning && <MobileLandscapeWarning />}
-
-      {showErrors && <Errors errors={errors} notationId={notationId} />}
     </FullHeightDiv>
   );
 };
