@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { MediaPlayer } from '../lib/MediaPlayer';
 
-export const useMuted = (mediaPlayer: MediaPlayer) => {
+export const useMute = (mediaPlayer: MediaPlayer): [muted: boolean, toggleMute: () => void] => {
   const [muted, setMuted] = useState(() => mediaPlayer.isMuted());
+
   useEffect(() => {
     setMuted(mediaPlayer.isMuted());
     const eventBusIds = [
@@ -14,5 +15,14 @@ export const useMuted = (mediaPlayer: MediaPlayer) => {
       mediaPlayer.eventBus.unsubscribe(...eventBusIds);
     };
   }, [mediaPlayer]);
-  return muted;
+
+  const toggleMute = useCallback(() => {
+    if (mediaPlayer.isMuted()) {
+      mediaPlayer.unmute();
+    } else {
+      mediaPlayer.mute();
+    }
+  }, [mediaPlayer]);
+
+  return [muted, toggleMute];
 };

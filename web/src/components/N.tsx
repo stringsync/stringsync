@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { useAuth } from '../ctx/auth';
 import { useDevice } from '../ctx/device';
 import { useViewport } from '../ctx/viewport';
-import { useMuted } from '../hooks/useMuted';
+import { useMute } from '../hooks/useMute';
 import { useNoOverflow } from '../hooks/useNoOverflow';
 import { useNotation } from '../hooks/useNotation';
 import { useNotationSettings } from '../hooks/useNotationSettings';
@@ -113,14 +113,7 @@ export const N: React.FC = () => {
 
   // media player
   const [mediaPlayer, setMediaPlayer] = useState<MediaPlayer>(() => new NoopMediaPlayer());
-  const muted = useMuted(mediaPlayer);
-  const onMuteClick = () => {
-    if (muted) {
-      mediaPlayer.unmute();
-    } else {
-      mediaPlayer.mute();
-    }
-  };
+  const [muted, toggleMute] = useMute(mediaPlayer);
 
   // sync sliding window sizes with settings
   const onSidecarSlideEnd = useCallback(
@@ -249,7 +242,7 @@ export const N: React.FC = () => {
               size="large"
               type="primary"
               icon={muted ? <SoundOutlined /> : <SoundFilled />}
-              onClick={onMuteClick}
+              onClick={toggleMute}
             />
             <Drawer
               closable
