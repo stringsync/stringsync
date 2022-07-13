@@ -1,3 +1,4 @@
+import { useCallback, useMemo, useState } from 'react';
 import { DisplayMode } from '../lib/musicxml';
 import * as notations from '../lib/notations';
 import { useLocalStorage } from './useLocalStorage';
@@ -11,11 +12,30 @@ export type NotationSettings = {
   defaultTheaterHeightPx: number;
   defaultSidecarWidthPx: number;
   displayMode: DisplayMode;
+  isLoopActive: boolean;
+  scaleSelectionType: notations.ScaleSelectionType;
+  selectedScale: string | null;
 };
+
+export type SetNotationSettings = (notationSettings: NotationSettings) => void;
+
+type PersistedNotationSettings = Pick<
+  NotationSettings,
+  | 'preferredLayout'
+  | 'isFretboardVisible'
+  | 'fretMarkerDisplay'
+  | 'isAutoscrollPreferred'
+  | 'isVideoVisible'
+  | 'defaultTheaterHeightPx'
+  | 'defaultSidecarWidthPx'
+  | 'displayMode'
+>;
+
+type EphemeralNotationSettings = Omit<NotationSettings, keyof PersistedNotationSettings>;
 
 const NOTATION_SETTINGS_KEY = 'stringsync_notation_settings';
 
-const DEFAULT_NOTATION_SETTINGS: NotationSettings = {
+const DEFAULT_PERSISTED_NOTATION_SETTINGS: PersistedNotationSettings = {
   preferredLayout: 'sidecar',
   isVideoVisible: true,
   isFretboardVisible: true,
@@ -26,6 +46,54 @@ const DEFAULT_NOTATION_SETTINGS: NotationSettings = {
   displayMode: DisplayMode.TabsOnly,
 };
 
-export const useNotationSettings = () => {
-  return useLocalStorage<NotationSettings>(NOTATION_SETTINGS_KEY, DEFAULT_NOTATION_SETTINGS);
+const DEFAULT_EPHEMERAL_SETTINGS: EphemeralNotationSettings = {
+  isLoopActive: false,
+  scaleSelectionType: notations.ScaleSelectionType.None,
+  selectedScale: null,
+};
+
+export const useNotationSettings = (): [
+  notationSettings: NotationSettings,
+  setNotationSettings: SetNotationSettings
+] => {
+  const [persistedSettings, setPersistedSettings] = useLocalStorage<PersistedNotationSettings>(
+    NOTATION_SETTINGS_KEY,
+    DEFAULT_PERSISTED_NOTATION_SETTINGS
+  );
+
+  const [ephemeralSettings, setEphemeralSettings] = useState(DEFAULT_EPHEMERAL_SETTINGS);
+
+  const notationSettings = useMemo(
+    () => ({
+      ...persistedSettings,
+      ...ephemeralSettings,
+    }),
+    [persistedSettings, ephemeralSettings]
+  );
+
+  const setNotationSettings = useCallback(
+    (nextNotationSettings: NotationSettings) => {
+      const nextPersistedSettings: Record<string, any> = {};
+      const nextEphemeralSettings: Record<string, any> = {};
+
+      for (const [key, val] of Object.entries(nextNotationSettings)) {
+        if (key in DEFAULT_PERSISTED_NOTATION_SETTINGS) {
+          nextPersistedSettings[key] = val;
+        }
+        if (key in DEFAULT_EPHEMERAL_SETTINGS) {
+          nextEphemeralSettings[key] = val;
+        }
+      }
+
+      if (Object.keys(nextPersistedSettings).length > 0) {
+        setPersistedSettings({ ...persistedSettings, ...nextPersistedSettings });
+      }
+      if (Object.keys(nextEphemeralSettings).length > 0) {
+        setEphemeralSettings({ ...ephemeralSettings, ...nextEphemeralSettings });
+      }
+    },
+    [persistedSettings, setPersistedSettings, ephemeralSettings]
+  );
+
+  return [notationSettings, setNotationSettings];
 };

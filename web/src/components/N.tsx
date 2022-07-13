@@ -13,8 +13,6 @@ import { useNotationSettings } from '../hooks/useNotationSettings';
 import { useNoTouchAction } from '../hooks/useNoTouchAction';
 import { useNoTouchCallout } from '../hooks/useNoTouchCallout';
 import { useNoUserSelect } from '../hooks/useNoUserSelect';
-import { usePlayerSettings } from '../hooks/usePlayerSettings';
-import { useScaleSettings } from '../hooks/useScaleSettings';
 import { UserRole } from '../lib/graphql';
 import { MediaPlayer, NoopMediaPlayer } from '../lib/MediaPlayer';
 import { MusicDisplay } from '../lib/MusicDisplay';
@@ -105,8 +103,6 @@ export const N: React.FC = () => {
 
   // settings
   const [notationSettings, setNotationSettings] = useNotationSettings();
-  const [playerSettings, setPlayerSettings] = usePlayerSettings();
-  const [scaleSettings, setScaleSettings] = useScaleSettings();
 
   // music display
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay>(() => new NoopMusicDisplay());
