@@ -15,6 +15,10 @@ import { FretboardJs, FretboardJsProps } from './FretboardJs';
 const Outer = styled.div`
   z-index: 3;
   background-color: white;
+
+  figure {
+    margin: 0;
+  }
 `;
 
 type Props = FretboardJsProps & {

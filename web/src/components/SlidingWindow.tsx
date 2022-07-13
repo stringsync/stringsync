@@ -1,8 +1,9 @@
 import { MenuOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { clamp } from 'lodash';
-import React, { PropsWithChildren, useCallback, useEffect, useId, useRef, useState } from 'react';
+import React, { CSSProperties, PropsWithChildren, useCallback, useEffect, useId, useRef, useState } from 'react';
 import styled from 'styled-components';
+import { useMemoCmp } from '../hooks/useMemoCmp';
 import { usePrevious } from '../hooks/usePrevious';
 import { InternalError } from '../lib/errors';
 
@@ -34,7 +35,6 @@ const HorizontalDivider = styled.div`
   height: 0;
   width: 100%;
   border-bottom: 1px solid ${(props) => props.theme['@border-color']};
-  z-index: 4;
   user-select: inherit !important;
 `;
 
@@ -46,7 +46,9 @@ const HorizontalPane1 = styled.div<{ px: number }>`
   flex: none;
 `;
 
-const HorizontalPane2 = styled.div``;
+const HorizontalPane2 = styled.div`
+  flex: 1;
+`;
 
 const VerticalOuter = styled.div`
   display: flex;
@@ -71,7 +73,6 @@ const VerticalDivider = styled.div`
   height: 100%;
   width: 0;
   border-right: 1px solid ${(props) => props.theme['@border-color']};
-  z-index: 5;
   user-select: inherit !important;
 `;
 
@@ -109,6 +110,9 @@ export type SlidingWindowProps = PropsWithChildren<{
   minSize?: number;
   maxSize?: number;
   onSlideEnd?: (size: number) => void;
+  pane1Style?: CSSProperties;
+  pane2Style?: CSSProperties;
+  dividerZIndexOffset?: number;
 }>;
 
 export const SlidingWindow: React.FC<SlidingWindowProps> = (props) => {
@@ -118,6 +122,15 @@ export const SlidingWindow: React.FC<SlidingWindowProps> = (props) => {
   const minSize = props.minSize ?? 200;
   const maxSize = props.maxSize ?? 500;
   const onSlideEnd = props.onSlideEnd || null;
+  const pane1Style = useMemoCmp(props.pane1Style || {});
+  const pane2Style = useMemoCmp(props.pane2Style || {});
+  const dividerZIndexOffset = props.dividerZIndexOffset ?? 0;
+
+  // ids
+  const idPrefix = useId();
+  const buttonId = `${idPrefix}-btn`;
+  const pane1Id = `${idPrefix}-pane1`;
+  const pane2Id = `${idPrefix}-pane2`;
 
   // error handling
   useEffect(() => {
@@ -132,9 +145,24 @@ export const SlidingWindow: React.FC<SlidingWindowProps> = (props) => {
     if (maxSize < 0) {
       throw new InternalError('maxSize must be >= 0');
     }
+    if (maxSize < minSize) {
+      throw new InternalError('maxSize must be greater than or equal to minSize');
+    }
   }, [minSize, maxSize]);
 
+  // size
   const [size, setSize] = useState(() => defaultSize);
+  useEffect(() => {
+    setSize((size) => {
+      if (size < minSize) {
+        return minSize;
+      }
+      if (size > maxSize) {
+        return maxSize;
+      }
+      return size;
+    });
+  }, [minSize, maxSize]);
 
   // active state
   const [active, setActive] = useState(false);
@@ -214,7 +242,6 @@ export const SlidingWindow: React.FC<SlidingWindowProps> = (props) => {
   }, [active, split, minSize, maxSize, startX, startY]);
 
   // end
-  const buttonId = useId();
   useEffect(() => {
     if (!active) {
       return;
@@ -247,6 +274,46 @@ export const SlidingWindow: React.FC<SlidingWindowProps> = (props) => {
     onSlideEnd(size);
   }, [onSlideEnd, prevActive, active, size]);
 
+  // z-index for divider must be pane1ZIndex + 1
+  const [pane1ZIndex, setPane1ZIndex] = useState(1);
+  const [pane2ZIndex, setPane2ZIndex] = useState(1);
+  const dividerZIndex = Math.max(pane1ZIndex, pane2ZIndex) + 1 + dividerZIndexOffset;
+  useEffect(() => {
+    const pane1 = document.getElementById(pane1Id);
+    const pane2 = document.getElementById(pane2Id);
+    if (!pane1 || !pane2) {
+      return;
+    }
+
+    const getZIndex = (element: Element) => {
+      const zIndex = parseInt(getComputedStyle(element).zIndex || '1', 10);
+      return Number.isInteger(zIndex) ? zIndex : 1;
+    };
+    const nextPane1ZIndex = getZIndex(pane1);
+    const nextPane2ZIndex = getZIndex(pane2);
+    setPane1ZIndex(nextPane1ZIndex);
+    setPane2ZIndex(nextPane2ZIndex);
+
+    const mutationObserver = new MutationObserver(() => {
+      const nextPane1ZIndex = getZIndex(pane1);
+      const nextPane2ZIndex = getZIndex(pane2);
+      setPane1ZIndex(nextPane1ZIndex);
+      setPane2ZIndex(nextPane2ZIndex);
+    });
+    mutationObserver.observe(pane1, {
+      attributes: true,
+      attributeFilter: ['style'],
+    });
+    mutationObserver.observe(pane2, {
+      attributes: true,
+      attributeFilter: ['style'],
+    });
+
+    return () => {
+      mutationObserver.disconnect();
+    };
+  }, [pane1Id, pane2Id]);
+
   const [pane1, pane2] = React.Children.toArray(children);
 
   const isHorizontal = split === 'horizontal';
@@ -256,11 +323,11 @@ export const SlidingWindow: React.FC<SlidingWindowProps> = (props) => {
     <>
       {isHorizontal && (
         <HorizontalOuter ref={outerRef}>
-          <HorizontalPane1 px={size} ref={pane1Ref}>
+          <HorizontalPane1 id={pane1Id} px={size} ref={pane1Ref} style={pane1Style}>
             {pane1}
           </HorizontalPane1>
-          <HorizontalPane2 ref={pane2Ref}>
-            <HorizontalDivider>
+          <HorizontalPane2 id={pane2Id} ref={pane2Ref} style={pane2Style}>
+            <HorizontalDivider style={{ zIndex: dividerZIndex }}>
               <Button
                 id={buttonId}
                 icon={<MenuOutlined />}
@@ -277,11 +344,11 @@ export const SlidingWindow: React.FC<SlidingWindowProps> = (props) => {
 
       {isVertical && (
         <VerticalOuter ref={outerRef}>
-          <VerticalPane1 px={size} ref={pane1Ref}>
+          <VerticalPane1 id={pane1Id} px={size} ref={pane1Ref} style={pane1Style}>
             {pane1}
           </VerticalPane1>
-          <VerticalPane2 ref={pane2Ref}>
-            <VerticalDivider>
+          <VerticalPane2 id={pane2Id} ref={pane2Ref}>
+            <VerticalDivider style={{ zIndex: dividerZIndex }}>
               <Button
                 id={buttonId}
                 icon={<VerticalMenuOutlined />}

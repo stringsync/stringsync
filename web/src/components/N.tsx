@@ -1,6 +1,6 @@
 import { HomeOutlined, InfoCircleOutlined, SoundFilled, SoundOutlined } from '@ant-design/icons';
 import { Alert, Button, Drawer, Row } from 'antd';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { RefObject, useCallback, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAuth } from '../ctx/auth';
@@ -8,8 +8,8 @@ import { useDevice } from '../ctx/device';
 import { useViewport } from '../ctx/viewport';
 import { useMute } from '../hooks/useMute';
 import { useNoOverflow } from '../hooks/useNoOverflow';
-import { useNotation } from '../hooks/useNotation';
-import { useNotationSettings } from '../hooks/useNotationSettings';
+import { Notation, useNotation } from '../hooks/useNotation';
+import { NotationSettings, useNotationSettings } from '../hooks/useNotationSettings';
 import { useNoTouchAction } from '../hooks/useNoTouchAction';
 import { useNoTouchCallout } from '../hooks/useNoTouchCallout';
 import { useNoUserSelect } from '../hooks/useNoUserSelect';
@@ -18,14 +18,17 @@ import { MediaPlayer, NoopMediaPlayer } from '../lib/MediaPlayer';
 import { MusicDisplay } from '../lib/MusicDisplay';
 import { NoopMusicDisplay } from '../lib/MusicDisplay/NoopMusicDisplay';
 import * as notations from '../lib/notations';
+import { Controls } from './Controls';
 import { Fretboard } from './Fretboard';
 import { FullHeightDiv } from './FullHeightDiv';
 import { Media } from './Media';
 import { MusicSheet } from './MusicSheet';
 import { NotationInfo } from './NotationInfo';
-import { Rect } from './Rect';
+import { ResizeObserver } from './ResizeObserver';
 import { SlidingWindow } from './SlidingWindow';
 import { SuggestedNotations } from './SuggestedNotations';
+
+const NOTATION_DETAIL_THRESHOLD_PX = 767;
 
 const DEFAULT_NOTATION_LAYOUT_OPTIONS: notations.NotationLayoutOptions = {
   target: 'sidecar',
@@ -37,7 +40,7 @@ const MOBILE_NOTATION_LAYOUT_OPTIONS: notations.NotationLayoutOptions = {
   permitted: ['theater'],
 };
 
-const Errors = styled.div`
+const ErrorsOuter = styled.div`
   width: 100%;
   max-width: 500px;
   margin: 0 auto;
@@ -72,6 +75,7 @@ const FlexColumn = styled.div`
 const Flex1 = styled.div`
   overflow: hidden;
   flex: 1;
+  height: 100%;
 `;
 
 const Flex1InvisibleScrollbar = styled(Flex1)`
@@ -87,7 +91,16 @@ const FloatingButton = styled(Button)<{ $top: number }>`
   position: fixed;
   top: ${(props) => props.$top}px;
   right: -1px;
-  z-index: 5;
+  z-index: 4;
+`;
+
+const FloatingGhostButton = styled(FloatingButton)`
+  opacity: 0.2;
+
+  :focus,
+  :hover {
+    opacity: 1;
+  }
 `;
 
 export const N: React.FC = () => {
@@ -98,21 +111,19 @@ export const N: React.FC = () => {
   const hasErrors = errors.length > 0;
   const videoUrl = notation?.videoUrl || null;
 
-  // refs
+  // auth
+  const [authState] = useAuth();
+  const isAdmin = authState.user.role === UserRole.ADMIN;
+  const isTranscriber = authState.user.id === notation?.transcriber.id;
+
+  // general
   const settingsContainerRef = useRef<HTMLDivElement>(null);
   const getSettingsContainer = () => settingsContainerRef.current || document.body;
-
-  // settings
   const [notationSettings, setNotationSettings] = useNotationSettings();
-
-  // music display
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay>(() => new NoopMusicDisplay());
-
-  // media player
   const [mediaPlayer, setMediaPlayer] = useState<MediaPlayer>(() => new NoopMediaPlayer());
-  const [muted, toggleMute] = useMute(mediaPlayer);
 
-  // sync sliding window sizes with settings
+  // sliding window
   const onSidecarSlideEnd = useCallback(
     (defaultSidecarWidthPx: number) => {
       setNotationSettings({ ...notationSettings, defaultSidecarWidthPx });
@@ -126,14 +137,20 @@ export const N: React.FC = () => {
     [notationSettings, setNotationSettings]
   );
 
-  // gadgets
-  const [gadgetsHeightPx, setGadgetsHeightPx] = useState(0);
-  const onGadgetsResize = useCallback((entries: ResizeObserverEntry[]) => {
-    if (!entries.length) {
-      return;
-    }
-    setGadgetsHeightPx(entries[0].contentRect.height);
+  // gadgets (the things below the music sheet)
+  const [fretboardRect, setFretboardRect] = useState(() => new DOMRect(0, 0, 0, 0));
+  const [controlsRect, setControlsRect] = useState(() => new DOMRect(0, 0, 0, 0));
+  const fretboardHeightPx = notationSettings.isFretboardVisible ? fretboardRect.height : 0;
+  const fretboardWidthPx = notationSettings.isFretboardVisible ? fretboardRect.width : 0;
+  const gadgetsHeightPx = fretboardHeightPx + controlsRect.height;
+  const gadgetsWidthPx = fretboardWidthPx + controlsRect.width;
+  const onFretboardResize = useCallback((entries: ResizeObserverEntry[]) => {
+    setFretboardRect(entries[0].contentRect);
   }, []);
+  const onControlsResize = useCallback((entries: ResizeObserverEntry[]) => {
+    setControlsRect(entries[0].contentRect);
+  }, []);
+  const showNotationDetailOnControls = gadgetsWidthPx >= NOTATION_DETAIL_THRESHOLD_PX;
 
   // layout
   const device = useDevice();
@@ -145,20 +162,6 @@ export const N: React.FC = () => {
   const layoutSizeBoundsPx = notations.getLayoutSizeBoundsPx(viewport, gadgetsHeightPx);
   const isPreferredLayoutPermitted = layoutOptions.permitted.includes(notationSettings.preferredLayout);
   const layout = isPreferredLayoutPermitted ? notationSettings.preferredLayout : notations.getLayout(layoutOptions);
-
-  // auth
-  const [authState] = useAuth();
-  const isAdmin = authState.user.role === UserRole.ADMIN;
-  const isTranscriber = authState.user.id === notation?.transcriber.id;
-
-  // sidecar drawer button
-  const [isSidecarDrawerVisible, setSidecarDrawerVisibility] = useState(false);
-  const onSidecarDrawerOpen = () => setSidecarDrawerVisibility(true);
-  const onSidecarDrawerClose = () => setSidecarDrawerVisibility(false);
-
-  // home button
-  const navigate = useNavigate();
-  const onHomeClick = () => navigate('/library');
 
   // css effects
   useNoOverflow(hasErrors ? null : document.body);
@@ -172,166 +175,391 @@ export const N: React.FC = () => {
   const showMobileLandscapeWarning = isMobileLandscape;
   const showNotation = !loading && !hasErrors;
   const showSidecarLayout = showNotation && layout === 'sidecar';
-  const showTheaterLayout = showNotation && layout === 'theater';
+  const showTheaterLayout = showNotation && layout === 'theater' && notationSettings.isVideoVisible;
+  const showNoVideoLayout = showNotation && layout === 'theater' && !notationSettings.isVideoVisible;
 
   return (
-    <FullHeightDiv data-testid="n">
-      <div ref={settingsContainerRef}>
-        {showSidecarLayout && (
-          <>
-            <SlidingWindow
-              split="vertical"
-              defaultSize={notationSettings.defaultSidecarWidthPx}
-              minSize={layoutSizeBoundsPx.sidecar.min}
-              maxSize={layoutSizeBoundsPx.sidecar.max}
-              onSlideEnd={onSidecarSlideEnd}
-            >
-              <Sidecar>
-                <FlexColumn>
-                  <Media video src={videoUrl} onPlayerChange={setMediaPlayer} />
-                  <Flex1InvisibleScrollbar>
-                    <br />
-                    <NotationInfo notation={notation} />
-                    <br />
-                    <div>
-                      {showEditButton && (
-                        <Link to={`/n/${params.id}/edit`}>
-                          <Button block type="default" size="large">
-                            edit
-                          </Button>
-                        </Link>
-                      )}
-                      <SuggestedNotations srcNotationId={notationId} />
-                    </div>
-                  </Flex1InvisibleScrollbar>
-                </FlexColumn>
-              </Sidecar>
+    <FullHeightDiv data-testid="n" ref={settingsContainerRef}>
+      {showSidecarLayout && (
+        <SidecarLayout
+          getSettingsContainer={getSettingsContainer}
+          layoutSizeBoundsPx={layoutSizeBoundsPx}
+          mediaPlayer={mediaPlayer}
+          musicDisplay={musicDisplay}
+          notation={notation}
+          notationId={notationId}
+          notationSettings={notationSettings}
+          onFretboardResize={onFretboardResize}
+          onControlsResize={onControlsResize}
+          onMusicDisplayChange={setMusicDisplay}
+          onPlayerChange={setMediaPlayer}
+          onSlideEnd={onSidecarSlideEnd}
+          setNotationSettings={setNotationSettings}
+          settingsContainerRef={settingsContainerRef}
+          showNotationDetailOnControls={showNotationDetailOnControls}
+          showEditButton={showEditButton}
+          videoUrl={videoUrl}
+        />
+      )}
 
-              <FlexColumn>
-                <Flex1>
-                  <MusicSheet
-                    notation={notation}
-                    displayMode={notationSettings.displayMode}
-                    onMusicDisplayChange={setMusicDisplay}
-                  />
-                </Flex1>
-                <Rect onResize={onGadgetsResize}>
-                  {notationSettings.isFretboardVisible && (
-                    <Fretboard settings={notationSettings} musicDisplay={musicDisplay} mediaPlayer={mediaPlayer} />
-                  )}
-                  <div>controls</div>
-                </Rect>
-              </FlexColumn>
-            </SlidingWindow>
-          </>
-        )}
+      {showTheaterLayout && (
+        <TheaterLayout
+          getSettingsContainer={getSettingsContainer}
+          layoutSizeBoundsPx={layoutSizeBoundsPx}
+          mediaPlayer={mediaPlayer}
+          musicDisplay={musicDisplay}
+          notation={notation}
+          notationId={notationId}
+          notationSettings={notationSettings}
+          onFretboardResize={onFretboardResize}
+          onControlsResize={onControlsResize}
+          onMusicDisplayChange={setMusicDisplay}
+          onPlayerChange={setMediaPlayer}
+          onSlideEnd={onTheaterSlideEnd}
+          setNotationSettings={setNotationSettings}
+          settingsContainerRef={settingsContainerRef}
+          showNotationDetailOnControls={showNotationDetailOnControls}
+          showEditButton={showEditButton}
+          videoUrl={videoUrl}
+        />
+      )}
 
-        {showTheaterLayout && (
-          <>
-            <FloatingButton $top={16} size="large" type="primary" icon={<HomeOutlined />} onClick={onHomeClick} />
-            <FloatingButton
-              $top={72}
-              size="large"
-              type="primary"
-              icon={<InfoCircleOutlined />}
-              onClick={onSidecarDrawerOpen}
-            />
-            <FloatingButton
-              $top={128}
-              size="large"
-              type="primary"
-              icon={muted ? <SoundOutlined /> : <SoundFilled />}
-              onClick={toggleMute}
-            />
-            <Drawer
-              closable
-              mask={false}
-              visible={isSidecarDrawerVisible}
-              width="100%"
-              onClose={onSidecarDrawerClose}
-              getContainer={getSettingsContainer}
-            >
-              <Sidecar>
-                <NotationInfo notation={notation} />
-                <br />
-                <div>
-                  {showEditButton && (
-                    <Link to={`/n/${params.id}/edit`}>
-                      <Button block type="default" size="large">
-                        edit
-                      </Button>
-                    </Link>
-                  )}
-                  <SuggestedNotations srcNotationId={notationId} />
-                </div>
-              </Sidecar>
-            </Drawer>
+      {showNoVideoLayout && (
+        <NoVideoLayout
+          getSettingsContainer={getSettingsContainer}
+          layoutSizeBoundsPx={layoutSizeBoundsPx}
+          mediaPlayer={mediaPlayer}
+          musicDisplay={musicDisplay}
+          notation={notation}
+          notationId={notationId}
+          notationSettings={notationSettings}
+          onFretboardResize={onFretboardResize}
+          onControlsResize={onControlsResize}
+          onMusicDisplayChange={setMusicDisplay}
+          onPlayerChange={setMediaPlayer}
+          onSlideEnd={onTheaterSlideEnd}
+          setNotationSettings={setNotationSettings}
+          settingsContainerRef={settingsContainerRef}
+          showNotationDetailOnControls={showNotationDetailOnControls}
+          showEditButton={showEditButton}
+          videoUrl={videoUrl}
+        />
+      )}
 
-            <SlidingWindow
-              split="horizontal"
-              defaultSize={notationSettings.defaultTheaterHeightPx}
-              minSize={layoutSizeBoundsPx.theater.min}
-              maxSize={layoutSizeBoundsPx.theater.max}
-              onSlideEnd={onTheaterSlideEnd}
-            >
-              <Media
-                video={notationSettings.isVideoVisible}
-                fluid={false}
-                src={videoUrl}
-                onPlayerChange={setMediaPlayer}
-              />
-              <FlexColumn>
-                <Flex1>
-                  <MusicSheet
-                    notation={notation}
-                    displayMode={notationSettings.displayMode}
-                    onMusicDisplayChange={setMusicDisplay}
-                  />
-                </Flex1>
-                <Rect onResize={onGadgetsResize}>
-                  {notationSettings.isFretboardVisible && (
-                    <Fretboard settings={notationSettings} musicDisplay={musicDisplay} mediaPlayer={mediaPlayer} />
-                  )}
-                </Rect>
-              </FlexColumn>
-            </SlidingWindow>
-          </>
-        )}
+      {showMobileLandscapeWarning && <MobileLandscapeWarning />}
 
-        {showMobileLandscapeWarning && (
-          <Overlay>
-            <h2>
-              Mobile landscape mode is not supported <em>yet</em>.
-            </h2>
-          </Overlay>
-        )}
-
-        {showErrors && (
-          <Errors>
-            <Row justify="center">
-              <Alert
-                showIcon
-                type="error"
-                message="error"
-                description={
-                  <>
-                    {errors.map((error, ndx) => (
-                      <div key={ndx}>{error}</div>
-                    ))}
-                  </>
-                }
-              />
-            </Row>
-
-            <br />
-
-            <Row justify="center">
-              <SuggestedNotations srcNotationId={notationId} />
-            </Row>
-          </Errors>
-        )}
-      </div>
+      {showErrors && <Errors errors={errors} notationId={notationId} />}
     </FullHeightDiv>
+  );
+};
+
+type LayoutProps = {
+  getSettingsContainer: () => HTMLElement;
+  layoutSizeBoundsPx: ReturnType<typeof notations.getLayoutSizeBoundsPx>;
+  mediaPlayer: MediaPlayer;
+  musicDisplay: MusicDisplay;
+  notation: Notation;
+  notationId: string;
+  notationSettings: NotationSettings;
+  onControlsResize: (entries: ResizeObserverEntry[]) => void;
+  onFretboardResize: (entries: ResizeObserverEntry[]) => void;
+  onMusicDisplayChange: (musicDisplay: MusicDisplay) => void;
+  onPlayerChange: (mediaPlayer: MediaPlayer) => void;
+  onSlideEnd: (size: number) => void;
+  setNotationSettings: (notationSettings: NotationSettings) => void;
+  settingsContainerRef: RefObject<HTMLDivElement>;
+  showNotationDetailOnControls: boolean;
+  showEditButton: boolean;
+  videoUrl: string | null;
+};
+
+const SidecarLayout: React.FC<LayoutProps> = (props) => {
+  return (
+    <SlidingWindow
+      split="vertical"
+      defaultSize={props.notationSettings.defaultSidecarWidthPx}
+      minSize={props.layoutSizeBoundsPx.sidecar.min}
+      maxSize={props.layoutSizeBoundsPx.sidecar.max}
+      onSlideEnd={props.onSlideEnd}
+      pane1Style={{ zIndex: 4 }}
+      dividerZIndexOffset={1}
+    >
+      <Sidecar>
+        <FlexColumn>
+          <Media video src={props.videoUrl} onPlayerChange={props.onPlayerChange} />
+          <Flex1InvisibleScrollbar>
+            <br />
+            <NotationInfo notation={props.notation} />
+            <br />
+            <div>
+              {props.showEditButton && (
+                <Link to={`/n/${props.notationId}/edit`}>
+                  <Button block type="default" size="large">
+                    edit
+                  </Button>
+                </Link>
+              )}
+              <SuggestedNotations srcNotationId={props.notationId} />
+            </div>
+          </Flex1InvisibleScrollbar>
+        </FlexColumn>
+      </Sidecar>
+
+      <FlexColumn>
+        <Flex1>
+          <MusicSheet
+            notation={props.notation}
+            displayMode={props.notationSettings.displayMode}
+            onMusicDisplayChange={props.onMusicDisplayChange}
+          />
+        </Flex1>
+        {props.notationSettings.isFretboardVisible && (
+          <ResizeObserver onResize={props.onFretboardResize}>
+            <Fretboard
+              settings={props.notationSettings}
+              musicDisplay={props.musicDisplay}
+              mediaPlayer={props.mediaPlayer}
+            />
+          </ResizeObserver>
+        )}
+        <ResizeObserver onResize={props.onControlsResize} style={{ zIndex: 4 }}>
+          <Controls
+            showDetail={props.showNotationDetailOnControls}
+            videoControls={false}
+            settingsContainerRef={props.settingsContainerRef}
+            notation={props.notation}
+            musicDisplay={props.musicDisplay}
+            mediaPlayer={props.mediaPlayer}
+            settings={props.notationSettings}
+            setSettings={props.setNotationSettings}
+          />
+        </ResizeObserver>
+      </FlexColumn>
+    </SlidingWindow>
+  );
+};
+
+const TheaterLayout: React.FC<LayoutProps> = (props) => {
+  const navigate = useNavigate();
+  const onHomeClick = () => navigate('/library');
+
+  const [isSidecarDrawerVisible, setSidecarDrawerVisibility] = useState(false);
+  const onSidecarDrawerOpen = () => setSidecarDrawerVisibility(true);
+  const onSidecarDrawerClose = () => setSidecarDrawerVisibility(false);
+
+  const [muted, toggleMute] = useMute(props.mediaPlayer);
+
+  return (
+    <>
+      <FloatingButton $top={16} size="large" type="primary" icon={<HomeOutlined />} onClick={onHomeClick} />
+      <FloatingButton
+        $top={72}
+        size="large"
+        type="primary"
+        icon={<InfoCircleOutlined />}
+        onClick={onSidecarDrawerOpen}
+      />
+      <FloatingButton
+        $top={128}
+        size="large"
+        type="primary"
+        icon={muted ? <SoundOutlined /> : <SoundFilled />}
+        onClick={toggleMute}
+      />
+      <Drawer
+        closable
+        mask={false}
+        visible={isSidecarDrawerVisible}
+        width="100%"
+        onClose={onSidecarDrawerClose}
+        getContainer={props.getSettingsContainer}
+      >
+        <Sidecar>
+          <NotationInfo notation={props.notation} />
+          <br />
+          <div>
+            {props.showEditButton && (
+              <Link to={`/n/${props.notationId}/edit`}>
+                <Button block type="default" size="large">
+                  edit
+                </Button>
+              </Link>
+            )}
+            <SuggestedNotations srcNotationId={props.notationId} />
+          </div>
+        </Sidecar>
+      </Drawer>
+
+      <SlidingWindow
+        split="horizontal"
+        defaultSize={props.notationSettings.defaultTheaterHeightPx}
+        minSize={props.layoutSizeBoundsPx.theater.min}
+        maxSize={props.layoutSizeBoundsPx.theater.max}
+        onSlideEnd={props.onSlideEnd}
+        dividerZIndexOffset={1}
+      >
+        <Media
+          video={props.notationSettings.isVideoVisible}
+          fluid={false}
+          src={props.videoUrl}
+          onPlayerChange={props.onPlayerChange}
+        />
+        <FlexColumn>
+          <Flex1>
+            <MusicSheet
+              notation={props.notation}
+              displayMode={props.notationSettings.displayMode}
+              onMusicDisplayChange={props.onMusicDisplayChange}
+            />
+          </Flex1>
+          {props.notationSettings.isFretboardVisible && (
+            <ResizeObserver onResize={props.onFretboardResize}>
+              <Fretboard
+                settings={props.notationSettings}
+                musicDisplay={props.musicDisplay}
+                mediaPlayer={props.mediaPlayer}
+              />
+            </ResizeObserver>
+          )}
+          <ResizeObserver onResize={props.onControlsResize} style={{ zIndex: 4 }}>
+            <Controls
+              showDetail={props.showNotationDetailOnControls}
+              videoControls
+              settingsContainerRef={props.settingsContainerRef}
+              notation={props.notation}
+              musicDisplay={props.musicDisplay}
+              mediaPlayer={props.mediaPlayer}
+              settings={props.notationSettings}
+              setSettings={props.setNotationSettings}
+            />
+          </ResizeObserver>
+        </FlexColumn>
+      </SlidingWindow>
+    </>
+  );
+};
+
+const NoVideoLayout: React.FC<LayoutProps> = (props) => {
+  const navigate = useNavigate();
+  const onHomeClick = () => navigate('/library');
+
+  const [isSidecarDrawerVisible, setSidecarDrawerVisibility] = useState(false);
+  const onSidecarDrawerOpen = () => setSidecarDrawerVisibility(true);
+  const onSidecarDrawerClose = () => setSidecarDrawerVisibility(false);
+
+  const [muted, toggleMute] = useMute(props.mediaPlayer);
+
+  return (
+    <>
+      <FloatingGhostButton $top={16} size="large" type="primary" icon={<HomeOutlined />} onClick={onHomeClick} />
+      <FloatingGhostButton
+        $top={72}
+        size="large"
+        type="primary"
+        icon={<InfoCircleOutlined />}
+        onClick={onSidecarDrawerOpen}
+      />
+      <FloatingGhostButton
+        $top={128}
+        size="large"
+        type="primary"
+        icon={muted ? <SoundOutlined /> : <SoundFilled />}
+        onClick={toggleMute}
+      />
+      <Drawer
+        closable
+        mask={false}
+        visible={isSidecarDrawerVisible}
+        width="100%"
+        onClose={onSidecarDrawerClose}
+        getContainer={props.getSettingsContainer}
+      >
+        <Sidecar>
+          <NotationInfo notation={props.notation} />
+          <br />
+          <div>
+            {props.showEditButton && (
+              <Link to={`/n/${props.notationId}/edit`}>
+                <Button block type="default" size="large">
+                  edit
+                </Button>
+              </Link>
+            )}
+            <SuggestedNotations srcNotationId={props.notationId} />
+          </div>
+        </Sidecar>
+      </Drawer>
+
+      <Media video={false} fluid={false} src={props.videoUrl} onPlayerChange={props.onPlayerChange} />
+
+      <FlexColumn>
+        <Flex1>
+          <MusicSheet
+            notation={props.notation}
+            displayMode={props.notationSettings.displayMode}
+            onMusicDisplayChange={props.onMusicDisplayChange}
+          />
+        </Flex1>
+        {props.notationSettings.isFretboardVisible && (
+          <ResizeObserver onResize={props.onFretboardResize}>
+            <Fretboard
+              settings={props.notationSettings}
+              musicDisplay={props.musicDisplay}
+              mediaPlayer={props.mediaPlayer}
+            />
+          </ResizeObserver>
+        )}
+        <ResizeObserver onResize={props.onControlsResize} style={{ zIndex: 4 }}>
+          <Controls
+            showDetail={props.showNotationDetailOnControls}
+            videoControls
+            settingsContainerRef={props.settingsContainerRef}
+            notation={props.notation}
+            musicDisplay={props.musicDisplay}
+            mediaPlayer={props.mediaPlayer}
+            settings={props.notationSettings}
+            setSettings={props.setNotationSettings}
+          />
+        </ResizeObserver>
+      </FlexColumn>
+    </>
+  );
+};
+
+const MobileLandscapeWarning = () => {
+  return (
+    <Overlay>
+      <h2>
+        Mobile landscape mode is not supported <em>yet</em>.
+      </h2>
+    </Overlay>
+  );
+};
+
+const Errors: React.FC<{ errors: string[]; notationId: string }> = (props) => {
+  return (
+    <ErrorsOuter>
+      <Row justify="center">
+        <Alert
+          showIcon
+          type="error"
+          message="error"
+          description={
+            <>
+              {props.errors.map((error, ndx) => (
+                <div key={ndx}>{error}</div>
+              ))}
+            </>
+          }
+        />
+      </Row>
+
+      <br />
+
+      <Row justify="center">
+        <SuggestedNotations srcNotationId={props.notationId} />
+      </Row>
+    </ErrorsOuter>
   );
 };
 

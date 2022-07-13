@@ -24,7 +24,6 @@ const Outer = styled.div`
   border-bottom: 0;
   height: ${CONTROLS_HEIGHT_PX}px;
   padding: 0 16px;
-  z-index: 5;
   background-color: white;
   box-sizing: border-box;
   overflow: hidden;
@@ -230,7 +229,7 @@ export const Controls: React.FC<Props> = (props) => {
         visible={isSettingsVisible}
         onClose={onSettingsClose}
         getContainer={getDrawerContainer}
-        zIndex={4}
+        zIndex={3}
       >
         <SettingsInner>
           {videoControls && (

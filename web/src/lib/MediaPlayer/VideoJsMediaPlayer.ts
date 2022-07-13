@@ -34,9 +34,6 @@ export class VideoJsMediaPlayer implements MediaPlayer {
     this.timeChangeLoop.stop();
     this.player.off('play', this.onPlay);
     this.player.off('pause', this.onPause);
-    // HACK: prevent the root element from being deleted when disposing the player
-    // https://github.com/videojs/video.js/blob/85343d1cec98b59891a650e9d050989424ecf866/src/js/component.js#L167
-    (this.player as any).el_ = null;
     this.player.dispose();
   }
 
@@ -108,7 +105,12 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   }
 
   isMuted() {
-    return this.player.muted();
+    // The VideoJs player does not protect against player.el_ being null.
+    try {
+      return this.player.muted();
+    } catch (e) {
+      return false;
+    }
   }
 
   mute() {

@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
 import styled from 'styled-components';
 import { useViewport } from '../ctx/viewport/useViewport';
 
@@ -8,7 +8,11 @@ const Outer = styled.div<{ $height: number }>`
 
 type Props = PropsWithChildren<{}>;
 
-export const FullHeightDiv: React.FC<Props> = (props) => {
+export const FullHeightDiv = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
   const { innerHeight } = useViewport();
-  return <Outer $height={innerHeight}>{props.children}</Outer>;
-};
+  return (
+    <Outer $height={innerHeight} ref={ref}>
+      {props.children}
+    </Outer>
+  );
+});

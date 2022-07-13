@@ -107,18 +107,16 @@ export const MusicSheet: React.FC<Props> = (props) => {
   const cursor = useCSSCursor(musicDisplay);
 
   return (
-    <>
-      <Outer data-testid="music-sheet" $cursor={cursor} ref={scrollContainerRef}>
-        {loading && (
-          <LoadingOverlay>
-            <Loading>loading</Loading>
-          </LoadingOverlay>
-        )}
+    <Outer data-testid="music-sheet" $cursor={cursor} ref={scrollContainerRef}>
+      {loading && (
+        <LoadingOverlay>
+          <Loading>loading</Loading>
+        </LoadingOverlay>
+      )}
 
-        <MusicSheetContainer data-notation id={musicSheetContainerId}>
-          <MusicDisplayDiv draggable={false} ref={musicDisplayContainerRef} />
-        </MusicSheetContainer>
-      </Outer>
-    </>
+      <MusicSheetContainer data-notation id={musicSheetContainerId}>
+        <MusicDisplayDiv draggable={false} ref={musicDisplayContainerRef} />
+      </MusicSheetContainer>
+    </Outer>
   );
 };
