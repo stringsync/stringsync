@@ -18,6 +18,7 @@ import { MediaPlayer, NoopMediaPlayer } from '../lib/MediaPlayer';
 import { MusicDisplay } from '../lib/MusicDisplay';
 import { NoopMusicDisplay } from '../lib/MusicDisplay/NoopMusicDisplay';
 import * as notations from '../lib/notations';
+import { Fretboard } from './Fretboard';
 import { FullHeightDiv } from './FullHeightDiv';
 import { Media } from './Media';
 import { MusicSheet } from './MusicSheet';
@@ -215,7 +216,9 @@ export const N: React.FC = () => {
                   />
                 </Flex1>
                 <Rect onResize={onGadgetsResize}>
-                  <div>fretboard</div>
+                  {notationSettings.isFretboardVisible && (
+                    <Fretboard settings={notationSettings} musicDisplay={musicDisplay} mediaPlayer={mediaPlayer} />
+                  )}
                   <div>controls</div>
                 </Rect>
               </FlexColumn>
@@ -277,7 +280,20 @@ export const N: React.FC = () => {
                 src={videoUrl}
                 onPlayerChange={setMediaPlayer}
               />
-              <div>bottom</div>
+              <FlexColumn>
+                <Flex1>
+                  <MusicSheet
+                    notation={notation}
+                    displayMode={notationSettings.displayMode}
+                    onMusicDisplayChange={setMusicDisplay}
+                  />
+                </Flex1>
+                <Rect onResize={onGadgetsResize}>
+                  {notationSettings.isFretboardVisible && (
+                    <Fretboard settings={notationSettings} musicDisplay={musicDisplay} mediaPlayer={mediaPlayer} />
+                  )}
+                </Rect>
+              </FlexColumn>
             </SlidingWindow>
           </>
         )}
