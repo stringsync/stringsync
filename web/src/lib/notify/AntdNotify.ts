@@ -47,6 +47,7 @@ export class AntdNotify implements Notify {
     success: AntdNotify.message(message.success),
     warn: AntdNotify.message(message.warn),
     error: AntdNotify.message(message.error),
+    loading: AntdNotify.message(message.loading),
   };
   popup = {
     info: AntdNotify.popup(notification.info),

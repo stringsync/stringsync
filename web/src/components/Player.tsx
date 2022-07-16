@@ -76,7 +76,6 @@ const VideoJs: React.FC<Props> = (props) => {
 
     return () => {
       mediaPlayer.dispose();
-
       setMediaPlayer(NOOP_MEDIA_PLAYER);
     };
   }, [playerOptions, mode, device]);

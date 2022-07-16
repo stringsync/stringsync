@@ -33,24 +33,6 @@ const MusicDisplayDiv = styled.div`
   background-color: white;
 `;
 
-const LoadingOverlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0.9;
-  width: 100%;
-  height: 100%;
-  background-color: white;
-  z-index: 2;
-  text-align: center;
-  pointer-events: none;
-  padding-top: 24px;
-`;
-
-const Loading = styled.small`
-  margin-top: 36px;
-`;
-
 type Props = {
   skeleton?: boolean;
   notation: Nullable<notations.RenderableNotation>;
@@ -62,6 +44,8 @@ export const MusicSheet: React.FC<Props> = (props) => {
   // props
   const notation = props.notation;
   const onMusicDisplayChange = props.onMusicDisplayChange;
+
+  const id = useId();
 
   // music display
   const musicDisplayContainerRef = useRef<HTMLDivElement>(null);
@@ -80,7 +64,7 @@ export const MusicSheet: React.FC<Props> = (props) => {
   }, [musicDisplay, onMusicDisplayChange]);
 
   // resize
-  const musicSheetContainerId = useId();
+  const musicSheetContainerId = `${id}-music-sheet-container`;
   const [widthPx, setWidthPx] = useState(0);
   const prevWidthPx = usePrevious(widthPx);
   const onResize = useCallback((entries: ResizeObserverEntry[]) => {
@@ -108,12 +92,6 @@ export const MusicSheet: React.FC<Props> = (props) => {
 
   return (
     <Outer data-testid="music-sheet" $cursor={cursor} ref={scrollContainerRef}>
-      {loading && (
-        <LoadingOverlay>
-          <Loading>loading</Loading>
-        </LoadingOverlay>
-      )}
-
       <MusicSheetContainer data-notation id={musicSheetContainerId}>
         <MusicDisplayDiv draggable={false} ref={musicDisplayContainerRef} />
       </MusicSheetContainer>

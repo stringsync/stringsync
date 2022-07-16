@@ -7,6 +7,7 @@ export class NoopNotify implements Notify {
     success: noop,
     warn: noop,
     error: noop,
+    loading: noop,
   };
   popup = {
     info: noop,

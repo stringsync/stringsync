@@ -34,6 +34,7 @@ export interface Notify {
     success: SendMessage;
     warn: SendMessage;
     error: SendMessage;
+    loading: SendMessage;
   }>;
   popup: Readonly<{
     info: MakePopup;

@@ -34,6 +34,9 @@ export class VideoJsMediaPlayer implements MediaPlayer {
     this.timeChangeLoop.stop();
     this.player.off('play', this.onPlay);
     this.player.off('pause', this.onPause);
+    // HACK: prevent the root element from being deleted when disposing the player
+    // https://github.com/videojs/video.js/blob/85343d1cec98b59891a650e9d050989424ecf866/src/js/component.js#L167
+    (this.player as any).el_ = null;
     this.player.dispose();
   }
 
