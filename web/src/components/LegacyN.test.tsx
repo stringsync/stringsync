@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 import { Test } from '../testing';
-import { N } from './N';
+import { N } from './LegacyN';
 
 describe('N', () => {
   it('renders without crashing', () => {

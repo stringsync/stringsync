@@ -1,7 +1,7 @@
 import { MenuOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { clamp } from 'lodash';
-import React, { CSSProperties, PropsWithChildren, useCallback, useEffect, useId, useRef, useState } from 'react';
+import React, { CSSProperties, ReactNode, useCallback, useEffect, useId, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useMemoCmp } from '../hooks/useMemoCmp';
 import { usePrevious } from '../hooks/usePrevious';
@@ -41,7 +41,6 @@ const HorizontalDivider = styled.div`
 const HorizontalPane1 = styled.div<{ px: number }>`
   position: relative;
   outline: none;
-  height: ${(props) => props.px}px;
   display: flex;
   flex: none;
 `;
@@ -84,7 +83,6 @@ const VerticalPane1 = styled.div<{ px: number }>`
   flex: none;
   position: relative;
   outline: none;
-  width: ${(props) => props.px}px;
 `;
 
 const VerticalPane2 = styled.div`
@@ -104,7 +102,9 @@ const unfocus = () => {
   }
 };
 
-export type SplitPaneProps = PropsWithChildren<{
+export type SplitPaneProps = {
+  pane1Content: ReactNode;
+  pane2Content: ReactNode;
   split?: Split;
   defaultSize?: number;
   minSize?: number;
@@ -113,10 +113,11 @@ export type SplitPaneProps = PropsWithChildren<{
   pane1Style?: CSSProperties;
   pane2Style?: CSSProperties;
   dividerZIndexOffset?: number;
-}>;
+};
 
 export const SplitPane: React.FC<SplitPaneProps> = (props) => {
-  const children = props.children;
+  const pane1Content = props.pane1Content;
+  const pane2Content = props.pane2Content;
   const split = props.split || 'horizontal';
   const defaultSize = props.defaultSize ?? 200;
   const minSize = props.minSize ?? 200;
@@ -133,11 +134,6 @@ export const SplitPane: React.FC<SplitPaneProps> = (props) => {
   const pane2Id = `${idPrefix}-pane2`;
 
   // error handling
-  useEffect(() => {
-    if (React.Children.count(children) !== 2) {
-      throw new InternalError('must have exactly two children for <Frame>');
-    }
-  }, [children]);
   useEffect(() => {
     if (minSize < 0) {
       throw new InternalError('minSize must be >= 0');
@@ -314,8 +310,6 @@ export const SplitPane: React.FC<SplitPaneProps> = (props) => {
     };
   }, [pane1Id, pane2Id]);
 
-  const [pane1, pane2] = React.Children.toArray(children);
-
   const isHorizontal = split === 'horizontal';
   const isVertical = split === 'vertical';
 
@@ -323,8 +317,8 @@ export const SplitPane: React.FC<SplitPaneProps> = (props) => {
     <>
       {isHorizontal && (
         <HorizontalOuter ref={outerRef}>
-          <HorizontalPane1 id={pane1Id} px={size} ref={pane1Ref} style={pane1Style}>
-            {pane1}
+          <HorizontalPane1 id={pane1Id} px={size} ref={pane1Ref} style={{ ...pane1Style, height: size }}>
+            {pane1Content}
           </HorizontalPane1>
           <HorizontalPane2 id={pane2Id} ref={pane2Ref} style={pane2Style}>
             <HorizontalDivider style={{ zIndex: dividerZIndex }}>
@@ -337,15 +331,15 @@ export const SplitPane: React.FC<SplitPaneProps> = (props) => {
                 onTouchStart={onTouchStart}
               />
             </HorizontalDivider>
-            {pane2}
+            {pane2Content}
           </HorizontalPane2>
         </HorizontalOuter>
       )}
 
       {isVertical && (
         <VerticalOuter ref={outerRef}>
-          <VerticalPane1 id={pane1Id} px={size} ref={pane1Ref} style={pane1Style}>
-            {pane1}
+          <VerticalPane1 id={pane1Id} px={size} ref={pane1Ref} style={{ ...pane1Style, width: size }}>
+            {pane1Content}
           </VerticalPane1>
           <VerticalPane2 id={pane2Id} ref={pane2Ref}>
             <VerticalDivider style={{ zIndex: dividerZIndex }}>
@@ -358,7 +352,7 @@ export const SplitPane: React.FC<SplitPaneProps> = (props) => {
                 onTouchStart={onTouchStart}
               />
             </VerticalDivider>
-            {pane2}
+            {pane2Content}
           </VerticalPane2>
         </VerticalOuter>
       )}

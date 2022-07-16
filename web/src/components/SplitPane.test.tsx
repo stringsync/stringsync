@@ -7,10 +7,7 @@ describe('SplitPane', () => {
   it('renders without crashing', () => {
     const { container } = render(
       <Test>
-        <SplitPane>
-          <div>foo</div>
-          <div>bar</div>
-        </SplitPane>
+        <SplitPane pane1Content={<div>foo</div>} pane2Content={<div>bar</div>} />
       </Test>
     );
     expect(container).toBeInTheDocument();

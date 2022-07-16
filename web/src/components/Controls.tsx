@@ -58,10 +58,10 @@ const SettingsInner = styled.div`
 `;
 
 type Props = {
-  showDetail: boolean;
+  showDetail?: boolean;
   videoControls: boolean;
   notation: Nullable<notations.RenderableNotation>;
-  settingsContainerRef: RefObject<HTMLDivElement>;
+  settingsContainerRef?: RefObject<HTMLDivElement>;
   musicDisplay: MusicDisplay;
   mediaPlayer: MediaPlayer;
   settings: notations.Settings;
@@ -70,12 +70,12 @@ type Props = {
 
 export const Controls: React.FC<Props> = (props) => {
   // props
-  const showDetail = props.showDetail;
+  const showDetail = props.showDetail ?? true;
   const settings = props.settings;
   const notation = props.notation;
   const musicDisplay = props.musicDisplay;
   const mediaPlayer = props.mediaPlayer;
-  const settingsContainer = props.settingsContainerRef.current;
+  const settingsContainer = props.settingsContainerRef?.current || document.body;
   const setSettings = props.setSettings;
   const videoControls = props.videoControls;
 
