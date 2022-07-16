@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { useDevice } from '../ctx/device';
 import { useViewport } from '../ctx/viewport';
-import { SlidingWindow } from './SlidingWindow';
+import { SplitPane } from './SplitPane';
 
 const MIN_SIDECAR_WIDTH = 400;
 const MAX_SIDECAR_WIDTH = 1000;
@@ -44,7 +44,7 @@ export const SplitPaneLayout: React.FC<SplitPaneLayoutProps> = (props) => {
 
 const SidecarLayout: React.FC<SplitPaneLayoutProps> = (props) => {
   return (
-    <SlidingWindow
+    <SplitPane
       split="vertical"
       defaultSize={props.pane1DefaultWidth}
       minSize={MIN_SIDECAR_WIDTH}
@@ -60,13 +60,13 @@ const SidecarLayout: React.FC<SplitPaneLayoutProps> = (props) => {
         {props.pane2Content}
         {props.pane2Supplements}
       </div>
-    </SlidingWindow>
+    </SplitPane>
   );
 };
 
 const TheaterLayout: React.FC<SplitPaneLayoutProps> = (props) => {
   return (
-    <SlidingWindow
+    <SplitPane
       split="horizontal"
       defaultSize={props.pane1DefaultWidth}
       minSize={MIN_THEATER_HEIGHT}
@@ -82,6 +82,6 @@ const TheaterLayout: React.FC<SplitPaneLayoutProps> = (props) => {
         {props.pane2Content}
         {props.pane2Supplements}
       </div>
-    </SlidingWindow>
+    </SplitPane>
   );
 };

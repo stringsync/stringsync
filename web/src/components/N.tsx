@@ -25,7 +25,7 @@ import { Media } from './Media';
 import { MusicSheet } from './MusicSheet';
 import { NotationInfo } from './NotationInfo';
 import { ResizeObserver } from './ResizeObserver';
-import { SlidingWindow } from './SlidingWindow';
+import { SplitPane } from './SplitPane';
 import { SuggestedNotations } from './SuggestedNotations';
 
 const NOTATION_DETAIL_THRESHOLD_PX = 767;
@@ -275,7 +275,7 @@ type LayoutProps = {
 
 const SidecarLayout: React.FC<LayoutProps> = (props) => {
   return (
-    <SlidingWindow
+    <SplitPane
       split="vertical"
       defaultSize={props.notationSettings.defaultSidecarWidthPx}
       minSize={props.layoutSizeBoundsPx.sidecar.min}
@@ -335,7 +335,7 @@ const SidecarLayout: React.FC<LayoutProps> = (props) => {
           />
         </ResizeObserver>
       </FlexColumn>
-    </SlidingWindow>
+    </SplitPane>
   );
 };
 
@@ -390,7 +390,7 @@ const TheaterLayout: React.FC<LayoutProps> = (props) => {
         </Sidecar>
       </Drawer>
 
-      <SlidingWindow
+      <SplitPane
         split="horizontal"
         defaultSize={props.notationSettings.defaultTheaterHeightPx}
         minSize={props.layoutSizeBoundsPx.theater.min}
@@ -434,7 +434,7 @@ const TheaterLayout: React.FC<LayoutProps> = (props) => {
             />
           </ResizeObserver>
         </FlexColumn>
-      </SlidingWindow>
+      </SplitPane>
     </>
   );
 };

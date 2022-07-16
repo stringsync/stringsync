@@ -7,9 +7,9 @@ describe('SplitPane', () => {
   it('renders without crashing', () => {
     const { container } = render(
       <Test>
-        <SplitPane handle split="vertical">
-          <div>child1</div>
-          <div>child2</div>
+        <SplitPane>
+          <div>foo</div>
+          <div>bar</div>
         </SplitPane>
       </Test>
     );

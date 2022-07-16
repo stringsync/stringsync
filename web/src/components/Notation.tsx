@@ -15,11 +15,11 @@ import * as notations from '../lib/notations';
 import { Nullable } from '../util/types';
 import { Controls, CONTROLS_HEIGHT_PX } from './Controls';
 import { Fretboard } from './Fretboard';
+import { SplitPane } from './LegacySplitPane';
 import { Media } from './Media';
 import { MusicSheet } from './MusicSheet';
 import { NotationInfo } from './NotationInfo';
 import { NotationSink } from './NotationSink';
-import { SplitPane } from './SplitPane';
 
 const NOTATION_DETAIL_THRESHOLD_PX = 767;
 
