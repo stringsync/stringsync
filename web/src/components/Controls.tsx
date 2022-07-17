@@ -2,9 +2,10 @@ import { InfoCircleOutlined, PauseOutlined, RightOutlined, SettingOutlined } fro
 import { Button, Checkbox, Col, Divider, Drawer, Radio, RadioChangeEvent, Row, Select, Tooltip } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { CheckboxOptionType, CheckboxValueType } from 'antd/lib/checkbox/Group';
-import React, { RefObject, useEffect, useState } from 'react';
+import React, { RefObject, useCallback, useEffect, useId, useState } from 'react';
 import styled from 'styled-components';
 import { useDevice } from '../ctx/device';
+import { useResizeObserver } from '../hooks/useResizeObserver';
 import { useScales } from '../hooks/useScales';
 import { MediaPlayer, PlayState } from '../lib/MediaPlayer';
 import { MusicDisplay } from '../lib/MusicDisplay';
@@ -16,6 +17,7 @@ import { Playback } from './Playback';
 import { Seekbar } from './Seekbar';
 
 export const CONTROLS_HEIGHT_PX = 75;
+const NOTATION_DETAIL_THRESHOLD_PX = 767;
 
 const DUMMY_DIV = document.createElement('div');
 
@@ -58,7 +60,6 @@ const SettingsInner = styled.div`
 `;
 
 type Props = {
-  showDetail?: boolean;
   videoControls: boolean;
   notation: Nullable<notations.RenderableNotation>;
   settingsContainerRef?: RefObject<HTMLDivElement>;
@@ -70,7 +71,6 @@ type Props = {
 
 export const Controls: React.FC<Props> = (props) => {
   // props
-  const showDetail = props.showDetail ?? true;
   const settings = props.settings;
   const notation = props.notation;
   const musicDisplay = props.musicDisplay;
@@ -82,6 +82,16 @@ export const Controls: React.FC<Props> = (props) => {
   // state
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
   const device = useDevice();
+
+  // show detail
+  const idPrefix = useId();
+  const outerId = `${idPrefix}-outer`;
+  const [showDetail, setShowDetail] = useState(false);
+  const onOuterResize = useCallback((entries: ResizeObserverEntry[]) => {
+    const nextShowDetail = entries[0].contentRect.width >= NOTATION_DETAIL_THRESHOLD_PX;
+    setShowDetail(nextShowDetail);
+  }, []);
+  useResizeObserver(outerId, onOuterResize);
 
   // callbacks
   const onSettingsClick = () => {
@@ -180,7 +190,7 @@ export const Controls: React.FC<Props> = (props) => {
   }, [mediaPlayer]);
 
   return (
-    <Outer data-testid="controls">
+    <Outer data-testid="controls" id={outerId}>
       <FullHeightRow justify="center" align="middle">
         <Col span={2}>
           <FullHeightRow justify="center" align="middle">

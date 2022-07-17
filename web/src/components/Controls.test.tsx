@@ -17,7 +17,6 @@ describe('Controls', () => {
     const { container } = render(
       <Test>
         <Controls
-          showDetail
           videoControls
           notation={null}
           settingsContainerRef={settingsContainerRef}

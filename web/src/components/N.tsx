@@ -183,7 +183,7 @@ export const N: React.FC = () => {
   const showSplitPaneLayout = !loading && !hasErrors;
   const showEditButton = isTranscriber || isAdmin;
   const showVideoControls = layoutType === 'theater';
-  const showHandle = layoutType === 'sidecar' || (showVideoControls && notationSettings.isVideoVisible);
+  const showVideo = layoutType === 'sidecar' || (showVideoControls && notationSettings.isVideoVisible);
 
   return (
     <Outer data-testid="n">
@@ -193,15 +193,8 @@ export const N: React.FC = () => {
 
       {showSplitPaneLayout && (
         <SplitPaneLayout
-          handle={showHandle}
-          pane1Content={
-            <Media
-              video={notationSettings.isVideoVisible}
-              src={videoUrl}
-              fluid={mediaFluid}
-              onPlayerChange={setMediaPlayer}
-            />
-          }
+          handle={showVideo}
+          pane1Content={<Media video={showVideo} src={videoUrl} fluid={mediaFluid} onPlayerChange={setMediaPlayer} />}
           pane1Supplements={
             <Flex1InvisibleScrollbar>
               <br />
@@ -221,8 +214,8 @@ export const N: React.FC = () => {
           }
           pane1DefaultHeight={notationSettings.defaultTheaterHeightPx}
           pane1DefaultWidth={notationSettings.defaultSidecarWidthPx}
-          pane1MinHeight={showHandle ? MIN_THEATER_HEIGHT_PX : 0}
-          pane1MaxHeight={showHandle ? pane1MaxHeight : 0}
+          pane1MinHeight={showVideo ? MIN_THEATER_HEIGHT_PX : 0}
+          pane1MaxHeight={showVideo ? pane1MaxHeight : 0}
           pane1MinWidth={MIN_SIDECAR_WIDTH_PX}
           pane1MaxWidth={pane1MaxWidth}
           pane1Style={{ zIndex: pane1ZIndex, background: 'white' }}

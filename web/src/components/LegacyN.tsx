@@ -325,7 +325,6 @@ const SidecarLayout: React.FC<LayoutProps> = (props) => {
           )}
           <ResizeObserver onResize={props.onControlsResize} style={{ zIndex: 4 }}>
             <Controls
-              showDetail={props.showNotationDetailOnControls}
               videoControls={false}
               settingsContainerRef={props.settingsContainerRef}
               notation={props.notation}
@@ -427,7 +426,6 @@ const TheaterLayout: React.FC<LayoutProps> = (props) => {
             )}
             <ResizeObserver onResize={props.onControlsResize} style={{ zIndex: 4 }}>
               <Controls
-                showDetail={props.showNotationDetailOnControls}
                 videoControls
                 settingsContainerRef={props.settingsContainerRef}
                 notation={props.notation}
@@ -516,7 +514,6 @@ const NoVideoLayout: React.FC<LayoutProps> = (props) => {
         )}
         <ResizeObserver onResize={props.onControlsResize} style={{ zIndex: 4 }}>
           <Controls
-            showDetail={props.showNotationDetailOnControls}
             videoControls
             settingsContainerRef={props.settingsContainerRef}
             notation={props.notation}

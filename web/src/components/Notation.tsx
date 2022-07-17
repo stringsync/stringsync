@@ -21,8 +21,6 @@ import { MusicSheet } from './MusicSheet';
 import { NotationInfo } from './NotationInfo';
 import { NotationSink } from './NotationSink';
 
-const NOTATION_DETAIL_THRESHOLD_PX = 767;
-
 const Outer = styled.div`
   height: 100%;
 `;
@@ -196,7 +194,6 @@ export const Notation: React.FC<Props> = (props) => {
 
   // conditionally show nodes
   const skeleton = props.skeleton ?? false;
-  const showDetail = pane2WidthPx > NOTATION_DETAIL_THRESHOLD_PX;
 
   return (
     <Outer data-testid="notation" ref={settingsContainerRef}>
@@ -252,7 +249,6 @@ export const Notation: React.FC<Props> = (props) => {
               <Controls
                 videoControls={false}
                 settingsContainerRef={settingsContainerRef}
-                showDetail={showDetail}
                 notation={notation}
                 musicDisplay={musicDisplay}
                 mediaPlayer={mediaPlayer}
@@ -334,7 +330,6 @@ export const Notation: React.FC<Props> = (props) => {
               <Controls
                 videoControls
                 settingsContainerRef={settingsContainerRef}
-                showDetail={showDetail}
                 notation={notation}
                 musicDisplay={musicDisplay}
                 mediaPlayer={mediaPlayer}

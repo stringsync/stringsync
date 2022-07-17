@@ -152,6 +152,9 @@ export const SplitPane: React.FC<SplitPaneProps> = (props) => {
   const [size, setSize] = useState(() => defaultSize);
   useEffect(() => {
     setSize((size) => {
+      if (size === 0) {
+        return defaultSize;
+      }
       if (size < minSize) {
         return minSize;
       }
@@ -160,7 +163,7 @@ export const SplitPane: React.FC<SplitPaneProps> = (props) => {
       }
       return size;
     });
-  }, [minSize, maxSize]);
+  }, [defaultSize, minSize, maxSize]);
 
   // active state
   const [active, setActive] = useState(false);
