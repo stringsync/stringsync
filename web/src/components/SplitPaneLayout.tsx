@@ -1,4 +1,3 @@
-import { Drawer } from 'antd';
 import { noop } from 'lodash';
 import React, { CSSProperties, ReactNode, useEffect } from 'react';
 import styled from 'styled-components';
@@ -89,27 +88,22 @@ const SidecarLayout: React.FC<SplitPaneLayoutProps> = (props) => {
 
 const TheaterLayout: React.FC<SplitPaneLayoutProps> = (props) => {
   return (
-    <>
-      <SplitPane
-        split="horizontal"
-        handle={props.handle}
-        pane1Style={props.pane1Style}
-        defaultSize={props.pane1DefaultHeight}
-        minSize={props.pane1MinHeight}
-        maxSize={props.pane1MaxHeight}
-        onSlideEnd={props.onHorizontalSlideEnd}
-        dividerZIndexOffset={1}
-        pane1Content={props.pane1Content}
-        pane2Content={
-          <FlexColumn>
-            {props.pane2Content}
-            {props.pane2Supplements}
-          </FlexColumn>
-        }
-      />
-      <Drawer closable mask={false} width="100%">
-        {props.pane1Supplements}
-      </Drawer>
-    </>
+    <SplitPane
+      split="horizontal"
+      handle={props.handle}
+      pane1Style={props.pane1Style}
+      defaultSize={props.pane1DefaultHeight}
+      minSize={props.pane1MinHeight}
+      maxSize={props.pane1MaxHeight}
+      onSlideEnd={props.onHorizontalSlideEnd}
+      dividerZIndexOffset={1}
+      pane1Content={props.pane1Content}
+      pane2Content={
+        <FlexColumn>
+          {props.pane2Content}
+          {props.pane2Supplements}
+        </FlexColumn>
+      }
+    />
   );
 };
