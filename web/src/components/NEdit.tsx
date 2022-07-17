@@ -1,7 +1,6 @@
 import { UploadOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Input, InputNumber, Row, Space } from 'antd';
-import Form, { useForm } from 'antd/lib/form/Form';
-import FormItem from 'antd/lib/form/FormItem';
+import { Alert, Button, Checkbox, Form, Input, InputNumber, Row, Space } from 'antd';
+import { useForm } from 'antd/lib/form/Form';
 import Upload, { RcFile } from 'antd/lib/upload';
 import { get } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -10,6 +9,7 @@ import styled from 'styled-components';
 import { Layout, withLayout } from '../hocs/withLayout';
 import { useNoOverflow } from '../hooks/useNoOverflow';
 import { useNotationEditor } from '../hooks/useNotationEditor';
+import { useNotationSettings } from '../hooks/useNotationSettings';
 import { useNoTouchAction } from '../hooks/useNoTouchAction';
 import { useNoTouchCallout } from '../hooks/useNoTouchCallout';
 import { useNoUserSelect } from '../hooks/useNoUserSelect';
@@ -17,9 +17,15 @@ import { useTimeAgo } from '../hooks/useTimeAgo';
 import { compose } from '../util/compose';
 import { Errors } from './Errors';
 import { FullHeightDiv } from './FullHeightDiv';
+import { NotationInfo } from './NotationInfo';
+import { NotationPlayer } from './NotationPlayer';
 
 const Outer = styled(FullHeightDiv)`
   background: white;
+`;
+
+const SidecarOuter = styled.div`
+  margin: 16px;
 `;
 
 const ErrorsOuter = styled.div`
@@ -38,7 +44,7 @@ const Italic = styled.div`
   font-size: 0.75em;
 `;
 
-const enhance = compose(withLayout(Layout.DEFAULT, { footer: false, lanes: false }));
+const enhance = compose(withLayout(Layout.NONE, { footer: false, lanes: false }));
 
 export const NEdit: React.FC = enhance(() => {
   // notation
@@ -46,6 +52,9 @@ export const NEdit: React.FC = enhance(() => {
   const notationId = params.id || '';
   const editor = useNotationEditor();
   const updatedAgo = useTimeAgo(editor.notation?.updatedAt || null);
+
+  // settings
+  const [notationSettings, setNotationSettings] = useNotationSettings();
 
   // automatically fetch whenever the notationId changes
   useEffect(() => {
@@ -132,70 +141,90 @@ export const NEdit: React.FC = enhance(() => {
       )}
 
       {showNotationEditor && (
-        <>
-          <Row justify="space-between">
-            <Link to={`/n/${notationId}`}>
-              <Button type="link">go to player</Button>
-            </Link>
+        <NotationPlayer
+          notation={editor.notation}
+          notationSettings={notationSettings}
+          setNotationSettings={setNotationSettings}
+          sidecar={
+            <SidecarOuter>
+              <NotationInfo notation={editor.notation} />
 
-            <Space>
-              <Button type="default" onClick={resetForm} disabled={!dirty || editor.updating}>
-                discard
-              </Button>
-              <Button type="primary" onClick={onSaveClick} disabled={!dirty || editor.updating}>
-                save
-              </Button>
-            </Space>
-          </Row>
+              <br />
 
-          <Row justify="end">
-            <Italic>saved {updatedAgo}</Italic>
-          </Row>
+              <Alert
+                type={dirty ? 'warning' : 'success'}
+                message={<Center>edit mode: {dirty ? 'unsaved changes' : 'up-to-date'}</Center>}
+              />
 
-          <Form
-            form={form}
-            labelCol={{ span: 6 }}
-            wrapperCol={{ span: 18 }}
-            onValuesChange={onValuesChange}
-            initialValues={initialValue}
-          >
-            <FormItem name="songName" label="song name">
-              <Input disabled={editor.fetching} />
-            </FormItem>
+              <br />
 
-            <FormItem name="artistName" label="artist">
-              <Input disabled={editor.fetching} />
-            </FormItem>
+              <Row justify="space-between">
+                <Link to={`/n/${notationId}`}>
+                  <Button type="link">go to player</Button>
+                </Link>
 
-            <FormItem name="durationMs" label="duration">
-              <InputNumber disabled={editor.fetching} />
-            </FormItem>
+                <Space>
+                  <Button type="default" onClick={resetForm} disabled={!dirty || editor.updating}>
+                    discard
+                  </Button>
+                  <Button type="primary" onClick={onSaveClick} disabled={!dirty || editor.updating}>
+                    save
+                  </Button>
+                </Space>
+              </Row>
 
-            <FormItem name="deadTimeMs" label="dead time">
-              <InputNumber disabled={editor.fetching} />
-            </FormItem>
+              <Row justify="end">
+                <Italic>saved {updatedAgo}</Italic>
+              </Row>
 
-            <FormItem name="private" valuePropName="checked" wrapperCol={{ offset: 6, span: 18 }}>
-              <Checkbox disabled={editor.fetching}>private</Checkbox>
-            </FormItem>
+              <br />
 
-            <FormItem name="musicXml" wrapperCol={{ offset: 6, span: 18 }}>
-              <Upload beforeUpload={dontUpload}>
-                <Button block disabled={editor.fetching} icon={<UploadOutlined />}>
-                  music xml
-                </Button>
-              </Upload>
-            </FormItem>
+              <Form
+                form={form}
+                labelCol={{ span: 6 }}
+                wrapperCol={{ span: 18 }}
+                onValuesChange={onValuesChange}
+                initialValues={initialValue}
+              >
+                <Form.Item name="songName" label="song name">
+                  <Input disabled={editor.fetching} />
+                </Form.Item>
 
-            <FormItem name="thumbnail" wrapperCol={{ offset: 6, span: 18 }}>
-              <Upload beforeUpload={dontUpload}>
-                <Button block disabled={editor.fetching} icon={<UploadOutlined />}>
-                  thumbnail
-                </Button>
-              </Upload>
-            </FormItem>
-          </Form>
-        </>
+                <Form.Item name="artistName" label="artist">
+                  <Input disabled={editor.fetching} />
+                </Form.Item>
+
+                <Form.Item name="durationMs" label="duration">
+                  <InputNumber disabled={editor.fetching} />
+                </Form.Item>
+
+                <Form.Item name="deadTimeMs" label="dead time">
+                  <InputNumber disabled={editor.fetching} />
+                </Form.Item>
+
+                <Form.Item name="private" valuePropName="checked" wrapperCol={{ offset: 6, span: 18 }}>
+                  <Checkbox disabled={editor.fetching}>private</Checkbox>
+                </Form.Item>
+
+                <Form.Item name="musicXml" wrapperCol={{ offset: 6, span: 18 }}>
+                  <Upload beforeUpload={dontUpload}>
+                    <Button block disabled={editor.fetching} icon={<UploadOutlined />}>
+                      music xml
+                    </Button>
+                  </Upload>
+                </Form.Item>
+
+                <Form.Item name="thumbnail" wrapperCol={{ offset: 6, span: 18 }}>
+                  <Upload beforeUpload={dontUpload}>
+                    <Button block disabled={editor.fetching} icon={<UploadOutlined />}>
+                      thumbnail
+                    </Button>
+                  </Upload>
+                </Form.Item>
+              </Form>
+            </SidecarOuter>
+          }
+        />
       )}
     </Outer>
   );

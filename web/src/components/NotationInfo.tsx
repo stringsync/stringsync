@@ -6,6 +6,7 @@ import { Tags } from './Tags';
 const Title = styled.h1`
   text-align: center;
   margin-bottom: 0;
+  font-size: 2em;
 `;
 
 const Subtitle = styled.h2`
