@@ -1,3 +1,4 @@
+import { Alert, Row } from 'antd';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useMusicDisplay } from '../hooks/useMusicDisplay';
@@ -33,6 +34,13 @@ const MusicDisplayDiv = styled.div`
   background-color: white;
 `;
 
+const Loading = styled(Row)`
+  position: absolute;
+  top: 24px;
+  z-index: 2;
+  width: 100%;
+`;
+
 type Props = {
   skeleton?: boolean;
   notation: Nullable<notations.RenderableNotation>;
@@ -45,34 +53,36 @@ export const MusicSheet: React.FC<Props> = (props) => {
   const notation = props.notation;
   const onMusicDisplayChange = props.onMusicDisplayChange;
 
-  const id = useId();
-
   // music display
   const musicDisplayContainerRef = useRef<HTMLDivElement>(null);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const outerRef = useRef<HTMLDivElement>(null);
   const musicXml = useMusicXml(notation?.musicXmlUrl || null);
   const [musicDisplay, loading] = useMusicDisplay({
     musicXml,
     deadTimeMs: notation?.deadTimeMs || 0,
     durationMs: notation?.durationMs || 0,
     musicDisplayContainer: musicDisplayContainerRef.current,
-    scrollContainer: scrollContainerRef.current,
+    scrollContainer: outerRef.current,
     displayMode: props.displayMode,
   });
   useEffect(() => {
     onMusicDisplayChange?.(musicDisplay);
   }, [musicDisplay, onMusicDisplayChange]);
 
-  // resize
-  const musicSheetContainerId = `${id}-music-sheet-container`;
+  // ids
+  const idPrefix = useId();
+  const musicSheetContainerId = `${idPrefix}-music-sheet`;
+
+  // width resize
   const [widthPx, setWidthPx] = useState(0);
   const prevWidthPx = usePrevious(widthPx);
-  const onResize = useCallback((entries: ResizeObserverEntry[]) => {
+  const onMusicSheetContainerResize = useCallback((entries: ResizeObserverEntry[]) => {
     if (entries.length) {
-      const nextWidthPx = entries[0].contentRect.width;
-      setWidthPx(nextWidthPx);
+      const rect = entries[0].contentRect;
+      setWidthPx(rect.width);
     }
   }, []);
+  useResizeObserver(musicSheetContainerId, onMusicSheetContainerResize);
   useEffect(() => {
     if (musicDisplay.getLoadingStatus() !== LoadingStatus.Done) {
       return;
@@ -85,14 +95,19 @@ export const MusicSheet: React.FC<Props> = (props) => {
     }
     musicDisplay.resize();
   }, [musicDisplay, widthPx, prevWidthPx]);
-  useResizeObserver(musicSheetContainerId, onResize);
 
   // css effects
   const cursor = useCSSCursor(musicDisplay);
 
   return (
-    <Outer data-testid="music-sheet" $cursor={cursor} ref={scrollContainerRef}>
-      <MusicSheetContainer data-notation id={musicSheetContainerId}>
+    <Outer data-testid="music-sheet" $cursor={cursor} ref={outerRef}>
+      {loading && (
+        <Loading justify="center">
+          <Alert type="warning" message={<small>loading</small>} style={{ padding: '2px 12px' }} />
+        </Loading>
+      )}
+
+      <MusicSheetContainer data-notation id={musicSheetContainerId} style={{ opacity: loading ? 0.1 : undefined }}>
         <MusicDisplayDiv draggable={false} ref={musicDisplayContainerRef} />
       </MusicSheetContainer>
     </Outer>
