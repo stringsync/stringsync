@@ -45,6 +45,7 @@ export const useNotation = (id: string): [Nullable<Notation>, Errors, Loading] =
   });
 
   useEffect(() => {
+    setErrors([]);
     execute({ id });
   }, [execute, id]);
 
