@@ -1,13 +1,13 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 import { Test } from '../testing';
-import { N } from './LegacyN';
+import { Errors } from './Errors';
 
-describe('N', () => {
+describe('Errors', () => {
   it('renders without crashing', () => {
     const { container } = render(
       <Test>
-        <N />
+        <Errors errors={['foo']} />
       </Test>
     );
     expect(container).toBeInTheDocument();

@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import { useViewport } from '../ctx/viewport/useViewport';
 import { Layout, withLayout } from '../hocs/withLayout';
 import { useDebouncer } from '../hooks/useDebouncer';
-import { GqlReqStatus } from '../hooks/useGql2';
+import { GqlStatus } from '../hooks/useGql2';
 import { useNotationPreviews } from '../hooks/useNotationPreviews';
 import { useTags } from '../hooks/useTags';
 import { compose } from '../util/compose';
@@ -109,8 +109,8 @@ export const Library: React.FC = enhance(() => {
     !debouncing && loadPage();
   }, [debouncing, loadPage]);
 
-  const isLoading = debouncing || status === GqlReqStatus.Init || status === GqlReqStatus.Pending;
-  const shouldShowErrors = status === GqlReqStatus.Error;
+  const isLoading = debouncing || status === GqlStatus.Init || status === GqlStatus.Pending;
+  const shouldShowErrors = status === GqlStatus.Error;
   const shouldShowList = !debouncing && pageInfo.hasLoadedFirstPage && notations.length > 0;
   const shouldShowNothingFound = !debouncing && pageInfo.hasLoadedFirstPage && notations.length === 0;
   const shouldShowNoMoreContent =

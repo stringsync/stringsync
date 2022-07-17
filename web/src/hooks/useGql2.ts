@@ -12,7 +12,7 @@ export type Exec<G extends graphql.Any$gql> = (variables: graphql.VariablesOf<G>
 // The reason why we use this instead of $gql.GqlResponseOf, is because the server can return data and populate errors.
 // Callers can use the status discriminant to determine what the response looks like instead of testing the presence
 // of the data and errors properties.
-export enum GqlReqStatus {
+export enum GqlStatus {
   Init,
   Pending,
   Success,
@@ -22,21 +22,21 @@ export enum GqlReqStatus {
 
 export type GqlRes<G extends graphql.Any$gql> =
   | {
-      status: GqlReqStatus.Init;
+      status: GqlStatus.Init;
     }
   | {
-      status: GqlReqStatus.Pending;
+      status: GqlStatus.Pending;
     }
   | {
-      status: GqlReqStatus.Success;
+      status: GqlStatus.Success;
       data: graphql.SuccessfulResponse<G>['data'];
     }
   | {
-      status: GqlReqStatus.Error;
+      status: GqlStatus.Error;
       errors: string[];
     }
   | {
-      status: GqlReqStatus.Cancelled;
+      status: GqlStatus.Cancelled;
     };
 
 export const useGql2 = <G extends graphql.Any$gql>(
@@ -51,28 +51,28 @@ export const useGql2 = <G extends graphql.Any$gql>(
     [req, gql]
   );
 
-  const [gqlRes, setGqlRes] = useState<GqlRes<G>>({ status: GqlReqStatus.Init });
+  const [gqlRes, setGqlRes] = useState<GqlRes<G>>({ status: GqlStatus.Init });
   useResHandler(xhr.Status.Init, res, (res) => {
-    setGqlRes({ status: GqlReqStatus.Init });
+    setGqlRes({ status: GqlStatus.Init });
   });
   useResHandler(xhr.Status.Pending, res, (res) => {
-    setGqlRes({ status: GqlReqStatus.Pending });
+    setGqlRes({ status: GqlStatus.Pending });
   });
   useResHandler(xhr.Status.Success, res, (res) => {
     const { data, errors } = res.result;
     if (errors) {
-      setGqlRes({ status: GqlReqStatus.Error, errors: errors.map((error) => error.message) });
+      setGqlRes({ status: GqlStatus.Error, errors: errors.map((error) => error.message) });
     } else if (!data) {
-      setGqlRes({ status: GqlReqStatus.Error, errors: [new MissingDataError().message] });
+      setGqlRes({ status: GqlStatus.Error, errors: [new MissingDataError().message] });
     } else {
-      setGqlRes({ status: GqlReqStatus.Success, data });
+      setGqlRes({ status: GqlStatus.Success, data });
     }
   });
   useResHandler(xhr.Status.Error, res, (res) => {
-    setGqlRes({ status: GqlReqStatus.Error, errors: [res.error.message] });
+    setGqlRes({ status: GqlStatus.Error, errors: [res.error.message] });
   });
   useResHandler(xhr.Status.Cancelled, res, (res) => {
-    setGqlRes({ status: GqlReqStatus.Cancelled });
+    setGqlRes({ status: GqlStatus.Cancelled });
   });
 
   return [exec, gqlRes, cancel, reset];

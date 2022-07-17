@@ -1,10 +1,11 @@
-import { Alert, Button, Row } from 'antd';
+import { Button, Row } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAuth } from '../ctx/auth';
 import { useDevice } from '../ctx/device';
 import { useViewport } from '../ctx/viewport';
+import { Layout, withLayout } from '../hocs/withLayout';
 import { useNoOverflow } from '../hooks/useNoOverflow';
 import { useNotation } from '../hooks/useNotation';
 import { useNotationSettings } from '../hooks/useNotationSettings';
@@ -15,7 +16,9 @@ import { UserRole } from '../lib/graphql';
 import { MediaPlayer, NoopMediaPlayer } from '../lib/MediaPlayer';
 import { MusicDisplay } from '../lib/MusicDisplay';
 import { NoopMusicDisplay } from '../lib/MusicDisplay/NoopMusicDisplay';
+import { compose } from '../util/compose';
 import { Controls, CONTROLS_HEIGHT_PX } from './Controls';
+import { Errors } from './Errors';
 import { Fretboard } from './Fretboard';
 import { FullHeightDiv } from './FullHeightDiv';
 import { Media } from './Media';
@@ -86,34 +89,9 @@ const MobileLandscapeWarning = () => {
   );
 };
 
-const Errors: React.FC<{ errors: string[]; notationId: string }> = (props) => {
-  return (
-    <ErrorsOuter>
-      <Row justify="center">
-        <Alert
-          showIcon
-          type="error"
-          message="error"
-          description={
-            <>
-              {props.errors.map((error, ndx) => (
-                <div key={ndx}>{error}</div>
-              ))}
-            </>
-          }
-        />
-      </Row>
+const enhance = compose(withLayout(Layout.DEFAULT, { footer: false, lanes: false }));
 
-      <br />
-
-      <Row justify="center">
-        <SuggestedNotations srcNotationId={props.notationId} />
-      </Row>
-    </ErrorsOuter>
-  );
-};
-
-export const N: React.FC = () => {
+export const N: React.FC = enhance(() => {
   // notation
   const params = useParams();
   const notationId = params.id || '';
@@ -181,7 +159,7 @@ export const N: React.FC = () => {
   // render branches
   const showMobileLandscapeWarning = device.mobile && viewport.innerHeight < viewport.innerWidth;
   const showErrors = !loading && hasErrors;
-  const showSplitPaneLayout = !loading && !hasErrors;
+  const showNotationPlayer = !loading && !hasErrors;
   const showEditButton = isTranscriber || isAdmin;
   const showVideoControls = layoutType === 'theater';
   const showVideo = layoutType === 'sidecar' || (showVideoControls && notationSettings.isVideoVisible);
@@ -190,9 +168,19 @@ export const N: React.FC = () => {
     <Outer data-testid="n">
       {showMobileLandscapeWarning && <MobileLandscapeWarning />}
 
-      {showErrors && <Errors errors={errors} notationId={notationId} />}
+      {showErrors && (
+        <ErrorsOuter>
+          <Errors errors={errors} />
 
-      {showSplitPaneLayout && (
+          <br />
+
+          <Row justify="center">
+            <SuggestedNotations srcNotationId={notationId} />
+          </Row>
+        </ErrorsOuter>
+      )}
+
+      {showNotationPlayer && (
         <>
           <NotationSink
             mediaPlayer={mediaPlayer}
@@ -268,6 +256,6 @@ export const N: React.FC = () => {
       )}
     </Outer>
   );
-};
+});
 
 export default N;

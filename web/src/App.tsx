@@ -26,8 +26,8 @@ const ThemeProviderProxy: any = ThemeProvider;
 
 const Library = compose(withAuthRequirement(AuthRequirement.NONE))(React.lazy(() => import('./components/Library')));
 const N = compose(withAuthRequirement(AuthRequirement.NONE))(React.lazy(() => import('./components/N')));
-const NotationEdit = compose(withAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER))(
-  React.lazy(() => import('./components/NotationEdit'))
+const NEdit = compose(withAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER))(
+  React.lazy(() => import('./components/NEdit'))
 );
 const Signup = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(
   React.lazy(() => import('./components/Signup'))
@@ -70,7 +70,7 @@ export const App: React.FC = () => {
                         <Route path="/" element={<Landing />}></Route>
                         <Route path="/library" element={<Library />} />
                         <Route path="/n/:id" element={<N />} />
-                        <Route path="/n/:id/edit" element={<NotationEdit />} />
+                        <Route path="/n/:id/edit" element={<NEdit />} />
                         <Route path="/users" element={<UserIndex />} />
                         <Route path="/tags" element={<TagIndex />} />
                         <Route path="/signup" element={<Signup />} />
