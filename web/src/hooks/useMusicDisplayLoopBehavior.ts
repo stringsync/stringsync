@@ -8,14 +8,15 @@ import { isCursorSnapshotPointerTarget, isSelectionPointerTarget, isTemporal } f
 import * as notations from '../lib/notations';
 import { AnchoredRange } from '../util/AnchoredRange';
 import { Duration } from '../util/Duration';
+import { NotationSettings, SetNotationSettings } from './useNotationSettings';
 
 const seekToLoopStart = (mediaPlayer: MediaPlayer, loop: Loop) => {
   mediaPlayer.seek(loop.timeRange.start.plus(Duration.ms(1)));
 };
 
 export const useMusicDisplayLoopBehavior = (
-  settings: notations.Settings,
-  setSettings: React.Dispatch<React.SetStateAction<notations.Settings>>,
+  settings: NotationSettings,
+  setSettings: SetNotationSettings,
   musicDisplay: MusicDisplay,
   mediaPlayer: MediaPlayer
 ) => {

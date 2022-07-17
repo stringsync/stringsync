@@ -198,8 +198,8 @@ export const Notation: React.FC<Props> = (props) => {
   return (
     <Outer data-testid="notation" ref={settingsContainerRef}>
       <NotationSink
-        settings={settings}
-        setSettings={setSettings}
+        notationSettings={settings}
+        setNotationSettings={setSettings}
         musicDisplay={musicDisplay}
         mediaPlayer={mediaPlayer}
       />

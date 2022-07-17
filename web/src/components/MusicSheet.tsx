@@ -20,6 +20,7 @@ const Outer = styled.div<{ $cursor: string }>`
   overflow-x: hidden;
   overflow-y: auto;
   background-color: white;
+  user-select: none;
 `;
 
 const MusicSheetContainer = styled.div`

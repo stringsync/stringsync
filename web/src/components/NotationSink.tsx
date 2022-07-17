@@ -7,13 +7,13 @@ import { useMusicDisplayLoopBehavior } from '../hooks/useMusicDisplayLoopBehavio
 import { useMusicDisplayPointerInteractions } from '../hooks/useMusicDisplayPointerInteractions';
 import { useMusicDisplayRipples } from '../hooks/useMusicDisplayRipples';
 import { useMusicDisplayScrolling } from '../hooks/useMusicDisplayScrolling';
+import { NotationSettings, SetNotationSettings } from '../hooks/useNotationSettings';
 import { MediaPlayer } from '../lib/MediaPlayer';
 import { MusicDisplay } from '../lib/MusicDisplay';
-import * as notations from '../lib/notations';
 
 type Props = {
-  settings: notations.Settings;
-  setSettings: React.Dispatch<React.SetStateAction<notations.Settings>>;
+  notationSettings: NotationSettings;
+  setNotationSettings: SetNotationSettings;
   musicDisplay: MusicDisplay;
   mediaPlayer: MediaPlayer;
 };
@@ -28,18 +28,18 @@ type Props = {
  */
 export const NotationSink: React.FC<Props> = (props) => {
   // props
-  const settings = props.settings;
-  const setSettings = props.setSettings;
+  const notationSettings = props.notationSettings;
+  const setNotationSettings = props.setNotationSettings;
   const musicDisplay = props.musicDisplay;
   const mediaPlayer = props.mediaPlayer;
 
   useMusicDisplayPointerInteractions(musicDisplay, mediaPlayer);
   useMusicDisplayRipples(musicDisplay);
-  useMusicDisplayScrolling(settings, musicDisplay, mediaPlayer);
-  useMusicDisplayLoopBehavior(settings, setSettings, musicDisplay, mediaPlayer);
+  useMusicDisplayScrolling(notationSettings, musicDisplay, mediaPlayer);
+  useMusicDisplayLoopBehavior(notationSettings, setNotationSettings, musicDisplay, mediaPlayer);
   useMusicDisplayCursorInteractions(musicDisplay, mediaPlayer);
   useMusicDisplayCursorTimeSync(musicDisplay, mediaPlayer);
-  useDynamicScaleSync(settings, setSettings, musicDisplay);
+  useDynamicScaleSync(notationSettings, setNotationSettings, musicDisplay);
   useMediaPlayerVolumeBehavior(mediaPlayer);
 
   return null;

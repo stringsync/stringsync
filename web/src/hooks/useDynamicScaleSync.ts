@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
 import { MusicDisplay } from '../lib/MusicDisplay';
 import * as notations from '../lib/notations';
+import { NotationSettings, SetNotationSettings } from './useNotationSettings';
 import { useScales } from './useScales';
 
 export const useDynamicScaleSync = (
-  settings: notations.Settings,
-  setSettings: React.Dispatch<React.SetStateAction<notations.Settings>>,
+  settings: NotationSettings,
+  setSettings: SetNotationSettings,
   musicDisplay: MusicDisplay
 ) => {
   const isDynamicScaleSelected = settings.scaleSelectionType === notations.ScaleSelectionType.Dynamic;

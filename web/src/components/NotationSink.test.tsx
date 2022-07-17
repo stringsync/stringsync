@@ -18,7 +18,7 @@ describe('NotationSink', () => {
         <NotationSink
           mediaPlayer={mediaPlayer}
           musicDisplay={musicDisplay}
-          settings={{
+          notationSettings={{
             defaultSidecarWidthPx: 100,
             defaultTheaterHeightPx: 100,
             displayMode: DisplayMode.NotesAndTabs,
@@ -31,7 +31,7 @@ describe('NotationSink', () => {
             scaleSelectionType: ScaleSelectionType.None,
             selectedScale: null,
           }}
-          setSettings={setSettings}
+          setNotationSettings={setSettings}
         />
       </Test>
     );

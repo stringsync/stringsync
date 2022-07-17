@@ -21,6 +21,7 @@ import { FullHeightDiv } from './FullHeightDiv';
 import { Media } from './Media';
 import { MusicSheet } from './MusicSheet';
 import { NotationInfo } from './NotationInfo';
+import { NotationSink } from './NotationSink';
 import { SplitPaneLayout, SplitPaneLayoutType } from './SplitPaneLayout';
 import { SuggestedNotations } from './SuggestedNotations';
 
@@ -192,69 +193,78 @@ export const N: React.FC = () => {
       {showErrors && <Errors errors={errors} notationId={notationId} />}
 
       {showSplitPaneLayout && (
-        <SplitPaneLayout
-          handle={showVideo}
-          pane1Content={<Media video={showVideo} src={videoUrl} fluid={mediaFluid} onPlayerChange={setMediaPlayer} />}
-          pane1Supplements={
-            <Flex1InvisibleScrollbar>
-              <br />
-              <NotationInfo notation={notation} />
-              <br />
-              <div>
-                {showEditButton && (
-                  <Link to={`/n/${notationId}/edit`}>
-                    <Button block type="default" size="large">
-                      edit
-                    </Button>
-                  </Link>
-                )}
-                <SuggestedNotations srcNotationId={notationId} />
-              </div>
-            </Flex1InvisibleScrollbar>
-          }
-          pane1DefaultHeight={notationSettings.defaultTheaterHeightPx}
-          pane1DefaultWidth={notationSettings.defaultSidecarWidthPx}
-          pane1MinHeight={showVideo ? MIN_THEATER_HEIGHT_PX : 0}
-          pane1MaxHeight={showVideo ? pane1MaxHeight : 0}
-          pane1MinWidth={MIN_SIDECAR_WIDTH_PX}
-          pane1MaxWidth={pane1MaxWidth}
-          pane1Style={{ zIndex: pane1ZIndex, background: 'white' }}
-          pane2Content={
-            <Flex1>
-              <MusicSheet
-                notation={notation}
-                displayMode={notationSettings.displayMode}
-                onMusicDisplayChange={setMusicDisplay}
-              />
-            </Flex1>
-          }
-          pane2Supplements={
-            <>
-              {notationSettings.isFretboardVisible && (
-                <Fretboard
-                  settings={notationSettings}
-                  musicDisplay={musicDisplay}
-                  mediaPlayer={mediaPlayer}
-                  onResize={setFretboardDimensions}
-                />
-              )}
-              <ControlsOuter>
-                <Controls
-                  videoControls={showVideoControls}
+        <>
+          <NotationSink
+            mediaPlayer={mediaPlayer}
+            musicDisplay={musicDisplay}
+            notationSettings={notationSettings}
+            setNotationSettings={setNotationSettings}
+          />
+
+          <SplitPaneLayout
+            handle={showVideo}
+            pane1Content={<Media video={showVideo} src={videoUrl} fluid={mediaFluid} onPlayerChange={setMediaPlayer} />}
+            pane1Supplements={
+              <Flex1InvisibleScrollbar>
+                <br />
+                <NotationInfo notation={notation} />
+                <br />
+                <div>
+                  {showEditButton && (
+                    <Link to={`/n/${notationId}/edit`}>
+                      <Button block type="default" size="large">
+                        edit
+                      </Button>
+                    </Link>
+                  )}
+                  <SuggestedNotations srcNotationId={notationId} />
+                </div>
+              </Flex1InvisibleScrollbar>
+            }
+            pane1DefaultHeight={notationSettings.defaultTheaterHeightPx}
+            pane1DefaultWidth={notationSettings.defaultSidecarWidthPx}
+            pane1MinHeight={showVideo ? MIN_THEATER_HEIGHT_PX : 0}
+            pane1MaxHeight={showVideo ? pane1MaxHeight : 0}
+            pane1MinWidth={MIN_SIDECAR_WIDTH_PX}
+            pane1MaxWidth={pane1MaxWidth}
+            pane1Style={{ zIndex: pane1ZIndex, background: 'white' }}
+            pane2Content={
+              <Flex1>
+                <MusicSheet
                   notation={notation}
-                  musicDisplay={musicDisplay}
-                  mediaPlayer={mediaPlayer}
-                  settings={notationSettings}
-                  setSettings={setNotationSettings}
+                  displayMode={notationSettings.displayMode}
+                  onMusicDisplayChange={setMusicDisplay}
                 />
-              </ControlsOuter>
-            </>
-          }
-          onHorizontalSlideEnd={onHorizontalSlideEnd}
-          onVerticalSlideEnd={onVerticalSlideEnd}
-          preferredLayoutType={notationSettings.preferredLayout}
-          onLayoutTypeChange={setLayoutType}
-        />
+              </Flex1>
+            }
+            pane2Supplements={
+              <>
+                {notationSettings.isFretboardVisible && (
+                  <Fretboard
+                    settings={notationSettings}
+                    musicDisplay={musicDisplay}
+                    mediaPlayer={mediaPlayer}
+                    onResize={setFretboardDimensions}
+                  />
+                )}
+                <ControlsOuter>
+                  <Controls
+                    videoControls={showVideoControls}
+                    notation={notation}
+                    musicDisplay={musicDisplay}
+                    mediaPlayer={mediaPlayer}
+                    settings={notationSettings}
+                    setSettings={setNotationSettings}
+                  />
+                </ControlsOuter>
+              </>
+            }
+            onHorizontalSlideEnd={onHorizontalSlideEnd}
+            onVerticalSlideEnd={onVerticalSlideEnd}
+            preferredLayoutType={notationSettings.preferredLayout}
+            onLayoutTypeChange={setLayoutType}
+          />
+        </>
       )}
     </Outer>
   );
