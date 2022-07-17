@@ -23,10 +23,10 @@ export enum FretMarkerDisplay {
 }
 
 export enum ScaleSelectionType {
-  None,
-  Dynamic,
-  User,
-  Random,
+  None = 'none',
+  Dynamic = 'dynamic',
+  User = 'user',
+  Random = 'random',
 }
 
 export type Settings = {

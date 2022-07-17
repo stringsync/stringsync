@@ -2,7 +2,7 @@ import { InfoCircleOutlined, PauseOutlined, RightOutlined, SettingOutlined } fro
 import { Button, Checkbox, Col, Divider, Drawer, Radio, RadioChangeEvent, Row, Select, Tooltip } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { CheckboxOptionType, CheckboxValueType } from 'antd/lib/checkbox/Group';
-import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useId, useState } from 'react';
 import styled from 'styled-components';
 import { useDevice } from '../ctx/device';
 import { useResizeObserver } from '../hooks/useResizeObserver';
@@ -186,11 +186,8 @@ export const Controls: React.FC<Props> = (props) => {
     };
   }, [mediaPlayer]);
 
-  // drawer container
-  const drawerContainerRef = useRef<HTMLDivElement>(null);
-
   return (
-    <Outer data-testid="controls" id={outerId} ref={drawerContainerRef}>
+    <Outer data-testid="controls" id={outerId}>
       <FullHeightRow justify="center" align="middle">
         <Col span={2}>
           <FullHeightRow justify="center" align="middle">
@@ -235,6 +232,7 @@ export const Controls: React.FC<Props> = (props) => {
         title="settings"
         placement="right"
         keyboard
+        width={device.mobile ? 278 : undefined}
         closable={false}
         visible={isSettingsVisible}
         onClose={onSettingsClose}
@@ -348,6 +346,8 @@ export const Controls: React.FC<Props> = (props) => {
 
           <h5>playback</h5>
           <Playback mediaPlayer={mediaPlayer} />
+
+          <br />
         </SettingsInner>
       </Drawer>
     </Outer>

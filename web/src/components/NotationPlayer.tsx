@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useViewport } from '../ctx/viewport';
 import { NotationSettings, SetNotationSettings } from '../hooks/useNotationSettings';
@@ -40,22 +40,21 @@ type Props = {
   notation: Nullable<notations.RenderableNotation>;
   sidecar?: React.ReactNode;
   notationSettings: NotationSettings;
-  settingsContainer?: HTMLElement | false;
   setNotationSettings: SetNotationSettings;
   onLayoutTypeChange?: (layoutType: SplitPaneLayoutType) => void;
   onMediaPlayerChange?: (mediaPLayer: MediaPlayer) => void;
 };
 
 export const NotationPlayer: React.FC<Props> = (props) => {
-  const {
-    notation,
-    notationSettings,
-    setNotationSettings,
-    sidecar,
-    onLayoutTypeChange,
-    onMediaPlayerChange,
-    settingsContainer,
-  } = props;
+  const notation = props.notation;
+  const notationSettings = props.notationSettings;
+  const setNotationSettings = props.setNotationSettings;
+  const sidecar = props.sidecar;
+  const onLayoutTypeChange = props.onLayoutTypeChange;
+  const onMediaPlayerChange = props.onMediaPlayerChange;
+
+  // refs
+  const settingsContainerRef = useRef<HTMLDivElement>(null);
 
   // dimensions
   const viewport = useViewport();
@@ -117,7 +116,7 @@ export const NotationPlayer: React.FC<Props> = (props) => {
   const showVideo = layoutType === 'sidecar' || (showVideoControls && notationSettings.isVideoVisible);
 
   return (
-    <Outer data-testid="notation-player">
+    <Outer data-testid="notation-player" ref={settingsContainerRef}>
       {notation && (
         <>
           <NotationSink
@@ -167,7 +166,7 @@ export const NotationPlayer: React.FC<Props> = (props) => {
                     mediaPlayer={mediaPlayer}
                     settings={notationSettings}
                     setSettings={setNotationSettings}
-                    settingsContainer={settingsContainer}
+                    settingsContainer={settingsContainerRef.current || false}
                   />
                 </ControlsOuter>
               </>

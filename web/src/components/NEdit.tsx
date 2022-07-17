@@ -29,6 +29,7 @@ const Outer = styled(FullHeightDiv)`
 
 const SidecarOuter = styled.div`
   margin: 16px;
+  overflow-x: hidden;
 `;
 
 const FloatingButton = styled(Button)<{ $top: number }>`

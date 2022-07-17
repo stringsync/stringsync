@@ -146,9 +146,7 @@ export class CursorSnapshot {
 
   @memoize()
   getPositions(): Position[] {
-    return this.getTabNotes()
-      .map(helpers.toPosition)
-      .filter(helpers.isPosition);
+    return this.getTabNotes().map(helpers.toPosition).filter(helpers.isPosition);
   }
 
   @memoize()

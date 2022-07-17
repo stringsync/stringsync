@@ -1,6 +1,6 @@
 import { HomeOutlined, InfoCircleOutlined, SoundFilled, SoundOutlined } from '@ant-design/icons';
 import { Button, Drawer, Row } from 'antd';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAuth } from '../ctx/auth';
@@ -127,7 +127,6 @@ export const N: React.FC = enhance(() => {
 
   // settings
   const [notationSettings, setNotationSettings] = useNotationSettings();
-  const settingsContainerRef = useRef<HTMLDivElement>(null);
 
   // layout
   const [layoutType, setLayoutType] = useState<SplitPaneLayoutType>('sidecar');
@@ -164,7 +163,7 @@ export const N: React.FC = enhance(() => {
   const renderFloatingButtons = layoutType === 'theater';
 
   return (
-    <Outer data-testid="n" ref={settingsContainerRef}>
+    <Outer data-testid="n">
       {renderMobileLandscapeWarning && <MobileLandscapeWarning />}
 
       {renderErrors && (
@@ -197,7 +196,6 @@ export const N: React.FC = enhance(() => {
           notation={notation}
           notationSettings={notationSettings}
           setNotationSettings={setNotationSettings}
-          settingsContainer={settingsContainerRef.current || false}
           sidecar={<Sidecar notation={notation} notationId={notationId} editable={editable} />}
           onLayoutTypeChange={setLayoutType}
           onMediaPlayerChange={setMediaPlayer}

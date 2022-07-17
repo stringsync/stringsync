@@ -18,6 +18,7 @@ export const useScales = (musicDisplay: MusicDisplay): Scales => {
 
   useEffect(() => {
     setKeyInfo(notations.getKeyInfo(musicDisplay));
+    setMeta(musicDisplay.getMeta());
 
     const eventBusIds = [
       musicDisplay.eventBus.subscribe('rendered', (payload) => {
