@@ -1,5 +1,5 @@
 import { Alert, Button, Row } from 'antd';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAuth } from '../ctx/auth';
@@ -15,7 +15,7 @@ import { UserRole } from '../lib/graphql';
 import { MediaPlayer, NoopMediaPlayer } from '../lib/MediaPlayer';
 import { MusicDisplay } from '../lib/MusicDisplay';
 import { NoopMusicDisplay } from '../lib/MusicDisplay/NoopMusicDisplay';
-import { Controls } from './Controls';
+import { Controls, CONTROLS_HEIGHT_PX } from './Controls';
 import { Fretboard } from './Fretboard';
 import { FullHeightDiv } from './FullHeightDiv';
 import { Media } from './Media';
@@ -23,6 +23,13 @@ import { MusicSheet } from './MusicSheet';
 import { NotationInfo } from './NotationInfo';
 import { SplitPaneLayout, SplitPaneLayoutType } from './SplitPaneLayout';
 import { SuggestedNotations } from './SuggestedNotations';
+
+export const MIN_SIDECAR_WIDTH_PX = 400;
+export const MAX_SIDECAR_WIDTH_FRAC = 0.6;
+export const MAX_SIDECAR_WIDTH_PX = 1000;
+export const MIN_THEATER_HEIGHT_PX = 100;
+export const MAX_THEATER_HEIGHT_PX = 800;
+export const MIN_NOTATION_HEIGHT_PX = 300;
 
 const Outer = styled(FullHeightDiv)`
   background: white;
@@ -121,6 +128,7 @@ export const N: React.FC = () => {
   // dimensions
   const device = useDevice();
   const viewport = useViewport();
+  const { innerHeight, innerWidth } = viewport;
 
   // controllers
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay>(() => new NoopMusicDisplay());
@@ -143,10 +151,25 @@ export const N: React.FC = () => {
     [notationSettings, setNotationSettings]
   );
 
-  // layout type
+  // layout
   const [layoutType, setLayoutType] = useState<SplitPaneLayoutType>('sidecar');
   const mediaFluid = layoutType === 'sidecar';
   const pane1ZIndex = layoutType === 'sidecar' ? 4 : undefined;
+  const [fretboardDimensions, setFretboardDimensions] = useState({ width: 0, height: 0 });
+  const apparentFretboardHeightPx = notationSettings.isFretboardVisible ? fretboardDimensions.height : 0;
+  const [pane1MaxWidth, setPane1MaxWidth] = useState(MAX_SIDECAR_WIDTH_PX);
+  useEffect(() => {
+    const nextPane1MaxWidth = Math.min(MAX_SIDECAR_WIDTH_PX, MAX_SIDECAR_WIDTH_FRAC * innerWidth);
+    setPane1MaxWidth(nextPane1MaxWidth);
+  }, [innerWidth]);
+  const [pane1MaxHeight, setPane1MaxHeight] = useState(MAX_THEATER_HEIGHT_PX);
+  useEffect(() => {
+    const nextPane1MaxHeight = Math.min(
+      MAX_THEATER_HEIGHT_PX,
+      innerHeight - MIN_NOTATION_HEIGHT_PX - CONTROLS_HEIGHT_PX - apparentFretboardHeightPx
+    );
+    setPane1MaxHeight(nextPane1MaxHeight);
+  }, [innerHeight, apparentFretboardHeightPx]);
 
   // css effects
   useNoOverflow(hasErrors ? null : document.body);
@@ -188,6 +211,10 @@ export const N: React.FC = () => {
           }
           pane1DefaultHeight={notationSettings.defaultTheaterHeightPx}
           pane1DefaultWidth={notationSettings.defaultSidecarWidthPx}
+          pane1MinHeight={MIN_THEATER_HEIGHT_PX}
+          pane1MaxHeight={pane1MaxHeight}
+          pane1MinWidth={MIN_SIDECAR_WIDTH_PX}
+          pane1MaxWidth={pane1MaxWidth}
           pane1Style={{ zIndex: pane1ZIndex, background: 'white' }}
           pane2Content={
             <Flex1>
@@ -201,7 +228,12 @@ export const N: React.FC = () => {
           pane2Supplements={
             <>
               {notationSettings.isFretboardVisible && (
-                <Fretboard settings={notationSettings} musicDisplay={musicDisplay} mediaPlayer={mediaPlayer} />
+                <Fretboard
+                  settings={notationSettings}
+                  musicDisplay={musicDisplay}
+                  mediaPlayer={mediaPlayer}
+                  onResize={setFretboardDimensions}
+                />
               )}
               <ControlsOuter>
                 <Controls
