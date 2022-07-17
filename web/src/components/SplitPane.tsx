@@ -103,6 +103,7 @@ const unfocus = () => {
 };
 
 export type SplitPaneProps = {
+  handle?: boolean;
   pane1Content: ReactNode;
   pane2Content: ReactNode;
   split?: Split;
@@ -116,6 +117,7 @@ export type SplitPaneProps = {
 };
 
 export const SplitPane: React.FC<SplitPaneProps> = (props) => {
+  const handle = props.handle ?? true;
   const pane1Content = props.pane1Content;
   const pane2Content = props.pane2Content;
   const split = props.split || 'horizontal';
@@ -321,16 +323,18 @@ export const SplitPane: React.FC<SplitPaneProps> = (props) => {
             {pane1Content}
           </HorizontalPane1>
           <HorizontalPane2 id={pane2Id} ref={pane2Ref} style={pane2Style}>
-            <HorizontalDivider style={{ zIndex: dividerZIndex }}>
-              <Button
-                id={buttonId}
-                icon={<MenuOutlined />}
-                size="small"
-                style={{ cursor: 'row-resize' }}
-                onMouseDown={onMouseDown}
-                onTouchStart={onTouchStart}
-              />
-            </HorizontalDivider>
+            {handle && (
+              <HorizontalDivider style={{ zIndex: dividerZIndex }}>
+                <Button
+                  id={buttonId}
+                  icon={<MenuOutlined />}
+                  size="small"
+                  style={{ cursor: 'row-resize' }}
+                  onMouseDown={onMouseDown}
+                  onTouchStart={onTouchStart}
+                />
+              </HorizontalDivider>
+            )}
             {pane2Content}
           </HorizontalPane2>
         </HorizontalOuter>
@@ -342,16 +346,18 @@ export const SplitPane: React.FC<SplitPaneProps> = (props) => {
             {pane1Content}
           </VerticalPane1>
           <VerticalPane2 id={pane2Id} ref={pane2Ref}>
-            <VerticalDivider style={{ zIndex: dividerZIndex }}>
-              <Button
-                id={buttonId}
-                icon={<VerticalMenuOutlined />}
-                size="small"
-                style={{ cursor: 'col-resize' }}
-                onMouseDown={onMouseDown}
-                onTouchStart={onTouchStart}
-              />
-            </VerticalDivider>
+            {handle && (
+              <VerticalDivider style={{ zIndex: dividerZIndex }}>
+                <Button
+                  id={buttonId}
+                  icon={<VerticalMenuOutlined />}
+                  size="small"
+                  style={{ cursor: 'col-resize' }}
+                  onMouseDown={onMouseDown}
+                  onTouchStart={onTouchStart}
+                />
+              </VerticalDivider>
+            )}
             {pane2Content}
           </VerticalPane2>
         </VerticalOuter>

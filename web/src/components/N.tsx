@@ -138,13 +138,13 @@ export const N: React.FC = () => {
   const [notationSettings, setNotationSettings] = useNotationSettings();
 
   // slide end handlers
-  const onHorizontalSlideEnd = useCallback(
+  const onVerticalSlideEnd = useCallback(
     (defaultSidecarWidthPx: number) => {
       setNotationSettings({ ...notationSettings, defaultSidecarWidthPx });
     },
     [notationSettings, setNotationSettings]
   );
-  const onVerticalSlideEnd = useCallback(
+  const onHorizontalSlideEnd = useCallback(
     (defaultTheaterHeightPx: number) => {
       setNotationSettings({ ...notationSettings, defaultTheaterHeightPx });
     },
@@ -169,7 +169,7 @@ export const N: React.FC = () => {
       innerHeight - MIN_NOTATION_HEIGHT_PX - CONTROLS_HEIGHT_PX - apparentFretboardHeightPx
     );
     setPane1MaxHeight(nextPane1MaxHeight);
-  }, [innerHeight, apparentFretboardHeightPx]);
+  }, [notationSettings, innerHeight, apparentFretboardHeightPx]);
 
   // css effects
   useNoOverflow(hasErrors ? null : document.body);
@@ -182,6 +182,8 @@ export const N: React.FC = () => {
   const showErrors = !loading && hasErrors;
   const showSplitPaneLayout = !loading && !hasErrors;
   const showEditButton = isTranscriber || isAdmin;
+  const showVideoControls = layoutType === 'theater';
+  const showHandle = layoutType === 'sidecar' || (showVideoControls && notationSettings.isVideoVisible);
 
   return (
     <Outer data-testid="n">
@@ -191,7 +193,15 @@ export const N: React.FC = () => {
 
       {showSplitPaneLayout && (
         <SplitPaneLayout
-          pane1Content={<Media video src={videoUrl} fluid={mediaFluid} onPlayerChange={setMediaPlayer} />}
+          handle={showHandle}
+          pane1Content={
+            <Media
+              video={notationSettings.isVideoVisible}
+              src={videoUrl}
+              fluid={mediaFluid}
+              onPlayerChange={setMediaPlayer}
+            />
+          }
           pane1Supplements={
             <Flex1InvisibleScrollbar>
               <br />
@@ -211,8 +221,8 @@ export const N: React.FC = () => {
           }
           pane1DefaultHeight={notationSettings.defaultTheaterHeightPx}
           pane1DefaultWidth={notationSettings.defaultSidecarWidthPx}
-          pane1MinHeight={MIN_THEATER_HEIGHT_PX}
-          pane1MaxHeight={pane1MaxHeight}
+          pane1MinHeight={showHandle ? MIN_THEATER_HEIGHT_PX : 0}
+          pane1MaxHeight={showHandle ? pane1MaxHeight : 0}
           pane1MinWidth={MIN_SIDECAR_WIDTH_PX}
           pane1MaxWidth={pane1MaxWidth}
           pane1Style={{ zIndex: pane1ZIndex, background: 'white' }}
@@ -237,7 +247,7 @@ export const N: React.FC = () => {
               )}
               <ControlsOuter>
                 <Controls
-                  videoControls={false}
+                  videoControls={showVideoControls}
                   notation={notation}
                   musicDisplay={musicDisplay}
                   mediaPlayer={mediaPlayer}

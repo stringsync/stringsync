@@ -19,6 +19,7 @@ type LayoutTypeChangeCallback = (layoutType: SplitPaneLayoutType) => void;
 export type SplitPaneLayoutType = 'sidecar' | 'theater';
 
 export type SplitPaneLayoutProps = {
+  handle?: boolean;
   pane1Content?: ReactNode;
   pane1Supplements?: ReactNode;
   pane1DefaultWidth?: number;
@@ -63,6 +64,7 @@ const SidecarLayout: React.FC<SplitPaneLayoutProps> = (props) => {
   return (
     <SplitPane
       split="vertical"
+      handle={props.handle}
       pane1Style={props.pane1Style}
       defaultSize={props.pane1DefaultWidth}
       minSize={props.pane1MinWidth}
@@ -90,6 +92,7 @@ const TheaterLayout: React.FC<SplitPaneLayoutProps> = (props) => {
     <>
       <SplitPane
         split="horizontal"
+        handle={props.handle}
         pane1Style={props.pane1Style}
         defaultSize={props.pane1DefaultHeight}
         minSize={props.pane1MinHeight}
