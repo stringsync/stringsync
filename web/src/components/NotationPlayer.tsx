@@ -38,13 +38,24 @@ const ControlsOuter = styled.div`
 
 type Props = {
   notation: Nullable<notations.RenderableNotation>;
-  notationSettings: NotationSettings;
-  setNotationSettings: SetNotationSettings;
   sidecar?: React.ReactNode;
+  notationSettings: NotationSettings;
+  settingsContainer?: HTMLElement | false;
+  setNotationSettings: SetNotationSettings;
+  onLayoutTypeChange?: (layoutType: SplitPaneLayoutType) => void;
+  onMediaPlayerChange?: (mediaPLayer: MediaPlayer) => void;
 };
 
 export const NotationPlayer: React.FC<Props> = (props) => {
-  const { notation, notationSettings, setNotationSettings, sidecar } = props;
+  const {
+    notation,
+    notationSettings,
+    setNotationSettings,
+    sidecar,
+    onLayoutTypeChange,
+    onMediaPlayerChange,
+    settingsContainer,
+  } = props;
 
   // dimensions
   const viewport = useViewport();
@@ -53,6 +64,11 @@ export const NotationPlayer: React.FC<Props> = (props) => {
   // controllers
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay>(() => new NoopMusicDisplay());
   const [mediaPlayer, setMediaPlayer] = useState<MediaPlayer>(() => new NoopMediaPlayer());
+  useEffect(() => {
+    if (onMediaPlayerChange) {
+      onMediaPlayerChange(mediaPlayer);
+    }
+  }, [onMediaPlayerChange, mediaPlayer]);
 
   // slide end handlers
   const onVerticalSlideEnd = useCallback(
@@ -70,6 +86,11 @@ export const NotationPlayer: React.FC<Props> = (props) => {
 
   // layout
   const [layoutType, setLayoutType] = useState<SplitPaneLayoutType>('sidecar');
+  useEffect(() => {
+    if (onLayoutTypeChange) {
+      onLayoutTypeChange(layoutType);
+    }
+  }, [onLayoutTypeChange, layoutType]);
   const mediaFluid = layoutType === 'sidecar';
   const pane1ZIndex = layoutType === 'sidecar' ? 4 : undefined;
   const [fretboardDimensions, setFretboardDimensions] = useState({ width: 0, height: 0 });
@@ -83,7 +104,10 @@ export const NotationPlayer: React.FC<Props> = (props) => {
   useEffect(() => {
     const nextPane1MaxHeight = Math.min(
       MAX_THEATER_HEIGHT_PX,
-      innerHeight - MIN_NOTATION_HEIGHT_PX - CONTROLS_HEIGHT_PX - apparentFretboardHeightPx
+      Math.max(
+        MIN_THEATER_HEIGHT_PX,
+        innerHeight - MIN_NOTATION_HEIGHT_PX - CONTROLS_HEIGHT_PX - apparentFretboardHeightPx
+      )
     );
     setPane1MaxHeight(nextPane1MaxHeight);
   }, [notationSettings, innerHeight, apparentFretboardHeightPx]);
@@ -143,6 +167,7 @@ export const NotationPlayer: React.FC<Props> = (props) => {
                     mediaPlayer={mediaPlayer}
                     settings={notationSettings}
                     setSettings={setNotationSettings}
+                    settingsContainer={settingsContainer}
                   />
                 </ControlsOuter>
               </>

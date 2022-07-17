@@ -64,6 +64,7 @@ type Props = {
   notation: Nullable<notations.RenderableNotation>;
   defaultSettings?: Partial<notations.Settings>;
   maxHeight?: number | string;
+  settingsContainer?: HTMLElement | false;
   onSettingsChange?: (settings: notations.Settings) => void;
   onInit?: () => void;
 };
@@ -77,6 +78,7 @@ export const Notation: React.FC<Props> = (props) => {
   const maxHeight = props.maxHeight;
   const defaultSettings = useMemoCmp(props.defaultSettings);
   const onSettingsChange = props.onSettingsChange || noop;
+  const settingsContainer = props.settingsContainer ?? false;
 
   // refs
   const settingsContainerRef = useRef<HTMLDivElement>(null);
@@ -248,7 +250,6 @@ export const Notation: React.FC<Props> = (props) => {
               )}
               <Controls
                 videoControls={false}
-                settingsContainerRef={settingsContainerRef}
                 notation={notation}
                 musicDisplay={musicDisplay}
                 mediaPlayer={mediaPlayer}
@@ -329,12 +330,12 @@ export const Notation: React.FC<Props> = (props) => {
               )}
               <Controls
                 videoControls
-                settingsContainerRef={settingsContainerRef}
                 notation={notation}
                 musicDisplay={musicDisplay}
                 mediaPlayer={mediaPlayer}
                 settings={settings}
                 setSettings={setSettings}
+                settingsContainer={settingsContainer}
               />
             </FlexColumn>
           </SplitPane>

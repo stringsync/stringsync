@@ -9,7 +9,6 @@ import { Controls } from './Controls';
 
 describe('Controls', () => {
   it('renders without crashing', () => {
-    const settingsContainerRef = {} as any;
     const musicDisplay = new NoopMusicDisplay();
     const mediaPlayer = new NoopMediaPlayer();
     const setSettings = jest.fn();
@@ -19,7 +18,6 @@ describe('Controls', () => {
         <Controls
           videoControls
           notation={null}
-          settingsContainerRef={settingsContainerRef}
           musicDisplay={musicDisplay}
           mediaPlayer={mediaPlayer}
           settings={{

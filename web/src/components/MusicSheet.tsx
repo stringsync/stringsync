@@ -37,7 +37,7 @@ const MusicDisplayDiv = styled.div`
 
 const Loading = styled(Row)`
   position: absolute;
-  top: 24px;
+  top: 36px;
   z-index: 2;
   width: 100%;
 `;

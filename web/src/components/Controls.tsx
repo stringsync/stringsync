@@ -2,7 +2,7 @@ import { InfoCircleOutlined, PauseOutlined, RightOutlined, SettingOutlined } fro
 import { Button, Checkbox, Col, Divider, Drawer, Radio, RadioChangeEvent, Row, Select, Tooltip } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { CheckboxOptionType, CheckboxValueType } from 'antd/lib/checkbox/Group';
-import React, { RefObject, useCallback, useEffect, useId, useState } from 'react';
+import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useDevice } from '../ctx/device';
 import { useResizeObserver } from '../hooks/useResizeObserver';
@@ -18,8 +18,6 @@ import { Seekbar } from './Seekbar';
 
 export const CONTROLS_HEIGHT_PX = 75;
 const NOTATION_DETAIL_THRESHOLD_PX = 767;
-
-const DUMMY_DIV = document.createElement('div');
 
 const Outer = styled.div`
   border: 1px solid ${(props) => props.theme['@border-color']};
@@ -62,11 +60,11 @@ const SettingsInner = styled.div`
 type Props = {
   videoControls: boolean;
   notation: Nullable<notations.RenderableNotation>;
-  settingsContainerRef?: RefObject<HTMLDivElement>;
   musicDisplay: MusicDisplay;
   mediaPlayer: MediaPlayer;
   settings: notations.Settings;
   setSettings(settings: notations.Settings): void;
+  settingsContainer?: HTMLElement | false;
 };
 
 export const Controls: React.FC<Props> = (props) => {
@@ -75,9 +73,9 @@ export const Controls: React.FC<Props> = (props) => {
   const notation = props.notation;
   const musicDisplay = props.musicDisplay;
   const mediaPlayer = props.mediaPlayer;
-  const settingsContainer = props.settingsContainerRef?.current || document.body;
   const setSettings = props.setSettings;
   const videoControls = props.videoControls;
+  const settingsContainer = props.settingsContainer ?? false;
 
   // state
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
@@ -100,7 +98,6 @@ export const Controls: React.FC<Props> = (props) => {
   const onSettingsClose = () => {
     setIsSettingsVisible(false);
   };
-  const getDrawerContainer = () => settingsContainer || DUMMY_DIV;
 
   // scales
   const scales = useScales(musicDisplay);
@@ -189,8 +186,11 @@ export const Controls: React.FC<Props> = (props) => {
     };
   }, [mediaPlayer]);
 
+  // drawer container
+  const drawerContainerRef = useRef<HTMLDivElement>(null);
+
   return (
-    <Outer data-testid="controls" id={outerId}>
+    <Outer data-testid="controls" id={outerId} ref={drawerContainerRef}>
       <FullHeightRow justify="center" align="middle">
         <Col span={2}>
           <FullHeightRow justify="center" align="middle">
@@ -238,7 +238,7 @@ export const Controls: React.FC<Props> = (props) => {
         closable={false}
         visible={isSettingsVisible}
         onClose={onSettingsClose}
-        getContainer={getDrawerContainer}
+        getContainer={settingsContainer}
         zIndex={3}
       >
         <SettingsInner>
