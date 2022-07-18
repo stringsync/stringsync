@@ -3,7 +3,7 @@ import { MissingDataError } from '../lib/errors';
 import * as graphql from '../lib/graphql';
 import * as xhr from '../lib/xhr';
 import { useReq } from './useReq';
-import { useResHandler } from './useResHandlers';
+import { useResHandler } from './useResHandler';
 
 const GRAPHQL_URI = `${window.location.origin}/graphql`;
 
