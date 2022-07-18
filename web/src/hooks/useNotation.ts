@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { $gql, DataOf, QueryNotationArgs, t, TagCategory } from '../lib/graphql';
 import { Nullable } from '../util/types';
-import { useGql } from './useGql';
+import { GqlStatus, useGql } from './useGql';
+import { useGqlResHandler } from './useGqlResHandler';
 
 export type Notation = DataOf<typeof NOTATION_GQL>;
 type Errors = string[];
@@ -31,21 +32,24 @@ const NOTATION_GQL = $gql
 export const useNotation = (id: string): [Nullable<Notation>, Errors, Loading] => {
   const [notation, setNotation] = useState<Nullable<Notation>>(null);
   const [errors, setErrors] = useState(new Array<string>());
-  const { execute, loading } = useGql(NOTATION_GQL, {
-    onData: (data) => {
-      if (!data.notation) {
-        setErrors([`could not find notation: '${id}'`]);
-      } else {
-        setNotation(data.notation);
-      }
-    },
-    onErrors: (errors) => {
-      setErrors(errors);
-    },
+
+  const [execute, res] = useGql(NOTATION_GQL);
+  const loading = res.status === GqlStatus.Pending;
+  useGqlResHandler.onPending(res, () => {
+    setErrors([]);
+  });
+  useGqlResHandler.onSuccess(res, ({ data }) => {
+    if (!data.notation) {
+      setErrors([`could not find notation: '${id}'`]);
+    } else {
+      setNotation(data.notation);
+    }
+  });
+  useGqlResHandler.onErrors(res, ({ errors }) => {
+    setErrors(errors);
   });
 
   useEffect(() => {
-    setErrors([]);
     execute({ id });
   }, [execute, id]);
 

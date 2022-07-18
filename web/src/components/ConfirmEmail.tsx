@@ -6,6 +6,8 @@ import { useAuth } from '../ctx/auth';
 import { Layout, withLayout } from '../hocs/withLayout';
 import { useConfirmEmail } from '../hooks/useConfirmEmail';
 import { useEffectOnce } from '../hooks/useEffectOnce';
+import { GqlStatus } from '../hooks/useGql';
+import { useGqlResHandler } from '../hooks/useGqlResHandler';
 import { useQueryParams } from '../hooks/useQueryParams';
 import { useResendConfirmationToken } from '../hooks/useResendConfirmationToken';
 import { UNKNOWN_ERROR_MSG } from '../lib/errors';
@@ -31,47 +33,46 @@ export const ConfirmEmail: React.FC = enhance(() => {
   const navigate = useNavigate();
   const queryParams = useQueryParams();
 
-  const { execute: confirmEmail, loading: confirmEmailLoading } = useConfirmEmail({
-    beforeLoading: () => {
-      setErrors([]);
-    },
-    onData: (data) => {
-      switch (data.confirmEmail?.__typename) {
-        case 'EmailConfirmation':
-          notify.message.success({ content: `${email} confirmed` });
-          navigate('/library');
-          break;
-        case 'BadRequestError':
-        case 'ForbiddenError':
-        case 'NotFoundError':
-        case 'UnknownError':
-          setErrors([data.confirmEmail.message]);
-          break;
-        default:
-          setErrors([UNKNOWN_ERROR_MSG]);
-      }
-    },
+  const [confirmEmail, confirmEmailRes] = useConfirmEmail();
+  useGqlResHandler.onPending(confirmEmailRes, () => {
+    setErrors([]);
+  });
+  useGqlResHandler.onSuccess(confirmEmailRes, ({ data }) => {
+    switch (data.confirmEmail?.__typename) {
+      case 'EmailConfirmation':
+        notify.message.success({ content: `${email} confirmed` });
+        navigate('/library');
+        break;
+      case 'BadRequestError':
+      case 'ForbiddenError':
+      case 'NotFoundError':
+      case 'UnknownError':
+        setErrors([data.confirmEmail.message]);
+        break;
+      default:
+        setErrors([UNKNOWN_ERROR_MSG]);
+    }
   });
 
-  const { execute: resendConfirmationToken, loading: resendConfirmationTokenLoading } = useResendConfirmationToken({
-    beforeLoading: () => {
-      setErrors([]);
-    },
-    onData: (data) => {
-      switch (data.resendConfirmationEmail?.__typename) {
-        case 'Processed':
-          notify.message.success({ content: `sent confirmation token to ${email}` });
-          break;
-        case 'ForbiddenError':
-          setErrors([data.resendConfirmationEmail.message]);
-          break;
-        default:
-          setErrors([UNKNOWN_ERROR_MSG]);
-      }
-    },
+  const [resendConfirmationToken, resendConfirmationTokenRes] = useResendConfirmationToken();
+  useGqlResHandler.onPending(resendConfirmationTokenRes, () => {
+    setErrors([]);
+  });
+  useGqlResHandler.onSuccess(resendConfirmationTokenRes, ({ data }) => {
+    switch (data.resendConfirmationEmail?.__typename) {
+      case 'Processed':
+        notify.message.success({ content: `sent confirmation token to ${email}` });
+        break;
+      case 'ForbiddenError':
+        setErrors([data.resendConfirmationEmail.message]);
+        break;
+      default:
+        setErrors([UNKNOWN_ERROR_MSG]);
+    }
   });
 
-  const loading = confirmEmailLoading || resendConfirmationTokenLoading;
+  const loading =
+    confirmEmailRes.status === GqlStatus.Pending || resendConfirmationTokenRes.status === GqlStatus.Pending;
 
   const onErrorsClose = () => {
     setErrors([]);

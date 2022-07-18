@@ -1,5 +1,5 @@
 import { $gql, ConfirmEmailInput, ConfirmEmailOutput, t } from '../lib/graphql';
-import { useGql, UseGqlOptions } from './useGql';
+import { useGql } from './useGql';
 
 const CONFIRM_EMAIL_GQL = $gql
   .mutation('confirmEmail')
@@ -32,6 +32,4 @@ const CONFIRM_EMAIL_GQL = $gql
   })
   .build();
 
-export const useConfirmEmail = (opts: UseGqlOptions<typeof CONFIRM_EMAIL_GQL>) => {
-  return useGql(CONFIRM_EMAIL_GQL, opts);
-};
+export const useConfirmEmail = () => useGql(CONFIRM_EMAIL_GQL);

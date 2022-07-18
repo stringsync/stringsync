@@ -1,5 +1,5 @@
 import { $gql, SendResetPasswordEmailInput, t } from '../lib/graphql';
-import { useGql, UseGqlOptions } from './useGql';
+import { useGql } from './useGql';
 
 const SEND_RESET_PASSWORD_EMAIL_GQL = $gql
   .mutation('sendResetPasswordEmail')
@@ -9,7 +9,4 @@ const SEND_RESET_PASSWORD_EMAIL_GQL = $gql
   })
   .build();
 
-export const useSendResetPasswordEmail = (opts?: UseGqlOptions<typeof SEND_RESET_PASSWORD_EMAIL_GQL>) => {
-  const { execute } = useGql(SEND_RESET_PASSWORD_EMAIL_GQL, opts);
-  return execute;
-};
+export const useSendResetPasswordEmail = () => useGql(SEND_RESET_PASSWORD_EMAIL_GQL);

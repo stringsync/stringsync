@@ -3,6 +3,8 @@ import { Rule } from 'antd/lib/form';
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { GqlStatus } from '../hooks/useGql';
+import { useGqlResHandler } from '../hooks/useGqlResHandler';
 import { useResetPassword } from '../hooks/useResetPassword';
 import { UNKNOWN_ERROR_MSG } from '../lib/errors';
 import { notify } from '../lib/notify';
@@ -38,21 +40,21 @@ export const ResetPassword: React.FC = (props) => {
   const [errors, setErrors] = useState(new Array<string>());
   const [form] = Form.useForm<FormValues>();
 
-  const { execute: resetPassword, loading } = useResetPassword({
-    beforeLoading: () => {
-      setErrors([]);
-    },
-    onData: (data) => {
-      if (data.resetPassword) {
-        notify.message.success({ content: 'password successfully reset' });
-        navigate('/login');
-      } else {
-        setErrors([UNKNOWN_ERROR_MSG]);
-      }
-    },
-    onErrors: (errors) => {
-      setErrors(errors);
-    },
+  const [resetPassword, resetPasswordRes] = useResetPassword();
+  const loading = resetPasswordRes.status === GqlStatus.Pending;
+  useGqlResHandler.onPending(resetPasswordRes, () => {
+    setErrors([]);
+  });
+  useGqlResHandler.onSuccess(resetPasswordRes, ({ data }) => {
+    if (data.resetPassword) {
+      notify.message.success({ content: 'password successfully reset' });
+      navigate('/login');
+    } else {
+      setErrors([UNKNOWN_ERROR_MSG]);
+    }
+  });
+  useGqlResHandler.onErrors(resetPasswordRes, ({ errors }) => {
+    setErrors(errors);
   });
 
   const onErrorsClose = () => {

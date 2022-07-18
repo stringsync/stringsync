@@ -3,7 +3,7 @@ import { Notation, Tag, User } from '../domain';
 import * as graphql from '../lib/graphql';
 import * as pager from '../lib/pager';
 import * as queries from '../lib/queries';
-import { GqlStatus, useGql2 } from './useGql2';
+import { GqlStatus, useGql } from './useGql';
 
 type Transcriber = Pick<User, 'id' | 'username' | 'role' | 'avatarUrl'>;
 
@@ -41,7 +41,7 @@ export const useNotationPreviews = (
   const [pageInfo, setPageInfo] = useState(getInitialPageInfo);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [exec, res, cancel, reset] = useGql2(queries.NOTATION_PREVIEWS);
+  const [exec, res, cancel, reset] = useGql(queries.NOTATION_PREVIEWS);
 
   useEffect(() => {
     setNotations([]);

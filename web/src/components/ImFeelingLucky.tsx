@@ -18,7 +18,7 @@ export const ImFeelingLucky = () => {
     notify.message.error({ content: 'something went wrong' });
     setHasError(true);
   }, []);
-  const [loading, getRandomNotationId] = useRandomNotationIdGetter(onSuccess, onErrors);
+  const [getRandomNotationId, loading] = useRandomNotationIdGetter(onSuccess, onErrors);
 
   return (
     <Button type="default" disabled={loading || hasError} onClick={getRandomNotationId}>

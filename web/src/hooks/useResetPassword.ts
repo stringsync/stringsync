@@ -1,5 +1,5 @@
 import { $gql, ResetPasswordInput, ResetPasswordOutput, t } from '../lib/graphql';
-import { useGql, UseGqlOptions } from './useGql';
+import { useGql } from './useGql';
 
 const RESET_PASSWORD_GQL = $gql
   .mutation('resetPassword')
@@ -24,6 +24,4 @@ const RESET_PASSWORD_GQL = $gql
   })
   .build();
 
-export const useResetPassword = (opts: UseGqlOptions<typeof RESET_PASSWORD_GQL>) => {
-  return useGql(RESET_PASSWORD_GQL, opts);
-};
+export const useResetPassword = () => useGql(RESET_PASSWORD_GQL);

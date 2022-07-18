@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { $gql, DataOf, t, TagCategory } from '../lib/graphql';
 import { useEffectOnce } from './useEffectOnce';
-import { useGql } from './useGql';
+import { GqlStatus, useGql } from './useGql';
+import { useGqlResHandler } from './useGqlResHandler';
 
 type Tags = DataOf<typeof TAGS_GQL>;
 
@@ -14,13 +15,13 @@ export const useTags = () => {
   const [tags, setTags] = useState<Tags>([]);
   const [errors, setErrors] = useState(new Array<string>());
 
-  const { execute, loading } = useGql(TAGS_GQL, {
-    onData: (data) => {
-      setTags(data.tags);
-    },
-    onErrors: (errors) => {
-      setErrors(errors);
-    },
+  const [execute, res] = useGql(TAGS_GQL);
+  const loading = res.status === GqlStatus.Pending;
+  useGqlResHandler.onSuccess(res, ({ data }) => {
+    setTags(data.tags);
+  });
+  useGqlResHandler.onErrors(res, ({ errors }) => {
+    setErrors(errors);
   });
 
   useEffectOnce(() => {

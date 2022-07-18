@@ -8,6 +8,8 @@ import styled from 'styled-components';
 import * as uuid from 'uuid';
 import { Layout, withLayout } from '../hocs/withLayout';
 import { useCreateNotation } from '../hooks/useCreateNotation';
+import { GqlStatus } from '../hooks/useGql';
+import { useGqlResHandler } from '../hooks/useGqlResHandler';
 import { useTags } from '../hooks/useTags';
 import { UNKNOWN_ERROR_MSG } from '../lib/errors';
 import { notify } from '../lib/notify';
@@ -64,29 +66,29 @@ const Upload: React.FC<Props> = enhance(() => {
     return obj;
   }, {});
 
-  const { execute: createNotation, loading } = useCreateNotation({
-    onData: (data) => {
-      const showErrors = (errors: string[]) => {
-        const id = uuid.v4();
-        notify.modal.error({
-          title: 'error',
-          content: errors.map((error, ndx) => <div key={`modal-${id}-${ndx}`}>{error}</div>),
-        });
-      };
+  const [createNotation, createNotationRes] = useCreateNotation();
+  const loading = createNotationRes.status === GqlStatus.Pending;
+  useGqlResHandler.onSuccess(createNotationRes, ({ data }) => {
+    const showErrors = (errors: string[]) => {
+      const id = uuid.v4();
+      notify.modal.error({
+        title: 'error',
+        content: errors.map((error, ndx) => <div key={`modal-${id}-${ndx}`}>{error}</div>),
+      });
+    };
 
-      switch (data.createNotation?.__typename) {
-        case 'Notation':
-          shouldBlockNavigation.current = false;
-          const notationId = data.createNotation.id;
-          navigate(`/n/${notationId}/edit`);
-          break;
-        case 'ValidationError':
-          showErrors(data.createNotation.details);
-          break;
-        default:
-          showErrors([data.createNotation?.message || UNKNOWN_ERROR_MSG]);
-      }
-    },
+    switch (data.createNotation?.__typename) {
+      case 'Notation':
+        shouldBlockNavigation.current = false;
+        const notationId = data.createNotation.id;
+        navigate(`/n/${notationId}/edit`);
+        break;
+      case 'ValidationError':
+        showErrors(data.createNotation.details);
+        break;
+      default:
+        showErrors([data.createNotation?.message || UNKNOWN_ERROR_MSG]);
+    }
   });
 
   const onStepChange = (stepNdx: number) => {

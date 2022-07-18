@@ -1,5 +1,5 @@
 import { $gql, CreateNotationInput, CreateNotationOutput, t } from '../lib/graphql';
-import { useGql, UseGqlOptions } from './useGql';
+import { useGql } from './useGql';
 
 const CREATE_NOTATION_GQL = $gql
   .mutation('createNotation')
@@ -34,6 +34,4 @@ const CREATE_NOTATION_GQL = $gql
   })
   .build();
 
-export const useCreateNotation = (opts: UseGqlOptions<typeof CREATE_NOTATION_GQL>) => {
-  return useGql(CREATE_NOTATION_GQL, opts);
-};
+export const useCreateNotation = () => useGql(CREATE_NOTATION_GQL);

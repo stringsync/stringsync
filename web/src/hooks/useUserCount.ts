@@ -4,6 +4,7 @@ import { $gql, t, UserCountOutput } from '../lib/graphql';
 import { notify } from '../lib/notify';
 import { useEffectOnce } from './useEffectOnce';
 import { useGql } from './useGql';
+import { useGqlResHandler } from './useGqlResHandler';
 
 const USER_COUNT_GQL = $gql
   .query('userCount')
@@ -28,19 +29,18 @@ const USER_COUNT_GQL = $gql
 export const useUserCount = (): number | null => {
   const [userCount, setUserCount] = useState<number | null>(null);
 
-  const { execute } = useGql(USER_COUNT_GQL, {
-    onData: (data) => {
-      switch (data.userCount?.__typename) {
-        case 'NumberValue':
-          setUserCount(data.userCount.value);
-          break;
-        default:
-          notify.modal.error({
-            title: 'error',
-            content: data.userCount?.message || UNKNOWN_ERROR_MSG,
-          });
-      }
-    },
+  const [execute, res] = useGql(USER_COUNT_GQL);
+  useGqlResHandler.onSuccess(res, ({ data }) => {
+    switch (data.userCount?.__typename) {
+      case 'NumberValue':
+        setUserCount(data.userCount.value);
+        break;
+      default:
+        notify.modal.error({
+          title: 'error',
+          content: data.userCount?.message || UNKNOWN_ERROR_MSG,
+        });
+    }
   });
 
   useEffectOnce(() => {

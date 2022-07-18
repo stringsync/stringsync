@@ -3,6 +3,7 @@ import { Rule } from 'antd/lib/form';
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { useGqlResHandler } from '../hooks/useGqlResHandler';
 import { useSendResetPasswordEmail } from '../hooks/useSendResetPasswordEmail';
 import { notify } from '../lib/notify';
 import { FormPage } from './FormPage';
@@ -25,12 +26,11 @@ export const ForgotPassword: React.FC = () => {
 
   const [form] = Form.useForm<FormValues>();
 
-  const sendResetPasswordEmail = useSendResetPasswordEmail({
-    onData: () => {
-      const { email } = form.getFieldsValue();
-      notify.message.success({ content: `sent reset password email to ${email}` });
-      navigate(`/reset-password?email=${email}`);
-    },
+  const [sendResetPasswordEmail, sendResetPasswordEmailRes] = useSendResetPasswordEmail();
+  useGqlResHandler.onSuccess(sendResetPasswordEmailRes, ({ data }) => {
+    const { email } = form.getFieldsValue();
+    notify.message.success({ content: `sent reset password email to ${email}` });
+    navigate(`/reset-password?email=${email}`);
   });
 
   const onFinish = () => {

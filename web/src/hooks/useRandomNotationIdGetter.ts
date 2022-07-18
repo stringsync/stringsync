@@ -2,11 +2,12 @@ import { first } from 'lodash';
 import { useCallback } from 'react';
 import { UNKNOWN_ERROR_MSG } from '../lib/errors';
 import { $gql, QuerySuggestedNotationsArgs, t } from '../lib/graphql';
-import { useGql } from './useGql';
+import { GqlStatus, useGql } from './useGql';
+import { useGqlResHandler } from './useGqlResHandler';
 
 type SuccessCallback = (notationId: string) => void;
 type ErrorsCallback = (errors: string[]) => void;
-type RandomNotationIdGetter = () => void;
+type GetRandomNotationId = () => void;
 
 const RANDOM_NOTATION_ID_GQL = $gql
   .query('suggestedNotations')
@@ -17,22 +18,24 @@ const RANDOM_NOTATION_ID_GQL = $gql
 export const useRandomNotationIdGetter = (
   onSuccess: SuccessCallback,
   onErrors: ErrorsCallback
-): [boolean, RandomNotationIdGetter] => {
-  const { execute, loading } = useGql(RANDOM_NOTATION_ID_GQL, {
-    onData: (data) => {
-      const id = first(data.suggestedNotations.map((notation) => notation.id));
-      if (id) {
-        onSuccess(id);
-      } else {
-        onErrors([UNKNOWN_ERROR_MSG]);
-      }
-    },
-    onErrors: (errors) => {
-      onErrors(errors);
-    },
+): [getRandomNotationId: GetRandomNotationId, loading: boolean] => {
+  const [execute, res] = useGql(RANDOM_NOTATION_ID_GQL);
+  const loading = res.status === GqlStatus.Pending;
+  useGqlResHandler.onSuccess(res, ({ data }) => {
+    const id = first(data.suggestedNotations.map((notation) => notation.id));
+    if (id) {
+      onSuccess(id);
+    } else {
+      onErrors([UNKNOWN_ERROR_MSG]);
+    }
   });
+  useGqlResHandler.onErrors(res, ({ errors }) => {
+    onErrors(errors);
+  });
+
   const getRandomNotationId = useCallback(() => {
     execute({ limit: 1 });
   }, [execute]);
-  return [loading, getRandomNotationId];
+
+  return [getRandomNotationId, loading];
 };

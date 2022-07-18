@@ -1,7 +1,8 @@
 import { useCallback, useState } from 'react';
 import { $gql, QueryUsersArgs, t, User, UserRole } from '../lib/graphql';
-import { useGql } from './useGql';
 import { Nullable } from '../util/types';
+import { GqlStatus, useGql } from './useGql';
+import { useGqlResHandler } from './useGqlResHandler';
 
 type LoadUsers = (limit: number) => void;
 
@@ -35,26 +36,32 @@ const USERS_GQL = $gql
   })
   .build();
 
-export const useUsers = (): [users: UserPreview[], loading: boolean, hasNextPage: boolean, errors: string[], loadUsers: LoadUsers] => {
+export const useUsers = (): [
+  users: UserPreview[],
+  loading: boolean,
+  hasNextPage: boolean,
+  errors: string[],
+  loadUsers: LoadUsers
+] => {
   const [users, setUsers] = useState(new Array<UserPreview>());
   const [cursor, setCursor] = useState<Nullable<string>>(null);
   const [errors, setErrors] = useState(new Array<string>());
   const [hasNextPage, setHasNextPage] = useState(true);
 
-  const { execute, loading } = useGql(USERS_GQL, {
-    onData: (data) => {
-      if (!data.users) {
-        setErrors(['missing user data']);
-        return;
-      }
-      const nextUsers = data.users.edges.map((edge) => edge.node);
-      setUsers((currentUsers) => [...currentUsers, ...nextUsers]);
-      setCursor(data.users.pageInfo.startCursor || null);
-      setHasNextPage(data.users.pageInfo.hasNextPage);
-    },
-    onErrors: (errors) => {
-      setErrors(errors);
-    },
+  const [execute, res] = useGql(USERS_GQL);
+  const loading = res.status === GqlStatus.Pending;
+  useGqlResHandler.onSuccess(res, ({ data }) => {
+    if (!data.users) {
+      setErrors(['missing user data']);
+      return;
+    }
+    const nextUsers = data.users.edges.map((edge) => edge.node);
+    setUsers((currentUsers) => [...currentUsers, ...nextUsers]);
+    setCursor(data.users.pageInfo.startCursor || null);
+    setHasNextPage(data.users.pageInfo.hasNextPage);
+  });
+  useGqlResHandler.onErrors(res, ({ errors }) => {
+    setErrors(errors);
   });
 
   const loadUsers = useCallback(

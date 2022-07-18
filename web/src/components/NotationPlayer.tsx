@@ -112,8 +112,8 @@ export const NotationPlayer: React.FC<Props> = (props) => {
   }, [notationSettings, innerHeight, apparentFretboardHeightPx]);
 
   // render branches
-  const showVideoControls = layoutType === 'theater';
-  const showVideo = layoutType === 'sidecar' || (showVideoControls && notationSettings.isVideoVisible);
+  const renderVideoControls = layoutType === 'theater';
+  const renderVideo = layoutType === 'sidecar' || (renderVideoControls && notationSettings.isVideoVisible);
 
   return (
     <Outer data-testid="notation-player" ref={settingsContainerRef}>
@@ -127,15 +127,15 @@ export const NotationPlayer: React.FC<Props> = (props) => {
           />
 
           <SplitPaneLayout
-            handle={showVideo}
+            handle={renderVideo}
             pane1Content={
-              <Media video={showVideo} src={notation.videoUrl} fluid={mediaFluid} onPlayerChange={setMediaPlayer} />
+              <Media video={renderVideo} src={notation.videoUrl} fluid={mediaFluid} onPlayerChange={setMediaPlayer} />
             }
             pane1Supplements={sidecar}
             pane1DefaultHeight={notationSettings.defaultTheaterHeightPx}
             pane1DefaultWidth={notationSettings.defaultSidecarWidthPx}
-            pane1MinHeight={showVideo ? MIN_THEATER_HEIGHT_PX : 0}
-            pane1MaxHeight={showVideo ? pane1MaxHeight : 0}
+            pane1MinHeight={renderVideo ? MIN_THEATER_HEIGHT_PX : 0}
+            pane1MaxHeight={renderVideo ? pane1MaxHeight : 0}
             pane1MinWidth={MIN_SIDECAR_WIDTH_PX}
             pane1MaxWidth={pane1MaxWidth}
             pane1Style={{ zIndex: pane1ZIndex, background: 'white' }}
@@ -160,7 +160,7 @@ export const NotationPlayer: React.FC<Props> = (props) => {
                 )}
                 <ControlsOuter>
                   <Controls
-                    videoControls={showVideoControls}
+                    videoControls={renderVideoControls}
                     notation={notation}
                     musicDisplay={musicDisplay}
                     mediaPlayer={mediaPlayer}

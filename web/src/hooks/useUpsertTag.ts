@@ -1,8 +1,9 @@
 import { useCallback } from 'react';
 import { Tag } from '../domain';
-import { useGql } from '../hooks/useGql';
 import { UNKNOWN_ERROR_MSG } from '../lib/errors';
 import { $gql, CreateTagInput, CreateTagOutput, t, TagCategory, UpdateTagInput, UpdateTagOutput } from '../lib/graphql';
+import { GqlStatus, useGql } from './useGql';
+import { useGqlResHandler } from './useGqlResHandler';
 
 type TagInput = {
   id?: string;
@@ -93,34 +94,36 @@ const CREATE_TAG_INPUT = $gql
   .build();
 
 export const useUpsertTag = (onSuccess: SuccessCallback, onErrors: ErrorsCallback): [UpsertTag, Loading] => {
-  const { execute: createTag, loading: creating } = useGql(CREATE_TAG_INPUT, {
-    onData: (data) => {
-      switch (data.createTag?.__typename) {
-        case 'Tag':
-          onSuccess(data.createTag);
-          break;
-        case 'ValidationError':
-          onErrors(data.createTag.details);
-          break;
-        default:
-          onErrors([data.createTag?.message || UNKNOWN_ERROR_MSG]);
-      }
-    },
+  const [createTag, createTagRes] = useGql(CREATE_TAG_INPUT);
+  const creating = createTagRes.status === GqlStatus.Pending;
+  useGqlResHandler.onSuccess(createTagRes, ({ data }) => {
+    switch (data.createTag?.__typename) {
+      case 'Tag':
+        onSuccess(data.createTag);
+        break;
+      case 'ValidationError':
+        onErrors(data.createTag.details);
+        break;
+      default:
+        onErrors([data.createTag?.message || UNKNOWN_ERROR_MSG]);
+    }
   });
-  const { execute: updateTag, loading: updating } = useGql(UPDATE_TAG_GQL, {
-    onData: (data) => {
-      switch (data.updateTag?.__typename) {
-        case 'Tag':
-          onSuccess(data.updateTag);
-          break;
-        case 'ValidationError':
-          onErrors(data.updateTag.details);
-          break;
-        default:
-          onErrors([data.updateTag?.message || UNKNOWN_ERROR_MSG]);
-      }
-    },
+
+  const [updateTag, updateTagRes] = useGql(UPDATE_TAG_GQL);
+  const updating = updateTagRes.status === GqlStatus.Pending;
+  useGqlResHandler.onSuccess(updateTagRes, ({ data }) => {
+    switch (data.updateTag?.__typename) {
+      case 'Tag':
+        onSuccess(data.updateTag);
+        break;
+      case 'ValidationError':
+        onErrors(data.updateTag.details);
+        break;
+      default:
+        onErrors([data.updateTag?.message || UNKNOWN_ERROR_MSG]);
+    }
   });
+
   const loading = creating || updating;
 
   const upsertTag = useCallback(

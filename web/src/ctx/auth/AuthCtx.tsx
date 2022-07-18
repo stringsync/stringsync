@@ -2,7 +2,7 @@ import { createAction, createReducer } from '@reduxjs/toolkit';
 import { noop } from 'lodash';
 import React, { PropsWithChildren, useCallback, useMemo, useReducer } from 'react';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
-import { useGql2 } from '../../hooks/useGql2';
+import { useGql } from '../../hooks/useGql';
 import { useGqlResHandler } from '../../hooks/useGqlResHandler';
 import { UNKNOWN_ERROR_MSG } from '../../lib/errors';
 import { LoginInput, SignupInput } from '../../lib/graphql';
@@ -73,21 +73,21 @@ export const AuthApiCtx = React.createContext<AuthApi>({
 export const AuthProvider: React.FC<PropsWithChildren<{}>> = (props) => {
   const [state, dispatch] = useReducer(authReducer, getInitialState());
 
-  const [authenticate, authenticateRes] = useGql2(queries.whoami);
+  const [authenticate, authenticateRes] = useGql(queries.whoami);
   useGqlResHandler.onInit(authenticateRes, () => {
     dispatch(AUTH_ACTIONS.pending());
   });
   useGqlResHandler.onSuccess(authenticateRes, ({ data }) => {
     dispatch(AUTH_ACTIONS.setUser({ user: helpers.toAuthUser(data.whoami) }));
   });
-  useGqlResHandler.onError(authenticateRes, () => {
+  useGqlResHandler.onErrors(authenticateRes, () => {
     dispatch(AUTH_ACTIONS.setUser({ user: helpers.toAuthUser(null) }));
   });
   useGqlResHandler.onCancelled(authenticateRes, () => {
     dispatch(AUTH_ACTIONS.setUser({ user: helpers.toAuthUser(null) }));
   });
 
-  const [login, loginRes] = useGql2(queries.login);
+  const [login, loginRes] = useGql(queries.login);
   useGqlResHandler.onPending(loginRes, () => {
     dispatch(AUTH_ACTIONS.pending());
   });
@@ -102,7 +102,7 @@ export const AuthProvider: React.FC<PropsWithChildren<{}>> = (props) => {
     }
   });
 
-  const [logout, logoutRes] = useGql2(queries.logout);
+  const [logout, logoutRes] = useGql(queries.logout);
   useGqlResHandler.onPending(logoutRes, () => {
     dispatch(AUTH_ACTIONS.pending());
   });
@@ -117,7 +117,7 @@ export const AuthProvider: React.FC<PropsWithChildren<{}>> = (props) => {
     }
   });
 
-  const [signup, signupRes] = useGql2(queries.signup);
+  const [signup, signupRes] = useGql(queries.signup);
   useGqlResHandler.onPending(signupRes, () => {
     dispatch(AUTH_ACTIONS.pending());
   });

@@ -1,5 +1,5 @@
 import { $gql, ResendConfirmationEmailOutput, t } from '../lib/graphql';
-import { useGql, UseGqlOptions } from './useGql';
+import { useGql } from './useGql';
 
 const RESEND_CONFIRMATION_EMAIL_GQL = $gql
   .mutation('resendConfirmationEmail')
@@ -17,6 +17,4 @@ const RESEND_CONFIRMATION_EMAIL_GQL = $gql
   })
   .build();
 
-export const useResendConfirmationToken = (opts: UseGqlOptions<typeof RESEND_CONFIRMATION_EMAIL_GQL>) => {
-  return useGql(RESEND_CONFIRMATION_EMAIL_GQL, opts);
-};
+export const useResendConfirmationToken = () => useGql(RESEND_CONFIRMATION_EMAIL_GQL);

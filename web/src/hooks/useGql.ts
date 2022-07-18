@@ -16,7 +16,7 @@ export enum GqlStatus {
   Init,
   Pending,
   Success,
-  Error,
+  Errors,
   Cancelled,
 }
 
@@ -32,14 +32,14 @@ export type GqlRes<G extends graphql.Any$gql> =
       data: graphql.SuccessfulResponse<G>['data'];
     }
   | {
-      status: GqlStatus.Error;
+      status: GqlStatus.Errors;
       errors: string[];
     }
   | {
       status: GqlStatus.Cancelled;
     };
 
-export const useGql2 = <G extends graphql.Any$gql>(
+export const useGql = <G extends graphql.Any$gql>(
   gql: G
 ): [exec: Exec<G>, res: GqlRes<G>, cancel: xhr.Cancel, reset: xhr.Reset] => {
   const [req, res, cancel, reset] = useReq(graphql.$gql.toGqlResponse);
@@ -61,15 +61,15 @@ export const useGql2 = <G extends graphql.Any$gql>(
   useResHandler(xhr.Status.Success, res, (res) => {
     const { data, errors } = res.result;
     if (errors) {
-      setGqlRes({ status: GqlStatus.Error, errors: errors.map((error) => error.message) });
+      setGqlRes({ status: GqlStatus.Errors, errors: errors.map((error) => error.message) });
     } else if (!data) {
-      setGqlRes({ status: GqlStatus.Error, errors: [new MissingDataError().message] });
+      setGqlRes({ status: GqlStatus.Errors, errors: [new MissingDataError().message] });
     } else {
       setGqlRes({ status: GqlStatus.Success, data });
     }
   });
   useResHandler(xhr.Status.Error, res, (res) => {
-    setGqlRes({ status: GqlStatus.Error, errors: [res.error.message] });
+    setGqlRes({ status: GqlStatus.Errors, errors: [res.error.message] });
   });
   useResHandler(xhr.Status.Cancelled, res, (res) => {
     setGqlRes({ status: GqlStatus.Cancelled });

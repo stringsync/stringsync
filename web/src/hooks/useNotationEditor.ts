@@ -9,7 +9,7 @@ import {
   UpdateNotationOutput,
 } from '../lib/graphql';
 import { Nullable } from '../util/types';
-import { GqlStatus, useGql2 } from './useGql2';
+import { GqlStatus, useGql } from './useGql';
 
 export type NotationData = DataOf<typeof NOTATION_GQL>;
 
@@ -108,7 +108,7 @@ export const useNotationEditor = (): NotationEditor => {
   const [notation, setNotation] = useState<Nullable<NotationData>>(null);
 
   // fetch
-  const [fetchNotation, fetchNotationRes, cancelFetchNotation] = useGql2(NOTATION_GQL);
+  const [fetchNotation, fetchNotationRes, cancelFetchNotation] = useGql(NOTATION_GQL);
   const [fetchNotationErrors, setFetchNotationErrors] = useState(new Array<string>());
   const [fetching, setFetching] = useState(false);
   useEffect(() => {
@@ -127,7 +127,7 @@ export const useNotationEditor = (): NotationEditor => {
         }
         setFetching(false);
         break;
-      case GqlStatus.Error:
+      case GqlStatus.Errors:
         setFetchNotationErrors([...fetchNotationRes.errors]);
         setFetching(false);
         break;
@@ -138,7 +138,7 @@ export const useNotationEditor = (): NotationEditor => {
   }, [fetchNotationRes]);
 
   // update
-  const [updateNotation, updateNotationRes, cancelUpdateNotation] = useGql2(UPDATE_NOTATION_GQL);
+  const [updateNotation, updateNotationRes, cancelUpdateNotation] = useGql(UPDATE_NOTATION_GQL);
   const [updateNotationErrors, setUpdateNotationErrors] = useState(new Array<string>());
   const [updating, setUpdating] = useState(false);
   useEffect(() => {
@@ -166,7 +166,7 @@ export const useNotationEditor = (): NotationEditor => {
         }
         setUpdating(false);
         break;
-      case GqlStatus.Error:
+      case GqlStatus.Errors:
         setUpdateNotationErrors([...updateNotationRes.errors]);
         setUpdating(false);
         break;

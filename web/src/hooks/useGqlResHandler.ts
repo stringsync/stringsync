@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useCallback, useEffect } from 'react';
 import { Any$gql } from '../lib/graphql';
-import { GqlRes, GqlStatus } from './useGql2';
+import { GqlRes, GqlStatus } from './useGql';
 
 type ResHandler<T extends Any$gql, S extends GqlStatus> = (res: Extract<GqlRes<T>, { status: S }>) => void;
 
@@ -22,7 +22,7 @@ export type UseGqlResHandler = DynamicGqlHandler & {
   onInit: StaticGqlHandler<GqlStatus.Init>;
   onPending: StaticGqlHandler<GqlStatus.Pending>;
   onSuccess: StaticGqlHandler<GqlStatus.Success>;
-  onError: StaticGqlHandler<GqlStatus.Error>;
+  onErrors: StaticGqlHandler<GqlStatus.Errors>;
   onCancelled: StaticGqlHandler<GqlStatus.Cancelled>;
 };
 
@@ -52,11 +52,11 @@ useGqlResHandler.onSuccess = <T extends Any$gql>(
   deps: React.DependencyList = []
 ) => useGqlResHandler(GqlStatus.Success, res, handler, deps);
 
-useGqlResHandler.onError = <T extends Any$gql>(
+useGqlResHandler.onErrors = <T extends Any$gql>(
   res: GqlRes<T>,
-  handler: ResHandler<T, GqlStatus.Error>,
+  handler: ResHandler<T, GqlStatus.Errors>,
   deps: React.DependencyList = []
-) => useGqlResHandler(GqlStatus.Error, res, handler, deps);
+) => useGqlResHandler(GqlStatus.Errors, res, handler, deps);
 
 useGqlResHandler.onCancelled = <T extends Any$gql>(
   res: GqlRes<T>,
