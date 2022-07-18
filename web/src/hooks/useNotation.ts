@@ -34,7 +34,7 @@ export const useNotation = (id: string): [Nullable<Notation>, Errors, Loading] =
   const [errors, setErrors] = useState(new Array<string>());
 
   const [execute, res] = useGql(NOTATION_GQL);
-  const loading = res.status === GqlStatus.Pending;
+  const loading = res.status === GqlStatus.Init || res.status === GqlStatus.Pending;
   useGqlResHandler.onPending(res, () => {
     setErrors([]);
   });

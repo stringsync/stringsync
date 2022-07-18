@@ -35,7 +35,7 @@ export const useSuggestedNotations = (srcNotationId: string, limit: number) => {
   const [errors, setErrors] = useState(new Array<string>());
 
   const [execute, res] = useGql(SUGGESTED_NOTATIONS_GQL);
-  const loading = res.status === GqlStatus.Pending;
+  const loading = res.status === GqlStatus.Init || res.status === GqlStatus.Pending;
   useGqlResHandler.onSuccess(res, ({ data }) => {
     setSuggestedNotations(data.suggestedNotations);
   });

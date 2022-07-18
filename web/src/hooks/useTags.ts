@@ -16,7 +16,7 @@ export const useTags = () => {
   const [errors, setErrors] = useState(new Array<string>());
 
   const [execute, res] = useGql(TAGS_GQL);
-  const loading = res.status === GqlStatus.Pending;
+  const loading = res.status === GqlStatus.Init || res.status === GqlStatus.Pending;
   useGqlResHandler.onSuccess(res, ({ data }) => {
     setTags(data.tags);
   });
