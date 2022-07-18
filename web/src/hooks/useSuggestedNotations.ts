@@ -1,5 +1,9 @@
-import { useAsyncAbortable } from 'react-async-hook';
-import { $gql, QuerySuggestedNotationsArgs, t, UserRole } from '../lib/graphql';
+import { useEffect, useState } from 'react';
+import { $gql, DataOf, QuerySuggestedNotationsArgs, t, UserRole } from '../lib/graphql';
+import { GqlStatus, useGql } from './useGql';
+import { useGqlResHandler } from './useGqlResHandler';
+
+type SuggestedNotations = DataOf<typeof SUGGESTED_NOTATIONS_GQL>;
 
 const SUGGESTED_NOTATIONS_GQL = $gql
   .query('suggestedNotations')
@@ -27,12 +31,21 @@ const SUGGESTED_NOTATIONS_GQL = $gql
   .build();
 
 export const useSuggestedNotations = (srcNotationId: string, limit: number) => {
-  const { result, loading } = useAsyncAbortable(
-    async (signal) => SUGGESTED_NOTATIONS_GQL.fetch({ id: srcNotationId, limit }, signal),
-    [srcNotationId, limit]
-  );
+  const [suggestedNotations, setSuggestedNotations] = useState<SuggestedNotations>([]);
+  const [errors, setErrors] = useState(new Array<string>());
 
-  const errors = result?.errors?.map((error) => error.message) || [];
+  const [execute, res] = useGql(SUGGESTED_NOTATIONS_GQL);
+  const loading = res.status === GqlStatus.Pending;
+  useGqlResHandler.onSuccess(res, ({ data }) => {
+    setSuggestedNotations(data.suggestedNotations);
+  });
+  useGqlResHandler.onErrors(res, ({ errors }) => {
+    setErrors(errors);
+  });
 
-  return [result?.data?.suggestedNotations || [], errors, loading] as const;
+  useEffect(() => {
+    execute({ id: srcNotationId, limit });
+  }, [execute, srcNotationId, limit]);
+
+  return [suggestedNotations, errors, loading] as const;
 };
