@@ -1,7 +1,7 @@
 import { UNKNOWN_ERROR_MSG } from '../lib/errors';
 import { $gql, t, UpdateUserInput, UpdateUserOutput, User, UserRole, VariablesOf } from '../lib/graphql';
 import { GqlStatus, useGql } from './useGql';
-import { useGqlResHandler } from './useGqlResHandler';
+import { useGqlHandler } from './useGqlHandler';
 
 type UserUpdater = (variables: VariablesOf<typeof UPDATE_USER_GQL>) => void;
 type Loading = boolean;
@@ -53,7 +53,7 @@ const UPDATE_USER_GQL = $gql
 export const useUserUpdater = (onSuccess: SuccessCallback, onErrors: ErrorsCallback): [Loading, UserUpdater] => {
   const [execute, res] = useGql(UPDATE_USER_GQL);
   const loading = res.status === GqlStatus.Pending;
-  useGqlResHandler.onSuccess(res, ({ data }) => {
+  useGqlHandler.onSuccess(res, ({ data }) => {
     switch (data.updateUser?.__typename) {
       case 'User':
         onSuccess(data.updateUser);

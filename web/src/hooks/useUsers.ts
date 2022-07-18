@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { $gql, QueryUsersArgs, t, User, UserRole } from '../lib/graphql';
 import { Nullable } from '../util/types';
 import { GqlStatus, useGql } from './useGql';
-import { useGqlResHandler } from './useGqlResHandler';
+import { useGqlHandler } from './useGqlHandler';
 
 type LoadUsers = (limit: number) => void;
 
@@ -50,7 +50,7 @@ export const useUsers = (): [
 
   const [execute, res] = useGql(USERS_GQL);
   const loading = res.status === GqlStatus.Pending;
-  useGqlResHandler.onSuccess(res, ({ data }) => {
+  useGqlHandler.onSuccess(res, ({ data }) => {
     if (!data.users) {
       setErrors(['missing user data']);
       return;
@@ -60,7 +60,7 @@ export const useUsers = (): [
     setCursor(data.users.pageInfo.startCursor || null);
     setHasNextPage(data.users.pageInfo.hasNextPage);
   });
-  useGqlResHandler.onErrors(res, ({ errors }) => {
+  useGqlHandler.onErrors(res, ({ errors }) => {
     setErrors(errors);
   });
 

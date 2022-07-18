@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { UNKNOWN_ERROR_MSG } from '../lib/errors';
 import { $gql, DeleteTagOutput, t } from '../lib/graphql';
 import { GqlStatus, useGql } from './useGql';
-import { useGqlResHandler } from './useGqlResHandler';
+import { useGqlHandler } from './useGqlHandler';
 
 type DeleteTag = (id: string) => void;
 type SuccessCallback = () => void;
@@ -35,7 +35,7 @@ export const useDeleteTag = (
 ): [deleteTag: DeleteTag, loading: boolean] => {
   const [execute, res] = useGql(DELETE_TAG_GQL);
   const loading = res.status === GqlStatus.Pending;
-  useGqlResHandler.onSuccess(res, ({ data }) => {
+  useGqlHandler.onSuccess(res, ({ data }) => {
     switch (data.deleteTag?.__typename) {
       case 'Processed':
         onSuccess();

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { GqlStatus } from '../hooks/useGql';
-import { useGqlResHandler } from '../hooks/useGqlResHandler';
+import { useGqlHandler } from '../hooks/useGqlHandler';
 import { useResetPassword } from '../hooks/useResetPassword';
 import { UNKNOWN_ERROR_MSG } from '../lib/errors';
 import { notify } from '../lib/notify';
@@ -42,10 +42,10 @@ export const ResetPassword: React.FC = (props) => {
 
   const [resetPassword, resetPasswordRes] = useResetPassword();
   const loading = resetPasswordRes.status === GqlStatus.Pending;
-  useGqlResHandler.onPending(resetPasswordRes, () => {
+  useGqlHandler.onPending(resetPasswordRes, () => {
     setErrors([]);
   });
-  useGqlResHandler.onSuccess(resetPasswordRes, ({ data }) => {
+  useGqlHandler.onSuccess(resetPasswordRes, ({ data }) => {
     if (data.resetPassword) {
       notify.message.success({ content: 'password successfully reset' });
       navigate('/login');
@@ -53,7 +53,7 @@ export const ResetPassword: React.FC = (props) => {
       setErrors([UNKNOWN_ERROR_MSG]);
     }
   });
-  useGqlResHandler.onErrors(resetPasswordRes, ({ errors }) => {
+  useGqlHandler.onErrors(resetPasswordRes, ({ errors }) => {
     setErrors(errors);
   });
 

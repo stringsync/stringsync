@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { $gql, DataOf, QuerySuggestedNotationsArgs, t, UserRole } from '../lib/graphql';
 import { GqlStatus, useGql } from './useGql';
-import { useGqlResHandler } from './useGqlResHandler';
+import { useGqlHandler } from './useGqlHandler';
 
 type SuggestedNotations = DataOf<typeof SUGGESTED_NOTATIONS_GQL>;
 
@@ -36,10 +36,10 @@ export const useSuggestedNotations = (srcNotationId: string, limit: number) => {
 
   const [execute, res] = useGql(SUGGESTED_NOTATIONS_GQL);
   const loading = res.status === GqlStatus.Init || res.status === GqlStatus.Pending;
-  useGqlResHandler.onSuccess(res, ({ data }) => {
+  useGqlHandler.onSuccess(res, ({ data }) => {
     setSuggestedNotations(data.suggestedNotations);
   });
-  useGqlResHandler.onErrors(res, ({ errors }) => {
+  useGqlHandler.onErrors(res, ({ errors }) => {
     setErrors(errors);
   });
 

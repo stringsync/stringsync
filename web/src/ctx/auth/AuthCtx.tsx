@@ -3,7 +3,7 @@ import { noop } from 'lodash';
 import React, { PropsWithChildren, useCallback, useMemo, useReducer } from 'react';
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useGql } from '../../hooks/useGql';
-import { useGqlResHandler } from '../../hooks/useGqlResHandler';
+import { useGqlHandler } from '../../hooks/useGqlHandler';
 import { UNKNOWN_ERROR_MSG } from '../../lib/errors';
 import { LoginInput, SignupInput } from '../../lib/graphql';
 import { notify } from '../../lib/notify';
@@ -74,24 +74,25 @@ export const AuthProvider: React.FC<PropsWithChildren<{}>> = (props) => {
   const [state, dispatch] = useReducer(authReducer, getInitialState());
 
   const [authenticate, authenticateRes] = useGql(queries.whoami);
-  useGqlResHandler.onInit(authenticateRes, () => {
-    dispatch(AUTH_ACTIONS.pending());
-  });
-  useGqlResHandler.onSuccess(authenticateRes, ({ data }) => {
-    dispatch(AUTH_ACTIONS.setUser({ user: helpers.toAuthUser(data.whoami) }));
-  });
-  useGqlResHandler.onErrors(authenticateRes, () => {
-    dispatch(AUTH_ACTIONS.setUser({ user: helpers.toAuthUser(null) }));
-  });
-  useGqlResHandler.onCancelled(authenticateRes, () => {
-    dispatch(AUTH_ACTIONS.setUser({ user: helpers.toAuthUser(null) }));
-  });
+  useGqlHandler
+    .onInit(authenticateRes, () => {
+      dispatch(AUTH_ACTIONS.pending());
+    })
+    .onSuccess(authenticateRes, ({ data }) => {
+      dispatch(AUTH_ACTIONS.setUser({ user: helpers.toAuthUser(data.whoami) }));
+    })
+    .onErrors(authenticateRes, () => {
+      dispatch(AUTH_ACTIONS.setUser({ user: helpers.toAuthUser(null) }));
+    })
+    .onCancelled(authenticateRes, () => {
+      dispatch(AUTH_ACTIONS.setUser({ user: helpers.toAuthUser(null) }));
+    });
 
   const [login, loginRes] = useGql(queries.login);
-  useGqlResHandler.onPending(loginRes, () => {
+  useGqlHandler.onPending(loginRes, () => {
     dispatch(AUTH_ACTIONS.pending());
   });
-  useGqlResHandler.onSuccess(loginRes, ({ data }) => {
+  useGqlHandler.onSuccess(loginRes, ({ data }) => {
     switch (data.login?.__typename) {
       case 'User':
         dispatch(AUTH_ACTIONS.setUser({ user: data.login }));
@@ -103,10 +104,10 @@ export const AuthProvider: React.FC<PropsWithChildren<{}>> = (props) => {
   });
 
   const [logout, logoutRes] = useGql(queries.logout);
-  useGqlResHandler.onPending(logoutRes, () => {
+  useGqlHandler.onPending(logoutRes, () => {
     dispatch(AUTH_ACTIONS.pending());
   });
-  useGqlResHandler.onSuccess(logoutRes, ({ data }) => {
+  useGqlHandler.onSuccess(logoutRes, ({ data }) => {
     switch (data.logout?.__typename) {
       case 'Processed':
         dispatch(AUTH_ACTIONS.setUser({ user: getNullAuthUser() }));
@@ -118,10 +119,10 @@ export const AuthProvider: React.FC<PropsWithChildren<{}>> = (props) => {
   });
 
   const [signup, signupRes] = useGql(queries.signup);
-  useGqlResHandler.onPending(signupRes, () => {
+  useGqlHandler.onPending(signupRes, () => {
     dispatch(AUTH_ACTIONS.pending());
   });
-  useGqlResHandler.onSuccess(signupRes, ({ data }) => {
+  useGqlHandler.onSuccess(signupRes, ({ data }) => {
     switch (data.signup?.__typename) {
       case 'User':
         dispatch(AUTH_ACTIONS.setUser({ user: data.signup }));

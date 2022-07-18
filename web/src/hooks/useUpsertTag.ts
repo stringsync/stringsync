@@ -3,7 +3,7 @@ import { Tag } from '../domain';
 import { UNKNOWN_ERROR_MSG } from '../lib/errors';
 import { $gql, CreateTagInput, CreateTagOutput, t, TagCategory, UpdateTagInput, UpdateTagOutput } from '../lib/graphql';
 import { GqlStatus, useGql } from './useGql';
-import { useGqlResHandler } from './useGqlResHandler';
+import { useGqlHandler } from './useGqlHandler';
 
 type TagInput = {
   id?: string;
@@ -96,7 +96,7 @@ const CREATE_TAG_INPUT = $gql
 export const useUpsertTag = (onSuccess: SuccessCallback, onErrors: ErrorsCallback): [UpsertTag, Loading] => {
   const [createTag, createTagRes] = useGql(CREATE_TAG_INPUT);
   const creating = createTagRes.status === GqlStatus.Pending;
-  useGqlResHandler.onSuccess(createTagRes, ({ data }) => {
+  useGqlHandler.onSuccess(createTagRes, ({ data }) => {
     switch (data.createTag?.__typename) {
       case 'Tag':
         onSuccess(data.createTag);
@@ -111,7 +111,7 @@ export const useUpsertTag = (onSuccess: SuccessCallback, onErrors: ErrorsCallbac
 
   const [updateTag, updateTagRes] = useGql(UPDATE_TAG_GQL);
   const updating = updateTagRes.status === GqlStatus.Pending;
-  useGqlResHandler.onSuccess(updateTagRes, ({ data }) => {
+  useGqlHandler.onSuccess(updateTagRes, ({ data }) => {
     switch (data.updateTag?.__typename) {
       case 'Tag':
         onSuccess(data.updateTag);

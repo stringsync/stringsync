@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { $gql, DataOf, QueryNotationArgs, t, TagCategory } from '../lib/graphql';
 import { Nullable } from '../util/types';
 import { GqlStatus, useGql } from './useGql';
-import { useGqlResHandler } from './useGqlResHandler';
+import { useGqlHandler } from './useGqlHandler';
 
 export type Notation = DataOf<typeof NOTATION_GQL>;
 type Errors = string[];
@@ -35,17 +35,17 @@ export const useNotation = (id: string): [Nullable<Notation>, Errors, Loading] =
 
   const [execute, res] = useGql(NOTATION_GQL);
   const loading = res.status === GqlStatus.Init || res.status === GqlStatus.Pending;
-  useGqlResHandler.onPending(res, () => {
+  useGqlHandler.onPending(res, () => {
     setErrors([]);
   });
-  useGqlResHandler.onSuccess(res, ({ data }) => {
+  useGqlHandler.onSuccess(res, ({ data }) => {
     if (!data.notation) {
       setErrors([`could not find notation: '${id}'`]);
     } else {
       setNotation(data.notation);
     }
   });
-  useGqlResHandler.onErrors(res, ({ errors }) => {
+  useGqlHandler.onErrors(res, ({ errors }) => {
     setErrors(errors);
   });
 

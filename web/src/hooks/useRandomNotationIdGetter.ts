@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { UNKNOWN_ERROR_MSG } from '../lib/errors';
 import { $gql, QuerySuggestedNotationsArgs, t } from '../lib/graphql';
 import { GqlStatus, useGql } from './useGql';
-import { useGqlResHandler } from './useGqlResHandler';
+import { useGqlHandler } from './useGqlHandler';
 
 type SuccessCallback = (notationId: string) => void;
 type ErrorsCallback = (errors: string[]) => void;
@@ -21,7 +21,7 @@ export const useRandomNotationIdGetter = (
 ): [getRandomNotationId: GetRandomNotationId, loading: boolean] => {
   const [execute, res] = useGql(RANDOM_NOTATION_ID_GQL);
   const loading = res.status === GqlStatus.Pending;
-  useGqlResHandler.onSuccess(res, ({ data }) => {
+  useGqlHandler.onSuccess(res, ({ data }) => {
     const id = first(data.suggestedNotations.map((notation) => notation.id));
     if (id) {
       onSuccess(id);
@@ -29,7 +29,7 @@ export const useRandomNotationIdGetter = (
       onErrors([UNKNOWN_ERROR_MSG]);
     }
   });
-  useGqlResHandler.onErrors(res, ({ errors }) => {
+  useGqlHandler.onErrors(res, ({ errors }) => {
     onErrors(errors);
   });
 

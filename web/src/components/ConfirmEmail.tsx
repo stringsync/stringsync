@@ -7,7 +7,7 @@ import { Layout, withLayout } from '../hocs/withLayout';
 import { useConfirmEmail } from '../hooks/useConfirmEmail';
 import { useEffectOnce } from '../hooks/useEffectOnce';
 import { GqlStatus } from '../hooks/useGql';
-import { useGqlResHandler } from '../hooks/useGqlResHandler';
+import { useGqlHandler } from '../hooks/useGqlHandler';
 import { useQueryParams } from '../hooks/useQueryParams';
 import { useResendConfirmationToken } from '../hooks/useResendConfirmationToken';
 import { UNKNOWN_ERROR_MSG } from '../lib/errors';
@@ -34,10 +34,10 @@ export const ConfirmEmail: React.FC = enhance(() => {
   const queryParams = useQueryParams();
 
   const [confirmEmail, confirmEmailRes] = useConfirmEmail();
-  useGqlResHandler.onPending(confirmEmailRes, () => {
+  useGqlHandler.onPending(confirmEmailRes, () => {
     setErrors([]);
   });
-  useGqlResHandler.onSuccess(confirmEmailRes, ({ data }) => {
+  useGqlHandler.onSuccess(confirmEmailRes, ({ data }) => {
     switch (data.confirmEmail?.__typename) {
       case 'EmailConfirmation':
         notify.message.success({ content: `${email} confirmed` });
@@ -55,10 +55,10 @@ export const ConfirmEmail: React.FC = enhance(() => {
   });
 
   const [resendConfirmationToken, resendConfirmationTokenRes] = useResendConfirmationToken();
-  useGqlResHandler.onPending(resendConfirmationTokenRes, () => {
+  useGqlHandler.onPending(resendConfirmationTokenRes, () => {
     setErrors([]);
   });
-  useGqlResHandler.onSuccess(resendConfirmationTokenRes, ({ data }) => {
+  useGqlHandler.onSuccess(resendConfirmationTokenRes, ({ data }) => {
     switch (data.resendConfirmationEmail?.__typename) {
       case 'Processed':
         notify.message.success({ content: `sent confirmation token to ${email}` });

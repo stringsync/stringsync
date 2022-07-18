@@ -9,7 +9,7 @@ import * as uuid from 'uuid';
 import { Layout, withLayout } from '../hocs/withLayout';
 import { useCreateNotation } from '../hooks/useCreateNotation';
 import { GqlStatus } from '../hooks/useGql';
-import { useGqlResHandler } from '../hooks/useGqlResHandler';
+import { useGqlHandler } from '../hooks/useGqlHandler';
 import { useTags } from '../hooks/useTags';
 import { UNKNOWN_ERROR_MSG } from '../lib/errors';
 import { notify } from '../lib/notify';
@@ -68,7 +68,7 @@ const Upload: React.FC<Props> = enhance(() => {
 
   const [createNotation, createNotationRes] = useCreateNotation();
   const loading = createNotationRes.status === GqlStatus.Pending;
-  useGqlResHandler.onSuccess(createNotationRes, ({ data }) => {
+  useGqlHandler.onSuccess(createNotationRes, ({ data }) => {
     const showErrors = (errors: string[]) => {
       const id = uuid.v4();
       notify.modal.error({

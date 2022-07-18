@@ -4,7 +4,7 @@ import { $gql, t, UserCountOutput } from '../lib/graphql';
 import { notify } from '../lib/notify';
 import { useEffectOnce } from './useEffectOnce';
 import { useGql } from './useGql';
-import { useGqlResHandler } from './useGqlResHandler';
+import { useGqlHandler } from './useGqlHandler';
 
 const USER_COUNT_GQL = $gql
   .query('userCount')
@@ -30,7 +30,7 @@ export const useUserCount = (): number | null => {
   const [userCount, setUserCount] = useState<number | null>(null);
 
   const [execute, res] = useGql(USER_COUNT_GQL);
-  useGqlResHandler.onSuccess(res, ({ data }) => {
+  useGqlHandler.onSuccess(res, ({ data }) => {
     switch (data.userCount?.__typename) {
       case 'NumberValue':
         setUserCount(data.userCount.value);

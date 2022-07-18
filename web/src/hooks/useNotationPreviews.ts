@@ -4,7 +4,7 @@ import * as graphql from '../lib/graphql';
 import * as pager from '../lib/pager';
 import * as queries from '../lib/queries';
 import { GqlStatus, useGql } from './useGql';
-import { useGqlResHandler } from './useGqlResHandler';
+import { useGqlHandler } from './useGqlHandler';
 
 type Transcriber = Pick<User, 'id' | 'username' | 'role' | 'avatarUrl'>;
 
@@ -43,7 +43,7 @@ export const useNotationPreviews = (
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [exec, res, _, reset] = useGql(queries.NOTATION_PREVIEWS);
-  useGqlResHandler.onSuccess(res, ({ data }) => {
+  useGqlHandler.onSuccess(res, ({ data }) => {
     const connection = data.notations!;
     // the server sorts by ascending cursor, but we're pagingating backwards
     // this is correct according to spec:
