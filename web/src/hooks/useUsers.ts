@@ -50,19 +50,20 @@ export const useUsers = (): [
 
   const [execute, res] = useGql(USERS_GQL);
   const loading = res.status === GqlStatus.Pending;
-  useGqlHandler.onSuccess(res, ({ data }) => {
-    if (!data.users) {
-      setErrors(['missing user data']);
-      return;
-    }
-    const nextUsers = data.users.edges.map((edge) => edge.node);
-    setUsers((currentUsers) => [...currentUsers, ...nextUsers]);
-    setCursor(data.users.pageInfo.startCursor || null);
-    setHasNextPage(data.users.pageInfo.hasNextPage);
-  });
-  useGqlHandler.onErrors(res, ({ errors }) => {
-    setErrors(errors);
-  });
+  useGqlHandler
+    .onSuccess(res, ({ data }) => {
+      if (!data.users) {
+        setErrors(['missing user data']);
+        return;
+      }
+      const nextUsers = data.users.edges.map((edge) => edge.node);
+      setUsers((currentUsers) => [...currentUsers, ...nextUsers]);
+      setCursor(data.users.pageInfo.startCursor || null);
+      setHasNextPage(data.users.pageInfo.hasNextPage);
+    })
+    .onErrors(res, ({ errors }) => {
+      setErrors(errors);
+    });
 
   const loadUsers = useCallback(
     (limit: number) => {

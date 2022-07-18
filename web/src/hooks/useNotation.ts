@@ -35,19 +35,20 @@ export const useNotation = (id: string): [Nullable<Notation>, Errors, Loading] =
 
   const [execute, res] = useGql(NOTATION_GQL);
   const loading = res.status === GqlStatus.Init || res.status === GqlStatus.Pending;
-  useGqlHandler.onPending(res, () => {
-    setErrors([]);
-  });
-  useGqlHandler.onSuccess(res, ({ data }) => {
-    if (!data.notation) {
-      setErrors([`could not find notation: '${id}'`]);
-    } else {
-      setNotation(data.notation);
-    }
-  });
-  useGqlHandler.onErrors(res, ({ errors }) => {
-    setErrors(errors);
-  });
+  useGqlHandler
+    .onPending(res, () => {
+      setErrors([]);
+    })
+    .onSuccess(res, ({ data }) => {
+      if (!data.notation) {
+        setErrors([`could not find notation: '${id}'`]);
+      } else {
+        setNotation(data.notation);
+      }
+    })
+    .onErrors(res, ({ errors }) => {
+      setErrors(errors);
+    });
 
   useEffect(() => {
     execute({ id });

@@ -21,17 +21,18 @@ export const useRandomNotationIdGetter = (
 ): [getRandomNotationId: GetRandomNotationId, loading: boolean] => {
   const [execute, res] = useGql(RANDOM_NOTATION_ID_GQL);
   const loading = res.status === GqlStatus.Pending;
-  useGqlHandler.onSuccess(res, ({ data }) => {
-    const id = first(data.suggestedNotations.map((notation) => notation.id));
-    if (id) {
-      onSuccess(id);
-    } else {
-      onErrors([UNKNOWN_ERROR_MSG]);
-    }
-  });
-  useGqlHandler.onErrors(res, ({ errors }) => {
-    onErrors(errors);
-  });
+  useGqlHandler
+    .onSuccess(res, ({ data }) => {
+      const id = first(data.suggestedNotations.map((notation) => notation.id));
+      if (id) {
+        onSuccess(id);
+      } else {
+        onErrors([UNKNOWN_ERROR_MSG]);
+      }
+    })
+    .onErrors(res, ({ errors }) => {
+      onErrors(errors);
+    });
 
   const getRandomNotationId = useCallback(() => {
     execute({ limit: 1 });

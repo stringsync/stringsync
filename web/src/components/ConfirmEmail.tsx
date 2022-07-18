@@ -34,42 +34,44 @@ export const ConfirmEmail: React.FC = enhance(() => {
   const queryParams = useQueryParams();
 
   const [confirmEmail, confirmEmailRes] = useConfirmEmail();
-  useGqlHandler.onPending(confirmEmailRes, () => {
-    setErrors([]);
-  });
-  useGqlHandler.onSuccess(confirmEmailRes, ({ data }) => {
-    switch (data.confirmEmail?.__typename) {
-      case 'EmailConfirmation':
-        notify.message.success({ content: `${email} confirmed` });
-        navigate('/library');
-        break;
-      case 'BadRequestError':
-      case 'ForbiddenError':
-      case 'NotFoundError':
-      case 'UnknownError':
-        setErrors([data.confirmEmail.message]);
-        break;
-      default:
-        setErrors([UNKNOWN_ERROR_MSG]);
-    }
-  });
+  useGqlHandler
+    .onPending(confirmEmailRes, () => {
+      setErrors([]);
+    })
+    .onSuccess(confirmEmailRes, ({ data }) => {
+      switch (data.confirmEmail?.__typename) {
+        case 'EmailConfirmation':
+          notify.message.success({ content: `${email} confirmed` });
+          navigate('/library');
+          break;
+        case 'BadRequestError':
+        case 'ForbiddenError':
+        case 'NotFoundError':
+        case 'UnknownError':
+          setErrors([data.confirmEmail.message]);
+          break;
+        default:
+          setErrors([UNKNOWN_ERROR_MSG]);
+      }
+    });
 
   const [resendConfirmationToken, resendConfirmationTokenRes] = useResendConfirmationToken();
-  useGqlHandler.onPending(resendConfirmationTokenRes, () => {
-    setErrors([]);
-  });
-  useGqlHandler.onSuccess(resendConfirmationTokenRes, ({ data }) => {
-    switch (data.resendConfirmationEmail?.__typename) {
-      case 'Processed':
-        notify.message.success({ content: `sent confirmation token to ${email}` });
-        break;
-      case 'ForbiddenError':
-        setErrors([data.resendConfirmationEmail.message]);
-        break;
-      default:
-        setErrors([UNKNOWN_ERROR_MSG]);
-    }
-  });
+  useGqlHandler
+    .onPending(resendConfirmationTokenRes, () => {
+      setErrors([]);
+    })
+    .onSuccess(resendConfirmationTokenRes, ({ data }) => {
+      switch (data.resendConfirmationEmail?.__typename) {
+        case 'Processed':
+          notify.message.success({ content: `sent confirmation token to ${email}` });
+          break;
+        case 'ForbiddenError':
+          setErrors([data.resendConfirmationEmail.message]);
+          break;
+        default:
+          setErrors([UNKNOWN_ERROR_MSG]);
+      }
+    });
 
   const loading =
     confirmEmailRes.status === GqlStatus.Pending || resendConfirmationTokenRes.status === GqlStatus.Pending;

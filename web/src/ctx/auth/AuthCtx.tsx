@@ -89,52 +89,55 @@ export const AuthProvider: React.FC<PropsWithChildren<{}>> = (props) => {
     });
 
   const [login, loginRes] = useGql(queries.login);
-  useGqlHandler.onPending(loginRes, () => {
-    dispatch(AUTH_ACTIONS.pending());
-  });
-  useGqlHandler.onSuccess(loginRes, ({ data }) => {
-    switch (data.login?.__typename) {
-      case 'User':
-        dispatch(AUTH_ACTIONS.setUser({ user: data.login }));
-        notify.message.success({ content: `logged in as ${data.login.username}` });
-        break;
-      default:
-        dispatch(AUTH_ACTIONS.setErrors({ errors: [data.login?.message || UNKNOWN_ERROR_MSG] }));
-    }
-  });
+  useGqlHandler
+    .onPending(loginRes, () => {
+      dispatch(AUTH_ACTIONS.pending());
+    })
+    .onSuccess(loginRes, ({ data }) => {
+      switch (data.login?.__typename) {
+        case 'User':
+          dispatch(AUTH_ACTIONS.setUser({ user: data.login }));
+          notify.message.success({ content: `logged in as ${data.login.username}` });
+          break;
+        default:
+          dispatch(AUTH_ACTIONS.setErrors({ errors: [data.login?.message || UNKNOWN_ERROR_MSG] }));
+      }
+    });
 
   const [logout, logoutRes] = useGql(queries.logout);
-  useGqlHandler.onPending(logoutRes, () => {
-    dispatch(AUTH_ACTIONS.pending());
-  });
-  useGqlHandler.onSuccess(logoutRes, ({ data }) => {
-    switch (data.logout?.__typename) {
-      case 'Processed':
-        dispatch(AUTH_ACTIONS.setUser({ user: getNullAuthUser() }));
-        notify.message.success({ content: 'logged out' });
-        break;
-      default:
-        dispatch(AUTH_ACTIONS.setErrors({ errors: [data.logout?.message || UNKNOWN_ERROR_MSG] }));
-    }
-  });
+  useGqlHandler
+    .onPending(logoutRes, () => {
+      dispatch(AUTH_ACTIONS.pending());
+    })
+    .onSuccess(logoutRes, ({ data }) => {
+      switch (data.logout?.__typename) {
+        case 'Processed':
+          dispatch(AUTH_ACTIONS.setUser({ user: getNullAuthUser() }));
+          notify.message.success({ content: 'logged out' });
+          break;
+        default:
+          dispatch(AUTH_ACTIONS.setErrors({ errors: [data.logout?.message || UNKNOWN_ERROR_MSG] }));
+      }
+    });
 
   const [signup, signupRes] = useGql(queries.signup);
-  useGqlHandler.onPending(signupRes, () => {
-    dispatch(AUTH_ACTIONS.pending());
-  });
-  useGqlHandler.onSuccess(signupRes, ({ data }) => {
-    switch (data.signup?.__typename) {
-      case 'User':
-        dispatch(AUTH_ACTIONS.setUser({ user: data.signup }));
-        notify.message.success({ content: `logged in as ${data.signup.username}` });
-        break;
-      case 'ValidationError':
-        dispatch(AUTH_ACTIONS.setErrors({ errors: data.signup.details }));
-        break;
-      default:
-        dispatch(AUTH_ACTIONS.setErrors({ errors: [data.signup?.message || UNKNOWN_ERROR_MSG] }));
-    }
-  });
+  useGqlHandler
+    .onPending(signupRes, () => {
+      dispatch(AUTH_ACTIONS.pending());
+    })
+    .onSuccess(signupRes, ({ data }) => {
+      switch (data.signup?.__typename) {
+        case 'User':
+          dispatch(AUTH_ACTIONS.setUser({ user: data.signup }));
+          notify.message.success({ content: `logged in as ${data.signup.username}` });
+          break;
+        case 'ValidationError':
+          dispatch(AUTH_ACTIONS.setErrors({ errors: data.signup.details }));
+          break;
+        default:
+          dispatch(AUTH_ACTIONS.setErrors({ errors: [data.signup?.message || UNKNOWN_ERROR_MSG] }));
+      }
+    });
 
   const clearErrors = useCallback(() => {
     dispatch(AUTH_ACTIONS.clearErrors());

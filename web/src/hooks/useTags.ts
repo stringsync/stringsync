@@ -17,12 +17,13 @@ export const useTags = () => {
 
   const [execute, res] = useGql(TAGS_GQL);
   const loading = res.status === GqlStatus.Init || res.status === GqlStatus.Pending;
-  useGqlHandler.onSuccess(res, ({ data }) => {
-    setTags(data.tags);
-  });
-  useGqlHandler.onErrors(res, ({ errors }) => {
-    setErrors(errors);
-  });
+  useGqlHandler
+    .onSuccess(res, ({ data }) => {
+      setTags(data.tags);
+    })
+    .onErrors(res, ({ errors }) => {
+      setErrors(errors);
+    });
 
   useEffectOnce(() => {
     execute();

@@ -42,20 +42,21 @@ export const ResetPassword: React.FC = (props) => {
 
   const [resetPassword, resetPasswordRes] = useResetPassword();
   const loading = resetPasswordRes.status === GqlStatus.Pending;
-  useGqlHandler.onPending(resetPasswordRes, () => {
-    setErrors([]);
-  });
-  useGqlHandler.onSuccess(resetPasswordRes, ({ data }) => {
-    if (data.resetPassword) {
-      notify.message.success({ content: 'password successfully reset' });
-      navigate('/login');
-    } else {
-      setErrors([UNKNOWN_ERROR_MSG]);
-    }
-  });
-  useGqlHandler.onErrors(resetPasswordRes, ({ errors }) => {
-    setErrors(errors);
-  });
+  useGqlHandler
+    .onPending(resetPasswordRes, () => {
+      setErrors([]);
+    })
+    .onSuccess(resetPasswordRes, ({ data }) => {
+      if (data.resetPassword) {
+        notify.message.success({ content: 'password successfully reset' });
+        navigate('/login');
+      } else {
+        setErrors([UNKNOWN_ERROR_MSG]);
+      }
+    })
+    .onErrors(resetPasswordRes, ({ errors }) => {
+      setErrors(errors);
+    });
 
   const onErrorsClose = () => {
     setErrors([]);

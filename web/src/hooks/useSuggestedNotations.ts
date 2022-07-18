@@ -36,12 +36,13 @@ export const useSuggestedNotations = (srcNotationId: string, limit: number) => {
 
   const [execute, res] = useGql(SUGGESTED_NOTATIONS_GQL);
   const loading = res.status === GqlStatus.Init || res.status === GqlStatus.Pending;
-  useGqlHandler.onSuccess(res, ({ data }) => {
-    setSuggestedNotations(data.suggestedNotations);
-  });
-  useGqlHandler.onErrors(res, ({ errors }) => {
-    setErrors(errors);
-  });
+  useGqlHandler
+    .onSuccess(res, ({ data }) => {
+      setSuggestedNotations(data.suggestedNotations);
+    })
+    .onErrors(res, ({ errors }) => {
+      setErrors(errors);
+    });
 
   useEffect(() => {
     execute({ id: srcNotationId, limit });
