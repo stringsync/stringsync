@@ -5,6 +5,7 @@ import { isEqual, uniq, without } from 'lodash';
 import React, { ChangeEventHandler, MouseEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { REACT_SNAP_ACTIVE } from '../constants';
 import { useViewport } from '../ctx/viewport/useViewport';
 import { Layout, withLayout } from '../hocs/withLayout';
 import { useDebouncer } from '../hooks/useDebouncer';
@@ -106,7 +107,13 @@ export const Library: React.FC = enhance(() => {
   useEffect(debounce, [debounce, query, tagIds]);
 
   const onIntersectionEnter = useCallback(() => {
-    !debouncing && loadPage();
+    if (REACT_SNAP_ACTIVE) {
+      return;
+    }
+    if (debouncing) {
+      return;
+    }
+    loadPage();
   }, [debouncing, loadPage]);
 
   const isLoading = debouncing || status === GqlStatus.Init || status === GqlStatus.Pending;

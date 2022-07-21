@@ -16,7 +16,7 @@ export async function down(composeFile: string) {
 }
 
 export async function build(dockerfile: string, tag: string, buildArgs: Record<string, string> = {}) {
-  const buildArgsFlags = [];
+  const buildArgsFlags = new Array<string>();
   for (const [key, val] of Object.entries(buildArgs)) {
     buildArgsFlags.push('--build-arg');
     buildArgsFlags.push(`${key}=${val}`);
