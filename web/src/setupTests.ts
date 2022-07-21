@@ -28,6 +28,15 @@ beforeEach(() => {
       dispatchEvent: jest.fn(),
     })),
   });
+
+  Object.defineProperty(window, 'IntersectionObserver', {
+    writable: true,
+    value: jest.fn().mockReturnValue({
+      observe: () => null,
+      unobserve: () => null,
+      disconnect: () => null,
+    }),
+  });
 });
 
 afterEach(() => {
