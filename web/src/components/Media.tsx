@@ -9,7 +9,6 @@ const Outer = styled.div<{ $video: boolean }>`
 `;
 
 type Props = {
-  skeleton?: boolean;
   video: boolean;
   fluid?: boolean;
   src: string | null;

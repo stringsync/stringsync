@@ -20,7 +20,6 @@ const Muted = styled.h3`
 `;
 
 type Props = {
-  skeleton?: boolean;
   notation: Nullable<notations.RenderableNotation>;
 };
 

@@ -7,7 +7,7 @@ describe('NotationInfo', () => {
   it('renders without crashing', () => {
     const { container } = render(
       <Test>
-        <NotationInfo notation={null} skeleton />
+        <NotationInfo notation={null} />
       </Test>
     );
     expect(container).toBeInTheDocument();

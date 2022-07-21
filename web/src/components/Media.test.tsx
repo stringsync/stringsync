@@ -9,7 +9,7 @@ describe('Media', () => {
 
     const { container } = render(
       <Test>
-        <Media src={null} skeleton={false} video={false} onPlayerChange={onPlayerChange} />
+        <Media src={null} video={false} onPlayerChange={onPlayerChange} />
       </Test>
     );
     expect(container).toBeInTheDocument();

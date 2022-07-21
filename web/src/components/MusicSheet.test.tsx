@@ -8,7 +8,7 @@ describe('MusicSheet', () => {
   it('renders without crashing', () => {
     const { container } = render(
       <Test>
-        <MusicSheet displayMode={DisplayMode.NotesAndTabs} notation={null} skeleton={false} />
+        <MusicSheet displayMode={DisplayMode.NotesAndTabs} notation={null} />
       </Test>
     );
     expect(container).toBeInTheDocument();

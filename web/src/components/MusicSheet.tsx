@@ -43,7 +43,6 @@ const Loading = styled(Row)`
 `;
 
 type Props = {
-  skeleton?: boolean;
   notation: Nullable<notations.RenderableNotation>;
   displayMode: DisplayMode;
   onMusicDisplayChange?: (musicDisplay: MusicDisplay) => void;
