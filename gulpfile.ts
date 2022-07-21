@@ -224,16 +224,20 @@ async function buildapp() {
 }
 
 async function buildnginx() {
+  const ci = CI.getOrDefault(false);
+
   const dockerTag = 'stringsyncnginx:latest';
   const dockerfile = 'Dockerfile.nginx';
 
   await cmd('yarn', ['build'], {
     cwd: Project.WEB,
-    env: {
-      // Without this, building locally will fail.
-      // https://stackoverflow.com/questions/69394632/webpack-build-failing-with-err-ossl-evp-unsupported
-      NODE_OPTIONS: '--openssl-legacy-provider',
-    },
+    env: ci
+      ? undefined
+      : {
+          // Without this, building locally will fail.
+          // https://stackoverflow.com/questions/69394632/webpack-build-failing-with-err-ossl-evp-unsupported
+          NODE_OPTIONS: '--openssl-legacy-provider',
+        },
   });
   await docker.build(dockerfile, dockerTag);
 }
