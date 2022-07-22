@@ -2,7 +2,7 @@ export const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz012345
 
 export const ENCRYPTED_PASSWORD = '$2b$10$SuOsN1G4fCftbp3yejwS.u2EARRSU5cVOCpWOARVuGAbTat5YOhC6'; // password = 'password'
 
-export const VIDEO_URL = 'https://d3d8u7w6klnryh.cloudfront.net/5693f37c-6a7f-4c2a-a534-86e7151170ee/hls/8P7zz8s0.m3u8';
+export const VIDEO_URL = 'https://d3d8u7w6klnryh.cloudfront.net/85be9c57-528b-4519-aacb-b9421b010f8e/hls/5sd4gJXW.m3u8';
 
 export const USER_AVATAR_URLS = [
   'https://images.unsplash.com/photo-1543610892-0b1f7e6d8ac1',
@@ -34,13 +34,7 @@ export const NOTATION_THUMBNAIL_URLS = [
   'https://i.picsum.photos/id/477/640/640.jpg?hmac=PbmMRK_FS_zhXcEz2rgWGJ99V9kEGz6LUoIXhlAjV0Y',
 ];
 
-export const MUSIC_XML_URLS = [
-  'https://d11z5bu8xy08xt.cloudfront.net/notations/music_xml/aloof_nograce.xml',
-  'https://d11z5bu8xy08xt.cloudfront.net/notations/music_xml/aloof.xml',
-  'https://d11z5bu8xy08xt.cloudfront.net/notations/music_xml/anatole.xml',
-  'https://d11z5bu8xy08xt.cloudfront.net/notations/music_xml/united_moccasins.xml',
-  'https://d11z5bu8xy08xt.cloudfront.net/notations/music_xml/amazing_grace.xml',
-];
+export const MUSIC_XML_URLS = ['https://d11z5bu8xy08xt.cloudfront.net//notations/music_xml/5sd4gJXW.xml'];
 
 export const ADJECTIVES = [
   'swift',

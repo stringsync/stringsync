@@ -94,7 +94,7 @@ import {
   notations.push(
     ...MUSIC_XML_URLS.map((musicXmlUrl) => {
       const filename = last(musicXmlUrl.split('/'));
-      const notation = buildNotation({ musicXmlUrl, songName: filename });
+      const notation = buildNotation({ musicXmlUrl, songName: filename, deadTimeMs: -67 });
       const transcriber = sample(teachers)!;
       notation.transcriber.set(transcriber);
       return notation;
