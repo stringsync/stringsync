@@ -75,6 +75,13 @@ export const NotationPlayer: React.FC<Props> = (props) => {
       onMediaPlayerChange(mediaPlayer);
     }
   }, [onMediaPlayerChange, mediaPlayer]);
+  useEffect(() => {
+    // debugging handle
+    (window as any).mp = mediaPlayer;
+    return () => {
+      (window as any).mp = undefined;
+    };
+  }, [mediaPlayer]);
 
   // slide end handlers
   const onVerticalSlideEnd = useCallback(

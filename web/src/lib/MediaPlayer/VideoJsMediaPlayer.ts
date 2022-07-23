@@ -44,6 +44,9 @@ export class VideoJsMediaPlayer implements MediaPlayer {
     if (this.isSuspended) {
       return;
     }
+    if (!this.isReady) {
+      return;
+    }
     this.player.play();
   };
 
@@ -51,15 +54,24 @@ export class VideoJsMediaPlayer implements MediaPlayer {
     if (this.isSuspended) {
       return;
     }
+    if (!this.isReady) {
+      return;
+    }
     this.player.pause();
   };
 
   seek(time: Duration) {
+    if (!this.isReady) {
+      return;
+    }
     this.player.currentTime(time.sec);
     this.updateTime(time);
   }
 
   suspend() {
+    if (!this.isReady) {
+      return;
+    }
     if (this.isSuspended) {
       return;
     }
@@ -77,6 +89,9 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   }
 
   unsuspend() {
+    if (!this.isReady) {
+      return;
+    }
     if (!this.isSuspended) {
       return;
     }
@@ -88,6 +103,9 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   }
 
   getPlayState() {
+    if (!this.isReady) {
+      return PlayState.Paused;
+    }
     try {
       return this.player.paused() ? PlayState.Paused : PlayState.Playing;
     } catch (e) {
@@ -100,14 +118,23 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   }
 
   getVolume() {
+    if (!this.isReady) {
+      return 0;
+    }
     return this.player.volume();
   }
 
   setVolume(volume: number) {
+    if (!this.isReady) {
+      return;
+    }
     this.player.volume(volume);
   }
 
   isMuted() {
+    if (!this.isReady) {
+      return false;
+    }
     // The VideoJs player does not protect against player.el_ being null.
     try {
       return this.player.muted();
@@ -117,20 +144,32 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   }
 
   mute() {
+    if (!this.isReady) {
+      return;
+    }
     this.player.muted(true);
     this.eventBus.dispatch('mutechange', { muted: true });
   }
 
   unmute() {
+    if (!this.isReady) {
+      return;
+    }
     this.player.muted(false);
     this.eventBus.dispatch('mutechange', { muted: false });
   }
 
   getPlayback() {
+    if (!this.isReady) {
+      return 1;
+    }
     return this.player.playbackRate();
   }
 
   setPlayback(playback: number) {
+    if (!this.isReady) {
+      return;
+    }
     this.player.playbackRate(playback);
     this.eventBus.dispatch('playbackchange', { playback });
   }
