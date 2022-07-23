@@ -135,6 +135,7 @@ export class StringsyncStack extends Stack {
     });
     appContainerSecurityGroup.connections.allowFrom(appLoadBalancerSecurityGroup, aws_ec2.Port.allTcp());
     cache.securityGroup.connections.allowFrom(appContainerSecurityGroup, aws_ec2.Port.allTcp());
+    cache.securityGroup.connections.allowFrom(adminInstance.securityGroup, aws_ec2.Port.allTcp());
     db.securityGroup.connections.allowFrom(appContainerSecurityGroup, aws_ec2.Port.allTcp());
     db.securityGroup.connections.allowFrom(adminInstance.securityGroup, aws_ec2.Port.allTcp());
 
