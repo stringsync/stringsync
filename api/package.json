@@ -1,6 +1,6 @@
 {
   "name": "api",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "GraphQL server for @stringsync",
   "license": "MIT",
   "private": true,
