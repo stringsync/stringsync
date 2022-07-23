@@ -62,6 +62,13 @@ export const NotationPlayer: React.FC<Props> = (props) => {
 
   // controllers
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay>(() => new NoopMusicDisplay());
+  useEffect(() => {
+    // debugging handle
+    (window as any).md = musicDisplay;
+    return () => {
+      (window as any).md = undefined;
+    };
+  }, [musicDisplay]);
   const [mediaPlayer, setMediaPlayer] = useState<MediaPlayer>(() => new NoopMediaPlayer());
   useEffect(() => {
     if (onMediaPlayerChange) {

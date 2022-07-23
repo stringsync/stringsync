@@ -23,7 +23,7 @@
     "altair-express-middleware": "^3.2.1",
     "aws-sdk": "^2.844.0",
     "bcrypt": "^5.0.0",
-    "bullmq": "^1.39.0",
+    "bullmq": "1.86.7",
     "class-validator": "^0.13.1",
     "cls-hooked": "^4.2.2",
     "connect-redis": "^5.1.0",
