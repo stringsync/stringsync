@@ -36,7 +36,7 @@ import {
       {
         ...rand.notation({
           id: undefined,
-          username: `${sample(USERNAMES)}_${random(100, 999)}`,
+          username: `${sample(USERNAMES)}_${random(0, 99999)}`,
           email: `${rand.str(5)}@${rand.str(5)}.com`,
           encryptedPassword: ENCRYPTED_PASSWORD,
           avatarUrl: sample(USER_AVATAR_URLS),

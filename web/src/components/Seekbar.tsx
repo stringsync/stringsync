@@ -11,6 +11,10 @@ import { Duration } from '../util/Duration';
 import { NumberRange } from '../util/NumberRange';
 import { Nullable } from '../util/types';
 
+// TODO(jared): After rc-slider and/or antd updates, remove this. For some reason, this being set to true will cause
+// safari browsers to freeze.
+const TOOLTIP_VISIBLE = false;
+
 const SLIDER_HANDLE_STYLE = { width: 21, height: 21, marginTop: -8 };
 
 const SliderOuter = styled.div<{ $showDots: boolean }>`
@@ -87,6 +91,7 @@ export const Seekbar: React.FC<Props> = (props) => {
         marks={marks}
         handleStyle={SLIDER_HANDLE_STYLE}
         value={value}
+        tooltipVisible={TOOLTIP_VISIBLE}
         tipFormatter={tipFormatter}
         onChange={onChange}
         onAfterChange={onAfterChange}
