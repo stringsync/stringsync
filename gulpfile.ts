@@ -229,6 +229,10 @@ async function buildnginx() {
   const dockerTag = 'stringsyncnginx:latest';
   const dockerfile = 'Dockerfile.nginx';
 
+  await cmd('rm', ['-rf', 'build'], {
+    cwd: Project.WEB,
+  });
+
   await cmd('yarn', ['build'], {
     cwd: Project.WEB,
     env: ci
