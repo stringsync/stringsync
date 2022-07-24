@@ -51,7 +51,9 @@ export const useNotation = (id: string): [Nullable<Notation>, Errors, Loading] =
     });
 
   useEffect(() => {
-    execute({ id });
+    if (id) {
+      execute({ id });
+    }
   }, [execute, id]);
 
   return [notation, errors, loading];
