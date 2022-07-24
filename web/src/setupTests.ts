@@ -12,7 +12,7 @@ expect.extend({
   toHavePositionStyle,
 });
 
-global.ResizeObserver = require('resize-observer-polyfill');
+(global as any).ResizeObserver = require('resize-observer-polyfill');
 
 beforeEach(() => {
   Object.defineProperty(window, 'matchMedia', {
