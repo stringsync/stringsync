@@ -199,7 +199,11 @@ describe('NotationResolver', () => {
         expect(res.data.createNotation).toBeDefined();
         expect(res.data.createNotation).not.toBeNull();
 
-        const id = res.data.createNotation!.id;
+        let id = '';
+        expect(res.data.createNotation.__typename).toBe('Notation');
+        if (res.data.createNotation.__typename === 'Notation') {
+          id = res.data.createNotation.id;
+        }
 
         const notation = await notationRepo.find(id);
         expect(notation).not.toBeNull();
