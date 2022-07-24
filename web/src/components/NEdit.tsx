@@ -6,6 +6,7 @@ import { get } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import { useAuth } from '../ctx/auth';
 import { Layout, withLayout } from '../hocs/withLayout';
 import { useMute } from '../hooks/useMute';
 import { useNoOverflow } from '../hooks/useNoOverflow';
@@ -15,6 +16,7 @@ import { useNoTouchAction } from '../hooks/useNoTouchAction';
 import { useNoTouchCallout } from '../hooks/useNoTouchCallout';
 import { useNoUserSelect } from '../hooks/useNoUserSelect';
 import { useTimeAgo } from '../hooks/useTimeAgo';
+import { UserRole } from '../lib/graphql';
 import { MediaPlayer, NoopMediaPlayer } from '../lib/MediaPlayer';
 import { compose } from '../util/compose';
 import { Errors } from './Errors';
@@ -55,12 +57,18 @@ const Italic = styled.div`
   font-size: 0.75em;
 `;
 
+const SpacedButton = styled(Button)`
+  margin-top: 8px;
+  margin-bottom: 8px;
+`;
+
 const Sidecar: React.FC<{
   editor: NotationEditor;
   dirty: boolean;
   notationId: string;
   form: FormInstance;
   initialValues: any;
+  exportable: boolean;
   resetForm: () => void;
   onSaveClick: () => void;
   onValuesChange: (changedValues: any, values: any) => void;
@@ -73,6 +81,14 @@ const Sidecar: React.FC<{
       <NotationInfo notation={props.editor.notation} />
 
       <br />
+
+      {props.exportable && (
+        <Link to={`/n/${props.notationId}/export`}>
+          <SpacedButton block type="default" size="large">
+            export
+          </SpacedButton>
+        </Link>
+      )}
 
       <Alert
         type={props.dirty ? 'warning' : 'success'}
@@ -159,6 +175,11 @@ export const NEdit: React.FC = enhance(() => {
 
   // settings
   const [notationSettings, setNotationSettings] = useNotationSettings();
+
+  // auth
+  const [auth] = useAuth();
+  const isAdmin = auth.user.role === UserRole.ADMIN;
+  const exportable = isAdmin;
 
   // automatically fetch whenever the notationId changes
   useEffect(() => {
@@ -279,6 +300,7 @@ export const NEdit: React.FC = enhance(() => {
             dirty={dirty}
             editor={editor}
             form={form}
+            exportable={exportable}
             initialValues={initialValues}
             notationId={notationId}
             onSaveClick={onSaveClick}
@@ -300,6 +322,7 @@ export const NEdit: React.FC = enhance(() => {
               dirty={dirty}
               editor={editor}
               form={form}
+              exportable={exportable}
               initialValues={initialValues}
               notationId={notationId}
               onSaveClick={onSaveClick}

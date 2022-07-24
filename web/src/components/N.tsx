@@ -72,6 +72,10 @@ const Flex1InvisibleScrollbar = styled(Flex1)`
   }
 `;
 
+const SpacedButton = styled(Button)`
+  margin-top: 8px;
+`;
+
 const MobileLandscapeWarning: React.FC = () => {
   return (
     <Overlay>
@@ -82,10 +86,13 @@ const MobileLandscapeWarning: React.FC = () => {
   );
 };
 
-const Sidecar: React.FC<{ notation: notations.RenderableNotation; editable: boolean; notationId: string }> = (
-  props
-) => {
-  const { notation, editable, notationId } = props;
+const Sidecar: React.FC<{
+  notation: notations.RenderableNotation;
+  notationId: string;
+  editable: boolean;
+  exportable: boolean;
+}> = (props) => {
+  const { notation, notationId, editable, exportable } = props;
 
   return (
     <Flex1InvisibleScrollbar>
@@ -95,11 +102,20 @@ const Sidecar: React.FC<{ notation: notations.RenderableNotation; editable: bool
       <div>
         {editable && (
           <Link to={`/n/${notationId}/edit`}>
-            <Button block type="default" size="large">
+            <SpacedButton block type="default" size="large">
               edit
-            </Button>
+            </SpacedButton>
           </Link>
         )}
+
+        {exportable && (
+          <Link to={`/n/${notationId}/export`}>
+            <SpacedButton block type="default" size="large">
+              export
+            </SpacedButton>
+          </Link>
+        )}
+
         <SuggestedNotations srcNotationId={notationId} />
       </div>
     </Flex1InvisibleScrollbar>
@@ -119,6 +135,7 @@ export const N: React.FC = enhance(() => {
   const [authState] = useAuth();
   const isAdmin = authState.user.role === UserRole.ADMIN;
   const isTranscriber = authState.user.id === notation?.transcriber.id;
+  const exportable = isAdmin;
   const editable = isTranscriber || isAdmin;
 
   // dimensions
@@ -187,7 +204,7 @@ export const N: React.FC = enhance(() => {
           onClose={onSidecarDrawerClose}
           getContainer={false}
         >
-          <Sidecar notation={notation} notationId={notationId} editable={editable} />
+          <Sidecar notation={notation} notationId={notationId} editable={editable} exportable={exportable} />
         </Drawer>
       )}
 
@@ -196,7 +213,7 @@ export const N: React.FC = enhance(() => {
           notation={notation}
           notationSettings={notationSettings}
           setNotationSettings={setNotationSettings}
-          sidecar={<Sidecar notation={notation} notationId={notationId} editable={editable} />}
+          sidecar={<Sidecar notation={notation} notationId={notationId} editable={editable} exportable={exportable} />}
           onLayoutTypeChange={setLayoutType}
           onMediaPlayerChange={setMediaPlayer}
         />
