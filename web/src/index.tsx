@@ -7,10 +7,19 @@ import * as serviceWorker from './serviceWorkerRegistration';
 
 const rootElement = document.getElementById('root');
 if (rootElement?.hasChildNodes()) {
-  hydrateRoot(rootElement, <App />);
+  hydrateRoot(
+    rootElement,
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
 } else {
   const root = createRoot(rootElement!);
-  root.render(<App />);
+  root.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
 }
 
 const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
