@@ -1,10 +1,11 @@
-import { Button, Divider, Form, InputNumber, Row } from 'antd';
+import { Button, Col, Divider, Form, InputNumber, Row } from 'antd';
 import CheckableTag from 'antd/lib/tag/CheckableTag';
 import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { Layout, withLayout } from '../hocs/withLayout';
 import { useNotation } from '../hooks/useNotation';
+import { useNotationExporter } from '../hooks/useNotationExporter';
 import { compose } from '../util/compose';
 import { Box } from './Box';
 import { Errors } from './Errors';
@@ -45,6 +46,13 @@ export const NExport: React.FC = enhance(() => {
   const [width, setWidth] = useState<number>(PRESETS[0].width);
   const [height, setHeight] = useState<number>(PRESETS[0].height);
 
+  // exporter
+  const [exportNotation, popup] = useNotationExporter();
+  const exporting = !!popup;
+  const onExportClick = () => {
+    exportNotation(notationId, width, height);
+  };
+
   // render branches
   const renderNotationErrors = errors.length > 0;
   const renderForm = !loading && !!notation;
@@ -83,7 +91,7 @@ export const NExport: React.FC = enhance(() => {
                 <Divider />
 
                 <Row justify="center">
-                  <Form layout="inline">
+                  <Form layout="inline" disabled={exporting}>
                     <Form.Item label="width">
                       <InputNumber min={200} max={2560} value={width} onChange={setWidth} />
                     </Form.Item>
@@ -96,11 +104,29 @@ export const NExport: React.FC = enhance(() => {
 
                 <br />
 
-                <Row justify="center">
-                  <Button block type="primary" htmlType="submit">
-                    export
-                  </Button>
-                </Row>
+                <Form.Item>
+                  {exporting && (
+                    <Row justify="center" gutter={16}>
+                      <Col span={12}>
+                        <Button block type="default" onClick={() => popup.focus()}>
+                          focus
+                        </Button>
+                      </Col>
+
+                      <Col span={12}>
+                        <Button block type="primary" onClick={() => popup.close()}>
+                          close
+                        </Button>
+                      </Col>
+                    </Row>
+                  )}
+
+                  {!exporting && (
+                    <Button block type="primary" htmlType="submit" onClick={onExportClick}>
+                      export
+                    </Button>
+                  )}
+                </Form.Item>
               </FormOuter>
             )}
 
