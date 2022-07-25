@@ -32,6 +32,9 @@ const NEdit = compose(withAuthRequirement(AuthRequirement.LOGGED_IN_AS_TEACHER))
 const NExport = compose(withAuthRequirement(AuthRequirement.LOGGED_IN_AS_ADMIN))(
   React.lazy(() => import('./components/NExport'))
 );
+const NRecord = compose(withAuthRequirement(AuthRequirement.LOGGED_IN_AS_ADMIN))(
+  React.lazy(() => import('./components/NRecord'))
+);
 const Signup = compose(withAuthRequirement(AuthRequirement.LOGGED_OUT))(
   React.lazy(() => import('./components/Signup'))
 );
@@ -75,6 +78,7 @@ export const App: React.FC = () => {
                         <Route path="/n/:id" element={<N />} />
                         <Route path="/n/:id/edit" element={<NEdit />} />
                         <Route path="/n/:id/export" element={<NExport />} />
+                        <Route path="/n/:id/record" element={<NRecord />} />
                         <Route path="/users" element={<UserIndex />} />
                         <Route path="/tags" element={<TagIndex />} />
                         <Route path="/signup" element={<Signup />} />
