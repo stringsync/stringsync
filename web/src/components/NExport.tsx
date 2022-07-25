@@ -49,8 +49,20 @@ export const NExport: React.FC = enhance(() => {
   // exporter
   const [exportNotation, popup] = useNotationExporter();
   const exporting = !!popup;
+
+  // events
   const onExportClick = () => {
     exportNotation(notationId, width, height);
+  };
+  const onFocusClick = () => {
+    if (popup) {
+      popup.focus();
+    }
+  };
+  const onCloseClick = () => {
+    if (popup) {
+      popup.close();
+    }
   };
 
   // render branches
@@ -104,29 +116,33 @@ export const NExport: React.FC = enhance(() => {
 
                 <br />
 
-                <Form.Item>
-                  {exporting && (
-                    <Row justify="center" gutter={16}>
-                      <Col span={12}>
-                        <Button block type="default" onClick={() => popup.focus()}>
-                          focus
-                        </Button>
-                      </Col>
+                <Button
+                  block
+                  type="primary"
+                  htmlType="submit"
+                  onClick={onExportClick}
+                  disabled={exporting}
+                  loading={exporting}
+                >
+                  export
+                </Button>
 
-                      <Col span={12}>
-                        <Button block type="primary" onClick={() => popup.close()}>
-                          close
-                        </Button>
-                      </Col>
-                    </Row>
-                  )}
+                <br />
+                <br />
 
-                  {!exporting && (
-                    <Button block type="primary" htmlType="submit" onClick={onExportClick}>
-                      export
+                <Row justify="center" gutter={16}>
+                  <Col span={12}>
+                    <Button block type="default" onClick={onFocusClick} disabled={!exporting}>
+                      focus
                     </Button>
-                  )}
-                </Form.Item>
+                  </Col>
+
+                  <Col span={12}>
+                    <Button block type="primary" onClick={onCloseClick} disabled={!exporting}>
+                      close
+                    </Button>
+                  </Col>
+                </Row>
               </FormOuter>
             )}
 
