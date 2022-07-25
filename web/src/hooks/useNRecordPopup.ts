@@ -11,11 +11,15 @@ const features = (obj: Record<string, any>): string => {
     .join(',');
 };
 
-export const useNExportPopup = (): [openPopup: OpenPopup, popup: Window | null] => {
+export const useNRecordPopup = (): [openPopup: OpenPopup, popup: Window | null] => {
   const [popup, setPopup] = useState<Window | null>(null);
 
   const openPopup = useCallback<OpenPopup>((notationId: string, width: number, height: number) => {
-    const popup = window.open(`/n/${notationId}`, STRINGSYNC_POPUP_TARGET, features({ popup: true, width, height }));
+    const popup = window.open(
+      `/n/${notationId}/record`,
+      STRINGSYNC_POPUP_TARGET,
+      features({ popup: true, width, height })
+    );
     setPopup(popup);
     popup?.focus();
   }, []);
