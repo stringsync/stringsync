@@ -3,7 +3,7 @@ import { Duration } from '../util/Duration';
 
 const STRINGSYNC_POPUP_TARGET = 'stringsync_popup';
 
-type ExportNotation = (notationId: string, width: number, height: number) => void;
+type OpenPopup = (notationId: string, width: number, height: number) => void;
 
 const features = (obj: Record<string, any>): string => {
   return Object.entries(obj)
@@ -11,10 +11,10 @@ const features = (obj: Record<string, any>): string => {
     .join(',');
 };
 
-export const useNotationExporter = (): [exportNotation: ExportNotation, popup: Window | null] => {
+export const useNExportPopup = (): [openPopup: OpenPopup, popup: Window | null] => {
   const [popup, setPopup] = useState<Window | null>(null);
 
-  const exportNotation = useCallback<ExportNotation>((notationId: string, width: number, height: number) => {
+  const openPopup = useCallback<OpenPopup>((notationId: string, width: number, height: number) => {
     const popup = window.open(`/n/${notationId}`, STRINGSYNC_POPUP_TARGET, features({ popup: true, width, height }));
     setPopup(popup);
     popup?.focus();
@@ -43,5 +43,5 @@ export const useNotationExporter = (): [exportNotation: ExportNotation, popup: W
     };
   }, [popup]);
 
-  return [exportNotation, popup];
+  return [openPopup, popup];
 };

@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { Layout, withLayout } from '../hocs/withLayout';
+import { useNExportPopup } from '../hooks/useNExportPopup';
 import { useNotation } from '../hooks/useNotation';
-import { useNotationExporter } from '../hooks/useNotationExporter';
 import { compose } from '../util/compose';
 import { Box } from './Box';
 import { Errors } from './Errors';
@@ -47,12 +47,12 @@ export const NExport: React.FC = enhance(() => {
   const [height, setHeight] = useState<number>(PRESETS[0].height);
 
   // exporter
-  const [exportNotation, popup] = useNotationExporter();
+  const [openPopup, popup] = useNExportPopup();
   const exporting = !!popup;
 
   // events
   const onExportClick = () => {
-    exportNotation(notationId, width, height);
+    openPopup(notationId, width, height);
   };
   const onFocusClick = () => {
     if (popup) {
