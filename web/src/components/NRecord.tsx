@@ -50,7 +50,7 @@ export const NRecord: React.FC = enhance(() => {
           <Errors errors={errors} />
 
           <Row justify="center">
-            <CallToActionLink to={'/library'}>library</CallToActionLink>
+            <CallToActionLink to="/library">library</CallToActionLink>
           </Row>
         </ErrorsOuter>
       )}
