@@ -1,14 +1,23 @@
 import { Row } from 'antd';
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { Layout, withLayout } from '../hocs/withLayout';
+import { useMusicDisplayCursorTimeSync } from '../hooks/useMusicDisplayCursorTimeSync';
+import { useMusicDisplayScrolling } from '../hooks/useMusicDisplayScrolling';
 import { useNotation } from '../hooks/useNotation';
+import { MediaPlayer, NoopMediaPlayer } from '../lib/MediaPlayer';
+import { MusicDisplay } from '../lib/MusicDisplay';
+import { NoopMusicDisplay } from '../lib/MusicDisplay/NoopMusicDisplay';
+import { DisplayMode } from '../lib/musicxml';
+import { FretMarkerDisplay } from '../lib/notations';
 import { Errors } from './Errors';
+import { Fretboard } from './Fretboard';
+import { FullHeightDiv } from './FullHeightDiv';
+import { Media } from './Media';
+import { MusicSheet } from './MusicSheet';
 
 const POPUP_ERRORS = ['must open through exporter'];
-
-const Outer = styled.div``;
 
 const ErrorsOuter = styled.div`
   margin-top: 24px;
@@ -18,7 +27,27 @@ const CallToActionLink = styled(Link)`
   margin-top: 24px;
 `;
 
-const Recorder = styled.div``;
+const FlexColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`;
+
+const Flex1 = styled.div`
+  overflow: hidden;
+  flex: 1;
+  height: 100%;
+`;
+
+const Sink: React.FC<{ musicDisplay: MusicDisplay; mediaPlayer: MediaPlayer }> = (props) => {
+  const musicDisplay = props.musicDisplay;
+  const mediaPlayer = props.mediaPlayer;
+
+  useMusicDisplayScrolling(true, musicDisplay, mediaPlayer);
+  useMusicDisplayCursorTimeSync(musicDisplay, mediaPlayer);
+
+  return null;
+};
 
 const enhance = withLayout(Layout.NONE, { footer: false, lanes: false });
 
@@ -28,13 +57,17 @@ export const NRecord: React.FC = enhance(() => {
   const notationId = params.id || '';
   const [notation, errors, loading] = useNotation(notationId);
 
+  // fretboard
+  const [mediaPlayer, setMediaPlayer] = useState<MediaPlayer>(() => new NoopMediaPlayer());
+  const [musicDisplay, setMusicDisplay] = useState<MusicDisplay>(() => new NoopMusicDisplay());
+
   // render branches
   const renderPopupError = !window.opener;
   const renderNotationErrors = !renderPopupError && !loading && errors.length > 0;
   const renderRecorder = !renderPopupError && !renderNotationErrors && !!notation;
 
   return (
-    <Outer data-testid="n-record">
+    <FullHeightDiv data-testid="n-record">
       {renderPopupError && (
         <ErrorsOuter>
           <Errors errors={POPUP_ERRORS} />
@@ -55,8 +88,28 @@ export const NRecord: React.FC = enhance(() => {
         </ErrorsOuter>
       )}
 
-      {renderRecorder && <Recorder>recorder</Recorder>}
-    </Outer>
+      {renderRecorder && (
+        <>
+          <Sink musicDisplay={musicDisplay} mediaPlayer={mediaPlayer} />
+
+          <FlexColumn>
+            <Media video src={notation.videoUrl} onPlayerChange={setMediaPlayer} />
+            <Flex1>
+              <MusicSheet
+                notation={notation}
+                displayMode={DisplayMode.TabsOnly}
+                onMusicDisplayChange={setMusicDisplay}
+              />
+            </Flex1>
+            <Fretboard
+              mediaPlayer={mediaPlayer}
+              musicDisplay={musicDisplay}
+              fretMarkerDisplay={FretMarkerDisplay.Degree}
+            />
+          </FlexColumn>
+        </>
+      )}
+    </FullHeightDiv>
   );
 });
 

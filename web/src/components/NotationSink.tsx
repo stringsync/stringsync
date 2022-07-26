@@ -35,7 +35,7 @@ export const NotationSink: React.FC<Props> = (props) => {
 
   useMusicDisplayPointerInteractions(musicDisplay, mediaPlayer);
   useMusicDisplayRipples(musicDisplay);
-  useMusicDisplayScrolling(notationSettings, musicDisplay, mediaPlayer);
+  useMusicDisplayScrolling(notationSettings.isAutoscrollPreferred, musicDisplay, mediaPlayer);
   useMusicDisplayLoopBehavior(notationSettings, setNotationSettings, musicDisplay, mediaPlayer);
   useMusicDisplayCursorInteractions(musicDisplay, mediaPlayer);
   useMusicDisplayCursorTimeSync(musicDisplay, mediaPlayer);

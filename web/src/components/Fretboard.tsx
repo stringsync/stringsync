@@ -10,6 +10,7 @@ import * as fretboard from '../lib/fretboard';
 import { MediaPlayer } from '../lib/MediaPlayer';
 import { MusicDisplay } from '../lib/MusicDisplay';
 import * as notations from '../lib/notations';
+import { FretMarkerDisplay, ScaleSelectionType } from '../lib/notations';
 import { FretboardJs, FretboardJsProps } from './FretboardJs';
 
 const Outer = styled.div`
@@ -22,17 +23,21 @@ const Outer = styled.div`
 `;
 
 type Props = FretboardJsProps & {
-  settings: notations.Settings;
   musicDisplay: MusicDisplay;
   mediaPlayer: MediaPlayer;
+  fretMarkerDisplay?: FretMarkerDisplay;
+  selectedScale?: string | null;
+  scaleSelectionType?: ScaleSelectionType;
 };
 
 export const Fretboard: React.FC<Props> = (props) => {
   // props
-  const settings = props.settings;
   const musicDisplay = props.musicDisplay;
   const mediaPlayer = props.mediaPlayer;
   const onResize = props.onResize;
+  const fretMarkerDisplay = props.fretMarkerDisplay ?? FretMarkerDisplay.None;
+  const selectedScale = props.selectedScale ?? null;
+  const scaleSelectionType = props.scaleSelectionType ?? ScaleSelectionType.None;
 
   // num frets
   const [fretCount, setFretCount] = useState(() => notations.getFretCount(0));
@@ -44,7 +49,7 @@ export const Fretboard: React.FC<Props> = (props) => {
 
   // fretboard positions
   const fretboardOpts = useMemo<fretboard.FretboardJsOptions>(() => {
-    switch (settings.fretMarkerDisplay) {
+    switch (fretMarkerDisplay) {
       case notations.FretMarkerDisplay.None:
         return { fretCount, dotFill: 'white' };
       case notations.FretMarkerDisplay.Degree:
@@ -54,17 +59,17 @@ export const Fretboard: React.FC<Props> = (props) => {
       default:
         return { fretCount, dotFill: 'white' };
     }
-  }, [settings.fretMarkerDisplay, fretCount]);
+  }, [fretMarkerDisplay, fretCount]);
 
   const cursorSnapshot = useMusicDisplayCursorSnapshot(musicDisplay);
-  const tonic = useTonic(settings.selectedScale, musicDisplay);
+  const tonic = useTonic(selectedScale, musicDisplay);
   const pressedPositions = usePressedPositions(cursorSnapshot, mediaPlayer);
   const measurePositions = useMeasurePositions(cursorSnapshot);
   const measureSlideTransitions = useMeasureSlideTransitions(cursorSnapshot);
   const pressedStyle = useMemo<Partial<fretboard.PositionStyle>>(() => ({ fill: '#f17e84', stroke: '#f17e84' }), []);
 
   // dynamic scale management
-  useEffect(() => {}, [settings.scaleSelectionType]);
+  useEffect(() => {}, [scaleSelectionType]);
 
   return (
     <Outer data-testid="fretboard" ref={outerRef}>
@@ -85,8 +90,8 @@ export const Fretboard: React.FC<Props> = (props) => {
         {pressedPositions.map(({ string, fret }) => (
           <FretboardJs.Position key={`pressed-${string}-${fret}`} string={string} fret={fret} style={pressedStyle} />
         ))}
-        {settings.scaleSelectionType !== notations.ScaleSelectionType.None && settings.selectedScale && (
-          <FretboardJs.Scale name={settings.selectedScale} style={{ stroke: '#111' }} />
+        {scaleSelectionType !== notations.ScaleSelectionType.None && selectedScale && (
+          <FretboardJs.Scale name={selectedScale} style={{ stroke: '#111' }} />
         )}
         {measureSlideTransitions.map(({ from, to }) => (
           <FretboardJs.Slide

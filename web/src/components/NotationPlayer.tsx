@@ -62,26 +62,12 @@ export const NotationPlayer: React.FC<Props> = (props) => {
 
   // controllers
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay>(() => new NoopMusicDisplay());
-  useEffect(() => {
-    // debugging handle
-    (window as any).md = musicDisplay;
-    return () => {
-      (window as any).md = undefined;
-    };
-  }, [musicDisplay]);
   const [mediaPlayer, setMediaPlayer] = useState<MediaPlayer>(() => new NoopMediaPlayer());
   useEffect(() => {
     if (onMediaPlayerChange) {
       onMediaPlayerChange(mediaPlayer);
     }
   }, [onMediaPlayerChange, mediaPlayer]);
-  useEffect(() => {
-    // debugging handle
-    (window as any).mp = mediaPlayer;
-    return () => {
-      (window as any).mp = undefined;
-    };
-  }, [mediaPlayer]);
 
   // slide end handlers
   const onVerticalSlideEnd = useCallback(
@@ -166,10 +152,12 @@ export const NotationPlayer: React.FC<Props> = (props) => {
               <>
                 {notationSettings.isFretboardVisible && (
                   <Fretboard
-                    settings={notationSettings}
                     musicDisplay={musicDisplay}
                     mediaPlayer={mediaPlayer}
                     onResize={setFretboardDimensions}
+                    fretMarkerDisplay={notationSettings.fretMarkerDisplay}
+                    scaleSelectionType={notationSettings.scaleSelectionType}
+                    selectedScale={notationSettings.selectedScale}
                   />
                 )}
                 <ControlsOuter>

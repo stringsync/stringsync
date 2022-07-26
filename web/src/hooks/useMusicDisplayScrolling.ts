@@ -4,7 +4,6 @@ import { MediaPlayer, PlayState } from '../lib/MediaPlayer';
 import { MusicDisplay } from '../lib/MusicDisplay';
 import { isTemporal } from '../lib/MusicDisplay/pointer';
 import { ScrollBehaviorType } from '../lib/MusicDisplay/scroller';
-import * as notations from '../lib/notations';
 import { notify } from '../lib/notify';
 
 const SCROLL_DIVERGENCE_KEY = 'SCROLL_DIVERGENCE_KEY';
@@ -19,13 +18,12 @@ const startPreferredScrolling = (musicDisplay: MusicDisplay, isAutoscrollPreferr
 };
 
 export const useMusicDisplayScrolling = (
-  settings: notations.Settings,
+  isAutoscrollPreferred: boolean,
   musicDisplay: MusicDisplay,
   mediaPlayer: MediaPlayer
 ) => {
   const isMusicDisplayResizingRef = useRef(false);
   const isMusicDisplayLoadingRef = useRef(false);
-  const isAutoscrollPreferred = settings.isAutoscrollPreferred;
 
   useEffect(() => {
     startPreferredScrolling(musicDisplay, isAutoscrollPreferred);

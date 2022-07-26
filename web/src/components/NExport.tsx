@@ -28,8 +28,8 @@ const FormOuter = styled.div`
 `;
 
 const PRESETS = [
-  { name: 'instagram', width: 1080, height: 1920 },
-  { name: 'tiktok', width: 1080, height: 1920 },
+  { name: 'instagram', width: 540, height: 960 },
+  { name: 'tiktok', width: 540, height: 960 },
   { name: 'facebook', width: 1280, height: 720 },
   { name: 'youtube', width: 1920, height: 1080 },
 ] as const;
