@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { Layout, withLayout } from '../hocs/withLayout';
+import { useConstantWindowSize } from '../hooks/useConstantWindowSize';
 import { useMusicDisplayCursorTimeSync } from '../hooks/useMusicDisplayCursorTimeSync';
 import { useMusicDisplayScrolling } from '../hooks/useMusicDisplayScrolling';
 import { useNotation } from '../hooks/useNotation';
+import { useQueryParams } from '../hooks/useQueryParams';
 import { MediaPlayer, NoopMediaPlayer } from '../lib/MediaPlayer';
 import { MusicDisplay } from '../lib/MusicDisplay';
 import { NoopMusicDisplay } from '../lib/MusicDisplay/NoopMusicDisplay';
@@ -18,6 +20,7 @@ import { Media } from './Media';
 import { MusicSheet } from './MusicSheet';
 
 const POPUP_ERRORS = ['must open through exporter'];
+const PARAMS_ERRORS = ['missing width and/or height query params'];
 
 const ErrorsOuter = styled.div`
   margin-top: 24px;
@@ -54,8 +57,14 @@ const enhance = withLayout(Layout.NONE, { footer: false, lanes: false });
 export const NRecord: React.FC = enhance(() => {
   // params
   const params = useParams();
+  const queryParams = useQueryParams();
   const notationId = params.id || '';
+  const width = parseInt(queryParams.get('width') ?? '0', 10);
+  const height = parseInt(queryParams.get('height') ?? '0', 10);
   const [notation, errors, loading] = useNotation(notationId);
+
+  // window
+  useConstantWindowSize(width, height);
 
   // fretboard
   const [mediaPlayer, setMediaPlayer] = useState<MediaPlayer>(() => new NoopMediaPlayer());
@@ -63,11 +72,22 @@ export const NRecord: React.FC = enhance(() => {
 
   // render branches
   const renderPopupError = !window.opener;
-  const renderNotationErrors = !renderPopupError && !loading && errors.length > 0;
-  const renderRecorder = !renderPopupError && !renderNotationErrors && !!notation;
+  const renderParamsError = !width || !height;
+  const renderNotationErrors = !renderPopupError && !renderParamsError && !loading && errors.length > 0;
+  const renderRecorder = !renderPopupError && !renderParamsError && !renderNotationErrors && !!notation;
 
   return (
     <FullHeightDiv data-testid="n-record">
+      {renderParamsError && (
+        <ErrorsOuter>
+          <Errors errors={PARAMS_ERRORS} />
+
+          <Row justify="center">
+            <CallToActionLink to="/library">library</CallToActionLink>
+          </Row>
+        </ErrorsOuter>
+      )}
+
       {renderPopupError && (
         <ErrorsOuter>
           <Errors errors={POPUP_ERRORS} />

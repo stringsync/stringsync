@@ -16,7 +16,7 @@ export const useNRecordPopup = (): [openPopup: OpenPopup, popup: Window | null] 
 
   const openPopup = useCallback<OpenPopup>((notationId: string, width: number, height: number) => {
     const popup = window.open(
-      `/n/${notationId}/record`,
+      `/n/${notationId}/record?width=${width}&height=${height}`,
       STRINGSYNC_POPUP_TARGET,
       features({ popup: true, width, height })
     );
