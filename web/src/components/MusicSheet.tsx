@@ -21,6 +21,11 @@ const Outer = styled.div<{ $cursor: string }>`
   overflow-y: auto;
   background-color: white;
   user-select: none;
+
+  ::-webkit-scrollbar {
+    width: 0;
+    background: transparent;
+  }
 `;
 
 const MusicSheetContainer = styled.div`
