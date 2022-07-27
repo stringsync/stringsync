@@ -26,6 +26,15 @@ const ErrorsOuter = styled.div`
   margin-top: 24px;
 `;
 
+const MediaOuter = styled.div`
+  flex: 1;
+`;
+
+const MusicSheetOuter = styled.div`
+  flex: 1;
+  min-height: 115px;
+`;
+
 const CallToActionLink = styled(Link)`
   margin-top: 24px;
 `;
@@ -33,12 +42,6 @@ const CallToActionLink = styled(Link)`
 const FlexColumn = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100%;
-`;
-
-const Flex1 = styled.div`
-  overflow: hidden;
-  flex: 1;
   height: 100%;
 `;
 
@@ -113,14 +116,24 @@ export const NRecord: React.FC = enhance(() => {
           <Sink musicDisplay={musicDisplay} mediaPlayer={mediaPlayer} />
 
           <FlexColumn>
-            <Media video src={notation.videoUrl} onPlayerChange={setMediaPlayer} />
-            <Flex1>
+            <MediaOuter>
+              <Media
+                video
+                fluid={false}
+                src={notation.videoUrl}
+                onPlayerChange={setMediaPlayer}
+                style={{ height: '100%' }}
+              />
+            </MediaOuter>
+
+            <MusicSheetOuter>
               <MusicSheet
                 notation={notation}
                 displayMode={DisplayMode.TabsOnly}
                 onMusicDisplayChange={setMusicDisplay}
               />
-            </Flex1>
+            </MusicSheetOuter>
+
             <Fretboard
               mediaPlayer={mediaPlayer}
               musicDisplay={musicDisplay}

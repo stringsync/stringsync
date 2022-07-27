@@ -1,10 +1,11 @@
+import { CSSProperties } from 'react';
 import styled from 'styled-components';
+import { useMemoCmp } from '../hooks/useMemoCmp';
 import { MediaPlayer } from '../lib/MediaPlayer';
 import { Player } from './Player';
 
-const Outer = styled.div<{ $video: boolean }>`
+const Outer = styled.div`
   width: 100%;
-  display: ${(props) => (props.$video ? 'inherit' : 'none')};
   background-color: black;
 `;
 
@@ -12,14 +13,16 @@ type Props = {
   video: boolean;
   fluid?: boolean;
   src: string | null;
+  style?: CSSProperties;
   onPlayerChange?: (mediaPlayer: MediaPlayer) => void;
 };
 
 export const Media: React.FC<Props> = (props) => {
   const fluid = props.fluid ?? true;
+  const style = useMemoCmp(props.style);
 
   return (
-    <Outer data-testid="media" $video={props.video}>
+    <Outer data-testid="media" style={style}>
       {/* hack to force the video to remount on fluid change */}
       {props.video && props.src && fluid && (
         <Player.Video

@@ -23,6 +23,7 @@ type AutoScrollTarget = {
 const SCROLL_DEFAULT_DURATION = Duration.ms(150);
 const SCROLL_BACK_TOP_DURATION = Duration.ms(500);
 const SCROLL_BOTTOM_PADDING_PX = 20;
+const SCROLL_CURSOR_PADDING_PX = 4;
 const SCROLL_INITIAL_GRACE_DURATION = Duration.ms(500);
 const SCROLL_GRACE_DURATION = Duration.ms(200);
 const SCROLL_DELTA_TOLERANCE_PX = 2;
@@ -134,7 +135,7 @@ export class AutoScrollBehavior implements ScrollBehavior {
       nonNotationHeightPx += $child.data('notation') ? 0 : outerHeight;
     });
 
-    const cursorTop = nonNotationHeightPx + $(this.cursor.cursorElement).position().top;
+    const cursorTop = nonNotationHeightPx + $(this.cursor.cursorElement).position().top - SCROLL_CURSOR_PADDING_PX;
 
     if (analysis.sizeComparison === SizeComparison.Bigger) {
       return cursorTop;
