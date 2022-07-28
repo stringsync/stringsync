@@ -36,6 +36,19 @@ const ControlsOuter = styled.div`
   z-index: 4;
 `;
 
+const MusicSheetOuter = styled.div`
+  max-width: 1080px;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+`;
+
+const FretboardOuter = styled.div`
+  max-width: 1080px;
+  width: 100%;
+  margin: 0 auto;
+`;
+
 type Props = {
   notation: Nullable<notations.RenderableNotation>;
   sidecar?: React.ReactNode;
@@ -141,24 +154,28 @@ export const NotationPlayer: React.FC<Props> = (props) => {
             pane1Style={{ zIndex: pane1ZIndex, background: 'white' }}
             pane2Content={
               <Flex1>
-                <MusicSheet
-                  notation={notation}
-                  displayMode={notationSettings.displayMode}
-                  onMusicDisplayChange={setMusicDisplay}
-                />
+                <MusicSheetOuter>
+                  <MusicSheet
+                    notation={notation}
+                    displayMode={notationSettings.displayMode}
+                    onMusicDisplayChange={setMusicDisplay}
+                  />
+                </MusicSheetOuter>
               </Flex1>
             }
             pane2Supplements={
               <>
                 {notationSettings.isFretboardVisible && (
-                  <Fretboard
-                    musicDisplay={musicDisplay}
-                    mediaPlayer={mediaPlayer}
-                    onResize={setFretboardDimensions}
-                    fretMarkerDisplay={notationSettings.fretMarkerDisplay}
-                    scaleSelectionType={notationSettings.scaleSelectionType}
-                    selectedScale={notationSettings.selectedScale}
-                  />
+                  <FretboardOuter>
+                    <Fretboard
+                      musicDisplay={musicDisplay}
+                      mediaPlayer={mediaPlayer}
+                      onResize={setFretboardDimensions}
+                      fretMarkerDisplay={notationSettings.fretMarkerDisplay}
+                      scaleSelectionType={notationSettings.scaleSelectionType}
+                      selectedScale={notationSettings.selectedScale}
+                    />
+                  </FretboardOuter>
                 )}
                 <ControlsOuter>
                   <Controls

@@ -38,7 +38,7 @@ const HorizontalDivider = styled.div`
   user-select: inherit !important;
 `;
 
-const HorizontalPane1 = styled.div<{ px: number }>`
+const HorizontalPane1 = styled.div`
   position: relative;
   outline: none;
   display: flex;
@@ -79,7 +79,7 @@ const VerticalMenuOutlined = styled(MenuOutlined)`
   transform: rotate(90deg);
 `;
 
-const VerticalPane1 = styled.div<{ px: number }>`
+const VerticalPane1 = styled.div`
   flex: none;
   position: relative;
   outline: none;
@@ -322,7 +322,7 @@ export const SplitPane: React.FC<SplitPaneProps> = (props) => {
     <>
       {isHorizontal && (
         <HorizontalOuter ref={outerRef}>
-          <HorizontalPane1 id={pane1Id} px={size} ref={pane1Ref} style={{ ...pane1Style, height: size }}>
+          <HorizontalPane1 id={pane1Id} ref={pane1Ref} style={{ ...pane1Style, height: size }}>
             {pane1Content}
           </HorizontalPane1>
           <HorizontalPane2 id={pane2Id} ref={pane2Ref} style={pane2Style}>
@@ -345,10 +345,10 @@ export const SplitPane: React.FC<SplitPaneProps> = (props) => {
 
       {isVertical && (
         <VerticalOuter ref={outerRef}>
-          <VerticalPane1 id={pane1Id} px={size} ref={pane1Ref} style={{ ...pane1Style, width: size }}>
+          <VerticalPane1 id={pane1Id} ref={pane1Ref} style={{ ...pane1Style, width: size }}>
             {pane1Content}
           </VerticalPane1>
-          <VerticalPane2 id={pane2Id} ref={pane2Ref}>
+          <VerticalPane2 id={pane2Id} ref={pane2Ref} style={pane2Style}>
             {handle && (
               <VerticalDivider style={{ zIndex: dividerZIndex }}>
                 <Button

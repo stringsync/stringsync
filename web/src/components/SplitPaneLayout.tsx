@@ -30,6 +30,7 @@ export type SplitPaneLayoutProps = {
   pane1Style?: CSSProperties;
   pane2Content?: ReactNode;
   pane2Supplements?: ReactNode;
+  pane2Style?: CSSProperties;
   preferredLayoutType?: SplitPaneLayoutType;
   onHorizontalSlideEnd?: SlideEndCallback;
   onVerticalSlideEnd?: SlideEndCallback;
@@ -65,6 +66,7 @@ const SidecarLayout: React.FC<SplitPaneLayoutProps> = (props) => {
       split="vertical"
       handle={props.handle}
       pane1Style={props.pane1Style}
+      pane2Style={props.pane2Style}
       defaultSize={props.pane1DefaultWidth}
       minSize={props.pane1MinWidth}
       maxSize={props.pane1MaxWidth}
@@ -92,6 +94,7 @@ const TheaterLayout: React.FC<SplitPaneLayoutProps> = (props) => {
       split="horizontal"
       handle={props.handle}
       pane1Style={props.pane1Style}
+      pane2Style={props.pane2Style}
       defaultSize={props.pane1DefaultHeight}
       minSize={props.pane1MinHeight}
       maxSize={props.pane1MaxHeight}
