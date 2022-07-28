@@ -46,6 +46,16 @@ const FlexColumn = styled.div`
   height: 100%;
 `;
 
+const Supplementals = styled.div`
+  height: 100%;
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+`;
+
 const Sink: React.FC<{ musicDisplay: MusicDisplay; mediaPlayer: MediaPlayer }> = (props) => {
   const musicDisplay = props.musicDisplay;
   const mediaPlayer = props.mediaPlayer;
@@ -127,19 +137,21 @@ export const NRecord: React.FC = enhance(() => {
               />
             </MediaOuter>
 
-            <MusicSheetOuter>
-              <MusicSheet
-                notation={notation}
-                displayMode={DisplayMode.TabsOnly}
-                onMusicDisplayChange={setMusicDisplay}
-              />
-            </MusicSheetOuter>
+            <Supplementals>
+              <MusicSheetOuter>
+                <MusicSheet
+                  notation={notation}
+                  displayMode={DisplayMode.TabsOnly}
+                  onMusicDisplayChange={setMusicDisplay}
+                />
+              </MusicSheetOuter>
 
-            <Fretboard
-              mediaPlayer={mediaPlayer}
-              musicDisplay={musicDisplay}
-              fretMarkerDisplay={FretMarkerDisplay.Degree}
-            />
+              <Fretboard
+                mediaPlayer={mediaPlayer}
+                musicDisplay={musicDisplay}
+                fretMarkerDisplay={FretMarkerDisplay.Degree}
+              />
+            </Supplementals>
           </FlexColumn>
         </>
       )}
