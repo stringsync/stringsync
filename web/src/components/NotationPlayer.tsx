@@ -7,11 +7,11 @@ import { MusicDisplay } from '../lib/MusicDisplay';
 import { NoopMusicDisplay } from '../lib/MusicDisplay/NoopMusicDisplay';
 import * as notations from '../lib/notations';
 import { Nullable } from '../util/types';
-import { Controls, CONTROLS_HEIGHT_PX } from './Controls';
 import { Fretboard } from './Fretboard';
 import { FullHeightDiv } from './FullHeightDiv';
 import { Media } from './Media';
 import { MusicSheet } from './MusicSheet';
+import { CONTROLS_HEIGHT_PX, NotationPlayerControls } from './NotationPlayerControls';
 import { NotationSink } from './NotationSink';
 import { SplitPaneLayout, SplitPaneLayoutType } from './SplitPaneLayout';
 
@@ -178,7 +178,7 @@ export const NotationPlayer: React.FC<Props> = (props) => {
                   </FretboardOuter>
                 )}
                 <ControlsOuter>
-                  <Controls
+                  <NotationPlayerControls
                     videoControls={renderVideoControls}
                     notation={notation}
                     musicDisplay={musicDisplay}

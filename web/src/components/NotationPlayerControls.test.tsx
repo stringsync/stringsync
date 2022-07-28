@@ -5,7 +5,7 @@ import { NoopMusicDisplay } from '../lib/MusicDisplay/NoopMusicDisplay';
 import { DisplayMode } from '../lib/musicxml';
 import { FretMarkerDisplay, ScaleSelectionType } from '../lib/notations';
 import { Test } from '../testing';
-import { Controls } from './Controls';
+import { NotationPlayerControls } from './NotationPlayerControls';
 
 describe('Controls', () => {
   it('renders without crashing', () => {
@@ -15,7 +15,7 @@ describe('Controls', () => {
 
     const { container } = render(
       <Test>
-        <Controls
+        <NotationPlayerControls
           videoControls
           notation={null}
           musicDisplay={musicDisplay}

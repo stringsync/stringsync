@@ -67,7 +67,7 @@ type Props = {
   settingsContainer?: HTMLElement | false;
 };
 
-export const Controls: React.FC<Props> = (props) => {
+export const NotationPlayerControls: React.FC<Props> = (props) => {
   // props
   const settings = props.settings;
   const notation = props.notation;
