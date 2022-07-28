@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { Layout, withLayout } from '../hocs/withLayout';
 import { useConstantWindowSize } from '../hooks/useConstantWindowSize';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useMusicDisplayCursorTimeSync } from '../hooks/useMusicDisplayCursorTimeSync';
 import { useMusicDisplayScrolling } from '../hooks/useMusicDisplayScrolling';
 import { useNotation } from '../hooks/useNotation';
@@ -66,10 +67,10 @@ export const NRecord: React.FC = enhance(() => {
   const height = parseInt(queryParams.get('height') ?? '0', 10);
   const [notation, errors, loading] = useNotation(notationId);
 
-  // window
+  // general
+  const fileName = `${notationId}_${width}x${height}`;
+  useDocumentTitle(`stringsync - ${fileName}`);
   useConstantWindowSize(width, height);
-
-  // fretboard
   const [mediaPlayer, setMediaPlayer] = useState<MediaPlayer>(() => new NoopMediaPlayer());
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay>(() => new NoopMusicDisplay());
 
