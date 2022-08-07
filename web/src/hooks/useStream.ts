@@ -1,48 +1,30 @@
-import { useEffect, useState } from 'react';
-import { useMemoCmp } from './useMemoCmp';
+import { useCallback, useRef, useState } from 'react';
 
-export const useStream = (
-  constraints?: DisplayMediaStreamConstraints,
-  prompt: boolean = false
-): [stream: MediaStream | null] => {
-  constraints = useMemoCmp(constraints);
+type Prompt = (constraints?: DisplayMediaStreamConstraints) => void;
 
+type Clear = () => void;
+
+export const useStream = (): [stream: MediaStream | null, prompt: Prompt, clear: Clear] => {
   const [stream, setStream] = useState<MediaStream | null>(null);
 
-  useEffect(() => {
-    if (!prompt) {
-      return;
-    }
-    // avoid polyfills in test env
-    if (typeof window?.navigator?.mediaDevices?.getDisplayMedia !== 'function') {
-      console.warn('cannot use getDisplayMedia, noop');
-      return;
-    }
+  const lastInvocationId = useRef(Symbol());
+  const prompt = useCallback((constraints?: DisplayMediaStreamConstraints) => {
+    setStream(null);
 
-    let cancelled = false;
-    navigator.mediaDevices.getDisplayMedia(constraints).then((nextStream) => {
-      if (!cancelled) {
+    const invocationId = Symbol();
+    lastInvocationId.current = invocationId;
+
+    window.navigator.mediaDevices.getDisplayMedia(constraints).then((nextStream) => {
+      const isSameInvocation = invocationId === lastInvocationId.current;
+      if (isSameInvocation) {
         setStream(nextStream);
       }
     });
+  }, []);
 
-    return () => {
-      cancelled = true;
-      setStream(null);
-    };
-  }, [constraints, prompt]);
+  const clear = useCallback(() => {
+    setStream(null);
+  }, []);
 
-  useEffect(() => {
-    if (!stream) {
-      return;
-    }
-    return () => {
-      const tracks = stream.getTracks();
-      for (const track of tracks) {
-        track.stop();
-      }
-    };
-  }, [stream]);
-
-  return [stream];
+  return [stream, prompt, clear];
 };
