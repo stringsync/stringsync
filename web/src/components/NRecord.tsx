@@ -116,15 +116,15 @@ export const NRecord: React.FC = enhance(() => {
 
   // stream
   const [stream, streamPending, prompt] = useStream();
+
+  // modal
+  const [modalVisible, setModalVisible] = useState(true);
+  const confirmLoading = !mediaPlayerReady || musicDisplayLoading || streamPending;
   useEffect(() => {
     if (stream) {
       setModalVisible(false);
     }
   }, [stream]);
-
-  // modal
-  const [modalVisible, setModalVisible] = useState(true);
-  const confirmLoading = !mediaPlayerReady || musicDisplayLoading || streamPending;
   const onCancel = () => {
     window.close();
   };
@@ -143,14 +143,14 @@ export const NRecord: React.FC = enhance(() => {
   const renderParamsError = !width || !height;
   const renderNotationErrors = !renderPopupError && !renderParamsError && !notationLoading && errors.length > 0;
   const renderRecorder = !renderPopupError && !renderParamsError && !renderNotationErrors && !!notation;
-  const renderModal = renderRecorder;
+  const renderModal = renderRecorder && modalVisible; // avoid transitions
 
   return (
     <FullHeightDiv data-testid="n-record">
       {renderModal && (
         <Modal
           title="record"
-          visible={modalVisible}
+          visible
           onCancel={onCancel}
           onOk={onOk}
           cancelText="close"
