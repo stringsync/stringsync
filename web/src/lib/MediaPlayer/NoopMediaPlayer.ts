@@ -20,6 +20,9 @@ export class NoopMediaPlayer implements MediaPlayer {
     return 0;
   }
   setVolume() {}
+  isReady() {
+    return true;
+  }
   isMuted() {
     return false;
   }

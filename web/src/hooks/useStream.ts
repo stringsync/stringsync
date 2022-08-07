@@ -4,8 +4,9 @@ type Prompt = (constraints?: DisplayMediaStreamConstraints) => void;
 
 type Clear = () => void;
 
-export const useStream = (): [stream: MediaStream | null, prompt: Prompt, clear: Clear] => {
+export const useStream = (): [stream: MediaStream | null, pending: boolean, prompt: Prompt, clear: Clear] => {
   const [stream, setStream] = useState<MediaStream | null>(null);
+  const [pending, setPending] = useState(false);
 
   const lastInvocationId = useRef(Symbol());
   const prompt = useCallback((constraints?: DisplayMediaStreamConstraints) => {
@@ -14,17 +15,21 @@ export const useStream = (): [stream: MediaStream | null, prompt: Prompt, clear:
     const invocationId = Symbol();
     lastInvocationId.current = invocationId;
 
-    window.navigator.mediaDevices.getDisplayMedia(constraints).then((nextStream) => {
-      const isSameInvocation = invocationId === lastInvocationId.current;
-      if (isSameInvocation) {
-        setStream(nextStream);
-      }
-    });
+    setPending(true);
+    window.navigator.mediaDevices
+      .getDisplayMedia(constraints)
+      .then((nextStream) => {
+        const isSameInvocation = invocationId === lastInvocationId.current;
+        if (isSameInvocation) {
+          setStream(nextStream);
+        }
+      })
+      .finally(() => setPending(false));
   }, []);
 
   const clear = useCallback(() => {
     setStream(null);
   }, []);
 
-  return [stream, prompt, clear];
+  return [stream, pending, prompt, clear];
 };

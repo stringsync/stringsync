@@ -31,6 +31,7 @@ export interface MediaPlayer {
   getVolume(): number;
   setVolume(volume: number): void;
   isMuted(): boolean;
+  isReady(): boolean;
   mute(): void;
   unmute(): void;
   setPlayback(playback: number): void;

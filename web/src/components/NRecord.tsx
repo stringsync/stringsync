@@ -1,5 +1,5 @@
-import { Row } from 'antd';
-import React, { useState } from 'react';
+import { Modal, Row } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { Layout, withLayout } from '../hocs/withLayout';
@@ -9,8 +9,9 @@ import { useMusicDisplayCursorTimeSync } from '../hooks/useMusicDisplayCursorTim
 import { useMusicDisplayScrolling } from '../hooks/useMusicDisplayScrolling';
 import { useNotation } from '../hooks/useNotation';
 import { useQueryParams } from '../hooks/useQueryParams';
+import { useStream } from '../hooks/useStream';
 import { MediaPlayer, NoopMediaPlayer } from '../lib/MediaPlayer';
-import { MusicDisplay } from '../lib/MusicDisplay';
+import { LoadingStatus, MusicDisplay } from '../lib/MusicDisplay';
 import { NoopMusicDisplay } from '../lib/MusicDisplay/NoopMusicDisplay';
 import { DisplayMode } from '../lib/musicxml';
 import { FretMarkerDisplay } from '../lib/notations';
@@ -75,23 +76,94 @@ export const NRecord: React.FC = enhance(() => {
   const notationId = params.id || '';
   const width = parseInt(queryParams.get('width') ?? '0', 10);
   const height = parseInt(queryParams.get('height') ?? '0', 10);
-  const [notation, errors, loading] = useNotation(notationId);
+  const [notation, errors, notationLoading] = useNotation(notationId);
 
   // general
   const fileName = `${notationId}_${width}x${height}`;
   useDocumentTitle(`stringsync - ${fileName}`);
   useConstantWindowSize(width, height);
+
+  // media player
   const [mediaPlayer, setMediaPlayer] = useState<MediaPlayer>(() => new NoopMediaPlayer());
+  const [mediaPlayerReady, setMediaPlayerReady] = useState(() => mediaPlayer.isReady());
+  useEffect(() => {
+    setMediaPlayerReady(mediaPlayer.isReady());
+    const eventBusIds = [
+      mediaPlayer.eventBus.subscribe('init', () => {
+        setMediaPlayerReady(true);
+      }),
+    ];
+    return () => {
+      mediaPlayer.eventBus.unsubscribe(...eventBusIds);
+    };
+  }, [mediaPlayer]);
+
   const [musicDisplay, setMusicDisplay] = useState<MusicDisplay>(() => new NoopMusicDisplay());
+  const [musicDisplayLoading, setMusicDisplayLoading] = useState(
+    () => musicDisplay.getLoadingStatus() === LoadingStatus.Loading
+  );
+  useEffect(() => {
+    setMusicDisplayLoading(musicDisplay.getLoadingStatus() === LoadingStatus.Loading);
+    const eventBusIds = [
+      musicDisplay.eventBus.subscribe('loadended', () => {
+        setMusicDisplayLoading(false);
+      }),
+    ];
+    return () => {
+      musicDisplay.eventBus.unsubscribe(...eventBusIds);
+    };
+  }, [musicDisplay]);
+
+  // stream
+  const [stream, streamPending, prompt] = useStream();
+  useEffect(() => {
+    if (stream) {
+      setModalVisible(false);
+    }
+  }, [stream]);
+
+  // modal
+  const [modalVisible, setModalVisible] = useState(true);
+  const confirmLoading = !mediaPlayerReady || musicDisplayLoading || streamPending;
+  const onCancel = () => {
+    window.close();
+  };
+  const onOk = () => {
+    prompt({
+      audio: true,
+      video: {
+        width: { ideal: width },
+        height: { ideal: height },
+      },
+    });
+  };
 
   // render branches
   const renderPopupError = !window.opener;
   const renderParamsError = !width || !height;
-  const renderNotationErrors = !renderPopupError && !renderParamsError && !loading && errors.length > 0;
+  const renderNotationErrors = !renderPopupError && !renderParamsError && !notationLoading && errors.length > 0;
   const renderRecorder = !renderPopupError && !renderParamsError && !renderNotationErrors && !!notation;
+  const renderModal = renderRecorder;
 
   return (
     <FullHeightDiv data-testid="n-record">
+      {renderModal && (
+        <Modal
+          title="record"
+          visible={modalVisible}
+          onCancel={onCancel}
+          onOk={onOk}
+          cancelText="close"
+          okText="record"
+          confirmLoading={confirmLoading}
+        >
+          <dl>
+            <dt>filename</dt>
+            <dd>{fileName}.mp4</dd>
+          </dl>
+        </Modal>
+      )}
+
       {renderParamsError && (
         <ErrorsOuter>
           <Errors errors={PARAMS_ERRORS} />

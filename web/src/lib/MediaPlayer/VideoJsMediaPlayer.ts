@@ -14,7 +14,7 @@ export class VideoJsMediaPlayer implements MediaPlayer {
 
   private isSuspended = false;
   private onUnsuspend = noop;
-  private isReady = false;
+  private ready = false;
 
   constructor(player: VideoJsPlayer) {
     this.player = player;
@@ -44,7 +44,7 @@ export class VideoJsMediaPlayer implements MediaPlayer {
     if (this.isSuspended) {
       return;
     }
-    if (!this.isReady) {
+    if (!this.ready) {
       return;
     }
     this.player.play();
@@ -54,14 +54,14 @@ export class VideoJsMediaPlayer implements MediaPlayer {
     if (this.isSuspended) {
       return;
     }
-    if (!this.isReady) {
+    if (!this.ready) {
       return;
     }
     this.player.pause();
   };
 
   seek(time: Duration) {
-    if (!this.isReady) {
+    if (!this.ready) {
       return;
     }
     this.player.currentTime(time.sec);
@@ -69,7 +69,7 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   }
 
   suspend() {
-    if (!this.isReady) {
+    if (!this.ready) {
       return;
     }
     if (this.isSuspended) {
@@ -89,7 +89,7 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   }
 
   unsuspend() {
-    if (!this.isReady) {
+    if (!this.ready) {
       return;
     }
     if (!this.isSuspended) {
@@ -103,7 +103,7 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   }
 
   getPlayState() {
-    if (!this.isReady) {
+    if (!this.ready) {
       return PlayState.Paused;
     }
     try {
@@ -114,25 +114,29 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   }
 
   getCurrentTime() {
-    return this.isReady ? Duration.sec(this.player.currentTime()) : Duration.zero();
+    return this.ready ? Duration.sec(this.player.currentTime()) : Duration.zero();
   }
 
   getVolume() {
-    if (!this.isReady) {
+    if (!this.ready) {
       return 0;
     }
     return this.player.volume();
   }
 
   setVolume(volume: number) {
-    if (!this.isReady) {
+    if (!this.ready) {
       return;
     }
     this.player.volume(volume);
   }
 
+  isReady() {
+    return this.ready;
+  }
+
   isMuted() {
-    if (!this.isReady) {
+    if (!this.ready) {
       return false;
     }
     // The VideoJs player does not protect against player.el_ being null.
@@ -144,7 +148,7 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   }
 
   mute() {
-    if (!this.isReady) {
+    if (!this.ready) {
       return;
     }
     this.player.muted(true);
@@ -152,7 +156,7 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   }
 
   unmute() {
-    if (!this.isReady) {
+    if (!this.ready) {
       return;
     }
     this.player.muted(false);
@@ -160,14 +164,14 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   }
 
   getPlayback() {
-    if (!this.isReady) {
+    if (!this.ready) {
       return 1;
     }
     return this.player.playbackRate();
   }
 
   setPlayback(playback: number) {
-    if (!this.isReady) {
+    if (!this.ready) {
       return;
     }
     this.player.playbackRate(playback);
@@ -190,7 +194,7 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   };
 
   private onReady = () => {
-    this.isReady = true;
+    this.ready = true;
     this.eventBus.dispatch('init', {});
   };
 
