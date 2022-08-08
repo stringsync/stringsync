@@ -1,6 +1,6 @@
 import { DownloadOutlined, UploadOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { Button, Col, Modal, Row, Steps } from 'antd';
-import React, { ReactNode, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { Layout, withLayout } from '../hocs/withLayout';
@@ -23,11 +23,6 @@ import { Fretboard } from './Fretboard';
 import { FullHeightDiv } from './FullHeightDiv';
 import { Media } from './Media';
 import { MusicSheet } from './MusicSheet';
-
-type StepDeclaration = {
-  title: string;
-  content: ReactNode;
-};
 
 enum RecordingStatus {
   None,
@@ -73,6 +68,16 @@ const Supplementals = styled.div`
 
 const StepDescription = styled.div`
   color: ${(props) => props.theme['@muted']};
+`;
+
+const NoCursor = styled.div`
+  z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  cursor: none;
 `;
 
 const wait = (duration: Duration) => new Promise((resolve) => setTimeout(resolve, duration.ms));
@@ -136,7 +141,9 @@ export const NRecord: React.FC = enhance(() => {
 
   // stream
   const [stream, streamPending, prompt, clearStream] = useStream();
-  const [recorder, download] = useRecorder(stream);
+  const [recorder, download] = useRecorder(stream, {
+    mimeType: 'video/webm;codecs=vp9',
+  });
   const [recordingStatus, setRecordingStatus] = useState<RecordingStatus>(RecordingStatus.None);
 
   // modal
@@ -154,101 +161,58 @@ export const NRecord: React.FC = enhance(() => {
     }
   };
   const stepIndex = getStepIndex();
-  const steps = useMemo<StepDeclaration[]>(() => {
-    const recording = recordingStatus === RecordingStatus.Recording;
+  const recording = recordingStatus === RecordingStatus.Recording;
 
-    const onChooseClick = () => {
-      prompt({
-        audio: true,
-        video: {
-          width: { ideal: width },
-          height: { ideal: height },
-        },
-      });
-    };
+  const onChooseClick = () => {
+    prompt({
+      audio: {
+        echoCancellation: false,
+        autoGainControl: false,
+        sampleRate: 48000,
+      },
+      video: {
+        width: { ideal: width },
+        height: { ideal: height },
+      },
+    });
+  };
 
-    const onRecordClick = async () => {
-      if (!recorder) {
-        return;
-      }
+  const onRecordClick = async () => {
+    if (!recorder) {
+      return;
+    }
 
-      setRecordingStatus(RecordingStatus.Recording);
-      setModalVisible(false);
+    setRecordingStatus(RecordingStatus.Recording);
+    setModalVisible(false);
 
-      await wait(Duration.sec(2));
+    mediaPlayer.seek(Duration.zero());
 
+    await wait(Duration.sec(2));
+
+    recorder.start();
+    mediaPlayer.play();
+
+    mediaPlayer.eventBus.once('end', async () => {
       mediaPlayer.seek(Duration.zero());
+      await wait(Duration.ms(500));
 
-      recorder.start();
-      mediaPlayer.play();
+      mediaPlayer.pause();
+      recorder.stop();
 
-      mediaPlayer.eventBus.once('end', async () => {
-        mediaPlayer.seek(Duration.zero());
-        await wait(Duration.ms(500));
-        mediaPlayer.pause();
-        recorder.stop();
-        setRecordingStatus(RecordingStatus.Done);
-        clearStream();
-        setModalVisible(true);
-      });
-    };
+      clearStream();
+      setModalVisible(true);
 
-    const onDownloadClick = () => {
-      download(filename);
-    };
+      setRecordingStatus(RecordingStatus.Done);
+    });
+  };
 
-    return [
-      {
-        title: 'stream',
-        content: (
-          <>
-            <StepDescription>choose the tab to stream from</StepDescription>
+  const onDownloadClick = () => {
+    download(filename);
+  };
 
-            <br />
-
-            <Button block onClick={onChooseClick} icon={<UploadOutlined />}>
-              source
-            </Button>
-          </>
-        ),
-      },
-      {
-        title: 'record',
-        content: (
-          <>
-            <StepDescription>record the video</StepDescription>
-
-            <br />
-
-            <Button
-              block
-              type="primary"
-              disabled={!recorder || recording}
-              loading={recording}
-              onClick={onRecordClick}
-              icon={<VideoCameraOutlined />}
-            >
-              record
-            </Button>
-          </>
-        ),
-      },
-      {
-        title: 'download',
-        content: (
-          <>
-            <StepDescription>{`${filename}.webm`}</StepDescription>
-
-            <br />
-
-            <Button block type="primary" onClick={onDownloadClick} icon={<DownloadOutlined />}>
-              download
-            </Button>
-          </>
-        ),
-      },
-    ];
-  }, [recordingStatus, recorder, filename, prompt, width, height, mediaPlayer, clearStream, download]);
+  const onCloseClick = () => {
+    window.close();
+  };
 
   // render branches
   const renderPopupError = !window.opener;
@@ -256,20 +220,76 @@ export const NRecord: React.FC = enhance(() => {
   const renderNotationErrors = !renderPopupError && !renderParamsError && !notationLoading && errors.length > 0;
   const renderRecorder = !renderPopupError && !renderParamsError && !renderNotationErrors && !!notation;
   const renderModal = renderRecorder;
+  const renderNoCursor = recording;
 
   return (
     <FullHeightDiv data-testid="n-record">
+      {renderNoCursor && <NoCursor />}
+
       {renderModal && (
-        <Modal title="record" visible={modalVisible} maskClosable={false} closable={false} footer={null}>
+        <Modal
+          title="record"
+          visible={modalVisible}
+          maskClosable={false}
+          closable={false}
+          footer={
+            <Row justify="end">
+              <Button onClick={onCloseClick}>close</Button>
+            </Row>
+          }
+        >
           <Row>
             <Col span={8}>
               <Steps current={stepIndex} direction="vertical" size="small">
-                {steps.map((step) => (
-                  <Steps.Step key={step.title} title={step.title} />
-                ))}
+                <Steps.Step title="stream" />
+                <Steps.Step title="record" />
+                <Steps.Step title="download" />
               </Steps>
             </Col>
-            <Col span={16}>{steps[stepIndex].content}</Col>
+            <Col span={16}>
+              {stepIndex === 0 && (
+                <>
+                  <StepDescription>choose the tab to stream from</StepDescription>
+
+                  <br />
+
+                  <Button block onClick={onChooseClick} icon={<UploadOutlined />}>
+                    source
+                  </Button>
+                </>
+              )}
+
+              {stepIndex === 1 && (
+                <>
+                  <StepDescription>record the video</StepDescription>
+
+                  <br />
+
+                  <Button
+                    block
+                    type="primary"
+                    disabled={!recorder || recording || !mediaPlayerReady || musicDisplayLoading}
+                    loading={recording}
+                    onClick={onRecordClick}
+                    icon={<VideoCameraOutlined />}
+                  >
+                    record
+                  </Button>
+                </>
+              )}
+
+              {stepIndex === 2 && (
+                <>
+                  <StepDescription>{`${filename}.webm`}</StepDescription>
+
+                  <br />
+
+                  <Button block type="primary" onClick={onDownloadClick} icon={<DownloadOutlined />}>
+                    download
+                  </Button>
+                </>
+              )}
+            </Col>
           </Row>
         </Modal>
       )}
