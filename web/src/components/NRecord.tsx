@@ -140,6 +140,7 @@ export const NRecord: React.FC = enhance(() => {
   }, [musicDisplay]);
 
   // stream
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [stream, streamPending, prompt, clearStream] = useStream();
   const [recorder, download] = useRecorder(stream, {
     mimeType: 'video/webm;codecs=vp9',
