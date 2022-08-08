@@ -169,7 +169,6 @@ export const NRecord: React.FC = enhance(() => {
       audio: {
         echoCancellation: false,
         autoGainControl: false,
-        sampleRate: 48000,
       },
       video: {
         width: { ideal: width },
