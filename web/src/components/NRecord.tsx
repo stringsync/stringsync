@@ -1,5 +1,6 @@
-import { Modal, Row } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { DownloadOutlined, UploadOutlined, VideoCameraOutlined } from '@ant-design/icons';
+import { Button, Col, Modal, Row, Steps } from 'antd';
+import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { Layout, withLayout } from '../hocs/withLayout';
@@ -9,19 +10,32 @@ import { useMusicDisplayCursorTimeSync } from '../hooks/useMusicDisplayCursorTim
 import { useMusicDisplayScrolling } from '../hooks/useMusicDisplayScrolling';
 import { useNotation } from '../hooks/useNotation';
 import { useQueryParams } from '../hooks/useQueryParams';
+import { useRecorder } from '../hooks/useRecorder';
 import { useStream } from '../hooks/useStream';
 import { MediaPlayer, NoopMediaPlayer } from '../lib/MediaPlayer';
 import { LoadingStatus, MusicDisplay } from '../lib/MusicDisplay';
 import { NoopMusicDisplay } from '../lib/MusicDisplay/NoopMusicDisplay';
 import { DisplayMode } from '../lib/musicxml';
 import { FretMarkerDisplay } from '../lib/notations';
+import { Duration } from '../util/Duration';
 import { Errors } from './Errors';
 import { Fretboard } from './Fretboard';
 import { FullHeightDiv } from './FullHeightDiv';
 import { Media } from './Media';
 import { MusicSheet } from './MusicSheet';
 
-const POPUP_ERRORS = ['must open through exporter'];
+type StepDeclaration = {
+  title: string;
+  content: ReactNode;
+};
+
+enum RecordingStatus {
+  None,
+  Recording,
+  Done,
+}
+
+const POPUP_ERRORS = ['must open through exporter', 'must keep the exporter window opened'];
 const PARAMS_ERRORS = ['missing width and/or height query params'];
 
 const ErrorsOuter = styled.div`
@@ -57,6 +71,12 @@ const Supplementals = styled.div`
   flex-direction: column;
 `;
 
+const StepDescription = styled.div`
+  color: ${(props) => props.theme['@muted']};
+`;
+
+const wait = (duration: Duration) => new Promise((resolve) => setTimeout(resolve, duration.ms));
+
 const Sink: React.FC<{ musicDisplay: MusicDisplay; mediaPlayer: MediaPlayer }> = (props) => {
   const musicDisplay = props.musicDisplay;
   const mediaPlayer = props.mediaPlayer;
@@ -79,8 +99,8 @@ export const NRecord: React.FC = enhance(() => {
   const [notation, errors, notationLoading] = useNotation(notationId);
 
   // general
-  const fileName = `${notationId}_${width}x${height}`;
-  useDocumentTitle(`stringsync - ${fileName}`);
+  const filename = `${notationId}_${width}x${height}`;
+  useDocumentTitle(`stringsync - ${filename}`);
   useConstantWindowSize(width, height);
 
   // media player
@@ -115,52 +135,142 @@ export const NRecord: React.FC = enhance(() => {
   }, [musicDisplay]);
 
   // stream
-  const [stream, streamPending, prompt] = useStream();
+  const [stream, streamPending, prompt, clearStream] = useStream();
+  const [recorder, download] = useRecorder(stream);
+  const [recordingStatus, setRecordingStatus] = useState<RecordingStatus>(RecordingStatus.None);
 
   // modal
   const [modalVisible, setModalVisible] = useState(true);
-  const confirmLoading = !mediaPlayerReady || musicDisplayLoading || streamPending;
-  useEffect(() => {
-    if (stream) {
-      setModalVisible(false);
+  const getStepIndex = (): 0 | 1 | 2 => {
+    if (recordingStatus === RecordingStatus.None && !recorder) {
+      return 0;
     }
-  }, [stream]);
-  const onCancel = () => {
-    window.close();
+    switch (recordingStatus) {
+      case RecordingStatus.None:
+      case RecordingStatus.Recording:
+        return 1;
+      case RecordingStatus.Done:
+        return 2;
+    }
   };
-  const onOk = () => {
-    prompt({
-      audio: true,
-      video: {
-        width: { ideal: width },
-        height: { ideal: height },
+  const stepIndex = getStepIndex();
+  const steps = useMemo<StepDeclaration[]>(() => {
+    const recording = recordingStatus === RecordingStatus.Recording;
+
+    const onChooseClick = () => {
+      prompt({
+        audio: true,
+        video: {
+          width: { ideal: width },
+          height: { ideal: height },
+        },
+      });
+    };
+
+    const onRecordClick = async () => {
+      if (!recorder) {
+        return;
+      }
+
+      setRecordingStatus(RecordingStatus.Recording);
+      setModalVisible(false);
+
+      await wait(Duration.sec(2));
+
+      mediaPlayer.seek(Duration.zero());
+
+      recorder.start();
+      mediaPlayer.play();
+
+      mediaPlayer.eventBus.once('end', async () => {
+        mediaPlayer.seek(Duration.zero());
+        await wait(Duration.ms(500));
+        mediaPlayer.pause();
+        recorder.stop();
+        setRecordingStatus(RecordingStatus.Done);
+        clearStream();
+        setModalVisible(true);
+      });
+    };
+
+    const onDownloadClick = () => {
+      download(filename);
+    };
+
+    return [
+      {
+        title: 'stream',
+        content: (
+          <>
+            <StepDescription>choose the tab to stream from</StepDescription>
+
+            <br />
+
+            <Button block onClick={onChooseClick} icon={<UploadOutlined />}>
+              source
+            </Button>
+          </>
+        ),
       },
-    });
-  };
+      {
+        title: 'record',
+        content: (
+          <>
+            <StepDescription>record the video</StepDescription>
+
+            <br />
+
+            <Button
+              block
+              type="primary"
+              disabled={!recorder || recording}
+              loading={recording}
+              onClick={onRecordClick}
+              icon={<VideoCameraOutlined />}
+            >
+              record
+            </Button>
+          </>
+        ),
+      },
+      {
+        title: 'download',
+        content: (
+          <>
+            <StepDescription>{`${filename}.webm`}</StepDescription>
+
+            <br />
+
+            <Button block type="primary" onClick={onDownloadClick} icon={<DownloadOutlined />}>
+              download
+            </Button>
+          </>
+        ),
+      },
+    ];
+  }, [recordingStatus, recorder, filename, prompt, width, height, mediaPlayer, clearStream, download]);
 
   // render branches
   const renderPopupError = !window.opener;
   const renderParamsError = !width || !height;
   const renderNotationErrors = !renderPopupError && !renderParamsError && !notationLoading && errors.length > 0;
   const renderRecorder = !renderPopupError && !renderParamsError && !renderNotationErrors && !!notation;
-  const renderModal = renderRecorder && modalVisible; // avoid transitions
+  const renderModal = renderRecorder;
 
   return (
     <FullHeightDiv data-testid="n-record">
       {renderModal && (
-        <Modal
-          title="record"
-          visible
-          onCancel={onCancel}
-          onOk={onOk}
-          cancelText="close"
-          okText="record"
-          confirmLoading={confirmLoading}
-        >
-          <dl>
-            <dt>filename</dt>
-            <dd>{fileName}.mp4</dd>
-          </dl>
+        <Modal title="record" visible={modalVisible} maskClosable={false} closable={false} footer={null}>
+          <Row>
+            <Col span={8}>
+              <Steps current={stepIndex} direction="vertical" size="small">
+                {steps.map((step) => (
+                  <Steps.Step key={step.title} title={step.title} />
+                ))}
+              </Steps>
+            </Col>
+            <Col span={16}>{steps[stepIndex].content}</Col>
+          </Row>
         </Modal>
       )}
 

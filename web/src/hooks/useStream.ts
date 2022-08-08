@@ -1,8 +1,15 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 type Prompt = (constraints?: DisplayMediaStreamConstraints) => void;
 
 type Clear = () => void;
+
+const stop = (stream: MediaStream) => {
+  const tracks = stream.getTracks();
+  for (const track of tracks) {
+    track.stop();
+  }
+};
 
 export const useStream = (): [stream: MediaStream | null, pending: boolean, prompt: Prompt, clear: Clear] => {
   const [stream, setStream] = useState<MediaStream | null>(null);
@@ -22,14 +29,28 @@ export const useStream = (): [stream: MediaStream | null, pending: boolean, prom
         const isSameInvocation = invocationId === lastInvocationId.current;
         if (isSameInvocation) {
           setStream(nextStream);
+        } else {
+          stop(nextStream);
         }
       })
       .finally(() => setPending(false));
   }, []);
 
   const clear = useCallback(() => {
+    if (stream) {
+      stop(stream);
+    }
     setStream(null);
-  }, []);
+  }, [stream]);
+
+  useEffect(() => {
+    if (!stream) {
+      return;
+    }
+    return () => {
+      stop(stream);
+    };
+  }, [stream]);
 
   return [stream, pending, prompt, clear];
 };

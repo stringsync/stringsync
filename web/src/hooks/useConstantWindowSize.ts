@@ -5,13 +5,16 @@ export const useConstantWindowSize = (width: number, height: number) => {
     if (width <= 0 || height <= 0) {
       return;
     }
+
     const onResize = (event: UIEvent) => {
       event.preventDefault();
-      window.resizeTo(width, height);
+      document.body.setAttribute('width', `${width}px`);
+      document.body.setAttribute('height', `${height}px`);
     };
-    window.addEventListener('resize', onResize);
+
+    document.body.addEventListener('resize', onResize);
     return () => {
-      window.removeEventListener('resize', onResize);
+      document.body.removeEventListener('resize', onResize);
     };
   }, [width, height]);
 };

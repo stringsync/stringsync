@@ -22,6 +22,7 @@ export class VideoJsMediaPlayer implements MediaPlayer {
     this.player.on('play', this.onPlay);
     this.player.on('pause', this.onPause);
     this.player.on('volumechange', this.onVolumeChange);
+    this.player.on('ended', this.onEnded);
 
     this.timeChangeLoop = new AsyncLoop(
       this.syncTime,
@@ -206,6 +207,10 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   private onPause = () => {
     this.timeChangeLoop.stop();
     this.eventBus.dispatch('playstatechange', { playState: PlayState.Paused });
+  };
+
+  private onEnded = () => {
+    this.eventBus.dispatch('end', {});
   };
 
   private onVolumeChange = () => {

@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useMemoCmp } from './useMemoCmp';
 
-type Download = () => void;
+type Download = (filename: string) => void;
 
 type Reset = () => void;
 
@@ -12,41 +12,38 @@ export const useRecorder = (
   options = useMemoCmp(options);
 
   const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
-  const [data, setData] = useState(new Array<Blob>());
+  const data = useRef(new Array<Blob>());
 
   useEffect(() => {
     if (!stream) {
       return;
     }
-    if (recorder) {
-      return;
-    }
-    const nextRecorder = new MediaRecorder(stream, options);
-    setRecorder(nextRecorder);
+    const recorder = new MediaRecorder(stream, options);
+    setRecorder(recorder);
 
     const record = (event: BlobEvent) => {
-      setData((data) => [...data, event.data]);
+      data.current = [...data.current, event.data];
     };
-    nextRecorder.addEventListener('dataavailable', record);
+    recorder.addEventListener('dataavailable', record);
 
     return () => {
-      nextRecorder.removeEventListener('dataavailable', record);
+      recorder.removeEventListener('dataavailable', record);
+      setRecorder(null);
     };
-  }, [recorder, stream, options]);
+  }, [stream, options]);
 
-  const download = useCallback(() => {
-    const blob = new Blob(data);
+  const download = useCallback((filename: string) => {
+    const blob = new Blob(data.current);
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'test.webm';
+    a.download = `${filename}.webm`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [data]);
+  }, []);
 
   const reset = useCallback(() => {
-    setRecorder(null);
-    setData([]);
+    data.current = [];
   }, []);
 
   return [recorder, download, reset];
