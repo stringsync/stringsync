@@ -130,7 +130,7 @@ export class InternalMusicDisplay extends OpenSheetMusicDisplay {
     this.cursorWrapper = LerpCursor.create(this, locator.clone(), {
       isNoteheadColoringEnabled: true,
       defaultStyle: { opacity: '0.5', 'box-shadow': '0 0 0' },
-      interactingStyle: { opacity: '1', 'box-shadow': '0 0 10px #00ffd9' },
+      interactingStyle: { opacity: '1', 'box-shadow': '0 0 10px #00FF7F' },
     });
     this.cursorWrapper.update(timeMs);
 

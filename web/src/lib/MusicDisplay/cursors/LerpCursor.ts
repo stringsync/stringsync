@@ -14,7 +14,7 @@ const CURSOR_STYLE_TRANSITION_DURATION = Duration.ms(200);
 const DEFAULT_CURSOR_OPTS = [
   {
     type: CursorType.ThinLeft,
-    color: '#00ffd9',
+    color: '#00FF7F',
     follow: false,
     alpha: 1,
   },
