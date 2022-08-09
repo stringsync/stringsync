@@ -30,6 +30,7 @@ enum RecordingStatus {
   Done,
 }
 
+const HEIGHT_OFFSET = 100;
 const POPUP_ERRORS = ['must open through exporter', 'must keep the exporter window opened'];
 const PARAMS_ERRORS = ['missing width and/or height query params'];
 
@@ -106,7 +107,7 @@ export const NRecord: React.FC = enhance(() => {
   // general
   const filename = `${notationId}_${width}x${height}`;
   useDocumentTitle(`stringsync - ${filename}`);
-  useConstantWindowSize(width, height);
+  useConstantWindowSize(width, height + HEIGHT_OFFSET);
 
   // media player
   const [mediaPlayer, setMediaPlayer] = useState<MediaPlayer>(() => new NoopMediaPlayer());
