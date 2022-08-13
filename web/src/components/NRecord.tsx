@@ -156,7 +156,7 @@ export const NRecord: React.FC = enhance(() => {
   const [recordingStatus, setRecordingStatus] = useState<RecordingStatus>(RecordingStatus.None);
 
   // modal
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(true);
   const getStepIndex = (): 0 | 1 | 2 => {
     if (recordingStatus === RecordingStatus.None && !recorder) {
       return 0;
