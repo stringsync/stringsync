@@ -11,6 +11,8 @@ import { Tuning } from '../lib/guitar/Tuning';
 const DEFAULT_TONIC = 'C';
 const DEFAULT_TUNING = Tuning.standard();
 const DEFAULT_OPTIONS: fretboard.FretboardJsOptions = {};
+const EXCEED_WIDTH_PX = 4;
+const EXCEED_LEFT_PADDING_PX = 6;
 
 export type FretboardJsProps = PropsWithChildren<{
   options?: fretboard.FretboardJsOptions;
@@ -66,15 +68,13 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
     // ----------------
     // render slides
     // ----------------
-    const { font, dotSize } = get(fb, 'options');
+    const { font, dotSize, width, leftPadding, rightPadding } = get(fb, 'options');
     const { positions } = fb;
     const getDotOffset = get(fb, 'getDotOffset', () => 0).bind(fb);
     const dotOffset = getDotOffset();
+    const p = (string: number, fret: number) => positions[string - 1][fret - dotOffset];
 
-    const slideGroup = fb.wrapper
-      .append('g')
-      .attr('class', 'slides')
-      .attr('font-family', font);
+    const slideGroup = fb.wrapper.append('g').attr('class', 'slides').attr('font-family', font);
 
     const slidesNodes = slideGroup
       .selectAll('g')
@@ -85,27 +85,28 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
         return ['slide', `slide-string-${string}-from-fret-${frets[0]}-to-fret-${frets[1]}`].join(' ');
       });
 
-    const p = (string: number, fret: number) => positions[string - 1][fret - dotOffset];
-    const opacity = 0.5;
-    const height = dotSize;
-    const width = ({ string, frets }: fretboard.SlideStyleTarget) => {
+    const slideOpacity = 0.5;
+    const slideHeight = dotSize;
+    const slideWidth = ({ string, frets }: fretboard.SlideStyleTarget) => {
       return `${Math.abs(p(string, frets[0]).x - p(string, frets[1]).x)}%`;
     };
-    const x = ({ string, frets }: fretboard.SlideStyleTarget) => `${p(string, Math.min(...frets)).x}%`;
-    const y = ({ string, frets }: fretboard.SlideStyleTarget) => p(string, Math.min(...frets)).y - height * 0.5;
-    const fill = ({ style }: fretboard.SlideStyleTarget) => style.fill;
-    const stroke = ({ style }: fretboard.SlideStyleTarget) => style.stroke;
+    const slideX = ({ string, frets }: fretboard.SlideStyleTarget) => `${p(string, Math.min(...frets)).x}%`;
+    const slideY = ({ string, frets }: fretboard.SlideStyleTarget) => {
+      return p(string, Math.min(...frets)).y - slideHeight * 0.5;
+    };
+    const slideFill = ({ style }: fretboard.SlideStyleTarget) => style.fill;
+    const slideStroke = ({ style }: fretboard.SlideStyleTarget) => style.stroke;
 
     slidesNodes
       .append('rect')
       .attr('class', 'slide-rect')
-      .attr('x', x)
-      .attr('y', y)
-      .attr('width', width)
-      .attr('height', height)
-      .attr('fill', fill)
-      .attr('stroke', stroke)
-      .attr('opacity', opacity);
+      .attr('x', slideX)
+      .attr('y', slideY)
+      .attr('width', slideWidth)
+      .attr('height', slideHeight)
+      .attr('fill', slideFill)
+      .attr('stroke', slideStroke)
+      .attr('opacity', slideOpacity);
 
     // ----------------
     // render positions
@@ -153,6 +154,33 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
         })
     );
 
+    // ----------------
+    // render exceeds
+    // ----------------
+
+    // https://github.com/moonwave99/fretboard.js/blob/118a38a3a487cc488cd1de49759b210d9ff14323/src/fretboard/utils.ts#L141
+    const totalWidth = width + leftPadding + rightPadding;
+
+    fb.wrapper
+      .append('g')
+      .attr('class', 'exceeds')
+      .attr('font-family', font)
+      .selectAll('g')
+      .data(positionStyleTargets.filter((styleTarget) => styleTarget.position.fret > maxFret))
+      .enter()
+      .append('g')
+      .attr('class', ({ position }: fretboard.PositionStyleTarget) => {
+        return `exceed exceed-string-${position.string}-fret-${position.fret}`;
+      })
+      .append('rect')
+      .attr('class', 'exceed-rect')
+      .attr('width', EXCEED_WIDTH_PX)
+      .attr('height', dotSize)
+      .attr('x', totalWidth + EXCEED_LEFT_PADDING_PX)
+      .attr('y', ({ position }: fretboard.PositionStyleTarget) => p(position.string, maxFret).y - dotSize * 0.5)
+      .attr('fill', ({ style }: fretboard.PositionStyleTarget) => style.fill)
+      .attr('stroke', ({ style }: fretboard.PositionStyleTarget) => style.stroke);
+
     fb.render();
 
     styleFilters.forEach((styleFilter) => {
@@ -161,6 +189,7 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
 
     return () => {
       fb.wrapper.select('.slides').remove();
+      fb.wrapper.select('.exceeds').remove();
     };
   }, [fb, guitar, styleFilters, positionStyleTargets, slideStyleTargets, tonic]);
 
