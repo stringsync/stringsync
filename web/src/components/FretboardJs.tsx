@@ -164,7 +164,6 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
     fb.wrapper
       .append('g')
       .attr('class', 'exceeds')
-      .attr('font-family', font)
       .selectAll('g')
       .data(positionStyleTargets.filter((styleTarget) => styleTarget.position.fret > maxFret))
       .enter()
