@@ -3,6 +3,7 @@ import { Button, Col, Modal, Row, Steps } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import { useViewport } from '../ctx/viewport';
 import { Layout, withLayout } from '../hocs/withLayout';
 import { useConstantWindowSize } from '../hooks/useConstantWindowSize';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
@@ -31,6 +32,7 @@ enum RecordingStatus {
 }
 
 const HEIGHT_OFFSET = 100;
+const FLUID_CUTOFF = 900;
 const POPUP_ERRORS = ['must open through exporter', 'must keep the exporter window opened'];
 const PARAMS_ERRORS = ['missing width and/or height query params'];
 
@@ -38,8 +40,8 @@ const ErrorsOuter = styled.div`
   margin-top: 24px;
 `;
 
-const MediaOuter = styled.div`
-  flex: 1;
+const MediaOuter = styled.div<{ flex: boolean }>`
+  ${(props) => (props.flex ? 'flex: 1;' : '')}
 `;
 
 const MusicSheetOuter = styled.div`
@@ -109,6 +111,11 @@ export const NRecord: React.FC = enhance(() => {
   useDocumentTitle(`stringsync - ${filename}`);
   useConstantWindowSize(width, height + HEIGHT_OFFSET);
 
+  // viewport
+  const viewport = useViewport();
+  const mediaFluid = viewport.innerWidth < FLUID_CUTOFF;
+  const mediaFlex = !mediaFluid;
+
   // media player
   const [mediaPlayer, setMediaPlayer] = useState<MediaPlayer>(() => new NoopMediaPlayer());
   const [mediaPlayerReady, setMediaPlayerReady] = useState(() => mediaPlayer.isReady());
@@ -149,7 +156,7 @@ export const NRecord: React.FC = enhance(() => {
   const [recordingStatus, setRecordingStatus] = useState<RecordingStatus>(RecordingStatus.None);
 
   // modal
-  const [modalVisible, setModalVisible] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
   const getStepIndex = (): 0 | 1 | 2 => {
     if (recordingStatus === RecordingStatus.None && !recorder) {
       return 0;
@@ -330,10 +337,10 @@ export const NRecord: React.FC = enhance(() => {
           <Sink musicDisplay={musicDisplay} mediaPlayer={mediaPlayer} />
 
           <FlexColumn>
-            <MediaOuter>
+            <MediaOuter flex={mediaFlex}>
               <Media
                 video
-                fluid={false}
+                fluid={mediaFluid}
                 src={notation.videoUrl}
                 onPlayerChange={setMediaPlayer}
                 style={{ height: '100%' }}
