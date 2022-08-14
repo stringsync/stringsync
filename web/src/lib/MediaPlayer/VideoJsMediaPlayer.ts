@@ -4,7 +4,7 @@ import 'videojs-contrib-quality-levels';
 import { AsyncLoop } from '../../util/AsyncLoop';
 import { Duration } from '../../util/Duration';
 import { EventBus } from '../EventBus';
-import { MediaPlayer, MediaPlayerEventBus, PlayState } from './types';
+import { MediaPlayer, MediaPlayerEventBus, PlayState, QualityLevel } from './types';
 
 export class VideoJsMediaPlayer implements MediaPlayer {
   eventBus: MediaPlayerEventBus = new EventBus();
@@ -19,6 +19,8 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   private ready = false;
 
   constructor(player: VideoJsPlayer) {
+    (window as any).player = this;
+
     this.player = player;
     this.player.ready(this.onReady);
     this.player.on('play', this.onPlay);
@@ -27,6 +29,9 @@ export class VideoJsMediaPlayer implements MediaPlayer {
     this.player.on('ended', this.onEnded);
 
     this.qualityLevels = (this.player as any).qualityLevels();
+    this.qualityLevels.on('addqualitylevel', this.onAddQualityLevel);
+    this.qualityLevels.on('removequalitylevel', this.onRemoveQualityLevel);
+    this.qualityLevels.on('change', this.onQualityLevelsChange);
 
     this.timeChangeLoop = new AsyncLoop(
       this.syncTime,
@@ -36,13 +41,20 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   }
 
   dispose() {
-    this.timeChangeLoop.stop();
     this.player.off('play', this.onPlay);
     this.player.off('pause', this.onPause);
+    this.player.off('volumechange', this.onVolumeChange);
+    this.player.off('ended', this.onEnded);
     // HACK: prevent the root element from being deleted when disposing the player
     // https://github.com/videojs/video.js/blob/85343d1cec98b59891a650e9d050989424ecf866/src/js/component.js#L167
     (this.player as any).el_ = null;
     this.player.dispose();
+
+    this.qualityLevels.off('addqualitylevel', this.onAddQualityLevel);
+    this.qualityLevels.off('removequalitylevel', this.onRemoveQualityLevel);
+    this.qualityLevels.off('change', this.onQualityLevelsChange);
+
+    this.timeChangeLoop.stop();
   }
 
   play = () => {
@@ -183,6 +195,30 @@ export class VideoJsMediaPlayer implements MediaPlayer {
     this.eventBus.dispatch('playbackchange', { playback });
   }
 
+  getQualityLevels(): QualityLevel[] {
+    return Array.from<any>(this.qualityLevels).map((qualityLevel) => ({
+      id: qualityLevel.id,
+      label: `${qualityLevel.height}p`,
+      width: qualityLevel.width,
+      height: qualityLevel.height,
+      bitrate: qualityLevel.bitrate,
+      enabled: qualityLevel.enabled_(),
+    }));
+  }
+
+  setQualityLevel(qualityLevelId: string): void {
+    const qualityLevels = Array.from<any>(this.qualityLevels);
+
+    const hasQualityLevel = qualityLevels.some((qualityLevel: any) => qualityLevel.id === qualityLevelId);
+    if (!hasQualityLevel) {
+      throw new Error(`could not find quality level: ${qualityLevelId}`);
+    }
+
+    for (const qualityLevel of qualityLevels) {
+      qualityLevel.enabled = qualityLevel.id === qualityLevelId;
+    }
+  }
+
   private updateTime(time: Duration) {
     if (this.currentTime.eq(time)) {
       return;
@@ -220,5 +256,17 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   private onVolumeChange = () => {
     const volume = this.getVolume();
     this.eventBus.dispatch('volumechange', { volume });
+  };
+
+  private onAddQualityLevel = () => {
+    this.eventBus.dispatch('qualitylevelschange', {});
+  };
+
+  private onRemoveQualityLevel = () => {
+    this.eventBus.dispatch('qualitylevelschange', {});
+  };
+
+  private onQualityLevelsChange = () => {
+    this.eventBus.dispatch('qualitylevelschange', {});
   };
 }

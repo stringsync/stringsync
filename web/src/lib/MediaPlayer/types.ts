@@ -7,6 +7,15 @@ export enum PlayState {
   Playing,
 }
 
+export type QualityLevel = {
+  id: string;
+  label: string;
+  width: number;
+  height: number;
+  bitrate: number;
+  enabled: boolean;
+};
+
 export type MediaPlayerEventBus = EventBus<{
   init: {};
   timechange: { time: Duration };
@@ -17,6 +26,7 @@ export type MediaPlayerEventBus = EventBus<{
   mutechange: { muted: boolean };
   playbackchange: { playback: number };
   end: {};
+  qualitylevelschange: {};
 }>;
 
 export interface MediaPlayer {
@@ -37,4 +47,6 @@ export interface MediaPlayer {
   unmute(): void;
   setPlayback(playback: number): void;
   getPlayback(): number;
+  getQualityLevels(): QualityLevel[];
+  setQualityLevel(qualityLevelId: string): void;
 }
