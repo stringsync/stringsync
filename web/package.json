@@ -64,6 +64,7 @@
     "typescript": "4.7.4",
     "uuid": "8.3.1",
     "video.js": "7.14.3",
+    "videojs-contrib-quality-levels": "^2.1.0",
     "web-vitals": "1.0.1",
     "workbox-background-sync": "5.1.3",
     "workbox-broadcast-update": "5.1.3",

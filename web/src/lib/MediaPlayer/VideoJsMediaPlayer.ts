@@ -1,5 +1,6 @@
 import { noop } from 'lodash';
 import { VideoJsPlayer } from 'video.js';
+import 'videojs-contrib-quality-levels';
 import { AsyncLoop } from '../../util/AsyncLoop';
 import { Duration } from '../../util/Duration';
 import { EventBus } from '../EventBus';
@@ -11,6 +12,7 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   private timeChangeLoop: AsyncLoop;
   private player: VideoJsPlayer;
   private currentTime = Duration.zero();
+  private qualityLevels;
 
   private isSuspended = false;
   private onUnsuspend = noop;
@@ -23,6 +25,8 @@ export class VideoJsMediaPlayer implements MediaPlayer {
     this.player.on('pause', this.onPause);
     this.player.on('volumechange', this.onVolumeChange);
     this.player.on('ended', this.onEnded);
+
+    this.qualityLevels = (this.player as any).qualityLevels();
 
     this.timeChangeLoop = new AsyncLoop(
       this.syncTime,
