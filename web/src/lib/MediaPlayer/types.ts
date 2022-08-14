@@ -7,14 +7,14 @@ export enum PlayState {
   Playing,
 }
 
-export type QualityLevel = {
+export type QualityLevel = Readonly<{
   id: string;
   label: string;
   width: number;
   height: number;
   bitrate: number;
   enabled: boolean;
-};
+}>;
 
 export type MediaPlayerEventBus = EventBus<{
   init: {};
