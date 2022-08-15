@@ -322,7 +322,7 @@ export const NotationPlayerControls: React.FC<Props> = (props) => {
           <br />
 
           <h5>scale</h5>
-          <Select defaultValue="none" style={{ width: '100%' }} onChange={onSelectedScaleChange}>
+          <Select defaultValue="none" style={{ width: '100%' }} onChange={onSelectedScaleChange} size="large">
             <Select.OptGroup label="default">
               <Select.Option value="none">none</Select.Option>
             </Select.OptGroup>
@@ -401,20 +401,29 @@ export const NotationPlayerControls: React.FC<Props> = (props) => {
           <h5>playback</h5>
           <Playback mediaPlayer={mediaPlayer} />
 
-          <br />
+          {qualityChoices.length > 1 && (
+            <>
+              <br />
 
-          <h5>quality</h5>
-          <Select value={getQualityId(settings.quality)} onChange={onQualityChoiceChange} style={{ width: '100%' }}>
-            {qualityChoices.map((quality) => {
-              const id = getQualityId(quality);
-              const label = getQualityLabel(quality);
-              return (
-                <Select.Option key={id} value={id}>
-                  {label}
-                </Select.Option>
-              );
-            })}
-          </Select>
+              <h5>quality</h5>
+              <Select
+                value={getQualityId(settings.quality)}
+                onChange={onQualityChoiceChange}
+                style={{ width: '100%' }}
+                size="large"
+              >
+                {qualityChoices.map((quality) => {
+                  const id = getQualityId(quality);
+                  const label = getQualityLabel(quality);
+                  return (
+                    <Select.Option key={id} value={id}>
+                      {label}
+                    </Select.Option>
+                  );
+                })}
+              </Select>
+            </>
+          )}
 
           <br />
         </SettingsInner>
