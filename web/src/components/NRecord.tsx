@@ -13,7 +13,7 @@ import { useNotation } from '../hooks/useNotation';
 import { useQueryParams } from '../hooks/useQueryParams';
 import { useRecorder } from '../hooks/useRecorder';
 import { useStream } from '../hooks/useStream';
-import { MediaPlayer, NoopMediaPlayer } from '../lib/MediaPlayer';
+import { MediaPlayer, NoopMediaPlayer, QualitySelectionStrategy } from '../lib/MediaPlayer';
 import { LoadingStatus, MusicDisplay } from '../lib/MusicDisplay';
 import { NoopMusicDisplay } from '../lib/MusicDisplay/NoopMusicDisplay';
 import { DisplayMode } from '../lib/musicxml';
@@ -344,6 +344,10 @@ export const NRecord: React.FC = enhance(() => {
                 src={notation.videoUrl}
                 onPlayerChange={setMediaPlayer}
                 style={{ height: '100%' }}
+                quality={{
+                  type: 'strategy',
+                  strategy: QualitySelectionStrategy.Highest,
+                }}
               />
             </MediaOuter>
 

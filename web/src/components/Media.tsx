@@ -24,7 +24,7 @@ type Props = {
 export const Media: React.FC<Props> = (props) => {
   const fluid = props.fluid ?? true;
   const style = useMemoCmp(props.style);
-  const quality = props.quality ?? DEFAULT_QUALITY;
+  const quality = useMemoCmp(props.quality ?? DEFAULT_QUALITY);
 
   return (
     <Outer data-testid="media" style={style}>
