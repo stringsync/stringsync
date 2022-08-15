@@ -36,4 +36,5 @@ export class NoopMediaPlayer implements MediaPlayer {
     return [];
   }
   setQualityLevel() {}
+  resetQualityLevels() {}
 }

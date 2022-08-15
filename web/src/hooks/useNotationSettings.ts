@@ -1,7 +1,18 @@
 import { useCallback, useMemo, useState } from 'react';
+import { QualityLevel, QualitySelectionStrategy } from '../lib/MediaPlayer';
 import { DisplayMode } from '../lib/musicxml';
 import * as notations from '../lib/notations';
 import { useLocalStorage } from './useLocalStorage';
+
+export type Quality =
+  | {
+      type: 'specified';
+      level: QualityLevel;
+    }
+  | {
+      type: 'strategy';
+      strategy: QualitySelectionStrategy;
+    };
 
 export type NotationSettings = {
   preferredLayout: notations.NotationLayout;
@@ -15,6 +26,7 @@ export type NotationSettings = {
   isLoopActive: boolean;
   scaleSelectionType: notations.ScaleSelectionType;
   selectedScale: string | null;
+  quality: Quality;
 };
 
 export type SetNotationSettings = (notationSettings: NotationSettings) => void;
@@ -50,6 +62,7 @@ const DEFAULT_EPHEMERAL_SETTINGS: EphemeralNotationSettings = {
   isLoopActive: false,
   scaleSelectionType: notations.ScaleSelectionType.None,
   selectedScale: null,
+  quality: { type: 'strategy', strategy: QualitySelectionStrategy.Auto },
 };
 
 export const useNotationSettings = (): [

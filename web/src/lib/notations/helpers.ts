@@ -5,11 +5,10 @@ import { ViewportState } from '../../ctx/viewport';
 import { MusicDisplay } from '../../lib/MusicDisplay';
 import { KeyInfo } from '../../lib/MusicDisplay/helpers';
 import { SupportedSVGEventNames } from '../../lib/MusicDisplay/svg';
-import { DisplayMode } from '../../lib/musicxml';
 import { NumberRange } from '../../util/NumberRange';
 import { InternalError } from '../errors';
 import * as constants from './constants';
-import { FretMarkerDisplay, NotationLayout, ScaleSelectionType, Settings } from './types';
+import { NotationLayout } from './types';
 
 const ALL_LAYOUTS: NotationLayout[] = ['sidecar', 'theater'];
 const MOUSE_SVG_EVENT_NAMES: SupportedSVGEventNames[] = ['mousedown', 'mousemove', 'mouseup'];
@@ -56,20 +55,6 @@ export const getLayoutSizeBoundsPx = (viewport: ViewportState, offsetHeightPx: n
     },
   };
 };
-
-export const getDefaultSettings = (device: Device): Settings => ({
-  preferredLayout: 'sidecar',
-  isFretboardVisible: !device.mobile,
-  fretMarkerDisplay: FretMarkerDisplay.None,
-  isAutoscrollPreferred: true,
-  isVideoVisible: true,
-  scaleSelectionType: ScaleSelectionType.None,
-  selectedScale: null,
-  isLoopActive: false,
-  defaultTheaterHeightPx: constants.MIN_THEATER_HEIGHT_PX,
-  defaultSidecarWidthPx: 480,
-  displayMode: DisplayMode.TabsOnly,
-});
 
 export const getKeyInfo = (musicDisplay: MusicDisplay): KeyInfo | null => {
   return (

@@ -142,7 +142,13 @@ export const NotationPlayer: React.FC<Props> = (props) => {
           <SplitPaneLayout
             handle={renderVideo}
             pane1Content={
-              <Media video={renderVideo} src={notation.videoUrl} fluid={mediaFluid} onPlayerChange={setMediaPlayer} />
+              <Media
+                video={renderVideo}
+                src={notation.videoUrl}
+                fluid={mediaFluid}
+                onPlayerChange={setMediaPlayer}
+                quality={notationSettings.quality}
+              />
             }
             pane1Supplements={sidecar}
             pane1DefaultHeight={notationSettings.defaultTheaterHeightPx}

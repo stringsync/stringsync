@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import React from 'react';
-import { NoopMediaPlayer } from '../lib/MediaPlayer';
+import { NoopMediaPlayer, QualitySelectionStrategy } from '../lib/MediaPlayer';
 import { NoopMusicDisplay } from '../lib/MusicDisplay/NoopMusicDisplay';
 import { DisplayMode } from '../lib/musicxml';
 import { FretMarkerDisplay, ScaleSelectionType } from '../lib/notations';
@@ -32,6 +32,7 @@ describe('Controls', () => {
             preferredLayout: 'sidecar',
             scaleSelectionType: ScaleSelectionType.None,
             selectedScale: null,
+            quality: { type: 'strategy', strategy: QualitySelectionStrategy.Auto },
           }}
           setSettings={setSettings}
         />

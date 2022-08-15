@@ -16,6 +16,12 @@ export type QualityLevel = Readonly<{
   enabled: boolean;
 }>;
 
+export enum QualitySelectionStrategy {
+  Auto = 'auto',
+  Highest = 'highest',
+  Lowest = 'lowest',
+}
+
 export type MediaPlayerEventBus = EventBus<{
   init: {};
   timechange: { time: Duration };
@@ -49,4 +55,5 @@ export interface MediaPlayer {
   getPlayback(): number;
   getQualityLevels(): QualityLevel[];
   setQualityLevel(qualityLevelId: string): void;
+  resetQualityLevels(): void;
 }

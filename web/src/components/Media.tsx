@@ -1,8 +1,11 @@
 import { CSSProperties } from 'react';
 import styled from 'styled-components';
 import { useMemoCmp } from '../hooks/useMemoCmp';
-import { MediaPlayer } from '../lib/MediaPlayer';
+import { Quality } from '../hooks/useNotationSettings';
+import { MediaPlayer, QualitySelectionStrategy } from '../lib/MediaPlayer';
 import { Player } from './Player';
+
+const DEFAULT_QUALITY: Quality = { type: 'strategy', strategy: QualitySelectionStrategy.Auto };
 
 const Outer = styled.div`
   width: 100%;
@@ -14,12 +17,14 @@ type Props = {
   fluid?: boolean;
   src: string | null;
   style?: CSSProperties;
+  quality?: Quality;
   onPlayerChange?: (mediaPlayer: MediaPlayer) => void;
 };
 
 export const Media: React.FC<Props> = (props) => {
   const fluid = props.fluid ?? true;
   const style = useMemoCmp(props.style);
+  const quality = props.quality ?? DEFAULT_QUALITY;
 
   return (
     <Outer data-testid="media" style={style}>
@@ -27,6 +32,7 @@ export const Media: React.FC<Props> = (props) => {
       {props.video && props.src && fluid && (
         <Player.Video
           playerOptions={{ fluid: true, sources: [{ src: props.src, type: 'application/x-mpegURL' }] }}
+          quality={quality}
           onPlayerChange={props.onPlayerChange}
         />
       )}
@@ -35,6 +41,7 @@ export const Media: React.FC<Props> = (props) => {
       {props.video && props.src && !fluid && (
         <Player.Video
           playerOptions={{ fluid: false, sources: [{ src: props.src, type: 'application/x-mpegURL' }] }}
+          quality={quality}
           onPlayerChange={props.onPlayerChange}
         />
       )}
@@ -42,6 +49,7 @@ export const Media: React.FC<Props> = (props) => {
       {!props.video && props.src && (
         <Player.Audio
           playerOptions={{ fluid, sources: [{ src: props.src, type: 'application/x-mpegURL' }] }}
+          quality={quality}
           onPlayerChange={props.onPlayerChange}
         />
       )}

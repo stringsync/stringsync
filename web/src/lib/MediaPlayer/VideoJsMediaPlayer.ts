@@ -1,4 +1,4 @@
-import { noop } from 'lodash';
+import { isEqual, noop } from 'lodash';
 import { VideoJsPlayer } from 'video.js';
 import 'videojs-contrib-quality-levels';
 import { AsyncLoop } from '../../util/AsyncLoop';
@@ -209,13 +209,34 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   setQualityLevel(qualityLevelId: string): void {
     const qualityLevels = Array.from<any>(this.qualityLevels);
 
-    const hasQualityLevel = qualityLevels.some((qualityLevel: any) => qualityLevel.id === qualityLevelId);
+    const hasQualityLevel = qualityLevels.some((qualityLevel) => qualityLevel.id === qualityLevelId);
     if (!hasQualityLevel) {
       throw new Error(`could not find quality level: ${qualityLevelId}`);
     }
 
+    const enabledQualityLevelIds = qualityLevels
+      .filter((qualityLevel) => qualityLevel.enabled_())
+      .map((qualityLevel) => qualityLevel.id);
+    const alreadyHasQualityLevelSet = isEqual(new Set(enabledQualityLevelIds), new Set([qualityLevelId]));
+    if (alreadyHasQualityLevelSet) {
+      return;
+    }
+
     for (const qualityLevel of qualityLevels) {
       qualityLevel.enabled = qualityLevel.id === qualityLevelId;
+    }
+  }
+
+  resetQualityLevels() {
+    const qualityLevels = Array.from<any>(this.qualityLevels);
+
+    const allQualityLevelsEnabled = qualityLevels.every((qualityLevel) => qualityLevel.enabled_());
+    if (allQualityLevelsEnabled) {
+      return;
+    }
+
+    for (const qualityLevel of qualityLevels) {
+      qualityLevel.enabled = true;
     }
   }
 

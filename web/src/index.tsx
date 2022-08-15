@@ -15,11 +15,7 @@ if (rootElement?.hasChildNodes()) {
   );
 } else {
   const root = createRoot(rootElement!);
-  root.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  );
+  root.render(<App />);
 }
 
 const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';

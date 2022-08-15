@@ -5,9 +5,10 @@ import { CheckboxOptionType, CheckboxValueType } from 'antd/lib/checkbox/Group';
 import React, { useCallback, useEffect, useId, useState } from 'react';
 import styled from 'styled-components';
 import { useDevice } from '../ctx/device';
+import { NotationSettings, Quality } from '../hooks/useNotationSettings';
 import { useResizeObserver } from '../hooks/useResizeObserver';
 import { useScales } from '../hooks/useScales';
-import { MediaPlayer, PlayState } from '../lib/MediaPlayer';
+import { MediaPlayer, PlayState, QualitySelectionStrategy } from '../lib/MediaPlayer';
 import { MusicDisplay } from '../lib/MusicDisplay';
 import { DisplayMode } from '../lib/musicxml';
 import * as notations from '../lib/notations';
@@ -57,13 +58,35 @@ const SettingsInner = styled.div`
   }
 `;
 
+const getQualityId = (quality: Quality): string => {
+  switch (quality.type) {
+    case 'strategy':
+      return quality.strategy;
+    case 'specified':
+      return quality.level.id;
+  }
+};
+
+const getQualityLabel = (quality: Quality): string => {
+  switch (quality.type) {
+    case 'strategy':
+      return quality.strategy;
+    case 'specified':
+      return quality.level.label;
+  }
+};
+
+const isQualitySelectionStrategy = (value: any): value is QualitySelectionStrategy => {
+  return Object.values(QualitySelectionStrategy).includes(value);
+};
+
 type Props = {
   videoControls: boolean;
   notation: Nullable<notations.RenderableNotation>;
   musicDisplay: MusicDisplay;
   mediaPlayer: MediaPlayer;
-  settings: notations.Settings;
-  setSettings(settings: notations.Settings): void;
+  settings: NotationSettings;
+  setSettings(settings: NotationSettings): void;
   settingsContainer?: HTMLElement | false;
 };
 
@@ -129,6 +152,37 @@ export const NotationPlayerControls: React.FC<Props> = (props) => {
   };
   const onIsLoopActiveChange = (event: CheckboxChangeEvent) => {
     setSettings({ ...settings, isLoopActive: event.target.checked });
+  };
+
+  // quality
+  const [qualityChoices, setQualityChoices] = useState<Quality[]>(() => [
+    { type: 'strategy', strategy: QualitySelectionStrategy.Auto },
+  ]);
+  useEffect(() => {
+    const syncQualityChoices = () => {
+      const qualityLevels = mediaPlayer.getQualityLevels();
+      setQualityChoices([
+        { type: 'strategy', strategy: QualitySelectionStrategy.Auto },
+        ...qualityLevels.map((level) => ({ type: 'specified' as const, level })),
+      ]);
+    };
+    const id = mediaPlayer.eventBus.subscribe('qualitylevelschange', syncQualityChoices);
+    return () => {
+      mediaPlayer.eventBus.unsubscribe(id);
+    };
+  }, [mediaPlayer]);
+  const onQualityChoiceChange = (qualityId: string) => {
+    if (isQualitySelectionStrategy(qualityId)) {
+      setSettings({ ...settings, quality: { type: 'strategy', strategy: qualityId } });
+      return;
+    }
+
+    const quality = qualityChoices.find(
+      (qualityChoice) => qualityChoice.type === 'specified' && qualityChoice.level.id === qualityId
+    );
+    if (quality) {
+      setSettings({ ...settings, quality });
+    }
   };
 
   // display mode settings
@@ -346,6 +400,21 @@ export const NotationPlayerControls: React.FC<Props> = (props) => {
 
           <h5>playback</h5>
           <Playback mediaPlayer={mediaPlayer} />
+
+          <br />
+
+          <h5>quality</h5>
+          <Select value={getQualityId(settings.quality)} onChange={onQualityChoiceChange} style={{ width: '100%' }}>
+            {qualityChoices.map((quality) => {
+              const id = getQualityId(quality);
+              const label = getQualityLabel(quality);
+              return (
+                <Select.Option key={id} value={id}>
+                  {label}
+                </Select.Option>
+              );
+            })}
+          </Select>
 
           <br />
         </SettingsInner>

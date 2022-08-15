@@ -2,6 +2,7 @@ import { render } from '@testing-library/react';
 import { noop } from 'lodash';
 import React from 'react';
 import { NotationSettings } from '../hooks/useNotationSettings';
+import { QualitySelectionStrategy } from '../lib/MediaPlayer';
 import { DisplayMode } from '../lib/musicxml';
 import { FretMarkerDisplay, ScaleSelectionType } from '../lib/notations';
 import { Test } from '../testing';
@@ -21,6 +22,7 @@ describe('NotationPlayer', () => {
       isLoopActive: false,
       isFretboardVisible: true,
       preferredLayout: 'sidecar',
+      quality: { type: 'strategy', strategy: QualitySelectionStrategy.Auto },
     };
 
     const { container } = render(
