@@ -608,7 +608,7 @@ Resources:
       Code:
         S3Bucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
         S3Key: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'custom-resource.zip']]
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: 180
       Environment:
         Variables:
@@ -665,7 +665,7 @@ Resources:
       Code:
         S3Bucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
         S3Key: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'step-functions.zip']]
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: 120
       Environment:
         Variables:
@@ -724,7 +724,7 @@ Resources:
       Code:
         S3Bucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
         S3Key: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'input-validate.zip']]
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: 120
       Environment:
         Variables:
@@ -870,7 +870,7 @@ Resources:
       Code:
         S3Bucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
         S3Key: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'dynamo.zip']]
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: 120
       Environment:
         Variables:
@@ -927,7 +927,7 @@ Resources:
       Code:
         S3Bucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
         S3Key: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'profiler.zip']]
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: 120
       Environment:
         Variables:
@@ -990,7 +990,7 @@ Resources:
       Code:
         S3Bucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
         S3Key: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'encode.zip']]
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: 120
       Environment:
         Variables:
@@ -1053,7 +1053,7 @@ Resources:
       Code:
         S3Bucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
         S3Key: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'output-validate.zip']]
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: 120
       Environment:
         Variables:
@@ -1111,7 +1111,7 @@ Resources:
       Code:
         S3Bucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
         S3Key: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'archive-source.zip']]
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: 120
       Environment:
         Variables:
@@ -1170,7 +1170,7 @@ Resources:
       Code:
         S3Bucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
         S3Key: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'sqs-publish.zip']]
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: 120
       Environment:
         Variables:
@@ -1229,7 +1229,7 @@ Resources:
       Code:
         S3Bucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
         S3Key: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'sns-notification.zip']]
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: 120
       Environment:
         Variables:
@@ -1290,7 +1290,7 @@ Resources:
       Code:
         S3Bucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
         S3Key: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'media-package-assets.zip']]
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: 300
       Environment:
         Variables:
@@ -1352,7 +1352,7 @@ Resources:
       Code:
         S3Bucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
         S3Key: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'error-handler.zip']]
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: 120
       Environment:
         Variables:
