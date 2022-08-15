@@ -202,9 +202,9 @@ export const NRecord: React.FC = enhance(() => {
 
     mediaPlayer.eventBus.once('end', async () => {
       mediaPlayer.seek(Duration.zero());
+
       await wait(Duration.ms(500));
 
-      mediaPlayer.pause();
       recorder.stop();
 
       clearStream();
