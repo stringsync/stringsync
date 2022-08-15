@@ -32,8 +32,6 @@ type AudioProps = BaseProps & {
 type Props = VideoProps | AudioProps;
 
 const applyQuality = (mediaPlayer: MediaPlayer, quality: Quality) => {
-  console.log('asdf');
-
   const qualityLevels = mediaPlayer.getQualityLevels();
   if (qualityLevels.length === 0) {
     return;
