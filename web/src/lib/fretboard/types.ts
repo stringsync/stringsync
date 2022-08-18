@@ -15,7 +15,10 @@ export type PlainPosition = {
 
 export enum StyleTargetType {
   Position,
+  HammerOn,
+  PullOff,
   Slide,
+  Tap,
 }
 
 export type PositionStyleTarget = {
@@ -31,7 +34,21 @@ export type SlideStyleTarget = {
   frets: [number, number];
 };
 
-export type StyleTarget = PositionStyleTarget | SlideStyleTarget;
+export type HammerOnStyleTarget = {
+  type: StyleTargetType.HammerOn;
+  style: PositionStyle;
+  string: number;
+  frets: [number, number];
+};
+
+export type PullOffStyleTarget = {
+  type: StyleTargetType.PullOff;
+  style: PositionStyle;
+  string: number;
+  frets: [number, number];
+};
+
+export type StyleTarget = PositionStyleTarget | SlideStyleTarget | HammerOnStyleTarget | PullOffStyleTarget;
 
 export type PositionFilterParams = {
   fret: number;

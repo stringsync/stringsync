@@ -3,19 +3,29 @@ import { Interval, Note } from '@tonaljs/tonal';
 import { get, identity, isNull, merge, uniq } from 'lodash';
 import React from 'react';
 import { Position as GuitarPosition } from '../guitar/Position';
+import { HammerOn } from './HammerOn';
 import { Position } from './Position';
+import { PullOff } from './PullOff';
 import { Scale } from './Scale';
 import { Slide } from './Slide';
 import {
+  HammerOnStyleTarget,
   MergeStrategy,
   PositionStyle,
   PositionStyleTarget,
+  PullOffStyleTarget,
   SlideStyleTarget,
   StyleTarget,
   StyleTargetType,
 } from './types';
 
-const CHILDREN_DISPLAY_NAMES = [Position.displayName, Scale.displayName].filter(identity);
+const CHILDREN_DISPLAY_NAMES = [
+  Position.displayName,
+  Scale.displayName,
+  Slide.displayName,
+  HammerOn.displayName,
+  PullOff.displayName,
+].filter(identity);
 
 type Component<C extends React.ComponentType<any>> = React.ReactElement<React.ComponentProps<C>>;
 
@@ -38,6 +48,8 @@ export const getStyleTargets = (
 const mergeStyles = (styleTargets: StyleTarget[]): StyleTarget[] => {
   const positionStyleTargets = styleTargets.filter(isPositionStyleTarget);
   const slideStyleTargets = styleTargets.filter(isSlideStyleTarget);
+  const hammerOnStyleTargets = styleTargets.filter(isHammerOnStyleTarget);
+  const pullOffStyleTargets = styleTargets.filter(isPullOffStyleTarget);
 
   const unioned: Record<string, StyleTarget> = {};
   for (const styleTarget of positionStyleTargets) {
@@ -51,12 +63,19 @@ const mergeStyles = (styleTargets: StyleTarget[]): StyleTarget[] => {
 
   const orderedPositions = positionStyleTargets.map(({ position }) => encodePosition(position));
   const uniqPositions = uniq(orderedPositions);
-  return [...uniqPositions.map((position) => unioned[position]), ...slideStyleTargets];
+  return [
+    ...uniqPositions.map((position) => unioned[position]),
+    ...slideStyleTargets,
+    ...hammerOnStyleTargets,
+    ...pullOffStyleTargets,
+  ];
 };
 
 const pickFirstStyles = (styleTargets: StyleTarget[]): StyleTarget[] => {
   const positionStyleTargets = styleTargets.filter(isPositionStyleTarget);
   const slideStyleTargets = styleTargets.filter(isSlideStyleTarget);
+  const hammerOnStyleTargets = styleTargets.filter(isHammerOnStyleTarget);
+  const pullOffStyleTargets = styleTargets.filter(isPullOffStyleTarget);
 
   const nextStyleTargets = new Array<StyleTarget>();
   const seen = new Set<string>();
@@ -69,12 +88,14 @@ const pickFirstStyles = (styleTargets: StyleTarget[]): StyleTarget[] => {
     }
   }
 
-  return [...nextStyleTargets, ...slideStyleTargets];
+  return [...nextStyleTargets, ...slideStyleTargets, ...hammerOnStyleTargets, ...pullOffStyleTargets];
 };
 
 const pickLastStyles = (styleTargets: StyleTarget[]): StyleTarget[] => {
   const positionStyleTargets = styleTargets.filter(isPositionStyleTarget);
   const slideStyleTargets = styleTargets.filter(isSlideStyleTarget);
+  const hammerOnStyleTargets = styleTargets.filter(isHammerOnStyleTarget);
+  const pullOffStyleTargets = styleTargets.filter(isPullOffStyleTarget);
 
   const latest: Record<string, StyleTarget> = {};
   for (const styleTarget of positionStyleTargets) {
@@ -84,7 +105,12 @@ const pickLastStyles = (styleTargets: StyleTarget[]): StyleTarget[] => {
 
   const orderedPositions = positionStyleTargets.map(({ position }) => encodePosition(position));
   const uniqPositions = uniq(orderedPositions);
-  return [...uniqPositions.map((position) => latest[position]), ...slideStyleTargets];
+  return [
+    ...uniqPositions.map((position) => latest[position]),
+    ...slideStyleTargets,
+    ...hammerOnStyleTargets,
+    ...pullOffStyleTargets,
+  ];
 };
 
 const mergeStyleTargets = (styleTargets: StyleTarget[], mergeStrategy: MergeStrategy): StyleTarget[] => {
@@ -116,6 +142,12 @@ const getStyleTargetsForChildType = (fretboard: Fretboard, child: React.ReactNod
   }
   if (isComponentType(child, Slide)) {
     return getStyleTargetsFromSlideComponent(child);
+  }
+  if (isComponentType(child, HammerOn)) {
+    return getStyleTargetsFromHammerOnComponent(child);
+  }
+  if (isComponentType(child, PullOff)) {
+    return getStyleTargetsFromPullOffComponent(child);
   }
   throw new Error(`Fretboard children must be one of: ${CHILDREN_DISPLAY_NAMES}, got ${child}`);
 };
@@ -159,6 +191,24 @@ const getStyleTargetsFromSlideComponent = (child: Component<typeof Slide>): Styl
   return [{ type: StyleTargetType.Slide, string: from.string, frets: [from.fret, to.fret], style: { ...style } }];
 };
 
+const getStyleTargetsFromHammerOnComponent = (child: Component<typeof HammerOn>): StyleTarget[] => {
+  const { from, to, style } = child.props;
+  if (from.string !== to.string) {
+    console.warn(`cannot get style targets for a hammer on that moves strings: from=${from}, to=${to}`);
+    return [];
+  }
+  return [{ type: StyleTargetType.HammerOn, string: from.string, frets: [from.fret, to.fret], style: { ...style } }];
+};
+
+const getStyleTargetsFromPullOffComponent = (child: Component<typeof HammerOn>): StyleTarget[] => {
+  const { from, to, style } = child.props;
+  if (from.string !== to.string) {
+    console.warn(`cannot get style targets for a hammer on that moves strings: from=${from}, to=${to}`);
+    return [];
+  }
+  return [{ type: StyleTargetType.PullOff, string: from.string, frets: [from.fret, to.fret], style: { ...style } }];
+};
+
 export const getEnharmonic = (note: string) => Note.simplify(Note.enharmonic(note));
 
 const GRADES = ['1', 'b2', '2', 'b3', '3', '4', 'b5', '5', '#5', '6', 'b7', '7'];
@@ -190,6 +240,14 @@ export const isPositionStyleTarget = (value: any): value is PositionStyleTarget 
 
 export const isSlideStyleTarget = (value: any): value is SlideStyleTarget => {
   return value.type === StyleTargetType.Slide;
+};
+
+export const isHammerOnStyleTarget = (value: any): value is HammerOnStyleTarget => {
+  return value.type === StyleTargetType.HammerOn;
+};
+
+export const isPullOffStyleTarget = (value: any): value is PullOffStyleTarget => {
+  return value.type === StyleTargetType.PullOff;
 };
 
 export const getFretboardEl = (container: HTMLElement): Element | null => {

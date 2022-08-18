@@ -14,6 +14,8 @@ const DEFAULT_OPTIONS: fretboard.FretboardJsOptions = {};
 const EXCEED_WIDTH_PX = 4;
 const EXCEED_LEFT_PADDING_PX = 6;
 
+type TieStyleTarget = fretboard.SlideStyleTarget | fretboard.HammerOnStyleTarget | fretboard.PullOffStyleTarget;
+
 export type FretboardJsProps = PropsWithChildren<{
   options?: fretboard.FretboardJsOptions;
   tonic?: string;
@@ -26,6 +28,8 @@ export type FretboardJsChildComponents = {
   Position: typeof fretboard.Position;
   Scale: typeof fretboard.Scale;
   Slide: typeof fretboard.Slide;
+  HammerOn: typeof fretboard.HammerOn;
+  PullOff: typeof fretboard.PullOff;
 };
 
 export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponents = (props) => {
@@ -38,8 +42,8 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
 
   const fb = useFretboard(figureRef, tuning, options);
   const guitar = useGuitar(tuning);
-  const { positionStyleTargets, slideStyleTargets } = useStyleTargets(fb, props.children, styleMergeStrategy);
-  const styleFilters = useStyleFilters(positionStyleTargets);
+  const styleTargets = useStyleTargets(fb, props.children, styleMergeStrategy);
+  const styleFilters = useStyleFilters(styleTargets.positions);
 
   useEffect(() => {
     const figure = figureRef.current;
@@ -64,49 +68,147 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
     // SVG elements do not have a z-index property.
 
     const maxFret = fb.positions[0].length - 1;
-
-    // ----------------
-    // render slides
-    // ----------------
-    const { font, dotSize, width, leftPadding, rightPadding } = get(fb, 'options');
+    const { font, dotSize, dotTextSize, width, leftPadding, rightPadding } = get(fb, 'options');
     const { positions } = fb;
     const getDotOffset = get(fb, 'getDotOffset', () => 0).bind(fb);
     const dotOffset = getDotOffset();
     const p = (string: number, fret: number) => positions[string - 1][fret - dotOffset];
 
-    const slideGroup = fb.wrapper.append('g').attr('class', 'slides').attr('font-family', font);
+    const tieOpacity = 0.3;
+    const tieHeight = dotSize;
+    const tieWidth = ({ string, frets }: TieStyleTarget) => {
+      return `${Math.abs(p(string, frets[0]).x - p(string, frets[1]).x)}%`;
+    };
+    const tieX = ({ string, frets }: TieStyleTarget) => `${p(string, Math.min(...frets)).x}%`;
+    const tieY = ({ string, frets }: TieStyleTarget) => {
+      return p(string, Math.min(...frets)).y - tieHeight * 0.5;
+    };
+    const tieFill = ({ style }: TieStyleTarget) => style.fill;
+    const tieStroke = ({ style }: TieStyleTarget) => style.stroke;
 
-    const slidesNodes = slideGroup
+    // ----------------
+    // render slides
+    // ----------------
+
+    const slideGroup = fb.wrapper
+      .append('g')
+      .attr('class', 'slides')
+      .attr('font-family', font)
       .selectAll('g')
-      .data(slideStyleTargets.filter((styleTarget) => styleTarget.frets.every((fret) => fret < maxFret)))
+      .data(styleTargets.slides.filter((styleTarget) => styleTarget.frets.every((fret) => fret < maxFret)))
       .enter()
       .append('g')
       .attr('class', ({ string, frets }: fretboard.SlideStyleTarget) => {
         return ['slide', `slide-string-${string}-from-fret-${frets[0]}-to-fret-${frets[1]}`].join(' ');
       });
-
-    const slideOpacity = 0.5;
-    const slideHeight = dotSize;
-    const slideWidth = ({ string, frets }: fretboard.SlideStyleTarget) => {
-      return `${Math.abs(p(string, frets[0]).x - p(string, frets[1]).x)}%`;
-    };
-    const slideX = ({ string, frets }: fretboard.SlideStyleTarget) => `${p(string, Math.min(...frets)).x}%`;
-    const slideY = ({ string, frets }: fretboard.SlideStyleTarget) => {
-      return p(string, Math.min(...frets)).y - slideHeight * 0.5;
-    };
-    const slideFill = ({ style }: fretboard.SlideStyleTarget) => style.fill;
-    const slideStroke = ({ style }: fretboard.SlideStyleTarget) => style.stroke;
-
-    slidesNodes
+    slideGroup
       .append('rect')
       .attr('class', 'slide-rect')
-      .attr('x', slideX)
-      .attr('y', slideY)
-      .attr('width', slideWidth)
-      .attr('height', slideHeight)
-      .attr('fill', slideFill)
-      .attr('stroke', slideStroke)
-      .attr('opacity', slideOpacity);
+      .attr('x', tieX)
+      .attr('y', tieY)
+      .attr('width', tieWidth)
+      .attr('height', tieHeight)
+      .attr('fill', tieFill)
+      .attr('stroke', tieStroke)
+      .attr('opacity', tieOpacity);
+    slideGroup
+      .append('text')
+      .attr('class', 'slide-text')
+      .text('S')
+      .attr('font-size', dotTextSize)
+      .attr('x', (styleTarget: fretboard.HammerOnStyleTarget) => {
+        let x1 = p(styleTarget.string, styleTarget.frets[0]).x;
+        let x2 = p(styleTarget.string, styleTarget.frets[1]).x;
+        [x1, x2] = [x1, x2].sort();
+        return `${x1 + (x2 - x1) / 2}%`;
+      })
+      .attr('y', (styleTarget: fretboard.HammerOnStyleTarget) => {
+        return tieY(styleTarget) + tieHeight / 2 - 4;
+      })
+      .attr('text-anchor', 'middle')
+      .attr('dominant-baseline', 'middle');
+
+    // -------------------
+    // render hammer-ons
+    // -------------------
+
+    const hammerOnGroup = fb.wrapper
+      .append('g')
+      .attr('class', 'hammer-ons')
+      .selectAll('g')
+      .data(styleTargets.hammerOns.filter((styleTarget) => styleTarget.frets.every((fret) => fret < maxFret)))
+      .enter()
+      .append('g')
+      .attr('class', ({ string, frets }: fretboard.HammerOnStyleTarget) => {
+        return ['hammer-on', `hammer-on-string-${string}-from-fret-${frets[0]}-to-fret-${frets[1]}`];
+      });
+    hammerOnGroup
+      .append('rect')
+      .attr('class', 'hammer-on-rect')
+      .attr('x', tieX)
+      .attr('y', tieY)
+      .attr('width', tieWidth)
+      .attr('height', tieHeight)
+      .attr('fill', tieFill)
+      .attr('stroke', tieStroke)
+      .attr('opacity', tieOpacity);
+    hammerOnGroup
+      .append('text')
+      .attr('class', 'hammer-on-text')
+      .text('H')
+      .attr('font-size', dotTextSize)
+      .attr('x', (styleTarget: fretboard.HammerOnStyleTarget) => {
+        let x1 = p(styleTarget.string, styleTarget.frets[0]).x;
+        let x2 = p(styleTarget.string, styleTarget.frets[1]).x;
+        [x1, x2] = [x1, x2].sort();
+        return `${x1 + (x2 - x1) / 2}%`;
+      })
+      .attr('y', (styleTarget: fretboard.HammerOnStyleTarget) => {
+        return tieY(styleTarget) + tieHeight / 2 - 4;
+      })
+      .attr('text-anchor', 'middle')
+      .attr('dominant-baseline', 'middle');
+
+    // -------------------
+    // render pull-offs
+    // -------------------
+
+    const pullOffsGroup = fb.wrapper
+      .append('g')
+      .attr('class', 'pull-offs')
+      .selectAll('g')
+      .data(styleTargets.pullOffs.filter((styleTarget) => styleTarget.frets.every((fret) => fret < maxFret)))
+      .enter()
+      .append('g')
+      .attr('class', ({ string, frets }: fretboard.PullOffStyleTarget) => {
+        return ['pull-offs', `pull-off-string-${string}-from-fret-${frets[0]}-to-fret-${frets[1]}`];
+      });
+    pullOffsGroup
+      .append('rect')
+      .attr('class', 'pull-off-rect')
+      .attr('x', tieX)
+      .attr('y', tieY)
+      .attr('width', tieWidth)
+      .attr('height', tieHeight)
+      .attr('fill', tieFill)
+      .attr('stroke', tieStroke)
+      .attr('opacity', tieOpacity);
+    pullOffsGroup
+      .append('text')
+      .attr('class', 'pull-off-text')
+      .text('P')
+      .attr('font-size', dotTextSize)
+      .attr('x', (styleTarget: fretboard.PullOffStyleTarget) => {
+        let x1 = p(styleTarget.string, styleTarget.frets[0]).x;
+        let x2 = p(styleTarget.string, styleTarget.frets[1]).x;
+        [x1, x2] = [x1, x2].sort();
+        return `${x1 + (x2 - x1) / 2}%`;
+      })
+      .attr('y', (styleTarget: fretboard.PullOffStyleTarget) => {
+        return tieY(styleTarget) + tieHeight / 2 - 4;
+      })
+      .attr('text-anchor', 'middle')
+      .attr('dominant-baseline', 'middle');
 
     // ----------------
     // render positions
@@ -116,7 +218,7 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
     const scale = new Set(key.scale);
 
     fb.setDots(
-      positionStyleTargets
+      styleTargets.positions
         .filter((styleTarget) => styleTarget.position.fret <= maxFret)
         .map<fretboard.PositionFilterParams>((styleTarget) => {
           const pitch = guitar.getPitchAt(styleTarget.position);
@@ -165,7 +267,7 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
       .append('g')
       .attr('class', 'exceeds')
       .selectAll('g')
-      .data(positionStyleTargets.filter((styleTarget) => styleTarget.position.fret > maxFret))
+      .data(styleTargets.positions.filter((styleTarget) => styleTarget.position.fret > maxFret))
       .enter()
       .append('g')
       .attr('class', ({ position }: fretboard.PositionStyleTarget) => {
@@ -188,9 +290,11 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
 
     return () => {
       fb.wrapper.select('.slides').remove();
+      fb.wrapper.select('.hammer-ons').remove();
+      fb.wrapper.select('.pull-offs').remove();
       fb.wrapper.select('.exceeds').remove();
     };
-  }, [fb, guitar, styleFilters, positionStyleTargets, slideStyleTargets, tonic]);
+  }, [fb, guitar, styleFilters, tonic, styleTargets]);
 
   return <figure ref={figureRef} />;
 };
@@ -198,3 +302,5 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
 FretboardJs.Position = fretboard.Position;
 FretboardJs.Scale = fretboard.Scale;
 FretboardJs.Slide = fretboard.Slide;
+FretboardJs.HammerOn = fretboard.HammerOn;
+FretboardJs.PullOff = fretboard.PullOff;

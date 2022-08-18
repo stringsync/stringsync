@@ -1,8 +1,9 @@
 import { Key } from '@tonaljs/tonal';
 import { get, isNumber, sortBy } from 'lodash';
-import { KeyEnum, KeyInstruction, Note, VexFlowMusicSheetCalculator } from 'opensheetmusicdisplay';
+import { KeyEnum, KeyInstruction, Note, TieTypes, VexFlowMusicSheetCalculator } from 'opensheetmusicdisplay';
 import { ConflictError, InternalError } from '../errors';
 import { Position } from '../guitar/Position';
+import { Tie, TieType } from './locator';
 
 export type MajorKey = ReturnType<typeof Key.majorKey>;
 
@@ -100,3 +101,21 @@ export const toPosition = (tabNote: Note) => {
 };
 
 export const isPosition = (value: any): value is Position => value instanceof Position;
+
+export const isTie = (value: any): value is Tie =>
+  typeof value === 'object' && value.type in TieType && value.to instanceof Position && value.from instanceof Position;
+
+export const toPositionTransitionType = (tabNote: Note): TieType => {
+  switch (tabNote.NoteTie.Type) {
+    case TieTypes.SIMPLE:
+      return TieType.None;
+    case TieTypes.HAMMERON:
+      return TieType.HammerOn;
+    case TieTypes.PULLOFF:
+      return TieType.PullOff;
+    case TieTypes.SLIDE:
+      return TieType.Slide;
+    case TieTypes.TAPPING:
+      return TieType.Tap;
+  }
+};

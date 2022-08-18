@@ -1,5 +1,5 @@
-import { first, isUndefined, last } from 'lodash';
-import { Note, TieTypes, VoiceEntry } from 'opensheetmusicdisplay';
+import { first, isNull, isUndefined, last } from 'lodash';
+import { Note, VoiceEntry } from 'opensheetmusicdisplay';
 import { Box } from '../../../util/Box';
 import { memoize } from '../../../util/memoize';
 import { NumberRange } from '../../../util/NumberRange';
@@ -8,7 +8,7 @@ import * as helpers from '../helpers';
 import { KeyInfo } from '../helpers';
 import { END_OF_MEASURE_LINE_PADDING_PX } from './constants';
 import { IteratorSnapshot } from './IteratorSnapshot';
-import { LocatorTarget, PositionTransition } from './types';
+import { LocatorTarget, Tie } from './types';
 
 type CursorSnapshotAttrs = {
   measureLine: number;
@@ -150,25 +150,33 @@ export class CursorSnapshot {
   }
 
   @memoize()
-  getSlideTransitions(): PositionTransition[] {
+  getTies(): Tie[] {
     return this.entries
       .filter((entry) => entry.hasTie())
       .flatMap((entry) => entry.Notes)
       .filter((note) => note.ParentStaff.isTab)
       .filter((tabNote) => tabNote.NoteTie)
-      .filter((tabNote) => tabNote.NoteTie.Type === TieTypes.SLIDE)
       .map((tabNote) => tabNote.NoteTie.Notes)
-      .filter((tiedTabNotes) => tiedTabNotes.length >= 2) // disallow sliding to/from nothing
-      .map((tiedTabNotes) => tiedTabNotes.map(helpers.toPosition).filter(helpers.isPosition))
-      .flatMap((tiedPositions) => {
-        const slideTransitions = new Array<PositionTransition>();
+      .filter((tiedTabNotes) => tiedTabNotes.length >= 2) // disallow articulating to/from nothing
+      .map((tiedTabNotes) =>
+        tiedTabNotes
+          .map((tiedTabNote) => {
+            const type = helpers.toPositionTransitionType(tiedTabNote);
+            const position = helpers.toPosition(tiedTabNote);
+            return { type, position };
+          })
+          .filter((tiePart) => !isNull(tiePart.position))
+      )
+      .flatMap((tieParts) => {
+        const ties = new Array<Tie>();
         // The last element is skipped.
-        for (let ndx = 0; ndx < tiedPositions.length - 1; ndx++) {
-          const from = tiedPositions[ndx];
-          const to = tiedPositions[ndx + 1];
-          slideTransitions.push({ from, to });
+        for (let ndx = 0; ndx < tieParts.length - 1; ndx++) {
+          const type = tieParts[ndx].type;
+          const from = tieParts[ndx].position!;
+          const to = tieParts[ndx + 1].position!;
+          ties.push({ type, from, to });
         }
-        return slideTransitions;
+        return ties;
       });
   }
 

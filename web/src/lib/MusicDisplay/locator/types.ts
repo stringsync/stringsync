@@ -70,7 +70,16 @@ export type LocateResult = {
   targets: LocatorTarget[];
 };
 
-export type PositionTransition = {
+export enum TieType {
+  None,
+  HammerOn,
+  PullOff,
+  Slide,
+  Tap,
+}
+
+export type Tie = {
+  type: TieType;
   from: Position;
   to: Position;
 };
