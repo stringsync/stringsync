@@ -85,6 +85,7 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
     };
     const tieFill = ({ style }: TieStyleTarget) => style.fill;
     const tieStroke = ({ style }: TieStyleTarget) => style.stroke;
+    const tieFontSize = Math.max(8, dotTextSize - 4);
 
     // ----------------
     // render slides
@@ -115,7 +116,7 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
       .append('text')
       .attr('class', 'slide-text')
       .text('S')
-      .attr('font-size', dotTextSize)
+      .attr('font-size', tieFontSize)
       .attr('x', (styleTarget: fretboard.HammerOnStyleTarget) => {
         let x1 = p(styleTarget.string, styleTarget.frets[0]).x;
         let x2 = p(styleTarget.string, styleTarget.frets[1]).x;
@@ -156,7 +157,7 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
       .append('text')
       .attr('class', 'hammer-on-text')
       .text('H')
-      .attr('font-size', dotTextSize)
+      .attr('font-size', tieFontSize)
       .attr('x', (styleTarget: fretboard.HammerOnStyleTarget) => {
         let x1 = p(styleTarget.string, styleTarget.frets[0]).x;
         let x2 = p(styleTarget.string, styleTarget.frets[1]).x;
@@ -197,7 +198,7 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
       .append('text')
       .attr('class', 'pull-off-text')
       .text('P')
-      .attr('font-size', dotTextSize)
+      .attr('font-size', tieFontSize)
       .attr('x', (styleTarget: fretboard.PullOffStyleTarget) => {
         let x1 = p(styleTarget.string, styleTarget.frets[0]).x;
         let x2 = p(styleTarget.string, styleTarget.frets[1]).x;
