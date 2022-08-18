@@ -5,11 +5,15 @@ import {
   aws_ec2,
   aws_ecs,
   aws_elasticloadbalancingv2,
+  aws_events,
+  aws_events_targets,
   aws_iam,
   aws_route53,
   aws_route53_targets,
   aws_s3,
   aws_secretsmanager,
+  aws_sns,
+  aws_sns_subscriptions,
   CfnParameter,
   Duration,
   PhysicalName,
@@ -521,6 +525,23 @@ export class StringsyncStack extends Stack {
           imageFile: ci.workerArtifactPath,
         }),
       ],
+    });
+
+    /**
+     * CI NOTIFICATIONS
+     * https://github.com/stelligent/cloudformation_templates/blob/74addde798e276adb45ec9f1487f4a5e2f58cabb/labs/codepipeline/codepipeline-notifications.yml
+     */
+    const adminEmailTopic = new aws_sns.Topic(this, 'AdminEmailTopic');
+    adminEmailTopic.addSubscription(new aws_sns_subscriptions.EmailSubscription('admin@stringsync.com'));
+
+    new aws_events.Rule(this, 'CodePipelineEvents', {
+      description: 'Notifies the admin when a deployment failed or succeeded',
+      eventPattern: {
+        source: ['aws.codepipeline'],
+        detailType: ['CodePipeline Pipeline Execution State Change'],
+        detail: { state: ['FAILED', 'SUCCEEDED'] },
+      },
+      targets: [new aws_events_targets.SnsTopic(adminEmailTopic)],
     });
   }
 }
