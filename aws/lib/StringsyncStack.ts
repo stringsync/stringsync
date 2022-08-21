@@ -345,7 +345,7 @@ export class StringsyncStack extends Stack {
      * ECS ENVIRONMENT
      */
 
-    const cluster = new aws_ecs.Cluster(this, 'Cluster', { vpc, containerInsights: true });
+    const cluster = new aws_ecs.Cluster(this, 'Cluster', { vpc, containerInsights: false });
 
     const environment = {
       NODE_ENV: 'production',
