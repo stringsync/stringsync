@@ -12,7 +12,7 @@ export class BullMqJob<P extends Payload> implements Job<P> {
   constructor(public name: string, public process: Processor<P>, public config: Config, public opts: JobOpts) {}
 
   async startWorking(): Promise<void> {
-    const queue = this.ensureQueue() as Queue<any>;
+    const queue = this.ensureQueue();
     await queue.waitUntilReady();
 
     const worker = this.ensureWorker();
@@ -23,7 +23,7 @@ export class BullMqJob<P extends Payload> implements Job<P> {
   }
 
   async startDispatching(): Promise<void> {
-    const queue = this.ensureQueue() as Queue<any>;
+    const queue = this.ensureQueue();
     await queue.waitUntilReady();
 
     const scheduler = this.ensureScheduler();
@@ -31,7 +31,7 @@ export class BullMqJob<P extends Payload> implements Job<P> {
 
     if (isNumber(this.opts.intervalMs)) {
       const name = this.getRepeatTaskName();
-      await queue.add(name, {}, { repeat: { every: this.opts.intervalMs } });
+      await queue.add(name, {} as P, { repeat: { every: this.opts.intervalMs } });
     }
   }
 
