@@ -6,6 +6,8 @@ export type Processor<P extends Payload> = (payload: P) => Promise<void>;
 
 export type JobOpts = { intervalMs?: number; attempts?: number };
 
+export type Task<P> = { payload: Payload };
+
 export interface Job<P extends Payload> {
   name: string;
   startWorking(): Promise<void>;
@@ -14,4 +16,5 @@ export interface Job<P extends Payload> {
   enqueue(payload: P, waitForCompletion?: boolean): Promise<void>;
   count(): Promise<number>;
   isHealthy(): Promise<boolean>;
+  getTasks(): Promise<Task<P>[]>;
 }

@@ -2,7 +2,7 @@ import { Queue, QueueScheduler, RedisOptions, Worker } from 'bullmq';
 import { isNumber } from 'lodash';
 import * as uuid from 'uuid';
 import { Config } from '../../config';
-import { Job, JobOpts, Payload, Processor } from '../types';
+import { Job, JobOpts, Payload, Processor, Task } from '../types';
 
 export class BullMqJob<P extends Payload> implements Job<P> {
   private worker?: Worker<P>;
@@ -79,6 +79,14 @@ export class BullMqJob<P extends Payload> implements Job<P> {
       return false;
     }
     return true;
+  }
+
+  async getTasks(): Promise<Task<P>[]> {
+    if (!this.queue) {
+      return [];
+    }
+    const jobs = await this.queue.getJobs();
+    return jobs.map((job) => ({ payload: job.data }));
   }
 
   private getConnection(): RedisOptions {
