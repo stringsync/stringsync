@@ -3,7 +3,7 @@ import { TYPES } from '../../inversify.constants';
 import { Logger } from '../../util';
 import { Processor } from '../types';
 
-export type PulseCheckPayload = {};
+export type PulseCheckPayload = Record<string, never>;
 
 export const pulseCheck: Processor<PulseCheckPayload> = async () => {
   const now = new Date();
