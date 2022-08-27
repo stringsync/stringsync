@@ -17,7 +17,9 @@ describe.each([['BullMqJob', createBullMqJob]])('%s', (name, createJob) => {
   beforeEach(() => {
     const config = container.get<Config>(TYPES.Config);
     process = jest.fn();
-    job = createJob(`${name}-test`, process, config);
+    // We need this or there will be flaky locking issues with bullmq
+    const now = Date.now();
+    job = createJob(`${name}-test-${now}`, process, config);
   });
 
   describe('count', () => {
@@ -26,9 +28,11 @@ describe.each([['BullMqJob', createBullMqJob]])('%s', (name, createJob) => {
     });
 
     it('returns how many jobs are in queue', async () => {
-      await Promise.all([job.enqueue({ id: 1 }), job.enqueue({ id: 2 })]);
-      const count = await job.count();
-      expect(count).toBe(2);
+      await job.enqueue({ id: 1 });
+      await expect(job.count()).resolves.toBe(1);
+
+      await job.enqueue({ id: 2 });
+      await expect(job.count()).resolves.toBe(2);
     });
   });
 

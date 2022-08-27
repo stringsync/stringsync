@@ -2,10 +2,11 @@ import { Db } from '../db';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
 import { Cache } from '../util';
-import { toHaveErrorCode } from './matchers';
+import { toHaveErrorCode, toHaveTask } from './matchers';
 
 expect.extend({
   toHaveErrorCode,
+  toHaveTask,
 });
 
 let db: Db;
