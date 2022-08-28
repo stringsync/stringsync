@@ -1,6 +1,13 @@
 declare namespace jest {
-  interface Matchers<R> {
-    toHaveErrorCode(errorCode: import('../errors').ErrorCode): R;
-    toHaveTask(task: import('../jobs').Task<Payload>): Promise<R>;
+  interface Matchers<R, T = any> {
+    toHaveErrorCode: T extends import('./types').Response<any, any>
+      ? (errorCode: import('../errors').ErrorCode) => R
+      : 'Type Error: Received must be a Response';
+    toHaveTaskWithPayload: T extends import('../jobs').Job<infer P>
+      ? (payload: import('../util').DeepPartial<P>) => Promise<R>
+      : 'Type Error: Received must be a Job';
+    toHaveTaskCount: T extends import('../jobs').Job<infer P>
+      ? (count: number) => Promise<R>
+      : 'Type Error: Received must be a Job';
   }
 }

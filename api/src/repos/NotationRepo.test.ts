@@ -3,7 +3,7 @@ import { Db } from '../db';
 import { Notation, Tag, User } from '../domain';
 import { container } from '../inversify.config';
 import { TYPES } from '../inversify.constants';
-import { Ctor, ctor, rand, util } from '../util';
+import { Ctor, ctor, rand } from '../util';
 import { NotationRepo as MikroORMNotationRepo, NotationTagRepo } from './mikro-orm';
 import { NotationRepo, TagRepo, UserRepo } from './types';
 
@@ -114,7 +114,8 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
 
       const foundNotations = await notationRepo.findAll();
 
-      expect(foundNotations.map(util.id)).toIncludeAllMembers(notations.map(util.id));
+      const id = (notation: Notation) => notation.id;
+      expect(foundNotations.map(id)).toIncludeAllMembers(notations.map(id));
     });
 
     it('returns plain objects', async () => {

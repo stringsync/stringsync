@@ -3,7 +3,7 @@ import { container } from '../../inversify.config';
 import { TYPES } from '../../inversify.constants';
 import { SendMail } from '../../jobs';
 import { SessionUser } from '../../server';
-import { AuthService, UserService } from '../../services';
+import { AuthService, MailWriterService, UserService } from '../../services';
 import { ConfirmEmailInput, createRandUser, gql, LoginInput, Mutation, Query, resolve } from '../../testing';
 import { rand } from '../../util';
 import * as types from '../graphqlTypes';
@@ -69,7 +69,7 @@ describe('AuthResolver', () => {
 
   describe('signup', () => {
     let user: User;
-    let sendMailSpy: jest.SpyInstance;
+    let sendMail: SendMail;
 
     beforeEach(async () => {
       const username = rand.str(10);
@@ -79,9 +79,7 @@ describe('AuthResolver', () => {
       const authService = container.get<AuthService>(TYPES.AuthService);
       user = await authService.signup(username, email, password);
 
-      sendMailSpy = jest
-        .spyOn(container.get<SendMail>(TYPES.SendMail).job, 'enqueue')
-        .mockImplementation((payload) => Promise.resolve());
+      sendMail = container.get<SendMail>(TYPES.SendMail);
     });
 
     afterEach(() => {
@@ -119,7 +117,7 @@ describe('AuthResolver', () => {
 
       expect(res.errors).toBeUndefined();
       expect(res.data.signup.__typename).toBe('User');
-      const signedUpUser = (res.data.signup as unknown) as types.User;
+      const signedUpUser = res.data.signup as unknown as types.User;
       expect(signedUpUser.username).toBe(username);
       expect(signedUpUser.email).toBe(email);
     });
@@ -135,7 +133,7 @@ describe('AuthResolver', () => {
 
       expect(res.errors).toBeUndefined();
       expect(res.data.signup.__typename).toBe('User');
-      const signedUpUser = (res.data.signup as unknown) as types.User;
+      const signedUpUser = res.data.signup as unknown as types.User;
       const fetchedUser = await userService.find(signedUpUser.id);
       expect(fetchedUser).not.toBeNull();
       expect(fetchedUser!.encryptedPassword).not.toBe(password);
@@ -159,7 +157,7 @@ describe('AuthResolver', () => {
 
       await signup({ username, email, password }, LoginStatus.LOGGED_OUT);
 
-      expect(sendMailSpy).toHaveBeenCalledTimes(1);
+      expect(sendMail.job).toHaveTaskCount(1);
     });
 
     it('forbids logged in users from signing up', async () => {
@@ -233,7 +231,7 @@ describe('AuthResolver', () => {
       expect(res.errors).toBeUndefined();
       expect(res.data.login).not.toBeNull();
       expect(res.data.login.__typename).toBe('User');
-      const loggedInUser = (res.data.login! as unknown) as types.User;
+      const loggedInUser = res.data.login! as unknown as types.User;
       expect(loggedInUser.id).toBe(user.id);
 
       const sessionUser = ctx.getSessionUser();
@@ -248,7 +246,7 @@ describe('AuthResolver', () => {
       expect(res.errors).toBeUndefined();
       expect(res.data.login).not.toBeNull();
       expect(res.data.login.__typename).toBe('User');
-      const loggedInUser = (res.data.login! as unknown) as types.User;
+      const loggedInUser = res.data.login! as unknown as types.User;
       expect(loggedInUser.id).toBe(user.id);
 
       const sessionUser = ctx.getSessionUser();
@@ -433,16 +431,16 @@ describe('AuthResolver', () => {
   describe('resendConfirmationEmail', () => {
     let userService: UserService;
     let authService: AuthService;
-    let sendMailSpy: jest.SpyInstance;
+    let sendMail: SendMail;
+    let mailWriterService: MailWriterService;
 
     let user: User;
 
     beforeEach(() => {
+      sendMail = container.get<SendMail>(TYPES.SendMail);
       userService = container.get<UserService>(TYPES.UserService);
       authService = container.get<AuthService>(TYPES.AuthService);
-      sendMailSpy = jest
-        .spyOn(container.get<SendMail>(TYPES.SendMail).job, 'enqueue')
-        .mockImplementation((payload) => Promise.resolve());
+      mailWriterService = container.get<MailWriterService>(TYPES.MailWriterService);
     });
 
     beforeEach(async () => {
@@ -500,7 +498,12 @@ describe('AuthResolver', () => {
 
     it('sends a resend confirmation email', async () => {
       await resendConfirmationEmail(LoginStatus.LOGGED_IN);
-      expect(sendMailSpy).toHaveBeenCalledTimes(1);
+
+      const reloadedUser = await userService.find(user.id);
+      const mail = mailWriterService.writeConfirmationEmail(reloadedUser!);
+
+      await expect(sendMail.job).toHaveTaskCount(1);
+      await expect(sendMail.job).toHaveTaskWithPayload({ mail });
     });
 
     it('silently fails if already confirmed', async () => {
@@ -525,25 +528,22 @@ describe('AuthResolver', () => {
       const now = new Date();
 
       await authService.confirmEmail(user.id, user.confirmationToken!, now);
-
       await resendConfirmationEmail(LoginStatus.LOGGED_IN);
 
-      expect(sendMailSpy).toHaveBeenCalledTimes(0);
+      await expect(sendMail.job).toHaveTaskCount(0);
     });
   });
 
   describe('sendResetPasswordEmail', () => {
     let userService: UserService;
-    let sendMailSpy: jest.SpyInstance;
+    let sendMail: SendMail;
 
     let user: User;
 
     beforeEach(async () => {
       userService = container.get<UserService>(TYPES.UserService);
-      sendMailSpy = jest
-        .spyOn(container.get<SendMail>(TYPES.SendMail).job, 'enqueue')
-        .mockImplementation((payload) => Promise.resolve());
       user = await createRandUser();
+      sendMail = container.get<SendMail>(TYPES.SendMail);
     });
 
     afterEach(() => {
@@ -576,7 +576,7 @@ describe('AuthResolver', () => {
       expect(reloadedUser!.resetPasswordToken!).not.toBeNull();
       expect(reloadedUser!.resetPasswordToken).not.toBe(user.resetPasswordToken);
 
-      expect(sendMailSpy).toHaveBeenCalledTimes(1);
+      expect(sendMail.job).toHaveTaskCount(1);
     });
 
     it('resets passwordResetToken when logged in', async () => {
@@ -590,7 +590,7 @@ describe('AuthResolver', () => {
       expect(reloadedUser!.resetPasswordToken!).not.toBeNull();
       expect(reloadedUser!.resetPasswordToken).not.toBe(user.resetPasswordToken);
 
-      expect(sendMailSpy).toHaveBeenCalledTimes(1);
+      expect(sendMail.job).toHaveTaskCount(1);
     });
   });
 

@@ -1,2 +1,3 @@
 export * from './toHaveErrorCode';
-export * from './toHaveTask';
+export * from './toHaveTaskCount';
+export * from './toHaveTaskWithPayload';
