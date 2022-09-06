@@ -1,8 +1,8 @@
 import { InfoCircleOutlined, PauseOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Col, Divider, Drawer, Radio, RadioChangeEvent, Row, Select, Tooltip } from 'antd';
+import { Button, Checkbox, Col, Divider, Drawer, Radio, RadioChangeEvent, Row, Tooltip } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { CheckboxOptionType, CheckboxValueType } from 'antd/lib/checkbox/Group';
-import React, { useCallback, useEffect, useId, useState } from 'react';
+import React, { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { useDevice } from '../ctx/device';
 import { NotationSettings, Quality } from '../hooks/useNotationSettings';
@@ -16,6 +16,7 @@ import { Nullable } from '../util/types';
 import { Detail } from './Detail';
 import { Playback } from './Playback';
 import { Seekbar } from './Seekbar';
+import { Select, SelectOption } from './Select';
 
 export const CONTROLS_HEIGHT_PX = 75;
 const NOTATION_DETAIL_THRESHOLD_PX = 767;
@@ -52,13 +53,14 @@ const RotationButton = styled(StyledButton)<{ $rotateDeg: number }>`
 const SettingsInner = styled.div`
   overflow-y: auto;
   height: calc(100% - ${CONTROLS_HEIGHT_PX}px);
+  padding: 4px;
 
   ::-webkit-scrollbar {
     display: none;
   }
 `;
 
-const getQualityId = (quality: Quality): string => {
+const getQualityValue = (quality: Quality): string => {
   switch (quality.type) {
     case 'strategy':
       return quality.strategy;
@@ -124,6 +126,12 @@ export const NotationPlayerControls: React.FC<Props> = (props) => {
 
   // scales
   const scales = useScales(musicDisplay);
+  const selectScaleOptions = useMemo<SelectOption[]>(() => {
+    return ['none', 'dynamic', ...scales.main, ...scales.pentatonic, ...scales.major, ...scales.minor].map((label) => ({
+      label,
+      value: label,
+    }));
+  }, [scales]);
 
   // settings
   const onVideoVisibilityChange = (event: CheckboxChangeEvent) => {
@@ -184,6 +192,15 @@ export const NotationPlayerControls: React.FC<Props> = (props) => {
       setSettings({ ...settings, quality });
     }
   };
+  const qualitySelectOptions = useMemo<SelectOption[]>(
+    () =>
+      qualityChoices.map((quality) => {
+        const value = getQualityValue(quality);
+        const label = getQualityLabel(quality);
+        return { label, value };
+      }),
+    []
+  );
 
   // display mode settings
   const onDisplayModeChange = (values: CheckboxValueType[]) => {
@@ -322,48 +339,12 @@ export const NotationPlayerControls: React.FC<Props> = (props) => {
           <br />
 
           <h5>scale</h5>
-          <Select defaultValue="none" style={{ width: '100%' }} onChange={onSelectedScaleChange} size="large">
-            <Select.OptGroup label="default">
-              <Select.Option value="none">none</Select.Option>
-            </Select.OptGroup>
-            <Select.OptGroup label="recommended">
-              <Select.Option value="dynamic">
-                <Tooltip title="based on the current key signature">dynamic</Tooltip>
-              </Select.Option>
-              {scales.main.map((scale) => (
-                <Select.Option key={`main-${scale}`} value={scale}>
-                  {scale}
-                </Select.Option>
-              ))}
-            </Select.OptGroup>
-            {scales.pentatonic.length > 0 && (
-              <Select.OptGroup label="pentatonic">
-                {scales.pentatonic.map((scale) => (
-                  <Select.Option key={`pentatonic-${scale}`} value={scale}>
-                    {scale}
-                  </Select.Option>
-                ))}
-              </Select.OptGroup>
-            )}
-            {scales.major.length > 0 && (
-              <Select.OptGroup label="major">
-                {scales.major.map((scale) => (
-                  <Select.Option key={`major-${scale}`} value={scale}>
-                    {scale}
-                  </Select.Option>
-                ))}
-              </Select.OptGroup>
-            )}
-            {scales.minor.length > 0 && (
-              <Select.OptGroup label="minor">
-                {scales.minor.map((scale) => (
-                  <Select.Option key={`minor-${scale}`} value={scale}>
-                    {scale}
-                  </Select.Option>
-                ))}
-              </Select.OptGroup>
-            )}
-          </Select>
+          <Select
+            defaultValue="none"
+            style={{ width: '100%' }}
+            onChange={onSelectedScaleChange}
+            options={selectScaleOptions}
+          />
 
           <br />
           <br />
@@ -407,21 +388,11 @@ export const NotationPlayerControls: React.FC<Props> = (props) => {
 
               <h5>quality</h5>
               <Select
-                value={getQualityId(settings.quality)}
+                value={getQualityValue(settings.quality)}
                 onChange={onQualityChoiceChange}
                 style={{ width: '100%' }}
-                size="large"
-              >
-                {qualityChoices.map((quality) => {
-                  const id = getQualityId(quality);
-                  const label = getQualityLabel(quality);
-                  return (
-                    <Select.Option key={id} value={id}>
-                      {label}
-                    </Select.Option>
-                  );
-                })}
-              </Select>
+                options={qualitySelectOptions}
+              />
             </>
           )}
 
