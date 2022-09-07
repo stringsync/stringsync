@@ -199,7 +199,7 @@ export const NotationPlayerControls: React.FC<Props> = (props) => {
         const label = getQualityLabel(quality);
         return { label, value };
       }),
-    []
+    [qualityChoices]
   );
 
   // display mode settings
