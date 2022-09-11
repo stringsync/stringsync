@@ -5,6 +5,7 @@ import { CheckboxOptionType, CheckboxValueType } from 'antd/lib/checkbox/Group';
 import React, { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { useDevice } from '../ctx/device';
+import { KeyboardKey, useKeyDownEffect } from '../hooks/useKeyDownEffect';
 import { NotationSettings, Quality } from '../hooks/useNotationSettings';
 import { useResizeObserver } from '../hooks/useResizeObserver';
 import { useScales } from '../hooks/useScales';
@@ -256,6 +257,20 @@ export const NotationPlayerControls: React.FC<Props> = (props) => {
       mediaPlayer.eventBus.unsubscribe(...eventBusIds);
     };
   }, [mediaPlayer]);
+
+  // keyboard
+  const togglePlay = useCallback(() => {
+    const playState = mediaPlayer.getPlayState();
+    switch (playState) {
+      case PlayState.Paused:
+        mediaPlayer.play();
+        break;
+      case PlayState.Playing:
+        mediaPlayer.pause();
+        break;
+    }
+  }, [mediaPlayer]);
+  useKeyDownEffect([KeyboardKey.Space], togglePlay);
 
   return (
     <Outer data-testid="controls" id={outerId}>
