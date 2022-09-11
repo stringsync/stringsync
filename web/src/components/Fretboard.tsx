@@ -1,3 +1,4 @@
+import { Alert } from 'antd';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useDimensions } from '../hooks/useDimensions';
@@ -17,10 +18,18 @@ import { FretboardJs, FretboardJsProps } from './FretboardJs';
 const Outer = styled.div`
   z-index: 3;
   background-color: white;
+  position: relative;
 
   figure {
     margin: 0;
   }
+`;
+
+const ScaleOuter = styled.div`
+  z-index: 100;
+  position: absolute;
+  top: -24px;
+  left: 12px;
 `;
 
 type Props = FretboardJsProps & {
@@ -89,11 +98,14 @@ export const Fretboard: React.FC<Props> = (props) => {
     return [slides, hammerOns, pullOffs];
   }, [ties]);
 
-  // dynamic scale management
-  useEffect(() => {}, [scaleSelectionType]);
-
   return (
     <Outer data-testid="fretboard" ref={outerRef}>
+      {scaleSelectionType !== ScaleSelectionType.None && selectedScale && (
+        <ScaleOuter>
+          <Alert type="info" message={<small>{selectedScale}</small>} style={{ padding: '2px 8px' }} />
+        </ScaleOuter>
+      )}
+
       <FretboardJs
         tonic={tonic || undefined}
         options={fretboardOpts}
