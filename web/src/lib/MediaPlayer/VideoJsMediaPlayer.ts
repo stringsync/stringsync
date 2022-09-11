@@ -19,8 +19,6 @@ export class VideoJsMediaPlayer implements MediaPlayer {
   private ready = false;
 
   constructor(player: VideoJsPlayer) {
-    (window as any).player = this;
-
     this.player = player;
     this.player.ready(this.onReady);
     this.player.on('play', this.onPlay);

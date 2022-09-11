@@ -11518,10 +11518,10 @@ open@^7.0.2:
     is-docker "^2.0.0"
     is-wsl "^2.1.1"
 
-opensheetmusicdisplay@1.5.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/opensheetmusicdisplay/-/opensheetmusicdisplay-1.5.1.tgz#f4bb47183ad24e8dbedab00267c0f9f3ed1e6055"
-  integrity sha512-DVAvXV5JAugvQrUoq++397ZIwtSMnOBRADT+pQpXjfmNVLuANXPbNrgo/R3MdgyKNV4ZyQfmvv0nn1y39uXj+g==
+opensheetmusicdisplay@1.5.3:
+  version "1.5.3"
+  resolved "https://registry.yarnpkg.com/opensheetmusicdisplay/-/opensheetmusicdisplay-1.5.3.tgz#b04dc8525173cfdc702de020816b2f0208e46a33"
+  integrity sha512-QJETagMvTeK6d88CrOCA7b9S6uAUWL4GSjMYS2YlqxIPuCPxf7W084Q0Yj9czCkKHzwRdZehX7aBgxyGfeAXjw==
   dependencies:
     "@types/vexflow" "^1.2.38"
     jszip "3.7.1"

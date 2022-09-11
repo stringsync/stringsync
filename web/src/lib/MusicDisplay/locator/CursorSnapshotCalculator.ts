@@ -187,9 +187,7 @@ export class CursorSnapshotCalculator {
       return null;
     }
 
-    return ($(vfStavenoteEl)
-      .find('.vf-notehead')
-      .get(vfnoteIndex) as unknown) as SVGGElement;
+    return $(vfStavenoteEl).find('.vf-notehead').get(vfnoteIndex) as unknown as SVGGElement;
   }
 
   private static getBoxFromVfNoteheadElement(g: SVGGElement) {

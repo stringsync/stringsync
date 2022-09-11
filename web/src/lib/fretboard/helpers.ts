@@ -209,7 +209,20 @@ const getStyleTargetsFromPullOffComponent = (child: Component<typeof HammerOn>):
   return [{ type: StyleTargetType.PullOff, string: from.string, frets: [from.fret, to.fret], style: { ...style } }];
 };
 
-export const getEnharmonic = (note: string) => Note.simplify(Note.enharmonic(note));
+export const getEnharmonic = (note: string) => {
+  switch (note) {
+    case 'Cb':
+      return 'B';
+    case 'B#':
+      return 'C';
+    case 'Fb':
+      return 'E';
+    case 'E#':
+      return 'F';
+    default:
+      return Note.simplify(Note.enharmonic(note));
+  }
+};
 
 const GRADES = ['1', 'b2', '2', 'b3', '3', '4', 'b5', '5', '#5', '6', 'b7', '7'];
 
@@ -229,7 +242,7 @@ export const getGradesByNote = (tonic: string): Record<string, string> => {
     });
     note = next(note);
     ndx++;
-  } while (!isTonic(note));
+  } while (!isTonic(note) && ndx < GRADES.length);
 
   return gradesByNote;
 };
