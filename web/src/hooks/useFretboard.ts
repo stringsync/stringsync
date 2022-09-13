@@ -11,7 +11,11 @@ export const useFretboard = (figureRef: RefObject<HTMLElement>, tuning: Tuning, 
     if (!figure) {
       return;
     }
-    const fretboard = new Fretboard({ el: figure, tuning: tuning.toFullyQualifiedStrings(), ...opts });
+    const fretboard = new Fretboard({
+      el: figure,
+      tuning: tuning.toFullyQualifiedStrings(),
+      ...opts,
+    });
     setFretboard(fretboard);
     fretboard.render();
     return () => {

@@ -32,6 +32,8 @@ export type FretboardJsChildComponents = {
   PullOff: typeof fretboard.PullOff;
 };
 
+const INLAY_FRETS: number[] = [3, 5, 7, 9, 15, 17, 19, 21];
+
 export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponents = (props) => {
   const tonic = props.tonic || DEFAULT_TONIC;
   const options = props.options || DEFAULT_OPTIONS;
@@ -63,6 +65,73 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
     };
   }, [figureRef, onResize]);
 
+  // render inlays
+  useEffect(() => {
+    const { positions } = fb;
+    const getDotOffset = get(fb, 'getDotOffset', () => 0).bind(fb);
+    const inlaySize = get(fb, 'options.dotSize') * 0.5;
+    const dotOffset = getDotOffset();
+    const numFrets = positions[0]?.length ?? 0;
+
+    const numStrings = positions.length;
+    const middleTopString = Math.floor(numStrings / 2);
+    const middleBottomString = middleTopString + 1;
+
+    const p = (fret: number, string = 1) => {
+      return positions[string - 1][fret - dotOffset];
+    };
+    const getX = (fret: number) => `${p(fret).x}%`;
+    const getYBetween = (string1: number, string2: number) => (fret: number) => {
+      const string1Y = p(fret, string1).y;
+      const string2Y = p(fret, string2).y;
+      return (string1Y + string2Y) / 2;
+    };
+    const fill = '#ddd';
+
+    const inlaysGroup = fb.wrapper.append('g').attr('class', 'inlays').selectAll('g');
+
+    // single dots
+    inlaysGroup
+      .data(INLAY_FRETS.filter((fret) => fret < numFrets))
+      .enter()
+      .append('g')
+      .attr('class', (fret: number) => `inlay-fret-${fret}`)
+      .append('circle')
+      .attr('cx', getX)
+      .attr('cy', getYBetween(middleTopString, middleBottomString))
+      .attr('r', inlaySize * 0.5)
+      .attr('fill', fill);
+
+    // double dots
+    if (numFrets >= 12) {
+      inlaysGroup
+        .data([12])
+        .enter()
+        .append('g')
+        .attr('class', 'inlay-fret-12')
+        .append('circle')
+        .attr('cx', getX)
+        .attr('cy', getYBetween(middleTopString - 1, middleTopString))
+        .attr('r', inlaySize * 0.5)
+        .attr('fill', fill);
+
+      inlaysGroup
+        .data([12])
+        .enter()
+        .append('g')
+        .attr('class', 'inlay-fret-12')
+        .append('circle')
+        .attr('cx', getX)
+        .attr('cy', getYBetween(middleBottomString, middleBottomString + 1))
+        .attr('r', inlaySize * 0.5)
+        .attr('fill', fill);
+    }
+
+    return () => {
+      fb.wrapper.select('.inlays').remove();
+    };
+  }, [fb]);
+
   useEffect(() => {
     // All renderings must be done synchronously within this effect so that they are layered deterministically.
     // SVG elements do not have a z-index property.
@@ -70,6 +139,7 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
     const maxFret = fb.positions[0].length - 1;
     const { font, dotSize, dotTextSize, width, leftPadding, rightPadding } = get(fb, 'options');
     const { positions } = fb;
+
     const getDotOffset = get(fb, 'getDotOffset', () => 0).bind(fb);
     const dotOffset = getDotOffset();
     const p = (string: number, fret: number) => positions[string - 1][fret - dotOffset];
@@ -214,6 +284,7 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
     // ----------------
     // render positions
     // ----------------
+
     const gradesByNote = fretboard.getGradesByNote(tonic);
     const key = Key.majorKey(tonic);
     const scale = new Set(key.scale);
