@@ -60,6 +60,14 @@ const showTabsOnly = (musicXml: MusicXML) => {
     note.setBeams([]);
   }
 
+  // remove <slur> elements from notations
+  for (const note of notes) {
+    const notations = note.getNotations();
+    for (const notation of notations) {
+      notation.setValues(notation.getValues().filter((value) => !asserts.isSlur(value)));
+    }
+  }
+
   // remove <note> elements without tabs
   const measures = getMeasures(musicXml);
   for (const measure of measures) {
