@@ -130,7 +130,7 @@ const VideoJs: React.FC<Props> = (props) => {
   }, [playerOptions, mode, device]);
 
   // vjs dynamically overwrites classnames, so we have to use inline styles instead of styled-components
-  return <div onClick={onClick} data-vjs-player ref={outerRef} style={{ cursor: 'pointer' }} />;
+  return <div onClick={onClick} onTouchStart={onClick} data-vjs-player ref={outerRef} style={{ cursor: 'pointer' }} />;
 };
 
 const Video: React.FC<Omit<VideoProps, 'mode'>> = (props) => <VideoJs mode="video" {...props} />;
