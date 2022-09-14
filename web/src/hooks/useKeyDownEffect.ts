@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useDevice } from '../ctx/device';
 import { useMemoCmp } from './useMemoCmp';
 
 // extend as needed
@@ -22,7 +23,13 @@ const INPUT_ELEMENTS = ['INPUT'];
 export const useKeyDownEffect = (keyboardKeys: KeyboardKey[], callback: Callback) => {
   keyboardKeys = useMemoCmp(keyboardKeys);
 
+  const device = useDevice();
+
   useEffect(() => {
+    if (device.mobile || device.tablet || device.phone) {
+      return;
+    }
+
     const onKeyDown = (event: KeyboardEvent) => {
       if (getActiveElementTagName() in INPUT_ELEMENTS) {
         return;
@@ -36,5 +43,5 @@ export const useKeyDownEffect = (keyboardKeys: KeyboardKey[], callback: Callback
     return () => {
       window.removeEventListener('keydown', onKeyDown);
     };
-  }, [keyboardKeys, callback]);
+  }, [device, keyboardKeys, callback]);
 };
