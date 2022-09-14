@@ -8,6 +8,9 @@ import { MusicDisplayLocator } from '../locator/MusicDisplayLocator';
 import { SelectionRenderer } from './SelectionRenderer';
 import { Loop } from './types';
 
+const DEFAULT_LOOP_START_DURATION = Duration.zero();
+const DEFAULT_LOOP_STOP_DURATION = Duration.sec(5);
+
 export class LerpLoop implements Loop {
   static create(imd: InternalMusicDisplay, locator: MusicDisplayLocator) {
     const startCursor = LerpCursor.create(imd, locator.clone(), {
@@ -28,6 +31,7 @@ export class LerpLoop implements Loop {
 
     const loop = new LerpLoop(imd, startCursor, endCursor, selectionRenderer);
     loop.deactivate();
+    loop.update(NumberRange.from(DEFAULT_LOOP_START_DURATION.ms).to(DEFAULT_LOOP_STOP_DURATION.ms));
 
     return loop;
   }

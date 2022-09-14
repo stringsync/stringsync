@@ -104,7 +104,6 @@ export const FretboardJs: React.FC<FretboardJsProps> & FretboardJsChildComponent
 
     // double dots
     if (numFrets > 12) {
-      console.log(positions, numFrets);
       inlaysGroup
         .data([12])
         .enter()
