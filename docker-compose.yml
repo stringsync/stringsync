@@ -1,0 +1,7 @@
+version: '3.9'
+
+services:
+  api:
+    build: ./api
+    ports:
+      - '8080:8080'
