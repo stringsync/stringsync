@@ -5,6 +5,6 @@ WORKDIR /app
 COPY go.mod .
 RUN go mod download
 COPY *.go .
-RUN go build -o /serve
+RUN go build
 
-CMD [ "/serve" ]
+CMD [ "./api" ]
