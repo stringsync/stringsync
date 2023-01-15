@@ -1,17 +1,21 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"log"
 	"net/http"
-	"time"
+
+	"github.com/stringsync/api/handler"
 )
 
-func greet(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello World! %s", time.Now())
-}
+var port = flag.Int("port", 8080, "the port to run the server")
 
 func main() {
-	http.HandleFunc("/", greet)
-	fmt.Println("listening on :8080")
-	http.ListenAndServe(":8080", nil)
+	addr := fmt.Sprintf(":%d", *port)
+
+	handler.Setup()
+
+	fmt.Printf("listening at %v\n", addr)
+	log.Fatal(http.ListenAndServe(addr, nil))
 }
