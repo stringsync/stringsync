@@ -5,4 +5,21 @@ services:
     build:
       dockerfile: Dockerfile.api
     ports:
-      - '8080:8080'
+      - 8080:8080
+    links:
+      - web
+    command:
+      - "./main"
+      - "-allowed_cors_origin"
+      - "http://localhost:8081"
+      - "-allowed_cors_origin"
+      - "http://localhost:8080"
+
+  web:
+    build:
+      dockerfile: Dockerfile.web
+    ports:
+      - 8081:8081
+    environment:
+      PORT: 8081
+  

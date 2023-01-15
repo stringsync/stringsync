@@ -1,3 +1,3 @@
-module github.com/stringsync
+module stringsync
 
 go 1.19

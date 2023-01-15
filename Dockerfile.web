@@ -1,0 +1,12 @@
+FROM node:19.4
+
+WORKDIR /app
+
+COPY web/package.json .
+COPY web/yarn.lock .
+RUN yarn
+COPY web/tsconfig.json .
+COPY web/public public
+COPY web/src src
+
+CMD [ "yarn", "start" ]
