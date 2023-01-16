@@ -67,6 +67,7 @@ export class NotationResolver {
       });
       return types.Notation.of(notation);
     } catch (e) {
+      console.error(e);
       if (e instanceof errors.ValidationError) {
         return types.ValidationError.of(e);
       } else {

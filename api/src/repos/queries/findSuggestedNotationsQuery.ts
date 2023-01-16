@@ -1,9 +1,9 @@
-import { QueryBuilder } from 'knex';
+import { Knex } from 'knex';
 import { times } from 'lodash';
 import { Notation } from '../../domain';
 import { sql } from './sql';
 
-const applyOrderBys = (b: QueryBuilder, artistName: string, tagIds: string[]) => {
+const applyOrderBys = (b: Knex.QueryBuilder, artistName: string, tagIds: string[]) => {
   const bindings = [];
   const orderBys = [];
 

@@ -1,4 +1,4 @@
-import { QueryBuilder } from 'knex';
+import { Knex } from 'knex';
 import { PagingType } from '../../util';
 import { sql } from './sql';
 
@@ -10,7 +10,7 @@ export type FindNotationPageQueryArgs = {
   query: string | null;
 };
 
-const applyQuery = (b: QueryBuilder, query: string | null) => {
+const applyQuery = (b: Knex.QueryBuilder, query: string | null) => {
   if (query) {
     b.join('users', 'users.id', 'notations.transcriber_id').where((b) => {
       b.orWhere('notations.song_name', 'ilike', query);
@@ -20,7 +20,7 @@ const applyQuery = (b: QueryBuilder, query: string | null) => {
   }
 };
 
-const applyTagIds = (b: QueryBuilder, tagIds: string[] | null) => {
+const applyTagIds = (b: Knex.QueryBuilder, tagIds: string[] | null) => {
   if (tagIds) {
     b.leftJoin('notation_tags', 'notation_tags.notation_id', 'notations.id')
       .whereIn('notation_tags.tag_id', tagIds)
@@ -49,28 +49,16 @@ export const findNotationPageQuery = (args: FindNotationPageQueryArgs): string =
 
 export const findNotationPageMinQuery = (args: FindNotationPageQueryArgs): string => {
   const { tagIds, query } = args;
-  const b = sql
-    .select('notations.cursor')
-    .from('notations')
-    .as('cursors');
+  const b = sql.select('notations.cursor').from('notations').as('cursors');
   applyQuery(b, query);
   applyTagIds(b, tagIds);
-  return sql
-    .min('cursors.cursor')
-    .from(b)
-    .toString();
+  return sql.min('cursors.cursor').from(b).toString();
 };
 
 export const findNotationPageMaxQuery = (args: FindNotationPageQueryArgs): string => {
   const { tagIds, query } = args;
-  const b = sql
-    .select('notations.cursor')
-    .from('notations')
-    .as('cursors');
+  const b = sql.select('notations.cursor').from('notations').as('cursors');
   applyQuery(b, query);
   applyTagIds(b, tagIds);
-  return sql
-    .max('cursors.cursor')
-    .from(b)
-    .toString();
+  return sql.max('cursors.cursor').from(b).toString();
 };
