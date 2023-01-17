@@ -74,6 +74,19 @@ const showTabsOnly = (musicXml: MusicXML) => {
     const nextMeasureValues = measure.getValues().filter((value) => {
       if (asserts.isNote(value)) {
         const note = value;
+
+        // keep rests
+        const variation = note.getVariation();
+        if (asserts.isTiedNote(variation) && asserts.isRest(variation[1])) {
+          return true;
+        } else if (asserts.isCuedNote(variation) && asserts.isRest(variation[2])) {
+          return true;
+        } else if (asserts.isTiedGraceNote(variation) && asserts.isRest(variation[2])) {
+          return true;
+        } else if (asserts.isCuedGraceNote(variation) && asserts.isRest(variation[3])) {
+          return true;
+        }
+
         return note.getNotations().some((notation) =>
           notation
             .getValues()
