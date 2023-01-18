@@ -240,7 +240,8 @@ async function buildnginx() {
       : {
           // Without this, building locally will fail.
           // https://stackoverflow.com/questions/69394632/webpack-build-failing-with-err-ossl-evp-unsupported
-          NODE_OPTIONS: '--openssl-legacy-provider',
+          // https://github.com/parcel-bundler/parcel/issues/8005
+          NODE_OPTIONS: '--openssl-legacy-provider --no-experimental-fetch',
         },
   });
   await docker.build(dockerfile, dockerTag);
