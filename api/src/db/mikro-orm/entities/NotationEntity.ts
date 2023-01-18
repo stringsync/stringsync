@@ -61,24 +61,26 @@ export class NotationEntity extends BaseEntity implements Notation {
 
   @Property({ nullable: true })
   @IsOptional()
-  @IsUrl()
+  @IsUrl(undefined, {
+    message: 'must be URL: $value',
+  })
   thumbnailUrl!: string | null;
 
   @Property({ nullable: true })
   @IsOptional()
-  @IsUrl()
+  @IsUrl(undefined, {
+    message: 'must be URL: $value',
+  })
   videoUrl!: string | null;
 
   @Property({ nullable: true })
   @IsOptional()
-  @IsUrl()
+  @IsUrl(undefined, {
+    message: 'must be URL: $value',
+  })
   musicXmlUrl!: string | null;
 
-  @OneToMany(
-    () => NotationTagEntity,
-    (notationTag) => notationTag.notation,
-    { hidden: true }
-  )
+  @OneToMany(() => NotationTagEntity, (notationTag) => notationTag.notation, { hidden: true })
   notationTags = new Collection<NotationTagEntity>(this);
 
   @ManyToMany({

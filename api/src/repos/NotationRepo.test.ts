@@ -80,6 +80,13 @@ describe.each([['MikroORMNotationRepo', MikroORMNotationRepo]])('%s', (name, Cto
         await expect(notationRepo.validate(rand.notation({ artistName }))).rejects.toThrow();
       }
     );
+
+    it.each(['https://media.stringsync.com/foo/bar/baz', 'asdfjkl.cloudfront.net/foo/bar/baz'])(
+      'permits valid musicXML URLs',
+      async (musicXmlUrl) => {
+        await expect(notationRepo.validate(rand.notation({ musicXmlUrl }))).resolves.not.toThrow();
+      }
+    );
   });
 
   describe('find', () => {
