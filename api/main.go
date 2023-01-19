@@ -27,7 +27,9 @@ func main() {
 		},
 	})
 
-	err := http.ListenAndServe(fmt.Sprintf(":%d", *port), mux)
+	addr := fmt.Sprintf(":%d", *port)
+	fmt.Printf("Server running at: http://localhost%v\n", addr)
+	err := http.ListenAndServe(addr, mux)
 	if err != nil {
 		log.Fatal("http.ListenAndServe: ", err)
 	}
