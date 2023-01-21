@@ -7,23 +7,18 @@ import (
 
 // Router contains fields common to routes.
 type Router struct {
-	routes      map[string][]route
+	routes      []Route
 	middlewares []Middleware
 }
 
-// route encapsulates the information to match and handle a route.
-type route struct {
-	path    string
-	method  string
-	handler http.Handler
-}
-
+// Middleware is a handler that adds functionality to another handler.
 type Middleware func(http.Handler) http.Handler
 
 // ServeHTTP runs all the middleware and tries to handle the requested route.
 func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	route, err := router.match(r)
 	if err != nil {
+		fmt.Println(err.Error())
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
@@ -39,7 +34,7 @@ func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // New returns a Router that can be used as an http handler.
 func New() *Router {
 	return &Router{
-		routes:      map[string][]route{},
+		routes:      []Route{},
 		middlewares: []Middleware{},
 	}
 }
@@ -52,48 +47,29 @@ func (router *Router) Middleware(m Middleware) {
 
 // Get registers a GET handler.
 func (router *Router) Get(path string, h http.Handler) {
-	router.register(route{path, http.MethodGet, h})
+	router.register(Route{http.MethodGet, path, h})
 }
 
 // Post registers a POST handler.
 func (router *Router) Post(path string, h http.Handler) {
-	router.register(route{path, http.MethodPost, h})
+	router.register(Route{http.MethodPost, path, h})
 }
 
 // register adds the route to the router.
-func (router *Router) register(route route) {
+func (router *Router) register(route Route) {
 	if route.path == "" {
 		panic(fmt.Errorf("route path cannot be empty"))
 	}
-
 	if string(route.path[0]) != "/" {
 		panic(fmt.Errorf("route path must begin with '/', got %v", route.path))
 	}
-
 	if string(route.path[len(route.path)-1]) == "/" {
 		panic(fmt.Errorf("route path cannot end in '/', got %v", route.path))
 	}
-
 	if !isValidMethod(route.method) {
 		panic(fmt.Errorf("route method must be an http verb, got %v", route.method))
 	}
-
-	if router.isRegistered(route.path, route.method) {
-		panic(fmt.Errorf("path %v already has %v registered, but it can only "+
-			"be registered once", route.path, route.method))
-	}
-
-	router.routes[route.path] = append(router.routes[route.path], route)
-}
-
-// isRegistered checks if the path and method combination already exists.
-func (router *Router) isRegistered(path, method string) bool {
-	for _, route := range router.routes[path] {
-		if route.method == method {
-			return true
-		}
-	}
-	return false
+	router.routes = append(router.routes, route)
 }
 
 // isValidMethod validates that the method is a support HTTP verb.
@@ -114,18 +90,13 @@ func isValidMethod(method string) bool {
 }
 
 // match finds a route that matches the HTTP request.
-func (router *Router) match(r *http.Request) (route, error) {
-	path := r.URL.Path
-	if _, ok := router.routes[path]; !ok {
-		return route{}, fmt.Errorf("%v not found", path)
-	}
-
+func (router *Router) match(r *http.Request) (*Route, error) {
 	method := r.Method
-	for _, route := range router.routes[path] {
-		if route.method == method {
-			return route, nil
+	path := r.URL.Path
+	for _, route := range router.routes {
+		if route.Matches(method, path) {
+			return &route, nil
 		}
 	}
-
-	return route{}, fmt.Errorf("%v %v not found", method, path)
+	return nil, fmt.Errorf("%v %v not found", method, path)
 }

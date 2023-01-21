@@ -20,11 +20,12 @@ func main() {
 	flag.Parse()
 
 	router := router.New()
-	router.Middleware(middleware.Cors(allowedOrigins, []string{
-		http.MethodGet,
-		http.MethodPost,
-		http.MethodHead,
-	}))
+	router.Middleware(
+		middleware.Cors(allowedOrigins, []string{
+			http.MethodGet,
+			http.MethodPost,
+			http.MethodHead,
+		}))
 	router.Middleware(middleware.Logger)
 	routes.Apply(router)
 
