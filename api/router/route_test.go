@@ -21,6 +21,24 @@ func TestRouteMatches(t *testing.T) {
 			method: http.MethodGet,
 			path:   "/foo",
 			want:   true,
+		}, {
+			name:   "returns false when the method does not match",
+			route:  Route{http.MethodGet, "/foo", noop},
+			method: http.MethodPost,
+			path:   "/foo",
+			want:   false,
+		}, {
+			name:   "returns false when the path does not match",
+			route:  Route{http.MethodGet, "/foo", noop},
+			method: http.MethodGet,
+			path:   "/bar",
+			want:   false,
+		}, {
+			name:   "returns false when the method and path do not match",
+			route:  Route{http.MethodGet, "/foo", noop},
+			method: http.MethodPost,
+			path:   "/bar",
+			want:   false,
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
