@@ -6,16 +6,11 @@ import (
 	"time"
 )
 
-type logger struct {
-	handler http.Handler
-}
-
-func WithLogger(handler http.Handler) *logger {
-	return &logger{handler}
-}
-
-func (l *logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	start := time.Now()
-	l.handler.ServeHTTP(w, r)
-	log.Printf("%s %s %v", r.Method, r.URL.Path, time.Since(start))
+// Logger is a middleware that logs basic information about the request.
+func Logger(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		handler.ServeHTTP(w, r)
+		log.Printf("%s %s %v", r.Method, r.URL.Path, time.Since(start))
+	})
 }

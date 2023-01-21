@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 
+	"stringsync/api/middleware"
+	"stringsync/api/router"
 	"stringsync/api/routes"
 	"stringsync/api/util"
 )
@@ -17,16 +19,17 @@ func main() {
 	flag.Var(&allowedOrigins, "allowed_cors_origin", "allowed CORS origins")
 	flag.Parse()
 
-	mux := http.NewServeMux()
+	router := router.New()
+	router.Middleware(middleware.Cors(allowedOrigins, []string{
+		http.MethodGet,
+		http.MethodPost,
+		http.MethodHead,
+	}))
+	router.Middleware(middleware.Logger)
+	routes.Apply(router)
 
-	routes.Install(mux, routes.RouterConfig{
-		AllowedOrigins: allowedOrigins,
-		AllowedMethods: []string{
-			http.MethodGet,
-			http.MethodPost,
-			http.MethodHead,
-		},
-	})
+	mux := http.NewServeMux()
+	mux.Handle("/", router)
 
 	addr := fmt.Sprintf(":%d", *port)
 	fmt.Printf("Server running at: http://localhost%v\n", addr)

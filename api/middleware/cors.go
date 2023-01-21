@@ -5,44 +5,30 @@ import (
 	"strings"
 )
 
-type cors struct {
-	handler        http.Handler
-	allowedOrigins []string
-	allowedMethods []string
-}
+// Cors creates a middleware that allowed the specified origins and methods.
+func Cors(allowedOrigins []string, allowedMethods []string) func(http.Handler) http.Handler {
+	return func(handler http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			headers := w.Header()
 
-func WithCors(handler http.Handler, allowedOrigins []string, allowedMethods []string) *cors {
-	return &cors{handler, allowedOrigins, allowedMethods}
-}
+			origin := r.Header.Get("Origin")
+			if includesIgnoringCase(origin, allowedOrigins) {
+				headers.Add("Access-Control-Allow-Origin", strings.ToLower(origin))
+			}
 
-func (c *cors) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	headers := w.Header()
+			method := r.Header.Get("Access-Control-Request-Method")
+			if includesIgnoringCase(method, allowedMethods) {
+				headers.Add("Access-Control-Allow-Methods", strings.ToUpper(method))
+			}
 
-	origin := r.Header.Get("Origin")
-	if c.isOriginAllowed(origin) {
-		headers.Add("Access-Control-Allow-Origin", strings.ToLower(origin))
+			handler.ServeHTTP(w, r)
+		})
 	}
-
-	method := r.Header.Get("Access-Control-Request-Method")
-	if c.isMethodAllowed(method) {
-		headers.Add("Access-Control-Allow-Methods", strings.ToUpper(method))
-	}
-
-	c.handler.ServeHTTP(w, r)
 }
 
-func (c *cors) isOriginAllowed(origin string) bool {
-	for _, allowedOrigin := range c.allowedOrigins {
-		if strings.EqualFold(allowedOrigin, origin) {
-			return true
-		}
-	}
-	return false
-}
-
-func (c *cors) isMethodAllowed(method string) bool {
-	for _, allowedMethod := range c.allowedMethods {
-		if strings.EqualFold(allowedMethod, method) {
+func includesIgnoringCase(needle string, haystack []string) bool {
+	for _, candidate := range haystack {
+		if strings.EqualFold(needle, candidate) {
 			return true
 		}
 	}
