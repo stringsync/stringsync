@@ -4,4 +4,4 @@
 
 root=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 cd "$root"
-docker compose up --build
+docker compose -f ../docker-compose.dev.yml up --build --remove-orphans
