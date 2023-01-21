@@ -1,3 +1,4 @@
+// Package main runs a stringsync server.
 package main
 
 import (
@@ -18,7 +19,7 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	routes.Install(mux, routes.RoutesConfig{
+	routes.Install(mux, routes.RouterConfig{
 		AllowedOrigins: allowedOrigins,
 		AllowedMethods: []string{
 			http.MethodGet,
