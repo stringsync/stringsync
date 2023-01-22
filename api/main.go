@@ -19,7 +19,7 @@ func main() {
 	flag.Var(&allowedOrigins, "allowed_cors_origin", "allowed CORS origins")
 	flag.Parse()
 
-	router := router.New()
+	router := router.NewRouter()
 	router.Middleware(
 		middleware.Cors(allowedOrigins, []string{
 			http.MethodGet,
