@@ -6,5 +6,5 @@ import (
 
 // Apply registers all the routes for stringsync.
 func Apply(router *router.Router) {
-	router.Get("/health", GetHealth())
+	router.Get("/health", getHealth())
 }
