@@ -23,9 +23,10 @@ func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Call the middlewares in the same order that they were installed.
 	h := route.handler
-	for _, middleware := range router.middlewares {
-		h = middleware(h)
+	for i := len(router.middlewares) - 1; i >= 0; i-- {
+		h = router.middlewares[i](h)
 	}
 
 	h.ServeHTTP(w, r)
@@ -34,6 +35,12 @@ func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // NewRouter returns a Router that can be used as an http handler.
 func NewRouter() *Router {
 	return &Router{}
+}
+
+// CanHandle determines if a method and path can be handled by the router.
+func (router *Router) CanHandle(method, path string) bool {
+	_, err := router.match(method, path)
+	return err == nil
 }
 
 // Middleware adds a middleware to the router. Middlewares get called in the
