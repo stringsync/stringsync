@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// Cors creates a middleware that allowed the specified origins and methods.
+// Cors creates a middleware that allows the specified origins and methods.
 func Cors(allowedOrigins []string, allowedMethods []string) func(http.Handler) http.Handler {
 	return func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
