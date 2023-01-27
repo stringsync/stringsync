@@ -48,8 +48,7 @@ export const useMusicDisplay = (opts: UseMusicDisplayOpts): [MusicDisplay, boole
       drawStartClefs: !isTabsOnly,
       drawMeasureNumbers: !isTabsOnly,
       drawMetronomeMarks: !isTabsOnly,
-      drawingParameters:
-        device.mobile || isTabsOnly ? DrawingParametersEnum.compacttight : DrawingParametersEnum.default,
+      drawingParameters: DrawingParametersEnum.default,
     });
     setMusicDisplay(musicDisplay);
 
