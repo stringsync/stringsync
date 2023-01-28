@@ -3,21 +3,25 @@ version: '3.9'
 services:
   api:
     build:
-      dockerfile: Dockerfile.api
+      dockerfile: Dockerfile
     ports:
       - 8080:8080
     links:
       - web
     command:
-      - "./main"
-      - "-allowed_cors_origin"
+      - "./stringsync"
+      - "api"
+      - "--port"
+      - "8080"
+      - "--allowed_origin"
       - "http://localhost:8081"
-      - "-allowed_cors_origin"
+      - "--allowed_origin"
       - "http://localhost:8080"
 
   web:
     build:
-      dockerfile: Dockerfile.web
+      context: web
+      dockerfile: Dockerfile
     ports:
       - 8081:8081
     environment:

@@ -1,7 +1,0 @@
-#!/bin/bash
-
-# test runs stringsync api tests
-
-root=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
-cd "$root"
-docker compose -f ../docker-compose.testapi.yml up --build --remove-orphans

@@ -1,24 +1,21 @@
-// Package main runs a stringsync server.
-package main
+package api
 
 import (
-	"flag"
 	"fmt"
-	"log"
 	"net/http"
 
 	"stringsync/api/middleware"
 	"stringsync/api/router"
 	"stringsync/api/routes"
-	"stringsync/api/util"
 )
 
-func main() {
-	var port = flag.Int("port", 8080, "the port to run the server")
-	var allowedOrigins util.FlagSlice
-	flag.Var(&allowedOrigins, "allowed_cors_origin", "allowed CORS origins")
-	flag.Parse()
+func Start(port int, allowedOrigins []string) error {
+	// validate port
+	if port <= 0 {
+		return fmt.Errorf("port must be valid, got: %d", port)
+	}
 
+	// setup router
 	router := router.NewRouter()
 	router.Middleware(
 		middleware.Cors(allowedOrigins, []string{
@@ -29,13 +26,12 @@ func main() {
 	router.Middleware(middleware.Logger)
 	routes.Apply(router)
 
+	// setup server
 	mux := http.NewServeMux()
 	mux.Handle("/", router)
 
-	addr := fmt.Sprintf(":%d", *port)
+	// run server
+	addr := fmt.Sprintf(":%d", port)
 	fmt.Printf("Server running at: http://localhost%v\n", addr)
-	err := http.ListenAndServe(addr, mux)
-	if err != nil {
-		log.Fatal("http.ListenAndServe: ", err)
-	}
+	return http.ListenAndServe(addr, mux)
 }
