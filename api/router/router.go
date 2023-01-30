@@ -70,7 +70,7 @@ func (router *Router) register(route Route) {
 // match finds a route that matches the method and path.
 func (router *Router) match(method, path string) (*Route, error) {
 	for _, route := range router.routes {
-		if route.Matches(method, path) {
+		if _, ok := route.Match(method, path); ok {
 			return &route, nil
 		}
 	}

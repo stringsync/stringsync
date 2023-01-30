@@ -2,55 +2,105 @@ package router
 
 import (
 	"net/http"
+	"reflect"
 	"testing"
 )
 
-func TestRoute_Matches(t *testing.T) {
+func TestRoute_Match(t *testing.T) {
 	noop := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
 
 	for _, test := range []struct {
-		name   string
-		route  Route
-		method string
-		path   string
-		want   bool
+		name      string
+		route     Route
+		method    string
+		path      string
+		wantOk    bool
+		wantMatch RouteMatch
 	}{
 		{
-			name:   "returns true when the method and path match",
-			route:  Route{http.MethodGet, "/foo", noop},
-			method: http.MethodGet,
-			path:   "/foo",
-			want:   true,
+			name:      "method and path match",
+			route:     Route{http.MethodGet, "/foo", noop},
+			method:    http.MethodGet,
+			path:      "/foo",
+			wantOk:    true,
+			wantMatch: RouteMatch{},
 		}, {
-			name:   "returns false when the method does not match",
-			route:  Route{http.MethodGet, "/foo", noop},
-			method: http.MethodPost,
-			path:   "/foo",
-			want:   false,
+			name:      "method does not match",
+			route:     Route{http.MethodGet, "/foo", noop},
+			method:    http.MethodPost,
+			path:      "/foo",
+			wantOk:    false,
+			wantMatch: RouteMatch{},
 		}, {
-			name:   "returns false when the path does not match",
-			route:  Route{http.MethodGet, "/foo", noop},
-			method: http.MethodGet,
-			path:   "/bar",
-			want:   false,
+			name:      "path does not match",
+			route:     Route{http.MethodGet, "/foo", noop},
+			method:    http.MethodGet,
+			path:      "/bar",
+			wantOk:    false,
+			wantMatch: RouteMatch{},
 		}, {
-			name:   "returns false when the method and path do not match",
-			route:  Route{http.MethodGet, "/foo", noop},
-			method: http.MethodPost,
-			path:   "/bar",
-			want:   false,
+			name:      "method and path do not match",
+			route:     Route{http.MethodGet, "/foo", noop},
+			method:    http.MethodPost,
+			path:      "/bar",
+			wantOk:    false,
+			wantMatch: RouteMatch{},
 		}, {
-			name:   "returns true when matching deep paths",
-			route:  Route{http.MethodGet, "/foo/bar", noop},
-			method: http.MethodGet,
-			path:   "/foo/bar",
-			want:   true,
+			name:      "deep paths",
+			route:     Route{http.MethodGet, "/foo/bar", noop},
+			method:    http.MethodGet,
+			path:      "/foo/bar",
+			wantOk:    true,
+			wantMatch: RouteMatch{},
+		}, {
+			name:      "simple paths with route params",
+			route:     Route{http.MethodGet, "/{foo}", noop},
+			method:    http.MethodGet,
+			path:      "/bar",
+			wantOk:    true,
+			wantMatch: RouteMatch{map[string]string{"foo": "bar"}},
+		}, {
+			name:      "deep paths with route params",
+			route:     Route{http.MethodGet, "/foo/bar/{id}", noop},
+			method:    http.MethodGet,
+			path:      "/foo/bar/1",
+			wantOk:    true,
+			wantMatch: RouteMatch{map[string]string{"id": "1"}},
+		}, {
+			name:      "complex paths with multiple route params",
+			route:     Route{http.MethodGet, "/foo/{fooId}/bar/{barId}", noop},
+			method:    http.MethodGet,
+			path:      "/foo/abc/bar/1",
+			wantOk:    true,
+			wantMatch: RouteMatch{map[string]string{"fooId": "abc", "barId": "1"}},
+		}, {
+			name:      "paths with route params ending in non route param",
+			route:     Route{http.MethodGet, "/foo/{id}/bar", noop},
+			method:    http.MethodGet,
+			path:      "/foo/1/bar",
+			wantOk:    true,
+			wantMatch: RouteMatch{map[string]string{"id": "1"}},
+		}, {
+			name:      "non-match paths with route params",
+			route:     Route{http.MethodGet, "/foo/{id}", noop},
+			method:    http.MethodGet,
+			path:      "/foo/1/bar",
+			wantOk:    false,
+			wantMatch: RouteMatch{},
+		}, {
+			name:      "non-match paths with route params",
+			route:     Route{http.MethodGet, "/bar/{id}", noop},
+			method:    http.MethodGet,
+			path:      "/foo/1",
+			wantOk:    false,
+			wantMatch: RouteMatch{},
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			if got := test.route.Matches(test.method, test.path); got != test.want {
-				t.Errorf("Matches(%q, %q) = %t, want %t",
-					test.method, test.path, got, test.want)
+			gotMatch, gotOk := test.route.Match(test.method, test.path)
+			if !reflect.DeepEqual(gotMatch, test.wantMatch) || gotOk != test.wantOk {
+				t.Errorf("Match(%q, %q) = %v, %v, want %v",
+					test.method, test.path, gotMatch, gotOk, test.wantOk)
 			}
 		})
 	}

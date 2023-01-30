@@ -3,6 +3,7 @@ package router
 import (
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 // Route contains data to match and handle a requested route.
@@ -12,9 +13,29 @@ type Route struct {
 	handler http.Handler
 }
 
-// Matches returns whether or not the route matches the request.
-func (r *Route) Matches(method, path string) bool {
-	return r.method == method && r.path == path
+// RouteMatch contains data about a matched route.
+type RouteMatch struct {
+	Params map[string]string
+}
+
+// Match returns whether or not the route matches the request.
+func (r *Route) Match(method, path string) (RouteMatch, bool) {
+	if r.method != method {
+		return RouteMatch{}, false
+	}
+
+	if r.hasRouteParams() {
+		if params, ok := r.params(path); ok {
+			return RouteMatch{params}, true
+		}
+		return RouteMatch{}, false
+	}
+
+	if r.path == path {
+		return RouteMatch{}, true
+	}
+
+	return RouteMatch{}, false
 }
 
 // Validate computes errors with the route.
@@ -32,6 +53,46 @@ func (r *Route) Validate() error {
 		return fmt.Errorf("route path cannot end in '/', got %v", r.path)
 	}
 	return nil
+}
+
+// hasRouteParams returns whether or not the route has parameters.
+func (r *Route) hasRouteParams() bool {
+	for _, char := range r.path {
+		if char == '{' {
+			return true
+		}
+	}
+	return false
+}
+
+func (r *Route) params(path string) (map[string]string, bool) {
+	src := strings.Split(r.path, "/")
+	dst := strings.Split(path, "/")
+
+	// ensure both routes have the same number of segments
+	if len(src) != len(dst) {
+		return nil, false
+	}
+
+	// extract the params
+	p := make(map[string]string)
+	for i := 0; i < len(src); i++ {
+		s := src[i]
+		d := dst[i]
+		if s == "" {
+			continue
+		} else if s[0] == '{' {
+			key := s[1 : len(s)-1]
+			val := d
+			p[key] = val
+		} else if s == d {
+			continue
+		} else {
+			return nil, false
+		}
+	}
+
+	return p, true
 }
 
 // isValidMethod validates that the method is a support HTTP verb.
