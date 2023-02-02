@@ -138,6 +138,30 @@ func TestRoute_Validate(t *testing.T) {
 			name:    "allows deep paths",
 			route:   Route{http.MethodGet, "/foo/bar", noop},
 			wantErr: false,
+		}, {
+			name:    "allows route params",
+			route:   Route{http.MethodGet, "/foo/{id}", noop},
+			wantErr: false,
+		}, {
+			name:    "allows pure route params",
+			route:   Route{http.MethodGet, "/{method}/{id}", noop},
+			wantErr: false,
+		}, {
+			name:    "disallows { characters without complement",
+			route:   Route{http.MethodGet, "/foo/{id", noop},
+			wantErr: true,
+		}, {
+			name:    "disallows } characters without complement",
+			route:   Route{http.MethodGet, "/foo/id}", noop},
+			wantErr: true,
+		}, {
+			name:    "disallows / characters inside curly braces",
+			route:   Route{http.MethodGet, "/foo/{/id}", noop},
+			wantErr: true,
+		}, {
+			name:    "disallows multiple { characters in a row",
+			route:   Route{http.MethodGet, "/foo/{{id}", noop},
+			wantErr: true,
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {

@@ -52,7 +52,36 @@ func (r *Route) Validate() error {
 	if len(r.path) > 1 && string(r.path[len(r.path)-1]) == "/" {
 		return fmt.Errorf("route path cannot end in '/', got %v", r.path)
 	}
+	if !hasValidCurlyBraces(r.path) {
+		return fmt.Errorf("route path must have valid curly braces, got %v", r.path)
+	}
 	return nil
+}
+
+// hasValidCurlyBraces ensures that curly braces are used correctly in
+// terms of path declaration.
+func hasValidCurlyBraces(s string) bool {
+	open := false
+	for _, char := range s {
+		if char == '{' {
+			if open {
+				return false
+			} else {
+				open = true
+			}
+		} else if char == '}' {
+			if !open {
+				return false
+			} else {
+				open = false
+			}
+		} else if char == '/' {
+			if open {
+				return false
+			}
+		}
+	}
+	return !open
 }
 
 // hasRouteParams returns whether or not the route has parameters.
