@@ -1,9 +1,17 @@
 package router
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 )
+
+type ctxKey struct {
+	name string
+}
+
+// Handler handles requests.
+type Handler func(http.ResponseWriter, *http.Request)
 
 // Router contains fields common to routes.
 type Router struct {
@@ -16,7 +24,7 @@ type Middleware func(http.Handler) http.Handler
 
 // ServeHTTP runs all the middleware and tries to handle the requested route.
 func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	route, err := router.match(r.Method, r.URL.Path)
+	route, match, err := router.match(r.Method, r.URL.Path)
 	if err != nil {
 		fmt.Println(err.Error())
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
@@ -29,7 +37,23 @@ func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h = router.middlewares[i](h)
 	}
 
+	// Add context to the request.
+	ctx := context.WithValue(r.Context(), matchKey(), *match)
+	r = r.WithContext(ctx)
+
+	// Call everything.
 	h.ServeHTTP(w, r)
+}
+
+// matchKey returns a context key for the match.
+func matchKey() ctxKey {
+	return ctxKey{"match"}
+}
+
+// Match returns the match from the request context.
+func Match(r *http.Request) (RouteMatch, bool) {
+	match, ok := r.Context().Value(matchKey()).(RouteMatch)
+	return match, ok
 }
 
 // NewRouter returns a Router that can be used as an http handler.
@@ -39,7 +63,7 @@ func NewRouter() *Router {
 
 // CanHandle determines if a method and path can be handled by the router.
 func (router *Router) CanHandle(method, path string) bool {
-	_, err := router.match(method, path)
+	_, _, err := router.match(method, path)
 	return err == nil
 }
 
@@ -50,13 +74,13 @@ func (router *Router) Middleware(m Middleware) {
 }
 
 // Get registers a GET handler.
-func (router *Router) Get(path string, h http.Handler) {
-	router.register(Route{http.MethodGet, path, h})
+func (router *Router) Get(path string, h Handler) {
+	router.register(Route{http.MethodGet, path, http.HandlerFunc(h)})
 }
 
 // Post registers a POST handler.
-func (router *Router) Post(path string, h http.Handler) {
-	router.register(Route{http.MethodPost, path, h})
+func (router *Router) Post(path string, h Handler) {
+	router.register(Route{http.MethodPost, path, http.HandlerFunc(h)})
 }
 
 // register adds the route to the router.
@@ -68,11 +92,11 @@ func (router *Router) register(route Route) {
 }
 
 // match finds a route that matches the method and path.
-func (router *Router) match(method, path string) (*Route, error) {
+func (router *Router) match(method, path string) (*Route, *RouteMatch, error) {
 	for _, route := range router.routes {
-		if _, ok := route.Match(method, path); ok {
-			return &route, nil
+		if match, ok := route.Match(method, path); ok {
+			return &route, &match, nil
 		}
 	}
-	return nil, fmt.Errorf("%v %v not found", method, path)
+	return nil, nil, fmt.Errorf("%v %v not found", method, path)
 }

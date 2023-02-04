@@ -21,10 +21,10 @@ func (n *testMiddleware) Middleware(h http.Handler) http.Handler {
 	})
 }
 
-func echoHandler(msg string) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func echoHandler(msg string) Handler {
+	return func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(msg))
-	})
+	}
 }
 
 func TestRouter_CanHandle(t *testing.T) {
@@ -237,4 +237,28 @@ func TestRouter_DisallowsInvalidRoutes(t *testing.T) {
 
 	router := NewRouter()
 	router.Get("", echoHandler("ok"))
+}
+
+func TestRouter_Match(t *testing.T) {
+	var gotMatch RouteMatch
+	var gotOk bool
+
+	router := NewRouter()
+	router.Get("/foo/{id}", func(w http.ResponseWriter, r *http.Request) {
+		gotMatch, gotOk = Match(r)
+	})
+
+	w := httptest.NewRecorder()
+	r := httptest.NewRequest(http.MethodGet, "/foo/123", nil)
+	router.ServeHTTP(w, r)
+
+	wantMatch := RouteMatch{
+		RouteParams: Params{
+			map[string]string{"id": "123"},
+		},
+	}
+	wantOk := true
+	if !reflect.DeepEqual(gotMatch, wantMatch) || gotOk != wantOk {
+		t.Errorf("Match(%T) = %v, %v, want %v, %v", r, gotMatch, gotOk, wantMatch, wantOk)
+	}
 }
