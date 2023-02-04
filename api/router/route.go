@@ -15,27 +15,32 @@ type Route struct {
 
 // RouteMatch contains data about a matched route.
 type RouteMatch struct {
-	Params map[string]string
+	RouteParams Params
+}
+
+// NewRouteMatch creates a RouteMatch struct.
+func NewRouteMatch() *RouteMatch {
+	return &RouteMatch{*NewParams()}
 }
 
 // Match returns whether or not the route matches the request.
 func (r *Route) Match(method, path string) (RouteMatch, bool) {
 	if r.method != method {
-		return RouteMatch{}, false
+		return *NewRouteMatch(), false
 	}
 
 	if r.hasRouteParams() {
 		if params, ok := r.params(path); ok {
 			return RouteMatch{params}, true
 		}
-		return RouteMatch{}, false
+		return *NewRouteMatch(), false
 	}
 
 	if r.path == path {
-		return RouteMatch{}, true
+		return *NewRouteMatch(), true
 	}
 
-	return RouteMatch{}, false
+	return *NewRouteMatch(), false
 }
 
 // Validate computes errors with the route.
@@ -94,17 +99,17 @@ func (r *Route) hasRouteParams() bool {
 	return false
 }
 
-func (r *Route) params(path string) (map[string]string, bool) {
+func (r *Route) params(path string) (Params, bool) {
 	src := strings.Split(r.path, "/")
 	dst := strings.Split(path, "/")
 
 	// ensure both routes have the same number of segments
 	if len(src) != len(dst) {
-		return nil, false
+		return Params{}, false
 	}
 
 	// extract the params
-	p := make(map[string]string)
+	p := NewParams()
 	for i := 0; i < len(src); i++ {
 		s := src[i]
 		d := dst[i]
@@ -113,15 +118,15 @@ func (r *Route) params(path string) (map[string]string, bool) {
 		} else if s[0] == '{' {
 			key := s[1 : len(s)-1]
 			val := d
-			p[key] = val
+			p.m[key] = val
 		} else if s == d {
 			continue
 		} else {
-			return nil, false
+			return Params{}, false
 		}
 	}
 
-	return p, true
+	return *p, true
 }
 
 // isValidMethod validates that the method is a support HTTP verb.
