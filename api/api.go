@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"stringsync/api/handlers"
 	"stringsync/api/middleware"
 	"stringsync/api/router"
-	"stringsync/api/routes"
 )
 
 func Start(port int, allowedOrigins []string) error {
@@ -24,13 +24,11 @@ func Start(port int, allowedOrigins []string) error {
 			http.MethodHead,
 		}))
 	router.Middleware(middleware.Logger)
-	routes.Apply(router)
-
-	// setup server
-	mux := http.NewServeMux()
-	mux.Handle("/", router)
+	router.Get("/health", handlers.GetHealth)
 
 	// run server
+	mux := http.NewServeMux()
+	mux.Handle("/", router)
 	addr := fmt.Sprintf(":%d", port)
 	fmt.Printf("Server running at: http://localhost%v\n", addr)
 	return http.ListenAndServe(addr, mux)
