@@ -38,21 +38,21 @@ func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Add context to the request.
-	ctx := context.WithValue(r.Context(), matchKey(), *match)
+	ctx := context.WithValue(r.Context(), routeMatchKey(), *match)
 	r = r.WithContext(ctx)
 
 	// Call everything.
 	h.ServeHTTP(w, r)
 }
 
-// matchKey returns a context key for the match.
-func matchKey() ctxKey {
+// routeMatchKey returns a context key for the match.
+func routeMatchKey() ctxKey {
 	return ctxKey{"match"}
 }
 
-// Match returns the match from the request context.
-func Match(r *http.Request) (RouteMatch, bool) {
-	match, ok := r.Context().Value(matchKey()).(RouteMatch)
+// GetRouteMatch returns the match from the request context.
+func GetRouteMatch(r *http.Request) (RouteMatch, bool) {
+	match, ok := r.Context().Value(routeMatchKey()).(RouteMatch)
 	return match, ok
 }
 
