@@ -7,6 +7,7 @@ import (
 	"stringsync/api/handlers"
 	"stringsync/api/middleware"
 	"stringsync/api/router"
+	"stringsync/api/util"
 )
 
 func Start(port int, allowedOrigins []string) error {
@@ -17,13 +18,20 @@ func Start(port int, allowedOrigins []string) error {
 
 	// setup router
 	router := router.NewRouter()
+
+	router.Middleware(middleware.RequestId())
+
 	router.Middleware(
 		middleware.Cors(allowedOrigins, []string{
 			http.MethodGet,
 			http.MethodPost,
 			http.MethodHead,
 		}))
-	router.Middleware(middleware.Logger)
+
+	logger := util.NewLogger(util.FormatterText)
+	logger.SetGlobalField("service", "api")
+	router.Middleware(middleware.Logger(logger))
+
 	router.Get("/health", handlers.GetHealth)
 
 	// run server

@@ -4,11 +4,10 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"stringsync/api/util"
 )
 
-type ctxKey struct {
-	name string
-}
+const routeMatchKey = util.CtxKey("stringsync.api.router.routeMatch")
 
 // Handler handles requests.
 type Handler func(http.ResponseWriter, *http.Request)
@@ -38,21 +37,16 @@ func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Add context to the request.
-	ctx := context.WithValue(r.Context(), routeMatchKey(), *match)
+	ctx := context.WithValue(r.Context(), routeMatchKey, *match)
 	r = r.WithContext(ctx)
 
 	// Call everything.
 	h.ServeHTTP(w, r)
 }
 
-// routeMatchKey returns a context key for the match.
-func routeMatchKey() ctxKey {
-	return ctxKey{"match"}
-}
-
 // GetRouteMatch returns the match from the request context.
-func GetRouteMatch(r *http.Request) (RouteMatch, bool) {
-	match, ok := r.Context().Value(routeMatchKey()).(RouteMatch)
+func GetRouteMatch(ctx context.Context) (RouteMatch, bool) {
+	match, ok := ctx.Value(routeMatchKey).(RouteMatch)
 	return match, ok
 }
 

@@ -245,7 +245,7 @@ func TestRouter_Match(t *testing.T) {
 
 	router := NewRouter()
 	router.Get("/foo/{id}", func(w http.ResponseWriter, r *http.Request) {
-		gotMatch, gotOk = GetRouteMatch(r)
+		gotMatch, gotOk = GetRouteMatch(r.Context())
 	})
 
 	w := httptest.NewRecorder()
