@@ -44,7 +44,8 @@ func Logger(logger *util.Logger) func(http.Handler) http.Handler {
 
 // GetLogger returns the logger associated with a request.
 func GetLogger(ctx context.Context) *log.Logger {
-	return ctx.Value(loggerKey).(*log.Logger)
+	logger, _ := ctx.Value(loggerKey).(*log.Logger)
+	return logger
 }
 
 // newStatusWriter wraps http's ResponseWriter to track HTTP status.
