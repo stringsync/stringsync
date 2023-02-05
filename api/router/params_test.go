@@ -104,11 +104,13 @@ func TestInt(t *testing.T) {
 			wantOk:  false,
 		},
 	} {
-		gotVal, gotOk := test.params.Int(test.key)
-		if gotVal != test.wantVal || gotOk != test.wantOk {
-			t.Errorf("String(%q) = %v, %v, want %v, %v",
-				test.key, gotVal, gotOk, test.wantVal, test.wantOk)
-		}
+		t.Run(test.name, func(t *testing.T) {
+			gotVal, gotOk := test.params.Int(test.key)
+			if gotVal != test.wantVal || gotOk != test.wantOk {
+				t.Errorf("String(%q) = %v, %v, want %v, %v",
+					test.key, gotVal, gotOk, test.wantVal, test.wantOk)
+			}
+		})
 	}
 }
 
@@ -140,10 +142,12 @@ func TestFloat64(t *testing.T) {
 			wantOk:  false,
 		},
 	} {
-		gotVal, gotOk := test.params.Float64(test.key)
-		if gotVal != test.wantVal || gotOk != test.wantOk {
-			t.Errorf("String(%q) = %v, %v, want %v, %v",
-				test.key, gotVal, gotOk, test.wantVal, test.wantOk)
-		}
+		t.Run(test.name, func(t *testing.T) {
+			gotVal, gotOk := test.params.Float64(test.key)
+			if gotVal != test.wantVal || gotOk != test.wantOk {
+				t.Errorf("String(%q) = %v, %v, want %v, %v",
+					test.key, gotVal, gotOk, test.wantVal, test.wantOk)
+			}
+		})
 	}
 }

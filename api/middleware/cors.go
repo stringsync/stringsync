@@ -26,6 +26,8 @@ func Cors(allowedOrigins []string, allowedMethods []string) func(http.Handler) h
 	}
 }
 
+// inclduesIgnoringCase checks to see if the needle is in the haystack ignoring
+// the case.
 func includesIgnoringCase(needle string, haystack []string) bool {
 	for _, candidate := range haystack {
 		if strings.EqualFold(needle, candidate) {
