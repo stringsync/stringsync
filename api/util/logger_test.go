@@ -56,3 +56,29 @@ func TestLogger_NewLogger(t *testing.T) {
 		})
 	}
 }
+
+func TestLogger_NewChild(t *testing.T) {
+	writer := &testWriter{}
+
+	logger := NewLogger(FormatterText)
+	logger.SetTime(time.Date(2023, time.June, 10, 9, 25, 10, 0, time.UTC))
+	logger.SetOutput(writer)
+
+	child1 := logger.NewChild()
+	child1.SetLocalField("secret", "foo")
+
+	child2 := logger.NewChild()
+	child2.SetLocalField("secret", "bar")
+
+	child1.Infof("hello")
+	got1 := writer.buf.String()
+
+	writer.buf.Reset()
+
+	child2.Infof("hello")
+	got2 := writer.buf.String()
+
+	if got1 == got2 {
+		t.Errorf("want got1 != got2, got got1 == got2 == %q", got1)
+	}
+}
