@@ -2,6 +2,7 @@ package util
 
 import (
 	"io"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -64,6 +65,11 @@ func (l *Logger) NewChild() *Logger {
 // SetOuput sets the output of the logger.
 func (l *Logger) SetOutput(output io.Writer) {
 	l.logger.SetOutput(output)
+}
+
+// SetTime sets the time of the logger for testing.
+func (l *Logger) SetTime(time time.Time) {
+	l.entry = l.entry.WithTime(time)
 }
 
 // SetGlobalField adds a field to the root logger.
