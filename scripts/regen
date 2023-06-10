@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# regen runs sqlc to regenerate the files in the db package.
+
+cd $(scripts/root)
+
+sqlc generate

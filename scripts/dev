@@ -2,6 +2,6 @@
 
 # dev runs stringsync in development mode
 
-root=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
-cd "$root"
+cd $(scripts/root)
+
 docker compose up --build --remove-orphans
