@@ -8,6 +8,7 @@ services:
       - 8080:8080
     links:
       - web
+      - db
     command:
       - "./stringsync"
       - "api"
@@ -17,6 +18,16 @@ services:
       - "http://localhost:8081"
       - "--allowed_origin"
       - "http://localhost:8080"
+
+  db:
+    image: postgres:11
+    restart: always
+    environment:
+      POSTGRES_DB: stringsync
+      POSTGRES_USER: stringsync
+      POSTGRES_PASSWORD: stringsync
+    ports:
+      - 5432:5432
 
   web:
     build:
