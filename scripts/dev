@@ -1,7 +1,0 @@
-#!/bin/bash
-
-# dev runs stringsync in development mode
-
-cd $(scripts/root)
-
-docker compose up --build --remove-orphans

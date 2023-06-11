@@ -4,9 +4,11 @@
 
 package db
 
-import ()
+import (
+	"database/sql"
+)
 
 type User struct {
-	ID       string
-	Username string
+	ID       int32
+	Username sql.NullString
 }
