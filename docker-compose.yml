@@ -8,6 +8,12 @@ services:
       - 8080:8080
     links:
       - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: stringsync
+      DB_USERNAME: stringsync
+      DB_PASSWORD: stringsync
     command:
       - "./stringsync"
       - "api"

@@ -4,14 +4,15 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"stringsync/service"
 	"testing"
 )
 
-func TestGetHealth(t *testing.T) {
+func TestGet(t *testing.T) {
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodGet, "/", nil)
 
-	GetHealth(w, r)
+	NewHealth(service.New(service.Config{})).Get(w, r)
 
 	body, err := io.ReadAll(w.Result().Body)
 	if err != nil {
