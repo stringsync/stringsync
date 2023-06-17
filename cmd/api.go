@@ -20,7 +20,7 @@ func init() {
 
 var apiCmd = &cobra.Command{
 	Use:   "api",
-	Short: "runs the api server",
+	Short: "Runs the api server",
 	RunE: func(c *cobra.Command, args []string) error {
 		return api.Start(apiPort, apiAllowedOrigins)
 	},

@@ -14,54 +14,54 @@ func TestGetPostgresDsn(t *testing.T) {
 		{
 			name: "calculates fully qualified dsns",
 			params: DsnParams{
-				host:     "host",
-				port:     1234,
-				dbName:   "dbName",
-				user:     "user",
-				password: "password",
+				Host:     "host",
+				Port:     1234,
+				DbName:   "dbName",
+				User:     "user",
+				Password: "password",
 			},
-			want: "host=host port=1234 dbname=dbName user=user password=password",
+			want: "host=host port=1234 dbname=dbName user=user password=password sslmode=disable",
 		},
 		{
 			name: "excluding host returns error",
 			params: DsnParams{
-				host: "",
+				Host: "",
 			},
 			wantErr: true,
 		}, {
 			name: "includes host",
 			params: DsnParams{
-				host: "host",
-				port: 1234,
+				Host: "host",
+				Port: 1234,
 			},
-			want: "host=host port=1234",
+			want: "host=host port=1234 sslmode=disable",
 		}, {
 			name: "defaults port",
 			params: DsnParams{
-				host: "host",
+				Host: "host",
 			},
-			want: "host=host port=5432",
+			want: "host=host port=5432 sslmode=disable",
 		}, {
 			name: "includes dbName",
 			params: DsnParams{
-				host:   "host",
-				dbName: "dbName",
+				Host:   "host",
+				DbName: "dbName",
 			},
-			want: "host=host port=5432 dbname=dbName",
+			want: "host=host port=5432 dbname=dbName sslmode=disable",
 		}, {
 			name: "includes user",
 			params: DsnParams{
-				host: "host",
-				user: "user",
+				Host: "host",
+				User: "user",
 			},
-			want: "host=host port=5432 user=user",
+			want: "host=host port=5432 user=user sslmode=disable",
 		}, {
 			name: "includes password",
 			params: DsnParams{
-				host:     "host",
-				password: "password",
+				Host:     "host",
+				Password: "password",
 			},
-			want: "host=host port=5432 password=password",
+			want: "host=host port=5432 password=password sslmode=disable",
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {

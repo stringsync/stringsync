@@ -7,7 +7,6 @@ services:
     ports:
       - 8080:8080
     links:
-      - web
       - db
     command:
       - "./stringsync"
@@ -28,13 +27,23 @@ services:
       POSTGRES_PASSWORD: stringsync
     ports:
       - 5432:5432
-
-  web:
-    build:
-      context: web
-      dockerfile: Dockerfile
-    ports:
-      - 8081:8081
-    environment:
-      PORT: 8081
   
+  migrate:
+    build:
+      dockerfile: Dockerfile
+    links:
+      - db
+    command:
+      - "./stringsync"
+      - "migrate"
+      - "--host"
+      - "db"
+      - "--port"
+      - "5432"
+      - "--dbname"
+      - "stringsync"
+      - "--user"
+      - "stringsync"
+      - "--password"
+      - "stringsync"
+      - "--seed"

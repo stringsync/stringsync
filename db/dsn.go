@@ -8,11 +8,11 @@ import (
 
 // DsnParams are the parameters needed for GetDsn.
 type DsnParams struct {
-	host     string
-	port     int
-	dbName   string
-	user     string
-	password string
+	Host     string
+	Port     int
+	DbName   string
+	User     string
+	Password string
 }
 
 // GetPostgresDsn calculates the Data Source Name for connecting to a Postgres database.
@@ -21,32 +21,34 @@ type DsnParams struct {
 func GetPostgresDsn(params DsnParams) (string, error) {
 	parts := []string{}
 
-	host := params.host
+	host := params.Host
 	if host == "" {
 		return "", errors.New("must provide a host")
 	}
 	parts = append(parts, (fmt.Sprintf("host=%s", host)))
 
-	port := params.port
+	port := params.Port
 	if port == 0 {
 		port = 5432
 	}
 	parts = append(parts, (fmt.Sprintf("port=%d", port)))
 
-	dbName := params.dbName
+	dbName := params.DbName
 	if dbName != "" {
 		parts = append(parts, (fmt.Sprintf("dbname=%s", dbName)))
 	}
 
-	user := params.user
+	user := params.User
 	if user != "" {
 		parts = append(parts, (fmt.Sprintf("user=%s", user)))
 	}
 
-	password := params.password
+	password := params.Password
 	if password != "" {
 		parts = append(parts, (fmt.Sprintf("password=%s", password)))
 	}
+
+	parts = append(parts, "sslmode=disable")
 
 	return strings.Join(parts, " "), nil
 }
