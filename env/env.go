@@ -9,10 +9,7 @@ import (
 // MustGetEnvString returns a string from the env.
 // It will panic if the env is missing.
 func MustGetEnvString(key string) string {
-	val, ok := os.LookupEnv(key)
-	if !ok {
-		panic(fmt.Sprintf("Missing env key %q", key))
-	}
+	val := os.Getenv(key)
 	if val == "" {
 		panic(fmt.Sprintf("Empty env key %q", key))
 	}
@@ -22,13 +19,15 @@ func MustGetEnvString(key string) string {
 // MustGetEnvInt returns an int64 from the env.
 // It will panic if the env is missing or invalid.
 func MustGetEnvInt(key string) int {
-	str, ok := os.LookupEnv(key)
-	if !ok {
-		panic(fmt.Sprintf("Missing env key %q", key))
+	str := os.Getenv(key)
+	if str == "" {
+		panic(fmt.Sprintf("Empty env key %q", key))
 	}
+
 	val, err := strconv.ParseInt(str, 10, 64)
 	if err != nil {
 		panic(fmt.Sprintf("Could not parse env key %q: %v", key, err))
 	}
+
 	return int(val)
 }
