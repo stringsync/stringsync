@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"stringsync/api"
-	"stringsync/env"
+	"stringsync/util"
 
 	"github.com/spf13/cobra"
 )
@@ -26,11 +26,11 @@ var apiCmd = &cobra.Command{
 		return api.Start(api.Config{
 			Port:           apiPort,
 			AllowedOrigins: apiAllowedOrigins,
-			DbHost:         env.MustGetEnvString("DB_HOST"),
-			DbPort:         env.MustGetEnvInt("DB_PORT"),
-			DbName:         env.MustGetEnvString("DB_NAME"),
-			DbUser:         env.MustGetEnvString("DB_USERNAME"),
-			DbPassword:     env.MustGetEnvString("DB_PASSWORD"),
+			DbHost:         util.MustGetEnvString("DB_HOST"),
+			DbPort:         util.MustGetEnvInt("DB_PORT"),
+			DbName:         util.MustGetEnvString("DB_NAME"),
+			DbUser:         util.MustGetEnvString("DB_USERNAME"),
+			DbPassword:     util.MustGetEnvString("DB_PASSWORD"),
 		})
 	},
 }
