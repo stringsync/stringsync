@@ -7,8 +7,8 @@ import (
 	"stringsync/api/handlers"
 	"stringsync/api/middleware"
 	"stringsync/api/router"
-	"stringsync/api/util"
 	"stringsync/service"
+	"stringsync/util"
 )
 
 type Config struct {

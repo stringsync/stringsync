@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 	"stringsync/api/internal/ctx"
-	"stringsync/api/util"
+	"stringsync/util"
 	"time"
 )
 

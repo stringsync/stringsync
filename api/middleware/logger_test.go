@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
-	"stringsync/api/util"
+	"stringsync/util"
 	"testing"
 )
 
