@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"stringsync/api"
+	"stringsync/env"
 
 	"github.com/spf13/cobra"
 )
@@ -22,6 +23,14 @@ var apiCmd = &cobra.Command{
 	Use:   "api",
 	Short: "Runs the api server",
 	RunE: func(c *cobra.Command, args []string) error {
-		return api.Start(apiPort, apiAllowedOrigins)
+		return api.Start(api.Config{
+			Port:           apiPort,
+			AllowedOrigins: apiAllowedOrigins,
+			DbHost:         env.MustGetEnvString("DB_HOST"),
+			DbPort:         env.MustGetEnvInt("DB_PORT"),
+			DbName:         env.MustGetEnvString("DB_NAME"),
+			DbUser:         env.MustGetEnvString("DB_USERNAME"),
+			DbPassword:     env.MustGetEnvString("DB_PASSWORD"),
+		})
 	},
 }

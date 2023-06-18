@@ -1,4 +1,4 @@
-package util
+package env
 
 import (
 	"fmt"
@@ -21,7 +21,7 @@ func MustGetEnvString(key string) string {
 
 // MustGetEnvInt returns an int64 from the env.
 // It will panic if the env is missing or invalid.
-func MustGetEnvInt(key string) int64 {
+func MustGetEnvInt(key string) int {
 	str, ok := os.LookupEnv(key)
 	if !ok {
 		panic(fmt.Sprintf("Missing env key %q", key))
@@ -30,5 +30,5 @@ func MustGetEnvInt(key string) int64 {
 	if err != nil {
 		panic(fmt.Sprintf("Could not parse env key %q: %v", key, err))
 	}
-	return val
+	return int(val)
 }

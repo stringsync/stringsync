@@ -11,24 +11,29 @@ import (
 	"stringsync/service"
 )
 
+type Config struct {
+	Port           int
+	AllowedOrigins []string
+	DbHost         string
+	DbPort         int
+	DbName         string
+	DbUser         string
+	DbPassword     string
+}
+
 // Start runs the API.
-func Start(port int, allowedOrigins []string) error {
+func Start(config Config) error {
 	// setup logger
 	logger := util.NewLogger(util.FormatterText)
 	logger.SetGlobalField("service", "api")
 
-	// validate port
-	if port <= 0 {
-		return fmt.Errorf("port must be valid, got: %d", port)
-	}
-
 	// create service
 	service := service.New(service.Config{
-		DbHost:     util.MustGetEnvString("DB_HOST"),
-		DbPort:     int(util.MustGetEnvInt("DB_PORT")),
-		DbName:     util.MustGetEnvString("DB_NAME"),
-		DbUser:     util.MustGetEnvString("DB_USERNAME"),
-		DbPassword: util.MustGetEnvString("DB_PASSWORD"),
+		DbHost:     config.DbHost,
+		DbPort:     config.DbPort,
+		DbName:     config.DbName,
+		DbUser:     config.DbUser,
+		DbPassword: config.DbPassword,
 	})
 	defer service.Cleanup()
 
@@ -38,7 +43,7 @@ func Start(port int, allowedOrigins []string) error {
 	router.Middleware(middleware.RequestId())
 
 	router.Middleware(
-		middleware.Cors(allowedOrigins, []string{
+		middleware.Cors(config.AllowedOrigins, []string{
 			http.MethodGet,
 			http.MethodPost,
 			http.MethodHead,
@@ -52,7 +57,7 @@ func Start(port int, allowedOrigins []string) error {
 	// run server
 	mux := http.NewServeMux()
 	mux.Handle("/", router)
-	addr := fmt.Sprintf(":%d", port)
-	fmt.Printf("Server running at: http://localhost%v\n", addr)
+	addr := fmt.Sprintf(":%d", config.Port)
+	logger.Infof("Server running at: http://localhost%v\n", addr)
 	return http.ListenAndServe(addr, mux)
 }
