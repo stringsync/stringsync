@@ -4,12 +4,12 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"stringsync/api/internal/ctx"
+	ctxkey "stringsync/api/internal/ctxkey"
 	"stringsync/util"
 	"time"
 )
 
-const loggerKey = ctx.CtxKey("stringsync.api.middleware.logger")
+const loggerKey = ctxkey.CtxKey("stringsync.api.middleware.logger")
 
 // statusWriter tracks the statusCode when writing to it.
 type statusWriter struct {

@@ -1,3 +1,3 @@
-package ctx
+package ctxkey
 
 type CtxKey string

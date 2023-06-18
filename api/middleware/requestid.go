@@ -3,14 +3,14 @@ package middleware
 import (
 	"context"
 	"net/http"
-	ssctx "stringsync/api/internal/ctx"
+	ctxkey "stringsync/api/internal/ctxkey"
 
 	"github.com/google/uuid"
 )
 
 const (
 	RequestIdHeader = "X-Request-ID"
-	requestIdKey    = ssctx.CtxKey("stringsync.api.middleware.requestId")
+	requestIdKey    = ctxkey.CtxKey("stringsync.api.middleware.requestId")
 )
 
 // RequestId creates a request ID, and adds it to a X-Request-ID header.
