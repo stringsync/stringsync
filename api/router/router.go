@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"stringsync/api/util"
+	"stringsync/api/internal/ctx"
 )
 
-const routeMatchKey = util.CtxKey("stringsync.api.router.routeMatch")
+const routeMatchKey = ctx.CtxKey("stringsync.api.router.routeMatch")
 
 // Handler handles requests.
 type Handler func(http.ResponseWriter, *http.Request)
