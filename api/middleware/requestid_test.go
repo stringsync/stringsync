@@ -3,16 +3,17 @@ package middleware
 import (
 	"net/http"
 	"net/http/httptest"
+	"stringsync/util"
 	"testing"
 )
 
 func TestRequestId_IsUniqueEachCall(t *testing.T) {
-	gotRequestIds := []string{}
+	gotRequestIDs := []string{}
 
-	middleware := RequestId()
+	middleware := RequestID()
 	handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		requestId := GetRequestId(r.Context())
-		gotRequestIds = append(gotRequestIds, requestId)
+		requestID := util.RequestIDCtxSlot.Get(r.Context())
+		gotRequestIDs = append(gotRequestIDs, requestID)
 	}))
 
 	w := httptest.NewRecorder()
@@ -22,11 +23,11 @@ func TestRequestId_IsUniqueEachCall(t *testing.T) {
 	handler.ServeHTTP(w, r)
 
 	wantLen := 2
-	if gotLen := len(gotRequestIds); gotLen != wantLen {
-		t.Errorf("len(requestIds) = %d, want %d", gotLen, wantLen)
+	if gotLen := len(gotRequestIDs); gotLen != wantLen {
+		t.Errorf("len(gotRequestIDs) = %d, want %d", gotLen, wantLen)
 	}
 
-	if gotRequestIds[0] == gotRequestIds[1] {
-		t.Errorf("gotRequestIds[0] and gotRequestIds[1] are equal, want unequal values")
+	if gotRequestIDs[0] == gotRequestIDs[1] {
+		t.Errorf("gotRequestIDs[0] and gotRequestIDs[1] are equal, want unequal values")
 	}
 }

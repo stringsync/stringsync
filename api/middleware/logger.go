@@ -1,15 +1,10 @@
 package middleware
 
 import (
-	"context"
-	"log"
 	"net/http"
-	ctxkey "stringsync/api/internal/ctxkey"
 	"stringsync/util"
 	"time"
 )
-
-const loggerKey = ctxkey.CtxKey("stringsync.api.middleware.logger")
 
 // statusWriter tracks the statusCode when writing to it.
 type statusWriter struct {
@@ -25,14 +20,14 @@ func Logger(logger *util.Logger) func(http.Handler) http.Handler {
 			start := time.Now()
 
 			// Update the context with a logger and create a status writer.
-			ctx := context.WithValue(r.Context(), loggerKey, logger)
+			ctx := util.LogCtxSlot.Put(r.Context(), logger)
 			r = r.WithContext(ctx)
 			sw := newStatusWriter(w)
 
 			// Create a new logger.
 			logger = logger.NewChild()
-			requestId := GetRequestId(r.Context())
-			logger.SetLocalField("requestId", requestId)
+			requestID := util.RequestIDCtxSlot.Get(ctx)
+			logger.SetLocalField("requestID", requestID)
 
 			// Propagate the request and wrap the start and end with logs.
 			logger.Infof("Started %s %s", r.Method, r.URL.Path)
@@ -41,12 +36,6 @@ func Logger(logger *util.Logger) func(http.Handler) http.Handler {
 				sw.statusCode, http.StatusText(sw.statusCode), time.Since(start))
 		})
 	}
-}
-
-// GetLogger returns the logger associated with a request.
-func GetLogger(ctx context.Context) *log.Logger {
-	logger, _ := ctx.Value(loggerKey).(*log.Logger)
-	return logger
 }
 
 // newStatusWriter wraps http's ResponseWriter to track HTTP status.

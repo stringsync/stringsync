@@ -52,7 +52,7 @@ func setupService(config Config) *service.Service {
 func setupRouter(config Config, logger *util.Logger, srv *service.Service) *router.Router {
 	r := router.NewRouter()
 
-	r.Middleware(middleware.RequestId())
+	r.Middleware(middleware.RequestID())
 	r.Middleware(
 		middleware.Cors(config.AllowedOrigins, []string{
 			http.MethodGet,

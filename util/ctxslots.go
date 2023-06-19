@@ -8,7 +8,7 @@ import (
 
 var (
 	RequestIDCtxSlot = NewCtxSlot[string]("requestID")
-	LogCtxSlot       = NewCtxSlot[Logger]("log")
+	LogCtxSlot       = NewCtxSlot[*Logger]("log")
 )
 
 // ctxKey is the key to retrieve a context value with.
