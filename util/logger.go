@@ -92,7 +92,12 @@ func (l *Logger) Warnf(format string, args ...any) {
 	l.entry.Warnf(format, args...)
 }
 
-// Errorf creates a lgo at the ERROR level.
+// Errorf creates a log at the ERROR level.
 func (l *Logger) Errorf(format string, args ...any) {
 	l.entry.Errorf(format, args...)
+}
+
+// Fatalf creates a log at the ERROR level, then exits with exit code 1.
+func (l *Logger) Fatalf(format string, args ...any) {
+	l.entry.Fatalf(format, args...)
 }

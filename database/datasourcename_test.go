@@ -65,7 +65,7 @@ func TestGetPostgresDsn(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			got, gotErr := GetPostgresDsn(test.params)
+			got, gotErr := GetPostgresDataSourceName(test.params)
 
 			if hasErr := gotErr != nil; hasErr != test.wantErr {
 				t.Errorf("gotErr = %v, wantErr = %t", gotErr, test.wantErr)

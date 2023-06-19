@@ -15,10 +15,10 @@ type DsnParams struct {
 	Password string
 }
 
-// GetPostgresDsn calculates the Data Source Name for connecting to a Postgres database.
+// GetPostgresDataSourceName calculates the Data Source Name for connecting to a Postgres database.
 //
 // See https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
-func GetPostgresDsn(params DsnParams) (string, error) {
+func GetPostgresDataSourceName(params DsnParams) (string, error) {
 	parts := []string{}
 
 	host := params.Host

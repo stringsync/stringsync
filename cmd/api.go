@@ -26,6 +26,7 @@ var apiCmd = &cobra.Command{
 		return api.Start(api.Config{
 			Port:           apiPort,
 			AllowedOrigins: apiAllowedOrigins,
+			DbDriver:       "postgres",
 			DbHost:         util.MustGetEnvString("DB_HOST"),
 			DbPort:         util.MustGetEnvInt("DB_PORT"),
 			DbName:         util.MustGetEnvString("DB_NAME"),
