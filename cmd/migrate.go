@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"log"
-	"stringsync/db"
+	"stringsync/database"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -34,7 +34,7 @@ var migrateCmd = &cobra.Command{
 	Use:   "migrate",
 	Short: "Migrates the database",
 	Run: func(c *cobra.Command, args []string) {
-		dsn, err := db.GetPostgresDsn(db.DsnParams{
+		dsn, err := database.GetPostgresDsn(database.DsnParams{
 			Host:     migrateHost,
 			Port:     migratePort,
 			DbName:   migrateDbName,
@@ -45,18 +45,18 @@ var migrateCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		err = db.Ready(migrateDriver, dsn, 30*time.Second)
+		err = database.Ready(migrateDriver, dsn, 30*time.Second)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		err = db.Migrate(migrateDriver, dsn)
+		err = database.Migrate(migrateDriver, dsn)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		if migrateSeed {
-			err = db.Seed(migrateDriver, dsn)
+			err = database.Seed(migrateDriver, dsn)
 			if err != nil {
 				log.Fatal(err)
 			}

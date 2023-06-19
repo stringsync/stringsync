@@ -14,8 +14,8 @@ RUN go mod download
 COPY stringsync.go stringsync.go
 COPY api api
 COPY cmd cmd
+COPY database database
 COPY util util
-COPY db db
 COPY service service
 RUN go build stringsync
 

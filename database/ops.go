@@ -1,4 +1,4 @@
-package db
+package database
 
 import (
 	"database/sql"
@@ -12,9 +12,9 @@ import (
 )
 
 const (
-	migrationsDir       = "db/migrations"
+	migrationsDir       = "database/migrations"
 	migrationsTableName = "_db_migrations"
-	seedsDir            = "db/seeds"
+	seedsDir            = "database/seeds"
 	seedsTableName      = "_db_seeds"
 )
 
@@ -52,12 +52,12 @@ func CanConnect(driver, dsn string) bool {
 
 // Migrate runs a DDL migration against the database to the latest version.
 func Migrate(driver, dsn string) error {
-	return up(migrationsDir, migrationsTableName, driver, dsn)
+	return up(driver, migrationsDir, migrationsTableName, dsn)
 }
 
 // Migrate runs a DML migration against the database to the latest version.
 func Seed(driver, dsn string) error {
-	return up(seedsDir, seedsTableName, driver, dsn)
+	return up(driver, seedsDir, seedsTableName, dsn)
 }
 
 // up runs the goose up command.

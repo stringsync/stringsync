@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	database "stringsync/db"
+	"stringsync/database"
 )
 
 type Service struct {
