@@ -7,16 +7,16 @@ import (
 func TestGetPostgresDsn(t *testing.T) {
 	for _, test := range []struct {
 		name    string
-		params  DsnParams
+		params  DataSourceNameParams
 		want    string
 		wantErr bool
 	}{
 		{
 			name: "calculates fully qualified dsns",
-			params: DsnParams{
+			params: DataSourceNameParams{
 				Host:     "host",
 				Port:     1234,
-				DbName:   "dbName",
+				DBName:   "dbName",
 				User:     "user",
 				Password: "password",
 			},
@@ -24,40 +24,40 @@ func TestGetPostgresDsn(t *testing.T) {
 		},
 		{
 			name: "excluding host returns error",
-			params: DsnParams{
+			params: DataSourceNameParams{
 				Host: "",
 			},
 			wantErr: true,
 		}, {
 			name: "includes host",
-			params: DsnParams{
+			params: DataSourceNameParams{
 				Host: "host",
 				Port: 1234,
 			},
 			want: "host=host port=1234 sslmode=disable",
 		}, {
 			name: "defaults port",
-			params: DsnParams{
+			params: DataSourceNameParams{
 				Host: "host",
 			},
 			want: "host=host port=5432 sslmode=disable",
 		}, {
 			name: "includes dbName",
-			params: DsnParams{
+			params: DataSourceNameParams{
 				Host:   "host",
-				DbName: "dbName",
+				DBName: "dbName",
 			},
 			want: "host=host port=5432 dbname=dbName sslmode=disable",
 		}, {
 			name: "includes user",
-			params: DsnParams{
+			params: DataSourceNameParams{
 				Host: "host",
 				User: "user",
 			},
 			want: "host=host port=5432 user=user sslmode=disable",
 		}, {
 			name: "includes password",
-			params: DsnParams{
+			params: DataSourceNameParams{
 				Host:     "host",
 				Password: "password",
 			},

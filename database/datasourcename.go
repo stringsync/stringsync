@@ -6,11 +6,11 @@ import (
 	"strings"
 )
 
-// DsnParams are the parameters needed for GetDsn.
-type DsnParams struct {
+// DataSourceNameParams are the parameters needed for GetDsn.
+type DataSourceNameParams struct {
 	Host     string
 	Port     int
-	DbName   string
+	DBName   string
 	User     string
 	Password string
 }
@@ -18,7 +18,7 @@ type DsnParams struct {
 // GetPostgresDataSourceName calculates the Data Source Name for connecting to a Postgres database.
 //
 // See https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
-func GetPostgresDataSourceName(params DsnParams) (string, error) {
+func GetPostgresDataSourceName(params DataSourceNameParams) (string, error) {
 	parts := []string{}
 
 	host := params.Host
@@ -33,7 +33,7 @@ func GetPostgresDataSourceName(params DsnParams) (string, error) {
 	}
 	parts = append(parts, (fmt.Sprintf("port=%d", port)))
 
-	dbName := params.DbName
+	dbName := params.DBName
 	if dbName != "" {
 		parts = append(parts, (fmt.Sprintf("dbname=%s", dbName)))
 	}

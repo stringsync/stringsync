@@ -34,10 +34,10 @@ var migrateCmd = &cobra.Command{
 	Use:   "migrate",
 	Short: "Migrates the database",
 	Run: func(c *cobra.Command, args []string) {
-		dsn, err := database.GetPostgresDataSourceName(database.DsnParams{
+		dsn, err := database.GetPostgresDataSourceName(database.DataSourceNameParams{
 			Host:     migrateHost,
 			Port:     migratePort,
-			DbName:   migrateDbName,
+			DBName:   migrateDbName,
 			User:     migrateUser,
 			Password: migratePassword,
 		})

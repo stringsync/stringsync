@@ -26,12 +26,12 @@ var apiCmd = &cobra.Command{
 		return api.Start(api.Config{
 			Port:           apiPort,
 			AllowedOrigins: apiAllowedOrigins,
-			DbDriver:       "postgres",
-			DbHost:         util.MustGetEnvString("DB_HOST"),
-			DbPort:         util.MustGetEnvInt("DB_PORT"),
-			DbName:         util.MustGetEnvString("DB_NAME"),
-			DbUser:         util.MustGetEnvString("DB_USERNAME"),
-			DbPassword:     util.MustGetEnvString("DB_PASSWORD"),
+			DBDriver:       "postgres",
+			DBHost:         util.MustGetEnvString("DB_HOST"),
+			DBPort:         util.MustGetEnvInt("DB_PORT"),
+			DBName:         util.MustGetEnvString("DB_NAME"),
+			DBUser:         util.MustGetEnvString("DB_USERNAME"),
+			DBPassword:     util.MustGetEnvString("DB_PASSWORD"),
 		})
 	},
 }

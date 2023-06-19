@@ -16,12 +16,12 @@ import (
 type Config struct {
 	Port           int
 	AllowedOrigins []string
-	DbDriver       string
-	DbHost         string
-	DbPort         int
-	DbName         string
-	DbUser         string
-	DbPassword     string
+	DBDriver       string
+	DBHost         string
+	DBPort         int
+	DBName         string
+	DBUser         string
+	DBPassword     string
 }
 
 // Start configures and runs the API.
@@ -31,20 +31,20 @@ func Start(config Config) error {
 	log.SetGlobalField("service", "api")
 
 	// Establish database connection.
-	if config.DbDriver != "postgres" {
-		log.Fatalf("DbDriver not supported: %v", config.DbDriver)
+	if config.DBDriver != "postgres" {
+		log.Fatalf("DbDriver not supported: %v", config.DBDriver)
 	}
-	dsn, err := database.GetPostgresDataSourceName(database.DsnParams{
-		Host:     config.DbHost,
-		Port:     config.DbPort,
-		DbName:   config.DbName,
-		User:     config.DbUser,
-		Password: config.DbPassword,
+	dsn, err := database.GetPostgresDataSourceName(database.DataSourceNameParams{
+		Host:     config.DBHost,
+		Port:     config.DBPort,
+		DBName:   config.DBName,
+		User:     config.DBUser,
+		Password: config.DBPassword,
 	})
 	if err != nil {
 		log.Fatalf("could not calculate data source name: %v", err)
 	}
-	db, err := sql.Open(config.DbDriver, dsn)
+	db, err := sql.Open(config.DBDriver, dsn)
 	if err != nil {
 		log.Fatalf("could not open database connection: %v", err)
 	}
