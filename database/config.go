@@ -1,5 +1,6 @@
 package database
 
+// Config contains configuration
 type Config struct {
 	Driver   string
 	Host     string

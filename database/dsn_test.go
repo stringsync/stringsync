@@ -4,16 +4,17 @@ import (
 	"testing"
 )
 
-func TestGetPostgresDsn(t *testing.T) {
+func TestGetDataSourceName(t *testing.T) {
 	for _, test := range []struct {
 		name    string
-		params  DataSourceNameParams
+		config  Config
 		want    string
 		wantErr bool
 	}{
 		{
 			name: "calculates fully qualified dsns",
-			params: DataSourceNameParams{
+			config: Config{
+				Driver:   "postgres",
 				Host:     "host",
 				Port:     1234,
 				DBName:   "dbName",
@@ -23,41 +24,54 @@ func TestGetPostgresDsn(t *testing.T) {
 			want: "host=host port=1234 dbname=dbName user=user password=password sslmode=disable",
 		},
 		{
-			name: "excluding host returns error",
-			params: DataSourceNameParams{
-				Host: "",
+			name: "returns error when excluding host",
+			config: Config{
+				Driver: "postgres",
+				Host:   "",
+			},
+			wantErr: true,
+		}, {
+			name: "returns error when excluding driver",
+			config: Config{
+				Driver: "",
+				Host:   "host",
 			},
 			wantErr: true,
 		}, {
 			name: "includes host",
-			params: DataSourceNameParams{
-				Host: "host",
-				Port: 1234,
+			config: Config{
+				Driver: "postgres",
+				Host:   "host",
+				Port:   1234,
 			},
 			want: "host=host port=1234 sslmode=disable",
 		}, {
 			name: "defaults port",
-			params: DataSourceNameParams{
-				Host: "host",
+			config: Config{
+				Driver: "postgres",
+				Host:   "host",
 			},
 			want: "host=host port=5432 sslmode=disable",
 		}, {
 			name: "includes dbName",
-			params: DataSourceNameParams{
+			config: Config{
+				Driver: "postgres",
 				Host:   "host",
 				DBName: "dbName",
 			},
 			want: "host=host port=5432 dbname=dbName sslmode=disable",
 		}, {
 			name: "includes user",
-			params: DataSourceNameParams{
-				Host: "host",
-				User: "user",
+			config: Config{
+				Driver: "postgres",
+				Host:   "host",
+				User:   "user",
 			},
 			want: "host=host port=5432 user=user sslmode=disable",
 		}, {
 			name: "includes password",
-			params: DataSourceNameParams{
+			config: Config{
+				Driver:   "postgres",
 				Host:     "host",
 				Password: "password",
 			},
@@ -65,14 +79,14 @@ func TestGetPostgresDsn(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			got, gotErr := GetPostgresDataSourceName(test.params)
+			got, gotErr := GetDataSourceName(test.config)
 
 			if hasErr := gotErr != nil; hasErr != test.wantErr {
 				t.Errorf("gotErr = %v, wantErr = %t", gotErr, test.wantErr)
 			}
 
 			if got != test.want {
-				t.Errorf("GetDsn(%+v) = %q, want %q", test.params, got, test.want)
+				t.Errorf("GetDsn(%+v) = %q, want %q", test.config, got, test.want)
 			}
 		})
 	}

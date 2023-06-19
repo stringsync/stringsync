@@ -16,7 +16,8 @@ func CreateTestDB(config Config) (testDB *sql.DB, cleanup func()) {
 	}
 
 	// config.DBName is purposely excluded.
-	dsn, err := GetPostgresDataSourceName(DataSourceNameParams{
+	dsn, err := GetDataSourceName(Config{
+		Driver:   "postgres",
 		Host:     config.Host,
 		Port:     config.Port,
 		User:     config.User,
@@ -39,7 +40,8 @@ func CreateTestDB(config Config) (testDB *sql.DB, cleanup func()) {
 		log.Fatalf("could not execute query: %v", err)
 	}
 
-	testDSN, err := GetPostgresDataSourceName(DataSourceNameParams{
+	testDSN, err := GetDataSourceName(Config{
+		Driver:   "postgres",
 		Host:     config.Host,
 		Port:     config.Port,
 		DBName:   config.DBName,
