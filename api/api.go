@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 
@@ -30,24 +29,9 @@ func Start(config Config) error {
 	log := util.NewLogger(util.FormatterText)
 	log.SetGlobalField("service", "api")
 
-	// Establish database connection.
-	if config.DBDriver != "postgres" {
-		log.Fatalf("database driver not supported: %v", config.DBDriver)
-	}
-	dsn, err := database.GetDataSourceName(database.Config{
-		Driver:   config.DBDriver,
-		Host:     config.DBHost,
-		Port:     config.DBPort,
-		DBName:   config.DBName,
-		User:     config.DBUser,
-		Password: config.DBPassword,
-	})
+	db, err := database.Connect(toDatabaseConfig(config))
 	if err != nil {
-		log.Fatalf("could not calculate data source name: %v", err)
-	}
-	db, err := sql.Open(config.DBDriver, dsn)
-	if err != nil {
-		log.Fatalf("could not open database connection: %v", err)
+		log.Fatal(err)
 	}
 	defer db.Close()
 
@@ -75,4 +59,15 @@ func Start(config Config) error {
 	addr := fmt.Sprintf(":%d", config.Port)
 	log.Infof("Server running at: http://localhost%v\n", addr)
 	return http.ListenAndServe(addr, mux)
+}
+
+func toDatabaseConfig(config Config) database.Config {
+	return database.Config{
+		Driver:   config.DBDriver,
+		Host:     config.DBHost,
+		Port:     config.DBPort,
+		DBName:   config.DBName,
+		User:     config.DBUser,
+		Password: config.DBPassword,
+	}
 }

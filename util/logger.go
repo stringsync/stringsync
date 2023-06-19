@@ -82,22 +82,42 @@ func (l *Logger) SetLocalField(key string, value any) {
 	l.entry = l.entry.WithField(key, value)
 }
 
-// Infof creates a log at the INFO level.
+// Info creates a log at the INFO level.
+func (l *Logger) Info(args ...any) {
+	l.entry.Info(args...)
+}
+
+// Infof creates a formatted log at the INFO level.
 func (l *Logger) Infof(format string, args ...any) {
 	l.entry.Infof(format, args...)
 }
 
-// Warnf creates a log at the WARN level.
+// Warn creates a log at the WARN level.
+func (l *Logger) Warn(args ...any) {
+	l.entry.Warn(args...)
+}
+
+// Warnf creates a formatted log at the WARN level.
 func (l *Logger) Warnf(format string, args ...any) {
 	l.entry.Warnf(format, args...)
 }
 
-// Errorf creates a log at the ERROR level.
+// Error creates a log at the ERROR level.
+func (l *Logger) Error(args ...any) {
+	l.entry.Error(args...)
+}
+
+// Errorf creates a formatted log at the ERROR level.
 func (l *Logger) Errorf(format string, args ...any) {
 	l.entry.Errorf(format, args...)
 }
 
-// Fatalf creates a log at the ERROR level, then exits with exit code 1.
+// Fatal creates a log at the ERROR level, then calls os.Exit.
+func (l *Logger) Fatal(args ...any) {
+	l.entry.Fatal(args...)
+}
+
+// Fatalf creates a formatted log at the ERROR level, then calls os.Exit.
 func (l *Logger) Fatalf(format string, args ...any) {
 	l.entry.Fatalf(format, args...)
 }

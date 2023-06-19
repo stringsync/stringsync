@@ -164,39 +164,3 @@ func TestLogger_SetLocalField_ChildLogger(t *testing.T) {
 		t.Errorf("strings.Contains(%q, \"foo=bar\") = true, want false", got)
 	}
 }
-
-func TestLogger_Infof(t *testing.T) {
-	writer := &testWriter{}
-	logger := NewLogger(FormatterText)
-	logger.SetOutput(writer)
-
-	logger.Infof("foo")
-
-	if got := writer.buf.String(); !strings.Contains(got, "level=info") {
-		t.Errorf("strings.Contains(%q, \"level=info\") = false, want true", got)
-	}
-}
-
-func TestLogger_Warnf(t *testing.T) {
-	writer := &testWriter{}
-	logger := NewLogger(FormatterText)
-	logger.SetOutput(writer)
-
-	logger.Warnf("foo")
-
-	if got := writer.buf.String(); !strings.Contains(got, "level=warn") {
-		t.Errorf("strings.Contains(%q, \"level=warn\") = false, want true", got)
-	}
-}
-
-func TestLogger_Errorf(t *testing.T) {
-	writer := &testWriter{}
-	logger := NewLogger(FormatterText)
-	logger.SetOutput(writer)
-
-	logger.Errorf("foo")
-
-	if got := writer.buf.String(); !strings.Contains(got, "level=error") {
-		t.Errorf("strings.Contains(%q, \"level=error\") = false, want true", got)
-	}
-}

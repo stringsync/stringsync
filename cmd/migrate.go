@@ -21,7 +21,7 @@ var (
 func init() {
 	rootCmd.AddCommand(migrateCmd)
 
-	migrateCmd.Flags().StringVar(&migrateDriver, "driver", "postgres", "database driver")
+	migrateCmd.Flags().StringVar(&migrateDriver, "driver", "", "database driver")
 	migrateCmd.Flags().StringVar(&migrateHost, "host", "", "database host")
 	migrateCmd.Flags().IntVar(&migratePort, "port", 5432, "database port")
 	migrateCmd.Flags().StringVar(&migrateDbName, "dbname", "", "database name")
@@ -34,31 +34,25 @@ var migrateCmd = &cobra.Command{
 	Use:   "migrate",
 	Short: "Migrates the database",
 	Run: func(c *cobra.Command, args []string) {
-		dsn, err := database.GetDataSourceName(database.Config{
-			Driver:   "postgres",
+		config := database.Config{
+			Driver:   migrateDriver,
 			Host:     migrateHost,
 			Port:     migratePort,
 			DBName:   migrateDbName,
 			User:     migrateUser,
 			Password: migratePassword,
-		})
-		if err != nil {
+		}
+
+		if err := database.Ready(config, 30*time.Second); err != nil {
 			log.Fatal(err)
 		}
 
-		err = database.Ready(migrateDriver, dsn, 30*time.Second)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		err = database.Migrate(migrateDriver, dsn)
-		if err != nil {
+		if err := database.Migrate(config); err != nil {
 			log.Fatal(err)
 		}
 
 		if migrateSeed {
-			err = database.Seed(migrateDriver, dsn)
-			if err != nil {
+			if err := database.Seed(config); err != nil {
 				log.Fatal(err)
 			}
 		}

@@ -11,25 +11,10 @@ import (
 )
 
 func CreateTestDB(config Config) (testDB *sql.DB, cleanup func()) {
-	if config.Driver != "postgres" {
-		log.Fatalf("database driver not supported: %v", config.Driver)
-	}
-
 	// config.DBName is purposely excluded.
-	dsn, err := GetDataSourceName(Config{
-		Driver:   "postgres",
-		Host:     config.Host,
-		Port:     config.Port,
-		User:     config.User,
-		Password: config.Password,
-	})
+	db, err := Connect(config.WithoutDBName())
 	if err != nil {
-		log.Fatalf("could not calculate data source name: %v", err)
-	}
-
-	db, err := sql.Open(config.Driver, dsn)
-	if err != nil {
-		log.Fatalf("could not connect to database: %v", err)
+		log.Fatal(err)
 	}
 
 	testDBName := fmt.Sprintf("test_%v", randID())
@@ -37,23 +22,11 @@ func CreateTestDB(config Config) (testDB *sql.DB, cleanup func()) {
 	// We need to create the query using fmt.
 	// https://github.com/lib/pq/issues/694
 	if _, err = db.Exec(fmt.Sprintf("CREATE DATABASE %v TEMPLATE %v", testDBName, config.DBName)); err != nil {
-		log.Fatalf("could not execute query: %v", err)
+		log.Fatal(err)
 	}
 
-	testDSN, err := GetDataSourceName(Config{
-		Driver:   "postgres",
-		Host:     config.Host,
-		Port:     config.Port,
-		DBName:   config.DBName,
-		User:     config.User,
-		Password: config.Password,
-	})
-	if err != nil {
-		log.Fatalf("could not calculate test data source name: %v", err)
-	}
-
-	if testDB, err = sql.Open(config.Driver, testDSN); err != nil {
-		log.Fatalf("could not connect to test DB: %v", err)
+	if testDB, err = Connect(config.WithDBName(testDBName)); err != nil {
+		log.Fatal(err)
 	}
 
 	cleanup = func() {

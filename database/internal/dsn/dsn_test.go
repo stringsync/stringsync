@@ -1,4 +1,4 @@
-package database
+package dsn
 
 import (
 	"testing"
@@ -7,13 +7,13 @@ import (
 func TestGetDataSourceName(t *testing.T) {
 	for _, test := range []struct {
 		name    string
-		config  Config
+		params  Params
 		want    string
 		wantErr bool
 	}{
 		{
 			name: "calculates fully qualified dsns",
-			config: Config{
+			params: Params{
 				Driver:   "postgres",
 				Host:     "host",
 				Port:     1234,
@@ -25,21 +25,21 @@ func TestGetDataSourceName(t *testing.T) {
 		},
 		{
 			name: "returns error when excluding host",
-			config: Config{
+			params: Params{
 				Driver: "postgres",
 				Host:   "",
 			},
 			wantErr: true,
 		}, {
 			name: "returns error when excluding driver",
-			config: Config{
+			params: Params{
 				Driver: "",
 				Host:   "host",
 			},
 			wantErr: true,
 		}, {
 			name: "includes host",
-			config: Config{
+			params: Params{
 				Driver: "postgres",
 				Host:   "host",
 				Port:   1234,
@@ -47,14 +47,14 @@ func TestGetDataSourceName(t *testing.T) {
 			want: "host=host port=1234 sslmode=disable",
 		}, {
 			name: "defaults port",
-			config: Config{
+			params: Params{
 				Driver: "postgres",
 				Host:   "host",
 			},
 			want: "host=host port=5432 sslmode=disable",
 		}, {
 			name: "includes dbName",
-			config: Config{
+			params: Params{
 				Driver: "postgres",
 				Host:   "host",
 				DBName: "dbName",
@@ -62,7 +62,7 @@ func TestGetDataSourceName(t *testing.T) {
 			want: "host=host port=5432 dbname=dbName sslmode=disable",
 		}, {
 			name: "includes user",
-			config: Config{
+			params: Params{
 				Driver: "postgres",
 				Host:   "host",
 				User:   "user",
@@ -70,7 +70,7 @@ func TestGetDataSourceName(t *testing.T) {
 			want: "host=host port=5432 user=user sslmode=disable",
 		}, {
 			name: "includes password",
-			config: Config{
+			params: Params{
 				Driver:   "postgres",
 				Host:     "host",
 				Password: "password",
@@ -79,14 +79,14 @@ func TestGetDataSourceName(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			got, gotErr := GetDataSourceName(test.config)
+			got, gotErr := GetDataSourceName(test.params)
 
 			if hasErr := gotErr != nil; hasErr != test.wantErr {
 				t.Errorf("gotErr = %v, wantErr = %t", gotErr, test.wantErr)
 			}
 
 			if got != test.want {
-				t.Errorf("GetDsn(%+v) = %q, want %q", test.config, got, test.want)
+				t.Errorf("GetDsn(%+v) = %q, want %q", test.params, got, test.want)
 			}
 		})
 	}
