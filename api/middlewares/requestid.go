@@ -1,4 +1,4 @@
-package middleware
+package middlewares
 
 import (
 	"net/http"
@@ -10,7 +10,7 @@ import (
 const RequestIDHeader = "X-Request-ID"
 
 // RequestID creates a request ID, and adds it to a X-Request-ID header.
-func RequestID() func(http.Handler) http.Handler {
+func RequestID() Middleware {
 	return func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Create a new request ID.

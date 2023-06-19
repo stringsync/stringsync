@@ -3,6 +3,7 @@ package router
 import (
 	"fmt"
 	"net/http"
+	"stringsync/api/middlewares"
 	"stringsync/util"
 )
 
@@ -12,11 +13,8 @@ var RouteMatchCtxSlot = util.NewCtxSlot[*RouteMatch]("routeMatch")
 // Router contains fields common to routes.
 type Router struct {
 	routes      []Route
-	middlewares []Middleware
+	middlewares []middlewares.Middleware
 }
-
-// Middleware is a handler that adds functionality to another handler.
-type Middleware func(http.Handler) http.Handler
 
 // ServeHTTP runs all the middleware and tries to handle the requested route.
 func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -54,7 +52,7 @@ func (router *Router) CanHandle(method, path string) bool {
 
 // Middleware adds a middleware to the router. Middlewares get called in the
 // order that they were added.
-func (router *Router) Middleware(m Middleware) {
+func (router *Router) Middleware(m middlewares.Middleware) {
 	router.middlewares = append(router.middlewares, m)
 }
 

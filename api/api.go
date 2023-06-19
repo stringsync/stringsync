@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"stringsync/api/handlers"
-	"stringsync/api/middleware"
+	"stringsync/api/middlewares"
 	"stringsync/api/router"
 	"stringsync/database"
 	"stringsync/services"
@@ -55,14 +55,14 @@ func Start(config Config) error {
 
 	// Setup router middleware.
 	handler := router.NewRouter()
-	handler.Middleware(middleware.RequestID())
+	handler.Middleware(middlewares.RequestID())
 	handler.Middleware(
-		middleware.Cors(config.AllowedOrigins, []string{
+		middlewares.Cors(config.AllowedOrigins, []string{
 			http.MethodGet,
 			http.MethodPost,
 			http.MethodHead,
 		}))
-	handler.Middleware(middleware.Logger(log))
+	handler.Middleware(middlewares.Logger(log))
 
 	// Define routes.
 	health := handlers.NewHealthHandler(healthService)

@@ -1,4 +1,4 @@
-package middleware
+package middlewares
 
 import (
 	"net/http"
@@ -6,7 +6,7 @@ import (
 )
 
 // Cors creates a middleware that allows the specified origins and methods.
-func Cors(allowedOrigins []string, allowedMethods []string) func(http.Handler) http.Handler {
+func Cors(allowedOrigins []string, allowedMethods []string) Middleware {
 	return func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			headers := w.Header()

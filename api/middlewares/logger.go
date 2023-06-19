@@ -1,4 +1,4 @@
-package middleware
+package middlewares
 
 import (
 	"net/http"
@@ -13,7 +13,7 @@ type statusWriter struct {
 }
 
 // Logger is a middleware that logs basic information about the request.
-func Logger(log *util.Logger) func(http.Handler) http.Handler {
+func Logger(log *util.Logger) Middleware {
 	return func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Create a new logger.
