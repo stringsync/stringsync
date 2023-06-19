@@ -1,13 +1,13 @@
 package router
 
 import (
-	"context"
 	"fmt"
 	"net/http"
-	"stringsync/api/internal/ctxkey"
+	"stringsync/util"
 )
 
-const routeMatchKey = ctxkey.CtxKey("stringsync.api.router.routeMatch")
+// RouteMatchCtxSlot is the mechanism to manage route match data inside a context.
+var RouteMatchCtxSlot = util.NewCtxSlot[*RouteMatch]("routeMatch")
 
 // Handler handles requests.
 type Handler func(http.ResponseWriter, *http.Request)
@@ -37,17 +37,11 @@ func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Add context to the request.
-	ctx := context.WithValue(r.Context(), routeMatchKey, *match)
+	ctx := RouteMatchCtxSlot.Put(r.Context(), match)
 	r = r.WithContext(ctx)
 
 	// Call everything.
 	h.ServeHTTP(w, r)
-}
-
-// GetRouteMatch returns the match from the request context.
-func GetRouteMatch(ctx context.Context) (RouteMatch, bool) {
-	match, ok := ctx.Value(routeMatchKey).(RouteMatch)
-	return match, ok
 }
 
 // NewRouter returns a Router that can be used as an http handler.

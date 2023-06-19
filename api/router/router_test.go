@@ -241,11 +241,10 @@ func TestRouter_DisallowsInvalidRoutes(t *testing.T) {
 
 func TestRouter_Match(t *testing.T) {
 	var gotMatch RouteMatch
-	var gotOk bool
 
 	router := NewRouter()
 	router.Get("/foo/{id}", func(w http.ResponseWriter, r *http.Request) {
-		gotMatch, gotOk = GetRouteMatch(r.Context())
+		gotMatch = *RouteMatchCtxSlot.Get(r.Context())
 	})
 
 	w := httptest.NewRecorder()
@@ -257,8 +256,7 @@ func TestRouter_Match(t *testing.T) {
 			map[string]string{"id": "123"},
 		},
 	}
-	wantOk := true
-	if !reflect.DeepEqual(gotMatch, wantMatch) || gotOk != wantOk {
-		t.Errorf("Match(%T) = %v, %v, want %v, %v", r, gotMatch, gotOk, wantMatch, wantOk)
+	if !reflect.DeepEqual(gotMatch, wantMatch) {
+		t.Errorf("Match(%T) = %v, want %v", r, gotMatch, wantMatch)
 	}
 }
