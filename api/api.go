@@ -32,7 +32,7 @@ func Start(config Config) error {
 
 	// Establish database connection.
 	if config.DBDriver != "postgres" {
-		log.Fatalf("DbDriver not supported: %v", config.DBDriver)
+		log.Fatalf("database driver not supported: %v", config.DBDriver)
 	}
 	dsn, err := database.GetPostgresDataSourceName(database.DataSourceNameParams{
 		Host:     config.DBHost,
