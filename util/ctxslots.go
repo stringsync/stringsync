@@ -6,6 +6,12 @@ import (
 	"runtime"
 )
 
+var (
+	RequestIDCtxSlot = NewCtxSlot[string]("requestID")
+	LogCtxSlot       = NewCtxSlot[Logger]("log")
+)
+
+// ctxKey is the key to retrieve a context value with.
 type ctxKey string
 
 // CtxSlot is a container for managing state inside a context.Context.
