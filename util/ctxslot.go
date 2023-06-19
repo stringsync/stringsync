@@ -1,11 +1,24 @@
 package util
 
-import "context"
+import (
+	"context"
+	"fmt"
+	"runtime"
+)
 
-type CtxKey string
+type ctxKey string
 
+// CtxSlot is a container for managing state inside a context.Context.
 type CtxSlot[T any] struct {
-	key CtxKey
+	key ctxKey
+}
+
+// NewCtxSlot creates a new CtxSlot. This is intended to only be called at the
+// top level.
+func NewCtxSlot[T any](name string) *CtxSlot[T] {
+	_, file, line, _ := runtime.Caller(0)
+	key := ctxKey(fmt.Sprintf("%v_%v@L%v", name, file, line))
+	return &CtxSlot[T]{key}
 }
 
 // Put creates a new context.Context with a value.
