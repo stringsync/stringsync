@@ -23,41 +23,26 @@ type Config struct {
 
 // Start runs the API.
 func Start(config Config) error {
-	log := setupLogger()
+	log := util.NewLogger(util.FormatterText)
+	log.SetGlobalField("service", "api")
 
-	r := setupRouter(config, log)
+	healthService := services.NewTestHealthService()
 
-	return run(config, log, r)
-}
-
-func setupLogger() *util.Logger {
-	logger := util.NewLogger(util.FormatterText)
-	logger.SetGlobalField("service", "api")
-	return logger
-}
-
-func setupRouter(config Config, logger *util.Logger) *router.Router {
-	r := router.NewRouter()
-
-	r.Middleware(middleware.RequestID())
-	r.Middleware(
+	handler := router.NewRouter()
+	handler.Middleware(middleware.RequestID())
+	handler.Middleware(
 		middleware.Cors(config.AllowedOrigins, []string{
 			http.MethodGet,
 			http.MethodPost,
 			http.MethodHead,
 		}))
-	r.Middleware(middleware.Logger(logger))
+	handler.Middleware(middleware.Logger(log))
 
-	healthService := services.NewTestHealthService()
 	health := handlers.NewHealthHandler(healthService)
-	r.Get("/health", health.Get())
+	handler.Get("/health", health.Get())
 
-	return r
-}
-
-func run(config Config, log *util.Logger, r *router.Router) error {
 	mux := http.NewServeMux()
-	mux.Handle("/", r)
+	mux.Handle("/", handler)
 	addr := fmt.Sprintf(":%d", config.Port)
 	log.Infof("Server running at: http://localhost%v\n", addr)
 	return http.ListenAndServe(addr, mux)
