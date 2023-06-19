@@ -13,26 +13,26 @@ type statusWriter struct {
 }
 
 // Logger is a middleware that logs basic information about the request.
-func Logger(logger *util.Logger) func(http.Handler) http.Handler {
+func Logger(log *util.Logger) func(http.Handler) http.Handler {
 	return func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Create a new logger.
+			log = log.NewChild()
+			requestID := util.RequestIDCtxSlot.Get(r.Context())
+			log.SetLocalField("requestID", requestID)
+
 			// Track the start time.
 			start := time.Now()
 
 			// Update the context with a logger and create a status writer.
-			ctx := util.LogCtxSlot.Put(r.Context(), logger)
+			ctx := util.LogCtxSlot.Put(r.Context(), log)
 			r = r.WithContext(ctx)
 			sw := newStatusWriter(w)
 
-			// Create a new logger.
-			logger = logger.NewChild()
-			requestID := util.RequestIDCtxSlot.Get(ctx)
-			logger.SetLocalField("requestID", requestID)
-
 			// Propagate the request and wrap the start and end with logs.
-			logger.Infof("Started %s %s", r.Method, r.URL.Path)
+			log.Infof("Started %s %s", r.Method, r.URL.Path)
 			handler.ServeHTTP(sw, r)
-			logger.Infof("Completed %d %s in %v",
+			log.Infof("Completed %d %s in %v",
 				sw.statusCode, http.StatusText(sw.statusCode), time.Since(start))
 		})
 	}

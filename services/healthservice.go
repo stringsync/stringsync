@@ -3,10 +3,10 @@ package services
 import (
 	"context"
 	"database/sql"
+	"stringsync/util"
 )
 
 type healthService struct {
-	// TODO(jared) Add logger.
 	db *sql.DB
 }
 
@@ -17,6 +17,13 @@ func NewHealthService(db *sql.DB) HealthService {
 
 // CheckDBHealth returns whether the DB can be pinged.
 func (h *healthService) CheckDBHealth(ctx context.Context) bool {
+	log := util.LogCtxSlot.Get(ctx)
+
 	err := h.db.PingContext(ctx)
+
+	if err != nil {
+		log.Errorf("could not ping database: %v", err)
+	}
+
 	return err == nil
 }
