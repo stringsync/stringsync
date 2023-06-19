@@ -10,11 +10,13 @@ type healthService struct {
 	db *sql.DB
 }
 
-func NewHealthService(db *sql.DB) *healthService {
+// NewHealthService creates a new health service.
+func NewHealthService(db *sql.DB) HealthService {
 	return &healthService{db}
 }
 
-func (h *healthService) IsDbHealthy(ctx context.Context) bool {
+// CheckDBHealth returns whether the DB can be pinged.
+func (h *healthService) CheckDBHealth(ctx context.Context) bool {
 	err := h.db.PingContext(ctx)
 	return err == nil
 }

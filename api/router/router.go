@@ -9,9 +9,6 @@ import (
 // RouteMatchCtxSlot is the mechanism to manage route match data inside a context.
 var RouteMatchCtxSlot = util.NewCtxSlot[*RouteMatch]("routeMatch")
 
-// Handler handles requests.
-type Handler func(http.ResponseWriter, *http.Request)
-
 // Router contains fields common to routes.
 type Router struct {
 	routes      []Route
@@ -62,13 +59,13 @@ func (router *Router) Middleware(m Middleware) {
 }
 
 // Get registers a GET handler.
-func (router *Router) Get(path string, h Handler) {
-	router.register(Route{http.MethodGet, path, http.HandlerFunc(h)})
+func (router *Router) Get(path string, h http.Handler) {
+	router.register(Route{http.MethodGet, path, h})
 }
 
 // Post registers a POST handler.
-func (router *Router) Post(path string, h Handler) {
-	router.register(Route{http.MethodPost, path, http.HandlerFunc(h)})
+func (router *Router) Post(path string, h http.Handler) {
+	router.register(Route{http.MethodPost, path, h})
 }
 
 // register adds the route to the router.

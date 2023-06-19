@@ -7,7 +7,7 @@ import (
 	"stringsync/api/handlers"
 	"stringsync/api/middleware"
 	"stringsync/api/router"
-	"stringsync/service"
+	"stringsync/services"
 	"stringsync/util"
 )
 
@@ -25,10 +25,7 @@ type Config struct {
 func Start(config Config) error {
 	log := setupLogger()
 
-	srv := setupService(config)
-	defer srv.Cleanup()
-
-	r := setupRouter(config, log, srv)
+	r := setupRouter(config, log)
 
 	return run(config, log, r)
 }
@@ -39,17 +36,7 @@ func setupLogger() *util.Logger {
 	return logger
 }
 
-func setupService(config Config) *service.Service {
-	return service.New(service.Config{
-		DbHost:     config.DbHost,
-		DbPort:     config.DbPort,
-		DbName:     config.DbName,
-		DbUser:     config.DbUser,
-		DbPassword: config.DbPassword,
-	})
-}
-
-func setupRouter(config Config, logger *util.Logger, srv *service.Service) *router.Router {
+func setupRouter(config Config, logger *util.Logger) *router.Router {
 	r := router.NewRouter()
 
 	r.Middleware(middleware.RequestID())
@@ -61,8 +48,9 @@ func setupRouter(config Config, logger *util.Logger, srv *service.Service) *rout
 		}))
 	r.Middleware(middleware.Logger(logger))
 
-	health := handlers.NewHealth(srv)
-	r.Get("/health", health.Get)
+	healthService := services.NewTestHealthService()
+	health := handlers.NewHealthHandler(healthService)
+	r.Get("/health", health.Get())
 
 	return r
 }

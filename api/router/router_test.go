@@ -21,10 +21,10 @@ func (n *testMiddleware) Middleware(h http.Handler) http.Handler {
 	})
 }
 
-func echoHandler(msg string) Handler {
-	return func(w http.ResponseWriter, r *http.Request) {
+func echoHandler(msg string) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(msg))
-	}
+	})
 }
 
 func TestRouter_CanHandle(t *testing.T) {
@@ -243,9 +243,9 @@ func TestRouter_Match(t *testing.T) {
 	var gotMatch RouteMatch
 
 	router := NewRouter()
-	router.Get("/foo/{id}", func(w http.ResponseWriter, r *http.Request) {
+	router.Get("/foo/{id}", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		gotMatch = *RouteMatchCtxSlot.Get(r.Context())
-	})
+	}))
 
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodGet, "/foo/123", nil)

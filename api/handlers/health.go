@@ -1,26 +1,32 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
-	"stringsync/service"
+	"stringsync/services"
 )
 
-type Health struct {
-	service *service.Service
+type HealthHandler struct {
+	service services.HealthService
 }
 
-func NewHealth(s *service.Service) *Health {
-	return &Health{service: s}
+func NewHealthHandler(service services.HealthService) *HealthHandler {
+	return &HealthHandler{service: service}
 }
 
-func (h *Health) Get(w http.ResponseWriter, r *http.Request) {
-	_, err := h.service.Db.ExecContext(r.Context(), "SELECT NOW();")
-	if err != nil {
-		fmt.Printf("db is not healthy: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+func (h *HealthHandler) Get() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if h.service.CheckDBHealth(r.Context()) {
+			respondOK(w)
+		} else {
+			respondInternalError(w)
+		}
+	})
+}
 
+func respondOK(w http.ResponseWriter) {
 	w.Write([]byte("ok"))
+}
+
+func respondInternalError(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusInternalServerError)
 }
