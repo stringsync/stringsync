@@ -9,6 +9,7 @@ import (
 )
 
 var (
+	migrateDriver   string
 	migrateHost     string
 	migratePort     int
 	migrateDbName   string
@@ -20,6 +21,7 @@ var (
 func init() {
 	rootCmd.AddCommand(migrateCmd)
 
+	migrateCmd.Flags().StringVar(&migrateDriver, "driver", "postgres", "database driver")
 	migrateCmd.Flags().StringVar(&migrateHost, "host", "", "database host")
 	migrateCmd.Flags().IntVar(&migratePort, "port", 5432, "database port")
 	migrateCmd.Flags().StringVar(&migrateDbName, "dbname", "", "database name")
@@ -43,18 +45,18 @@ var migrateCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		err = db.Ready("postgres", dsn, 30*time.Second)
+		err = db.Ready(migrateDriver, dsn, 30*time.Second)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		err = db.Migrate(dsn)
+		err = db.Migrate(migrateDriver, dsn)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		if migrateSeed {
-			err = db.Seed(dsn)
+			err = db.Seed(migrateDriver, dsn)
 			if err != nil {
 				log.Fatal(err)
 			}

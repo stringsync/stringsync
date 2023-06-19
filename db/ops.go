@@ -46,26 +46,23 @@ func CanConnect(driver, dsn string) bool {
 	if err != nil {
 		return false
 	}
-
 	defer db.Close()
-
-	_, err = db.Exec("SELECT NOW();")
-	return err == nil
+	return db.Ping() == nil
 }
 
 // Migrate runs a DDL migration against the database to the latest version.
-func Migrate(dsn string) error {
-	return up(migrationsDir, migrationsTableName, dsn)
+func Migrate(driver, dsn string) error {
+	return up(migrationsDir, migrationsTableName, driver, dsn)
 }
 
 // Migrate runs a DML migration against the database to the latest version.
-func Seed(dsn string) error {
-	return up(seedsDir, seedsTableName, dsn)
+func Seed(driver, dsn string) error {
+	return up(seedsDir, seedsTableName, driver, dsn)
 }
 
 // up runs the goose up command.
-func up(dir, table, dsn string) error {
-	cmd := exec.Command("goose", "-dir", dir, "-table", table, "postgres", dsn, "up")
+func up(driver, dir, table, dsn string) error {
+	cmd := exec.Command("goose", "-dir", dir, "-table", table, driver, dsn, "up")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
