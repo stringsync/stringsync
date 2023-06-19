@@ -17,6 +17,7 @@ COPY cmd cmd
 COPY database database
 COPY util util
 COPY service service
+COPY services services
 RUN go build stringsync
 
 CMD [ "./stringsync", "api" ]
