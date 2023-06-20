@@ -17,7 +17,7 @@ func NewHealthService(db *sql.DB) HealthService {
 
 // CheckDBHealth returns whether the DB can be pinged.
 func (h *healthService) CheckDBHealth(ctx context.Context) bool {
-	log := util.LogCtxSlot.Get(ctx)
+	log, _ := util.LogCtxSlot.Get(ctx)
 
 	err := h.db.PingContext(ctx)
 

@@ -12,7 +12,7 @@ func TestRequestId_IsUniqueEachCall(t *testing.T) {
 
 	middleware := RequestID()
 	handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		requestID := util.RequestIDCtxSlot.Get(r.Context())
+		requestID, _ := util.RequestIDCtxSlot.Get(r.Context())
 		gotRequestIDs = append(gotRequestIDs, requestID)
 	}))
 

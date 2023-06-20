@@ -11,8 +11,7 @@ import (
 )
 
 func CreateTestDB(config Config) (testDB *sql.DB, cleanup func()) {
-	// config.DBName is purposely excluded.
-	db, err := Connect(config.WithoutDBName())
+	db, err := Connect(config)
 	if err != nil {
 		log.Fatal(err)
 	}

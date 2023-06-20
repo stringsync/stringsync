@@ -18,8 +18,10 @@ func Logger(log *util.Logger) Middleware {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Create a new logger.
 			log = log.NewChild()
-			requestID := util.RequestIDCtxSlot.Get(r.Context())
-			log.SetLocalField("requestID", requestID)
+			requestID, ok := util.RequestIDCtxSlot.Get(r.Context())
+			if ok {
+				log.SetLocalField("requestID", requestID)
+			}
 
 			// Track the start time.
 			start := time.Now()

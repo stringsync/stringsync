@@ -33,6 +33,7 @@ func (c *CtxSlot[T]) Put(ctx context.Context, val T) context.Context {
 }
 
 // Get returns the stored value from a context.Context.
-func (c *CtxSlot[T]) Get(ctx context.Context) T {
-	return ctx.Value(c.key).(T)
+func (c *CtxSlot[T]) Get(ctx context.Context) (T, bool) {
+	val, ok := ctx.Value(c.key).(T)
+	return val, ok
 }

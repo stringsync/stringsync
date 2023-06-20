@@ -21,8 +21,3 @@ func (c Config) WithDBName(dbName string) Config {
 		Password: c.Password,
 	}
 }
-
-// WithDBName returns a new Config with an empty DBName.
-func (c Config) WithoutDBName() Config {
-	return c.WithDBName("")
-}

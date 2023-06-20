@@ -1,7 +1,7 @@
 version: '3.9'
 
 services:
-  api:
+  test:
     build:
       dockerfile: Dockerfile
     ports:
@@ -9,7 +9,6 @@ services:
     links:
       - db
     environment:
-      APP_PORT: 8080
       DB_HOST: db
       DB_PORT: 5432
       DB_NAME: stringsync
@@ -17,11 +16,7 @@ services:
       DB_PASSWORD: stringsync
     command:
       - "./stringsync"
-      - "api"
-      - "--allowed_origin"
-      - "http://localhost:8081"
-      - "--allowed_origin"
-      - "http://localhost:8080"
+      - "test"
 
   db:
     image: postgres:11
@@ -32,23 +27,3 @@ services:
       POSTGRES_PASSWORD: stringsync
     ports:
       - 5432:5432
-  
-  migrate:
-    build:
-      dockerfile: Dockerfile
-    links:
-      - db
-    command:
-      - "./stringsync"
-      - "migrate"
-      - "--host"
-      - "db"
-      - "--port"
-      - "5432"
-      - "--dbname"
-      - "stringsync"
-      - "--user"
-      - "stringsync"
-      - "--password"
-      - "stringsync"
-      - "--seed"

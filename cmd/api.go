@@ -8,14 +8,12 @@ import (
 )
 
 var (
-	apiPort           int
 	apiAllowedOrigins []string
 )
 
 func init() {
 	rootCmd.AddCommand(apiCmd)
 
-	apiCmd.Flags().IntVar(&apiPort, "port", 8080, "the port to run the server on")
 	apiCmd.Flags().StringArrayVar(&apiAllowedOrigins, "allowed_origin", []string{}, "allowed CORS origin")
 }
 
@@ -24,7 +22,7 @@ var apiCmd = &cobra.Command{
 	Short: "Runs the api server",
 	RunE: func(c *cobra.Command, args []string) error {
 		return api.Start(api.Config{
-			Port:           apiPort,
+			Port:           util.MustGetEnvInt("APP_PORT"),
 			AllowedOrigins: apiAllowedOrigins,
 			DBDriver:       "postgres",
 			DBHost:         util.MustGetEnvString("DB_HOST"),
