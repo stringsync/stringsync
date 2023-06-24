@@ -19,11 +19,13 @@ type CtxSlot[T any] struct {
 	key ctxKey
 }
 
-// NewCtxSlot creates a new CtxSlot. This is intended to only be called at the
-// top level.
+// NewCtxSlot creates a new CtxSlot.
 func NewCtxSlot[T any](name string) *CtxSlot[T] {
 	_, file, line, _ := runtime.Caller(0)
-	key := ctxKey(fmt.Sprintf("%v_%v@L%v", name, file, line))
+
+	// Ensure uniqueness.
+	key := ctxKey(fmt.Sprintf("_contextslots.CtxSlot_%v_%v@L%v", name, file, line))
+
 	return &CtxSlot[T]{key}
 }
 
