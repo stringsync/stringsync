@@ -7,7 +7,9 @@ import (
 	"testing"
 )
 
-func TestRequestId_IsUniqueEachCall(t *testing.T) {
+func TestRequestId(t *testing.T) {
+	// Test that RequestId is unique each call.
+
 	gotRequestIDs := []string{}
 
 	middleware := RequestID()

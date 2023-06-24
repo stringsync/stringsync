@@ -112,55 +112,59 @@ func TestLogger_SetTime(t *testing.T) {
 }
 
 func TestLogger_SetGlobalField(t *testing.T) {
-	writer := &testWriter{}
-	logger := NewLogger(FormatterText)
-	logger.SetOutput(writer)
+	t.Run("parent", func(t *testing.T) {
+		writer := &testWriter{}
+		logger := NewLogger(FormatterText)
+		logger.SetOutput(writer)
 
-	logger.SetGlobalField("foo", "bar")
-	logger.Infof("hello")
+		logger.SetGlobalField("foo", "bar")
+		logger.Infof("hello")
 
-	if got := writer.buf.String(); !strings.Contains(got, "foo=bar") {
-		t.Errorf("strings.Contains(%q, \"foo=bar\") = false, want true", got)
-	}
-}
+		if got := writer.buf.String(); !strings.Contains(got, "foo=bar") {
+			t.Errorf("strings.Contains(%q, \"foo=bar\") = false, want true", got)
+		}
+	})
 
-func TestLogger_SetGlobalField_ChildLogger(t *testing.T) {
-	writer := &testWriter{}
-	logger := NewLogger(FormatterText)
-	logger.SetOutput(writer)
+	t.Run("child", func(t *testing.T) {
+		writer := &testWriter{}
+		logger := NewLogger(FormatterText)
+		logger.SetOutput(writer)
 
-	logger.SetGlobalField("foo", "bar")
-	child := logger.NewChild()
-	child.Infof("hello")
+		logger.SetGlobalField("foo", "bar")
+		child := logger.NewChild()
+		child.Infof("hello")
 
-	if got := writer.buf.String(); !strings.Contains(got, "foo=bar") {
-		t.Errorf("strings.Contains(%q, \"foo=bar\") = false, want true", got)
-	}
+		if got := writer.buf.String(); !strings.Contains(got, "foo=bar") {
+			t.Errorf("strings.Contains(%q, \"foo=bar\") = false, want true", got)
+		}
+	})
 }
 
 func TestLogger_SetLocalField(t *testing.T) {
-	writer := &testWriter{}
-	logger := NewLogger(FormatterText)
-	logger.SetOutput(writer)
+	t.Run("parent", func(t *testing.T) {
+		writer := &testWriter{}
+		logger := NewLogger(FormatterText)
+		logger.SetOutput(writer)
 
-	logger.SetLocalField("foo", "bar")
-	logger.Infof("hello")
+		logger.SetLocalField("foo", "bar")
+		logger.Infof("hello")
 
-	if got := writer.buf.String(); !strings.Contains(got, "foo=bar") {
-		t.Errorf("strings.Contains(%q, \"foo=bar\") = false, want true", got)
-	}
-}
+		if got := writer.buf.String(); !strings.Contains(got, "foo=bar") {
+			t.Errorf("strings.Contains(%q, \"foo=bar\") = false, want true", got)
+		}
+	})
 
-func TestLogger_SetLocalField_ChildLogger(t *testing.T) {
-	writer := &testWriter{}
-	logger := NewLogger(FormatterText)
-	logger.SetOutput(writer)
+	t.Run("child", func(t *testing.T) {
+		writer := &testWriter{}
+		logger := NewLogger(FormatterText)
+		logger.SetOutput(writer)
 
-	logger.SetLocalField("foo", "bar")
-	child := logger.NewChild()
-	child.Infof("hello")
+		logger.SetLocalField("foo", "bar")
+		child := logger.NewChild()
+		child.Infof("hello")
 
-	if got := writer.buf.String(); strings.Contains(got, "foo=bar") {
-		t.Errorf("strings.Contains(%q, \"foo=bar\") = true, want false", got)
-	}
+		if got := writer.buf.String(); strings.Contains(got, "foo=bar") {
+			t.Errorf("strings.Contains(%q, \"foo=bar\") = true, want false", got)
+		}
+	})
 }

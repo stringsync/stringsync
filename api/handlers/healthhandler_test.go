@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestGet(t *testing.T) {
+func TestHealthHandler_Get(t *testing.T) {
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodGet, "/", nil)
 
