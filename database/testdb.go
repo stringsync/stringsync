@@ -10,6 +10,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// / CreateTestDB creates a test database with the given config.
 func CreateTestDB(config Config) (testDB *sql.DB, cleanup func()) {
 	db, err := Connect(config)
 	if err != nil {
@@ -39,6 +40,12 @@ func CreateTestDB(config Config) (testDB *sql.DB, cleanup func()) {
 	}
 
 	return testDB, cleanup
+}
+
+// / CreateTestDBFromEnv creates a test database using the env params.
+func CreateTestDBFromEnv() (testDB *sql.DB, cleanup func()) {
+	config := ConfigFromEnv()
+	return CreateTestDB(config)
 }
 
 func randID() string {

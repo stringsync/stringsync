@@ -6,6 +6,25 @@ import (
 	"strconv"
 )
 
+// GetEnvString returns a string from the env.
+func GetEnvString(key string) string {
+	return os.Getenv(key)
+}
+
+// GetEnvInt returns an int from the env.
+func GetEnvInt(key string) int {
+	str := os.Getenv(key)
+	if str == "" {
+		return 0
+	}
+
+	val, err := strconv.ParseInt(str, 10, 64)
+	if err != nil {
+		return 0
+	}
+	return int(val)
+}
+
 // MustGetEnvString returns a string from the env.
 // It will panic if the env is missing.
 func MustGetEnvString(key string) string {
