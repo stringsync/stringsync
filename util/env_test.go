@@ -13,6 +13,49 @@ func setup(key, val string) func() {
 	}
 }
 
+func TestGetEnvString(t *testing.T) {
+	t.Run("returns the env value when it exists", func(t *testing.T) {
+		cleanup := setup("FOO", "bar")
+		defer cleanup()
+
+		if got := GetEnvString("FOO"); got != "bar" {
+			t.Errorf("GetEnvString(%q) = %q, want %q", "FOO", got, "bar")
+		}
+	})
+
+	t.Run("returns the zero value when it does not exist", func(t *testing.T) {
+		if got := GetEnvString("FOO"); got != "" {
+			t.Errorf("GetEnvString(%q) = %q, want %q", "FOO", "", "bar")
+		}
+	})
+}
+
+func TestGetEnvInt(t *testing.T) {
+	t.Run("returns the env value when it exists", func(t *testing.T) {
+		cleanup := setup("FOO", "42")
+		defer cleanup()
+
+		if got := GetEnvInt("FOO"); got != 42 {
+			t.Errorf("GetEnvInt(%q) = %d, want %d", "FOO", got, 42)
+		}
+	})
+
+	t.Run("returns the zero value when it does not exist", func(t *testing.T) {
+		if got := GetEnvInt("FOO"); got != 0 {
+			t.Errorf("GetEnvInt(%q) = %d, want %d", "FOO", got, 0)
+		}
+	})
+
+	t.Run("returns the zero value when it is not an int", func(t *testing.T) {
+		cleanup := setup("FOO", "bar")
+		defer cleanup()
+
+		if got := GetEnvInt("FOO"); got != 0 {
+			t.Errorf("GetEnvInt(%q) = %d, want %d", "FOO", got, 0)
+		}
+	})
+}
+
 func TestMustGetEnvString(t *testing.T) {
 	for _, test := range []struct {
 		name      string
