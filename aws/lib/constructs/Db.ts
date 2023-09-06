@@ -39,7 +39,7 @@ export class Db extends Construct {
       vpc: props.vpc,
       databaseName: this.databaseName,
       port: this.port,
-      instanceType: aws_ec2.InstanceType.of(aws_ec2.InstanceClass.T2, aws_ec2.InstanceSize.MICRO),
+      instanceType: aws_ec2.InstanceType.of(aws_ec2.InstanceClass.T3, aws_ec2.InstanceSize.MICRO),
       credentials: aws_rds.Credentials.fromSecret(this.credsSecret),
       vpcSubnets: props.vpcSubnets,
       engine: aws_rds.DatabaseInstanceEngine.postgres({ version: aws_rds.PostgresEngineVersion.VER_14 }),
