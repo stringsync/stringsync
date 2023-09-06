@@ -42,7 +42,7 @@ export class Db extends Construct {
       instanceType: aws_ec2.InstanceType.of(aws_ec2.InstanceClass.T2, aws_ec2.InstanceSize.MICRO),
       credentials: aws_rds.Credentials.fromSecret(this.credsSecret),
       vpcSubnets: props.vpcSubnets,
-      engine: aws_rds.DatabaseInstanceEngine.postgres({ version: aws_rds.PostgresEngineVersion.VER_11 }),
+      engine: aws_rds.DatabaseInstanceEngine.postgres({ version: aws_rds.PostgresEngineVersion.VER_14 }),
       securityGroups: [this.securityGroup],
     });
 
