@@ -815,7 +815,7 @@ Resources:
       Code:
         S3Bucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
         S3Key: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'mediainfo.zip']]
-      Runtime: python3.7
+      Runtime: python3.11
       Timeout: 120
       Environment:
         Variables:
