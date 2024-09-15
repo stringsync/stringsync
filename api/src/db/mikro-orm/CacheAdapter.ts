@@ -1,6 +1,8 @@
 import { CacheAdapter as ICacheAdapter } from '@mikro-orm/core';
 import { Cache } from '../../util';
 
+const DEFAULT_EXPIRATION = 60 * 60 * 24; // 24 hours
+
 export type CacheAdapterOptions = {
   cache: Cache;
 };
@@ -19,7 +21,7 @@ export class CacheAdapter implements ICacheAdapter {
 
   async set(name: string, data: any, origin: string, expiration?: number) {
     const json = JSON.stringify(data);
-    await this.cache.set(name, json, expiration);
+    await this.cache.set(name, json, expiration ?? DEFAULT_EXPIRATION);
   }
 
   async clear(): Promise<void> {
