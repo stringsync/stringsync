@@ -22,8 +22,9 @@ const getTestCmd = (project: Project, ci: boolean, watch: boolean) => {
 const doTest = async (composeFile: string, project: Project, ci: boolean, watch: boolean) => {
   try {
     const result = await cmd(
-      'docker-compose',
+      'docker',
       [
+        'compose',
         '-f',
         path.join(docker.DOCKER_DIR, composeFile),
         'run',

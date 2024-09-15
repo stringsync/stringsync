@@ -8,10 +8,9 @@ stringsync is a web application that teaches people how to play guitar.
 
 ### Prerequisites
 
-stringsync uses Docker and `docker-compose` to run services locally. You will need this if you want to run stringsync locally.
+stringsync uses Docker to run services locally. You will need this if you want to run stringsync locally.
 
 - [install Docker](https://docs.docker.com/install/)
-- [install docker-compose](https://docs.docker.com/compose/install/)
 
 stringsync uses `yarn` as a package management solution. You will need this if you want to have TypeScript type definitions when updating the codebase.
 
