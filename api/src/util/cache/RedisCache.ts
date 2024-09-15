@@ -47,7 +47,7 @@ export class RedisCache implements Cache {
     });
   }
 
-  async set(key: string, value: string, expiration?: number) {
+  async set(key: string, value: string, expirationMs?: number) {
     await new Promise((resolve, reject) => {
       const callback = (err: Error | null, reply: 'OK' | undefined) => {
         if (err) {
@@ -57,8 +57,8 @@ export class RedisCache implements Cache {
         resolve(undefined);
       };
 
-      if (typeof expiration === 'number') {
-        this.redis.set(key, value, 'PX', expiration, callback);
+      if (typeof expirationMs === 'number') {
+        this.redis.set(key, value, 'PX', expirationMs, callback);
       } else {
         this.redis.set(key, value, callback);
       }
