@@ -31,7 +31,12 @@ export class BullMqJob<P extends Payload> implements Job<P> {
 
     if (isNumber(this.opts.intervalMs)) {
       const name = this.getRepeatTaskName();
-      await queue.add(name, {} as P, { repeat: { every: this.opts.intervalMs } });
+      await queue.add(name, {} as P, {
+        repeat: { every: this.opts.intervalMs },
+        // TODO: This is a temporary fix to prevent the queue from growing indefinitely.
+        removeOnComplete: true,
+        removeOnFail: true,
+      });
     }
   }
 
