@@ -9,7 +9,7 @@ const MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
 
 export const withSession = (redis: RedisClient, config: Config): Handler => {
   const RedisStore = connectRedis(session);
-  const store = new RedisStore({ client: redis });
+  const store = new RedisStore({ client: redis, ttl: MAX_AGE_MS / 1000 });
   const isProduction = config.NODE_ENV === 'production';
   const secure = isProduction;
   const sameSite = isProduction ? 'strict' : undefined;
